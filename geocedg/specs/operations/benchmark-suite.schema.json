@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://geocedg.local/schemas/benchmark-suite-v1",
+  "title": "GeoCeDG benchmark suite",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_version", "id", "maturity", "budget_mode", "cases"],
+  "properties": {
+    "$schema": { "type": "string", "minLength": 1 },
+    "schema_version": { "const": 1 },
+    "id": { "type": "string", "pattern": "^cedg\\.[a-z0-9]+(?:[.-][a-z0-9]+)*$" },
+    "maturity": { "enum": ["research", "experimental", "stable"] },
+    "budget_mode": { "const": "informational" },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "script", "arguments", "warmup_iterations", "measurement_iterations", "timeout_seconds", "budget"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9]+(?:[.-][a-z0-9]+)*$" },
+          "script": { "type": "string", "pattern": "^tools/agent/[A-Za-z0-9._/-]+\\.ps1$" },
+          "arguments": { "type": "array", "items": { "type": "string" } },
+          "warmup_iterations": { "type": "integer", "minimum": 0 },
+          "measurement_iterations": { "type": "integer", "minimum": 1 },
+          "timeout_seconds": { "type": "integer", "minimum": 1 },
+          "budget": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["metric", "warning_threshold_ms"],
+            "properties": {
+              "metric": { "const": "median_elapsed_ms" },
+              "warning_threshold_ms": { "type": "number", "exclusiveMinimum": 0 }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://geocedg.local/schemas/regression-catalog-v1",
+  "title": "GeoCeDG regression catalog",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_version", "baseline_sha", "cases"],
+  "properties": {
+    "$schema": { "type": "string", "minLength": 1 },
+    "schema_version": { "const": 1 },
+    "baseline_sha": { "const": "9b93256b7df401ff056c37b502d82df4d72b1522" },
+    "cases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "manifest", "specification", "expected"],
+        "properties": {
+          "id": { "type": "string" },
+          "manifest": { "type": "string" },
+          "specification": { "type": "string" },
+          "expected": { "type": "object" }
+        }
+      }
+    }
+  }
+}
