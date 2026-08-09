@@ -1,7 +1,7 @@
 # GeoCeDG — Proposed Spatial Object and Canonical Projection Semantics
 
-**Status:** Proposed research/architecture input  
-**Authority:** Non-normative until converted into approved specifications and ADRs during G9  
+**Status:** Proposed research/architecture input
+**Authority:** Non-normative until converted into approved specifications and ADRs during G9
 **Target phase:** G9, before the Python DSL
 
 ## 1. Purpose

@@ -1,11 +1,11 @@
 # GeoCeDG - Planificación inicial del repositorio, arquitectura y desarrollo
 
-**Fecha de referencia:** 9 de agosto de 2026  
-**Versión del plan:** 2.0  
-**Revisión principal:** semántica espacial, proyecciones canónicas y fases posteriores de producción  
-**Producto propuesto:** GeoCeDG  
-**Base tecnológica:** fork del código fuente actual de GeoGebra  
-**Primer cliente:** aplicación de escritorio de la familia Classic 5  
+**Fecha de referencia:** 9 de agosto de 2026
+**Versión del plan:** 2.0
+**Revisión principal:** semántica espacial, proyecciones canónicas y fases posteriores de producción
+**Producto propuesto:** GeoCeDG
+**Base tecnológica:** fork del código fuente actual de GeoGebra
+**Primer cliente:** aplicación de escritorio de la familia Classic 5
 **Núcleo:** Java compartido de GeoGebra, extendido de forma mínima y estructural
 
 ---
@@ -1485,62 +1485,62 @@ Ese informe permitirá ajustar esta planificación al commit real antes de empez
 
 ### Licencias de activos
 
-**Riesgo:** creer que todo el producto está cubierto por EUPL.  
+**Riesgo:** creer que todo el producto está cubierto por EUPL.
 **Control:** matriz por componente y recursos propios.
 
 ### Divergencia upstream
 
-**Riesgo:** cambios masivos dificultan fusionar GeoGebra.  
+**Riesgo:** cambios masivos dificultan fusionar GeoGebra.
 **Control:** perfil separado, parches mínimos y sincronización aislada.
 
 ### `Locus` convertido en polilínea refinada
 
-**Riesgo:** mejorar solo la densidad de muestras sin corregir semántica.  
+**Riesgo:** mejorar solo la densidad de muestras sin corregir semántica.
 **Control:** separar definición, evaluator, métrica y render.
 
 ### Exactitud declarada indebidamente
 
-**Riesgo:** llamar exacta a una longitud numérica.  
+**Riesgo:** llamar exacta a una longitud numérica.
 **Control:** clasificación y estimación de error.
 
 ### Herramientas heredadas permanentes
 
-**Riesgo:** convertir scripts de investigación en API.  
+**Riesgo:** convertir scripts de investigación en API.
 **Control:** estados de madurez y laboratorio.
 
 ### Lógica geométrica en DXF o workbench
 
-**Riesgo:** duplicar el kernel.  
+**Riesgo:** duplicar el kernel.
 **Control:** DTO de solo lectura y servicios clientes.
 
 ### Asociación espacial inferida de forma frágil
 
-**Riesgo:** vincular objetos por etiquetas, orden de creación o proximidad visual.  
+**Riesgo:** vincular objetos por etiquetas, orden de creación o proximidad visual.
 **Control:** identificadores estables, `ProjectionBinding` tipado y serialización versionada.
 
 ### Proyecciones canónicas declaradas sin suficiencia
 
-**Riesgo:** aceptar dos vistas aunque una o ambas pierdan información esencial.  
+**Riesgo:** aceptar dos vistas aunque una o ambas pierdan información esencial.
 **Control:** esquemas por tipo, predicados de no degeneración y certificado dinámico.
 
 ### B-Rep CAD introducida como autoridad
 
-**Riesgo:** perder la construcción CeDG al copiar una representación sólida opaca.  
+**Riesgo:** perder la construcción CeDG al copiar una representación sólida opaca.
 **Control:** frontera proyectiva ligada a primitivas, superficies, caras, proyecciones y dependencias.
 
 ### Confusión entre capa, visibilidad y existencia
 
-**Riesgo:** ocultar un objeto y tratarlo como geométricamente inexistente, o usar capas para resolver ocultaciones.  
+**Riesgo:** ocultar un objeto y tratarlo como geométricamente inexistente, o usar capas para resolver ocultaciones.
 **Control:** estados separados y servicios distintos.
 
 ### Optimización sin línea base
 
-**Riesgo:** complejidad y errores sin mejora demostrable.  
+**Riesgo:** complejidad y errores sin mejora demostrable.
 **Control:** benchmarks desde G0 y perfiles antes de cada cambio de rendimiento.
 
 ### Prompt files divergentes
 
-**Riesgo:** varias copias de las mismas reglas.  
+**Riesgo:** varias copias de las mismas reglas.
 **Control:** `.github/prompts` canónico y `tools/agent` como autoridad ejecutable.
 
 ---

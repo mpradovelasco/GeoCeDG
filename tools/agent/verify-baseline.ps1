@@ -1,0 +1,366 @@
+[CmdletBinding()]
+param(
+    [switch]$FullTests,
+    [switch]$LaunchDesktop,
+    [switch]$AllowToolchainDownload,
+    [switch]$KeepBuildOutputs,
+    [string]$LogDirectory = (Join-Path ([IO.Path]::GetTempPath()) "geocedg-verify-baseline")
+)
+
+Set-StrictMode -Version Latest
+$ErrorActionPreference = "Stop"
+
+$ExpectedBaseline = "9b93256b7df401ff056c37b502d82df4d72b1522"
+$ExpectedVersion = "5.4.928.0"
+$ExpectedTag = "geogebra-baseline-5.4.928.0"
+$ExpectedDesktopJava = "25"
+$GeneratedDirectoryNames = @("build", ".gradle", ".kotlin")
+
+$RepositoryRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot "..\..")).Path
+$SharedBuildRoot = Join-Path $RepositoryRoot "source\shared"
+$RootGradle = Join-Path $RepositoryRoot "gradlew.bat"
+$BaselineFile = Join-Path $RepositoryRoot "docs\upstream\BASELINE_COMMIT.txt"
+$VersionFile = Join-Path $RepositoryRoot `
+    "source\shared\common\src\main\java\org\geogebra\common\GeoGebraConstants.java"
+$DesktopBuildFile = Join-Path $RepositoryRoot "source\desktop\desktop\build.gradle.kts"
+$LogDirectory = [IO.Path]::GetFullPath($LogDirectory)
+
+function Invoke-CapturedNative {
+    param(
+        [Parameter(Mandatory)] [string]$FilePath,
+        [Parameter(Mandatory)] [string[]]$ArgumentList,
+        [Parameter(Mandatory)] [string]$Description
+    )
+
+    $output = & $FilePath @ArgumentList 2>&1
+    $exitCode = $LASTEXITCODE
+    if ($exitCode -ne 0) {
+        $rendered = $output -join [Environment]::NewLine
+        throw "$Description failed with exit code $exitCode.$([Environment]::NewLine)$rendered"
+    }
+    return $output
+}
+
+function Assert-NativeSuccess {
+    param(
+        [Parameter(Mandatory)] [scriptblock]$Command,
+        [Parameter(Mandatory)] [string]$Description
+    )
+
+    & $Command
+    $exitCode = $LASTEXITCODE
+    if ($exitCode -ne 0) {
+        throw "$Description failed with exit code $exitCode."
+    }
+}
+
+function Invoke-LoggedNative {
+    param(
+        [Parameter(Mandatory)] [string]$FilePath,
+        [Parameter(Mandatory)] [string[]]$ArgumentList,
+        [Parameter(Mandatory)] [string]$WorkingDirectory,
+        [Parameter(Mandatory)] [string]$LogName,
+        [Parameter(Mandatory)] [string]$Description
+    )
+
+    $logPath = Join-Path $LogDirectory $LogName
+    Write-Host "`n==> $Description"
+    Write-Host "    cwd: $WorkingDirectory"
+    Write-Host "    log: $logPath"
+
+    $exitCode = -1
+    Push-Location -LiteralPath $WorkingDirectory
+    try {
+        & $FilePath @ArgumentList 2>&1 | Tee-Object -FilePath $logPath
+        $exitCode = $LASTEXITCODE
+    } finally {
+        Pop-Location
+    }
+
+    if ($exitCode -ne 0) {
+        throw "$Description failed with exit code $exitCode. See $logPath"
+    }
+}
+
+function Get-RepositoryStatus {
+    $status = & git -C $RepositoryRoot status --porcelain=v1 --untracked-files=all
+    if ($LASTEXITCODE -ne 0) {
+        throw "Unable to read repository status."
+    }
+    return ($status -join "`n")
+}
+
+function Get-UntrackedOutputDirectories {
+    $paths = [Collections.Generic.HashSet[string]]::new(
+        [StringComparer]::OrdinalIgnoreCase)
+
+    $untracked = & git -C $RepositoryRoot ls-files --others --directory --exclude-standard
+    if ($LASTEXITCODE -ne 0) {
+        throw "Unable to enumerate untracked output directories."
+    }
+
+    $ignored = & git -C $RepositoryRoot ls-files --others --directory --ignored `
+        --exclude-standard
+    if ($LASTEXITCODE -ne 0) {
+        throw "Unable to enumerate ignored output directories."
+    }
+
+    foreach ($entry in @($untracked) + @($ignored)) {
+        if ([string]::IsNullOrWhiteSpace($entry)) {
+            continue
+        }
+        $relative = $entry.TrimEnd("/", "\")
+        $leaf = Split-Path -Leaf $relative
+        if ($GeneratedDirectoryNames -contains $leaf) {
+            $absolute = [IO.Path]::GetFullPath((Join-Path $RepositoryRoot $relative))
+            [void]$paths.Add($absolute)
+        }
+    }
+    return ,$paths
+}
+
+function Remove-NewOutputDirectories {
+    param(
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [Collections.Generic.HashSet[string]]$Before
+    )
+
+    if ($KeepBuildOutputs) {
+        Write-Host "Keeping build outputs because -KeepBuildOutputs was supplied."
+        return
+    }
+
+    $after = Get-UntrackedOutputDirectories
+    $newPaths = @($after | Where-Object { -not $Before.Contains($_) } |
+        Sort-Object Length)
+    $selected = [Collections.Generic.List[string]]::new()
+    $rootPrefix = $RepositoryRoot + [IO.Path]::DirectorySeparatorChar
+
+    foreach ($candidate in $newPaths) {
+        $covered = $false
+        foreach ($parent in $selected) {
+            if ($candidate.StartsWith(
+                    $parent + [IO.Path]::DirectorySeparatorChar,
+                    [StringComparison]::OrdinalIgnoreCase)) {
+                $covered = $true
+                break
+            }
+        }
+        if (-not $covered) {
+            $selected.Add($candidate)
+        }
+    }
+
+    foreach ($candidate in $selected) {
+        if (-not $candidate.StartsWith($rootPrefix, [StringComparison]::OrdinalIgnoreCase)) {
+            throw "Refusing to remove output outside repository: $candidate"
+        }
+        if ($GeneratedDirectoryNames -notcontains (Split-Path -Leaf $candidate)) {
+            throw "Refusing to remove unexpected directory: $candidate"
+        }
+        if (Test-Path -LiteralPath $candidate) {
+            Write-Host "Removing generated output: $candidate"
+            Remove-Item -LiteralPath $candidate -Recurse -Force
+        }
+    }
+}
+
+function Get-GradleArguments {
+    param([Parameter(Mandatory)] [string[]]$Tasks)
+
+    $arguments = @($Tasks) + @(
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "--stacktrace"
+    )
+    if (-not $AllowToolchainDownload) {
+        $arguments += "-Dorg.gradle.java.installations.auto-download=false"
+    }
+    return $arguments
+}
+
+$InitialStatus = $null
+$InitialOutputs = $null
+[Exception]$Failure = $null
+
+try {
+    if (-not (Test-Path -LiteralPath (Join-Path $RepositoryRoot ".git"))) {
+        throw "Repository root was not resolved correctly: $RepositoryRoot"
+    }
+    New-Item -ItemType Directory -Path $LogDirectory -Force | Out-Null
+
+    $InitialStatus = Get-RepositoryStatus
+    $InitialOutputs = Get-UntrackedOutputDirectories
+
+    Write-Host "GeoCeDG baseline verification"
+    Write-Host "Repository: $RepositoryRoot"
+
+    $head = (Invoke-CapturedNative -FilePath "git" -ArgumentList @(
+            "-C", $RepositoryRoot, "rev-parse", "HEAD"
+        ) -Description "Read HEAD").Trim()
+    Write-Host "HEAD: $head"
+
+    $recordedBaseline = (Get-Content -Raw -LiteralPath $BaselineFile).Trim()
+    if ($recordedBaseline -ne $ExpectedBaseline) {
+        throw "Baseline file contains $recordedBaseline; expected $ExpectedBaseline."
+    }
+    Write-Host "Recorded baseline: $recordedBaseline"
+
+    Assert-NativeSuccess -Description "Baseline ancestry check" -Command {
+        & git -C $RepositoryRoot merge-base --is-ancestor $ExpectedBaseline HEAD
+    }
+
+    $tagTarget = (Invoke-CapturedNative -FilePath "git" -ArgumentList @(
+            "-C", $RepositoryRoot, "rev-parse", "$ExpectedTag^{}"
+        ) -Description "Resolve baseline tag").Trim()
+    if ($tagTarget -ne $ExpectedBaseline) {
+        throw "Tag $ExpectedTag resolves to $tagTarget; expected $ExpectedBaseline."
+    }
+    Write-Host "Tag: $ExpectedTag -> $tagTarget"
+
+    $upstreamPaths = @(
+        "source",
+        "gradle",
+        "gradle.properties",
+        "settings.gradle.kts",
+        "gradlew",
+        "gradlew.bat",
+        "README.md",
+        "doc/dev"
+    )
+
+    Assert-NativeSuccess -Description "Committed upstream-tree pin check" -Command {
+        & git -C $RepositoryRoot diff --quiet "$ExpectedBaseline..HEAD" -- @upstreamPaths
+    }
+    Assert-NativeSuccess -Description "Unstaged upstream-tree pin check" -Command {
+        & git -C $RepositoryRoot diff --quiet -- @upstreamPaths
+    }
+    Assert-NativeSuccess -Description "Staged upstream-tree pin check" -Command {
+        & git -C $RepositoryRoot diff --cached --quiet -- @upstreamPaths
+    }
+
+    $untrackedUpstream = & git -C $RepositoryRoot ls-files --others `
+        --exclude-standard -- @upstreamPaths
+    if ($LASTEXITCODE -ne 0) {
+        throw "Unable to inspect untracked upstream paths."
+    }
+    $unexpectedUpstream = @($untrackedUpstream | Where-Object {
+            $segments = $_ -split "[/\\]"
+            @($segments | Where-Object {
+                    $GeneratedDirectoryNames -contains $_
+                }).Count -eq 0
+        })
+    if ($unexpectedUpstream.Count -gt 0) {
+        throw "Untracked files exist in upstream-owned paths: $($unexpectedUpstream -join ', ')"
+    }
+
+    Assert-NativeSuccess -Description "Working-tree whitespace check" -Command {
+        & git -C $RepositoryRoot diff --check
+    }
+    Assert-NativeSuccess -Description "Index whitespace check" -Command {
+        & git -C $RepositoryRoot diff --cached --check
+    }
+    Assert-NativeSuccess -Description "Bootstrap tree whitespace check" -Command {
+        & git -C $RepositoryRoot diff --check $ExpectedBaseline
+    }
+
+    $versionText = Get-Content -Raw -LiteralPath $VersionFile
+    $versionMatch = [regex]::Match($versionText, 'VERSION_STRING\s*=\s*"([^"]+)"')
+    if (-not $versionMatch.Success -or $versionMatch.Groups[1].Value -ne $ExpectedVersion) {
+        throw "GeoGebra version is not $ExpectedVersion in $VersionFile."
+    }
+    Write-Host "GeoGebra version: $($versionMatch.Groups[1].Value)"
+
+    $desktopBuildText = Get-Content -Raw -LiteralPath $DesktopBuildFile
+    $toolchainMatch = [regex]::Match(
+        $desktopBuildText,
+        'JavaLanguageVersion\.of\((\d+)\)')
+    if (-not $toolchainMatch.Success) {
+        throw "Desktop run Java toolchain request was not found."
+    }
+    if ($toolchainMatch.Groups[1].Value -ne $ExpectedDesktopJava) {
+        throw "Desktop run requests Java $($toolchainMatch.Groups[1].Value); expected $ExpectedDesktopJava."
+    }
+    Write-Host "Desktop run requests Java: $($toolchainMatch.Groups[1].Value)"
+
+    $javaCommand = (Get-Command java -ErrorAction Stop).Source
+    Invoke-LoggedNative -FilePath $javaCommand -ArgumentList @("-version") `
+        -WorkingDirectory $RepositoryRoot -LogName "java-version.log" `
+        -Description "Java launcher version"
+
+    Invoke-LoggedNative -FilePath $RootGradle -ArgumentList @(
+            "--version", "--no-daemon", "--no-problems-report"
+        ) -WorkingDirectory $RepositoryRoot -LogName "gradle-version.log" `
+        -Description "Gradle wrapper version"
+
+    Invoke-LoggedNative -FilePath $RootGradle -ArgumentList (
+        Get-GradleArguments -Tasks @(
+            ":canvas-base:compileJava",
+            ":renderer-base:compileJava"
+        )) -WorkingDirectory $SharedBuildRoot -LogName "shared-compile.log" `
+        -Description "Shared canvas/renderer compilation"
+
+    Invoke-LoggedNative -FilePath $RootGradle -ArgumentList (
+        Get-GradleArguments -Tasks @(
+            ":desktop:desktop:compileJava"
+        )) -WorkingDirectory $RepositoryRoot -LogName "desktop-compile.log" `
+        -Description "Desktop composite compilation"
+
+    if ($FullTests) {
+        Invoke-LoggedNative -FilePath $RootGradle -ArgumentList (
+            Get-GradleArguments -Tasks @(
+                ":common-jre:test"
+            )) -WorkingDirectory $SharedBuildRoot -LogName "shared-tests.log" `
+            -Description "Shared JRE tests"
+
+        Invoke-LoggedNative -FilePath $RootGradle -ArgumentList (
+            Get-GradleArguments -Tasks @(
+                ":desktop:desktop:test"
+            )) -WorkingDirectory $RepositoryRoot -LogName "desktop-tests.log" `
+            -Description "Desktop tests"
+    }
+
+    if ($LaunchDesktop) {
+        Write-Host "Close the GeoGebra Desktop window to complete the launch gate."
+        Invoke-LoggedNative -FilePath $RootGradle -ArgumentList (
+            Get-GradleArguments -Tasks @(
+                ":desktop:desktop:run"
+            )) -WorkingDirectory $RepositoryRoot -LogName "desktop-run.log" `
+            -Description "Interactive Desktop launch"
+    }
+} catch {
+    $Failure = $_.Exception
+} finally {
+    try {
+        if ($null -ne $InitialOutputs) {
+            Remove-NewOutputDirectories -Before $InitialOutputs
+        }
+        if ($null -ne $InitialStatus) {
+            $finalStatus = Get-RepositoryStatus
+            if ($finalStatus -ne $InitialStatus) {
+                throw "Repository status changed during verification.`nBefore:`n$InitialStatus`nAfter:`n$finalStatus"
+            }
+        }
+    } catch {
+        if ($null -eq $Failure) {
+            $Failure = $_.Exception
+        } else {
+            $Failure = [Exception]::new(
+                "$($Failure.Message)`nCleanup/status failure: $($_.Exception.Message)",
+                $Failure)
+        }
+    }
+}
+
+if ($null -ne $Failure) {
+    Write-Error $Failure.Message
+    exit 1
+}
+
+Write-Host "`nAll requested baseline gates passed."
+Write-Host "Logs: $LogDirectory"
+exit 0
