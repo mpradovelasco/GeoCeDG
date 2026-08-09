@@ -147,6 +147,7 @@ import org.geogebra.common.kernel.geos.GeoElementGraphicsAdapter;
 import org.geogebra.common.kernel.geos.GeoImage;
 import org.geogebra.common.kernel.kernelND.GeoPointND;
 import org.geogebra.common.main.App;
+import org.geogebra.common.main.AppConfig;
 import org.geogebra.common.main.DialogManager;
 import org.geogebra.common.main.MyError.Errors;
 import org.geogebra.common.main.ProverSettings;
@@ -381,8 +382,26 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 	public AppD(CommandLineArguments args, JFrame frame, Container comp,
 			boolean undoActive,
 			LocalizationD loc) {
+		this(args, frame, comp, undoActive, loc, null);
+	}
+
+	/**
+	 * GeoGebra application constructor with early product configuration.
+	 *
+	 * @param args command line arguments
+	 * @param frame frame
+	 * @param comp parent panel
+	 * @param undoActive whether undo is active
+	 * @param loc localization
+	 * @param config product configuration, or {@code null} for the Classic default
+	 */
+	protected AppD(CommandLineArguments args, JFrame frame, Container comp,
+			boolean undoActive, LocalizationD loc, AppConfig config) {
 
 		super(Platform.DESKTOP);
+		if (config != null) {
+			setConfigNoSettingsReset(config);
+		}
 
 		this.loc = loc;
 		loc.setApp(this);
@@ -552,7 +571,10 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 
 		// Windows 7 uses this for the Toolbar icon too
 		// (needs to be larger)
-		frame.setIconImage(getInternalImage(GuiResourcesD.GEOGEBRA64));
+		Image frameIcon = getFrameIcon();
+		if (frameIcon != null) {
+			frame.setIconImage(frameIcon);
+		}
 
 		frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
@@ -567,6 +589,13 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 			};
 			frame.addWindowListener(windowListener);
 		}
+	}
+
+	/**
+	 * @return application frame icon, or {@code null} for no product icon
+	 */
+	protected Image getFrameIcon() {
+		return getInternalImage(GuiResourcesD.GEOGEBRA64);
 	}
 
 	/**

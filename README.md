@@ -5,9 +5,10 @@ para Computer-Extended Descriptive Geometry (CeDG). Busca preservar la
 trazabilidad constructiva, las dependencias dinámicas y la coherencia entre
 objetos espaciales y sus proyecciones; no es un producto oficial de GeoGebra.
 
-El proyecto está en desarrollo experimental. G0 fijó y validó el baseline y
-G1 estableció la capa operativa; todavía no existe un perfil de producto
-GeoCeDG ni se ha iniciado G2.
+El proyecto está en desarrollo experimental. G0 fijó y validó el baseline,
+G1/G1R establecieron la capa operativa y G2 incorpora el primer perfil Desktop
+propio. Todavía no se han importado herramientas CeDG ni se ha modificado la
+semántica geométrica.
 
 ## Baseline
 
@@ -48,15 +49,24 @@ Autoridad compuesta local:
 .\tools\agent\verify.ps1
 ```
 
-Compilación y arranque Desktop desde la raíz:
+Compilación y arranque GeoCeDG desde la raíz:
 
 ```powershell
 .\gradlew.bat :desktop:desktop:compileJava
+.\gradlew.bat :desktop:desktop:runGeoCeDG
+```
+
+El Desktop GeoGebra Classic 5 del baseline permanece como ruta explícita de
+diagnóstico y regresión:
+
+```powershell
 .\gradlew.bat :desktop:desktop:run
 ```
 
-El arranque es gráfico. En el bootstrap sólo se ejecuta cuando se solicita
-explícitamente con `-LaunchDesktop`; la verificación normal no abre ventanas.
+Ambos arranques son gráficos. El bootstrap conserva `-LaunchDesktop` para el
+baseline Classic; la verificación normal no abre ventanas. El contrato del
+perfil, su perspectiva y su toolbar se encuentran en
+[la especificación de aplicación](geocedg/specs/ui/application-profile.md).
 
 ## Repositorio y flujo de trabajo
 

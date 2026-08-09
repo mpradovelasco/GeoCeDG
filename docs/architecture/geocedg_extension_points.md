@@ -1,6 +1,6 @@
-# GeoCeDG extension points in the upstream baseline
+# GeoCeDG extension points and G2 frontend foundation
 
-Status: source characterization; no implementation authorized
+Status: G0 characterization retained; G2 frontend extension implemented
 Baseline: `9b93256b7df401ff056c37b502d82df4d72b1522`
 
 “Fact” below means observed in the pinned source. “Recommendation” means a
@@ -34,12 +34,14 @@ and exposes `getConfig()`/`setConfig()` at lines 4532-4545. `AppD` calls
 `getConfig()` during construction, before kernel and UI initialization complete
 (`source/desktop/desktop/src/main/java/org/geogebra/desktop/main/AppD.java:381-430`).
 
-### Recommendation
+### G2 implementation
 
-Use a dedicated launcher/frame plus an early `AppConfig` injection seam, as
-proposed in `docs/adr/0001-geocedg-product-profile.md`. Do not mutate
-`AppConfigDefault`, globally replace `GeoGebra3D`, or select the profile after
-`AppD` has initialized.
+ADR 0001 is accepted and implemented through `AppConfigGeoCeDG`,
+`GeoCeDG`/`GeoCeDGFrame`/`AppGeoCeDG`, and one protected early-config
+constructor seam in `AppD`/`App3D`. The default constructors and
+`GeoGebra3D` entry remain the Classic path. Gradle exposes
+`:desktop:desktop:runGeoCeDG` alongside the unchanged
+`:desktop:desktop:run` diagnostic task.
 
 ## Perspectives and dock layout
 
@@ -58,11 +60,13 @@ proposed in `docs/adr/0001-geocedg-product-profile.md`. Do not mutate
 - `AppD` applies a saved temporary perspective or the default at
   `source/desktop/desktop/src/main/java/org/geogebra/desktop/main/AppD.java:494-497`.
 
-### Recommendation
+### G2 implementation
 
-Let the product profile choose a GeoCeDG perspective through an explicit
-profile/layout factory seam. Do not delete upstream defaults; retain a
-diagnostic Classic perspective.
+`GeoCeDGProfile` compiles a fresh initial `Perspective` from
+`apps/geocedg/application-profile.yml`. Algebra and the primary 2D view are
+initially visible; other upstream views remain available. A document or saved
+profile perspective takes precedence. No upstream default perspective is
+deleted or mutated.
 
 ## Toolbar and user tools
 
@@ -86,11 +90,12 @@ Desktop `ToolbarD` parses a dock-panel, custom, or default definition at
 it adds that derived mode to the toolbar and selects it
 (`source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/dialog/ToolCreationDialogD.java:224-246`).
 
-### Recommendation
+### G2 implementation
 
-Keep this grammar as an adapter. A future versioned GeoCeDG feature/profile
-manifest should be the single durable toolbar source. User macros remain a
-separate appended category and must not silently become stable product tools.
+The versioned GeoCeDG application manifest is now the single durable toolbar
+source. `GeoCeDGProfile` validates unique mode IDs and adapts its ordered
+categories to the inherited grammar. G2 exposes only existing conservative
+modes; user macros and legacy CeDG tools are not imported or promoted.
 
 ## Commands and dependency graph
 
@@ -109,7 +114,7 @@ separate appended category and must not silently become stable product tools.
   while using a reduced update set; it is explicitly intended for Locus
   (`AlgoElement.java:751-771`).
 
-### Recommendation
+### Current decision
 
 Future semantic commands must follow registration, processor, algorithm,
 `setInputOutput()`, compute, serialization, localization, and test conventions.
@@ -270,9 +275,12 @@ operational skeleton, reusing profiler hooks where useful. Record warm-up,
 machine/JVM, model revision, repetitions, and result distribution; do not use a
 single UI wall-clock assertion as the performance authority.
 
-## Deferred work
+## G2 boundary and deferred work
 
-No product code, toolbar, command, Locus, spatial object, layer model, export,
-installer, dependency, or upstream source is changed by this characterization.
-The next implementation task must start from an accepted ADR/specification and
-add focused tests with the change.
+G2 changes only application identity, early configuration, initial layout,
+toolbar selection, window identity, and launch/build wiring. The controlled
+upstream diff is recorded in `docs/upstream/modified-files.yml`. No command,
+kernel behavior, Locus, spatial object, projection relation, serialization
+app code, layer model, exporter, installer, dependency, legacy tool, or final
+branding asset is added. Those subjects remain deferred to their roadmap
+gates and require their own approved contracts and focused tests.

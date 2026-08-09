@@ -64,5 +64,6 @@ specialized diagnostics remain independently runnable.
 
 This ADR does not decide product configuration, toolbar contents, geometric
 commands, Locus semantics, spatial identity, projection schemas, serialization
-extensions, packaging, or licensing of GeoCeDG-authored material. ADR 0001
-remains Proposed, and the spatial proposal remains non-normative.
+extensions, packaging, or licensing of GeoCeDG-authored material. At G1 close,
+ADR 0001 remained Proposed; it was accepted separately for G2. The spatial
+proposal remains non-normative.

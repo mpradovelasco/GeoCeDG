@@ -250,8 +250,22 @@ public class GeoGebraFrame extends JFrame
 	}
 
 	String getPreferredTitle() {
-		return app.getCurrentFile() == null ? "GeoGebra Classic 5"
+		return app.getCurrentFile() == null ? getApplicationTitle()
 				: app.getCurrentFile().getName();
+	}
+
+	/**
+	 * @return title used for a new, unnamed application window
+	 */
+	public String getApplicationTitle() {
+		return "GeoGebra Classic 5";
+	}
+
+	/**
+	 * @return Windows application identity for this product frame
+	 */
+	protected String getApplicationUserModelId() {
+		return "geogebra.AppId";
 	}
 
 	/**
@@ -286,7 +300,8 @@ public class GeoGebraFrame extends JFrame
 		// Fixing #3772
 		if (AppD.WINDOWS) {
 			try {
-				AppId.setCurrentProcessExplicitAppUserModelID("geogebra.AppId");
+				AppId.setCurrentProcessExplicitAppUserModelID(
+						wnd.getApplicationUserModelId());
 				Log.debug("AppID = "
 						+ AppId.getCurrentProcessExplicitAppUserModelID());
 			} catch (Throwable t) {

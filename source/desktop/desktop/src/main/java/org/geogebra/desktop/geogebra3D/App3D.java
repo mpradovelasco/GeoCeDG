@@ -41,6 +41,7 @@ import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.geos.AnimationExportSlider;
 import org.geogebra.common.main.App;
 import org.geogebra.common.main.AppCompanion;
+import org.geogebra.common.main.AppConfig;
 import org.geogebra.desktop.CommandLineArguments;
 import org.geogebra.desktop.geogebra3D.euclidian3D.EuclidianController3DD;
 import org.geogebra.desktop.geogebra3D.euclidian3D.EuclidianView3DD;
@@ -86,6 +87,24 @@ public class App3D extends AppD {
 	 */
 	public App3D(CommandLineArguments args, Container comp) {
 		super(args, null, comp, true, new LocalizationD(3));
+	}
+
+	/**
+	 * @param args arguments
+	 * @param frame frame
+	 * @param config product configuration installed before initialization
+	 */
+	protected App3D(CommandLineArguments args, JFrame frame, AppConfig config) {
+		super(args, frame, null, true, new LocalizationD(3), config);
+	}
+
+	/**
+	 * @param args arguments
+	 * @param comp parent component
+	 * @param config product configuration installed before initialization
+	 */
+	protected App3D(CommandLineArguments args, Container comp, AppConfig config) {
+		super(args, null, comp, true, new LocalizationD(3), config);
 	}
 
 	@Override

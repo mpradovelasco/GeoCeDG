@@ -1,0 +1,132 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://geocedg.local/schemas/application-profile-v1",
+  "title": "GeoCeDG Desktop application profile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema_version",
+    "profile_id",
+    "application",
+    "serialization",
+    "perspective",
+    "toolbar",
+    "features"
+  ],
+  "properties": {
+    "$schema": { "type": "string", "minLength": 1 },
+    "schema_version": { "const": 1 },
+    "profile_id": { "const": "geocedg-desktop" },
+    "application": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "preferences_key", "windows_app_id", "base_profile"],
+      "properties": {
+        "name": { "const": "GeoCeDG" },
+        "preferences_key": { "const": "geocedg" },
+        "windows_app_id": { "const": "org.geocedg.desktop" },
+        "base_profile": { "const": "geogebra-classic-5" }
+      }
+    },
+    "serialization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["app_code", "policy"],
+      "properties": {
+        "app_code": { "const": "classic" },
+        "policy": { "const": "preserve-upstream-g2" }
+      }
+    },
+    "perspective": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "divider",
+        "views",
+        "show_toolbar",
+        "show_grid",
+        "show_axes",
+        "unit_axes_ratio",
+        "show_input_panel",
+        "show_input_help"
+      ],
+      "properties": {
+        "id": { "const": "geocedg-initial" },
+        "divider": { "type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1 },
+        "views": {
+          "type": "array",
+          "minItems": 2,
+          "items": { "$ref": "#/$defs/view" }
+        },
+        "show_toolbar": { "type": "boolean" },
+        "show_grid": { "type": "boolean" },
+        "show_axes": { "type": "boolean" },
+        "unit_axes_ratio": { "type": "boolean" },
+        "show_input_panel": { "type": "boolean" },
+        "show_input_help": { "type": "boolean" }
+      }
+    },
+    "toolbar": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["categories", "planned_categories"],
+      "properties": {
+        "categories": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/category" }
+        },
+        "planned_categories": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/plannedCategory" }
+        }
+      }
+    },
+    "features": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^cedg\\." }
+    }
+  },
+  "$defs": {
+    "view": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "visible", "embedded_definition", "embedded_size"],
+      "properties": {
+        "id": {
+          "enum": ["euclidian", "algebra", "spreadsheet", "cas", "properties", "euclidian3d"]
+        },
+        "visible": { "type": "boolean" },
+        "embedded_definition": { "type": "string", "pattern": "^[13](,[13])*$" },
+        "embedded_size": { "type": "integer", "minimum": 100 }
+      }
+    },
+    "category": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "modes"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+        "modes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "integer", "minimum": 0 }
+        }
+      }
+    },
+    "plannedCategory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "status"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+        "status": { "const": "not-implemented" }
+      }
+    }
+  }
+}

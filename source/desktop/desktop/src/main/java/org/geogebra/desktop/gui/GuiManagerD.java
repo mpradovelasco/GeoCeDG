@@ -2483,8 +2483,7 @@ public class GuiManagerD extends GuiManager implements GuiManagerInterfaceD {
 		if (getApp().getCurrentFile() != null) {
 			sb.append(getApp().getCurrentFile().getName());
 		} else {
-			sb.append(GeoGebraConstants.APPLICATION_NAME);
-			sb.append(" Classic 5");
+			sb.append(frame.getApplicationTitle());
 			if (GeoGebraFrame.getInstanceCount() > 1) {
 				int nr = frame.getInstanceNumber();
 				sb.append(" (");

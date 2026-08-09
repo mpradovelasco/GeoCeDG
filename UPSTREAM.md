@@ -21,9 +21,12 @@ bootstrap commit. The canonical machine-readable pin is
 `source/shared/common/src/main/java/org/geogebra/common/GeoGebraConstants.java:29-32`.
 
 The bootstrap branch was reconstructed by replaying only the two pre-existing
-GeoCeDG documentation commits on this pin. A diff from the pin contains no
-post-baseline upstream source. `tools/agent/verify-baseline.ps1` enforces that
-`source/`, the Gradle build, and `doc/dev/` remain equal to the pinned commit.
+GeoCeDG documentation commits on this pin. No source from a later upstream
+commit has been incorporated. Starting in G2, the minimum product-profile
+overlay inside the inherited tree is recorded file by file in
+`docs/upstream/modified-files.yml`. `tools/agent/verify-baseline.ps1` verifies
+the pinned ancestry and requires the actual difference under `source/`, the
+Gradle build, and `doc/dev/` to equal that controlled register exactly.
 The exact upstream README is preserved separately as
 `docs/upstream/GEOGEBRA_README.md`; its normalized Git blob must equal the
 `README.md` blob stored by the baseline tag. The root `README.md` is now the
@@ -85,6 +88,17 @@ was launched with Oracle Java 22.0.2; the wrapper version is pinned at
 
 The baseline build and interactive launch evidence is recorded in
 `docs/validation/baseline_report.md`.
+
+G2 adds the explicit GeoCeDG entry without replacing the baseline route:
+
+```powershell
+.\gradlew.bat :desktop:desktop:runGeoCeDG # GeoCeDG profile
+.\gradlew.bat :desktop:desktop:run         # Classic diagnostic baseline
+```
+
+Both tasks use the same Desktop module and Java 25 application toolchain. The
+GeoCeDG launcher is an application-layer overlay; the baseline SHA and version
+remain the upstream provenance authority.
 
 ## Licensing boundary
 
