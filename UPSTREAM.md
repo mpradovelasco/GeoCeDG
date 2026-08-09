@@ -23,8 +23,11 @@ bootstrap commit. The canonical machine-readable pin is
 The bootstrap branch was reconstructed by replaying only the two pre-existing
 GeoCeDG documentation commits on this pin. A diff from the pin contains no
 post-baseline upstream source. `tools/agent/verify-baseline.ps1` enforces that
-`source/`, the Gradle build, upstream `README.md`, and `doc/dev/` remain equal
-to the pinned commit.
+`source/`, the Gradle build, and `doc/dev/` remain equal to the pinned commit.
+The exact upstream README is preserved separately as
+`docs/upstream/GEOGEBRA_README.md`; its normalized Git blob must equal the
+`README.md` blob stored by the baseline tag. The root `README.md` is now the
+GeoCeDG onboarding entry point.
 
 ## Remotes and mirror status
 
@@ -35,8 +38,9 @@ to the pinned commit.
 
 The checked-out upstream README says that the authoritative development
 repository is a private GitLab instance and that GitHub is a mirror
-(`README.md:4-8`). It also points contributors at
-`https://git.geogebra.org/ggb/geogebra.git` (`README.md:38-46`). Therefore:
+(`docs/upstream/GEOGEBRA_README.md:4-8`). It also points contributors at
+`https://git.geogebra.org/ggb/geogebra.git`
+(`docs/upstream/GEOGEBRA_README.md:38-46`). Therefore:
 
 - the GitHub remote is suitable for fetching and pinning public source;
 - GeoCeDG records exact SHAs and never treats a moving GitHub branch as a
@@ -67,10 +71,11 @@ The wrapper is tracked only at the repository root. Gradle selects the
 included build from the current working directory when that wrapper is invoked
 through the relative `..\..\gradlew.bat` path.
 
-The upstream README still documents root `:desktop:run`
-(`README.md:28-34`). That selector is stale for this composite layout; the
-extra `desktop` segment is the included-build name. No upstream file is changed
-to correct the discrepancy.
+The archived upstream README documents root `:desktop:run`
+(`docs/upstream/GEOGEBRA_README.md:28-34`). That selector is stale for this
+composite layout; the extra `desktop` segment is the included-build name. The
+historical file remains unchanged, while the GeoCeDG root README gives the
+correct selector.
 
 The `run` task requests Java language version 25
 (`source/desktop/desktop/build.gradle.kts:20-24`). The baseline verification
@@ -84,10 +89,11 @@ The baseline build and interactive launch evidence is recorded in
 ## Licensing boundary
 
 The upstream README delegates licensing to
-`https://www.geogebra.org/license` (`README.md:7-8`). Code, language files,
-documentation, UI assets, fonts, installers, services, and trademarks are not
-assumed to share one license. The evidence and unresolved release questions
-are tracked in `docs/licensing/component-matrix.md`.
+`https://www.geogebra.org/license`
+(`docs/upstream/GEOGEBRA_README.md:7-8`). Code, language files, documentation,
+UI assets, fonts, installers, services, and trademarks are not assumed to
+share one license. The evidence and unresolved release questions are tracked
+in `docs/licensing/component-matrix.md`.
 
 ## Synchronization rule
 

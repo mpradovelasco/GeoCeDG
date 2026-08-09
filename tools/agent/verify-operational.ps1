@@ -10,6 +10,7 @@ $RepositoryRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot "..\..")).
 $RootPrefix = $RepositoryRoot + [IO.Path]::DirectorySeparatorChar
 $ExpectedBaseline = "9b93256b7df401ff056c37b502d82df4d72b1522"
 $ExpectedVersion = "5.4.928.0"
+$ExpectedTag = "geogebra-baseline-5.4.928.0"
 
 function Write-Step {
     param([Parameter(Mandatory)] [string]$Message)
@@ -109,6 +110,7 @@ function Assert-CleanTextFile {
 try {
     Write-Step "Required operational structure"
     $requiredFiles = @(
+        ".gitattributes",
         ".gitignore",
         ".github/prompts/canonical/governance.prompt.md",
         ".github/prompts/canonical/verification.prompt.md",
@@ -122,6 +124,8 @@ try {
         "ai-shell/prompts/refactor.md",
         "ai-shell/prompts/architect.md",
         "docs/adr/0002-g1-operational-authority.md",
+        "docs/upstream/GEOGEBRA_README.md",
+        "docs/validation/g1r_repository_onboarding_report.md",
         "docs/validation/g1_operational_layer_report.md",
         "geocedg/specs/operations/manifest-contracts.md",
         "geocedg/specs/operations/feature-set.schema.json",
@@ -136,13 +140,51 @@ try {
         "benchmarks/suites/operational-smoke.yml",
         "benchmarks/models/stress-catalog.yml",
         "artifacts/README.md",
+        "README.md",
         "tools/agent/verify-baseline.ps1",
         "tools/agent/verify-operational.ps1",
         "tools/agent/verify.ps1",
+        "tools/bootstrap/bootstrap-windows.ps1",
         "tools/benchmark/run.ps1"
     )
     foreach ($requiredFile in $requiredFiles) {
         [void](Resolve-RepositoryPath -RelativePath $requiredFile -RequireFile)
+    }
+
+    Write-Step "Repository onboarding contracts"
+    $rootReadme = Get-Content -Raw -LiteralPath (Join-Path $RepositoryRoot "README.md")
+    foreach ($requiredReadmeValue in @(
+            "# GeoCeDG",
+            $ExpectedVersion,
+            $ExpectedBaseline,
+            $ExpectedTag,
+            ".\tools\bootstrap\bootstrap-windows.ps1",
+            ".\gradlew.bat :desktop:desktop:run",
+            "docs/upstream/GEOGEBRA_README.md")) {
+        Assert-Condition -Condition $rootReadme.Contains($requiredReadmeValue) `
+            -Message "README.md is missing '$requiredReadmeValue'."
+    }
+
+    $attributes = Get-Content -Raw -LiteralPath (
+        Join-Path $RepositoryRoot ".gitattributes")
+    Assert-Condition -Condition $attributes.Contains(
+        "docs/upstream/GEOGEBRA_README.md text eol=lf -whitespace") `
+        -Message "Archived README preservation attributes are missing."
+
+    $bootstrap = Get-Content -Raw -LiteralPath (
+        Join-Path $RepositoryRoot "tools\bootstrap\bootstrap-windows.ps1")
+    Assert-Condition -Condition $bootstrap.Contains("tools\agent\verify.ps1") `
+        -Message "Windows bootstrap does not delegate to tools/agent/verify.ps1."
+    foreach ($forbiddenBootstrapPattern in @(
+            '(?im)\bgit\s+push\b',
+            '(?im)\bgit\s+reset\b',
+            '(?im)\bgit\s+merge\b',
+            '(?im)\bgit\s+rebase\b',
+            '(?im)\bgit\s+remote\s+set-url\b',
+            '(?im)\bgit\s+config\s+--global\b')) {
+        Assert-Condition -Condition (-not [regex]::IsMatch(
+                $bootstrap, $forbiddenBootstrapPattern)) `
+            -Message "Windows bootstrap contains a prohibited Git operation."
     }
 
     Write-Step "Prompt contracts and lightweight profiles"
@@ -334,7 +376,7 @@ try {
     Write-Step "Operational text hygiene"
     $ownedTextRoots = @(
         ".github", "ai-shell", "geocedg", "models", "benchmarks",
-        "artifacts", "tools/benchmark"
+        "artifacts", "tools/benchmark", "tools/bootstrap"
     )
     $ownedTextFiles = [Collections.Generic.List[string]]::new()
     foreach ($root in $ownedTextRoots) {
@@ -345,8 +387,13 @@ try {
     }
     foreach ($relative in @(
             ".gitignore",
+            ".gitattributes",
+            "README.md",
+            "UPSTREAM.md",
             "docs/adr/0002-g1-operational-authority.md",
+            "docs/validation/g1r_repository_onboarding_report.md",
             "docs/validation/g1_operational_layer_report.md",
+            "tools/agent/verify-baseline.ps1",
             "tools/agent/verify-operational.ps1",
             "tools/agent/verify.ps1")) {
         $ownedTextFiles.Add((Resolve-RepositoryPath -RelativePath $relative -RequireFile))
@@ -364,7 +411,7 @@ try {
     }
     $upstreamPaths = @(
         "source", "gradle", "gradle.properties", "settings.gradle.kts",
-        "gradlew", "gradlew.bat", "README.md", "doc/dev"
+        "gradlew", "gradlew.bat", "doc/dev"
     )
     Assert-NativeSuccess -Description "Committed upstream boundary" -Command {
         & git -C $RepositoryRoot diff --quiet "$ExpectedBaseline..HEAD" -- @upstreamPaths

@@ -6,8 +6,8 @@ Inventory date: 2026-08-09
 
 ## Authorities inspected
 
-1. Upstream `README.md:7-8`, which delegates licensing to the official
-   [GeoGebra license page](https://www.geogebra.org/license).
+1. Upstream `docs/upstream/GEOGEBRA_README.md:7-8`, which delegates licensing
+   to the official [GeoGebra license page](https://www.geogebra.org/license).
 2. The official license page as retrieved on 2026-08-09; the page says its
    terms were last updated in November 2025.
 3. The checked-out source header template at

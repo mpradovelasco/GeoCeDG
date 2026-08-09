@@ -2,6 +2,7 @@
 param(
     [switch]$FullTests,
     [switch]$LaunchDesktop,
+    [switch]$SkipBuild,
     [switch]$AllowToolchainDownload,
     [switch]$KeepBuildOutputs,
     [switch]$RunBenchmarks,
@@ -45,6 +46,9 @@ try {
     }
     if ($LaunchDesktop) {
         $baselineParameters.LaunchDesktop = $true
+    }
+    if ($SkipBuild) {
+        $baselineParameters.SkipBuild = $true
     }
     if ($AllowToolchainDownload) {
         $baselineParameters.AllowToolchainDownload = $true

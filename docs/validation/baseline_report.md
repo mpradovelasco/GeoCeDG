@@ -18,8 +18,9 @@ pre-existing GeoCeDG bootstrap documentation commits. The annotated tag
 `geogebra-baseline-5.4.928.0` peels directly to the upstream commit.
 
 No commit after the baseline contributes a file under `source/`, `gradle/`,
-`doc/dev/`, the root Gradle files, or the upstream README. The executable gate
-in `tools/agent/verify-baseline.ps1` checks this invariant.
+`doc/dev/`, or the root Gradle files. G1R later moved the exact upstream README
+to `docs/upstream/GEOGEBRA_README.md` and made the root README GeoCeDG-owned;
+the executable gate checks the archived file against the baseline tag blob.
 
 ## Identity and provenance
 
@@ -37,10 +38,11 @@ in `tools/agent/verify-baseline.ps1` checks this invariant.
 | Bootstrap branch | `bootstrap/geocedg-baseline` |
 
 The public GitHub repository identifies itself as a mirror of GeoGebra's
-private GitLab development repository (`README.md:4-8`) and gives the GitLab
-clone URL to contributors (`README.md:38-46`). GeoCeDG therefore uses the
-public mirror for fetching and immutable SHA pinning, not as evidence that a
-moving GitHub branch is an approved baseline or contribution endpoint.
+private GitLab development repository
+(`docs/upstream/GEOGEBRA_README.md:4-8`) and gives the GitLab clone URL to
+contributors (`docs/upstream/GEOGEBRA_README.md:38-46`). GeoCeDG therefore
+uses the public mirror for fetching and immutable SHA pinning, not as evidence
+that a moving GitHub branch is an approved baseline or contribution endpoint.
 
 ## History reconstruction
 
@@ -87,8 +89,9 @@ while the current directory is an included build makes that included build the
 Gradle project root.
 
 The upstream README's root selector `:desktop:run` is stale for this composite
-layout (`README.md:28-34`). It is a documentation discrepancy, not a baseline
-failure. No upstream source or Gradle file was modified to hide or correct it.
+layout (`docs/upstream/GEOGEBRA_README.md:28-34`). It is a documentation
+discrepancy, not a baseline failure. No upstream source or Gradle file was
+modified to hide or correct it.
 
 The Desktop included build resolves shared GeoGebra module coordinates to the
 local `source/shared` included build. In particular, local project dependency
