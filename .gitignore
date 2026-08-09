@@ -1,0 +1,3 @@
+# GeoCeDG-generated evidence. The directory contract remains tracked.
+/artifacts/*
+!/artifacts/README.md

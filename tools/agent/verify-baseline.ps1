@@ -2,6 +2,7 @@
 param(
     [switch]$FullTests,
     [switch]$LaunchDesktop,
+    [switch]$SkipBuild,
     [switch]$AllowToolchainDownload,
     [switch]$KeepBuildOutputs,
     [string]$LogDirectory = (Join-Path ([IO.Path]::GetTempPath()) "geocedg-verify-baseline")
@@ -20,6 +21,7 @@ $RepositoryRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot "..\..")).
 $SharedBuildRoot = Join-Path $RepositoryRoot "source\shared"
 $RootGradle = Join-Path $RepositoryRoot "gradlew.bat"
 $BaselineFile = Join-Path $RepositoryRoot "docs\upstream\BASELINE_COMMIT.txt"
+$ArchivedReadme = Join-Path $RepositoryRoot "docs\upstream\GEOGEBRA_README.md"
 $VersionFile = Join-Path $RepositoryRoot `
     "source\shared\common\src\main\java\org\geogebra\common\GeoGebraConstants.java"
 $DesktopBuildFile = Join-Path $RepositoryRoot "source\desktop\desktop\build.gradle.kts"
@@ -222,6 +224,18 @@ try {
     }
     Write-Host "Tag: $ExpectedTag -> $tagTarget"
 
+    $expectedReadmeBlob = (Invoke-CapturedNative -FilePath "git" -ArgumentList @(
+            "-C", $RepositoryRoot, "rev-parse", "${ExpectedTag}:README.md"
+        ) -Description "Resolve baseline README blob").Trim()
+    $archivedReadmeBlob = (Invoke-CapturedNative -FilePath "git" -ArgumentList @(
+            "-C", $RepositoryRoot, "hash-object", "--no-filters",
+            $ArchivedReadme
+        ) -Description "Hash archived baseline README").Trim()
+    if ($archivedReadmeBlob -ne $expectedReadmeBlob) {
+        throw "Archived GeoGebra README does not match $ExpectedTag exactly."
+    }
+    Write-Host "Archived upstream README blob: $archivedReadmeBlob"
+
     $upstreamPaths = @(
         "source",
         "gradle",
@@ -229,7 +243,6 @@ try {
         "settings.gradle.kts",
         "gradlew",
         "gradlew.bat",
-        "README.md",
         "doc/dev"
     )
 
@@ -287,6 +300,10 @@ try {
     }
     Write-Host "Desktop run requests Java: $($toolchainMatch.Groups[1].Value)"
 
+    if ($SkipBuild -and ($FullTests -or $LaunchDesktop)) {
+        throw "-SkipBuild cannot be combined with -FullTests or -LaunchDesktop."
+    }
+
     $javaCommand = (Get-Command java -ErrorAction Stop).Source
     Invoke-LoggedNative -FilePath $javaCommand -ArgumentList @("-version") `
         -WorkingDirectory $RepositoryRoot -LogName "java-version.log" `
@@ -297,40 +314,54 @@ try {
         ) -WorkingDirectory $RepositoryRoot -LogName "gradle-version.log" `
         -Description "Gradle wrapper version"
 
-    Invoke-LoggedNative -FilePath $RootGradle -ArgumentList (
-        Get-GradleArguments -Tasks @(
-            ":canvas-base:compileJava",
-            ":renderer-base:compileJava"
-        )) -WorkingDirectory $SharedBuildRoot -LogName "shared-compile.log" `
-        -Description "Shared canvas/renderer compilation"
-
-    Invoke-LoggedNative -FilePath $RootGradle -ArgumentList (
-        Get-GradleArguments -Tasks @(
-            ":desktop:desktop:compileJava"
-        )) -WorkingDirectory $RepositoryRoot -LogName "desktop-compile.log" `
-        -Description "Desktop composite compilation"
-
-    if ($FullTests) {
-        Invoke-LoggedNative -FilePath $RootGradle -ArgumentList (
-            Get-GradleArguments -Tasks @(
-                ":common-jre:test"
-            )) -WorkingDirectory $SharedBuildRoot -LogName "shared-tests.log" `
-            -Description "Shared JRE tests"
-
-        Invoke-LoggedNative -FilePath $RootGradle -ArgumentList (
-            Get-GradleArguments -Tasks @(
-                ":desktop:desktop:test"
-            )) -WorkingDirectory $RepositoryRoot -LogName "desktop-tests.log" `
-            -Description "Desktop tests"
+    $toolchainArguments = @(
+        "-q", "javaToolchains", "--no-daemon", "--no-problems-report"
+    )
+    if (-not $AllowToolchainDownload) {
+        $toolchainArguments += "-Dorg.gradle.java.installations.auto-download=false"
     }
+    Invoke-LoggedNative -FilePath $RootGradle -ArgumentList $toolchainArguments `
+        -WorkingDirectory $RepositoryRoot -LogName "java-toolchains.log" `
+        -Description "Detected Gradle Java toolchains"
 
-    if ($LaunchDesktop) {
-        Write-Host "Close the GeoGebra Desktop window to complete the launch gate."
+    if ($SkipBuild) {
+        Write-Host "Skipping compilation because -SkipBuild was supplied."
+    } else {
         Invoke-LoggedNative -FilePath $RootGradle -ArgumentList (
             Get-GradleArguments -Tasks @(
-                ":desktop:desktop:run"
-            )) -WorkingDirectory $RepositoryRoot -LogName "desktop-run.log" `
-            -Description "Interactive Desktop launch"
+                ":canvas-base:compileJava",
+                ":renderer-base:compileJava"
+            )) -WorkingDirectory $SharedBuildRoot -LogName "shared-compile.log" `
+            -Description "Shared canvas/renderer compilation"
+
+        Invoke-LoggedNative -FilePath $RootGradle -ArgumentList (
+            Get-GradleArguments -Tasks @(
+                ":desktop:desktop:compileJava"
+            )) -WorkingDirectory $RepositoryRoot -LogName "desktop-compile.log" `
+            -Description "Desktop composite compilation"
+
+        if ($FullTests) {
+            Invoke-LoggedNative -FilePath $RootGradle -ArgumentList (
+                Get-GradleArguments -Tasks @(
+                    ":common-jre:test"
+                )) -WorkingDirectory $SharedBuildRoot -LogName "shared-tests.log" `
+                -Description "Shared JRE tests"
+
+            Invoke-LoggedNative -FilePath $RootGradle -ArgumentList (
+                Get-GradleArguments -Tasks @(
+                    ":desktop:desktop:test"
+                )) -WorkingDirectory $RepositoryRoot -LogName "desktop-tests.log" `
+                -Description "Desktop tests"
+        }
+
+        if ($LaunchDesktop) {
+            Write-Host "Close the GeoGebra Desktop window to complete the launch gate."
+            Invoke-LoggedNative -FilePath $RootGradle -ArgumentList (
+                Get-GradleArguments -Tasks @(
+                    ":desktop:desktop:run"
+                )) -WorkingDirectory $RepositoryRoot -LogName "desktop-run.log" `
+                -Description "Interactive Desktop launch"
+        }
     }
 } catch {
     $Failure = $_.Exception

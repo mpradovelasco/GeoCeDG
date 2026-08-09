@@ -1,0 +1,33 @@
+{
+  "$schema": "../../geocedg/specs/operations/model-manifest.schema.json",
+  "schema_version": 1,
+  "template": true,
+  "id": "cedg.template.replace-me",
+  "maturity": "research",
+  "source": {
+    "uri": "",
+    "author": null,
+    "date": null,
+    "provenance_notes": "Replace every placeholder before import."
+  },
+  "required_geogebra": {
+    "version": "5.4.928.0",
+    "baseline_sha": "9b93256b7df401ff056c37b502d82df4d72b1522"
+  },
+  "loaded_by_default": false,
+  "inputs": [],
+  "outputs": [],
+  "validity_domain": {
+    "description": "",
+    "parameters": []
+  },
+  "known_degeneracies": [],
+  "reference_models": [],
+  "expected_metrics": {},
+  "license": {
+    "spdx": null,
+    "evidence": "",
+    "review_status": "unreviewed"
+  },
+  "replacement_candidate": null
+}

@@ -1,0 +1,6 @@
+{
+  "$schema": "../specs/operations/feature-set.schema.json",
+  "schema_version": 1,
+  "set": "stable",
+  "features": []
+}

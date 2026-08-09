@@ -1,0 +1,6 @@
+{
+  "$schema": "../../specs/operations/regression-catalog.schema.json",
+  "schema_version": 1,
+  "baseline_sha": "9b93256b7df401ff056c37b502d82df4d72b1522",
+  "cases": []
+}

@@ -1,0 +1,48 @@
+name: GeoCeDG verification
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - integration
+      - "feature/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: windows-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out complete history and tags
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Select Gradle launcher Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "22"
+
+      - name: Run GeoCeDG authority
+        shell: pwsh
+        run: |
+          $logRoot = Join-Path $env:RUNNER_TEMP "geocedg-verify"
+          .\tools\agent\verify.ps1 `
+            -LogDirectory $logRoot `
+            -RunBenchmarks `
+            -BenchmarkOutputPath (Join-Path $logRoot "operational-benchmark.json")
+
+      - name: Upload verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: geocedg-verification-${{ github.run_id }}
+          path: ${{ runner.temp }}/geocedg-verify
+          if-no-files-found: warn

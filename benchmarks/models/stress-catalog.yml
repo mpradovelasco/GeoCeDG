@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "status": "planning-only",
+  "models": [
+    {
+      "id": "cedg.stress.dependency-update-chain",
+      "enabled": false,
+      "asset": null,
+      "target_gate": "G2-or-later",
+      "purpose": "Measure deterministic construction dependency updates after an approved model exists."
+    },
+    {
+      "id": "cedg.stress.high-object-count-render",
+      "enabled": false,
+      "asset": null,
+      "target_gate": "G16",
+      "purpose": "Measure rendering scale only after a reproducible model and profiler boundary are approved."
+    },
+    {
+      "id": "cedg.stress.serialization-round-trip",
+      "enabled": false,
+      "asset": null,
+      "target_gate": "G2-or-later",
+      "purpose": "Measure save/load determinism without defining new serialization semantics."
+    }
+  ]
+}

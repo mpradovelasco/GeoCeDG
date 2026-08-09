@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://geocedg.local/schemas/feature-set-v1",
+  "title": "GeoCeDG feature set manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_version", "set", "features"],
+  "properties": {
+    "$schema": { "type": "string", "minLength": 1 },
+    "schema_version": { "const": 1 },
+    "set": { "enum": ["stable", "experimental"] },
+    "features": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/feature" }
+    }
+  },
+  "$defs": {
+    "feature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "maturity", "specification", "enabled_by_default", "depends_on"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^cedg\\.[a-z0-9]+(?:[.-][a-z0-9]+)*$" },
+        "maturity": { "enum": ["research", "experimental", "stable", "deprecated"] },
+        "specification": { "type": "string", "minLength": 1 },
+        "enabled_by_default": { "type": "boolean" },
+        "depends_on": {
+          "type": "array",
+          "items": { "type": "string" },
+          "uniqueItems": true
+        }
+      }
+    }
+  }
+}
