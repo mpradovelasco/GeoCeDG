@@ -3,7 +3,7 @@
   "schema_version": 1,
   "generator": {
     "path": "tools/legacy/ingest.ps1",
-    "sha256": "62d7ea903ad06553e8a84b1cb3f013d7f028136b41cc39c325ebd8d6b00875af",
+    "sha256": "77987a23d463e4479ec4f9d13554c0860915bafa6b06032378adfb6faf89de80",
     "curation_path": "models/legacy/template-v7/curation.yml",
     "curation_sha256": "259759951beb5c3b08407ab239de919a34289420a8a2f545339e5334281093c6"
   },

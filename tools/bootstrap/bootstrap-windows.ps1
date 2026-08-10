@@ -21,13 +21,19 @@ Runs the informational G1 operational benchmark through verify.ps1.
 .PARAMETER LaunchDesktop
 Runs the explicit interactive Desktop launch gate. Close the application
 window to let the verification finish.
+
+.PARAMETER InstallPackagingPrerequisites
+Explicitly installs only a missing compatible .NET 8 SDK and/or the pinned
+global WiX 5.0.2 tool required for MSI/EXE generation. The default remains
+detection-only. JDK installation is never automated.
 #>
 [CmdletBinding()]
 param(
     [switch]$SkipFetch,
     [switch]$SkipBuild,
     [switch]$RunBenchmarks,
-    [switch]$LaunchDesktop
+    [switch]$LaunchDesktop,
+    [switch]$InstallPackagingPrerequisites
 )
 
 Set-StrictMode -Version Latest
@@ -39,6 +45,7 @@ $ExpectedBaseline = "9b93256b7df401ff056c37b502d82df4d72b1522"
 $ExpectedTag = "geogebra-baseline-5.4.928.0"
 $ExpectedGradleJava = 22
 $ExpectedDesktopJava = 25
+$ExpectedWix = "5.0.2"
 $RepositoryRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\.."))
 $Verifier = Join-Path $RepositoryRoot "tools\agent\verify.ps1"
 $BaselineFile = Join-Path $RepositoryRoot "docs\upstream\BASELINE_COMMIT.txt"
@@ -46,6 +53,10 @@ $GradleWrapper = Join-Path $RepositoryRoot "gradlew.bat"
 $LogDirectory = Join-Path ([IO.Path]::GetTempPath()) "geocedg-bootstrap"
 $Warnings = [Collections.Generic.List[string]]::new()
 $InitialRepositoryStatus = $null
+$PackagingJpackage = "not detected"
+$PackagingDotNet = "not detected"
+$PackagingWix = "not detected"
+$PackagingWixExtensions = "not detected"
 
 function Write-Step {
     param([Parameter(Mandatory)] [string]$Message)
@@ -140,6 +151,25 @@ function Get-GradleToolchain {
         }
     }
     return $null
+}
+
+function Add-ProcessPath {
+    param([Parameter(Mandatory)] [string]$Path)
+
+    if ((Test-Path -LiteralPath $Path -PathType Container) -and
+        (($env:PATH -split ";") -notcontains $Path)) {
+        $env:PATH = "$Path;$env:PATH"
+    }
+}
+
+function Get-CompatibleDotNetSdk {
+    param([Parameter(Mandatory)] [string]$DotNetPath)
+
+    $sdks = Invoke-Native -FilePath $DotNetPath -ArgumentList @("--list-sdks") `
+        -Description ".NET SDK inventory"
+    return $sdks | Where-Object {
+        $_ -match "^(\d+)\." -and [int]$Matches[1] -ge 6
+    } | Select-Object -First 1
 }
 
 try {
@@ -308,6 +338,137 @@ try {
         throw "Gradle did not detect a Java $ExpectedDesktopJava toolchain required by Desktop run. Install a JDK $ExpectedDesktopJava manually and rerun; automatic download is disabled."
     }
 
+    Write-Step "Optional Windows packaging prerequisites"
+    $jpackagePath = Join-Path $desktopToolchain.Location "bin\jpackage.exe"
+    if (Test-Path -LiteralPath $jpackagePath -PathType Leaf) {
+        $PackagingJpackage = @(Invoke-Native -FilePath $jpackagePath `
+            -ArgumentList @("--version") -Description "jpackage version")[-1].Trim()
+        if ($PackagingJpackage -notmatch "^$ExpectedDesktopJava(?:\.|$)") {
+            Add-Warning "Desktop jpackage is $PackagingJpackage; G4 was validated with Java $ExpectedDesktopJava. Select the validated JDK toolchain manually."
+        }
+    } else {
+        Add-Warning "jpackage is missing from the Desktop JDK: $jpackagePath. Install a full JDK $ExpectedDesktopJava manually; the bootstrap does not install JDKs."
+    }
+
+    $dotnetCommand = Get-Command dotnet -ErrorAction SilentlyContinue
+    $compatibleSdk = $null
+    if ($null -ne $dotnetCommand) {
+        $compatibleSdk = Get-CompatibleDotNetSdk -DotNetPath $dotnetCommand.Source
+    }
+    if ($null -eq $compatibleSdk -and $InstallPackagingPrerequisites) {
+        $wingetCommand = Get-Command winget -ErrorAction SilentlyContinue
+        if ($null -eq $wingetCommand) {
+            throw "A compatible .NET SDK is missing and WinGet is unavailable. Install manually: winget install --id Microsoft.DotNet.SDK.8 --exact"
+        }
+        Write-Host "Installing the minimum supported .NET 8 SDK through WinGet (explicit opt-in)."
+        [void](Invoke-Native -FilePath $wingetCommand.Source -ArgumentList @(
+                "install", "--id", "Microsoft.DotNet.SDK.8", "--exact",
+                "--accept-package-agreements", "--accept-source-agreements",
+                "--disable-interactivity"
+            ) -Description "Install .NET 8 SDK")
+        Add-ProcessPath -Path (Join-Path $env:ProgramFiles "dotnet")
+        $dotnetCommand = Get-Command dotnet -ErrorAction SilentlyContinue
+        if ($null -eq $dotnetCommand) {
+            throw ".NET installation completed but dotnet is not visible. Start a new PowerShell session and rerun."
+        }
+        $compatibleSdk = Get-CompatibleDotNetSdk -DotNetPath $dotnetCommand.Source
+    }
+    if ($null -eq $compatibleSdk) {
+        Add-Warning ".NET SDK 6+ is missing; it is required only for MSI/EXE packaging. Recommended: winget install --id Microsoft.DotNet.SDK.8 --exact"
+    } else {
+        $PackagingDotNet = @(Invoke-Native -FilePath $dotnetCommand.Source `
+            -ArgumentList @("--version") -Description ".NET SDK version")[-1].Trim()
+    }
+
+    $globalToolPath = Join-Path (
+        [Environment]::GetFolderPath([Environment+SpecialFolder]::UserProfile)) `
+        ".dotnet\tools"
+    Add-ProcessPath -Path $globalToolPath
+    $wixCommand = Get-Command wix -ErrorAction SilentlyContinue
+    $observedWix = $null
+    if ($null -ne $wixCommand) {
+        $observedWix = @(Invoke-Native -FilePath $wixCommand.Source `
+            -ArgumentList @("--version") -Description "WiX version")[-1].Trim()
+    }
+    if (($null -eq $compatibleSdk) -and $InstallPackagingPrerequisites) {
+        throw "A compatible .NET SDK is still unavailable, so WiX cannot be installed."
+    }
+    if (($null -eq $observedWix -or
+            -not $observedWix.StartsWith(
+                $ExpectedWix, [StringComparison]::Ordinal)) -and
+        $InstallPackagingPrerequisites) {
+        $verb = if ($null -eq $observedWix) { "install" } else { "update" }
+        Write-Host "$verb WiX $ExpectedWix as a pinned global .NET tool (explicit opt-in)."
+        [void](Invoke-Native -FilePath $dotnetCommand.Source -ArgumentList @(
+                "tool", $verb, "--global", "wix", "--version", $ExpectedWix,
+                "--add-source", "https://api.nuget.org/v3/index.json",
+                "--ignore-failed-sources"
+            ) -Description "$verb WiX $ExpectedWix")
+        Add-ProcessPath -Path $globalToolPath
+        $wixCommand = Get-Command wix -ErrorAction SilentlyContinue
+        if ($null -eq $wixCommand) {
+            throw "WiX installation completed but wix is not visible. Start a new PowerShell session and rerun."
+        }
+        $observedWix = @(Invoke-Native -FilePath $wixCommand.Source `
+            -ArgumentList @("--version") -Description "WiX version")[-1].Trim()
+    }
+    if ($null -eq $observedWix) {
+        Add-Warning "WiX $ExpectedWix is missing; it is required only for MSI/EXE packaging. Recommended: dotnet tool install --global wix --version $ExpectedWix --add-source https://api.nuget.org/v3/index.json --ignore-failed-sources"
+    } elseif (-not $observedWix.StartsWith(
+            $ExpectedWix, [StringComparison]::Ordinal)) {
+        Add-Warning "WiX $observedWix is installed; G4 requires pinned $ExpectedWix. Recommended: dotnet tool update --global wix --version $ExpectedWix --add-source https://api.nuget.org/v3/index.json --ignore-failed-sources"
+        $PackagingWix = $observedWix
+    } else {
+        $PackagingWix = $observedWix
+    }
+    if ($null -ne $observedWix -and $observedWix.StartsWith(
+            $ExpectedWix, [StringComparison]::Ordinal)) {
+        $extensionOutput = @(& $wixCommand.Source extension list -g 2>&1)
+        $extensionExitCode = $LASTEXITCODE
+        if ($extensionExitCode -ne 0) {
+            $extensionOutput = @()
+        }
+        $requiredWixExtensions = @(
+            "WixToolset.Util.wixext",
+            "WixToolset.UI.wixext"
+        )
+        $missingWixExtensions = @($requiredWixExtensions | Where-Object {
+            $extensionName = $_
+            $null -eq ($extensionOutput | Where-Object {
+                $_.ToString() -match "^$([regex]::Escape($extensionName))\s+$([regex]::Escape($ExpectedWix))$"
+            } | Select-Object -First 1)
+        })
+        if ($missingWixExtensions.Count -gt 0 -and
+            $InstallPackagingPrerequisites) {
+            $wixConfigRoot = Join-Path $RepositoryRoot "packaging\windows"
+            Push-Location -LiteralPath $wixConfigRoot
+            try {
+                foreach ($extension in $missingWixExtensions) {
+                    [void](Invoke-Native -FilePath $wixCommand.Source -ArgumentList @(
+                            "extension", "add", "-g", "$extension/$ExpectedWix"
+                        ) -Description "Install $extension $ExpectedWix")
+                }
+            } finally {
+                Pop-Location
+            }
+            $extensionOutput = @(& $wixCommand.Source extension list -g 2>&1)
+            if ($LASTEXITCODE -ne 0) {
+                throw "WiX extensions were installed but cannot be enumerated."
+            }
+            $missingWixExtensions = @($requiredWixExtensions | Where-Object {
+                $extensionName = $_
+                $null -eq ($extensionOutput | Where-Object {
+                    $_.ToString() -match "^$([regex]::Escape($extensionName))\s+$([regex]::Escape($ExpectedWix))$"
+                } | Select-Object -First 1)
+            })
+        }
+        if ($missingWixExtensions.Count -gt 0) {
+            Add-Warning "Pinned WiX extensions are missing: $($missingWixExtensions -join ', '). From packaging/windows run: wix extension add -g WixToolset.Util.wixext/$ExpectedWix; wix extension add -g WixToolset.UI.wixext/$ExpectedWix"
+        } else {
+            $PackagingWixExtensions = "Util $ExpectedWix, UI $ExpectedWix"
+        }
+    }
+
     $finalStatus = @(& $gitCommand -C $RepositoryRoot status --porcelain=v1 `
         --untracked-files=all)
     if ($LASTEXITCODE -ne 0) {
@@ -325,6 +486,10 @@ try {
     Write-Host "Gradle daemon: $daemonJvm"
     Write-Host "Desktop run requires Java: $ExpectedDesktopJava"
     Write-Host "Detected Desktop toolchain: $($desktopToolchain.Vendor), $($desktopToolchain.Location)"
+    Write-Host "jpackage: $PackagingJpackage"
+    Write-Host ".NET SDK: $PackagingDotNet"
+    Write-Host "WiX: $PackagingWix"
+    Write-Host "WiX extensions: $PackagingWixExtensions"
     if ($LaunchDesktop) {
         Write-Host "Desktop toolchain use: exercised by :desktop:desktop:run"
     } else {

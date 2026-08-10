@@ -65,6 +65,20 @@ function Get-BytesSha256 {
     }
 }
 
+function Get-NormalizedTextFileSha256 {
+    param([Parameter(Mandatory)] [string]$Path)
+
+    $text = [IO.File]::ReadAllText($Path)
+    $normalized = $text.Replace("`r`n", "`n").Replace("`r", "`n")
+    return Get-BytesSha256 -Bytes $Utf8NoBom.GetBytes($normalized)
+}
+
+function Normalize-TextLineEndings {
+    param([Parameter(Mandatory)] [string]$Text)
+
+    return $Text.Replace("`r`n", "`n").Replace("`r", "`n")
+}
+
 function Read-ZipEntryBytes {
     param([Parameter(Mandatory)] [IO.Compression.ZipArchiveEntry]$Entry)
 
@@ -116,7 +130,7 @@ function Read-Curation {
     return [ordered]@{
         absolute_path = $absolute
         relative_path = Get-RepositoryRelativePath -Path $absolute
-        sha256 = (Get-FileHash -LiteralPath $absolute -Algorithm SHA256).Hash.ToLowerInvariant()
+        sha256 = Get-NormalizedTextFileSha256 -Path $absolute
         value = $curation
     }
 }
@@ -358,8 +372,7 @@ function New-Inventory {
             })
     }
 
-    $generatorHash = (Get-FileHash -LiteralPath $PSCommandPath `
-        -Algorithm SHA256).Hash.ToLowerInvariant()
+    $generatorHash = Get-NormalizedTextFileSha256 -Path $PSCommandPath
     return [ordered]@{
         '$schema' = "../../../../geocedg/specs/operations/legacy-tool-inventory.schema.json"
         schema_version = 1
@@ -474,7 +487,8 @@ try {
         New-Item -ItemType Directory -Path $inventoryDirectory -Force | Out-Null
         if (Test-Path -LiteralPath $absoluteInventory -PathType Leaf) {
             $existing = [IO.File]::ReadAllText($absoluteInventory)
-            if ($existing -ne $inventoryText) {
+            if ((Normalize-TextLineEndings -Text $existing) -ne
+                (Normalize-TextLineEndings -Text $inventoryText)) {
                 [IO.File]::WriteAllText($absoluteInventory, $inventoryText, $Utf8NoBom)
             }
         } else {
@@ -492,7 +506,8 @@ try {
             throw "InventoryPath must remain below TargetDirectory: $InventoryPath"
         }
         $existing = [IO.File]::ReadAllText($absoluteInventory)
-        if ($existing -ne $inventoryText) {
+        if ((Normalize-TextLineEndings -Text $existing) -ne
+            (Normalize-TextLineEndings -Text $inventoryText)) {
             throw "Derived inventory is stale: $(Get-RepositoryRelativePath -Path $absoluteInventory)"
         }
         Write-Host "Legacy ingest check passed: $ResourceId"

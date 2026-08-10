@@ -39,8 +39,10 @@ cd GeoCeDG
 
 El bootstrap comprueba el workstation, configura `upstream` sólo si falta,
 verifica el tag fijado y delega las puertas del repositorio en
-`tools/agent/verify.ps1`. Es idempotente y no instala software. Consulte su
-ayuda con `Get-Help .\tools\bootstrap\bootstrap-windows.ps1 -Detailed`.
+`tools/agent/verify.ps1`. Por defecto es idempotente y no instala software. Consulte su
+ayuda con `Get-Help .\tools\bootstrap\bootstrap-windows.ps1 -Detailed`. La
+instalación de requisitos de packaging es una acción separada y explícita con
+`-InstallPackagingPrerequisites`.
 
 ## Verificación, compilación y ejecución
 
@@ -80,6 +82,48 @@ La botonera contenida en `Templatev7.ggb` se conserva como organización legacy
 de referencia; no sustituye ni redefine la toolbar estable de G2. El flujo de
 ingest y promoción se documenta en
 [la especificación de integración legacy](geocedg/specs/legacy/controlled-integration.md).
+
+## Requisitos de packaging Windows
+
+El `app-image` y ZIP requieren el JDK 25 Desktop completo y su `jpackage`.
+MSI/EXE requieren además un SDK .NET 6 o posterior y WiX Toolset 5.0.2 con sus
+extensiones Util/UI 5.0.2. G4 se validó con Temurin 25.0.4, .NET SDK 8.0.303 y
+WiX `5.0.2+aa65968c`.
+
+```powershell
+.\gradlew.bat -q javaToolchains
+& "<JDK25>\bin\jpackage.exe" --version
+dotnet --info
+wix --version
+wix extension list -g
+```
+
+El bootstrap detecta estos componentes sin instalarlos. La instalación mínima
+opt-in recomendada es:
+
+```powershell
+winget install --id Microsoft.DotNet.SDK.8 --exact
+dotnet tool install --global wix --version 5.0.2 `
+  --add-source https://api.nuget.org/v3/index.json --ignore-failed-sources
+Push-Location .\packaging\windows
+wix extension add -g WixToolset.Util.wixext/5.0.2
+wix extension add -g WixToolset.UI.wixext/5.0.2
+Pop-Location
+.\tools\bootstrap\bootstrap-windows.ps1 -InstallPackagingPrerequisites
+```
+
+Generación técnica:
+
+```powershell
+.\tools\release\build-windows-package.ps1 -Target AppImage
+.\tools\release\build-windows-package.ps1 -Target All
+.\tools\agent\verify-packaging.ps1 -CheckToolchain -RequireArtifacts
+```
+
+Todos los binarios G4 son `INTERNAL EVALUATION — NOT FOR REDISTRIBUTION`.
+La capacidad técnica está validada, pero la redistribución pública continúa
+bloqueada. Véanse [ADR 0004](docs/adr/0004-standalone-windows-packaging.md) y
+[el contrato de packaging](geocedg/specs/packaging/windows-packaging.md).
 
 ## Repositorio y flujo de trabajo
 

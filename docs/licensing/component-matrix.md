@@ -36,7 +36,7 @@ statements do not eliminate third-party notices embedded in the source tree.
 | Renderer fonts | `source/desktop/renderer-desktop/.../fonts`, corresponding Web resources; `renderer-base/LICENSE:46-59` | Mixed OFL, GPLv2, Knuth-license, public-domain, and other/free-font statements. An OFL 1.1 text is checked in under `fonts/licences/OFL.txt`. | Treat every font family/file as a separately inventoried asset. Do not collapse the set to one license. Missing referenced texts must be resolved before packaging. |
 | Cyrillic/Greek renderer resources | `source/web/renderer-web/.../resources/xml/{cyrillic,greek}/{COPYING,LICENSE}` | Component-local license files are checked in. | Preserve and surface the notices in the release inventory. |
 | Maven/Gradle dependencies and native libraries | `gradle/libs.versions.toml`, Gradle dependency graphs, JOGL/Giac/native variants | Not audited by this first-pass source inventory. Each dependency retains its own terms. | Generate an exact resolved dependency/SBOM and license report in a dedicated audit task before release. |
-| GeoCeDG-authored documentation in this branch | `AGENTS.md`, `FIRST_AGENT_TASK.md`, `docs/**`, `UPSTREAM.md`, `tools/agent/**` | No project-level GeoCeDG license has yet been approved or checked in. | Preserve authorship/provenance. Do not make a public licensing claim until maintainers choose and add the root legal bundle. |
+| GeoCeDG-authored documentation in this branch | `AGENTS.md`, `FIRST_AGENT_TASK.md`, `docs/**`, `UPSTREAM.md`, `tools/agent/**` | No project-level GeoCeDG license has yet been approved. The G4 root `LICENSE` records that absence and is explicitly not a license grant. | Preserve authorship/provenance. Do not make a public licensing claim until maintainers approve a project license and complete the legal bundle. |
 | Author-supplied CeDG scientific references | `docs/references/cedg/**/*.pdf`; per-file evidence and hashes in `docs/references/cedg/catalog.yml` | Mixed: three supplied articles identify CC BY 4.0; book/proceedings/publisher chapters include restrictions; remaining manuscripts/preprints are unreviewed. | Retain as local knowledge sources. Do not assume repository presence authorizes republication or release packaging. |
 | Historical `Templatev7.ggb` | `models/legacy/template-v7/original/Templatev7.ggb`; SHA-256 and provenance in its manifest | Rights review is blocked: the container includes author-created macros plus embedded GeoGebra resources/code and no complete redistribution clearance. | Preserve for research and explicit Laboratory loading only; exclude from release packaging until human review. |
 
@@ -64,20 +64,19 @@ under shared common resources, 397 under Desktop, and 12 under Web. Counts do
 not identify author, trademark status, or applicable license; the future asset
 manifest must do so file by file for anything shipped.
 
-## Missing repository records
+## G4 legal-record infrastructure
 
-At this baseline none of these root records exists:
+G4 creates `LICENSE`, `LICENSES/README.md`, `NOTICE.md`, `THIRD_PARTY.md`, and
+`geocedg/resources/assets-manifest.yml` as explicit status/inventory records.
+They all identify packages as `INTERNAL EVALUATION — NOT FOR REDISTRIBUTION`.
+The root `LICENSE` is deliberately a no-grant status notice because no
+project-wide license has been approved; `LICENSES/` remains incomplete.
 
-- `LICENSE`;
-- `LICENSES/`;
-- `NOTICE.md`;
-- `THIRD_PARTY.md`;
-- `geocedg/resources/assets-manifest.yml`.
-
-They are release blockers, not files to synthesize by guesswork in the baseline
-characterization. Creating them requires a maintainer-approved GeoCeDG license,
-an exact distribution contents list, complete third-party notice extraction,
-and human legal review.
+The package pipeline adds these records to the app image and emits an exact
+JAR/hash SBOM. This closes the missing-file infrastructure gap only. It does
+not close the substantive release blockers: approved GeoCeDG license, exact
+third-party texts/attributions, embedded translation/UI/font rights, owned
+final branding, or trademark review.
 
 ## Unresolved questions and gates
 

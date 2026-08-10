@@ -1,0 +1,19 @@
+GeoCeDG project licensing status
+
+NO PROJECT-WIDE LICENSE HAS YET BEEN APPROVED FOR GEOCEDG.
+
+This file is not a license grant. It records an unresolved release gate so that
+internal evaluation packages cannot be mistaken for authorized public
+distributions.
+
+Inherited source files and third-party components retain their original
+copyright notices and applicable terms. GeoGebra-authored source is recorded
+as EUPL-1.2 in the repository component matrix, while translations, UI assets,
+fonts, native libraries, trademarks, and other components may have different
+terms. GeoCeDG-authored material has no approved project-wide license yet.
+
+INTERNAL EVALUATION — NOT FOR REDISTRIBUTION
+
+See LICENSES/README.md, NOTICE.md, THIRD_PARTY.md, and
+docs/licensing/component-matrix.md. Human legal and asset approval is required
+before any public redistribution.
