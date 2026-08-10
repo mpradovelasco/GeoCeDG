@@ -3,12 +3,12 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Roadmap vivo y normativo de fases; no sustituye las especificaciones ni los ADR aceptados |
-| Versión documental | 3.0 |
-| Fecha de revisión | 10 de agosto de 2026 |
+| Versión documental | 3.2 |
+| Fecha de revisión | 11 de agosto de 2026 |
 | Baseline GeoGebra | 5.4.928.0, commit `9b93256b7df401ff056c37b502d82df4d72b1522`, tag `geogebra-baseline-5.4.928.0` |
 | Estado actual | G5 `PASS` |
 | Última fase cerrada | G5 — native 2D geometry export foundation and DXF export |
-| Siguiente fase | G6 — Locus V2, pendiente de planificación detallada como G6A/G6B |
+| Siguiente fase | G6 — Locus V2; decisiones de primera revisión incorporadas, G6A/G6B no iniciadas |
 | Primer cliente | Aplicación de escritorio de la familia Classic 5 |
 | Núcleo | Java compartido de GeoGebra, extendido solo cuando la semántica lo requiere |
 
@@ -570,8 +570,9 @@ sustituyen el resultado de los verificadores.
 
 > **Propuesta previa, no implementación actual.** Esta caracterización se
 > conserva como antecedente para G6A. No equivale a un contrato aprobado ni
-> inicia G6; la planificación detallada G6A/G6B se realizará por separado y sus
-> ADR/specs aceptados prevalecerán sobre esta propuesta.
+> inicia G6. La [planificación detallada G6A/G6B](g6_locus_v2_plan.md) y su
+> [modelo semántico](../architecture/locus_v2_semantic_model.md) ya refinan esta
+> formulación; sus futuros ADR/specs aceptados prevalecerán sobre esta propuesta.
 
 ## 11.1 Definición
 
@@ -593,7 +594,10 @@ Entonces:
 L = \bigcup_{j=1}^{m} F_j(I_j \setminus D_j).
 \]
 
-Los intervalos \(I_j\) representan componentes o ramas orientadas. \(D_j\) contiene valores indefinidos o geométricamente inválidos.
+Históricamente, los intervalos \(I_j\) se describieron aquí como componentes o
+ramas orientadas. La hipótesis G6A vigente ya no identifica ambos conceptos:
+una rama es una solución constructiva semántica y su subconjunto válido puede
+tener varios componentes separados por \(D_j\).
 
 La lista de puntos mostrada en pantalla es solo una aproximación de \(L\).
 
@@ -1222,17 +1226,29 @@ aprobación de licencia y assets
 
 **Estado:** `PENDING`
 
-La planificación detallada se realizará en una tarea posterior y se dividirá en:
+La [planificación ejecutable detallada](g6_locus_v2_plan.md) incorpora la
+primera revisión del autor. La hipótesis de entidad paralela está
+`APPROVED AS G6A WORKING ARCHITECTURAL HYPOTHESIS`, pero esta normalización
+documental no inicia G6A. ADR 0006 permanece `Proposed` hasta el cierre de G6A y
+una segunda revisión del autor; G6B sigue bloqueada hasta entonces. La ejecución
+se divide en:
 
 - **G6A — mathematical/semantic characterization and contract:** definición,
-  dominios, ramas, degeneraciones, exactitud, compatibilidad, persistencia y
-  diseño de validación; no inicia implementación del kernel.
+  parámetro semántico proporcionado por el provider, ramas/componentes válidos,
+  degeneraciones, garantía numérica, composición anidada, clasificación,
+  compatibilidad y diseño de validación; no inicia implementación del kernel.
 - **G6B — minimal Locus V2 kernel implementation:** implementación mínima
   posterior al contrato aprobado de G6A, protegida por feature flag y compatible
   con diagnóstico legacy/dual-run.
 
-Las secciones conceptuales previas de este roadmap son material de partida, no
-una especificación G6 ya aprobada. G6 no se ha iniciado.
+El paquete incluye el
+[modelo semántico candidato](../architecture/locus_v2_semantic_model.md), el
+[mapa de impacto upstream](../architecture/locus_v2_upstream_impact.md), la
+[matriz de validación](../validation/g6_locus_v2_validation_matrix.md), el
+[plan de benchmarks](../validation/g6_locus_v2_benchmark_plan.md) y el
+[ADR 0006 Proposed](../adr/0006-parallel-locus-v2-semantic-entity.md). Las
+secciones conceptuales previas de este roadmap siguen siendo material de
+partida, no una especificación G6 aprobada. G6 no se ha iniciado.
 
 ## G7 - Longitud
 
