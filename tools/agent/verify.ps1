@@ -6,8 +6,10 @@ param(
     [switch]$AllowToolchainDownload,
     [switch]$KeepBuildOutputs,
     [switch]$RunBenchmarks,
+    [switch]$VerifyPackagingArtifacts,
     [string]$LogDirectory = (Join-Path ([IO.Path]::GetTempPath()) "geocedg-verify"),
-    [string]$BenchmarkOutputPath
+    [string]$BenchmarkOutputPath,
+    [string]$PackagingArtifactRoot
 )
 
 Set-StrictMode -Version Latest
@@ -18,6 +20,7 @@ $OperationalVerifier = Join-Path $PSScriptRoot "verify-operational.ps1"
 $BaselineVerifier = Join-Path $PSScriptRoot "verify-baseline.ps1"
 $FrontendVerifier = Join-Path $PSScriptRoot "verify-frontend.ps1"
 $LegacyVerifier = Join-Path $PSScriptRoot "verify-legacy.ps1"
+$PackagingVerifier = Join-Path $PSScriptRoot "verify-packaging.ps1"
 $BenchmarkRunner = Join-Path $RepositoryRoot "tools\benchmark\run.ps1"
 $InitialStatus = $null
 
@@ -43,6 +46,19 @@ try {
     Write-Host "`n==> Controlled legacy CeDG integration"
     & $LegacyVerifier
     Assert-LastScriptSuccess -Description "Controlled legacy CeDG integration"
+
+    Write-Host "`n==> Standalone Windows packaging contracts"
+    $packagingParameters = @{}
+    if ($VerifyPackagingArtifacts) {
+        $packagingParameters.CheckToolchain = $true
+        $packagingParameters.RequireArtifacts = $true
+        if (-not [string]::IsNullOrWhiteSpace($PackagingArtifactRoot)) {
+            $packagingParameters.ArtifactRoot = [IO.Path]::GetFullPath(
+                $PackagingArtifactRoot)
+        }
+    }
+    & $PackagingVerifier @packagingParameters
+    Assert-LastScriptSuccess -Description "Standalone Windows packaging"
 
     $baselineParameters = @{
         LogDirectory = [IO.Path]::GetFullPath($LogDirectory)

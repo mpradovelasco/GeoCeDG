@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://geocedg.local/schemas/package-profile-v1",
+  "title": "GeoCeDG Windows package profile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema_version",
+    "profile_id",
+    "application",
+    "toolchain",
+    "input",
+    "outputs",
+    "file_association",
+    "distribution"
+  ],
+  "properties": {
+    "$schema": { "type": "string", "minLength": 1 },
+    "schema_version": { "const": 1 },
+    "profile_id": { "const": "geocedg-windows-internal" },
+    "application": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version", "vendor", "main_jar", "main_class", "upgrade_uuid", "jvm_options"],
+      "properties": {
+        "name": { "const": "GeoCeDG" },
+        "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+        "vendor": { "type": "string", "minLength": 1 },
+        "main_jar": { "type": "string", "pattern": "^[^/\\\\]+\\.jar$" },
+        "main_class": { "const": "org.geocedg.desktop.GeoCeDG" },
+        "upgrade_uuid": { "type": "string", "format": "uuid" },
+        "jvm_options": { "type": "array", "minItems": 4, "items": { "type": "string" }, "uniqueItems": true }
+      }
+    },
+    "toolchain": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["gradle_java", "desktop_java", "wix", "wix_extensions"],
+      "properties": {
+        "gradle_java": { "const": 22 },
+        "desktop_java": { "const": 25 },
+        "wix": { "const": "5.0.2" },
+        "wix_extensions": {
+          "type": "array",
+          "prefixItems": [
+            { "const": "WixToolset.Util.wixext/5.0.2" },
+            { "const": "WixToolset.UI.wixext/5.0.2" }
+          ],
+          "items": false,
+          "minItems": 2,
+          "maxItems": 2
+        }
+      }
+    },
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["gradle_task", "install_dist", "excluded_native_patterns"],
+      "properties": {
+        "gradle_task": { "const": ":desktop:desktop:installDist" },
+        "install_dist": { "type": "string", "minLength": 1 },
+        "excluded_native_patterns": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+      }
+    },
+    "outputs": {
+      "type": "array",
+      "items": { "enum": ["app-image", "zip", "msi", "exe"] },
+      "minItems": 4,
+      "uniqueItems": true
+    },
+    "file_association": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["installers_only", "extension", "mime_type", "description"],
+      "properties": {
+        "installers_only": { "const": true },
+        "extension": { "const": "ggb" },
+        "mime_type": { "const": "application/vnd.geogebra.file" },
+        "description": { "type": "string", "minLength": 1 }
+      }
+    },
+    "distribution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "marker", "public_redistribution"],
+      "properties": {
+        "status": { "const": "internal-evaluation" },
+        "marker": { "const": "INTERNAL EVALUATION — NOT FOR REDISTRIBUTION" },
+        "public_redistribution": { "const": "blocked-pending-license-and-asset-approval" }
+      }
+    }
+  }
+}

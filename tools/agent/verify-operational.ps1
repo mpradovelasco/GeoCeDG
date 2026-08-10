@@ -119,6 +119,7 @@ try {
         ".github/prompts/tasks/g1-operational-layer.prompt.md",
         ".github/prompts/tasks/g2-frontend-foundation.prompt.md",
         ".github/prompts/tasks/g3-legacy-integration.prompt.md",
+        ".github/prompts/tasks/g4-standalone-packaging.prompt.md",
         ".github/prompts/reviews/change-review.prompt.md",
         ".github/workflows/verify.yml",
         "ai-shell/prompts/ask.md",
@@ -129,6 +130,7 @@ try {
         "docs/adr/0002-g1-operational-authority.md",
         "docs/adr/0001-geocedg-product-profile.md",
         "docs/adr/0003-controlled-legacy-integration.md",
+        "docs/adr/0004-standalone-windows-packaging.md",
         "docs/legacy/README.md",
         "docs/references/cedg/README.md",
         "docs/references/cedg/catalog.yml",
@@ -138,6 +140,7 @@ try {
         "docs/validation/g1r_repository_onboarding_report.md",
         "docs/validation/g1_operational_layer_report.md",
         "docs/validation/g3_controlled_legacy_integration_report.md",
+        "docs/validation/g4_standalone_packaging_report.md",
         "geocedg/specs/operations/manifest-contracts.md",
         "geocedg/specs/operations/feature-set.schema.json",
         "geocedg/specs/operations/model-manifest.schema.json",
@@ -148,6 +151,8 @@ try {
         "geocedg/specs/operations/legacy-tool-inventory.schema.json",
         "geocedg/specs/operations/scientific-reference-catalog.schema.json",
         "geocedg/specs/operations/external-model-corpus.schema.json",
+        "geocedg/specs/operations/package-profile.schema.json",
+        "geocedg/specs/packaging/windows-packaging.md",
         "geocedg/specs/legacy/controlled-integration.md",
         "geocedg/specs/ui/application-profile.schema.json",
         "geocedg/specs/ui/application-profile.md",
@@ -160,17 +165,28 @@ try {
         "benchmarks/suites/operational-smoke.yml",
         "benchmarks/models/stress-catalog.yml",
         "artifacts/README.md",
+        "packaging/windows/package.yml",
+        "packaging/windows/file-associations.properties",
+        "packaging/windows/INTERNAL_EVALUATION_ONLY.txt",
+        "packaging/windows/NuGet.Config",
+        "LICENSE",
+        "LICENSES/README.md",
+        "NOTICE.md",
+        "THIRD_PARTY.md",
+        "geocedg/resources/assets-manifest.yml",
         "README.md",
         "tools/agent/verify-baseline.ps1",
         "tools/agent/verify-frontend.ps1",
         "tools/agent/verify-legacy.ps1",
+        "tools/agent/verify-packaging.ps1",
         "tools/agent/verify-operational.ps1",
         "tools/agent/verify.ps1",
         "tools/agent/upstream-boundary.ps1",
         "tools/bootstrap/bootstrap-windows.ps1",
         "tools/benchmark/run.ps1",
         "tools/legacy/ingest.ps1",
-        "tools/legacy/open-laboratory.ps1"
+        "tools/legacy/open-laboratory.ps1",
+        "tools/release/build-windows-package.ps1"
     )
     foreach ($requiredFile in $requiredFiles) {
         [void](Resolve-RepositoryPath -RelativePath $requiredFile -RequireFile)
@@ -264,6 +280,7 @@ try {
         "geocedg/specs/operations/legacy-tool-inventory.schema.json",
         "geocedg/specs/operations/scientific-reference-catalog.schema.json",
         "geocedg/specs/operations/external-model-corpus.schema.json",
+        "geocedg/specs/operations/package-profile.schema.json",
         "geocedg/specs/ui/application-profile.schema.json"
     )
     foreach ($schemaPath in $schemaPaths) {
@@ -271,6 +288,24 @@ try {
         Assert-Properties -Value $schema -Names @('$schema', '$id', 'type') `
             -Description $schemaPath
     }
+
+    $packageProfilePath = "packaging/windows/package.yml"
+    $packageProfile = Read-JsonCompatibleYaml -RelativePath $packageProfilePath
+    Assert-Properties -Value $packageProfile -Names @(
+        '$schema', 'schema_version', 'profile_id', 'application', 'toolchain',
+        'input', 'outputs', 'file_association', 'distribution') `
+        -Description $packageProfilePath
+    Assert-Condition -Condition (
+        $packageProfile.schema_version -eq 1 -and
+        $packageProfile.profile_id -eq "geocedg-windows-internal" -and
+        $packageProfile.application.main_class -eq "org.geocedg.desktop.GeoCeDG" -and
+        $packageProfile.toolchain.desktop_java -eq 25 -and
+        $packageProfile.toolchain.wix -eq "5.0.2" -and
+        @($packageProfile.toolchain.wix_extensions).Count -eq 2 -and
+        $packageProfile.file_association.installers_only -and
+        $packageProfile.distribution.marker -eq
+        "INTERNAL EVALUATION — NOT FOR REDISTRIBUTION") `
+        -Message "G4 package profile is invalid."
 
     $allFeatureIds = [Collections.Generic.HashSet[string]]::new(
         [StringComparer]::Ordinal)
@@ -438,8 +473,8 @@ try {
     Write-Step "Operational text hygiene"
     $ownedTextRoots = @(
         ".github", "ai-shell", "geocedg", "models", "benchmarks",
-        "artifacts", "apps", "tools/agent", "tools/benchmark", "tools/bootstrap",
-        "tools/legacy"
+        "apps", "tools/agent", "tools/benchmark", "tools/bootstrap",
+        "tools/legacy", "tools/release", "packaging", "LICENSES"
     )
     $textExtensions = @(".json", ".md", ".ps1", ".txt", ".yml", ".yaml", ".js", ".ggs")
     $ownedTextFiles = [Collections.Generic.List[string]]::new()
@@ -459,6 +494,7 @@ try {
             "docs/adr/0001-geocedg-product-profile.md",
             "docs/adr/0002-g1-operational-authority.md",
             "docs/adr/0003-controlled-legacy-integration.md",
+            "docs/adr/0004-standalone-windows-packaging.md",
             "docs/legacy/README.md",
             "docs/references/cedg/README.md",
             "docs/references/cedg/catalog.yml",
@@ -470,9 +506,13 @@ try {
             "docs/validation/g1_operational_layer_report.md",
             "tools/agent/verify-baseline.ps1",
             "tools/agent/verify-frontend.ps1",
+            "tools/agent/verify-packaging.ps1",
             "tools/agent/verify-operational.ps1",
             "tools/agent/verify.ps1",
-            "tools/agent/upstream-boundary.ps1")) {
+            "tools/agent/upstream-boundary.ps1",
+            "LICENSE",
+            "NOTICE.md",
+            "THIRD_PARTY.md")) {
         $ownedTextFiles.Add((Resolve-RepositoryPath -RelativePath $relative -RequireFile))
     }
     foreach ($textFile in $ownedTextFiles | Sort-Object -Unique) {

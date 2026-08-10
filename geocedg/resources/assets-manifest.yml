@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "status": "blocked-pending-license-and-asset-approval",
+  "distribution_marker": "INTERNAL EVALUATION — NOT FOR REDISTRIBUTION",
+  "owned_packaging_assets": [
+    {
+      "id": "geocedg.internal-evaluation-notice",
+      "path": "packaging/windows/INTERNAL_EVALUATION_ONLY.txt",
+      "kind": "text",
+      "provenance": "GeoCeDG-authored G4 packaging notice",
+      "redistribution_status": "internal-evaluation-only"
+    },
+    {
+      "id": "geocedg.file-association-metadata",
+      "path": "packaging/windows/file-associations.properties",
+      "kind": "installer-metadata",
+      "provenance": "GeoCeDG-authored G4 package metadata",
+      "redistribution_status": "internal-evaluation-only"
+    }
+  ],
+  "package_icon": null,
+  "deliberate_exclusions": [
+    "upstream GeoGebra logos and trademarks",
+    "upstream installer resources",
+    "scientific PDFs under docs/references/cedg",
+    "Templatev7.ggb and all models/legacy resources",
+    "repository knowledge and development documentation"
+  ],
+  "unresolved_runtime_assets": [
+    "translations embedded in runtime JARs",
+    "UI images and styles embedded in runtime JARs",
+    "renderer fonts and component-local resources",
+    "third-party native libraries and transitive resources"
+  ]
+}

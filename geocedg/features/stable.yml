@@ -25,6 +25,15 @@
       "specification": "geocedg/specs/legacy/controlled-integration.md",
       "enabled_by_default": true,
       "depends_on": []
+    },
+    {
+      "id": "cedg.packaging.windows",
+      "maturity": "stable",
+      "specification": "geocedg/specs/packaging/windows-packaging.md",
+      "enabled_by_default": false,
+      "depends_on": [
+        "cedg.frontend.profile"
+      ]
     }
   ]
 }

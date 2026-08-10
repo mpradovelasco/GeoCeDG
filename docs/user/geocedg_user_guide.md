@@ -45,6 +45,7 @@ The validated workstation profile is:
 | Gradle launcher JVM | JDK 22 on `PATH`; the validated installation was Oracle JDK 22.0.2 |
 | Desktop toolchain | A JDK 25 discoverable by Gradle; the validated runtime was Eclipse Temurin 25.0.4 |
 | Gradle | Use only `gradlew.bat` from the repository; do not install or invoke a system Gradle |
+| G4 packaging | JDK 25 `jpackage`; MSI/EXE additionally require .NET SDK 6+ and WiX 5.0.2 with Util/UI extensions 5.0.2 |
 | Network | Required by the normal first bootstrap to fetch `origin`, `upstream`, and tags |
 
 The Desktop task requests Java language version 25, while Gradle itself is
@@ -52,7 +53,10 @@ launched with Java 22. Automatic toolchain download is disabled by the normal
 verification path, so install or expose JDK 25 manually if Gradle cannot find
 one.
 
-The bootstrap never installs Git, PowerShell, Java, or Gradle. It does not
+The bootstrap never installs Git, PowerShell, Java, or Gradle. By default it
+also only detects optional packaging prerequisites. The explicit
+`-InstallPackagingPrerequisites` option may install only a missing .NET 8 SDK
+and pinned WiX 5.0.2 plus required extensions. It does not
 modify global environment variables, global Git configuration, credentials,
 `origin`, branches, or history.
 
@@ -91,12 +95,16 @@ Useful options are:
 .\tools\bootstrap\bootstrap-windows.ps1 -SkipBuild
 .\tools\bootstrap\bootstrap-windows.ps1 -RunBenchmarks
 .\tools\bootstrap\bootstrap-windows.ps1 -LaunchDesktop
+.\tools\bootstrap\bootstrap-windows.ps1 -InstallPackagingPrerequisites
 ```
 
 `-SkipFetch` uses existing local refs. `-SkipBuild` provides only static and
 toolchain evidence. `-RunBenchmarks` adds the informational operational
 benchmark. `-LaunchDesktop` launches **GeoGebra Classic**, because that option
 belongs to the pinned-baseline gate; it does not launch GeoCeDG.
+`-InstallPackagingPrerequisites` is opt-in and idempotent; use it only on a
+packaging workstation. Exact manual commands are in the
+[root README](../../README.md#requisitos-de-packaging-windows).
 
 See the [root README](../../README.md) for the short repository overview and
 [UPSTREAM.md](../../UPSTREAM.md) for baseline provenance.
@@ -112,7 +120,8 @@ Run commands from the repository root unless stated otherwise.
 ```
 
 This is the canonical local gate. It composes operational contracts, the G3
-legacy catalog, the pinned baseline build, and focused GeoCeDG frontend tests.
+legacy catalog, G4 static package contracts, the pinned baseline build, and
+focused GeoCeDG frontend tests.
 It writes logs below `%TEMP%\geocedg-verify` by default and normally removes
 the Gradle outputs it created.
 
@@ -139,6 +148,7 @@ baseline Classic launcher. Close its window normally to complete the gate.
 .\tools\agent\verify-baseline.ps1
 .\tools\agent\verify-frontend.ps1
 .\tools\agent\verify-legacy.ps1
+.\tools\agent\verify-packaging.ps1
 ```
 
 Use the composed verifier for an acceptance result. Use a focused verifier to
@@ -152,10 +162,52 @@ The current verified minimum Desktop compilation is:
 .\gradlew.bat :desktop:desktop:compileJava
 ```
 
-There is no GeoCeDG installer or standalone packaged application yet. G4 owns
-that work; at present GeoCeDG runs from the source tree through the wrapper.
+## 4. Package and install for internal evaluation
 
-## 4. Run GeoCeDG and Classic
+Development execution remains `runGeoCeDG`; it recompiles/runs from the
+checkout and uses a workstation Java toolchain. G4 packaging instead creates a
+self-contained application with its own Java 25 runtime.
+
+Check the optional package toolchain:
+
+```powershell
+.\tools\bootstrap\bootstrap-windows.ps1 -SkipFetch -SkipBuild
+.\tools\agent\verify-packaging.ps1 -CheckToolchain
+```
+
+Build an `app-image` only, or the complete app-image/ZIP/MSI/EXE set:
+
+```powershell
+.\tools\release\build-windows-package.ps1 -Target AppImage
+.\tools\release\build-windows-package.ps1 -Target All
+```
+
+The outputs are regenerated below `artifacts/packaging/windows/`:
+
+- `app-image/GeoCeDG/GeoCeDG.exe`: unpacked, self-contained executable;
+- `GeoCeDG-0.4.0-windows-x64-internal.zip`: portable app-image archive;
+- `packages/*-internal.msi`: Windows Installer package;
+- `packages/*-internal.exe`: Windows installer executable;
+- `geocedg-windows.cdx.json`, `build-manifest.json`, and SHA-256 files:
+  composition evidence.
+
+MSI and EXE register `.ggb` with GeoCeDG; the app-image and ZIP do not. The
+validated MSI installed to the current user's local application directory,
+launched with title `GeoCeDG` using its bundled JVM, and restored the previous
+`.ggb` association after uninstall.
+
+Validate a complete generated set with:
+
+```powershell
+.\tools\agent\verify.ps1 -VerifyPackagingArtifacts
+```
+
+Every G4 artifact is `INTERNAL EVALUATION — NOT FOR REDISTRIBUTION`. Technical
+generation and installation are available; public redistribution is blocked
+pending project-license, dependency, inherited-asset, branding, and trademark
+approval. Do not publish or share these binaries as a release.
+
+## 5. Run GeoCeDG and Classic
 
 ### GeoCeDG
 
@@ -193,7 +245,7 @@ root commands are:
 
 No source or Gradle file has been changed merely to hide that discrepancy.
 
-## 5. Identify the running application
+## 6. Identify the running application
 
 | Signal | GeoCeDG | Baseline Classic |
 |---|---|---|
@@ -209,7 +261,7 @@ When the title says `GeoCeDG` but the panels or toolbar differ, first determine
 whether a document or saved preference supplied that layout; do not infer the
 application identity from icons alone.
 
-## 6. Current GeoCeDG GUI
+## 7. Current GeoCeDG GUI
 
 The initial GeoCeDG perspective contains:
 
@@ -242,7 +294,7 @@ The planned toolbar categories for descriptive projections, plane changes and
 developments, CeDG tools, and import/export are explicitly **not implemented**
 and are not emitted into the toolbar.
 
-## 7. CeDG Laboratory
+## 8. CeDG Laboratory
 
 G3 provides an experimental, opt-in Laboratory for registered non-stable
 resources. The current default resource is the preserved `Templatev7.ggb`.
@@ -279,7 +331,7 @@ In particular, `postLocus`, `listLength`, `listLength12`, and `SplineLength`
 are research evidence based on legacy/sampled procedures. They are not Locus
 V2 and are not exact or native metric authority.
 
-## 8. Maturity states
+## 9. Maturity states
 
 | State | Meaning in GeoCeDG |
 |---|---|
@@ -297,7 +349,7 @@ be stable while the resources it manages remain legacy or research.
 Promotion follows `legacy -> research -> experimental -> stable`, or
 `experimental -> deprecated`; it is always an explicit review decision.
 
-## 9. Capabilities by completed phase
+## 10. Capabilities by completed phase
 
 | Phase | Capability | Current status | What that means now |
 |---|---|---|---|
@@ -311,12 +363,16 @@ Promotion follows `legacy -> research -> experimental -> stable`, or
 | G3 | `Templatev7.ggb` and its 24 tools | Available as legacy/research material | Loadable for inspection and comparison, not promoted to stable GeoCeDG behavior |
 | G3 | Public book-model corpus | Infrastructure only | Metadata for 71 remote models; no bulk download and no local regression promotion |
 | G3 | Per-tool geometric correctness, validity domains, degeneracies and expected numerical results | Pending | Required before any tool can be promoted |
+| G4 | Windows app-image, normalized ZIP, MSI and EXE pipeline | Available; stable infrastructure | Reproducible technical packaging outside upstream Gradle; per-build hashes are authoritative and binaries remain internal-only |
+| G4 | Bundled Java runtime and GeoCeDG launcher | Available | App-image and installed MSI run without an external Java runtime |
+| G4 | `.ggb` file association | Available in MSI/EXE | Installer-only shell integration; no serialization change |
+| G4 | SBOM, manifests, hashes and package exclusions | Available; infrastructure | Exact runtime evidence and exclusion checks; license classification remains incomplete |
+| G4 | Public redistribution | Pending/blocker | Requires human license, third-party, asset, branding and trademark approval |
 
-## 10. Planned phases not yet implemented
+## 11. Planned phases not yet implemented
 
 | Phase | Planned area | Current status |
 |---|---|---|
-| G4 | Own installer and packaging | Pending |
 | G5 | Reproducible 2D DXF export | Pending |
 | G6-G8 | Locus V2 characterization, native length and 2D intersections | Pending |
 | G9 | Native spatial identity and canonical projection semantics | Pending |
@@ -332,10 +388,10 @@ The existing Classic runtime already has many general 2D/3D facilities. Their
 presence must not be reported as implementation of these future GeoCeDG
 semantic contracts.
 
-## 11. Current limitations
+## 12. Current limitations
 
-- GeoCeDG must currently be run from source; there is no G4 installer or
-  standalone distribution.
+- G4 packages are technical internal-evaluation artifacts, not authorized
+  public releases.
 - Windows is the only validated workstation platform.
 - Branding is textual and provisional. There is no final GeoCeDG logo, icon,
   translation set, style, or installer resource.
@@ -344,7 +400,7 @@ semantic contracts.
 - `.ggb` serialization still uses the upstream `classic` app code for
   compatibility; GeoCeDG has no new persisted app code.
 - No new geometric semantics, native CeDG command, Locus V2 behavior, spatial
-  object/projection identity, DXF service, DSL, or packaging has been added.
+  object/projection identity, DXF service, or DSL has been added.
 - Legacy macros may have undocumented validity ranges, degeneracies, dynamic
   limitations, and sampled numerical approximations.
 - The 71-model public corpus is an external metadata index, not a local mirror
@@ -352,7 +408,7 @@ semantic contracts.
 - CI is defined to call the same Windows verifier, but a hosted CI result must
   be established by the hosting service and is not inferred from local checks.
 
-## 12. Development quick reference
+## 13. Development quick reference
 
 ```powershell
 # Repository state
@@ -366,6 +422,13 @@ git status --short
 
 # Focused G3 catalog/ingest validation
 .\tools\agent\verify-legacy.ps1
+
+# Focused G4 contracts and generated package validation
+.\tools\agent\verify-packaging.ps1
+.\tools\agent\verify-packaging.ps1 -CheckToolchain -RequireArtifacts
+
+# Generate all internal Windows package formats
+.\tools\release\build-windows-package.ps1 -Target All
 
 # Validate the Laboratory resource without GUI
 .\tools\legacy\open-laboratory.ps1 -ValidateOnly
@@ -383,11 +446,11 @@ git status --short
 git diff --check
 ```
 
-Do not commit Gradle outputs or generated benchmark evidence. Generated
-evidence belongs outside durable sources or under the ignored `artifacts/`
+Do not commit Gradle outputs, package binaries, or generated benchmark
+evidence. Generated evidence belongs outside durable sources or under the ignored `artifacts/`
 boundary defined by the operational contracts.
 
-## 13. Technical references
+## 14. Technical references
 
 - Governance: [AGENTS.md](../../AGENTS.md)
 - Baseline provenance: [UPSTREAM.md](../../UPSTREAM.md) and
@@ -404,6 +467,10 @@ boundary defined by the operational contracts.
   [integration specification](../../geocedg/specs/legacy/controlled-integration.md),
   [Templatev7 manifest](../../models/legacy/template-v7/manifest.yml), and
   [G3 report](../validation/g3_controlled_legacy_integration_report.md)
+- Windows packaging: [ADR 0004](../adr/0004-standalone-windows-packaging.md),
+  [packaging contract](../../geocedg/specs/packaging/windows-packaging.md),
+  [package profile](../../packaging/windows/package.yml), and
+  [G4 report](../validation/g4_standalone_packaging_report.md)
 - Current feature state:
   [stable manifest](../../geocedg/features/stable.yml) and
   [experimental manifest](../../geocedg/features/experimental.yml)
@@ -415,7 +482,7 @@ boundary defined by the operational contracts.
 - Redistribution constraints:
   [component/license matrix](../licensing/component-matrix.md)
 
-## 14. Maintenance rule
+## 15. Maintenance rule
 
 Update this guide whenever a roadmap phase closes. The update must reflect the
 actual manifests, accepted ADRs, validation report, executable commands, GUI,

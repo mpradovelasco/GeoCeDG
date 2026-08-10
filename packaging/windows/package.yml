@@ -1,0 +1,53 @@
+{
+  "$schema": "../../geocedg/specs/operations/package-profile.schema.json",
+  "schema_version": 1,
+  "profile_id": "geocedg-windows-internal",
+  "application": {
+    "name": "GeoCeDG",
+    "version": "0.4.0",
+    "vendor": "GeoCeDG Project",
+    "main_jar": "desktop.jar",
+    "main_class": "org.geocedg.desktop.GeoCeDG",
+    "upgrade_uuid": "b52d8e6d-3996-4bc5-b9ba-4f51f73c6e44",
+    "jvm_options": [
+      "--add-exports=java.base/java.lang=ALL-UNNAMED",
+      "--add-exports=java.desktop/sun.awt=ALL-UNNAMED",
+      "--add-exports=java.desktop/sun.java2d=ALL-UNNAMED",
+      "--enable-native-access=ALL-UNNAMED"
+    ]
+  },
+  "toolchain": {
+    "gradle_java": 22,
+    "desktop_java": 25,
+    "wix": "5.0.2",
+    "wix_extensions": [
+      "WixToolset.Util.wixext/5.0.2",
+      "WixToolset.UI.wixext/5.0.2"
+    ]
+  },
+  "input": {
+    "gradle_task": ":desktop:desktop:installDist",
+    "install_dist": "source/desktop/desktop/build/install/desktop/lib",
+    "excluded_native_patterns": [
+      "(?i)-natives-linux-",
+      "(?i)-natives-macosx-"
+    ]
+  },
+  "outputs": [
+    "app-image",
+    "zip",
+    "msi",
+    "exe"
+  ],
+  "file_association": {
+    "installers_only": true,
+    "extension": "ggb",
+    "mime_type": "application/vnd.geogebra.file",
+    "description": "GeoCeDG construction (internal evaluation)"
+  },
+  "distribution": {
+    "status": "internal-evaluation",
+    "marker": "INTERNAL EVALUATION — NOT FOR REDISTRIBUTION",
+    "public_redistribution": "blocked-pending-license-and-asset-approval"
+  }
+}
