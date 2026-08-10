@@ -1001,6 +1001,14 @@ La optimización priorizará, según evidencia: invalidación incremental, cach�
 
 ## 15. Roadmap por puertas
 
+### Regla transversal de cierre documental
+
+Al cerrar cada fase, se debe actualizar
+`docs/user/geocedg_user_guide.md` para reflejar los comandos, la interfaz, los
+manifiestos de funciones, las capacidades disponibles, las limitaciones y el
+estado de las fases realmente validados. El manual no debe anticipar como
+implementada ninguna capacidad que siga pendiente en esta planificación.
+
 ## G0 - Gobierno, licencia y línea base
 
 **Trabajo**
