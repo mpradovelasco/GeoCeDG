@@ -1,0 +1,59 @@
+{
+  "$schema": "../../../geocedg/specs/operations/model-manifest.schema.json",
+  "schema_version": 1,
+  "template": false,
+  "id": "cedg.regression.g5-dxf-foundation",
+  "maturity": "experimental",
+  "source": {
+    "uri": "models/regression/g5-dxf-foundation/construction.ggs",
+    "author": "GeoCeDG contributors",
+    "date": "2026-08-10",
+    "provenance_notes": "Synthetic deterministic 2D construction authored for G5 semantic DXF validation."
+  },
+  "required_geogebra": {
+    "version": "5.4.928.0",
+    "baseline_sha": "9b93256b7df401ff056c37b502d82df4d72b1522"
+  },
+  "loaded_by_default": false,
+  "inputs": [
+    "models/regression/g5-dxf-foundation/construction.ggs"
+  ],
+  "outputs": [
+    "DXF AC1015 semantic entity stream"
+  ],
+  "validity_domain": {
+    "description": "Finite, defined 2D model-space entities with unitless coordinates.",
+    "parameters": []
+  },
+  "known_degeneracies": [
+    "Non-finite points and zero directions are rejected.",
+    "The function is deliberately unsupported and must produce a diagnostic."
+  ],
+  "reference_models": [],
+  "expected_metrics": {
+    "exact_entities": 9,
+    "unsupported_entities": 1,
+    "zoom_invariant": true
+  },
+  "license": {
+    "spdx": null,
+    "evidence": "Project-authored validation data; public redistribution remains subject to repository license approval.",
+    "review_status": "unreviewed"
+  },
+  "replacement_candidate": null,
+  "derived_artifacts": [
+    {
+      "path": "models/regression/g5-dxf-foundation/expected-entities.yml",
+      "role": "regression-evidence"
+    }
+  ],
+  "implementation": {
+    "mechanisms": [
+      "geogebrascript-source",
+      "semantic-dxf-parser"
+    ],
+    "embedded_tools": 0,
+    "global_javascript": false
+  },
+  "publications": []
+}

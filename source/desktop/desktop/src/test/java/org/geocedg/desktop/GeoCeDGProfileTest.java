@@ -13,6 +13,8 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -75,5 +77,18 @@ class GeoCeDGProfileTest {
 	void isolatesDefaultPreferencesPath() {
 		assertThat(GeoCeDG.getDefaultPreferencesFile().toString(),
 				containsString("GeoCeDG"));
+	}
+
+	@Test
+	void exposesExperimentalDxfOnlyThroughGeoCeDGMenu() {
+		assertThat(GeoCeDGMenuBar.DXF_ACTION_TEXT,
+				equalTo("Export 2D geometry as DXF (experimental)..."));
+		assertThat(GeoCeDGMenuBar.PRODUCT_MENU_MNEMONIC, equalTo((int) 'G'));
+		assertThat(GeoCeDGMenuBar.DXF_ACTION_ACCELERATOR.getKeyCode(),
+				equalTo(KeyEvent.VK_D));
+		int requiredModifiers = InputEvent.CTRL_DOWN_MASK
+				| InputEvent.SHIFT_DOWN_MASK;
+		assertThat(GeoCeDGMenuBar.DXF_ACTION_ACCELERATOR.getModifiers()
+				& requiredModifiers, equalTo(requiredModifiers));
 	}
 }

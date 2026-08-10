@@ -108,6 +108,7 @@
   },
   "features": [
     "cedg.frontend.profile",
-    "cedg.frontend.classic-diagnostic"
+    "cedg.frontend.classic-diagnostic",
+    "cedg.export.dxf.2d"
   ]
 }

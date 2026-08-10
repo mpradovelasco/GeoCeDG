@@ -210,7 +210,7 @@ try {
             )) -WorkingDirectory $RepositoryRoot -LogName "frontend-desktop-test.log" `
             -Description "GeoCeDG Desktop profile tests"
         Assert-TestResult -Path $DesktopResult -Description "Desktop profile tests" `
-            -ExpectedTests 4
+            -ExpectedTests 5
     }
 } catch {
     $Failure = $_.Exception

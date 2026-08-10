@@ -2,5 +2,16 @@
   "$schema": "../../specs/operations/regression-catalog.schema.json",
   "schema_version": 1,
   "baseline_sha": "9b93256b7df401ff056c37b502d82df4d72b1522",
-  "cases": []
+  "cases": [
+    {
+      "id": "cedg.regression.g5-dxf-foundation",
+      "manifest": "models/regression/g5-dxf-foundation/manifest.yml",
+      "specification": "geocedg/specs/export/geometry-export-foundation.md",
+      "expected": {
+        "evidence": "models/regression/g5-dxf-foundation/expected-entities.yml",
+        "validator": "tools/agent/verify-dxf.ps1",
+        "comparison": "semantic-dxf-entities"
+      }
+    }
+  ]
 }

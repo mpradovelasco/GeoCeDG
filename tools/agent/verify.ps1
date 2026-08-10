@@ -21,6 +21,7 @@ $BaselineVerifier = Join-Path $PSScriptRoot "verify-baseline.ps1"
 $FrontendVerifier = Join-Path $PSScriptRoot "verify-frontend.ps1"
 $LegacyVerifier = Join-Path $PSScriptRoot "verify-legacy.ps1"
 $PackagingVerifier = Join-Path $PSScriptRoot "verify-packaging.ps1"
+$DxfVerifier = Join-Path $PSScriptRoot "verify-dxf.ps1"
 $BenchmarkRunner = Join-Path $RepositoryRoot "tools\benchmark\run.ps1"
 $InitialStatus = $null
 
@@ -46,6 +47,22 @@ try {
     Write-Host "`n==> Controlled legacy CeDG integration"
     & $LegacyVerifier
     Assert-LastScriptSuccess -Description "Controlled legacy CeDG integration"
+
+    Write-Host "`n==> Native 2D geometry and DXF export"
+    $dxfParameters = @{
+        LogDirectory = Join-Path ([IO.Path]::GetFullPath($LogDirectory)) "dxf"
+    }
+    if ($SkipBuild) {
+        $dxfParameters.SkipBuild = $true
+    }
+    if ($AllowToolchainDownload) {
+        $dxfParameters.AllowToolchainDownload = $true
+    }
+    if ($KeepBuildOutputs) {
+        $dxfParameters.KeepBuildOutputs = $true
+    }
+    & $DxfVerifier @dxfParameters
+    Assert-LastScriptSuccess -Description "Native 2D geometry and DXF export"
 
     Write-Host "`n==> Standalone Windows packaging contracts"
     $packagingParameters = @{}

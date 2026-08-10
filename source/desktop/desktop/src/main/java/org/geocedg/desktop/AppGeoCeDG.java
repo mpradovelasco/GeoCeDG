@@ -15,6 +15,7 @@ import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
 import org.geogebra.common.io.layout.Perspective;
 import org.geogebra.desktop.CommandLineArguments;
 import org.geogebra.desktop.geogebra3D.App3D;
+import org.geogebra.desktop.gui.GuiManagerD;
 import org.geogebra.desktop.main.AppD;
 
 /**
@@ -58,5 +59,10 @@ public final class AppGeoCeDG extends App3D {
 	@Override
 	protected Image getFrameIcon() {
 		return null;
+	}
+
+	@Override
+	protected GuiManagerD newGuiManager() {
+		return new GuiManagerGeoCeDG(this);
 	}
 }

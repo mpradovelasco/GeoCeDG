@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "case_id": "cedg.regression.g5-dxf-foundation",
+  "format": {
+    "name": "DXF",
+    "acad_version": "AC1015",
+    "insunits": 0,
+    "coordinate_system": "GEOGEBRA_CARTESIAN_2D_WORLD"
+  },
+  "selection_mode": "CURRENT_SELECTION",
+  "entity_types": [
+    "POINT",
+    "LINE",
+    "CIRCLE",
+    "ARC",
+    "LWPOLYLINE",
+    "LWPOLYLINE",
+    "XLINE",
+    "RAY",
+    "ELLIPSE"
+  ],
+  "exact_entities": 9,
+  "approximate_entities": 0,
+  "unsupported_entities": 1,
+  "invariants": {
+    "segment_end": [3.0, 4.0],
+    "circle_radius": 2.0,
+    "polygon_vertices": 3,
+    "polygon_closed": true,
+    "line_direction_norm": 1.0,
+    "ray_direction_norm": 1.0,
+    "zoom_invariant": true,
+    "source_correspondence": true
+  }
+}
