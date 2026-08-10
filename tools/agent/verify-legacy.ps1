@@ -188,7 +188,11 @@ try {
     }
 
     $modelCatalog = Read-JsonCompatibleYaml -RelativePath "models/manifests/catalog.yml"
-    Assert-SequenceEqual -Actual @($modelCatalog.models) `
+    $legacyManifestPaths = @($modelCatalog.models | Where-Object {
+            $registered = Read-JsonCompatibleYaml -RelativePath $_
+            $registered.maturity -eq "legacy"
+        })
+    Assert-SequenceEqual -Actual $legacyManifestPaths `
         -Expected @("models/legacy/template-v7/manifest.yml") `
         -Description "registered legacy manifests"
     $manifest = Read-JsonCompatibleYaml `
@@ -356,9 +360,16 @@ try {
             -Expected @($ExpectedStableToolbar[$category.id]) `
             -Description "G2 toolbar modes for $($category.id)"
     }
-    Assert-SequenceEqual -Actual @($profile.features) -Expected @(
-        "cedg.frontend.profile", "cedg.frontend.classic-diagnostic") `
+    $g2FeatureIds = @(
+        "cedg.frontend.profile", "cedg.frontend.classic-diagnostic")
+    $selectedG2Features = @($profile.features | Where-Object {
+            $g2FeatureIds -contains $_
+        })
+    Assert-SequenceEqual -Actual $selectedG2Features -Expected $g2FeatureIds `
         -Description "G2 profile feature selection"
+    Assert-Condition -Condition (-not (@($profile.features) -contains
+            "cedg.laboratory.legacy")) `
+        -Message "The experimental Laboratory must remain disabled in the profile."
 
     & (Join-Path $RepositoryRoot "tools\legacy\open-laboratory.ps1") `
         -ResourceId $ExpectedResourceId -ValidateOnly

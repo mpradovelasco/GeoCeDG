@@ -928,9 +928,18 @@ public class GuiManagerD extends GuiManager implements GuiManagerInterfaceD {
 	@Override
 	public void initMenubar() {
 		if (menuBar == null) {
-			menuBar = new GeoGebraMenuBar(getApp(), layout);
+			menuBar = newMenuBar();
 		}
 		menuBar.initMenubar();
+	}
+
+	/**
+	 * Factory hook for product profiles that add their own menu surface.
+	 *
+	 * @return menu bar with unchanged Classic default
+	 */
+	protected GeoGebraMenuBar newMenuBar() {
+		return new GeoGebraMenuBar(getApp(), layout);
 	}
 
 	@Override

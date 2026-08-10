@@ -24,8 +24,8 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/GuiManagerD.java",
       "change": "modified",
-      "purpose": "Obtain the window title from the frame profile hook instead of a Classic-only constant.",
-      "authority": "docs/adr/0001-geocedg-product-profile.md"
+      "purpose": "Obtain the product title through the existing frame hook and expose a conservative menu-bar factory with unchanged Classic default.",
+      "authority": "docs/adr/0005-neutral-2d-geometry-export.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/app/GeoGebraFrame.java",
@@ -54,8 +54,8 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/AppGeoCeDG.java",
       "change": "added",
-      "purpose": "Instantiate the GeoCeDG config and manifest-defined initial perspective on Desktop.",
-      "authority": "geocedg/specs/ui/application-profile.md"
+      "purpose": "Instantiate the GeoCeDG config, manifest-defined perspective, and GeoCeDG-owned GUI manager on Desktop.",
+      "authority": "docs/adr/0005-neutral-2d-geometry-export.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDG.java",
@@ -78,8 +78,56 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGProfileTest.java",
       "change": "added",
-      "purpose": "Verify manifest compilation, initial layout, launcher identity, and preference isolation.",
-      "authority": "geocedg/specs/ui/application-profile.md"
+      "purpose": "Verify profile identity/layout and the explicit experimental DXF action owned by GeoCeDG.",
+      "authority": "docs/adr/0005-neutral-2d-geometry-export.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/export/GeometryExportModel.java",
+      "change": "added",
+      "purpose": "Define the immutable read-only 2D geometry export representation independent of formats and views.",
+      "authority": "docs/adr/0005-neutral-2d-geometry-export.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/export/GeoElementGeometryExportAdapter.java",
+      "change": "added",
+      "purpose": "Provide the sole boundary that adapts resolved GeoGebra 2D objects to neutral export geometry.",
+      "authority": "geocedg/specs/export/geometry-export-foundation.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/export/GeometryExportService.java",
+      "change": "added",
+      "purpose": "Expose a UI-independent export service for tests, Desktop, and future automation.",
+      "authority": "geocedg/specs/export/geometry-export-foundation.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/export/DxfExporter.java",
+      "change": "added",
+      "purpose": "Encode neutral exact 2D entities as deterministic ASCII DXF AC1015 without external dependencies.",
+      "authority": "docs/adr/0005-neutral-2d-geometry-export.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/export/GeometryExportFoundationTest.java",
+      "change": "added",
+      "purpose": "Verify geometry invariants, semantic DXF structure, diagnostics, styles, and zoom independence.",
+      "authority": "geocedg/specs/export/geometry-export-foundation.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GuiManagerGeoCeDG.java",
+      "change": "added",
+      "purpose": "Select the GeoCeDG menu surface without changing the Classic GUI manager.",
+      "authority": "docs/adr/0005-neutral-2d-geometry-export.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGMenuBar.java",
+      "change": "added",
+      "purpose": "Expose the experimental DXF action only in the GeoCeDG product profile.",
+      "authority": "geocedg/specs/export/geometry-export-foundation.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGDxfExportController.java",
+      "change": "added",
+      "purpose": "Keep selection dialogs, diagnostics, destination choice, and file I/O outside the shared exporter.",
+      "authority": "geocedg/specs/export/geometry-export-foundation.md"
     }
   ]
 }

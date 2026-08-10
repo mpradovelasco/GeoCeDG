@@ -1,7 +1,7 @@
 # Manual operativo vivo de GeoCeDG
 
 - Tipo de documento: manual operativo vivo
-- Puerta actual del proyecto: G4 **PASS**; G4R **PASS**
+- Puerta actual del proyecto: G5 **PASS**
 - Baseline: GeoGebra 5.4.928.0 at
   `9b93256b7df401ff056c37b502d82df4d72b1522`
 - Plataforma validada: únicamente Windows
@@ -10,7 +10,7 @@
 - `PUBLIC REDISTRIBUTION STATUS = BLOCKED PENDING LICENSE/ASSET APPROVAL`
 
 This guide is the practical entry point for the GeoCeDG author/developer. It
-describes only the behavior available through G4. It does not replace the
+describes only the behavior available through G5. It does not replace the
 [repository README](../../README.md),
 [roadmap](../roadmap/geocedg_initial_plan.md), ADRs, specifications, or
 architecture documentation.
@@ -25,6 +25,10 @@ run:
 ```
 
 Close the application window normally to let Gradle finish successfully.
+
+The experimental 2D DXF workflow is available inside GeoCeDG at
+`GeoCeDG > Export 2D geometry as DXF (experimental)...`. It is not present in
+the Classic diagnostic application.
 
 To run an app-image that has already been generated, without installing it:
 
@@ -547,10 +551,260 @@ available through the normal application mechanisms even when they are not in
 the reduced default toolbar.
 
 The planned toolbar categories for descriptive projections, plane changes and
-developments, CeDG tools, and import/export are explicitly **not implemented**
-and are not emitted into the toolbar.
+developments and native CeDG tools are explicitly **not implemented** and are
+not emitted into the toolbar. G5 adds DXF through a separate GeoCeDG menu; it
+does not alter the stable G2 toolbar.
 
-## 8. CeDG Laboratory
+## 8. Export 2D geometry to DXF
+
+G5 provides an **experimental** native 2D geometry-export foundation and an
+ASCII DXF AC1015 exporter. It exports already-resolved 2D model geometry. It
+does not export a screenshot, clip to the window, change the construction, or
+add DXF import.
+
+### Open or create the source construction
+
+Start GeoCeDG with Gradle, an app-image, or an installed package. To open an
+existing construction use the inherited `File > Open...` workflow and select
+its `.ggb` file. To create a construction, use the toolbar or enter commands in
+the input bar. Save the `.ggb` separately if the construction itself must be
+preserved; writing DXF does not save or alter it.
+
+The G5 action is available only in the window identified as `GeoCeDG`:
+
+1. Construct the required 2D objects.
+2. For selection-only export, select the intended objects before opening the
+   dialog. Use the Move tool and normal Ctrl-click selection behavior.
+3. Choose `GeoCeDG > Export 2D geometry as DXF (experimental)...`. The menu
+   mnemonic is `Alt+G`; `Ctrl+Shift+D` invokes the action directly.
+4. Choose `Complete labeled 2D construction` or `Current selection`.
+5. Review any unsupported/invalid-object diagnostics. `OK` explicitly accepts
+   writing the supported subset; `Cancel` writes nothing.
+6. Choose the destination. GeoCeDG appends `.dxf` when omitted and asks before
+   replacing an existing file.
+7. Check the completion dialog for the target path, written entity count and
+   skipped-object count.
+
+The same menu and behavior are present in the Gradle application, app-image,
+ZIP, MSI and EXE installations because they use the same GeoCeDG Desktop JARs.
+GeoGebra Classic remains a comparison target and intentionally has no G5 menu.
+
+### Available population modes
+
+| Mode | Exact population rule | Use |
+|---|---|---|
+| `Complete labeled 2D construction` | Labeled objects in construction order; 3D, invalid and unsupported objects become diagnostics | Reproducible full-model export |
+| `Current selection` | The explicit GUI selection captured before adaptation | Small subsets and controlled comparisons |
+
+Visibility is metadata, not a population filter: a hidden supported object in
+either population is exported with DXF visibility group `60 = 1`. G5 does not
+offer viewport, visible-only, named-view or layer-filtered population modes.
+Those absent modes must not be inferred from what is currently on screen.
+
+### Minimal reproducible example
+
+Start GeoCeDG and enter these commands, one per input-bar submission:
+
+```text
+A=(1,2)
+s=Segment((0,0),(3,4))
+c=Circle((5,6),2)
+```
+
+Choose the complete-construction mode and save as
+`artifacts\manual\g5-minimal.dxf` after creating that directory if necessary.
+The completion dialog should report three entities. The file should contain
+one `POINT`, one `LINE`, one `CIRCLE`, `$ACADVER` value `AC1015`, and
+`$INSUNITS` value `0`. A developer can perform a quick non-authoritative text
+inspection with:
+
+```powershell
+Select-String -Path .\artifacts\manual\g5-minimal.dxf `
+  -Pattern 'AC1015|POINT|LINE|CIRCLE'
+```
+
+Geometric verification should use the semantic tests rather than this text
+search. Moving or zooming the Graphics view and exporting again must leave the
+DXF geometry unchanged.
+
+To exercise the loss warning, add `f(x)=x^2` and export the complete
+construction again. The dialog reports the function as `UNSUPPORTED`; it does
+not convert it to a polyline. Continue only when omission is intended.
+
+### Exact vs approximate export
+
+G5 deliberately favors explicit omission over silent approximation.
+
+| Source family | DXF representation | Status in G5 | Loss or limitation |
+|---|---|---|---|
+| finite 2D point | `POINT` | exact | label is provenance in the neutral model, not DXF text |
+| segment | `LINE` | exact | endpoint coordinates preserved |
+| ray | `RAY` | exact | origin plus normalized direction; never viewport-clipped |
+| infinite line | `XLINE` | exact | base point plus normalized direction; never viewport-clipped |
+| circle | `CIRCLE` | exact | center and radius preserved |
+| circular arc | `ARC` | exact | center, radius and counterclockwise angular bounds preserved |
+| ellipse / elliptic arc | `ELLIPSE` | exact | center, major-axis vector, ratio and parameter interval preserved |
+| polygon boundary | closed `LWPOLYLINE` | exact boundary | fill is omitted; generated side duplicates are suppressed with diagnostics |
+| polyline | open `LWPOLYLINE` | exact vertices | no smoothing is invented |
+| sector | none | unsupported | no partial boundary/fill substitute |
+| parabola, hyperbola or degenerate conic | none | unsupported | no tessellation |
+| explicit, parametric or implicit general curve | none | unsupported | no tessellation |
+| legacy `Locus` | none | unsupported | sampled display data is not geometric authority |
+| text, labels, images and widgets | none | unsupported | G5 is geometry-only |
+| any 3D object | none | unsupported | G5 has no spatial/projection semantics |
+
+No approximate source family is enabled in G5. The neutral contract has an
+`APPROXIMATE` state only to make future tolerance-controlled additions
+explicit; an approximate entity without a positive finite tolerance is
+rejected. This is important for a future Locus V2 adapter: legacy display
+samples cannot be relabeled as an exact curve.
+
+### Coordinates, units, scale and views
+
+GeoCeDG distinguishes five concepts:
+
+- **geometric coordinates** are the Cartesian values owned by resolved 2D
+  kernel objects;
+- a **view** presents those objects and has pixel bounds, axes and zoom;
+- **zoom** changes only presentation and never model dimensions;
+- a **drawing/printing scale** relates model values to physical output and is
+  not defined by G5;
+- **DXF model space** receives the 2D Cartesian coordinates with `z = 0`.
+
+The baseline construction has no approved physical model-unit contract.
+Therefore G5 applies the identity transform, records source/target as
+`UNITLESS`, and writes DXF `$INSUNITS = 0`. A value `3` remains `3`; GeoCeDG
+does not claim that it means millimetres, metres or inches. Screen axes ratio,
+DPI, current viewport and print/export image scale are not inputs to the
+service. Physical units and drawing sheets remain future work.
+
+### Layers and transported style
+
+G5 maps the current flat integer GeoGebra layer deterministically:
+
+- GeoGebra layer `0` -> DXF layer `0`;
+- layer `n != 0` -> DXF layer `GEOCEDG_L<n>`.
+
+This is only a compatibility bridge. It is not the future hierarchical
+GeoCeDG layer architecture planned for G11. DXF entities also receive true RGB
+color (`420`) and hidden state (`60 = 1`). Line thickness, dash pattern, point
+size, polygon fill, opacity and label text are not transported. Those values
+are presentation data and G5 does not reinterpret pixel conventions as
+physical geometry.
+
+Each entity also receives a deterministic handle and a group `999` comment
+with its construction-revision source identifier. That evidence supports
+source/output correspondence during validation; it is not a new persistent
+GeoCeDG object identity and is not stored back into `.ggb`.
+
+### Warnings and failure behavior
+
+Diagnostics distinguish `UNSUPPORTED`, `UNDEFINED`, `NON_FINITE`, `NOT_2D`,
+`DEGENERATE`, and `DUPLICATE_POLYGON_SIDE`. The dialog lists the source
+identifier and reason. No destination is requested when the population is
+empty or contains zero exportable entities. When the population is mixed, the
+user must explicitly accept the supported subset. File and writer errors are
+shown in an error dialog; there is no silent success.
+
+### Why DXF is not geometric authority
+
+A dynamic-geometry object is defined by its type, inputs and construction
+dependency graph. Its graphical representation is a view-dependent rendering.
+The neutral export representation is a read-only snapshot of approved,
+already-resolved geometric parameters. DXF is a final encoding of that
+snapshot for interoperability.
+
+```mermaid
+flowchart LR
+    G["GeoElement<br/>kernel semantics + dependencies"]
+    A["GeoElementGeometryExportAdapter<br/>read-only extraction"]
+    N["GeometryExportModel<br/>neutral exactness contract"]
+    X["DxfExporter<br/>format encoding"]
+    F["DXF file"]
+    G --> A --> N --> X --> F
+```
+
+The flow is one-way. The writer neither invokes construction algorithms nor
+infers geometry from pixels. A DXF reader cannot replace the `.ggb`
+construction as GeoCeDG's dependency/semantic authority, and DXF import is not
+implemented in G5.
+
+### Classes, dependencies and extension points
+
+| Component | Responsibility | May depend on |
+|---|---|---|
+| `GeometryExportModel` | Immutable entity values, units, exactness, style and diagnostics | Java value collections only |
+| `GeoElementGeometryExportAdapter` | Sole interpretation boundary for resolved supported `GeoElement` types | shared GeoGebra geometry APIs and neutral model |
+| `DxfExporter` | Deterministic AC1015 group-code encoding | neutral model only |
+| `GeometryExportService` | Reusable model/export facade | adapter and format exporter |
+| `GeoCeDGDxfExportController` | selection mode, dialogs, destination, file I/O and user diagnostics | Desktop UI and shared service |
+| `GuiManagerGeoCeDG` / `GeoCeDGMenuBar` | GeoCeDG-only action surface and `Alt+G` / `Ctrl+Shift+D` access | Desktop application profile |
+
+The format writer deliberately avoids `GeoElement`, `Kernel`,
+`EuclidianView`, Swing and file APIs. The controller deliberately contains no
+geometric interpretation. A future format can consume the neutral model; a
+future source family must add an approved adapter policy rather than geometry
+logic to each writer.
+
+The baseline had no DXF implementation or suitable neutral DTO. Existing
+SVG/PDF/PNG/EMF export repaints the Euclidian view; PSTricks/PGF/Asymptote
+paths combine source traversal, view bounds and format logic; STL/Collada are
+renderer-oriented 3D export. They remain available and unchanged. G5 reuses
+the resolved source geometry APIs, not those presentation pipelines.
+
+Two pre-existing Desktop files have narrowly controlled changes:
+`GuiManagerD` exposes a menu-bar factory whose Classic default is unchanged,
+and `AppGeoCeDG` selects the GeoCeDG GUI manager. All export implementation is
+GeoCeDG-owned. The detailed audit, alternatives and file responsibilities are
+in the [G5 architecture document](../architecture/native_2d_geometry_export.md)
+and [ADR 0005](../adr/0005-neutral-2d-geometry-export.md).
+
+### Validation and meaning of PASS
+
+The versioned regression construction contains a point, segment, circle, arc,
+polygon, polyline, line, ray, ellipse and deliberately unsupported function.
+A lightweight group-code parser checks semantics rather than relying only on
+byte comparison. Invariants include:
+
+- entity count, family and order;
+- endpoint coordinates, radius, arc/ellipse parameters and polygon closure;
+- unit direction for `RAY` and `XLINE`;
+- unit header, layer, RGB, visibility and source correspondence;
+- explicit unsupported diagnostics and mandatory approximation tolerance;
+- identical DXF before and after a zoom/viewport change.
+
+Run the focused gate with:
+
+```powershell
+.\tools\agent\verify-dxf.ps1
+```
+
+It is subordinate to the composed authority:
+
+```powershell
+.\tools\agent\verify.ps1 -RunBenchmarks
+```
+
+`PASS` means the supported exact entity contract, loss diagnostics,
+determinism and zoom invariance match the versioned semantic evidence. It does
+not claim support for all GeoGebra objects, physical units, DXF import, or
+byte-for-byte identity across unrelated future serializer versions.
+
+### Historical position and future evolution
+
+Before G5, GeoCeDG had a product profile, legacy laboratory and standalone
+packaging but no native geometry-format boundary. G5 adds the neutral model,
+exact supported adapters, AC1015 writer, GeoCeDG-only GUI action and semantic
+regression gate. Packaging automatically includes these classes through the
+existing Desktop distribution; its internal-only redistribution status is
+unchanged.
+
+Still pending are Locus V2 and its controlled export representation, 3D
+objects/projection bindings, Python DSL access, hierarchical layers, drawing
+sheets and advanced PDF/SVG formats. These future capabilities must extend
+approved boundaries and are not present merely because DXF export now exists.
+
+## 9. CeDG Laboratory
 
 G3 provides an experimental, opt-in Laboratory for registered non-stable
 resources. The current default resource is the preserved `Templatev7.ggb`.
@@ -587,7 +841,7 @@ In particular, `postLocus`, `listLength`, `listLength12`, and `SplineLength`
 are research evidence based on legacy/sampled procedures. They are not Locus
 V2 and are not exact or native metric authority.
 
-## 9. Maturity states
+## 10. Maturity states
 
 | State | Meaning in GeoCeDG |
 |---|---|
@@ -605,7 +859,7 @@ be stable while the resources it manages remain legacy or research.
 Promotion follows `legacy -> research -> experimental -> stable`, or
 `experimental -> deprecated`; it is always an explicit review decision.
 
-## 10. Capabilities by completed phase
+## 11. Capabilities by completed phase
 
 | Phase | Capability | Current status | What that means now |
 |---|---|---|---|
@@ -624,12 +878,16 @@ Promotion follows `legacy -> research -> experimental -> stable`, or
 | G4 | `.ggb` file association | Available in MSI/EXE | Installer-only shell integration; no serialization change |
 | G4 | SBOM, manifests, hashes and package exclusions | Available; infrastructure | Exact runtime evidence and exclusion checks; license classification remains incomplete |
 | G4 | Public redistribution | Pending/blocker | Requires human license, third-party, asset, branding and trademark approval |
+| G5 | Neutral read-only 2D geometry export model and reusable service | Available; experimental infrastructure | Separates resolved source adaptation from format encoding without changing the kernel |
+| G5 | ASCII DXF AC1015 export from a full labeled construction or current selection | Available; experimental | Exact supported entities, explicit omissions, unitless model coordinates and deterministic output |
+| G5 | GeoCeDG-only export menu, diagnostics and file chooser | Available; experimental | Works in development and packaged GeoCeDG; Classic remains unchanged |
+| G5 | Semantic regression, zoom invariance and focused verifier | Available; infrastructure | Versioned source/expected evidence checks geometry rather than only file bytes |
+| G5 | Approximate curves, legacy Locus, physical units, DXF import and 3D export | Pending | Deliberately excluded until their governing semantic phases/contracts exist |
 
-## 11. Planned phases not yet implemented
+## 12. Planned phases not yet implemented
 
 | Phase | Planned area | Current status |
 |---|---|---|
-| G5 | Reproducible 2D DXF export | Pending |
 | G6-G8 | Locus V2 characterization, native length and 2D intersections | Pending |
 | G9 | Native spatial identity and canonical projection semantics | Pending |
 | G10 | CeDG 3D DSL and workbench | Pending |
@@ -644,7 +902,7 @@ The existing Classic runtime already has many general 2D/3D facilities. Their
 presence must not be reported as implementation of these future GeoCeDG
 semantic contracts.
 
-## 12. Current limitations
+## 13. Current limitations
 
 - G4 packages are technical internal-evaluation artifacts, not authorized
   public releases.
@@ -655,8 +913,11 @@ semantic contracts.
   commercial redistribution requires the recorded license/brand review.
 - `.ggb` serialization still uses the upstream `classic` app code for
   compatibility; GeoCeDG has no new persisted app code.
+- G5 supports only the exact 2D families listed above. There is no DXF import,
+  viewport export, physical-unit contract, text export, approximate general
+  curves, legacy Locus export or 3D export.
 - No new geometric semantics, native CeDG command, Locus V2 behavior, spatial
-  object/projection identity, DXF service, or DSL has been added.
+  object/projection identity, or DSL has been added.
 - Legacy macros may have undocumented validity ranges, degeneracies, dynamic
   limitations, and sampled numerical approximations.
 - The 71-model public corpus is an external metadata index, not a local mirror
@@ -664,7 +925,7 @@ semantic contracts.
 - CI is defined to call the same Windows verifier, but a hosted CI result must
   be established by the hosting service and is not inferred from local checks.
 
-## 13. Development quick reference
+## 14. Development quick reference
 
 ```powershell
 # Repository state
@@ -682,6 +943,9 @@ git status --short
 # Focused G4 contracts and generated package validation
 .\tools\agent\verify-packaging.ps1
 .\tools\agent\verify-packaging.ps1 -CheckToolchain -RequireArtifacts
+
+# Focused G5 geometry/DXF tests, manifests and architecture boundary
+.\tools\agent\verify-dxf.ps1
 
 # Generate all internal Windows package formats
 .\tools\release\build-windows-package.ps1 -Target All
@@ -706,7 +970,7 @@ Do not commit Gradle outputs, package binaries, or generated benchmark
 evidence. Generated evidence belongs outside durable sources or under the ignored `artifacts/`
 boundary defined by the operational contracts.
 
-## 14. Technical references
+## 15. Technical references
 
 - Governance: [AGENTS.md](../../AGENTS.md)
 - Baseline provenance: [UPSTREAM.md](../../UPSTREAM.md) and
@@ -727,6 +991,12 @@ boundary defined by the operational contracts.
   [packaging contract](../../geocedg/specs/packaging/windows-packaging.md),
   [package profile](../../packaging/windows/package.yml), and
   [G4 report](../validation/g4_standalone_packaging_report.md)
+- Native 2D geometry/DXF export:
+  [ADR 0005](../adr/0005-neutral-2d-geometry-export.md),
+  [architecture](../architecture/native_2d_geometry_export.md),
+  [normative export contract](../../geocedg/specs/export/geometry-export-foundation.md),
+  [regression evidence](../../models/regression/g5-dxf-foundation/expected-entities.yml),
+  and [G5 report](../validation/g5_native_2d_dxf_export_report.md)
 - Current feature state:
   [stable manifest](../../geocedg/features/stable.yml) and
   [experimental manifest](../../geocedg/features/experimental.yml)
@@ -738,7 +1008,7 @@ boundary defined by the operational contracts.
 - Redistribution constraints:
   [component/license matrix](../licensing/component-matrix.md)
 
-## 15. Maintenance authority
+## 16. Maintenance authority
 
 The authoritative update gate is the roadmap's
 [transversal documentary closure rule](../roadmap/geocedg_initial_plan.md#regla-transversal-de-cierre-documental).

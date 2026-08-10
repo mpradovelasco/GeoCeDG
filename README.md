@@ -8,8 +8,9 @@ objetos espaciales y sus proyecciones; no es un producto oficial de GeoGebra.
 El proyecto está en desarrollo experimental. G0 fijó y validó el baseline,
 G1/G1R establecieron la capa operativa, G2 incorporó el primer perfil Desktop
 propio y G3 preserva y cataloga de forma controlada los recursos CeDG legacy.
-Ningún recurso legacy se carga por defecto ni se ha modificado la semántica
-geométrica.
+G4 añadió packaging Windows interno y G5 una primera exportación geométrica 2D
+DXF experimental. Ningún recurso legacy se carga por defecto ni se ha
+modificado la semántica geométrica.
 
 ## Baseline
 
@@ -82,6 +83,11 @@ La botonera contenida en `Templatev7.ggb` se conserva como organización legacy
 de referencia; no sustituye ni redefine la toolbar estable de G2. El flujo de
 ingest y promoción se documenta en
 [la especificación de integración legacy](geocedg/specs/legacy/controlled-integration.md).
+
+La exportación experimental de geometría 2D se invoca desde
+`GeoCeDG > Export 2D geometry as DXF (experimental)...`. Su alcance exacto,
+unidades, entidades soportadas y warnings se documentan en
+[el manual operativo](docs/user/geocedg_user_guide.md#8-export-2d-geometry-to-dxf).
 
 ## Requisitos de packaging Windows
 
