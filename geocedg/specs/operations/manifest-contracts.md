@@ -29,7 +29,12 @@ not enable a product feature.
 GeoGebra baseline, inputs/outputs, validity domain, degeneracies, reference
 models, expected metrics, default loading, license evidence, and replacement
 candidate. It is a template, not an imported model. Actual `.ggb`, `.ggt`, or
-script files require a separate authorized import task.
+script files require a separate authorized import task. G3 uses the optional
+version-1 `artifact`, `source_environment`, `derived_artifacts`,
+`implementation`, `publications`, and `laboratory` fields for controlled legacy
+packages. Their meaning is governed by
+`geocedg/specs/legacy/controlled-integration.md` and does not alter geometric
+semantics.
 
 ## Regression catalog
 

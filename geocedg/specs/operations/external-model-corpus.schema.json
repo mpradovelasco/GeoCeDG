@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://geocedg.local/schemas/external-model-corpus-v1",
+  "title": "GeoCeDG external model corpus index",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema_version",
+    "id",
+    "source_url",
+    "title",
+    "author",
+    "related_reference",
+    "retrieved_at",
+    "build_dependency",
+    "import_policy",
+    "chapters",
+    "pilot_candidates"
+  ],
+  "properties": {
+    "$schema": { "type": "string", "minLength": 1 },
+    "schema_version": { "const": 1 },
+    "id": { "const": "cedg.external.geogebra-book-models" },
+    "source_url": { "const": "https://www.geogebra.org/m/nmsgff5s" },
+    "title": { "type": "string", "minLength": 1 },
+    "author": { "type": "string", "minLength": 1 },
+    "related_reference": { "const": "cedg.reference.book-2023" },
+    "retrieved_at": { "type": "string", "format": "date" },
+    "build_dependency": { "const": false },
+    "import_policy": { "const": "metadata-only-no-bulk-download" },
+    "chapters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["chapter_id", "title", "models"]
+      }
+    },
+    "pilot_candidates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["material_id", "reason", "import_status", "local_manifest"]
+      }
+    }
+  }
+}

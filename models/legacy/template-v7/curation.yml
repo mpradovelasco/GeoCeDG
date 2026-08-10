@@ -1,0 +1,252 @@
+{
+  "$schema": "../../../geocedg/specs/operations/legacy-tool-curation.schema.json",
+  "schema_version": 1,
+  "resource_id": "cedg.legacy.template-v7",
+  "source_artifact_sha256": "f62e5b7a92bcd95f10b8afda348763a57ccbd0c10dbc0c2bccc7049831ed4113",
+  "toolbar_interpretation": {
+    "status": "authoritative-legacy-reference",
+    "future_constraint": false
+  },
+  "tools": [
+    {
+      "id": "cedg.legacy.template-v7.tool.spline-length",
+      "source_command_name": "SplineLength",
+      "family": "curve-measurement",
+      "category": "transport-measurement",
+      "maturity": "research",
+      "architecture_recommendation": "remain-external-legacy",
+      "confidence": "high",
+      "observations": "Builds a spline and estimates its length from a finite point sequence; the sample count is an explicit input and no exactness is claimed."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.sheet-isoan-land",
+      "source_command_name": "sheetISOAnLand",
+      "family": "sheet-format-scale",
+      "category": "format-scale",
+      "maturity": "legacy",
+      "architecture_recommendation": "remain-external-legacy",
+      "confidence": "high",
+      "observations": "Creates a landscape ISO 216 sheet framework and scale controls; this is document/presentation behavior, not geometric truth."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.sheet-isoan-vert",
+      "source_command_name": "sheetISOAnVert",
+      "family": "sheet-format-scale",
+      "category": "format-scale",
+      "maturity": "legacy",
+      "architecture_recommendation": "remain-external-legacy",
+      "confidence": "high",
+      "observations": "Creates a portrait ISO 216 sheet framework and scale controls; future sheet/export architecture is outside G3."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.direct-dimension",
+      "source_command_name": "directDimension",
+      "family": "curve-measurement",
+      "category": "transport-measurement",
+      "maturity": "legacy",
+      "architecture_recommendation": "future-high-level-command",
+      "confidence": "medium",
+      "observations": "Produces dimension graphics and converted distance text between two points; standards compliance and presentation policy require later design."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.squareby-diagonal",
+      "source_command_name": "SquarebyDiagonal",
+      "family": "planar-construction",
+      "category": "construction-2d",
+      "maturity": "legacy",
+      "architecture_recommendation": "remain-external-legacy",
+      "confidence": "high",
+      "observations": "Composed planar construction of a square from diagonal endpoints using baseline primitives."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.circleby-d",
+      "source_command_name": "CirclebyD",
+      "family": "planar-construction",
+      "category": "construction-2d",
+      "maturity": "legacy",
+      "architecture_recommendation": "remain-external-legacy",
+      "confidence": "high",
+      "observations": "Convenience construction for a circle from centre and diameter using baseline Circle behavior."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.ellipse-axis",
+      "source_command_name": "EllipseAxis",
+      "family": "planar-construction",
+      "category": "construction-2d",
+      "maturity": "legacy",
+      "architecture_recommendation": "future-high-level-command",
+      "confidence": "medium",
+      "observations": "Constructs an ellipse from centre and axis endpoints with conditional selection of the larger axis."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.point-jump",
+      "source_command_name": "pointJump",
+      "family": "coordinate-transport",
+      "category": "descriptive-geometry-procedure",
+      "maturity": "legacy",
+      "architecture_recommendation": "future-dsl-procedure",
+      "confidence": "medium",
+      "observations": "Moves a point by a signed distance along a supplied direction; a future high-level procedure can compose existing primitives."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.poli-line-visibility",
+      "source_command_name": "PoliLineVisibility",
+      "family": "visibility-presentation",
+      "category": "general-utility",
+      "maturity": "legacy",
+      "architecture_recommendation": "remain-external-legacy",
+      "confidence": "high",
+      "observations": "Creates continuous and dashed segment portions for legacy presentation; it is not the future geometric visibility service."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.perimeter",
+      "source_command_name": "Perimeter",
+      "family": "curve-measurement",
+      "category": "transport-measurement",
+      "maturity": "legacy",
+      "architecture_recommendation": "remain-external-legacy",
+      "confidence": "high",
+      "observations": "Convenience wrapper over the baseline Circumference command for a conic input."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.axis-dimension",
+      "source_command_name": "axisDimension",
+      "family": "curve-measurement",
+      "category": "transport-measurement",
+      "maturity": "legacy",
+      "architecture_recommendation": "future-high-level-command",
+      "confidence": "medium",
+      "observations": "Produces axis-oriented dimension graphics and text; standards and presentation behavior remain uncharacterized."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.rel-coor",
+      "source_command_name": "relCoor",
+      "family": "coordinate-transport",
+      "category": "descriptive-geometry-procedure",
+      "maturity": "legacy",
+      "architecture_recommendation": "future-dsl-procedure",
+      "confidence": "medium",
+      "observations": "Measures a relative coordinate along a supplied direction by composing baseline line, vector, and intersection operations."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.duct-symbol",
+      "source_command_name": "DuctSymbol",
+      "family": "presentation-symbols",
+      "category": "general-utility",
+      "maturity": "legacy",
+      "architecture_recommendation": "remain-external-legacy",
+      "confidence": "medium",
+      "observations": "Generates a legacy duct presentation symbol from diameter endpoints and length; no spatial-object semantics are inferred."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.symm-symbol",
+      "source_command_name": "SymmSymbol",
+      "family": "presentation-symbols",
+      "category": "general-utility",
+      "maturity": "legacy",
+      "architecture_recommendation": "remain-external-legacy",
+      "confidence": "medium",
+      "observations": "Generates a symmetry presentation mark from a point, axis, and distance."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.list-length",
+      "source_command_name": "listLength",
+      "family": "locus-research",
+      "category": "locus",
+      "maturity": "research",
+      "architecture_recommendation": "remain-external-legacy",
+      "confidence": "high",
+      "observations": "Sums distances between consecutive points. Publications refer to the role as locusLength; the Template command is listLength and remains an approximate sampled-list operation."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.list-length12",
+      "source_command_name": "listLength12",
+      "family": "locus-research",
+      "category": "locus",
+      "maturity": "research",
+      "architecture_recommendation": "remain-external-legacy",
+      "confidence": "high",
+      "observations": "Estimates distance along an ordered point list between two points. Publications refer to the role as locusLength12; ambiguity and error semantics are not native Locus semantics."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.post-locus",
+      "source_command_name": "postLocus",
+      "family": "locus-research",
+      "category": "locus",
+      "maturity": "research",
+      "architecture_recommendation": "future-kernel-design",
+      "confidence": "high",
+      "observations": "Filters points exposed by a legacy Locus using metric and directional thresholds. It is research evidence for Locus V2, not a semantic locus definition or exact metric authority."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.ellipse-visibility",
+      "source_command_name": "ellipseVisibility",
+      "family": "visibility-presentation",
+      "category": "general-utility",
+      "maturity": "legacy",
+      "architecture_recommendation": "remain-external-legacy",
+      "confidence": "high",
+      "observations": "Creates a counter-clockwise ellipse arc for presentation; it does not define future geometric visibility."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.translation-coor",
+      "source_command_name": "translationCoor",
+      "family": "coordinate-transport",
+      "category": "descriptive-geometry-procedure",
+      "maturity": "legacy",
+      "architecture_recommendation": "future-dsl-procedure",
+      "confidence": "medium",
+      "observations": "Transports a measured coordinate between supplied reference points and directions using existing primitives."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.circ-arcby-angle",
+      "source_command_name": "circArcbyAngle",
+      "family": "planar-construction",
+      "category": "construction-2d",
+      "maturity": "legacy",
+      "architecture_recommendation": "remain-external-legacy",
+      "confidence": "high",
+      "observations": "Composed circular arc construction from centre, start point, and angle."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.dummy-rotate",
+      "source_command_name": "dummyRotate",
+      "family": "coordinate-transport",
+      "category": "descriptive-geometry-procedure",
+      "maturity": "legacy",
+      "architecture_recommendation": "future-dsl-procedure",
+      "confidence": "medium",
+      "observations": "Convenience rotation of a point around a centre; broader descriptive-geometry rotation policy is deferred."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.conj2main-axes-ellipse",
+      "source_command_name": "conj2mainAxesEllipse",
+      "family": "planar-construction",
+      "category": "construction-2d",
+      "maturity": "legacy",
+      "architecture_recommendation": "future-high-level-command",
+      "confidence": "high",
+      "observations": "Derives principal-axis endpoints from conjugate ellipse axes with conditional handling documented in the 2025 tool paper."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.ellipse-length12",
+      "source_command_name": "ellipseLength12",
+      "family": "curve-measurement",
+      "category": "transport-measurement",
+      "maturity": "legacy",
+      "architecture_recommendation": "remain-external-legacy",
+      "confidence": "high",
+      "observations": "Builds an ellipse arc between two points and applies the baseline Length command."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.ifpositive-select-point",
+      "source_command_name": "IFPositiveSelectPoint",
+      "family": "conditional-utility",
+      "category": "general-utility",
+      "maturity": "legacy",
+      "architecture_recommendation": "future-dsl-procedure",
+      "confidence": "high",
+      "observations": "Selects one of two points from the sign of a numeric input; it is a composed conditional utility."
+    }
+  ]
+}

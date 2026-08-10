@@ -6,9 +6,10 @@ trazabilidad constructiva, las dependencias dinámicas y la coherencia entre
 objetos espaciales y sus proyecciones; no es un producto oficial de GeoGebra.
 
 El proyecto está en desarrollo experimental. G0 fijó y validó el baseline,
-G1/G1R establecieron la capa operativa y G2 incorpora el primer perfil Desktop
-propio. Todavía no se han importado herramientas CeDG ni se ha modificado la
-semántica geométrica.
+G1/G1R establecieron la capa operativa, G2 incorporó el primer perfil Desktop
+propio y G3 preserva y cataloga de forma controlada los recursos CeDG legacy.
+Ningún recurso legacy se carga por defecto ni se ha modificado la semántica
+geométrica.
 
 ## Baseline
 
@@ -67,6 +68,18 @@ Ambos arranques son gráficos. El bootstrap conserva `-LaunchDesktop` para el
 baseline Classic; la verificación normal no abre ventanas. El contrato del
 perfil, su perspectiva y su toolbar se encuentran en
 [la especificación de aplicación](geocedg/specs/ui/application-profile.md).
+
+El CeDG Laboratory abre de forma explícita un recurso no estable registrado:
+
+```powershell
+.\tools\legacy\open-laboratory.ps1
+.\tools\legacy\open-laboratory.ps1 -Classic
+```
+
+La botonera contenida en `Templatev7.ggb` se conserva como organización legacy
+de referencia; no sustituye ni redefine la toolbar estable de G2. El flujo de
+ingest y promoción se documenta en
+[la especificación de integración legacy](geocedg/specs/legacy/controlled-integration.md).
 
 ## Repositorio y flujo de trabajo
 

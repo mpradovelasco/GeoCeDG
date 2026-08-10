@@ -1,0 +1,157 @@
+{
+  "$schema": "../../../geocedg/specs/operations/external-model-corpus.schema.json",
+  "schema_version": 1,
+  "id": "cedg.external.geogebra-book-models",
+  "source_url": "https://www.geogebra.org/m/nmsgff5s",
+  "title": "Modelos computacionales 3D basados en CeDG",
+  "author": "Manuel Prado-Velasco",
+  "related_reference": "cedg.reference.book-2023",
+  "retrieved_at": "2026-08-10",
+  "build_dependency": false,
+  "import_policy": "metadata-only-no-bulk-download",
+  "chapters": [
+    {
+      "chapter_id": "819818",
+      "title": "Fundamentos del CeDG",
+      "models": [
+        {"material_id": "pvftg2b5", "title": "Arco capaz tool", "url": "https://www.geogebra.org/m/nmsgff5s#material/pvftg2b5", "book_problem": "Arco capaz tool", "regression_manifest": null},
+        {"material_id": "ucq63sut", "title": "Arco capaz mal definido", "url": "https://www.geogebra.org/m/nmsgff5s#material/ucq63sut", "book_problem": "Arco capaz mal definido", "regression_manifest": null},
+        {"material_id": "wxgcrht5", "title": "Herramienta acotacion", "url": "https://www.geogebra.org/m/nmsgff5s#material/wxgcrht5", "book_problem": "Herramienta acotacion", "regression_manifest": null},
+        {"material_id": "f7vrktqs", "title": "Funcion basada en locus", "url": "https://www.geogebra.org/m/nmsgff5s#material/f7vrktqs", "book_problem": "Funcion basada en locus", "regression_manifest": null},
+        {"material_id": "f3gjbfjp", "title": "Prueba de concepto de CeDG", "url": "https://www.geogebra.org/m/nmsgff5s#material/f3gjbfjp", "book_problem": "Prueba de concepto de CeDG", "regression_manifest": null},
+        {"material_id": "jgehztsc", "title": "Analisis tecnico CeDG", "url": "https://www.geogebra.org/m/nmsgff5s#material/jgehztsc", "book_problem": "Analisis tecnico CeDG", "regression_manifest": null},
+        {"material_id": "jdjn39zx", "title": "Analisis de evolucion de CeDG mediante Scripting", "url": "https://www.geogebra.org/m/nmsgff5s#material/jdjn39zx", "book_problem": "Analisis de evolucion de CeDG mediante Scripting", "regression_manifest": null},
+        {"material_id": "fq5dpkdu", "title": "Programacion GGB scripting", "url": "https://www.geogebra.org/m/nmsgff5s#material/fq5dpkdu", "book_problem": "Programacion GGB scripting", "regression_manifest": null},
+        {"material_id": "q7vhxazc", "title": "Gestion puntos libres y vistas", "url": "https://www.geogebra.org/m/nmsgff5s#material/q7vhxazc", "book_problem": "Gestion puntos libres y vistas", "regression_manifest": null},
+        {"material_id": "gf5djuny", "title": "Tres circunferencias continuidad-determinismo", "url": "https://www.geogebra.org/m/nmsgff5s#material/gf5djuny", "book_problem": "Tres circunferencias continuidad-determinismo", "regression_manifest": null}
+      ]
+    },
+    {
+      "chapter_id": "819816",
+      "title": "Analisis y secciones de piezas",
+      "models": [
+        {"material_id": "sq7erfqr", "title": "Seccion poligonal simple", "url": "https://www.geogebra.org/m/nmsgff5s#material/sq7erfqr", "book_problem": "Seccion poligonal simple", "regression_manifest": null},
+        {"material_id": "cm3tjec3", "title": "Seccion poligonal multiple - caso 1", "url": "https://www.geogebra.org/m/nmsgff5s#material/cm3tjec3", "book_problem": "Seccion poligonal multiple - caso 1", "regression_manifest": null},
+        {"material_id": "hjhsgkmb", "title": "Seccion poligonal multiple - caso 2", "url": "https://www.geogebra.org/m/nmsgff5s#material/hjhsgkmb", "book_problem": "Seccion poligonal multiple - caso 2", "regression_manifest": null},
+        {"material_id": "zf85wu3y", "title": "Pieza con geometria variable", "url": "https://www.geogebra.org/m/nmsgff5s#material/zf85wu3y", "book_problem": "Pieza con geometria variable", "regression_manifest": null},
+        {"material_id": "xehgpqjw", "title": "Apoyo plano de pieza de patas prismaticas", "url": "https://www.geogebra.org/m/nmsgff5s#material/xehgpqjw", "book_problem": "Apoyo plano de pieza de patas prismaticas", "regression_manifest": null}
+      ]
+    },
+    {
+      "chapter_id": "955780",
+      "title": "Plegamientos de formas planas",
+      "models": [
+        {"material_id": "spfpth3c", "title": "Plegado de chapa plana", "url": "https://www.geogebra.org/m/nmsgff5s#material/spfpth3c", "book_problem": "Plegado de chapa plana", "regression_manifest": null},
+        {"material_id": "hmawqpag", "title": "Chapa acoplada a las caras de una pieza", "url": "https://www.geogebra.org/m/nmsgff5s#material/hmawqpag", "book_problem": "Chapa acoplada a las caras de una pieza", "regression_manifest": null},
+        {"material_id": "vfptamzw", "title": "Disipador de calor", "url": "https://www.geogebra.org/m/nmsgff5s#material/vfptamzw", "book_problem": "Disipador de calor", "regression_manifest": null},
+        {"material_id": "dgbdfs4d", "title": "Estructura tetraedrica", "url": "https://www.geogebra.org/m/nmsgff5s#material/dgbdfs4d", "book_problem": "Estructura tetraedrica", "regression_manifest": null},
+        {"material_id": "mt7xhzkz", "title": "Placa articulada", "url": "https://www.geogebra.org/m/nmsgff5s#material/mt7xhzkz", "book_problem": "Placa articulada", "regression_manifest": null},
+        {"material_id": "xuzksnb5", "title": "Plegado de chapa como soporte de cilindro", "url": "https://www.geogebra.org/m/nmsgff5s#material/xuzksnb5", "book_problem": "Plegado de chapa como soporte de cilindro", "regression_manifest": null},
+        {"material_id": "h3c3u7zj", "title": "Equilibrio de chapa plegada", "url": "https://www.geogebra.org/m/nmsgff5s#material/h3c3u7zj", "book_problem": "Equilibrio de chapa plegada", "regression_manifest": null}
+      ]
+    },
+    {
+      "chapter_id": "955781",
+      "title": "Superficies tecnicas",
+      "models": [
+        {"material_id": "r2znbgyc", "title": "Hiperboloide de revolucion con seccion eliptica", "url": "https://www.geogebra.org/m/nmsgff5s#material/r2znbgyc", "book_problem": "Hiperboloide de revolucion con seccion eliptica", "regression_manifest": null},
+        {"material_id": "fpm9fbb7", "title": "Hiperboloide de revolucion con seccion hiperbolica", "url": "https://www.geogebra.org/m/nmsgff5s#material/fpm9fbb7", "book_problem": "Hiperboloide de revolucion con seccion hiperbolica", "regression_manifest": null},
+        {"material_id": "wpvcaycw", "title": "Hiperboloide de revolucion con seccion parabolica", "url": "https://www.geogebra.org/m/nmsgff5s#material/wpvcaycw", "book_problem": "Hiperboloide de revolucion con seccion parabolica", "regression_manifest": null},
+        {"material_id": "azfsu3wk", "title": "Paraboloide de revolucion con seccion eliptica", "url": "https://www.geogebra.org/m/nmsgff5s#material/azfsu3wk", "book_problem": "Paraboloide de revolucion con seccion eliptica", "regression_manifest": null},
+        {"material_id": "yuggmkwj", "title": "Paraboloide de revolucion con seccion parabolica", "url": "https://www.geogebra.org/m/nmsgff5s#material/yuggmkwj", "book_problem": "Paraboloide de revolucion con seccion parabolica", "regression_manifest": null},
+        {"material_id": "t3wq58vc", "title": "Paraboloide hiperbolico - modelo general", "url": "https://www.geogebra.org/m/nmsgff5s#material/t3wq58vc", "book_problem": "Paraboloide hiperbolico - modelo general", "regression_manifest": null}
+      ]
+    },
+    {
+      "chapter_id": "955782",
+      "title": "Superficies poliedricas",
+      "models": [
+        {"material_id": "dkmkgweh", "title": "Tetraedro dadas dos rectas", "url": "https://www.geogebra.org/m/nmsgff5s#material/dkmkgweh", "book_problem": "Tetraedro dadas dos rectas", "regression_manifest": null},
+        {"material_id": "vkuj9fsp", "title": "Tetraedro dado recta y punto", "url": "https://www.geogebra.org/m/nmsgff5s#material/vkuj9fsp", "book_problem": "Tetraedro dado recta y punto", "regression_manifest": null},
+        {"material_id": "umkmpqjq", "title": "Tetraedro dados un vertice y un plano", "url": "https://www.geogebra.org/m/nmsgff5s#material/umkmpqjq", "book_problem": "Tetraedro dados un vertice y un plano", "regression_manifest": null},
+        {"material_id": "jyzndz8m", "title": "Hexaedro dadas dos rectas", "url": "https://www.geogebra.org/m/nmsgff5s#material/jyzndz8m", "book_problem": "Hexaedro dadas dos rectas", "regression_manifest": null},
+        {"material_id": "uems3bks", "title": "Hexaedro dado vertice y diagonal", "url": "https://www.geogebra.org/m/nmsgff5s#material/uems3bks", "book_problem": "Hexaedro dado vertice y diagonal", "regression_manifest": null},
+        {"material_id": "wkc3yt2a", "title": "Hexaedro dada la arista de una de sus caras", "url": "https://www.geogebra.org/m/nmsgff5s#material/wkc3yt2a", "book_problem": "Hexaedro dada la arista de una de sus caras", "regression_manifest": null}
+      ]
+    },
+    {
+      "chapter_id": "955783",
+      "title": "Superficies radiadas",
+      "models": [
+        {"material_id": "mwg7qgf4", "title": "Cilindro oblicuo y secciones planas", "url": "https://www.geogebra.org/m/nmsgff5s#material/mwg7qgf4", "book_problem": "Cilindro oblicuo y secciones planas", "regression_manifest": null},
+        {"material_id": "zfcgazam", "title": "Cono oblicuo y secciones planas - desarrollo por esferas", "url": "https://www.geogebra.org/m/nmsgff5s#material/zfcgazam", "book_problem": "Cono oblicuo y secciones planas - desarrollo por esferas", "regression_manifest": null},
+        {"material_id": "t4pafnxz", "title": "Cono oblicuo y secciones planas - desarrollo discreto", "url": "https://www.geogebra.org/m/nmsgff5s#material/t4pafnxz", "book_problem": "Cono oblicuo y secciones planas - desarrollo discreto", "regression_manifest": null},
+        {"material_id": "ngdveaz8", "title": "Interseccion entre cono y cilindro rectos de revolucion - caso general", "url": "https://www.geogebra.org/m/nmsgff5s#material/ngdveaz8", "book_problem": "Interseccion cono-cilindro general", "regression_manifest": null},
+        {"material_id": "kew9nkbq", "title": "Interseccion entre cono y cilindro rectos de revolucion - caso particular (mordedura)", "url": "https://www.geogebra.org/m/nmsgff5s#material/kew9nkbq", "book_problem": "Interseccion cono-cilindro particular", "regression_manifest": null},
+        {"material_id": "kwb4pyf4", "title": "Interseccion entre cono y cilindro oblicuos", "url": "https://www.geogebra.org/m/nmsgff5s#material/kwb4pyf4", "book_problem": "Interseccion cono-cilindro oblicuos", "regression_manifest": null},
+        {"material_id": "ngcs2fv5", "title": "Diseno de conexion troncoconica por optimizacion", "url": "https://www.geogebra.org/m/nmsgff5s#material/ngcs2fv5", "book_problem": "Conexion troncoconica por optimizacion", "regression_manifest": null}
+      ]
+    },
+    {
+      "chapter_id": "955784",
+      "title": "Esfera",
+      "models": [
+        {"material_id": "rskhjfpd", "title": "Interseccion esfera plano", "url": "https://www.geogebra.org/m/nmsgff5s#material/rskhjfpd", "book_problem": "Interseccion esfera plano", "regression_manifest": null},
+        {"material_id": "bz4x4e33", "title": "Interseccion entre dos esferas", "url": "https://www.geogebra.org/m/nmsgff5s#material/bz4x4e33", "book_problem": "Interseccion entre dos esferas", "regression_manifest": null},
+        {"material_id": "xcf3g4uu", "title": "Haz luminico conico sobre esfera", "url": "https://www.geogebra.org/m/nmsgff5s#material/xcf3g4uu", "book_problem": "Iluminacion focal de esfera", "regression_manifest": null},
+        {"material_id": "thbyqdgy", "title": "Haz luminico conico sobre esfera - caso aproximado", "url": "https://www.geogebra.org/m/nmsgff5s#material/thbyqdgy", "book_problem": "Iluminacion focal aproximada", "regression_manifest": null},
+        {"material_id": "vbcgr4dd", "title": "Esfera rodando sobre superficie cilindrica", "url": "https://www.geogebra.org/m/nmsgff5s#material/vbcgr4dd", "book_problem": "Esfera rodando sobre superficie cilindrica", "regression_manifest": null}
+      ]
+    },
+    {
+      "chapter_id": "955785",
+      "title": "Toro",
+      "models": [
+        {"material_id": "caus4dyd", "title": "Interseccion toro - plano en verdadera magnitud", "url": "https://www.geogebra.org/m/nmsgff5s#material/caus4dyd", "book_problem": "Interseccion toro-plano en verdadera magnitud", "regression_manifest": null},
+        {"material_id": "yz4hs2tv", "title": "Interseccion toro con plano proyectante", "url": "https://www.geogebra.org/m/nmsgff5s#material/yz4hs2tv", "book_problem": "Interseccion toro con plano proyectante", "regression_manifest": null},
+        {"material_id": "qdarmkkz", "title": "Plano tangente a toro", "url": "https://www.geogebra.org/m/nmsgff5s#material/qdarmkkz", "book_problem": "Plano tangente a toro", "regression_manifest": null},
+        {"material_id": "ekmzeyrv", "title": "Helice torica", "url": "https://www.geogebra.org/m/nmsgff5s#material/ekmzeyrv", "book_problem": "Helice torica", "regression_manifest": null}
+      ]
+    },
+    {
+      "chapter_id": "955786",
+      "title": "Superficies de transicion entre bocas conicas y poligonales",
+      "models": [
+        {"material_id": "fgfx4ykv", "title": "Adaptador entre bocas paralelas cuadrada y eliptica", "url": "https://www.geogebra.org/m/nmsgff5s#material/fgfx4ykv", "book_problem": "Adaptador cuadrado-eliptico", "regression_manifest": null},
+        {"material_id": "d7vdjr3a", "title": "Adaptador entre bocas circular y poligonal situadas en planos no paralelos", "url": "https://www.geogebra.org/m/nmsgff5s#material/d7vdjr3a", "book_problem": "Adaptador circular-poligonal no paralelo", "regression_manifest": null},
+        {"material_id": "sq7mmjen", "title": "Adaptador entre bocas paralelas circular y rectangular redondeada", "url": "https://www.geogebra.org/m/nmsgff5s#material/sq7mmjen", "book_problem": "Adaptador circular-rectangular", "regression_manifest": null},
+        {"material_id": "cfpfz7a8", "title": "Adaptador entre boca circular y cara de un tetraedro", "url": "https://www.geogebra.org/m/nmsgff5s#material/cfpfz7a8", "book_problem": "Adaptador circular-tetraedro", "regression_manifest": null},
+        {"material_id": "edmahtef", "title": "Adaptador entre bocas no paralelas con derivacion cilindrica (desarrollo por esferas)", "url": "https://www.geogebra.org/m/nmsgff5s#material/edmahtef", "book_problem": "Adaptador con derivacion cilindrica por esferas", "regression_manifest": null},
+        {"material_id": "nprctcap", "title": "Adaptador entre bocas no paralelas con derivacion cilindrica (GGBScript)", "url": "https://www.geogebra.org/m/nmsgff5s#material/nprctcap", "book_problem": "Adaptador con derivacion cilindrica por GGBScript", "regression_manifest": null}
+      ]
+    },
+    {
+      "chapter_id": "955787",
+      "title": "Codos, derivaciones y tolvas",
+      "models": [
+        {"material_id": "wsp9ktrq", "title": "Codo poligonal cilindrico", "url": "https://www.geogebra.org/m/nmsgff5s#material/wsp9ktrq", "book_problem": "Codo poligonal cilindrico", "regression_manifest": null},
+        {"material_id": "tptusqqm", "title": "Codo poligonal conico", "url": "https://www.geogebra.org/m/nmsgff5s#material/tptusqqm", "book_problem": "Codo poligonal conico", "regression_manifest": null},
+        {"material_id": "gpkupdkt", "title": "Codo poligonal entre conductos de ejes paralelos", "url": "https://www.geogebra.org/m/nmsgff5s#material/gpkupdkt", "book_problem": "Codo entre conductos paralelos", "regression_manifest": null},
+        {"material_id": "vevfwnpp", "title": "Injerto cilindrico", "url": "https://www.geogebra.org/m/nmsgff5s#material/vevfwnpp", "book_problem": "Injerto cilindrico", "regression_manifest": null},
+        {"material_id": "s7dsv8pq", "title": "Derivacion cilindrica de tres conductos", "url": "https://www.geogebra.org/m/nmsgff5s#material/s7dsv8pq", "book_problem": "Derivacion cilindrica de tres conductos", "regression_manifest": null},
+        {"material_id": "vhydnjnq", "title": "Derivacion conica de tres conductos", "url": "https://www.geogebra.org/m/nmsgff5s#material/vhydnjnq", "book_problem": "Derivacion conica de tres conductos", "regression_manifest": null},
+        {"material_id": "fep79m9c", "title": "Derivacion cilindrica acoplada a superficie conica", "url": "https://www.geogebra.org/m/nmsgff5s#material/fep79m9c", "book_problem": "Derivacion cilindrica sobre cono", "regression_manifest": null},
+        {"material_id": "ydx2rg6j", "title": "Sistema transformador con codo", "url": "https://www.geogebra.org/m/nmsgff5s#material/ydx2rg6j", "book_problem": "Sistema transformador con codo", "regression_manifest": null},
+        {"material_id": "uqy4wq4t", "title": "Tolva troncoconica con conexion vertical", "url": "https://www.geogebra.org/m/nmsgff5s#material/uqy4wq4t", "book_problem": "Tolva troncoconica con conexion vertical", "regression_manifest": null},
+        {"material_id": "dhfqqzr8", "title": "Tolva compuesta", "url": "https://www.geogebra.org/m/nmsgff5s#material/dhfqqzr8", "book_problem": "Tolva compuesta", "regression_manifest": null}
+      ]
+    },
+    {
+      "chapter_id": "955788",
+      "title": "Aplicaciones adicionales",
+      "models": [
+        {"material_id": "pngcpgff", "title": "Reconstruccion 3D a partir de imagenes ortograficas", "url": "https://www.geogebra.org/m/nmsgff5s#material/pngcpgff", "book_problem": "Reconstruccion 3D desde vistas", "regression_manifest": null},
+        {"material_id": "emxqc2xp", "title": "Perspectiva axonometrica de una pieza cajeada", "url": "https://www.geogebra.org/m/nmsgff5s#material/emxqc2xp", "book_problem": "Perspectiva axonometrica", "regression_manifest": null},
+        {"material_id": "xxj2zbja", "title": "Sistema de apertura - cierre de valvula esferica", "url": "https://www.geogebra.org/m/nmsgff5s#material/xxj2zbja", "book_problem": "Valvula esferica", "regression_manifest": null},
+        {"material_id": "syq75pkr", "title": "Sistema de apertura - cierre de valvula esferica (version 2)", "url": "https://www.geogebra.org/m/nmsgff5s#material/syq75pkr", "book_problem": "Valvula esferica version 2", "regression_manifest": null},
+        {"material_id": "nwxczbqq", "title": "Modelo y parametros de diseno de una puerta articulada", "url": "https://www.geogebra.org/m/nmsgff5s#material/nwxczbqq", "book_problem": "Puerta articulada", "regression_manifest": null}
+      ]
+    }
+  ],
+  "pilot_candidates": [
+    {"material_id": "ngdveaz8", "reason": "Canonical cone-cylinder LSIM candidate required by the long-term regression plan.", "import_status": "not-imported", "local_manifest": null},
+    {"material_id": "xcf3g4uu", "reason": "Published focal-illumination case with analytic and methodological evidence.", "import_status": "not-imported", "local_manifest": null},
+    {"material_id": "wsp9ktrq", "reason": "Representative discrete ferrule-count model linked to the supplied publications.", "import_status": "not-imported", "local_manifest": null},
+    {"material_id": "tptusqqm", "reason": "Conical counterpart for future controlled discrete-model comparison.", "import_status": "not-imported", "local_manifest": null}
+  ]
+}

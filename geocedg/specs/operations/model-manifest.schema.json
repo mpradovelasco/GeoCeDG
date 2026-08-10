@@ -71,6 +71,68 @@
         "review_status": { "enum": ["unreviewed", "reviewed", "blocked"] }
       }
     },
-    "replacement_candidate": { "type": ["string", "null"] }
+    "replacement_candidate": { "type": ["string", "null"] },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "format", "sha256", "immutable"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "format": { "enum": ["ggb", "ggt", "geogebrascript", "javascript"] },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "immutable": { "const": true }
+      }
+    },
+    "source_environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["geogebra_version", "app", "platform"],
+      "properties": {
+        "geogebra_version": { "type": ["string", "null"] },
+        "app": { "type": ["string", "null"] },
+        "platform": { "type": ["string", "null"] }
+      }
+    },
+    "derived_artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "role"],
+        "properties": {
+          "path": { "type": "string", "minLength": 1 },
+          "role": { "enum": ["curation", "inventory", "regression-evidence"] }
+        }
+      }
+    },
+    "implementation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mechanisms", "embedded_tools", "global_javascript"],
+      "properties": {
+        "mechanisms": {
+          "type": "array",
+          "items": { "type": "string" },
+          "uniqueItems": true
+        },
+        "embedded_tools": { "type": ["integer", "null"], "minimum": 0 },
+        "global_javascript": { "type": ["boolean", "null"] }
+      }
+    },
+    "publications": {
+      "type": "array",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+    "laboratory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["eligible", "loader", "stable_toolbar_replaced"],
+      "properties": {
+        "eligible": { "type": "boolean" },
+        "loader": { "type": "string", "minLength": 1 },
+        "stable_toolbar_replaced": { "const": false }
+      }
+    }
   }
 }

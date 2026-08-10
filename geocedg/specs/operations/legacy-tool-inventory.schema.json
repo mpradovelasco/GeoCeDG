@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://geocedg.local/schemas/legacy-tool-inventory-v1",
+  "title": "GeoCeDG derived legacy tool inventory",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema_version",
+    "generator",
+    "resource",
+    "container",
+    "scripts",
+    "legacy_toolbar",
+    "tools"
+  ],
+  "properties": {
+    "$schema": { "type": "string", "minLength": 1 },
+    "schema_version": { "const": 1 },
+    "generator": {
+      "type": "object",
+      "required": ["path", "sha256", "curation_path", "curation_sha256"]
+    },
+    "resource": {
+      "type": "object",
+      "required": ["id", "path", "sha256", "bytes"]
+    },
+    "container": {
+      "type": "object",
+      "required": ["format", "geogebra_version", "app", "platform", "entries"]
+    },
+    "scripts": {
+      "type": "object",
+      "required": ["global_javascript", "document_geogebrascript_blocks"]
+    },
+    "legacy_toolbar": {
+      "type": "object",
+      "required": ["status", "future_constraint", "raw_definition", "custom_groups"]
+    },
+    "tools": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "legacy_index",
+          "mode_id",
+          "command_name",
+          "tool_name",
+          "help",
+          "original_toolbar",
+          "inputs",
+          "outputs",
+          "dependencies",
+          "contains_geogebrascript",
+          "family",
+          "category",
+          "maturity",
+          "architecture_recommendation",
+          "confidence",
+          "observations"
+        ]
+      }
+    }
+  }
+}
