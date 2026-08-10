@@ -138,6 +138,7 @@ try {
         "docs/references/cedg/README.md",
         "docs/references/cedg/catalog.yml",
         "docs/references/cedg/public-model-corpus.yml",
+        "docs/roadmap/geocedg_roadmap.md",
         "docs/upstream/GEOGEBRA_README.md",
         "docs/upstream/modified-files.yml",
         "docs/validation/g1r_repository_onboarding_report.md",
@@ -211,6 +212,7 @@ try {
             ".\tools\bootstrap\bootstrap-windows.ps1",
             ".\gradlew.bat :desktop:desktop:run",
             ".\gradlew.bat :desktop:desktop:runGeoCeDG",
+            "docs/roadmap/geocedg_roadmap.md",
             "docs/upstream/GEOGEBRA_README.md")) {
         Assert-Condition -Condition $rootReadme.Contains($requiredReadmeValue) `
             -Message "README.md is missing '$requiredReadmeValue'."
@@ -510,6 +512,7 @@ try {
             "docs/references/cedg/README.md",
             "docs/references/cedg/catalog.yml",
             "docs/references/cedg/public-model-corpus.yml",
+            "docs/roadmap/geocedg_roadmap.md",
             "docs/upstream/modified-files.yml",
             "docs/validation/g2_frontend_foundation_report.md",
             "docs/validation/g3_controlled_legacy_integration_report.md",

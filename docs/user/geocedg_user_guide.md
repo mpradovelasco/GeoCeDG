@@ -12,7 +12,7 @@
 This guide is the practical entry point for the GeoCeDG author/developer. It
 describes only the behavior available through G5. It does not replace the
 [repository README](../../README.md),
-[roadmap](../roadmap/geocedg_initial_plan.md), ADRs, specifications, or
+[living technical roadmap](../roadmap/geocedg_roadmap.md), ADRs, specifications, or
 architecture documentation.
 
 ## Run GeoCeDG now
@@ -975,7 +975,7 @@ boundary defined by the operational contracts.
 - Governance: [AGENTS.md](../../AGENTS.md)
 - Baseline provenance: [UPSTREAM.md](../../UPSTREAM.md) and
   [G0 report](../validation/baseline_report.md)
-- Roadmap: [GeoCeDG initial plan](../roadmap/geocedg_initial_plan.md)
+- Roadmap: [GeoCeDG — Living Technical Roadmap](../roadmap/geocedg_roadmap.md)
 - Operational authority: [ADR 0002](../adr/0002-g1-operational-authority.md),
   [G1 report](../validation/g1_operational_layer_report.md), and
   [G1R report](../validation/g1r_repository_onboarding_report.md)
@@ -1011,5 +1011,5 @@ boundary defined by the operational contracts.
 ## 16. Maintenance authority
 
 The authoritative update gate is the roadmap's
-[transversal documentary closure rule](../roadmap/geocedg_initial_plan.md#regla-transversal-de-cierre-documental).
+[transversal documentary closure rule](../roadmap/geocedg_roadmap.md#reglas-de-mantenimiento-y-cierre-documental).
 This guide does not redefine that rule.

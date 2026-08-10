@@ -147,6 +147,8 @@ bloqueada. Véanse [ADR 0004](docs/adr/0004-standalone-windows-packaging.md) y
 Puntos de entrada del repositorio:
 
 - [AGENTS.md](AGENTS.md): contrato obligatorio para personas y agentes.
+- [GeoCeDG — Living Technical Roadmap](docs/roadmap/geocedg_roadmap.md): fases,
+  puertas y estado consolidado del proyecto.
 - [docs/](docs/): arquitectura, ADR, roadmap, validación, upstream y licencias.
 - [tools/](tools/): bootstrap, verificación, benchmark y futuras herramientas
   reproducibles.

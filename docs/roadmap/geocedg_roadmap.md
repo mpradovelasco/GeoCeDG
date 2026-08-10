@@ -1,12 +1,25 @@
-# GeoCeDG - Planificación inicial del repositorio, arquitectura y desarrollo
+# GeoCeDG — Living Technical Roadmap
 
-**Fecha de referencia:** 9 de agosto de 2026
-**Versión del plan:** 2.0
-**Revisión principal:** semántica espacial, proyecciones canónicas y fases posteriores de producción
-**Producto propuesto:** GeoCeDG
-**Base tecnológica:** fork del código fuente actual de GeoGebra
-**Primer cliente:** aplicación de escritorio de la familia Classic 5
-**Núcleo:** Java compartido de GeoGebra, extendido de forma mínima y estructural
+| Campo | Valor |
+|---|---|
+| Carácter | Roadmap vivo y normativo de fases; no sustituye las especificaciones ni los ADR aceptados |
+| Versión documental | 3.0 |
+| Fecha de revisión | 10 de agosto de 2026 |
+| Baseline GeoGebra | 5.4.928.0, commit `9b93256b7df401ff056c37b502d82df4d72b1522`, tag `geogebra-baseline-5.4.928.0` |
+| Estado actual | G5 `PASS` |
+| Última fase cerrada | G5 — native 2D geometry export foundation and DXF export |
+| Siguiente fase | G6 — Locus V2, pendiente de planificación detallada como G6A/G6B |
+| Primer cliente | Aplicación de escritorio de la familia Classic 5 |
+| Núcleo | Java compartido de GeoGebra, extendido solo cuando la semántica lo requiere |
+
+Este roadmap gobierna el orden, estado y puertas de las fases. Las
+especificaciones de `geocedg/specs/` son la autoridad técnica normativa de cada
+capacidad; los ADR aceptados registran decisiones y alternativas; y los informes
+de `docs/validation/` conservan evidencia histórica de ejecución. Cuando una
+especificación o un ADR posterior aceptado contradice una propuesta anterior de
+este documento, prevalece la autoridad posterior y el roadmap debe registrar la
+supersesión. La [guía de usuario](../user/geocedg_user_guide.md) describe las
+capacidades observables vigentes.
 
 ---
 
@@ -20,17 +33,24 @@ La estrategia recomendable no es convertir inmediatamente toda la distribución 
 4. **Modificar el kernel únicamente cuando cambie la semántica geométrica**, empezando por un rediseño de `Locus` que separe el objeto geométrico de su muestreo gráfico.
 5. **Introducir, antes del DSL, una semántica espacial CeDG nativa** que asocie cada objeto 3D con sus proyecciones, verifique qué conjunto de proyecciones lo define completamente y permita componer objetos complejos mediante primitivas, superficies, caras y relaciones constructivas.
 
-La primera versión útil debe ser una aplicación de escritorio basada en el kernel común de GeoGebra, con:
+La plataforma útil se construye por incrementos sobre el kernel común de
+GeoGebra. A cierre de G5 ya dispone de interfaz propia, laboratorio legacy,
+packaging técnico Windows y exportación DXF 2D experimental; los siguientes
+elementos combinan capacidades cerradas y objetivos explícitamente futuros:
 
-- interfaz GeoCeDG propia;
-- carga optativa de las herramientas CeDG ya desarrolladas;
-- sistema de prompt files y verificación ejecutable;
-- instalador propio generado desde los fuentes;
-- modelos de regresión CeDG;
-- exportación DXF 2D como servicio externo al kernel;
-- `Locus V2` inicialmente detrás de una bandera experimental;
-- un modelo semántico `SpatialObject3D`–proyecciones, también inicialmente experimental;
-- criterios verificables de suficiencia y degeneración de proyecciones canónicas.
+- interfaz GeoCeDG propia (`PASS`, G2);
+- carga optativa de herramientas CeDG legacy (`PASS`, G3);
+- prompt files y verificación ejecutable (`PASS`, G1/G1R);
+- packaging e instaladores Windows generados desde fuentes (`TECHNICAL PASS`,
+  G4/G4R; redistribución pública bloqueada);
+- corpus y modelos de regresión CeDG (`PASS` para la infraestructura G3/G5,
+  ampliación continua);
+- exportación DXF 2D como servicio externo al kernel (`PASS`, G5; feature
+  experimental);
+- `Locus V2` inicialmente detrás de una bandera experimental (`PENDING`, G6);
+- un modelo semántico `SpatialObject3D`–proyecciones (`PENDING`, G9);
+- criterios verificables de suficiencia y degeneración de proyecciones
+  canónicas (`PENDING`, G9).
 
 Este orden permite obtener pronto un producto reconocible sin arriesgar la estabilidad del kernel y prepara una evolución científica mantenible. El primer hito de producto se alcanza en G2; el primer hito de plataforma CeDG con semántica espacial completa se alcanza en G9.
 
@@ -79,14 +99,21 @@ El repositorio público actual es un espejo del repositorio principal de desarro
 - `source/build-logic`: lógica de construcción;
 - `doc/dev`: documentación de extensión y pruebas.
 
-Los comandos oficiales documentados para arrancar las aplicaciones incluyen:
+La entrada canónica comprobada desde la raíz del composite build es:
 
 ```powershell
-.\gradlew.bat :desktop:run
-.\gradlew.bat :web:run
+.\gradlew.bat :desktop:desktop:runGeoCeDG
+.\gradlew.bat :desktop:desktop:run
 ```
 
-El `run` actual del módulo desktop solicita un toolchain Java 25. No conviene seguir ciegamente documentación antigua que mencione Java 8; la versión efectiva debe obtenerse siempre del commit congelado.
+El primer comando arranca GeoCeDG y el segundo conserva GeoGebra Classic como
+referencia diagnóstica. La indicación
+histórica `:desktop:run` del README upstream no refleja la ruta del composite
+actual; se conserva literalmente solo en la
+[copia archivada del README upstream](../upstream/GEOGEBRA_README.md). La JVM
+validada que ejecuta Gradle es JDK 22 y la tarea Desktop solicita y utiliza un
+toolchain JDK 25. La autoridad operativa sigue siendo el wrapper y
+`tools/agent/verify.ps1`, no documentación histórica sobre Java 8.
 
 ### 3.2 Perfil de aplicación
 
@@ -230,9 +257,11 @@ La semántica espacial no debe residir en Python ni en el workbench. El DSL cons
 ---
 
 
-## 6. Estructura de carpetas recomendada
+## 6. Estructura de carpetas
 
-Se debe conservar la estructura upstream y añadir una envolvente GeoCeDG clara:
+El siguiente árbol fue la **topología objetivo inicial**. Se conserva como
+registro de intención y no debe interpretarse como una lista de directorios que
+haya que crear por adelantado:
 
 ```text
 GeoCeDG/
@@ -338,9 +367,17 @@ GeoCeDG/
 └─ artifacts/                      # generado; ignorado por Git
 ```
 
-El código Java real del producto debe integrarse en módulos coherentes con el build de GeoGebra. `apps/geocedg-desktop/` contendrá el contrato y la documentación del producto; el agente determinará, tras mapear Gradle, si el launcher se añade al módulo desktop existente o a un submódulo nuevo.
-
-No se debe decidir ese detalle antes de reproducir la línea base.
+G0–G5 adoptaron una estructura incremental y más pequeña: el contrato del
+producto reside en `apps/geocedg/application-profile.yml`; los puntos Java de
+perfil, launcher e integración permanecen localizados en los módulos shared y
+Desktop existentes; las especificaciones están agrupadas por capacidad bajo
+`geocedg/specs/`; los recursos legacy se preservan en `models/legacy/`; y la
+automatización propia se distribuye entre `tools/agent/`, `tools/bootstrap/`,
+`tools/benchmark/`, `tools/legacy/` y `tools/release/`. El packaging validado es
+exclusivamente Windows y reside en `packaging/windows/`; no se han creado aún
+clientes Python, macOS o Linux. Esta estructura adoptada prevalece sobre los
+directorios hipotéticos del árbol anterior y solo debe ampliarse cuando una fase
+aprobada lo necesite.
 
 ---
 
@@ -395,20 +432,20 @@ El perfil GeoCeDG incluirá un modo de laboratorio que cargue paquetes experimen
 
 ### 8.1 Estrategia
 
-Crear un perfil `GeoCeDG` basado en la infraestructura `AppConfig`, con:
+G2 creó un perfil `GeoCeDG` basado en la infraestructura `AppConfig`, con:
 
-- código de aplicación propio;
-- namespace de preferencias propio;
+- identidad de producto, launcher y namespace de preferencias propios, conservando
+  el `app_code` de serialización Classic por compatibilidad;
 - perspectiva inicial;
 - distribución de paneles;
-- filtros de comandos;
-- categorías CeDG;
-- recursos propios;
+- base explícita para filtros de comandos futuros, sin filtro activo en G2;
+- seis grupos conservadores de toolbar sin operaciones geométricas nuevas;
+- branding textual provisional y recursos propios mínimos;
 - acceso opcional a una perspectiva Classic para diagnóstico.
 
 No conviene borrar funciones de GeoGebra. Es preferible ocultarlas en el perfil GeoCeDG y conservarlas en el modo diagnóstico, facilitando validación y sincronización upstream.
 
-### 8.2 Barra recomendada
+### 8.2 Arquitectura objetivo de barra
 
 1. Construcción y selección
 2. Proyecciones diédricas
@@ -421,31 +458,47 @@ No conviene borrar funciones de GeoGebra. Es preferible ocultarlas en el perfil 
 9. Herramientas CeDG
 10. Importación y exportación
 
-### 8.3 Fuente de verdad
+La lista anterior sigue siendo una arquitectura objetivo para fases posteriores;
+no describe la toolbar reducida actualmente visible. G2 implementó únicamente
+los grupos seguros que podían sostenerse sin cambiar semántica ni anticipar
+herramientas CeDG.
 
-La fuente será un manifiesto legible, por ejemplo `geocedg/specs/ui/toolbar.yml`. Un adaptador lo traducirá a la cadena de modos de GeoGebra. No se mantendrán varias cadenas manuales divergentes.
+### 8.3 Fuente de verdad adoptada
+
+La fuente adoptada es `apps/geocedg/application-profile.yml`, validada contra el
+contrato UI. Un adaptador la traduce a la cadena de modos de GeoGebra; no se
+mantienen varias cadenas manuales divergentes. Véanse el
+[ADR 0001](../adr/0001-geocedg-product-profile.md), la
+[especificación del perfil](../../geocedg/specs/ui/application-profile.md) y el
+[informe G2](../validation/g2_frontend_foundation_report.md).
 
 ---
 
-## 9. Instalador propio
+## 9. Packaging e instalador propio
 
-Se recomienda `jpackage` del JDK actual:
+La propuesta inicial recomendó `jpackage` por su runtime autocontenido y por la
+posibilidad de generar instaladores nativos. G4/G4R concretaron y validaron el
+siguiente pipeline para Windows:
 
-- genera una imagen autocontenida con runtime Java;
-- produce `exe`/`msi` en Windows, `dmg`/`pkg` en macOS y `deb`/`rpm` en Linux;
-- permite iconos, licencia, asociaciones de fichero, accesos directos y recursos propios;
-- cada paquete debe construirse en su plataforma objetivo;
-- en Windows requiere WiX.
+```text
+installDist
+-> filtro determinista de binarios nativos Windows
+-> jpackage app-image
+-> ZIP autocontenido / MSI / EXE
+-> manifest, hashes y SBOM
+```
 
-### Secuencia
+La asociación `.ggb` se incluye solo en MSI/EXE. El toolchain validado utiliza
+JDK 25 con `jpackage`, .NET SDK y WiX Toolset 5.0.2. Linux y macOS no están
+validados ni deben presentarse como plataformas soportadas. Los outputs actuales
+se etiquetan `INTERNAL EVALUATION — NOT FOR REDISTRIBUTION`.
 
-1. generar y probar `app-image`;
-2. crear paquete Windows inicial;
-3. añadir asociación `.ggb` y, si se define, una extensión propia GeoCeDG;
-4. incorporar metadatos, licencia y recursos propios;
-5. generar SBOM/manifiesto de dependencias;
-6. automatizar por plataforma;
-7. firmar paquetes solo después de estabilizar el flujo.
+`PACKAGING TECHNICAL STATUS = PASS`; la redistribución pública sigue bloqueada
+pendiente de aprobación de licencias y assets. La capacidad técnica no constituye
+autorización jurídica de distribución. Véanse el
+[ADR 0004](../adr/0004-standalone-windows-packaging.md), la
+[especificación Windows](../../geocedg/specs/packaging/windows-packaging.md) y el
+[informe G4](../validation/g4_standalone_packaging_report.md).
 
 El primer instalador no debe reutilizar el instalador oficial de GeoGebra ni sus recursos de marca.
 
@@ -490,27 +543,35 @@ Los prompts no deben duplicar especificaciones. Deben referenciarlas.
 # Stop conditions
 ```
 
-### 10.3 Autoridad ejecutable
+### 10.3 Autoridad ejecutable adoptada
 
-Crear progresivamente:
+`tools/agent/verify.ps1` es la única autoridad compuesta. Los verificadores de
+capacidad permanecen subordinados y se incorporan solo al existir una fase que
+los justifique. A cierre de G5, la estructura relevante es:
 
 ```text
 tools/agent/
-├─ bootstrap.ps1
 ├─ verify.ps1
 ├─ verify-baseline.ps1
-├─ verify-geometry.ps1
-├─ verify-locus.ps1
+├─ verify-operational.ps1
+├─ verify-frontend.ps1
+├─ verify-legacy.ps1
 ├─ verify-packaging.ps1
-├─ license-audit.ps1
-└─ upstream-sync.ps1
+└─ verify-dxf.ps1
 ```
 
-Los informes solo resumen. El resultado válido procede de estos comandos.
+El onboarding reside separadamente en `tools/bootstrap/bootstrap-windows.ps1` y
+los benchmarks en `tools/benchmark/run.ps1`. Los informes resumen evidencia; no
+sustituyen el resultado de los verificadores.
 
 ---
 
 ## 11. Diseño de `Locus V2`
+
+> **Propuesta previa, no implementación actual.** Esta caracterización se
+> conserva como antecedente para G6A. No equivale a un contrato aprobado ni
+> inicia G6; la planificación detallada G6A/G6B se realizará por separado y sus
+> ADR/specs aceptados prevalecerán sobre esta propuesta.
 
 ## 11.1 Definición
 
@@ -681,41 +742,46 @@ No basta buscar cambios de signo: una tangencia puede tener raíz de multiplicid
 
 ## 12. Exportación DXF
 
-### Decisión
+### Decisión adoptada en G5
 
-Implementar primero fuera del kernel. El kernel solo proporcionará una vista de solo lectura:
+La exportación permanece fuera del kernel y consume una representación neutral
+de solo lectura. La frontera implementada es:
 
 ```text
-GeometryExportModel
-├─ id y procedencia constructiva
-├─ tipo geométrico
-├─ unidades
-├─ parámetros/coordenadas
-├─ capa, nombre y estilo
-├─ representación exacta/paramétrica
-└─ tolerancia si hay discretización
+GeoElement
+-> GeoElementGeometryExportAdapter
+-> GeometryExportModel
+-> DxfExporter
+-> ASCII DXF AC1015
 ```
 
-### Alcance inicial
+El exportador no resuelve ni reinterpreta geometría. G5 exporta la construcción
+2D completa mediante una API independiente de los diálogos Desktop, con unidad
+DXF `UNITLESS`, coordenadas de modelo invariantes frente al zoom y normalización
+determinista de layers y estilos soportados.
 
-- proyecciones 2D;
-- desarrollos planos;
-- puntos, líneas, arcos, circunferencias, polilíneas;
-- splines solo cuando exista representación adecuada;
-- Locus general como curva paramétrica o polilínea adaptativa documentada.
+### Alcance G5 validado
 
-### Regla
+- representación exacta: puntos, segmentos, rectas, semirrectas,
+  circunferencias, arcos circulares, elipses, arcos elípticos, polígonos y
+  polilíneas;
+- no soportado en G5: parábolas, hipérbolas, curvas generales, texto y `Locus`
+  legacy;
+- sin recorte implícito por viewport y sin aproximaciones silenciosas.
 
-El exportador no resolverá geometría. Convertirá objetos ya resueltos.
+La propuesta inicial de exportar un `Locus` general como curva paramétrica o
+polilínea adaptativa queda **superseded by
+[ADR 0005](../adr/0005-neutral-2d-geometry-export.md)**. El `Locus` legacy no
+constituye una autoridad geométrica independiente de su muestreo y G5 no lo
+exporta. La futura exportación de locus deberá consumir la semántica aprobada de
+`Locus V2`; toda representación aproximada deberá declarar expresamente su
+naturaleza, tolerancia y error.
 
-Python puede:
-
-- comprobar DXF;
-- comparar entidades;
-- efectuar conversiones por lotes;
-- generar informes.
-
-La exportación interactiva debe consumir el DTO Java para no depender del XML interno de `.ggb`.
+La variante, los mappings, pérdidas de estilo, invariantes y tipos no soportados
+están definidos en la
+[especificación G5](../../geocedg/specs/export/geometry-export-foundation.md) y
+registrados en el
+[informe de validación G5](../validation/g5_native_2d_dxf_export_report.md).
 
 ---
 
@@ -1001,7 +1067,31 @@ La optimización priorizará, según evidencia: invalidación incremental, cach�
 
 ## 15. Roadmap por puertas
 
-### Regla transversal de cierre documental
+### Estado consolidado
+
+| Puerta | Estado | Evidencia / condición |
+|---|---|---|
+| G0 | `PASS` | [Baseline](../validation/baseline_report.md) |
+| G1/G1R | `PASS` | [G1](../validation/g1_operational_layer_report.md) y [G1R](../validation/g1r_repository_onboarding_report.md) |
+| G2 | `PASS` | [Frontend foundation](../validation/g2_frontend_foundation_report.md) |
+| G3 | `PASS` | [Controlled legacy integration](../validation/g3_controlled_legacy_integration_report.md) |
+| G4/G4R | `TECHNICAL PASS` | [Packaging](../validation/g4_standalone_packaging_report.md); redistribución pública `BLOCKED` pendiente de licencia/assets |
+| G5 | `PASS` | [Native 2D DXF export](../validation/g5_native_2d_dxf_export_report.md); feature integrada con estado experimental |
+| G6–G16 | `PENDING` | No iniciadas; G6 se planificará como G6A/G6B |
+
+Los estados `experimental` describen madurez de una capacidad, no una puerta
+fallida. Un gate solo se marca `PASS` cuando satisface sus validaciones; un
+blocker de alcance parcial debe quedar visible, como la redistribución pública
+de G4.
+
+### Reglas de mantenimiento y cierre documental
+
+Este roadmap debe actualizarse cuando una fase cambie de estado, se subdivida o
+modifique su alcance. Un ADR aceptado puede superseder una propuesta anterior y
+el roadmap debe registrar esa supersesión. Las specs son la autoridad técnica
+normativa de cada capacidad; los informes de validación son evidencia histórica
+de ejecución; y la user guide describe las capacidades observables actuales.
+Estas funciones documentales no deben convertirse en autoridades concurrentes.
 
 Antes de que una fase pueda cerrarse como `PASS`, se debe revisar
 `docs/user/geocedg_user_guide.md`. Si la fase cambia capacidades observables,
@@ -1012,6 +1102,8 @@ validados. El manual no debe anticipar como implementada ninguna capacidad que
 siga pendiente en esta planificación.
 
 ## G0 - Gobierno, licencia y línea base
+
+**Estado:** `PASS`
 
 **Trabajo**
 
@@ -1033,7 +1125,9 @@ siga pendiente en esta planificación.
 - repositorio limpio;
 - ninguna modificación funcional.
 
-## G1 - Esqueleto operativo
+## G1/G1R - Esqueleto operativo y onboarding reproducible
+
+**Estado:** `PASS`
 
 **Trabajo**
 
@@ -1054,6 +1148,8 @@ siga pendiente en esta planificación.
 
 ## G2 - Perfil GeoCeDG y frontend
 
+**Estado:** `PASS`
+
 **Trabajo**
 
 - launcher/config;
@@ -1071,6 +1167,8 @@ siga pendiente en esta planificación.
 
 ## G3 - Herramientas heredadas no permanentes
 
+**Estado:** `PASS`
+
 **Trabajo**
 
 - inventario de `.ggb`, `.ggt`, GGBScript;
@@ -1083,7 +1181,10 @@ siga pendiente en esta planificación.
 - herramientas reproducibles y optativas;
 - ninguna promoción automática a estable.
 
-## G4 - Instalador propio
+## G4/G4R - Packaging e instalador propio
+
+**Estado:** `TECHNICAL PASS`; redistribución pública `BLOCKED` pendiente de
+aprobación de licencia y assets
 
 **Trabajo**
 
@@ -1099,38 +1200,43 @@ siga pendiente en esta planificación.
 - aplicación arranca sin instalación Java externa;
 - no se usa instalador oficial.
 
-## G5 - DXF 2D
+## G5 - Infraestructura de exportación geométrica 2D y DXF
+
+**Estado:** `PASS` (capacidad DXF `experimental`)
 
 **Trabajo**
 
-- DTO;
-- servicio exportador;
-- capas/unidades;
-- validación de round-trip.
+- representación neutral de solo lectura;
+- adaptador GeoElement y servicio exportador independiente de la GUI;
+- escritor ASCII DXF AC1015;
+- layers, unidades y estilos con políticas explícitas;
+- UI Desktop GeoCeDG y validación semántica del resultado.
 
 **Salida**
 
-- exportación reproducible de modelos canónicos;
-- tolerancias explícitas.
+- exportación reproducible de entidades 2D soportadas;
+- tipos no soportados y pérdidas declarados sin aproximación silenciosa;
+- invariancia frente al zoom y regresión estructural/geométrica.
 
-## G6 - Caracterización y base de Locus V2
+## G6 - Locus V2
 
-**Trabajo**
+**Estado:** `PENDING`
 
-- especificación matemática;
-- evaluator;
-- ramas;
-- separación render/métrica;
-- caché y feature flag;
-- ejecución dual.
+La planificación detallada se realizará en una tarea posterior y se dividirá en:
 
-**Salida**
+- **G6A — mathematical/semantic characterization and contract:** definición,
+  dominios, ramas, degeneraciones, exactitud, compatibilidad, persistencia y
+  diseño de validación; no inicia implementación del kernel.
+- **G6B — minimal Locus V2 kernel implementation:** implementación mínima
+  posterior al contrato aprobado de G6A, protegida por feature flag y compatible
+  con diagnóstico legacy/dual-run.
 
-- Locus V2 se dibuja y conserva dependencias;
-- independencia de zoom demostrada;
-- todavía sin API pública estable.
+Las secciones conceptuales previas de este roadmap son material de partida, no
+una especificación G6 ya aprobada. G6 no se ha iniciado.
 
 ## G7 - Longitud
+
+**Estado:** `PENDING`
 
 **Trabajo**
 
@@ -1147,6 +1253,8 @@ siga pendiente en esta planificación.
 
 ## G8 - Intersecciones 2D
 
+**Estado:** `PENDING`
+
 **Trabajo**
 
 - objetos básicos;
@@ -1160,6 +1268,8 @@ siga pendiente en esta planificación.
 - pruebas de topología y degeneraciones.
 
 ## G9 - Semántica espacial y proyecciones canónicas
+
+**Estado:** `PENDING`
 
 ### G9A - Asociación objeto 3D–proyecciones
 
@@ -1217,6 +1327,8 @@ siga pendiente en esta planificación.
 
 ## G10 - DSL 3D CeDG y workbench
 
+**Estado:** `PENDING`
+
 **Trabajo**
 
 - DSL declarativo sobre `SpatialObject3D`;
@@ -1232,6 +1344,8 @@ siga pendiente en esta planificación.
 
 ## G11 - Capas y estados de vista
 
+**Estado:** `PENDING`
+
 **Trabajo**
 
 - jerarquía, roles, bloqueo y filtros;
@@ -1245,6 +1359,8 @@ siga pendiente en esta planificación.
 - compatibilidad con capas numéricas de GeoGebra.
 
 ## G12 - Navegación, zoom y escalas extendidas
+
+**Estado:** `PENDING`
 
 **Trabajo**
 
@@ -1260,6 +1376,8 @@ siga pendiente en esta planificación.
 
 ## G13 - Visibilidad geométrica en proyecciones
 
+**Estado:** `PENDING`
+
 **Trabajo**
 
 - partición visible/oculta/silueta;
@@ -1274,6 +1392,8 @@ siga pendiente en esta planificación.
 
 ## G14 - Puente a la vista 3D
 
+**Estado:** `PENDING`
+
 **Trabajo**
 
 - adaptador desde `SpatialObject3D`;
@@ -1286,6 +1406,8 @@ siga pendiente en esta planificación.
 - el sistema CeDG se visualiza en la vista 3D existente sin crear una segunda verdad geométrica.
 
 ## G15 - Hojas, PDF y formatos gráficos
+
+**Estado:** `PENDING`
 
 **Trabajo**
 
@@ -1300,6 +1422,8 @@ siga pendiente en esta planificación.
 - publicación reproducible que respeta marco, tamaño físico, escala y capas.
 
 ## G16 - Rendimiento y escalabilidad
+
+**Estado:** `PENDING`
 
 **Trabajo**
 
@@ -1316,7 +1440,17 @@ siga pendiente en esta planificación.
 
 ---
 
-## 16. Instrucciones para crear el repositorio y copia local
+## Apéndice A. Historical bootstrap record (G0)
+
+> **Registro histórico, superseded y no operativo.** Esta sección conserva las
+> instrucciones que originaron G0 para explicar la evolución del proyecto; no
+> debe ejecutarse como onboarding actual. La línea base finalmente adoptada es
+> GeoGebra 5.4.928.0, commit
+> `9b93256b7df401ff056c37b502d82df4d72b1522`, y las rutas/comandos históricos
+> que siguen en este apéndice pueden estar obsoletos. Para clonar, preparar y
+> ejecutar el repositorio se deben usar [README.md](../../README.md), la
+> [guía de usuario](../user/geocedg_user_guide.md) y
+> `tools/bootstrap/bootstrap-windows.ps1`.
 
 ### 16.1 Repositorio remoto
 
@@ -1396,7 +1530,7 @@ Copiar:
 
 - `AGENTS.md` a la raíz;
 - `FIRST_AGENT_TASK.md` a la raíz;
-- esta planificación a `docs/roadmap/geocedg_initial_plan.md`;
+- este roadmap a `docs/roadmap/geocedg_roadmap.md`;
 - `SPATIAL_PROJECTION_SEMANTICS_PROPOSAL.md` a `docs/architecture/proposed_spatial_projection_semantics.md`.
 
 El último documento es una propuesta no normativa: G9 deberá convertirla, tras inspeccionar el código real, en especificaciones y ADR aprobadas.
@@ -1406,7 +1540,7 @@ Después:
 ```powershell
 git switch -c bootstrap/geocedg-baseline
 git add AGENTS.md FIRST_AGENT_TASK.md `
-  docs/roadmap/geocedg_initial_plan.md `
+  docs/roadmap/geocedg_roadmap.md `
   docs/architecture/proposed_spatial_projection_semantics.md
 git commit -m "docs: define GeoCeDG bootstrap architecture and agent policy"
 git push -u origin bootstrap/geocedg-baseline
@@ -1432,34 +1566,23 @@ La primera tarea del agente es solo caracterización y scaffold.
 
 ---
 
-## 17. Estrategia de ramas
+## 17. Estrategia de ramas vigente
 
 ```text
-main                         estados liberables
-integration                  integración validada
-bootstrap/*                  preparación inicial
-feature/ui-profile
-feature/packaging
-feature/dxf
-feature/locus-v2
-feature/spatial-semantics
-feature/canonical-projections
-feature/projective-boundary
-feature/layers
-feature/navigation-scale
-feature/visibility
-feature/3d-bridge
-feature/publication
-feature/performance
-research/*
-sync/geogebra-YYYYMMDD
+main                         fases cerradas y promovidas
+feature/gN-<capacidad>       implementación aislada de una fase
+planning/gN-<capacidad>      planificación previa explícita
+research/<capacidad>         experimentos no promovidos
+sync/geogebra-YYYYMMDD       sincronización upstream aislada
 ```
 
-La sincronización upstream se hará en rama específica:
+La sincronización upstream se hará en rama específica desde el estado de
+integración aprobado que corresponda y terminará en revisión antes de alcanzar
+`main`. No se prescribe aquí una rama `integration` permanente:
 
 ```powershell
 git fetch upstream --tags --prune
-git switch -c sync/geogebra-2026MMDD integration
+git switch -c sync/geogebra-2026MMDD main
 git merge --no-ff upstream/main
 .\tools\agent\verify.ps1
 ```
@@ -1468,7 +1591,11 @@ Resolver, validar y abrir PR. No mezclar una sincronización upstream con una fu
 
 ---
 
-## 18. Primer paquete de decisiones que debe producir el agente
+## Apéndice B. Historical G0 decision package
+
+> Esta lista fue la entrada de G0 y está completada. Sus resultados se conservan
+> en el [informe de baseline](../validation/baseline_report.md) y documentos
+> enlazados; no constituye trabajo pendiente.
 
 1. SHA y build reproducible.
 2. Mapa Gradle real.
@@ -1487,7 +1614,7 @@ Resolver, validar y abrir PR. No mezclar una sincronización upstream con una fu
 15. Estructura de directorios mínima, sin duplicar upstream.
 16. Riesgos y decisiones pendientes.
 
-Ese informe permitirá ajustar esta planificación al commit real antes de empezar la implementación.
+Ese informe permitió ajustar el roadmap al commit real antes de empezar la implementación.
 
 ---
 
@@ -1557,9 +1684,9 @@ Ese informe permitirá ajustar esta planificación al commit real antes de empez
 
 ## 20. Resultados esperados por hitos
 
-### Al cerrar G2
+### G2, cerrado como `PASS`
 
-GeoCeDG deberá:
+GeoCeDG alcanzó en G2:
 
 - arrancar como producto separado;
 - mostrar su interfaz CeDG;
@@ -1568,11 +1695,13 @@ GeoCeDG deberá:
 - cargar funciones experimentales sin hacerlas permanentes;
 - compilar y probarse de forma reproducible;
 - mantener el kernel geométrico upstream sin cambios semánticos;
-- estar preparado para instalarse y para abordar DXF y Locus V2.
+- una base preparada para abordar packaging, DXF y Locus V2; packaging y DXF se
+  materializaron posteriormente en G4 y G5.
 
-Ese estado constituye la primera plataforma propia CeDG, todavía sin semántica espacial nativa.
+Ese estado constituyó la primera plataforma propia CeDG, todavía sin semántica
+espacial nativa. G3–G5 ampliaron la plataforma sin iniciar esa semántica.
 
-### Al cerrar G9
+### Objetivo pendiente al cerrar G9
 
 GeoCeDG deberá además:
 
@@ -1586,7 +1715,7 @@ GeoCeDG deberá además:
 
 Este es el hito que habilita un DSL verdaderamente 3D.
 
-### Al cerrar G16
+### Objetivo pendiente al cerrar G16
 
 La plataforma deberá añadir:
 

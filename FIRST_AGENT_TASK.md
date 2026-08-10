@@ -11,7 +11,7 @@ Read, in order:
 1. root `AGENTS.md`;
 2. current Git and Gradle files;
 3. upstream `README.md` and `doc/dev/`;
-4. `docs/roadmap/geocedg_initial_plan.md`;
+4. `docs/roadmap/geocedg_roadmap.md`;
 5. `docs/architecture/proposed_spatial_projection_semantics.md` as a non-normative research proposal;
 6. current source code at the exact checked-out commit.
 
