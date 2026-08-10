@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://geocedg.local/schemas/legacy-tool-curation-v1",
+  "title": "GeoCeDG legacy tool curation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema_version",
+    "resource_id",
+    "source_artifact_sha256",
+    "toolbar_interpretation",
+    "tools"
+  ],
+  "properties": {
+    "$schema": { "type": "string", "minLength": 1 },
+    "schema_version": { "const": 1 },
+    "resource_id": { "type": "string", "pattern": "^cedg\\.legacy\\.[a-z0-9]+(?:[.-][a-z0-9]+)*$" },
+    "source_artifact_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "toolbar_interpretation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "future_constraint"],
+      "properties": {
+        "status": { "const": "authoritative-legacy-reference" },
+        "future_constraint": { "const": false }
+      }
+    },
+    "tools": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/tool" }
+    }
+  },
+  "$defs": {
+    "tool": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "source_command_name",
+        "family",
+        "category",
+        "maturity",
+        "architecture_recommendation",
+        "confidence",
+        "observations"
+      ],
+      "properties": {
+        "id": { "type": "string", "pattern": "^cedg\\.legacy\\.[a-z0-9]+(?:[.-][a-z0-9]+)*\\.tool\\.[a-z0-9]+(?:-[a-z0-9]+)*$" },
+        "source_command_name": { "type": "string", "minLength": 1 },
+        "family": {
+          "enum": [
+            "presentation-symbols",
+            "visibility-presentation",
+            "curve-measurement",
+            "locus-research",
+            "planar-construction",
+            "coordinate-transport",
+            "conditional-utility",
+            "sheet-format-scale",
+            "unknown"
+          ]
+        },
+        "category": {
+          "enum": [
+            "construction-2d",
+            "descriptive-geometry-procedure",
+            "transport-measurement",
+            "format-scale",
+            "development",
+            "locus",
+            "general-utility",
+            "unknown"
+          ]
+        },
+        "maturity": { "enum": ["legacy", "research"] },
+        "architecture_recommendation": {
+          "enum": [
+            "remain-external-legacy",
+            "future-high-level-command",
+            "future-dsl-procedure",
+            "future-kernel-design"
+          ]
+        },
+        "confidence": { "enum": ["high", "medium", "low"] },
+        "observations": { "type": "string" }
+      }
+    }
+  }
+}

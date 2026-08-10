@@ -118,6 +118,7 @@ try {
         ".github/prompts/tasks/task-template.prompt.md",
         ".github/prompts/tasks/g1-operational-layer.prompt.md",
         ".github/prompts/tasks/g2-frontend-foundation.prompt.md",
+        ".github/prompts/tasks/g3-legacy-integration.prompt.md",
         ".github/prompts/reviews/change-review.prompt.md",
         ".github/workflows/verify.yml",
         "ai-shell/prompts/ask.md",
@@ -127,16 +128,27 @@ try {
         "ai-shell/prompts/architect.md",
         "docs/adr/0002-g1-operational-authority.md",
         "docs/adr/0001-geocedg-product-profile.md",
+        "docs/adr/0003-controlled-legacy-integration.md",
+        "docs/legacy/README.md",
+        "docs/references/cedg/README.md",
+        "docs/references/cedg/catalog.yml",
+        "docs/references/cedg/public-model-corpus.yml",
         "docs/upstream/GEOGEBRA_README.md",
         "docs/upstream/modified-files.yml",
         "docs/validation/g1r_repository_onboarding_report.md",
         "docs/validation/g1_operational_layer_report.md",
+        "docs/validation/g3_controlled_legacy_integration_report.md",
         "geocedg/specs/operations/manifest-contracts.md",
         "geocedg/specs/operations/feature-set.schema.json",
         "geocedg/specs/operations/model-manifest.schema.json",
         "geocedg/specs/operations/benchmark-suite.schema.json",
         "geocedg/specs/operations/regression-catalog.schema.json",
         "geocedg/specs/operations/upstream-modifications.schema.json",
+        "geocedg/specs/operations/legacy-tool-curation.schema.json",
+        "geocedg/specs/operations/legacy-tool-inventory.schema.json",
+        "geocedg/specs/operations/scientific-reference-catalog.schema.json",
+        "geocedg/specs/operations/external-model-corpus.schema.json",
+        "geocedg/specs/legacy/controlled-integration.md",
         "geocedg/specs/ui/application-profile.schema.json",
         "geocedg/specs/ui/application-profile.md",
         "geocedg/features/stable.yml",
@@ -151,11 +163,14 @@ try {
         "README.md",
         "tools/agent/verify-baseline.ps1",
         "tools/agent/verify-frontend.ps1",
+        "tools/agent/verify-legacy.ps1",
         "tools/agent/verify-operational.ps1",
         "tools/agent/verify.ps1",
         "tools/agent/upstream-boundary.ps1",
         "tools/bootstrap/bootstrap-windows.ps1",
-        "tools/benchmark/run.ps1"
+        "tools/benchmark/run.ps1",
+        "tools/legacy/ingest.ps1",
+        "tools/legacy/open-laboratory.ps1"
     )
     foreach ($requiredFile in $requiredFiles) {
         [void](Resolve-RepositoryPath -RelativePath $requiredFile -RequireFile)
@@ -181,6 +196,12 @@ try {
     Assert-Condition -Condition $attributes.Contains(
         "docs/upstream/GEOGEBRA_README.md text eol=lf -whitespace") `
         -Message "Archived README preservation attributes are missing."
+    Assert-Condition -Condition $attributes.Contains(
+        "docs/references/cedg/**/*.pdf binary") `
+        -Message "Scientific reference binary attributes are missing."
+    Assert-Condition -Condition $attributes.Contains(
+        "models/legacy/**/original/*.ggb binary") `
+        -Message "Legacy GGB binary attributes are missing."
 
     $bootstrap = Get-Content -Raw -LiteralPath (
         Join-Path $RepositoryRoot "tools\bootstrap\bootstrap-windows.ps1")
@@ -239,6 +260,10 @@ try {
         "geocedg/specs/operations/benchmark-suite.schema.json",
         "geocedg/specs/operations/regression-catalog.schema.json",
         "geocedg/specs/operations/upstream-modifications.schema.json",
+        "geocedg/specs/operations/legacy-tool-curation.schema.json",
+        "geocedg/specs/operations/legacy-tool-inventory.schema.json",
+        "geocedg/specs/operations/scientific-reference-catalog.schema.json",
+        "geocedg/specs/operations/external-model-corpus.schema.json",
         "geocedg/specs/ui/application-profile.schema.json"
     )
     foreach ($schemaPath in $schemaPaths) {
@@ -400,16 +425,6 @@ try {
         }
     }
 
-    Write-Step "No legacy model or tool import before G3"
-    $forbiddenModelExtensions = @(".ggb", ".ggt", ".js")
-    $importedModels = @(Get-ChildItem -LiteralPath (Join-Path $RepositoryRoot "models") `
-        -Recurse -File | Where-Object {
-            $forbiddenModelExtensions -contains $_.Extension.ToLowerInvariant()
-        })
-    $importedModelNames = @($importedModels | ForEach-Object { $_.FullName }) -join ", "
-    Assert-Condition -Condition ($importedModels.Count -eq 0) `
-        -Message "A legacy model/tool asset was imported before G3: $importedModelNames"
-
     Write-Step "CI delegates to executable authority"
     $workflow = Get-Content -Raw -LiteralPath (
         Join-Path $RepositoryRoot ".github\workflows\verify.yml")
@@ -423,13 +438,17 @@ try {
     Write-Step "Operational text hygiene"
     $ownedTextRoots = @(
         ".github", "ai-shell", "geocedg", "models", "benchmarks",
-        "artifacts", "apps", "tools/agent", "tools/benchmark", "tools/bootstrap"
+        "artifacts", "apps", "tools/agent", "tools/benchmark", "tools/bootstrap",
+        "tools/legacy"
     )
+    $textExtensions = @(".json", ".md", ".ps1", ".txt", ".yml", ".yaml", ".js", ".ggs")
     $ownedTextFiles = [Collections.Generic.List[string]]::new()
     foreach ($root in $ownedTextRoots) {
         $absoluteRoot = Join-Path $RepositoryRoot $root
         foreach ($file in Get-ChildItem -LiteralPath $absoluteRoot -Recurse -File) {
-            $ownedTextFiles.Add($file.FullName)
+            if ($textExtensions -contains $file.Extension.ToLowerInvariant()) {
+                $ownedTextFiles.Add($file.FullName)
+            }
         }
     }
     foreach ($relative in @(
@@ -439,8 +458,14 @@ try {
             "UPSTREAM.md",
             "docs/adr/0001-geocedg-product-profile.md",
             "docs/adr/0002-g1-operational-authority.md",
+            "docs/adr/0003-controlled-legacy-integration.md",
+            "docs/legacy/README.md",
+            "docs/references/cedg/README.md",
+            "docs/references/cedg/catalog.yml",
+            "docs/references/cedg/public-model-corpus.yml",
             "docs/upstream/modified-files.yml",
             "docs/validation/g2_frontend_foundation_report.md",
+            "docs/validation/g3_controlled_legacy_integration_report.md",
             "docs/validation/g1r_repository_onboarding_report.md",
             "docs/validation/g1_operational_layer_report.md",
             "tools/agent/verify-baseline.ps1",

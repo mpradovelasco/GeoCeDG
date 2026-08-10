@@ -1,0 +1,1713 @@
+{
+  "$schema": "../../../../geocedg/specs/operations/legacy-tool-inventory.schema.json",
+  "schema_version": 1,
+  "generator": {
+    "path": "tools/legacy/ingest.ps1",
+    "sha256": "62d7ea903ad06553e8a84b1cb3f013d7f028136b41cc39c325ebd8d6b00875af",
+    "curation_path": "models/legacy/template-v7/curation.yml",
+    "curation_sha256": "259759951beb5c3b08407ab239de919a34289420a8a2f545339e5334281093c6"
+  },
+  "resource": {
+    "id": "cedg.legacy.template-v7",
+    "path": "models/legacy/template-v7/original/Templatev7.ggb",
+    "sha256": "f62e5b7a92bcd95f10b8afda348763a57ccbd0c10dbc0c2bccc7049831ed4113",
+    "bytes": 48149
+  },
+  "container": {
+    "format": "ggb",
+    "geogebra_version": "5.2.879.0",
+    "app": "classic",
+    "platform": "d",
+    "entries": [
+      {
+        "name": "03a3c2a1c411ba47a36cf0d41cab025e/GeoGebra_button_copy_visual_style.png",
+        "bytes": 1065,
+        "compressed_bytes": 363,
+        "sha256": "67ccc7cfef67476abe0365f984f2528072fa0938770845494226c80c5d2462b6"
+      },
+      {
+        "name": "20f2e82a3235d4a6cbe03bb98b268006/GeoGebra_icon_perspective1.png",
+        "bytes": 462,
+        "compressed_bytes": 467,
+        "sha256": "66ce13e7a8d31094fe058f517b870eb4b1b12be2463ef9eca0d184537f53afb4"
+      },
+      {
+        "name": "2797d543beb66ff6f7048543e22a4514/GeoGebra_button_relation.png",
+        "bytes": 175,
+        "compressed_bytes": 167,
+        "sha256": "331f70db2c5cb5024f95a82318136ad524fa8e282d0b56da34d62f9075648a34"
+      },
+      {
+        "name": "340968320cfb2361fb89a4e816d68da6/GeoGebra_button_distance.png",
+        "bytes": 1082,
+        "compressed_bytes": 612,
+        "sha256": "98b3d276dadd2165771e2a5dc3a7166d10e7547c336847d5d3c02f395a1e1d7f"
+      },
+      {
+        "name": "36600aceabcba6fc1f74beb4eb0d5ef2/SegmentVisibility.png",
+        "bytes": 588,
+        "compressed_bytes": 593,
+        "sha256": "7156f6fc435fdf1433ff5b4aa075716e6f07979570da91830b5e90eac19de547"
+      },
+      {
+        "name": "5cbd1802b6c0ce26b2e76afaa154641c/GeoGebra_button_translate_by_vector.png",
+        "bytes": 1187,
+        "compressed_bytes": 830,
+        "sha256": "a1fdc117724386924c676a6d37b55de3a09ecc1f4021ead065612ff7f1d18c8a"
+      },
+      {
+        "name": "6c6883332c563c98785be596f8dae06c/GeoGebra_button_angle_fixed.png",
+        "bytes": 1267,
+        "compressed_bytes": 1111,
+        "sha256": "5c08f9956d26967e682a57c184577c3a99ac041db0288b4ebe920c5c2302f863"
+      },
+      {
+        "name": "75189129e395cdee8c2eeb89de8cbb83/GeoGebra_button_locus.png",
+        "bytes": 1402,
+        "compressed_bytes": 1403,
+        "sha256": "0a61822287b4cea5907e0e2796752bdc685910b46dd5d232427b8485ec3ab12e"
+      },
+      {
+        "name": "8051e6540eab330ea57701a61c4fa52d/GeoGebra_button_ellipse_3.png",
+        "bytes": 1282,
+        "compressed_bytes": 1177,
+        "sha256": "033039fd2b4996707b8b3fa157872cd30b097658046b8db51cc24ff35abe1b93"
+      },
+      {
+        "name": "9d793b2f6d09c1d4ac1386c0f987c5ef/Ellipse.png",
+        "bytes": 853,
+        "compressed_bytes": 858,
+        "sha256": "6801f370ccfd759c9191033d5316c3c4c7b5ed61754aa59a9838db9cfd998234"
+      },
+      {
+        "name": "b17a5603c97e7dbc3efa752c989fd746/GeoGebra_icon_trace_on.png",
+        "bytes": 1036,
+        "compressed_bytes": 1041,
+        "sha256": "5d68915a0e54a66c1881caa256c999db1e84d1f665d11bee0ec95686d8e6e00d"
+      },
+      {
+        "name": "c9a68047dbb98cd64e9bb5c140b877a3/GeoGebra_button_semicircle.png",
+        "bytes": 1133,
+        "compressed_bytes": 764,
+        "sha256": "16996615f77c49f9d93c114390198746b83979a788e8a0eba11ba60f3397f7d5"
+      },
+      {
+        "name": "caaa950a1fee94e98e3cce6aa99dc324/circulodiametro.png",
+        "bytes": 972,
+        "compressed_bytes": 977,
+        "sha256": "9793000beafc380d63b7a486d90eaaf576c181a1201f4581bdfe1c69725a477a"
+      },
+      {
+        "name": "d66a51ee99a80822e5c484f02d851013/Square.png",
+        "bytes": 1378,
+        "compressed_bytes": 1383,
+        "sha256": "1550dac567cab2dfff5736d20336ccf29b60eac01cc93a06f229e63fb47ab083"
+      },
+      {
+        "name": "e03e6929a24d32778067014994766f6d/GeoGebra_button_circle_sector_3.png",
+        "bytes": 1200,
+        "compressed_bytes": 899,
+        "sha256": "88a286833d412afd4487b5037f39bf7359058eafe7affeb13d44c3c537e2d55a"
+      },
+      {
+        "name": "ffac980ceb8cc7727390bbc9511772dd/TranspLength.PNG",
+        "bytes": 396,
+        "compressed_bytes": 401,
+        "sha256": "10ffb0f47b6db1352a9bb1cb980055f7a82ea053932749fc359b7875b60a734a"
+      },
+      {
+        "name": "geogebra_defaults2d.xml",
+        "bytes": 9858,
+        "compressed_bytes": 1318,
+        "sha256": "e1c3a458e86a3d4ba52ffd85f4164b05a61bf5c9724e26ff7a249347c5dc38c9"
+      },
+      {
+        "name": "geogebra_defaults3d.xml",
+        "bytes": 4504,
+        "compressed_bytes": 856,
+        "sha256": "9f70437b0626decfa3318ac625604d76bbb3e9dd03cf6fcb52a2bba72f0794b8"
+      },
+      {
+        "name": "geogebra_javascript.js",
+        "bytes": 629,
+        "compressed_bytes": 297,
+        "sha256": "086b396ce853cd54acc4d0979f0393bea869f26bfd91df29ca375eb2927a7f29"
+      },
+      {
+        "name": "geogebra_macro.xml",
+        "bytes": 221871,
+        "compressed_bytes": 24952,
+        "sha256": "f3744e131a627ba5e9bef092427930e6e7c1526a6d527b43c3b4f30e04fc94f4"
+      },
+      {
+        "name": "geogebra_thumbnail.png",
+        "bytes": 1035,
+        "compressed_bytes": 171,
+        "sha256": "4a0398404a3c879fb776ff8401ec36cf32e9cc5ebf2fab0266935c878471737c"
+      },
+      {
+        "name": "geogebra.xml",
+        "bytes": 15191,
+        "compressed_bytes": 3337,
+        "sha256": "fc456772249bd716d0960ee9c7756a7ff1a371fcef3f97c2366e9192d8ca226d"
+      }
+    ]
+  },
+  "scripts": {
+    "global_javascript": {
+      "present": true,
+      "entry": "geogebra_javascript.js",
+      "bytes": 629,
+      "sha256": "086b396ce853cd54acc4d0979f0393bea869f26bfd91df29ca375eb2927a7f29",
+      "functions": [
+        "ggbOnInit",
+        "clickL"
+      ]
+    },
+    "document_geogebrascript_blocks": 2
+  },
+  "legacy_toolbar": {
+    "status": "authoritative-legacy-reference",
+    "future_constraint": false,
+    "raw_definition": "0 39 | 1 501 67 , 5 19 , 72 | 2 15 45 , 18 65 , 7 37 | 4 3 8 9 , 13 44 , 58 , 47 | 16 51 64 , 70 | 10 34 53 11 , 24 20 22 , 21 23 | 55 56 57 , 12 | 36 46 , 38 49 50 , 71 | 30 29 54 32 31 33 | 17 26 62 73 , 14 68 | 25 52 60 61 | 40 41 42 , 27 28 35 , 6 | 100014 100013 | 100009 100018 | 100017 , 100015 100016 , 100001 , 100010 100023 | 100007 100006 100005 100022 100020 | 100004 100011 , 100012 100008 , 100019 100021 | 100024 | 100002 100003",
+    "custom_groups": [
+      {
+        "group": 13,
+        "raw": "100014 100013",
+        "tool_ids": [
+          "cedg.legacy.template-v7.tool.symm-symbol",
+          "cedg.legacy.template-v7.tool.duct-symbol"
+        ]
+      },
+      {
+        "group": 14,
+        "raw": "100009 100018",
+        "tool_ids": [
+          "cedg.legacy.template-v7.tool.poli-line-visibility",
+          "cedg.legacy.template-v7.tool.ellipse-visibility"
+        ]
+      },
+      {
+        "group": 15,
+        "raw": "100017 , 100015 100016 , 100001 , 100010 100023",
+        "tool_ids": [
+          "cedg.legacy.template-v7.tool.post-locus",
+          "cedg.legacy.template-v7.tool.list-length",
+          "cedg.legacy.template-v7.tool.list-length12",
+          "cedg.legacy.template-v7.tool.spline-length",
+          "cedg.legacy.template-v7.tool.perimeter",
+          "cedg.legacy.template-v7.tool.ellipse-length12"
+        ]
+      },
+      {
+        "group": 16,
+        "raw": "100007 100006 100005 100022 100020",
+        "tool_ids": [
+          "cedg.legacy.template-v7.tool.ellipse-axis",
+          "cedg.legacy.template-v7.tool.circleby-d",
+          "cedg.legacy.template-v7.tool.squareby-diagonal",
+          "cedg.legacy.template-v7.tool.conj2main-axes-ellipse",
+          "cedg.legacy.template-v7.tool.circ-arcby-angle"
+        ]
+      },
+      {
+        "group": 17,
+        "raw": "100004 100011 , 100012 100008 , 100019 100021",
+        "tool_ids": [
+          "cedg.legacy.template-v7.tool.direct-dimension",
+          "cedg.legacy.template-v7.tool.axis-dimension",
+          "cedg.legacy.template-v7.tool.rel-coor",
+          "cedg.legacy.template-v7.tool.point-jump",
+          "cedg.legacy.template-v7.tool.translation-coor",
+          "cedg.legacy.template-v7.tool.dummy-rotate"
+        ]
+      },
+      {
+        "group": 18,
+        "raw": "100024",
+        "tool_ids": [
+          "cedg.legacy.template-v7.tool.ifpositive-select-point"
+        ]
+      },
+      {
+        "group": 19,
+        "raw": "100002 100003",
+        "tool_ids": [
+          "cedg.legacy.template-v7.tool.sheet-isoan-land",
+          "cedg.legacy.template-v7.tool.sheet-isoan-vert"
+        ]
+      }
+    ]
+  },
+  "tools": [
+    {
+      "id": "cedg.legacy.template-v7.tool.spline-length",
+      "legacy_index": 1,
+      "mode_id": 100001,
+      "command_name": "SplineLength",
+      "tool_name": "SplineLength",
+      "help": "Select list for Spline and give Number of points for Length",
+      "original_toolbar": {
+        "group": 15,
+        "subgroup": 3,
+        "position": 1
+      },
+      "inputs": [
+        {
+          "label": "listaSpline2",
+          "type": "list"
+        },
+        {
+          "label": "NSpline",
+          "type": "numeric"
+        }
+      ],
+      "outputs": [
+        {
+          "label": "d",
+          "type": "curvecartesian"
+        },
+        {
+          "label": "lspline",
+          "type": "numeric"
+        }
+      ],
+      "dependencies": {
+        "embedded_tools": [],
+        "baseline_commands": [
+          "Sequence",
+          "Spline",
+          "Sum"
+        ]
+      },
+      "contains_geogebrascript": false,
+      "family": "curve-measurement",
+      "category": "transport-measurement",
+      "maturity": "research",
+      "architecture_recommendation": "remain-external-legacy",
+      "confidence": "high",
+      "observations": "Builds a spline and estimates its length from a finite point sequence; the sample count is an explicit input and no exactness is claimed."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.sheet-isoan-land",
+      "legacy_index": 2,
+      "mode_id": 100002,
+      "command_name": "sheetISOAnLand",
+      "tool_name": "sheetISOAnLand",
+      "help": "Left top corner, n, Scale, Margin",
+      "original_toolbar": {
+        "group": 19,
+        "subgroup": 1,
+        "position": 1
+      },
+      "inputs": [
+        {
+          "label": "D",
+          "type": "conic"
+        },
+        {
+          "label": "ISO216n",
+          "type": "numeric"
+        },
+        {
+          "label": "CeDGScale",
+          "type": "numeric"
+        },
+        {
+          "label": "CeDGMargin",
+          "type": "numeric"
+        }
+      ],
+      "outputs": [
+        {
+          "label": "f",
+          "type": "segment"
+        },
+        {
+          "label": "g",
+          "type": "segment"
+        },
+        {
+          "label": "h",
+          "type": "segment"
+        },
+        {
+          "label": "i",
+          "type": "point"
+        },
+        {
+          "label": "n",
+          "type": "segment"
+        },
+        {
+          "label": "p",
+          "type": "point"
+        },
+        {
+          "label": "q",
+          "type": "segment"
+        },
+        {
+          "label": "r",
+          "type": "point"
+        },
+        {
+          "label": "b",
+          "type": "segment"
+        },
+        {
+          "label": "f_1",
+          "type": "point"
+        },
+        {
+          "label": "j_1",
+          "type": "point"
+        },
+        {
+          "label": "l_1",
+          "type": "point"
+        },
+        {
+          "label": "m_1",
+          "type": "point"
+        },
+        {
+          "label": "a_1",
+          "type": "segment"
+        },
+        {
+          "label": "b_1",
+          "type": "segment"
+        },
+        {
+          "label": "f_2",
+          "type": "segment"
+        },
+        {
+          "label": "j_2",
+          "type": "segment"
+        },
+        {
+          "label": "i_2",
+          "type": "segment"
+        },
+        {
+          "label": "E",
+          "type": "conic"
+        },
+        {
+          "label": "G",
+          "type": "segment"
+        },
+        {
+          "label": "F",
+          "type": "segment"
+        }
+      ],
+      "dependencies": {
+        "embedded_tools": [],
+        "baseline_commands": [
+          "Circle",
+          "Intersect",
+          "Line",
+          "OrthogonalLine",
+          "Segment"
+        ]
+      },
+      "contains_geogebrascript": false,
+      "family": "sheet-format-scale",
+      "category": "format-scale",
+      "maturity": "legacy",
+      "architecture_recommendation": "remain-external-legacy",
+      "confidence": "high",
+      "observations": "Creates a landscape ISO 216 sheet framework and scale controls; this is document/presentation behavior, not geometric truth."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.sheet-isoan-vert",
+      "legacy_index": 3,
+      "mode_id": 100003,
+      "command_name": "sheetISOAnVert",
+      "tool_name": "sheetISOAnVert",
+      "help": "Left top corner, n, Scale, Margin",
+      "original_toolbar": {
+        "group": 19,
+        "subgroup": 1,
+        "position": 2
+      },
+      "inputs": [
+        {
+          "label": "D",
+          "type": "conic"
+        },
+        {
+          "label": "ISO216n",
+          "type": "numeric"
+        },
+        {
+          "label": "CeDGScale",
+          "type": "numeric"
+        },
+        {
+          "label": "CeDGMargin",
+          "type": "numeric"
+        }
+      ],
+      "outputs": [
+        {
+          "label": "f'",
+          "type": "point"
+        },
+        {
+          "label": "q''",
+          "type": "segment"
+        },
+        {
+          "label": "n''",
+          "type": "point"
+        },
+        {
+          "label": "p''",
+          "type": "point"
+        },
+        {
+          "label": "r''",
+          "type": "point"
+        },
+        {
+          "label": "f''",
+          "type": "point"
+        },
+        {
+          "label": "i''",
+          "type": "segment"
+        },
+        {
+          "label": "g''",
+          "type": "segment"
+        },
+        {
+          "label": "h''",
+          "type": "segment"
+        },
+        {
+          "label": "b''",
+          "type": "segment"
+        },
+        {
+          "label": "a_2",
+          "type": "segment"
+        },
+        {
+          "label": "b_2",
+          "type": "segment"
+        },
+        {
+          "label": "e_2",
+          "type": "segment"
+        },
+        {
+          "label": "f_3",
+          "type": "segment"
+        },
+        {
+          "label": "g_3",
+          "type": "segment"
+        },
+        {
+          "label": "h_3",
+          "type": "segment"
+        },
+        {
+          "label": "i_3",
+          "type": "segment"
+        },
+        {
+          "label": "j_3",
+          "type": "segment"
+        },
+        {
+          "label": "k_3",
+          "type": "segment"
+        },
+        {
+          "label": "F_2",
+          "type": "point"
+        },
+        {
+          "label": "G_2",
+          "type": "point"
+        },
+        {
+          "label": "H_2",
+          "type": "point"
+        }
+      ],
+      "dependencies": {
+        "embedded_tools": [],
+        "baseline_commands": [
+          "Circle",
+          "Intersect",
+          "Line",
+          "OrthogonalLine",
+          "Rotate",
+          "Segment",
+          "Translate",
+          "Vector"
+        ]
+      },
+      "contains_geogebrascript": false,
+      "family": "sheet-format-scale",
+      "category": "format-scale",
+      "maturity": "legacy",
+      "architecture_recommendation": "remain-external-legacy",
+      "confidence": "high",
+      "observations": "Creates a portrait ISO 216 sheet framework and scale controls; future sheet/export architecture is outside G3."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.direct-dimension",
+      "legacy_index": 4,
+      "mode_id": 100004,
+      "command_name": "directDimension",
+      "tool_name": "directDimension",
+      "help": "A, B, conversion coefficient",
+      "original_toolbar": {
+        "group": 17,
+        "subgroup": 1,
+        "position": 1
+      },
+      "inputs": [
+        {
+          "label": "A",
+          "type": "point"
+        },
+        {
+          "label": "B",
+          "type": "point"
+        },
+        {
+          "label": "kconversion",
+          "type": "numeric"
+        }
+      ],
+      "outputs": [
+        {
+          "label": "m",
+          "type": "segment"
+        },
+        {
+          "label": "p",
+          "type": "segment"
+        },
+        {
+          "label": "u",
+          "type": "vector"
+        },
+        {
+          "label": "v",
+          "type": "vector"
+        },
+        {
+          "label": "D",
+          "type": "point"
+        },
+        {
+          "label": "g",
+          "type": "point"
+        },
+        {
+          "label": "distanceDE",
+          "type": "numeric"
+        },
+        {
+          "label": "TextDE",
+          "type": "text"
+        }
+      ],
+      "dependencies": {
+        "embedded_tools": [],
+        "baseline_commands": [
+          "Distance",
+          "Intersect",
+          "Line",
+          "OrthogonalLine",
+          "Point",
+          "Segment",
+          "UnitVector",
+          "Vector"
+        ]
+      },
+      "contains_geogebrascript": false,
+      "family": "curve-measurement",
+      "category": "transport-measurement",
+      "maturity": "legacy",
+      "architecture_recommendation": "future-high-level-command",
+      "confidence": "medium",
+      "observations": "Produces dimension graphics and converted distance text between two points; standards compliance and presentation policy require later design."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.squareby-diagonal",
+      "legacy_index": 5,
+      "mode_id": 100005,
+      "command_name": "SquarebyDiagonal",
+      "tool_name": "SquarebyDiagonal",
+      "help": "Ends of diagonal",
+      "original_toolbar": {
+        "group": 16,
+        "subgroup": 1,
+        "position": 3
+      },
+      "inputs": [
+        {
+          "label": "A",
+          "type": "point"
+        },
+        {
+          "label": "B",
+          "type": "point"
+        }
+      ],
+      "outputs": [
+        {
+          "label": "k",
+          "type": "segment"
+        },
+        {
+          "label": "j",
+          "type": "segment"
+        },
+        {
+          "label": "i",
+          "type": "segment"
+        },
+        {
+          "label": "h",
+          "type": "segment"
+        },
+        {
+          "label": "E",
+          "type": "point"
+        },
+        {
+          "label": "D",
+          "type": "point"
+        }
+      ],
+      "dependencies": {
+        "embedded_tools": [],
+        "baseline_commands": [
+          "Circle",
+          "Intersect",
+          "Line",
+          "Midpoint",
+          "OrthogonalLine",
+          "Segment"
+        ]
+      },
+      "contains_geogebrascript": false,
+      "family": "planar-construction",
+      "category": "construction-2d",
+      "maturity": "legacy",
+      "architecture_recommendation": "remain-external-legacy",
+      "confidence": "high",
+      "observations": "Composed planar construction of a square from diagonal endpoints using baseline primitives."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.circleby-d",
+      "legacy_index": 6,
+      "mode_id": 100006,
+      "command_name": "CirclebyD",
+      "tool_name": "CirclebyD: Centre & Diameter",
+      "help": "Circle[ <Point>, <Number> ]",
+      "original_toolbar": {
+        "group": 16,
+        "subgroup": 1,
+        "position": 2
+      },
+      "inputs": [
+        {
+          "label": "A",
+          "type": "point"
+        },
+        {
+          "label": "diameter",
+          "type": "numeric"
+        }
+      ],
+      "outputs": [
+        {
+          "label": "g",
+          "type": "conic"
+        }
+      ],
+      "dependencies": {
+        "embedded_tools": [],
+        "baseline_commands": [
+          "Circle",
+          "Point"
+        ]
+      },
+      "contains_geogebrascript": false,
+      "family": "planar-construction",
+      "category": "construction-2d",
+      "maturity": "legacy",
+      "architecture_recommendation": "remain-external-legacy",
+      "confidence": "high",
+      "observations": "Convenience construction for a circle from centre and diameter using baseline Circle behavior."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.ellipse-axis",
+      "legacy_index": 7,
+      "mode_id": 100007,
+      "command_name": "EllipseAxis",
+      "tool_name": "EllipseAxis",
+      "help": "Center, end axis 1, end axis 2",
+      "original_toolbar": {
+        "group": 16,
+        "subgroup": 1,
+        "position": 1
+      },
+      "inputs": [
+        {
+          "label": "O",
+          "type": "point"
+        },
+        {
+          "label": "B",
+          "type": "point"
+        },
+        {
+          "label": "C",
+          "type": "conic"
+        }
+      ],
+      "outputs": [
+        {
+          "label": "e",
+          "type": "conic"
+        }
+      ],
+      "dependencies": {
+        "embedded_tools": [],
+        "baseline_commands": [
+          "Circle",
+          "Distance",
+          "Ellipse",
+          "If",
+          "Line",
+          "OrthogonalLine"
+        ]
+      },
+      "contains_geogebrascript": false,
+      "family": "planar-construction",
+      "category": "construction-2d",
+      "maturity": "legacy",
+      "architecture_recommendation": "future-high-level-command",
+      "confidence": "medium",
+      "observations": "Constructs an ellipse from centre and axis endpoints with conditional selection of the larger axis."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.point-jump",
+      "legacy_index": 8,
+      "mode_id": 100008,
+      "command_name": "pointJump",
+      "tool_name": "pointJump",
+      "help": "Point, direction, sign length",
+      "original_toolbar": {
+        "group": 17,
+        "subgroup": 2,
+        "position": 2
+      },
+      "inputs": [
+        {
+          "label": "A",
+          "type": "point"
+        },
+        {
+          "label": "f",
+          "type": "line"
+        },
+        {
+          "label": "Avance",
+          "type": "numeric"
+        }
+      ],
+      "outputs": [
+        {
+          "label": "B",
+          "type": "point"
+        }
+      ],
+      "dependencies": {
+        "embedded_tools": [],
+        "baseline_commands": [
+          "UnitVector"
+        ]
+      },
+      "contains_geogebrascript": false,
+      "family": "coordinate-transport",
+      "category": "descriptive-geometry-procedure",
+      "maturity": "legacy",
+      "architecture_recommendation": "future-dsl-procedure",
+      "confidence": "medium",
+      "observations": "Moves a point by a signed distance along a supplied direction; a future high-level procedure can compose existing primitives."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.poli-line-visibility",
+      "legacy_index": 9,
+      "mode_id": 100009,
+      "command_name": "PoliLineVisibility",
+      "tool_name": "PoliLineVisibility",
+      "help": "Start, MIddle and End Points (continuous, dashed)",
+      "original_toolbar": {
+        "group": 14,
+        "subgroup": 1,
+        "position": 1
+      },
+      "inputs": [
+        {
+          "label": "D",
+          "type": "point"
+        },
+        {
+          "label": "E",
+          "type": "point"
+        },
+        {
+          "label": "F",
+          "type": "segment"
+        }
+      ],
+      "outputs": [
+        {
+          "label": "f",
+          "type": "segment"
+        },
+        {
+          "label": "g",
+          "type": "segment"
+        }
+      ],
+      "dependencies": {
+        "embedded_tools": [],
+        "baseline_commands": [
+          "Segment"
+        ]
+      },
+      "contains_geogebrascript": false,
+      "family": "visibility-presentation",
+      "category": "general-utility",
+      "maturity": "legacy",
+      "architecture_recommendation": "remain-external-legacy",
+      "confidence": "high",
+      "observations": "Creates continuous and dashed segment portions for legacy presentation; it is not the future geometric visibility service."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.perimeter",
+      "legacy_index": 10,
+      "mode_id": 100010,
+      "command_name": "Perimeter",
+      "tool_name": "Perimeter ",
+      "help": "Conic or Poligon ",
+      "original_toolbar": {
+        "group": 15,
+        "subgroup": 4,
+        "position": 1
+      },
+      "inputs": [
+        {
+          "label": "f",
+          "type": "conic"
+        }
+      ],
+      "outputs": [
+        {
+          "label": "a",
+          "type": "numeric"
+        },
+        {
+          "label": "text1",
+          "type": "text"
+        }
+      ],
+      "dependencies": {
+        "embedded_tools": [],
+        "baseline_commands": [
+          "Circumference"
+        ]
+      },
+      "contains_geogebrascript": false,
+      "family": "curve-measurement",
+      "category": "transport-measurement",
+      "maturity": "legacy",
+      "architecture_recommendation": "remain-external-legacy",
+      "confidence": "high",
+      "observations": "Convenience wrapper over the baseline Circumference command for a conic input."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.axis-dimension",
+      "legacy_index": 11,
+      "mode_id": 100011,
+      "command_name": "axisDimension",
+      "tool_name": "axisDimension",
+      "help": "A,B, direction, conversion coefficient",
+      "original_toolbar": {
+        "group": 17,
+        "subgroup": 1,
+        "position": 2
+      },
+      "inputs": [
+        {
+          "label": "A",
+          "type": "point"
+        },
+        {
+          "label": "B",
+          "type": "point"
+        },
+        {
+          "label": "f",
+          "type": "point"
+        },
+        {
+          "label": "kconversion",
+          "type": "numeric"
+        }
+      ],
+      "outputs": [
+        {
+          "label": "u",
+          "type": "vector"
+        },
+        {
+          "label": "v",
+          "type": "vector"
+        },
+        {
+          "label": "TextDE",
+          "type": "text"
+        },
+        {
+          "label": "distanceDE",
+          "type": "numeric"
+        },
+        {
+          "label": "p",
+          "type": "segment"
+        },
+        {
+          "label": "m",
+          "type": "segment"
+        },
+        {
+          "label": "D",
+          "type": "point"
+        },
+        {
+          "label": "r",
+          "type": "segment"
+        }
+      ],
+      "dependencies": {
+        "embedded_tools": [],
+        "baseline_commands": [
+          "Distance",
+          "Intersect",
+          "Line",
+          "OrthogonalLine",
+          "Point",
+          "Segment",
+          "UnitVector",
+          "Vector"
+        ]
+      },
+      "contains_geogebrascript": false,
+      "family": "curve-measurement",
+      "category": "transport-measurement",
+      "maturity": "legacy",
+      "architecture_recommendation": "future-high-level-command",
+      "confidence": "medium",
+      "observations": "Produces axis-oriented dimension graphics and text; standards and presentation behavior remain uncharacterized."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.rel-coor",
+      "legacy_index": 12,
+      "mode_id": 100012,
+      "command_name": "relCoor",
+      "tool_name": "relCoor",
+      "help": "Point, Ref, Direction",
+      "original_toolbar": {
+        "group": 17,
+        "subgroup": 2,
+        "position": 1
+      },
+      "inputs": [
+        {
+          "label": "D",
+          "type": "point"
+        },
+        {
+          "label": "C",
+          "type": "point"
+        },
+        {
+          "label": "f",
+          "type": "line"
+        }
+      ],
+      "outputs": [
+        {
+          "label": "relx",
+          "type": "numeric"
+        }
+      ],
+      "dependencies": {
+        "embedded_tools": [],
+        "baseline_commands": [
+          "Intersect",
+          "Line",
+          "OrthogonalLine",
+          "UnitVector",
+          "Vector"
+        ]
+      },
+      "contains_geogebrascript": false,
+      "family": "coordinate-transport",
+      "category": "descriptive-geometry-procedure",
+      "maturity": "legacy",
+      "architecture_recommendation": "future-dsl-procedure",
+      "confidence": "medium",
+      "observations": "Measures a relative coordinate along a supplied direction by composing baseline line, vector, and intersection operations."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.duct-symbol",
+      "legacy_index": 13,
+      "mode_id": 100013,
+      "command_name": "DuctSymbol",
+      "tool_name": "DuctSymbol",
+      "help": "Extremes of diameter, lengh duct",
+      "original_toolbar": {
+        "group": 13,
+        "subgroup": 1,
+        "position": 2
+      },
+      "inputs": [
+        {
+          "label": "A",
+          "type": "point"
+        },
+        {
+          "label": "B",
+          "type": "point"
+        },
+        {
+          "label": "lt",
+          "type": "numeric"
+        }
+      ],
+      "outputs": [
+        {
+          "label": "m",
+          "type": "segment"
+        },
+        {
+          "label": "d'",
+          "type": "conicpart"
+        },
+        {
+          "label": "k'",
+          "type": "conicpart"
+        },
+        {
+          "label": "p'",
+          "type": "conicpart"
+        },
+        {
+          "label": "l",
+          "type": "segment"
+        },
+        {
+          "label": "f",
+          "type": "point"
+        }
+      ],
+      "dependencies": {
+        "embedded_tools": [],
+        "baseline_commands": [
+          "Circle",
+          "CircumcircleArc",
+          "Intersect",
+          "Line",
+          "Midpoint",
+          "OrthogonalLine",
+          "Segment",
+          "Translate",
+          "Vector"
+        ]
+      },
+      "contains_geogebrascript": false,
+      "family": "presentation-symbols",
+      "category": "general-utility",
+      "maturity": "legacy",
+      "architecture_recommendation": "remain-external-legacy",
+      "confidence": "medium",
+      "observations": "Generates a legacy duct presentation symbol from diameter endpoints and length; no spatial-object semantics are inferred."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.symm-symbol",
+      "legacy_index": 14,
+      "mode_id": 100014,
+      "command_name": "SymmSymbol",
+      "tool_name": "SymmSymbol",
+      "help": "Point, Axis, Distance",
+      "original_toolbar": {
+        "group": 13,
+        "subgroup": 1,
+        "position": 1
+      },
+      "inputs": [
+        {
+          "label": "A",
+          "type": "point"
+        },
+        {
+          "label": "f",
+          "type": "line"
+        },
+        {
+          "label": "ds",
+          "type": "numeric"
+        }
+      ],
+      "outputs": [
+        {
+          "label": "h'",
+          "type": "segment"
+        },
+        {
+          "label": "h",
+          "type": "segment"
+        }
+      ],
+      "dependencies": {
+        "embedded_tools": [],
+        "baseline_commands": [
+          "Circle",
+          "Intersect",
+          "Mirror",
+          "OrthogonalLine",
+          "Segment",
+          "Translate",
+          "Vector"
+        ]
+      },
+      "contains_geogebrascript": false,
+      "family": "presentation-symbols",
+      "category": "general-utility",
+      "maturity": "legacy",
+      "architecture_recommendation": "remain-external-legacy",
+      "confidence": "medium",
+      "observations": "Generates a symmetry presentation mark from a point, axis, and distance."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.list-length",
+      "legacy_index": 15,
+      "mode_id": 100015,
+      "command_name": "listLength",
+      "tool_name": "listLength",
+      "help": "List",
+      "original_toolbar": {
+        "group": 15,
+        "subgroup": 2,
+        "position": 1
+      },
+      "inputs": [
+        {
+          "label": "listTarget",
+          "type": "list"
+        }
+      ],
+      "outputs": [
+        {
+          "label": "lengList",
+          "type": "numeric"
+        }
+      ],
+      "dependencies": {
+        "embedded_tools": [],
+        "baseline_commands": [
+          "Sum"
+        ]
+      },
+      "contains_geogebrascript": false,
+      "family": "locus-research",
+      "category": "locus",
+      "maturity": "research",
+      "architecture_recommendation": "remain-external-legacy",
+      "confidence": "high",
+      "observations": "Sums distances between consecutive points. Publications refer to the role as locusLength; the Template command is listLength and remains an approximate sampled-list operation."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.list-length12",
+      "legacy_index": 16,
+      "mode_id": 100016,
+      "command_name": "listLength12",
+      "tool_name": "listLength12",
+      "help": "List, Point1, Point2, epsilon (accuracy)",
+      "original_toolbar": {
+        "group": 15,
+        "subgroup": 2,
+        "position": 2
+      },
+      "inputs": [
+        {
+          "label": "listTarget",
+          "type": "list"
+        },
+        {
+          "label": "A",
+          "type": "point"
+        },
+        {
+          "label": "B",
+          "type": "point"
+        },
+        {
+          "label": "epsilon",
+          "type": "numeric"
+        }
+      ],
+      "outputs": [
+        {
+          "label": "lengList12",
+          "type": "numeric"
+        }
+      ],
+      "dependencies": {
+        "embedded_tools": [],
+        "baseline_commands": [
+          "If",
+          "IndexOf",
+          "Sequence"
+        ]
+      },
+      "contains_geogebrascript": false,
+      "family": "locus-research",
+      "category": "locus",
+      "maturity": "research",
+      "architecture_recommendation": "remain-external-legacy",
+      "confidence": "high",
+      "observations": "Estimates distance along an ordered point list between two points. Publications refer to the role as locusLength12; ambiguity and error semantics are not native Locus semantics."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.post-locus",
+      "legacy_index": 17,
+      "mode_id": 100017,
+      "command_name": "postLocus",
+      "tool_name": "postLocus",
+      "help": "Locus, nMetric (>=1, eg 3), redMod (<1, eg 0.7)",
+      "original_toolbar": {
+        "group": 15,
+        "subgroup": 1,
+        "position": 1
+      },
+      "inputs": [
+        {
+          "label": "loc2",
+          "type": "locus"
+        },
+        {
+          "label": "nMetric",
+          "type": "numeric"
+        },
+        {
+          "label": "redMod",
+          "type": "numeric"
+        }
+      ],
+      "outputs": [
+        {
+          "label": "ListCorrFinal",
+          "type": "list"
+        }
+      ],
+      "dependencies": {
+        "embedded_tools": [],
+        "baseline_commands": [
+          "First",
+          "Join",
+          "RemoveUndefined",
+          "Sequence"
+        ]
+      },
+      "contains_geogebrascript": false,
+      "family": "locus-research",
+      "category": "locus",
+      "maturity": "research",
+      "architecture_recommendation": "future-kernel-design",
+      "confidence": "high",
+      "observations": "Filters points exposed by a legacy Locus using metric and directional thresholds. It is research evidence for Locus V2, not a semantic locus definition or exact metric authority."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.ellipse-visibility",
+      "legacy_index": 18,
+      "mode_id": 100018,
+      "command_name": "ellipseVisibility",
+      "tool_name": "ellipseVisibility",
+      "help": "ellipse, point 1, point 2 (counterclock)",
+      "original_toolbar": {
+        "group": 14,
+        "subgroup": 1,
+        "position": 2
+      },
+      "inputs": [
+        {
+          "label": "f",
+          "type": "conic"
+        },
+        {
+          "label": "C",
+          "type": "point"
+        },
+        {
+          "label": "H",
+          "type": "point"
+        }
+      ],
+      "outputs": [
+        {
+          "label": "g",
+          "type": "conicpart"
+        }
+      ],
+      "dependencies": {
+        "embedded_tools": [],
+        "baseline_commands": [
+          "Arc"
+        ]
+      },
+      "contains_geogebrascript": false,
+      "family": "visibility-presentation",
+      "category": "general-utility",
+      "maturity": "legacy",
+      "architecture_recommendation": "remain-external-legacy",
+      "confidence": "high",
+      "observations": "Creates a counter-clockwise ellipse arc for presentation; it does not define future geometric visibility."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.translation-coor",
+      "legacy_index": 19,
+      "mode_id": 100019,
+      "command_name": "translationCoor",
+      "tool_name": "translationCoor",
+      "help": "Point meas, Point ref, Direction meas, Point to translate, Direction Trans",
+      "original_toolbar": {
+        "group": 17,
+        "subgroup": 3,
+        "position": 1
+      },
+      "inputs": [
+        {
+          "label": "D",
+          "type": "point"
+        },
+        {
+          "label": "C",
+          "type": "point"
+        },
+        {
+          "label": "f",
+          "type": "point"
+        },
+        {
+          "label": "F",
+          "type": "point"
+        },
+        {
+          "label": "i",
+          "type": "point"
+        }
+      ],
+      "outputs": [
+        {
+          "label": "I",
+          "type": "point"
+        }
+      ],
+      "dependencies": {
+        "embedded_tools": [],
+        "baseline_commands": [
+          "Intersect",
+          "Line",
+          "OrthogonalLine",
+          "UnitVector",
+          "Vector"
+        ]
+      },
+      "contains_geogebrascript": false,
+      "family": "coordinate-transport",
+      "category": "descriptive-geometry-procedure",
+      "maturity": "legacy",
+      "architecture_recommendation": "future-dsl-procedure",
+      "confidence": "medium",
+      "observations": "Transports a measured coordinate between supplied reference points and directions using existing primitives."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.circ-arcby-angle",
+      "legacy_index": 20,
+      "mode_id": 100020,
+      "command_name": "circArcbyAngle",
+      "tool_name": "circArcbyAngle",
+      "help": "Center, Start Point, Angle",
+      "original_toolbar": {
+        "group": 16,
+        "subgroup": 1,
+        "position": 5
+      },
+      "inputs": [
+        {
+          "label": "A",
+          "type": "point"
+        },
+        {
+          "label": "B",
+          "type": "point"
+        },
+        {
+          "label": "phi",
+          "type": "angle"
+        }
+      ],
+      "outputs": [
+        {
+          "label": "c",
+          "type": "conicpart"
+        },
+        {
+          "label": "B'",
+          "type": "point"
+        }
+      ],
+      "dependencies": {
+        "embedded_tools": [],
+        "baseline_commands": [
+          "If",
+          "Rotate"
+        ]
+      },
+      "contains_geogebrascript": false,
+      "family": "planar-construction",
+      "category": "construction-2d",
+      "maturity": "legacy",
+      "architecture_recommendation": "remain-external-legacy",
+      "confidence": "high",
+      "observations": "Composed circular arc construction from centre, start point, and angle."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.dummy-rotate",
+      "legacy_index": 21,
+      "mode_id": 100021,
+      "command_name": "dummyRotate",
+      "tool_name": "dummyRotate",
+      "help": "Leg and center point, angle",
+      "original_toolbar": {
+        "group": 17,
+        "subgroup": 3,
+        "position": 2
+      },
+      "inputs": [
+        {
+          "label": "A",
+          "type": "point"
+        },
+        {
+          "label": "B",
+          "type": "point"
+        },
+        {
+          "label": "phi",
+          "type": "angle"
+        }
+      ],
+      "outputs": [
+        {
+          "label": "A'",
+          "type": "point"
+        }
+      ],
+      "dependencies": {
+        "embedded_tools": [],
+        "baseline_commands": [
+          "Rotate"
+        ]
+      },
+      "contains_geogebrascript": false,
+      "family": "coordinate-transport",
+      "category": "descriptive-geometry-procedure",
+      "maturity": "legacy",
+      "architecture_recommendation": "future-dsl-procedure",
+      "confidence": "medium",
+      "observations": "Convenience rotation of a point around a centre; broader descriptive-geometry rotation policy is deferred."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.conj2main-axes-ellipse",
+      "legacy_index": 22,
+      "mode_id": 100022,
+      "command_name": "conj2mainAxesEllipse",
+      "tool_name": "conj2mainAxesEllipse",
+      "help": "Center, Conj Point1, Conj Point 2",
+      "original_toolbar": {
+        "group": 16,
+        "subgroup": 1,
+        "position": 4
+      },
+      "inputs": [
+        {
+          "label": "A",
+          "type": "point"
+        },
+        {
+          "label": "B",
+          "type": "point"
+        },
+        {
+          "label": "C",
+          "type": "point"
+        }
+      ],
+      "outputs": [
+        {
+          "label": "L",
+          "type": "point"
+        },
+        {
+          "label": "K",
+          "type": "point"
+        },
+        {
+          "label": "N",
+          "type": "point"
+        },
+        {
+          "label": "M",
+          "type": "point"
+        }
+      ],
+      "dependencies": {
+        "embedded_tools": [],
+        "baseline_commands": [
+          "Circle",
+          "Distance",
+          "If",
+          "Intersect",
+          "Line",
+          "Midpoint",
+          "UnitVector"
+        ]
+      },
+      "contains_geogebrascript": false,
+      "family": "planar-construction",
+      "category": "construction-2d",
+      "maturity": "legacy",
+      "architecture_recommendation": "future-high-level-command",
+      "confidence": "high",
+      "observations": "Derives principal-axis endpoints from conjugate ellipse axes with conditional handling documented in the 2025 tool paper."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.ellipse-length12",
+      "legacy_index": 23,
+      "mode_id": 100023,
+      "command_name": "ellipseLength12",
+      "tool_name": "ellipseLength12",
+      "help": "Ellipse, Point 1, Point 2 (counterclock",
+      "original_toolbar": {
+        "group": 15,
+        "subgroup": 4,
+        "position": 2
+      },
+      "inputs": [
+        {
+          "label": "f",
+          "type": "conic"
+        },
+        {
+          "label": "H",
+          "type": "point"
+        },
+        {
+          "label": "C",
+          "type": "point"
+        }
+      ],
+      "outputs": [
+        {
+          "label": "g",
+          "type": "conicpart"
+        },
+        {
+          "label": "a",
+          "type": "numeric"
+        }
+      ],
+      "dependencies": {
+        "embedded_tools": [],
+        "baseline_commands": [
+          "Arc",
+          "Length"
+        ]
+      },
+      "contains_geogebrascript": false,
+      "family": "curve-measurement",
+      "category": "transport-measurement",
+      "maturity": "legacy",
+      "architecture_recommendation": "remain-external-legacy",
+      "confidence": "high",
+      "observations": "Builds an ellipse arc between two points and applies the baseline Length command."
+    },
+    {
+      "id": "cedg.legacy.template-v7.tool.ifpositive-select-point",
+      "legacy_index": 24,
+      "mode_id": 100024,
+      "command_name": "IFPositiveSelectPoint",
+      "tool_name": "IFPositiveSelectPoint",
+      "help": "Point 1, Point 2, sgn variable",
+      "original_toolbar": {
+        "group": 18,
+        "subgroup": 1,
+        "position": 1
+      },
+      "inputs": [
+        {
+          "label": "M_4",
+          "type": "point"
+        },
+        {
+          "label": "L_4",
+          "type": "point"
+        },
+        {
+          "label": "v_1",
+          "type": "numeric"
+        }
+      ],
+      "outputs": [
+        {
+          "label": "O_4",
+          "type": "point"
+        }
+      ],
+      "dependencies": {
+        "embedded_tools": [],
+        "baseline_commands": [
+          "If"
+        ]
+      },
+      "contains_geogebrascript": false,
+      "family": "conditional-utility",
+      "category": "general-utility",
+      "maturity": "legacy",
+      "architecture_recommendation": "future-dsl-procedure",
+      "confidence": "high",
+      "observations": "Selects one of two points from the sign of a numeric input; it is a composed conditional utility."
+    }
+  ]
+}

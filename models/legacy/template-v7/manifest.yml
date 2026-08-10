@@ -1,0 +1,79 @@
+{
+  "$schema": "../../../geocedg/specs/operations/model-manifest.schema.json",
+  "schema_version": 1,
+  "template": false,
+  "id": "cedg.legacy.template-v7",
+  "maturity": "legacy",
+  "source": {
+    "uri": "author-supplied:docs/legacy/Templatev7.ggb",
+    "author": "Manuel Prado-Velasco",
+    "date": null,
+    "provenance_notes": "Historical author-supplied CeDG template moved byte-for-byte from the provisional docs/legacy intake area during G3."
+  },
+  "required_geogebra": {
+    "version": "5.4.928.0",
+    "baseline_sha": "9b93256b7df401ff056c37b502d82df4d72b1522"
+  },
+  "loaded_by_default": false,
+  "inputs": [],
+  "outputs": [],
+  "validity_domain": {
+    "description": "Container-level validity is unknown; each embedded tool remains subject to characterization before promotion.",
+    "parameters": []
+  },
+  "known_degeneracies": [
+    "Embedded tool validity domains are not fully documented.",
+    "Legacy locus post-processing depends on sampled points, filtering parameters, and source Locus coverage.",
+    "Global JavaScript relies on document object names and the historical CopyFreeObject workflow."
+  ],
+  "reference_models": [],
+  "expected_metrics": {
+    "embedded_tool_count": 24,
+    "legacy_custom_toolbar_group_count": 7
+  },
+  "license": {
+    "spdx": null,
+    "evidence": "Author-supplied container includes embedded GeoGebra UI images and code; no complete redistribution clearance is recorded.",
+    "review_status": "blocked"
+  },
+  "replacement_candidate": null,
+  "artifact": {
+    "path": "models/legacy/template-v7/original/Templatev7.ggb",
+    "format": "ggb",
+    "sha256": "f62e5b7a92bcd95f10b8afda348763a57ccbd0c10dbc0c2bccc7049831ed4113",
+    "immutable": true
+  },
+  "source_environment": {
+    "geogebra_version": "5.2.879.0",
+    "app": "classic",
+    "platform": "desktop"
+  },
+  "derived_artifacts": [
+    {
+      "path": "models/legacy/template-v7/curation.yml",
+      "role": "curation"
+    },
+    {
+      "path": "models/legacy/template-v7/derived/tool-inventory.yml",
+      "role": "inventory"
+    }
+  ],
+  "implementation": {
+    "mechanisms": [
+      "embedded-ggb-macros",
+      "document-geogebrascript",
+      "global-javascript",
+      "custom-document-toolbar"
+    ],
+    "embedded_tools": 24,
+    "global_javascript": true
+  },
+  "publications": [
+    "cedg.reference.tools-and-oblique-cone-2025"
+  ],
+  "laboratory": {
+    "eligible": true,
+    "loader": "tools/legacy/open-laboratory.ps1",
+    "stable_toolbar_replaced": false
+  }
+}

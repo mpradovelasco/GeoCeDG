@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://geocedg.local/schemas/scientific-reference-catalog-v1",
+  "title": "GeoCeDG scientific reference catalog",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_version", "catalog_id", "references"],
+  "properties": {
+    "$schema": { "type": "string", "minLength": 1 },
+    "schema_version": { "const": 1 },
+    "catalog_id": { "const": "cedg.scientific-references" },
+    "references": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "kind",
+          "title",
+          "authors",
+          "year",
+          "citation",
+          "doi",
+          "isbn",
+          "path",
+          "sha256",
+          "pages",
+          "topics",
+          "relation",
+          "rights"
+        ],
+        "properties": {
+          "id": { "type": "string", "pattern": "^cedg\\.reference\\.[a-z0-9]+(?:[.-][a-z0-9]+)*$" },
+          "kind": { "enum": ["book", "journal-article", "book-chapter", "conference-paper", "conference-abstract", "manuscript"] },
+          "title": { "type": "string", "minLength": 1 },
+          "authors": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+          "year": { "type": ["integer", "null"] },
+          "citation": { "type": "string", "minLength": 1 },
+          "doi": { "type": ["string", "null"] },
+          "isbn": { "type": ["string", "null"] },
+          "path": { "type": "string", "minLength": 1 },
+          "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "pages": { "type": "integer", "minimum": 1 },
+          "topics": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+          "relation": { "type": "string", "minLength": 1 },
+          "rights": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["status", "spdx", "evidence"],
+            "properties": {
+              "status": { "enum": ["open-access", "restricted", "unreviewed"] },
+              "spdx": { "type": ["string", "null"] },
+              "evidence": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    }
+  }
+}
