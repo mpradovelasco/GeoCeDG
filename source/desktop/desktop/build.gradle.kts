@@ -17,10 +17,18 @@ val e2eTest: SourceSet by sourceSets.creating {
     runtimeClasspath += sourceSets.main.get().output
 }
 
+val desktopJavaLauncher = project.javaToolchains.launcherFor {
+    languageVersion.set(JavaLanguageVersion.of(25))
+}
+val desktopJvmArgs = listOf(
+    "--add-exports", "java.base/java.lang=ALL-UNNAMED",
+    "--add-exports", "java.desktop/sun.awt=ALL-UNNAMED",
+    "--add-exports", "java.desktop/sun.java2d=ALL-UNNAMED",
+    "--enable-native-access=ALL-UNNAMED"
+)
+
 tasks.getByName<JavaExec>("run") {
-    javaLauncher = project.javaToolchains.launcherFor {
-        languageVersion.set(JavaLanguageVersion.of(25))
-    }
+    javaLauncher = desktopJavaLauncher
 }
 
 val e2eTestImplementation: Configuration by configurations.getting
@@ -75,10 +83,24 @@ tasks.test {
 application {
     mainClass = "org.geogebra.desktop.GeoGebra3D"
  // https://forum.jogamp.org/Unable-to-determine-Graphics-Configuration-Am-I-setting-up-something-wrong-tp4041606p4041636.html
-    applicationDefaultJvmArgs = listOf("--add-exports", "java.base/java.lang=ALL-UNNAMED",
-            "--add-exports", "java.desktop/sun.awt=ALL-UNNAMED",
-            "--add-exports", "java.desktop/sun.java2d=ALL-UNNAMED",
-        "--enable-native-access=ALL-UNNAMED")
+    applicationDefaultJvmArgs = desktopJvmArgs
+}
+
+tasks.processResources {
+    from(rootProject.file("../../apps/geocedg/application-profile.yml")) {
+        into("org/geocedg/desktop")
+    }
+}
+
+tasks.register<JavaExec>("runGeoCeDG") {
+    group = "application"
+    description = "Run the GeoCeDG Desktop product profile."
+    dependsOn(tasks.named("classes"))
+    classpath = sourceSets.main.get().runtimeClasspath
+    mainClass = "org.geocedg.desktop.GeoCeDG"
+    javaLauncher = desktopJavaLauncher
+    setJvmArgs(desktopJvmArgs)
+    standardInput = System.`in`
 }
 
 run {

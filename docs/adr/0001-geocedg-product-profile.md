@@ -1,9 +1,9 @@
 # ADR 0001: Dedicated GeoCeDG product profile
 
-- Status: **Proposed**
-- Date: 2026-08-09
+- Status: **Accepted for G2**
+- Date: 2026-08-10
 - Baseline: `9b93256b7df401ff056c37b502d82df4d72b1522`
-- Decision owners: pending human review
+- Decision owners: GeoCeDG project owner
 
 ## Context
 
@@ -31,13 +31,14 @@ and Desktop applies the chosen/default perspective during `AppD`
 initialization (`AppD.java:494-497`). Toolbar definitions are parsed from the
 existing numeric grammar rather than being independent widget declarations.
 
-## Proposed decision
+## Decision
 
 Introduce a dedicated GeoCeDG launch path and configuration, without changing
 the default Classic launch path:
 
 1. Add a GeoCeDG `AppConfig` implementation in the shared application
-   configuration layer.
+   configuration layer. It has a dedicated product profile ID, visible name,
+   and preference key.
 2. Add a dedicated Desktop launcher/frame/application path that selects this
    config before `AppD` performs any config-dependent initialization.
 3. Add the smallest compatible constructor/factory seam needed to inject the
@@ -46,17 +47,22 @@ the default Classic launch path:
    behavior.
 4. Let the profile select a GeoCeDG default perspective and feature/tool
    policy. Keep an explicit diagnostic route to Upstream Classic.
-5. Make a future GeoCeDG UI manifest the durable toolbar source; compile it to
-   the existing toolbar-string adapter rather than maintaining divergent
+5. Make `apps/geocedg/application-profile.yml` the durable perspective and
+   toolbar source; copy it as a runtime resource and translate it to the
+   existing toolbar-string adapter rather than maintaining divergent
    hard-coded strings.
-6. Give GeoCeDG its own application code and preference namespace before any
-   user-facing release.
+6. Use profile ID `geocedg-desktop`, preference key `geocedg`, and Windows app
+   ID `org.geocedg.desktop`. Isolate Desktop preferences using the existing
+   settings-file mechanism.
+7. Preserve `classic` as the app code serialized in `.ggb` during G2. A new
+   persisted GeoCeDG app code requires a separate compatibility decision.
+8. Use textual branding only. Suppress the inherited splash and frame icon in
+   the GeoCeDG launcher; do not add or claim rights over upstream assets.
 
-This ADR does not approve class names, constructor signatures, toolbar
-contents, branding assets, commands, or feature flags. Those details require
-a focused implementation design and tests.
+The exact accepted contract is
+`geocedg/specs/ui/application-profile.md`; the manifest is version 1.
 
-## Consequences if accepted
+## Consequences
 
 - Classic 5 remains buildable and launchable through
   `org.geogebra.desktop.GeoGebra3D`.
@@ -65,8 +71,10 @@ a focused implementation design and tests.
 - Shared semantic code remains frontend-independent.
 - The constructor seam is a small upstream diff but must be tested because
   configuration is already read during initialization.
-- GeoCeDG preferences and assets can be audited independently from upstream
-  materials.
+- GeoCeDG preferences can be audited independently from upstream materials.
+- G2 files remain serialization-compatible with Classic because their header
+  app code does not change.
+- Final branding and distributable asset replacement remain release blockers.
 
 ## Alternatives considered
 
@@ -93,23 +101,24 @@ Rejected for the product boundary. Scripts and user tools may remain
 experimental content, but they cannot own application identity or kernel
 semantics.
 
-## Required validation before acceptance
+## Acceptance validation
 
-- Classic launcher behavior is byte-for-byte/behaviorally unchanged where
-  applicable.
+- Classic launcher behavior remains equivalent; the shared hooks retain their
+  previous Classic defaults.
 - GeoCeDG config is installed before its first read.
 - Preference namespaces do not collide.
 - perspective and toolbar selection are deterministic and manifest-driven;
 - serialization compatibility is unchanged by selecting the profile;
 - Desktop compile, launch smoke, focused profile tests, and baseline verifier
   pass;
-- licensing review approves every bundled GeoCeDG/upstream asset.
+- no new branded asset is bundled; remaining inherited-asset questions stay in
+  the licensing matrix and G2 report.
 
-## Open questions
+## Deferred questions
 
-- Exact application code and preference key format.
-- Whether the minimal injection seam belongs in `AppD`, a factory, or a new
-  pre-initialization parameter object.
-- Exact feature/profile manifest schema.
+- Whether a future file-format policy should introduce a persisted GeoCeDG app
+  code and migration/compatibility rules.
 - Whether a later independent Gradle application module reduces release
   coupling enough to justify its maintenance cost.
+- Which owned and reviewed translations, icons, styles, and other assets will
+  replace inherited baseline materials before redistribution.

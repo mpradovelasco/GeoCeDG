@@ -75,6 +75,7 @@ Canonical tasks from the root:
 | Shared renderer prerequisites | run from `source/shared`: `..\..\gradlew.bat :canvas-base:compileJava :renderer-base:compileJava` |
 | Desktop compilation | `:desktop:desktop:compileJava` |
 | Desktop launch | `:desktop:desktop:run` |
+| GeoCeDG G2 launch | `:desktop:desktop:runGeoCeDG` |
 | Desktop unit tests | `:desktop:desktop:test` |
 | Installed application distribution | `:desktop:desktop:installDist` |
 | ZIP/TAR distributions | `:desktop:desktop:distZip`, `:desktop:desktop:distTar` |

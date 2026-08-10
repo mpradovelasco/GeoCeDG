@@ -26,6 +26,7 @@ $VersionFile = Join-Path $RepositoryRoot `
     "source\shared\common\src\main\java\org\geogebra\common\GeoGebraConstants.java"
 $DesktopBuildFile = Join-Path $RepositoryRoot "source\desktop\desktop\build.gradle.kts"
 $LogDirectory = [IO.Path]::GetFullPath($LogDirectory)
+. (Join-Path $PSScriptRoot "upstream-boundary.ps1")
 
 function Invoke-CapturedNative {
     param(
@@ -236,40 +237,9 @@ try {
     }
     Write-Host "Archived upstream README blob: $archivedReadmeBlob"
 
-    $upstreamPaths = @(
-        "source",
-        "gradle",
-        "gradle.properties",
-        "settings.gradle.kts",
-        "gradlew",
-        "gradlew.bat",
-        "doc/dev"
-    )
-
-    Assert-NativeSuccess -Description "Committed upstream-tree pin check" -Command {
-        & git -C $RepositoryRoot diff --quiet "$ExpectedBaseline..HEAD" -- @upstreamPaths
-    }
-    Assert-NativeSuccess -Description "Unstaged upstream-tree pin check" -Command {
-        & git -C $RepositoryRoot diff --quiet -- @upstreamPaths
-    }
-    Assert-NativeSuccess -Description "Staged upstream-tree pin check" -Command {
-        & git -C $RepositoryRoot diff --cached --quiet -- @upstreamPaths
-    }
-
-    $untrackedUpstream = & git -C $RepositoryRoot ls-files --others `
-        --exclude-standard -- @upstreamPaths
-    if ($LASTEXITCODE -ne 0) {
-        throw "Unable to inspect untracked upstream paths."
-    }
-    $unexpectedUpstream = @($untrackedUpstream | Where-Object {
-            $segments = $_ -split "[/\\]"
-            @($segments | Where-Object {
-                    $GeneratedDirectoryNames -contains $_
-                }).Count -eq 0
-        })
-    if ($unexpectedUpstream.Count -gt 0) {
-        throw "Untracked files exist in upstream-owned paths: $($unexpectedUpstream -join ', ')"
-    }
+    Assert-GeoCeDGUpstreamBoundary -RepositoryRoot $RepositoryRoot `
+        -ExpectedBaseline $ExpectedBaseline `
+        -GeneratedDirectoryNames $GeneratedDirectoryNames
 
     Assert-NativeSuccess -Description "Working-tree whitespace check" -Command {
         & git -C $RepositoryRoot diff --check

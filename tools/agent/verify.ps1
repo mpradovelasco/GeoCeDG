@@ -16,6 +16,7 @@ $ErrorActionPreference = "Stop"
 $RepositoryRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot "..\..")).Path
 $OperationalVerifier = Join-Path $PSScriptRoot "verify-operational.ps1"
 $BaselineVerifier = Join-Path $PSScriptRoot "verify-baseline.ps1"
+$FrontendVerifier = Join-Path $PSScriptRoot "verify-frontend.ps1"
 $BenchmarkRunner = Join-Path $RepositoryRoot "tools\benchmark\run.ps1"
 $InitialStatus = $null
 
@@ -59,6 +60,22 @@ try {
     Write-Host "`n==> Pinned GeoGebra baseline"
     & $BaselineVerifier @baselineParameters
     Assert-LastScriptSuccess -Description "Pinned GeoGebra baseline"
+
+    $frontendParameters = @{
+        LogDirectory = Join-Path ([IO.Path]::GetFullPath($LogDirectory)) "frontend"
+    }
+    if ($SkipBuild) {
+        $frontendParameters.SkipBuild = $true
+    }
+    if ($AllowToolchainDownload) {
+        $frontendParameters.AllowToolchainDownload = $true
+    }
+    if ($KeepBuildOutputs) {
+        $frontendParameters.KeepBuildOutputs = $true
+    }
+    Write-Host "`n==> GeoCeDG frontend profile"
+    & $FrontendVerifier @frontendParameters
+    Assert-LastScriptSuccess -Description "GeoCeDG frontend profile"
 
     if ($RunBenchmarks) {
         if ([string]::IsNullOrWhiteSpace($BenchmarkOutputPath)) {

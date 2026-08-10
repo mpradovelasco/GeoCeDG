@@ -1,0 +1,85 @@
+{
+  "$schema": "../../geocedg/specs/operations/upstream-modifications.schema.json",
+  "schema_version": 1,
+  "baseline_sha": "9b93256b7df401ff056c37b502d82df4d72b1522",
+  "modifications": [
+    {
+      "path": "source/build-logic/convention/src/main/resources/checkstyle/checkstyle.xml",
+      "change": "modified",
+      "purpose": "Recognize GeoCeDG-owned Java headers while preserving all remaining upstream checks.",
+      "authority": "docs/adr/0001-geocedg-product-profile.md"
+    },
+    {
+      "path": "source/desktop/desktop/build.gradle.kts",
+      "change": "modified",
+      "purpose": "Package the profile manifest and expose the explicit runGeoCeDG launcher task.",
+      "authority": "docs/adr/0001-geocedg-product-profile.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/geogebra3D/App3D.java",
+      "change": "modified",
+      "purpose": "Allow a derived Desktop application to install its AppConfig before GUI initialization.",
+      "authority": "docs/adr/0001-geocedg-product-profile.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/GuiManagerD.java",
+      "change": "modified",
+      "purpose": "Obtain the window title from the frame profile hook instead of a Classic-only constant.",
+      "authority": "docs/adr/0001-geocedg-product-profile.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/app/GeoGebraFrame.java",
+      "change": "modified",
+      "purpose": "Add conservative title, application ID, and frame factory hooks with unchanged Classic defaults.",
+      "authority": "docs/adr/0001-geocedg-product-profile.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/main/AppD.java",
+      "change": "modified",
+      "purpose": "Install a supplied application config early and allow a profile-specific safe frame icon.",
+      "authority": "docs/adr/0001-geocedg-product-profile.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/main/settings/config/AppConfigGeoCeDG.java",
+      "change": "added",
+      "purpose": "Define isolated GeoCeDG product identity while preserving Classic serialization semantics.",
+      "authority": "geocedg/specs/ui/application-profile.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/main/settings/config/AppConfigGeoCeDGTest.java",
+      "change": "added",
+      "purpose": "Verify identity, preferences, serialization compatibility, and the future filter seam.",
+      "authority": "geocedg/specs/ui/application-profile.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/AppGeoCeDG.java",
+      "change": "added",
+      "purpose": "Instantiate the GeoCeDG config and manifest-defined initial perspective on Desktop.",
+      "authority": "geocedg/specs/ui/application-profile.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDG.java",
+      "change": "added",
+      "purpose": "Provide the explicit GeoCeDG Desktop process entry point and isolated preferences path.",
+      "authority": "geocedg/specs/ui/application-profile.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGFrame.java",
+      "change": "added",
+      "purpose": "Preserve the GeoCeDG application profile across frames and new windows.",
+      "authority": "geocedg/specs/ui/application-profile.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGProfile.java",
+      "change": "added",
+      "purpose": "Load the maintainable profile manifest and compile its toolbar and perspective contracts.",
+      "authority": "apps/geocedg/application-profile.yml"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGProfileTest.java",
+      "change": "added",
+      "purpose": "Verify manifest compilation, initial layout, launcher identity, and preference isolation.",
+      "authority": "geocedg/specs/ui/application-profile.md"
+    }
+  ]
+}

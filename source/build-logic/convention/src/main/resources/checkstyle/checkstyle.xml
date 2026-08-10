@@ -31,7 +31,7 @@
     <module name="SuppressWithNearbyTextFilter">
         <property name="checkPattern" value="RegexpHeader"/>
         <property name="lineRange" value="1"/>
-        <property name="nearbyTextPattern" value="generated|Generated|vendored"/>
+        <property name="nearbyTextPattern" value="generated|Generated|vendored|GeoCeDG"/>
     </module>
     <module name="RegexpMultiline">
         <property name="format" value="\n\s*\n\s*\n"/>

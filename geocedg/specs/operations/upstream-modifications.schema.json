@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://geocedg.local/schemas/upstream-modifications-v1",
+  "title": "GeoCeDG controlled upstream modifications",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_version", "baseline_sha", "modifications"],
+  "properties": {
+    "$schema": { "type": "string", "minLength": 1 },
+    "schema_version": { "const": 1 },
+    "baseline_sha": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "modifications": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/modification" }
+    }
+  },
+  "$defs": {
+    "modification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "change", "purpose", "authority"],
+      "properties": {
+        "path": { "type": "string", "pattern": "^(source|gradle|doc/dev)/" },
+        "change": { "enum": ["added", "modified"] },
+        "purpose": { "type": "string", "minLength": 1 },
+        "authority": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

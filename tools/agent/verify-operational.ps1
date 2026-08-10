@@ -11,6 +11,7 @@ $RootPrefix = $RepositoryRoot + [IO.Path]::DirectorySeparatorChar
 $ExpectedBaseline = "9b93256b7df401ff056c37b502d82df4d72b1522"
 $ExpectedVersion = "5.4.928.0"
 $ExpectedTag = "geogebra-baseline-5.4.928.0"
+. (Join-Path $PSScriptRoot "upstream-boundary.ps1")
 
 function Write-Step {
     param([Parameter(Mandatory)] [string]$Message)
@@ -116,6 +117,7 @@ try {
         ".github/prompts/canonical/verification.prompt.md",
         ".github/prompts/tasks/task-template.prompt.md",
         ".github/prompts/tasks/g1-operational-layer.prompt.md",
+        ".github/prompts/tasks/g2-frontend-foundation.prompt.md",
         ".github/prompts/reviews/change-review.prompt.md",
         ".github/workflows/verify.yml",
         "ai-shell/prompts/ask.md",
@@ -124,7 +126,9 @@ try {
         "ai-shell/prompts/refactor.md",
         "ai-shell/prompts/architect.md",
         "docs/adr/0002-g1-operational-authority.md",
+        "docs/adr/0001-geocedg-product-profile.md",
         "docs/upstream/GEOGEBRA_README.md",
+        "docs/upstream/modified-files.yml",
         "docs/validation/g1r_repository_onboarding_report.md",
         "docs/validation/g1_operational_layer_report.md",
         "geocedg/specs/operations/manifest-contracts.md",
@@ -132,8 +136,12 @@ try {
         "geocedg/specs/operations/model-manifest.schema.json",
         "geocedg/specs/operations/benchmark-suite.schema.json",
         "geocedg/specs/operations/regression-catalog.schema.json",
+        "geocedg/specs/operations/upstream-modifications.schema.json",
+        "geocedg/specs/ui/application-profile.schema.json",
+        "geocedg/specs/ui/application-profile.md",
         "geocedg/features/stable.yml",
         "geocedg/features/experimental.yml",
+        "apps/geocedg/application-profile.yml",
         "models/manifests/model-manifest.template.yml",
         "models/manifests/catalog.yml",
         "geocedg/validation/regression/catalog.yml",
@@ -142,8 +150,10 @@ try {
         "artifacts/README.md",
         "README.md",
         "tools/agent/verify-baseline.ps1",
+        "tools/agent/verify-frontend.ps1",
         "tools/agent/verify-operational.ps1",
         "tools/agent/verify.ps1",
+        "tools/agent/upstream-boundary.ps1",
         "tools/bootstrap/bootstrap-windows.ps1",
         "tools/benchmark/run.ps1"
     )
@@ -160,6 +170,7 @@ try {
             $ExpectedTag,
             ".\tools\bootstrap\bootstrap-windows.ps1",
             ".\gradlew.bat :desktop:desktop:run",
+            ".\gradlew.bat :desktop:desktop:runGeoCeDG",
             "docs/upstream/GEOGEBRA_README.md")) {
         Assert-Condition -Condition $rootReadme.Contains($requiredReadmeValue) `
             -Message "README.md is missing '$requiredReadmeValue'."
@@ -226,7 +237,9 @@ try {
         "geocedg/specs/operations/feature-set.schema.json",
         "geocedg/specs/operations/model-manifest.schema.json",
         "geocedg/specs/operations/benchmark-suite.schema.json",
-        "geocedg/specs/operations/regression-catalog.schema.json"
+        "geocedg/specs/operations/regression-catalog.schema.json",
+        "geocedg/specs/operations/upstream-modifications.schema.json",
+        "geocedg/specs/ui/application-profile.schema.json"
     )
     foreach ($schemaPath in $schemaPaths) {
         $schema = Read-JsonCompatibleYaml -RelativePath $schemaPath
@@ -254,6 +267,40 @@ try {
             [void](Resolve-RepositoryPath -RelativePath $feature.specification -RequireFile)
         }
     }
+
+    $applicationProfilePath = "apps/geocedg/application-profile.yml"
+    $applicationProfile = Read-JsonCompatibleYaml -RelativePath $applicationProfilePath
+    Assert-Properties -Value $applicationProfile -Names @(
+        '$schema', 'schema_version', 'profile_id', 'application', 'serialization',
+        'perspective', 'toolbar', 'features') -Description $applicationProfilePath
+    Assert-Condition -Condition (
+        $applicationProfile.schema_version -eq 1 -and
+        $applicationProfile.profile_id -eq "geocedg-desktop" -and
+        $applicationProfile.application.name -eq "GeoCeDG" -and
+        $applicationProfile.application.preferences_key -eq "geocedg" -and
+        $applicationProfile.application.windows_app_id -eq "org.geocedg.desktop") `
+        -Message "GeoCeDG application profile identity is invalid."
+    Assert-Condition -Condition (
+        $applicationProfile.serialization.app_code -eq "classic" -and
+        $applicationProfile.serialization.policy -eq "preserve-upstream-g2") `
+        -Message "G2 must preserve Classic serialization semantics."
+    Assert-Condition -Condition (@($applicationProfile.toolbar.categories).Count -gt 0) `
+        -Message "GeoCeDG toolbar has no active categories."
+    foreach ($featureId in @($applicationProfile.features)) {
+        Assert-Condition -Condition $allFeatureIds.Contains([string]$featureId) `
+            -Message "Application profile references unknown feature: $featureId"
+    }
+
+    $upstreamModificationsPath = "docs/upstream/modified-files.yml"
+    $upstreamModifications = Read-JsonCompatibleYaml `
+        -RelativePath $upstreamModificationsPath
+    Assert-Properties -Value $upstreamModifications -Names @(
+        '$schema', 'schema_version', 'baseline_sha', 'modifications') `
+        -Description $upstreamModificationsPath
+    Assert-Condition -Condition (
+        $upstreamModifications.schema_version -eq 1 -and
+        $upstreamModifications.baseline_sha -eq $ExpectedBaseline) `
+        -Message "Controlled upstream modification manifest is not pinned to the baseline."
 
     $modelTemplatePath = "models/manifests/model-manifest.template.yml"
     $modelTemplate = Read-JsonCompatibleYaml -RelativePath $modelTemplatePath
@@ -353,7 +400,7 @@ try {
         }
     }
 
-    Write-Step "No model import in G1"
+    Write-Step "No legacy model or tool import before G3"
     $forbiddenModelExtensions = @(".ggb", ".ggt", ".js")
     $importedModels = @(Get-ChildItem -LiteralPath (Join-Path $RepositoryRoot "models") `
         -Recurse -File | Where-Object {
@@ -361,7 +408,7 @@ try {
         })
     $importedModelNames = @($importedModels | ForEach-Object { $_.FullName }) -join ", "
     Assert-Condition -Condition ($importedModels.Count -eq 0) `
-        -Message "G1 contains imported model/tool assets: $importedModelNames"
+        -Message "A legacy model/tool asset was imported before G3: $importedModelNames"
 
     Write-Step "CI delegates to executable authority"
     $workflow = Get-Content -Raw -LiteralPath (
@@ -376,7 +423,7 @@ try {
     Write-Step "Operational text hygiene"
     $ownedTextRoots = @(
         ".github", "ai-shell", "geocedg", "models", "benchmarks",
-        "artifacts", "tools/benchmark", "tools/bootstrap"
+        "artifacts", "apps", "tools/agent", "tools/benchmark", "tools/bootstrap"
     )
     $ownedTextFiles = [Collections.Generic.List[string]]::new()
     foreach ($root in $ownedTextRoots) {
@@ -390,12 +437,17 @@ try {
             ".gitattributes",
             "README.md",
             "UPSTREAM.md",
+            "docs/adr/0001-geocedg-product-profile.md",
             "docs/adr/0002-g1-operational-authority.md",
+            "docs/upstream/modified-files.yml",
+            "docs/validation/g2_frontend_foundation_report.md",
             "docs/validation/g1r_repository_onboarding_report.md",
             "docs/validation/g1_operational_layer_report.md",
             "tools/agent/verify-baseline.ps1",
+            "tools/agent/verify-frontend.ps1",
             "tools/agent/verify-operational.ps1",
-            "tools/agent/verify.ps1")) {
+            "tools/agent/verify.ps1",
+            "tools/agent/upstream-boundary.ps1")) {
         $ownedTextFiles.Add((Resolve-RepositoryPath -RelativePath $relative -RequireFile))
     }
     foreach ($textFile in $ownedTextFiles | Sort-Object -Unique) {
@@ -409,25 +461,8 @@ try {
     Assert-NativeSuccess -Description "Index whitespace check" -Command {
         & git -C $RepositoryRoot diff --cached --check
     }
-    $upstreamPaths = @(
-        "source", "gradle", "gradle.properties", "settings.gradle.kts",
-        "gradlew", "gradlew.bat", "doc/dev"
-    )
-    Assert-NativeSuccess -Description "Committed upstream boundary" -Command {
-        & git -C $RepositoryRoot diff --quiet "$ExpectedBaseline..HEAD" -- @upstreamPaths
-    }
-    Assert-NativeSuccess -Description "Unstaged upstream boundary" -Command {
-        & git -C $RepositoryRoot diff --quiet -- @upstreamPaths
-    }
-    Assert-NativeSuccess -Description "Staged upstream boundary" -Command {
-        & git -C $RepositoryRoot diff --cached --quiet -- @upstreamPaths
-    }
-    $untrackedUpstream = @(& git -C $RepositoryRoot ls-files --others `
-        --exclude-standard -- @upstreamPaths)
-    Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
-        -Message "Unable to inspect untracked upstream paths."
-    Assert-Condition -Condition ($untrackedUpstream.Count -eq 0) `
-        -Message "Untracked files exist in upstream paths: $($untrackedUpstream -join ', ')"
+    Assert-GeoCeDGUpstreamBoundary -RepositoryRoot $RepositoryRoot `
+        -ExpectedBaseline $ExpectedBaseline
 
     if (-not $Quiet) {
         Write-Host "Operational verification passed."
