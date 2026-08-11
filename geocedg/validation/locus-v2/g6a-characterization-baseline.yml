@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "id": "cedg.validation.g6a.characterization-baseline",
+  "status": "g6a-pass-author-approved",
+  "baseline": {
+    "geogebra_version": "5.4.928.0",
+    "upstream_sha": "9b93256b7df401ff056c37b502d82df4d72b1522",
+    "tag": "geogebra-baseline-5.4.928.0"
+  },
+  "environment": {
+    "os": "Windows 11 Pro 10.0.26200",
+    "architecture": "amd64",
+    "logical_processors": 24,
+    "memory_bytes": 34186194944,
+    "powershell": "7.6.4",
+    "gradle": "9.4.1",
+    "gradle_launcher_java": "Oracle JDK 22.0.2",
+    "common_jre_test_toolchain": "Amazon Corretto 17.0.10",
+    "desktop_toolchain_observed": "Eclipse Adoptium JDK 25.0.4"
+  },
+  "test_command": ".\\gradlew.bat -p source/shared :common-jre:test --tests org.geocedg.common.locus.LegacyLocusCharacterizationTest --tests org.geocedg.common.locus.LocusV2SemanticCharacterizationTest --tests org.geocedg.common.locus.LegacyCeDGScientificModelCharacterizationTest --no-build-cache --no-daemon --max-workers=1 --no-problems-report --info",
+  "tests": {
+    "legacy": 6,
+    "semantic_fixture": 5,
+    "scientific_model": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "legacy_metrics": {
+    "zoom_samples_near": 277,
+    "zoom_samples_far": 160,
+    "zoom_chord_perimeter_near": 20.565979779489272,
+    "zoom_chord_perimeter_far": 20.565121501408928,
+    "function_domain_near": [-5.0, 5.0],
+    "function_domain_far": [-100.0, 100.0],
+    "hyperbola_samples": 798,
+    "hyperbola_move_to_samples": 100,
+    "nested_samples_depth_1_2_3": [160, 154, 198],
+    "nested_slice_algorithms_depth_1_2_3": [3, 2, 2],
+    "nested_slice_original_elements_depth_1_2_3": [4, 4, 4],
+    "nested_recompute_median_ms_depth_1_2_3_5": [0.5589, 0.945701, 1.2681, 1.2107],
+    "dependency_chain_create_ms_depth_10_50_200": [17.601299, 23.051, 63.7688],
+    "dependency_chain_slice_algorithms_depth_10_50_200": [14, 54, 204]
+  },
+  "semantic_fixture_metrics": {
+    "outer_queries": 5,
+    "calls_depth_1_2_3_5": [5, 10, 15, 25],
+    "session_disabled_calls_repeated_depth_3": 18,
+    "session_enabled_calls_repeated_depth_3": 9,
+    "session_hits": 3,
+    "cache_enabled_disabled_results_equal": true,
+    "hidden_cycle_detected": true,
+    "render_cache_accesses": 0
+  },
+  "scientific_legacy_metrics": {
+    "model_original_sha256": "b1cb614f1a4c414144fbff29349ddebda92d1026acb4c535990a2895c589fa27",
+    "model_two_levels_sha256": "587328a8e5b6474aee3169bb6af2fe2a711e98e000a423a96bba6e38274fb2b6",
+    "stored_loci_original": 10,
+    "stored_loci_two_levels": 13,
+    "stored_original_loc10_inner_locus_algorithms": 1,
+    "stored_original_loc10_perimeter_algorithms": 1,
+    "stored_two_levels_loc11_inner_locus_algorithms": 1,
+    "stored_two_levels_loc11_perimeter_algorithms": 1,
+    "two_levels_radius_recompute_ms": 127.3908,
+    "two_levels_driver_recompute_ms": 125.2002,
+    "pre_flatten_original_recompute_ms": 31.8663,
+    "flatten_create_ms": [6034.8104, 5950.345, 5673.1672],
+    "flatten_defined": [false, false, false],
+    "flatten_samples_before_timeout": [229, 84, 64],
+    "flatten_recompute_ms": 20973.5585,
+    "flatten_inner_locus_algorithms_per_slice": [2, 2, 2],
+    "flatten_perimeter_algorithms_per_slice": [2, 2, 2],
+    "flatten_slice_algorithm_counts": [61, 73, 73],
+    "flatten_slice_original_element_counts": [102, 127, 127],
+    "legacy_step_budget_ms": 500,
+    "timing_note": "Single opt-in characterization run; timings are informational, while slice composition, timeout status and undefined results are the deterministic evidence."
+  },
+  "interpretation": {
+    "legacy_sampling_is_view_dependent": true,
+    "legacy_sample_chord_measure_is_view_dependent": true,
+    "legacy_nested_consumes_upstream_sample_path": true,
+    "legacy_downstream_slice_clones_upstream_locus_algorithm": false,
+    "controlled_legacy_depth_five_intractable": false,
+    "author_reported_severe_nested_degradation_reproduced": true,
+    "causal_scope": "observed and instrumented for the two supplied cone-cylinder fixtures only",
+    "causal_mechanism": "The outer AlgoLocusSlider macro dependency slice contains two inner legacy locus algorithms and two sample-derived perimeter algorithms. Each outer copyP.updateCascade() recomputes that slice; measured steps exceeded the 500 ms legacy budget, so all three Flatten loci became undefined.",
+    "two_level_comparison": "Stored two-level slices contain one inner locus plus one perimeter and remained defined; the three-level Flatten slice is the reproduced pathological transition.",
+    "recommended_nested_strategy": "recursive-semantic-evaluators-with-scoped-session",
+    "dag_flattening": "deferred-until-measured-need"
+  },
+  "timing_policy": "informational; absolute G6B budgets require productive repeatable measurements",
+  "raw_results": "generated Gradle XML/logs are regenerable and are not versioned",
+  "source_hashes": {
+    "LegacyLocusCharacterizationTest.java": "6e52d969d853e984c67b0166d7ed9a9eff1f01b8871310adeac1cf040dea2323",
+    "LocusV2SemanticCharacterizationTest.java": "a1372bc958af007a2b3d6f2d39b2793ad0f1e69d6b1bb04ef43c43d2a9cfc138",
+    "LegacyCeDGScientificModelCharacterizationTest.java": "50b70144796fc0d29492f3b6e2671a3feb7a6f613dfa8c44511e05f1c06aad3a",
+    "Templatev7.ggb": "f62e5b7a92bcd95f10b8afda348763a57ccbd0c10dbc0c2bccc7049831ed4113",
+    "InterCilConoOblique.ggb": "b1cb614f1a4c414144fbff29349ddebda92d1026acb4c535990a2895c589fa27",
+    "InterCilConoObliqueTwoLevels.ggb": "587328a8e5b6474aee3169bb6af2fe2a711e98e000a423a96bba6e38274fb2b6"
+  }
+}

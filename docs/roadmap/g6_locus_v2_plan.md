@@ -2,14 +2,14 @@
 
 | Field | Value |
 |---|---|
-| Planning status | **AUTHOR-REVIEW DECISIONS INCORPORATED** |
-| Project phase status | G6 remains **PENDING**; neither G6A nor G6B has started |
+| Planning status | **EXECUTED THROUGH G6A CHARACTERIZATION** |
+| Project phase status | **G6A PASS — AUTHOR APPROVED**; G6B **NOT STARTED** |
 | Baseline | GeoGebra 5.4.928.0, `9b93256b7df401ff056c37b502d82df4d72b1522` |
-| Branch | `planning/g6-locus-v2` |
-| Document version | 1.1 author-reviewed working package |
+| Branch | `feature/g6a-locus-v2-characterization` |
+| Document version | 1.3 G6A author-approved closeout |
 | Review date | 2026-08-11 |
-| Current disposition | **APPROVED AS G6A WORKING ARCHITECTURAL HYPOTHESIS**; G6A not started |
-| Required next approval | Second author review at G6A closeout before G6B |
+| Current disposition | Normative semantic contract and ADR 0006 accepted; G6A closed |
+| Required next approval | Separate author authorization to execute G6B |
 
 This package is the design-before-code gate for G6. It divides the work into
 two independently reviewable tasks:
@@ -24,10 +24,9 @@ two independently reviewable tasks:
   length (G7), intersections (G8) or spatial semantics (G9).
 
 The governing phase order remains the
-[living roadmap](geocedg_roadmap.md). The author has approved this package only
-as the working hypothesis that a later G6A execution must characterize. This
-documentation revision does not start G6A. G6B remains blocked until G6A `PASS`,
-ADR review and a second author approval.
+[living roadmap](geocedg_roadmap.md). The author approved this package as G6A's
+working hypothesis; G6A produced and the author approved its contract and
+evidence. G6B is deliberately `NOT STARTED` and requires a separate task.
 
 ## 1. Planning authorities and produced artifacts
 
@@ -39,17 +38,18 @@ characterization.
 
 | Artifact | Role | Authority state |
 |---|---|---|
-| [Candidate semantic model](../architecture/locus_v2_semantic_model.md) | Mathematical object, branch/domain/evaluator/quality/degeneration/nesting contract | Approved G6A working hypothesis; not normative spec |
-| [Upstream impact map](../architecture/locus_v2_upstream_impact.md) | Exact baseline command/object/render/serialization map and minimum change strategy | Author-reviewed planning evidence; G6A must verify |
-| [Validation matrix](../validation/g6_locus_v2_validation_matrix.md) | Cases, invariants, expected evidence, phase and tolerance owner | Author-reviewed working execution contract |
-| [Benchmark plan](../validation/g6_locus_v2_benchmark_plan.md) | Legacy/nested baselines, semantic/render metrics and budget approval method | Working protocol; numeric budgets deferred |
-| [ADR 0006](../adr/0006-parallel-locus-v2-semantic-entity.md) | Parallel V2 entity and nested-composition hypothesis versus alternatives | **Proposed**; approved only as G6A working hypothesis |
-| [G6A prompt](../../.github/prompts/tasks/g6a-locus-v2-characterization.prompt.md) | Independently executable characterization task | Author-reviewed; not executed by this task |
-| [G6B prompt](../../.github/prompts/tasks/g6b-locus-v2-kernel.prompt.md) | Independently executable implementation task | Candidate; blocked until G6A/ADR approval |
+| [Semantic model](../architecture/locus_v2_semantic_model.md) | Mathematical object, branch/domain/evaluator/quality/degeneration/nesting explanation | G6A author-approved supporting architecture |
+| [Upstream impact map](../architecture/locus_v2_upstream_impact.md) | Exact baseline command/object/render/serialization map and minimum change strategy | G6A audit accepted; no productive change made |
+| [Validation matrix](../validation/g6_locus_v2_validation_matrix.md) | Cases, invariants, expected evidence, phase and tolerance owner | G6A PASS evidence and approved future G6B gate |
+| [Benchmark plan](../validation/g6_locus_v2_benchmark_plan.md) | Legacy/nested baselines, semantic/render metrics and budget method | G6A baseline and functional budgets accepted; absolute timings informational |
+| [ADR 0006](../adr/0006-parallel-locus-v2-semantic-entity.md) | Parallel V2 entity and nested-composition decision | **Accepted** |
+| [G6A prompt](../../.github/prompts/tasks/g6a-locus-v2-characterization.prompt.md) | Historical executable characterization task | Executed and closed; [report](../validation/g6a_locus_v2_characterization_report.md) author-approved |
+| [G6B prompt](../../.github/prompts/tasks/g6b-locus-v2-kernel.prompt.md) | Independently executable implementation task | Ready as a contract; **NOT STARTED** |
 
-No feature manifest, normative G6 spec, Java source, serialization contract or
-generated benchmark result is created by planning. Those become G6A/G6B
-deliverables only after approval.
+G6A created a normative spec, validation records and test-only Java probes. It
+created no feature manifest, productive V2 Java source or serialization
+contract. Product implementation remains a future G6B deliverable after
+approval.
 
 ## 2. Outcome and hard boundary
 
@@ -280,7 +280,7 @@ reviewed schema change says otherwise.
   `Locus[...]` redirection, no `.ggb` migration and no public V2 `Path`;
 - audit `GeoClass.LOCUS`, `isGeoLocus()`, `isGeoLocusable()`, drawing, defaults,
   labels, metrics, `Path`, factory/XML and 2D/3D dispatch, then recommend a
-  classification for second author review;
+  classification for the author-review gate;
 - resolve nested evaluation-session/DAG strategy and exact cycle protection;
 - fix the exact G6B classes/packages and minimum upstream files.
 
@@ -297,7 +297,7 @@ reviewed schema change says otherwise.
 ### 5.3 G6A durable deliverables
 
 - accepted or explicitly revised semantic spec under `geocedg/specs/`;
-- author disposition of ADR 0006 (or a superseding Proposed/Accepted ADR);
+- accepted ADR 0006 (or an explicitly superseding accepted ADR);
 - completed upstream/legacy characterization report and reproducible probes;
 - formal topology fixture and nested-composition causal/performance evidence;
 - curated pilot manifests/hashes where authorized;
@@ -306,6 +306,11 @@ reviewed schema change says otherwise.
 - exact G6B change/file plan;
 - focused subordinate verifier and G6A validation report;
 - user-guide/roadmap updates that do not claim implementation.
+
+G6A produced every deliverable and the second author review accepted the
+semantic contract, compatibility classification, nested strategy, numeric
+validation envelope, functional budgets and scientific-evidence roles. The
+report links each artifact and documented exclusion.
 
 ### 5.4 G6A PASS criteria
 
@@ -332,10 +337,57 @@ G6A may be `PASS` only when all are true:
 - ADR 0006 has an explicit author disposition;
 - no productive Locus V2 kernel implementation was needed to claim G6A PASS.
 
-Failure to agree on branch identity, deterministic evaluation, nested scaling,
-classification or tolerances is `G6A = BLOCKED`, not an invitation to guess in
-code. Tolerances and budgets remain **DEFERRED TO G6A MEASUREMENTS** until this
-work is performed.
+The second author review confirms that every criterion above is satisfied.
+The accepted numeric envelope is a non-certified comparison policy; it does
+not turn floating-point output into exact arithmetic. Absolute timing values
+remain informational for future G6B execution.
+
+### 5.5 G6A closeout state
+
+Completed characterization:
+
+- legacy sample/view/path/metric, multibranch and dependency-slice probes;
+- formal branch/component/lineage fixture;
+- Level-A order-independent analytic references;
+- nested recursive/flattened reference comparison through depth five;
+- scoped-session memoization equality and hidden callback-cycle detection;
+- complete `GeoClass.LOCUS`, predicate, drawing, defaults, metric, `Path`, XML
+  and 2D/3D dispatch audit;
+- scientific case classification, two hash-pinned cone-cylinder models and
+  explicit remaining provenance exclusions;
+- reproduced two-/three-level legacy transition with macro-slice and timeout
+  instrumentation;
+- subordinate operational verifier and worktree-preserving cleanup.
+
+Author-approved closeout decisions:
+
+- the semantic specification is normative and ADR 0006 is `Accepted`;
+- G6B uses a distinct appended V2 classification, preserves existing enum
+  ordinals, and claims no legacy locus predicates/contracts;
+- recursive semantic evaluators plus a scoped shared session, full semantic
+  key, bounded memoization and active-key cycle protection form the minimum
+  nested strategy; controlled DAG flattening is deferred;
+- `max(1e-12 * max(1,S), 64 * ulp(max(1,S)))` is the G6B uncertified comparison
+  envelope, with case-documented geometric `S` independent of screen state and
+  origin offset; other tolerance families remain separate; and
+- the two supplied models are complementary legacy evidence, not persisted V2
+  pilots or redistributable release assets.
+
+The small controlled fixture remained functional, but the author-supplied real
+model reproduced the severe third-level failure. The two-level control measured
+approximately 125–127 ms. In the pathological model, the state before
+`Flatten` measured approximately 31.9 ms; the three third-level locus creations
+took approximately 6.03, 5.95 and 5.67 s, each ended undefined after exceeding
+the 500 ms legacy step limit, and recomputation after the attempt took
+approximately 21.0 s. Each `Flatten` macro slice contains two inner legacy loci
+and two sampled `AlgoPerimeterLocus` instances, and its outer
+`AlgoLocusSliderND` repeatedly updates that slice. This is the observed cause
+for these fixtures, not a general claim about every legacy locus.
+
+G6B will use a small internal typed three-level reproduction traced to both
+originals. It must prove composition, inner invalidation, no render/sample
+dependency, no whole-upstream-locus regeneration and accepted functional
+scaling without implementing G7 `Perimeter` semantics.
 
 ## 6. G6B — Minimal kernel implementation
 
@@ -343,13 +395,14 @@ work is performed.
 
 G6B may start only from a clean branch after:
 
-1. G6A is committed and reported `PASS`;
-2. the author has approved the semantic spec, validation matrix, numeric
+1. the author issues a separate explicit G6B implementation task;
+2. G6A is committed and reported `PASS`;
+3. the author has approved the semantic spec, validation matrix, numeric
    tolerances, budgets and exact pilot set;
-3. ADR 0006 or a superseding architecture decision is `Accepted`;
-4. the accepted spec preserves the approved non-persistent/no-command/no-public-
+4. ADR 0006 or a superseding architecture decision is `Accepted`;
+5. the accepted spec preserves the approved non-persistent/no-command/no-public-
    `Path` G6B boundary;
-5. the existing full operational authority passes.
+6. the existing full operational authority passes.
 
 ### 6.2 Minimal implementation scope
 
@@ -365,7 +418,9 @@ G6B must demonstrate exactly:
 8. unchanged legacy `Locus` and Classic behavior;
 9. explicit `cedg.locus.v2` runtime selection and dual diagnostic mode;
 10. internal typed V2-on-V2 semantic composition through at least three levels;
-11. tests, regression evidence and approved benchmarks.
+11. a distinct appended V2 classification that preserves existing ordinals and
+    claims neither legacy locus predicate;
+12. tests, regression evidence and approved benchmarks.
 
 ### 6.3 Implementation work packages
 
@@ -386,13 +441,17 @@ G6B must demonstrate exactly:
   without mutating the live construction or rebuilding an informal graph per
   sample;
 - report unsupported nondeterminism explicitly;
-- implement only the G6A-approved nested session/DAG strategy and demonstrate
+- implement recursive semantic evaluators with the approved scoped shared
+  session, full-key bounded memoization and active-key cycle protection, and demonstrate
   three levels through an internal typed API/factory.
 
 #### G6B.3 Kernel object and dependency algorithm
 
 - implement parallel `GeoLocusV2` and the approved `AlgoLocusV2` family (names
   and number of algorithms may be refined by the accepted spec);
+- append a distinct V2 `GeoClass`/classification without changing existing
+  ordinals; keep `isGeoLocus()` and `isGeoLocusable()` false and do not enter
+  legacy `Path`, metrics, commands, XML or 3D dispatch;
 - register complete standard input/output dependencies;
 - publish one immutable semantic snapshot with a monotonic local revision;
 - clear/invalidate state on undefined driver/dependency or failed evaluation;
@@ -502,7 +561,7 @@ G6B may be `PASS` only when saved evidence proves:
 | Multibranch/closed/self-intersection/cusp/discontinuity/unbounded | Define topology and validity semantics | Required selected topology/status tests | Oriented/multibranch lengths | Multiplicity, tangency and stable roots |
 | Formal two-control topology/lineage fixture | Approve analytic branch/component distinction and typed transitions | Required definition/lineage/invalidation test | Not applicable | Future identity regression |
 | Synthetic nested `NESTED-1/2/3/5` | Compare evaluator-session/DAG strategies and scaling | Three levels required; depth 5 only if approved | Future nested metric consumers | Future nested intersection consumers |
-| Cone–cylinder | Characterize leaves/topology/legacy behavior | Limited dual diagnostic if curated | No intersection claim | Primary native intersection case |
+| Cone–cylinder | Characterize leaves/topology and reproduced two-/three-level legacy behavior using the hash-pinned pair | Use a small internal typed nested fixture traced to the originals; retain originals as manual/scientific comparison only | No metric implementation; preserve the forward derived-service rule | Primary native intersection case |
 | Focal sphere–cone | Characterize provenance/invariants | Optional curated smoke | As relevant | Primary intersection case |
 | Cylinder development | Characterize driver/dependencies | One possible dependency pilot | Developed length evidence | Only if construction intersections require it |
 | Oblique-cone development | Required legacy/error/benchmark characterization | Required legacy benchmark; V2 pilot if deterministic | Primary length/error case | Intersection subprocedures later |
@@ -520,6 +579,13 @@ The staged capability model is:
 3. use adaptive subdivision only to build the render representation in G6B;
 4. add controlled metric error in G7 and root/residual error in G8.
 
+Any future G7 metric used by a downstream construction must preserve semantic
+composition: it is scoped to the upstream locus semantic revision, consumes V2
+semantic data rather than render samples or sampled chords, avoids complete
+metric recomputation for every downstream query while that revision is
+unchanged, and follows normal-DAG invalidation and caching. This is a future
+architecture requirement, not a G6 implementation.
+
 G6B does not need symbolic derivatives for arbitrary constructions. Optional
 derivative/tangent/bounds capabilities may return `unsupported`; they must
 never return guessed finite differences under an “exact” label. Analytic method
@@ -534,7 +600,7 @@ tolerances remain separate authorities.
 | Dependency evaluation is traversal-history dependent | G6A shuffled-order experiments | Restrict supported subset or approve typed canonical continuation; author |
 | Path min/max hides multiple branches or view dependence | Type-by-type domain characterization | Explicit providers; reject unsafe generic path fallback |
 | Branch identity changes under topology | Level B and CeDG dynamic cases | Approved provenance/lineage policy; no proximity matching |
-| V2 type collides with legacy type/render switches | Complete `GeoClass`/predicate/default/metric/Path/2D–3D audit | Prefer distinct classification if localized; non-persistent G6B; second author review |
+| V2 type collides with legacy type/render switches | Completed `GeoClass`/predicate/default/metric/Path/2D–3D audit | Use the accepted distinct appended classification; keep G6B non-persistent |
 | Feature manifest mistaken for runtime flag | Mode integration test | Add minimal explicit runtime setting; Classic default legacy |
 | MacroKernel duplicates/rebuilds too much work | `BM-CHAIN` and evaluation counters | Build/synchronize once per revision; optimize only from evidence |
 | Nested loci multiply slice/sample/render work | `BM-NESTED-1/2/3/5`, per-level calls and slice counters | Semantic evaluator composition only; compare scoped session with controlled DAG plan |
@@ -567,12 +633,12 @@ conditions occurs:
   discretization;
 - work would implement G7, G8, G9 or alter G5's locus policy.
 
-## 11. Author decisions recorded and deferred
+## 11. Author-approved G6A closeout decisions
 
 The author has recorded these decisions:
 
-1. ADR 0006 remains `Proposed` but is **APPROVED AS G6A WORKING ARCHITECTURAL
-   HYPOTHESIS**;
+1. the semantic specification is **APPROVED AS NORMATIVE G6 SEMANTIC CONTRACT**
+   and ADR 0006 is `Accepted`;
 2. a versioned provider owns the semantic parameter; native and normalized path
    parameters are not automatic identities;
 3. semantic branch identity is distinct from valid-domain components, with
@@ -584,21 +650,27 @@ The author has recorded these decisions:
    `.ggb` migration; diagnostic modes never redirect `Locus[...]`;
 7. nested V2 semantic composition is first-class and G6B must demonstrate at
    least three levels without render/sample authority or whole-locus recursion;
-8. `GeoClass` is deferred, with a preference for a distinct classification when
-   impact remains localized.
+8. G6B uses a distinct appended V2 classification, preserving all existing
+   ordinals and claiming neither legacy locus predicate nor legacy contracts;
+9. recursive semantic evaluators plus a scoped shared session with full keys,
+   bounded memoization and active-key cycle protection are the minimum nested
+   strategy; controlled DAG flattening is deferred pending profiling;
+10. the scale-aware formula recorded in the semantic contract is accepted only
+    as an uncertified G6B comparison envelope; and
+11. the two supplied `.ggb` files are accepted in distinct control/pathological
+    evidence roles, with public redistribution still blocked.
 
-G6A and the second author review must resolve the exact provider set, topology
-rules, nested session/DAG strategy, cycle protection, `GeoClass` decision, real
-pilots, tolerances and performance budgets. Numeric tolerances and budgets are
-**DEFERRED TO G6A MEASUREMENTS**.
+The scientific originals do not have to become persisted V2 constructions.
+The required G6B pilot is the smaller internal typed reproduction traced to
+them. Absolute timings remain informational.
 
 ## 12. Planned user-guide and monograph evidence
 
-G6A must add a conceptual/history section to
+G6A added a conceptual/history section to
 `docs/user/geocedg_user_guide.md` explaining the legacy sampled object,
 scientific evidence, mathematical definition, parameter versus point, branch
-identity, exactness and degenerations. It must explicitly say that V2 is not
-yet available to users.
+identity, exactness and degenerations. It explicitly says that V2 is not yet
+available to users.
 
 G6B must then document only observed behavior:
 
@@ -619,8 +691,8 @@ monograph does not need to reconstruct the rationale from commits.
 
 ## 13. Planned verification commands
 
-Exact focused class names may be refined in G6A, but execution must remain
-subordinate to the existing authority. The candidate G6B gate is:
+Exact focused class names may be refined during G6B, but execution remains
+subordinate to the existing authority. The G6B gate is:
 
 ```powershell
 .\tools\agent\verify-locus-v2.ps1
@@ -638,12 +710,13 @@ The focused verifier must validate schemas/manifests/regression evidence and
 clean its own regenerable outputs. Manual launches supplement saved automated
 semantic evidence; screenshots are not geometric authority.
 
-## 14. Planning disposition
+## 14. G6A disposition
 
-This author-reviewed working package recommends **parallel experimental V2 plus
-V2-only reusable semantic interfaces**, a non-persistent/non-public G6B
-demonstrator, provider-owned semantic parameters, explicit branches and valid
-components, bounded nested evaluator composition, and completely separate
-semantic/render caches. It starts neither G6A nor G6B.
+The author accepts **parallel experimental V2 plus V2-only reusable semantic
+interfaces**, a non-persistent/non-public G6B demonstrator,
+provider-owned semantic parameters, explicit branches and valid components,
+recursive nested evaluator composition with a scoped session, a distinct V2
+classification and completely separate semantic/render caches. This closeout
+does not authorize or start implementation.
 
-**G6 PLANNING = AUTHOR-REVIEW DECISIONS INCORPORATED; G6A NOT STARTED.**
+**G6A = PASS — AUTHOR APPROVED. ADR 0006 = ACCEPTED. G6B = NOT STARTED.**

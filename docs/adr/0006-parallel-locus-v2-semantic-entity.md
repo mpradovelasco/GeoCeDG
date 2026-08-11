@@ -1,12 +1,14 @@
 # ADR 0006: parallel experimental Locus V2 semantic entity
 
-- Status: **Proposed**
-- Author review disposition: **APPROVED AS G6A WORKING ARCHITECTURAL HYPOTHESIS**
+- Status: **Accepted**
+- Author review disposition: **ACCEPTED AT G6A CLOSEOUT**
+- G6A disposition: **PASS — AUTHOR APPROVED**
 - Date: 2026-08-11
-- Scope: authorizes G6A characterization only; candidate G6B kernel boundary
+- Scope: normative architectural boundary for G6B and forward compatibility
 
-The current approval does not accept this ADR and does not authorize G6B. The
-ADR remains `Proposed` until G6A closeout and a second author review.
+The author's second review accepts this ADR and closes G6A. It does not start
+or otherwise authorize execution of G6B; G6B remains `NOT STARTED` until a
+separate implementation task is authorized.
 
 ## Context
 
@@ -35,9 +37,9 @@ G6A must reproduce and explain that behavior. It must not assume a cause before
 instrumenting sample-path traversal, dependency-slice build/reset/update and
 render interaction.
 
-## Proposed decision
+## Decision
 
-1. Keep a parallel experimental `GeoLocusV2` as the G6A working hypothesis,
+1. Keep a parallel experimental `GeoLocusV2`,
    leaving legacy `GeoLocus` intact. `AlgoLocusV2` denotes a conceptual
    algorithm family; G6A may recommend separate algorithms by driver.
 2. Put reusable, read-only semantic contracts in a GeoCeDG-owned shared package:
@@ -51,7 +53,7 @@ render interaction.
 4. Do not make legacy `GeoLocus` implement those interfaces. A diagnostic
    adapter may observe V1 samples for comparison but must identify them as
    sampled legacy evidence.
-5. Reuse the baseline cloned dependency-slice technique only through a
+5. Reuse any baseline cloned dependency-slice technique only through a
    controlled evaluation context proven deterministic for the G6B subset. The
    normal `AlgoElement` inputs/outputs remain the dependency authority.
 6. Classify evaluator behavior as `POINTWISE_DETERMINISTIC`,
@@ -71,10 +73,12 @@ render interaction.
    evaluator, revision, validity and quality metadata. It must never consume
    render vertices/sample polylines or regenerate a whole upstream locus for a
    downstream point.
-10. Require G6A to compare recursive semantic evaluators with a scoped shared
-    evaluation session against controlled DAG flattening/compilation. Session
-    naming and final strategy remain open. No hidden dependency graph or
-    callback cycle is permitted.
+10. Use recursive semantic evaluators with a scoped shared evaluation session
+    as the minimum nested-composition strategy. Its cache key contains locus
+    identity, semantic revision, branch identity and native semantic parameter;
+    memoization is bounded and active keys detect callback cycles. Controlled
+    DAG flattening/compilation remains deferred until profiling demonstrates a
+    need. No hidden dependency graph or callback cycle is permitted.
 11. In G6B, keep V2 non-persistent and without a public command. Construct it
    through an internal/test factory and an explicit experimental mode. Any
    public creation or `.ggb` persistence requires a later accepted
@@ -84,15 +88,21 @@ render interaction.
     existing `.ggb` silently changes meaning and no migration is introduced.
 13. Do not implement public `Path`/incidence, public length, intersections, DXF locus
    export or 3D projection semantics in G6B.
-14. Defer the choice between `GeoClass.LOCUS` and a distinct V2 classification
-    to the G6A switch/contract audit. Prefer a distinct V2 type when its measured
-    compatibility impact remains reasonably localized.
+14. Append a distinct V2 `GeoClass`/classification while preserving every
+    existing ordinal. Do not reuse `GeoClass.LOCUS`; during G6B, V2 must not
+    claim `isGeoLocus()` or `isGeoLocusable()` and remains outside legacy
+    `Path`, metrics, commands, XML and 3D dispatch contracts.
+15. Future derived semantic services used by downstream constructions must be
+    revision-scoped and compositional. In particular, G7 metrics must consume
+    V2 semantic data rather than render samples, must not sum sampled chords or
+    regenerate the complete metric for every downstream query when the semantic
+    revision is unchanged, and must use normal-DAG invalidation and caching.
 
 This is alternative B plus a deliberately small part of alternative C: the new
 abstraction is reusable by V2 and its future consumers, but V1 is not forced
 through a false semantic interface.
 
-## Consequences if accepted
+## Consequences
 
 - Legacy construction loading and Classic behavior remain isolated from the
   experimental object.
@@ -101,14 +111,13 @@ through a false semantic interface.
 - G7/G8 can consume branches and evaluator results without reading a drawable
   polyline.
 - A V2 locus can be an explicit semantic dependency of another V2 locus. G6B
-  must demonstrate at least three levels with bounded work before final ADR
-  acceptance.
+  must demonstrate at least three levels with bounded work as a PASS condition.
 - The initial V2 cannot be created through the standard input bar or saved to a
   `.ggb`; this is an intentional demonstrator boundary, not a hidden omission.
 - A minimal shared Euclidian draw-dispatch change and one explicit runtime mode
-  seam are anticipated, but their exact form depends on the G6A `GeoClass`
-  audit. Actual changes require the second author review and must be added to
-  the upstream modification record.
+  seam are anticipated. The appended V2 classification keeps legacy dispatch
+  opt-in. Any actual G6B source change must be recorded in the upstream
+  modification record.
 - Driver types whose domain is view-dependent, or whose evaluation has neither
   pointwise nor canonical-continuation determinism, remain unsupported with
   diagnostics.
@@ -129,9 +138,8 @@ incompatible parameterizations.
 
 ### B. Parallel experimental `GeoLocusV2`
 
-Preferred working hypothesis. It provides native graph identity and isolates
-compatibility while the semantic contract is still experimental. Final
-selection remains subject to G6A evidence and the second author review.
+Selected. It provides native graph identity and isolates compatibility while
+the new entity remains experimental.
 
 ### C. Introduce one abstraction implemented by both V1 and V2
 
@@ -153,9 +161,9 @@ dependency slice.
 
 ### Nested evaluation strategy A: recursive semantic evaluators plus session
 
-Working minimum for G6A comparison. It preserves explicit locus boundaries and
-normal DAG inputs while a bounded session can share revision context,
-memoization and cycle detection. It is not accepted until measured.
+Selected minimum. It preserves explicit locus boundaries and normal DAG inputs
+while a bounded scoped session shares revision context, memoization and active-
+key cycle detection.
 
 ### Nested evaluation strategy B: controlled DAG flattening/compilation
 
@@ -164,25 +172,34 @@ synchronization remains a bottleneck. It must not create a second authority,
 erase branch/revision identity or broaden upstream impact without demonstrated
 benefit.
 
-## Decisions deferred to G6A and second author review
+## Accepted closeout decisions
 
-The author has approved non-persistence, no public command, no public V2
-`Path`, no `.ggb` migration, unchanged public `Locus[...]`, diagnostic-only
-`LEGACY`/`V2`/`DUAL`, and the parallel entity as the G6A working hypothesis.
-Before this ADR can become `Accepted`, G6A must provide and the author must
-review:
+The second author review accepts:
 
-1. final typed branch-key, valid-component and split/merge lineage rules;
-2. provider-specific pointwise/canonical-continuation classifications;
-3. the dependency-slice and nested evaluation-session/DAG strategy, including
-   cycle protection and measured scaling;
-4. the `GeoClass`/drawing/defaults/labels/metric/Path/2D–3D dispatch decision;
-5. the approved driver providers and real CeDG pilots for G6B;
-6. the runtime owner of diagnostic modes without changing Classic;
-7. numeric tolerances and performance budgets, which are **DEFERRED TO G6A
-   MEASUREMENTS**.
+1. the normative branch-key, valid-component, typed-lineage, determinism and
+   multiaxial exactness model in the G6 semantic contract;
+2. recursive semantic evaluators plus a scoped shared evaluation session as the
+   minimum nested strategy, with a full semantic key, bounded memoization and
+   active-key cycle protection;
+3. a distinct appended V2 classification, leaving all legacy locus contracts
+   untouched during G6B;
+4. the G6B numeric comparison envelope
+   `max(1e-12 * max(1,S), 64 * ulp(max(1,S)))` solely for uncertified numeric
+   comparison. `S` is a documented, case-specific characteristic geometric
+   scale and may not depend on zoom, DPI, viewport or absolute distance from
+   the origin. Domain, render, G7 metric and G8 intersection tolerances remain
+   separate; and
+5. the two supplied cone-cylinder models as complementary scientific and
+   operational evidence. Their originals, hashes, manifests and inventories
+   are preserved, while public redistribution remains blocked pending rights
+   and asset review.
 
-## Validation required before acceptance
+Absolute timing budgets remain informational until a G6B execution task adopts
+budgets from the G6A measurements. The accepted functional gates prohibit
+render dependence, per-query dependency-slice rebuilding and work that
+multiplies with nested render densities.
+
+## Acceptance evidence
 
 - approved mathematical/branch/degeneration/exactness contract;
 - completed legacy characterization, pointwise/canonical-continuation
@@ -197,8 +214,65 @@ review:
   legacy `GeoLocus` dispatch;
 - G6B acceptance criteria that require a typed three-level nested semantic
   demonstrator, correct invalidation and no upstream render dependency;
-- second author sign-off recorded in this ADR or a superseding decision.
+- second author sign-off recorded in this ADR.
 
-Until those conditions are met this ADR remains **Proposed**. The current
-disposition authorizes G6A characterization only; it authorizes no G6B
-implementation.
+Those conditions were met by the G6A evidence package and accepted by the
+author on 2026-08-11. Acceptance defines the architecture; it does not start
+G6B implementation.
+
+## G6A closeout evidence and recommendation
+
+G6A executed the hypothesis without adding productive V2 code. The durable
+evidence is the normative semantic contract, formal topology/tolerance fixtures,
+characterization baseline, upstream audit and G6A report linked from the G6
+plan.
+
+The measured/tested results support the accepted decisions:
+
+1. retain the parallel experimental entity and leave legacy `GeoLocus`
+   unchanged;
+2. use provider-owned semantic parameters, branch keys distinct from valid
+   components, typed lineage and the separated status/quality axes already
+   accepted above;
+3. start G6B with pointwise deterministic explicit-numeric and narrowly
+   approved stable-path providers; canonical continuation requires a separate
+   characterized provider rule;
+4. use recursive semantic evaluator composition plus a scoped shared session
+   as the minimum nested strategy. The controlled fixture scaled exactly as
+   outer queries times depth, and memoization removed repeated exact keys
+   without changing results. Defer controlled DAG flattening until profiling
+   demonstrates need;
+5. protect callbacks with an active semantic-key stack in addition to normal
+   declared DAG inputs;
+6. prefer a distinct V2 `GeoClass`, appended to preserve current ordinals,
+   because reusing `LOCUS` triggers legacy casts, defaults, `Path`, metrics,
+   command and 3D contracts; and
+7. keep absolute timing budgets informational. Make deterministic evaluator
+   counts, no per-query slice build, no render dependency and cache equality the
+   initial functional performance gates.
+
+The controlled `Point(Locus)` fixture confirms sampled-`Path` traversal but did
+not reproduce the slowdown. The subsequently supplied hash-pinned
+cone-cylinder pair did. `InterCilConoObliqueTwoLevels.ggb` is the functional
+two-level control (approximately 125–127 ms). In
+`InterCilConoOblique.ggb`, the state before `Flatten` was approximately
+31.9 ms; creating its three third-level loci took approximately 6.03, 5.95 and
+5.67 s, each became undefined after exceeding the legacy 500 ms per-step guard,
+and the post-attempt recomputation took approximately 21.0 s.
+
+For this measured model, each outer `AlgoLocusSliderND` sampling/evaluation
+updates a dependency slice containing two inner loci and two
+`AlgoPerimeterLocus` instances. Upstream geometric and metric work is
+regenerated rather than consumed through composable semantic evaluators, and
+the model reaches the legacy time guard. This is a bounded observation about
+the instrumented fixtures, not a universal causal claim about every legacy
+locus.
+
+The original models remain manual/scientific legacy references. Because G6B
+has no public command or persistence, its required pilot is a small internal,
+typed, three-level reproduction traced explicitly to those originals. It must
+prove semantic composition, inner-level invalidation, no render/sample
+dependency, no whole-upstream-locus regeneration and approved functional
+scaling; it does not implement G7 `Perimeter` semantics.
+
+**G6A = PASS — AUTHOR APPROVED. ADR 0006 = ACCEPTED. G6B = NOT STARTED.**

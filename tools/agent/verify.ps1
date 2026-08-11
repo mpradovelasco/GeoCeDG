@@ -23,6 +23,7 @@ $FrontendVerifier = Join-Path $PSScriptRoot "verify-frontend.ps1"
 $LegacyVerifier = Join-Path $PSScriptRoot "verify-legacy.ps1"
 $PackagingVerifier = Join-Path $PSScriptRoot "verify-packaging.ps1"
 $DxfVerifier = Join-Path $PSScriptRoot "verify-dxf.ps1"
+$LocusV2Verifier = Join-Path $PSScriptRoot "verify-locus-v2.ps1"
 $BenchmarkRunner = Join-Path $RepositoryRoot "tools\benchmark\run.ps1"
 $InitialStatus = $null
 
@@ -68,6 +69,22 @@ try {
     }
     & $DxfVerifier @dxfParameters
     Assert-LastScriptSuccess -Description "Native 2D geometry and DXF export"
+
+    Write-Host "`n==> G6A Locus V2 characterization"
+    $locusV2Parameters = @{
+        LogDirectory = Join-Path ([IO.Path]::GetFullPath($LogDirectory)) "locus-v2"
+    }
+    if ($SkipBuild) {
+        $locusV2Parameters.SkipBuild = $true
+    }
+    if ($AllowToolchainDownload) {
+        $locusV2Parameters.AllowToolchainDownload = $true
+    }
+    if ($KeepBuildOutputs) {
+        $locusV2Parameters.KeepBuildOutputs = $true
+    }
+    & $LocusV2Verifier @locusV2Parameters
+    Assert-LastScriptSuccess -Description "G6A Locus V2 characterization"
 
     Write-Host "`n==> Standalone Windows packaging contracts"
     $packagingParameters = @{}

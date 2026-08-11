@@ -1,0 +1,73 @@
+{
+  "$schema": "../../../../geocedg/specs/operations/legacy-tool-inventory.schema.json",
+  "schema_version": 1,
+  "generator": {
+    "path": "tools/legacy/ingest.ps1",
+    "sha256": "77987a23d463e4479ec4f9d13554c0860915bafa6b06032378adfb6faf89de80",
+    "curation_path": null,
+    "curation_sha256": null
+  },
+  "resource": {
+    "id": "cedg.legacy.inter-cil-cono-oblique",
+    "path": "models/legacy/inter-cil-cono-oblique/original/InterCilConoOblique.ggb",
+    "sha256": "b1cb614f1a4c414144fbff29349ddebda92d1026acb4c535990a2895c589fa27",
+    "bytes": 78087
+  },
+  "container": {
+    "format": "ggb",
+    "geogebra_version": "5.0.760.0",
+    "app": "classic",
+    "platform": "d",
+    "entries": [
+      {
+        "name": "geogebra_defaults2d.xml",
+        "bytes": 9787,
+        "compressed_bytes": 1314,
+        "sha256": "1f811ed620dafe0c0071c39d15d6b2a2f1b49ae0588691e761bdd1122362c13d"
+      },
+      {
+        "name": "geogebra_defaults3d.xml",
+        "bytes": 4478,
+        "compressed_bytes": 847,
+        "sha256": "f9e0c62e4ab81b95fe037529e1c95656f774cbc3f3ca1e5bc5a65a24cd5e3fe3"
+      },
+      {
+        "name": "geogebra_javascript.js",
+        "bytes": 24,
+        "compressed_bytes": 26,
+        "sha256": "90d66739c7658fadada2635213419190cd92f745f4950b71c6573970a8bd1c98"
+      },
+      {
+        "name": "geogebra_thumbnail.png",
+        "bytes": 63722,
+        "compressed_bytes": 63124,
+        "sha256": "91a3017f445822e54cd6391eacfbe7ff91176b907079b1740888b0e36f8cf752"
+      },
+      {
+        "name": "geogebra.xml",
+        "bytes": 99269,
+        "compressed_bytes": 12090,
+        "sha256": "8aae8909bc59c1baafb32fbfffa46fc286e6e5a5c266e22d235202986c200454"
+      }
+    ]
+  },
+  "scripts": {
+    "global_javascript": {
+      "present": true,
+      "entry": "geogebra_javascript.js",
+      "bytes": 24,
+      "sha256": "90d66739c7658fadada2635213419190cd92f745f4950b71c6573970a8bd1c98",
+      "functions": [
+        "ggbOnInit"
+      ]
+    },
+    "document_geogebrascript_blocks": 1
+  },
+  "legacy_toolbar": {
+    "status": "authoritative-legacy-reference",
+    "future_constraint": false,
+    "raw_definition": "0 39 | 1 501 67 , 5 19 , 72 | 2 15 45 , 18 65 , 7 37 | 4 3 8 9 , 13 44 , 58 , 47 | 16 51 64 , 70 | 10 34 53 11 , 24  20 22 , 21 23 | 55 56 57 , 12 | 36 46 , 38 49  50 , 71 | 30 29 54 32 31 33 | 17 26 62 73 , 14 68 | 25 52 60 61 | 40 41 42 , 27 28 35 , 6",
+    "custom_groups": []
+  },
+  "tools": []
+}

@@ -151,6 +151,12 @@ try {
         "models/legacy/template-v7/curation.yml",
         "models/legacy/template-v7/derived/tool-inventory.yml",
         "models/legacy/template-v7/original/Templatev7.ggb",
+        "models/legacy/inter-cil-cono-oblique/manifest.yml",
+        "models/legacy/inter-cil-cono-oblique/derived/tool-inventory.yml",
+        "models/legacy/inter-cil-cono-oblique/original/InterCilConoOblique.ggb",
+        "models/legacy/inter-cil-cono-oblique-two-levels/manifest.yml",
+        "models/legacy/inter-cil-cono-oblique-two-levels/derived/tool-inventory.yml",
+        "models/legacy/inter-cil-cono-oblique-two-levels/original/InterCilConoObliqueTwoLevels.ggb",
         "tools/legacy/ingest.ps1",
         "tools/legacy/open-laboratory.ps1"
     )
@@ -180,6 +186,14 @@ try {
                 "models/legacy/template-v7/curation.yml"),
             @("geocedg/specs/operations/legacy-tool-inventory.schema.json",
                 "models/legacy/template-v7/derived/tool-inventory.yml"),
+            @("geocedg/specs/operations/model-manifest.schema.json",
+                "models/legacy/inter-cil-cono-oblique/manifest.yml"),
+            @("geocedg/specs/operations/legacy-tool-inventory.schema.json",
+                "models/legacy/inter-cil-cono-oblique/derived/tool-inventory.yml"),
+            @("geocedg/specs/operations/model-manifest.schema.json",
+                "models/legacy/inter-cil-cono-oblique-two-levels/manifest.yml"),
+            @("geocedg/specs/operations/legacy-tool-inventory.schema.json",
+                "models/legacy/inter-cil-cono-oblique-two-levels/derived/tool-inventory.yml"),
             @("geocedg/specs/operations/scientific-reference-catalog.schema.json",
                 "docs/references/cedg/catalog.yml"),
             @("geocedg/specs/operations/external-model-corpus.schema.json",
@@ -193,7 +207,10 @@ try {
             $registered.maturity -eq "legacy"
         })
     Assert-SequenceEqual -Actual $legacyManifestPaths `
-        -Expected @("models/legacy/template-v7/manifest.yml") `
+        -Expected @(
+            "models/legacy/template-v7/manifest.yml",
+            "models/legacy/inter-cil-cono-oblique/manifest.yml",
+            "models/legacy/inter-cil-cono-oblique-two-levels/manifest.yml") `
         -Description "registered legacy manifests"
     $manifest = Read-JsonCompatibleYaml `
         -RelativePath "models/legacy/template-v7/manifest.yml"
@@ -271,6 +288,60 @@ try {
         -TargetDirectory "models/legacy/template-v7" -Check
     if ($LASTEXITCODE -ne 0) {
         throw "Deterministic Templatev7 ingest verification failed."
+    }
+
+    Write-Step "G6A scientific legacy model preservation"
+    $scientificLegacyCases = @(
+        [ordered]@{
+            id = "cedg.legacy.inter-cil-cono-oblique"
+            directory = "models/legacy/inter-cil-cono-oblique"
+            manifest = "models/legacy/inter-cil-cono-oblique/manifest.yml"
+            inventory = "models/legacy/inter-cil-cono-oblique/derived/tool-inventory.yml"
+            hash = "b1cb614f1a4c414144fbff29349ddebda92d1026acb4c535990a2895c589fa27"
+        },
+        [ordered]@{
+            id = "cedg.legacy.inter-cil-cono-oblique-two-levels"
+            directory = "models/legacy/inter-cil-cono-oblique-two-levels"
+            manifest = "models/legacy/inter-cil-cono-oblique-two-levels/manifest.yml"
+            inventory = "models/legacy/inter-cil-cono-oblique-two-levels/derived/tool-inventory.yml"
+            hash = "587328a8e5b6474aee3169bb6af2fe2a711e98e000a423a96bba6e38274fb2b6"
+        }
+    )
+    foreach ($case in $scientificLegacyCases) {
+        $scientificManifest = Read-JsonCompatibleYaml -RelativePath $case.manifest
+        $scientificInventory = Read-JsonCompatibleYaml -RelativePath $case.inventory
+        Assert-Condition -Condition (
+            $scientificManifest.schema_version -eq 1 -and
+            $scientificManifest.id -eq $case.id -and
+            $scientificManifest.maturity -eq "legacy" -and
+            -not $scientificManifest.loaded_by_default -and
+            $scientificManifest.artifact.immutable -and
+            $scientificManifest.artifact.sha256 -eq $case.hash -and
+            $scientificManifest.license.review_status -eq "blocked" -and
+            $scientificManifest.laboratory.eligible -and
+            -not $scientificManifest.laboratory.stable_toolbar_replaced) `
+            -Message "Scientific legacy manifest is invalid: $($case.manifest)"
+        Assert-Sha256 -RelativePath $scientificManifest.artifact.path `
+            -Expected $case.hash
+        Assert-Condition -Condition (
+            $scientificInventory.schema_version -eq 1 -and
+            $scientificInventory.resource.id -eq $case.id -and
+            $scientificInventory.resource.sha256 -eq $case.hash -and
+            $scientificInventory.container.format -eq "ggb" -and
+            $scientificInventory.container.geogebra_version -eq "5.0.760.0" -and
+            @($scientificInventory.tools).Count -eq 0) `
+            -Message "Scientific legacy inventory is invalid: $($case.inventory)"
+        & (Join-Path $RepositoryRoot "tools\legacy\ingest.ps1") `
+            -ResourceId $case.id -Source $scientificManifest.artifact.path `
+            -TargetDirectory $case.directory -Check
+        if ($LASTEXITCODE -ne 0) {
+            throw "Deterministic scientific-model ingest failed for $($case.id)."
+        }
+        & (Join-Path $RepositoryRoot "tools\legacy\open-laboratory.ps1") `
+            -ResourceId $case.id -ValidateOnly
+        if ($LASTEXITCODE -ne 0) {
+            throw "CeDG Laboratory resolution failed for $($case.id)."
+        }
     }
 
     Write-Step "Scientific references and external model corpus"
@@ -398,8 +469,8 @@ try {
         Assert-Condition -Condition $relative.Contains("/original/") `
             -Message "Original legacy resource is outside an original/ directory: $relative"
     }
-    Assert-Condition -Condition ($legacyResources.Count -eq 1) `
-        -Message "G3 intentionally imports only Templatev7; found $($legacyResources.Count) resources."
+    Assert-Condition -Condition ($legacyResources.Count -eq 3) `
+        -Message "Expected Templatev7 plus two G6A scientific models; found $($legacyResources.Count) resources."
 
     if (-not $Quiet) {
         Write-Host "G3 legacy integration verification passed."

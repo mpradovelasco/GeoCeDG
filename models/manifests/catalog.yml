@@ -2,6 +2,8 @@
   "schema_version": 1,
   "models": [
     "models/legacy/template-v7/manifest.yml",
+    "models/legacy/inter-cil-cono-oblique/manifest.yml",
+    "models/legacy/inter-cil-cono-oblique-two-levels/manifest.yml",
     "models/regression/g5-dxf-foundation/manifest.yml"
   ]
 }

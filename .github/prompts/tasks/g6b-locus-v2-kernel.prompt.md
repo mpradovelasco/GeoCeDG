@@ -7,7 +7,13 @@ entity that satisfies the author-approved G6A contract.
 
 Do not execute this prompt unless G6A is committed as PASS, the author has
 approved its semantic spec, validation matrix, tolerances, benchmark budgets
-and pilot set, and ADR 0006 or a superseding architecture decision is Accepted.
+and pilot set, ADR 0006 or a superseding architecture decision is Accepted,
+and the author has issued a separate explicit G6B implementation task.
+
+Current repository state after closeout: G6A is `PASS — AUTHOR APPROVED`, the
+semantic contract is normative and ADR 0006 is `Accepted`. The design gate is
+satisfied, but this closeout explicitly leaves **G6B = NOT STARTED**. Do not
+execute this prompt until the separate implementation authorization exists.
 
 # Authority and evidence hierarchy
 
@@ -49,6 +55,12 @@ Implement only the accepted G6A spec and accepted ADR. Use
 map. If implementation requires a larger semantic or serialization change,
 stop before editing it.
 
+At start, verify that the author-reviewed versions of all of these exist and
+agree: `geocedg/specs/locus/locus-v2-semantics.md`, the topology/tolerance/
+characterization records under `geocedg/validation/locus-v2/`, the G6A report,
+ADR 0006 and the upstream impact map. Verify their accepted/normative state
+before editing and stop if they disagree.
+
 # Geometric invariants and degeneracies
 
 Apply every required Level A, selected Level B/Level C and cross-cutting row of
@@ -61,6 +73,12 @@ Use the approved versioned driver-domain provider parameter, branch key and
 valid-domain-component model. Preserve the separated state layers,
 pointwise/canonical-continuation determinism and four quality axes including
 numeric guarantee.
+
+Use `max(1e-12 * max(1,S), 64 * ulp(max(1,S)))` only as the approved
+uncertified numeric comparison envelope. Each case must document a
+characteristic geometric scale `S`; it cannot depend on zoom, DPI, viewport or
+absolute distance from the origin. Keep `eps_domain`, `eps_render`, future G7
+metric tolerances and future G8 intersection tolerances separate.
 
 # Nested Locus V2 composition
 
@@ -79,12 +97,35 @@ results with session/cache enabled and disabled, and scaling within the budget
 approved after G6A. Demonstrate cycle rejection/diagnostics. Do not expose V2
 as public `Path` to achieve this.
 
+Implement recursive semantic evaluators with one scoped shared full-key
+evaluation session with bounded memoization and active-key cycle protection;
+leave controlled DAG flattening out pending profiling. The semantic cache key
+must include locus identity, semantic
+revision, branch key and provider-canonical parameter. A dependency slice may
+be prepared once per locus definition/revision but never once per downstream
+point. If measurements violate the approved linear-depth functional budget,
+stop rather than hiding the result with a timing allowance.
+
+Treat the hash-pinned pair as complementary manual/scientific legacy evidence:
+`InterCilConoObliqueTwoLevels.ggb` is the functional two-level control and
+`InterCilConoOblique.ggb` is the pathological third-level `Flatten` reference.
+Create a sufficiently small internal typed fixture, explicitly traced to both,
+that demonstrates at least three V2 levels, inner invalidation, no render/sample
+dependency, no whole-upstream-locus regeneration and approved functional
+scaling. Direct conversion of either `.ggb` is not required, and G7
+`Perimeter` semantics must not be implemented. Do not interpret legacy sample
+coordinates as V2 expected geometry or add these rights-blocked models to
+packaging.
+
 # Compatibility and serialization
 
 Existing `.ggb` files and Classic use V1. V2 is experimental and opt-in; dual
 mode labels V1 as sampled comparison evidence. `LEGACY`, `V2` and `DUAL` do not
 redirect `Locus[...]`. G6B is non-persistent and has no public command or public
-V2 `Path`; never write/reuse legacy XML for it.
+V2 `Path`; never write/reuse legacy XML for it. Append a distinct V2
+`GeoClass`/classification while preserving every existing ordinal. Do not reuse
+`GeoClass.LOCUS`, return true from `isGeoLocus()`/`isGeoLocusable()`, or enter
+legacy metrics, commands, XML or 3D dispatch.
 
 # Required tests and commands
 

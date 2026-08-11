@@ -1,0 +1,72 @@
+{
+  "$schema": "../../../geocedg/specs/operations/model-manifest.schema.json",
+  "schema_version": 1,
+  "template": false,
+  "id": "cedg.legacy.inter-cil-cono-oblique-two-levels",
+  "maturity": "legacy",
+  "source": {
+    "uri": "author-supplied:g6a/InterCilConoObliqueTwoLevels.ggb",
+    "author": "Manuel Prado-Velasco",
+    "date": null,
+    "provenance_notes": "Author-supplied companion CeDG research model accepted at G6A closeout as the functional two-level legacy control. It is preserved independently because it is structurally different from InterCilConoOblique.ggb."
+  },
+  "required_geogebra": {
+    "version": "5.4.928.0",
+    "baseline_sha": "9b93256b7df401ff056c37b502d82df4d72b1522"
+  },
+  "loaded_by_default": false,
+  "inputs": ["rbCone", "rbCylinder", "excCyl", "t_omegaR"],
+  "outputs": ["loc1-loc13", "L_2 as a point on loc11"],
+  "validity_domain": {
+    "description": "Companion research construction with materialized additional legacy loci; its complete geometric validity domain remains to be characterized.",
+    "parameters": ["rbCone in [0.5,10]", "rbCylinder in [0.5,rbCone]", "excCyl in [-rbCone,rbCone]", "t_omegaR in [0,1]"]
+  },
+  "known_degeneracies": [
+    "Tangencies and loss/change of intersection branches are not explicitly classified by the legacy model.",
+    "Perimeter(loc9) consumes a viewport-dependent sampled legacy locus.",
+    "L_2 uses loc11 as a sampled Path, so its path identity and downstream behavior are legacy sample-derived."
+  ],
+  "reference_models": ["https://www.geogebra.org/m/nmsgff5s#material/kwb4pyf4"],
+  "expected_metrics": {
+    "g6a_evidence_role": "functional two-level legacy control",
+    "stored_locus_count": 13,
+    "stored_command_count": 191,
+    "point_on_locus_count": 1,
+    "source_recompute_ms_approx": 127,
+    "driver_recompute_ms_approx": 125
+  },
+  "license": {
+    "spdx": null,
+    "evidence": "Author-supplied research model; public redistribution permission and embedded GeoGebra asset status have not been approved.",
+    "review_status": "blocked"
+  },
+  "replacement_candidate": null,
+  "artifact": {
+    "path": "models/legacy/inter-cil-cono-oblique-two-levels/original/InterCilConoObliqueTwoLevels.ggb",
+    "format": "ggb",
+    "sha256": "587328a8e5b6474aee3169bb6af2fe2a711e98e000a423a96bba6e38274fb2b6",
+    "immutable": true
+  },
+  "source_environment": {
+    "geogebra_version": "5.0.760.0",
+    "app": "classic",
+    "platform": "desktop"
+  },
+  "derived_artifacts": [
+    {
+      "path": "models/legacy/inter-cil-cono-oblique-two-levels/derived/tool-inventory.yml",
+      "role": "inventory"
+    }
+  ],
+  "implementation": {
+    "mechanisms": ["embedded-ggb-construction", "legacy-locus", "point-on-legacy-locus"],
+    "embedded_tools": 0,
+    "global_javascript": true
+  },
+  "publications": ["cedg.reference.intersection-flattening-2023"],
+  "laboratory": {
+    "eligible": true,
+    "loader": "tools/legacy/open-laboratory.ps1",
+    "stable_toolbar_replaced": false
+  }
+}

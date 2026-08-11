@@ -128,6 +128,24 @@
       "change": "added",
       "purpose": "Keep selection dialogs, diagnostics, destination choice, and file I/O outside the shared exporter.",
       "authority": "geocedg/specs/export/geometry-export-foundation.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LegacyLocusCharacterizationTest.java",
+      "change": "added",
+      "purpose": "Characterize the pinned legacy Locus sample, view, parameter, dependency-slice, branch-break, and nested behavior without changing production semantics.",
+      "authority": "docs/roadmap/g6_locus_v2_plan.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusV2SemanticCharacterizationTest.java",
+      "change": "added",
+      "purpose": "Execute test-private mathematical fixtures for branch/component separation, deterministic analytic evaluation, nested composition, memoization, and cycle detection; no productive V2 API is introduced.",
+      "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LegacyCeDGScientificModelCharacterizationTest.java",
+      "change": "added",
+      "purpose": "Load the author-supplied cone-cylinder pair, characterize its legacy nested dependency slices, and reproduce the third-level AlgoLocusSlider timeout without changing production semantics.",
+      "authority": "docs/roadmap/g6_locus_v2_plan.md"
     }
   ]
 }

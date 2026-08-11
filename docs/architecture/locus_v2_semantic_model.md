@@ -1,17 +1,18 @@
-# Locus V2 — candidate mathematical and semantic model
+# Locus V2 — mathematical and semantic model
 
 | Field | Value |
 |---|---|
-| Status | **APPROVED AS G6A WORKING ARCHITECTURAL HYPOTHESIS**; not an accepted specification |
-| Phase | G6A characterization; implementation target for G6B |
+| Status | **G6A PASS — AUTHOR APPROVED**; supporting model for the normative G6 contract |
+| Phase | G6A closed; G6B **NOT STARTED** |
 | Date | 2026-08-11 |
 | Scope | Two-dimensional dynamic loci only |
 | Excluded | Public length (G7), intersections (G8), spatial semantics (G9) |
 
-The author approves this document only as the working architectural hypothesis
-that G6A must test, measure and refine. It is not yet an accepted specification,
-does not start G6A and does not change the meaning of the legacy GeoGebra
-`Locus` command. The execution plan is
+The author approved the characterized model at G6A closeout. This document
+explains the normative contract without changing the meaning of the legacy
+GeoGebra `Locus` command. The authority is
+[the normative semantic specification](../../geocedg/specs/locus/locus-v2-semantics.md).
+The execution plan is
 [G6 Locus V2 plan](../roadmap/g6_locus_v2_plan.md); the baseline implementation
 evidence is recorded in the
 [upstream impact map](locus_v2_upstream_impact.md).
@@ -52,7 +53,7 @@ make an arbitrary sampled output exact. It establishes a stable semantic
 question: given a branch and a valid driver state, evaluate the dependent point
 deterministically and report the quality and validity of that result.
 
-## 2. Candidate mathematical object
+## 2. Mathematical object
 
 Let `B = {b_1, ..., b_m}` be the set of semantic branches recognized by a
 versioned driver-domain provider. Each branch `b_j` has a declared oriented
@@ -166,7 +167,7 @@ semantics.
 ### 3.1 Point constrained to a `Path`
 
 The locus is driven by a point whose native path parameter changes. The
-candidate `PathLocusDriver2D` must provide:
+conceptual `PathLocusDriver2D` contract must provide:
 
 - a stable reference to the path and moving point;
 - a versioned semantic parameter descriptor and mapping, if needed, to the
@@ -176,8 +177,8 @@ candidate `PathLocusDriver2D` must provide:
 - declared topology and periodicity capabilities.
 
 The existing `Path` interface alone is not sufficient for V2 branch semantics:
-it exposes only one minimum/maximum pair and no branch descriptors. G6A must
-characterize type-specific providers for the initially supported path types.
+it exposes only one minimum/maximum pair and no branch descriptors. Each G6B
+path type therefore requires an explicitly characterized provider.
 The current `GeoFunction.getMinParameter()` / `getMaxParameter()` values are
 view-dependent even when a function interval exists (the declared interval is
 intersected with the view range). That `Path` domain is therefore a mandatory
@@ -188,7 +189,7 @@ interval independently of those view-clipped `Path` bounds.
 ### 3.2 Numeric parameter or slider
 
 The locus is driven by a number over a declared numeric interval. The
-candidate `NumericLocusDriver2D` must provide the interval, endpoint policy,
+conceptual `NumericLocusDriver2D` contract must provide the interval, endpoint policy,
 orientation and numeric update operation. Slider animation style (increasing,
 oscillating or wrapping) is presentation/traversal state and does not declare
 the domain periodic.
@@ -225,7 +226,7 @@ compact representation of that key, but may not replace its deterministic
 meaning. Lifecycle/lineage is separate state describing `UNCHANGED`,
 `APPEARED`, `DISAPPEARED`, `SPLIT` or `MERGED` transitions.
 
-The author-approved working policy is:
+The author-approved policy is:
 
 | Event | Working identity rule |
 |---|---|
@@ -240,16 +241,16 @@ The author-approved working policy is:
 | Declared domain merely changes endpoints | Preserve key when the provider declares the same branch and orientation |
 
 Keys must never derive from sample order, display label, creation order among
-samples, screen proximity or a hash of floating-point coordinates. G6A must
-define deterministic branch descriptors and typed split/merge rules for every
-G6B provider; otherwise the case remains unsupported rather than receiving a
-guessed identity.
+samples, screen proximity or a hash of floating-point coordinates. Every G6B
+provider must define deterministic branch descriptors and typed split/merge
+rules; otherwise the case remains unsupported rather than receiving a guessed
+identity.
 
 ## 5. Validity, properties and degeneration taxonomy
 
 Definition, branch/domain properties, point evaluation, regularity and lineage
-belong to different semantic levels. G6A must not collapse them into one enum.
-The names below are working names; the separation is author-approved.
+belong to different semantic levels and must not be collapsed into one enum.
+The separation is normative; final implementation names remain a G6B detail.
 
 ### 5.1 Definition status
 
@@ -361,7 +362,7 @@ An analytic expression evaluated with Java `double` is normally
 `FLOATING_POINT_UNCERTIFIED` on this axis. It does not produce mathematically
 exact coordinates merely because its construction fidelity is semantic.
 
-## 7. Candidate evaluator contract
+## 7. Evaluator contract
 
 The minimal conceptual API is:
 
@@ -397,7 +398,7 @@ were requested.
 
 ### 7.1 Determinism categories
 
-G6A must classify each provider/case as exactly one of:
+Each provider/case must be classified as exactly one of:
 
 - `POINTWISE_DETERMINISTIC`: `evaluate(branch,t)` can be calculated directly
   and is independent of evaluation history;
@@ -409,7 +410,7 @@ G6A must classify each provider/case as exactly one of:
 
 The second category may use internal continuation state as an implementation
 detail, but a fresh evaluation session and a warmed session must return the
-same semantic result. G6A must not reject a CeDG construction solely because it
+same semantic result. A CeDG construction must not be rejected solely because it
 needs continuation when such a canonical rule can be specified and validated.
 
 ### 7.2 Deferred capabilities
@@ -485,11 +486,11 @@ reconstruct the complete upstream dependency slice for each downstream point.
 The upstream object is an explicit input in the normal kernel DAG, so this
 semantic dependency is neither hidden nor callback-only.
 
-### 9.1 Shared evaluation context and memoization candidate
+### 9.1 Shared evaluation context and memoization
 
-G6A must determine whether a scoped abstraction equivalent to a
-`LocusEvaluationSession2D` is required. The name is not accepted architecture.
-Its candidate responsibilities are:
+The accepted minimum requires a scoped abstraction equivalent to a
+`LocusEvaluationSession2D`; the final implementation name remains local to
+G6B. Its responsibilities are:
 
 - carry one coherent set of semantic revisions through a nested query/batch;
 - memoize identical upstream requests during that session using at least
@@ -503,18 +504,17 @@ representation of its semantic parameter, not a normalized `PathParameter` or
 a render sample index. Cache-enabled and cache-disabled execution must produce
 semantically identical results.
 
-### 9.2 Dependency-slice strategies to characterize in G6A
+### 9.2 Dependency-slice strategy
 
 | Strategy | Mechanism | Principal advantage | Principal risk |
 |---|---|---|---|
 | A. Recursive semantic evaluators with a shared session | Each V2 evaluator calls explicit upstream V2 evaluators; one session shares revisions and memoization | Smallest semantic extension and direct preservation of branch identity | Repeated slice synchronization if session boundaries or ownership are wrong |
 | B. Controlled flattening/compilation of the evaluation DAG | Compile compatible nested slices into one evaluation plan while retaining locus boundaries and keys | May remove repeated synchronization at greater depth | Larger compatibility surface, invalidation complexity and accidental duplication of the kernel DAG |
 
-The working minimum is strategy A, subject to measurement. Strategy B is not
-authorized merely as an optimization; G6A may recommend it only if profiling
+Strategy A is the accepted G6B minimum. Strategy B is deferred and is not
+authorized merely as an optimization; a later proposal requires profiling that
 shows a reproducible bottleneck and proves that the compiled plan preserves the
-normal DAG, revisions and semantic identities. Other code-supported strategies
-may be compared.
+normal DAG, revisions and semantic identities.
 
 ### 9.3 Invalidation
 
@@ -524,7 +524,7 @@ revisions caused by its normal recompute, and all affected semantic/session
 caches are invalidated. No upstream render tessellation is generated eagerly;
 each view rebuilds its render cache only on demand.
 
-G6A must specifically guard against a design in which every level owns a slice
+G6B must specifically guard against a design in which every level owns a slice
 that clones the complete upstream locus and then rebuilds or recursively
 synchronizes those slices for each point. Nested evaluation cost may grow with
 query count and depth, but never with the product of upstream render densities.
@@ -534,9 +534,9 @@ query count and depth, but never with the product of upstream render densities.
 The baseline registers `AlgoElement` input/output dependencies in construction
 order and exposes ancestor checks such as `GeoElement.isChildOf()` /
 `isParentOf()` plus `CircularDefinitionException` in reference-setting paths.
-G6A must audit the exact protection applicable to every proposed V2 factory;
-those mechanisms do not by themselves prove safety for callbacks hidden inside
-evaluators. V2 factories must reject graph cycles, and any re-entry detected by
+The G6A audit found that those mechanisms do not by themselves prove safety for
+callbacks hidden inside evaluators. V2 factories must reject graph cycles, and
+any re-entry detected by
 a semantic evaluation session must return a typed diagnostic rather than
 recurse indefinitely or expose a stale value.
 
@@ -574,9 +574,9 @@ G6B should implement only measured caches:
 - an immutable definition/domain snapshot keyed by the algorithm's semantic
   revision;
 - an optional small bounded evaluation cache keyed by at least
-  `(locus identity, revision, branchKey, canonical semantic parameter)` for
+  `(locus identity, semantic revision, branchKey, canonical semantic parameter)` for
   approved deterministic evaluators;
-- a scoped, bounded nested-session memo only if G6A measurements justify it;
+- a scoped, bounded nested-session memo using the full semantic key;
 - one render cache per view, keyed by revision, view transform and tessellation
   policy.
 
@@ -619,8 +619,11 @@ tolerance is never reused as geometric, metric or intersection tolerance.
 ## 13. Forward compatibility boundaries
 
 - **G7:** may build a world-coordinate `LocusMetricIndex` by querying domain,
-  evaluations and optional differential capabilities. It must not read the
-  render cache.
+  evaluations and optional differential capabilities. A metric consumed by a
+  downstream construction must be semantic-revision-scoped, use normal-DAG
+  invalidation and caching, and must not read the render cache, sum sampled
+  chords or recompute the whole metric for every query while its upstream
+  semantic revision is unchanged.
 - **G8:** may isolate/refine roots in provider-owned semantic branch parameters
   and preserve `(branchKey,t)` identity. It must not use screen polylines as
   roots.
@@ -631,36 +634,89 @@ tolerance is never reused as geometric, metric or intersection tolerance.
   domain, evaluations and exactness/error metadata. It must never consume
   `LocusRenderCache2D`. No DXF locus support is part of G6.
 
-## 14. Evidence conflicts and questions to resolve in G6A
+## 14. Evidence conflicts characterized in G6A
 
 1. The scientific literature sometimes calls the locus procedure/result
    “exact” because it is generated by exact constructions, whereas the current
    Java kernel stores sampled `double` points. The author-approved working
    four-axis quality model resolves the vocabulary without upgrading numerical
-   evidence; G6A must validate its applicability to the selected cases.
+   evidence; G6A validated it against the selected cases.
 2. The book-era reports of `PathParameter(Locus)` behavior differ from the
    present baseline, which implements sample-index path behavior. Both support
-   the same conclusion—samples are not a semantic parameter—but G6A must record
-   the version context rather than declare either account universally current.
+   the same conclusion—samples are not a semantic parameter—and G6A records
+   the version context rather than declaring either account universally current.
 3. The roadmap and `AGENTS.md` name conceptual components, but current code has
    no semantic branch provider and no runtime shared-kernel feature-flag
    service. G6B must add minimal mechanisms rather than assume they exist.
 4. `kernel.isContinuous()` lets legacy sampling depend on prior traversal.
-   G6A must distinguish pointwise deterministic cases, cases with a provable
-   canonical continuation, and unsupported nondeterminism.
-5. The author's observation that legacy `Locus -> Locus` was slow and a third
-   nested level became practically intractable is experimental evidence to
-   reproduce. It does not yet prove whether the cause is sampled `Path`
-   traversal, dependency-slice cloning/synchronization, repeated updates,
-   render coupling or their combination.
-6. Reusing `GeoClass.LOCUS` versus introducing a distinct V2 classification is
-   intentionally undecided. G6A must audit every relevant switch/contract. The
-   author's preference is a distinct type/classification if measured
-   compatibility impact remains reasonably localized.
-7. Numeric tolerances and performance budgets are **DEFERRED TO G6A
-   MEASUREMENTS**. Analytic scales and reproducible legacy/V2 baselines must
-   precede any numeric threshold.
+   the normative model distinguishes pointwise deterministic cases, cases with
+   a provable canonical continuation, and unsupported nondeterminism.
+5. The author's observation that a third legacy locus level became practically
+   intractable is reproduced by the supplied cone-cylinder pair. A working
+   two-level outer slice contains one inner locus and one sampled perimeter;
+   each third-level `Flatten` slice contains two inner loci and two perimeters.
+   `AlgoLocusSliderND` invokes that macro slice through `copyP.updateCascade()`
+   for outer samples, exceeds its 500 ms per-step guard and returns undefined.
+   This demonstrated mechanism is model-specific evidence, not a universal
+   complexity claim for every legacy nesting pattern.
+6. The completed switch/contract audit showed that reusing `GeoClass.LOCUS`
+   would opt V2 into legacy casts, defaults, `Path`, metrics, commands and 3D
+   dispatch. G6B therefore uses a distinct appended classification, preserving
+   all existing ordinals and claiming neither `isGeoLocus()` nor
+   `isGeoLocusable()`.
+7. The author approved the scale-aware envelope
+   `max(1e-12*max(1,S), 64*ulp(max(1,S)))` for uncertified G6B numeric
+   comparison only. `S` is a documented characteristic geometric scale for
+   the case and cannot depend on screen state or absolute origin offset.
+   Absolute performance timings remain informational pending G6B measurements.
 
-These are characterization obligations, not permission to start G6A in this
-documentation-only task. ADR 0006 remains `Proposed` until G6A closeout and a
-second author review.
+The normative specification resolves these conflicts through versioned
+providers, independent state/quality axes, explicit determinism classes and
+the accepted compatibility boundary. ADR 0006 is `Accepted`.
+
+## 15. G6A evidence and recommended disposition
+
+G6A added only test-private mathematical fixtures and read-only legacy probes.
+It introduced no productive V2 object. The saved baseline and exact command are
+in
+[`g6a-characterization-baseline.yml`](../../geocedg/validation/locus-v2/g6a-characterization-baseline.yml).
+
+| Question | Evidence | Author-approved G6 closeout decision |
+|---|---|---|
+| Semantic parameter | Native circle parameter is `[-pi,pi]`; a function's path domain changed from `[-5,5]` to `[-100,100]` with the view; public normalization maps native ranges to `[0,1]` | Provider-owned parameter; only a versioned provider may approve a native mapping. Start G6B with explicit numeric interval plus stable segment/circle/ellipse mappings |
+| Branch vs component | The analytic fixture keeps one branch key while its valid subset changes from one interval to two intervals, isolated points and empty | Adopt `LocusBranch2D` with `validDomainComponents[]`; lineage is typed separately |
+| Determinism | Five Level-A evaluators produced identical maps for forward, reverse and shuffled queries with residual at most `1e-12` | Support `POINTWISE_DETERMINISTIC`; admit canonical continuation only with anchor/orientation/rule; otherwise return `UNSUPPORTED_NONDETERMINISM` |
+| Exactness | All executable references use `double`; no certified interval bound is produced | Record construction fidelity, evaluation method, role and numeric guarantee separately; use `FLOATING_POINT_UNCERTIFIED` for G6B references |
+| Nested strategy | Controlled semantic composition made exactly `q*d` calls at depths 1/2/3/5. A scoped session reduced repeated depth-3 requests from 18 to 9 calls without changing results; active-key recursion was detected | Select recursive semantic evaluators plus a scoped session as the minimum; defer controlled DAG flattening until profiling proves need |
+| Legacy nesting | The synthetic `Point(Locus)` chain stayed functional and cloned no upstream locus. In the hash-pinned scientific pair, working two-level slices contain one inner locus/perimeter, while third-level `Flatten` slices contain two of each and time out undefined | Treat nested full-locus/perimeter regeneration as a demonstrated legacy anti-pattern; G6B must compose semantic evaluators and never reproduce it |
+| Numeric tolerance | Analytic residuals were within `1e-12`; the kernel uses the same order for maximum precision | Use `max(1e-12*max(1,S), 64*ulp(max(1,S)))` only as an uncertified validation envelope with case-documented geometric `S`; provider-domain, render, G7 and G8 tolerances remain separate |
+| Performance budget | Controlled legacy median recompute was 0.559/0.946/1.268/1.211 ms at nesting depth 1/2/3/5 on the recorded workstation; timings are noisy and model-specific | Gate deterministic call counts, slice lifecycle and no-render dependencies first. Keep absolute timing informational until author-approved repeatability exists |
+
+The formal topology fixture, accepted tolerance envelope and scientific case provenance
+are versioned under `geocedg/validation/locus-v2/`. The local hash-pinned
+cone-cylinder pair is accepted as two complementary legacy references. Its
+public redistribution remains blocked, and neither model becomes V2 semantic
+authority.
+
+## 16. Author-approved closeout disposition
+
+The second author review records:
+
+1. the semantic specification is normative for G6;
+2. ADR 0006 is `Accepted`;
+3. G6B uses a distinct appended V2 classification and leaves the legacy locus
+   predicates and contracts untouched;
+4. recursive semantic evaluators plus a scoped shared evaluation session are
+   the minimum nested strategy; controlled DAG flattening remains deferred;
+5. the scale-aware envelope above is accepted only for uncertified numeric
+   comparison; and
+6. the hash-pinned two-level model is the functional legacy control, while the
+   three-level `Flatten` model is the pathological legacy reference.
+
+The original `.ggb` files remain manual/scientific evidence. G6B will use a
+small internal, typed, three-level fixture traced to them because it has no
+public command, persistence or G7 metric operation. That fixture must prove
+composition, inner-level invalidation, absence of render/sample dependence,
+absence of whole-upstream-locus regeneration and approved functional scaling.
+
+**G6A = PASS — AUTHOR APPROVED. ADR 0006 = ACCEPTED. G6B = NOT STARTED.**
