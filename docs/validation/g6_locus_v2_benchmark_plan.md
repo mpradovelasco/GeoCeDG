@@ -2,8 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Status | **G6A PASS — AUTHOR APPROVED**; baseline and functional G6B budgets accepted |
-| Baseline | GeoGebra 5.4.928.0 / GeoCeDG G5 `PASS` |
+| Status | **G6 PASS** — G6B functional budgets measured and verified |
+| Baseline | GeoGebra 5.4.928.0 / GeoCeDG G6A `PASS` |
 | Date | 2026-08-11 |
 | Principle | Measure semantic evaluation separately from graphical tessellation |
 
@@ -295,10 +295,52 @@ The recommended first gates avoid unstable wall-clock thresholds:
 
 Absolute latency, throughput, retained memory and render budgets remain
 informational until G6B has a real implementation and repeatable distributions.
-The functional gates above are accepted; this acceptance does not start G6B.
+The functional gates above were accepted before implementation and are now
+exercised by the completed G6B experimental implementation.
 
 The original `.ggb` files remain manual/scientific legacy benchmarks. G6B uses
 a sufficiently small internal typed reproduction, traced to both originals, to
 measure at least three semantic levels, innermost invalidation, no
 render/sample dependency, no whole-upstream-locus regeneration and bounded
 functional scaling. It is not required to implement G7 `Perimeter` semantics.
+
+## 12. G6B measured functional evidence
+
+`LocusV2FunctionalBenchmarkTest` separates deterministic architectural counts
+from informational wall-clock observations. Its controlled batch uses 64
+unique outer parameters:
+
+| Case | Depth | Required evaluator calls | Observed evaluator calls | Representative median elapsed time |
+|---|---:|---:|---:|---:|
+| `BM-NESTED-1` | 1 | 64 | 64 | 122,100 ns |
+| `BM-NESTED-2` | 2 | 128 | 128 | 133,600 ns |
+| `BM-NESTED-3` | 3 | 192 | 192 | 89,599 ns |
+| `BM-NESTED-5` | 5 | 320 | 320 | 186,700 ns |
+
+The timings are one local rerun and are deliberately not monotonic or a PASS
+budget. They demonstrate why G6B gates call counts and lifecycle behavior, not
+unstable nanosecond thresholds.
+
+In the duplicate depth-three batch, 64 unique queries followed by the same 64
+queries produce 192 evaluator calls, 192 misses, 64 hits and 192 retained
+entries in a 256-entry session. The reference session returns equal semantic
+results. A separate capacity-two fixture produces one deterministic eviction,
+showing bounded storage.
+
+The instrumentation records zero dependency-slice builds, zero slice
+synchronizations, zero whole-locus regenerations and zero upstream render
+evaluations for nested semantic work. These zeros describe the implemented V2
+architecture: point evaluation has no dependency-slice or render operation to
+invoke. They do not erase or reinterpret the measured legacy mechanism.
+
+Render evidence is recorded separately: a fixed semantic definition produces
+33 vertices under the coarse policy and 129 under the fine policy; its semantic
+revision and evaluated coordinates are unchanged. The per-drawable render
+cache retains at most four policy/revision entries.
+
+The machine-readable authority for these counts and the documented geometric
+scales `S` is
+[`g6b-functional-evidence.yml`](../../geocedg/validation/locus-v2/g6b-functional-evidence.yml).
+Retained JVM object-size measurement and absolute latency budgets remain
+deferred because no stable allocation probe or repeatability threshold was
+approved. This does not weaken the mandatory nonmultiplicative functional gate.

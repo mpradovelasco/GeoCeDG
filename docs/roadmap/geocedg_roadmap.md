@@ -3,12 +3,12 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Roadmap vivo y normativo de fases; no sustituye las especificaciones ni los ADR aceptados |
-| Versión documental | 3.4 |
+| Versión documental | 3.5 |
 | Fecha de revisión | 11 de agosto de 2026 |
 | Baseline GeoGebra | 5.4.928.0, commit `9b93256b7df401ff056c37b502d82df4d72b1522`, tag `geogebra-baseline-5.4.928.0` |
-| Estado actual | G6A `PASS — AUTHOR APPROVED`; contrato semántico G6 normativo y ADR 0006 aceptado |
-| Última fase cerrada | G6A — mathematical and semantic characterization |
-| Siguiente fase | G6B — minimal kernel implementation (`PENDING / NOT STARTED`) |
+| Estado actual | G6 `PASS`: G6A `PASS — AUTHOR APPROVED` y G6B `PASS` como entidad experimental interna |
+| Última fase cerrada | G6B — minimal Locus V2 kernel implementation |
+| Siguiente fase | G7 — native Locus V2 metrics (`PENDING / NOT STARTED`) |
 | Primer cliente | Aplicación de escritorio de la familia Classic 5 |
 | Núcleo | Java compartido de GeoGebra, extendido solo cuando la semántica lo requiere |
 
@@ -34,8 +34,9 @@ La estrategia recomendable no es convertir inmediatamente toda la distribución 
 5. **Introducir, antes del DSL, una semántica espacial CeDG nativa** que asocie cada objeto 3D con sus proyecciones, verifique qué conjunto de proyecciones lo define completamente y permita componer objetos complejos mediante primitivas, superficies, caras y relaciones constructivas.
 
 La plataforma útil se construye por incrementos sobre el kernel común de
-GeoGebra. A cierre de G5 ya dispone de interfaz propia, laboratorio legacy,
-packaging técnico Windows y exportación DXF 2D experimental; los siguientes
+GeoGebra. Tras G6A y la implementación candidata G6B ya dispone de interfaz
+propia, laboratorio legacy, packaging técnico Windows, exportación DXF 2D
+experimental y una entidad semántica Locus V2 interna validada; los siguientes
 elementos combinan capacidades cerradas y objetivos explícitamente futuros:
 
 - interfaz GeoCeDG propia (`PASS`, G2);
@@ -47,8 +48,9 @@ elementos combinan capacidades cerradas y objetivos explícitamente futuros:
   ampliación continua);
 - exportación DXF 2D como servicio externo al kernel (`PASS`, G5; feature
   experimental);
-- contrato matemático y arquitectura de `Locus V2` (`PASS`, G6A), sin entidad
-  productiva todavía; implementación experimental (`PENDING`, G6B);
+- contrato matemático y arquitectura de `Locus V2` (`PASS`, G6A), con entidad
+  experimental interna, evaluator, composición anidada y render derivado
+  implementados y validados en G6B (`PASS`);
 - un modelo semántico `SpatialObject3D`–proyecciones (`PENDING`, G9);
 - criterios verificables de suficiencia y degeneración de proyecciones
   canónicas (`PENDING`, G9).
@@ -1084,7 +1086,8 @@ La optimización priorizará, según evidencia: invalidación incremental, cach�
 | G4/G4R | `TECHNICAL PASS` | [Packaging](../validation/g4_standalone_packaging_report.md); redistribución pública `BLOCKED` pendiente de licencia/assets |
 | G5 | `PASS` | [Native 2D DXF export](../validation/g5_native_2d_dxf_export_report.md); feature integrada con estado experimental |
 | G6A | `PASS — AUTHOR APPROVED` | [Informe G6A](../validation/g6a_locus_v2_characterization_report.md), [contrato normativo](../../geocedg/specs/locus/locus-v2-semantics.md) y [ADR 0006 Accepted](../adr/0006-parallel-locus-v2-semantic-entity.md) |
-| G6B–G16 | `PENDING` | G6B no se ha iniciado y requiere una tarea de implementación separada |
+| G6B | `PASS` | [Informe G6B](../validation/g6b_locus_v2_kernel_report.md); entidad experimental interna, sin superficie pública |
+| G7–G16 | `PENDING` | No iniciadas |
 
 Los estados `experimental` describen madurez de una capacidad, no una puerta
 fallida. Un gate solo se marca `PASS` cuando satisface sus validaciones; un
@@ -1227,15 +1230,15 @@ aprobación de licencia y assets
 
 ## G6 - Locus V2
 
-**Estado:** G6A `PASS — AUTHOR APPROVED`; G6B `PENDING / NOT STARTED`
+**Estado:** `G6 PASS`; G6A `PASS — AUTHOR APPROVED`; G6B `PASS`
 
 La [planificación ejecutable detallada](g6_locus_v2_plan.md) incorporó la
 primera revisión del autor y G6A ejecutó la caracterización autorizada. La
 segunda revisión aprobó el
 [contrato normativo](../../geocedg/specs/locus/locus-v2-semantics.md), fixtures,
 mediciones y mapa de impacto, y aceptó
-[ADR 0006](../adr/0006-parallel-locus-v2-semantic-entity.md). G6B no se ha
-iniciado.
+[ADR 0006](../adr/0006-parallel-locus-v2-semantic-entity.md). El autor autorizó
+después G6B mediante el prompt canónico endurecido y fijado por hash.
 
 Los dos modelos de intersección cono-cilindro suministrados por el autor
 reproducen el límite legacy con roles distintos. El modelo `TwoLevels` es el
@@ -1256,10 +1259,11 @@ redistribución pública.
   compatibilidad y diseño de validación; caracterización cerrada `PASS` sin
   implementación productiva del kernel.
 - **G6B — minimal Locus V2 kernel implementation:** implementación mínima
-  futura implementación separada, protegida por feature flag y compatible con
-  diagnóstico legacy/dual-run. Usará una clasificación V2 añadida y distinta,
-  evaluadores semánticos recursivos con sesión compartida acotada y un fixture
-  interno de tres niveles trazable a los modelos originales.
+  productiva pero interna/experimental. Añade clasificación V2 distinta,
+  definiciones/ramas/evaluator, providers estrechos, algoritmos con dependencias
+  normales, evaluación anidada recursiva con sesión compartida acotada y un
+  drawable derivado. El fixture controlado demuestra tres niveles y mide
+  también profundidad cinco sin regeneración upstream.
 
 El paquete incluye el
 [modelo semántico](../architecture/locus_v2_semantic_model.md), el
@@ -1269,8 +1273,12 @@ El paquete incluye el
 [ADR 0006 Accepted](../adr/0006-parallel-locus-v2-semantic-entity.md). Las
 secciones conceptuales previas de este roadmap siguen siendo material de
 partida; la spec enlazada es la autoridad normativa. El resultado se documenta en el
-[informe G6A](../validation/g6a_locus_v2_characterization_report.md). No existe
-todavía un Locus V2 visible o persistente.
+[informe G6A](../validation/g6a_locus_v2_characterization_report.md) y el
+[informe G6B](../validation/g6b_locus_v2_kernel_report.md). Existe una entidad
+V2 productiva interna, pero no un comando, workflow de usuario, persistencia,
+`Path`, métrica, intersección, exportación o comportamiento 3D. Classic y el
+comando público `Locus[...]` de GeoCeDG continúan usando exclusivamente el
+locus legacy.
 
 ## G7 - Longitud
 

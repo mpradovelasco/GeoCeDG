@@ -9,6 +9,14 @@
     "required_evidence": ["three semantic V2 levels", "innermost invalidation", "no render or sample dependency", "no whole-upstream-locus regeneration", "approved functional scaling"],
     "not_required": ["direct conversion of either legacy ggb", "public command", "persistence", "public Path", "G7 Perimeter semantics"]
   },
+  "g6b_execution": {
+    "status": "g6b-pass",
+    "fixture": "internal typed pointwise semantic composition",
+    "implemented_depths": [1, 2, 3, 5],
+    "traceability_scope": "Reproduces the nested dependency shape without copying sampled Perimeter semantics or either original model's coordinates.",
+    "proved": ["normal kernel DAG dependencies", "recursive semantic evaluation", "innermost invalidation", "no render/sample dependency", "no dependency-slice build per query", "no whole-upstream-locus regeneration", "q*d evaluator calls"],
+    "deferred": ["direct V2 conversion of the legacy originals", "V2 Perimeter or length", "public command", "persistence", "public Path"]
+  },
   "cases": [
     {
       "id": "C-CONE-CYLINDER",

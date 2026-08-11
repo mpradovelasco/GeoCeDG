@@ -915,10 +915,51 @@ Promotion follows `legacy -> research -> experimental -> stable`, or
 | G5 | GeoCeDG-only export menu, diagnostics and file chooser | Available; experimental | Works in development and packaged GeoCeDG; Classic remains unchanged |
 | G5 | Semantic regression, zoom invariance and focused verifier | Available; infrastructure | Versioned source/expected evidence checks geometry rather than only file bytes |
 | G5 | Approximate curves, legacy Locus, physical units, DXF import and 3D export | Pending | Deliberately excluded until their governing semantic phases/contracts exist |
-| G6A | Legacy Locus characterization, mathematical fixtures, upstream impact audit and normative V2 contract | `PASS — AUTHOR APPROVED`; infrastructure/evidence only | Reproducible tests document current behavior and approved future semantics; no V2 product object exists |
-| G6B+ | Locus V2 entity, command, drawable, persistence, `Path`, length, intersections or export | Pending / not started | G6A approved the architecture, but none of these capabilities is available to users |
+| G6A | Legacy Locus characterization, mathematical fixtures, upstream impact audit and normative V2 contract | `PASS — AUTHOR APPROVED`; infrastructure/evidence only | Reproducible tests document current behavior and approved semantics; G6A itself added no product object |
+| G6B | Parallel `GeoLocusV2`, semantic providers/evaluator, explicit branches, revisions, nested composition and dedicated drawable | `PASS`; experimental/internal | Productive shared-kernel foundation exists and is testable, but has no public creation workflow |
+| G6B | Public command, `.ggb` persistence, public `Path`, metrics, intersections, export or 3D behavior | Pending / deliberately absent | Classic and GeoCeDG public `Locus[...]` remain legacy |
+| G7+ | Native Locus V2 metrics, intersections and later spatial/export integration | Pending / not started | Requires separate phase contracts and authorizations |
 
-### G6A Locus V2 characterization
+### G6 Locus V2 semantic foundation
+
+#### Operational status
+
+G6A is `PASS — AUTHOR APPROVED`; ADR 0006 is Accepted and the semantic
+specification is normative. G6B is `PASS` and contains a productive, parallel
+`GeoLocusV2` implementation in the shared Java kernel, but its maturity is
+**experimental** and it is disabled by default in the feature manifest.
+
+There is deliberately no user command, menu, toolbar button, preference or
+`.ggb` representation for V2. Consequently, an authorized developer does not
+"turn on" V2 in the running application. The supported operational inspection
+is the focused gate:
+
+```powershell
+.\tools\agent\verify-locus-v2.ps1
+```
+
+This runs the legacy G6A controls, productive G6B unit/integration/render tests,
+the functional nested benchmark and checkstyle. It is subordinate to the
+canonical repository authority:
+
+```powershell
+.\tools\agent\verify.ps1 -RunBenchmarks
+```
+
+The internal typed modes `LEGACY`, `V2` and `DUAL` are factory/test diagnostic
+inputs. They do not redirect the public command. Therefore:
+
+```text
+Classic + Locus[...]  -> legacy GeoLocus
+GeoCeDG + Locus[...]  -> legacy GeoLocus
+internal V2 factory   -> experimental GeoLocusV2
+DUAL test seam        -> labeled comparison evidence, not mixed authority
+```
+
+This compatibility rule is observable in normal use: every locus created from
+the input bar or a legacy `.ggb` still behaves exactly as before G6B.
+
+#### Why a second locus entity is necessary
 
 The current visible `Locus` remains GeoGebra's legacy implementation. Its
 stored `myPointList` serves simultaneously as drawable data and current `Path`
@@ -929,17 +970,166 @@ of the baseline, but the list is not an independent geometric definition.
 The normative Locus V2 contract separates:
 
 ```text
-versioned driver/domain + semantic branches + evaluator + graph revision
+versioned driver/domain + semantic branches + evaluator + semantic revision
                                   !=
                     view-local render tessellation
 ```
 
-The semantic parameter belongs to a versioned driver-domain provider; public
-normalized `PathParameter[...]` is not automatic identity. A branch represents
-a constructive solution/sheet and may contain several valid-domain components
-separated by undefined states. Branch identity never follows sample order,
-screen proximity or coordinates. Evaluations explicitly report validity,
-method, construction fidelity, representation role and numeric guarantee.
+The mathematical object for branch `j` is an evaluator
+`F_j : V_j -> R²`, where `V_j` is the valid subset of a branch's declared
+driver domain. A parameter address and its geometric image are different:
+multiple parameters may map to the same self-intersection point. Likewise, a
+semantic branch is a constructive solution/sheet, not each connected interval
+of `V_j`.
+
+The semantic parameter belongs to a versioned driver-domain provider. Public
+normalized `PathParameter[...]`, a sample index, zoom and viewport range are
+not automatic identity. This leaves room for two future CeDG projections to
+share a common semantic parameter even when their internal 2D `Path`
+parametrizations differ.
+
+#### Implemented providers and branch contract
+
+G6B keeps provider coverage intentionally narrow:
+
+| Provider | Contract | Current implementation |
+|---|---|---|
+| `explicit-numeric-domain/v1` | Construction-owned finite interval, endpoint openness, orientation, periodicity and `eps_domain` | Used by analytic, topology and nested fixtures |
+| `stable-path-domain/v1` | Segment parameter `t in [0,1]`; circle/ellipse angle `t in [-pi,pi)` | Value contracts for all three; live normal-DAG algorithm only for segment |
+
+Arbitrary functions and path families are not accepted merely because
+GeoGebra can sample them. Native infinite driver intervals and deterministic
+canonical-continuation providers are also deferred. G6B implements
+`POINTWISE_DETERMINISTIC`; unapproved history-dependent selection reports
+`UNSUPPORTED_NONDETERMINISM`.
+
+Each immutable `LocusBranch2D` contains:
+
+- deterministic `branchKey` and constructive provenance;
+- declared driver domain and zero or more `validDomainComponents`;
+- semantic orientation;
+- typed lineage (`APPEARED`, `DISAPPEARED`, `SPLIT`, `MERGED` or unchanged);
+- branch properties and independently typed quality metadata.
+
+Coordinates, labels, samples, visual order and proximity never construct a
+branch key. A gap where dependencies are undefined changes valid components;
+it does not automatically create another branch. A screen crossing or apparent
+orientation reversal also does not change identity.
+
+Status and quality are deliberately separate axes, not one catch-all enum:
+
+- definition status;
+- branch/domain properties;
+- evaluation status;
+- optional regularity;
+- topology/lineage;
+- construction fidelity;
+- evaluation method;
+- representation role; and
+- numeric guarantee.
+
+A cusp may therefore be a valid evaluation whose regularity is singular or
+unknown. A collapsed image may be valid while its branch property records the
+degeneration. An invalid evaluation never carries stale coordinates.
+
+#### Implemented kernel architecture
+
+```text
+GeoNumeric / approved Path inputs
+  -> AlgoLocusV2 family
+       -> GeoLocusV2 @ monotonic semanticRevision
+            -> immutable LocusDefinition2D
+                 -> LocusBranch2D[]
+                 -> LocusEvaluator2D
+                      -> LocusEvaluationSession2D
+
+EuclidianView -> DrawLocusV2 -> LocusRenderCache2D
+                              -> semantic evaluator
+                              -> view-local vertices only
+```
+
+Main responsibilities:
+
+| Class/family | Responsibility |
+|---|---|
+| `GeoLocusV2` | Parallel experimental kernel object and immutable semantic snapshot owner |
+| `AlgoLocusV2` family | Normal `AlgoElement` dependencies and snapshot publication for analytic, dynamic-branch, segment-path and nested pilots |
+| `LocusDefinition2D` / `LocusBranch2D` | Revisioned domain, branch, lineage, provider and evaluator contract |
+| `LocusEvaluation2D` / `LocusQuality2D` | Typed result without stale coordinates and independent exactness axes |
+| `LocusEvaluationSession2D` | Disposable bounded full-key memoization, coherent revisions and cycle re-entry protection |
+| `LocusV2Factory` | Internal/test-only typed creation seam; not a command processor |
+| `DrawLocusV2` / `LocusRenderCache2D` | Presentation derived from semantic evaluation and bounded per drawable |
+
+`GeoClass.LOCUS_V2` is appended after all baseline enum values, preserving every
+existing ordinal. V2 does not implement `Path`, `GeoLocusNDInterface` or
+`GeoLocusable`; `isGeoLocus()` and `isGeoLocusable()` remain false. No routing
+was added to `CmdLocus`, `AlgoDispatcher`, `GeoFactory`, legacy metrics, ODE,
+XML, G5 export or 3D drawing. The only upstream productive edits are the
+appended enum constant and the dedicated 2D draw dispatch.
+
+#### Revisions, sessions and nested composition
+
+An `AlgoLocusV2` recompute captures its declared inputs and publishes a new
+immutable semantic snapshot only when semantic content changes. Its revision
+is local, positive and monotonic. A point query, cache hit, render, zoom or DPI
+change does not increment it. An upstream source change propagates through the
+normal kernel DAG and invalidates downstream V2 definitions.
+
+For `L1 -> L2 -> L3`, the implementation performs:
+
+```text
+evaluate L3(u)
+  -> evaluate semantic snapshot L2(psi(u))
+       -> evaluate semantic snapshot L1(phi(psi(u)))
+```
+
+It never regenerates/tessellates L2 or L1. The downstream algorithm declares
+the upstream V2 output as a normal `AlgoElement` input and consumes its
+immutable definition. A scoped session is shared through the recursive calls.
+Its exact key comprises locus identity, semantic revision, branch key and the
+provider-canonical semantic parameter. It is bounded, disposable, can run with
+memoization disabled and rejects active-key re-entry with a diagnostic instead
+of creating a hidden callback cycle.
+
+The functional G6B fixture uses 64 outer queries. Depths 1, 2, 3 and 5 produce
+exactly 64, 128, 192 and 320 evaluator calls: `q * d`. Repeating the same 64
+depth-three queries in one eligible session adds 64 cache hits without changing
+results. Changing the innermost source publishes one coherent new revision at
+each affected level. Dependency-slice builds, slice synchronizations, upstream
+render evaluations and whole-locus regenerations are all zero in this path.
+
+#### Semantic exactness and numerical comparison
+
+G6B records construction fidelity, evaluation method, representation role and
+numeric guarantee separately. Its analytic formulas still execute with Java
+`double`; they are not mathematically exact coordinates. The accepted
+uncertified test envelope is:
+
+```text
+max(1e-12 * max(1,S), 64 * ulp(max(1,S)))
+```
+
+Each case documents a characteristic geometric scale `S`, such as a radius,
+semiaxis, segment length or bounded coordinate span. `S` cannot depend on
+absolute distance from the origin, zoom, DPI or viewport. This envelope is not
+`eps_domain`, render tolerance, a future G7 metric error or a future G8
+intersection residual.
+
+#### Rendering and zoom
+
+`DrawLocusV2` samples only for presentation. A view/revision/render-policy key
+selects a bounded per-drawable cache with at most four entries. The validated
+coarse and fine policies produce 33 and 129 vertices for the same locus; its
+semantic revision and semantic point evaluations are identical. Disconnected
+valid components form separate graphical subpaths. An unbounded image is
+clipped/inset only for presentation while finite semantic queries remain
+available independently of the viewport.
+
+The current renderer uses bounded uniform parameter samples. It is not a
+certified adaptive approximation, metric index, intersection index or semantic
+API. Render vertices cannot be consumed by downstream constructions.
+
+#### Scientific nested-locus evidence
 
 G6A also characterized nested composition. The accepted architecture evaluates an
 upstream V2 locus through its branch/domain/evaluator/revision metadata, never
@@ -962,32 +1152,39 @@ cause is specific to the measured models and is not generalized to every
 legacy locus.
 
 Both originals are hash-pinned under `models/legacy/`, are not loaded by
-default and remain blocked for public redistribution. G6B will use a smaller
-internal three-level fixture traced to them; it need not convert the originals
-or implement G7 perimeter semantics.
+default and remain blocked for public redistribution. G6B implements a smaller
+internal three-level fixture traced to their dependency shape; it does not
+convert either model or reproduce its `AlgoPerimeterLocus`. Structurally, G6B
+eliminates downstream dependence on an upstream sampled locus or full
+dependency-slice regeneration. It does not yet eliminate the future risk of a
+metric service recomputing an entire locus: G7 must make derived metrics
+revision-scoped, semantic and cache/invalidation coherent.
 
-There is currently no menu, toolbar button, command, saved-file type or user
-workflow for Locus V2. ADR 0006 is `Accepted` and the semantic contract is
-normative, but G6B is `NOT STARTED` and still requires a separate implementation
-task. The accepted G6B boundary uses a distinct appended V2 classification,
-leaves legacy predicates/contracts untouched, and is non-persistent with no
-public command or public `Path`.
+#### Current G6B limitations and future boundary
 
-The G6B uncertified numeric comparison envelope will be
-`max(1e-12 * max(1,S), 64 * ulp(max(1,S)))`, where each case documents a
-characteristic geometric scale `S` that is independent of zoom, DPI, viewport
-and absolute distance from the origin. This is not certified error and is
-separate from domain, render, future G7 metric and G8 intersection tolerances.
-Future G7 metrics consumed downstream must be scoped to the locus semantic
-revision and must not read render samples, sum sampled chords or recompute a
-whole unchanged metric per query.
+- no GUI, public command or end-user activation;
+- no `.ggb` XML, migration or public copy guarantee;
+- no public `Path`, point-on-V2 or legacy incidence;
+- no length, perimeter or metric index (G7);
+- no intersections (G8);
+- no 3D/projection semantics (G9);
+- no DXF locus export;
+- no canonical-continuation provider;
+- no general path support or native infinite provider domain;
+- no concurrency or compiled/flattened evaluation DAG; and
+- no certified numeric error bounds.
+
+These absences are intentional. Locus V2 is not a spline or a denser polyline:
+its evaluator/domain/branch identity is the geometric authority, while any
+polyline is a disposable view representation.
 
 ## 12. Planned phases not yet implemented
 
 | Phase | Planned area | Current status |
 |---|---|---|
 | G6A | Mathematical/semantic characterization and author review | `PASS — AUTHOR APPROVED` |
-| G6B-G8 | Minimal Locus V2 kernel entity, native length and 2D intersections | Pending; G6B not started |
+| G6B | Minimal experimental Locus V2 kernel entity | `PASS`; no public workflow |
+| G7-G8 | Native Locus V2 metrics and 2D intersections | Pending; not started |
 | G9 | Native spatial identity and canonical projection semantics | Pending |
 | G10 | CeDG 3D DSL and workbench | Pending |
 | G11 | Hierarchical layers and view states | Pending |
@@ -1015,8 +1212,8 @@ semantic contracts.
 - G5 supports only the exact 2D families listed above. There is no DXF import,
   viewport export, physical-unit contract, text export, approximate general
   curves, legacy Locus export or 3D export.
-- No new geometric semantics, native CeDG command, Locus V2 behavior, spatial
-  object/projection identity, or DSL has been added.
+- Locus V2 semantic behavior exists only through internal/test factories. No
+  native public CeDG command, spatial object/projection identity or DSL exists.
 - Legacy macros may have undocumented validity ranges, degeneracies, dynamic
   limitations, and sampled numerical approximations.
 - The 71-model public corpus is an external metadata index, not a local mirror
@@ -1046,7 +1243,7 @@ git status --short
 # Focused G5 geometry/DXF tests, manifests and architecture boundary
 .\tools\agent\verify-dxf.ps1
 
-# Focused G6A characterization, normative contracts and read-only probes
+# Focused G6A controls plus productive G6B semantic/render gates
 .\tools\agent\verify-locus-v2.ps1
 
 # Generate all internal Windows package formats
@@ -1099,13 +1296,15 @@ boundary defined by the operational contracts.
   [normative export contract](../../geocedg/specs/export/geometry-export-foundation.md),
   [regression evidence](../../models/regression/g5-dxf-foundation/expected-entities.yml),
   and [G5 report](../validation/g5_native_2d_dxf_export_report.md)
-- Locus V2 characterization:
+- Locus V2 characterization and experimental kernel:
   [G6 plan](../roadmap/g6_locus_v2_plan.md),
   [semantic model](../architecture/locus_v2_semantic_model.md),
   [upstream impact audit](../architecture/locus_v2_upstream_impact.md),
   [Accepted ADR 0006](../adr/0006-parallel-locus-v2-semantic-entity.md),
-  [normative contract](../../geocedg/specs/locus/locus-v2-semantics.md), and
-  [G6A report](../validation/g6a_locus_v2_characterization_report.md)
+  [normative contract](../../geocedg/specs/locus/locus-v2-semantics.md),
+  [G6A report](../validation/g6a_locus_v2_characterization_report.md),
+  [G6B report](../validation/g6b_locus_v2_kernel_report.md), and
+  [functional evidence](../../geocedg/validation/locus-v2/g6b-functional-evidence.yml)
 - Current feature state:
   [stable manifest](../../geocedg/features/stable.yml) and
   [experimental manifest](../../geocedg/features/experimental.yml)

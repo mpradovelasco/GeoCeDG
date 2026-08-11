@@ -146,6 +146,190 @@
       "change": "added",
       "purpose": "Load the author-supplied cone-cylinder pair, characterize its legacy nested dependency slices, and reproduce the third-level AlgoLocusSlider timeout without changing production semantics.",
       "authority": "docs/roadmap/g6_locus_v2_plan.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/plugin/GeoClass.java",
+      "change": "modified",
+      "purpose": "Append the distinct experimental LOCUS_V2 classification while preserving every existing ordinal and legacy LOCUS dispatch.",
+      "authority": "docs/adr/0006-parallel-locus-v2-semantic-entity.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/euclidian/EuclidianDraw.java",
+      "change": "modified",
+      "purpose": "Dispatch only LOCUS_V2 to its dedicated semantic drawable without changing the legacy LOCUS drawable path.",
+      "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geogebra/common/euclidian/DrawablesTest.java",
+      "change": "modified",
+      "purpose": "Keep the exhaustive GeoClass drawable audit meaningful by covering the appended experimental LOCUS_V2 type through its internal factory.",
+      "authority": ".github/prompts/tasks/g6b-locus-v2-kernel.prompt.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/ExplicitNumericDomainProvider2D.java",
+      "change": "added", "purpose": "Implement the approved explicit numeric driver-domain provider.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusBranch2D.java",
+      "change": "added", "purpose": "Represent immutable branch identity, valid components, lineage, provenance and quality.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusBranchSnapshot2D.java",
+      "change": "added", "purpose": "Publish provider-owned branch snapshots independently from samples.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusBranchSnapshotFunction2D.java",
+      "change": "added", "purpose": "Define the internal typed dynamic branch-snapshot seam.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusDefinition2D.java",
+      "change": "added", "purpose": "Own one immutable revisioned semantic definition and evaluator.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusDriverDomainProvider2D.java",
+      "change": "added", "purpose": "Define provider-owned semantic parameter and domain contracts.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusDualRunDiagnostic2D.java",
+      "change": "added", "purpose": "Label legacy sampled and V2 semantic comparison evidence without redirecting Locus.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusDynamicPointFunction2D.java",
+      "change": "added", "purpose": "Define internal evaluation over immutable dynamic source snapshots.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusEvaluation2D.java",
+      "change": "added", "purpose": "Return typed valid or invalid semantic evaluations without stale coordinates.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusEvaluationSession2D.java",
+      "change": "added", "purpose": "Provide bounded full-key memoization, coherent revisions and cycle protection.", "authority": "docs/adr/0006-parallel-locus-v2-semantic-entity.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusEvaluator2D.java",
+      "change": "added", "purpose": "Define the viewport-independent pointwise semantic evaluator contract.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusInstrumentation2D.java",
+      "change": "added", "purpose": "Expose deterministic evaluation, session, revision and forbidden-work counters.", "authority": ".github/prompts/tasks/g6b-locus-v2-kernel.prompt.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusInterval2D.java",
+      "change": "added", "purpose": "Represent explicit finite oriented-domain endpoint policies for G6B.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusLineage2D.java",
+      "change": "added", "purpose": "Represent typed appeared, disappeared, split and merged lineage.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusParameterMap2D.java",
+      "change": "added", "purpose": "Define typed semantic parameter composition between nested loci.", "authority": "docs/adr/0006-parallel-locus-v2-semantic-entity.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusPathPointFunction2D.java",
+      "change": "added", "purpose": "Define the characterized path-driver pointwise transformation seam.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusPoint2D.java",
+      "change": "added", "purpose": "Represent immutable finite two-dimensional semantic coordinates.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusPointFunction2D.java",
+      "change": "added", "purpose": "Define the internal pointwise analytic evaluator seam.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusPointTransform2D.java",
+      "change": "added", "purpose": "Define typed downstream transformation of nested semantic points.", "authority": "docs/adr/0006-parallel-locus-v2-semantic-entity.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusQuality2D.java",
+      "change": "added", "purpose": "Keep construction fidelity, method, role and numeric guarantee independent.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusSemanticKey2D.java",
+      "change": "added", "purpose": "Address session evaluations by identity, revision, branch and canonical parameter.", "authority": "docs/adr/0006-parallel-locus-v2-semantic-entity.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusSemanticMetadata2D.java",
+      "change": "added", "purpose": "Define the separated semantic status, property, quality and determinism axes.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusSourceSnapshot2D.java",
+      "change": "added", "purpose": "Capture dynamic numeric inputs during normal recompute for query-independent evaluation.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusV2Factory.java",
+      "change": "added", "purpose": "Provide the internal typed creation seam without a public command.", "authority": "docs/adr/0006-parallel-locus-v2-semantic-entity.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusV2Mode.java",
+      "change": "added", "purpose": "Represent internal LEGACY, V2 and DUAL diagnostic modes.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusValidationTolerance2D.java",
+      "change": "added", "purpose": "Implement the author-approved uncertified scale-aware validation envelope.", "authority": "geocedg/validation/locus-v2/tolerance-policy.yml"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/StablePathDomainProvider2D.java",
+      "change": "added", "purpose": "Implement only the approved segment, circle and ellipse semantic mappings.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/geos/GeoLocusV2.java",
+      "change": "added",
+      "purpose": "Add the parallel experimental 2D semantic locus entity without Path, XML, public command, legacy locus, metric, or 3D contracts.",
+      "authority": "docs/adr/0006-parallel-locus-v2-semantic-entity.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoAnalyticLocusV2.java",
+      "change": "added", "purpose": "Publish explicit-numeric pointwise semantic definitions through normal dependencies.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoDynamicBranchLocusV2.java",
+      "change": "added", "purpose": "Publish immutable dynamic topology and lineage snapshots through normal dependencies.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusV2.java",
+      "change": "added", "purpose": "Provide the normal-DAG revisioned semantic snapshot algorithm base.", "authority": "docs/adr/0006-parallel-locus-v2-semantic-entity.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoNestedLocusV2.java",
+      "change": "added", "purpose": "Compose upstream V2 semantic evaluators recursively through a shared session.", "authority": "docs/adr/0006-parallel-locus-v2-semantic-entity.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoSegmentPathLocusV2.java",
+      "change": "added", "purpose": "Integrate the approved live segment provider through normal kernel inputs.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/euclidian/draw/DrawLocusV2.java",
+      "change": "added", "purpose": "Draw V2 only from semantic evaluations through a dedicated drawable.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/euclidian/draw/LocusRenderCache2D.java",
+      "change": "added", "purpose": "Keep bounded per-view render tessellation separate from semantic state.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/euclidian/draw/LocusRenderData2D.java",
+      "change": "added", "purpose": "Represent derived presentation vertices and subpaths without semantic exposure.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/euclidian/draw/LocusRenderPolicy2D.java",
+      "change": "added", "purpose": "Own view-dependent bounded sampling solely as a render policy.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusV2FunctionalBenchmarkTest.java",
+      "change": "added", "purpose": "Gate q*d nested cost, exact-key reuse and bounded session behavior.", "authority": ".github/prompts/tasks/g6b-locus-v2-kernel.prompt.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusV2KernelIntegrationTest.java",
+      "change": "added", "purpose": "Verify providers, topology, revisions, nesting and public compatibility boundaries.", "authority": ".github/prompts/tasks/g6b-locus-v2-kernel.prompt.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusV2RenderSeparationTest.java",
+      "change": "added", "purpose": "Verify zoom/render variation without semantic variation or upstream render consumption.", "authority": ".github/prompts/tasks/g6b-locus-v2-kernel.prompt.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusV2ValueContractsTest.java",
+      "change": "added", "purpose": "Verify immutable value axes, providers, branches and numeric envelope.", "authority": ".github/prompts/tasks/g6b-locus-v2-kernel.prompt.md"
     }
   ]
 }

@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "id": "cedg.validation.g6b.functional-evidence",
+  "status": "g6b-pass",
+  "entry": {
+    "branch": "feature/g6b-locus-v2-kernel",
+    "commit": "b25153f4cfd563a47f00c3f98b5c67277037121d",
+    "prompt": ".github/prompts/tasks/g6b-locus-v2-kernel.prompt.md",
+    "prompt_sha256": "394b1fb1677205d6740a10da512a91b4e01b0f998f4eadcaf1c0e04a90b0fd53"
+  },
+  "semantic_contract": {
+    "specification": "geocedg/specs/locus/locus-v2-semantics.md",
+    "adr": "docs/adr/0006-parallel-locus-v2-semantic-entity.md",
+    "classification": "distinct append-only GeoClass.LOCUS_V2",
+    "providers": [
+      "explicit-numeric-domain/v1",
+      "stable-path-domain/v1"
+    ],
+    "determinism_implemented": [
+      "POINTWISE_DETERMINISTIC"
+    ],
+    "determinism_deferred": [
+      "CANONICAL_CONTINUATION_DETERMINISTIC"
+    ],
+    "public_command": false,
+    "persistence": false,
+    "public_path": false,
+    "three_dimensional_behavior": false
+  },
+  "nested_functional_gate": {
+    "outer_queries": 64,
+    "depths": [1, 2, 3, 5],
+    "evaluator_calls": [64, 128, 192, 320],
+    "expected_rule": "outer_queries * dependency_depth",
+    "dependency_slice_builds": 0,
+    "dependency_slice_synchronizations": 0,
+    "whole_locus_regenerations": 0,
+    "upstream_render_evaluations": 0,
+    "cache_disabled_results_equal": true,
+    "innermost_invalidation_revisions_per_level": 1,
+    "cycle_reentry_diagnosed": true
+  },
+  "session_gate": {
+    "depth": 3,
+    "unique_outer_queries": 64,
+    "repeated_outer_queries": 64,
+    "evaluator_calls": 192,
+    "misses": 192,
+    "hits": 64,
+    "retained_entries": 192,
+    "configured_capacity": 256,
+    "evictions": 0,
+    "bounded_eviction_fixture_capacity": 2,
+    "bounded_eviction_fixture_evictions": 1
+  },
+  "render_gate": {
+    "coarse_vertices": 33,
+    "fine_vertices": 129,
+    "bounded_policy_entries": 4,
+    "semantic_revision_changed_by_zoom": false,
+    "semantic_result_changed_by_zoom": false,
+    "discontinuous_component_subpaths": 2
+  },
+  "topology_gate": {
+    "fixture": "geocedg/validation/locus-v2/topology-fixture.yml",
+    "valid_component_counts": [1, 2, 2, 0],
+    "isolated_component_count": 2,
+    "lineage": ["UNCHANGED", "SPLIT", "MERGED", "DISAPPEARED", "APPEARED"],
+    "branch_keys": ["root", "root/+", "root/-"],
+    "discrete_fixture_values": [1, 2]
+  },
+  "validation_scales": {
+    "policy": "max(1e-12 * max(1,S), 64 * ulp(max(1,S)))",
+    "numeric_guarantee": "FLOATING_POINT_UNCERTIFIED",
+    "cases": [
+      {"id": "A-LINE", "S": 8.0, "basis": "dependent coordinate span on the declared pilot domain"},
+      {"id": "A-CIRCLE", "S": 2.0, "basis": "defining radius"},
+      {"id": "A-ELLIPSE", "S": 3.0, "basis": "largest defining semiaxis"},
+      {"id": "A-PARABOLA", "S": 4.0, "basis": "largest coordinate magnitude on the finite G6B pilot interval"},
+      {"id": "A-TRANSCENDENTAL", "S": 6.283185307179586, "basis": "declared parameter span scale 2*pi"},
+      {"id": "PATH-SEGMENT", "S": 4.47213595499958, "basis": "defining segment length before the dependency update"},
+      {"id": "B-SPLIT-MERGE", "S": 2.0, "basis": "declared world-coordinate x span"}
+    ],
+    "forbidden_scale_inputs": ["absolute distance from origin", "zoom", "DPI", "viewport"]
+  },
+  "legacy_scientific_controls": [
+    {
+      "id": "cedg.legacy.inter-cil-cono-oblique-two-levels",
+      "sha256": "587328a8e5b6474aee3169bb6af2fe2a711e98e000a423a96bba6e38274fb2b6",
+      "role": "functional two-level legacy control"
+    },
+    {
+      "id": "cedg.legacy.inter-cil-cono-oblique",
+      "sha256": "b1cb614f1a4c414144fbff29349ddebda92d1026acb4c535990a2895c589fa27",
+      "role": "pathological third-level Flatten legacy reference"
+    }
+  ],
+  "test_suites": {
+    "LocusV2ValueContractsTest": 5,
+    "LocusV2KernelIntegrationTest": 16,
+    "LocusV2RenderSeparationTest": 5,
+    "LocusV2FunctionalBenchmarkTest": 2,
+    "DrawablesTest": 4
+  },
+  "timing_policy": "informational only; generated XML and logs remain regenerable outside version control",
+  "future_boundaries": {
+    "G7": "pending; no metric or perimeter implementation",
+    "G8": "pending; no intersection or incidence implementation",
+    "G9": "pending; no spatial or projection implementation",
+    "DXF_locus": "unsupported"
+  }
+}

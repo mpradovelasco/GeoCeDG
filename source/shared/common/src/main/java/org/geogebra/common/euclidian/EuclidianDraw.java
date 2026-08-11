@@ -16,6 +16,8 @@
 
 package org.geogebra.common.euclidian;
 
+import org.geocedg.common.euclidian.draw.DrawLocusV2;
+import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geogebra.common.awt.GColor;
 import org.geogebra.common.euclidian.draw.DrawAudio;
 import org.geogebra.common.euclidian.draw.DrawBarGraph;
@@ -339,6 +341,10 @@ public class EuclidianDraw {
 			d = new DrawLocus(ev, ((GeoLocusNDInterface) geo).getLocus(),
 					CoordSys.XOY);
 			d.update();
+			break;
+
+		case LOCUS_V2:
+			d = new DrawLocusV2(ev, (GeoLocusV2) geo);
 			break;
 
 		case CURVE_CARTESIAN:

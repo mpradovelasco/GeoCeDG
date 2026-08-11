@@ -2,14 +2,15 @@
 
 | Field | Value |
 |---|---|
-| Status | **G6A PASS — AUTHOR APPROVED**; approved validation input for future G6B |
+| Status | **G6 PASS** — G6A characterization and G6B implementation evidence verified |
 | Governing model | [Locus V2 semantic model](../architecture/locus_v2_semantic_model.md) |
 | Execution plan | [G6 Locus V2 plan](../roadmap/g6_locus_v2_plan.md) |
 | Date | 2026-08-11 |
 
-This matrix relates requirements to executed G6A evidence and future G6B gates.
-G6A created only test-private fixtures and read-only legacy probes. Values and
-architecture were approved at G6A closeout. G6B remains not started.
+This matrix relates requirements to executed G6A evidence and the realized G6B
+gates. G6A created test-private fixtures and read-only legacy probes; G6B now
+implements the restricted parallel experimental entity. Final phase status is
+set only after the composed authority completes.
 
 ## 1. Tolerance classes
 
@@ -269,5 +270,34 @@ Executable evidence:
 - [`g6a-characterization-baseline.yml`](../../geocedg/validation/locus-v2/g6a-characterization-baseline.yml);
 - [`scientific-pilots.yml`](../../geocedg/validation/locus-v2/scientific-pilots.yml).
 
-The matrix is an accepted input to the future G6B gate. G6B is `NOT STARTED`
-and may not substitute missing provenance with a remote URL or screenshot.
+The preceding table is the accepted G6A input to G6B. G6B did not substitute
+missing provenance with a remote URL or screenshot.
+
+## 11. G6B executed validation mapping
+
+| Requirement family | Executable evidence | Result |
+|---|---|---|
+| Separated value axes, numeric provider, approved path mappings, branch/component distinction and validation envelope | `LocusV2ValueContractsTest` (5 tests) | PASS |
+| Level A line, circle, ellipse, parabola and transcendental relations | `levelAAnalyticFixturesSatisfyConstructionRelations` | PASS with case-specific `S` and the uncertified evaluation envelope |
+| Self-intersection multiplicity and periodic seam | `parameterMultiplicityAndPeriodicSeamAreSemantic` | PASS; parameter addresses remain distinct even at a shared point |
+| Formal topology and lineage | `providerOwnsDynamicBranchTopologyAndLineage` | PASS for one/two/isolated/empty valid sets plus split, merge, disappearance and deterministic reappearance |
+| Live path provider | `liveSegmentPathProviderUsesNormalDagButNotPathParameterIdentity` | PASS for segment; circle/ellipse remain immutable provider-contract tests |
+| Cusp, collapsed image and optional regularity | `cuspAndCollapsedImageRetainTypedSemanticMeaning` | PASS without claiming differential certification |
+| Dependency undefined/recovery and discrete topology | `undefinedDependencyPublishesTypedRevisionAndRecovers`; `discreteTopologyInputUsesStableProviderKeysAndNormalInvalidation` | PASS with normal-DAG revision publication |
+| Nested composition and functional scale | kernel nested tests plus `LocusV2FunctionalBenchmarkTest` | PASS at depths 1/2/3/5 with `q*d` calls |
+| Scoped session, full key, bounded cache, reference execution and cycle guard | session/cycle integration tests | PASS; cache-enabled and disabled semantic results agree |
+| Render separation, zoom sensitivity, unbounded image presentation and disconnected components | `LocusV2RenderSeparationTest` (5 tests) | PASS; 33 vs 129 vertices, unchanged semantic revision/result, two subpaths |
+| Distinct type and prohibited legacy/public contracts | classification/runtime-mode integration tests plus `DrawablesTest` | PASS; no public creation, XML, `Path`, metric, G5 export or 3D route |
+
+The versioned machine-readable result is
+[`g6b-functional-evidence.yml`](../../geocedg/validation/locus-v2/g6b-functional-evidence.yml).
+It records the prompt hash, entry SHA, provider coverage, scale choices,
+functional counters, render counters and immutable legacy-model hashes. Raw
+JUnit XML and Gradle logs are regenerable evidence and are not versioned.
+
+G6B does not implement canonical continuation. It maps any provider without an
+approved reproducible continuation rule to `UNSUPPORTED_NONDETERMINISM`.
+Native infinite driver intervals and broad path coverage also remain outside
+the minimum implementation. The unbounded case validates a mathematically
+unbounded image over a finite open provider domain, not a new infinite-domain
+provider contract.
