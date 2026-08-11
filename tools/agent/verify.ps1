@@ -70,7 +70,7 @@ try {
     & $DxfVerifier @dxfParameters
     Assert-LastScriptSuccess -Description "Native 2D geometry and DXF export"
 
-    Write-Host "`n==> G6A Locus V2 characterization"
+    Write-Host "`n==> G6 Locus V2 characterization and experimental kernel"
     $locusV2Parameters = @{
         LogDirectory = Join-Path ([IO.Path]::GetFullPath($LogDirectory)) "locus-v2"
     }
@@ -84,7 +84,7 @@ try {
         $locusV2Parameters.KeepBuildOutputs = $true
     }
     & $LocusV2Verifier @locusV2Parameters
-    Assert-LastScriptSuccess -Description "G6A Locus V2 characterization"
+    Assert-LastScriptSuccess -Description "G6 Locus V2"
 
     Write-Host "`n==> Standalone Windows packaging contracts"
     $packagingParameters = @{}

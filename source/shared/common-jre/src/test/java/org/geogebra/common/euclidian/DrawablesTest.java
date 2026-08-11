@@ -25,9 +25,21 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Objects;
 import java.util.TreeSet;
 
+import org.geocedg.common.euclidian.draw.DrawLocusV2;
+import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.kernel.locus.ExplicitNumericDomainProvider2D;
+import org.geocedg.common.kernel.locus.LocusBranch2D;
+import org.geocedg.common.kernel.locus.LocusInterval2D;
+import org.geocedg.common.kernel.locus.LocusPoint2D;
+import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.BranchProperty;
+import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.Orientation;
+import org.geocedg.common.kernel.locus.LocusV2Factory;
+import org.geocedg.common.kernel.locus.LocusV2Mode;
 import org.geogebra.common.BaseUnitTest;
 import org.geogebra.common.awt.GGraphics2D;
 import org.geogebra.common.awt.GGraphicsCommon;
@@ -46,6 +58,7 @@ import org.geogebra.common.kernel.geos.GeoFormula;
 import org.geogebra.common.kernel.geos.GeoInlineTable;
 import org.geogebra.common.kernel.geos.GeoInlineText;
 import org.geogebra.common.kernel.geos.GeoMindMapNode;
+import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.geos.GeoScriptAction;
 import org.geogebra.common.kernel.geos.GeoSymbolic;
 import org.geogebra.common.kernel.geos.GeoVideo;
@@ -120,6 +133,22 @@ class DrawablesTest extends BaseUnitTest {
 		GeoMindMapNode mindMap = new GeoMindMapNode(construction, new GPoint2D());
 		mindMap.setLabel("mindMap");
 		TreeSet<GeoClass> types = new TreeSet<>();
+		ExplicitNumericDomainProvider2D provider =
+				new ExplicitNumericDomainProvider2D("drawable-fixture/v1",
+						new LocusInterval2D(-1, 1, true, true),
+						Orientation.INCREASING, false, 1E-14);
+		LocusBranch2D branch = LocusV2Factory.fullDomainBranch("main", provider,
+				"drawable-fixture/v1", EnumSet.noneOf(BranchProperty.class));
+		GeoLocusV2 locusV2 = LocusV2Factory.createAnalytic(LocusV2Mode.V2,
+				construction, "drawable-v2", new GeoNumeric(construction, 1), provider,
+				Collections.singletonList(branch), (source, semanticBranch, parameter,
+						session) ->
+						new LocusPoint2D(parameter, parameter * parameter),
+				"drawable-parabola/v1");
+		DrawableND locusV2Drawable = getApp().getEuclidianView1()
+				.newDrawable(locusV2);
+		assertTrue(locusV2Drawable instanceof DrawLocusV2);
+		types.add(GeoClass.LOCUS_V2);
 		for (String s : def) {
 			GeoElementND geo = add(s);
 			DrawableND draw = getApp().getEuclidianView1().newDrawable(geo);

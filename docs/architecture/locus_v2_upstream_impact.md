@@ -2,16 +2,17 @@
 
 | Field | Value |
 |---|---|
-| Status | **G6A PASS — AUTHOR APPROVED**; no production source change made |
+| Status | **G6B PASS**; minimal impact and compatibility boundary verified |
 | Baseline | GeoGebra 5.4.928.0, `9b93256b7df401ff056c37b502d82df4d72b1522` |
-| Inspected tree | GeoCeDG `feature/g6a-locus-v2-characterization`, G5 `PASS` |
+| Inspected tree | GeoCeDG `feature/g6b-locus-v2-kernel`, G6A `PASS` |
 | Date | 2026-08-11 |
 
 This map records the real implementation behind the baseline `Locus` command
-and the minimum change surface accepted for a future G6B task. It complements the
+and the minimum change surface accepted and realized by G6B. It complements the
 [semantic model](locus_v2_semantic_model.md) and does not authorize any change
-to production `source/`. G6A adds only read-only/test-private characterization
-tests under `common-jre/src/test`. G6B remains `NOT STARTED`.
+to legacy locus semantics. G6A added only read-only/test-private
+characterization tests; G6B adds the parallel implementation described in
+Section 19.
 
 ## 1. End-to-end legacy path
 
@@ -506,7 +507,47 @@ The accepted minimum class/file plan is:
 6. explicit internal diagnostic mode ownership in GeoCeDG configuration, with
    Classic and the public `Locus[...]` path unchanged.
 
-No existing production file was changed or is authorized by this closeout.
-G6B is `NOT STARTED`; its exact edits must be reconfirmed against the branch at
-G6B start and entered in
-`docs/upstream/modified-files.yml` as they are made.
+The preceding paragraph records the historical G6A closeout boundary. G6B was
+subsequently authorized and its realized edits are listed below and in
+`docs/upstream/modified-files.yml`.
+
+## 19. Actual G6B impact and compatibility audit
+
+The realized change is smaller than a legacy-locus refactor. GeoCeDG-owned
+productive code was added under:
+
+- `org.geocedg.common.kernel.locus`: immutable semantic values, providers,
+  evaluator/session, instrumentation, diagnostic mode and internal factory;
+- `org.geocedg.common.kernel.geos.GeoLocusV2`;
+- `org.geocedg.common.kernel.algos`: analytic, dynamic-branch, segment-path and
+  nested algorithm family; and
+- `org.geocedg.common.euclidian.draw`: dedicated drawable, render data, policy
+  and bounded cache.
+
+Only two upstream productive files are modified:
+
+| File | Minimal change | Compatibility reason |
+|---|---|---|
+| `source/shared/common/src/main/java/org/geogebra/common/plugin/GeoClass.java` | Append `LOCUS_V2` after the former final constant | Distinct type without changing any existing ordinal |
+| `source/shared/common/src/main/java/org/geogebra/common/euclidian/EuclidianDraw.java` | One dedicated `LOCUS_V2` case | Avoid the legacy `GeoLocusNDInterface` cast and sampled drawable |
+
+`DrawablesTest` is the only modified upstream test: it constructs one internal
+V2 fixture so the existing exhaustive `GeoClass.values()` drawable audit stays
+complete. All additions and purposes are recorded in
+[`modified-files.yml`](../upstream/modified-files.yml).
+
+Static and executable audits confirm no V2 reference was added to `CmdLocus`,
+`AlgoDispatcher`, `GeoFactory`, `CmdLength`, `CmdFirst`, `CmdPerimeter`,
+`AlgoIntegralODE` or `EuclidianView3D`. `GeoLocusV2` is not a `Path`,
+`GeoLocusNDInterface` or `GeoLocusable`; its classification is distinct, its
+value type is non-arithmetic, and its XML writer deliberately emits nothing.
+The G5 adapter continues to report it unsupported. Classic and public
+`Locus[...]` therefore retain their existing route and meaning.
+
+One planned class location changed: the internal factory resides in
+`org.geocedg.common.kernel.locus.LocusV2Factory`, not the algorithm package,
+because it assembles approved semantic contracts as well as algorithm objects.
+The anticipated dependency-slice context was not introduced: the minimal
+analytic, path and nested demonstrators capture immutable normal-DAG snapshots,
+and point evaluation builds or synchronizes no cloned slice. Controlled DAG
+flattening remains deferred as approved.

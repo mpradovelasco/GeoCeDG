@@ -2,8 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Status | **G6A PASS — AUTHOR APPROVED**; supporting model for the normative G6 contract |
-| Phase | G6A closed; G6B **NOT STARTED** |
+| Status | **G6 PASS** — G6A author-approved contract plus G6B experimental kernel |
+| Phase | G6A `PASS`; G6B `PASS`; G7/G8/G9 not started |
 | Date | 2026-08-11 |
 | Scope | Two-dimensional dynamic loci only |
 | Excluded | Public length (G7), intersections (G8), spatial semantics (G9) |
@@ -719,4 +719,98 @@ public command, persistence or G7 metric operation. That fixture must prove
 composition, inner-level invalidation, absence of render/sample dependence,
 absence of whole-upstream-locus regeneration and approved functional scaling.
 
-**G6A = PASS — AUTHOR APPROVED. ADR 0006 = ACCEPTED. G6B = NOT STARTED.**
+**Historical G6A closeout:** G6A = PASS — AUTHOR APPROVED. ADR 0006 =
+ACCEPTED. G6B had not started at that closeout.
+
+## 17. Realized minimal G6B semantic architecture
+
+G6B realizes the approved model without changing the legacy locus. The
+productive data flow is:
+
+```text
+normal GeoElement inputs
+  -> AlgoLocusV2 family (normal AlgoElement input/output edges)
+  -> immutable LocusDefinition2D @ semanticRevision
+       -> LocusBranch2D {branchKey, declared domain,
+                         validDomainComponents, orientation,
+                         provenance, typed lineage, quality}
+       -> LocusEvaluator2D
+            -> scoped LocusEvaluationSession2D
+                 -> exact full-key memoization / active-key cycle guard
+
+EuclidianView
+  -> DrawLocusV2
+       -> bounded LocusRenderCache2D
+            -> semantic evaluate(...)
+            -> view-local vertices (never returned by the semantic API)
+```
+
+### 17.1 Implemented semantic surface
+
+`GeoLocusV2` is a parallel final `GeoElement` classified as the append-only
+`GeoClass.LOCUS_V2`. It implements neither `Path` nor a legacy locus interface,
+does not claim `isGeoLocus()` or `isGeoLocusable()`, returns no XML and is not
+registered in `GeoFactory`. `CmdLocus`, `AlgoDispatcher`, legacy metrics, ODE,
+G5 export and 3D dispatch remain untouched.
+
+The initial providers are deliberately narrow:
+
+| Provider | Semantic parameter | Productive G6B coverage |
+|---|---|---|
+| `explicit-numeric-domain/v1` | Explicit finite interval, endpoint policy, orientation and optional periodicity owned by the construction | Analytic, topology, nested and test fixtures |
+| `stable-path-domain/v1` | Segment `t in [0,1]`; circle/ellipse angle `t in [-pi,pi)` | Live normal-DAG segment pilot; immutable segment/circle/ellipse provider contracts |
+
+No public normalized `PathParameter` is adopted. Functions and arbitrary paths
+are not silently assigned a provider. An unbounded image is demonstrated by a
+finite open semantic domain and a divergent analytic map; native infinite
+driver intervals remain outside this minimum provider version.
+
+### 17.2 Revision and dependency behavior
+
+Each concrete algorithm captures its normal-DAG inputs during `compute()` and
+publishes an immutable definition only when semantic content changes. The
+local revision is positive and monotonic. Point queries, query order, render,
+zoom and a constrained segment driver's current presentation position do not
+publish revisions. Changes to defining inputs propagate through ordinary
+`AlgoElement` edges; nested V2 outputs are explicit downstream inputs.
+
+The dynamic branch pilot captures immutable source values and constructs typed
+lineage from the preceding semantic definition during recompute. Evaluation
+therefore never reaches back into a mutable live construction. A validity gap
+changes `validDomainComponents`; it does not manufacture a branch identity.
+
+### 17.3 Nested semantic composition
+
+For `L1 -> L2 -> L3`, `AlgoNestedLocusV2` captures the upstream immutable
+definition for its own revision and invokes `upstreamDefinition.evaluate(...)`
+with the same scoped session. The session key is locus identity, semantic
+revision, branch key and provider-canonical parameter bits. It enforces one
+coherent revision per locus, has bounded insertion-order eviction, can run with
+memoization disabled, and diagnoses an active-key re-entry cycle.
+
+The controlled gate uses 64 unique outer queries. Depths 1, 2, 3 and 5 require
+exactly 64, 128, 192 and 320 semantic evaluator calls. Repeating the 64
+depth-three requests in the same session yields 64 hits and retains 192 entries;
+session-disabled results are identical. Dependency-slice builds,
+synchronizations, upstream render work and whole-locus regeneration remain
+zero because none is part of the V2 evaluation path.
+
+### 17.4 Render boundary and current limitations
+
+`DrawLocusV2` obtains semantic points from the evaluator and constructs a
+`GeneralPathClipped`. Its per-drawable cache is keyed by semantic revision and
+an immutable view/render policy and is bounded to four entries. The validated
+coarse/fine policies produce 33 and 129 vertices for the same semantic
+definition; semantic coordinates and revision do not change.
+
+This first renderer uses a bounded, view-derived uniform presentation sampling
+policy. It is not a metric partition, error-certified curve approximation or
+semantic domain authority. Native infinite driver domains, canonical
+continuation, persistence, public creation, point-on-V2 behavior, metrics,
+intersections, locus export, 3D behavior and concurrency remain deliberately
+unimplemented.
+
+The internal `GeoElement.copy()` support exists only to satisfy kernel object
+contracts. It rebinds an immutable definition but does not establish a public
+copy/migration/persistence guarantee; that surface must be reviewed before any
+future public exposure.

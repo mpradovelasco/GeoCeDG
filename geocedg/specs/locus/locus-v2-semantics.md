@@ -1,9 +1,9 @@
 # Locus V2 semantic contract
 
 - Status: **APPROVED AS NORMATIVE G6 SEMANTIC CONTRACT**
-- Version: `1.0`
+- Version: `1.1`
 - Approval date: 2026-08-11
-- Roadmap gate: G6A `PASS`; G6B `NOT STARTED`
+- Roadmap gate: G6A `PASS`; G6B `PASS`; G6 `PASS`
 - Affected layer: shared Java kernel semantics; derived rendering
 - Architecture decision: Accepted ADR 0006
 
@@ -241,8 +241,10 @@ cache keyed by semantic revision and view/render policy.
 
 The validation matrix, tolerance policy and characterization baseline under
 `geocedg/validation/locus-v2/` are the approved G6A evidence and the normative
-input to G6B. G6A is `PASS`; ADR 0006 is `Accepted`. G6B remains `NOT STARTED`
-until an explicit implementation task is authorized.
+input to G6B. G6A is `PASS`; ADR 0006 is `Accepted`. The author subsequently
+authorized G6B through the hash-pinned canonical prompt. Productive G6B code
+must conform to this contract; implementation notes below do not weaken or
+reinterpret it.
 
 The evidence gap is resolved by two author-supplied, hash-pinned legacy models.
 `InterCilConoObliqueTwoLevels.ggb` is the functional two-level control
@@ -266,3 +268,32 @@ required three-level V2 demonstrator shall be a small internal typed fixture
 with explicit traceability to these originals. The pathological original
 remains a legacy comparison and does not require G6B to implement G7
 `Perimeter` or reproduce its sampled coordinates as V2 truth.
+
+## G6B implementation conformance profile
+
+The minimal implementation realizes this contract through:
+
+- immutable `LocusDefinition2D`, `LocusBranch2D`, domain, lineage, evaluation
+  and quality values under `org.geocedg.common.kernel.locus`;
+- `explicit-numeric-domain/v1` plus the characterized
+  `stable-path-domain/v1` mappings for segment, circle and ellipse; only the
+  segment provider currently has a live kernel-DAG algorithm;
+- a parallel `GeoLocusV2` with append-only `GeoClass.LOCUS_V2`;
+- an internal `AlgoLocusV2` family that publishes immutable snapshots through
+  normal `AlgoElement` input/output dependencies;
+- recursive `AlgoNestedLocusV2` evaluation through a disposable bounded
+  `LocusEvaluationSession2D` with the full semantic key and active-key cycle
+  detection; and
+- a dedicated `DrawLocusV2` and bounded per-drawable `LocusRenderCache2D`
+  derived only from semantic evaluation.
+
+G6B implements `POINTWISE_DETERMINISTIC`. Canonical continuation remains
+unsupported until a provider with an approved anchor, orientation and
+continuation rule exists. The numeric comparison envelope remains
+`FLOATING_POINT_UNCERTIFIED`; no certified error claim is introduced.
+
+The implementation is deliberately internal and nonpersistent. The typed
+`LEGACY`, `V2` and `DUAL` values are a factory/test diagnostic seam, not an
+end-user preference and not a public command switch. `Locus[...]` remains
+legacy in both Classic and GeoCeDG. Versioned execution evidence is stored in
+[`g6b-functional-evidence.yml`](../../validation/locus-v2/g6b-functional-evidence.yml).

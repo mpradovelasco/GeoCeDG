@@ -2,14 +2,14 @@
 
 | Field | Value |
 |---|---|
-| Planning status | **EXECUTED THROUGH G6A CHARACTERIZATION** |
-| Project phase status | **G6A PASS — AUTHOR APPROVED**; G6B **NOT STARTED** |
+| Planning status | **EXECUTED** |
+| Project phase status | **G6A PASS — AUTHOR APPROVED**; **G6B PASS**; **G6 PASS** |
 | Baseline | GeoGebra 5.4.928.0, `9b93256b7df401ff056c37b502d82df4d72b1522` |
-| Branch | `feature/g6a-locus-v2-characterization` |
-| Document version | 1.3 G6A author-approved closeout |
+| Branch | `feature/g6b-locus-v2-kernel` |
+| Document version | 1.5 G6 closeout |
 | Review date | 2026-08-11 |
-| Current disposition | Normative semantic contract and ADR 0006 accepted; G6A closed |
-| Required next approval | Separate author authorization to execute G6B |
+| Current disposition | Normative contract implemented and verified in the restricted experimental boundary |
+| Required next approval | G7 remains a separate future authorization |
 
 This package is the design-before-code gate for G6. It divides the work into
 two independently reviewable tasks:
@@ -26,7 +26,9 @@ two independently reviewable tasks:
 The governing phase order remains the
 [living roadmap](geocedg_roadmap.md). The author approved this package as G6A's
 working hypothesis; G6A produced and the author approved its contract and
-evidence. G6B is deliberately `NOT STARTED` and requires a separate task.
+evidence. The author then authorized G6B through the hardened canonical prompt.
+Historical planning statements below remain useful design evidence; Section 15
+records the realized implementation.
 
 ## 1. Planning authorities and produced artifacts
 
@@ -719,4 +721,52 @@ recursive nested evaluator composition with a scoped session, a distinct V2
 classification and completely separate semantic/render caches. This closeout
 does not authorize or start implementation.
 
-**G6A = PASS — AUTHOR APPROVED. ADR 0006 = ACCEPTED. G6B = NOT STARTED.**
+**Historical G6A disposition:** G6A = PASS — AUTHOR APPROVED. ADR 0006 =
+ACCEPTED. G6B had not started when this disposition was recorded.
+
+## 15. G6B implementation closeout
+
+The authorized implementation follows the work-package order and remains
+inside the accepted boundary:
+
+1. separated immutable value/status/quality types;
+2. explicit numeric and characterized stable-path providers;
+3. evaluator, full semantic key and bounded scoped session;
+4. branch/domain/lineage snapshots;
+5. parallel `GeoLocusV2` and normal-DAG `AlgoLocusV2` family;
+6. append-only `GeoClass.LOCUS_V2`;
+7. internal factory and typed diagnostic modes;
+8. recursive nested composition, revisions and invalidation;
+9. dedicated drawable and bounded render cache; and
+10. focused tests, evidence, verifier and documentation.
+
+The implemented path-provider coverage is intentionally asymmetric: segment,
+circle and ellipse have immutable provider contracts, while only segment has a
+live normal-DAG algorithm in G6B. Canonical continuation, arbitrary paths and
+native infinite driver intervals remain unsupported. This is a restricted
+scope decision, not a semantic fallback to samples.
+
+The nested functional fixture evaluates 64 queries at depths 1/2/3/5 with
+exactly 64/128/192/320 semantic evaluator calls. A shared depth-three batch
+reuses 64 exact upstream requests, session-disabled execution agrees, and
+inner-source invalidation publishes one new semantic revision at each affected
+level. No dependency slice, upstream render work or whole-locus regeneration
+exists in the evaluation path.
+
+The user-visible compatibility boundary remains unchanged: Classic and
+GeoCeDG public `Locus[...]` are legacy; V2 has no public command, XML,
+migration, `Path`, metric, intersection, export or 3D behavior. Its feature
+manifest entry is experimental and disabled by default. The only runtime
+creation path is internal/test code, so no toolbar or menu was added.
+
+Closeout evidence is the
+[G6B report](../validation/g6b_locus_v2_kernel_report.md),
+[functional evidence manifest](../../geocedg/validation/locus-v2/g6b-functional-evidence.yml),
+[validation matrix](../validation/g6_locus_v2_validation_matrix.md) and
+[benchmark plan/evidence](../validation/g6_locus_v2_benchmark_plan.md).
+G7, G8 and G9 remain pending and were not started.
+
+The focused G6 verifier, full shared/Desktop suite, both Desktop launch smokes
+and composed authority passed on 2026-08-11. The mature phase result is:
+
+**G6B = PASS. G6 = PASS.**

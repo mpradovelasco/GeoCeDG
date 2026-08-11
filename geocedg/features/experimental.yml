@@ -21,6 +21,13 @@
         "cedg.frontend.profile",
         "cedg.legacy.ingest"
       ]
+    },
+    {
+      "id": "cedg.locus.v2",
+      "maturity": "experimental",
+      "specification": "geocedg/specs/locus/locus-v2-semantics.md",
+      "enabled_by_default": false,
+      "depends_on": []
     }
   ]
 }

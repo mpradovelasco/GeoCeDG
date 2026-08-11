@@ -199,7 +199,10 @@ public enum GeoClass {
 	MIND_MAP("MindMap", 150, false),
 
 	PIECHART("PieChart", 80, false),
-	SHAPE_STADIUM("Stadium", 150, false);
+	SHAPE_STADIUM("Stadium", 150, false),
+
+	/** Experimental GeoCeDG semantic locus; appended to preserve all ordinals. */
+	LOCUS_V2("LocusV2", "locusv2", 130, false);
 
 	/**
 	 * name MUST be in ggbtrans/properties
