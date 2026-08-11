@@ -12,3 +12,9 @@ Each directory is a controlled, non-default package governed by
 Run `tools/legacy/ingest.ps1 -Check` through the registered manifest before
 using or updating a package. A resource being present here does not make it a
 stable feature or a regression authority.
+
+The two `inter-cil-cono-oblique*` packages are G6A scientific models rather
+than tool containers. The author accepted `TwoLevels` as the functional control
+and the `Flatten` model as the pathological third-level reference. Their deterministic inventories record container facts;
+their semantic/performance interpretation lives in the G6A specification,
+validation baseline and report. Both remain non-default and rights-blocked.

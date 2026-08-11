@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "id": "cedg.validation.g6a.topology-branch-components",
+  "status": "author-approved-g6a-reference",
+  "declared_domain": {
+    "parameter": "t",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "minimum_closed": true,
+    "maximum_closed": true,
+    "orientation": "increasing-t"
+  },
+  "valid_subset": "V_c = { t in [-1,1] | t^2 >= c }",
+  "branch_family": {
+    "a_negative": "empty",
+    "a_zero": [
+      {
+        "branch_key": "root",
+        "formula": "F_root(t;a)=(t,0)"
+      }
+    ],
+    "a_positive": [
+      {
+        "branch_key": "root/+",
+        "formula": "F_+(t;a)=(t,sqrt(a))"
+      },
+      {
+        "branch_key": "root/-",
+        "formula": "F_-(t;a)=(t,-sqrt(a))"
+      }
+    ]
+  },
+  "component_path": [
+    {
+      "a": 0.0,
+      "c": -0.25,
+      "branch_key": "root",
+      "valid_components": [[-1.0, 1.0]],
+      "lineage": "UNCHANGED"
+    },
+    {
+      "a": 0.0,
+      "c": 0.25,
+      "branch_key": "root",
+      "valid_components": [[-1.0, -0.5], [0.5, 1.0]],
+      "domain_transition": "SPLIT",
+      "lineage": "UNCHANGED"
+    },
+    {
+      "a": 0.0,
+      "c": 1.0,
+      "branch_key": "root",
+      "valid_components": [[-1.0, -1.0], [1.0, 1.0]],
+      "component_kind": "isolated",
+      "lineage": "UNCHANGED"
+    },
+    {
+      "a": 0.0,
+      "c": 1.25,
+      "branch_key": "root",
+      "valid_components": [],
+      "definition_status": "EMPTY_DOMAIN",
+      "lineage": "DISAPPEARED"
+    }
+  ],
+  "lineage_path": [
+    {
+      "from_a": 0.0,
+      "to_a": 1.0,
+      "transition": "SPLIT",
+      "parents": ["root"],
+      "children": ["root/+", "root/-"]
+    },
+    {
+      "from_a": 1.0,
+      "to_a": 0.0,
+      "transition": "MERGED",
+      "parents": ["root/+", "root/-"],
+      "children": ["root"]
+    },
+    {
+      "from_a": 0.0,
+      "to_a": -1.0,
+      "transition": "DISAPPEARED",
+      "parents": ["root"],
+      "children": []
+    },
+    {
+      "from_a": -1.0,
+      "to_a": 0.0,
+      "transition": "APPEARED",
+      "parents": [],
+      "children": ["root"],
+      "identity_recovered": true
+    }
+  ],
+  "executable_test": "org.geocedg.common.locus.LocusV2SemanticCharacterizationTest#topologyFixtureSeparatesBranchIdentityFromValidComponents"
+}

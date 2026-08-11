@@ -860,6 +860,19 @@ In particular, `postLocus`, `listLength`, `listLength12`, and `SplineLength`
 are research evidence based on legacy/sampled procedures. They are not Locus
 V2 and are not exact or native metric authority.
 
+G6A also registers two non-default scientific models. Validate or open one by
+supplying its resource ID, for example:
+
+```powershell
+.\tools\legacy\open-laboratory.ps1 `
+  -ResourceId cedg.legacy.inter-cil-cono-oblique-two-levels `
+  -ValidateOnly
+```
+
+The companion ID is `cedg.legacy.inter-cil-cono-oblique`. Both remain legacy
+research evidence with redistribution blocked; opening them does not enable a
+Locus V2 feature.
+
 ## 10. Maturity states
 
 | State | Meaning in GeoCeDG |
@@ -902,12 +915,79 @@ Promotion follows `legacy -> research -> experimental -> stable`, or
 | G5 | GeoCeDG-only export menu, diagnostics and file chooser | Available; experimental | Works in development and packaged GeoCeDG; Classic remains unchanged |
 | G5 | Semantic regression, zoom invariance and focused verifier | Available; infrastructure | Versioned source/expected evidence checks geometry rather than only file bytes |
 | G5 | Approximate curves, legacy Locus, physical units, DXF import and 3D export | Pending | Deliberately excluded until their governing semantic phases/contracts exist |
+| G6A | Legacy Locus characterization, mathematical fixtures, upstream impact audit and normative V2 contract | `PASS — AUTHOR APPROVED`; infrastructure/evidence only | Reproducible tests document current behavior and approved future semantics; no V2 product object exists |
+| G6B+ | Locus V2 entity, command, drawable, persistence, `Path`, length, intersections or export | Pending / not started | G6A approved the architecture, but none of these capabilities is available to users |
+
+### G6A Locus V2 characterization
+
+The current visible `Locus` remains GeoGebra's legacy implementation. Its
+stored `myPointList` serves simultaneously as drawable data and current `Path`
+authority. A controlled G6A circle changed from 277 to 160 samples after a view
+change, and its sampled chord sum changed too. This is valid characterization
+of the baseline, but the list is not an independent geometric definition.
+
+The normative Locus V2 contract separates:
+
+```text
+versioned driver/domain + semantic branches + evaluator + graph revision
+                                  !=
+                    view-local render tessellation
+```
+
+The semantic parameter belongs to a versioned driver-domain provider; public
+normalized `PathParameter[...]` is not automatic identity. A branch represents
+a constructive solution/sheet and may contain several valid-domain components
+separated by undefined states. Branch identity never follows sample order,
+screen proximity or coordinates. Evaluations explicitly report validity,
+method, construction fidelity, representation role and numeric guarantee.
+
+G6A also characterized nested composition. The accepted architecture evaluates an
+upstream V2 locus through its branch/domain/evaluator/revision metadata, never
+through render vertices. A scoped shared session uses a full semantic key,
+bounded memoization and active-key cycle protection. Controlled DAG flattening
+is deferred pending profiling. This is accepted architecture, not a runtime
+feature.
+
+The two author-supplied cone-cylinder models provide complementary measured
+evidence. `InterCilConoObliqueTwoLevels.ggb` is the functional two-level control
+(approximately 125–127 ms). In `InterCilConoOblique.ggb`, the state before
+`Flatten` measured approximately 31.9 ms; creating its three third-level loci
+took approximately 6.03, 5.95 and 5.67 s, each ended undefined after exceeding
+the legacy 500 ms per-step guard, and recomputation after the attempt measured
+approximately 21.0 s. Instrumentation of these fixtures showed that the outer
+`AlgoLocusSliderND` repeatedly updates a dependency slice containing two inner
+loci and two `AlgoPerimeterLocus` operations, regenerating upstream geometric
+and metric work instead of consuming composable semantic evaluators. This
+cause is specific to the measured models and is not generalized to every
+legacy locus.
+
+Both originals are hash-pinned under `models/legacy/`, are not loaded by
+default and remain blocked for public redistribution. G6B will use a smaller
+internal three-level fixture traced to them; it need not convert the originals
+or implement G7 perimeter semantics.
+
+There is currently no menu, toolbar button, command, saved-file type or user
+workflow for Locus V2. ADR 0006 is `Accepted` and the semantic contract is
+normative, but G6B is `NOT STARTED` and still requires a separate implementation
+task. The accepted G6B boundary uses a distinct appended V2 classification,
+leaves legacy predicates/contracts untouched, and is non-persistent with no
+public command or public `Path`.
+
+The G6B uncertified numeric comparison envelope will be
+`max(1e-12 * max(1,S), 64 * ulp(max(1,S)))`, where each case documents a
+characteristic geometric scale `S` that is independent of zoom, DPI, viewport
+and absolute distance from the origin. This is not certified error and is
+separate from domain, render, future G7 metric and G8 intersection tolerances.
+Future G7 metrics consumed downstream must be scoped to the locus semantic
+revision and must not read render samples, sum sampled chords or recompute a
+whole unchanged metric per query.
 
 ## 12. Planned phases not yet implemented
 
 | Phase | Planned area | Current status |
 |---|---|---|
-| G6-G8 | Locus V2 characterization, native length and 2D intersections | Pending |
+| G6A | Mathematical/semantic characterization and author review | `PASS — AUTHOR APPROVED` |
+| G6B-G8 | Minimal Locus V2 kernel entity, native length and 2D intersections | Pending; G6B not started |
 | G9 | Native spatial identity and canonical projection semantics | Pending |
 | G10 | CeDG 3D DSL and workbench | Pending |
 | G11 | Hierarchical layers and view states | Pending |
@@ -966,6 +1046,9 @@ git status --short
 # Focused G5 geometry/DXF tests, manifests and architecture boundary
 .\tools\agent\verify-dxf.ps1
 
+# Focused G6A characterization, normative contracts and read-only probes
+.\tools\agent\verify-locus-v2.ps1
+
 # Generate all internal Windows package formats
 .\tools\release\build-windows-package.ps1 -Target All
 
@@ -1016,6 +1099,13 @@ boundary defined by the operational contracts.
   [normative export contract](../../geocedg/specs/export/geometry-export-foundation.md),
   [regression evidence](../../models/regression/g5-dxf-foundation/expected-entities.yml),
   and [G5 report](../validation/g5_native_2d_dxf_export_report.md)
+- Locus V2 characterization:
+  [G6 plan](../roadmap/g6_locus_v2_plan.md),
+  [semantic model](../architecture/locus_v2_semantic_model.md),
+  [upstream impact audit](../architecture/locus_v2_upstream_impact.md),
+  [Accepted ADR 0006](../adr/0006-parallel-locus-v2-semantic-entity.md),
+  [normative contract](../../geocedg/specs/locus/locus-v2-semantics.md), and
+  [G6A report](../validation/g6a_locus_v2_characterization_report.md)
 - Current feature state:
   [stable manifest](../../geocedg/features/stable.yml) and
   [experimental manifest](../../geocedg/features/experimental.yml)

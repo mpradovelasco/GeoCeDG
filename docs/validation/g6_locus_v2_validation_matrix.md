@@ -2,22 +2,25 @@
 
 | Field | Value |
 |---|---|
-| Status | **APPROVED AS G6A WORKING ARCHITECTURAL HYPOTHESIS**; values still require G6A evidence |
+| Status | **G6A PASS — AUTHOR APPROVED**; approved validation input for future G6B |
 | Governing model | [Locus V2 semantic model](../architecture/locus_v2_semantic_model.md) |
 | Execution plan | [G6 Locus V2 plan](../roadmap/g6_locus_v2_plan.md) |
 | Date | 2026-08-11 |
 
-This matrix turns the scientific and architectural requirements into planned
-evidence. G6 planning creates no test fixture or expected-result artifact. G6A
-must approve each formula/model, tolerance and evidence path before G6B uses it
-as a gate.
+This matrix relates requirements to executed G6A evidence and future G6B gates.
+G6A created only test-private fixtures and read-only legacy probes. Values and
+architecture were approved at G6A closeout. G6B remains not started.
 
 ## 1. Tolerance classes
 
-No screen tolerance is a geometric tolerance. All numeric values and
-performance budgets are **DEFERRED TO G6A MEASUREMENTS**. The symbols below
-deliberately remain unassigned until G6A measures the baseline and the author
-approves the case scales.
+No screen tolerance is a geometric tolerance. The author accepts the
+uncertified G6B comparison envelope
+`max(1e-12*max(1,S), 64*ulp(max(1,S)))` after Level-A residual measurements.
+`S` is a documented characteristic geometric scale for each case; it must not
+depend on zoom, DPI, viewport or absolute distance from the origin.
+Provider-specific domain values and absolute timing budgets remain separate.
+The versioned authority is
+[`tolerance-policy.yml`](../../geocedg/validation/locus-v2/tolerance-policy.yml).
 
 | Symbol | Owner | Meaning | Forbidden reuse |
 |---|---|---|---|
@@ -28,10 +31,11 @@ approves the case scales.
 | `eps_metric_abs`, `eps_metric_rel` | G7 | Future integration/length error | G6 render/evaluator |
 | `eps_root`, `eps_residual` | G8 | Future parameter isolation and geometric intersection residual | G6 render/evaluator |
 
-For scale `S`, a planned analytic coordinate comparison uses
-`eps_eval_abs + eps_eval_rel * S`. G6A must document how `S` is chosen for each
-case and test the tolerance against translated/scaled variants. A tolerance may
-not be selected solely to make a failing fixture pass.
+For scale `S`, the approved formula above is used. Each case must document how
+`S` is derived from characteristic geometry and test the envelope against
+translated/scaled variants. A tolerance may not be selected solely to make a
+failing fixture pass. `eps_domain`, `eps_render_px`, G7 metric tolerances and G8
+intersection tolerances are independent policies.
 
 ## 2. Level A — analytic simple cases
 
@@ -50,7 +54,7 @@ evidence for dependency-slice integration.
 
 ## 3. Level B — topology and degeneration
 
-| ID / case | Candidate fixture | Property | Expected result | Phase | Tolerance/status |
+| ID / case | Fixture | Property | Expected result | Phase | Tolerance/status |
 |---|---|---|---|---|---|
 | `B-MULTI` | Two declared semantic branches `F0(t)=(t,t^2)` and `F1(t)=(t,-t^2)`, `t in [-1,1]` | Explicit branch identity | Two stable keys survive recompute and crossing at the origin; sample/order changes do not swap them | G6A; G6B | `eps_eval_*` plus exact key equality |
 | `B-CLOSED` | `A-CIRCLE` | Periodicity and orientation | One periodic branch; no false split at the seam; reverse parameterization is distinguishable | G6A; G6B | `eps_domain` |
@@ -68,8 +72,7 @@ evidence for dependency-slice integration.
 
 ### 3.1 Formal `B-SPLIT-MERGE` fixture
 
-G6A must encode this deterministic two-control family, or prove an equivalent
-replacement, before the topology rows can be approved. It deliberately
+G6A encoded this deterministic two-control family. It deliberately
 separates branch lineage from valid-domain topology.
 
 For declared driver domain `Omega=[-1,1]`, let
@@ -104,8 +107,8 @@ Two independent state paths are required:
    reappearance.
 
 This fixture has analytic predicates and requires no proximity matching or
-numerical root isolation. G6A may refine endpoint/status naming, but not merge
-component topology back into branch identity.
+numerical root isolation. G6B may refine implementation names, but must not
+merge component topology back into branch identity.
 
 ## 4. Nested Locus V2 composition
 
@@ -129,9 +132,11 @@ form and an independently evaluated reference composition.
 | `NESTED-3` | 3 | Correct `L3`, coherent keys/revisions, no full upstream-locus or per-query slice regeneration | G6A strategy probe; G6B PASS requirement |
 | `NESTED-5` | 5 | Same invariants and useful depth-scaling evidence when fixture cost permits | G6A stress; G6B only if approved budget includes it |
 
-After the synthetic family, G6A must select one real nested CeDG artifact only
-when its provenance and reproducibility are sufficient. The author's legacy
-observation is evidence to reproduce, not a predetermined causal conclusion.
+The author accepted a reproducible real pair after the synthetic run:
+`InterCilConoOblique.ggb` captures the three-level pathological transition and
+`InterCilConoObliqueTwoLevels.ggb` is the working two-level comparison. Their
+hashes and manifests are registered under `models/legacy/`; they are legacy
+evidence, not V2 semantic authority or redistribution-approved assets.
 
 ## 5. Level C — real CeDG cases and phase assignment
 
@@ -140,7 +145,7 @@ requirement. Local scientific sources and legacy artifacts retain provenance.
 
 | ID / scientific case | Local/public evidence | G6A obligation | G6B minimum | Later owner |
 |---|---|---|---|---|
-| `C-CONE-CYLINDER` | LSIM and Symmetry papers; public model `ngdveaz8` in [`public-model-corpus.yml`](../references/cedg/public-model-corpus.yml) | Characterize driver, leaves, bite/penetration topology, undefined states and legacy zoom/history behavior | Dual diagnostic on one frozen local/author-approved construction if reproducible; no intersection solver | G8 owns native intersection and tangency validation |
+| `C-CONE-CYLINDER` | LSIM and Symmetry papers; public model `ngdveaz8`; local author-supplied `InterCilConoOblique` pair | Characterize driver, leaves, topology and legacy two-/three-level locus/perimeter cascade | Small internal typed three-level fixture traced to both originals; originals remain manual/scientific legacy comparison and no native intersection or G7 metric is required | G8 owns native intersection and tangency validation |
 | `C-FOCAL-SPHERE-CONE` | Public model `xcf3g4uu`; CeDG book/corpus relation | Identify parameters, branches and focal construction invariants | Optional smoke case only after source model is curated locally | G8 owns intersection correctness |
 | `C-CYLINDER-DEVELOPMENT` | Book/development literature; public model `wsp9ktrq` | Characterize generatrix parameter and flattened-curve dependencies | One dependency-recompute pilot if a small deterministic local case exists | G7 owns developed-curve metric evidence |
 | `C-OBLIQUE-CONE` | Tool/development study; public model `zfcgazam`; legacy length/post-processing tools | Record three-locus concatenation, coverage gaps, chord error and domain restriction; define non-sample invariants | Required legacy benchmark; V2 pilot only if deterministic dependency slice is approved | G7 owns length; G8 owns intersection aspects |
@@ -148,10 +153,11 @@ requirement. Local scientific sources and legacy artifacts retain provenance.
 | `C-DEVELOPABLE` | `DevelopableRuledSurfaces_Rev.pdf` and related development paper | Distinguish locus semantics from the source's declared discrete `acc` approximation and regression-edge zones | Benchmark/unsupported diagnostic unless deterministic minimal case is curated | G7 metric and G8 intersection as relevant |
 
 G6A characterizes all six Level C families. G6B is not required to make all
-six productive. It must include one real dependency-chain case, the oblique
-cone as a legacy performance baseline, and one discrete topology invalidation
-case; any additional pilot needs a curated local manifest and deterministic
-expected evidence.
+six productive. It must trace its small internal nested fixture to the local
+cone-cylinder pair, retain the originals as manual legacy comparisons, include
+one approved V2 dependency-chain case and one discrete topology
+invalidation case; any additional pilot needs a curated local manifest and
+deterministic expected evidence.
 
 ## 6. Cross-cutting G6B invariants
 
@@ -168,11 +174,11 @@ expected evidence.
 | `I-FEATURE` | Experimental modes | Run `LEGACY`, `V2`, `DUAL` under GeoCeDG and Classic defaults | Classic remains legacy; V2 is opt-in; dual report labels V1 as sampled evidence |
 | `I-LEGACY-LOAD` | Compatibility | Load representative legacy `.ggb`, including curated Template-derived case | Existing command/object behavior unchanged; no automatic migration or V2 XML |
 | `I-NO-PERSISTENCE` | Restricted G6B boundary | Save a construction containing only legacy objects; inspect V2 factory behavior | No unversioned V2 XML is written; attempted unsupported persistence is explicit |
-| `I-G5-BOUNDARY` | Export separation | Invoke G5 adapter against legacy and candidate V2 | Legacy remains unsupported; V2 remains unsupported in G6; no render points enter DXF |
+| `I-G5-BOUNDARY` | Export separation | Invoke G5 adapter against legacy and the experimental V2 entity | Legacy remains unsupported; V2 remains unsupported in G6; no render points enter DXF |
 
-## 7. Legacy characterization evidence required in G6A
+## 7. Legacy characterization evidence recorded in G6A
 
-G6A must save results, toolchain, construction provenance and commands for:
+G6A saved results, toolchain, construction provenance and commands for:
 
 1. sample count and sampled coordinates across at least three zoom/view states;
 2. `PathParameter` public normalized value versus native internal parameter for
@@ -205,8 +211,8 @@ never replace saved geometric/parameter evidence.
 - unsupported/history-dependent cases are explicit;
 - the formal topology fixture verifies branch/component separation and lineage;
 - nested legacy evidence and V2 strategy comparison are reproducible;
-- the proposed ADR records the working-hypothesis disposition and remains
-  `Proposed` for second review.
+- the normative semantic contract and accepted ADR record the author-approved
+  architecture and compatibility boundary.
 
 ### G6B matrix gate
 
@@ -218,10 +224,10 @@ never replace saved geometric/parameter evidence.
 - legacy/Classic tests pass unchanged;
 - no G7 metric, G8 intersection, G9 spatial or DXF-locus behavior is claimed.
 
-## 9. Regression artifact shape proposed for execution
+## 9. Regression artifact shape for execution
 
-G6A should extend the existing regression conventions with one manifest per
-case containing:
+G6B should use the existing regression conventions with one manifest per case
+containing:
 
 ```text
 case id and maturity
@@ -240,3 +246,28 @@ phase owner
 Expected results should compare semantic fields and analytic residuals, not
 serialized render vertices or byte-for-byte `.ggb` output. Any remote public
 model remains `build_dependency: false` until explicitly curated.
+
+## 10. G6A execution disposition
+
+| Evidence family | Executed result | Review disposition |
+|---|---|---|
+| Level A analytic | Line, circle, ellipse, parabola and transcendental test-private evaluators agreed for forward/reverse/shuffled orders; residuals were at most `1e-12` | Reference formulas and scale-aware uncertified comparison envelope accepted |
+| Branch/components | Formal fixture traversed one interval, two intervals, isolated components, empty domain and reappearance while preserving `fixture.sheet.main` | Branch/component separation accepted; persisted fixture uses normative keys `root`, `root/+`, `root/-` |
+| Lineage | Analytic manifest defines split, merge, disappearance and deterministic reappearance independently of component topology | Accepted; G6B must implement typed events rather than infer them |
+| Legacy zoom | Same circle construction produced 277 versus 160 samples and different chord sums at two views | Confirms render/view samples cannot be V2 authority |
+| Legacy multibranch | Hyperbola probe produced 798 samples and 100 `MOVE_TO` markers | Characterizes sample-list breaks; it does not supply V2 branch identity |
+| Legacy nested, synthetic | Levels 1/2/3/5 completed; downstream drivers use `PathMoverLocus`; downstream slices did not clone upstream `AlgoLocus` | Useful control showing that nesting alone does not imply the reported failure |
+| Legacy nested, real CeDG | Two-level control measured approximately 125–127 ms; pathological state before `Flatten` approximately 31.9 ms; creations approximately 6.03/5.95/5.67 s, undefined after the 500 ms guard; post-attempt recompute approximately 21.0 s | Accepted complementary control/pathological evidence; the repeated macro-slice `updateCascade` mechanism is specific to the measured models |
+| Semantic nested | Depths 1/2/3/5 used exactly 5/10/15/25 calls for five outer queries; recursive and flattened references agreed | Recursive semantic composition accepted; flattening deferred pending profiling |
+| Scoped session | Repeated depth-3 queries fell from 18 to 9 calls with three hits and identical results; active-key cycle detected | Scoped full-key bounded memoization and explicit active-key cycle guard accepted |
+| Level C CeDG | Six families classified; the hash-pinned cone-cylinder pair is executable while the remaining cases stay static/metadata evidence | Originals accepted as legacy evidence; G6B uses a smaller internal typed fixture traced to them |
+
+Executable evidence:
+
+- `LegacyLocusCharacterizationTest` — six pinned-baseline cases;
+- `LocusV2SemanticCharacterizationTest` — five test-private semantic fixtures;
+- [`g6a-characterization-baseline.yml`](../../geocedg/validation/locus-v2/g6a-characterization-baseline.yml);
+- [`scientific-pilots.yml`](../../geocedg/validation/locus-v2/scientific-pilots.yml).
+
+The matrix is an accepted input to the future G6B gate. G6B is `NOT STARTED`
+and may not substitute missing provenance with a remote URL or screenshot.

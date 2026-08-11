@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "id": "cedg.validation.g6a.scientific-pilots",
+  "status": "g6a-evidence-author-approved",
+  "build_dependency": false,
+  "g6b_nested_fixture_policy": {
+    "kind": "small internal typed three-level semantic reproduction",
+    "traceability": ["cedg.legacy.inter-cil-cono-oblique", "cedg.legacy.inter-cil-cono-oblique-two-levels"],
+    "required_evidence": ["three semantic V2 levels", "innermost invalidation", "no render or sample dependency", "no whole-upstream-locus regeneration", "approved functional scaling"],
+    "not_required": ["direct conversion of either legacy ggb", "public command", "persistence", "public Path", "G7 Perimeter semantics"]
+  },
+  "cases": [
+    {
+      "id": "C-CONE-CYLINDER",
+      "evidence": ["cedg-book-2023", "cedg-lsim-cone-cylinder", "cedg-symmetry-cone-cylinder", "cedg.legacy.inter-cil-cono-oblique", "cedg.legacy.inter-cil-cono-oblique-two-levels"],
+      "observations": ["constructive leaves", "bite/penetration topology", "multiple projected branches", "real two-level and three-level legacy locus dependency slices", "third-level AlgoLocusSlider timeout"],
+      "g6b_disposition": "author-supplied pair remains the real legacy comparison; G6B uses a small internal three-level semantic fixture traced to this mechanism and does not implement legacy sampled Perimeter"
+    },
+    {
+      "id": "C-FOCAL-SPHERE-CONE",
+      "evidence": ["cedg-book-2023", "cedg-lsim-cone-cylinder"],
+      "observations": ["two horizontal leaves", "configuration-dependent vertical leaves"],
+      "g6b_disposition": "optional after curated local model"
+    },
+    {
+      "id": "C-CYLINDER-DEVELOPMENT",
+      "evidence": ["cedg-book-2023", "cedg-developable-surfaces"],
+      "observations": ["construction-owned generatrix parameter", "derived flattened curve"],
+      "g6b_disposition": "candidate dependency-recompute pilot after curation"
+    },
+    {
+      "id": "C-OBLIQUE-CONE",
+      "evidence": ["cedg-book-2023", "cedg-locus-tools-extension", "cedg-developable-surfaces"],
+      "observations": ["restricted parameter domain", "conditional branch selection", "legacy sampled length/post-processing limitations"],
+      "g6b_disposition": "required legacy benchmark remains documented exclusion until reproducible model is supplied"
+    },
+    {
+      "id": "C-DISCRETE-ELBOW",
+      "evidence": ["cedg-discrete-parameter-models"],
+      "observations": ["integer ferrule count changes topology", "continuous locus parameter remains distinct"],
+      "g6b_disposition": "dynamic invalidation candidate after local fixture approval"
+    },
+    {
+      "id": "C-DEVELOPABLE",
+      "evidence": ["cedg-developable-surfaces"],
+      "observations": ["locus-based construction", "published 50-generatrix result is explicitly discrete"],
+      "g6b_disposition": "unsupported diagnostic until a deterministic minimal case is curated"
+    }
+  ],
+  "local_executable_models": [
+    {
+      "id": "cedg.legacy.inter-cil-cono-oblique",
+      "path": "models/legacy/inter-cil-cono-oblique/original/InterCilConoOblique.ggb",
+      "sha256": "b1cb614f1a4c414144fbff29349ddebda92d1026acb4c535990a2895c589fa27",
+      "role": "three-level pathological legacy reference",
+      "stored_loci": 10,
+      "opt_in_action": "Flatten creates three outer loci",
+      "redistribution": "blocked pending rights/asset approval"
+    },
+    {
+      "id": "cedg.legacy.inter-cil-cono-oblique-two-levels",
+      "path": "models/legacy/inter-cil-cono-oblique-two-levels/original/InterCilConoObliqueTwoLevels.ggb",
+      "sha256": "587328a8e5b6474aee3169bb6af2fe2a711e98e000a423a96bba6e38274fb2b6",
+      "role": "functional two-level legacy control",
+      "stored_loci": 13,
+      "opt_in_action": null,
+      "redistribution": "blocked pending rights/asset approval"
+    }
+  ],
+  "remaining_exclusions": "The pair resolves the real nested cone-cylinder evidence gap. Separate oblique-cone development, discrete, concatenated and other Level-C pilots remain metadata/static evidence until curated local models are approved."
+}

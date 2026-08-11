@@ -2,15 +2,15 @@
 
 | Field | Value |
 |---|---|
-| Status | **APPROVED AS G6A WORKING ARCHITECTURAL HYPOTHESIS**; budgets **DEFERRED TO G6A MEASUREMENTS** |
+| Status | **G6A PASS — AUTHOR APPROVED**; baseline and functional G6B budgets accepted |
 | Baseline | GeoGebra 5.4.928.0 / GeoCeDG G5 `PASS` |
 | Date | 2026-08-11 |
 | Principle | Measure semantic evaluation separately from graphical tessellation |
 
-No performance result is asserted by this planning document. G6A must capture
-the legacy baseline on a recorded workstation/toolchain before the author
-approves G6B budgets. Every proposed optimization must cite one of the cases
-and metrics below.
+G6A has captured a controlled legacy/semantic-fixture baseline on a recorded
+workstation. It is not a product benchmark and does not justify an absolute
+timing gate. Every proposed optimization must cite one of the cases and metrics
+below; absolute latency budgets remain informational pending G6B measurements.
 
 ## 1. Existing operational benchmark boundary
 
@@ -20,19 +20,21 @@ durations and requires `budget_mode: informational`. It cannot directly count
 kernel evaluations, isolate recompute from render, inspect cache behavior or
 measure per-locus allocations.
 
-G6A should preserve that runner and its authority. The smallest extension is:
+G6A preserves that runner and its authority. The implemented minimum is:
 
-1. a focused Java/JUnit benchmark probe in the existing common-jre test
-   environment, with deterministic structured JSON output;
-2. a subordinate `tools/agent/verify-locus-v2.ps1` that invokes the probe and
-   validates its schema/provenance;
-3. an optional G6 benchmark suite consumed by either a minimal compatible
-   runner extension or a separate subordinate measurement script called by the
-   verifier.
+1. focused Java/JUnit characterization probes in the existing common-jre test
+   environment, emitting named metrics and deterministic assertions;
+2. a versioned JSON-compatible summary under `geocedg/validation/locus-v2/`;
+3. subordinate `tools/agent/verify-locus-v2.ps1`, invoked by the composed
+   authority, which validates contracts and reruns the bounded tests.
+
+A new benchmark-suite schema or JMH dependency was not justified. Raw Gradle
+logs/XML are regenerable and remain outside version control; the versioned
+summary records the review evidence.
 
 Do not silently turn G1's informational schema into a hard performance gate.
-If enforceable budgets require schema version 2, G6A must specify, validate and
-review that contract before use. JMH or another dependency is not justified
+If enforceable budgets require schema version 2, a future task must specify,
+validate and review that contract before use. JMH or another dependency is not justified
 unless the focused probe demonstrates measurement noise that the existing JVM
 test harness cannot control.
 
@@ -112,9 +114,11 @@ preserve.
 | `BM-MULTIBRANCH` | Explicit 2/4/8 branch fixture | Branch enumeration, cache key and render scaling | Legacy `MOVE_TO`/point-list behavior where comparable | Cost versus branches and requested parameters |
 | `BM-CONCAT` | 1/2/3 concatenated loci reflecting the historical development workflow | Detect compounded recompute/filter cost | Legacy concatenation and `postLocus` observation | V2 branches without list filtering; no length metric |
 | `BM-NESTED-1` | One pointwise deterministic semantic locus | Base cost for the nested family | Comparable simple legacy locus | One outer query equals one level-1 semantic evaluation, excluding explicit render work |
-| `BM-NESTED-2` | Locus consumes one semantic evaluation of `BM-NESTED-1` | Two-level composition and duplicate-call accounting | Reproduce author's two-level legacy pattern when an equivalent artifact exists | Per-level calls, slice builds/synchronizations, session hits/misses and invalidation |
-| `BM-NESTED-3` | Third semantic locus consumes level 2 | Required bounded three-level demonstrator | Attempt reproducible legacy third level and record timeout/practical failure without assuming cause | Same counters; no render/sample dependency or upstream whole-locus regeneration |
+| `BM-NESTED-2` | Locus consumes one semantic evaluation of `BM-NESTED-1` | Two-level composition and duplicate-call accounting | Compare conceptually with the stored working slices in the author-supplied pair | Small internal typed fixture: per-level calls, slice builds/synchronizations, session hits/misses and invalidation |
+| `BM-NESTED-3` | Third semantic locus consumes level 2 | Required bounded three-level demonstrator | Preserve `InterCilConoOblique` `Flatten` as the pathological legacy reference | Small internal typed fixture: same counters; no render/sample dependency or upstream whole-locus regeneration; no G7 perimeter required |
 | `BM-NESTED-5` | Five-level synthetic affine composition when fixture cost remains useful | Small depth-stress and scaling-shape evidence | Optional legacy comparison only if safely bounded | G6A characterization; G6B only if its approved functional budget includes it |
+| `BM-NESTED-CEDG-2` | `InterCilConoObliqueTwoLevels.ggb`, hash-pinned | Real two-level sampled-locus/perimeter comparison | Load, source/driver recompute, slice composition | Informational legacy baseline; no V2 geometry inferred |
+| `BM-NESTED-CEDG-3` | `InterCilConoOblique.ggb` plus document `Flatten` commands | Real third-level pathological comparison | Per-command creation, definition status, step timeout, post-create recompute and slice composition | G6B must avoid its full-inner-locus cascade by construction |
 | `BM-OBLIQUE-CONE` | Curated oblique-cone development case from local scientific evidence | Required real CeDG stress/regression evidence | Recompute, sample count, timeout, memory, three zooms | Dual diagnostic only if deterministic G6B evaluator is approved |
 | `BM-DISCRETE` | Small elbow/development with integer parameter values | Dynamic topology and invalidation cost | Recompute across approved integer values | Revision/branch invalidation and recompute; no optimization search |
 | `BM-STRESS` | Generated dependency chain with configurable branches and sample requests | Capacity limit and cache discipline | Establish timeout/partial legacy behavior | Detect nonlinear allocation or hidden graph rebuild |
@@ -126,8 +130,9 @@ a mandatory benchmark input.
 `BM-NESTED-*` is an independent family. It is neither `BM-CHAIN` (ordinary
 algorithm depth) nor `BM-CONCAT` (joining completed locus/sample groups). The
 controlled reference functions are specified in the
-[validation matrix](g6_locus_v2_validation_matrix.md); a real nested CeDG case
-is added only if G6A finds a reproducible, properly sourced artifact.
+[validation matrix](g6_locus_v2_validation_matrix.md). The author-supplied,
+hash-pinned cone-cylinder pair now provides the real nested CeDG case; it
+remains opt-in for expensive timing and mandatory for structural evidence.
 
 ## 5. Baseline experiments required in G6A
 
@@ -163,7 +168,7 @@ LEGACY, normal cache
 V2, evaluator cache disabled
 V2, evaluator cache enabled
 V2 nested, shared session disabled
-V2 nested, shared session enabled (if G6A approves the mechanism)
+V2 nested, scoped shared session enabled
 V2, render cache cold
 V2, render cache warm
 DUAL, diagnostics enabled
@@ -209,7 +214,7 @@ runner reproducibility are demonstrated.
 |---|---|---|
 | Build dependency slice once per algorithm | `BM-CHAIN` shows per-evaluation rebuild cost | Architecturally preferred; verify correctness first |
 | Bounded memoization of evaluations | Repeated-query hit rate and allocation benefit | Optional in G6B, disabled/reference mode required |
-| Scoped nested evaluation session | `BM-NESTED-*` shows duplicated upstream requests or repeated synchronization and equal enabled/disabled results | Candidate minimum; final abstraction/name deferred to G6A |
+| Scoped nested evaluation session | `BM-NESTED-*` shows duplicated upstream requests or repeated synchronization and equal enabled/disabled results | Accepted minimum with full semantic key, bounded memoization and active-key cycle guard; final class name remains local to G6B |
 | Controlled evaluation-DAG flattening/compilation | Recursive/session strategy remains a measured bottleneck and flattening preserves identities, revisions and normal invalidation | Defer unless evidence demonstrates necessity and localized impact |
 | Interval bounds cache | G8 broad-phase or render benchmark need | Defer; not justified by G6 alone |
 | Parallel evaluation | Thread-safe kernel evidence and material speedup | Reject for G6B; baseline is mutable/single-thread confined |
@@ -244,3 +249,56 @@ runner reproducibility are demonstrated.
   change;
 - no unbounded cache growth or residual evaluation process exists;
 - any missed target is reported as a blocker, not hidden by a larger timeout.
+
+## 10. G6A measured baseline
+
+Environment: Windows 11 Pro `10.0.26200`, 24 logical processors,
+34,186,194,944 bytes memory, PowerShell 7.6.4, Gradle 9.4.1 launched by Oracle
+JDK 22.0.2, with common-jre tests on Corretto 17.0.10. These timings are one
+run's controlled evidence; deterministic counts are the stronger gate.
+
+| Case | Result |
+|---|---|
+| `BM-SIMPLE` legacy circle | 277 samples at `[-5,5]`, 160 at `[-100,100]`; sampled chord sums `20.565979779489272` and `20.565121501408928` |
+| `BM-CHAIN-10/50/200` | creation 17.601/23.051/63.769 ms; dependency-slice algorithm counts 14/54/204; 160 locus samples in each measured view |
+| legacy nested 1/2/3/5 | median source-update/recompute 0.559/0.946/1.268/1.211 ms; outer samples 160/154/168/222 |
+| semantic `BM-NESTED-1/2/3/5` | five outer requests produced exactly 5/10/15/25 evaluator calls in recursive and flattened references |
+| repeated nested depth 3 | no session: 18 calls; scoped session: 9 calls, 3 cache hits; identical results |
+| cycle fixture | re-entry of the same full semantic key was detected before recursion |
+| real `BM-NESTED-CEDG-2` | accepted functional control; stored outer slice: one inner locus + one sampled perimeter; measured source/driver recompute about 127/125 ms |
+| real `BM-NESTED-CEDG-3` | accepted pathological reference; pre-`Flatten` state about 31.9 ms; each `Flatten` slice: two inner loci + two sampled perimeters; three creations about 6.03/5.95/5.67 s, all undefined after timeout; post-create recompute about 21.0 s |
+
+The controlled affine/point-on-locus legacy chain did not reproduce the failure,
+which establishes that nesting depth alone is not its cause. The real CeDG pair
+did reproduce it: `AlgoLocusSliderND` cloned both inner locus algorithms and
+both sampled perimeter algorithms into each outer macro slice, then invoked the
+slice through `copyP.updateCascade()` for outer samples until the 500 ms
+per-step guard fired. `BM-OBLIQUE-CONE`, `BM-DISCRETE`, real `BM-CONCAT`, render
+timing and retained-memory measurements remain documented exclusions.
+
+## 11. Author-approved G6B functional budgets
+
+The recommended first gates avoid unstable wall-clock thresholds:
+
+- for controlled pointwise nesting, evaluator calls without duplicate requests
+  equal `outer_query_count * dependency_depth`;
+- an exact semantic key is evaluated at most once per eligible scoped session;
+- session-enabled and disabled coordinates/statuses are identical;
+- dependency-slice construction occurs at most once per locus definition or
+  semantic revision, never per point evaluation;
+- no upstream render-cache access, tessellation or whole-locus regeneration is
+  permitted for downstream semantic evaluation;
+- a source change at the innermost level invalidates the normal declared chain
+  once and clears derived semantic/session data;
+- clearly superlinear growth with depth blocks closeout unless the author
+  reviews a demonstrated cause.
+
+Absolute latency, throughput, retained memory and render budgets remain
+informational until G6B has a real implementation and repeatable distributions.
+The functional gates above are accepted; this acceptance does not start G6B.
+
+The original `.ggb` files remain manual/scientific legacy benchmarks. G6B uses
+a sufficiently small internal typed reproduction, traced to both originals, to
+measure at least three semantic levels, innermost invalidation, no
+render/sample dependency, no whole-upstream-locus regeneration and bounded
+functional scaling. It is not required to implement G7 `Perimeter` semantics.

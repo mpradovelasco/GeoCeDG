@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "id": "cedg.validation.g6a.locus-v2-tolerances",
+  "status": "author-approved-g6b-validation-envelope",
+  "coordinate_system": "GEOGEBRA_CARTESIAN_2D_WORLD",
+  "numeric_guarantee": "FLOATING_POINT_UNCERTIFIED",
+  "evaluation": {
+    "absolute_scale_floor": 1.0,
+    "relative_factor": 1e-12,
+    "ulp_factor": 64,
+    "formula": "max(1e-12 * max(1,S), 64 * ulp(max(1,S)))",
+    "observed_level_a_max_residual": 1e-12,
+    "purpose": "analytic fixture comparison, not a certified geometric error bound",
+    "scale_policy": {
+      "meaning": "documented case-characteristic geometric scale",
+      "examples": ["defining length", "radius", "documented local construction scale"],
+      "forbidden": ["zoom", "DPI", "viewport", "pixel density", "absolute distance from origin"]
+    }
+  },
+  "domain": {
+    "policy": "provider-specific",
+    "formal_topology_fixture": "analytic predicates and exact declared endpoints",
+    "general_numeric_value": "requires author-approved provider measurement"
+  },
+  "render": {
+    "unit": "pixel",
+    "value": "deferred-to-g6b-render-measurement",
+    "forbidden_as": ["domain tolerance", "semantic evaluation tolerance", "metric tolerance", "intersection tolerance"]
+  },
+  "future": {
+    "metric_g7": "separate contract required",
+    "intersection_g8": "separate root and residual contracts required"
+  }
+}

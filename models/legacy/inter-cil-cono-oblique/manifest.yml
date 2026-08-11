@@ -1,0 +1,75 @@
+{
+  "$schema": "../../../geocedg/specs/operations/model-manifest.schema.json",
+  "schema_version": 1,
+  "template": false,
+  "id": "cedg.legacy.inter-cil-cono-oblique",
+  "maturity": "legacy",
+  "source": {
+    "uri": "author-supplied:g6a/InterCilConoOblique.ggb",
+    "author": "Manuel Prado-Velasco",
+    "date": null,
+    "provenance_notes": "Author-supplied CeDG research model accepted at G6A closeout as the pathological third-level legacy reference. Its Flatten action reproduces the measured degradation. The source file remains byte-identical."
+  },
+  "required_geogebra": {
+    "version": "5.4.928.0",
+    "baseline_sha": "9b93256b7df401ff056c37b502d82df4d72b1522"
+  },
+  "loaded_by_default": false,
+  "inputs": ["rbCone", "rbCylinder", "excCyl", "t_omega", "t_omegaR"],
+  "outputs": ["loc1-loc10", "button1/Flatten creates three additional legacy loci"],
+  "validity_domain": {
+    "description": "Research construction for an oblique cone-cylinder intersection and flattening workflow; its complete geometric validity domain remains to be characterized.",
+    "parameters": ["rbCone in [0.5,10]", "rbCylinder in [0.5,rbCone]", "excCyl in [-rbCone,rbCone]", "t_omega and t_omegaR in [0,1]"]
+  },
+  "known_degeneracies": [
+    "Tangencies and loss/change of intersection branches are not explicitly classified by the legacy model.",
+    "Perimeter(loc9) and Perimeter(loc10) consume viewport-dependent sampled legacy loci.",
+    "The Flatten button creates additional legacy loci and may trigger severe nested recomputation cost."
+  ],
+  "reference_models": ["https://www.geogebra.org/m/nmsgff5s#material/kwb4pyf4"],
+  "expected_metrics": {
+    "g6a_evidence_role": "stress/pathological legacy reference reproducing third-level degradation through Flatten",
+    "stored_locus_count": 10,
+    "stored_command_count": 198,
+    "flatten_button_created_locus_count": 3,
+    "pre_flatten_recompute_ms_approx": 31.9,
+    "flatten_create_ms_approx": [6030, 5950, 5670],
+    "post_attempt_recompute_ms_approx": 21000,
+    "legacy_step_limit_ms": 500,
+    "flatten_outputs_defined": false
+  },
+  "license": {
+    "spdx": null,
+    "evidence": "Author-supplied research model; public redistribution permission and embedded GeoGebra asset status have not been approved.",
+    "review_status": "blocked"
+  },
+  "replacement_candidate": null,
+  "artifact": {
+    "path": "models/legacy/inter-cil-cono-oblique/original/InterCilConoOblique.ggb",
+    "format": "ggb",
+    "sha256": "b1cb614f1a4c414144fbff29349ddebda92d1026acb4c535990a2895c589fa27",
+    "immutable": true
+  },
+  "source_environment": {
+    "geogebra_version": "5.0.760.0",
+    "app": "classic",
+    "platform": "desktop"
+  },
+  "derived_artifacts": [
+    {
+      "path": "models/legacy/inter-cil-cono-oblique/derived/tool-inventory.yml",
+      "role": "inventory"
+    }
+  ],
+  "implementation": {
+    "mechanisms": ["embedded-ggb-construction", "legacy-locus", "document-geogebrascript"],
+    "embedded_tools": 0,
+    "global_javascript": true
+  },
+  "publications": ["cedg.reference.intersection-flattening-2023"],
+  "laboratory": {
+    "eligible": true,
+    "loader": "tools/legacy/open-laboratory.ps1",
+    "stable_toolbar_replaced": false
+  }
+}

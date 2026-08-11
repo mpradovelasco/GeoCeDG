@@ -3,12 +3,12 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Roadmap vivo y normativo de fases; no sustituye las especificaciones ni los ADR aceptados |
-| Versión documental | 3.2 |
+| Versión documental | 3.4 |
 | Fecha de revisión | 11 de agosto de 2026 |
 | Baseline GeoGebra | 5.4.928.0, commit `9b93256b7df401ff056c37b502d82df4d72b1522`, tag `geogebra-baseline-5.4.928.0` |
-| Estado actual | G5 `PASS` |
-| Última fase cerrada | G5 — native 2D geometry export foundation and DXF export |
-| Siguiente fase | G6 — Locus V2; decisiones de primera revisión incorporadas, G6A/G6B no iniciadas |
+| Estado actual | G6A `PASS — AUTHOR APPROVED`; contrato semántico G6 normativo y ADR 0006 aceptado |
+| Última fase cerrada | G6A — mathematical and semantic characterization |
+| Siguiente fase | G6B — minimal kernel implementation (`PENDING / NOT STARTED`) |
 | Primer cliente | Aplicación de escritorio de la familia Classic 5 |
 | Núcleo | Java compartido de GeoGebra, extendido solo cuando la semántica lo requiere |
 
@@ -47,7 +47,8 @@ elementos combinan capacidades cerradas y objetivos explícitamente futuros:
   ampliación continua);
 - exportación DXF 2D como servicio externo al kernel (`PASS`, G5; feature
   experimental);
-- `Locus V2` inicialmente detrás de una bandera experimental (`PENDING`, G6);
+- contrato matemático y arquitectura de `Locus V2` (`PASS`, G6A), sin entidad
+  productiva todavía; implementación experimental (`PENDING`, G6B);
 - un modelo semántico `SpatialObject3D`–proyecciones (`PENDING`, G9);
 - criterios verificables de suficiencia y degeneración de proyecciones
   canónicas (`PENDING`, G9).
@@ -568,11 +569,12 @@ sustituyen el resultado de los verificadores.
 
 ## 11. Diseño de `Locus V2`
 
-> **Propuesta previa, no implementación actual.** Esta caracterización se
-> conserva como antecedente para G6A. No equivale a un contrato aprobado ni
-> inicia G6. La [planificación detallada G6A/G6B](g6_locus_v2_plan.md) y su
-> [modelo semántico](../architecture/locus_v2_semantic_model.md) ya refinan esta
-> formulación; sus futuros ADR/specs aceptados prevalecerán sobre esta propuesta.
+> **Antecedente conceptual, no implementación actual.** La
+> [caracterización G6A](g6_locus_v2_plan.md), su
+> [modelo semántico](../architecture/locus_v2_semantic_model.md), el
+> [contrato normativo](../../geocedg/specs/locus/locus-v2-semantics.md) y
+> [ADR 0006 Accepted](../adr/0006-parallel-locus-v2-semantic-entity.md)
+> superseden cualquier detalle incompatible de esta formulación histórica.
 
 ## 11.1 Definición
 
@@ -595,7 +597,7 @@ L = \bigcup_{j=1}^{m} F_j(I_j \setminus D_j).
 \]
 
 Históricamente, los intervalos \(I_j\) se describieron aquí como componentes o
-ramas orientadas. La hipótesis G6A vigente ya no identifica ambos conceptos:
+ramas orientadas. El contrato normativo G6 ya no identifica ambos conceptos:
 una rama es una solución constructiva semántica y su subconjunto válido puede
 tener varios componentes separados por \(D_j\).
 
@@ -1081,7 +1083,8 @@ La optimización priorizará, según evidencia: invalidación incremental, cach�
 | G3 | `PASS` | [Controlled legacy integration](../validation/g3_controlled_legacy_integration_report.md) |
 | G4/G4R | `TECHNICAL PASS` | [Packaging](../validation/g4_standalone_packaging_report.md); redistribución pública `BLOCKED` pendiente de licencia/assets |
 | G5 | `PASS` | [Native 2D DXF export](../validation/g5_native_2d_dxf_export_report.md); feature integrada con estado experimental |
-| G6–G16 | `PENDING` | No iniciadas; G6 se planificará como G6A/G6B |
+| G6A | `PASS — AUTHOR APPROVED` | [Informe G6A](../validation/g6a_locus_v2_characterization_report.md), [contrato normativo](../../geocedg/specs/locus/locus-v2-semantics.md) y [ADR 0006 Accepted](../adr/0006-parallel-locus-v2-semantic-entity.md) |
+| G6B–G16 | `PENDING` | G6B no se ha iniciado y requiere una tarea de implementación separada |
 
 Los estados `experimental` describen madurez de una capacidad, no una puerta
 fallida. Un gate solo se marca `PASS` cuando satisface sus validaciones; un
@@ -1224,31 +1227,50 @@ aprobación de licencia y assets
 
 ## G6 - Locus V2
 
-**Estado:** `PENDING`
+**Estado:** G6A `PASS — AUTHOR APPROVED`; G6B `PENDING / NOT STARTED`
 
-La [planificación ejecutable detallada](g6_locus_v2_plan.md) incorpora la
-primera revisión del autor. La hipótesis de entidad paralela está
-`APPROVED AS G6A WORKING ARCHITECTURAL HYPOTHESIS`, pero esta normalización
-documental no inicia G6A. ADR 0006 permanece `Proposed` hasta el cierre de G6A y
-una segunda revisión del autor; G6B sigue bloqueada hasta entonces. La ejecución
-se divide en:
+La [planificación ejecutable detallada](g6_locus_v2_plan.md) incorporó la
+primera revisión del autor y G6A ejecutó la caracterización autorizada. La
+segunda revisión aprobó el
+[contrato normativo](../../geocedg/specs/locus/locus-v2-semantics.md), fixtures,
+mediciones y mapa de impacto, y aceptó
+[ADR 0006](../adr/0006-parallel-locus-v2-semantic-entity.md). G6B no se ha
+iniciado.
+
+Los dos modelos de intersección cono-cilindro suministrados por el autor
+reproducen el límite legacy con roles distintos. El modelo `TwoLevels` es el
+control funcional (aproximadamente 125–127 ms). En el modelo patológico, el
+estado previo a `Flatten` midió aproximadamente 31.9 ms; las tres creaciones de
+tercer nivel tardaron aproximadamente 6.03, 5.95 y 5.67 s, terminaron
+indefinidas al superar el guard legacy de 500 ms por paso y dejaron una
+recomputación posterior de aproximadamente 21.0 s. La instrumentación muestra
+que `AlgoLocusSliderND` actualiza por muestra un dependency slice con dos loci
+interiores y dos `AlgoPerimeterLocus`, regenerando trabajo upstream. Esta causa
+se limita a los artefactos medidos. Los originales están fijados por hash bajo
+`models/legacy/`; no son autoridad semántica V2 ni están autorizados para
+redistribución pública.
 
 - **G6A — mathematical/semantic characterization and contract:** definición,
   parámetro semántico proporcionado por el provider, ramas/componentes válidos,
   degeneraciones, garantía numérica, composición anidada, clasificación,
-  compatibilidad y diseño de validación; no inicia implementación del kernel.
+  compatibilidad y diseño de validación; caracterización cerrada `PASS` sin
+  implementación productiva del kernel.
 - **G6B — minimal Locus V2 kernel implementation:** implementación mínima
-  posterior al contrato aprobado de G6A, protegida por feature flag y compatible
-  con diagnóstico legacy/dual-run.
+  futura implementación separada, protegida por feature flag y compatible con
+  diagnóstico legacy/dual-run. Usará una clasificación V2 añadida y distinta,
+  evaluadores semánticos recursivos con sesión compartida acotada y un fixture
+  interno de tres niveles trazable a los modelos originales.
 
 El paquete incluye el
-[modelo semántico candidato](../architecture/locus_v2_semantic_model.md), el
+[modelo semántico](../architecture/locus_v2_semantic_model.md), el
 [mapa de impacto upstream](../architecture/locus_v2_upstream_impact.md), la
 [matriz de validación](../validation/g6_locus_v2_validation_matrix.md), el
 [plan de benchmarks](../validation/g6_locus_v2_benchmark_plan.md) y el
-[ADR 0006 Proposed](../adr/0006-parallel-locus-v2-semantic-entity.md). Las
+[ADR 0006 Accepted](../adr/0006-parallel-locus-v2-semantic-entity.md). Las
 secciones conceptuales previas de este roadmap siguen siendo material de
-partida, no una especificación G6 aprobada. G6 no se ha iniciado.
+partida; la spec enlazada es la autoridad normativa. El resultado se documenta en el
+[informe G6A](../validation/g6a_locus_v2_characterization_report.md). No existe
+todavía un Locus V2 visible o persistente.
 
 ## G7 - Longitud
 
@@ -1261,6 +1283,13 @@ partida, no una especificación G6 aprobada. G6 no se ha iniciado.
 - `LocusLength`;
 - casos cerrados, multirrama y auto-intersección;
 - modelo del cono oblicuo.
+
+Toda métrica G7 consumida por una construcción downstream deberá conservar la
+composición semántica: quedará asociada a la revisión semántica del Locus V2,
+consumirá sus dominios/evaluadores y no `LocusRenderCache2D` ni sumas de cuerdas
+muestreadas, evitará recalcular la métrica completa por cada consulta mientras
+la revisión upstream no cambie y seguirá la invalidación/caché del DAG normal.
+Este requisito no implementa G7.
 
 **Salida**
 
