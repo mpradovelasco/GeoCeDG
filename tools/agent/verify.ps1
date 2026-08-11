@@ -17,6 +17,7 @@ $ErrorActionPreference = "Stop"
 
 $RepositoryRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot "..\..")).Path
 $OperationalVerifier = Join-Path $PSScriptRoot "verify-operational.ps1"
+$WorkstationVerifier = Join-Path $PSScriptRoot "verify-workstation.ps1"
 $BaselineVerifier = Join-Path $PSScriptRoot "verify-baseline.ps1"
 $FrontendVerifier = Join-Path $PSScriptRoot "verify-frontend.ps1"
 $LegacyVerifier = Join-Path $PSScriptRoot "verify-legacy.ps1"
@@ -43,6 +44,10 @@ try {
     Write-Host "`n==> GeoCeDG operational contracts"
     & $OperationalVerifier
     Assert-LastScriptSuccess -Description "GeoCeDG operational contracts"
+
+    Write-Host "`n==> Windows workstation operational contracts"
+    & $WorkstationVerifier
+    Assert-LastScriptSuccess -Description "Windows workstation operational contracts"
 
     Write-Host "`n==> Controlled legacy CeDG integration"
     & $LegacyVerifier

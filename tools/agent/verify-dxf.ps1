@@ -19,77 +19,7 @@ $SharedResult = Join-Path $RepositoryRoot (
 $DesktopResult = Join-Path $RepositoryRoot (
     "source\desktop\desktop\build\test-results\test\" +
     "TEST-org.geocedg.desktop.GeoCeDGProfileTest.xml")
-
-function Get-RepositoryStatus {
-    $status = & git -C $RepositoryRoot status --porcelain=v1 --untracked-files=all
-    if ($LASTEXITCODE -ne 0) {
-        throw "Unable to read repository status."
-    }
-    return ($status -join "`n")
-}
-
-function Get-OutputDirectories {
-    $paths = [Collections.Generic.HashSet[string]]::new(
-        [StringComparer]::OrdinalIgnoreCase)
-    $entries = @(& git -C $RepositoryRoot ls-files --others --directory `
-        --exclude-standard)
-    if ($LASTEXITCODE -ne 0) {
-        throw "Unable to enumerate untracked output directories."
-    }
-    $entries += @(& git -C $RepositoryRoot ls-files --others --directory `
-        --ignored --exclude-standard)
-    if ($LASTEXITCODE -ne 0) {
-        throw "Unable to enumerate ignored output directories."
-    }
-    foreach ($entry in $entries) {
-        if ([string]::IsNullOrWhiteSpace($entry)) {
-            continue
-        }
-        $relative = $entry.TrimEnd("/", "\")
-        if ($GeneratedDirectoryNames -contains (Split-Path -Leaf $relative)) {
-            [void]$paths.Add([IO.Path]::GetFullPath((Join-Path $RepositoryRoot $relative)))
-        }
-    }
-    return ,$paths
-}
-
-function Remove-NewOutputDirectories {
-    param(
-        [Parameter(Mandatory)]
-        [AllowEmptyCollection()]
-        [Collections.Generic.HashSet[string]]$Before
-    )
-
-    if ($KeepBuildOutputs) {
-        Write-Host "Keeping G5 build outputs because -KeepBuildOutputs was supplied."
-        return
-    }
-    $after = Get-OutputDirectories
-    $rootPrefix = $RepositoryRoot + [IO.Path]::DirectorySeparatorChar
-    $selected = [Collections.Generic.List[string]]::new()
-    foreach ($candidate in @($after | Where-Object { -not $Before.Contains($_) } |
-            Sort-Object Length)) {
-        $covered = @($selected | Where-Object {
-                $candidate.StartsWith(
-                    $_ + [IO.Path]::DirectorySeparatorChar,
-                    [StringComparison]::OrdinalIgnoreCase)
-            }).Count -gt 0
-        if (-not $covered) {
-            $selected.Add($candidate)
-        }
-    }
-    foreach ($candidate in $selected) {
-        if (-not $candidate.StartsWith(
-                $rootPrefix, [StringComparison]::OrdinalIgnoreCase) -or
-                $GeneratedDirectoryNames -notcontains (Split-Path -Leaf $candidate)) {
-            throw "Refusing to remove unexpected output directory: $candidate"
-        }
-        if (Test-Path -LiteralPath $candidate) {
-            Write-Host "Removing generated G5 output: $candidate"
-            Remove-Item -LiteralPath $candidate -Recurse -Force
-        }
-    }
-}
+. (Join-Path $PSScriptRoot "repository-generated-state.ps1")
 
 function Assert-Condition {
     param([bool]$Condition, [string]$Message)
@@ -152,13 +82,15 @@ function Assert-TestResult {
 }
 
 $InitialStatus = $null
-$InitialOutputs = $null
+$GeneratedState = $null
 [Exception]$Failure = $null
 
 try {
     New-Item -ItemType Directory -Path $LogDirectory -Force | Out-Null
-    $InitialStatus = Get-RepositoryStatus
-    $InitialOutputs = Get-OutputDirectories
+    $InitialStatus = Get-RepositoryStatusText -RepositoryRoot $RepositoryRoot
+    $GeneratedState = New-RepositoryGeneratedStateSnapshot `
+        -RepositoryRoot $RepositoryRoot -DirectoryNames $GeneratedDirectoryNames `
+        -Label "verify-dxf"
 
     foreach ($required in @(
             "docs/adr/0005-neutral-2d-geometry-export.md",
@@ -254,27 +186,31 @@ try {
 } catch {
     $Failure = $_.Exception
 } finally {
-    if ($null -ne $InitialOutputs) {
-        try {
-            Remove-NewOutputDirectories -Before $InitialOutputs
-        } catch {
-            if ($null -eq $Failure) {
-                $Failure = $_.Exception
-            } else {
-                Write-Error "G5 cleanup also failed: $($_.Exception.Message)"
+    try {
+        if ($null -ne $GeneratedState) {
+            Restore-RepositoryGeneratedStateSnapshot -Snapshot $GeneratedState `
+                -KeepCurrentOutputs:$KeepBuildOutputs -Description "G5 output"
+        }
+        if ($null -ne $InitialStatus) {
+            $finalStatus = Get-RepositoryStatusText -RepositoryRoot $RepositoryRoot
+            if ($finalStatus -ne $InitialStatus) {
+                throw "Repository status changed during G5 verification.`n" +
+                    "Before:`n$InitialStatus`nAfter:`n$finalStatus"
             }
+        }
+    } catch {
+        if ($null -eq $Failure) {
+            $Failure = $_.Exception
+        } else {
+            $Failure = [Exception]::new(
+                "$($Failure.Message)`nCleanup/status failure: $($_.Exception.Message)",
+                $Failure)
         }
     }
 }
 
 if ($null -ne $Failure) {
     Write-Error $Failure.Message
-    exit 1
-}
-
-$FinalStatus = Get-RepositoryStatus
-if ($FinalStatus -ne $InitialStatus) {
-    Write-Error "Repository status changed during G5 verification."
     exit 1
 }
 

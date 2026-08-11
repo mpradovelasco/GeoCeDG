@@ -189,10 +189,14 @@ try {
         "tools/agent/verify-legacy.ps1",
         "tools/agent/verify-packaging.ps1",
         "tools/agent/verify-dxf.ps1",
+        "tools/agent/verify-workstation.ps1",
+        "tools/agent/repository-generated-state.ps1",
         "tools/agent/verify-operational.ps1",
         "tools/agent/verify.ps1",
         "tools/agent/upstream-boundary.ps1",
         "tools/bootstrap/bootstrap-windows.ps1",
+        "tools/bootstrap/install-packaging-prerequisites.ps1",
+        "tools/bootstrap/packaging-prerequisites.psm1",
         "tools/benchmark/run.ps1",
         "tools/legacy/ingest.ps1",
         "tools/legacy/open-laboratory.ps1",
@@ -234,6 +238,15 @@ try {
         Join-Path $RepositoryRoot "tools\bootstrap\bootstrap-windows.ps1")
     Assert-Condition -Condition $bootstrap.Contains("tools\agent\verify.ps1") `
         -Message "Windows bootstrap does not delegate to tools/agent/verify.ps1."
+    Assert-Condition -Condition $bootstrap.Contains(
+        "tools\bootstrap\install-packaging-prerequisites.ps1") `
+        -Message "Windows bootstrap does not delegate focused prerequisite installation."
+    $rootIgnore = Get-Content -Raw -LiteralPath (
+        Join-Path $RepositoryRoot ".gitignore")
+    foreach ($generatedRule in @(".gradle/", ".kotlin/", "build/")) {
+        Assert-Condition -Condition $rootIgnore.Contains($generatedRule) `
+            -Message ".gitignore is missing generated-state rule '$generatedRule'."
+    }
     foreach ($forbiddenBootstrapPattern in @(
             '(?im)\bgit\s+push\b',
             '(?im)\bgit\s+reset\b',

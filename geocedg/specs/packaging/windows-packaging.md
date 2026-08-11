@@ -60,6 +60,16 @@ The composed authority always runs the static packaging gate. Use
 `tools/agent/verify.ps1 -VerifyPackagingArtifacts` after generating all
 artifacts to include toolchain and artifact checks.
 
+Prerequisite setup is a separate operational responsibility.
+`tools/bootstrap/install-packaging-prerequisites.ps1` owns focused inspection
+and the explicit installation of the approved .NET 8 SDK, pinned WiX 5.0.2,
+and pinned Util/UI extensions. The bootstrap
+`-InstallPackagingPrerequisites` action delegates to it before any remote,
+build, or repository-verification phase and then exits. It never installs a
+JDK. Setup success is not repository acceptance; `tools/agent/verify.ps1`
+remains the composed authority, while `verify-packaging.ps1 -CheckToolchain`
+is the focused toolchain diagnosis.
+
 ## Release gate
 
 Successful execution proves packaging capability only. Until the component

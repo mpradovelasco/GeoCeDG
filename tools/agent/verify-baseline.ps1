@@ -27,6 +27,7 @@ $VersionFile = Join-Path $RepositoryRoot `
 $DesktopBuildFile = Join-Path $RepositoryRoot "source\desktop\desktop\build.gradle.kts"
 $LogDirectory = [IO.Path]::GetFullPath($LogDirectory)
 . (Join-Path $PSScriptRoot "upstream-boundary.ps1")
+. (Join-Path $PSScriptRoot "repository-generated-state.ps1")
 
 function Invoke-CapturedNative {
     param(
@@ -85,90 +86,6 @@ function Invoke-LoggedNative {
     }
 }
 
-function Get-RepositoryStatus {
-    $status = & git -C $RepositoryRoot status --porcelain=v1 --untracked-files=all
-    if ($LASTEXITCODE -ne 0) {
-        throw "Unable to read repository status."
-    }
-    return ($status -join "`n")
-}
-
-function Get-UntrackedOutputDirectories {
-    $paths = [Collections.Generic.HashSet[string]]::new(
-        [StringComparer]::OrdinalIgnoreCase)
-
-    $untracked = & git -C $RepositoryRoot ls-files --others --directory --exclude-standard
-    if ($LASTEXITCODE -ne 0) {
-        throw "Unable to enumerate untracked output directories."
-    }
-
-    $ignored = & git -C $RepositoryRoot ls-files --others --directory --ignored `
-        --exclude-standard
-    if ($LASTEXITCODE -ne 0) {
-        throw "Unable to enumerate ignored output directories."
-    }
-
-    foreach ($entry in @($untracked) + @($ignored)) {
-        if ([string]::IsNullOrWhiteSpace($entry)) {
-            continue
-        }
-        $relative = $entry.TrimEnd("/", "\")
-        $leaf = Split-Path -Leaf $relative
-        if ($GeneratedDirectoryNames -contains $leaf) {
-            $absolute = [IO.Path]::GetFullPath((Join-Path $RepositoryRoot $relative))
-            [void]$paths.Add($absolute)
-        }
-    }
-    return ,$paths
-}
-
-function Remove-NewOutputDirectories {
-    param(
-        [Parameter(Mandatory)]
-        [AllowEmptyCollection()]
-        [Collections.Generic.HashSet[string]]$Before
-    )
-
-    if ($KeepBuildOutputs) {
-        Write-Host "Keeping build outputs because -KeepBuildOutputs was supplied."
-        return
-    }
-
-    $after = Get-UntrackedOutputDirectories
-    $newPaths = @($after | Where-Object { -not $Before.Contains($_) } |
-        Sort-Object Length)
-    $selected = [Collections.Generic.List[string]]::new()
-    $rootPrefix = $RepositoryRoot + [IO.Path]::DirectorySeparatorChar
-
-    foreach ($candidate in $newPaths) {
-        $covered = $false
-        foreach ($parent in $selected) {
-            if ($candidate.StartsWith(
-                    $parent + [IO.Path]::DirectorySeparatorChar,
-                    [StringComparison]::OrdinalIgnoreCase)) {
-                $covered = $true
-                break
-            }
-        }
-        if (-not $covered) {
-            $selected.Add($candidate)
-        }
-    }
-
-    foreach ($candidate in $selected) {
-        if (-not $candidate.StartsWith($rootPrefix, [StringComparison]::OrdinalIgnoreCase)) {
-            throw "Refusing to remove output outside repository: $candidate"
-        }
-        if ($GeneratedDirectoryNames -notcontains (Split-Path -Leaf $candidate)) {
-            throw "Refusing to remove unexpected directory: $candidate"
-        }
-        if (Test-Path -LiteralPath $candidate) {
-            Write-Host "Removing generated output: $candidate"
-            Remove-Item -LiteralPath $candidate -Recurse -Force
-        }
-    }
-}
-
 function Get-GradleArguments {
     param([Parameter(Mandatory)] [string[]]$Tasks)
 
@@ -187,7 +104,7 @@ function Get-GradleArguments {
 }
 
 $InitialStatus = $null
-$InitialOutputs = $null
+$GeneratedState = $null
 [Exception]$Failure = $null
 
 try {
@@ -196,8 +113,10 @@ try {
     }
     New-Item -ItemType Directory -Path $LogDirectory -Force | Out-Null
 
-    $InitialStatus = Get-RepositoryStatus
-    $InitialOutputs = Get-UntrackedOutputDirectories
+    $InitialStatus = Get-RepositoryStatusText -RepositoryRoot $RepositoryRoot
+    $GeneratedState = New-RepositoryGeneratedStateSnapshot `
+        -RepositoryRoot $RepositoryRoot -DirectoryNames $GeneratedDirectoryNames `
+        -Label "verify-baseline"
 
     Write-Host "GeoCeDG baseline verification"
     Write-Host "Repository: $RepositoryRoot"
@@ -337,11 +256,12 @@ try {
     $Failure = $_.Exception
 } finally {
     try {
-        if ($null -ne $InitialOutputs) {
-            Remove-NewOutputDirectories -Before $InitialOutputs
+        if ($null -ne $GeneratedState) {
+            Restore-RepositoryGeneratedStateSnapshot -Snapshot $GeneratedState `
+                -KeepCurrentOutputs:$KeepBuildOutputs -Description "build output"
         }
         if ($null -ne $InitialStatus) {
-            $finalStatus = Get-RepositoryStatus
+            $finalStatus = Get-RepositoryStatusText -RepositoryRoot $RepositoryRoot
             if ($finalStatus -ne $InitialStatus) {
                 throw "Repository status changed during verification.`nBefore:`n$InitialStatus`nAfter:`n$finalStatus"
             }

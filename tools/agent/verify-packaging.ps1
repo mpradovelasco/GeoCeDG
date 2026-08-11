@@ -30,6 +30,7 @@ if ([string]::IsNullOrWhiteSpace($ArtifactRoot)) {
 } else {
     $ArtifactRoot = [IO.Path]::GetFullPath($ArtifactRoot)
 }
+. (Join-Path $PSScriptRoot "repository-generated-state.ps1")
 
 function Write-Step {
     param([Parameter(Mandatory)] [string]$Message)
@@ -75,70 +76,6 @@ function Invoke-Captured {
     return @($output | ForEach-Object { $_.ToString() })
 }
 
-function Get-UntrackedOutputDirectories {
-    $paths = [Collections.Generic.HashSet[string]]::new(
-        [StringComparer]::OrdinalIgnoreCase)
-    $entries = @(& git -C $RepositoryRoot ls-files --others --directory `
-        --exclude-standard)
-    if ($LASTEXITCODE -ne 0) {
-        throw "Unable to enumerate untracked output directories."
-    }
-    $entries += @(& git -C $RepositoryRoot ls-files --others --directory `
-        --ignored --exclude-standard)
-    if ($LASTEXITCODE -ne 0) {
-        throw "Unable to enumerate ignored output directories."
-    }
-    foreach ($entry in $entries) {
-        if ([string]::IsNullOrWhiteSpace($entry)) {
-            continue
-        }
-        $relative = $entry.TrimEnd("/", "\")
-        if ($GeneratedDirectoryNames -contains (Split-Path -Leaf $relative)) {
-            [void]$paths.Add([IO.Path]::GetFullPath(
-                (Join-Path $RepositoryRoot $relative)))
-        }
-    }
-    return ,$paths
-}
-
-function Remove-NewOutputDirectories {
-    param(
-        [Parameter(Mandatory)]
-        [AllowEmptyCollection()]
-        [Collections.Generic.HashSet[string]]$Before
-    )
-
-    $after = Get-UntrackedOutputDirectories
-    $rootPrefix = $RepositoryRoot + [IO.Path]::DirectorySeparatorChar
-    $selected = [Collections.Generic.List[string]]::new()
-    foreach ($candidate in @($after | Where-Object { -not $Before.Contains($_) } |
-            Sort-Object Length)) {
-        $covered = $false
-        foreach ($parent in $selected) {
-            if ($candidate.StartsWith(
-                    $parent + [IO.Path]::DirectorySeparatorChar,
-                    [StringComparison]::OrdinalIgnoreCase)) {
-                $covered = $true
-                break
-            }
-        }
-        if (-not $covered) {
-            $selected.Add($candidate)
-        }
-    }
-    foreach ($candidate in $selected) {
-        if (-not $candidate.StartsWith(
-                $rootPrefix, [StringComparison]::OrdinalIgnoreCase) -or
-                $GeneratedDirectoryNames -notcontains (Split-Path -Leaf $candidate)) {
-            throw "Refusing to remove unexpected output directory: $candidate"
-        }
-        if (Test-Path -LiteralPath $candidate) {
-            Write-Host "Removing generated packaging-verifier output: $candidate"
-            Remove-Item -LiteralPath $candidate -Recurse -Force
-        }
-    }
-}
-
 function Resolve-Jpackage {
     $gradle = Join-Path $RepositoryRoot "gradlew.bat"
     $output = Invoke-Captured -FilePath $gradle -ArgumentList @(
@@ -167,7 +104,10 @@ function Resolve-Jpackage {
     throw "Gradle did not report the Java 25 Desktop toolchain."
 }
 
-$InitialOutputs = Get-UntrackedOutputDirectories
+$InitialStatus = Get-RepositoryStatusText -RepositoryRoot $RepositoryRoot
+$GeneratedState = New-RepositoryGeneratedStateSnapshot `
+    -RepositoryRoot $RepositoryRoot -DirectoryNames $GeneratedDirectoryNames `
+    -Label "verify-packaging"
 [Exception]$Failure = $null
 
 try {
@@ -387,7 +327,13 @@ try {
     $Failure = $_.Exception
 } finally {
     try {
-        Remove-NewOutputDirectories -Before $InitialOutputs
+        Restore-RepositoryGeneratedStateSnapshot -Snapshot $GeneratedState `
+            -Description "packaging-verifier output"
+        $finalStatus = Get-RepositoryStatusText -RepositoryRoot $RepositoryRoot
+        if ($finalStatus -ne $InitialStatus) {
+            throw "Repository status changed during packaging verification.`n" +
+                "Before:`n$InitialStatus`nAfter:`n$finalStatus"
+        }
     } catch {
         if ($null -eq $Failure) {
             $Failure = $_.Exception
