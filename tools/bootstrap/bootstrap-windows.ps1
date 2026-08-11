@@ -23,9 +23,10 @@ Runs the explicit interactive Desktop launch gate. Close the application
 window to let the verification finish.
 
 .PARAMETER InstallPackagingPrerequisites
-Explicitly installs only a missing compatible .NET 8 SDK and/or the pinned
-global WiX 5.0.2 tool required for MSI/EXE generation. The default remains
-detection-only. JDK installation is never automated.
+Runs the focused prerequisite installer and exits without fetching remotes or
+executing repository verification. It installs only an approved missing .NET 8
+SDK, pinned WiX 5.0.2, and the pinned WiX extensions. JDK installation is never
+automated.
 #>
 [CmdletBinding()]
 param(
@@ -48,6 +49,8 @@ $ExpectedDesktopJava = 25
 $ExpectedWix = "5.0.2"
 $RepositoryRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\.."))
 $Verifier = Join-Path $RepositoryRoot "tools\agent\verify.ps1"
+$PackagingPrerequisiteInstaller = Join-Path $RepositoryRoot `
+    "tools\bootstrap\install-packaging-prerequisites.ps1"
 $BaselineFile = Join-Path $RepositoryRoot "docs\upstream\BASELINE_COMMIT.txt"
 $GradleWrapper = Join-Path $RepositoryRoot "gradlew.bat"
 $LogDirectory = Join-Path ([IO.Path]::GetTempPath()) "geocedg-bootstrap"
@@ -175,6 +178,19 @@ function Get-CompatibleDotNetSdk {
 try {
     Write-Host "GeoCeDG Windows workstation bootstrap"
     Write-Host "Repository candidate: $RepositoryRoot"
+
+    if ($InstallPackagingPrerequisites) {
+        if ($SkipFetch -or $SkipBuild -or $RunBenchmarks -or $LaunchDesktop) {
+            throw "-InstallPackagingPrerequisites is an independent action and cannot be combined with onboarding or verification options."
+        }
+        Write-Step "Focused Windows packaging-prerequisite installation"
+        & $PackagingPrerequisiteInstaller -Install
+        $installerExitCode = $LASTEXITCODE
+        if ($installerExitCode -ne 0) {
+            throw "Focused packaging-prerequisite installation failed with exit code $installerExitCode."
+        }
+        exit 0
+    }
 
     if ($SkipBuild -and $LaunchDesktop) {
         throw "-SkipBuild cannot be combined with -LaunchDesktop."
@@ -355,24 +371,6 @@ try {
     if ($null -ne $dotnetCommand) {
         $compatibleSdk = Get-CompatibleDotNetSdk -DotNetPath $dotnetCommand.Source
     }
-    if ($null -eq $compatibleSdk -and $InstallPackagingPrerequisites) {
-        $wingetCommand = Get-Command winget -ErrorAction SilentlyContinue
-        if ($null -eq $wingetCommand) {
-            throw "A compatible .NET SDK is missing and WinGet is unavailable. Install manually: winget install --id Microsoft.DotNet.SDK.8 --exact"
-        }
-        Write-Host "Installing the minimum supported .NET 8 SDK through WinGet (explicit opt-in)."
-        [void](Invoke-Native -FilePath $wingetCommand.Source -ArgumentList @(
-                "install", "--id", "Microsoft.DotNet.SDK.8", "--exact",
-                "--accept-package-agreements", "--accept-source-agreements",
-                "--disable-interactivity"
-            ) -Description "Install .NET 8 SDK")
-        Add-ProcessPath -Path (Join-Path $env:ProgramFiles "dotnet")
-        $dotnetCommand = Get-Command dotnet -ErrorAction SilentlyContinue
-        if ($null -eq $dotnetCommand) {
-            throw ".NET installation completed but dotnet is not visible. Start a new PowerShell session and rerun."
-        }
-        $compatibleSdk = Get-CompatibleDotNetSdk -DotNetPath $dotnetCommand.Source
-    }
     if ($null -eq $compatibleSdk) {
         Add-Warning ".NET SDK 6+ is missing; it is required only for MSI/EXE packaging. Recommended: winget install --id Microsoft.DotNet.SDK.8 --exact"
     } else {
@@ -387,28 +385,6 @@ try {
     $wixCommand = Get-Command wix -ErrorAction SilentlyContinue
     $observedWix = $null
     if ($null -ne $wixCommand) {
-        $observedWix = @(Invoke-Native -FilePath $wixCommand.Source `
-            -ArgumentList @("--version") -Description "WiX version")[-1].Trim()
-    }
-    if (($null -eq $compatibleSdk) -and $InstallPackagingPrerequisites) {
-        throw "A compatible .NET SDK is still unavailable, so WiX cannot be installed."
-    }
-    if (($null -eq $observedWix -or
-            -not $observedWix.StartsWith(
-                $ExpectedWix, [StringComparison]::Ordinal)) -and
-        $InstallPackagingPrerequisites) {
-        $verb = if ($null -eq $observedWix) { "install" } else { "update" }
-        Write-Host "$verb WiX $ExpectedWix as a pinned global .NET tool (explicit opt-in)."
-        [void](Invoke-Native -FilePath $dotnetCommand.Source -ArgumentList @(
-                "tool", $verb, "--global", "wix", "--version", $ExpectedWix,
-                "--add-source", "https://api.nuget.org/v3/index.json",
-                "--ignore-failed-sources"
-            ) -Description "$verb WiX $ExpectedWix")
-        Add-ProcessPath -Path $globalToolPath
-        $wixCommand = Get-Command wix -ErrorAction SilentlyContinue
-        if ($null -eq $wixCommand) {
-            throw "WiX installation completed but wix is not visible. Start a new PowerShell session and rerun."
-        }
         $observedWix = @(Invoke-Native -FilePath $wixCommand.Source `
             -ArgumentList @("--version") -Description "WiX version")[-1].Trim()
     }
@@ -438,30 +414,6 @@ try {
                 $_.ToString() -match "^$([regex]::Escape($extensionName))\s+$([regex]::Escape($ExpectedWix))$"
             } | Select-Object -First 1)
         })
-        if ($missingWixExtensions.Count -gt 0 -and
-            $InstallPackagingPrerequisites) {
-            $wixConfigRoot = Join-Path $RepositoryRoot "packaging\windows"
-            Push-Location -LiteralPath $wixConfigRoot
-            try {
-                foreach ($extension in $missingWixExtensions) {
-                    [void](Invoke-Native -FilePath $wixCommand.Source -ArgumentList @(
-                            "extension", "add", "-g", "$extension/$ExpectedWix"
-                        ) -Description "Install $extension $ExpectedWix")
-                }
-            } finally {
-                Pop-Location
-            }
-            $extensionOutput = @(& $wixCommand.Source extension list -g 2>&1)
-            if ($LASTEXITCODE -ne 0) {
-                throw "WiX extensions were installed but cannot be enumerated."
-            }
-            $missingWixExtensions = @($requiredWixExtensions | Where-Object {
-                $extensionName = $_
-                $null -eq ($extensionOutput | Where-Object {
-                    $_.ToString() -match "^$([regex]::Escape($extensionName))\s+$([regex]::Escape($ExpectedWix))$"
-                } | Select-Object -First 1)
-            })
-        }
         if ($missingWixExtensions.Count -gt 0) {
             Add-Warning "Pinned WiX extensions are missing: $($missingWixExtensions -join ', '). From packaging/windows run: wix extension add -g WixToolset.Util.wixext/$ExpectedWix; wix extension add -g WixToolset.UI.wixext/$ExpectedWix"
         } else {

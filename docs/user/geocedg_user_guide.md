@@ -12,7 +12,7 @@
 This guide is the practical entry point for the GeoCeDG author/developer. It
 describes only the behavior available through G5. It does not replace the
 [repository README](../../README.md),
-[roadmap](../roadmap/geocedg_initial_plan.md), ADRs, specifications, or
+[living technical roadmap](../roadmap/geocedg_roadmap.md), ADRs, specifications, or
 architecture documentation.
 
 ## Run GeoCeDG now
@@ -72,6 +72,12 @@ and pinned WiX 5.0.2 plus required extensions. It does not
 modify global environment variables, global Git configuration, credentials,
 `origin`, branches, or history.
 
+This option is an action mode, not an acceptance gate. It delegates immediately
+to `tools/bootstrap/install-packaging-prerequisites.ps1` and exits without
+fetching remotes, running Gradle, or executing G3/G5/frontend/repository
+verification. Run the normal bootstrap or `tools/agent/verify.ps1` separately
+when repository acceptance is required.
+
 ### Packaging prerequisite checks
 
 Run these commands from the repository root to characterize the workstation:
@@ -120,9 +126,14 @@ Alternatively, opt in to the idempotent repository orchestration:
 
 ```powershell
 .\tools\bootstrap\bootstrap-windows.ps1 -InstallPackagingPrerequisites
+.\tools\agent\verify-packaging.ps1 -CheckToolchain
 ```
 
-That option still does not install a JDK. See the compact
+The first command installs only approved missing .NET/WiX components and never
+installs a JDK. The second command is the focused, read-only confirmation that
+Gradle can resolve JDK 25 `jpackage` and that .NET, WiX, and both pinned
+extensions are usable together. Neither command replaces the composed
+repository acceptance authority. See the compact
 [Windows packaging prerequisites](../../README.md#requisitos-de-packaging-windows)
 and the [packaging contract](../../geocedg/specs/packaging/windows-packaging.md)
 for the authoritative boundary.
@@ -170,7 +181,9 @@ toolchain evidence. `-RunBenchmarks` adds the informational operational
 benchmark. `-LaunchDesktop` launches **GeoGebra Classic**, because that option
 belongs to the pinned-baseline gate; it does not launch GeoCeDG.
 `-InstallPackagingPrerequisites` is opt-in and idempotent; use it only on a
-packaging workstation. Exact manual commands are in the
+packaging workstation. It is independent of the other bootstrap options,
+cannot be combined with them, and exits after focused prerequisite setup
+without onboarding or repository verification. Exact manual commands are in the
 [root README](../../README.md#requisitos-de-packaging-windows).
 
 See the [root README](../../README.md) for the short repository overview and
@@ -186,9 +199,9 @@ Run commands from the repository root unless stated otherwise.
 .\tools\agent\verify.ps1
 ```
 
-This is the canonical local gate. It composes operational contracts, the G3
-legacy catalog, G4 static package contracts, the pinned baseline build, and
-focused GeoCeDG frontend tests.
+This is the canonical local gate. It composes workstation/operational contracts,
+the G3 legacy catalog, G4 static package contracts, G5 DXF tests, the pinned
+baseline build, and focused GeoCeDG frontend tests.
 It writes logs below `%TEMP%\geocedg-verify` by default and normally removes
 the Gradle outputs it created.
 
@@ -212,6 +225,7 @@ baseline Classic launcher. Close its window normally to complete the gate.
 
 ```powershell
 .\tools\agent\verify-operational.ps1
+.\tools\agent\verify-workstation.ps1
 .\tools\agent\verify-baseline.ps1
 .\tools\agent\verify-frontend.ps1
 .\tools\agent\verify-legacy.ps1
@@ -462,6 +476,11 @@ of ZIP, MSI, or EXE is therefore not guaranteed.
   $env:PATH = "$env:USERPROFILE\.dotnet\tools;$env:PATH"
   wix --version
   ```
+
+The focused installer updates `PATH` only for its current process after an
+official installer/tool command. It does not persist an environment-variable
+change. Opening a new PowerShell lets the normal user environment expose a
+recent global tool installation.
 
 The focused verifier prints actionable installation commands for missing
 requirements. Do not patch Gradle or application sources to compensate for a
@@ -975,7 +994,7 @@ boundary defined by the operational contracts.
 - Governance: [AGENTS.md](../../AGENTS.md)
 - Baseline provenance: [UPSTREAM.md](../../UPSTREAM.md) and
   [G0 report](../validation/baseline_report.md)
-- Roadmap: [GeoCeDG initial plan](../roadmap/geocedg_initial_plan.md)
+- Roadmap: [GeoCeDG — Living Technical Roadmap](../roadmap/geocedg_roadmap.md)
 - Operational authority: [ADR 0002](../adr/0002-g1-operational-authority.md),
   [G1 report](../validation/g1_operational_layer_report.md), and
   [G1R report](../validation/g1r_repository_onboarding_report.md)
@@ -1011,5 +1030,5 @@ boundary defined by the operational contracts.
 ## 16. Maintenance authority
 
 The authoritative update gate is the roadmap's
-[transversal documentary closure rule](../roadmap/geocedg_initial_plan.md#regla-transversal-de-cierre-documental).
+[transversal documentary closure rule](../roadmap/geocedg_roadmap.md#reglas-de-mantenimiento-y-cierre-documental).
 This guide does not redefine that rule.

@@ -51,7 +51,7 @@ GeoCeDG-only commits:
 
 ```text
 13aec3d  AGENTS.md, FIRST_AGENT_TASK.md,
-         docs/roadmap/geocedg_initial_plan.md
+         docs/roadmap/geocedg_roadmap.md
 656718d  docs/architecture/proposed_spatial_projection_semantics.md
 ```
 

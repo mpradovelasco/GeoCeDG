@@ -38,6 +38,11 @@ built-in JSON parser but no built-in YAML parser.
    is ignored. Only `artifacts/README.md` is durable source.
 8. Basic CI runs on Windows, calls `tools/agent/verify.ps1`, and uploads its
    temporary logs. CI does not launch the interactive Desktop application.
+9. A focused verifier that claims to preserve repository state treats generated
+   Gradle/Kotlin directories as a transaction: pre-existing contents are
+   snapshotted outside the checkout, current verifier outputs are removed, and
+   the entry state is restored before status comparison. Ignore rules prevent
+   accidental versioning but never replace this lifecycle guarantee.
 
 ## Rationale
 
@@ -59,6 +64,8 @@ specialized diagnostics remain independently runnable.
 - Performance comparisons have provenance and repeat counts, but their G1
   thresholds are not release gates.
 - Future schema changes require a new `schema_version` and migration policy.
+- Focused Gradle verifiers preserve both a clean checkout and pre-existing
+  regenerable outputs unless an explicit keep-output diagnostic mode is used.
 
 ## Explicit non-decisions
 

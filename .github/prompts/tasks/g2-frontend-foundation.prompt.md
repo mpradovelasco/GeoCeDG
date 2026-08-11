@@ -8,7 +8,7 @@ without changing geometric or serialization semantics.
 1. `AGENTS.md`.
 2. `docs/adr/0001-geocedg-product-profile.md`.
 3. `geocedg/specs/ui/application-profile.md` and its manifest/schema.
-4. `docs/roadmap/geocedg_initial_plan.md`.
+4. `docs/roadmap/geocedg_roadmap.md`.
 5. Current pinned source and the G0/G1/G1R reports.
 
 # Scope

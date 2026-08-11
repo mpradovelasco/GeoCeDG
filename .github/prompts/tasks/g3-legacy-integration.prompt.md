@@ -8,7 +8,7 @@ references without promoting geometric behavior.
 1. `AGENTS.md`.
 2. `docs/adr/0003-controlled-legacy-integration.md`.
 3. `geocedg/specs/legacy/controlled-integration.md` and G1 manifest contracts.
-4. `docs/roadmap/geocedg_initial_plan.md`.
+4. `docs/roadmap/geocedg_roadmap.md`.
 5. G2 profile contracts and current pinned source.
 6. Registered scientific and legacy evidence.
 

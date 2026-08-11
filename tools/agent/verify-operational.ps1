@@ -138,6 +138,7 @@ try {
         "docs/references/cedg/README.md",
         "docs/references/cedg/catalog.yml",
         "docs/references/cedg/public-model-corpus.yml",
+        "docs/roadmap/geocedg_roadmap.md",
         "docs/upstream/GEOGEBRA_README.md",
         "docs/upstream/modified-files.yml",
         "docs/validation/g1r_repository_onboarding_report.md",
@@ -188,10 +189,14 @@ try {
         "tools/agent/verify-legacy.ps1",
         "tools/agent/verify-packaging.ps1",
         "tools/agent/verify-dxf.ps1",
+        "tools/agent/verify-workstation.ps1",
+        "tools/agent/repository-generated-state.ps1",
         "tools/agent/verify-operational.ps1",
         "tools/agent/verify.ps1",
         "tools/agent/upstream-boundary.ps1",
         "tools/bootstrap/bootstrap-windows.ps1",
+        "tools/bootstrap/install-packaging-prerequisites.ps1",
+        "tools/bootstrap/packaging-prerequisites.psm1",
         "tools/benchmark/run.ps1",
         "tools/legacy/ingest.ps1",
         "tools/legacy/open-laboratory.ps1",
@@ -211,6 +216,7 @@ try {
             ".\tools\bootstrap\bootstrap-windows.ps1",
             ".\gradlew.bat :desktop:desktop:run",
             ".\gradlew.bat :desktop:desktop:runGeoCeDG",
+            "docs/roadmap/geocedg_roadmap.md",
             "docs/upstream/GEOGEBRA_README.md")) {
         Assert-Condition -Condition $rootReadme.Contains($requiredReadmeValue) `
             -Message "README.md is missing '$requiredReadmeValue'."
@@ -232,6 +238,15 @@ try {
         Join-Path $RepositoryRoot "tools\bootstrap\bootstrap-windows.ps1")
     Assert-Condition -Condition $bootstrap.Contains("tools\agent\verify.ps1") `
         -Message "Windows bootstrap does not delegate to tools/agent/verify.ps1."
+    Assert-Condition -Condition $bootstrap.Contains(
+        "tools\bootstrap\install-packaging-prerequisites.ps1") `
+        -Message "Windows bootstrap does not delegate focused prerequisite installation."
+    $rootIgnore = Get-Content -Raw -LiteralPath (
+        Join-Path $RepositoryRoot ".gitignore")
+    foreach ($generatedRule in @(".gradle/", ".kotlin/", "build/")) {
+        Assert-Condition -Condition $rootIgnore.Contains($generatedRule) `
+            -Message ".gitignore is missing generated-state rule '$generatedRule'."
+    }
     foreach ($forbiddenBootstrapPattern in @(
             '(?im)\bgit\s+push\b',
             '(?im)\bgit\s+reset\b',
@@ -510,6 +525,7 @@ try {
             "docs/references/cedg/README.md",
             "docs/references/cedg/catalog.yml",
             "docs/references/cedg/public-model-corpus.yml",
+            "docs/roadmap/geocedg_roadmap.md",
             "docs/upstream/modified-files.yml",
             "docs/validation/g2_frontend_foundation_report.md",
             "docs/validation/g3_controlled_legacy_integration_report.md",

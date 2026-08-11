@@ -5,7 +5,7 @@ Establish the reproducible G1 operational layer for later GeoCeDG development.
 # Authority and evidence hierarchy
 
 1. `AGENTS.md`.
-2. `docs/roadmap/geocedg_initial_plan.md`, especially sections 6, 10, and G1.
+2. `docs/roadmap/geocedg_roadmap.md`, especially sections 6, 10, and G1.
 3. G0 artifacts and `FIRST_AGENT_TASK.md` where relevant.
 4. `docs/architecture/proposed_spatial_projection_semantics.md` as
    non-normative G9 input only.

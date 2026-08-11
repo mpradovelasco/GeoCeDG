@@ -10,7 +10,7 @@ GeoGebra: `5.4.928.0`
 
 G1 establishes reproducible GeoCeDG-owned operational infrastructure for
 later roadmap gates. Authority was applied in this order: `AGENTS.md`, the G1
-sections of `docs/roadmap/geocedg_initial_plan.md`, relevant G0 artifacts,
+sections of `docs/roadmap/geocedg_roadmap.md`, relevant G0 artifacts,
 the non-normative spatial proposal only as a deferred-scope constraint, and
 the real baseline code/build.
 

@@ -42,7 +42,10 @@ Toolset 5.0.2, its Util/UI extensions 5.0.2, and the existing .NET 8 SDK.
    build installers or install workstation software.
 8. `bootstrap-windows.ps1` detects packaging prerequisites. Its default is
    read-only with respect to system software; installation of the minimum
-   .NET/WiX prerequisites is explicit and opt-in.
+   .NET/WiX prerequisites is explicit and opt-in. That install action delegates
+   to a focused repository-owned installer and exits before onboarding fetches,
+   builds, or acceptance gates. JDK installation remains manual. Repository
+   acceptance and focused packaging-toolchain diagnosis remain separate actions.
 
 ## Package composition boundary
 

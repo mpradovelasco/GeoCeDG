@@ -43,7 +43,10 @@ verifica el tag fijado y delega las puertas del repositorio en
 `tools/agent/verify.ps1`. Por defecto es idempotente y no instala software. Consulte su
 ayuda con `Get-Help .\tools\bootstrap\bootstrap-windows.ps1 -Detailed`. La
 instalación de requisitos de packaging es una acción separada y explícita con
-`-InstallPackagingPrerequisites`.
+`-InstallPackagingPrerequisites`: ejecuta únicamente el instalador focalizado y
+termina, sin `fetch`, builds ni verificaciones G3/G5. La aceptación del
+repositorio se ejecuta después, de forma independiente, con
+`tools/agent/verify.ps1`.
 
 ## Verificación, compilación y ejecución
 
@@ -104,8 +107,16 @@ wix --version
 wix extension list -g
 ```
 
-El bootstrap detecta estos componentes sin instalarlos. La instalación mínima
-opt-in recomendada es:
+El bootstrap normal detecta estos componentes sin instalarlos. La instalación
+opt-in, idempotente y recomendada de .NET/WiX es:
+
+```powershell
+.\tools\bootstrap\bootstrap-windows.ps1 -InstallPackagingPrerequisites
+.\tools\agent\verify-packaging.ps1 -CheckToolchain
+```
+
+La primera orden no ejecuta la verificación del repositorio y nunca instala el
+JDK. Como alternativa manual equivalente para .NET/WiX:
 
 ```powershell
 winget install --id Microsoft.DotNet.SDK.8 --exact
@@ -115,7 +126,6 @@ Push-Location .\packaging\windows
 wix extension add -g WixToolset.Util.wixext/5.0.2
 wix extension add -g WixToolset.UI.wixext/5.0.2
 Pop-Location
-.\tools\bootstrap\bootstrap-windows.ps1 -InstallPackagingPrerequisites
 ```
 
 Generación técnica:
@@ -147,6 +157,8 @@ bloqueada. Véanse [ADR 0004](docs/adr/0004-standalone-windows-packaging.md) y
 Puntos de entrada del repositorio:
 
 - [AGENTS.md](AGENTS.md): contrato obligatorio para personas y agentes.
+- [GeoCeDG — Living Technical Roadmap](docs/roadmap/geocedg_roadmap.md): fases,
+  puertas y estado consolidado del proyecto.
 - [docs/](docs/): arquitectura, ADR, roadmap, validación, upstream y licencias.
 - [tools/](tools/): bootstrap, verificación, benchmark y futuras herramientas
   reproducibles.
