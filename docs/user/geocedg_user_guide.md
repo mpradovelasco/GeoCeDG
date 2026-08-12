@@ -1236,7 +1236,8 @@ polyline is a disposable view representation.
 | G6A | Mathematical/semantic characterization and author review | `PASS — AUTHOR APPROVED` |
 | G6B | Minimal experimental Locus V2 kernel entity | `PASS`; no public workflow |
 | G6R | Hardening, developer laboratory, measured render optimization and developer documentation | `PASS`; developer-only workflow |
-| G7-G8 | Native Locus V2 metrics and 2D intersections | Pending; not started |
+| G7 | Native Locus V2 metrics | Planning restored and author-reviewed; G7A/G7B not started |
+| G8 | Native Locus V2 intersections | Pending; not started |
 | G9 | Native spatial identity and canonical projection semantics | Pending |
 | G10 | CeDG 3D DSL and workbench | Pending |
 | G11 | Hierarchical layers and view states | Pending |
@@ -1249,6 +1250,59 @@ polyline is a disposable view representation.
 The existing Classic runtime already has many general 2D/3D facilities. Their
 presence must not be reported as implementation of these future GeoCeDG
 semantic contracts.
+
+### G7 metric design evidence — not an available feature
+
+The restored G7 package documents how a future native metric should work; it
+does not add a command or a result that can be created today. The mathematical
+authority is total variation of the semantic evaluator on each valid-domain
+component. Render vertices, legacy locus samples, viewport, zoom, DPI and pixel
+tolerance cannot define that length.
+
+Two future operations are deliberately distinct:
+
+```text
+BetweenPositionsMetricQuery
+    A/B positions + revision binding + direction + route policy
+
+TotalLocusMetricQuery
+    every valid component exactly once; no A/B and no direction
+```
+
+The total operation may add disconnected component lengths, but never adds a
+chord across a gap. Constructive multiplicity is preserved: retracing and
+coincident constructive branches count through their separate preimages.
+
+For between-position queries, direction will select `FORWARD` or `REVERSE`
+routes while length remains non-negative. A same semantic position will require
+an explicit `ZERO_LENGTH` or, for approved periodic semantics only,
+`FULL_CYCLE`. Open branches will distinguish STOP, explicit metric WRAP and
+STRICT; wrap will not close the geometry or create incidence.
+
+The working kernel architecture for a later G7B is:
+
+```text
+LocusMetricResult2D
+    immutable semantic metric value
+
+GeoLocusMetricResult
+    rich GeoElement in the normal dependency graph
+
+AlgoLocusMetricV2
+    dependency registration and atomic result updates
+```
+
+The rich result is intended to keep value kind, coverage, computation status,
+rectifiability, traversal outcome, numeric guarantee, error, provenance and
+component decomposition separate. A valid zero is not failure; a partial STOP
+result is not automatically a usable scalar.
+
+Before any implementation, G7A must compare numeric participation and all three
+index strategies, measure independent metric tolerances/error policies, audit
+the complete GeoElement lifecycle and prove repeated/nested behavior with
+functional counters. The current preference for a conditional numeric facet
+and bounded lazy component/revision index remains a hypothesis, not an
+implemented or accepted contract.
 
 ## 13. Current limitations
 
@@ -1266,7 +1320,8 @@ semantic contracts.
   curves, legacy Locus export or 3D export.
 - Locus V2 semantic behavior is accessible only through internal/test factories
   and the explicit developer laboratory. No native public CeDG command,
-  persistence, spatial object/projection identity or DSL exists.
+  productive V2 metric, persistence, spatial object/projection identity or DSL
+  exists.
 - Legacy macros may have undocumented validity ranges, degeneracies, dynamic
   limitations, and sampled numerical approximations.
 - The 71-model public corpus is an external metadata index, not a local mirror
@@ -1370,6 +1425,14 @@ boundary defined by the operational contracts.
   [traceability](../validation/g6r_locus_v2_traceability_matrix.md),
   [G6R report](../validation/g6r_locus_v2_hardening_report.md), and
   [hardening evidence](../../geocedg/validation/locus-v2/g6r-hardening-evidence.yml)
+- Locus V2 G7 planning evidence — not implemented:
+  [G7 plan](../roadmap/g7_locus_v2_metrics_plan.md),
+  [metric semantic model](../architecture/locus_v2_metric_semantic_model.md),
+  [metric architecture](../architecture/locus_v2_metric_architecture.md),
+  [proposed metric spec](../../geocedg/specs/locus/locus-v2-metrics.md),
+  [Proposed ADR 0007](../adr/0007-revision-scoped-locus-v2-metric-index.md),
+  [validation matrix](../validation/g7_locus_v2_metric_validation_matrix.md),
+  and [benchmark plan](../validation/g7_locus_v2_metric_benchmark_plan.md)
 - Current feature state:
   [stable manifest](../../geocedg/features/stable.yml) and
   [experimental manifest](../../geocedg/features/experimental.yml)

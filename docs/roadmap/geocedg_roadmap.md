@@ -3,7 +3,7 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Roadmap vivo y normativo de fases; no sustituye las especificaciones ni los ADR aceptados |
-| Versión documental | 3.6 |
+| Versión documental | 3.7 |
 | Fecha de revisión | 12 de agosto de 2026 |
 | Baseline GeoGebra | 5.4.928.0, commit `9b93256b7df401ff056c37b502d82df4d72b1522`, tag `geogebra-baseline-5.4.928.0` |
 | Estado actual | G6 `PASS`; G6R `PASS` con V2 todavía experimental, interno y desactivado por defecto |
@@ -51,6 +51,8 @@ elementos combinan capacidades cerradas y objetivos explícitamente futuros:
 - contrato matemático y arquitectura de `Locus V2` (`PASS`, G6A), con entidad
   experimental interna, evaluator, composición anidada y render derivado
   implementados y validados en G6B (`PASS`);
+- paquete G7 de planificación de métricas Locus V2 restaurado y revisado por
+  el autor, con spec y ADR todavía propuestos (`PENDING / NOT STARTED`);
 - un modelo semántico `SpatialObject3D`–proyecciones (`PENDING`, G9);
 - criterios verificables de suficiencia y degeneración de proyecciones
   canónicas (`PENDING`, G9).
@@ -1088,7 +1090,8 @@ La optimización priorizará, según evidencia: invalidación incremental, cach�
 | G6A | `PASS — AUTHOR APPROVED` | [Informe G6A](../validation/g6a_locus_v2_characterization_report.md), [contrato normativo](../../geocedg/specs/locus/locus-v2-semantics.md) y [ADR 0006 Accepted](../adr/0006-parallel-locus-v2-semantic-entity.md) |
 | G6B | `PASS` | [Informe G6B](../validation/g6b_locus_v2_kernel_report.md); entidad experimental interna, sin superficie pública |
 | G6R | `PASS` | [Informe G6R](../validation/g6r_locus_v2_hardening_report.md); hardening, laboratorio developer-only y optimización de render medida |
-| G7–G16 | `PENDING` | No iniciadas |
+| G7 | `PENDING / NOT STARTED` | [Planning restaurado y revisado por el autor](g7_locus_v2_metrics_plan.md); spec `PROPOSED — NOT NORMATIVE`, ADR 0007 `Proposed`, G7A/G7B no iniciados |
+| G8–G16 | `PENDING` | No iniciadas |
 
 Los estados `experimental` describen madurez de una capacidad, no una puerta
 fallida. Un gate solo se marca `PASS` cuando satisface sus validaciones; un
@@ -1294,29 +1297,85 @@ pública. Su arquitectura, API, trazabilidad y evidencia se registran en el
 [matriz G6R](../validation/g6r_locus_v2_traceability_matrix.md) y el
 [informe G6R](../validation/g6r_locus_v2_hardening_report.md).
 
-## G7 - Longitud
+## G7 - Métricas nativas Locus V2
 
-**Estado:** `PENDING`
+**Estado:** `PENDING / NOT STARTED`
+
+El [paquete G7 restaurado](g7_locus_v2_metrics_plan.md) incorpora las decisiones
+conceptuales revisadas por el autor. La
+[spec métrica](../../geocedg/specs/locus/locus-v2-metrics.md) permanece
+`PROPOSED — NOT NORMATIVE` y el
+[ADR 0007](../adr/0007-revision-scoped-locus-v2-metric-index.md) permanece
+`Proposed`, con la estrategia lazy acotada por componente/revisión únicamente
+como hipótesis de trabajo para G7A. No existe todavía una métrica V2 productiva.
+
+### G7A - Caracterización métrica
+
+**Estado:** `NOT STARTED`
 
 **Trabajo**
 
-- índice métrico;
-- error;
-- `LocusLength`;
-- casos cerrados, multirrama y auto-intersección;
-- modelo del cono oblicuo.
+- medir tolerancias absolutas/relativas, integración, error y límites
+  impropios con referencias independientes;
+- auditar `GeoLocusMetricResult`, un `GeoClass` append-only y su lifecycle
+  completo;
+- comparar no-reuse, índice eager por revisión e índice lazy por componente;
+- resolver participación numérica, admisibilidad escalar y efectos en Algebra
+  View, algoritmos genéricos y CAS;
+- ejecutar traces 1/10/100 y composición métrica anidada con contadores
+  funcionales;
+- preparar spec, ADR y presupuestos G7B para una segunda revisión de autor.
 
-Toda métrica G7 consumida por una construcción downstream deberá conservar la
-composición semántica: quedará asociada a la revisión semántica del Locus V2,
-consumirá sus dominios/evaluadores y no `LocusRenderCache2D` ni sumas de cuerdas
-muestreadas, evitará recalcular la métrica completa por cada consulta mientras
-la revisión upstream no cambie y seguirá la invalidación/caché del DAG normal.
-Este requisito no implementa G7.
+G7A puede usar únicamente probes/tests privados y evidencia versionada cuando
+reciba autorización separada. No crea todavía la implementación productiva.
 
-**Salida**
+### G7B - Kernel métrico mínimo
 
-- medición dinámica tolerada y reproducible;
-- regresión de los modelos CeDG.
+**Estado:** `NOT STARTED`
+
+G7B queda bloqueado hasta que G7A sea `PASS — AUTHOR APPROVED`, la spec sea
+normativa, el ADR de índice esté aceptado o reemplazado y exista autorización
+separada. Su arquitectura candidata es:
+
+```text
+LocusMetricResult2D
+    immutable semantic metric value
+
+GeoLocusMetricResult
+    GeoElement publishing the rich result in the normal kernel DAG
+
+AlgoLocusMetricV2
+    AlgoElement registering dependencies and updating GeoLocusMetricResult
+```
+
+Las operaciones `BetweenPositionsMetricQuery` y `TotalLocusMetricQuery` son
+distintas. La primera usa un resolver de ruta con `FORWARD`, `REVERSE`,
+`ZERO_LENGTH`/`FULL_CYCLE` y `STOP_AT_END`/`WRAP_TO_START`/`STRICT`; la segunda
+suma una vez cada componente válido y un ciclo fundamental de cada rama
+periódica, sin fabricar conexiones. La longitud usa variación total y
+multiplicidad constructiva.
+
+Desde el primer candidato G7B deberá incluir valores inmutables, resultado rico
+en el DAG, lifecycle completo, keys completas, índice acotado, eviction
+determinista, publicación atómica, exception safety, igualdad index ON/OFF y
+gates funcionales repetidos/anidados. No se reserva este hardening para una
+fase posterior.
+
+El [modelo semántico](../architecture/locus_v2_metric_semantic_model.md), la
+[arquitectura](../architecture/locus_v2_metric_architecture.md), la
+[matriz](../validation/g7_locus_v2_metric_validation_matrix.md), el
+[plan de benchmarks](../validation/g7_locus_v2_metric_benchmark_plan.md) y los
+prompts [G7A](../../.github/prompts/tasks/g7a-locus-v2-metric-characterization.prompt.md)
+y [G7B](../../.github/prompts/tasks/g7b-locus-v2-metric-kernel.prompt.md)
+definen los gates.
+
+**Frontera pública candidata G7B**
+
+- API Java interna;
+- `GeoLocusMetricResult`;
+- laboratorio developer-only;
+- sin comando, cambios en `Length`/`Perimeter`, `Path`, XML, persistencia, 3D,
+  G8 o G9.
 
 ## G8 - Intersecciones 2D
 
