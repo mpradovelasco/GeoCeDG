@@ -2,9 +2,9 @@
 
 | Field | Value |
 |---|---|
-| Status | **G6 PASS** — G6A author-approved contract plus G6B experimental kernel |
-| Phase | G6A `PASS`; G6B `PASS`; G7/G8/G9 not started |
-| Date | 2026-08-11 |
+| Status | **G6 PASS / G6R PASS** — normative model unchanged; implementation hardened |
+| Phase | G6A `PASS`; G6B `PASS`; G6R `PASS`; G7/G8/G9 not started |
+| Date | 2026-08-12 |
 | Scope | Two-dimensional dynamic loci only |
 | Excluded | Public length (G7), intersections (G8), spatial semantics (G9) |
 
@@ -16,6 +16,9 @@ The execution plan is
 [G6 Locus V2 plan](../roadmap/g6_locus_v2_plan.md); the baseline implementation
 evidence is recorded in the
 [upstream impact map](locus_v2_upstream_impact.md).
+The post-G6 implementation and lifecycle details are in the
+[G6R implementation architecture](locus_v2_implementation.md); that document
+does not alter this mathematical contract.
 
 ## 1. Scientific purpose and non-goals
 

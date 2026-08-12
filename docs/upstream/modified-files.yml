@@ -12,7 +12,7 @@
     {
       "path": "source/desktop/desktop/build.gradle.kts",
       "change": "modified",
-      "purpose": "Package the profile manifest and expose the explicit runGeoCeDG launcher task.",
+      "purpose": "Package the profile manifest, expose runGeoCeDG, and register the isolated opt-in Locus V2 developer-laboratory task.",
       "authority": "docs/adr/0001-geocedg-product-profile.md"
     },
     {
@@ -305,7 +305,7 @@
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/euclidian/draw/LocusRenderCache2D.java",
-      "change": "added", "purpose": "Keep bounded per-view render tessellation separate from semantic state.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+      "change": "added", "purpose": "Keep bounded per-view uniform/adaptive render tessellation and diagnostics separate from semantic state.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/euclidian/draw/LocusRenderData2D.java",
@@ -313,7 +313,7 @@
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/euclidian/draw/LocusRenderPolicy2D.java",
-      "change": "added", "purpose": "Own view-dependent bounded sampling solely as a render policy.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+      "change": "added", "purpose": "Own bounded uniform-reference and adaptive-visual sampling solely as render policies.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusV2FunctionalBenchmarkTest.java",
@@ -330,6 +330,66 @@
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusV2ValueContractsTest.java",
       "change": "added", "purpose": "Verify immutable value axes, providers, branches and numeric envelope.", "authority": ".github/prompts/tasks/g6b-locus-v2-kernel.prompt.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusSessionDiagnostic2D.java",
+      "change": "added", "purpose": "Expose typed immutable cycle, revision-coherence and disposed-session diagnostics.", "authority": "docs/validation/g6r_locus_v2_hardening_report.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusInstrumentationSnapshot2D.java",
+      "change": "added", "purpose": "Provide immutable observations of Locus V2 functional counters.", "authority": "docs/validation/g6r_locus_v2_hardening_report.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/package-info.java",
+      "change": "added", "purpose": "Document the internal semantic package boundary and forbidden public contracts.", "authority": "docs/developer/locus_v2_api.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/euclidian/draw/package-info.java",
+      "change": "added", "purpose": "Document that Locus V2 presentation data is never semantic authority.", "authority": "docs/architecture/locus_v2_implementation.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/locus/LocusV2Laboratory.java",
+      "change": "added", "purpose": "Provide an explicit opt-in developer-only entry point with temporary preferences.", "authority": "docs/validation/g6r_locus_v2_hardening_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/locus/LocusV2LaboratoryFrame.java",
+      "change": "added", "purpose": "Give the laboratory a distinct visible/process identity and initialize it outside normal GeoCeDG.", "authority": "docs/validation/g6r_locus_v2_hardening_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/locus/LocusV2LaboratoryFixtures.java",
+      "change": "added", "purpose": "Create bounded analytic, topology, discontinuity, unbounded and nested developer fixtures through the internal factory.", "authority": "docs/validation/g6r_locus_v2_hardening_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/locus/LocusV2LaboratoryController.java",
+      "change": "added", "purpose": "Present developer diagnostics without creating a public command, toolbar or persistence surface.", "authority": "docs/validation/g6r_locus_v2_hardening_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/locus/package-info.java",
+      "change": "added", "purpose": "Document the developer-only Desktop package boundary.", "authority": "docs/developer/locus_v2_api.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/locus/LocusV2LaboratoryContractTest.java",
+      "change": "added", "purpose": "Verify fixture coverage, temporary settings and exclusion from public legacy contracts.", "authority": "docs/validation/g6r_locus_v2_hardening_report.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusV2HardeningValueContractsTest.java",
+      "change": "added", "purpose": "Verify defensive immutable values, finite canonical keys, signed zero and typed lineage shapes.", "authority": "docs/validation/g6r_locus_v2_hardening_report.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusV2SessionHardeningTest.java",
+      "change": "added", "purpose": "Verify bounded eviction, typed cycles, exception cleanup, revision coherence and disposal.", "authority": "docs/validation/g6r_locus_v2_hardening_report.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusV2LifecycleHardeningTest.java",
+      "change": "added", "purpose": "Verify revisions, undefined recovery, removal and explicitly unsupported copy/persistence seams.", "authority": "docs/validation/g6r_locus_v2_hardening_report.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusV2RenderHardeningTest.java",
+      "change": "added", "purpose": "Verify adaptive/reference render separation, topology, seam, clipping and cache behavior.", "authority": "docs/validation/g6r_locus_v2_hardening_report.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusV2HardeningBenchmarkTest.java",
+      "change": "added", "purpose": "Measure nested/session/invalidation/render/provider distributions while enforcing functional budgets.", "authority": "docs/validation/g6r_locus_v2_hardening_report.md"
     }
   ]
 }

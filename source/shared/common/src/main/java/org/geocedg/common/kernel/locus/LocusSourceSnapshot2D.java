@@ -13,11 +13,16 @@ public final class LocusSourceSnapshot2D {
 
 	/** Captures finite source values without exposing mutable storage. */
 	public LocusSourceSnapshot2D(double[] values) {
+		if (values == null) {
+			throw new IllegalArgumentException("Source values are required");
+		}
 		this.values = values.clone();
-		for (double value : this.values) {
+		for (int index = 0; index < this.values.length; index++) {
+			double value = this.values[index];
 			if (!Double.isFinite(value)) {
 				throw new IllegalArgumentException("Source values must be finite");
 			}
+			this.values[index] = value == 0 ? 0 : value;
 		}
 	}
 
@@ -42,6 +47,17 @@ public final class LocusSourceSnapshot2D {
 			signature.append('|').append(Double.toHexString(value));
 		}
 		return signature.toString();
+	}
+
+	@Override
+	public boolean equals(Object other) {
+		return other instanceof LocusSourceSnapshot2D
+				&& Arrays.equals(values, ((LocusSourceSnapshot2D) other).values);
+	}
+
+	@Override
+	public int hashCode() {
+		return Arrays.hashCode(values);
 	}
 
 	@Override

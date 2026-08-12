@@ -94,4 +94,30 @@ public final class ExplicitNumericDomainProvider2D
 				+ orientation + "|periodic=" + periodic + "|eps="
 				+ Double.toHexString(domainEpsilon);
 	}
+
+	@Override
+	public boolean equals(Object other) {
+		if (!(other instanceof ExplicitNumericDomainProvider2D)) {
+			return false;
+		}
+		ExplicitNumericDomainProvider2D provider =
+				(ExplicitNumericDomainProvider2D) other;
+		return descriptor.equals(provider.descriptor)
+				&& domain.equals(provider.domain)
+				&& orientation == provider.orientation
+				&& periodic == provider.periodic
+				&& Double.doubleToLongBits(domainEpsilon)
+						== Double.doubleToLongBits(provider.domainEpsilon);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(descriptor, domain, orientation, periodic,
+				Double.doubleToLongBits(domainEpsilon));
+	}
+
+	@Override
+	public String toString() {
+		return getSemanticSignature();
+	}
 }

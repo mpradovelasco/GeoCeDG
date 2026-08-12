@@ -174,4 +174,29 @@ public final class StablePathDomainProvider2D
 				+ centerOrStart + "|" + firstAxisOrEnd + "|" + secondAxis
 				+ "|" + domainProvider.getSemanticSignature();
 	}
+
+	@Override
+	public boolean equals(Object other) {
+		if (!(other instanceof StablePathDomainProvider2D)) {
+			return false;
+		}
+		StablePathDomainProvider2D provider = (StablePathDomainProvider2D) other;
+		return descriptor.equals(provider.descriptor)
+				&& family == provider.family
+				&& centerOrStart.equals(provider.centerOrStart)
+				&& firstAxisOrEnd.equals(provider.firstAxisOrEnd)
+				&& Objects.equals(secondAxis, provider.secondAxis)
+				&& domainProvider.equals(provider.domainProvider);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(descriptor, family, centerOrStart, firstAxisOrEnd,
+				secondAxis, domainProvider);
+	}
+
+	@Override
+	public String toString() {
+		return getSemanticSignature();
+	}
 }

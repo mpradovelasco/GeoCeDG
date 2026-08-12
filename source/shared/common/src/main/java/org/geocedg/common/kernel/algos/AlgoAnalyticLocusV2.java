@@ -47,7 +47,8 @@ public final class AlgoAnalyticLocusV2 extends AlgoLocusV2 {
 	protected LocusDefinition2D createCandidate(long candidateRevision) {
 		final boolean sourceDefined = source.isDefined()
 				&& Double.isFinite(source.getDouble());
-		final double capturedValue = sourceDefined ? source.getDouble() : 0;
+		double sourceValue = sourceDefined ? source.getDouble() : 0;
+		final double capturedValue = sourceValue == 0 ? 0 : sourceValue;
 		return new LocusDefinition2D(locusIdentity, candidateRevision,
 				sourceDefined ? DefinitionStatus.VALID : DefinitionStatus.DRIVER_INVALID,
 				provider, branches,

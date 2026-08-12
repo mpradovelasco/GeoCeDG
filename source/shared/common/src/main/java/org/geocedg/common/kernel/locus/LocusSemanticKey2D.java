@@ -17,9 +17,15 @@ public final class LocusSemanticKey2D {
 	/** Creates a key from provider-canonical semantic parameter bits. */
 	public LocusSemanticKey2D(String locusIdentity, long semanticRevision,
 			String branchKey, double canonicalParameter) {
-		this.locusIdentity = Objects.requireNonNull(locusIdentity);
+		if (locusIdentity == null || locusIdentity.trim().isEmpty()
+				|| branchKey == null || branchKey.trim().isEmpty()
+				|| semanticRevision < 1 || !Double.isFinite(canonicalParameter)) {
+			throw new IllegalArgumentException(
+					"A semantic key needs finite canonical data and stable identity");
+		}
+		this.locusIdentity = locusIdentity;
 		this.semanticRevision = semanticRevision;
-		this.branchKey = Objects.requireNonNull(branchKey);
+		this.branchKey = branchKey;
 		double normalized = canonicalParameter == 0 ? 0 : canonicalParameter;
 		this.canonicalParameterBits = Double.doubleToLongBits(normalized);
 	}

@@ -4,7 +4,9 @@
   "status": "g6b-pass",
   "entry": {
     "branch": "feature/g6b-locus-v2-kernel",
-    "commit": "b25153f4cfd563a47f00c3f98b5c67277037121d",
+    "entry_sha": "b25153f4cfd563a47f00c3f98b5c67277037121d",
+    "implementation_commit": "0c4cc40a389477226b2a6cb507c4fa072790a586",
+    "baseline_upstream_sha": "9b93256b7df401ff056c37b502d82df4d72b1522",
     "prompt": ".github/prompts/tasks/g6b-locus-v2-kernel.prompt.md",
     "prompt_sha256": "394b1fb1677205d6740a10da512a91b4e01b0f998f4eadcaf1c0e04a90b0fd53"
   },

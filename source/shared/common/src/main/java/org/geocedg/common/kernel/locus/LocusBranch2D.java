@@ -103,9 +103,38 @@ public final class LocusBranch2D {
 	public String getSemanticSignature() {
 		return branchKey + "|" + declaredDriverDomain + "|"
 				+ validDomainComponents + "|" + orientation + "|" + provenance
-				+ "|" + lineage.getTransition() + "|" + lineage.getParentKeys()
-				+ "|" + lineage.getChildKeys() + "|" + properties + "|"
-				+ quality.hashCode();
+				+ "|" + lineage + "|" + properties + "|"
+				+ quality.getConstructionFidelity() + "|"
+				+ quality.getEvaluationMethod() + "|"
+				+ quality.getRepresentationRole() + "|"
+				+ quality.getNumericGuarantee();
+	}
+
+	@Override
+	public boolean equals(Object other) {
+		if (!(other instanceof LocusBranch2D)) {
+			return false;
+		}
+		LocusBranch2D branch = (LocusBranch2D) other;
+		return branchKey.equals(branch.branchKey)
+				&& declaredDriverDomain.equals(branch.declaredDriverDomain)
+				&& validDomainComponents.equals(branch.validDomainComponents)
+				&& orientation == branch.orientation
+				&& provenance.equals(branch.provenance)
+				&& lineage.equals(branch.lineage)
+				&& properties.equals(branch.properties)
+				&& quality.equals(branch.quality);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(branchKey, declaredDriverDomain, validDomainComponents,
+				orientation, provenance, lineage, properties, quality);
+	}
+
+	@Override
+	public String toString() {
+		return getSemanticSignature();
 	}
 
 	private static List<LocusInterval2D> immutableComponents(

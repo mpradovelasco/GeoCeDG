@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Status | **G6B PASS**; minimal impact and compatibility boundary verified |
+| Status | **G6B PASS / G6R PASS**; compatibility boundary re-audited |
 | Baseline | GeoGebra 5.4.928.0, `9b93256b7df401ff056c37b502d82df4d72b1522` |
-| Inspected tree | GeoCeDG `feature/g6b-locus-v2-kernel`, G6A `PASS` |
-| Date | 2026-08-11 |
+| Inspected tree | GeoCeDG `feature/g6r-locus-v2-hardening`, G6 `PASS` |
+| Date | 2026-08-12 |
 
 This map records the real implementation behind the baseline `Locus` command
 and the minimum change surface accepted and realized by G6B. It complements the
@@ -13,6 +13,11 @@ and the minimum change surface accepted and realized by G6B. It complements the
 to legacy locus semantics. G6A added only read-only/test-private
 characterization tests; G6B adds the parallel implementation described in
 Section 19.
+
+G6R re-audited every dispatch boundary and did not alter the legacy command,
+algorithm, 3D, XML, metric or export paths documented here. The realized class,
+lifecycle, session and render details are maintained in
+[the G6R implementation map](locus_v2_implementation.md).
 
 ## 1. End-to-end legacy path
 

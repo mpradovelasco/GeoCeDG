@@ -23,6 +23,8 @@ import org.geogebra.common.plugin.GeoClass;
  * Path nor any legacy GeoLocus interface in G6B.
  */
 public final class GeoLocusV2 extends GeoElement {
+	private static final String UNSUPPORTED_COPY =
+			"GeoLocusV2 cannot be copied before an approved persistence/lifecycle contract";
 	private final String locusIdentity;
 	private final LocusInstrumentation2D instrumentation;
 	private LocusDefinition2D definition;
@@ -70,6 +72,17 @@ public final class GeoLocusV2 extends GeoElement {
 	}
 
 	/**
+	 * Restores defined state after a normal-DAG recompute republishes equivalent
+	 * semantic content. No semantic revision is created by this state recovery.
+	 */
+	public void restoreDefinedStateAfterEquivalentRecompute() {
+		if (definition == null) {
+			throw new IllegalStateException("Cannot restore an unpublished Locus V2");
+		}
+		explicitlyUndefined = false;
+	}
+
+	/**
 	 * Evaluates semantic data; no render/sample structure is consulted.
 	 *
 	 * @return typed semantic point result or invalid status
@@ -103,27 +116,32 @@ public final class GeoLocusV2 extends GeoElement {
 		return ValueType.VOID;
 	}
 
+	/** @return safe developer-only type text without an upstream translation key */
+	@Override
+	public String translatedTypeString() {
+		return "Locus V2 (experimental)";
+	}
+
+	/** @return safe developer-only Algebra View type text */
+	@Override
+	public String translatedTypeStringForAlgebraView() {
+		return translatedTypeString();
+	}
+
 	@Override
 	public GeoElement copy() {
-		GeoLocusV2 copy = new GeoLocusV2(cons, locusIdentity + "/internal-copy");
-		if (definition != null) {
-			copy.definition = definition.copyFor(copy.locusIdentity,
-					copy.instrumentation);
-		}
-		copy.explicitlyUndefined = explicitlyUndefined;
-		return copy;
+		throw new UnsupportedOperationException(UNSUPPORTED_COPY);
+	}
+
+	@Override
+	public GeoElement copyInternal(Construction targetConstruction) {
+		throw new UnsupportedOperationException(UNSUPPORTED_COPY);
 	}
 
 	@Override
 	public void set(GeoElementND geo) {
-		if (!(geo instanceof GeoLocusV2)) {
-			setUndefined();
-			return;
-		}
-		GeoLocusV2 source = (GeoLocusV2) geo;
-		definition = source.definition == null ? null
-				: source.definition.copyFor(locusIdentity, instrumentation);
-		explicitlyUndefined = source.explicitlyUndefined;
+		throw new UnsupportedOperationException(
+				"GeoLocusV2 assignment is unavailable before an approved lifecycle contract");
 	}
 
 	@Override
