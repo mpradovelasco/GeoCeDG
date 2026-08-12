@@ -14,12 +14,13 @@ import java.util.Map;
 import java.util.Set;
 
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.EvaluationStatus;
+import org.geocedg.common.kernel.locus.LocusSessionDiagnostic2D.Kind;
 
 /**
  * Bounded disposable context for one coherent semantic evaluation or batch.
  * It memoizes results but never owns dependency edges or semantic definitions.
  */
-public final class LocusEvaluationSession2D {
+public final class LocusEvaluationSession2D implements AutoCloseable {
 	private final boolean memoizationEnabled;
 	private final int maximumEntries;
 	private final Map<LocusSemanticKey2D, LocusEvaluation2D> cache;
@@ -30,6 +31,9 @@ public final class LocusEvaluationSession2D {
 	private long misses;
 	private long evictions;
 	private long cycles;
+	private boolean closed;
+	private LocusSessionDiagnostic2D lastDiagnostic =
+			LocusSessionDiagnostic2D.none();
 
 	/**
 	 * @param memoizationEnabled whether exact semantic keys are cached
@@ -56,15 +60,26 @@ public final class LocusEvaluationSession2D {
 
 	LocusEvaluation2D evaluate(LocusDefinition2D definition, LocusBranch2D branch,
 			double canonicalParameter) {
+		if (activeStack.isEmpty()) {
+			lastDiagnostic = LocusSessionDiagnostic2D.none();
+		}
 		LocusSemanticKey2D key = new LocusSemanticKey2D(
 				definition.getLocusIdentity(), definition.getSemanticRevision(),
 				branch.getBranchKey(), canonicalParameter);
+		if (closed) {
+			lastDiagnostic = diagnostic(Kind.CLOSED_SESSION,
+					"A disposed semantic evaluation session cannot be reused", key);
+			return LocusEvaluation2D.invalid(EvaluationStatus.EVALUATION_FAILED,
+					branch.getQuality(), lastDiagnostic.toString());
+		}
 		Long coherentRevision = coherentRevisions.get(key.getLocusIdentity());
 		if (coherentRevision != null
 				&& coherentRevision.longValue() != key.getSemanticRevision()) {
+			lastDiagnostic = diagnostic(Kind.INCOHERENT_REVISION,
+					"One session cannot mix semantic revisions for "
+							+ key.getLocusIdentity(), key);
 			return LocusEvaluation2D.invalid(EvaluationStatus.EVALUATION_FAILED,
-					branch.getQuality(), "Incoherent semantic revisions in one session for "
-							+ key.getLocusIdentity());
+					branch.getQuality(), lastDiagnostic.toString());
 		}
 		coherentRevisions.put(key.getLocusIdentity(), key.getSemanticRevision());
 
@@ -81,9 +96,10 @@ public final class LocusEvaluationSession2D {
 		definition.getInstrumentation().recordSessionMiss();
 		if (!activeKeys.add(key)) {
 			cycles++;
+			lastDiagnostic = diagnostic(Kind.CYCLE_REENTRY,
+					"Semantic evaluator re-entry cycle", key);
 			return LocusEvaluation2D.invalid(EvaluationStatus.EVALUATION_FAILED,
-					branch.getQuality(), "Semantic evaluator re-entry cycle: "
-							+ cycleDiagnostic(key));
+					branch.getQuality(), lastDiagnostic.toString());
 		}
 
 		activeStack.push(key);
@@ -128,8 +144,45 @@ public final class LocusEvaluationSession2D {
 		return cycles;
 	}
 
+	/** @return number of currently active semantic keys, normally zero */
+	public int getActiveDepth() {
+		return activeStack.size();
+	}
+
+	/** @return most recent typed session-level diagnostic */
+	public LocusSessionDiagnostic2D getLastDiagnostic() {
+		return lastDiagnostic;
+	}
+
+	public boolean isClosed() {
+		return closed;
+	}
+
 	public Map<String, Long> getCoherentRevisions() {
 		return Collections.unmodifiableMap(new LinkedHashMap<>(coherentRevisions));
+	}
+
+	/**
+	 * Drops memoized values and revision observations while retaining counters.
+	 * Active evaluation cannot be cleared because that would hide re-entry.
+	 */
+	public void clear() {
+		if (!activeStack.isEmpty()) {
+			throw new IllegalStateException("Cannot clear an active semantic session");
+		}
+		cache.clear();
+		coherentRevisions.clear();
+		activeKeys.clear();
+		lastDiagnostic = LocusSessionDiagnostic2D.none();
+	}
+
+	/** Disposes this kernel-thread-confined session and releases all revisions. */
+	@Override
+	public void close() {
+		if (!closed) {
+			clear();
+			closed = true;
+		}
 	}
 
 	private void putBounded(LocusSemanticKey2D key, LocusEvaluation2D value) {
@@ -141,14 +194,15 @@ public final class LocusEvaluationSession2D {
 		cache.put(key, value);
 	}
 
-	private String cycleDiagnostic(LocusSemanticKey2D repeated) {
-		StringBuilder diagnostic = new StringBuilder();
-		for (LocusSemanticKey2D active : activeStack) {
-			if (diagnostic.length() > 0) {
-				diagnostic.append(" -> ");
-			}
-			diagnostic.append(active);
+	private LocusSessionDiagnostic2D diagnostic(Kind kind, String message,
+			LocusSemanticKey2D repeated) {
+		java.util.ArrayList<LocusSemanticKey2D> path = new java.util.ArrayList<>();
+		java.util.Iterator<LocusSemanticKey2D> iterator =
+				activeStack.descendingIterator();
+		while (iterator.hasNext()) {
+			path.add(iterator.next());
 		}
-		return diagnostic.append(" -> ").append(repeated).toString();
+		path.add(repeated);
+		return new LocusSessionDiagnostic2D(kind, message, path);
 	}
 }

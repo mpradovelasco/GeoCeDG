@@ -3,11 +3,11 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Roadmap vivo y normativo de fases; no sustituye las especificaciones ni los ADR aceptados |
-| Versión documental | 3.5 |
-| Fecha de revisión | 11 de agosto de 2026 |
+| Versión documental | 3.6 |
+| Fecha de revisión | 12 de agosto de 2026 |
 | Baseline GeoGebra | 5.4.928.0, commit `9b93256b7df401ff056c37b502d82df4d72b1522`, tag `geogebra-baseline-5.4.928.0` |
-| Estado actual | G6 `PASS`: G6A `PASS — AUTHOR APPROVED` y G6B `PASS` como entidad experimental interna |
-| Última fase cerrada | G6B — minimal Locus V2 kernel implementation |
+| Estado actual | G6 `PASS`; G6R `PASS` con V2 todavía experimental, interno y desactivado por defecto |
+| Última fase cerrada | G6R — Locus V2 hardening and developer laboratory |
 | Siguiente fase | G7 — native Locus V2 metrics (`PENDING / NOT STARTED`) |
 | Primer cliente | Aplicación de escritorio de la familia Classic 5 |
 | Núcleo | Java compartido de GeoGebra, extendido solo cuando la semántica lo requiere |
@@ -1087,6 +1087,7 @@ La optimización priorizará, según evidencia: invalidación incremental, cach�
 | G5 | `PASS` | [Native 2D DXF export](../validation/g5_native_2d_dxf_export_report.md); feature integrada con estado experimental |
 | G6A | `PASS — AUTHOR APPROVED` | [Informe G6A](../validation/g6a_locus_v2_characterization_report.md), [contrato normativo](../../geocedg/specs/locus/locus-v2-semantics.md) y [ADR 0006 Accepted](../adr/0006-parallel-locus-v2-semantic-entity.md) |
 | G6B | `PASS` | [Informe G6B](../validation/g6b_locus_v2_kernel_report.md); entidad experimental interna, sin superficie pública |
+| G6R | `PASS` | [Informe G6R](../validation/g6r_locus_v2_hardening_report.md); hardening, laboratorio developer-only y optimización de render medida |
 | G7–G16 | `PENDING` | No iniciadas |
 
 Los estados `experimental` describen madurez de una capacidad, no una puerta
@@ -1230,7 +1231,7 @@ aprobación de licencia y assets
 
 ## G6 - Locus V2
 
-**Estado:** `G6 PASS`; G6A `PASS — AUTHOR APPROVED`; G6B `PASS`
+**Estado:** `G6 PASS`; G6A `PASS — AUTHOR APPROVED`; G6B `PASS`; G6R `PASS`
 
 La [planificación ejecutable detallada](g6_locus_v2_plan.md) incorporó la
 primera revisión del autor y G6A ejecutó la caracterización autorizada. La
@@ -1264,6 +1265,11 @@ redistribución pública.
   normales, evaluación anidada recursiva con sesión compartida acotada y un
   drawable derivado. El fixture controlado demuestra tres niveles y mide
   también profundidad cinco sin regeneración upstream.
+- **G6R — hardening and developer laboratory:** endurece value/lifecycle/session
+  contracts, conserva los gates funcionales anidados, adopta teselación
+  adaptativa exclusivamente visual tras medición, y añade un laboratorio
+  opt-in con preferencias temporales. No registra comando, `Path`, XML,
+  métrica, intersección ni UI pública.
 
 El paquete incluye el
 [modelo semántico](../architecture/locus_v2_semantic_model.md), el
@@ -1279,6 +1285,14 @@ V2 productiva interna, pero no un comando, workflow de usuario, persistencia,
 `Path`, métrica, intersección, exportación o comportamiento 3D. Classic y el
 comando público `Locus[...]` de GeoCeDG continúan usando exclusivamente el
 locus legacy.
+
+G6R añade únicamente un workflow **developer-only** y explícito mediante
+`tools/locus-v2/open-locus-v2-laboratory.ps1`; no cambia la disponibilidad
+pública. Su arquitectura, API, trazabilidad y evidencia se registran en el
+[mapa de implementación](../architecture/locus_v2_implementation.md), la
+[referencia API](../developer/locus_v2_api.md), la
+[matriz G6R](../validation/g6r_locus_v2_traceability_matrix.md) y el
+[informe G6R](../validation/g6r_locus_v2_hardening_report.md).
 
 ## G7 - Longitud
 

@@ -2,15 +2,19 @@
 
 | Field | Value |
 |---|---|
-| Status | **G6 PASS** — G6A characterization and G6B implementation evidence verified |
+| Status | **G6 PASS / G6R PASS** — implementation hardening evidence verified |
 | Governing model | [Locus V2 semantic model](../architecture/locus_v2_semantic_model.md) |
 | Execution plan | [G6 Locus V2 plan](../roadmap/g6_locus_v2_plan.md) |
-| Date | 2026-08-11 |
+| Date | 2026-08-12 |
 
 This matrix relates requirements to executed G6A evidence and the realized G6B
 gates. G6A created test-private fixtures and read-only legacy probes; G6B now
 implements the restricted parallel experimental entity. Final phase status is
 set only after the composed authority completes.
+
+G6R adds value/lifecycle/session/render/laboratory tests without changing this
+semantic matrix. Requirement-to-code-to-evidence mapping is recorded in the
+[G6R traceability matrix](g6r_locus_v2_traceability_matrix.md).
 
 ## 1. Tolerance classes
 

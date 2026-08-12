@@ -46,11 +46,36 @@ public final class LocusLineage2D {
 	}
 
 	private void validateShape() {
-		if (transition == LineageTransition.SPLIT && childKeys.size() < 2) {
-			throw new IllegalArgumentException("Split lineage needs child keys");
-		}
-		if (transition == LineageTransition.MERGED && parentKeys.size() < 2) {
-			throw new IllegalArgumentException("Merged lineage needs parent keys");
+		switch (transition) {
+		case UNCHANGED:
+			if (!parentKeys.isEmpty() || !childKeys.isEmpty()) {
+				throw new IllegalArgumentException("Unchanged lineage has no edges");
+			}
+			break;
+		case APPEARED:
+			if (!parentKeys.isEmpty() || childKeys.isEmpty()) {
+				throw new IllegalArgumentException("Appeared lineage needs only children");
+			}
+			break;
+		case DISAPPEARED:
+			if (parentKeys.isEmpty() || !childKeys.isEmpty()) {
+				throw new IllegalArgumentException("Disappeared lineage needs only parents");
+			}
+			break;
+		case SPLIT:
+			if (parentKeys.size() != 1 || childKeys.size() < 2) {
+				throw new IllegalArgumentException(
+						"Split lineage needs one parent and at least two children");
+			}
+			break;
+		case MERGED:
+			if (parentKeys.size() < 2 || childKeys.size() != 1) {
+				throw new IllegalArgumentException(
+						"Merged lineage needs at least two parents and one child");
+			}
+			break;
+		default:
+			throw new IllegalStateException("Unhandled lineage transition");
 		}
 	}
 
@@ -61,8 +86,32 @@ public final class LocusLineage2D {
 			if (key == null || key.trim().isEmpty()) {
 				throw new IllegalArgumentException("Lineage keys must be stable");
 			}
+			if (copy.contains(key)) {
+				throw new IllegalArgumentException("Lineage keys must be unique");
+			}
 			copy.add(key);
 		}
 		return Collections.unmodifiableList(copy);
+	}
+
+	@Override
+	public boolean equals(Object other) {
+		if (!(other instanceof LocusLineage2D)) {
+			return false;
+		}
+		LocusLineage2D lineage = (LocusLineage2D) other;
+		return transition == lineage.transition
+				&& parentKeys.equals(lineage.parentKeys)
+				&& childKeys.equals(lineage.childKeys);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(transition, parentKeys, childKeys);
+	}
+
+	@Override
+	public String toString() {
+		return transition + "[parents=" + parentKeys + ", children=" + childKeys + "]";
 	}
 }

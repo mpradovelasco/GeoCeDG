@@ -21,7 +21,12 @@ public final class LocusBranchSnapshot2D {
 	public LocusBranchSnapshot2D(DefinitionStatus definitionStatus,
 			List<LocusBranch2D> branches) {
 		this.definitionStatus = Objects.requireNonNull(definitionStatus);
-		this.branches = Collections.unmodifiableList(new ArrayList<>(branches));
+		Objects.requireNonNull(branches);
+		ArrayList<LocusBranch2D> copy = new ArrayList<>();
+		for (LocusBranch2D branch : branches) {
+			copy.add(Objects.requireNonNull(branch));
+		}
+		this.branches = Collections.unmodifiableList(copy);
 		if (definitionStatus == DefinitionStatus.VALID && this.branches.isEmpty()) {
 			throw new IllegalArgumentException("A valid snapshot needs a branch");
 		}
@@ -33,5 +38,20 @@ public final class LocusBranchSnapshot2D {
 
 	public List<LocusBranch2D> getBranches() {
 		return branches;
+	}
+
+	@Override
+	public boolean equals(Object other) {
+		if (!(other instanceof LocusBranchSnapshot2D)) {
+			return false;
+		}
+		LocusBranchSnapshot2D snapshot = (LocusBranchSnapshot2D) other;
+		return definitionStatus == snapshot.definitionStatus
+				&& branches.equals(snapshot.branches);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(definitionStatus, branches);
 	}
 }

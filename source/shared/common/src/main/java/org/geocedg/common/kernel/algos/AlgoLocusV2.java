@@ -47,6 +47,8 @@ public abstract class AlgoLocusV2 extends AlgoElement {
 		if (current == null || !current.hasSameSemanticContent(candidate)) {
 			locus.publishSemanticDefinition(candidate.withRevision(candidateRevision));
 			locus.getInstrumentation().recordRevisionPublication();
+		} else {
+			locus.restoreDefinedStateAfterEquivalentRecompute();
 		}
 	}
 

@@ -37,6 +37,24 @@ $FunctionalBenchmarkResult = Join-Path $RepositoryRoot (
 $DrawablesResult = Join-Path $RepositoryRoot (
     "source\shared\common-jre\build\test-results\test\" +
     "TEST-org.geogebra.common.euclidian.DrawablesTest.xml")
+$HardeningValueContractsResult = Join-Path $RepositoryRoot (
+    "source\shared\common-jre\build\test-results\test\" +
+    "TEST-org.geocedg.common.locus.LocusV2HardeningValueContractsTest.xml")
+$SessionHardeningResult = Join-Path $RepositoryRoot (
+    "source\shared\common-jre\build\test-results\test\" +
+    "TEST-org.geocedg.common.locus.LocusV2SessionHardeningTest.xml")
+$LifecycleHardeningResult = Join-Path $RepositoryRoot (
+    "source\shared\common-jre\build\test-results\test\" +
+    "TEST-org.geocedg.common.locus.LocusV2LifecycleHardeningTest.xml")
+$RenderHardeningResult = Join-Path $RepositoryRoot (
+    "source\shared\common-jre\build\test-results\test\" +
+    "TEST-org.geocedg.common.locus.LocusV2RenderHardeningTest.xml")
+$HardeningBenchmarkResult = Join-Path $RepositoryRoot (
+    "source\shared\common-jre\build\test-results\test\" +
+    "TEST-org.geocedg.common.locus.LocusV2HardeningBenchmarkTest.xml")
+$LaboratoryResult = Join-Path $RepositoryRoot (
+    "source\desktop\desktop\build\test-results\test\" +
+    "TEST-org.geocedg.desktop.locus.LocusV2LaboratoryContractTest.xml")
 . (Join-Path $PSScriptRoot "repository-generated-state.ps1")
 
 function Assert-Condition {
@@ -78,10 +96,14 @@ function Get-NormalizedTextSha256 {
 }
 
 function Invoke-LoggedGradle {
-    param([Parameter(Mandatory)] [string[]]$Arguments)
+    param(
+        [Parameter(Mandatory)] [string[]]$Arguments,
+        [string]$LogName = "g6-locus-v2-gradle.log",
+        [string]$Description = "G6A characterization and productive G6B/G6R gates"
+    )
 
-    $logPath = Join-Path $LogDirectory "g6-locus-v2-gradle.log"
-    Write-Host "`n==> G6A characterization and productive G6B gates"
+    $logPath = Join-Path $LogDirectory $LogName
+    Write-Host "`n==> $Description"
     Write-Host "    log: $logPath"
     $exitCode = -1
     Push-Location -LiteralPath $RepositoryRoot
@@ -144,7 +166,14 @@ try {
         "geocedg/validation/locus-v2/scientific-pilots.yml",
         "geocedg/validation/locus-v2/g6a-characterization-baseline.yml",
         "geocedg/validation/locus-v2/g6b-functional-evidence.yml",
+        "geocedg/validation/locus-v2/g6r-hardening-evidence.yml",
         "geocedg/features/experimental.yml",
+        "docs/architecture/locus_v2_implementation.md",
+        "docs/developer/locus_v2_api.md",
+        "docs/developer/repository_map.md",
+        "docs/validation/g6r_locus_v2_hardening_report.md",
+        "docs/validation/g6r_locus_v2_traceability_matrix.md",
+        "docs/user/geocedg_user_guide.md",
         "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LegacyLocusCharacterizationTest.java",
         "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusV2SemanticCharacterizationTest.java",
         "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LegacyCeDGScientificModelCharacterizationTest.java",
@@ -152,11 +181,29 @@ try {
         "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusV2KernelIntegrationTest.java",
         "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusV2RenderSeparationTest.java",
         "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusV2FunctionalBenchmarkTest.java",
+        "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusV2HardeningValueContractsTest.java",
+        "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusV2SessionHardeningTest.java",
+        "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusV2LifecycleHardeningTest.java",
+        "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusV2RenderHardeningTest.java",
+        "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusV2HardeningBenchmarkTest.java",
         "source/shared/common/src/main/java/org/geocedg/common/kernel/geos/GeoLocusV2.java",
         "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusV2.java",
         "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusDefinition2D.java",
         "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusEvaluationSession2D.java",
+        "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusSessionDiagnostic2D.java",
+        "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusInstrumentationSnapshot2D.java",
+        "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/package-info.java",
         "source/shared/common/src/main/java/org/geocedg/common/euclidian/draw/DrawLocusV2.java",
+        "source/shared/common/src/main/java/org/geocedg/common/euclidian/draw/LocusRenderCache2D.java",
+        "source/shared/common/src/main/java/org/geocedg/common/euclidian/draw/LocusRenderPolicy2D.java",
+        "source/shared/common/src/main/java/org/geocedg/common/euclidian/draw/package-info.java",
+        "source/desktop/desktop/src/main/java/org/geocedg/desktop/locus/LocusV2Laboratory.java",
+        "source/desktop/desktop/src/main/java/org/geocedg/desktop/locus/LocusV2LaboratoryController.java",
+        "source/desktop/desktop/src/main/java/org/geocedg/desktop/locus/LocusV2LaboratoryFixtures.java",
+        "source/desktop/desktop/src/main/java/org/geocedg/desktop/locus/LocusV2LaboratoryFrame.java",
+        "source/desktop/desktop/src/main/java/org/geocedg/desktop/locus/package-info.java",
+        "source/desktop/desktop/src/test/java/org/geocedg/desktop/locus/LocusV2LaboratoryContractTest.java",
+        "tools/locus-v2/open-locus-v2-laboratory.ps1",
         "docs/validation/g6b_locus_v2_kernel_report.md",
         "models/legacy/inter-cil-cono-oblique/manifest.yml",
         "models/legacy/inter-cil-cono-oblique/original/InterCilConoOblique.ggb",
@@ -258,8 +305,12 @@ try {
         "geocedg/validation/locus-v2/g6b-functional-evidence.yml"
     Assert-Condition -Condition ($g6bEvidence.schema_version -eq 1 -and
             $g6bEvidence.status -eq "g6b-pass" -and
-            $g6bEvidence.entry.commit -eq
+            $g6bEvidence.entry.entry_sha -eq
                 "b25153f4cfd563a47f00c3f98b5c67277037121d" -and
+            $g6bEvidence.entry.implementation_commit -eq
+                "0c4cc40a389477226b2a6cb507c4fa072790a586" -and
+            $g6bEvidence.entry.baseline_upstream_sha -eq
+                "9b93256b7df401ff056c37b502d82df4d72b1522" -and
             $g6bEvidence.entry.prompt_sha256 -eq
                 "394b1fb1677205d6740a10da512a91b4e01b0f998f4eadcaf1c0e04a90b0fd53" -and
             @($g6bEvidence.semantic_contract.providers).Count -eq 2 -and
@@ -276,6 +327,71 @@ try {
             $g6bEvidence.render_gate.semantic_revision_changed_by_zoom -eq $false -and
             @($g6bEvidence.topology_gate.valid_component_counts).Count -eq 4) `
         -Message "The G6B functional evidence contract is invalid."
+
+    $g6rEvidence = Read-JsonDocument `
+        "geocedg/validation/locus-v2/g6r-hardening-evidence.yml"
+    Assert-Condition -Condition ($g6rEvidence.schema_version -eq 1 -and
+            $g6rEvidence.status -eq "g6r-pass" -and
+            $g6rEvidence.entry.entry_sha -eq
+                "e78b4e71ebf752de8c3552b466dbee52b400ab94" -and
+            $g6rEvidence.entry.implementation_commit -eq
+                "0c4cc40a389477226b2a6cb507c4fa072790a586" -and
+            $g6rEvidence.entry.hardening_commit -eq "SELF" -and
+            $g6rEvidence.entry.baseline_upstream_sha -eq
+                "9b93256b7df401ff056c37b502d82df4d72b1522" -and
+            -not $g6rEvidence.contract.semantic_contract_changed -and
+            -not $g6rEvidence.contract.public_availability -and
+            $g6rEvidence.contract.maturity -eq "experimental" -and
+            -not $g6rEvidence.contract.enabled_by_default -and
+            $g6rEvidence.hardening_tests.value_contracts -eq 5 -and
+            $g6rEvidence.hardening_tests.session_and_cycle -eq 6 -and
+            $g6rEvidence.hardening_tests.lifecycle -eq 7 -and
+            $g6rEvidence.hardening_tests.render -eq 4 -and
+            $g6rEvidence.hardening_tests.performance_distributions -eq 4 -and
+            $g6rEvidence.hardening_tests.laboratory_contract -eq 3 -and
+            $g6rEvidence.functional_gates.outer_queries -eq 128 -and
+            @($g6rEvidence.functional_gates.nested_depths).Count -eq 4 -and
+            $g6rEvidence.functional_gates.evaluator_calls[0] -eq 128 -and
+            $g6rEvidence.functional_gates.evaluator_calls[1] -eq 256 -and
+            $g6rEvidence.functional_gates.evaluator_calls[2] -eq 384 -and
+            $g6rEvidence.functional_gates.evaluator_calls[3] -eq 640 -and
+            $g6rEvidence.functional_gates.session_on_off_equal -and
+            $g6rEvidence.functional_gates.dependency_slice_builds_per_point_query -eq 0 -and
+            $g6rEvidence.functional_gates.whole_locus_regenerations -eq 0 -and
+            $g6rEvidence.functional_gates.upstream_render_dependencies -eq 0 -and
+            $g6rEvidence.session_measurement.bounded_retained_entries -le
+                $g6rEvidence.session_measurement.bounded_capacity -and
+            $g6rEvidence.render_measurement.adaptive_vertices -lt
+                $g6rEvidence.render_measurement.uniform_vertices -and
+            $g6rEvidence.render_measurement.decision -eq
+                "adopt adaptive visual tessellation with uniform reference mode" -and
+            -not $g6rEvidence.timing_policy.absolute_time_gate -and
+            $g6rEvidence.developer_laboratory.opt_in -and
+            $g6rEvidence.developer_laboratory.temporary_preferences -and
+            -not $g6rEvidence.developer_laboratory.normal_geocedg_exposure -and
+            -not $g6rEvidence.developer_laboratory.classic_exposure -and
+            -not $g6rEvidence.developer_laboratory.persistence -and
+            $g6rEvidence.developer_laboratory.nested_depths[4] -eq 5 -and
+            $g6rEvidence.developer_laboratory.visual_smoke.distinct_window_title -and
+            $g6rEvidence.developer_laboratory.visual_smoke.diagnostics_controls_reachable -and
+            $g6rEvidence.developer_laboratory.visual_smoke.segment_provider_status -eq "VALID" -and
+            $g6rEvidence.developer_laboratory.visual_smoke.nested_depth_five_status -eq "VALID" -and
+            $g6rEvidence.developer_laboratory.visual_smoke.normal_geocedg_title -eq "GeoCeDG" -and
+            $g6rEvidence.developer_laboratory.visual_smoke.classic_title -eq "GeoGebra Classic 5" -and
+            $g6rEvidence.developer_laboratory.visual_smoke.laboratory_absent_from_normal_and_classic -and
+            $g6rEvidence.developer_laboratory.visual_smoke.residual_processes_after_close -eq 0 -and
+            $g6rEvidence.packaging_validation.technical_status -eq "PASS" -and
+            $g6rEvidence.packaging_validation.zip_msi_exe_verified -and
+            $g6rEvidence.packaging_validation.sbom_manifest_hashes_verified -and
+            $g6rEvidence.packaging_validation.generated_outputs_removed_at_closeout -and
+            $g6rEvidence.verification.composed_authority_with_builds -eq "PASS" -and
+            $g6rEvidence.verification.composed_authority_static_recheck -eq "PASS" -and
+            $g6rEvidence.verification.generated_repository_outputs_after_closeout -eq 0 -and
+            $g6rEvidence.verification.residual_java_gradle_geocedg_processes -eq 0 -and
+            $g6rEvidence.deferred.G7_metrics -eq "not started" -and
+            $g6rEvidence.deferred.G8_intersections -eq "not started" -and
+            $g6rEvidence.deferred.G9_spatial_semantics -eq "not started") `
+        -Message "The G6R hardening evidence contract is invalid."
 
     $experimental = Read-JsonDocument "geocedg/features/experimental.yml"
     $locusFeature = @($experimental.features | Where-Object {
@@ -306,6 +422,39 @@ try {
             "No G7, G8 or G9 implementation was started")) {
         Assert-Condition -Condition $g6bReport.Contains($requiredDisposition) `
             -Message "The G6B report is missing '$requiredDisposition'."
+    }
+
+    $g6rReport = Get-Content -Raw -LiteralPath (Join-Path $RepositoryRoot `
+        "docs\validation\g6r_locus_v2_hardening_report.md")
+    foreach ($requiredDisposition in @(
+            "G6R = PASS",
+            "G6 REMAINS PASS",
+            "LOCUS V2 PUBLIC AVAILABILITY = NOT YET",
+            "G7 = NOT STARTED")) {
+        Assert-Condition -Condition $g6rReport.Contains($requiredDisposition) `
+            -Message "The G6R report is missing '$requiredDisposition'."
+    }
+
+    $userGuide = Get-Content -Raw -LiteralPath (Join-Path $RepositoryRoot `
+        "docs\user\geocedg_user_guide.md")
+    foreach ($requiredGuideValue in @(
+            "## Can I use Locus V2 now?",
+            ".\tools\locus-v2\open-locus-v2-laboratory.ps1 -ValidateOnly",
+            ":desktop:desktop:runLocusV2Laboratory",
+            "GeoCeDG - Locus V2 Developer Laboratory",
+            "experimental", 'G7 (`PENDING / NOT STARTED`)')) {
+        Assert-Condition -Condition $userGuide.Contains($requiredGuideValue) `
+            -Message "The G6R user guide is missing '$requiredGuideValue'."
+    }
+
+    $traceability = Get-Content -Raw -LiteralPath (Join-Path $RepositoryRoot `
+        "docs\validation\g6r_locus_v2_traceability_matrix.md")
+    foreach ($requiredTrace in @(
+            "Provider-owned semantic parameter", "Branch identity",
+            "Nested semantic composition", "Render/semantic separation",
+            "No persistence", 'No public `Path`')) {
+        Assert-Condition -Condition $traceability.Contains($requiredTrace) `
+            -Message "The G6R traceability matrix is missing '$requiredTrace'."
     }
 
     $hashTargets = @{
@@ -348,6 +497,8 @@ try {
             "final class GeoLocusV2 extends GeoElement") -and
             $geoV2Source.Contains("return GeoClass.LOCUS_V2") -and
             $geoV2Source.Contains("return ValueType.VOID") -and
+            $geoV2Source.Contains("throw new UnsupportedOperationException") -and
+            $geoV2Source.Contains("restoreDefinedStateAfterEquivalentRecompute") -and
             -not $geoV2Source.Contains("myPointList") -and
             -not $geoV2Source.Contains("PathMoverLocus") -and
             -not $geoV2Source.Contains("LocusRenderCache2D")) `
@@ -361,6 +512,33 @@ try {
             -not $nestedSource.Contains("myPointList") -and
             -not $nestedSource.Contains("PathMoverLocus")) `
         -Message "Nested V2 must consume only upstream semantic evaluators."
+
+    $sessionSource = Get-Content -Raw -LiteralPath (Join-Path $productionRoot `
+        "org\geocedg\common\kernel\locus\LocusEvaluationSession2D.java")
+    Assert-Condition -Condition ($sessionSource.Contains("implements AutoCloseable") -and
+            $sessionSource.Contains("new LocusSemanticKey2D") -and
+            $sessionSource.Contains("activeStack") -and
+            $sessionSource.Contains("finally") -and
+            $sessionSource.Contains("Kind.CYCLE_REENTRY") -and
+            $sessionSource.Contains("Kind.INCOHERENT_REVISION") -and
+            $sessionSource.Contains("void close()") -and
+            -not $sessionSource.Contains("static final Map") -and
+            -not $sessionSource.Contains("Construction.addAlgorithm")) `
+        -Message "The G6R evaluation session boundary is incomplete or global."
+
+    $renderPolicySource = Get-Content -Raw -LiteralPath (Join-Path $productionRoot `
+        "org\geocedg\common\euclidian\draw\LocusRenderPolicy2D.java")
+    $renderCacheSource = Get-Content -Raw -LiteralPath (Join-Path $productionRoot `
+        "org\geocedg\common\euclidian\draw\LocusRenderCache2D.java")
+    Assert-Condition -Condition ($renderPolicySource.Contains("UNIFORM_REFERENCE") -and
+            $renderPolicySource.Contains("ADAPTIVE_VISUAL") -and
+            $renderPolicySource.Contains("DEFAULT_VISUAL_TOLERANCE_PIXELS") -and
+            $renderCacheSource.Contains("screenChordError") -and
+            $renderCacheSource.Contains("try (LocusEvaluationSession2D session") -and
+            -not $renderCacheSource.Contains("myPointList") -and
+            -not $renderCacheSource.Contains("LocusMetric") -and
+            -not $renderCacheSource.Contains("PathMoverLocus")) `
+        -Message "Adaptive rendering does not preserve the semantic/render boundary."
 
     $euclidianDraw = Get-Content -Raw -LiteralPath (Join-Path $productionRoot `
         "org\geogebra\common\euclidian\EuclidianDraw.java")
@@ -384,6 +562,34 @@ try {
             -Message "G6B entered a forbidden legacy/public/3D contract: $forbiddenReference"
     }
 
+    $laboratoryRoot = Join-Path $RepositoryRoot `
+        "source\desktop\desktop\src\main\java\org\geocedg\desktop\locus"
+    $laboratoryText = (Get-ChildItem -LiteralPath $laboratoryRoot -File |
+        ForEach-Object { Get-Content -Raw -LiteralPath $_.FullName }) -join "`n"
+    Assert-Condition -Condition ($laboratoryText.Contains(
+            "LocusV2Factory") -and
+            $laboratoryText.Contains("Locus V2 Developer Laboratory") -and
+            $laboratoryText.Contains("cannot be saved") -and
+            -not $laboratoryText.Contains("CmdLocus") -and
+            -not $laboratoryText.Contains("AlgoDispatcher") -and
+            -not $laboratoryText.Contains("PathParameter") -and
+            -not $laboratoryText.Contains("getXML")) `
+        -Message "The developer laboratory crossed a forbidden public/persistence seam."
+
+    $normalLauncher = Get-Content -Raw -LiteralPath (Join-Path $RepositoryRoot `
+        "source\desktop\desktop\src\main\java\org\geocedg\desktop\GeoCeDG.java")
+    $classicLauncher = Get-Content -Raw -LiteralPath (Join-Path $RepositoryRoot `
+        "source\desktop\desktop\src\main\java\org\geogebra\desktop\GeoGebra3D.java")
+    Assert-Condition -Condition (-not $normalLauncher.Contains(
+            "LocusV2Laboratory") -and
+            -not $classicLauncher.Contains("LocusV2Laboratory")) `
+        -Message "The opt-in laboratory leaked into normal GeoCeDG or Classic."
+
+    & (Join-Path $PSHOME "pwsh.exe") -NoProfile -File (Join-Path $RepositoryRoot `
+        "tools\locus-v2\open-locus-v2-laboratory.ps1") -ValidateOnly
+    Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
+        -Message "The developer laboratory static smoke failed."
+
     if (-not $SkipBuild) {
         $arguments = @(
             ":shared:common-jre:test", "--tests",
@@ -400,6 +606,16 @@ try {
             "org.geocedg.common.locus.LocusV2RenderSeparationTest",
             "--tests",
             "org.geocedg.common.locus.LocusV2FunctionalBenchmarkTest",
+            "--tests",
+            "org.geocedg.common.locus.LocusV2HardeningValueContractsTest",
+            "--tests",
+            "org.geocedg.common.locus.LocusV2SessionHardeningTest",
+            "--tests",
+            "org.geocedg.common.locus.LocusV2LifecycleHardeningTest",
+            "--tests",
+            "org.geocedg.common.locus.LocusV2RenderHardeningTest",
+            "--tests",
+            "org.geocedg.common.locus.LocusV2HardeningBenchmarkTest",
             "--tests",
             "org.geogebra.common.euclidian.DrawablesTest",
             ":shared:common:checkstyleMain",
@@ -427,11 +643,38 @@ try {
             -Description "G6B functional benchmark" -ExpectedTests 2
         Assert-TestResult -Path $DrawablesResult `
             -Description "GeoClass drawable enumeration" -ExpectedTests 4
+        Assert-TestResult -Path $HardeningValueContractsResult `
+            -Description "G6R immutable value hardening" -ExpectedTests 5
+        Assert-TestResult -Path $SessionHardeningResult `
+            -Description "G6R session, eviction and cycle hardening" -ExpectedTests 6
+        Assert-TestResult -Path $LifecycleHardeningResult `
+            -Description "G6R lifecycle, recovery and removal hardening" -ExpectedTests 7
+        Assert-TestResult -Path $RenderHardeningResult `
+            -Description "G6R adaptive/uniform render hardening" -ExpectedTests 4
+        Assert-TestResult -Path $HardeningBenchmarkResult `
+            -Description "G6R measured functional distributions" -ExpectedTests 4
+
+        $desktopArguments = @(
+            ":desktop:desktop:test", "--tests",
+            "org.geocedg.desktop.locus.LocusV2LaboratoryContractTest",
+            ":desktop:desktop:checkstyleMain",
+            ":desktop:desktop:checkstyleTest",
+            "--rerun-tasks", "--no-build-cache", "--no-daemon",
+            "--max-workers=1", "--no-problems-report", "--console=plain"
+        )
+        if (-not $AllowToolchainDownload) {
+            $desktopArguments += "-Dorg.gradle.java.installations.auto-download=false"
+        }
+        Invoke-LoggedGradle -Arguments $desktopArguments `
+            -LogName "g6r-laboratory-gradle.log" `
+            -Description "G6R developer laboratory Desktop gate"
+        Assert-TestResult -Path $LaboratoryResult `
+            -Description "G6R developer laboratory contract" -ExpectedTests 3
     } else {
         Write-Host "Skipping G6 Gradle validation because -SkipBuild was supplied."
     }
 
-    Write-Host "G6A characterization and productive G6B verification passed."
+    Write-Host "G6A characterization and productive G6B/G6R verification passed."
 } catch {
     $Failure = $_.Exception
 } finally {

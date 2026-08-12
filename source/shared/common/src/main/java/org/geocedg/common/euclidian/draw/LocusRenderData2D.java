@@ -16,15 +16,23 @@ public final class LocusRenderData2D {
 	/** One world-coordinate vertex plus a presentation subpath marker. */
 	public static final class Vertex {
 		private final LocusPoint2D point;
+		private final double semanticParameter;
 		private final boolean startsSubpath;
 
-		Vertex(LocusPoint2D point, boolean startsSubpath) {
+		Vertex(LocusPoint2D point, double semanticParameter,
+				boolean startsSubpath) {
 			this.point = point;
+			this.semanticParameter = semanticParameter;
 			this.startsSubpath = startsSubpath;
 		}
 
 		public LocusPoint2D getPoint() {
 			return point;
+		}
+
+		/** @return render provenance only; never a path or metric authority */
+		public double getSemanticParameter() {
+			return semanticParameter;
 		}
 
 		/** @return whether this vertex starts a disconnected render subpath */

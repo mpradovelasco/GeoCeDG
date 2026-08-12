@@ -2,9 +2,9 @@
 
 | Field | Value |
 |---|---|
-| Status | **G6 PASS** — G6B functional budgets measured and verified |
+| Status | **G6 PASS / G6R PASS** — distributions measured; functional gates retained |
 | Baseline | GeoGebra 5.4.928.0 / GeoCeDG G6A `PASS` |
-| Date | 2026-08-11 |
+| Date | 2026-08-12 |
 | Principle | Measure semantic evaluation separately from graphical tessellation |
 
 G6A has captured a controlled legacy/semantic-fixture baseline on a recorded
@@ -31,6 +31,18 @@ G6A preserves that runner and its authority. The implemented minimum is:
 A new benchmark-suite schema or JMH dependency was not justified. Raw Gradle
 logs/XML are regenerable and remain outside version control; the versioned
 summary records the review evidence.
+
+G6R executed depth 1/2/3/5 distributions with session on/off, repeated keys,
+capacity/eviction, innermost invalidation, branch-component changes, render
+cold/warm policies and the segment provider. The durable summary is
+[`g6r-hardening-evidence.yml`](../../geocedg/validation/locus-v2/g6r-hardening-evidence.yml).
+It preserves `q*d` and zero forbidden-work counts as hard gates. Absolute time
+and retained-memory values remain informational because repeatability/noise was
+not sufficient to approve hard limits.
+
+Measured adaptive visual tessellation was accepted for normal rendering while
+uniform sampling remains the reference. Session capacity/eviction was not
+changed, and DAG flattening was not justified.
 
 Do not silently turn G1's informational schema into a hard performance gate.
 If enforceable budgets require schema version 2, a future task must specify,

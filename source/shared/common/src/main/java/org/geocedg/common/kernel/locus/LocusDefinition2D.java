@@ -157,8 +157,7 @@ public final class LocusDefinition2D {
 			return false;
 		}
 		for (int index = 0; index < branches.size(); index++) {
-			if (!branches.get(index).getSemanticSignature()
-					.equals(other.branches.get(index).getSemanticSignature())) {
+			if (!branches.get(index).equals(other.branches.get(index))) {
 				return false;
 			}
 		}
@@ -176,21 +175,13 @@ public final class LocusDefinition2D {
 				instrumentation);
 	}
 
-	/**
-	 * Rebinds a private snapshot copy without changing semantic content.
-	 *
-	 * @return internal copy bound to a new identity and instrumentation owner
-	 */
-	public LocusDefinition2D copyFor(String identity,
-			LocusInstrumentation2D targetInstrumentation) {
-		return new LocusDefinition2D(identity, semanticRevision, definitionStatus,
-				provider, branches, evaluator, determinism, evaluatorSignature,
-				targetInstrumentation);
-	}
-
 	private static List<LocusBranch2D> immutableBranches(List<LocusBranch2D> input) {
 		Objects.requireNonNull(input);
-		return Collections.unmodifiableList(new ArrayList<>(input));
+		ArrayList<LocusBranch2D> copy = new ArrayList<>();
+		for (LocusBranch2D branch : input) {
+			copy.add(Objects.requireNonNull(branch));
+		}
+		return Collections.unmodifiableList(copy);
 	}
 
 	private static Map<String, LocusBranch2D> indexBranches(

@@ -103,6 +103,17 @@ tasks.register<JavaExec>("runGeoCeDG") {
     standardInput = System.`in`
 }
 
+tasks.register<JavaExec>("runLocusV2Laboratory") {
+    group = "application"
+    description = "Run the opt-in GeoCeDG Locus V2 developer laboratory."
+    dependsOn(tasks.named("classes"))
+    classpath = sourceSets.main.get().runtimeClasspath
+    mainClass = "org.geocedg.desktop.locus.LocusV2Laboratory"
+    javaLauncher = desktopJavaLauncher
+    setJvmArgs(desktopJvmArgs)
+    standardInput = System.`in`
+}
+
 run {
     // Copying JOGL related native JARs into the same directory where the non-native JAR takes place.
     // JOGL is simply dumb, it cannot work neither with java.library.path nor classpath or anything. Arrgh.

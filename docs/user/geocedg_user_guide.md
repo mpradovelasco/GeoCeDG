@@ -1,16 +1,18 @@
 # Manual operativo vivo de GeoCeDG
 
 - Tipo de documento: manual operativo vivo
-- Puerta actual del proyecto: G5 **PASS**
+- Puerta actual del proyecto: G6 **PASS**; G6R **PASS**
 - Baseline: GeoGebra 5.4.928.0 at
   `9b93256b7df401ff056c37b502d82df4d72b1522`
 - Plataforma validada: únicamente Windows
-- Última revisión: 2026-08-10
+- Última revisión: 2026-08-12
+- Siguiente fase: G7 (`PENDING / NOT STARTED`)
+- Locus V2: `experimental`, internal/developer-only, disabled by default
 - `PACKAGING TECHNICAL STATUS = PASS`
 - `PUBLIC REDISTRIBUTION STATUS = BLOCKED PENDING LICENSE/ASSET APPROVAL`
 
 This guide is the practical entry point for the GeoCeDG author/developer. It
-describes only the behavior available through G5. It does not replace the
+describes only the behavior available through G6R. It does not replace the
 [repository README](../../README.md),
 [living technical roadmap](../roadmap/geocedg_roadmap.md), ADRs, specifications, or
 architecture documentation.
@@ -23,6 +25,28 @@ run:
 ```powershell
 .\gradlew.bat :desktop:desktop:runGeoCeDG
 ```
+
+## Can I use Locus V2 now?
+
+| Reader | What is available now | What is not available |
+|---|---|---|
+| Normal GeoCeDG user | Public `Locus[...]` continues to use the unchanged legacy `GeoLocus` | No public V2 command, toolbar/menu, saved `.ggb`, `Path`, length, intersection or export |
+| Classic diagnostic user | Unchanged legacy `Locus[...]` only | No V2 and no developer laboratory |
+| Authorized developer | Opt-in visual laboratory, internal factory, semantic evaluator/tests and focused verifier | The laboratory is not a stable product UI and its generated construction cannot be saved |
+
+Validate or open the developer-only laboratory from the repository root:
+
+```powershell
+.\tools\locus-v2\open-locus-v2-laboratory.ps1 -ValidateOnly
+.\tools\locus-v2\open-locus-v2-laboratory.ps1
+```
+
+The second command runs `:desktop:desktop:runLocusV2Laboratory` with temporary
+preferences. The window title is `GeoCeDG - Locus V2 Developer Laboratory` and
+a separate diagnostics window shows semantic identity, revision, provider,
+branches/domains/lineage, quality/status axes, session counters and render
+vertices. Close both windows to finish Gradle. This opt-in route is absent from
+normal GeoCeDG and Classic.
 
 Close the application window normally to let Gradle finish successfully.
 
@@ -818,7 +842,8 @@ regression gate. Packaging automatically includes these classes through the
 existing Desktop distribution; its internal-only redistribution status is
 unchanged.
 
-Still pending are Locus V2 and its controlled export representation, 3D
+Still pending are public Locus V2 access and its controlled export
+representation, 3D
 objects/projection bindings, Python DSL access, hierarchical layers, drawing
 sheets and advanced PDF/SVG formats. These future capabilities must extend
 approved boundaries and are not present merely because DXF export now exists.
@@ -918,6 +943,7 @@ Promotion follows `legacy -> research -> experimental -> stable`, or
 | G6A | Legacy Locus characterization, mathematical fixtures, upstream impact audit and normative V2 contract | `PASS — AUTHOR APPROVED`; infrastructure/evidence only | Reproducible tests document current behavior and approved semantics; G6A itself added no product object |
 | G6B | Parallel `GeoLocusV2`, semantic providers/evaluator, explicit branches, revisions, nested composition and dedicated drawable | `PASS`; experimental/internal | Productive shared-kernel foundation exists and is testable, but has no public creation workflow |
 | G6B | Public command, `.ggb` persistence, public `Path`, metrics, intersections, export or 3D behavior | Pending / deliberately absent | Classic and GeoCeDG public `Locus[...]` remain legacy |
+| G6R | Value/lifecycle/session hardening, adaptive render, developer laboratory and API/repository documentation | `PASS`; experimental developer infrastructure | Developers can inspect V2 explicitly without changing normal GeoCeDG or Classic |
 | G7+ | Native Locus V2 metrics, intersections and later spatial/export integration | Pending / not started | Requires separate phase contracts and authorizations |
 
 ### G6 Locus V2 semantic foundation
@@ -925,14 +951,15 @@ Promotion follows `legacy -> research -> experimental -> stable`, or
 #### Operational status
 
 G6A is `PASS — AUTHOR APPROVED`; ADR 0006 is Accepted and the semantic
-specification is normative. G6B is `PASS` and contains a productive, parallel
-`GeoLocusV2` implementation in the shared Java kernel, but its maturity is
-**experimental** and it is disabled by default in the feature manifest.
+specification is normative. G6B and G6R are `PASS`. The repository contains a
+productive, parallel `GeoLocusV2` implementation in the shared Java kernel,
+but its maturity is **experimental** and it is disabled by default in the
+feature manifest.
 
-There is deliberately no user command, menu, toolbar button, preference or
-`.ggb` representation for V2. Consequently, an authorized developer does not
-"turn on" V2 in the running application. The supported operational inspection
-is the focused gate:
+There is deliberately no public user command, normal menu, toolbar button,
+preference or `.ggb` representation for V2. An authorized developer may use
+the separate opt-in laboratory described above; it creates objects through the
+internal factory and never redirects `Locus[...]`. The focused gate is:
 
 ```powershell
 .\tools\agent\verify-locus-v2.ps1
@@ -958,6 +985,23 @@ DUAL test seam        -> labeled comparison evidence, not mixed authority
 
 This compatibility rule is observable in normal use: every locus created from
 the input bar or a legacy `.ggb` still behaves exactly as before G6B.
+
+#### Developer laboratory
+
+The laboratory contains ten bounded fixtures:
+
+1. analytic locus with `explicit-numeric-domain/v1`;
+2. live segment-driven locus with the stable segment provider;
+3. branch/valid-component/typed-lineage topology fixture;
+4. discontinuity represented by two valid components/subpaths;
+5. unbounded-image fixture whose clipping is exclusively graphical; and
+6. a semantic chain L1→L2→L3→L4→L5.
+
+Edit the visible `g6r*` numeric controls in Algebra View and press **Refresh
+semantic diagnostics**. The diagnostic panel is evidence/inspection, not a
+second semantic authority. It uses a bounded disposable session and a separate
+per-locus render cache. Saving is unsupported because V2 has no XML contract;
+use the ordinary GeoCeDG or Classic launcher for persistent legacy work.
 
 #### Why a second locus entity is necessary
 
@@ -1125,9 +1169,15 @@ valid components form separate graphical subpaths. An unbounded image is
 clipped/inset only for presentation while finite semantic queries remain
 available independently of the viewport.
 
-The current renderer uses bounded uniform parameter samples. It is not a
-certified adaptive approximation, metric index, intersection index or semantic
-API. Render vertices cannot be consumed by downstream constructions.
+G6R retains bounded uniform parameter sampling as a reference and uses bounded
+adaptive visual subdivision for the normal drawable. The latter evaluates
+semantic endpoints/midpoints and stops according to a 0.75-pixel chord-error
+policy (maximum depth 12). On a controlled line it reduced 257 uniform vertices
+and evaluations to 5 vertices and 9 evaluations without changing the semantic
+revision or point evaluations. Components, periodic seam and unbounded
+presentation clipping have dedicated tests. The pixel tolerance is not a
+geometric error, numeric guarantee, metric tolerance, intersection residual or
+export policy. Render vertices cannot be consumed by downstream constructions.
 
 #### Scientific nested-locus evidence
 
@@ -1162,7 +1212,8 @@ revision-scoped, semantic and cache/invalidation coherent.
 
 #### Current G6B limitations and future boundary
 
-- no GUI, public command or end-user activation;
+- no public GUI, command or end-user activation; only the opt-in developer
+  laboratory exists;
 - no `.ggb` XML, migration or public copy guarantee;
 - no public `Path`, point-on-V2 or legacy incidence;
 - no length, perimeter or metric index (G7);
@@ -1184,6 +1235,7 @@ polyline is a disposable view representation.
 |---|---|---|
 | G6A | Mathematical/semantic characterization and author review | `PASS — AUTHOR APPROVED` |
 | G6B | Minimal experimental Locus V2 kernel entity | `PASS`; no public workflow |
+| G6R | Hardening, developer laboratory, measured render optimization and developer documentation | `PASS`; developer-only workflow |
 | G7-G8 | Native Locus V2 metrics and 2D intersections | Pending; not started |
 | G9 | Native spatial identity and canonical projection semantics | Pending |
 | G10 | CeDG 3D DSL and workbench | Pending |
@@ -1212,8 +1264,9 @@ semantic contracts.
 - G5 supports only the exact 2D families listed above. There is no DXF import,
   viewport export, physical-unit contract, text export, approximate general
   curves, legacy Locus export or 3D export.
-- Locus V2 semantic behavior exists only through internal/test factories. No
-  native public CeDG command, spatial object/projection identity or DSL exists.
+- Locus V2 semantic behavior is accessible only through internal/test factories
+  and the explicit developer laboratory. No native public CeDG command,
+  persistence, spatial object/projection identity or DSL exists.
 - Legacy macros may have undocumented validity ranges, degeneracies, dynamic
   limitations, and sampled numerical approximations.
 - The 71-model public corpus is an external metadata index, not a local mirror
@@ -1232,6 +1285,11 @@ git status --short
 
 # Canonical gate plus informational benchmark
 .\tools\agent\verify.ps1 -RunBenchmarks
+
+# Locus V2 focused gate and developer laboratory
+.\tools\agent\verify-locus-v2.ps1
+.\tools\locus-v2\open-locus-v2-laboratory.ps1 -ValidateOnly
+.\tools\locus-v2\open-locus-v2-laboratory.ps1
 
 # Focused G3 catalog/ingest validation
 .\tools\agent\verify-legacy.ps1
@@ -1305,6 +1363,13 @@ boundary defined by the operational contracts.
   [G6A report](../validation/g6a_locus_v2_characterization_report.md),
   [G6B report](../validation/g6b_locus_v2_kernel_report.md), and
   [functional evidence](../../geocedg/validation/locus-v2/g6b-functional-evidence.yml)
+- Locus V2 G6R hardening and developer references:
+  [implementation architecture](../architecture/locus_v2_implementation.md),
+  [internal API](../developer/locus_v2_api.md),
+  [repository map](../developer/repository_map.md),
+  [traceability](../validation/g6r_locus_v2_traceability_matrix.md),
+  [G6R report](../validation/g6r_locus_v2_hardening_report.md), and
+  [hardening evidence](../../geocedg/validation/locus-v2/g6r-hardening-evidence.yml)
 - Current feature state:
   [stable manifest](../../geocedg/features/stable.yml) and
   [experimental manifest](../../geocedg/features/experimental.yml)

@@ -114,6 +114,15 @@ public final class LocusInstrumentation2D {
 		return Collections.unmodifiableMap(new LinkedHashMap<>(evaluatorCallsByLocus));
 	}
 
+	/** @return immutable diagnostic evidence without exposing mutable counters */
+	public LocusInstrumentationSnapshot2D snapshot() {
+		return new LocusInstrumentationSnapshot2D(evaluatorCalls,
+				dependencySliceBuilds, dependencySliceSynchronizations,
+				dependencyUpdates, duplicatedRequests, sessionHits, sessionMisses,
+				revisionPublications, revisionConsumptions, renderEvaluations,
+				wholeLocusRegenerations, evaluatorCallsByLocus);
+	}
+
 	/** Resets evidence counters without changing semantic state. */
 	public void reset() {
 		evaluatorCalls = 0;

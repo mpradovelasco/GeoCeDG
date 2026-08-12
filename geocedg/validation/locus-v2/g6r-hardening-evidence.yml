@@ -1,0 +1,138 @@
+{
+  "schema_version": 1,
+  "id": "cedg.validation.g6r.hardening-evidence",
+  "status": "g6r-pass",
+  "entry": {
+    "branch": "feature/g6r-locus-v2-hardening",
+    "entry_sha": "e78b4e71ebf752de8c3552b466dbee52b400ab94",
+    "implementation_commit": "0c4cc40a389477226b2a6cb507c4fa072790a586",
+    "hardening_commit": "SELF",
+    "hardening_commit_resolution": "the Git commit containing this evidence record",
+    "baseline_upstream_sha": "9b93256b7df401ff056c37b502d82df4d72b1522"
+  },
+  "contract": {
+    "semantic_specification": "geocedg/specs/locus/locus-v2-semantics.md",
+    "adr": "docs/adr/0006-parallel-locus-v2-semantic-entity.md",
+    "semantic_contract_changed": false,
+    "public_availability": false,
+    "maturity": "experimental",
+    "enabled_by_default": false
+  },
+  "hardening_tests": {
+    "value_contracts": 5,
+    "session_and_cycle": 6,
+    "lifecycle": 7,
+    "render": 4,
+    "performance_distributions": 4,
+    "laboratory_contract": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "functional_gates": {
+    "nested_depths": [1, 2, 3, 5],
+    "outer_queries": 128,
+    "evaluator_calls": [128, 256, 384, 640],
+    "expected_rule": "outer_queries * dependency_depth",
+    "session_on_off_equal": true,
+    "dependency_slice_builds_per_point_query": 0,
+    "dependency_slice_synchronizations_per_point_query": 0,
+    "whole_locus_regenerations": 0,
+    "upstream_render_dependencies": 0
+  },
+  "session_measurement": {
+    "repeated_outer_queries": 128,
+    "depth": 3,
+    "memoized_evaluator_calls": 384,
+    "hits": 128,
+    "misses": 384,
+    "bounded_capacity": 32,
+    "bounded_evictions": 352,
+    "bounded_retained_entries": 32,
+    "policy": "deterministic insertion-order eviction retained; no measured need to change it"
+  },
+  "render_measurement": {
+    "fixture": "analytic line at 200 pixels per world unit",
+    "uniform_vertices": 257,
+    "adaptive_vertices": 5,
+    "uniform_cold_evaluations": 257,
+    "adaptive_cold_evaluations": 9,
+    "adaptive_visual_tolerance_pixels": 0.75,
+    "adaptive_maximum_depth": 12,
+    "decision": "adopt adaptive visual tessellation with uniform reference mode",
+    "authority_boundary": "render-only; no semantic, metric, intersection or export guarantee"
+  },
+  "timing_policy": {
+    "absolute_time_gate": false,
+    "retained_memory_gate": false,
+    "reason": "single-workstation JVM timings are informational and noise was not characterized sufficiently for absolute budgets",
+    "functional_counts_are_hard_gates": true
+  },
+  "developer_laboratory": {
+    "script": "tools/locus-v2/open-locus-v2-laboratory.ps1",
+    "gradle_task": ":desktop:desktop:runLocusV2Laboratory",
+    "opt_in": true,
+    "temporary_preferences": true,
+    "normal_geocedg_exposure": false,
+    "classic_exposure": false,
+    "persistence": false,
+    "fixture_count": 10,
+    "nested_depths": [1, 2, 3, 4, 5],
+    "visual_smoke": {
+      "date": "2026-08-12",
+      "distinct_window_title": true,
+      "diagnostics_controls_reachable": true,
+      "segment_provider_status": "VALID",
+      "unbounded_fixture_visible": true,
+      "nested_depth_five_status": "VALID",
+      "normal_geocedg_title": "GeoCeDG",
+      "classic_title": "GeoGebra Classic 5",
+      "laboratory_absent_from_normal_and_classic": true,
+      "residual_processes_after_close": 0
+    }
+  },
+  "packaging_validation": {
+    "target": "All",
+    "technical_status": "PASS",
+    "public_redistribution": "BLOCKED PENDING LICENSE/ASSET APPROVAL",
+    "jpackage": "25.0.4",
+    "wix": "5.0.2+aa65968c",
+    "app_image_classes": {
+      "org/geocedg/common/kernel/geos/GeoLocusV2.class": "common.jar",
+      "org/geocedg/common/kernel/locus/LocusEvaluationSession2D.class": "common.jar",
+      "org/geocedg/common/euclidian/draw/DrawLocusV2.class": "common.jar",
+      "org/geocedg/desktop/locus/LocusV2Laboratory.class": "desktop.jar"
+    },
+    "artifact_sha256": {
+      "app-image.SHA256SUMS.txt": "6d4e1fa8602be92e6cd567c52e8790bf21fb85b48570c4906a6c2f37e463b8b8",
+      "GeoCeDG-0.4.0-windows-x64-internal.zip": "9fc3101e660a1e2e648c589ea031959dd97daaaba1a5962c38703787b187da51",
+      "GeoCeDG-0.4.0-windows-x64-internal.msi": "a94327020c72d9edf1a62d7f54ba52ecfcba1271041262faf3e7e398cfcffeea",
+      "GeoCeDG-0.4.0-windows-x64-internal.exe": "c48de892701a09a8ae33252e821fdb11ac621bf3129bff5769fab5fb6c7365e8",
+      "geocedg-windows.cdx.json": "339c4c7f21e9eef840467dea2817b5725ef9318e7d04522e50969eea62c288ba"
+    },
+    "zip_msi_exe_verified": true,
+    "sbom_manifest_hashes_verified": true,
+    "distribution_marker": "INTERNAL EVALUATION — NOT FOR REDISTRIBUTION",
+    "provenance_note": "temporary pre-commit validation build from the G6R worktree at entry_sha; not durable release evidence",
+    "generated_outputs_removed_at_closeout": true
+  },
+  "verification": {
+    "composed_authority_with_builds": "PASS",
+    "composed_authority_static_recheck": "PASS",
+    "focused_locus_v2": "PASS",
+    "operational": "PASS",
+    "packaging_artifacts": "PASS",
+    "git_diff_check": "PASS",
+    "generated_repository_outputs_after_closeout": 0,
+    "residual_java_gradle_geocedg_processes": 0
+  },
+  "deferred": {
+    "G7_metrics": "not started",
+    "G8_intersections": "not started",
+    "G9_spatial_semantics": "not started",
+    "dag_flattening": "not justified by measurements",
+    "concurrency": "out of scope",
+    "canonical_continuation": "not characterized for productive use",
+    "circle_ellipse_live_algorithms": "provider and test coverage only"
+  }
+}
