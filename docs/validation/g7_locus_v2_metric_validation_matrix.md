@@ -2,9 +2,9 @@
 
 | Field | Value |
 |---|---|
-| Status | G7A plus focused R1 author-approved evidence; G7B matrix authorized, not executed |
+| Status | G7A/R1 author-approved baseline; productive G7B matrix executed |
 | G7A | `PASS — AUTHOR APPROVED` |
-| G7B | `AUTHORIZED / NOT STARTED` |
+| G7B | `READY FOR AUTHOR REVIEW` |
 | Mathematical authority | Total variation per valid-domain component |
 | Normative contract | [`locus-v2-metrics.md`](../../geocedg/specs/locus/locus-v2-metrics.md) |
 | Benchmark authority | [`g7_locus_v2_metric_benchmark_plan.md`](g7_locus_v2_metric_benchmark_plan.md) |
@@ -280,8 +280,8 @@ G7A saved:
 - explicit resolved decisions and author-approved G7B budgets.
 
 No row may be marked pass from prose alone. G7A passed by author approval after
-the evidence ran. G7B is authorized but not started; its implementation must
-pass every applicable `B` gate.
+the evidence ran. G7B now has productive test and audit evidence; final author
+review remains required.
 
 ## 15. Executed G7A and R1 coverage
 
@@ -303,7 +303,8 @@ cover the remaining non-executable G7A rows. Exact requirement-to-evidence
 mapping is in
 [`g7a_locus_v2_metric_traceability_matrix.md`](g7a_locus_v2_metric_traceability_matrix.md).
 
-This is author-approved characterization coverage, not G7B conformance.
+This remains author-approved characterization coverage. Productive G7B
+conformance is recorded separately below.
 
 ## 16. Focused G7A-R1 matrix
 
@@ -337,3 +338,24 @@ The accepted ownership is `DEDICATED_SHARED_OWNER`. G7B shall retain
 semantic oracle and shall use capacity 64 only as a provisional per-active-
 locus implementation default until real productive footprint evidence is
 reviewed.
+
+## 17. Productive G7B conformance suites
+
+The focused verifier executes 60 productive common-kernel cases and three
+developer-laboratory contract cases:
+
+| Suite | Tests | Productive evidence |
+|---|---:|---|
+| value | 8 | closed values/errors, orthogonal axes, aggregate precedence, defensive immutability |
+| route | 11 | bindings, stale/rebind, FORWARD/REVERSE, ZERO/FULL, STOP/WRAP/STRICT, seam and gap exclusion |
+| numerical | 16 | total/components/multiplicity, analytic/differential/evaluator-only, segment/circle/ellipse/parabola/exponential/cusp, reparameterization, work ceilings, index oracle |
+| improper | 6 | finite unbounded A/B, convergent improper, infinity, non-rectifiable, unsupported and limit not established |
+| lifecycle | 10 | GeoClass, rich Geo/P1, scalar adapter, copy/set, XML absence, leases, undefined/recovery/removal and failed-build cleanup |
+| benchmark | 7 | 1/10/100, overlap/reverse/periodic/STOP/WRAP/STRICT, repeated total, policy/revision, query order and owner isolation |
+| nested | 2 | three-level normal DAG, downstream evaluation and invalidation with all forbidden-work counters zero |
+| laboratory | 3 | opt-in fixtures, public-boundary isolation and temporary settings |
+
+The matrix result is candidate conformance, not final G7 approval. The
+[G7B report](g7b_locus_v2_metric_kernel_report.md) and
+[traceability](g7b_locus_v2_metric_traceability_matrix.md) identify each
+assertion and source.

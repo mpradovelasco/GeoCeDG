@@ -19,6 +19,7 @@ package org.geogebra.common.euclidian;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.atLeastOnce;
@@ -31,6 +32,7 @@ import java.util.Objects;
 import java.util.TreeSet;
 
 import org.geocedg.common.euclidian.draw.DrawLocusV2;
+import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.ExplicitNumericDomainProvider2D;
 import org.geocedg.common.kernel.locus.LocusBranch2D;
@@ -149,6 +151,10 @@ class DrawablesTest extends BaseUnitTest {
 				.newDrawable(locusV2);
 		assertTrue(locusV2Drawable instanceof DrawLocusV2);
 		types.add(GeoClass.LOCUS_V2);
+		GeoLocusMetricResult metricResult =
+				new GeoLocusMetricResult(construction, "drawable-v2");
+		assertNull(getApp().getEuclidianView1().newDrawable(metricResult));
+		types.add(GeoClass.LOCUS_METRIC_RESULT);
 		for (String s : def) {
 			GeoElementND geo = add(s);
 			DrawableND draw = getApp().getEuclidianView1().newDrawable(geo);

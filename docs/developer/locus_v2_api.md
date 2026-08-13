@@ -5,6 +5,7 @@
 | Maturity | `experimental`, internal/developer-only, disabled by default |
 | Normative semantics | [`geocedg/specs/locus/locus-v2-semantics.md`](../../geocedg/specs/locus/locus-v2-semantics.md) |
 | Architecture | [`docs/architecture/locus_v2_implementation.md`](../architecture/locus_v2_implementation.md) |
+| Additive metric API | [`docs/developer/locus_v2_metric_api.md`](locus_v2_metric_api.md), G7B internal candidate |
 | Public command/API | None |
 | Persistence / `Path` | None |
 | Date | 2026-08-12 |
@@ -12,7 +13,9 @@
 This reference documents the current Java seams so future kernel work does not
 infer contracts from call sites. Java `public` is used where the shared kernel,
 Desktop laboratory and tests cross packages. It does **not** promise third-party
-API compatibility.
+API compatibility. The G7B metric layer consumes these seams without changing
+them; its result, route, integration and component-state contracts are kept in
+the separate [metric API reference](locus_v2_metric_api.md).
 
 ## 1. Packages
 

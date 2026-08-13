@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Status | Author-approved G7A/G7A-R1 semantic model; no metric implementation |
+| Status | Author-approved G7A/G7A-R1 semantic model; implemented by G7B candidate |
 | Mathematical authority | Total variation on each valid-domain component |
 | Upstream semantic authority | [`locus-v2-semantics.md`](../../geocedg/specs/locus/locus-v2-semantics.md) |
 | Normative metric contract | [`locus-v2-metrics.md`](../../geocedg/specs/locus/locus-v2-metrics.md) |
@@ -10,9 +10,10 @@
 | Date | 2026-08-13 |
 
 This document defines the author-approved semantic vocabulary characterized by
-G7A/R1 and governed by the normative G7 metric spec. It is not a productive
-API. G7A-R1 and G7A are `PASS — AUTHOR APPROVED`; G7B is
-`AUTHORIZED / NOT STARTED`, and G8 remains `NOT STARTED`.
+G7A/R1 and governed by the normative G7 metric spec. The productive G7B
+candidate implements it as an internal API. G7A-R1 and G7A are
+`PASS — AUTHOR APPROVED`; G7B is `READY FOR AUTHOR REVIEW`, and G8 remains
+`NOT STARTED`.
 
 ## 1. Mathematical object
 
@@ -691,8 +692,23 @@ publication. These are author-approved.
 
 ## 19. Phase boundary
 
-This model records `GeoLocusMetricResult` as the author-approved G7B
-architecture. ADR 0007 is Accepted and the G7 metric spec is normative. G7B is
-authorized but not started. Public `LocusLength`, changes to `Length` or
+This model records `GeoLocusMetricResult` as the author-approved and now
+implemented G7B candidate architecture. ADR 0007 is Accepted and the G7 metric
+spec is normative. G7B is ready for author review. Public `LocusLength`, changes to `Length` or
 `Perimeter`, public `Path`, point-on-locus, XML, persistence, G8 intersections,
 G9 spatial semantics and G5 locus export remain outside G7B minimum scope.
+
+## 20. Productive semantic realization
+
+The G7B implementation preserves each invariant above with immutable values in
+`org.geocedg.common.kernel.locus.metric`. `TotalLocusMetricQuery` exposes no
+traversal outcome; between-position results expose an
+`Optional<TraversalOutcome>` only where traversal applies. Closed value and
+error variants make absence, infinity and unavailable error amounts explicit.
+
+The route resolver consumes revision-bound semantic positions and emits only
+single-component route segments. The metric engine obtains immutable component
+state, derives segment-specific contributions, and delegates only aggregation
+to `LocusMetricAggregator2D`. This realizes total variation and constructive
+multiplicity without making the numerical partition the mathematical
+definition.

@@ -2,17 +2,17 @@
 
 | Field | Value |
 |---|---|
-| Status | G7A and focused R1 functional-counter experiments author-approved; G7B budgets authorized |
+| Status | G7A/R1 budgets approved; productive G7B functional counters executed |
 | G7A | `PASS — AUTHOR APPROVED` |
-| G7B | `AUTHORIZED / NOT STARTED` |
+| G7B | `READY FOR AUTHOR REVIEW` |
 | Primary gates | Functional counters, semantic equality, bounded state and invalidation |
 | Wall-clock | Initially informational |
 | Matrix | [`g7_locus_v2_metric_validation_matrix.md`](g7_locus_v2_metric_validation_matrix.md) |
 | Date | 2026-08-13 |
 
 This plan defines the reproducible experiments executed by G7A and the hard
-functional budgets approved for G7B. G7A created only test-private probes and
-expected constants; it created no productive metric code.
+functional budgets implemented by G7B. The G7A references remain independent;
+the productive tests use them as evidence rather than kernel authority.
 
 ## 1. Questions
 
@@ -522,6 +522,31 @@ Stop G7A and report rather than alter productive code if:
 - a legacy/scientific original hash changes;
 - characterization would require a public command, XML or G8 behavior.
 
-G7B is authorized but not started. Stop its future execution if this approved
-baseline, its evidence hashes or any hard semantic/functional gate cannot be
-reproduced.
+G7B is ready for author review. Stop review promotion if this approved baseline,
+its evidence hashes or any hard semantic/functional gate cannot be reproduced.
+
+## 19. Productive G7B measurements
+
+Productive functional traces reproduce the approved budgets:
+
+| Trace | Builds | Hits | Retained | Required interpretation |
+|---|---:|---:|---:|---|
+| same query, N=1 | 1 | 0 | 1 | cold component-state build |
+| same query, N=10 | 1 | 9 | 1 | compatible reuse |
+| same query, N=100 | 1 | 99 | 1 | no repeated build |
+| 100 distinct compatible consumers | 1 | 99 | 1 | 99 cross-result hits, zero duplicate builds |
+| repeated total, 100 queries × 3 components | 3 | 297 | 3 | one state per complete key |
+| periodic, 100 queries | 1 | 99 | 1 | seam does not change state ownership |
+| STRICT unreachable, 100 queries | 0 | 0 | 0 | route rejection before metric work |
+| capacity, 65 policy keys | 65 | 0 | 64 | one deterministic insertion-order eviction |
+
+Total-first and local-first traces each build exactly three component states.
+A policy-key change builds one additional state; revision invalidation removes
+both obsolete entries and builds one current state. A failed private build
+publishes no entry and leaves zero active builds.
+
+The productive three-level composition records one build at each active source
+level, normal DAG invalidation, maximum active build count one and zero render,
+legacy-sample, whole-locus-regeneration, per-downstream-point index-build and
+compatible-duplicate-build counters. Wall-clock remains informational and no
+hard timing threshold is introduced.

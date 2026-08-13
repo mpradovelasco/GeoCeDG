@@ -13,6 +13,7 @@ $ErrorActionPreference = "Stop"
 $RepositoryRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot "..\..")).Path
 $RootGradle = Join-Path $RepositoryRoot "gradlew.bat"
 $GeneratedStateHelper = Join-Path $PSScriptRoot "repository-generated-state.ps1"
+$OriginMainSha = "726abd95be928e232f3a3f7c6b637605b46d0cb1"
 $PlanningSha = "e918846a73829032ab1e1aff37e863fed40c1969"
 $PromptSha = "4820bf0934b84f3ea84ec5f30930a0be56769c150940ce53483e1150232fab39"
 $GeneratedDirectoryNames = @("build", ".gradle", ".kotlin")
@@ -59,6 +60,21 @@ function Assert-Condition {
     }
 }
 
+function Get-CanonicalTextSha256 {
+    param([Parameter(Mandatory)] [string]$Path)
+
+    $content = [IO.File]::ReadAllText($Path)
+    $canonicalContent = $content.Replace("`r`n", "`n").Replace("`r", "`n")
+    $encoding = [Text.UTF8Encoding]::new($false)
+    $sha256 = [Security.Cryptography.SHA256]::Create()
+    try {
+        $hashBytes = $sha256.ComputeHash($encoding.GetBytes($canonicalContent))
+        return [Convert]::ToHexString($hashBytes).ToLowerInvariant()
+    } finally {
+        $sha256.Dispose()
+    }
+}
+
 function Assert-RequiredFile {
     param([Parameter(Mandatory)] [string]$RelativePath)
     $path = Join-Path $RepositoryRoot $RelativePath
@@ -98,7 +114,7 @@ function Assert-ReferenceHashes {
         $path = Join-Path $ReferenceRoot $parts[1].Trim()
         Assert-Condition -Condition (Test-Path -LiteralPath $path -PathType Leaf) `
             -Message "Hashed reference artifact is missing: $path"
-        $actual = (Get-FileHash -Algorithm SHA256 -LiteralPath $path).Hash.ToLowerInvariant()
+        $actual = Get-CanonicalTextSha256 -Path $path
         Assert-Condition -Condition ($actual -eq $parts[0].ToLowerInvariant()) `
             -Message "G7A reference hash mismatch: $path"
     }
@@ -116,8 +132,7 @@ function Assert-R1EvidenceHashes {
         $path = Join-Path $RepositoryRoot $relativePath
         Assert-Condition -Condition (Test-Path -LiteralPath $path -PathType Leaf) `
             -Message "Hashed R1 evidence artifact is missing: $path"
-        $actual = (Get-FileHash -Algorithm SHA256 `
-            -LiteralPath $path).Hash.ToLowerInvariant()
+        $actual = Get-CanonicalTextSha256 -Path $path
         Assert-Condition -Condition ($actual -eq $parts[0].ToLowerInvariant()) `
             -Message "G7A-R1 evidence hash mismatch: $path"
     }
@@ -176,20 +191,22 @@ try {
     }
 
     $currentBranch = (& git -C $RepositoryRoot branch --show-current).Trim()
-    Assert-Condition -Condition ($currentBranch -eq `
-            "feature/g7a-locus-v2-metric-characterization") `
-        -Message "G7A verifier requires the characterization branch; got $currentBranch."
-    & git -C $RepositoryRoot merge-base --is-ancestor origin/main $PlanningSha
+    $allowedBranches = @(
+        "feature/g7a-locus-v2-metric-characterization",
+        "feature/g7b-locus-v2-metric-kernel"
+    )
+    Assert-Condition -Condition ($currentBranch -in $allowedBranches) `
+        -Message "G7A verifier requires an approved G7A/G7B branch; got $currentBranch."
+    & git -C $RepositoryRoot merge-base --is-ancestor $OriginMainSha $PlanningSha
     Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
-        -Message "Planning SHA does not descend from origin/main."
+        -Message "Planning SHA does not descend from the pinned G7A origin/main SHA."
     & git -C $RepositoryRoot merge-base --is-ancestor $PlanningSha HEAD
     Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
-        -Message "Current G7A branch does not descend from the planning SHA."
+        -Message "Current G7A/G7B branch does not descend from the planning SHA."
 
     $promptPath = Join-Path $RepositoryRoot `
         ".github\prompts\tasks\g7a-locus-v2-metric-characterization.prompt.md"
-    $actualPromptSha = (Get-FileHash -Algorithm SHA256 `
-        -LiteralPath $promptPath).Hash.ToLowerInvariant()
+    $actualPromptSha = Get-CanonicalTextSha256 -Path $promptPath
     Assert-Condition -Condition ($actualPromptSha -eq $PromptSha) `
         -Message "The executed G7A prompt hash changed."
     Assert-ReferenceHashes
@@ -203,6 +220,8 @@ try {
         -Message "G7A evidence must record final author approval."
     Assert-Condition -Condition ($evidence.provenance.planningSha -eq `
             $PlanningSha) -Message "G7A evidence planning SHA mismatch."
+    Assert-Condition -Condition ($evidence.provenance.originMainSha -eq `
+            $OriginMainSha) -Message "G7A evidence origin/main SHA mismatch."
     Assert-Condition -Condition ($evidence.provenance.promptSha256 -eq `
             $PromptSha) -Message "G7A evidence prompt SHA mismatch."
     Assert-Condition -Condition ([int]$evidence.characterizationProbes.total.tests `
@@ -409,9 +428,9 @@ try {
 
     $closeoutDocumentContracts = @{
         "docs\roadmap\g7_locus_v2_metrics_plan.md" =
-            "G7B = AUTHORIZED / NOT STARTED"
+            "G7B = READY FOR AUTHOR REVIEW"
         "docs\roadmap\geocedg_roadmap.md" =
-            "G7B AUTHORIZED / NOT STARTED"
+            "G7B READY FOR AUTHOR REVIEW"
         "docs\architecture\locus_v2_metric_semantic_model.md" =
             "Author-approved G7A/G7A-R1 semantic model"
         "docs\architecture\locus_v2_metric_architecture.md" =
@@ -419,11 +438,11 @@ try {
         "docs\developer\locus_v2_metric_api.md" =
             "G7A-R1 AND G7A PASS — AUTHOR APPROVED"
         "docs\validation\g7_locus_v2_metric_validation_matrix.md" =
-            "AUTHORIZED / NOT STARTED"
+            "READY FOR AUTHOR REVIEW"
         "docs\validation\g7_locus_v2_metric_benchmark_plan.md" =
-            "AUTHORIZED / NOT STARTED"
+            "READY FOR AUTHOR REVIEW"
         "docs\user\geocedg_user_guide.md" =
-            "no productive metric available"
+            "internal productive metric available"
     }
     foreach ($contract in $closeoutDocumentContracts.GetEnumerator()) {
         $documentText = Get-Content -LiteralPath (Join-Path $RepositoryRoot `
@@ -488,9 +507,28 @@ try {
     if ($LASTEXITCODE -ne 0) {
         throw "Unable to audit productive source changes from planning baseline."
     }
-    Assert-Condition -Condition ($productiveChanges.Count -eq 0) `
-        -Message ("G7A changed productive source:`n" +
-            ($productiveChanges -join "`n"))
+    if ($currentBranch -eq "feature/g7a-locus-v2-metric-characterization") {
+        Assert-Condition -Condition ($productiveChanges.Count -eq 0) `
+            -Message ("G7A changed productive source:`n" +
+                ($productiveChanges -join "`n"))
+    } else {
+        $approvedG7BProductivePaths = @(
+            '^source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/',
+            '^source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusMetric(V2|ScalarAdapter)\.java$',
+            '^source/shared/common/src/main/java/org/geocedg/common/kernel/geos/GeoLocus(MetricResult|V2)\.java$',
+            '^source/shared/common/src/main/java/org/geogebra/common/plugin/GeoClass\.java$',
+            '^source/desktop/desktop/src/main/java/org/geocedg/desktop/locus/LocusV2LaboratoryController\.java$'
+        )
+        $unexpectedG7BProductive = @($productiveChanges | Where-Object {
+                $candidate = $_
+                -not @($approvedG7BProductivePaths | Where-Object {
+                        $candidate -match $_
+                    })
+            })
+        Assert-Condition -Condition ($unexpectedG7BProductive.Count -eq 0) `
+            -Message ("G7B productive source escaped its approved boundary:`n" +
+                ($unexpectedG7BProductive -join "`n"))
+    }
 
     Write-Host "`n==> Independent G7A numerical references"
     & conda run --no-capture-output -n om_env python $ReferenceGenerator --check

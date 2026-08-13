@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Status | **G7A-R1 AND G7A PASS — AUTHOR APPROVED** |
+| Status | **G7B IMPLEMENTED — READY FOR AUTHOR REVIEW** |
 | Roadmap gate | G7 `IN PROGRESS` |
 | G7A | `PASS — AUTHOR APPROVED` |
-| G7B | `AUTHORIZED / NOT STARTED` |
+| G7B | `READY FOR AUTHOR REVIEW` |
 | G8 | `NOT STARTED` |
 | G6 baseline | G6 `PASS`; G6R `PASS` |
 | Metric specification | [`NORMATIVE / AUTHOR APPROVED`](../../geocedg/specs/locus/locus-v2-metrics.md) |
@@ -22,7 +22,8 @@ reexecution now adds only test-private probes and versioned evidence; it creates
 no productive metric class or `src/main` change. The focused R1 refinement
 adds safe value/error contracts, deterministic work ceilings and measured
 multi-consumer ownership evidence, also test-private only. The final author
-review approved both stages and authorized G7B, which remains not started.
+review approved both stages and authorized G7B. The separately executed G7B
+task now supplies the internal productive candidate and review evidence.
 
 ## 1. Authority
 
@@ -531,8 +532,9 @@ The G7B entry decisions are now satisfied:
   decisions;
 - explicit G7B authorization, granted at this closeout.
 
-G7B remains `AUTHORIZED / NOT STARTED`; only execution of its versioned prompt
-may begin implementation.
+The separately authorized prompt was executed on the G7B feature branch. Its
+entry conditions remained satisfied and the result is `READY FOR AUTHOR
+REVIEW`.
 
 ### 15.4 Gate to close G7B
 
@@ -593,7 +595,7 @@ Wall-clock remains informational.
 
 All 42 G7A recommendations and R1-1..R1-22 are author-approved with the three
 final API normalizations. ADR 0007 is Accepted, the G7 metric specification is
-normative, and G7B is authorized but not started.
+normative, and G7B implements their internal candidate without closing G7.
 
 ## 17. Current disposition
 
@@ -611,6 +613,20 @@ G7A = PASS — AUTHOR APPROVED
 G7 METRIC SPEC = NORMATIVE / AUTHOR APPROVED
 ADR 0007 = ACCEPTED
 
-G7B = AUTHORIZED / NOT STARTED
+G7B = READY FOR AUTHOR REVIEW
 G8 = NOT STARTED
 ```
+
+## 18. G7B implementation handoff
+
+G7B adds the internal metric package, rich normal-DAG Geo, metric algorithm,
+explicit scalar adapter, bounded per-locus shared owner and opt-in laboratory.
+The implementation maps complete component keys to immutable component state;
+routes and contributions remain query-local. It registers no command, XML,
+public `Path`, 3D, G8 or G9 behavior.
+
+The focused evidence is recorded in the
+[G7B kernel report](../validation/g7b_locus_v2_metric_kernel_report.md) and
+[G7B traceability matrix](../validation/g7b_locus_v2_metric_traceability_matrix.md).
+The gate to close G7B remains explicit author review; this implementation does
+not self-declare G7 or G7B `PASS`.

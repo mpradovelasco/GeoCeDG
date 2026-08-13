@@ -1,27 +1,26 @@
-# Locus V2 metric candidate API
+# Locus V2 internal metric API
 
-- Status: **G7A CHARACTERIZATION ONLY**
-- Availability: **NO PRODUCTIVE METRIC EXISTS**
+- Status: **G7B PRODUCTIVE INTERNAL CANDIDATE**
+- Availability: **INTERNAL PRODUCTIVE METRIC AVAILABLE; NO PUBLIC METRIC**
 - Review state: **G7A-R1 AND G7A PASS — AUTHOR APPROVED**
 - G7 specification: `NORMATIVE / AUTHOR APPROVED`
 - ADR 0007: `Accepted`
 - Date: 2026-08-13
 
-This document describes the author-approved candidate Java API established by
-the G7A and focused G7A-R1 experiments and normalized at final closeout.
-It is design evidence for G7B and future monograph work. None of the classes in
-this document exists in productive source yet. Names may be adjusted only to
-fit the actual code while preserving the normative contracts.
+This document describes the productive internal Java API implemented from the
+author-approved G7A and focused G7A-R1 contracts. It is the developer reference
+for the G7B review candidate and future monograph work. It does not create a
+public command, Path, persistence or stable end-user API.
 
 ## 1. Package and authority boundary
 
-Metric semantic values should be GeoCeDG-owned:
+Metric semantic values are GeoCeDG-owned:
 
 ```text
 org.geocedg.common.kernel.locus.metric
 ```
 
-Normal-DAG publication belongs in the existing GeoCeDG kernel packages:
+Normal-DAG publication is in the existing GeoCeDG kernel packages:
 
 ```text
 org.geocedg.common.kernel.geos.GeoLocusMetricResult
@@ -269,7 +268,12 @@ can produce many different contributions.
 
 Evaluator-only refinement agreement never creates a certified bound. Without
 explicit assumptions it returns `FLOATING_POINT_UNCERTIFIED` or
-`UNSUPPORTED`.
+`UNSUPPORTED`. Explicit assumptions can establish estimated evidence for the
+complete component state. A between-position contribution obtained by
+interpolating that component's arc-coordinate evidence remains
+`FLOATING_POINT_UNCERTIFIED` until route-local error evidence is established;
+the complete-component estimate is not scaled and relabelled as a subarc
+estimate.
 
 ## 7. Contributions and aggregation
 
@@ -571,6 +575,13 @@ owner, aggregates and atomically publishes success or P1 failure. The Algo
 remains a normal direct DAG dependent of the locus. Active-build cleanup is in
 `finally`; its owner lease closes during normal removal.
 
+A total query has no durable position binding, so its algorithm refreshes the
+query revision to the current source snapshot at every normal-DAG recompute. A
+between-position query retains its original revision-bound A/B values and
+publishes `POSITION_STALE` after a source revision until the caller explicitly
+constructs rebound positions. This distinction prevents both a stale total and
+an implicit A/B coordinate repair.
+
 ## 11. Explicit scalar adapter
 
 The accepted numeric strategy is C:
@@ -611,14 +622,13 @@ Default inadmissible states:
 ## 12. Total and between-position examples
 
 ```java
-BetweenPositionsMetricQuery query = BetweenPositionsMetricQuery.builder()
-        .start(bindingA)
-        .target(bindingB)
-        .direction(TraversalDirection.FORWARD)
-        .boundaryPolicy(OpenBoundaryPolicy.STRICT)
-        .samePositionPolicy(SamePositionPolicy.ZERO_LENGTH)
-        .policy(metricPolicy)
-        .build();
+BetweenPositionsMetricQuery query = new BetweenPositionsMetricQuery(
+        bindingA,
+        bindingB,
+        TraversalDirection.FORWARD,
+        OpenBoundaryPolicy.STRICT,
+        SamePositionPolicy.ZERO_LENGTH,
+        metricPolicy);
 ```
 
 ```java
@@ -630,7 +640,7 @@ The second query cannot be constructed with endpoints or a direction.
 
 ## 13. Public and compatibility boundary
 
-G7B candidate exposure is limited to internal Java API,
+G7B exposure is limited to internal Java API,
 `GeoLocusMetricResult` and the opt-in developer laboratory. It adds no
 `LocusLength` command, changes no `Length`/`Perimeter`, implements no Path,
 serializes no XML, registers no factory, adds no 3D behavior and starts no G8
@@ -646,14 +656,59 @@ The author accepted the
 [G7A decision table](../validation/g7a_locus_v2_metric_characterization_report.md),
 the
 [G7A-R1 decision table](../validation/g7a_r1_locus_v2_metric_refinement_report.md),
-the normative metric specification and ADR 0007. This document does not execute
-the separately versioned G7B prompt.
+the normative metric specification and ADR 0007. The separately authorized
+G7B task implemented this API; author review remains pending.
 
 ```text
 G7A-R1 = PASS — AUTHOR APPROVED
 G7A = PASS — AUTHOR APPROVED
 G7 METRIC SPEC = NORMATIVE / AUTHOR APPROVED
 ADR 0007 = ACCEPTED
-G7B = AUTHORIZED / NOT STARTED
+G7B = READY FOR AUTHOR REVIEW
 G8 = NOT STARTED
 ```
+
+## 15. Implemented construction and lifecycle seam
+
+`AlgoLocusMetricV2` is constructed with the `Construction`, source
+`GeoLocusV2`, immutable query, capability hierarchy, index mode, consumer ID
+and any additional Geo inputs owned by the query. It registers normal
+dependencies and publishes exactly one `GeoLocusMetricResult`.
+
+Each algorithm acquires a lease from the source locus's dedicated shared
+owner. Removal closes the lease. A source revision, topology change, undefined
+transition or removal invalidates component state synchronously. `copy()`,
+`copyInternal()` and `set()` never copy a current revision-bound result;
+recomputation is required. Owner acquisition, lookup, invalidation, statistics
+and lease release all reject access outside the creating kernel thread before
+mutating lifecycle state.
+
+`GeoLocusMetricResult.getXML(...)` deliberately emits no XML. Its `ValueType`
+is `VOID`, it is non-editable and non-drawable, and it does not implement
+`NumberValue`. `AlgoLocusMetricScalarAdapter` is the only supported numeric
+participation seam.
+
+## 16. Implemented capability and state flow
+
+The productive capability hierarchy checks, in order, analytic,
+differential, evaluator-only and unsupported strategies. Differential work
+uses a deterministic per-call adaptive Simpson integrator. Evaluator-only
+results are `FLOATING_POINT_UNCERTIFIED` unless explicit assumptions request
+estimated complete-component evidence; refinement agreement alone is never
+certification. Interpolated evaluator-only subarcs remain uncertified unless a
+future implementation establishes route-local evidence directly.
+
+```text
+LocusMetricIndexKey2D
+  -> LocusMetricSharedOwner2D.getOrBuildComponentState(...)
+  -> immutable LocusMetricComponentState2D
+  + LocusMetricRouteSegment2D
+  -> LocusMetricContribution2D
+  -> LocusMetricAggregator2D
+  -> LocusMetricResult2D
+```
+
+The default policy is `eps_metric_abs=1e-10`, `eps_metric_rel=1e-9`, 32768
+evaluations, 16384 subdivisions and depth 22. These are versioned policy
+defaults, not mathematical constants. The shared owner has provisional
+capacity 64 with deterministic insertion-order eviction.

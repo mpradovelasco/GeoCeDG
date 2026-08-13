@@ -150,8 +150,8 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/plugin/GeoClass.java",
       "change": "modified",
-      "purpose": "Append the distinct experimental LOCUS_V2 classification while preserving every existing ordinal and legacy LOCUS dispatch.",
-      "authority": "docs/adr/0006-parallel-locus-v2-semantic-entity.md"
+      "purpose": "G6B appended LOCUS_V2; G7B minimally appends LOCUS_METRIC_RESULT without changing earlier ordinals or legacy dispatch. Phase G7B structural enum extension; append-only placement is the smallest viable upstream edit.",
+      "authority": "docs/adr/0007-revision-scoped-locus-v2-metric-index.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/euclidian/EuclidianDraw.java",
@@ -162,8 +162,8 @@
     {
       "path": "source/shared/common-jre/src/test/java/org/geogebra/common/euclidian/DrawablesTest.java",
       "change": "modified",
-      "purpose": "Keep the exhaustive GeoClass drawable audit meaningful by covering the appended experimental LOCUS_V2 type through its internal factory.",
-      "authority": ".github/prompts/tasks/g6b-locus-v2-kernel.prompt.md"
+      "purpose": "Keep the exhaustive GeoClass drawable audit meaningful for LOCUS_V2 and the appended non-drawable LOCUS_METRIC_RESULT. Phase G7B structural regression edit; only the new enum case is added.",
+      "authority": "docs/validation/g7b_locus_v2_metric_kernel_report.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/ExplicitNumericDomainProvider2D.java",
@@ -276,8 +276,8 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/geos/GeoLocusV2.java",
       "change": "added",
-      "purpose": "Add the parallel experimental 2D semantic locus entity without Path, XML, public command, legacy locus, metric, or 3D contracts.",
-      "authority": "docs/adr/0006-parallel-locus-v2-semantic-entity.md"
+      "purpose": "Add the parallel experimental 2D semantic locus entity and, in phase G7B, the narrow per-source metric-owner lifecycle seam without Path, XML, public command, legacy-locus authority or 3D contracts. The owner attachment avoids a global or Construction repository.",
+      "authority": "docs/adr/0007-revision-scoped-locus-v2-metric-index.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoAnalyticLocusV2.java",
@@ -321,7 +321,7 @@
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusV2KernelIntegrationTest.java",
-      "change": "added", "purpose": "Verify providers, topology, revisions, nesting and public compatibility boundaries.", "authority": ".github/prompts/tasks/g6b-locus-v2-kernel.prompt.md"
+      "change": "added", "purpose": "Verify G6 providers/topology/revisions/nesting plus the phase G7B append-only metric GeoClass ordinal and public compatibility boundary. The existing integration suite is the narrowest enum regression location.", "authority": "docs/validation/g7b_locus_v2_metric_kernel_report.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusV2RenderSeparationTest.java",
@@ -361,7 +361,7 @@
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/locus/LocusV2LaboratoryController.java",
-      "change": "added", "purpose": "Present developer diagnostics without creating a public command, toolbar or persistence surface.", "authority": "docs/validation/g6r_locus_v2_hardening_report.md"
+      "change": "added", "purpose": "Present G6R semantic and phase G7B rich metric/component-owner diagnostics, with explicit removal on window close, without creating a public command, toolbar or persistence surface. Reusing the opt-in laboratory is the minimal UI edit.", "authority": "docs/validation/g7b_locus_v2_metric_kernel_report.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/locus/package-info.java",
@@ -434,6 +434,540 @@
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G7AR1MetricValueAndWorkBudgetTest.java",
       "change": "added", "purpose": "Characterize closed metric values, sentinel-free error evidence, direct reuse of the normative G6 guarantee and independent deterministic integration work ceilings.", "authority": "docs/validation/g7a_r1_locus_v2_metric_refinement_report.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/AbsentMetricValue2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/AnalyticLocusMetricCapability2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/BetweenPositionsMetricQuery.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/DifferentialLocusMetricCapability2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/EstablishedMetricErrorAmount2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/EvaluatorOnlyLocusMetricCapability2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/EvaluatorOnlyPolicy.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/FiniteMetricValue2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/ImproperLimitPolicy2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/LocusAnalyticMetricEvaluation2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/LocusAnalyticMetricEvaluator2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/LocusDifferentialEvaluation2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/LocusDifferentialEvaluator2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/LocusMetricAggregator2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/LocusMetricCapability2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/LocusMetricCapabilityHierarchy2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/LocusMetricComponentBuildException.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/LocusMetricComponentEvaluator2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/LocusMetricComponentKey2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/LocusMetricComponentState2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/LocusMetricComponentStateBuilder2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/LocusMetricContribution2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/LocusMetricEngine2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/LocusMetricIndex2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/LocusMetricIndexKey2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/LocusMetricIndexMode.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/LocusMetricIndexStatistics2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/LocusMetricInstrumentation2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/LocusMetricInstrumentationSnapshot2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/LocusMetricIntegrator2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/LocusMetricOwnerLease2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/LocusMetricPolicy2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/LocusMetricPositionBinder2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/LocusMetricQuery2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/LocusMetricResult2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/LocusMetricResults2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/LocusMetricRoute2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/LocusMetricRouteResolver2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/LocusMetricRouteSegment2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/LocusMetricSharedOwner2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/LocusSemanticPosition2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/MetricArcCoordinateEvidence2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/MetricCapabilityMetadata2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/MetricComponentPartition2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/MetricComputationStatus.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/MetricCoverage.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/MetricDiagnostic2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/MetricDiagnosticCode2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/MetricErrorAmount2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/MetricErrorAmountKind.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/MetricErrorEvidence2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/MetricErrorEvidenceScope.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/MetricEvaluatorMethod2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/MetricIntegrationResult2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/MetricMethod2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/MetricMultiplicityPolicy.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/MetricPositionBinding2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/MetricPositionEvaluationStatus.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/MetricProvenance2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/MetricRectifiability.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/MetricRepresentationRole2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/MetricRouteSegmentRole.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/MetricRouteStatus.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/MetricUnit2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/MetricValue2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/MetricValueKind.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/MetricWorkBudget2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/MetricWorkLimit2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/NotApplicableMetricErrorAmount2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/NotEstablishedMetricErrorAmount2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/OpenBoundaryPolicy.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/PositiveInfinityMetricValue2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/SamePositionPolicy.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/TotalLocusMetricQuery.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/TraversalDirection.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/TraversalOutcome.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/UnsupportedLocusMetricCapability2D.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/package-info.java",
+      "change": "added",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusMetricV2.java",
+      "change": "added",
+      "purpose": "Phase G7B semantic addition: register normal-DAG dependencies, owner-lease lifecycle and atomic rich-result publication without command dispatch; a dedicated GeoCeDG Algo is the minimal integration.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusMetricScalarAdapter.java",
+      "change": "added",
+      "purpose": "Phase G7B semantic adapter: expose only admissible finite rich results through a derived GeoNumeric without making the rich Geo numeric authority.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/geos/GeoLocusMetricResult.java",
+      "change": "added",
+      "purpose": "Phase G7B semantic addition: publish the immutable rich result as a nonnumeric, non-Path, nonpersistent and non-drawable GeoElement in the normal DAG.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G7BMetricFixtures.java",
+      "change": "added",
+      "purpose": "Provide focused phase G7B productive-kernel semantic, numerical, lifecycle, repeated-query, nested or fixture evidence without adding public behavior.",
+      "authority": "docs/validation/g7b_locus_v2_metric_kernel_report.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusMetricProductiveBenchmarkTest.java",
+      "change": "added",
+      "purpose": "Provide focused phase G7B productive-kernel semantic, numerical, lifecycle, repeated-query, nested or fixture evidence without adding public behavior.",
+      "authority": "docs/validation/g7b_locus_v2_metric_kernel_report.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusMetricProductiveImproperTest.java",
+      "change": "added",
+      "purpose": "Provide focused phase G7B productive-kernel semantic, numerical, lifecycle, repeated-query, nested or fixture evidence without adding public behavior.",
+      "authority": "docs/validation/g7b_locus_v2_metric_kernel_report.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusMetricProductiveLifecycleTest.java",
+      "change": "added",
+      "purpose": "Provide focused phase G7B productive-kernel semantic, numerical, lifecycle, repeated-query, nested or fixture evidence without adding public behavior.",
+      "authority": "docs/validation/g7b_locus_v2_metric_kernel_report.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusMetricProductiveNestedTest.java",
+      "change": "added",
+      "purpose": "Provide focused phase G7B productive-kernel semantic, numerical, lifecycle, repeated-query, nested or fixture evidence without adding public behavior.",
+      "authority": "docs/validation/g7b_locus_v2_metric_kernel_report.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusMetricProductiveNumericalTest.java",
+      "change": "added",
+      "purpose": "Provide focused phase G7B productive-kernel semantic, numerical, lifecycle, repeated-query, nested or fixture evidence without adding public behavior.",
+      "authority": "docs/validation/g7b_locus_v2_metric_kernel_report.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusMetricProductiveRouteTest.java",
+      "change": "added",
+      "purpose": "Provide focused phase G7B productive-kernel semantic, numerical, lifecycle, repeated-query, nested or fixture evidence without adding public behavior.",
+      "authority": "docs/validation/g7b_locus_v2_metric_kernel_report.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusMetricProductiveValueTest.java",
+      "change": "added",
+      "purpose": "Provide focused phase G7B productive-kernel semantic, numerical, lifecycle, repeated-query, nested or fixture evidence without adding public behavior.",
+      "authority": "docs/validation/g7b_locus_v2_metric_kernel_report.md"
     }
   ]
 }

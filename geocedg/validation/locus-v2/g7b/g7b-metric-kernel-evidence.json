@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "id": "cedg.validation.g7b.metric-kernel",
+  "status": "READY_FOR_AUTHOR_REVIEW",
+  "provenance": {
+    "entrySha": "bb3623dbd5945b558f42ff1a6f2d9ce4262cb983",
+    "planningSha": "e918846a73829032ab1e1aff37e863fed40c1969",
+    "executedPromptSha256": "c215a36a8350e5dd44da9ae3e546899d8ab0cf1abc480aec22666fc363f19aed",
+    "versionedPromptCanonicalSha256": "11e938be2788902298722d2e0442c9afb5700e1f7512b9b22732248d61af1c11",
+    "date": "2026-08-13"
+  },
+  "policy": {
+    "absoluteTolerance": 1e-10,
+    "relativeTolerance": 1e-9,
+    "maximumMetricEvaluations": 32768,
+    "maximumMetricSubdivisions": 16384,
+    "maximumAdaptiveDepth": 22,
+    "sharedOwnerCapacity": 64,
+    "capacityDisposition": "PROVISIONAL_NON_NORMATIVE",
+    "eviction": "DETERMINISTIC_INSERTION_ORDER"
+  },
+  "tests": {
+    "productive": {
+      "total": 62,
+      "failures": 0,
+      "bySuite": {
+        "value": 8,
+        "route": 11,
+        "numerical": 17,
+        "improper": 6,
+        "lifecycle": 11,
+        "benchmark": 7,
+        "nested": 2
+      }
+    },
+    "developerLaboratory": { "total": 3, "failures": 0 },
+    "g7aR1Regression": { "total": 51, "failures": 0 }
+  },
+  "functionalGates": {
+    "sameBetweenAnalyticTraces": {
+      "queries1": {
+        "componentStateBuilds": 1,
+        "hits": 0,
+        "misses": 1,
+        "evaluatorCalls": 0,
+        "derivativeCalls": 0,
+        "integratorCalls": 0,
+        "subdivisions": 0,
+        "retainedEntries": 1,
+        "retainedBytes": 336
+      },
+      "queries10": {
+        "componentStateBuilds": 1,
+        "hits": 9,
+        "misses": 1,
+        "evaluatorCalls": 0,
+        "derivativeCalls": 0,
+        "integratorCalls": 0,
+        "subdivisions": 0,
+        "retainedEntries": 1,
+        "retainedBytes": 336
+      },
+      "queries100": {
+        "componentStateBuilds": 1,
+        "hits": 99,
+        "misses": 1,
+        "evaluatorCalls": 0,
+        "derivativeCalls": 0,
+        "integratorCalls": 0,
+        "subdivisions": 0,
+        "retainedEntries": 1,
+        "retainedBytes": 336
+      },
+      "crossResultHits": 0,
+      "duplicateBuilds": 0,
+      "evictions": 0,
+      "invalidations": 0,
+      "wallClockDisposition": "INFORMATIONAL_IN_TEST_LOG"
+    },
+    "compatibleConsumers100": {
+      "componentStateBuilds": 1,
+      "crossResultHits": 99,
+      "duplicateBuilds": 0
+    },
+    "repeatedTotal100ThreeComponents": {
+      "componentStateBuilds": 3,
+      "hits": 297,
+      "retainedEntries": 3
+    },
+    "strictUnreachable100": { "builds": 0, "misses": 0 },
+    "capacity65Keys": { "retainedEntries": 64, "evictions": 1 },
+    "renderReads": 0,
+    "renderVertexReads": 0,
+    "legacySampleReads": 0,
+    "wholeLocusRegenerations": 0,
+    "indexBuildsInsideDownstreamPoint": 0,
+    "failedEntriesPublished": 0,
+    "oldRevisionsRetained": 0,
+    "crossConstructionSharing": 0,
+    "publicCommands": 0,
+    "xmlRegistrations": 0,
+    "publicPathAdditions": 0,
+    "metric3dBehavior": 0,
+    "g8Behavior": 0,
+    "cacheOffSemanticEquality": "PASS"
+  },
+  "sourceBoundary": {
+    "metricPackageJavaFiles": 78,
+    "richGeo": "org.geocedg.common.kernel.geos.GeoLocusMetricResult",
+    "metricAlgorithm": "org.geocedg.common.kernel.algos.AlgoLocusMetricV2",
+    "scalarAdapter": "org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter",
+    "upstreamOwnedProductiveFilesModified": [
+      "source/shared/common/src/main/java/org/geogebra/common/plugin/GeoClass.java"
+    ]
+  },
+  "phaseDisposition": {
+    "g7": "IN_PROGRESS",
+    "g7b": "READY_FOR_AUTHOR_REVIEW",
+    "g7bPublicCommand": "ABSENT",
+    "g7bXmlPersistence": "ABSENT",
+    "g7bPublicPath": "ABSENT",
+    "g7b3d": "ABSENT",
+    "g8": "NOT_STARTED",
+    "g9": "NOT_STARTED"
+  }
+}

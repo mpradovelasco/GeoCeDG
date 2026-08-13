@@ -202,7 +202,10 @@ public enum GeoClass {
 	SHAPE_STADIUM("Stadium", 150, false),
 
 	/** Experimental GeoCeDG semantic locus; appended to preserve all ordinals. */
-	LOCUS_V2("LocusV2", "locusv2", 130, false);
+	LOCUS_V2("LocusV2", "locusv2", 130, false),
+
+	/** Internal rich GeoCeDG Locus V2 metric result; no XML contract. */
+	LOCUS_METRIC_RESULT("LocusMetricResult", "locusmetricresult", 131, false);
 
 	/**
 	 * name MUST be in ggbtrans/properties

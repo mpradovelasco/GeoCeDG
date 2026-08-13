@@ -8,12 +8,19 @@
 | Implementation baseline | `0c4cc40a389477226b2a6cb507c4fa072790a586` |
 | Hardening entry | `e78b4e71ebf752de8c3552b466dbee52b400ab94` |
 | Date | 2026-08-12 |
+| Current additive metric layer | [G7B metric architecture](locus_v2_metric_architecture.md), ready for author review |
 
 This document describes the implementation that exists after G6R. It does not
 extend the normative semantics and does not make Locus V2 public. The
 [developer API reference](../developer/locus_v2_api.md) gives method-level
 contracts; the [user guide](../user/geocedg_user_guide.md) is the operational
 entry point.
+
+Sections 1–11 intentionally preserve the G6R baseline. G7B subsequently added
+the separate internal metric layer documented by the
+[metric implementation architecture](locus_v2_metric_architecture.md) and
+[metric developer API](../developer/locus_v2_metric_api.md); it did not change
+the legacy metric or public-command boundaries recorded here.
 
 ## 1. Implemented boundary
 
@@ -193,7 +200,7 @@ hardening and would enlarge the product boundary without a G6R need.
 | 3D and plane views | Explicitly unsupported; no dispatch |
 | legacy `Path`, incidence, `isGeoLocus*` | Explicitly unsupported/false |
 | `CmdLocus`, `AlgoDispatcher`, ODE | Explicitly excluded |
-| `Length`, `Perimeter`, legacy metrics | Explicitly excluded; G7 not started |
+| `Length`, `Perimeter`, legacy metrics | Explicitly excluded at G6R closeout; G7B later adds only a separate internal V2 metric layer |
 | XML/factory/migration/undo persistence | Explicitly excluded |
 | G5 export | Explicitly rejected as unsupported geometry |
 
@@ -221,8 +228,9 @@ corresponding GeoCeDG packages. The registry is
 
 ## 11. Deliberate limitations
 
-No public command, persistence, migration, `Path`, point-on-locus, G7 metric,
-G8 intersection, G9 spatial binding, locus export, 3D behavior, concurrency or
-canonical-continuation provider exists. These are phase boundaries, not hidden
-features. G7 must consume semantic revisions/evaluators and must not reintroduce
-sampled chord or whole-locus regeneration.
+At G6R closeout no public command, persistence, migration, `Path`,
+point-on-locus, G7 metric, G8 intersection, G9 spatial binding, locus export,
+3D behavior, concurrency or canonical-continuation provider existed. G7B now
+adds the internal metric only; all the other exclusions remain current. Its
+implementation consumes semantic revisions/evaluators and does not reintroduce
+sampled chords or whole-locus regeneration.

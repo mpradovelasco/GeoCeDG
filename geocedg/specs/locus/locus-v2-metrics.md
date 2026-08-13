@@ -4,7 +4,7 @@
 - Version: `1.0`
 - Approval date: 2026-08-13
 - Author-review disposition: **G7A-R1 AND G7A PASS — AUTHOR APPROVED**
-- Roadmap gate: G7 `IN PROGRESS`; G7A `PASS`; G7B `AUTHORIZED / NOT STARTED`
+- Roadmap gate: G7 `IN PROGRESS`; G7A `PASS`; G7B `READY FOR AUTHOR REVIEW`
 - Affected layer: shared Java kernel semantics and internal developer laboratory
 - Working architecture: `GeoLocusMetricResult` as a normal kernel-DAG result
 - Architecture decision: Accepted ADR 0007
@@ -13,8 +13,8 @@
 This normative contract records the author-approved G7 planning requirements,
 all 42 G7A recommendations, R1-1..R1-22 and the three API normalizations
 approved at final closeout. It does not override the normative G6 Locus V2
-semantic contract, implement productive metric code or create a public API.
-G7B is authorized but remains not started.
+semantic contract or create a public API. The productive internal G7B candidate
+implements this contract and is ready for author review.
 
 ## 1. Scope
 
@@ -567,15 +567,32 @@ experimental/internal and disabled by default.
 
 ## 19. Author-approved phase disposition
 
-The final author review accepted all 42 G7A recommendations, R1-1..R1-22 and
-the three closeout API normalizations. This approval makes the contract
-normative and authorizes, but does not execute, G7B:
+The final G7A author review accepted all 42 recommendations, R1-1..R1-22 and
+the three closeout API normalizations. That approval made the contract
+normative and authorized the separately executed G7B candidate:
 
 ```text
 G7A-R1 = PASS — AUTHOR APPROVED
 G7A = PASS — AUTHOR APPROVED
 G7 METRIC SPEC = NORMATIVE / AUTHOR APPROVED
 ADR 0007 = ACCEPTED
-G7B = AUTHORIZED / NOT STARTED
+G7B = READY FOR AUTHOR REVIEW
 G8 = NOT STARTED
 ```
+
+## 20. G7B conformance clarification
+
+The G7B candidate realizes this normative contract with internal classes under
+`org.geocedg.common.kernel.locus.metric`, one rich
+`GeoLocusMetricResult`, one normal-DAG `AlgoLocusMetricV2` and an explicit
+scalar adapter. This is implementation evidence, not a semantic amendment.
+
+The component-state key excludes route endpoints. The bounded shared owner
+publishes only immutable component-level state after successful private build;
+route-specific contributions and aggregate results remain local to the query.
+Traversal is structurally absent from total results. Error amount is expressed
+only by the three closed variants, reusing the G6 `NumericGuarantee` directly.
+
+No command, XML registration, persistence contract, public `Path`, 3D, G5,
+G8 or G9 surface is added. The mathematical and public-boundary clauses above
+remain unchanged.

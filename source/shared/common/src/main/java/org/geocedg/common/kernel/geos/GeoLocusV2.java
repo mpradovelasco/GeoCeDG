@@ -10,6 +10,9 @@ import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
 import org.geocedg.common.kernel.locus.LocusInstrumentation2D;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.DefinitionStatus;
+import org.geocedg.common.kernel.locus.metric.LocusMetricInstrumentation2D;
+import org.geocedg.common.kernel.locus.metric.LocusMetricOwnerLease2D;
+import org.geocedg.common.kernel.locus.metric.LocusMetricSharedOwner2D;
 import org.geogebra.common.io.XMLStringBuilder;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.StringTemplate;
@@ -27,8 +30,10 @@ public final class GeoLocusV2 extends GeoElement {
 			"GeoLocusV2 cannot be copied before an approved persistence/lifecycle contract";
 	private final String locusIdentity;
 	private final LocusInstrumentation2D instrumentation;
+	private final LocusMetricInstrumentation2D metricInstrumentation;
 	private LocusDefinition2D definition;
 	private boolean explicitlyUndefined;
+	private LocusMetricSharedOwner2D metricOwner;
 
 	/** Creates an empty internal V2 object with a caller-owned stable identity. */
 	public GeoLocusV2(Construction construction, String locusIdentity) {
@@ -38,6 +43,7 @@ public final class GeoLocusV2 extends GeoElement {
 		}
 		this.locusIdentity = locusIdentity;
 		this.instrumentation = new LocusInstrumentation2D();
+		this.metricInstrumentation = new LocusMetricInstrumentation2D();
 		setEuclidianVisible(true);
 		setAuxiliaryObject(true);
 	}
@@ -58,6 +64,30 @@ public final class GeoLocusV2 extends GeoElement {
 		return instrumentation;
 	}
 
+	/** @return functional metric counters, separate from render instrumentation */
+	public LocusMetricInstrumentation2D getMetricInstrumentation() {
+		return metricInstrumentation;
+	}
+
+	/**
+	 * Acquires the narrow per-source metric-state owner seam. No dependency edge
+	 * or query/result authority is stored here.
+	 *
+	 * @return one active metric-consumer lease
+	 */
+	public LocusMetricOwnerLease2D acquireMetricOwnerLease() {
+		if (metricOwner == null || metricOwner.isReleased()) {
+			metricOwner = new LocusMetricSharedOwner2D(locusIdentity,
+					metricInstrumentation);
+		}
+		return metricOwner.acquireLease();
+	}
+
+	/** @return active owner for diagnostics only, or {@code null} */
+	public LocusMetricSharedOwner2D getMetricSharedOwnerForDiagnostics() {
+		return metricOwner;
+	}
+
 	/** Publishes one immutable snapshot from normal AlgoElement recompute only. */
 	public void publishSemanticDefinition(LocusDefinition2D semanticDefinition) {
 		if (!locusIdentity.equals(semanticDefinition.getLocusIdentity())) {
@@ -66,6 +96,10 @@ public final class GeoLocusV2 extends GeoElement {
 		if (definition != null && semanticDefinition.getSemanticRevision()
 				<= definition.getSemanticRevision()) {
 			throw new IllegalArgumentException("Semantic revisions must increase");
+		}
+		if (metricOwner != null && !metricOwner.isReleased()) {
+			metricOwner.invalidateObsoleteRevision(
+					semanticDefinition.getSemanticRevision());
 		}
 		definition = semanticDefinition;
 		explicitlyUndefined = false;
@@ -157,6 +191,18 @@ public final class GeoLocusV2 extends GeoElement {
 	@Override
 	public void setUndefined() {
 		explicitlyUndefined = true;
+		if (metricOwner != null && !metricOwner.isReleased()) {
+			metricOwner.clear();
+		}
+	}
+
+	@Override
+	public void doRemove() {
+		if (metricOwner != null) {
+			metricOwner.releaseSource();
+			metricOwner = null;
+		}
+		super.doRemove();
 	}
 
 	@Override

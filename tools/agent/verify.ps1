@@ -25,6 +25,7 @@ $PackagingVerifier = Join-Path $PSScriptRoot "verify-packaging.ps1"
 $DxfVerifier = Join-Path $PSScriptRoot "verify-dxf.ps1"
 $LocusV2Verifier = Join-Path $PSScriptRoot "verify-locus-v2.ps1"
 $G7AMetricVerifier = Join-Path $PSScriptRoot "verify-g7a-metrics.ps1"
+$G7BMetricVerifier = Join-Path $PSScriptRoot "verify-g7b-metrics.ps1"
 $BenchmarkRunner = Join-Path $RepositoryRoot "tools\benchmark\run.ps1"
 $InitialStatus = $null
 
@@ -103,6 +104,23 @@ try {
     }
     & $G7AMetricVerifier @g7aMetricParameters
     Assert-LastScriptSuccess -Description "G7A Locus V2 metric characterization"
+
+    Write-Host "`n==> G7B native Locus V2 metric kernel"
+    $g7bMetricParameters = @{
+        LogDirectory = Join-Path ([IO.Path]::GetFullPath($LogDirectory)) `
+            "g7b-metrics"
+    }
+    if ($SkipBuild) {
+        $g7bMetricParameters.SkipBuild = $true
+    }
+    if ($AllowToolchainDownload) {
+        $g7bMetricParameters.AllowToolchainDownload = $true
+    }
+    if ($KeepBuildOutputs) {
+        $g7bMetricParameters.KeepBuildOutputs = $true
+    }
+    & $G7BMetricVerifier @g7bMetricParameters
+    Assert-LastScriptSuccess -Description "G7B native Locus V2 metric kernel"
 
     Write-Host "`n==> Standalone Windows packaging contracts"
     $packagingParameters = @{}

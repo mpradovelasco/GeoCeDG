@@ -19,6 +19,12 @@ algorithm, 3D, XML, metric or export paths documented here. The realized class,
 lifecycle, session and render details are maintained in
 [the G6R implementation map](locus_v2_implementation.md).
 
+This remains the historical G6/G6R impact record. The additive G7B metric
+surface is documented separately in the
+[G7 metric architecture](locus_v2_metric_architecture.md) and
+[G7B report](../validation/g7b_locus_v2_metric_kernel_report.md); legacy
+`Length`, `Perimeter`, `Path`, XML and 3D dispatch remain unchanged.
+
 ## 1. End-to-end legacy path
 
 ```text
@@ -200,12 +206,13 @@ operate on samples and filtered lists. Their exact definitions are preserved in
 the [derived inventory](../../models/legacy/template-v7/derived/tool-inventory.yml).
 They are characterization cases, not APIs to port into the kernel.
 
-A future G7 metric exposed as a downstream semantic dependency must be scoped
-to the upstream locus semantic revision. It must consume V2 semantic data,
-never `LocusRenderCache2D` or sampled chord sums, and must not recompute the
-complete metric for every downstream point while that revision is unchanged.
-Its cache and invalidation remain subordinate to the normal kernel DAG. This is
-a forward requirement only; G7 is not implemented by G6A or G6B.
+At G6 closeout, a future G7 metric exposed as a downstream semantic dependency
+was required to be scoped to the upstream locus semantic revision, consume V2
+semantic data, never consume `LocusRenderCache2D` or sampled chord sums, and
+avoid recomputing the complete metric for every downstream point while that
+revision remained unchanged. Its cache and invalidation had to remain
+subordinate to the normal kernel DAG. G7B now realizes those requirements as a
+separate internal layer; they were not implemented by G6A or G6B.
 
 ## 8. Serialization and type dispatch
 

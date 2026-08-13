@@ -2,17 +2,17 @@
 
 | Field | Value |
 |---|---|
-| Status | Author-approved G7A/G7A-R1 architecture; no implementation |
-| Product maturity | Authorized experimental/internal G7B candidate; not started |
+| Status | Author-approved G7A/G7A-R1 architecture; G7B candidate implemented |
+| Product maturity | Experimental/internal; ready for author review |
 | Semantic model | [`locus_v2_metric_semantic_model.md`](locus_v2_metric_semantic_model.md) |
 | Normative contract | [`locus-v2-metrics.md`](../../geocedg/specs/locus/locus-v2-metrics.md) |
 | Index decision | [ADR 0007 Accepted](../adr/0007-revision-scoped-locus-v2-metric-index.md) |
 | Date | 2026-08-13 |
 
 This document maps the approved G7 planning semantics and measured G7A findings
-to the author-approved G7B shared-kernel architecture. Names remain conceptual
-until implemented. G7A-R1 and G7A are `PASS — AUTHOR APPROVED`; G7B is
-`AUTHORIZED / NOT STARTED`, and G8 remains `NOT STARTED`.
+to the author-approved G7B shared-kernel architecture. The names below now map
+to productive internal classes. G7A-R1 and G7A are `PASS — AUTHOR APPROVED`;
+G7B is `READY FOR AUTHOR REVIEW`, and G8 remains `NOT STARTED`.
 
 ## 1. Baseline and placement
 
@@ -25,8 +25,8 @@ The G6/G6R baseline already contains:
 - revision-aware bounded `LocusEvaluationSession2D`;
 - view-owned `LocusRenderCache2D` under the Euclidian draw package.
 
-It deliberately contains no productive metric entity, index, command or
-persistence. The G7 metric changes semantic meaning, must update in the normal
+Before G7B it deliberately contained no productive metric entity, index,
+command or persistence. The G7 metric changes semantic meaning, must update in the normal
 construction DAG and can be consumed by downstream constructions. Therefore
 its truth belongs in the shared Java kernel, with only a developer-laboratory
 adapter in the Desktop/application layer.
@@ -636,7 +636,7 @@ API normalizations. The resulting decisions are:
 - the exact source/test/package map in the developer API;
 - functional repeated/nested gates, not absolute timing gates.
 
-`SHORTEST` remains deferred. G7B is authorized but not started.
+`SHORTEST` remains deferred. The G7B candidate implements this architecture.
 
 ## 15. G7B minimum acceptance architecture
 
@@ -657,5 +657,29 @@ The authorized G7B minimum includes:
 - internal API documentation and developer laboratory.
 
 It still excludes commands, XML, public `Path`, 3D, G5 changes, G8 and G9.
-No implementation begins in this closeout task. Productive work starts only by
-executing the separately versioned G7B prompt.
+
+## 16. Implemented class and ownership map
+
+The shared common module now contains the query, binding, route, policy,
+capability, integration, component-state, index, contribution, aggregation and
+rich-result values under `org.geocedg.common.kernel.locus.metric`. Publication
+is split between `AlgoLocusMetricV2`, `GeoLocusMetricResult` and the explicit
+`AlgoLocusMetricScalarAdapter`.
+
+`GeoLocusV2` owns one lazily created, kernel-thread-confined
+`LocusMetricSharedOwner2D`. Every metric algorithm holds a lease. The final
+lease, a semantic revision/topology transition, undefined state or source
+removal synchronously clears retained state. Capacity is the provisional 64
+entries from ADR 0007, with deterministic insertion-order eviction. No global
+or Construction-wide registry exists.
+
+The owner publishes only immutable `LocusMetricComponentState2D` after a
+successful private build. It never stores routes, query results, contributions
+or aggregates. `REFERENCE_NO_INDEX_REUSE` remains the semantic oracle and the
+productive tests require full rich-result equality with the indexed path.
+
+The only upstream-owned productive edit is the append-only
+`GeoClass.LOCUS_METRIC_RESULT` enumerator. GeoCeDG-owned existing seams are
+limited to `GeoLocusV2` lifecycle and the developer laboratory; base
+`GeoElement`, numeric interfaces, commands, XML/factories, Path and 3D remain
+unchanged.

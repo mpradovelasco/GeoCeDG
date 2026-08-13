@@ -3,12 +3,13 @@
 - Status: **Accepted**
 - Author review disposition: **ACCEPTED AT G7A FINAL AUTHOR CLOSEOUT**
 - Prior disposition: **APPROVED AS G7A WORKING ARCHITECTURAL HYPOTHESIS**
-- Roadmap state: G7 `IN PROGRESS`; G7A `PASS`; G7B `AUTHORIZED / NOT STARTED`
+- Roadmap state: G7 `IN PROGRESS`; G7A `PASS`; G7B `READY FOR AUTHOR REVIEW`
 - Decision phase: final G7A/G7A-R1 author closeout
 - Date: 2026-08-13
 
-The author accepts the architecture after G7A and G7A-R1 characterization.
-This decision authorizes G7B but does not implement or start it.
+The author accepted the architecture after G7A and G7A-R1 characterization.
+The separately authorized G7B task now implements the candidate; this ADR
+remains the decision authority rather than execution evidence.
 
 ## Context
 
@@ -351,5 +352,31 @@ entry measurement.
 INDEX STRATEGY = LAZY_COMPONENT_REVISION
 INDEX OWNERSHIP = DEDICATED_SHARED_OWNER
 ADR 0007 = ACCEPTED
-G7B = AUTHORIZED / NOT STARTED
+G7B = READY FOR AUTHOR REVIEW
 ```
+
+## Implementation evidence
+
+G7B implements `LAZY_COMPONENT_REVISION` and
+`DEDICATED_SHARED_OWNER` as distinct decisions. One non-GeoElement owner is
+attached to each active `GeoLocusV2`; metric algorithms acquire leases and the
+last lease releases retained state. Revision/topology, undefined and source
+removal transitions invalidate synchronously. Owners are isolated by source
+locus and Construction and have no dependency edges or callbacks.
+
+The productive map is exactly:
+
+```text
+complete component key
+    -> private build
+    -> immutable LocusMetricComponentState2D publication
+    + route segment
+    -> query-local LocusMetricContribution2D
+```
+
+The provisional capacity remains 64 entries per active source locus with
+deterministic insertion-order eviction. Productive probes confirm one build
+and 99 cross-result hits for 100 compatible consumers, zero compatible
+duplicate builds, no failed entry publication, current-revision retention only
+and semantic equality with `REFERENCE_NO_INDEX_REUSE`. Capacity 64 remains
+non-normative pending author review of productive evidence.
