@@ -1219,13 +1219,14 @@ dependency-slice regeneration. It does not yet eliminate the future risk of a
 metric service recomputing an entire locus: G7 must make derived metrics
 revision-scoped, semantic and cache/invalidation coherent.
 
-#### Current G6B limitations and future boundary
+#### Current public Locus V2 boundary
 
 - no public GUI, command or end-user activation; only the opt-in developer
   laboratory exists;
 - no `.ggb` XML, migration or public copy guarantee;
 - no public `Path`, point-on-V2 or legacy incidence;
-- no length, perimeter or metric index (G7);
+- no public length, perimeter or metric command; the G7B metric service/index
+  remains internal and developer-only;
 - no intersections (G8);
 - no 3D/projection semantics (G9);
 - no DXF locus export;
@@ -1247,7 +1248,7 @@ polyline is a disposable view representation.
 | G6R | Hardening, developer laboratory, measured render optimization and developer documentation | `PASS`; developer-only workflow |
 | G7A | Locus V2 metric characterization plus focused R1 | `PASS — AUTHOR APPROVED`; historical evidence |
 | G7B | Minimal native Locus V2 metric kernel | Internal productive kernel; `PASS — AUTHOR APPROVED`; no public metric |
-| G8 | Native Locus V2 intersections | Pending; not started |
+| G8 | Native Locus V2 intersections | Planning package ready for author review; execution not started |
 | G9 | Native spatial identity and canonical projection semantics | Pending |
 | G10 | CeDG 3D DSL and workbench | Pending |
 | G11 | Hierarchical layers and view states | Pending |
@@ -1376,6 +1377,30 @@ adequate guarantee. STOP partials, stale/unsupported/incomplete states,
 failures, absent values and positive infinity remain rich-only or scalar-
 undefined.
 
+### G8 planning — no observable intersection feature
+
+G8 remains `NOT STARTED`. Its proposed planning package recommends an
+author-gated characterization stage followed, only after explicit approval, by
+a minimum internal 2D kernel stage. The proposed first target families are
+line, segment, ray and circle; full conics are conditional, while functions,
+implicit curves and locus–locus are deferred for broader characterization.
+
+The proposal treats the semantic Locus V2 parameter, branch, valid component
+and source revision as authority. It requires a rich result that distinguishes
+complete empty, finite verified solutions, unresolved search, unsupported
+capability and overlap; it also proposes topology-aware root lineage for
+tangent merge/split and periodic seams. These are review hypotheses, not
+implemented behavior.
+
+There is no native Locus V2 intersection command, point output, public
+incidence/`Path`, persistence, UI, 3D behavior or end-user workflow. The
+[G8 plan](../roadmap/g8_locus_v2_intersections_plan.md),
+[proposed spec](../../geocedg/specs/locus/locus-v2-intersections.md),
+[architecture](../architecture/locus_v2_intersection_architecture.md),
+[validation matrix](../validation/g8_locus_v2_intersection_validation_matrix.md)
+and [Proposed ADR 0008](../adr/0008-locus-v2-intersection-result-and-continuation.md)
+exist only for author review.
+
 ## 13. Current limitations
 
 - G4 packages are technical internal-evaluation artifacts, not authorized
@@ -1392,9 +1417,9 @@ undefined.
   curves, legacy Locus export or 3D export.
 - Locus V2 semantic and G7B metric behavior is accessible only through
   internal/test factories and the explicit developer laboratory. No native
-  public CeDG metric command,
-  productive V2 metric, persistence, spatial object/projection identity or DSL
-  exists.
+  public CeDG metric or Locus V2 intersection command, persistence, spatial
+  object/projection identity or DSL exists. The productive V2 metric remains
+  internal; productive G8 intersections do not exist.
 - Legacy macros may have undocumented validity ranges, degeneracies, dynamic
   limitations, and sampled numerical approximations.
 - The 71-model public corpus is an external metadata index, not a local mirror
@@ -1498,7 +1523,7 @@ boundary defined by the operational contracts.
   [traceability](../validation/g6r_locus_v2_traceability_matrix.md),
   [G6R report](../validation/g6r_locus_v2_hardening_report.md), and
   [hardening evidence](../../geocedg/validation/locus-v2/g6r-hardening-evidence.yml)
-- Locus V2 G7 author-approved architecture and characterization evidence — not implemented:
+- Locus V2 G7 author-approved internal metric architecture and evidence:
   [G7 plan](../roadmap/g7_locus_v2_metrics_plan.md),
   [metric semantic model](../architecture/locus_v2_metric_semantic_model.md),
   [metric architecture](../architecture/locus_v2_metric_architecture.md),
@@ -1508,8 +1533,20 @@ boundary defined by the operational contracts.
   [benchmark plan](../validation/g7_locus_v2_metric_benchmark_plan.md),
   [G7A report](../validation/g7a_locus_v2_metric_characterization_report.md),
   [focused R1 report](../validation/g7a_r1_locus_v2_metric_refinement_report.md),
-  [candidate developer API](../developer/locus_v2_metric_api.md), and
-  [G7A traceability](../validation/g7a_locus_v2_metric_traceability_matrix.md)
+  [developer API](../developer/locus_v2_metric_api.md),
+  [G7A traceability](../validation/g7a_locus_v2_metric_traceability_matrix.md),
+  [G7B report](../validation/g7b_locus_v2_metric_kernel_report.md), and
+  [G7B traceability](../validation/g7b_locus_v2_metric_traceability_matrix.md)
+- Locus V2 G8 planning only — no implementation or observable feature:
+  [G8 plan](../roadmap/g8_locus_v2_intersections_plan.md),
+  [proposed semantic model](../architecture/locus_v2_intersection_semantic_model.md),
+  [proposed architecture](../architecture/locus_v2_intersection_architecture.md),
+  [upstream impact map](../architecture/locus_v2_intersection_upstream_impact.md),
+  [proposed non-normative spec](../../geocedg/specs/locus/locus-v2-intersections.md),
+  [validation matrix](../validation/g8_locus_v2_intersection_validation_matrix.md),
+  [functional-counter plan](../validation/g8_locus_v2_intersection_benchmark_plan.md),
+  [scientific traceability](../validation/g8_locus_v2_intersection_scientific_traceability.md), and
+  [Proposed ADR 0008](../adr/0008-locus-v2-intersection-result-and-continuation.md)
 - Current feature state:
   [stable manifest](../../geocedg/features/stable.yml) and
   [experimental manifest](../../geocedg/features/experimental.yml)

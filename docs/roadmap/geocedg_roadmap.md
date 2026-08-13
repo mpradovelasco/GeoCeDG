@@ -3,7 +3,7 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Roadmap vivo y normativo de fases; no sustituye las especificaciones ni los ADR aceptados |
-| Versión documental | 3.11 |
+| Versión documental | 3.12 |
 | Fecha de revisión | 13 de agosto de 2026 |
 | Baseline GeoGebra | 5.4.928.0, commit `9b93256b7df401ff056c37b502d82df4d72b1522`, tag `geogebra-baseline-5.4.928.0` |
 | Estado actual | G6 `PASS`; G6R `PASS`; G7A-R1, G7A y G7B `PASS — AUTHOR APPROVED`; G7 `PASS`; V2 sigue experimental, interno y desactivado por defecto |
@@ -51,8 +51,10 @@ elementos combinan capacidades cerradas y objetivos explícitamente futuros:
 - contrato matemático y arquitectura de `Locus V2` (`PASS`, G6A), con entidad
   experimental interna, evaluator, composición anidada y render derivado
   implementados y validados en G6B (`PASS`);
-- paquete G7 de planificación restaurado y caracterización G7A reejecutada,
-  lista para segunda revisión; spec y ADR continúan propuestos;
+- métricas internas Locus V2 implementadas y validadas en G7B, con G7A-R1,
+  G7A y G7B aprobadas por el autor, spec normativa y ADR 0007 Accepted;
+- paquete de planificación G8 propuesto y listo para revisión de autor, sin
+  iniciar caracterización ni implementación;
 - un modelo semántico `SpatialObject3D`–proyecciones (`PENDING`, G9);
 - criterios verificables de suficiencia y degeneración de proyecciones
   canónicas (`PENDING`, G9).
@@ -1091,7 +1093,8 @@ La optimización priorizará, según evidencia: invalidación incremental, cach�
 | G6B | `PASS` | [Informe G6B](../validation/g6b_locus_v2_kernel_report.md); entidad experimental interna, sin superficie pública |
 | G6R | `PASS` | [Informe G6R](../validation/g6r_locus_v2_hardening_report.md); hardening, laboratorio developer-only y optimización de render medida |
 | G7 | `PASS` | [G7A reejecutado](../validation/g7a_locus_v2_metric_characterization_report.md), [R1 acotado](../validation/g7a_r1_locus_v2_metric_refinement_report.md) y G7B `PASS — AUTHOR APPROVED`; spec normativa y ADR 0007 Accepted |
-| G8–G16 | `NOT STARTED` | No iniciadas |
+| G8 | `NOT STARTED — PLANNING READY FOR AUTHOR REVIEW` | [Plan G8 propuesto](g8_locus_v2_intersections_plan.md); spec y ADR siguen propuestos; no hay ejecución ni implementación |
+| G9–G16 | `NOT STARTED` | No iniciadas |
 
 Los estados `experimental` describen madurez de una capacidad, no una puerta
 fallida. Un gate solo se marca `PASS` cuando satisface sus validaciones; un
@@ -1403,19 +1406,61 @@ G9 = NOT STARTED
 
 ## G8 - Intersecciones 2D
 
-**Estado:** `NOT STARTED`
+**Estado:** `NOT STARTED — PLANNING READY FOR AUTHOR REVIEW`
 
-**Trabajo**
+El [plan de ejecución propuesto](g8_locus_v2_intersections_plan.md) recomienda
+dos puertas, sin iniciarlas:
 
-- objetos básicos;
-- tangencia;
-- identidad dinámica;
-- ampliación a implícitas y locus-locus.
+1. **G8A — caracterización y decisiones de autor:** probes exclusivamente
+   test-private, referencias independientes y medición de solver, tangencia,
+   tolerancias, resultado rico, identidad/topología y trabajo acotado;
+2. **G8B — kernel interno 2D mínimo:** solo después de que G8A sea
+   `PASS — AUTHOR APPROVED`, la spec pase a normativa, el ADR se acepte o
+   sustituya y exista autorización productiva separada.
 
-**Salida**
+No se reserva una G8C. Implícitas, funciones y locus–locus se caracterizarán
+como Level C y solo justificarán una fase posterior si la evidencia muestra que
+no caben de forma sostenible en el mínimo.
 
-- Locus como entidad 2D de primer nivel para incidencia soportada;
-- pruebas de topología y degeneraciones.
+**Mínimo productivo propuesto, pendiente de decisión**
+
+- recta, segmento, semirrecta y circunferencia;
+- cónicas no degeneradas solo si G8A demuestra un contrato cerrado;
+- aislamiento por componente semántico, refinamiento y verificación residual;
+- tangencia de multiplicidad par sin depender solo de cambios de signo;
+- resultado rico inmutable con ausencia completa, incertidumbre, overlap,
+  garantía y lifecycle separados;
+- identidad por parámetro/rama/componente y linaje topológico, nunca por
+  proximidad de coordenadas; y
+- estado inicialmente local a la consulta; ningún índice métrico G7 sirve como
+  autoridad de intersección.
+
+**Frontera mantenida**
+
+- `GeoLocus` legacy y Classic no cambian;
+- no comando/dispatcher público, `Path`, punto arbitrario sobre V2, XML,
+  persistencia o migración;
+- no exportación G5, 3D, semántica espacial G9 ni DSL Python;
+- `LocusRenderCache2D`, vértices, `myPointList`, viewport, zoom, DPI y
+  tolerancias de píxel están prohibidos como autoridad.
+
+El paquete incluye el
+[modelo semántico](../architecture/locus_v2_intersection_semantic_model.md), la
+[arquitectura](../architecture/locus_v2_intersection_architecture.md), el
+[impacto upstream](../architecture/locus_v2_intersection_upstream_impact.md),
+la [spec propuesta](../../geocedg/specs/locus/locus-v2-intersections.md), la
+[matriz de validación](../validation/g8_locus_v2_intersection_validation_matrix.md),
+el [plan de contadores](../validation/g8_locus_v2_intersection_benchmark_plan.md),
+la [trazabilidad científica](../validation/g8_locus_v2_intersection_scientific_traceability.md),
+el [ADR 0008 Proposed](../adr/0008-locus-v2-intersection-result-and-continuation.md)
+y los prompts futuros
+[G8A](../../.github/prompts/tasks/g8a-locus-v2-intersection-characterization.prompt.md)
+y [G8B](../../.github/prompts/tasks/g8b-locus-v2-intersection-kernel.prompt.md).
+
+Ninguno de estos documentos ejecuta G8. La spec permanece
+`PROPOSED — NOT NORMATIVE`, ADR 0008 permanece `Proposed`, G8A/G8B no han
+comenzado y toda implementación productiva exige revisión y autorización
+explícita del autor.
 
 ## G9 - Semántica espacial y proyecciones canónicas
 
