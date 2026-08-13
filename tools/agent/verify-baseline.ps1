@@ -114,9 +114,11 @@ try {
     New-Item -ItemType Directory -Path $LogDirectory -Force | Out-Null
 
     $InitialStatus = Get-RepositoryStatusText -RepositoryRoot $RepositoryRoot
-    $GeneratedState = New-RepositoryGeneratedStateSnapshot `
-        -RepositoryRoot $RepositoryRoot -DirectoryNames $GeneratedDirectoryNames `
-        -Label "verify-baseline"
+    if (-not $SkipBuild) {
+        $GeneratedState = New-RepositoryGeneratedStateSnapshot `
+            -RepositoryRoot $RepositoryRoot `
+            -DirectoryNames $GeneratedDirectoryNames -Label "verify-baseline"
+    }
 
     Write-Host "GeoCeDG baseline verification"
     Write-Host "Repository: $RepositoryRoot"

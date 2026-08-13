@@ -2,24 +2,27 @@
 
 | Field | Value |
 |---|---|
-| Status | **RESTORED AND AUTHOR-REVIEWED PLANNING** |
-| Roadmap gate | G7 `PENDING / NOT STARTED` |
-| G7A | `NOT STARTED` |
-| G7B | `NOT STARTED` |
+| Status | **G7A-R1 AND G7A PASS — AUTHOR APPROVED** |
+| Roadmap gate | G7 `IN PROGRESS` |
+| G7A | `PASS — AUTHOR APPROVED` |
+| G7B | `AUTHORIZED / NOT STARTED` |
 | G8 | `NOT STARTED` |
 | G6 baseline | G6 `PASS`; G6R `PASS` |
-| Metric specification | [`PROPOSED — NOT NORMATIVE`](../../geocedg/specs/locus/locus-v2-metrics.md) |
-| Index ADR | [ADR 0007 `Proposed`](../adr/0007-revision-scoped-locus-v2-metric-index.md) |
-| Date | 2026-08-12 |
+| Metric specification | [`NORMATIVE / AUTHOR APPROVED`](../../geocedg/specs/locus/locus-v2-metrics.md) |
+| Index ADR | [ADR 0007 `Accepted`](../adr/0007-revision-scoped-locus-v2-metric-index.md) |
+| Date | 2026-08-13 |
 
 This package reconstructs G7 planning exclusively from the current
 `origin/main` history, versioned G6/G6R authorities and the author's decisions
 recorded in the recovery task. No inaccessible G7 commit, result or probe was
 recovered or treated as evidence.
 
-Planning recovery does not execute G7A. It creates no characterization probe,
-no productive metric class and no source change. A future G7A and G7B each
-require separate explicit authorization.
+Planning recovery itself did not execute G7A. The separately authorized G7A
+reexecution now adds only test-private probes and versioned evidence; it creates
+no productive metric class or `src/main` change. The focused R1 refinement
+adds safe value/error contracts, deterministic work ceilings and measured
+multi-consumer ownership evidence, also test-private only. The final author
+review approved both stages and authorized G7B, which remains not started.
 
 ## 1. Authority
 
@@ -76,9 +79,9 @@ AlgoLocusMetricV2
     AlgoElement registering dependencies and updating GeoLocusMetricResult
 ```
 
-`GeoNumeric` is not the result authority. G7A must audit an append-only
-classification equivalent to `GeoClass.LOCUS_METRIC_RESULT`; it must not reuse
-`NUMERIC`, `LOCUS` or `LOCUS_V2`.
+`GeoNumeric` is not the result authority. G7A audited and the author accepts an
+append-only classification equivalent to `GeoClass.LOCUS_METRIC_RESULT`; it
+must not reuse `NUMERIC`, `LOCUS` or `LOCUS_V2`.
 
 ## 3. Explicitly excluded
 
@@ -232,7 +235,12 @@ connection.
 
 ## 8. Result and aggregation contract
 
-`LocusMetricResult2D` is a defensive immutable value with orthogonal axes:
+`LocusMetricResult2D` and each contribution contain a closed immutable
+`MetricValue2D`: finite non-negative, positive infinity or absent. Only the
+finite variant exposes `OptionalDouble`; a bare value accessor, NaN semantics,
+magic doubles and exceptions for normal absence are forbidden.
+
+The result remains a defensive immutable value with orthogonal axes:
 
 - `MetricValueKind`: `FINITE`, `POSITIVE_INFINITY`, `ABSENT`;
 - `MetricCoverage`: `COMPLETE`, `INCOMPLETE`;
@@ -245,9 +253,13 @@ connection.
   `DISCONTINUITY_ENCOUNTERED`.
 
 It also preserves construction fidelity, evaluator method,
-metric/integration method, representation role, numeric guarantee,
-absolute/relative error, units, provenance, diagnostics and contribution
-decomposition. `DIVERGENT` is not a generic numerical-failure bucket.
+metric/integration method, representation role, units, provenance, diagnostics
+and contribution decomposition. Numeric quality directly reuses normative G6
+`LocusSemanticMetadata2D.NumericGuarantee`; G7 defines no duplicate enum.
+`MetricErrorEvidence2D` or equivalent uses typed established,
+not-established and not-applicable amounts, explicit complete/partial scope,
+method, assumptions and certificate metadata. Error fields use no sentinels.
+`DIVERGENT` is not a generic numerical-failure bucket.
 
 `LocusMetricAggregator2D` combines contributions and constructive
 multiplicity, aggregates value and error, propagates the weakest guarantee,
@@ -256,9 +268,9 @@ component.
 
 ## 9. G7A characterization work
 
-G7A must produce reproducible evidence and an author-decision package. It may
-add narrowly scoped read-only/test-private probes only when separately
-authorized. It must not implement productive metric classes.
+G7A produced reproducible evidence and an author-decision package using only
+narrowly scoped test-private probes. It did not implement productive metric
+classes.
 
 ### 9.1 Upstream impact and rich Geo lifecycle
 
@@ -286,9 +298,10 @@ Compare:
 - **B:** conditional read-only numeric facet;
 - **C:** explicit numeric adapter.
 
-The working preference is **B only if the real API can express scalar
-admissibility without hiding rich status/error semantics**. Otherwise G7A must
-recommend A or C. A companion `GeoNumeric` cannot become authority.
+The original working preference was **B only if the real API could express
+scalar admissibility without hiding rich status/error semantics**. The source
+audit found that it cannot; the author therefore accepts C, an explicit derived
+numeric adapter. A companion `GeoNumeric` cannot become authority.
 
 Candidate scalar-admissible results are finite, successful, semantically
 satisfied, suitably covered, current, fully supported, valid zero or an
@@ -312,7 +325,8 @@ Refinement agreement alone never yields `CERTIFIED_ERROR_BOUND`.
 `FLOATING_POINT_UNCERTIFIED` or `UNSUPPORTED`.
 
 Measure and propose independent `eps_metric_abs` and `eps_metric_rel`,
-stopping policy, refinement limits, improper-limit policy and aggregate error
+stopping policy, independent evaluation/subdivision/depth work limits,
+improper-limit policy and aggregate error
 policy. Do not reuse the G6 evaluation envelope, `eps_domain`, render pixel
 tolerance or a future G8 root tolerance.
 
@@ -345,15 +359,15 @@ Python is validation evidence, never kernel authority.
 
 ## 10. Metric index experiment and working hypothesis
 
-G7A must implement comparable characterization strategies:
+G7A implemented comparable characterization strategies:
 
 1. `REFERENCE_NO_INDEX_REUSE`;
 2. `EAGER_WHOLE_REVISION`;
 3. `LAZY_COMPONENT_REVISION`.
 
-The working hypothesis is a bounded lazy component-scoped revision index. It
-is not accepted architecture until G7A evidence and author review. Its complete
-key contains at least:
+The measured recommendation is a bounded lazy component-scoped revision index.
+It is not accepted architecture until author review. Its complete key contains
+at least:
 
 ```text
 locusIdentity
@@ -366,10 +380,28 @@ metricPolicyVersion
 metricTolerancePolicy
 multiplicityPolicy
 improperLimitPolicy
+metricWorkBudget
 ```
 
 There is no global cache and no unbounded revision history. A component key is
 revision-scoped and is not durable position identity.
+
+R1 compared algorithm-local, direct locus-attached, Construction-scoped and
+dedicated shared ownership. The author accepts a GeoCeDG-owned non-GeoElement
+`DEDICATED_SHARED_OWNER` tied to one active source
+locus and acquired by ordinary metric algorithms through a narrow lifecycle
+hook. The algorithms remain direct normal-DAG dependents; the owner has no
+dependency edges, route/aggregate authority, result publication or algorithm
+callbacks. It shares only immutable `LocusMetricComponentState2D` values for
+complete component keys; route-specific contributions, routes, query results
+and aggregates remain algorithm-owned.
+
+For N compatible metric results, the hard budget is one component-state build
+per complete key until eviction/invalidation. At N=100 R1 measured 100
+local builds and 99 duplicates versus one dedicated-owner build and 99 hits.
+Different loci/Constructions never share. The provisional capacity is 64 per
+active locus owner, not per algorithm, with deterministic insertion-order
+eviction; it is not normative.
 
 ## 11. Hardening required in the first G7B candidate
 
@@ -380,7 +412,9 @@ must provide:
 - bounded state and deterministic eviction;
 - no retained obsolete revisions;
 - kernel-thread confinement, no concurrency and no background mutation;
-- atomic publication and exception-safe updates;
+- P1 atomic publication: no failed index entry, but a coherent current-revision
+  rich failure snapshot; never stale success or a hybrid payload;
+- exception-safe updates;
 - cleanup via `finally` and no partially valid published entry;
 - complete rich-result and `GeoLocusMetricResult` lifecycle;
 - cache/index ON/OFF semantic equality;
@@ -395,6 +429,12 @@ arcs, reverse, periodic, STOP, WRAP, STRICT, repeated total and
 tolerance/policy changes. Record evaluator/derivative/integrator calls,
 subdivisions, component/index builds, hits/misses, evictions, retained entries,
 latency and invalidation.
+
+For multi-consumer ownership, additionally trace 1, 3, 10 and 100 compatible
+results, local-first/total-first order, full-key changes, revision/topology,
+multiple loci/Constructions, removal and nested multi-results. Record unique
+builds, compatible duplicates, cross-result hits and separate unique payload,
+duplicate payload, metadata, owner and consumer retained bytes.
 
 Characterize:
 
@@ -454,7 +494,7 @@ cases; and repeated/nested composition through three levels.
 
 ## 15. Phase gates
 
-### 15.1 Gate to start G7A
+### 15.1 G7A entry gate — satisfied
 
 G7A may start only with:
 
@@ -463,15 +503,11 @@ G7A may start only with:
 - a clean authorized execution scope;
 - explicit author authorization.
 
-Otherwise:
-
-```text
-G7A = BLOCKED PENDING AUTHOR AUTHORIZATION OR G6 BASELINE
-```
+The reexecution recorded and satisfied all four conditions before probes ran.
 
 ### 15.2 Gate to close G7A
 
-G7A cannot pass until evidence:
+G7A passed after evidence:
 
 - compares all three index strategies;
 - resolves metric tolerances/error/improper-limit policy;
@@ -479,28 +515,24 @@ G7A cannot pass until evidence:
 - audits every upstream impact listed above;
 - validates route, total, repeated and nested cases;
 - proposes the exact G7B editable set and budgets;
-- receives explicit author approval.
+- received explicit author approval.
 
-At closeout the metric spec may become normative and ADR 0007 may become
-Accepted only through explicit author decisions. This planning task does
-neither.
+At final closeout the author made the metric spec normative and accepted ADR
+0007. The closeout adds no productive metric implementation.
 
 ### 15.3 Gate to start G7B
 
-G7B requires all of:
+The G7B entry decisions are now satisfied:
 
 - `G7A = PASS — AUTHOR APPROVED`;
 - `locus-v2-metrics.md` approved as normative;
 - ADR 0007 Accepted or explicitly replaced;
 - approved scalar, lifecycle, index, tolerance, error and improper-limit
   decisions;
-- separate explicit G7B authorization.
+- explicit G7B authorization, granted at this closeout.
 
-Otherwise:
-
-```text
-G7B = BLOCKED PENDING AUTHOR REVIEW
-```
+G7B remains `AUTHORIZED / NOT STARTED`; only execution of its versioned prompt
+may begin implementation.
 
 ### 15.4 Gate to close G7B
 
@@ -509,7 +541,61 @@ cache ON/OFF equality, lifecycle and exception tests, focused Locus V2
 verification, shared-kernel/Desktop build gates, traceability and author
 review. Public command, XML, `Path`, 3D, G8 and G9 remain absent.
 
-## 16. Current disposition
+## 16. Author-approved G7A and focused R1 decisions
+
+The fresh G7A reexecution is recorded in the
+[characterization report](../validation/g7a_locus_v2_metric_characterization_report.md),
+[R1 refinement report](../validation/g7a_r1_locus_v2_metric_refinement_report.md),
+[candidate API](../developer/locus_v2_metric_api.md) and
+[traceability matrix](../validation/g7a_locus_v2_metric_traceability_matrix.md).
+It used no result from the lost workstation.
+
+The author approves the measured recommendations:
+
+- retain total variation, endpoint-free total query, constructive multiplicity,
+  revision-separated positions/bindings and the route architecture;
+- require FORWARD, REVERSE, ZERO/FULL, STOP, WRAP and STRICT while deferring
+  SHORTEST;
+- retain the rich result taxonomy and deterministic aggregate precedence;
+- use closed immutable finite/infinity/absent values and typed error evidence
+  without sentinels;
+- use a closed `MetricErrorAmount2D` hierarchy so availability and amount
+  cannot contradict;
+- make traversal outcome structurally optional in the rich result: present for
+  applicable between-position results and absent from total results;
+- reuse the exact normative G6 `NumericGuarantee` type;
+- publish a dedicated `GeoLocusMetricResult` with append-only
+  `GeoClass.LOCUS_METRIC_RESULT`;
+- reject conditional `NumberValue` strategy B and use explicit derived adapter
+  strategy C when scalar participation is requested;
+- use analytic capability first, then a GeoCeDG-owned per-call differential
+  integrator; evaluator-only agreement is never a certified bound;
+- retain `eps_metric_abs=1e-10` and `eps_metric_rel=1e-9` as the initial
+  versioned tolerance policy; review R1's measured work ceilings of 32768
+  evaluations, 16384 subdivisions and depth 22;
+- advance bounded lazy component/revision indexing with provisional capacity
+  64 per active locus shared owner, current-revision-only ownership and
+  deterministic insertion-order eviction;
+- use `DEDICATED_SHARED_OWNER`, which measured one build and 99 cross-result
+  hits for 100 compatible consumers while preserving normal DAG/lifecycle
+  isolation;
+- map a complete component key to immutable component metric state and derive
+  each route-specific contribution only after lookup;
+- use P1 coherent current-revision rich failure publication with no failed
+  index entry and an undefined scalar adapter;
+- hard-gate functional counters, invalidation, exception safety, cache-off
+  equality and nested zero-render/zero-sample behavior.
+
+Same-component 1/10/100 traces built 1/10/100 reference components, 3/3/3
+eager components and 1/1/1 lazy components. Across 100 repeated totals over
+three components, reference built 300 while eager and lazy each built 3.
+Wall-clock remains informational.
+
+All 42 G7A recommendations and R1-1..R1-22 are author-approved with the three
+final API normalizations. ADR 0007 is Accepted, the G7 metric specification is
+normative, and G7B is authorized but not started.
+
+## 17. Current disposition
 
 ```text
 G7 PLANNING RECOVERY = PASS
@@ -519,10 +605,12 @@ G7 PLANNING = RESTORED AND AUTHOR-REVIEWED
 GEOLOCUSMETRICRESULT =
 APPROVED AS G7A WORKING ARCHITECTURE
 
-ADR 0007 = PROPOSED
-G7 SPEC = PROPOSED / NOT NORMATIVE
+G7A-R1 = PASS — AUTHOR APPROVED
+G7A = PASS — AUTHOR APPROVED
 
-G7A = NOT STARTED
-G7B = NOT STARTED
+G7 METRIC SPEC = NORMATIVE / AUTHOR APPROVED
+ADR 0007 = ACCEPTED
+
+G7B = AUTHORIZED / NOT STARTED
 G8 = NOT STARTED
 ```

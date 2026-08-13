@@ -90,9 +90,11 @@ $GeneratedState = $null
 try {
     New-Item -ItemType Directory -Path $LogDirectory -Force | Out-Null
     $InitialStatus = Get-RepositoryStatusText -RepositoryRoot $RepositoryRoot
-    $GeneratedState = New-RepositoryGeneratedStateSnapshot `
-        -RepositoryRoot $RepositoryRoot -DirectoryNames $GeneratedDirectoryNames `
-        -Label "verify-frontend"
+    if (-not $SkipBuild) {
+        $GeneratedState = New-RepositoryGeneratedStateSnapshot `
+            -RepositoryRoot $RepositoryRoot `
+            -DirectoryNames $GeneratedDirectoryNames -Label "verify-frontend"
+    }
 
     if (-not (Test-Path -LiteralPath $ProfilePath -PathType Leaf)) {
         throw "GeoCeDG application profile is missing: $ProfilePath"

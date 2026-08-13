@@ -105,9 +105,12 @@ function Resolve-Jpackage {
 }
 
 $InitialStatus = Get-RepositoryStatusText -RepositoryRoot $RepositoryRoot
-$GeneratedState = New-RepositoryGeneratedStateSnapshot `
-    -RepositoryRoot $RepositoryRoot -DirectoryNames $GeneratedDirectoryNames `
-    -Label "verify-packaging"
+$GeneratedState = $null
+if ($CheckToolchain -or $RequireArtifacts) {
+    $GeneratedState = New-RepositoryGeneratedStateSnapshot `
+        -RepositoryRoot $RepositoryRoot `
+        -DirectoryNames $GeneratedDirectoryNames -Label "verify-packaging"
+}
 [Exception]$Failure = $null
 
 try {
@@ -327,8 +330,10 @@ try {
     $Failure = $_.Exception
 } finally {
     try {
-        Restore-RepositoryGeneratedStateSnapshot -Snapshot $GeneratedState `
-            -Description "packaging-verifier output"
+        if ($null -ne $GeneratedState) {
+            Restore-RepositoryGeneratedStateSnapshot -Snapshot $GeneratedState `
+                -Description "packaging-verifier output"
+        }
         $finalStatus = Get-RepositoryStatusText -RepositoryRoot $RepositoryRoot
         if ($finalStatus -ne $InitialStatus) {
             throw "Repository status changed during packaging verification.`n" +

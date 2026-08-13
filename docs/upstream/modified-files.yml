@@ -390,6 +390,50 @@
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusV2HardeningBenchmarkTest.java",
       "change": "added", "purpose": "Measure nested/session/invalidation/render/provider distributions while enforcing functional budgets.", "authority": "docs/validation/g6r_locus_v2_hardening_report.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G7AMetricSemanticModel.java",
+      "change": "added", "purpose": "Provide test-private immutable position/route values, structurally optional traversal, closed sentinel-free rich-result/error variants and aggregation candidates for G7A/R1 without adding a productive metric API.", "authority": "docs/validation/g7a_r1_locus_v2_metric_refinement_report.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G7AMetricSemanticCharacterizationTest.java",
+      "change": "added", "purpose": "Characterize semantic positions, revision bindings, traversal policies, constructive total aggregation and scalar admissibility with no render or legacy-sample authority.", "authority": "docs/validation/g7a_locus_v2_metric_characterization_report.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G7AMetricNumerics.java",
+      "change": "added", "purpose": "Provide deterministic test-private adaptive quadrature, evaluator-only refinement and independent evaluation/subdivision/depth work-budget candidates.", "authority": "docs/validation/g7a_r1_locus_v2_metric_refinement_report.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G7AMetricNumericalCharacterizationTest.java",
+      "change": "added", "purpose": "Compare total variation, analytic and differential methods, independent references, reparameterization, tolerances, improper outcomes and truthful evaluator-only guarantees.", "authority": "docs/validation/g7a_locus_v2_metric_characterization_report.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G7AMetricIndexExperiment.java",
+      "change": "added", "purpose": "Implement equivalent test-private no-reuse, eager-revision and lazy-component index strategies with complete keys, counters and bounded lifecycle.", "authority": "docs/adr/0007-revision-scoped-locus-v2-metric-index.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G7AMetricIndexCharacterizationTest.java",
+      "change": "added", "purpose": "Measure 1/10/100 repeated route, total and policy traces, deterministic eviction, invalidation, failure cleanup, arc-coordinate reuse and index ON/OFF equality.", "authority": "docs/validation/g7a_locus_v2_metric_characterization_report.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G7ANestedMetricCharacterizationTest.java",
+      "change": "added", "purpose": "Characterize a three-level metric/locus dependency chain with normal invalidation and zero render, legacy-sample, whole-locus or per-point index work.", "authority": "docs/validation/g7a_locus_v2_metric_characterization_report.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G7AMetricGeoLifecycleCharacterizationTest.java",
+      "change": "added", "purpose": "Characterize test-private rich-result creation, P1 current-revision failure publication, copy/set isolation, invalidation, removal, recovery and exception cleanup.", "authority": "docs/validation/g7a_r1_locus_v2_metric_refinement_report.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G7AR1MultiConsumerMetricIndexExperiment.java",
+      "change": "added", "purpose": "Compare test-private algorithm-local, locus-attached, Construction-scoped and dedicated per-locus component-state ownership with endpoint-free complete keys, route-specific contribution derivation, deterministic lifecycle and retained-memory counters.", "authority": "docs/validation/g7a_r1_locus_v2_metric_refinement_report.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G7AR1MultiConsumerMetricIndexTest.java",
+      "change": "added", "purpose": "Measure cross-result reuse for 1/3/10/100 consumers, query-order invariance, policy and Construction isolation, revision/topology transitions, removal and nested composition.", "authority": "docs/validation/g7a_r1_locus_v2_metric_refinement_report.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G7AR1MetricValueAndWorkBudgetTest.java",
+      "change": "added", "purpose": "Characterize closed metric values, sentinel-free error evidence, direct reuse of the normative G6 guarantee and independent deterministic integration work ceilings.", "authority": "docs/validation/g7a_r1_locus_v2_metric_refinement_report.md"
     }
   ]
 }

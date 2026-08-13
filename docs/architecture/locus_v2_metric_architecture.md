@@ -2,16 +2,17 @@
 
 | Field | Value |
 |---|---|
-| Status | Author-reviewed G7 working architecture; no implementation |
-| Product maturity | Future experimental/internal G7B candidate |
+| Status | Author-approved G7A/G7A-R1 architecture; no implementation |
+| Product maturity | Authorized experimental/internal G7B candidate; not started |
 | Semantic model | [`locus_v2_metric_semantic_model.md`](locus_v2_metric_semantic_model.md) |
-| Proposed contract | [`locus-v2-metrics.md`](../../geocedg/specs/locus/locus-v2-metrics.md) |
-| Index decision | [ADR 0007 Proposed](../adr/0007-revision-scoped-locus-v2-metric-index.md) |
-| Date | 2026-08-12 |
+| Normative contract | [`locus-v2-metrics.md`](../../geocedg/specs/locus/locus-v2-metrics.md) |
+| Index decision | [ADR 0007 Accepted](../adr/0007-revision-scoped-locus-v2-metric-index.md) |
+| Date | 2026-08-13 |
 
-This document maps the approved G7 planning semantics to a candidate shared
-kernel architecture. Names and responsibilities are working G7A hypotheses,
-not productive APIs. G7A, G7B and G8 remain `NOT STARTED`.
+This document maps the approved G7 planning semantics and measured G7A findings
+to the author-approved G7B shared-kernel architecture. Names remain conceptual
+until implemented. G7A-R1 and G7A are `PASS — AUTHOR APPROVED`; G7B is
+`AUTHORIZED / NOT STARTED`, and G8 remains `NOT STARTED`.
 
 ## 1. Baseline and placement
 
@@ -154,33 +155,45 @@ A component metric service selects one of four capabilities:
 3. evaluator-only adaptive metric;
 4. unsupported.
 
-The working service boundary accepts one route segment or whole valid
-component and returns an immutable `LocusMetricContribution2D` containing:
+The shared integration boundary builds or obtains one immutable
+`LocusMetricComponentState2D` for a complete compatible component key. That
+state contains adaptive partition/cumulative arc-coordinate evidence,
+capability/integration metadata and component-level error state. It contains no
+A/B endpoint and is not a contribution.
+
+Route/component evaluation then combines one state with one
+`LocusMetricRouteSegment2D` (or the complete component extent for a total
+query) and returns an immutable `LocusMetricContribution2D` containing:
 
 - locus/revision/branch/component provenance;
 - parameter interval and orientation metadata;
-- non-negative value kind/value;
+- one closed `MetricValue2D` (`Finite`, `PositiveInfinity` or `Absent`), with
+  no sentinel double;
 - rectifiability and coverage;
 - construction fidelity and evaluator method;
 - integration method and representation role;
-- numeric guarantee and absolute/relative error metadata;
+- a `MetricErrorEvidence2D` wrapper around the normative G6 guarantee, typed
+  absolute/relative availability, scope, assumptions and certificate metadata;
 - evaluator/derivative/integrator/subdivision counters;
 - diagnostics.
 
 Orientation selects a route; it does not make contribution length negative.
+One component state may produce many different route-specific contributions.
 
 Evaluator-only refinement cannot claim `CERTIFIED_ERROR_BOUND` from agreement
-of successive chord sums. G7A must establish explicit assumptions before
-`ESTIMATED_ERROR` is permitted; otherwise the contribution is
+of successive chord sums. G7A demonstrated aliasing despite exact two-level
+agreement: explicit assumptions are required before `ESTIMATED_ERROR` is
+permitted; otherwise the contribution is
 `FLOATING_POINT_UNCERTIFIED` or `UNSUPPORTED`.
 
 ### 3.4 Metric index
 
-The working `LocusMetricIndex2D` is a bounded, kernel-thread-confined service
+The accepted `LocusMetricIndex2D` strategy is a bounded,
+kernel-thread-confined service
 for immutable component-scoped entries. It is not a global cache and is not the
 G6 render cache or evaluator session.
 
-The complete candidate key is:
+The complete R1 candidate key is:
 
 ```text
 locusIdentity
@@ -193,13 +206,27 @@ metricPolicyVersion
 metricTolerancePolicy
 multiplicityPolicy
 improperLimitPolicy
+maximumMetricEvaluations
+maximumMetricSubdivisions
+maximumAdaptiveDepth
 ```
 
-G7A must compare no reuse, eager whole-revision and lazy component-revision
-strategies. Concrete owner, capacity, entry representation and component-key
-derivation remain characterization decisions. Any chosen design has
-deterministic eviction, no obsolete-revision retention, atomic publication,
-`finally` cleanup and index ON/OFF equality.
+G7A compared no reuse, eager whole-revision and lazy component-revision
+strategies on identical traces. R1 then measured 1/3/10/100 independent metric
+results. A per-Algorithm lazy index performed N compatible builds; a dedicated
+shared owner performed one build and N-1 cross-result hits. The accepted
+architecture therefore uses current-revision lazy entries in one
+`LocusMetricSharedOwner2D` per active source locus, separate from semantic
+definition and normal DAG ownership.
+
+Capacity 64 remains provisional, but it is per locus owner rather than per
+metric result. The last consumer and locus removal release entries; revision,
+topology and undefined transitions synchronously invalidate them. The owner is
+not a GeoElement, route resolver, aggregator, result publisher or callback
+graph. It shares only immutable component metric state—never routes, query
+results, contributions or aggregate results. The accepted design retains
+deterministic insertion-order eviction, atomic entry publication, `finally`
+cleanup and index ON/OFF equality.
 
 ### 3.5 Aggregator
 
@@ -225,26 +252,32 @@ periodic domain is normalized to one fundamental cycle before integration.
 
 ```text
 query kind and semantic provenance
-MetricValueKind
-value when FINITE
+closed MetricValue2D
 MetricCoverage
 MetricComputationStatus
 MetricRectifiability
-TraversalOutcome when applicable
+Optional<TraversalOutcome> for between-position results only
 construction fidelity
 evaluator method
 metric/integration method
 representation role
-numeric guarantee
-absolute and relative error
+MetricErrorEvidence2D containing the normative G6 guarantee when applicable
+typed absolute/relative evidence and complete/partial/not-applicable scope
 units
 contribution decomposition
 diagnostics
 ```
 
+Total results contain no traversal outcome. Absence is structural; no `null`,
+sentinel or `NOT_APPLICABLE` outcome is allowed. Error amounts are likewise a
+closed `MetricErrorAmount2D` hierarchy with established non-negative finite,
+not-established and not-applicable variants; a separate state plus
+`OptionalDouble` representation is forbidden.
+
 No mutable array, list, diagnostic or index entry may be exposed by alias.
-Value zero is valid for an empty domain, isolated point, collapsed image and
-`ZERO_LENGTH` query; diagnostics distinguish them from one another.
+No absent/infinite value or unavailable error uses NaN, `-1`, zero or another
+numeric sentinel. Value zero is valid for an empty domain, isolated point,
+collapsed image and `ZERO_LENGTH` query; diagnostics distinguish them.
 
 ### 3.7 DAG publication
 
@@ -258,7 +291,7 @@ publishes a scalar independently of the rich payload.
 1. captures one coherent locus revision and query/policy snapshot;
 2. validates/rebinds only as explicitly requested;
 3. resolves a route or total component list;
-4. obtains contributions with the selected integration/index path;
+4. obtains immutable component states and derives route/extent contributions;
 5. aggregates a complete immutable candidate payload;
 6. atomically replaces the Geo payload;
 7. releases scoped work in `finally`.
@@ -267,6 +300,12 @@ An exception, topology transition or numerical failure cannot expose a mixture
 of old value and new status. Failure produces a coherent rich failure result;
 it cannot leave a partially built index entry or keep a previous successful
 payload as current.
+
+R1 names this P1 publication. At the start of revision `r+1`, the `r` payload
+is made non-current. A handled failure publishes one coherent `Absent` failure
+snapshot for `r+1`; the scalar adapter is undefined. “Publish nothing on
+failure” applies only to the private candidate index entry, never to retention
+of the old rich success as current.
 
 ## 4. Between-position execution
 
@@ -298,8 +337,8 @@ The canonical open-branch outcomes are:
 | internal gap | finite partial or absent, as approved | incomplete | success/failure axis as cause requires | `DISCONTINUITY_ENCOUNTERED` | inadmissible |
 | stale binding | absent | incomplete | invalid query | no route outcome or explicit diagnostic | inadmissible |
 
-G7A must finalize ambiguous cells without collapsing these axes. In particular,
-`DIVERGENT` is not available as a generic status.
+G7A finalized these author-approved cells without collapsing the axes. In
+particular, `DIVERGENT` is not available as a generic status.
 
 ## 5. Total execution
 
@@ -324,7 +363,7 @@ the numeric total is `L_1 + L_2` when both contributions are established.
 There is no gap chord. Decomposition identifies both components and the invalid
 gap.
 
-G7A must settle mixed outcomes. The working algebra is:
+G7A characterized mixed outcomes. The accepted algebra is:
 
 - finite complete contributions add normally;
 - positive infinity is distinct from numerical failure;
@@ -341,7 +380,7 @@ Rich defined state answers whether `GeoLocusMetricResult` contains a coherent
 current semantic result. Scalar admissibility answers whether generic numeric
 consumers may read a scalar. They are orthogonal.
 
-G7A compares:
+G7A compared:
 
 | Option | Shape | Main risk |
 |---|---|---|
@@ -349,11 +388,11 @@ G7A compares:
 | B | conditional read-only numeric facet | Java `instanceof NumberValue` may expose inadmissible states too broadly |
 | C | explicit numeric adapter | extra user-visible/algorithmic step and lifecycle |
 
-Working preference B is conditional. Current shared-kernel code commonly uses
-`instanceof NumberValue` and `evaluateDouble()` as static capability tests, so
-G7A must demonstrate that an instance-level scalar gate is honored by Algebra
-View, generic algorithms and CAS. If it cannot, B is rejected in favor of A or
-C.
+The audit found 219 `instanceof NumberValue` occurrences in 72 shared-source
+files and no per-instance admissibility hook. B is therefore rejected. G7A
+accepts C: the rich Geo implements no numeric facade and an explicit derived
+adapter publishes a scalar only when admissible. The adapter never owns the
+metric value or index.
 
 Candidate scalar gate:
 
@@ -364,16 +403,18 @@ and semantic query satisfied
 and suitable coverage
 and current bindings
 and no unsupported contribution
+and at least ESTIMATED_ERROR by default
 and (normal reached route or explicit valid wrap or valid zero)
 ```
 
 Positive infinity is inadmissible unless separately approved.
-`isDefined()` must not be overloaded to hide a coherent rich STOP, unsupported
-or failure result merely because it is not scalar-admissible.
+`isDefined()` reports whether a coherent immutable rich snapshot is current,
+including a STOP, unsupported or failure diagnostic. It never implies scalar
+admissibility.
 
 ## 7. GeoLocusMetricResult lifecycle
 
-G7A must determine and G7B must test each transition:
+G7A characterized and G7B must test each transition:
 
 | Event | Required invariant |
 |---|---|
@@ -404,12 +445,15 @@ lookup immutable complete key
     |
  hit -> verify current revision/policy -> consume immutable entry
     |
- miss -> build private candidate
+miss -> build private candidate
               |
-              +-- exception/failure -> finally cleanup; publish nothing
+              +-- exception/failure -> finally cleanup; publish no index entry
               |
               +-- complete -> atomically publish -> deterministic eviction
 ```
+
+The result Geo independently follows P1 and publishes a coherent current-
+revision failure snapshot when component construction fails.
 
 Revision invalidation removes or makes unreachable all obsolete entries within
 the same kernel update boundary. No background cleanup is allowed. Capacity
@@ -426,17 +470,27 @@ It neither replaces `providerCanonicalParameter` nor crosses a gap/branch.
 ## 9. Numerical capability and tolerances
 
 Metric policy is independent of G6 evaluation/domain/render tolerances. The
-candidate policy value includes:
+initial versioned policy value includes:
 
 ```text
 eps_metric_abs
 eps_metric_rel
 stopping policy
-refinement/subdivision limits
+maximumMetricEvaluations
+maximumMetricSubdivisions
+maximumAdaptiveDepth
 improper-limit policy
 aggregate error policy
 algorithm/policy versions
 ```
+
+The three work ceilings are independent, deterministic and included in policy
+identity and the complete index key. With the initial tolerances `1e-10` and
+`1e-9`, R1 observed at most 2493 evaluations and 1245 subdivisions in the
+quadrature fixtures and 4162 evaluator calls in the difficult evaluator-only
+trace. The approved initial ceilings are 32768/16384/depth 22. These are
+implementation-policy defaults, not mathematical constants. Any exhaustion is
+`LIMIT_NOT_ESTABLISHED`; wall-clock is not a metric guard.
 
 Analytic values still record floating-point evaluation guarantees when
 evaluated as `double`. Differential quadrature records derivative provenance
@@ -471,6 +525,12 @@ For repeated compatible queries, the chosen strategy must not rebuild
 component state unnecessarily. A tolerance or policy change must miss the old
 key rather than reuse incompatible state.
 
+Across independent metric result Algos, the hard budget is one component-state
+build per complete key until eviction or invalidation. R1 measured
+100 local owners as 100 builds/99 duplicates, while the dedicated shared owner
+produced one build/99 cross-result hits. Both total-first and local-first
+orders built exactly the three unique components in the mixed fixture.
+
 For:
 
 ```text
@@ -482,17 +542,25 @@ regenerate a whole upstream locus or build a metric index. Shared
 revision/policy work is reusable only through the accepted bounded owner.
 Cache-off and cache-on rich outputs must be equal.
 
+The dedicated owner is acquired through the source-locus lifecycle and stores
+no dependency edges. Every metric Algo still names the source locus as an
+ordinary input. Same-Construction different loci and different Constructions
+never share entries. The nested multi-consumer fixture produced zero duplicate
+compatible builds, render/sample reads, whole-locus regeneration and per-point
+index builds.
+
 ## 11. Upstream impact audit
 
-G7A must inspect actual source, not infer from class names:
+G7A inspected actual source rather than inferring from class names:
 
 | Surface | Baseline observation / question | G7B constraint |
 |---|---|---|
 | `GeoClass` | `LOCUS_V2` is currently appended | audit append-only `LOCUS_METRIC_RESULT` and exhaustive switch/tests |
 | `GeoElement` | defined state, copy/set/remove and `evaluateDouble()` conventions are broad | rich and scalar states remain separate |
-| `NumberValue` / numeric interfaces | static interface checks occur widely | B only if every relevant consumer honors conditional admissibility |
+| `NumberValue` / numeric interfaces | 219 static `instanceof` checks occur across 72 shared-source files | rich Geo implements no numeric interface; optional explicit adapter gates admissibility |
 | Algebra View | formatting/evaluation can assume known value categories | display rich status without false scalar or public surface |
 | `AlgoElement` | dependency registration and compute drive the DAG | no hidden graph, background mutation or manual propagation |
+| `GeoLocusV2` lifecycle | revision publication, undefined and remove are coherent source-locus boundaries | narrow acquire/invalidate/release hook for a separate derived owner; copy never carries it |
 | `ConstructionDefaults` | unknown classes can fall through generic defaults | explicit audited behavior; no accidental locus/numeric styling |
 | command dispatch | `Length`/`Perimeter` and legacy processors already exist | no command registration or behavior change |
 | `AlgoPerimeterLocus` | sums legacy stored sample chords | preserved unchanged and used only as legacy evidence |
@@ -504,7 +572,10 @@ G7A must inspect actual source, not infer from class names:
 | enum/switch tests | drawable/default/factory tests may enumerate classes | update only required tests after G7A approval |
 | CAS/generic algorithms | numeric interfaces may trigger broad coercion | no semantic loss or silent partial/infinite scalar |
 
-The exact editable source set must be listed in the G7A report before G7B.
+The exact optimized editable source set is listed in R1 report §9. It adds new
+GeoCeDG-owned metric values/services and only narrow `GeoLocusV2`, metric Algo,
+GeoClass/test and laboratory edits; it does not require a Construction
+repository, base `GeoElement`, public command, XML, Path, 3D, G5 or G8 change.
 
 ## 12. Developer laboratory boundary
 
@@ -532,26 +603,44 @@ Architecture tests must fail any metric code that imports or reads:
 Legacy evidence adapters may observe legacy algorithms only in
 characterization tests; they cannot feed productive V2 results.
 
-## 14. G7A decisions still open
+## 14. Author-approved G7A/R1 decisions
 
-The following are intentionally unresolved and block G7B:
+The author accepts all 42 G7A recommendations, R1-1..R1-22 and the three final
+API normalizations. The resulting decisions are:
 
-- whether numeric participation is A, B or C;
-- precise rich `isDefined()` and Algebra View presentation;
-- copy/set/sequence semantics;
-- exact appended `GeoClass` integration impact;
-- index owner, capacity, eviction and component-key derivation;
-- selected integration methods and capability negotiation;
-- `eps_metric_abs`, `eps_metric_rel`, stopping/refinement and aggregate error;
-- improper-limit and positive-infinity scalar policies;
-- mixed total aggregation rules;
-- exact G7B source/test/package edit set and functional budgets.
+- numeric strategy C: the rich Geo has no numeric facade and an explicit
+  derived adapter exposes only admissible scalars; static strategy B is unsafe;
+- rich `isDefined()` means a current immutable diagnostic snapshot exists;
+  scalar admissibility remains independent;
+- copy/set/sequence operations clear current revision-bound state and require
+  recomputation in the G7B minimum;
+- append-only `GeoClass.LOCUS_METRIC_RESULT`, non-drawable and nonpersistent;
+- bounded lazy component/revision indexing, current revision only,
+  one dedicated shared owner per active locus, deterministic insertion-order
+  eviction and provisional capacity 64 per locus rather than per Algo;
+- the owner maps complete component keys only to immutable
+  `LocusMetricComponentState2D`; route-specific contributions are derived after
+  lookup and are never shared;
+- analytic capability, then a GeoCeDG-owned per-call differential integrator;
+  evaluator-only values are uncertified/unsupported without assumptions;
+- initial `eps_metric_abs=1e-10`, `eps_metric_rel=1e-9`, maximum depth 22,
+  32768-evaluation and 16384-subdivision ceilings, deterministic
+  sentinel-free error aggregation and direct reuse of the G6 guarantee;
+- closed `MetricValue2D`, closed `MetricErrorAmount2D` and typed
+  `MetricErrorEvidence2D` contracts;
+- structurally optional traversal outcome: required for applicable
+  between-position results and absent from total results;
+- P1 current-revision rich failure publication with no stale success;
+- explicit improper tail evidence; positive infinity is rich-only by default;
+- the aggregate precedence in the G7A report;
+- the exact source/test/package map in the developer API;
+- functional repeated/nested gates, not absolute timing gates.
 
-G7A may characterize `SHORTEST` but it remains deferred.
+`SHORTEST` remains deferred. G7B is authorized but not started.
 
 ## 15. G7B minimum acceptance architecture
 
-After all open decisions are author-approved, the minimum includes:
+The authorized G7B minimum includes:
 
 - distinct between-position and total query values;
 - position/binding separation and explicit stale/rebind behavior;
@@ -559,12 +648,14 @@ After all open decisions are author-approved, the minimum includes:
   STOP/WRAP/STRICT;
 - component integration capability hierarchy;
 - accepted bounded index strategy with cache-off oracle;
+- accepted dedicated shared-owner lifecycle and one-build-per-key budget;
 - `LocusMetricAggregator2D`;
 - immutable `LocusMetricResult2D`;
 - `GeoLocusMetricResult` and normal-DAG `AlgoLocusMetricV2`;
+- an explicit optional scalar adapter that never becomes metric authority;
 - lifecycle, exception, invalidation, repeated and nested gates;
 - internal API documentation and developer laboratory.
 
 It still excludes commands, XML, public `Path`, 3D, G5 changes, G8 and G9.
-No implementation begins while the spec is proposed or ADR 0007 is not
-Accepted/replaced.
+No implementation begins in this closeout task. Productive work starts only by
+executing the separately versioned G7B prompt.

@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "id": "cedg.validation.g7a.metric-reference-values",
+  "authority": "independent validation evidence; never kernel authority",
+  "runtime": {
+    "implementation": "CPython",
+    "version": "3.12.13",
+    "distribution": "conda-forge om_env",
+    "library": "mpmath",
+    "library_version": "1.4.1",
+    "precision_decimal_digits": 80
+  },
+  "references": [
+    {
+      "id": "ellipse-a3-b2-total",
+      "curve": "F(t)=(3 cos(t), 2 sin(t)), t in [0,2*pi]",
+      "equation": "4*a*E(1-b^2/a^2)",
+      "method": "mpmath complete elliptic integral",
+      "value": "15.86543958929058979133166302778307249673008284832650068966726311774248223910968898"
+    },
+    {
+      "id": "exponential-graph-0-1",
+      "curve": "F(t)=(t, exp(t)), t in [0,1]",
+      "equation": "integral_0^1 sqrt(1+exp(2*t)) dt",
+      "method": "mpmath arbitrary-precision quadrature",
+      "value": "2.003497111627352478569902752420239130821142795232094217999705272287739153789971509"
+    },
+    {
+      "id": "parabola-minus1-1",
+      "curve": "F(t)=(t,t^2), t in [-1,1]",
+      "equation": "integral_-1^1 sqrt(1+4*t^2) dt",
+      "method": "mpmath split arbitrary-precision quadrature",
+      "value": "2.957885715089194867655812038867828870143394861190016503762424498670766727050137561"
+    },
+    {
+      "id": "cusp-minus1-1",
+      "curve": "F(t)=(t^2,t^3), t in [-1,1]",
+      "equation": "integral_-1^1 sqrt(4*t^2+9*t^4) dt = 2*(13*sqrt(13)-8)/27",
+      "method": "symbolic antiderivative evaluated by mpmath",
+      "value": "2.879419746743100800781472331638255355649396700739866723350806646737271876134010053"
+    },
+    {
+      "id": "evaluator-alias-64-cycles",
+      "curve": "F(t)=(t,0.1*sin(128*pi*t)), t in [0,1]",
+      "equation": "integral_0^1 sqrt(1+(12.8*pi*cos(128*pi*t))^2) dt",
+      "method": "period reduction plus mpmath split quadrature",
+      "value": "25.64417077003715028102074686934612938858912417236228902635700929245278724142250062"
+    }
+  ]
+}

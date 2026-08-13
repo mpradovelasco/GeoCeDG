@@ -2,17 +2,17 @@
 
 | Field | Value |
 |---|---|
-| Status | Author-reviewed G7 planning model; no metric implementation |
+| Status | Author-approved G7A/G7A-R1 semantic model; no metric implementation |
 | Mathematical authority | Total variation on each valid-domain component |
 | Upstream semantic authority | [`locus-v2-semantics.md`](../../geocedg/specs/locus/locus-v2-semantics.md) |
-| Proposed metric contract | [`locus-v2-metrics.md`](../../geocedg/specs/locus/locus-v2-metrics.md) |
+| Normative metric contract | [`locus-v2-metrics.md`](../../geocedg/specs/locus/locus-v2-metrics.md) |
 | Architecture | [`locus_v2_metric_architecture.md`](locus_v2_metric_architecture.md) |
-| Date | 2026-08-12 |
+| Date | 2026-08-13 |
 
-This document defines the semantic vocabulary that G7A must characterize and
-that an explicitly authorized G7B may later implement. It is planning and
-design evidence, not a normative or productive API. G7A, G7B and G8 remain
-`NOT STARTED`.
+This document defines the author-approved semantic vocabulary characterized by
+G7A/R1 and governed by the normative G7 metric spec. It is not a productive
+API. G7A-R1 and G7A are `PASS — AUTHOR APPROVED`; G7B is
+`AUTHORIZED / NOT STARTED`, and G8 remains `NOT STARTED`.
 
 ## 1. Mathematical object
 
@@ -117,7 +117,7 @@ periodic branch contributes exactly one provider-declared fundamental cycle.
 
 ## 4. Durable semantic positions and revision bindings
 
-A durable semantic position is proposed as the immutable value:
+The durable semantic position is the immutable value:
 
 ```text
 LocusSemanticPosition2D
@@ -318,7 +318,7 @@ underflow.
 `LocusMetricResult2D` is an immutable semantic value. It does not encode all
 meaning in a `double` or one status enum.
 
-### 9.1 Value kind
+### 9.1 Closed metric value
 
 ```text
 MetricValueKind
@@ -327,9 +327,19 @@ MetricValueKind
     ABSENT
 ```
 
-`FINITE` carries a non-negative finite value. `POSITIVE_INFINITY` is explicit
-and is not a large finite sentinel. `ABSENT` carries no numeric payload. NaN is
-not used as a semantic discriminator.
+R1 established that the enum never travels beside a bare value. One closed
+immutable `MetricValue2D` is exactly one of:
+
+```text
+FiniteMetricValue2D(non-negative finite value)
+PositiveInfinityMetricValue2D
+AbsentMetricValue2D
+```
+
+Only `FiniteMetricValue2D` can expose a present `OptionalDouble`.
+`POSITIVE_INFINITY` is not a large finite sentinel and `ABSENT` has no numeric
+payload. NaN, null, magic values and exceptions are not normal-state
+semantics. Contributions and aggregate results use the same closed contract.
 
 ### 9.2 Coverage
 
@@ -387,22 +397,22 @@ The result also separates:
 - metric/integration method;
 - representation role;
 - numeric guarantee;
-- absolute and relative error information;
+- typed absolute/relative error evidence, method, assumptions, certificate and
+  applicability scope;
 - units;
 - query, algorithm, policy and tolerance provenance; and
 - immutable contribution decomposition.
 
-One proposed structural shape is:
+The accepted structural shape is:
 
 ```text
 LocusMetricResult2D
     operationKind
-    valueKind
-    finiteValue?
+    metricValue: Finite | PositiveInfinity | Absent
     coverage
     computationStatus
     rectifiability
-    traversalOutcome?
+    traversalOutcome: Optional<TraversalOutcome>
     targetReached?
     wrapped?
     geometricallyConnected?
@@ -411,18 +421,43 @@ LocusMetricResult2D
     evaluatorMethod
     metricMethod
     representationRole
-    numericGuarantee
-    absoluteError?
-    relativeError?
+    errorEvidence
+        G6 NumericGuarantee?  // absent only when not applicable
+        absolute: ESTABLISHED(value) | NOT_ESTABLISHED | NOT_APPLICABLE
+        relative: ESTABLISHED(value) | NOT_ESTABLISHED | NOT_APPLICABLE
+        scope: COMPLETE_VALUE | REPORTED_PARTIAL_VALUE | NOT_APPLICABLE
+        method / assumptions / certificate metadata
     units
     provenance
     contributionDecomposition[]
     diagnostics[]
 ```
 
+The optional traversal member is present for between-position outcomes and
+empty for total results, which have no traversal semantics. `null`, sentinels
+and an artificial `NOT_APPLICABLE` traversal value are forbidden; an equivalent
+separation into total and between-position result subtypes is also valid.
+
+Error amount is a closed value:
+
+```text
+sealed MetricErrorAmount2D
+    EstablishedMetricErrorAmount2D(non-negative finite amount)
+    NotEstablishedMetricErrorAmount2D
+    NotApplicableMetricErrorAmount2D
+```
+
+This makes a contradictory `state + OptionalDouble` pair unrepresentable. No
+variant carries NaN, `-1`, magic zero or `null`.
+
 ## 10. Metric methods and guarantees
 
-G7A must characterize this capability hierarchy:
+G7 directly reuses
+`LocusSemanticMetadata2D.NumericGuarantee`, the normative productive G6 type.
+It does not define an equivalent metric enum. A metric-specific immutable
+evidence wrapper contains that type and adds only metric error information.
+
+G7A characterized this capability hierarchy:
 
 1. analytic or closed-form metric capability;
 2. differential quadrature from an approved derivative capability;
@@ -460,7 +495,7 @@ Its responsibilities are:
 - rectifiability propagation; and
 - immutable contribution decomposition.
 
-The proposed deterministic rules are:
+The accepted deterministic rules are:
 
 - finite established contributions add normally;
 - established positive infinity dominates finite non-negative contributions;
@@ -473,13 +508,19 @@ The proposed deterministic rules are:
 - `ABSENT` is used when no defensible aggregate numeric value is established,
   while a known partial sum may be `FINITE + INCOMPLETE`.
 
-G7A must turn the status/guarantee precedence into an executable truth table
-before G7B is authorized.
+Exact terms retain `EXACT_ARITHMETIC`; certified bounds add; any estimate makes
+the established finite aggregate estimated; and an uncertified finite term
+makes amounts not established. Infinity/absence have not-applicable evidence.
+For a finite incomplete subtotal, evidence is explicitly scoped
+`REPORTED_PARTIAL_VALUE` and does not bound the unknown complete total.
+
+G7A turned the status/guarantee precedence into an executable truth table; the
+author accepted those rules at final closeout.
 
 ## 12. Scalar admissibility
 
 Rich-result existence, `GeoElement.isDefined()` and scalar admissibility are
-different questions. The candidate scalar rule admits a value only when all
+different questions. The accepted scalar rule admits a value only when all
 of the following hold:
 
 - value kind is `FINITE`;
@@ -505,16 +546,20 @@ The following are not scalar-admissible by default:
 - `ABSENT`; and
 - positive infinity, pending an explicit later policy.
 
-G7A must compare no generic numeric facade, a conditional read-only numeric
-facet and an explicit numeric adapter. The working preference is the
-conditional facet only if the real GeoGebra API can prevent inadmissible rich
-states from entering generic arithmetic, lists, CAS and numeric algorithms.
+G7A compared no facade, a conditional read-only facet and an explicit adapter.
+The real API exposes numeric participation through static interfaces with no
+instance-level admissibility hook, so the conditional facet is rejected. The
+author-approved choice is an explicit derived adapter while the rich Geo
+implements no numeric interface and remains authoritative. In normative G6
+vocabulary the admitted scalar guarantees are `EXACT_ARITHMETIC`,
+`CERTIFIED_ERROR_BOUND` and `ESTIMATED_ERROR`; uncertified values remain
+rich-only unless a later explicit policy approves them.
 
 ## 13. Reparameterization
 
 Total variation is invariant under orientation-preserving reparameterization.
-G7A must retain the endpoint-degenerate monotone fixture `t = u^3` and add a
-regular fixture such as
+G7A retained the endpoint-degenerate monotone fixture `t = u^3` and added the
+regular fixture
 
 \[
 \phi(u)=\frac{e^{cu}-1}{e^c-1},\qquad c\ne0,
@@ -533,7 +578,7 @@ an endpoint.
 
 ## 14. Unbounded and improper metrics
 
-Unbounded semantics never use a viewport cutoff. G7A must distinguish:
+Unbounded semantics never use a viewport cutoff. G7A distinguished:
 
 - finite `A`/`B` length on an unbounded branch;
 - finite improper total length;
@@ -544,8 +589,9 @@ Unbounded semantics never use a viewport cutoff. G7A must distinguish:
 
 The last case is `LIMIT_NOT_ESTABLISHED`, not `NUMERICAL_FAILURE` or a finite
 viewport approximation. The current G6 finite interval provider does not by
-itself authorize a native infinite provider; G7A must map that source boundary
-before selecting a G7B executable subset.
+itself authorize a native infinite provider. G7A mapped that source boundary;
+G7B shall implement only the subset authorized by the normative spec and its
+versioned prompt.
 
 ## 15. Arc coordinate
 
@@ -560,7 +606,49 @@ It may be cached as component-local metric data. It does not replace the
 provider-owned semantic parameter, connect gaps, connect branches or create an
 automatic public coordinate surface.
 
-## 16. Semantic invariants
+## 16. R1 deterministic work and shared derived state
+
+Requested accuracy is attempted under a versioned `MetricWorkBudget2D` with
+independent maximum evaluations, subdivisions and depth. Exhausting any guard
+produces `Absent + LIMIT_NOT_ESTABLISHED`; it never changes total variation's
+mathematical definition or turns a partial refinement into success. The whole
+budget affects result/status and is therefore part of policy identity and the
+complete component key.
+
+Compatible metric results may reuse one immutable
+`LocusMetricComponentState2D` from a dedicated per-locus owner. It contains
+component-wide adaptive partition/cumulative arc-coordinate evidence,
+capability/integration metadata and component-level error state. Sharing has no
+semantic effect: the cache-off result
+must match value, coverage, status, rectifiability, guarantee, error evidence,
+contributions and diagnostics. The owner neither selects a route nor connects
+queries. It is bounded derived state with no dependency edges, and it is
+invalidated by revision/topology/undefined/removal transitions.
+
+The complete key is component-scoped and contains no A/B endpoints. Lookup and
+evaluation are deliberately separate:
+
+```text
+complete component key -> immutable component metric state
+component metric state + route segment -> route-specific contribution
+```
+
+A total query evaluates the complete component extent. A between-position
+query evaluates the subarc of each route segment. One state can produce many
+contributions; the owner shares no route, query result, contribution or
+aggregate result.
+
+For N compatible consumers and one complete key, the accepted hard budget is
+one component-state build until eviction or invalidation. This is a work bound,
+not a change in metric identity.
+
+On a transition from successful revision `r` to a failed computation at
+revision `r+1`, the old success becomes non-current before evaluation. P1
+publishes no failed index entry but does publish one coherent `Absent` rich
+failure snapshot for `r+1`; scalar access is undefined. Old-value/new-status
+hybrids, stale current success and partial entries are impossible states.
+
+## 17. Semantic invariants
 
 Every G7 characterization and implementation must preserve:
 
@@ -576,10 +664,35 @@ Every G7 characterization and implementation must preserve:
 10. normal kernel-DAG invalidation; and
 11. cache/index ON/OFF semantic equality.
 
-## 17. Phase boundary
+## 18. G7A characterization result
 
-This model approves `GeoLocusMetricResult` as a G7A working architecture only.
-It does not accept ADR 0007, make the proposed metric spec normative, authorize
-G7A execution or start G7B. Public `LocusLength`, changes to `Length` or
+The executable test-private model confirmed the operation split, constructive
+multiplicity, revision-separated binding, route semantics and orthogonal result
+axes. The difficult infinite-plus-unsupported aggregate retains a known
+positive-infinite value with incomplete coverage and both diagnostics.
+
+The accepted scalar rule adds an adequate-guarantee requirement to the
+finite/success/complete/satisfied predicate. Rich publication is defined when
+an immutable result snapshot exists, including an absent or failed diagnostic;
+scalar-defined state is independent. Because GeoGebra numeric participation is
+type-static, the rich Geo must not implement `NumberValue`. An explicit derived
+adapter is required when generic scalar consumption is requested.
+
+The accepted aggregate precedence and exact initial values are recorded
+in the [G7A report](../validation/g7a_locus_v2_metric_characterization_report.md)
+and [developer API](../developer/locus_v2_metric_api.md). The author accepted
+them and the normative spec now governs G7B.
+
+The focused
+[G7A-R1 report](../validation/g7a_r1_locus_v2_metric_refinement_report.md)
+adds closed value/error contracts, direct reuse of the G6 guarantee,
+deterministic work guards, dedicated shared ownership and P1 failure
+publication. These are author-approved.
+
+## 19. Phase boundary
+
+This model records `GeoLocusMetricResult` as the author-approved G7B
+architecture. ADR 0007 is Accepted and the G7 metric spec is normative. G7B is
+authorized but not started. Public `LocusLength`, changes to `Length` or
 `Perimeter`, public `Path`, point-on-locus, XML, persistence, G8 intersections,
 G9 spatial semantics and G5 locus export remain outside G7B minimum scope.

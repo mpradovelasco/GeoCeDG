@@ -2,17 +2,17 @@
 
 | Field | Value |
 |---|---|
-| Status | Planning only; no benchmark or probe has been run |
-| G7A | `NOT STARTED` |
-| G7B | `NOT STARTED` |
+| Status | G7A and focused R1 functional-counter experiments author-approved; G7B budgets authorized |
+| G7A | `PASS — AUTHOR APPROVED` |
+| G7B | `AUTHORIZED / NOT STARTED` |
 | Primary gates | Functional counters, semantic equality, bounded state and invalidation |
 | Wall-clock | Initially informational |
 | Matrix | [`g7_locus_v2_metric_validation_matrix.md`](g7_locus_v2_metric_validation_matrix.md) |
-| Date | 2026-08-12 |
+| Date | 2026-08-13 |
 
-This plan defines reproducible experiments for a separately authorized G7A and
-the hard functional budgets that G7A must propose for G7B. It does not create a
-benchmark harness, expected constants or productive metric code.
+This plan defines the reproducible experiments executed by G7A and the hard
+functional budgets approved for G7B. G7A created only test-private probes and
+expected constants; it created no productive metric code.
 
 ## 1. Questions
 
@@ -29,6 +29,10 @@ The experiments must answer:
    render/sample access, whole-locus regeneration or per-point index builds?
 6. Are index ON/OFF outputs semantically identical?
 7. Are capacity, eviction, exception cleanup and invalidation deterministic?
+8. Can compatible metric results share one component-state build without creating a
+   global cache, hidden DAG or lifecycle leak?
+9. Do independent evaluation, subdivision and depth ceilings bound work
+   deterministically at the accepted initial metric tolerances?
 8. Which recomputations are necessary after a semantic change, and which are
    waste?
 
@@ -91,9 +95,17 @@ componentIndexBuilds
 wholeRevisionIndexBuilds
 indexHits
 indexMisses
+crossResultIndexHits
+duplicateCompatibleComponentBuilds
 indexEvictions
 retainedIndexEntries
 retainedSemanticRevisions
+uniqueComponentPayloadBytes
+duplicateComponentPayloadBytes
+indexMetadataBytes
+metricOwnerOverheadBytes
+metricConsumerOverheadBytes
+approximateRetainedBytes
 indexInvalidations
 aggregateOperations
 publishedResults
@@ -131,7 +143,7 @@ Each trace records:
 - branch and resolved component keys;
 - provider/evaluator capability version;
 - algorithm, metric policy and tolerance-policy versions;
-- multiplicity and improper-limit policies;
+- multiplicity, improper-limit and deterministic work-budget policies;
 - strategy and capacity/eviction rule;
 - query fields and resolved route summary;
 - full rich result hash plus human-readable axes;
@@ -396,25 +408,48 @@ scripts/data under GeoCeDG validation-owned paths; generated files are evidence,
 not authority. Python is validation evidence, not kernel authority. Do not add
 a runtime dependency from the Java kernel to Python.
 
-## 15. Suggested future evidence layout
+## 15. Versioned G7A evidence layout
 
-Only a separately authorized G7A may create:
+The separately authorized G7A created:
 
 ```text
-geocedg/validation/locus-v2/g7a-metric-characterization.yml
-geocedg/validation/locus-v2/g7a-metric-counter-traces.*
-geocedg/validation/locus-v2/g7a-metric-references/
+geocedg/validation/locus-v2/g7a/g7a-characterization-evidence.json
+geocedg/validation/locus-v2/g7a/generate_metric_references.py
+geocedg/validation/locus-v2/g7a/metric-reference-values.json
+geocedg/validation/locus-v2/g7a/metric-reference-values.sha256
 docs/validation/g7a_locus_v2_metric_characterization_report.md
 docs/validation/g7a_locus_v2_metric_traceability_matrix.md
+geocedg/validation/locus-v2/g7a-r1/g7a-r1-characterization-evidence.json
+docs/validation/g7a_r1_locus_v2_metric_refinement_report.md
 ```
 
 Raw large/generated outputs belong under ignored `artifacts/` with a versioned
-manifest/hash when needed. G7A must not overwrite G6/G6R evidence.
+manifest/hash when needed. G7A did not overwrite G6/G6R evidence.
 
-## 16. Initial functional acceptance criteria
+## 16. Measured functional acceptance criteria
 
-G7A must propose exact numeric counter budgets. Before those numbers exist, the
-non-negotiable shape gates are:
+The author accepts these exact initial functional budgets:
+
+- same-component lazy builds: `1` for 1/10/100 queries;
+- same-component eager builds: `3` for 1/10/100 queries in the three-component
+  fixture;
+- reference builds: query count;
+- repeated total over three components: `3` eager, `3` lazy, `3 * queries`
+  reference;
+- warm same-component build count does not increase;
+- retained lazy entries never exceed configured capacity (provisional 64 in
+  G7B; smaller capacities are exercised for eviction);
+- policy/tolerance/multiplicity/improper version change: exactly one miss/build
+  for the requested component;
+- post-invalidation: exactly one rebuild on first affected request;
+- failed build: zero published entries and zero active builds after `finally`;
+- nested: one index build per affected metric level/revision/policy and zero
+  builds per downstream point;
+- compatible cross-result consumers: one component-state build per complete key
+  until eviction/invalidation, regardless of consumer count;
+- render reads, legacy sample reads and whole-locus regeneration: zero.
+
+The continuing non-negotiable gates are:
 
 - same rich result for all three strategies and index ON/OFF;
 - first lazy request builds only requested components;
@@ -428,10 +463,52 @@ non-negotiable shape gates are:
 - nested forbidden-access and per-point-build counters remain zero;
 - no existing legacy/V2 G6 behavior changes.
 
-Wall-clock regression thresholds may become hard only after multiple runs
-show stable dispersion on identified runners and the author approves them.
+For overlapping arcs, counters must prove that the endpoint-free complete key
+reuses one immutable `LocusMetricComponentState2D`, while each route segment
+still produces its own `LocusMetricContribution2D`. No benchmark may count a
+shared query result or contribution as a component-state hit.
 
-## 17. Stop conditions
+The fresh cold/warm nanosecond observation was no-reuse `12600/3100`, eager
+`230900/19000` and lazy `25400/10200`. The fixture's component work is too small
+for these values to rank strategies; timer/JVM overhead dominates. Wall-clock
+traces remain informational. Timing thresholds may become hard only after
+multiple runs show stable dispersion on identified runners and the author
+approves them.
+
+## 17. G7A-R1 multi-consumer benchmark families
+
+R1 adds these named families. Every family compares the algorithm-local
+reference ownership against the three shared shapes while keeping the component
+builder and full semantic key fixed. `REFERENCE_NO_INDEX_REUSE` remains the
+semantic oracle.
+
+| ID | Trace | Required hard evidence |
+|---|---|---|
+| `BM-G7-MULTI-CONSUMER` | N=1/3/10/100 compatible A/B consumers on one component | unique builds, duplicate builds, cross-result hits and full rich equality |
+| `BM-G7-MULTI-CONSUMER-MIXED` | compatible plus capability/algorithm/tolerance/multiplicity/improper/work-budget changes | same full key shares; every result-affecting key change misses |
+| `BM-G7-MULTI-CONSUMER-TOTAL` | C1/C2/C3 local-first and total-first orders | exactly three unique component builds in both orders; equal results |
+| `BM-G7-MULTI-CONSUMER-REVISION` | value revision, split, merge, disappearance/reappearance, undefined/recovery, remove | one rebuild per affected unique key, then shared hits; no obsolete or retained removed state |
+| `BM-G7-MULTI-CONSUMER-NESTED` | L1 multi-results → L2 multi-results → L3 | zero duplicate compatible builds and all render/sample/regeneration/per-point-index counters zero |
+| `BM-G7-MULTI-CONSUMER-MEMORY` | N=1/3/10/100 owner shapes | unique and duplicate payload, metadata, owner, consumer and total retained bytes reported separately |
+
+The measured R1 accounting constants are explicitly synthetic comparison
+weights, not JVM heap-size claims. At N=100, algo-local ownership produced 100
+builds, 99 duplicates and 108800 retained accounting bytes; the dedicated
+shared owner produced one build, 99 hits, no duplicate payload and 13760 bytes.
+
+The accepted ownership gate is `DEDICATED_SHARED_OWNER`: one bounded capacity
+per active source locus, provisional/non-normative capacity 64, deterministic insertion-order eviction and no wall-clock
+LRU. Wall-clock remains informational. Lifecycle, cross-Construction isolation,
+semantic equality and bounded retained state remain mandatory even if another
+shape has lower raw accounting overhead.
+
+The R1 deterministic work trace at `eps_metric_abs=1e-10` and
+`eps_metric_rel=1e-9` establishes initial ceilings of 32768 evaluations, 16384
+subdivisions and depth 22. Each ceiling is tested independently; exhaustion
+must return `LIMIT_NOT_ESTABLISHED`, never success or a wall-clock-derived
+answer.
+
+## 18. Stop conditions
 
 Stop G7A and report rather than alter productive code if:
 
@@ -445,5 +522,6 @@ Stop G7A and report rather than alter productive code if:
 - a legacy/scientific original hash changes;
 - characterization would require a public command, XML or G8 behavior.
 
-G7B remains blocked until G7A evidence, tolerances, functional budgets, spec
-promotion and ADR acceptance/replacement receive explicit author approval.
+G7B is authorized but not started. Stop its future execution if this approved
+baseline, its evidence hashes or any hard semantic/functional gate cannot be
+reproduced.

@@ -1,0 +1,225 @@
+{
+  "schema": "geocedg.g7a.metric-characterization-evidence.v1",
+  "status": "PASS_AUTHOR_APPROVED",
+  "recovery": {
+    "mode": "REEXECUTED FROM VERSIONED G6/G6R + RESTORED G7 PLANNING BASELINE",
+    "priorUnversionedG7AResults": "NOT USED"
+  },
+  "provenance": {
+    "branch": "feature/g7a-locus-v2-metric-characterization",
+    "initialSha": "e918846a73829032ab1e1aff37e863fed40c1969",
+    "planningSha": "e918846a73829032ab1e1aff37e863fed40c1969",
+    "originMainSha": "726abd95be928e232f3a3f7c6b637605b46d0cb1",
+    "promptSha256": "4820bf0934b84f3ea84ec5f30930a0be56769c150940ce53483e1150232fab39",
+    "rootAgentsSha256": "ea76fd1724088398bdee4d14c69079d830a79530e53b3b50187f8ce537b6b2ff",
+    "preexistingUntrackedRootNote": {
+      "path": "ChatGPT-Planificación desarrollo GeoCeDG.md",
+      "usedAsEvidence": false,
+      "modified": false
+    }
+  },
+  "preflight": {
+    "trackedWorktreeClean": true,
+    "ancestry": "origin/main -> planning/g7-locus-v2-metrics -> feature/g7a-locus-v2-metric-characterization",
+    "g6": "PASS",
+    "g6r": "PASS",
+    "adr0006": "Accepted",
+    "g6Spec": "NORMATIVE",
+    "g7PlanningRecovery": "PASS",
+    "adr0007": "Proposed",
+    "g7Spec": "PROPOSED_NOT_NORMATIVE",
+    "g7b": "NOT_STARTED",
+    "g8": "NOT_STARTED",
+    "baseline": {
+      "verifyOperational": "PASS",
+      "verifyLocusV2": "PASS",
+      "g6SharedTests": 73,
+      "g6SharedFailures": 0,
+      "desktopLaboratoryTests": 3,
+      "desktopLaboratoryFailures": 0,
+      "logDirectory": "C:/Users/mprad/AppData/Local/Temp/geocedg-g7a-preflight-locus-v2"
+    }
+  },
+  "characterizationProbes": {
+    "semantic": { "tests": 10, "failures": 0 },
+    "numerical": { "tests": 10, "failures": 0 },
+    "index": { "tests": 8, "failures": 0 },
+    "nested": { "tests": 4, "failures": 0 },
+    "geoLifecycle": { "tests": 5, "failures": 0 },
+    "total": { "tests": 37, "failures": 0, "skipped": 0 }
+  },
+  "independentReferences": {
+    "runtime": "CPython 3.12.13, conda-forge om_env",
+    "library": "mpmath 1.4.1",
+    "decimalPrecision": 80,
+    "generatorSha256": "b23a3e824cb4e70f83d499a0c7601950fb13458c9a77e7ba69d6ca886d7eb3a8",
+    "valuesSha256": "ca2169af253431f0a4583dd083cb1f59ed188774cdbe89fd3ae314d5d68ead5e",
+    "authority": "independent validation evidence; never kernel authority"
+  },
+  "numerics": {
+    "recommendedCandidatePolicy": {
+      "epsMetricAbs": 1e-10,
+      "epsMetricRel": 1e-9,
+      "maximumAdaptiveDepth": 22,
+      "guarantee": "ESTIMATED_ERROR",
+      "disposition": "AUTHOR_APPROVED_INITIAL_G7B_POLICY"
+    },
+    "evaluatorOnlyAliasing": {
+      "coarseChordLength": 1.0,
+      "refinedChordLength": 1.0,
+      "independentFineChordLengthLowerBound": 25.0,
+      "guarantee": "FLOATING_POINT_UNCERTIFIED"
+    },
+    "inheritedGaussIntegrator": {
+      "role": "comparison only",
+      "directReuseRecommended": false,
+      "reasons": [
+        "global formatting bootstrap coupling",
+        "static mutable integration counter",
+        "fixed kernel tolerance",
+        "bare double or NaN result",
+        "no metric error metadata"
+      ]
+    }
+  },
+  "indexExperiments": {
+    "sameBetweenQuery": {
+      "1": {
+        "REFERENCE_NO_INDEX_REUSE": { "componentBuilds": 1, "integratorCalls": 8, "evaluatorCalls": 33, "derivativeCalls": 33, "refinements": 16, "hits": 0, "retainedEntries": 0 },
+        "EAGER_WHOLE_REVISION": { "componentBuilds": 3, "integratorCalls": 24, "evaluatorCalls": 99, "derivativeCalls": 99, "refinements": 48, "hits": 0, "retainedEntries": 3 },
+        "LAZY_COMPONENT_REVISION": { "componentBuilds": 1, "integratorCalls": 8, "evaluatorCalls": 33, "derivativeCalls": 33, "refinements": 16, "hits": 0, "retainedEntries": 1 }
+      },
+      "10": {
+        "REFERENCE_NO_INDEX_REUSE": { "componentBuilds": 10, "integratorCalls": 80, "evaluatorCalls": 330, "derivativeCalls": 330, "refinements": 160, "hits": 0, "retainedEntries": 0 },
+        "EAGER_WHOLE_REVISION": { "componentBuilds": 3, "integratorCalls": 24, "evaluatorCalls": 99, "derivativeCalls": 99, "refinements": 48, "hits": 9, "retainedEntries": 3 },
+        "LAZY_COMPONENT_REVISION": { "componentBuilds": 1, "integratorCalls": 8, "evaluatorCalls": 33, "derivativeCalls": 33, "refinements": 16, "hits": 9, "retainedEntries": 1 }
+      },
+      "100": {
+        "REFERENCE_NO_INDEX_REUSE": { "componentBuilds": 100, "integratorCalls": 800, "evaluatorCalls": 3300, "derivativeCalls": 3300, "refinements": 1600, "hits": 0, "retainedEntries": 0 },
+        "EAGER_WHOLE_REVISION": { "componentBuilds": 3, "integratorCalls": 24, "evaluatorCalls": 99, "derivativeCalls": 99, "refinements": 48, "hits": 99, "retainedEntries": 3 },
+        "LAZY_COMPONENT_REVISION": { "componentBuilds": 1, "integratorCalls": 8, "evaluatorCalls": 33, "derivativeCalls": 33, "refinements": 16, "hits": 99, "retainedEntries": 1 }
+      }
+    },
+    "repeatedTotal": {
+      "queryCounts": [1, 10, 100],
+      "REFERENCE_NO_INDEX_REUSE": { "componentBuilds": [3, 30, 300] },
+      "EAGER_WHOLE_REVISION": { "componentBuilds": [3, 3, 3], "hits": [2, 29, 299] },
+      "LAZY_COMPONENT_REVISION": { "componentBuilds": [3, 3, 3], "hits": [0, 27, 297] }
+    },
+    "routeFamilies": {
+      "families": ["overlapping", "reverse", "periodic", "STOP", "WRAP", "STRICT"],
+      "queryCounts": [1, 10, 100],
+      "strategiesCompared": ["REFERENCE_NO_INDEX_REUSE", "EAGER_WHOLE_REVISION", "LAZY_COMPONENT_REVISION"],
+      "strictUnreachableIntegratorCalls": 0,
+      "lazyBuildsPerReachableFamily": [1, 1, 1]
+    },
+    "policyKeyTrace": {
+      "queryCounts": [1, 10, 100],
+      "uniquePolicyPerQuery": true,
+      "referenceBuilds": [1, 10, 100],
+      "eagerBuilds": [3, 30, 300],
+      "lazyBuilds": [1, 10, 100],
+      "hits": 0
+    },
+    "latencyNanosecondsInformational": {
+      "workstationRun": "2026-08-12 direct focused trace; wall-clock is not a gate",
+      "REFERENCE_NO_INDEX_REUSE": { "cold": 12600, "warm": 3100 },
+      "EAGER_WHOLE_REVISION": { "cold": 230900, "warm": 19000 },
+      "LAZY_COMPONENT_REVISION": { "cold": 25400, "warm": 10200 }
+    },
+    "lifecycle": {
+      "experimentalCapacity": 2,
+      "retainedEntries": 2,
+      "approximateBytesPerEntry": 512,
+      "approximateRetainedBytes": 1024,
+      "deterministicEvictions": 1,
+      "obsoleteRevisionEntriesAfterInvalidation": 0,
+      "failedEntriesPublished": 0,
+      "cacheOnOffSemanticEquality": true
+    },
+    "recommendation": "AUTHOR_APPROVED_LAZY_COMPONENT_REVISION",
+    "provisionalG7BCapacity": 64
+  },
+  "nestedComposition": {
+    "levels": 3,
+    "renderReads": 0,
+    "legacySampleReads": 0,
+    "wholeLocusRegenerationsPerDownstreamPoint": 0,
+    "indexBuildsPerDownstreamPoint": 0,
+    "maximumActiveMetricComputations": 1,
+    "sameRevisionPolicyReuse": true,
+    "cacheOffEquality": true,
+    "kernelThreadConfinementRequired": true
+  },
+  "sourceAudit": {
+    "numberValueInstanceofOccurrences": 219,
+    "numberValueInstanceofFiles": 72,
+    "geoClassRecommendation": "AUTHOR_APPROVED: append LOCUS_METRIC_RESULT after LOCUS_V2",
+    "numericFacetRecommendation": "AUTHOR_APPROVED: C explicit derived numeric adapter",
+    "productiveMetricSourceAdded": false,
+    "publicCommandAdded": false,
+    "xmlAdded": false,
+    "threeDimensionalBehaviorAdded": false
+  },
+  "legacyEvidence": {
+    "InterCilConoOblique.ggb": "b1cb614f1a4c414144fbff29349ddebda92d1026acb4c535990a2895c589fa27",
+    "InterCilConoObliqueTwoLevels.ggb": "587328a8e5b6474aee3169bb6af2fe2a711e98e000a423a96bba6e38274fb2b6",
+    "Templatev7.ggb": "f62e5b7a92bcd95f10b8afda348763a57ccbd0c10dbc0c2bccc7049831ed4113",
+    "originalsModified": false
+  },
+  "finalValidation": {
+    "focusedG7A": {
+      "status": "PASS",
+      "originalTests": 37,
+      "r1Tests": 14,
+      "tests": 51,
+      "failures": 0,
+      "skipped": 0,
+      "checkstyleErrors": 0,
+      "logDirectory": "artifacts/validation/g7a-author-closeout-focused"
+    },
+    "g6G6rRegression": {
+      "status": "PASS",
+      "sharedTests": 73,
+      "sharedFailures": 0,
+      "desktopLaboratoryTests": 3,
+      "desktopLaboratoryFailures": 0,
+      "logDirectory": "artifacts/validation/g7a-author-closeout-locus-v2"
+    },
+    "verifyOperational": {
+      "status": "PASS",
+      "registeredUpstreamFiles": 94
+    },
+    "composedAuthoritySkipBuild": {
+      "status": "PASS",
+      "elapsedSeconds": 91.7,
+      "logDirectory": "artifacts/validation/g7a-author-closeout-composed"
+    },
+    "internalMarkdownLinks": { "status": "PASS", "documents": 13 },
+    "independentReferenceCheck": "PASS",
+    "gitDiffCheck": "PASS",
+    "productiveMainSourceChanges": 0,
+    "environmentRetries": [
+      "SANDBOX_CONDA_ENV_WRITE_DENIED_THEN_EXACT_MANAGED_RERUN_PASS",
+      "SANDBOX_GRADLE_DISTRIBUTION_NETWORK_DENIED_THEN_EXACT_MANAGED_RERUN_PASS"
+    ]
+  },
+  "authorCloseout": {
+    "date": "2026-08-13",
+    "g7aRecommendations": "ALL_42_AUTHOR_APPROVED",
+    "r1Recommendations": "R1_1_THROUGH_R1_22_AUTHOR_APPROVED",
+    "apiNormalizations": {
+      "componentStateVsContribution": "COMPLETE_COMPONENT_KEY_TO_IMMUTABLE_STATE_THEN_ROUTE_SEGMENT_TO_CONTRIBUTION",
+      "traversalOutcome": "STRUCTURALLY_OPTIONAL_TOTAL_ABSENT",
+      "metricErrorAmount": "CLOSED_ESTABLISHED_NOT_ESTABLISHED_NOT_APPLICABLE"
+    }
+  },
+  "phaseDisposition": {
+    "g7aR1": "PASS_AUTHOR_APPROVED",
+    "g7a": "PASS_AUTHOR_APPROVED",
+    "g7b": "AUTHORIZED_NOT_STARTED",
+    "g8": "NOT_STARTED",
+    "adr0007": "ACCEPTED",
+    "g7Spec": "NORMATIVE_AUTHOR_APPROVED"
+  }
+}

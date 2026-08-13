@@ -442,10 +442,18 @@ try {
             ".\tools\locus-v2\open-locus-v2-laboratory.ps1 -ValidateOnly",
             ":desktop:desktop:runLocusV2Laboratory",
             "GeoCeDG - Locus V2 Developer Laboratory",
-            "experimental", 'G7 (`PENDING / NOT STARTED`)')) {
+            "experimental")) {
         Assert-Condition -Condition $userGuide.Contains($requiredGuideValue) `
             -Message "The G6R user guide is missing '$requiredGuideValue'."
     }
+    $g7PlanningOnly = $userGuide.Contains('G7 (`PENDING / NOT STARTED`)')
+    $g7aCharacterizedOnly = $userGuide.Contains("G7A characterization only") -and
+        $userGuide.Contains("no productive metric available") -and
+        $userGuide.Contains(
+            "| G7B | Minimal native Locus V2 metric kernel | Authorized; not started |")
+    Assert-Condition -Condition ($g7PlanningOnly -or $g7aCharacterizedOnly) `
+        -Message ("The user guide must report either the historical G7 planning " +
+            "state or G7A characterization-only with G7B authorized/not started.")
 
     $traceability = Get-Content -Raw -LiteralPath (Join-Path $RepositoryRoot `
         "docs\validation\g6r_locus_v2_traceability_matrix.md")

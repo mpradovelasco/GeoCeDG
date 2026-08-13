@@ -2,20 +2,20 @@
 
 | Field | Value |
 |---|---|
-| Status | Planning matrix; no G7 execution evidence |
-| G7A | `NOT STARTED` |
-| G7B | `NOT STARTED` |
+| Status | G7A plus focused R1 author-approved evidence; G7B matrix authorized, not executed |
+| G7A | `PASS — AUTHOR APPROVED` |
+| G7B | `AUTHORIZED / NOT STARTED` |
 | Mathematical authority | Total variation per valid-domain component |
-| Proposed contract | [`locus-v2-metrics.md`](../../geocedg/specs/locus/locus-v2-metrics.md) |
+| Normative contract | [`locus-v2-metrics.md`](../../geocedg/specs/locus/locus-v2-metrics.md) |
 | Benchmark authority | [`g7_locus_v2_metric_benchmark_plan.md`](g7_locus_v2_metric_benchmark_plan.md) |
-| Date | 2026-08-12 |
+| Date | 2026-08-13 |
 
-This matrix defines characterization obligations for G7A and candidate hard
-gates for a separately authorized G7B. `A` means G7A must measure/classify the
-case; `B` means the minimum G7B must implement and pass it after author review.
-`B-policy` means G7A may approve an explicit unsupported or
-limit-not-established outcome instead of numeric support, but G7B must still
-return the exact rich status and never approximate silently.
+This matrix defines characterization obligations executed by G7A and candidate
+hard gates for a separately authorized G7B. `A` means G7A measures/classifies the
+case; `B` means the minimum G7B must implement and pass it. `B-policy` means the
+normative contract permits, using the G7A evidence, an explicit
+unsupported or limit-not-established outcome instead of numeric support; G7B
+must still return the exact rich status and never approximate silently.
 
 ## 1. Cross-cutting assertions
 
@@ -53,8 +53,8 @@ guarantee, errors, diagnostics and contribution decomposition.
 | M-REPAR-02 | A+B | `t=u^3` over an approved monotone interval | total/subarcs | invariant length despite endpoint/interior derivative degeneration; guarantee truthful |
 | M-POINT-01 | A+B | constant `F(t)=P` | total and A/B | finite zero, complete, success, rectifiable, collapsed-image diagnostic |
 
-For M-ELL-01 and M-TRN-01, G7A must record the independent implementation and
-precision. If Python creates expected constants, version formula, precision,
+For M-ELL-01 and M-TRN-01, G7A recorded the independent implementation and
+precision. The Python-generated expected constants version formula, precision,
 runtime/library, script and output hash. Python is not kernel authority.
 
 ## 3. Position, branch and topology cases
@@ -183,7 +183,7 @@ and query A to B in `FORWARD`.
 | L-LABEL-01 | A+B | rename/label | identity/provenance does not depend on label |
 | L-LIST-01 | A+B | list/sequence use | no silent scalar coercion; lifecycle policy honored |
 | L-STYLE-01 | A+B | defaults/style/selection | deliberate behavior; no accidental NUMERIC/LOCUS classification |
-| L-EXC-01 | A+B | evaluator throws during private build | `finally` cleanup; no published partial entry/result |
+| L-EXC-01 | A+B | evaluator throws during private build | `finally` cleanup; no partial index entry; coherent current-revision rich failure snapshot |
 | L-EXC-02 | A+B | integrator/aggregator throws | atomic failure payload; old success not relabeled current |
 | L-ALIAS-01 | A+B | mutate source arrays/lists after construction | keys/results/decomposition unchanged |
 
@@ -267,7 +267,7 @@ explicit provenance.
 
 ## 14. G7A evidence and promotion gate
 
-G7A must save:
+G7A saved:
 
 - machine/JDK/Gradle/baseline metadata;
 - exact source/probe/test paths and hashes;
@@ -277,8 +277,63 @@ G7A must save:
 - lifecycle, exception, aliasing, repeated and nested results;
 - legacy original hash verification;
 - a requirement-to-evidence traceability matrix;
-- explicit unresolved issues and proposed G7B budgets.
+- explicit resolved decisions and author-approved G7B budgets.
 
-No row may be marked pass from prose alone. G7A remains open until the author
-accepts the decisions. G7B remains blocked while the spec is proposed or ADR
-0007 is not Accepted/replaced.
+No row may be marked pass from prose alone. G7A passed by author approval after
+the evidence ran. G7B is authorized but not started; its implementation must
+pass every applicable `B` gate.
+
+## 15. Executed G7A and R1 coverage
+
+The executable characterization currently covers 51 test-private cases:
+
+| Suite | Cases | Matrix areas |
+|---|---:|---|
+| semantic/routes/results | 10 | position, topology, direction, same-position, STOP/WRAP/STRICT, total and scalar axes |
+| numerical methods | 10 | variation, analytic/differential, upstream Gauss comparison, reparameterization, tolerance grid, evaluator-only alias, improper and arc coordinate |
+| index strategies | 8 | 1/10/100, route traces, total, full keys, capacity, eviction, failure, ON/OFF |
+| nested composition | 4 | repeated, invalidation, cache-off and policy change |
+| Geo lifecycle | 5 | creation/publication, rich-vs-scalar, copy/set, removal/recovery and atomic failure |
+| R1 safe value/error/work budget | 6 | closed values, evidence states, G6 guarantee reuse and independent work ceilings |
+| R1 multi-consumer ownership | 8 | N=1/3/10/100, query order, full-key isolation, lifecycle, Construction isolation and nesting |
+
+Independent expected values cover ellipse, exponential graph, parabola, cusp
+and the evaluator-alias stress case at 80 decimal digits. Legacy/source audits
+cover the remaining non-executable G7A rows. Exact requirement-to-evidence
+mapping is in
+[`g7a_locus_v2_metric_traceability_matrix.md`](g7a_locus_v2_metric_traceability_matrix.md).
+
+This is author-approved characterization coverage, not G7B conformance.
+
+## 16. Focused G7A-R1 matrix
+
+The following IDs are separately emitted by the R1 probes/evidence even when a
+single parameterized Java test covers several rows:
+
+| ID | Phase | Fixture/transition | Hard assertion |
+|---|---|---|---|
+| R1-VALUE-ABSENT | A-R1+B | finite/infinity/absent values | closed immutable `MetricValue2D`; no NaN, sentinel or bare absent value access |
+| R1-ERROR-NONE | A-R1+B | exact/certified/estimated/unknown/not-applicable | closed immutable amount variants and scope; zero/NaN never means unknown |
+| R1-GUARANTEE-G6 | A-R1+B | every guarantee state | direct `LocusSemanticMetadata2D.NumericGuarantee` reuse; no metric duplicate enum |
+| R1-WORK-BUDGET | A-R1+B | ellipse/parabola/transcendental/cusp/reparameterized/improper/evaluator-only | independent deterministic evaluation, subdivision and depth ceilings; exhaustion is typed `LIMIT_NOT_ESTABLISHED` |
+| R1-MULTI-1 | A-R1+B | 1 compatible consumer | one unique build, zero duplicate build |
+| R1-MULTI-3 | A-R1+B | 3 compatible consumers | one unique build, two cross-result hits |
+| R1-MULTI-10 | A-R1+B | 10 compatible consumers | one unique build, nine cross-result hits |
+| R1-MULTI-100 | A-R1+B | 100 compatible consumers | one unique component-state build, 99 cross-result hits; local comparator reports 99 duplicates |
+| R1-MULTI-TOTAL-FIRST | A-R1+B | total then local queries over C1/C2/C3 | exactly three unique component builds and order-independent rich values |
+| R1-MULTI-LOCAL-FIRST | A-R1+B | local queries then total over C1/C2/C3 | exactly three unique component builds and order-independent rich values |
+| R1-MULTI-POLICY | A-R1+B | capability/algorithm/tolerance/multiplicity/improper/work-budget changes | same complete key shares; each result-affecting change misses |
+| R1-MULTI-REVISION | A-R1+B | value-only revision/undefined/recovery | old entries unreachable; first consumer builds once, later compatible consumers hit |
+| R1-MULTI-TOPOLOGY | A-R1+B | split/merge/branch disappearance/reappearance | no old component/coordinate/lineage reuse |
+| R1-MULTI-CONSTRUCTION | A-R1+B | two loci in one Construction and look-alike IDs in two Constructions | zero cross-locus and cross-Construction sharing; no static registry |
+| R1-MULTI-REMOVE | A-R1+B | consumer and source-locus removal | final consumer releases entries; locus removal releases owner and strong references |
+| R1-MULTI-NESTED | A-R1+B | L1 multi-results → L2 multi-results → L3 | zero duplicate compatible builds, render/sample/regeneration/per-point-index counters all zero |
+| CLOSEOUT-COMPONENT-STATE | A-closeout+B | overlapping subarcs and total over one component | key has no endpoints; owner returns immutable component state; distinct route contributions are derived after lookup |
+| CLOSEOUT-TRAVERSAL-OPTIONAL | A-closeout+B | total and between rich results | between outcome present where required; total outcome structurally absent; no null/sentinel |
+| CLOSEOUT-ERROR-CLOSED | A-closeout+B | established/not-established/not-applicable errors | sealed variants make contradictory state/amount pairs unrepresentable |
+
+The accepted ownership is `DEDICATED_SHARED_OWNER`. G7B shall retain
+`REFERENCE_NO_INDEX_REUSE` as the full rich
+semantic oracle and shall use capacity 64 only as a provisional per-active-
+locus implementation default until real productive footprint evidence is
+reviewed.

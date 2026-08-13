@@ -1,0 +1,296 @@
+{
+  "schema": "geocedg.g7a-r1.metric-refinement-evidence.v1",
+  "status": "PASS_AUTHOR_APPROVED",
+  "provenance": {
+    "branch": "feature/g7a-locus-v2-metric-characterization",
+    "headAndPlanningSha": "e918846a73829032ab1e1aff37e863fed40c1969",
+    "originMainSha": "726abd95be928e232f3a3f7c6b637605b46d0cb1",
+    "executedG7APromptSha256": "4820bf0934b84f3ea84ec5f30930a0be56769c150940ce53483e1150232fab39",
+    "r1RequestSha256": "af90f2209cbbbead33b0dcca37e9e8f426236f20ec99bcda3e0965482512a055",
+    "priorUnversionedG7AResults": "NOT USED",
+    "preexistingUntrackedRootNote": {
+      "path": "ChatGPT-Planificación desarrollo GeoCeDG.md",
+      "usedAsEvidence": false,
+      "modified": false,
+      "includedInCloseoutCommit": true
+    }
+  },
+  "entryState": {
+    "g6": "PASS",
+    "g6r": "PASS",
+    "g7Planning": "APPROVED",
+    "g7a": "READY_FOR_SECOND_AUTHOR_REVIEW",
+    "g7b": "NOT_STARTED",
+    "g8": "NOT_STARTED",
+    "adr0007": "PROPOSED",
+    "g7Spec": "PROPOSED_NOT_NORMATIVE",
+    "existingG7AProbes": { "tests": 37, "failures": 0 },
+    "productiveG7MainSourceChanges": 0
+  },
+  "sourceAudit": {
+    "normativeGuarantee": {
+      "type": "org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.NumericGuarantee",
+      "source": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusSemanticMetadata2D.java:55",
+      "values": [
+        "EXACT_ARITHMETIC",
+        "CERTIFIED_ERROR_BOUND",
+        "ESTIMATED_ERROR",
+        "FLOATING_POINT_UNCERTIFIED"
+      ],
+      "metricSpecificDuplicateEnumAllowed": false
+    },
+    "lifecycleSeams": [
+      "GeoLocusV2.publishSemanticDefinition at line 62",
+      "GeoLocusV2.setUndefined at line 158",
+      "GeoElement.doRemove at line 2920",
+      "AlgoElement.remove at line 828"
+    ],
+    "boundedDerivedPattern": "LocusEvaluationSession2D is bounded, disposable, kernel-thread-confined and insertion-order evicted",
+    "rejectedRenderPattern": "LocusRenderCache2D is per Drawable and view-specific; it is forbidden metric ownership"
+  },
+  "safeContracts": {
+    "metricValueRepresentation": {
+      "recommendation": "V2_CLOSED_IMMUTABLE_METRIC_VALUE",
+      "variants": ["Finite(non-negative finite double)", "PositiveInfinity", "Absent"],
+      "finiteAccess": "OptionalDouble",
+      "semanticNaN": false,
+      "sentinelDouble": false,
+      "appliesTo": ["LocusMetricContribution2D", "LocusMetricResult2D"],
+      "disposition": "AUTHOR_APPROVED"
+    },
+    "errorEvidence": {
+      "wrapper": "MetricErrorEvidence2D",
+      "normativeGuaranteeReuse": true,
+      "amountRepresentation": "CLOSED_METRIC_ERROR_AMOUNT_2D",
+      "amountVariants": ["Established(non-negative finite)", "NotEstablished", "NotApplicable"],
+      "scopes": ["COMPLETE_VALUE", "REPORTED_PARTIAL_VALUE", "NOT_APPLICABLE"],
+      "metadata": ["method", "assumptions", "certificateMetadata"],
+      "semanticNaN": false,
+      "sentinelNumbers": false
+    },
+    "scalarGuarantees": {
+      "candidateAdmissible": [
+        "EXACT_ARITHMETIC",
+        "CERTIFIED_ERROR_BOUND",
+        "ESTIMATED_ERROR"
+      ],
+      "richOnlyByDefault": ["FLOATING_POINT_UNCERTIFIED"]
+    }
+  },
+  "deterministicWork": {
+    "policy": {
+      "epsMetricAbs": 1e-10,
+      "epsMetricRel": 1e-9,
+      "maximumEvaluations": 32768,
+      "maximumSubdivisions": 16384,
+      "maximumDepth": 22,
+      "disposition": "AUTHOR_APPROVED_INITIAL_VERSIONED_G7B_POLICY"
+    },
+    "observations": {
+      "ellipse": { "evaluations": 497, "subdivisions": 247, "status": "SUCCESS" },
+      "parabola": { "evaluations": 233, "subdivisions": 115, "status": "SUCCESS" },
+      "transcendental": { "evaluations": 65, "subdivisions": 31, "status": "SUCCESS" },
+      "cusp": { "evaluations": 233, "subdivisions": 115, "status": "SUCCESS" },
+      "regularReparameterization": { "evaluations": 129, "subdivisions": 63, "status": "SUCCESS" },
+      "endpointDegenerateU3": { "evaluations": 5, "subdivisions": 1, "status": "SUCCESS" },
+      "finiteImproperTransform": { "evaluations": 5, "subdivisions": 1, "status": "SUCCESS" },
+      "difficultImproperTransform": {
+        "evaluations": 2493,
+        "subdivisions": 1245,
+        "status": "LIMIT_NOT_ESTABLISHED",
+        "exhausted": "MAXIMUM_DEPTH"
+      },
+      "difficultEvaluatorOnlyCalls": 4162
+    },
+    "independentCeilingsTested": [
+      "MAXIMUM_EVALUATIONS",
+      "MAXIMUM_SUBDIVISIONS",
+      "MAXIMUM_DEPTH"
+    ],
+    "exhaustionStatus": "LIMIT_NOT_ESTABLISHED",
+    "wallClockAuthority": false,
+    "keyIncludesWorkBudget": true
+  },
+  "multiConsumer": {
+    "strategies": [
+      "ALGO_LOCAL_INDEX",
+      "LOCUS_ATTACHED_SHARED_INDEX",
+      "CONSTRUCTION_SCOPED_METRIC_REPOSITORY",
+      "DEDICATED_SHARED_OWNER"
+    ],
+    "compatibleSameComponent": {
+      "1": {
+        "ALGO_LOCAL_INDEX": { "builds": 1, "crossResultHits": 0, "duplicateBuilds": 0, "retainedBytes": 1088 },
+        "DEDICATED_SHARED_OWNER": { "builds": 1, "crossResultHits": 0, "duplicateBuilds": 0, "retainedBytes": 1088 }
+      },
+      "3": {
+        "ALGO_LOCAL_INDEX": { "builds": 3, "crossResultHits": 0, "duplicateBuilds": 2, "retainedBytes": 3264 },
+        "DEDICATED_SHARED_OWNER": { "builds": 1, "crossResultHits": 2, "duplicateBuilds": 0, "retainedBytes": 1344 }
+      },
+      "10": {
+        "ALGO_LOCAL_INDEX": { "builds": 10, "crossResultHits": 0, "duplicateBuilds": 9, "retainedBytes": 10880 },
+        "DEDICATED_SHARED_OWNER": { "builds": 1, "crossResultHits": 9, "duplicateBuilds": 0, "retainedBytes": 2240 }
+      },
+      "100": {
+        "ALGO_LOCAL_INDEX": {
+          "builds": 100,
+          "crossResultHits": 0,
+          "duplicateBuilds": 99,
+          "uniquePayloadBytes": 512,
+          "duplicatePayloadBytes": 50688,
+          "entryMetadataBytes": 19200,
+          "ownerOverheadBytes": 25600,
+          "consumerOverheadBytes": 12800,
+          "retainedBytes": 108800,
+          "classification": "CROSS_RESULT_DUPLICATE_METRIC_WORK"
+        },
+        "DEDICATED_SHARED_OWNER": {
+          "builds": 1,
+          "crossResultHits": 99,
+          "duplicateBuilds": 0,
+          "uniquePayloadBytes": 512,
+          "duplicatePayloadBytes": 0,
+          "entryMetadataBytes": 192,
+          "ownerOverheadBytes": 256,
+          "consumerOverheadBytes": 12800,
+          "retainedBytes": 13760
+        }
+      }
+    },
+    "queryOrder": {
+      "orders": ["M1_M2_M3_M4", "M3_M4_M2_M1"],
+      "uniqueComponentBuildsEach": 3,
+      "crossResultHitsEach": 3,
+      "semanticResultsEqual": true
+    },
+    "fullKeyIsolation": {
+      "sameKeyShares": true,
+      "differentCapabilityVersionMisses": true,
+      "differentAlgorithmVersionMisses": true,
+      "differentToleranceMisses": true,
+      "differentMultiplicityMisses": true,
+      "differentImproperPolicyMisses": true,
+      "differentWorkBudgetMisses": true
+    },
+    "lifecycle": {
+      "sameConstructionDifferentLociShare": false,
+      "differentConstructionsEquivalentLookingIdsShare": false,
+      "obsoleteRevisionRetained": false,
+      "splitOrMergeReusesOldComponent": false,
+      "disappearanceReappearanceCoordinateRepair": false,
+      "firstConsumerAfterRevisionBuilds": 1,
+      "laterCompatibleConsumersHit": true,
+      "lastConsumerRemovalReleasesEntries": true,
+      "locusRemovalReleasesOwner": true,
+      "staticRegistry": false
+    },
+    "nested": {
+      "levels": 3,
+      "componentBuilds": 2,
+      "crossResultHits": 3,
+      "duplicateCompatibleBuilds": 0,
+      "renderReads": 0,
+      "legacySampleReads": 0,
+      "wholeLocusRegenerations": 0,
+      "indexBuildsInsideDownstreamPoint": 0
+    },
+    "cacheOffSemanticEquality": true,
+    "recommendation": "DEDICATED_SHARED_OWNER",
+    "crossResultCompatibleBuildBudget": "one component-state build per complete key until eviction or invalidation",
+    "componentStateBoundary": {
+      "keyIncludesEndpoints": false,
+      "sharedValue": "LocusMetricComponentState2D",
+      "routeSpecificContributionDerivedAfterLookup": true,
+      "sharedRoutes": false,
+      "sharedContributions": false,
+      "sharedQueryResults": false,
+      "sharedAggregateResults": false
+    },
+    "capacity": {
+      "ownership": "per active locus shared owner, not per metric algorithm",
+      "provisionalEntries": 64,
+      "normative": false,
+      "eviction": "deterministic insertion order"
+    }
+  },
+  "atomicPublication": {
+    "recommendation": "P1_COHERENT_RICH_FAILURE_SNAPSHOT",
+    "sequence": [
+      "source revision r+1 invalidates revision r payload and index entries",
+      "build remains private",
+      "successful build atomically publishes immutable entry and rich snapshot",
+      "handled failure publishes a coherent ABSENT rich failure snapshot for r+1",
+      "scalar adapter is undefined"
+    ],
+    "staleSuccessCurrent": false,
+    "hybridPayload": false,
+    "partialIndexEntryPublished": false
+  },
+  "probes": {
+    "r1ValueAndWorkBudget": { "tests": 6, "failures": 0 },
+    "r1MultiConsumer": { "tests": 8, "failures": 0 },
+    "r1Total": { "tests": 14, "failures": 0 },
+    "g7aRegression": { "tests": 37, "failures": 0 }
+  },
+  "validation": {
+    "focusedG7AR1": {
+      "command": "tools/agent/verify-g7a-metrics.ps1",
+      "exitCode": 0,
+      "tests": 51,
+      "failures": 0,
+      "skipped": 0,
+      "checkstyle": "PASS",
+      "independentReferences": "PASS",
+      "linksAndHashes": "PASS",
+      "logDirectory": "artifacts/validation/g7a-author-closeout-focused"
+    },
+    "g6G6rBaseline": {
+      "command": "tools/agent/verify-locus-v2.ps1",
+      "exitCode": 0,
+      "tests": 76,
+      "failures": 0,
+      "checkstyle": "PASS",
+      "logDirectory": "artifacts/validation/g7a-author-closeout-locus-v2"
+    },
+    "operational": {
+      "command": "tools/agent/verify-operational.ps1",
+      "exitCode": 0,
+      "controlledUpstreamFiles": 94
+    },
+    "composed": {
+      "command": "tools/agent/verify.ps1 -SkipBuild",
+      "exitCode": 0,
+      "result": "ALL_REQUESTED_GATES_PASS",
+      "logDirectory": "artifacts/validation/g7a-author-closeout-composed"
+    },
+    "gitDiffCheck": "PASS",
+    "productiveSourceAudit": {
+      "changesFromPlanning": 0,
+      "productiveMetricClassMatches": 0
+    },
+    "residualJavaGradleProcesses": 0,
+    "environmentRetries": [
+      "SANDBOX_CONDA_ENV_WRITE_DENIED_THEN_EXACT_MANAGED_RERUN_PASS",
+      "SANDBOX_GRADLE_DISTRIBUTION_NETWORK_DENIED_THEN_EXACT_MANAGED_RERUN_PASS"
+    ],
+    "evidenceHashManifest": "geocedg/validation/locus-v2/g7a-r1/g7a-r1-evidence.sha256"
+  },
+  "authorCloseout": {
+    "date": "2026-08-13",
+    "g7aRecommendations": "ALL_42_AUTHOR_APPROVED",
+    "r1Recommendations": "R1_1_THROUGH_R1_22_AUTHOR_APPROVED",
+    "traversalOutcome": "OPTIONAL_TOTAL_ABSENT",
+    "metricErrorAmount": "CLOSED_VARIANTS",
+    "indexStrategy": "LAZY_COMPONENT_REVISION",
+    "indexOwnership": "DEDICATED_SHARED_OWNER"
+  },
+  "phaseDisposition": {
+    "g7aR1": "PASS_AUTHOR_APPROVED",
+    "g7a": "PASS_AUTHOR_APPROVED",
+    "g7b": "AUTHORIZED_NOT_STARTED",
+    "g8": "NOT_STARTED",
+    "adr0007": "ACCEPTED",
+    "g7Spec": "NORMATIVE_AUTHOR_APPROVED",
+    "productiveG7SourceChanges": 0
+  }
+}

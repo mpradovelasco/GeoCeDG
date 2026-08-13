@@ -5,14 +5,15 @@
 - Baseline: GeoGebra 5.4.928.0 at
   `9b93256b7df401ff056c37b502d82df4d72b1522`
 - Plataforma validada: únicamente Windows
-- Última revisión: 2026-08-12
-- Siguiente fase: G7 (`PENDING / NOT STARTED`)
+- Última revisión: 2026-08-13
+- Fase de estudio actual: G7A-R1 y G7A (`PASS — AUTHOR APPROVED`); G7B (`AUTHORIZED / NOT STARTED`)
 - Locus V2: `experimental`, internal/developer-only, disabled by default
 - `PACKAGING TECHNICAL STATUS = PASS`
 - `PUBLIC REDISTRIBUTION STATUS = BLOCKED PENDING LICENSE/ASSET APPROVAL`
 
 This guide is the practical entry point for the GeoCeDG author/developer. It
-describes only the behavior available through G6R. It does not replace the
+describes product behavior available through G6R and separately labels G7A
+design/characterization evidence. It does not replace the
 [repository README](../../README.md),
 [living technical roadmap](../roadmap/geocedg_roadmap.md), ADRs, specifications, or
 architecture documentation.
@@ -944,7 +945,8 @@ Promotion follows `legacy -> research -> experimental -> stable`, or
 | G6B | Parallel `GeoLocusV2`, semantic providers/evaluator, explicit branches, revisions, nested composition and dedicated drawable | `PASS`; experimental/internal | Productive shared-kernel foundation exists and is testable, but has no public creation workflow |
 | G6B | Public command, `.ggb` persistence, public `Path`, metrics, intersections, export or 3D behavior | Pending / deliberately absent | Classic and GeoCeDG public `Locus[...]` remain legacy |
 | G6R | Value/lifecycle/session hardening, adaptive render, developer laboratory and API/repository documentation | `PASS`; experimental developer infrastructure | Developers can inspect V2 explicitly without changing normal GeoCeDG or Classic |
-| G7+ | Native Locus V2 metrics, intersections and later spatial/export integration | Pending / not started | Requires separate phase contracts and authorizations |
+| G7A | Metric semantics, traversal, numerical/index/lifecycle characterization plus focused R1 | `PASS — AUTHOR APPROVED`; evidence only | 51 test-private probes and independent references exist; no productive metric exists |
+| G7B+ | Native Locus V2 metric implementation, intersections and later spatial/export integration | G7B authorized / not started; later phases pending | No productive native metric or public metric is available |
 
 ### G6 Locus V2 semantic foundation
 
@@ -1236,7 +1238,8 @@ polyline is a disposable view representation.
 | G6A | Mathematical/semantic characterization and author review | `PASS — AUTHOR APPROVED` |
 | G6B | Minimal experimental Locus V2 kernel entity | `PASS`; no public workflow |
 | G6R | Hardening, developer laboratory, measured render optimization and developer documentation | `PASS`; developer-only workflow |
-| G7 | Native Locus V2 metrics | Planning restored and author-reviewed; G7A/G7B not started |
+| G7A | Locus V2 metric characterization plus focused R1 | `PASS — AUTHOR APPROVED`; no productive metric |
+| G7B | Minimal native Locus V2 metric kernel | Authorized; not started |
 | G8 | Native Locus V2 intersections | Pending; not started |
 | G9 | Native spatial identity and canonical projection semantics | Pending |
 | G10 | CeDG 3D DSL and workbench | Pending |
@@ -1251,13 +1254,22 @@ The existing Classic runtime already has many general 2D/3D facilities. Their
 presence must not be reported as implementation of these future GeoCeDG
 semantic contracts.
 
-### G7 metric design evidence — not an available feature
+### G7A metric characterization — not an available feature
 
-The restored G7 package documents how a future native metric should work; it
-does not add a command or a result that can be created today. The mathematical
-authority is total variation of the semantic evaluator on each valid-domain
-component. Render vertices, legacy locus samples, viewport, zoom, DPI and pixel
-tolerance cannot define that length.
+```text
+G7A characterization only
+no productive metric available
+```
+
+G7A reexecuted 37 test-private cases from the versioned G6/G6R and restored G7
+planning baseline. It did not use results from the lost workstation and did not
+add a command, productive metric class or result that can be created today.
+The focused R1 added 14 test-private cases (51 total) for safe value/error
+contracts, direct G6 guarantee reuse, deterministic work ceilings and shared
+multi-consumer ownership. It likewise added no productive metric.
+The mathematical authority is total variation of the semantic evaluator on
+each valid-domain component. Render vertices, legacy locus samples, viewport,
+zoom, DPI and pixel tolerance cannot define that length.
 
 Two future operations are deliberately distinct:
 
@@ -1279,7 +1291,7 @@ an explicit `ZERO_LENGTH` or, for approved periodic semantics only,
 `FULL_CYCLE`. Open branches will distinguish STOP, explicit metric WRAP and
 STRICT; wrap will not close the geometry or create incidence.
 
-The working kernel architecture for a later G7B is:
+The author-approved kernel architecture for G7B is:
 
 ```text
 LocusMetricResult2D
@@ -1292,17 +1304,44 @@ AlgoLocusMetricV2
     dependency registration and atomic result updates
 ```
 
-The rich result is intended to keep value kind, coverage, computation status,
-rectifiability, traversal outcome, numeric guarantee, error, provenance and
-component decomposition separate. A valid zero is not failure; a partial STOP
-result is not automatically a usable scalar.
+The rich result keeps value kind, coverage, computation status, rectifiability,
+numeric guarantee, error, provenance and component decomposition separate.
+Traversal outcome exists for applicable between-position results and is absent
+from total results. R1 establishes a closed immutable finite/positive-infinity/
+absent value and a closed established/not-established/not-applicable error
+amount without sentinel doubles. It reuses the exact G6 `NumericGuarantee`
+vocabulary. A valid zero is not failure; a partial STOP result is not
+automatically a usable scalar.
 
-Before any implementation, G7A must compare numeric participation and all three
-index strategies, measure independent metric tolerances/error policies, audit
-the complete GeoElement lifecycle and prove repeated/nested behavior with
-functional counters. The current preference for a conditional numeric facet
-and bounded lazy component/revision index remains a hypothesis, not an
-implemented or accepted contract.
+The author-approved architecture requires:
+
+- keep `GeoLocusMetricResult` as the rich non-numeric authority and use an
+  explicit derived numeric adapter only when a result is scalar-admissible;
+- append a dedicated `GeoClass.LOCUS_METRIC_RESULT` without reusing `NUMERIC`,
+  `LOCUS` or `LOCUS_V2`;
+- use a bounded lazy component/revision index through a dedicated non-Geo
+  shared owner per active source locus, provisionally 64 entries and current
+  revision only; 100 compatible results measured one build plus 99 shared hits;
+- share only immutable component metric state for a complete key, then derive
+  each route-specific contribution from that state and its route segment;
+- use independent world-coordinate metric tolerances, initially absolute
+  `1e-10`, relative `1e-9`, 32768 evaluations, 16384 subdivisions and adaptive
+  depth 22;
+- on a failed current-revision build, publish no partial index entry and expose
+  one coherent rich failure snapshot; never leave an older success current;
+- retain evaluator-only results as floating-point-uncertified or unsupported
+  unless explicit assumptions justify a stronger guarantee; and
+- gate repeated/nested work by functional counters: zero render/sample reads,
+  no whole-locus regeneration or index build per downstream point, bounded
+  state, correct invalidation and cache-off semantic equality.
+
+These measured decisions are author-approved; ADR 0007 is Accepted and the G7
+metric spec is normative. G7B is authorized but not started, and no public or
+internal productive metric is available. The complete
+scientific evidence includes high-precision ellipse, transcendental and
+difficult-quadrature references, regular and endpoint-degenerate
+reparameterizations, explicit improper outcomes, all open-branch policies,
+aggregate precedence and three-level nested composition.
 
 ## 13. Current limitations
 
@@ -1425,14 +1464,18 @@ boundary defined by the operational contracts.
   [traceability](../validation/g6r_locus_v2_traceability_matrix.md),
   [G6R report](../validation/g6r_locus_v2_hardening_report.md), and
   [hardening evidence](../../geocedg/validation/locus-v2/g6r-hardening-evidence.yml)
-- Locus V2 G7 planning evidence — not implemented:
+- Locus V2 G7 author-approved architecture and characterization evidence — not implemented:
   [G7 plan](../roadmap/g7_locus_v2_metrics_plan.md),
   [metric semantic model](../architecture/locus_v2_metric_semantic_model.md),
   [metric architecture](../architecture/locus_v2_metric_architecture.md),
-  [proposed metric spec](../../geocedg/specs/locus/locus-v2-metrics.md),
-  [Proposed ADR 0007](../adr/0007-revision-scoped-locus-v2-metric-index.md),
+  [normative metric spec](../../geocedg/specs/locus/locus-v2-metrics.md),
+  [Accepted ADR 0007](../adr/0007-revision-scoped-locus-v2-metric-index.md),
   [validation matrix](../validation/g7_locus_v2_metric_validation_matrix.md),
-  and [benchmark plan](../validation/g7_locus_v2_metric_benchmark_plan.md)
+  [benchmark plan](../validation/g7_locus_v2_metric_benchmark_plan.md),
+  [G7A report](../validation/g7a_locus_v2_metric_characterization_report.md),
+  [focused R1 report](../validation/g7a_r1_locus_v2_metric_refinement_report.md),
+  [candidate developer API](../developer/locus_v2_metric_api.md), and
+  [G7A traceability](../validation/g7a_locus_v2_metric_traceability_matrix.md)
 - Current feature state:
   [stable manifest](../../geocedg/features/stable.yml) and
   [experimental manifest](../../geocedg/features/experimental.yml)
