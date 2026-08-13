@@ -3,12 +3,12 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Roadmap vivo y normativo de fases; no sustituye las especificaciones ni los ADR aceptados |
-| Versión documental | 3.10 |
+| Versión documental | 3.11 |
 | Fecha de revisión | 13 de agosto de 2026 |
 | Baseline GeoGebra | 5.4.928.0, commit `9b93256b7df401ff056c37b502d82df4d72b1522`, tag `geogebra-baseline-5.4.928.0` |
-| Estado actual | G6 `PASS`; G6R `PASS`; G7A-R1 y G7A `PASS — AUTHOR APPROVED`; G7B `READY FOR AUTHOR REVIEW`; V2 sigue experimental, interno y desactivado por defecto |
-| Última fase cerrada | G7A — Locus V2 metric characterization and focused refinement |
-| Siguiente puerta | Revisión de autor del candidato productivo interno G7B |
+| Estado actual | G6 `PASS`; G6R `PASS`; G7A-R1, G7A y G7B `PASS — AUTHOR APPROVED`; G7 `PASS`; V2 sigue experimental, interno y desactivado por defecto |
+| Última fase cerrada | G7 — Native Locus V2 metrics |
+| Siguiente puerta | G8 permanece `NOT STARTED`; requiere autorización separada |
 | Primer cliente | Aplicación de escritorio de la familia Classic 5 |
 | Núcleo | Java compartido de GeoGebra, extendido solo cuando la semántica lo requiere |
 
@@ -1090,8 +1090,8 @@ La optimización priorizará, según evidencia: invalidación incremental, cach�
 | G6A | `PASS — AUTHOR APPROVED` | [Informe G6A](../validation/g6a_locus_v2_characterization_report.md), [contrato normativo](../../geocedg/specs/locus/locus-v2-semantics.md) y [ADR 0006 Accepted](../adr/0006-parallel-locus-v2-semantic-entity.md) |
 | G6B | `PASS` | [Informe G6B](../validation/g6b_locus_v2_kernel_report.md); entidad experimental interna, sin superficie pública |
 | G6R | `PASS` | [Informe G6R](../validation/g6r_locus_v2_hardening_report.md); hardening, laboratorio developer-only y optimización de render medida |
-| G7 | `IN PROGRESS` | [G7A reejecutado](../validation/g7a_locus_v2_metric_characterization_report.md) y [R1 acotado](../validation/g7a_r1_locus_v2_metric_refinement_report.md), `PASS — AUTHOR APPROVED`; spec normativa, ADR 0007 Accepted, G7B interno listo para revisión de autor |
-| G8–G16 | `PENDING` | No iniciadas |
+| G7 | `PASS` | [G7A reejecutado](../validation/g7a_locus_v2_metric_characterization_report.md), [R1 acotado](../validation/g7a_r1_locus_v2_metric_refinement_report.md) y G7B `PASS — AUTHOR APPROVED`; spec normativa y ADR 0007 Accepted |
+| G8–G16 | `NOT STARTED` | No iniciadas |
 
 Los estados `experimental` describen madurez de una capacidad, no una puerta
 fallida. Un gate solo se marca `PASS` cuando satisface sus validaciones; un
@@ -1299,7 +1299,7 @@ pública. Su arquitectura, API, trazabilidad y evidencia se registran en el
 
 ## G7 - Métricas nativas Locus V2
 
-**Estado:** `IN PROGRESS — G7A PASS; G7B READY FOR AUTHOR REVIEW`
+**Estado:** `PASS — G7A AND G7B AUTHOR APPROVED`
 
 El [paquete G7 restaurado](g7_locus_v2_metrics_plan.md) incorpora las decisiones
 conceptuales revisadas por el autor. La
@@ -1341,11 +1341,11 @@ test-private pasan; no se creó implementación productiva.
 
 ### G7B - Kernel métrico mínimo
 
-**Estado:** `READY FOR AUTHOR REVIEW`
+**Estado:** `PASS — AUTHOR APPROVED`
 
 Las puertas documentales se satisficieron antes de ejecutar G7B: G7A es
 `PASS — AUTHOR APPROVED`, la spec es normativa y ADR 0007 está Accepted. El
-candidato productivo interno implementa esta arquitectura:
+kernel productivo interno aprobado implementa esta arquitectura:
 
 ```text
 LocusMetricResult2D
@@ -1371,9 +1371,9 @@ total, evidencia de error tipada y alineada con G6, work ceilings deterministas,
 resultado rico en el DAG, lifecycle completo, keys completas, índice acotado,
 owner compartido que conserva solo `LocusMetricComponentState2D`, eviction determinista, publicación P1 atómica,
 exception safety, igualdad index ON/OFF y gates funcionales repetidos,
-multi-consumer y anidados. Las 60 pruebas productivas y las tres pruebas del
-laboratorio constituyen la evidencia focalizada; G7 continúa `IN PROGRESS`
-pendiente de revisión del autor.
+multi-consumer y anidados. Las 62 pruebas productivas y las tres pruebas del
+laboratorio constituyen la evidencia focalizada aprobada por el autor; G7 queda
+`PASS` sin ampliar la superficie pública.
 
 El [modelo semántico](../architecture/locus_v2_metric_semantic_model.md), la
 [arquitectura](../architecture/locus_v2_metric_architecture.md), la
@@ -1391,9 +1391,19 @@ definen los gates.
 - sin comando, cambios en `Length`/`Perimeter`, `Path`, XML, persistencia, 3D,
   G8 o G9.
 
+```text
+G7A-R1 = PASS — AUTHOR APPROVED
+G7A = PASS — AUTHOR APPROVED
+G7B = PASS — AUTHOR APPROVED
+G7 = PASS
+G7B CAPACITY 64 = PROVISIONAL NON-NORMATIVE IMPLEMENTATION DEFAULT
+G8 = NOT STARTED
+G9 = NOT STARTED
+```
+
 ## G8 - Intersecciones 2D
 
-**Estado:** `PENDING`
+**Estado:** `NOT STARTED`
 
 **Trabajo**
 
@@ -1409,7 +1419,7 @@ definen los gates.
 
 ## G9 - Semántica espacial y proyecciones canónicas
 
-**Estado:** `PENDING`
+**Estado:** `NOT STARTED`
 
 ### G9A - Asociación objeto 3D–proyecciones
 

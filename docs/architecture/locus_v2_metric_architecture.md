@@ -2,8 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Status | Author-approved G7A/G7A-R1 architecture; G7B candidate implemented |
-| Product maturity | Experimental/internal; ready for author review |
+| Status | Author-approved G7A/G7A-R1 architecture; G7B implementation author-approved |
+| Product maturity | Experimental/internal; G7B `PASS — AUTHOR APPROVED` |
 | Semantic model | [`locus_v2_metric_semantic_model.md`](locus_v2_metric_semantic_model.md) |
 | Normative contract | [`locus-v2-metrics.md`](../../geocedg/specs/locus/locus-v2-metrics.md) |
 | Index decision | [ADR 0007 Accepted](../adr/0007-revision-scoped-locus-v2-metric-index.md) |
@@ -11,8 +11,8 @@
 
 This document maps the approved G7 planning semantics and measured G7A findings
 to the author-approved G7B shared-kernel architecture. The names below now map
-to productive internal classes. G7A-R1 and G7A are `PASS — AUTHOR APPROVED`;
-G7B is `READY FOR AUTHOR REVIEW`, and G8 remains `NOT STARTED`.
+to productive internal classes. G7A-R1, G7A and G7B are
+`PASS — AUTHOR APPROVED`; G7 is `PASS`, and G8 remains `NOT STARTED`.
 
 ## 1. Baseline and placement
 
@@ -219,8 +219,13 @@ architecture therefore uses current-revision lazy entries in one
 `LocusMetricSharedOwner2D` per active source locus, separate from semantic
 definition and normal DAG ownership.
 
-Capacity 64 remains provisional, but it is per locus owner rather than per
-metric result. The last consumer and locus removal release entries; revision,
+Capacity 64 remains an initial provisional, non-normative implementation
+default, but it is per locus owner rather than per metric result. The
+productive `retainedBytes = 336` for the analytic fixture is a deterministic
+logical retained-state estimate from metric-state instrumentation, not a JVM
+heap or object-layout measurement, not a universal component-state entry size,
+and not evidence that stabilizes capacity 64. The last consumer and locus
+removal release entries; revision,
 topology and undefined transitions synchronously invalidate them. The owner is
 not a GeoElement, route resolver, aggregator, result publisher or callback
 graph. It shares only immutable component metric state—never routes, query
@@ -636,11 +641,12 @@ API normalizations. The resulting decisions are:
 - the exact source/test/package map in the developer API;
 - functional repeated/nested gates, not absolute timing gates.
 
-`SHORTEST` remains deferred. The G7B candidate implements this architecture.
+`SHORTEST` remains deferred. The author-approved G7B implementation realizes
+this architecture.
 
 ## 15. G7B minimum acceptance architecture
 
-The authorized G7B minimum includes:
+The author-approved G7B minimum includes:
 
 - distinct between-position and total query values;
 - position/binding separation and explicit stale/rebind behavior;
@@ -669,9 +675,10 @@ is split between `AlgoLocusMetricV2`, `GeoLocusMetricResult` and the explicit
 `GeoLocusV2` owns one lazily created, kernel-thread-confined
 `LocusMetricSharedOwner2D`. Every metric algorithm holds a lease. The final
 lease, a semantic revision/topology transition, undefined state or source
-removal synchronously clears retained state. Capacity is the provisional 64
-entries from ADR 0007, with deterministic insertion-order eviction. No global
-or Construction-wide registry exists.
+removal synchronously clears retained state. Capacity is the initial
+provisional, non-normative 64-entry implementation default from ADR 0007, with
+deterministic insertion-order eviction. No global or Construction-wide
+registry exists.
 
 The owner publishes only immutable `LocusMetricComponentState2D` after a
 successful private build. It never stores routes, query results, contributions

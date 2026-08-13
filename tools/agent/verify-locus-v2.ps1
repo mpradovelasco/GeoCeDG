@@ -451,14 +451,14 @@ try {
         $userGuide.Contains("no productive metric available") -and
         $userGuide.Contains(
             "| G7B | Minimal native Locus V2 metric kernel | Authorized; not started |")
-    $g7bInternalCandidate = $userGuide.Contains(
+    $g7bInternalApproved = $userGuide.Contains(
             "G7B internal productive metric available") -and
         $userGuide.Contains("no public metric available") -and
-        $userGuide.Contains('G7B (`READY FOR AUTHOR REVIEW`)')
+        $userGuide.Contains('G7B (`PASS — AUTHOR APPROVED`)')
     Assert-Condition -Condition ($g7PlanningOnly -or $g7aCharacterizedOnly -or
-            $g7bInternalCandidate) `
+            $g7bInternalApproved) `
         -Message ("The user guide must report either the historical G7 planning " +
-            "state, G7A characterization-only, or the internal G7B review candidate.")
+            "state, G7A characterization-only, or the author-approved internal G7B kernel.")
 
     $traceability = Get-Content -Raw -LiteralPath (Join-Path $RepositoryRoot `
         "docs\validation\g6r_locus_v2_traceability_matrix.md")

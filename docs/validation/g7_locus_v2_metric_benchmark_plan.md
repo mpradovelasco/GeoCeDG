@@ -4,7 +4,7 @@
 |---|---|
 | Status | G7A/R1 budgets approved; productive G7B functional counters executed |
 | G7A | `PASS — AUTHOR APPROVED` |
-| G7B | `READY FOR AUTHOR REVIEW` |
+| G7B | `PASS — AUTHOR APPROVED` |
 | Primary gates | Functional counters, semantic equality, bounded state and invalidation |
 | Wall-clock | Initially informational |
 | Matrix | [`g7_locus_v2_metric_validation_matrix.md`](g7_locus_v2_metric_validation_matrix.md) |
@@ -33,7 +33,7 @@ The experiments must answer:
    global cache, hidden DAG or lifecycle leak?
 9. Do independent evaluation, subdivision and depth ceilings bound work
    deterministically at the accepted initial metric tolerances?
-8. Which recomputations are necessary after a semantic change, and which are
+10. Which recomputations are necessary after a semantic change, and which are
    waste?
 
 ## 2. Measurement principles
@@ -522,8 +522,9 @@ Stop G7A and report rather than alter productive code if:
 - a legacy/scientific original hash changes;
 - characterization would require a public command, XML or G8 behavior.
 
-G7B is ready for author review. Stop review promotion if this approved baseline,
-its evidence hashes or any hard semantic/functional gate cannot be reproduced.
+G7B is `PASS — AUTHOR APPROVED`. Reopen the phase rather than weakening the
+approved result if this baseline, its evidence hashes or any hard
+semantic/functional gate cannot be reproduced.
 
 ## 19. Productive G7B measurements
 
@@ -544,6 +545,29 @@ Total-first and local-first traces each build exactly three component states.
 A policy-key change builds one additional state; revision invalidation removes
 both obsolete entries and builds one current state. A failed private build
 publishes no entry and leaves zero active builds.
+
+The query counters deliberately distinguish consumer identity. Repeating one
+query through the same metric consumer increments ordinary index hits but not
+cross-result hits: at N=100 it records one build, 99 hits and zero
+`crossResultHits`. Running 100 distinct compatible metric consumers against
+the same owner records one build, 99 `crossResultHits` and zero
+`duplicateCompatibleBuilds`. These counters are not interchangeable.
+
+For the analytic fixture, productive instrumentation reports
+`retainedBytes=336`. This is a deterministic logical retained-state estimate
+computed from the immutable component-state payload. It is not a JVM heap
+measurement, not an object-layout measurement, not evidence that every
+component-state entry occupies 336 JVM bytes and not a basis for stabilizing
+capacity 64. Detailed JVM heap/object-layout accounting was not performed and
+is not required for G7 closeout. The R1 retained-byte weights remain synthetic
+characterization evidence as stated in section 17.
+
+The productive evidence instead establishes the hard bounded-state properties:
+entry count is deterministically bounded; capacity+1 causes the expected
+insertion-order eviction; obsolete revision retention is zero; and 100
+compatible consumers share one component-state build with zero compatible
+duplicate builds. Capacity 64 remains an initial provisional, non-normative
+implementation default.
 
 The productive three-level composition records one build at each active source
 level, normal DAG invalidation, maximum active build count one and zero render,

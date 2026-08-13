@@ -1,15 +1,15 @@
 # Locus V2 internal metric API
 
-- Status: **G7B PRODUCTIVE INTERNAL CANDIDATE**
+- Status: **G7B PRODUCTIVE INTERNAL — AUTHOR APPROVED**
 - Availability: **INTERNAL PRODUCTIVE METRIC AVAILABLE; NO PUBLIC METRIC**
-- Review state: **G7A-R1 AND G7A PASS — AUTHOR APPROVED**
+- Review state: **G7A-R1, G7A AND G7B PASS — AUTHOR APPROVED**
 - G7 specification: `NORMATIVE / AUTHOR APPROVED`
 - ADR 0007: `Accepted`
 - Date: 2026-08-13
 
 This document describes the productive internal Java API implemented from the
 author-approved G7A and focused G7A-R1 contracts. It is the developer reference
-for the G7B review candidate and future monograph work. It does not create a
+for the author-approved G7B implementation and future monograph work. It does not create a
 public command, Path, persistence or stable end-user API.
 
 ## 1. Package and authority boundary
@@ -656,16 +656,23 @@ The author accepted the
 [G7A decision table](../validation/g7a_locus_v2_metric_characterization_report.md),
 the
 [G7A-R1 decision table](../validation/g7a_r1_locus_v2_metric_refinement_report.md),
-the normative metric specification and ADR 0007. The separately authorized
-G7B task implemented this API; author review remains pending.
+the normative metric specification and ADR 0007. The author has also approved
+the G7B implementation of this API and closed the G7 phase.
 
 ```text
 G7A-R1 = PASS — AUTHOR APPROVED
 G7A = PASS — AUTHOR APPROVED
 G7 METRIC SPEC = NORMATIVE / AUTHOR APPROVED
 ADR 0007 = ACCEPTED
-G7B = READY FOR AUTHOR REVIEW
+G7B = PASS — AUTHOR APPROVED
+G7 = PASS
+G7B CAPACITY 64 = PROVISIONAL NON-NORMATIVE IMPLEMENTATION DEFAULT
+G7B PUBLIC COMMAND = ABSENT
+G7B XML/PERSISTENCE = ABSENT
+G7B PUBLIC PATH = ABSENT
+G7B 3D = ABSENT
 G8 = NOT STARTED
+G9 = NOT STARTED
 ```
 
 ## 15. Implemented construction and lifecycle seam
@@ -711,4 +718,16 @@ LocusMetricIndexKey2D
 The default policy is `eps_metric_abs=1e-10`, `eps_metric_rel=1e-9`, 32768
 evaluations, 16384 subdivisions and depth 22. These are versioned policy
 defaults, not mathematical constants. The shared owner has provisional
-capacity 64 with deterministic insertion-order eviction.
+capacity 64 with deterministic insertion-order eviction. This capacity is an
+initial non-normative implementation default and was not stabilized by memory
+measurement. For the analytic fixture, productive instrumentation reports
+`retainedBytes = 336` as a deterministic logical retained-state estimate; it
+is not JVM heap accounting, object-layout accounting or a universal entry
+size.
+
+Repeated queries from one metric consumer reuse its indexed state through
+normal hits: at `N=100`, `componentStateBuilds=1`, `hits=99` and
+`crossResultHits=0`. With 100 distinct compatible metric consumers sharing the
+same owner, the first builds and the other 99 report cross-result reuse:
+`componentStateBuilds=1`, `crossResultHits=99` and
+`duplicateCompatibleBuilds=0`. These counters are intentionally distinct.

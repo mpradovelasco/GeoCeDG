@@ -357,7 +357,7 @@ try {
     }
     foreach ($bindingText in @("normative G7 metric spec", "Accepted ADR 0007",
             "G7A raw evidence", "G7A-R1 raw evidence",
-            "authorized G7B candidate gate")) {
+            "executed G7B implementation gate")) {
         Assert-Condition -Condition ($traceability.Contains($bindingText)) `
             -Message "The accepted traceability binding is missing: $bindingText"
     }
@@ -428,19 +428,19 @@ try {
 
     $closeoutDocumentContracts = @{
         "docs\roadmap\g7_locus_v2_metrics_plan.md" =
-            "G7B = READY FOR AUTHOR REVIEW"
+            "G7B = PASS — AUTHOR APPROVED"
         "docs\roadmap\geocedg_roadmap.md" =
-            "G7B READY FOR AUTHOR REVIEW"
+            "G7B = PASS — AUTHOR APPROVED"
         "docs\architecture\locus_v2_metric_semantic_model.md" =
             "Author-approved G7A/G7A-R1 semantic model"
         "docs\architecture\locus_v2_metric_architecture.md" =
             "Author-approved G7A/G7A-R1 architecture"
         "docs\developer\locus_v2_metric_api.md" =
-            "G7A-R1 AND G7A PASS — AUTHOR APPROVED"
+            "G7A-R1, G7A AND G7B PASS — AUTHOR APPROVED"
         "docs\validation\g7_locus_v2_metric_validation_matrix.md" =
-            "READY FOR AUTHOR REVIEW"
+            "PASS — AUTHOR APPROVED"
         "docs\validation\g7_locus_v2_metric_benchmark_plan.md" =
-            "READY FOR AUTHOR REVIEW"
+            "PASS — AUTHOR APPROVED"
         "docs\user\geocedg_user_guide.md" =
             "internal productive metric available"
     }

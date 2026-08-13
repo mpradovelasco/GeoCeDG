@@ -6,14 +6,14 @@
   `9b93256b7df401ff056c37b502d82df4d72b1522`
 - Plataforma validada: únicamente Windows
 - Última revisión: 2026-08-13
-- Fase actual: G7A-R1 y G7A (`PASS — AUTHOR APPROVED`); G7B (`READY FOR AUTHOR REVIEW`)
+- Fase actual: G7A-R1, G7A y G7B (`PASS — AUTHOR APPROVED`); G7 (`PASS`)
 - Locus V2: `experimental`, internal/developer-only, disabled by default
 - `PACKAGING TECHNICAL STATUS = PASS`
 - `PUBLIC REDISTRIBUTION STATUS = BLOCKED PENDING LICENSE/ASSET APPROVAL`
 
 This guide is the practical entry point for the GeoCeDG author/developer. It
 describes product behavior available through G6R, G7A characterization
-evidence and the internal G7B review candidate. It does not replace the
+evidence and the author-approved internal G7B metric kernel. It does not replace the
 [repository README](../../README.md),
 [living technical roadmap](../roadmap/geocedg_roadmap.md), ADRs, specifications, or
 architecture documentation.
@@ -946,7 +946,7 @@ Promotion follows `legacy -> research -> experimental -> stable`, or
 | G6B | Public command, `.ggb` persistence, public `Path`, metrics, intersections, export or 3D behavior | Pending / deliberately absent | Classic and GeoCeDG public `Locus[...]` remain legacy |
 | G6R | Value/lifecycle/session hardening, adaptive render, developer laboratory and API/repository documentation | `PASS`; experimental developer infrastructure | Developers can inspect V2 explicitly without changing normal GeoCeDG or Classic |
 | G7A | Metric semantics, traversal, numerical/index/lifecycle characterization plus focused R1 | `PASS — AUTHOR APPROVED`; evidence only | 51 test-private probes and independent references established the contract; G7A itself added no productive metric |
-| G7B | Native Locus V2 metric kernel | Internal productive candidate; `READY FOR AUTHOR REVIEW` | Internal API, rich Geo, scalar adapter, shared component state and laboratory diagnostics exist; no public metric exists |
+| G7B | Native Locus V2 metric kernel | Internal productive kernel; `PASS — AUTHOR APPROVED` | Internal API, rich Geo, scalar adapter, shared component state and laboratory diagnostics exist; no public metric exists |
 | G8+ | Intersections and later spatial/export integration | Not started / pending | No G8 or later behavior is implied by G7B |
 
 ### G6 Locus V2 semantic foundation
@@ -1240,7 +1240,7 @@ polyline is a disposable view representation.
 | G6B | Minimal experimental Locus V2 kernel entity | `PASS`; no public workflow |
 | G6R | Hardening, developer laboratory, measured render optimization and developer documentation | `PASS`; developer-only workflow |
 | G7A | Locus V2 metric characterization plus focused R1 | `PASS — AUTHOR APPROVED`; historical evidence |
-| G7B | Minimal native Locus V2 metric kernel | Internal candidate; `READY FOR AUTHOR REVIEW` |
+| G7B | Minimal native Locus V2 metric kernel | Internal productive kernel; `PASS — AUTHOR APPROVED`; no public metric |
 | G8 | Native Locus V2 intersections | Pending; not started |
 | G9 | Native spatial identity and canonical projection semantics | Pending |
 | G10 | CeDG 3D DSL and workbench | Pending |
@@ -1338,16 +1338,16 @@ The implementation preserves these author-approved requirements:
   no whole-locus regeneration or index build per downstream point, bounded
   state, correct invalidation and cache-off semantic equality.
 
-These measured decisions are author-approved; ADR 0007 is Accepted and the G7
-metric spec is normative. G7B is ready for author review. A productive internal
-metric is available only through Java and the opt-in developer laboratory; no
-public metric is available. The complete
+These measured decisions are author-approved; ADR 0007 is Accepted, the G7
+metric spec is normative, G7B is `PASS — AUTHOR APPROVED`, and G7 is `PASS`. A
+productive internal metric is available only through Java and the opt-in
+developer laboratory; no public metric is available. The complete
 scientific evidence includes high-precision ellipse, transcendental and
 difficult-quadrature references, regular and endpoint-degenerate
 reparameterizations, explicit improper outcomes, all open-branch policies,
 aggregate precedence and three-level nested composition.
 
-To inspect the candidate without changing the normal GeoCeDG workflow:
+To inspect the internal metric laboratory without changing the normal GeoCeDG workflow:
 
 ```powershell
 .\tools\locus-v2\open-locus-v2-laboratory.ps1 -ValidateOnly

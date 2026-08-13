@@ -3,8 +3,8 @@
 - Status: **APPROVED AS NORMATIVE G7 METRIC CONTRACT**
 - Version: `1.0`
 - Approval date: 2026-08-13
-- Author-review disposition: **G7A-R1 AND G7A PASS — AUTHOR APPROVED**
-- Roadmap gate: G7 `IN PROGRESS`; G7A `PASS`; G7B `READY FOR AUTHOR REVIEW`
+- Author-review disposition: **G7A-R1, G7A AND G7B PASS — AUTHOR APPROVED**
+- Roadmap gate: G7 `PASS`; G7A `PASS`; G7B `PASS`
 - Affected layer: shared Java kernel semantics and internal developer laboratory
 - Working architecture: `GeoLocusMetricResult` as a normal kernel-DAG result
 - Architecture decision: Accepted ADR 0007
@@ -13,8 +13,8 @@
 This normative contract records the author-approved G7 planning requirements,
 all 42 G7A recommendations, R1-1..R1-22 and the three API normalizations
 approved at final closeout. It does not override the normative G6 Locus V2
-semantic contract or create a public API. The productive internal G7B candidate
-implements this contract and is ready for author review.
+semantic contract or create a public API. The productive internal G7B
+implementation conforms to this contract and is author-approved.
 
 ## 1. Scope
 
@@ -569,20 +569,24 @@ experimental/internal and disabled by default.
 
 The final G7A author review accepted all 42 recommendations, R1-1..R1-22 and
 the three closeout API normalizations. That approval made the contract
-normative and authorized the separately executed G7B candidate:
+normative and authorized the separately executed G7B implementation, which is
+now also author-approved:
 
 ```text
 G7A-R1 = PASS — AUTHOR APPROVED
 G7A = PASS — AUTHOR APPROVED
 G7 METRIC SPEC = NORMATIVE / AUTHOR APPROVED
 ADR 0007 = ACCEPTED
-G7B = READY FOR AUTHOR REVIEW
+G7B = PASS — AUTHOR APPROVED
+G7 = PASS
+G7B CAPACITY 64 = PROVISIONAL NON-NORMATIVE IMPLEMENTATION DEFAULT
 G8 = NOT STARTED
+G9 = NOT STARTED
 ```
 
 ## 20. G7B conformance clarification
 
-The G7B candidate realizes this normative contract with internal classes under
+The author-approved G7B implementation realizes this normative contract with internal classes under
 `org.geocedg.common.kernel.locus.metric`, one rich
 `GeoLocusMetricResult`, one normal-DAG `AlgoLocusMetricV2` and an explicit
 scalar adapter. This is implementation evidence, not a semantic amendment.

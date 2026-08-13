@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Status | Author-approved G7A/G7A-R1 semantic model; implemented by G7B candidate |
+| Status | Author-approved G7A/G7A-R1 semantic model; G7B implementation author-approved |
 | Mathematical authority | Total variation on each valid-domain component |
 | Upstream semantic authority | [`locus-v2-semantics.md`](../../geocedg/specs/locus/locus-v2-semantics.md) |
 | Normative metric contract | [`locus-v2-metrics.md`](../../geocedg/specs/locus/locus-v2-metrics.md) |
@@ -10,10 +10,9 @@
 | Date | 2026-08-13 |
 
 This document defines the author-approved semantic vocabulary characterized by
-G7A/R1 and governed by the normative G7 metric spec. The productive G7B
-candidate implements it as an internal API. G7A-R1 and G7A are
-`PASS — AUTHOR APPROVED`; G7B is `READY FOR AUTHOR REVIEW`, and G8 remains
-`NOT STARTED`.
+G7A/R1 and governed by the normative G7 metric spec. The author-approved
+productive G7B implementation realizes it as an internal API. G7A-R1, G7A and
+G7B are `PASS — AUTHOR APPROVED`; G7 is `PASS`, and G8 remains `NOT STARTED`.
 
 ## 1. Mathematical object
 
@@ -692,11 +691,12 @@ publication. These are author-approved.
 
 ## 19. Phase boundary
 
-This model records `GeoLocusMetricResult` as the author-approved and now
-implemented G7B candidate architecture. ADR 0007 is Accepted and the G7 metric
-spec is normative. G7B is ready for author review. Public `LocusLength`, changes to `Length` or
-`Perimeter`, public `Path`, point-on-locus, XML, persistence, G8 intersections,
-G9 spatial semantics and G5 locus export remain outside G7B minimum scope.
+This model records `GeoLocusMetricResult` as the author-approved and implemented
+G7B architecture. ADR 0007 is Accepted, the G7 metric spec is normative, G7B is
+`PASS — AUTHOR APPROVED`, and G7 is `PASS`. Public `LocusLength`, changes to
+`Length` or `Perimeter`, public `Path`, point-on-locus, XML, persistence, G8
+intersections, G9 spatial semantics and G5 locus export remain outside G7B
+minimum scope.
 
 ## 20. Productive semantic realization
 

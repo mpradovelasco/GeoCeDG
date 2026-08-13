@@ -8,7 +8,7 @@
 | Implementation baseline | `0c4cc40a389477226b2a6cb507c4fa072790a586` |
 | Hardening entry | `e78b4e71ebf752de8c3552b466dbee52b400ab94` |
 | Date | 2026-08-12 |
-| Current additive metric layer | [G7B metric architecture](locus_v2_metric_architecture.md), ready for author review |
+| Current additive metric layer | [G7B metric architecture](locus_v2_metric_architecture.md), `PASS — AUTHOR APPROVED` |
 
 This document describes the implementation that exists after G6R. It does not
 extend the normative semantics and does not make Locus V2 public. The

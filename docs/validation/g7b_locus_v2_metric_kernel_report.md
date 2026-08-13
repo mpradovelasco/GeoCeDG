@@ -2,12 +2,13 @@
 
 | Field | Value |
 |---|---|
-| Disposition | **READY FOR AUTHOR REVIEW** |
-| Entry commit | `bb3623dbd5945b558f42ff1a6f2d9ce4262cb983` (`geocedg-g7a-pass`) |
+| Disposition | **PASS — AUTHOR APPROVED** |
+| G7B execution baseline | `bb3623dbd5945b558f42ff1a6f2d9ce4262cb983` (`geocedg-g7a-pass`) |
+| Productive implementation commit | `92b0684074ef328039946f724d4aa951f70e21ec` |
 | Planning ancestor | `e918846a73829032ab1e1aff37e863fed40c1969` |
 | Executed prompt SHA-256 | `c215a36a8350e5dd44da9ae3e546899d8ab0cf1abc480aec22666fc363f19aed` |
 | Versioned prompt canonical SHA-256 | `11e938be2788902298722d2e0442c9afb5700e1f7512b9b22732248d61af1c11` |
-| Final SHA / worktree | One coherent commit containing this report; its exact SHA is handed off after commit because a commit cannot contain its own hash; clean tracked worktree required |
+| Closeout commit / worktree | One coherent documentary commit containing this report; its exact SHA is handed off after commit because a commit cannot contain its own hash; clean tracked worktree required |
 | Date | 2026-08-13 |
 
 ## 1. Entry and scope
@@ -20,6 +21,12 @@ The implementation is limited to an internal two-dimensional Java API, one
 rich metric Geo in the normal kernel DAG, one explicit scalar adapter and the
 existing opt-in developer laboratory. It adds no command, XML registration,
 persistence, public `Path`, point-on-locus, 3D, G5, G8 or G9 behavior.
+
+The final closeout reconciled the authoritative Gradle/JUnit XML with the
+focused verifier without changing tests: value 8, route 11, numerical 17,
+improper 6, lifecycle 11, benchmark 7 and nested 2, for 62 productive
+common-kernel tests, plus three developer-laboratory tests. All report zero
+failures and zero errors.
 
 ## 2. Productive implementation map
 
@@ -254,16 +261,17 @@ state. Owner operations and lease release reject an off-thread caller before
 changing lifecycle state. Different loci and Constructions never share.
 
 Private builds publish atomically only after success. Exceptions leave no entry
-and active-build cleanup occurs in `finally`. Capacity is the provisional 64
-entries per active locus from ADR 0007 with deterministic insertion-order
-eviction. `REFERENCE_NO_INDEX_REUSE` remains the semantic oracle.
+and active-build cleanup occurs in `finally`. Capacity 64 entries per active
+locus is an initial provisional, non-normative implementation default from ADR
+0007, with deterministic insertion-order eviction. It is not a stabilized
+capacity. `REFERENCE_NO_INDEX_REUSE` remains the semantic oracle.
 
 ## 7. Functional measurements
 
 | Gate | Productive result |
 |---|---:|
-| 100 compatible consumers | 1 component-state build, 99 cross-result hits, 0 duplicate builds |
-| same query N=1/10/100 | 1 build and 0/9/99 hits |
+| 100 distinct compatible consumers | 1 component-state build, 99 cross-result hits, 0 duplicate compatible builds |
+| same metric consumer, same query N=1/10/100 | 1 build, 0/9/99 normal hits and 0 cross-result hits |
 | repeated total, 100 queries × 3 components | 3 builds, 297 hits, 3 retained entries |
 | STRICT unreachable, 100 queries | 0 builds, 0 misses |
 | 65 complete policy keys | 64 retained entries, 1 deterministic eviction |
@@ -271,14 +279,27 @@ eviction. `REFERENCE_NO_INDEX_REUSE` remains the semantic oracle.
 | revision invalidation | 0 obsolete revisions retained; one necessary rebuild |
 | cache/index ON versus OFF | equal value, coverage, status, rectifiability and decomposition |
 
-The same-A/B analytic traces report the full counter vector. For N=1/10/100,
+The same-A/B analytic traces report the full counter vector. For one metric
+consumer at N=1/10/100,
 evaluator, derivative, integrator and subdivision counts are all zero because
 the selected provider is analytic; builds remain 1, misses remain 1, hits are
 0/9/99, retained entries remain 1, evictions and invalidations remain zero,
-and retained bytes are recorded by the test output. First-query and remaining
+and `crossResultHits` remains 0. First-query and remaining
 warm-query nanoseconds are captured as informational data only, never as a
-gate. The 100-consumer trace separately records 99 cross-result hits and zero
-compatible duplicate builds.
+gate. The 100-distinct-consumer trace separately records one build, 99
+cross-result hits and zero compatible duplicate builds. Normal hits and
+cross-result hits are intentionally not merged.
+
+For the analytic fixture, productive metric-state instrumentation reports
+`retainedBytes = 336`. This is a deterministic logical retained-state estimate,
+not a JVM heap measurement, object-layout measurement, proof that all
+component-state entries occupy 336 JVM bytes, or a basis for stabilizing
+capacity 64. The prior R1 memory weights remain synthetic characterization
+evidence. Detailed JVM heap/object-layout accounting was not performed and is
+not required for G7 closeout. Productive gates instead establish deterministic
+bounded entry count, capacity-plus-one eviction, zero obsolete-revision
+retention, and one component-state build with no duplicate compatible builds
+for 100 compatible consumers.
 
 Total-first and local-first order each build three states for three components.
 The nested `L1 -> metric(L1) -> L2 -> metric(L2) -> L3` fixture uses the normal
@@ -347,19 +368,53 @@ the composed packaging/static gates therefore remain unchanged.
 | internal links and evidence hashes | PASS (exit 0) | G7A and G7B focused verifiers |
 | `git diff --check`, productive/source and residual-process audits | PASS (exit 0) | 84 productive files, one upstream-owned; no Java/Gradle/GeoCeDG process |
 
+### 10.1 Final author-review closeout revalidation
+
+The bounded documentary closeout was revalidated from productive implementation
+commit `92b0684074ef328039946f724d4aa951f70e21ec`:
+
+| Command/audit | Closeout result | Log/evidence |
+|---|---|---|
+| authoritative G7B JUnit inventory | PASS: value 8, route 11, numerical 17, improper 6, lifecycle 11, benchmark 7, nested 2; productive total 62; laboratory 3; zero failures/errors | focused verifier plus generated Gradle/JUnit XML |
+| `verify-g7b-metrics.ps1` | PASS (exit 0), 62+3 and zero Checkstyle findings | `artifacts/validation/g7b-closeout/g7b` |
+| `verify-g7a-metrics.ps1` regression | PASS (exit 0), 37 original + 14 R1; independent references and Checkstyle pass | `artifacts/validation/g7b-closeout/g7a` |
+| `verify-locus-v2.ps1` | PASS (exit 0), G6A/G6B/G6R plus 3/3 laboratory contracts | `artifacts/validation/g7b-closeout/locus-v2` |
+| `verify-operational.ps1` | PASS (exit 0), 183 controlled files | console |
+| `verify.ps1 -SkipBuild` | PASS (exit 0); delegates include operational, workstation, G6, G7A and G7B | `artifacts/validation/g7b-closeout/composed` |
+| links and G7A/G7B evidence hashes | PASS (exit 0) | focused verifiers |
+| closeout productive-source delta | PASS: zero `source/**/src/main/**` changes from the implementation commit | Git audit |
+| `git diff --check` and residual-process audit | PASS (exit 0); zero Java/Gradle/GeoCeDG processes | Git/PowerShell audit |
+
+Initial sandboxed attempts that required Conda or a Gradle distribution ended
+before executing the relevant probes because workstation resources/network were
+blocked. The same commands were rerun with normal workstation access and are
+the PASS evidence recorded above; no project-code workaround was made.
+
 ## 11. Limitations and disposition
 
 - The API is internal and experimental; there is no public construction path.
 - Analytic/differential support is capability-injected; the laboratory uses
   evaluator-only semantics and therefore normally reports uncertified values.
-- Capacity 64 is provisional and non-normative pending productive author
-  review; wall-clock data is not a gate.
+- Capacity 64 is an initial provisional, non-normative implementation default;
+  the author approval does not stabilize it. Wall-clock data is not a gate.
+- Productive retained bytes are a deterministic logical estimate; no JVM heap
+  or object-layout measurement was performed.
 - Public commands, XML/persistence, Path, 3D, G8 and G9 remain absent.
-- No unresolved implementation or validation blocker remains. Final G7B/G7
-  approval is deliberately deferred to author review.
+- No unresolved implementation or validation blocker remains. The author
+  approved G7B and closed G7.
 
 ```text
-G7B = READY FOR AUTHOR REVIEW
+G7A-R1 = PASS — AUTHOR APPROVED
+G7A = PASS — AUTHOR APPROVED
+
+G7B = PASS — AUTHOR APPROVED
+G7 = PASS
+
+G7 METRIC SPEC = NORMATIVE
+ADR 0007 = ACCEPTED
+
+G7B CAPACITY 64 =
+PROVISIONAL NON-NORMATIVE IMPLEMENTATION DEFAULT
 
 G7B PUBLIC COMMAND = ABSENT
 G7B XML/PERSISTENCE = ABSENT

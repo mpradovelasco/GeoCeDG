@@ -1,5 +1,9 @@
 # G7B Locus V2 metric requirement-to-evidence traceability
 
+**Disposition:** G7B `PASS — AUTHOR APPROVED`; G7 `PASS`. The normative G7
+metric specification, Accepted ADR 0007, G7A/R1 characterization evidence and
+the productive probes jointly govern the closed implementation gates below.
+
 | ID | Requirement | Authority | Productive implementation | Probe/evidence | Review gate |
 |---|---|---|---|---|---|
 | G7B-01 | total variation is mathematical authority | G7 spec §2 | capability hierarchy and component evaluation | numerical suite; independent references | algorithm never defines length |
@@ -34,7 +38,7 @@
 | G7B-30 | lazy component/revision strategy | ADR 0007 | index + engine mode | benchmark suite | one build per compatible key |
 | G7B-31 | dedicated per-locus owner | ADR 0007 | `LocusMetricSharedOwner2D` | lifecycle/multi-consumer | no global/Construction owner |
 | G7B-32 | owner leases | ADR 0007 | `LocusMetricOwnerLease2D` | lifecycle removal tests | final lease releases |
-| G7B-33 | bounded deterministic eviction | ADR 0007 | capacity 64 insertion-order map | 65-key test | retained=64, evictions=1 |
+| G7B-33 | bounded deterministic eviction | ADR 0007 | capacity 64 insertion-order map | 65-key test | retained=64, evictions=1; capacity remains provisional/non-normative |
 | G7B-34 | current-revision retention | ADR 0007 | invalidation seam on source | revision tests | obsolete retained=0 |
 | G7B-35 | transaction/exception safety | ADR 0007 | private build + finally cleanup | injected failure tests | no failed entry/active build |
 | G7B-36 | cache-off oracle | ADR 0007 | `REFERENCE_NO_INDEX_REUSE` | numerical equality test | full rich equality |
@@ -46,8 +50,8 @@
 | G7B-42 | append-only dedicated GeoClass | G7 spec §12 | ordinal 131 after Locus V2 | lifecycle/enum tests | no class reuse |
 | G7B-43 | P1 current-revision failure | G7 spec §12 | begin/publish failure sequence | lifecycle cascade/failure | no stale success |
 | G7B-44 | explicit scalar adapter C | G7 spec §12 | `AlgoLocusMetricScalarAdapter` | lifecycle/value tests | rich Geo not NumberValue |
-| G7B-45 | 100-consumer budget | ADR 0007 | shared owner consumer accounting | numerical N=100 | build=1, hits=99, duplicates=0 |
-| G7B-46 | repeated-query budgets | benchmark plan §19 | shared owner/index counters | benchmark suite | 1/10/100 and policy traces |
+| G7B-45 | 100-distinct-consumer budget | ADR 0007 | shared owner consumer accounting | numerical N=100 | build=1, cross-result hits=99, duplicate compatible builds=0 |
+| G7B-46 | same-consumer repeated-query budgets | benchmark plan §19 | shared owner/index counters | benchmark suite | N=100: build=1, normal hits=99, cross-result hits=0 |
 | G7B-47 | nested normal-DAG budget | benchmark plan §19 | real Geo/Algo chain | nested suite | forbidden counters zero |
 | G7B-48 | labels/selection/copy/set/remove | G7A lifecycle decision | rich Geo lifecycle methods | lifecycle suite | no foreign/stale current state |
 | G7B-49 | developer-only laboratory | G7 spec §18 | extended G6R controller | Desktop contract suite | opt-in/nonpersistent |
@@ -57,6 +61,10 @@
 | G7B-53 | controlled upstream impact | repository AGENTS §3 | GeoClass plus narrow tests only | modified-files registry | no base GeoElement refactor |
 | G7B-54 | subordinate verifier | G7 prompt §46 | `verify-g7b-metrics.ps1` | composed `verify.ps1` | not independent authority |
 | G7B-55 | G8/G9 remain absent | roadmap | no implementation paths | status/source audit | both not started |
+| G7B-56 | retained-state accounting is truthful | benchmark plan; G7A/R1 evidence | productive logical retained-state instrumentation | analytic fixture reports 336 | deterministic logical estimate only; no JVM heap/object layout or capacity stabilization claim |
 
 The raw machine-readable counterpart is
 [`g7b-metric-kernel-evidence.json`](../../geocedg/validation/locus-v2/g7b/g7b-metric-kernel-evidence.json).
+The productive implementation commit is
+`92b0684074ef328039946f724d4aa951f70e21ec`; the final documentary closeout
+commit is handed off separately after creation.

@@ -4,7 +4,7 @@
 |---|---|
 | Status | G7A/R1 author-approved baseline; productive G7B matrix executed |
 | G7A | `PASS — AUTHOR APPROVED` |
-| G7B | `READY FOR AUTHOR REVIEW` |
+| G7B | `PASS — AUTHOR APPROVED` |
 | Mathematical authority | Total variation per valid-domain component |
 | Normative contract | [`locus-v2-metrics.md`](../../geocedg/specs/locus/locus-v2-metrics.md) |
 | Benchmark authority | [`g7_locus_v2_metric_benchmark_plan.md`](g7_locus_v2_metric_benchmark_plan.md) |
@@ -333,29 +333,32 @@ single parameterized Java test covers several rows:
 | CLOSEOUT-TRAVERSAL-OPTIONAL | A-closeout+B | total and between rich results | between outcome present where required; total outcome structurally absent; no null/sentinel |
 | CLOSEOUT-ERROR-CLOSED | A-closeout+B | established/not-established/not-applicable errors | sealed variants make contradictory state/amount pairs unrepresentable |
 
-The accepted ownership is `DEDICATED_SHARED_OWNER`. G7B shall retain
+The accepted ownership is `DEDICATED_SHARED_OWNER`. G7B retains
 `REFERENCE_NO_INDEX_REUSE` as the full rich
 semantic oracle and shall use capacity 64 only as a provisional per-active-
-locus implementation default until real productive footprint evidence is
-reviewed.
+locus implementation default. The productive analytic fixture reports a
+deterministic logical retained-state estimate of 336 bytes; this is not a JVM
+heap or object-layout measurement, is not a universal entry-size claim and does
+not stabilize capacity 64.
 
 ## 17. Productive G7B conformance suites
 
-The focused verifier executes 60 productive common-kernel cases and three
+The focused verifier executes 62 productive common-kernel cases and three
 developer-laboratory contract cases:
 
 | Suite | Tests | Productive evidence |
 |---|---:|---|
 | value | 8 | closed values/errors, orthogonal axes, aggregate precedence, defensive immutability |
 | route | 11 | bindings, stale/rebind, FORWARD/REVERSE, ZERO/FULL, STOP/WRAP/STRICT, seam and gap exclusion |
-| numerical | 16 | total/components/multiplicity, analytic/differential/evaluator-only, segment/circle/ellipse/parabola/exponential/cusp, reparameterization, work ceilings, index oracle |
+| numerical | 17 | total/components/multiplicity, analytic/differential/evaluator-only, segment/circle/ellipse/parabola/exponential/cusp, reparameterization, work ceilings, truthful subarc guarantee and index oracle |
 | improper | 6 | finite unbounded A/B, convergent improper, infinity, non-rectifiable, unsupported and limit not established |
-| lifecycle | 10 | GeoClass, rich Geo/P1, scalar adapter, copy/set, XML absence, leases, undefined/recovery/removal and failed-build cleanup |
+| lifecycle | 11 | GeoClass, rich Geo/P1, scalar adapter, copy/set, XML absence, leases, thread-confined owner, undefined/recovery/removal and failed-build cleanup |
 | benchmark | 7 | 1/10/100, overlap/reverse/periodic/STOP/WRAP/STRICT, repeated total, policy/revision, query order and owner isolation |
 | nested | 2 | three-level normal DAG, downstream evaluation and invalidation with all forbidden-work counters zero |
 | laboratory | 3 | opt-in fixtures, public-boundary isolation and temporary settings |
 
-The matrix result is candidate conformance, not final G7 approval. The
+The 62+3 inventory is reproduced from the authoritative JUnit XML and focused
+verifier. The author accepts this matrix as final G7 conformance evidence. The
 [G7B report](g7b_locus_v2_metric_kernel_report.md) and
 [traceability](g7b_locus_v2_metric_traceability_matrix.md) identify each
 assertion and source.

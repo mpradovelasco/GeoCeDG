@@ -1,9 +1,9 @@
 # ADR 0007: revision-scoped Locus V2 metric index
 
 - Status: **Accepted**
-- Author review disposition: **ACCEPTED AT G7A FINAL AUTHOR CLOSEOUT**
+- Author review disposition: **ACCEPTED; PRODUCTIVE G7B ARCHITECTURE AUTHOR APPROVED**
 - Prior disposition: **APPROVED AS G7A WORKING ARCHITECTURAL HYPOTHESIS**
-- Roadmap state: G7 `IN PROGRESS`; G7A `PASS`; G7B `READY FOR AUTHOR REVIEW`
+- Roadmap state: G7 `PASS`; G7A `PASS`; G7B `PASS — AUTHOR APPROVED`
 - Decision phase: final G7A/G7A-R1 author closeout
 - Date: 2026-08-13
 
@@ -146,13 +146,13 @@ The selected owner must:
 - remain confined to the kernel thread; and
 - be testable through `REFERENCE_NO_INDEX_REUSE`.
 
-The candidate Java package is `org.geocedg.common.kernel.locus.metric`; no
-productive owner exists yet.
+The productive Java package is `org.geocedg.common.kernel.locus.metric`; the
+author-approved implementation provides the dedicated per-locus owner there.
 
 ## Lifecycle and safety rules
 
-Any accepted implementation must provide all of the following from the first
-G7B candidate:
+The author-approved G7B implementation provides all of the following from its
+first productive version:
 
 1. bounded entry count and/or bounded component work units;
 2. a documented deterministic eviction rule;
@@ -345,14 +345,15 @@ The author reviewed and accepted the three-strategy and ON/OFF evidence,
 dedicated shared ownership, current-revision and work-budget keying,
 component-key derivation, deterministic eviction, invalidation, exception,
 copy/remove/undo/redo and nested gates. Capacity 64 is accepted only as a
-provisional initial G7B default and remains non-normative pending productive
-entry measurement.
+provisional initial G7B implementation default and remains non-normative. The
+productive logical retained-state estimate does not stabilize that capacity.
 
 ```text
 INDEX STRATEGY = LAZY_COMPONENT_REVISION
 INDEX OWNERSHIP = DEDICATED_SHARED_OWNER
 ADR 0007 = ACCEPTED
-G7B = READY FOR AUTHOR REVIEW
+G7B = PASS — AUTHOR APPROVED
+G7 = PASS
 ```
 
 ## Implementation evidence
@@ -378,5 +379,7 @@ The provisional capacity remains 64 entries per active source locus with
 deterministic insertion-order eviction. Productive probes confirm one build
 and 99 cross-result hits for 100 compatible consumers, zero compatible
 duplicate builds, no failed entry publication, current-revision retention only
-and semantic equality with `REFERENCE_NO_INDEX_REUSE`. Capacity 64 remains
-non-normative pending author review of productive evidence.
+and semantic equality with `REFERENCE_NO_INDEX_REUSE`. The author approves
+this productive architecture. Capacity 64 remains a provisional non-normative
+implementation default; the deterministic logical retained-state estimate is
+not JVM heap/object-layout evidence and does not stabilize it.

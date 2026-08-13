@@ -1,7 +1,7 @@
 # G7A Locus V2 metric traceability matrix
 
 - Status: **PASS — AUTHOR APPROVED**
-- Scope: G7A test-private characterization and G7B candidate gates
+- Scope: G7A test-private characterization and the implemented G7B conformance gates
 - G7 specification: `NORMATIVE / AUTHOR APPROVED`
 - ADR 0007: `Accepted`
 - Date: 2026-08-13
@@ -16,7 +16,7 @@ The sources below are the versioned
 [benchmark plan](g7_locus_v2_metric_benchmark_plan.md),
 [G7A report](g7a_locus_v2_metric_characterization_report.md),
 [focused R1 report](g7a_r1_locus_v2_metric_refinement_report.md) and
-[candidate API](../developer/locus_v2_metric_api.md).
+[author-approved internal API](../developer/locus_v2_metric_api.md).
 
 ### Accepted binding
 
@@ -27,7 +27,7 @@ mandatory targets in addition to its row-specific cells:
 - [Accepted ADR 0007](../adr/0007-revision-scoped-locus-v2-metric-index.md);
 - [G7A raw evidence](../../geocedg/validation/locus-v2/g7a/g7a-characterization-evidence.json);
 - [G7A-R1 raw evidence](../../geocedg/validation/locus-v2/g7a-r1/g7a-r1-characterization-evidence.json);
-- [authorized G7B candidate gate](../../.github/prompts/tasks/g7b-locus-v2-metric-kernel.prompt.md).
+- [executed G7B implementation gate](../../.github/prompts/tasks/g7b-locus-v2-metric-kernel.prompt.md).
 
 | ID | requirement | source | decision | normative spec | ADR | fixture | probe | evidence | G7B gate | user guide |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -124,6 +124,9 @@ G7A-R1 = PASS — AUTHOR APPROVED
 G7A = PASS — AUTHOR APPROVED
 G7 METRIC SPEC = NORMATIVE / AUTHOR APPROVED
 ADR 0007 = ACCEPTED
-G7B = AUTHORIZED / NOT STARTED
+G7B = PASS — AUTHOR APPROVED
+G7 = PASS
+G7B CAPACITY 64 = PROVISIONAL NON-NORMATIVE IMPLEMENTATION DEFAULT
 G8 = NOT STARTED
+G9 = NOT STARTED
 ```

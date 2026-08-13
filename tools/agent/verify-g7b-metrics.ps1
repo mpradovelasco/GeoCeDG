@@ -14,6 +14,7 @@ $RepositoryRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot "..\..")).
 $RootGradle = Join-Path $RepositoryRoot "gradlew.bat"
 $EntrySha = "bb3623dbd5945b558f42ff1a6f2d9ce4262cb983"
 $PlanningSha = "e918846a73829032ab1e1aff37e863fed40c1969"
+$ImplementationSha = "92b0684074ef328039946f724d4aa951f70e21ec"
 $VersionedPromptSha = "11e938be2788902298722d2e0442c9afb5700e1f7512b9b22732248d61af1c11"
 $ExecutedPromptSha = "c215a36a8350e5dd44da9ae3e546899d8ab0cf1abc480aec22666fc363f19aed"
 $GeneratedDirectoryNames = @("build", ".gradle", ".kotlin")
@@ -199,6 +200,9 @@ try {
     & git -C $RepositoryRoot merge-base --is-ancestor $EntrySha HEAD
     Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
         -Message "Current branch does not descend from the approved G7A closeout."
+    & git -C $RepositoryRoot merge-base --is-ancestor $ImplementationSha HEAD
+    Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
+        -Message "Current branch does not descend from the G7B implementation commit."
     $versionedPrompt = Join-Path $RepositoryRoot `
         ".github\prompts\tasks\g7b-locus-v2-metric-kernel.prompt.md"
     Assert-Condition -Condition ((Get-CanonicalTextSha256 -Path $versionedPrompt) `
@@ -253,13 +257,24 @@ try {
                 -Message "Forbidden G7B public/persistence/3D edit: $path"
         }
     }
+    $closeoutPaths = @(& git -C $RepositoryRoot diff --name-only `
+        $ImplementationSha --)
+    $closeoutPaths += @(& git -C $RepositoryRoot ls-files --others `
+        --exclude-standard)
+    $closeoutProductivePaths = @($closeoutPaths | Where-Object {
+            $_ -match '^source/.+/src/main/'
+        })
+    Assert-Condition -Condition ($closeoutProductivePaths.Count -eq 0) `
+        -Message ("G7B closeout changed productive source: {0}" -f `
+            ($closeoutProductivePaths -join ", "))
 
     $evidence = Get-Content -LiteralPath $EvidencePath -Raw |
         ConvertFrom-Json -Depth 100
     Assert-Condition -Condition ($evidence.status -eq `
-            "READY_FOR_AUTHOR_REVIEW") `
-        -Message "G7B evidence disposition is not ready for author review."
+            "PASS_AUTHOR_APPROVED") `
+        -Message "G7B evidence disposition is not author-approved PASS."
     Assert-Condition -Condition ($evidence.provenance.entrySha -eq $EntrySha -and
+            $evidence.provenance.implementationSha -eq $ImplementationSha -and
             $evidence.provenance.executedPromptSha256 -eq $ExecutedPromptSha) `
         -Message "G7B evidence provenance is inconsistent."
     Assert-Condition -Condition ([int]$evidence.tests.productive.total -eq 62 `
@@ -267,8 +282,26 @@ try {
         -Message "G7B evidence must record 62 passing productive probes."
     Assert-Condition -Condition ([int]$evidence.functionalGates.compatibleConsumers100.componentStateBuilds -eq 1 `
             -and [int]$evidence.functionalGates.compatibleConsumers100.crossResultHits -eq 99 `
-            -and [int]$evidence.functionalGates.compatibleConsumers100.duplicateBuilds -eq 0) `
+            -and [int]$evidence.functionalGates.compatibleConsumers100.duplicateCompatibleBuilds -eq 0) `
         -Message "G7B N=100 shared-owner gate is not recorded."
+    Assert-Condition -Condition ([int]$evidence.functionalGates.sameBetweenAnalyticTraces.queries100.componentStateBuilds -eq 1 `
+            -and [int]$evidence.functionalGates.sameBetweenAnalyticTraces.queries100.hits -eq 99 `
+            -and [int]$evidence.functionalGates.sameBetweenAnalyticTraces.crossResultHits -eq 0) `
+        -Message "G7B same-consumer N=100 counter distinction is not recorded."
+    Assert-Condition -Condition ([int]$evidence.memoryDisposition.analyticFixtureLogicalRetainedBytes -eq 336 `
+            -and $evidence.memoryDisposition.measurementKind -eq `
+                "DETERMINISTIC_LOGICAL_RETAINED_STATE_ESTIMATE" `
+            -and -not [bool]$evidence.memoryDisposition.jvmHeapMeasured `
+            -and -not [bool]$evidence.memoryDisposition.objectLayoutMeasured `
+            -and -not [bool]$evidence.memoryDisposition.capacity64StabilizedByMeasurement) `
+        -Message "G7B retained-state accounting disposition is inconsistent."
+    Assert-Condition -Condition ($evidence.policy.capacityDisposition -eq `
+            "PROVISIONAL_NON_NORMATIVE" -and
+            -not [bool]$evidence.policy.capacityStabilized -and
+            [int]$evidence.sourceBoundary.closeoutProductiveJavaChanges -eq 0 `
+            -and $evidence.phaseDisposition.g7 -eq "PASS" `
+            -and $evidence.phaseDisposition.g7b -eq "PASS_AUTHOR_APPROVED") `
+        -Message "G7B closeout phase/capacity/source disposition is inconsistent."
     foreach ($zeroGate in @("renderReads", "legacySampleReads",
             "wholeLocusRegenerations", "indexBuildsInsideDownstreamPoint",
             "failedEntriesPublished", "oldRevisionsRetained",
@@ -349,7 +382,7 @@ try {
     Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
         -Message "git diff --cached --check failed."
 
-    Write-Host "G7B focused verification passed (62 productive + 3 laboratory tests)."
+    Write-Host "G7B author-approved closeout verification passed (62 productive + 3 laboratory tests)."
     Write-Host "Logs: $LogDirectory"
 } catch {
     Write-Error $_.Exception.Message

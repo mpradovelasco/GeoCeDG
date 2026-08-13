@@ -1,9 +1,10 @@
 {
   "schemaVersion": 1,
   "id": "cedg.validation.g7b.metric-kernel",
-  "status": "READY_FOR_AUTHOR_REVIEW",
+  "status": "PASS_AUTHOR_APPROVED",
   "provenance": {
     "entrySha": "bb3623dbd5945b558f42ff1a6f2d9ce4262cb983",
+    "implementationSha": "92b0684074ef328039946f724d4aa951f70e21ec",
     "planningSha": "e918846a73829032ab1e1aff37e863fed40c1969",
     "executedPromptSha256": "c215a36a8350e5dd44da9ae3e546899d8ab0cf1abc480aec22666fc363f19aed",
     "versionedPromptCanonicalSha256": "11e938be2788902298722d2e0442c9afb5700e1f7512b9b22732248d61af1c11",
@@ -17,6 +18,8 @@
     "maximumAdaptiveDepth": 22,
     "sharedOwnerCapacity": 64,
     "capacityDisposition": "PROVISIONAL_NON_NORMATIVE",
+    "capacityRole": "INITIAL_IMPLEMENTATION_DEFAULT",
+    "capacityStabilized": false,
     "eviction": "DETERMINISTIC_INSERTION_ORDER"
   },
   "tests": {
@@ -38,6 +41,7 @@
   },
   "functionalGates": {
     "sameBetweenAnalyticTraces": {
+      "consumerIdentity": "SAME_METRIC_CONSUMER",
       "queries1": {
         "componentStateBuilds": 1,
         "hits": 0,
@@ -78,9 +82,11 @@
       "wallClockDisposition": "INFORMATIONAL_IN_TEST_LOG"
     },
     "compatibleConsumers100": {
+      "consumerIdentity": "100_DISTINCT_COMPATIBLE_METRIC_CONSUMERS",
       "componentStateBuilds": 1,
       "crossResultHits": 99,
-      "duplicateBuilds": 0
+      "duplicateBuilds": 0,
+      "duplicateCompatibleBuilds": 0
     },
     "repeatedTotal100ThreeComponents": {
       "componentStateBuilds": 3,
@@ -104,18 +110,28 @@
     "g8Behavior": 0,
     "cacheOffSemanticEquality": "PASS"
   },
+  "memoryDisposition": {
+    "analyticFixtureLogicalRetainedBytes": 336,
+    "measurementKind": "DETERMINISTIC_LOGICAL_RETAINED_STATE_ESTIMATE",
+    "jvmHeapMeasured": false,
+    "objectLayoutMeasured": false,
+    "universalEntrySizeClaim": false,
+    "capacity64StabilizedByMeasurement": false,
+    "g7aR1Weights": "SYNTHETIC_CHARACTERIZATION_ONLY"
+  },
   "sourceBoundary": {
     "metricPackageJavaFiles": 78,
     "richGeo": "org.geocedg.common.kernel.geos.GeoLocusMetricResult",
     "metricAlgorithm": "org.geocedg.common.kernel.algos.AlgoLocusMetricV2",
     "scalarAdapter": "org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter",
+    "closeoutProductiveJavaChanges": 0,
     "upstreamOwnedProductiveFilesModified": [
       "source/shared/common/src/main/java/org/geogebra/common/plugin/GeoClass.java"
     ]
   },
   "phaseDisposition": {
-    "g7": "IN_PROGRESS",
-    "g7b": "READY_FOR_AUTHOR_REVIEW",
+    "g7": "PASS",
+    "g7b": "PASS_AUTHOR_APPROVED",
     "g7bPublicCommand": "ABSENT",
     "g7bXmlPersistence": "ABSENT",
     "g7bPublicPath": "ABSENT",
