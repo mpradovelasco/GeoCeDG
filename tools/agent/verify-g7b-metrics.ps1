@@ -3,6 +3,7 @@ param(
     [switch]$SkipBuild,
     [switch]$AllowToolchainDownload,
     [switch]$KeepBuildOutputs,
+    [switch]$ReproduceImplementation,
     [string]$LogDirectory = (Join-Path ([IO.Path]::GetTempPath()) `
         "geocedg-verify-g7b-metrics")
 )
@@ -190,10 +191,14 @@ try {
         Assert-RequiredFile -RelativePath $file
     }
 
-    $branch = (& git -C $RepositoryRoot branch --show-current).Trim()
-    Assert-Condition -Condition ($branch -eq `
-            "feature/g7b-locus-v2-metric-kernel") `
-        -Message "G7B verifier requires the G7B feature branch; got $branch."
+    if ($ReproduceImplementation) {
+        $branch = ((& git -C $RepositoryRoot branch --show-current) `
+            -join "").Trim()
+        Assert-Condition -Condition ($branch -eq `
+                "feature/g7b-locus-v2-metric-kernel") `
+            -Message ("G7B implementation reproduction requires the G7B " +
+                "feature branch; got $branch.")
+    }
     & git -C $RepositoryRoot merge-base --is-ancestor $PlanningSha $EntrySha
     Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
         -Message "G7B entry SHA does not descend from the planning SHA."

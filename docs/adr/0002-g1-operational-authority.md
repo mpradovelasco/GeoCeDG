@@ -23,8 +23,10 @@ built-in JSON parser but no built-in YAML parser.
    prompts. `ai-shell/prompts/` contains only short profiles that point to
    those authorities.
 3. `tools/agent/verify.ps1` is the top-level executable authority. It composes
-   the G1 structural verifier and the G0 baseline verifier instead of copying
-   their commands.
+   focused verifiers instead of copying their commands, validates the current
+   checkout independently of its branch name, and reports branch, HEAD and the
+   latest included phase from the normative roadmap. Branch-specific historical
+   preconditions belong only to explicit characterization/reproduction modes.
 4. Initial files with a `.yml` manifest name use the JSON-compatible subset of
    YAML 1.2. They are parsed with `ConvertFrom-Json`, require no downloaded
    module, and may not use YAML comments, anchors, tags, or implicit typing.
@@ -61,6 +63,8 @@ specialized diagnostics remain independently runnable.
   PowerShell 7.
 - Prompt profiles cannot silently replace repository rules or specifications.
 - CI and local verification share the same commands.
+- Main, normal work branches and detached HEAD use the same productive gates
+  for the same versioned checkout; branch identity remains diagnostic.
 - Performance comparisons have provenance and repeat counts, but their G1
   thresholds are not release gates.
 - Future schema changes require a new `schema_version` and migration policy.

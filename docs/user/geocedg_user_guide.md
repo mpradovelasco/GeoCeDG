@@ -103,6 +103,12 @@ fetching remotes, running Gradle, or executing G3/G5/frontend/repository
 verification. Run the normal bootstrap or `tools/agent/verify.ps1` separately
 when repository acceptance is required.
 
+The composed verifier reports the current branch (or `detached HEAD`), exact
+commit, and latest included phase from the versioned roadmap. It validates the
+same checkout with the same productive gates on `main`, a normal work branch,
+or detached HEAD. Historical G7 branch preconditions apply only to explicit
+focused reproduction modes and are not repository-acceptance conditions.
+
 ### Packaging prerequisite checks
 
 Run these commands from the repository root to characterize the workstation:

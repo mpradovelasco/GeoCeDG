@@ -57,6 +57,13 @@ Autoridad compuesta local:
 .\tools\agent\verify.ps1
 ```
 
+La autoridad informa rama (o `detached HEAD`), commit y última fase incluida
+según el roadmap versionado. Valida el checkout actual con los mismos gates en
+`main`, ramas de trabajo y `detached HEAD`; el nombre de rama es diagnóstico.
+Las precondiciones históricas de G7 sólo se aplican al solicitar explícitamente
+`verify-g7a-metrics.ps1 -ReproduceCharacterization` o
+`verify-g7b-metrics.ps1 -ReproduceImplementation`.
+
 Compilación y arranque GeoCeDG desde la raíz:
 
 ```powershell

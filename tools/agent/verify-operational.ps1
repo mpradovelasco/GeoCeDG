@@ -11,6 +11,7 @@ $RootPrefix = $RepositoryRoot + [IO.Path]::DirectorySeparatorChar
 $ExpectedBaseline = "9b93256b7df401ff056c37b502d82df4d72b1522"
 $ExpectedVersion = "5.4.928.0"
 $ExpectedTag = "geogebra-baseline-5.4.928.0"
+$RepositoryStateVerifier = Join-Path $PSScriptRoot "verify-repository-state.ps1"
 . (Join-Path $PSScriptRoot "upstream-boundary.ps1")
 
 function Write-Step {
@@ -211,9 +212,13 @@ try {
         "tools/agent/verify-legacy.ps1",
         "tools/agent/verify-packaging.ps1",
         "tools/agent/verify-dxf.ps1",
+        "tools/agent/verify-g7a-metrics.ps1",
+        "tools/agent/verify-g7b-metrics.ps1",
         "tools/agent/verify-locus-v2.ps1",
         "tools/agent/verify-workstation.ps1",
+        "tools/agent/repository-state.ps1",
         "tools/agent/repository-generated-state.ps1",
+        "tools/agent/verify-repository-state.ps1",
         "tools/agent/verify-operational.ps1",
         "tools/agent/verify.ps1",
         "tools/agent/upstream-boundary.ps1",
@@ -229,6 +234,11 @@ try {
     foreach ($requiredFile in $requiredFiles) {
         [void](Resolve-RepositoryPath -RelativePath $requiredFile -RequireFile)
     }
+
+    Write-Step "Repository state contracts"
+    & $RepositoryStateVerifier -Quiet:$Quiet
+    Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
+        -Message "Repository state contracts failed with exit code $LASTEXITCODE."
 
     Write-Step "Repository onboarding contracts"
     $rootReadme = Get-Content -Raw -LiteralPath (Join-Path $RepositoryRoot "README.md")
@@ -575,8 +585,12 @@ try {
             "tools/agent/verify-frontend.ps1",
             "tools/agent/verify-packaging.ps1",
             "tools/agent/verify-dxf.ps1",
+            "tools/agent/verify-g7a-metrics.ps1",
+            "tools/agent/verify-g7b-metrics.ps1",
             "tools/agent/verify-locus-v2.ps1",
             "tools/agent/verify-operational.ps1",
+            "tools/agent/repository-state.ps1",
+            "tools/agent/verify-repository-state.ps1",
             "tools/agent/verify.ps1",
             "tools/agent/upstream-boundary.ps1",
             "LICENSE",

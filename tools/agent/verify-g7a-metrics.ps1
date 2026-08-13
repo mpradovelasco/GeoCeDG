@@ -3,6 +3,7 @@ param(
     [switch]$SkipBuild,
     [switch]$AllowToolchainDownload,
     [switch]$KeepBuildOutputs,
+    [switch]$ReproduceCharacterization,
     [string]$LogDirectory = (Join-Path ([IO.Path]::GetTempPath()) `
         "geocedg-verify-g7a-metrics")
 )
@@ -190,13 +191,14 @@ try {
         Assert-RequiredFile -RelativePath $relativePath
     }
 
-    $currentBranch = (& git -C $RepositoryRoot branch --show-current).Trim()
-    $allowedBranches = @(
-        "feature/g7a-locus-v2-metric-characterization",
-        "feature/g7b-locus-v2-metric-kernel"
-    )
-    Assert-Condition -Condition ($currentBranch -in $allowedBranches) `
-        -Message "G7A verifier requires an approved G7A/G7B branch; got $currentBranch."
+    if ($ReproduceCharacterization) {
+        $currentBranch = ((& git -C $RepositoryRoot branch --show-current) `
+            -join "").Trim()
+        Assert-Condition -Condition ($currentBranch -eq `
+                "feature/g7a-locus-v2-metric-characterization") `
+            -Message ("G7A characterization reproduction requires the " +
+                "characterization branch; got $currentBranch.")
+    }
     & git -C $RepositoryRoot merge-base --is-ancestor $OriginMainSha $PlanningSha
     Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
         -Message "Planning SHA does not descend from the pinned G7A origin/main SHA."
@@ -507,7 +509,7 @@ try {
     if ($LASTEXITCODE -ne 0) {
         throw "Unable to audit productive source changes from planning baseline."
     }
-    if ($currentBranch -eq "feature/g7a-locus-v2-metric-characterization") {
+    if ($ReproduceCharacterization) {
         Assert-Condition -Condition ($productiveChanges.Count -eq 0) `
             -Message ("G7A changed productive source:`n" +
                 ($productiveChanges -join "`n"))

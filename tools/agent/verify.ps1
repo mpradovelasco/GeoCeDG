@@ -29,6 +29,8 @@ $G7BMetricVerifier = Join-Path $PSScriptRoot "verify-g7b-metrics.ps1"
 $BenchmarkRunner = Join-Path $RepositoryRoot "tools\benchmark\run.ps1"
 $InitialStatus = $null
 
+. (Join-Path $PSScriptRoot "repository-state.ps1")
+
 function Assert-LastScriptSuccess {
     param([Parameter(Mandatory)] [string]$Description)
 
@@ -43,6 +45,13 @@ try {
     if ($LASTEXITCODE -ne 0) {
         throw "Unable to read initial repository status."
     }
+
+    $repositoryState = Get-GeoCeDGRepositoryState `
+        -RepositoryRoot $RepositoryRoot
+    Write-Host "Repository state"
+    Write-Host "  Branch: $($repositoryState.Branch)"
+    Write-Host "  Commit: $($repositoryState.Commit)"
+    Write-Host "  Latest included phase: $($repositoryState.LatestIncludedPhase)"
 
     Write-Host "`n==> GeoCeDG operational contracts"
     & $OperationalVerifier
@@ -88,39 +97,42 @@ try {
     & $LocusV2Verifier @locusV2Parameters
     Assert-LastScriptSuccess -Description "G6 Locus V2"
 
-    Write-Host "`n==> G7A Locus V2 metric characterization"
-    $g7aMetricParameters = @{
-        LogDirectory = Join-Path ([IO.Path]::GetFullPath($LogDirectory)) `
-            "g7a-metrics"
-    }
-    if ($SkipBuild) {
-        $g7aMetricParameters.SkipBuild = $true
-    }
-    if ($AllowToolchainDownload) {
-        $g7aMetricParameters.AllowToolchainDownload = $true
-    }
-    if ($KeepBuildOutputs) {
-        $g7aMetricParameters.KeepBuildOutputs = $true
-    }
-    & $G7AMetricVerifier @g7aMetricParameters
-    Assert-LastScriptSuccess -Description "G7A Locus V2 metric characterization"
+    if ($repositoryState.LatestIncludedPhaseNumber -ge 7) {
+        Write-Host "`n==> G7A Locus V2 metric characterization"
+        $g7aMetricParameters = @{
+            LogDirectory = Join-Path ([IO.Path]::GetFullPath($LogDirectory)) `
+                "g7a-metrics"
+        }
+        if ($SkipBuild) {
+            $g7aMetricParameters.SkipBuild = $true
+        }
+        if ($AllowToolchainDownload) {
+            $g7aMetricParameters.AllowToolchainDownload = $true
+        }
+        if ($KeepBuildOutputs) {
+            $g7aMetricParameters.KeepBuildOutputs = $true
+        }
+        & $G7AMetricVerifier @g7aMetricParameters
+        Assert-LastScriptSuccess `
+            -Description "G7A Locus V2 metric characterization"
 
-    Write-Host "`n==> G7B native Locus V2 metric kernel"
-    $g7bMetricParameters = @{
-        LogDirectory = Join-Path ([IO.Path]::GetFullPath($LogDirectory)) `
-            "g7b-metrics"
+        Write-Host "`n==> G7B native Locus V2 metric kernel"
+        $g7bMetricParameters = @{
+            LogDirectory = Join-Path ([IO.Path]::GetFullPath($LogDirectory)) `
+                "g7b-metrics"
+        }
+        if ($SkipBuild) {
+            $g7bMetricParameters.SkipBuild = $true
+        }
+        if ($AllowToolchainDownload) {
+            $g7bMetricParameters.AllowToolchainDownload = $true
+        }
+        if ($KeepBuildOutputs) {
+            $g7bMetricParameters.KeepBuildOutputs = $true
+        }
+        & $G7BMetricVerifier @g7bMetricParameters
+        Assert-LastScriptSuccess -Description "G7B native Locus V2 metric kernel"
     }
-    if ($SkipBuild) {
-        $g7bMetricParameters.SkipBuild = $true
-    }
-    if ($AllowToolchainDownload) {
-        $g7bMetricParameters.AllowToolchainDownload = $true
-    }
-    if ($KeepBuildOutputs) {
-        $g7bMetricParameters.KeepBuildOutputs = $true
-    }
-    & $G7BMetricVerifier @g7bMetricParameters
-    Assert-LastScriptSuccess -Description "G7B native Locus V2 metric kernel"
 
     Write-Host "`n==> Standalone Windows packaging contracts"
     $packagingParameters = @{}
