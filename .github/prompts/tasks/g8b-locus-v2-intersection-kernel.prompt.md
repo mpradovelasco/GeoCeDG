@@ -5,7 +5,8 @@ intersection kernel, using the exact result, solver, identity, tolerance,
 work, scope, and lifecycle contracts approved after G8A.
 
 This is a future execution prompt. **Do not execute it during planning or G8A.**
-Its presence does not authorize or start productive G8B work.
+Current state is `G8B = NOT AUTHORIZED / BLOCKED ON G8A PASS — AUTHOR
+APPROVED`. Its presence does not authorize or start productive G8B work.
 
 # Mandatory entry gate
 
@@ -68,9 +69,13 @@ Expected semantic responsibilities, when approved, are:
 - safeguarded refinement and independent residual/membership verification;
 - tangent/even-root handling beyond sign changes;
 - semantic-parameter deduplication preserving distinct preimages;
-- complete finite, complete empty, unresolved/partial, unsupported,
+- complete finite, complete empty, finite incomplete/not-established,
+  unresolved, unsupported,
   overlap/infinite, invalid, stale, and failure result states;
-- opaque root tokens and explicit topology lineage;
+- an independent `COMPLETE`/`INCOMPLETE`/`NOT_ESTABLISHED` result-set
+  completeness axis that no point/scalar consumer hides;
+- opaque root tokens using the post-G8A approved durable-versus-revision
+  evidence contract and the approved topology/ambiguity semantics;
 - atomic normal-DAG publication through the approved rich result architecture;
 - deterministic work limits and counters; and
 - approved query-local or bounded revision-scoped state with cache-off semantic
@@ -127,16 +132,20 @@ current roots. Removal releases all leases/state.
 
 Select capabilities exactly as approved. Record method/provenance/guarantee;
 independently verify every candidate. Complete empty requires established
-coverage. Multiplicity/contact order remains unknown unless proved to the
-approved standard. Target equation scaling must not change the residual
+exhaustive isolation/exclusion evidence. Multiplicity/contact order remains
+unknown unless proved to the approved standard. Target equation scaling must
+not change the residual
 decision.
 
 ## Identity
 
-Use the approved semantic token/topology policy. Merge, split, seam,
-termination, ambiguity, and branch-lineage behavior must match the G8A traces.
-Coordinates may be verified but never select identity. Bound retained topology
-history and any derived output slots exactly as approved.
+Use the approved semantic token/topology policy. Root parameters, isolating
+intervals, residuals, and solver certificates are revision-scoped evidence,
+not fundamental durable identity. Merge, split, seam, reparameterization,
+termination, ambiguity, and branch-lineage behavior must match the
+author-approved G8A traces and narrower contract if universal genealogy was
+rejected. Coordinates may be verified but never select identity. Bound
+retained topology history and any derived output slots exactly as approved.
 
 ## State and counters
 
@@ -149,7 +158,7 @@ algorithm, tolerance, and work-policy value established by G8A.
 # Geometric invariants and degeneracies
 
 Preserve revision coherence, branch/component/preimage multiplicity,
-representation independence, explicit guarantee/coverage, and atomic DAG
+representation independence, explicit guarantee/completeness, and atomic DAG
 currentness. Implement the approved behavior for transverse/even/higher roots,
 near tangency, endpoints, seams, discontinuities, repeated coordinates,
 collapsed/empty components, overlap/infinite sets, root merge/split,

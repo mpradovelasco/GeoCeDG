@@ -2,22 +2,43 @@
 
 | Field | Value |
 |---|---|
-| Status | **PROPOSED — NOT APPROVED / NOT IMPLEMENTED** |
-| Roadmap phase | G8 planning; G8 remains `NOT STARTED` |
+| Status | **PLANNING ARCHITECTURE AUTHOR APPROVED — NOT IMPLEMENTED** |
+| Roadmap phase | G8 planning `PASS`; G8A authorized/not started; G8B not authorized |
 | Semantic model | [`locus_v2_intersection_semantic_model.md`](locus_v2_intersection_semantic_model.md) |
 | Proposed contract | [`locus-v2-intersections.md`](../../geocedg/specs/locus/locus-v2-intersections.md) |
 | Upstream audit | [`locus_v2_intersection_upstream_impact.md`](locus_v2_intersection_upstream_impact.md) |
-| Date | 2026-08-13 |
+| Date | 2026-08-14 |
 
-This document turns the proposed G8 semantics into an implementation shape for
-characterization. It does not authorize productive source, public commands,
-ordinary `Path` behavior, persistence, or dispatcher integration.
+This document turns the proposed G8 semantics into the author-approved
+architecture to characterize. It authorizes only a separately invoked G8A. It
+does not make the proposed spec normative, accept ADR 0008, or authorize
+productive source, public commands, ordinary `Path` behavior, persistence, or
+dispatcher integration.
+
+## Fundamental CeDG capability
+
+First-class Locus V2 intersection is structural CeDG infrastructure. A
+locus-defined projection must be able to intersect a supported ordinary 2D
+entity, produce semantically identified solution entities, and feed later
+construction steps through normal dynamic propagation whenever continuation is
+unambiguous:
+
+```text
+CeDG construction -> Locus V2 projection -> identified intersection solution
+    -> downstream CeDG construction -> normal DAG update
+```
+
+The architecture must retain constructive source, branch/component/preimage,
+identity, topology, and degeneration information; an anonymous instantaneous
+coordinate is not an acceptable result. This requirement does not widen the
+initial family scope beyond line, segment, ray, and circle without G8A evidence.
 
 ## 1. Placement and dependency direction
 
-Intersection truth belongs in the shared Java kernel only after author
-approval because it changes incidence, participates in the construction DAG,
-and must remain valid for non-render consumers. Characterization probes,
+Future productive intersection truth belongs in the shared Java kernel only
+after the post-G8A author gate because it changes incidence, participates in
+the construction DAG, and must remain valid for non-render consumers.
+Characterization probes,
 independent references, diagnostics, and functional counters remain in test
 and validation layers.
 
@@ -60,11 +81,11 @@ Names are conceptual until G8A records exact candidate APIs.
 | Target authority | `IntersectionTarget2D` adapters | Exposes only a representation already authoritative for the actual target type |
 | Evaluation | existing `LocusEvaluationSession2D` | Evaluates one captured Locus V2 revision; retains existing bounded/cycle-safe behavior |
 | Capability choice | `LocusIntersectionCapability2D` | Selects analytic, certified, derivative-aware, or evaluator-only behavior without inflating guarantees |
-| Isolation | `RootIsolation1D` | Produces semantic-parameter intervals and explicit coverage evidence |
+| Isolation | `RootIsolation1D` | Produces semantic-parameter intervals plus explicit evidence for whether query completeness was or was not established |
 | Refinement | `RootRefiner1D` | Refines an isolated candidate within its valid component and work budget |
 | Verification | `IntersectionVerifier2D` | Re-evaluates semantic geometry, target membership, normalized residual, and domain membership independently of broad phase |
 | Classification | `IntersectionClassifier2D` | Reports contact and domain-location evidence without converting unknown into transverse or absent |
-| Continuation | `IntersectionContinuation2D` | Associates roots within one source-pair/topology context using semantic intervals and lineage |
+| Continuation | `IntersectionContinuation2D` | Associates roots within one source-pair/topology context using constructive/branch lineage and proven continuation relations; parameters/intervals are revision evidence |
 | Immutable result | `LocusIntersectionResult2D` | Publishes query-level state plus zero or more rich solution records atomically |
 | DAG owner | `AlgoLocusIntersectionV2` | Registers both geometric inputs and replaces the entire current-revision snapshot on recompute |
 | Rich Geo | `GeoLocusIntersectionResult` | Makes success, absence, unresolved, overlap, and stale outcomes inspectable in the normal DAG |
@@ -73,6 +94,12 @@ Names are conceptual until G8A records exact candidate APIs.
 The rich result is the authority. A point adapter cannot improve a guarantee,
 discard an unresolved case and call the remainder complete, or manufacture a
 finite representative for overlap.
+
+`IntersectionCompleteness` is a mandatory axis independent of computation,
+per-root residual validity, numeric guarantee, geometry kind, identity, and
+currentness. Its candidate values are `COMPLETE`, `INCOMPLETE`, and
+`NOT_ESTABLISHED`. In particular, three verified roots do not prove that a
+fourth was excluded, and no point adapter may hide that distinction.
 
 ## 3. Target adapters and minimum capability surface
 
@@ -98,7 +125,7 @@ same authoritative conic data.
 
 `GeoFunction` is not admitted merely because a view interval can be sampled;
 its view-clipped root paths are not a semantic domain for G8. `GeoImplicit`
-does expose polynomial evaluation and derivative facilities, but coverage and
+does expose polynomial evaluation and derivative facilities, but completeness and
 degeneration characterization are required before promotion. Both families
 therefore remain Level C candidates.
 
@@ -173,9 +200,9 @@ provider's periodic contract and can retain a lifted continuation coordinate.
 | Strategy | Strength | Principal risk | Required evidence |
 |---|---|---|---|
 | Target-specific analytic/exact | Strongest classification when genuinely authoritative | Hidden numeric fallbacks or type-specific inconsistency | Capability provenance, residual recheck, degeneration cases |
-| Certified interval/subdivision | Can establish coverage and even roots | Dependency/complexity and interval-extension quality | Proof boundary, enclosure behavior, bounded-work failures |
+| Certified interval/subdivision | Can establish completeness and even roots | Dependency/complexity and interval-extension quality | Proof boundary, enclosure behavior, bounded-work failures |
 | Derivative-aware safeguarded 1D | Natural for `h_j(t)` and tangency refinement | Derivative absence/instability and missed candidates | Independent isolation, derivative guarantee, multiple-root probes |
-| Evaluator-only adaptive | Broadest Locus V2 compatibility | Cannot generally prove no roots or complete tangency coverage | Honest partial/unresolved statuses and adversarial tests |
+| Evaluator-only adaptive | Broadest Locus V2 compatibility | Cannot generally prove no roots or complete tangency isolation | Honest `INCOMPLETE`/`NOT_ESTABLISHED` statuses and adversarial tests |
 | Spatial bounds/index broad phase | Repeated-query acceleration | False negatives or accidental sample authority | Conservative bounds, independent refinement, cache-off equality |
 | Two-parameter solver | Necessary for locus–locus | Much larger topology/identity surface | Separate Level C characterization |
 
@@ -185,28 +212,43 @@ solver. Unsupported capability is a legitimate rich outcome.
 ## 6. Dynamic root continuation
 
 Continuation is scoped to one active algorithm, ordered source pair, policy,
-and topology epoch. Each finite root owns an opaque token plus:
+and topology context. Each finite root owns an opaque token. Its candidate
+durable/continuation information is:
+
+```text
+source-pair identity
+constructive intersection lineage
+applicable branch lineage
+topology/continuation context
+explicit continuation relation when established
+```
+
+Its separate revision-scoped localization evidence is:
 
 ```text
 source identities and current revisions
-locus branch and valid-component binding
+valid-component binding for those revisions
 canonical semantic parameter and isolating interval
 optional lifted periodic parameter
-contact/domain classification evidence
-parent/child lineage for an explicit topology event
+residual, contact, method, and solver/certificate evidence
 ```
 
-For a topology-preserving perturbation, a previous root predicts a semantic
-interval on the corresponding branch lineage. Re-association is permitted only
-when exactly one verified current root satisfies the approved semantic
-continuation test. Coordinates may be a diagnostic cross-check but never the
-matching key.
+An isolating interval is localization/certification evidence, not fundamental
+durable identity. For a topology-preserving perturbation, re-association is
+permitted only when exactly one verified current root satisfies an approved
+semantic continuation relation. G8A must test ordinary motion, known equivalent
+monotone reparameterization, allowed orientation reversal, and periodic-seam
+representation. A changed parameter or interval alone cannot force a new
+geometric identity. Coordinates may be diagnostic but never the matching key.
 
-Merge, split, seam, and invalidation events are explicit:
+Merge/split genealogy is a strong G8A hypothesis rather than approved universal
+semantics:
 
-- two transverse parents merging at a tangent produce a new merge-event root;
-- a tangent root splitting produces two children rather than reusing one slot
-  arbitrarily;
+- candidate parent/child lineage is recorded across `2 roots -> tangent root ->
+  2 roots` and reverse traversal when it can be established robustly;
+- symmetric child correspondence, seam interaction, and nearby
+  branch/component changes must expose ambiguity or identity discontinuity
+  when continuation is not unique;
 - a seam crossing preserves identity through canonical/lifted parameter
   semantics when the provider declares a periodic seam;
 - a component split, disappeared branch, invalid gap, or incompatible target
@@ -215,8 +257,10 @@ Merge, split, seam, and invalidation events are explicit:
 - obsolete results become stale before current computation begins and cannot
   be republished after a failed recomputation.
 
-If G8A cannot make a continuation case deterministic, G8B must expose it as an
-unsupported topology transition.
+If the universal genealogy hypothesis fails, G8A must recommend a narrower
+rigorous contract. Cases outside it expose `AMBIGUOUS_CONTINUATION`,
+`IDENTITY_DISCONTINUITY`, or `NOT_ESTABLISHED`-equivalent status, never a
+coordinate-based guess.
 
 ## 7. DAG and publication lifecycle
 
@@ -228,8 +272,8 @@ metric result type or index:
 3. the previous success is no longer current as soon as either source revision
    changes;
 4. all work occurs in private immutable builders/state;
-5. exactly one complete current-revision success, empty, overlap, unsupported,
-   or failure snapshot is published;
+5. exactly one coherent current-revision success, empty, overlap, unsupported,
+   or failure snapshot with an explicit completeness axis is published;
 6. exceptions publish one coherent diagnostic snapshot and no partial roots;
 7. removal releases any owner lease and bounded continuation state.
 
@@ -245,8 +289,8 @@ coordinate-near heuristics. Those rules cannot define G8 identity.
 If the author later approves ordinary points, the safest minimum is a separate
 adapter with a fixed approved maximum number of active slots. Slots are bound
 to root tokens for the current topology epoch. Unused slots are undefined;
-capacity exhaustion makes the adapter incomplete/unsupported and leaves the
-rich result intact. Labels attach to slots only after the policy is explicitly
+capacity exhaustion makes adapter projection unavailable and cannot hide an
+`INCOMPLETE`/`NOT_ESTABLISHED` rich set. Labels attach to slots only after the policy is explicitly
 approved. Historical roots or slots cannot grow without a deterministic cap.
 
 ## 9. State ownership and G7 boundary
@@ -256,7 +300,8 @@ G8 may reuse the evaluator/session infrastructure and G6
 `LocusMetricComponentState2D`, cumulative metric partitions, or the G7 metric
 index as intersection truth.
 
-Start G8A and the minimum G8B candidate query-local. Introduce an
+The author-approved starting point for G8A and the minimum G8B candidate is
+query-local. Introduce an
 intersection-specific revision-scoped owner only if measurements show a
 repeated-query benefit and the author approves:
 
@@ -279,12 +324,15 @@ The minimum productive edit should not touch `CmdIntersect`,
 `AlgoDispatcher`, `GeoFactory`, XML handlers, legacy `GeoLocus`, Classic
 intersection algorithms, 3D dispatch, rendering, export, or public `Path`
 interfaces. An append-only `GeoClass` entry and an exhaustive drawing switch
-test may be unavoidable only if the rich-Geo option is approved.
+test may be unavoidable under the approved planning architecture, subject to
+G8A's exact lifecycle/API audit and the second author gate.
 
 ## 11. Approval gate
 
-Before productive G8B work, the author must approve the normative contract,
-ADR, rich-result shape, continuation semantics, support matrix, numerical
-capability hierarchy, tolerance/work policy, and exact candidate edit set.
-Until then every item in this document remains a characterization hypothesis.
-
+The rich-result/normal-DAG architecture, query-local-first starting point,
+core-four preference, and closed public/API boundaries are approved planning
+premises. Before productive G8B work, the author must separately make the spec
+normative, accept or supersede ADR 0008, approve the exact lifecycle/API,
+completeness rules, identity/reparameterization and genealogy contract, support
+matrix, numerical capability hierarchy, tolerance/work policy, and candidate
+edit set. G8B remains not authorized until that second review.

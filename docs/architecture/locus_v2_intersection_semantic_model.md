@@ -2,12 +2,30 @@
 
 | Field | Value |
 |---|---|
-| Status | **PROPOSED — NOT NORMATIVE / NOT IMPLEMENTED** |
-| Phase | G8 planning |
+| Status | **AUTHOR-APPROVED PLANNING MODEL — PROPOSED SEMANTICS / NOT IMPLEMENTED** |
+| Phase | G8 planning `PASS`; G8A authorized/not started; G8B not authorized |
 | Authority if approved | `geocedg/specs/locus/locus-v2-intersections.md` |
 
-This document explains the candidate value and identity model that G8A must
-test. It does not supersede the normative G6/G7 specifications.
+This document explains the author-approved planning architecture and the
+candidate value/identity details that G8A must test. It does not make the G8
+specification normative or supersede the normative G6/G7 specifications.
+
+## Fundamental CeDG capability
+
+Locus-defined projection curves are genuine CeDG geometric results. A supported
+Locus V2 intersection must therefore publish semantically identified solutions
+that can feed later normal-DAG construction steps whenever continuation is
+unambiguous:
+
+```text
+CeDG construction -> Locus V2 projection -> identified 2D intersection
+    -> downstream CeDG construction -> normal dynamic propagation
+```
+
+An anonymous coordinate at one instant is insufficient. Source,
+branch/component, constructive preimage, dynamic identity, topology, and
+degeneration evidence must remain available. This requirement does not promote
+an uncharacterized target family.
 
 ## 1. Separate the curve, query, computation, and point projection
 
@@ -20,14 +38,14 @@ intersection query
   target adapter + policies + work limits
 
 rich set result
-  coverage + geometry kind + solutions + diagnostics + work evidence
+  completeness + geometry kind + solutions + diagnostics + work evidence
 
 optional presentation/output
   ordinary GeoPoints derived from current verified finite solutions
 ```
 
 The rich set result is the intersection authority. An ordinary point cannot
-carry complete-set coverage, overlap, unresolved tangency, residual evidence,
+carry complete-set completeness, overlap, unresolved tangency, residual evidence,
 or parent/child identity lineage and therefore cannot be the sole result.
 
 ## 2. Conceptual immutable values
@@ -43,7 +61,7 @@ LocusIntersectionQuery2D
 
 LocusIntersectionResult2D
   IntersectionComputationStatus
-  IntersectionCoverage
+  IntersectionCompleteness
   IntersectionGeometryKind
   IntersectionCurrentness
   IntersectionSupportLevel
@@ -53,6 +71,7 @@ LocusIntersectionResult2D
 
 LocusIntersectionSolution2D
   IntersectionRootToken2D
+  IntersectionIdentityStatus
   IntersectionRootLineage2D
   LocusIntersectionPosition2D
   optional TargetParameterBinding2D
@@ -102,33 +121,45 @@ no persistent target identity contract.
 
 ## 4. Result axes and legal states
 
-The result answers four different questions:
+The result answers at least six different questions:
 
 1. Did computation execute under the requested contract?
-2. How much of the valid source domain was covered?
+2. Has the algorithm established that every solution in the supported semantic
+   domain is represented?
 3. What geometric result-set kind was established?
 4. How strong is the numerical/geometric evidence?
+5. Is the payload current for both sources?
+6. Is each solution's continuation identity established, new, ambiguous,
+   discontinuous, or not established?
 
 These answers are independent. Example legal states include:
 
-| Situation | Computation | Coverage | Geometry | Support |
+| Situation | Computation | Completeness | Geometry | Support |
 |---|---|---|---|---|
 | certified no root on all components | success | complete | empty | certified |
-| three verified roots but completeness unavailable | success | partial | finite | verified uncertified |
+| three verified roots while a fourth cannot be excluded | success | incomplete | finite | each returned root verified uncertified |
+| three verified roots but exhaustiveness capability is unknown | success | not established | finite | each returned root verified uncertified |
 | tangent candidate unresolved at work limit | work limit | not established | unresolved | unsupported for existence |
-| source branch coincides with target over an interval | success | complete or localized | overlap | exact/certified/verified as evidenced |
+| source branch coincides with target over a resolved interval | success | complete or incomplete as evidenced | overlap | exact/certified/verified as evidenced |
 | undefined target | invalid input | not established | unresolved | unsupported |
 
-`EMPTY + PARTIAL` and `SUCCESS + stale payload` are illegal. Result factories
+`EMPTY + INCOMPLETE`, `EMPTY + NOT_ESTABLISHED`, and `SUCCESS + stale payload`
+are illegal. Solver convergence does not imply completeness. Result factories
 should make contradictory combinations unrepresentable.
 
 ## 5. Finite-solution position and repeated coordinates
 
-The semantic address of a root is not its world coordinate:
+The semantic preimage/localization address of a root is not its durable
+identity and is not its world coordinate:
 
 ```text
-(source pair, topology epoch, branch key, component, canonical t,
- optional target u, root token)
+durable continuation context:
+  (source pair, constructive intersection lineage, applicable branch lineage,
+   topology/continuation context, root token)
+
+revision-scoped localization evidence:
+  (source revisions, component binding, canonical t, isolating interval,
+   optional target u, residual/solver evidence)
 ```
 
 Two different `t` values at a self-intersection remain two constructive
@@ -141,13 +172,24 @@ provider's declared canonicalization. The continuation layer may retain a
 lifted parameter/winding value privately so a root crossing the seam remains
 continuous without creating duplicate public preimages.
 
+An isolating interval is revision-scoped localization/certification evidence,
+not fundamental durable identity. A known equivalent monotone
+reparameterization must map the localization evidence without automatically
+creating a new geometric intersection. G8A determines the supported invariance
+subset for monotone maps, allowed orientation reversal, and seam
+representations; outside it, identity is explicitly ambiguous or not
+established rather than repaired by coordinates.
+
 ## 6. Classification as independent evidence
 
 `IntersectionClassification2D` is a product of independent fields:
 
 ```text
-contactOrder:
-  TRANSVERSE | TANGENT | HIGHER_MULTIPLE | UNKNOWN_MULTIPLICITY
+contactClass:
+  TRANSVERSE_ESTABLISHED | TANGENT_ESTABLISHED | CONTACT_UNDETERMINED
+
+multiplicityEvidence:
+  ESTABLISHED(order, evidence) | NOT_ESTABLISHED
 
 domainLocation:
   INTERIOR | INCLUDED_ENDPOINT | PERIODIC_SEAM | ISOLATED_COMPONENT
@@ -160,13 +202,13 @@ targetMembership:
 ```
 
 The result-set kind separately represents `EMPTY`, `FINITE`, `OVERLAP`,
-`INFINITE`, or `UNRESOLVED`. A tangent endpoint is therefore expressible
+`INFINITELY_MANY`, `UNSUPPORTED_OVERLAP`, or `UNRESOLVED`. A tangent endpoint is therefore expressible
 without inventing a combined enum value.
 
 Multiplicity greater than one is a claim, not a formatting hint. G8A must
 define the exact analytic/differential/interval evidence needed for each
-supported claim. A verified root with insufficient order evidence uses
-`UNKNOWN_MULTIPLICITY`.
+supported claim. Tangency may be established while exact multiplicity remains
+`NOT_ESTABLISHED`; uncertainty cannot be reported as transverse.
 
 ## 7. Residual and tolerance evidence
 
@@ -187,17 +229,26 @@ one universal epsilon. Normalization must make multiplication of the target
 equation by a nonzero scalar semantically irrelevant.
 
 The G6 `NumericGuarantee` enum remains the shared numeric-guarantee vocabulary.
-Intersection coverage/support is a different axis and must not be added to that
-enum.
+Intersection completeness/support are different axes and must not be added to
+that enum.
 
 ## 8. Root token and lineage
 
 `IntersectionRootToken2D` is an opaque algorithm-owned runtime identity. It is
-not computed from a coordinate, label, or parameter-bit hash. A current binding
-associates it with semantic evidence.
+not computed from a coordinate, label, parameter-bit hash, or isolating
+interval. A current binding associates it with revision-scoped semantic and
+numerical evidence.
 
-`IntersectionRootLineage2D` has closed transitions analogous to, but distinct
-from, G6 branch lineage:
+Candidate closed identity statuses are:
+
+- `CONTINUATION_ESTABLISHED`;
+- `NEW_TOPOLOGICAL_SOLUTION`;
+- `AMBIGUOUS_CONTINUATION`;
+- `IDENTITY_DISCONTINUITY`; and
+- `NOT_ESTABLISHED`.
+
+An `IntersectionRootLineage2D` hypothesis has transitions analogous to, but
+distinct from, G6 branch lineage:
 
 - `UNCHANGED`;
 - `APPEARED`;
@@ -209,21 +260,26 @@ Root lineage cannot be inferred solely from branch lineage: one stable branch
 may gain or lose roots against a moving target. Conversely, a branch split may
 force root-lineage events even when coordinates remain coincident.
 
-### Proposed continuation rules
+### G8A continuation and genealogy hypotheses
 
 | Transition | Proposed semantic interpretation |
 |---|---|
-| one isolated root moves inside the same branch/component | preserve token when isolation intervals and predicted semantic parameter establish continuation |
-| two roots merge at a tangent event | terminate both parents; allocate one child with `MERGED` lineage |
-| tangent root splits | terminate parent; allocate two children with `SPLIT` lineage |
+| one isolated root moves inside the same branch/component | preserve token only when a proven semantic continuation relation is unique; intervals/parameters are supporting evidence |
+| equivalent monotone reparameterization | preserve geometric identity when an approved map carries the semantic continuation evidence; a changed interval alone is not a new root |
+| two roots merge at a tangent event | candidate: terminate both parents and allocate one child with `MERGED` lineage when robustly established |
+| tangent root splits | candidate: terminate parent and allocate two children with `SPLIT` lineage when correspondence is robustly established |
 | periodic seam crossing | preserve token through provider equivalence and lifted continuation |
 | included endpoint touch/reversal | retain or event-transition according to characterized local root topology; always record boundary location |
 | invalid-domain gap | terminate at the gap; do not bridge it by coordinate proximity |
 | branch/component topology change | require compatible provider/root lineage; otherwise begin a new topology epoch |
 
-This new-token-on-merge/split rule deliberately distinguishes stable
-continuation from a topological event. G8A must compare it with alternatives
-and request author approval.
+The new-token-on-merge/split model deliberately distinguishes stable
+continuation from a topological event, but it is not yet universal semantics.
+G8A must trace `2 -> 1 -> 2` and reverse traversal, symmetric ambiguous splits,
+seam interactions, and nearby branch/component changes. When several
+continuations are equally admissible, the result exposes ambiguity or identity
+discontinuity. If the hypothesis fails, G8A recommends a narrower rigorous
+contract.
 
 ## 9. Atomic currentness
 
@@ -249,7 +305,8 @@ association. It reuses a slot for the same continued token, assigns available
 slots deterministically for new tokens, and marks unused slots undefined.
 
 The maximum simultaneously representable point outputs is an explicit work/
-output budget. Exceeding it makes the rich result incomplete or work-limited;
+output budget. Exceeding it makes completeness `INCOMPLETE` or the computation
+work-limited;
 the algorithm must not silently truncate a claimed complete set. Historical
 root events cannot grow the output list or continuation history without bound.
 
@@ -274,10 +331,15 @@ overlap into a finite sample or `EMPTY`.
 
 Before G8B, the author must approve or replace:
 
-- one rich set Geo plus optional derived points;
-- result-axis names and legal combinations;
-- root tokens and new-token-on-split/merge lineage;
-- parameter/isolation-based continuation;
+- exact result-axis names and legal combinations within the approved rich-set
+  plus normal-DAG rich-Geo architecture;
+- root-token invariance and the supported reparameterization subset;
+- merge/split genealogy or a narrower identity contract;
 - classification and multiplicity evidence;
 - overlap representation level; and
-- the bounded output/currentness lifecycle.
+- the bounded optional point-output/currentness lifecycle.
+
+Query-local-first computation and the rich-result authority are already
+approved planning premises. Ordinary points remain optional derived consumers,
+and no point projection may hide `INCOMPLETE` or `NOT_ESTABLISHED`
+completeness.

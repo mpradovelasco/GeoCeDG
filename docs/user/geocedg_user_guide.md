@@ -5,8 +5,10 @@
 - Baseline: GeoGebra 5.4.928.0 at
   `9b93256b7df401ff056c37b502d82df4d72b1522`
 - Plataforma validada: únicamente Windows
-- Última revisión: 2026-08-13
-- Fase actual: G7A-R1, G7A y G7B (`PASS — AUTHOR APPROVED`); G7 (`PASS`)
+- Última revisión: 2026-08-14
+- Fase actual: G7B (`PASS — AUTHOR APPROVED`); G7 `PASS`; G8 planning
+  `PASS — AUTHOR APPROVED`; G8A
+  `AUTHORIZED / NOT STARTED`; G8B `NOT AUTHORIZED`
 - Locus V2: `experimental`, internal/developer-only, disabled by default
 - `PACKAGING TECHNICAL STATUS = PASS`
 - `PUBLIC REDISTRIBUTION STATUS = BLOCKED PENDING LICENSE/ASSET APPROVAL`
@@ -953,7 +955,8 @@ Promotion follows `legacy -> research -> experimental -> stable`, or
 | G6R | Value/lifecycle/session hardening, adaptive render, developer laboratory and API/repository documentation | `PASS`; experimental developer infrastructure | Developers can inspect V2 explicitly without changing normal GeoCeDG or Classic |
 | G7A | Metric semantics, traversal, numerical/index/lifecycle characterization plus focused R1 | `PASS — AUTHOR APPROVED`; evidence only | 51 test-private probes and independent references established the contract; G7A itself added no productive metric |
 | G7B | Native Locus V2 metric kernel | Internal productive kernel; `PASS — AUTHOR APPROVED` | Internal API, rich Geo, scalar adapter, shared component state and laboratory diagnostics exist; no public metric exists |
-| G8+ | Intersections and later spatial/export integration | Not started / pending | No G8 or later behavior is implied by G7B |
+| G8 planning | Native Locus V2 2D intersection planning | `PASS — AUTHOR APPROVED`; G8A authorized but not executed | No intersection behavior exists; G8B remains not authorized |
+| G9+ | Spatial/export integration and later phases | Not started / pending | No G9 or later behavior is implied |
 
 ### G6 Locus V2 semantic foundation
 
@@ -1227,7 +1230,8 @@ revision-scoped, semantic and cache/invalidation coherent.
 - no public `Path`, point-on-V2 or legacy incidence;
 - no public length, perimeter or metric command; the G7B metric service/index
   remains internal and developer-only;
-- no intersections (G8);
+- no productive/public intersections (G8 planning is approved, but G8A has not
+  executed and G8B is not authorized);
 - no 3D/projection semantics (G9);
 - no DXF locus export;
 - no canonical-continuation provider;
@@ -1248,7 +1252,9 @@ polyline is a disposable view representation.
 | G6R | Hardening, developer laboratory, measured render optimization and developer documentation | `PASS`; developer-only workflow |
 | G7A | Locus V2 metric characterization plus focused R1 | `PASS — AUTHOR APPROVED`; historical evidence |
 | G7B | Minimal native Locus V2 metric kernel | Internal productive kernel; `PASS — AUTHOR APPROVED`; no public metric |
-| G8 | Native Locus V2 intersections | Planning package ready for author review; execution not started |
+| G8 planning | Native Locus V2 intersections | `PASS — AUTHOR APPROVED`; no execution or observable feature |
+| G8A | Characterization and author decisions | `AUTHORIZED / NOT STARTED`; separate task required |
+| G8B | Minimum internal 2D intersection kernel | `NOT AUTHORIZED`; blocked on G8A `PASS — AUTHOR APPROVED` |
 | G9 | Native spatial identity and canonical projection semantics | Pending |
 | G10 | CeDG 3D DSL and workbench | Pending |
 | G11 | Hierarchical layers and view states | Pending |
@@ -1379,18 +1385,22 @@ undefined.
 
 ### G8 planning — no observable intersection feature
 
-G8 remains `NOT STARTED`. Its proposed planning package recommends an
-author-gated characterization stage followed, only after explicit approval, by
-a minimum internal 2D kernel stage. The proposed first target families are
-line, segment, ray and circle; full conics are conditional, while functions,
-implicit curves and locus–locus are deferred for broader characterization.
+G8 planning is `PASS — AUTHOR APPROVED`. G8A characterization is authorized
+for a separate task but has not been executed. G8B is not authorized and is
+blocked until G8A is `PASS — AUTHOR APPROVED`, the proposed specification is
+made normative, ADR 0008 is accepted or superseded, and productive execution
+is separately authorized. The preferred first target families remain line,
+segment, ray and circle; full conics are conditional, while functions,
+implicit curves and locus–locus remain Level C characterization candidates.
 
-The proposal treats the semantic Locus V2 parameter, branch, valid component
-and source revision as authority. It requires a rich result that distinguishes
-complete empty, finite verified solutions, unresolved search, unsupported
-capability and overlap; it also proposes topology-aware root lineage for
-tangent merge/split and periodic seams. These are review hypotheses, not
-implemented behavior.
+The approved planning architecture treats semantic Locus V2 evaluation,
+constructive branch/component/preimage provenance, and coherent source
+revisions as authority. Its proposed rich result distinguishes computation,
+`COMPLETE`/`INCOMPLETE`/`NOT_ESTABLISHED` set completeness, finite verified
+solutions, unsupported capability, overlap, numeric evidence, identity and
+currentness. Isolating intervals are revision-scoped localization evidence,
+not fundamental identity. Merge/split genealogy remains a G8A hypothesis.
+None of this is implemented behavior.
 
 There is no native Locus V2 intersection command, point output, public
 incidence/`Path`, persistence, UI, 3D behavior or end-user workflow. The
@@ -1399,7 +1409,8 @@ incidence/`Path`, persistence, UI, 3D behavior or end-user workflow. The
 [architecture](../architecture/locus_v2_intersection_architecture.md),
 [validation matrix](../validation/g8_locus_v2_intersection_validation_matrix.md)
 and [Proposed ADR 0008](../adr/0008-locus-v2-intersection-result-and-continuation.md)
-exist only for author review.
+record the author-approved planning package and still-proposed semantic
+contract.
 
 ## 13. Current limitations
 
@@ -1537,7 +1548,8 @@ boundary defined by the operational contracts.
   [G7A traceability](../validation/g7a_locus_v2_metric_traceability_matrix.md),
   [G7B report](../validation/g7b_locus_v2_metric_kernel_report.md), and
   [G7B traceability](../validation/g7b_locus_v2_metric_traceability_matrix.md)
-- Locus V2 G8 planning only — no implementation or observable feature:
+- Locus V2 G8 author-approved planning only — G8A authorized but not executed;
+  no implementation or observable feature:
   [G8 plan](../roadmap/g8_locus_v2_intersections_plan.md),
   [proposed semantic model](../architecture/locus_v2_intersection_semantic_model.md),
   [proposed architecture](../architecture/locus_v2_intersection_architecture.md),

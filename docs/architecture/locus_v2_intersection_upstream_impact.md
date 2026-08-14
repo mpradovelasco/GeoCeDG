@@ -5,8 +5,8 @@
 | Status | **PLANNING AUDIT — NO PRODUCTIVE G8 CHANGE AUTHORIZED** |
 | Baseline | GeoGebra 5.4.928.0, `9b93256b7df401ff056c37b502d82df4d72b1522` |
 | GeoCeDG HEAD audited | `d1fe15568fa838b1fdcc1a4ba2412197668cdc40` |
-| Roadmap | G7 `PASS`; G8/G9 `NOT STARTED` |
-| Date | 2026-08-13 |
+| Roadmap | G7 `PASS`; G8 planning `PASS`; G8A authorized/not started; G8B not authorized; G9 not started |
+| Date | 2026-08-14 |
 
 This map records the actual pinned-source extension points and compatibility
 risks relevant to G8 planning. It does not authorize editing any listed file.
@@ -184,7 +184,8 @@ repository modified-file governance and keep upstream notices intact.
 ## 12. Principal compatibility risks
 
 1. importing Classic coordinate-near identity or view-dependent root sampling;
-2. treating a finite set of found roots as complete without coverage evidence;
+2. treating individually verified roots as a complete set without independent
+   completeness evidence;
 3. losing distinct semantic preimages during coordinate deduplication;
 4. allowing variable output slots or history to grow without bound;
 5. reusing G7 metric state across incompatible intersection policies;
@@ -194,4 +195,3 @@ repository modified-file governance and keep upstream notices intact.
 9. crossing the 2D/3D or G8/G9 boundary.
 
 Any of these requires stopping productive work and returning to author review.
-

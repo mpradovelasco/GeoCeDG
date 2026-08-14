@@ -3,15 +3,47 @@
 | Field | Value |
 |---|---|
 | Status | **PROPOSED — NOT NORMATIVE** |
-| Phase | G8 planning; G8A and G8B not started |
+| Phase | G8 planning `PASS — AUTHOR APPROVED`; G8A authorized/not started; G8B not authorized |
 | Scope | Internal two-dimensional Locus V2 intersection semantics |
 | Product state | Experimental, internal, disabled by default |
 | Approval | Explicit author approval required before this specification may become normative |
 
-This proposal defines the questions G8A must characterize. It states no
-implemented behavior and authorizes no productive source change.
+This proposal defines the questions the separately authorized G8A must
+characterize. Planning approval does not make this specification normative,
+accept ADR 0008, execute G8A, or authorize productive source change.
 
 ## 1. Governing principles
+
+### 1.1 Fundamental CeDG requirement
+
+Locus V2 must participate as a first-class geometric entity in intersection
+and incidence operations with each supported family of ordinary 2D geometric
+objects. Every finite solution must be semantically identifiable, and that
+identity must participate correctly in normal dynamic dependencies when the
+construction changes.
+
+This is a structural CeDG requirement because locus-defined projection curves
+are genuine intermediate geometric results used by later descriptive-geometry
+procedures:
+
+```text
+CeDG construction
+    -> Locus V2 geometric projection
+    -> native intersection with another 2D geometric entity
+    -> identified intersection solution(s)
+    -> downstream CeDG construction
+    -> normal dynamic propagation
+```
+
+A solution may serve as a stable input to later construction steps whenever
+geometric continuation is unambiguous. It must not be reduced to an anonymous
+coordinate computed at one revision. Constructive traceability,
+branch/component provenance, semantic parameterization, solution identity,
+dynamic update, topology changes, and degenerations remain explicit. This
+requirement does not imply broad initial family support; each target family is
+promoted separately after evidence.
+
+### 1.2 Geometric authority
 
 An intersection result is derived from the semantic construction, not from a
 drawn approximation. The following remain authoritative:
@@ -159,18 +191,22 @@ of points.
 | Axis | Proposed values | Meaning |
 |---|---|---|
 | computation | `SUCCESS`, `INVALID_INPUT`, `UNSUPPORTED`, `NUMERICAL_FAILURE`, `WORK_LIMIT_REACHED` | whether the requested computation executed under its contract |
-| coverage | `COMPLETE`, `PARTIAL`, `NOT_ESTABLISHED` | whether the complete valid source domain was resolved |
-| geometry kind | `EMPTY`, `FINITE`, `OVERLAP`, `INFINITE`, `UNRESOLVED` | established geometric shape of the result set |
+| completeness | `COMPLETE`, `INCOMPLETE`, `NOT_ESTABLISHED` | whether every solution in the supported semantic query domain has been accounted for |
+| geometry kind | `EMPTY`, `FINITE`, `OVERLAP`, `INFINITELY_MANY`, `UNSUPPORTED_OVERLAP`, `UNRESOLVED` | established geometric shape of the result set |
 | currentness | `CURRENT`, `NON_CURRENT` | whether the payload is bound to the publisher's current input revision |
 | support level | `EXACT`, `CERTIFIED`, `VERIFIED_UNCERTIFIED`, `UNSUPPORTED` | strength of the intersection claim, separate from coordinate guarantee |
 
 The final names require G8A review. The following combinations are mandatory:
 
-- `EMPTY` requires `COMPLETE` coverage;
-- `FINITE` with `PARTIAL` coverage means a verified subset, not the complete
+- `EMPTY` requires `COMPLETE` completeness;
+- `FINITE` with `INCOMPLETE` means a verified subset, not the complete
   result set;
-- `OVERLAP` and `INFINITE` require affirmative evidence and carry no arbitrary
-  sampled substitute;
+- `FINITE` with `NOT_ESTABLISHED` means the capability has not determined
+  whether other solutions exist;
+- `OVERLAP` and `INFINITELY_MANY` require affirmative evidence and carry no
+  arbitrary sampled substitute;
+- `UNSUPPORTED_OVERLAP` records a detected overlap whose complete geometry
+  cannot be resolved under the current capability;
 - `WORK_LIMIT_REACHED` and unresolved tangency cannot be presented as `EMPTY`;
 - an invalid or unsupported input carries no stale solution list; and
 - a result may be structurally defined and diagnostic even when it cannot
@@ -182,7 +218,8 @@ Every result records:
 
 - source locus identity and semantic revision;
 - target runtime identity, target kind, and coherent input revision;
-- branch/component coverage attempted and completed;
+- branch/component search coverage attempted and completed as evidence for the
+  independent completeness axis;
 - algorithm, target-adapter, policy, and tolerance versions;
 - aggregate support and G6 `NumericGuarantee` values;
 - deterministic work consumed versus allowed;
@@ -195,7 +232,8 @@ Each finite solution records at least:
 
 ```text
 root continuation token
-topology epoch and parent/child root lineage
+identity/continuation status
+topology epoch and established or candidate parent/child root lineage
 locus identity and source semantic revision
 branch key
 resolved valid-component binding
@@ -222,16 +260,21 @@ sentinels, magic multiplicity values, and null-as-state are prohibited.
 Classification is orthogonal; one enum must not collapse contact, domain
 location, regularity, and result-set geometry.
 
-### 5.1 Contact order
+### 5.1 Contact and multiplicity
 
-- `TRANSVERSE`: a simple crossing is established;
-- `TANGENT`: an even or otherwise non-transverse contact is established;
-- `HIGHER_MULTIPLE`: order greater than the accepted tangent baseline is
-  established by analytic, differential, or certified evidence;
-- `UNKNOWN_MULTIPLICITY`: a root is verified but order is not defensible.
+Contact classification and multiplicity evidence are separate:
 
-No tangent or higher-multiple classification follows from a small residual
-alone. Sign-change isolation is insufficient for even-multiplicity roots.
+- `TRANSVERSE_ESTABLISHED`: transverse crossing is established;
+- `TANGENT_ESTABLISHED`: non-transverse/tangent contact is established even if
+  its exact multiplicity is not;
+- `CONTACT_UNDETERMINED`: the root is verified but contact class is not; and
+- multiplicity is either an established positive integer/order with its
+  analytic, differential, or certified evidence, or `NOT_ESTABLISHED`.
+
+`HIGHER_MULTIPLE` may be a derived classification only when the relevant order
+is established. Neither tangency nor multiplicity follows from a small
+residual alone. Sign-change isolation is insufficient for even-multiplicity
+roots, and uncertainty must not become a false transverse or no-root result.
 
 ### 5.2 Domain location
 
@@ -252,7 +295,7 @@ Limit intersections require a separately approved limit contract.
   constructive preimages at one coordinate and must not be silently reduced to
   one ordinary root;
 - coincident/overlapping geometry is a positive set-level result;
-- ordinary absence is `EMPTY` only after complete coverage; and
+- ordinary absence is `EMPTY` only with `COMPLETE` completeness; and
 - unsupported or unresolved numerical cases remain distinct from absence.
 
 ## 6. Dynamic root identity
@@ -260,38 +303,62 @@ Limit intersections require a separately approved limit contract.
 ### 6.1 Identity context
 
 A root continuation token is durable only within the active nonpersistent G8
-algorithm and its source pair. Its binding contains:
+algorithm and its source pair. The candidate durable/continuation information
+contains:
 
 ```text
 source-pair identity
-topology epoch
-branch key and valid-component context
-provider-canonical root parameter or isolating interval
-optional target parameter
-lineage relation to previous/current tokens
+constructive intersection lineage
+applicable branch lineage
+topology/continuation context
+explicit continuation relation when established
 ```
 
-The current locus revision and target/input revision establish currentness; they
-are not, by themselves, the durable token. Labels, output indices, coordinates,
-render order, and nearest-neighbour screen/world matching are excluded.
+The separate revision-scoped numerical/localization evidence contains:
+
+```text
+current locus and target/input revisions
+resolved valid-component binding for that revision
+provider-canonical root parameter
+isolating semantic-parameter interval
+optional target parameter
+residual and tolerance evidence
+solver/refinement state or certificate
+```
+
+A root isolating interval is localization/certification evidence for a
+revision. It is not, by itself, fundamental durable identity. An equivalent
+monotone reparameterization must not create a new geometric intersection merely
+because the parameter value or isolating interval changes. Labels, output
+indices, coordinates, render order, and nearest-neighbour screen/world matching
+are excluded.
+
+The proposed per-root identity status is closed and independent of numeric
+validity, with values equivalent to `CONTINUATION_ESTABLISHED`,
+`NEW_TOPOLOGICAL_SOLUTION`, `AMBIGUOUS_CONTINUATION`,
+`IDENTITY_DISCONTINUITY`, and `NOT_ESTABLISHED`. G8A may refine the names, but it
+must not omit the ambiguous/not-established outcomes.
 
 ### 6.2 Continuation without topology change
 
 Continuation may preserve a token only when evidence establishes the same
-isolated semantic root: compatible source branch/component lineage, overlapping
-or predictably continued isolation intervals in semantic parameter space,
-unchanged target family, and successful refinement/verification at the current
-revision. Parameter distance is governed by a versioned continuation policy.
-Cartesian nearness may be logged but cannot decide identity.
+semantic root through compatible source/branch lineage, topology context,
+successful current-revision refinement/verification, and a proven continuation
+relation. Mapped or predictably continued intervals and semantic parameters may
+support that relation, but are revision-scoped evidence rather than identity.
+G8A must characterize ordinary source motion, equivalent monotone
+reparameterization, allowed orientation reversal, and periodic-seam
+representation. Cartesian nearness may be logged but cannot decide identity.
 
 ### 6.3 Topology events
 
-The proposed event policy is:
+The following merge/split policy is a strong **G8A hypothesis**, not an
+approved universal identity semantic:
 
 | Event | Identity effect |
 |---|---|
-| two simple roots merge at tangency | parents terminate; one new tangent-event token records `MERGED` lineage |
-| tangent root splits into two | parent terminates; two new tokens record `SPLIT` lineage |
+| two simple roots merge at tangency | candidate: parents terminate; one tangent-event token records `MERGED` lineage when robustly established |
+| tangent root splits into two | candidate: parent terminates; two tokens record `SPLIT` lineage when child correspondence is robustly established |
 | root crosses a provider periodic seam | preserve one token using canonical seam equivalence and a lifted continuation coordinate |
 | root reaches an included component boundary | preserve through the boundary event only while the root remains valid; record boundary classification |
 | root crosses an invalid gap/open boundary | terminate; any later root is new unless approved provider lineage proves a semantic continuation |
@@ -299,8 +366,13 @@ The proposed event policy is:
 | source becomes undefined | current result becomes a coherent failure/non-current payload; no old coordinate survives as current |
 | source recovers | reuse a token only if the approved continuation evidence spans the event; otherwise create a new topology epoch |
 
-G8A must test and the author must approve this policy. Unsupported topology
-families return an explicit state instead of fabricated continuity.
+G8A must test `2 -> 1 -> 2` and reverse traversal, symmetric cases with
+intrinsically ambiguous child correspondence, periodic-seam interaction, and
+branch/component changes near the same event. Preserve identity when
+continuation is geometrically unambiguous; otherwise expose ambiguity or an
+identity discontinuity. If universal genealogy fails, G8A must recommend a
+narrower rigorous contract. Unsupported topology families return an explicit
+state instead of fabricated continuity.
 
 ## 7. Numerical capability and evidence
 
@@ -318,7 +390,7 @@ The proposed preference order is:
 An exact target equation does not upgrade floating-point locus evaluations.
 The result directly reuses
 `LocusSemanticMetadata2D.NumericGuarantee` for coordinate/numeric assurance and
-records a separate intersection support/coverage level.
+records separate intersection support and completeness levels.
 
 ### 7.2 Isolation and refinement
 
@@ -339,14 +411,29 @@ is diagnostic evidence, not a hidden point.
 
 ### 7.3 Completeness
 
-An evaluator-only adaptive scan may find and verify roots but cannot claim that
-none were missed unless it has an approved bound/certificate covering the
-component. Therefore:
+Completeness answers a different question from per-root validity: has every
+intersection satisfying the query over the supported semantic domain been
+accounted for? Solver convergence and several verified roots do not establish
+that no additional root was missed.
 
-- verified individual roots may be returned with `PARTIAL` coverage;
-- `EMPTY` requires complete isolation evidence;
-- tangency candidates that cannot be resolved yield `UNRESOLVED`; and
-- work exhaustion yields `WORK_LIMIT_REACHED` with consumed-work evidence.
+- `COMPLETE` requires approved exhaustive isolation/exclusion evidence over the
+  full supported query domain. A complete empty result is valid.
+- `INCOMPLETE` means at least one returned root may be individually verified,
+  but known unprocessed/unresolved domain or candidates prevent an exhaustive
+  set claim.
+- `NOT_ESTABLISHED` means the available capability cannot determine whether the
+  set is exhaustive.
+- tangency candidates that cannot be resolved yield `UNRESOLVED`, never empty;
+  and
+- work exhaustion records consumed work and cannot silently truncate a
+  complete set.
+
+G8A must characterize completeness independently for tangencies,
+evaluator-only methods, unbounded domains, difficult multiple roots, and
+unsupported/incomplete broad phase. Every strategy reports verified-root count,
+completeness value, and the method/evidence that established or failed to
+establish it. Any later scalar or point projection must preserve or reject
+incomplete/not-established set semantics rather than hide them.
 
 ## 8. Tolerance policy
 
@@ -404,8 +491,8 @@ runner-specific policy says otherwise.
 
 ## 11. Cache/index contract
 
-The default proposal is query-local isolation state plus the existing bounded
-semantic evaluation session. No G7 metric cache is reused.
+The author-approved starting point is query-local isolation state plus the
+existing bounded semantic evaluation session. No G7 metric cache is reused.
 
 If G8A proves cross-query reuse necessary, a dedicated intersection owner must:
 
@@ -438,15 +525,18 @@ Until a separate author decision:
 
 ## 13. Open approval gate
 
-This proposal becomes normative only after G8A evidence resolves and the author
-explicitly approves at least: result/public-point architecture, root identity
-and topology events, tangency/multiplicity evidence, overlap semantics,
-capability hierarchy, tolerance values, isolation/refinement strategy, cache
-ownership, work/output bounds, minimum target families, deferred Level C, and
-public/persistence boundaries.
+The author has approved the planning architecture: rich immutable set plus a
+normal-DAG nonnumeric rich Geo, optional derived ordinary points, query-local
+first computation, the preferred core-four family scope, and the public/API
+boundaries. This proposal becomes normative only after G8A evidence resolves
+and a second author review explicitly approves at least the exact root identity
+invariance and topology/genealogy contract, completeness establishment rules,
+tangency/multiplicity evidence, overlap taxonomy, capability hierarchy,
+tolerance values, isolation/refinement strategy, any cache ownership,
+work/output bounds, final target families, and any Level C promotion.
 
 ```text
 G8 SPEC = PROPOSED / NOT NORMATIVE
-G8A = NOT STARTED
-G8B = NOT STARTED
+G8A = AUTHORIZED / NOT STARTED
+G8B = NOT AUTHORIZED / BLOCKED ON G8A PASS — AUTHOR APPROVED
 ```

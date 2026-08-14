@@ -3,13 +3,15 @@
 | Field | Value |
 |---|---|
 | Status | **PROPOSED — NOT EXECUTED** |
+| G8A state | **AUTHORIZED / NOT STARTED**; execute only in a separate task |
+| G8B state | **NOT AUTHORIZED** |
 | Primary authority | Semantic equality, deterministic work, bounded state, and invalidation |
 | Wall-clock | Informational until a reproducible environment budget is approved |
 | Validation matrix | [`g8_locus_v2_intersection_validation_matrix.md`](g8_locus_v2_intersection_validation_matrix.md) |
-| Date | 2026-08-13 |
+| Date | 2026-08-14 |
 
 G8 must not repeat the historical nested-Locus cost pattern. This plan defines
-the measurements a separately authorized G8A should collect before selecting
+the measurements the separately executed G8A must collect before selecting
 solver, tolerance, work, or cache/index policies. It assigns no numerical
 default and reports no G8 result.
 
@@ -26,7 +28,8 @@ default and reports no G8 result.
 5. Can a query-local implementation meet repeated and nested workloads?
 6. If reuse is justified, what is the smallest conservative intersection state
    that can be shared without retaining stale topology or creating a hidden DAG?
-7. Does enabled/disabled reusable state preserve the complete rich result?
+7. Does enabled/disabled reusable state preserve the full rich result,
+   including its independent completeness axis?
 8. Are root continuation and topology-event costs deterministic and bounded?
 9. Does every failure publish a coherent current snapshot and release private
    state?
@@ -37,6 +40,9 @@ default and reports no G8 result.
 - Hold source revisions, query, tolerance/work policy, capability version, and
   evaluator-session configuration constant while changing one strategy.
 - Separate candidate isolation from refinement and final verification counts.
+- For every strategy, separately record verified-root count, completeness
+  status, and the method/evidence by which completeness was established or
+  failed to be established.
 - Record per-component and whole-query counters, including unsuccessful work.
 - Run deterministic traces from a fresh Construction and from controlled
   repeated/nested consumers.
@@ -58,8 +64,9 @@ Compare, where actual capabilities permit:
 5. conservative spatial-bound broad phase followed by the same semantic
    isolation/refinement/verifier pipeline.
 
-A strategy unable to prove coverage must report partial/unresolved coverage;
-it cannot win by returning fewer roots.
+A strategy unable to establish completeness must report `INCOMPLETE` or
+`NOT_ESTABLISHED`; it cannot win by returning fewer roots or by converging on
+only the candidates it found.
 
 ### Refinement strategies
 
@@ -69,7 +76,7 @@ evaluation. Every path ends at the same independent semantic verifier.
 
 ### State strategies
 
-Start with:
+The author-approved starting point is:
 
 `REFERENCE_QUERY_LOCAL`
 : No intersection-state reuse across query computations. Existing bounded
@@ -87,8 +94,9 @@ Only if repeated-query evidence justifies it, characterize:
   result sets, root tokens, continuation lineage, route-specific state, or G7
   metric partitions.
 
-The last strategy is not approved. G8A must compare ownership shapes and
-produce a separate author decision before any productive cache/index exists.
+The last strategy is not approved. G8A may characterize ownership shapes only
+if measured repeated-query need exists and must produce a separate author
+decision before any productive cache/index exists.
 
 ## 4. Required counters
 
@@ -111,13 +119,23 @@ residualVerificationCalls
 targetMembershipChecks
 deduplicationComparisons
 verifiedFiniteSolutions
+verifiedRootCount
 rejectedCandidates
 unresolvedCandidates
+completenessCompleteResults
+completenessIncompleteResults
+completenessNotEstablishedResults
+completenessEstablishmentChecks
+completenessDomainsExcluded
+completenessDomainsUnresolved
 overlapComponentsDetected
 identityContinuationPredictions
 identityContinuationComparisons
 identityContinuationsAccepted
 identityContinuationsAmbiguous
+identityContinuationsNotEstablished
+reparameterizationMappingsChecked
+reparameterizationContinuationsAccepted
 topologyMergeEvents
 topologySplitEvents
 topologyTerminationEvents
@@ -177,12 +195,14 @@ G8A must sweep and report, without assuming shared numeric values:
 - `eps_tangency`: derivative/contact evidence threshold or interval criterion;
 - `eps_dedup_parameter`: duplicate candidate decision within one semantic
   component;
-- `eps_continuation_parameter`: semantic root continuation prediction; and
+- `eps_continuation_parameter`: revision-scoped semantic root continuation
+  prediction evidence, never durable identity; and
 - optional `eps_coordinate_verify`: independent coordinate consistency check.
 
 Each policy value has a versioned identity and documented units/normalization.
 Experiments must include rescaled target equations, geometric scale/translation,
-regular and derivative-degenerate reparameterizations, near tangency, and close
+regular and derivative-degenerate monotone reparameterizations, allowed
+orientation reversal, periodic-seam representations, near tangency, and close
 distinct roots. Do not reuse G6 domain, G7 metric, kernel/render, or pixel
 tolerances unless measured evidence and author approval explicitly establish a
 mapping.
@@ -209,8 +229,8 @@ maxRetainedTopologyEpochs
 
 Ceilings must compose predictably. Per-candidate limits alone are insufficient
 if candidate count is unbounded. Budget exhaustion returns a typed unresolved
-or partial-coverage result with exact consumed counters; it never truncates to
-a falsely complete finite solution set.
+result with `INCOMPLETE` or `NOT_ESTABLISHED` completeness and exact consumed
+counters; it never truncates to a falsely complete finite solution set.
 
 No initial wall-clock stop is proposed for semantic truth. If responsiveness
 later requires cancellation, cancellation must publish a typed incomplete
@@ -224,18 +244,41 @@ Run simple, even, higher-order, clustered, endpoint, seam, false-minimum,
 overlap, and no-root polynomials composed with representative semantic loci.
 Sweep geometry and equation scale separately.
 
-### Topology traces
+### Completeness sweep
+
+For every isolation strategy, run matched cases producing:
+
+- `EMPTY + COMPLETE` from exhaustive exclusion;
+- `FINITE + COMPLETE` from exhaustive isolation and verification;
+- verified finite roots plus known unresolved/unprocessed work, reported as
+  `INCOMPLETE`; and
+- verified finite roots for which the capability cannot determine
+  exhaustiveness, reported as `NOT_ESTABLISHED`.
+
+Repeat for tangency/even roots, unbounded domains, difficult multiple roots,
+and a deliberately non-exhaustive broad phase. Solver convergence and a
+repeatable root count are not completeness evidence.
+
+### Identity and topology traces
 
 Use deterministic parameter sequences across:
 
-- two transverse roots → tangent merge → empty;
-- empty → tangent → two-root split;
+- two roots → tangent/multiple root → two roots and reverse traversal;
+- symmetric split cases with intrinsically ambiguous child correspondence;
 - root crossing included endpoint;
 - root crossing periodic seam;
+- merge/split at or near a periodic seam;
 - valid-component split/loss/recovery; and
-- branch replacement with and without unique G6 lineage.
+- branch replacement with and without unique G6 lineage, including changes near
+  a root merge/split;
+- ordinary continuous source motion;
+- equivalent monotone reparameterization; and
+- parameter reversal/orientation changes where semantically allowed.
 
-Record root tokens and lineage alongside continuation-operation counts.
+Record root tokens/identity status, semantic parameters, isolating intervals,
+source/topology revisions, candidate parent/child lineage, ambiguity events,
+and continuation-operation counts. Root intervals are revision evidence, not
+durable identity. No coordinate-only re-association is allowed.
 
 ### Multi-branch/component sweep
 
@@ -260,11 +303,16 @@ Measure one-, two-, and three-level evaluator nesting and a selected scientific
 pilot. Assert no whole-locus regeneration, bounded session state, correct cycle
 diagnostics, and normal DAG invalidation.
 
+At least one nested case must use an identified intersection solution as a
+normal-DAG input to a later CeDG-style construction. Measure dynamic
+propagation and identity continuation; an anonymous coordinate copy does not
+satisfy this first-class capability gate.
+
 ## 9. Equality oracle
 
 For every reuse experiment, compare against `REFERENCE_QUERY_LOCAL` on:
 
-- query-level status/coverage/geometry/currentness/guarantee axes;
+- query-level status/completeness/geometry/currentness/guarantee axes;
 - source/revision/policy/capability provenance;
 - ordered branch/component solution keys;
 - semantic parameters and verified coordinates under the approved comparison
@@ -293,3 +341,5 @@ No solver, tolerance, budget, isolation, or owner policy becomes normative
 until the author explicitly approves the evidence. Productive G8B cannot begin
 on a benchmark-plan recommendation alone.
 
+This plan was not executed during planning closeout. G8A is authorized for a
+separate task; G8B remains not authorized.

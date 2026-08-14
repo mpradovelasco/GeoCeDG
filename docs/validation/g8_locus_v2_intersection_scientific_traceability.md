@@ -2,16 +2,37 @@
 
 | Field | Value |
 |---|---|
-| Status | **PLANNING EVIDENCE — NO G8 EXECUTION CLAIM** |
+| Status | **AUTHOR-APPROVED PLANNING TRACEABILITY — NO G8 EXECUTION CLAIM** |
 | Catalog authority | [`docs/references/cedg/catalog.yml`](../references/cedg/catalog.yml) |
 | Existing pilot authority | [`scientific-pilots.yml`](../../geocedg/validation/locus-v2/scientific-pilots.yml) |
 | Proposed matrix | [`g8_locus_v2_intersection_validation_matrix.md`](g8_locus_v2_intersection_validation_matrix.md) |
-| Date | 2026-08-13 |
+| Date | 2026-08-14 |
 
 This matrix translates the versioned CeDG corpus into G8 requirements and
 future characterization pilots. The papers, book, and legacy models establish
 scientific relevance, constructive topology, and historical limitations. They
-do not define numeric G8 answers, solver tolerances, or complete root sets.
+do not define numeric G8 answers, solver tolerances, root-identity algorithms,
+or complete root sets. Current G6/G7 normative contracts, Accepted ADRs, and
+actual source architecture remain the software authority.
+
+## Fundamental CeDG requirement traced
+
+The corpus shows that locus-defined projection curves are intermediate
+geometric entities in later descriptive-geometry procedures, not disposable
+drawings. G8 must therefore enable this construction chain for each supported
+ordinary 2D target family:
+
+```text
+CeDG construction -> Locus V2 projection -> identified intersection solution
+    -> downstream CeDG construction -> normal dynamic propagation
+```
+
+Each finite solution must preserve constructive source, branch/component and
+semantic-preimage provenance plus explicit dynamic identity/topology status.
+An anonymous coordinate snapshot cannot satisfy this requirement. The
+scientific sources justify the capability and regression scenarios; they do
+not prescribe a solver, isolating interval, continuation token, or merge/split
+algorithm. Family coverage remains incremental.
 
 ## 1. Sources inspected
 
@@ -43,14 +64,16 @@ root constants or make the local models build dependencies.
 
 | G8 requirement | Scientific evidence | Proposed characterization / regression |
 |---|---|---|
+| Treat a locus-defined projection as first-class input to later CeDG construction | LSIM methodology in preprint/book; Symmetry article continues intersection leaves into flattening | `D-FIRSTCLASS-01` plus `D-NEST-01`: identified root drives a downstream construction and updates through the normal DAG |
 | Preserve the constructive parameter/preimage rather than only a point coordinate | LSIM preprint, PDF pp. 6–10; book, PDF pp. 51–54 | `B-SELF-01`, `B-RETRACE-01`, and all rich solution records retain branch/component/semantic parameter |
 | Support several constructive leaves/components | LSIM preprint, PDF pp. 6–10; Symmetry article, PDF pp. 7–14 | `B-BRANCH-01`, `B-COMP-01`, reduced `S-LSIM-01` pilot |
-| Represent topology transitions explicitly | Bite/penetration cases in the Symmetry article, PDF pp. 8–14; LSIM preprint, PDF pp. 8–10 | `B-TOPO-01`, `I-MERGE-01`, `I-SPLIT-01`; deterministic parameter trace across transition |
+| Represent topology transitions explicitly without assuming universal genealogy | Bite/penetration cases in the Symmetry article, PDF pp. 8–14; LSIM preprint, PDF pp. 8–10 | `B-TOPO-01`, `I-MERGE-01`, `I-SPLIT-01`, `I-REVERSE-01`, `I-SYMMETRIC-01`; record established lineage, ambiguity, or identity discontinuity |
 | Detect tangent/even-multiplicity contact | Sphere/cone tangent versus secant configurations in LSIM preprint, PDF p. 14; book, PDF pp. 69–72 | `A-LINE-02`, `A-CIR-02/03`, `C-TAN-01`, `N-EVEN-01`, focal `S-FOCAL-01` |
 | Preserve distinct spatial/constructive solutions whose projection coordinates can coincide | Focal sphere/separatrix discussion in the book, PDF pp. 69–72 | `A-CIR-06`, `B-SELF-01`; use two semantic preimages and never coordinate dedup |
 | Distinguish finite roots from overlap/infinite solution sets | Surface generators/sections can coincide in limiting configurations across LSIM material | `C-OVER-01/02`, `C-INF-01`; query-level overlap result, not sampled points |
-| Downstream procedures must consume construction-linked results | Symmetry article links intersection leaves to flattening, PDF pp. 11–14 | Rich normal-DAG result and selected downstream test; no detached report/GUI truth |
-| No silent sampled approximation | Book describes historical sampled perimeter and Locus limitations, PDF pp. 51–54; Springer chapter supplies sampled-tool context | Zero legacy/render authority assertions, verified residuals, explicit guarantee/coverage axes |
+| Downstream procedures must consume construction-linked results | Symmetry article links intersection leaves to flattening, PDF pp. 11–14 | Rich normal-DAG result and `D-FIRSTCLASS-01`; no detached report/GUI truth |
+| No silent sampled approximation | Book describes historical sampled perimeter and Locus limitations, PDF pp. 51–54; Springer chapter supplies sampled-tool context | Zero legacy/render authority assertions, verified residuals, explicit guarantee/completeness axes |
+| Distinguish verified roots from an exhaustive root set | Multileaf and topology-changing scientific cases make missing leaves scientifically material | `K-COMP-*`, tangency, unbounded and evaluator-only cases report verified-root count and independent completeness evidence |
 | Bound repeated and nested work | Legacy two-/three-level cone–cylinder models and Springer tool context | `D-NEST-01/02`, `S-NEST-01`; evaluator, isolation, refinement, and retained-state counters |
 | Dynamic edits must not leave stale geometry | Dynamic bite/penetration and flattened-locus examples in the Symmetry article | `I-STALE-01`, `I-FAIL-01`, `I-RECOVER-01`, normal DAG invalidation |
 
@@ -64,9 +87,10 @@ circle. Sweep the source parameter through secant, tangent, and empty regimes.
 
 Required evidence:
 
-- two verified roots, one tangent root, and complete empty only when coverage
+- two verified roots, one tangent root, and complete empty only when completeness
   is established;
-- explicit merge/split lineage;
+- merge/split genealogy characterized as a hypothesis, with explicit ambiguity
+  or identity discontinuity when lineage cannot be established;
 - repeated coordinate/preimage preservation where the construction demands it;
 - target equation scaling and geometry scaling invariance; and
 - an independent analytic or high-precision reference generated from the
@@ -141,4 +165,3 @@ product scope. They do not authorize:
 Any conflict between a pilot's necessary semantics and the approved Level A
 2D architecture returns to the author decision gate rather than expanding G8B
 silently.
-
