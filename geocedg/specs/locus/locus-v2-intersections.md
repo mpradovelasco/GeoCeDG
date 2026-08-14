@@ -2,18 +2,20 @@
 
 | Field | Value |
 |---|---|
-| Status | **APPROVED AS NORMATIVE G8 INTERSECTION CONTRACT** |
-| Version | `1.0` |
-| Phase | G8 planning `PASS — AUTHOR APPROVED`; G8A `PASS — AUTHOR APPROVED`; G8B `AUTHORIZED / NOT STARTED` |
+| Status | **NORMATIVE / AUTHOR-APPROVED R1 REFINEMENT APPLIED** |
+| Version | `1.1` |
+| Phase | G8 planning, G8A, G8B-R1 and G8B `PASS — AUTHOR APPROVED`; G8C design authorized/not started; G8 in progress |
 | Scope | Internal two-dimensional Locus V2 intersection semantics |
 | Product state | Experimental, internal, disabled by default |
-| Approval | Author-approved on 2026-08-14 from the completed G8A evidence |
-| Architecture decision | Accepted ADR 0008 |
+| Approval | Author-approved on 2026-08-14 from G8A; G8B-R1 semantics and G8B implementation author-approved on 2026-08-14 |
+| Architecture decision | Accepted ADR 0008 with R1 clarification |
 
 This normative contract incorporates the G8A characterization evidence and
-the final author decisions D1–D17. It authorizes a separately invoked G8B
-implementation task within the internal boundary below. It does not itself
-execute G8B or make any intersection behavior observable.
+the final author decisions D1–D17. The separately invoked G8B task produced an
+internal implementation within the boundary below. The final author review
+approves both that minimum kernel and the author-directed G8B-R1 normative
+clarification of selected-solution admissibility. Approval does not make the
+behavior public or close the remaining extended G8 families.
 
 ## 1. Governing principles
 
@@ -248,6 +250,7 @@ evaluated finite world coordinate
 raw and normalized residual evidence
 absolute/relative residual policy used
 root-isolation and refinement method
+local semantic-root isolation status (`ESTABLISHED` or `NOT_ESTABLISHED`)
 iteration/evaluation evidence
 contact-order classification and its evidence
 domain-location classification
@@ -429,18 +432,36 @@ that no additional root was missed.
   but known unprocessed/unresolved domain or candidates prevent an exhaustive
   set claim.
 - `NOT_ESTABLISHED` means the available capability cannot determine whether the
-  set is exhaustive.
+  set is exhaustive. It does not invalidate an individually established
+  solution.
 - tangency candidates that cannot be resolved yield `UNRESOLVED`, never empty;
   and
 - work exhaustion records consumed work and cannot silently truncate a
   complete set.
 
+Global intersection completeness and individual solution admissibility are
+orthogonal. A finite current solution may be consumed as a dynamic point when
+that solution is independently verified, semantically identified, locally
+isolated under the current capability, revision-coherent and unambiguous under
+the lifecycle/continuation contract, even if the parent result is `INCOMPLETE`
+or `NOT_ESTABLISHED`. Such a point does not imply or advertise global
+completeness of the parent query. Its rich-result dependency remains the source
+of the parent identity, revisions, per-solution guarantee and completeness
+provenance.
+
+Residual satisfaction alone does not establish local isolation or durable
+identity. The per-solution revision evidence therefore reports local isolation
+separately from the numeric isolating interval. `ESTABLISHED` means that the
+current finite semantic preimage is locally distinguishable sufficiently for
+the claimed token/continuation status; `NOT_ESTABLISHED` keeps the point
+consumer undefined even when the coordinate passes residual verification.
+
 G8A characterized completeness independently for tangencies,
 evaluator-only methods, unbounded domains, difficult multiple roots, and
 unsupported/incomplete broad phase. Every strategy reports verified-root count,
 completeness value, and the method/evidence that established or failed to
-establish it. Any later scalar or point projection must preserve or reject
-incomplete/not-established set semantics rather than hide them.
+establish it. Any derived projection must preserve incomplete/not-established
+set provenance rather than hide or strengthen it.
 
 ## 8. Tolerance and normalization policy
 
@@ -575,6 +596,18 @@ author-approved runner-specific policy says otherwise.
   dependencies, becomes coherently undefined for absent, stale or ambiguous
   continuation, never retargets to another root, and may recover only when the
   same token is current again under the approved continuation contract.
+- The solution-local admissibility predicate requires a successful current
+  `FINITE` result, a unique matching token, supported target/evaluator
+  authority, coherent source/revision/branch/component bindings, independent
+  residual and target-membership verification, `ESTABLISHED` local isolation,
+  an explicit semantic continuation key, and identity status
+  `NEW_TOPOLOGICAL_SOLUTION` or `CONTINUATION_ESTABLISHED`. Global
+  completeness is recorded but is not a veto.
+- Absence, non-current evidence, unsupported or unverified candidates,
+  residual/membership rejection, overlap-kind results, ambiguous or
+  discontinuous identity, computation failure and work-limit failure make the
+  selected point undefined. The consumer never searches coordinates or
+  retargets by result order.
 
 ## 11. Cache/index contract
 
@@ -663,14 +696,27 @@ minimum. Full conics, functions, general implicit curves and locus–locus remai
 deferred. Public command, generic `Path`, XML/persistence, legacy/Classic, 3D,
 G9 and Python boundaries remain closed.
 
-G8B is authorized but has not started. Productive work begins only through a
-separate explicit execution of the canonical G8B prompt.
+The canonical G8B prompt has been executed and the focused author-directed R1
+refinement has been applied. Its internal implementation and evidence package
+are `PASS — AUTHOR APPROVED`. The implementation conforms by
+keeping evaluator-only discovery at `NOT_ESTABLISHED`; complete finite/empty
+claims require an authoritative analytic/certified capability
+whose declared component coverage and candidates are independently verified.
+Individually verified roots additionally require established local isolation
+and unambiguous semantic identity before point consumption. G8C design is
+authorized to examine full conics, functional curves, general implicit curves
+and Locus V2 × Locus V2; no G8C implementation, public or other deferred
+boundary is opened by this closeout.
 
 ```text
-G8 SPEC = NORMATIVE / AUTHOR APPROVED
+G8 SPEC = NORMATIVE / AUTHOR-APPROVED R1 REFINEMENT APPLIED
 G8A = PASS — AUTHOR APPROVED
-ADR 0008 = ACCEPTED
-G8B = AUTHORIZED / NOT STARTED
-G8 PRODUCTIVE IMPLEMENTATION = NOT STARTED
+ADR 0008 = ACCEPTED — R1 CLARIFICATION APPLIED
+G8B-R1 = PASS — AUTHOR APPROVED
+G8B = PASS — AUTHOR APPROVED
+G8 PRODUCTIVE IMPLEMENTATION = INTERNAL MINIMUM KERNEL — AUTHOR APPROVED
+G8C DESIGN = AUTHORIZED — NOT STARTED
+G8C IMPLEMENTATION = NOT AUTHORIZED — NOT STARTED
+G8 = IN PROGRESS
 G9 = NOT STARTED
 ```

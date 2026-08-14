@@ -1,22 +1,22 @@
-# Locus V2 internal 2D intersection API candidate
+# Locus V2 internal 2D intersection API
 
 | Field | Value |
 |---|---|
-| Status | **AUTHOR-APPROVED G8B CANDIDATE — NOT IMPLEMENTED / INTERNAL** |
+| Status | **G8B-R1/G8B INTERNAL API — AUTHOR APPROVED** |
 | Evidence | [`g8a_locus_v2_intersection_characterization_report.md`](../validation/g8a_locus_v2_intersection_characterization_report.md) |
 | G8A | **PASS — AUTHOR APPROVED** |
-| G8B | **AUTHORIZED / NOT STARTED** |
+| G8B | **PASS — AUTHOR APPROVED** |
+| G8B-R1 | **PASS — AUTHOR APPROVED** |
 | Public API | None |
 | Date | 2026-08-14 |
 
-This is the author-approved implementation candidate for a separately executed
-G8B. It is not productive API and exposes no public surface. The normative G8
-specification and Accepted ADR 0008 govern any implementation; exact Java
-spelling may adapt to repository conventions without weakening those roles.
+This is the implemented and author-approved internal G8B API. It is productive shared-
+kernel code but exposes no public command, `Path`, persistence, or frontend
+surface. The normative G8 specification and Accepted ADR 0008 govern it.
 
 ## 1. Package and dependency boundary
 
-Authorized candidate semantic types belong under:
+Authorized semantic types belong under:
 
 ```text
 org.geocedg.common.kernel.locus.intersection
@@ -311,6 +311,7 @@ public final class IntersectionRootRevisionEvidence2D {
     double getSemanticParameter();
     OptionalDouble getLiftedPeriodicParameter();
     IntersectionParameterInterval2D getIsolatingInterval();
+    LocalIsolationStatus getLocalIsolationStatus();
     TargetResidual2D getResidualEvidence();
     IntersectionSolverMethod getSolverMethod();
     NumericGuarantee getNumericGuarantee();
@@ -320,6 +321,16 @@ public final class IntersectionRootRevisionEvidence2D {
 The first value is the accepted durable/continuation layer. The second is
 revision-scoped numerical and localization evidence. In particular, neither a
 semantic parameter nor an isolating interval is the fundamental root identity.
+
+`LocalIsolationStatus` is the solution-local evidence needed by the point
+consumer; it is independent of query-wide completeness:
+
+```java
+public enum LocalIsolationStatus {
+    ESTABLISHED,
+    NOT_ESTABLISHED
+}
+```
 
 ```java
 public enum IntersectionLineageEventKind {
@@ -398,13 +409,18 @@ public final class LocusIntersectionResult2D {
     List<IntersectionOverlapEvidence2D> getOverlapEvidence();
     LocusIntersectionInstrumentationSnapshot2D getWork();
     List<IntersectionDiagnostic2D> getDiagnostics();
-    boolean isFinitePointProjectionAdmissible();
+    Optional<LocusIntersectionSolution2D> findPointAdmissibleSolution(
+            String rootToken);
 }
 ```
 
 The value is deeply immutable. `OVERLAP` and `INFINITELY_MANY` carry typed
-component evidence, never arbitrary point samples. Point projection is
-admissible only for current, successful, complete finite results.
+component evidence, never arbitrary point samples. The token lookup applies the
+solution-local point-admissibility predicate. Parent completeness is not a veto:
+an individually verified, locally isolated, supported, current and
+identity-unambiguous solution may be returned from a `COMPLETE`, `INCOMPLETE`,
+or `NOT_ESTABLISHED` finite result. The result remains the authority and retains
+its original completeness evidence.
 
 ## 8. Query-local solver pipeline
 
@@ -477,7 +493,7 @@ public final class GeoLocusIntersectionResult extends GeoElement {
     void publishIntersectionResult(
             IntersectionSourceBinding2D binding,
             LocusIntersectionResult2D result);
-    boolean isFinitePointProjectionAdmissible();
+    boolean isPointAdmissible(String rootToken);
 }
 
 public final class AlgoLocusIntersectionV2 extends AlgoElement {
@@ -510,16 +526,20 @@ public final class AlgoLocusIntersectionPointV2 extends AlgoElement {
 }
 ```
 
-It produces one ordinary point only while the selected token is current in a
-complete finite result. Ambiguity, incomplete/not-established completeness,
-overlap, failure or token termination makes it undefined. It must not retarget
-to a different solution and may recover only when the same token is current
-again under the approved lifecycle contract. It owns no solver, identity or
-cache. A variable-size public point array is not authorized.
+It produces one ordinary point only while the selected token resolves uniquely
+to a point-admissible current finite solution. Parent `INCOMPLETE` or
+`NOT_ESTABLISHED` completeness is preserved as provenance and does not by
+itself make that solution undefined. Missing or duplicate tokens, unresolved
+local isolation, ambiguity, overlap-only geometry, unsupported/unverified or
+failed residual evidence, stale state, atomic computation failure, or token
+termination makes the point undefined. It must not retarget to a different
+solution and may recover only when the same token is current again under the
+approved lifecycle contract. It owns no solver, identity or cache. A
+variable-size public point array is not authorized.
 
-## 12. Exact candidate productive edit set
+## 12. Exact implemented productive edit set
 
-The smallest authorized G8B candidate set is:
+The implemented G8B candidate set is:
 
 1. new immutable intersection values, policy, instrumentation, target adapters,
    query-local solver and continuation types under
@@ -532,10 +552,10 @@ The smallest authorized G8B candidate set is:
 5. focused productive unit/lifecycle/topology tests; and
 6. specification, API, modified-upstream ledger and validation evidence.
 
-No edit is proposed to `GeoLocusV2`, `GeoLocus`, `CmdIntersect`,
+No edit was made to `GeoLocusV2`, `GeoLocus`, `CmdIntersect`,
 `AlgoDispatcher`, Classic `AlgoIntersect*`, `Path`, `GeoFactory`, XML,
-rendering, export, 3D, Python or G9 sources. A future implementation must stop
-if an additional public or persistence dependency becomes necessary.
+rendering, export, 3D, Python or G9 sources. Any later public or persistence
+dependency still requires a separate author decision.
 
 ## 13. Current disposition
 
@@ -543,7 +563,56 @@ if an additional public or persistence dependency becomes necessary.
 G8A = PASS — AUTHOR APPROVED
 G8 SPEC = NORMATIVE / AUTHOR APPROVED
 ADR 0008 = ACCEPTED
-G8B = AUTHORIZED / NOT STARTED
-G8 PRODUCTIVE IMPLEMENTATION = NOT STARTED
+G8B-R1 = PASS — AUTHOR APPROVED
+G8B = PASS — AUTHOR APPROVED
+G8C DESIGN = AUTHORIZED / NOT STARTED
+G8C IMPLEMENTATION = NOT AUTHORIZED / NOT STARTED
+G8 = IN PROGRESS
 G9 = NOT STARTED
 ```
+
+## 14. Implemented Java mapping
+
+The exact G8B source supersedes any illustrative spelling earlier in this
+document. The implemented extension points are:
+
+```java
+public interface LocusIntersectionCapability2D {
+    String getCapabilityId();
+    boolean supports(IntersectionCapabilityContext2D context);
+    IntersectionCandidateSet2D isolate(
+            IntersectionCapabilityContext2D context);
+}
+
+public final class LocusIntersectionSolver2D {
+    LocusIntersectionResult2D intersect(
+            LocusIntersectionQuery2D query,
+            LocusDefinition2D definition,
+            LocusIntersectionTarget2D target,
+            IntersectionSourceBinding2D binding,
+            LocusIntersectionCapability2D preferred,
+            IntersectionRootTokenSource2D tokenSource);
+}
+
+public final class LocusIntersectionContinuation2D {
+    LocusIntersectionResult2D continueRoots(
+            LocusIntersectionResult2D previous,
+            LocusIntersectionResult2D current,
+            LocusIntersectionPolicy2D policy);
+}
+```
+
+Closed enums are nested in `IntersectionSemanticMetadata2D`. Target capture is
+`LocusIntersectionTargets2D.capture(GeoElement, String, long)` and accepts only
+`GeoLine`, `GeoSegment`, `GeoRay`, and circular `GeoConic`. The default
+`AlgoLocusIntersectionV2` constructor selects
+`EvaluatorOnlyIntersectionCapability2D`; its result never claims complete
+coverage. Internal callers with stronger semantic proof provide an explicit
+capability and register any extra `GeoElement` dependencies in the algorithm
+constructor.
+
+`GeoLocusIntersectionResult.getXML(...)` deliberately emits nothing, and
+copy/set never transfer a revision-bound result. The token point consumer is
+`AlgoLocusIntersectionPointV2(Construction, GeoLocusIntersectionResult,
+String)` and produces exactly one ordinary `GeoPoint` or a coherent undefined
+point.

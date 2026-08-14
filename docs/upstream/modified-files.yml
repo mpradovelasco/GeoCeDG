@@ -150,8 +150,8 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/plugin/GeoClass.java",
       "change": "modified",
-      "purpose": "G6B appended LOCUS_V2; G7B minimally appends LOCUS_METRIC_RESULT without changing earlier ordinals or legacy dispatch. Phase G7B structural enum extension; append-only placement is the smallest viable upstream edit.",
-      "authority": "docs/adr/0007-revision-scoped-locus-v2-metric-index.md"
+      "purpose": "G6B appended LOCUS_V2; G7B appended LOCUS_METRIC_RESULT; G8B appends LOCUS_INTERSECTION_RESULT at priority 132. All additions preserve earlier ordinals and legacy dispatch.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/euclidian/EuclidianDraw.java",
@@ -162,8 +162,8 @@
     {
       "path": "source/shared/common-jre/src/test/java/org/geogebra/common/euclidian/DrawablesTest.java",
       "change": "modified",
-      "purpose": "Keep the exhaustive GeoClass drawable audit meaningful for LOCUS_V2 and the appended non-drawable LOCUS_METRIC_RESULT. Phase G7B structural regression edit; only the new enum case is added.",
-      "authority": "docs/validation/g7b_locus_v2_metric_kernel_report.md"
+      "purpose": "Keep the exhaustive GeoClass drawable audit meaningful for LOCUS_V2 and the appended non-drawable metric/intersection rich-result types; G8B adds no productive drawing route.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/ExplicitNumericDomainProvider2D.java",
@@ -321,7 +321,7 @@
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusV2KernelIntegrationTest.java",
-      "change": "added", "purpose": "Verify G6 providers/topology/revisions/nesting plus the phase G7B append-only metric GeoClass ordinal and public compatibility boundary. The existing integration suite is the narrowest enum regression location.", "authority": "docs/validation/g7b_locus_v2_metric_kernel_report.md"
+      "change": "added", "purpose": "Verify G6 providers/topology/revisions/nesting plus append-only G7B metric and G8B intersection GeoClass ordering and the unchanged public compatibility boundary.", "authority": "geocedg/specs/locus/locus-v2-intersections.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusV2RenderSeparationTest.java",
@@ -942,8 +942,8 @@
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusMetricProductiveLifecycleTest.java",
       "change": "added",
-      "purpose": "Provide focused phase G7B productive-kernel semantic, numerical, lifecycle, repeated-query, nested or fixture evidence without adding public behavior.",
-      "authority": "docs/validation/g7b_locus_v2_metric_kernel_report.md"
+      "purpose": "Provide focused phase G7B productive-kernel lifecycle evidence and preserve its append-only GeoClass contract after G8B adds LOCUS_INTERSECTION_RESULT, without adding public behavior.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusMetricProductiveNestedTest.java",
@@ -996,8 +996,8 @@
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8AIntersectionKernelLifecycleCharacterizationTest.java",
       "change": "added",
-      "purpose": "Probe G8A rich-result publication, downstream dependency, invalidation, copy/set and removal using test-private Geo/Algo fixtures.",
-      "authority": "docs/validation/g8a_locus_v2_intersection_characterization_report.md"
+      "purpose": "Probe G8A rich-result lifecycle behavior and preserve its test-private GeoClass boundary while asserting the append-only G8B intersection-result class ordering.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8AIntersectionNumericalCharacterizationTest.java",
@@ -1034,6 +1034,246 @@
       "change": "added",
       "purpose": "Audit real GeoLine, GeoSegment, GeoRay, GeoConic, GeoFunction and GeoImplicit authority through test-private G8A adapters.",
       "authority": "docs/validation/g8a_locus_v2_intersection_characterization_report.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/EvaluatorOnlyIntersectionCapability2D.java",
+      "change": "added",
+      "purpose": "Implement the internal query-local G8B intersection semantic contract (EvaluatorOnlyIntersectionCapability2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionCandidate2D.java",
+      "change": "added",
+      "purpose": "Implement the internal query-local G8B intersection semantic contract (IntersectionCandidate2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionCandidateSet2D.java",
+      "change": "added",
+      "purpose": "Implement the internal query-local G8B intersection semantic contract (IntersectionCandidateSet2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionCapabilityContext2D.java",
+      "change": "added",
+      "purpose": "Implement the internal query-local G8B intersection semantic contract (IntersectionCapabilityContext2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionClassification2D.java",
+      "change": "added",
+      "purpose": "Implement the internal query-local G8B intersection semantic contract (IntersectionClassification2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionCompletenessEvidence2D.java",
+      "change": "added",
+      "purpose": "Implement the internal query-local G8B intersection semantic contract (IntersectionCompletenessEvidence2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionDiagnostic2D.java",
+      "change": "added",
+      "purpose": "Implement the internal query-local G8B intersection semantic contract (IntersectionDiagnostic2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionOverlapEvidence2D.java",
+      "change": "added",
+      "purpose": "Implement the internal query-local G8B intersection semantic contract (IntersectionOverlapEvidence2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionParameterInterval2D.java",
+      "change": "added",
+      "purpose": "Implement the internal query-local G8B intersection semantic contract (IntersectionParameterInterval2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionResidualContract2D.java",
+      "change": "added",
+      "purpose": "Implement the internal query-local G8B intersection semantic contract (IntersectionResidualContract2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionRootIdentity2D.java",
+      "change": "added",
+      "purpose": "Implement the internal query-local G8B intersection semantic contract (IntersectionRootIdentity2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionRootLineage2D.java",
+      "change": "added",
+      "purpose": "Implement the internal query-local G8B intersection semantic contract (IntersectionRootLineage2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionRootRevisionEvidence2D.java",
+      "change": "added",
+      "purpose": "Implement the internal query-local G8B intersection semantic contract (IntersectionRootRevisionEvidence2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionRootTokenSource2D.java",
+      "change": "added",
+      "purpose": "Implement the internal query-local G8B intersection semantic contract (IntersectionRootTokenSource2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionSemanticMetadata2D.java",
+      "change": "added",
+      "purpose": "Implement the internal query-local G8B intersection semantic contract (IntersectionSemanticMetadata2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionSourceBinding2D.java",
+      "change": "added",
+      "purpose": "Implement the internal query-local G8B intersection semantic contract (IntersectionSourceBinding2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusDifferentialEvaluation2D.java",
+      "change": "added",
+      "purpose": "Implement the internal query-local G8B intersection semantic contract (LocusDifferentialEvaluation2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionCapability2D.java",
+      "change": "added",
+      "purpose": "Implement the internal query-local G8B intersection semantic contract (LocusIntersectionCapability2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionContinuation2D.java",
+      "change": "added",
+      "purpose": "Implement the internal query-local G8B intersection semantic contract (LocusIntersectionContinuation2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionInstrumentation2D.java",
+      "change": "added",
+      "purpose": "Implement the internal query-local G8B intersection semantic contract (LocusIntersectionInstrumentation2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionInstrumentationSnapshot2D.java",
+      "change": "added",
+      "purpose": "Implement the internal query-local G8B intersection semantic contract (LocusIntersectionInstrumentationSnapshot2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionPolicy2D.java",
+      "change": "added",
+      "purpose": "Implement the internal query-local G8B intersection semantic contract (LocusIntersectionPolicy2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionQuery2D.java",
+      "change": "added",
+      "purpose": "Implement the internal query-local G8B intersection semantic contract (LocusIntersectionQuery2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionResult2D.java",
+      "change": "added",
+      "purpose": "Implement the internal query-local G8B intersection semantic contract (LocusIntersectionResult2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionSolution2D.java",
+      "change": "added",
+      "purpose": "Implement the internal query-local G8B intersection semantic contract (LocusIntersectionSolution2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionSolver2D.java",
+      "change": "added",
+      "purpose": "Implement the internal query-local G8B intersection semantic contract (LocusIntersectionSolver2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionTarget2D.java",
+      "change": "added",
+      "purpose": "Implement the internal query-local G8B intersection semantic contract (LocusIntersectionTarget2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionTargets2D.java",
+      "change": "added",
+      "purpose": "Implement the internal query-local G8B intersection semantic contract (LocusIntersectionTargets2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionWorkBudget2D.java",
+      "change": "added",
+      "purpose": "Implement the internal query-local G8B intersection semantic contract (LocusIntersectionWorkBudget2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionWorkLimitException.java",
+      "change": "added",
+      "purpose": "Implement the internal query-local G8B intersection semantic contract (LocusIntersectionWorkLimitException) without public, render, metric-index, persistence, 3D, or G9 authority.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/TargetContactEvidence2D.java",
+      "change": "added",
+      "purpose": "Implement the internal query-local G8B intersection semantic contract (TargetContactEvidence2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/TargetMembership2D.java",
+      "change": "added",
+      "purpose": "Implement the internal query-local G8B intersection semantic contract (TargetMembership2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/TargetResidual2D.java",
+      "change": "added",
+      "purpose": "Implement the internal query-local G8B intersection semantic contract (TargetResidual2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusIntersectionV2.java",
+      "change": "added",
+      "purpose": "Publish one coherent immutable G8B rich intersection snapshot through normal Construction DAG dependencies and bounded semantic continuation.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusIntersectionPointV2.java",
+      "change": "added",
+      "purpose": "Provide the required internal derived point consumer selected only by a current semantic root token, with no coordinate retargeting.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/geos/GeoLocusIntersectionResult.java",
+      "change": "added",
+      "purpose": "Represent the internal nonnumeric, non-drawable, nonpersistent rich G8B intersection authority in the normal kernel DAG.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8BIntersectionFixtures.java",
+      "change": "added",
+      "purpose": "Provide focused analytic/certified capability fixtures and semantic references that drive the productive G8B kernel without becoming productive authority.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8BIntersectionKernelTest.java",
+      "change": "added",
+      "purpose": "Verify productive G8B target adapters, rich result axes, completeness, tangency, topology, normalization, budgets, and forbidden-authority counters.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8BIntersectionLifecycleTest.java",
+      "change": "added",
+      "purpose": "Verify G8B normal-DAG publication, token-selected point propagation, identity continuation, ambiguity, recovery, copy/XML/removal, and bounded consumers.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8BIntersectionTopologyAndScientificTest.java",
+      "change": "added",
+      "purpose": "Verify productive G8B topology, representation independence, mixed overlap, reduced CeDG scientific pilots, and repeated query-local work.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
     }
   ]
 }

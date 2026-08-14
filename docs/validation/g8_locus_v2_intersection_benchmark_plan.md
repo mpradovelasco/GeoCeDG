@@ -2,9 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Status | **G8A PASS — AUTHOR-APPROVED G8B FUNCTIONAL POLICY** |
+| Status | **G8B-R1/G8B FUNCTIONAL POLICY — AUTHOR APPROVED** |
 | G8A state | **PASS — AUTHOR APPROVED** |
-| G8B state | **AUTHORIZED / NOT STARTED** |
+| G8B state | **PASS — AUTHOR APPROVED** |
+| G8B-R1 state | **PASS — AUTHOR APPROVED** |
 | Primary authority | Semantic equality, deterministic work, bounded state, and invalidation |
 | Wall-clock | Informational until a reproducible environment budget is approved |
 | Validation matrix | [`g8_locus_v2_intersection_validation_matrix.md`](g8_locus_v2_intersection_validation_matrix.md) |
@@ -310,6 +311,14 @@ For compatible queries use `N = 1, 3, 10, 100` consumers, then repeat after:
 - removal of half/all consumers; and
 - owner capacity pressure if a shared strategy is characterized.
 
+G8B-R1 additionally repeats the consumer sweep with parent completeness
+`NOT_ESTABLISHED` and an individually verified, locally isolated root. Creating
+or updating a token consumer must not trigger semantic evaluation, target
+evaluation, refinement, exhaustive rescanning, or a new retained owner. Adding
+a newly discovered root and reordering the finite solution list must preserve
+the counters and existing token bindings unless identity evidence becomes
+genuinely ambiguous.
+
 ### Nested evaluation
 
 Measure one-, two-, and three-level evaluator nesting and a selected scientific
@@ -382,5 +391,15 @@ provisional exact work ceilings and query-local/no-owner state from this
 evidence. The measured JSON remains unchanged; the author-approved G8B policy
 is a derived contract, not a rewrite of measurements.
 
-G8A is `PASS — AUTHOR APPROVED`. G8B is authorized but not started and begins
-only through separate execution of its canonical prompt.
+G8A is `PASS — AUTHOR APPROVED`. G8B executed the versioned policy with 100
+repeated queries and 100 derived consumers, zero retained index entries, at
+most two retained topology epochs, deterministic counters, and zero forbidden
+authority reads. The author approved this bounded query-local policy; no shared
+owner/index was introduced.
+
+G8B-R1 re-executed the 100-consumer path with a `NOT_ESTABLISHED` finite parent
+and an admissible local root. All 100 points were defined from the same semantic
+token, semantic-evaluation count did not change while consumers were created,
+retained index entries remained zero, topology epochs remained bounded by two,
+and forbidden-authority counters remained zero. R1 changes no numerical work
+budget or query-local ownership rule.

@@ -228,7 +228,9 @@ class G8AIntersectionKernelLifecycleCharacterizationTest extends BaseUnitTest {
 		assertEquals("", rich.getXML());
 		assertFalse(getApp().getXML().contains("g8aInternalResult"));
 		assertEquals(GeoClass.DEFAULT, rich.getGeoClassType());
-		assertEquals(GeoClass.LOCUS_METRIC_RESULT,
+		assertEquals(GeoClass.LOCUS_METRIC_RESULT.ordinal() + 1,
+				GeoClass.LOCUS_INTERSECTION_RESULT.ordinal());
+		assertEquals(GeoClass.LOCUS_INTERSECTION_RESULT,
 				GeoClass.values()[GeoClass.values().length - 1]);
 		fixture.algorithm.remove();
 		assertFalse(getConstruction().getAlgoList().contains(fixture.algorithm));

@@ -28,6 +28,9 @@ $EvidencePath = Join-Path $EvidenceRoot `
 $CloseoutEvidencePath = Join-Path $EvidenceRoot `
     "g8a-author-closeout-evidence.json"
 $EvidenceHashes = Join-Path $EvidenceRoot "g8a-evidence.sha256"
+$G8BEvidencePath = Join-Path $RepositoryRoot `
+    "geocedg\validation\locus-v2\g8b\g8b-intersection-kernel-evidence.json"
+$G8BVerifierPath = Join-Path $PSScriptRoot "verify-g8b-intersections.ps1"
 $ReferenceGenerator = Join-Path $EvidenceRoot `
     "generate_intersection_references.py"
 $TestSourceRoot = Join-Path $RepositoryRoot `
@@ -385,12 +388,13 @@ try {
 
     Assert-DocumentContains -RelativePath `
         "geocedg\specs\locus\locus-v2-intersections.md" -ExpectedText @(
-            "APPROVED AS NORMATIVE G8 INTERSECTION CONTRACT",
+            "NORMATIVE / AUTHOR-APPROVED R1 REFINEMENT APPLIED",
             "g8b-initial-normalized/v1",
             "token-selected point consumer")
     Assert-DocumentContains -RelativePath `
         "docs\adr\0008-locus-v2-intersection-result-and-continuation.md" `
-        -ExpectedText @("Status: **Accepted**", "universal merge/split genealogy")
+        -ExpectedText @("Status: **Accepted — R1 clarification applied**",
+            "universal merge/split genealogy")
     Assert-DocumentContains -RelativePath `
         ".github\prompts\tasks\g8b-locus-v2-intersection-kernel.prompt.md" `
         -ExpectedText @("AUTHORIZED / NOT STARTED", "token-selected point consumer",
@@ -418,16 +422,68 @@ try {
         $EntrySha -- ":(glob)source/**/src/main/**")
     $productiveStatus = @(& git -C $RepositoryRoot status --porcelain=v1 `
         --untracked-files=all -- ":(glob)source/**/src/main/**")
-    Assert-Condition -Condition ($productiveChanges.Count -eq 0 `
-            -and $productiveStatus.Count -eq 0) `
-        -Message ("G8A changed productive source:`n" +
-            (($productiveChanges + $productiveStatus) -join "`n"))
+    $g8bFollowOnPresent = (Test-Path -LiteralPath $G8BEvidencePath `
+            -PathType Leaf) -and (Test-Path -LiteralPath $G8BVerifierPath `
+            -PathType Leaf)
+    $g8bAllowedCompatibilityTests = @()
+    if (-not $g8bFollowOnPresent) {
+        Assert-Condition -Condition ($productiveChanges.Count -eq 0 `
+                -and $productiveStatus.Count -eq 0) `
+            -Message ("G8A changed productive source:`n" +
+                (($productiveChanges + $productiveStatus) -join "`n"))
+    } else {
+        $g8bEvidence = Get-Content -LiteralPath $G8BEvidencePath -Raw |
+            ConvertFrom-Json -Depth 100
+        Assert-Condition -Condition ($g8bEvidence.status -eq `
+                "PASS_AUTHOR_APPROVED") `
+            -Message "The detected G8B follow-on evidence has an invalid status."
+        $g8bAllowedProductive = @(
+            "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusIntersectionV2.java",
+            "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusIntersectionPointV2.java",
+            "source/shared/common/src/main/java/org/geocedg/common/kernel/geos/GeoLocusIntersectionResult.java",
+            "source/shared/common/src/main/java/org/geogebra/common/plugin/GeoClass.java"
+        )
+        $g8bAllowedCompatibilityTests = @(
+            "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusV2KernelIntegrationTest.java",
+            "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusMetricProductiveLifecycleTest.java",
+            "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8AIntersectionKernelLifecycleCharacterizationTest.java",
+            "source/shared/common-jre/src/test/java/org/geogebra/common/euclidian/DrawablesTest.java"
+        )
+        $compatibilityDifference = @(Compare-Object `
+                -ReferenceObject @($g8bAllowedCompatibilityTests | Sort-Object) `
+                -DifferenceObject @($g8bEvidence.productiveSource.compatibilityTestFilesModified |
+                    Sort-Object))
+        Assert-Condition -Condition ($compatibilityDifference.Count -eq 0) `
+            -Message "G8B compatibility-test evidence does not match the exact delegated allowlist."
+        $unexpectedProductive = @(($productiveChanges +
+                ($productiveStatus | ForEach-Object {
+                    ($_ -replace '^..\s+', '').Replace("\", "/")
+                })) | Sort-Object -Unique | Where-Object {
+                $_ -notmatch '^source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/[^/]+\.java$' `
+                    -and $_ -notin $g8bAllowedProductive
+            })
+        Assert-Condition -Condition ($unexpectedProductive.Count -eq 0) `
+            -Message ("Post-G8A productive source escaped the G8B boundary:`n" +
+                ($unexpectedProductive -join "`n"))
+        Write-Host "G8A historical no-product boundary delegated to the versioned G8B verifier."
+    }
 
     $sourceStatus = @(& git -C $RepositoryRoot status --porcelain=v1 `
         --untracked-files=all -- source)
     $unexpectedSource = @($sourceStatus | Where-Object {
             $path = ($_ -replace '^..\s+', '').Replace("\", "/")
-            $path -notmatch '^source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8A(Intersection.*|TargetAdapters)\.java$'
+            $isG8A = $path -match `
+                '^source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8A(Intersection.*|TargetAdapters)\.java$'
+            $isG8BTest = $g8bFollowOnPresent -and $path -match `
+                '^source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8BIntersection.*\.java$'
+            $isG8BCompatibility = $g8bFollowOnPresent -and
+                $path -in $g8bAllowedCompatibilityTests
+            $isG8BProductive = $g8bFollowOnPresent -and
+                ($path -match `
+                    '^source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/[^/]+\.java$' `
+                -or $path -in $g8bAllowedProductive)
+            -not ($isG8A -or $isG8BTest -or $isG8BCompatibility -or
+                $isG8BProductive)
         })
     Assert-Condition -Condition ($unexpectedSource.Count -eq 0) `
         -Message ("G8A source changes escaped the test-private boundary:`n" +

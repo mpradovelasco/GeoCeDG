@@ -1,0 +1,386 @@
+{
+  "schemaVersion": 2,
+  "id": "cedg.validation.g8b.intersection-kernel",
+  "phase": "G8B",
+  "status": "PASS_AUTHOR_APPROVED",
+  "executionDate": "2026-08-14",
+  "provenance": {
+    "entrySha": "6529a4ebfafa5dc9dca3cc1b4c3e7a89ebcba375",
+    "entryBranch": "feature/g8b-locus-v2-intersections-kernel",
+    "originMainAtEntry": "6529a4ebfafa5dc9dca3cc1b4c3e7a89ebcba375",
+    "upstreamBaseline": "9b93256b7df401ff056c37b502d82df4d72b1522",
+    "canonicalPrompt": ".github/prompts/tasks/g8b-locus-v2-intersection-kernel.prompt.md",
+    "canonicalPromptCanonicalTextSha256": "7ea46214e3a8f88fe5b79e41417495386d01728d3c0a8f015d87c1df75ea51ac",
+    "normativeSpecification": "geocedg/specs/locus/locus-v2-intersections.md",
+    "acceptedAdr": "docs/adr/0008-locus-v2-intersection-result-and-continuation.md",
+    "g8aMeasuredEvidenceCanonicalTextSha256": "feb6f024c4ef4a96b6cfa1be15bd3a37009af0106a55818f72d1c614a9f04cf4",
+    "g8aCloseoutEvidenceCanonicalTextSha256": "b4a72682652c0f1a5defe7187dcec39ee423619846d07aa4e1d2e2dac3b16b32"
+  },
+  "productiveSource": {
+    "intersectionPackageJavaFiles": 33,
+    "normalDagAlgorithms": 2,
+    "richGeoElements": 1,
+    "focusedG8bTestFiles": 4,
+    "compatibilityTestFilesModified": [
+      "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusV2KernelIntegrationTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusMetricProductiveLifecycleTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8AIntersectionKernelLifecycleCharacterizationTest.java",
+      "source/shared/common-jre/src/test/java/org/geogebra/common/euclidian/DrawablesTest.java"
+    ],
+    "upstreamOwnedModifiedFiles": [
+      "source/shared/common/src/main/java/org/geogebra/common/plugin/GeoClass.java"
+    ],
+    "appendOnlyGeoClass": "LOCUS_INTERSECTION_RESULT",
+    "appendOnlyGeoClassPriority": 132,
+    "minimumTargetFamilies": [
+      "LINE",
+      "SEGMENT",
+      "RAY",
+      "CIRCLE"
+    ],
+    "levelCFamiliesImplemented": [],
+    "queryLocal": true,
+    "sharedIntersectionOwner": false,
+    "intersectionIndex": false,
+    "g7MetricStateReuse": false
+  },
+  "resultAuthority": {
+    "immutableRichIntersectionSet": true,
+    "normalDagNonnumericRichGeo": true,
+    "ordinaryPointIsAuthority": false,
+    "internalTokenSelectedPointConsumer": true,
+    "pointRequiresCompleteFiniteCurrentSuccess": false,
+    "pointAdmissibilityIsSolutionLocal": true,
+    "parentCompletenessRemainsVisible": true,
+    "localIsolationRequired": true,
+    "pointRetargetsByCoordinate": false,
+    "pointRecoversOnlyThroughSameEstablishedToken": true
+  },
+  "completeness": {
+    "values": [
+      "COMPLETE",
+      "INCOMPLETE",
+      "NOT_ESTABLISHED"
+    ],
+    "orthogonalToRootVerificationAndOtherAxes": true,
+    "completeEmptyValidated": true,
+    "verifiedIncompleteFiniteValidated": true,
+    "verifiedNotEstablishedFiniteValidated": true,
+    "evaluatorFallbackCanClaimComplete": false,
+    "completeCoverageRequiresAuthoritativeCapability": true
+  },
+  "targetResiduals": {
+    "lineSegmentRayQuantity": "SIGNED_PERPENDICULAR_MODEL_COORDINATE_DISTANCE",
+    "circleQuantity": "SIGNED_RADIAL_MODEL_COORDINATE_DISTANCE",
+    "equationScalingInvariant": true,
+    "typedQuantityAndUnitsRequired": true,
+    "independentMembershipForLimitedTargets": true,
+    "normalizedContactUsesSourceSpeedWhenEstablished": true,
+    "rawDerivativeComparisonAllowed": false
+  },
+  "tolerancePolicy": {
+    "policyId": "g8b-initial-normalized/v1",
+    "provenanceId": "g8a-measured-candidate/v1",
+    "rootParameterTolerance": 1e-12,
+    "absoluteResidualTolerance": 2e-12,
+    "relativeResidualTolerance": 2e-12,
+    "tangencyThreshold": 1e-10,
+    "deduplicationParameterTolerance": 4e-12,
+    "continuationParameterTolerance": 1e-8,
+    "coordinateVerificationTolerance": 4e-12,
+    "parameterQuantitiesProviderScoped": true,
+    "coordinateClosenessEstablishesIdentity": false
+  },
+  "workBudget": {
+    "maximumSemanticEvaluations": 32768,
+    "maximumSemanticDerivativeEvaluations": 16384,
+    "maximumTargetEvaluations": 32768,
+    "maximumCandidateIntervals": 8192,
+    "maximumIsolationSubdivisions": 8192,
+    "maximumIsolationDepth": 40,
+    "maximumRefinementIterationsPerCandidate": 80,
+    "maximumResidualVerifications": 1024,
+    "maximumCandidateCount": 512,
+    "maximumContinuationComparisons": 4096,
+    "maximumPublishedFiniteSolutions": 256,
+    "maximumRetainedIntersectionIndexEntries": 0,
+    "maximumRetainedTopologyEpochs": 2,
+    "wallClockGate": false
+  },
+  "identity": {
+    "durableFields": [
+      "sourcePairIdentity",
+      "opaqueRootToken",
+      "constructiveIntersectionLineage",
+      "establishedBranchLineage",
+      "topologyContext",
+      "explicitEstablishedContinuationRelation"
+    ],
+    "revisionScopedFields": [
+      "semanticParameter",
+      "liftedPeriodicParameter",
+      "isolatingInterval",
+      "localIsolationStatus",
+      "locusSemanticRevision",
+      "targetUpdateStamp",
+      "residualEvidence",
+      "solverMethod",
+      "numericGuarantee"
+    ],
+    "universalMergeSplitGenealogy": false,
+    "candidateParentEvidenceSupported": true,
+    "ambiguousContinuationExplicit": true,
+    "coordinateNearestNeighbourUsed": false,
+    "parameterOrIntervalIsFundamentalIdentity": false
+  },
+  "tests": {
+    "command": ".\\gradlew.bat :shared:common-jre:test --tests org.geocedg.common.locus.G8BIntersection* :shared:common:checkstyleMain :shared:common-jre:checkstyleTest --rerun-tasks --no-daemon --console=plain",
+    "suites": {
+      "G8BIntersectionKernelTest": {
+        "tests": 25,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "G8BIntersectionLifecycleTest": {
+        "tests": 15,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "G8BIntersectionTopologyAndScientificTest": {
+        "tests": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    "total": {
+      "tests": 49,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "checkstyleMainViolations": 0,
+    "checkstyleTestViolations": 0
+  },
+  "functionalGates": {
+    "completeEmpty": true,
+    "verifiedIncompleteFinite": true,
+    "verifiedIncompleteFinitePointAdmissible": true,
+    "verifiedNotEstablishedFinitePointAdmissible": true,
+    "notEstablishedCompletenessPreservedByPointConsumer": true,
+    "localizationOnlyCandidatePointInadmissible": true,
+    "newRootAndOrderingDoNotRetarget": true,
+    "equalCoordinateDistinctPreimagesKeepDistinctTokens": true,
+    "evaluatorOnlyEvenCandidateWithoutFalseCompleteness": true,
+    "typedOverlapAndInfinite": true,
+    "mixedOverlapAndIsolatedFiniteEvidence": true,
+    "lineSegmentRayCircle": true,
+    "equationScalingInvariant": true,
+    "parameterScaleAndReversalIdentity": true,
+    "periodicSeamEvidenceSeparatedFromIdentity": true,
+    "mergeSplitAmbiguityWithoutUniversalGenealogy": true,
+    "atomicFailureAndSameTokenRecovery": true,
+    "normalDagDownstreamPropagation": true,
+    "consumers100WithoutDuplicateSolve": true,
+    "repeatedQueries100Bounded": true,
+    "lsimConstructivePreimages": 4,
+    "lsimDistinctCoordinates": 2,
+    "focalTopologyTrace": [
+      2,
+      1,
+      0
+    ],
+    "renderCacheReads": 0,
+    "renderVertexReads": 0,
+    "legacySampleReads": 0,
+    "viewportReads": 0,
+    "pixelToleranceReads": 0,
+    "metricIndexReads": 0,
+    "wholeLocusRegenerations": 0,
+    "retainedIntersectionIndexEntries": 0
+  },
+  "g8bR1": {
+    "status": "PASS_AUTHOR_APPROVED",
+    "authorDecision": "OPTION_B",
+    "contract": "INDIVIDUAL_POINT_ADMISSIBILITY_ORTHOGONAL_TO_GLOBAL_COMPLETENESS",
+    "admissibilityPredicate": {
+      "parentComputation": "SUCCESS",
+      "parentGeometryKind": "FINITE",
+      "parentCurrentness": "CURRENT",
+      "parentSupportMustNotBe": "UNSUPPORTED",
+      "tokenMustBeUnique": true,
+      "independentSemanticResidualAndMembershipVerification": true,
+      "localIsolationStatus": "ESTABLISHED",
+      "admissibleIdentityStatuses": [
+        "NEW_TOPOLOGICAL_SOLUTION",
+        "CONTINUATION_ESTABLISHED"
+      ],
+      "explicitContinuationKeyRequired": true,
+      "sourcePairConstructiveTopologyBranchAndRevisionCoherenceRequired": true,
+      "globalCompletenessVeto": false,
+      "coordinateSearchPerformedByPointConsumer": false
+    },
+    "cases": [
+      {
+        "id": "R1-COMPLETE-FINITE",
+        "parentCompleteness": "COMPLETE",
+        "perSolutionVerification": "VERIFIED",
+        "perSolutionAdmissibility": "ADMISSIBLE",
+        "token": "SEMANTIC_TOKEN",
+        "branchComponentProvenance": "COHERENT",
+        "identityContinuationStatus": "ESTABLISHED_OR_NEW",
+        "residualEvidence": "VERIFIED_NORMALIZED_TARGET_RESIDUAL",
+        "downstreamPointDefined": true,
+        "inadmissibilityReason": null
+      },
+      {
+        "id": "R1-INCOMPLETE-FINITE",
+        "parentCompleteness": "INCOMPLETE",
+        "perSolutionVerification": "VERIFIED",
+        "perSolutionAdmissibility": "ADMISSIBLE",
+        "token": "SEMANTIC_TOKEN",
+        "branchComponentProvenance": "COHERENT",
+        "identityContinuationStatus": "ESTABLISHED_OR_NEW",
+        "residualEvidence": "VERIFIED_NORMALIZED_TARGET_RESIDUAL",
+        "downstreamPointDefined": true,
+        "inadmissibilityReason": null
+      },
+      {
+        "id": "R1-NOT-ESTABLISHED-TANGENT",
+        "parentCompleteness": "NOT_ESTABLISHED",
+        "perSolutionVerification": "VERIFIED_TANGENT",
+        "perSolutionAdmissibility": "ADMISSIBLE",
+        "token": "SEMANTIC_TOKEN",
+        "branchComponentProvenance": "COHERENT",
+        "identityContinuationStatus": "ESTABLISHED_OR_NEW",
+        "residualEvidence": "VERIFIED_NORMALIZED_TARGET_RESIDUAL",
+        "downstreamPointDefined": true,
+        "inadmissibilityReason": null
+      },
+      {
+        "id": "R1-LOCALIZATION-ONLY",
+        "parentCompleteness": "NOT_ESTABLISHED",
+        "perSolutionVerification": "RESIDUAL_VERIFIED_LOCAL_ISOLATION_NOT_ESTABLISHED",
+        "perSolutionAdmissibility": "INADMISSIBLE",
+        "token": "SEMANTIC_TOKEN",
+        "branchComponentProvenance": "COHERENT",
+        "identityContinuationStatus": "NOT_LOCALLY_ESTABLISHED",
+        "residualEvidence": "VERIFIED_BUT_INSUFFICIENT_ALONE",
+        "downstreamPointDefined": false,
+        "inadmissibilityReason": "LOCAL_ISOLATION_NOT_ESTABLISHED"
+      },
+      {
+        "id": "R1-EMPTY-NOT-ESTABLISHED",
+        "parentCompleteness": "NOT_ESTABLISHED",
+        "perSolutionVerification": "NO_VERIFIED_FINITE_SOLUTION",
+        "perSolutionAdmissibility": "NO_SELECTABLE_SOLUTION",
+        "token": null,
+        "branchComponentProvenance": null,
+        "identityContinuationStatus": null,
+        "residualEvidence": null,
+        "downstreamPointDefined": false,
+        "inadmissibilityReason": "NO_VERIFIED_FINITE_SOLUTION"
+      },
+      {
+        "id": "R1-STALE-AMBIGUOUS-FAILURE-OVERLAP",
+        "parentCompleteness": "ANY",
+        "perSolutionVerification": "NOT_COHERENTLY_CURRENT_OR_ISOLATED_FINITE",
+        "perSolutionAdmissibility": "INADMISSIBLE",
+        "token": "SELECTED_TOKEN_OR_NONE",
+        "branchComponentProvenance": "STALE_OR_AMBIGUOUS_OR_NONFINITE_KIND",
+        "identityContinuationStatus": "AMBIGUOUS_OR_DISCONTINUOUS_OR_ABSENT",
+        "residualEvidence": "FAILED_OR_NOT_APPLICABLE",
+        "downstreamPointDefined": false,
+        "inadmissibilityReason": "STALE_AMBIGUOUS_FAILURE_OR_OVERLAP"
+      }
+    ],
+    "identityScenarios": {
+      "newlyDiscoveredRootRetargetsExistingToken": false,
+      "resultReorderingRetargetsExistingToken": false,
+      "equalCoordinatesMergeDistinctTokens": false,
+      "mergeSplitUniversalGenealogy": false,
+      "ambiguousMergeSplitPointDefined": false,
+      "sameTokenRecoveryRequiresEstablishedContinuation": true
+    },
+    "performance": {
+      "consumerSemanticEvaluationIncrease": 0,
+      "consumerTargetEvaluationIncrease": 0,
+      "consumerRefinementIncrease": 0,
+      "consumerRetainedIndexEntries": 0,
+      "maximumRetainedTopologyEpochs": 2,
+      "consumerCount": 100,
+      "forbiddenAuthorityReads": 0
+    }
+  },
+  "scopeAudit": {
+    "publicCommands": 0,
+    "dispatcherOverloads": 0,
+    "publicPathAdditions": 0,
+    "xmlOrPersistenceRegistrations": 0,
+    "legacyGeoLocusChanges": 0,
+    "classicIntersectionChanges": 0,
+    "frontendChanges": 0,
+    "exportChanges": 0,
+    "threeDimensionalChanges": 0,
+    "pythonDslChanges": 0,
+    "g9Changes": 0,
+    "fullConicSupport": false,
+    "functionSupport": false,
+    "implicitCurveSupport": false,
+    "locusLocusSupport": false
+  },
+  "verification": {
+    "focusedG8b": {
+      "command": ".\\tools\\agent\\verify-g8b-intersections.ps1 -KeepBuildOutputs -LogDirectory $env:TEMP\\geocedg-g8b-closeout-final-focused",
+      "exitCode": 0,
+      "tests": 49,
+      "logDirectory": "%TEMP%\\geocedg-g8b-closeout-final-focused"
+    },
+    "locusV2Compatibility": {
+      "command": ".\\tools\\agent\\verify-locus-v2.ps1 -KeepBuildOutputs -LogDirectory $env:TEMP\\geocedg-g8b-closeout-final-locus-v2",
+      "exitCode": 0,
+      "sharedTests": 73,
+      "desktopTests": 3,
+      "logDirectory": "%TEMP%\\geocedg-g8b-closeout-final-locus-v2"
+    },
+    "g7bCompatibility": {
+      "command": ".\\tools\\agent\\verify-g7b-metrics.ps1 -KeepBuildOutputs -LogDirectory $env:TEMP\\geocedg-g8b-closeout-final-g7b",
+      "exitCode": 0,
+      "productiveTests": 62,
+      "laboratoryTests": 3,
+      "logDirectory": "%TEMP%\\geocedg-g8b-closeout-final-g7b"
+    },
+    "g8aFinalEvidence": {
+      "command": ".\\tools\\agent\\verify-g8a-intersections.ps1 -SkipBuild -KeepBuildOutputs -RequireFinalEvidence -LogDirectory $env:TEMP\\geocedg-g8b-closeout-final-g8a",
+      "exitCode": 0,
+      "logDirectory": "%TEMP%\\geocedg-g8b-closeout-final-g8a"
+    },
+    "composed": {
+      "command": ".\\tools\\agent\\verify.ps1 -KeepBuildOutputs -LogDirectory $env:TEMP\\geocedg-g8b-closeout-final-composed",
+      "skipBuild": false,
+      "exitCode": 0,
+      "logDirectory": "%TEMP%\\geocedg-g8b-closeout-final-composed"
+    }
+  },
+  "authorReview": {
+    "required": false,
+    "approvalDate": "2026-08-14",
+    "implementationPassClaimed": true,
+    "primaryReviewItem": "G8B-R1 implements Option B: an individually verified, locally isolated, current and unambiguous finite solution is point-admissible independently of parent COMPLETE/INCOMPLETE/NOT_ESTABLISHED completeness; localization-only candidates remain inadmissible and parent completeness remains visible.",
+    "disposition": "APPROVED_BOUNDED_INTERNAL_MINIMUM"
+  },
+  "phaseDisposition": {
+    "g7": "PASS",
+    "g8Planning": "PASS_AUTHOR_APPROVED",
+    "g8a": "PASS_AUTHOR_APPROVED",
+    "g8bR1": "PASS_AUTHOR_APPROVED",
+    "g8b": "PASS_AUTHOR_APPROVED",
+    "g8ProductiveImplementation": "INTERNAL_MINIMUM_KERNEL_AUTHOR_APPROVED",
+    "g8cDesign": "AUTHORIZED_NOT_STARTED",
+    "g8cImplementation": "NOT_AUTHORIZED_NOT_STARTED",
+    "g8": "IN_PROGRESS",
+    "g9": "NOT_STARTED"
+  }
+}

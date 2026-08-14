@@ -2,21 +2,22 @@
 
 | Field | Value |
 |---|---|
-| Status | **G8A PASS — AUTHOR-APPROVED G8B VALIDATION MATRIX** |
+| Status | **G8B-R1/G8B PRODUCTIVE MATRIX — AUTHOR APPROVED** |
 | Characterization phase | G8A **PASS — AUTHOR APPROVED** |
-| Productive phase | G8B **AUTHORIZED / NOT STARTED** |
+| Productive phase | G8B **PASS — AUTHOR APPROVED** |
 | Normative contract | [`locus-v2-intersections.md`](../../geocedg/specs/locus/locus-v2-intersections.md) |
 | Functional counters | [`g8_locus_v2_intersection_benchmark_plan.md`](g8_locus_v2_intersection_benchmark_plan.md) |
-| Executed traceability | [`g8a_locus_v2_intersection_traceability_matrix.md`](g8a_locus_v2_intersection_traceability_matrix.md) |
+| Executed traceability | G8A [`g8a_locus_v2_intersection_traceability_matrix.md`](g8a_locus_v2_intersection_traceability_matrix.md); G8B [`g8b_locus_v2_intersection_traceability_matrix.md`](g8b_locus_v2_intersection_traceability_matrix.md) |
 | Date | 2026-08-14 |
 
-This matrix defines the evidence collected by the separately executed G8A and the
-minimum gates that G8B must satisfy. `A`
+This matrix defines the evidence collected by G8A and the minimum gates
+executed by the internal G8B candidate. `A`
 means characterization. `B-core` is approved minimum productive coverage.
 `B-policy` means the productive kernel must return a truthful rich
 unsupported/unresolved/overlap result, even if it does not compute finite
 points. Executed case-to-probe status is recorded in the linked G8A
-traceability matrix; productive B-core/B-policy rows remain future gates.
+traceability matrices. Productive B-core/B-policy rows have G8B execution
+evidence and author approval.
 
 ## 1. Assertions common to every case
 
@@ -32,6 +33,8 @@ Every executed case must inspect the full rich result and assert:
   overlap, invalid input, and computation failure;
 - every finite candidate is independently re-evaluated and verified against
   semantic Locus V2 and target authority;
+- point admissibility requires established solution-local isolation and
+  unambiguous identity/continuation, independently of global completeness;
 - distinct constructive preimages are never deduplicated by coordinate;
 - viewport, zoom, DPI, render vertices, legacy `myPointList`, and graphical
   proximity make no semantic difference;
@@ -66,7 +69,10 @@ work counters.
 | K-INCOMPLETE | A+B-policy | verified roots plus known unresolved/unprocessed region or candidate | `FINITE` + `INCOMPLETE`; returned roots stay valid but the set is not exhaustive |
 | K-NOT-EST | A+B-policy | evaluator-only/unbounded capability cannot determine exhaustiveness | `NOT_ESTABLISHED`; neither convergence nor a stable root count upgrades it |
 | K-TANGENCY | A+B-policy | even/multiple-root search without exhaustive contact isolation | verified roots and unresolved contacts reported separately; no false complete/empty result |
-| K-PROJECTION | A+B-core | required token-selected point consumer sees incomplete set | consumer is undefined; it never presents the subset as the full intersection or retargets |
+| K-PROJECTION | A+B-core+R1 | required token-selected point consumer sees an individually verified, locally isolated root in an incomplete/not-established finite set | consumer is defined for that token while parent completeness remains unchanged and visible; it never presents the subset as exhaustive or retargets |
+| K-PROJECTION-LOCAL | R1 | root has a small residual but no established local isolation or has ambiguous/stale identity | consumer is undefined even if the parent is finite |
+| K-PROJECTION-NEW | R1 | a later result adds a newly discovered root while existing token solutions continue | existing token-selected points retain their tokens independent of order and root count |
+| K-PROJECTION-FAIL | R1 | selected solution becomes absent, ambiguous, stale, or atomically failed and later returns | point becomes undefined without retargeting and recovers only under the established same-token continuation contract |
 
 ## 2. Level A — lines, segments, and rays
 
@@ -265,7 +271,9 @@ When separately executed, G8B can pass only if:
 7. Classic/legacy/persistence/3D/export non-regression passes; and
 8. the canonical repository verifier passes without weakening existing gates.
 
-The required internal token-selected point consumer must also pass
-defined/undefined/no-retarget/recovery and downstream DAG traces. G8A is
-`PASS — AUTHOR APPROVED`; G8B is authorized but not started, and G8 productive
-implementation remains `NOT STARTED`.
+The required internal token-selected point consumer also passes
+defined/undefined/no-retarget/recovery and downstream DAG traces for complete,
+incomplete, and not-established parent sets. G8A is `PASS — AUTHOR APPROVED`;
+G8B-R1 and G8B are `PASS — AUTHOR APPROVED`. The productive code remains an
+internal, non-public capability. G8C design is authorized and not started;
+G8C implementation and the global G8 closeout remain pending.

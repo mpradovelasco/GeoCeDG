@@ -4,17 +4,22 @@
 |---|---|
 | Status | **PASS — AUTHOR APPROVED** |
 | G8A state | **PASS — AUTHOR APPROVED** |
-| G8B state | **AUTHORIZED / NOT STARTED** |
-| Approved stages | G8A characterization and author decisions; G8B minimum internal kernel |
-| Specification state | **NORMATIVE — AUTHOR APPROVED** |
-| ADR state | ADR 0008 **Accepted** |
+| G8B-R1 state | **PASS — AUTHOR APPROVED** |
+| G8B state | **PASS — AUTHOR APPROVED** |
+| G8C design | **AUTHORIZED — NOT STARTED** |
+| G8C implementation | **NOT AUTHORIZED — NOT STARTED** |
+| Approved stages | G8A characterization; G8B minimum internal kernel including R1; G8C design only |
+| Specification state | **NORMATIVE / AUTHOR-APPROVED R1 REFINEMENT APPLIED** |
+| ADR state | ADR 0008 **Accepted — R1 clarification applied** |
 | Author-review date | 2026-08-14 |
 | Product maturity | Locus V2 remains experimental, internal, and disabled by default |
 
 The author approved this planning architecture, reviewed the completed G8A
 characterization, incorporated decisions D1–D17 into the normative contract,
-accepted ADR 0008 and authorized a separately invoked G8B. This closeout does
-not execute G8B or add productive/observable intersection behavior.
+accepted ADR 0008 and authorized a separately invoked G8B. The canonical G8B
+execution and its focused R1 refinement are now `PASS — AUTHOR APPROVED`.
+They add no observable intersection behavior. G8C design is authorized for a
+separate task; G8C implementation and G9 remain unauthorized/not started.
 
 ## 1. Authority and preflight record
 
@@ -119,7 +124,8 @@ It excludes:
 
 ## 4. Author-approved phase structure
 
-The author approves two mandatory stages. No G8C is predeclared.
+The author approves the completed G8A/G8B structure and authorizes G8C design
+without authorizing its implementation.
 
 ### G8A — intersection characterization and author decisions
 
@@ -156,7 +162,9 @@ and closed G8A.
 
 ### G8B — minimum internal productive 2D intersection kernel
 
-**State:** `AUTHORIZED / NOT STARTED`; execution remains a separate task.
+**State:** `PASS — AUTHOR APPROVED`.
+
+**Focused refinement:** G8B-R1 `PASS — AUTHOR APPROVED`.
 
 The authorized minimum is an internal, feature-gated kernel service over finite
 Locus V2 valid components and a closed Level-A target set. It publishes a rich,
@@ -164,6 +172,13 @@ revision-bound result through the normal DAG and includes one required internal
 derived point consumer selected by semantic root token. That point is never
 intersection authority. There is no public command, `Path`, or persistence
 surface.
+
+The author-approved G8B-R1 policy makes selected-solution admissibility
+orthogonal to global set completeness. A current verified, locally isolated,
+semantically identified and unambiguous solution may feed the internal point
+when the parent finite result is `COMPLETE`, `INCOMPLETE`, or
+`NOT_ESTABLISHED`. The parent completeness remains visible and is never
+strengthened by point definition.
 
 G8B entry conditions:
 
@@ -178,14 +193,24 @@ G8B entry conditions:
 G8B exits only after productive tests prove semantic/reference equality,
 truthful completeness, tangency support, dynamic identity, atomic invalidation,
 bounded state/work, zero forbidden-authority reads, and Classic non-regression.
+The implementation candidate has executed those gates and is documented in the
+[G8B kernel report](../validation/g8b_locus_v2_intersection_kernel_report.md)
+and [productive traceability matrix](../validation/g8b_locus_v2_intersection_traceability_matrix.md).
+Final author closeout converted that evidence into G8B `PASS — AUTHOR
+APPROVED` and preserved every internal/public boundary below.
 
-### Possible later stage
+### G8C — extended 2D incidence design
 
-Do not pre-authorize a G8C/G8R. Later evidence may recommend one if it shows that
-general conics, hard topology continuation, or performance hardening cannot be
-closed safely in the minimum kernel. Functions, general implicit curves, and
-locus–locus remain separately gated Level-C extensions even if the eventual
-roadmap keeps them under the G8 umbrella.
+**Design state:** `AUTHORIZED — NOT STARTED`.
+
+**Implementation state:** `NOT AUTHORIZED — NOT STARTED`.
+
+The separate design task must examine full conics, functional curves, general
+implicit curves and Locus V2 × Locus V2. It must determine whether productive
+work can be one phase or needs subdivision. In particular, Locus V2 × Locus V2
+solves `F(t) = Q(u)` over two semantic domains and introduces dual topology,
+overlap, completeness and identity questions. This closeout makes no
+architectural choice for that problem and adds no productive G8C source.
 
 ## 5. Author-approved staged coverage
 
@@ -241,6 +266,9 @@ Geometric existence and numerical confidence are separate axes. In particular:
 - `EMPTY` is legal only with `IntersectionCompleteness.COMPLETE` evidence;
 - verified roots with `INCOMPLETE` or `NOT_ESTABLISHED` completeness are not a
   complete finite intersection set;
+- such a root may nevertheless be point-admissible when its own current
+  verification, local isolation, provenance, and identity/continuation evidence
+  are established;
 - exhausted work or unresolved tangency is not `NO_INTERSECTION`;
 - overlap/infinitely many points is a query-level geometric result, never an
   arbitrary finite point list; and
@@ -481,11 +509,12 @@ This package comprises:
   [characterization report](../validation/g8a_locus_v2_intersection_characterization_report.md),
   [traceability matrix](../validation/g8a_locus_v2_intersection_traceability_matrix.md)
   and machine-readable evidence; and
-- the authorized but unexecuted canonical G8B prompt.
+- the executed canonical G8B prompt plus its internal kernel report,
+  productive traceability matrix and machine-readable evidence.
 
-The G8A execution added no observable feature. The G8B prompt is now authorized
-for separate execution but remains unexecuted. The user guide records
-development state and the absence of public G8 behavior.
+The G8A execution added no observable feature. G8B likewise exposes no public
+command, `Path`, persistence, migration, or UI behavior; its author-approved
+implementation remains internal. The user guide records that boundary.
 
 ```text
 G7 = PASS
@@ -496,18 +525,31 @@ PASS — AUTHOR APPROVED
 G8A =
 PASS — AUTHOR APPROVED
 
+G8B-R1 =
+PASS — AUTHOR APPROVED
+
 G8B =
+PASS — AUTHOR APPROVED
+
+G8 SPEC =
+NORMATIVE / AUTHOR-APPROVED R1 REFINEMENT APPLIED
+
+ADR 0008 =
+ACCEPTED — R1 CLARIFICATION APPLIED
+
+G8 PRODUCTIVE IMPLEMENTATION =
+INTERNAL MINIMUM KERNEL — AUTHOR APPROVED
+
+G8C DESIGN =
 AUTHORIZED
 NOT STARTED
 
-G8 SPEC =
-NORMATIVE / AUTHOR APPROVED
-
-ADR 0008 =
-ACCEPTED
-
-G8 PRODUCTIVE IMPLEMENTATION =
+G8C IMPLEMENTATION =
+NOT AUTHORIZED
 NOT STARTED
+
+G8 =
+IN PROGRESS
 
 G9 =
 NOT STARTED

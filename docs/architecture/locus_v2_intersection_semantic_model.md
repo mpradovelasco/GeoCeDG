@@ -2,13 +2,14 @@
 
 | Field | Value |
 |---|---|
-| Status | **G8A AUTHOR-APPROVED MODEL — NOT IMPLEMENTED** |
-| Phase | G8 planning `PASS`; G8A `PASS — AUTHOR APPROVED`; G8B `AUTHORIZED / NOT STARTED` |
+| Status | **G8B-R1 AND G8B PASS — AUTHOR APPROVED** |
+| Phase | G8 planning, G8A, G8B-R1 and G8B `PASS — AUTHOR APPROVED`; G8C design authorized and not started; G8 remains in progress |
 | Normative authority | `geocedg/specs/locus/locus-v2-intersections.md` |
 
 This document explains the architecture and value/identity details accepted
-after G8A. The linked normative G8 specification is authoritative and does not
-supersede the normative G6/G7 specifications.
+after G8A and their internal G8B implementation. The linked normative G8
+specification is authoritative and does not supersede the normative G6/G7
+specifications.
 
 ## Fundamental CeDG capability
 
@@ -41,7 +42,7 @@ rich set result
   completeness + geometry kind + solutions + diagnostics + work evidence
 
 required internal derived consumer
-  one token-selected ordinary GeoPoint from a current complete finite set
+  one token-selected ordinary GeoPoint from a current point-admissible finite solution
 ```
 
 The rich set result is the intersection authority. An ordinary point cannot
@@ -321,9 +322,19 @@ tokens have no current verified solution.
 
 G8B must provide one separate internal derived point consumer selected by an
 opaque semantic root token. It manages one ordinary `GeoPoint`, never root
-identity or solving. The point is current only when the rich input is a
-successful complete finite set and contains that token with established
-admissible continuation.
+identity or solving. Point admissibility is solution-local and is independent
+of whether the parent finite set has `COMPLETE`, `INCOMPLETE`, or
+`NOT_ESTABLISHED` completeness. The point is current only when the coherent
+current rich result contains that token as an independently verified finite
+solution with established local isolation, branch/component provenance, source
+revisions, and unambiguous identity/continuation. Result failure, unsupported
+state, overlap-only geometry, residual failure, stale evidence, merely
+broad-phase localization, or unresolved identity makes it inadmissible.
+
+Parent completeness remains visible provenance. Defining a point from an
+admissible solution in a `NOT_ESTABLISHED` or `INCOMPLETE` result does not imply
+that all roots were found. The point consumer neither searches coordinates nor
+strengthens the parent guarantee.
 
 If the selected root disappears, becomes stale, or has ambiguous continuation,
 the point becomes coherently undefined and does not retarget. It may recover
@@ -359,7 +370,7 @@ coordinate and slot identity. The accepted exact field split is:
 | opaque root token | locus and target revisions |
 | source-pair identity | branch snapshot and component key |
 | constructive intersection lineage | semantic and lifted periodic parameter |
-| established branch lineage | isolating interval |
+| established branch lineage | isolating interval and local-isolation status |
 | topology context | normalized residual and membership |
 | explicit continuation relation/status | solver method and numeric guarantee |
 
@@ -370,8 +381,11 @@ Unknown or many-valued maps are explicit identity ambiguity/not-established
 states.
 
 The rich result must retain the independent completeness axis and method
-evidence. The required internal point consumer is legal only for a current
-successful complete finite set and its selected current token.
+evidence. G8B-R1 establishes that global completeness and selected-solution
+admissibility are orthogonal. The required internal point consumer is legal for
+a selected current token whose own verified geometry, local isolation,
+provenance, and unambiguous identity/continuation are established, including in
+an `INCOMPLETE` or `NOT_ESTABLISHED` finite parent result.
 
 ## 13. Author-approved G8B contract
 
@@ -382,5 +396,19 @@ query-local state. The line/segment/ray/circle family is mandatory; full
 conics and Level C remain deferred. The normalized tolerance contract and
 provisional deterministic ceilings are defined by the normative specification.
 
-G8B is authorized but not started. No public command, `Path`, persistence,
-legacy/Classic, 3D or G9 behavior is implied.
+The author-approved G8B-R1 refinement separates local point admissibility from
+global set completeness. A solution needs explicit local-isolation evidence in
+addition to residual verification; evaluator-only localization that cannot
+establish local identity remains non-consumable even if its coordinate is
+plausible.
+
+G8B now implements this model through the immutable
+`LocusIntersectionResult2D`/`LocusIntersectionSolution2D` family,
+`GeoLocusIntersectionResult`, `AlgoLocusIntersectionV2`, and the required
+`AlgoLocusIntersectionPointV2`. The evaluator-only capability preserves
+`NOT_ESTABLISHED` completeness; only a stronger authoritative capability may
+establish complete coverage. The author approved this minimum internal model,
+including the R1 refinement, on 2026-08-14. G8C design may examine full conics,
+functions, general implicit curves and locus–locus intersections, but neither
+that design nor any G8C implementation begins here. No public command, `Path`,
+persistence, legacy/Classic, 3D or G9 behavior is implied.

@@ -477,8 +477,10 @@ class LocusV2KernelIntegrationTest extends BaseUnitTest {
 				GeoClass.LOCUS_V2.ordinal());
 		assertEquals(GeoClass.LOCUS_V2.ordinal() + 1,
 				GeoClass.LOCUS_METRIC_RESULT.ordinal());
+		assertEquals(GeoClass.LOCUS_METRIC_RESULT.ordinal() + 1,
+				GeoClass.LOCUS_INTERSECTION_RESULT.ordinal());
 		assertEquals(GeoClass.values().length - 1,
-				GeoClass.LOCUS_METRIC_RESULT.ordinal());
+				GeoClass.LOCUS_INTERSECTION_RESULT.ordinal());
 		assertFalse(locus.isGeoLocus());
 		assertFalse(locus.isGeoLocusable());
 		assertFalse(Path.class.isAssignableFrom(locus.getClass()));

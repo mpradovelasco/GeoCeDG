@@ -1,8 +1,8 @@
 # ADR 0008: Locus V2 intersection result and semantic root continuation
 
-- Status: **Accepted**
-- Author review disposition: **ACCEPTED AT G8A CLOSEOUT**
-- Roadmap state: G8 planning `PASS — AUTHOR APPROVED`; G8A `PASS — AUTHOR APPROVED`; G8B authorized/not started
+- Status: **Accepted — R1 clarification applied**
+- Author review disposition: **ACCEPTED AT G8A CLOSEOUT; AUTHOR-APPROVED G8B-R1 CLARIFICATION APPLIED**
+- Roadmap state: G8 planning/G8A/G8B-R1/G8B `PASS — AUTHOR APPROVED`; G8C design authorized/not started; G8 in progress
 - Decision phase: final G8A author closeout
 - Date: 2026-08-14
 
@@ -104,12 +104,55 @@ would couple unrelated semantics and risk stale topology.
 12. Keep public command/dispatcher, `Path`, XML/factory/persistence, legacy
    `GeoLocus`, Classic intersections, 3D/G9, and export out of this decision.
 
+### G8B-R1 clarification — point admissibility versus completeness
+
+The author clarified Decision 3 during focused G8B review. Set completeness and
+selected-solution admissibility answer different questions:
+
+- `COMPLETE`/`INCOMPLETE`/`NOT_ESTABLISHED` says whether all roots over the
+  supported query domain have been accounted for;
+- a selected finite solution is point-admissible only when it is independently
+  verified, current, locally isolated as a semantic preimage, bound coherently
+  to its branch/component and source revisions, selected by a unique opaque
+  token with explicit semantic continuation evidence, and free of identity
+  ambiguity; and
+- global completeness is retained as parent-result provenance but is not, by
+  itself, a point-admissibility veto.
+
+Thus a verified admissible root from an `INCOMPLETE` or `NOT_ESTABLISHED`
+finite result may drive the internal derived point. That point neither implies
+nor advertises exhaustive root coverage. Residual-only/localization-only
+candidates, stale or failed results, overlap-kind results and ambiguous or
+discontinuous identities remain inadmissible. Discovery of another root or a
+change in result ordering cannot retarget an existing token-selected point.
+
+This is a clarification of the already accepted rich-result and token-selected
+consumer architecture, not a replacement of its historical rationale. It adds
+no public command, `Path`, persistence, target family, shared state, 3D or G9
+surface.
+
+### Final G8B author closeout
+
+On 2026-08-14 the author approved the implemented R1 predicate and the complete
+minimum G8B kernel. The approval makes Option B and all strict negative cases
+above final for G8B. It preserves this ADR's architecture without changing its
+historical rationale. The implementation remains experimental/internal and
+limited to line, segment, ray and circle.
+
+The author separately authorizes only G8C design for full conics, functional
+curves, general implicit curves and Locus V2 × Locus V2. G8C implementation is
+not authorized, G8 remains in progress, and G9 has not started.
+
 ## Result invariants
 
 - `EMPTY + COMPLETE` is publishable only with established exhaustive evidence.
 - Found roots plus unresolved candidates are not a complete finite set.
 - Verified-root count, `COMPLETE`/`INCOMPLETE`/`NOT_ESTABLISHED`, and the
   completeness method/evidence are independently observable.
+- Global completeness and point admissibility are orthogonal; a point keeps a
+  dependency on the rich parent result and cannot strengthen its set claim.
+- Local semantic-root isolation is explicit revision evidence and is required
+  for point consumption; a small residual alone is insufficient.
 - Tangency is not inferred from sign changes alone.
 - Overlap/infinite sets are never converted into an arbitrary point sample.
 - A finite solution is not deduplicated solely because another solution has the
@@ -332,13 +375,18 @@ On 2026-08-14 the author approved D1–D17, including:
 - the internal/public/persistence/legacy/3D/G9 boundaries; and
 - an append-only dedicated `GeoClass` only if the rich Geo requires it.
 
-The normative specification records the exact semantic contract. G8B is
-authorized but not started and must be executed separately through its
-canonical prompt.
+The normative specification records the exact semantic contract. The G8B
+kernel and focused R1 refinement have been executed, remain internal, and are
+`PASS — AUTHOR APPROVED`.
 
 ```text
-ADR 0008 = ACCEPTED
-G8 SPEC = NORMATIVE / AUTHOR APPROVED
+ADR 0008 = ACCEPTED — R1 CLARIFICATION APPLIED
+G8 SPEC = NORMATIVE / AUTHOR-APPROVED R1 REFINEMENT APPLIED
 G8A = PASS — AUTHOR APPROVED
-G8B = AUTHORIZED / NOT STARTED
+G8B-R1 = PASS — AUTHOR APPROVED
+G8B = PASS — AUTHOR APPROVED
+G8C DESIGN = AUTHORIZED — NOT STARTED
+G8C IMPLEMENTATION = NOT AUTHORIZED — NOT STARTED
+G8 = IN PROGRESS
+G9 = NOT STARTED
 ```

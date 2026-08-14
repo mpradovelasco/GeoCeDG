@@ -205,7 +205,11 @@ public enum GeoClass {
 	LOCUS_V2("LocusV2", "locusv2", 130, false),
 
 	/** Internal rich GeoCeDG Locus V2 metric result; no XML contract. */
-	LOCUS_METRIC_RESULT("LocusMetricResult", "locusmetricresult", 131, false);
+	LOCUS_METRIC_RESULT("LocusMetricResult", "locusmetricresult", 131, false),
+
+	/** Internal rich Locus V2 intersection result; no XML contract. */
+	LOCUS_INTERSECTION_RESULT("LocusIntersectionResult",
+			"locusintersectionresult", 132, false);
 
 	/**
 	 * name MUST be in ggbtrans/properties

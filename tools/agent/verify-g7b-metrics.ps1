@@ -27,6 +27,9 @@ $DesktopTestResultRoot = Join-Path $RepositoryRoot `
 $EvidenceRoot = Join-Path $RepositoryRoot "geocedg\validation\locus-v2\g7b"
 $EvidencePath = Join-Path $EvidenceRoot "g7b-metric-kernel-evidence.json"
 $EvidenceHashes = Join-Path $EvidenceRoot "g7b-evidence.sha256"
+$G8BEvidencePath = Join-Path $RepositoryRoot `
+    "geocedg\validation\locus-v2\g8b\g8b-intersection-kernel-evidence.json"
+$G8BVerifierPath = Join-Path $PSScriptRoot "verify-g8b-intersections.ps1"
 $MetricSourceRoot = Join-Path $RepositoryRoot `
     "source\shared\common\src\main\java\org\geocedg\common\kernel\locus\metric"
 $InitialStatus = $null
@@ -269,9 +272,34 @@ try {
     $closeoutProductivePaths = @($closeoutPaths | Where-Object {
             $_ -match '^source/.+/src/main/'
         })
-    Assert-Condition -Condition ($closeoutProductivePaths.Count -eq 0) `
-        -Message ("G7B closeout changed productive source: {0}" -f `
-            ($closeoutProductivePaths -join ", "))
+    $g8bFollowOnPresent = (Test-Path -LiteralPath $G8BEvidencePath `
+            -PathType Leaf) -and (Test-Path -LiteralPath $G8BVerifierPath `
+            -PathType Leaf)
+    if (-not $g8bFollowOnPresent) {
+        Assert-Condition -Condition ($closeoutProductivePaths.Count -eq 0) `
+            -Message ("G7B closeout changed productive source: {0}" -f `
+                ($closeoutProductivePaths -join ", "))
+    } else {
+        $g8bEvidence = Get-Content -LiteralPath $G8BEvidencePath -Raw |
+            ConvertFrom-Json -Depth 100
+        Assert-Condition -Condition ($g8bEvidence.status -eq `
+                "PASS_AUTHOR_APPROVED") `
+            -Message "The detected G8B follow-on evidence has an invalid status."
+        $g8bAllowedProductive = @(
+            "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusIntersectionV2.java",
+            "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusIntersectionPointV2.java",
+            "source/shared/common/src/main/java/org/geocedg/common/kernel/geos/GeoLocusIntersectionResult.java",
+            "source/shared/common/src/main/java/org/geogebra/common/plugin/GeoClass.java"
+        )
+        $unexpectedProductive = @($closeoutProductivePaths | Where-Object {
+                $_ -notmatch '^source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/[^/]+\.java$' `
+                    -and $_ -notin $g8bAllowedProductive
+            })
+        Assert-Condition -Condition ($unexpectedProductive.Count -eq 0) `
+            -Message ("Post-G7B productive source escaped the G8B boundary: {0}" `
+                -f ($unexpectedProductive -join ", "))
+        Write-Host "G7B closeout no-later-source boundary delegated to the versioned G8B verifier."
+    }
 
     $evidence = Get-Content -LiteralPath $EvidencePath -Raw |
         ConvertFrom-Json -Depth 100

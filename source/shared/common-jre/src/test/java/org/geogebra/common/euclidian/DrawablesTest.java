@@ -32,6 +32,7 @@ import java.util.Objects;
 import java.util.TreeSet;
 
 import org.geocedg.common.euclidian.draw.DrawLocusV2;
+import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
 import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.ExplicitNumericDomainProvider2D;
@@ -155,6 +156,10 @@ class DrawablesTest extends BaseUnitTest {
 				new GeoLocusMetricResult(construction, "drawable-v2");
 		assertNull(getApp().getEuclidianView1().newDrawable(metricResult));
 		types.add(GeoClass.LOCUS_METRIC_RESULT);
+		GeoLocusIntersectionResult intersectionResult =
+				new GeoLocusIntersectionResult(construction, "drawable-pair/v1");
+		assertNull(getApp().getEuclidianView1().newDrawable(intersectionResult));
+		types.add(GeoClass.LOCUS_INTERSECTION_RESULT);
 		for (String s : def) {
 			GeoElementND geo = add(s);
 			DrawableND draw = getApp().getEuclidianView1().newDrawable(geo);

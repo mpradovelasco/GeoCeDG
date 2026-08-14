@@ -2,15 +2,15 @@
 
 | Field | Value |
 |---|---|
-| Status | **G8A SCIENTIFIC PILOTS PASS — AUTHOR APPROVED** |
+| Status | **G8A/G8B-R1/G8B TRACEABILITY — AUTHOR APPROVED** |
 | Catalog authority | [`docs/references/cedg/catalog.yml`](../references/cedg/catalog.yml) |
 | Existing pilot authority | [`scientific-pilots.yml`](../../geocedg/validation/locus-v2/scientific-pilots.yml) |
 | Approved matrix | [`g8_locus_v2_intersection_validation_matrix.md`](g8_locus_v2_intersection_validation_matrix.md) |
-| Executed evidence | [`g8a_locus_v2_intersection_traceability_matrix.md`](g8a_locus_v2_intersection_traceability_matrix.md) |
+| Executed evidence | G8A [`g8a_locus_v2_intersection_traceability_matrix.md`](g8a_locus_v2_intersection_traceability_matrix.md); G8B [`g8b_locus_v2_intersection_traceability_matrix.md`](g8b_locus_v2_intersection_traceability_matrix.md) |
 | Date | 2026-08-14 |
 
 This matrix translates the versioned CeDG corpus into G8 requirements and the
-executed reduced G8A pilots. The papers, book, and legacy models establish
+executed reduced G8A/G8B pilots. The papers, book, and legacy models establish
 scientific relevance, constructive topology, and historical limitations. They
 do not define numeric G8 answers, solver tolerances, root-identity algorithms,
 or complete root sets. Current G6/G7 normative contracts, Accepted ADRs, and
@@ -37,6 +37,12 @@ cannot satisfy this requirement. The
 scientific sources justify the capability and regression scenarios; they do
 not prescribe a solver, isolating interval, continuation token, or merge/split
 algorithm. Family coverage remains incremental.
+
+G8B-R1 makes this chain available when one solution is rigorously established
+even though exhaustive global enumeration has not been proved. That scientific
+need does not weaken completeness reporting: the downstream point retains its
+parent rich-result provenance, and the construction never implies that an
+`INCOMPLETE` or `NOT_ESTABLISHED` set is exhaustive.
 
 ## 1. Sources inspected
 
@@ -78,6 +84,7 @@ make the local models build dependencies.
 | Downstream procedures must consume construction-linked results | Symmetry article links intersection leaves to flattening, PDF pp. 11–14 | Rich normal-DAG result and `D-FIRSTCLASS-01`; no detached report/GUI truth |
 | No silent sampled approximation | Book describes historical sampled perimeter and Locus limitations, PDF pp. 51–54; Springer chapter supplies sampled-tool context | Zero legacy/render authority assertions, verified residuals, explicit guarantee/completeness axes |
 | Distinguish verified roots from an exhaustive root set | Multileaf and topology-changing scientific cases make missing leaves scientifically material | `K-COMP-*`, tangency, unbounded and evaluator-only cases report verified-root count and independent completeness evidence |
+| Consume an established constructive root without falsely requiring or claiming exhaustive enumeration | Downstream LSIM/flattening procedures need identified intermediate points while multileaf coverage may remain unresolved | G8B-R1 `K-PROJECTION*` and `D-FIRSTCLASS-01`: local isolation/identity admits the selected token while parent completeness remains visible and unchanged |
 | Bound repeated and nested work | Legacy two-/three-level cone–cylinder models and Springer tool context | `D-NEST-01/02`, `S-NEST-01`; evaluator, isolation, refinement, and retained-state counters |
 | Dynamic edits must not leave stale geometry | Dynamic bite/penetration and flattened-locus examples in the Symmetry article | `I-STALE-01`, `I-FAIL-01`, `I-RECOVER-01`, normal DAG invalidation |
 
@@ -184,3 +191,11 @@ product scope. They do not authorize:
 Any conflict between a pilot's necessary semantics and the approved Level A
 2D architecture returns to the author decision gate rather than expanding G8B
 silently.
+
+The productive G8B regressions preserve four LSIM constructive preimages at
+two coordinates and the focal-inspired `2 -> 1 -> 0` circle topology trace.
+They exercise generic rich-result, identity and DAG semantics only; no
+pilot-specific solver, sampled historical oracle, 3D surface semantics or
+Level C support entered productive code. Those four extended families now form
+the authorized but not-started G8C design scope; the corpus does not prejudge
+their productive phase subdivision or solver architecture.

@@ -2,17 +2,17 @@
 
 | Field | Value |
 |---|---|
-| Status | **G8A AUTHOR-APPROVED G8B ARCHITECTURE — NOT IMPLEMENTED** |
-| Roadmap phase | G8 planning `PASS`; G8A `PASS — AUTHOR APPROVED`; G8B `AUTHORIZED / NOT STARTED` |
+| Status | **G8B-R1 AND G8B PASS — AUTHOR APPROVED** |
+| Roadmap phase | G8 planning, G8A, G8B-R1 and G8B `PASS — AUTHOR APPROVED`; G8C design authorized and not started; G8 remains in progress |
 | Semantic model | [`locus_v2_intersection_semantic_model.md`](locus_v2_intersection_semantic_model.md) |
 | Normative contract | [`locus-v2-intersections.md`](../../geocedg/specs/locus/locus-v2-intersections.md) |
 | Upstream audit | [`locus_v2_intersection_upstream_impact.md`](locus_v2_intersection_upstream_impact.md) |
 | Date | 2026-08-14 |
 
 This document turns the normative G8 semantics and Accepted ADR 0008 into the
-author-approved architecture for a separately executed G8B. It authorizes no
-work outside the internal source boundary and does not add public commands,
-ordinary `Path` behavior, persistence, or dispatcher integration.
+author-approved internal G8B minimum. The implementation remains inside the
+approved source boundary and adds no public commands, ordinary `Path`
+behavior, persistence, or dispatcher integration.
 
 ## Fundamental CeDG capability
 
@@ -89,7 +89,7 @@ Names are conceptual until G8B implements the approved candidate API.
 | Immutable result | `LocusIntersectionResult2D` | Publishes query-level state plus zero or more rich solution records atomically |
 | DAG owner | `AlgoLocusIntersectionV2` | Registers both geometric inputs and replaces the entire current-revision snapshot on recompute |
 | Rich Geo | `GeoLocusIntersectionResult` | Makes success, absence, unresolved, overlap, and stale outcomes inspectable in the normal DAG |
-| Required point consumer | dedicated derived algorithm | Projects one selected token from a current complete finite set to an ordinary point; never solves or retargets |
+| Required point consumer | dedicated derived algorithm | Projects one selected token whose current finite solution is independently verified, locally isolated, and identity-unambiguous; never solves, retargets, or strengthens parent completeness |
 
 The rich result is the authority. A point adapter cannot improve a guarantee,
 discard an unresolved case and call the remainder complete, or manufacture a
@@ -100,6 +100,13 @@ per-root residual validity, numeric guarantee, geometry kind, identity, and
 currentness. Its values are `COMPLETE`, `INCOMPLETE`, and
 `NOT_ESTABLISHED`. In particular, three verified roots do not prove that a
 fourth was excluded, and no point adapter may hide that distinction.
+
+G8B-R1 makes the converse distinction explicit: absence of a completeness proof
+does not invalidate an individually established root. A finite solution may be
+point-admissible in a parent result with `INCOMPLETE` or `NOT_ESTABLISHED`
+completeness when its own verification, local isolation, provenance,
+currentness, and identity/continuation evidence are sufficient. Completeness is
+retained as parent provenance and is never inferred from point definition.
 
 ## 3. Target adapters and minimum capability surface
 
@@ -306,8 +313,18 @@ coordinate-near heuristics. Those rules cannot define G8 identity.
 G8B includes a separate internal `AlgoLocusIntersectionPointV2`-style consumer
 for one selected semantic root token. It has one ordinary point output and no
 solver, identity or cache. It consumes the rich Geo through a normal DAG edge
-and is defined only for the selected token in a current successful complete
-finite set.
+and is defined only for the selected token in a coherent current successful
+finite result when that solution is independently verified, locally isolated,
+supported, revision-consistent, and has unambiguous permitted identity and
+continuation state. `COMPLETE`, `INCOMPLETE`, and `NOT_ESTABLISHED` parent
+completeness are all compatible with definition when those solution-local
+conditions hold.
+
+The consumer reads the parent completeness as provenance but cannot turn the
+ordinary point into a claim of exhaustive enumeration. It performs no
+independent coordinate search. A broad-phase candidate, residual-only match,
+overlap representative, stale solution, or unresolved local/identity state is
+inadmissible even if its coordinate is near the target.
 
 If that token disappears, is stale, or has ambiguous continuation, the point
 becomes coherently undefined. It never selects a replacement by coordinates,
@@ -338,29 +355,35 @@ G8A measured exact linear query-local work for 1/3/10/100 consumers and depth
 1–3, with zero retained intersection entries. That evidence supports the
 accepted no-owner/no-index minimum.
 
-## 10. Author-approved G8B productive package
+## 10. Implemented G8B productive package
 
-Prefer GeoCeDG-owned classes under
+The implementation uses GeoCeDG-owned classes under
 `org.geocedg.common.kernel.locus.intersection`, plus a focused algorithm and
 rich Geo under existing GeoCeDG packages. The exact candidate signatures and
 files are recorded in
 [`locus_v2_intersection_api.md`](../developer/locus_v2_intersection_api.md).
-Exact Java spelling may adapt to source conventions without changing the
-normative semantic roles.
+The rich result and point algorithms use normal DAG inputs and atomic
+publication. Query-local functional counters prove zero G7 metric-index,
+render, legacy-sample, viewport and pixel authority reads.
 
-The minimum productive edit should not touch `CmdIntersect`,
+The minimum productive edit does not touch `CmdIntersect`,
 `AlgoDispatcher`, `GeoFactory`, XML handlers, legacy `GeoLocus`, Classic
 intersection algorithms, 3D dispatch, rendering, export, or public `Path`
 interfaces. One append-only `GeoClass.LOCUS_INTERSECTION_RESULT`-equivalent
-entry and its exhaustive-type/drawing tests are authorized if required by the
-rich Geo; no unrelated type-system edit is authorized.
+entry was appended for the rich Geo; no unrelated type-system edit was needed.
 
-## 11. Execution gate
+## 11. Final author closeout and G8C boundary
 
 The rich-result/normal-DAG architecture, required token-selected point
 consumer, query-local state, core-four scope, normalized tolerance/work policy,
 narrow identity/topology contract and closed public boundaries are author
-approved. The specification is normative and ADR 0008 is Accepted. G8B is
-authorized but not started; productive editing begins only through a separate
-explicit execution of the canonical G8B prompt after its repository entry
-gates reproduce.
+approved. The specification is normative and ADR 0008 is Accepted. The
+canonical G8B prompt produced the bounded internal implementation and evidence
+package. The author closed G8B-R1 and G8B as `PASS — AUTHOR APPROVED` on
+2026-08-14.
+
+G8C design is authorized but not started. It must examine full conics,
+functional curves, general implicit curves and the fundamentally
+two-parameter locus–locus problem without prejudging whether one productive
+phase is sufficient. G8C implementation, global G8 closeout and G9 remain
+unauthorized/not started as applicable.

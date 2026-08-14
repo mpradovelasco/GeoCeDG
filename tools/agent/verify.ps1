@@ -28,6 +28,8 @@ $G7AMetricVerifier = Join-Path $PSScriptRoot "verify-g7a-metrics.ps1"
 $G7BMetricVerifier = Join-Path $PSScriptRoot "verify-g7b-metrics.ps1"
 $G8AIntersectionVerifier = Join-Path $PSScriptRoot `
     "verify-g8a-intersections.ps1"
+$G8BIntersectionVerifier = Join-Path $PSScriptRoot `
+    "verify-g8b-intersections.ps1"
 $BenchmarkRunner = Join-Path $RepositoryRoot "tools\benchmark\run.ps1"
 $InitialStatus = $null
 
@@ -155,6 +157,24 @@ try {
         & $G8AIntersectionVerifier @g8aIntersectionParameters
         Assert-LastScriptSuccess `
             -Description "G8A Locus V2 intersection characterization and closeout"
+
+        Write-Host "`n==> G8B native Locus V2 intersection kernel"
+        $g8bIntersectionParameters = @{
+            LogDirectory = Join-Path ([IO.Path]::GetFullPath($LogDirectory)) `
+                "g8b-intersections"
+        }
+        if ($SkipBuild) {
+            $g8bIntersectionParameters.SkipBuild = $true
+        }
+        if ($AllowToolchainDownload) {
+            $g8bIntersectionParameters.AllowToolchainDownload = $true
+        }
+        if ($KeepBuildOutputs) {
+            $g8bIntersectionParameters.KeepBuildOutputs = $true
+        }
+        & $G8BIntersectionVerifier @g8bIntersectionParameters
+        Assert-LastScriptSuccess `
+            -Description "G8B native Locus V2 intersection kernel"
     }
 
     Write-Host "`n==> Standalone Windows packaging contracts"
