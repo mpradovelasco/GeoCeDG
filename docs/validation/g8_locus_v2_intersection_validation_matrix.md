@@ -2,19 +2,21 @@
 
 | Field | Value |
 |---|---|
-| Status | **PROPOSED — NOT EXECUTED / NOT NORMATIVE** |
-| Characterization phase | G8A **AUTHORIZED / NOT EXECUTED**; requires a separate invoking task |
-| Productive phase | G8B **NOT AUTHORIZED**; blocked on G8A `PASS — AUTHOR APPROVED` |
-| Proposed contract | [`locus-v2-intersections.md`](../../geocedg/specs/locus/locus-v2-intersections.md) |
+| Status | **G8A PASS — AUTHOR-APPROVED G8B VALIDATION MATRIX** |
+| Characterization phase | G8A **PASS — AUTHOR APPROVED** |
+| Productive phase | G8B **AUTHORIZED / NOT STARTED** |
+| Normative contract | [`locus-v2-intersections.md`](../../geocedg/specs/locus/locus-v2-intersections.md) |
 | Functional counters | [`g8_locus_v2_intersection_benchmark_plan.md`](g8_locus_v2_intersection_benchmark_plan.md) |
+| Executed traceability | [`g8a_locus_v2_intersection_traceability_matrix.md`](g8a_locus_v2_intersection_traceability_matrix.md) |
 | Date | 2026-08-14 |
 
-This matrix defines the evidence that the separately executed G8A must collect and the
-minimum candidate gates that an authorized G8B would have to satisfy. `A`
-means characterization. `B-core` is proposed minimum productive coverage.
+This matrix defines the evidence collected by the separately executed G8A and the
+minimum gates that G8B must satisfy. `A`
+means characterization. `B-core` is approved minimum productive coverage.
 `B-policy` means the productive kernel must return a truthful rich
 unsupported/unresolved/overlap result, even if it does not compute finite
-points. Nothing in this file records an executed G8 test.
+points. Executed case-to-probe status is recorded in the linked G8A
+traceability matrix; productive B-core/B-policy rows remain future gates.
 
 ## 1. Assertions common to every case
 
@@ -38,10 +40,13 @@ Every executed case must inspect the full rich result and assert:
 - work and retained state remain within the versioned policy; and
 - an exception or revision change cannot expose stale or partial success.
 
-For supported target families, selected lifecycle cases must consume an
-identified finite solution in a downstream CeDG-style construction and prove
-normal dynamic propagation. An anonymous coordinate snapshot is not a valid
-substitute for the semantically identified rich solution.
+For supported target families, lifecycle cases must consume an identified
+finite solution through the required internal token-selected point consumer in
+a downstream CeDG-style construction and prove normal dynamic propagation.
+The point becomes undefined without retargeting when its token is absent,
+stale or ambiguous, and recovers only for the same current token. An anonymous
+coordinate snapshot is not a valid substitute for the semantically identified
+rich solution.
 
 Where an independent numeric reference is used, save formula, generator
 script, precision, runtime/library versions, output, and hashes. A scientific
@@ -61,7 +66,7 @@ work counters.
 | K-INCOMPLETE | A+B-policy | verified roots plus known unresolved/unprocessed region or candidate | `FINITE` + `INCOMPLETE`; returned roots stay valid but the set is not exhaustive |
 | K-NOT-EST | A+B-policy | evaluator-only/unbounded capability cannot determine exhaustiveness | `NOT_ESTABLISHED`; neither convergence nor a stable root count upgrades it |
 | K-TANGENCY | A+B-policy | even/multiple-root search without exhaustive contact isolation | verified roots and unresolved contacts reported separately; no false complete/empty result |
-| K-PROJECTION | A+B-policy | optional scalar/point consumer sees incomplete set | consumer refuses or exposes incompleteness; it never presents the subset as the full intersection |
+| K-PROJECTION | A+B-core | required token-selected point consumer sees incomplete set | consumer is undefined; it never presents the subset as the full intersection or retargets |
 
 ## 2. Level A — lines, segments, and rays
 
@@ -172,20 +177,24 @@ Merge/split genealogy is under test; the trace must not presuppose it.
 | N-ISO-01 | A+B-core | narrow root pair | completeness evidence and semantic-parameter dedup remain distinct |
 | N-EVEN-01 | A+B-core | even roots of orders 2 and 4 | no reliance on sign changes; bounded resolution outcome |
 | N-FLAT-01 | A | very flat residual near a non-root minimum | avoid false tangent; unresolved if evidence insufficient |
-| N-NORM-01 | A+B-core | multiply target equation by nonzero constants | normalized residual decision invariant |
-| N-ABSREL-01 | A | several geometry scales/translations | measure independent absolute/relative residual policy; approve no values yet |
-| N-PARAM-01 | A | regular reparameterizations with different parameter scales | characterize root-isolation and continuation policies separately from world residual |
+| N-NORM-01 | A+B-core | multiply target equation by nonzero constants | normalized residual, classification and completeness decisions invariant |
+| N-RES-TYPE-01 | B-core | every core target adapter | model-distance-equivalent quantity and units recorded; otherwise typed family-specific residual/tolerance and no incompatible comparison |
+| N-ABSREL-01 | A+B-core | several geometry scales/translations | accepted absolute/relative residual policy uses a documented translation-invariant geometric scale |
+| N-PARAM-01 | A+B-core | regular reparameterizations with different parameter scales | root/dedup/continuation quantities bound to provider units; no Euclidean interpretation |
+| N-TAN-NORM-01 | B-core | equation scaling, parameter scaling/reversal and regular-source speed changes | normalized contact indicator is invariant as declared; raw derivatives are not compared |
 | N-DEDUP-01 | A | close roots versus duplicate candidates for one root | determine semantic dedup policy without merging real roots |
 | N-DERIV-01 | A | analytic, estimated, absent and singular derivatives | derivative guarantee propagates to classification truthfully |
 | N-BUDGET-01 | A+B-core | each evaluation/subdivision/iteration/depth/candidate limit | deterministic termination and exact counter/diagnostic |
 | N-NAN-01 | A+B-core | nonfinite evaluator/target/residual data | typed failure; no NaN/magic-number state escapes |
 | N-REF-01 | A | independent high-precision reference suite | reproducible script, formula, precision/runtime/library and hashes |
 
-G8A selects values only after these experiments. G6 domain tolerances, G7
-metric tolerances, kernel standard precision, and render/pixel tolerances are
-comparison inputs, not inherited G8 defaults.
+The accepted initial policy is `g8b-initial-normalized/v1`, derived from the
+G8A measurements. G6 domain tolerances, G7 metric tolerances, kernel standard
+precision, and render/pixel tolerances are not inherited G8 defaults. The raw
+G8A numbers apply only to matching normalized quantities; any adapter-specific
+normalization uses the validated equivalent required by the normative spec.
 
-## 8. Level C characterization — not proposed G8B minimum
+## 8. Level C characterization — outside the approved G8B minimum
 
 | ID | Phase | Family | Required characterization |
 |---|---|---|---|
@@ -242,20 +251,21 @@ the first productive candidate by default.
 Scientific traceability and exact source pages are recorded in
 [`g8_locus_v2_intersection_scientific_traceability.md`](g8_locus_v2_intersection_scientific_traceability.md).
 
-## 12. Proposed G8B exit gate
+## 12. Author-approved G8B exit gate
 
-After G8A author approval and a separate implementation authorization, G8B
-could pass only if:
+When separately executed, G8B can pass only if:
 
 1. all selected B-core and B-policy cases execute through productive code;
 2. each supported family has a closed capability/degeneration contract;
 3. empty, unresolved, overlap and currentness states are distinguishable;
-4. tangent/even-root and the post-G8A author-approved identity traces pass;
+4. tangent/even-root, normalized tolerance and author-approved identity traces
+   pass;
 5. all hard functional budgets and forbidden-access counters pass;
 6. cache-off/reference equality passes if any reusable state exists;
 7. Classic/legacy/persistence/3D/export non-regression passes; and
 8. the canonical repository verifier passes without weakening existing gates.
 
-This is a proposed productive gate only. G8A is authorized but was not executed
-by the planning closeout. G8B is not authorized and G8 productive
+The required internal token-selected point consumer must also pass
+defined/undefined/no-retarget/recovery and downstream DAG traces. G8A is
+`PASS — AUTHOR APPROVED`; G8B is authorized but not started, and G8 productive
 implementation remains `NOT STARTED`.

@@ -3,12 +3,13 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Roadmap vivo y normativo de fases; no sustituye las especificaciones ni los ADR aceptados |
-| Versión documental | 3.13 |
+| Versión documental | 3.15 |
 | Fecha de revisión | 14 de agosto de 2026 |
 | Baseline GeoGebra | 5.4.928.0, commit `9b93256b7df401ff056c37b502d82df4d72b1522`, tag `geogebra-baseline-5.4.928.0` |
-| Estado actual | G7 `PASS`; G8 planning `PASS — AUTHOR APPROVED`; G8A `AUTHORIZED / NOT STARTED`; G8B `NOT AUTHORIZED`; V2 sigue experimental, interno y desactivado por defecto |
-| Última fase cerrada | G8 — Native Locus V2 2D intersections planning closeout (sin ejecución) |
-| Siguiente puerta | Ejecución separada de G8A; G8B bloqueado hasta `G8A = PASS — AUTHOR APPROVED` |
+| Estado actual | G7 `PASS`; G8 planning `PASS — AUTHOR APPROVED`; G8A `PASS — AUTHOR APPROVED`; G8B `AUTHORIZED / NOT STARTED`; V2 sigue experimental, interno y desactivado por defecto |
+| Última fase cerrada | G8A — Locus V2 2D intersection characterization, `PASS — AUTHOR APPROVED` |
+| Última fase ejecutada | G8A — caracterización test-private cerrada y aprobada por el autor; sin implementación productiva |
+| Siguiente puerta | Ejecución separada del prompt canónico G8B desde su rama publicada |
 | Primer cliente | Aplicación de escritorio de la familia Classic 5 |
 | Núcleo | Java compartido de GeoGebra, extendido solo cuando la semántica lo requiere |
 
@@ -53,9 +54,9 @@ elementos combinan capacidades cerradas y objetivos explícitamente futuros:
   implementados y validados en G6B (`PASS`);
 - métricas internas Locus V2 implementadas y validadas en G7B, con G7A-R1,
   G7A y G7B aprobadas por el autor, spec normativa y ADR 0007 Accepted;
-- arquitectura y fases de planificación G8 aprobadas por el autor; G8A queda
-  autorizado para ejecución separada, sin haber iniciado caracterización ni
-  implementación, y G8B sigue bloqueado;
+- arquitectura y fases de planificación G8 aprobadas por el autor; G8A es
+  `PASS — AUTHOR APPROVED`, la spec G8 es normativa, ADR 0008 está Accepted y
+  G8B está autorizado pero no iniciado;
 - un modelo semántico `SpatialObject3D`–proyecciones (`PENDING`, G9);
 - criterios verificables de suficiencia y degeneración de proyecciones
   canónicas (`PENDING`, G9).
@@ -1094,9 +1095,9 @@ La optimización priorizará, según evidencia: invalidación incremental, cach�
 | G6B | `PASS` | [Informe G6B](../validation/g6b_locus_v2_kernel_report.md); entidad experimental interna, sin superficie pública |
 | G6R | `PASS` | [Informe G6R](../validation/g6r_locus_v2_hardening_report.md); hardening, laboratorio developer-only y optimización de render medida |
 | G7 | `PASS` | [G7A reejecutado](../validation/g7a_locus_v2_metric_characterization_report.md), [R1 acotado](../validation/g7a_r1_locus_v2_metric_refinement_report.md) y G7B `PASS — AUTHOR APPROVED`; spec normativa y ADR 0007 Accepted |
-| G8 planning | `PASS — AUTHOR APPROVED` | [Plan G8](g8_locus_v2_intersections_plan.md); aprobación de planificación no vuelve normativa la spec ni acepta ADR 0008 |
-| G8A | `AUTHORIZED / NOT STARTED` | Solo caracterización test-private en una tarea separada; no ejecutada en el cierre de planificación |
-| G8B | `NOT AUTHORIZED` | Bloqueado hasta `G8A = PASS — AUTHOR APPROVED`, spec normativa, ADR aceptado/sustituido y autorización productiva separada |
+| G8 planning | `PASS — AUTHOR APPROVED` | [Plan G8](g8_locus_v2_intersections_plan.md); cerrado antes de G8A |
+| G8A | `PASS — AUTHOR APPROVED` | [Informe y decisiones G8A](../validation/g8a_locus_v2_intersection_characterization_report.md); 65 probes test-private, referencias independientes, spec normativa y ADR 0008 Accepted, sin implementación productiva |
+| G8B | `AUTHORIZED / NOT STARTED` | Autorizado para ejecución separada del [prompt canónico](../../.github/prompts/tasks/g8b-locus-v2-intersection-kernel.prompt.md) desde su rama; no ejecutado por el cierre G8A |
 | G9–G16 | `NOT STARTED` | No iniciadas |
 
 Los estados `experimental` describen madurez de una capacidad, no una puerta
@@ -1404,17 +1405,17 @@ G7B = PASS — AUTHOR APPROVED
 G7 = PASS
 G7B CAPACITY 64 = PROVISIONAL NON-NORMATIVE IMPLEMENTATION DEFAULT
 G8 PLANNING = PASS — AUTHOR APPROVED
-G8A = AUTHORIZED / NOT STARTED
-G8B = NOT AUTHORIZED
+G8A = PASS — AUTHOR APPROVED
+G8B = AUTHORIZED / NOT STARTED
 G8 PRODUCTIVE IMPLEMENTATION = NOT STARTED
 G9 = NOT STARTED
 ```
 
 ## G8 - Intersecciones 2D
 
-**Estado:** planificación `PASS — AUTHOR APPROVED`; G8A `AUTHORIZED / NOT
-STARTED`; G8B `NOT AUTHORIZED` y bloqueado; implementación productiva
-`NOT STARTED`.
+**Estado:** planificación `PASS — AUTHOR APPROVED`; G8A `PASS — AUTHOR
+APPROVED`; G8B `AUTHORIZED / NOT STARTED`; implementación productiva `NOT
+STARTED`.
 
 El autor aprueba la arquitectura de planificación y estas dos puertas, sin
 predeclarar G8C:
@@ -1422,11 +1423,10 @@ predeclarar G8C:
 1. **G8A — caracterización y decisiones de autor:** probes exclusivamente
    test-private, referencias independientes y medición de solver, tangencia,
    tolerancias, completitud, resultado rico, identidad/topología y trabajo
-   acotado. Queda autorizado solo para una ejecución separada y no se ejecuta
-   en este cierre;
-2. **G8B — kernel interno 2D mínimo:** solo después de que G8A sea
-   `PASS — AUTHOR APPROVED`, la spec pase a normativa, el ADR se acepte o
-   sustituya y exista autorización productiva separada.
+   acotado. La ejecución separada y la revisión de autor han terminado; la
+   puerta está cerrada en `PASS — AUTHOR APPROVED`;
+2. **G8B — kernel interno 2D mínimo:** autorizado por el cierre G8A, pero solo
+   inicia mediante ejecución separada de su prompt canónico.
 
 No se reserva una G8C. Implícitas, funciones y locus–locus se caracterizarán
 como Level C y solo justificarán una fase posterior si la evidencia muestra que
@@ -1451,23 +1451,32 @@ parametrización semántica, identidad dinámica y cambios topológicos explíci
 Este carácter fundamental no amplía por sí mismo la familia inicial: cada
 familia se promueve incrementalmente mediante evidencia.
 
-**Mínimo productivo preferido para caracterización**
+**Mínimo productivo autorizado para G8B**
 
 - recta, segmento, semirrecta y circunferencia;
-- cónicas no degeneradas solo si G8A demuestra un contrato cerrado;
+- cónicas completas diferidas: G8A confirmó la representación de ecuación,
+  pero no un contrato uniforme cerrado de completitud/degeneración;
 - aislamiento por componente semántico, refinamiento y verificación residual;
 - tangencia de multiplicidad par sin depender solo de cambios de signo;
 - resultado rico inmutable con ejes separados de cómputo, completitud
   (`COMPLETE`/`INCOMPLETE`/`NOT_ESTABLISHED`), tipo geométrico, garantía,
   identidad y lifecycle;
+- `GeoElement` rico no numérico como autoridad y un consumidor interno
+  obligatorio de un punto seleccionado por token semántico; queda indefinido
+  sin retargeting si la solución falta, está stale o es ambigua y solo recupera
+  el mismo token conforme al contrato;
 - identidad duradera basada en el par de fuentes, linaje constructivo/de rama y
   contexto topológico; parámetro, intervalo aislante, residuo y certificado son
   evidencia numérica ligada a una revisión, nunca identidad fundamental;
-- genealogía merge/split como hipótesis G8A, con ambigüedad o discontinuidad de
-  identidad explícita si la continuación no es única; y
-- estado inicialmente local a la consulta; ningún índice métrico G7 sirve como
-  autoridad de intersección y un owner específico requeriría evidencia y nueva
-  aprobación.
+- genealogía merge/split caracterizada: no existe herencia universal en los
+  casos simétricos; se usan tokens de evento, relaciones candidatas y
+  ambigüedad o discontinuidad explícita si la continuación no es única; y
+- política `g8b-initial-normalized/v1`: residuo de significado geométrico común
+  o contrato tipado por familia, parámetros en el espacio semántico del
+  provider, tangencia normalizada y coordenadas solo como verificación;
+- presupuestos funcionales iniciales aprobados provisionalmente desde G8A; y
+- estado local a la consulta; no hay índice métrico G7, owner compartido ni
+  índice de intersecciones en el mínimo.
 
 **Frontera mantenida**
 
@@ -1482,27 +1491,28 @@ El paquete incluye el
 [modelo semántico](../architecture/locus_v2_intersection_semantic_model.md), la
 [arquitectura](../architecture/locus_v2_intersection_architecture.md), el
 [impacto upstream](../architecture/locus_v2_intersection_upstream_impact.md),
-la [spec propuesta](../../geocedg/specs/locus/locus-v2-intersections.md), la
+la [spec normativa](../../geocedg/specs/locus/locus-v2-intersections.md), la
 [matriz de validación](../validation/g8_locus_v2_intersection_validation_matrix.md),
 el [plan de contadores](../validation/g8_locus_v2_intersection_benchmark_plan.md),
 la [trazabilidad científica](../validation/g8_locus_v2_intersection_scientific_traceability.md),
-el [ADR 0008 Proposed](../adr/0008-locus-v2-intersection-result-and-continuation.md)
+el [ADR 0008 Accepted](../adr/0008-locus-v2-intersection-result-and-continuation.md)
 y los prompts futuros
 [G8A](../../.github/prompts/tasks/g8a-locus-v2-intersection-characterization.prompt.md)
-y [G8B](../../.github/prompts/tasks/g8b-locus-v2-intersection-kernel.prompt.md).
+y [G8B](../../.github/prompts/tasks/g8b-locus-v2-intersection-kernel.prompt.md),
+además del [informe G8A](../validation/g8a_locus_v2_intersection_characterization_report.md)
+y su [matriz de trazabilidad](../validation/g8a_locus_v2_intersection_traceability_matrix.md).
 
-El cierre de planificación no ejecuta el prompt G8A. La spec permanece
-`PROPOSED — NOT NORMATIVE`, ADR 0008 permanece `Proposed`, G8A está autorizado
-pero no iniciado, y G8B no está autorizado. Toda implementación productiva
-exige que G8A sea `PASS — AUTHOR APPROVED` y una autorización posterior
-explícita.
+G8A se ejecutó después del cierre de planificación y añadió solo
+caracterización test-private. El autor ha aprobado D1–D17, la spec es normativa
+y ADR 0008 está Accepted. G8B está autorizado pero no iniciado; toda
+implementación productiva exige ejecutar separadamente su prompt canónico.
 
 ```text
 G8 PLANNING = PASS — AUTHOR APPROVED
-G8A = AUTHORIZED / NOT STARTED
-G8B = NOT AUTHORIZED / BLOCKED ON G8A PASS — AUTHOR APPROVED
-G8 SPEC = PROPOSED / NOT NORMATIVE
-ADR 0008 = PROPOSED
+G8A = PASS — AUTHOR APPROVED
+G8B = AUTHORIZED / NOT STARTED
+G8 SPEC = NORMATIVE / AUTHOR APPROVED
+ADR 0008 = ACCEPTED
 G8 PRODUCTIVE IMPLEMENTATION = NOT STARTED
 G9 = NOT STARTED
 ```

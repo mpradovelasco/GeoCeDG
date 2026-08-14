@@ -2,15 +2,18 @@
 
 | Field | Value |
 |---|---|
-| Status | **PROPOSED — NOT NORMATIVE** |
-| Phase | G8 planning `PASS — AUTHOR APPROVED`; G8A authorized/not started; G8B not authorized |
+| Status | **APPROVED AS NORMATIVE G8 INTERSECTION CONTRACT** |
+| Version | `1.0` |
+| Phase | G8 planning `PASS — AUTHOR APPROVED`; G8A `PASS — AUTHOR APPROVED`; G8B `AUTHORIZED / NOT STARTED` |
 | Scope | Internal two-dimensional Locus V2 intersection semantics |
 | Product state | Experimental, internal, disabled by default |
-| Approval | Explicit author approval required before this specification may become normative |
+| Approval | Author-approved on 2026-08-14 from the completed G8A evidence |
+| Architecture decision | Accepted ADR 0008 |
 
-This proposal defines the questions the separately authorized G8A must
-characterize. Planning approval does not make this specification normative,
-accept ADR 0008, execute G8A, or authorize productive source change.
+This normative contract incorporates the G8A characterization evidence and
+the final author decisions D1–D17. It authorizes a separately invoked G8B
+implementation task within the internal boundary below. It does not itself
+execute G8B or make any intersection behavior observable.
 
 ## 1. Governing principles
 
@@ -64,8 +67,8 @@ The following are never intersection authority:
 - graphical proximity, labels, creation order, or output order; and
 - G7 metric component state or cumulative-length partitions.
 
-A sampled semantic partition may be a broad-phase accelerator only after the
-author approves its characterized safety contract. Every candidate must still
+A sampled semantic partition may be a broad-phase accelerator only when its
+conservative safety contract is established. Every candidate must still
 be refined and verified against the semantic evaluator and the target's
 authority.
 
@@ -97,19 +100,20 @@ h_{j,O}(t)=R_O(F_j(t))=0,
 `R_O` includes a declared normalization policy. Multiplying an equation by a
 nonzero scalar must not change acceptance, classification, or completeness.
 
-The initial target authorities are proposed as follows:
+The initial target authorities are as follows:
 
 | Target | Authoritative geometric form | Additional membership rule |
 |---|---|---|
 | line | normalized homogeneous equation `a x + b y + c = 0` from the current `GeoLine` coefficients | none beyond full-line incidence |
 | segment | the support-line residual | current `GeoSegment` finite parameter/endpoints and limited-path policy |
 | ray | the support-line residual | current `GeoRay` one-sided parameter and limited-path policy |
-| circle | specialized, normalized circle equation derived from the current `GeoConic` state | full-circle incidence and defined/nondegenerate type |
-| supported full conic | homogeneous quadratic `p^T A p = 0` from the current `GeoConic` matrix | current conic type/degeneration policy |
+| circle | signed model-distance-equivalent residual derived from the current, verified nondegenerate `GeoConic` circle state | full-circle incidence |
 
 The target adapter must distinguish support-curve incidence from membership in
 a limited object. A root on the support line but outside a segment or ray is not
-an intersection with that limited object.
+an intersection with that limited object. Full conics are deferred from the
+minimum G8B family together with functions, general implicit curves and
+locus–locus intersections.
 
 ### 2.2 Parametric versus parametric
 
@@ -154,7 +158,7 @@ conversion for unrelated objects.
 
 ### 2.4 Functions
 
-For an explicit function with a construction-owned domain, a candidate residual
+For an explicit function with a construction-owned domain, a possible residual
 is `y-f(x)`. The current `GeoFunction.getMinParameter()` and
 `getMaxParameter()` are view-clipped, so they are not an acceptable semantic
 domain. Functions remain deferred until a type-specific, view-independent
@@ -162,7 +166,7 @@ domain and discontinuity contract is approved.
 
 ## 3. Query model
 
-The proposed immutable query records at least:
+The immutable query records at least:
 
 ```text
 source locus runtime identity
@@ -182,13 +186,13 @@ GeoElements do not expose a semantic revision equivalent to `GeoLocusV2`.
 
 ## 4. Rich result model
 
-The proposed result is a closed immutable set value, conceptually
+The result is a closed immutable set value, conceptually
 `LocusIntersectionResult2D`, with independent axes rather than a nullable list
 of points.
 
 ### 4.1 Query-level axes
 
-| Axis | Proposed values | Meaning |
+| Axis | Values | Meaning |
 |---|---|---|
 | computation | `SUCCESS`, `INVALID_INPUT`, `UNSUPPORTED`, `NUMERICAL_FAILURE`, `WORK_LIMIT_REACHED` | whether the requested computation executed under its contract |
 | completeness | `COMPLETE`, `INCOMPLETE`, `NOT_ESTABLISHED` | whether every solution in the supported semantic query domain has been accounted for |
@@ -196,7 +200,7 @@ of points.
 | currentness | `CURRENT`, `NON_CURRENT` | whether the payload is bound to the publisher's current input revision |
 | support level | `EXACT`, `CERTIFIED`, `VERIFIED_UNCERTIFIED`, `UNSUPPORTED` | strength of the intersection claim, separate from coordinate guarantee |
 
-The final names require G8A review. The following combinations are mandatory:
+The following combinations are mandatory:
 
 - `EMPTY` requires `COMPLETE` completeness;
 - `FINITE` with `INCOMPLETE` means a verified subset, not the complete
@@ -303,7 +307,7 @@ Limit intersections require a separately approved limit contract.
 ### 6.1 Identity context
 
 A root continuation token is durable only within the active nonpersistent G8
-algorithm and its source pair. The candidate durable/continuation information
+algorithm and its source pair. The durable/continuation information
 contains:
 
 ```text
@@ -333,11 +337,10 @@ because the parameter value or isolating interval changes. Labels, output
 indices, coordinates, render order, and nearest-neighbour screen/world matching
 are excluded.
 
-The proposed per-root identity status is closed and independent of numeric
+The per-root identity status is closed and independent of numeric
 validity, with values equivalent to `CONTINUATION_ESTABLISHED`,
 `NEW_TOPOLOGICAL_SOLUTION`, `AMBIGUOUS_CONTINUATION`,
-`IDENTITY_DISCONTINUITY`, and `NOT_ESTABLISHED`. G8A may refine the names, but it
-must not omit the ambiguous/not-established outcomes.
+`IDENTITY_DISCONTINUITY`, and `NOT_ESTABLISHED`.
 
 ### 6.2 Continuation without topology change
 
@@ -346,19 +349,22 @@ semantic root through compatible source/branch lineage, topology context,
 successful current-revision refinement/verification, and a proven continuation
 relation. Mapped or predictably continued intervals and semantic parameters may
 support that relation, but are revision-scoped evidence rather than identity.
-G8A must characterize ordinary source motion, equivalent monotone
+G8A characterized ordinary source motion, equivalent monotone
 reparameterization, allowed orientation reversal, and periodic-seam
-representation. Cartesian nearness may be logged but cannot decide identity.
+representation. The supported subset requires an explicit semantic
+map selecting one continuation. Cartesian nearness was unnecessary and cannot
+decide identity.
 
 ### 6.3 Topology events
 
-The following merge/split policy is a strong **G8A hypothesis**, not an
-approved universal identity semantic:
+G8A rejected universal merge/split genealogy. The normative policy is to
+publish explicit topology/identity events and candidate relations, while
+preserving an existing token only when continuation is uniquely established:
 
 | Event | Identity effect |
 |---|---|
-| two simple roots merge at tangency | candidate: parents terminate; one tangent-event token records `MERGED` lineage when robustly established |
-| tangent root splits into two | candidate: parent terminates; two tokens record `SPLIT` lineage when child correspondence is robustly established |
+| two simple roots merge at tangency | parents terminate; one tangent-event token records the candidate parent set when robustly established |
+| tangent root splits into two | the tangent-event token terminates; new child tokens record the candidate parent relation when robustly established |
 | root crosses a provider periodic seam | preserve one token using canonical seam equivalence and a lifted continuation coordinate |
 | root reaches an included component boundary | preserve through the boundary event only while the root remains valid; record boundary classification |
 | root crosses an invalid gap/open boundary | terminate; any later root is new unless approved provider lineage proves a semantic continuation |
@@ -366,19 +372,20 @@ approved universal identity semantic:
 | source becomes undefined | current result becomes a coherent failure/non-current payload; no old coordinate survives as current |
 | source recovers | reuse a token only if the approved continuation evidence spans the event; otherwise create a new topology epoch |
 
-G8A must test `2 -> 1 -> 2` and reverse traversal, symmetric cases with
+G8A tested `2 -> 1 -> 2` and reverse traversal, symmetric cases with
 intrinsically ambiguous child correspondence, periodic-seam interaction, and
-branch/component changes near the same event. Preserve identity when
-continuation is geometrically unambiguous; otherwise expose ambiguity or an
-identity discontinuity. If universal genealogy fails, G8A must recommend a
-narrower rigorous contract. Unsupported topology families return an explicit
-state instead of fabricated continuity.
+branch/component changes near the same event. Universal child genealogy
+failed the symmetric/reverse evidence. The contract therefore uses new
+topology-event tokens, candidate parent/child sets and explicit ambiguity
+or discontinuity unless one semantic continuation is uniquely established.
+Unsupported topology families return an explicit state instead of fabricated
+continuity.
 
 ## 7. Numerical capability and evidence
 
 ### 7.1 Capability hierarchy
 
-The proposed preference order is:
+The author-approved capability order is:
 
 1. exact symbolic/arithmetic intersection capability;
 2. certified interval residual/bounds capability;
@@ -394,7 +401,7 @@ records separate intersection support and completeness levels.
 
 ### 7.2 Isolation and refinement
 
-G8A must compare:
+G8A compared:
 
 - interval/subdivision isolation over each valid semantic component;
 - sign-change brackets for odd roots;
@@ -428,37 +435,114 @@ that no additional root was missed.
 - work exhaustion records consumed work and cannot silently truncate a
   complete set.
 
-G8A must characterize completeness independently for tangencies,
+G8A characterized completeness independently for tangencies,
 evaluator-only methods, unbounded domains, difficult multiple roots, and
 unsupported/incomplete broad phase. Every strategy reports verified-root count,
 completeness value, and the method/evidence that established or failed to
 establish it. Any later scalar or point projection must preserve or reject
 incomplete/not-established set semantics rather than hide them.
 
-## 8. Tolerance policy
+## 8. Tolerance and normalization policy
 
-G8 uses a versioned intersection-specific policy. It must not reuse G6 domain
+G8 uses the versioned policy `g8b-initial-normalized/v1`, derived from the
+measured G8A candidate `g8a-measured-candidate/v1`. It must not reuse G6 domain
 epsilon, the G6 validation envelope, G7 metric tolerances, render tolerances,
-pixel tolerances, or `Kernel.MIN_PRECISION` without measured justification.
+pixel tolerances, or `Kernel.MIN_PRECISION`. Every result-affecting quantity,
+its units/normalization, provider/adapter applicability and version participate
+in policy identity.
 
-G8A must characterize at least:
+### 8.1 Target residual
 
-- semantic parameter/root-isolation tolerance;
-- normalized absolute residual tolerance;
-- normalized relative residual tolerance;
-- tangency/derivative or stationary-evidence threshold;
-- semantic-parameter deduplication tolerance;
-- topology-continuation tolerance; and
-- optional coordinate-consistency tolerance used only as verification
-  evidence, never identity.
+Every target adapter supplies either:
 
-No numerical default becomes normative before measured evidence and author
-approval. The policy key includes every result-affecting quantity and its
-version.
+1. a normalized geometric residual with a documented common meaning,
+   preferably signed or unsigned model-coordinate distance; or
+2. a target-family-specific typed residual and matching typed tolerance when a
+   correct common distance residual is unavailable.
+
+The residual evidence records raw value, normalization scale and provenance,
+normalized value, quantity kind and units. Multiplying an authoritative
+implicit equation by any nonzero scalar must not change root acceptance,
+classification or completeness. A value from one residual quantity may never
+be compared against a tolerance belonging to another.
+
+For the minimum core, line/segment/ray use signed perpendicular distance to
+the support line plus separate limited-object membership. A verified circle
+uses a signed radial-distance-equivalent residual derived from its actual
+`GeoConic` state. Undefined or degenerate targets produce typed non-success
+rather than an algebraically convenient substitute.
+
+Absolute and relative residual checks operate only on compatible normalized
+quantities. Any characteristic geometric scale used by the relative check is
+translation-invariant, documented by the adapter/query and independent of
+viewport and coordinate-origin offset.
+
+### 8.2 Semantic-parameter quantities
+
+Root-isolation, semantic deduplication and continuation tolerances live in the
+provider's semantic parameter space. They are not Euclidean distances. Their
+meaning is bound to the provider/version and its declared parameter units or
+normalization. A provider for which that meaning cannot be established is
+unsupported under this policy rather than assigned a universal scalar.
+
+Deduplication merges duplicate candidate evidence for one semantic preimage;
+it never merges distinct preimages merely because coordinates are close.
+Continuation tolerance is prediction/localization evidence only and cannot
+establish durable identity.
+
+### 8.3 Tangency quantity
+
+The tangency threshold applies only to a documented normalized contact
+indicator. For a regular source and a model-distance residual, the preferred
+first-order indicator is the absolute derivative with respect to source arc
+length, equivalently the target-normal/source-tangent directional factor. It
+is invariant to ordinary monotone parameter scaling. Raw derivatives of
+differently scaled equations or unnormalized semantic parameters are not
+comparable. Singular sources or capabilities without the required normalized
+indicator must use analytic/certified evidence or report contact/multiplicity
+as not established.
+
+### 8.4 Initial versioned values
+
+The author approves the measured values below as initial G8B defaults only
+where the quantity has the normalized meaning characterized above:
+
+| Quantity | Initial value | Meaning |
+|---|---:|---|
+| root parameter | `1e-12` | provider-declared semantic parameter units |
+| absolute residual | `2e-12` | compatible normalized residual units |
+| relative residual | `2e-12` | dimensionless multiplier of a documented geometric scale |
+| tangency threshold | `1e-10` | compatible normalized contact-indicator units |
+| semantic deduplication | `4e-12` | provider-declared semantic parameter units |
+| semantic continuation | `1e-8` | revision-scoped prediction evidence in provider units |
+| coordinate verification | `4e-12` | model-coordinate consistency only |
+
+If an adapter/provider normalization changes the numerical interpretation,
+G8B uses and validates the corresponding normalized equivalent rather than
+copying the raw value. Coordinate verification is never identity evidence.
 
 ## 9. Deterministic work and state
 
-Every query has independent finite maxima for:
+The author provisionally approves these initial G8B deterministic ceilings,
+whose provenance is the G8A evidence:
+
+| Work dimension | Initial ceiling |
+|---|---:|
+| semantic evaluations | `32768` |
+| semantic derivative evaluations | `16384` |
+| target evaluations | `32768` |
+| candidate intervals/boxes | `8192` |
+| isolation subdivisions | `8192` |
+| isolation depth | `40` |
+| refinement iterations per candidate | `80` |
+| residual verifications | `1024` |
+| candidates | `512` |
+| continuation comparisons | `4096` |
+| published finite solutions | `256` |
+| retained intersection-index entries | `0` |
+| retained topology epochs | `2` |
+
+Every query therefore has independent finite maxima for:
 
 - semantic evaluations;
 - derivative evaluations;
@@ -471,8 +555,9 @@ Every query has independent finite maxima for:
 - retained index entries/bytes when an index is enabled.
 
 Exhausting one limit returns a typed result. It never silently truncates a
-complete set. Wall-clock time is diagnostic only unless a future author-approved
-runner-specific policy says otherwise.
+complete set. These are implementation-policy defaults, not universal
+mathematical constants. Wall-clock time is diagnostic only unless a future
+author-approved runner-specific policy says otherwise.
 
 ## 10. Dependency and lifecycle contract
 
@@ -485,16 +570,19 @@ runner-specific policy says otherwise.
   copy, and assignment follow explicit tested semantics.
 - No callback-only dependency, static/global cache, foreign Construction
   reference, or obsolete-revision payload is retained.
-- Ordinary point outputs, if approved, are bounded derived views keyed by root
-  tokens. Extra slots become undefined; slot association never defines root
-  identity.
+- G8B includes one internal derived point consumer selected by a semantic root
+  token. It owns no solving or identity authority, follows normal DAG
+  dependencies, becomes coherently undefined for absent, stale or ambiguous
+  continuation, never retargets to another root, and may recover only when the
+  same token is current again under the approved continuation contract.
 
 ## 11. Cache/index contract
 
 The author-approved starting point is query-local isolation state plus the
 existing bounded semantic evaluation session. No G7 metric cache is reused.
 
-If G8A proves cross-query reuse necessary, a dedicated intersection owner must:
+G8B has no shared intersection owner or index. Any later proposal requires new
+measured evidence and separate architectural approval, and must:
 
 - be scoped to one active source locus and Construction;
 - key state by source/target identities and revisions, branch/component,
@@ -523,20 +611,66 @@ Until a separate author decision:
 - G8 internal result support does not imply public incidence support for every
   GeoGebra curve.
 
-## 13. Open approval gate
+## 13. Author-approved G8B conformance profile
 
-The author has approved the planning architecture: rich immutable set plus a
-normal-DAG nonnumeric rich Geo, optional derived ordinary points, query-local
-first computation, the preferred core-four family scope, and the public/API
-boundaries. This proposal becomes normative only after G8A evidence resolves
-and a second author review explicitly approves at least the exact root identity
-invariance and topology/genealogy contract, completeness establishment rules,
-tangency/multiplicity evidence, overlap taxonomy, capability hierarchy,
-tolerance values, isolation/refinement strategy, any cache ownership,
-work/output bounds, final target families, and any Level C promotion.
+The [G8A report](../../../docs/validation/g8a_locus_v2_intersection_characterization_report.md)
+and [traceability matrix](../../../docs/validation/g8a_locus_v2_intersection_traceability_matrix.md)
+provide the measured evidence incorporated by the author into this contract:
+
+- minimum family: line, segment, ray and circle;
+- full conics, functions, implicit curves and locus–locus deferred;
+- analytic/certified capabilities first; evaluator-only and broad-phase methods
+  may find candidates but cannot claim completeness without separate coverage
+  proof;
+- query-local state, zero retained intersection-index entries, and no G7 metric
+  state;
+- durable identity fields separated from revision-scoped parameter, interval,
+  component, residual and certificate evidence;
+- no universal merge/split descendant inheritance; and
+- a rich Geo as authority plus the required internal token-selected derived
+  point consumer.
+
+The G8A measured tolerance source is `g8a-measured-candidate/v1`; the approved
+implementation policy is `g8b-initial-normalized/v1` with the normalization
+contract in Section 8:
 
 ```text
-G8 SPEC = PROPOSED / NOT NORMATIVE
-G8A = AUTHORIZED / NOT STARTED
-G8B = NOT AUTHORIZED / BLOCKED ON G8A PASS — AUTHOR APPROVED
+root parameter = 1e-12
+absolute normalized residual = 2e-12
+relative normalized residual = 2e-12
+tangency threshold = 1e-10
+semantic deduplication = 4e-12
+semantic continuation = 1e-8
+coordinate verification = 4e-12
+```
+
+Initial deterministic ceilings are 32768 semantic evaluations, 16384
+semantic derivative evaluations, 32768 target evaluations, 8192 candidate
+intervals, 8192 subdivisions, depth 40, 80 refinement iterations per
+candidate, 1024 residual verifications, 512 candidates, 4096 continuation
+comparisons, 256 published finite solutions, zero retained intersection-index
+entries and two retained topology epochs. They are provisional versioned G8B
+implementation defaults, not mathematical constants.
+
+## 14. Author-approved phase disposition
+
+The author accepts the rich-result/rich-Geo authority, required internal
+token-selected point consumer, independent completeness axis, typed overlap,
+capability hierarchy, normalized tolerance policy, provisional deterministic
+budgets, narrow semantic continuation contract, rejection of universal
+merge/split genealogy, query-local state and the line/segment/ray/circle
+minimum. Full conics, functions, general implicit curves and locus–locus remain
+deferred. Public command, generic `Path`, XML/persistence, legacy/Classic, 3D,
+G9 and Python boundaries remain closed.
+
+G8B is authorized but has not started. Productive work begins only through a
+separate explicit execution of the canonical G8B prompt.
+
+```text
+G8 SPEC = NORMATIVE / AUTHOR APPROVED
+G8A = PASS — AUTHOR APPROVED
+ADR 0008 = ACCEPTED
+G8B = AUTHORIZED / NOT STARTED
+G8 PRODUCTIVE IMPLEMENTATION = NOT STARTED
+G9 = NOT STARTED
 ```

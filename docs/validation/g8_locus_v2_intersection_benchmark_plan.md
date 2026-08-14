@@ -2,18 +2,17 @@
 
 | Field | Value |
 |---|---|
-| Status | **PROPOSED — NOT EXECUTED** |
-| G8A state | **AUTHORIZED / NOT STARTED**; execute only in a separate task |
-| G8B state | **NOT AUTHORIZED** |
+| Status | **G8A PASS — AUTHOR-APPROVED G8B FUNCTIONAL POLICY** |
+| G8A state | **PASS — AUTHOR APPROVED** |
+| G8B state | **AUTHORIZED / NOT STARTED** |
 | Primary authority | Semantic equality, deterministic work, bounded state, and invalidation |
 | Wall-clock | Informational until a reproducible environment budget is approved |
 | Validation matrix | [`g8_locus_v2_intersection_validation_matrix.md`](g8_locus_v2_intersection_validation_matrix.md) |
 | Date | 2026-08-14 |
 
 G8 must not repeat the historical nested-Locus cost pattern. This plan defines
-the measurements the separately executed G8A must collect before selecting
-solver, tolerance, work, or cache/index policies. It assigns no numerical
-default and reports no G8 result.
+the measurements collected by G8A and the author-approved G8B policies derived
+from them. Measured evidence and implementation policy remain distinct.
 
 ## 1. Questions to answer
 
@@ -94,8 +93,8 @@ Only if repeated-query evidence justifies it, characterize:
   result sets, root tokens, continuation lineage, route-specific state, or G7
   metric partitions.
 
-The last strategy is not approved. G8A may characterize ownership shapes only
-if measured repeated-query need exists and must produce a separate author
+The last strategy is not approved for G8B. A later task may characterize it
+only from new measured repeated-query need and must obtain a separate author
 decision before any productive cache/index exists.
 
 ## 4. Required counters
@@ -136,6 +135,11 @@ identityContinuationsAmbiguous
 identityContinuationsNotEstablished
 reparameterizationMappingsChecked
 reparameterizationContinuationsAccepted
+pointConsumerTokenLookups
+pointConsumerDefinedPublications
+pointConsumerUndefinedPublications
+pointConsumerSameTokenRecoveries
+pointConsumerRetargets
 topologyMergeEvents
 topologySplitEvents
 topologyTerminationEvents
@@ -178,6 +182,7 @@ legacySampleReads = 0
 viewportReads = 0
 pixelToleranceReads = 0
 metricIndexReads = 0
+pointConsumerRetargets = 0
 staleRevisionEntriesAfterInvalidation = 0
 partialSnapshotsPublished = 0
 ```
@@ -186,9 +191,9 @@ Candidate-isolation sampling is counted under semantic evaluator calls and is
 never recorded as a verified solution until independent refinement and
 verification complete.
 
-## 6. Policy quantities to measure independently
+## 6. Author-approved normalized policy
 
-G8A must sweep and report, without assuming shared numeric values:
+G8A swept and reported these independent quantities:
 
 - `eps_root_parameter`: isolating/refined semantic-parameter width;
 - `eps_residual_abs` and `eps_residual_rel`: normalized target incidence;
@@ -197,34 +202,41 @@ G8A must sweep and report, without assuming shared numeric values:
   component;
 - `eps_continuation_parameter`: revision-scoped semantic root continuation
   prediction evidence, never durable identity; and
-- optional `eps_coordinate_verify`: independent coordinate consistency check.
+- `eps_coordinate_verify`: independent coordinate consistency check.
 
-Each policy value has a versioned identity and documented units/normalization.
-Experiments must include rescaled target equations, geometric scale/translation,
-regular and derivative-degenerate monotone reparameterizations, allowed
-orientation reversal, periodic-seam representations, near tangency, and close
-distinct roots. Do not reuse G6 domain, G7 metric, kernel/render, or pixel
-tolerances unless measured evidence and author approval explicitly establish a
-mapping.
+The accepted `g8b-initial-normalized/v1` values are respectively `1e-12`,
+`2e-12`, `2e-12`, `1e-10`, `4e-12`, `1e-8` and `4e-12`. They retain the G8A
+provenance but apply only to compatible normalized quantities.
 
-## 7. Deterministic work ceilings
+Target adapters expose model-distance-equivalent residuals where correct or a
+family-specific typed residual/tolerance contract otherwise. Equation scaling
+cannot change the decision. Root/dedup/continuation values remain in declared
+provider parameter space and are not Euclidean distance. Tangency uses a
+normalized contact indicator, never raw derivatives across equation/parameter
+scaling. Coordinate closeness is verification-only and cannot establish
+identity. If an adapter normalization changes the interpretation, G8B measures
+and validates the normalized equivalent instead of copying the raw number.
 
-G8A measures candidate limits for each of:
+G6 domain, G7 metric, kernel/render and pixel tolerances remain separate.
+
+## 7. Provisionally approved deterministic work ceilings
+
+The exact initial G8B values from G8A are:
 
 ```text
-maxSemanticEvaluations
-maxSemanticDerivativeEvaluations
-maxTargetEvaluations
-maxCandidateIntervalsOrBoxes
-maxIsolationSubdivisions
-maxIsolationDepth
-maxRefinementIterationsPerCandidate
-maxResidualVerifications
-maxCandidateCount
-maxContinuationComparisons
-maxPublishedFiniteSolutions
-maxRetainedIndexEntries
-maxRetainedTopologyEpochs
+maxSemanticEvaluations = 32768
+maxSemanticDerivativeEvaluations = 16384
+maxTargetEvaluations = 32768
+maxCandidateIntervalsOrBoxes = 8192
+maxIsolationSubdivisions = 8192
+maxIsolationDepth = 40
+maxRefinementIterationsPerCandidate = 80
+maxResidualVerifications = 1024
+maxCandidateCount = 512
+maxContinuationComparisons = 4096
+maxPublishedFiniteSolutions = 256
+maxRetainedIndexEntries = 0
+maxRetainedTopologyEpochs = 2
 ```
 
 Ceilings must compose predictably. Per-candidate limits alone are insufficient
@@ -232,7 +244,8 @@ if candidate count is unbounded. Budget exhaustion returns a typed unresolved
 result with `INCOMPLETE` or `NOT_ESTABLISHED` completeness and exact consumed
 counters; it never truncates to a falsely complete finite solution set.
 
-No initial wall-clock stop is proposed for semantic truth. If responsiveness
+These are implementation defaults rather than universal mathematical
+constants. No initial wall-clock stop is authorized for semantic truth. If responsiveness
 later requires cancellation, cancellation must publish a typed incomplete
 snapshot and cannot make partial roots current as a complete result.
 
@@ -303,10 +316,11 @@ Measure one-, two-, and three-level evaluator nesting and a selected scientific
 pilot. Assert no whole-locus regeneration, bounded session state, correct cycle
 diagnostics, and normal DAG invalidation.
 
-At least one nested case must use an identified intersection solution as a
-normal-DAG input to a later CeDG-style construction. Measure dynamic
-propagation and identity continuation; an anonymous coordinate copy does not
-satisfy this first-class capability gate.
+At least one nested case must use the required internal token-selected point
+consumer as a normal-DAG input to a later CeDG-style construction. Measure
+dynamic propagation, undefined/no-retarget behavior and same-token recovery;
+an anonymous coordinate copy does not satisfy this first-class capability
+gate.
 
 ## 9. Equality oracle
 
@@ -324,9 +338,35 @@ For every reuse experiment, compare against `REFERENCE_QUERY_LOCAL` on:
 Cache/index strategies may differ only in documented work/state counters. A
 semantic difference rejects the reuse strategy.
 
-## 10. Evidence package and promotion rule
+## 10. G8A measured outcome
 
-A future G8A report must preserve:
+The query-local analytic trace measured exactly:
+
+| Consumers | Semantic evaluations | Residual verifications | Retained entries |
+|---:|---:|---:|---:|
+| 1 | 1 | 1 | 0 |
+| 3 | 3 | 3 | 0 |
+| 10 | 10 | 10 | 0 |
+| 100 | 100 | 100 | 0 |
+
+For ten consumers at nesting depths 1, 2 and 3, underlying semantic evaluator
+calls were 10, 20 and 30. Removal of half/all consumers retained zero
+intersection entries/history. All hard-zero authority counters remained zero.
+The evaluator-only comparison built one query-local candidate context per
+query and retained nothing; it correctly reported completeness
+`NOT_ESTABLISHED`.
+
+No measured cross-query benefit was needed to keep work bounded, so G8A did
+not characterize or recommend a shared owner. Measured limits and tolerance
+values are recorded in the
+[characterization report](g8a_locus_v2_intersection_characterization_report.md)
+and machine evidence. Work exhaustion produced
+`WORK_LIMIT_REACHED + NOT_ESTABLISHED + UNRESOLVED` without partial
+publication.
+
+## 11. Evidence package and approved policy boundary
+
+The G8A report preserves:
 
 - exact branch, HEAD, baseline and command lines;
 - fixture/query/policy manifests;
@@ -337,9 +377,10 @@ A future G8A report must preserve:
 - rejected strategies and failure cases; and
 - recommended hard budgets with measured margin.
 
-No solver, tolerance, budget, isolation, or owner policy becomes normative
-until the author explicitly approves the evidence. Productive G8B cannot begin
-on a benchmark-plan recommendation alone.
+The author approved the capability hierarchy, normalized tolerance contract,
+provisional exact work ceilings and query-local/no-owner state from this
+evidence. The measured JSON remains unchanged; the author-approved G8B policy
+is a derived contract, not a rewrite of measurements.
 
-This plan was not executed during planning closeout. G8A is authorized for a
-separate task; G8B remains not authorized.
+G8A is `PASS — AUTHOR APPROVED`. G8B is authorized but not started and begins
+only through separate execution of its canonical prompt.

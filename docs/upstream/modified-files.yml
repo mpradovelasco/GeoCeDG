@@ -968,6 +968,72 @@
       "change": "added",
       "purpose": "Provide focused phase G7B productive-kernel semantic, numerical, lifecycle, repeated-query, nested or fixture evidence without adding public behavior.",
       "authority": "docs/validation/g7b_locus_v2_metric_kernel_report.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8AIntersectionFixtures.java",
+      "change": "added",
+      "purpose": "Provide test-private G8A semantic-evaluator fixtures against the productive G6/G7 kernel without adding G8B or public behavior.",
+      "authority": "docs/validation/g8a_locus_v2_intersection_characterization_report.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8AIntersectionFunctionalBenchmarkTest.java",
+      "change": "added",
+      "purpose": "Characterize G8A deterministic work counters, repeated consumers, nesting and reduced scientific pilots entirely in test scope.",
+      "authority": "docs/validation/g8a_locus_v2_intersection_characterization_report.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8AIntersectionIdentityCharacterizationTest.java",
+      "change": "added",
+      "purpose": "Characterize test-private durable identity, reparameterization, seam and merge/split ambiguity semantics for G8A.",
+      "authority": "docs/validation/g8a_locus_v2_intersection_characterization_report.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8AIntersectionIdentityExperiment.java",
+      "change": "added",
+      "purpose": "Implement the nonproductive G8A continuation experiment used to distinguish durable lineage from revision-scoped localization evidence.",
+      "authority": "docs/validation/g8a_locus_v2_intersection_characterization_report.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8AIntersectionKernelLifecycleCharacterizationTest.java",
+      "change": "added",
+      "purpose": "Probe G8A rich-result publication, downstream dependency, invalidation, copy/set and removal using test-private Geo/Algo fixtures.",
+      "authority": "docs/validation/g8a_locus_v2_intersection_characterization_report.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8AIntersectionNumericalCharacterizationTest.java",
+      "change": "added",
+      "purpose": "Characterize G8A isolation, refinement, tangency, completeness and residual evidence without productive solver code.",
+      "authority": "docs/validation/g8a_locus_v2_intersection_characterization_report.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8AIntersectionNumerics.java",
+      "change": "added",
+      "purpose": "Provide test-private G8A numerical strategy probes and counters; it is characterization evidence, not a productive intersection solver.",
+      "authority": "docs/validation/g8a_locus_v2_intersection_characterization_report.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8AIntersectionSemanticCharacterizationTest.java",
+      "change": "added",
+      "purpose": "Characterize the proposed G8 rich-result axes and real target-family authority in shared-kernel test scope.",
+      "authority": "docs/validation/g8a_locus_v2_intersection_characterization_report.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8AIntersectionSemanticModel.java",
+      "change": "added",
+      "purpose": "Model the proposed G8 result, completeness, identity, guarantee, policy and work axes solely for G8A probes.",
+      "authority": "docs/validation/g8a_locus_v2_intersection_characterization_report.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8AIntersectionTopologyCharacterizationTest.java",
+      "change": "added",
+      "purpose": "Characterize branches, components, repeated preimages, cusps, collapse, seams and invalid-domain boundaries in G8A tests.",
+      "authority": "docs/validation/g8a_locus_v2_intersection_characterization_report.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8ATargetAdapters.java",
+      "change": "added",
+      "purpose": "Audit real GeoLine, GeoSegment, GeoRay, GeoConic, GeoFunction and GeoImplicit authority through test-private G8A adapters.",
+      "authority": "docs/validation/g8a_locus_v2_intersection_characterization_report.md"
     }
   ]
 }

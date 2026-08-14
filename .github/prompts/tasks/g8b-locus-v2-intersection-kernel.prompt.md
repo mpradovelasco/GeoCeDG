@@ -5,23 +5,39 @@ intersection kernel, using the exact result, solver, identity, tolerance,
 work, scope, and lifecycle contracts approved after G8A.
 
 This is a future execution prompt. **Do not execute it during planning or G8A.**
-Current state is `G8B = NOT AUTHORIZED / BLOCKED ON G8A PASS — AUTHOR
-APPROVED`. Its presence does not authorize or start productive G8B work.
+Current state is `G8B = AUTHORIZED / NOT STARTED`. This prompt is the canonical
+execution authority, but its presence alone does not start productive work; a
+task must explicitly invoke it.
+
+The author-approved minimum is line/segment/ray/circle; immutable rich value
+plus normal-DAG nonnumeric rich Geo; one required token-selected internal point
+consumer; an independent completeness axis; narrow semantic continuation with
+explicit event/ambiguity semantics and no universal merge/split genealogy;
+query-local state; no shared intersection owner; and the normalized policy and
+provisional work budgets in
+`docs/developer/locus_v2_intersection_api.md`.
 
 # Mandatory entry gate
 
 Before productive editing, require all of:
 
+- current branch is `feature/g8b-locus-v2-intersections-kernel`, clean at
+  entry, and starts from the published `geocedg-g8a-pass` target shared by
+  `main` and `origin/main`;
 - G6/G6R and G7 reproduce as `PASS`;
-- `G8A = PASS — AUTHOR APPROVED` is recorded in versioned closeout evidence;
+- `G8A = PASS — AUTHOR APPROVED` is recorded in
+  `geocedg/validation/locus-v2/g8a/g8a-author-closeout-evidence.json`;
 - `geocedg/specs/locus/locus-v2-intersections.md` is explicitly normative and
   author-approved;
 - ADR 0008 is Accepted or a superseding Accepted ADR records the chosen result,
   continuation, and state architecture;
-- exact target-family support, overlap policy, tangent/multiplicity semantics,
-  numeric capability hierarchy, tolerance values, work budgets, root lineage,
-  rich-Geo/point boundary, and cache/index ownership are author-approved;
-- the exact candidate API and upstream-owned edit set are approved;
+- line/segment/ray/circle support, typed overlap policy,
+  tangent/multiplicity semantics, capability hierarchy, normalized tolerance
+  contract, exact initial values, provisional work budgets, narrow root
+  lineage, required internal point consumer, and query-local/no-owner state
+  reproduce the author-approved record;
+- the candidate API and bounded upstream-owned edit set reproduce the approved
+  documents;
 - the roadmap records `G8B = AUTHORIZED / NOT STARTED`; and
 - the current task explicitly executes this G8B prompt.
 
@@ -31,8 +47,8 @@ If any item is absent, stop:
 G8B = BLOCKED — APPROVED G8A ENTRY BASELINE NOT REPRODUCED
 ```
 
-Do not infer approval from this prompt, a Proposed ADR/spec, conversation, or
-unreviewed characterization recommendation.
+Do not infer a broader scope from this prompt, conversation, or
+characterization alternative.
 
 # Authority and evidence hierarchy
 
@@ -45,8 +61,8 @@ Authority order:
 1. current source/tests/build/serialization;
 2. `AGENTS.md` and canonical governance/verification prompts;
 3. living roadmap;
-4. normative G6, G7, and approved G8 specs;
-5. Accepted ADRs 0006, 0007, and the G8 decision ADR;
+4. normative G6, G7, and G8 specs;
+5. Accepted ADRs 0006, 0007, and 0008;
 6. approved G8A report/API/traceability/evidence;
 7. current G6/G7 architecture/API/source;
 8. audited upstream intersection source; and
@@ -57,10 +73,9 @@ review. Do not choose between conflicting normative contracts yourself.
 
 # Scope
 
-Implement only the object families, result architecture, and solver
-capabilities explicitly approved after G8A. The planning recommendation is
-line, segment, ray, and circle, with full conics conditional on evidence; that
-recommendation is not authority until approved.
+Implement only line, segment, ray and circle under the author-approved result
+architecture and capability hierarchy. Full conics, functions, general
+implicit curves and locus–locus are explicitly deferred.
 
 Expected semantic responsibilities, when approved, are:
 
@@ -77,9 +92,10 @@ Expected semantic responsibilities, when approved, are:
 - opaque root tokens using the post-G8A approved durable-versus-revision
   evidence contract and the approved topology/ambiguity semantics;
 - atomic normal-DAG publication through the approved rich result architecture;
+- one internal derived point consumer selected by semantic root token, with
+  undefined/no-retarget/same-token-recovery lifecycle;
 - deterministic work limits and counters; and
-- approved query-local or bounded revision-scoped state with cache-off semantic
-  equality.
+- query-local state with no shared owner or intersection index.
 
 # Explicitly forbidden scope
 
@@ -119,6 +135,11 @@ not solve, identify, or repair intersections.
 Prefer additive GeoCeDG-owned shared-kernel packages. Modify upstream-owned
 files only in the exact author-approved set, preserving notices and updating
 the modified-file governance record. Do not refactor unrelated Classic code.
+Implement the immutable intersection value family, normal-DAG rich Geo and
+algorithm, and the required internal token-selected point consumer. If the
+rich Geo requires a distinct classification, add exactly one append-only
+`GeoClass.LOCUS_INTERSECTION_RESULT`-equivalent member plus exhaustive type/
+drawing tests; do not reuse `DEFAULT` or another semantic class.
 
 ## Dependency lifecycle
 
@@ -134,8 +155,20 @@ Select capabilities exactly as approved. Record method/provenance/guarantee;
 independently verify every candidate. Complete empty requires established
 exhaustive isolation/exclusion evidence. Multiplicity/contact order remains
 unknown unless proved to the approved standard. Target equation scaling must
-not change the residual
-decision.
+not change the residual decision. Each target adapter must expose either a
+model-distance-equivalent normalized residual or a family-specific typed
+residual with a matching typed tolerance. Line/segment/ray use signed
+perpendicular support-line distance plus separate limited membership; circle
+uses a signed radial-distance-equivalent residual from verified current
+`GeoConic` circle state. Record raw value, normalized value, quantity/units,
+scale and provenance. Never compare incompatible residual dimensions.
+
+Root isolation, semantic deduplication and continuation tolerances are in the
+provider's declared semantic parameter space, not Euclidean distance. The
+tangency threshold applies only to a normalized contact indicator; for a
+regular source and model-distance residual, prefer `d residual / d source arc
+length`. Raw derivatives from differently scaled equations/parameters are
+inadmissible. Coordinate tolerance is verification-only and never identity.
 
 ## Identity
 
@@ -143,17 +176,57 @@ Use the approved semantic token/topology policy. Root parameters, isolating
 intervals, residuals, and solver certificates are revision-scoped evidence,
 not fundamental durable identity. Merge, split, seam, reparameterization,
 termination, ambiguity, and branch-lineage behavior must match the
-author-approved G8A traces and narrower contract if universal genealogy was
-rejected. Coordinates may be verified but never select identity. Bound
+author-approved narrow contract: universal genealogy is rejected;
+topology-event tokens and candidate parent/child evidence are used where
+established, and non-unique continuation is explicit ambiguity/discontinuity.
+Coordinates may be verified but never select identity. Bound
 retained topology history and any derived output slots exactly as approved.
+
+The internal point consumer selects one token from the rich result. It owns no
+solver, token or cache; it becomes coherently undefined rather than switching
+roots when the token is absent, stale or ambiguous, and recovers only when the
+same token is current again under the approved lifecycle.
 
 ## State and counters
 
-Enforce every approved evaluation, derivative, candidate, subdivision, depth,
-iteration, residual, continuation, output, and retention ceiling. Failed
-private builds publish no reusable entry. If reuse exists, keys include every
-result-affecting source revision, branch/component, target state, capability,
-algorithm, tolerance, and work-policy value established by G8A.
+Use policy `g8b-initial-normalized/v1`, derived from
+`g8a-measured-candidate/v1`, with initial values:
+
+```text
+root parameter = 1e-12
+absolute residual = 2e-12
+relative residual = 2e-12
+tangency threshold = 1e-10
+semantic deduplication = 4e-12
+semantic continuation = 1e-8
+coordinate verification = 4e-12
+```
+
+Use a raw number only when the normalized quantity matches the characterized
+one; otherwise validate the appropriate normalized equivalent.
+
+Enforce the provisionally approved initial ceilings:
+
+```text
+semantic evaluations = 32768
+semantic derivative evaluations = 16384
+target evaluations = 32768
+candidate intervals/boxes = 8192
+isolation subdivisions = 8192
+isolation depth = 40
+refinement iterations per candidate = 80
+residual verifications = 1024
+candidates = 512
+continuation comparisons = 4096
+published finite solutions = 256
+retained intersection-index entries = 0
+retained topology epochs = 2
+```
+
+Every quantity is a versioned implementation default, not a universal
+mathematical constant. Failed private builds publish no reusable entry. There
+is no shared intersection owner/index or G7 metric-state reuse. Wall clock is
+informational.
 
 # Geometric invariants and degeneracies
 
@@ -181,10 +254,14 @@ Implement every selected B-core/B-policy case in
 
 - zero/one/multiple, endpoint, seam, transverse, tangent, near-tangent, and
   equation-scaling cases;
+- residual-quantity/unit compatibility, geometric scale/translation,
+  parameter scaling/reversal and normalized tangency-indicator cases;
 - branches/components, repeated coordinates/preimages, discontinuities,
   collapsed/empty components, and topology changes;
 - overlap/infinite and unsupported/unresolved rich results;
 - root continuation, merge, split, ambiguity, stale/failure/recovery traces;
+- token-selected point defined/undefined, no-retarget, same-token recovery and
+  downstream normal-DAG propagation;
 - viewport/render/legacy independence and forbidden-access zero counters;
 - deterministic bounded work, repeated/nested consumption, removal, and
   exception safety;

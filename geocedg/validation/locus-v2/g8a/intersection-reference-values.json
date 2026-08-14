@@ -1,0 +1,195 @@
+{
+  "schema_version": 1,
+  "id": "cedg.validation.g8a.intersection-reference-values",
+  "authority": "independent validation evidence; never kernel authority",
+  "runtime": {
+    "implementation": "CPython",
+    "version": "3.12.13",
+    "distribution": "conda-forge om_env",
+    "library": "mpmath",
+    "library_version": "1.4.1",
+    "precision_decimal_digits": 80,
+    "rounding_policy": "mpmath decimal rendering; binary64 sweeps use IEEE-754 CPython float"
+  },
+  "references": [
+    {
+      "id": "transverse-two-roots",
+      "equation": "h(t)=t^2-1",
+      "domain": "[-2,2]",
+      "method": "symbolic factorization",
+      "completeness": "COMPLETE",
+      "roots": [
+        {
+          "label": "left",
+          "parameter": "-1.0",
+          "multiplicity": 1
+        },
+        {
+          "label": "right",
+          "parameter": "1.0",
+          "multiplicity": 1
+        }
+      ]
+    },
+    {
+      "id": "even-tangent-root",
+      "equation": "h(t)=t^2",
+      "domain": "[-1,1]",
+      "method": "symbolic factorization and derivative",
+      "completeness": "COMPLETE",
+      "roots": [
+        {
+          "label": "tangent",
+          "parameter": "0.0",
+          "multiplicity": 2
+        }
+      ]
+    },
+    {
+      "id": "higher-and-clustered-roots",
+      "equation": "h(t)=(t+1/3)^3*(t-1e-8)*(t+1e-8)",
+      "domain": "[-1,1]",
+      "method": "symbolic factorization",
+      "completeness": "COMPLETE",
+      "roots": [
+        {
+          "label": "triple",
+          "parameter": "-0.3333333333333333333333333333333333333333333333333333333333333333333333333333333332",
+          "multiplicity": 3
+        },
+        {
+          "label": "cluster-left",
+          "parameter": "-0.00000001",
+          "multiplicity": 1
+        },
+        {
+          "label": "cluster-right",
+          "parameter": "0.00000001",
+          "multiplicity": 1
+        }
+      ]
+    },
+    {
+      "id": "complete-empty",
+      "equation": "h(t)=t^2+1",
+      "domain": "[-10,10]",
+      "method": "positive polynomial lower bound h(t)>=1",
+      "completeness": "COMPLETE",
+      "roots": []
+    },
+    {
+      "id": "focal-reduced-secant",
+      "scientific_role": "reduced focal sphere/cone separatrix pilot",
+      "equation": "F_mu(t)=(t,mu), G(x,y)=x^2+y^2-1, mu=0.6",
+      "method": "substitution and analytic discriminant",
+      "completeness": "COMPLETE",
+      "roots": [
+        {
+          "label": "left",
+          "parameter": "-0.8000000000000000000000000000000000000000000000000000000000000000000000000000000004",
+          "multiplicity": 1
+        },
+        {
+          "label": "right",
+          "parameter": "0.8000000000000000000000000000000000000000000000000000000000000000000000000000000004",
+          "multiplicity": 1
+        }
+      ]
+    },
+    {
+      "id": "focal-reduced-tangent",
+      "scientific_role": "reduced focal sphere/cone separatrix pilot",
+      "equation": "F_mu(t)=(t,mu), G(x,y)=x^2+y^2-1, mu=1",
+      "method": "substitution and zero discriminant",
+      "completeness": "COMPLETE",
+      "roots": [
+        {
+          "label": "tangent",
+          "parameter": "0.0",
+          "multiplicity": 2
+        }
+      ]
+    },
+    {
+      "id": "focal-reduced-empty",
+      "scientific_role": "reduced focal sphere/cone separatrix pilot",
+      "equation": "F_mu(t)=(t,mu), G(x,y)=x^2+y^2-1, mu=1.2",
+      "method": "negative analytic discriminant",
+      "completeness": "COMPLETE",
+      "roots": []
+    },
+    {
+      "id": "lsim-reduced-four-leaf",
+      "scientific_role": "two-branch 2D cone-cylinder LSIM topology proxy",
+      "equation": "F_sigma(t)=(t,sigma*(t^2-lambda)), target y=0, sigma=+-1, lambda=0.25",
+      "method": "per-branch symbolic factorization",
+      "completeness": "COMPLETE_PER_TWO_DECLARED_BRANCHES",
+      "roots_per_branch": [
+        {
+          "label": "negative-leaf",
+          "parameter": "-0.5",
+          "multiplicity": 1
+        },
+        {
+          "label": "positive-leaf",
+          "parameter": "0.5",
+          "multiplicity": 1
+        }
+      ],
+      "total_constructive_preimages": 4
+    },
+    {
+      "id": "reparameterization-increasing",
+      "equation": "t=s^3, original t=0.512",
+      "method": "principal real arbitrary-precision cube root",
+      "original_parameter": "0.512",
+      "reparameterized_parameter": "0.8000000000000000000000000000000000000000000000000000000000000000000000000000000004",
+      "durable_identity_effect": "UNCHANGED_ONLY_WITH_EXPLICIT_SEMANTIC_CONTINUATION_MAP"
+    },
+    {
+      "id": "reparameterization-reversal",
+      "equation": "t=-s, original roots t=-0.8,+0.8",
+      "method": "exact affine substitution",
+      "reparameterized_roots": [
+        "-0.8",
+        "0.8"
+      ],
+      "orientation": "REVERSED"
+    },
+    {
+      "id": "periodic-seam",
+      "equation": "F(t)=(cos(t),sin(t)), domain [0,2*pi]",
+      "method": "exact periodic equivalence",
+      "equivalent_parameters": [
+        "0.0",
+        "6.283185307179586476925286766559005768394338798750211641949889184615632812572417995"
+      ],
+      "constructive_preimages": 1
+    }
+  ],
+  "tolerance_measurements": {
+    "binary64_max_normalized_residual": "2.0194839173657902e-28",
+    "near_tangent_delta": "0.000000000001",
+    "near_tangent_root": "0.000001000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+    "near_tangent_derivative_magnitude": "0.000002000000000000000000000000000000000000000000000000000000000000000000000000000000002",
+    "clustered_distinct_root_gap": "0.00000002000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+    "monotone_mapping_binary64_roundtrip_error": "1.1102230246251565e-16",
+    "candidate_policy": {
+      "status": "PROPOSED_FROM_G8A_MEASUREMENTS_NOT_NORMATIVE",
+      "root_parameter_tolerance": "1e-12",
+      "absolute_residual_tolerance": "2e-12",
+      "relative_residual_tolerance": "2e-12",
+      "tangency_threshold": "1e-10",
+      "deduplication_parameter_tolerance": "4e-12",
+      "continuation_parameter_tolerance": "1e-8",
+      "coordinate_verification_tolerance": "4e-12"
+    }
+  },
+  "scientific_source_ids": [
+    "cedg.reference.lsim-preprint-2022",
+    "cedg.reference.intersection-flattening-2023",
+    "cedg.reference.book-2023",
+    "cedg.reference.tools-and-oblique-cone-2025"
+  ],
+  "scientific_boundary": "sources motivate topology and dependency; reduced formulas are independently declared G8A fixtures"
+}

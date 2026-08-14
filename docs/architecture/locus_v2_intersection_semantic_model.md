@@ -1,14 +1,14 @@
-# Locus V2 2D intersections — proposed semantic model
+# Locus V2 2D intersections — author-approved semantic model
 
 | Field | Value |
 |---|---|
-| Status | **AUTHOR-APPROVED PLANNING MODEL — PROPOSED SEMANTICS / NOT IMPLEMENTED** |
-| Phase | G8 planning `PASS`; G8A authorized/not started; G8B not authorized |
-| Authority if approved | `geocedg/specs/locus/locus-v2-intersections.md` |
+| Status | **G8A AUTHOR-APPROVED MODEL — NOT IMPLEMENTED** |
+| Phase | G8 planning `PASS`; G8A `PASS — AUTHOR APPROVED`; G8B `AUTHORIZED / NOT STARTED` |
+| Normative authority | `geocedg/specs/locus/locus-v2-intersections.md` |
 
-This document explains the author-approved planning architecture and the
-candidate value/identity details that G8A must test. It does not make the G8
-specification normative or supersede the normative G6/G7 specifications.
+This document explains the architecture and value/identity details accepted
+after G8A. The linked normative G8 specification is authoritative and does not
+supersede the normative G6/G7 specifications.
 
 ## Fundamental CeDG capability
 
@@ -40,8 +40,8 @@ intersection query
 rich set result
   completeness + geometry kind + solutions + diagnostics + work evidence
 
-optional presentation/output
-  ordinary GeoPoints derived from current verified finite solutions
+required internal derived consumer
+  one token-selected ordinary GeoPoint from a current complete finite set
 ```
 
 The rich set result is the intersection authority. An ordinary point cannot
@@ -50,7 +50,8 @@ or parent/child identity lineage and therefore cannot be the sole result.
 
 ## 2. Conceptual immutable values
 
-The names below are proposals for G8A, not pre-approved Java APIs.
+The semantic roles below are approved. Exact Java names remain the candidate
+API surface for G8B.
 
 ```text
 LocusIntersectionQuery2D
@@ -205,8 +206,8 @@ The result-set kind separately represents `EMPTY`, `FINITE`, `OVERLAP`,
 `INFINITELY_MANY`, `UNSUPPORTED_OVERLAP`, or `UNRESOLVED`. A tangent endpoint is therefore expressible
 without inventing a combined enum value.
 
-Multiplicity greater than one is a claim, not a formatting hint. G8A must
-define the exact analytic/differential/interval evidence needed for each
+Multiplicity greater than one is a claim, not a formatting hint. G8A
+characterized the analytic/differential/factor evidence needed for each
 supported claim. Tangency may be established while exact multiplicity remains
 `NOT_ESTABLISHED`; uncertainty cannot be reported as transverse.
 
@@ -228,6 +229,23 @@ Raw line/conic polynomial values are scale-dependent and cannot be compared to
 one universal epsilon. Normalization must make multiplication of the target
 equation by a nonzero scalar semantically irrelevant.
 
+The accepted `g8b-initial-normalized/v1` policy requires each adapter to expose
+either a model-distance-equivalent residual or a family-specific typed
+quantity with a matching typed tolerance. Line, segment and ray use signed
+perpendicular support-line distance plus separate membership; circle uses a
+signed radial-distance-equivalent residual from its verified `GeoConic` state.
+Absolute/relative comparisons operate only on compatible units and a
+translation-invariant documented geometric scale.
+
+Root-isolation, semantic deduplication and continuation tolerances remain in
+the versioned provider's semantic parameter space. The tangency threshold
+applies only to a normalized contact indicator; for a regular source and
+distance residual, the preferred first-order indicator is the derivative with
+respect to source arc length. Raw equation or raw parameter derivatives from
+differently scaled representations are not comparable. The initial values are
+the G8A-measured values recorded in the normative specification and apply only
+where these normalized meanings match.
+
 The G6 `NumericGuarantee` enum remains the shared numeric-guarantee vocabulary.
 Intersection completeness/support are different axes and must not be added to
 that enum.
@@ -247,7 +265,7 @@ Candidate closed identity statuses are:
 - `IDENTITY_DISCONTINUITY`; and
 - `NOT_ESTABLISHED`.
 
-An `IntersectionRootLineage2D` hypothesis has transitions analogous to, but
+`IntersectionRootLineage2D` has topology-event transitions analogous to, but
 distinct from, G6 branch lineage:
 
 - `UNCHANGED`;
@@ -260,26 +278,28 @@ Root lineage cannot be inferred solely from branch lineage: one stable branch
 may gain or lose roots against a moving target. Conversely, a branch split may
 force root-lineage events even when coordinates remain coincident.
 
-### G8A continuation and genealogy hypotheses
+### Author-approved continuation and topology policy
 
-| Transition | Proposed semantic interpretation |
+| Transition | Accepted semantic interpretation |
 |---|---|
 | one isolated root moves inside the same branch/component | preserve token only when a proven semantic continuation relation is unique; intervals/parameters are supporting evidence |
 | equivalent monotone reparameterization | preserve geometric identity when an approved map carries the semantic continuation evidence; a changed interval alone is not a new root |
-| two roots merge at a tangent event | candidate: terminate both parents and allocate one child with `MERGED` lineage when robustly established |
-| tangent root splits | candidate: terminate parent and allocate two children with `SPLIT` lineage when correspondence is robustly established |
+| two roots merge at a tangent event | terminate both parents and allocate one event token with candidate-parent evidence when robustly established |
+| tangent root splits | terminate the event token and allocate new children with candidate-parent evidence when robustly established |
 | periodic seam crossing | preserve token through provider equivalence and lifted continuation |
 | included endpoint touch/reversal | retain or event-transition according to characterized local root topology; always record boundary location |
 | invalid-domain gap | terminate at the gap; do not bridge it by coordinate proximity |
 | branch/component topology change | require compatible provider/root lineage; otherwise begin a new topology epoch |
 
 The new-token-on-merge/split model deliberately distinguishes stable
-continuation from a topological event, but it is not yet universal semantics.
-G8A must trace `2 -> 1 -> 2` and reverse traversal, symmetric ambiguous splits,
+continuation from a topological event. G8A found that it cannot become
+universal descendant-inheritance semantics.
+G8A traced `2 -> 1 -> 2` and reverse traversal, symmetric ambiguous splits,
 seam interactions, and nearby branch/component changes. When several
 continuations are equally admissible, the result exposes ambiguity or identity
-discontinuity. If the hypothesis fails, G8A recommends a narrower rigorous
-contract.
+discontinuity. The accepted narrower contract records an event token and
+candidate parent/child sets, preserving an old token only when continuation is
+uniquely established.
 
 ## 9. Atomic currentness
 
@@ -297,18 +317,20 @@ an exception-visible mix of old solutions and new diagnostics. Derived points
 are updated only after rich publication; they become undefined when their
 tokens have no current verified solution.
 
-## 10. Output-slot semantics
+## 10. Token-selected point-consumer semantics
 
-If ordinary point outputs are approved, an output handler may manage storage
-and labels but not root identity. The algorithm maintains a bounded token-to-slot
-association. It reuses a slot for the same continued token, assigns available
-slots deterministically for new tokens, and marks unused slots undefined.
+G8B must provide one separate internal derived point consumer selected by an
+opaque semantic root token. It manages one ordinary `GeoPoint`, never root
+identity or solving. The point is current only when the rich input is a
+successful complete finite set and contains that token with established
+admissible continuation.
 
-The maximum simultaneously representable point outputs is an explicit work/
-output budget. Exceeding it makes completeness `INCOMPLETE` or the computation
-work-limited;
-the algorithm must not silently truncate a claimed complete set. Historical
-root events cannot grow the output list or continuation history without bound.
+If the selected root disappears, becomes stale, or has ambiguous continuation,
+the point becomes coherently undefined and does not retarget. It may recover
+only when the same token is again current under the approved lifecycle
+contract. A variable-size public point array, slot-derived identity and
+coordinate-nearest reassociation are not part of G8B. Historical topology
+events remain bounded to the approved two-epoch context.
 
 ## 11. Ordinary absence, unsupported cases, and overlap
 
@@ -327,19 +349,38 @@ G8A may conclude that the first G8B kernel only detects and reports overlap as
 `UNSUPPORTED_OVERLAP` rather than fully parameterizing it. It may not convert
 overlap into a finite sample or `EMPTY`.
 
-## 12. Approval questions
+## 12. G8A model outcome
 
-Before G8B, the author must approve or replace:
+The 65 probes validated the legal value shape and rejected parameter/interval,
+coordinate and slot identity. The accepted exact field split is:
 
-- exact result-axis names and legal combinations within the approved rich-set
-  plus normal-DAG rich-Geo architecture;
-- root-token invariance and the supported reparameterization subset;
-- merge/split genealogy or a narrower identity contract;
-- classification and multiplicity evidence;
-- overlap representation level; and
-- the bounded optional point-output/currentness lifecycle.
+| Durable/continuation candidate | Revision-scoped evidence |
+|---|---|
+| opaque root token | locus and target revisions |
+| source-pair identity | branch snapshot and component key |
+| constructive intersection lineage | semantic and lifted periodic parameter |
+| established branch lineage | isolating interval |
+| topology context | normalized residual and membership |
+| explicit continuation relation/status | solver method and numeric guarantee |
 
-Query-local-first computation and the rich-result authority are already
-approved planning premises. Ordinary points remain optional derived consumers,
-and no point projection may hide `INCOMPLETE` or `NOT_ESTABLISHED`
-completeness.
+The candidate supported invariance subset is ordinary motion, known monotone
+maps (including derivative-degenerate maps with separate contact truth),
+permitted known orientation reversal, and declared periodic lifted mapping.
+Unknown or many-valued maps are explicit identity ambiguity/not-established
+states.
+
+The rich result must retain the independent completeness axis and method
+evidence. The required internal point consumer is legal only for a current
+successful complete finite set and its selected current token.
+
+## 13. Author-approved G8B contract
+
+The author accepts the result axes/legal combinations, narrow root-token
+invariance subset, non-universal merge/split policy, contact/multiplicity
+evidence, typed overlap semantics, required token-selected point consumer and
+query-local state. The line/segment/ray/circle family is mandatory; full
+conics and Level C remain deferred. The normalized tolerance contract and
+provisional deterministic ceilings are defined by the normative specification.
+
+G8B is authorized but not started. No public command, `Path`, persistence,
+legacy/Classic, 3D or G9 behavior is implied.

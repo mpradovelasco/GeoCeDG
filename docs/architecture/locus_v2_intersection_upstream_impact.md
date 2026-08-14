@@ -1,15 +1,17 @@
-# Locus V2 2D intersections — proposed upstream impact map
+# Locus V2 2D intersections — author-approved upstream impact map
 
 | Field | Value |
 |---|---|
-| Status | **PLANNING AUDIT — NO PRODUCTIVE G8 CHANGE AUTHORIZED** |
+| Status | **G8A SOURCE/LIFECYCLE AUDIT ACCEPTED — G8B AUTHORIZED / NOT STARTED** |
 | Baseline | GeoGebra 5.4.928.0, `9b93256b7df401ff056c37b502d82df4d72b1522` |
-| GeoCeDG HEAD audited | `d1fe15568fa838b1fdcc1a4ba2412197668cdc40` |
-| Roadmap | G7 `PASS`; G8 planning `PASS`; G8A authorized/not started; G8B not authorized; G9 not started |
+| GeoCeDG G8A entry HEAD audited | `315aec011cdc719a41a9bdc352a4a10ea502df6e` |
+| Roadmap | G7 `PASS`; G8 planning `PASS`; G8A `PASS — AUTHOR APPROVED`; G8B authorized/not started; G9 not started |
 | Date | 2026-08-14 |
 
-This map records the actual pinned-source extension points and compatibility
-risks relevant to G8 planning. It does not authorize editing any listed file.
+This map records the actual pinned-source extension points, accepted G8A
+lifecycle results and compatibility risks. Productive editing is authorized
+only through a separate execution of the G8B prompt and within this exact
+boundary.
 
 ## 1. Existing intersection dispatch and lifecycle
 
@@ -46,9 +48,9 @@ independent budgets and residual policy.
 | Source file / class | Authoritative data observed | Scope implication |
 |---|---|---|
 | `.../kernel/geos/GeoLine.java` | Homogeneous line coefficients/incidence plus path range | Suitable Level A support-line equation; segment/ray restrictions remain type-specific |
-| `.../kernel/geos/GeoSegment.java` | Finite line subtype and endpoint/path membership | Candidate Level A target with explicit included-boundary classification |
-| `.../kernel/geos/GeoRay.java` | Half-line subtype and start/path membership | Candidate Level A target with explicit boundary/direction membership |
-| `.../kernel/kernelND/GeoConicND.java` | Symmetric conic matrix, evaluation, type and degeneration state | Candidate Level A authority; full conic support remains conditional on G8A degeneration evidence |
+| `.../kernel/geos/GeoSegment.java` | Finite line subtype and endpoint/path membership | Approved minimum target with explicit included-boundary classification |
+| `.../kernel/geos/GeoRay.java` | Half-line subtype and start/path membership | Approved minimum target with explicit boundary/direction membership |
+| `.../kernel/kernelND/GeoConicND.java` | Symmetric conic matrix, evaluation, type and degeneration state | Circle is approved through verified type and normalized radial residual; full conics are deferred |
 | `.../kernel/implicit/GeoImplicit.java` | Polynomial equation evaluation, coefficient and derivative facilities | Legitimate Level C characterization candidate; not automatic minimum support |
 | `.../kernel/geos/GeoFunction.java` | Function evaluation plus paths that often use view-limited intervals | Do not use a visible interval as complete semantic domain; defer pending a domain contract |
 
@@ -76,14 +78,14 @@ services or candidate isolation authorities.
 
 ## 5. GeoElement classification, copy, and persistence
 
-| Source file / class | Current behavior | Risk / proposed boundary |
+| Source file / class | Current behavior | Risk / approved boundary |
 |---|---|---|
 | `.../common/plugin/GeoClass.java` | Append-only type classification now includes GeoCeDG V2 and metric-result types | A rich G8 Geo may require one append-only value; author approval and exhaustive-switch validation are mandatory |
 | `.../kernel/GeoFactory.java` | Factory for supported GeoElement types; no public V2/metric persistence route | Keep unchanged; a no-XML internal Geo must not be made factory-persistent by accident |
 | `.../kernel/geos/GeoElement.java` | Base definition/copy/set/remove/update contracts | Rich result must implement defensive copy/set and definedness without becoming numeric or path-like |
 | XML and construction factories | Recreate supported serialized types | Explicitly outside G8; no V2 intersection result or point association persistence |
 
-The candidate rich Geo follows the normal Construction lifetime but is not a
+The approved rich Geo follows the normal Construction lifetime but is not a
 publicly constructible/persisted type. Its `copy`/`set` behavior must preserve
 one immutable snapshot or a coherent diagnostic; it cannot alias mutable
 solver state.
@@ -100,9 +102,10 @@ That lifecycle is insufficient for G8 because:
 - a periodic seam can reorder the same semantic root; and
 - a growing output handler can retain unbounded historical slots.
 
-The proposed rich result therefore owns root tokens and topology lineage.
-Ordinary point outputs, if later approved, are a bounded projection of those
-tokens rather than the identity source.
+The rich result therefore owns root tokens and topology lineage. G8B must add
+one separate internal point consumer selected by a root token; it is a bounded
+derived consumer rather than the identity source and never retargets by
+coordinate.
 
 ## 7. Incidence and Path boundaries
 
@@ -115,7 +118,7 @@ binding without widening public incidence behavior.
 
 ## 8. Construction update, removal, and exception safety
 
-The candidate algorithm must use normal `setInputOutput()` dependency edges
+The G8B algorithm must use normal `setInputOutput()` dependency edges
 for both sources and normal recomputation/removal. A private computation
 captures revisions and publishes atomically. On target/locus invalidation,
 exception, or removal:
@@ -138,7 +141,7 @@ Classic `Intersect` selection.
 Legacy `GeoLocus` and its sampled `myPointList` remain unchanged and cannot be
 silently migrated to `GeoLocusV2`.
 
-## 10. Candidate editable set after G8A approval
+## 10. Author-approved G8B editable set
 
 The smallest sustainable productive set is expected to be additive:
 
@@ -147,17 +150,18 @@ The smallest sustainable productive set is expected to be additive:
   `source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/`;
 - a focused `AlgoLocusIntersectionV2` under the GeoCeDG algorithm package;
 - a rich `GeoLocusIntersectionResult` under the GeoCeDG geos package;
+- a required internal `AlgoLocusIntersectionPointV2`-equivalent consumer;
 - focused shared-kernel tests under matching GeoCeDG test packages; and
 - test-private characterization/support fixtures and versioned validation
   evidence.
 
-Potential unavoidable upstream-owned edits, only after explicit approval:
+Potential unavoidable upstream-owned edits authorized if required:
 
 1. append one `GeoClass.LOCUS_INTERSECTION_RESULT` classification; and
 2. update exhaustive type/drawing tests or switches so an internal non-drawable
    Geo is rejected/handled deliberately.
 
-The following are *not* in the proposed minimum edit set:
+The following are *not* in the approved minimum edit set:
 
 - `CmdIntersect` or command factories;
 - `AlgoDispatcher` public integration;
@@ -179,7 +183,7 @@ repository modified-file governance and keep upstream notices intact.
 | Scientific pilot adapters | test/validation only | Only generic approved semantics, never pilot-specific solving |
 | Counters and benchmark traces | test-private instrumentation/evidence | Stable functional counters where needed for gates |
 | Rich result and DAG lifecycle | API/lifecycle probe | GeoCeDG shared-kernel classes |
-| Public points/commands/XML | prohibited | Still deferred unless separately authorized |
+| Public points/commands/XML | prohibited | Still deferred; the required internal token-selected point consumer is additive kernel code, not a public surface |
 
 ## 12. Principal compatibility risks
 
@@ -195,3 +199,33 @@ repository modified-file governance and keep upstream notices intact.
 9. crossing the 2D/3D or G8/G9 boundary.
 
 Any of these requires stopping productive work and returning to author review.
+
+## 13. G8A audit disposition
+
+The actual test-private adapters confirmed:
+
+- `GeoLine.getX/getY/getZ` supply a scale-normalizable line equation;
+- `GeoSegment` and `GeoRay` limited-path membership can be verified after
+  support-line incidence without projecting a candidate;
+- `GeoConicND.getFlatMatrix`, type and derivative formula supply circle and
+  conic equation authority, but ellipse/parabola/hyperbola/degenerate subtype
+  completeness is not uniform;
+- `GeoFunction.value` plus a genuinely explicit `hasInterval` domain can define
+  incidence, while view-limited min/max cannot; and
+- `GeoImplicit.evaluateImplicitCurve`, `derivativeX/Y` and coefficients are
+  legitimate Level C authority but do not by themselves prove component
+  completeness.
+
+The actual `GeoElement`/`AlgoElement` probe validated a nonnumeric rich output,
+normal input/output registration, P1-style atomic publication, defensive
+copy/set, failure/recovery, a token-selected point consumer, label/removal and an empty
+XML implementation. It used `GeoClass.DEFAULT` only test-private. A future
+productive rich Geo still requires one author-approved append-only
+`LOCUS_INTERSECTION_RESULT` value and exhaustive-type tests.
+
+The author requires that internal point consumer in G8B and permits one
+append-only dedicated `GeoClass` if the rich Geo requires it. No evidence
+requires edits to `GeoLocusV2`, public dispatch, Classic
+intersection code, `Path`, `GeoFactory`, XML, rendering or 3D. The exact
+candidate additive API is in
+[`locus_v2_intersection_api.md`](../developer/locus_v2_intersection_api.md).

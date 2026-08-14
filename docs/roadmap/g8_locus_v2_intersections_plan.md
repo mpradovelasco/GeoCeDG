@@ -3,19 +3,18 @@
 | Field | Value |
 |---|---|
 | Status | **PASS — AUTHOR APPROVED** |
-| G8A state | **AUTHORIZED / NOT STARTED**; execution requires a separate task |
-| G8B state | **NOT AUTHORIZED**; blocked on G8A `PASS — AUTHOR APPROVED` |
+| G8A state | **PASS — AUTHOR APPROVED** |
+| G8B state | **AUTHORIZED / NOT STARTED** |
 | Approved stages | G8A characterization and author decisions; G8B minimum internal kernel |
-| Specification state | **PROPOSED — NOT NORMATIVE** |
-| ADR state | ADR 0008 **Proposed** |
+| Specification state | **NORMATIVE — AUTHOR APPROVED** |
+| ADR state | ADR 0008 **Accepted** |
 | Author-review date | 2026-08-14 |
 | Product maturity | Locus V2 remains experimental, internal, and disabled by default |
 
-The author approves this planning architecture and authorizes only a separately
-invoked G8A characterization task. This closeout does not execute G8A, make the
-proposed specification normative, accept ADR 0008, authorize G8B, or authorize
-productive work. G8B remains blocked until G8A passes a second explicit author
-review and every productive entry gate below is satisfied.
+The author approved this planning architecture, reviewed the completed G8A
+characterization, incorporated decisions D1–D17 into the normative contract,
+accepted ADR 0008 and authorized a separately invoked G8B. This closeout does
+not execute G8B or add productive/observable intersection behavior.
 
 ## 1. Authority and preflight record
 
@@ -124,8 +123,8 @@ The author approves two mandatory stages. No G8C is predeclared.
 
 ### G8A — intersection characterization and author decisions
 
-**State:** `AUTHORIZED / NOT STARTED`; execute only through a separate task
-that explicitly invokes the versioned G8A prompt.
+**State:** `PASS — AUTHOR APPROVED`; executed through the separately invoked
+versioned G8A prompt, with no productive code.
 
 G8A may add only test-private probes, validation scripts/data, documentation,
 and reproducible evidence. It must not add a productive intersection API.
@@ -151,22 +150,20 @@ Work packages:
 9. update the decision table with evidence and recommendations; and
 10. request explicit author approval.
 
-G8A exits only when all evidence is reproducible, every result claim has an
-honest support/guarantee level, the minimum G8B object-family scope is closed,
-the proposed specification is ready to become normative, ADR 0008 is ready for
-acceptance or replacement, and the author records `G8A = PASS — AUTHOR
-APPROVED`.
+The execution requirements and author decision package are satisfied. The
+author approved D1–D17, made the specification normative, accepted ADR 0008
+and closed G8A.
 
 ### G8B — minimum internal productive 2D intersection kernel
 
-**State:** `NOT AUTHORIZED / NOT STARTED`; blocked until the G8A author gate
-passes.
+**State:** `AUTHORIZED / NOT STARTED`; execution remains a separate task.
 
-The candidate minimum is an internal, feature-gated kernel service over finite
+The authorized minimum is an internal, feature-gated kernel service over finite
 Locus V2 valid components and a closed Level-A target set. It publishes a rich,
-revision-bound result through the normal DAG. Ordinary point outputs, if the
-author approves them, are derived projections of that result rather than its
-authority. There is no public command, `Path`, or persistence surface.
+revision-bound result through the normal DAG and includes one required internal
+derived point consumer selected by semantic root token. That point is never
+intersection authority. There is no public command, `Path`, or persistence
+surface.
 
 G8B entry conditions:
 
@@ -174,9 +171,9 @@ G8B entry conditions:
 - G8A is `PASS — AUTHOR APPROVED`;
 - the intersection specification is explicitly normative;
 - ADR 0008 is Accepted or superseded by an Accepted ADR;
-- tolerance values, work ceilings, completeness claims, output bounds, and
-  minimum target families are author approved; and
-- a separately issued implementation authorization invokes the G8B prompt.
+- tolerance normalization/values, work ceilings, completeness claims, point
+  lifecycle, and minimum target families are author approved; and
+- a separate task explicitly invokes the G8B prompt.
 
 G8B exits only after productive tests prove semantic/reference equality,
 truthful completeness, tangency support, dynamic identity, atomic invalidation,
@@ -184,7 +181,7 @@ bounded state/work, zero forbidden-authority reads, and Classic non-regression.
 
 ### Possible later stage
 
-Do not pre-authorize a G8C/G8R. G8A may recommend one if evidence shows that
+Do not pre-authorize a G8C/G8R. Later evidence may recommend one if it shows that
 general conics, hard topology continuation, or performance hardening cannot be
 closed safely in the minimum kernel. Functions, general implicit curves, and
 locus–locus remain separately gated Level-C extensions even if the eventual
@@ -192,13 +189,13 @@ roadmap keeps them under the G8 umbrella.
 
 ## 5. Author-approved staged coverage
 
-| Family | G8A characterization | Candidate G8B disposition | Reason |
+| Family | G8A characterization | Approved G8B disposition | Reason |
 |---|---|---|---|
 | line | mandatory | include | authoritative homogeneous equation and unbounded support |
 | segment | mandatory | include | line residual plus authoritative limited-path membership and endpoint classification |
 | ray | mandatory | include | line residual plus one-sided authoritative membership |
 | circle | mandatory | include | stable specialized conic residual and required tangency cases |
-| nondegenerate full conics | mandatory | conditional include | same one-parameter problem, but residual normalization and degeneration/completeness must pass G8A |
+| nondegenerate full conics | characterized | defer | G8A found no uniform closed completeness/degeneration contract across subtypes |
 | conic parts/arcs | characterize only if needed | defer by default | additional endpoint/limited-path and seam policies |
 | functions | Level C | defer | path bounds are view-dependent and discontinuity/domain semantics need a separate authority |
 | polynomial implicit curves | Level C | defer | `GeoImplicit` has an authoritative evaluator, but complete isolation and normalization are not a Level-A consequence |
@@ -206,15 +203,14 @@ roadmap keeps them under the G8 umbrella.
 | Locus V2–Locus V2 | Level C | defer | two-parameter solving, overlap, dual topology, and identity require a separate contract |
 | generic `Path` | out of minimum | defer | `Path` alone does not expose the required semantic domains, branches, or guarantees |
 
-The preferred minimum is line, segment, ray, and circle. Full nondegenerate
-conics join that minimum only if G8A proves a scale-invariant residual contract,
-explicit degenerate-type handling, tangency detection, and honest root-set
-completeness with the same bounded architecture. Nominal breadth is not a
-reason to promote a family.
+The approved minimum is line, segment, ray, and circle. Full nondegenerate
+conics require new explicitly approved evidence for a scale-invariant residual
+contract, degenerate-type handling, tangency detection and honest root-set
+completeness. Nominal breadth is not a reason to promote a family.
 
-## 6. Proposed semantic architecture
+## 6. Author-approved semantic architecture
 
-The proposed data flow is:
+The approved data flow is:
 
 ```text
 GeoLocusV2 + supported target GeoElement
@@ -228,7 +224,7 @@ immutable LocusIntersectionResult2D
         v
 non-numeric rich result Geo in the normal DAG
         |
-        +--> optional bounded ordinary GeoPoint projections
+        +--> required internal GeoPoint consumer selected by semantic root token
 ```
 
 The rich immutable result contains orthogonal query-level computation,
@@ -251,13 +247,13 @@ Geometric existence and numerical confidence are separate axes. In particular:
 - ordinary geometric absence does not throw.
 
 The detailed model is in
-[the proposed specification](../../geocedg/specs/locus/locus-v2-intersections.md)
+[the normative specification](../../geocedg/specs/locus/locus-v2-intersections.md)
 and the
 [semantic architecture](../architecture/locus_v2_intersection_semantic_model.md).
 
-## 7. Numerical recommendation for G8A
+## 7. Author-approved numerical strategy
 
-G8A should compare, rather than prematurely select, a capability hierarchy:
+G8A compared and the author approved this capability hierarchy:
 
 1. authoritative exact/analytic intersection capability when both sources
    genuinely provide it;
@@ -277,19 +273,28 @@ completeness, and residual evidence rather than inventing a second exactness
 scale.
 
 Sign changes isolate odd-multiplicity candidates but cannot cover tangencies.
-Every promoted strategy must also characterize stationary/residual minima,
-derivative evidence, endpoint roots, and interval-safe alternatives. A root is
-published only after semantic re-evaluation, target-domain checking, and
-residual verification.
+Every productive strategy must also use applicable stationary/residual minima,
+normalized derivative/contact evidence, endpoint roots, or interval-safe
+alternatives. A root is published only after semantic re-evaluation,
+target-domain checking and residual verification.
 
-## 8. Dynamic identity characterization contract
+The accepted `g8b-initial-normalized/v1` policy derives from the G8A measured
+values. Target adapters expose model-distance-equivalent residuals where
+correct or family-specific typed residual/tolerance contracts otherwise;
+equation rescaling cannot change the decision. Root/dedup/continuation
+tolerances remain provider-parameter quantities, tangency uses a normalized
+contact indicator, and coordinate tolerance is verification-only. The exact
+values and provisional deterministic ceilings are normative in the
+[G8 specification](../../geocedg/specs/locus/locus-v2-intersections.md).
 
-A solution's candidate durable runtime identity is a semantic continuation
+## 8. Author-approved dynamic identity contract
+
+A solution's durable runtime identity is a semantic continuation
 token scoped to the source pair, constructive intersection lineage, applicable
 branch lineage, and topology/continuation context. It is not its coordinate,
 output index, current parameter value, or current isolating interval.
 
-G8A must keep two evidence classes separate:
+G8 keeps two evidence classes separate:
 
 - durable/continuation information: source-pair identity, constructive
   intersection lineage, applicable branch lineage, topology/continuation
@@ -301,9 +306,9 @@ G8A must keep two evidence classes separate:
 A root isolating interval is revision-scoped localization/certification
 evidence. It is not, by itself, fundamental durable identity. Equivalent
 monotone reparameterization must not automatically create a new geometric
-intersection merely because its parameter value or interval changes. G8A must
-establish exactly which monotone reparameterizations, orientation reversals,
-and periodic-seam representations preserve identity. Cases without a rigorous
+intersection merely because its parameter value or interval changes. G8A
+established the supported subset for known monotone maps, permitted orientation
+reversal and declared periodic-seam representations. Cases without a rigorous
 invariant contract return an explicit unsupported, ambiguous, or
 not-established identity status; coordinates are never the fallback.
 
@@ -312,15 +317,12 @@ intervals, provider canonicalization, branch lineage, and a proven
 reparameterization map are candidate continuation evidence. Cartesian distance
 may be logged only as a diagnostic.
 
-The `2 simple roots -> 1 tangent/multiple root -> 2 simple roots` genealogy is
-a strong **G8A hypothesis**, not an approved universal identity semantic. G8A
-must trace forward and reverse traversal, symmetric cases with intrinsically
-ambiguous descendants, periodic-seam interaction, and simultaneous
-branch/component change. The preferred hypothesis preserves identity when
-continuation is geometrically unique, records parent/child merge/split lineage
-when robustly established, and exposes ambiguity or identity discontinuity
-otherwise. If the universal genealogy fails, G8A must recommend a narrower
-rigorous identity contract.
+The `2 simple roots -> 1 tangent/multiple root -> 2 simple roots` hypothesis
+failed as a universal genealogy in forward/reverse symmetric cases. The
+accepted narrower contract preserves identity only when continuation is
+geometrically unique, records topology events and candidate parent/child
+relations when robustly established, and exposes ambiguity or identity
+discontinuity otherwise.
 
 Endpoint, invalid-gap, branch-loss, seam, stale, failure, and recovery events
 remain explicit. No event may retain stale coordinates as current or infer
@@ -337,9 +339,9 @@ Legitimate reuse candidates are:
   patterns established by G7.
 
 The G7 metric component state and `LocusMetricIndex2D` are not intersection
-state and must remain separate. The author-approved starting point is
-query-local intersection state. G8A may propose a dedicated per-locus
-intersection owner only if repeated-query counters justify it. Any such state
+state and must remain separate. The author-approved G8B state is query-local
+and contains no shared intersection owner. A later phase may propose a
+dedicated owner only if new repeated-query counters justify it. Any such state
 must be bounded, keyed by every result-affecting source/policy/version field,
 limited to current revisions, cache-disabled equivalent, and released through
 the normal source/consumer lifecycle. It cannot become a global registry or a
@@ -362,7 +364,7 @@ tolerance authority. Full model conversion is not required for G8A or G8B.
 
 ## 11. Validation and functional-performance gates
 
-The proposed matrix covers analytic/reference correctness, per-root residuals
+The approved matrix covers analytic/reference correctness, per-root residuals
 and an independent result-set completeness axis,
 viewport/zoom/DPI independence, reparameterization, scale/translation,
 tangency and higher multiplicity, endpoints and seams, distinct preimages at
@@ -381,18 +383,19 @@ runner-specific evidence and author approval justify a threshold.
 See the [validation matrix](../validation/g8_locus_v2_intersection_validation_matrix.md)
 and [benchmark plan](../validation/g8_locus_v2_intersection_benchmark_plan.md).
 
-## 12. Candidate productive impact after approval
+## 12. Authorized productive impact
 
-The candidate G8B implementation should concentrate new code under
+The authorized G8B implementation should concentrate new code under
 `org.geocedg.common.kernel.locus.intersection`, add one focused GeoCeDG
-`AlgoElement`, one nonnumeric rich Geo, and focused tests. An append-only
-`GeoClass` member and its exhaustive drawable test may be unavoidable if the
-rich Geo architecture is approved. `GeoLocusV2` changes only if an approved,
-measured owner lease is required.
+`AlgoElement`, one nonnumeric rich Geo, the required internal token-selected
+point consumer, and focused tests. One append-only `GeoClass` member and its
+exhaustive drawable/type tests are authorized if required by the rich Geo.
+`GeoLocusV2` does not acquire an intersection-owner lease in the query-local
+minimum.
 
 `CmdIntersect`, `AlgoDispatcher`, `GeoFactory`, XML handlers, legacy locus
 classes, Classic intersection algorithms, 3D commands, and product UI are not
-candidate G8B edits. Public integration is a later author decision.
+authorized G8B edits. Public integration is a later author decision.
 
 The [upstream impact map](../architecture/locus_v2_intersection_upstream_impact.md)
 records the audited files and risks.
@@ -419,47 +422,70 @@ Stop G8A or G8B and report instead of weakening the contract when:
 
 ## 14. Author decision table
 
-Author approval closes the planning choices marked approved below. It does not
-make the proposed specification normative or accept ADR 0008. Characterization
-questions remain open until a second author review after G8A.
+The author reviewed the 65-probe G8A package and closed every entry decision:
 
-| Question | Evidence and alternatives | Author-review disposition / advantages and disadvantages | Impact if rejected or changed | Required before G8A? | Required before G8B? |
-|---|---|---|---|---|---|
-| Phase subdivision | One phase risks premature semantics; G8A/G8B separates evidence from production; a predeclared G8C adds unjustified process | **Approved:** G8A then G8B, no predeclared G8C | Reopen roadmap gates and evidence ownership | resolved | yes, G8A must pass |
-| Fundamental first-class capability | CeDG uses locus-defined projections as intermediate geometry; anonymous coordinates lose constructive dependency | **Approved requirement:** rich identified solutions must support downstream normal-DAG construction where continuation is unambiguous; coverage still grows family by family | G8 would no longer satisfy the structural CeDG objective | resolved | binding |
-| Rich result and ordinary points | Point-only is familiar but loses completeness/status/lineage; immutable set + rich Geo preserves semantics; points remain ergonomic consumers | **Approved planning architecture:** immutable rich set, normal-DAG nonnumeric rich Geo, optional derived points only after a separate decision | Any alternative requires a new lifecycle/GeoClass audit without weakening rich semantics | resolved | lifecycle details and point scope |
-| Completeness axis | Correct returned roots do not prove exhaustive root isolation | **Approved mandatory axis:** `COMPLETE`, `INCOMPLETE`, `NOT_ESTABLISHED`, orthogonal to computation, guarantee, residual, identity, and result kind | Scalar/point projection cannot be approved if it hides set incompleteness | resolved | establishment rules |
-| Durable root identity | Coordinates/slots are nonconstructive; parameter and intervals change with revision/reparameterization | **Approved constraint:** durable source-pair/constructive/branch/topology context is separate from revision-scoped parameter, interval, residual, and solver evidence | Narrow support or report identity `NOT_ESTABLISHED`; never fall back to coordinates | resolved | exact invariant subset |
-| Merge/split genealogy | Parent/child events express topology, but symmetric split correspondence may be intrinsically ambiguous | **G8A hypothesis:** compare explicit genealogy through forward/reverse `2 -> 1 -> 2`, seam, symmetry, and nearby branch changes | Adopt a narrower rigorous contract with ambiguity/discontinuity states | no | **yes** |
-| Tangency and multiplicity | Sign changes miss even roots; derivative/minimum/interval evidence has different guarantees | **Approved principle:** never sign-change-only; distinguish tangent/transverse/multiplicity established from classification undetermined | Unsupported cases remain explicit | resolved | method/evidence policy |
-| Overlap/infinite intersections | A continuum is not a finite point array | **Approved principle:** typed `OVERLAP`/`INFINITELY_MANY`/`UNSUPPORTED_OVERLAP`-equivalent outcomes; exact taxonomy remains open | Overlap remains unsupported, never sampled or empty | resolved | exact taxonomy |
-| Numeric capability hierarchy | Analytic target data plus floating evaluator is not exact; one generic solver overclaims | **G8A recommendation:** compare exact/certified first, derivative-aware next, evaluator-only with truthful completeness | Narrow guarantees or object-family scope | no | **yes** |
-| Tolerance policy | Domain, metric, render, and pixel tolerances have different meanings | **G8A recommendation:** measure independent root-isolation, residual abs/rel, tangency, deduplication, and continuation quantities | Return to characterization; no magic/inherited values | no | **yes** |
-| Candidate isolation | Uniform/sign sampling misses contacts; interval subdivision costs more; bounds can accelerate but must be conservative | **G8A recommendation:** compare query-local interval/subdivision plus tangency candidates; bounds are broad phase only | Reduce completeness claims or supported scope | no | **yes** |
-| Cache/index ownership | G7 metric state is semantically unrelated; shared state adds lifecycle/staleness risk | **Approved starting point:** query-local, no G7 metric state; a dedicated owner needs measured G8A evidence and later author approval | Accept bounded recomputation or authorize a separately characterized owner | resolved for G8A | **yes** if any owner ships |
-| Minimum object families | Core four share a manageable 1D residual model; conics add degeneration/normalization | **Approved preference:** line, segment, ray, circle; conics conditional on evidence | Author may approve a narrower/larger matrix after G8A | resolved for G8A | **yes** |
-| Functions, implicit, locus–locus | Domains, completeness, two-parameter solving, overlap, and dual topology widen the problem | **Approved Level C treatment:** characterize; do not promote without G8A evidence | Promotion expands solver/identity evidence and requires explicit author review | resolved for G8A | **yes** |
-| Public command/`Path`/serialization | These surfaces create compatibility, migration, label, and persistence contracts | **Boundary closed:** no public command/dispatcher, generic `Path`, point-on API, XML, persistence, migration, 3D/G9, or Classic/legacy changes | Requires a separate approved phase/contract | resolved | binding |
+| ID | Evidence/question | Author-approved disposition | Impact of replacement |
+|---|---|---|---|
+| D1 | G8A characterization and verification complete | `G8A = PASS — AUTHOR APPROVED` | Reopen characterization and block G8B |
+| D2 | Point-only cannot carry set/completeness/overlap truth | Immutable rich set plus normal-DAG nonnumeric rich Geo is authority | Requires a new lifecycle architecture with equivalent rich semantics |
+| D3 | Downstream CeDG point-consuming construction passed test-private DAG probe | Require one internal point consumer selected by semantic token; undefined on absence/stale/ambiguity, no retarget, same-token recovery only | G8B would not satisfy first-class downstream CeDG use |
+| D4 | Verified roots do not prove exhaustive isolation | Require independent `COMPLETE`/`INCOMPLETE`/`NOT_ESTABLISHED` plus method evidence | Point/scalar consumers could hide missing roots |
+| D5 | Even/fourth-order roots defeat sign-change-only search | Analytic/certified/normalized derivative or minimum evidence; undetermined when unproved | Narrow support; false transverse/empty remains forbidden |
+| D6 | Coincident/collapsed cases have no canonical finite sample | Typed overlap/infinite/unsupported-overlap result | Sampling or empty remains forbidden |
+| D7 | Capability comparison separated truthful guarantees | Analytic/exact, certified, safeguarded derivative-aware, then evaluator-only with weaker completeness | Narrow guarantees or target scope |
+| D8 | G8A measured seven independent quantities | Accept as `g8b-initial-normalized/v1`: residuals typed/model-distance-equivalent, parameters provider-scoped, tangency normalized, coordinates verification-only | Recharacterize affected adapters; raw scaling reuse is forbidden |
+| D9 | Typed exhaustion and measured nested/repeated work | Provisionally accept exact G8A deterministic ceilings; wall clock informational | Rerun bounded-work evidence for changed budgets |
+| D10 | Reparameterization changed parameters/intervals without changing the root | Durable source-pair/token/lineage/topology identity separated from revision evidence | Narrow identity status; coordinate fallback forbidden |
+| D11 | Symmetric/reverse `2 -> 1 -> 2` has no canonical descendants | No universal genealogy; use events/candidate relations and explicit ambiguity/discontinuity | A narrower terminate/recreate policy is possible; arbitrary inheritance is not |
+| D12 | Query-local 1/3/10/100 and depth 1–3 stayed bounded with zero retained entries | Query-local G8B; no G7 state, global cache, shared owner or index | Later sharing needs new measurements and approval |
+| D13 | Core-four adapters closed; full-conic subtype completeness did not | Require line, segment, ray and circle | Any enlargement needs new family evidence |
+| D14 | Function/implicit domains and locus–locus two-parameter topology remain open | Defer full conics, functions, general implicit curves and locus–locus | Separate characterization/approval required |
+| D15 | No public surface was needed or characterized | Internal only; no command, generic `Path`, point-on API, XML, persistence, legacy/Classic, 3D/G9 or Python | Separate compatibility/serialization phase required |
+| D16 | Rich Geo may need exhaustive type identity | Permit one append-only dedicated `GeoClass` only if required | Reusing `DEFAULT`/another class productively is disallowed |
+| D17 | G8A resolves the proposal without contradiction | G8 spec normative/author-approved; ADR 0008 Accepted; G8B authorized/not started | Any substantive alternative requires a new author decision |
 
-## 15. Planning package and execution prompts
+## 15. G8A characterization outcome
+
+G8A executed 65 test-private probes plus independent 80-digit references. The
+author-approved G8B policy is:
+
+- retain the immutable rich set and normal-DAG nonnumeric rich Geo as
+  authority, with the required token-selected internal point consumer;
+- require the independent `COMPLETE` / `INCOMPLETE` / `NOT_ESTABLISHED` axis;
+- promote only line, segment, ray and circle to the minimum G8B candidate;
+- defer full conics, functions, implicit curves and locus–locus;
+- begin G8B query-local, with no G7 metric state and no shared intersection
+  owner;
+- distinguish durable constructive/topology identity from revision parameter,
+  interval and residual evidence;
+- reject universal merge/split child inheritance in favor of event tokens,
+  candidate parent/child sets and explicit ambiguity/discontinuity; and
+- retain all public command, `Path`, XML, 3D/G9 and legacy boundaries.
+
+The tolerance values are initial versioned defaults only through the normalized
+quantity contract. The work ceilings are provisional implementation defaults.
+Both retain explicit G8A provenance.
+
+## 16. Planning package and execution prompts
 
 This package comprises:
 
 - this execution plan;
-- the proposed intersection specification;
+- the normative intersection specification;
 - semantic and implementation architecture;
 - upstream impact map;
 - validation matrix and benchmark/counter plan;
 - scientific traceability;
-- Proposed ADR 0008; and
-- an author-authorized, separately invoked G8A execution prompt; and
-- a future G8B prompt that remains blocked.
+- Accepted ADR 0008; and
+- the executed G8A prompt plus its
+  [characterization report](../validation/g8a_locus_v2_intersection_characterization_report.md),
+  [traceability matrix](../validation/g8a_locus_v2_intersection_traceability_matrix.md)
+  and machine-readable evidence; and
+- the authorized but unexecuted canonical G8B prompt.
 
-This closeout authorizes only a separate execution of the G8A prompt; it does
-not execute that prompt. The G8B prompt remains a deliverable only and provides
-no implementation authorization.
-The planning-only review does not add an observable feature, so the user guide
-records only the absence of G8 behavior and links the proposed package.
+The G8A execution added no observable feature. The G8B prompt is now authorized
+for separate execution but remains unexecuted. The user guide records
+development state and the absence of public G8 behavior.
 
 ```text
 G7 = PASS
@@ -468,17 +494,17 @@ G8 PLANNING =
 PASS — AUTHOR APPROVED
 
 G8A =
-AUTHORIZED
+PASS — AUTHOR APPROVED
 
 G8B =
-NOT AUTHORIZED
-BLOCKED ON G8A PASS — AUTHOR APPROVED
+AUTHORIZED
+NOT STARTED
 
 G8 SPEC =
-PROPOSED / NOT NORMATIVE
+NORMATIVE / AUTHOR APPROVED
 
 ADR 0008 =
-PROPOSED
+ACCEPTED
 
 G8 PRODUCTIVE IMPLEMENTATION =
 NOT STARTED

@@ -2,14 +2,15 @@
 
 | Field | Value |
 |---|---|
-| Status | **AUTHOR-APPROVED PLANNING TRACEABILITY — NO G8 EXECUTION CLAIM** |
+| Status | **G8A SCIENTIFIC PILOTS PASS — AUTHOR APPROVED** |
 | Catalog authority | [`docs/references/cedg/catalog.yml`](../references/cedg/catalog.yml) |
 | Existing pilot authority | [`scientific-pilots.yml`](../../geocedg/validation/locus-v2/scientific-pilots.yml) |
-| Proposed matrix | [`g8_locus_v2_intersection_validation_matrix.md`](g8_locus_v2_intersection_validation_matrix.md) |
+| Approved matrix | [`g8_locus_v2_intersection_validation_matrix.md`](g8_locus_v2_intersection_validation_matrix.md) |
+| Executed evidence | [`g8a_locus_v2_intersection_traceability_matrix.md`](g8a_locus_v2_intersection_traceability_matrix.md) |
 | Date | 2026-08-14 |
 
-This matrix translates the versioned CeDG corpus into G8 requirements and
-future characterization pilots. The papers, book, and legacy models establish
+This matrix translates the versioned CeDG corpus into G8 requirements and the
+executed reduced G8A pilots. The papers, book, and legacy models establish
 scientific relevance, constructive topology, and historical limitations. They
 do not define numeric G8 answers, solver tolerances, root-identity algorithms,
 or complete root sets. Current G6/G7 normative contracts, Accepted ADRs, and
@@ -29,7 +30,10 @@ CeDG construction -> Locus V2 projection -> identified intersection solution
 
 Each finite solution must preserve constructive source, branch/component and
 semantic-preimage provenance plus explicit dynamic identity/topology status.
-An anonymous coordinate snapshot cannot satisfy this requirement. The
+The required internal token-selected point consumer carries an admissible
+solution into later normal-DAG construction without becoming authority,
+silently retargeting or hiding ambiguity. An anonymous coordinate snapshot
+cannot satisfy this requirement. The
 scientific sources justify the capability and regression scenarios; they do
 not prescribe a solver, isolating interval, continuation token, or merge/split
 algorithm. Family coverage remains incremental.
@@ -56,15 +60,15 @@ hashes are the identity authority.
 | `C-CONE-CYLINDER` | [`scientific-pilots.yml`](../../geocedg/validation/locus-v2/scientific-pilots.yml) | Existing approved requirement mapping for constructive leaves, bite/penetration topology, and multiple projected branches | G6 evidence, not a G8 test result |
 | `C-FOCAL-SPHERE-CONE` | same manifest | Existing requirement for multiple leaves under focal geometry | Local curated model is not yet identified there |
 
-Future G8A may build small test-private typed reproductions, as G6 did for
-nested evaluation. It must not convert legacy sampled points into expected G8
-root constants or make the local models build dependencies.
+G8A built small test-private typed reductions, as G6 did for nested evaluation.
+It did not convert legacy sampled points into expected G8 root constants or
+make the local models build dependencies.
 
 ## 3. Requirement-to-source-to-test matrix
 
-| G8 requirement | Scientific evidence | Proposed characterization / regression |
+| G8 requirement | Scientific evidence | Characterization / approved regression |
 |---|---|---|
-| Treat a locus-defined projection as first-class input to later CeDG construction | LSIM methodology in preprint/book; Symmetry article continues intersection leaves into flattening | `D-FIRSTCLASS-01` plus `D-NEST-01`: identified root drives a downstream construction and updates through the normal DAG |
+| Treat a locus-defined projection as first-class input to later CeDG construction | LSIM methodology in preprint/book; Symmetry article continues intersection leaves into flattening | `D-FIRSTCLASS-01` plus `D-NEST-01`: required token-selected point consumer drives a downstream construction and updates through the normal DAG |
 | Preserve the constructive parameter/preimage rather than only a point coordinate | LSIM preprint, PDF pp. 6–10; book, PDF pp. 51–54 | `B-SELF-01`, `B-RETRACE-01`, and all rich solution records retain branch/component/semantic parameter |
 | Support several constructive leaves/components | LSIM preprint, PDF pp. 6–10; Symmetry article, PDF pp. 7–14 | `B-BRANCH-01`, `B-COMP-01`, reduced `S-LSIM-01` pilot |
 | Represent topology transitions explicitly without assuming universal genealogy | Bite/penetration cases in the Symmetry article, PDF pp. 8–14; LSIM preprint, PDF pp. 8–10 | `B-TOPO-01`, `I-MERGE-01`, `I-SPLIT-01`, `I-REVERSE-01`, `I-SYMMETRIC-01`; record established lineage, ambiguity, or identity discontinuity |
@@ -77,11 +81,11 @@ root constants or make the local models build dependencies.
 | Bound repeated and nested work | Legacy two-/three-level cone–cylinder models and Springer tool context | `D-NEST-01/02`, `S-NEST-01`; evaluator, isolation, refinement, and retained-state counters |
 | Dynamic edits must not leave stale geometry | Dynamic bite/penetration and flattened-locus examples in the Symmetry article | `I-STALE-01`, `I-FAIL-01`, `I-RECOVER-01`, normal DAG invalidation |
 
-## 4. Proposed scientific pilots
+## 4. Executed reduced scientific pilots
 
 ### Pilot S-FOCAL-01 — focal sphere/cone projection
 
-Build a small test-private 2D semantic fixture derived from the published
+G8A built a small test-private 2D semantic fixture derived from the published
 construction roles: a Locus V2 projection and the authoritative separatrix
 circle. Sweep the source parameter through secant, tangent, and empty regimes.
 
@@ -89,15 +93,19 @@ Required evidence:
 
 - two verified roots, one tangent root, and complete empty only when completeness
   is established;
-- merge/split genealogy characterized as a hypothesis, with explicit ambiguity
-  or identity discontinuity when lineage cannot be established;
+- merge/split genealogy tested as a hypothesis and rejected as universal, with
+  explicit ambiguity or identity discontinuity when lineage cannot be established;
 - repeated coordinate/preimage preservation where the construction demands it;
 - target equation scaling and geometry scaling invariance; and
 - an independent analytic or high-precision reference generated from the
   reduced fixture, not read from the paper figure or legacy samples.
 
+**Outcome:** `F_mu(t)=(t,mu)` against the unit circle produced two transverse
+roots at `mu=0.6`, one double tangent at `mu=1`, and complete empty at
+`mu=1.2`. The analytic discriminant is reproduced independently at 80 digits.
+
 This is the preferred first scientific pilot because it maps directly to the
-proposed circle minimum and exercises tangency/identity.
+approved circle minimum and exercises tangency/identity.
 
 ### Pilot S-LSIM-01 — reduced cone–cylinder section
 
@@ -115,6 +123,12 @@ Required evidence:
 - clear documentation of which scientific topology was preserved and which 3D
   construction details were intentionally omitted.
 
+**Outcome:** two semantic branches
+`F_sigma(t)=(t,sigma*(t^2-lambda))`, `sigma=±1`, against `y=0` produced four
+constructive leaves, two tangent preimages at one coordinate, then two complete
+empty branch results. The proxy preserves multileaf/topology requirements and
+explicitly omits 3D surface solving.
+
 ### Pilot S-NEST-01 — nested evaluation control
 
 Reuse the *dependency shape* characterized by the hash-pinned two-/three-level
@@ -129,9 +143,14 @@ Required evidence:
 - deterministic functional scaling; and
 - correct innermost invalidation/recovery.
 
+**Outcome:** depth 1–3 with ten consumers produced exactly 10/20/30 semantic
+evaluator calls and zero whole-locus regeneration. A separate normal-DAG probe
+used one identified rich solution as a downstream CeDG-style input and
+recovered after injected failure.
+
 ## 5. Reference generation policy
 
-Any new numeric reference must be stored under a future G8A validation bundle
+The new numeric references are stored in the G8A validation bundle
 with:
 
 ```text

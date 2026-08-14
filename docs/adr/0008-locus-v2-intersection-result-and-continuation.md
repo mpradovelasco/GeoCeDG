@@ -1,17 +1,16 @@
 # ADR 0008: Locus V2 intersection result and semantic root continuation
 
-- Status: **Proposed**
-- Author review disposition: **PLANNING ARCHITECTURE APPROVED; ADR ACCEPTANCE PENDING G8A**
-- Roadmap state: G8 planning `PASS — AUTHOR APPROVED`; G8A authorized; G8B not authorized
-- Decision phase: proposed G8A characterization and author closeout
+- Status: **Accepted**
+- Author review disposition: **ACCEPTED AT G8A CLOSEOUT**
+- Roadmap state: G8 planning `PASS — AUTHOR APPROVED`; G8A `PASS — AUTHOR APPROVED`; G8B authorized/not started
+- Decision phase: final G8A author closeout
 - Date: 2026-08-14
 
-This ADR remains a decision proposal, not an Accepted contract or
-implementation authorization. The author approves the overall planning
-architecture and G8A characterization premises below, but productive G8 work
-is blocked until G8A evidence receives a second explicit author review, this
-ADR is accepted or superseded, and the intersection specification is made
-normative explicitly.
+The author accepts this architecture after reviewing the complete G8A
+characterization package. Acceptance makes the intersection specification
+normative and authorizes a separately invoked G8B implementation task within
+the internal scope below. It does not itself execute G8B or add observable
+intersection behavior.
 
 ## Context
 
@@ -53,12 +52,7 @@ Repeated queries may benefit from candidate-isolation state, but the G7 metric
 index contains cumulative length partitions and metric-policy state. Reusing it
 would couple unrelated semantics and risk stale topology.
 
-## Proposed decision
-
-The author approves items 1–3 and the query-local starting point as planning
-architecture. The detailed identity, genealogy, completeness-establishment,
-numeric, and lifecycle contracts remain subject to G8A measurement and a
-second author approval:
+## Decision
 
 1. Make an immutable `LocusIntersectionResult2D`-style value the semantic
    result. It carries orthogonal computation, completeness, geometry-set,
@@ -67,9 +61,12 @@ second author approval:
 2. Publish that value atomically through a dedicated internal nonnumeric rich
    `GeoLocusIntersectionResult`-style `GeoElement` owned by a normal-DAG
    `AlgoLocusIntersectionV2`-style algorithm.
-3. Keep ordinary `GeoPoint` outputs optional and derived. They require a
-   separate author decision, are bounded, and use rich-result root tokens; they
-   never become the identity authority.
+3. Require one internal derived `GeoPoint` consumer in the minimum G8B
+   candidate. It selects one current finite solution by semantic root token,
+   follows normal DAG dependencies, never becomes authority or silently
+   retargets, becomes undefined for absence/staleness/ambiguity, and recovers
+   only when the same semantic solution is current again under the continuation
+   contract.
 4. Identify a finite root with an opaque source-pair/constructive/
    branch/topology continuation token. Keep current semantic parameter,
    isolating interval, component binding, residual, and solver certificate as
@@ -78,21 +75,36 @@ second author approval:
    approved G6 branch lineage, including an approved mapping for equivalent
    reparameterization. Coordinates are diagnostics, not matching keys. Cases
    without an invariant contract expose ambiguous/not-established identity.
-6. Characterize merge/split parent-child genealogy as a G8A hypothesis, not a
-   universal semantic. Test `2 -> 1 -> 2`, reverse traversal, symmetric
-   ambiguity, seam interaction, and nearby branch/component changes. Preserve
-   identity only where continuation is unambiguous; otherwise expose ambiguity
-   or identity discontinuity.
+6. Reject universal merge/split parent-child genealogy. Publish explicit
+   topology events and candidate parent/child relations where established;
+   preserve identity only where continuation is unique, and otherwise expose
+   ambiguity or identity discontinuity.
 7. Start query-local. Do not use the G7 metric owner/index. Consider a bounded
    intersection-specific revision-scoped owner only after G8A demonstrates a
    repeat-use benefit and the author separately approves key, payload,
    capacity, eviction, lifecycle, and cache-off equality.
 8. Use existing G6 `NumericGuarantee` vocabulary where applicable, while
    defining independent G8 root/residual/tangency/dedup/continuation policies.
-9. Keep public command/dispatcher, `Path`, XML/factory/persistence, legacy
+   Target residuals are model-distance-equivalent where correct, otherwise
+   target-family-specific typed quantities with matching tolerances. Equation
+   scaling cannot change geometry. Parameter tolerances remain in declared
+   provider space, and tangency thresholds apply only to normalized contact
+   evidence, never raw equation derivatives.
+9. Start G8B with the author-approved measured tolerance values and
+   deterministic work ceilings recorded in the normative specification. They
+   are versioned implementation defaults with explicit normalization and
+   provenance, not universal mathematical constants; wall clock is
+   informational.
+10. Limit the minimum productive target family to line, segment, ray and
+    circle. Defer full conics, functions, general implicit curves and
+    locus–locus.
+11. Allow one append-only `GeoClass.LOCUS_INTERSECTION_RESULT`-equivalent value
+    only if the audited rich Geo requires it; do not reuse an unrelated class
+    or broaden the type system.
+12. Keep public command/dispatcher, `Path`, XML/factory/persistence, legacy
    `GeoLocus`, Classic intersections, 3D/G9, and export out of this decision.
 
-## Result invariants under the proposal
+## Result invariants
 
 - `EMPTY + COMPLETE` is publishable only with established exhaustive evidence.
 - Found roots plus unresolved candidates are not a complete finite set.
@@ -126,8 +138,8 @@ Disadvantages:
 - variable topology and history are hard to bound;
 - discards constructive branch/preimage evidence.
 
-Disposition: **not recommended** as semantic authority. It may be a later
-derived adapter.
+Disposition: **rejected as semantic authority**. The accepted minimum includes
+only the token-selected internal derived consumer described by the decision.
 
 ### B. Internal immutable result only, no rich GeoElement
 
@@ -143,9 +155,9 @@ Disadvantages:
 - lifecycle/currentness risks becoming an algorithm-private side channel;
 - weakens the stated G8 goal of first-class supported incidence.
 
-Disposition: useful as the value layer, but **not recommended alone** if G8B is
-to create a consumable kernel-semantic result. G8A must verify the rich-Geo
-lifecycle before approval.
+Disposition: useful as the value layer, but **rejected alone** because G8B must
+create a consumable kernel-semantic result. G8A verified the rich-Geo
+lifecycle.
 
 ### C. Dedicated rich result plus derived points
 
@@ -163,7 +175,8 @@ Disadvantages:
 - later point-slot/label policy remains a separate design problem;
 - wider internal type surface than alternative B.
 
-Disposition: **recommended working hypothesis for G8A**.
+Disposition: **selected**, with one required internal token-selected point
+consumer and no public/variable point array.
 
 ### D. Reuse Classic point-near/output-index continuity
 
@@ -229,19 +242,20 @@ Disadvantages:
 Disposition: **rejected**. The evaluator/session may be shared; metric state is
 not intersection authority.
 
-## Consequences if accepted
+## Consequences
 
-- G8A must prototype the rich Geo lifecycle and characterize identity/
-  genealogy in test-private code before productive implementation.
-- The result taxonomy, token events, and bounds become part of the proposed
-  normative contract and validation matrix.
+- G8A prototyped the rich Geo lifecycle and characterized identity/genealogy
+  in test-private code before productive implementation.
+- The result taxonomy, token events, normalized tolerance contract and bounds
+  are part of the normative contract and validation matrix.
 - Minimum productive support can remain line/segment/ray/circle while overlap
   and unsupported cases are still expressed truthfully.
 - Public point/command/Path/XML behavior remains available for later explicit
-  decisions without forcing it into the semantic kernel.
+  decisions without forcing it into the semantic kernel; only the internal
+  token-selected point consumer is required now.
 - Any future reusable state needs its own evidence and ADR amendment/new ADR.
 
-## Consequences if rejected
+## Consequences of replacing this decision
 
 - Choosing point-only output would require an alternative explicit
   representation for incomplete/not-established completeness, overlap,
@@ -257,10 +271,10 @@ not intersection authority.
 
 ## Required characterization evidence
 
-G8A must provide at least:
+G8A provided:
 
 1. a real-source lifecycle audit/probe for the immutable internal value,
-   required rich Geo, and optional bounded derived points under the approved
+   required rich Geo, and bounded token-selected derived point under the
    rich-result architecture;
 2. deterministic traces for ordinary continuation, equivalent monotone
    reparameterization, allowed reversal, seam representation, branch loss,
@@ -276,16 +290,55 @@ G8A must provide at least:
 8. a measured reuse comparison if any cache/index is recommended; and
 9. the exact proposed API and minimal upstream-owned edit set.
 
-## Approval record required
+## G8A evidence and accepted resolution
 
-The author has approved the rich-set/rich-Geo planning architecture,
-query-local-first computation, and optional-derived-point boundary. After G8A,
-the author must explicitly choose:
+The [G8A report](../validation/g8a_locus_v2_intersection_characterization_report.md)
+and [traceability matrix](../validation/g8a_locus_v2_intersection_traceability_matrix.md)
+provide 65 passing test-private probes and independent 80-digit references.
+They support the rich value/rich Geo architecture, the independent
+completeness axis, query-local state and a minimum line/segment/ray/circle
+family.
 
-- exact rich-Geo lifecycle/API and whether any ordinary points are included;
-- completeness establishment policy and legal projections;
-- durable token/reparameterization invariance and topology-lineage policy;
-- merge/split hypothesis outcome plus seam/termination behavior;
-- query-local versus separately characterized shared state.
+They refine the identity proposal as follows:
 
-Only then may this ADR change from `Proposed` to `Accepted` (or be superseded).
+- semantic parameter, component binding, isolating interval, residual,
+  revisions and solver certificate are revision-scoped evidence;
+- a token persists across a known monotone/reversed/periodic map only through
+  one explicit semantic continuation relation; and
+- universal merge/split child inheritance is rejected. A topology-event token
+  records candidate parent/child sets, while symmetric or otherwise
+  non-unique continuation is explicit ambiguity/discontinuity.
+
+Repeated 1/3/10/100 and nested depth 1–3 traces retained zero intersection
+entries, so the accepted minimum has no shared intersection owner. Full conics
+and all Level C families remain deferred. The measured tolerances are accepted
+through the explicit normalization contract, and the deterministic ceilings
+are provisional initial implementation defaults.
+
+## Approval record
+
+On 2026-08-14 the author approved D1–D17, including:
+
+- the immutable rich set and normal-DAG nonnumeric rich Geo as authority;
+- the required internal token-selected derived point consumer;
+- independent completeness and typed overlap/infinite semantics;
+- analytic/certified/derivative-aware/evaluator-only capability ordering;
+- the normalized tolerance contract and G8A-derived initial values;
+- the provisional deterministic work ceilings;
+- durable identity separated from all revision-scoped numerical evidence;
+- explicit topology events without universal merge/split genealogy;
+- query-local state with no G7 metric or shared intersection owner;
+- line, segment, ray and circle as the minimum family, with Level C deferred;
+- the internal/public/persistence/legacy/3D/G9 boundaries; and
+- an append-only dedicated `GeoClass` only if the rich Geo requires it.
+
+The normative specification records the exact semantic contract. G8B is
+authorized but not started and must be executed separately through its
+canonical prompt.
+
+```text
+ADR 0008 = ACCEPTED
+G8 SPEC = NORMATIVE / AUTHOR APPROVED
+G8A = PASS — AUTHOR APPROVED
+G8B = AUTHORIZED / NOT STARTED
+```

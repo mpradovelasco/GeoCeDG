@@ -1,0 +1,509 @@
+{
+  "schema": "geocedg.g8a.intersection-characterization-evidence.v1",
+  "status": "CHARACTERIZATION_COMPLETE_AWAITING_AUTHOR_REVIEW",
+  "authority": "versioned G8A evidence; proposed decisions are not normative",
+  "provenance": {
+    "date": "2026-08-14",
+    "repositoryRoot": "C:/DesarrolloyDatos/Areas/ProyectosNoFinanciados/CeDG/GeoCeDG",
+    "branch": "feature/g8a-locus-v2-intersections-characterization",
+    "initialHead": "315aec011cdc719a41a9bdc352a4a10ea502df6e",
+    "originMainAtEntry": "315aec011cdc719a41a9bdc352a4a10ea502df6e",
+    "originMainDivergenceAtEntry": [0, 0],
+    "upstreamBaseline": "9b93256b7df401ff056c37b502d82df4d72b1522",
+    "upstreamVersion": "5.4.928.0",
+    "prompt": ".github/prompts/tasks/g8a-locus-v2-intersection-characterization.prompt.md",
+    "promptSha256": "0f962a36b2cae76d2208371bd39e68fff8bf5cd1d9a7f3f9e9ca14afefef424b",
+    "rootAgentsSha256": "ea76fd1724088398bdee4d14c69079d830a79530e53b3b50187f8ce537b6b2ff",
+    "requestedPluralPromptPath": ".github/prompts/tasks/g8a-locus-v2-intersections-characterization.prompt.md",
+    "requestedPluralPromptExists": false,
+    "canonicalSingularPromptUsed": true
+  },
+  "entryGate": {
+    "trackedWorktreeClean": true,
+    "g6": "PASS",
+    "g6r": "PASS",
+    "g7": "PASS",
+    "g7aR1": "PASS_AUTHOR_APPROVED",
+    "g7a": "PASS_AUTHOR_APPROVED",
+    "g7b": "PASS_AUTHOR_APPROVED",
+    "adr0006": "ACCEPTED",
+    "adr0007": "ACCEPTED",
+    "g6Spec": "NORMATIVE",
+    "g7Spec": "NORMATIVE",
+    "g8Planning": "PASS_AUTHOR_APPROVED",
+    "g8a": "AUTHORIZED",
+    "g8b": "NOT_AUTHORIZED_BLOCKED",
+    "g8ProductiveImplementation": "NOT_STARTED",
+    "g9": "NOT_STARTED",
+    "locusV2": "EXPERIMENTAL_INTERNAL_DISABLED_BY_DEFAULT",
+    "productiveG8SourceAtEntry": 0,
+    "priorG8aEvidenceAtEntry": 0,
+    "baselineCommands": [
+      {
+        "command": ".\\tools\\agent\\verify-operational.ps1",
+        "exitCode": 0,
+        "status": "PASS"
+      },
+      {
+        "command": ".\\tools\\agent\\verify-locus-v2.ps1",
+        "exitCode": 0,
+        "status": "PASS",
+        "elapsedSeconds": 326.7,
+        "logDirectory": "C:/Users/usuario/AppData/Local/Temp/geocedg-verify-locus-v2"
+      },
+      {
+        "command": ".\\tools\\agent\\verify-g7a-metrics.ps1",
+        "exitCode": 0,
+        "status": "PASS",
+        "elapsedSeconds": 209.8,
+        "tests": 51,
+        "logDirectory": "C:/Users/usuario/AppData/Local/Temp/geocedg-verify-g7a-metrics"
+      },
+      {
+        "command": ".\\tools\\agent\\verify-g7b-metrics.ps1",
+        "exitCode": 0,
+        "status": "PASS",
+        "elapsedSeconds": 189.2,
+        "tests": 65,
+        "logDirectory": "C:/Users/usuario/AppData/Local/Temp/geocedg-verify-g7b-metrics"
+      }
+    ],
+    "scientificHashes": {
+      "catalogEntriesChecked": 12,
+      "legacyModelsChecked": 2,
+      "mismatches": 0
+    }
+  },
+  "environment": {
+    "operatingSystem": "Windows 11",
+    "java": "22.0.2",
+    "gradle": "9.4.1",
+    "referenceRuntime": "CPython 3.12.13, conda-forge om_env",
+    "referenceLibrary": "mpmath 1.4.1",
+    "referencePrecisionDecimalDigits": 80
+  },
+  "characterizationProbes": {
+    "semanticAndTargetAdapters": {
+      "tests": 13,
+      "failures": 0
+    },
+    "numericalAndCompleteness": {
+      "tests": 15,
+      "failures": 0
+    },
+    "identityAndGenealogy": {
+      "tests": 12,
+      "failures": 0
+    },
+    "topologyAndDegeneration": {
+      "tests": 7,
+      "failures": 0
+    },
+    "kernelLifecycle": {
+      "tests": 10,
+      "failures": 0
+    },
+    "functionalCountersAndScientificPilots": {
+      "tests": 8,
+      "failures": 0
+    },
+    "total": {
+      "tests": 65,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "evidenceClass": "test-private Java against real GeoGebra and productive G6/G7 APIs"
+  },
+  "targetFamilyAudit": [
+    {
+      "family": "LINE",
+      "authority": "GeoLine homogeneous coefficients x,y,z",
+      "membership": "unbounded support line",
+      "derivativeCapability": "coefficient gradient dotted with semantic tangent",
+      "residualNormalization": "absolute equation residual divided by hypot(a,b)",
+      "completenessCandidate": "target-specific analytic/factorization or certified component isolation",
+      "recommendation": "PROMOTE_TO_G8B_CORE"
+    },
+    {
+      "family": "SEGMENT",
+      "authority": "GeoSegment support coefficients plus respectLimitedPath",
+      "membership": "finite included endpoints",
+      "derivativeCapability": "support-line derivative plus independent membership",
+      "residualNormalization": "support-line normalization; membership separate",
+      "completenessCandidate": "line candidates filtered by authoritative finite membership",
+      "recommendation": "PROMOTE_TO_G8B_CORE"
+    },
+    {
+      "family": "RAY",
+      "authority": "GeoRay support coefficients plus respectLimitedPath",
+      "membership": "included start and directed half-line",
+      "derivativeCapability": "support-line derivative plus independent membership",
+      "residualNormalization": "support-line normalization; membership separate",
+      "completenessCandidate": "line candidates filtered by authoritative ray membership",
+      "recommendation": "PROMOTE_TO_G8B_CORE"
+    },
+    {
+      "family": "CIRCLE",
+      "authority": "GeoConicND six-coefficient symmetric matrix and circle type",
+      "membership": "full valid circle",
+      "derivativeCapability": "matrix gradient dotted with semantic tangent",
+      "residualNormalization": "matrix coefficient norm times coordinate scale",
+      "completenessCandidate": "analytic discriminant where compositional capability proves it; otherwise certified component isolation",
+      "recommendation": "PROMOTE_TO_G8B_CORE"
+    },
+    {
+      "family": "FULL_CONIC",
+      "authority": "GeoConicND matrix, type and degeneration state",
+      "membership": "type dependent; may be unbounded, degenerate, overlapping or empty",
+      "derivativeCapability": "matrix gradient exists but singularity and multiplicity guarantees vary",
+      "residualNormalization": "matrix coefficient norm times coordinate scale",
+      "completenessCandidate": "not closed uniformly across ellipse/parabola/hyperbola/degenerate subtypes",
+      "recommendation": "DEFER_FROM_MINIMUM_G8B_PENDING_SEPARATE_FAMILY_CONTRACT"
+    },
+    {
+      "family": "FUNCTION",
+      "authority": "GeoFunction.value and explicit hasInterval/getIntervalMin/getIntervalMax",
+      "membership": "explicit function interval only; view-derived min/max are not semantic authority",
+      "derivativeCapability": "not uniformly exposed by the audited adapter",
+      "residualNormalization": "y-f(x) relative to value/coordinate scale",
+      "completenessCandidate": "not established for discontinuities or unbounded domain",
+      "observedApiBoundary": "GeoFunction.setInterval preserves explicit domain; the tested Function(f,-1,1) construction route did not expose hasInterval on the returned object",
+      "recommendation": "LEVEL_C_DEFER"
+    },
+    {
+      "family": "IMPLICIT",
+      "authority": "GeoImplicit.evaluateImplicitCurve, derivativeX/Y and coefficients",
+      "membership": "equation-defined but component/domain coverage is capability dependent",
+      "derivativeCapability": "first derivatives available",
+      "residualNormalization": "requires coefficient/scale policy beyond the minimal adapter",
+      "completenessCandidate": "not established for singularities, components and non-polynomial forms",
+      "recommendation": "LEVEL_C_DEFER_NO_IMPLICIT_CONVERSION_LAYER"
+    },
+    {
+      "family": "LOCUS_LOCUS",
+      "authority": "paired semantic evaluators and paired revisions",
+      "membership": "two semantic parameter domains",
+      "derivativeCapability": "two-parameter rank/contact problem",
+      "completenessCandidate": "requires a separate two-parameter isolation contract",
+      "recommendation": "LEVEL_C_DEFER"
+    }
+  ],
+  "solverStrategyEvidence": [
+    {
+      "strategy": "ANALYTIC_FACTORIZATION",
+      "verifiedRoots": "0, 1, 2, 3 and four constructive preimages across probes",
+      "completeness": "COMPLETE only with an explicit exhaustive factorization/discriminant/lower-bound proof",
+      "guarantee": "exact capability provenance plus independently verified floating coordinates; never label binary coordinates exact",
+      "strength": "establishes complete empty, finite multiplicity and overlap for declared reduced formulas",
+      "limitation": "not a generic evaluator capability"
+    },
+    {
+      "strategy": "CERTIFIED_BRACKET",
+      "verifiedRoots": 2,
+      "completeness": "COMPLETE only for the declared simple-root proof set; even roots remain unresolved",
+      "guarantee": "CERTIFIED_ERROR_BOUND for bracketed simple roots",
+      "strength": "safeguarded refinement",
+      "limitation": "sign change cannot detect even tangency"
+    },
+    {
+      "strategy": "DERIVATIVE_AWARE",
+      "verifiedRoots": "even and fourth-order contacts detected in controlled proofs",
+      "completeness": "COMPLETE only when independent factor-count evidence excludes other roots",
+      "guarantee": "ESTIMATED_ERROR in tested double evaluator",
+      "strength": "contact evidence does not require sign change",
+      "limitation": "derivative convergence alone does not prove multiplicity or completeness"
+    },
+    {
+      "strategy": "EVALUATOR_ONLY",
+      "verifiedRoots": "correct simple/even candidates can be independently verified",
+      "completeness": "NOT_ESTABLISHED",
+      "guarantee": "FLOATING_POINT_UNCERTIFIED",
+      "strength": "generic query-local candidate discovery",
+      "limitation": "cannot establish empty, exhaustiveness, unbounded coverage or multiplicity"
+    },
+    {
+      "strategy": "CONSERVATIVE_BROAD_PHASE",
+      "verifiedRoots": "retained candidates independently verified",
+      "completeness": "COMPLETE only with independently proved conservative coverage; otherwise INCOMPLETE or NOT_ESTABLISHED",
+      "guarantee": "broad phase is never root authority",
+      "strength": "can reduce narrow-phase work",
+      "limitation": "rejection without coverage proof can omit valid roots"
+    }
+  ],
+  "resultArchitecture": {
+    "immutableRichSet": "VALIDATED_TEST_PRIVATE",
+    "normalDagNonnumericRichGeo": "VALIDATED_TEST_PRIVATE",
+    "atomicPublication": true,
+    "ordinaryPointProjection": "OPTIONAL_BOUNDED_DERIVED_CONSUMER_ONLY",
+    "pointProjectionRefusesIncompleteOrNotEstablished": true,
+    "copySetPolicy": "clear revision-bound payload and require explicit recompute",
+    "failurePolicy": "publish coherent current unresolved failure and no partial/stale roots",
+    "recovery": "fresh normal-DAG recomputation",
+    "xmlPersistence": false,
+    "publicCreation": false,
+    "geoClassProbe": "GeoClass.DEFAULT used test-private; candidate productive type would require one append-only value after author approval",
+    "outputSlots": "bounded consumer slots are not semantic identity"
+  },
+  "completenessAxis": {
+    "values": ["COMPLETE", "INCOMPLETE", "NOT_ESTABLISHED"],
+    "orthogonalTo": [
+      "computationStatus",
+      "geometryKind",
+      "numericGuarantee",
+      "perRootResidual",
+      "identityStatus",
+      "currentness"
+    ],
+    "completeEmptyValidated": true,
+    "verifiedIncompleteFiniteValidated": true,
+    "verifiedNotEstablishedFiniteValidated": true,
+    "illegalIncompleteEmptyRejected": true,
+    "solverConvergenceDoesNotImplyCompleteness": true
+  },
+  "identityDecision": {
+    "durableCandidateFields": [
+      "opaqueRootToken",
+      "sourcePairIdentity",
+      "constructiveIntersectionLineage",
+      "establishedBranchLineage",
+      "topologyContext",
+      "explicitContinuationRelation",
+      "identityStatus"
+    ],
+    "revisionScopedEvidenceFields": [
+      "locusRevision",
+      "targetUpdateStamp",
+      "branchSnapshotKey",
+      "componentKey",
+      "semanticParameter",
+      "liftedPeriodicParameter",
+      "isolatingInterval",
+      "normalizedResidual",
+      "solverMethod",
+      "numericGuarantee"
+    ],
+    "isolatingIntervalIsFundamentalIdentity": false,
+    "coordinateNearestNeighbourUsed": false,
+    "supportedContinuationSubset": [
+      "ordinary continuous motion with a unique explicit semantic prediction",
+      "equivalent monotone reparameterization with a known bijective semantic map",
+      "derivative-degenerate monotone map only when the explicit map establishes the relation; contact guarantee remains separate",
+      "orientation reversal only when provider semantics permit it and the exact orientation-aware map is known",
+      "periodic seam continuation through declared periodic semantics and lifted parameter"
+    ],
+    "unsupportedOrAmbiguous": [
+      "unknown reparameterization map",
+      "several equally admissible semantic continuations",
+      "branch replacement without unique G6 lineage",
+      "topology event without robust parent/child relation"
+    ]
+  },
+  "mergeSplitHypothesis": {
+    "universalGenealogyValidated": false,
+    "recommendedContract": "new topology-event token plus candidate parent/child sets; preserve a pre-event token only when a unique semantic continuation is proved",
+    "forwardTrace": [
+      {"epoch": 1, "tokens": ["root-1", "root-2"], "parameters": [-0.1, 0.1], "status": "NEW_TOPOLOGICAL_SOLUTION"},
+      {"epoch": 2, "tokens": ["root-3"], "parameters": [0.0], "parents": ["root-1", "root-2"], "event": "MERGE_CANDIDATE", "status": "IDENTITY_DISCONTINUITY"},
+      {"epoch": 3, "tokens": ["root-4", "root-5"], "parameters": [-0.1, 0.1], "parents": ["root-3"], "event": "SPLIT_CANDIDATE", "status": "AMBIGUOUS_CONTINUATION"}
+    ],
+    "reverseTraversal": "repeating the tangent event in reverse creates new event/child tokens; old symmetric child tokens are not fabricated as restored",
+    "periodicSeamInteraction": "lifted seam parameters prevent duplicate parent identity but do not prove genealogy",
+    "branchChangeNearEvent": "terminate old tokens and create a new topology solution when branch lineage is replaced",
+    "symmetricChildCorrespondence": "intrinsically ambiguous"
+  },
+  "topologyAndDegeneration": {
+    "multipleBranches": "distinct tokens and branch bindings retained at equal coordinates",
+    "disconnectedComponents": "isolated independently; invalid gap never traversed",
+    "selfIntersectionAndRepeatedCoordinates": "distinct semantic preimages retained",
+    "cusp": "contact order reported only from explicit factor evidence",
+    "collapsedComponent": "OVERLAP with no arbitrary repeated points",
+    "isolatedComponent": "ISOLATED_COMPONENT finite root",
+    "emptyComponent": "EMPTY + COMPLETE with zero semantic evaluations",
+    "periodicSeam": "equivalent endpoint representatives canonicalized once",
+    "nonfiniteDiscontinuity": "INCOMPLETE + UNRESOLVED; not empty/stale",
+    "overlap": "typed set result; no finite point sampling"
+  },
+  "independentReferences": {
+    "generator": "geocedg/validation/locus-v2/g8a/generate_intersection_references.py",
+    "values": "geocedg/validation/locus-v2/g8a/intersection-reference-values.json",
+    "generatorSha256": "5c9263d219bdcc4755d51eb2361f800d4c4e731b9d9fdb37f242e90d176d47aa",
+    "valuesSha256": "645448704fbd825eac924335df4176967ac5060e1265cb7609e638786a8b5ebf",
+    "checkCommand": "conda run -n om_env python geocedg/validation/locus-v2/g8a/generate_intersection_references.py --check",
+    "checkExitCode": 0,
+    "authority": "independent validation evidence; never kernel authority"
+  },
+  "toleranceCandidate": {
+    "status": "PROPOSED_NOT_NORMATIVE_REQUIRES_AUTHOR_APPROVAL",
+    "policyId": "g8a-measured-candidate/v1",
+    "rootParameterTolerance": 1e-12,
+    "absoluteResidualTolerance": 2e-12,
+    "relativeResidualTolerance": 2e-12,
+    "tangencyThreshold": 1e-10,
+    "deduplicationParameterTolerance": 4e-12,
+    "continuationParameterTolerance": 1e-8,
+    "coordinateVerificationTolerance": 4e-12,
+    "measuredMaxNormalizedBinary64Residual": "2.0194839173657902e-28",
+    "measuredMonotoneMappingRoundtripError": "1.1102230246251565e-16",
+    "measuredNearTangentDerivativeAtDelta1eMinus12": "2e-6",
+    "measuredDistinctClusterGap": "2e-8",
+    "units": "semantic parameter for root/dedup/continuation; normalized target equation for residual/tangency; world coordinates for coordinate verification",
+    "notInheritedFrom": ["G6 domain tolerance", "G7 metric tolerance", "render tolerance", "pixel tolerance"]
+  },
+  "workBudgetCandidate": {
+    "status": "PROPOSED_NOT_NORMATIVE_REQUIRES_AUTHOR_APPROVAL",
+    "maximumSemanticEvaluations": 32768,
+    "maximumSemanticDerivativeEvaluations": 16384,
+    "maximumTargetEvaluations": 32768,
+    "maximumCandidateIntervals": 8192,
+    "maximumIsolationSubdivisions": 8192,
+    "maximumIsolationDepth": 40,
+    "maximumRefinementIterationsPerCandidate": 80,
+    "maximumResidualVerifications": 1024,
+    "maximumCandidateCount": 512,
+    "maximumContinuationComparisons": 4096,
+    "maximumPublishedFiniteSolutions": 256,
+    "maximumRetainedIndexEntries": 0,
+    "maximumRetainedTopologyEpochs": 2,
+    "measuredStress": {
+      "consumers": [1, 3, 10, 100],
+      "queryLocalAnalyticSemanticEvaluations": [1, 3, 10, 100],
+      "queryLocalAnalyticResidualVerifications": [1, 3, 10, 100],
+      "nestedDepths": [1, 2, 3],
+      "nestedEvaluatorCallsForTenConsumers": [10, 20, 30],
+      "evaluatorOnlySubdivisions": [64, 128],
+      "retainedIntersectionEntries": 0,
+      "sharedIndexBuilds": 0
+    },
+    "wallClockGate": false,
+    "budgetExhaustion": "typed WORK_LIMIT_REACHED + NOT_ESTABLISHED + UNRESOLVED; no partial finite publication"
+  },
+  "stateRecommendation": {
+    "startingPoint": "QUERY_LOCAL",
+    "g7MetricIndexReuse": false,
+    "sharedIntersectionOwnerRecommendedForG8b": false,
+    "reason": "1/3/10/100 repeated and 1-3 nested probes were deterministic, linear and retained zero entries; no measured need justifies shared ownership",
+    "futureSharedOwnerGate": "new measured evidence plus separate author approval of key, immutable payload, capacity, eviction, lifecycle and cache-off equality"
+  },
+  "scientificPilots": {
+    "focalSphereConeReduced2D": {
+      "formula": "F_mu(t)=(t,mu), target x^2+y^2=1",
+      "regimes": {"mu0.6": "2 transverse", "mu1": "1 double tangent", "mu1.2": "complete empty"},
+      "sourceRole": "scientific topology/dependency motivation only",
+      "referenceAuthority": "independent analytic discriminant"
+    },
+    "coneCylinderLsimReduced2D": {
+      "formula": "F_sigma(t)=(t,sigma*(t^2-lambda)), sigma=+-1, target y=0",
+      "regimes": {"lambda0.25": "4 constructive leaves", "lambda0": "2 tangent branch preimages at one coordinate", "lambdaMinus0.25": "complete empty on both branches"},
+      "preservedRequirement": "multibranch topology and equal-coordinate constructive preimages",
+      "excluded": "3D surface semantics and historical sampled coordinates"
+    },
+    "nestedControl": {
+      "depths": [1, 2, 3],
+      "tenConsumerEvaluatorCalls": [10, 20, 30],
+      "wholeLocusRegenerations": 0,
+      "firstClassDownstreamDagProbe": true
+    }
+  },
+  "hardZeroCounters": {
+    "wholeLocusRegenerations": 0,
+    "renderCacheReads": 0,
+    "renderVertexReads": 0,
+    "legacySampleReads": 0,
+    "viewportReads": 0,
+    "pixelToleranceReads": 0,
+    "metricIndexReads": 0,
+    "staleRevisionEntriesAfterInvalidation": 0,
+    "partialSnapshotsPublished": 0
+  },
+  "g8bCandidate": {
+    "status": "NOT_AUTHORIZED_BLOCKED_ON_AUTHOR_REVIEW",
+    "minimumFamilies": ["line", "segment", "ray", "circle"],
+    "deferred": ["full conics", "functions", "implicit curves", "locus-locus", "generic path"],
+    "architecture": "immutable rich value + normal-DAG nonnumeric rich Geo + optional separately approved bounded point consumer",
+    "queryState": "query-local only",
+    "productiveMainSourceAddedByG8a": false,
+    "publicCommandAdded": false,
+    "pathAdded": false,
+    "xmlPersistenceAdded": false,
+    "threeDimensionalBehaviorAdded": false,
+    "g9BehaviorAdded": false
+  },
+  "rejectedStrategies": [
+    "render cache, render vertices, legacy samples, viewport or pixels as authority",
+    "sign-change-only tangency detection",
+    "coordinate-nearest, output-slot, label or creation-order identity",
+    "point-only result authority",
+    "solver convergence as completeness evidence",
+    "arbitrary finite samples for overlap",
+    "G7 metric index as intersection state",
+    "shared/global cache without measured need",
+    "generic implicit conversion to widen support",
+    "universal merge/split child identity"
+  ],
+  "finalValidation": {
+    "focusedG8a": "PASS",
+    "operationalRegression": "PASS",
+    "locusV2Regression": "PASS",
+    "g7aRegression": "PASS",
+    "g7bRegression": "PASS",
+    "composedAuthority": "PASS",
+    "markdownLinks": "PASS",
+    "gitDiffCheck": "PASS",
+    "productiveMainSourceChanges": 0,
+    "upstreamTestPrivateFilesRegistered": 11,
+    "commands": [
+      {
+        "command": ".\\tools\\agent\\verify-g8a-intersections.ps1",
+        "exitCode": 0,
+        "elapsedSeconds": 249.3,
+        "evidence": "test-private Java and independent numerical references",
+        "logDirectory": "C:/Users/usuario/AppData/Local/Temp/geocedg-verify-g8a-intersections"
+      },
+      {
+        "command": ".\\tools\\agent\\verify-operational.ps1",
+        "exitCode": 0,
+        "elapsedSeconds": 9.0,
+        "evidence": "static operational and upstream-boundary contracts"
+      },
+      {
+        "command": ".\\tools\\agent\\verify-locus-v2.ps1",
+        "exitCode": 0,
+        "elapsedSeconds": 312.1,
+        "evidence": "real G6/G6R Java tests and static laboratory contract",
+        "logDirectory": "C:/Users/usuario/AppData/Local/Temp/geocedg-verify-locus-v2"
+      },
+      {
+        "command": ".\\tools\\agent\\verify-g7a-metrics.ps1",
+        "exitCode": 0,
+        "elapsedSeconds": 192.8,
+        "evidence": "test-private G7A/G7A-R1 Java and independent references",
+        "logDirectory": "C:/Users/usuario/AppData/Local/Temp/geocedg-verify-g7a-metrics"
+      },
+      {
+        "command": ".\\tools\\agent\\verify-g7b-metrics.ps1",
+        "exitCode": 0,
+        "elapsedSeconds": 177.6,
+        "evidence": "real productive G7B Java and static laboratory contract",
+        "logDirectory": "C:/Users/usuario/AppData/Local/Temp/geocedg-verify-g7b-metrics"
+      },
+      {
+        "command": ".\\tools\\agent\\verify.ps1 -SkipBuild -LogDirectory $env:TEMP\\geocedg-verify-g8a-composed",
+        "exitCode": 0,
+        "elapsedSeconds": 28.9,
+        "evidence": "canonical composed static authority after focused builds",
+        "logDirectory": "C:/Users/usuario/AppData/Local/Temp/geocedg-verify-g8a-composed"
+      }
+    ]
+  },
+  "phaseDisposition": {
+    "g7": "PASS",
+    "g8Planning": "PASS_AUTHOR_APPROVED",
+    "g8a": "CHARACTERIZATION_COMPLETE_AWAITING_AUTHOR_REVIEW",
+    "g8Spec": "PROPOSED_NOT_NORMATIVE",
+    "adr0008": "PROPOSED",
+    "g8b": "NOT_AUTHORIZED_BLOCKED_ON_G8A_PASS_AUTHOR_APPROVED",
+    "g8ProductiveImplementation": "NOT_STARTED",
+    "g9": "NOT_STARTED"
+  }
+}

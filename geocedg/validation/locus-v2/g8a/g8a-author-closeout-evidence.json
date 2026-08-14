@@ -1,0 +1,159 @@
+{
+  "schemaVersion": 1,
+  "phase": "G8A",
+  "status": "PASS_AUTHOR_APPROVED",
+  "authorReviewDate": "2026-08-14",
+  "characterizationEvidence": {
+    "path": "geocedg/validation/locus-v2/g8a/g8a-intersection-characterization-evidence.json",
+    "sha256": "feb6f024c4ef4a96b6cfa1be15bd3a37009af0106a55818f72d1c614a9f04cf4",
+    "immutableMeasuredEvidence": true,
+    "preReviewStatusRetained": "CHARACTERIZATION_COMPLETE_AWAITING_AUTHOR_REVIEW",
+    "tests": 65,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "decisions": {
+    "D1": "APPROVE_G8A_PASS_AUTHOR_APPROVED",
+    "D2": "APPROVE_IMMUTABLE_RICH_SET_PLUS_NORMAL_DAG_NONNUMERIC_RICH_GEO_AUTHORITY",
+    "D3": "APPROVE_REQUIRE_INTERNAL_TOKEN_SELECTED_DYNAMIC_POINT_CONSUMER",
+    "D4": "APPROVE_INDEPENDENT_COMPLETE_INCOMPLETE_NOT_ESTABLISHED_AXIS",
+    "D5": "APPROVE_NON_SIGN_ONLY_TANGENCY_AND_SEPARATE_MULTIPLICITY_EVIDENCE",
+    "D6": "APPROVE_TYPED_OVERLAP_AND_INFINITE_RESULT_SEMANTICS",
+    "D7": "APPROVE_CAPABILITY_HIERARCHY_AND_INDEPENDENT_VERIFICATION",
+    "D8": "APPROVE_MEASURED_VALUES_WITH_NORMALIZATION_CONTRACT",
+    "D9": "APPROVE_PROVISIONAL_DETERMINISTIC_WORK_BUDGETS",
+    "D10": "APPROVE_DURABLE_IDENTITY_SEPARATE_FROM_REVISION_EVIDENCE",
+    "D11": "APPROVE_REJECTION_OF_UNIVERSAL_MERGE_SPLIT_GENEALOGY",
+    "D12": "APPROVE_QUERY_LOCAL_STATE_NO_SHARED_OWNER_OR_G7_INDEX",
+    "D13": "APPROVE_LINE_SEGMENT_RAY_CIRCLE_MINIMUM",
+    "D14": "APPROVE_LEVEL_C_AND_FULL_CONIC_DEFERRAL",
+    "D15": "APPROVE_INTERNAL_ONLY_PUBLIC_BOUNDARIES_CLOSED",
+    "D16": "APPROVE_APPEND_ONLY_DEDICATED_GEOCLASS_IF_REQUIRED",
+    "D17": "APPROVE_NORMATIVE_G8_SPEC_AND_ACCEPT_ADR_0008"
+  },
+  "resultAuthority": {
+    "immutableRichIntersectionSet": true,
+    "normalDagNonnumericRichGeo": true,
+    "ordinaryPointIsAuthority": false,
+    "requiredInternalTokenSelectedPointConsumer": true,
+    "pointConsumerRetargetByCoordinate": false,
+    "pointConsumerUndefinedWhenAbsentStaleOrAmbiguous": true,
+    "pointConsumerRecoversOnlyForSameCurrentToken": true
+  },
+  "completeness": {
+    "values": [
+      "COMPLETE",
+      "INCOMPLETE",
+      "NOT_ESTABLISHED"
+    ],
+    "orthogonalToRootVerificationAndOtherResultAxes": true,
+    "completeEmptyIsSuccessfulGeometry": true,
+    "pointConsumerHidesIncompleteSet": false
+  },
+  "tolerancePolicy": {
+    "policyId": "g8b-initial-normalized/v1",
+    "measuredSourcePolicyId": "g8a-measured-candidate/v1",
+    "rootParameterTolerance": 1e-12,
+    "absoluteResidualTolerance": 2e-12,
+    "relativeResidualTolerance": 2e-12,
+    "tangencyThreshold": 1e-10,
+    "deduplicationParameterTolerance": 4e-12,
+    "continuationParameterTolerance": 1e-8,
+    "coordinateVerificationTolerance": 4e-12,
+    "preferredResidualMeaning": "MODEL_COORDINATE_DISTANCE_EQUIVALENT",
+    "familySpecificTypedResidualPermittedWhenDistanceMeaningUnavailable": true,
+    "equationScalingInvariant": true,
+    "parameterQuantitiesBoundToProviderSemantics": true,
+    "tangencyUsesNormalizedContactIndicator": true,
+    "coordinateClosenessEstablishesIdentity": false,
+    "rawValueRequiresMatchingNormalizedMeaning": true
+  },
+  "workBudget": {
+    "status": "PROVISIONAL_INITIAL_G8B_IMPLEMENTATION_DEFAULT",
+    "maximumSemanticEvaluations": 32768,
+    "maximumSemanticDerivativeEvaluations": 16384,
+    "maximumTargetEvaluations": 32768,
+    "maximumCandidateIntervals": 8192,
+    "maximumIsolationSubdivisions": 8192,
+    "maximumIsolationDepth": 40,
+    "maximumRefinementIterationsPerCandidate": 80,
+    "maximumResidualVerifications": 1024,
+    "maximumCandidateCount": 512,
+    "maximumContinuationComparisons": 4096,
+    "maximumPublishedFiniteSolutions": 256,
+    "maximumRetainedIntersectionIndexEntries": 0,
+    "maximumRetainedTopologyEpochs": 2,
+    "wallClockGate": false
+  },
+  "identity": {
+    "durableFields": [
+      "sourcePairIdentity",
+      "opaqueSolutionToken",
+      "constructiveRootLineage",
+      "establishedBranchLineage",
+      "topologyContinuationContext"
+    ],
+    "revisionScopedFields": [
+      "semanticParameter",
+      "isolatingInterval",
+      "evaluatorRevision",
+      "targetRevision",
+      "residualEvidence",
+      "solverCertificate"
+    ],
+    "reparameterizationChangesIdentityByItself": false,
+    "universalMergeSplitGenealogy": false,
+    "ambiguousContinuationIsExplicit": true,
+    "nearestCartesianMatching": false
+  },
+  "stateAndScope": {
+    "queryLocal": true,
+    "g7MetricIndexReuse": false,
+    "sharedIntersectionOwner": false,
+    "globalIntersectionCache": false,
+    "minimumFamilies": [
+      "line",
+      "segment",
+      "ray",
+      "circle"
+    ],
+    "deferredFamilies": [
+      "full conics",
+      "functions",
+      "general implicit curves",
+      "locus-locus"
+    ]
+  },
+  "publicBoundaries": {
+    "publicCommand": false,
+    "genericPath": false,
+    "publicPointOnLocus": false,
+    "xmlPersistenceMigration": false,
+    "legacyGeoLocusChange": false,
+    "classicSemanticChange": false,
+    "threeDimensionalBehavior": false,
+    "g9Behavior": false,
+    "pythonDsl": false
+  },
+  "normativePromotion": {
+    "g8Specification": "NORMATIVE_AUTHOR_APPROVED",
+    "adr0008": "ACCEPTED"
+  },
+  "executionBoundary": {
+    "g8b": "AUTHORIZED_NOT_STARTED",
+    "productiveG8ImplementationAddedByG8a": false,
+    "g8bPromptExecutedByCloseout": false,
+    "promotionRequiresCompleteVerificationPass": true
+  },
+  "phaseDisposition": {
+    "g7": "PASS",
+    "g8Planning": "PASS_AUTHOR_APPROVED",
+    "g8a": "PASS_AUTHOR_APPROVED",
+    "g8Spec": "NORMATIVE_AUTHOR_APPROVED",
+    "adr0008": "ACCEPTED",
+    "g8b": "AUTHORIZED_NOT_STARTED",
+    "g8ProductiveImplementation": "NOT_STARTED",
+    "g9": "NOT_STARTED"
+  }
+}
