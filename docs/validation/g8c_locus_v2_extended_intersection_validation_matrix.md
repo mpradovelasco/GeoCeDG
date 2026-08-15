@@ -1,7 +1,7 @@
 # G8C extended-intersection validation matrix
 
-**Status: G8C1 IMPLEMENTATION GATES AUTHOR APPROVED; G8C2 GATES PROPOSED;
-characterization rows executed only where explicitly identified**
+**Status: G8C1 IMPLEMENTATION GATES PASS — AUTHOR APPROVED; G8C2 GATES
+PROPOSED/UNEXECUTED**
 
 | ID | Track | Case | Required assertions | Reference |
 |---|---|---|---|---|
@@ -63,6 +63,23 @@ The design task executes 32 test-private tests:
 These tests characterize architecture; they do not implement the future solver.
 The independent reference manifest is reproduced at 80 decimal digits with
 CPython 3.12.13 and mpmath 1.4.1.
+
+## Executed G8C1 implementation validation
+
+The implementation adds 38 focused tests: 22 kernel/geometry tests, 10
+lifecycle/identity tests and 6 deterministic functional-counter tests. They
+execute the applicable C1, LIFE, NEST, INV, PERF, AUTH and REG rows above.
+
+The default evaluator-adaptive capability does not claim complete empty results
+because it has no exhaustive coverage proof. C1-CONIC-01's complete-empty arm
+is therefore tested through an injected authoritative capability that supplies
+explicit complete coverage evidence; the default path remains truthfully
+`NOT_ESTABLISHED`. Function gaps and singular implicit candidates remain hard
+typed barriers. See the
+[G8C1 kernel report](g8c1_locus_v2_extended_target_intersection_kernel_report.md)
+and [traceability matrix](g8c1_locus_v2_extended_target_intersection_traceability_matrix.md).
+The author approved these executed G8C1 gates on 2026-08-15; the numerical
+measurements remain the recorded execution evidence rather than policy values.
 
 ## Acceptance principles
 

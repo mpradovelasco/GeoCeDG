@@ -37,6 +37,7 @@ import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.MultiplicityStatus;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.SolverMethod;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.SupportLevel;
+import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.TargetFamily;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSourceBinding2D;
 import org.geocedg.common.kernel.locus.intersection.LocusDifferentialEvaluation2D;
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionPolicy2D;
@@ -156,7 +157,7 @@ class G8BIntersectionKernelTest extends BaseUnitTest {
 	}
 
 	@Test
-	void circleUsesSignedRadialModelDistanceAndRejectsFullConic() {
+	void circleKeepsSignedRadialDistanceAndExtendedConicUsesDistinctFamily() {
 		GeoConic circle = add("Circle((3,-2),2)");
 		LocusIntersectionTarget2D target =
 				LocusIntersectionTargets2D.capture(circle, "circle", 1);
@@ -165,8 +166,9 @@ class G8BIntersectionKernelTest extends BaseUnitTest {
 		assertEquals(-2, target.evaluateResidual(new LocusPoint2D(3, -2))
 				.getNormalizedResidual(), 1E-15);
 		GeoConic ellipse = add("x^2 + 2y^2 = 1");
-		assertThrows(IllegalArgumentException.class,
-				() -> LocusIntersectionTargets2D.capture(ellipse, "ellipse", 1));
+		assertEquals(TargetFamily.ELLIPSE,
+				LocusIntersectionTargets2D.capture(ellipse, "ellipse", 1)
+						.getFamily());
 	}
 
 	@Test
@@ -546,10 +548,10 @@ class G8BIntersectionKernelTest extends BaseUnitTest {
 	}
 
 	@Test
-	void unsupportedConicProducesClosedRichState() {
+	void unsupportedDegenerateConicProducesClosedRichState() {
 		G8BIntersectionFixtures.Fixture fixture = parabola("unsupported");
-		GeoConic ellipse = add("x^2+2y^2=1");
-		LocusIntersectionResult2D result = result(fixture, ellipse, null);
+		GeoConic pairOfLines = add("x^2-y^2=0");
+		LocusIntersectionResult2D result = result(fixture, pairOfLines, null);
 		assertEquals(ComputationStatus.UNSUPPORTED,
 				result.getComputationStatus());
 		assertEquals(GeometryKind.UNRESOLVED, result.getGeometryKind());

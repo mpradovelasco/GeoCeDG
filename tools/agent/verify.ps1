@@ -32,6 +32,8 @@ $G8BIntersectionVerifier = Join-Path $PSScriptRoot `
     "verify-g8b-intersections.ps1"
 $G8CIntersectionDesignVerifier = Join-Path $PSScriptRoot `
     "verify-g8c-intersections-design.ps1"
+$G8C1IntersectionVerifier = Join-Path $PSScriptRoot `
+    "verify-g8c1-intersections.ps1"
 $BenchmarkRunner = Join-Path $RepositoryRoot "tools\benchmark\run.ps1"
 $InitialStatus = $null
 
@@ -195,6 +197,28 @@ try {
         & $G8CIntersectionDesignVerifier @g8cDesignParameters
         Assert-LastScriptSuccess `
             -Description "G8C extended Locus V2 intersection design"
+
+        $g8c1Evidence = Join-Path $RepositoryRoot `
+            "geocedg\validation\locus-v2\g8c1\g8c1-intersection-kernel-evidence.json"
+        if (Test-Path -LiteralPath $g8c1Evidence -PathType Leaf) {
+            Write-Host "`n==> G8C1 extended one-parameter intersection kernel"
+            $g8c1IntersectionParameters = @{
+                LogDirectory = Join-Path ([IO.Path]::GetFullPath($LogDirectory)) `
+                    "g8c1-intersections"
+            }
+            if ($SkipBuild) {
+                $g8c1IntersectionParameters.SkipBuild = $true
+            }
+            if ($AllowToolchainDownload) {
+                $g8c1IntersectionParameters.AllowToolchainDownload = $true
+            }
+            if ($KeepBuildOutputs) {
+                $g8c1IntersectionParameters.KeepBuildOutputs = $true
+            }
+            & $G8C1IntersectionVerifier @g8c1IntersectionParameters
+            Assert-LastScriptSuccess `
+                -Description "G8C1 extended one-parameter intersection kernel"
+        }
     }
 
     Write-Host "`n==> Standalone Windows packaging contracts"

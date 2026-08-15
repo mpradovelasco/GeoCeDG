@@ -1,6 +1,7 @@
 # G8C scientific traceability
 
-**Status: G8C DESIGN TRACEABILITY — AUTHOR APPROVED; scientific sources motivate
+**Status: G8C DESIGN/G8C1 TRACEABILITY — AUTHOR APPROVED;
+scientific sources motivate
 requirements but do not define the numerical algorithm**
 
 | Requirement | Versioned source/evidence | G8C consequence | Planned validation |
@@ -34,6 +35,13 @@ select Newton, interval boxes, tolerances, token algorithms, residual
 normalization, or completeness claims. Those derive from normative G6/G8
 contracts, Accepted ADRs, actual source architecture, and reproducible G8C
 evidence.
+
+The author-approved G8C1 internal kernel operationalizes only the one-parameter implications above:
+typed conic/function/regular-polynomial targets, even-contact discovery,
+semantic tokens and downstream DAG propagation. Its scientific pilots are
+reduced analytic fixtures linked to the catalog rather than assertions that the
+historical sampled models themselves are kernel truth. The Locus V2 × Locus V2
+requirements remain traceability inputs for unexecuted G8C2.
 
 ## Versioned source identifiers
 

@@ -29,6 +29,8 @@ $EvidencePath = Join-Path $EvidenceRoot `
 $EvidenceHashes = Join-Path $EvidenceRoot "g8c-design-evidence.sha256"
 $ReferenceGenerator = Join-Path $EvidenceRoot `
     "generate_extended_intersection_references.py"
+$G8C1EvidencePath = Join-Path $RepositoryRoot `
+    "geocedg\validation\locus-v2\g8c1\g8c1-intersection-kernel-evidence.json"
 $InitialStatus = $null
 $GeneratedSnapshot = $null
 
@@ -205,8 +207,10 @@ function Invoke-G8CTests {
         $arguments += "-Dorg.gradle.java.installations.auto-download=false"
     }
     $arguments += @(
-        ":shared:common-jre:test", "--tests",
-        "org.geocedg.common.locus.G8C*",
+        ":shared:common-jre:test",
+        "--tests", "org.geocedg.common.locus.G8CExtendedTargetCharacterizationTest",
+        "--tests", "org.geocedg.common.locus.G8CLocusLocusCharacterizationTest",
+        "--tests", "org.geocedg.common.locus.G8CDesignFunctionalBenchmarkTest",
         ":shared:common-jre:checkstyleTest",
         "--rerun-tasks", "--no-daemon", "--console=plain"
     )
@@ -276,10 +280,17 @@ try {
     Assert-Contains -RelativePath `
         "docs\adr\0009-locus-v2-locus-intersection-pair-semantics.md" -Text @(
             "Status: **Proposed**", "canonical unordered pair")
+    $g8c1CandidatePresent = Test-Path -LiteralPath $G8C1EvidencePath `
+        -PathType Leaf
+    $g8c1RoadmapState = if ($g8c1CandidatePresent) {
+        "G8C1 = PASS — AUTHOR APPROVED"
+    } else {
+        "G8C1 = AUTHORIZED — NOT STARTED"
+    }
     Assert-Contains -RelativePath `
         "docs\roadmap\geocedg_roadmap.md" -Text @(
             "G8C DESIGN = PASS — AUTHOR APPROVED",
-            "G8C1 = AUTHORIZED — NOT STARTED",
+            $g8c1RoadmapState,
             "G8C2 = NOT AUTHORIZED — NOT STARTED",
             "G9 = NOT STARTED")
 
@@ -288,10 +299,19 @@ try {
         --exclude-standard)
     $changedPaths = @($changedPaths | Sort-Object -Unique)
     foreach ($path in $changedPaths) {
-        Assert-Condition -Condition (-not ($path -match '^source/.+/src/main/')) `
-            -Message "Productive G8C source edit is forbidden: $path"
+        if ($path -match '^source/.+/src/main/') {
+            $allowedG8C1Productive = $g8c1CandidatePresent -and (
+                $path -eq "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusIntersectionV2.java" -or
+                $path -match '^source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/[^/]+\.java$')
+            Assert-Condition -Condition $allowedG8C1Productive `
+                -Message "Unapproved productive G8C source edit: $path"
+        }
         if ($path -match '^source/.+/src/test/.+\.java$') {
-            Assert-Condition -Condition ($path -in $AllowedTestSources) `
+            $allowedG8C1Test = $g8c1CandidatePresent -and (
+                $path -eq "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8BIntersectionKernelTest.java" -or
+                $path -match '^source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8C1[^/]+\.java$')
+            Assert-Condition -Condition ($path -in $AllowedTestSources -or
+                    $allowedG8C1Test) `
                 -Message "Unapproved G8C characterization source: $path"
         }
         foreach ($forbiddenPath in @(
@@ -370,7 +390,11 @@ try {
         -Message "git diff --cached --check failed."
 
     Write-Host "G8C design author-closeout verification passed (32 characterization probes)."
-    Write-Host "G8C1 is authorized/not started; G8C2 and G9 are not started."
+    if ($g8c1CandidatePresent) {
+        Write-Host "G8C1 is author-approved; G8C2 and G9 are not started."
+    } else {
+        Write-Host "G8C1 is authorized/not started; G8C2 and G9 are not started."
+    }
     Write-Host "Logs: $LogDirectory"
 } catch {
     Write-Error $_.Exception.Message

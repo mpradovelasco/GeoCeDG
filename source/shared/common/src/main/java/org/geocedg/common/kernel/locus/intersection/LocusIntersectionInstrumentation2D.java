@@ -11,6 +11,9 @@ public final class LocusIntersectionInstrumentation2D {
 	private long semanticEvaluations;
 	private long derivativeEvaluations;
 	private long targetEvaluations;
+	private long targetDerivativeEvaluations;
+	private long targetDomainEvaluations;
+	private long invalidTargetEvaluations;
 	private long candidateIntervals;
 	private long isolationSubdivisions;
 	private long maximumIsolationDepth;
@@ -50,6 +53,27 @@ public final class LocusIntersectionInstrumentation2D {
 	public void recordTargetEvaluation() {
 		targetEvaluations = increment(targetEvaluations,
 				budget.getMaximumTargetEvaluations(), "target evaluations");
+	}
+
+	/** Records one target normal/derivative evaluation. */
+	public void recordTargetDerivativeEvaluation() {
+		targetDerivativeEvaluations = increment(targetDerivativeEvaluations,
+				budget.getMaximumDerivativeEvaluations(),
+				"target derivative evaluations");
+	}
+
+	/** Records one explicit target-domain or membership evaluation. */
+	public void recordTargetDomainEvaluation() {
+		targetDomainEvaluations = increment(targetDomainEvaluations,
+				budget.getMaximumTargetEvaluations(),
+				"target domain evaluations");
+	}
+
+	/** Records one typed invalid/undefined target-local evaluation. */
+	public void recordInvalidTargetEvaluation() {
+		invalidTargetEvaluations = increment(invalidTargetEvaluations,
+				budget.getMaximumTargetEvaluations(),
+				"invalid target evaluations");
 	}
 
 	/** Records one retained candidate interval. */
@@ -151,6 +175,8 @@ public final class LocusIntersectionInstrumentation2D {
 	public LocusIntersectionInstrumentationSnapshot2D snapshot() {
 		return new LocusIntersectionInstrumentationSnapshot2D(
 				semanticEvaluations, derivativeEvaluations, targetEvaluations,
+				targetDerivativeEvaluations, targetDomainEvaluations,
+				invalidTargetEvaluations,
 				candidateIntervals, isolationSubdivisions,
 				maximumIsolationDepth, refinementCalls, refinementIterations,
 				residualVerifications, membershipChecks,

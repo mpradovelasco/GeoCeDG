@@ -1056,8 +1056,8 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionCapabilityContext2D.java",
       "change": "added",
-      "purpose": "Implement the internal query-local G8B intersection semantic contract (IntersectionCapabilityContext2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
-      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+      "purpose": "Implement the internal query-local G8B context and its G8C1 typed target evaluation, domain, derivative and invalid-evaluation instrumentation seams.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionClassification2D.java",
@@ -1122,8 +1122,8 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionSemanticMetadata2D.java",
       "change": "added",
-      "purpose": "Implement the internal query-local G8B intersection semantic contract (IntersectionSemanticMetadata2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
-      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+      "purpose": "Define the closed G8B/G8C1 target-family, support, evaluation, result, completeness, classification and identity vocabulary.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionSourceBinding2D.java",
@@ -1152,20 +1152,20 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionInstrumentation2D.java",
       "change": "added",
-      "purpose": "Implement the internal query-local G8B intersection semantic contract (LocusIntersectionInstrumentation2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
-      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+      "purpose": "Enforce bounded query-local G8B/G8C1 work and record typed target/domain/derivative counters with zero retained or forbidden-authority state.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionInstrumentationSnapshot2D.java",
       "change": "added",
-      "purpose": "Implement the internal query-local G8B intersection semantic contract (LocusIntersectionInstrumentationSnapshot2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
-      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+      "purpose": "Publish immutable G8B/G8C1 functional counters including target derivative, domain and invalid-evaluation evidence.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionPolicy2D.java",
       "change": "added",
-      "purpose": "Implement the internal query-local G8B intersection semantic contract (LocusIntersectionPolicy2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
-      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+      "purpose": "Bind versioned normalized G8B/G8C1 residual, parameter, tangency, deduplication, continuation and deterministic budget policy.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionQuery2D.java",
@@ -1188,20 +1188,20 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionSolver2D.java",
       "change": "added",
-      "purpose": "Implement the internal query-local G8B intersection semantic contract (LocusIntersectionSolver2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
-      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+      "purpose": "Select the closed G8B/G8C1 capability hierarchy and independently verify typed residual and membership evidence before rich-result publication.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionTarget2D.java",
       "change": "added",
-      "purpose": "Implement the internal query-local G8B intersection semantic contract (LocusIntersectionTarget2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
-      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+      "purpose": "Expose the captured G8B/G8C1 target family, domain, candidate level, normalized residual, membership and contact contracts.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionTargets2D.java",
       "change": "added",
-      "purpose": "Implement the internal query-local G8B intersection semantic contract (LocusIntersectionTargets2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
-      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+      "purpose": "Make closed typed support and snapshot decisions for G8B targets and the authorized G8C1 conic, bounded-function and regular-polynomial subsets.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionWorkBudget2D.java",
@@ -1236,8 +1236,8 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusIntersectionV2.java",
       "change": "added",
-      "purpose": "Publish one coherent immutable G8B rich intersection snapshot through normal Construction DAG dependencies and bounded semantic continuation.",
-      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+      "purpose": "Publish one coherent immutable G8B/G8C1 rich intersection snapshot through normal Construction DAG dependencies, typed target capture and bounded semantic continuation.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusIntersectionPointV2.java",
@@ -1260,8 +1260,8 @@
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8BIntersectionKernelTest.java",
       "change": "added",
-      "purpose": "Verify productive G8B target adapters, rich result axes, completeness, tangency, topology, normalization, budgets, and forbidden-authority counters.",
-      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+      "purpose": "Verify the G8B baseline remains intact while the closed family classifier recognizes G8C1 conics and still rejects unsupported conic degeneracies.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8BIntersectionLifecycleTest.java",
@@ -1298,6 +1298,78 @@
       "change": "added",
       "purpose": "Measure deterministic query-local pair combinatorics, repeated queries, nesting depth, retained state, and forbidden-authority counters for G8C design.",
       "authority": "docs/roadmap/g8c_locus_v2_extended_intersections_design.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/BoundedFunctionGraphIntersectionTarget2D.java",
+      "change": "added",
+      "purpose": "Capture a real GeoFunction with an explicit finite semantic interval and expose a typed vertical model-length residual without bridging undefined regions.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/ExtendedTargetIntersectionCapability2D.java",
+      "change": "added",
+      "purpose": "Provide bounded query-local one-parameter candidate isolation, safeguarded refinement, even-contact discovery and conservative completeness for G8C1 targets.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionTargetDomain2D.java",
+      "change": "added",
+      "purpose": "Represent captured model-plane or explicit finite function-domain authority independently of view bounds.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionTargetSupport2D.java",
+      "change": "added",
+      "purpose": "Represent the closed typed support decision for ordinary G8B/G8C1 target objects without null or magic-number states.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/NondegenerateConicIntersectionTarget2D.java",
+      "change": "added",
+      "purpose": "Capture authoritative ellipse, parabola and hyperbola matrices and expose a scale-invariant first-order normal residual at regular points.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/RegularPolynomialImplicitIntersectionTarget2D.java",
+      "change": "added",
+      "purpose": "Capture finite polynomial implicit coefficients and expose scale-invariant regular first-order residual evidence while rejecting singular normalization.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/TargetCandidateEvaluation2D.java",
+      "change": "added",
+      "purpose": "Separate typed candidate-level evaluation and domain/normalization failure from independent target verification.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/TargetResidualEvaluation2D.java",
+      "change": "added",
+      "purpose": "Represent established or explicitly unavailable normalized target residual evidence without NaN states.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8C1IntersectionTestSupport.java",
+      "change": "added",
+      "purpose": "Provide test-private semantic fixtures and target constructors for focused G8C1 kernel and lifecycle validation.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8C1ExtendedTargetKernelTest.java",
+      "change": "added",
+      "purpose": "Verify G8C1 target support, normalization, domains, roots, tangency, completeness and unsupported/singular outcomes.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8C1ExtendedTargetLifecycleTest.java",
+      "change": "added",
+      "purpose": "Verify G8C1 Option B, token identity, normal-DAG propagation, ambiguity, disappearance/recovery and atomic failure semantics.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8C1ExtendedTargetFunctionalBenchmarkTest.java",
+      "change": "added",
+      "purpose": "Verify deterministic G8C1 functional counters, 1/10/100 query scaling, 100 consumers, invalid barriers and zero retained/forbidden state.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
     }
   ]
 }

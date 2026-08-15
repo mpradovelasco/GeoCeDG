@@ -1,7 +1,7 @@
 # G8C target-family capability matrix
 
-**Status: G8C1 rows author-approved normative scope; G8C2 rows proposed;
-not an implementation claim**
+**Status: G8C1 rows implemented and author-approved; G8C2 rows proposed/not
+implemented**
 
 | Family | Actual kernel authority | Domain authority | Candidate/refinement capability | Verification residual | Derivative/bounds | First productive recommendation |
 |---|---|---|---|---|---|---|
@@ -33,5 +33,7 @@ not an implementation claim**
 - **Unsupported**: capability or normalization is absent; no fabricated result.
 
 No row broadens the public API. “G8C1 required” is the author-approved internal
-implementation scope; it is authorized but not yet implemented. G8C2 rows
-remain proposed and not authorized.
+scope and is implemented by the author-approved internal kernel. The default adaptive
+capability provides verified-but-uncertified local evidence and does not claim
+global completeness. G8C2 rows remain proposed, not authorized and not
+implemented.

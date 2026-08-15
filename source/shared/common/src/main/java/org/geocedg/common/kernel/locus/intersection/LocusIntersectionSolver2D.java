@@ -36,6 +36,8 @@ import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata
 public final class LocusIntersectionSolver2D {
 	private final EvaluatorOnlyIntersectionCapability2D evaluatorFallback =
 			new EvaluatorOnlyIntersectionCapability2D();
+	private final ExtendedTargetIntersectionCapability2D extendedTargetFallback =
+			new ExtendedTargetIntersectionCapability2D();
 
 	/**
 	 * Computes one private immutable result without shared intersection state.
@@ -85,7 +87,10 @@ public final class LocusIntersectionSolver2D {
 						new IntersectionCapabilityContext2D(query, definition,
 								target, session, instrumentation);
 				LocusIntersectionCapability2D selected = preferred != null
-						&& preferred.supports(context) ? preferred : evaluatorFallback;
+						&& preferred.supports(context) ? preferred
+								: extendedTargetFallback.supports(context)
+										? extendedTargetFallback
+										: evaluatorFallback;
 				IntersectionCandidateSet2D candidateSet =
 						selected.isolate(context);
 				return verifyAndPublish(binding, context, candidateSet, tokenSource);
@@ -208,14 +213,14 @@ public final class LocusIntersectionSolver2D {
 			context.getInstrumentation().recordRejectedCandidate();
 			return Verification.unresolved();
 		}
-		TargetResidual2D residual;
-		try {
-			context.getInstrumentation().recordResidualVerification();
-			residual = context.evaluateResidual(evaluation.getPoint());
-		} catch (IllegalArgumentException exception) {
+		context.getInstrumentation().recordResidualVerification();
+		TargetResidualEvaluation2D residualEvaluation =
+				context.evaluateResidualEvidence(evaluation.getPoint());
+		if (!residualEvaluation.isEstablished()) {
 			context.getInstrumentation().recordRejectedCandidate();
 			return Verification.unresolved();
 		}
+		TargetResidual2D residual = residualEvaluation.getResidual().get();
 		if (!residualCompatible(context.getQuery().getPolicy(), residual)
 				|| Math.abs(residual.getNormalizedResidual())
 						> context.getQuery().getPolicy().getResidualTolerance()
@@ -223,8 +228,7 @@ public final class LocusIntersectionSolver2D {
 			context.getInstrumentation().recordRejectedCandidate();
 			return Verification.unresolved();
 		}
-		context.getInstrumentation().recordMembershipCheck();
-		TargetMembership2D membership = context.getTarget().evaluateMembership(
+		TargetMembership2D membership = context.evaluateMembership(
 				evaluation.getPoint(), context.getQuery().getPolicy()
 						.getCoordinateTolerance().getValue());
 		if (membership.getStatus() == MembershipStatus.NOT_MEMBER) {

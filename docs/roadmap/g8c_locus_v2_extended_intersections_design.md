@@ -4,7 +4,7 @@
 |---|---|
 | Status | **PASS — AUTHOR APPROVED** |
 | Baseline | G8B/G8B-R1 `PASS — AUTHOR APPROVED` |
-| G8C1 implementation | **AUTHORIZED / NOT STARTED** |
+| G8C1 implementation | **PASS — AUTHOR APPROVED** |
 | G8C2 implementation | **NOT AUTHORIZED / NOT STARTED** |
 | Contract | G8C1 **NORMATIVE — AUTHOR APPROVED**; G8C2 **PROPOSED — NOT NORMATIVE** |
 | Proposed ADR | ADR 0009 **Proposed** |
@@ -65,8 +65,9 @@ distinct contracts.
 
 Entry gate: satisfied by the 2026-08-15 author closeout for the design,
 G8C1-specific normative specification, supported subsets, and normalized
-residual contract. Productive work still requires a separate invocation of the
-canonical G8C1 prompt from the published design-closeout baseline.
+residual contract. The canonical G8C1 prompt has now been executed from the
+  published design-closeout baseline; the resulting internal kernel passed its
+  author closeout on 2026-08-15.
 
 Exit gate: all three mandatory subsets implemented internally; G8B regression
 green; analytic and independent references pass; Option B point admissibility,
@@ -91,6 +92,17 @@ all compatibility gates pass; then explicit author approval.
 
 No G8C3 is predeclared. Unsupported singular, degenerate, nonpolynomial, or
 unbounded cases remain explicit future decisions.
+
+### G8C1 execution disposition
+
+The candidate implements the three target subsets through the existing G8B
+result/lifecycle pipeline. Its default query-local adaptive capability verifies
+roots conservatively and reports global completeness as `NOT_ESTABLISHED`;
+stronger injected analytic/certified capabilities may retain justified
+completeness evidence. The 38 focused tests and measured counters are recorded
+in the
+[G8C1 kernel report](../validation/g8c1_locus_v2_extended_target_intersection_kernel_report.md).
+This is an implementation record, not author approval.
 
 ## 4. Preserved G8B contract
 
@@ -196,13 +208,13 @@ them honestly rather than leaving a missing structural family.
 On 2026-08-15 the author approved the G8C design, the G8C1/G8C2 subdivision,
 every G8C1 decision in the table above, query-local state, and the gate that
 both implementation phases must pass before G8 global closeout or G9. The
-G8C1-specific contract is normative and G8C1 is authorized for a separately
-invoked execution. Pair-specific G8C2 decisions remain proposed: G8C2 is not
+  G8C1-specific contract and internal implementation are `PASS — AUTHOR
+  APPROVED`. Pair-specific G8C2 decisions remain proposed: G8C2 is not
 authorized and ADR 0009 remains Proposed.
 
 ```text
 G8C DESIGN = PASS — AUTHOR APPROVED
-G8C1 = AUTHORIZED — NOT STARTED
+G8C1 = PASS — AUTHOR APPROVED
 G8C2 = NOT AUTHORIZED — NOT STARTED
 G8 = IN PROGRESS
 G9 = NOT STARTED

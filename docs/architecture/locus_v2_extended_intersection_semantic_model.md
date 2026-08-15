@@ -2,7 +2,7 @@
 
 **Status: G8C1 SEMANTICS NORMATIVE — AUTHOR APPROVED / G8C2 SEMANTICS
 PROPOSED — NOT NORMATIVE**
-**Scope: approved G8C design; G8C1 authorized/not started; G8C2 not authorized**
+**Scope: approved G8C design and G8C1 internal kernel; G8C2 not authorized**
 
 Sections applying to one semantic source and a typed extended target are the
 author-approved G8C1 semantic contract. Dual-source/pair-specific sections are
@@ -151,3 +151,22 @@ Reuse G6/G8 guarantee levels: exact/analytic, certified, estimated or
 floating-point uncertified, and unsupported. Each residual declares its units
 and physical meaning. First-order normal residuals are not exact distance;
 derivative-free or evaluator-only strategies publish weaker guarantees.
+
+## 10. Author-approved G8C1 implementation
+
+The internal candidate realizes the single-target binding as the existing
+`LocusIntersectionTarget2D` plus typed support, domain, candidate-level and
+residual-evaluation values. The closed families are `ELLIPSE`, `PARABOLA`,
+`HYPERBOLA`, `BOUNDED_FUNCTION_GRAPH`, and
+`REGULAR_POLYNOMIAL_IMPLICIT`.
+
+The default extended capability keeps completeness `NOT_ESTABLISHED`; local
+verification is not extrapolated into global coverage. A regular transverse
+root with semantic localization may be `LocalIsolationStatus.ESTABLISHED`.
+Even-contact roots discovered through a local minimum are verified but remain
+locally unisolated unless stronger uniqueness evidence exists. This preserves
+Option B without making residual-only candidates consumable.
+
+The author approved this implementation contract and its measured query-local
+baseline on 2026-08-15. G8C1 is `PASS — AUTHOR APPROVED`; this status does not
+authorize the proposed pair-specific G8C2 model.

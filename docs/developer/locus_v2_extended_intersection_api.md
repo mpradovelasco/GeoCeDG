@@ -1,30 +1,35 @@
 # Locus V2 extended-intersection candidate API
 
-**Status: G8C1 CONTRACT NORMATIVE — AUTHOR APPROVED / NOT IMPLEMENTED;
-G8C2 API PROPOSED — NOT AUTHORIZED**
+**Status: G8C1 INTERNAL API IMPLEMENTED — AUTHOR APPROVED;
+G8C2 API PROPOSED — NOT AUTHORIZED/NOT IMPLEMENTED**
 
-G8C1 semantic responsibilities are normative; concrete additive names remain
-illustrative until reconciled with the audited G8B API during the authorized
-implementation. G8C2 types remain proposed. Existing G8B types remain
+G8C1 semantic responsibilities are normative and the concrete additive names
+below describe the author-approved internal kernel. G8C2 types remain illustrative
+and proposed. Existing G8B rich-result and point-consumer types remain
 authority.
 
 ## 1. G8C1 target adapter
 
 ```java
-interface ExtendedIntersectionTarget2D<T extends GeoElement> {
-    TargetBinding2D bind(T target, long revision);
-    TargetSupport2D support();
-    DomainContract2D domain();
-    CandidateLevel2D candidateLevel(LocusPoint2D point);
-    ResidualEvidence2D verify(LocusPoint2D point, ResidualPolicy2D policy);
-    DerivativeCapability2D derivatives();
-    BoundsCapability2D semanticBounds();
+interface LocusIntersectionTarget2D {
+    TargetFamily getFamily();
+    String getTargetIdentity();
+    long getTargetUpdateStamp();
+    IntersectionResidualContract2D getResidualContract();
+    IntersectionTargetDomain2D getDomainContract();
+    TargetCandidateEvaluation2D evaluateCandidateLevel(LocusPoint2D point);
+    TargetResidualEvaluation2D evaluateResidualEvidence(LocusPoint2D point);
+    TargetMembership2D evaluateMembership(LocusPoint2D point,
+            double coordinateTolerance);
+    TargetContactEvidence2D evaluateContact(LocusPoint2D point,
+            LocusDifferentialEvaluation2D differential);
 }
 ```
 
-`ResidualEvidence2D` must carry quantity/units, normalization, error/tolerance,
-guarantee and validity preconditions. It cannot be a bare interchangeable
-`double`. Candidate level evaluation does not itself verify membership.
+`IntersectionResidualContract2D` and `TargetResidualEvaluation2D` carry
+quantity/units, normalization, characteristic scale and typed availability.
+They cannot be a bare interchangeable `double`. Candidate level evaluation
+does not itself verify membership.
 
 Author-approved G8C1 closed adapters:
 
@@ -32,9 +37,13 @@ Author-approved G8C1 closed adapters:
 - `BoundedFunctionGraphIntersectionTarget2D`;
 - `RegularPolynomialImplicitIntersectionTarget2D`.
 
-Factory rejection is typed (`UNSUPPORTED_TARGET_SUBTYPE`,
+`LocusIntersectionTargets2D.assess()` returns typed rejection
+(`UNSUPPORTED_TARGET_SUBTYPE`,
 `DOMAIN_NOT_EXPLICIT`, `RESIDUAL_NORMALIZATION_UNAVAILABLE`,
-`SINGULAR_LOCAL_GEOMETRY`, or equivalent), never a `null`, NaN, or magic value.
+`NONPOLYNOMIAL_IMPLICIT`, `TARGET_UNDEFINED`, or equivalent), never a `null`,
+NaN, or magic value. Singular local implicit geometry is represented by
+`TargetEvaluationStatus.RESIDUAL_NORMALIZATION_UNAVAILABLE` during candidate
+and verification evaluation.
 
 ## 2. Pair query
 
@@ -125,8 +134,8 @@ result. They cannot silently discard either contribution.
 
 ## 6. Algorithm and point consumer
 
-G8C1 should extend the current `AlgoLocusIntersectionV2` only if its typed
-target seam remains clear. G8C2 should use a two-input
+G8C1 extends the current `AlgoLocusIntersectionV2` through its typed target
+seam and publishes the existing rich Geo. G8C2 should use a two-input
 `AlgoLocusLocusIntersectionV2`-style algorithm if that makes DAG input and
 revision capture explicit. Both publish the existing
 `GeoLocusIntersectionResult` authority.
@@ -138,7 +147,8 @@ or overlap-only.
 
 ## 7. Policies and counters
 
-G8C1 adds target/derivative evaluations and invalid-boundary counters. G8C2
+G8C1 adds target candidate, derivative, domain and invalid-evaluation counters
+to `LocusIntersectionInstrumentationSnapshot2D`. G8C2
 adds branch/component pair counts, boxes visited/rejected, pair refinements,
 Jacobian evaluations, overlap checks and two-source continuation comparisons.
 All limits are versioned, deterministic and query-local. No public setters or

@@ -10,13 +10,16 @@ import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.Regularity;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.MembershipStatus;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.ResidualQuantityKind;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.TargetFamily;
+import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.TargetSupportStatus;
 import org.geogebra.common.kernel.geos.GeoConic;
 import org.geogebra.common.kernel.geos.GeoElement;
+import org.geogebra.common.kernel.geos.GeoFunction;
 import org.geogebra.common.kernel.geos.GeoLine;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.kernel.geos.GeoRay;
 import org.geogebra.common.kernel.geos.GeoSegment;
 import org.geogebra.common.kernel.geos.GeoVec2D;
+import org.geogebra.common.kernel.implicit.GeoImplicitCurve;
 
 /** Captures G8B-authorized ordinary 2D target authority. */
 public final class LocusIntersectionTargets2D {
@@ -37,8 +40,10 @@ public final class LocusIntersectionTargets2D {
 	 */
 	public static LocusIntersectionTarget2D capture(GeoElement target,
 			String targetIdentity, long targetUpdateStamp) {
-		if (target == null || !target.isDefined()) {
-			throw new IllegalArgumentException("Target must be currently defined");
+		IntersectionTargetSupport2D support = assess(target);
+		if (!support.isSupported()) {
+			throw new IllegalArgumentException(support.getStatus() + ": "
+					+ support.getDiagnostic());
 		}
 		if (target instanceof GeoSegment) {
 			return new LineTarget((GeoLine) target, TargetFamily.SEGMENT,
@@ -56,31 +61,129 @@ public final class LocusIntersectionTargets2D {
 			return new CircleTarget((GeoConic) target, targetIdentity,
 					targetUpdateStamp);
 		}
+		if (target instanceof GeoConic) {
+			return new NondegenerateConicIntersectionTarget2D((GeoConic) target,
+					targetIdentity, targetUpdateStamp);
+		}
+		if (target instanceof GeoFunction) {
+			return new BoundedFunctionGraphIntersectionTarget2D(
+					(GeoFunction) target, targetIdentity, targetUpdateStamp);
+		}
+		if (target instanceof GeoImplicitCurve) {
+			return new RegularPolynomialImplicitIntersectionTarget2D(
+					(GeoImplicitCurve) target, targetIdentity, targetUpdateStamp);
+		}
 		throw new IllegalArgumentException(
-				"G8B supports only line, segment, ray and nondegenerate circle");
+				"Supported target assessment and capture dispatch disagree");
 	}
 
-	/** @return whether a GeoElement has an authorized G8B target family */
+	/** @return whether a GeoElement has an authorized G8B/G8C1 target family */
 	public static boolean supports(GeoElement target) {
-		return target instanceof GeoLine
-				|| target instanceof GeoConic && ((GeoConic) target).isCircle();
+		return assess(target).isSupported();
 	}
 
 	/** @return captured-family classification, including unsupported input */
 	public static TargetFamily familyOf(GeoElement target) {
+		return assess(target).getFamily();
+	}
+
+	/**
+	 * Assesses exact target support without throwing for ordinary unsupported
+	 * geometry.
+	 *
+	 * @return typed closed adapter decision
+	 */
+	public static IntersectionTargetSupport2D assess(GeoElement target) {
+		String targetType = target == null ? "null"
+				: target.getClass().getSimpleName();
+		if (target == null || !target.isDefined()) {
+			return unsupported(TargetSupportStatus.TARGET_UNDEFINED, targetType,
+					"Target must be currently defined");
+		}
 		if (target instanceof GeoSegment) {
-			return TargetFamily.SEGMENT;
+			return supported(TargetFamily.SEGMENT, targetType,
+					"Captured finite segment support line and membership");
 		}
 		if (target instanceof GeoRay) {
-			return TargetFamily.RAY;
+			return supported(TargetFamily.RAY, targetType,
+					"Captured oriented ray support line and membership");
 		}
 		if (target instanceof GeoLine) {
-			return TargetFamily.LINE;
+			return supported(TargetFamily.LINE, targetType,
+					"Captured normalized line equation");
 		}
 		if (target instanceof GeoConic && ((GeoConic) target).isCircle()) {
-			return TargetFamily.CIRCLE;
+			return supported(TargetFamily.CIRCLE, targetType,
+					"Captured nondegenerate circle geometry");
 		}
-		return TargetFamily.UNSUPPORTED;
+		if (target instanceof GeoConic) {
+			GeoConic conic = (GeoConic) target;
+			if (conic.isDegenerate() || !(conic.isEllipse()
+					|| conic.isParabola() || conic.isHyperbola())) {
+				return unsupported(
+						TargetSupportStatus.UNSUPPORTED_TARGET_SUBTYPE,
+						targetType,
+						"Degenerate and non-ellipse/parabola/hyperbola conics are outside G8C1");
+			}
+			TargetFamily family = conic.isEllipse() ? TargetFamily.ELLIPSE
+					: conic.isParabola() ? TargetFamily.PARABOLA
+							: TargetFamily.HYPERBOLA;
+			return supported(family, targetType,
+					"Captured nondegenerate canonical conic matrix");
+		}
+		if (target instanceof GeoFunction) {
+			GeoFunction function = (GeoFunction) target;
+			if (function.isBooleanFunction() || function.getFunction() == null) {
+				return unsupported(
+						TargetSupportStatus.UNSUPPORTED_TARGET_SUBTYPE,
+						targetType,
+						"G8C1 supports real single-variable function graphs only");
+			}
+			if (!function.hasInterval()
+					|| !Double.isFinite(function.getIntervalMin())
+					|| !Double.isFinite(function.getIntervalMax())
+					|| function.getIntervalMin() > function.getIntervalMax()) {
+				return unsupported(TargetSupportStatus.DOMAIN_NOT_EXPLICIT,
+						targetType,
+						"Function graph needs an explicit finite semantic "
+								+ "x-domain; view bounds are forbidden");
+			}
+			return supported(TargetFamily.BOUNDED_FUNCTION_GRAPH, targetType,
+					"Captured real function expression and explicit finite x-domain");
+		}
+		if (target instanceof GeoImplicitCurve) {
+			GeoImplicitCurve implicit = (GeoImplicitCurve) target;
+			if (implicit.getCoeff() == null) {
+				return unsupported(
+						TargetSupportStatus.NONPOLYNOMIAL_IMPLICIT,
+						targetType,
+						"G8C1 supports polynomial implicit coefficient authority only");
+			}
+			if (!RegularPolynomialImplicitIntersectionTarget2D
+					.hasFinitePolynomialCoefficients(implicit.getCoeff())) {
+				return unsupported(
+						TargetSupportStatus.RESIDUAL_NORMALIZATION_UNAVAILABLE,
+						targetType,
+						"Implicit polynomial coefficients must be finite and nonzero");
+			}
+			return supported(TargetFamily.REGULAR_POLYNOMIAL_IMPLICIT,
+					targetType,
+					"Captured finite polynomial coefficient representation");
+		}
+		return unsupported(TargetSupportStatus.UNSUPPORTED_TARGET_SUBTYPE,
+				targetType, "Target GeoElement has no authorized G8B/G8C1 adapter");
+	}
+
+	private static IntersectionTargetSupport2D supported(TargetFamily family,
+			String targetType, String diagnostic) {
+		return new IntersectionTargetSupport2D(family,
+				TargetSupportStatus.SUPPORTED, targetType, diagnostic);
+	}
+
+	private static IntersectionTargetSupport2D unsupported(
+			TargetSupportStatus status, String targetType, String diagnostic) {
+		return new IntersectionTargetSupport2D(TargetFamily.UNSUPPORTED, status,
+				targetType, diagnostic);
 	}
 
 	private static final class LineTarget implements LocusIntersectionTarget2D {

@@ -1,7 +1,7 @@
 # G8C extended-intersection functional-counter plan
 
-**Status: G8C1 COUNTER CONTRACT AUTHOR APPROVED; G8C2 COUNTERS PROPOSED;
-wall clock is informational**
+**Status: G8C1 COUNTER CONTRACT EXECUTED — AUTHOR APPROVED; G8C2 COUNTERS
+PROPOSED; wall clock is informational**
 
 ## 1. Counter vocabulary
 
@@ -90,3 +90,20 @@ be proposed only if the 100-consumer measurements show repeated semantic work
 that violates approved deterministic budgets and the proposal demonstrates
 bounded revision-scoped storage, isolation, atomicity, deterministic eviction,
 and exact semantic equality with sharing disabled.
+
+## 6. G8C1 measured candidate
+
+The representative unique-ellipse query records the deterministic vector
+`414/1/411/1/1/1/2/256/2/95/1/1/1/0/1/0` for source evaluations, source
+derivatives, target evaluations, target derivatives, target-domain checks,
+invalid target evaluations, candidate intervals, subdivisions, refinements,
+refinement iterations, residual checks, membership checks, deduplication,
+continuation, verified roots and retained entries, respectively.
+
+The 1/10/100 query sweep is exactly linear and deterministic. One hundred
+token-selected consumers add zero semantic evaluations and retain zero entries.
+No G8B deterministic limit is exceeded; the 256-subdivision phase default is
+bounded by the existing maximum-isolation budget. Wall-clock values remain
+informational and no cache/index is justified. The author approved this
+measured baseline and the query-local policy on 2026-08-15 without converting
+the measurements into universal mathematical constants.

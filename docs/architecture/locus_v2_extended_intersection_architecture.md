@@ -1,7 +1,7 @@
 # Locus V2 extended-intersection architecture
 
-**Status: G8C DESIGN PASS — AUTHOR APPROVED; G8C1 ARCHITECTURE NORMATIVE;
-G8C2 ARCHITECTURE PROPOSED**
+**Status: G8C DESIGN AND G8C1 PASS — AUTHOR APPROVED; G8C2 ARCHITECTURE
+PROPOSED**
 
 ## 1. Architectural split
 
@@ -139,8 +139,25 @@ proposed implementation prompt.
 
 ## 9. Phase gates
 
-G8C1 is authorized through its separately invoked canonical prompt and remains
-subject to implementation verification and author review. G8C2 cannot begin
-productively until G8C1 passes, proposed ADR 0009 is Accepted or explicitly
+G8C1 has been executed, verified, and closed as `PASS — AUTHOR APPROVED`.
+G8C2 cannot begin productively until proposed ADR 0009 is Accepted or explicitly
 superseded, and the author separately authorizes G8C2. G9 remains blocked until
 both pass and G8 receives global author closeout.
+
+## 10. G8C1 implementation mapping
+
+- `LocusIntersectionTargets2D` performs closed typed assessment and capture.
+- `NondegenerateConicIntersectionTarget2D`,
+  `BoundedFunctionGraphIntersectionTarget2D`, and
+  `RegularPolynomialImplicitIntersectionTarget2D` snapshot target authority.
+- `ExtendedTargetIntersectionCapability2D` supplies bounded query-local
+  candidate isolation, safeguarded refinement and local-minimum even-contact
+  discovery.
+- `LocusIntersectionSolver2D` still owns independent residual/membership
+  verification, rich solution construction and atomic result publication.
+- `AlgoLocusIntersectionV2` captures target state through the same normal DAG;
+  the existing rich Geo and strict token point consumer are unchanged.
+
+No retained intersection state is added. The representative query uses 256
+subdivisions, 414 source evaluations, 411 target evaluations and 95 refinement
+iterations, with zero retained entries and forbidden-authority reads.

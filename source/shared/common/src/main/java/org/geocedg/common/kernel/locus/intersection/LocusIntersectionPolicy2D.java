@@ -12,6 +12,8 @@ import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata
 /** Immutable versioned and dimension-aware G8B numerical policy. */
 public final class LocusIntersectionPolicy2D {
 	public static final String POLICY_VERSION = "g8b-initial-normalized/v1";
+	public static final String EXTENDED_TARGET_POLICY_VERSION =
+			"g8c1-extended-target-normalized/v1";
 	public static final String PROVENANCE_VERSION = "g8a-measured-candidate/v1";
 	public static final double DEFAULT_ROOT_PARAMETER_TOLERANCE = 1E-12;
 	public static final double DEFAULT_ABSOLUTE_RESIDUAL_TOLERANCE = 2E-12;
@@ -72,6 +74,37 @@ public final class LocusIntersectionPolicy2D {
 	 */
 	public static LocusIntersectionPolicy2D initial(String providerId,
 			String parameterDescriptor) {
+		return initial(providerId, parameterDescriptor,
+				ResidualQuantityKind.MODEL_COORDINATE_DISTANCE,
+				"model-coordinate",
+				"max(1,target-characteristic-length)", POLICY_VERSION);
+	}
+
+	/**
+	 * Creates the approved numeric values for one typed target residual.
+	 *
+	 * <p>The values retain their G8A provenance, while quantity, units and
+	 * characteristic scale come from the captured adapter contract.</p>
+	 *
+	 * @return dimension-compatible G8C1 query policy
+	 */
+	public static LocusIntersectionPolicy2D initial(String providerId,
+			String parameterDescriptor,
+			IntersectionResidualContract2D targetContract) {
+		Objects.requireNonNull(targetContract);
+		return initial(providerId, parameterDescriptor,
+				targetContract.getQuantityKind(), targetContract.getUnits(),
+				targetContract.getCharacteristicScalePolicy(),
+				targetContract.getQuantityKind()
+						== ResidualQuantityKind.MODEL_COORDINATE_DISTANCE
+								? POLICY_VERSION
+								: EXTENDED_TARGET_POLICY_VERSION);
+	}
+
+	private static LocusIntersectionPolicy2D initial(String providerId,
+			String parameterDescriptor, ResidualQuantityKind residualQuantity,
+			String residualUnits, String characteristicScalePolicy,
+			String policyVersion) {
 		ParameterTolerance root = new ParameterTolerance(
 				DEFAULT_ROOT_PARAMETER_TOLERANCE, providerId,
 				parameterDescriptor);
@@ -81,15 +114,15 @@ public final class LocusIntersectionPolicy2D {
 		ParameterTolerance continuation = new ParameterTolerance(
 				DEFAULT_CONTINUATION_TOLERANCE, providerId,
 				parameterDescriptor);
-		return new LocusIntersectionPolicy2D(POLICY_VERSION,
+		return new LocusIntersectionPolicy2D(policyVersion,
 				PROVENANCE_VERSION, root,
 				new ResidualTolerance(
-						ResidualQuantityKind.MODEL_COORDINATE_DISTANCE,
-						"model-coordinate", DEFAULT_ABSOLUTE_RESIDUAL_TOLERANCE,
+						residualQuantity, residualUnits,
+						DEFAULT_ABSOLUTE_RESIDUAL_TOLERANCE,
 						DEFAULT_RELATIVE_RESIDUAL_TOLERANCE,
-						"max(1,target-characteristic-length)"),
+						characteristicScalePolicy),
 				new TangencyTolerance(
-						"d(model-distance-residual)/d(source-arc-length)",
+						"normalized-target-contact/source-arc-length",
 						"dimensionless", DEFAULT_TANGENCY_THRESHOLD),
 				dedup, continuation,
 				new CoordinateTolerance(DEFAULT_COORDINATE_TOLERANCE,

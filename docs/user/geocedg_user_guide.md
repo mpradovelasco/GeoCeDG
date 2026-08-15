@@ -8,8 +8,8 @@
 - Última revisión: 2026-08-15
 - Fase actual: G7B (`PASS — AUTHOR APPROVED`); G7 `PASS`; G8 planning
   `PASS — AUTHOR APPROVED`; G8A, G8B-R1, G8B y G8C design `PASS — AUTHOR
-  APPROVED`; G8C1 autorizado/no iniciado; G8C2 no autorizado; G8 continúa en
-  curso
+  APPROVED`; G8C1 `PASS — AUTHOR APPROVED` como kernel interno;
+  G8C2 no autorizado; G8 continúa en curso
 - Locus V2: `experimental`, internal/developer-only, disabled by default
 - `PACKAGING TECHNICAL STATUS = PASS`
 - `PUBLIC REDISTRIBUTION STATUS = BLOCKED PENDING LICENSE/ASSET APPROVAL`
@@ -964,7 +964,7 @@ Promotion follows `legacy -> research -> experimental -> stable`, or
 | G7A | Metric semantics, traversal, numerical/index/lifecycle characterization plus focused R1 | `PASS — AUTHOR APPROVED`; evidence only | 51 test-private probes and independent references established the contract; G7A itself added no productive metric |
 | G7B | Native Locus V2 metric kernel | Internal productive kernel; `PASS — AUTHOR APPROVED` | Internal API, rich Geo, scalar adapter, shared component state and laboratory diagnostics exist; no public metric exists |
 | G8 planning/G8A/G8B | Native Locus V2 2D intersection design, characterization and minimum internal kernel | planning/G8A/G8B-R1/G8B `PASS — AUTHOR APPROVED`; G8 remains in progress | Internal rich-result, solver/adapters and token-selected point consumer exist for developer/test use only; no public command, Path, persistence or workflow |
-| G8C design | Extended native 2D incidence: typed conics, bounded functions, regular polynomial implicit curves and Locus V2 × Locus V2 | `PASS — AUTHOR APPROVED`; G8C1 authorized, G8C2 not authorized | Design/evidence only; separate G8C1 and G8C2 approved; no observable capability |
+| G8C design | Extended native 2D incidence: typed conics, bounded functions, regular polynomial implicit curves and Locus V2 × Locus V2 | design/G8C1 `PASS — AUTHOR APPROVED`; G8C2 not authorized | Internal G8C1 kernel only; no public command, Path, persistence or observable workflow |
 | G9+ | Spatial/export integration and later phases | Not started / pending | No G9 or later behavior is implied |
 
 ### G6 Locus V2 semantic foundation
@@ -1265,7 +1265,7 @@ polyline is a disposable view representation.
 | G8A | Characterization and author decisions | `PASS — AUTHOR APPROVED`; test-private evidence only |
 | G8B-R1 | Point admissibility versus global completeness | `PASS — AUTHOR APPROVED`; internal refinement only, no observable feature |
 | G8B | Minimum internal 2D intersection kernel | `PASS — AUTHOR APPROVED`; internal capability only |
-| G8C design | Extended 2D Locus V2 incidence/intersection design | `PASS — AUTHOR APPROVED`; G8C1 authorized/not started; G8C2 not authorized |
+| G8C design/G8C1 | Extended 2D Locus V2 incidence/intersection design and one-parameter internal kernel | Design/G8C1 `PASS — AUTHOR APPROVED`; G8C2 not authorized |
 | G9 | Native spatial identity and canonical projection semantics | Pending |
 | G10 | CeDG 3D DSL and workbench | Pending |
 | G11 | Hierarchical layers and view states | Pending |
@@ -1400,8 +1400,9 @@ G8 planning and G8A are `PASS — AUTHOR APPROVED`. The G8 specification is
 normative and ADR 0008 is Accepted. The canonical G8B task has produced its
 minimum internal implementation and evidence; G8B-R1 and G8B are
 `PASS — AUTHOR APPROVED`.
-The implemented target adapters are line, segment, ray and circle. Full
-conics, functions, implicit curves and locus–locus remain deferred.
+The G8B target adapters are line, segment, ray and circle. G8C1 adds its closed
+internal subsets; degenerate conics, unrestricted functions, singular/general
+implicit curves, and locus–locus remain deferred.
 
 The approved planning architecture treats semantic Locus V2 evaluation,
 constructive branch/component/preimage provenance, and coherent source
@@ -1424,9 +1425,10 @@ evidence.
 G8C design and test-private characterization are `PASS — AUTHOR APPROVED`. The
 approved G8C1 scope is deliberately typed: nondegenerate conics,
 explicitly bounded real function graphs and regular polynomial implicit curves
-followed by a separate two-parameter Locus V2 × Locus V2 G8C2. G8C1 execution
-is authorized but not started; its capability is not yet available. G8C2 is not
-authorized, G8 is not globally closed and G9 has not started.
+followed by a separate two-parameter Locus V2 × Locus V2 G8C2. The internal
+G8C1 kernel is `PASS — AUTHOR APPROVED`, but remains experimental, nonpublic,
+nonpersistent, and disabled by default. G8C2 is not authorized, G8 is not
+globally closed and G9 has not started.
 
 There is no native Locus V2 intersection command, public point output, public
 incidence/`Path`, persistence, UI, 3D behavior or end-user workflow. The
@@ -1465,7 +1467,7 @@ contract.
   public CeDG metric or Locus V2 intersection command, persistence, spatial
   object/projection identity or DSL exists. The productive V2 metric remains
   internal; G8B is an author-approved internal minimum, while G8C design is
-  author-approved and G8C1 is only authorized/not started, with no
+  author-approved and G8C1 is an author-approved internal kernel, with no
   user-observable extended intersection surface.
 - Legacy macros may have undocumented validity ranges, degeneracies, dynamic
   limitations, and sampled numerical approximations.
@@ -1590,8 +1592,9 @@ boundary defined by the operational contracts.
   [G7A traceability](../validation/g7a_locus_v2_metric_traceability_matrix.md),
   [G7B report](../validation/g7b_locus_v2_metric_kernel_report.md), and
   [G7B traceability](../validation/g7b_locus_v2_metric_traceability_matrix.md)
-- Locus V2 G8 author-approved planning/G8A/G8B/G8C design; G8C1 authorized and
-  G8C2 gated; no observable extended feature:
+- Locus V2 G8 author-approved planning/G8A/G8B/G8C design/G8C1; G8C2 gated;
+  no observable extended
+  feature:
   [G8 plan](../roadmap/g8_locus_v2_intersections_plan.md),
   [semantic model](../architecture/locus_v2_intersection_semantic_model.md),
   [architecture](../architecture/locus_v2_intersection_architecture.md),
@@ -1607,7 +1610,9 @@ boundary defined by the operational contracts.
   [Accepted ADR 0008](../adr/0008-locus-v2-intersection-result-and-continuation.md),
   [G8C design](../roadmap/g8c_locus_v2_extended_intersections_design.md),
   [G8C1 normative/G8C2 proposed spec](../../geocedg/specs/locus/locus-v2-extended-intersections.md),
-  [G8C report](../validation/g8c_locus_v2_extended_intersection_characterization_report.md), and
+  [G8C report](../validation/g8c_locus_v2_extended_intersection_characterization_report.md),
+  [G8C1 kernel report](../validation/g8c1_locus_v2_extended_target_intersection_kernel_report.md),
+  [G8C1 traceability](../validation/g8c1_locus_v2_extended_target_intersection_traceability_matrix.md), and
   [ADR 0009 Proposed](../adr/0009-locus-v2-locus-intersection-pair-semantics.md)
 - Current feature state:
   [stable manifest](../../geocedg/features/stable.yml) and

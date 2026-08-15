@@ -2,8 +2,7 @@
 
 **Status: G8C1 NORMATIVE — AUTHOR APPROVED / G8C2 PROPOSED — NOT NORMATIVE**
 
-**Phase: G8C design `PASS — AUTHOR APPROVED`; G8C1 authorized/not started;
-G8C2 not authorized**
+**Phase: G8C design and G8C1 `PASS — AUTHOR APPROVED`; G8C2 not authorized**
 
 **Approval date: 2026-08-15**
 
@@ -12,11 +11,12 @@ This is a non-destructive extension of the normative
 rule remains normative for its supported line, segment, ray, and circle
 families. The common invariants and the G8C1 one-parameter contract in sections
 1–3, 5–7 as applicable to one source locus, and 8.1 below are normative and
-author-approved for G8C1. The two-parameter Locus V2 × Locus V2 contract in
+author-approved for G8C1. The G8C1 implementation was author-approved on
+2026-08-15. The two-parameter Locus V2 × Locus V2 contract in
 section 4, its pair-specific uses of sections 5–7, and section 8.2 remain
-proposed and non-normative pending G8C1 author closeout, ADR 0009 acceptance,
-and separate G8C2 authorization. Nothing here claims implementation or public
-availability.
+proposed and non-normative pending ADR 0009 acceptance and separate G8C2
+authorization. The G8C1 sections govern an author-approved internal kernel;
+they do not claim public availability.
 
 ## 1. Required semantic chain
 
@@ -247,15 +247,18 @@ It authorizes no public command/API, generic `Path`, XML, migration, legacy
 
 ### 8.1 G8C1
 
-The author approved the G8C1 subset and this one-parameter contract on
-2026-08-15. Productive execution is authorized only through the separately
-invoked canonical G8C1 prompt. G8C1 still requires implementation, complete
-verification, and a later explicit author review before it can become `PASS`.
+The author approved the G8C1 subset, one-parameter contract, implementation,
+and measured query-local baseline on 2026-08-15. G8C1 is `PASS — AUTHOR
+APPROVED`. Its adaptive evaluator capability reports `NOT_ESTABLISHED`
+completeness unless an independently authoritative capability supplies an
+exhaustive coverage proof. A verified regular root is locally isolated only
+with semantic localization plus normalized transverse evidence; local-minimum
+tangencies remain unisolated absent stronger uniqueness evidence.
 
 ### 8.2 G8C2
 
-G8C2 remains `NOT AUTHORIZED`. Its pair-specific proposal requires G8C1
-`PASS — AUTHOR APPROVED`, ADR 0009 Accepted or explicitly superseded, and a
+G8C2 remains `NOT AUTHORIZED`. Its pair-specific proposal requires ADR 0009
+Accepted or explicitly superseded and a
 separate author authorization. G8 may close and G9 may begin only after both
 required phases pass, unless the author explicitly changes the typed minimum
 scope.

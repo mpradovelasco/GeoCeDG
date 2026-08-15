@@ -34,6 +34,9 @@ $G8BVerifierPath = Join-Path $PSScriptRoot "verify-g8b-intersections.ps1"
 $G8CEvidencePath = Join-Path $RepositoryRoot `
     "geocedg\validation\locus-v2\g8c\g8c-design-characterization-evidence.json"
 $G8CVerifierPath = Join-Path $PSScriptRoot "verify-g8c-intersections-design.ps1"
+$G8C1EvidencePath = Join-Path $RepositoryRoot `
+    "geocedg\validation\locus-v2\g8c1\g8c1-intersection-kernel-evidence.json"
+$G8C1VerifierPath = Join-Path $PSScriptRoot "verify-g8c1-intersections.ps1"
 $ReferenceGenerator = Join-Path $EvidenceRoot `
     "generate_intersection_references.py"
 $TestSourceRoot = Join-Path $RepositoryRoot `
@@ -491,6 +494,23 @@ try {
             "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8CLocusLocusCharacterizationTest.java"
         )
     }
+    $g8c1Present = (Test-Path -LiteralPath $G8C1EvidencePath `
+            -PathType Leaf) -and (Test-Path -LiteralPath $G8C1VerifierPath `
+            -PathType Leaf)
+    $g8c1AllowedTests = @()
+    if ($g8c1Present) {
+        $g8c1Evidence = Get-Content -LiteralPath $G8C1EvidencePath -Raw |
+            ConvertFrom-Json -Depth 100
+        Assert-Condition -Condition ($g8c1Evidence.phase -eq "G8C1" `
+                -and $g8c1Evidence.status -eq "PASS_AUTHOR_APPROVED") `
+            -Message "The detected G8C1 evidence has an invalid status."
+        $g8c1AllowedTests = @(
+            "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8C1ExtendedTargetFunctionalBenchmarkTest.java",
+            "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8C1ExtendedTargetKernelTest.java",
+            "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8C1ExtendedTargetLifecycleTest.java",
+            "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8C1IntersectionTestSupport.java"
+        )
+    }
     $unexpectedSource = @($sourceStatus | Where-Object {
             $path = ($_ -replace '^..\s+', '').Replace("\", "/")
             $isG8A = $path -match `
@@ -505,8 +525,9 @@ try {
                 -or $path -in $g8bAllowedProductive)
             $isG8CDesignTest = $g8cDesignPresent -and
                 $path -in $g8cAllowedCharacterizationTests
+            $isG8C1Test = $g8c1Present -and $path -in $g8c1AllowedTests
             -not ($isG8A -or $isG8BTest -or $isG8BCompatibility -or
-                $isG8BProductive -or $isG8CDesignTest)
+                $isG8BProductive -or $isG8CDesignTest -or $isG8C1Test)
         })
     Assert-Condition -Condition ($unexpectedSource.Count -eq 0) `
         -Message ("G8A source changes escaped the test-private boundary:`n" +

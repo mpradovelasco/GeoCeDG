@@ -10,6 +10,9 @@ public final class LocusIntersectionInstrumentationSnapshot2D {
 	private final long semanticEvaluations;
 	private final long derivativeEvaluations;
 	private final long targetEvaluations;
+	private final long targetDerivativeEvaluations;
+	private final long targetDomainEvaluations;
+	private final long invalidTargetEvaluations;
 	private final long candidateIntervals;
 	private final long isolationSubdivisions;
 	private final long maximumIsolationDepth;
@@ -37,6 +40,8 @@ public final class LocusIntersectionInstrumentationSnapshot2D {
 	/** Creates a complete immutable snapshot. */
 	public LocusIntersectionInstrumentationSnapshot2D(long semanticEvaluations,
 			long derivativeEvaluations, long targetEvaluations,
+			long targetDerivativeEvaluations, long targetDomainEvaluations,
+			long invalidTargetEvaluations,
 			long candidateIntervals, long isolationSubdivisions,
 			long maximumIsolationDepth, long refinementCalls,
 			long refinementIterations, long residualVerifications,
@@ -51,6 +56,9 @@ public final class LocusIntersectionInstrumentationSnapshot2D {
 		this.semanticEvaluations = semanticEvaluations;
 		this.derivativeEvaluations = derivativeEvaluations;
 		this.targetEvaluations = targetEvaluations;
+		this.targetDerivativeEvaluations = targetDerivativeEvaluations;
+		this.targetDomainEvaluations = targetDomainEvaluations;
+		this.invalidTargetEvaluations = invalidTargetEvaluations;
 		this.candidateIntervals = candidateIntervals;
 		this.isolationSubdivisions = isolationSubdivisions;
 		this.maximumIsolationDepth = maximumIsolationDepth;
@@ -86,6 +94,18 @@ public final class LocusIntersectionInstrumentationSnapshot2D {
 
 	public long getTargetEvaluations() {
 		return targetEvaluations;
+	}
+
+	public long getTargetDerivativeEvaluations() {
+		return targetDerivativeEvaluations;
+	}
+
+	public long getTargetDomainEvaluations() {
+		return targetDomainEvaluations;
+	}
+
+	public long getInvalidTargetEvaluations() {
+		return invalidTargetEvaluations;
 	}
 
 	public long getCandidateIntervals() {
@@ -193,6 +213,8 @@ public final class LocusIntersectionInstrumentationSnapshot2D {
 			long additionalComparisons, long topologyEpochs) {
 		return new LocusIntersectionInstrumentationSnapshot2D(
 				semanticEvaluations, derivativeEvaluations, targetEvaluations,
+				targetDerivativeEvaluations, targetDomainEvaluations,
+				invalidTargetEvaluations,
 				candidateIntervals, isolationSubdivisions,
 				maximumIsolationDepth, refinementCalls, refinementIterations,
 				residualVerifications, membershipChecks,

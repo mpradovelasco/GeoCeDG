@@ -4,7 +4,7 @@
 |---|---|
 | Status | **NORMATIVE / AUTHOR-APPROVED R1 REFINEMENT APPLIED** |
 | Version | `1.1` |
-| Phase | G8 planning, G8A, G8B-R1, G8B and G8C design `PASS — AUTHOR APPROVED`; G8C1 authorized/not started; G8C2 not authorized; G8 in progress |
+| Phase | G8 planning, G8A, G8B-R1, G8B, G8C design and G8C1 `PASS — AUTHOR APPROVED`; G8C2 not authorized; G8 in progress |
 | Scope | Internal two-dimensional Locus V2 intersection semantics |
 | Product state | Experimental, internal, disabled by default |
 | Approval | Author-approved on 2026-08-14 from G8A; G8B-R1 semantics and G8B implementation author-approved on 2026-08-14 |
@@ -710,7 +710,7 @@ whose declared component coverage and candidates are independently verified.
 Individually verified roots additionally require established local isolation
 and unambiguous semantic identity before point consumption. G8C design is
 `PASS — AUTHOR APPROVED`. The extension specification makes only the G8C1
-one-parameter subset normative and authorizes its separately invoked execution;
+one-parameter subset normative and records its author-approved internal kernel;
 the G8C2 Locus V2 × Locus V2 contract remains proposed and implementation is
 not authorized. No public or other deferred boundary is opened by this
 closeout.
@@ -723,7 +723,7 @@ G8B-R1 = PASS — AUTHOR APPROVED
 G8B = PASS — AUTHOR APPROVED
 G8 PRODUCTIVE IMPLEMENTATION = INTERNAL MINIMUM KERNEL — AUTHOR APPROVED
 G8C DESIGN = PASS — AUTHOR APPROVED
-G8C1 = AUTHORIZED — NOT STARTED
+G8C1 = PASS — AUTHOR APPROVED
 G8C2 = NOT AUTHORIZED — NOT STARTED
 G8 = IN PROGRESS
 G9 = NOT STARTED

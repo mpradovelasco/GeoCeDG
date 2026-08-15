@@ -1,6 +1,7 @@
 # G8C upstream impact map
 
-**Status: G8C DESIGN PASS — AUTHOR APPROVED; no productive G8C edit has been made**
+**Status: G8C DESIGN AND G8C1 PASS — AUTHOR APPROVED; G8C2 PRODUCTIVE IMPACT
+REMAINS PROPOSED**
 
 ## 1. Source inspected
 
@@ -30,22 +31,22 @@ All paths above are under
 package. The characterization tests are under
 `source/shared/common-jre/src/test/java/org/geocedg/common/locus/`.
 
-## 2. Candidate G8C1 productive edit set
+## 2. Actual G8C1 productive edit set
 
-For the separately authorized G8C1 execution, the minimum likely set is:
+The separately authorized G8C1 execution uses the following minimum set:
 
-- additive target-adapter/capability types in
-  `org.geocedg.common.kernel.locus.intersection`;
-- typed conic/function/polynomial-implicit adapter factories adjacent to
-  `LocusIntersectionTargets2D`;
-- narrowly additive query/solver policy and evidence fields;
+- three target adapters, typed support/domain/evaluation values and one
+  query-local capability in `org.geocedg.common.kernel.locus.intersection`;
+- additive factory dispatch in `LocusIntersectionTargets2D`;
+- narrowly additive target evaluation, policy, solver and instrumentation
+  seams;
+- the existing `AlgoLocusIntersectionV2` target-capture path;
 - focused tests under the GeoCeDG JRE test package;
 - modified-file inventory and durable documentation.
 
-No upstream `GeoConic`, `GeoFunction`, `GeoImplicitCurve`, intersection
-algorithm, dispatcher, command, serialization, or frontend edit is expected.
-If source inspection during implementation proves one unavoidable, stop for an
-updated impact decision rather than patching upstream broadly.
+No upstream `GeoConic`, `GeoFunction`, `GeoImplicitCurve`, classic intersection
+algorithm, dispatcher, command, serialization, type-system or frontend file is
+changed. The rich Geo and token-selected point consumer require no edit.
 
 ## 3. Candidate G8C2 productive edit set
 
@@ -87,7 +88,9 @@ persistence factories, legacy `GeoLocus`, Classic algorithms/outputs, frontend,
 
 ## 6. Modified-file governance
 
-Every future productive upstream-tree edit must be minimal, registered in
+Every productive upstream-tree edit must be minimal, registered in
 `docs/upstream/modified-files.yml`, tied to the approved extended specification
 or ADR, and covered by focused plus composed verification. This design task adds
 only GeoCeDG-owned docs, evidence, prompts, verifier and test-private probes.
+The G8C1 author-approved edits are enumerated in the inventory and checked by
+the focused verifier.

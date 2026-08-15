@@ -42,14 +42,30 @@ public final class IntersectionSemanticMetadata2D {
 		INCOMPLETE_CANDIDATE_COVERAGE, NOT_ESTABLISHED
 	}
 
-	/** Minimum target families authorized for G8B. */
+	/** Closed target families authorized through G8C1. */
 	public enum TargetFamily {
-		LINE, SEGMENT, RAY, CIRCLE, UNSUPPORTED
+		LINE, SEGMENT, RAY, CIRCLE, ELLIPSE, PARABOLA, HYPERBOLA,
+		BOUNDED_FUNCTION_GRAPH, REGULAR_POLYNOMIAL_IMPLICIT, UNSUPPORTED
 	}
 
 	/** Physical meaning of a target residual. */
 	public enum ResidualQuantityKind {
-		MODEL_COORDINATE_DISTANCE, TARGET_FAMILY_SPECIFIC
+		MODEL_COORDINATE_DISTANCE, FIRST_ORDER_NORMAL_LENGTH,
+		VERTICAL_MODEL_LENGTH, TARGET_FAMILY_SPECIFIC
+	}
+
+	/** Result of binding one target GeoElement to a closed adapter. */
+	public enum TargetSupportStatus {
+		SUPPORTED, TARGET_UNDEFINED, UNSUPPORTED_TARGET_SUBTYPE,
+		DOMAIN_NOT_EXPLICIT, NONPOLYNOMIAL_IMPLICIT,
+		RESIDUAL_NORMALIZATION_UNAVAILABLE
+	}
+
+	/** One local target evaluation without NaN or magic-state semantics. */
+	public enum TargetEvaluationStatus {
+		ESTABLISHED, OUTSIDE_EXPLICIT_DOMAIN, TARGET_UNDEFINED,
+		RESIDUAL_NORMALIZATION_UNAVAILABLE,
+		UNSUPPORTED_LOCAL_GEOMETRY
 	}
 
 	/** Limited-target membership evidence. */
@@ -99,6 +115,9 @@ public final class IntersectionSemanticMetadata2D {
 	/** Typed broad diagnostic categories. */
 	public enum DiagnosticCode {
 		INVALID_SOURCE, INVALID_TARGET, UNSUPPORTED_TARGET,
+		UNSUPPORTED_TARGET_SUBTYPE, TARGET_DOMAIN_NOT_EXPLICIT,
+		TARGET_UNDEFINED, RESIDUAL_NORMALIZATION_UNAVAILABLE,
+		LOCAL_ISOLATION_ESTABLISHED,
 		CAPABILITY_NOT_AVAILABLE, DOMAIN_EXCLUSION_ESTABLISHED,
 		COVERAGE_NOT_ESTABLISHED,
 		OPEN_BOUNDARY_EXCLUDED, CANDIDATE_REJECTED,

@@ -23,7 +23,9 @@ import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.GeometryKind;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.SupportLevel;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.TargetFamily;
+import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.TargetSupportStatus;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSourceBinding2D;
+import org.geocedg.common.kernel.locus.intersection.IntersectionTargetSupport2D;
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionCapability2D;
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionContinuation2D;
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionInstrumentation2D;
@@ -115,30 +117,35 @@ public final class AlgoLocusIntersectionV2 extends AlgoElement {
 		String parameterDescriptor = definition == null
 				? "unavailable semantic parameter"
 				: definition.getProvider().getParameterDescriptor();
-		LocusIntersectionPolicy2D policy = LocusIntersectionPolicy2D.initial(
+		LocusIntersectionPolicy2D basePolicy = LocusIntersectionPolicy2D.initial(
 				providerId, parameterDescriptor);
-		LocusIntersectionQuery2D query = new LocusIntersectionQuery2D(
-				sourcePairIdentity, constructiveIntersectionLineage,
-				source.getLocusIdentity(), locusRevision, targetIdentity,
-				targetUpdateStamp, topologyContext, policy);
-		TargetFamily family = LocusIntersectionTargets2D.familyOf(target);
-		IntersectionSourceBinding2D binding =
-				new IntersectionSourceBinding2D(query, family);
-		result.beginIntersectionRevision(binding);
+		IntersectionTargetSupport2D support =
+				LocusIntersectionTargets2D.assess(target);
 		if (definition == null || !source.isDefined()) {
+			LocusIntersectionQuery2D query = query(locusRevision, basePolicy);
+			IntersectionSourceBinding2D binding =
+					new IntersectionSourceBinding2D(query, support.getFamily());
+			result.beginIntersectionRevision(binding);
 			result.publishIntersectionResult(binding,
 					failure(binding, ComputationStatus.INVALID_INPUT,
 							DiagnosticCode.INVALID_SOURCE,
 							"Source locus has no current defined semantic snapshot",
-							policy));
+							basePolicy));
 			return;
 		}
-		if (family == TargetFamily.UNSUPPORTED) {
+		if (!support.isSupported()) {
+			LocusIntersectionQuery2D query = query(locusRevision, basePolicy);
+			IntersectionSourceBinding2D binding =
+					new IntersectionSourceBinding2D(query, TargetFamily.UNSUPPORTED);
+			result.beginIntersectionRevision(binding);
+			ComputationStatus status = support.getStatus()
+					== TargetSupportStatus.TARGET_UNDEFINED
+							? ComputationStatus.INVALID_INPUT
+							: ComputationStatus.UNSUPPORTED;
 			result.publishIntersectionResult(binding,
-					failure(binding, ComputationStatus.UNSUPPORTED,
-							DiagnosticCode.UNSUPPORTED_TARGET,
-							"Target family is outside the G8B internal minimum",
-							policy));
+					failure(binding, status, support.getDiagnosticCode(),
+							support.getStatus() + ": " + support.getDiagnostic(),
+							basePolicy));
 			lastContinuableResult = null;
 			return;
 		}
@@ -146,6 +153,13 @@ public final class AlgoLocusIntersectionV2 extends AlgoElement {
 			LocusIntersectionTarget2D captured =
 					LocusIntersectionTargets2D.capture(target, targetIdentity,
 							targetUpdateStamp);
+			LocusIntersectionPolicy2D policy = LocusIntersectionPolicy2D.initial(
+					providerId, parameterDescriptor,
+					captured.getResidualContract());
+			LocusIntersectionQuery2D query = query(locusRevision, policy);
+			IntersectionSourceBinding2D binding =
+					new IntersectionSourceBinding2D(query, captured.getFamily());
+			result.beginIntersectionRevision(binding);
 			LocusIntersectionResult2D candidate = solver.intersect(query,
 					definition, captured, binding, preferredCapability,
 					this::nextToken);
@@ -154,12 +168,25 @@ public final class AlgoLocusIntersectionV2 extends AlgoElement {
 			result.publishIntersectionResult(binding, current);
 			updateContinuationBaseline(current);
 		} catch (RuntimeException exception) {
+			LocusIntersectionQuery2D query = query(locusRevision, basePolicy);
+			IntersectionSourceBinding2D binding =
+					new IntersectionSourceBinding2D(query, support.getFamily());
+			result.beginIntersectionRevision(binding);
 			result.publishIntersectionResult(binding,
 					failure(binding, ComputationStatus.NUMERICAL_FAILURE,
 							DiagnosticCode.INTERNAL_FAILURE,
 							"Intersection target capture or publication failed: "
-									+ exception.getClass().getSimpleName(), policy));
+									+ exception.getClass().getSimpleName(),
+							basePolicy));
 		}
+	}
+
+	private LocusIntersectionQuery2D query(long locusRevision,
+			LocusIntersectionPolicy2D policy) {
+		return new LocusIntersectionQuery2D(sourcePairIdentity,
+				constructiveIntersectionLineage, source.getLocusIdentity(),
+				locusRevision, targetIdentity, targetUpdateStamp, topologyContext,
+				policy);
 	}
 
 	public GeoLocusIntersectionResult getResult() {
