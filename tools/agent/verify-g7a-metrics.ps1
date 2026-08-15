@@ -34,6 +34,9 @@ $R1EvidenceHashes = Join-Path $R1EvidenceRoot "g7a-r1-evidence.sha256"
 $G8BEvidencePath = Join-Path $RepositoryRoot `
     "geocedg\validation\locus-v2\g8b\g8b-intersection-kernel-evidence.json"
 $G8BVerifierPath = Join-Path $PSScriptRoot "verify-g8b-intersections.ps1"
+$G8C2EvidencePath = Join-Path $RepositoryRoot `
+    "geocedg\validation\locus-v2\g8c2\g8c2-intersection-kernel-evidence.json"
+$G8C2VerifierPath = Join-Path $PSScriptRoot "verify-g8c2-intersections.ps1"
 $G7MarkdownDocuments = @(
     "docs\roadmap\g7_locus_v2_metrics_plan.md",
     "docs\roadmap\geocedg_roadmap.md",
@@ -527,6 +530,16 @@ try {
                     "PASS_AUTHOR_APPROVED") `
                 -Message "The detected G8B follow-on evidence has an invalid status."
         }
+        $g8c2FollowOnPresent = (Test-Path -LiteralPath $G8C2EvidencePath `
+                -PathType Leaf) -and (Test-Path -LiteralPath $G8C2VerifierPath `
+                -PathType Leaf)
+        if ($g8c2FollowOnPresent) {
+            $g8c2Evidence = Get-Content -LiteralPath $G8C2EvidencePath -Raw |
+                ConvertFrom-Json -Depth 100
+            Assert-Condition -Condition ($g8c2Evidence.status -eq `
+                    "PASS_AUTHOR_APPROVED") `
+                -Message "The detected G8C2 follow-on evidence has an invalid status."
+        }
         $approvedG7BProductivePaths = @(
             '^source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/',
             '^source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusMetric(V2|ScalarAdapter)\.java$',
@@ -541,6 +554,10 @@ try {
                 '^source/shared/common/src/main/java/org/geocedg/common/kernel/geos/GeoLocusIntersectionResult\.java$'
             )
         }
+        if ($g8c2FollowOnPresent) {
+            $approvedG7BProductivePaths += `
+                '^source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusLocusIntersectionV2\.java$'
+        }
         $unexpectedG7BProductive = @($productiveChanges | Where-Object {
                 $candidate = $_
                 -not @($approvedG7BProductivePaths | Where-Object {
@@ -548,7 +565,7 @@ try {
                     })
             })
         Assert-Condition -Condition ($unexpectedG7BProductive.Count -eq 0) `
-            -Message ("Post-G7A productive source escaped its approved G7B/G8B boundary:`n" +
+            -Message ("Post-G7A productive source escaped its approved G7B/G8 boundary:`n" +
                 ($unexpectedG7BProductive -join "`n"))
     }
 
