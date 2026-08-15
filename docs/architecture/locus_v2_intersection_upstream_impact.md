@@ -5,7 +5,7 @@
 | Status | **G8B-R1/G8B SOURCE IMPACT AUTHOR APPROVED** |
 | Baseline | GeoGebra 5.4.928.0, `9b93256b7df401ff056c37b502d82df4d72b1522` |
 | GeoCeDG G8A entry HEAD audited | `315aec011cdc719a41a9bdc352a4a10ea502df6e` |
-| Roadmap | G7/G8 planning/G8A/G8B-R1/G8B/G8C design author-approved; G8C1 authorized, G8C2 not authorized; G8 in progress; G9 not started |
+| Roadmap | G7/G8 planning/G8A/G8B-R1/G8B/G8C design/G8C1/G8C2 and global G8 author-approved; G9 design authorized/not started |
 | Date | 2026-08-14 |
 
 This map records the actual pinned-source extension points, accepted G8A

@@ -8,8 +8,11 @@
 | G8B state | **PASS — AUTHOR APPROVED** |
 | G8C design | **PASS — AUTHOR APPROVED** |
 | G8C1 | **PASS — AUTHOR APPROVED** |
-| G8C2 | **AUTHORIZED — NOT STARTED** |
-| Approved stages | G8A characterization; G8B minimum internal kernel including R1; G8C design; G8C1 internal kernel; G8C2 contract gate |
+| G8C2 | **PASS — AUTHOR APPROVED** |
+| G8 global state | **PASS — AUTHOR APPROVED** |
+| G9 design | **AUTHORIZED — NOT STARTED** |
+| G9 implementation | **NOT AUTHORIZED — NOT STARTED** |
+| Approved stages | G8A characterization; G8B minimum internal kernel including R1; G8C design; G8C1 internal kernel; G8C2 locus-locus kernel; global G8 closeout |
 | Specification state | G8 core **NORMATIVE / AUTHOR-APPROVED R1**; G8C1/G8C2 extension **NORMATIVE — AUTHOR APPROVED** |
 | ADR state | ADR 0008 **Accepted — R1 clarification applied**; ADR 0009 **Accepted** |
 | Latest author-review date | 2026-08-15 |
@@ -23,7 +26,9 @@ They add no observable intersection behavior. The separately executed G8C
 design is now `PASS — AUTHOR APPROVED`; its G8C1 one-parameter contract is
 normative and the internal kernel is `PASS — AUTHOR APPROVED`. The final G8C2
 contract review found no contradiction, accepted ADR 0009, and authorized the
-separate G8C2 implementation; G8C2 is not started and G9 remains not started.
+separate G8C2 implementation. The canonical execution, final verification and
+author review close G8C2 and global G8 as `PASS — AUTHOR APPROVED`. G9 design is
+authorized but not started; G9 implementation remains unauthorized.
 
 ## 1. Authority and preflight record
 
@@ -210,7 +215,7 @@ APPROVED` and preserved every internal/public boundary below.
 
 **G8C1 state:** `PASS — AUTHOR APPROVED`.
 
-**G8C2 state:** `AUTHORIZED — NOT STARTED`.
+**G8C2 state:** `PASS — AUTHOR APPROVED`.
 
 The separate design task audited full conics, functional curves, actual implicit
 curve authority and Locus V2 × Locus V2. It recommends G8C1 for typed
@@ -225,8 +230,12 @@ produced a verified internal kernel, closed on 2026-08-15 as `PASS — AUTHOR
 APPROVED`, documented in the
 [G8C1 kernel report](../validation/g8c1_locus_v2_extended_target_intersection_kernel_report.md).
 The final review against that implementation found no contradiction. The G8C2
-contract is normative/author-approved and implementation is authorized for a
-separately invoked canonical task; no G8C2 productive work has started.
+contract is normative/author-approved. Its separately invoked canonical task
+produced the internal kernel documented in the
+[G8C2 kernel report](../validation/g8c2_locus_v2_locus_intersection_kernel_report.md);
+the author approved the result after complete verification and closed G8
+globally. This closes the required typed 2D incidence scope without claiming
+universal curve support.
 
 ## 5. Author-approved staged coverage
 
@@ -532,6 +541,25 @@ The G8A execution added no observable feature. G8B likewise exposes no public
 command, `Path`, persistence, migration, or UI behavior; its author-approved
 implementation remains internal. The user guide records that boundary.
 
+## 17. Global G8 closeout criterion
+
+The complete author-approved sequence now supports the fundamental CeDG chain
+within its typed scope:
+
+```text
+CeDG construction -> Locus V2 -> native 2D intersection
+    -> rich semantic solution -> token-selected dynamic point
+    -> downstream CeDG construction
+```
+
+G8B supplies line/segment/ray/circle, G8C1 supplies nondegenerate conics,
+explicitly finite-domain real functions and regular polynomial implicit curves,
+and G8C2 supplies Locus V2 × Locus V2. Degenerate conics, unrestricted
+functions, singular/general implicit curves, unbounded locus products and
+unresolved general overlap remain explicit typed unsupported or
+not-established outcomes. These approved boundaries do not block global G8
+closeout and do not imply universal curve support.
+
 ```text
 G7 = PASS
 
@@ -569,12 +597,14 @@ ADR 0009 =
 ACCEPTED
 
 G8C2 =
-AUTHORIZED
-NOT STARTED
+PASS — AUTHOR APPROVED
 
 G8 =
-IN PROGRESS
+PASS — AUTHOR APPROVED
 
-G9 =
-NOT STARTED
+G9 DESIGN =
+AUTHORIZED — NOT STARTED
+
+G9 IMPLEMENTATION =
+NOT AUTHORIZED — NOT STARTED
 ```

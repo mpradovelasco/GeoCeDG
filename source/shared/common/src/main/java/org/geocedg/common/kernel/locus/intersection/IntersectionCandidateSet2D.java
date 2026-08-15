@@ -97,8 +97,11 @@ public final class IntersectionCandidateSet2D {
 		}
 		boolean overlapKind = geometryKind == GeometryKind.OVERLAP
 				|| geometryKind == GeometryKind.INFINITELY_MANY
-				|| geometryKind == GeometryKind.UNSUPPORTED_OVERLAP;
-		if (geometryKind != GeometryKind.FINITE && !overlapKind
+				|| geometryKind == GeometryKind.UNSUPPORTED_OVERLAP
+				|| geometryKind == GeometryKind.MIXED_FINITE_OVERLAP;
+		if (geometryKind != GeometryKind.FINITE
+				&& geometryKind != GeometryKind.MIXED_FINITE_OVERLAP
+				&& !overlapKind
 				&& !candidates.isEmpty()) {
 			throw new IllegalArgumentException(
 					"Empty or unresolved geometry cannot carry root candidates");

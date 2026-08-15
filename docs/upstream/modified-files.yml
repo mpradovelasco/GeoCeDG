@@ -1370,6 +1370,138 @@
       "change": "added",
       "purpose": "Verify deterministic G8C1 functional counters, 1/10/100 query scaling, 100 consumers, invalid barriers and zero retained/forbidden state.",
       "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusLocusIntersectionV2.java",
+      "change": "added",
+      "purpose": "Publish one coherent immutable G8C2 locus-pair result through two normal-DAG inputs, query-local solving, semantic continuation and atomic failure handling.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/EvaluatorPairIntersectionCapability2D.java",
+      "change": "added",
+      "purpose": "Provide the conservative evaluator-only G8C2 fallback with semantic parameter-box candidates, dual refinement and no unsupported completeness or isolation claims.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocalPairIsolationEvidence2D.java",
+      "change": "added",
+      "purpose": "Represent revision-scoped pair-space coverage, uniqueness and local-isolation evidence independently from residual convergence and durable identity.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusPairIdentity2D.java",
+      "change": "added",
+      "purpose": "Canonicalize the unordered semantic locus source pair while preserving reversible ordered evaluation evidence.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusPairIntersectionCandidate2D.java",
+      "change": "added",
+      "purpose": "Carry one G8C2 semantic parameter-pair candidate and its typed refinement, classification, isolation, overlap and guarantee evidence.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusPairIntersectionCandidateSet2D.java",
+      "change": "added",
+      "purpose": "Publish a bounded candidate batch with component-product coverage, completeness and overlap evidence for independent semantic verification.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusPairIntersectionCapability2D.java",
+      "change": "added",
+      "purpose": "Define the dedicated G8C2 dual-parameter capability seam without forcing locus-pair solving through a one-parameter target adapter.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusPairIntersectionContext2D.java",
+      "change": "added",
+      "purpose": "Own one query-local pair of semantic evaluator sessions and bounded pair-work instrumentation with no retained shared state.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusPairIntersectionEvidence2D.java",
+      "change": "added",
+      "purpose": "Bind branch/component/parameter-pair, source-revision, residual, tangent, isolation and continuation evidence to each finite G8C2 solution.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusPairIntersectionInstrumentation2D.java",
+      "change": "added",
+      "purpose": "Enforce G8C2 deterministic pair budgets and record branch/component products, boxes, Jacobians, overlap checks and zero retained state.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusPairIntersectionPolicy2D.java",
+      "change": "added",
+      "purpose": "Bind the versioned G8C2 model-length residual, normalized tangency, parameter-pair tolerance, continuation and deterministic work policy.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusPairIntersectionQuery2D.java",
+      "change": "added",
+      "purpose": "Capture the two semantic loci, canonical pair identity, component domains, prior result and query-local policy for one G8C2 computation.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusPairIntersectionSolver2D.java",
+      "change": "added",
+      "purpose": "Coordinate dedicated pair candidate isolation, dual refinement, independent two-source residual verification, completeness, overlap and strict continuation.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusPairIntersectionWorkBudget2D.java",
+      "change": "added",
+      "purpose": "Define the initial versioned deterministic limits for G8C2 branch pairs, component pairs, parameter boxes, refinements, overlap checks and outputs.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusPairResidualEvidence2D.java",
+      "change": "added",
+      "purpose": "Represent independently evaluated model-coordinate pair residual and tolerance evidence without coordinate or render authority.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusPairRootTokenSource2D.java",
+      "change": "added",
+      "purpose": "Issue opaque G8C2 solution tokens from canonical source-pair and constructive lineage rather than coordinates, ordering, parameters or revisions.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusPairSourceRevisionEvidence2D.java",
+      "change": "added",
+      "purpose": "Record both evaluator and topology revisions as currentness evidence while keeping revision outside durable identity.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusSourceBinding2D.java",
+      "change": "added",
+      "purpose": "Capture one semantic Locus V2 source identity, current revisions, branches, finite or periodic components and evaluator-session authority.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8C2IntersectionTestSupport.java",
+      "change": "added",
+      "purpose": "Provide deterministic test-private semantic locus-pair fixtures, analytic capabilities and rich-result lifecycle helpers for G8C2 validation.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8C2LocusPairKernelTest.java",
+      "change": "added",
+      "purpose": "Verify G8C2 pair geometry, source symmetry, semantic provenance, isolation, tangency, overlap, completeness, domains and constructive multiplicity.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8C2LocusPairLifecycleTest.java",
+      "change": "added",
+      "purpose": "Verify two-source normal-DAG updates, strict tokens, ambiguity, overlap transitions, disappearance/recovery, atomic failure, periodic seams and nested consumption.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8C2LocusPairFunctionalBenchmarkTest.java",
+      "change": "added",
+      "purpose": "Verify deterministic G8C2 1/10/100 query scaling, 100 consumers, component combinatorics, budget failure, invariance and zero retained/forbidden state.",
+      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
     }
   ]
 }

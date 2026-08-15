@@ -1,8 +1,8 @@
 # G8C scientific traceability
 
-**Status: G8C DESIGN/G8C1 TRACEABILITY AND G8C2 CONTRACT TRACEABILITY —
-AUTHOR APPROVED; scientific sources motivate requirements but do not define the
-numerical algorithm**
+**Status: G8C DESIGN/G8C1/G8C2 TRACEABILITY AUTHOR APPROVED; GLOBAL G8
+PASS — AUTHOR APPROVED; scientific sources motivate
+requirements but do not define the numerical algorithm**
 
 | Requirement | Versioned source/evidence | G8C consequence | Planned validation |
 |---|---|---|---|
@@ -40,8 +40,12 @@ The author-approved G8C1 internal kernel operationalizes only the one-parameter 
 typed conic/function/regular-polynomial targets, even-contact discovery,
 semantic tokens and downstream DAG propagation. Its scientific pilots are
 reduced analytic fixtures linked to the catalog rather than assertions that the
-historical sampled models themselves are kernel truth. The Locus V2 × Locus V2
-requirements remain traceability inputs for unexecuted G8C2.
+historical sampled models themselves are kernel truth. The G8C2 internal
+candidate now operationalizes the locus–locus requirements through analytic
+line/circle/tangent/overlap proxies, two-source DAG depth 1/2/3, constructive
+multiplicity, and bounded query-local counters. These are reduced scientific
+pilots: they validate the semantic role and topology requirements without
+treating historical sampled coordinates as kernel truth.
 
 ## Versioned source identifiers
 

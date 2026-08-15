@@ -1,7 +1,7 @@
 # G8C target-family capability matrix
 
-**Status: G8C1 rows implemented and author-approved; G8C2 rows normative and
-author-approved/not implemented**
+**Status: G8C1 and G8C2 rows implemented — AUTHOR APPROVED; global G8
+PASS — AUTHOR APPROVED**
 
 | Family | Actual kernel authority | Domain authority | Candidate/refinement capability | Verification residual | Derivative/bounds | First productive recommendation |
 |---|---|---|---|---|---|---|
@@ -35,5 +35,7 @@ author-approved/not implemented**
 No row broadens the public API. “G8C1 required” is the author-approved internal
 scope and is implemented by the author-approved internal kernel. The default adaptive
 capability provides verified-but-uncertified local evidence and does not claim
-global completeness. G8C2 rows are normative and implementation-authorized but
-remain unimplemented.
+global completeness. G8C2 finite/periodic rows are implemented internally by a
+query-local pair solver and analytic/certified capability seam. The evaluator
+fallback provides verified candidate roots with weaker isolation/completeness;
+unbounded products remain unsupported. The candidate awaits author review.

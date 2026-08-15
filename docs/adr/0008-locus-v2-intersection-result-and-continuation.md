@@ -2,7 +2,7 @@
 
 - Status: **Accepted — R1 clarification applied**
 - Author review disposition: **ACCEPTED AT G8A CLOSEOUT; AUTHOR-APPROVED G8B-R1 CLARIFICATION APPLIED**
-- Roadmap state: G8 planning/G8A/G8B-R1/G8B/G8C design `PASS — AUTHOR APPROVED`; G8C1 authorized/not started; G8C2 not authorized; G8 in progress
+- Roadmap state: G8 planning/G8A/G8B-R1/G8B/G8C design/G8C1/G8C2 and global G8 `PASS — AUTHOR APPROVED`; G9 design authorized/not started
 - Decision phase: final G8A author closeout
 - Date: 2026-08-14
 
@@ -140,10 +140,12 @@ historical rationale. The implementation remains experimental/internal and
 limited to line, segment, ray and circle.
 
 The author subsequently closed G8C design as `PASS — AUTHOR APPROVED` on
-2026-08-15 and approved its G8C1/G8C2 subdivision. Only the separately invoked
-G8C1 one-parameter implementation is authorized. G8C2 and its proposed ADR
-0009 contract remain not authorized, G8 remains in progress, and G9 has not
-started.
+2026-08-15 and approved its G8C1/G8C2 subdivision. At that design closeout only
+the separately invoked G8C1 one-parameter implementation was authorized; G8C2
+and ADR 0009 still had their later gates. Those historical conditions were
+satisfied by the accepted ADR 0009 contract, G8C2 execution and final author
+review. G8C2 and global G8 are now `PASS — AUTHOR APPROVED`; G9 design is
+authorized but has not started.
 
 ## Result invariants
 
@@ -388,8 +390,9 @@ G8A = PASS — AUTHOR APPROVED
 G8B-R1 = PASS — AUTHOR APPROVED
 G8B = PASS — AUTHOR APPROVED
 G8C DESIGN = PASS — AUTHOR APPROVED
-G8C1 = AUTHORIZED — NOT STARTED
-G8C2 = NOT AUTHORIZED — NOT STARTED
-G8 = IN PROGRESS
-G9 = NOT STARTED
+G8C1 = PASS — AUTHOR APPROVED
+G8C2 = PASS — AUTHOR APPROVED
+G8 = PASS — AUTHOR APPROVED
+G9 DESIGN = AUTHORIZED — NOT STARTED
+G9 IMPLEMENTATION = NOT AUTHORIZED — NOT STARTED
 ```

@@ -1,0 +1,280 @@
+{
+  "schemaVersion": 1,
+  "id": "cedg.validation.g8c2.locus-pair-intersection-kernel",
+  "phase": "G8C2",
+  "status": "PASS_AUTHOR_APPROVED",
+  "executionDate": "2026-08-15",
+  "authorCloseoutDate": "2026-08-15",
+  "provenance": {
+    "entrySha": "a585591afd073ec390ffc34a532d390472277150",
+    "entryBranch": "feature/g8c2-locus-v2-locus-v2-intersections",
+    "originMainAtEntry": "a585591afd073ec390ffc34a532d390472277150",
+    "g8c1Tag": "geocedg-g8c1-pass",
+    "g8c1TagTarget": "3c72e889a436e4bbccde177e1f24423196575f04",
+    "upstreamBaseline": "9b93256b7df401ff056c37b502d82df4d72b1522",
+    "canonicalPrompt": ".github/prompts/tasks/g8c2-locus-v2-locus-intersections.prompt.md",
+    "canonicalPromptCanonicalTextSha256": "e7f0535332a9c5a2789f98476aef2f9f143e84f9bda0ad3b7d657f070d99e58b",
+    "normativeSpecification": "geocedg/specs/locus/locus-v2-extended-intersections.md",
+    "acceptedAdr": "docs/adr/0009-locus-v2-locus-intersection-pair-semantics.md"
+  },
+  "architecture": {
+    "resultAuthority": "EXISTING_IMMUTABLE_RICH_RESULT_AND_NORMAL_DAG_RICH_GEO",
+    "algorithm": "AlgoLocusLocusIntersectionV2",
+    "solver": "LocusPairIntersectionSolver2D",
+    "defaultCapability": "EvaluatorPairIntersectionCapability2D",
+    "dedicatedDualParameterSolver": true,
+    "oneParameterAdapterUsedAsPairSolver": false,
+    "canonicalUnorderedSourcePair": true,
+    "orderedEvidenceReversible": true,
+    "queryLocal": true,
+    "retainedPairEntries": 0,
+    "g7MetricStateReuse": false,
+    "secondRichResultFramework": false
+  },
+  "supportedDomains": {
+    "finiteComponents": true,
+    "periodicFundamentalDomains": true,
+    "unboundedBounded": false,
+    "unboundedUnbounded": false,
+    "viewportTruncation": false,
+    "arbitraryFiniteWindow": false
+  },
+  "verificationSemantics": {
+    "pairResidual": "EUCLIDEAN_NORM_OF_TWO_INDEPENDENT_SEMANTIC_EVALUATIONS",
+    "pairResidualUnits": "MODEL_COORDINATE_LENGTH",
+    "smallResidualEstablishesIsolation": false,
+    "newtonConvergenceEstablishesIsolation": false,
+    "localIsolationRequiresCoverageAndUniqueness": true,
+    "normalizedTangentDeterminant": true,
+    "rawDeterminantEstablishesMultiplicity": false,
+    "signChangeOnlyTangency": false
+  },
+  "completenessAndAdmissibility": {
+    "values": ["COMPLETE", "INCOMPLETE", "NOT_ESTABLISHED"],
+    "defaultEvaluatorCompleteness": "NOT_ESTABLISHED",
+    "defaultEvaluatorLocalIsolation": "NOT_ESTABLISHED",
+    "completeRequiresAllComponentPairs": true,
+    "optionBPreserved": true,
+    "parentCompleteRequiredForPoint": false,
+    "localIsolationRequiredForPoint": true,
+    "completeEmptySupported": true
+  },
+  "identity": {
+    "durableBasis": "CANONICAL_SOURCE_PAIR_CONSTRUCTIVE_BRANCH_PAIR_TOPOLOGY_AND_EXPLICIT_CONTINUATION_LINEAGE",
+    "coordinateUsed": false,
+    "resultOrderUsed": false,
+    "parameterPairUsedAsToken": false,
+    "isolatingRectangleUsedAsToken": false,
+    "revisionUsedAsToken": false,
+    "completenessUsedAsToken": false,
+    "additionalRootRetargetsExistingToken": false,
+    "universalMergeSplitGenealogy": false,
+    "overlapTransitionPreservesFiniteIdentityWithoutProof": false
+  },
+  "overlap": {
+    "states": [
+      "OVERLAP_ESTABLISHED",
+      "OVERLAP_SUSPECTED_NOT_ESTABLISHED",
+      "UNSUPPORTED_OVERLAP"
+    ],
+    "relations": [
+      "FULL_COMPONENT",
+      "PARTIAL_COMPONENT",
+      "REVERSE_PARAMETERIZATION",
+      "REPEATED_TRAVERSAL"
+    ],
+    "mixedFiniteOverlapSupported": true,
+    "samplesCanEstablishOverlap": false,
+    "arbitraryFiniteOverlapPoints": false
+  },
+  "workBudget": {
+    "version": "g8c2-pair-initial/v1",
+    "maximumBranchPairs": 256,
+    "maximumComponentPairs": 1024,
+    "maximumParameterBoxes": 32768,
+    "maximumBoxDepth": 16,
+    "maximumCandidateBoxes": 4096,
+    "maximumPairRefinements": 1024,
+    "maximumPairRefinementIterations": 80,
+    "maximumJacobianEvaluations": 16384,
+    "maximumOverlapChecks": 4096,
+    "maximumPairContinuationComparisons": 4096,
+    "maximumPublishedSolutions": 256,
+    "maximumRetainedEntries": 0
+  },
+  "representativeCounterSnapshot": {
+    "case": "evaluator-only-transverse-line-pair",
+    "semanticEvaluations": 120,
+    "semanticDerivativeEvaluations": 18,
+    "residualVerifications": 1,
+    "verifiedSolutions": 1,
+    "branchPairs": 1,
+    "componentPairs": 1,
+    "parameterBoxesVisited": 1024,
+    "parameterBoxesRejected": 1020,
+    "candidateBoxes": 4,
+    "pairRefinementCalls": 4,
+    "pairRefinementIterations": 8,
+    "jacobianEvaluations": 9,
+    "overlapChecks": 1,
+    "pairContinuationComparisons": 0,
+    "retainedPairEntries": 0
+  },
+  "tests": {
+    "command": ".\\gradlew.bat :shared:common-jre:test --tests org.geocedg.common.locus.G8C2* :shared:common:checkstyleMain :shared:common-jre:checkstyleTest --rerun-tasks --no-daemon --console=plain --no-problems-report -Dorg.gradle.java.installations.auto-download=false",
+    "suites": {
+      "G8C2LocusPairKernelTest": {
+        "tests": 16,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "G8C2LocusPairLifecycleTest": {
+        "tests": 10,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "G8C2LocusPairFunctionalBenchmarkTest": {
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    "total": {
+      "tests": 34,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "checkstyleMainViolations": 0,
+    "checkstyleTestViolations": 0
+  },
+  "functionalGates": {
+    "transverseLinePair": true,
+    "periodicCirclePair": true,
+    "tangentAndHigherContact": true,
+    "closeRoots": true,
+    "equalCoordinateDistinctPreimages": true,
+    "multipleComponentProducts": true,
+    "sourceOrderSymmetry": true,
+    "reparameterization": true,
+    "periodicSeam": true,
+    "typedOverlap": true,
+    "mixedFiniteOverlap": true,
+    "unboundedRejected": true,
+    "onlyAOnlyBAndBothMotion": true,
+    "mergeSplitAmbiguity": true,
+    "disappearanceRecovery": true,
+    "overlapEntryExitIdentityDiscontinuity": true,
+    "atomicFailureRecovery": true,
+    "downstreamDagDepth": 3,
+    "repeatedQueries": 100,
+    "pointConsumersWithoutResolve": 100,
+    "renderCacheReads": 0,
+    "renderVertexReads": 0,
+    "legacySampleReads": 0,
+    "viewportReads": 0,
+    "pixelToleranceReads": 0,
+    "metricIndexReads": 0,
+    "wholeLocusRegenerations": 0,
+    "retainedPairEntries": 0
+  },
+  "independentReference": {
+    "generator": "geocedg/validation/locus-v2/g8c/generate_extended_intersection_references.py",
+    "output": "geocedg/validation/locus-v2/g8c/extended-intersection-reference-values.json",
+    "runtime": "CPython 3.12.13",
+    "library": "mpmath 1.4.1",
+    "precisionDecimalDigits": 80,
+    "pairCases": 6,
+    "reproduced": true,
+    "historicalDesignEvidencePreserved": true
+  },
+  "scopeAudit": {
+    "productiveG8c2SourceFilesAdded": 18,
+    "existingProductiveG8FilesModified": 8,
+    "focusedTestFilesAdded": 4,
+    "publicCommands": 0,
+    "dispatcherOverloads": 0,
+    "publicPathAdditions": 0,
+    "xmlOrPersistenceRegistrations": 0,
+    "legacyGeoLocusChanges": 0,
+    "classicIntersectionChanges": 0,
+    "frontendChanges": 0,
+    "threeDimensionalChanges": 0,
+    "g9Changes": 0,
+    "sharedOrGlobalIntersectionCache": 0,
+    "renderSampleOrViewportAuthority": 0,
+    "g7MetricIndexAuthority": 0,
+    "generatedTrackedArtifacts": 0
+  },
+  "verification": {
+    "entryG8b": {
+      "exitCode": 0,
+      "tests": 49,
+      "logDirectory": "%TEMP%\\geocedg-verify-g8b-intersections"
+    },
+    "entryG8c1": {
+      "exitCode": 0,
+      "tests": 38,
+      "logDirectory": "%TEMP%\\geocedg-verify-g8c1-intersections"
+    },
+    "entryComposed": {
+      "skipBuild": false,
+      "exitCode": 0,
+      "logDirectory": "%TEMP%\\geocedg-verify"
+    },
+    "focusedG8c2": {
+      "command": ".\\tools\\agent\\verify-g8c2-intersections.ps1 -KeepBuildOutputs -LogDirectory %TEMP%\\geocedg-g8c2-closeout-focused",
+      "skipBuild": false,
+      "exitCode": 0,
+      "tests": 34,
+      "logDirectory": "%TEMP%\\geocedg-g8c2-closeout-focused"
+    },
+    "composed": {
+      "command": ".\\tools\\agent\\verify.ps1 -KeepBuildOutputs -LogDirectory %TEMP%\\geocedg-g8-closeout-composed",
+      "skipBuild": false,
+      "exitCode": 0,
+      "logDirectory": "%TEMP%\\geocedg-g8-closeout-composed"
+    }
+  },
+  "authorReview": {
+    "required": false,
+    "implementationPassClaimed": true,
+    "disposition": "PASS_AUTHOR_APPROVED",
+    "decisions": {
+      "D1_RICH_RESULT_REUSE": "APPROVED",
+      "D2_CANONICAL_UNORDERED_SOURCE_PAIR": "APPROVED",
+      "D3_DEDICATED_DUAL_PARAMETER_SOLVER": "APPROVED",
+      "D4_CONSERVATIVE_EVALUATOR_GUARANTEES": "APPROVED",
+      "D5_OPTION_B": "APPROVED",
+      "D6_LOCAL_PAIR_ISOLATION": "APPROVED",
+      "D7_TANGENCY_HIERARCHY": "APPROVED",
+      "D8_TYPED_OVERLAP": "APPROVED",
+      "D9_CONSTRUCTIVE_MULTIPLICITY_AND_IDENTITY": "APPROVED",
+      "D10_SUPPORTED_DOMAIN_SCOPE": "APPROVED",
+      "D11_QUERY_LOCAL_STATE": "APPROVED",
+      "D12_DETERMINISTIC_BUDGETS": "APPROVED_INITIAL_VERSIONED_DEFAULTS",
+      "D13_G8C2_CLOSEOUT": "APPROVED"
+    }
+  },
+  "globalG8Closeout": {
+    "disposition": "PASS_AUTHOR_APPROVED",
+    "fundamentalDynamicIncidenceChainEstablished": true,
+    "locusLocusIncluded": true,
+    "typedLimitationsAreNormativeBoundaries": true,
+    "universalCurveSupportClaimed": false
+  },
+  "phaseDisposition": {
+    "g8b": "PASS_AUTHOR_APPROVED",
+    "g8cDesign": "PASS_AUTHOR_APPROVED",
+    "g8c1": "PASS_AUTHOR_APPROVED",
+    "g8c2Contract": "NORMATIVE_AUTHOR_APPROVED",
+    "adr0009": "ACCEPTED",
+    "g8c2": "PASS_AUTHOR_APPROVED",
+    "g8": "PASS_AUTHOR_APPROVED",
+    "g9Design": "AUTHORIZED_NOT_STARTED",
+    "g9Implementation": "NOT_AUTHORIZED_NOT_STARTED"
+  }
+}

@@ -117,6 +117,7 @@ public final class LocusIntersectionResult2D {
 		if (rootToken == null || rootToken.trim().isEmpty()
 				|| computationStatus != ComputationStatus.SUCCESS
 				|| geometryKind != GeometryKind.FINITE
+						&& geometryKind != GeometryKind.MIXED_FINITE_OVERLAP
 				|| currentness != Currentness.CURRENT
 				|| supportLevel == SupportLevel.UNSUPPORTED) {
 			return Optional.empty();
@@ -141,7 +142,7 @@ public final class LocusIntersectionResult2D {
 		IdentityStatus status = identity.getIdentityStatus();
 		boolean identityAdmissible = status == IdentityStatus.CONTINUATION_ESTABLISHED
 				|| status == IdentityStatus.NEW_TOPOLOGICAL_SOLUTION;
-		return identityAdmissible
+		boolean common = identityAdmissible
 				&& identity.getExplicitContinuationKey().isPresent()
 				&& evidence.getLocalIsolationStatus()
 						== LocalIsolationStatus.ESTABLISHED
@@ -157,6 +158,26 @@ public final class LocusIntersectionResult2D {
 						== sourceBinding.getLocusSemanticRevision()
 				&& evidence.getTargetUpdateStamp()
 						== sourceBinding.getTargetUpdateStamp();
+		if (!common || !sourceBinding.isLocusPair()) {
+			return common;
+		}
+		if (!solution.getPairEvidence().isPresent()) {
+			return false;
+		}
+		LocusPairIntersectionEvidence2D pair =
+				solution.getPairEvidence().get();
+		return pair.getLocalIsolation().getStatus()
+					== LocalIsolationStatus.ESTABLISHED
+				&& pair.getEstablishedBranchPairLineage().equals(
+						identity.getEstablishedBranchLineage())
+				&& pair.getFirst().getLocusIdentity().equals(
+						sourceBinding.getFirstLocusIdentity())
+				&& pair.getFirst().getSemanticRevision()
+						== sourceBinding.getFirstLocusSemanticRevision()
+				&& pair.getSecond().getLocusIdentity().equals(
+						sourceBinding.getSecondLocusIdentity())
+				&& pair.getSecond().getSemanticRevision()
+						== sourceBinding.getSecondLocusSemanticRevision();
 	}
 
 	private void validateShape() {
@@ -166,14 +187,16 @@ public final class LocusIntersectionResult2D {
 			throw new IllegalArgumentException(
 					"Only complete coverage may publish an empty result");
 		}
-		if (geometryKind == GeometryKind.FINITE && finiteSolutions.isEmpty()) {
+		boolean mixed = geometryKind == GeometryKind.MIXED_FINITE_OVERLAP;
+		if ((geometryKind == GeometryKind.FINITE || mixed)
+				&& finiteSolutions.isEmpty()) {
 			throw new IllegalArgumentException(
 					"Finite result requires verified solutions");
 		}
 		boolean overlapKind = geometryKind == GeometryKind.OVERLAP
 				|| geometryKind == GeometryKind.INFINITELY_MANY
-				|| geometryKind == GeometryKind.UNSUPPORTED_OVERLAP;
-		if (geometryKind != GeometryKind.FINITE && !overlapKind
+				|| geometryKind == GeometryKind.UNSUPPORTED_OVERLAP || mixed;
+		if (geometryKind != GeometryKind.FINITE && !mixed && !overlapKind
 				&& !finiteSolutions.isEmpty()) {
 			throw new IllegalArgumentException(
 					"Empty or unresolved geometry cannot carry finite solutions");

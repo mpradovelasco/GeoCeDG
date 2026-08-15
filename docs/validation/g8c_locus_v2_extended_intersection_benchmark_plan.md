@@ -1,7 +1,7 @@
 # G8C extended-intersection functional-counter plan
 
-**Status: G8C1 COUNTER CONTRACT EXECUTED — AUTHOR APPROVED; G8C2 COUNTER
-CONTRACT NORMATIVE — AUTHOR APPROVED / UNEXECUTED; wall clock is informational**
+**Status: G8C1 AND G8C2 COUNTER CONTRACTS EXECUTED — AUTHOR APPROVED;
+wall clock is informational**
 
 ## 1. Counter vocabulary
 
@@ -56,7 +56,7 @@ Nested semantic sessions at depth 1/2/3 evaluate only the requested parameter
 through each chain. Ten pair queries yield `20 * depth` evaluator calls across
 both chains, zero whole-locus regenerations and zero render evaluations.
 
-## 3. Future benchmark cases
+## 3. Benchmark cases
 
 For each phase run 1, 10 and 100 identical compatible queries/consumers, then
 repeat after one source change, both-source change, topology change and failure.
@@ -75,8 +75,12 @@ is later proposed.
 Do not copy G8B counts blindly. G8C1 may begin from the existing versioned G8B
 per-query limits only where the same operation retains the same meaning. New
 target-gradient/domain counters require measured limits during implementation.
-G8C2 requires separate pair-product, parameter-box, pair-refinement, Jacobian
-and overlap budgets approved before productive merge.
+G8C2 uses the versioned `g8c2-pair-initial/v1` ceilings: 256 branch pairs,
+1,024 component pairs, 32,768 visited boxes, depth 16, 4,096 candidate boxes,
+1,024 refinements, 80 iterations per refinement, 16,384 Jacobian evaluations,
+4,096 overlap checks, 4,096 continuation comparisons, 256 finite outputs, and
+zero retained entries. These are internal phase defaults, not universal
+mathematical constants.
 
 Budget exhaustion yields a coherent result with `INCOMPLETE` or
 `NOT_ESTABLISHED` completeness and preserves individually admissible solutions
@@ -107,3 +111,20 @@ bounded by the existing maximum-isolation budget. Wall-clock values remain
 informational and no cache/index is justified. The author approved this
 measured baseline and the query-local policy on 2026-08-15 without converting
 the measurements into universal mathematical constants.
+
+## 7. G8C2 measured candidate
+
+The representative evaluator-only transverse crossing records the deterministic
+vector `120/18/1/1/1/1/1024/1020/4/4/8/9/1/0/0` for semantic evaluations,
+semantic derivative evaluations, residual verifications, verified roots,
+branch pairs, component pairs, boxes visited, boxes rejected, candidate boxes,
+pair refinements, refinement iterations, Jacobian evaluations, overlap checks,
+pair-continuation comparisons, and retained pair entries.
+
+The 1/10/100 query sweep is deterministic and query-local. One hundred
+token-selected consumers add zero solver evaluations and retain zero entries.
+A 2×3 component product reports exactly six component pairs. A 33×33 product
+crosses the 1,024-pair ceiling and publishes one coherent
+`WORK_LIMIT_REACHED` result with no stale finite roots. All render, legacy,
+viewport, pixel-tolerance, metric-index, whole-locus-regeneration, and retained-
+state counters remain zero. No shared owner or index is justified.

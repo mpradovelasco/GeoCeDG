@@ -37,6 +37,9 @@ $G8CVerifierPath = Join-Path $PSScriptRoot "verify-g8c-intersections-design.ps1"
 $G8C1EvidencePath = Join-Path $RepositoryRoot `
     "geocedg\validation\locus-v2\g8c1\g8c1-intersection-kernel-evidence.json"
 $G8C1VerifierPath = Join-Path $PSScriptRoot "verify-g8c1-intersections.ps1"
+$G8C2EvidencePath = Join-Path $RepositoryRoot `
+    "geocedg\validation\locus-v2\g8c2\g8c2-intersection-kernel-evidence.json"
+$G8C2VerifierPath = Join-Path $PSScriptRoot "verify-g8c2-intersections.ps1"
 $ReferenceGenerator = Join-Path $EvidenceRoot `
     "generate_intersection_references.py"
 $TestSourceRoot = Join-Path $RepositoryRoot `
@@ -446,6 +449,7 @@ try {
         $g8bAllowedProductive = @(
             "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusIntersectionV2.java",
             "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusIntersectionPointV2.java",
+            "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusLocusIntersectionV2.java",
             "source/shared/common/src/main/java/org/geocedg/common/kernel/geos/GeoLocusIntersectionResult.java",
             "source/shared/common/src/main/java/org/geogebra/common/plugin/GeoClass.java"
         )
@@ -511,6 +515,24 @@ try {
             "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8C1IntersectionTestSupport.java"
         )
     }
+    $g8c2Present = (Test-Path -LiteralPath $G8C2EvidencePath `
+            -PathType Leaf) -and (Test-Path -LiteralPath $G8C2VerifierPath `
+            -PathType Leaf)
+    $g8c2AllowedTests = @()
+    if ($g8c2Present) {
+        $g8c2Evidence = Get-Content -LiteralPath $G8C2EvidencePath -Raw |
+            ConvertFrom-Json -Depth 100
+        Assert-Condition -Condition ($g8c2Evidence.phase -eq "G8C2" `
+                -and $g8c2Evidence.status -eq `
+                    "PASS_AUTHOR_APPROVED") `
+            -Message "The detected G8C2 closeout evidence has an invalid status."
+        $g8c2AllowedTests = @(
+            "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8C2IntersectionTestSupport.java",
+            "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8C2LocusPairFunctionalBenchmarkTest.java",
+            "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8C2LocusPairKernelTest.java",
+            "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8C2LocusPairLifecycleTest.java"
+        )
+    }
     $unexpectedSource = @($sourceStatus | Where-Object {
             $path = ($_ -replace '^..\s+', '').Replace("\", "/")
             $isG8A = $path -match `
@@ -526,8 +548,10 @@ try {
             $isG8CDesignTest = $g8cDesignPresent -and
                 $path -in $g8cAllowedCharacterizationTests
             $isG8C1Test = $g8c1Present -and $path -in $g8c1AllowedTests
+            $isG8C2Test = $g8c2Present -and $path -in $g8c2AllowedTests
             -not ($isG8A -or $isG8BTest -or $isG8BCompatibility -or
-                $isG8BProductive -or $isG8CDesignTest -or $isG8C1Test)
+                $isG8BProductive -or $isG8CDesignTest -or $isG8C1Test -or
+                $isG8C2Test)
         })
     Assert-Condition -Condition ($unexpectedSource.Count -eq 0) `
         -Message ("G8A source changes escaped the test-private boundary:`n" +

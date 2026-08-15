@@ -5,7 +5,9 @@
 | Status | **PASS — AUTHOR APPROVED** |
 | Baseline | G8B/G8B-R1 `PASS — AUTHOR APPROVED` |
 | G8C1 implementation | **PASS — AUTHOR APPROVED** |
-| G8C2 implementation | **AUTHORIZED / NOT STARTED** |
+| G8C2 implementation | **PASS — AUTHOR APPROVED** |
+| G8 global | **PASS — AUTHOR APPROVED** |
+| G9 design | **AUTHORIZED — NOT STARTED** |
 | Contract | G8C1 and G8C2 **NORMATIVE — AUTHOR APPROVED** |
 | Pair ADR | ADR 0009 **Accepted** |
 | Author-review date | 2026-08-15 |
@@ -84,8 +86,9 @@ problem as a one-dimensional target adapter.
 
 Entry contract gate: satisfied on 2026-08-15 by G8C1 `PASS — AUTHOR APPROVED`,
 ADR 0009 Accepted, and explicit author approval of source symmetry, local pair
-isolation, overlap taxonomy, and completeness limits. Productive execution
-still requires a separate explicit invocation of the canonical G8C2 prompt.
+isolation, overlap taxonomy, and completeness limits. The separately invoked
+canonical G8C2 prompt has produced the bounded internal candidate; its exit gate
+still requires explicit author approval.
 
 Exit gate: bounded/periodic finite-domain pair support, source-order symmetry,
 local isolation, tangency/ambiguity, overlap, constructive multiplicity,
@@ -213,14 +216,17 @@ the G8C1 contract and internal implementation, query-local state, and the gate
 that both implementation phases must pass before G8 global closeout or G9. The
 final post-G8C1 review found no contradiction in the pair architecture,
 approved every pair-specific decision in the table, accepted ADR 0009, made the
-G8C2 contract normative, and authorized—but did not start—G8C2 implementation.
+G8C2 contract normative, and authorized G8C2 implementation. That execution,
+its verification and final author review are complete; G8C2 and global G8 are
+`PASS — AUTHOR APPROVED`.
 
 ```text
 G8C DESIGN = PASS — AUTHOR APPROVED
 G8C1 = PASS — AUTHOR APPROVED
 G8C2 CONTRACT = NORMATIVE — AUTHOR APPROVED
 ADR 0009 = ACCEPTED
-G8C2 = AUTHORIZED — NOT STARTED
-G8 = IN PROGRESS
-G9 = NOT STARTED
+G8C2 = PASS — AUTHOR APPROVED
+G8 = PASS — AUTHOR APPROVED
+G9 DESIGN = AUTHORIZED — NOT STARTED
+G9 IMPLEMENTATION = NOT AUTHORIZED — NOT STARTED
 ```

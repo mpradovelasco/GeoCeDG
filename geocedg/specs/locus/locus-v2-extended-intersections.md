@@ -2,7 +2,8 @@
 
 **Status: G8C1 AND G8C2 NORMATIVE — AUTHOR APPROVED**
 
-**Phase: G8C design and G8C1 `PASS — AUTHOR APPROVED`; G8C2 `AUTHORIZED — NOT STARTED`**
+**Phase: G8C design, G8C1 and G8C2 `PASS — AUTHOR APPROVED`; G8 global
+`PASS — AUTHOR APPROVED`**
 
 **Approval date: 2026-08-15**
 
@@ -15,8 +16,9 @@ author-approved for G8C1. The G8C1 implementation was author-approved on
 2026-08-15. The author approved the two-parameter Locus V2 × Locus V2 contract
 in section 4, its pair-specific uses of sections 5–7, and section 8.2 on
 2026-08-15 after accepting ADR 0009 and reviewing the completed G8C1 kernel.
-Those sections are normative for G8C2 implementation. G8C2 is authorized but
-not started. Neither phase claims public availability.
+Those sections are normative for G8C2 implementation. The author approved the
+internal G8C2 kernel and global G8 closeout on 2026-08-15. Neither approval
+claims public availability or authorizes G9 implementation.
 
 ## 1. Required semantic chain
 
@@ -131,7 +133,8 @@ small raw residual is insufficient.
 
 ## 4. Locus V2 × Locus V2
 
-**G8C2 status: NORMATIVE — AUTHOR APPROVED / AUTHORIZED — NOT STARTED.** The
+**G8C2 contract status: NORMATIVE — AUTHOR APPROVED. Implementation status:
+PASS — AUTHOR APPROVED.** The
 author-approved G8C phase split recognizes this as a separate two-parameter
 architecture. The final review against G8C1 found no contradiction, and
 Accepted ADR 0009 governs the contract below.
@@ -258,8 +261,8 @@ tangencies remain unisolated absent stronger uniqueness evidence.
 
 ### 8.2 G8C2
 
-G8C2 is `AUTHORIZED — NOT STARTED`. Productive work may begin only through a
-separate explicit invocation of the canonical G8C2 prompt from the approved
-contract baseline. G8 may close and G9 may begin only after G8C2 implementation
-passes and receives author approval, unless the author explicitly changes the
-typed minimum scope.
+G8C2 canonical execution produced an internal implementation on 2026-08-15.
+After complete verification the author approved it and closed G8 globally.
+This satisfies the 2D incidence gate for a separately authorized G9 design;
+G9 productive implementation remains unauthorized. The typed limits above
+remain normative and do not claim universal curve support.

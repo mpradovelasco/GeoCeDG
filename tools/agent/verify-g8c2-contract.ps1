@@ -11,6 +11,8 @@ $PromptSha = "e7f0535332a9c5a2789f98476aef2f9f143e84f9bda0ad3b7d657f070d99e58b"
 $EvidenceRoot = Join-Path $RepositoryRoot "geocedg\validation\locus-v2\g8c2"
 $EvidencePath = Join-Path $EvidenceRoot "g8c2-contract-review-evidence.json"
 $EvidenceHashes = Join-Path $EvidenceRoot "g8c2-contract-evidence.sha256"
+$ImplementationEvidencePath = Join-Path $EvidenceRoot `
+    "g8c2-intersection-kernel-evidence.json"
 $PromptPath = ".github/prompts/tasks/g8c2-locus-v2-locus-intersections.prompt.md"
 $InitialStatus = $null
 
@@ -131,10 +133,17 @@ try {
     Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
         -Message "Unable to read initial repository status."
 
+    $implementationPresent = Test-Path -LiteralPath $ImplementationEvidencePath `
+        -PathType Leaf
     foreach ($file in $Documents + @(
             "geocedg/validation/locus-v2/g8c2/g8c2-contract-review-evidence.json",
             "geocedg/validation/locus-v2/g8c2/g8c2-contract-evidence.sha256",
-            "tools/agent/verify-g8c2-contract.ps1")) {
+            "tools/agent/verify-g8c2-contract.ps1") +
+            $(if ($implementationPresent) {
+                    @("geocedg/validation/locus-v2/g8c2/g8c2-intersection-kernel-evidence.json")
+                } else {
+                    @()
+                })) {
         Assert-RequiredFile -RelativePath $file
     }
 
@@ -153,10 +162,14 @@ try {
     Assert-Contains -RelativePath `
         "geocedg/specs/locus/locus-v2-extended-intersections.md" -Text @(
             "G8C1 AND G8C2 NORMATIVE — AUTHOR APPROVED",
-            "G8C2 status: NORMATIVE — AUTHOR APPROVED / AUTHORIZED — NOT STARTED",
+            $(if ($implementationPresent) {
+                    "G8C2 contract status: NORMATIVE — AUTHOR APPROVED. Implementation status:"
+                } else {
+                    "G8C2 status: NORMATIVE — AUTHOR APPROVED / AUTHORIZED — NOT STARTED"
+                }),
             "canonical source pair", "Option B", "Local isolation",
             "finite component products and periodic branches",
-            "G8 may close and G9 may begin only after G8C2")
+            "global G8 closeout", "G9 productive implementation remains unauthorized")
     Assert-Contains -RelativePath `
         "docs/adr/0009-locus-v2-locus-intersection-pair-semantics.md" -Text @(
             "Status: **Accepted**", "Accepted: 2026-08-15",
@@ -173,7 +186,15 @@ try {
             "G8C1 = PASS — AUTHOR APPROVED",
             "G8C2 CONTRACT = NORMATIVE — AUTHOR APPROVED",
             "ADR 0009 = ACCEPTED",
-            "G8C2 = AUTHORIZED — NOT STARTED", "G9 = NOT STARTED")
+            $(if ($implementationPresent) {
+                    "G8C2 = PASS — AUTHOR APPROVED"
+                } else {
+                    "G8C2 = AUTHORIZED — NOT STARTED"
+                }), $(if ($implementationPresent) {
+                    "G9 DESIGN = AUTHORIZED — NOT STARTED"
+                } else {
+                    "G9 = NOT STARTED"
+                }))
     Assert-Contains -RelativePath `
         "docs/validation/g8c2_locus_v2_locus_intersection_contract_review.md" `
         -Text @("PASS — AUTHOR APPROVED", "no substantive contradiction",
@@ -221,8 +242,14 @@ try {
         --exclude-standard)
     $changedPaths = @($changedPaths | Sort-Object -Unique)
     foreach ($path in $changedPaths) {
-        Assert-Condition -Condition (-not $path.StartsWith("source/")) `
-            -Message "Productive or test source changed during G8C2 contract review: $path"
+        if ($path.StartsWith("source/")) {
+            $allowedImplementationPath = $implementationPresent -and (
+                $path -eq "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusLocusIntersectionV2.java" -or
+                $path -match '^source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/[^/]+\.java$' -or
+                $path -match '^source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8C2[^/]+\.java$')
+            Assert-Condition -Condition $allowedImplementationPath `
+                -Message "Productive or test source changed outside G8C2 implementation: $path"
+        }
         foreach ($forbiddenPath in @(
                 "/commands/", "CmdIntersect", "AlgoDispatcher", "GeoLocus.java",
                 "/Path.java", "GeoFactory", "/io/", "geogebra3D", "kernel3D",
@@ -250,7 +277,11 @@ try {
 
     Write-Host "G8C2 contract review verification passed."
     Write-Host "G8C2 contract is normative/author-approved; ADR 0009 is Accepted."
-    Write-Host "G8C2 is authorized/not started; G9 remains not started."
+    if ($implementationPresent) {
+        Write-Host "G8C2/global G8 are author-approved; G9 design is authorized/not started."
+    } else {
+        Write-Host "G8C2 is authorized/not started; G9 remains not started."
+    }
 } catch {
     Write-Error $_.Exception.Message
     exit 1

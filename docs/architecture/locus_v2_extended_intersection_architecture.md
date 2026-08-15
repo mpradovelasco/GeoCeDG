@@ -1,7 +1,7 @@
 # Locus V2 extended-intersection architecture
 
-**Status: G8C DESIGN AND G8C1 PASS — AUTHOR APPROVED; G8C2 ARCHITECTURE
-NORMATIVE — AUTHOR APPROVED / IMPLEMENTATION AUTHORIZED — NOT STARTED**
+**Status: G8C DESIGN, G8C1 AND G8C2 PASS — AUTHOR APPROVED; GLOBAL G8
+PASS — AUTHOR APPROVED**
 
 ## 1. Architectural split
 
@@ -142,8 +142,9 @@ implementation contract.
 G8C1 has been executed, verified, and closed as `PASS — AUTHOR APPROVED`.
 The final comparison with that implementation found no contradiction in the
 dedicated two-parameter design. ADR 0009 is Accepted, the pair contract is
-normative, and G8C2 is authorized but not started. G9 remains blocked until
-G8C2 passes, receives author approval, and G8 receives global author closeout.
+normative, and the authorized G8C2 execution has produced an author-approved
+internal kernel. Global G8 is closed. G9 design is authorized but not started;
+G9 implementation remains unauthorized.
 
 ## 10. G8C1 implementation mapping
 
@@ -162,3 +163,33 @@ G8C2 passes, receives author approval, and G8 receives global author closeout.
 No retained intersection state is added. The representative query uses 256
 subdivisions, 414 source evaluations, 411 target evaluations and 95 refinement
 iterations, with zero retained entries and forbidden-authority reads.
+
+## 11. G8C2 implementation mapping
+
+- `AlgoLocusLocusIntersectionV2` declares both `GeoLocusV2` operands (plus any
+  capability dependencies) in the normal construction DAG and atomically
+  publishes the existing `GeoLocusIntersectionResult`.
+- `LocusPairIntersectionQuery2D`, `LocusSourceBinding2D`, and
+  `LocusPairIntersectionContext2D` capture canonical source identity, ordered
+  revisions, branches/components, evaluator session, policy, and counters.
+- `LocusPairIntersectionSolver2D` owns product enumeration, capability
+  selection, semantic-parameter deduplication, independent two-sided residual
+  verification, classification, rich-result construction, and failure status.
+- `EvaluatorPairIntersectionCapability2D` is the query-local weaker fallback:
+  its semantic boxes are broad-phase candidates only, its dual Newton step is
+  safeguarded, and it never claims local uniqueness, overlap establishment, or
+  global completeness.
+- `LocalPairIsolationEvidence2D`, `LocusPairIntersectionEvidence2D`, and
+  `IntersectionOverlapEvidence2D` carry typed pair isolation, two-sided
+  revision evidence, and overlap relations without creating a second result
+  framework.
+- `LocusIntersectionContinuation2D` continues a token only through one unique
+  semantic continuation key in the same constructive branch-pair context; an
+  overlap transition, merge/split ambiguity, result ordering, or Cartesian
+  proximity cannot repair identity.
+
+The implementation remains query-local. The representative evaluator crossing
+visits 1,024 parameter boxes, rejects 1,020, refines 4 candidates in 8
+iterations, performs 120 semantic and 18 derivative evaluations, and retains
+zero entries. Render, legacy-sample, viewport, pixel, and metric-index counters
+are zero.

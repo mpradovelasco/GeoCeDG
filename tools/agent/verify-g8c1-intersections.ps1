@@ -23,6 +23,8 @@ $EvidencePath = Join-Path $EvidenceRoot "g8c1-intersection-kernel-evidence.json"
 $EvidenceHashes = Join-Path $EvidenceRoot "g8c1-evidence.sha256"
 $G8C2ContractEvidencePath = Join-Path $RepositoryRoot `
     "geocedg\validation\locus-v2\g8c2\g8c2-contract-review-evidence.json"
+$G8C2ImplementationEvidencePath = Join-Path $RepositoryRoot `
+    "geocedg\validation\locus-v2\g8c2\g8c2-intersection-kernel-evidence.json"
 $ReferenceGenerator = Join-Path $RepositoryRoot `
     "geocedg\validation\locus-v2\g8c\generate_extended_intersection_references.py"
 $TestResultRoot = Join-Path $RepositoryRoot `
@@ -274,6 +276,8 @@ try {
 
     $g8c2ContractApproved = Test-Path -LiteralPath $G8C2ContractEvidencePath `
         -PathType Leaf
+    $g8c2ImplementationPresent = Test-Path -LiteralPath `
+        $G8C2ImplementationEvidencePath -PathType Leaf
     Assert-Contains -RelativePath `
         "geocedg/specs/locus/locus-v2-extended-intersections.md" -Text @(
             $(if ($g8c2ContractApproved) {
@@ -287,12 +291,18 @@ try {
     Assert-Contains -RelativePath "docs/roadmap/geocedg_roadmap.md" -Text @(
         "G8C DESIGN = PASS — AUTHOR APPROVED",
         "G8C1 = PASS — AUTHOR APPROVED",
-        $(if ($g8c2ContractApproved) {
+        $(if ($g8c2ImplementationPresent) {
+                "G8C2 = PASS — AUTHOR APPROVED"
+            } elseif ($g8c2ContractApproved) {
                 "G8C2 = AUTHORIZED — NOT STARTED"
             } else {
                 "G8C2 = NOT AUTHORIZED — NOT STARTED"
             }),
-        "G9 = NOT STARTED")
+        $(if ($g8c2ImplementationPresent) {
+                "G9 DESIGN = AUTHORIZED — NOT STARTED"
+            } else {
+                "G9 = NOT STARTED"
+            }))
     Assert-Contains -RelativePath `
         "docs/validation/g8c1_locus_v2_extended_target_intersection_kernel_report.md" `
         -Text @("PASS — AUTHOR APPROVED", "38 tests", "NOT_ESTABLISHED", "414")
@@ -303,12 +313,18 @@ try {
     $changedPaths = @($changedPaths | Sort-Object -Unique)
     foreach ($path in $changedPaths) {
         if ($path -match '^source/.+/src/main/') {
-            Assert-Condition -Condition ($path -in $ProductiveFiles) `
+            $allowedG8C2Productive = $g8c2ImplementationPresent -and (
+                $path -eq "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusLocusIntersectionV2.java" -or
+                $path -match '^source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/[^/]+\.java$')
+            Assert-Condition -Condition ($path -in $ProductiveFiles -or
+                    $allowedG8C2Productive) `
                 -Message "Unapproved productive G8C1 source edit: $path"
         }
         if ($path -match '^source/.+/src/test/.+\.java$') {
             Assert-Condition -Condition ($path -in $TestFiles -or $path -match `
-                    '^source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8C(CharacterizationSupport|ExtendedTargetCharacterizationTest|LocusLocusCharacterizationTest|DesignFunctionalBenchmarkTest)\.java$') `
+                    '^source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8C(CharacterizationSupport|ExtendedTargetCharacterizationTest|LocusLocusCharacterizationTest|DesignFunctionalBenchmarkTest)\.java$' -or
+                    ($g8c2ImplementationPresent -and $path -match `
+                    '^source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8C2[^/]+\.java$')) `
                 -Message "Unapproved G8C1 test source edit: $path"
         }
         foreach ($forbiddenPath in @(
@@ -422,7 +438,9 @@ try {
 
     Write-Host "G8C1 verification passed (38 focused tests)."
     Write-Host "G8C1 is PASS - AUTHOR APPROVED and remains internal."
-    if ($g8c2ContractApproved) {
+    if ($g8c2ImplementationPresent) {
+        Write-Host "G8C2/global G8 are author-approved; G9 design is authorized/not started."
+    } elseif ($g8c2ContractApproved) {
         Write-Host "G8C2 is authorized/not started; G9 remains not started."
     } else {
         Write-Host "G8C2 and G9 remain not authorized/not started."

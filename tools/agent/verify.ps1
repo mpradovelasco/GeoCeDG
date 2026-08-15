@@ -36,6 +36,8 @@ $G8C1IntersectionVerifier = Join-Path $PSScriptRoot `
     "verify-g8c1-intersections.ps1"
 $G8C2ContractVerifier = Join-Path $PSScriptRoot `
     "verify-g8c2-contract.ps1"
+$G8C2IntersectionVerifier = Join-Path $PSScriptRoot `
+    "verify-g8c2-intersections.ps1"
 $BenchmarkRunner = Join-Path $RepositoryRoot "tools\benchmark\run.ps1"
 $InitialStatus = $null
 
@@ -222,9 +224,29 @@ try {
                 -Description "G8C1 extended one-parameter intersection kernel"
         }
 
+        $g8c2ImplementationEvidence = Join-Path $RepositoryRoot `
+            "geocedg\validation\locus-v2\g8c2\g8c2-intersection-kernel-evidence.json"
         $g8c2ContractEvidence = Join-Path $RepositoryRoot `
             "geocedg\validation\locus-v2\g8c2\g8c2-contract-review-evidence.json"
-        if (Test-Path -LiteralPath $g8c2ContractEvidence -PathType Leaf) {
+        if (Test-Path -LiteralPath $g8c2ImplementationEvidence -PathType Leaf) {
+            Write-Host "`n==> G8C2 Locus V2 x Locus V2 intersection kernel"
+            $g8c2IntersectionParameters = @{
+                LogDirectory = Join-Path ([IO.Path]::GetFullPath($LogDirectory)) `
+                    "g8c2-intersections"
+            }
+            if ($SkipBuild) {
+                $g8c2IntersectionParameters.SkipBuild = $true
+            }
+            if ($AllowToolchainDownload) {
+                $g8c2IntersectionParameters.AllowToolchainDownload = $true
+            }
+            if ($KeepBuildOutputs) {
+                $g8c2IntersectionParameters.KeepBuildOutputs = $true
+            }
+            & $G8C2IntersectionVerifier @g8c2IntersectionParameters
+            Assert-LastScriptSuccess `
+                -Description "G8C2 Locus V2 x Locus V2 intersection kernel"
+        } elseif (Test-Path -LiteralPath $g8c2ContractEvidence -PathType Leaf) {
             Write-Host "`n==> G8C2 locus-locus contract review"
             & $G8C2ContractVerifier
             Assert-LastScriptSuccess `

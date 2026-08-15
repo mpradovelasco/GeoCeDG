@@ -33,6 +33,8 @@ $G8C1EvidencePath = Join-Path $RepositoryRoot `
     "geocedg\validation\locus-v2\g8c1\g8c1-intersection-kernel-evidence.json"
 $G8C2ContractEvidencePath = Join-Path $RepositoryRoot `
     "geocedg\validation\locus-v2\g8c2\g8c2-contract-review-evidence.json"
+$G8C2ImplementationEvidencePath = Join-Path $RepositoryRoot `
+    "geocedg\validation\locus-v2\g8c2\g8c2-intersection-kernel-evidence.json"
 $InitialStatus = $null
 $GeneratedSnapshot = $null
 
@@ -281,6 +283,8 @@ try {
 
     $g8c2ContractApproved = Test-Path -LiteralPath $G8C2ContractEvidencePath `
         -PathType Leaf
+    $g8c2ImplementationPresent = Test-Path -LiteralPath `
+        $G8C2ImplementationEvidencePath -PathType Leaf
     $g8c2SpecificationState = if ($g8c2ContractApproved) {
         "G8C1 AND G8C2 NORMATIVE — AUTHOR APPROVED"
     } else {
@@ -309,12 +313,18 @@ try {
         "docs\roadmap\geocedg_roadmap.md" -Text @(
             "G8C DESIGN = PASS — AUTHOR APPROVED",
             $g8c1RoadmapState,
-            $(if ($g8c2ContractApproved) {
+            $(if ($g8c2ImplementationPresent) {
+                    "G8C2 = PASS — AUTHOR APPROVED"
+                } elseif ($g8c2ContractApproved) {
                     "G8C2 = AUTHORIZED — NOT STARTED"
                 } else {
                     "G8C2 = NOT AUTHORIZED — NOT STARTED"
                 }),
-            "G9 = NOT STARTED")
+            $(if ($g8c2ImplementationPresent) {
+                    "G9 DESIGN = AUTHORIZED — NOT STARTED"
+                } else {
+                    "G9 = NOT STARTED"
+                }))
 
     $changedPaths = @(& git -C $RepositoryRoot diff --name-only $EntrySha --)
     $changedPaths += @(& git -C $RepositoryRoot ls-files --others `
@@ -325,15 +335,21 @@ try {
             $allowedG8C1Productive = $g8c1CandidatePresent -and (
                 $path -eq "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusIntersectionV2.java" -or
                 $path -match '^source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/[^/]+\.java$')
-            Assert-Condition -Condition $allowedG8C1Productive `
+            $allowedG8C2Productive = $g8c2ImplementationPresent -and (
+                $path -eq "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusLocusIntersectionV2.java" -or
+                $path -match '^source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/[^/]+\.java$')
+            Assert-Condition -Condition ($allowedG8C1Productive -or
+                    $allowedG8C2Productive) `
                 -Message "Unapproved productive G8C source edit: $path"
         }
         if ($path -match '^source/.+/src/test/.+\.java$') {
             $allowedG8C1Test = $g8c1CandidatePresent -and (
                 $path -eq "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8BIntersectionKernelTest.java" -or
                 $path -match '^source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8C1[^/]+\.java$')
+            $allowedG8C2Test = $g8c2ImplementationPresent -and
+                $path -match '^source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8C2[^/]+\.java$'
             Assert-Condition -Condition ($path -in $AllowedTestSources -or
-                    $allowedG8C1Test) `
+                    $allowedG8C1Test -or $allowedG8C2Test) `
                 -Message "Unapproved G8C characterization source: $path"
         }
         foreach ($forbiddenPath in @(
@@ -412,7 +428,9 @@ try {
         -Message "git diff --cached --check failed."
 
     Write-Host "G8C design author-closeout verification passed (32 characterization probes)."
-    if ($g8c2ContractApproved) {
+    if ($g8c2ImplementationPresent) {
+    Write-Host "G8C1/G8C2 and global G8 are author-approved; G9 design is authorized/not started."
+    } elseif ($g8c2ContractApproved) {
         Write-Host "G8C1 is author-approved; G8C2 is authorized/not started; G9 is not started."
     } elseif ($g8c1CandidatePresent) {
         Write-Host "G8C1 is author-approved; G8C2 and G9 are not started."

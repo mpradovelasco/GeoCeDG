@@ -36,6 +36,17 @@ public final class LocusIntersectionInstrumentationSnapshot2D {
 	private final long viewportReads;
 	private final long pixelToleranceReads;
 	private final long metricIndexReads;
+	private final long branchPairs;
+	private final long componentPairs;
+	private final long parameterBoxesVisited;
+	private final long parameterBoxesRejected;
+	private final long pairCandidateBoxes;
+	private final long pairRefinementCalls;
+	private final long pairRefinementIterations;
+	private final long jacobianEvaluations;
+	private final long overlapChecks;
+	private final long pairContinuationComparisons;
+	private final long retainedPairEntries;
 
 	/** Creates a complete immutable snapshot. */
 	public LocusIntersectionInstrumentationSnapshot2D(long semanticEvaluations,
@@ -53,6 +64,40 @@ public final class LocusIntersectionInstrumentationSnapshot2D {
 			long wholeLocusRegenerations, long renderCacheReads,
 			long renderVertexReads, long legacySampleReads, long viewportReads,
 			long pixelToleranceReads, long metricIndexReads) {
+		this(semanticEvaluations, derivativeEvaluations, targetEvaluations,
+				targetDerivativeEvaluations, targetDomainEvaluations,
+				invalidTargetEvaluations, candidateIntervals,
+				isolationSubdivisions, maximumIsolationDepth, refinementCalls,
+				refinementIterations, residualVerifications, membershipChecks,
+				deduplicationComparisons, continuationComparisons,
+				verifiedSolutions, rejectedCandidates, unresolvedCandidates,
+				publishedSnapshots, failedPrivateComputations,
+				retainedIndexEntries, retainedTopologyEpochs,
+				wholeLocusRegenerations, renderCacheReads, renderVertexReads,
+				legacySampleReads, viewportReads, pixelToleranceReads,
+				metricIndexReads, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	}
+
+	private LocusIntersectionInstrumentationSnapshot2D(
+			long semanticEvaluations, long derivativeEvaluations,
+			long targetEvaluations, long targetDerivativeEvaluations,
+			long targetDomainEvaluations, long invalidTargetEvaluations,
+			long candidateIntervals, long isolationSubdivisions,
+			long maximumIsolationDepth, long refinementCalls,
+			long refinementIterations, long residualVerifications,
+			long membershipChecks, long deduplicationComparisons,
+			long continuationComparisons, long verifiedSolutions,
+			long rejectedCandidates, long unresolvedCandidates,
+			long publishedSnapshots, long failedPrivateComputations,
+			long retainedIndexEntries, long retainedTopologyEpochs,
+			long wholeLocusRegenerations, long renderCacheReads,
+			long renderVertexReads, long legacySampleReads, long viewportReads,
+			long pixelToleranceReads, long metricIndexReads, long branchPairs,
+			long componentPairs, long parameterBoxesVisited,
+			long parameterBoxesRejected, long pairCandidateBoxes,
+			long pairRefinementCalls, long pairRefinementIterations,
+			long jacobianEvaluations, long overlapChecks,
+			long pairContinuationComparisons, long retainedPairEntries) {
 		this.semanticEvaluations = semanticEvaluations;
 		this.derivativeEvaluations = derivativeEvaluations;
 		this.targetEvaluations = targetEvaluations;
@@ -82,6 +127,17 @@ public final class LocusIntersectionInstrumentationSnapshot2D {
 		this.viewportReads = viewportReads;
 		this.pixelToleranceReads = pixelToleranceReads;
 		this.metricIndexReads = metricIndexReads;
+		this.branchPairs = branchPairs;
+		this.componentPairs = componentPairs;
+		this.parameterBoxesVisited = parameterBoxesVisited;
+		this.parameterBoxesRejected = parameterBoxesRejected;
+		this.pairCandidateBoxes = pairCandidateBoxes;
+		this.pairRefinementCalls = pairRefinementCalls;
+		this.pairRefinementIterations = pairRefinementIterations;
+		this.jacobianEvaluations = jacobianEvaluations;
+		this.overlapChecks = overlapChecks;
+		this.pairContinuationComparisons = pairContinuationComparisons;
+		this.retainedPairEntries = retainedPairEntries;
 	}
 
 	public long getSemanticEvaluations() {
@@ -200,6 +256,50 @@ public final class LocusIntersectionInstrumentationSnapshot2D {
 		return metricIndexReads;
 	}
 
+	public long getBranchPairs() {
+		return branchPairs;
+	}
+
+	public long getComponentPairs() {
+		return componentPairs;
+	}
+
+	public long getParameterBoxesVisited() {
+		return parameterBoxesVisited;
+	}
+
+	public long getParameterBoxesRejected() {
+		return parameterBoxesRejected;
+	}
+
+	public long getPairCandidateBoxes() {
+		return pairCandidateBoxes;
+	}
+
+	public long getPairRefinementCalls() {
+		return pairRefinementCalls;
+	}
+
+	public long getPairRefinementIterations() {
+		return pairRefinementIterations;
+	}
+
+	public long getJacobianEvaluations() {
+		return jacobianEvaluations;
+	}
+
+	public long getOverlapChecks() {
+		return overlapChecks;
+	}
+
+	public long getPairContinuationComparisons() {
+		return pairContinuationComparisons;
+	}
+
+	public long getRetainedPairEntries() {
+		return retainedPairEntries;
+	}
+
 	/** @return whether every forbidden-authority counter is zero */
 	public boolean hasZeroForbiddenAuthorityReads() {
 		return wholeLocusRegenerations == 0 && renderCacheReads == 0
@@ -224,6 +324,51 @@ public final class LocusIntersectionInstrumentationSnapshot2D {
 				publishedSnapshots, failedPrivateComputations,
 				retainedIndexEntries, topologyEpochs, wholeLocusRegenerations,
 				renderCacheReads, renderVertexReads, legacySampleReads,
-				viewportReads, pixelToleranceReads, metricIndexReads);
+				viewportReads, pixelToleranceReads, metricIndexReads,
+				branchPairs, componentPairs, parameterBoxesVisited,
+				parameterBoxesRejected, pairCandidateBoxes, pairRefinementCalls,
+				pairRefinementIterations, jacobianEvaluations, overlapChecks,
+				pairContinuationComparisons, retainedPairEntries);
+	}
+
+	/** @return copy including query-local G8C2 pair counters */
+	public LocusIntersectionInstrumentationSnapshot2D withPairCounters(
+			long newBranchPairs, long newComponentPairs,
+			long newParameterBoxesVisited, long newParameterBoxesRejected,
+			long newPairCandidateBoxes, long newPairRefinementCalls,
+			long newPairRefinementIterations, long newJacobianEvaluations,
+			long newOverlapChecks, long newPairContinuationComparisons,
+			long newRetainedPairEntries) {
+		return new LocusIntersectionInstrumentationSnapshot2D(
+				semanticEvaluations, derivativeEvaluations, targetEvaluations,
+				targetDerivativeEvaluations, targetDomainEvaluations,
+				invalidTargetEvaluations, candidateIntervals,
+				isolationSubdivisions, maximumIsolationDepth, refinementCalls,
+				refinementIterations, residualVerifications, membershipChecks,
+				deduplicationComparisons, continuationComparisons,
+				verifiedSolutions, rejectedCandidates, unresolvedCandidates,
+				publishedSnapshots, failedPrivateComputations,
+				retainedIndexEntries, retainedTopologyEpochs,
+				wholeLocusRegenerations, renderCacheReads, renderVertexReads,
+				legacySampleReads, viewportReads, pixelToleranceReads,
+				metricIndexReads, newBranchPairs, newComponentPairs,
+				newParameterBoxesVisited, newParameterBoxesRejected,
+				newPairCandidateBoxes, newPairRefinementCalls,
+				newPairRefinementIterations, newJacobianEvaluations,
+				newOverlapChecks, newPairContinuationComparisons,
+				newRetainedPairEntries);
+	}
+
+	/** @return copy after bounded two-source continuation work */
+	public LocusIntersectionInstrumentationSnapshot2D withPairContinuation(
+			long additionalComparisons, long topologyEpochs) {
+		return withContinuation(additionalComparisons, topologyEpochs)
+				.withPairCounters(branchPairs, componentPairs,
+						parameterBoxesVisited, parameterBoxesRejected,
+						pairCandidateBoxes, pairRefinementCalls,
+						pairRefinementIterations, jacobianEvaluations,
+						overlapChecks,
+						pairContinuationComparisons + additionalComparisons,
+						retainedPairEntries);
 	}
 }

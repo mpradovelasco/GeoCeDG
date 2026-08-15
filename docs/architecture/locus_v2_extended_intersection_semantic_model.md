@@ -1,7 +1,7 @@
 # Locus V2 extended-intersection semantic model
 
 **Status: G8C1 AND G8C2 SEMANTICS NORMATIVE — AUTHOR APPROVED**
-**Scope: G8C1 internal kernel `PASS`; G8C2 implementation authorized / not started**
+**Scope: G8C1 and G8C2 internal kernels `PASS — AUTHOR APPROVED`; global G8 closed**
 
 Sections applying to one semantic source and a typed extended target are the
 author-approved G8C1 semantic contract. Dual-source/pair-specific sections are
@@ -169,4 +169,29 @@ Option B without making residual-only candidates consumable.
 The author approved this implementation contract and its measured query-local
 baseline on 2026-08-15. G8C1 is `PASS — AUTHOR APPROVED`. The later final
 source-level review approved the pair-specific G8C2 model as normative and
-authorized its separate implementation; no G8C2 implementation exists yet.
+authorized its separate implementation. The resulting internal candidate now
+realizes the pair model without changing the normative semantics; author review
+is still required.
+
+## 11. G8C2 internal-candidate realization
+
+`LocusPairIntersectionQuery2D` canonicalizes the unordered geometric source
+pair while retaining reversible ordered evidence. Every finite solution carries
+two `LocusPairSourceRevisionEvidence2D` values, a
+`LocalPairIsolationEvidence2D`, independently evaluated
+`LocusPairResidualEvidence2D`, normalized tangent-determinant evidence when
+available, and the existing opaque root token.
+
+The evaluator-only fallback visits query-local semantic parameter boxes and
+uses safeguarded dual-variable refinement. Its roots are verified on both
+semantic sources, but it deliberately reports global completeness and local
+isolation as `NOT_ESTABLISHED`; Newton convergence and a small residual are not
+promoted into uniqueness. Analytic or certified capabilities may provide an
+exhaustive rectangle and uniqueness basis, which enables Option B point
+consumption independently of global completeness.
+
+Overlap evidence is typed as established, suspected-not-established, or
+unsupported. Agreement of evaluator samples can produce suspicion only. Mixed
+finite-plus-overlap results preserve both contributions. Unbounded components
+are rejected rather than truncated, and periodic providers retain fundamental-
+domain/seam authority.

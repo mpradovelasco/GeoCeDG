@@ -9,7 +9,8 @@
 - Fase actual: G7B (`PASS — AUTHOR APPROVED`); G7 `PASS`; G8 planning
   `PASS — AUTHOR APPROVED`; G8A, G8B-R1, G8B y G8C design `PASS — AUTHOR
   APPROVED`; G8C1 `PASS — AUTHOR APPROVED` como kernel interno; contrato G8C2
-  normativo/aprobado y ejecución autorizada/no iniciada; G8 continúa en curso
+  normativo/aprobado y candidato interno completo a la espera de revisión
+  autoral; G8 continúa en curso
 - Locus V2: `experimental`, internal/developer-only, disabled by default
 - `PACKAGING TECHNICAL STATUS = PASS`
 - `PUBLIC REDISTRIBUTION STATUS = BLOCKED PENDING LICENSE/ASSET APPROVAL`
@@ -963,9 +964,9 @@ Promotion follows `legacy -> research -> experimental -> stable`, or
 | G6R | Value/lifecycle/session hardening, adaptive render, developer laboratory and API/repository documentation | `PASS`; experimental developer infrastructure | Developers can inspect V2 explicitly without changing normal GeoCeDG or Classic |
 | G7A | Metric semantics, traversal, numerical/index/lifecycle characterization plus focused R1 | `PASS — AUTHOR APPROVED`; evidence only | 51 test-private probes and independent references established the contract; G7A itself added no productive metric |
 | G7B | Native Locus V2 metric kernel | Internal productive kernel; `PASS — AUTHOR APPROVED` | Internal API, rich Geo, scalar adapter, shared component state and laboratory diagnostics exist; no public metric exists |
-| G8 planning/G8A/G8B | Native Locus V2 2D intersection design, characterization and minimum internal kernel | planning/G8A/G8B-R1/G8B `PASS — AUTHOR APPROVED`; G8 remains in progress | Internal rich-result, solver/adapters and token-selected point consumer exist for developer/test use only; no public command, Path, persistence or workflow |
-| G8C design | Extended native 2D incidence: typed conics, bounded functions, regular polynomial implicit curves and Locus V2 × Locus V2 | design/G8C1 `PASS — AUTHOR APPROVED`; G8C2 contract approved, implementation authorized/not started | Internal G8C1 kernel only; no public command, Path, persistence or observable workflow |
-| G9+ | Spatial/export integration and later phases | Not started / pending | No G9 or later behavior is implied |
+| G8 | Native Locus V2 2D metrics and incidence/intersections | G8A/G8B/G8C1/G8C2 and global G8 `PASS — AUTHOR APPROVED` | Internal rich-result, solvers/adapters and token-selected point consumer exist for developer/test use only; no public command, Path, persistence or workflow |
+| G8C | Extended native 2D incidence: typed conics, bounded functions, regular polynomial implicit curves and Locus V2 × Locus V2 | design/G8C1/G8C2 `PASS — AUTHOR APPROVED`; still experimental/internal | Internal developer/test kernels only; no public command, Path, persistence or observable workflow |
+| G9+ | Spatial semantics and later phases | G9 design authorized/not started; implementation not authorized | No G9 or later behavior is currently observable |
 
 ### G6 Locus V2 semantic foundation
 
@@ -1265,8 +1266,8 @@ polyline is a disposable view representation.
 | G8A | Characterization and author decisions | `PASS — AUTHOR APPROVED`; test-private evidence only |
 | G8B-R1 | Point admissibility versus global completeness | `PASS — AUTHOR APPROVED`; internal refinement only, no observable feature |
 | G8B | Minimum internal 2D intersection kernel | `PASS — AUTHOR APPROVED`; internal capability only |
-| G8C design/G8C1/G8C2 contract | Extended 2D Locus V2 incidence/intersection design, one-parameter internal kernel, and pair contract | Design/G8C1 `PASS — AUTHOR APPROVED`; G8C2 authorized/not started and not user-observable |
-| G9 | Native spatial identity and canonical projection semantics | Pending |
+| G8C design/G8C1/G8C2 | Extended 2D Locus V2 incidence/intersection design and internal one-/two-parameter kernels | `PASS — AUTHOR APPROVED`; global G8 closed; no user-observable surface |
+| G9 design | Native spatial identity and canonical projection semantics | Authorized, not started; implementation not authorized |
 | G10 | CeDG 3D DSL and workbench | Pending |
 | G11 | Hierarchical layers and view states | Pending |
 | G12 | Extended navigation, zoom and physical scales | Pending |
@@ -1446,9 +1447,10 @@ incidence/`Path`, persistence, UI, 3D behavior or end-user workflow. The
 [Accepted ADR 0008](../adr/0008-locus-v2-intersection-result-and-continuation.md),
 [G8C design](../roadmap/g8c_locus_v2_extended_intersections_design.md),
 [normative G8C1/G8C2 extension specification](../../geocedg/specs/locus/locus-v2-extended-intersections.md)
-and [G8C characterization report](../validation/g8c_locus_v2_extended_intersection_characterization_report.md)
-record the author-approved design and the normative G8C1/G8C2 contracts. No
-G8C2 implementation or user-facing behavior is implied.
+[G8C characterization report](../validation/g8c_locus_v2_extended_intersection_characterization_report.md)
+and [G8C2 kernel report](../validation/g8c2_locus_v2_locus_intersection_kernel_report.md)
+record the author-approved design, contracts and internal implementations.
+Global G8 is closed, but no public G8 workflow or G9 implementation is implied.
 
 ## 13. Current limitations
 

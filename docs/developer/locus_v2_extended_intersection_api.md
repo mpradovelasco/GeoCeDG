@@ -1,11 +1,11 @@
 # Locus V2 extended-intersection candidate API
 
-**Status: G8C1 INTERNAL API IMPLEMENTED — AUTHOR APPROVED;
-G8C2 API CONTRACT NORMATIVE — AUTHOR APPROVED / NOT IMPLEMENTED**
+**Status: G8C1 AND G8C2 INTERNAL APIS IMPLEMENTED — AUTHOR APPROVED;
+GLOBAL G8 PASS — AUTHOR APPROVED**
 
 G8C1 semantic responsibilities are normative and the concrete additive names
-below describe the author-approved internal kernel. G8C2 type names below remain
-candidate implementation names, while their responsibilities are normative.
+below describe the author-approved internal kernel. G8C2 names below describe
+the implemented and author-approved internal kernel; their responsibilities are normative.
 Existing G8B rich-result and point-consumer types remain authority.
 
 ## 1. G8C1 target adapter
@@ -47,29 +47,10 @@ and verification evaluation.
 
 ## 2. Pair query
 
-```java
-record LocusPairIntersectionQuery2D(
-        LocusSourceBinding2D first,
-        LocusSourceBinding2D second,
-        LocusPairIntersectionPolicy2D policy) {
-}
-
-record LocusPairLocalizationEvidence2D(
-        ParameterInterval2D firstInterval,
-        ParameterInterval2D secondInterval,
-        PairCoverageStatus coverage,
-        PairUniquenessStatus uniqueness,
-        NumericGuarantee2D guarantee) {
-}
-
-record LocusPairResidualEvidence2D(
-        LocusPoint2D firstPoint,
-        LocusPoint2D secondPoint,
-        double modelCoordinateResidual,
-        double absoluteError,
-        NumericGuarantee2D guarantee) {
-}
-```
+The concrete internal types are `LocusPairIntersectionQuery2D`,
+`LocusSourceBinding2D`, `LocusPairIntersectionPolicy2D`,
+`LocusPairIntersectionContext2D`, `LocalPairIsolationEvidence2D`,
+`LocusPairResidualEvidence2D`, and `LocusPairIntersectionEvidence2D`.
 
 The geometric key is a canonical unordered pair of semantic locus identities.
 `first`/`second` remain an ordered computation view. A `reversed()` mapping swaps
@@ -97,16 +78,16 @@ The parameter pair/rectangle is revision evidence, never the token.
 
 ## 4. Local isolation
 
-Existing `LocalIsolationStatus` should be reused if it can carry a typed basis.
-Otherwise add one evidence object, not a competing status enum:
+Existing `LocalIsolationStatus` is reused with one pair-specific evidence
+object, not a competing status enum:
 
 ```java
-record LocalIsolationEvidence2D(
+record LocalPairIsolationEvidence2D(
         LocalIsolationStatus status,
-        IsolationMethod2D method,
-        CoverageEvidence2D coverage,
-        UniquenessEvidence2D uniqueness,
-        NumericGuarantee2D guarantee) {
+        PairIsolationMethod method,
+        PairCoverageStatus coverage,
+        PairUniquenessStatus uniqueness,
+        NumericGuarantee guarantee) {
 }
 ```
 
@@ -135,9 +116,9 @@ result. They cannot silently discard either contribution.
 ## 6. Algorithm and point consumer
 
 G8C1 extends the current `AlgoLocusIntersectionV2` through its typed target
-seam and publishes the existing rich Geo. G8C2 should use a two-input
-`AlgoLocusLocusIntersectionV2`-style algorithm if that makes DAG input and
-revision capture explicit. Both publish the existing
+seam and publishes the existing rich Geo. G8C2 implements the internal
+two-input `AlgoLocusLocusIntersectionV2`; its inputs include both semantic loci
+and any explicit capability dependencies. Both publish the existing
 `GeoLocusIntersectionResult` authority.
 
 The current strict token-selected point consumer is reused. It performs no
@@ -151,8 +132,12 @@ G8C1 adds target candidate, derivative, domain and invalid-evaluation counters
 to `LocusIntersectionInstrumentationSnapshot2D`. G8C2
 adds branch/component pair counts, boxes visited/rejected, pair refinements,
 Jacobian evaluations, overlap checks and two-source continuation comparisons.
-All limits are versioned, deterministic and query-local. No public setters or
-serialization surface is authorized.
+The initial pair policy is `g8c2-locus-pair/v1`; the work policy is
+`g8c2-pair-initial/v1`. It bounds branch/component products, parameter boxes,
+depth, candidate boxes, refinements/iterations, Jacobian evaluations, overlap
+checks, continuation comparisons, outputs, and retained entries. All limits
+are deterministic and query-local. No public setters or serialization surface
+is authorized.
 
 ## 8. API boundaries
 

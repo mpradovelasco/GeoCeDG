@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Status | **G8B-R1 AND G8B PASS — AUTHOR APPROVED** |
-| Roadmap phase | G8 planning, G8A, G8B-R1, G8B and G8C design `PASS — AUTHOR APPROVED`; G8C1 authorized/not started; G8C2 not authorized; G8 remains in progress |
+| Roadmap phase | G8 planning, G8A, G8B-R1, G8B, G8C design, G8C1, G8C2 and global G8 `PASS — AUTHOR APPROVED`; G9 design authorized/not started |
 | Semantic model | [`locus_v2_intersection_semantic_model.md`](locus_v2_intersection_semantic_model.md) |
 | Normative contract | [`locus-v2-intersections.md`](../../geocedg/specs/locus/locus-v2-intersections.md) |
 | Upstream audit | [`locus_v2_intersection_upstream_impact.md`](locus_v2_intersection_upstream_impact.md) |

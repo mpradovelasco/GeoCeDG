@@ -35,11 +35,33 @@ public final class LocusIntersectionContinuation2D {
 			LocusIntersectionResult2D previous,
 			LocusIntersectionResult2D current,
 			LocusIntersectionPolicy2D policy) {
-		java.util.Objects.requireNonNull(current);
 		java.util.Objects.requireNonNull(policy);
-		if (previous == null || current.getGeometryKind() != GeometryKind.FINITE
+		return continueRoots(previous, current, policy.getWorkBudget()
+				.getMaximumContinuationComparisons(), false);
+	}
+
+	/**
+	 * Applies the same strict token contract to canonical two-locus roots.
+	 *
+	 * @return current result with any uniquely established pair tokens continued
+	 */
+	public LocusIntersectionResult2D continuePairRoots(
+			LocusIntersectionResult2D previous,
+			LocusIntersectionResult2D current,
+			LocusPairIntersectionPolicy2D policy) {
+		java.util.Objects.requireNonNull(policy);
+		return continueRoots(previous, current, policy.getPairWorkBudget()
+				.getMaximumPairContinuationComparisons(), true);
+	}
+
+	private LocusIntersectionResult2D continueRoots(
+			LocusIntersectionResult2D previous,
+			LocusIntersectionResult2D current, long maximumComparisons,
+			boolean pair) {
+		java.util.Objects.requireNonNull(current);
+		if (previous == null || !continuableKind(current.getGeometryKind())
 				|| current.getComputationStatus() != ComputationStatus.SUCCESS
-				|| previous.getGeometryKind() != GeometryKind.FINITE
+				|| !continuableKind(previous.getGeometryKind())
 				|| previous.getComputationStatus() != ComputationStatus.SUCCESS
 				|| !sameConstructiveContext(previous, current)) {
 			return current;
@@ -48,10 +70,9 @@ public final class LocusIntersectionContinuation2D {
 		ArrayList<LocusIntersectionSolution2D> continued = new ArrayList<>();
 		for (LocusIntersectionSolution2D solution : current.getFiniteSolutions()) {
 			ContinuationOutcome outcome = continueOne(previous, current, solution,
-					policy, comparisons);
+					maximumComparisons, comparisons);
 			comparisons += outcome.comparisons;
-			if (comparisons > policy.getWorkBudget()
-					.getMaximumContinuationComparisons()) {
+			if (comparisons > maximumComparisons) {
 				return current;
 			}
 			continued.add(outcome.solution);
@@ -62,19 +83,21 @@ public final class LocusIntersectionContinuation2D {
 				DiagnosticCode.CONTINUATION_ESTABLISHED,
 				"Semantic continuation compared " + comparisons
 						+ " root contexts without Cartesian matching"));
+		LocusIntersectionInstrumentationSnapshot2D work = pair
+				? current.getWork().withPairContinuation(comparisons, 2)
+				: current.getWork().withContinuation(comparisons, 2);
 		return new LocusIntersectionResult2D(current.getSourceBinding(),
 				current.getComputationStatus(), current.getCompletenessEvidence(),
 				current.getGeometryKind(), current.getCurrentness(),
 				current.getSupportLevel(), current.getNumericGuarantee(), continued,
-				current.getOverlapEvidence(),
-				current.getWork().withContinuation(comparisons, 2), diagnostics);
+				current.getOverlapEvidence(), work, diagnostics);
 	}
 
 	private static ContinuationOutcome continueOne(
 			LocusIntersectionResult2D previous,
 			LocusIntersectionResult2D current,
 			LocusIntersectionSolution2D solution,
-			LocusIntersectionPolicy2D policy, long alreadyCompared) {
+			long maximumComparisons, long alreadyCompared) {
 		Optional<String> key = solution.getIdentity()
 				.getExplicitContinuationKey();
 		if (!key.isPresent()) {
@@ -86,8 +109,7 @@ public final class LocusIntersectionContinuation2D {
 				solution.getIdentity().getEstablishedBranchLineage(), key.get());
 		long comparisons = current.getFiniteSolutions().size()
 				+ previous.getFiniteSolutions().size();
-		if (alreadyCompared + comparisons > policy.getWorkBudget()
-				.getMaximumContinuationComparisons()) {
+		if (alreadyCompared + comparisons > maximumComparisons) {
 			return new ContinuationOutcome(solution, comparisons);
 		}
 		LineageEventKind event = solution.getLineage().getEventKind();
@@ -147,7 +169,13 @@ public final class LocusIntersectionContinuation2D {
 				parentTokens, List.of(token), Collections.emptyList(), established);
 		return new LocusIntersectionSolution2D(identity,
 				solution.getRevisionEvidence(), solution.getEvaluatedPoint(),
-				solution.getClassification(), lineage, solution.getDiagnostics());
+				solution.getClassification(), lineage, solution.getDiagnostics(),
+				solution.getPairEvidence());
+	}
+
+	private static boolean continuableKind(GeometryKind kind) {
+		return kind == GeometryKind.FINITE
+				|| kind == GeometryKind.MIXED_FINITE_OVERLAP;
 	}
 
 	private static List<LocusIntersectionSolution2D> matching(

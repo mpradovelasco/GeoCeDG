@@ -1,7 +1,7 @@
 # G8C upstream impact map
 
-**Status: G8C DESIGN AND G8C1 PASS — AUTHOR APPROVED; G8C2 EDIT BOUNDARY
-AUTHOR APPROVED / PRODUCTIVE IMPLEMENTATION NOT STARTED**
+**Status: G8C DESIGN, G8C1 AND G8C2 SOURCE IMPACT — AUTHOR APPROVED;
+GLOBAL G8 PASS — AUTHOR APPROVED**
 
 ## 1. Source inspected
 
@@ -48,9 +48,9 @@ No upstream `GeoConic`, `GeoFunction`, `GeoImplicitCurve`, classic intersection
 algorithm, dispatcher, command, serialization, type-system or frontend file is
 changed. The rich Geo and token-selected point consumer require no edit.
 
-## 3. Candidate G8C2 productive edit set
+## 3. Actual G8C2 internal-candidate edit set
 
-Subject to later separate authorization and ADR 0009 acceptance:
+The authorized canonical execution uses the following minimum set:
 
 - a GeoCeDG-owned dual-source query/binding;
 - a query-local pair-space solver and pair work ledger;
@@ -59,10 +59,12 @@ Subject to later separate authorization and ADR 0009 acceptance:
 - the existing token-selected point consumer with no authority change;
 - focused tests and validation artifacts.
 
-Whether `AlgoLocusIntersectionV2` can accept a second semantic source without
-obscuring input semantics is an implementation audit point. A separate
-`AlgoLocusLocusIntersectionV2` is preferred if it keeps two-source dependency
-registration and failure atomicity explicit.
+The implementation uses a separate internal `AlgoLocusLocusIntersectionV2` so
+two-source dependency registration and failure atomicity remain explicit. It
+reuses the existing rich result and point consumer. Existing G8/G8C1 files are
+changed only where pair binding/evidence, mixed finite-overlap shape, pair
+currentness, counters, and continuation require additive seams. No upstream
+GeoGebra intersection algorithm or object implementation is changed.
 
 ## 4. Compatibility and type-system risks
 
@@ -93,4 +95,5 @@ Every productive upstream-tree edit must be minimal, registered in
 or ADR, and covered by focused plus composed verification. This design task adds
 only GeoCeDG-owned docs, evidence, prompts, verifier and test-private probes.
 The G8C1 author-approved edits are enumerated in the inventory and checked by
-the focused verifier.
+the focused verifier. The G8C2 candidate additions and additive shared-file
+edits are also enumerated and checked by `verify-g8c2-intersections.ps1`.

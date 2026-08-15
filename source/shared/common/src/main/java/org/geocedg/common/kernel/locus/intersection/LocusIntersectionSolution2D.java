@@ -8,6 +8,7 @@ package org.geocedg.common.kernel.locus.intersection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.geocedg.common.kernel.locus.LocusPoint2D;
 
@@ -19,6 +20,7 @@ public final class LocusIntersectionSolution2D {
 	private final IntersectionClassification2D classification;
 	private final IntersectionRootLineage2D lineage;
 	private final List<IntersectionDiagnostic2D> diagnostics;
+	private final Optional<LocusPairIntersectionEvidence2D> pairEvidence;
 
 	/** Creates a verified solution; candidates cannot bypass this value. */
 	public LocusIntersectionSolution2D(IntersectionRootIdentity2D identity,
@@ -27,6 +29,18 @@ public final class LocusIntersectionSolution2D {
 			IntersectionClassification2D classification,
 			IntersectionRootLineage2D lineage,
 			List<IntersectionDiagnostic2D> diagnostics) {
+		this(identity, revisionEvidence, evaluatedPoint, classification, lineage,
+				diagnostics, Optional.empty());
+	}
+
+	/** Creates a verified solution with additive dual-parameter evidence. */
+	public LocusIntersectionSolution2D(IntersectionRootIdentity2D identity,
+			IntersectionRootRevisionEvidence2D revisionEvidence,
+			LocusPoint2D evaluatedPoint,
+			IntersectionClassification2D classification,
+			IntersectionRootLineage2D lineage,
+			List<IntersectionDiagnostic2D> diagnostics,
+			Optional<LocusPairIntersectionEvidence2D> pairEvidence) {
 		this.identity = java.util.Objects.requireNonNull(identity);
 		this.revisionEvidence = java.util.Objects.requireNonNull(revisionEvidence);
 		this.evaluatedPoint = java.util.Objects.requireNonNull(evaluatedPoint);
@@ -37,6 +51,7 @@ public final class LocusIntersectionSolution2D {
 		this.classification = java.util.Objects.requireNonNull(classification);
 		this.lineage = java.util.Objects.requireNonNull(lineage);
 		this.diagnostics = immutableDiagnostics(diagnostics);
+		this.pairEvidence = java.util.Objects.requireNonNull(pairEvidence);
 	}
 
 	public IntersectionRootIdentity2D getIdentity() {
@@ -61,6 +76,11 @@ public final class LocusIntersectionSolution2D {
 
 	public List<IntersectionDiagnostic2D> getDiagnostics() {
 		return diagnostics;
+	}
+
+	/** @return dual-parameter evidence for G8C2, otherwise empty */
+	public Optional<LocusPairIntersectionEvidence2D> getPairEvidence() {
+		return pairEvidence;
 	}
 
 	private static List<IntersectionDiagnostic2D> immutableDiagnostics(

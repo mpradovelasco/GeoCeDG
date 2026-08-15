@@ -2,7 +2,7 @@
 
 - Status: **Accepted**
 - G8C design disposition: **PASS — AUTHOR APPROVED**
-- G8C2 contract disposition: **NORMATIVE — AUTHOR APPROVED; implementation authorized / not started**
+- G8C2 disposition: **PASS — AUTHOR APPROVED; G8 global PASS — AUTHOR APPROVED**
 - Proposed: 2026-08-14
 - Accepted: 2026-08-15
 
@@ -135,7 +135,9 @@ no measured need. Shared state risks hidden DAG dependencies and stale topology.
 
 The author accepted this ADR on 2026-08-15 after G8C1 reached `PASS — AUTHOR
 APPROVED` and the final source-level comparison above found no contradiction.
-The G8C2 contract is normative and G8C2 implementation is authorized, but not
-started. Acceptance does not constitute G8C2 implementation approval or G8
-global closeout, and it does not authorize commands, `Path`, persistence,
-legacy/Classic changes, 3D, G9, or unbounded-domain support.
+The G8C2 contract is normative and the authorized implementation produced the
+internal kernel reviewed on 2026-08-15. The author subsequently approved G8C2
+and closed G8 globally without changing this ADR's architectural decision.
+That closeout does not authorize commands, `Path`, persistence, legacy/Classic
+changes, 3D, G9 implementation, or unbounded-domain support. It authorizes only
+a separately executed G9 design task.

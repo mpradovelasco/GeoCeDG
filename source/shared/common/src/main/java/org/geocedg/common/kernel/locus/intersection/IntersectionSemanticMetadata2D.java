@@ -22,7 +22,7 @@ public final class IntersectionSemanticMetadata2D {
 	/** Geometric kind of the intersection set. */
 	public enum GeometryKind {
 		EMPTY, FINITE, OVERLAP, INFINITELY_MANY, UNSUPPORTED_OVERLAP,
-		UNRESOLVED
+		MIXED_FINITE_OVERLAP, UNRESOLVED
 	}
 
 	/** Whether a result is bound to the currently captured sources. */
@@ -45,7 +45,8 @@ public final class IntersectionSemanticMetadata2D {
 	/** Closed target families authorized through G8C1. */
 	public enum TargetFamily {
 		LINE, SEGMENT, RAY, CIRCLE, ELLIPSE, PARABOLA, HYPERBOLA,
-		BOUNDED_FUNCTION_GRAPH, REGULAR_POLYNOMIAL_IMPLICIT, UNSUPPORTED
+		BOUNDED_FUNCTION_GRAPH, REGULAR_POLYNOMIAL_IMPLICIT, LOCUS_V2,
+		UNSUPPORTED
 	}
 
 	/** Physical meaning of a target residual. */
@@ -104,12 +105,41 @@ public final class IntersectionSemanticMetadata2D {
 	public enum SolverMethod {
 		ANALYTIC_ROOT_ENUMERATION, CERTIFIED_INTERVAL,
 		SAFEGUARDED_DERIVATIVE, EVALUATOR_ADAPTIVE,
-		CONSERVATIVE_BROAD_PHASE
+		CONSERVATIVE_BROAD_PHASE, CERTIFIED_PARAMETER_RECTANGLE,
+		SAFEGUARDED_DUAL_PARAMETER, EVALUATOR_PARAMETER_BOXES
 	}
 
 	/** Whether one verified root is locally isolated as a semantic preimage. */
 	public enum LocalIsolationStatus {
 		ESTABLISHED, NOT_ESTABLISHED
+	}
+
+	/** Coverage evidence for one local parameter-pair rectangle. */
+	public enum PairCoverageStatus {
+		EXHAUSTIVE_RECTANGLE, NOT_ESTABLISHED
+	}
+
+	/** Uniqueness evidence inside one local parameter-pair rectangle. */
+	public enum PairUniquenessStatus {
+		CERTIFIED_UNIQUE, REGULAR_JACOBIAN_UNIQUE, NOT_ESTABLISHED
+	}
+
+	/** Method establishing or declining local pair isolation. */
+	public enum PairIsolationMethod {
+		ANALYTIC_UNIQUE_PAIR, CERTIFIED_RECTANGLE,
+		SAFEGUARDED_REGULAR_JACOBIAN, NOT_ESTABLISHED
+	}
+
+	/** Strength of one component-pair overlap contribution. */
+	public enum OverlapStatus {
+		OVERLAP_ESTABLISHED, OVERLAP_SUSPECTED_NOT_ESTABLISHED,
+		UNSUPPORTED_OVERLAP
+	}
+
+	/** Geometric form of one typed overlap contribution. */
+	public enum OverlapRelationKind {
+		FULL_COMPONENT, PARTIAL_COMPONENT, REVERSE_PARAMETERIZATION,
+		REPEATED_TRAVERSAL, UNSPECIFIED
 	}
 
 	/** Typed broad diagnostic categories. */
@@ -124,7 +154,11 @@ public final class IntersectionSemanticMetadata2D {
 		NONFINITE_EVALUATION, RESIDUAL_REJECTED, MEMBERSHIP_REJECTED,
 		WORK_LIMIT_REACHED, NUMERICAL_FAILURE, OVERLAP_ESTABLISHED,
 		CONTINUATION_ESTABLISHED, CONTINUATION_AMBIGUOUS,
-		IDENTITY_DISCONTINUITY, REVISION_MISMATCH, INTERNAL_FAILURE
+		IDENTITY_DISCONTINUITY, REVISION_MISMATCH, INTERNAL_FAILURE,
+		PAIR_DOMAIN_UNSUPPORTED, PAIR_COVERAGE_NOT_ESTABLISHED,
+		PAIR_LOCAL_ISOLATION_NOT_ESTABLISHED, PAIR_RESIDUAL_REJECTED,
+		PAIR_SOURCE_ORDER_CANONICALIZED, OVERLAP_SUSPECTED,
+		UNSUPPORTED_OVERLAP
 	}
 
 	private IntersectionSemanticMetadata2D() {

@@ -4,10 +4,10 @@
 |---|---|
 | Status | **NORMATIVE / AUTHOR-APPROVED R1 REFINEMENT APPLIED** |
 | Version | `1.1` |
-| Phase | G8 planning, G8A, G8B-R1, G8B, G8C design and G8C1 `PASS — AUTHOR APPROVED`; G8C2 contract normative/author-approved and implementation authorized/not started; G8 in progress |
+| Phase | G8 planning, G8A, G8B-R1, G8B, G8C design, G8C1 and G8C2 `PASS — AUTHOR APPROVED`; G8 global `PASS — AUTHOR APPROVED` |
 | Scope | Internal two-dimensional Locus V2 intersection semantics |
 | Product state | Experimental, internal, disabled by default |
-| Approval | Author-approved on 2026-08-14 from G8A; G8B-R1 semantics and G8B implementation author-approved on 2026-08-14 |
+| Approval | Author-approved on 2026-08-14 from G8A/G8B; G8C1/G8C2 implementation and global G8 closeout author-approved on 2026-08-15 |
 | Architecture decision | Accepted ADR 0008 with R1 clarification |
 
 This normative contract incorporates the G8A characterization evidence and
@@ -694,12 +694,12 @@ token-selected point consumer, independent completeness axis, typed overlap,
 capability hierarchy, normalized tolerance policy, provisional deterministic
 budgets, narrow semantic continuation contract, rejection of universal
 merge/split genealogy, query-local state and the line/segment/ray/circle
-minimum. Those extended families remain outside G8B. The separate G8C1 contract
-now authorizes nondegenerate ellipse/parabola/hyperbola, explicitly bounded real
-functions and regular finite-coefficient polynomial implicit targets; G8C2
-locus–locus remains proposed and not authorized. Public command, generic
-`Path`, XML/persistence, legacy/Classic, 3D, G9 and Python boundaries remain
-closed.
+minimum. Those extended families remain outside G8B. G8C1 author-approves
+nondegenerate ellipse/parabola/hyperbola, explicitly bounded real functions and
+regular finite-coefficient polynomial implicit targets. G8C2 author-approves
+Locus V2 × Locus V2 over finite components and approved periodic fundamental
+domains. Public command, generic `Path`, XML/persistence, legacy/Classic, 3D,
+G9 implementation and Python boundaries remain closed.
 
 The canonical G8B prompt has been executed and the focused author-directed R1
 refinement has been applied. Its internal implementation and evidence package
@@ -711,9 +711,9 @@ Individually verified roots additionally require established local isolation
 and unambiguous semantic identity before point consumption. G8C design is
 `PASS — AUTHOR APPROVED`. The extension specification makes both the G8C1
 one-parameter subset and the G8C2 Locus V2 × Locus V2 contract normative. G8C1
-records an author-approved internal kernel; G8C2 implementation is authorized
-but not started under Accepted ADR 0009. No public or other deferred boundary is
-opened by this contract gate.
+records an author-approved internal kernel. The G8C2 execution under Accepted
+ADR 0009 is also `PASS — AUTHOR APPROVED`; together the approved subphases close
+G8 globally. No public or other deferred boundary is opened by this closeout.
 
 ```text
 G8 SPEC = NORMATIVE / AUTHOR-APPROVED R1 REFINEMENT APPLIED
@@ -726,7 +726,8 @@ G8C DESIGN = PASS — AUTHOR APPROVED
 G8C1 = PASS — AUTHOR APPROVED
 G8C2 CONTRACT = NORMATIVE — AUTHOR APPROVED
 ADR 0009 = ACCEPTED
-G8C2 = AUTHORIZED — NOT STARTED
-G8 = IN PROGRESS
-G9 = NOT STARTED
+G8C2 = PASS — AUTHOR APPROVED
+G8 = PASS — AUTHOR APPROVED
+G9 DESIGN = AUTHORIZED — NOT STARTED
+G9 IMPLEMENTATION = NOT AUTHORIZED — NOT STARTED
 ```

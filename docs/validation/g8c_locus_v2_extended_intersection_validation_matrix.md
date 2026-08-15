@@ -1,7 +1,7 @@
 # G8C extended-intersection validation matrix
 
-**Status: G8C1 IMPLEMENTATION GATES PASS — AUTHOR APPROVED; G8C2 GATES
-NORMATIVE — AUTHOR APPROVED / UNEXECUTED**
+**Status: G8C1 AND G8C2 IMPLEMENTATION GATES PASS — AUTHOR APPROVED;
+GLOBAL G8 PASS — AUTHOR APPROVED**
 
 | ID | Track | Case | Required assertions | Reference |
 |---|---|---|---|---|
@@ -87,3 +87,21 @@ No tolerance may be weakened to pass. An individually verified solution and
 global completeness are reported separately. Unresolved tangency, singularity,
 overlap, unbounded coverage, identity, or atomic failure produces an explicit
 state rather than a false root, empty set, completeness, or stale point.
+
+## Executed G8C2 implementation validation
+
+The internal candidate adds 34 focused tests: 16 kernel/geometry tests, 10
+lifecycle/identity tests, and 8 deterministic functional-counter tests. They
+execute every applicable LL, LIFE, NEST, INV, PERF, AUTH, and REG row above.
+
+The evaluator fallback verifies candidate coordinates independently on both
+semantic loci but intentionally keeps local isolation and completeness
+`NOT_ESTABLISHED`. Analytic/certified fixtures exercise stronger isolation,
+complete empty/finite results, tangency, overlap maps, mixed contributions, and
+Option B. The same-coordinate/two-preimage, operand reversal, seam,
+disappearance/recovery, merge/split, overlap-transition, and atomic-failure
+tests ensure that no coordinate or result order repairs identity. The
+1/10/100, 100-consumer, 2×3 component, and 33×33 work-limit tests establish
+query-local boundedness. See the
+[G8C2 kernel report](g8c2_locus_v2_locus_intersection_kernel_report.md) and
+[traceability matrix](g8c2_locus_v2_locus_intersection_traceability_matrix.md).
