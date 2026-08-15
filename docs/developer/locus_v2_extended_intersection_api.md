@@ -1,12 +1,12 @@
 # Locus V2 extended-intersection candidate API
 
 **Status: G8C1 INTERNAL API IMPLEMENTED — AUTHOR APPROVED;
-G8C2 API PROPOSED — NOT AUTHORIZED/NOT IMPLEMENTED**
+G8C2 API CONTRACT NORMATIVE — AUTHOR APPROVED / NOT IMPLEMENTED**
 
 G8C1 semantic responsibilities are normative and the concrete additive names
-below describe the author-approved internal kernel. G8C2 types remain illustrative
-and proposed. Existing G8B rich-result and point-consumer types remain
-authority.
+below describe the author-approved internal kernel. G8C2 type names below remain
+candidate implementation names, while their responsibilities are normative.
+Existing G8B rich-result and point-consumer types remain authority.
 
 ## 1. G8C1 target adapter
 
@@ -152,7 +152,7 @@ to `LocusIntersectionInstrumentationSnapshot2D`. G8C2
 adds branch/component pair counts, boxes visited/rejected, pair refinements,
 Jacobian evaluations, overlap checks and two-source continuation comparisons.
 All limits are versioned, deterministic and query-local. No public setters or
-serialization surface is proposed.
+serialization surface is authorized.
 
 ## 8. API boundaries
 

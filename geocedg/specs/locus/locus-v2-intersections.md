@@ -4,7 +4,7 @@
 |---|---|
 | Status | **NORMATIVE / AUTHOR-APPROVED R1 REFINEMENT APPLIED** |
 | Version | `1.1` |
-| Phase | G8 planning, G8A, G8B-R1, G8B, G8C design and G8C1 `PASS — AUTHOR APPROVED`; G8C2 not authorized; G8 in progress |
+| Phase | G8 planning, G8A, G8B-R1, G8B, G8C design and G8C1 `PASS — AUTHOR APPROVED`; G8C2 contract normative/author-approved and implementation authorized/not started; G8 in progress |
 | Scope | Internal two-dimensional Locus V2 intersection semantics |
 | Product state | Experimental, internal, disabled by default |
 | Approval | Author-approved on 2026-08-14 from G8A; G8B-R1 semantics and G8B implementation author-approved on 2026-08-14 |
@@ -709,11 +709,11 @@ claims require an authoritative analytic/certified capability
 whose declared component coverage and candidates are independently verified.
 Individually verified roots additionally require established local isolation
 and unambiguous semantic identity before point consumption. G8C design is
-`PASS — AUTHOR APPROVED`. The extension specification makes only the G8C1
-one-parameter subset normative and records its author-approved internal kernel;
-the G8C2 Locus V2 × Locus V2 contract remains proposed and implementation is
-not authorized. No public or other deferred boundary is opened by this
-closeout.
+`PASS — AUTHOR APPROVED`. The extension specification makes both the G8C1
+one-parameter subset and the G8C2 Locus V2 × Locus V2 contract normative. G8C1
+records an author-approved internal kernel; G8C2 implementation is authorized
+but not started under Accepted ADR 0009. No public or other deferred boundary is
+opened by this contract gate.
 
 ```text
 G8 SPEC = NORMATIVE / AUTHOR-APPROVED R1 REFINEMENT APPLIED
@@ -724,7 +724,9 @@ G8B = PASS — AUTHOR APPROVED
 G8 PRODUCTIVE IMPLEMENTATION = INTERNAL MINIMUM KERNEL — AUTHOR APPROVED
 G8C DESIGN = PASS — AUTHOR APPROVED
 G8C1 = PASS — AUTHOR APPROVED
-G8C2 = NOT AUTHORIZED — NOT STARTED
+G8C2 CONTRACT = NORMATIVE — AUTHOR APPROVED
+ADR 0009 = ACCEPTED
+G8C2 = AUTHORIZED — NOT STARTED
 G8 = IN PROGRESS
 G9 = NOT STARTED
 ```

@@ -1,7 +1,7 @@
 # G8C extended-intersection functional-counter plan
 
-**Status: G8C1 COUNTER CONTRACT EXECUTED — AUTHOR APPROVED; G8C2 COUNTERS
-PROPOSED; wall clock is informational**
+**Status: G8C1 COUNTER CONTRACT EXECUTED — AUTHOR APPROVED; G8C2 COUNTER
+CONTRACT NORMATIVE — AUTHOR APPROVED / UNEXECUTED; wall clock is informational**
 
 ## 1. Counter vocabulary
 

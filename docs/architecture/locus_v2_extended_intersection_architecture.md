@@ -1,7 +1,7 @@
 # Locus V2 extended-intersection architecture
 
 **Status: G8C DESIGN AND G8C1 PASS — AUTHOR APPROVED; G8C2 ARCHITECTURE
-PROPOSED**
+NORMATIVE — AUTHOR APPROVED / IMPLEMENTATION AUTHORIZED — NOT STARTED**
 
 ## 1. Architectural split
 
@@ -135,14 +135,15 @@ Likely productive edits are confined to GeoCeDG-owned shared-kernel intersection
 packages plus the smallest append-only `GeoClass` or DAG plumbing already
 approved by G8 if actually required. No dispatcher/command, public `Path`, XML,
 legacy `GeoLocus`, Classic, frontend, 3D, or G9 integration is part of either
-proposed implementation prompt.
+implementation contract.
 
 ## 9. Phase gates
 
 G8C1 has been executed, verified, and closed as `PASS — AUTHOR APPROVED`.
-G8C2 cannot begin productively until proposed ADR 0009 is Accepted or explicitly
-superseded, and the author separately authorizes G8C2. G9 remains blocked until
-both pass and G8 receives global author closeout.
+The final comparison with that implementation found no contradiction in the
+dedicated two-parameter design. ADR 0009 is Accepted, the pair contract is
+normative, and G8C2 is authorized but not started. G9 remains blocked until
+G8C2 passes, receives author approval, and G8 receives global author closeout.
 
 ## 10. G8C1 implementation mapping
 

@@ -5,9 +5,9 @@
 | Status | **PASS — AUTHOR APPROVED** |
 | Baseline | G8B/G8B-R1 `PASS — AUTHOR APPROVED` |
 | G8C1 implementation | **PASS — AUTHOR APPROVED** |
-| G8C2 implementation | **NOT AUTHORIZED / NOT STARTED** |
-| Contract | G8C1 **NORMATIVE — AUTHOR APPROVED**; G8C2 **PROPOSED — NOT NORMATIVE** |
-| Proposed ADR | ADR 0009 **Proposed** |
+| G8C2 implementation | **AUTHORIZED / NOT STARTED** |
+| Contract | G8C1 and G8C2 **NORMATIVE — AUTHOR APPROVED** |
+| Pair ADR | ADR 0009 **Accepted** |
 | Author-review date | 2026-08-15 |
 
 ## 1. Objective
@@ -42,9 +42,10 @@ The design covers four deferred families:
 - Locus V2 × Locus V2 over declared finite components and periodic
   fundamental domains.
 
-The author closeout authorizes only the separately invoked G8C1 productive
-phase. This design package itself adds no productive Java. It does not authorize
-G8C2, commands, generic `Path`, public
+The design closeout originally authorized only the separately invoked G8C1
+productive phase. The later final contract review authorizes G8C2 through a
+separate canonical task. This design/contract package itself adds no productive
+G8C2 Java and does not authorize commands, generic `Path`, public
 point-on-locus behavior, XML/persistence/migration, legacy `GeoLocus`, Classic
 semantic changes, 3D, Python DSL, shared/global caches, G9, or unrestricted
 claims about functions, implicit curves, singularities, degeneracies, or
@@ -81,9 +82,10 @@ Reuse the rich result, lifecycle, publication, token-selected point, tolerance
 vocabulary, and evaluator sessions, but do not disguise a two-dimensional root
 problem as a one-dimensional target adapter.
 
-Entry gate: G8C1 `PASS — AUTHOR APPROVED`, ADR 0009 Accepted, and explicit
-author approval of source symmetry, local pair isolation, overlap taxonomy,
-and completeness limits.
+Entry contract gate: satisfied on 2026-08-15 by G8C1 `PASS — AUTHOR APPROVED`,
+ADR 0009 Accepted, and explicit author approval of source symmetry, local pair
+isolation, overlap taxonomy, and completeness limits. Productive execution
+still requires a separate explicit invocation of the canonical G8C2 prompt.
 
 Exit gate: bounded/periodic finite-domain pair support, source-order symmetry,
 local isolation, tangency/ambiguity, overlap, constructive multiplicity,
@@ -102,7 +104,7 @@ stronger injected analytic/certified capabilities may retain justified
 completeness evidence. The 38 focused tests and measured counters are recorded
 in the
 [G8C1 kernel report](../validation/g8c1_locus_v2_extended_target_intersection_kernel_report.md).
-This is an implementation record, not author approval.
+The author approved that implementation on 2026-08-15.
 
 ## 4. Preserved G8B contract
 
@@ -166,7 +168,7 @@ them honestly rather than leaving a missing structural family.
 
 ## 8. Deliverables
 
-- [G8C1 normative/G8C2 proposed specification extension](../../geocedg/specs/locus/locus-v2-extended-intersections.md)
+- [Normative G8C1/G8C2 specification extension](../../geocedg/specs/locus/locus-v2-extended-intersections.md)
 - [Semantic model](../architecture/locus_v2_extended_intersection_semantic_model.md)
 - [Architecture](../architecture/locus_v2_extended_intersection_architecture.md)
 - [Upstream impact](../architecture/locus_v2_extended_intersection_upstream_impact.md)
@@ -176,7 +178,8 @@ them honestly rather than leaving a missing structural family.
 - [Validation matrix](../validation/g8c_locus_v2_extended_intersection_validation_matrix.md)
 - [Benchmark plan](../validation/g8c_locus_v2_extended_intersection_benchmark_plan.md)
 - [Scientific traceability](../validation/g8c_locus_v2_extended_intersection_scientific_traceability.md)
-- [Proposed ADR 0009](../adr/0009-locus-v2-locus-intersection-pair-semantics.md)
+- [Accepted ADR 0009](../adr/0009-locus-v2-locus-intersection-pair-semantics.md)
+- [G8C2 final contract review](../validation/g8c2_locus_v2_locus_intersection_contract_review.md)
 
 ## 9. Author-decision table
 
@@ -206,16 +209,18 @@ them honestly rather than leaving a missing structural family.
 ## 10. Author closeout
 
 On 2026-08-15 the author approved the G8C design, the G8C1/G8C2 subdivision,
-every G8C1 decision in the table above, query-local state, and the gate that
-both implementation phases must pass before G8 global closeout or G9. The
-  G8C1-specific contract and internal implementation are `PASS — AUTHOR
-  APPROVED`. Pair-specific G8C2 decisions remain proposed: G8C2 is not
-authorized and ADR 0009 remains Proposed.
+the G8C1 contract and internal implementation, query-local state, and the gate
+that both implementation phases must pass before G8 global closeout or G9. The
+final post-G8C1 review found no contradiction in the pair architecture,
+approved every pair-specific decision in the table, accepted ADR 0009, made the
+G8C2 contract normative, and authorized—but did not start—G8C2 implementation.
 
 ```text
 G8C DESIGN = PASS — AUTHOR APPROVED
 G8C1 = PASS — AUTHOR APPROVED
-G8C2 = NOT AUTHORIZED — NOT STARTED
+G8C2 CONTRACT = NORMATIVE — AUTHOR APPROVED
+ADR 0009 = ACCEPTED
+G8C2 = AUTHORIZED — NOT STARTED
 G8 = IN PROGRESS
 G9 = NOT STARTED
 ```

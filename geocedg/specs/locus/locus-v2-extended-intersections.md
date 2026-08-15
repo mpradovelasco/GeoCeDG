@@ -1,8 +1,8 @@
 # Locus V2 extended 2D intersection semantics
 
-**Status: G8C1 NORMATIVE — AUTHOR APPROVED / G8C2 PROPOSED — NOT NORMATIVE**
+**Status: G8C1 AND G8C2 NORMATIVE — AUTHOR APPROVED**
 
-**Phase: G8C design and G8C1 `PASS — AUTHOR APPROVED`; G8C2 not authorized**
+**Phase: G8C design and G8C1 `PASS — AUTHOR APPROVED`; G8C2 `AUTHORIZED — NOT STARTED`**
 
 **Approval date: 2026-08-15**
 
@@ -12,11 +12,11 @@ rule remains normative for its supported line, segment, ray, and circle
 families. The common invariants and the G8C1 one-parameter contract in sections
 1–3, 5–7 as applicable to one source locus, and 8.1 below are normative and
 author-approved for G8C1. The G8C1 implementation was author-approved on
-2026-08-15. The two-parameter Locus V2 × Locus V2 contract in
-section 4, its pair-specific uses of sections 5–7, and section 8.2 remain
-proposed and non-normative pending ADR 0009 acceptance and separate G8C2
-authorization. The G8C1 sections govern an author-approved internal kernel;
-they do not claim public availability.
+2026-08-15. The author approved the two-parameter Locus V2 × Locus V2 contract
+in section 4, its pair-specific uses of sections 5–7, and section 8.2 on
+2026-08-15 after accepting ADR 0009 and reviewing the completed G8C1 kernel.
+Those sections are normative for G8C2 implementation. G8C2 is authorized but
+not started. Neither phase claims public availability.
 
 ## 1. Required semantic chain
 
@@ -131,9 +131,10 @@ small raw residual is insufficient.
 
 ## 4. Locus V2 × Locus V2
 
-**G8C2 status: PROPOSED — NOT NORMATIVE / NOT AUTHORIZED.** The author-approved
-G8C phase split recognizes this as a separate two-parameter architecture; the
-detailed contract below remains a proposal until the later G8C2 gate.
+**G8C2 status: NORMATIVE — AUTHOR APPROVED / AUTHORIZED — NOT STARTED.** The
+author-approved G8C phase split recognizes this as a separate two-parameter
+architecture. The final review against G8C1 found no contradiction, and
+Accepted ADR 0009 governs the contract below.
 
 For current valid components of branches `j,k`, solve
 
@@ -202,7 +203,7 @@ overlap is projected to arbitrary points.
 exhaustive isolation/exclusion over each parameter product. Finite candidate
 exhaustion alone does not prove coverage.
 
-The initial proposal supports finite component products and periodic branches
+The initial G8C2 contract supports finite component products and periodic branches
 through one canonical fundamental domain with seam equivalence. An arbitrary
 window over an unbounded domain never yields `COMPLETE`; viewport truncation is
 forbidden. Current G6 intervals do not represent infinite endpoints, so
@@ -257,8 +258,8 @@ tangencies remain unisolated absent stronger uniqueness evidence.
 
 ### 8.2 G8C2
 
-G8C2 remains `NOT AUTHORIZED`. Its pair-specific proposal requires ADR 0009
-Accepted or explicitly superseded and a
-separate author authorization. G8 may close and G9 may begin only after both
-required phases pass, unless the author explicitly changes the typed minimum
-scope.
+G8C2 is `AUTHORIZED — NOT STARTED`. Productive work may begin only through a
+separate explicit invocation of the canonical G8C2 prompt from the approved
+contract baseline. G8 may close and G9 may begin only after G8C2 implementation
+passes and receives author approval, unless the author explicitly changes the
+typed minimum scope.

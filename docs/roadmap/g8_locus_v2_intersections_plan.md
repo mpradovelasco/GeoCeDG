@@ -8,10 +8,10 @@
 | G8B state | **PASS — AUTHOR APPROVED** |
 | G8C design | **PASS — AUTHOR APPROVED** |
 | G8C1 | **PASS — AUTHOR APPROVED** |
-| G8C2 | **NOT AUTHORIZED — NOT STARTED** |
-| Approved stages | G8A characterization; G8B minimum internal kernel including R1; G8C design; G8C1 internal kernel |
-| Specification state | **NORMATIVE / AUTHOR-APPROVED R1 REFINEMENT APPLIED** |
-| ADR state | ADR 0008 **Accepted — R1 clarification applied** |
+| G8C2 | **AUTHORIZED — NOT STARTED** |
+| Approved stages | G8A characterization; G8B minimum internal kernel including R1; G8C design; G8C1 internal kernel; G8C2 contract gate |
+| Specification state | G8 core **NORMATIVE / AUTHOR-APPROVED R1**; G8C1/G8C2 extension **NORMATIVE — AUTHOR APPROVED** |
+| ADR state | ADR 0008 **Accepted — R1 clarification applied**; ADR 0009 **Accepted** |
 | Latest author-review date | 2026-08-15 |
 | Product maturity | Locus V2 remains experimental, internal, and disabled by default |
 
@@ -21,8 +21,9 @@ accepted ADR 0008 and authorized a separately invoked G8B. The canonical G8B
 execution and its focused R1 refinement are now `PASS — AUTHOR APPROVED`.
 They add no observable intersection behavior. The separately executed G8C
 design is now `PASS — AUTHOR APPROVED`; its G8C1 one-parameter contract is
-normative and the internal kernel is `PASS — AUTHOR APPROVED`. G8C2 and G9
-remain unauthorized/not started.
+normative and the internal kernel is `PASS — AUTHOR APPROVED`. The final G8C2
+contract review found no contradiction, accepted ADR 0009, and authorized the
+separate G8C2 implementation; G8C2 is not started and G9 remains not started.
 
 ## 1. Authority and preflight record
 
@@ -209,22 +210,23 @@ APPROVED` and preserved every internal/public boundary below.
 
 **G8C1 state:** `PASS — AUTHOR APPROVED`.
 
-**G8C2 state:** `NOT AUTHORIZED — NOT STARTED`.
+**G8C2 state:** `AUTHORIZED — NOT STARTED`.
 
 The separate design task audited full conics, functional curves, actual implicit
 curve authority and Locus V2 × Locus V2. It recommends G8C1 for typed
 one-parameter adapters (nondegenerate conics, explicitly bounded real functions,
 regular polynomial implicit curves) and G8C2 for the genuinely two-parameter
 problem `F(t) = Q(u)`. G8C2 adds dual topology, source symmetry, overlap,
-completeness and pair-identity questions and is governed by proposed ADR 0009.
+completeness and pair-identity questions and is governed by Accepted ADR 0009.
 The [G8C design package](g8c_locus_v2_extended_intersections_design.md) itself
 added no productive source. The author approved the subdivision and the
 G8C1-specific contract on 2026-08-15. The separately invoked G8C1 execution has
 produced a verified internal kernel, closed on 2026-08-15 as `PASS — AUTHOR
 APPROVED`, documented in the
 [G8C1 kernel report](../validation/g8c1_locus_v2_extended_target_intersection_kernel_report.md).
-G8C2 remains blocked on ADR 0009 acceptance or explicit supersession and
-separate author authorization.
+The final review against that implementation found no contradiction. The G8C2
+contract is normative/author-approved and implementation is authorized for a
+separately invoked canonical task; no G8C2 productive work has started.
 
 ## 5. Author-approved staged coverage
 
@@ -560,8 +562,14 @@ PASS — AUTHOR APPROVED
 G8C1 =
 PASS — AUTHOR APPROVED
 
+G8C2 CONTRACT =
+NORMATIVE — AUTHOR APPROVED
+
+ADR 0009 =
+ACCEPTED
+
 G8C2 =
-NOT AUTHORIZED
+AUTHORIZED
 NOT STARTED
 
 G8 =

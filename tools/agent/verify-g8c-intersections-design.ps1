@@ -15,7 +15,7 @@ $RootGradle = Join-Path $RepositoryRoot "gradlew.bat"
 $EntrySha = "3531db7838426305c505c291b1d614aa6df5175c"
 $G8BTag = "geocedg-g8b-pass"
 $G8C1PromptSha = "c096a069b10b85a27e8ac96223ca679d788441f2a684403991e66a1ffbcfabaa"
-$G8C2PromptSha = "b79e5f37d9ed8393dfb81f6d05a09c456a9487a10852f85efc09e07ddc5951b0"
+$G8C2PromptSha = "e7f0535332a9c5a2789f98476aef2f9f143e84f9bda0ad3b7d657f070d99e58b"
 $GeneratedStateHelper = Join-Path $PSScriptRoot "repository-generated-state.ps1"
 $GeneratedDirectoryNames = @("build", ".gradle", ".kotlin")
 $LogDirectory = [IO.Path]::GetFullPath($LogDirectory)
@@ -31,6 +31,8 @@ $ReferenceGenerator = Join-Path $EvidenceRoot `
     "generate_extended_intersection_references.py"
 $G8C1EvidencePath = Join-Path $RepositoryRoot `
     "geocedg\validation\locus-v2\g8c1\g8c1-intersection-kernel-evidence.json"
+$G8C2ContractEvidencePath = Join-Path $RepositoryRoot `
+    "geocedg\validation\locus-v2\g8c2\g8c2-contract-review-evidence.json"
 $InitialStatus = $null
 $GeneratedSnapshot = $null
 
@@ -269,17 +271,33 @@ try {
             "# Geometric invariants and degeneracies",
             "# Compatibility and serialization",
             "# Required tests and commands", "# Required artifacts",
-            "# Verification", "# Stop conditions", "do not execute")
+            "# Verification", "# Stop conditions")
+        $promptContent = Get-Content -LiteralPath `
+            (Join-Path $RepositoryRoot $prompt.Key) -Raw
+        Assert-Condition -Condition ($promptContent.ToLowerInvariant().Contains(
+                "do not execute")) `
+            -Message "Future prompt does not preserve its no-execution boundary: $($prompt.Key)"
     }
 
+    $g8c2ContractApproved = Test-Path -LiteralPath $G8C2ContractEvidencePath `
+        -PathType Leaf
+    $g8c2SpecificationState = if ($g8c2ContractApproved) {
+        "G8C1 AND G8C2 NORMATIVE — AUTHOR APPROVED"
+    } else {
+        "G8C2 PROPOSED — NOT NORMATIVE"
+    }
+    $adr0009State = if ($g8c2ContractApproved) {
+        "Status: **Accepted**"
+    } else {
+        "Status: **Proposed**"
+    }
     Assert-Contains -RelativePath `
         "geocedg\specs\locus\locus-v2-extended-intersections.md" -Text @(
-            "G8C1 NORMATIVE — AUTHOR APPROVED", "G8C2 PROPOSED — NOT NORMATIVE",
-            "Option B", "Source symmetry",
+            $g8c2SpecificationState, "Option B", "Source symmetry",
             "Locus V2 × Locus V2")
     Assert-Contains -RelativePath `
         "docs\adr\0009-locus-v2-locus-intersection-pair-semantics.md" -Text @(
-            "Status: **Proposed**", "canonical unordered pair")
+            $adr0009State, "canonical unordered pair")
     $g8c1CandidatePresent = Test-Path -LiteralPath $G8C1EvidencePath `
         -PathType Leaf
     $g8c1RoadmapState = if ($g8c1CandidatePresent) {
@@ -291,7 +309,11 @@ try {
         "docs\roadmap\geocedg_roadmap.md" -Text @(
             "G8C DESIGN = PASS — AUTHOR APPROVED",
             $g8c1RoadmapState,
-            "G8C2 = NOT AUTHORIZED — NOT STARTED",
+            $(if ($g8c2ContractApproved) {
+                    "G8C2 = AUTHORIZED — NOT STARTED"
+                } else {
+                    "G8C2 = NOT AUTHORIZED — NOT STARTED"
+                }),
             "G9 = NOT STARTED")
 
     $changedPaths = @(& git -C $RepositoryRoot diff --name-only $EntrySha --)
@@ -390,7 +412,9 @@ try {
         -Message "git diff --cached --check failed."
 
     Write-Host "G8C design author-closeout verification passed (32 characterization probes)."
-    if ($g8c1CandidatePresent) {
+    if ($g8c2ContractApproved) {
+        Write-Host "G8C1 is author-approved; G8C2 is authorized/not started; G9 is not started."
+    } elseif ($g8c1CandidatePresent) {
         Write-Host "G8C1 is author-approved; G8C2 and G9 are not started."
     } else {
         Write-Host "G8C1 is authorized/not started; G8C2 and G9 are not started."

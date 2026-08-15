@@ -34,6 +34,8 @@ $G8CIntersectionDesignVerifier = Join-Path $PSScriptRoot `
     "verify-g8c-intersections-design.ps1"
 $G8C1IntersectionVerifier = Join-Path $PSScriptRoot `
     "verify-g8c1-intersections.ps1"
+$G8C2ContractVerifier = Join-Path $PSScriptRoot `
+    "verify-g8c2-contract.ps1"
 $BenchmarkRunner = Join-Path $RepositoryRoot "tools\benchmark\run.ps1"
 $InitialStatus = $null
 
@@ -218,6 +220,15 @@ try {
             & $G8C1IntersectionVerifier @g8c1IntersectionParameters
             Assert-LastScriptSuccess `
                 -Description "G8C1 extended one-parameter intersection kernel"
+        }
+
+        $g8c2ContractEvidence = Join-Path $RepositoryRoot `
+            "geocedg\validation\locus-v2\g8c2\g8c2-contract-review-evidence.json"
+        if (Test-Path -LiteralPath $g8c2ContractEvidence -PathType Leaf) {
+            Write-Host "`n==> G8C2 locus-locus contract review"
+            & $G8C2ContractVerifier
+            Assert-LastScriptSuccess `
+                -Description "G8C2 locus-locus contract review"
         }
     }
 

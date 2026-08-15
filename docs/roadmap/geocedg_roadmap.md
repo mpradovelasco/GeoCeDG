@@ -3,13 +3,13 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Roadmap vivo y normativo de fases; no sustituye las especificaciones ni los ADR aceptados |
-| Versión documental | 3.20 |
+| Versión documental | 3.21 |
 | Fecha de revisión | 15 de agosto de 2026 |
 | Baseline GeoGebra | 5.4.928.0, commit `9b93256b7df401ff056c37b502d82df4d72b1522`, tag `geogebra-baseline-5.4.928.0` |
-| Estado actual | G7 `PASS`; G8 planning/G8A/G8B-R1/G8B, G8C design y G8C1 `PASS — AUTHOR APPROVED`; G8C2 no autorizado/no iniciado; G8 sigue en progreso; V2 sigue experimental, interno y desactivado por defecto |
+| Estado actual | G7 `PASS`; G8 planning/G8A/G8B-R1/G8B, G8C design y G8C1 `PASS — AUTHOR APPROVED`; contrato G8C2 normativo/aprobado y ejecución autorizada/no iniciada; G8 sigue en progreso; V2 sigue experimental, interno y desactivado por defecto |
 | Última fase cerrada | G8C1 — objetivos extendidos uniparamétricos, `PASS — AUTHOR APPROVED` |
 | Última fase ejecutada | G8C1 — kernel interno de cónicas no degeneradas, funciones de dominio finito e implícitas polinómicas regulares |
-| Siguiente puerta | Revisión final del contrato G8C2 y ADR 0009; G8C2 y G9 permanecen no autorizados |
+| Siguiente puerta | Ejecución canónica separada de G8C2; G9 permanece no iniciada y bloqueada por el cierre global G8 |
 | Primer cliente | Aplicación de escritorio de la familia Classic 5 |
 | Núcleo | Java compartido de GeoGebra, extendido solo cuando la semántica lo requiere |
 
@@ -57,7 +57,8 @@ elementos combinan capacidades cerradas y objetivos explícitamente futuros:
 - arquitectura y fases de planificación G8 aprobadas por el autor; G8A,
   G8B-R1 y G8B son `PASS — AUTHOR APPROVED`, la spec G8 es normativa, ADR 0008
   está Accepted con la aclaración R1, el diseño G8C y G8C1 son `PASS — AUTHOR
-  APPROVED`, y G8C2 permanece no autorizado;
+  APPROVED`; el contrato G8C2 es normativo, ADR 0009 está Accepted y G8C2 está
+  autorizado/no iniciado;
 - un modelo semántico `SpatialObject3D`–proyecciones (`PENDING`, G9);
 - criterios verificables de suficiencia y degeneración de proyecciones
   canónicas (`PENDING`, G9).
@@ -1100,9 +1101,9 @@ La optimización priorizará, según evidencia: invalidación incremental, cach�
 | G8A | `PASS — AUTHOR APPROVED` | [Informe y decisiones G8A](../validation/g8a_locus_v2_intersection_characterization_report.md); 65 probes test-private, referencias independientes, spec normativa y ADR 0008 Accepted, sin implementación productiva |
 | G8B-R1 | `PASS — AUTHOR APPROVED` | [Refinamiento de admisibilidad local](../validation/g8b_r1_locus_v2_intersection_point_admissibility_report.md); Option B normativa, completitud global preservada, sin superficie pública ni Level C |
 | G8B | `PASS — AUTHOR APPROVED` | [Núcleo interno y evidencia G8B](../validation/g8b_locus_v2_intersection_kernel_report.md); mínimo line/segment/ray/circle aprobado como implementación interna |
-| G8C design | `PASS — AUTHOR APPROVED` | [Diseño G8C](g8c_locus_v2_extended_intersections_design.md); subdivisión G8C1/G8C2 aprobada; G8C1 autorizado y G8C2 bloqueado |
+| G8C design | `PASS — AUTHOR APPROVED` | [Diseño G8C](g8c_locus_v2_extended_intersections_design.md); subdivisión G8C1/G8C2 aprobada; contratos de ambas fases normativos |
 | G8C1 | `PASS — AUTHOR APPROVED` | Kernel interno tipado: cónicas no degeneradas, funciones reales explícitamente acotadas e implícitas polinómicas regulares; 38 pruebas focales |
-| G8C2 | `NOT AUTHORIZED — NOT STARTED` | Locus V2 × Locus V2; requiere G8C1 `PASS — AUTHOR APPROVED`, ADR 0009 Accepted/superseded y autorización separada |
+| G8C2 | `AUTHORIZED — NOT STARTED` | Locus V2 × Locus V2; contrato normativo, ADR 0009 Accepted y ejecución canónica separada pendiente |
 | G9–G16 | `NOT STARTED` | No iniciadas; G9 bloqueada hasta el cierre global de G8 |
 
 Los estados `experimental` describen madurez de una capacidad, no una puerta
@@ -1416,7 +1417,9 @@ G8B = PASS — AUTHOR APPROVED
 G8 PRODUCTIVE IMPLEMENTATION = INTERNAL MINIMUM KERNEL — AUTHOR APPROVED
 G8C DESIGN = PASS — AUTHOR APPROVED
 G8C1 = PASS — AUTHOR APPROVED
-G8C2 = NOT AUTHORIZED — NOT STARTED
+G8C2 CONTRACT = NORMATIVE — AUTHOR APPROVED
+ADR 0009 = ACCEPTED
+G8C2 = AUTHORIZED — NOT STARTED
 G8 = IN PROGRESS
 G9 = NOT STARTED
 ```
@@ -1424,11 +1427,11 @@ G9 = NOT STARTED
 ## G8 - Intersecciones 2D
 
 **Estado:** planificación, G8A, G8B-R1, G8B, G8C design y G8C1 `PASS — AUTHOR
-APPROVED`; G8C2
-`NOT AUTHORIZED — NOT STARTED`; G8 permanece `IN PROGRESS`.
+APPROVED`; contrato G8C2 `NORMATIVE — AUTHOR APPROVED`, ADR 0009 `Accepted` y
+G8C2 `AUTHORIZED — NOT STARTED`; G8 permanece `IN PROGRESS`.
 
 El autor aprueba la arquitectura de planificación, cierra el diseño G8C y
-autoriza solo la ejecución separada de G8C1:
+autoriza las ejecuciones separadas de G8C1 y, tras su cierre, G8C2:
 
 1. **G8A — caracterización y decisiones de autor:** probes exclusivamente
    test-private, referencias independientes y medición de solver, tangencia,
@@ -1442,14 +1445,14 @@ autoriza solo la ejecución separada de G8C1:
    degeneradas, funciones reales explícitamente acotadas, curvas implícitas
    polinómicas regulares y Locus V2 × Locus V2. La subdivisión queda aprobada:
    G8C1 (objetivos uniparamétricos) está cerrado en `PASS — AUTHOR APPROVED`;
-   G8C2 (solver biparamétrico) no está autorizado.
+   el contrato G8C2 (solver biparamétrico) es normativo y su ejecución separada
+   está autorizada pero no iniciada.
 
 Locus V2 × Locus V2 requiere resolver `F(t) = Q(u)` y por ello introduce un
 problema genuinamente bidimensional de parámetros, topología dual, overlap e
-identidad. El diseño G8C aprueba la separación arquitectónica, pero el contrato
-biparamétrico detallado y ADR 0009 permanecen `Proposed`; G8C2 requiere G8C1
-`PASS — AUTHOR APPROVED`, aceptación o sustitución explícita de ADR 0009 y una
-autorización separada. G8
+identidad. La revisión final contra la implementación G8C1 no encontró
+contradicción: el contrato biparamétrico es normativo, ADR 0009 está Accepted y
+G8C2 está autorizado para una tarea canónica separada. G8
 no podrá cerrarse globalmente hasta que G8C1 y G8C2 hayan pasado y recibido
 aprobación autoral; G9 continúa sin iniciar.
 
@@ -1531,12 +1534,14 @@ el [informe G8B](../validation/g8b_locus_v2_intersection_kernel_report.md), la
 y el [informe enfocado G8B-R1](../validation/g8b_r1_locus_v2_intersection_point_admissibility_report.md).
 La extensión dividida se documenta en el
 [plan G8C](g8c_locus_v2_extended_intersections_design.md), la
-[spec G8C1 normativa/G8C2 propuesta](../../geocedg/specs/locus/locus-v2-extended-intersections.md),
+[spec G8C1/G8C2 normativa](../../geocedg/specs/locus/locus-v2-extended-intersections.md),
 el [informe de caracterización](../validation/g8c_locus_v2_extended_intersection_characterization_report.md),
-el [ADR 0009 Proposed](../adr/0009-locus-v2-locus-intersection-pair-semantics.md)
-y los prompts canónicos no ejecutados
+el [ADR 0009 Accepted](../adr/0009-locus-v2-locus-intersection-pair-semantics.md),
+la [revisión final del contrato G8C2](../validation/g8c2_locus_v2_locus_intersection_contract_review.md),
+el prompt histórico ya ejecutado
 [G8C1](../../.github/prompts/tasks/g8c1-locus-v2-extended-target-intersections.prompt.md)
-y [G8C2](../../.github/prompts/tasks/g8c2-locus-v2-locus-intersections.prompt.md).
+y el prompt canónico aún no ejecutado
+[G8C2](../../.github/prompts/tasks/g8c2-locus-v2-locus-intersections.prompt.md).
 
 G8A se ejecutó después del cierre de planificación y añadió solo
 caracterización test-private. El autor aprobó D1–D17, la spec es normativa y
@@ -1544,9 +1549,10 @@ ADR 0008 está Accepted. El prompt G8B produjo el kernel interno autorizado y
 G8B-R1 aplicó Option B, separando la admisibilidad local de una solución de la
 completitud global. La revisión final del autor aprueba tanto G8B-R1 como G8B;
 ello no abre una superficie pública ni cierra G8 globalmente. La revisión del
-15 de agosto de 2026 cierra el diseño G8C, aprueba su subdivisión, promueve solo
-  el contrato G8C1 y autoriza su ejecución separada. Esa ejecución y su revisión
-  final están cerradas en `PASS — AUTHOR APPROVED`; G8C2 permanece bloqueado.
+15 de agosto de 2026 cierra el diseño G8C, aprueba su subdivisión y promueve el
+contrato G8C1. Esa ejecución y su revisión final están cerradas en `PASS —
+AUTHOR APPROVED`. La revisión posterior contra el kernel real hace normativo el
+contrato G8C2, acepta ADR 0009 y autoriza G8C2 sin iniciarlo.
 
 ```text
 G8 PLANNING = PASS — AUTHOR APPROVED
@@ -1558,7 +1564,9 @@ ADR 0008 = ACCEPTED — R1 CLARIFICATION APPLIED
 G8 PRODUCTIVE IMPLEMENTATION = INTERNAL MINIMUM KERNEL — AUTHOR APPROVED
 G8C DESIGN = PASS — AUTHOR APPROVED
 G8C1 = PASS — AUTHOR APPROVED
-G8C2 = NOT AUTHORIZED — NOT STARTED
+G8C2 CONTRACT = NORMATIVE — AUTHOR APPROVED
+ADR 0009 = ACCEPTED
+G8C2 = AUTHORIZED — NOT STARTED
 G8 = IN PROGRESS
 G9 = NOT STARTED
 ```

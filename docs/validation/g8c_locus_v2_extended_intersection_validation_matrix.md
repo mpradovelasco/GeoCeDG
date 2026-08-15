@@ -1,7 +1,7 @@
 # G8C extended-intersection validation matrix
 
 **Status: G8C1 IMPLEMENTATION GATES PASS — AUTHOR APPROVED; G8C2 GATES
-PROPOSED/UNEXECUTED**
+NORMATIVE — AUTHOR APPROVED / UNEXECUTED**
 
 | ID | Track | Case | Required assertions | Reference |
 |---|---|---|---|---|

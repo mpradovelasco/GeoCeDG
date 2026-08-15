@@ -3,15 +3,17 @@
 Implement the author-approved G8C2 internal native Locus V2 × Locus V2
 intersection kernel over the approved finite/periodic semantic domains.
 
-**Future execution prompt — do not execute during G8C design or G8C1.** A later
-task must explicitly invoke it after every mandatory gate is author-approved.
+**Canonical execution prompt — authorized for a separate explicit G8C2 task.**
+Do not execute it during contract review or as a side effect of branch setup.
 
 # Mandatory entry gate
 
 Before productive editing require and report:
 
-- a clean dedicated G8C2 feature branch from the exact published G8C1
-  author-approved completion baseline required by the living roadmap;
+- a clean published
+  `feature/g8c2-locus-v2-locus-v2-intersections` branch whose `HEAD` equals the
+  final published G8C2 contract-authorization commit on `main`/`origin/main`
+  and contains the peeled `geocedg-g8c1-pass` baseline;
 - G6/G6R, G7, G8A, G8B-R1, G8B and G8C1 reproduce as author-approved PASS;
 - G8C design is author-approved and G8C2 explicitly authorized;
 - the G8C locus-locus specification is normative/author-approved;
@@ -34,8 +36,9 @@ matrices, actual evaluator and intersection source, audited upstream curve
 algorithms and versioned scientific pilots. Current source and normative
 contracts override generated evidence and conversation.
 
-Record repository/branch/HEAD/remotes/upstream/worktree, baseline tag(s), prompt
-SHA-256 and evidence hashes before edits.
+Record repository/branch/HEAD/remotes/upstream/worktree, the
+`geocedg-g8c1-pass` object and peeled target, prompt canonical-LF SHA-256 and
+evidence hashes before edits.
 
 # Scope
 

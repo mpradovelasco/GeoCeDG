@@ -1,12 +1,11 @@
 # Locus V2 extended-intersection semantic model
 
-**Status: G8C1 SEMANTICS NORMATIVE — AUTHOR APPROVED / G8C2 SEMANTICS
-PROPOSED — NOT NORMATIVE**
-**Scope: approved G8C design and G8C1 internal kernel; G8C2 not authorized**
+**Status: G8C1 AND G8C2 SEMANTICS NORMATIVE — AUTHOR APPROVED**
+**Scope: G8C1 internal kernel `PASS`; G8C2 implementation authorized / not started**
 
 Sections applying to one semantic source and a typed extended target are the
 author-approved G8C1 semantic contract. Dual-source/pair-specific sections are
-the proposed G8C2 model and remain gated by ADR 0009.
+the author-approved normative G8C2 model governed by Accepted ADR 0009.
 
 ## 1. Common result model
 
@@ -117,7 +116,7 @@ tangent roots require stronger evidence or remain unisolated/undetermined.
 
 ## 6. Result-kind and overlap model
 
-Finite and overlap information must not be collapsed. Proposed pair-level
+Finite and overlap information must not be collapsed. Normative pair-level
 outcomes include:
 
 - finite isolated solutions;
@@ -168,5 +167,6 @@ locally unisolated unless stronger uniqueness evidence exists. This preserves
 Option B without making residual-only candidates consumable.
 
 The author approved this implementation contract and its measured query-local
-baseline on 2026-08-15. G8C1 is `PASS — AUTHOR APPROVED`; this status does not
-authorize the proposed pair-specific G8C2 model.
+baseline on 2026-08-15. G8C1 is `PASS — AUTHOR APPROVED`. The later final
+source-level review approved the pair-specific G8C2 model as normative and
+authorized its separate implementation; no G8C2 implementation exists yet.

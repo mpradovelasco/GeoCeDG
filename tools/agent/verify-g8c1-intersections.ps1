@@ -21,6 +21,8 @@ $LogDirectory = [IO.Path]::GetFullPath($LogDirectory)
 $EvidenceRoot = Join-Path $RepositoryRoot "geocedg\validation\locus-v2\g8c1"
 $EvidencePath = Join-Path $EvidenceRoot "g8c1-intersection-kernel-evidence.json"
 $EvidenceHashes = Join-Path $EvidenceRoot "g8c1-evidence.sha256"
+$G8C2ContractEvidencePath = Join-Path $RepositoryRoot `
+    "geocedg\validation\locus-v2\g8c2\g8c2-contract-review-evidence.json"
 $ReferenceGenerator = Join-Path $RepositoryRoot `
     "geocedg\validation\locus-v2\g8c\generate_extended_intersection_references.py"
 $TestResultRoot = Join-Path $RepositoryRoot `
@@ -270,16 +272,27 @@ try {
     Assert-Condition -Condition ((Get-CanonicalTextSha256 -Path $promptPath) -eq `
             $PromptSha) -Message "Canonical G8C1 prompt hash changed."
 
+    $g8c2ContractApproved = Test-Path -LiteralPath $G8C2ContractEvidencePath `
+        -PathType Leaf
     Assert-Contains -RelativePath `
         "geocedg/specs/locus/locus-v2-extended-intersections.md" -Text @(
-            "G8C1 NORMATIVE — AUTHOR APPROVED",
-            "G8C1 is", "PASS — AUTHOR", "G8C2 remains",
+            $(if ($g8c2ContractApproved) {
+                    "G8C1 AND G8C2 NORMATIVE — AUTHOR APPROVED"
+                } else {
+                    "G8C1 NORMATIVE — AUTHOR APPROVED"
+                }),
+            "G8C1 is", "PASS — AUTHOR", "G8C2",
             "first-order normal geometric residual", "rho_vertical",
             "Option B")
     Assert-Contains -RelativePath "docs/roadmap/geocedg_roadmap.md" -Text @(
         "G8C DESIGN = PASS — AUTHOR APPROVED",
         "G8C1 = PASS — AUTHOR APPROVED",
-        "G8C2 = NOT AUTHORIZED — NOT STARTED", "G9 = NOT STARTED")
+        $(if ($g8c2ContractApproved) {
+                "G8C2 = AUTHORIZED — NOT STARTED"
+            } else {
+                "G8C2 = NOT AUTHORIZED — NOT STARTED"
+            }),
+        "G9 = NOT STARTED")
     Assert-Contains -RelativePath `
         "docs/validation/g8c1_locus_v2_extended_target_intersection_kernel_report.md" `
         -Text @("PASS — AUTHOR APPROVED", "38 tests", "NOT_ESTABLISHED", "414")
@@ -409,7 +422,11 @@ try {
 
     Write-Host "G8C1 verification passed (38 focused tests)."
     Write-Host "G8C1 is PASS - AUTHOR APPROVED and remains internal."
-    Write-Host "G8C2 and G9 remain not authorized/not started."
+    if ($g8c2ContractApproved) {
+        Write-Host "G8C2 is authorized/not started; G9 remains not started."
+    } else {
+        Write-Host "G8C2 and G9 remain not authorized/not started."
+    }
     Write-Host "Logs: $LogDirectory"
 } catch {
     Write-Error $_.Exception.Message

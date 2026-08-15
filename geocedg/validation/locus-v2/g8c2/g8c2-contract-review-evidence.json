@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "phase": "G8C2_CONTRACT_REVIEW",
+  "status": "PASS_AUTHOR_APPROVED",
+  "reviewDate": "2026-08-15",
+  "g8c1Baseline": {
+    "commit": "3c72e889a436e4bbccde177e1f24423196575f04",
+    "tag": "geocedg-g8c1-pass",
+    "tagPeeledToBaseline": true,
+    "implementationStatus": "PASS_AUTHOR_APPROVED"
+  },
+  "comparison": {
+    "substantiveContradictionFound": false,
+    "sharedRichResultFrameworkRetained": true,
+    "oneParameterAdapterUsedAsPairSolver": false,
+    "dedicatedDualParameterSolverRequired": true,
+    "queryLocalInitialState": true
+  },
+  "authorDecisions": {
+    "contract": "NORMATIVE_AUTHOR_APPROVED",
+    "adr0009": "ACCEPTED",
+    "implementation": "AUTHORIZED_NOT_STARTED",
+    "sourcePairIdentity": "CANONICAL_UNORDERED_WITH_REVERSIBLE_ORDERED_EVIDENCE",
+    "localIsolation": "EXHAUSTIVE_LOCAL_REGION_PLUS_JUSTIFIED_UNIQUENESS",
+    "tangency": "NORMALIZED_HIERARCHY_NO_MULTIPLICITY_FROM_RAW_DETERMINANT",
+    "overlap": "TYPED_NO_SAMPLED_POINT_REPRESENTATION",
+    "constructiveMultiplicity": "SEMANTIC_PAIR_NOT_CARTESIAN_COORDINATE",
+    "completeness": "EXHAUSTIVE_COMPONENT_PRODUCT_ONLY",
+    "optionB": "PRESERVED",
+    "domains": "BOUNDED_FINITE_AND_APPROVED_PERIODIC_FUNDAMENTAL_DOMAINS",
+    "identity": "SEMANTIC_CONTINUATION_NO_COORDINATE_REPAIR",
+    "state": "QUERY_LOCAL",
+    "g9Gate": "G8C2_PASS_AND_G8_GLOBAL_CLOSEOUT_REQUIRED"
+  },
+  "canonicalPrompt": {
+    "path": ".github/prompts/tasks/g8c2-locus-v2-locus-intersections.prompt.md",
+    "canonicalLfSha256": "e7f0535332a9c5a2789f98476aef2f9f143e84f9bda0ad3b7d657f070d99e58b",
+    "executed": false
+  },
+  "scopeAudit": {
+    "productiveG8c2SourceFiles": 0,
+    "g8c2Execution": 0,
+    "publicCommands": 0,
+    "publicApiExpansion": 0,
+    "genericPath": 0,
+    "xmlOrPersistence": 0,
+    "legacyGeoLocusChanges": 0,
+    "classicSemanticChanges": 0,
+    "threeDimensionalChanges": 0,
+    "g9Changes": 0,
+    "sharedOrGlobalIntersectionState": 0,
+    "generatedArtifactsTracked": 0
+  },
+  "phaseDisposition": {
+    "g8c1": "PASS_AUTHOR_APPROVED",
+    "g8c2Contract": "NORMATIVE_AUTHOR_APPROVED",
+    "adr0009": "ACCEPTED",
+    "g8c2": "AUTHORIZED_NOT_STARTED",
+    "g8": "IN_PROGRESS",
+    "g9": "NOT_STARTED"
+  }
+}

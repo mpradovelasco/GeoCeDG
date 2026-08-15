@@ -1,8 +1,8 @@
 # G8C scientific traceability
 
-**Status: G8C DESIGN/G8C1 TRACEABILITY — AUTHOR APPROVED;
-scientific sources motivate
-requirements but do not define the numerical algorithm**
+**Status: G8C DESIGN/G8C1 TRACEABILITY AND G8C2 CONTRACT TRACEABILITY —
+AUTHOR APPROVED; scientific sources motivate requirements but do not define the
+numerical algorithm**
 
 | Requirement | Versioned source/evidence | G8C consequence | Planned validation |
 |---|---|---|---|
