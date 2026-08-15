@@ -5,7 +5,7 @@
 | Status | **G8B-R1/G8B SOURCE IMPACT AUTHOR APPROVED** |
 | Baseline | GeoGebra 5.4.928.0, `9b93256b7df401ff056c37b502d82df4d72b1522` |
 | GeoCeDG G8A entry HEAD audited | `315aec011cdc719a41a9bdc352a4a10ea502df6e` |
-| Roadmap | G7/G8 planning/G8A/G8B-R1/G8B author-approved; G8C design authorized and not started; G8 in progress; G9 not started |
+| Roadmap | G7/G8 planning/G8A/G8B-R1/G8B/G8C design author-approved; G8C1 authorized, G8C2 not authorized; G8 in progress; G9 not started |
 | Date | 2026-08-14 |
 
 This map records the actual pinned-source extension points, accepted G8A
@@ -272,5 +272,6 @@ rich-result/Geo lookup, and the existing token point algorithm. The append-only
 `Path`, persistence, legacy/Classic, 3D, Level C, or G9 source.
 
 The author approved this exact bounded source-impact state for G8B-R1 and G8B
-on 2026-08-14. G8C design is authorized, but no Level C productive source or
-G8C design artifact is added by this closeout.
+on 2026-08-14. The 2026-08-15 G8C design closeout authorizes only G8C1 within
+its separate upstream impact inventory; it does not retroactively widen this
+G8B edit set or authorize G8C2.

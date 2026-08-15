@@ -6,20 +6,23 @@
 | G8A state | **PASS — AUTHOR APPROVED** |
 | G8B-R1 state | **PASS — AUTHOR APPROVED** |
 | G8B state | **PASS — AUTHOR APPROVED** |
-| G8C design | **AUTHORIZED — NOT STARTED** |
-| G8C implementation | **NOT AUTHORIZED — NOT STARTED** |
-| Approved stages | G8A characterization; G8B minimum internal kernel including R1; G8C design only |
+| G8C design | **PASS — AUTHOR APPROVED** |
+| G8C1 | **AUTHORIZED — NOT STARTED** |
+| G8C2 | **NOT AUTHORIZED — NOT STARTED** |
+| Approved stages | G8A characterization; G8B minimum internal kernel including R1; G8C design; separate G8C1 execution |
 | Specification state | **NORMATIVE / AUTHOR-APPROVED R1 REFINEMENT APPLIED** |
 | ADR state | ADR 0008 **Accepted — R1 clarification applied** |
-| Author-review date | 2026-08-14 |
+| Latest author-review date | 2026-08-15 |
 | Product maturity | Locus V2 remains experimental, internal, and disabled by default |
 
 The author approved this planning architecture, reviewed the completed G8A
 characterization, incorporated decisions D1–D17 into the normative contract,
 accepted ADR 0008 and authorized a separately invoked G8B. The canonical G8B
 execution and its focused R1 refinement are now `PASS — AUTHOR APPROVED`.
-They add no observable intersection behavior. G8C design is authorized for a
-separate task; G8C implementation and G9 remain unauthorized/not started.
+They add no observable intersection behavior. The separately executed G8C
+design is now `PASS — AUTHOR APPROVED`; its G8C1 one-parameter contract is
+normative and execution is authorized. G8C2 and G9 remain unauthorized/not
+started.
 
 ## 1. Authority and preflight record
 
@@ -124,8 +127,9 @@ It excludes:
 
 ## 4. Author-approved phase structure
 
-The author approves the completed G8A/G8B structure and authorizes G8C design
-without authorizing its implementation.
+The author approved the completed G8A/G8B structure and authorized G8C design
+without authorizing its implementation. That design is now complete and awaits
+author review.
 
 ### G8A — intersection characterization and author decisions
 
@@ -201,16 +205,23 @@ APPROVED` and preserved every internal/public boundary below.
 
 ### G8C — extended 2D incidence design
 
-**Design state:** `AUTHORIZED — NOT STARTED`.
+**Design state:** `PASS — AUTHOR APPROVED`.
 
-**Implementation state:** `NOT AUTHORIZED — NOT STARTED`.
+**G8C1 state:** `AUTHORIZED — NOT STARTED`.
 
-The separate design task must examine full conics, functional curves, general
-implicit curves and Locus V2 × Locus V2. It must determine whether productive
-work can be one phase or needs subdivision. In particular, Locus V2 × Locus V2
-solves `F(t) = Q(u)` over two semantic domains and introduces dual topology,
-overlap, completeness and identity questions. This closeout makes no
-architectural choice for that problem and adds no productive G8C source.
+**G8C2 state:** `NOT AUTHORIZED — NOT STARTED`.
+
+The separate design task audited full conics, functional curves, actual implicit
+curve authority and Locus V2 × Locus V2. It recommends G8C1 for typed
+one-parameter adapters (nondegenerate conics, explicitly bounded real functions,
+regular polynomial implicit curves) and G8C2 for the genuinely two-parameter
+problem `F(t) = Q(u)`. G8C2 adds dual topology, source symmetry, overlap,
+completeness and pair-identity questions and is governed by proposed ADR 0009.
+The [G8C design package](g8c_locus_v2_extended_intersections_design.md) adds no
+productive source. The author approved the subdivision and the G8C1-specific
+contract on 2026-08-15. Only a separately invoked G8C1 execution is authorized;
+G8C2 remains blocked on G8C1 `PASS — AUTHOR APPROVED`, ADR 0009 acceptance or
+explicit supersession, and separate author authorization.
 
 ## 5. Author-approved staged coverage
 
@@ -541,10 +552,13 @@ G8 PRODUCTIVE IMPLEMENTATION =
 INTERNAL MINIMUM KERNEL — AUTHOR APPROVED
 
 G8C DESIGN =
+PASS — AUTHOR APPROVED
+
+G8C1 =
 AUTHORIZED
 NOT STARTED
 
-G8C IMPLEMENTATION =
+G8C2 =
 NOT AUTHORIZED
 NOT STARTED
 

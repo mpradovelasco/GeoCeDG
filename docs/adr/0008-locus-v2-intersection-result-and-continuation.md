@@ -2,7 +2,7 @@
 
 - Status: **Accepted — R1 clarification applied**
 - Author review disposition: **ACCEPTED AT G8A CLOSEOUT; AUTHOR-APPROVED G8B-R1 CLARIFICATION APPLIED**
-- Roadmap state: G8 planning/G8A/G8B-R1/G8B `PASS — AUTHOR APPROVED`; G8C design authorized/not started; G8 in progress
+- Roadmap state: G8 planning/G8A/G8B-R1/G8B/G8C design `PASS — AUTHOR APPROVED`; G8C1 authorized/not started; G8C2 not authorized; G8 in progress
 - Decision phase: final G8A author closeout
 - Date: 2026-08-14
 
@@ -139,9 +139,11 @@ above final for G8B. It preserves this ADR's architecture without changing its
 historical rationale. The implementation remains experimental/internal and
 limited to line, segment, ray and circle.
 
-The author separately authorizes only G8C design for full conics, functional
-curves, general implicit curves and Locus V2 × Locus V2. G8C implementation is
-not authorized, G8 remains in progress, and G9 has not started.
+The author subsequently closed G8C design as `PASS — AUTHOR APPROVED` on
+2026-08-15 and approved its G8C1/G8C2 subdivision. Only the separately invoked
+G8C1 one-parameter implementation is authorized. G8C2 and its proposed ADR
+0009 contract remain not authorized, G8 remains in progress, and G9 has not
+started.
 
 ## Result invariants
 
@@ -385,8 +387,9 @@ G8 SPEC = NORMATIVE / AUTHOR-APPROVED R1 REFINEMENT APPLIED
 G8A = PASS — AUTHOR APPROVED
 G8B-R1 = PASS — AUTHOR APPROVED
 G8B = PASS — AUTHOR APPROVED
-G8C DESIGN = AUTHORIZED — NOT STARTED
-G8C IMPLEMENTATION = NOT AUTHORIZED — NOT STARTED
+G8C DESIGN = PASS — AUTHOR APPROVED
+G8C1 = AUTHORIZED — NOT STARTED
+G8C2 = NOT AUTHORIZED — NOT STARTED
 G8 = IN PROGRESS
 G9 = NOT STARTED
 ```

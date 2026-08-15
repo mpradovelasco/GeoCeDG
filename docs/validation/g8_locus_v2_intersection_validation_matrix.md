@@ -275,5 +275,6 @@ The required internal token-selected point consumer also passes
 defined/undefined/no-retarget/recovery and downstream DAG traces for complete,
 incomplete, and not-established parent sets. G8A is `PASS — AUTHOR APPROVED`;
 G8B-R1 and G8B are `PASS — AUTHOR APPROVED`. The productive code remains an
-internal, non-public capability. G8C design is authorized and not started;
-G8C implementation and the global G8 closeout remain pending.
+internal, non-public capability. G8C design is `PASS — AUTHOR APPROVED`; G8C1
+is authorized/not started, while G8C2 and the global G8 closeout remain
+pending.

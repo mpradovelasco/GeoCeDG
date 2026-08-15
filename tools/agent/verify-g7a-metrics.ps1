@@ -31,6 +31,9 @@ $R1EvidenceRoot = Join-Path $RepositoryRoot "geocedg\validation\locus-v2\g7a-r1"
 $R1EvidencePath = Join-Path $R1EvidenceRoot `
     "g7a-r1-characterization-evidence.json"
 $R1EvidenceHashes = Join-Path $R1EvidenceRoot "g7a-r1-evidence.sha256"
+$G8BEvidencePath = Join-Path $RepositoryRoot `
+    "geocedg\validation\locus-v2\g8b\g8b-intersection-kernel-evidence.json"
+$G8BVerifierPath = Join-Path $PSScriptRoot "verify-g8b-intersections.ps1"
 $G7MarkdownDocuments = @(
     "docs\roadmap\g7_locus_v2_metrics_plan.md",
     "docs\roadmap\geocedg_roadmap.md",
@@ -514,6 +517,16 @@ try {
             -Message ("G7A changed productive source:`n" +
                 ($productiveChanges -join "`n"))
     } else {
+        $g8bFollowOnPresent = (Test-Path -LiteralPath $G8BEvidencePath `
+                -PathType Leaf) -and (Test-Path -LiteralPath $G8BVerifierPath `
+                -PathType Leaf)
+        if ($g8bFollowOnPresent) {
+            $g8bEvidence = Get-Content -LiteralPath $G8BEvidencePath -Raw |
+                ConvertFrom-Json -Depth 100
+            Assert-Condition -Condition ($g8bEvidence.status -eq `
+                    "PASS_AUTHOR_APPROVED") `
+                -Message "The detected G8B follow-on evidence has an invalid status."
+        }
         $approvedG7BProductivePaths = @(
             '^source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/',
             '^source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusMetric(V2|ScalarAdapter)\.java$',
@@ -521,6 +534,13 @@ try {
             '^source/shared/common/src/main/java/org/geogebra/common/plugin/GeoClass\.java$',
             '^source/desktop/desktop/src/main/java/org/geocedg/desktop/locus/LocusV2LaboratoryController\.java$'
         )
+        if ($g8bFollowOnPresent) {
+            $approvedG7BProductivePaths += @(
+                '^source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/[^/]+\.java$',
+                '^source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusIntersection(Point)?V2\.java$',
+                '^source/shared/common/src/main/java/org/geocedg/common/kernel/geos/GeoLocusIntersectionResult\.java$'
+            )
+        }
         $unexpectedG7BProductive = @($productiveChanges | Where-Object {
                 $candidate = $_
                 -not @($approvedG7BProductivePaths | Where-Object {
@@ -528,7 +548,7 @@ try {
                     })
             })
         Assert-Condition -Condition ($unexpectedG7BProductive.Count -eq 0) `
-            -Message ("G7B productive source escaped its approved boundary:`n" +
+            -Message ("Post-G7A productive source escaped its approved G7B/G8B boundary:`n" +
                 ($unexpectedG7BProductive -join "`n"))
     }
 

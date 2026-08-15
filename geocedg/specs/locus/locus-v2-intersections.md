@@ -4,7 +4,7 @@
 |---|---|
 | Status | **NORMATIVE / AUTHOR-APPROVED R1 REFINEMENT APPLIED** |
 | Version | `1.1` |
-| Phase | G8 planning, G8A, G8B-R1 and G8B `PASS — AUTHOR APPROVED`; G8C design authorized/not started; G8 in progress |
+| Phase | G8 planning, G8A, G8B-R1, G8B and G8C design `PASS — AUTHOR APPROVED`; G8C1 authorized/not started; G8C2 not authorized; G8 in progress |
 | Scope | Internal two-dimensional Locus V2 intersection semantics |
 | Product state | Experimental, internal, disabled by default |
 | Approval | Author-approved on 2026-08-14 from G8A; G8B-R1 semantics and G8B implementation author-approved on 2026-08-14 |
@@ -154,17 +154,19 @@ The current `GeoImplicit` interface supplies `evaluateImplicitCurve(x,y)`,
 `GeoImplicitCurve` can also evaluate a non-polynomial expression when the
 coefficient array is absent. These are real authority seams, but they do not by
 themselves establish residual normalization, root-set completeness, or a
-bounded solver. Polynomial and non-polynomial implicit curves therefore remain
-Level-C characterization targets. G8 must not manufacture an implicit
-conversion for unrelated objects.
+bounded solver. The author-approved G8C1 extension now defines a regular,
+finite-coefficient polynomial subset; singular and nonpolynomial/general
+implicit curves remain deferred. G8 must not manufacture an implicit conversion
+for unrelated objects.
 
 ### 2.4 Functions
 
 For an explicit function with a construction-owned domain, a possible residual
 is `y-f(x)`. The current `GeoFunction.getMinParameter()` and
 `getMaxParameter()` are view-clipped, so they are not an acceptable semantic
-domain. Functions remain deferred until a type-specific, view-independent
-domain and discontinuity contract is approved.
+domain. The author-approved G8C1 extension therefore supports only real
+`GeoFunction` targets with an explicit finite semantic domain and established
+valid components; unrestricted/view-bounded functions remain deferred.
 
 ## 3. Query model
 
@@ -692,9 +694,12 @@ token-selected point consumer, independent completeness axis, typed overlap,
 capability hierarchy, normalized tolerance policy, provisional deterministic
 budgets, narrow semantic continuation contract, rejection of universal
 merge/split genealogy, query-local state and the line/segment/ray/circle
-minimum. Full conics, functions, general implicit curves and locus–locus remain
-deferred. Public command, generic `Path`, XML/persistence, legacy/Classic, 3D,
-G9 and Python boundaries remain closed.
+minimum. Those extended families remain outside G8B. The separate G8C1 contract
+now authorizes nondegenerate ellipse/parabola/hyperbola, explicitly bounded real
+functions and regular finite-coefficient polynomial implicit targets; G8C2
+locus–locus remains proposed and not authorized. Public command, generic
+`Path`, XML/persistence, legacy/Classic, 3D, G9 and Python boundaries remain
+closed.
 
 The canonical G8B prompt has been executed and the focused author-directed R1
 refinement has been applied. Its internal implementation and evidence package
@@ -704,9 +709,11 @@ claims require an authoritative analytic/certified capability
 whose declared component coverage and candidates are independently verified.
 Individually verified roots additionally require established local isolation
 and unambiguous semantic identity before point consumption. G8C design is
-authorized to examine full conics, functional curves, general implicit curves
-and Locus V2 × Locus V2; no G8C implementation, public or other deferred
-boundary is opened by this closeout.
+`PASS — AUTHOR APPROVED`. The extension specification makes only the G8C1
+one-parameter subset normative and authorizes its separately invoked execution;
+the G8C2 Locus V2 × Locus V2 contract remains proposed and implementation is
+not authorized. No public or other deferred boundary is opened by this
+closeout.
 
 ```text
 G8 SPEC = NORMATIVE / AUTHOR-APPROVED R1 REFINEMENT APPLIED
@@ -715,8 +722,9 @@ ADR 0008 = ACCEPTED — R1 CLARIFICATION APPLIED
 G8B-R1 = PASS — AUTHOR APPROVED
 G8B = PASS — AUTHOR APPROVED
 G8 PRODUCTIVE IMPLEMENTATION = INTERNAL MINIMUM KERNEL — AUTHOR APPROVED
-G8C DESIGN = AUTHORIZED — NOT STARTED
-G8C IMPLEMENTATION = NOT AUTHORIZED — NOT STARTED
+G8C DESIGN = PASS — AUTHOR APPROVED
+G8C1 = AUTHORIZED — NOT STARTED
+G8C2 = NOT AUTHORIZED — NOT STARTED
 G8 = IN PROGRESS
 G9 = NOT STARTED
 ```

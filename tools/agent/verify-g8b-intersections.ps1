@@ -236,8 +236,8 @@ try {
     Assert-Contains -RelativePath `
         "geocedg\specs\locus\locus-v2-intersections.md" -Text @(
             "NORMATIVE / AUTHOR-APPROVED R1 REFINEMENT APPLIED",
-            'G8B `PASS — AUTHOR APPROVED`',
-            'G8C design authorized/not started'
+            'G8B = PASS — AUTHOR APPROVED',
+            'G8C design `PASS — AUTHOR APPROVED`'
         )
     Assert-Contains -RelativePath `
         "docs\adr\0008-locus-v2-intersection-result-and-continuation.md" `
@@ -428,7 +428,7 @@ try {
         -Message "git diff --cached --check failed."
 
     Write-Host "G8B-R1/G8B author-closeout verification passed (49 productive tests)."
-    Write-Host "G8C design is authorized and not started; G8C implementation is not authorized."
+    Write-Host "G8C design is author-approved; G8C1 is authorized and G8C2 is not authorized."
     Write-Host "Logs: $LogDirectory"
 } catch {
     Write-Error $_.Exception.Message

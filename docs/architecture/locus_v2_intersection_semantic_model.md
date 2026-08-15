@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Status | **G8B-R1 AND G8B PASS — AUTHOR APPROVED** |
-| Phase | G8 planning, G8A, G8B-R1 and G8B `PASS — AUTHOR APPROVED`; G8C design authorized and not started; G8 remains in progress |
+| Phase | G8 planning, G8A, G8B-R1, G8B and G8C design `PASS — AUTHOR APPROVED`; G8C1 authorized/not started; G8C2 not authorized; G8 remains in progress |
 | Normative authority | `geocedg/specs/locus/locus-v2-intersections.md` |
 
 This document explains the architecture and value/identity details accepted
@@ -408,7 +408,8 @@ G8B now implements this model through the immutable
 `AlgoLocusIntersectionPointV2`. The evaluator-only capability preserves
 `NOT_ESTABLISHED` completeness; only a stronger authoritative capability may
 establish complete coverage. The author approved this minimum internal model,
-including the R1 refinement, on 2026-08-14. G8C design may examine full conics,
-functions, general implicit curves and locus–locus intersections, but neither
-that design nor any G8C implementation begins here. No public command, `Path`,
+including the R1 refinement, on 2026-08-14. The later G8C design closeout on
+2026-08-15 approved the G8C1/G8C2 subdivision and authorizes only the separately
+invoked G8C1 implementation. G8C2 remains proposed and not authorized. No
+public command, `Path`,
 persistence, legacy/Classic, 3D or G9 behavior is implied.

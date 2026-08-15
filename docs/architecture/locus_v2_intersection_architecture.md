@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Status | **G8B-R1 AND G8B PASS — AUTHOR APPROVED** |
-| Roadmap phase | G8 planning, G8A, G8B-R1 and G8B `PASS — AUTHOR APPROVED`; G8C design authorized and not started; G8 remains in progress |
+| Roadmap phase | G8 planning, G8A, G8B-R1, G8B and G8C design `PASS — AUTHOR APPROVED`; G8C1 authorized/not started; G8C2 not authorized; G8 remains in progress |
 | Semantic model | [`locus_v2_intersection_semantic_model.md`](locus_v2_intersection_semantic_model.md) |
 | Normative contract | [`locus-v2-intersections.md`](../../geocedg/specs/locus/locus-v2-intersections.md) |
 | Upstream audit | [`locus_v2_intersection_upstream_impact.md`](locus_v2_intersection_upstream_impact.md) |
@@ -382,8 +382,8 @@ canonical G8B prompt produced the bounded internal implementation and evidence
 package. The author closed G8B-R1 and G8B as `PASS — AUTHOR APPROVED` on
 2026-08-14.
 
-G8C design is authorized but not started. It must examine full conics,
-functional curves, general implicit curves and the fundamentally
-two-parameter locus–locus problem without prejudging whether one productive
-phase is sufficient. G8C implementation, global G8 closeout and G9 remain
-unauthorized/not started as applicable.
+G8C design is `PASS — AUTHOR APPROVED`. It establishes G8C1 for nondegenerate
+conics, explicitly bounded functions and regular polynomial implicit targets,
+followed by a separate G8C2 for the fundamentally two-parameter locus–locus
+problem. Only G8C1 execution is authorized; G8C2, global G8 closeout and G9
+remain unauthorized/not started as applicable.

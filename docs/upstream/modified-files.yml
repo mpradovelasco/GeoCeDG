@@ -1274,6 +1274,30 @@
       "change": "added",
       "purpose": "Verify productive G8B topology, representation independence, mixed overlap, reduced CeDG scientific pilots, and repeated query-local work.",
       "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8CCharacterizationSupport.java",
+      "change": "added",
+      "purpose": "Provide deterministic test-private residual, pair-identity, isolation, overlap, and work-counter probes for G8C design without productive authority.",
+      "authority": "docs/roadmap/g8c_locus_v2_extended_intersections_design.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8CExtendedTargetCharacterizationTest.java",
+      "change": "added",
+      "purpose": "Characterize actual conic, function, and implicit-curve authority, domains, normalization, singularities, and supported-subset boundaries for G8C1 design.",
+      "authority": "docs/roadmap/g8c_locus_v2_extended_intersections_design.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8CLocusLocusCharacterizationTest.java",
+      "change": "added",
+      "purpose": "Characterize two-source sessions, source-order symmetry, semantic pair identity, local isolation, tangency, overlap, periodicity, and Option B for G8C2 design.",
+      "authority": "docs/roadmap/g8c_locus_v2_extended_intersections_design.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8CDesignFunctionalBenchmarkTest.java",
+      "change": "added",
+      "purpose": "Measure deterministic query-local pair combinatorics, repeated queries, nesting depth, retained state, and forbidden-authority counters for G8C design.",
+      "authority": "docs/roadmap/g8c_locus_v2_extended_intersections_design.md"
     }
   ]
 }

@@ -31,6 +31,9 @@ $EvidenceHashes = Join-Path $EvidenceRoot "g8a-evidence.sha256"
 $G8BEvidencePath = Join-Path $RepositoryRoot `
     "geocedg\validation\locus-v2\g8b\g8b-intersection-kernel-evidence.json"
 $G8BVerifierPath = Join-Path $PSScriptRoot "verify-g8b-intersections.ps1"
+$G8CEvidencePath = Join-Path $RepositoryRoot `
+    "geocedg\validation\locus-v2\g8c\g8c-design-characterization-evidence.json"
+$G8CVerifierPath = Join-Path $PSScriptRoot "verify-g8c-intersections-design.ps1"
 $ReferenceGenerator = Join-Path $EvidenceRoot `
     "generate_intersection_references.py"
 $TestSourceRoot = Join-Path $RepositoryRoot `
@@ -470,6 +473,24 @@ try {
 
     $sourceStatus = @(& git -C $RepositoryRoot status --porcelain=v1 `
         --untracked-files=all -- source)
+    $g8cDesignPresent = (Test-Path -LiteralPath $G8CEvidencePath `
+            -PathType Leaf) -and (Test-Path -LiteralPath $G8CVerifierPath `
+            -PathType Leaf)
+    $g8cAllowedCharacterizationTests = @()
+    if ($g8cDesignPresent) {
+        $g8cEvidence = Get-Content -LiteralPath $G8CEvidencePath -Raw |
+            ConvertFrom-Json -Depth 100
+        Assert-Condition -Condition ($g8cEvidence.phase -eq "G8C_DESIGN" `
+                -and $g8cEvidence.status -eq `
+                    "PASS_AUTHOR_APPROVED") `
+            -Message "The detected G8C design evidence has an invalid status."
+        $g8cAllowedCharacterizationTests = @(
+            "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8CCharacterizationSupport.java",
+            "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8CDesignFunctionalBenchmarkTest.java",
+            "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8CExtendedTargetCharacterizationTest.java",
+            "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8CLocusLocusCharacterizationTest.java"
+        )
+    }
     $unexpectedSource = @($sourceStatus | Where-Object {
             $path = ($_ -replace '^..\s+', '').Replace("\", "/")
             $isG8A = $path -match `
@@ -482,8 +503,10 @@ try {
                 ($path -match `
                     '^source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/[^/]+\.java$' `
                 -or $path -in $g8bAllowedProductive)
+            $isG8CDesignTest = $g8cDesignPresent -and
+                $path -in $g8cAllowedCharacterizationTests
             -not ($isG8A -or $isG8BTest -or $isG8BCompatibility -or
-                $isG8BProductive)
+                $isG8BProductive -or $isG8CDesignTest)
         })
     Assert-Condition -Condition ($unexpectedSource.Count -eq 0) `
         -Message ("G8A source changes escaped the test-private boundary:`n" +

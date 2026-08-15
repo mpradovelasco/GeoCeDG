@@ -30,6 +30,8 @@ $G8AIntersectionVerifier = Join-Path $PSScriptRoot `
     "verify-g8a-intersections.ps1"
 $G8BIntersectionVerifier = Join-Path $PSScriptRoot `
     "verify-g8b-intersections.ps1"
+$G8CIntersectionDesignVerifier = Join-Path $PSScriptRoot `
+    "verify-g8c-intersections-design.ps1"
 $BenchmarkRunner = Join-Path $RepositoryRoot "tools\benchmark\run.ps1"
 $InitialStatus = $null
 
@@ -175,6 +177,24 @@ try {
         & $G8BIntersectionVerifier @g8bIntersectionParameters
         Assert-LastScriptSuccess `
             -Description "G8B native Locus V2 intersection kernel"
+
+        Write-Host "`n==> G8C extended Locus V2 intersection design"
+        $g8cDesignParameters = @{
+            LogDirectory = Join-Path ([IO.Path]::GetFullPath($LogDirectory)) `
+                "g8c-intersections-design"
+        }
+        if ($SkipBuild) {
+            $g8cDesignParameters.SkipBuild = $true
+        }
+        if ($AllowToolchainDownload) {
+            $g8cDesignParameters.AllowToolchainDownload = $true
+        }
+        if ($KeepBuildOutputs) {
+            $g8cDesignParameters.KeepBuildOutputs = $true
+        }
+        & $G8CIntersectionDesignVerifier @g8cDesignParameters
+        Assert-LastScriptSuccess `
+            -Description "G8C extended Locus V2 intersection design"
     }
 
     Write-Host "`n==> Standalone Windows packaging contracts"

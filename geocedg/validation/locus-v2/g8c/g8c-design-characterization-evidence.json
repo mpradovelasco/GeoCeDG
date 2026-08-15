@@ -1,0 +1,174 @@
+{
+  "schemaVersion": 1,
+  "id": "cedg.validation.g8c.extended-intersections-design",
+  "phase": "G8C_DESIGN",
+  "status": "PASS_AUTHOR_APPROVED",
+  "executionDate": "2026-08-14",
+  "authorReviewDate": "2026-08-15",
+  "authority": "design and test-private characterization evidence; no productive G8C authority",
+  "provenance": {
+    "entrySha": "3531db7838426305c505c291b1d614aa6df5175c",
+    "entryBranch": "feature/g8c-locus-v2-extended-intersections-design",
+    "originMainAtEntry": "3531db7838426305c505c291b1d614aa6df5175c",
+    "g8bTag": "geocedg-g8b-pass",
+    "g8bTagTarget": "3531db7838426305c505c291b1d614aa6df5175c",
+    "upstreamBaseline": "9b93256b7df401ff056c37b502d82df4d72b1522",
+    "normativeG8Specification": "geocedg/specs/locus/locus-v2-intersections.md",
+    "acceptedG8Adr": "docs/adr/0008-locus-v2-intersection-result-and-continuation.md",
+    "splitStatusExtensionSpecification": "geocedg/specs/locus/locus-v2-extended-intersections.md",
+    "proposedPairAdr": "docs/adr/0009-locus-v2-locus-intersection-pair-semantics.md"
+  },
+  "recommendation": {
+    "singleUnifiedImplementation": false,
+    "phases": [
+      {
+        "id": "G8C1",
+        "role": "ONE_SEMANTIC_PARAMETER_EXTENDED_TARGETS",
+        "families": [
+          "NONDEGENERATE_ELLIPSE",
+          "NONDEGENERATE_PARABOLA",
+          "NONDEGENERATE_HYPERBOLA",
+          "EXPLICITLY_BOUNDED_REAL_GEOFUNCTION",
+          "REGULAR_FINITE_COEFFICIENT_POLYNOMIAL_GEOIMPLICITCURVE"
+        ],
+        "authorized": true,
+        "contractStatus": "NORMATIVE_AUTHOR_APPROVED",
+        "implementationStatus": "AUTHORIZED_NOT_STARTED"
+      },
+      {
+        "id": "G8C2",
+        "role": "DUAL_SEMANTIC_PARAMETER_LOCUS_V2_X_LOCUS_V2",
+        "domains": [
+          "FINITE_COMPONENT_X_FINITE_COMPONENT",
+          "FINITE_X_PERIODIC_FUNDAMENTAL_DOMAIN",
+          "PERIODIC_X_PERIODIC_FUNDAMENTAL_DOMAIN"
+        ],
+        "authorized": false,
+        "contractStatus": "PROPOSED_NOT_NORMATIVE",
+        "implementationStatus": "NOT_AUTHORIZED_NOT_STARTED"
+      }
+    ]
+  },
+  "singleTargetCharacterization": {
+    "conic": {
+      "authoritativeClasses": ["GeoConicND", "GeoConic"],
+      "supportedProposal": ["ELLIPSE", "PARABOLA", "HYPERBOLA"],
+      "degenerateConics": "DEFER_TYPED_SUBTYPE_POLICY",
+      "verificationQuantity": "FIRST_ORDER_NORMAL_G_OVER_GRADIENT_NORM",
+      "exactEuclideanDistanceClaimed": false,
+      "equationScaleInvariantAtRegularPoints": true
+    },
+    "function": {
+      "authoritativeClass": "GeoFunction",
+      "explicitFiniteDomainRequired": true,
+      "viewDerivedBoundsAllowed": false,
+      "verificationQuantity": "VERTICAL_MODEL_LENGTH_Y_MINUS_F_X",
+      "firstOrderNormalDiagnostic": true,
+      "invalidValuesSplitComponents": true,
+      "undefinedIsNoIntersection": false
+    },
+    "implicit": {
+      "authoritativeClasses": ["GeoImplicit", "GeoImplicitCurve"],
+      "supportedProposal": "FINITE_COEFFICIENT_POLYNOMIAL_REGULAR_ROOTS",
+      "verificationQuantity": "FIRST_ORDER_NORMAL_G_OVER_GRADIENT_NORM",
+      "singularRootRegularResidualAvailable": false,
+      "nonPolynomialGeneralSupport": false,
+      "sampledPathAuthorityAllowed": false
+    }
+  },
+  "locusLocusCharacterization": {
+    "equation": "F_j(t)-Q_k(u)=(0,0)",
+    "geometricSourcePair": "CANONICAL_UNORDERED",
+    "computationEvidence": "ORDERED_REVISION_SCOPED",
+    "operandReversalPreservesToken": true,
+    "parameterPairIsDurableIdentity": false,
+    "isolatingRectangleIsDurableIdentity": false,
+    "localIsolationRequirement": "EXHAUSTIVE_LOCAL_RECTANGLE_PLUS_JUSTIFIED_UNIQUENESS",
+    "smallResidualAloneEstablishesIsolation": false,
+    "normalizedTangencyQuantity": "DET_F_PRIME_Q_PRIME_OVER_SPEED_PRODUCT",
+    "zeroDeterminantProvesMultiplicity": false,
+    "overlapStates": [
+      "OVERLAP_ESTABLISHED",
+      "OVERLAP_SUSPECTED_NOT_ESTABLISHED",
+      "UNSUPPORTED_OVERLAP"
+    ],
+    "matchingSamplesEstablishOverlap": false,
+    "constructivePreimagesDeduplicatedByCoordinate": false,
+    "optionBPreserved": true,
+    "globalCompletenessGenerallyAssumed": false,
+    "unboundedDomainsSupportedByCurrentG6Intervals": false
+  },
+  "tests": {
+    "command": ".\\gradlew.bat -Dorg.gradle.java.installations.auto-download=false :shared:common-jre:test --tests org.geocedg.common.locus.G8C* :shared:common-jre:checkstyleTest --no-daemon --console=plain",
+    "suites": {
+      "G8CExtendedTargetCharacterizationTest": {"tests": 13, "failures": 0},
+      "G8CLocusLocusCharacterizationTest": {"tests": 13, "failures": 0},
+      "G8CDesignFunctionalBenchmarkTest": {"tests": 6, "failures": 0}
+    },
+    "total": {"tests": 32, "failures": 0, "errors": 0, "skipped": 0},
+    "checkstyleTestViolations": 0
+  },
+  "functionalEvidence": {
+    "twoCurrentLocusRevisionsInOneSession": true,
+    "sourceOrderSymmetricToken": true,
+    "reversalSwapsParameterEvidence": true,
+    "equalCoordinateDistinctPreimagesKeepDistinctTokens": true,
+    "residualOnlyPairIsolation": false,
+    "tangentPairNeedsHigherOrderEvidence": true,
+    "matchingSamplesOnlySuspectOverlap": true,
+    "periodicSeamCanonicalizationTwoSided": true,
+    "g6InfiniteIntervalsRejected": true,
+    "optionBAcrossAllCompletenessStates": true,
+    "queryLocalRetainedEntries": 0,
+    "renderReads": 0,
+    "legacySampleReads": 0,
+    "viewportReads": 0,
+    "metricIndexReads": 0,
+    "wholeLocusRegenerations": 0,
+    "nestedDepthsCharacterized": [1, 2, 3],
+    "repeatedQueryCountsCharacterized": [1, 10, 100]
+  },
+  "independentReferences": {
+    "generator": "geocedg/validation/locus-v2/g8c/generate_extended_intersection_references.py",
+    "values": "geocedg/validation/locus-v2/g8c/extended-intersection-reference-values.json",
+    "runtime": "CPython 3.12.13",
+    "library": "mpmath 1.4.1",
+    "precisionDecimalDigits": 80,
+    "generatorSha256": "f00ffd1b33c558e0a936d766b5736b807b7fd80756ffa092bc0aee7764db3548",
+    "valuesSha256": "5d50cbd8c86733d4da33be35de2c6946421038e1e3f6ea4a8204140d8ed16e12"
+  },
+  "futurePrompts": [
+    {
+      "phase": "G8C1",
+      "path": ".github/prompts/tasks/g8c1-locus-v2-extended-target-intersections.prompt.md",
+      "sha256": "c096a069b10b85a27e8ac96223ca679d788441f2a684403991e66a1ffbcfabaa",
+      "executed": false
+    },
+    {
+      "phase": "G8C2",
+      "path": ".github/prompts/tasks/g8c2-locus-v2-locus-intersections.prompt.md",
+      "sha256": "b79e5f37d9ed8393dfb81f6d05a09c456a9487a10852f85efc09e07ddc5951b0",
+      "executed": false
+    }
+  ],
+  "scopeAudit": {
+    "productiveG8cSourceFiles": 0,
+    "publicApiOrCommandChanges": false,
+    "pathChanges": false,
+    "xmlPersistenceMigrationChanges": false,
+    "legacyGeoLocusOrClassicChanges": false,
+    "threeDimensionalOrG9Changes": false,
+    "sharedOrGlobalIntersectionState": false,
+    "generatedArtifactsTracked": false
+  },
+  "authorReview": {
+    "required": false,
+    "designPassClaimed": true,
+    "subdivisionApproved": true,
+    "g8c1Authorized": true,
+    "g8c2Authorized": false,
+    "adr0009Accepted": false,
+    "disposition": "G8C_DESIGN_PASS_AUTHOR_APPROVED"
+  },
+  "g9GateRecommendation": "REQUIRE_G8C1_AND_G8C2_PASS_AUTHOR_APPROVED_BEFORE_G8_GLOBAL_CLOSEOUT_OR_G9_START"
+}
