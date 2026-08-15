@@ -254,8 +254,8 @@ try {
         ".github\prompts\tasks\g8c2-locus-v2-locus-intersections.prompt.md" = $G8C2PromptSha
     }
     foreach ($prompt in $promptHashes.GetEnumerator()) {
-        $actual = (Get-FileHash -LiteralPath (Join-Path $RepositoryRoot $prompt.Key) `
-            -Algorithm SHA256).Hash.ToLowerInvariant()
+        $actual = Get-CanonicalTextSha256 -Path `
+            (Join-Path $RepositoryRoot $prompt.Key)
         Assert-Condition -Condition ($actual -eq $prompt.Value) `
             -Message "Future prompt hash changed: $($prompt.Key)"
         Assert-Contains -RelativePath $prompt.Key -Text @(
