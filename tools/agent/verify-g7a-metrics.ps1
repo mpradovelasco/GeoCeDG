@@ -56,6 +56,7 @@ $InitialStatus = $null
 $GeneratedSnapshot = $null
 
 . $GeneratedStateHelper
+. (Join-Path $PSScriptRoot "evidence-integrity.ps1")
 
 function Assert-Condition {
     param(
@@ -64,21 +65,6 @@ function Assert-Condition {
     )
     if (-not $Condition) {
         throw $Message
-    }
-}
-
-function Get-CanonicalTextSha256 {
-    param([Parameter(Mandatory)] [string]$Path)
-
-    $content = [IO.File]::ReadAllText($Path)
-    $canonicalContent = $content.Replace("`r`n", "`n").Replace("`r", "`n")
-    $encoding = [Text.UTF8Encoding]::new($false)
-    $sha256 = [Security.Cryptography.SHA256]::Create()
-    try {
-        $hashBytes = $sha256.ComputeHash($encoding.GetBytes($canonicalContent))
-        return [Convert]::ToHexString($hashBytes).ToLowerInvariant()
-    } finally {
-        $sha256.Dispose()
     }
 }
 
@@ -111,38 +97,13 @@ function Assert-TestResult {
 }
 
 function Assert-ReferenceHashes {
-    foreach ($line in Get-Content -LiteralPath $ReferenceHashes) {
-        if ([string]::IsNullOrWhiteSpace($line)) {
-            continue
-        }
-        $parts = $line -split "\s+", 2
-        Assert-Condition -Condition ($parts.Count -eq 2) `
-            -Message "Malformed reference hash line: $line"
-        $path = Join-Path $ReferenceRoot $parts[1].Trim()
-        Assert-Condition -Condition (Test-Path -LiteralPath $path -PathType Leaf) `
-            -Message "Hashed reference artifact is missing: $path"
-        $actual = Get-CanonicalTextSha256 -Path $path
-        Assert-Condition -Condition ($actual -eq $parts[0].ToLowerInvariant()) `
-            -Message "G7A reference hash mismatch: $path"
-    }
+    [void](Assert-GeoCeDGFrozenHashManifest -RepositoryRoot $RepositoryRoot `
+        -ManifestPath $ReferenceHashes)
 }
 
 function Assert-R1EvidenceHashes {
-    foreach ($line in Get-Content -LiteralPath $R1EvidenceHashes) {
-        if ([string]::IsNullOrWhiteSpace($line)) {
-            continue
-        }
-        $parts = $line -split "\s+", 2
-        Assert-Condition -Condition ($parts.Count -eq 2) `
-            -Message "Malformed R1 evidence hash line: $line"
-        $relativePath = $parts[1].Trim().Replace("/", "\")
-        $path = Join-Path $RepositoryRoot $relativePath
-        Assert-Condition -Condition (Test-Path -LiteralPath $path -PathType Leaf) `
-            -Message "Hashed R1 evidence artifact is missing: $path"
-        $actual = Get-CanonicalTextSha256 -Path $path
-        Assert-Condition -Condition ($actual -eq $parts[0].ToLowerInvariant()) `
-            -Message "G7A-R1 evidence hash mismatch: $path"
-    }
+    [void](Assert-GeoCeDGFrozenHashManifest -RepositoryRoot $RepositoryRoot `
+        -ManifestPath $R1EvidenceHashes)
 }
 
 function Assert-MarkdownLinks {
@@ -176,6 +137,7 @@ function Assert-MarkdownLinks {
 
 try {
     $InitialStatus = Get-RepositoryStatusText -RepositoryRoot $RepositoryRoot
+    [void](Assert-GeoCeDGFrozenG8Anchor -RepositoryRoot $RepositoryRoot)
     if (-not $SkipBuild) {
         $GeneratedSnapshot = New-RepositoryGeneratedStateSnapshot `
             -RepositoryRoot $RepositoryRoot `
@@ -214,15 +176,16 @@ try {
 
     $promptPath = Join-Path $RepositoryRoot `
         ".github\prompts\tasks\g7a-locus-v2-metric-characterization.prompt.md"
-    $actualPromptSha = Get-CanonicalTextSha256 -Path $promptPath
+    $actualPromptSha = Get-GeoCeDGFrozenCanonicalTextSha256 `
+        -RepositoryRoot $RepositoryRoot -Path $promptPath
     Assert-Condition -Condition ($actualPromptSha -eq $PromptSha) `
         -Message "The executed G7A prompt hash changed."
     Assert-ReferenceHashes
     Assert-R1EvidenceHashes
     Assert-MarkdownLinks
 
-    $evidence = Get-Content -LiteralPath $EvidencePath -Raw |
-        ConvertFrom-Json -Depth 100
+    $evidence = Get-GeoCeDGFrozenJson -RepositoryRoot $RepositoryRoot `
+        -Path $EvidencePath
     Assert-Condition -Condition ($evidence.status -eq `
             "PASS_AUTHOR_APPROVED") `
         -Message "G7A evidence must record final author approval."
@@ -245,8 +208,8 @@ try {
                 "NORMATIVE_AUTHOR_APPROVED") `
         -Message "G7A evidence final phase disposition is inconsistent."
 
-    $r1Evidence = Get-Content -LiteralPath $R1EvidencePath -Raw |
-        ConvertFrom-Json -Depth 100
+    $r1Evidence = Get-GeoCeDGFrozenJson -RepositoryRoot $RepositoryRoot `
+        -Path $R1EvidencePath
     Assert-Condition -Condition ($r1Evidence.status -eq "PASS_AUTHOR_APPROVED") `
         -Message "G7A-R1 evidence must record final author approval."
     Assert-Condition -Condition ($r1Evidence.provenance.headAndPlanningSha -eq `
@@ -510,32 +473,32 @@ try {
             "Map<FullKey, LocusMetricContribution2D>")) `
         -Message "Shared owner must not cache route-specific contributions."
 
-    $productiveChanges = @(& git -C $RepositoryRoot diff --name-only `
-        $PlanningSha -- ":(glob)source/**/src/main/**")
-    if ($LASTEXITCODE -ne 0) {
-        throw "Unable to audit productive source changes from planning baseline."
-    }
+    $productiveChanges = @(Get-GeoCeDGFrozenChangedPaths `
+        -RepositoryRoot $RepositoryRoot -BaseCommit $PlanningSha |
+        Where-Object { $_ -match '^source/.+/src/main/' })
     if ($ReproduceCharacterization) {
         Assert-Condition -Condition ($productiveChanges.Count -eq 0) `
             -Message ("G7A changed productive source:`n" +
                 ($productiveChanges -join "`n"))
     } else {
-        $g8bFollowOnPresent = (Test-Path -LiteralPath $G8BEvidencePath `
-                -PathType Leaf) -and (Test-Path -LiteralPath $G8BVerifierPath `
-                -PathType Leaf)
+        $g8bFollowOnPresent = (Test-GeoCeDGFrozenPath `
+                -RepositoryRoot $RepositoryRoot -Path $G8BEvidencePath) -and
+            (Test-GeoCeDGFrozenPath -RepositoryRoot $RepositoryRoot `
+                -Path $G8BVerifierPath)
         if ($g8bFollowOnPresent) {
-            $g8bEvidence = Get-Content -LiteralPath $G8BEvidencePath -Raw |
-                ConvertFrom-Json -Depth 100
+            $g8bEvidence = Get-GeoCeDGFrozenJson `
+                -RepositoryRoot $RepositoryRoot -Path $G8BEvidencePath
             Assert-Condition -Condition ($g8bEvidence.status -eq `
                     "PASS_AUTHOR_APPROVED") `
                 -Message "The detected G8B follow-on evidence has an invalid status."
         }
-        $g8c2FollowOnPresent = (Test-Path -LiteralPath $G8C2EvidencePath `
-                -PathType Leaf) -and (Test-Path -LiteralPath $G8C2VerifierPath `
-                -PathType Leaf)
+        $g8c2FollowOnPresent = (Test-GeoCeDGFrozenPath `
+                -RepositoryRoot $RepositoryRoot -Path $G8C2EvidencePath) -and
+            (Test-GeoCeDGFrozenPath -RepositoryRoot $RepositoryRoot `
+                -Path $G8C2VerifierPath)
         if ($g8c2FollowOnPresent) {
-            $g8c2Evidence = Get-Content -LiteralPath $G8C2EvidencePath -Raw |
-                ConvertFrom-Json -Depth 100
+            $g8c2Evidence = Get-GeoCeDGFrozenJson `
+                -RepositoryRoot $RepositoryRoot -Path $G8C2EvidencePath
             Assert-Condition -Condition ($g8c2Evidence.status -eq `
                     "PASS_AUTHOR_APPROVED") `
                 -Message "The detected G8C2 follow-on evidence has an invalid status."

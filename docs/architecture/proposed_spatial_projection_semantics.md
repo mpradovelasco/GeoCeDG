@@ -1,8 +1,13 @@
-# GeoCeDG — Proposed Spatial Object and Canonical Projection Semantics
+# GeoCeDG — Spatial object and canonical projection research input
 
-**Status:** Proposed research/architecture input
-**Authority:** Non-normative until converted into approved specifications and ADRs during G9
+**Status:** Historical research/architecture input; non-normative
+**Authority:** Governing normative contract is `geocedg/specs/spatial/g9-spatial-projection-semantics.md`; ADR 0010/0011 are Accepted
 **Target phase:** G9, before the Python DSL
+
+**G9P-R1 refinement:** this research input now distinguishes intrinsic
+projection from geometric placement in a common CeDG diagram. The refinement is
+author approved in the governing contract; this explanatory research input
+remains non-normative.
 
 ## 1. Purpose
 
@@ -15,12 +20,20 @@ The existing CeDG proof of concept based on GeoGebra lists and JavaScript demons
 ```text
 SpatialObject3D       geometric identity and dependencies
 ProjectionFrame       geometric projection definition
+ProjectionSystem      typed multi-frame geometric arrangement
+ProjectionDiagramMap  intrinsic-frame to common-diagram map
+ProjectionFrameRelation  hinge/change-of-plane relation
 ProjectionBinding     typed association to 2D kernel entities
 Viewport              screen transform and interaction state
 DrawingViewport       physical sheet placement and scale
 ```
 
 A `ProjectionFrame` is geometric. A `Viewport` is visual. Changing zoom or DPI must not change the spatial object, canonical certificate, metric result, or intersection.
+
+A `ProjectionDiagramMap` is also geometric: it records how intrinsic
+coordinates of a frame are unfolded or placed in the common two-dimensional
+CeDG construction diagram. It is not the plane-view camera-derived
+mirror/rotation, a canvas transform, or physical sheet placement.
 
 ## 3. Core model
 
@@ -35,8 +48,31 @@ SpatialObject3D
 ├─ ProjectionSet
 └─ primitiveDefinition | compositeDefinition
 
+ProjectionSystem
+├─ stableId / semanticVersion / systemRevision
+├─ common DiagramCoordinateFrame2D
+├─ ProjectionDiagramMaps[]
+├─ ProjectionFrameRelations[]
+├─ state and immutable system certificate
+└─ construction provenance
+
+ProjectionDiagramMap
+├─ stableId / systemId / frameId
+├─ frameUseRole: defining | auxiliary
+├─ delta(q)=Aq+b / units / orientation / fold side
+├─ defining relation IDs / provenance
+└─ mapRevision / validity
+
+ProjectionFrameRelation
+├─ stableId / sourceMapId / destinationMapId
+├─ hingeUnfold | changeOfPlane
+├─ oriented hinge/support construction
+└─ relationRevision / validity
+
 ProjectionBinding
 ├─ objectId
+├─ systemId
+├─ diagramMapId
 ├─ frameId
 ├─ projectedElementIds[]
 ├─ role
@@ -47,6 +83,8 @@ ProjectionBinding
 ```
 
 Projection roles are `defining`, `derived`, `auxiliary`, `analysis`, and `presentation`.
+Frame-use role in the system is independent of binding role. A geometric
+diagram map is not presentation state.
 
 ## 4. Canonical projection schema
 
@@ -55,6 +93,34 @@ For type `T`, let `X_T` be its valid configuration space and let `Pi={pi_i}` be 
 \[
 \Phi_{T,\Pi}(x)=(\pi_1(x),\ldots,\pi_k(x)).
 \]
+
+For a point, explicitly distinguish
+
+\[
+x\xrightarrow{\pi_i}q_i\xrightarrow{\delta_m}p_m,
+\qquad
+\delta_m(q)=A_mq+b_m,
+\qquad \det A_m\ne0.
+\]
+
+Bound ordinary 2D geos store common-diagram `p_m`; canonical reconstruction
+uses `q_i=delta_m^{-1}(p_m)`. The initial admitted map family is an oriented
+isometry or declared unit similarity. Define the typed diagram composition
+
+\[
+\Psi_{T,S}(x)=
+\left(\delta_m^{(T)}(\pi_i(x))\right)_{m\in S}.
+\]
+
+Sufficiency remains intrinsic. For fixed valid bijective maps, `Psi` is
+injective exactly when `Phi` is injective. A coherent common-diagram gauge
+`delta'=g o delta`, `p'=g(p)` leaves `delta'^-1(p')=delta^-1(p)` and therefore
+cannot change sufficiency.
+
+For a declared hinge between two nonparallel frame planes, its intrinsic line
+in both frames must map to the same common-diagram line with explicit
+orientation and fold side. Auxiliary changes of plane are typed relations with
+construction provenance, never inferences from visible placement.
 
 A schema is canonical on a declared domain when:
 
@@ -76,6 +142,10 @@ UNDEFINED
 ```
 
 The certificate includes the failed predicates and implicated bindings.
+It also references the exact system/map/relation/frame revisions. Projection
+system state (`NOT_EVALUATED`, `CONSISTENT`, `INCONSISTENT`, `DEGENERATE`, or
+`UNDEFINED`) remains distinct from object-level
+`INCONSISTENT_PROJECTIONS`.
 
 ## 5. Primitive schemas
 
@@ -135,7 +205,10 @@ No stale spatial object may remain active after failed validation. Multiple admi
 
 Persist:
 
-- stable object and frame IDs;
+- stable object, frame, projection-system, diagram-map, frame-relation and
+  binding IDs;
+- common diagram coordinate frame, typed maps, hinges/change-of-plane inputs,
+  units, orientation and fold choice;
 - semantic/schema versions;
 - binding roles;
 - projected element IDs;
@@ -145,6 +218,20 @@ Persist:
 - inputs needed to recompute the certificate.
 
 Do not persist associations only through labels or names. Legacy files remain valid without associations and may be upgraded only through explicit migration or user action.
+
+Loading registers all IDs before resolving relations and building normal-DAG
+dependencies. Save/reopen and undo restore serialized IDs. Copy creates and
+remaps a fresh selected closure, except for an explicitly permitted shared
+same-construction system dependency; cross-document live references are
+forbidden.
+
+Ordinary recomputation preserves identity. A target-based semantically
+compatible redefine may retain identity only through an atomic
+provider/type/schema/role compatibility transaction, with a definition
+revision and a topology revision only when declared. True replacement or
+type-incompatible redefine gets fresh identity or fails; delete/recreate and
+copy get fresh identity; labels and host-instance compatibility are never the
+continuity predicate.
 
 ## 9. Relationship with the DSL
 
@@ -165,6 +252,11 @@ The DSL compiler asks the kernel to create and validate objects. It does not imp
 | Case | Expected result |
 |---|---|
 | General point, two views | `VALID` |
+| Common-diagram `q -> p -> q` round trip | equal intrinsic observation |
+| Coherent common-diagram gauge | unchanged sufficiency and payload |
+| Inconsistent hinge maps | system `INCONSISTENT`; no stale object payload |
+| Noninvertible diagram map | system `DEGENERATE`; no object evaluation |
+| Auxiliary change-of-plane map | explicit relation and deterministic revision |
 | Point, one view only | `UNDERDETERMINED` |
 | General line, two non-collapsed views | `VALID` |
 | Line of sight to one plane plus second view | `VALID` |
@@ -176,6 +268,13 @@ The DSL compiler asks the kernel to create and validate objects. It does not imp
 | Open boundary claimed as solid | invalid closure diagnostic |
 | Dynamic passage through singular position | explicit `DEGENERATE`, then recovery |
 | Save/reopen | stable IDs and equal certificate inputs |
+
+G9A1 owns system/map/relation identity, XML, copy and restore substrate; G9A2
+owns map/relation evaluation and the point pilot; G9A3 owns hostile lifecycle,
+redefine and migration behavior. G9B consumes the foundation after G9A3 and
+has no semantic dependency on G9U1. After the approved global G9 gate, G9U2
+may consume these records for explicit procedures but may not define their
+meaning in a GUI controller.
 
 ## 11. Deferred decisions
 

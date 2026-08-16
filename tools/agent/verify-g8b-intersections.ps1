@@ -54,6 +54,7 @@ $TestClasses = [ordered]@{
 }
 
 . $GeneratedStateHelper
+. (Join-Path $PSScriptRoot "evidence-integrity.ps1")
 
 function Assert-Condition {
     param(
@@ -62,21 +63,6 @@ function Assert-Condition {
     )
     if (-not $Condition) {
         throw $Message
-    }
-}
-
-function Get-CanonicalTextSha256 {
-    param([Parameter(Mandatory)] [string]$Path)
-
-    $content = [IO.File]::ReadAllText($Path)
-    $canonical = $content.Replace("`r`n", "`n").Replace("`r", "`n")
-    $sha256 = [Security.Cryptography.SHA256]::Create()
-    try {
-        $bytes = [Text.UTF8Encoding]::new($false).GetBytes($canonical)
-        return [Convert]::ToHexString(
-            $sha256.ComputeHash($bytes)).ToLowerInvariant()
-    } finally {
-        $sha256.Dispose()
     }
 }
 
@@ -103,20 +89,8 @@ function Assert-Contains {
 }
 
 function Assert-EvidenceHashes {
-    foreach ($line in Get-Content -LiteralPath $EvidenceHashes) {
-        if ([string]::IsNullOrWhiteSpace($line)) {
-            continue
-        }
-        $parts = $line -split "\s+", 2
-        Assert-Condition -Condition ($parts.Count -eq 2) `
-            -Message "Malformed G8B evidence hash line: $line"
-        $path = Join-Path $RepositoryRoot $parts[1].Trim().Replace("/", "\")
-        Assert-Condition -Condition (Test-Path -LiteralPath $path -PathType Leaf) `
-            -Message "Hashed G8B artifact is missing: $path"
-        Assert-Condition -Condition ((Get-CanonicalTextSha256 -Path $path) -eq `
-                $parts[0].ToLowerInvariant()) `
-            -Message "G8B evidence hash mismatch: $path"
-    }
+    [void](Assert-GeoCeDGFrozenHashManifest -RepositoryRoot $RepositoryRoot `
+        -ManifestPath $EvidenceHashes)
 }
 
 function Assert-MarkdownLinks {
@@ -201,6 +175,7 @@ function Invoke-LoggedGradle {
 
 try {
     $InitialStatus = Get-RepositoryStatusText -RepositoryRoot $RepositoryRoot
+    [void](Assert-GeoCeDGFrozenG8Anchor -RepositoryRoot $RepositoryRoot)
     if (-not $SkipBuild) {
         $GeneratedSnapshot = New-RepositoryGeneratedStateSnapshot `
             -RepositoryRoot $RepositoryRoot `
@@ -230,7 +205,8 @@ try {
         -Message "Current checkout does not descend from the G8B entry SHA."
     $promptPath = Join-Path $RepositoryRoot `
         ".github\prompts\tasks\g8b-locus-v2-intersection-kernel.prompt.md"
-    Assert-Condition -Condition ((Get-CanonicalTextSha256 -Path $promptPath) `
+    Assert-Condition -Condition ((Get-GeoCeDGFrozenCanonicalTextSha256 `
+            -RepositoryRoot $RepositoryRoot -Path $promptPath) `
             -eq $PromptSha) -Message "The canonical G8B prompt changed."
 
     Assert-Contains -RelativePath `
@@ -304,10 +280,8 @@ try {
             $geoClass.Contains('"locusintersectionresult", 132, false);')) `
         -Message "The append-only G8B GeoClass value is missing or changed."
 
-    $changedPaths = @(& git -C $RepositoryRoot diff --name-only $EntrySha --)
-    $changedPaths += @(& git -C $RepositoryRoot ls-files --others `
-        --exclude-standard)
-    $changedPaths = @($changedPaths | Sort-Object -Unique)
+    $changedPaths = @(Get-GeoCeDGFrozenChangedPaths `
+        -RepositoryRoot $RepositoryRoot -BaseCommit $EntrySha)
     $allowedProductive = @(
         "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusIntersectionV2.java",
         "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusLocusIntersectionV2.java",
@@ -331,16 +305,16 @@ try {
         }
     }
 
-    $manifest = Get-Content -LiteralPath (Join-Path $RepositoryRoot `
-        "docs\upstream\modified-files.yml") -Raw | ConvertFrom-Json -Depth 100
+    $manifest = Get-GeoCeDGFrozenJson -RepositoryRoot $RepositoryRoot `
+        -Path "docs/upstream/modified-files.yml"
     $registered = @($manifest.modifications | ForEach-Object { $_.path })
     foreach ($path in @($changedPaths | Where-Object { $_ -match '^source/' })) {
         Assert-Condition -Condition ($path -in $registered) `
             -Message "Changed source/test path is not registered: $path"
     }
 
-    $evidence = Get-Content -LiteralPath $EvidencePath -Raw |
-        ConvertFrom-Json -Depth 100
+    $evidence = Get-GeoCeDGFrozenJson -RepositoryRoot $RepositoryRoot `
+        -Path $EvidencePath
     Assert-Condition -Condition ($evidence.status -eq `
             "PASS_AUTHOR_APPROVED") `
         -Message "G8B evidence has the wrong phase status."

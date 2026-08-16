@@ -36,6 +36,7 @@ $InitialStatus = $null
 $GeneratedSnapshot = $null
 
 . (Join-Path $PSScriptRoot "repository-generated-state.ps1")
+. (Join-Path $PSScriptRoot "evidence-integrity.ps1")
 
 function Assert-Condition {
     param(
@@ -44,21 +45,6 @@ function Assert-Condition {
     )
     if (-not $Condition) {
         throw $Message
-    }
-}
-
-function Get-CanonicalTextSha256 {
-    param([Parameter(Mandatory)] [string]$Path)
-
-    $content = [IO.File]::ReadAllText($Path)
-    $canonical = $content.Replace("`r`n", "`n").Replace("`r", "`n")
-    $sha256 = [Security.Cryptography.SHA256]::Create()
-    try {
-        $hex = [Convert]::ToHexString($sha256.ComputeHash(
-            [Text.UTF8Encoding]::new($false).GetBytes($canonical)))
-        return $hex.ToLowerInvariant()
-    } finally {
-        $sha256.Dispose()
     }
 }
 
@@ -128,20 +114,8 @@ function Invoke-LoggedGradle {
 }
 
 function Assert-EvidenceHashes {
-    foreach ($line in Get-Content -LiteralPath $EvidenceHashes) {
-        if ([string]::IsNullOrWhiteSpace($line)) {
-            continue
-        }
-        $parts = $line -split "\s+", 2
-        Assert-Condition -Condition ($parts.Count -eq 2) `
-            -Message "Malformed G7B evidence hash line: $line"
-        $path = Join-Path $RepositoryRoot $parts[1].Trim().Replace("/", "\")
-        Assert-Condition -Condition (Test-Path -LiteralPath $path -PathType Leaf) `
-            -Message "Hashed G7B evidence artifact is missing: $path"
-        Assert-Condition -Condition ((Get-CanonicalTextSha256 -Path $path) -eq `
-                $parts[0].ToLowerInvariant()) `
-            -Message "G7B evidence hash mismatch: $path"
-    }
+    [void](Assert-GeoCeDGFrozenHashManifest -RepositoryRoot $RepositoryRoot `
+        -ManifestPath $EvidenceHashes)
 }
 
 function Assert-MarkdownLinks {
@@ -171,6 +145,7 @@ function Assert-MarkdownLinks {
 
 try {
     $InitialStatus = Get-RepositoryStatusText -RepositoryRoot $RepositoryRoot
+    [void](Assert-GeoCeDGFrozenG8Anchor -RepositoryRoot $RepositoryRoot)
     if (-not $SkipBuild) {
         $GeneratedSnapshot = New-RepositoryGeneratedStateSnapshot `
             -RepositoryRoot $RepositoryRoot `
@@ -213,7 +188,8 @@ try {
         -Message "Current branch does not descend from the G7B implementation commit."
     $versionedPrompt = Join-Path $RepositoryRoot `
         ".github\prompts\tasks\g7b-locus-v2-metric-kernel.prompt.md"
-    Assert-Condition -Condition ((Get-CanonicalTextSha256 -Path $versionedPrompt) `
+    Assert-Condition -Condition ((Get-GeoCeDGFrozenCanonicalTextSha256 `
+            -RepositoryRoot $RepositoryRoot -Path $versionedPrompt) `
             -eq $VersionedPromptSha) `
         -Message "The approved versioned G7B prompt changed during execution."
 
@@ -255,9 +231,8 @@ try {
             -Message "Productive G7B contract is missing: $requiredContract"
     }
 
-    $changedPaths = @(& git -C $RepositoryRoot diff --name-only $EntrySha --)
-    $changedPaths += @(& git -C $RepositoryRoot ls-files --others `
-        --exclude-standard)
+    $changedPaths = @(Get-GeoCeDGFrozenChangedPaths `
+        -RepositoryRoot $RepositoryRoot -BaseCommit $EntrySha)
     foreach ($path in $changedPaths) {
         foreach ($forbiddenPath in @("CommandDispatcher", "/commands/",
                 "MyXML", "/io/", "geogebra3D", "/kernel3D/")) {
@@ -265,23 +240,22 @@ try {
                 -Message "Forbidden G7B public/persistence/3D edit: $path"
         }
     }
-    $closeoutPaths = @(& git -C $RepositoryRoot diff --name-only `
-        $ImplementationSha --)
-    $closeoutPaths += @(& git -C $RepositoryRoot ls-files --others `
-        --exclude-standard)
+    $closeoutPaths = @(Get-GeoCeDGFrozenChangedPaths `
+        -RepositoryRoot $RepositoryRoot -BaseCommit $ImplementationSha)
     $closeoutProductivePaths = @($closeoutPaths | Where-Object {
             $_ -match '^source/.+/src/main/'
         })
-    $g8bFollowOnPresent = (Test-Path -LiteralPath $G8BEvidencePath `
-            -PathType Leaf) -and (Test-Path -LiteralPath $G8BVerifierPath `
-            -PathType Leaf)
+    $g8bFollowOnPresent = (Test-GeoCeDGFrozenPath `
+            -RepositoryRoot $RepositoryRoot -Path $G8BEvidencePath) -and
+        (Test-GeoCeDGFrozenPath -RepositoryRoot $RepositoryRoot `
+            -Path $G8BVerifierPath)
     if (-not $g8bFollowOnPresent) {
         Assert-Condition -Condition ($closeoutProductivePaths.Count -eq 0) `
             -Message ("G7B closeout changed productive source: {0}" -f `
                 ($closeoutProductivePaths -join ", "))
     } else {
-        $g8bEvidence = Get-Content -LiteralPath $G8BEvidencePath -Raw |
-            ConvertFrom-Json -Depth 100
+        $g8bEvidence = Get-GeoCeDGFrozenJson `
+            -RepositoryRoot $RepositoryRoot -Path $G8BEvidencePath
         Assert-Condition -Condition ($g8bEvidence.status -eq `
                 "PASS_AUTHOR_APPROVED") `
             -Message "The detected G8B follow-on evidence has an invalid status."
@@ -302,8 +276,8 @@ try {
         Write-Host "G7B closeout no-later-source boundary delegated to the versioned G8B verifier."
     }
 
-    $evidence = Get-Content -LiteralPath $EvidencePath -Raw |
-        ConvertFrom-Json -Depth 100
+    $evidence = Get-GeoCeDGFrozenJson -RepositoryRoot $RepositoryRoot `
+        -Path $EvidencePath
     Assert-Condition -Condition ($evidence.status -eq `
             "PASS_AUTHOR_APPROVED") `
         -Message "G7B evidence disposition is not author-approved PASS."

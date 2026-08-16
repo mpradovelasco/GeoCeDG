@@ -1,0 +1,166 @@
+{
+  "manifest_schema": "geocedg/specs/operations/knowledge-bundle.schema.json",
+  "schema_version": 1,
+  "status": "NORMATIVE_AUTHOR_APPROVED",
+  "implementation_status": "AUTHORIZED_NOT_STARTED",
+  "profiles": [
+    {
+      "id": "source",
+      "kind": "source",
+      "description": "GeoCeDG-native and upstream-modified source with focused tests and provenance.",
+      "ownership": ["GEOCEDG_NATIVE", "UPSTREAM_MODIFIED"],
+      "include": [
+        "source/**/org/geocedg/**",
+        "apps/geocedg/**",
+        "geocedg/features/**",
+        "geocedg/resources/**",
+        "tools/agent/**",
+        "docs/upstream/modified-files.yml"
+      ],
+      "include_related_tests": true,
+      "include_unified_diffs": true,
+      "reading_order": ["ownership", "productive-source", "tests", "profiles", "verifiers", "provenance"]
+    },
+    {
+      "id": "knowledge",
+      "kind": "knowledge",
+      "description": "Governance, design, guides, prompts, validation summaries and scientific indexes.",
+      "ownership": ["GEOCEDG_NATIVE", "UPSTREAM_MODIFIED"],
+      "include": [
+        "AGENTS.md",
+        "docs/roadmap/**",
+        "geocedg/specs/**",
+        "docs/adr/**",
+        "docs/architecture/**",
+        "docs/developer/**",
+        "docs/user/**",
+        ".github/prompts/**",
+        "docs/validation/**",
+        "geocedg/validation/**",
+        "docs/references/cedg/catalog.yml"
+      ],
+      "include_related_tests": false,
+      "include_unified_diffs": false,
+      "reading_order": ["governance", "roadmap", "specifications", "decisions", "architecture", "guides", "prompts", "validation", "scientific-index"]
+    },
+    {
+      "id": "locus-v2",
+      "kind": "thematic",
+      "description": "Locus V2 semantics, internal metrics/intersections, tests and evidence.",
+      "ownership": ["GEOCEDG_NATIVE", "UPSTREAM_MODIFIED"],
+      "themes": ["locus-v2"],
+      "include": [
+        "geocedg/specs/locus/**",
+        "docs/adr/0006-*.md",
+        "docs/adr/0007-*.md",
+        "docs/adr/0008-*.md",
+        "docs/adr/0009-*.md",
+        "docs/architecture/locus_v2_*.md",
+        "docs/developer/locus_v2_*.md",
+        "geocedg/validation/locus-v2/**",
+        "source/**/org/geocedg/**/locus/**"
+      ],
+      "include_related_tests": true,
+      "include_unified_diffs": false,
+      "reading_order": ["semantics", "metrics", "intersections", "implementation", "tests", "evidence"]
+    },
+    {
+      "id": "governance",
+      "kind": "thematic",
+      "description": "Repository authority, licensing, phase decisions and verification governance.",
+      "ownership": ["GEOCEDG_NATIVE", "UPSTREAM_MODIFIED"],
+      "themes": ["governance"],
+      "include": [
+        "AGENTS.md",
+        "NOTICE.md",
+        "THIRD_PARTY.md",
+        "docs/licensing/**",
+        "docs/upstream/**",
+        "docs/adr/**",
+        "docs/roadmap/**",
+        "tools/agent/**"
+      ],
+      "include_related_tests": false,
+      "include_unified_diffs": false,
+      "reading_order": ["authority", "licensing", "baseline", "decisions", "roadmap", "verification"]
+    },
+    {
+      "id": "frontend-dxf",
+      "kind": "thematic",
+      "description": "Application profile, Desktop frontend and exact/proposed DXF interoperability context.",
+      "ownership": ["GEOCEDG_NATIVE", "UPSTREAM_MODIFIED"],
+      "themes": ["frontend", "dxf"],
+      "include": [
+        "apps/geocedg/**",
+        "geocedg/features/**",
+        "geocedg/specs/ui/**",
+        "geocedg/specs/export/**",
+        "docs/architecture/*frontend*.md",
+        "docs/architecture/*dxf*.md",
+        "source/**/org/geocedg/**/export/**",
+        "source/desktop/**/org/geocedg/**"
+      ],
+      "include_related_tests": true,
+      "include_unified_diffs": false,
+      "reading_order": ["profile", "ui-contracts", "export-contracts", "architecture", "implementation", "tests"]
+    },
+    {
+      "id": "spatial-g9",
+      "kind": "thematic",
+      "description": "Normative G9 spatial identity, projection and persistence design; no productive capability.",
+      "ownership": ["GEOCEDG_NATIVE", "UPSTREAM_MODIFIED"],
+      "themes": ["spatial-g9"],
+      "include": [
+        "geocedg/specs/spatial/**",
+        "docs/architecture/g9_*spatial*.md",
+        "docs/architecture/g9_*projection*.md",
+        "docs/adr/0010-*.md",
+        "docs/adr/0011-*.md",
+        ".github/prompts/tasks/g9a*.prompt.md",
+        ".github/prompts/tasks/g9b*.prompt.md",
+        ".github/prompts/tasks/g9c*.prompt.md",
+        "docs/validation/g9_spatial_*.md"
+      ],
+      "include_related_tests": false,
+      "include_unified_diffs": false,
+      "reading_order": ["specifications", "decisions", "semantic-model", "persistence", "prompts", "validation-design"]
+    },
+    {
+      "id": "operational",
+      "kind": "thematic",
+      "description": "Documentation maintenance, agent workflow and normative deterministic bundle operations.",
+      "ownership": ["GEOCEDG_NATIVE", "UPSTREAM_MODIFIED"],
+      "themes": ["operations"],
+      "include": [
+        "geocedg/specs/operations/**",
+        "docs/architecture/*documentation*.md",
+        "docs/architecture/*bundle*.md",
+        "docs/developer/geocedg_*guide.md",
+        "docs/validation/g9_documentation_bundle_traceability.md",
+        ".github/prompts/tasks/g9o1-*.prompt.md",
+        "tools/agent/evidence-integrity.ps1"
+      ],
+      "include_related_tests": false,
+      "include_unified_diffs": false,
+      "reading_order": ["maintenance-contract", "bundle-contract", "decision", "architecture", "guides", "prompt", "evidence-integrity"]
+    }
+  ],
+  "default_exclusions": [
+    ".git/**",
+    "**/build/**",
+    ".gradle/**",
+    ".kotlin/**",
+    "artifacts/**",
+    "**/*.log",
+    "**/*.tmp",
+    "**/local.properties",
+    "**/*secret*",
+    "docs/references/cedg/**/*.pdf",
+    "packaging/output/**"
+  ],
+  "default_budgets": {
+    "maximum_files": 2000,
+    "maximum_bytes": 50000000,
+    "maximum_tokens": 5000000
+  }
+}

@@ -3,13 +3,13 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Roadmap vivo y normativo de fases; no sustituye las especificaciones ni los ADR aceptados |
-| Versión documental | 3.23 |
-| Fecha de revisión | 15 de agosto de 2026 |
+| Versión documental | 3.25 |
+| Fecha de revisión | 16 de agosto de 2026 |
 | Baseline GeoGebra | 5.4.928.0, commit `9b93256b7df401ff056c37b502d82df4d72b1522`, tag `geogebra-baseline-5.4.928.0` |
-| Estado actual | G7 y G8 `PASS`; G8A/G8B/G8C1/G8C2 `PASS — AUTHOR APPROVED`; Locus V2 sigue experimental, interno y desactivado por defecto; diseño G9 autorizado/no iniciado |
-| Última fase cerrada | G8C2 — incidencia 2D Locus V2 × Locus V2 y cierre global G8 dentro del alcance tipado aprobado, `PASS — AUTHOR APPROVED` |
-| Última fase ejecutada | G8C2 — kernel interno Locus V2 × Locus V2, autor-aprobado |
-| Siguiente puerta | Ejecución separada de diseño G9; implementación G9 no autorizada |
+| Estado actual | G7 y G8 `PASS`; G9P-R1 y G9P `PASS — AUTHOR APPROVED`; seis especificaciones G9 normativas; ADR 0010–0015 Accepted; G9O1 autorizado y no iniciado; Locus V2 sigue experimental, interno y desactivado por defecto |
+| Última fase cerrada | G9P — análisis, caracterización y prediseño integrado, incluido R1, `PASS — AUTHOR APPROVED` |
+| Última fase ejecutada | cierre autoral G9P/R1; sin implementación productiva G9 |
+| Siguiente puerta | ejecución canónica G9O1 autorizada y no iniciada; G9A/G9U0/G9X1/G9U1/G9B/G9C no autorizadas |
 | Primer cliente | Aplicación de escritorio de la familia Classic 5 |
 | Núcleo | Java compartido de GeoGebra, extendido solo cuando la semántica lo requiere |
 
@@ -1105,8 +1105,13 @@ La optimización priorizará, según evidencia: invalidación incremental, cach�
 | G8C1 | `PASS — AUTHOR APPROVED` | Kernel interno tipado: cónicas no degeneradas, funciones reales explícitamente acotadas e implícitas polinómicas regulares; 38 pruebas focales |
 | G8C2 | `PASS — AUTHOR APPROVED` | Kernel interno Locus V2 × Locus V2; 34 pruebas focales, evidencia y verificación canónica aprobadas |
 | G8 | `PASS — AUTHOR APPROVED` | Arquitectura nativa 2D Locus V2 y cobertura tipada G8B/G8C1/G8C2 cerradas; capacidad todavía interna/experimental |
-| G9 design | `AUTHORIZED — NOT STARTED` | Nueva fase espacial; requiere tarea separada de diseño |
-| G9 implementation / G10–G16 | `NOT AUTHORIZED — NOT STARTED` / `NOT STARTED` | Ninguna semántica espacial productiva iniciada |
+| G9P-R1 / G9P | `PASS — AUTHOR APPROVED` / `PASS — AUTHOR APPROVED` | [Plan integrado](../architecture/g9p_integrated_plan.md), seis especificaciones normativas, ADR 0010–0015 Accepted y [decisiones D1–D8](../validation/g9p_author_decisions.md); ninguna implementación productiva |
+| G9O1 | `AUTHORIZED — NOT STARTED` | Primer precedente operacional recomendado; no es dependencia semántica de G9A1 |
+| G9A1 / G9A2 / G9A3 | `DESIGNED — NOT AUTHORIZED` | G9A conserva identidad/persistencia, sistema de proyecciones, piloto espacial y hardening de ciclo de vida |
+| G9U0 / G9X1 / G9U1 | `DESIGNED — NOT AUTHORIZED` | Superficie pública Locus V2, DXF extendido y workspace Construction, cada uno con gate separado |
+| G9B / G9C | `DESIGNED — NOT AUTHORIZED` | Track kernel tras cierre de G9A; no depende de completar el cliente G9U1 |
+| G9U2 | `DESIGNED — BLOCKED ON APPROVED G9 GATE` | Workspace de procedimientos diédrico solo tras `G9 PASS — AUTHOR APPROVED` |
+| G9 productive implementation / G10–G16 | `NOT STARTED` / `NOT STARTED` | Ninguna semántica espacial productiva iniciada |
 
 Los estados `experimental` describen madurez de una capacidad, no una puerta
 fallida. Un gate solo se marca `PASS` cuando satisface sus validaciones; un
@@ -1574,67 +1579,168 @@ G8C2 CONTRACT = NORMATIVE — AUTHOR APPROVED
 ADR 0009 = ACCEPTED
 G8C2 = PASS — AUTHOR APPROVED
 G8 = PASS — AUTHOR APPROVED
-G9 DESIGN = AUTHORIZED — NOT STARTED
-G9 IMPLEMENTATION = NOT AUTHORIZED — NOT STARTED
+G9P-R1 = PASS — AUTHOR APPROVED
+G9P = PASS — AUTHOR APPROVED
+G9 SPECIFICATIONS = NORMATIVE / AUTHOR APPROVED
+ADR 0010–0015 = ACCEPTED
+G9A / G9B / G9C = DESIGNED — NOT AUTHORIZED
+G9O1 = AUTHORIZED — NOT STARTED
+G9U0 / G9X1 / G9U1 = DESIGNED — NOT AUTHORIZED
+G9U2 = DESIGNED — BLOCKED ON THE APPROVED G9 GATE
+G9 PRODUCTIVE IMPLEMENTATION = NOT STARTED
 ```
 
 ## G9 - Semántica espacial y proyecciones canónicas
 
-**Estado:** diseño `AUTHORIZED — NOT STARTED`; implementación `NOT AUTHORIZED — NOT STARTED`
+**Estado:** G9P-R1 y G9P `PASS — AUTHOR APPROVED`; seis especificaciones
+normativas y ADR 0010–0015 Accepted. G9O1 está autorizado y no iniciado; las
+demás fases de implementación están diseñadas pero no autorizadas. El
+[plan integrado G9P](../architecture/g9p_integrated_plan.md) y el
+[paquete de decisiones](../validation/g9p_author_decisions.md) gobiernan el
+contrato; la implementación productiva G9 no ha comenzado.
 
-### G9A - Asociación objeto 3D–proyecciones
+### Dependencias y orden recomendado posteriores a G9P
 
-**Trabajo**
+```text
+                                      +--> G9B --> G9C -----------+
+                                      |                            |
+G9A1 --> G9A2 --> G9A3 ---------------+                            +--> cierre global G9 --> G9U2
+                                      |                            |
+                                      +--> G9U0 -------+           |
+                                                       +--> G9U1 --+
+G5 + autoridad semántica interna G6-G8 --> G9X1 ------+
 
-- `SpatialObject3D`, `ProjectionFrame`, `ProjectionBinding` y registros estables;
-- roles definitorio, derivado, auxiliar, análisis y presentación;
-- integración con dependencias y serialización;
-- migración explícita de la prueba de concepto, sin inferencia por etiquetas.
+G9O1: primero por recomendación operacional; sin arista semántica hacia G9A1.
+```
 
-**Salida**
+El diagrama expresa dependencias semánticas/contractuales, no un calendario.
+Se distinguen: (1) dependencias duras, (2) predecesores de ejecución
+recomendados y (3) puertas de cierre global/release. El orden de bajo conflicto
+recomendado sigue siendo `G9O1; A1; A2; A3; U0; X1; U1; B; C; cierre; U2`, pero
+los puntos y coma no son flechas semánticas. Tras A3, el track kernel B/C puede
+avanzar sin U1. U0 sí requiere A3 para publicar objetos persistentes. X1 puede
+consumir snapshots internos G6-G8 y declarar su `id_scope`; ejecutar U0 antes
+de X1 sigue recomendado para la integración pública. U1 integra las acciones
+aprobadas de ambos.
 
-- un objeto espacial mantiene identidad estable y conoce todas sus proyecciones asociadas;
-- cambios dinámicos se propagan de manera trazable;
-- ficheros heredados continúan siendo compatibles.
+### G9O1 - Bundles de conocimiento y guías operativas
+
+**Estado:** `AUTHORIZED — NOT STARTED`
+
+Implementará el generador determinista y los perfiles ya diseñados, con
+clasificación de propiedad, exclusión de material restringido, hashes raw/
+canónicos, política de árbol sucio, budgets y guías reproducibles. No cambia
+geometría. Se recomienda ejecutarlo primero y su evidencia participa en el
+cierre operacional global; su PASS no es dependencia semántica de G9A1.
+
+### G9A1 - Fundamento de identidad y persistencia
+
+**Estado:** `DESIGNED — NOT AUTHORIZED`
+
+Añadirá IDs tipados durables y registro por construcción para geos, objetos,
+frames, sistemas de proyección, mapas de diagrama, relaciones de frame y
+bindings; XML versionado, copy/remap, undo/reopen, colisiones y transacción de
+redefine compatible. No resuelve geometría espacial y no reutiliza `ceID`,
+etiquetas, orden o coordenadas.
+
+### G9A2 - Núcleo espacial y piloto de punto
+
+**Estado:** `DESIGNED — NOT AUTHORIZED`
+
+Añadirá frames, roles, bindings, evaluación del sistema de proyecciones y el
+piloto projection-defined para punto. Separará `q_i = pi_i(x)` de la colocación
+geométrica diédrica `p_i = delta_i(q_i)`, con relaciones de charnela/cambio de
+plano, reconstrucción intrínseca y reproyección intrínseca+diagrama en el DAG.
+La vista 3D seguirá derivada y no habrá bucle bidireccional.
+
+### G9A3 - Ciclo de vida y migración
+
+**Estado:** `DESIGNED — NOT AUTHORIZED`
+
+Cerrará mutaciones de bindings/sistemas/mapas/relaciones, copy closure,
+undo/reopen y todas las rutas hostiles de redefine. Recomputación conserva ID;
+redefine explícito y semánticamente compatible puede transferirlo de forma
+atómica; reemplazo real/incompatible, delete+recreate y copy crean IDs nuevos.
+También cubre referencias rotas, ficheros heredados no asociados, migración
+explícita y recuperación determinista. El camino diagnóstico GeoCeDG Classic
+preserva/recomputa tipos nativos e identidades sin downgrade; la apertura en un
+upstream externo que desconozca esos tipos queda fuera de garantía. Su cierre
+autoral completa G9A.
+
+### G9U0 - Superficie pública experimental Locus V2
+
+**Estado:** `DESIGNED — NOT AUTHORIZED`
+
+Introducirá un generador semántico 1D reconstructible con un único driver/
+dominio explícito: estado escalar `u -> t(u)` o punto con preimagen sobre
+segmento, circunferencia, arco circular o rama/componente Locus V2. Incluye
+`L1 -> punto -> L2`, continuidad, seams periódicos, ciclos rechazados por el
+DAG, creación V2 sin redirigir `Locus`, métrica rica con adaptador escalar
+guardado obligatorio para `Length[GeoLocusV2]`, Intersect general, token-punto,
+persistencia, ayuda y política Classic. La sintaxis escalar concreta no se fija
+en G9P: U0 inspeccionará las convenciones reales de overload y presentará la
+superficie elegida a revisión autoral. GeoCeDG Classic conservará objetos V2/
+rich nativos; nunca los degradará silenciosamente para un upstream externo.
+
+### G9X1 - DXF extendido exacto/aproximado
+
+**Estado:** `DESIGNED — NOT AUTHORIZED`
+
+Preservará el corpus exacto G5 y añadirá outcomes por componente, preflight,
+sidecar obligatorio para toda reducción de fidelidad y escritura pareada cuando
+corresponda, antes de aproximaciones acotadas por
+dominio semántico. Toda aproximación será export-only, determinista y ajena al
+Construction/render. El modo parcial rechaza por defecto; una opción futura
+exige intención explícita, aviso y sidecar. `SPLINE` e implícitas requieren evidencia posterior.
+Su dependencia dura es G5 más los contratos internos G6-G8; U0 es precedente
+de integración recomendado, no requisito semántico.
+
+### G9U1 - Workspace CeDG Construction
+
+**Estado:** `DESIGNED — NOT AUTHORIZED`
+
+Extenderá el manifiesto de perfil como única autoridad para workspaces, vistas,
+docking, input inferior, help contextual, actions, madurez, iconos y localización.
+Expondrá las acciones aprobadas de creación/métrica/intersección/punto sobre
+Locus V2 y DXF. Los macros específicos de los modelos de referencia no pasan al
+núcleo estable.
+El acceso diagnóstico GeoCeDG Classic seguirá siendo un proceso/path separado
+que cambia presentación, no verdad geométrica, y conserva objetos soportados
+con las mismas semánticas de kernel.
 
 ### G9B - Proyecciones canónicas de primitivas
 
-**Trabajo**
+**Estado:** `DESIGNED — NOT AUTHORIZED`
 
-- esquemas para punto, recta, plano, circunferencia/curva, esfera, cilindro y cono;
-- predicados de suficiencia y no degeneración;
-- reconstrucción y reproyección;
-- estados `VALID`, `UNDERDETERMINED`, `AMBIGUOUS`, `INCONSISTENT` y `DEGENERATE`.
+Implementará por etapas esquemas tipados para recta, segmento, rayo, vector,
+plano, circunferencia, cónica y curva espacial soportada sobre la base del piloto
+de punto. Cada familia define datos mínimos por configuración, frames admisibles,
+correspondencia, ecuaciones, garantías, degeneraciones y certificado dinámico;
+el número de vistas nunca basta por sí solo.
+Su única dependencia semántica de fase es el cierre autor-aprobado de G9A3 y el
+contrato de primitivas. G9U1 es un cliente y no constituye gate de entrada.
 
-**Salida**
+### G9C - Objetos compuestos y frontera proyectiva
 
-- GeoCeDG puede definir una primitiva 3D por un conjunto suficiente de proyecciones;
-- una recta de punta requiere y utiliza una vista adicional no degenerada;
-- el certificado canónico se actualiza dinámicamente.
+**Estado:** `DESIGNED — NOT AUTHORIZED`
 
-### G9C - Objetos compuestos, superficies y sólidos proyectivos
+Cubrirá solo colecciones de puntos, curvas/arcos espaciales, aristas, bucles
+orientados, caras, superficies soporte/regladas/desarrollables, objetos
+poliédricos, incidencia, adyacencia, orientación, ownership de frontera y
+componentes conexas necesarios para CeDG. No será un feature tree ni una copia
+genérica de B-Rep CAD.
 
-**Trabajo**
+### Puerta global G9 y G9U2
 
-- agregación jerárquica;
-- superficies soporte;
-- curvas/aristas espaciales;
-- caras y bucles orientados;
-- incidencia, adyacencia, cierre y orientación;
-- bindings de proyección de componentes y caras.
-
-**Salida**
-
-- objetos no primitivos pueden definirse por primitivas, relaciones y fronteras proyectivas;
-- un sólido cerrado dispone de diagnóstico topológico;
-- la geometría sigue siendo constructiva y no una copia opaca de B-Rep CAD.
-
-**Puerta global G9**
-
-- round-trip proyección–objeto–proyección validado;
-- serialización estable;
-- casos canónicos y degenerados superados;
-- API todavía experimental detrás de `cedg.spatial.semantics`.
+El cierre global exige round-trip proyección–objeto–proyección, serialización y
+migración estables, casos canónicos/dinámicos/degenerados, los tracks B/C y
+U0/X1/U1 aprobados, evidencia operacional G9O1, counters y composed verify,
+seguido de aprobación autoral explícita. Solo entonces G9U2 podrá
+implementar el workspace `CeDG Dihedral Procedures` y sus procedimientos
+constructivos consumiendo sistemas/mapas/charnelas tipados; hasta ese momento
+está `BLOCKED ON THE APPROVED G9 GATE`.
+El cierre es una acción de revisión autor/verificador sin semántica nueva, no una
+fase productiva ni un prompt de implementación independiente.
 
 ## G10 - DSL 3D CeDG y workbench
 

@@ -4,9 +4,9 @@
 |---|---|
 | Scope | Durable source, evidence, operational and generated boundaries |
 | Baseline | GeoGebra 5.4.928.0 at `9b93256b7df401ff056c37b502d82df4d72b1522` |
-| Current closed capability | G6 + G6R; Locus V2 experimental/internal |
-| Next phase | G7, pending/not started |
-| Date | 2026-08-12 |
+| Current closed capability | G8 `PASS — AUTHOR APPROVED`; Locus V2 metrics/intersections remain experimental/internal |
+| Current design phase | G9P-R1 and G9P PASS — AUTHOR APPROVED; six normative specifications and ADR 0010–0015 Accepted; G9O1 authorized/not started; no productive G9 implementation started |
+| Date | 2026-08-16 |
 
 Use this map to decide where a change belongs. `AGENTS.md`, accepted ADRs and
 normative specifications remain authoritative when this overview is
@@ -20,7 +20,7 @@ insufficient.
 | `source/desktop/*` | Classic Desktop runtime and GeoCeDG Desktop/profile/laboratory code | Productive source; Desktop frontend only |
 | `source/web/*` | Upstream web frontend | Not a validated GeoCeDG platform yet |
 | `apps/geocedg` | Product profile manifest and application-level contracts | Durable GeoCeDG source; no geometric truth |
-| `geocedg/specs` | Normative feature/object/export/operation specifications | Technical authority for each accepted capability |
+| `geocedg/specs` | Feature/object/export/operation specifications | Status-labelled technical contracts; proposed documents are not normative |
 | `geocedg/features` | Stable and experimental maturity/default manifests | Durable feature-state authority |
 | `geocedg/resources` | GeoCeDG-owned resource/asset declarations | Durable source/provenance; license boundary |
 | `geocedg/validation` | Versioned invariants, tolerance policies and compact evidence | Durable validation authority/evidence; not generated logs |
@@ -28,12 +28,14 @@ insufficient.
 | `models/regression` | Small deterministic source fixtures and expected semantic results | Versioned regression authority |
 | `docs/adr` | Architectural decisions and alternatives | Accepted ADRs supersede earlier roadmap proposals |
 | `docs/architecture` | System maps, implementation boundaries and impact analysis | Durable design/implementation documentation |
-| `docs/developer` | Internal API and repository operating references | Durable developer documentation |
+| `docs/developer` | Internal API, repository and agent operating references | Durable developer documentation |
 | `docs/user/geocedg_user_guide.md` | Current observable/manual workflow and conceptual entry point | Living user/developer guide |
-| `docs/validation` | Phase reports and traceability | Historical execution evidence, not normative semantics |
+| `docs/user/geocedg_mathematical_reference.md` | Mathematical definitions and authority links | Living explanatory reference; specifications remain authoritative |
+| `docs/validation` | Phase reports and traceability | Historical evidence is immutable; current traceability is maintained separately; neither is normative semantics |
 | `docs/references/cedg` | Scientific knowledge corpus | Local reference only; often redistribution-blocked |
 | `docs/upstream` | Pinned baseline records and exact archived upstream README | Upstream provenance/evidence |
 | `tools/agent` | Focused verifiers plus canonical composed `verify.ps1` | Executable verification authority |
+| `tools/agent/evidence-integrity.ps1` | Exact-byte Git blob and frozen G8 evidence helpers | Operational verification source; never rewrites evidence |
 | `tools/bootstrap` | Workstation onboarding and focused prerequisite installation | Setup/orchestration, not acceptance authority |
 | `tools/locus-v2` | Explicit developer-only Locus V2 laboratory launcher | Operational tool, opt-in; not product UI |
 | `tools/legacy` | Reproducible ingest and legacy Laboratory loader | Operational tools with immutable originals |

@@ -7,12 +7,13 @@
 | Upstream semantic authority | [`locus-v2-semantics.md`](../../geocedg/specs/locus/locus-v2-semantics.md) |
 | Normative metric contract | [`locus-v2-metrics.md`](../../geocedg/specs/locus/locus-v2-metrics.md) |
 | Architecture | [`locus_v2_metric_architecture.md`](locus_v2_metric_architecture.md) |
-| Date | 2026-08-13 |
+| Date | 2026-08-16 |
 
 This document defines the author-approved semantic vocabulary characterized by
 G7A/R1 and governed by the normative G7 metric spec. The author-approved
 productive G7B implementation realizes it as an internal API. G7A-R1, G7A and
-G7B are `PASS — AUTHOR APPROVED`; G7 is `PASS`, and G8 remains `NOT STARTED`.
+G7B are `PASS — AUTHOR APPROVED`; G7 is `PASS`. G8 subsequently closed with
+internal, nonpublic intersection kernels under its own contracts.
 
 ## 1. Mathematical object
 
@@ -590,7 +591,7 @@ Unbounded semantics never use a viewport cutoff. G7A distinguished:
 The last case is `LIMIT_NOT_ESTABLISHED`, not `NUMERICAL_FAILURE` or a finite
 viewport approximation. The current G6 finite interval provider does not by
 itself authorize a native infinite provider. G7A mapped that source boundary;
-G7B shall implement only the subset authorized by the normative spec and its
+G7B implements only the subset authorized by the normative spec and its
 versioned prompt.
 
 ## 15. Arc coordinate
@@ -694,9 +695,9 @@ publication. These are author-approved.
 This model records `GeoLocusMetricResult` as the author-approved and implemented
 G7B architecture. ADR 0007 is Accepted, the G7 metric spec is normative, G7B is
 `PASS — AUTHOR APPROVED`, and G7 is `PASS`. Public `LocusLength`, changes to
-`Length` or `Perimeter`, public `Path`, point-on-locus, XML, persistence, G8
-intersections, G9 spatial semantics and G5 locus export remain outside G7B
-minimum scope.
+`Length` or `Perimeter`, public `Path`, point-on-locus, XML and persistence
+remain absent. G8 intersections, G9 spatial semantics and G5 locus export are
+outside the G7B minimum scope; later internal G8 work is governed separately.
 
 ## 20. Productive semantic realization
 

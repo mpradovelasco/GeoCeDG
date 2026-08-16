@@ -74,6 +74,7 @@ $AllowedTestSources = @(
 )
 
 . $GeneratedStateHelper
+. (Join-Path $PSScriptRoot "evidence-integrity.ps1")
 
 function Assert-Condition {
     param(
@@ -82,21 +83,6 @@ function Assert-Condition {
     )
     if (-not $Condition) {
         throw $Message
-    }
-}
-
-function Get-CanonicalTextSha256 {
-    param([Parameter(Mandatory)] [string]$Path)
-
-    $content = [IO.File]::ReadAllText($Path)
-    $canonical = $content.Replace("`r`n", "`n").Replace("`r", "`n")
-    $sha256 = [Security.Cryptography.SHA256]::Create()
-    try {
-        $bytes = [Text.UTF8Encoding]::new($false).GetBytes($canonical)
-        return [Convert]::ToHexString(
-            $sha256.ComputeHash($bytes)).ToLowerInvariant()
-    } finally {
-        $sha256.Dispose()
     }
 }
 
@@ -123,20 +109,8 @@ function Assert-Contains {
 }
 
 function Assert-EvidenceHashes {
-    foreach ($line in Get-Content -LiteralPath $EvidenceHashes) {
-        if ([string]::IsNullOrWhiteSpace($line)) {
-            continue
-        }
-        $parts = $line -split "\s+", 2
-        Assert-Condition -Condition ($parts.Count -eq 2) `
-            -Message "Malformed G8C evidence hash line: $line"
-        $path = Join-Path $RepositoryRoot $parts[1].Trim().Replace("/", "\")
-        Assert-Condition -Condition (Test-Path -LiteralPath $path -PathType Leaf) `
-            -Message "Hashed G8C artifact is missing: $path"
-        Assert-Condition -Condition ((Get-CanonicalTextSha256 -Path $path) -eq `
-                $parts[0].ToLowerInvariant()) `
-            -Message "G8C evidence hash mismatch: $path"
-    }
+    [void](Assert-GeoCeDGFrozenHashManifest -RepositoryRoot $RepositoryRoot `
+        -ManifestPath $EvidenceHashes)
 }
 
 function Assert-MarkdownLinks {
@@ -232,6 +206,7 @@ function Invoke-G8CTests {
 
 try {
     $InitialStatus = Get-RepositoryStatusText -RepositoryRoot $RepositoryRoot
+    [void](Assert-GeoCeDGFrozenG8Anchor -RepositoryRoot $RepositoryRoot)
     if (-not $SkipBuild) {
         $GeneratedSnapshot = New-RepositoryGeneratedStateSnapshot `
             -RepositoryRoot $RepositoryRoot `
@@ -262,8 +237,8 @@ try {
         ".github\prompts\tasks\g8c2-locus-v2-locus-intersections.prompt.md" = $G8C2PromptSha
     }
     foreach ($prompt in $promptHashes.GetEnumerator()) {
-        $actual = Get-CanonicalTextSha256 -Path `
-            (Join-Path $RepositoryRoot $prompt.Key)
+        $actual = Get-GeoCeDGFrozenCanonicalTextSha256 `
+            -RepositoryRoot $RepositoryRoot -Path $prompt.Key
         Assert-Condition -Condition ($actual -eq $prompt.Value) `
             -Message "Future prompt hash changed: $($prompt.Key)"
         Assert-Contains -RelativePath $prompt.Key -Text @(
@@ -281,10 +256,10 @@ try {
             -Message "Future prompt does not preserve its no-execution boundary: $($prompt.Key)"
     }
 
-    $g8c2ContractApproved = Test-Path -LiteralPath $G8C2ContractEvidencePath `
-        -PathType Leaf
-    $g8c2ImplementationPresent = Test-Path -LiteralPath `
-        $G8C2ImplementationEvidencePath -PathType Leaf
+    $g8c2ContractApproved = Test-GeoCeDGFrozenPath `
+        -RepositoryRoot $RepositoryRoot -Path $G8C2ContractEvidencePath
+    $g8c2ImplementationPresent = Test-GeoCeDGFrozenPath `
+        -RepositoryRoot $RepositoryRoot -Path $G8C2ImplementationEvidencePath
     $g8c2SpecificationState = if ($g8c2ContractApproved) {
         "G8C1 AND G8C2 NORMATIVE — AUTHOR APPROVED"
     } else {
@@ -302,8 +277,8 @@ try {
     Assert-Contains -RelativePath `
         "docs\adr\0009-locus-v2-locus-intersection-pair-semantics.md" -Text @(
             $adr0009State, "canonical unordered pair")
-    $g8c1CandidatePresent = Test-Path -LiteralPath $G8C1EvidencePath `
-        -PathType Leaf
+    $g8c1CandidatePresent = Test-GeoCeDGFrozenPath `
+        -RepositoryRoot $RepositoryRoot -Path $G8C1EvidencePath
     $g8c1RoadmapState = if ($g8c1CandidatePresent) {
         "G8C1 = PASS — AUTHOR APPROVED"
     } else {
@@ -326,10 +301,8 @@ try {
                     "G9 = NOT STARTED"
                 }))
 
-    $changedPaths = @(& git -C $RepositoryRoot diff --name-only $EntrySha --)
-    $changedPaths += @(& git -C $RepositoryRoot ls-files --others `
-        --exclude-standard)
-    $changedPaths = @($changedPaths | Sort-Object -Unique)
+    $changedPaths = @(Get-GeoCeDGFrozenChangedPaths `
+        -RepositoryRoot $RepositoryRoot -BaseCommit $EntrySha)
     foreach ($path in $changedPaths) {
         if ($path -match '^source/.+/src/main/') {
             $allowedG8C1Productive = $g8c1CandidatePresent -and (
@@ -361,16 +334,16 @@ try {
         }
     }
 
-    $manifest = Get-Content -LiteralPath (Join-Path $RepositoryRoot `
-        "docs\upstream\modified-files.yml") -Raw | ConvertFrom-Json -Depth 100
+    $manifest = Get-GeoCeDGFrozenJson -RepositoryRoot $RepositoryRoot `
+        -Path "docs/upstream/modified-files.yml"
     $registered = @($manifest.modifications | ForEach-Object { $_.path })
     foreach ($path in @($changedPaths | Where-Object { $_ -match '^source/' })) {
         Assert-Condition -Condition ($path -in $registered) `
             -Message "Changed source/test path is not registered: $path"
     }
 
-    $evidence = Get-Content -LiteralPath $EvidencePath -Raw |
-        ConvertFrom-Json -Depth 100
+    $evidence = Get-GeoCeDGFrozenJson -RepositoryRoot $RepositoryRoot `
+        -Path $EvidencePath
     Assert-Condition -Condition ($evidence.status -eq `
             "PASS_AUTHOR_APPROVED" -and
             $evidence.provenance.entrySha -eq $EntrySha) `

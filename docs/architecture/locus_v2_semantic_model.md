@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Status | **G6 PASS / G6R PASS** — normative model unchanged; implementation hardened |
-| Phase | G6A `PASS`; G6B `PASS`; G6R `PASS`; G7/G8/G9 not started |
-| Date | 2026-08-12 |
+| Status | **G6 PASS / G6R PASS** — normative model unchanged; implementation hardened; G7/G8 internal consumers closed |
+| Phase | G6A/G6B/G6R/G7/G8 `PASS`; G9P/R1 `PASS — AUTHOR APPROVED`, normative design only |
+| Date | 2026-08-16 |
 | Scope | Two-dimensional dynamic loci only |
-| Excluded | Public length (G7), intersections (G8), spatial semantics (G9) |
+| Excluded | Public metric/intersection workflows and productive spatial semantics (G9) |
 
 The author approved the characterized model at G6A closeout. This document
 explains the normative contract without changing the meaning of the legacy
@@ -339,8 +339,8 @@ This axis does not claim exact real arithmetic.
 ### 6.3 Representation role
 
 - `SEMANTIC_EVALUATION`: a point returned by the branch evaluator;
-- `METRIC_APPROXIMATION`: future G7 index/quadrature data;
-- `INTERSECTION_APPROXIMATION`: future G8 isolation/refinement data;
+- `METRIC_APPROXIMATION`: G7 index/quadrature data derived from semantic evaluation;
+- `INTERSECTION_APPROXIMATION`: G8 isolation/refinement data derived from semantic evaluation;
 - `RENDER_DISCRETIZATION`: view-specific tessellation only.
 
 Increasing a point count changes only the last category. Java `double`
@@ -562,8 +562,8 @@ modify:
 
 - declared/valid domain components or branch keys;
 - `evaluate(branch,t)`;
-- future length/integration state;
-- future intersection roots;
+- metric length/integration state;
+- intersection roots and result state;
 - quality/numeric-guarantee metadata;
 - future export geometry.
 
@@ -585,9 +585,10 @@ G6B should implement only measured caches:
 
 All caches are invalidated through normal dependency recompute when an affected
 locus publishes a new revision. A downstream invalidation does not eagerly
-build an upstream render cache. Bounds and metric indexes are deferred until
-G7/G8 demonstrate a need. No global cache, unbounded memoization or new
-concurrent execution model is justified for G6B. Memory limits, duplicate
+build an upstream render cache. G6B deferred bounds and metric indexes; G7 and
+G8 later added their own revision-scoped, bounded derived state under separate
+contracts. No global cache, unbounded memoization or new concurrent execution
+model is justified. Memory limits, duplicate
 upstream evaluations and hit rates must be measured by the
 [benchmark plan](../validation/g6_locus_v2_benchmark_plan.md).
 
@@ -621,18 +622,18 @@ tolerance is never reused as geometric, metric or intersection tolerance.
 
 ## 13. Forward compatibility boundaries
 
-- **G7:** may build a world-coordinate `LocusMetricIndex` by querying domain,
+- **G7:** builds a world-coordinate `LocusMetricIndex` by querying domain,
   evaluations and optional differential capabilities. A metric consumed by a
   downstream construction must be semantic-revision-scoped, use normal-DAG
   invalidation and caching, and must not read the render cache, sum sampled
   chords or recompute the whole metric for every query while its upstream
   semantic revision is unchanged.
-- **G8:** may isolate/refine roots in provider-owned semantic branch parameters
-  and preserve `(branchKey,t)` identity. It must not use screen polylines as
+- **G8:** isolates/refines roots in provider-owned semantic branch parameters
+  and preserves `(branchKey,t)` identity. It must not use screen polylines as
   roots.
-- **G9:** may use a shared, declared parameter as correspondence between
-  projections; normalized traversal coordinates are insufficient unless the
-  schema explicitly approves them.
+- **G9P proposal:** a future implementation may use a shared, declared
+  parameter as correspondence between projections; normalized traversal
+  coordinates are insufficient unless the schema explicitly approves them.
 - **G5 extension:** a future `GeoLocusV2` export adapter may consume branches,
   domain, evaluations and exactness/error metadata. It must never consume
   `LocusRenderCache2D`. No DXF locus support is part of G6.
@@ -716,9 +717,10 @@ The second author review records:
 6. the hash-pinned two-level model is the functional legacy control, while the
    three-level `Flatten` model is the pathological legacy reference.
 
-The original `.ggb` files remain manual/scientific evidence. G6B will use a
+The original `.ggb` files remain manual/scientific evidence. G6B uses a
 small internal, typed, three-level fixture traced to them because it has no
-public command, persistence or G7 metric operation. That fixture must prove
+public command or persistence. In its historical G6B scope, that fixture had no
+G7 metric operation. It proves
 composition, inner-level invalidation, absence of render/sample dependence,
 absence of whole-upstream-locus regeneration and approved functional scaling.
 

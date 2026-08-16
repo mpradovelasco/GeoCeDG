@@ -36,6 +36,8 @@ $Documents = @(
     "geocedg/specs/locus/locus-v2-intersections.md"
 )
 
+. (Join-Path $PSScriptRoot "evidence-integrity.ps1")
+
 function Assert-Condition {
     param(
         [Parameter(Mandatory)] [bool]$Condition,
@@ -43,21 +45,6 @@ function Assert-Condition {
     )
     if (-not $Condition) {
         throw $Message
-    }
-}
-
-function Get-CanonicalTextSha256 {
-    param([Parameter(Mandatory)] [string]$Path)
-
-    $content = [IO.File]::ReadAllText($Path)
-    $canonical = $content.Replace("`r`n", "`n").Replace("`r", "`n")
-    $sha256 = [Security.Cryptography.SHA256]::Create()
-    try {
-        $bytes = [Text.UTF8Encoding]::new($false).GetBytes($canonical)
-        return [Convert]::ToHexString(
-            $sha256.ComputeHash($bytes)).ToLowerInvariant()
-    } finally {
-        $sha256.Dispose()
     }
 }
 
@@ -84,20 +71,8 @@ function Assert-Contains {
 }
 
 function Assert-EvidenceHashes {
-    foreach ($line in Get-Content -LiteralPath $EvidenceHashes) {
-        if ([string]::IsNullOrWhiteSpace($line)) {
-            continue
-        }
-        $parts = $line -split "\s+", 2
-        Assert-Condition -Condition ($parts.Count -eq 2) `
-            -Message "Malformed G8C2 evidence hash line: $line"
-        $path = Join-Path $RepositoryRoot $parts[1].Trim().Replace("/", "\")
-        Assert-Condition -Condition (Test-Path -LiteralPath $path -PathType Leaf) `
-            -Message "Hashed G8C2 contract artifact is missing: $path"
-        Assert-Condition -Condition ((Get-CanonicalTextSha256 -Path $path) -eq `
-                $parts[0].ToLowerInvariant()) `
-            -Message "G8C2 contract evidence hash mismatch: $path"
-    }
+    [void](Assert-GeoCeDGFrozenHashManifest -RepositoryRoot $RepositoryRoot `
+        -ManifestPath $EvidenceHashes)
 }
 
 function Assert-MarkdownLinks {
@@ -133,8 +108,9 @@ try {
     Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
         -Message "Unable to read initial repository status."
 
-    $implementationPresent = Test-Path -LiteralPath $ImplementationEvidencePath `
-        -PathType Leaf
+    [void](Assert-GeoCeDGFrozenG8Anchor -RepositoryRoot $RepositoryRoot)
+    $implementationPresent = Test-GeoCeDGFrozenPath `
+        -RepositoryRoot $RepositoryRoot -Path $ImplementationEvidencePath
     foreach ($file in $Documents + @(
             "geocedg/validation/locus-v2/g8c2/g8c2-contract-review-evidence.json",
             "geocedg/validation/locus-v2/g8c2/g8c2-contract-evidence.sha256",
@@ -155,8 +131,8 @@ try {
             $tagTarget -eq $G8C1Commit) `
         -Message "$G8C1Tag does not identify the G8C2 entry baseline."
 
-    Assert-Condition -Condition ((Get-CanonicalTextSha256 -Path `
-                (Join-Path $RepositoryRoot $PromptPath)) -eq $PromptSha) `
+    Assert-Condition -Condition ((Get-GeoCeDGFrozenCanonicalTextSha256 `
+                -RepositoryRoot $RepositoryRoot -Path $PromptPath) -eq $PromptSha) `
         -Message "Canonical G8C2 prompt hash changed."
 
     Assert-Contains -RelativePath `
@@ -200,8 +176,8 @@ try {
         -Text @("PASS — AUTHOR APPROVED", "no substantive contradiction",
             $PromptSha, "G8C2 = AUTHORIZED — NOT STARTED")
 
-    $evidence = Get-Content -LiteralPath $EvidencePath -Raw |
-        ConvertFrom-Json -Depth 100
+    $evidence = Get-GeoCeDGFrozenJson -RepositoryRoot $RepositoryRoot `
+        -Path $EvidencePath
     Assert-Condition -Condition ($evidence.status -eq "PASS_AUTHOR_APPROVED" `
             -and $evidence.g8c1Baseline.commit -eq $G8C1Commit `
             -and $evidence.g8c1Baseline.tag -eq $G8C1Tag `
@@ -237,10 +213,8 @@ try {
             $evidence.phaseDisposition.g9 -eq "NOT_STARTED") `
         -Message "G8C2 phase disposition is inconsistent."
 
-    $changedPaths = @(& git -C $RepositoryRoot diff --name-only $G8C1Commit --)
-    $changedPaths += @(& git -C $RepositoryRoot ls-files --others `
-        --exclude-standard)
-    $changedPaths = @($changedPaths | Sort-Object -Unique)
+    $changedPaths = @(Get-GeoCeDGFrozenChangedPaths `
+        -RepositoryRoot $RepositoryRoot -BaseCommit $G8C1Commit)
     foreach ($path in $changedPaths) {
         if ($path.StartsWith("source/")) {
             $allowedImplementationPath = $implementationPresent -and (

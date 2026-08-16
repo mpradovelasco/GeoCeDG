@@ -59,5 +59,16 @@ treating historical sampled coordinates as kernel truth.
   `docs/references/cedg/developments/978-3-031-72829-7_81.pdf`
 
 Hashes and catalog metadata remain governed by
-`docs/references/cedg/cedg-scientific-catalog.yml` and the associated source
+`docs/references/cedg/catalog.yml` and the associated source
 manifest; this task does not modify historical files or evidence.
+
+## Frozen historical evidence anchor
+
+This G8 traceability record is historical evidence. Its immutable repository
+anchor is the annotated tag object
+`fed1bfbeea77a48acce285429b397eda77054df1`, peeled to commit
+`e7810171179825a03b22d8c6eba28c672f468281`. Verification reads manifests and
+their governed files from that commit's Git blobs and requires the current
+`HEAD` to descend from it. Living documentation is checked separately at the
+current worktree. Historical manifests are never regenerated or rewritten to
+match later documentation.

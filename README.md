@@ -10,7 +10,11 @@ G1/G1R establecieron la capa operativa, G2 incorporó el primer perfil Desktop
 propio y G3 preserva y cataloga de forma controlada los recursos CeDG legacy.
 G4 añadió packaging Windows interno y G5 una primera exportación geométrica 2D
 DXF experimental. G6 añadió una entidad Locus V2 semántica paralela y G6R la
-endureció con un laboratorio developer-only; permanece experimental, interna y
+endureció con un laboratorio developer-only. G7 cerró métricas semánticas
+internas y G8 cerró intersecciones internas tipadas, ambas autor-aprobadas.
+G9P-R1 y G9P son `PASS — AUTHOR APPROVED`; sus seis especificaciones son
+normativas y ADR 0010–0015 están Accepted. G9O1 está autorizado y no iniciado;
+no ha comenzado ninguna implementación productiva G9. Locus V2 permanece experimental, interna y
 desactivada por defecto. Ningún recurso legacy se carga por defecto.
 
 ## Baseline
@@ -100,8 +104,9 @@ La exportación experimental de geometría 2D se invoca desde
 unidades, entidades soportadas y warnings se documentan en
 [el manual operativo](docs/user/geocedg_user_guide.md#8-export-2d-geometry-to-dxf).
 
-Locus V2 no tiene todavía comando público, persistencia, `Path`, métricas ni
-intersecciones. Un desarrollador puede validar o abrir su laboratorio aislado:
+Locus V2 no tiene todavía comando público, persistencia ni `Path`. Sus métricas
+G7 e intersecciones G8 son capacidades internas no públicas. Un desarrollador
+puede validar o abrir su laboratorio aislado:
 
 ```powershell
 .\tools\locus-v2\open-locus-v2-laboratory.ps1 -ValidateOnly

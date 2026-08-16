@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 2,
+  "phase": "G9P",
+  "generatedOn": "2026-08-16",
+  "hashPolicy": "SHA-256 of UTF-8 text after CRLF/CR to LF normalization; no other normalization",
+  "executionPolicy": "A checked-in prompt never executes itself. G9O1 is authorized and not started after G9P closeout; the other nine future prompts remain unexecuted and unauthorized, and every execution requires an explicit canonical task invocation.",
+  "dependencyPolicy": "Hard semantic/contract dependencies, recommended execution predecessors, and global/release gates are distinct and must never be inferred from catalog order.",
+  "sourcePrompt": {
+    "path": "docs/references/cedg/models/g9p/Prompt.md",
+    "rawSha256": "b29a919c5c3a7ba781f720d3a9c646f2892c6be19b87419001493481077a9e08",
+    "canonicalLfSha256": "02d05478f719f5e5f14c5ee21d062a7446602721893f85b2f289bfeac700f495",
+    "state": "EXECUTED_IMMUTABLE_AUTHOR_INPUT"
+  },
+  "prompts": [
+    {
+      "phase": "G9P",
+      "path": ".github/prompts/tasks/g9p-integrated-analysis-predesign.prompt.md",
+      "state": "EXECUTED_RECORD",
+      "canonicalLfSha256": "2c82eb57a0d402c9ec0340d43b712f8839bb2c4deb2f65fc66d0297f6d4d3cf8",
+      "branch": "feature/g9-spatial-semantics-design",
+      "governing": ["docs/references/cedg/models/g9p/Prompt.md"]
+    },
+    {
+      "phase": "G9O1",
+      "path": ".github/prompts/tasks/g9o1-source-knowledge-bundles-and-guides.prompt.md",
+      "state": "AUTHORIZED_UNEXECUTED",
+      "hardDependencies": ["APPROVED_G9P_OPERATIONS_AND_DOCUMENTATION_CONTRACTS"],
+      "recommendedExecutionPredecessor": "FIRST_AFTER_FINAL_G9P_APPROVAL",
+      "globalReleaseGate": "REQUIRED_INPUT_TO_G9_GLOBAL_OPERATIONAL_CLOSEOUT",
+      "canonicalLfSha256": "b0b04ee4095423fd76f4ecd18a9ea567c091d23197b9bdfd92c736c25b1b9ed6",
+      "branch": "feature/g9o1-source-knowledge-bundles-guides",
+      "governing": ["geocedg/specs/operations/knowledge-bundles.md", "geocedg/specs/operations/documentation-maintenance.md", "docs/adr/0015-deterministic-source-knowledge-bundle-ownership.md"]
+    },
+    {
+      "phase": "G9A1",
+      "path": ".github/prompts/tasks/g9a1-spatial-identity-persistence-foundation.prompt.md",
+      "state": "PROPOSED_UNEXECUTED",
+      "hardDependencies": ["APPROVED_G9P_IDENTITY_AND_PROJECTION_SYSTEM_PERSISTENCE_CONTRACTS", "FROZEN_G8_AUTHORITY"],
+      "recommendedExecutionPredecessor": "G9O1_OPERATIONAL_RECOMMENDATION_ONLY",
+      "globalReleaseGate": "INPUT_TO_G9A_AND_G9_GLOBAL_CLOSEOUT",
+      "canonicalLfSha256": "7a31db2e19b7ff99c643d248b6cf207681adab961614bf97a090037491d72889",
+      "branch": "feature/g9a1-spatial-identity-persistence-foundation",
+      "governing": ["geocedg/specs/spatial/g9-spatial-projection-semantics.md", "docs/adr/0010-role-gated-spatial-authority-and-durable-identity.md", "docs/adr/0011-g9-spatial-persistence-and-phase-gates.md"]
+    },
+    {
+      "phase": "G9A2",
+      "path": ".github/prompts/tasks/g9a2-spatial-semantic-point-pilot.prompt.md",
+      "state": "PROPOSED_UNEXECUTED",
+      "hardDependencies": ["G9A1_AUTHOR_APPROVED"],
+      "recommendedExecutionPredecessor": "G9A1",
+      "globalReleaseGate": "INPUT_TO_G9A_AND_G9_GLOBAL_CLOSEOUT",
+      "canonicalLfSha256": "d02553668cfa8800fa28428e5ee8f293504bc5519ec53f8ed2d54571d802d23e",
+      "branch": "feature/g9a2-spatial-semantic-point-pilot",
+      "governing": ["geocedg/specs/spatial/g9-spatial-projection-semantics.md", "docs/adr/0010-role-gated-spatial-authority-and-durable-identity.md"]
+    },
+    {
+      "phase": "G9A3",
+      "path": ".github/prompts/tasks/g9a3-spatial-lifecycle-migration.prompt.md",
+      "state": "PROPOSED_UNEXECUTED",
+      "hardDependencies": ["G9A2_AUTHOR_APPROVED"],
+      "recommendedExecutionPredecessor": "G9A2",
+      "globalReleaseGate": "CLOSES_G9A_AND_BRANCHES_TO_G9U0_AND_G9B",
+      "canonicalLfSha256": "f12d9f66eb4f2f9df8afe715f9f9039e8a45e8a377a08491e79252891f6f7651",
+      "branch": "feature/g9a3-spatial-lifecycle-migration",
+      "governing": ["geocedg/specs/spatial/g9-spatial-projection-semantics.md", "docs/adr/0011-g9-spatial-persistence-and-phase-gates.md"]
+    },
+    {
+      "phase": "G9U0",
+      "path": ".github/prompts/tasks/g9u0-locus-v2-public-surface.prompt.md",
+      "state": "PROPOSED_UNEXECUTED",
+      "hardDependencies": ["G9A3_AUTHOR_APPROVED", "G6_G8_INTERNAL_SEMANTIC_AUTHORITY"],
+      "recommendedExecutionPredecessor": "G9O1_THEN_G9A3",
+      "globalReleaseGate": "INPUT_TO_G9U1_AND_G9_GLOBAL_CLOSEOUT",
+      "canonicalLfSha256": "160dae2e7dd56fc51fa8910ee9ddecceb2cffa0a3594a655393de264f29cbdfe",
+      "branch": "feature/g9u0-locus-v2-public-surface",
+      "governing": ["geocedg/specs/locus/locus-v2-public-surface.md", "docs/adr/0013-public-locus-v2-surface-and-token-selection.md"]
+    },
+    {
+      "phase": "G9X1",
+      "path": ".github/prompts/tasks/g9x1-extended-dxf-curves.prompt.md",
+      "state": "PROPOSED_UNEXECUTED",
+      "hardDependencies": ["G5_AUTHOR_APPROVED", "G6_G8_INTERNAL_SEMANTIC_AUTHORITY"],
+      "recommendedExecutionPredecessor": "G9U0_RECOMMENDED_NOT_HARD",
+      "globalReleaseGate": "INPUT_TO_G9U1_AND_G9_GLOBAL_CLOSEOUT",
+      "canonicalLfSha256": "fab1dd78c85b337a4f5ac29b8b56ca5565761a2b7cc199312634f42cbe975b94",
+      "branch": "feature/g9x1-extended-dxf-curves",
+      "governing": ["geocedg/specs/export/dxf-curve-fidelity-and-approximation.md", "docs/adr/0014-export-only-dxf-approximation-and-sidecar.md"]
+    },
+    {
+      "phase": "G9U1",
+      "path": ".github/prompts/tasks/g9u1-construction-workspace.prompt.md",
+      "state": "PROPOSED_UNEXECUTED",
+      "hardDependencies": ["G9U0_AUTHOR_APPROVED", "G9X1_AUTHOR_APPROVED"],
+      "recommendedExecutionPredecessor": "G9U0_AND_G9X1",
+      "globalReleaseGate": "APPLICATION_TRACK_INPUT_TO_G9_GLOBAL_CLOSEOUT",
+      "canonicalLfSha256": "502dabbac1f756e01d0f7935a337e389a3c5e26eaabf3452a6ffe953e83b6ddd",
+      "branch": "feature/g9u1-construction-workspace",
+      "governing": ["geocedg/specs/ui/cedg-workspaces.md", "docs/adr/0012-manifest-defined-geocedg-workspaces.md"]
+    },
+    {
+      "phase": "G9B",
+      "path": ".github/prompts/tasks/g9b-canonical-primitive-projections.prompt.md",
+      "state": "PROPOSED_UNEXECUTED",
+      "hardDependencies": ["G9A3_AUTHOR_APPROVED"],
+      "recommendedExecutionPredecessor": "G9A3_OR_AFTER_G9U1_FOR_STAFFING_ONLY",
+      "globalReleaseGate": "PREDECESSOR_TO_G9C_AND_SPATIAL_TRACK_INPUT_TO_GLOBAL_CLOSEOUT",
+      "canonicalLfSha256": "969527b05b5e88b6c7217ebc6bfe0cf552cb2a6937e415cc862c5e619f6963ee",
+      "branch": "feature/g9b-canonical-primitive-projections",
+      "governing": ["geocedg/specs/spatial/g9-spatial-projection-semantics.md"]
+    },
+    {
+      "phase": "G9C",
+      "path": ".github/prompts/tasks/g9c-composed-spatial-objects.prompt.md",
+      "state": "PROPOSED_UNEXECUTED",
+      "hardDependencies": ["G9B_AUTHOR_APPROVED"],
+      "recommendedExecutionPredecessor": "G9B",
+      "globalReleaseGate": "SPATIAL_TRACK_INPUT_TO_G9_GLOBAL_CLOSEOUT",
+      "canonicalLfSha256": "0c446156582e8fc9e568032fe17ba86387ca5640baef4b590cdab4d19e599f9f",
+      "branch": "feature/g9c-composed-spatial-objects",
+      "governing": ["geocedg/specs/spatial/g9-spatial-projection-semantics.md"]
+    },
+    {
+      "phase": "G9U2",
+      "path": ".github/prompts/tasks/g9u2-dihedral-procedures-workspace.prompt.md",
+      "state": "PROPOSED_UNEXECUTED_BLOCKED_ON_G9",
+      "hardDependencies": ["G9_GLOBAL_CLOSEOUT_AUTHOR_APPROVED", "G9U1_WORKSPACE_SUBSTRATE"],
+      "recommendedExecutionPredecessor": "ONLY_AFTER_FROZEN_G9_GLOBAL_CLOSEOUT",
+      "globalReleaseGate": "POST_G9_PRODUCT_GATE_SEPARATE_FROM_GLOBAL_G9_CLOSEOUT",
+      "canonicalLfSha256": "2390973dee76624abced29844875dcef144fe34d153f16b4f083f1f07ce5760d",
+      "branch": "feature/g9u2-dihedral-procedures-workspace",
+      "governing": ["geocedg/specs/ui/cedg-workspaces.md", "geocedg/specs/spatial/g9-spatial-projection-semantics.md"]
+    }
+  ]
+}

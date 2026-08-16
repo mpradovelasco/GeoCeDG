@@ -7,12 +7,13 @@
 | Semantic model | [`locus_v2_metric_semantic_model.md`](locus_v2_metric_semantic_model.md) |
 | Normative contract | [`locus-v2-metrics.md`](../../geocedg/specs/locus/locus-v2-metrics.md) |
 | Index decision | [ADR 0007 Accepted](../adr/0007-revision-scoped-locus-v2-metric-index.md) |
-| Date | 2026-08-13 |
+| Date | 2026-08-16 |
 
 This document maps the approved G7 planning semantics and measured G7A findings
 to the author-approved G7B shared-kernel architecture. The names below now map
 to productive internal classes. G7A-R1, G7A and G7B are
-`PASS — AUTHOR APPROVED`; G7 is `PASS`, and G8 remains `NOT STARTED`.
+`PASS — AUTHOR APPROVED`; G7 is `PASS`. G8 subsequently closed with internal,
+nonpublic intersection kernels; that later work does not change G7 authority.
 
 ## 1. Baseline and placement
 
@@ -584,7 +585,7 @@ repository, base `GeoElement`, public command, XML, Path, 3D, G5 or G8 change.
 
 ## 12. Developer laboratory boundary
 
-The future laboratory may create internal metric queries and display every rich
+The opt-in developer laboratory can create internal metric queries and display every rich
 axis, decomposition and counter. It must:
 
 - remain explicitly opt-in and disabled by default;
@@ -662,7 +663,8 @@ The author-approved G7B minimum includes:
 - lifecycle, exception, invalidation, repeated and nested gates;
 - internal API documentation and developer laboratory.
 
-It still excludes commands, XML, public `Path`, 3D, G5 changes, G8 and G9.
+The G7B change set itself excludes commands, XML, public `Path`, 3D, G5
+changes, G8 and G9. Later internal G8 work is governed independently.
 
 ## 16. Implemented class and ownership map
 

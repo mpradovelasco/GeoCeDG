@@ -56,6 +56,7 @@ $LaboratoryResult = Join-Path $RepositoryRoot (
     "source\desktop\desktop\build\test-results\test\" +
     "TEST-org.geocedg.desktop.locus.LocusV2LaboratoryContractTest.xml")
 . (Join-Path $PSScriptRoot "repository-generated-state.ps1")
+. (Join-Path $PSScriptRoot "evidence-integrity.ps1")
 
 function Assert-Condition {
     param([bool]$Condition, [string]$Message)
@@ -446,19 +447,26 @@ try {
         Assert-Condition -Condition $userGuide.Contains($requiredGuideValue) `
             -Message "The G6R user guide is missing '$requiredGuideValue'."
     }
-    $g7PlanningOnly = $userGuide.Contains('G7 (`PENDING / NOT STARTED`)')
-    $g7aCharacterizedOnly = $userGuide.Contains("G7A characterization only") -and
-        $userGuide.Contains("no productive metric available") -and
-        $userGuide.Contains(
+    [void](Assert-GeoCeDGFrozenG8Anchor -RepositoryRoot $RepositoryRoot)
+    $historicalUserGuide = Get-GeoCeDGFrozenText `
+        -RepositoryRoot $RepositoryRoot `
+        -Path "docs/user/geocedg_user_guide.md"
+    $g7PlanningOnly = $historicalUserGuide.Contains(
+        'G7 (`PENDING / NOT STARTED`)')
+    $g7aCharacterizedOnly = $historicalUserGuide.Contains(
+        "G7A characterization only") -and
+        $historicalUserGuide.Contains("no productive metric available") -and
+        $historicalUserGuide.Contains(
             "| G7B | Minimal native Locus V2 metric kernel | Authorized; not started |")
-    $g7bInternalApproved = $userGuide.Contains(
+    $g7bInternalApproved = $historicalUserGuide.Contains(
             "G7B internal productive metric available") -and
-        $userGuide.Contains("no public metric available") -and
-        $userGuide.Contains('G7B (`PASS — AUTHOR APPROVED`)')
+        $historicalUserGuide.Contains("no public metric available") -and
+        $historicalUserGuide.Contains('G7B (`PASS — AUTHOR APPROVED`)')
     Assert-Condition -Condition ($g7PlanningOnly -or $g7aCharacterizedOnly -or
             $g7bInternalApproved) `
-        -Message ("The user guide must report either the historical G7 planning " +
-            "state, G7A characterization-only, or the author-approved internal G7B kernel.")
+        -Message ("The frozen user guide must report either the historical G7 " +
+            "planning state, G7A characterization-only, or the author-approved " +
+            "internal G7B kernel.")
 
     $traceability = Get-Content -Raw -LiteralPath (Join-Path $RepositoryRoot `
         "docs\validation\g6r_locus_v2_traceability_matrix.md")

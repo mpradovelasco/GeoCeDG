@@ -1,4 +1,9 @@
 docs/upstream/GEOGEBRA_README.md text eol=lf -whitespace
 docs/references/cedg/**/*.pdf binary
+docs/references/cedg/models/g9p/*.ggb binary
+docs/references/cedg/models/g9p/*.png binary
+# Immutable author evidence: preserve the supplied bytes, including three
+# pre-existing trailing-space lines recorded by the G9P input manifest.
+docs/references/cedg/models/g9p/geocedg-reference-workflows-notes.md text -whitespace
 models/legacy/**/original/*.ggb binary
 models/legacy/**/original/*.ggt binary

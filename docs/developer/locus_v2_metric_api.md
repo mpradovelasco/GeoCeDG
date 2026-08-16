@@ -643,8 +643,8 @@ The second query cannot be constructed with endpoints or a direction.
 G7B exposure is limited to internal Java API,
 `GeoLocusMetricResult` and the opt-in developer laboratory. It adds no
 `LocusLength` command, changes no `Length`/`Perimeter`, implements no Path,
-serializes no XML, registers no factory, adds no 3D behavior and starts no G8
-or G9 work.
+serializes no XML, registers no factory and adds no 3D behavior. The G7B change
+set started no G8 or G9 work; later internal G8 work is independent.
 
 Legacy `GeoLocus`, `AlgoLengthLocus`, `AlgoPerimeterLocus`, `myPointList`,
 `listLength`, `listLength12` and `postLocus` remain unchanged. Cache ON/OFF must
@@ -671,8 +671,8 @@ G7B PUBLIC COMMAND = ABSENT
 G7B XML/PERSISTENCE = ABSENT
 G7B PUBLIC PATH = ABSENT
 G7B 3D = ABSENT
-G8 = NOT STARTED
-G9 = NOT STARTED
+G8 = PASS — AUTHOR APPROVED / INTERNAL / NO PUBLIC WORKFLOW
+G9P = PASS — AUTHOR APPROVED / NORMATIVE DESIGN / NO PRODUCTIVE IMPLEMENTATION
 ```
 
 ## 15. Implemented construction and lifecycle seam

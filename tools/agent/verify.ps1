@@ -38,6 +38,7 @@ $G8C2ContractVerifier = Join-Path $PSScriptRoot `
     "verify-g8c2-contract.ps1"
 $G8C2IntersectionVerifier = Join-Path $PSScriptRoot `
     "verify-g8c2-intersections.ps1"
+$G9PDesignVerifier = Join-Path $PSScriptRoot "verify-g9p-design.ps1"
 $BenchmarkRunner = Join-Path $RepositoryRoot "tools\benchmark\run.ps1"
 $InitialStatus = $null
 
@@ -252,6 +253,19 @@ try {
             Assert-LastScriptSuccess `
                 -Description "G8C2 locus-locus contract review"
         }
+    }
+
+    $g9pEvidence = Join-Path $RepositoryRoot `
+        "geocedg\validation\g9p\g9p-design-evidence.json"
+    if (Test-Path -LiteralPath $g9pEvidence -PathType Leaf) {
+        Write-Host "`n==> G9P/R1 author-approved design closeout"
+        $g9pParameters = @{
+            LogDirectory = Join-Path ([IO.Path]::GetFullPath($LogDirectory)) `
+                "g9p-design"
+        }
+        & $G9PDesignVerifier @g9pParameters
+        Assert-LastScriptSuccess `
+            -Description "G9P/R1 author-approved design closeout"
     }
 
     Write-Host "`n==> Standalone Windows packaging contracts"

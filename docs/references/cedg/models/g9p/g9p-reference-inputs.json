@@ -1,0 +1,390 @@
+{
+  "manifest_id": "geocedg.g9p.reference-inputs",
+  "schema_version": 1,
+  "status": "immutable-reference-evidence",
+  "inspection": {
+    "date": "2026-08-16",
+    "repository_head": "667e1cfa6f36",
+    "method": "Read-only SHA-256, ZIP-member, XML, toolbar, macro, script and construction inspection. No archive was opened for update or passed through GeoGebra.",
+    "inputs_unchanged": true,
+    "input_mutations": [],
+    "hash_scope": "Raw file bytes; ZIP-entry hashes cover each uncompressed member byte stream.",
+    "dependency_depth_method": "Lower bound from ordered command inputs that exactly match an already known construction label; recognized edge count is reported so this derived measure is not mistaken for complete dependency semantics."
+  },
+  "author_inputs": [
+    {
+      "path": "docs/references/cedg/models/g9p/geocedg-reference-general-construction-workflow.ggb",
+      "bytes": 140136,
+      "sha256": "738e3edcf44e10f0c07b846d1f53127c4d8450cf0ad209ea9a0e3e8cc2c36a2e",
+      "provenance": "Author-supplied G9P reference input; original filename and bytes retained.",
+      "purpose": "Evidence for a mature manual CeDG construction workflow and workspace density.",
+      "relevant_workflows": ["general-construction", "orthographic-projection", "conic-construction", "manual-dihedral-rotation"],
+      "g9p_role": "Primary structured workflow reference",
+      "evidence_class": "reference-current",
+      "immutable": true
+    },
+    {
+      "path": "docs/references/cedg/models/g9p/geocedg-reference-locus-cylindrical-graft-development.ggb",
+      "bytes": 76870,
+      "sha256": "9e220a695a4b1ee2bf60adc77872133e8074740443ae659de1404539de8141f2",
+      "provenance": "Author-supplied G9P reference input; original filename and bytes retained.",
+      "purpose": "Evidence for cylindrical graft intersection, locus projections and flat development.",
+      "relevant_workflows": ["surface-intersection", "legacy-locus", "cylindrical-development", "length-transport"],
+      "g9p_role": "Primary structured Locus/development reference",
+      "evidence_class": "reference-current",
+      "immutable": true
+    },
+    {
+      "path": "docs/references/cedg/models/g9p/geocedg-reference-locus-focal-sphere-illumination.ggb",
+      "bytes": 111502,
+      "sha256": "baec7131aa95676864457d1602f73f8fef3ce37674fc0e48b28efd4feac204a0",
+      "provenance": "Author-supplied G9P reference input; original filename and bytes retained.",
+      "purpose": "Evidence for changes of projection plane, sphere-cone intersection loci and illumination analysis.",
+      "relevant_workflows": ["change-of-projection-plane", "surface-intersection", "legacy-locus", "rotation-analysis"],
+      "g9p_role": "Primary structured Locus/analysis reference",
+      "evidence_class": "reference-current",
+      "immutable": true
+    },
+    {
+      "path": "docs/references/cedg/models/g9p/geocedg-reference-locus-truncated-cone-cylinder-connections.ggb",
+      "bytes": 97204,
+      "sha256": "18c6fad4d53fc3bb03a1546021a0677656fded2c853b7ec198312b96ee55e155",
+      "provenance": "Author-supplied G9P reference input; original filename and bytes retained.",
+      "purpose": "Evidence for a truncated-cone transition, folded right section and two locus-defined cylinder connections.",
+      "relevant_workflows": ["folding", "surface-intersection", "legacy-locus", "profile-projection"],
+      "g9p_role": "Primary structured Locus/procedure reference",
+      "evidence_class": "reference-current",
+      "immutable": true
+    },
+    {
+      "path": "docs/references/cedg/models/g9p/geocedg-reference-construction-workspace.png",
+      "bytes": 571678,
+      "sha256": "3c30ddc0ae4aa54d02292a66bae3ed37447911803f52b64315cc1c6b71f966ba",
+      "provenance": "Author-supplied G9P screenshot; raw PNG retained.",
+      "purpose": "Visual evidence of toolbar density, Algebra/Graphics/Construction Protocol use, floating Properties, input bar and contextual command help.",
+      "relevant_workflows": ["general-construction", "workspace-layout"],
+      "g9p_role": "Explanatory visual evidence, not a pixel specification",
+      "evidence_class": "explanatory",
+      "image": {"width": 3822, "height": 2159, "format": "png"},
+      "immutable": true
+    },
+    {
+      "path": "docs/references/cedg/models/g9p/geocedg-reference-workflows-notes.md",
+      "bytes": 16372,
+      "sha256": "d30f08d8ff278e40fbf65e26a030969d129c56e5e5bda8f18b5fdee760a8b6a0",
+      "provenance": "Author-supplied first-person workflow note; raw text retained.",
+      "purpose": "Author interpretation of intended construction order, panel use, locus limitations and model workflows.",
+      "relevant_workflows": ["all-reference-models", "workspace-design", "legacy-tool-migration"],
+      "g9p_role": "Explanatory author evidence",
+      "evidence_class": "explanatory",
+      "immutable": true
+    },
+    {
+      "path": "docs/references/cedg/models/g9p/Prompt.md",
+      "bytes": 42340,
+      "sha256": "b29a919c5c3a7ba781f720d3a9c646f2892c6be19b87419001493481077a9e08",
+      "provenance": "Author-supplied G9P execution prompt; raw text retained.",
+      "purpose": "Defines the bounded G9P design and characterization request.",
+      "relevant_workflows": ["g9p-governance"],
+      "g9p_role": "Task input, subordinate to repository authority",
+      "evidence_class": "explanatory",
+      "immutable": true
+    }
+  ],
+  "context_inputs": [
+    {
+      "path": "models/legacy/template-v7/original/Templatev7.ggb",
+      "bytes": 48149,
+      "sha256": "f62e5b7a92bcd95f10b8afda348763a57ccbd0c10dbc0c2bccc7049831ed4113",
+      "provenance": "Byte-identical historical author-supplied template curated under models/legacy/template-v7/manifest.yml.",
+      "purpose": "Legacy context for the 24 embedded macros, seven custom toolbar groups, scripts and document controls inherited by the four G9P GGBs.",
+      "relevant_workflows": ["legacy-toolbar", "legacy-macros", "laboratory"],
+      "g9p_role": "Legacy comparison context",
+      "evidence_class": "legacy",
+      "immutable": true
+    }
+  ],
+  "archive_entry_sets": {
+    "template-v7-shared-resources-16": {
+      "description": "These exact sixteen members occur in all five inspected GGB archives.",
+      "entries": [
+        {"name": "03a3c2a1c411ba47a36cf0d41cab025e/GeoGebra_button_copy_visual_style.png", "bytes": 1065, "compressed_bytes": 363, "sha256": "67ccc7cfef67476abe0365f984f2528072fa0938770845494226c80c5d2462b6"},
+        {"name": "20f2e82a3235d4a6cbe03bb98b268006/GeoGebra_icon_perspective1.png", "bytes": 462, "compressed_bytes": 467, "sha256": "66ce13e7a8d31094fe058f517b870eb4b1b12be2463ef9eca0d184537f53afb4"},
+        {"name": "2797d543beb66ff6f7048543e22a4514/GeoGebra_button_relation.png", "bytes": 175, "compressed_bytes": 167, "sha256": "331f70db2c5cb5024f95a82318136ad524fa8e282d0b56da34d62f9075648a34"},
+        {"name": "340968320cfb2361fb89a4e816d68da6/GeoGebra_button_distance.png", "bytes": 1082, "compressed_bytes": 612, "sha256": "98b3d276dadd2165771e2a5dc3a7166d10e7547c336847d5d3c02f395a1e1d7f"},
+        {"name": "36600aceabcba6fc1f74beb4eb0d5ef2/SegmentVisibility.png", "bytes": 588, "compressed_bytes": 593, "sha256": "7156f6fc435fdf1433ff5b4aa075716e6f07979570da91830b5e90eac19de547"},
+        {"name": "5cbd1802b6c0ce26b2e76afaa154641c/GeoGebra_button_translate_by_vector.png", "bytes": 1187, "compressed_bytes": 830, "sha256": "a1fdc117724386924c676a6d37b55de3a09ecc1f4021ead065612ff7f1d18c8a"},
+        {"name": "6c6883332c563c98785be596f8dae06c/GeoGebra_button_angle_fixed.png", "bytes": 1267, "compressed_bytes": 1111, "sha256": "5c08f9956d26967e682a57c184577c3a99ac041db0288b4ebe920c5c2302f863"},
+        {"name": "75189129e395cdee8c2eeb89de8cbb83/GeoGebra_button_locus.png", "bytes": 1402, "compressed_bytes": 1403, "sha256": "0a61822287b4cea5907e0e2796752bdc685910b46dd5d232427b8485ec3ab12e"},
+        {"name": "8051e6540eab330ea57701a61c4fa52d/GeoGebra_button_ellipse_3.png", "bytes": 1282, "compressed_bytes": 1177, "sha256": "033039fd2b4996707b8b3fa157872cd30b097658046b8db51cc24ff35abe1b93"},
+        {"name": "9d793b2f6d09c1d4ac1386c0f987c5ef/Ellipse.png", "bytes": 853, "compressed_bytes": 858, "sha256": "6801f370ccfd759c9191033d5316c3c4c7b5ed61754aa59a9838db9cfd998234"},
+        {"name": "b17a5603c97e7dbc3efa752c989fd746/GeoGebra_icon_trace_on.png", "bytes": 1036, "compressed_bytes": 1041, "sha256": "5d68915a0e54a66c1881caa256c999db1e84d1f665d11bee0ec95686d8e6e00d"},
+        {"name": "c9a68047dbb98cd64e9bb5c140b877a3/GeoGebra_button_semicircle.png", "bytes": 1133, "compressed_bytes": 764, "sha256": "16996615f77c49f9d93c114390198746b83979a788e8a0eba11ba60f3397f7d5"},
+        {"name": "caaa950a1fee94e98e3cce6aa99dc324/circulodiametro.png", "bytes": 972, "compressed_bytes": 977, "sha256": "9793000beafc380d63b7a486d90eaaf576c181a1201f4581bdfe1c69725a477a"},
+        {"name": "d66a51ee99a80822e5c484f02d851013/Square.png", "bytes": 1378, "compressed_bytes": 1383, "sha256": "1550dac567cab2dfff5736d20336ccf29b60eac01cc93a06f229e63fb47ab083"},
+        {"name": "e03e6929a24d32778067014994766f6d/GeoGebra_button_circle_sector_3.png", "bytes": 1200, "compressed_bytes": 899, "sha256": "88a286833d412afd4487b5037f39bf7359058eafe7affeb13d44c3c537e2d55a"},
+        {"name": "ffac980ceb8cc7727390bbc9511772dd/TranspLength.PNG", "bytes": 396, "compressed_bytes": 401, "sha256": "10ffb0f47b6db1352a9bb1cb980055f7a82ea053932749fc359b7875b60a734a"}
+      ]
+    }
+  },
+  "toolbar_sets": {
+    "template-v7-toolbar": {
+      "utf8_sha256": "949222576d8e059b251bdd4766759d0a2bc8a162541222306c1d5647cb57b70c",
+      "character_count": 443,
+      "raw": "0 39 | 1 501 67 , 5 19 , 72 | 2 15 45 , 18 65 , 7 37 | 4 3 8 9 , 13 44 , 58 , 47 | 16 51 64 , 70 | 10 34 53 11 , 24 20 22 , 21 23 | 55 56 57 , 12 | 36 46 , 38 49 50 , 71 | 30 29 54 32 31 33 | 17 26 62 73 , 14 68 | 25 52 60 61 | 40 41 42 , 27 28 35 , 6 | 100014 100013 | 100009 100018 | 100017 , 100015 100016 , 100001 , 100010 100023 | 100007 100006 100005 100022 100020 | 100004 100011 , 100012 100008 , 100019 100021 | 100024 | 100002 100003",
+      "top_level_group_count": 19,
+      "custom_group_count": 7,
+      "custom_mode_count": 24,
+      "help_enabled": true
+    }
+  },
+  "macro_sets": {
+    "template-v7-macros-24": {
+      "names_in_archive_order": [
+        "SplineLength", "sheetISOAnLand", "sheetISOAnVert", "directDimension",
+        "SquarebyDiagonal", "CirclebyD", "EllipseAxis", "pointJump",
+        "PoliLineVisibility", "Perimeter", "axisDimension", "relCoor",
+        "DuctSymbol", "SymmSymbol", "listLength", "listLength12", "postLocus",
+        "ellipseVisibility", "translationCoor", "circArcbyAngle", "dummyRotate",
+        "conj2mainAxesEllipse", "ellipseLength12", "IFPositiveSelectPoint"
+      ],
+      "toolbar_groups": [
+        {"group": 13, "modes": [{"id": 100014, "macro": "SymmSymbol"}, {"id": 100013, "macro": "DuctSymbol"}]},
+        {"group": 14, "modes": [{"id": 100009, "macro": "PoliLineVisibility"}, {"id": 100018, "macro": "ellipseVisibility"}]},
+        {"group": 15, "modes": [{"id": 100017, "macro": "postLocus"}, {"id": 100015, "macro": "listLength"}, {"id": 100016, "macro": "listLength12"}, {"id": 100001, "macro": "SplineLength"}, {"id": 100010, "macro": "Perimeter"}, {"id": 100023, "macro": "ellipseLength12"}]},
+        {"group": 16, "modes": [{"id": 100007, "macro": "EllipseAxis"}, {"id": 100006, "macro": "CirclebyD"}, {"id": 100005, "macro": "SquarebyDiagonal"}, {"id": 100022, "macro": "conj2mainAxesEllipse"}, {"id": 100020, "macro": "circArcbyAngle"}]},
+        {"group": 17, "modes": [{"id": 100004, "macro": "directDimension"}, {"id": 100011, "macro": "axisDimension"}, {"id": 100012, "macro": "relCoor"}, {"id": 100008, "macro": "pointJump"}, {"id": 100019, "macro": "translationCoor"}, {"id": 100021, "macro": "dummyRotate"}]},
+        {"group": 18, "modes": [{"id": 100024, "macro": "IFPositiveSelectPoint"}]},
+        {"group": 19, "modes": [{"id": 100002, "macro": "sheetISOAnLand"}, {"id": 100003, "macro": "sheetISOAnVert"}]}
+      ]
+    }
+  },
+  "ggb_archives": [
+    {
+      "path": "docs/references/cedg/models/g9p/geocedg-reference-general-construction-workflow.ggb",
+      "archive_bytes": 140136,
+      "archive_sha256": "738e3edcf44e10f0c07b846d1f53127c4d8450cf0ad209ea9a0e3e8cc2c36a2e",
+      "entry_count": 22,
+      "shared_entry_set": "template-v7-shared-resources-16",
+      "document_entries": [
+        {"name": "geogebra_defaults2d.xml", "bytes": 9965, "compressed_bytes": 1348, "sha256": "eb62b45f75eaa5b71582476506348490ce6bcdff82a9763fd250955ddc9f1f4d"},
+        {"name": "geogebra_defaults3d.xml", "bytes": 4504, "compressed_bytes": 855, "sha256": "f19c732b3143bf3c10213401e4985b3f0ea1b7057d67aba742fcc1b3697168cd"},
+        {"name": "geogebra_javascript.js", "bytes": 630, "compressed_bytes": 299, "sha256": "583c6ce80275a0fa15d1fde036535fcf2aa10776a1ac081601b6a7025af3d92b"},
+        {"name": "geogebra_macro.xml", "bytes": 221871, "compressed_bytes": 24952, "sha256": "871ae59f7c59873a14719f469e5b4c39ce258033333204f0119ac8133c85c1c5"},
+        {"name": "geogebra_thumbnail.png", "bytes": 83603, "compressed_bytes": 81105, "sha256": "f10149b355fa9c76010d0833a6a62a6eae2511f73f003b3d2bd3c16200372470"},
+        {"name": "geogebra.xml", "bytes": 123693, "compressed_bytes": 14359, "sha256": "071c3b8ab5e498e318e06f7b01bd5f5c8932a4efeb447d5e9f62a2047809ea9c"}
+      ],
+      "container": {"format": "5.0", "geogebra_version": "5.2.892.0", "app": "classic", "platform": "d", "document_id": "456bba6f-3b8b-4097-a188-0c234d556f50"},
+      "layout": {
+        "window": {"width": 1126, "height": 1070},
+        "pane_dividers": [0.26287744227353466],
+        "visible_views": [{"id": 1, "role": "graphics", "size": 798}, {"id": 2, "role": "algebra", "size": 296}],
+        "construction_protocol_view_visible": false,
+        "construction_protocol_navigation": {"present": true, "saved_step": 205},
+        "properties_view": {"visible": false, "in_frame": true},
+        "input": {"visible": true, "command_enabled": true, "position": "bottom"},
+        "toolbar_set": "template-v7-toolbar"
+      },
+      "construction": {
+        "element_nodes": 267, "command_nodes": 183, "expression_nodes": 14,
+        "recognized_dependency_depth_lower_bound": 32, "recognized_dependency_edges": 368,
+        "controls": {"sliders": 4, "checkboxes": 3, "buttons": 3, "text_fields": 4},
+        "object_visibility": {"visible": 177, "hidden": 84},
+        "layers": {"0": 7, "3": 18, "5": 242},
+        "object_families": {"angle": 2, "boolean": 3, "button": 3, "conic": 19, "conicpart": 9, "line": 37, "list": 3, "numeric": 13, "point": 95, "ray": 7, "segment": 70, "text": 2, "textfield": 4},
+        "commands": {"Angle": 2, "Circle": 11, "conj2mainAxesEllipse": 1, "EllipseAxis": 5, "ellipseLength12": 4, "If": 1, "Intersect": 66, "Line": 27, "Midpoint": 4, "Mirror": 7, "OrthogonalLine": 2, "Point": 2, "PoliLineVisibility": 4, "Ray": 7, "Rotate": 16, "Segment": 13, "Semicircle": 1, "sheetISOAnLand": 1, "sheetISOAnVert": 1, "Tangent": 4, "Textfield": 4}
+      },
+      "macros": {"set": "template-v7-macros-24", "embedded_count": 24, "invocations": {"conj2mainAxesEllipse": 1, "EllipseAxis": 5, "ellipseLength12": 4, "PoliLineVisibility": 4, "sheetISOAnLand": 1, "sheetISOAnVert": 1}},
+      "scripts": {"document_script_blocks": 5, "scripted_elements": 4, "global_javascript": "copy-free-object click-listener", "export_image_script": true},
+      "workflow": [
+        "Complete point projections for three leg-axis/sphere points.",
+        "Rotate one axis into a frontal construction position.",
+        "Construct the intersection circle and its ellipse projections from principal and conjugate axes.",
+        "Return the first leg to position and derive the other two through rotation and reflection.",
+        "Extend contour generators to the support plane and construct support ellipses."
+      ],
+      "workarounds": ["projection identity conveyed by labels", "legacy macro axis conversion", "ICeDGFunctions and CopyFreeObject scripting", "presentation visibility macro"],
+      "native_g6_g8_replacements": [],
+      "g9_dependencies": ["typed spatial point/projection association", "projection frames", "procedure-level rotation and reprojection"],
+      "model_local_candidates": ["sheet/export scripts", "exam statement", "presentation styling"]
+    },
+    {
+      "path": "docs/references/cedg/models/g9p/geocedg-reference-locus-cylindrical-graft-development.ggb",
+      "archive_bytes": 76870,
+      "archive_sha256": "9e220a695a4b1ee2bf60adc77872133e8074740443ae659de1404539de8141f2",
+      "entry_count": 22,
+      "shared_entry_set": "template-v7-shared-resources-16",
+      "document_entries": [
+        {"name": "geogebra_defaults2d.xml", "bytes": 9685, "compressed_bytes": 1317, "sha256": "21a683941bfb0f1e90fca1770ba24473c268df4d8decec6e8860794054cdc459"},
+        {"name": "geogebra_defaults3d.xml", "bytes": 4336, "compressed_bytes": 848, "sha256": "cfa64dc5f4321760d2f05383774676d460af8fe733d6c77e397e5050d48a37bb"},
+        {"name": "geogebra_javascript.js", "bytes": 24, "compressed_bytes": 26, "sha256": "90d66739c7658fadada2635213419190cd92f745f4950b71c6573970a8bd1c98"},
+        {"name": "geogebra_macro.xml", "bytes": 218176, "compressed_bytes": 24876, "sha256": "db42b6b1d8a0a3011b626e329a892499db24a600810ef8bcdb6b45b84099285c"},
+        {"name": "geogebra_thumbnail.png", "bytes": 21306, "compressed_bytes": 20819, "sha256": "121eb01b6d70aad8c93dfb8c149871a7cc6958f50e552dfc9f6324181a6e2101"},
+        {"name": "geogebra.xml", "bytes": 106017, "compressed_bytes": 11766, "sha256": "0900085bfd71efdc130dc3656b0ab3a2d4d53e385346d382b4fcb2a2073f3152"}
+      ],
+      "container": {"format": "5.0", "geogebra_version": "5.4.927.1", "app": "classic", "platform": "d", "document_id": "456bba6f-3b8b-4097-a188-0c234d556f50"},
+      "layout": {
+        "window": {"width": 1536, "height": 864}, "pane_dividers": [0.15559895833333334],
+        "visible_views": [{"id": 1, "role": "graphics", "size": 1269}, {"id": 2, "role": "algebra", "size": 239}],
+        "construction_protocol_view_visible": false, "construction_protocol_navigation": {"present": false},
+        "properties_view": {"visible": false, "in_frame": true},
+        "input": {"visible": true, "command_enabled": true, "position": "bottom"}, "toolbar_set": "template-v7-toolbar"
+      },
+      "construction": {
+        "element_nodes": 234, "command_nodes": 156, "expression_nodes": 25,
+        "recognized_dependency_depth_lower_bound": 25, "recognized_dependency_edges": 283,
+        "controls": {"sliders": 3, "checkboxes": 4, "buttons": 4, "text_fields": 6},
+        "object_visibility": {"visible": 154, "hidden": 75}, "layers": {"0": 9, "3": 15, "5": 210},
+        "object_families": {"boolean": 4, "button": 4, "conic": 11, "conicpart": 14, "line": 35, "list": 3, "locus": 6, "numeric": 11, "point": 72, "ray": 2, "segment": 54, "text": 11, "textfield": 6, "vector": 1},
+        "commands": {"Circle": 11, "DuctSymbol": 3, "ellipseLength12": 2, "If": 1, "Intersect": 39, "Line": 30, "Locus": 6, "OrthogonalLine": 1, "Perimeter": 1, "Point": 12, "pointJump": 3, "Ray": 2, "Segment": 25, "sheetISOAnLand": 1, "Tangent": 2, "Textfield": 6, "Translate": 10, "Vector": 1}
+      },
+      "macros": {"set": "template-v7-macros-24", "embedded_count": 24, "invocations": {"DuctSymbol": 3, "ellipseLength12": 2, "Perimeter": 1, "pointJump": 3, "sheetISOAnLand": 1}},
+      "scripts": {"document_script_blocks": 7, "scripted_elements": 6, "global_javascript": "no-op ggbOnInit", "copy_free_object_button_scripts": 2, "export_image_script": true},
+      "workflow": [
+        "Use an auxiliary frontal plane to obtain entrance generatrices and moving points P1/P2.",
+        "Generate six legacy loci for paired projections and the developed intersection.",
+        "Transport generatrices to a flat domain using the generator through A as reference.",
+        "Use indirect constructions where legacy Locus cannot intersect its adjacent generators."
+      ],
+      "workarounds": ["six sampled legacy Locus objects", "indirect locus/generatrix intersections", "free-copy buttons", "length inferred through transformed geometry rather than semantic locus metric"],
+      "native_g6_g8_replacements": ["Locus V2 definition", "rich semantic length", "Locus V2 intersections", "token-bound derived points"],
+      "g9_dependencies": ["typed projection bindings for the spatial intersection", "procedure provenance for the development"],
+      "model_local_candidates": ["DuctSymbol", "sheet/export scripts"]
+    },
+    {
+      "path": "docs/references/cedg/models/g9p/geocedg-reference-locus-focal-sphere-illumination.ggb",
+      "archive_bytes": 111502,
+      "archive_sha256": "baec7131aa95676864457d1602f73f8fef3ce37674fc0e48b28efd4feac204a0",
+      "entry_count": 22,
+      "shared_entry_set": "template-v7-shared-resources-16",
+      "document_entries": [
+        {"name": "geogebra_defaults2d.xml", "bytes": 9748, "compressed_bytes": 1344, "sha256": "227c03941f7b2a7664a88b6f27a1d5708d0d587190cef512ce151a3dd948ef76"},
+        {"name": "geogebra_defaults3d.xml", "bytes": 4336, "compressed_bytes": 848, "sha256": "cfa64dc5f4321760d2f05383774676d460af8fe733d6c77e397e5050d48a37bb"},
+        {"name": "geogebra_javascript.js", "bytes": 630, "compressed_bytes": 299, "sha256": "583c6ce80275a0fa15d1fde036535fcf2aa10776a1ac081601b6a7025af3d92b"},
+        {"name": "geogebra_macro.xml", "bytes": 218204, "compressed_bytes": 24881, "sha256": "163daa7fbdb2346f1a85e9913c7fdcdba785e4ed7648d67fff48f8518a353397"},
+        {"name": "geogebra_thumbnail.png", "bytes": 54723, "compressed_bytes": 54302, "sha256": "d718b8eecd28cfc0fd49ca8018561964b7875ddc964a4d43ddaeda544382cbbf"},
+        {"name": "geogebra.xml", "bytes": 92520, "compressed_bytes": 12610, "sha256": "abc3e9d1fcb0db29c02feac99cba86680b3833adc06bd64ef488cd0c68c31ae0"}
+      ],
+      "container": {"format": "5.0", "geogebra_version": "5.4.927.1", "app": "classic", "platform": "d", "document_id": "18b8f0bf-2502-4ed5-b557-e911101a042e"},
+      "layout": {
+        "window": {"width": 1536, "height": 864}, "pane_dividers": [0.9166666666666666, 0.171875],
+        "visible_views": [{"id": 1, "role": "graphics", "size": 1139}, {"id": 2, "role": "algebra", "size": 264}, {"id": 32, "role": "construction-protocol", "size": 100}],
+        "construction_protocol_view_visible": true, "construction_protocol_navigation": {"present": true, "saved_step": 171},
+        "properties_view": {"visible": false, "in_frame": true},
+        "input": {"visible": true, "command_enabled": true, "position": "bottom"}, "toolbar_set": "template-v7-toolbar"
+      },
+      "construction": {
+        "element_nodes": 208, "command_nodes": 140, "expression_nodes": 23,
+        "recognized_dependency_depth_lower_bound": 29, "recognized_dependency_edges": 288,
+        "controls": {"sliders": 3, "checkboxes": 3, "buttons": 3, "text_fields": 4},
+        "object_visibility": {"visible": 162, "hidden": 40}, "layers": {"0": 13, "3": 15, "5": 180},
+        "object_families": {"angle": 5, "boolean": 3, "button": 3, "conic": 13, "conicpart": 4, "line": 37, "list": 3, "locus": 4, "numeric": 11, "point": 81, "ray": 6, "segment": 26, "text": 8, "textfield": 4},
+        "commands": {"Angle": 3, "Circle": 11, "conj2mainAxesEllipse": 1, "EllipseAxis": 2, "ellipseLength12": 4, "If": 1, "Intersect": 40, "Line": 28, "Locus": 4, "Midpoint": 1, "Mirror": 1, "OrthogonalLine": 5, "Point": 9, "Ray": 6, "Rotate": 2, "Segment": 8, "sheetISOAnLand": 1, "Tangent": 2, "Textfield": 4, "translationCoor": 7}
+      },
+      "macros": {"set": "template-v7-macros-24", "embedded_count": 24, "invocations": {"conj2mainAxesEllipse": 1, "EllipseAxis": 2, "ellipseLength12": 4, "sheetISOAnLand": 1, "translationCoor": 7}},
+      "scripts": {"document_script_blocks": 5, "scripted_elements": 4, "global_javascript": "copy-free-object click-listener", "export_image_script": true},
+      "workflow": [
+        "Change vertical projection plane to place the tangent-cone axis in frontal position.",
+        "Change horizontal projection plane around CP_1 to place the illumination-cone axis in projecting position.",
+        "Use a horizontal auxiliary plane controlled by K to cut sphere and cone in circles.",
+        "Generate four legacy locus projections from p1, q1, p-prime and q-prime.",
+        "Combine the bite intersection and light separatrix with a rotating sensor to report an illuminated fraction."
+      ],
+      "workarounds": ["four sampled legacy Locus objects", "manual changes of projection plane", "projection association by labels", "coordinate-transport macro"],
+      "native_g6_g8_replacements": ["Locus V2 definition", "rich intersections including tangent roots", "token-bound derived points"],
+      "g9_dependencies": ["ProjectionFrame", "ProjectionBinding", "sphere/cone spatial identity", "procedure-level change of plane and reprojection"],
+      "model_local_candidates": ["illumination fraction presentation", "sheet/export scripts"]
+    },
+    {
+      "path": "docs/references/cedg/models/g9p/geocedg-reference-locus-truncated-cone-cylinder-connections.ggb",
+      "archive_bytes": 97204,
+      "archive_sha256": "18c6fad4d53fc3bb03a1546021a0677656fded2c853b7ec198312b96ee55e155",
+      "entry_count": 22,
+      "shared_entry_set": "template-v7-shared-resources-16",
+      "document_entries": [
+        {"name": "geogebra_defaults2d.xml", "bytes": 9732, "compressed_bytes": 1346, "sha256": "2a7402a6d94a2cba340e17511b6eb727b27b223c6060a45a7350077c948caedc"},
+        {"name": "geogebra_defaults3d.xml", "bytes": 4336, "compressed_bytes": 848, "sha256": "cfa64dc5f4321760d2f05383774676d460af8fe733d6c77e397e5050d48a37bb"},
+        {"name": "geogebra_javascript.js", "bytes": 630, "compressed_bytes": 299, "sha256": "583c6ce80275a0fa15d1fde036535fcf2aa10776a1ac081601b6a7025af3d92b"},
+        {"name": "geogebra_macro.xml", "bytes": 218176, "compressed_bytes": 24876, "sha256": "db42b6b1d8a0a3011b626e329a892499db24a600810ef8bcdb6b45b84099285c"},
+        {"name": "geogebra_thumbnail.png", "bytes": 40176, "compressed_bytes": 39822, "sha256": "bc09b6eeef97ae5edc03fe7e660745ceea91ab60f9f5087743935f3098d52a62"},
+        {"name": "geogebra.xml", "bytes": 108650, "compressed_bytes": 12795, "sha256": "b07a848eab45f2306c3aafd79b5df2ca7663051c0e43fe6fd2960295e86ce34a"}
+      ],
+      "container": {"format": "5.0", "geogebra_version": "5.4.927.1", "app": "classic", "platform": "d", "document_id": "456bba6f-3b8b-4097-a188-0c234d556f50"},
+      "layout": {
+        "window": {"width": 1536, "height": 864}, "pane_dividers": [0.8528645833333334, 0.1640625],
+        "visible_views": [{"id": 1, "role": "graphics", "size": 1053}, {"id": 2, "role": "algebra", "size": 252}, {"id": 32, "role": "construction-protocol", "size": 198}],
+        "construction_protocol_view_visible": true, "construction_protocol_navigation": {"present": true, "saved_step": 203},
+        "properties_view": {"visible": false, "in_frame": true},
+        "input": {"visible": true, "command_enabled": true, "position": "bottom"}, "toolbar_set": "template-v7-toolbar"
+      },
+      "construction": {
+        "element_nodes": 245, "command_nodes": 174, "expression_nodes": 21,
+        "recognized_dependency_depth_lower_bound": 32, "recognized_dependency_edges": 328,
+        "controls": {"sliders": 5, "checkboxes": 3, "buttons": 3, "text_fields": 4},
+        "object_visibility": {"visible": 168, "hidden": 74}, "layers": {"0": 10, "3": 15, "5": 220},
+        "object_families": {"angle": 4, "boolean": 3, "button": 3, "conic": 13, "conicpart": 7, "line": 38, "list": 3, "locus": 6, "numeric": 11, "point": 96, "ray": 7, "segment": 44, "text": 6, "textfield": 4},
+        "commands": {"Angle": 2, "Circle": 12, "DuctSymbol": 2, "Ellipse": 1, "ellipseLength12": 1, "If": 1, "Intersect": 64, "Line": 27, "Locus": 6, "Mirror": 5, "OrthogonalLine": 1, "Point": 12, "Ray": 7, "Rotate": 2, "Segment": 20, "sheetISOAnLand": 1, "Tangent": 5, "Textfield": 4, "translationCoor": 1}
+      },
+      "macros": {"set": "template-v7-macros-24", "embedded_count": 24, "invocations": {"DuctSymbol": 2, "ellipseLength12": 1, "sheetISOAnLand": 1, "translationCoor": 1}},
+      "scripts": {"document_script_blocks": 5, "scripted_elements": 4, "global_javascript": "copy-free-object click-listener", "export_image_script": true},
+      "workflow": [
+        "Fold a freely positioned right section of the connecting cone.",
+        "Use a free point p to define a cone generator and transport it to the profile view.",
+        "Use a pencil plane to obtain cylinder generators and their intersections c1/c2 with the cone generator.",
+        "Project the moving intersections and generate six legacy locus projections for the two connections."
+      ],
+      "workarounds": ["six sampled legacy Locus objects", "manual folding/profile transport", "projection association by labels", "coordinate-transport macro"],
+      "native_g6_g8_replacements": ["Locus V2 definition", "rich intersections", "token-bound derived points"],
+      "g9_dependencies": ["ProjectionFrame", "ProjectionBinding", "cone/cylinder spatial identity", "procedure-level folding and section"],
+      "model_local_candidates": ["DuctSymbol", "sheet/export scripts"]
+    },
+    {
+      "path": "models/legacy/template-v7/original/Templatev7.ggb",
+      "archive_bytes": 48149,
+      "archive_sha256": "f62e5b7a92bcd95f10b8afda348763a57ccbd0c10dbc0c2bccc7049831ed4113",
+      "entry_count": 22,
+      "shared_entry_set": "template-v7-shared-resources-16",
+      "document_entries": [
+        {"name": "geogebra_defaults2d.xml", "bytes": 9858, "compressed_bytes": 1318, "sha256": "e1c3a458e86a3d4ba52ffd85f4164b05a61bf5c9724e26ff7a249347c5dc38c9"},
+        {"name": "geogebra_defaults3d.xml", "bytes": 4504, "compressed_bytes": 856, "sha256": "9f70437b0626decfa3318ac625604d76bbb3e9dd03cf6fcb52a2bba72f0794b8"},
+        {"name": "geogebra_javascript.js", "bytes": 629, "compressed_bytes": 297, "sha256": "086b396ce853cd54acc4d0979f0393bea869f26bfd91df29ca375eb2927a7f29"},
+        {"name": "geogebra_macro.xml", "bytes": 221871, "compressed_bytes": 24952, "sha256": "f3744e131a627ba5e9bef092427930e6e7c1526a6d527b43c3b4f30e04fc94f4"},
+        {"name": "geogebra_thumbnail.png", "bytes": 1035, "compressed_bytes": 171, "sha256": "4a0398404a3c879fb776ff8401ec36cf32e9cc5ebf2fab0266935c878471737c"},
+        {"name": "geogebra.xml", "bytes": 15191, "compressed_bytes": 3337, "sha256": "fc456772249bd716d0960ee9c7756a7ff1a371fcef3f97c2366e9192d8ca226d"}
+      ],
+      "container": {"format": "5.0", "geogebra_version": "5.2.879.0", "app": "classic", "platform": "d", "document_id": "456bba6f-3b8b-4097-a188-0c234d556f50"},
+      "layout": {
+        "window": {"width": 1491, "height": 958}, "pane_dividers": [0.3675385647216633],
+        "visible_views": [{"id": 1, "role": "graphics", "size": 911}, {"id": 2, "role": "algebra", "size": 548}],
+        "construction_protocol_view_visible": false, "construction_protocol_navigation": {"present": false},
+        "properties_view": {"visible": false, "in_frame": true},
+        "input": {"visible": true, "command_enabled": true, "position": "bottom"}, "toolbar_set": "template-v7-toolbar"
+      },
+      "construction": {
+        "element_nodes": 23, "command_nodes": 5, "expression_nodes": 13,
+        "recognized_dependency_depth_lower_bound": 1, "recognized_dependency_edges": 4,
+        "controls": {"sliders": 1, "checkboxes": 3, "buttons": 3, "text_fields": 4},
+        "object_visibility": {"visible": 10, "hidden": 11}, "layers": {"0": 3, "3": 18, "5": 2},
+        "object_families": {"boolean": 3, "button": 3, "list": 3, "numeric": 6, "point": 3, "text": 1, "textfield": 4},
+        "commands": {"If": 1, "Textfield": 4}
+      },
+      "macros": {"set": "template-v7-macros-24", "embedded_count": 24, "invocations": {}},
+      "scripts": {"document_script_blocks": 5, "scripted_elements": 4, "global_javascript": "copy-free-object click-listener", "export_image_script": true},
+      "workflow": ["Legacy tool container, custom toolbar and document-control template; not a solved geometric model."],
+      "workarounds": ["ICeDGFunctions list", "CopyFreeObject JavaScript", "sample-list locus tools", "document-local toolbar authority"],
+      "native_g6_g8_replacements": ["postLocus", "listLength", "listLength12"],
+      "g9_dependencies": ["future procedure promotion for coordinate-transport macros"],
+      "model_local_candidates": ["sheet formats", "presentation symbols", "export scripts"]
+    }
+  ],
+  "cross_model_summary": {
+    "reference_model_count": 4,
+    "reference_model_command_nodes": 653,
+    "legacy_locus_command_nodes": 16,
+    "intersect_command_nodes": 209,
+    "all_four_embed_same_macro_names": true,
+    "all_four_embed_same_custom_toolbar_mapping": true,
+    "sample_metric_macro_invocations_in_reference_models": 0,
+    "warning": "Three archives and Templatev7 share the same document UUID; archive UUID, labels and construction order are therefore not durable cross-document semantic identity."
+  }
+}

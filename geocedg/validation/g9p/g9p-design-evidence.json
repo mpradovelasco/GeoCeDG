@@ -1,0 +1,170 @@
+{
+  "schemaVersion": 2,
+  "phase": "G9P",
+  "status": "G9P_R1_PASS_AUTHOR_APPROVED",
+  "g9pStatus": "PASS_AUTHOR_APPROVED",
+  "date": "2026-08-16",
+  "repositoryEntry": {
+    "branch": "feature/g9-spatial-semantics-design",
+    "head": "667e1cfa6f368c693118ed2444159f1aa641d2fe",
+    "localMain": "e7810171179825a03b22d8c6eba28c672f468281",
+    "originMainObserved": "667e1cfa6f368c693118ed2444159f1aa641d2fe",
+    "upstreamTracking": "origin/feature/g9-spatial-semantics-design",
+    "ahead": 0,
+    "behind": 0,
+    "entryTreeClean": true
+  },
+  "g8Authority": {
+    "status": "PASS_AUTHOR_APPROVED",
+    "tag": "geocedg-g8-pass",
+    "annotatedTagObject": "fed1bfbeea77a48acce285429b397eda77054df1",
+    "peeledCommit": "e7810171179825a03b22d8c6eba28c672f468281",
+    "peeledCommitIsAncestor": true,
+    "focusedFunctionalGatesReproducedThrough": "G8C2"
+  },
+  "entryComposedVerification": {
+    "sandboxRun": "ENVIRONMENT_FAILURE_WINDOWS_GRADLE_PROFILE_ACCESS",
+    "managedEscalationRun": "G5_THROUGH_G8C2_FUNCTIONAL_PASS_THEN_IMMUTABLE_REFERENCE_WHITESPACE_METADATA_STOP",
+    "codeRegressionObserved": false,
+    "resolution": "Preserve author bytes and declare a path-specific Git whitespace exception; require final focused and composed verification."
+  },
+  "workstreams": {
+    "G9P-S": "DESIGN_AUTHOR_APPROVED_NORMATIVE",
+    "G9P-U": "DESIGN_AUTHOR_APPROVED_NORMATIVE",
+    "G9P-X": "DESIGN_AUTHOR_APPROVED_NORMATIVE",
+    "G9P-D": "DESIGN_AUTHOR_APPROVED_NORMATIVE",
+    "G9P-O": "DESIGN_AUTHOR_APPROVED_NORMATIVE"
+  },
+  "r1Refinement": {
+    "status": "PASS_AUTHOR_APPROVED",
+    "projectionSystem": "Q_EQUALS_PI_OF_X_THEN_P_EQUALS_DELTA_OF_Q",
+    "redefineIdentity": "SOURCE_BACKED_A_THROUGH_G_TAXONOMY",
+    "locusGenerators": "TYPED_ONE_DIMENSIONAL_SEMANTIC_GENERATORS",
+    "dependencyCategories": [
+      "HARD_SEMANTIC_OR_CONTRACT",
+      "RECOMMENDED_EXECUTION_PREDECESSOR",
+      "GLOBAL_OR_RELEASE_GATE"
+    ],
+    "productiveImplementationChanged": false,
+    "futurePromptsExecuted": 0
+  },
+  "recommendedSequence": [
+    "G9O1",
+    "G9A1",
+    "G9A2",
+    "G9A3",
+    "G9U0",
+    "G9X1",
+    "G9U1",
+    "G9B",
+    "G9C",
+    "G9_GLOBAL_CLOSEOUT",
+    "G9U2"
+  ],
+  "dependencyModel": {
+    "hardEdges": [
+      { "from": "G9A1", "to": "G9A2" },
+      { "from": "G9A2", "to": "G9A3" },
+      { "from": "G9A3", "to": "G9U0" },
+      { "from": "G9A3", "to": "G9B" },
+      { "from": "G9B", "to": "G9C" },
+      { "from": "G9U0", "to": "G9U1" },
+      { "from": "G9X1", "to": "G9U1" },
+      { "from": "G9U1", "to": "G9U2" }
+    ],
+    "recommendedEdges": [
+      { "from": "G9O1", "to": "G9A1" },
+      { "from": "G9U0", "to": "G9X1" },
+      { "from": "G9U1", "to": "G9B" }
+    ],
+    "globalGateEdges": [
+      { "from": "G9O1", "to": "G9_GLOBAL_CLOSEOUT" },
+      { "from": "G9U1", "to": "G9_GLOBAL_CLOSEOUT" },
+      { "from": "G9C", "to": "G9_GLOBAL_CLOSEOUT" },
+      { "from": "G9_GLOBAL_CLOSEOUT", "to": "G9U2" }
+    ],
+    "externalHardDependencies": {
+      "G9X1": [
+        "G5_AUTHOR_APPROVED",
+        "G6_G8_INTERNAL_SEMANTIC_AUTHORITY"
+      ]
+    },
+    "forbiddenSemanticEdges": [
+      "G9O1->G9A1",
+      "G9U0->G9X1",
+      "G9U1->G9B"
+    ],
+    "recommendedSequence": [
+      "G9O1",
+      "G9A1",
+      "G9A2",
+      "G9A3",
+      "G9U0",
+      "G9X1",
+      "G9U1",
+      "G9B",
+      "G9C",
+      "G9_GLOBAL_CLOSEOUT",
+      "G9U2"
+    ]
+  },
+  "phaseDisposition": {
+    "G9O1": "AUTHORIZED_NOT_STARTED",
+    "G9A1": "DESIGNED_NOT_AUTHORIZED",
+    "G9A2": "DESIGNED_NOT_AUTHORIZED",
+    "G9A3": "DESIGNED_NOT_AUTHORIZED",
+    "G9U0": "DESIGNED_NOT_AUTHORIZED",
+    "G9X1": "DESIGNED_NOT_AUTHORIZED",
+    "G9U1": "DESIGNED_NOT_AUTHORIZED",
+    "G9B": "DESIGNED_NOT_AUTHORIZED",
+    "G9C": "DESIGNED_NOT_AUTHORIZED",
+    "G9U2": "DESIGNED_BLOCKED_ON_APPROVED_G9_GATE",
+    "productiveG9": "NOT_STARTED"
+  },
+  "referenceInputs": {
+    "manifest": "docs/references/cedg/models/g9p/g9p-reference-inputs.json",
+    "inputsUnchanged": true,
+    "count": 7
+  },
+  "canonicalPrompts": {
+    "catalog": "geocedg/validation/g9p/g9p-prompt-catalog.json",
+    "futurePromptCount": 10,
+    "futurePromptsExecuted": false,
+    "authorizedNotStarted": ["G9O1"]
+  },
+  "scopeAudit": {
+    "productiveSourceFilesChanged": 0,
+    "productiveGuiFilesChanged": 0,
+    "productiveDxfFilesChanged": 0,
+    "publicCommandImplementationsChanged": 0,
+    "persistenceImplementationsChanged": 0,
+    "bundleGeneratorsChanged": 0,
+    "generatedOutputsTracked": 0
+  },
+  "verification": {
+    "focused": "tools/agent/verify-g9p-design.ps1",
+    "composed": "tools/agent/verify.ps1",
+    "composedMustBuild": true,
+    "logsAreGeneratedIgnoredEvidence": true,
+    "exactCloseoutResultsReportedInTaskHandoff": true
+  },
+  "approval": {
+    "selfApproved": false,
+    "authorApproved": true,
+    "specificationsNormative": true,
+    "adrsAccepted": true,
+    "g9o1Authorized": true,
+    "otherImplementationAuthorized": false,
+    "productiveG9Started": false,
+    "decisions": {
+      "D1": "APPROVED",
+      "D2": "APPROVED",
+      "D3": "APPROVED",
+      "D4": "APPROVED",
+      "D5": "APPROVED_SEMANTICS_SYNTAX_DEFERRED_TO_G9U0",
+      "D6": "APPROVED_RICH_AUTHORITY_GUARDED_STANDARD_SCALAR",
+      "D7": "APPROVED_GEOCEDG_CLASSIC_NATIVE_EXTERNAL_OPEN_UNSUPPORTED",
+      "D8": "APPROVED_EXPLICIT_APPROXIMATION_CONDITIONAL_SIDECAR_STRICT_PARTIALITY"
+    }
+  }
+}
