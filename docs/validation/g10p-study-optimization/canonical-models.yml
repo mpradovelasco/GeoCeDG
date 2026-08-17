@@ -1,0 +1,39 @@
+schemaVersion: 1
+phase: G10P
+status: PASS_AUTHOR_APPROVED_PLANNING_ONLY
+qualification: PLANNING_CHARACTERIZATION_ONLY_NO_PRODUCT_IMPLEMENTATION_AUTHORIZED
+provenance:
+  source: author supplied
+  ownership: author owned
+  repositoryInclusion: authorized
+  versioning: authorized
+  publication: authorized
+  legalConclusion: none
+bytePolicy: preserve exact source bytes; do not normalize, resave, or reserialize
+fixturePolicy: canonical planning and future validation evidence; not a Java-kernel test fixture
+entries:
+  - file: models/TruncatedCone.ggb
+    sha256: ce1beeda01a4f1593ff75132338f739187560c803c1b8e6cf01d7c31c58504a0
+    role: inverse scalar design and bounded scalar optimization pilot with an independently verified analytical reference where correspondence holds
+  - file: models/ArticulatedDoor.ggb
+    sha256: b6f3fdbc944164db3225ec2368f8be2c2305d4257c1be688aa79d0cb4ab77d2a
+    role: design-versus-operating-variable separation and future trajectory or worst-case constraint pilot
+  - file: models/SphericValveV2.ggb
+    sha256: e8411083e8d30274cc6a1db18cccc89f9a760064b312e662ac1f04556073ed58
+    role: direct functional-response study without optimization
+  - file: models/SphericValve.ggb
+    sha256: 4aeed2b948087b1b9c4284b8420a76ebc9d3072b63829101ee31dee5e50fe4d8
+    role: geometry and control counterpart for the functional-response family
+  - file: models/dyscrete-elbows/coneElbow_3V.ggb
+    sha256: 8addf7b7099a5297bc64d551a10c59216ca4c5fe5c22caab92b016582b461a23
+    role: conical discrete-variable and future mixed continuous-discrete study pilot
+  - file: models/dyscrete-elbows/CylElbow_3V.ggb
+    sha256: 413f812ef99552fea1b085c8de9d0d5cf3e69492ce40ca83016439ec3d01307f
+    role: cylindrical discrete-variable and future mixed continuous-discrete study pilot
+  - file: models/dyscrete-elbows/coneElbow.ggt
+    sha256: 36e601e3a810f421f4f92499c0a1601edbf76691219514cddec0a294605c950e
+    role: provenance and reference template demonstrating current label-bound construction practice, not future durable study identity
+  - file: models/dyscrete-elbows/CylElbow.ggt
+    sha256: 7dffa0db11a5024300dbdb87ec7cd9c86c9d020faf3b288e046e2f33804cf24e
+    role: provenance and reference template demonstrating current label-bound construction practice, not future durable study identity
+releaseNote: embedded legacy images, macros, icons, or trademark-bearing material remain subject to the repository's separate factual release audit

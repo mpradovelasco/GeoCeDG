@@ -3,13 +3,13 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Roadmap vivo y normativo de fases; no sustituye las especificaciones ni los ADR aceptados |
-| Versión documental | 3.29 |
+| Versión documental | 3.31 |
 | Fecha de revisión | 17 de agosto de 2026 |
 | Baseline GeoGebra | 5.4.928.0, commit `9b93256b7df401ff056c37b502d82df4d72b1522`, tag `geogebra-baseline-5.4.928.0` |
-| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1 y G9A1 `PASS — AUTHOR APPROVED`; seis especificaciones G9 normativas; ADR 0010–0015 Accepted; G9A2 y fases posteriores diseñadas pero no autorizadas; Locus V2 sigue experimental, interno y desactivado por defecto |
-| Última fase cerrada | G9A1 — fundamento durable de identidad/persistencia, `PASS — AUTHOR APPROVED` |
-| Última fase ejecutada | G9A1: identidad/persistencia durable cerrada sin evaluación, reconstrucción ni autoridad 3D espacial |
-| Siguiente puerta | autorización explícita separada de G9A2; G9A2 permanece `DESIGNED — NOT AUTHORIZED` y ninguna fase posterior está autorizada |
+| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1 y la planificación G10P `PASS — AUTHOR APPROVED`; seis especificaciones G9 normativas; ADR 0010–0015 Accepted; G9A2 y fases posteriores diseñadas pero no autorizadas; G10P es solo planificación/caracterización y no autoriza producto; Locus V2 sigue experimental, interno y desactivado por defecto |
+| Última fase cerrada | G10P — planificación/caracterización de estudios y optimización, `PASS — AUTHOR APPROVED`; sin implementación productiva autorizada |
+| Última fase ejecutada | G10P: corpus y dirección arquitectónica caracterizados y aprobados, sin código productivo ni ejecución de G9A2 |
+| Siguiente puerta | autorización explícita separada de G9A2; G9A2 permanece `DESIGNED — NOT AUTHORIZED` y es la siguiente puerta productiva; ninguna fase productiva G10 está autorizada |
 | Primer cliente | Aplicación de escritorio de la familia Classic 5 |
 | Núcleo | Java compartido de GeoGebra, extendido solo cuando la semántica lo requiere |
 
@@ -221,11 +221,11 @@ Esta planificación no constituye asesoramiento jurídico. La liberación públi
 │ Aplicación GeoCeDG de escritorio                            │
 │ perfil, perspectivas, toolbar, capas, navegación            │
 ├─────────────────────────────────────────────────────────────┤
-│ Servicios de documento e interoperabilidad                  │
-│ DXF, PDF/SVG, hojas, informes, empaquetado, CLI             │
+│ Capa externa de estudios posterior a la puerta global G9    │
+│ DSL, análisis, optimización, solvers, informes y workbench   │
 ├─────────────────────────────────────────────────────────────┤
-│ Capa Python posterior a G9                                  │
-│ DSL 3D CeDG, orquestación, estudios, validación, notebooks  │
+│ Servicios compartidos de documento, evaluación e intercambio│
+│ evaluación aislada, aplicación atómica, DXF, PDF/SVG y CLI  │
 ├─────────────────────────────────────────────────────────────┤
 │ Semántica espacial CeDG en Java                             │
 │ objetos 3D, asociaciones, proyecciones canónicas,           │
@@ -239,7 +239,12 @@ Esta planificación no constituye asesoramiento jurídico. La liberación públi
 └─────────────────────────────────────────────────────────────┘
 ```
 
-La semántica espacial no debe residir en Python ni en el workbench. El DSL consumirá y generará objetos definidos por el kernel; no será la autoridad que reconstruye informalmente un objeto 3D a partir de nombres o coincidencias gráficas.
+La semántica espacial no debe residir en Python ni en el workbench. El DSL y
+el runtime de estudios consumirán objetos y evaluaciones definidos por el
+kernel; no reconstruirán informalmente geometría a partir de nombres,
+coincidencias gráficas ni un segundo grafo de dependencias. El servicio
+compartido de evaluación/aplicación solo podrá reutilizar el `Construction` y
+su DAG normal; no contendrá un optimizador genérico.
 
 ### Regla de colocación
 
@@ -255,7 +260,9 @@ La semántica espacial no debe residir en Python ni en el workbench. El DSL cons
 | Asociación objeto 3D–proyecciones | kernel/semántica compartida Java |
 | Criterios de proyección canónica | kernel/semántica compartida Java |
 | Objetos compuestos, caras y sólidos proyectivos | kernel/semántica compartida Java |
-| DSL y estudios | Python, después de G9 |
+| Caracterización G10P de estudios | documentación/validación; puede diseñarse durante G9 sin código productivo |
+| Evaluación aislada y aplicación atómica de candidatos | servicio compartido Java de construcción/documento, después de la puerta global G9 |
+| DSL, estudios, sweeps, optimización y adapters de solver | runtime externo solver-neutral, después de la puerta global G9 |
 | Medición e intersección de Locus | kernel Java |
 | Visibilidad geométrica en proyecciones | servicio geométrico compartido Java |
 | Capas jerárquicas, bloqueo y estados de vista | modelo de documento/aplicación compartido |
@@ -263,7 +270,7 @@ La semántica espacial no debe residir en Python ni en el workbench. El DSL cons
 | Conversión a vista 3D | adaptador compartido desde la semántica espacial al kernel/vista 3D existente |
 | PDF/SVG y hojas de dibujo | servicio de documento/exportación |
 | Benchmarks y validación | tests + modelos + herramientas de rendimiento |
-| Workbench futuro | cliente, sin lógica geométrica propia |
+| Workbench de estudios futuro | cliente del runtime y del kernel, sin lógica geométrica propia |
 
 ---
 
@@ -1079,6 +1086,13 @@ Métricas mínimas:
 
 La optimización priorizará, según evidencia: invalidación incremental, cachés por revisión del grafo, índices espaciales, reducción de objetos temporales, evaluación perezosa y partición segura de tareas. No se introducirá C++ ni paralelismo complejo sin demostrar primero un cuello de botella estable y un contrato claro de integración.
 
+G10R medirá específicamente el pipeline de estudios: coste por candidato,
+recomputaciones del DAG, ausencia de render y efectos laterales, memoria,
+cancelación, determinismo y cachés acotadas por revisión coherente. G16 conserva
+la responsabilidad distinta de optimizar el sistema completo sobre todos los
+benchmarks acumulados. La optimización matemática de un diseño en G10 no es
+optimización de rendimiento del software.
+
 ---
 
 ## 15. Roadmap por puertas
@@ -1112,7 +1126,10 @@ La optimización priorizará, según evidencia: invalidación incremental, cach�
 | G9U0 / G9X1 / G9U1 | `DESIGNED — NOT AUTHORIZED` | Superficie pública Locus V2, DXF extendido y workspace Construction, cada uno con gate separado |
 | G9B / G9C | `DESIGNED — NOT AUTHORIZED` | Track kernel tras cierre de G9A; no depende de completar el cliente G9U1 |
 | G9U2 | `DESIGNED — BLOCKED ON APPROVED G9 GATE` | Workspace de procedimientos diédrico solo tras `G9 PASS — AUTHOR APPROVED` |
-| G9 spatial solving / G10–G16 | `NOT STARTED` / `NOT STARTED` | G9A1 aporta solo el sustrato durable inerte; no hay evaluación, reconstrucción ni autoridad 3D |
+| G9 spatial solving | `NOT STARTED` | G9A1 aporta solo el sustrato durable inerte; no hay evaluación, reconstrucción ni autoridad 3D |
+| G10P | `PASS — AUTHOR APPROVED — PLANNING/CHARACTERIZATION ONLY` | Corpus y dirección de estudios/optimización aprobados como planificación; no autoriza producto ni altera G9 |
+| G10A/G10B/G10C1/G10C2/G10U/G10R | `PROPOSED — NOT AUTHORIZED — NOT STARTED` | Toda implementación espera `G9 PASS — AUTHOR APPROVED`, G10P aprobado y prompts separados |
+| G11–G16 | `NOT STARTED` | Conservan sus alcances y puertas posteriores; G16 sigue siendo rendimiento global |
 
 Los estados `experimental` describen madurez de una capacidad, no una puerta
 fallida. Un gate solo se marca `PASS` cuando satisface sus validaciones; un
@@ -1760,22 +1777,106 @@ está `BLOCKED ON THE APPROVED G9 GATE`.
 El cierre es una acción de revisión autor/verificador sin semántica nueva, no una
 fase productiva ni un prompt de implementación independiente.
 
-## G10 - DSL 3D CeDG y workbench
+## G10 - DSL, estudios geométrico-funcionales, optimización y workbench
 
-**Estado:** `PENDING`
+**Estado de planificación:** G10P `PASS — AUTHOR APPROVED —
+PLANNING/CHARACTERIZATION ONLY`. G10A, G10B, G10C1, G10C2, G10U y G10R
+permanecen `PROPOSED — NOT AUTHORIZED — NOT STARTED`. No existe todavía una
+capacidad de producto G10.
 
-**Trabajo**
+La [caracterización G10P](../validation/g10p-study-optimization/g10p_study_optimization_roadmap_analysis.md)
+se apoya en el cierre publicado G9A1 y en modelos canónicos suministrados,
+propiedad del autor y autorizados para su inclusión y publicación. Se cerró
+durante G9 porque solo cambia planificación. Cualquier
+implementación G10A o posterior requiere antes `G9 PASS — AUTHOR APPROVED`,
+G10P aprobado, especificaciones/ADR propios y un prompt canónico invocado de
+forma separada. G10P deberá revalidar sus seams contra el G9 finalmente cerrado.
 
-- DSL declarativo sobre `SpatialObject3D`;
-- declaración de marcos, proyecciones canónicas, primitivas, caras, superficies y procedimientos;
-- compilación/orquestación;
-- inspección de dependencias y certificados;
-- estudios y cliente de escritorio.
+El modelo conceptual distingue variables de diseño `d`, variables de operación
+`u` y escenarios `e`. La construcción autoritativa evalúa `G(d,u,e)` mediante
+el DAG normal; el modelo funcional `F` añade supuestos declarados; y el solver
+consume objetivos/restricciones sin reconstruir geometría. Validez geométrica,
+factibilidad funcional, terminación del solver y garantía de optimalidad son
+ejes independientes. Un candidato válido o una factibilidad muestreada no es
+un óptimo global establecido.
 
-**Salida**
+### G10P - Caracterización de arquitectura de estudios y optimización
 
-- el DSL expresa objetos 3D y genera las proyecciones que maneja GeoCeDG;
-- no duplica reconstrucción, validez ni lógica geométrica del kernel.
+Fija taxonomía, corpus canónico, variables/dominios/unidades, supuestos,
+objetivos, restricciones puntuales y de trayectoria, estados de resultado,
+separación kernel/exterior, alternativas de evaluación aislada, persistencia,
+benchmarks y artefactos normativos futuros. Es documentación no productiva y no
+autoriza ninguna fase.
+
+El cierre autoral aprueba como dirección de planificación el corpus y la
+descomposición P/A/B/C1/C2/U/R; los ejes independientes de currentness fuente,
+validez geométrica, factibilidad funcional, cobertura de dominio, terminación,
+garantía de optimalidad y evidencia numérica; y el requisito de un token fuente
+coherente. Los identificadores y la implementación de ese token quedan diferidos
+a especificaciones futuras y a G10A tras el cierre global G9.
+
+### G10A - Fundamento de evaluación determinista de estudios
+
+Después de la puerta global G9, podrá implementar el mínimo servicio compartido
+para evaluar candidatos en un contexto aislado y sin render, ligado a una
+revisión coherente, con política explícita de scripts/eventos, límites,
+cancelación, descarte/restauración y lectura tipada de validez/resultados. Una
+aplicación seleccionada será una transacción explícita, multi-parámetro,
+atómica, undoable y revalidada contra la revisión fuente. No habrá solver ni
+DSL dentro del kernel.
+
+### G10B - Modelo de estudio y DSL solver-neutral
+
+Declarará referencias durables, variables continuas/discretas/categóricas,
+intervalos de operación, escenarios, unidades, supuestos, cantidades
+funcionales, objetivos y restricciones. La persistencia inicial será un
+artefacto externo versionado que referencia IDs durables; introducir objetos de
+estudio en XML `.ggb` exigiría evidencia y otra decisión explícita.
+
+### G10C1 - Orquestación y solver mínimo robusto
+
+Cubrirá análisis directo, sweeps, diseño inverso escalar, optimización escalar
+acotada, enumeración discreta finita, combinación discreta-finita con un
+continuo escalar, búsqueda del peor caso sobre un dominio operativo y
+clasificación conservadora de garantía. Usará adapters a bibliotecas maduras y
+mantendrá el contrato compartido independiente de cualquier solver.
+
+### G10C2 - Optimización avanzada
+
+Quedan detrás de otra puerta: optimización no lineal multidimensional,
+multiobjetivo/Pareto, mixed-integer general, incertidumbre, diseño robusto,
+sensibilidad, muestreo adaptativo y métodos certificados/globales cuando su
+evidencia lo justifique. G10C2 no es requisito para un primer G10 útil. No se
+añadirán optimizadores genéricos ni diferenciación automática al kernel por
+conveniencia.
+
+### G10U - Workbench de estudios
+
+Será un cliente para configurar, ejecutar/cancelar, inspeccionar candidatos
+inválidos y garantías, representar respuestas, comparar alternativas y pedir
+la aplicación explícita de un resultado. No mantendrá geometría ni un grafo de
+dependencias propio y el runtime no dependerá de un workspace concreto.
+
+### G10R - Cierre de validación y rendimiento del estudio
+
+Validará corpus, determinismo, equivalencia de reruns, ausencia de mutación del
+documento vivo, coste/recomputaciones por evaluación, cero render, memoria,
+cancelación, caché acotada e invalidación por revisión. Es distinto de G16, que
+optimiza transversalmente la plataforma completa.
+
+```text
+G9A1 PASS --> G10P (planificación no productiva)
+
+tracks G9 restantes --> G9 GLOBAL PASS
+G9 GLOBAL PASS + G10P aprobado --> G10A --> G10B --> G10C1 --> G10U --> G10R
+                                                    +--> G10C2 (puerta posterior separada)
+```
+
+El cierre mínimo G10 v1 requiere P/A/B/C1/U/R aprobados; G10C2 puede permanecer
+posterior. Los estudios espaciales consumen certificados G9 para los tipos que
+usen; la aplicación atómica consume el ciclo de vida G9A3; y los estudios
+públicos sobre Locus V2 consumen G9U0. Ningún cliente GUI constituye autoridad
+semántica ni gate inverso para el runtime.
 
 ## G11 - Capas y estados de vista
 
@@ -1872,6 +1973,9 @@ fase productiva ni un prompt de implementación independiente.
 - mejoras cuantificadas frente a G0;
 - ausencia de regresiones geométricas;
 - decisiones Java/C++ o paralelismo sustentadas por evidencia, no por intuición.
+
+G16 conserva el rendimiento global y no absorbe el contrato G10R de evaluación
+de candidatos ni la optimización matemática de diseños.
 
 ---
 
@@ -2105,10 +2209,24 @@ Ese informe permitió ajustar el roadmap al commit real antes de empezar la impl
 **Riesgo:** ocultar un objeto y tratarlo como geométricamente inexistente, o usar capas para resolver ocultaciones.
 **Control:** estados separados y servicios distintos.
 
-### Optimización sin línea base
+### Optimización de rendimiento sin línea base
 
 **Riesgo:** complejidad y errores sin mejora demostrable.
 **Control:** benchmarks desde G0 y perfiles antes de cada cambio de rendimiento.
+
+### Estudio externo que duplica autoridad geométrica
+
+**Riesgo:** reconstruir geometría, validez o dependencias en Python, DSL o
+workbench y divergir del `Construction`.
+**Control:** evaluación compartida sobre el DAG normal, referencias durables y
+clientes sin segundo grafo.
+
+### Garantía de estudio exagerada
+
+**Riesgo:** presentar un candidato factible, una muestra o convergencia local
+como prueba de factibilidad continua u óptimo global.
+**Control:** ejes separados de validez, factibilidad, terminación, cobertura y
+garantía; `GLOBAL_OPTIMUM_ESTABLISHED` solo con evidencia independiente.
 
 ### Prompt files divergentes
 
@@ -2155,6 +2273,8 @@ Este es el hito que habilita un DSL verdaderamente 3D.
 La plataforma deberá añadir:
 
 - DSL 3D y workbench clientes del kernel;
+- estudios geométrico-funcionales con análisis directo, diseño inverso,
+  optimización acotada y garantías conservadoras;
 - capas técnicas y estados de vista;
 - navegación y escalas extendidas;
 - visibilidad geométrica en proyecciones;
