@@ -229,6 +229,47 @@ function Assert-CurrentIntegrityManifest {
     return $validated
 }
 
+function Assert-FrozenG9O1IntegrityManifest {
+    $manifest = Resolve-RequiredFile -RelativePath $IntegrityManifestPath
+    $currentBytes = ConvertTo-GeoCeDGCanonicalLfBytes `
+        -Bytes ([IO.File]::ReadAllBytes($manifest))
+    $frozenBytes = Get-GeoCeDGFrozenBlobBytes -RepositoryRoot $RepositoryRoot `
+        -Path $IntegrityManifestPath -Commit $AuthorityCommit
+    $frozenCanonicalBytes = ConvertTo-GeoCeDGCanonicalLfBytes `
+        -Bytes $frozenBytes
+    Assert-Condition -Condition (
+        (Get-GeoCeDGSha256FromBytes -Bytes $currentBytes) -eq
+        (Get-GeoCeDGSha256FromBytes -Bytes $frozenCanonicalBytes)) `
+        -Message "Checked-out G9O1 integrity manifest differs from its tag blob."
+
+    $seen = [Collections.Generic.HashSet[string]]::new(
+        [StringComparer]::Ordinal)
+    $validated = 0
+    $manifestText = ConvertFrom-GeoCeDGStrictUtf8 -Bytes $frozenBytes
+    foreach ($line in $manifestText.Replace("`r`n", "`n").Replace(
+            "`r", "`n").Split("`n")) {
+        if ([string]::IsNullOrWhiteSpace($line) -or
+                $line.TrimStart().StartsWith("#")) {
+            continue
+        }
+        $parts = $line -split "\s+", 2
+        Assert-Condition -Condition ($parts.Count -eq 2 -and
+                $parts[0] -match '^[0-9a-f]{64}$') `
+            -Message "Malformed frozen G9O1 integrity entry: $line"
+        $relativePath = ConvertTo-GeoCeDGRepositoryPath `
+            -RepositoryRoot $RepositoryRoot -Path $parts[1].Trim()
+        Assert-Condition -Condition $seen.Add($relativePath) `
+            -Message "Duplicate frozen G9O1 integrity path: $relativePath"
+        $actual = Get-GeoCeDGFrozenCanonicalTextSha256 `
+            -RepositoryRoot $RepositoryRoot -Path $relativePath `
+            -Commit $AuthorityCommit
+        Assert-Condition -Condition ($actual -eq $parts[0]) `
+            -Message "Frozen G9O1 integrity mismatch: $relativePath"
+        $validated++
+    }
+    return $validated
+}
+
 function Assert-Scope {
     $paths = if ($null -ne $AuthorityCommit) {
         @(& git -C $RepositoryRoot diff --name-only $G9PCommit `
@@ -500,8 +541,7 @@ try {
     $scriptCount = Assert-PowerShellParses
     $scopeCount = Assert-Scope
     $integrityCount = if ($null -ne $AuthorityCommit) {
-        Assert-GeoCeDGFrozenHashManifest -RepositoryRoot $RepositoryRoot `
-            -ManifestPath $IntegrityManifestPath -Commit $AuthorityCommit
+        Assert-FrozenG9O1IntegrityManifest
     } else {
         Assert-CurrentIntegrityManifest
     }
