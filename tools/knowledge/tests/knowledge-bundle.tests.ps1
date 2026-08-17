@@ -163,6 +163,12 @@ try {
 "@
     Write-TestText -Root $testRoot `
         -Path "docs/upstream/BASELINE_COMMIT.txt" -Text "$baseline`n"
+    Write-TestText -Root $testRoot `
+        -Path "geocedg/specs/operations/fixture-evidence.sha256" `
+        -Text (("0" * 64) + "  AGENTS.md`n")
+    Write-TestText -Root $testRoot `
+        -Path "geocedg/specs/operations/fixture-generator.py" `
+        -Text "print('fixture')`n"
     $inventory = [ordered]@{
         schema_version = 1
         baseline_sha = $baseline
@@ -235,6 +241,8 @@ try {
     $paths = @($manifest.entries | ForEach-Object { $_.source_path })
     foreach ($requiredPath in @(
             "AGENTS.md",
+            "geocedg/specs/operations/fixture-evidence.sha256",
+            "geocedg/specs/operations/fixture-generator.py",
             "source/shared/common/src/main/java/org/example/Upstream.java",
             "source/shared/common/src/main/java/org/example/Reference.java",
             "source/shared/common/src/main/java/org/example/Unregistered.java",
@@ -263,6 +271,12 @@ try {
         $previousOrder = $currentOrder
     }
     $native = $manifest.entries | Where-Object { $_.source_path -eq "AGENTS.md" }
+    $sha256Manifest = $manifest.entries | Where-Object {
+        $_.source_path -eq "geocedg/specs/operations/fixture-evidence.sha256"
+    }
+    $pythonSource = $manifest.entries | Where-Object {
+        $_.source_path -eq "geocedg/specs/operations/fixture-generator.py"
+    }
     $modified = $manifest.entries | Where-Object {
         $_.source_path -eq
             "source/shared/common/src/main/java/org/example/Upstream.java"
@@ -279,6 +293,14 @@ try {
     Assert-TestCondition -Condition ($native.raw_sha256 -ne
             $native.canonical_sha256) `
         -Message "BOM/CRLF fixture did not preserve distinct raw/canonical hashes."
+    Assert-TestCondition -Condition (
+        $sha256Manifest.language -eq "SHA-256 manifest" -and
+        $sha256Manifest.encoding -eq "UTF-8") `
+        -Message "SHA-256 integrity manifest text policy is not explicit."
+    Assert-TestCondition -Condition (
+        $pythonSource.language -eq "Python" -and
+        $pythonSource.encoding -eq "UTF-8") `
+        -Message "Python validation source text policy is not explicit."
     Assert-TestCondition -Condition ($modified.baseline_blob_sha -match
             '^[0-9a-f]{40}$' -and
             -not [string]::IsNullOrWhiteSpace($modified.unified_diff_path)) `

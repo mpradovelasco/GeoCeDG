@@ -877,7 +877,8 @@ function Test-KnowledgeBundleTextPath {
         ".md", ".txt", ".json", ".yml", ".yaml", ".ps1", ".psm1",
         ".java", ".kt", ".kts", ".gradle", ".xml", ".properties",
         ".js", ".ts", ".css", ".scss", ".html", ".csv", ".tsv",
-        ".ggs", ".toml", ".ini", ".cfg", ".bat", ".cmd", ".sh")
+        ".ggs", ".toml", ".ini", ".cfg", ".bat", ".cmd", ".sh",
+        ".py", ".sha256")
 }
 
 function Get-KnowledgeBundleLanguage {
@@ -893,6 +894,8 @@ function Get-KnowledgeBundleLanguage {
         ".ts" = "TypeScript"; ".css" = "CSS"; ".scss" = "SCSS"
         ".html" = "HTML"; ".csv" = "CSV"; ".tsv" = "TSV"
         ".ggs" = "GeoGebraScript"; ".toml" = "TOML"
+        ".py" = "Python"
+        ".sha256" = "SHA-256 manifest"
     }
     if ($languages.ContainsKey($extension)) {
         return $languages[$extension]
