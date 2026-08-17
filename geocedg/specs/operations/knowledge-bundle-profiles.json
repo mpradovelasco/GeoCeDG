@@ -2,7 +2,7 @@
   "manifest_schema": "geocedg/specs/operations/knowledge-bundle.schema.json",
   "schema_version": 1,
   "status": "NORMATIVE_AUTHOR_APPROVED",
-  "implementation_status": "AUTHORIZED_NOT_STARTED",
+  "implementation_status": "PASS_AUTHOR_APPROVED",
   "profiles": [
     {
       "id": "source",
@@ -10,11 +10,15 @@
       "description": "GeoCeDG-native and upstream-modified source with focused tests and provenance.",
       "ownership": ["GEOCEDG_NATIVE", "UPSTREAM_MODIFIED"],
       "include": [
-        "source/**/org/geocedg/**",
+        "source/**",
         "apps/geocedg/**",
         "geocedg/features/**",
         "geocedg/resources/**",
+        "geocedg/specs/operations/knowledge-bundle.schema.json",
+        "geocedg/specs/operations/knowledge-bundle-profiles.json",
         "tools/agent/**",
+        "tools/knowledge/**",
+        "docs/upstream/BASELINE_COMMIT.txt",
         "docs/upstream/modified-files.yml"
       ],
       "include_related_tests": true,
@@ -138,11 +142,15 @@
         "docs/developer/geocedg_*guide.md",
         "docs/validation/g9_documentation_bundle_traceability.md",
         ".github/prompts/tasks/g9o1-*.prompt.md",
-        "tools/agent/evidence-integrity.ps1"
+        "tools/knowledge/**",
+        "tools/agent/evidence-integrity.ps1",
+        "tools/agent/verify-knowledge-bundles.ps1",
+        "geocedg/validation/g9o1/**",
+        "docs/validation/g9o1_*.md"
       ],
-      "include_related_tests": false,
+      "include_related_tests": true,
       "include_unified_diffs": false,
-      "reading_order": ["maintenance-contract", "bundle-contract", "decision", "architecture", "guides", "prompt", "evidence-integrity"]
+      "reading_order": ["maintenance-contract", "bundle-contract", "decision", "architecture", "guides", "prompt", "implementation", "tests", "verifiers", "evidence-integrity"]
     }
   ],
   "default_exclusions": [
@@ -161,6 +169,7 @@
   "default_budgets": {
     "maximum_files": 2000,
     "maximum_bytes": 50000000,
-    "maximum_tokens": 5000000
+    "maximum_tokens": 5000000,
+    "maximum_chunk_tokens": 16000
   }
 }

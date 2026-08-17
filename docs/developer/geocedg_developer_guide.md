@@ -3,7 +3,7 @@
 - Status: current-state first edition
 - Baseline: GeoGebra 5.4.928.0 at
   `9b93256b7df401ff056c37b502d82df4d72b1522`
-- G9 designs in this guide: normative/author-approved, not productive; G9O1 authorized and not started
+- G9 designs in this guide: normative/author-approved; G9O1 `PASS — AUTHOR APPROVED`; G9A1 authorized/not started; geometric G9 not started
 
 ## Purpose and boundary
 
@@ -26,6 +26,8 @@ areas are:
 - `apps/geocedg`, `geocedg/features`, `geocedg/resources`: product contracts;
 - `geocedg/specs`, `docs/adr`, `docs/architecture`: durable design authority;
 - `tools/agent`: focused and composed verification;
+- `tools/knowledge`: deterministic source/knowledge bundle generation, artifact
+  verification and disposable Git fixtures;
 - `packaging` and `tools/release`: internal Windows packaging.
 
 GeoCeDG-owned Java uses `org.geocedg`. Changes to upstream namespaces must be
@@ -177,12 +179,36 @@ compatibility effects, verifier command/exit/log, skipped checks and risks.
 Commit intentionally, create an annotated phase tag only after author approval,
 and fast-forward promotion branches without rewriting shared history.
 
+## Deterministic source and knowledge bundles
+
+Generate only from the Git-index inventory and a declared profile. A clean tree
+is required by default:
+
+```powershell
+.\tools\knowledge\build-knowledge-bundle.ps1 -Profile operational
+.\tools\knowledge\verify-knowledge-bundle.ps1 `
+  -BundleDirectory artifacts\knowledge\operational-<bundle-id>
+.\tools\agent\verify-knowledge-bundles.ps1
+```
+
+The generator prints the exact bundle directory. Use `-AllowDirty` only for
+explicit diagnostic evidence; the manifest records staged, unstaged and
+untracked hashes and marks the result `NON_RELEASE_EVIDENCE`. Do not add a
+generated bundle to Git. The independent verifier rejects stale `HEAD`, changed
+dirty state, unsafe paths, membership/ownership drift, invalid continuation
+topology, archive metadata drift and budget violations.
+
+Profiles `source`, `knowledge`, `locus-v2`, `governance`, `frontend-dxf`,
+`spatial-g9` and `operational` are declared in the normative profile catalog.
+Generated/restricted material cannot be admitted by those ownership lists.
+
 ## Approved G9 architecture
 
 G9P designed operational bundles, public V2 exposure, extended DXF, workspaces
 and spatial/projection semantics. The six specifications are normative and ADR
-0010–0015 are Accepted. G9O1 alone is authorized and not started; all other
-productive phases remain future-gated and unauthorized.
+0010–0015 are Accepted. G9O1 is **PASS — AUTHOR APPROVED**. G9A1 is authorized
+but not started; all later productive phases remain future-gated and
+unauthorized. No productive spatial G9 implementation has started.
 
 Phase documents distinguish hard semantic/contract dependencies, recommended
 execution predecessors and global/release gates. G9O1 is recommended first but

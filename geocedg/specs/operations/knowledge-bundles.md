@@ -5,15 +5,16 @@
 - Accepted decision: `docs/adr/0015-deterministic-source-knowledge-bundle-ownership.md`
 - Schema: `geocedg/specs/operations/knowledge-bundle.schema.json`
 - Profiles: `geocedg/specs/operations/knowledge-bundle-profiles.json`
-- Implementation status: **AUTHORIZED / NOT STARTED**
+- Implementation status: **PASS — AUTHOR APPROVED**
 
 ## 1. Boundary
 
 A bundle is a generated, read-only knowledge artifact. It does not become
 source authority, alter the working tree, enter the geometric dependency graph,
-or replace repository paths. The future generator belongs under
-`tools/knowledge/`; its focused verifier is planned as
-`tools/agent/verify-knowledge-bundles.ps1`. Neither is implemented by G9P.
+or replace repository paths. G9O1 implements the generator at
+`tools/knowledge/build-knowledge-bundle.ps1`, its independent artifact verifier
+at `tools/knowledge/verify-knowledge-bundle.ps1`, and the focused repository
+gate at `tools/agent/verify-knowledge-bundles.ps1`.
 
 ## 2. Ownership classification
 
@@ -56,7 +57,7 @@ repository into one uncontrolled document.
 Each bundle has one schema-versioned manifest containing repository/branch/
 commit/dirty state, pinned upstream baseline, generator version, normalized
 configuration and a deterministic bundle ID. Every entry records source path,
-ownership, language, encoding, line range, canonical SHA-256, baseline blob,
+ownership, language, encoding, line range, raw and canonical SHA-256, baseline blob,
 change type, related spec/ADR/phase/tests, license/provenance and ordering.
 
 For `UPSTREAM_MODIFIED`, the complete current file is mandatory. Baseline blob
@@ -87,6 +88,9 @@ range. Never split a class or Markdown section when another budget-respecting
 boundary exists. Every unavoidable continuation records a stable continuation
 ID, sequence/total, original path, complete source hash and exact line range.
 Chunks never replace the complete-file requirement for upstream-modified source.
+The configured `maximum_chunk_tokens` bounds canonical source payload using the
+declared byte-based estimate; provenance headers are additional metadata. A
+single source line that cannot fit fails closed rather than being split.
 
 ## 7. Default exclusions
 
@@ -98,7 +102,7 @@ authorizes copying them.
 
 ## 8. Verification design
 
-The future verifier must independently recompute ownership, path order, hashes,
+The artifact verifier independently recomputes ownership, path order, hashes,
 bundle ID, archive metadata, budgets, exclusions and freshness. It must reject
 missing sources, stale commits, ambiguous ownership, absolute paths, restricted
 assets, hash mismatch and invalid continuation topology.
@@ -110,6 +114,6 @@ without explicit authorization, ownership disagreement, non-UTF-8 text without
 an explicit binary policy, nondeterministic output or a budget that would split
 semantic boundaries unsafely.
 
-This normative contract defines G9O1. The author has authorized that phase, but
-it remains not started: this document does not implement or execute the
-generator, verifier, archive, bundle manifest instance, or generated artifact.
+This normative contract defines G9O1. The implementation is **PASS — AUTHOR
+APPROVED**. Generated bundle instances remain ignored evidence under
+`artifacts/knowledge/` and are never committed as source authority.

@@ -1,0 +1,56 @@
+{
+  "manifest_schema": "geocedg/specs/operations/knowledge-bundle.schema.json",
+  "schema_version": 1,
+  "status": "NORMATIVE_AUTHOR_APPROVED",
+  "implementation_status": "TEST_FIXTURE",
+  "profiles": [
+    {
+      "id": "fixture",
+      "kind": "source",
+      "description": "Deterministic G9O1 fixture profile.",
+      "ownership": [
+        "GEOCEDG_NATIVE",
+        "UPSTREAM_MODIFIED",
+        "UPSTREAM_UNCHANGED_REFERENCE"
+      ],
+      "include": [
+        "AGENTS.md",
+        "UPSTREAM.md",
+        "geocedg/specs/operations/**",
+        "docs/excluded-by-profile.md",
+        "docs/upstream/**",
+        "tools/knowledge/**",
+        "source/shared/common/src/main/java/org/example/**",
+        "docs/references/cedg/**",
+        "module/build/**"
+      ],
+      "include_related_tests": true,
+      "include_unified_diffs": true,
+      "reading_order": [
+        "governance",
+        "specifications",
+        "implementation",
+        "tests",
+        "productive-source",
+        "provenance"
+      ]
+    }
+  ],
+  "default_exclusions": [
+    ".git/**",
+    "**/build/**",
+    "artifacts/**",
+    "**/*.log",
+    "**/*.tmp",
+    "**/local.properties",
+    "**/*secret*",
+    "docs/references/cedg/**/*.pdf",
+    "docs/excluded-by-profile.md"
+  ],
+  "default_budgets": {
+    "maximum_files": 100,
+    "maximum_bytes": 2000000,
+    "maximum_tokens": 500000,
+    "maximum_chunk_tokens": 2000
+  }
+}

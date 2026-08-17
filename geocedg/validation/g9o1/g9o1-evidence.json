@@ -1,0 +1,187 @@
+{
+  "schemaVersion": 1,
+  "phase": "G9O1",
+  "status": "PASS_AUTHOR_APPROVED",
+  "date": "2026-08-17",
+  "authorReviewDate": "2026-08-17",
+  "entryAuthority": {
+    "branch": "feature/g9o1-source-knowledge-bundles-guides",
+    "head": "94f92f49a44560e44bae9e75ba52595067471368",
+    "localMain": "94f92f49a44560e44bae9e75ba52595067471368",
+    "originMainObserved": "94f92f49a44560e44bae9e75ba52595067471368",
+    "entryTreeClean": true,
+    "g9pTag": "geocedg-g9p-pass",
+    "g9pAnnotatedTagObject": "6ce37f03df6f742aa448323d2150dd1655c986a5",
+    "g9pPeeledCommit": "94f92f49a44560e44bae9e75ba52595067471368",
+    "g9pPublishedTargetVerified": true,
+    "prompt": ".github/prompts/tasks/g9o1-source-knowledge-bundles-and-guides.prompt.md",
+    "promptCanonicalLfSha256": "b0b04ee4095423fd76f4ecd18a9ea567c091d23197b9bdfd92c736c25b1b9ed6"
+  },
+  "entryVerification": {
+    "operational": {
+      "command": ".\\tools\\agent\\verify-operational.ps1",
+      "exitCode": 0
+    },
+    "g9pDesign": {
+      "command": ".\\tools\\agent\\verify-g9p-design.ps1 -LogDirectory artifacts\\g9o1\\entry\\g9p-design",
+      "exitCode": 0,
+      "logRoot": "artifacts/g9o1/entry/g9p-design"
+    },
+    "composed": {
+      "command": ".\\tools\\agent\\verify.ps1 -KeepBuildOutputs -LogDirectory artifacts\\g9o1\\entry\\composed-escalated",
+      "exitCode": 0,
+      "skipBuild": false,
+      "logRoot": "artifacts/g9o1/entry/composed-escalated",
+      "executionClass": "MANAGED_ESCALATION_AFTER_WINDOWS_SANDBOX_GRADLE_ACCESS_FAILURE"
+    }
+  },
+  "authorities": {
+    "operationsSpecificationsNormative": true,
+    "g9SpecificationsNormative": true,
+    "adrs0010Through0015Accepted": true,
+    "acceptedDecision": "docs/adr/0015-deterministic-source-knowledge-bundle-ownership.md",
+    "historicalG9pIntegrityManifestRewritten": false,
+    "historicalG7G8IntegrityManifestsRewritten": false
+  },
+  "authorDecisions": {
+    "D1": "APPROVE_G9O1_PASS_AUTHOR_APPROVED",
+    "D2": "APPROVE_GENERATOR_ARCHITECTURE_AS_IMPLEMENTED",
+    "D3": "APPROVE_LOGICALLY_INDEPENDENT_ARTIFACT_VERIFIER",
+    "D4": "APPROVE_UNTRACKED_GENERATED_BUNDLE_POLICY",
+    "D5": "APPROVE_FROZEN_HISTORICAL_VERSUS_LIVING_DOCUMENTATION_BOUNDARY",
+    "D6": "APPROVE_GUIDE_IMPACT_UPDATED"
+  },
+  "implementation": {
+    "architecturalLayer": "OPERATIONAL_TOOLING_AND_LIVING_DOCUMENTATION",
+    "generator": "tools/knowledge/build-knowledge-bundle.ps1",
+    "coreModule": "tools/knowledge/knowledge-bundle.psm1",
+    "independentArtifactVerifier": "tools/knowledge/verify-knowledge-bundle.ps1",
+    "focusedVerifier": "tools/agent/verify-knowledge-bundles.ps1",
+    "profiles": [
+      "source",
+      "knowledge",
+      "locus-v2",
+      "governance",
+      "frontend-dxf",
+      "spatial-g9",
+      "operational"
+    ],
+    "outputRoot": "artifacts/knowledge",
+    "generatedBundlesTracked": false,
+    "gitIndexEnumeration": true,
+    "strictUtf8CanonicalLf": true,
+    "rawAndCanonicalHashes": true,
+    "fixedArchiveMetadata": true,
+    "cleanDefaultExplicitDirty": true,
+    "dirtyWarning": "NON_RELEASE_EVIDENCE",
+    "rightsAwareDefaultExclusions": true,
+    "schemaVersion": 1
+  },
+  "fixtureCoverage": [
+    "BYTE_EQUAL_CLEAN_RERUN",
+    "BYTE_EQUAL_EXPLICIT_DIRTY_RERUN",
+    "WHOLE_PROFILE_CATALOG_VALIDATION",
+    "PROFILE_MEMBERSHIP",
+    "OWNERSHIP_PRECEDENCE",
+    "RAW_AND_CANONICAL_HASHES",
+    "CLEAN_DEFAULT_REJECTION",
+    "EXPLICIT_DIRTY_STATE_AND_UNTRACKED_HASH",
+    "DECLARED_PROFILE_EXCLUSION",
+    "GENERATED_AND_RESTRICTED_EXCLUSIONS",
+    "PROFILE_PATH_TRAVERSAL_REJECTION",
+    "OUTPUT_PATH_TRAVERSAL_REJECTION",
+    "CONTROL_CHARACTER_AND_DOT_SEGMENT_PATH_REJECTION",
+    "LOCAL_OR_CREDENTIAL_BEARING_REMOTE_REJECTION",
+    "SYMLINK_SELECTION_REJECTION",
+    "UNSTAGED_AND_STAGED_INVENTORY_GIT_DISAGREEMENT_REJECTION",
+    "FILE_BYTE_TOKEN_AND_UNSPLITTABLE_CHUNK_BUDGET_REJECTION",
+    "STALE_HEAD_REJECTION",
+    "INDEPENDENT_MANIFEST_ARCHIVE_RECOMPUTATION"
+  ],
+  "scopeAudit": {
+    "kernelFilesChanged": 0,
+    "spatialSemanticFilesChanged": 0,
+    "locusPublicSurfaceFilesChanged": 0,
+    "guiFilesChanged": 0,
+    "dxfFilesChanged": 0,
+    "laterPromptFilesChanged": 0,
+    "generatedBundleFilesTracked": 0
+  },
+  "guideImpact": {
+    "decision": "UPDATED",
+    "paths": [
+      "README.md",
+      "docs/architecture/geocedg_documentation_architecture.md",
+      "docs/architecture/knowledge_bundle_architecture.md",
+      "docs/developer/geocedg_agent_prompt_guide.md",
+      "docs/developer/geocedg_developer_guide.md",
+      "docs/developer/repository_map.md",
+      "docs/roadmap/geocedg_roadmap.md",
+      "docs/user/geocedg_user_guide.md",
+      "docs/validation/g9_documentation_bundle_traceability.md",
+      "geocedg/specs/README.md"
+    ]
+  },
+  "integrity": {
+    "manifest": "geocedg/validation/g9o1/g9o1-evidence.sha256",
+    "hashPolicy": "STRICT_UTF8_CANONICAL_LF_SHA256",
+    "entryCount": 29,
+    "historicalAnchorAfterPublication": "geocedg-g9o1-pass"
+  },
+  "verification": {
+    "focused": "tools/agent/verify-knowledge-bundles.ps1",
+    "composed": "tools/agent/verify.ps1",
+    "composedMustBuild": true,
+    "finalFocused": {
+      "command": ".\\tools\\agent\\verify-knowledge-bundles.ps1 -LogDirectory artifacts\\g9o1\\closeout\\focused",
+      "requiredExitCode": 0,
+      "logRoot": "artifacts/g9o1/closeout/focused"
+    },
+    "finalG9pDesign": {
+      "command": ".\\tools\\agent\\verify-g9p-design.ps1 -LogDirectory artifacts\\g9o1\\closeout\\g9p-design",
+      "requiredExitCode": 0,
+      "logRoot": "artifacts/g9o1/closeout/g9p-design"
+    },
+    "finalOperational": {
+      "command": ".\\tools\\agent\\verify-operational.ps1",
+      "requiredExitCode": 0
+    },
+    "finalComposed": {
+      "command": ".\\tools\\agent\\verify.ps1 -KeepBuildOutputs -LogDirectory artifacts\\g9o1\\closeout\\composed",
+      "requiredExitCode": 0,
+      "skipBuild": false,
+      "logRoot": "artifacts/g9o1/closeout/composed"
+    },
+    "gitDiffCheckRequiredExitCode": 0,
+    "gitCachedDiffCheckRequiredExitCode": 0,
+    "closeoutVerificationRequiredBeforePromotion": true,
+    "logsGeneratedAndIgnored": true
+  },
+  "phaseDisposition": {
+    "G9O1": "PASS_AUTHOR_APPROVED",
+    "G9A1": "AUTHORIZED_NOT_STARTED",
+    "laterCanonicalPrompts": "NOT_EXECUTED",
+    "productiveSpatialG9": "NOT_STARTED"
+  },
+  "nextPhase": {
+    "prompt": ".github/prompts/tasks/g9a1-spatial-identity-persistence-foundation.prompt.md",
+    "promptCanonicalLfSha256": "50c665a399b7b6290b8dcf86cc2326bb78202d85d7b52b130fd8ebf2980127e1",
+    "branch": "feature/g9a1-spatial-identity-persistence-foundation",
+    "authorized": true,
+    "executed": false
+  },
+  "publication": {
+    "featureBranch": "feature/g9o1-source-knowledge-bundles-guides",
+    "mainPromotion": "FAST_FORWARD_ONLY",
+    "annotatedTag": "geocedg-g9o1-pass",
+    "generatedBundlesIncluded": false
+  },
+  "approval": {
+    "selfApproved": false,
+    "authorApproved": true,
+    "passClaimed": true,
+    "promotionAuthorized": true,
+    "tagAuthorized": true,
+    "nextBranchAuthorized": true
+  }
+}

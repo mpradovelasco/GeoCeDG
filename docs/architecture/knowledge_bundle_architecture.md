@@ -1,8 +1,8 @@
 # Deterministic knowledge bundle architecture
 
 - Status: author-approved architecture under a **NORMATIVE / AUTHOR APPROVED** contract
-- Phase: G9O1 — **AUTHORIZED / NOT STARTED**
-- Productive generator: absent
+- Phase: G9O1 — **PASS — AUTHOR APPROVED**
+- Productive generator: `tools/knowledge/build-knowledge-bundle.ps1`
 - Contract: `geocedg/specs/operations/knowledge-bundles.md`
 - Accepted ADR: `docs/adr/0015-deterministic-source-knowledge-bundle-ownership.md`
 
@@ -21,8 +21,9 @@ flowchart LR
     A --> V["Independent verifier"]
 ```
 
-All components are future operational services outside the kernel. G9P defines
-their contracts only.
+All components are operational services outside the kernel. G9P defined their
+contracts; the approved G9O1 implementation realizes them without changing
+application or kernel runtime behavior.
 
 ## Ownership engine
 
@@ -45,9 +46,11 @@ without a separately recorded explicit authorization.
 ## Content pipeline
 
 Text is read as bytes, decoded as strict UTF-8, stripped of an optional UTF-8
-BOM and normalized to LF. Hashes cover canonical bytes. Binary files require an
-explicit profile and are copied byte-for-byte. No timestamp, local absolute path
-or host-specific path separator enters deterministic content.
+BOM and normalized to LF. The manifest retains both raw and canonical hashes.
+Restricted/binary paths are excluded by the implemented default profiles; a
+future explicit binary policy would require separate authorization. No variable
+timestamp, local absolute path or host-specific path separator enters
+deterministic content.
 
 Chunk planning respects complete files and semantic boundaries. A continuation
 contains the complete source hash and exact range, so chunks cannot be mistaken
@@ -62,7 +65,7 @@ dirty bundle includes a canonical diff hash and is visibly non-release evidence.
 
 ## Verification
 
-The future verifier independently recomputes:
+`tools/knowledge/verify-knowledge-bundle.ps1` independently recomputes:
 
 - fixed commit/freshness and clean/dirty policy;
 - ownership from baseline/inventory/history;
@@ -71,5 +74,7 @@ The future verifier independently recomputes:
 - bundle ID, order, chunks and budgets;
 - stable archive metadata and byte reproducibility.
 
-It must not trust generator summaries. No productive generator or verifier is
-authorized by this architecture.
+It does not import or trust the generator implementation. The fixture suite and
+`tools/agent/verify-knowledge-bundles.ps1` exercise deterministic reruns,
+membership, ownership, hashes, dirty state, exclusions, unsafe paths, budgets
+and freshness. Generated outputs stay below ignored `artifacts/knowledge/`.

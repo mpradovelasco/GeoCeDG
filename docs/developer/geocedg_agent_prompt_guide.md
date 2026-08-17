@@ -1,7 +1,7 @@
 # GeoCeDG agent prompt usage guide
 
 - Status: current operational guide
-- Productive knowledge-bundle tooling: absent; G9O1 is authorized and not started
+- Productive knowledge-bundle tooling: **PASS — AUTHOR APPROVED**
 
 ## Authority
 
@@ -110,14 +110,40 @@ evidence manifests.
 When maintaining the G9 prompts, reference the approved projection-system,
 redefine and one-dimensional-generator contracts instead of copying their
 equations. Recompute the canonical-LF hash only for a prompt whose bytes
-changed, update the catalog and current integrity manifest, and leave every
-future prompt explicitly unexecuted. G9O1 is the sole authorized future prompt
-after G9P closeout; the other nine remain unauthorized, and none has run.
+changed, update current evidence, and leave every future prompt explicitly
+unexecuted. The canonical G9O1 prompt has been executed and closed as **PASS —
+AUTHOR APPROVED**. G9A1 is authorized but remains unexecuted; the other eight
+future prompts remain unauthorized and unexecuted. Frozen G9P prompt hashes and
+integrity data are read from `geocedg-g9p-pass`, not rewritten.
 
 ## Knowledge bundles
 
-The normative bundle contract can provide bounded reading sets after G9O1 is
-executed. G9O1 is authorized but not started; no generator or
-`verify-knowledge-bundles.ps1` exists yet. Until that canonical prompt is
-explicitly invoked and implemented, discover files directly from the repository
-and follow the normal authority hierarchy.
+The normative bundle contract provides bounded reading sets through declared
+profiles while preserving repository file boundaries and provenance. From a
+clean tree, run:
+
+```powershell
+.\tools\knowledge\build-knowledge-bundle.ps1 -Profile operational
+.\tools\knowledge\verify-knowledge-bundle.ps1 `
+  -BundleDirectory artifacts\knowledge\operational-<bundle-id>
+```
+
+Use the exact directory printed by the generator. Default generation rejects a
+dirty tree. `-AllowDirty` is diagnostic-only: it records staged, unstaged and
+untracked hashes, labels the manifest `NON_RELEASE_EVIDENCE`, and does not make
+the artifact releasable. Never commit anything below `artifacts/knowledge/`.
+
+The `source` and `knowledge` profiles cover broad source/governance context;
+thematic profiles cover Locus V2, governance, frontend/DXF, spatial G9 and
+operations. Restricted binaries, generated outputs, caches, secrets and
+unregistered upstream modifications fail closed. Verify the implementation and
+fixtures with:
+
+```powershell
+.\tools\agent\verify-knowledge-bundles.ps1
+```
+
+Bundles are generated evidence, not authority. Follow every `FILE:` path back
+to the repository before editing. G9O1 is **PASS — AUTHOR APPROVED**. G9A1 is
+authorized but not started, and no productive spatial G9 implementation has
+started.

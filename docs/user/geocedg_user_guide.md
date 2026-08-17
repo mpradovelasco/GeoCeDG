@@ -1,14 +1,14 @@
 # Manual operativo vivo de GeoCeDG
 
 - Tipo de documento: manual operativo vivo
-- Puerta actual del proyecto: G9P **PASS — AUTHOR APPROVED**
+- Puerta actual del proyecto: G9O1 **PASS — AUTHOR APPROVED**
 - Baseline: GeoGebra 5.4.928.0 at
   `9b93256b7df401ff056c37b502d82df4d72b1522`
 - Plataforma validada: únicamente Windows
-- Última revisión: 2026-08-16
-- Fase actual: G9P-R1 y G9P `PASS — AUTHOR APPROVED`; seis especificaciones G9
-  son normativas y ADR 0010–0015 están Accepted. G9O1 está autorizado y no
-  iniciado; ninguna capacidad productiva G9 ha comenzado. G7 y G8 siguen siendo
+- Última revisión: 2026-08-17
+- Fase actual: G9P-R1, G9P y G9O1 `PASS — AUTHOR APPROVED`; seis especificaciones
+  G9 son normativas y ADR 0010–0015 están Accepted. G9A1 está autorizado pero no
+  iniciado, y ninguna capacidad espacial productiva G9 ha comenzado. G7 y G8 siguen siendo
   capacidades internas sin comando, persistencia, `Path` ni flujo público.
 - Locus V2: `experimental`, internal/developer-only, disabled by default
 - `PACKAGING TECHNICAL STATUS = PASS`
@@ -970,8 +970,9 @@ Promotion follows `legacy -> research -> experimental -> stable`, or
 | G8 | Native Locus V2 2D metrics and incidence/intersections | G8A/G8B/G8C1/G8C2 and global G8 `PASS — AUTHOR APPROVED` | Internal rich-result, solvers/adapters and token-selected point consumer exist for developer/test use only; no public command, Path, persistence or workflow |
 | G8C | Extended native 2D incidence: typed conics, bounded functions, regular polynomial implicit curves and Locus V2 × Locus V2 | design/G8C1/G8C2 `PASS — AUTHOR APPROVED`; still experimental/internal | Internal developer/test kernels only; no public command, Path, persistence or observable workflow |
 | G9P | Spatial/public/workspace/DXF/operations design | G9P-R1 and G9P `PASS — AUTHOR APPROVED`; six normative specifications and ADR 0010–0015 Accepted | Design authority is closed; no productive G9 behavior is currently observable |
-| G9O1 | Deterministic source/knowledge bundles and operational guides | Authorized / not started | The canonical prompt and clean branch may be executed later; no generator or bundle exists yet |
-| G9A/U/X/B/C/U2 | Productive G9 capabilities | Designed / not authorized; U2 blocked on global G9 PASS | No G9 geometric, public, workspace, or extended-DXF behavior is currently observable |
+| G9O1 | Deterministic source/knowledge bundles and operational guides | `PASS — AUTHOR APPROVED` | Checked-in operational tooling can generate ignored, independently verified bundles; this adds no product or geometric behavior |
+| G9A1 | Durable identity and persistence foundation | Authorized / not started | Authorization is not implementation; no spatial identity, XML or product behavior is currently observable |
+| G9A2/A3/U/X/B/C/U2 | Later productive G9 capabilities | Designed / not authorized; U2 blocked on global G9 PASS | No G9 geometric, public, workspace, or extended-DXF behavior is currently observable |
 
 The approved future compatibility rule is also design, not current behavior.
 Once supported GeoCeDG V2/rich/spatial persisted types exist, the GeoCeDG
@@ -1280,7 +1281,7 @@ polyline is a disposable view representation.
 | G8B-R1 | Point admissibility versus global completeness | `PASS — AUTHOR APPROVED`; internal refinement only, no observable feature |
 | G8B | Minimum internal 2D intersection kernel | `PASS — AUTHOR APPROVED`; internal capability only |
 | G8C design/G8C1/G8C2 | Extended 2D Locus V2 incidence/intersection design and internal one-/two-parameter kernels | `PASS — AUTHOR APPROVED`; global G8 closed; no user-observable surface |
-| G9P-R1/G9P design | Spatial identity plus projection-system/dihedral-diagram semantics, general one-dimensional Locus generators, documentation and interoperability foundations | `PASS — AUTHOR APPROVED`; six normative specifications and ADR 0010–0015 Accepted; G9O1 authorized/not started; no productive G9 implementation started |
+| G9P-R1/G9P design | Spatial identity plus projection-system/dihedral-diagram semantics, general one-dimensional Locus generators, documentation and interoperability foundations | `PASS — AUTHOR APPROVED`; six normative specifications and ADR 0010–0015 Accepted; G9O1 `PASS — AUTHOR APPROVED`; G9A1 authorized/not started; no productive spatial G9 implementation started |
 | G10 | CeDG 3D DSL and workbench | Pending |
 | G11 | Hierarchical layers and view states | Pending |
 | G12 | Extended navigation, zoom and physical scales | Pending |
@@ -1446,7 +1447,8 @@ nonpersistent, and disabled by default. The G8C2 pair contract is normative,
 ADR 0009 is Accepted, and its internal implementation is
 `PASS — AUTHOR APPROVED`. G8 is globally closed. G9P is
 `PASS — AUTHOR APPROVED`; its six specifications are normative, but it implies
-no productive G9 implementation. G9O1 alone is authorized and not started.
+no productive spatial G9 implementation. G9O1 is `PASS — AUTHOR APPROVED`;
+G9A1 is authorized but not started.
 
 There is no native Locus V2 intersection command, public point output, public
 incidence/`Path`, persistence, UI, 3D behavior or end-user workflow. The

@@ -57,8 +57,9 @@ proposals and do not establish product behavior.
 
 Historical validation reports intentionally overlap living documentation: they
 record what a phase established. That overlap is not removed or synchronized
-by rewriting evidence. Remaining future documentation work belongs to its
-separately authorized implementation phase.
+by rewriting evidence. G9O1 applies this rule by checking the accepted G9P
+closeout from its annotated tag while validating current living guides
+separately.
 
 ## Living versus historical documents
 
@@ -71,6 +72,12 @@ annotated `geocedg-g8-pass` tag object
 Old verifiers must read historical manifests and their targets from the tag
 tree. Current documentation is validated separately, so correcting a stale
 guide never requires rewriting a historical manifest.
+
+The accepted G9P design is likewise frozen at annotated tag
+`geocedg-g9p-pass`, tag object
+`6ce37f03df6f742aa448323d2150dd1655c986a5`, peeled commit
+`94f92f49a44560e44bae9e75ba52595067471368`. G9O1 does not rewrite the G9P
+integrity manifest when living operations documents advance.
 
 ## Mathematics
 
@@ -91,5 +98,6 @@ capability change
   -> focused verifier and evidence
 ```
 
-Generated knowledge bundles, if later authorized, consume this topology. They
-do not flatten or replace it.
+Generated knowledge bundles consume this topology through explicit profiles.
+They preserve file boundaries, provenance and reading order; they do not
+flatten or replace repository authority.

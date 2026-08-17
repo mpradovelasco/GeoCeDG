@@ -143,6 +143,8 @@ try {
         "docs/architecture/locus_v2_implementation.md",
         "docs/developer/locus_v2_api.md",
         "docs/developer/repository_map.md",
+        "docs/developer/geocedg_developer_guide.md",
+        "docs/developer/geocedg_agent_prompt_guide.md",
         "docs/legacy/README.md",
         "docs/references/cedg/README.md",
         "docs/references/cedg/catalog.yml",
@@ -162,6 +164,8 @@ try {
         "docs/validation/g6b_locus_v2_kernel_report.md",
         "docs/validation/g6r_locus_v2_hardening_report.md",
         "docs/validation/g6r_locus_v2_traceability_matrix.md",
+        "docs/validation/g9_documentation_bundle_traceability.md",
+        "docs/validation/g9o1_source_knowledge_bundles_guides_report.md",
         "geocedg/specs/operations/manifest-contracts.md",
         "geocedg/specs/operations/feature-set.schema.json",
         "geocedg/specs/operations/model-manifest.schema.json",
@@ -173,6 +177,10 @@ try {
         "geocedg/specs/operations/scientific-reference-catalog.schema.json",
         "geocedg/specs/operations/external-model-corpus.schema.json",
         "geocedg/specs/operations/package-profile.schema.json",
+        "geocedg/specs/operations/knowledge-bundle.schema.json",
+        "geocedg/specs/operations/knowledge-bundle-profiles.json",
+        "geocedg/specs/operations/knowledge-bundles.md",
+        "geocedg/specs/operations/documentation-maintenance.md",
         "geocedg/specs/packaging/windows-packaging.md",
         "geocedg/specs/export/geometry-export-foundation.md",
         "geocedg/specs/locus/locus-v2-semantics.md",
@@ -194,6 +202,8 @@ try {
         "geocedg/validation/locus-v2/g6a-characterization-baseline.yml",
         "geocedg/validation/locus-v2/g6b-functional-evidence.yml",
         "geocedg/validation/locus-v2/g6r-hardening-evidence.yml",
+        "geocedg/validation/g9o1/g9o1-evidence.json",
+        "geocedg/validation/g9o1/g9o1-evidence.sha256",
         "benchmarks/suites/operational-smoke.yml",
         "benchmarks/models/stress-catalog.yml",
         "artifacts/README.md",
@@ -215,6 +225,8 @@ try {
         "tools/agent/verify-g7a-metrics.ps1",
         "tools/agent/verify-g7b-metrics.ps1",
         "tools/agent/verify-locus-v2.ps1",
+        "tools/agent/verify-g9p-design.ps1",
+        "tools/agent/verify-knowledge-bundles.ps1",
         "tools/agent/verify-workstation.ps1",
         "tools/agent/repository-state.ps1",
         "tools/agent/repository-generated-state.ps1",
@@ -229,6 +241,11 @@ try {
         "tools/legacy/ingest.ps1",
         "tools/legacy/open-laboratory.ps1",
         "tools/locus-v2/open-locus-v2-laboratory.ps1",
+        "tools/knowledge/knowledge-bundle.psm1",
+        "tools/knowledge/build-knowledge-bundle.ps1",
+        "tools/knowledge/verify-knowledge-bundle.ps1",
+        "tools/knowledge/tests/knowledge-bundle.tests.ps1",
+        "tools/knowledge/tests/fixtures/knowledge-bundle-profiles.fixture.json",
         "tools/release/build-windows-package.ps1"
     )
     foreach ($requiredFile in $requiredFiles) {
@@ -339,6 +356,7 @@ try {
         "geocedg/specs/operations/scientific-reference-catalog.schema.json",
         "geocedg/specs/operations/external-model-corpus.schema.json",
         "geocedg/specs/operations/package-profile.schema.json",
+        "geocedg/specs/operations/knowledge-bundle.schema.json",
         "geocedg/specs/ui/application-profile.schema.json"
     )
     foreach ($schemaPath in $schemaPaths) {
@@ -346,6 +364,21 @@ try {
         Assert-Properties -Value $schema -Names @('$schema', '$id', 'type') `
             -Description $schemaPath
     }
+
+    $knowledgeProfiles = Read-JsonCompatibleYaml `
+        -RelativePath "geocedg/specs/operations/knowledge-bundle-profiles.json"
+    Assert-Properties -Value $knowledgeProfiles -Names @(
+        'manifest_schema', 'schema_version', 'status',
+        'implementation_status', 'profiles', 'default_exclusions',
+        'default_budgets') -Description "knowledge-bundle profiles"
+    Assert-Condition -Condition (
+        $knowledgeProfiles.schema_version -eq 1 -and
+        $knowledgeProfiles.status -eq "NORMATIVE_AUTHOR_APPROVED" -and
+        $knowledgeProfiles.implementation_status -eq
+            "PASS_AUTHOR_APPROVED" -and
+        @($knowledgeProfiles.profiles).Count -eq 7 -and
+        $knowledgeProfiles.default_budgets.maximum_chunk_tokens -gt 0) `
+        -Message "Knowledge-bundle profile catalog is inconsistent."
 
     $packageProfilePath = "packaging/windows/package.yml"
     $packageProfile = Read-JsonCompatibleYaml -RelativePath $packageProfilePath
@@ -531,10 +564,10 @@ try {
     Write-Step "Operational text hygiene"
     $ownedTextRoots = @(
         ".github", "ai-shell", "geocedg", "models", "benchmarks",
-        "apps", "tools/agent", "tools/benchmark", "tools/bootstrap",
+        "apps", "tools/agent", "tools/knowledge", "tools/benchmark", "tools/bootstrap",
         "tools/legacy", "tools/release", "packaging", "LICENSES"
     )
-    $textExtensions = @(".json", ".md", ".ps1", ".txt", ".yml", ".yaml", ".js", ".ggs")
+    $textExtensions = @(".json", ".md", ".ps1", ".psm1", ".txt", ".yml", ".yaml", ".js", ".ggs")
     $ownedTextFiles = [Collections.Generic.List[string]]::new()
     foreach ($root in $ownedTextRoots) {
         $absoluteRoot = Join-Path $RepositoryRoot $root
@@ -561,6 +594,8 @@ try {
             "docs/architecture/locus_v2_implementation.md",
             "docs/developer/locus_v2_api.md",
             "docs/developer/repository_map.md",
+            "docs/developer/geocedg_developer_guide.md",
+            "docs/developer/geocedg_agent_prompt_guide.md",
             "docs/legacy/README.md",
             "docs/references/cedg/README.md",
             "docs/references/cedg/catalog.yml",
@@ -578,6 +613,8 @@ try {
             "docs/validation/g6b_locus_v2_kernel_report.md",
             "docs/validation/g6r_locus_v2_hardening_report.md",
             "docs/validation/g6r_locus_v2_traceability_matrix.md",
+            "docs/validation/g9_documentation_bundle_traceability.md",
+            "docs/validation/g9o1_source_knowledge_bundles_guides_report.md",
             "docs/validation/g1r_repository_onboarding_report.md",
             "docs/validation/g1_operational_layer_report.md",
             "docs/user/geocedg_user_guide.md",
@@ -588,6 +625,8 @@ try {
             "tools/agent/verify-g7a-metrics.ps1",
             "tools/agent/verify-g7b-metrics.ps1",
             "tools/agent/verify-locus-v2.ps1",
+            "tools/agent/verify-g9p-design.ps1",
+            "tools/agent/verify-knowledge-bundles.ps1",
             "tools/agent/verify-operational.ps1",
             "tools/agent/repository-state.ps1",
             "tools/agent/verify-repository-state.ps1",

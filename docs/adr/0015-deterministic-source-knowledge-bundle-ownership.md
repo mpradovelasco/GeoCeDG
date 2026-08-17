@@ -3,7 +3,7 @@
 - Status: **Accepted**
 - Date: 2026-08-16
 - Scope: documentation maintenance and future G9O1 bundle generation
-- Productive implementation: G9O1 authorized; not started
+- Productive implementation: G9O1 **PASS — AUTHOR APPROVED**
 
 ## Context
 
@@ -86,5 +86,6 @@ obscures provenance.
 G9P closeout accepted ownership precedence, dirty-tree policy, budgets,
 historical anchor, profile scope and the operational-versus-semantic dependency
 boundary. The related specifications are **NORMATIVE / AUTHOR APPROVED**.
-G9O1 is authorized and not started; this ADR does not execute or implement its
-bundle generator or verifier.
+G9O1 is implemented under the operational tooling layer and is **PASS — AUTHOR
+APPROVED**. This closeout record does not amend the Accepted decision or create
+a semantic dependency on G9A1. G9A1 is separately authorized and not started.

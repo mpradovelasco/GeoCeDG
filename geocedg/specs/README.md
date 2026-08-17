@@ -10,7 +10,10 @@ Locus V2 semantics/metrics/intersections closed through G8. G9P-R1 refined the
 spatial, public-surface, workspace, extended-DXF, documentation, and bundle
 specifications without implementing them. Those six G9P specifications are
 `NORMATIVE / AUTHOR APPROVED`; implementation authorization remains an
-independent phase status. G9O1 alone is authorized and not started.
+independent phase status. The G9O1 operational bundle/documentation
+implementation is `PASS — AUTHOR APPROVED`. G9A1 is authorized but not started;
+every later productive phase remains unauthorized, and no productive spatial
+G9 implementation has started.
 
 Every specification must state its status, version, authority, scope,
 invariants, compatibility policy, validation evidence, and stop conditions.

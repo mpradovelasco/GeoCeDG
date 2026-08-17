@@ -12,9 +12,9 @@ G4 añadió packaging Windows interno y G5 una primera exportación geométrica 
 DXF experimental. G6 añadió una entidad Locus V2 semántica paralela y G6R la
 endureció con un laboratorio developer-only. G7 cerró métricas semánticas
 internas y G8 cerró intersecciones internas tipadas, ambas autor-aprobadas.
-G9P-R1 y G9P son `PASS — AUTHOR APPROVED`; sus seis especificaciones son
-normativas y ADR 0010–0015 están Accepted. G9O1 está autorizado y no iniciado;
-no ha comenzado ninguna implementación productiva G9. Locus V2 permanece experimental, interna y
+G9P-R1, G9P y G9O1 son `PASS — AUTHOR APPROVED`; sus seis especificaciones son
+normativas y ADR 0010–0015 están Accepted. G9A1 está autorizado pero no iniciado,
+y no ha comenzado ninguna implementación espacial productiva G9. Locus V2 permanece experimental, interna y
 desactivada por defecto. Ningún recurso legacy se carga por defecto.
 
 ## Baseline

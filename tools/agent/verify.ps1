@@ -39,6 +39,8 @@ $G8C2ContractVerifier = Join-Path $PSScriptRoot `
 $G8C2IntersectionVerifier = Join-Path $PSScriptRoot `
     "verify-g8c2-intersections.ps1"
 $G9PDesignVerifier = Join-Path $PSScriptRoot "verify-g9p-design.ps1"
+$KnowledgeBundleVerifier = Join-Path $PSScriptRoot `
+    "verify-knowledge-bundles.ps1"
 $BenchmarkRunner = Join-Path $RepositoryRoot "tools\benchmark\run.ps1"
 $InitialStatus = $null
 
@@ -266,6 +268,19 @@ try {
         & $G9PDesignVerifier @g9pParameters
         Assert-LastScriptSuccess `
             -Description "G9P/R1 author-approved design closeout"
+    }
+
+    $g9o1Evidence = Join-Path $RepositoryRoot `
+        "geocedg\validation\g9o1\g9o1-evidence.json"
+    if (Test-Path -LiteralPath $g9o1Evidence -PathType Leaf) {
+        Write-Host "`n==> G9O1 deterministic source/knowledge bundles"
+        $knowledgeBundleParameters = @{
+            LogDirectory = Join-Path ([IO.Path]::GetFullPath($LogDirectory)) `
+                "g9o1-knowledge-bundles"
+        }
+        & $KnowledgeBundleVerifier @knowledgeBundleParameters
+        Assert-LastScriptSuccess `
+            -Description "G9O1 deterministic source/knowledge bundles"
     }
 
     Write-Host "`n==> Standalone Windows packaging contracts"

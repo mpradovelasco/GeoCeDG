@@ -5,8 +5,8 @@
 | Scope | Durable source, evidence, operational and generated boundaries |
 | Baseline | GeoGebra 5.4.928.0 at `9b93256b7df401ff056c37b502d82df4d72b1522` |
 | Current closed capability | G8 `PASS — AUTHOR APPROVED`; Locus V2 metrics/intersections remain experimental/internal |
-| Current design phase | G9P-R1 and G9P PASS — AUTHOR APPROVED; six normative specifications and ADR 0010–0015 Accepted; G9O1 authorized/not started; no productive G9 implementation started |
-| Date | 2026-08-16 |
+| Current design phase | G9P-R1, G9P and G9O1 PASS — AUTHOR APPROVED; six normative specifications and ADR 0010–0015 Accepted; G9A1 authorized/not started; no productive spatial G9 implementation started |
+| Date | 2026-08-17 |
 
 Use this map to decide where a change belongs. `AGENTS.md`, accepted ADRs and
 normative specifications remain authoritative when this overview is
@@ -36,6 +36,7 @@ insufficient.
 | `docs/upstream` | Pinned baseline records and exact archived upstream README | Upstream provenance/evidence |
 | `tools/agent` | Focused verifiers plus canonical composed `verify.ps1` | Executable verification authority |
 | `tools/agent/evidence-integrity.ps1` | Exact-byte Git blob and frozen G8 evidence helpers | Operational verification source; never rewrites evidence |
+| `tools/knowledge` | Deterministic profile-driven source/knowledge bundle generator, independent artifact verifier and disposable fixtures | Operational source; generated bundles are not authority |
 | `tools/bootstrap` | Workstation onboarding and focused prerequisite installation | Setup/orchestration, not acceptance authority |
 | `tools/locus-v2` | Explicit developer-only Locus V2 laboratory launcher | Operational tool, opt-in; not product UI |
 | `tools/legacy` | Reproducible ingest and legacy Laboratory loader | Operational tools with immutable originals |
@@ -44,7 +45,7 @@ insufficient.
 | `packaging` | Windows `jpackage` configuration and notices | Durable packaging source; public release remains blocked |
 | `.github/prompts`, `ai-shell/prompts` | Canonical tasks/reviews and lightweight profiles | Operational instructions, not geometric truth |
 | `.github/workflows` | CI invocation of repository verification | Automation source |
-| `artifacts` | Packaging, export and other generated output boundary | Regenerable/ignored except explicit README/manifests |
+| `artifacts` | Packaging, export, `knowledge` bundles and other generated output boundary | Regenerable/ignored except explicit README/manifests |
 | module `build/`, `.gradle/`, `.kotlin/` | Build caches and generated outputs | Regenerable/ignored; verifiers restore entry state |
 
 ## Locus V2 path

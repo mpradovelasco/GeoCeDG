@@ -3,13 +3,15 @@
 Implement G9A1 durable identity and persistence substrate on
 `feature/g9a1-spatial-identity-persistence-foundation` without spatial solving.
 
-**PROPOSED FUTURE PROMPT — UNEXECUTED AND NOT AUTHORIZED.**
+**AUTHORIZED CANONICAL PROMPT — NOT STARTED / UNEXECUTED.**
 
 # Mandatory entry gate
 
 Require final G9P author approval, author-approved spatial specification,
 Accepted ADRs 0010/0011, clean approved baseline, exact prompt hash, and green
 G6-G8 plus composed authority. G9O1 PASS is not a semantic entry condition.
+Author closeout authorized G9A1 after G9O1 PASS, but this file does not execute
+it; an explicit canonical task invocation is still required.
 
 # Hard dependencies
 

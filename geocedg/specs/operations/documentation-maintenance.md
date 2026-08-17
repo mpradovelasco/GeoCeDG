@@ -143,5 +143,6 @@ or rewrite documents.
 
 The author accepted the claim vocabulary, historical-evidence boundary and
 `GUIDE_IMPACT` protocol at G9P closeout. This document is normative; it does not
-by itself authorize productive geometric work. G9O1 is separately authorized
-and not started.
+by itself authorize productive geometric work. The G9O1 operational
+implementation is **PASS — AUTHOR APPROVED**. G9A1 is separately authorized and
+not started; every later productive G9 phase remains unauthorized.

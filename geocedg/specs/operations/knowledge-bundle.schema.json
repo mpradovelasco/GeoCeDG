@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://geocedg.local/schemas/knowledge-bundle-v1",
   "title": "GeoCeDG deterministic knowledge bundle manifest",
-  "description": "NORMATIVE / AUTHOR APPROVED; G9O1 is authorized and not started, and no productive generator exists yet.",
+  "description": "Normative manifest contract implemented by the author-approved G9O1 tooling; generated bundles remain non-authoritative evidence.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -14,10 +14,14 @@
     "configuration",
     "bundle_id",
     "profile",
+    "reading_order",
+    "summary",
     "entries"
   ],
   "properties": {
-    "$schema": { "type": "string", "minLength": 1 },
+    "$schema": {
+      "const": "geocedg/specs/operations/knowledge-bundle.schema.json"
+    },
     "schema_version": { "const": 1 },
     "generator": {
       "type": "object",
@@ -25,7 +29,10 @@
       "required": ["name", "version"],
       "properties": {
         "name": { "const": "geocedg-knowledge-bundle" },
-        "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" }
+        "version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        }
       }
     },
     "repository": {
@@ -37,12 +44,26 @@
         "branch": { "type": ["string", "null"] },
         "commit": { "$ref": "#/$defs/gitObject" },
         "dirty": { "type": "boolean" },
-        "dirty_diff_sha256": { "$ref": "#/$defs/sha256" }
+        "dirty_diff_sha256": { "$ref": "#/$defs/sha256" },
+        "dirty_state": { "$ref": "#/$defs/dirtyState" }
       },
       "allOf": [
         {
-          "if": { "properties": { "dirty": { "const": true } }, "required": ["dirty"] },
-          "then": { "required": ["dirty_diff_sha256"] }
+          "if": {
+            "properties": { "dirty": { "const": true } },
+            "required": ["dirty"]
+          },
+          "then": {
+            "required": ["dirty_diff_sha256", "dirty_state"]
+          },
+          "else": {
+            "not": {
+              "anyOf": [
+                { "required": ["dirty_diff_sha256"] },
+                { "required": ["dirty_state"] }
+              ]
+            }
+          }
         }
       ]
     },
@@ -59,21 +80,97 @@
     "configuration": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["profile_id", "include_diffs", "budgets", "canonical_sha256"],
+      "required": [
+        "profile_id",
+        "profile_kind",
+        "themes",
+        "ownership",
+        "include",
+        "include_related_tests",
+        "include_diffs",
+        "reading_order",
+        "exclusions",
+        "budgets",
+        "canonical_sha256"
+      ],
       "properties": {
-        "profile_id": { "type": "string", "pattern": "^[a-z0-9]+(?:[.-][a-z0-9]+)*$" },
-        "themes": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "profile_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:[.-][a-z0-9]+)*$"
+        },
+        "profile_kind": {
+          "enum": ["source", "knowledge", "thematic"]
+        },
+        "themes": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "ownership": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "enum": [
+              "GEOCEDG_NATIVE",
+              "UPSTREAM_MODIFIED",
+              "UPSTREAM_UNCHANGED_REFERENCE"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "include": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/repoPath" },
+          "uniqueItems": true
+        },
+        "include_related_tests": { "type": "boolean" },
         "include_diffs": { "type": "boolean" },
+        "reading_order": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "exclusions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/repoPath" },
+          "uniqueItems": true
+        },
         "budgets": { "$ref": "#/$defs/budgets" },
         "canonical_sha256": { "$ref": "#/$defs/sha256" }
       }
     },
-    "bundle_id": { "type": "string", "pattern": "^kb-v1-[a-f0-9]{64}$" },
+    "bundle_id": {
+      "type": "string",
+      "pattern": "^kb-v1-[a-f0-9]{64}$"
+    },
     "profile": { "enum": ["source", "knowledge", "thematic"] },
     "reading_order": {
       "type": "array",
+      "minItems": 1,
       "items": { "type": "string", "minLength": 1 },
       "uniqueItems": true
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "files",
+        "canonical_bytes",
+        "estimated_tokens",
+        "chunks",
+        "token_estimate"
+      ],
+      "properties": {
+        "files": { "type": "integer", "minimum": 1 },
+        "canonical_bytes": { "type": "integer", "minimum": 0 },
+        "estimated_tokens": { "type": "integer", "minimum": 0 },
+        "chunks": { "type": "integer", "minimum": 1 },
+        "token_estimate": {
+          "const": "ceil(canonical UTF-8 bytes / 4)"
+        }
+      }
     },
     "entries": {
       "type": "array",
@@ -82,21 +179,33 @@
     }
   },
   "$defs": {
-    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
-    "gitObject": { "type": "string", "pattern": "^[a-f0-9]{40}$" },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "gitObject": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}$"
+    },
     "repoPath": {
       "type": "string",
       "minLength": 1,
-      "pattern": "^(?!/)(?![A-Za-z]:)(?!.*\\\\)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"
+      "pattern": "^(?!/)(?!.*:)(?!.*\\\\)(?!.*[\\u0000-\\u001F])(?!.*(?:^|/)\\.(?:/|$))(?!.*(?:^|/)\\.\\.(?:/|$)).+$"
     },
     "budgets": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["maximum_files", "maximum_bytes", "maximum_tokens"],
+      "required": [
+        "maximum_files",
+        "maximum_bytes",
+        "maximum_tokens",
+        "maximum_chunk_tokens"
+      ],
       "properties": {
         "maximum_files": { "type": "integer", "minimum": 1 },
         "maximum_bytes": { "type": "integer", "minimum": 1 },
-        "maximum_tokens": { "type": "integer", "minimum": 1 }
+        "maximum_tokens": { "type": "integer", "minimum": 1 },
+        "maximum_chunk_tokens": { "type": "integer", "minimum": 1 }
       }
     },
     "lineRange": {
@@ -108,15 +217,62 @@
         "end": { "type": "integer", "minimum": 1 }
       }
     },
-    "continuation": {
+    "untrackedState": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "sequence", "total", "complete_source_sha256"],
+      "required": ["path", "raw_sha256", "bytes"],
       "properties": {
-        "id": { "type": "string", "minLength": 1 },
+        "path": { "$ref": "#/$defs/repoPath" },
+        "raw_sha256": { "$ref": "#/$defs/sha256" },
+        "bytes": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "dirtyState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "warning",
+        "staged_diff_sha256",
+        "unstaged_diff_sha256",
+        "untracked"
+      ],
+      "properties": {
+        "warning": { "const": "NON_RELEASE_EVIDENCE" },
+        "staged_diff_sha256": { "$ref": "#/$defs/sha256" },
+        "unstaged_diff_sha256": { "$ref": "#/$defs/sha256" },
+        "untracked": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/untrackedState" }
+        }
+      }
+    },
+    "chunk": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "archive_path",
+        "line_range",
+        "continuation_id",
+        "sequence",
+        "total",
+        "complete_source_sha256",
+        "sha256",
+        "bytes",
+        "estimated_tokens"
+      ],
+      "properties": {
+        "archive_path": { "$ref": "#/$defs/repoPath" },
+        "line_range": { "$ref": "#/$defs/lineRange" },
+        "continuation_id": {
+          "type": "string",
+          "pattern": "^kb-cont-[a-f0-9]{64}$"
+        },
         "sequence": { "type": "integer", "minimum": 1 },
-        "total": { "type": "integer", "minimum": 2 },
-        "complete_source_sha256": { "$ref": "#/$defs/sha256" }
+        "total": { "type": "integer", "minimum": 1 },
+        "complete_source_sha256": { "$ref": "#/$defs/sha256" },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "bytes": { "type": "integer", "minimum": 0 },
+        "estimated_tokens": { "type": "integer", "minimum": 0 }
       }
     },
     "entry": {
@@ -124,21 +280,31 @@
       "additionalProperties": false,
       "required": [
         "source_path",
+        "bundle_path",
         "ownership_class",
         "language",
         "encoding",
         "line_range",
-        "sha256",
+        "raw_sha256",
+        "canonical_sha256",
+        "raw_bytes",
+        "canonical_bytes",
+        "estimated_tokens",
+        "current_blob_sha",
+        "baseline_blob_sha",
         "change_type",
+        "change_summary",
         "related_specs",
         "related_adrs",
         "related_phases",
         "related_tests",
         "license_provenance",
-        "order"
+        "order",
+        "chunks"
       ],
       "properties": {
         "source_path": { "$ref": "#/$defs/repoPath" },
+        "bundle_path": { "$ref": "#/$defs/repoPath" },
         "ownership_class": {
           "enum": [
             "GEOCEDG_NATIVE",
@@ -151,23 +317,64 @@
         "language": { "type": "string", "minLength": 1 },
         "encoding": { "const": "UTF-8" },
         "line_range": { "$ref": "#/$defs/lineRange" },
-        "sha256": { "$ref": "#/$defs/sha256" },
-        "baseline_blob_sha": { "type": ["string", "null"], "pattern": "^[a-f0-9]{40}$" },
-        "change_type": { "enum": ["ADDED", "MODIFIED", "UNCHANGED_REFERENCE"] },
-        "change_summary": { "type": "string" },
+        "raw_sha256": { "$ref": "#/$defs/sha256" },
+        "canonical_sha256": { "$ref": "#/$defs/sha256" },
+        "raw_bytes": { "type": "integer", "minimum": 0 },
+        "canonical_bytes": { "type": "integer", "minimum": 0 },
+        "estimated_tokens": { "type": "integer", "minimum": 0 },
+        "current_blob_sha": { "$ref": "#/$defs/gitObject" },
+        "baseline_blob_sha": {
+          "anyOf": [
+            { "$ref": "#/$defs/gitObject" },
+            { "type": "null" }
+          ]
+        },
+        "change_type": {
+          "enum": ["ADDED", "MODIFIED", "UNCHANGED_REFERENCE"]
+        },
+        "change_summary": { "type": "string", "minLength": 1 },
         "unified_diff_path": { "$ref": "#/$defs/repoPath" },
-        "related_specs": { "type": "array", "items": { "$ref": "#/$defs/repoPath" }, "uniqueItems": true },
-        "related_adrs": { "type": "array", "items": { "$ref": "#/$defs/repoPath" }, "uniqueItems": true },
-        "related_phases": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
-        "related_tests": { "type": "array", "items": { "$ref": "#/$defs/repoPath" }, "uniqueItems": true },
+        "related_specs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/repoPath" },
+          "uniqueItems": true
+        },
+        "related_adrs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/repoPath" },
+          "uniqueItems": true
+        },
+        "related_phases": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "related_tests": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/repoPath" },
+          "uniqueItems": true
+        },
         "license_provenance": { "type": "string", "minLength": 1 },
         "order": { "type": "integer", "minimum": 0 },
-        "continuation": { "$ref": "#/$defs/continuation" }
+        "chunks": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/chunk" }
+        }
       },
       "allOf": [
         {
-          "if": { "properties": { "ownership_class": { "const": "UPSTREAM_MODIFIED" } }, "required": ["ownership_class"] },
-          "then": { "required": ["baseline_blob_sha", "change_summary"] }
+          "if": {
+            "properties": {
+              "ownership_class": { "const": "UPSTREAM_MODIFIED" }
+            },
+            "required": ["ownership_class"]
+          },
+          "then": {
+            "properties": {
+              "baseline_blob_sha": { "$ref": "#/$defs/gitObject" }
+            }
+          }
         }
       ]
     }

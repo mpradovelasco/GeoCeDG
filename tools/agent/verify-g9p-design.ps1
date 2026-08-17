@@ -9,6 +9,9 @@ $ErrorActionPreference = "Stop"
 $RepositoryRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot "..\..")).Path
 $G8TagObject = "fed1bfbeea77a48acce285429b397eda77054df1"
 $G8Commit = "e7810171179825a03b22d8c6eba28c672f468281"
+$G9PTagObject = "6ce37f03df6f742aa448323d2150dd1655c986a5"
+$G9PCommit = "94f92f49a44560e44bae9e75ba52595067471368"
+$G9PTagName = "geocedg-g9p-pass"
 $EvidenceRoot = Join-Path $RepositoryRoot "geocedg\validation\g9p"
 $EvidencePath = Join-Path $EvidenceRoot "g9p-design-evidence.json"
 $IntegrityPath = Join-Path $EvidenceRoot "g9p-evidence.sha256"
@@ -17,6 +20,8 @@ $ReferenceManifestPath = Join-Path $RepositoryRoot `
     "docs\references\cedg\models\g9p\g9p-reference-inputs.json"
 $SummaryLog = Join-Path ([IO.Path]::GetFullPath($LogDirectory)) "g9p-design.log"
 $InitialStatus = $null
+
+. (Join-Path $PSScriptRoot "evidence-integrity.ps1")
 
 $PromptPaths = @(
     ".github/prompts/tasks/g9p-integrated-analysis-predesign.prompt.md",
@@ -117,25 +122,18 @@ function Assert-Condition {
 function Get-CanonicalTextSha256 {
     param([Parameter(Mandatory)] [string]$Path)
 
-    $content = [IO.File]::ReadAllText($Path)
-    $canonical = $content.Replace("`r`n", "`n").Replace("`r", "`n")
-    $sha256 = [Security.Cryptography.SHA256]::Create()
-    try {
-        $bytes = [Text.UTF8Encoding]::new($false).GetBytes($canonical)
-        return [Convert]::ToHexString(
-            $sha256.ComputeHash($bytes)).ToLowerInvariant()
-    } finally {
-        $sha256.Dispose()
-    }
+    return Get-GeoCeDGFrozenCanonicalTextSha256 `
+        -RepositoryRoot $RepositoryRoot -Path $Path -Commit $G9PCommit
 }
 
 function Assert-RequiredFile {
     param([Parameter(Mandatory)] [string]$RelativePath)
 
-    $path = Join-Path $RepositoryRoot $RelativePath.Replace("/", "\")
-    Assert-Condition -Condition (Test-Path -LiteralPath $path -PathType Leaf) `
-        -Message "Required G9P artifact is missing: $RelativePath"
-    return $path
+    Assert-Condition -Condition (Test-GeoCeDGFrozenPath `
+            -RepositoryRoot $RepositoryRoot -Path $RelativePath `
+            -Commit $G9PCommit) `
+        -Message "Required frozen G9P artifact is missing: $RelativePath"
+    return $RelativePath.Replace("\", "/")
 }
 
 function Assert-Contains {
@@ -145,7 +143,8 @@ function Assert-Contains {
     )
 
     $path = Assert-RequiredFile -RelativePath $RelativePath
-    $content = Get-Content -LiteralPath $path -Raw
+    $content = Get-GeoCeDGFrozenText -RepositoryRoot $RepositoryRoot `
+        -Path $path -Commit $G9PCommit
     foreach ($requiredText in $Text) {
         Assert-Condition -Condition ($content.Contains($requiredText)) `
             -Message "$RelativePath does not contain: $requiredText"
@@ -159,7 +158,8 @@ function Assert-NotContains {
     )
 
     $path = Assert-RequiredFile -RelativePath $RelativePath
-    $content = Get-Content -LiteralPath $path -Raw
+    $content = Get-GeoCeDGFrozenText -RepositoryRoot $RepositoryRoot `
+        -Path $path -Commit $G9PCommit
     foreach ($forbiddenText in $Text) {
         Assert-Condition -Condition (-not $content.Contains($forbiddenText)) `
             -Message "$RelativePath contains obsolete/forbidden text: $forbiddenText"
@@ -169,10 +169,10 @@ function Assert-NotContains {
 function Assert-JsonFile {
     param([Parameter(Mandatory)] [string]$RelativePath)
 
-    $path = Assert-RequiredFile -RelativePath $RelativePath
     try {
-        return (Get-Content -LiteralPath $path -Raw |
-            ConvertFrom-Json -Depth 100)
+        [void](Assert-RequiredFile -RelativePath $RelativePath)
+        return Get-GeoCeDGFrozenJson -RepositoryRoot $RepositoryRoot `
+            -Path $RelativePath -Commit $G9PCommit
     } catch {
         throw "Invalid JSON in ${RelativePath}: $($_.Exception.Message)"
     }
@@ -186,7 +186,8 @@ function Assert-MarkdownLinks {
     $checked = 0
     foreach ($relativeDocument in $documents) {
         $document = Assert-RequiredFile -RelativePath $relativeDocument
-        $content = Get-Content -LiteralPath $document -Raw
+        $content = Get-GeoCeDGFrozenText -RepositoryRoot $RepositoryRoot `
+            -Path $document -Commit $G9PCommit
         foreach ($match in [regex]::Matches(
                 $content, '\[[^\]]*\]\((?<target>[^)]+)\)')) {
             $target = $match.Groups["target"].Value.Trim().Trim("<", ">")
@@ -198,10 +199,22 @@ function Assert-MarkdownLinks {
             if ([string]::IsNullOrWhiteSpace($pathPart)) {
                 continue
             }
-            $resolved = [IO.Path]::GetFullPath((Join-Path `
-                (Split-Path -Parent $document) `
-                ([Uri]::UnescapeDataString($pathPart))))
-            Assert-Condition -Condition (Test-Path -LiteralPath $resolved) `
+            $syntheticRoot = [IO.Path]::GetFullPath($RepositoryRoot)
+            $documentDirectory = Split-Path -Parent $document
+            $relativeJoin = if ([string]::IsNullOrWhiteSpace(
+                    $documentDirectory)) {
+                [Uri]::UnescapeDataString($pathPart)
+            } else {
+                Join-Path $documentDirectory `
+                    ([Uri]::UnescapeDataString($pathPart))
+            }
+            $resolved = [IO.Path]::GetFullPath((Join-Path $syntheticRoot `
+                $relativeJoin))
+            $relativeTarget = [IO.Path]::GetRelativePath(
+                $syntheticRoot, $resolved).Replace("\", "/")
+            Assert-Condition -Condition (Test-GeoCeDGFrozenPath `
+                    -RepositoryRoot $RepositoryRoot -Path $relativeTarget `
+                    -Commit $G9PCommit) `
                 -Message "Broken Markdown link in ${relativeDocument}: $target"
         }
         $checked++
@@ -211,7 +224,11 @@ function Assert-MarkdownLinks {
 
 function Assert-IntegrityManifest {
     $validated = 0
-    foreach ($line in Get-Content -LiteralPath $IntegrityPath) {
+    $manifestText = Get-GeoCeDGFrozenText -RepositoryRoot $RepositoryRoot `
+        -Path "geocedg/validation/g9p/g9p-evidence.sha256" `
+        -Commit $G9PCommit
+    foreach ($line in $manifestText.Replace("`r`n", "`n").Replace(
+            "`r", "`n").Split("`n")) {
         if ([string]::IsNullOrWhiteSpace($line) -or
                 $line.TrimStart().StartsWith("#")) {
             continue
@@ -224,8 +241,8 @@ function Assert-IntegrityManifest {
         Assert-Condition -Condition ($relative -ne
                 "geocedg/validation/g9p/g9p-evidence.sha256") `
             -Message "The G9P integrity manifest cannot hash itself."
-        $path = Assert-RequiredFile -RelativePath $relative
-        $actual = Get-CanonicalTextSha256 -Path $path
+        [void](Assert-RequiredFile -RelativePath $relative)
+        $actual = Get-CanonicalTextSha256 -Path $relative
         Assert-Condition -Condition ($actual -eq $parts[0].ToLowerInvariant()) `
             -Message "G9P integrity mismatch: $relative"
         $validated++
@@ -254,20 +271,43 @@ function Assert-ReferenceInputs {
         "models/legacy/template-v7/original/Templatev7.ggb" =
             "f62e5b7a92bcd95f10b8afda348763a57ccbd0c10dbc0c2bccc7049831ed4113"
     }
-    foreach ($item in $rawHashes.GetEnumerator()) {
-        $path = Assert-RequiredFile -RelativePath $item.Key
-        $actual = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant()
-        Assert-Condition -Condition ($actual -eq $item.Value) `
-            -Message "Immutable reference hash mismatch: $($item.Key)"
+    $canonicalTextHashes = [ordered]@{
+        "docs/references/cedg/models/g9p/geocedg-reference-workflows-notes.md" =
+            "9eefa014dfd6951263cf42b70bb02737c834d4a515278efd8e41f64173b7c16b"
+        "docs/references/cedg/models/g9p/Prompt.md" =
+            "02d05478f719f5e5f14c5ee21d062a7446602721893f85b2f289bfeac700f495"
     }
-    $promptCanonical = Get-CanonicalTextSha256 -Path (Join-Path $RepositoryRoot `
-        "docs\references\cedg\models\g9p\Prompt.md")
+    foreach ($item in $rawHashes.GetEnumerator()) {
+        [void](Assert-RequiredFile -RelativePath $item.Key)
+        $bytes = Get-GeoCeDGFrozenBlobBytes -RepositoryRoot $RepositoryRoot `
+            -Path $item.Key -Commit $G9PCommit
+        if ($canonicalTextHashes.Contains($item.Key)) {
+            $actual = Get-GeoCeDGSha256FromBytes `
+                -Bytes (ConvertTo-GeoCeDGCanonicalLfBytes -Bytes $bytes)
+            Assert-Condition -Condition ($actual -eq
+                    $canonicalTextHashes[$item.Key]) `
+                -Message "Immutable reference canonical hash mismatch: $($item.Key)"
+        } else {
+            $actual = Get-GeoCeDGSha256FromBytes -Bytes $bytes
+            Assert-Condition -Condition ($actual -eq $item.Value) `
+                -Message "Immutable reference raw hash mismatch: $($item.Key)"
+        }
+    }
+    $promptCanonical = Get-CanonicalTextSha256 `
+        -Path "docs/references/cedg/models/g9p/Prompt.md"
     Assert-Condition -Condition ($promptCanonical -eq
             "02d05478f719f5e5f14c5ee21d062a7446602721893f85b2f289bfeac700f495") `
         -Message "Canonical-LF author prompt hash mismatch."
 
     $manifest = Assert-JsonFile -RelativePath `
         "docs/references/cedg/models/g9p/g9p-reference-inputs.json"
+    foreach ($textPath in $canonicalTextHashes.Keys) {
+        $manifestRecords = @($manifest.author_inputs | Where-Object {
+                $_.path -eq $textPath })
+        Assert-Condition -Condition ($manifestRecords.Count -eq 1 -and
+                $manifestRecords[0].sha256 -eq $rawHashes[$textPath]) `
+            -Message "Recorded author-input raw hash drift: $textPath"
+    }
     Assert-Condition -Condition ([bool]$manifest.inspection.inputs_unchanged -and
             $manifest.author_inputs.Count -eq 7 -and
             $manifest.context_inputs.Count -eq 1 -and
@@ -280,8 +320,13 @@ function Assert-ReferenceInputs {
         Assert-Condition -Condition ($archiveRecord.entry_count -eq 22 -and
                 $archiveRecord.macros.embedded_count -eq 24) `
             -Message "Reference archive inventory is inconsistent: $($archiveRecord.path)"
-        $archivePath = Assert-RequiredFile -RelativePath $archiveRecord.path
-        $archive = [IO.Compression.ZipFile]::OpenRead($archivePath)
+        [void](Assert-RequiredFile -RelativePath $archiveRecord.path)
+        $archiveBytes = Get-GeoCeDGFrozenBlobBytes `
+            -RepositoryRoot $RepositoryRoot -Path $archiveRecord.path `
+            -Commit $G9PCommit
+        $stream = [IO.MemoryStream]::new($archiveBytes, $false)
+        $archive = [IO.Compression.ZipArchive]::new(
+            $stream, [IO.Compression.ZipArchiveMode]::Read, $false)
         try {
             Assert-Condition -Condition ($archive.Entries.Count -eq 22 -and
                     $null -ne $archive.GetEntry("geogebra.xml") -and
@@ -289,6 +334,7 @@ function Assert-ReferenceInputs {
                 -Message "Reference GGB structure changed: $($archiveRecord.path)"
         } finally {
             $archive.Dispose()
+            $stream.Dispose()
         }
     }
     return $rawHashes.Count
@@ -323,7 +369,8 @@ function Assert-PromptCatalog {
         Assert-Condition -Condition ((Get-CanonicalTextSha256 -Path $path) -eq
                 $entry.canonicalLfSha256) `
             -Message "Canonical prompt hash mismatch: $($entry.path)"
-        $content = Get-Content -LiteralPath $path -Raw
+        $content = Get-GeoCeDGFrozenText -RepositoryRoot $RepositoryRoot `
+            -Path $path -Commit $G9PCommit
         foreach ($heading in $requiredHeadings) {
             Assert-Condition -Condition ($content.Contains($heading)) `
                 -Message "$($entry.path) is missing prompt heading: $heading"
@@ -366,13 +413,10 @@ function Assert-PromptCatalog {
 }
 
 function Assert-Scope {
-    $changedPaths = @(& git -C $RepositoryRoot diff --name-only $G8Commit --)
+    $changedPaths = @(& git -C $RepositoryRoot diff --name-only --no-renames `
+        $G8Commit $G9PCommit --)
     Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
         -Message "Unable to enumerate G9P changed paths."
-    $changedPaths += @(& git -C $RepositoryRoot ls-files --others `
-        --exclude-standard)
-    Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
-        -Message "Unable to enumerate G9P untracked paths."
     $changedPaths = @($changedPaths | Where-Object {
             -not [string]::IsNullOrWhiteSpace($_) } | Sort-Object -Unique)
 
@@ -427,11 +471,13 @@ function Assert-PowerShellParses {
         "tools/agent/verify-g9p-design.ps1",
         "tools/agent/verify.ps1")
     foreach ($relative in $scripts) {
-        $path = Assert-RequiredFile -RelativePath $relative
+        [void](Assert-RequiredFile -RelativePath $relative)
+        $content = Get-GeoCeDGFrozenText -RepositoryRoot $RepositoryRoot `
+            -Path $relative -Commit $G9PCommit
         $tokens = $null
         $errors = $null
-        [void][Management.Automation.Language.Parser]::ParseFile(
-            $path, [ref]$tokens, [ref]$errors)
+        [void][Management.Automation.Language.Parser]::ParseInput(
+            $content, [ref]$tokens, [ref]$errors)
         Assert-Condition -Condition ($errors.Count -eq 0) `
             -Message "PowerShell parse failure in $relative"
     }
@@ -450,13 +496,29 @@ try {
         [void](Assert-RequiredFile -RelativePath $artifact)
     }
 
-    . (Join-Path $PSScriptRoot "evidence-integrity.ps1")
     $frozen = Assert-GeoCeDGFrozenG8Anchor -RepositoryRoot $RepositoryRoot
     Assert-Condition -Condition ($frozen -eq $G8Commit) `
         -Message "Unexpected frozen G8 commit."
     $tagType = (& git -C $RepositoryRoot cat-file -t $G8TagObject).Trim()
     Assert-Condition -Condition ($LASTEXITCODE -eq 0 -and $tagType -eq "tag") `
         -Message "Approved G8 tag object is missing or not annotated."
+    $g9pTagType = (& git -C $RepositoryRoot cat-file -t $G9PTagObject).Trim()
+    Assert-Condition -Condition ($LASTEXITCODE -eq 0 -and
+            $g9pTagType -eq "tag") `
+        -Message "Approved G9P tag object is missing or not annotated."
+    $g9pRef = (& git -C $RepositoryRoot rev-parse `
+        "refs/tags/$G9PTagName").Trim()
+    Assert-Condition -Condition ($LASTEXITCODE -eq 0 -and
+            $g9pRef -eq $G9PTagObject) `
+        -Message "Approved G9P tag reference does not resolve to its tag object."
+    $g9pPeeled = (& git -C $RepositoryRoot rev-parse `
+        "$G9PTagObject^{}").Trim()
+    Assert-Condition -Condition ($LASTEXITCODE -eq 0 -and
+            $g9pPeeled -eq $G9PCommit) `
+        -Message "Approved G9P tag does not peel to its accepted commit."
+    & git -C $RepositoryRoot merge-base --is-ancestor $G9PCommit HEAD
+    Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
+        -Message "Current HEAD does not descend from the accepted G9P commit."
     $historicalEntries = 0
     foreach ($manifest in $HistoricalManifests) {
         $historicalEntries += Assert-GeoCeDGFrozenHashManifest `
@@ -624,9 +686,9 @@ try {
     $markdownCount = Assert-MarkdownLinks -RelativePaths $RequiredArtifacts
     $integrityCount = Assert-IntegrityManifest
 
-    & git -C $RepositoryRoot diff --check $G8Commit
+    & git -C $RepositoryRoot diff --check $G8Commit $G9PCommit
     Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
-        -Message "G9P diff whitespace check failed."
+        -Message "Frozen G9P diff whitespace check failed."
     & git -C $RepositoryRoot diff --check
     Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
         -Message "git diff --check failed."
@@ -641,15 +703,16 @@ try {
         -Message "Repository status changed during G9P verification."
 
     $summary = @(
-        "G9P/R1 author closeout verification passed.",
+        "Frozen G9P/R1 author closeout verification passed.",
+        "Historical target: $G9PTagName -> $G9PCommit.",
         "References: $referenceCount immutable inputs/context files.",
         "Frozen historical evidence: $historicalEntries entries.",
         "Canonical prompts: $promptCount (10 future, unexecuted; G9O1 authorized/not started).",
-        "Current integrity: $integrityCount files.",
+        "Frozen G9P integrity: $integrityCount files.",
         "Markdown documents: $markdownCount.",
         "PowerShell scripts parsed: $scriptCount.",
-        "Scoped changed paths: $scopeCount.",
-        "G9 productive implementation: NOT STARTED."
+        "Frozen scoped changed paths: $scopeCount.",
+        "Historical G9P disposition: productive G9 implementation NOT STARTED."
     )
     [IO.File]::WriteAllLines($SummaryLog, $summary,
         [Text.UTF8Encoding]::new($false))
