@@ -1,16 +1,23 @@
 # G9 spatial persistence and upstream impact
 
-**Status:** author-approved G9 architecture and source-impact analysis; implementation not started
+**Status:** author-approved G9 architecture and source-impact analysis; G9A1 `PASS — AUTHOR APPROVED`
 
 **Baseline:** `9b93256b7df401ff056c37b502d82df4d72b1522`
 
-**Implementation state:** no productive G9 spatial changes made
+**G9A1 entry baseline:** `001f7920a1154b09a22b54c190f7bc5f94b48e90`
+
+**Implementation state:** the G9A1 durable-identity/persistence substrate is
+implemented and author-approved; no spatial solving, projection
+evaluation, certificate, payload, public command, GUI, 3D authority, migration,
+G9A2, or later-G9 implementation is present
 
 ## 1. Purpose
 
 This document maps the normative identity/binding contract to the pinned source
-and defines the smallest coherent upstream impact. It is deliberately more
-conservative than choosing XML names or patching classes during design.
+and defines the smallest coherent upstream impact. Its approved design analysis
+remains normative. The G9A1 implementation notes below record the concrete names
+and seams selected by the separately authorized implementation; the G9A1
+closeout does not authorize G9A2.
 
 The fundamental insertion is a shared-kernel semantic and persistence layer.
 Frontend, JavaScript, exporters, 3D renderer, labels, and generated sidecars
@@ -164,24 +171,23 @@ that name by label. This is existing plane-view UI state, not precedent for a
 semantic projection binding. It may remain compatible while the new G9 record
 uses persistent IDs.
 
-## 3. Proposed serialized information model
+## 3. Serialized information model
 
-Exact names below are illustrative. G9A1 must choose names consistent with the
-existing XML writer/parser extension style and document the version behavior.
+The broad G9 model below remains the normative target. G9A1 implements only its
+inert identity/reference skeleton: an optional `geocedgId` attribute on a
+participating element plus a flat, versioned `geocedgSpatial` sibling section.
+It does not persist or evaluate the future geometric definitions and current
+certificate data described later in this section.
 
 ```xml
-<element type="point" label="A">
+<element type="point" label="A" geocedgId="geo:...">
   <!-- existing geo data -->
-  <geocedgPersistentId value="..."/>
 </element>
 
 <geocedgSpatial version="1">
   <frame id="..." kind="orthographic" version="1" .../>
-  <projectionSystem id="..." version="1" revision="..." ...>
-    <diagramFrame .../>
-    <diagramMapRef id="..."/>
-    <frameRelationRef id="..."/>
-  </projectionSystem>
+  <system id="..." version="1" revision="..."
+          maps="map:..." relations="relation:..." .../>
   <diagramMap id="..." system="..." frame="..." role="defining"
               family="orientedIsometry" revision="..." .../>
   <frameRelation id="..." system="..." sourceMap="..."
@@ -189,8 +195,8 @@ existing XML writer/parser extension style and document the version behavior.
                  revision="..." .../>
   <object id="..." type="point" authority="projectionDefined"
           schema="cedg.point.orthographic" schemaVersion="1" .../>
-  <binding id="..." object="..." system="..." diagramMap="..."
-           frame="..." role="defining" geos="..."
+  <binding id="..." object="..." system="..." map="..."
+           frame="..." role="defining" projectedGeos="..."
            correspondence="point" .../>
 </geocedgSpatial>
 ```
@@ -221,6 +227,11 @@ values may be retained as nonauthoritative diagnostic cache only if they are
 versioned and discarded on mismatch.
 
 ## 4. Two-stage load protocol
+
+G9A1 implements parse/register and typed-reference resolution for inert records
+only. The scheduling, projection-system evaluation, certificate and payload
+steps below remain G9A2-or-later normative design and are not part of the
+approved G9A1 implementation.
 
 ### Stage 1 — parse and register
 
@@ -307,6 +318,16 @@ zones and allowed purpose are:
 G9A1 validates the persistence substrate with inert or test-private semantic
 stubs. It has no hard semantic dependency on G9O1 bundle generation; G9O1 is a
 recommended operational prerequisite only.
+
+The approved G9A1 implementation realizes this boundary in the GeoCeDG-owned
+`org.geocedg.common.kernel.spatial.identity` package and the minimum host seams
+for construction ownership, optional geo attachment/XML, staged host parsing,
+shared/desktop clipboard remap, snapshot undo/delete, macro instantiation, and
+explicit-target redefine routing. `Kernel` participates only to terminate an
+expected rejected semantic macro invocation without publishing its output or
+use registration. `ParametricProcessor` carries the same explicit redefine
+context as the general algebra route. These are lifecycle integrations, not
+projection or reconstruction behavior.
 
 ### G9A2
 

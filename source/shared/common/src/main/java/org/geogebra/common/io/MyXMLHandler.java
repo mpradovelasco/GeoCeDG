@@ -18,11 +18,18 @@ package org.geogebra.common.io;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityDiagnostic;
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityException;
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry.LoadPurpose;
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry.LoadSession;
 import org.geogebra.common.GeoGebraConstants;
 import org.geogebra.common.SuiteSubApp;
 import org.geogebra.common.awt.AwtFactory;
@@ -124,6 +131,7 @@ public class MyXMLHandler implements DocHandler {
 	private static final int MODE_CONSTRUCTION = 300;
 	private static final int MODE_CONST_GEO_ELEMENT = 301;
 	private static final int MODE_CONST_COMMAND = 302;
+	private static final int MODE_CONST_SPATIAL_IDENTITY = 303;
 
 	private static final int MODE_GUI = 400;
 	private static final int MODE_GUI_PERSPECTIVES = 401; // <perspectives>
@@ -143,6 +151,12 @@ public class MyXMLHandler implements DocHandler {
 	private int mode;
 	private int constMode; // submode for <construction>
 	private int casMode; // submode for <cascell>
+	private LoadPurpose spatialIdentityLoadPurpose = LoadPurpose.GENERIC_MERGE;
+	private LoadSession spatialIdentityLoadSession;
+	private Construction spatialIdentityLoadConstruction;
+	private int spatialIdentityRecordDepth;
+	private final IdentityHashMap<GeoElement, String> pendingSpatialGeoIds =
+			new IdentityHashMap<>();
 
 	/** currently parsed element */
 
@@ -293,7 +307,10 @@ public class MyXMLHandler implements DocHandler {
 
 	@Override
 	final public void text(String str) throws XMLParseException {
-		// do nothing
+		if (constMode == MODE_CONST_SPATIAL_IDENTITY && !str.trim().isEmpty()) {
+			throw spatialFailure(SpatialIdentityDiagnostic.Code.MALFORMED_RECORD,
+					"geocedgSpatial cannot contain free text");
+		}
 	}
 
 	@Override
@@ -690,6 +707,9 @@ public class MyXMLHandler implements DocHandler {
 			mode = MODE_DEFAULTS;
 			constMode = MODE_DEFAULTS;
 			break;
+		case "geocedgSpatial":
+			throw spatialFailure(SpatialIdentityDiagnostic.Code.MALFORMED_RECORD,
+					"geocedgSpatial must be nested in a construction");
 		default:
 			Log.error("unknown tag in <geogebra>: " + eName);
 		}
@@ -728,6 +748,9 @@ public class MyXMLHandler implements DocHandler {
 		} else if ("construction".equals(eName)) {
 			mode = MODE_CONSTRUCTION;
 			handleConstruction(attrs);
+		} else if ("geocedgSpatial".equals(eName)) {
+			throw spatialFailure(SpatialIdentityDiagnostic.Code.MALFORMED_RECORD,
+					"geocedgSpatial must be nested in the macro construction");
 		} else {
 			Log.error("unknown tag in <macro>: " + eName);
 		}
@@ -2609,6 +2632,11 @@ public class MyXMLHandler implements DocHandler {
 			// is done in the macro construction from now on
 			kernel = macroKernel;
 			cons = macroKernel.getConstruction();
+			// A macro definition owns a separate native template construction.
+			// The surrounding GGT/default parse is never authority to merge IDs
+			// into the caller's live construction.
+			cons.setNextSpatialIdentityLoadPurpose(
+					LoadPurpose.NATIVE_OR_UNDO_RESTORE);
 			parser = new GParser(macroKernel, cons);
 
 		} catch (RuntimeException e) {
@@ -2892,6 +2920,100 @@ public class MyXMLHandler implements DocHandler {
 
 	}
 
+	void setSpatialIdentityLoadPurpose(LoadPurpose purpose) {
+		spatialIdentityLoadPurpose = purpose;
+	}
+
+	void stageSpatialGeoAttachment(GeoElement geo, String externalId) {
+		if (externalId == null) {
+			return;
+		}
+		if (spatialIdentityLoadSession == null) {
+			if (pendingSpatialGeoIds.put(geo, externalId) != null) {
+				throw spatialFailure(SpatialIdentityDiagnostic.Code.DUPLICATE_ID,
+						"Duplicate GeoCeDG identity attachment for one geo");
+			}
+		} else {
+			spatialIdentityLoadSession.stageGeoAttachment(geo, externalId);
+		}
+	}
+
+	private void startSpatialIdentitySection(Map<String, String> attrs) {
+		if (spatialIdentityLoadSession != null) {
+			throw spatialFailure(SpatialIdentityDiagnostic.Code.MALFORMED_RECORD,
+					"A construction may contain only one geocedgSpatial section");
+		}
+		for (String attribute : attrs.keySet()) {
+			if (!"version".equals(attribute)) {
+				throw spatialFailure(SpatialIdentityDiagnostic.Code.MALFORMED_RECORD,
+						"Unsupported geocedgSpatial attribute: " + attribute);
+			}
+		}
+		String versionAttribute = attrs.get("version");
+		if (versionAttribute == null) {
+			throw spatialFailure(SpatialIdentityDiagnostic.Code.MALFORMED_RECORD,
+					"geocedgSpatial requires a version");
+		}
+		int version;
+		try {
+			version = Integer.parseInt(versionAttribute);
+		} catch (NumberFormatException exception) {
+			throw new SpatialIdentityException(SpatialIdentityDiagnostic.of(
+					SpatialIdentityDiagnostic.Code.MALFORMED_RECORD,
+					"Malformed geocedgSpatial version"), exception);
+		}
+		spatialIdentityLoadConstruction = cons;
+		spatialIdentityRecordDepth = 0;
+		LoadPurpose purpose = cons.consumeSpatialIdentityLoadPurpose(
+				spatialIdentityLoadPurpose);
+		spatialIdentityLoadSession = cons.getSpatialIdentityRegistry()
+				.beginLoadSession(purpose, version);
+		for (Map.Entry<GeoElement, String> pending : pendingSpatialGeoIds.entrySet()) {
+			spatialIdentityLoadSession.stageGeoAttachment(pending.getKey(),
+					pending.getValue());
+		}
+		pendingSpatialGeoIds.clear();
+		if (version != SpatialIdentityRegistry.XML_VERSION) {
+			spatialIdentityLoadSession.commit();
+		}
+	}
+
+	private void finishSpatialIdentityLoad() {
+		try {
+			if (spatialIdentityLoadSession == null && !pendingSpatialGeoIds.isEmpty()) {
+				startSpatialIdentitySection(Collections.singletonMap("version",
+						Integer.toString(SpatialIdentityRegistry.XML_VERSION)));
+			}
+			if (spatialIdentityLoadSession != null) {
+				spatialIdentityLoadSession.commit();
+			}
+		} finally {
+			cons.clearNextSpatialIdentityLoadPurpose();
+			spatialIdentityLoadSession = null;
+			spatialIdentityLoadConstruction = null;
+			spatialIdentityRecordDepth = 0;
+			pendingSpatialGeoIds.clear();
+		}
+	}
+
+	private static SpatialIdentityException spatialFailure(
+			SpatialIdentityDiagnostic.Code code, String message) {
+		return new SpatialIdentityException(SpatialIdentityDiagnostic.of(code, message));
+	}
+
+	void abortSpatialIdentityLoad() {
+		if (spatialIdentityLoadSession != null) {
+			spatialIdentityLoadSession.abort();
+		}
+		if (spatialIdentityLoadConstruction != null) {
+			spatialIdentityLoadConstruction.clearNextSpatialIdentityLoadPurpose();
+		}
+		spatialIdentityLoadSession = null;
+		spatialIdentityLoadConstruction = null;
+		spatialIdentityRecordDepth = 0;
+		pendingSpatialGeoIds.clear();
+	}
+
 	private void startConstructionElement(String eName,
 			Map<String, String> attrs) {
 		// handle construction mode
@@ -2919,6 +3041,9 @@ public class MyXMLHandler implements DocHandler {
 				geoHandler.handleGroup(attrs);
 			} else if ("worksheetText".equals(eName)) {
 				handleWorksheetText(attrs);
+			} else if ("geocedgSpatial".equals(eName)) {
+				startSpatialIdentitySection(attrs);
+				constMode = MODE_CONST_SPATIAL_IDENTITY;
 			} else {
 				Log.error("unknown tag in <construction>: " + eName);
 			}
@@ -2930,6 +3055,14 @@ public class MyXMLHandler implements DocHandler {
 
 		case MODE_CONST_COMMAND:
 			startCommandElement(eName, attrs);
+			break;
+		case MODE_CONST_SPATIAL_IDENTITY:
+			if (spatialIdentityRecordDepth != 0) {
+				throw spatialFailure(SpatialIdentityDiagnostic.Code.MALFORMED_RECORD,
+						"geocedgSpatial records must be flat");
+			}
+			spatialIdentityLoadSession.stageRecord(eName, attrs);
+			spatialIdentityRecordDepth = 1;
 			break;
 		case MODE_CAS_MAP:
 			handleMapEntry(attrs);
@@ -2955,6 +3088,7 @@ public class MyXMLHandler implements DocHandler {
 		switch (constMode) {
 		case MODE_CONSTRUCTION:
 			if ("construction".equals(eName)) {
+				finishSpatialIdentityLoad();
 				// process start points at end of construction
 				this.geoHandler.processLists();
 				cons.getLayerManager().updateList();
@@ -2983,6 +3117,18 @@ public class MyXMLHandler implements DocHandler {
 				cons.setOutputGeo(null);
 				casMap = null;
 				constMode = MODE_CONSTRUCTION;
+			}
+			break;
+		case MODE_CONST_SPATIAL_IDENTITY:
+			if ("geocedgSpatial".equals(eName)) {
+				if (spatialIdentityRecordDepth != 0) {
+					throw spatialFailure(
+							SpatialIdentityDiagnostic.Code.MALFORMED_RECORD,
+							"geocedgSpatial record was not closed");
+				}
+				constMode = MODE_CONSTRUCTION;
+			} else {
+				spatialIdentityRecordDepth = 0;
 			}
 			break;
 		case MODE_CAS_MAP:

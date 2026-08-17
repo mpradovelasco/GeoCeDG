@@ -479,6 +479,7 @@ public class ConsElementXMLHandler {
 		lineStyleTagProcessed = false;
 		lineOpacityTagProcessed = false;
 		geo = getGeoElement(attrs);
+		xmlHandler.stageSpatialGeoAttachment(geo, attrs.get("geocedgId"));
 		if (needsConstructionDefaults) {
 			// don't set auxiliary prop here, it will be loaded from XML
 			geo.setConstructionDefaults(true, false);
@@ -1677,7 +1678,7 @@ public class ConsElementXMLHandler {
 		if (geo instanceof GeoText && geo.isIndependent()) {
 			try {
 				GeoInlineText ret = new GeoInlineText((GeoText) geo);
-				geo.getConstruction().replace(geo, ret);
+				geo.getConstruction().replaceWithoutSpatialRedefineAuthority(geo, ret);
 				geo = ret;
 				double width = Double.parseDouble(attrs.get("width"));
 				double height = Double.parseDouble(attrs.get("height"));

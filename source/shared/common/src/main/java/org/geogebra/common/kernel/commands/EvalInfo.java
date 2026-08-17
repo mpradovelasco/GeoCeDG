@@ -19,6 +19,8 @@ package org.geogebra.common.kernel.commands;
 import java.util.TreeMap;
 import java.util.function.Predicate;
 
+import org.geocedg.common.kernel.spatial.identity.SpatialRedefineContext;
+import org.geocedg.common.kernel.spatial.identity.SpatialRedefineTransaction;
 import org.geogebra.common.kernel.arithmetic.ArbitraryConstantRegistry;
 import org.geogebra.common.kernel.arithmetic.SymbolicMode;
 import org.geogebra.common.kernel.commands.redefinition.RuleCollection;
@@ -53,6 +55,9 @@ public class EvalInfo {
 	private boolean forceFunctionsEnabled = false;
 	private boolean autoCreateObjects = true;
 	private boolean forSpreadsheet;
+	private SpatialRedefineContext spatialRedefineContext;
+	private SpatialRedefineTransaction spatialRedefineTransaction;
+	private boolean spatialReplacementOperationSelected;
 
 	/**
 	 * Creates a default evaluation info
@@ -187,6 +192,10 @@ public class EvalInfo {
 		ret.allowAssignment = this.allowAssignment;
 		ret.autoCreateObjects = this.autoCreateObjects;
 		ret.forSpreadsheet = this.forSpreadsheet;
+		ret.spatialRedefineContext = this.spatialRedefineContext;
+		ret.spatialRedefineTransaction = this.spatialRedefineTransaction;
+		ret.spatialReplacementOperationSelected =
+				this.spatialReplacementOperationSelected;
 		return ret;
 	}
 
@@ -573,5 +582,63 @@ public class EvalInfo {
 
 	public boolean isForSpreadsheet() {
 		return forSpreadsheet;
+	}
+
+	/**
+	 * Carries the durable identity of an explicitly selected redefine target.
+	 * A label-only replacement never receives this context.
+	 *
+	 * @param context explicit old-target context
+	 * @return a copy with the context
+	 */
+	public EvalInfo withSpatialRedefineContext(SpatialRedefineContext context) {
+		EvalInfo info = copy();
+		info.spatialRedefineContext = context;
+		return info;
+	}
+
+	/**
+	 * @return explicit old-target context, or {@code null}
+	 */
+	public SpatialRedefineContext getSpatialRedefineContext() {
+		return spatialRedefineContext;
+	}
+
+	/**
+	 * Carries the provider-approved identity decision through the host replace
+	 * branches. The transaction is prepared before any host mutation.
+	 *
+	 * @param transaction prepared identity transaction
+	 * @return a copy with the transaction
+	 */
+	public EvalInfo withSpatialRedefineTransaction(
+			SpatialRedefineTransaction transaction) {
+		EvalInfo info = copy();
+		info.spatialRedefineTransaction = transaction;
+		return info;
+	}
+
+	/**
+	 * @return prepared identity transaction, or {@code null}
+	 */
+	public SpatialRedefineTransaction getSpatialRedefineTransaction() {
+		return spatialRedefineTransaction;
+	}
+
+	/**
+	 * Selects true semantic replacement rather than an ordinary continuity edit.
+	 * Only this explicit intent can admit a provider decision of {@code FRESH}.
+	 *
+	 * @return a copy carrying explicit replacement intent
+	 */
+	public EvalInfo withSpatialReplacementOperation() {
+		EvalInfo info = copy();
+		info.spatialReplacementOperationSelected = true;
+		return info;
+	}
+
+	/** @return whether true semantic replacement was explicitly selected */
+	public boolean isSpatialReplacementOperationSelected() {
+		return spatialReplacementOperationSelected;
 	}
 }

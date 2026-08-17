@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<geogebra format="5.0" version="5.4.928.0" app="classic">
+  <construction title="G9A1 future" author="" date="">
+    <geocedgSpatial version="2">
+      <futureRecord id="future:00000000000000000000000000000001" value="preserve-me"/>
+    </geocedgSpatial>
+    <element type="numeric" label="A">
+      <value val="1.0"/>
+    </element>
+  </construction>
+</geogebra>

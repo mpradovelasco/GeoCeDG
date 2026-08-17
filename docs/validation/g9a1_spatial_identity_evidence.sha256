@@ -1,0 +1,4 @@
+# G9A1 implementation-candidate canonical-LF SHA-256 integrity record
+# Hash policy: strict UTF-8 text after optional BOM removal and CRLF/CR to LF normalization; no other normalization.
+# This candidate record is not author approval and must be refreshed if the evidence JSON changes.
+e5191804969285779d3f31fc0117a819d3176274640aa6a5a5aa817c3be464c7  docs/validation/g9a1_spatial_identity_evidence.json

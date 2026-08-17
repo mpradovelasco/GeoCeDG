@@ -63,6 +63,10 @@ public class PolygonFactory {
 		 * cons.setSuppressLabelCreation(oldMacroMode);
 		 */
 
+		if (hasParticipatingReplacement(points)) {
+			return null;
+		}
+
 		StringBuilder sb = new StringBuilder();
 
 		double xA = points[0].getInhomX();
@@ -200,6 +204,10 @@ public class PolygonFactory {
 	 * @return rigid polygon
 	 */
 	final public GeoElement[] rigidPolygon(String[] labels, GeoPointND[] points) {
+		if (hasParticipatingReplacement(points)) {
+			return null;
+		}
+
 		boolean oldMacroMode = cons.isSuppressLabelsActive();
 		cons.setSuppressLabelCreation(true);
 		GeoConicND circle = kernel.getAlgoDispatcher().circle(null, points[0],
@@ -224,9 +232,9 @@ public class PolygonFactory {
 		double yB = points[1].getInhomY();
 
 		GeoVec2D a = new GeoVec2D(cons.getKernel(), xB - xA, yB - yA); // vector
-																		// AB
+																			// AB
 		GeoVec2D b = new GeoVec2D(cons.getKernel(), yA - yB, xB - xA); // perpendicular
-																		// to
+																			// to
 		// AB
 		// changed to use this instead of Unit(Orthogonal)Vector
 		// https://www.geogebra.org/forum/viewtopic.php?f=13&p=82764#p82764
@@ -288,6 +296,17 @@ public class PolygonFactory {
 
 		return kernel.getAlgoDispatcher().polygon(labels, points);
 
+	}
+
+	private boolean hasParticipatingReplacement(GeoPointND[] points) {
+		for (int i = 1; i < points.length; i++) {
+			if (cons.getSpatialIdentityRegistry()
+					.isParticipating((GeoElement) points[i])) {
+				Log.debug("GeoCeDG G9A1 rejects composite polygon identity replacement");
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private static void rigidPolygonAddEndOfCommand(StringBuilder sb, boolean is3D) {

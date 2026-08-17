@@ -21,6 +21,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -34,6 +35,13 @@ import java.util.function.Predicate;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityDiagnostic;
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityException;
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry.LoadPurpose;
+import org.geocedg.common.kernel.spatial.identity.SpatialRedefineContext;
+import org.geocedg.common.kernel.spatial.identity.SpatialRedefineDecision;
+import org.geocedg.common.kernel.spatial.identity.SpatialRedefineTransaction;
 import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.euclidian.LayerManager;
@@ -190,6 +198,8 @@ public class Construction {
 	// when many cells in the spreadsheet are redefined at once
 	private boolean collectRedefineCalls = false;
 	private HashMap<GeoElement, GeoElement> redefineMap;
+	private HashMap<GeoElement, SpatialRedefineTransaction> spatialRedefineMap;
+	private String collectedRedefineRollbackXml;
 	private GeoElement keepGeo;
 	private ArrayList<GeoElement> latexGeos;
 
@@ -206,10 +216,13 @@ public class Construction {
 	private boolean spreadsheetTraces;
 	private boolean allowUnboundedAngles = true;
 
-	private boolean isRemovingGeoToReplaceIt = false;
+	private GeoElement geoBeingRemovedForReplace;
 	private boolean ignoringNewTypes;
 
 	private MyXMLio xmlio;
+	private final SpatialIdentityRegistry spatialIdentityRegistry;
+	private LoadPurpose nextSpatialIdentityLoadPurpose;
+	private int spatialIdentityXmlDepth;
 
 	private GeoElement outputGeo;
 
@@ -240,6 +253,7 @@ public class Construction {
 	 */
 	protected Construction(@Nonnull Kernel k, Construction parentConstruction) {
 		kernel = k;
+		spatialIdentityRegistry = new SpatialIdentityRegistry(this);
 
 		companion = kernel.createConstructionCompanion(this);
 
@@ -267,6 +281,61 @@ public class Construction {
 		geoTable = new HashMap<>(200);
 		initGeoTables();
 		groups = new ArrayList<>();
+	}
+
+	/**
+	 * @return this construction's durable spatial identity registry
+	 */
+	public SpatialIdentityRegistry getSpatialIdentityRegistry() {
+		return spatialIdentityRegistry;
+	}
+
+	/**
+	 * Selects the interpretation of the next identity-bearing XML parse. The
+	 * parser consumes this value once; ordinary merges cannot infer import
+	 * authority from labels or registry state.
+	 *
+	 * @param purpose explicit load purpose
+	 */
+	public void setNextSpatialIdentityLoadPurpose(LoadPurpose purpose) {
+		nextSpatialIdentityLoadPurpose = purpose;
+	}
+
+	/**
+	 * Consumes an explicit load purpose or returns the parser's safe default.
+	 *
+	 * @param defaultPurpose parser default for this XML operation
+	 * @return purpose for the current construction section
+	 */
+	public LoadPurpose consumeSpatialIdentityLoadPurpose(LoadPurpose defaultPurpose) {
+		LoadPurpose purpose = nextSpatialIdentityLoadPurpose;
+		nextSpatialIdentityLoadPurpose = null;
+		return purpose == null ? defaultPurpose : purpose;
+	}
+
+	/** Clears an unused one-shot load purpose after a failed or legacy parse. */
+	public void clearNextSpatialIdentityLoadPurpose() {
+		nextSpatialIdentityLoadPurpose = null;
+	}
+
+	/** Starts an explicit full/semantic-fragment identity XML scope. */
+	public void beginSpatialIdentityXML() {
+		spatialIdentityXmlDepth++;
+	}
+
+	/** Ends an explicit full/semantic-fragment identity XML scope. */
+	public void endSpatialIdentityXML() {
+		if (spatialIdentityXmlDepth <= 0) {
+			throw new IllegalStateException("Spatial identity XML scope is not active");
+		}
+		spatialIdentityXmlDepth--;
+	}
+
+	/**
+	 * @return whether participating geo IDs may be emitted into element XML
+	 */
+	public boolean isSpatialIdentityXMLActive() {
+		return spatialIdentityXmlDepth > 0;
 	}
 
 	/**
@@ -1277,7 +1346,7 @@ public class Construction {
 	 * @param getListenersToo whether to include JS listener names
 	 */
 	public void getConstructionXML(XMLStringBuilder sb, boolean getListenersToo) {
-
+		beginSpatialIdentityXML();
 		try {
 			// save construction elements
 			sb.startOpeningTag("construction", 0);
@@ -1294,6 +1363,11 @@ public class Construction {
 				sb.endTag();
 			}
 
+			if (!spatialIdentityRegistry.isEmpty()) {
+				sb.append(new XMLStringBuilder(new StringBuilder(
+						spatialIdentityRegistry.writeSpatialSection())));
+			}
+
 			getConstructionElementsXML(sb, getListenersToo);
 
 			getGroupsXML(sb);
@@ -1301,6 +1375,8 @@ public class Construction {
 			sb.closeTag("construction");
 		} catch (Exception e) {
 			Log.debug(e);
+		} finally {
+			endSpatialIdentityXML();
 		}
 	}
 
@@ -1421,11 +1497,17 @@ public class Construction {
 	 * @see #processCollectedRedefineCalls()
 	 */
 	public void startCollectingRedefineCalls() {
+		collectedRedefineRollbackXml = spatialIdentityRegistry.isEmpty() ? null
+				: getCurrentUndoXML(false).toString();
 		collectRedefineCalls = true;
 		if (redefineMap == null) {
 			redefineMap = new HashMap<>();
 		}
 		redefineMap.clear();
+		if (spatialRedefineMap == null) {
+			spatialRedefineMap = new LinkedHashMap<>();
+		}
+		spatialRedefineMap.clear();
 	}
 
 	/**
@@ -1434,9 +1516,16 @@ public class Construction {
 	 */
 	public void stopCollectingRedefineCalls() {
 		collectRedefineCalls = false;
+		if (spatialRedefineMap != null) {
+			rollbackCollectedSpatialRedefines();
+		}
 		if (redefineMap != null) {
 			redefineMap.clear();
 		}
+		if (spatialRedefineMap != null) {
+			spatialRedefineMap.clear();
+		}
+		collectedRedefineRollbackXml = null;
 	}
 
 	/**
@@ -1449,7 +1538,7 @@ public class Construction {
 	 */
 	public void replace(GeoElement oldGeo, GeoElement newGeo)
 			throws CircularDefinitionException, XMLParseException {
-		replace(oldGeo, newGeo, null);
+		replaceInternal(oldGeo, newGeo, null, true, null);
 	}
 
 	/**
@@ -1463,7 +1552,109 @@ public class Construction {
 	 */
 	public void replace(GeoElement oldGeo, GeoElement newGeo, EvalInfo info)
 			throws CircularDefinitionException, XMLParseException {
+		replaceInternal(oldGeo, newGeo, info, true, null);
+	}
+
+	/**
+	 * Executes a host replacement whose target was discovered only by a label or
+	 * XML compatibility seam. Participating geos are rejected because this route
+	 * has no explicit semantic old-target authority.
+	 *
+	 * @param oldGeo label/XML-discovered host target
+	 * @param newGeo replacement candidate
+	 * @throws CircularDefinitionException for a circular definition
+	 * @throws XMLParseException if replacement creates invalid XML
+	 */
+	public void replaceWithoutSpatialRedefineAuthority(GeoElement oldGeo,
+			GeoElement newGeo) throws CircularDefinitionException, XMLParseException {
+		replaceInternal(oldGeo, newGeo, null, false, null);
+	}
+
+	/**
+	 * Replaces an explicit target using a context captured before the caller
+	 * created persistent helper objects or otherwise began its host operation.
+	 *
+	 * @param oldGeo explicit old target
+	 * @param newGeo replacement candidate
+	 * @param operationContext pre-operation identity and rollback context
+	 * @throws CircularDefinitionException for a circular definition
+	 * @throws XMLParseException if replacement creates invalid XML
+	 */
+	public void replaceFromSpatialRedefineOperation(GeoElement oldGeo,
+			GeoElement newGeo, SpatialRedefineContext operationContext)
+			throws CircularDefinitionException, XMLParseException {
+		replaceInternal(oldGeo, newGeo, null, true, operationContext);
+	}
+
+	private void replaceInternal(GeoElement oldGeo, GeoElement newGeo, EvalInfo info,
+			boolean captureExplicitOldTarget,
+			SpatialRedefineContext preOperationContext)
+			throws CircularDefinitionException, XMLParseException {
+		boolean participating = oldGeo != null
+				&& spatialIdentityRegistry.isParticipating(oldGeo);
+		String entryRollbackXml = participating
+				? getCurrentUndoXML(false).toString() : null;
+		String operationRollbackXml = entryRollbackXml;
+		if (preOperationContext != null) {
+			spatialIdentityRegistry.validateRedefineContext(preOperationContext,
+					oldGeo);
+			operationRollbackXml = preOperationContext.getRollbackXml();
+		}
+		SpatialRedefineTransaction suppliedTransaction = info == null ? null
+				: info.getSpatialRedefineTransaction();
+		EvalInfo operationInfo = info;
+		if (participating && suppliedTransaction == null && captureExplicitOldTarget) {
+			SpatialRedefineContext context = preOperationContext;
+			if (context == null && info != null) {
+				context = info.getSpatialRedefineContext();
+			}
+			if (preOperationContext == null) {
+				context = context == null
+						? spatialIdentityRegistry.captureRedefineContext(oldGeo)
+						: context.withRollbackXml(operationRollbackXml);
+			}
+			if (context != null) {
+				operationInfo = (info == null ? new EvalInfo(true) : info)
+						.withSpatialRedefineContext(context);
+			}
+		}
+		SpatialRedefineTransaction spatialTransaction;
+		try {
+			spatialTransaction = prepareSpatialRedefine(oldGeo, newGeo, operationInfo);
+		} catch (RuntimeException | MyError failure) {
+			if (suppliedTransaction != null
+					&& suppliedTransaction.getState()
+							== SpatialRedefineTransaction.State.PREPARED) {
+				suppliedTransaction.rollback();
+			}
+			if (operationRollbackXml != null) {
+				restoreSpatialRedefineSnapshot(operationRollbackXml);
+			}
+			throw failure;
+		}
+		EvalInfo preparedInfo = spatialTransaction == null || info == null ? info
+				: operationInfo.withSpatialRedefineTransaction(spatialTransaction);
+		try {
+			replacePrepared(oldGeo, newGeo, preparedInfo, spatialTransaction);
+		} catch (CircularDefinitionException | XMLParseException | RuntimeException
+				| MyError failure) {
+			if (spatialTransaction != null
+					&& spatialTransaction.getState()
+							== SpatialRedefineTransaction.State.PREPARED) {
+				spatialTransaction.rollback();
+			}
+			if (operationRollbackXml != null) {
+				restoreSpatialRedefineSnapshot(operationRollbackXml);
+			}
+			throw failure;
+		}
+	}
+
+	private void replacePrepared(GeoElement oldGeo, GeoElement newGeo, EvalInfo info,
+			SpatialRedefineTransaction spatialTransaction)
+			throws CircularDefinitionException, XMLParseException {
 		if (oldGeo == null || newGeo == null || oldGeo == newGeo) {
+			commitSpatialRedefine(spatialTransaction, oldGeo);
 			return;
 		}
 		// assignment v=? should make v undefined, not change its type
@@ -1471,6 +1662,7 @@ public class Construction {
 				&& newGeo.isIndependent() && !newGeo.isDefined()) {
 			oldGeo.setUndefined();
 			oldGeo.updateRepaint();
+			commitSpatialRedefine(spatialTransaction, oldGeo);
 			return;
 		}
 
@@ -1494,9 +1686,11 @@ public class Construction {
 			}
 			// repaint here to make sure #4114 is OK
 			kernel.notifyRepaint();
+			commitSpatialRedefine(spatialTransaction, oldGeo);
 			return;
 		}
 		if (softRedefine(oldGeo, newGeo)) {
+			commitSpatialRedefine(spatialTransaction, oldGeo);
 			return;
 		}
 
@@ -1533,6 +1727,7 @@ public class Construction {
 				newGeo.updateRepaint();
 			}
 
+			commitSpatialRedefine(spatialTransaction, newGeo);
 			return;
 		}
 
@@ -1547,6 +1742,7 @@ public class Construction {
 						.setValue(((GeoNumeric) newGeo).getDouble());
 				oldGeo.updateRepaint();
 				newGeo.remove();
+				commitSpatialRedefine(spatialTransaction, oldGeo);
 				return;
 
 			} else if (oldGeo.isIndependent() && !(oldGeo instanceof GeoSymbolic) && (
@@ -1555,11 +1751,19 @@ public class Construction {
 				oldGeo.setDefinition(null);
 				oldGeo.updateRepaint();
 				newGeo.remove();
+				commitSpatialRedefine(spatialTransaction, oldGeo);
 				return;
 
 			} else {
 				throw new CircularDefinitionException();
 			}
+		}
+		if (collectRedefineCalls && spatialTransaction != null
+				&& spatialTransaction.getDecision() != SpatialRedefineDecision.RETAIN) {
+			throw new SpatialIdentityException(SpatialIdentityDiagnostic.forSubject(
+					SpatialIdentityDiagnostic.Code.REDEFINE_REJECTED,
+					"Collected G9A1 redefine admits only retained single outputs",
+					spatialTransaction.getContext().getOldId()));
 		}
 		// 1) remove all brothers and sisters of oldGeo
 		// 2) move all predecessors of newGeo to the left of oldGeo in
@@ -1567,6 +1771,9 @@ public class Construction {
 		prepareReplace(oldGeo, newGeo);
 
 		if (collectRedefineCalls) {
+			if (spatialTransaction != null) {
+				spatialRedefineMap.put(oldGeo, spatialTransaction);
+			}
 			// collecting redefine calls in redefineMap
 			redefineMap.put(oldGeo, newGeo);
 			return;
@@ -1592,15 +1799,44 @@ public class Construction {
 
 		// 3) replace oldGeo by newGeo in XML
 		String oldXML = consXML.toString();
-		boolean canReplace = doReplaceInXML(consXML, oldGeo, newGeo);
+		boolean canReplace;
+		beginSpatialIdentityXML();
+		try (SpatialIdentityRegistry.SerializationOverlay ignored =
+				spatialTransaction == null ? null
+						: spatialIdentityRegistry.beginRedefineSerializationOverlay(
+								spatialTransaction)) {
+			canReplace = doReplaceInXML(consXML, oldGeo, newGeo);
+			if (canReplace && spatialTransaction != null) {
+				replaceSpatialIdentitySection(consXML,
+						spatialIdentityRegistry.writeSpatialSection(),
+						spatialIdentityRegistry.writeSpatialSectionForRedefine(
+								spatialTransaction));
+			}
+		} finally {
+			endSpatialIdentityXML();
+		}
 		// moveDependencies(oldGeo,newGeo);
 
 		// 4) build new construction
 		if (canReplace) {
+			if (spatialTransaction != null) {
+				setNextSpatialIdentityLoadPurpose(LoadPurpose.REDEFINE_REBUILD);
+			}
 			buildConstructionWithGlobalListeners(new XMLStringBuilder(consXML), oldXML, info);
 		} else {
 			throw new MyError(getApplication().getLocalization(),
 					Errors.ReplaceFailed);
+		}
+		if (spatialTransaction != null) {
+			GeoElement result = spatialIdentityRegistry.getGeo(
+					spatialTransaction.getDecidedId());
+			if (result == null) {
+				throw new SpatialIdentityException(SpatialIdentityDiagnostic.forSubject(
+						SpatialIdentityDiagnostic.Code.TRANSACTION_STATE,
+						"Rebuilt redefine result did not resolve by durable identity",
+						spatialTransaction.getDecidedId()));
+			}
+			commitSpatialRedefine(spatialTransaction, result);
 		}
 		if (moveMode && oldSelection != null) {
 			GeoElement selGeo = kernel.lookupLabel(oldSelection);
@@ -1614,10 +1850,14 @@ public class Construction {
 	}
 
 	private void removeForReplace(GeoElement oldGeo) {
-		isRemovingGeoToReplaceIt = true;
-		oldGeo.setParentGroup(null);
-		oldGeo.remove();
-		isRemovingGeoToReplaceIt = false;
+		GeoElement previousRemovalTarget = geoBeingRemovedForReplace;
+		geoBeingRemovedForReplace = oldGeo;
+		try {
+			oldGeo.setParentGroup(null);
+			oldGeo.remove();
+		} finally {
+			geoBeingRemovedForReplace = previousRemovalTarget;
+		}
 	}
 
 	private boolean softRedefine(GeoElement oldGeo, GeoElement newGeo) {
@@ -1627,6 +1867,112 @@ public class Construction {
 			return oldParent.setFrom(newParent);
 		}
 		return false;
+	}
+
+	private SpatialRedefineTransaction prepareSpatialRedefine(GeoElement oldGeo,
+			GeoElement newGeo, EvalInfo info) {
+		if (oldGeo == null || !spatialIdentityRegistry.isParticipating(oldGeo)) {
+			return null;
+		}
+		SpatialRedefineTransaction transaction = info == null ? null
+				: info.getSpatialRedefineTransaction();
+		if (transaction != null) {
+			spatialIdentityRegistry.validatePreparedRedefineTransaction(transaction);
+			if (transaction.getContext().getOldTarget() != oldGeo
+					|| transaction.getProposal().getCandidate() != newGeo) {
+				throw new SpatialIdentityException(SpatialIdentityDiagnostic.forSubject(
+						SpatialIdentityDiagnostic.Code.REDEFINE_CONTEXT_MISSING,
+						"Redefine transaction does not belong to the explicit target",
+						transaction.getContext().getOldId()));
+			}
+		} else {
+			SpatialRedefineContext context = info == null ? null
+					: info.getSpatialRedefineContext();
+			if (context != null && context.getOldTarget() != oldGeo) {
+				throw new SpatialIdentityException(SpatialIdentityDiagnostic.forSubject(
+						SpatialIdentityDiagnostic.Code.REDEFINE_CONTEXT_MISSING,
+						"Redefine context does not belong to the explicit target",
+						context.getOldId()));
+			}
+			transaction = spatialIdentityRegistry.prepareRedefine(context, newGeo, 1,
+					true, info != null && info.isSpatialReplacementOperationSelected());
+		}
+		if (transaction.getDecision() == SpatialRedefineDecision.REJECT) {
+			transaction.rollback();
+			throw new SpatialIdentityException(SpatialIdentityDiagnostic.forSubject(
+					SpatialIdentityDiagnostic.Code.REDEFINE_REJECTED,
+					"Provider rejected redefine before host mutation",
+					transaction.getContext().getOldId()));
+		}
+		return transaction;
+	}
+
+	private static void commitSpatialRedefine(
+			SpatialRedefineTransaction transaction, GeoElement result) {
+		if (transaction != null
+				&& transaction.getState() == SpatialRedefineTransaction.State.PREPARED) {
+			transaction.commit(result);
+		}
+	}
+
+	/** Restores the exact pre-parse host snapshot and abandons the decision. */
+	public void rollbackSpatialRedefine(SpatialRedefineTransaction transaction) {
+		if (transaction != null
+				&& transaction.getState() == SpatialRedefineTransaction.State.PREPARED) {
+			String rollbackXml = transaction.getContext().getRollbackXml();
+			transaction.rollback();
+			restoreSpatialRedefineSnapshot(rollbackXml);
+		}
+	}
+
+	/** Restores a pre-candidate snapshot when preparation failed before a transaction. */
+	public void rollbackSpatialRedefinePreparation(SpatialRedefineContext context) {
+		if (context != null) {
+			restoreSpatialRedefineSnapshot(context.getRollbackXml());
+		}
+	}
+
+	private void rollbackCollectedSpatialRedefines() {
+		String transactionRollbackXml = null;
+		boolean restoreBatch = false;
+		for (SpatialRedefineTransaction transaction : spatialRedefineMap.values()) {
+			if (transaction.getState() == SpatialRedefineTransaction.State.PREPARED) {
+				if (transactionRollbackXml == null) {
+					transactionRollbackXml = transaction.getContext().getRollbackXml();
+				}
+				transaction.rollback();
+				restoreBatch = true;
+			}
+		}
+		if (restoreBatch) {
+			String rollbackXml = collectedRedefineRollbackXml == null
+					? transactionRollbackXml : collectedRedefineRollbackXml;
+			restoreSpatialRedefineSnapshot(rollbackXml);
+		}
+	}
+
+	private void restoreSpatialRedefineSnapshot(String rollbackXml) {
+		setNextSpatialIdentityLoadPurpose(LoadPurpose.ROLLBACK_RESTORE);
+		try {
+			getXMLio().processXMLString(rollbackXml, true, false);
+		} catch (XMLParseException | RuntimeException failure) {
+			throw new IllegalStateException(
+					"Spatial redefine rollback could not restore the construction",
+					failure);
+		} finally {
+			clearNextSpatialIdentityLoadPurpose();
+		}
+	}
+
+	private static void replaceSpatialIdentitySection(StringBuilder constructionXml,
+			String oldSection, String newSection) {
+		int sectionPosition = constructionXml.indexOf(oldSection);
+		if (oldSection.isEmpty() || sectionPosition < 0) {
+			throw new IllegalStateException(
+					"Participating construction XML has no spatial identity section");
+		}
+		constructionXml.replace(sectionPosition,
+				sectionPosition + oldSection.length(), newSection);
 	}
 
 	private void buildConstructionWithGlobalListeners(
@@ -1652,7 +1998,15 @@ public class Construction {
 	 * geo)
 	 */
 	public boolean isRemovingGeoToReplaceIt() {
-		return isRemovingGeoToReplaceIt;
+		return geoBeingRemovedForReplace != null;
+	}
+
+	/**
+	 * @param geo candidate removal in the current replacement cascade
+	 * @return whether identity retirement is suppressed for this exact target
+	 */
+	public boolean isRemovingGeoToReplaceIt(GeoElement geo) {
+		return geoBeingRemovedForReplace == geo;
 	}
 
 	/**
@@ -1664,30 +2018,81 @@ public class Construction {
 		collectRedefineCalls = false;
 
 		if (redefineMap == null || redefineMap.size() == 0) {
+			stopCollectingRedefineCalls();
 			return;
 		}
 
 		// get current construction XML
 		StringBuilder consXML = getCurrentUndoXML(false);
 		String oldXML = consXML.toString();
-		// replace all oldGeo -> newGeo pairs in XML
-		boolean canReplace = true;
-		for (Entry<GeoElement, GeoElement> entry : redefineMap.entrySet()) {
-			GeoElement oldGeo = entry.getKey();
-			GeoElement newGeo = entry.getValue();
-
-			// 3) replace oldGeo by newGeo in XML
-			canReplace = canReplace && doReplaceInXML(consXML, oldGeo, newGeo);
-		}
-
 		try {
+			// Validate and mark every provider-inspected serialization view before
+			// mutating the batch XML or rebuilding any host object.
+			if (spatialRedefineMap != null && !spatialRedefineMap.isEmpty()) {
+				String currentSpatialSection =
+						spatialIdentityRegistry.writeSpatialSection();
+				for (SpatialRedefineTransaction transaction
+						: spatialRedefineMap.values()) {
+					String transactionView = spatialIdentityRegistry
+							.writeSpatialSectionForRedefine(transaction);
+					if (!currentSpatialSection.equals(transactionView)) {
+						throw new SpatialIdentityException(
+								SpatialIdentityDiagnostic.forSubject(
+										SpatialIdentityDiagnostic.Code.TRANSACTION_STATE,
+										"Collected retained redefine changed the "
+												+ "spatial serialization view",
+										transaction.getContext().getOldId()));
+					}
+				}
+			}
+			// replace all oldGeo -> newGeo pairs in XML
+			boolean canReplace = true;
+			for (Entry<GeoElement, GeoElement> entry : redefineMap.entrySet()) {
+				GeoElement oldGeo = entry.getKey();
+				GeoElement newGeo = entry.getValue();
+				SpatialRedefineTransaction transaction = spatialRedefineMap == null
+						? null : spatialRedefineMap.get(oldGeo);
+				beginSpatialIdentityXML();
+				try (SpatialIdentityRegistry.SerializationOverlay ignored =
+						transaction == null ? null
+								: spatialIdentityRegistry.beginRedefineSerializationOverlay(
+										transaction)) {
+					canReplace = canReplace && doReplaceInXML(consXML, oldGeo, newGeo);
+				} finally {
+					endSpatialIdentityXML();
+				}
+			}
+
 			// 4) build new construction for all changes at once
 			if (canReplace) {
+				if (spatialRedefineMap != null && !spatialRedefineMap.isEmpty()) {
+					setNextSpatialIdentityLoadPurpose(LoadPurpose.REDEFINE_REBUILD);
+				}
 				buildConstructionWithGlobalListeners(new XMLStringBuilder(consXML), oldXML, null);
 			} else {
 				throw new MyError(getApplication().getLocalization(),
 						Errors.ReplaceFailed);
 			}
+			if (spatialRedefineMap != null) {
+				for (SpatialRedefineTransaction transaction
+						: spatialRedefineMap.values()) {
+					GeoElement result = spatialIdentityRegistry.getGeo(
+							transaction.getDecidedId());
+					if (result == null) {
+						throw new SpatialIdentityException(
+								SpatialIdentityDiagnostic.forSubject(
+										SpatialIdentityDiagnostic.Code.TRANSACTION_STATE,
+										"Collected redefine result did not resolve by ID",
+										transaction.getDecidedId()));
+					}
+					commitSpatialRedefine(transaction, result);
+				}
+			}
+		} catch (XMLParseException | RuntimeException | MyError failure) {
+			if (spatialRedefineMap != null) {
+				rollbackCollectedSpatialRedefines();
+			}
+			throw failure;
 		} finally {
 			stopCollectingRedefineCalls();
 			consXML.setLength(0);
@@ -2838,6 +3243,12 @@ public class Construction {
 	 * After this the construction list will be empty.
 	 */
 	public void clearConstruction() {
+		if (nextSpatialIdentityLoadPurpose == LoadPurpose.REDEFINE_REBUILD
+				|| nextSpatialIdentityLoadPurpose == LoadPurpose.ROLLBACK_RESTORE) {
+			spatialIdentityRegistry.clearPreservingRetiredTokens();
+		} else {
+			spatialIdentityRegistry.clear();
+		}
 		arbitraryConstantsMap.clear();
 		unclaimedArbitraryConstants.clear();
 		arbitraryComplexNumbersMap.clear();
@@ -2958,13 +3369,17 @@ public class Construction {
 			boolean isGGTOrDefaults, EvalInfo info) throws XMLParseException {
 
 		boolean randomize = info != null && info.updateRandom();
-
+		boolean previousFileLoading = isFileLoading();
+		boolean previousCasCellUpdate = isCasCellUpdate();
 		setFileLoading(true);
 		setCasCellUpdate(true);
-		getXMLio().processXMLString(strXML, true, isGGTOrDefaults,
-				true, randomize);
-		setFileLoading(false);
-		setCasCellUpdate(false);
+		try {
+			getXMLio().processXMLString(strXML, true, isGGTOrDefaults,
+					true, randomize);
+		} finally {
+			setFileLoading(previousFileLoading);
+			setCasCellUpdate(previousCasCellUpdate);
+		}
 	}
 
 	/**

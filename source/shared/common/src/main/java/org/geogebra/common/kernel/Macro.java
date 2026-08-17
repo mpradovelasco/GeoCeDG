@@ -22,6 +22,7 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
 import org.geogebra.common.GeoGebraConstants;
 import org.geogebra.common.io.XMLParseException;
 import org.geogebra.common.io.XMLStringBuilder;
@@ -33,6 +34,7 @@ import org.geogebra.common.kernel.geos.GeoVector;
 import org.geogebra.common.kernel.geos.TestGeo;
 import org.geogebra.common.kernel.kernelND.GeoPointND;
 import org.geogebra.common.main.MyError;
+import org.geogebra.common.util.InternalClipboard;
 import org.geogebra.common.util.debug.Log;
 
 /**
@@ -460,6 +462,16 @@ public class Macro {
 	 */
 	public static XMLStringBuilder buildMacroXML(Kernel kernel,
 			Set<ConstructionElement> macroConsElements) {
+		ArrayList<ConstructionElement> closureElements =
+				new ArrayList<>(macroConsElements);
+		Set<GeoElement> spatialTemplateGeos =
+				InternalClipboard.addSpatialIdentityClosure(closureElements, true);
+		macroConsElements.addAll(closureElements);
+		Construction sourceConstruction = kernel.getConstruction();
+		SpatialIdentityRegistry spatialRegistry =
+				sourceConstruction.getSpatialIdentityRegistry();
+		final boolean identityBearing = !spatialRegistry.getClosureRecords(
+				spatialTemplateGeos).isEmpty();
 
 		// get the XML for all macro construction elements
 		XMLStringBuilder macroConsXML = new XMLStringBuilder(new StringBuilder(500));
@@ -470,15 +482,29 @@ public class Macro {
 				.attr("author", "").attr("title", "")
 				.attr("date", "").endTag();
 
-		Iterator<ConstructionElement> it = macroConsElements.iterator();
-		while (it.hasNext()) {
-			ConstructionElement ce = it.next();
+		if (identityBearing) {
+			sourceConstruction.beginSpatialIdentityXML();
+		}
+		try {
+			Iterator<ConstructionElement> it = macroConsElements.iterator();
+			while (it.hasNext()) {
+				ConstructionElement ce = it.next();
 
-			if (ce.isGeoElement()) {
-				ce.getXML(false, macroConsXML);
-			} else if (ce.isAlgoElement()) {
-				AlgoElement algo = (AlgoElement) ce;
-				algo.getXML(macroConsXML, false);
+				if (ce.isGeoElement()) {
+					ce.getXML(false, macroConsXML);
+				} else if (ce.isAlgoElement()) {
+					AlgoElement algo = (AlgoElement) ce;
+					algo.getXML(macroConsXML, false);
+				}
+			}
+			if (identityBearing) {
+				macroConsXML.append(new XMLStringBuilder(new StringBuilder(
+						spatialRegistry.writeMacroTemplateClosure(
+								spatialTemplateGeos))));
+			}
+		} finally {
+			if (identityBearing) {
+				sourceConstruction.endSpatialIdentityXML();
 			}
 		}
 

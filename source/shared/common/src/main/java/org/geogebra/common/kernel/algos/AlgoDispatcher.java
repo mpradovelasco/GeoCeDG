@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.geocedg.common.kernel.spatial.identity.SpatialRedefineContext;
 import org.geogebra.common.euclidian.EuclidianViewInterfaceCommon;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.ConstructionDefaults;
@@ -3110,9 +3111,12 @@ public class AlgoDispatcher {
 	 */
 	public GeoPointND attach(GeoPointND point, Path path,
 			EuclidianViewInterfaceCommon view, Coords locRW) {
-
+		final SpatialRedefineContext spatialContext = cons.getSpatialIdentityRegistry()
+				.captureRedefineContext((GeoElement) point);
+		final boolean oldLabelCreationFlag = cons.isSuppressLabelsActive();
+		boolean replacementStarted = false;
+		boolean replacementSucceeded = false;
 		try {
-			boolean oldLabelCreationFlag = cons.isSuppressLabelsActive();
 			cons.setSuppressLabelCreation(true);
 			// checkZooming();
 
@@ -3129,7 +3133,10 @@ public class AlgoDispatcher {
 					point.getToStringMode() != Kernel.COORD_CARTESIAN_3D);
 
 			cons.setSuppressLabelCreation(oldLabelCreationFlag);
-			cons.replace((GeoElement) point, (GeoElement) newPoint);
+			replacementStarted = true;
+			cons.replaceFromSpatialRedefineOperation((GeoElement) point,
+					(GeoElement) newPoint, spatialContext);
+			replacementSucceeded = true;
 			// clearSelections();
 
 			if (setDefaultColor) {
@@ -3141,9 +3148,13 @@ public class AlgoDispatcher {
 
 			return newPoint;
 		} catch (Exception | Error e1) {
+			rollbackSpatialOperation(spatialContext, replacementStarted,
+					replacementSucceeded);
 			// for Error e.g. try to attach dependent point of regular polygon
 			Log.error(e1.getMessage());
 			return null;
+		} finally {
+			cons.setSuppressLabelCreation(oldLabelCreationFlag);
 		}
 	}
 
@@ -3160,9 +3171,12 @@ public class AlgoDispatcher {
 	 */
 	public GeoPointND attach(GeoPointND point, Region region,
 			EuclidianViewInterfaceCommon view, Coords locRW) {
-
+		final SpatialRedefineContext spatialContext = cons.getSpatialIdentityRegistry()
+				.captureRedefineContext((GeoElement) point);
+		final boolean oldLabelCreationFlag = cons.isSuppressLabelsActive();
+		boolean replacementStarted = false;
+		boolean replacementSucceeded = false;
 		try {
-			boolean oldLabelCreationFlag = cons.isSuppressLabelsActive();
 			cons.setSuppressLabelCreation(true);
 			// checkZooming();
 
@@ -3179,7 +3193,10 @@ public class AlgoDispatcher {
 					true);
 
 			cons.setSuppressLabelCreation(oldLabelCreationFlag);
-			cons.replace((GeoElement) point, (GeoElement) newPoint, null);
+			replacementStarted = true;
+			cons.replaceFromSpatialRedefineOperation((GeoElement) point,
+					(GeoElement) newPoint, spatialContext);
+			replacementSucceeded = true;
 
 			if (setDefaultColor) {
 				newPoint.setObjColor(cons.getConstructionDefaults()
@@ -3191,8 +3208,12 @@ public class AlgoDispatcher {
 			// clearSelections();
 			return newPoint;
 		} catch (Exception | MyError e1) {
-			Log.debug(e1);
+			rollbackSpatialOperation(spatialContext, replacementStarted,
+					replacementSucceeded);
+			Log.debug(e1.getMessage());
 			return null;
+		} finally {
+			cons.setSuppressLabelCreation(oldLabelCreationFlag);
 		}
 	}
 
@@ -3204,8 +3225,12 @@ public class AlgoDispatcher {
 	 * @return redefined point
 	 */
 	public GeoPointND detach(GeoPointND p, EuclidianViewInterfaceCommon view) {
+		final SpatialRedefineContext spatialContext = cons.getSpatialIdentityRegistry()
+				.captureRedefineContext((GeoElement) p);
+		final boolean oldLabelCreationFlag = cons.isSuppressLabelsActive();
+		boolean replacementStarted = false;
+		boolean replacementSucceeded = false;
 		try {
-			boolean oldLabelCreationFlag = cons.isSuppressLabelsActive();
 			cons.setSuppressLabelCreation(true);
 
 			boolean setDefaultColor = false;
@@ -3228,7 +3253,10 @@ public class AlgoDispatcher {
 			GeoPointND newPoint = copyFreePoint(p, view);
 
 			cons.setSuppressLabelCreation(oldLabelCreationFlag);
-			cons.replace((GeoElement) p, (GeoElement) newPoint);
+			replacementStarted = true;
+			cons.replaceFromSpatialRedefineOperation((GeoElement) p,
+					(GeoElement) newPoint, spatialContext);
+			replacementSucceeded = true;
 
 			if (setDefaultColor) {
 				newPoint.setObjColor(cons.getConstructionDefaults()
@@ -3239,8 +3267,12 @@ public class AlgoDispatcher {
 			return newPoint;
 
 		} catch (Exception e1) {
-			Log.debug(e1);
+			rollbackSpatialOperation(spatialContext, replacementStarted,
+					replacementSucceeded);
+			Log.debug(e1.getMessage());
 			return null;
+		} finally {
+			cons.setSuppressLabelCreation(oldLabelCreationFlag);
 		}
 	}
 
@@ -3265,8 +3297,12 @@ public class AlgoDispatcher {
 	 */
 	public boolean detach(GeoPointND point, double d, double e,
 			boolean wasOnPath, boolean wasOnRegion) {
+		final SpatialRedefineContext spatialContext = cons.getSpatialIdentityRegistry()
+				.captureRedefineContext((GeoElement) point);
+		final boolean oldLabelCreationFlag = cons.isSuppressLabelsActive();
+		boolean replacementStarted = false;
+		boolean replacementSucceeded = false;
 		try {
-			boolean oldLabelCreationFlag = cons.isSuppressLabelsActive();
 			cons.setSuppressLabelCreation(true);
 
 			boolean setDefaultColor = false;
@@ -3288,7 +3324,10 @@ public class AlgoDispatcher {
 
 			GeoPoint newPoint = new GeoPoint(cons, null, d, e, 1.0);
 			cons.setSuppressLabelCreation(oldLabelCreationFlag);
-			cons.replace((GeoElement) point, newPoint);
+			replacementStarted = true;
+			cons.replaceFromSpatialRedefineOperation((GeoElement) point,
+					newPoint, spatialContext);
+			replacementSucceeded = true;
 
 			if (setDefaultColor) {
 				newPoint.setObjColor(cons.getConstructionDefaults()
@@ -3296,10 +3335,21 @@ public class AlgoDispatcher {
 						.getObjectColor());
 			}
 		} catch (Exception e1) {
-			Log.debug(e1);
+			rollbackSpatialOperation(spatialContext, replacementStarted,
+					replacementSucceeded);
+			Log.debug(e1.getMessage());
 			return false;
+		} finally {
+			cons.setSuppressLabelCreation(oldLabelCreationFlag);
 		}
 		return true;
+	}
+
+	private void rollbackSpatialOperation(SpatialRedefineContext context,
+			boolean replacementStarted, boolean replacementSucceeded) {
+		if (context != null && (!replacementStarted || replacementSucceeded)) {
+			cons.rollbackSpatialRedefinePreparation(context);
+		}
 	}
 
 	/**

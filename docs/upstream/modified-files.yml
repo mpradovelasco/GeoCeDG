@@ -1502,6 +1502,414 @@
       "change": "added",
       "purpose": "Verify deterministic G8C2 1/10/100 query scaling, 100 consumers, component combinatorics, budget failure, invariance and zero retained/forbidden state.",
       "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/util/CopyPasteD.java",
+      "change": "modified",
+      "purpose": "Route participating Desktop clipboard operations through the shared complete-closure export/import transaction and stop rejected pastes atomically.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9A1SpatialIdentityIdTest.java",
+      "change": "added",
+      "purpose": "Verify canonical typed-ID syntax, kind separation, round trips, and malformed/kind-mismatch rejection.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9A1SpatialIdentityLifecycleTest.java",
+      "change": "added",
+      "purpose": "Verify rename/recompute stability, deletion/recreation, exact undo/redo, whole-closure paste remap, and rejected-paste rollback.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9A1SpatialIdentityMacroTest.java",
+      "change": "added",
+      "purpose": "Verify per-invocation fresh macro closure remapping and cleanup after a rejected semantic invocation.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9A1SpatialIdentityRedefineHostTest.java",
+      "change": "added",
+      "purpose": "Verify explicit RETAIN/FRESH/REJECT decisions across real algebra, soft, no-child, XML-rebuild, stale-context, multi-output, rollback, and parametric host routes.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9A1SpatialIdentityRegistryTest.java",
+      "change": "added",
+      "purpose": "Verify construction ownership, connected typed records, allocation/collision policy, broken references, copy/macro closure, retirement, attachment preconditions, and zero forbidden authority.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9A1SpatialIdentityXmlTest.java",
+      "change": "added",
+      "purpose": "Verify real-host legacy/native XML behavior, forward references, deterministic round trip, broken/malformed/duplicate/future input, and atomic generic-merge rollback.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9A1SpatialRedefineTransactionTest.java",
+      "change": "added",
+      "purpose": "Verify provider-gated compatibility, explicit replacement intent, transaction ownership, overlay scope, commit, retirement, and rollback invariants.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/spatial/g9a1/complete-forward-closure.xml",
+      "change": "added",
+      "purpose": "Provide a real-host G9A1 XML compatibility and atomicity fixture for typed identity persistence validation.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/spatial/g9a1/cross-kind-token.xml",
+      "change": "added",
+      "purpose": "Provide a real-host G9A1 XML compatibility and atomicity fixture for typed identity persistence validation.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/spatial/g9a1/duplicate-id.xml",
+      "change": "added",
+      "purpose": "Provide a real-host G9A1 XML compatibility and atomicity fixture for typed identity persistence validation.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/spatial/g9a1/future-version.xml",
+      "change": "added",
+      "purpose": "Provide a real-host G9A1 XML compatibility and atomicity fixture for typed identity persistence validation.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/spatial/g9a1/legacy-no-identities.xml",
+      "change": "added",
+      "purpose": "Provide a real-host G9A1 XML compatibility and atomicity fixture for typed identity persistence validation.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/spatial/g9a1/malformed-id.xml",
+      "change": "added",
+      "purpose": "Provide a real-host G9A1 XML compatibility and atomicity fixture for typed identity persistence validation.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/spatial/g9a1/missing-reference.xml",
+      "change": "added",
+      "purpose": "Provide a real-host G9A1 XML compatibility and atomicity fixture for typed identity persistence validation.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/DefaultSpatialTokenSource.java",
+      "change": "added",
+      "purpose": "Implement bounded opaque G9A1 token allocation with deterministic injectable test authority and no geometric or label-derived input.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/EditAuthorityMode.java",
+      "change": "added",
+      "purpose": "Represent structured G9A1 lifecycle status, diagnostics, roles, fidelity, authority, or deterministic instrumentation without evaluating geometry.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/GeoIdentityRecord.java",
+      "change": "added",
+      "purpose": "Implement one typed inert G9A1 identity record or deterministic versioned XML codec component without spatial evaluation.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/package-info.java",
+      "change": "added",
+      "purpose": "Document the inert G9A1 construction-scoped spatial identity and persistence boundary.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/PersistentGeoId.java",
+      "change": "added",
+      "purpose": "Implement one opaque kind-correct durable G9A1 identity type independent of labels, order, coordinates, ceID, and view state.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/ProjectionBindingId.java",
+      "change": "added",
+      "purpose": "Implement one opaque kind-correct durable G9A1 identity type independent of labels, order, coordinates, ceID, and view state.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/ProjectionBindingRecord.java",
+      "change": "added",
+      "purpose": "Implement one typed inert G9A1 identity record or deterministic versioned XML codec component without spatial evaluation.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/ProjectionBindingRole.java",
+      "change": "added",
+      "purpose": "Represent structured G9A1 lifecycle status, diagnostics, roles, fidelity, authority, or deterministic instrumentation without evaluating geometry.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/ProjectionDiagramMapId.java",
+      "change": "added",
+      "purpose": "Implement one opaque kind-correct durable G9A1 identity type independent of labels, order, coordinates, ceID, and view state.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/ProjectionDiagramMapRecord.java",
+      "change": "added",
+      "purpose": "Implement one typed inert G9A1 identity record or deterministic versioned XML codec component without spatial evaluation.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/ProjectionFrameId.java",
+      "change": "added",
+      "purpose": "Implement one opaque kind-correct durable G9A1 identity type independent of labels, order, coordinates, ceID, and view state.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/ProjectionFrameRecord.java",
+      "change": "added",
+      "purpose": "Implement one typed inert G9A1 identity record or deterministic versioned XML codec component without spatial evaluation.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/ProjectionFrameRelationId.java",
+      "change": "added",
+      "purpose": "Implement one opaque kind-correct durable G9A1 identity type independent of labels, order, coordinates, ceID, and view state.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/ProjectionFrameRelationRecord.java",
+      "change": "added",
+      "purpose": "Implement one typed inert G9A1 identity record or deterministic versioned XML codec component without spatial evaluation.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/ProjectionFrameUseRole.java",
+      "change": "added",
+      "purpose": "Represent structured G9A1 lifecycle status, diagnostics, roles, fidelity, authority, or deterministic instrumentation without evaluating geometry.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/ProjectionSystemId.java",
+      "change": "added",
+      "purpose": "Implement one opaque kind-correct durable G9A1 identity type independent of labels, order, coordinates, ceID, and view state.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/ProjectionSystemRecord.java",
+      "change": "added",
+      "purpose": "Implement one typed inert G9A1 identity record or deterministic versioned XML codec component without spatial evaluation.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialIdentityDiagnostic.java",
+      "change": "added",
+      "purpose": "Represent structured G9A1 lifecycle status, diagnostics, roles, fidelity, authority, or deterministic instrumentation without evaluating geometry.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialIdentityException.java",
+      "change": "added",
+      "purpose": "Represent structured G9A1 lifecycle status, diagnostics, roles, fidelity, authority, or deterministic instrumentation without evaluating geometry.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialIdentityId.java",
+      "change": "added",
+      "purpose": "Implement one opaque kind-correct durable G9A1 identity type independent of labels, order, coordinates, ceID, and view state.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialIdentityInstrumentation.java",
+      "change": "added",
+      "purpose": "Represent structured G9A1 lifecycle status, diagnostics, roles, fidelity, authority, or deterministic instrumentation without evaluating geometry.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialIdentityKind.java",
+      "change": "added",
+      "purpose": "Implement one opaque kind-correct durable G9A1 identity type independent of labels, order, coordinates, ceID, and view state.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialIdentityRecord.java",
+      "change": "added",
+      "purpose": "Implement one typed inert G9A1 identity record or deterministic versioned XML codec component without spatial evaluation.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialIdentityRegistry.java",
+      "change": "added",
+      "purpose": "Implement the construction-scoped typed registry, atomic load/copy/macro/delete transactions, collision handling, closure validation, and exact restoration.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialObjectId.java",
+      "change": "added",
+      "purpose": "Implement one opaque kind-correct durable G9A1 identity type independent of labels, order, coordinates, ceID, and view state.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialObjectRecord.java",
+      "change": "added",
+      "purpose": "Implement one typed inert G9A1 identity record or deterministic versioned XML codec component without spatial evaluation.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRecordResolution.java",
+      "change": "added",
+      "purpose": "Implement one typed inert G9A1 identity record or deterministic versioned XML codec component without spatial evaluation.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRecordSupport.java",
+      "change": "added",
+      "purpose": "Implement one typed inert G9A1 identity record or deterministic versioned XML codec component without spatial evaluation.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRecordXmlCodec.java",
+      "change": "added",
+      "purpose": "Implement one typed inert G9A1 identity record or deterministic versioned XML codec component without spatial evaluation.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRedefineContext.java",
+      "change": "added",
+      "purpose": "Implement the explicit old-target, provider-gated G9A1 redefine decision and transaction substrate without spatial evaluation.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRedefineDecision.java",
+      "change": "added",
+      "purpose": "Implement the explicit old-target, provider-gated G9A1 redefine decision and transaction substrate without spatial evaluation.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRedefineProposal.java",
+      "change": "added",
+      "purpose": "Implement the explicit old-target, provider-gated G9A1 redefine decision and transaction substrate without spatial evaluation.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRedefineProvider.java",
+      "change": "added",
+      "purpose": "Implement the explicit old-target, provider-gated G9A1 redefine decision and transaction substrate without spatial evaluation.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRedefineSignature.java",
+      "change": "added",
+      "purpose": "Implement the explicit old-target, provider-gated G9A1 redefine decision and transaction substrate without spatial evaluation.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRedefineTransaction.java",
+      "change": "added",
+      "purpose": "Implement the explicit old-target, provider-gated G9A1 redefine decision and transaction substrate without spatial evaluation.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialResolutionState.java",
+      "change": "added",
+      "purpose": "Represent structured G9A1 lifecycle status, diagnostics, roles, fidelity, authority, or deterministic instrumentation without evaluating geometry.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialTokenSource.java",
+      "change": "added",
+      "purpose": "Implement bounded opaque G9A1 token allocation with deterministic injectable test authority and no geometric or label-derived input.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/io/ConsElementXMLHandler.java",
+      "change": "modified",
+      "purpose": "Stage optional participating-geo durable-ID attachments during real construction XML parsing.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/io/MyXMLHandler.java",
+      "change": "modified",
+      "purpose": "Parse the versioned flat GeoCeDG spatial identity section and carry the explicit native, clipboard, macro, redefine, or rollback load purpose.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/io/MyXMLio.java",
+      "change": "modified",
+      "purpose": "Write the deterministic identity section and restore the complete pre-parse construction snapshot after a structured spatial-identity rejection.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/algos/AlgoDispatcher.java",
+      "change": "modified",
+      "purpose": "Capture the explicit participating point before attach or detach candidate creation and restore the complete operation on rejection.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/algos/AlgoMacro.java",
+      "change": "modified",
+      "purpose": "Instantiate a fresh, complete identity closure only after the macro template-to-instance geo map is available.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/AlgebraProcessor.java",
+      "change": "modified",
+      "purpose": "Capture the explicit old-target identity context and enforce provider-gated RETAIN, explicit FRESH, or atomic REJECT across host redefine routes.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/EvalInfo.java",
+      "change": "modified",
+      "purpose": "Transport immutable old-target redefine context and explicit true-replacement intent through evaluation.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/ParametricProcessor.java",
+      "change": "modified",
+      "purpose": "Preserve the explicit old-target redefine context through the parametric equation route.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/Construction.java",
+      "change": "modified",
+      "purpose": "Own the construction-scoped spatial identity registry and integrate atomic copy, delete, clear, and explicit redefine lifecycle transactions.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/geos/GeoElement.java",
+      "change": "modified",
+      "purpose": "Expose the optional participating-geo durable ID and emit it only in an explicit spatial XML scope.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/geos/PolygonFactory.java",
+      "change": "modified",
+      "purpose": "Reject composite multi-target polygon rewrites involving participating identities before creating helper algorithms.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/Kernel.java",
+      "change": "modified",
+      "purpose": "Terminate an expected rejected semantic macro invocation without publishing its output or macro-use registration.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/Macro.java",
+      "change": "modified",
+      "purpose": "Serialize and stage macro-template identity closures for per-invocation fresh remapping.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/main/undo/UndoableDeletionExecutor.java",
+      "change": "modified",
+      "purpose": "Checkpoint participating deletion as a complete serialized identity closure before retiring it.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/main/undo/UndoManager.java",
+      "change": "modified",
+      "purpose": "Select full construction snapshots for participating identity mutations that cannot be represented safely by legacy action undo.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/util/InternalClipboard.java",
+      "change": "modified",
+      "purpose": "Export and atomically import complete participating identity closures with one fresh typed-ID remap per paste.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
     }
   ]
 }

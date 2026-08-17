@@ -29,6 +29,7 @@ public class UndoableDeletionExecutor implements DeletionExecutor {
 
 	List<String> labels = new ArrayList<>();
 	List<String> xmls = new ArrayList<>();
+	private boolean requiresFullCheckpoint;
 
 	@Override
 	public void delete(GeoElement geo) {
@@ -49,6 +50,12 @@ public class UndoableDeletionExecutor implements DeletionExecutor {
 
 	@Override
 	public boolean storeUndoAction(Kernel kernel) {
+		if (kernel.isUndoActive() && requiresFullCheckpoint) {
+			kernel.storeStateForModeStarting();
+			kernel.getConstruction().getUndoManager().storeUndoInfo();
+			requiresFullCheckpoint = false;
+			return true;
+		}
 		if (kernel.isUndoActive() && !labels.isEmpty()) {
 			kernel.storeStateForModeStarting();
 			String[] labelsArray = labels.toArray(new String[0]);
@@ -67,6 +74,8 @@ public class UndoableDeletionExecutor implements DeletionExecutor {
 	}
 
 	private void doStoreDeletion(GeoElement geo) {
+		requiresFullCheckpoint |= geo.getConstruction()
+				.getSpatialIdentityRegistry().isParticipating(geo);
 		if (labels.contains(geo.getLabelSimple())) {
 			return;
 		}

@@ -21,15 +21,21 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityException;
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRecord;
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry.LoadPurpose;
 import org.geogebra.common.awt.GRectangle2D;
 import org.geogebra.common.euclidian.EmbedManager;
 import org.geogebra.common.euclidian.EuclidianController;
 import org.geogebra.common.euclidian.EuclidianView;
+import org.geogebra.common.io.MyXMLio;
 import org.geogebra.common.io.XMLStringBuilder;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.Kernel;
@@ -53,6 +59,7 @@ import org.geogebra.common.kernel.geos.groups.Group;
 import org.geogebra.common.kernel.matrix.Coords;
 import org.geogebra.common.kernel.statistics.AlgoTableToChart;
 import org.geogebra.common.main.App;
+import org.geogebra.common.main.MyError;
 import org.geogebra.common.util.debug.Log;
 
 public class InternalClipboard {
@@ -87,6 +94,7 @@ public class InternalClipboard {
 		}
 
 		CopyPaste.addSubGeos(geosLocal, selectedGroups);
+		addSpatialIdentityClosure(geosLocal, false);
 
 		if (geosLocal.isEmpty()) {
 			app.setBlockUpdateScripts(scriptsBlocked);
@@ -96,6 +104,8 @@ public class InternalClipboard {
 		ArrayList<ConstructionElement> geosToHide = CopyPaste.addPredecessorGeos(geosLocal);
 
 		geosToHide.addAll(addAlgosDependentFromInside(geosLocal, null));
+		final Set<GeoElement> spatialClosure =
+				addSpatialIdentityClosure(geosLocal, true);
 		// topological order to make sure client listener can process predecessor objects
 		// before child objects (e.g. for multiuser)
 		Collections.sort(geosLocal);
@@ -115,30 +125,46 @@ public class InternalClipboard {
 
 		Construction cons = app.getKernel().getConstruction();
 		XMLStringBuilder xmlStringBuilder = new XMLStringBuilder(copiedXml);
-		for (int i = 0; i < cons.steps(); ++i) {
-			ConstructionElement ce = cons.getConstructionElement(i);
-			if (ce instanceof AlgoTableToChart) {
-				ce = ((AlgoTableToChart) ce).getOutput(0);
-			}
-			if (geosLocal.contains(ce)) {
-				if (ce instanceof GeoMindMapNode
-						&& !geosLocal.contains(((GeoMindMapNode) ce).getParent())) {
-					((GeoMindMapNode) ce).getXMLNoParent(xmlStringBuilder);
-				} else {
-					ce.getXML(false, xmlStringBuilder);
+		SpatialIdentityRegistry spatialRegistry = cons.getSpatialIdentityRegistry();
+		List<SpatialIdentityRecord> spatialRecords =
+				spatialRegistry.getClosureRecords(spatialClosure);
+		if (!spatialRecords.isEmpty()) {
+			cons.beginSpatialIdentityXML();
+		}
+		try {
+			for (int i = 0; i < cons.steps(); ++i) {
+				ConstructionElement ce = cons.getConstructionElement(i);
+				if (ce instanceof AlgoTableToChart) {
+					ce = ((AlgoTableToChart) ce).getOutput(0);
 				}
+				if (geosLocal.contains(ce)) {
+					if (ce instanceof GeoMindMapNode
+							&& !geosLocal.contains(((GeoMindMapNode) ce).getParent())) {
+						((GeoMindMapNode) ce).getXMLNoParent(xmlStringBuilder);
+					} else {
+						ce.getXML(false, xmlStringBuilder);
+					}
 
-				if (ce instanceof GeoImage) {
-					GeoImage image = (GeoImage) ce;
-					String name = image.getImageFileName();
-					ImageManager imageManager = app.getImageManager();
-					copiedImages.put(name, imageManager.getExternalImageSrc(name));
+					if (ce instanceof GeoImage) {
+						GeoImage image = (GeoImage) ce;
+						String name = image.getImageFileName();
+						ImageManager imageManager = app.getImageManager();
+						copiedImages.put(name, imageManager.getExternalImageSrc(name));
+					}
+					if (ce instanceof GeoEmbed && embedManager != null) {
+						int embedID = ((GeoEmbed) ce).getEmbedID();
+						String name = String.valueOf(embedID);
+						copiedEmbeds.put(name, embedManager.getContent(embedID));
+					}
 				}
-				if (ce instanceof GeoEmbed && embedManager != null) {
-					int embedID = ((GeoEmbed) ce).getEmbedID();
-					String name = String.valueOf(embedID);
-					copiedEmbeds.put(name, embedManager.getContent(embedID));
-				}
+			}
+			if (!spatialRecords.isEmpty()) {
+				xmlStringBuilder.append(new XMLStringBuilder(new StringBuilder(
+						spatialRegistry.writeClosureSection(spatialClosure))));
+			}
+		} finally {
+			if (!spatialRecords.isEmpty()) {
+				cons.endSpatialIdentityXML();
 			}
 		}
 
@@ -204,6 +230,89 @@ public class InternalClipboard {
 
 		consElements.addAll(ret);
 		return ret;
+	}
+
+	/**
+	 * Expands participating geos to their complete semantic component. When
+	 * requested, geometric predecessors and their algorithms are added after
+	 * semantic expansion so the ordinary clipboard XML remains reconstructible.
+	 *
+	 * @param consElements clipboard construction elements
+	 * @param includePredecessors whether to complete geometric dependencies
+	 * @return all geos whose participating records belong in the fragment
+	 */
+	public static Set<GeoElement> addSpatialIdentityClosure(
+			ArrayList<ConstructionElement> consElements,
+			boolean includePredecessors) {
+		Construction construction = null;
+		LinkedHashSet<GeoElement> participatingSeeds = new LinkedHashSet<>();
+		for (ConstructionElement element : consElements) {
+			if (element instanceof GeoElement) {
+				GeoElement geo = (GeoElement) element;
+				construction = geo.getConstruction();
+			}
+		}
+		if (construction == null) {
+			return Collections.emptySet();
+		}
+
+		SpatialIdentityRegistry registry = construction.getSpatialIdentityRegistry();
+		for (ConstructionElement element : consElements) {
+			if (element instanceof GeoElement
+					&& registry.isParticipating((GeoElement) element)) {
+				participatingSeeds.add((GeoElement) element);
+			}
+		}
+		if (participatingSeeds.isEmpty()) {
+			return Collections.emptySet();
+		}
+
+		LinkedHashSet<GeoElement> semanticClosure = new LinkedHashSet<>();
+		LinkedHashSet<GeoElement> needsPredecessors = new LinkedHashSet<>();
+		boolean changed;
+		do {
+			changed = false;
+			for (GeoElement geo : registry.expandSemanticClosure(
+					participatingSeeds)) {
+				changed |= semanticClosure.add(geo);
+				if (!consElements.contains(geo)) {
+					consElements.add(geo);
+					needsPredecessors.add(geo);
+				}
+			}
+			if (includePredecessors) {
+				for (GeoElement geo : new ArrayList<>(needsPredecessors)) {
+					addSpatialPredecessors(geo, construction, registry,
+							participatingSeeds, consElements);
+				}
+				needsPredecessors.clear();
+			}
+		} while (changed);
+		return Collections.unmodifiableSet(semanticClosure);
+	}
+
+	private static void addSpatialPredecessors(GeoElement geo,
+			Construction construction, SpatialIdentityRegistry registry,
+			Set<GeoElement> participatingSeeds,
+			ArrayList<ConstructionElement> consElements) {
+		for (GeoElement predecessor : geo.getAllPredecessors()) {
+			if (!construction.isConstantElement(predecessor)) {
+				if (!consElements.contains(predecessor)) {
+					consElements.add(predecessor);
+				}
+				if (registry.isParticipating(predecessor)) {
+					participatingSeeds.add(predecessor);
+				}
+				AlgoElement parent = predecessor.getParentAlgorithm();
+				if (parent != null && !consElements.contains(parent)) {
+					consElements.add(parent);
+				}
+			}
+		}
+		AlgoElement parent = geo.getParentAlgorithm();
+		if (parent != null && !consElements.contains(parent)) {
+			consElements.add(parent);
+		}
 	}
 
 	/**
@@ -327,8 +436,13 @@ public class InternalClipboard {
 	 */
 	public static void pasteGeoGebraXMLInternal(App app,
 			List<String> copiedXmlLabels, String copiedXml) {
+		try {
+			SpatialIdentityRegistry.preflightClipboardFragment(copiedXml);
+		} catch (SpatialIdentityException failure) {
+			Log.debug(failure.getMessage());
+			return;
+		}
 		app.getKernel().notifyPaste(copiedXml);
-
 		// it turned out to be necessary for e.g. handleLabels
 		final boolean scriptsBlocked = app.isBlockUpdateScripts();
 		app.setBlockUpdateScripts(true);
@@ -346,7 +460,10 @@ public class InternalClipboard {
 
 		// don't update properties view
 		app.updateSelection(false);
-		app.getGgbApi().evalXML(copiedXml);
+		if (!evalClipboardXMLAtomically(app, copiedXml)) {
+			app.setBlockUpdateScripts(scriptsBlocked);
+			return;
+		}
 		app.getKernel().getConstruction().updateConstruction(false);
 		if (ev == app.getEuclidianView1()) {
 			app.setActiveView(App.VIEW_EUCLIDIAN);
@@ -410,6 +527,70 @@ public class InternalClipboard {
 		}
 
 		app.getKernel().getConstruction().getUndoManager().storeAddGeo(createdElements);
+	}
+
+	/**
+	 * Evaluates one clipboard fragment with an explicit import plan. A rejected
+	 * semantic closure restores the exact pre-paste construction before control
+	 * returns to label handling or undo notification.
+	 *
+	 * @param app application receiving the fragment
+	 * @param clipboardXml construction-element fragment
+	 * @return whether the complete fragment was imported
+	 */
+	public static boolean evalClipboardXMLAtomically(App app, String clipboardXml) {
+		return evalClipboardXMLAtomically(app, clipboardXml, null, null);
+	}
+
+	/**
+	 * Evaluates a clipboard fragment inside a caller-started host mutation.
+	 * The mutation runs after paste pre-notification but inside the same rollback
+	 * boundary as XML evaluation.
+	 *
+	 * @param app application receiving the fragment
+	 * @param clipboardXml construction-element fragment
+	 * @param rollbackXml snapshot captured before the caller mutation, or null
+	 * @param beforeImport caller mutation to include in the rollback, or null
+	 * @return whether the caller mutation and complete fragment were imported
+	 */
+	public static boolean evalClipboardXMLAtomically(App app, String clipboardXml,
+			String rollbackXml, Runnable beforeImport) {
+		app.getActiveEuclidianView().saveInlines();
+		String effectiveRollbackXml = rollbackXml == null ? app.getXML() : rollbackXml;
+		XMLStringBuilder wrapped = new XMLStringBuilder();
+		MyXMLio.addXMLHeader(wrapped);
+		MyXMLio.addGeoGebraHeader(wrapped, false, null, app);
+		wrapped.startOpeningTag("construction", 0).endTag();
+		wrapped.append(new XMLStringBuilder(new StringBuilder(clipboardXml)))
+				.closeTag("construction");
+		wrapped.closeTag("geogebra");
+
+		Construction construction = app.getKernel().getConstruction();
+		try {
+			if (beforeImport != null) {
+				beforeImport.run();
+			}
+			construction.setNextSpatialIdentityLoadPurpose(LoadPurpose.CLIPBOARD_IMPORT);
+			app.getXMLio().processXMLString(wrapped.toString(), false, false);
+			app.getActiveEuclidianView().updateInlines();
+			return true;
+		} catch (Exception | MyError failure) {
+			try {
+				construction.setNextSpatialIdentityLoadPurpose(
+						LoadPurpose.ROLLBACK_RESTORE);
+				app.getXMLio().processXMLString(effectiveRollbackXml, true, false);
+				app.getActiveEuclidianView().updateInlines();
+			} catch (Exception | MyError rollbackFailure) {
+				throw new IllegalStateException(
+						"Clipboard identity rollback could not restore the construction",
+						rollbackFailure);
+			} finally {
+				construction.clearNextSpatialIdentityLoadPurpose();
+			}
+			return false;
+		} finally {
+			construction.clearNextSpatialIdentityLoadPurpose();
+		}
 	}
 
 	private static boolean groupedWithMindMap(GeoElement created) {

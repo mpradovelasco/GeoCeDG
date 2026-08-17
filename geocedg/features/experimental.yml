@@ -28,6 +28,13 @@
       "specification": "geocedg/specs/locus/locus-v2-semantics.md",
       "enabled_by_default": false,
       "depends_on": []
+    },
+    {
+      "id": "cedg.spatial.semantics",
+      "maturity": "experimental",
+      "specification": "geocedg/specs/spatial/g9-spatial-projection-semantics.md",
+      "enabled_by_default": false,
+      "depends_on": []
     }
   ]
 }

@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityException;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.StringTemplate;
@@ -150,6 +151,8 @@ public class ParametricProcessor {
 					ap.processReplace(replaceable, ret, null, info);
 					return ret;
 				}
+			} catch (SpatialIdentityException failure) {
+				throw failure;
 			} catch (Throwable tt) {
 				Log.debug("X is not parametric:" + tt.getMessage());
 			}
@@ -175,6 +178,8 @@ public class ParametricProcessor {
 					ap.processReplace(replaceable, ret, null, info);
 					return ret;
 				}
+			} catch (SpatialIdentityException failure) {
+				throw failure;
 			} catch (Throwable tt) {
 				Log.debug(tt);
 				Log.debug("X is not parametric");

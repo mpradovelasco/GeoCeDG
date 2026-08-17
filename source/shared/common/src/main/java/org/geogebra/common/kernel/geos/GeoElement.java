@@ -32,6 +32,7 @@ import java.util.TreeSet;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
+import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geogebra.common.awt.GColor;
 import org.geogebra.common.awt.MyImage;
 import org.geogebra.common.euclidian.Drawable;
@@ -2538,7 +2539,7 @@ public abstract class GeoElement extends ConstructionElement implements GeoEleme
 			if (geo instanceof GeoNumeric
 					&& this instanceof GeoNumeric) {
 				try {
-					cons.replace(geo, this);
+					cons.replaceWithoutSpatialRedefineAuthority(geo, this);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					Log.debug(e);
@@ -2920,6 +2921,9 @@ public abstract class GeoElement extends ConstructionElement implements GeoEleme
 	public void doRemove() {
 		// stop animation of this geo
 		setAnimating(false);
+		if (!cons.isRemovingGeoToReplaceIt(this)) {
+			cons.getSpatialIdentityRegistry().retireGeo(this);
+		}
 
 		// first remove all dependent algorithms
 		removeDependentAlgos();
@@ -2952,7 +2956,7 @@ public abstract class GeoElement extends ConstructionElement implements GeoEleme
 		if (isSelected()) {
 			// prevent update selection if construction will replace the geo
 			app.getSelectionManager().removeSelectedGeo(
-					this, false, !cons.isRemovingGeoToReplaceIt());
+					this, false, !cons.isRemovingGeoToReplaceIt(this));
 		}
 
 		if (getParentGroup() != null) {
@@ -4504,6 +4508,13 @@ public abstract class GeoElement extends ConstructionElement implements GeoEleme
 		sb.startOpeningTag("element", 0);
 		sb.attr("type", type);
 		sb.attr("label", label);
+		if (cons.isSpatialIdentityXMLActive()) {
+			PersistentGeoId persistentId = cons.getSpatialIdentityRegistry()
+					.getPersistentGeoIdForSerialization(this);
+			if (persistentId != null) {
+				sb.attr("geocedgId", persistentId.toExternalForm());
+			}
+		}
 		if (defaultGeoType >= 0) {
 			sb.attr("default", defaultGeoType);
 		}

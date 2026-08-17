@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.TreeSet;
 
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry.MacroInstantiationSession;
 import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.FixedPathRegionAlgo;
@@ -133,6 +135,13 @@ public class AlgoMacro extends AlgoElement
 					}
 				}
 			}
+		}
+
+		try {
+			instantiateSpatialIdentity(add);
+		} catch (RuntimeException exception) {
+			remove();
+			throw exception;
 		}
 	}
 
@@ -335,6 +344,26 @@ public class AlgoMacro extends AlgoElement
 		// objects twice
 		for (int i = 0; i < macroOutput.length; i++) {
 			initSpecialReferences(macroOutput[i], getOutput(i));
+		}
+	}
+
+	private void instantiateSpatialIdentity(boolean add) {
+		SpatialIdentityRegistry templateRegistry = macro.getMacroConstruction()
+				.getSpatialIdentityRegistry();
+		if (!add || cons.isFileLoading() || templateRegistry.isEmpty()) {
+			return;
+		}
+		MacroInstantiationSession session = cons.getSpatialIdentityRegistry()
+				.beginMacroInstantiation(templateRegistry, false);
+		try {
+			for (Entry<GeoElementND, GeoElement> entry : macroToAlgoMap.entrySet()) {
+				session.map((GeoElement) entry.getKey(), entry.getValue(),
+						!isMacroInputObject(entry.getKey()));
+			}
+			session.commit();
+		} catch (RuntimeException exception) {
+			session.abort();
+			throw exception;
 		}
 	}
 

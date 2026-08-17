@@ -29,6 +29,11 @@ import java.util.TreeSet;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityDiagnostic;
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityException;
+import org.geocedg.common.kernel.spatial.identity.SpatialRedefineContext;
+import org.geocedg.common.kernel.spatial.identity.SpatialRedefineDecision;
+import org.geocedg.common.kernel.spatial.identity.SpatialRedefineTransaction;
 import org.geogebra.common.gui.view.algebra.AlgebraOutputFormat;
 import org.geogebra.common.io.MathMLParser;
 import org.geogebra.common.kernel.CircularDefinitionException;
@@ -505,6 +510,7 @@ public class AlgebraProcessor {
 			AsyncOperation<GeoElementND> callback, ErrorHandler handler) {
 
 		try {
+			info = withExplicitSpatialRedefineTarget(geo, info);
 			ValidExpression ve;
 
 			if (info.isMultipleUnassignedAllowed()) {
@@ -620,6 +626,7 @@ public class AlgebraProcessor {
 			ValidExpression newValue, EvalInfo info,
 			final boolean storeUndoInfo,
 			final AsyncOperation<GeoElementND> callback, ErrorHandler handler) {
+		info = withExplicitSpatialRedefineTarget(geo, info);
 		@CheckForNull String oldLabel;
 		@CheckForNull String newLabel;
 
@@ -684,6 +691,18 @@ public class AlgebraProcessor {
 		}
 
 		cons.registerFunctionVariable(null);
+	}
+
+	private EvalInfo withExplicitSpatialRedefineTarget(GeoElementND target,
+			EvalInfo info) {
+		SpatialRedefineContext existing = info.getSpatialRedefineContext();
+		if (existing != null) {
+			return info.withSpatialRedefineContext(existing.withRollbackXml(
+					cons.getCurrentUndoXML(false).toString()));
+		}
+		SpatialRedefineContext context = cons.getSpatialIdentityRegistry()
+				.captureRedefineContext(target.toGeoElement());
+		return context == null ? info : info.withSpatialRedefineContext(context);
 	}
 
 	private void updateTypePreservingFlags(ValidExpression newValue, GeoElementND geo,
@@ -966,10 +985,17 @@ public class AlgebraProcessor {
 		ve.any(collector);
 		final TreeSet<String> undefinedVariables = collector.getResult();
 
+		EvalInfo parametricInfo = new EvalInfo(!cons.isSuppressLabelsActive())
+				.withSliders(info.isAutocreateSliders());
+		if (info.getSpatialRedefineContext() != null) {
+			parametricInfo = parametricInfo.withSpatialRedefineContext(
+					info.getSpatialRedefineContext());
+		}
+		if (info.isSpatialReplacementOperationSelected()) {
+			parametricInfo = parametricInfo.withSpatialReplacementOperation();
+		}
 		GeoElement[] ret = getParamProcessor().checkParametricEquation(ve,
-				undefinedVariables, callback0,
-				new EvalInfo(!cons.isSuppressLabelsActive())
-						.withSliders(info.isAutocreateSliders()));
+				undefinedVariables, callback0, parametricInfo);
 		if (ret != null) {
 			if (storeUndo) {
 				app.storeUndoInfo();
@@ -2160,21 +2186,40 @@ public class AlgebraProcessor {
 			throws CircularDefinitionException {
 		// try to replace replaceable geo by ret[0]
 		if (replaceable != null && ret.length > 0) {
-			if (replaceable instanceof GeoNumeric) {
-				((GeoNumeric) replaceable).extendMinMax(ret[0]);
+			SpatialRedefineTransaction spatialTransaction;
+			try {
+				spatialTransaction = prepareSpatialRedefine(replaceable, ret, info);
+			} catch (RuntimeException | MyError failure) {
+				cons.rollbackSpatialRedefinePreparation(
+						info.getSpatialRedefineContext());
+				throw failure;
 			}
-			RuleCollection rule = info.getRedefinitionRule();
-			if (rule != null && !rule.allowed(replaceable,
-					ret[0])) {
-				Log.debug("Cannot change " + replaceable.getGeoClassType() + " to "
-						+ ret[0].getGeoClassType());
-				// Set undefined
-				ret[0] = replaceable;
-				geoElementSetups.forEach(setup -> setup.applyTo(replaceable));
-				replaceable.setUndefined();
-				replaceable.updateRepaint();
-				throw new MyError(loc, Errors.ReplaceFailed);
-			} else
+			if (spatialTransaction != null) {
+				info = info.withSpatialRedefineTransaction(spatialTransaction);
+			}
+			try {
+				RuleCollection rule = info.getRedefinitionRule();
+				if (rule != null && !rule.allowed(replaceable,
+						ret[0])) {
+					Log.debug("Cannot change " + replaceable.getGeoClassType() + " to "
+							+ ret[0].getGeoClassType());
+					if (spatialTransaction != null) {
+						throw new MyError(loc, Errors.ReplaceFailed);
+					}
+					// Set undefined
+					ret[0] = replaceable;
+					geoElementSetups.forEach(setup -> setup.applyTo(replaceable));
+					replaceable.setUndefined();
+					replaceable.updateRepaint();
+					throw new MyError(loc, Errors.ReplaceFailed);
+				}
+				if (replaceable instanceof GeoNumeric) {
+					((GeoNumeric) replaceable).extendMinMax(ret[0]);
+				}
+			} catch (RuntimeException | MyError failure) {
+				rollbackSpatialRedefine(spatialTransaction);
+				throw failure;
+			}
 			// a changeable replaceable is not redefined:
 			// it gets the value of ret[0]
 			// (note: texts are always redefined)
@@ -2188,7 +2233,12 @@ public class AlgebraProcessor {
 						ret[0] = replaceable;
 						geoElementSetups.forEach(setup -> setup.applyTo(replaceable));
 						replaceable.updateRepaint();
+						commitSpatialRedefine(spatialTransaction, replaceable);
 					} else {
+						if (spatialTransaction != null) {
+							rollbackSpatialRedefine(spatialTransaction);
+							throw new MyError(loc, Errors.ReplaceFailed);
+						}
 						ret[0] = replaceable;
 						geoElementSetups.forEach(setup -> setup.applyTo(replaceable));
 						replaceable.setUndefined();
@@ -2196,6 +2246,7 @@ public class AlgebraProcessor {
 						throw new MyError(loc, Errors.ReplaceFailed);
 					}
 				} catch (Exception e) {
+					rollbackSpatialRedefine(spatialTransaction);
 					throw new MyError(loc, e, Errors.IllegalAssignment,
 							replaceable.getLongDescription(), "     =     ",
 							ret[0].getLongDescription());
@@ -2223,6 +2274,7 @@ public class AlgebraProcessor {
 						}
 						replaceable.updateRepaint();
 						ret[0] = replaceable;
+						commitSpatialRedefine(spatialTransaction, replaceable);
 					}
 
 					// STANDARD CASE: REDEFINED
@@ -2232,6 +2284,15 @@ public class AlgebraProcessor {
 						geoElementSetups.forEach(setup -> setup.applyTo(newGeo));
 						GeoCasCell cell = replaceable.getCorrespondingCasCell();
 						if (cell != null) {
+							if (spatialTransaction != null) {
+								rollbackSpatialRedefine(spatialTransaction);
+								throw new SpatialIdentityException(
+										SpatialIdentityDiagnostic.forSubject(
+												SpatialIdentityDiagnostic.Code.REDEFINE_REJECTED,
+												"CAS-cell redefine is outside the admitted "
+														+ "A1 boundary",
+												spatialTransaction.getContext().getOldId()));
+							}
 							// this is a ValidExpression since we don't get
 							// GeoElements from parsing
 							StringBuilder oldXML = cons.getCurrentUndoXML(false);
@@ -2245,13 +2306,29 @@ public class AlgebraProcessor {
 						} else {
 							cons.replace(replaceable, newGeo, info);
 						}
-						// now all objects have changed
-						// get the new object with same label as our result
-						String newLabel = newGeo.isLabelSet()
-								? newGeo.getLabelSimple()
-								: replaceable.getLabelSimple();
-						ret[0] = kernel.lookupLabel(newLabel);
+						// Resolve participating results only by durable identity.
+						if (spatialTransaction != null) {
+							ret[0] = cons.getSpatialIdentityRegistry().getGeo(
+									spatialTransaction.getDecidedId());
+							if (ret[0] == null) {
+								throw new SpatialIdentityException(
+										SpatialIdentityDiagnostic.forSubject(
+												SpatialIdentityDiagnostic.Code.TRANSACTION_STATE,
+												"Redefine result did not resolve by durable "
+														+ "identity",
+												spatialTransaction.getDecidedId()));
+							}
+						} else {
+							String newLabel = newGeo.isLabelSet()
+									? newGeo.getLabelSimple()
+									: replaceable.getLabelSimple();
+							ret[0] = kernel.lookupLabel(newLabel);
+						}
 					} else {
+						if (spatialTransaction != null) {
+							rollbackSpatialRedefine(spatialTransaction);
+							throw new MyError(loc, Errors.ReplaceFailed);
+						}
 						// Set undefined
 						ret[0] = replaceable;
 						geoElementSetups.forEach(setup -> setup.applyTo(replaceable));
@@ -2260,16 +2337,71 @@ public class AlgebraProcessor {
 						throw new MyError(loc, Errors.ReplaceFailed);
 					}
 				} catch (CircularDefinitionException e) {
+					rollbackSpatialRedefine(spatialTransaction);
 					throw e;
 				} catch (Exception | MyError e) {
+					rollbackSpatialRedefine(spatialTransaction);
 					if (replaceable.getLabelSimple() != null) {
-						Log.debug(e);
+						if (spatialTransaction == null) {
+							Log.debug(e);
+						} else {
+							Log.debug(e.getMessage());
+						}
 					} else {
 						Log.debug("Replacing unlabeled element");
 					}
 					throw new MyError(loc, e, Errors.ReplaceFailed);
 				}
 			}
+		}
+	}
+
+	private SpatialRedefineTransaction prepareSpatialRedefine(GeoElement replaceable,
+			GeoElement[] candidates, EvalInfo info) {
+		if (!cons.getSpatialIdentityRegistry().isParticipating(replaceable)) {
+			return null;
+		}
+		SpatialRedefineContext context = info.getSpatialRedefineContext();
+		if (context != null && context.getOldTarget() != replaceable) {
+			throw new SpatialIdentityException(SpatialIdentityDiagnostic.forSubject(
+					SpatialIdentityDiagnostic.Code.REDEFINE_CONTEXT_MISSING,
+					"Explicit redefine context does not match the replacement target",
+					context.getOldId()));
+		}
+		SpatialRedefineTransaction transaction =
+				cons.getSpatialIdentityRegistry().prepareRedefine(context,
+						candidates[0], candidates.length, true,
+						info.isSpatialReplacementOperationSelected());
+		if (transaction.getDecision() == SpatialRedefineDecision.REJECT) {
+			transaction.rollback();
+			throw new SpatialIdentityException(SpatialIdentityDiagnostic.forSubject(
+					SpatialIdentityDiagnostic.Code.REDEFINE_REJECTED,
+					"Provider rejected redefine before host mutation",
+					transaction.getContext().getOldId()));
+		}
+		return transaction;
+	}
+
+	private static void commitSpatialRedefine(
+			SpatialRedefineTransaction transaction, GeoElement result) {
+		if (transaction != null
+				&& transaction.getState() == SpatialRedefineTransaction.State.PREPARED) {
+			transaction.commit(result);
+		}
+	}
+
+	private void rollbackSpatialRedefine(
+			SpatialRedefineTransaction transaction) {
+		if (transaction == null) {
+			return;
+		}
+		if (transaction.getState() == SpatialRedefineTransaction.State.PREPARED) {
+			cons.rollbackSpatialRedefine(transaction);
+		} else {
+			// Construction may already have abandoned the token after restoring its
+			// own entry snapshot. Algebra parsing began earlier, so its explicit
+			// target context remains the authoritative outer rollback boundary.
+			cons.rollbackSpatialRedefinePreparation(transaction.getContext());
 		}
 	}
 

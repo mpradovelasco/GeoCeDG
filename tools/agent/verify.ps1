@@ -41,6 +41,8 @@ $G8C2IntersectionVerifier = Join-Path $PSScriptRoot `
 $G9PDesignVerifier = Join-Path $PSScriptRoot "verify-g9p-design.ps1"
 $KnowledgeBundleVerifier = Join-Path $PSScriptRoot `
     "verify-knowledge-bundles.ps1"
+$G9A1SpatialIdentityVerifier = Join-Path $PSScriptRoot `
+    "verify-g9a1-spatial-identity.ps1"
 $BenchmarkRunner = Join-Path $RepositoryRoot "tools\benchmark\run.ps1"
 $InitialStatus = $null
 
@@ -281,6 +283,34 @@ try {
         & $KnowledgeBundleVerifier @knowledgeBundleParameters
         Assert-LastScriptSuccess `
             -Description "G9O1 deterministic source/knowledge bundles"
+    }
+
+    $g9a1Evidence = Join-Path $RepositoryRoot `
+        "docs\validation\g9a1_spatial_identity_evidence.json"
+    $hasG9A1Evidence = Test-Path -LiteralPath $g9a1Evidence -PathType Leaf
+    $hasG9A1Verifier = Test-Path -LiteralPath $G9A1SpatialIdentityVerifier `
+        -PathType Leaf
+    if ($hasG9A1Evidence -ne $hasG9A1Verifier) {
+        throw "Incomplete G9A1 verifier/evidence integration; both artifacts are required."
+    }
+    if ($hasG9A1Evidence) {
+        Write-Host "`n==> G9A1 durable spatial identity and persistence foundation"
+        $g9a1Parameters = @{
+            LogDirectory = Join-Path ([IO.Path]::GetFullPath($LogDirectory)) `
+                "g9a1-spatial-identity"
+        }
+        if ($SkipBuild) {
+            $g9a1Parameters.SkipBuild = $true
+        }
+        if ($AllowToolchainDownload) {
+            $g9a1Parameters.AllowToolchainDownload = $true
+        }
+        if ($KeepBuildOutputs) {
+            $g9a1Parameters.KeepBuildOutputs = $true
+        }
+        & $G9A1SpatialIdentityVerifier @g9a1Parameters
+        Assert-LastScriptSuccess `
+            -Description "G9A1 durable spatial identity and persistence foundation"
     }
 
     Write-Host "`n==> Standalone Windows packaging contracts"

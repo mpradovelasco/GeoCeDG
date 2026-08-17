@@ -26,6 +26,8 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityException;
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
 import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.euclidian.EuclidianViewInterfaceCommon;
 import org.geogebra.common.io.XMLStringBuilder;
@@ -63,6 +65,9 @@ public class CopyPasteD extends CopyPaste {
 	protected AppState copyObject2;
 
 	private Set<String> duplicateLabels;
+	private boolean copiedSpatialIdentity;
+	private String spatialInsertRollbackXml;
+	private Runnable spatialInsertMutation;
 
 	/**
 	 * Returns whether the clipboard is empty
@@ -83,7 +88,9 @@ public class CopyPasteD extends CopyPaste {
 		GeoElement geo;
 		for (int i = geos.size() - 1; i >= 0; i--) {
 			geo = (GeoElement) geos.get(i);
-			if (geo.isGeoNumeric() && geo.isLockedPosition()) {
+			if (geo.isGeoNumeric() && geo.isLockedPosition()
+					&& !geo.getConstruction().getSpatialIdentityRegistry()
+							.isParticipating(geo)) {
 				geos.remove(geo);
 			}
 		}
@@ -285,6 +292,7 @@ public class CopyPasteD extends CopyPaste {
 		copySource = app.getActiveEuclidianView();
 		copyObject = app.getUndoManager().getCurrentUndoInfo();
 		copiedMacros = new HashSet<>();
+		copiedSpatialIdentity = false;
 
 		// create geoslocal and geostohide
 		ArrayList<ConstructionElement> geoslocal = new ArrayList<>(geos);
@@ -308,6 +316,7 @@ public class CopyPasteD extends CopyPaste {
 		}
 
 		addSubGeos(geoslocal, new HashSet<>(app.getSelectionManager().getSelectedGroups()));
+		InternalClipboard.addSpatialIdentityClosure(geoslocal, false);
 
 		if (geoslocal.isEmpty()) {
 			app.setBlockUpdateScripts(scriptsBlocked);
@@ -327,6 +336,12 @@ public class CopyPasteD extends CopyPaste {
 
 		geostohide.addAll(addAlgosDependentFromInside(geoslocal
 		));
+		Set<GeoElement> spatialClosure =
+				InternalClipboard.addSpatialIdentityClosure(geoslocal, true);
+		Construction cons = app.getKernel().getConstruction();
+		SpatialIdentityRegistry spatialRegistry = cons.getSpatialIdentityRegistry();
+		copiedSpatialIdentity = !spatialRegistry.getClosureRecords(
+				spatialClosure).isEmpty();
 
 		ArrayList<ConstructionElement> geoslocalsw = removeFreeNonselectedGeoNumerics(
 				geoslocal, geos);
@@ -343,6 +358,10 @@ public class CopyPasteD extends CopyPaste {
 		if (!putdown) {
 			kernel.setSaveScriptsToXML(false);
 		}
+		final boolean spatialXmlStarted = copiedSpatialIdentity;
+		if (spatialXmlStarted) {
+			cons.beginSpatialIdentityXML();
+		}
 		try {
 			// step 5
 			copiedXML = new StringBuilder();
@@ -351,16 +370,23 @@ public class CopyPasteD extends CopyPaste {
 			// loop through Construction to keep the good order of
 			// ConstructionElements
 			XMLStringBuilder xmlBuilder = new XMLStringBuilder(copiedXML);
-			Construction cons = app.getKernel().getConstruction();
 			for (int i = 0; i < cons.steps(); ++i) {
 				ce = cons.getConstructionElement(i);
 				if (geoslocal.contains(ce)) {
 					ce.getXML(false, xmlBuilder);
 				}
 			}
+			if (copiedSpatialIdentity) {
+				xmlBuilder.append(new XMLStringBuilder(new StringBuilder(
+						spatialRegistry.writeClosureSection(spatialClosure))));
+			}
 		} catch (Exception e) {
 			Log.debug(e);
 			copiedXML = new StringBuilder();
+		} finally {
+			if (spatialXmlStarted) {
+				cons.endSpatialIdentityXML();
+			}
 		}
 		// restore kernel settings
 		// kernel.setCASPrintForm(oldPrintForm);
@@ -371,7 +397,7 @@ public class CopyPasteD extends CopyPaste {
 		// FIRST XML SAVE END
 
 		// SECOND XML SAVE
-		if (!putdown) {
+		if (!putdown && !copiedSpatialIdentity) {
 			beforeSavingToXML(geoslocalsw, geostohidesw, true, putdown);
 			kernel.setSaveScriptsToXML(false);
 			try {
@@ -381,7 +407,6 @@ public class CopyPasteD extends CopyPaste {
 
 				// loop through Construction to keep the good order of
 				// ConstructionElements
-				Construction cons = app.getKernel().getConstruction();
 				XMLStringBuilder xmlBuilder = new XMLStringBuilder(copiedXMLForSameWindow);
 				for (int i = 0; i < cons.steps(); ++i) {
 					ce = cons.getConstructionElement(i);
@@ -414,7 +439,7 @@ public class CopyPasteD extends CopyPaste {
 	 * @return boolean
 	 */
 	public boolean pasteFast(App app) {
-		if (app.getActiveEuclidianView() != copySource) {
+		if (copiedSpatialIdentity || app.getActiveEuclidianView() != copySource) {
 			return false;
 		}
 		return copyObject == copyObject2;
@@ -432,20 +457,25 @@ public class CopyPasteD extends CopyPaste {
 			return;
 		}
 
-		copyObject2 = app.getUndoManager().getCurrentUndoInfo();
-
-		if (pasteFast(app) && !putdown) {
+		AppState currentUndoInfo = app.getUndoManager().getCurrentUndoInfo();
+		boolean fastPaste = !putdown && !copiedSpatialIdentity
+				&& app.getActiveEuclidianView() == copySource
+				&& copyObject == currentUndoInfo;
+		if (fastPaste) {
 			if (copiedXMLForSameWindow == null
 					|| copiedXMLForSameWindow.length() == 0) {
 				return;
 			}
 		}
-
-		if (pasteFast(app)) {
-			app.getKernel().notifyPaste(copiedXMLForSameWindow.toString());
-		} else {
-			app.getKernel().notifyPaste(copiedXML.toString());
+		String pasteXml = fastPaste ? copiedXMLForSameWindow.toString()
+				: copiedXML.toString();
+		Boolean identityBearing = preflightClipboardXML(pasteXml);
+		if (identityBearing == null) {
+			return;
 		}
+		copiedSpatialIdentity = identityBearing;
+		copyObject2 = currentUndoInfo;
+		app.getKernel().notifyPaste(pasteXml);
 
 		// it turned out to be necessary for e.g. handleLabels
 		boolean scriptsBlocked = app.isBlockUpdateScripts();
@@ -458,9 +488,12 @@ public class CopyPasteD extends CopyPaste {
 		app.updateSelection(false);
 
 		ArrayList<GeoElement> createdGeos;
-		if (pasteFast(app) && !putdown) {
+		if (fastPaste) {
 			EuclidianViewInterfaceCommon ev = app.getActiveEuclidianView();
-			app.getGgbApi().evalXML(copiedXMLForSameWindow.toString());
+			if (!evalClipboardXML(app, pasteXml)) {
+				app.setBlockUpdateScripts(scriptsBlocked);
+				return;
+			}
 			app.getKernel().getConstruction().updateConstruction(false);
 			if (ev == app.getEuclidianView1()) {
 				app.setActiveView(App.VIEW_EUCLIDIAN);
@@ -474,7 +507,10 @@ public class CopyPasteD extends CopyPaste {
 		} else {
 			// here the possible macros should be copied as well,
 			// in case we should copy any macros
-			if (!copiedMacros.isEmpty()) {
+			// Identity-bearing payloads never mutate the macro registry first;
+			// a missing macro makes their construction import fail atomically.
+			if (!copiedSpatialIdentity && copiedMacros != null
+					&& !copiedMacros.isEmpty()) {
 				// now we have to copy the macros from ad to app
 				// in order to make some advanced constructions work
 				// as it was hard to copy macro classes, let's use
@@ -495,7 +531,10 @@ public class CopyPasteD extends CopyPaste {
 			}
 
 			EuclidianViewInterfaceCommon ev = app.getActiveEuclidianView();
-			app.getGgbApi().evalXML(copiedXML.toString());
+			if (!evalClipboardXML(app, pasteXml)) {
+				app.setBlockUpdateScripts(scriptsBlocked);
+				return;
+			}
 			app.getKernel().getConstruction().updateConstruction(false);
 			if (ev == app.getEuclidianView1()) {
 				app.setActiveView(App.VIEW_EUCLIDIAN);
@@ -513,6 +552,31 @@ public class CopyPasteD extends CopyPaste {
 		app.setMode(EuclidianConstants.MODE_MOVE);
 
 		app.getKernel().notifyPasteComplete(createdGeos);
+		if (createdGeos.stream().anyMatch(geo -> app.getKernel().getConstruction()
+				.getSpatialIdentityRegistry().isParticipating(geo))) {
+			app.getUndoManager().storeAddGeo(createdGeos);
+		}
+	}
+
+	private boolean evalClipboardXML(App app, String xml) {
+		return InternalClipboard.evalClipboardXMLAtomically(app, xml,
+				spatialInsertRollbackXml, spatialInsertMutation);
+	}
+
+	private Boolean preflightClipboardXML(String xml) {
+		try {
+			boolean identityBearing =
+					SpatialIdentityRegistry.preflightClipboardFragment(xml);
+			if (identityBearing && copiedMacros != null && !copiedMacros.isEmpty()) {
+				Log.debug("Identity-bearing clipboard imports with copied macros "
+						+ "are not supported in G9A1");
+				return null;
+			}
+			return identityBearing;
+		} catch (SpatialIdentityException failure) {
+			Log.debug(failure.getMessage());
+			return null;
+		}
 	}
 
 	@Override
@@ -539,6 +603,7 @@ public class CopyPasteD extends CopyPaste {
 		if (copiedXMLForSameWindow != null) {
 			copiedXMLForSameWindow.setLength(0);
 		}
+		copiedSpatialIdentity = false;
 	}
 
 	@Override
@@ -557,20 +622,42 @@ public class CopyPasteD extends CopyPaste {
 	public void insertFrom(App fromApp, App toApp,
 			@Nonnull Set<String> duplicateLabels, boolean overwrite) {
 		Construction fromConstruction = fromApp.getKernel().getConstruction();
-		fromConstruction.getGeoSetConstructionOrder().stream()
-				.map(GeoElement::getLabelSimple)
-				.forEach(toApp.getKernel().getConstruction()::addProtectedLabel);
 		copyToXML(fromApp,
 						new ArrayList<>(fromConstruction.getGeoSetWithCasCellsConstructionOrder()),
 						true);
-
-		this.duplicateLabels = duplicateLabels;
-		if (overwrite) {
-			for (String label: duplicateLabels) {
-				GeoElement toRemove = toApp.getKernel().lookupLabel(label);
-				toRemove.remove();
-			}
+		if (copiedXML == null || copiedXML.length() == 0) {
+			return;
 		}
+		Boolean identityBearing = preflightClipboardXML(copiedXML.toString());
+		if (identityBearing == null) {
+			return;
+		}
+		copiedSpatialIdentity = identityBearing;
+		this.duplicateLabels = duplicateLabels;
+		Runnable insertMutation = () -> {
+			fromConstruction.getGeoSetConstructionOrder().stream()
+					.map(GeoElement::getLabelSimple)
+					.forEach(toApp.getKernel().getConstruction()::addProtectedLabel);
+			if (overwrite) {
+				for (String label : duplicateLabels) {
+					GeoElement toRemove = toApp.getKernel().lookupLabel(label);
+					toRemove.remove();
+				}
+			}
+		};
+		if (copiedSpatialIdentity) {
+			toApp.getActiveEuclidianView().saveInlines();
+			spatialInsertRollbackXml = toApp.getXML();
+			spatialInsertMutation = insertMutation;
+			try {
+				pasteFromXML(toApp, true);
+			} finally {
+				spatialInsertRollbackXml = null;
+				spatialInsertMutation = null;
+			}
+			return;
+		}
+		insertMutation.run();
 		pasteFromXML(toApp, true);
 	}
 }

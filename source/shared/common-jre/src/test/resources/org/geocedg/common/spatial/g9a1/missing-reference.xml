@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<geogebra format="5.0" version="5.4.928.0" app="classic">
+  <construction title="G9A1 broken closure" author="" date="">
+    <geocedgSpatial version="1">
+      <binding id="binding:00000000000000000000000000000008" semanticVersion="1"
+          object="object:ffffffffffffffffffffffffffffffff"
+          system="system:00000000000000000000000000000005"
+          diagramMap="map:00000000000000000000000000000006"
+          frame="frame:00000000000000000000000000000004" role="DEFINING"
+          representation="POINT" expectedType="POINT" schema="cedg.point.orthographic"
+          schemaVersion="1" geos="geo:00000000000000000000000000000001"
+          revision="0"/>
+      <geo id="geo:00000000000000000000000000000001" provider="g9a1.test"
+          family="POINT" schema="cedg.point.orthographic" schemaVersion="1"
+          authority="PROJECTION_DEFINED" bindingRole="DEFINING" outputRole="POINT"
+          cardinality="1" definitionRevision="0" topologyRevision="0"/>
+    </geocedgSpatial>
+    <element type="numeric" label="A" geocedgId="geo:00000000000000000000000000000001">
+      <value val="1.0"/>
+    </element>
+  </construction>
+</geogebra>

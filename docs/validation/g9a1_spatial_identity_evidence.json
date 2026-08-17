@@ -1,0 +1,245 @@
+{
+  "phase": "G9A1",
+  "status": "IMPLEMENTATION_CANDIDATE_PENDING_AUTHOR_REVIEW",
+  "executionDate": "2026-08-17",
+  "provenance": {
+    "entrySha": "001f7920a1154b09a22b54c190f7bc5f94b48e90",
+    "branch": "feature/g9a1-spatial-identity-persistence-foundation",
+    "canonicalPrompt": ".github/prompts/tasks/g9a1-spatial-identity-persistence-foundation.prompt.md",
+    "canonicalPromptCanonicalLfSha256": "50c665a399b7b6290b8dcf86cc2326bb78202d85d7b52b130fd8ebf2980127e1",
+    "spatialSpecification": "geocedg/specs/spatial/g9-spatial-projection-semantics.md",
+    "spatialSpecificationCanonicalLfSha256": "11e1327a6518a25178133a1bfc0720a6d73adabab7d127b5203b6da86b25ca56",
+    "adr0010": "docs/adr/0010-role-gated-spatial-authority-and-durable-identity.md",
+    "adr0010CanonicalLfSha256": "25b85c8f29488df3c313f3a1e67cea1cb25714253aa01d13625f8791ad20586d",
+    "adr0011": "docs/adr/0011-g9-spatial-persistence-and-phase-gates.md",
+    "adr0011CanonicalLfSha256": "42fd3fdc0a7493f6bde28c1ba2c597e093e138b14fd73619204cb22d001ebf41"
+  },
+  "approval": {
+    "selfApproved": false,
+    "authorApproved": false,
+    "passClaimed": false,
+    "reviewRequired": true,
+    "disposition": "PENDING_AUTHOR_REVIEW"
+  },
+  "phaseDisposition": {
+    "G9A1": "IMPLEMENTATION_CANDIDATE_PENDING_AUTHOR_REVIEW",
+    "G9A2": "NOT_AUTHORIZED_NOT_STARTED",
+    "laterG9": "NOT_AUTHORIZED_NOT_STARTED"
+  },
+  "entryGates": {
+    "composedWithoutSkipBuild": {
+      "passed": true,
+      "exitCode": 0,
+      "command": ".\\tools\\agent\\verify.ps1 -KeepBuildOutputs -LogDirectory artifacts\\g9a1\\entry\\composed",
+      "logDirectory": "artifacts/g9a1/entry/composed"
+    }
+  },
+  "validation": {
+    "privateParserOnly": false,
+    "realHostXmlRoundTrip": true,
+    "deterministicRerunAsserted": true,
+    "hostParserTestClasses": [
+      "org.geocedg.common.spatial.G9A1SpatialIdentityLifecycleTest",
+      "org.geocedg.common.spatial.G9A1SpatialIdentityMacroTest",
+      "org.geocedg.common.spatial.G9A1SpatialIdentityXmlTest"
+    ],
+    "finalCandidateExecutions": {
+      "focusedFirstRun": {
+        "state": "PASSED",
+        "command": ".\\tools\\agent\\verify-g9a1-spatial-identity.ps1 -KeepBuildOutputs -LogDirectory artifacts\\g9a1\\candidate\\focused",
+        "exitCode": 0,
+        "logDirectory": "artifacts/g9a1/candidate/focused"
+      },
+      "focusedDeterministicRerun": {
+        "state": "PASSED",
+        "command": ".\\tools\\agent\\verify-g9a1-spatial-identity.ps1 -KeepBuildOutputs -LogDirectory artifacts\\g9a1\\candidate\\focused-rerun",
+        "exitCode": 0,
+        "logDirectory": "artifacts/g9a1/candidate/focused-rerun"
+      },
+      "composedWithoutSkipBuild": {
+        "state": "PASSED",
+        "command": ".\\tools\\agent\\verify.ps1 -KeepBuildOutputs -LogDirectory artifacts\\g9a1\\candidate\\composed-final",
+        "exitCode": 0,
+        "logDirectory": "artifacts/g9a1/candidate/composed-final"
+      }
+    }
+  },
+  "sourceBoundary": {
+    "productivePaths": [
+      "source/desktop/desktop/src/main/java/org/geogebra/desktop/util/CopyPasteD.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/DefaultSpatialTokenSource.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/EditAuthorityMode.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/GeoIdentityRecord.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/package-info.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/PersistentGeoId.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/ProjectionBindingId.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/ProjectionBindingRecord.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/ProjectionBindingRole.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/ProjectionDiagramMapId.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/ProjectionDiagramMapRecord.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/ProjectionFrameId.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/ProjectionFrameRecord.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/ProjectionFrameRelationId.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/ProjectionFrameRelationRecord.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/ProjectionFrameUseRole.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/ProjectionSystemId.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/ProjectionSystemRecord.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialIdentityDiagnostic.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialIdentityException.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialIdentityId.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialIdentityInstrumentation.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialIdentityKind.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialIdentityRecord.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialIdentityRegistry.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialObjectId.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialObjectRecord.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRecordResolution.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRecordSupport.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRecordXmlCodec.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRedefineContext.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRedefineDecision.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRedefineProposal.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRedefineProvider.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRedefineSignature.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRedefineTransaction.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialResolutionState.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialTokenSource.java",
+      "source/shared/common/src/main/java/org/geogebra/common/io/ConsElementXMLHandler.java",
+      "source/shared/common/src/main/java/org/geogebra/common/io/MyXMLHandler.java",
+      "source/shared/common/src/main/java/org/geogebra/common/io/MyXMLio.java",
+      "source/shared/common/src/main/java/org/geogebra/common/kernel/algos/AlgoDispatcher.java",
+      "source/shared/common/src/main/java/org/geogebra/common/kernel/algos/AlgoMacro.java",
+      "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/AlgebraProcessor.java",
+      "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/EvalInfo.java",
+      "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/ParametricProcessor.java",
+      "source/shared/common/src/main/java/org/geogebra/common/kernel/Construction.java",
+      "source/shared/common/src/main/java/org/geogebra/common/kernel/geos/GeoElement.java",
+      "source/shared/common/src/main/java/org/geogebra/common/kernel/geos/PolygonFactory.java",
+      "source/shared/common/src/main/java/org/geogebra/common/kernel/Kernel.java",
+      "source/shared/common/src/main/java/org/geogebra/common/kernel/Macro.java",
+      "source/shared/common/src/main/java/org/geogebra/common/main/undo/UndoableDeletionExecutor.java",
+      "source/shared/common/src/main/java/org/geogebra/common/main/undo/UndoManager.java",
+      "source/shared/common/src/main/java/org/geogebra/common/util/InternalClipboard.java"
+    ],
+    "testPaths": [
+      "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9A1SpatialIdentityIdTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9A1SpatialIdentityLifecycleTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9A1SpatialIdentityMacroTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9A1SpatialIdentityRedefineHostTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9A1SpatialIdentityRegistryTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9A1SpatialIdentityXmlTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9A1SpatialRedefineTransactionTest.java"
+    ],
+    "fixturePaths": [
+      "source/shared/common-jre/src/test/resources/org/geocedg/common/spatial/g9a1/complete-forward-closure.xml",
+      "source/shared/common-jre/src/test/resources/org/geocedg/common/spatial/g9a1/cross-kind-token.xml",
+      "source/shared/common-jre/src/test/resources/org/geocedg/common/spatial/g9a1/duplicate-id.xml",
+      "source/shared/common-jre/src/test/resources/org/geocedg/common/spatial/g9a1/future-version.xml",
+      "source/shared/common-jre/src/test/resources/org/geocedg/common/spatial/g9a1/legacy-no-identities.xml",
+      "source/shared/common-jre/src/test/resources/org/geocedg/common/spatial/g9a1/malformed-id.xml",
+      "source/shared/common-jre/src/test/resources/org/geocedg/common/spatial/g9a1/missing-reference.xml"
+    ],
+    "supportingPaths": [
+      "docs/architecture/g9_spatial_persistence_and_upstream_impact.md",
+      "docs/architecture/g9a1_spatial_identity_persistence_design.md",
+      "docs/roadmap/geocedg_roadmap.md",
+      "docs/upstream/modified-files.yml",
+      "docs/validation/g9a1_spatial_identity_evidence.json",
+      "docs/validation/g9a1_spatial_identity_evidence.sha256",
+      "docs/validation/g9a1_spatial_identity_persistence_report.md",
+      "geocedg/features/experimental.yml",
+      "tools/agent/verify-g8a-intersections.ps1",
+      "tools/agent/verify-g9a1-spatial-identity.ps1",
+      "tools/agent/verify.ps1"
+    ]
+  },
+  "scopeAudit": {
+    "spatialReconstruction": 0,
+    "projectionGeometryEvaluation": 0,
+    "threeDimensionalAuthority": 0,
+    "publicLocusChanges": 0,
+    "guiChanges": 0,
+    "dxfChanges": 0,
+    "labelOrProximityIdentity": 0,
+    "migrationInference": 0,
+    "g9a2OrLaterChanges": 0,
+    "publicCommands": 0,
+    "hiddenScheduler": 0,
+    "generatedTrackedArtifacts": 0
+  },
+  "identityAuthorityCounters": {
+    "labels": 0,
+    "creationOrder": 0,
+    "xmlPosition": 0,
+    "coordinates": 0,
+    "ceID": 0,
+    "layers": 0,
+    "viewport": 0,
+    "dpi": 0,
+    "camera": 0
+  },
+  "tests": {
+    "interpretation": "Expected exact class and clean-result contract consumed by the focused verifier; final candidate executions are recorded separately above.",
+    "focused": {
+      "classes": [
+        {
+          "name": "org.geocedg.common.spatial.G9A1SpatialIdentityIdTest",
+          "tests": 5
+        },
+        {
+          "name": "org.geocedg.common.spatial.G9A1SpatialIdentityLifecycleTest",
+          "tests": 6
+        },
+        {
+          "name": "org.geocedg.common.spatial.G9A1SpatialIdentityMacroTest",
+          "tests": 2
+        },
+        {
+          "name": "org.geocedg.common.spatial.G9A1SpatialIdentityRedefineHostTest",
+          "tests": 12
+        },
+        {
+          "name": "org.geocedg.common.spatial.G9A1SpatialIdentityRegistryTest",
+          "tests": 15
+        },
+        {
+          "name": "org.geocedg.common.spatial.G9A1SpatialIdentityXmlTest",
+          "tests": 11
+        },
+        {
+          "name": "org.geocedg.common.spatial.G9A1SpatialRedefineTransactionTest",
+          "tests": 11
+        }
+      ],
+      "total": {
+        "tests": 62,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    "redefineRegression": {
+      "class": "org.geogebra.common.kernel.commands.RedefineTest",
+      "tests": 55,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceChanged": false
+    },
+    "combined": {
+      "tests": 117,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "scopeDeviations": [],
+  "remainingRisks": [
+    "The substrate persists inert identity/reference records only; all projection evaluation, reconstruction, certificates, payloads, public surfaces, and migration remain outside G9A1.",
+    "Unknown future spatial section or record versions are rejected atomically; reviewed opaque round-trip preservation remains deferred.",
+    "Participating undo/delete operations intentionally use full XML snapshots until an identity-aware action format is separately reviewed.",
+    "Composite vector/rigid-polygon operations reject before helper creation when any rewritten target participates; multi-target continuity remains outside G9A1.",
+    "Identity-bearing cross-application paste combined with copied macros is rejected atomically; a reviewed combined import policy remains deferred.",
+    "The non-reuse ledger is scoped to the live Construction instance and conservatively retains bounded historical tokens across document clears."
+  ]
+}

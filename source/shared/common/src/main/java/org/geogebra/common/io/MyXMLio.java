@@ -21,6 +21,8 @@ import java.util.List;
 
 import javax.annotation.CheckForNull;
 
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityException;
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry.LoadPurpose;
 import org.geogebra.common.GeoGebraConstants;
 import org.geogebra.common.GeoGebraConstants.Platform;
 import org.geogebra.common.awt.annotations.HasNativeSubclass;
@@ -196,15 +198,19 @@ public abstract class MyXMLio {
 	 */
 	public void processXMLString(String xml, boolean clearConstruction,
 			boolean isGgtFile, boolean randomize) throws XMLParseException {
+		boolean wasFileLoading = cons != null && cons.isFileLoading();
 		if (cons != null) {
 			cons.setFileLoading(true);
 		}
-		if (!isGgtFile) {
-			app.resetUniqueId();
-		}
-		processXMLString(xml, clearConstruction, isGgtFile, true, randomize);
-		if (cons != null) {
-			cons.setFileLoading(false);
+		try {
+			if (!isGgtFile) {
+				app.resetUniqueId();
+			}
+			processXMLString(xml, clearConstruction, isGgtFile, true, randomize);
+		} finally {
+			if (cons != null) {
+				cons.setFileLoading(wasFileLoading);
+			}
 		}
 	}
 
@@ -394,6 +400,7 @@ public abstract class MyXMLio {
 	final protected void doParseXML(XMLStream stream, boolean clearConstruction,
 			boolean isGGTOrDefaults, boolean mayZoom, boolean settingsBatch,
 			boolean randomize) throws XMLParseException, IOException {
+		String rejectedSpatialRollbackXml = app.getXML();
 		boolean oldVal = kernel.isNotifyViewsActive();
 		CommandLookupStrategy oldVal2 = kernel.getCommandLookupStrategy();
 		kernel.setLoadingMode(true);
@@ -407,16 +414,29 @@ public abstract class MyXMLio {
 			// clear construction
 			kernel.clearConstruction(false);
 		}
+		handler.setSpatialIdentityLoadPurpose(clearConstruction
+				? LoadPurpose.NATIVE_OR_UNDO_RESTORE
+				: LoadPurpose.GENERIC_MERGE);
 		try {
 			parseXmlUnsafe(stream, settingsBatch, isGGTOrDefaults);
 		} catch (CommandNotLoadedError e) {
+			handler.abortSpatialIdentityLoad();
 			throw e;
 		} catch (Error | XMLParseException | IOException | RuntimeException e) {
+			handler.abortSpatialIdentityLoad();
+			if (isRejectedSpatialParse(e)) {
+				try {
+					restoreRejectedSpatialParse(rejectedSpatialRollbackXml);
+				} catch (RuntimeException | XMLParseException rollbackFailure) {
+					e.addSuppressed(rollbackFailure);
+				}
+			}
 			Log.error(e.getMessage());
-			if (!isGGTOrDefaults) {
+			if (e instanceof SpatialIdentityException || !isGGTOrDefaults) {
 				throw e;
 			}
 		} finally {
+			cons.clearNextSpatialIdentityLoadPurpose();
 			kernel.setLoadingMode(false);
 			kernel.setCommandLookupStrategy(oldVal2);
 			if (!isGGTOrDefaults && mayZoom) {
@@ -453,6 +473,20 @@ public abstract class MyXMLio {
 
 		}
 
+	}
+
+	private boolean isRejectedSpatialParse(Throwable failure) {
+		return failure instanceof SpatialIdentityException;
+	}
+
+	private void restoreRejectedSpatialParse(String rollbackXml)
+			throws XMLParseException {
+		cons.setNextSpatialIdentityLoadPurpose(LoadPurpose.ROLLBACK_RESTORE);
+		try {
+			processXMLString(rollbackXml, true, false);
+		} finally {
+			cons.clearNextSpatialIdentityLoadPurpose();
+		}
 	}
 
 	private void parseXmlUnsafe(XMLStream stream, boolean settingsBatch, boolean isGGTOrDefaults)

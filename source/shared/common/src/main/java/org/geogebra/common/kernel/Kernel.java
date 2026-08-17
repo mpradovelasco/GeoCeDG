@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityException;
 import org.geogebra.common.GeoGebraConstants;
 import org.geogebra.common.cas.GeoGebraCAS;
 import org.geogebra.common.euclidian.EuclidianView;
@@ -4445,6 +4446,8 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 		try {
 			AlgoMacro algo = new AlgoMacro(cons, labels, macro, input, true);
 			return algo.getOutput();
+		} catch (SpatialIdentityException expectedRejection) {
+			return null;
 		} catch (Exception e) {
 			Log.debug(e);
 			return null;

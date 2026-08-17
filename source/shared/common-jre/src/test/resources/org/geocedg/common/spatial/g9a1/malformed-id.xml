@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<geogebra format="5.0" version="5.4.928.0" app="classic">
+  <construction title="G9A1 malformed" author="" date="">
+    <geocedgSpatial version="1">
+      <geo id="geo:not-a-128-bit-token" provider="g9a1.test" family="POINT"
+          schema="cedg.point" schemaVersion="1" authority="PROJECTION_DEFINED"
+          bindingRole="DEFINING" outputRole="POINT" cardinality="1"
+          definitionRevision="0" topologyRevision="0"/>
+    </geocedgSpatial>
+    <element type="numeric" label="A" geocedgId="geo:not-a-128-bit-token">
+      <value val="1.0"/>
+    </element>
+  </construction>
+</geogebra>

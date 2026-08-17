@@ -500,6 +500,11 @@ public abstract class UndoManager implements UndoProvider {
 	 * @param arg GeoElement just added
 	 */
 	public void storeAddGeo(List<GeoElement> arg) {
+		if (arg.stream().anyMatch(geo -> construction.getSpatialIdentityRegistry()
+				.isParticipating(geo))) {
+			storeUndoInfo();
+			return;
+		}
 		Stream<String> stream = arg.stream().map(this::getXMLOf);
 		String[] labels = arg.stream().map(GeoElement::getLabelSimple).toArray(String[]::new);
 		buildAction(ActionType.ADD, stream.toArray(String[]::new))

@@ -75,6 +75,7 @@ $TestClasses = [ordered]@{
 }
 
 . $GeneratedStateHelper
+. (Join-Path $PSScriptRoot "evidence-integrity.ps1")
 
 function Assert-Condition {
     param(
@@ -218,6 +219,9 @@ try {
             -DirectoryNames $GeneratedDirectoryNames -Label "g8a-intersections"
     }
     [void](New-Item -ItemType Directory -Path $LogDirectory -Force)
+    [void](Assert-GeoCeDGFrozenG8Anchor -RepositoryRoot $RepositoryRoot)
+    $frozenChangedPaths = @(Get-GeoCeDGFrozenChangedPaths `
+        -RepositoryRoot $RepositoryRoot -BaseCommit $EntrySha)
 
     $requiredFiles = @(
         ".github\prompts\tasks\g8a-locus-v2-intersection-characterization.prompt.md",
@@ -427,10 +431,10 @@ try {
         }
     }
 
-    $productiveChanges = @(& git -C $RepositoryRoot diff --name-only `
-        $EntrySha -- ":(glob)source/**/src/main/**")
-    $productiveStatus = @(& git -C $RepositoryRoot status --porcelain=v1 `
-        --untracked-files=all -- ":(glob)source/**/src/main/**")
+    $productiveChanges = @($frozenChangedPaths | Where-Object {
+            $_ -match '^source/.+/src/main/'
+        })
+    $productiveStatus = @()
     $g8bFollowOnPresent = (Test-Path -LiteralPath $G8BEvidencePath `
             -PathType Leaf) -and (Test-Path -LiteralPath $G8BVerifierPath `
             -PathType Leaf)
@@ -478,8 +482,9 @@ try {
         Write-Host "G8A historical no-product boundary delegated to the versioned G8B verifier."
     }
 
-    $sourceStatus = @(& git -C $RepositoryRoot status --porcelain=v1 `
-        --untracked-files=all -- source)
+    $sourceChanges = @($frozenChangedPaths | Where-Object {
+            $_ -match '^source/'
+        })
     $g8cDesignPresent = (Test-Path -LiteralPath $G8CEvidencePath `
             -PathType Leaf) -and (Test-Path -LiteralPath $G8CVerifierPath `
             -PathType Leaf)
@@ -533,8 +538,8 @@ try {
             "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8C2LocusPairLifecycleTest.java"
         )
     }
-    $unexpectedSource = @($sourceStatus | Where-Object {
-            $path = ($_ -replace '^..\s+', '').Replace("\", "/")
+    $unexpectedSource = @($sourceChanges | Where-Object {
+            $path = $_
             $isG8A = $path -match `
                 '^source/shared/common-jre/src/test/java/org/geocedg/common/locus/G8A(Intersection.*|TargetAdapters)\.java$'
             $isG8BTest = $g8bFollowOnPresent -and $path -match `
