@@ -4,6 +4,7 @@
     "models/legacy/template-v7/manifest.yml",
     "models/legacy/inter-cil-cono-oblique/manifest.yml",
     "models/legacy/inter-cil-cono-oblique-two-levels/manifest.yml",
-    "models/regression/g5-dxf-foundation/manifest.yml"
+    "models/regression/g5-dxf-foundation/manifest.yml",
+    "models/regression/g9a2-spatial-point-pilot/manifest.yml"
   ]
 }

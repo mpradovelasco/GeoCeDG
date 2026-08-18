@@ -1632,7 +1632,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/ProjectionBindingRecord.java",
       "change": "added",
-      "purpose": "Implement one typed inert G9A1 identity record or deterministic versioned XML codec component without spatial evaluation.",
+      "purpose": "Preserve the inert G9A1 version-one contract and persist the exact typed version-two inputs admitted by the G9A2 projection-system/POINT pilot.",
       "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
     },
     {
@@ -1650,7 +1650,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/ProjectionDiagramMapRecord.java",
       "change": "added",
-      "purpose": "Implement one typed inert G9A1 identity record or deterministic versioned XML codec component without spatial evaluation.",
+      "purpose": "Preserve the inert G9A1 version-one contract and persist the exact typed version-two inputs admitted by the G9A2 projection-system/POINT pilot.",
       "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
     },
     {
@@ -1662,7 +1662,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/ProjectionFrameRecord.java",
       "change": "added",
-      "purpose": "Implement one typed inert G9A1 identity record or deterministic versioned XML codec component without spatial evaluation.",
+      "purpose": "Preserve the inert G9A1 version-one contract and persist the exact typed version-two inputs admitted by the G9A2 projection-system/POINT pilot.",
       "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
     },
     {
@@ -1674,7 +1674,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/ProjectionFrameRelationRecord.java",
       "change": "added",
-      "purpose": "Implement one typed inert G9A1 identity record or deterministic versioned XML codec component without spatial evaluation.",
+      "purpose": "Preserve the inert G9A1 version-one contract and persist the exact typed version-two inputs admitted by the G9A2 projection-system/POINT pilot.",
       "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
     },
     {
@@ -1692,7 +1692,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/ProjectionSystemRecord.java",
       "change": "added",
-      "purpose": "Implement one typed inert G9A1 identity record or deterministic versioned XML codec component without spatial evaluation.",
+      "purpose": "Preserve the inert G9A1 version-one contract and persist the exact typed version-two inputs admitted by the G9A2 projection-system/POINT pilot.",
       "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
     },
     {
@@ -1734,7 +1734,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialIdentityRegistry.java",
       "change": "added",
-      "purpose": "Implement the construction-scoped typed registry, atomic load/copy/macro/delete transactions, collision handling, closure validation, and exact restoration.",
+      "purpose": "Preserve G9A1 atomic identity lifecycle while validating, remapping, and publishing exact version-two G9A2 records to the construction semantic runtime.",
       "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
     },
     {
@@ -1746,7 +1746,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialObjectRecord.java",
       "change": "added",
-      "purpose": "Implement one typed inert G9A1 identity record or deterministic versioned XML codec component without spatial evaluation.",
+      "purpose": "Preserve the inert G9A1 version-one contract and persist the exact typed version-two inputs admitted by the G9A2 projection-system/POINT pilot.",
       "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
     },
     {
@@ -1764,7 +1764,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRecordXmlCodec.java",
       "change": "added",
-      "purpose": "Implement one typed inert G9A1 identity record or deterministic versioned XML codec component without spatial evaluation.",
+      "purpose": "Preserve version-one XML byte shape and strictly parse/write the exact version-two G9A2 point-pilot record attributes.",
       "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
     },
     {
@@ -1866,7 +1866,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/Construction.java",
       "change": "modified",
-      "purpose": "Own the construction-scoped spatial identity registry and integrate atomic copy, delete, clear, and explicit redefine lifecycle transactions.",
+      "purpose": "Own the identity registry and G9A2 semantic runtime, connecting atomic record publication/retirement to normal construction-DAG certificates.",
       "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
     },
     {
@@ -1909,6 +1909,312 @@
       "path": "source/shared/common/src/main/java/org/geogebra/common/util/InternalClipboard.java",
       "change": "modified",
       "purpose": "Export and atomically import complete participating identity closures with one fresh typed-ID remap per paste.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/runtime/AlgoProjectionDefinedSpatialPoint.java",
+      "change": "added",
+      "purpose": "Integrate exact durable G9A2 point/system records with the normal construction DAG, atomic certificates, and the one-way transient derived point.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/runtime/AlgoProjectionSystemCertificate.java",
+      "change": "added",
+      "purpose": "Integrate exact durable G9A2 point/system records with the normal construction DAG, atomic certificates, and the one-way transient derived point.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/runtime/package-info.java",
+      "change": "added",
+      "purpose": "Integrate exact durable G9A2 point/system records with the normal construction DAG, atomic certificates, and the one-way transient derived point.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/runtime/ProjectionSystemPilotCertificate.java",
+      "change": "added",
+      "purpose": "Integrate exact durable G9A2 point/system records with the normal construction DAG, atomic certificates, and the one-way transient derived point.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/runtime/SpatialPointPilotCertificate.java",
+      "change": "added",
+      "purpose": "Integrate exact durable G9A2 point/system records with the normal construction DAG, atomic certificates, and the one-way transient derived point.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/runtime/SpatialSemanticInputs.java",
+      "change": "added",
+      "purpose": "Integrate exact durable G9A2 point/system records with the normal construction DAG, atomic certificates, and the one-way transient derived point.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/runtime/SpatialSemanticRuntime.java",
+      "change": "added",
+      "purpose": "Integrate exact durable G9A2 point/system records with the normal construction DAG, atomic certificates, and the one-way transient derived point.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/CorrespondenceStatus.java",
+      "change": "added",
+      "purpose": "Implement one reusable G9A2 frame/map/relation, status, numeric-policy, certificate, or projection-defined POINT evaluation component without presentation authority.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/DiagramMapDefinition.java",
+      "change": "added",
+      "purpose": "Implement one reusable G9A2 frame/map/relation, status, numeric-policy, certificate, or projection-defined POINT evaluation component without presentation authority.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/DiagramMapEvidence.java",
+      "change": "added",
+      "purpose": "Publish immutable G9A2 diagram-map family, orientation, unit, scale, revision, and status evidence inside the system certificate.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/DiagramMapFamily.java",
+      "change": "added",
+      "purpose": "Implement one reusable G9A2 frame/map/relation, status, numeric-policy, certificate, or projection-defined POINT evaluation component without presentation authority.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/DiagramOrientation.java",
+      "change": "added",
+      "purpose": "Implement one reusable G9A2 frame/map/relation, status, numeric-policy, certificate, or projection-defined POINT evaluation component without presentation authority.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/FoldSide.java",
+      "change": "added",
+      "purpose": "Implement one reusable G9A2 frame/map/relation, status, numeric-policy, certificate, or projection-defined POINT evaluation component without presentation authority.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/FrameHandedness.java",
+      "change": "added",
+      "purpose": "Implement one reusable G9A2 frame/map/relation, status, numeric-policy, certificate, or projection-defined POINT evaluation component without presentation authority.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/NumericalEvidenceStatus.java",
+      "change": "added",
+      "purpose": "Implement one reusable G9A2 frame/map/relation, status, numeric-policy, certificate, or projection-defined POINT evaluation component without presentation authority.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/NumericPolicy.java",
+      "change": "added",
+      "purpose": "Implement one reusable G9A2 frame/map/relation, status, numeric-policy, certificate, or projection-defined POINT evaluation component without presentation authority.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/package-info.java",
+      "change": "added",
+      "purpose": "Implement one reusable G9A2 frame/map/relation, status, numeric-policy, certificate, or projection-defined POINT evaluation component without presentation authority.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/ProjectionDefinedPointEvaluator.java",
+      "change": "added",
+      "purpose": "Implement one reusable G9A2 frame/map/relation, status, numeric-policy, certificate, or projection-defined POINT evaluation component without presentation authority.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/ProjectionFrameDefinition.java",
+      "change": "added",
+      "purpose": "Implement one reusable G9A2 frame/map/relation, status, numeric-policy, certificate, or projection-defined POINT evaluation component without presentation authority.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/ProjectionFrameFamily.java",
+      "change": "added",
+      "purpose": "Implement one reusable G9A2 frame/map/relation, status, numeric-policy, certificate, or projection-defined POINT evaluation component without presentation authority.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/ProjectionObservation.java",
+      "change": "added",
+      "purpose": "Implement one reusable G9A2 frame/map/relation, status, numeric-policy, certificate, or projection-defined POINT evaluation component without presentation authority.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/ProjectionRelationDefinition.java",
+      "change": "added",
+      "purpose": "Implement one reusable G9A2 frame/map/relation, status, numeric-policy, certificate, or projection-defined POINT evaluation component without presentation authority.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/ProjectionRelationEvidence.java",
+      "change": "added",
+      "purpose": "Implement one reusable G9A2 frame/map/relation, status, numeric-policy, certificate, or projection-defined POINT evaluation component without presentation authority.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/ProjectionRelationKind.java",
+      "change": "added",
+      "purpose": "Implement one reusable G9A2 frame/map/relation, status, numeric-policy, certificate, or projection-defined POINT evaluation component without presentation authority.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/ProjectionRelationOrientation.java",
+      "change": "added",
+      "purpose": "Implement one reusable G9A2 frame/map/relation, status, numeric-policy, certificate, or projection-defined POINT evaluation component without presentation authority.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/ProjectionRelationProvenance.java",
+      "change": "added",
+      "purpose": "Implement one reusable G9A2 frame/map/relation, status, numeric-policy, certificate, or projection-defined POINT evaluation component without presentation authority.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/ProjectionResidualEvidence.java",
+      "change": "added",
+      "purpose": "Implement one reusable G9A2 frame/map/relation, status, numeric-policy, certificate, or projection-defined POINT evaluation component without presentation authority.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/ProjectionSystemCertificate.java",
+      "change": "added",
+      "purpose": "Implement one reusable G9A2 frame/map/relation, status, numeric-policy, certificate, or projection-defined POINT evaluation component without presentation authority.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/ProjectionSystemEvaluator.java",
+      "change": "added",
+      "purpose": "Implement one reusable G9A2 frame/map/relation, status, numeric-policy, certificate, or projection-defined POINT evaluation component without presentation authority.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/ProjectionSystemStatus.java",
+      "change": "added",
+      "purpose": "Implement one reusable G9A2 frame/map/relation, status, numeric-policy, certificate, or projection-defined POINT evaluation component without presentation authority.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/RepresentationFidelity.java",
+      "change": "added",
+      "purpose": "Implement one reusable G9A2 frame/map/relation, status, numeric-policy, certificate, or projection-defined POINT evaluation component without presentation authority.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/SemanticEvidenceKey.java",
+      "change": "added",
+      "purpose": "Provide deterministic semantic evidence keys without label, coordinate, construction-order, XML-position, output-index, or Java-reference identity inference.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/SemanticValueChecks.java",
+      "change": "added",
+      "purpose": "Implement one reusable G9A2 frame/map/relation, status, numeric-policy, certificate, or projection-defined POINT evaluation component without presentation authority.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/SpatialCapabilityStatus.java",
+      "change": "added",
+      "purpose": "Implement one reusable G9A2 frame/map/relation, status, numeric-policy, certificate, or projection-defined POINT evaluation component without presentation authority.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/SpatialCertificateStatus.java",
+      "change": "added",
+      "purpose": "Implement one reusable G9A2 frame/map/relation, status, numeric-policy, certificate, or projection-defined POINT evaluation component without presentation authority.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/SpatialCurrentnessStatus.java",
+      "change": "added",
+      "purpose": "Implement one reusable G9A2 frame/map/relation, status, numeric-policy, certificate, or projection-defined POINT evaluation component without presentation authority.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/SpatialDefinitionStatus.java",
+      "change": "added",
+      "purpose": "Implement one reusable G9A2 frame/map/relation, status, numeric-policy, certificate, or projection-defined POINT evaluation component without presentation authority.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/SpatialPointCertificate.java",
+      "change": "added",
+      "purpose": "Implement one reusable G9A2 frame/map/relation, status, numeric-policy, certificate, or projection-defined POINT evaluation component without presentation authority.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/SpatialSemanticInstrumentation.java",
+      "change": "added",
+      "purpose": "Implement one reusable G9A2 frame/map/relation, status, numeric-policy, certificate, or projection-defined POINT evaluation component without presentation authority.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/Vector2.java",
+      "change": "added",
+      "purpose": "Implement one reusable G9A2 frame/map/relation, status, numeric-policy, certificate, or projection-defined POINT evaluation component without presentation authority.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/Vector3.java",
+      "change": "added",
+      "purpose": "Implement one reusable G9A2 frame/map/relation, status, numeric-policy, certificate, or projection-defined POINT evaluation component without presentation authority.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9A2ProjectionDefinedPointEvaluatorTest.java",
+      "change": "added",
+      "purpose": "Verify authorized G9A2 point/system semantics, persistence, lifecycle, authority, DAG behavior, and geometric degeneracies.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9A2ProjectionSystemEvaluatorTest.java",
+      "change": "added",
+      "purpose": "Verify authorized G9A2 point/system semantics, persistence, lifecycle, authority, DAG behavior, and geometric degeneracies.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9A2SpatialSemanticHostXmlTest.java",
+      "change": "added",
+      "purpose": "Verify authorized G9A2 point/system semantics, persistence, lifecycle, authority, DAG behavior, and geometric degeneracies.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9A2SpatialSemanticInstrumentationTest.java",
+      "change": "added",
+      "purpose": "Verify authorized G9A2 point/system semantics, persistence, lifecycle, authority, DAG behavior, and geometric degeneracies.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9A2SpatialSemanticLifecycleTest.java",
+      "change": "added",
+      "purpose": "Verify authorized G9A2 point/system semantics, persistence, lifecycle, authority, DAG behavior, and geometric degeneracies.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9A2SpatialSemanticRecordXmlTest.java",
+      "change": "added",
+      "purpose": "Verify authorized G9A2 point/system semantics, persistence, lifecycle, authority, DAG behavior, and geometric degeneracies.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9A2SpatialSemanticRuntimeTest.java",
+      "change": "added",
+      "purpose": "Verify authorized G9A2 point/system semantics, persistence, lifecycle, authority, DAG behavior, and geometric degeneracies.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/spatial/g9a2/v1-inert-point-closure.xml",
+      "change": "added",
+      "purpose": "Provide a strict G9A2 legacy or version-two spatial XML compatibility fixture.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/spatial/g9a2/v2-malformed-unknown-attribute.xml",
+      "change": "added",
+      "purpose": "Provide a strict G9A2 legacy or version-two spatial XML compatibility fixture.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/spatial/g9a2/v2-unknown-record-version.xml",
+      "change": "added",
+      "purpose": "Provide a strict G9A2 legacy or version-two spatial XML compatibility fixture.",
       "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
     }
   ]

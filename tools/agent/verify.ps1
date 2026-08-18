@@ -43,6 +43,8 @@ $KnowledgeBundleVerifier = Join-Path $PSScriptRoot `
     "verify-knowledge-bundles.ps1"
 $G9A1SpatialIdentityVerifier = Join-Path $PSScriptRoot `
     "verify-g9a1-spatial-identity.ps1"
+$G9A2SpatialPointVerifier = Join-Path $PSScriptRoot `
+    "verify-g9a2-spatial-point.ps1"
 $BenchmarkRunner = Join-Path $RepositoryRoot "tools\benchmark\run.ps1"
 $InitialStatus = $null
 
@@ -311,6 +313,26 @@ try {
         & $G9A1SpatialIdentityVerifier @g9a1Parameters
         Assert-LastScriptSuccess `
             -Description "G9A1 durable spatial identity and persistence foundation"
+    }
+
+    if (Test-Path -LiteralPath $G9A2SpatialPointVerifier -PathType Leaf) {
+        Write-Host "`n==> G9A2 spatial semantic core and projection-defined point pilot"
+        $g9a2Parameters = @{
+            LogDirectory = Join-Path ([IO.Path]::GetFullPath($LogDirectory)) `
+                "g9a2-spatial-point"
+        }
+        if ($SkipBuild) {
+            $g9a2Parameters.SkipBuild = $true
+        }
+        if ($AllowToolchainDownload) {
+            $g9a2Parameters.AllowToolchainDownload = $true
+        }
+        if ($KeepBuildOutputs) {
+            $g9a2Parameters.KeepBuildOutputs = $true
+        }
+        & $G9A2SpatialPointVerifier @g9a2Parameters
+        Assert-LastScriptSuccess `
+            -Description "G9A2 spatial semantic point pilot"
     }
 
     Write-Host "`n==> Standalone Windows packaging contracts"

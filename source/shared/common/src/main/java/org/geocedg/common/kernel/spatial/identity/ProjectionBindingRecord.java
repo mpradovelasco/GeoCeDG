@@ -23,6 +23,9 @@ public final class ProjectionBindingRecord implements SpatialIdentityRecord {
 	private final String schemaId;
 	private final int schemaVersion;
 	private final List<PersistentGeoId> projectedGeoIds;
+	private final PersistentGeoId projectedPointGeoId;
+	private final String fidelity;
+	private final String correspondence;
 	private final long revision;
 	private final ProjectionBindingId copySourceId;
 
@@ -46,9 +49,12 @@ public final class ProjectionBindingRecord implements SpatialIdentityRecord {
 			String expectedSpatialType, String schemaId, int schemaVersion,
 			List<PersistentGeoId> projectedGeoIds, long revision,
 			ProjectionBindingId copySourceId) {
+		if (semanticVersion != 1) {
+			throw new IllegalArgumentException(
+					"The inert projection-binding constructor requires semanticVersion 1");
+		}
 		this.id = Objects.requireNonNull(id);
-		this.semanticVersion = SpatialRecordSupport.requirePositive(semanticVersion,
-				"semanticVersion");
+		this.semanticVersion = semanticVersion;
 		this.objectId = Objects.requireNonNull(objectId);
 		this.systemId = Objects.requireNonNull(systemId);
 		this.diagramMapId = Objects.requireNonNull(diagramMapId);
@@ -62,6 +68,71 @@ public final class ProjectionBindingRecord implements SpatialIdentityRecord {
 		this.schemaVersion = SpatialRecordSupport.requirePositive(schemaVersion,
 				"schemaVersion");
 		this.projectedGeoIds = SpatialRecordSupport.immutableIds(projectedGeoIds);
+		this.projectedPointGeoId = null;
+		this.fidelity = null;
+		this.correspondence = null;
+		this.revision = SpatialRecordSupport.requireRevision(revision, "revision");
+		this.copySourceId = copySourceId;
+	}
+
+	/** Creates a version-two point binding with one explicit projected point. */
+	public ProjectionBindingRecord(ProjectionBindingId id, int semanticVersion,
+			SpatialObjectId objectId, ProjectionSystemId systemId,
+			ProjectionDiagramMapId diagramMapId, ProjectionFrameId frameId,
+			ProjectionBindingRole role, String representationType,
+			String expectedSpatialType, String schemaId, int schemaVersion,
+			PersistentGeoId projectedPointGeoId, String fidelity,
+			String correspondence, long revision) {
+		this(id, semanticVersion, objectId, systemId, diagramMapId, frameId, role,
+				representationType, expectedSpatialType, schemaId, schemaVersion,
+				projectedPointGeoId, fidelity, correspondence, revision, null);
+	}
+
+	/** Creates a version-two point binding with optional immediate copy lineage. */
+	public ProjectionBindingRecord(ProjectionBindingId id, int semanticVersion,
+			SpatialObjectId objectId, ProjectionSystemId systemId,
+			ProjectionDiagramMapId diagramMapId, ProjectionFrameId frameId,
+			ProjectionBindingRole role, String representationType,
+			String expectedSpatialType, String schemaId, int schemaVersion,
+			PersistentGeoId projectedPointGeoId, String fidelity,
+			String correspondence, long revision, ProjectionBindingId copySourceId) {
+		if (semanticVersion != 2) {
+			throw new IllegalArgumentException(
+					"The semantic projection-binding constructor requires semanticVersion 2");
+		}
+		this.id = Objects.requireNonNull(id);
+		this.semanticVersion = semanticVersion;
+		this.objectId = Objects.requireNonNull(objectId);
+		this.systemId = Objects.requireNonNull(systemId);
+		this.diagramMapId = Objects.requireNonNull(diagramMapId);
+		this.frameId = Objects.requireNonNull(frameId);
+		this.role = Objects.requireNonNull(role);
+		this.representationType = SpatialRecordSupport.requireText(representationType,
+				"representationType");
+		if (!SpatialObjectRecord.POINT_TYPE.equals(this.representationType)) {
+			throw new IllegalArgumentException(
+					"Version-two projection bindings support POINT only");
+		}
+		this.expectedSpatialType = SpatialRecordSupport.requireText(expectedSpatialType,
+				"expectedSpatialType");
+		if (!SpatialObjectRecord.POINT_TYPE.equals(this.expectedSpatialType)) {
+			throw new IllegalArgumentException(
+					"Version-two projection bindings require expected POINT type");
+		}
+		this.schemaId = SpatialRecordSupport.requireText(schemaId, "schemaId");
+		this.schemaVersion = SpatialRecordSupport.requirePositive(schemaVersion,
+				"schemaVersion");
+		if (!SpatialObjectRecord.POINT_SCHEMA_ID.equals(this.schemaId)
+				|| this.schemaVersion != SpatialObjectRecord.POINT_SCHEMA_VERSION) {
+			throw new IllegalArgumentException(
+					"Version-two projection bindings require the G9A2 point schema");
+		}
+		this.projectedPointGeoId = Objects.requireNonNull(projectedPointGeoId);
+		this.projectedGeoIds = SpatialRecordSupport.immutableIds(
+				java.util.Collections.singletonList(projectedPointGeoId));
+		this.fidelity = SpatialRecordSupport.requireText(fidelity, "fidelity");
+		this.correspondence = SpatialRecordSupport.requireText(correspondence,
+				"correspondence");
 		this.revision = SpatialRecordSupport.requireRevision(revision, "revision");
 		this.copySourceId = copySourceId;
 	}
@@ -133,6 +204,21 @@ public final class ProjectionBindingRecord implements SpatialIdentityRecord {
 		return projectedGeoIds;
 	}
 
+	/** @return the explicit version-two projected point, or {@code null} for v1 */
+	public PersistentGeoId getProjectedPointGeoId() {
+		return projectedPointGeoId;
+	}
+
+	/** @return the explicit version-two fidelity token, or {@code null} for v1 */
+	public String getFidelity() {
+		return fidelity;
+	}
+
+	/** @return the explicit version-two correspondence token, or {@code null} for v1 */
+	public String getCorrespondence() {
+		return correspondence;
+	}
+
 	public long getRevision() {
 		return revision;
 	}
@@ -140,6 +226,17 @@ public final class ProjectionBindingRecord implements SpatialIdentityRecord {
 	@Override
 	public ProjectionBindingRecord remap(Map<SpatialIdentityId, SpatialIdentityId> remap,
 			boolean recordImmediateCopySource) {
+		if (semanticVersion == 2) {
+			return new ProjectionBindingRecord(SpatialRecordSupport.remap(id, remap),
+					semanticVersion, SpatialRecordSupport.remap(objectId, remap),
+					SpatialRecordSupport.remap(systemId, remap),
+					SpatialRecordSupport.remap(diagramMapId, remap),
+					SpatialRecordSupport.remap(frameId, remap), role, representationType,
+					expectedSpatialType, schemaId, schemaVersion,
+					SpatialRecordSupport.remap(projectedPointGeoId, remap), fidelity,
+					correspondence, revision,
+					recordImmediateCopySource ? id : copySourceId);
+		}
 		return new ProjectionBindingRecord(SpatialRecordSupport.remap(id, remap),
 				semanticVersion, SpatialRecordSupport.remap(objectId, remap),
 				SpatialRecordSupport.remap(systemId, remap),

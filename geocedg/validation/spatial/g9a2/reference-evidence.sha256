@@ -1,0 +1,5 @@
+# G9A2 analytic-reference canonical-LF SHA-256 integrity record
+# Strict UTF-8 text after optional BOM removal and CRLF/CR to LF normalization.
+4ba07d83eecd0238e78be60b491fb51d0e18fa5921bea6a2e01db7efb2e176a1  geocedg/validation/spatial/g9a2/numeric-policy.json
+6d159f150b4c5d014ea11af7a0ea7e48e7e03cd6116f55b377a1ecba411b00dd  geocedg/validation/spatial/g9a2/point-reference-values.json
+38ede6ce49aa8a5164c9416187d15c0eb584ce66787198bdc8faa46f08ae8d74  geocedg/validation/spatial/g9a2/generate_point_references.py

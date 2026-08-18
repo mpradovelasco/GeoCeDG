@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<geogebra format="5.0" version="5.4.928.0" app="classic">
+  <construction title="G9A2 v1 inert closure" author="" date="">
+    <geocedgSpatial version="1">
+      <geo id="geo:00000000000000000000000000000001" provider="g9a1.test"
+          family="POINT" schema="cedg.point.orthographic" schemaVersion="1"
+          authority="PROJECTION_DEFINED" bindingRole="DEFINING" outputRole="POINT"
+          cardinality="1" definitionRevision="0" topologyRevision="0"/>
+      <geo id="geo:00000000000000000000000000000002" provider="g9a1.test"
+          family="POINT" schema="cedg.point.orthographic" schemaVersion="1"
+          authority="PROJECTION_DEFINED" bindingRole="DEFINING" outputRole="POINT"
+          cardinality="1" definitionRevision="0" topologyRevision="0"/>
+      <object id="object:00000000000000000000000000000003" semanticVersion="1"
+          type="POINT" authority="PROJECTION_DEFINED" schema="cedg.point.orthographic"
+          schemaVersion="1" geos="geo:00000000000000000000000000000001"
+          definitionRevision="0" topologyRevision="0"/>
+      <frame id="frame:00000000000000000000000000000004" semanticVersion="1"
+          geos="geo:00000000000000000000000000000001" revision="0"/>
+      <frame id="frame:00000000000000000000000000000009" semanticVersion="1"
+          geos="geo:00000000000000000000000000000002" revision="0"/>
+      <system id="system:00000000000000000000000000000005" semanticVersion="1"
+          maps="map:00000000000000000000000000000006 map:0000000000000000000000000000000a"
+          relations="relation:00000000000000000000000000000007"
+          geos="geo:00000000000000000000000000000001 geo:00000000000000000000000000000002"
+          revision="0"/>
+      <diagramMap id="map:00000000000000000000000000000006" semanticVersion="1"
+          system="system:00000000000000000000000000000005"
+          frame="frame:00000000000000000000000000000004" role="DEFINING"
+          family="ORIENTED_ISOMETRY" relations="relation:00000000000000000000000000000007"
+          geos="geo:00000000000000000000000000000001" revision="0"/>
+      <diagramMap id="map:0000000000000000000000000000000a" semanticVersion="1"
+          system="system:00000000000000000000000000000005"
+          frame="frame:00000000000000000000000000000009" role="AUXILIARY"
+          family="ORIENTED_ISOMETRY" relations="relation:00000000000000000000000000000007"
+          geos="geo:00000000000000000000000000000002" revision="0"/>
+      <frameRelation id="relation:00000000000000000000000000000007"
+          semanticVersion="1" system="system:00000000000000000000000000000005"
+          sourceMap="map:00000000000000000000000000000006"
+          destinationMap="map:0000000000000000000000000000000a"
+          kind="HINGE_UNFOLD" geos="geo:00000000000000000000000000000001"
+          revision="0"/>
+      <binding id="binding:00000000000000000000000000000008" semanticVersion="1"
+          object="object:00000000000000000000000000000003"
+          system="system:00000000000000000000000000000005"
+          diagramMap="map:00000000000000000000000000000006"
+          frame="frame:00000000000000000000000000000004" role="DEFINING"
+          representation="POINT" expectedType="POINT" schema="cedg.point.orthographic"
+          schemaVersion="1" geos="geo:00000000000000000000000000000001"
+          revision="0"/>
+    </geocedgSpatial>
+    <element type="numeric" label="A"
+        geocedgId="geo:00000000000000000000000000000001">
+      <value val="1.0"/>
+    </element>
+    <element type="numeric" label="B"
+        geocedgId="geo:00000000000000000000000000000002">
+      <value val="2.0"/>
+    </element>
+  </construction>
+</geogebra>

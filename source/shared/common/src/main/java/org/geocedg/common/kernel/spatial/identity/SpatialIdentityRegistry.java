@@ -284,6 +284,10 @@ public final class SpatialIdentityRegistry {
 			}
 		}
 		instrumentation.recordDeleteCommit();
+		if (owner != null) {
+			owner.onSpatialIdentityRecordsRetired(
+					Collections.unmodifiableSet(new LinkedHashSet<>(retired)));
+		}
 		return Collections.unmodifiableSet(retired);
 	}
 
@@ -743,6 +747,11 @@ public final class SpatialIdentityRegistry {
 		}
 		transaction.markCommitted();
 		instrumentation.recordRedefineCommit();
+		if (owner != null && transaction.getDecision()
+				== SpatialRedefineDecision.RETAIN) {
+			owner.onSpatialIdentityRecordsPublished(
+					Collections.<SpatialIdentityId>singleton(context.getOldId()));
+		}
 	}
 
 	private void requireCurrentFreshClosure(
@@ -854,6 +863,14 @@ public final class SpatialIdentityRegistry {
 		}
 		if (copied) {
 			instrumentation.recordCopyCommit();
+		}
+		if (owner != null && !batch.isEmpty()) {
+			ArrayList<SpatialIdentityId> publishedIds = new ArrayList<>();
+			for (SpatialIdentityRecord record : batch) {
+				publishedIds.add(record.getId());
+			}
+			owner.onSpatialIdentityRecordsPublished(
+					Collections.unmodifiableList(publishedIds));
 		}
 	}
 
@@ -1070,12 +1087,114 @@ public final class SpatialIdentityRegistry {
 					"Record class does not match its globally typed identity",
 					record.getId()));
 		}
-		if (record.getSemanticVersion() != XML_VERSION) {
+		int semanticVersion = record.getSemanticVersion();
+		boolean geoVersion = record instanceof GeoIdentityRecord
+				&& semanticVersion == XML_VERSION;
+		boolean typedVersion = !(record instanceof GeoIdentityRecord)
+				&& (semanticVersion == 1 || semanticVersion == 2);
+		if (!geoVersion && !typedVersion) {
 			throw failure(SpatialIdentityDiagnostic.forSubject(
 					SpatialIdentityDiagnostic.Code.UNSUPPORTED_VERSION,
 					"Unsupported record semantic version: "
-							+ record.getSemanticVersion(), record.getId()));
+							+ semanticVersion, record.getId()));
 		}
+		if (semanticVersion == 2) {
+			validateVersionTwoShape(record);
+		}
+	}
+
+	private void validateVersionTwoShape(SpatialIdentityRecord record) {
+		boolean valid;
+		if (record instanceof ProjectionFrameRecord) {
+			ProjectionFrameRecord frame = (ProjectionFrameRecord) record;
+			valid = exactIds(frame.getDefinitionGeoIds(), frame.getOriginGeoId(),
+					frame.getUGeoId(), frame.getVGeoId()) && frame.getFamily() != null
+					&& frame.getUnits() != null && frame.getHandedness() != null
+					&& frame.getFidelity() != null;
+		} else if (record instanceof ProjectionDiagramMapRecord) {
+			ProjectionDiagramMapRecord map = (ProjectionDiagramMapRecord) record;
+			valid = exactIds(map.getDefinitionGeoIds(), map.getA00GeoId(),
+					map.getA01GeoId(), map.getA10GeoId(), map.getA11GeoId(),
+					map.getB0GeoId(), map.getB1GeoId(), map.getDeclaredScaleGeoId())
+					&& map.getOrientation() != null && map.getUnits() != null
+					&& map.getFidelity() != null;
+		} else if (record instanceof ProjectionFrameRelationRecord) {
+			ProjectionFrameRelationRecord relation =
+					(ProjectionFrameRelationRecord) record;
+			boolean hinge = ProjectionFrameRelationRecord.HINGE_UNFOLD.equals(
+					relation.getRelationKind())
+					&& exactIds(relation.getDefinitionGeoIds(),
+							relation.getSupportStartGeoId(),
+							relation.getSupportEndGeoId(),
+							relation.getFoldSignGeoId());
+			boolean changeOfPlane = ProjectionFrameRelationRecord.CHANGE_OF_PLANE.equals(
+					relation.getRelationKind()) && relation.getFoldSignGeoId() == null
+					&& exactIds(relation.getDefinitionGeoIds(),
+							relation.getSupportStartGeoId(),
+							relation.getSupportEndGeoId());
+			boolean orientation = ProjectionFrameRelationRecord.POSITIVE_ORIENTATION
+					.equals(relation.getOrientation())
+					|| ProjectionFrameRelationRecord.NEGATIVE_ORIENTATION
+							.equals(relation.getOrientation());
+			valid = (hinge || changeOfPlane) && orientation
+					&& ProjectionFrameRelationRecord.EXPLICIT_CONSTRUCTION.equals(
+							relation.getProvenance());
+		} else if (record instanceof ProjectionSystemRecord) {
+			ProjectionSystemRecord system = (ProjectionSystemRecord) record;
+			valid = system.getDefinitionGeoIds().isEmpty() && system.getUnits() != null
+					&& finitePositive(system.getAbsoluteTolerance())
+					&& finitePositive(system.getRelativeTolerance())
+					&& finitePositive(system.getRankTolerance())
+					&& finitePositive(system.getMapTolerance())
+					&& finitePositive(system.getHingeTolerance())
+					&& finitePositive(system.getConditionLimit());
+		} else if (record instanceof ProjectionBindingRecord) {
+			ProjectionBindingRecord binding = (ProjectionBindingRecord) record;
+			valid = SpatialObjectRecord.POINT_TYPE.equals(
+					binding.getRepresentationType())
+					&& SpatialObjectRecord.POINT_TYPE.equals(
+							binding.getExpectedSpatialType())
+					&& SpatialObjectRecord.POINT_SCHEMA_ID.equals(binding.getSchemaId())
+					&& binding.getSchemaVersion()
+							== SpatialObjectRecord.POINT_SCHEMA_VERSION
+					&& exactIds(binding.getProjectedGeoIds(),
+							binding.getProjectedPointGeoId())
+					&& binding.getFidelity() != null
+					&& binding.getCorrespondence() != null;
+		} else if (record instanceof SpatialObjectRecord) {
+			SpatialObjectRecord object = (SpatialObjectRecord) record;
+			valid = SpatialObjectRecord.POINT_TYPE.equals(object.getSpatialType())
+					&& object.getAuthority() == EditAuthorityMode.PROJECTION_DEFINED
+					&& SpatialObjectRecord.POINT_SCHEMA_ID.equals(object.getSchemaId())
+					&& object.getSchemaVersion()
+							== SpatialObjectRecord.POINT_SCHEMA_VERSION
+					&& object.getDefinitionGeoIds().isEmpty()
+					&& object.getSystemId() != null && !object.getBindingIds().isEmpty();
+		} else {
+			valid = false;
+		}
+		if (!valid) {
+			throw failure(SpatialIdentityDiagnostic.forSubject(
+					SpatialIdentityDiagnostic.Code.MALFORMED_RECORD,
+					"Version-two record does not have the exact typed persistence shape",
+					record.getId()));
+		}
+	}
+
+	private static boolean exactIds(List<PersistentGeoId> actual,
+			PersistentGeoId... explicit) {
+		ArrayList<PersistentGeoId> expected = new ArrayList<>();
+		for (PersistentGeoId id : explicit) {
+			if (id != null && !expected.contains(id)) {
+				expected.add(id);
+			}
+		}
+		Collections.sort(expected);
+		return actual.equals(expected);
+	}
+
+	private static boolean finitePositive(double value) {
+		return Double.isFinite(value) && value > 0;
 	}
 
 	private void validateAttachmentGeo(GeoElement geo, PersistentGeoId id) {
@@ -1325,17 +1444,26 @@ public final class SpatialIdentityRegistry {
 					records.add(SpatialRecordXmlCodec.parseRecord(tag, attributes));
 				} catch (IllegalArgumentException exception) {
 					String message = exception.getMessage();
-					SpatialIdentityDiagnostic.Code code = message != null
-							&& (message.contains("identity")
-									|| message.contains("token")
-									|| message.contains("Expected "))
-							? SpatialIdentityDiagnostic.Code.MALFORMED_ID
-							: SpatialIdentityDiagnostic.Code.MALFORMED_RECORD;
+					SpatialIdentityDiagnostic.Code code;
+					if (isUnsupportedRecordVersion(message)) {
+						code = SpatialIdentityDiagnostic.Code.UNSUPPORTED_VERSION;
+					} else if (message != null && (message.contains("identity")
+							|| message.contains("token")
+							|| message.contains("Expected "))) {
+						code = SpatialIdentityDiagnostic.Code.MALFORMED_ID;
+					} else {
+						code = SpatialIdentityDiagnostic.Code.MALFORMED_RECORD;
+					}
 					throw preflightFailure(code,
 							"Malformed clipboard " + tag + " persistence record",
 							exception);
 				}
 			}
+		}
+
+		private static boolean isUnsupportedRecordVersion(String message) {
+			return message != null
+					&& message.contains("Unsupported record semantic version");
 		}
 
 		@Override
@@ -1409,7 +1537,7 @@ public final class SpatialIdentityRegistry {
 			stagedRecords.add(Objects.requireNonNull(record));
 		}
 
-		/** Parses and stages one version-one flat record. */
+		/** Parses and stages one supported versioned flat record. */
 		public void stageRecord(String xmlElementName, Map<String, String> attributes) {
 			requireOpen();
 			if (sectionVersion != XML_VERSION) {
@@ -1421,9 +1549,11 @@ public final class SpatialIdentityRegistry {
 			try {
 				stageRecord(SpatialRecordXmlCodec.parseRecord(xmlElementName, attributes));
 			} catch (IllegalArgumentException exception) {
-				SpatialIdentityDiagnostic.Code code = isIdentityParseFailure(exception)
-						? SpatialIdentityDiagnostic.Code.MALFORMED_ID
-						: SpatialIdentityDiagnostic.Code.MALFORMED_RECORD;
+				SpatialIdentityDiagnostic.Code code = isUnsupportedVersion(exception)
+						? SpatialIdentityDiagnostic.Code.UNSUPPORTED_VERSION
+						: isIdentityParseFailure(exception)
+								? SpatialIdentityDiagnostic.Code.MALFORMED_ID
+								: SpatialIdentityDiagnostic.Code.MALFORMED_RECORD;
 				stagingFailure = failure(SpatialIdentityDiagnostic.of(code,
 						"Malformed " + xmlElementName + " persistence record"), exception);
 				throw stagingFailure;
@@ -1546,6 +1676,12 @@ public final class SpatialIdentityRegistry {
 			String message = exception.getMessage();
 			return message != null && (message.contains("identity")
 					|| message.contains("token") || message.contains("Expected "));
+		}
+
+		private boolean isUnsupportedVersion(IllegalArgumentException exception) {
+			String message = exception.getMessage();
+			return message != null
+					&& message.contains("Unsupported record semantic version");
 		}
 	}
 

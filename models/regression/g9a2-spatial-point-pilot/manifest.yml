@@ -1,0 +1,82 @@
+{
+  "$schema": "../../../geocedg/specs/operations/model-manifest.schema.json",
+  "schema_version": 1,
+  "template": false,
+  "id": "cedg.regression.g9a2-spatial-point-pilot",
+  "maturity": "experimental",
+  "source": {
+    "uri": "models/regression/g9a2-spatial-point-pilot/geogebra.xml",
+    "author": "GeoCeDG contributors",
+    "date": "2026-08-17",
+    "provenance_notes": "New deterministic projection-defined POINT construction authored for the authorized G9A2 validation gate; it is not migrated from labels or visual coincidence."
+  },
+  "required_geogebra": {
+    "version": "5.4.928.0",
+    "baseline_sha": "9b93256b7df401ff056c37b502d82df4d72b1522"
+  },
+  "loaded_by_default": false,
+  "inputs": [
+    "two defining 2D point projections",
+    "three explicit orthographic frames",
+    "three typed intrinsic-to-diagram maps",
+    "one hinge and one auxiliary change-of-plane relation",
+    "versioned world-coordinate numeric policy"
+  ],
+  "outputs": [
+    "projection-system certificate",
+    "projection-defined spatial POINT certificate",
+    "transient one-way derived point at (2, 3, 5)"
+  ],
+  "validity_domain": {
+    "description": "Finite orthonormal frames, invertible admitted maps, explicit coherent supports and at least two defining observations whose stacked point system has rank three.",
+    "parameters": []
+  },
+  "known_degeneracies": [
+    "Parallel or repeated frame equations are underdetermined.",
+    "Singular or incoherent diagram maps invalidate the system.",
+    "Nonincident, reversed or collapsed support lines invalidate their relation.",
+    "Inconsistent projected points publish no spatial payload.",
+    "Undefined inputs withdraw the transient derived point."
+  ],
+  "reference_models": [
+    "geocedg/validation/spatial/g9a2/point-reference-values.json"
+  ],
+  "expected_metrics": {
+    "spatial_point": [2.0, 3.0, 5.0],
+    "defining_bindings": 2,
+    "projection_maps": 3,
+    "typed_relations": 2,
+    "derived_point_persisted": false,
+    "viewport_independent": true
+  },
+  "license": {
+    "spdx": null,
+    "evidence": "Project-authored validation construction; public redistribution remains subject to repository license approval.",
+    "review_status": "unreviewed"
+  },
+  "replacement_candidate": null,
+  "artifact": {
+    "path": "models/regression/g9a2-spatial-point-pilot/g9a2-spatial-point-pilot.ggb",
+    "format": "ggb",
+    "sha256": "3f150eaf05731b3907b5ba3e653ec4666ca1dcc6f999f1b609de305b98b2a3be",
+    "immutable": true
+  },
+  "derived_artifacts": [
+    {
+      "path": "geocedg/validation/spatial/g9a2/point-reference-values.json",
+      "role": "regression-evidence"
+    }
+  ],
+  "implementation": {
+    "mechanisms": [
+      "g9a1-durable-spatial-identities",
+      "version-two-semantic-records",
+      "normal-kernel-dependency-graph",
+      "projection-defined-point-certificate",
+      "one-way-derived-3d-adapter"
+    ],
+    "embedded_tools": 0,
+    "global_javascript": false
+  },
+  "publications": []
+}

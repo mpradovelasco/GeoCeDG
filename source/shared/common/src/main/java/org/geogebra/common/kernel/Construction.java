@@ -17,6 +17,7 @@
 package org.geogebra.common.kernel;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -37,11 +38,13 @@ import javax.annotation.Nonnull;
 
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityDiagnostic;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityException;
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityId;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry.LoadPurpose;
 import org.geocedg.common.kernel.spatial.identity.SpatialRedefineContext;
 import org.geocedg.common.kernel.spatial.identity.SpatialRedefineDecision;
 import org.geocedg.common.kernel.spatial.identity.SpatialRedefineTransaction;
+import org.geocedg.common.kernel.spatial.runtime.SpatialSemanticRuntime;
 import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.euclidian.LayerManager;
@@ -221,6 +224,7 @@ public class Construction {
 
 	private MyXMLio xmlio;
 	private final SpatialIdentityRegistry spatialIdentityRegistry;
+	private final SpatialSemanticRuntime spatialSemanticRuntime;
 	private LoadPurpose nextSpatialIdentityLoadPurpose;
 	private int spatialIdentityXmlDepth;
 
@@ -254,6 +258,7 @@ public class Construction {
 	protected Construction(@Nonnull Kernel k, Construction parentConstruction) {
 		kernel = k;
 		spatialIdentityRegistry = new SpatialIdentityRegistry(this);
+		spatialSemanticRuntime = new SpatialSemanticRuntime(this);
 
 		companion = kernel.createConstructionCompanion(this);
 
@@ -288,6 +293,42 @@ public class Construction {
 	 */
 	public SpatialIdentityRegistry getSpatialIdentityRegistry() {
 		return spatialIdentityRegistry;
+	}
+
+	/** @return this construction's G9A2 normal-DAG spatial runtime */
+	public SpatialSemanticRuntime getSpatialSemanticRuntime() {
+		return spatialSemanticRuntime;
+	}
+
+	/**
+	 * Reconciles semantic algorithms after an atomic identity publication.
+	 * Registry publication remains authoritative even if a presentation/runtime
+	 * listener cannot be wired.
+	 *
+	 * @param changedIds published durable identities
+	 */
+	public void onSpatialIdentityRecordsPublished(
+			Collection<SpatialIdentityId> changedIds) {
+		try {
+			spatialSemanticRuntime.onRecordsPublished(changedIds);
+		} catch (RuntimeException exception) {
+			Log.debug(exception);
+		}
+	}
+
+	/**
+	 * Withdraws current semantic payloads during identity retirement without
+	 * changing the registry transaction outcome.
+	 *
+	 * @param retiredIds retired durable identities
+	 */
+	public void onSpatialIdentityRecordsRetired(
+			Collection<SpatialIdentityId> retiredIds) {
+		try {
+			spatialSemanticRuntime.onRecordsRetired(retiredIds);
+		} catch (RuntimeException exception) {
+			Log.debug(exception);
+		}
 	}
 
 	/**
@@ -3243,6 +3284,7 @@ public class Construction {
 	 * After this the construction list will be empty.
 	 */
 	public void clearConstruction() {
+		spatialSemanticRuntime.clear();
 		if (nextSpatialIdentityLoadPurpose == LoadPurpose.REDEFINE_REBUILD
 				|| nextSpatialIdentityLoadPurpose == LoadPurpose.ROLLBACK_RESTORE) {
 			spatialIdentityRegistry.clearPreservingRetiredTokens();

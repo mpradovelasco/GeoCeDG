@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "id": "cedg.spatial.point.numeric.v1",
+  "status": "G9A2_IMPLEMENTATION_CANDIDATE",
+  "coordinateSystem": "GEOGEBRA_CARTESIAN_3D_WORLD",
+  "arithmetic": "IEEE_754_BINARY64",
+  "numericGuarantee": "ESTIMATED_ERROR",
+  "residual": {
+    "absoluteTolerance": 1e-10,
+    "relativeTolerance": 1e-10,
+    "formula": "absoluteTolerance + relativeTolerance * max(1, abs(characteristicScale))",
+    "aggregation": "EVERY_BINDING_MUST_PASS",
+    "forbiddenScaleInputs": [
+      "zoom",
+      "DPI",
+      "viewport",
+      "pixel density",
+      "camera distance",
+      "absolute distance from the global origin"
+    ]
+  },
+  "rank": {
+    "method": "SINGULAR_VALUES_OF_POINT_SYSTEM",
+    "relativeTolerance": 1e-12,
+    "formula": "relativeTolerance * max(rows, columns) * max(1, abs(sigmaMax))",
+    "classification": "rank counts singular values strictly greater than the threshold",
+    "conditioningReportedSeparately": true
+  },
+  "map": {
+    "tolerance": 1e-10,
+    "formula": "tolerance * max(1, abs(characteristicScale))"
+  },
+  "hinge": {
+    "tolerance": 1e-10,
+    "formula": "tolerance * max(1, abs(characteristicScale))"
+  },
+  "conditionLimit": 1e12,
+  "frameAndMap": {
+    "finiteComponentsRequired": true,
+    "positiveUnitScaleRequired": true,
+    "invertibleMapRequired": true,
+    "orientedIsometryOrDeclaredUnitSimilarityOnly": true,
+    "generalAffineAndProjectiveMaps": "UNSUPPORTED"
+  },
+  "claims": {
+    "exactInputMayUseExactEvidence": true,
+    "binary64EvaluationIsNumerical": true,
+    "smallResidualDoesNotProveRankOrUniqueness": true,
+    "screenDistanceIsForbidden": true
+  }
+}

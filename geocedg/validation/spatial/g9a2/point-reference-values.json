@@ -1,0 +1,445 @@
+{
+  "diagramMaps": {
+    "commonGauge": {
+      "determinantSign": 1,
+      "family": "ORIENTED_ISOMETRY",
+      "matrix": [
+        [
+          "0",
+          "-1"
+        ],
+        [
+          "1",
+          "0"
+        ]
+      ],
+      "translation": [
+        "7",
+        "-11"
+      ],
+      "unitScale": "1"
+    },
+    "horizontalIdentity": {
+      "determinantSign": 1,
+      "family": "ORIENTED_ISOMETRY",
+      "matrix": [
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ]
+      ],
+      "translation": [
+        "0",
+        "0"
+      ],
+      "unitScale": "1"
+    },
+    "profileAuxiliary": {
+      "determinantSign": 1,
+      "family": "ORIENTED_ISOMETRY",
+      "frameUseRole": "AUXILIARY",
+      "matrix": [
+        [
+          "0",
+          "-1"
+        ],
+        [
+          "1",
+          "0"
+        ]
+      ],
+      "translation": [
+        "0",
+        "0"
+      ],
+      "unitScale": "1"
+    },
+    "verticalFolded": {
+      "determinantSign": -1,
+      "family": "ORIENTED_ISOMETRY",
+      "foldSide": "NEGATIVE_INTRINSIC_V",
+      "matrix": [
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "-1"
+        ]
+      ],
+      "translation": [
+        "0",
+        "0"
+      ],
+      "unitScale": "1"
+    }
+  },
+  "frames": [
+    {
+      "direction": [
+        "0",
+        "0",
+        "1"
+      ],
+      "id": "horizontal",
+      "normal": [
+        "0",
+        "0",
+        "1"
+      ],
+      "origin": [
+        "0",
+        "0",
+        "0"
+      ],
+      "projectionFamily": "ORTHOGRAPHIC",
+      "u": [
+        "1",
+        "0",
+        "0"
+      ],
+      "v": [
+        "0",
+        "1",
+        "0"
+      ]
+    },
+    {
+      "direction": [
+        "0",
+        "-1",
+        "0"
+      ],
+      "id": "vertical",
+      "normal": [
+        "0",
+        "-1",
+        "0"
+      ],
+      "origin": [
+        "0",
+        "0",
+        "0"
+      ],
+      "projectionFamily": "ORTHOGRAPHIC",
+      "u": [
+        "1",
+        "0",
+        "0"
+      ],
+      "v": [
+        "0",
+        "0",
+        "1"
+      ]
+    },
+    {
+      "direction": [
+        "1",
+        "0",
+        "0"
+      ],
+      "id": "profile",
+      "normal": [
+        "1",
+        "0",
+        "0"
+      ],
+      "origin": [
+        "0",
+        "0",
+        "0"
+      ],
+      "projectionFamily": "ORTHOGRAPHIC",
+      "u": [
+        "0",
+        "1",
+        "0"
+      ],
+      "v": [
+        "0",
+        "0",
+        "1"
+      ]
+    }
+  ],
+  "gaugeCase": {
+    "expectedCertificate": "VALID",
+    "expectedSpatialPointAfterGauge": [
+      "2",
+      "3",
+      "5"
+    ],
+    "intrinsicCoordinatesUnchanged": true,
+    "sourcePoint": [
+      "2",
+      "3",
+      "5"
+    ]
+  },
+  "generator": {
+    "candidateImplementationImported": false,
+    "precisionDigits": 80,
+    "randomness": false,
+    "runtime": "Python standard library Decimal"
+  },
+  "id": "cedg.validation.g9a2.point-reference-values",
+  "limitations": [
+    "The rank-side expectations consume the separately versioned numeric policy.",
+    "The reference does not implement a general primitive or product evaluator.",
+    "Binary64 results remain numerical even when analytic inputs are exact."
+  ],
+  "nearRankCases": [
+    {
+      "expectedCertificate": "UNDERDETERMINED",
+      "expectedRank": 2,
+      "frame": {
+        "direction": [
+          "1.9999999999999999999999980000000000000000000000019999999999999999999999980000000E-12",
+          "0",
+          "0.99999999999999999999999800000000000000000000000199999999999999999999999800000000"
+        ],
+        "id": "near-horizontal",
+        "normal": [
+          "1.9999999999999999999999980000000000000000000000019999999999999999999999980000000E-12",
+          "0",
+          "0.99999999999999999999999800000000000000000000000199999999999999999999999800000000"
+        ],
+        "origin": [
+          "0",
+          "0",
+          "0"
+        ],
+        "projectionFamily": "ORTHOGRAPHIC",
+        "u": [
+          "0.99999999999999999999999800000000000000000000000199999999999999999999999800000000",
+          "0",
+          "-1.9999999999999999999999980000000000000000000000019999999999999999999999980000000E-12"
+        ],
+        "v": [
+          "0",
+          "1",
+          "0"
+        ]
+      },
+      "id": "below-relative-threshold",
+      "parameterT": "1E-12",
+      "smallestSingularValue": "1.4142135623730950488016880171029168920221474745331162984135303637980954235248141E-12"
+    },
+    {
+      "expectedCertificate": "VALID",
+      "expectedRank": 3,
+      "frame": {
+        "direction": [
+          "1.5999999999999999999998976000000000000000000065535999999999999999995805696000000E-11",
+          "0",
+          "0.99999999999999999999987200000000000000000000819199999999999999999947571200000000"
+        ],
+        "id": "near-horizontal",
+        "normal": [
+          "1.5999999999999999999998976000000000000000000065535999999999999999995805696000000E-11",
+          "0",
+          "0.99999999999999999999987200000000000000000000819199999999999999999947571200000000"
+        ],
+        "origin": [
+          "0",
+          "0",
+          "0"
+        ],
+        "projectionFamily": "ORTHOGRAPHIC",
+        "u": [
+          "0.99999999999999999999987200000000000000000000819199999999999999999947571200000000",
+          "0",
+          "-1.5999999999999999999998976000000000000000000065535999999999999999995805696000000E-11"
+        ],
+        "v": [
+          "0",
+          "1",
+          "0"
+        ]
+      },
+      "id": "above-relative-threshold",
+      "parameterT": "8E-12",
+      "smallestSingularValue": "1.1313708498984760390413147755005617116224881788080043157145916027601470463479035E-11"
+    }
+  ],
+  "numericPolicy": {
+    "absoluteTolerance": "1e-10",
+    "conditionLimit": "1e12",
+    "hingeTolerance": "1e-10",
+    "mapTolerance": "1e-10",
+    "nearRankMatrixShape": [
+      4,
+      3
+    ],
+    "nearRankMaximumSingularValue": "1.4142135623730950488016887242096980785696718753769480731766797379907324784621070",
+    "nearRankThreshold": "5.6568542494923801952067548968387923142786875015077922927067189519629299138484280E-12",
+    "rankRelativeTolerance": "1e-12",
+    "rankThresholdFormula": "rankRelativeTolerance * max(rows, columns) * max(1, abs(sigmaMax))",
+    "relativeTolerance": "1e-10"
+  },
+  "pointCases": [
+    {
+      "certificate": "VALID",
+      "diagram": {
+        "horizontal": [
+          "2",
+          "3"
+        ],
+        "vertical": [
+          "2",
+          "-5"
+        ]
+      },
+      "id": "general-two-frame",
+      "intrinsic": {
+        "horizontal": [
+          "2",
+          "3"
+        ],
+        "vertical": [
+          "2",
+          "5"
+        ]
+      },
+      "spatialPoint": [
+        "2",
+        "3",
+        "5"
+      ]
+    },
+    {
+      "certificate": "VALID",
+      "id": "point-on-horizontal-plane",
+      "intrinsic": {
+        "horizontal": [
+          "2",
+          "3"
+        ],
+        "vertical": [
+          "2",
+          "0"
+        ]
+      },
+      "spatialPoint": [
+        "2",
+        "3",
+        "0"
+      ]
+    },
+    {
+      "certificate": "UNDERDETERMINED",
+      "id": "one-view",
+      "intrinsic": {
+        "horizontal": [
+          "2",
+          "3"
+        ]
+      }
+    },
+    {
+      "certificate": "UNDERDETERMINED",
+      "id": "repeated-frame",
+      "intrinsic": {
+        "horizontal-1": [
+          "2",
+          "3"
+        ],
+        "horizontal-2": [
+          "2",
+          "3"
+        ]
+      }
+    },
+    {
+      "certificate": "VALID",
+      "id": "three-view-consistent",
+      "intrinsic": {
+        "horizontal": [
+          "2",
+          "3"
+        ],
+        "profile": [
+          "3",
+          "5"
+        ],
+        "vertical": [
+          "2",
+          "5"
+        ]
+      },
+      "requiredResidualCount": 3,
+      "spatialPoint": [
+        "2",
+        "3",
+        "5"
+      ]
+    },
+    {
+      "certificate": "INCONSISTENT_PROJECTIONS",
+      "id": "incompatible-lifts",
+      "intrinsic": {
+        "horizontal": [
+          "2",
+          "3"
+        ],
+        "vertical": [
+          "4",
+          "5"
+        ]
+      }
+    }
+  ],
+  "relations": [
+    {
+      "commonDiagramLine": "p_v=0",
+      "destinationMap": "verticalFolded",
+      "foldSide": "OPPOSITE_DIAGRAM_SIDE",
+      "horizontalIntrinsicLine": "q_v=0",
+      "id": "horizontal-vertical-hinge",
+      "kind": "HINGE_UNFOLD",
+      "orientation": "POSITIVE",
+      "provenance": "EXPLICIT_CONSTRUCTION",
+      "sourceMap": "horizontalIdentity",
+      "supportEnd": [
+        "1",
+        "0",
+        "0"
+      ],
+      "supportStart": [
+        "0",
+        "0",
+        "0"
+      ],
+      "verticalIntrinsicLine": "q_v=0"
+    },
+    {
+      "commonDiagramLine": "p_u=0",
+      "destinationFrameUseRole": "AUXILIARY",
+      "destinationMap": "profileAuxiliary",
+      "foldSide": "NOT_APPLICABLE",
+      "id": "horizontal-profile-change",
+      "kind": "CHANGE_OF_PLANE",
+      "orientation": "POSITIVE",
+      "provenance": "EXPLICIT_CONSTRUCTION",
+      "sourceMap": "horizontalIdentity",
+      "supportEnd": [
+        "0",
+        "1",
+        "0"
+      ],
+      "supportStart": [
+        "0",
+        "0",
+        "0"
+      ]
+    }
+  ],
+  "schemaVersion": 1,
+  "status": "G9A2_IMPLEMENTATION_CANDIDATE_ANALYTIC_REFERENCE"
+}

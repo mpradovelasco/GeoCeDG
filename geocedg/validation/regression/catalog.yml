@@ -12,6 +12,16 @@
         "validator": "tools/agent/verify-dxf.ps1",
         "comparison": "semantic-dxf-entities"
       }
+    },
+    {
+      "id": "cedg.regression.g9a2-spatial-point-pilot",
+      "manifest": "models/regression/g9a2-spatial-point-pilot/manifest.yml",
+      "specification": "geocedg/specs/spatial/g9-spatial-projection-semantics.md",
+      "expected": {
+        "evidence": "geocedg/validation/spatial/g9a2/point-reference-values.json",
+        "validator": "tools/agent/verify-g9a2-spatial-point.ps1",
+        "comparison": "semantic-point-certificate"
+      }
     }
   ]
 }

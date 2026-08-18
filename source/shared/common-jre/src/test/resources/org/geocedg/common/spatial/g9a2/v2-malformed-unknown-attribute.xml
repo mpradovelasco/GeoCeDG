@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<geogebra format="5.0" version="5.4.928.0" app="classic">
+  <construction title="G9A2 malformed v2" author="" date="">
+    <geocedgSpatial version="1">
+      <frame id="frame:00000000000000000000000000000004" semanticVersion="2"
+          origin="geo:00000000000000000000000000000001"
+          u="geo:00000000000000000000000000000002"
+          v="geo:00000000000000000000000000000003" family="ORTHOGRAPHIC"
+          units="model-unit" handedness="RIGHT_HANDED" fidelity="EXACT"
+          revision="0" future="opaque"/>
+    </geocedgSpatial>
+  </construction>
+</geogebra>

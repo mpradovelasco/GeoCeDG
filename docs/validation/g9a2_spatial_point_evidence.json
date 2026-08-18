@@ -1,0 +1,325 @@
+{
+  "schemaVersion": 1,
+  "phase": "G9A2",
+  "status": "IMPLEMENTATION_CANDIDATE_PENDING_AUTHOR_REVIEW",
+  "provenance": {
+    "entrySha": "5934d706fd9b30ea11b34d6ff0fe293e971cfc3f",
+    "branch": "feature/g9a2-spatial-semantic-point-pilot",
+    "canonicalPromptCanonicalLfSha256": "d02553668cfa8800fa28428e5ee8f293504bc5519ec53f8ed2d54571d802d23e",
+    "spatialSpecificationCanonicalLfSha256": "11e1327a6518a25178133a1bfc0720a6d73adabab7d127b5203b6da86b25ca56",
+    "adr0010CanonicalLfSha256": "25b85c8f29488df3c313f3a1e67cea1cb25714253aa01d13625f8791ad20586d",
+    "adr0011CanonicalLfSha256": "42fd3fdc0a7493f6bde28c1ba2c597e093e138b14fd73619204cb22d001ebf41",
+    "g9a1TagObject": "9b125d9e4d23ff8ce68ce0ad9c16e30a8de338c7",
+    "g9a1PeeledCommit": "02e97ecc9a2e53aece913f7004c50c17fcc663e6"
+  },
+  "approval": {
+    "selfApproved": false,
+    "authorApproved": false,
+    "passClaimed": false,
+    "reviewRequired": true,
+    "disposition": "PENDING_AUTHOR_REVIEW"
+  },
+  "phaseDisposition": {
+    "G9A2": "IMPLEMENTATION_CANDIDATE_PENDING_AUTHOR_REVIEW",
+    "G9A3AndLater": "NOT_AUTHORIZED_NOT_STARTED",
+    "productiveG10": "NOT_AUTHORIZED_NOT_STARTED"
+  },
+  "sourceBoundary": {
+    "productivePaths": [
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/ProjectionBindingRecord.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/ProjectionDiagramMapRecord.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/ProjectionFrameRecord.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/ProjectionFrameRelationRecord.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/ProjectionSystemRecord.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialIdentityRegistry.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialObjectRecord.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRecordXmlCodec.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/runtime/AlgoProjectionDefinedSpatialPoint.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/runtime/AlgoProjectionSystemCertificate.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/runtime/package-info.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/runtime/ProjectionSystemPilotCertificate.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/runtime/SpatialPointPilotCertificate.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/runtime/SpatialSemanticInputs.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/runtime/SpatialSemanticRuntime.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/CorrespondenceStatus.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/DiagramMapDefinition.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/DiagramMapEvidence.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/DiagramMapFamily.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/DiagramOrientation.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/FoldSide.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/FrameHandedness.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/NumericalEvidenceStatus.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/NumericPolicy.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/package-info.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/ProjectionDefinedPointEvaluator.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/ProjectionFrameDefinition.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/ProjectionFrameFamily.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/ProjectionObservation.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/ProjectionRelationDefinition.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/ProjectionRelationEvidence.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/ProjectionRelationKind.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/ProjectionRelationOrientation.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/ProjectionRelationProvenance.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/ProjectionResidualEvidence.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/ProjectionSystemCertificate.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/ProjectionSystemEvaluator.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/ProjectionSystemStatus.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/RepresentationFidelity.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/SemanticEvidenceKey.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/SemanticValueChecks.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/SpatialCapabilityStatus.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/SpatialCertificateStatus.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/SpatialCurrentnessStatus.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/SpatialDefinitionStatus.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/SpatialPointCertificate.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/SpatialSemanticInstrumentation.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/Vector2.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/Vector3.java",
+      "source/shared/common/src/main/java/org/geogebra/common/kernel/Construction.java"
+    ],
+    "testPaths": [
+      "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9A2ProjectionDefinedPointEvaluatorTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9A2ProjectionSystemEvaluatorTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9A2SpatialSemanticHostXmlTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9A2SpatialSemanticInstrumentationTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9A2SpatialSemanticLifecycleTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9A2SpatialSemanticRecordXmlTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9A2SpatialSemanticRuntimeTest.java"
+    ],
+    "fixturePaths": [
+      "source/shared/common-jre/src/test/resources/org/geocedg/common/spatial/g9a2/v1-inert-point-closure.xml",
+      "source/shared/common-jre/src/test/resources/org/geocedg/common/spatial/g9a2/v2-malformed-unknown-attribute.xml",
+      "source/shared/common-jre/src/test/resources/org/geocedg/common/spatial/g9a2/v2-unknown-record-version.xml"
+    ],
+    "modelPaths": [
+      "geocedg/validation/regression/catalog.yml",
+      "models/manifests/catalog.yml",
+      "models/regression/g9a2-spatial-point-pilot/g9a2-spatial-point-pilot.ggb",
+      "models/regression/g9a2-spatial-point-pilot/generate_model.py",
+      "models/regression/g9a2-spatial-point-pilot/geogebra.xml",
+      "models/regression/g9a2-spatial-point-pilot/manifest.yml",
+      "models/regression/g9a2-spatial-point-pilot/README.md"
+    ],
+    "validationPaths": [
+      "geocedg/validation/spatial/g9a2/generate_point_references.py",
+      "geocedg/validation/spatial/g9a2/numeric-policy.json",
+      "geocedg/validation/spatial/g9a2/point-reference-values.json",
+      "geocedg/validation/spatial/g9a2/reference-evidence.sha256"
+    ],
+    "supportingPaths": [
+      "docs/architecture/g9a2_spatial_semantic_point_design.md",
+      "docs/roadmap/geocedg_roadmap.md",
+      "docs/upstream/modified-files.yml",
+      "docs/validation/g9a2_spatial_point_evidence.json",
+      "docs/validation/g9a2_spatial_point_evidence.sha256",
+      "docs/validation/g9a2_spatial_semantic_point_report.md",
+      "tools/agent/verify-g9a1-spatial-identity.ps1",
+      "tools/agent/verify-g9a2-spatial-point.ps1",
+      "tools/agent/verify.ps1"
+    ]
+  },
+  "validation": {
+    "scenarios": [
+      { "id": "A2-SYS-01", "disposition": "PASSED" },
+      { "id": "A2-SYS-02", "disposition": "PASSED" },
+      { "id": "A2-SYS-03", "disposition": "PASSED" },
+      { "id": "A2-SYS-04", "disposition": "PASSED" },
+      { "id": "A2-SYS-05", "disposition": "PASSED" },
+      { "id": "A2-SYS-06", "disposition": "PASSED" },
+      { "id": "A2-SYS-07", "disposition": "PASSED" },
+      { "id": "A2-SYS-08", "disposition": "PASSED" },
+      { "id": "A2-SYS-09", "disposition": "PASSED" },
+      { "id": "A2-SYS-10", "disposition": "PASSED" },
+      { "id": "A2-SYS-11", "disposition": "PASSED" },
+      { "id": "A2-POINT-01", "disposition": "PASSED" },
+      { "id": "A2-POINT-02", "disposition": "PASSED" },
+      { "id": "A2-POINT-03", "disposition": "PASSED" },
+      { "id": "A2-POINT-04", "disposition": "PASSED" },
+      { "id": "A2-POINT-05", "disposition": "PASSED" },
+      { "id": "A2-POINT-06", "disposition": "PASSED" },
+      { "id": "A2-POINT-07", "disposition": "NOT_APPLICABLE" },
+      { "id": "A2-POINT-08", "disposition": "PASSED" },
+      { "id": "A2-POINT-09", "disposition": "PASSED" },
+      { "id": "A2-POINT-10", "disposition": "PASSED" },
+      { "id": "A2-POINT-11", "disposition": "PASSED" },
+      { "id": "A2-POINT-12", "disposition": "PASSED" },
+      { "id": "A2-DYN-01", "disposition": "PASSED" },
+      { "id": "A2-DYN-02", "disposition": "PASSED" },
+      { "id": "A2-DYN-03", "disposition": "PASSED" },
+      { "id": "A2-DYN-04", "disposition": "PASSED" },
+      { "id": "A2-DYN-05", "disposition": "PASSED" },
+      { "id": "A2-AUTH-01", "disposition": "PASSED" },
+      { "id": "A2-AUTH-02", "disposition": "PASSED" }
+    ],
+    "realHostXmlRoundTrip": true,
+    "certificateRecomputedAfterLoad": true,
+    "atomicFailureWithdrawsPayload": true,
+    "deterministicRerunAsserted": true,
+    "finalFocusedExecution": "PASSED",
+    "finalComposedExecutionWithoutSkipBuild": "PASSED"
+  },
+  "semanticCoverage": {
+    "projectionSystemStates": [
+      "NOT_EVALUATED",
+      "CONSISTENT",
+      "INCONSISTENT",
+      "DEGENERATE",
+      "UNDEFINED"
+    ],
+    "certificateStates": [
+      "NOT_EVALUATED",
+      "VALID",
+      "UNDERDETERMINED",
+      "AMBIGUOUS",
+      "INCONSISTENT_PROJECTIONS",
+      "DEGENERATE",
+      "UNDEFINED"
+    ]
+  },
+  "tests": {
+    "focused": {
+      "executionStatus": "PASSED_WITH_DETERMINISTIC_FULL_RERUN",
+      "classes": [
+        {
+          "name": "org.geocedg.common.spatial.G9A2ProjectionDefinedPointEvaluatorTest",
+          "tests": 13
+        },
+        {
+          "name": "org.geocedg.common.spatial.G9A2ProjectionSystemEvaluatorTest",
+          "tests": 10
+        },
+        {
+          "name": "org.geocedg.common.spatial.G9A2SpatialSemanticInstrumentationTest",
+          "tests": 4
+        },
+        {
+          "name": "org.geocedg.common.spatial.G9A2SpatialSemanticRecordXmlTest",
+          "tests": 6
+        },
+        {
+          "name": "org.geocedg.common.spatial.G9A2SpatialSemanticRuntimeTest",
+          "tests": 23
+        },
+        {
+          "name": "org.geocedg.common.spatial.G9A2SpatialSemanticHostXmlTest",
+          "tests": 5
+        },
+        {
+          "name": "org.geocedg.common.spatial.G9A2SpatialSemanticLifecycleTest",
+          "tests": 3
+        }
+      ],
+      "total": {
+        "tests": 64,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    }
+  },
+  "hardZeroCounters": {
+    "labelFallbackLookups": 0,
+    "coordinateAssociationAttempts": 0,
+    "creationOrderAssociationAttempts": 0,
+    "xmlPositionAssociationAttempts": 0,
+    "outputIndexAssociationAttempts": 0,
+    "javaReferenceIdentityAssumptions": 0,
+    "visibleDiagramAssociationAttempts": 0,
+    "stalePayloadPublications": 0,
+    "mixedAuthorityRevisionPublications": 0,
+    "hiddenGraphRecomputations": 0,
+    "renderCacheReads": 0,
+    "rendererReads": 0,
+    "viewportReads": 0,
+    "screenCoordinateReads": 0,
+    "dpiReads": 0,
+    "cameraTransformReads": 0,
+    "layerOrVisibilityReads": 0
+  },
+  "scopeAudit": {
+    "spatialDefinedEditing": 0,
+    "authorityTransitions": 0,
+    "generalPrimitiveSchemas": 0,
+    "lineSegmentRayVectorSchemas": 0,
+    "planeCircleConicSchemas": 0,
+    "spatialCurveSchemas": 0,
+    "composedSpatialObjects": 0,
+    "surfacesOrSolids": 0,
+    "automaticMigration": 0,
+    "publicCommands": 0,
+    "publicProcedures": 0,
+    "guiChanges": 0,
+    "locusChanges": 0,
+    "dxfChanges": 0,
+    "pythonProductChanges": 0,
+    "g9a3OrLaterImplementation": 0,
+    "productiveG10Implementation": 0,
+    "generatedTrackedArtifacts": 0
+  },
+  "oneWayView": {
+    "sharedKernelAdapterReal": true,
+    "hostEditingRejectedOrAuthorityPreserved": true,
+    "failureWithdrawsDerivedPoint": true,
+    "desktopSmokeClassification": "SHARED_KERNEL_ADAPTER_TESTED_COMPOSED_DESKTOP_COMPILE_PROFILE_GATES_PASSED_NO_DEDICATED_G9A2_3D_RENDERER_SMOKE"
+  },
+  "numericPolicy": {
+    "path": "geocedg/validation/spatial/g9a2/numeric-policy.json",
+    "classification": "VERSIONED_WORLD_COORDINATE_POLICY"
+  },
+  "analyticReference": {
+    "path": "geocedg/validation/spatial/g9a2/point-reference-values.json",
+    "classification": "INDEPENDENT_FAKE_FIRST_DECIMAL_80"
+  },
+  "canonicalModel": {
+    "path": "models/regression/g9a2-spatial-point-pilot/g9a2-spatial-point-pilot.ggb",
+    "sha256": "3f150eaf05731b3907b5ba3e653ec4666ca1dcc6f999f1b609de305b98b2a3be"
+  },
+  "entryVerification": {
+    "composed": "PASSED",
+    "logDirectory": "artifacts/g9a2/entry/composed"
+  },
+  "savedExecutions": {
+    "focusedFinal": {
+      "command": ".\\tools\\agent\\verify-g9a2-spatial-point.ps1 -KeepBuildOutputs -LogDirectory artifacts\\g9a2\\candidate\\focused-final",
+      "logDirectory": "artifacts/g9a2/candidate/focused-final",
+      "exitCode": 0,
+      "tests": 64,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "focusedDeterministicRerun": {
+      "command": ".\\tools\\agent\\verify-g9a2-spatial-point.ps1 -KeepBuildOutputs -LogDirectory artifacts\\g9a2\\candidate\\focused-rerun",
+      "logDirectory": "artifacts/g9a2/candidate/focused-rerun",
+      "exitCode": 0,
+      "tests": 64,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "composedFinal": {
+      "command": ".\\tools\\agent\\verify.ps1 -KeepBuildOutputs -LogDirectory artifacts\\g9a2\\candidate\\composed-final",
+      "logDirectory": "artifacts/g9a2/candidate/composed-final",
+      "withoutSkipBuild": true,
+      "exitCode": 0,
+      "g9a2Tests": 64,
+      "g9a2Failures": 0,
+      "g9a2Errors": 0,
+      "g9a2Skipped": 0
+    },
+    "environmentObservations": [
+      {
+        "classification": "ENVIRONMENT_ONLY",
+        "observation": "An initial run was blocked by an ACL on stale ignored Gradle problems-report output.",
+        "disposition": "The ignored stale output was removed and the unchanged authority was retried successfully; no product or source workaround was made and this is not a scope deviation."
+      }
+    ]
+  },
+  "scopeDeviations": [],
+  "residualRisks": [
+    "G9A2 admits only the projection-defined POINT provider and does not establish general primitive sufficiency.",
+    "Full hostile lifecycle, migration, re-role, and partial-copy hardening remains assigned to G9A3.",
+    "Binary64 residual evidence is estimated rather than a certified exact-error bound.",
+    "The 3D representation is a one-way shared-kernel adapter; bidirectional editing remains forbidden."
+  ]
+}

@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/** Strict version-one parser and deterministic writer for the flat XML section. */
+/** Strict versioned parser and deterministic writer for the flat XML section. */
 public final class SpatialRecordXmlCodec {
 	private SpatialRecordXmlCodec() {
 	}
@@ -43,11 +43,28 @@ public final class SpatialRecordXmlCodec {
 					optionalGeoId(attributes, "copySource"));
 		}
 		if ("object".equals(elementName)) {
+			int semanticVersion = recordSemanticVersion(attributes);
+			if (semanticVersion == 2) {
+				checkAttributes(attributes, "id", "semanticVersion", "type",
+						"authority", "schema", "schemaVersion", "system", "bindings",
+						"definitionRevision", "topologyRevision", "copySource");
+				return new SpatialObjectRecord(
+						SpatialObjectId.parse(required(attributes, "id")), semanticVersion,
+						required(attributes, "type"),
+						EditAuthorityMode.valueOf(required(attributes, "authority")),
+						required(attributes, "schema"),
+						integer(attributes, "schemaVersion"),
+						ProjectionSystemId.parse(required(attributes, "system")),
+						bindingIds(attributes, "bindings"),
+						longValue(attributes, "definitionRevision"),
+						longValue(attributes, "topologyRevision"),
+						optionalObjectId(attributes, "copySource"));
+			}
 			checkAttributes(attributes, "id", "semanticVersion", "type", "authority",
 					"schema", "schemaVersion", "geos", "definitionRevision",
 					"topologyRevision", "copySource");
 			return new SpatialObjectRecord(SpatialObjectId.parse(required(attributes, "id")),
-					integer(attributes, "semanticVersion"), required(attributes, "type"),
+					semanticVersion, required(attributes, "type"),
 					EditAuthorityMode.valueOf(required(attributes, "authority")),
 					required(attributes, "schema"), integer(attributes, "schemaVersion"),
 					geoIds(attributes, "geos"), longValue(attributes, "definitionRevision"),
@@ -55,30 +72,92 @@ public final class SpatialRecordXmlCodec {
 					optionalObjectId(attributes, "copySource"));
 		}
 		if ("frame".equals(elementName)) {
+			int semanticVersion = recordSemanticVersion(attributes);
+			if (semanticVersion == 2) {
+				checkAttributes(attributes, "id", "semanticVersion", "origin", "u", "v",
+						"family", "units", "handedness", "fidelity", "revision",
+						"copySource");
+				return new ProjectionFrameRecord(
+						ProjectionFrameId.parse(required(attributes, "id")),
+						semanticVersion,
+						PersistentGeoId.parse(required(attributes, "origin")),
+						PersistentGeoId.parse(required(attributes, "u")),
+						PersistentGeoId.parse(required(attributes, "v")),
+						required(attributes, "family"), required(attributes, "units"),
+						required(attributes, "handedness"),
+						required(attributes, "fidelity"),
+						longValue(attributes, "revision"),
+						optionalFrameId(attributes, "copySource"));
+			}
 			checkAttributes(attributes, "id", "semanticVersion", "geos", "revision",
 					"copySource");
 			return new ProjectionFrameRecord(
 					ProjectionFrameId.parse(required(attributes, "id")),
-					integer(attributes, "semanticVersion"), geoIds(attributes, "geos"),
+					semanticVersion, geoIds(attributes, "geos"),
 					longValue(attributes, "revision"),
 					optionalFrameId(attributes, "copySource"));
 		}
 		if ("system".equals(elementName)) {
+			int semanticVersion = recordSemanticVersion(attributes);
+			if (semanticVersion == 2) {
+				checkAttributes(attributes, "id", "semanticVersion", "maps", "relations",
+						"units", "absoluteTolerance", "relativeTolerance",
+						"rankTolerance", "mapTolerance", "hingeTolerance",
+						"conditionLimit", "revision", "copySource");
+				return new ProjectionSystemRecord(
+						ProjectionSystemId.parse(required(attributes, "id")),
+						semanticVersion, mapIds(attributes, "maps"),
+						relationIds(attributes, "relations"), required(attributes, "units"),
+						doubleValue(attributes, "absoluteTolerance"),
+						doubleValue(attributes, "relativeTolerance"),
+						doubleValue(attributes, "rankTolerance"),
+						doubleValue(attributes, "mapTolerance"),
+						doubleValue(attributes, "hingeTolerance"),
+						doubleValue(attributes, "conditionLimit"),
+						longValue(attributes, "revision"),
+						optionalSystemId(attributes, "copySource"));
+			}
 			checkAttributes(attributes, "id", "semanticVersion", "maps", "relations",
 					"geos", "revision", "copySource");
 			return new ProjectionSystemRecord(
 					ProjectionSystemId.parse(required(attributes, "id")),
-					integer(attributes, "semanticVersion"), mapIds(attributes, "maps"),
+					semanticVersion, mapIds(attributes, "maps"),
 					relationIds(attributes, "relations"), geoIds(attributes, "geos"),
 					longValue(attributes, "revision"),
 					optionalSystemId(attributes, "copySource"));
 		}
 		if ("diagramMap".equals(elementName)) {
+			int semanticVersion = recordSemanticVersion(attributes);
+			if (semanticVersion == 2) {
+				checkAttributes(attributes, "id", "semanticVersion", "system", "frame",
+						"role", "family", "orientation", "units", "fidelity", "a00",
+						"a01", "a10", "a11", "b0", "b1", "declaredScale",
+						"relations", "revision", "copySource");
+				return new ProjectionDiagramMapRecord(
+						ProjectionDiagramMapId.parse(required(attributes, "id")),
+						semanticVersion,
+						ProjectionSystemId.parse(required(attributes, "system")),
+						ProjectionFrameId.parse(required(attributes, "frame")),
+						ProjectionFrameUseRole.valueOf(required(attributes, "role")),
+						required(attributes, "family"),
+						required(attributes, "orientation"), required(attributes, "units"),
+						required(attributes, "fidelity"),
+						PersistentGeoId.parse(required(attributes, "a00")),
+						PersistentGeoId.parse(required(attributes, "a01")),
+						PersistentGeoId.parse(required(attributes, "a10")),
+						PersistentGeoId.parse(required(attributes, "a11")),
+						PersistentGeoId.parse(required(attributes, "b0")),
+						PersistentGeoId.parse(required(attributes, "b1")),
+						PersistentGeoId.parse(required(attributes, "declaredScale")),
+						relationIds(attributes, "relations"),
+						longValue(attributes, "revision"),
+						optionalMapId(attributes, "copySource"));
+			}
 			checkAttributes(attributes, "id", "semanticVersion", "system", "frame",
 					"role", "family", "relations", "geos", "revision", "copySource");
 			return new ProjectionDiagramMapRecord(
 					ProjectionDiagramMapId.parse(required(attributes, "id")),
-					integer(attributes, "semanticVersion"),
+					semanticVersion,
 					ProjectionSystemId.parse(required(attributes, "system")),
 					ProjectionFrameId.parse(required(attributes, "frame")),
 					ProjectionFrameUseRole.valueOf(required(attributes, "role")),
@@ -87,11 +166,40 @@ public final class SpatialRecordXmlCodec {
 					optionalMapId(attributes, "copySource"));
 		}
 		if ("frameRelation".equals(elementName)) {
+			int semanticVersion = recordSemanticVersion(attributes);
+			if (semanticVersion == 2) {
+				String kind = required(attributes, "kind");
+				if (ProjectionFrameRelationRecord.HINGE_UNFOLD.equals(kind)) {
+					checkAttributes(attributes, "id", "semanticVersion", "system",
+							"sourceMap", "destinationMap", "kind", "supportStart",
+							"supportEnd", "orientation", "provenance", "foldSign",
+							"revision", "copySource");
+				} else {
+					checkAttributes(attributes, "id", "semanticVersion", "system",
+							"sourceMap", "destinationMap", "kind", "supportStart",
+							"supportEnd", "orientation", "provenance", "revision",
+							"copySource");
+				}
+				return new ProjectionFrameRelationRecord(
+						ProjectionFrameRelationId.parse(required(attributes, "id")),
+						semanticVersion,
+						ProjectionSystemId.parse(required(attributes, "system")),
+						ProjectionDiagramMapId.parse(required(attributes, "sourceMap")),
+						ProjectionDiagramMapId.parse(required(attributes, "destinationMap")),
+						kind, PersistentGeoId.parse(required(attributes, "supportStart")),
+						PersistentGeoId.parse(required(attributes, "supportEnd")),
+						required(attributes, "orientation"),
+						required(attributes, "provenance"),
+						ProjectionFrameRelationRecord.HINGE_UNFOLD.equals(kind)
+								? PersistentGeoId.parse(required(attributes, "foldSign")) : null,
+						longValue(attributes, "revision"),
+						optionalRelationId(attributes, "copySource"));
+			}
 			checkAttributes(attributes, "id", "semanticVersion", "system", "sourceMap",
 					"destinationMap", "kind", "geos", "revision", "copySource");
 			return new ProjectionFrameRelationRecord(
 					ProjectionFrameRelationId.parse(required(attributes, "id")),
-					integer(attributes, "semanticVersion"),
+					semanticVersion,
 					ProjectionSystemId.parse(required(attributes, "system")),
 					ProjectionDiagramMapId.parse(required(attributes, "sourceMap")),
 					ProjectionDiagramMapId.parse(required(attributes, "destinationMap")),
@@ -100,12 +208,35 @@ public final class SpatialRecordXmlCodec {
 					optionalRelationId(attributes, "copySource"));
 		}
 		if ("binding".equals(elementName)) {
+			int semanticVersion = recordSemanticVersion(attributes);
+			if (semanticVersion == 2) {
+				checkAttributes(attributes, "id", "semanticVersion", "object", "system",
+						"diagramMap", "frame", "role", "representation", "expectedType",
+						"schema", "schemaVersion", "projectedPoint", "fidelity",
+						"correspondence", "revision", "copySource");
+				return new ProjectionBindingRecord(
+						ProjectionBindingId.parse(required(attributes, "id")),
+						semanticVersion,
+						SpatialObjectId.parse(required(attributes, "object")),
+						ProjectionSystemId.parse(required(attributes, "system")),
+						ProjectionDiagramMapId.parse(required(attributes, "diagramMap")),
+						ProjectionFrameId.parse(required(attributes, "frame")),
+						ProjectionBindingRole.valueOf(required(attributes, "role")),
+						required(attributes, "representation"),
+						required(attributes, "expectedType"), required(attributes, "schema"),
+						integer(attributes, "schemaVersion"),
+						PersistentGeoId.parse(required(attributes, "projectedPoint")),
+						required(attributes, "fidelity"),
+						required(attributes, "correspondence"),
+						longValue(attributes, "revision"),
+						optionalBindingId(attributes, "copySource"));
+			}
 			checkAttributes(attributes, "id", "semanticVersion", "object", "system",
 					"diagramMap", "frame", "role", "representation", "expectedType",
 					"schema", "schemaVersion", "geos", "revision", "copySource");
 			return new ProjectionBindingRecord(
 					ProjectionBindingId.parse(required(attributes, "id")),
-					integer(attributes, "semanticVersion"),
+					semanticVersion,
 					SpatialObjectId.parse(required(attributes, "object")),
 					ProjectionSystemId.parse(required(attributes, "system")),
 					ProjectionDiagramMapId.parse(required(attributes, "diagramMap")),
@@ -197,14 +328,31 @@ public final class SpatialRecordXmlCodec {
 		attribute(xml, "authority", record.getAuthority().name());
 		attribute(xml, "schema", record.getSchemaId());
 		attribute(xml, "schemaVersion", record.getSchemaVersion());
-		attribute(xml, "geos", join(record.getDefinitionGeoIds()));
+		if (record.getSemanticVersion() == 2) {
+			attribute(xml, "system", record.getSystemId().toExternalForm());
+			attribute(xml, "bindings", join(record.getBindingIds()));
+		} else {
+			requireVersionOne(record);
+			attribute(xml, "geos", join(record.getDefinitionGeoIds()));
+		}
 		attribute(xml, "definitionRevision", record.getDefinitionRevision());
 		attribute(xml, "topologyRevision", record.getTopologyRevision());
 	}
 
 	private static void writeFrame(StringBuilder xml, ProjectionFrameRecord record) {
 		attribute(xml, "semanticVersion", record.getSemanticVersion());
-		attribute(xml, "geos", join(record.getDefinitionGeoIds()));
+		if (record.getSemanticVersion() == 2) {
+			attribute(xml, "origin", record.getOriginGeoId().toExternalForm());
+			attribute(xml, "u", record.getUGeoId().toExternalForm());
+			attribute(xml, "v", record.getVGeoId().toExternalForm());
+			attribute(xml, "family", record.getFamily());
+			attribute(xml, "units", record.getUnits());
+			attribute(xml, "handedness", record.getHandedness());
+			attribute(xml, "fidelity", record.getFidelity());
+		} else {
+			requireVersionOne(record);
+			attribute(xml, "geos", join(record.getDefinitionGeoIds()));
+		}
 		attribute(xml, "revision", record.getRevision());
 	}
 
@@ -212,7 +360,18 @@ public final class SpatialRecordXmlCodec {
 		attribute(xml, "semanticVersion", record.getSemanticVersion());
 		attribute(xml, "maps", join(record.getMapIds()));
 		attribute(xml, "relations", join(record.getRelationIds()));
-		attribute(xml, "geos", join(record.getDefinitionGeoIds()));
+		if (record.getSemanticVersion() == 2) {
+			attribute(xml, "units", record.getUnits());
+			attribute(xml, "absoluteTolerance", record.getAbsoluteTolerance());
+			attribute(xml, "relativeTolerance", record.getRelativeTolerance());
+			attribute(xml, "rankTolerance", record.getRankTolerance());
+			attribute(xml, "mapTolerance", record.getMapTolerance());
+			attribute(xml, "hingeTolerance", record.getHingeTolerance());
+			attribute(xml, "conditionLimit", record.getConditionLimit());
+		} else {
+			requireVersionOne(record);
+			attribute(xml, "geos", join(record.getDefinitionGeoIds()));
+		}
 		attribute(xml, "revision", record.getRevision());
 	}
 
@@ -222,8 +381,25 @@ public final class SpatialRecordXmlCodec {
 		attribute(xml, "frame", record.getFrameId().toExternalForm());
 		attribute(xml, "role", record.getFrameUseRole().name());
 		attribute(xml, "family", record.getFamily());
+		if (record.getSemanticVersion() == 2) {
+			attribute(xml, "orientation", record.getOrientation());
+			attribute(xml, "units", record.getUnits());
+			attribute(xml, "fidelity", record.getFidelity());
+			attribute(xml, "a00", record.getA00GeoId().toExternalForm());
+			attribute(xml, "a01", record.getA01GeoId().toExternalForm());
+			attribute(xml, "a10", record.getA10GeoId().toExternalForm());
+			attribute(xml, "a11", record.getA11GeoId().toExternalForm());
+			attribute(xml, "b0", record.getB0GeoId().toExternalForm());
+			attribute(xml, "b1", record.getB1GeoId().toExternalForm());
+			attribute(xml, "declaredScale",
+					record.getDeclaredScaleGeoId().toExternalForm());
+		} else {
+			requireVersionOne(record);
+		}
 		attribute(xml, "relations", join(record.getRelationIds()));
-		attribute(xml, "geos", join(record.getDefinitionGeoIds()));
+		if (record.getSemanticVersion() == 1) {
+			attribute(xml, "geos", join(record.getDefinitionGeoIds()));
+		}
 		attribute(xml, "revision", record.getRevision());
 	}
 
@@ -234,7 +410,20 @@ public final class SpatialRecordXmlCodec {
 		attribute(xml, "sourceMap", record.getSourceMapId().toExternalForm());
 		attribute(xml, "destinationMap", record.getDestinationMapId().toExternalForm());
 		attribute(xml, "kind", record.getRelationKind());
-		attribute(xml, "geos", join(record.getDefinitionGeoIds()));
+		if (record.getSemanticVersion() == 2) {
+			attribute(xml, "supportStart",
+					record.getSupportStartGeoId().toExternalForm());
+			attribute(xml, "supportEnd", record.getSupportEndGeoId().toExternalForm());
+			attribute(xml, "orientation", record.getOrientation());
+			attribute(xml, "provenance", record.getProvenance());
+			if (ProjectionFrameRelationRecord.HINGE_UNFOLD.equals(
+					record.getRelationKind())) {
+				attribute(xml, "foldSign", record.getFoldSignGeoId().toExternalForm());
+			}
+		} else {
+			requireVersionOne(record);
+			attribute(xml, "geos", join(record.getDefinitionGeoIds()));
+		}
 		attribute(xml, "revision", record.getRevision());
 	}
 
@@ -249,8 +438,23 @@ public final class SpatialRecordXmlCodec {
 		attribute(xml, "expectedType", record.getExpectedSpatialType());
 		attribute(xml, "schema", record.getSchemaId());
 		attribute(xml, "schemaVersion", record.getSchemaVersion());
-		attribute(xml, "geos", join(record.getProjectedGeoIds()));
+		if (record.getSemanticVersion() == 2) {
+			attribute(xml, "projectedPoint",
+					record.getProjectedPointGeoId().toExternalForm());
+			attribute(xml, "fidelity", record.getFidelity());
+			attribute(xml, "correspondence", record.getCorrespondence());
+		} else {
+			requireVersionOne(record);
+			attribute(xml, "geos", join(record.getProjectedGeoIds()));
+		}
 		attribute(xml, "revision", record.getRevision());
+	}
+
+	private static void requireVersionOne(SpatialIdentityRecord record) {
+		if (record.getSemanticVersion() != 1) {
+			throw new IllegalArgumentException("Unsupported record semantic version: "
+					+ record.getSemanticVersion());
+		}
 	}
 
 	private static String required(Map<String, String> attributes, String name) {
@@ -265,8 +469,21 @@ public final class SpatialRecordXmlCodec {
 		return Integer.parseInt(required(attributes, name));
 	}
 
+	private static int recordSemanticVersion(Map<String, String> attributes) {
+		int version = integer(attributes, "semanticVersion");
+		if (version != 1 && version != 2) {
+			throw new IllegalArgumentException(
+					"Unsupported record semantic version: " + version);
+		}
+		return version;
+	}
+
 	private static long longValue(Map<String, String> attributes, String name) {
 		return Long.parseLong(required(attributes, name));
+	}
+
+	private static double doubleValue(Map<String, String> attributes, String name) {
+		return Double.parseDouble(required(attributes, name));
 	}
 
 	private static List<PersistentGeoId> geoIds(Map<String, String> attributes,
@@ -292,6 +509,15 @@ public final class SpatialRecordXmlCodec {
 		ArrayList<ProjectionFrameRelationId> result = new ArrayList<>();
 		for (String external : splitIds(required(attributes, name))) {
 			result.add(ProjectionFrameRelationId.parse(external));
+		}
+		return result;
+	}
+
+	private static List<ProjectionBindingId> bindingIds(Map<String, String> attributes,
+			String name) {
+		ArrayList<ProjectionBindingId> result = new ArrayList<>();
+		for (String external : splitIds(required(attributes, name))) {
+			result.add(ProjectionBindingId.parse(external));
 		}
 		return result;
 	}

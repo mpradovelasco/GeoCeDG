@@ -554,10 +554,8 @@ try {
     $roadmapText = Get-Content -Raw -LiteralPath (Resolve-RequiredFile `
         -RelativePath "docs/roadmap/geocedg_roadmap.md")
     Assert-Condition -Condition ($roadmapText.Contains(
-            "G9A1 = PASS — AUTHOR APPROVED") -and
-            $roadmapText.Contains(
-                "G9A2 = DESIGNED — NOT AUTHORIZED")) `
-        -Message "Living G9A1/G9A2 closeout status is inconsistent."
+            "G9A1 = PASS — AUTHOR APPROVED")) `
+        -Message "Living G9A1 closeout status is inconsistent."
 
     $g9pEvidence = Read-JsonFile `
         -RelativePath "geocedg/validation/g9p/g9p-design-evidence.json"
@@ -726,7 +724,7 @@ try {
 
     Write-Host "G9A1 focused verification passed ($ExpectedFocusedTotal focused + $ExpectedRedefineTests unchanged redefine tests = $ExpectedCombinedTotal)."
     Write-Host "G9A1 = PASS — AUTHOR APPROVED."
-    Write-Host "G9A2 remains designed, not authorized, and not executed."
+    Write-Host "Current later-phase status is governed by the living roadmap and separate author decisions."
     Write-Host "Logs: $LogDirectory"
 } catch {
     Write-Error "G9A1 focused verification failed: $($_.Exception.Message)"
