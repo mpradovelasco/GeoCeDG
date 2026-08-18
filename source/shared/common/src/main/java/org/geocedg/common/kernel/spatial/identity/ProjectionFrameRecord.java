@@ -154,6 +154,17 @@ public final class ProjectionFrameRecord implements SpatialIdentityRecord {
 		return revision;
 	}
 
+	/** @return an immutable same-ID frame with the supplied revision */
+	public ProjectionFrameRecord withRevision(long newRevision) {
+		if (semanticVersion == 2) {
+			return new ProjectionFrameRecord(id, semanticVersion, originGeoId, uGeoId,
+					vGeoId, family, units, handedness, fidelity, newRevision,
+					copySourceId);
+		}
+		return new ProjectionFrameRecord(id, semanticVersion, definitionGeoIds,
+				newRevision, copySourceId);
+	}
+
 	@Override
 	public ProjectionFrameRecord remap(Map<SpatialIdentityId, SpatialIdentityId> remap,
 			boolean recordImmediateCopySource) {

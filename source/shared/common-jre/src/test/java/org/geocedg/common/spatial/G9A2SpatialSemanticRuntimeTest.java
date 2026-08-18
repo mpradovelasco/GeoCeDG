@@ -41,6 +41,7 @@ import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRecord;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
 import org.geocedg.common.kernel.spatial.identity.SpatialObjectId;
 import org.geocedg.common.kernel.spatial.identity.SpatialObjectRecord;
+import org.geocedg.common.kernel.spatial.identity.SpatialPointPilotRedefineProvider;
 import org.geocedg.common.kernel.spatial.runtime.ProjectionSystemPilotCertificate;
 import org.geocedg.common.kernel.spatial.runtime.SpatialPointPilotCertificate;
 import org.geocedg.common.kernel.spatial.runtime.SpatialSemanticRuntime;
@@ -973,9 +974,9 @@ class G9A2SpatialSemanticRuntimeTest extends BaseUnitTest {
 		assertNotNull(records.put(replacement.getId(), replacement));
 	}
 
-	private static final class SiblingGraph {
-		private final ProjectionSystemId systemId;
-		private final SpatialObjectId objectId;
+	static final class SiblingGraph {
+		final ProjectionSystemId systemId;
+		final SpatialObjectId objectId;
 
 		private SiblingGraph(ProjectionSystemId systemId, SpatialObjectId objectId) {
 			this.systemId = systemId;
@@ -985,18 +986,18 @@ class G9A2SpatialSemanticRuntimeTest extends BaseUnitTest {
 		static SiblingGraph create(Graph source) {
 			ProjectionSystemRecord sourceSystem = (ProjectionSystemRecord)
 					source.registry.getRecord(source.systemId);
-			ProjectionDiagramMapRecord sourceHorizontalMap =
-					(ProjectionDiagramMapRecord) source.registry.getRecord(
-							sourceSystem.getMapIds().get(0));
-			ProjectionDiagramMapRecord sourceVerticalMap =
-					(ProjectionDiagramMapRecord) source.registry.getRecord(
-							sourceSystem.getMapIds().get(1));
 			ProjectionBindingRecord sourceHorizontalBinding =
 					(ProjectionBindingRecord) source.registry.getRecord(
 							source.horizontalBindingId);
 			ProjectionBindingRecord sourceVerticalBinding =
 					(ProjectionBindingRecord) source.registry.getRecord(
 							source.verticalBindingId);
+			ProjectionDiagramMapRecord sourceHorizontalMap =
+					(ProjectionDiagramMapRecord) source.registry.getRecord(
+							sourceHorizontalBinding.getDiagramMapId());
+			ProjectionDiagramMapRecord sourceVerticalMap =
+					(ProjectionDiagramMapRecord) source.registry.getRecord(
+							sourceVerticalBinding.getDiagramMapId());
 			ProjectionSystemId systemId = source.registry.allocateProjectionSystemId();
 			ProjectionDiagramMapId horizontalMapId =
 					source.registry.allocateProjectionDiagramMapId();
@@ -1013,10 +1014,10 @@ class G9A2SpatialSemanticRuntimeTest extends BaseUnitTest {
 					sourceSystem.getRelativeTolerance(), sourceSystem.getRankTolerance(),
 					sourceSystem.getMapTolerance(), sourceSystem.getHingeTolerance(),
 					sourceSystem.getConditionLimit(), sourceSystem.getRevision());
-			ProjectionDiagramMapRecord horizontalMap = copyMapAtRevision(
+			ProjectionDiagramMapRecord horizontalMap = copySiblingMap(
 					sourceHorizontalMap, horizontalMapId, systemId,
 					sourceHorizontalMap.getRevision());
-			ProjectionDiagramMapRecord verticalMap = copyMapAtRevision(
+			ProjectionDiagramMapRecord verticalMap = copySiblingMap(
 					sourceVerticalMap, verticalMapId, systemId,
 					sourceVerticalMap.getRevision());
 			ProjectionBindingRecord horizontalBinding = Graph.bindingRecord(
@@ -1035,10 +1036,22 @@ class G9A2SpatialSemanticRuntimeTest extends BaseUnitTest {
 					horizontalBinding, verticalBinding, object));
 			return new SiblingGraph(systemId, objectId);
 		}
+
+		private static ProjectionDiagramMapRecord copySiblingMap(
+				ProjectionDiagramMapRecord source, ProjectionDiagramMapId id,
+				ProjectionSystemId systemId, long revision) {
+			return new ProjectionDiagramMapRecord(id, source.getSemanticVersion(),
+					systemId, source.getFrameId(), source.getFrameUseRole(),
+					source.getFamily(), source.getOrientation(), source.getUnits(),
+					source.getFidelity(), source.getA00GeoId(), source.getA01GeoId(),
+					source.getA10GeoId(), source.getA11GeoId(), source.getB0GeoId(),
+					source.getB1GeoId(), source.getDeclaredScaleGeoId(), List.of(),
+					revision);
+		}
 	}
 
 	static final class Graph {
-		private static final String PROVIDER = "g9a2.test";
+		private static final String TEST_PROVIDER = "g9a2.test";
 		private static final String UNIT = "model-unit";
 		final SpatialIdentityRegistry registry;
 		final ProjectionSystemId systemId;
@@ -1110,6 +1123,14 @@ class G9A2SpatialSemanticRuntimeTest extends BaseUnitTest {
 					TopologyMode.NORMAL);
 		}
 
+		static Graph createProductiveWithHinge(Construction construction,
+				Function<String, GeoElement> add) {
+			return create(construction, add, EditAuthorityMode.PROJECTION_DEFINED,
+					ProjectionBindingRole.DEFINING, RelationMode.HINGE,
+					TopologyMode.NORMAL,
+					SpatialPointPilotRedefineProvider.PROVIDER_ID);
+		}
+
 		static Graph createWithChangeOfPlane(Construction construction,
 				Function<String, GeoElement> add, boolean auxiliaryDestination) {
 			return create(construction, add, EditAuthorityMode.PROJECTION_DEFINED,
@@ -1124,6 +1145,15 @@ class G9A2SpatialSemanticRuntimeTest extends BaseUnitTest {
 				EditAuthorityMode projectedAuthority,
 				ProjectionBindingRole projectedRole, RelationMode relationMode,
 				TopologyMode topologyMode) {
+			return create(construction, add, projectedAuthority, projectedRole,
+					relationMode, topologyMode, TEST_PROVIDER);
+		}
+
+		private static Graph create(Construction construction,
+				Function<String, GeoElement> add,
+				EditAuthorityMode projectedAuthority,
+				ProjectionBindingRole projectedRole, RelationMode relationMode,
+				TopologyMode topologyMode, String providerId) {
 			SpatialIdentityRegistry registry = construction.getSpatialIdentityRegistry();
 			GeoElement origin = add.apply("G9A2O=(0,0,0)");
 			GeoElement u = add.apply("G9A2U=Vector((0,0,0),(1,0,0))");
@@ -1151,28 +1181,28 @@ class G9A2SpatialSemanticRuntimeTest extends BaseUnitTest {
 			GeoPoint3D supportEnd = relationMode == RelationMode.NONE ? null
 					: (GeoPoint3D) add.apply("G9A2HE=(1,0,0)");
 
-			PersistentGeoId originId = register(registry, origin);
-			PersistentGeoId uId = register(registry, u);
-			PersistentGeoId horizontalVId = register(registry, horizontalV);
-			PersistentGeoId verticalVId = register(registry, verticalV);
-			register(registry, axisControl);
-			PersistentGeoId oneId = register(registry, one);
-			PersistentGeoId zeroId = register(registry, zero);
+			PersistentGeoId originId = register(registry, origin, providerId);
+			PersistentGeoId uId = register(registry, u, providerId);
+			PersistentGeoId horizontalVId = register(registry, horizontalV, providerId);
+			PersistentGeoId verticalVId = register(registry, verticalV, providerId);
+			register(registry, axisControl, providerId);
+			PersistentGeoId oneId = register(registry, one, providerId);
+			PersistentGeoId zeroId = register(registry, zero, providerId);
 			PersistentGeoId horizontalPointId = register(registry, horizontalPoint,
-					projectedAuthority, projectedRole);
+					projectedAuthority, projectedRole, providerId);
 			PersistentGeoId verticalPointId;
 			if (topologyMode == TopologyMode.MISSING_PROJECTED_IDENTITY) {
 				verticalPointId = registry.allocatePersistentGeoId();
 			} else {
 				verticalPointId = register(registry, (GeoElement) verticalPoint,
-						projectedAuthority, projectedRole);
+						projectedAuthority, projectedRole, providerId);
 			}
 			PersistentGeoId supportEndId = supportEnd == null ? null
-					: register(registry, supportEnd);
+					: register(registry, supportEnd, providerId);
 			PersistentGeoId nonDefiningPointId = nonDefiningPoint == null ? null
 					: register(registry, (GeoElement) nonDefiningPoint,
 							EditAuthorityMode.PROJECTION_DEFINED,
-							ProjectionBindingRole.PRESENTATION);
+							ProjectionBindingRole.PRESENTATION, providerId);
 
 			ProjectionFrameId horizontalFrameId = registry.allocateProjectionFrameId();
 			ProjectionFrameId verticalFrameId = registry.allocateProjectionFrameId();
@@ -1289,14 +1319,26 @@ class G9A2SpatialSemanticRuntimeTest extends BaseUnitTest {
 		private static PersistentGeoId register(SpatialIdentityRegistry registry,
 				GeoElement geo) {
 			return register(registry, geo, EditAuthorityMode.PROJECTION_DEFINED,
-					ProjectionBindingRole.DEFINING);
+					ProjectionBindingRole.DEFINING, TEST_PROVIDER);
+		}
+
+		private static PersistentGeoId register(SpatialIdentityRegistry registry,
+				GeoElement geo, String providerId) {
+			return register(registry, geo, EditAuthorityMode.PROJECTION_DEFINED,
+					ProjectionBindingRole.DEFINING, providerId);
 		}
 
 		private static PersistentGeoId register(SpatialIdentityRegistry registry,
 				GeoElement geo, EditAuthorityMode authority,
 				ProjectionBindingRole role) {
+			return register(registry, geo, authority, role, TEST_PROVIDER);
+		}
+
+		private static PersistentGeoId register(SpatialIdentityRegistry registry,
+				GeoElement geo, EditAuthorityMode authority,
+				ProjectionBindingRole role, String providerId) {
 			PersistentGeoId id = registry.allocatePersistentGeoId();
-			registry.registerParticipation(geo, new GeoIdentityRecord(id, PROVIDER,
+			registry.registerParticipation(geo, new GeoIdentityRecord(id, providerId,
 					"SEMANTIC_INPUT", SpatialObjectRecord.POINT_SCHEMA_ID, 1,
 					authority, role, "INPUT", 1, 0, 0));
 			return id;

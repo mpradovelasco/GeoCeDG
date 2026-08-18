@@ -78,8 +78,8 @@ public final class ProjectionDefinedPointEvaluator {
 				.evaluateObservations(observations, relations, policy, instrumentation);
 
 		if (observations.isEmpty()) {
-			return failure(systemCertificate, SpatialDefinitionStatus.UNDEFINED,
-					SpatialCertificateStatus.UNDEFINED, fidelity,
+			return failure(systemCertificate, SpatialDefinitionStatus.DEFINED,
+					SpatialCertificateStatus.UNDERDETERMINED, fidelity,
 					NumericalEvidenceStatus.UNRESOLVED, correspondence, sourceRevision,
 					0, new double[0], Double.NaN, Collections.emptyList(),
 					Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY,

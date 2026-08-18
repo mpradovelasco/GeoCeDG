@@ -30,6 +30,20 @@ public final class SpatialIdentityInstrumentation {
 	private long redefineMultiOutputRejections;
 	private long definitionRevisionChanges;
 	private long topologyRevisionChanges;
+	private long lifecyclePreparationAttempts;
+	private long lifecyclePrepared;
+	private long lifecyclePreflightRejects;
+	private long lifecycleCommits;
+	private long lifecycleRollbacks;
+	private long lifecycleRecordCreates;
+	private long lifecycleRecordReplacements;
+	private long lifecycleRecordRetirements;
+	private long lifecycleResolutionChanges;
+	private long explicitMigrationCommits;
+	private long explicitMigrationRollbacks;
+	private long declaredExternalCopyCommits;
+	private long declaredExternalCopyRollbacks;
+	private long declaredExternalCopyReferences;
 	private final Map<SpatialIdentityKind, Long> allocationsByKind =
 			new EnumMap<>(SpatialIdentityKind.class);
 	private final Map<SpatialIdentityKind, Long> restoresByKind =
@@ -127,6 +141,48 @@ public final class SpatialIdentityInstrumentation {
 		topologyRevisionChanges++;
 	}
 
+	void recordLifecyclePreparationAttempt() {
+		lifecyclePreparationAttempts++;
+	}
+
+	void recordLifecyclePrepared() {
+		lifecyclePrepared++;
+	}
+
+	void recordLifecyclePreflightReject() {
+		lifecyclePreflightRejects++;
+	}
+
+	void recordLifecycleCommit(int creates, int replacements, int retirements,
+			int resolutionChanges) {
+		lifecycleCommits++;
+		lifecycleRecordCreates += creates;
+		lifecycleRecordReplacements += replacements;
+		lifecycleRecordRetirements += retirements;
+		lifecycleResolutionChanges += resolutionChanges;
+	}
+
+	void recordLifecycleRollback() {
+		lifecycleRollbacks++;
+	}
+
+	void recordExplicitMigrationCommit() {
+		explicitMigrationCommits++;
+	}
+
+	void recordExplicitMigrationRollback() {
+		explicitMigrationRollbacks++;
+	}
+
+	void recordDeclaredExternalCopyCommit(int externalReferences) {
+		declaredExternalCopyCommits++;
+		declaredExternalCopyReferences += externalReferences;
+	}
+
+	void recordDeclaredExternalCopyRollback() {
+		declaredExternalCopyRollbacks++;
+	}
+
 	public long getAllocationAttempts() {
 		return allocationAttempts;
 	}
@@ -201,6 +257,62 @@ public final class SpatialIdentityInstrumentation {
 
 	public long getTopologyRevisionChanges() {
 		return topologyRevisionChanges;
+	}
+
+	public long getLifecyclePreparationAttempts() {
+		return lifecyclePreparationAttempts;
+	}
+
+	public long getLifecyclePrepared() {
+		return lifecyclePrepared;
+	}
+
+	public long getLifecyclePreflightRejects() {
+		return lifecyclePreflightRejects;
+	}
+
+	public long getLifecycleCommits() {
+		return lifecycleCommits;
+	}
+
+	public long getLifecycleRollbacks() {
+		return lifecycleRollbacks;
+	}
+
+	public long getLifecycleRecordCreates() {
+		return lifecycleRecordCreates;
+	}
+
+	public long getLifecycleRecordReplacements() {
+		return lifecycleRecordReplacements;
+	}
+
+	public long getLifecycleRecordRetirements() {
+		return lifecycleRecordRetirements;
+	}
+
+	public long getLifecycleResolutionChanges() {
+		return lifecycleResolutionChanges;
+	}
+
+	public long getExplicitMigrationCommits() {
+		return explicitMigrationCommits;
+	}
+
+	public long getExplicitMigrationRollbacks() {
+		return explicitMigrationRollbacks;
+	}
+
+	public long getDeclaredExternalCopyCommits() {
+		return declaredExternalCopyCommits;
+	}
+
+	public long getDeclaredExternalCopyRollbacks() {
+		return declaredExternalCopyRollbacks;
+	}
+
+	public long getDeclaredExternalCopyReferences() {
+		return declaredExternalCopyReferences;
 	}
 
 	public Map<SpatialIdentityKind, Long> getAllocationsByKind() {
@@ -314,6 +426,20 @@ public final class SpatialIdentityInstrumentation {
 		redefineMultiOutputRejections = 0;
 		definitionRevisionChanges = 0;
 		topologyRevisionChanges = 0;
+		lifecyclePreparationAttempts = 0;
+		lifecyclePrepared = 0;
+		lifecyclePreflightRejects = 0;
+		lifecycleCommits = 0;
+		lifecycleRollbacks = 0;
+		lifecycleRecordCreates = 0;
+		lifecycleRecordReplacements = 0;
+		lifecycleRecordRetirements = 0;
+		lifecycleResolutionChanges = 0;
+		explicitMigrationCommits = 0;
+		explicitMigrationRollbacks = 0;
+		declaredExternalCopyCommits = 0;
+		declaredExternalCopyRollbacks = 0;
+		declaredExternalCopyReferences = 0;
 		allocationsByKind.clear();
 		restoresByKind.clear();
 		remapsByKind.clear();

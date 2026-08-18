@@ -420,11 +420,20 @@ public abstract class MyXMLio {
 		try {
 			parseXmlUnsafe(stream, settingsBatch, isGGTOrDefaults);
 		} catch (CommandNotLoadedError e) {
+			boolean identityBearingParse = handler.isSpatialIdentityBearingParse();
 			handler.abortSpatialIdentityLoad();
+			if (identityBearingParse) {
+				try {
+					restoreRejectedSpatialParse(rejectedSpatialRollbackXml);
+				} catch (RuntimeException | XMLParseException rollbackFailure) {
+					e.addSuppressed(rollbackFailure);
+				}
+			}
 			throw e;
 		} catch (Error | XMLParseException | IOException | RuntimeException e) {
+			boolean identityBearingParse = handler.isSpatialIdentityBearingParse();
 			handler.abortSpatialIdentityLoad();
-			if (isRejectedSpatialParse(e)) {
+			if (isRejectedSpatialParse(e, identityBearingParse)) {
 				try {
 					restoreRejectedSpatialParse(rejectedSpatialRollbackXml);
 				} catch (RuntimeException | XMLParseException rollbackFailure) {
@@ -440,9 +449,14 @@ public abstract class MyXMLio {
 			kernel.setLoadingMode(false);
 			kernel.setCommandLookupStrategy(oldVal2);
 			if (!isGGTOrDefaults && mayZoom) {
-				kernel.updateConstruction(randomize, 1);
-				cons.updateCasCellTwinVisibility();
-				kernel.setNotifyViewsActive(oldVal);
+				try {
+					kernel.updateConstruction(randomize, 1);
+					cons.updateCasCellTwinVisibility();
+				} finally {
+					// A guarded spatial update may reject during parse rollback. View
+					// notification state is host state and must still return to entry.
+					kernel.setNotifyViewsActive(oldVal);
+				}
 			}
 
 			// #2153
@@ -475,17 +489,22 @@ public abstract class MyXMLio {
 
 	}
 
-	private boolean isRejectedSpatialParse(Throwable failure) {
-		return failure instanceof SpatialIdentityException;
+	private boolean isRejectedSpatialParse(Throwable failure,
+			boolean identityBearingParse) {
+		return failure instanceof SpatialIdentityException || identityBearingParse;
 	}
 
 	private void restoreRejectedSpatialParse(String rollbackXml)
 			throws XMLParseException {
+		cons.getSpatialSemanticRuntime().beginRollbackRestore();
 		cons.setNextSpatialIdentityLoadPurpose(LoadPurpose.ROLLBACK_RESTORE);
+		boolean restored = false;
 		try {
 			processXMLString(rollbackXml, true, false);
+			restored = true;
 		} finally {
 			cons.clearNextSpatialIdentityLoadPurpose();
+			cons.getSpatialSemanticRuntime().finishRollbackRestore(restored);
 		}
 	}
 

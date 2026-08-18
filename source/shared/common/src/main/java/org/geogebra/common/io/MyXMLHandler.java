@@ -30,6 +30,7 @@ import org.geocedg.common.kernel.spatial.identity.SpatialIdentityException;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry.LoadPurpose;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry.LoadSession;
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry.RedefineRebuildToken;
 import org.geogebra.common.GeoGebraConstants;
 import org.geogebra.common.SuiteSubApp;
 import org.geogebra.common.awt.AwtFactory;
@@ -155,6 +156,7 @@ public class MyXMLHandler implements DocHandler {
 	private LoadSession spatialIdentityLoadSession;
 	private Construction spatialIdentityLoadConstruction;
 	private int spatialIdentityRecordDepth;
+	private boolean spatialIdentityBearingParse;
 	private final IdentityHashMap<GeoElement, String> pendingSpatialGeoIds =
 			new IdentityHashMap<>();
 
@@ -2922,12 +2924,26 @@ public class MyXMLHandler implements DocHandler {
 
 	void setSpatialIdentityLoadPurpose(LoadPurpose purpose) {
 		spatialIdentityLoadPurpose = purpose;
+		spatialIdentityBearingParse = false;
+	}
+
+	/**
+	 * Reports whether the current parse encountered native GeoCeDG identity data.
+	 * The flag deliberately survives section commit/abort so the outer XML
+	 * transaction can restore its entry snapshot after a later host parse failure.
+	 * It is reset only when the next parse purpose is installed.
+	 *
+	 * @return whether the current parse is identity-bearing
+	 */
+	boolean isSpatialIdentityBearingParse() {
+		return spatialIdentityBearingParse;
 	}
 
 	void stageSpatialGeoAttachment(GeoElement geo, String externalId) {
 		if (externalId == null) {
 			return;
 		}
+		spatialIdentityBearingParse = true;
 		if (spatialIdentityLoadSession == null) {
 			if (pendingSpatialGeoIds.put(geo, externalId) != null) {
 				throw spatialFailure(SpatialIdentityDiagnostic.Code.DUPLICATE_ID,
@@ -2939,6 +2955,7 @@ public class MyXMLHandler implements DocHandler {
 	}
 
 	private void startSpatialIdentitySection(Map<String, String> attrs) {
+		spatialIdentityBearingParse = true;
 		if (spatialIdentityLoadSession != null) {
 			throw spatialFailure(SpatialIdentityDiagnostic.Code.MALFORMED_RECORD,
 					"A construction may contain only one geocedgSpatial section");
@@ -2966,8 +2983,23 @@ public class MyXMLHandler implements DocHandler {
 		spatialIdentityRecordDepth = 0;
 		LoadPurpose purpose = cons.consumeSpatialIdentityLoadPurpose(
 				spatialIdentityLoadPurpose);
-		spatialIdentityLoadSession = cons.getSpatialIdentityRegistry()
-				.beginLoadSession(purpose, version);
+		RedefineRebuildToken rebuildToken =
+				cons.consumeSpatialIdentityRedefineRebuildToken(purpose);
+		try {
+			spatialIdentityLoadSession = purpose == LoadPurpose.REDEFINE_REBUILD
+					? cons.getSpatialIdentityRegistry().beginRedefineRebuildLoad(
+							rebuildToken, version)
+					: cons.getSpatialIdentityRegistry().beginLoadSession(purpose, version);
+		} catch (RuntimeException | Error failure) {
+			if (rebuildToken != null) {
+				try {
+					cons.getSpatialIdentityRegistry().abortRedefineRebuild(rebuildToken);
+				} catch (RuntimeException abortFailure) {
+					failure.addSuppressed(abortFailure);
+				}
+			}
+			throw failure;
+		}
 		for (Map.Entry<GeoElement, String> pending : pendingSpatialGeoIds.entrySet()) {
 			spatialIdentityLoadSession.stageGeoAttachment(pending.getKey(),
 					pending.getValue());
@@ -2979,14 +3011,27 @@ public class MyXMLHandler implements DocHandler {
 	}
 
 	private void finishSpatialIdentityLoad() {
+		LoadSession finishingSession = spatialIdentityLoadSession;
 		try {
 			if (spatialIdentityLoadSession == null && !pendingSpatialGeoIds.isEmpty()) {
 				startSpatialIdentitySection(Collections.singletonMap("version",
 						Integer.toString(SpatialIdentityRegistry.XML_VERSION)));
+				finishingSession = spatialIdentityLoadSession;
 			}
 			if (spatialIdentityLoadSession != null) {
 				spatialIdentityLoadSession.commit();
 			}
+		} catch (RuntimeException | Error failure) {
+			LoadSession failedSession = finishingSession == null
+					? spatialIdentityLoadSession : finishingSession;
+			if (failedSession != null) {
+				try {
+					failedSession.abort();
+				} catch (RuntimeException abortFailure) {
+					failure.addSuppressed(abortFailure);
+				}
+			}
+			throw failure;
 		} finally {
 			cons.clearNextSpatialIdentityLoadPurpose();
 			spatialIdentityLoadSession = null;

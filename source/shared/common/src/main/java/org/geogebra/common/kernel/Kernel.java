@@ -31,6 +31,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityException;
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry.RedefineExternalCallbackScope;
 import org.geogebra.common.GeoGebraConstants;
 import org.geogebra.common.cas.GeoGebraCAS;
 import org.geogebra.common.euclidian.EuclidianView;
@@ -3562,13 +3563,21 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 		return notifyRepaint;
 	}
 
+	private @CheckForNull RedefineExternalCallbackScope beginRedefineExternalCallback() {
+		Construction current = cons;
+		return current == null ? null : current.getSpatialIdentityRegistry()
+				.beginRedefineExternalCallback();
+	}
+
 	/**
 	 * Notify all views to repaint.
 	 */
 	public final void notifyRepaint() {
-		if (notifyRepaint && notifyViewsActive) {
-			for (View view : views) {
-				view.repaintView();
+		try (RedefineExternalCallbackScope ignored = beginRedefineExternalCallback()) {
+			if (notifyRepaint && notifyViewsActive) {
+				for (View view : views) {
+					view.repaintView();
+				}
 			}
 		}
 	}
@@ -3577,9 +3586,11 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	 * Notify all views about zoom / pan.
 	 */
 	public final void notifyScreenChanged() {
-		for (View view : views) {
-			if (view instanceof EuclidianViewInterfaceCommon) {
-				((EuclidianViewInterfaceCommon) view).screenChanged();
+		try (RedefineExternalCallbackScope ignored = beginRedefineExternalCallback()) {
+			for (View view : views) {
+				if (view instanceof EuclidianViewInterfaceCommon) {
+					((EuclidianViewInterfaceCommon) view).screenChanged();
+				}
 			}
 		}
 	}
@@ -3589,9 +3600,11 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	 */
 	public final boolean notifySuggestRepaint() {
 		boolean needed = false;
-		if (notifyViewsActive) {
-			for (View view : views) {
-				needed = view.suggestRepaint() || needed;
+		try (RedefineExternalCallbackScope ignored = beginRedefineExternalCallback()) {
+			if (notifyViewsActive) {
+				for (View view : views) {
+					needed = view.suggestRepaint() || needed;
+				}
 			}
 		}
 		return needed;
@@ -3601,9 +3614,11 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	 * Reset all views.
 	 */
 	final public void notifyReset() {
-		if (notifyViewsActive) {
-			for (View view : views) {
-				view.reset();
+		try (RedefineExternalCallbackScope ignored = beginRedefineExternalCallback()) {
+			if (notifyViewsActive) {
+				for (View view : views) {
+					view.reset();
+				}
 			}
 		}
 	}
@@ -3612,10 +3627,11 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	 * Clears all views, even if notifyViewsActive is false
 	 */
 	protected final void notifyClearView() {
-		for (View view : views) {
-			view.clearView();
+		try (RedefineExternalCallbackScope ignored = beginRedefineExternalCallback()) {
+			for (View view : views) {
+				view.clearView();
+			}
 		}
-
 	}
 
 	/**
@@ -3639,9 +3655,11 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	 *            added geo
 	 */
 	public void notifyConstructionProtocol(GeoElement geo) {
-		for (View view : views) {
-			if (view.getViewID() == App.VIEW_CONSTRUCTION_PROTOCOL) {
-				view.add(geo);
+		try (RedefineExternalCallbackScope ignored = beginRedefineExternalCallback()) {
+			for (View view : views) {
+				if (view.getViewID() == App.VIEW_CONSTRUCTION_PROTOCOL) {
+					view.add(geo);
+				}
 			}
 		}
 	}
@@ -3660,21 +3678,22 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 
 			if (flag) {
 				viewReiniting = true;
+				try {
+					// "attach" views again
+					// add all geos to all views
+					for (View view : views) {
+						notifyAddAll(view);
+					}
 
-				// "attach" views again
-				// add all geos to all views
-				for (View view : views) {
-					notifyAddAll(view);
+					notifyEuclidianViewCE(EVProperty.ZOOM);
+					notifyReset();
+					// algebra settings need to be applied after remaking tree
+					if (app.getGuiManager() != null) {
+						app.getGuiManager().applyAlgebraViewSettings();
+					}
+				} finally {
+					viewReiniting = false;
 				}
-
-				notifyEuclidianViewCE(EVProperty.ZOOM);
-				notifyReset();
-				// algebra settings need to be applied after remaking tree
-				if (app.getGuiManager() != null) {
-					app.getGuiManager().applyAlgebraViewSettings();
-				}
-
-				viewReiniting = false;
 			} else {
 				// "detach" views
 				notifyClearView();
@@ -3866,15 +3885,17 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 			return;
 		}
 
-		view.startBatchUpdate();
-		for (GeoElement geo : cons.getGeoSetWithCasCellsConstructionOrder()) {
-			// stop when not visible for current construction step
-			if (!geo.isAvailableAtConstructionStep(consStep)) {
-				break;
+		try (RedefineExternalCallbackScope ignored = beginRedefineExternalCallback()) {
+			view.startBatchUpdate();
+			for (GeoElement geo : cons.getGeoSetWithCasCellsConstructionOrder()) {
+				// stop when not visible for current construction step
+				if (!geo.isAvailableAtConstructionStep(consStep)) {
+					break;
+				}
+				view.add(geo);
 			}
-			view.add(geo);
+			view.endBatchUpdate();
 		}
-		view.endBatchUpdate();
 
 		if (getUpdateAgain()) {
 			setUpdateAgain(false, null);
@@ -3889,20 +3910,22 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	 *            added geo
 	 */
 	public final void notifyAdd(GeoElement geo) {
-		if (notifyViewsActive) {
-			if (batchAddStarted && geo.isLabelSet() && firstGeoInBatch == null) {
-				firstGeoInBatch = geo;
-			}
-			for (View view : views) {
-				if ((view.getViewID() != App.VIEW_CONSTRUCTION_PROTOCOL)
-						|| isNotifyConstructionProtocolViewAboutAddRemoveActive()) {
-					view.add(geo);
+		try (RedefineExternalCallbackScope ignored = beginRedefineExternalCallback()) {
+			if (notifyViewsActive) {
+				if (batchAddStarted && geo.isLabelSet() && firstGeoInBatch == null) {
+					firstGeoInBatch = geo;
+				}
+				for (View view : views) {
+					if ((view.getViewID() != App.VIEW_CONSTRUCTION_PROTOCOL)
+							|| isNotifyConstructionProtocolViewAboutAddRemoveActive()) {
+						view.add(geo);
+					}
 				}
 			}
-		}
 
-		if (geo.isLabelSet()) {
-			notifyRenameListenerAlgos();
+			if (geo.isLabelSet()) {
+				notifyRenameListenerAlgos();
+			}
 		}
 	}
 
@@ -3950,19 +3973,24 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	 *            removed element
 	 */
 	public final void notifyRemove(GeoElement geo) {
-		if (notifyViewsActive) {
-			if (geo.isLabelSet()) {
-				this.deleteList.add(geo);
-			}
-			for (View view : views) {
-				if ((view.getViewID() != App.VIEW_CONSTRUCTION_PROTOCOL)
-						|| isNotifyConstructionProtocolViewAboutAddRemoveActive()) {
-					// needed for GGB-808
-					// geoCasCell is already removed from cas view
-					if (view.getViewID() == App.VIEW_CAS) {
-						removeFromCAS(view, geo);
-					} else {
-						view.remove(geo);
+		if (cons != null && cons.isSpatialSemanticAdapterNotificationSuppressed()) {
+			return;
+		}
+		try (RedefineExternalCallbackScope ignored = beginRedefineExternalCallback()) {
+			if (notifyViewsActive) {
+				if (geo.isLabelSet()) {
+					this.deleteList.add(geo);
+				}
+				for (View view : views) {
+					if ((view.getViewID() != App.VIEW_CONSTRUCTION_PROTOCOL)
+							|| isNotifyConstructionProtocolViewAboutAddRemoveActive()) {
+						// needed for GGB-808
+						// geoCasCell is already removed from cas view
+						if (view.getViewID() == App.VIEW_CAS) {
+							removeFromCAS(view, geo);
+						} else {
+							view.remove(geo);
+						}
 					}
 				}
 			}
@@ -4017,9 +4045,11 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	 */
 	public final void notifyUpdate(GeoElement geo) {
 		// event dispatcher should not collect calls to stay compatible with 4.0
-		if (notifyViewsActive) {
-			for (View view : views) {
-				view.update(geo);
+		try (RedefineExternalCallbackScope ignored = beginRedefineExternalCallback()) {
+			if (notifyViewsActive) {
+				for (View view : views) {
+					view.update(geo);
+				}
 			}
 		}
 	}
@@ -4032,13 +4062,15 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	 */
 	public final void notifyUpdateLocation(GeoElement geo) {
 		// event dispatcher should not collect calls to stay compatible with 4.0
-		if (notifyViewsActive) {
-			for (View view : views) {
-				// we already told event dispatcher
-				if (view instanceof UpdateLocationView) {
-					((UpdateLocationView) view).updateLocation(geo);
-				} else {
-					view.update(geo);
+		try (RedefineExternalCallbackScope ignored = beginRedefineExternalCallback()) {
+			if (notifyViewsActive) {
+				for (View view : views) {
+					// we already told event dispatcher
+					if (view instanceof UpdateLocationView) {
+						((UpdateLocationView) view).updateLocation(geo);
+					} else {
+						view.update(geo);
+					}
 				}
 			}
 		}
@@ -4053,9 +4085,11 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	 *            property
 	 */
 	public final void notifyUpdateVisualStyle(GeoElement geo, GProperty prop) {
-		if (notifyViewsActive) {
-			for (View view : views) {
-				view.updateVisualStyle(geo, prop);
+		try (RedefineExternalCallbackScope ignored = beginRedefineExternalCallback()) {
+			if (notifyViewsActive) {
+				for (View view : views) {
+					view.updateVisualStyle(geo, prop);
+				}
 			}
 		}
 	}
@@ -4081,9 +4115,11 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	 *            changed geo
 	 */
 	public final void notifyUpdateAuxiliaryObject(GeoElement geo) {
-		if (notifyViewsActive) {
-			for (View view : views) {
-				view.updateAuxiliaryObject(geo);
+		try (RedefineExternalCallbackScope ignored = beginRedefineExternalCallback()) {
+			if (notifyViewsActive) {
+				for (View view : views) {
+					view.updateAuxiliaryObject(geo);
+				}
 			}
 		}
 	}
@@ -4095,9 +4131,11 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	 *            renamed geo
 	 */
 	public final void notifyRename(GeoElement geo) {
-		if (notifyViewsActive) {
-			for (View view : views) {
-				view.rename(geo);
+		try (RedefineExternalCallbackScope ignored = beginRedefineExternalCallback()) {
+			if (notifyViewsActive) {
+				for (View view : views) {
+					view.rename(geo);
+				}
 			}
 		}
 
@@ -4111,10 +4149,12 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	 *            new geo after type change
 	 */
 	public final void notifyTypeChanged(GeoElement geo) {
-		if (notifyViewsActive) {
-			for (View view : views) {
-				if (view.getViewID() == App.VIEW_ALGEBRA) {
-					view.rename(geo);
+		try (RedefineExternalCallbackScope ignored = beginRedefineExternalCallback()) {
+			if (notifyViewsActive) {
+				for (View view : views) {
+					if (view.getViewID() == App.VIEW_ALGEBRA) {
+						view.rename(geo);
+					}
 				}
 			}
 		}
@@ -5117,9 +5157,11 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	 * Notify views about started update batch.
 	 */
 	public void notifyBatchUpdate() {
-		if (notifyViewsActive) {
-			for (View view : views) {
-				view.startBatchUpdate();
+		try (RedefineExternalCallbackScope ignored = beginRedefineExternalCallback()) {
+			if (notifyViewsActive) {
+				for (View view : views) {
+					view.startBatchUpdate();
+				}
 			}
 		}
 	}
@@ -5128,9 +5170,11 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	 * Notify views about finished update batch.
 	 */
 	public void notifyEndBatchUpdate() {
-		if (notifyViewsActive) {
-			for (View view : views) {
-				view.endBatchUpdate();
+		try (RedefineExternalCallbackScope ignored = beginRedefineExternalCallback()) {
+			if (notifyViewsActive) {
+				for (View view : views) {
+					view.endBatchUpdate();
+				}
 			}
 		}
 	}

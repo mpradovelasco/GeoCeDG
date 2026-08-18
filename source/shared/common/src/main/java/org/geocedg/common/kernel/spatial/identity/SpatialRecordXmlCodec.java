@@ -47,7 +47,8 @@ public final class SpatialRecordXmlCodec {
 			if (semanticVersion == 2) {
 				checkAttributes(attributes, "id", "semanticVersion", "type",
 						"authority", "schema", "schemaVersion", "system", "bindings",
-						"definitionRevision", "topologyRevision", "copySource");
+						"definitionRevision", "topologyRevision", "copySource",
+						"associationProvenance");
 				return new SpatialObjectRecord(
 						SpatialObjectId.parse(required(attributes, "id")), semanticVersion,
 						required(attributes, "type"),
@@ -58,7 +59,9 @@ public final class SpatialRecordXmlCodec {
 						bindingIds(attributes, "bindings"),
 						longValue(attributes, "definitionRevision"),
 						longValue(attributes, "topologyRevision"),
-						optionalObjectId(attributes, "copySource"));
+						optionalObjectId(attributes, "copySource"),
+						optional(attributes, "associationProvenance",
+								SpatialObjectRecord.CONSTRUCTION_OWNED));
 			}
 			checkAttributes(attributes, "id", "semanticVersion", "type", "authority",
 					"schema", "schemaVersion", "geos", "definitionRevision",
@@ -331,6 +334,11 @@ public final class SpatialRecordXmlCodec {
 		if (record.getSemanticVersion() == 2) {
 			attribute(xml, "system", record.getSystemId().toExternalForm());
 			attribute(xml, "bindings", join(record.getBindingIds()));
+			if (SpatialObjectRecord.EXPLICIT_ASSOCIATION.equals(
+					record.getAssociationProvenance())) {
+				attribute(xml, "associationProvenance",
+						record.getAssociationProvenance());
+			}
 		} else {
 			requireVersionOne(record);
 			attribute(xml, "geos", join(record.getDefinitionGeoIds()));
@@ -532,6 +540,11 @@ public final class SpatialRecordXmlCodec {
 			String name) {
 		return attributes.containsKey(name) ? PersistentGeoId.parse(attributes.get(name))
 				: null;
+	}
+
+	private static String optional(Map<String, String> attributes, String name,
+			String defaultValue) {
+		return attributes.containsKey(name) ? attributes.get(name) : defaultValue;
 	}
 
 	private static SpatialObjectId optionalObjectId(Map<String, String> attributes,

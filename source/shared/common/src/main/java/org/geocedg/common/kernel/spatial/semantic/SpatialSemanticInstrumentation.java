@@ -5,6 +5,12 @@
 
 package org.geocedg.common.kernel.spatial.semantic;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityId;
+
 /** Thread-confined deterministic counters for spatial-semantic evaluation. */
 public final class SpatialSemanticInstrumentation {
 	private final Thread ownerThread = Thread.currentThread();
@@ -26,6 +32,9 @@ public final class SpatialSemanticInstrumentation {
 	private long dependencyUpdates;
 	private long derivedViewPublications;
 	private long derivedViewWithdrawals;
+	private long authoritativePublicationEpoch;
+	private final Map<SpatialIdentityId, Long> authoritativePublicationCounts =
+			new LinkedHashMap<>();
 
 	void recordFrameEvaluation() {
 		checkOwner();
@@ -188,6 +197,165 @@ public final class SpatialSemanticInstrumentation {
 
 	public long getDerivedViewWithdrawals() {
 		return derivedViewWithdrawals;
+	}
+
+	/** Records one typed authoritative system or object certificate publication. */
+	public void recordAuthoritativePublication(SpatialIdentityId subject) {
+		checkOwner();
+		if (subject == null) {
+			throw new IllegalArgumentException(
+					"Authoritative publication subject must be typed");
+		}
+		long nextEpoch = Math.addExact(authoritativePublicationEpoch, 1);
+		long nextSubjectCount = Math.addExact(
+				authoritativePublicationCounts.getOrDefault(subject, 0L), 1);
+		authoritativePublicationEpoch = nextEpoch;
+		authoritativePublicationCounts.put(subject, nextSubjectCount);
+	}
+
+	/** @return monotone epoch unaffected by evidence-counter resets */
+	public long getAuthoritativePublicationEpoch() {
+		return authoritativePublicationEpoch;
+	}
+
+	/** @return immutable same-thread subject counts for publication-scope checks */
+	public Map<SpatialIdentityId, Long> snapshotAuthoritativePublicationCounts() {
+		checkOwner();
+		return Collections.unmodifiableMap(
+				new LinkedHashMap<>(authoritativePublicationCounts));
+	}
+
+	/**
+	 * Checks that a staged evidence merge can complete without changing the live
+	 * counters. The lifecycle runtime calls this before publishing used geo types,
+	 * so an overflow cannot leave construction compatibility state behind.
+	 *
+	 * @param staged same-thread lifecycle evidence
+	 */
+	public void preflightMergeFrom(SpatialSemanticInstrumentation staged) {
+		checkOwner();
+		staged.checkOwner();
+		if (staged == this) {
+			return;
+		}
+		Math.addExact(frameEvaluations, staged.frameEvaluations);
+		Math.addExact(projectionSystemEvaluations,
+				staged.projectionSystemEvaluations);
+		Math.addExact(diagramMapForwardEvaluations,
+				staged.diagramMapForwardEvaluations);
+		Math.addExact(diagramMapInverseEvaluations,
+				staged.diagramMapInverseEvaluations);
+		Math.addExact(hingeConsistencyEvaluations,
+				staged.hingeConsistencyEvaluations);
+		Math.addExact(changeOfPlaneConsistencyEvaluations,
+				staged.changeOfPlaneConsistencyEvaluations);
+		Math.addExact(projectionSystemCertificatePublications,
+				staged.projectionSystemCertificatePublications);
+		Math.addExact(projectionSystemCertificateRejections,
+				staged.projectionSystemCertificateRejections);
+		Math.addExact(reconstructionAttempts, staged.reconstructionAttempts);
+		Math.addExact(rankEvaluations, staged.rankEvaluations);
+		Math.addExact(candidateObjectsBuilt, staged.candidateObjectsBuilt);
+		Math.addExact(reprojectionEvaluations, staged.reprojectionEvaluations);
+		Math.addExact(certificatePublications, staged.certificatePublications);
+		Math.addExact(failurePublications, staged.failurePublications);
+		Math.addExact(supersededCandidateRejections,
+				staged.supersededCandidateRejections);
+		Math.addExact(dependencyUpdates, staged.dependencyUpdates);
+		Math.addExact(derivedViewPublications, staged.derivedViewPublications);
+		Math.addExact(derivedViewWithdrawals, staged.derivedViewWithdrawals);
+		Math.addExact(authoritativePublicationEpoch,
+				staged.authoritativePublicationEpoch);
+		for (Map.Entry<SpatialIdentityId, Long> entry
+				: staged.authoritativePublicationCounts.entrySet()) {
+			Math.addExact(authoritativePublicationCounts.getOrDefault(
+					entry.getKey(), 0L), entry.getValue());
+		}
+	}
+
+	/**
+	 * Atomically incorporates successful lifecycle-preparation evidence.
+	 * A staged runtime uses a separate counter sink so an abandoned or failed
+	 * preparation cannot alter the live evidence record.
+	 *
+	 * @param staged successful same-thread lifecycle evidence
+	 */
+	public void mergeFrom(SpatialSemanticInstrumentation staged) {
+		preflightMergeFrom(staged);
+		if (staged == this) {
+			return;
+		}
+		long mergedFrameEvaluations = Math.addExact(frameEvaluations,
+				staged.frameEvaluations);
+		long mergedProjectionSystemEvaluations = Math.addExact(
+				projectionSystemEvaluations, staged.projectionSystemEvaluations);
+		long mergedDiagramMapForwardEvaluations = Math.addExact(
+				diagramMapForwardEvaluations, staged.diagramMapForwardEvaluations);
+		long mergedDiagramMapInverseEvaluations = Math.addExact(
+				diagramMapInverseEvaluations, staged.diagramMapInverseEvaluations);
+		long mergedHingeConsistencyEvaluations = Math.addExact(
+				hingeConsistencyEvaluations, staged.hingeConsistencyEvaluations);
+		long mergedChangeOfPlaneConsistencyEvaluations = Math.addExact(
+				changeOfPlaneConsistencyEvaluations,
+				staged.changeOfPlaneConsistencyEvaluations);
+		long mergedProjectionSystemCertificatePublications = Math.addExact(
+				projectionSystemCertificatePublications,
+				staged.projectionSystemCertificatePublications);
+		final long mergedProjectionSystemCertificateRejections = Math.addExact(
+				projectionSystemCertificateRejections,
+				staged.projectionSystemCertificateRejections);
+		final long mergedReconstructionAttempts = Math.addExact(reconstructionAttempts,
+				staged.reconstructionAttempts);
+		final long mergedRankEvaluations = Math.addExact(rankEvaluations,
+				staged.rankEvaluations);
+		final long mergedCandidateObjectsBuilt = Math.addExact(candidateObjectsBuilt,
+				staged.candidateObjectsBuilt);
+		final long mergedReprojectionEvaluations = Math.addExact(reprojectionEvaluations,
+				staged.reprojectionEvaluations);
+		final long mergedCertificatePublications = Math.addExact(certificatePublications,
+				staged.certificatePublications);
+		final long mergedFailurePublications = Math.addExact(failurePublications,
+				staged.failurePublications);
+		final long mergedSupersededCandidateRejections = Math.addExact(
+				supersededCandidateRejections, staged.supersededCandidateRejections);
+		final long mergedDependencyUpdates = Math.addExact(dependencyUpdates,
+				staged.dependencyUpdates);
+		final long mergedDerivedViewPublications = Math.addExact(derivedViewPublications,
+				staged.derivedViewPublications);
+		final long mergedDerivedViewWithdrawals = Math.addExact(derivedViewWithdrawals,
+				staged.derivedViewWithdrawals);
+		final long mergedAuthoritativePublicationEpoch = Math.addExact(
+				authoritativePublicationEpoch,
+				staged.authoritativePublicationEpoch);
+
+		frameEvaluations = mergedFrameEvaluations;
+		projectionSystemEvaluations = mergedProjectionSystemEvaluations;
+		diagramMapForwardEvaluations = mergedDiagramMapForwardEvaluations;
+		diagramMapInverseEvaluations = mergedDiagramMapInverseEvaluations;
+		hingeConsistencyEvaluations = mergedHingeConsistencyEvaluations;
+		changeOfPlaneConsistencyEvaluations =
+				mergedChangeOfPlaneConsistencyEvaluations;
+		projectionSystemCertificatePublications =
+				mergedProjectionSystemCertificatePublications;
+		projectionSystemCertificateRejections =
+				mergedProjectionSystemCertificateRejections;
+		reconstructionAttempts = mergedReconstructionAttempts;
+		rankEvaluations = mergedRankEvaluations;
+		candidateObjectsBuilt = mergedCandidateObjectsBuilt;
+		reprojectionEvaluations = mergedReprojectionEvaluations;
+		certificatePublications = mergedCertificatePublications;
+		failurePublications = mergedFailurePublications;
+		supersededCandidateRejections = mergedSupersededCandidateRejections;
+		dependencyUpdates = mergedDependencyUpdates;
+		derivedViewPublications = mergedDerivedViewPublications;
+		derivedViewWithdrawals = mergedDerivedViewWithdrawals;
+		authoritativePublicationEpoch = mergedAuthoritativePublicationEpoch;
+		for (Map.Entry<SpatialIdentityId, Long> entry
+				: staged.authoritativePublicationCounts.entrySet()) {
+			authoritativePublicationCounts.put(entry.getKey(), Math.addExact(
+					authoritativePublicationCounts.getOrDefault(entry.getKey(), 0L),
+					entry.getValue()));
+		}
 	}
 
 	// Forbidden authority mechanisms intentionally have no mutator.

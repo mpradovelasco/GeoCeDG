@@ -3146,6 +3146,7 @@ public class AlgoDispatcher {
 						.getObjectColor());
 			}
 
+			completeSpatialOperation(spatialContext);
 			return newPoint;
 		} catch (Exception | Error e1) {
 			rollbackSpatialOperation(spatialContext, replacementStarted,
@@ -3206,6 +3207,7 @@ public class AlgoDispatcher {
 			}
 
 			// clearSelections();
+			completeSpatialOperation(spatialContext);
 			return newPoint;
 		} catch (Exception | MyError e1) {
 			rollbackSpatialOperation(spatialContext, replacementStarted,
@@ -3264,6 +3266,7 @@ public class AlgoDispatcher {
 						.getObjectColor());
 			}
 
+			completeSpatialOperation(spatialContext);
 			return newPoint;
 
 		} catch (Exception e1) {
@@ -3334,6 +3337,7 @@ public class AlgoDispatcher {
 						.getDefaultGeo(ConstructionDefaults.DEFAULT_POINT_FREE)
 						.getObjectColor());
 			}
+			completeSpatialOperation(spatialContext);
 		} catch (Exception e1) {
 			rollbackSpatialOperation(spatialContext, replacementStarted,
 					replacementSucceeded);
@@ -3349,6 +3353,12 @@ public class AlgoDispatcher {
 			boolean replacementStarted, boolean replacementSucceeded) {
 		if (context != null && (!replacementStarted || replacementSucceeded)) {
 			cons.rollbackSpatialRedefinePreparation(context);
+		}
+	}
+
+	private void completeSpatialOperation(SpatialRedefineContext context) {
+		if (context != null) {
+			cons.completeSpatialRedefineOperation(context);
 		}
 	}
 

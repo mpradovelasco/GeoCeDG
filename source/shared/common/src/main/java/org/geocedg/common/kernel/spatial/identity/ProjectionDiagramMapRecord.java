@@ -225,6 +225,43 @@ public final class ProjectionDiagramMapRecord implements SpatialIdentityRecord {
 		return revision;
 	}
 
+	/** @return an immutable same-ID map with the supplied revision */
+	public ProjectionDiagramMapRecord withRevision(long newRevision) {
+		return withRelationsAndRevision(relationIds, newRevision);
+	}
+
+	/** @return a same-ID map with explicit relation membership and revision */
+	public ProjectionDiagramMapRecord withRelationsAndRevision(
+			List<ProjectionFrameRelationId> newRelationIds, long newRevision) {
+		if (semanticVersion == 2) {
+			return new ProjectionDiagramMapRecord(id, semanticVersion, systemId,
+					frameId, frameUseRole, family, orientation, units, fidelity,
+					a00GeoId, a01GeoId, a10GeoId, a11GeoId, b0GeoId, b1GeoId,
+					declaredScaleGeoId, newRelationIds, newRevision, copySourceId);
+		}
+		return new ProjectionDiagramMapRecord(id, semanticVersion, systemId,
+				frameId, frameUseRole, family, newRelationIds, definitionGeoIds,
+				newRevision, copySourceId);
+	}
+
+	/**
+	 * Creates the fresh map identity required by an explicit frame-use re-role.
+	 *
+	 * @return fresh map with the requested frame-use role and relations
+	 */
+	public ProjectionDiagramMapRecord asFreshReroled(
+			ProjectionDiagramMapId freshId, ProjectionFrameUseRole newRole,
+			List<ProjectionFrameRelationId> newRelationIds) {
+		if (semanticVersion != 2) {
+			throw new IllegalStateException(
+					"Only a version-two POINT map can be re-roled productively");
+		}
+		return new ProjectionDiagramMapRecord(freshId, semanticVersion, systemId,
+				frameId, newRole, family, orientation, units, fidelity, a00GeoId,
+				a01GeoId, a10GeoId, a11GeoId, b0GeoId, b1GeoId,
+				declaredScaleGeoId, newRelationIds, 0, null);
+	}
+
 	@Override
 	public ProjectionDiagramMapRecord remap(
 			Map<SpatialIdentityId, SpatialIdentityId> remap,

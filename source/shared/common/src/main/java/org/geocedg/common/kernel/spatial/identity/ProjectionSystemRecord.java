@@ -173,6 +173,25 @@ public final class ProjectionSystemRecord implements SpatialIdentityRecord {
 		return revision;
 	}
 
+	/** @return an immutable same-ID system with the supplied revision */
+	public ProjectionSystemRecord withRevision(long newRevision) {
+		return withMembershipAndRevision(mapIds, relationIds, newRevision);
+	}
+
+	/** @return a same-ID system with explicit child membership and revision */
+	public ProjectionSystemRecord withMembershipAndRevision(
+			List<ProjectionDiagramMapId> newMapIds,
+			List<ProjectionFrameRelationId> newRelationIds, long newRevision) {
+		if (semanticVersion == 2) {
+			return new ProjectionSystemRecord(id, semanticVersion, newMapIds,
+					newRelationIds, units, absoluteTolerance, relativeTolerance,
+					rankTolerance, mapTolerance, hingeTolerance, conditionLimit,
+					newRevision, copySourceId);
+		}
+		return new ProjectionSystemRecord(id, semanticVersion, newMapIds,
+				newRelationIds, definitionGeoIds, newRevision, copySourceId);
+	}
+
 	@Override
 	public ProjectionSystemRecord remap(Map<SpatialIdentityId, SpatialIdentityId> remap,
 			boolean recordImmediateCopySource) {

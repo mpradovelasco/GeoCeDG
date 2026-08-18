@@ -15,14 +15,19 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
+
 import org.geocedg.common.kernel.spatial.identity.EditAuthorityMode;
 import org.geocedg.common.kernel.spatial.identity.GeoIdentityRecord;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geocedg.common.kernel.spatial.identity.ProjectionBindingRole;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityException;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
+import org.geocedg.common.kernel.spatial.identity.SpatialRedefineCandidateOutput;
 import org.geocedg.common.kernel.spatial.identity.SpatialRedefineContext;
 import org.geocedg.common.kernel.spatial.identity.SpatialRedefineDecision;
+import org.geocedg.common.kernel.spatial.identity.SpatialRedefineEffect;
+import org.geocedg.common.kernel.spatial.identity.SpatialRedefineOutputGroup;
 import org.geocedg.common.kernel.spatial.identity.SpatialRedefineProposal;
 import org.geocedg.common.kernel.spatial.identity.SpatialRedefineProvider;
 import org.geocedg.common.kernel.spatial.identity.SpatialRedefineSignature;
@@ -49,6 +54,8 @@ class G9A1SpatialIdentityRedefineHostTest extends BaseUnitTest {
 	private static final String MISSING_PROVIDER = "g9a1.host.missing";
 	private static final String THROWING_PROVIDER = "g9a1.host.throwing";
 	private static final String DIRECT_ROUTE_PROVIDER = "g9a1.host.direct";
+	private static final String HOSTILE_CARDINALITY_PROVIDER =
+			"g9a3.host.hostile-cardinality";
 	private static final String SCHEMA = "cedg.numeric.test";
 
 	@Test
@@ -100,7 +107,7 @@ class G9A1SpatialIdentityRedefineHostTest extends BaseUnitTest {
 		GeoNumeric restored = (GeoNumeric) lookup("A");
 		assertEquals(1, restored.getDouble());
 		assertEquals(oldId, registry().getPersistentGeoId(restored));
-		assertTrue(errors.sawSpatialIdentityFailure());
+		assertTrue(errors.sawSpatialIdentityFailure(), errors::describe);
 		assertEquals(1, registry().getInstrumentation().getRedefineRejectDecisions());
 	}
 
@@ -139,7 +146,7 @@ class G9A1SpatialIdentityRedefineHostTest extends BaseUnitTest {
 		assertEquals(oldId, registry().getPersistentGeoId(restored));
 		assertEquals(originalXml, getApp().getXML());
 		assertEquals(originalSteps, getConstruction().steps());
-		assertTrue(errors.sawSpatialIdentityFailure());
+		assertTrue(errors.sawSpatialIdentityFailure(), errors::describe);
 		assertEquals(2, registry().getInstrumentation().getRedefineRejectDecisions());
 
 		GeoNumeric throwingTarget = add("T=1");
@@ -368,6 +375,76 @@ class G9A1SpatialIdentityRedefineHostTest extends BaseUnitTest {
 						wrongContext));
 		assertEquals(beforeWrongOperation, getApp().getXML());
 		assertEquals(stepsBeforeWrongOperation, getConstruction().steps());
+		assertStaleRollbackLeaseNeverRewindsNewerOperation();
+	}
+
+	private void assertStaleRollbackLeaseNeverRewindsNewerOperation() {
+		GeoNumeric oldTarget = add("G9A3LeaseA=1");
+		GeoIdentityRecord original = register(oldTarget);
+		SpatialRedefineContext staleContext = registry()
+				.captureRedefineContext(oldTarget);
+		GeoNumeric staleCandidate = new GeoNumeric(getConstruction(), 9);
+		SpatialRedefineTransaction staleTransaction = registry().prepareRedefine(
+				staleContext, staleCandidate, 1, true);
+
+		editGeoElement(oldTarget, "G9A3LeaseA=2");
+		String newerXml = getApp().getXML();
+		PersistentGeoId retainedId = registry().getPersistentGeoId(
+				lookup("G9A3LeaseA"));
+		assertEquals(original.getId(), retainedId);
+
+		assertThrows(SpatialIdentityException.class,
+				() -> getConstruction().rollbackSpatialRedefinePreparation(
+						staleContext));
+		assertEquals(newerXml, getApp().getXML());
+		assertEquals(2, ((GeoNumeric) lookup("G9A3LeaseA")).getDouble());
+		assertThrows(SpatialIdentityException.class,
+				() -> getConstruction().rollbackSpatialRedefine(staleTransaction));
+		assertEquals(newerXml, getApp().getXML());
+		assertEquals(retainedId,
+				registry().getPersistentGeoId(lookup("G9A3LeaseA")));
+
+		GeoNumeric current = (GeoNumeric) lookup("G9A3LeaseA");
+		SpatialRedefineContext ownContext = registry().captureRedefineContext(current);
+		GeoNumeric ownCandidate = new GeoNumeric(getConstruction(), 4);
+		SpatialRedefineTransaction ownTransaction = registry().prepareRedefine(
+				ownContext, ownCandidate, 1, true);
+		current.setValue(4);
+		current.updateRepaint();
+		ownTransaction.commit(current);
+		assertEquals(4, current.getDouble());
+		assertEquals(2, registry().getGeoRecord(retainedId)
+				.getDefinitionRevision());
+
+		getConstruction().rollbackSpatialRedefine(ownTransaction);
+		assertEquals(newerXml, getApp().getXML());
+		assertEquals(2, ((GeoNumeric) lookup("G9A3LeaseA")).getDouble());
+		assertEquals(retainedId,
+				registry().getPersistentGeoId(lookup("G9A3LeaseA")));
+		assertEquals(1, registry().getGeoRecord(retainedId)
+				.getDefinitionRevision());
+	}
+
+	private void assertPreOperationContextRejectsToExactPreHelperState() {
+		GeoNumeric oldTarget = add("G9A3HelperA=1");
+		PersistentGeoId oldId = register(oldTarget,
+				numericSignature(THROWING_PROVIDER)).getId();
+		String beforeHelper = getApp().getXML();
+		int stepsBeforeHelper = getConstruction().steps();
+		SpatialRedefineContext operationContext =
+				registry().captureRedefineContext(oldTarget);
+
+		add("G9A3HostHelper=7");
+		assertThrows(IllegalStateException.class,
+				() -> getConstruction().replaceFromSpatialRedefineOperation(
+						oldTarget, new GeoNumeric(getConstruction(), 2),
+						operationContext));
+
+		assertEquals(beforeHelper, getApp().getXML());
+		assertEquals(stepsBeforeHelper, getConstruction().steps());
+		assertNull(lookup("G9A3HostHelper"));
+		assertEquals(oldId,
+				registry().getPersistentGeoId(lookup("G9A3HelperA")));
 	}
 
 	@Test
@@ -420,6 +497,44 @@ class G9A1SpatialIdentityRedefineHostTest extends BaseUnitTest {
 
 		assertNull(lookup(siblingLabel));
 		assertNull(registry().getRecord(siblingId));
+		assertHostileFreshOneToTwoRejectsBeforeInspectionOrReservation();
+	}
+
+	private void assertHostileFreshOneToTwoRejectsBeforeInspectionOrReservation() {
+		GeoNumeric oldTarget = add("G9A3HostileA=1");
+		SpatialRedefineSignature oldSignature = new SpatialRedefineSignature(
+				HOSTILE_CARDINALITY_PROVIDER, "VALUE", SCHEMA, 1,
+				EditAuthorityMode.PROJECTION_DEFINED,
+				ProjectionBindingRole.DEFINING, "VALUE", 1);
+		final PersistentGeoId oldId = register(oldTarget, oldSignature).getId();
+		add("c3=Circle((0,0),2)");
+		add("g3:y=0");
+		GeoElementND[] candidates = getAlgebraProcessor()
+				.processAlgebraCommandNoExceptionHandling("Intersect(c3,g3)", false,
+						new CapturingErrorHandler(), false, null);
+		assertEquals(2, candidates.length);
+		HostileCardinalityProvider provider = new HostileCardinalityProvider(
+				(GeoElement) candidates[0], (GeoElement) candidates[1]);
+		registry().registerRedefineProvider(provider);
+		SpatialRedefineContext context = registry().captureRedefineContext(oldTarget);
+		String before = getApp().getXML();
+		long allocationsBefore = registry().getInstrumentation().getAllocations();
+
+		SpatialRedefineTransaction transaction = registry().prepareRedefine(context,
+				(GeoElement) candidates[0], List.of((GeoElement) candidates[0],
+						(GeoElement) candidates[1]), true);
+
+		assertEquals(SpatialRedefineDecision.REJECT, transaction.getDecision());
+		assertTrue(transaction.getDecidedIds().isEmpty());
+		assertFalse(provider.inspected);
+		assertEquals(allocationsBefore,
+				registry().getInstrumentation().getAllocations());
+		getConstruction().rollbackSpatialRedefine(transaction);
+		assertEquals(before, getApp().getXML());
+		assertEquals(oldId,
+				registry().getPersistentGeoId(lookup("G9A3HostileA")));
+		assertEquals(0,
+				registry().getInstrumentation().getRedefineFreshDecisions());
 	}
 
 	@Test
@@ -514,6 +629,39 @@ class G9A1SpatialIdentityRedefineHostTest extends BaseUnitTest {
 		assertEquals(stepsBeforeRejectedPolygon, getConstruction().steps());
 		assertEquals(rejectedPolygonId,
 				registry().getPersistentGeoId(lookup("K")));
+		assertPreOperationContextRejectsToExactPreHelperState();
+	}
+
+	private void assertCollectedSuccessfulBatchPersistsAndClosesRollbackLease()
+			throws Exception {
+		add("G9A3BP=(0,0)");
+		add("G9A3BQ=(1,0)");
+		add("G9A3BS=(2,0)");
+		add("G9A3BT=(2,1)");
+		add("G9A3Bh=Line(G9A3BS,G9A3BT)");
+		GeoElement first = add("G9A3Bm=Line(G9A3BP,G9A3BS)");
+		GeoElement second = add("G9A3Bn=Line(G9A3BQ,G9A3BT)");
+		add("G9A3BM=Point(G9A3Bm)");
+		add("G9A3BN=Point(G9A3Bn)");
+		SpatialRedefineSignature signature = structuralSignature("LINE", "AXIS");
+		PersistentGeoId firstId = register(first, signature).getId();
+		PersistentGeoId secondId = register(second, signature).getId();
+		String entryXml = getApp().getXML();
+
+		getConstruction().startCollectingRedefineCalls();
+		editGeoElement(first, "G9A3Bm=PerpendicularLine(G9A3BP,G9A3Bh)");
+		editGeoElement(second, "G9A3Bn=PerpendicularLine(G9A3BQ,G9A3Bh)");
+		getConstruction().processCollectedRedefineCalls();
+
+		String committedXml = getApp().getXML();
+		assertNotEquals(entryXml, committedXml);
+		assertEquals(firstId, registry().getPersistentGeoId(lookup("G9A3Bm")));
+		assertEquals(secondId, registry().getPersistentGeoId(lookup("G9A3Bn")));
+		assertEquals(1, registry().getGeoRecord(firstId).getDefinitionRevision());
+		assertEquals(1, registry().getGeoRecord(secondId).getDefinitionRevision());
+		assertNotNull(lookup("G9A3BM"));
+		assertNotNull(lookup("G9A3BN"));
+		assertEquals(committedXml, getApp().getXML());
 	}
 
 	@Test
@@ -598,6 +746,7 @@ class G9A1SpatialIdentityRedefineHostTest extends BaseUnitTest {
 		assertEquals(overflowId,
 				registry().getPersistentGeoId(lookup("q")));
 		assertTrue(overflowErrors.sawSpatialIdentityFailure());
+		assertCollectedSuccessfulBatchPersistsAndClosesRollbackLease();
 	}
 
 	@Test
@@ -763,6 +912,65 @@ class G9A1SpatialIdentityRedefineHostTest extends BaseUnitTest {
 		}
 	}
 
+	private static final class HostileCardinalityProvider
+			implements SpatialRedefineProvider {
+		private final GeoElement left;
+		private final GeoElement right;
+		private boolean inspected;
+
+		private HostileCardinalityProvider(GeoElement left, GeoElement right) {
+			this.left = left;
+			this.right = right;
+		}
+
+		@Override
+		public String getProviderId() {
+			return HOSTILE_CARDINALITY_PROVIDER;
+		}
+
+		@Override
+		public SpatialRedefineSignature describeCandidate(
+				SpatialRedefineContext context, GeoElement candidate) {
+			throw new AssertionError("Grouped hostile provider must use stable roles");
+		}
+
+		@Override
+		public boolean isTopologyPreserving(SpatialRedefineContext context,
+				GeoElement candidate) {
+			return false;
+		}
+
+		@Override
+		public SpatialRedefineOutputGroup<SpatialRedefineCandidateOutput>
+				describeCandidateGroup(SpatialRedefineContext context,
+						List<GeoElement> candidates) {
+			SpatialRedefineSignature leftSignature = cardinalitySignature("LEFT");
+			SpatialRedefineSignature rightSignature = cardinalitySignature("RIGHT");
+			return SpatialRedefineOutputGroup.of(List.of(
+					new SpatialRedefineCandidateOutput(left, leftSignature),
+					new SpatialRedefineCandidateOutput(right, rightSignature)));
+		}
+
+		@Override
+		public SpatialRedefineEffect describeEffect(SpatialRedefineContext context,
+				SpatialRedefineOutputGroup<SpatialRedefineCandidateOutput> outputs) {
+			return SpatialRedefineEffect.ADMITTED_TOPOLOGY_CHANGE;
+		}
+
+		@Override
+		public SpatialRedefineDecision inspect(SpatialRedefineContext context,
+				SpatialRedefineProposal proposal) {
+			inspected = true;
+			return SpatialRedefineDecision.FRESH;
+		}
+
+		private static SpatialRedefineSignature cardinalitySignature(String role) {
+			return new SpatialRedefineSignature(HOSTILE_CARDINALITY_PROVIDER,
+					"POINT", SCHEMA, 1, EditAuthorityMode.PROJECTION_DEFINED,
+					ProjectionBindingRole.DEFINING, role, 2);
+		}
+	}
+
 	private static final class CapturingErrorHandler implements ErrorLogger {
 		private Throwable throwable;
 		private String message;
@@ -808,6 +1016,10 @@ class G9A1SpatialIdentityRedefineHostTest extends BaseUnitTest {
 				current = current.getCause();
 			}
 			return message != null && message.contains("REDEFINE_");
+		}
+
+		private String describe() {
+			return "throwable=" + throwable + ", message=" + message;
 		}
 	}
 }

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<geogebra format="5.0" version="5.4.928.0" app="classic">
+  <construction title="G9A3 unsupported external-loss shape" author="GeoCeDG" date="2026-08-18">
+    <!--
+      Project-authored boundary fixture, not an externally produced artifact.
+      It represents ordinary geometry after the GeoCeDG spatial section and
+      durable IDs are absent. It must remain unassociated until an explicit
+      typed migration request is supplied.
+    -->
+    <element type="point3d" label="O">
+      <coords x="0" y="0" z="0" w="1"/>
+    </element>
+    <element type="point3d" label="X">
+      <coords x="1" y="0" z="0" w="1"/>
+    </element>
+    <element type="vector3d" label="Ux">
+      <coords x="1" y="0" z="0" w="0"/>
+    </element>
+    <element type="vector3d" label="Uy">
+      <coords x="0" y="1" z="0" w="0"/>
+    </element>
+    <element type="vector3d" label="Uz">
+      <coords x="0" y="0" z="1" w="0"/>
+    </element>
+    <element type="point" label="PH">
+      <coords x="2" y="3" z="1"/>
+    </element>
+    <element type="point" label="PV">
+      <coords x="2" y="5" z="1"/>
+    </element>
+  </construction>
+</geogebra>

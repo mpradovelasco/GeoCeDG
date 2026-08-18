@@ -223,6 +223,54 @@ public final class ProjectionBindingRecord implements SpatialIdentityRecord {
 		return revision;
 	}
 
+	/** @return an immutable same-ID binding with the supplied revision */
+	public ProjectionBindingRecord withRevision(long newRevision) {
+		if (semanticVersion == 2) {
+			return new ProjectionBindingRecord(id, semanticVersion, objectId, systemId,
+					diagramMapId, frameId, role, representationType,
+					expectedSpatialType, schemaId, schemaVersion, projectedPointGeoId,
+					fidelity, correspondence, newRevision, copySourceId);
+		}
+		return new ProjectionBindingRecord(id, semanticVersion, objectId, systemId,
+				diagramMapId, frameId, role, representationType, expectedSpatialType,
+				schemaId, schemaVersion, projectedGeoIds, newRevision, copySourceId);
+	}
+
+	/**
+	 * Creates the fresh binding identity required by an explicit re-role operation.
+	 *
+	 * @return fresh binding with the requested role
+	 */
+	public ProjectionBindingRecord asFreshReroled(ProjectionBindingId freshId,
+			ProjectionBindingRole newRole) {
+		if (semanticVersion == 2) {
+			return new ProjectionBindingRecord(freshId, semanticVersion, objectId,
+					systemId, diagramMapId, frameId, newRole, representationType,
+					expectedSpatialType, schemaId, schemaVersion, projectedPointGeoId,
+					fidelity, correspondence, 0, null);
+		}
+		return new ProjectionBindingRecord(freshId, semanticVersion, objectId,
+				systemId, diagramMapId, frameId, newRole, representationType,
+				expectedSpatialType, schemaId, schemaVersion, projectedGeoIds, 0, null);
+	}
+
+	/**
+	 * Creates a fresh binding explicitly retargeted to a fresh map identity.
+	 *
+	 * @return fresh binding targeting the supplied map
+	 */
+	public ProjectionBindingRecord asFreshRetargeted(ProjectionBindingId freshId,
+			ProjectionDiagramMapId freshMapId) {
+		if (semanticVersion != 2) {
+			throw new IllegalStateException(
+					"Only a version-two POINT binding can be retargeted productively");
+		}
+		return new ProjectionBindingRecord(freshId, semanticVersion, objectId,
+				systemId, freshMapId, frameId, role, representationType,
+				expectedSpatialType, schemaId, schemaVersion, projectedPointGeoId,
+				fidelity, correspondence, 0, null);
+	}
+
 	@Override
 	public ProjectionBindingRecord remap(Map<SpatialIdentityId, SpatialIdentityId> remap,
 			boolean recordImmediateCopySource) {

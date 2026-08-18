@@ -141,6 +141,20 @@ public final class GeoIdentityRecord implements SpatialIdentityRecord {
 				newDefinitionRevision, newTopologyRevision, copySourceId);
 	}
 
+	/**
+	 * Creates the same durable geo identity with one explicitly changed projection
+	 * binding role and monotone lifecycle revisions.
+	 *
+	 * @return role-revised identity record
+	 */
+	public GeoIdentityRecord withBindingRoleAndRevisions(
+			ProjectionBindingRole newBindingRole, long newDefinitionRevision,
+			long newTopologyRevision) {
+		return new GeoIdentityRecord(id, provider, family, schemaId, schemaVersion,
+				authority, newBindingRole, stableOutputRole, outputCardinality,
+				newDefinitionRevision, newTopologyRevision, copySourceId);
+	}
+
 	@Override
 	public GeoIdentityRecord remap(Map<SpatialIdentityId, SpatialIdentityId> remap,
 			boolean recordImmediateCopySource) {

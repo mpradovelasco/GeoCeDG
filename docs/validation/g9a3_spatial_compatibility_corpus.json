@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 1,
+  "phase": "G9A3",
+  "status": "IMPLEMENTATION_CANDIDATE_CORPUS_FROZEN",
+  "authorApprovalClaimed": false,
+  "hashesFrozen": true,
+  "purpose": "Deterministic native, legacy, malformed and unsupported-open fixtures for G9A3 lifecycle and migration hardening.",
+  "boundary": {
+    "geoCeDGProfile": "AppConfigGeoCeDG using the fork shared kernel",
+    "geoCeDGClassicDiagnostic": "AppConfigDefault using the same fork shared kernel in a separate process",
+    "externalUpstream": "An external upstream GeoGebra distribution outside the native GeoCeDG persistence guarantee",
+    "externalUpstreamRuntimeEvidence": "NOT_EXECUTED_OR_CLAIMED_BY_THIS_CORPUS",
+    "lossyConversionAuthorized": false
+  },
+  "provenancePolicy": [
+    "All newly added XML fixtures are project-authored test inputs.",
+    "The external-upstream loss-shape fixture is synthetic and is not represented as output captured from an external runtime.",
+    "The existing G9A2 GGB remains the canonical native spatial model and is referenced rather than duplicated or resaved.",
+    "Corrupt and future-version documents are test-private and are not Java-kernel model fixtures or user documents."
+  ],
+  "entries": [
+    {
+      "id": "native-g9a2-point-model",
+      "path": "models/regression/g9a2-spatial-point-pilot/g9a2-spatial-point-pilot.ggb",
+      "sha256": "3f150eaf05731b3907b5ba3e653ec4666ca1dcc6f999f1b609de305b98b2a3be",
+      "classification": "CANONICAL_NATIVE_MODEL",
+      "testMechanism": "real GeoCeDG and fork-Classic load/recompute/save/reopen without modifying source bytes",
+      "expected": "Exact typed identities, relations, revisions, certificates and normalized spatial XML are preserved."
+    },
+    {
+      "id": "native-v2-shuffled-forward-closure",
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/spatial/g9a3/v2-shuffled-forward-closure.xml",
+      "sha256": "cfeb2232f8fb3ae59438c20e4d1f8cedd8a88689a1d17181018dd2689f6af448",
+      "classification": "PROJECT_AUTHORED_NATIVE_XML_FIXTURE",
+      "testMechanism": "real host two-stage load and deterministic rewrite",
+      "expected": "Record order has no authority and the POINT certificate is current after resolution."
+    },
+    {
+      "id": "native-v2-missing-binding-reference",
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/spatial/g9a3/v2-missing-binding-reference.xml",
+      "sha256": "b1eaa23dbded232eab7a9174491c79627c223cf653fe6deac19c5083b30f746c",
+      "classification": "TEST_PRIVATE_BROKEN_POINT_REFERENCE_FIXTURE",
+      "testMechanism": "real host two-stage load, runtime withdrawal and deterministic rewrite",
+      "expected": "The v2 POINT object remains explicitly BROKEN on its exact missing binding ID, publishes no payload and is never repaired by appearance."
+    },
+    {
+      "id": "legacy-no-spatial-section",
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/spatial/g9a1/legacy-no-identities.xml",
+      "sha256": "c93eefd5cb0038a69a25d5e4d82261db1174317646441fed657a4547b6b5aaa1",
+      "classification": "FROZEN_G9A1_LEGACY_FIXTURE",
+      "testMechanism": "real host load",
+      "expected": "Ordinary geometry remains valid and unassociated."
+    },
+    {
+      "id": "legacy-adversarial-coincident",
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/spatial/g9a3/legacy-adversarial-coincident.xml",
+      "sha256": "1f3c6b437595c04bb521a95ad0eba91fc0cbd6096a037947ae3ca6ba55052237",
+      "classification": "PROJECT_AUTHORED_MIGRATION_NON_INFERENCE_FIXTURE",
+      "testMechanism": "real host load with label, layer, coordinate and order permutations",
+      "expected": "Zero spatial associations exist until a complete explicit typed request is applied."
+    },
+    {
+      "id": "legacy-v1-inert-point-closure",
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/spatial/g9a2/v1-inert-point-closure.xml",
+      "sha256": "19ba2823d6386c1269e1059ed3f9dcbb4f356eecaa5d1a5cb9fca6f4cb08e228",
+      "classification": "FROZEN_G9A2_INERT_FIXTURE",
+      "testMechanism": "real host load",
+      "expected": "Version-one records do not imply version-two POINT semantics."
+    },
+    {
+      "id": "missing-relation-support",
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/spatial/g9a3/v2-missing-relation-support.xml",
+      "sha256": "4ef4e530cce75ec2f334c8c7c5d4f955d9f6cfb9d10e5a989e2790628b9c8f8f",
+      "classification": "TEST_PRIVATE_BROKEN_REFERENCE_FIXTURE",
+      "testMechanism": "record staging and prospective-graph validation",
+      "expected": "The exact missing ID is diagnosed and ordinary coincident geometry is not used as repair authority."
+    },
+    {
+      "id": "duplicate-semantic-id",
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/spatial/g9a3/v2-duplicate-semantic-id.xml",
+      "sha256": "2187307981bdc2b2c4b26e25237fcfbd933035d730e5903c543fff030ca17c19",
+      "classification": "TEST_PRIVATE_NATIVE_COLLISION_FIXTURE",
+      "testMechanism": "record staging and native-load transaction",
+      "expected": "The native graph rejects atomically and the duplicate is never remapped."
+    },
+    {
+      "id": "malformed-role-family",
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/spatial/g9a3/v2-malformed-role-family.xml",
+      "sha256": "bdfbfa2c795f7681fabbb7920acba69795ee91e17c4852a777840c22920b121e",
+      "classification": "TEST_PRIVATE_STRICT_RECORD_FIXTURE",
+      "testMechanism": "strict record parsing and prospective-graph validation",
+      "expected": "Unknown role and inadmissible map family fail before publication."
+    },
+    {
+      "id": "future-outer-version",
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/spatial/g9a3/v2-future-outer-version.xml",
+      "sha256": "5b8aa46d56c5392da9bd08e0dfedfe9346d4ab2dd166e5716db0fc4d264f991b",
+      "classification": "TEST_PRIVATE_FUTURE_SECTION_FIXTURE",
+      "testMechanism": "real host load",
+      "expected": "The future section fails atomically and truthfully with no downgrade."
+    },
+    {
+      "id": "future-record-version",
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/spatial/g9a2/v2-unknown-record-version.xml",
+      "sha256": "af6ff69f5a8d6450ab8796511913fef50153ea19bf6362bc2d797797788cd161",
+      "classification": "FROZEN_G9A2_FUTURE_RECORD_FIXTURE",
+      "testMechanism": "strict record parsing",
+      "expected": "The future record fails truthfully with no partial publication."
+    },
+    {
+      "id": "external-upstream-ordinary-control",
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/spatial/g9a3/external-upstream-ordinary-control.xml",
+      "sha256": "762429ea059de9e546c8356729d0c69c3815b7dacf30c76d781261dd574bd46c",
+      "classification": "PROJECT_AUTHORED_ORDINARY_CONTROL",
+      "testMechanism": "real GeoCeDG host load plus static external-boundary classification",
+      "expected": "Ordinary geometry loads normally and has no spatial association."
+    },
+    {
+      "id": "external-upstream-no-spatial-loss-shape",
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/spatial/g9a3/external-upstream-no-spatial-loss-shape.xml",
+      "sha256": "12dfa6abb458acd9aa72f2770cb6e764dcd158ad24fa2bfa484c6a498e61d33a",
+      "classification": "PROJECT_AUTHORED_UNSUPPORTED_LOSS_SHAPE_NOT_EXTERNAL_RUNTIME_OUTPUT",
+      "testMechanism": "real GeoCeDG host load plus migration hard-zero assertions",
+      "expected": "The geometry is legacy/unassociated; no label, list or coordinate downgrade or repair is invoked."
+    }
+  ],
+  "hashManifest": "docs/validation/g9a3_spatial_compatibility_corpus.sha256",
+  "openQuestions": [
+    "A real external-upstream runtime observation may be added only if the exact external binary/version and saved artifacts are provenance-recorded.",
+    "Public migration interaction remains deferred to a separately authorized frontend phase."
+  ]
+}

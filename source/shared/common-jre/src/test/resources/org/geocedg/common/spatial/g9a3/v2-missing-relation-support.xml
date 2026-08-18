@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<g9a3Fixture purpose="missing relation support is never inferred">
+  <geocedgSpatial version="1">
+    <frameRelation id="relation:00000000000000000000000000000041"
+        semanticVersion="2" system="system:00000000000000000000000000000021"
+        sourceMap="map:00000000000000000000000000000031"
+        destinationMap="map:00000000000000000000000000000032"
+        kind="HINGE_UNFOLD"
+        supportStart="geo:00000000000000000000000000000001"
+        supportEnd="geo:0000000000000000000000000000ffff"
+        orientation="POSITIVE" provenance="EXPLICIT_CONSTRUCTION"
+        foldSign="geo:00000000000000000000000000000007" revision="0"/>
+  </geocedgSpatial>
+  <ordinaryGeometry label="same-looking-support-is-not-authority">
+    <point x="1" y="0" z="0"/>
+  </ordinaryGeometry>
+</g9a3Fixture>

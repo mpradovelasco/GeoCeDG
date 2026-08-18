@@ -24,23 +24,101 @@ import org.geogebra.common.kernel.algos.Algos;
  */
 public final class AlgoProjectionDefinedSpatialPoint extends AlgoElement {
 	private final SpatialSemanticInputs.PointTopology topology;
-	private final SpatialSemanticInstrumentation instrumentation;
+	private SpatialSemanticInstrumentation instrumentation;
 	private final GeoPoint3D derivedPoint;
 	private SpatialPointPilotCertificate certificate;
+	private boolean derivedPointAnnounced;
+	private boolean dependenciesActive;
 
 	AlgoProjectionDefinedSpatialPoint(Construction construction,
 			SpatialSemanticInputs.PointTopology topology,
 			SpatialSemanticInstrumentation instrumentation) {
+		this(construction, topology, instrumentation, true);
+	}
+
+	AlgoProjectionDefinedSpatialPoint(Construction construction,
+			SpatialSemanticInputs.PointTopology topology,
+			SpatialSemanticInstrumentation instrumentation,
+			boolean activateImmediately) {
 		super(construction, false);
 		this.topology = topology;
 		this.instrumentation = instrumentation;
 		this.derivedPoint = new GeoPoint3D(construction);
-		setProtectedInput(true);
-		setInputOutput();
+		try {
+			setProtectedInput(true);
+			setInputOutput();
+			this.derivedPoint.setSelectionAllowed(false);
+			if (activateImmediately) {
+				activatePrepared();
+				compute();
+				announceDerivedPoint();
+			}
+		} catch (RuntimeException failure) {
+			discardPrepared(failure);
+			throw failure;
+		}
+	}
+
+	/** Wires a prevalidated algorithm into the live normal dependency graph. */
+	void activatePrepared() {
+		if (dependenciesActive) {
+			throw new IllegalStateException("Spatial-point algorithm is already active");
+		}
+		dependenciesActive = true;
 		setDependencies();
-		this.derivedPoint.setSelectionAllowed(false);
-		compute();
-		derivedPoint.notifyAdd();
+		// setDependencies() installs the parent algorithm and reapplies the
+		// construction defaults. The derived adapter is diagnostic-only, so its
+		// non-editable contract must be reasserted after that host activation.
+		derivedPoint.setSelectionAllowed(false);
+	}
+
+	/** Selects the runtime evidence sink after a prepared switch succeeds. */
+	void useInstrumentation(SpatialSemanticInstrumentation activeInstrumentation) {
+		instrumentation = activeInstrumentation;
+	}
+
+	/** Discards an inactive preparation or removes an activated preparation. */
+	void discardPrepared() {
+		discardPrepared(null);
+	}
+
+	private void discardPrepared(RuntimeException failure) {
+		if (!dependenciesActive) {
+			return;
+		}
+		try (Construction.SpatialSemanticAdapterNotificationScope ignored =
+				cons.suppressSpatialSemanticAdapterNotifications()) {
+			remove();
+		} catch (RuntimeException cleanupFailure) {
+			if (failure != null) {
+				failure.addSuppressed(cleanupFailure);
+			} else {
+				throw cleanupFailure;
+			}
+		}
+	}
+
+	/** Makes a successfully prepared one-way adapter observable at commit. */
+	void announceDerivedPoint() {
+		if (!derivedPointAnnounced) {
+			derivedPoint.notifyAdd();
+			derivedPointAnnounced = true;
+		}
+	}
+
+	/** @return whether this transient adapter was made visible to Views */
+	boolean isDerivedPointAnnounced() {
+		return derivedPointAnnounced;
+	}
+
+	/**
+	 * Makes an already superseded adapter inert without publishing another
+	 * authoritative revision. The replacement algorithm has already published
+	 * the sole terminal certificate for this graph switch.
+	 */
+	void retireWithoutAuthoritativePublication() {
+		certificate = null;
+		withdrawDerivedPoint();
 	}
 
 	@Override
@@ -57,6 +135,10 @@ public final class AlgoProjectionDefinedSpatialPoint extends AlgoElement {
 				&& before.getRevisionTuple().equals(certificate.getRevisionTuple())
 				&& before.getValueToken().equals(
 						certificate.getValueSnapshotToken())) {
+			return;
+		}
+		if (cons.getSpatialIdentityRegistry()
+				.deferAuthoritativeRuntimePublication(topology.getObjectId())) {
 			return;
 		}
 		instrumentation.recordDependencyUpdate();
@@ -77,6 +159,7 @@ public final class AlgoProjectionDefinedSpatialPoint extends AlgoElement {
 		certificate = new SpatialPointPilotCertificate(topology.getObjectId(),
 				topology.getSystemId(), before.getRevisionTuple(),
 				before.getValueToken(), candidate, evaluationCompleted);
+		instrumentation.recordAuthoritativePublication(topology.getObjectId());
 		if (candidate.getCertificateStatus() == SpatialCertificateStatus.VALID
 				&& candidate.getPoint().isPresent()) {
 			Vector3 point = candidate.getPoint().get();
@@ -89,13 +172,26 @@ public final class AlgoProjectionDefinedSpatialPoint extends AlgoElement {
 
 	/** Withdraws current evidence and the one-way view payload immediately. */
 	public void invalidateCurrentRevision() {
+		if (cons.getSpatialIdentityRegistry()
+				.deferAuthoritativeRuntimePublication(topology.getObjectId())) {
+			return;
+		}
 		publishInvalidated(topology.capture());
+	}
+
+	boolean isCurrentFor(SpatialSemanticInputs.Snapshot snapshot) {
+		return certificate != null && certificate.isCurrentRevision()
+				&& snapshot.isCurrentTopology()
+				&& snapshot.getRevisionTuple().equals(certificate.getRevisionTuple())
+				&& snapshot.getValueToken().equals(
+						certificate.getValueSnapshotToken());
 	}
 
 	private void publishInvalidated(SpatialSemanticInputs.Snapshot snapshot) {
 		certificate = new SpatialPointPilotCertificate(topology.getObjectId(),
 				topology.getSystemId(), snapshot.getRevisionTuple(),
 				snapshot.getValueToken(), SpatialSemanticInputs.invalidatedPoint(), false);
+		instrumentation.recordAuthoritativePublication(topology.getObjectId());
 		withdrawDerivedPoint();
 	}
 

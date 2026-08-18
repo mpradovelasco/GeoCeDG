@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<g9a3Fixture purpose="strict role and family rejection">
+  <records>
+    <diagramMap id="map:00000000000000000000000000000031" semanticVersion="2"
+        system="system:00000000000000000000000000000021"
+        frame="frame:00000000000000000000000000000011" role="VISIBLE"
+        family="SCREEN_AFFINE" orientation="PRESERVING" units="m"
+        fidelity="EXACT" a00="geo:00000000000000000000000000000001"
+        a01="geo:00000000000000000000000000000002"
+        a10="geo:00000000000000000000000000000002"
+        a11="geo:00000000000000000000000000000001"
+        b0="geo:00000000000000000000000000000002"
+        b1="geo:00000000000000000000000000000002"
+        declaredScale="geo:00000000000000000000000000000001" revision="0"/>
+    <binding id="binding:00000000000000000000000000000051" semanticVersion="2"
+        object="object:00000000000000000000000000000061"
+        system="system:00000000000000000000000000000021"
+        diagramMap="map:00000000000000000000000000000031"
+        frame="frame:00000000000000000000000000000011" role="OWNER"
+        representation="POINT" expectedType="POINT"
+        schema="cedg.spatial.point.projection" schemaVersion="1"
+        projectedPoint="geo:00000000000000000000000000000003"
+        fidelity="EXACT" correspondence="ESTABLISHED" revision="0"/>
+  </records>
+</g9a3Fixture>

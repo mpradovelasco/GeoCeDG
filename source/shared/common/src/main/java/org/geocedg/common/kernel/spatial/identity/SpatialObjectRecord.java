@@ -11,6 +11,12 @@ import java.util.Objects;
 
 /** Inert identity, type and definition-input record for a future spatial object. */
 public final class SpatialObjectRecord implements SpatialIdentityRecord {
+	/** Ordinary construction-owned creation provenance. */
+	public static final String CONSTRUCTION_OWNED = "CONSTRUCTION_OWNED";
+
+	/** Durable provenance for a caller-selected explicit legacy association. */
+	public static final String EXPLICIT_ASSOCIATION = "EXPLICIT_ASSOCIATION";
+
 	/** The only spatial type admitted by the version-two G9A2 pilot. */
 	public static final String POINT_TYPE = "POINT";
 
@@ -32,6 +38,7 @@ public final class SpatialObjectRecord implements SpatialIdentityRecord {
 	private final long definitionRevision;
 	private final long topologyRevision;
 	private final SpatialObjectId copySourceId;
+	private final String associationProvenance;
 
 	/** Creates an original inert spatial-object record. */
 	public SpatialObjectRecord(SpatialObjectId id, int semanticVersion,
@@ -39,7 +46,8 @@ public final class SpatialObjectRecord implements SpatialIdentityRecord {
 			int schemaVersion, List<PersistentGeoId> definitionGeoIds,
 			long definitionRevision, long topologyRevision) {
 		this(id, semanticVersion, spatialType, authority, schemaId, schemaVersion,
-				definitionGeoIds, definitionRevision, topologyRevision, null);
+				definitionGeoIds, definitionRevision, topologyRevision, null,
+				CONSTRUCTION_OWNED);
 	}
 
 	/** Creates an inert spatial-object record with optional immediate copy lineage. */
@@ -48,6 +56,16 @@ public final class SpatialObjectRecord implements SpatialIdentityRecord {
 			int schemaVersion, List<PersistentGeoId> definitionGeoIds,
 			long definitionRevision, long topologyRevision,
 			SpatialObjectId copySourceId) {
+		this(id, semanticVersion, spatialType, authority, schemaId, schemaVersion,
+				definitionGeoIds, definitionRevision, topologyRevision, copySourceId,
+				CONSTRUCTION_OWNED);
+	}
+
+	private SpatialObjectRecord(SpatialObjectId id, int semanticVersion,
+			String spatialType, EditAuthorityMode authority, String schemaId,
+			int schemaVersion, List<PersistentGeoId> definitionGeoIds,
+			long definitionRevision, long topologyRevision,
+			SpatialObjectId copySourceId, String associationProvenance) {
 		if (semanticVersion != 1) {
 			throw new IllegalArgumentException(
 					"The inert spatial-object constructor requires semanticVersion 1");
@@ -67,6 +85,8 @@ public final class SpatialObjectRecord implements SpatialIdentityRecord {
 		this.topologyRevision = SpatialRecordSupport.requireRevision(topologyRevision,
 				"topologyRevision");
 		this.copySourceId = copySourceId;
+		this.associationProvenance = requireAssociationProvenance(
+				associationProvenance, false);
 	}
 
 	/** Creates a version-two projection-defined point object. */
@@ -76,7 +96,8 @@ public final class SpatialObjectRecord implements SpatialIdentityRecord {
 			List<ProjectionBindingId> bindingIds, long definitionRevision,
 			long topologyRevision) {
 		this(id, semanticVersion, spatialType, authority, schemaId, schemaVersion,
-				systemId, bindingIds, definitionRevision, topologyRevision, null);
+				systemId, bindingIds, definitionRevision, topologyRevision, null,
+				CONSTRUCTION_OWNED);
 	}
 
 	/** Creates a version-two point object with optional immediate copy lineage. */
@@ -85,6 +106,17 @@ public final class SpatialObjectRecord implements SpatialIdentityRecord {
 			int schemaVersion, ProjectionSystemId systemId,
 			List<ProjectionBindingId> bindingIds, long definitionRevision,
 			long topologyRevision, SpatialObjectId copySourceId) {
+		this(id, semanticVersion, spatialType, authority, schemaId, schemaVersion,
+				systemId, bindingIds, definitionRevision, topologyRevision,
+				copySourceId, CONSTRUCTION_OWNED);
+	}
+
+	SpatialObjectRecord(SpatialObjectId id, int semanticVersion,
+			String spatialType, EditAuthorityMode authority, String schemaId,
+			int schemaVersion, ProjectionSystemId systemId,
+			List<ProjectionBindingId> bindingIds, long definitionRevision,
+			long topologyRevision, SpatialObjectId copySourceId,
+			String associationProvenance) {
 		if (semanticVersion != 2) {
 			throw new IllegalArgumentException(
 					"The semantic spatial-object constructor requires semanticVersion 2");
@@ -121,6 +153,20 @@ public final class SpatialObjectRecord implements SpatialIdentityRecord {
 		this.topologyRevision = SpatialRecordSupport.requireRevision(topologyRevision,
 				"topologyRevision");
 		this.copySourceId = copySourceId;
+		this.associationProvenance = requireAssociationProvenance(
+				associationProvenance, true);
+	}
+
+	private static String requireAssociationProvenance(String provenance,
+			boolean allowExplicitAssociation) {
+		String checked = SpatialRecordSupport.requireText(provenance,
+				"associationProvenance");
+		if (!CONSTRUCTION_OWNED.equals(checked)
+				&& !(allowExplicitAssociation && EXPLICIT_ASSOCIATION.equals(checked))) {
+			throw new IllegalArgumentException(
+					"Unsupported spatial-object association provenance");
+		}
+		return checked;
 	}
 
 	@Override
@@ -191,6 +237,52 @@ public final class SpatialObjectRecord implements SpatialIdentityRecord {
 		return topologyRevision;
 	}
 
+	/** @return durable creation or explicit-association provenance */
+	public String getAssociationProvenance() {
+		return associationProvenance;
+	}
+
+	SpatialObjectRecord withAssociationProvenance(String provenance) {
+		if (semanticVersion != 2) {
+			throw new IllegalStateException(
+					"Only a version-two POINT can record explicit association");
+		}
+		return new SpatialObjectRecord(id, semanticVersion, spatialType, authority,
+				schemaId, schemaVersion, systemId, bindingIds, definitionRevision,
+				topologyRevision, copySourceId, provenance);
+	}
+
+	/** @return an immutable same-ID object with the supplied revisions */
+	public SpatialObjectRecord withRevisions(long newDefinitionRevision,
+			long newTopologyRevision) {
+		if (semanticVersion == 2) {
+			return new SpatialObjectRecord(id, semanticVersion, spatialType, authority,
+					schemaId, schemaVersion, systemId, bindingIds,
+					newDefinitionRevision, newTopologyRevision, copySourceId,
+					associationProvenance);
+		}
+		return new SpatialObjectRecord(id, semanticVersion, spatialType, authority,
+				schemaId, schemaVersion, definitionGeoIds, newDefinitionRevision,
+				newTopologyRevision, copySourceId);
+	}
+
+	/**
+	 * @return a same-ID version-two POINT object with explicit binding membership
+	 *         and revisions
+	 */
+	public SpatialObjectRecord withBindingsAndRevisions(
+			List<ProjectionBindingId> newBindingIds, long newDefinitionRevision,
+			long newTopologyRevision) {
+		if (semanticVersion != 2) {
+			throw new IllegalStateException(
+					"Only a version-two POINT object has binding membership");
+		}
+		return new SpatialObjectRecord(id, semanticVersion, spatialType, authority,
+				schemaId, schemaVersion, systemId, newBindingIds,
+				newDefinitionRevision, newTopologyRevision, copySourceId,
+				associationProvenance);
+	}
+
 	@Override
 	public SpatialObjectRecord remap(Map<SpatialIdentityId, SpatialIdentityId> remap,
 			boolean recordImmediateCopySource) {
@@ -199,7 +291,8 @@ public final class SpatialObjectRecord implements SpatialIdentityRecord {
 					semanticVersion, spatialType, authority, schemaId, schemaVersion,
 					SpatialRecordSupport.remap(systemId, remap),
 					SpatialRecordSupport.remap(bindingIds, remap), definitionRevision,
-					topologyRevision, recordImmediateCopySource ? id : copySourceId);
+					topologyRevision, recordImmediateCopySource ? id : copySourceId,
+					associationProvenance);
 		}
 		return new SpatialObjectRecord(SpatialRecordSupport.remap(id, remap),
 				semanticVersion, spatialType, authority, schemaId, schemaVersion,

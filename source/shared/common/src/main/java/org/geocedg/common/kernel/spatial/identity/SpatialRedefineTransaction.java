@@ -6,8 +6,11 @@
 package org.geocedg.common.kernel.spatial.identity;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.geogebra.common.kernel.geos.GeoElement;
 
@@ -24,7 +27,7 @@ public final class SpatialRedefineTransaction {
 	private final SpatialRedefineContext context;
 	private final SpatialRedefineProposal proposal;
 	private final SpatialRedefineDecision decision;
-	private final PersistentGeoId freshId;
+	private final Map<String, PersistentGeoId> decidedIds;
 	private final Set<SpatialIdentityId> retiredIds;
 	private boolean rebuildViewWritten;
 	private State state = State.PREPARED;
@@ -37,7 +40,31 @@ public final class SpatialRedefineTransaction {
 		this.context = context;
 		this.proposal = proposal;
 		this.decision = decision;
-		this.freshId = freshId;
+		this.decidedIds = singletonDecidedIds(context, proposal, decision, freshId);
+		this.retiredIds = Collections.unmodifiableSet(
+				new LinkedHashSet<>(retiredIds));
+	}
+
+	SpatialRedefineTransaction(SpatialIdentityRegistry registry,
+			SpatialRedefineContext context, SpatialRedefineProposal proposal,
+			SpatialRedefineDecision decision,
+			Map<String, PersistentGeoId> decidedIds,
+			Set<SpatialIdentityId> retiredIds) {
+		this.registry = registry;
+		this.context = context;
+		this.proposal = proposal;
+		this.decision = decision;
+		TreeMap<String, PersistentGeoId> ordered = new TreeMap<>();
+		for (Map.Entry<String, PersistentGeoId> entry : decidedIds.entrySet()) {
+			String role = SpatialRecordSupport.requireText(entry.getKey(),
+					"stableOutputRole");
+			if (ordered.put(role, java.util.Objects.requireNonNull(entry.getValue()))
+					!= null) {
+				throw new IllegalArgumentException(
+						"Duplicate decided stable output role: " + role);
+			}
+		}
+		this.decidedIds = Collections.unmodifiableMap(ordered);
 		this.retiredIds = Collections.unmodifiableSet(
 				new LinkedHashSet<>(retiredIds));
 	}
@@ -55,8 +82,17 @@ public final class SpatialRedefineTransaction {
 	}
 
 	public PersistentGeoId getDecidedId() {
-		return decision == SpatialRedefineDecision.RETAIN
-				? context.getOldId() : freshId;
+		return decidedIds.get(proposal.getTargetedStableOutputRole());
+	}
+
+	/** @return decided durable identity for the exact stable role, or {@code null} */
+	public PersistentGeoId getDecidedId(String stableOutputRole) {
+		return decidedIds.get(stableOutputRole);
+	}
+
+	/** @return complete immutable role-to-decided-identity map */
+	public Map<String, PersistentGeoId> getDecidedIds() {
+		return decidedIds;
 	}
 
 	public State getState() {
@@ -96,5 +132,18 @@ public final class SpatialRedefineTransaction {
 
 	boolean isOwnedBy(SpatialIdentityRegistry candidateRegistry) {
 		return registry == candidateRegistry;
+	}
+
+	private static Map<String, PersistentGeoId> singletonDecidedIds(
+			SpatialRedefineContext context, SpatialRedefineProposal proposal,
+			SpatialRedefineDecision decision, PersistentGeoId freshId) {
+		if (decision == SpatialRedefineDecision.REJECT) {
+			return Collections.emptyMap();
+		}
+		PersistentGeoId decided = decision == SpatialRedefineDecision.RETAIN
+				? context.getOldId() : java.util.Objects.requireNonNull(freshId);
+		LinkedHashMap<String, PersistentGeoId> result = new LinkedHashMap<>();
+		result.put(proposal.getTargetedStableOutputRole(), decided);
+		return Collections.unmodifiableMap(result);
 	}
 }

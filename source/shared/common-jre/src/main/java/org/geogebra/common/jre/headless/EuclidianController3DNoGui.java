@@ -42,6 +42,7 @@ public class EuclidianController3DNoGui extends EuclidianController3D {
 
 	@Override
 	public void setView(EuclidianView view) {
+		super.setView(view);
 		super.setView3D(view);
 
 	}

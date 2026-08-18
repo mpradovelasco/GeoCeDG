@@ -23,6 +23,7 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 
+import org.geocedg.common.kernel.spatial.identity.SpatialRedefineContext;
 import org.geogebra.common.awt.GPoint;
 import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.euclidian.EuclidianController;
@@ -110,6 +111,7 @@ import org.geogebra.common.kernel.kernelND.GeoVectorND;
 import org.geogebra.common.kernel.matrix.CoordMatrix4x4;
 import org.geogebra.common.kernel.matrix.Coords;
 import org.geogebra.common.main.App;
+import org.geogebra.common.main.MyError;
 import org.geogebra.common.main.MyError.Errors;
 import org.geogebra.common.main.SchedulerFactory;
 import org.geogebra.common.main.error.ErrorHandler;
@@ -1709,17 +1711,20 @@ public abstract class EuclidianController3D extends EuclidianController {
 				// 2D point will be replaced by 3D point (only for move
 				// mode)
 
-				// create new 3D point
 				Construction cons = kernel.getConstruction();
-				GeoPoint3D newGeo = (GeoPoint3D) kernel.getManager3D()
-						.point3D(movedPoint.getInhomX(),
-								movedPoint.getInhomY(), 0, false);
+				GeoElement oldGeo = movedPoint.toGeoElement();
+				SpatialRedefineContext spatialContext = cons
+						.getSpatialIdentityRegistry().captureRedefineContext(oldGeo);
+				GeoPoint3D newGeo = null;
 				try {
-					cons.replace(movedPoint.toGeoElement(), newGeo);
-				} catch (Exception e) {
-					Log.debug(e);
-				} finally {
-					// update geo selected
+					// Capture semantic authority before this helper becomes persistent.
+					newGeo = (GeoPoint3D) kernel.getManager3D()
+							.point3D(movedPoint.getInhomX(),
+									movedPoint.getInhomY(), 0, false);
+					cons.replaceFromSpatialRedefineOperation(oldGeo, newGeo,
+							spatialContext);
+
+					// update geo selected only after the host and semantic switch succeeded
 					String newLabel = newGeo.isLabelSet()
 							? newGeo.getLabelSimple()
 							: movedPoint.getLabelSimple();
@@ -1732,11 +1737,18 @@ public abstract class EuclidianController3D extends EuclidianController {
 					hits.add(geo);
 
 					// update selection
-					app.getSelectionManager().clearSelectedGeos(false,
-							false);
-					app.getSelectionManager().addSelectedGeo(geo, true,
-							true);
-
+					app.getSelectionManager().clearSelectedGeos(false, false);
+					app.getSelectionManager().addSelectedGeo(geo, true, true);
+					if (spatialContext != null) {
+						cons.completeSpatialRedefineOperation(spatialContext);
+					}
+				} catch (Exception | MyError e) {
+					if (spatialContext != null && cons.getSpatialIdentityRegistry()
+							.isRedefineHostRollbackAvailable(spatialContext)) {
+						cons.rollbackSpatialRedefinePreparation(spatialContext);
+					}
+					Log.debug(e);
+					return;
 				}
 			}
 			if (mode == EuclidianConstants.MODE_MOVE

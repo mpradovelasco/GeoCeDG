@@ -232,6 +232,38 @@ public final class ProjectionFrameRelationRecord implements SpatialIdentityRecor
 		return revision;
 	}
 
+	/** @return an immutable same-ID relation with the supplied revision */
+	public ProjectionFrameRelationRecord withRevision(long newRevision) {
+		if (semanticVersion == 2) {
+			return new ProjectionFrameRelationRecord(id, semanticVersion, systemId,
+					sourceMapId, destinationMapId, relationKind, supportStartGeoId,
+					supportEndGeoId, orientation, provenance, foldSignGeoId,
+					newRevision, copySourceId);
+		}
+		return new ProjectionFrameRelationRecord(id, semanticVersion, systemId,
+				sourceMapId, destinationMapId, relationKind, definitionGeoIds,
+				newRevision, copySourceId);
+	}
+
+	/**
+	 * Creates a fresh relation retargeted after an explicit map re-role.
+	 *
+	 * @return fresh relation targeting the supplied endpoint maps
+	 */
+	public ProjectionFrameRelationRecord asFreshRetargeted(
+			ProjectionFrameRelationId freshId,
+			ProjectionDiagramMapId freshSourceMapId,
+			ProjectionDiagramMapId freshDestinationMapId) {
+		if (semanticVersion != 2) {
+			throw new IllegalStateException(
+					"Only a version-two POINT relation can be retargeted productively");
+		}
+		return new ProjectionFrameRelationRecord(freshId, semanticVersion, systemId,
+				freshSourceMapId, freshDestinationMapId, relationKind,
+				supportStartGeoId, supportEndGeoId, orientation, provenance,
+				foldSignGeoId, 0, null);
+	}
+
 	@Override
 	public ProjectionFrameRelationRecord remap(
 			Map<SpatialIdentityId, SpatialIdentityId> remap,

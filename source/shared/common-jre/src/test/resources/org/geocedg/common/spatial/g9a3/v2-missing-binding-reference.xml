@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<geogebra format="5.0" version="5.4.928.0" app="classic">
+  <construction title="G9A3 missing v2 POINT binding reference" author="GeoCeDG" date="2026-08-18">
+    <geocedgSpatial version="1">
+      <frame id="frame:00000000000000000000000000000012" semanticVersion="2"
+          origin="geo:00000000000000000000000000000001"
+          u="geo:00000000000000000000000000000003"
+          v="geo:00000000000000000000000000000005" family="ORTHOGRAPHIC"
+          units="m" handedness="RIGHT_HANDED" fidelity="EXACT" revision="0"/>
+      <object id="object:00000000000000000000000000000061" semanticVersion="2"
+          type="POINT" authority="PROJECTION_DEFINED"
+          schema="cedg.spatial.point.projection" schemaVersion="1"
+          system="system:00000000000000000000000000000021"
+          bindings="binding:00000000000000000000000000000051 binding:00000000000000000000000000000052"
+          definitionRevision="0" topologyRevision="0"/>
+      <frameRelation id="relation:00000000000000000000000000000041"
+          semanticVersion="2" system="system:00000000000000000000000000000021"
+          sourceMap="map:00000000000000000000000000000031"
+          destinationMap="map:00000000000000000000000000000032"
+          kind="HINGE_UNFOLD"
+          supportStart="geo:00000000000000000000000000000001"
+          supportEnd="geo:00000000000000000000000000000002"
+          orientation="POSITIVE" provenance="EXPLICIT_CONSTRUCTION"
+          foldSign="geo:00000000000000000000000000000007" revision="0"/>
+      <diagramMap id="map:00000000000000000000000000000032" semanticVersion="2"
+          system="system:00000000000000000000000000000021"
+          frame="frame:00000000000000000000000000000012" role="DEFINING"
+          family="ORIENTED_ISOMETRY" orientation="PRESERVING" units="m"
+          fidelity="EXACT" a00="geo:00000000000000000000000000000007"
+          a01="geo:00000000000000000000000000000006"
+          a10="geo:00000000000000000000000000000006"
+          a11="geo:00000000000000000000000000000007"
+          b0="geo:00000000000000000000000000000006"
+          b1="geo:00000000000000000000000000000006"
+          declaredScale="geo:00000000000000000000000000000007"
+          relations="relation:00000000000000000000000000000041" revision="0"/>
+      <geo id="geo:00000000000000000000000000000009" provider="g9a2.point.pilot"
+          family="POINT" schema="cedg.spatial.point.projection" schemaVersion="1"
+          authority="PROJECTION_DEFINED" bindingRole="DEFINING"
+          outputRole="PROJECTED_POINT" cardinality="1" definitionRevision="0"
+          topologyRevision="0"/>
+      <system id="system:00000000000000000000000000000021" semanticVersion="2"
+          maps="map:00000000000000000000000000000031 map:00000000000000000000000000000032"
+          relations="relation:00000000000000000000000000000041"
+          units="m" absoluteTolerance="1.0E-10" relativeTolerance="1.0E-10"
+          rankTolerance="1.0E-12" mapTolerance="1.0E-10"
+          hingeTolerance="1.0E-10" conditionLimit="1.0E12" revision="0"/>
+      <geo id="geo:00000000000000000000000000000001" provider="g9a2.point.pilot"
+          family="SEMANTIC_INPUT" schema="cedg.spatial.point.projection"
+          schemaVersion="1" authority="PROJECTION_DEFINED" bindingRole="DEFINING"
+          outputRole="INPUT" cardinality="1" definitionRevision="0" topologyRevision="0"/>
+      <binding id="binding:00000000000000000000000000000051" semanticVersion="2"
+          object="object:00000000000000000000000000000061"
+          system="system:00000000000000000000000000000021"
+          diagramMap="map:00000000000000000000000000000031"
+          frame="frame:00000000000000000000000000000011" role="DEFINING"
+          representation="POINT" expectedType="POINT"
+          schema="cedg.spatial.point.projection" schemaVersion="1"
+          projectedPoint="geo:00000000000000000000000000000008"
+          fidelity="EXACT" correspondence="ESTABLISHED" revision="0"/>
+      <geo id="geo:00000000000000000000000000000008" provider="g9a2.point.pilot"
+          family="POINT" schema="cedg.spatial.point.projection" schemaVersion="1"
+          authority="PROJECTION_DEFINED" bindingRole="DEFINING"
+          outputRole="PROJECTED_POINT" cardinality="1" definitionRevision="0"
+          topologyRevision="0"/>
+      <frame id="frame:00000000000000000000000000000011" semanticVersion="2"
+          origin="geo:00000000000000000000000000000001"
+          u="geo:00000000000000000000000000000003"
+          v="geo:00000000000000000000000000000004" family="ORTHOGRAPHIC"
+          units="m" handedness="RIGHT_HANDED" fidelity="EXACT" revision="0"/>
+      <diagramMap id="map:00000000000000000000000000000031" semanticVersion="2"
+          system="system:00000000000000000000000000000021"
+          frame="frame:00000000000000000000000000000011" role="DEFINING"
+          family="ORIENTED_ISOMETRY" orientation="PRESERVING" units="m"
+          fidelity="EXACT" a00="geo:00000000000000000000000000000007"
+          a01="geo:00000000000000000000000000000006"
+          a10="geo:00000000000000000000000000000006"
+          a11="geo:00000000000000000000000000000007"
+          b0="geo:00000000000000000000000000000006"
+          b1="geo:00000000000000000000000000000006"
+          declaredScale="geo:00000000000000000000000000000007"
+          relations="relation:00000000000000000000000000000041" revision="0"/>
+      <geo id="geo:00000000000000000000000000000007" provider="g9a2.point.pilot"
+          family="SEMANTIC_INPUT" schema="cedg.spatial.point.projection"
+          schemaVersion="1" authority="PROJECTION_DEFINED" bindingRole="DEFINING"
+          outputRole="INPUT" cardinality="1" definitionRevision="0" topologyRevision="0"/>
+      <geo id="geo:00000000000000000000000000000006" provider="g9a2.point.pilot"
+          family="SEMANTIC_INPUT" schema="cedg.spatial.point.projection"
+          schemaVersion="1" authority="PROJECTION_DEFINED" bindingRole="DEFINING"
+          outputRole="INPUT" cardinality="1" definitionRevision="0" topologyRevision="0"/>
+      <geo id="geo:00000000000000000000000000000002" provider="g9a2.point.pilot"
+          family="SEMANTIC_INPUT" schema="cedg.spatial.point.projection"
+          schemaVersion="1" authority="PROJECTION_DEFINED" bindingRole="DEFINING"
+          outputRole="INPUT" cardinality="1" definitionRevision="0" topologyRevision="0"/>
+      <geo id="geo:00000000000000000000000000000005" provider="g9a2.point.pilot"
+          family="SEMANTIC_INPUT" schema="cedg.spatial.point.projection"
+          schemaVersion="1" authority="PROJECTION_DEFINED" bindingRole="DEFINING"
+          outputRole="INPUT" cardinality="1" definitionRevision="0" topologyRevision="0"/>
+      <geo id="geo:00000000000000000000000000000003" provider="g9a2.point.pilot"
+          family="SEMANTIC_INPUT" schema="cedg.spatial.point.projection"
+          schemaVersion="1" authority="PROJECTION_DEFINED" bindingRole="DEFINING"
+          outputRole="INPUT" cardinality="1" definitionRevision="0" topologyRevision="0"/>
+      <geo id="geo:00000000000000000000000000000004" provider="g9a2.point.pilot"
+          family="SEMANTIC_INPUT" schema="cedg.spatial.point.projection"
+          schemaVersion="1" authority="PROJECTION_DEFINED" bindingRole="DEFINING"
+          outputRole="INPUT" cardinality="1" definitionRevision="0" topologyRevision="0"/>
+    </geocedgSpatial>
+    <element type="point3d" label="O" geocedgId="geo:00000000000000000000000000000001">
+      <coords x="0" y="0" z="0" w="1"/>
+    </element>
+    <element type="point3d" label="X" geocedgId="geo:00000000000000000000000000000002">
+      <coords x="1" y="0" z="0" w="1"/>
+    </element>
+    <element type="vector3d" label="Ux" geocedgId="geo:00000000000000000000000000000003">
+      <coords x="1" y="0" z="0" w="0"/>
+    </element>
+    <element type="vector3d" label="Uy" geocedgId="geo:00000000000000000000000000000004">
+      <coords x="0" y="1" z="0" w="0"/>
+    </element>
+    <element type="vector3d" label="Uz" geocedgId="geo:00000000000000000000000000000005">
+      <coords x="0" y="0" z="1" w="0"/>
+    </element>
+    <element type="numeric" label="Zero" geocedgId="geo:00000000000000000000000000000006">
+      <value val="0"/>
+    </element>
+    <element type="numeric" label="One" geocedgId="geo:00000000000000000000000000000007">
+      <value val="1"/>
+    </element>
+    <element type="point" label="PH" geocedgId="geo:00000000000000000000000000000008">
+      <coords x="2" y="3" z="1"/>
+    </element>
+    <element type="point" label="PV" geocedgId="geo:00000000000000000000000000000009">
+      <coords x="2" y="5" z="1"/>
+    </element>
+  </construction>
+</geogebra>

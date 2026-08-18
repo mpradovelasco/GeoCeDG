@@ -22,7 +22,9 @@ import org.geocedg.common.kernel.spatial.identity.ProjectionBindingRole;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityDiagnostic;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityException;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
-import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry.LoadPurpose;
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry.RedefinePublicationLease;
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry.RedefineRebuildToken;
+import org.geocedg.common.kernel.spatial.identity.SpatialLifecycleRuntime;
 import org.geocedg.common.kernel.spatial.identity.SpatialObjectId;
 import org.geocedg.common.kernel.spatial.identity.SpatialObjectRecord;
 import org.geocedg.common.kernel.spatial.identity.SpatialRedefineContext;
@@ -122,16 +124,23 @@ class G9A1SpatialRedefineTransactionTest extends BaseUnitTest {
 		assertTrue(rebuildView.contains(decided.toExternalForm()));
 		assertFalse(rebuildView.contains(record.getId().toExternalForm()));
 		assertFalse(rebuildView.contains(dependentId.toExternalForm()));
-		registry.clearPreservingRetiredTokens();
 		GeoIdentityRecord rebuiltRecord = new GeoIdentityRecord(decided, PROVIDER,
 				FAMILY, SCHEMA, 1, EditAuthorityMode.PROJECTION_DEFINED,
 				ProjectionBindingRole.DEFINING, "POINT", 1, 0, 0);
-		SpatialIdentityRegistry.LoadSession load = registry.beginLoadSession(
-				LoadPurpose.REDEFINE_REBUILD);
-		load.stageRecord(rebuiltRecord);
-		load.stageGeoAttachment(actualCandidate, decided);
-		load.commit();
-		transaction.commit(actualCandidate);
+		try (RedefinePublicationLease ignored = registry.beginRedefinePublicationLease(
+				Collections.singletonList(transaction.getContext()))) {
+			RedefineRebuildToken token = registry.beginRedefineRebuild(
+					Collections.singletonList(transaction.getContext()));
+			registry.clearForRedefineRebuild(token);
+			SpatialIdentityRegistry.LoadSession load =
+					registry.beginRedefineRebuildLoad(token,
+							SpatialIdentityRegistry.XML_VERSION);
+			load.stageRecord(rebuiltRecord);
+			load.stageGeoAttachment(actualCandidate, decided);
+			load.commit();
+			transaction.commit(actualCandidate);
+		}
+		registry.completeRedefineHostOperation(transaction.getContext());
 
 		assertNotEquals(record.getId(), decided);
 		assertNull(registry.getRecord(record.getId()));
@@ -381,6 +390,18 @@ class G9A1SpatialRedefineTransactionTest extends BaseUnitTest {
 
 		SpatialIdentityRegistry unlabeledRegistry = new SpatialIdentityRegistry(
 				getConstruction(), new SequentialTokenSource(), 4);
+		unlabeledRegistry.registerLifecycleRuntime(graph ->
+				new SpatialLifecycleRuntime.PreparedSwitch() {
+					@Override
+					public void commit() {
+						// This isolated G9A1 registry has no semantic runtime records.
+					}
+
+					@Override
+					public void rollback() {
+						// No semantic runtime preparation exists in this fixture.
+					}
+				});
 		GeoElement unlabeledOldTarget = add("D=4");
 		GeoIdentityRecord unlabeledRecord = register(unlabeledRegistry,
 				unlabeledOldTarget);
@@ -408,6 +429,18 @@ class G9A1SpatialRedefineTransactionTest extends BaseUnitTest {
 
 		SpatialIdentityRegistry foreignRegistry = new SpatialIdentityRegistry(
 				getConstruction(), new SequentialTokenSource(), 4);
+		foreignRegistry.registerLifecycleRuntime(graph ->
+				new SpatialLifecycleRuntime.PreparedSwitch() {
+					@Override
+					public void commit() {
+						// This isolated G9A1 registry has no semantic runtime records.
+					}
+
+					@Override
+					public void rollback() {
+						// No semantic runtime preparation exists in this fixture.
+					}
+				});
 		GeoElement foreignOldTarget = add("E=5");
 		GeoIdentityRecord foreignRecord = register(foreignRegistry,
 				foreignOldTarget);

@@ -3,13 +3,13 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Roadmap vivo y normativo de fases; no sustituye las especificaciones ni los ADR aceptados |
-| Versión documental | 3.33 |
-| Fecha de revisión | 18 de agosto de 2026 |
+| Versión documental | 3.35 |
+| Fecha de revisión | 19 de agosto de 2026 |
 | Baseline GeoGebra | 5.4.928.0, commit `9b93256b7df401ff056c37b502d82df4d72b1522`, tag `geogebra-baseline-5.4.928.0` |
-| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1, G9A2 y la planificación G10P `PASS — AUTHOR APPROVED`; seis especificaciones G9 normativas; ADR 0010–0015 Accepted; G9A2 cierra el núcleo espacial y el piloto projection-defined de punto; G9A3 y fases posteriores no están autorizadas por ese cierre; G10P sigue siendo solo planificación/caracterización y no autoriza producto; Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
-| Última fase cerrada | G9A2 — núcleo espacial y piloto projection-defined de punto, `PASS — AUTHOR APPROVED` |
-| Última fase ejecutada | G9A2: cierre de autor del núcleo espacial y piloto projection-defined de punto |
-| Siguiente puerta | G9A3 permanece `DESIGNED — NOT AUTHORIZED` tras el cierre G9A2; ninguna fase productiva G10 está autorizada |
+| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1, G9A2, G9A3, el track G9A y la planificación G10P `PASS — AUTHOR APPROVED`; seis especificaciones G9 normativas; ADR 0010–0015 Accepted; G9U0, G9X1, G9U1, G9B y G9C permanecen `DESIGNED — NOT AUTHORIZED`, G9U2 sigue bloqueada por la puerta G9 aprobada y ninguna implementación productiva G10 está autorizada; Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
+| Última fase cerrada | G9A3 — ciclo de vida y migración espacial; G9A completa, `PASS — AUTHOR APPROVED` |
+| Última fase ejecutada | G9A3: cierre autoral del hardening de ciclo de vida y migración |
+| Siguiente puerta | G9U0, siguiente fase recomendada de bajo conflicto, permanece `DESIGNED — NOT AUTHORIZED`; requiere autorización separada antes de ejecutarse |
 | Primer cliente | Aplicación de escritorio de la familia Classic 5 |
 | Núcleo | Java compartido de GeoGebra, extendido solo cuando la semántica lo requiere |
 
@@ -1122,11 +1122,12 @@ optimización de rendimiento del software.
 | G9P-R1 / G9P | `PASS — AUTHOR APPROVED` / `PASS — AUTHOR APPROVED` | [Plan integrado](../architecture/g9p_integrated_plan.md), seis especificaciones normativas, ADR 0010–0015 Accepted y [decisiones D1–D8](../validation/g9p_author_decisions.md); ninguna implementación productiva |
 | G9O1 | `PASS — AUTHOR APPROVED` | Precedente operacional cerrado; no es dependencia semántica de G9A1 |
 | G9A1 | `PASS — AUTHOR APPROVED` | Identidad/persistencia durable sin solving espacial cerrada; no autoriza A2 |
-| G9A2 | `PASS — AUTHOR APPROVED` | Núcleo espacial y piloto projection-defined de punto cerrados; 64 pruebas focales y repetición determinista sin fallos; no autoriza A3 |
-| G9A3 | `DESIGNED — NOT AUTHORIZED` | Hardening completo de ciclo de vida y migración permanece detrás de su puerta propia |
+| G9A2 | `PASS — AUTHOR APPROVED` | Núcleo espacial y piloto projection-defined de punto cerrados; 64 pruebas focales y repetición determinista sin fallos; su cierre no autorizó A3 por sí solo |
+| G9A3 | `PASS — AUTHOR APPROVED` | Hardening de ciclo de vida, migración explícita, copy closure, redefine y recuperación cerrados; completa el track G9A |
+| G9A | `PASS — AUTHOR APPROVED` | Identidad/persistencia durable, piloto POINT y ciclo de vida/migración cerrados en G9A1–G9A3 |
 | G9U0 / G9X1 / G9U1 | `DESIGNED — NOT AUTHORIZED` | Superficie pública Locus V2, DXF extendido y workspace Construction, cada uno con gate separado |
 | G9B / G9C | `DESIGNED — NOT AUTHORIZED` | Track kernel tras cierre de G9A; no depende de completar el cliente G9U1 |
-| G9U2 | `DESIGNED — BLOCKED ON APPROVED G9 GATE` | Workspace de procedimientos diédrico solo tras `G9 PASS — AUTHOR APPROVED` |
+| G9U2 | `BLOCKED ON THE APPROVED G9 GATE` | Workspace de procedimientos diédrico solo tras `G9 PASS — AUTHOR APPROVED` |
 | G9 spatial solving | `POINT PILOT — AUTHOR APPROVED` | G9A2 se limita a frames/sistemas/mapas/relaciones y reconstrucción projection-defined de punto; no hay primitivas generales, objetos compuestos ni autoridad 3D |
 | G10P | `PASS — AUTHOR APPROVED — PLANNING/CHARACTERIZATION ONLY` | Corpus y dirección de estudios/optimización aprobados como planificación; no autoriza producto ni altera G9 |
 | G10A/G10B/G10C1/G10C2/G10U/G10R | `PROPOSED — NOT AUTHORIZED — NOT STARTED` | Toda implementación espera `G9 PASS — AUTHOR APPROVED`, G10P aprobado y prompts separados |
@@ -1612,20 +1613,27 @@ G9P-R1 = PASS — AUTHOR APPROVED
 G9P = PASS — AUTHOR APPROVED
 G9 SPECIFICATIONS = NORMATIVE / AUTHOR APPROVED
 ADR 0010–0015 = ACCEPTED
-G9A2 / G9A3 / G9B / G9C = DESIGNED — NOT AUTHORIZED
 G9O1 = PASS — AUTHOR APPROVED
 G9A1 = PASS — AUTHOR APPROVED
-G9U0 / G9X1 / G9U1 = DESIGNED — NOT AUTHORIZED
-G9U2 = DESIGNED — BLOCKED ON THE APPROVED G9 GATE
-G9 SPATIAL SOLVING = NOT STARTED
+G9A2 = PASS — AUTHOR APPROVED
+G9A3 = PASS — AUTHOR APPROVED
+G9A = PASS — AUTHOR APPROVED
+G9U0 = DESIGNED — NOT AUTHORIZED
+G9X1 = DESIGNED — NOT AUTHORIZED
+G9U1 = DESIGNED — NOT AUTHORIZED
+G9B = DESIGNED — NOT AUTHORIZED
+G9C = DESIGNED — NOT AUTHORIZED
+G9U2 = BLOCKED ON THE APPROVED G9 GATE
+G9 SPATIAL SOLVING = POINT PILOT — AUTHOR APPROVED; GENERAL PRIMITIVES NOT STARTED
 ```
 
 ## G9 - Semántica espacial y proyecciones canónicas
 
-**Estado:** G9P-R1, G9P, G9O1, G9A1 y G9A2 `PASS — AUTHOR APPROVED`; seis
-especificaciones normativas y ADR 0010–0015 Accepted. G9A2 cierra el núcleo
-espacial y el piloto projection-defined de punto; G9A3 y todas las fases
-posteriores siguen diseñadas pero no autorizadas por ese cierre. El
+**Estado:** G9P-R1, G9P, G9O1, G9A1, G9A2, G9A3 y el track G9A `PASS —
+AUTHOR APPROVED`; seis especificaciones normativas y ADR 0010–0015 Accepted.
+G9A cierra identidad/persistencia durable, el piloto projection-defined de punto
+y su ciclo de vida/migración. G9U0, G9X1, G9U1, G9B y G9C siguen sin
+autorización; G9U2 permanece bloqueada por la puerta G9 aprobada. El
 [plan integrado G9P](../architecture/g9p_integrated_plan.md) y el
 [paquete de decisiones](../validation/g9p_author_decisions.md) gobiernan el
 contrato. A1 implementa identidad/persistencia durable y A2 activa únicamente
@@ -1714,17 +1722,33 @@ Este cierre no autoriza ni ejecuta G9A3 ni ninguna fase posterior.
 
 ### G9A3 - Ciclo de vida y migración
 
-**Estado:** `DESIGNED — NOT AUTHORIZED`
+**Estado:** `PASS — AUTHOR APPROVED`
 
-Cerrará mutaciones de bindings/sistemas/mapas/relaciones, copy closure,
-undo/reopen y todas las rutas hostiles de redefine. Recomputación conserva ID;
-redefine explícito y semánticamente compatible puede transferirlo de forma
-atómica; reemplazo real/incompatible, delete+recreate y copy crean IDs nuevos.
-También cubre referencias rotas, ficheros heredados no asociados, migración
-explícita y recuperación determinista. El camino diagnóstico GeoCeDG Classic
-preserva/recomputa tipos nativos e identidades sin downgrade; la apertura en un
-upstream externo que desconozca esos tipos queda fuera de garantía. Su cierre
-autoral completa G9A.
+La ejecución autorizada endurece mutaciones de bindings/sistemas/mapas/
+relaciones, copy closure, undo/reopen y las rutas hostiles de redefine.
+Recomputación conserva ID; redefine explícito y semánticamente compatible solo
+puede transferirlo mediante la transacción tipada aprobada; reemplazo real o
+incompatible, delete+recreate y copy crean IDs nuevos. También cubre referencias
+rotas, ficheros heredados no asociados, migración explícita y recuperación
+determinista sin inferencia por etiqueta, coordenadas, proximidad, orden, posición
+XML ni referencia Java.
+
+El camino diagnóstico GeoCeDG Classic preserva y recomputa tipos nativos e
+identidades sin downgrade; la apertura en un upstream externo que desconozca
+esos tipos permanece fuera de garantía. Dos ejecuciones enfocadas deterministas
+cerraron 72 escenarios G9A3 más 181 regresiones heredadas, 253/253 sin fallos,
+errores ni skips; Checkstyle main/test, la autoridad compuesta sin `-SkipBuild` y
+la verificación estática/inventario terminaron limpias. La auditoría independiente
+no encontró P0/P1 bloqueantes.
+
+El [informe del candidato](../validation/g9a3_spatial_lifecycle_migration_report.md)
+y su evidencia máquina conservan históricamente el inventario de 81 rutas y sus
+afirmaciones originales `authorApproved=false` y `passClaimed=false`; el cierre
+autoral posterior no reescribe esa evidencia. La guía de usuario fue revisada y
+no cambia porque G9A3 no añade comandos, GUI, flujos observables ni capacidad
+activada por defecto. Este cierre completa formalmente G9A. G9U0, G9X1, G9U1,
+G9B, G9C y cualquier implementación productiva G10 siguen sin autorizar y sin
+ejecutar; G9U2 continúa bloqueada por la puerta G9 aprobada.
 
 ### G9U0 - Superficie pública experimental Locus V2
 

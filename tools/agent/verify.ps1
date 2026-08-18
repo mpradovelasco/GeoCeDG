@@ -45,6 +45,8 @@ $G9A1SpatialIdentityVerifier = Join-Path $PSScriptRoot `
     "verify-g9a1-spatial-identity.ps1"
 $G9A2SpatialPointVerifier = Join-Path $PSScriptRoot `
     "verify-g9a2-spatial-point.ps1"
+$G9A3SpatialLifecycleVerifier = Join-Path $PSScriptRoot `
+    "verify-g9a3-spatial-lifecycle.ps1"
 $BenchmarkRunner = Join-Path $RepositoryRoot "tools\benchmark\run.ps1"
 $InitialStatus = $null
 
@@ -333,6 +335,52 @@ try {
         & $G9A2SpatialPointVerifier @g9a2Parameters
         Assert-LastScriptSuccess `
             -Description "G9A2 spatial semantic point pilot"
+    }
+
+    $g9a3IntegrationArtifacts = @(
+        $G9A3SpatialLifecycleVerifier,
+        (Join-Path $RepositoryRoot `
+            "docs\architecture\g9a3_spatial_lifecycle_migration_design.md"),
+        (Join-Path $RepositoryRoot `
+            "docs\validation\g9a3_spatial_lifecycle_scenarios.json"),
+        (Join-Path $RepositoryRoot `
+            "docs\validation\g9a3_spatial_compatibility_corpus.json"),
+        (Join-Path $RepositoryRoot `
+            "docs\validation\g9a3_spatial_compatibility_corpus.sha256"),
+        (Join-Path $RepositoryRoot `
+            "docs\validation\g9a3_spatial_compatibility_matrix.md"),
+        (Join-Path $RepositoryRoot `
+            "docs\validation\g9a3_spatial_lifecycle_evidence.json"),
+        (Join-Path $RepositoryRoot `
+            "docs\validation\g9a3_spatial_lifecycle_evidence.sha256"),
+        (Join-Path $RepositoryRoot `
+            "docs\validation\g9a3_spatial_lifecycle_migration_report.md")
+    )
+    $g9a3PresentCount = @($g9a3IntegrationArtifacts | Where-Object {
+        Test-Path -LiteralPath $_ -PathType Leaf
+    }).Count
+    if ($g9a3PresentCount -ne 0 -and
+            $g9a3PresentCount -ne $g9a3IntegrationArtifacts.Count) {
+        throw "Incomplete G9A3 verifier/support integration; all paired artifacts are required."
+    }
+    if ($g9a3PresentCount -eq $g9a3IntegrationArtifacts.Count) {
+        Write-Host "`n==> G9A3 spatial lifecycle and explicit migration hardening"
+        $g9a3Parameters = @{
+            LogDirectory = Join-Path ([IO.Path]::GetFullPath($LogDirectory)) `
+                "g9a3-spatial-lifecycle"
+        }
+        if ($SkipBuild) {
+            $g9a3Parameters.SkipBuild = $true
+        }
+        if ($AllowToolchainDownload) {
+            $g9a3Parameters.AllowToolchainDownload = $true
+        }
+        if ($KeepBuildOutputs) {
+            $g9a3Parameters.KeepBuildOutputs = $true
+        }
+        & $G9A3SpatialLifecycleVerifier @g9a3Parameters
+        Assert-LastScriptSuccess `
+            -Description "G9A3 spatial lifecycle and migration hardening"
     }
 
     Write-Host "`n==> Standalone Windows packaging contracts"

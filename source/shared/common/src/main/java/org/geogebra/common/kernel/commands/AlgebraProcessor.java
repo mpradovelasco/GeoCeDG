@@ -31,6 +31,7 @@ import javax.annotation.Nonnull;
 
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityDiagnostic;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityException;
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry.RedefinePublicationLease;
 import org.geocedg.common.kernel.spatial.identity.SpatialRedefineContext;
 import org.geocedg.common.kernel.spatial.identity.SpatialRedefineDecision;
 import org.geocedg.common.kernel.spatial.identity.SpatialRedefineTransaction;
@@ -2197,7 +2198,13 @@ public class AlgebraProcessor {
 			if (spatialTransaction != null) {
 				info = info.withSpatialRedefineTransaction(spatialTransaction);
 			}
+			GeoElement[] spatialCandidateEnumeration = spatialTransaction == null
+					? null : ret.clone();
+			RedefinePublicationLease publicationLease = null;
 			try {
+			try {
+				publicationLease =
+						cons.beginSpatialRedefinePublicationLease(spatialTransaction);
 				RuleCollection rule = info.getRedefinitionRule();
 				if (rule != null && !rule.allowed(replaceable,
 						ret[0])) {
@@ -2213,12 +2220,27 @@ public class AlgebraProcessor {
 					replaceable.updateRepaint();
 					throw new MyError(loc, Errors.ReplaceFailed);
 				}
-				if (replaceable instanceof GeoNumeric) {
-					((GeoNumeric) replaceable).extendMinMax(ret[0]);
+			} catch (RuntimeException | MyError failure) {
+				rollbackSpatialRedefine(spatialTransaction);
+				throw failure;
+			}
+			try {
+				if (spatialTransaction != null
+						&& cons.stageCollectedSpatialRedefine(replaceable, ret[0],
+								spatialTransaction)) {
+					if (publicationLease != null) {
+						publicationLease.close();
+					}
+					resolveSpatialRedefineResults(spatialTransaction,
+							spatialCandidateEnumeration, ret);
+					return;
 				}
 			} catch (RuntimeException | MyError failure) {
 				rollbackSpatialRedefine(spatialTransaction);
 				throw failure;
+			}
+			if (replaceable instanceof GeoNumeric) {
+				((GeoNumeric) replaceable).extendMinMax(ret[0]);
 			}
 			// a changeable replaceable is not redefined:
 			// it gets the value of ret[0]
@@ -2234,6 +2256,11 @@ public class AlgebraProcessor {
 						geoElementSetups.forEach(setup -> setup.applyTo(replaceable));
 						replaceable.updateRepaint();
 						commitSpatialRedefine(spatialTransaction, replaceable);
+						if (publicationLease != null) {
+							publicationLease.close();
+						}
+						resolveSpatialRedefineResults(spatialTransaction,
+								spatialCandidateEnumeration, ret);
 					} else {
 						if (spatialTransaction != null) {
 							rollbackSpatialRedefine(spatialTransaction);
@@ -2275,6 +2302,11 @@ public class AlgebraProcessor {
 						replaceable.updateRepaint();
 						ret[0] = replaceable;
 						commitSpatialRedefine(spatialTransaction, replaceable);
+						if (publicationLease != null) {
+							publicationLease.close();
+						}
+						resolveSpatialRedefineResults(spatialTransaction,
+								spatialCandidateEnumeration, ret);
 					}
 
 					// STANDARD CASE: REDEFINED
@@ -2306,18 +2338,14 @@ public class AlgebraProcessor {
 						} else {
 							cons.replace(replaceable, newGeo, info);
 						}
-						// Resolve participating results only by durable identity.
+						// Resolve every participating sibling through its provider-owned
+						// stable role and decided durable ID, never host ordinal.
 						if (spatialTransaction != null) {
-							ret[0] = cons.getSpatialIdentityRegistry().getGeo(
-									spatialTransaction.getDecidedId());
-							if (ret[0] == null) {
-								throw new SpatialIdentityException(
-										SpatialIdentityDiagnostic.forSubject(
-												SpatialIdentityDiagnostic.Code.TRANSACTION_STATE,
-												"Redefine result did not resolve by durable "
-														+ "identity",
-												spatialTransaction.getDecidedId()));
+							if (publicationLease != null) {
+								publicationLease.close();
 							}
+							resolveSpatialRedefineResults(spatialTransaction,
+									spatialCandidateEnumeration, ret);
 						} else {
 							String newLabel = newGeo.isLabelSet()
 									? newGeo.getLabelSimple()
@@ -2350,9 +2378,53 @@ public class AlgebraProcessor {
 					} else {
 						Log.debug("Replacing unlabeled element");
 					}
+					if (e instanceof SpatialIdentityException) {
+						throw (SpatialIdentityException) e;
+					}
 					throw new MyError(loc, e, Errors.ReplaceFailed);
 				}
 			}
+			} finally {
+				if (publicationLease != null) {
+					publicationLease.close();
+				}
+			}
+		}
+	}
+
+	private void resolveSpatialRedefineResults(
+			SpatialRedefineTransaction transaction,
+			GeoElement[] candidateEnumeration, GeoElement[] results) {
+		if (transaction == null) {
+			return;
+		}
+		if (candidateEnumeration == null
+				|| candidateEnumeration.length != results.length) {
+			throw new SpatialIdentityException(SpatialIdentityDiagnostic.forSubject(
+					SpatialIdentityDiagnostic.Code.TRANSACTION_STATE,
+					"Redefine candidate enumeration changed before result resolution",
+					transaction.getContext().getOldId()));
+		}
+		for (int i = 0; i < candidateEnumeration.length; i++) {
+			String role = transaction.getProposal().getCandidateOutputs()
+					.getRoleForGeo(candidateEnumeration[i]);
+			GeoElement resolved = role == null ? null
+					: cons.getSpatialIdentityRegistry().getGeo(
+							transaction.getDecidedId(role));
+			if (resolved == null) {
+				throw new SpatialIdentityException(
+						SpatialIdentityDiagnostic.forSubject(
+								SpatialIdentityDiagnostic.Code.TRANSACTION_STATE,
+								"Redefine output did not resolve by stable role and "
+										+ "durable identity",
+								transaction.getContext().getOldId()));
+			}
+			results[i] = resolved;
+		}
+		if (transaction.getState()
+				== SpatialRedefineTransaction.State.COMMITTED) {
+			cons.getSpatialIdentityRegistry().completeRedefineHostOperation(
+					transaction.getContext());
 		}
 	}
 
@@ -2370,7 +2442,7 @@ public class AlgebraProcessor {
 		}
 		SpatialRedefineTransaction transaction =
 				cons.getSpatialIdentityRegistry().prepareRedefine(context,
-						candidates[0], candidates.length, true,
+						candidates[0], Arrays.asList(candidates),
 						info.isSpatialReplacementOperationSelected());
 		if (transaction.getDecision() == SpatialRedefineDecision.REJECT) {
 			transaction.rollback();
@@ -2395,13 +2467,8 @@ public class AlgebraProcessor {
 		if (transaction == null) {
 			return;
 		}
-		if (transaction.getState() == SpatialRedefineTransaction.State.PREPARED) {
+		if (transaction.getState() != SpatialRedefineTransaction.State.ROLLED_BACK) {
 			cons.rollbackSpatialRedefine(transaction);
-		} else {
-			// Construction may already have abandoned the token after restoring its
-			// own entry snapshot. Algebra parsing began earlier, so its explicit
-			// target context remains the authoritative outer rollback boundary.
-			cons.rollbackSpatialRedefinePreparation(transaction.getContext());
 		}
 	}
 

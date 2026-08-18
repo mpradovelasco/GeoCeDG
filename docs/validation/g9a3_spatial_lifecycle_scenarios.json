@@ -1,0 +1,161 @@
+{
+  "schemaVersion": 1,
+  "phase": "G9A3",
+  "status": "IMPLEMENTATION_CANDIDATE_SCENARIOS_FROZEN",
+  "authorApprovalClaimed": false,
+  "countsFrozen": true,
+  "authority": {
+    "prompt": ".github/prompts/tasks/g9a3-spatial-lifecycle-migration.prompt.md",
+    "specification": "geocedg/specs/spatial/g9-spatial-projection-semantics.md",
+    "adr": "docs/adr/0011-g9-spatial-persistence-and-phase-gates.md",
+    "validationPlan": "docs/validation/g9_spatial_validation_and_benchmark_plan.md",
+    "design": "docs/architecture/g9a3_spatial_lifecycle_migration_design.md"
+  },
+  "globalAssertions": [
+    "Durable continuity is decided only from typed identities and explicit old-target authority.",
+    "Rejected operations preserve the complete pre-operation registry, attachment, DAG, certificate-payload and serialized spatial graph.",
+    "Invalid current geometry preserves identity and publishes no stale payload.",
+    "Every successful copy uses a complete deterministic remap, except an explicitly declared same-construction external-reference policy.",
+    "Migration never searches by label, coordinates, proximity, construction order, XML position, output ordinal, layer, view state or Java reference equality.",
+    "GeoCeDG Classic is the fork Classic process using the same shared kernel; it is not external upstream GeoGebra.",
+    "External upstream support is characterized as unsupported-open and no lossy compatibility conversion is added."
+  ],
+  "groups": [
+    {
+      "id": "LIFE",
+      "testClass": "org.geocedg.common.spatial.G9A3SpatialMutationLifecycleTest",
+      "cases": [
+        {"id": "G9A3-LIFE01", "title": "Add second defining binding", "expected": "Owner identities persist, the binding is fresh, declared revisions advance and UNDERDETERMINED becomes VALID."},
+        {"id": "G9A3-LIFE02", "title": "Remove defining binding", "expected": "The exact binding retires, owner identities persist and VALID becomes UNDERDETERMINED with no payload."},
+        {"id": "G9A3-LIFE03", "title": "Re-role binding and recover", "expected": "DEFINING to AUXILIARY or PRESENTATION and back is atomic, revisioned and deterministically recoverable."},
+        {"id": "G9A3-LIFE04", "title": "Reject mixed derived authority", "expected": "A forbidden DERIVED or mixed-authority proposal leaves graph, certificate and XML state unchanged."},
+        {"id": "G9A3-LIFE05", "title": "Mutate frame, map and relation membership", "expected": "Reciprocal membership, fresh or retired child identities and exact declared revision deltas remain coherent."},
+        {"id": "G9A3-LIFE06", "title": "Map value invalidation and recovery", "expected": "Only durable dependents update through the normal DAG; invalidity withdraws payload and recovery is current."},
+        {"id": "G9A3-LIFE07", "title": "Hinge support compatible redefine", "expected": "The support identity persists, relation/system/point recompute and invalid-to-valid recovery is deterministic."},
+        {"id": "G9A3-LIFE08", "title": "Delete dependency and recreate same appearance", "expected": "The recreated geo has fresh identity and no broken reference rebinds by label or coordinates."},
+        {"id": "G9A3-LIFE09", "title": "True projection-system replacement", "expected": "Every affected old dependent is explicitly retired, the replacement closure is fresh and complete, existing geo attachments are preserved, and no identity is inferred or rebound."},
+        {"id": "G9A3-LIFE10", "title": "Zero through three defining bindings", "expected": "UNDEFINED, UNDERDETERMINED, VALID, INCONSISTENT and DEGENERATE transitions are explicit and never retain stale payload."}
+      ]
+    },
+    {
+      "id": "COPY",
+      "testClass": "org.geocedg.common.spatial.G9A3SpatialCopyClosureTest",
+      "cases": [
+        {"id": "G9A3-COPY01", "title": "Same-document complete closure", "expected": "Every owned typed identity is fresh-remapped and immediate copy provenance is exact."},
+        {"id": "G9A3-COPY02", "title": "Cross-document complete closure", "expected": "All live references resolve inside the destination closure and none point to the source construction."},
+        {"id": "G9A3-COPY03", "title": "Declared same-construction external references", "expected": "Only explicitly allow-listed active system or map identities remain shared."},
+        {"id": "G9A3-COPY04", "title": "Undeclared same-document partial closure", "expected": "The whole copy rejects atomically with no dangling record."},
+        {"id": "G9A3-COPY05", "title": "Cross-document external reference", "expected": "A partial or live external cross-construction reference rejects atomically."},
+        {"id": "G9A3-COPY06", "title": "Recursive relation closure", "expected": "Relation endpoints, auxiliary maps/frames and support geos are included and remapped."},
+        {"id": "G9A3-COPY07", "title": "Repeated paste and macro", "expected": "Each instance is disjoint, internally coherent and deterministic for the same source closure."},
+        {"id": "G9A3-COPY08", "title": "Copy, re-role, undo, redo and delete", "expected": "Every step has an exact identity graph and the construction registry remains bounded."}
+      ]
+    },
+    {
+      "id": "REDEF",
+      "testClasses": [
+        "org.geocedg.common.spatial.G9A3SpatialRedefineTransactionTest",
+        "org.geocedg.common.spatial.G9A3SpatialRedefineHostTest"
+      ],
+      "cases": [
+        {"id": "G9A3-REDEF01", "title": "Explicit semantic no-op", "expected": "RETAIN preserves all identities and advances neither definition nor topology revision."},
+        {"id": "G9A3-REDEF02", "title": "Same-object or null host no-op", "expected": "The host route cannot fabricate a lifecycle change."},
+        {"id": "G9A3-REDEF03", "title": "Independent undefined numeric route", "expected": "Explicit compatible authority is preserved and rollback remains pre-operation exact."},
+        {"id": "G9A3-REDEF04", "title": "In-place set route", "expected": "Compatible change retains identity and advances definition exactly once."},
+        {"id": "G9A3-REDEF05", "title": "Soft redefine route", "expected": "Compatible change has the same lifecycle result as every other admitted host route."},
+        {"id": "G9A3-REDEF06", "title": "No-child new-instance route", "expected": "The replacement instance receives the explicit target identity without Java-instance inference."},
+        {"id": "G9A3-REDEF07", "title": "Circular numeric route", "expected": "Participating identity is either explicitly retained under the provider contract or atomically rejected."},
+        {"id": "G9A3-REDEF08", "title": "Circular point, vector and boolean route", "expected": "Every subroute obeys the same explicit-target and rollback policy."},
+        {"id": "G9A3-REDEF09", "title": "Collected retained batch route", "expected": "The whole mapped group commits or rolls back as one transaction."},
+        {"id": "G9A3-REDEF10", "title": "Full XML rebuild route", "expected": "The serialization overlay restores the decided identities and exact revisions without XML-order authority."},
+        {"id": "G9A3-REDEF11", "title": "AlgebraProcessor explicit target", "expected": "Target authority captured before parsing controls continuity."},
+        {"id": "G9A3-REDEF12", "title": "ParametricProcessor explicit target", "expected": "The provider predicate, not expression or label equality, controls continuity."},
+        {"id": "G9A3-REDEF13", "title": "AlgoDispatcher path and region routes", "expected": "Pre-operation authority covers attach and detach replacement paths and failures restore the original graph."},
+        {"id": "G9A3-REDEF14", "title": "EuclidianController3D move-release route", "expected": "Context and rollback snapshot precede helper-point creation; failure restores pre-operation state."},
+        {"id": "G9A3-REDEF15", "title": "Label and XML-discovered no-authority routes", "expected": "Participating targets reject; label or bounding-box replacement cannot retain identity."},
+        {"id": "G9A3-REDEF16", "title": "GeoCasCell direct route", "expected": "Participating targets remain unsupported and reject atomically."},
+        {"id": "G9A3-REDEF17", "title": "PolygonFactory guarded route", "expected": "Participating rewrites remain conservatively rejected."},
+        {"id": "G9A3-REDEF18", "title": "Compatible route equivalence", "expected": "Every admitted route yields the same identity, definition plus one, unchanged topology and current certificate."},
+        {"id": "G9A3-REDEF19", "title": "Incompatible redefine", "expected": "Type, schema, family, authority or role incompatibility yields atomic REJECT."},
+        {"id": "G9A3-REDEF20", "title": "Explicit true replacement", "expected": "FRESH identities replace the old meaning and undo restores the exact old snapshot."},
+        {"id": "G9A3-REDEF21", "title": "Missing explicit target context", "expected": "Continuity is never retained without the captured target."},
+        {"id": "G9A3-REDEF22", "title": "Label-only apparent compatibility", "expected": "Same label, type, coordinates or construction position never grants RETAIN."},
+        {"id": "G9A3-REDEF23", "title": "Stale target context", "expected": "A superseded transaction cannot overwrite a newer registry or runtime publication."},
+        {"id": "G9A3-REDEF24", "title": "Provider-owned stable-role output group", "expected": "Exact-cardinality outputs retain by unique persisted role even when the candidate array is reordered."},
+        {"id": "G9A3-REDEF25", "title": "Ambiguous or cardinality-changing output group", "expected": "Missing or duplicate roles, partial siblings, ordinal-only mapping or changed cardinality rejects and rolls back."}
+      ]
+    },
+    {
+      "id": "SNAP",
+      "testClass": "org.geocedg.common.spatial.G9A3SpatialSnapshotRecoveryTest",
+      "cases": [
+        {"id": "G9A3-SNAP01", "title": "Repeated save and reopen", "expected": "Two cycles preserve exact graph, revisions and normalized spatial XML."},
+        {"id": "G9A3-SNAP02", "title": "Repeated undo and redo", "expected": "Binding mutation, re-role and delete snapshots restore exact identities."},
+        {"id": "G9A3-SNAP03", "title": "Redefine, reopen, replacement and undo", "expected": "Compatible continuity and later true replacement remain distinguishable and reversible."},
+        {"id": "G9A3-SNAP04", "title": "Persist invalid state and recover", "expected": "Invalid identities reopen without payload and exact typed repair deterministically recovers them."},
+        {"id": "G9A3-SNAP05", "title": "Injected mutation or load failure", "expected": "Interrupted resolution restores the complete registry, DAG, payload and XML entry snapshot."}
+      ]
+    },
+    {
+      "id": "XML",
+      "testClass": "org.geocedg.common.spatial.G9A3SpatialCompatibilityXmlTest",
+      "cases": [
+        {"id": "G9A3-XML01", "title": "Legacy file without spatial section", "expected": "The file remains valid and all ordinary geos remain unassociated."},
+        {"id": "G9A3-XML02", "title": "Version-one inert records", "expected": "They remain inert and do not imply version-two POINT semantics."},
+        {"id": "G9A3-XML03", "title": "Shuffled version-two forward closure", "expected": "Two-stage load resolves deterministically independent of XML order."},
+        {"id": "G9A3-XML04", "title": "Missing binding or map reference", "expected": "The graph is explicitly broken or the load rejects according to the native atomic policy; it is never repaired."},
+        {"id": "G9A3-XML05", "title": "Missing relation support or endpoint", "expected": "The exact missing durable identity is diagnosed and no geometry is inferred."},
+        {"id": "G9A3-XML06", "title": "Duplicate native durable identity", "expected": "Native load rejects atomically and never remaps."},
+        {"id": "G9A3-XML07", "title": "Malformed kind, role, family or schema", "expected": "Strict parsing or prospective validation rejects before publication."},
+        {"id": "G9A3-XML08", "title": "Unknown attribute or future version", "expected": "Outer and record future versions fail truthfully with no opaque or lossy fallback."},
+        {"id": "G9A3-XML09", "title": "Native collision versus import collision", "expected": "Native load rejects while explicit import remaps the complete closure."},
+        {"id": "G9A3-XML10", "title": "Deterministic normalized rewrite", "expected": "Repeated reopen produces identical canonical record order and identity graph."}
+      ]
+    },
+    {
+      "id": "MIG",
+      "testClass": "org.geocedg.common.spatial.G9A3SpatialExplicitMigrationTest",
+      "cases": [
+        {"id": "G9A3-MIG01", "title": "Complete explicit POINT association", "expected": "Caller-selected GeoElements plus a complete typed plan atomically allocate fresh identities and explicit-association provenance."},
+        {"id": "G9A3-MIG02", "title": "No request under adversarial appearance", "expected": "Coincident geometry, suggestive labels, layers and order permutations create zero associations."},
+        {"id": "G9A3-MIG03", "title": "Incomplete or ambiguous plan", "expected": "The service rejects without scanning or guessing."},
+        {"id": "G9A3-MIG04", "title": "Stale, foreign or deleted target", "expected": "The explicit plan rejects atomically before identity allocation becomes live."},
+        {"id": "G9A3-MIG05", "title": "Repeated explicit plan", "expected": "The second application is an explicit already-associated no-op or typed rejection and never duplicates the graph."},
+        {"id": "G9A3-MIG06", "title": "Migrate, copy, disable feature and reopen", "expected": "The associated graph persists exactly; disabling creation never strips native records."}
+      ]
+    },
+    {
+      "id": "COMPAT",
+      "testClass": "org.geocedg.common.spatial.G9A3SpatialNativeCompatibilityTest",
+      "cases": [
+        {"id": "G9A3-COMPAT01", "title": "GeoCeDG native round trip", "expected": "AppConfigGeoCeDG loads, recomputes, saves and reopens the native POINT model exactly."},
+        {"id": "G9A3-COMPAT02", "title": "Fork Classic diagnostic round trip", "expected": "AppConfigDefault uses the same shared kernel and preserves the exact native identity graph and certificates."},
+        {"id": "G9A3-COMPAT03", "title": "Classic creation boundary", "expected": "No public spatial creation workflow is exposed while native records remain readable and writable."},
+        {"id": "G9A3-COMPAT04", "title": "External upstream unsupported-open boundary", "expected": "The target is classified unsupported and converter or downgrade invocation count remains zero."},
+        {"id": "G9A3-COMPAT05", "title": "Foreign resave without spatial section", "expected": "Ordinary geometry loads as legacy and remains unassociated; no label/list/coordinate repair occurs."}
+      ]
+    },
+    {
+      "id": "AUTH",
+      "testClass": "org.geocedg.common.spatial.G9A3SpatialLifecycleInstrumentationTest",
+      "cases": [
+        {"id": "G9A3-AUTH01", "title": "Authority hard-zero counters", "expected": "Inference, downgrade, stale-publication, hidden-graph and view-state counters remain zero while transaction counters match outcomes."},
+        {"id": "G9A3-AUTH02", "title": "Forbidden-scope audit", "expected": "No G9B/G9C/G9U, GUI, command, DXF, Locus, Python, general genealogy or new primitive implementation is present."},
+        {"id": "G9A3-AUTH03", "title": "Hostile-sequence boundedness", "expected": "The final registry is bounded, reciprocal, free of dangling references and contains no tracked generated bundle."}
+      ]
+    }
+  ],
+  "expectedScenarioCount": 72,
+  "testExecution": {
+    "focusedSelectors": [
+      "org.geocedg.common.spatial.G9A1*",
+      "org.geocedg.common.spatial.G9A2*",
+      "org.geocedg.common.spatial.G9A3*",
+      "org.geogebra.common.kernel.commands.RedefineTest"
+    ],
+    "frozenInheritedCount": 181,
+    "g9a3Count": 72,
+    "focusedTotal": 253,
+    "note": "The exact source mapping is frozen at 72 G9A3 tests plus 181 inherited G9A regression tests; execution disposition is recorded separately in the candidate evidence."
+  }
+}

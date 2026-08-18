@@ -21,21 +21,72 @@ import org.geogebra.common.kernel.geos.GeoBoolean;
 /** Normal-DAG publisher for one complete version-two projection system. */
 public final class AlgoProjectionSystemCertificate extends AlgoElement {
 	private final SpatialSemanticInputs.SystemTopology topology;
-	private final SpatialSemanticInstrumentation instrumentation;
+	private SpatialSemanticInstrumentation instrumentation;
 	private final GeoBoolean statusOutput;
 	private ProjectionSystemPilotCertificate certificate;
+	private boolean dependenciesActive;
 
 	AlgoProjectionSystemCertificate(Construction construction,
 			SpatialSemanticInputs.SystemTopology topology,
 			SpatialSemanticInstrumentation instrumentation) {
+		this(construction, topology, instrumentation, true);
+	}
+
+	AlgoProjectionSystemCertificate(Construction construction,
+			SpatialSemanticInputs.SystemTopology topology,
+			SpatialSemanticInstrumentation instrumentation,
+			boolean activateImmediately) {
 		super(construction, false);
 		this.topology = topology;
 		this.instrumentation = instrumentation;
 		this.statusOutput = new GeoBoolean(construction);
-		setProtectedInput(true);
-		setInputOutput();
+		try {
+			setProtectedInput(true);
+			setInputOutput();
+			if (activateImmediately) {
+				activatePrepared();
+				compute();
+			}
+		} catch (RuntimeException failure) {
+			discardPrepared(failure);
+			throw failure;
+		}
+	}
+
+	/** Wires a prevalidated algorithm into the live normal dependency graph. */
+	void activatePrepared() {
+		if (dependenciesActive) {
+			throw new IllegalStateException(
+					"Projection-system algorithm is already active");
+		}
+		dependenciesActive = true;
 		setDependencies();
-		compute();
+	}
+
+	/** Selects the runtime evidence sink after a prepared switch succeeds. */
+	void useInstrumentation(SpatialSemanticInstrumentation activeInstrumentation) {
+		instrumentation = activeInstrumentation;
+	}
+
+	/** Discards an inactive preparation or removes an activated preparation. */
+	void discardPrepared() {
+		discardPrepared(null);
+	}
+
+	private void discardPrepared(RuntimeException failure) {
+		if (!dependenciesActive) {
+			return;
+		}
+		try (Construction.SpatialSemanticAdapterNotificationScope ignored =
+				cons.suppressSpatialSemanticAdapterNotifications()) {
+			remove();
+		} catch (RuntimeException cleanupFailure) {
+			if (failure != null) {
+				failure.addSuppressed(cleanupFailure);
+			} else {
+				throw cleanupFailure;
+			}
+		}
 	}
 
 	@Override
@@ -54,6 +105,10 @@ public final class AlgoProjectionSystemCertificate extends AlgoElement {
 						certificate.getValueSnapshotToken())) {
 			return;
 		}
+		if (cons.getSpatialIdentityRegistry()
+				.deferAuthoritativeRuntimePublication(topology.getSystemId())) {
+			return;
+		}
 		instrumentation.recordDependencyUpdate();
 		ProjectionSystemCertificate candidate;
 		boolean evaluationCompleted = true;
@@ -69,12 +124,14 @@ public final class AlgoProjectionSystemCertificate extends AlgoElement {
 			certificate = new ProjectionSystemPilotCertificate(topology.getSystemId(),
 					before.getRevisionTuple(), before.getValueToken(),
 					SpatialSemanticInputs.invalidatedSystem(), false);
+			instrumentation.recordAuthoritativePublication(topology.getSystemId());
 			statusOutput.setUndefined();
 			return;
 		}
 		certificate = new ProjectionSystemPilotCertificate(topology.getSystemId(),
 				before.getRevisionTuple(), before.getValueToken(), candidate,
 				evaluationCompleted);
+		instrumentation.recordAuthoritativePublication(topology.getSystemId());
 		if (candidate.getStatus() == ProjectionSystemStatus.NOT_EVALUATED) {
 			statusOutput.setUndefined();
 		} else {
@@ -85,10 +142,29 @@ public final class AlgoProjectionSystemCertificate extends AlgoElement {
 
 	/** Withdraws current evidence without scheduling any hidden recomputation. */
 	public void invalidateCurrentRevision() {
+		if (cons.getSpatialIdentityRegistry()
+				.deferAuthoritativeRuntimePublication(topology.getSystemId())) {
+			return;
+		}
 		SpatialSemanticInputs.Snapshot snapshot = topology.capture();
 		certificate = new ProjectionSystemPilotCertificate(topology.getSystemId(),
 				snapshot.getRevisionTuple(), snapshot.getValueToken(),
 				SpatialSemanticInputs.invalidatedSystem(), false);
+		instrumentation.recordAuthoritativePublication(topology.getSystemId());
+		statusOutput.setUndefined();
+	}
+
+	boolean isCurrentFor(SpatialSemanticInputs.Snapshot snapshot) {
+		return certificate != null && certificate.isCurrentRevision()
+				&& snapshot.isCurrentTopology()
+				&& snapshot.getRevisionTuple().equals(certificate.getRevisionTuple())
+				&& snapshot.getValueToken().equals(
+						certificate.getValueSnapshotToken());
+	}
+
+	/** Retires an inaccessible superseded publisher without a second revision. */
+	void retireWithoutAuthoritativePublication() {
+		certificate = null;
 		statusOutput.setUndefined();
 	}
 

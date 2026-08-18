@@ -2216,6 +2216,240 @@
       "change": "added",
       "purpose": "Provide a strict G9A2 legacy or version-two spatial XML compatibility fixture.",
       "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialCopyPlan.java",
+      "change": "added",
+      "purpose": "Define the complete typed G9A3 copy closure, deterministic fresh-ID remap, and declared same-construction external-reference context.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialCopyPolicy.java",
+      "change": "added",
+      "purpose": "Enforce G9A3 complete-closure copy policy without label, coordinate, order, XML-position, ordinal, or Java-reference inference.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialIdentityGraph.java",
+      "change": "added",
+      "purpose": "Represent the construction-confined typed spatial identity graph used for G9A3 prospective validation, copying, snapshots, and recovery.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialLifecycleMutation.java",
+      "change": "added",
+      "purpose": "Describe one explicit G9A3 lifecycle mutation with complete record, attachment, revision, and runtime effects.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialLifecycleOperationKind.java",
+      "change": "added",
+      "purpose": "Type the admitted G9A3 lifecycle operations so generic or inferred mutation bypasses remain sealed.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialLifecycleProspectiveGraph.java",
+      "change": "added",
+      "purpose": "Validate the complete prospective G9A3 identity graph before any authoritative registry or runtime publication.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialLifecycleRuntime.java",
+      "change": "added",
+      "purpose": "Coordinate G9A3 lifecycle publication with the normal construction DAG and exact runtime revision/currentness state.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialLifecycleTransaction.java",
+      "change": "added",
+      "purpose": "Provide atomic prepare, commit, and rollback for G9A3 identity-graph and runtime lifecycle changes.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialPointLifecycleService.java",
+      "change": "added",
+      "purpose": "Apply the approved G9A3 POINT-only mutation, copy, replacement, recovery, and explicit migration rules.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialPointMigrationPlan.java",
+      "change": "added",
+      "purpose": "Require a complete caller-supplied typed POINT association plan for G9A3 explicit migration without scanning or guessing.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialPointPilotRedefineProvider.java",
+      "change": "added",
+      "purpose": "Admit only explicit semantically compatible G9A3 POINT-pilot redefine transactions and reject incompatible continuity.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRedefineCandidateOutput.java",
+      "change": "added",
+      "purpose": "Carry one provider-owned candidate output and stable semantic role for exact-cardinality G9A3 redefine mapping.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRedefineEffect.java",
+      "change": "added",
+      "purpose": "Distinguish G9A3 semantic no-op, compatible definition change, topology change, and true replacement effects.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRedefineHostState.java",
+      "change": "added",
+      "purpose": "Capture the exact pre-parse host state required for G9A3 explicit-target redefine authority and rollback.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRedefineOutput.java",
+      "change": "added",
+      "purpose": "Describe one persisted-role G9A3 redefine output independent of candidate enumeration order.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRedefineOutputGroup.java",
+      "change": "added",
+      "purpose": "Enforce exact-cardinality atomic sibling mapping for G9A3 multi-output redefine without ordinal identity.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRedefinePersistedOutput.java",
+      "change": "added",
+      "purpose": "Persist the stable provider-owned role used to restore G9A3 output continuity across XML rebuild and reopen.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/geogebra3D/euclidian3D/EuclidianController3D.java",
+      "change": "modified",
+      "purpose": "Capture G9A3 explicit redefine context and rollback state before the existing 3D move-release helper path mutates construction state.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9A3SpatialCompatibilityXmlTest.java",
+      "change": "added",
+      "purpose": "Verify the ten canonical G9A3 legacy, malformed, collision, forward-reference, future-version, and deterministic XML scenarios.",
+      "authority": "docs/validation/g9a3_spatial_lifecycle_scenarios.json"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9A3SpatialCopyClosureTest.java",
+      "change": "added",
+      "purpose": "Verify the eight canonical G9A3 complete-closure copy, remap, declared-context, repeated-paste, macro, undo, and delete scenarios.",
+      "authority": "docs/validation/g9a3_spatial_lifecycle_scenarios.json"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9A3SpatialExplicitMigrationTest.java",
+      "change": "added",
+      "purpose": "Verify the six canonical G9A3 explicit POINT migration and no-inference scenarios.",
+      "authority": "docs/validation/g9a3_spatial_lifecycle_scenarios.json"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9A3SpatialGraphSnapshot.java",
+      "change": "added",
+      "purpose": "Provide exact test-private G9A3 registry, attachment, resolution, runtime, certificate, counter, and normalized-XML graph snapshots.",
+      "authority": "docs/validation/g9a3_spatial_lifecycle_scenarios.json"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9A3SpatialLifecycleInstrumentationTest.java",
+      "change": "added",
+      "purpose": "Verify the three canonical G9A3 authority-counter, forbidden-scope, and hostile-sequence boundedness scenarios.",
+      "authority": "docs/validation/g9a3_spatial_lifecycle_scenarios.json"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9A3SpatialMutationLifecycleTest.java",
+      "change": "added",
+      "purpose": "Verify the ten canonical G9A3 binding, system, map, relation, dependency, replacement, and degeneration lifecycle scenarios.",
+      "authority": "docs/validation/g9a3_spatial_lifecycle_scenarios.json"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9A3SpatialNativeCompatibilityTest.java",
+      "change": "added",
+      "purpose": "Verify the five canonical G9A3 GeoCeDG, fork-Classic, and unsupported external-upstream boundary scenarios.",
+      "authority": "docs/validation/g9a3_spatial_lifecycle_scenarios.json"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9A3SpatialRedefineHostTest.java",
+      "change": "added",
+      "purpose": "Verify fifteen canonical G9A3 host redefine routes with explicit target authority and exact rollback.",
+      "authority": "docs/validation/g9a3_spatial_lifecycle_scenarios.json"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9A3SpatialRedefineTransactionTest.java",
+      "change": "added",
+      "purpose": "Verify ten canonical G9A3 redefine continuity, incompatibility, replacement, staleness, and stable-role group scenarios.",
+      "authority": "docs/validation/g9a3_spatial_lifecycle_scenarios.json"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9A3SpatialSnapshotRecoveryTest.java",
+      "change": "added",
+      "purpose": "Verify the five canonical G9A3 save/reopen, undo/redo, replacement, invalid recovery, and injected-failure snapshot scenarios.",
+      "authority": "docs/validation/g9a3_spatial_lifecycle_scenarios.json"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/spatial/g9a3/external-upstream-no-spatial-loss-shape.xml",
+      "change": "added",
+      "purpose": "Provide a project-authored G9A3 no-spatial loss-shape input without claiming capture from an external upstream runtime.",
+      "authority": "docs/validation/g9a3_spatial_compatibility_corpus.json"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/spatial/g9a3/external-upstream-ordinary-control.xml",
+      "change": "added",
+      "purpose": "Provide the G9A3 ordinary-geometry external-upstream boundary control fixture.",
+      "authority": "docs/validation/g9a3_spatial_compatibility_corpus.json"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/spatial/g9a3/legacy-adversarial-coincident.xml",
+      "change": "added",
+      "purpose": "Prove that G9A3 legacy coincidence, labels, layers, and order create no inferred spatial association.",
+      "authority": "docs/validation/g9a3_spatial_compatibility_corpus.json"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/spatial/g9a3/v2-duplicate-semantic-id.xml",
+      "change": "added",
+      "purpose": "Provide a strict G9A3 duplicate native durable-identity rejection fixture.",
+      "authority": "docs/validation/g9a3_spatial_compatibility_corpus.json"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/spatial/g9a3/v2-future-outer-version.xml",
+      "change": "added",
+      "purpose": "Provide a strict G9A3 unknown future outer-version rejection fixture.",
+      "authority": "docs/validation/g9a3_spatial_compatibility_corpus.json"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/spatial/g9a3/v2-malformed-role-family.xml",
+      "change": "added",
+      "purpose": "Provide a strict G9A3 malformed typed role/family/schema rejection fixture.",
+      "authority": "docs/validation/g9a3_spatial_compatibility_corpus.json"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/spatial/g9a3/v2-missing-binding-reference.xml",
+      "change": "added",
+      "purpose": "Provide a G9A3 missing binding-reference fixture that must remain explicitly broken without repair.",
+      "authority": "docs/validation/g9a3_spatial_compatibility_corpus.json"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/spatial/g9a3/v2-missing-relation-support.xml",
+      "change": "added",
+      "purpose": "Provide a G9A3 missing relation-support fixture with exact durable-ID diagnostics and no geometric inference.",
+      "authority": "docs/validation/g9a3_spatial_compatibility_corpus.json"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/spatial/g9a3/v2-shuffled-forward-closure.xml",
+      "change": "added",
+      "purpose": "Provide a G9A3 shuffled forward-reference closure proving that XML record order has no identity authority.",
+      "authority": "docs/validation/g9a3_spatial_compatibility_corpus.json"
+    },
+    {
+      "path": "source/shared/common-jre/src/main/java/org/geogebra/common/jre/headless/EuclidianController3DNoGui.java",
+      "change": "modified",
+      "purpose": "Provide the headless G9A3 3D controller test seam needed to verify explicit move-release lifecycle context without adding a GUI workflow.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9A3SpatialRedefineTestSupport.java",
+      "change": "added",
+      "purpose": "Share test-private G9A3 redefine fixtures and assertions across the exact host and transaction scenario classes while satisfying Checkstyle file-size limits.",
+      "authority": "docs/validation/g9a3_spatial_lifecycle_scenarios.json"
     }
   ]
 }

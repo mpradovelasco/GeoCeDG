@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<g9a3Fixture purpose="native duplicate-ID rejection">
+  <geocedgSpatial version="1">
+    <frame id="frame:00000000000000000000000000000011" semanticVersion="2"
+        origin="geo:00000000000000000000000000000001"
+        u="geo:00000000000000000000000000000002"
+        v="geo:00000000000000000000000000000003" family="ORTHOGRAPHIC"
+        units="m" handedness="RIGHT_HANDED" fidelity="EXACT" revision="0"/>
+    <frame id="frame:00000000000000000000000000000011" semanticVersion="2"
+        origin="geo:00000000000000000000000000000004"
+        u="geo:00000000000000000000000000000005"
+        v="geo:00000000000000000000000000000006" family="ORTHOGRAPHIC"
+        units="m" handedness="RIGHT_HANDED" fidelity="EXACT" revision="0"/>
+  </geocedgSpatial>
+</g9a3Fixture>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<geogebra format="5.0" version="5.4.928.0" app="classic">
+  <construction title="G9A3 future spatial section" author="GeoCeDG" date="2026-08-18">
+    <geocedgSpatial version="999">
+      <object id="object:00000000000000000000000000000061" semanticVersion="2"
+          type="POINT" authority="PROJECTION_DEFINED"
+          schema="cedg.spatial.point.projection" schemaVersion="1"
+          system="system:00000000000000000000000000000021"
+          bindings="binding:00000000000000000000000000000051"
+          definitionRevision="0" topologyRevision="0"/>
+    </geocedgSpatial>
+    <element type="point" label="P">
+      <coords x="2" y="3" z="1"/>
+    </element>
+  </construction>
+</geogebra>

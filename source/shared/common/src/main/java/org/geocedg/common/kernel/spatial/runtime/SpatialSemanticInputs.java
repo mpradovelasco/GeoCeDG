@@ -32,9 +32,9 @@ import org.geocedg.common.kernel.spatial.identity.ProjectionFrameRelationRecord;
 import org.geocedg.common.kernel.spatial.identity.ProjectionFrameUseRole;
 import org.geocedg.common.kernel.spatial.identity.ProjectionSystemId;
 import org.geocedg.common.kernel.spatial.identity.ProjectionSystemRecord;
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityGraph;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityId;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRecord;
-import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
 import org.geocedg.common.kernel.spatial.identity.SpatialObjectId;
 import org.geocedg.common.kernel.spatial.identity.SpatialObjectRecord;
 import org.geocedg.common.kernel.spatial.identity.SpatialRecordResolution;
@@ -77,12 +77,12 @@ final class SpatialSemanticInputs {
 	private SpatialSemanticInputs() {
 	}
 
-	static SystemTopology systemTopology(SpatialIdentityRegistry registry,
+	static SystemTopology systemTopology(SpatialIdentityGraph registry,
 			ProjectionSystemRecord system) {
 		return SystemTopology.create(registry, system);
 	}
 
-	static PointTopology pointTopology(SpatialIdentityRegistry registry,
+	static PointTopology pointTopology(SpatialIdentityGraph registry,
 			SpatialObjectRecord object) {
 		return PointTopology.create(registry, object);
 	}
@@ -170,19 +170,19 @@ final class SpatialSemanticInputs {
 	}
 
 	abstract static class Topology {
-		final SpatialIdentityRegistry registry;
+		final SpatialIdentityGraph registry;
 		final Set<SpatialIdentityId> recordIds;
 		final Set<PersistentGeoId> geoIds;
 		final Set<SpatialIdentityId> structuralRecordIds;
 		final String structureToken;
 		final TopologyOutcome outcome;
 
-		Topology(SpatialIdentityRegistry registry, Set<SpatialIdentityId> recordIds,
+		Topology(SpatialIdentityGraph registry, Set<SpatialIdentityId> recordIds,
 				Set<PersistentGeoId> geoIds, TopologyOutcome outcome) {
 			this(registry, recordIds, geoIds, outcome, Collections.emptySet());
 		}
 
-		Topology(SpatialIdentityRegistry registry, Set<SpatialIdentityId> recordIds,
+		Topology(SpatialIdentityGraph registry, Set<SpatialIdentityId> recordIds,
 				Set<PersistentGeoId> geoIds, TopologyOutcome outcome,
 				Set<SpatialIdentityId> structuralRecordIds) {
 			this.registry = Objects.requireNonNull(registry);
@@ -246,7 +246,7 @@ final class SpatialSemanticInputs {
 		private final Map<ProjectionDiagramMapId, ProjectionDiagramMapRecord> maps;
 		private final List<ProjectionFrameRelationRecord> relations;
 
-		private SystemTopology(SpatialIdentityRegistry registry,
+		private SystemTopology(SpatialIdentityGraph registry,
 				ProjectionSystemRecord system, Set<SpatialIdentityId> recordIds,
 				Set<PersistentGeoId> geoIds, TopologyOutcome outcome,
 				Map<ProjectionFrameId, ProjectionFrameRecord> frames,
@@ -259,7 +259,7 @@ final class SpatialSemanticInputs {
 			this.relations = relations;
 		}
 
-		static SystemTopology create(SpatialIdentityRegistry registry,
+		static SystemTopology create(SpatialIdentityGraph registry,
 				ProjectionSystemRecord system) {
 			TreeSet<SpatialIdentityId> recordIds = new TreeSet<>();
 			TreeSet<PersistentGeoId> geoIds = new TreeSet<>();
@@ -405,7 +405,7 @@ final class SpatialSemanticInputs {
 		private final PointOutcome pointOutcome;
 		private final Set<ProjectionBindingId> undefinedBindings;
 
-		private PointTopology(SpatialIdentityRegistry registry,
+		private PointTopology(SpatialIdentityGraph registry,
 				SpatialObjectRecord object, ProjectionSystemRecord system,
 				Set<SpatialIdentityId> recordIds, Set<PersistentGeoId> geoIds,
 				TopologyOutcome outcome,
@@ -427,7 +427,7 @@ final class SpatialSemanticInputs {
 			this.undefinedBindings = undefinedBindings;
 		}
 
-		static PointTopology create(SpatialIdentityRegistry registry,
+		static PointTopology create(SpatialIdentityGraph registry,
 				SpatialObjectRecord object) {
 			TreeSet<SpatialIdentityId> recordIds = new TreeSet<>();
 			TreeSet<PersistentGeoId> geoIds = new TreeSet<>();
@@ -620,7 +620,7 @@ final class SpatialSemanticInputs {
 	}
 
 	private static List<ProjectionFrameRelationRecord>
-			closePointRelationSubcontext(SpatialIdentityRegistry registry,
+			closePointRelationSubcontext(SpatialIdentityGraph registry,
 					ProjectionSystemRecord system,
 					Map<ProjectionDiagramMapId, ProjectionDiagramMapRecord> maps,
 					Map<ProjectionFrameId, ProjectionFrameRecord> frames,
@@ -703,7 +703,7 @@ final class SpatialSemanticInputs {
 		return new ArrayList<>(relations.values());
 	}
 
-	private static void addPointRelationMap(SpatialIdentityRegistry registry,
+	private static void addPointRelationMap(SpatialIdentityGraph registry,
 			ProjectionDiagramMapRecord map,
 			Map<ProjectionDiagramMapId, ProjectionDiagramMapRecord> maps,
 			Map<ProjectionFrameId, ProjectionFrameRecord> frames,
@@ -1059,7 +1059,7 @@ final class SpatialSemanticInputs {
 		INCOHERENT_AUTHORITY
 	}
 
-	private static void validateFrameGeoRecords(SpatialIdentityRegistry registry,
+	private static void validateFrameGeoRecords(SpatialIdentityGraph registry,
 			ProjectionFrameRecord frame, TopologyOutcome outcome) {
 		validateSystemGeoRecord(registry, frame.getOriginGeoId(),
 				"projection-frame origin", outcome);
@@ -1069,7 +1069,7 @@ final class SpatialSemanticInputs {
 				"projection-frame second axis", outcome);
 	}
 
-	private static void validateMapGeoRecords(SpatialIdentityRegistry registry,
+	private static void validateMapGeoRecords(SpatialIdentityGraph registry,
 			ProjectionDiagramMapRecord map, TopologyOutcome outcome) {
 		for (PersistentGeoId id : map.getDefinitionGeoIds()) {
 			validateSystemGeoRecord(registry, id,
@@ -1077,7 +1077,7 @@ final class SpatialSemanticInputs {
 		}
 	}
 
-	private static void validateRelationGeoRecords(SpatialIdentityRegistry registry,
+	private static void validateRelationGeoRecords(SpatialIdentityGraph registry,
 			ProjectionFrameRelationRecord relation, TopologyOutcome outcome) {
 		validateSystemGeoRecord(registry, relation.getSupportStartGeoId(),
 				"relation support start", outcome);
@@ -1089,7 +1089,7 @@ final class SpatialSemanticInputs {
 		}
 	}
 
-	private static void validateSystemGeoRecord(SpatialIdentityRegistry registry,
+	private static void validateSystemGeoRecord(SpatialIdentityGraph registry,
 			PersistentGeoId id, String context, TopologyOutcome outcome) {
 		GeoInputState state = definingGeoState(registry, id);
 		if (state == GeoInputState.MISSING) {
@@ -1099,7 +1099,7 @@ final class SpatialSemanticInputs {
 		}
 	}
 
-	private static GeoInputState definingGeoState(SpatialIdentityRegistry registry,
+	private static GeoInputState definingGeoState(SpatialIdentityGraph registry,
 			PersistentGeoId id) {
 		GeoIdentityRecord record = typedRecord(registry, id, GeoIdentityRecord.class);
 		SpatialRecordResolution resolution = id == null ? null
@@ -1141,7 +1141,7 @@ final class SpatialSemanticInputs {
 		}
 	}
 
-	private static void validatePassiveBinding(SpatialIdentityRegistry registry,
+	private static void validatePassiveBinding(SpatialIdentityGraph registry,
 			SpatialObjectRecord object, ProjectionSystemRecord system,
 			ProjectionBindingRecord binding,
 			Set<SpatialIdentityId> structuralRecordIds, PointOutcome outcome) {
@@ -1222,7 +1222,7 @@ final class SpatialSemanticInputs {
 						binding.getCorrespondence()) != null;
 	}
 
-	private static void validateActiveV2(SpatialIdentityRegistry registry,
+	private static void validateActiveV2(SpatialIdentityGraph registry,
 			SpatialIdentityRecord record, TopologyOutcome outcome) {
 		if (record == null) {
 			outcome.undefined("Required semantic record is missing");
@@ -1243,7 +1243,7 @@ final class SpatialSemanticInputs {
 	}
 
 	private static <T extends SpatialIdentityRecord> T typedRecord(
-			SpatialIdentityRegistry registry, SpatialIdentityId id, Class<T> type) {
+			SpatialIdentityGraph registry, SpatialIdentityId id, Class<T> type) {
 		SpatialIdentityRecord record = registry.getRecord(id);
 		return type.isInstance(record) ? type.cast(record) : null;
 	}
@@ -1264,7 +1264,7 @@ final class SpatialSemanticInputs {
 		return Collections.unmodifiableSet(new LinkedHashSet<>(new TreeSet<>(source)));
 	}
 
-	private static String structureToken(SpatialIdentityRegistry registry,
+	private static String structureToken(SpatialIdentityGraph registry,
 			Set<SpatialIdentityId> ids,
 			Set<SpatialIdentityId> structuralRecordIds) {
 		StringBuilder result = new StringBuilder();
@@ -1287,7 +1287,7 @@ final class SpatialSemanticInputs {
 		return resolution == null ? "MISSING" : resolution.getState().name();
 	}
 
-	private static String attachmentToken(SpatialIdentityRegistry registry,
+	private static String attachmentToken(SpatialIdentityGraph registry,
 			SpatialIdentityId id) {
 		if (!(id instanceof PersistentGeoId)) {
 			return "NOT_APPLICABLE";

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<geogebra format="5.0" version="5.4.928.0" app="classic">
+  <construction title="G9A3 legacy adversarial coincidence" author="GeoCeDG" date="2026-08-18">
+    <element type="point" label="HorizontalProjection">
+      <coords x="2" y="3" z="1"/>
+      <layer val="4"/>
+    </element>
+    <element type="point" label="VerticalProjection">
+      <coords x="2" y="3" z="1"/>
+      <layer val="9"/>
+    </element>
+    <element type="point" label="P_h">
+      <coords x="2" y="5" z="1"/>
+      <layer val="9"/>
+    </element>
+    <element type="point" label="P_v">
+      <coords x="2" y="5" z="1"/>
+      <layer val="4"/>
+    </element>
+  </construction>
+</geogebra>
