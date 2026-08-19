@@ -15,7 +15,7 @@ permissions:
 jobs:
   verify:
     runs-on: windows-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
 
     steps:
       - name: Check out complete history and tags
@@ -31,6 +31,24 @@ jobs:
           java-version: |
             17
             22
+
+      - name: Provision G7A Conda environment
+        uses: conda-incubator/setup-miniconda@v4
+        with:
+          activate-environment: om_env
+          python-version: "3.12.13"
+          channels: conda-forge
+          channel-priority: strict
+          conda-remove-defaults: true
+
+      - name: Install and verify G7A numerical dependency
+        shell: pwsh
+        run: |
+          conda install -n om_env -c conda-forge "mpmath=1.4.1" -y
+
+          Write-Host "G7A Conda environment:"
+          conda run -n om_env python --version
+          conda run -n om_env python -c "import mpmath; print('mpmath', mpmath.__version__)"
 
       - name: Run GeoCeDG authority
         shell: pwsh
