@@ -558,8 +558,16 @@ try {
         -Message "CI does not invoke tools/agent/verify.ps1."
     Assert-Condition -Condition $workflow.Contains("fetch-depth: 0") `
         -Message "CI must fetch baseline ancestry and tags."
-    Assert-Condition -Condition $workflow.Contains('java-version: "22"') `
-        -Message "CI Gradle launcher Java is not pinned."
+    $javaVersionMatch = [regex]::Match(
+        $workflow,
+        '(?m)^\s*java-version:\s*\|\r?\n(?<java_versions>(\s*\d+\s*\r?\n)+)')
+    Assert-Condition -Condition $javaVersionMatch.Success `
+        -Message "CI setup-java does not use a composed Java-version matrix."
+    $javaVersions = @([string[]]($javaVersionMatch.Groups["java_versions"].Value `
+        -split "`r?`n")) | ForEach-Object { $_.Trim() } | Where-Object { $_ }
+    Assert-Condition -Condition ($javaVersions.Count -ge 2 -and
+        $javaVersions[0] -eq "17" -and $javaVersions[1] -eq "22") `
+        -Message "CI must provision Java 17 and Java 22 (with 22 last for Gradle launcher)."
 
     Write-Step "Operational text hygiene"
     $ownedTextRoots = @(
