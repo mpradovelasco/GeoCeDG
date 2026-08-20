@@ -70,6 +70,27 @@ public final class LocusMetricPolicy2D {
 				EvaluatorOnlyPolicy.UNCERTIFIED);
 	}
 
+	/**
+	 * G9U0 public adaptive policy with an explicit, non-certified estimate.
+	 *
+	 * <p>This enables the guarded scalar adapter only when every other rich
+	 * admissibility predicate also succeeds. The value is never described as
+	 * exact or certified.</p>
+	 *
+	 * @return versioned experimental public metric policy
+	 */
+	public static LocusMetricPolicy2D publicExperimental() {
+		return new LocusMetricPolicy2D(DEFAULT_ABSOLUTE_TOLERANCE,
+				DEFAULT_RELATIVE_TOLERANCE,
+				new MetricWorkBudget2D(DEFAULT_MAXIMUM_EVALUATIONS,
+						DEFAULT_MAXIMUM_SUBDIVISIONS, DEFAULT_MAXIMUM_DEPTH),
+				"g9u0-public-total-variation/v1",
+				"g9u0-public-metric-policy/v1", "g9u0-abs-rel/v1",
+				MetricMultiplicityPolicy.CONSTRUCTIVE_TRAVERSAL_LENGTH,
+				new ImproperLimitPolicy2D("g9u0-improper-limit/v1", 12, 0.25),
+				EvaluatorOnlyPolicy.ESTIMATED_WITH_EXPLICIT_ASSUMPTIONS);
+	}
+
 	public double getAbsoluteTolerance() {
 		return absoluteTolerance;
 	}

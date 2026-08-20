@@ -29,6 +29,7 @@ public final class SpatialRedefineTransaction {
 	private final SpatialRedefineDecision decision;
 	private final Map<String, PersistentGeoId> decidedIds;
 	private final Set<SpatialIdentityId> retiredIds;
+	private final SpatialRedefineCandidateParticipation candidateParticipation;
 	private boolean rebuildViewWritten;
 	private State state = State.PREPARED;
 
@@ -43,6 +44,7 @@ public final class SpatialRedefineTransaction {
 		this.decidedIds = singletonDecidedIds(context, proposal, decision, freshId);
 		this.retiredIds = Collections.unmodifiableSet(
 				new LinkedHashSet<>(retiredIds));
+		this.candidateParticipation = null;
 	}
 
 	SpatialRedefineTransaction(SpatialIdentityRegistry registry,
@@ -50,6 +52,15 @@ public final class SpatialRedefineTransaction {
 			SpatialRedefineDecision decision,
 			Map<String, PersistentGeoId> decidedIds,
 			Set<SpatialIdentityId> retiredIds) {
+		this(registry, context, proposal, decision, decidedIds, retiredIds, null);
+	}
+
+	SpatialRedefineTransaction(SpatialIdentityRegistry registry,
+			SpatialRedefineContext context, SpatialRedefineProposal proposal,
+			SpatialRedefineDecision decision,
+			Map<String, PersistentGeoId> decidedIds,
+			Set<SpatialIdentityId> retiredIds,
+			SpatialRedefineCandidateParticipation candidateParticipation) {
 		this.registry = registry;
 		this.context = context;
 		this.proposal = proposal;
@@ -67,6 +78,7 @@ public final class SpatialRedefineTransaction {
 		this.decidedIds = Collections.unmodifiableMap(ordered);
 		this.retiredIds = Collections.unmodifiableSet(
 				new LinkedHashSet<>(retiredIds));
+		this.candidateParticipation = candidateParticipation;
 	}
 
 	public SpatialRedefineContext getContext() {
@@ -104,6 +116,14 @@ public final class SpatialRedefineTransaction {
 		return retiredIds;
 	}
 
+	/**
+	 * Activates only ordinary persistence labels for the already provider-approved
+	 * staged set. Identity records remain unpublished until transaction commit.
+	 */
+	public void activateCandidateParticipation() {
+		registry.activateRedefineCandidateParticipation(this);
+	}
+
 	/** Commits the prepared decision against the actual installed result. */
 	public void commit(GeoElement actualResult) {
 		registry.commitRedefine(this, actualResult);
@@ -132,6 +152,10 @@ public final class SpatialRedefineTransaction {
 
 	boolean isOwnedBy(SpatialIdentityRegistry candidateRegistry) {
 		return registry == candidateRegistry;
+	}
+
+	SpatialRedefineCandidateParticipation getCandidateParticipation() {
+		return candidateParticipation;
 	}
 
 	private static Map<String, PersistentGeoId> singletonDecidedIds(

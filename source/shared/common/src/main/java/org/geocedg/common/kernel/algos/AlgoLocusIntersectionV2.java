@@ -15,6 +15,7 @@ import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.NumericGuarantee;
 import org.geocedg.common.kernel.locus.intersection.IntersectionCompletenessEvidence2D;
 import org.geocedg.common.kernel.locus.intersection.IntersectionDiagnostic2D;
+import org.geocedg.common.kernel.locus.intersection.IntersectionRootTokenSource2D;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.Completeness;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.CompletenessMethod;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.ComputationStatus;
@@ -35,19 +36,26 @@ import org.geocedg.common.kernel.locus.intersection.LocusIntersectionResult2D;
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionSolver2D;
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionTarget2D;
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionTargets2D;
+import org.geocedg.common.kernel.locus.intersection.LocusIntersectionTokenLedger2D;
+import org.geocedg.common.kernel.locus.intersection.PublicTargetIntersectionCapability2D;
+import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.algos.Algos;
+import org.geogebra.common.kernel.algos.GetCommand;
+import org.geogebra.common.kernel.commands.Commands;
 import org.geogebra.common.kernel.geos.GeoElement;
 
 /** Normal-DAG publisher for one internal native Locus V2 intersection query. */
 public final class AlgoLocusIntersectionV2 extends AlgoElement {
 	private final GeoLocusV2 source;
 	private final GeoElement target;
-	private final String sourcePairIdentity;
+	private String sourcePairIdentity;
 	private final String constructiveIntersectionLineage;
-	private final String targetIdentity;
+	private String targetIdentity;
 	private final String topologyContext;
+	private final boolean publicCommand;
+	private final GetCommand commandName;
 	private final LocusIntersectionCapability2D preferredCapability;
 	private final GeoElement[] configuredInputs;
 	private final GeoLocusIntersectionResult result;
@@ -71,7 +79,31 @@ public final class AlgoLocusIntersectionV2 extends AlgoElement {
 			String topologyContext,
 			LocusIntersectionCapability2D preferredCapability,
 			GeoElement[] capabilityDependencies) {
-		super(construction, false);
+		this(construction, source, target, sourcePairIdentity,
+				constructiveIntersectionLineage, targetIdentity, topologyContext,
+				preferredCapability, capabilityDependencies, false,
+				Algos.Expression, null, null);
+	}
+
+	/** Creates a reconstructible public rich intersection result. */
+	public AlgoLocusIntersectionV2(Construction construction, String label,
+			GeoLocusV2 source, GeoElement target, PersistentGeoId resultId) {
+		this(construction, source, target, "g9u0-pending-source-pair",
+				"g9u0-public-intersection/v1", "g9u0-pending-target",
+				"g9u0-public-topology/v1",
+				new PublicTargetIntersectionCapability2D(), new GeoElement[0], true,
+				Commands.Intersect, label, resultId);
+	}
+
+	private AlgoLocusIntersectionV2(Construction construction,
+			GeoLocusV2 source, GeoElement target, String sourcePairIdentity,
+			String constructiveIntersectionLineage, String targetIdentity,
+			String topologyContext,
+			LocusIntersectionCapability2D preferredCapability,
+			GeoElement[] capabilityDependencies, boolean addToConstructionList,
+			GetCommand commandName, String label,
+			PersistentGeoId reservedResultId) {
+		super(construction, addToConstructionList);
 		this.source = java.util.Objects.requireNonNull(source);
 		this.target = java.util.Objects.requireNonNull(target);
 		this.sourcePairIdentity = requireText(sourcePairIdentity,
@@ -80,15 +112,26 @@ public final class AlgoLocusIntersectionV2 extends AlgoElement {
 				constructiveIntersectionLineage, "Intersection lineage");
 		this.targetIdentity = requireText(targetIdentity, "Target identity");
 		this.topologyContext = requireText(topologyContext, "Topology context");
+		this.publicCommand = addToConstructionList;
+		if (addToConstructionList && !construction.isFileLoading()) {
+			java.util.Objects.requireNonNull(reservedResultId);
+		}
+		this.commandName = commandName;
 		this.preferredCapability = preferredCapability;
 		this.configuredInputs = combineInputs(source, target,
 				capabilityDependencies);
 		this.result = new GeoLocusIntersectionResult(construction,
 				sourcePairIdentity);
+		if (publicCommand) {
+			result.enablePublicPersistence();
+		}
 		setProtectedInput(true);
 		setInputOutput();
 		setDependencies();
 		compute();
+		if (label != null) {
+			result.setLabel(label);
+		}
 	}
 
 	/** Convenience constructor with evaluator-only candidate discovery. */
@@ -109,6 +152,16 @@ public final class AlgoLocusIntersectionV2 extends AlgoElement {
 
 	@Override
 	public void compute() {
+		if (!result.isTokenLedgerReadyForEvaluation()) {
+			lastContinuableResult = null;
+			result.deferUntilPersistentIdentityAttachment();
+			return;
+		}
+		if (!refreshPublicIdentities()) {
+			lastContinuableResult = null;
+			result.deferUntilPersistentIdentityAttachment();
+			return;
+		}
 		LocusDefinition2D definition = source.getSemanticDefinition();
 		long locusRevision = Math.max(1, source.getSemanticRevision());
 		targetUpdateStamp++;
@@ -126,7 +179,7 @@ public final class AlgoLocusIntersectionV2 extends AlgoElement {
 			IntersectionSourceBinding2D binding =
 					new IntersectionSourceBinding2D(query, support.getFamily());
 			result.beginIntersectionRevision(binding);
-			result.publishIntersectionResult(binding,
+			publishWithLedger(binding,
 					failure(binding, ComputationStatus.INVALID_INPUT,
 							DiagnosticCode.INVALID_SOURCE,
 							"Source locus has no current defined semantic snapshot",
@@ -142,7 +195,7 @@ public final class AlgoLocusIntersectionV2 extends AlgoElement {
 					== TargetSupportStatus.TARGET_UNDEFINED
 							? ComputationStatus.INVALID_INPUT
 							: ComputationStatus.UNSUPPORTED;
-			result.publishIntersectionResult(binding,
+			publishWithLedger(binding,
 					failure(binding, status, support.getDiagnosticCode(),
 							support.getStatus() + ": " + support.getDiagnostic(),
 							basePolicy));
@@ -160,19 +213,33 @@ public final class AlgoLocusIntersectionV2 extends AlgoElement {
 			IntersectionSourceBinding2D binding =
 					new IntersectionSourceBinding2D(query, captured.getFamily());
 			result.beginIntersectionRevision(binding);
-			LocusIntersectionResult2D candidate = solver.intersect(query,
-					definition, captured, binding, preferredCapability,
-					this::nextToken);
-			LocusIntersectionResult2D current = continuation.continueRoots(
-					lastContinuableResult, candidate, policy);
-			result.publishIntersectionResult(binding, current);
-			updateContinuationBaseline(current);
+			LocusIntersectionTokenLedger2D.Evaluation evaluation =
+					beginTokenEvaluation();
+			try {
+				IntersectionRootTokenSource2D tokenSource = evaluation == null
+					? this::nextLegacyToken
+					: IntersectionRootTokenSource2D.semantic(evaluation::mint,
+							evaluation::revisionLocalHandle);
+				LocusIntersectionResult2D candidate = solver.intersect(query,
+						definition, captured, binding, preferredCapability,
+						tokenSource);
+				LocusIntersectionResult2D current = publicCommand
+						? continuation.continuePublicRoots(lastContinuableResult,
+								candidate, policy)
+						: continuation.continueRoots(lastContinuableResult,
+								candidate, policy);
+				publishWithLedger(binding, current, evaluation);
+				updateContinuationBaseline(current);
+			} catch (RuntimeException exception) {
+				result.abortTokenEvaluation(evaluation);
+				throw exception;
+			}
 		} catch (RuntimeException exception) {
 			LocusIntersectionQuery2D query = query(locusRevision, basePolicy);
 			IntersectionSourceBinding2D binding =
 					new IntersectionSourceBinding2D(query, support.getFamily());
 			result.beginIntersectionRevision(binding);
-			result.publishIntersectionResult(binding,
+			publishWithLedger(binding,
 					failure(binding, ComputationStatus.NUMERICAL_FAILURE,
 							DiagnosticCode.INTERNAL_FAILURE,
 							"Intersection target capture or publication failed: "
@@ -201,6 +268,16 @@ public final class AlgoLocusIntersectionV2 extends AlgoElement {
 		return target;
 	}
 
+	/** @return durable constructive lineage declared by this public algorithm */
+	public String getConstructiveIntersectionLineage() {
+		return constructiveIntersectionLineage;
+	}
+
+	/** @return durable topology context declared by this public algorithm */
+	public String getTopologyContext() {
+		return topologyContext;
+	}
+
 	@Override
 	public void remove() {
 		lastContinuableResult = null;
@@ -208,16 +285,72 @@ public final class AlgoLocusIntersectionV2 extends AlgoElement {
 	}
 
 	@Override
-	public Algos getClassName() {
-		return Algos.Expression;
+	public GetCommand getClassName() {
+		return commandName;
 	}
 
-	private String nextToken() {
+	private boolean refreshPublicIdentities() {
+		if (!publicCommand) {
+			return true;
+		}
+		PersistentGeoId sourceId = source.getPersistentLocusId();
+		PersistentGeoId targetId = cons.getSpatialIdentityRegistry()
+				.getPersistentGeoId(target);
+		PersistentGeoId resultId = cons.getSpatialIdentityRegistry()
+				.getPersistentGeoId(result);
+		if (sourceId == null || targetId == null || resultId == null) {
+			return false;
+		}
+		targetIdentity = targetId.toExternalForm();
+		sourcePairIdentity = framed(sourceId.toExternalForm())
+				+ framed(targetIdentity);
+		result.refreshSourcePairIdentity(sourcePairIdentity);
+		return true;
+	}
+
+	private String nextLegacyToken() {
 		if (nextRootToken == Long.MAX_VALUE) {
 			throw new IllegalStateException("Root token sequence exhausted");
 		}
 		nextRootToken++;
 		return sourcePairIdentity + "/opaque-root-" + nextRootToken;
+	}
+
+	private String resultOwnerIdentity() {
+		PersistentGeoId id = cons.getSpatialIdentityRegistry()
+				.getPersistentGeoId(result);
+		if (id == null) {
+			throw new IllegalStateException(
+					"Public intersection result has no attached identity");
+		}
+		return id.toExternalForm();
+	}
+
+	private LocusIntersectionTokenLedger2D.Evaluation beginTokenEvaluation() {
+		return publicCommand ? result.beginTokenEvaluation(resultOwnerIdentity(),
+				constructiveIntersectionLineage, topologyContext) : null;
+	}
+
+	private void publishWithLedger(IntersectionSourceBinding2D binding,
+			LocusIntersectionResult2D current) {
+		LocusIntersectionTokenLedger2D.Evaluation evaluation =
+				beginTokenEvaluation();
+		try {
+			publishWithLedger(binding, current, evaluation);
+		} catch (RuntimeException exception) {
+			result.abortTokenEvaluation(evaluation);
+			throw exception;
+		}
+	}
+
+	private void publishWithLedger(IntersectionSourceBinding2D binding,
+			LocusIntersectionResult2D current,
+			LocusIntersectionTokenLedger2D.Evaluation evaluation) {
+		if (evaluation == null) {
+			result.publishIntersectionResult(binding, current);
+		} else {
+			result.publishIntersectionResult(binding, current, evaluation);
+		}
 	}
 
 	private void updateContinuationBaseline(LocusIntersectionResult2D current) {
@@ -278,5 +411,9 @@ public final class AlgoLocusIntersectionV2 extends AlgoElement {
 			throw new IllegalArgumentException(name + " is required");
 		}
 		return value;
+	}
+
+	private static String framed(String value) {
+		return value.length() + ":" + value;
 	}
 }

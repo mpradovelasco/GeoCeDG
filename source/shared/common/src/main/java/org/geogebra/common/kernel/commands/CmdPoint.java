@@ -16,6 +16,9 @@
 
 package org.geogebra.common.kernel.commands;
 
+import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.kernel.locus.LocusV2PublicOperations;
+import org.geocedg.common.main.feature.RuntimeFeatureService;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.Path;
 import org.geogebra.common.kernel.algos.AlgoPointVector;
@@ -24,6 +27,7 @@ import org.geogebra.common.kernel.arithmetic.Command;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoList;
 import org.geogebra.common.kernel.geos.GeoNumberValue;
+import org.geogebra.common.kernel.geos.GeoText;
 import org.geogebra.common.kernel.kernelND.GeoPointND;
 import org.geogebra.common.kernel.kernelND.GeoVectorND;
 import org.geogebra.common.main.MyError;
@@ -92,6 +96,25 @@ public class CmdPoint extends CommandProcessor {
 				}
 				throw argErr(c, arg[1]);
 			}
+
+		case 3:
+			arg = resArgs(c, info);
+			if ((ok[0] = arg[0] instanceof GeoLocusV2)
+					&& (ok[1] = arg[1] instanceof GeoText)
+					&& (ok[2] = arg[2] instanceof GeoNumberValue)) {
+				RuntimeFeatureService.requireLocusV2Access(cons);
+				try {
+					return new GeoElement[] {
+							LocusV2PublicOperations.createSemanticPoint(cons,
+									c.getLabel(), (GeoLocusV2) arg[0],
+									(GeoText) arg[1], (GeoNumberValue) arg[2])};
+				} catch (IllegalArgumentException exception) {
+					throw MyError.forCommand(loc,
+							loc.getMenu("LocusV2.InvalidPosition"), c.getName(),
+							exception);
+				}
+			}
+			throw argErr(c, getBadArg(ok, arg));
 
 		default:
 			throw argNumErr(c);

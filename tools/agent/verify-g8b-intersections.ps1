@@ -66,6 +66,59 @@ function Assert-Condition {
     }
 }
 
+function Test-G9U0FrozenPublicSurface {
+    $evidenceRoot = Join-Path $RepositoryRoot `
+        "geocedg\validation\locus-v2\g9u0"
+    $artifacts = @(
+        (Join-Path $PSScriptRoot `
+            "verify-g9u0-locus-v2-public-surface.ps1"),
+        (Join-Path $evidenceRoot "g9u0-public-surface-evidence.json"),
+        (Join-Path $evidenceRoot "g9u0-public-surface-scenarios.json"),
+        (Join-Path $evidenceRoot "g9u0-evidence.sha256"),
+        (Join-Path $evidenceRoot "g9u0-compatibility-corpus.json"),
+        (Join-Path $evidenceRoot "g9u0-compatibility-corpus.sha256")
+    )
+    $present = @($artifacts | Where-Object {
+        Test-Path -LiteralPath $_ -PathType Leaf
+    }).Count
+    if ($present -eq 0) {
+        return $false
+    }
+    if ($present -ne $artifacts.Count) {
+        throw "Incomplete G9U0 integration cannot relax the historical G8B boundary."
+    }
+    $evidence = Get-Content -Raw -LiteralPath $artifacts[1] |
+        ConvertFrom-Json -Depth 100
+    $hasCloseout = $null -ne $evidence.PSObject.Properties["closeout"]
+    $pending = ($evidence.status -eq
+            "IMPLEMENTATION_CANDIDATE_PENDING_AUTHOR_REVIEW" -and
+            -not [bool]$evidence.approval.selfApproved -and
+            -not [bool]$evidence.approval.authorApproved -and
+            -not [bool]$evidence.approval.passClaimed -and
+            [bool]$evidence.approval.reviewRequired -and
+            $evidence.approval.disposition -eq "PENDING_AUTHOR_REVIEW" -and
+            -not $hasCloseout)
+    $approved = ($evidence.status -eq "PASS_AUTHOR_APPROVED" -and
+            -not [bool]$evidence.approval.selfApproved -and
+            [bool]$evidence.approval.authorApproved -and
+            [bool]$evidence.approval.passClaimed -and
+            -not [bool]$evidence.approval.reviewRequired -and
+            $evidence.approval.disposition -eq "PASS_AUTHOR_APPROVED" -and
+            $hasCloseout)
+    Assert-Condition -Condition ($pending -xor $approved) `
+        -Message "G9U0 evidence has a mixed approval tuple at the G8B boundary."
+    if ($evidence.sourceBoundary.inventoryStatus -ne "FROZEN") {
+        return $false
+    }
+
+    & $artifacts[0] -SkipBuild -LogDirectory (Join-Path $LogDirectory `
+        "g9u0-static-boundary")
+    Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
+        -Message ("The frozen G9U0 boundary failed its dedicated static " +
+            "verification; the historical G8B boundary remains closed.")
+    return $true
+}
+
 function Assert-RequiredFile {
     param([Parameter(Mandatory)] [string]$RelativePath)
 
@@ -255,9 +308,25 @@ try {
         "source\shared\common\src\main\java\org\geocedg\common\kernel\algos\AlgoLocusIntersectionPointV2.java"
     $pointSource = Get-Content -LiteralPath `
         (Join-Path $RepositoryRoot $pointPath) -Raw
-    Assert-Condition -Condition ($pointSource.Contains(
-            ".findPointAdmissibleSolution(selectedRootToken)") -and
-            -not $pointSource.Contains("distance(")) `
+    $g9u0FrozenPublicSurface = Test-G9U0FrozenPublicSurface
+    $usesHistoricalTokenSelection = $pointSource.Contains(
+        ".findPointAdmissibleSolution(selectedRootToken)")
+    $usesLedgerValidatedTokenSelection = $pointSource.Contains(
+        ".findExactPointAdmissibleSolution(requestedToken)") -and
+        $pointSource.Contains(
+            ".rebaseCopiedPointAdmissibleSolution(requestedToken,") -and
+        $richGeo.Contains("tokenLedger.validatesCurrentToken(token)") -and
+        $richGeo.Contains(
+            "intersectionResult.findPointAdmissibleSolution(token)")
+    $usesExpectedTokenSelection = if ($g9u0FrozenPublicSurface) {
+        $usesLedgerValidatedTokenSelection
+    } else {
+        $usesHistoricalTokenSelection
+    }
+    Assert-Condition -Condition ($usesExpectedTokenSelection -and
+            -not $pointSource.Contains("distance(") -and
+            -not $pointSource.Contains(
+                "findPointAdmissibleSolutionByLineage")) `
         -Message "The G8B point consumer must select by token, never coordinates."
     $resultPath = Join-Path $SourceRoot "LocusIntersectionResult2D.java"
     $resultSource = Get-Content -LiteralPath $resultPath -Raw

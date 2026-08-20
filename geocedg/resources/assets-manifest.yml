@@ -18,6 +18,57 @@
       "redistribution_status": "internal-evaluation-only"
     }
   ],
+  "owned_runtime_assets": [
+    {
+      "id": "geocedg.locus-v2-tool-icon",
+      "path": "source/shared/common/src/main/resources/org/geogebra/common/icons/svg/web/toolIcons/mode_locusv2.svg",
+      "kind": "svg-tool-icon",
+      "provenance": "GeoCeDG-authored G9U0 semantic locus icon; accessible text fallback is localized by LocusV2.Tool",
+      "redistribution_status": "GeoCeDG-owned EUPL-1.2 source asset"
+    },
+    {
+      "id": "geocedg.locus-v2-command-localization-default",
+      "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command.properties",
+      "kind": "localization-key-additions",
+      "provenance": "G9U0 Locus V2 keys are GeoCeDG-authored; the containing upstream bundle retains its recorded provenance",
+      "redistribution_status": "pending containing-bundle license audit"
+    },
+    {
+      "id": "geocedg.locus-v2-command-localization-en",
+      "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command_en.properties",
+      "kind": "localization-key-additions",
+      "provenance": "G9U0 English Locus V2 keys are GeoCeDG-authored; the containing upstream bundle retains its recorded provenance",
+      "redistribution_status": "pending containing-bundle license audit"
+    },
+    {
+      "id": "geocedg.locus-v2-command-localization-es",
+      "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command_es.properties",
+      "kind": "localization-key-additions",
+      "provenance": "G9U0 Spanish Locus V2 keys are GeoCeDG-authored; the containing upstream bundle retains its recorded provenance",
+      "redistribution_status": "pending containing-bundle license audit"
+    },
+    {
+      "id": "geocedg.locus-v2-menu-localization-default",
+      "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu.properties",
+      "kind": "localization-key-additions",
+      "provenance": "G9U0 Locus V2 menu keys are GeoCeDG-authored; the containing upstream bundle retains its recorded provenance",
+      "redistribution_status": "pending containing-bundle license audit"
+    },
+    {
+      "id": "geocedg.locus-v2-menu-localization-en",
+      "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_en.properties",
+      "kind": "localization-key-additions",
+      "provenance": "G9U0 English Locus V2 menu keys are GeoCeDG-authored; the containing upstream bundle retains its recorded provenance",
+      "redistribution_status": "pending containing-bundle license audit"
+    },
+    {
+      "id": "geocedg.locus-v2-menu-localization-es",
+      "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_es.properties",
+      "kind": "localization-key-additions",
+      "provenance": "G9U0 Spanish Locus V2 menu keys are GeoCeDG-authored; the containing upstream bundle retains its recorded provenance",
+      "redistribution_status": "pending containing-bundle license audit"
+    }
+  ],
   "package_icon": null,
   "deliberate_exclusions": [
     "upstream GeoGebra logos and trademarks",

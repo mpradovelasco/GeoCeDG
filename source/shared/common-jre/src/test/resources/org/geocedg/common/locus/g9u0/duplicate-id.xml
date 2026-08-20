@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<g9u0Fixture purpose="reject duplicate durable result identities">
+  <result id="geo:00000000000000000000000000000001" kind="METRIC"/>
+  <result id="geo:00000000000000000000000000000001" kind="INTERSECTION"/>
+</g9u0Fixture>

@@ -7,12 +7,16 @@ package org.geocedg.desktop;
 
 import java.awt.Container;
 import java.awt.Image;
+import java.io.File;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import org.geocedg.common.main.feature.RuntimeFeatureService;
 import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
+import org.geogebra.common.euclidian.EuclidianController;
 import org.geogebra.common.io.layout.Perspective;
+import org.geogebra.common.kernel.Kernel;
 import org.geogebra.desktop.CommandLineArguments;
 import org.geogebra.desktop.geogebra3D.App3D;
 import org.geogebra.desktop.gui.GuiManagerD;
@@ -28,7 +32,13 @@ public final class AppGeoCeDG extends App3D {
 	 * @param frame product frame
 	 */
 	public AppGeoCeDG(CommandLineArguments args, JFrame frame) {
-		super(args, frame, new AppConfigGeoCeDG());
+		this(args, frame, createConfig(args));
+	}
+
+	private AppGeoCeDG(CommandLineArguments args, JFrame frame,
+			AppConfigGeoCeDG config) {
+		super(args, frame, config);
+		bindFeatureService(config);
 	}
 
 	/**
@@ -36,7 +46,13 @@ public final class AppGeoCeDG extends App3D {
 	 * @param component parent component
 	 */
 	public AppGeoCeDG(CommandLineArguments args, Container component) {
-		super(args, component, new AppConfigGeoCeDG());
+		this(args, component, createConfig(args));
+	}
+
+	private AppGeoCeDG(CommandLineArguments args, Container component,
+			AppConfigGeoCeDG config) {
+		super(args, component, config);
+		bindFeatureService(config);
 	}
 
 	@Override
@@ -53,7 +69,15 @@ public final class AppGeoCeDG extends App3D {
 
 	@Override
 	protected AppD newAppForTemplateOrInsertFile() {
-		return new AppGeoCeDG(new CommandLineArguments(null), new JPanel());
+		AppConfigGeoCeDG config = (AppConfigGeoCeDG) getConfig();
+		return new AppGeoCeDG(new CommandLineArguments(null), new JPanel(),
+				new AppConfigGeoCeDG(config.getRuntimeFeatureService()
+						.isLocusV2CreationEnabled()));
+	}
+
+	@Override
+	public EuclidianController newEuclidianController(Kernel kernel) {
+		return new GeoCeDGEuclidianController(kernel);
 	}
 
 	@Override
@@ -64,5 +88,23 @@ public final class AppGeoCeDG extends App3D {
 	@Override
 	protected GuiManagerD newGuiManager() {
 		return new GuiManagerGeoCeDG(this);
+	}
+
+	@Override
+	public boolean saveGeoGebraFile(File file) {
+		if (!GeoCeDGExternalCompatibilityWarning.confirmSave(this)) {
+			return false;
+		}
+		return super.saveGeoGebraFile(file);
+	}
+
+	private static AppConfigGeoCeDG createConfig(CommandLineArguments args) {
+		return new AppConfigGeoCeDG(args != null && args.getBooleanValue(
+				RuntimeFeatureService.LOCUS_V2_ARGUMENT, false));
+	}
+
+	private void bindFeatureService(AppConfigGeoCeDG config) {
+		config.getRuntimeFeatureService().bindPreservationContext(
+				() -> getKernel().getConstruction().isFileLoading());
 	}
 }

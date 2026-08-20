@@ -16,6 +16,10 @@
 
 package org.geogebra.common.kernel.commands;
 
+import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
+import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.kernel.locus.LocusV2PublicOperations;
+import org.geocedg.common.main.feature.RuntimeFeatureService;
 import org.geogebra.common.geogebra3D.kernel3D.implicit3D.GeoImplicitSurface;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.Path;
@@ -38,6 +42,7 @@ import org.geogebra.common.kernel.geos.GeoNumberValue;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.kernel.geos.GeoPolyLine;
 import org.geogebra.common.kernel.geos.GeoPolygon;
+import org.geogebra.common.kernel.geos.GeoText;
 import org.geogebra.common.kernel.implicit.AlgoIntersectImplicitPolynomials;
 import org.geogebra.common.kernel.implicit.GeoImplicit;
 import org.geogebra.common.kernel.implicit.GeoImplicitCurve;
@@ -141,6 +146,36 @@ public class CmdIntersect extends CommandProcessor {
 	 */
 	public GeoElement[] intersect2(GeoElement[] arg, Command c) {
 		boolean[] ok = new boolean[2];
+		if (arg[0] instanceof GeoLocusIntersectionResult
+				&& arg[1] instanceof GeoText) {
+			RuntimeFeatureService.requireLocusV2Access(cons);
+			try {
+				return new GeoElement[] {
+						LocusV2PublicOperations.selectIntersectionPoint(cons,
+								c.getLabel(),
+								(GeoLocusIntersectionResult) arg[0],
+								(GeoText) arg[1])};
+			} catch (IllegalArgumentException exception) {
+				throw MyError.forCommand(loc,
+						loc.getMenu("LocusV2.InvalidToken"), c.getName(),
+						exception);
+			}
+		}
+		if (arg[0] instanceof GeoLocusV2
+				|| arg[1] instanceof GeoLocusV2) {
+			RuntimeFeatureService.requireLocusV2Access(cons);
+			GeoLocusV2 source = arg[0] instanceof GeoLocusV2
+					? (GeoLocusV2) arg[0] : (GeoLocusV2) arg[1];
+			GeoElement target = source == arg[0] ? arg[1] : arg[0];
+			try {
+				return new GeoElement[] {LocusV2PublicOperations.intersect(cons,
+						c.getLabel(), source, target)};
+			} catch (IllegalArgumentException exception) {
+				throw MyError.forCommand(loc,
+						loc.getMenu("LocusV2.UnsupportedTarget"), c.getName(),
+						exception);
+			}
+		}
 		if ((ok[0] = arg[0].isGeoLine()) && (ok[1] = arg[1].isGeoLine())) {
 			return new GeoElement[]{
 					(GeoElement) getAlgoDispatcher().intersectLines(

@@ -25,6 +25,20 @@ public interface SpatialRedefineProvider {
 			GeoElement candidate);
 
 	/**
+	 * Describes a candidate against an explicit read-only staged graph. Legacy
+	 * providers that do not consume construction dependencies retain their exact
+	 * behavior through this adapter.
+	 *
+	 * @return provider-owned candidate signature
+	 */
+	default SpatialRedefineSignature describeCandidate(
+			SpatialRedefineContext context, GeoElement candidate,
+			SpatialIdentityGraph candidateGraph) {
+		Objects.requireNonNull(candidateGraph);
+		return describeCandidate(context, candidate);
+	}
+
+	/**
 	 * Proves whether this actual candidate preserves the provider-owned topology.
 	 * Host class, label and instance reuse are not proof.
 	 *
@@ -57,6 +71,20 @@ public interface SpatialRedefineProvider {
 				describeCandidate(context, candidate));
 		return SpatialRedefineOutputGroup.singleton(
 				new SpatialRedefineCandidateOutput(candidate, signature));
+	}
+
+	/**
+	 * Assigns stable roles while resolving construction dependencies through the
+	 * exact staged graph captured for this candidate.
+	 *
+	 * @return complete provider-owned candidate role map
+	 */
+	default SpatialRedefineOutputGroup<SpatialRedefineCandidateOutput>
+			describeCandidateGroup(SpatialRedefineContext context,
+					List<GeoElement> candidates,
+					SpatialIdentityGraph candidateGraph) {
+		Objects.requireNonNull(candidateGraph);
+		return describeCandidateGroup(context, candidates);
 	}
 
 	/**

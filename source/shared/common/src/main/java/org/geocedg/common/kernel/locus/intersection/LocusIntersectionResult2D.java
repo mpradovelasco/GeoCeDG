@@ -134,6 +134,42 @@ public final class LocusIntersectionResult2D {
 		return Optional.ofNullable(found);
 	}
 
+	/**
+	 * Resolves an exact explicit lineage after an authorized owner-ID remap.
+	 *
+	 * <p>This is deliberately not a geometric fallback: both the established
+	 * branch lineage and continuation key come from a previously validated
+	 * semantic token. Ambiguity returns empty.</p>
+	 *
+	 * @return the unique locally admissible solution, or empty
+	 */
+	public Optional<LocusIntersectionSolution2D>
+			findPointAdmissibleSolutionByLineage(String branchLineage,
+					String continuationKey) {
+		if (branchLineage == null || branchLineage.trim().isEmpty()
+				|| continuationKey == null || continuationKey.trim().isEmpty()
+				|| computationStatus != ComputationStatus.SUCCESS
+				|| geometryKind != GeometryKind.FINITE
+						&& geometryKind != GeometryKind.MIXED_FINITE_OVERLAP
+				|| currentness != Currentness.CURRENT
+				|| supportLevel == SupportLevel.UNSUPPORTED) {
+			return Optional.empty();
+		}
+		LocusIntersectionSolution2D found = null;
+		for (LocusIntersectionSolution2D solution : finiteSolutions) {
+			IntersectionRootIdentity2D identity = solution.getIdentity();
+			if (identity.getEstablishedBranchLineage().equals(branchLineage)
+					&& identity.getExplicitContinuationKey()
+							.filter(continuationKey::equals).isPresent()) {
+				if (!isLocallyPointAdmissible(solution) || found != null) {
+					return Optional.empty();
+				}
+				found = solution;
+			}
+		}
+		return Optional.ofNullable(found);
+	}
+
 	private boolean isLocallyPointAdmissible(
 			LocusIntersectionSolution2D solution) {
 		IntersectionRootIdentity2D identity = solution.getIdentity();

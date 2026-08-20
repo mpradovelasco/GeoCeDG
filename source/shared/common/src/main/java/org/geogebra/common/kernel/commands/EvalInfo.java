@@ -19,6 +19,7 @@ package org.geogebra.common.kernel.commands;
 import java.util.TreeMap;
 import java.util.function.Predicate;
 
+import org.geocedg.common.kernel.spatial.identity.SpatialRedefineCandidateParticipation;
 import org.geocedg.common.kernel.spatial.identity.SpatialRedefineContext;
 import org.geocedg.common.kernel.spatial.identity.SpatialRedefineTransaction;
 import org.geogebra.common.kernel.arithmetic.ArbitraryConstantRegistry;
@@ -56,6 +57,7 @@ public class EvalInfo {
 	private boolean autoCreateObjects = true;
 	private boolean forSpreadsheet;
 	private SpatialRedefineContext spatialRedefineContext;
+	private SpatialRedefineCandidateParticipation spatialCandidateParticipation;
 	private SpatialRedefineTransaction spatialRedefineTransaction;
 	private boolean spatialReplacementOperationSelected;
 
@@ -193,6 +195,7 @@ public class EvalInfo {
 		ret.autoCreateObjects = this.autoCreateObjects;
 		ret.forSpreadsheet = this.forSpreadsheet;
 		ret.spatialRedefineContext = this.spatialRedefineContext;
+		ret.spatialCandidateParticipation = this.spatialCandidateParticipation;
 		ret.spatialRedefineTransaction = this.spatialRedefineTransaction;
 		ret.spatialReplacementOperationSelected =
 				this.spatialReplacementOperationSelected;
@@ -602,6 +605,26 @@ public class EvalInfo {
 	 */
 	public SpatialRedefineContext getSpatialRedefineContext() {
 		return spatialRedefineContext;
+	}
+
+	/**
+	 * Carries the exact sealed pre-provider participation produced by candidate
+	 * parsing. Only the registry can claim it for a redefine transaction.
+	 *
+	 * @param participation sealed candidate participation
+	 * @return a copy carrying the opaque staging authority
+	 */
+	public EvalInfo withSpatialRedefineCandidateParticipation(
+			SpatialRedefineCandidateParticipation participation) {
+		EvalInfo info = copy();
+		info.spatialCandidateParticipation = participation;
+		return info;
+	}
+
+	/** @return sealed candidate participation, or {@code null} */
+	public SpatialRedefineCandidateParticipation
+			getSpatialRedefineCandidateParticipation() {
+		return spatialCandidateParticipation;
 	}
 
 	/**

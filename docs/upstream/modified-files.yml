@@ -42,20 +42,20 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/main/settings/config/AppConfigGeoCeDG.java",
       "change": "added",
-      "purpose": "Define isolated GeoCeDG product identity while preserving Classic serialization semantics.",
-      "authority": "geocedg/specs/ui/application-profile.md"
+      "purpose": "Define isolated GeoCeDG product identity, default-off Locus V2 command discovery, and Classic-compatible serialization semantics.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/main/settings/config/AppConfigGeoCeDGTest.java",
       "change": "added",
-      "purpose": "Verify identity, preferences, serialization compatibility, and the future filter seam.",
-      "authority": "geocedg/specs/ui/application-profile.md"
+      "purpose": "Verify identity, preferences, serialization compatibility, and default-off Locus V2 command gating without restricting legacy commands.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/AppGeoCeDG.java",
       "change": "added",
-      "purpose": "Instantiate the GeoCeDG config, manifest-defined perspective, and GeoCeDG-owned GUI manager on Desktop.",
-      "authority": "docs/adr/0005-neutral-2d-geometry-export.md"
+      "purpose": "Instantiate the GeoCeDG config, manifest-defined perspective, GUI manager, default-off Locus V2 flag, GeoCeDG controller, and native-save compatibility warning on Desktop.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDG.java",
@@ -78,8 +78,8 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGProfileTest.java",
       "change": "added",
-      "purpose": "Verify profile identity/layout and the explicit experimental DXF action owned by GeoCeDG.",
-      "authority": "docs/adr/0005-neutral-2d-geometry-export.md"
+      "purpose": "Verify profile identity/layout, the explicit experimental DXF action, and detection of native Locus V2 data at the GeoCeDG save boundary.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/export/GeometryExportModel.java",
@@ -120,8 +120,8 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGMenuBar.java",
       "change": "added",
-      "purpose": "Expose the experimental DXF action only in the GeoCeDG product profile.",
-      "authority": "geocedg/specs/export/geometry-export-foundation.md"
+      "purpose": "Expose experimental DXF and default-off Locus V2 actions only in the GeoCeDG product profile.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGDxfExportController.java",
@@ -276,7 +276,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/geos/GeoLocusV2.java",
       "change": "added",
-      "purpose": "Add the parallel experimental 2D semantic locus entity and, in phase G7B, the narrow per-source metric-owner lifecycle seam without Path, XML, public command, legacy-locus authority or 3D contracts. The owner attachment avoids a global or Construction repository.",
+      "purpose": "Represent the public persistent semantic locus with lifecycle-owned identity, reconstructible XML/copy behavior, and a per-source metric owner while remaining separate from Path and render samples.",
       "authority": "docs/adr/0007-revision-scoped-locus-v2-metric-index.md"
     },
     {
@@ -918,7 +918,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/geos/GeoLocusMetricResult.java",
       "change": "added",
-      "purpose": "Phase G7B semantic addition: publish the immutable rich result as a nonnumeric, non-Path, nonpersistent and non-drawable GeoElement in the normal DAG.",
+      "purpose": "Publish rich metric authority as a nonnumeric, non-Path, nondrawable DAG node that remains transient internally and becomes reconstructibly persistent only for the G9U0 public surface.",
       "authority": "geocedg/specs/locus/locus-v2-metrics.md"
     },
     {
@@ -1248,7 +1248,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/geos/GeoLocusIntersectionResult.java",
       "change": "added",
-      "purpose": "Represent the internal nonnumeric, non-drawable, nonpersistent rich G8B intersection authority in the normal kernel DAG.",
+      "purpose": "Publish rich intersection authority as a nonnumeric, nondrawable DAG node with reconstructible public persistence, an exact token ledger, and atomic rejection of missing or incompatible ledger state.",
       "authority": "geocedg/specs/locus/locus-v2-intersections.md"
     },
     {
@@ -1830,7 +1830,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/io/MyXMLio.java",
       "change": "modified",
-      "purpose": "Write the deterministic identity section and restore the complete pre-parse construction snapshot after a structured spatial-identity rejection.",
+      "purpose": "Write the deterministic identity section and atomically restore the complete pre-parse construction after rejected identity-bearing native XML, with non-reentrant and macro-kernel rollback guards.",
       "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
     },
     {
@@ -2450,6 +2450,336 @@
       "change": "added",
       "purpose": "Share test-private G9A3 redefine fixtures and assertions across the exact host and transaction scenario classes while satisfying Checkstyle file-size limits.",
       "authority": "docs/validation/g9a3_spatial_lifecycle_scenarios.json"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/Commands.java",
+      "change": "modified",
+      "purpose": "Register separate experimental LocusV2 and LocusLength command identities without redefining legacy Locus.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/BasicCommandProcessorFactory.java",
+      "change": "modified",
+      "purpose": "Dispatch the experimental public Locus V2 creation and rich metric processors through the existing command architecture.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CommandDispatcher.java",
+      "change": "modified",
+      "purpose": "Hide default-off Locus V2 commands from discovery while retaining processor-level typed failures and native file reconstruction.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CmdLocusV2.java",
+      "change": "added",
+      "purpose": "Validate the selected typed public Locus V2 overloads and strict explicit domain descriptor before kernel creation.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CmdLocusLength.java",
+      "change": "added",
+      "purpose": "Expose authoritative rich total and semantic-position partial Locus V2 metrics.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CmdPoint.java",
+      "change": "modified",
+      "purpose": "Add the exact branch-and-parameter semantic point overload for Locus V2 without making it a generic Path.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CmdLength.java",
+      "change": "modified",
+      "purpose": "Route GeoLocusV2 through its persisted rich query and reconstruct the internal Length[rich] scalar child while preserving every legacy overload.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CmdIntersect.java",
+      "change": "modified",
+      "purpose": "Route typed Locus V2 operands to rich intersection authority and exact-token point selection before unchanged legacy dispatch.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusV2DomainDescriptor.java",
+      "change": "added",
+      "purpose": "Parse the strict finite-union or one periodic half-open domain list with explicit orientation and no inference.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/main/feature/RuntimeFeatureService.java",
+      "change": "added",
+      "purpose": "Separate default-off interactive Locus V2 creation from native file-load preservation and enforce both discovery and processor boundaries.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/euclidian/EuclidianConstants.java",
+      "change": "modified",
+      "purpose": "Allocate GeoCeDG experimental Locus V2 creation, semantic-point and rich-metric modes without changing legacy Locus mode 47.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGEuclidianController.java",
+      "change": "added",
+      "purpose": "Provide GeoCeDG-only creation, semantic-position, rich metric, rich inspector/token and general-intersection actions for enabled Locus V2 sessions.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGExternalCompatibilityWarning.java",
+      "change": "added",
+      "purpose": "Warn at the GeoCeDG native-file write boundary when Locus V2 data may be unsupported by external upstream distributions without changing Classic save behavior.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGLocusV2Dialogs.java",
+      "change": "added",
+      "purpose": "Provide keyboard-accessible text-first semantic-address and rich-result/token dialogs without exposing any action in Classic or the default toolbar.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command.properties",
+      "change": "modified",
+      "purpose": "Add GeoCeDG-authored default command names and overload help for the experimental Locus V2 surface.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command_en.properties",
+      "change": "modified",
+      "purpose": "Add GeoCeDG-authored English command names and overload help for the experimental Locus V2 surface.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command_es.properties",
+      "change": "modified",
+      "purpose": "Add GeoCeDG-authored Spanish command names and overload help for the experimental Locus V2 surface.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu.properties",
+      "change": "modified",
+      "purpose": "Add GeoCeDG-authored default type, action, help, and typed-error strings for Locus V2.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_en.properties",
+      "change": "modified",
+      "purpose": "Add GeoCeDG-authored English type, action, help, and typed-error strings for Locus V2.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_es.properties",
+      "change": "modified",
+      "purpose": "Add GeoCeDG-authored Spanish type, action, help, and typed-error strings for Locus V2.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common/src/main/resources/org/geogebra/common/icons/svg/web/toolIcons/mode_locusv2.svg",
+      "change": "added",
+      "purpose": "Provide the original GeoCeDG-authored experimental Locus V2 vector icon with text fallback.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/locus/G9U0LocalizationHelpTest.java",
+      "change": "added",
+      "purpose": "Verify the exact L4 English/Spanish command and status text, contextual help separation, and GeoCeDG-owned icon provenance.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/locus/G9U0RuntimeFeatureTest.java",
+      "change": "added",
+      "purpose": "Verify the exact F4 default-off runtime flag, GeoCeDG opt-in boundary, Classic isolation, and separate laboratory/dual-run features.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/locus/G9U0ToolSurfaceTest.java",
+      "change": "added",
+      "purpose": "Verify the exact T4 GeoCeDG-only creation, explicit-preimage point, general-intersection, and keyboard-accessible rich-result inspection tools.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9U0CommandSurfaceTest.java",
+      "change": "added",
+      "purpose": "Verify the exact C14 typed command surface, default-off gate, legacy Locus separation, normal DAG dependencies, and durable identity rules.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9U0GeneratorSuiteTest.java",
+      "change": "added",
+      "purpose": "Verify the exact G22 closed generator families, explicit domains, nested dependency behavior, cycle rejection, lifecycle continuity, and fresh-identity copying.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9U0IntersectionTokenTest.java",
+      "change": "added",
+      "purpose": "Verify the exact I18 rich-intersection, Option B completeness, supported-target, exact-token, continuation, overlap, and no-inference contracts.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9U0MetricPositionTest.java",
+      "change": "added",
+      "purpose": "Verify the exact M11 semantic-position, rich total/partial metric, guarded Length adapter, explicit invalidity, and viewport-independence contracts.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9U0PersistenceCompatibilityTest.java",
+      "change": "added",
+      "purpose": "Verify the exact P16 native XML, byte-stable reopen, closure copy, undo/redo, Classic preservation, no-downgrade, and corrupt-state rejection scenarios.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9U0PublicSurfaceTestBase.java",
+      "change": "added",
+      "purpose": "Provide shared command-level setup and exact public-surface fixtures for the focused G9U0 scenario classes.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/locus/g9u0/duplicate-id.xml",
+      "change": "added",
+      "purpose": "Provide the malformed G9U0 fixture for rejecting duplicate durable result identities.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/locus/g9u0/external-upstream-no-downgrade.xml",
+      "change": "added",
+      "purpose": "Provide the ordinary external-upstream control proving that compatibility handling never invents or downgrades Locus V2 data.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/locus/g9u0/future-provider.xml",
+      "change": "added",
+      "purpose": "Provide the native XML fixture for explicit rejection of an unsupported future semantic provider version.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/locus/g9u0/missing-generator.xml",
+      "change": "added",
+      "purpose": "Provide the malformed fixture for rejecting a native Locus V2 whose durable generator reference is absent.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/locus/g9u0/missing-support.xml",
+      "change": "added",
+      "purpose": "Provide the malformed fixture for rejecting a point-driver Locus V2 whose typed support reference is absent.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/locus/g9u0/missing-token.xml",
+      "change": "added",
+      "purpose": "Provide the malformed fixture for rejecting a token-derived point without exact persisted token evidence.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/locus/g9u0/public-surface-provider-query-manifest.xml",
+      "change": "added",
+      "purpose": "Declare the closed G9U0 provider and public-query coverage matrix independently of native construction XML.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoDependentPointLocusV2.java",
+      "change": "added",
+      "purpose": "Provide the reconstructible public Locus V2 parent with explicit serialized inputs, durable direct roots, and a complete isolated evaluator dependency slice.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusBetweenMetricV2.java",
+      "change": "added",
+      "purpose": "Publish a reconstructible rich metric query between two exact semantic positions through normal kernel dependencies.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoSemanticLocusPoint2D.java",
+      "change": "added",
+      "purpose": "Construct an ordinary dynamic point from one exact durable Locus V2 preimage address without coordinate, proximity, or order inference.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusComponentLineage2D.java",
+      "change": "added",
+      "purpose": "Define the canonical revision-independent lineage key for one semantic locus branch component.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusSemanticAddress2D.java",
+      "change": "added",
+      "purpose": "Represent a durable branch, parameter, and periodic-seam preimage address independently of revision-local evaluation state.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusV2PublicOperations.java",
+      "change": "added",
+      "purpose": "Centralize feature-gated public creation, atomic identity publication, XML reconstruction, rich metric/intersection queries, and exact-address/token derived points.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/ReconstructibleLocusEvaluator2D.java",
+      "change": "added",
+      "purpose": "Evaluate a reconstructible isolated construction slice resolved only by durable identities while excluding labels, coordinates, samples, and XML order as authority.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/SemanticGeneratorDescriptor1D.java",
+      "change": "added",
+      "purpose": "Persist the immutable versioned generator family, durable participants, explicit domain, and mapping contract without visual or creation-order identity material.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/SemanticGeneratorDomainProvider1D.java",
+      "change": "added",
+      "purpose": "Expose the explicit evaluator domain and parameter mapping from one reconstructible semantic generator descriptor.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/SemanticGeneratorFamily1D.java",
+      "change": "added",
+      "purpose": "Close and version the supported scalar, segment-point, circle-point, circular-arc-point, and Locus V2 branch-point generator families.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionRootAddressProof2D.java",
+      "change": "added",
+      "purpose": "Persist exact provider, target, and canonical-preimage evidence for conservative token continuity and authorized closure-copy rebasing without geometric inference.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionTokenLineage2D.java",
+      "change": "added",
+      "purpose": "Define source-order-independent durable solution lineage for token minting without coordinates, candidate order, sample indices, or revision-local ordinals.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionTokenLedger2D.java",
+      "change": "added",
+      "purpose": "Persist and atomically manage intersection-token incarnations, owner validation, exact continuation evidence, burns, restore, and authorized copy rebasing.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusSemanticIntersectionToken2D.java",
+      "change": "added",
+      "purpose": "Encode and validate versioned opaque public intersection tokens while keeping revision-local diagnostic handles explicitly nondurable and unselectable.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PublicTargetIntersectionCapability2D.java",
+      "change": "added",
+      "purpose": "Adapt approved line, segment, ray, and circle targets to the public rich-intersection contract with stable semantic candidate lineage and no unsupported completeness claim.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/ConstructionGeoRedefineProvider.java",
+      "change": "added",
+      "purpose": "Provide structural-family and durable-dependency redefine authority for neutral construction geos and typed public G9U0 outputs without label or ordinal inference.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/PersistentGeoIdentityListener.java",
+      "change": "added",
+      "purpose": "Provide preflight and post-commit hooks for reconstructible public geos that require lifecycle-owned identity before publishing derived semantics.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRedefineCandidateParticipation.java",
+      "change": "added",
+      "purpose": "Stage an exact construction-confined identity graph during candidate parsing so redefine validation and rollback publish no provisional records or labels.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     }
   ]
 }

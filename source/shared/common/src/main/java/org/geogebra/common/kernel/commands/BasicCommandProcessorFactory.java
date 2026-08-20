@@ -153,6 +153,10 @@ public class BasicCommandProcessorFactory implements CommandProcessorFactory {
 			return new CmdPerimeter(kernel);
 		case Locus:
 			return new CmdLocus(kernel);
+		case LocusV2:
+			return new CmdLocusV2(kernel);
+		case LocusLength:
+			return new CmdLocusLength(kernel);
 		case Vertex:
 			return new CmdVertex(kernel);
 		case If:

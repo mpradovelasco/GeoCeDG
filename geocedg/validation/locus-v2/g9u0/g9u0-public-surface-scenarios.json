@@ -1,0 +1,163 @@
+{
+  "schemaVersion": 1,
+  "phase": "G9U0",
+  "status": "IMPLEMENTATION_CANDIDATE_SCENARIOS_SOURCE_COMPLETE",
+  "authorApprovalClaimed": false,
+  "countsFrozen": true,
+  "authority": {
+    "prompt": ".github/prompts/tasks/g9u0-locus-v2-public-surface.prompt.md",
+    "specification": "geocedg/specs/locus/locus-v2-public-surface.md",
+    "adr": "docs/adr/0013-public-locus-v2-surface-and-token-selection.md",
+    "validationMatrix": "docs/validation/g9_public_workspace_validation_matrix.md"
+  },
+  "groups": [
+    {
+      "id": "C",
+      "testClass": "org.geocedg.common.locus.G9U0CommandSurfaceTest",
+      "cases": [
+        {"id": "U0-C01", "title": "Legacy Locus command unchanged"},
+        {"id": "U0-C02", "title": "Explicit typed V2 command"},
+        {"id": "U0-C03", "title": "Feature-off algebra command"},
+        {"id": "U0-C04", "title": "Feature-off native file load"},
+        {"id": "U0-C05", "title": "Exact argument and provider matrix"},
+        {"id": "U0-C06", "title": "Explicit scalar semantic domain"},
+        {"id": "U0-C07", "title": "Closed point-support providers"},
+        {"id": "U0-C08", "title": "Complete normal-DAG dependencies"},
+        {"id": "U0-C09", "title": "Evaluator transaction restoration"},
+        {"id": "U0-C10", "title": "Render and viewport independence"},
+        {"id": "U0-C11", "title": "Reconstructible command identity"},
+        {"id": "U0-C12", "title": "Label independence"},
+        {"id": "U0-C13", "title": "Archive UUID independence"},
+        {"id": "U0-C14", "title": "Deterministic branch topology change"}
+      ]
+    },
+    {
+      "id": "G",
+      "testClass": "org.geocedg.common.locus.G9U0GeneratorSuiteTest",
+      "cases": [
+        {"id": "U0-G01", "title": "Bounded scalar slider visibility independence"},
+        {"id": "U0-G02", "title": "Free scalar with explicit domain"},
+        {"id": "U0-G03", "title": "Dependent scalar expression without mutation"},
+        {"id": "U0-G04", "title": "Non-injective periodic and discontinuous maps"},
+        {"id": "U0-G05", "title": "Point on finite segment"},
+        {"id": "U0-G06", "title": "Point on oriented circle"},
+        {"id": "U0-G07", "title": "Point on oriented circular arc"},
+        {"id": "U0-G08", "title": "Point on explicit V2 branch"},
+        {"id": "U0-G09", "title": "Locus to point to Locus nesting"},
+        {"id": "U0-G10", "title": "Acyclic nesting deeper than one"},
+        {"id": "U0-G11", "title": "Distinct self-intersection preimages"},
+        {"id": "U0-G12", "title": "Disconnected components"},
+        {"id": "U0-G13", "title": "Branch loss invalidation"},
+        {"id": "U0-G14", "title": "Periodic seam traversal"},
+        {"id": "U0-G15", "title": "Split and merge continuation ambiguity"},
+        {"id": "U0-G16", "title": "Direct cycle rejection"},
+        {"id": "U0-G17", "title": "Indirect cycle rejection"},
+        {"id": "U0-G18", "title": "Generator save and reopen"},
+        {"id": "U0-G19", "title": "Copy within and across constructions"},
+        {"id": "U0-G20", "title": "Undo and redo identity restoration"},
+        {"id": "U0-G21", "title": "Deterministic nested-query counters"},
+        {"id": "U0-G22", "title": "Zero render sample or viewport authority"}
+      ]
+    },
+    {
+      "id": "M",
+      "testClass": "org.geocedg.common.locus.G9U0MetricPositionTest",
+      "cases": [
+        {"id": "U0-M01", "title": "Explicit semantic point"},
+        {"id": "U0-M02", "title": "Self-intersection preimage selection"},
+        {"id": "U0-M03", "title": "Stale semantic position"},
+        {"id": "U0-M04", "title": "Rich total length"},
+        {"id": "U0-M05", "title": "Rich partial length"},
+        {"id": "U0-M06", "title": "Guarded standard scalar Length"},
+        {"id": "U0-M07", "title": "Nonrectifiable and infinite metric"},
+        {"id": "U0-M08", "title": "Incomplete and error metric status"},
+        {"id": "U0-M09", "title": "Zoom and DPI invariant metric"},
+        {"id": "U0-M10", "title": "Legacy Length compatibility"},
+        {"id": "U0-M11", "title": "Developed versus direct metric"}
+      ]
+    },
+    {
+      "id": "I",
+      "testClass": "org.geocedg.common.locus.G9U0IntersectionTokenTest",
+      "cases": [
+        {"id": "U0-I01", "title": "General Intersect integration"},
+        {"id": "U0-I02", "title": "Baseline non-V2 dispatch unchanged"},
+        {"id": "U0-I03", "title": "Complete empty rich result"},
+        {"id": "U0-I04", "title": "Complete finite rich result"},
+        {"id": "U0-I05", "title": "Incomplete finite Option B result"},
+        {"id": "U0-I06", "title": "Locally unisolated root"},
+        {"id": "U0-I07", "title": "Tangent and near-tangent roots"},
+        {"id": "U0-I08", "title": "Typed overlap"},
+        {"id": "U0-I09", "title": "Mixed finite and overlap result"},
+        {"id": "U0-I10", "title": "Deterministic work limit"},
+        {"id": "U0-I11", "title": "Exact-token point overload"},
+        {"id": "U0-I12", "title": "Unknown or duplicate token"},
+        {"id": "U0-I13", "title": "Proximity remains presentation-only"},
+        {"id": "U0-I14", "title": "Exact-address continuation across coordinate change"},
+        {"id": "U0-I15", "title": "Merge split and changed-address token burn"},
+        {"id": "U0-I16", "title": "Revision mismatch invalidation"},
+        {"id": "U0-I17", "title": "Canonical source-order behavior"},
+        {"id": "U0-I18", "title": "Unsupported and unbounded domains"}
+      ]
+    },
+    {
+      "id": "P",
+      "testClass": "org.geocedg.common.locus.G9U0PersistenceCompatibilityTest",
+      "cases": [
+        {"id": "U0-P01", "title": "Locus save and reopen"},
+        {"id": "U0-P02", "title": "Metric query save and reopen"},
+        {"id": "U0-P03", "title": "Intersection query save and reopen"},
+        {"id": "U0-P04", "title": "Bound and token point save and reopen"},
+        {"id": "U0-P05", "title": "Deterministic byte-identical rerun"},
+        {"id": "U0-P06", "title": "Owned closure copy"},
+        {"id": "U0-P07", "title": "Cross-construction copy"},
+        {"id": "U0-P08", "title": "Atomic rejection and explicit replacement intent"},
+        {"id": "U0-P09", "title": "Source deletion invalidation"},
+        {"id": "U0-P10", "title": "Undo and redo lifecycle"},
+        {"id": "U0-P11", "title": "Presentation metadata independence"},
+        {"id": "U0-P12", "title": "Old-file compatibility"},
+        {"id": "U0-P13", "title": "GeoCeDG Classic native round trip"},
+        {"id": "U0-P14", "title": "External upstream unsupported boundary"},
+        {"id": "U0-P15", "title": "Unknown semantic version"},
+        {"id": "U0-P16", "title": "Corrupt or partial XML"}
+      ]
+    },
+    {
+      "id": "F",
+      "testClass": "org.geocedg.desktop.locus.G9U0RuntimeFeatureTest",
+      "cases": [
+        {"id": "U0-F01", "title": "One runtime availability decision"},
+        {"id": "U0-F02", "title": "Default-off behavior"},
+        {"id": "U0-F03", "title": "GeoCeDG and Classic separation"},
+        {"id": "U0-F04", "title": "Laboratory and dual-run separation"}
+      ]
+    },
+    {
+      "id": "L",
+      "testClass": "org.geocedg.desktop.locus.G9U0LocalizationHelpTest",
+      "cases": [
+        {"id": "U0-L01", "title": "Command localization"},
+        {"id": "U0-L02", "title": "Rich status localization"},
+        {"id": "U0-L03", "title": "Icon provenance or text fallback"},
+        {"id": "U0-L04", "title": "Legacy and V2 contextual help"}
+      ]
+    },
+    {
+      "id": "T",
+      "testClass": "org.geocedg.desktop.locus.G9U0ToolSurfaceTest",
+      "cases": [
+        {"id": "U0-T01", "title": "Creation selection transaction"},
+        {"id": "U0-T01A", "title": "Point-on-Locus preimage selection"},
+        {"id": "U0-T02", "title": "General Intersect tool selection"},
+        {"id": "U0-T03", "title": "Accessible exact-token chooser"}
+      ]
+    }
+  ],
+  "expectedScenarioCount": 93,
+  "testExecution": {
+    "commonCount": 81,
+    "desktopCount": 12,
+    "focusedTotal": 93,
+    "executionStatus": "PASSED"
+  }
+}

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<g9u0Fixture purpose="reject a point-driver whose typed support is absent">
+  <locus label="L" semanticVersion="1"
+      generator="geo:00000000000000000000000000000002"
+      support="geo:ffffffffffffffffffffffffffffffff"
+      family="SEGMENT_POINT"/>
+</g9u0Fixture>

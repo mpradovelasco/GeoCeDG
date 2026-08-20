@@ -16,6 +16,10 @@
 
 package org.geogebra.common.kernel.commands;
 
+import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
+import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.kernel.locus.LocusV2PublicOperations;
+import org.geocedg.common.main.feature.RuntimeFeatureService;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.algos.AlgoArcLength;
 import org.geogebra.common.kernel.algos.AlgoLengthSegment;
@@ -75,7 +79,22 @@ public class CmdLength extends CommandProcessor {
 		switch (n) {
 		case 1:
 			arg = resArgs(c, info);
-			if (arg[0].isGeoVector()) {
+			if (arg[0] instanceof GeoLocusMetricResult
+					&& cons.isFileLoading()) {
+				RuntimeFeatureService.requireLocusV2Access(cons);
+				return new GeoElement[] {LocusV2PublicOperations.scalarFromMetric(
+						cons, c.getLabel(), (GeoLocusMetricResult) arg[0])};
+			} else if (arg[0] instanceof GeoLocusV2) {
+				RuntimeFeatureService.requireLocusV2Access(cons);
+				try {
+					return new GeoElement[] {LocusV2PublicOperations.scalarLength(
+							cons, c.getLabel(), (GeoLocusV2) arg[0])};
+				} catch (IllegalArgumentException exception) {
+					throw MyError.forCommand(loc,
+							loc.getMenu("LocusV2.MetricUnavailable"), c.getName(),
+							exception);
+				}
+			} else if (arg[0].isGeoVector()) {
 				GeoElement[] ret = {
 						length(c.getLabel(), (GeoVectorND) arg[0]) };
 				return ret;

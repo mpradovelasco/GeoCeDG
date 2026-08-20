@@ -5,6 +5,7 @@
 
 package org.geocedg.common.kernel.spatial.identity;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,8 @@ public final class GeoIdentityRecord implements SpatialIdentityRecord {
 	private final ProjectionBindingRole bindingRole;
 	private final String stableOutputRole;
 	private final int outputCardinality;
+	private final List<PersistentGeoId> dependencies;
+	private final List<SpatialIdentityId> references;
 	private final long definitionRevision;
 	private final long topologyRevision;
 	private final PersistentGeoId copySourceId;
@@ -33,7 +36,8 @@ public final class GeoIdentityRecord implements SpatialIdentityRecord {
 			ProjectionBindingRole bindingRole, String stableOutputRole,
 			int outputCardinality, long definitionRevision, long topologyRevision) {
 		this(id, provider, family, schemaId, schemaVersion, authority, bindingRole,
-				stableOutputRole, outputCardinality, definitionRevision,
+				stableOutputRole, outputCardinality,
+				Collections.<PersistentGeoId>emptyList(), definitionRevision,
 				topologyRevision, null);
 	}
 
@@ -43,6 +47,33 @@ public final class GeoIdentityRecord implements SpatialIdentityRecord {
 			ProjectionBindingRole bindingRole, String stableOutputRole,
 			int outputCardinality, long definitionRevision, long topologyRevision,
 			PersistentGeoId copySourceId) {
+		this(id, provider, family, schemaId, schemaVersion, authority, bindingRole,
+				stableOutputRole, outputCardinality,
+				Collections.<PersistentGeoId>emptyList(), definitionRevision,
+				topologyRevision, copySourceId);
+	}
+
+	/** Creates an original record with exact construction-DAG dependencies. */
+	public GeoIdentityRecord(PersistentGeoId id, String provider, String family,
+			String schemaId, int schemaVersion, EditAuthorityMode authority,
+			ProjectionBindingRole bindingRole, String stableOutputRole,
+			int outputCardinality, List<PersistentGeoId> dependencies,
+			long definitionRevision, long topologyRevision) {
+		this(id, provider, family, schemaId, schemaVersion, authority, bindingRole,
+				stableOutputRole, outputCardinality, dependencies, definitionRevision,
+				topologyRevision, null);
+	}
+
+	/**
+	 * Creates a participating-geo record with exact live dependencies and optional
+	 * immediate copy lineage.
+	 */
+	public GeoIdentityRecord(PersistentGeoId id, String provider, String family,
+			String schemaId, int schemaVersion, EditAuthorityMode authority,
+			ProjectionBindingRole bindingRole, String stableOutputRole,
+			int outputCardinality, List<PersistentGeoId> dependencies,
+			long definitionRevision, long topologyRevision,
+			PersistentGeoId copySourceId) {
 		this.id = Objects.requireNonNull(id);
 		this.provider = SpatialRecordSupport.requireText(provider, "provider");
 		this.family = SpatialRecordSupport.requireText(family, "family");
@@ -51,10 +82,27 @@ public final class GeoIdentityRecord implements SpatialIdentityRecord {
 				"schemaVersion");
 		this.authority = Objects.requireNonNull(authority);
 		this.bindingRole = Objects.requireNonNull(bindingRole);
+		boolean constructionDefined = authority == EditAuthorityMode.CONSTRUCTION_DEFINED;
+		boolean notApplicable = bindingRole == ProjectionBindingRole.NOT_APPLICABLE;
+		if (constructionDefined != notApplicable) {
+			throw new IllegalArgumentException("Construction-defined authority and "
+					+ "not-applicable projection role must be used together");
+		}
 		this.stableOutputRole = SpatialRecordSupport.requireText(stableOutputRole,
 				"stableOutputRole");
 		this.outputCardinality = SpatialRecordSupport.requirePositive(outputCardinality,
 				"outputCardinality");
+		Objects.requireNonNull(dependencies);
+		if (new java.util.HashSet<PersistentGeoId>(dependencies).size()
+				!= dependencies.size()) {
+			throw new IllegalArgumentException("Geo dependencies must be unique");
+		}
+		this.dependencies = SpatialRecordSupport.immutableIds(dependencies);
+		if (this.dependencies.contains(id)) {
+			throw new IllegalArgumentException("A geo identity cannot depend on itself");
+		}
+		this.references = Collections.unmodifiableList(
+				new ArrayList<SpatialIdentityId>(this.dependencies));
 		this.definitionRevision = SpatialRecordSupport.requireRevision(definitionRevision,
 				"definitionRevision");
 		this.topologyRevision = SpatialRecordSupport.requireRevision(topologyRevision,
@@ -79,7 +127,12 @@ public final class GeoIdentityRecord implements SpatialIdentityRecord {
 
 	@Override
 	public List<SpatialIdentityId> getReferences() {
-		return Collections.emptyList();
+		return references;
+	}
+
+	/** @return exact sorted durable construction-DAG dependency identities */
+	public List<PersistentGeoId> getDependencies() {
+		return dependencies;
 	}
 
 	@Override
@@ -130,7 +183,8 @@ public final class GeoIdentityRecord implements SpatialIdentityRecord {
 	/** @return the exact provider-owned signature used at redefine boundaries */
 	public SpatialRedefineSignature toRedefineSignature() {
 		return new SpatialRedefineSignature(provider, family, schemaId, schemaVersion,
-				authority, bindingRole, stableOutputRole, outputCardinality);
+				authority, bindingRole, stableOutputRole, outputCardinality,
+				dependencies);
 	}
 
 	/** @return a copy with the supplied monotone revisions */
@@ -138,7 +192,7 @@ public final class GeoIdentityRecord implements SpatialIdentityRecord {
 			long newTopologyRevision) {
 		return new GeoIdentityRecord(id, provider, family, schemaId, schemaVersion,
 				authority, bindingRole, stableOutputRole, outputCardinality,
-				newDefinitionRevision, newTopologyRevision, copySourceId);
+				dependencies, newDefinitionRevision, newTopologyRevision, copySourceId);
 	}
 
 	/**
@@ -152,7 +206,7 @@ public final class GeoIdentityRecord implements SpatialIdentityRecord {
 			long newTopologyRevision) {
 		return new GeoIdentityRecord(id, provider, family, schemaId, schemaVersion,
 				authority, newBindingRole, stableOutputRole, outputCardinality,
-				newDefinitionRevision, newTopologyRevision, copySourceId);
+				dependencies, newDefinitionRevision, newTopologyRevision, copySourceId);
 	}
 
 	@Override
@@ -161,7 +215,8 @@ public final class GeoIdentityRecord implements SpatialIdentityRecord {
 		PersistentGeoId remapped = SpatialRecordSupport.remap(id, remap);
 		return new GeoIdentityRecord(remapped, provider, family, schemaId, schemaVersion,
 				authority, bindingRole, stableOutputRole, outputCardinality,
-				definitionRevision, topologyRevision,
+				SpatialRecordSupport.remap(dependencies, remap), definitionRevision,
+				topologyRevision,
 				recordImmediateCopySource ? id : copySourceId);
 	}
 
@@ -177,6 +232,7 @@ public final class GeoIdentityRecord implements SpatialIdentityRecord {
 				&& bindingRole == record.bindingRole
 				&& stableOutputRole.equals(record.stableOutputRole)
 				&& outputCardinality == record.outputCardinality
+				&& dependencies.equals(record.dependencies)
 				&& definitionRevision == record.definitionRevision
 				&& topologyRevision == record.topologyRevision
 				&& Objects.equals(copySourceId, record.copySourceId);
@@ -185,7 +241,7 @@ public final class GeoIdentityRecord implements SpatialIdentityRecord {
 	@Override
 	public int hashCode() {
 		return Objects.hash(id, provider, family, schemaId, schemaVersion, authority,
-				bindingRole, stableOutputRole, outputCardinality, definitionRevision,
-				topologyRevision, copySourceId);
+				bindingRole, stableOutputRole, outputCardinality, dependencies,
+				definitionRevision, topologyRevision, copySourceId);
 	}
 }

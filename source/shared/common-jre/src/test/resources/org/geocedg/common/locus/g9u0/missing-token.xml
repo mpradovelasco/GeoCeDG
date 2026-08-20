@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<g9u0Fixture purpose="reject a token-derived point without exact token evidence">
+  <intersectionResult label="R" semanticVersion="1"/>
+  <tokenPoint label="X" result="R" token=""/>
+</g9u0Fixture>

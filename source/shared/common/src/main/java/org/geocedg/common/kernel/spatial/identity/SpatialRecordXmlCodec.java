@@ -31,13 +31,14 @@ public final class SpatialRecordXmlCodec {
 			checkAttributes(attributes, "id", "provider", "family", "schema",
 					"schemaVersion", "authority", "bindingRole", "outputRole",
 					"cardinality", "definitionRevision", "topologyRevision",
-					"copySource");
+					"dependencies", "copySource");
 			return new GeoIdentityRecord(PersistentGeoId.parse(required(attributes, "id")),
 					required(attributes, "provider"), required(attributes, "family"),
 					required(attributes, "schema"), integer(attributes, "schemaVersion"),
 					EditAuthorityMode.valueOf(required(attributes, "authority")),
 					ProjectionBindingRole.valueOf(required(attributes, "bindingRole")),
 					required(attributes, "outputRole"), integer(attributes, "cardinality"),
+					optionalCanonicalGeoIds(attributes, "dependencies"),
 					longValue(attributes, "definitionRevision"),
 					longValue(attributes, "topologyRevision"),
 					optionalGeoId(attributes, "copySource"));
@@ -321,6 +322,9 @@ public final class SpatialRecordXmlCodec {
 		attribute(xml, "bindingRole", record.getBindingRole().name());
 		attribute(xml, "outputRole", record.getStableOutputRole());
 		attribute(xml, "cardinality", record.getOutputCardinality());
+		if (!record.getDependencies().isEmpty()) {
+			attribute(xml, "dependencies", join(record.getDependencies()));
+		}
 		attribute(xml, "definitionRevision", record.getDefinitionRevision());
 		attribute(xml, "topologyRevision", record.getTopologyRevision());
 	}
@@ -499,6 +503,34 @@ public final class SpatialRecordXmlCodec {
 		ArrayList<PersistentGeoId> result = new ArrayList<>();
 		for (String external : splitIds(required(attributes, name))) {
 			result.add(PersistentGeoId.parse(external));
+		}
+		return result;
+	}
+
+	private static List<PersistentGeoId> optionalCanonicalGeoIds(
+			Map<String, String> attributes, String name) {
+		if (!attributes.containsKey(name)) {
+			return Collections.emptyList();
+		}
+		String encoded = attributes.get(name);
+		if (encoded == null || encoded.isEmpty()) {
+			throw new IllegalArgumentException(
+					"Empty optional geocedgSpatial attribute: " + name);
+		}
+		ArrayList<PersistentGeoId> result = new ArrayList<>();
+		for (String external : splitIds(encoded)) {
+			PersistentGeoId parsed = PersistentGeoId.parse(external);
+			if (result.contains(parsed)) {
+				throw new IllegalArgumentException(
+						"Duplicate geocedgSpatial dependency: " + external);
+			}
+			result.add(parsed);
+		}
+		ArrayList<PersistentGeoId> sorted = new ArrayList<>(result);
+		Collections.sort(sorted);
+		if (!result.equals(sorted) || !encoded.equals(join(sorted))) {
+			throw new IllegalArgumentException(
+					"Geo dependencies must use canonical sorted encoding");
 		}
 		return result;
 	}

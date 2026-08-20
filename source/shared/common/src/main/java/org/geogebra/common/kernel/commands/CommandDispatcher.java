@@ -23,6 +23,8 @@ import java.util.List;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
+import org.geocedg.common.main.feature.RuntimeFeatureService;
+import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.Macro;
@@ -156,6 +158,10 @@ public abstract class CommandDispatcher {
 		cons = kernel.getConstruction();
 		this.kernel = kernel;
 		app = kernel.getApplication();
+		if (app.getConfig() instanceof AppConfigGeoCeDG) {
+			((AppConfigGeoCeDG) app.getConfig()).getRuntimeFeatureService()
+					.bindPreservationContext(cons::isFileLoading);
+		}
 		CommandFilter commandFilter = app.getConfig().getCommandFilter();
 		if (commandFilter != null) {
 			addCommandFilter(commandFilter);
@@ -190,6 +196,7 @@ public abstract class CommandDispatcher {
 	final public GeoElement[] processCommand(Command c, EvalInfo info)
 			throws MyError {
 
+		enforceRuntimeFeatureGate(c);
 		CommandProcessor cmdProc = getProcessor(c);
 
 		if (cmdProc == null) {
@@ -202,6 +209,17 @@ public abstract class CommandDispatcher {
 		return process(cmdProc, c, info);
 	}
 
+	private void enforceRuntimeFeatureGate(Command command) {
+		try {
+			Commands commandId = Commands.valueOf(command.getName());
+			if (RuntimeFeatureService.isDedicatedLocusV2Command(commandId)) {
+				RuntimeFeatureService.requireLocusV2Access(cons);
+			}
+		} catch (IllegalArgumentException exception) {
+			// Macros and aliases continue through the ordinary dispatcher path.
+		}
+	}
+
 	/**
 	 * Checks a command against the current set of command filters (which may change, e.g.
 	 * during an exam).
@@ -210,6 +228,10 @@ public abstract class CommandDispatcher {
 	 * @return false if any of the current command filters rejects this command, true otherwise.
 	 */
 	public boolean isAllowedByCommandFilters(Commands command) {
+		if (RuntimeFeatureService.isDedicatedLocusV2Command(command)
+				&& !RuntimeFeatureService.mayUseLocusV2(cons)) {
+			return false;
+		}
 		for (CommandFilter filter : commandFilters) {
 			if (!filter.isCommandAllowed(command)) {
 				return false;
@@ -539,6 +561,8 @@ public abstract class CommandDispatcher {
 
 			case Tangent:
 			case Length:
+			case LocusV2:
+			case LocusLength:
 			case UnitPerpendicularVector:
 			case UnitOrthogonalVector:
 			case Surface:

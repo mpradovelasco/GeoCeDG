@@ -147,6 +147,10 @@ public enum Commands implements CommandsConstants,
 
 	Locus(TABLE_GEOMETRY),
 
+	LocusV2(TABLE_GEOMETRY),
+
+	LocusLength(TABLE_GEOMETRY),
+
 	Centroid(TABLE_GEOMETRY),
 
 	TriangleCenter(TABLE_GEOMETRY),

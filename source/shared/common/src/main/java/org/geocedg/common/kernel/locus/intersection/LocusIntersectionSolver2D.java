@@ -137,9 +137,12 @@ public final class LocusIntersectionSolver2D {
 					DiagnosticCode.COVERAGE_NOT_ESTABLISHED,
 					"Capability did not cover every current semantic component"));
 		}
+		// Mixed results carry both roots that still require independent
+		// verification and typed overlap evidence that must survive publication.
 		boolean overlapKind = kind == GeometryKind.OVERLAP
 				|| kind == GeometryKind.INFINITELY_MANY
-				|| kind == GeometryKind.UNSUPPORTED_OVERLAP;
+				|| kind == GeometryKind.UNSUPPORTED_OVERLAP
+				|| kind == GeometryKind.MIXED_FINITE_OVERLAP;
 		if (kind != GeometryKind.FINITE && !overlapKind) {
 			return publish(binding, ComputationStatus.SUCCESS, completeness,
 					completenessMethod, kind, candidateSet.getSupportLevel(),
@@ -240,15 +243,10 @@ public final class LocusIntersectionSolver2D {
 			return Verification.unresolved();
 		}
 		context.getInstrumentation().recordVerifiedSolution();
-		String token = tokenSource.nextToken();
-		IdentityStatus identityStatus = candidate.getContinuationKey().isPresent()
-				? IdentityStatus.NEW_TOPOLOGICAL_SOLUTION
-				: IdentityStatus.NOT_ESTABLISHED;
-		IntersectionRootIdentity2D identity = new IntersectionRootIdentity2D(
-				token, context.getQuery().getSourcePairIdentity(),
-				context.getQuery().getConstructiveIntersectionLineage(),
-				candidate.getBranchKey(), context.getQuery().getTopologyContext(),
-				candidate.getContinuationKey(), identityStatus);
+		IntersectionTokenLineage2D tokenLineage =
+				IntersectionTokenLineage2D.forSingleComponent(
+						candidate.getBranchKey(), address.interval,
+						candidate.getContinuationKey());
 		OptionalDouble lifted = candidate.getLiftedPeriodicParameter();
 		IntersectionParameterInterval2D interval =
 				candidate.getIsolatingInterval().contains(canonical, 0)
@@ -263,6 +261,27 @@ public final class LocusIntersectionSolver2D {
 						candidate.getLocalIsolationStatus(), residual,
 						candidate.getSolverMethod(),
 						candidate.getNumericGuarantee());
+		boolean durableIdentity = candidate.getContinuationKey().isPresent();
+		String token;
+		IdentityStatus identityStatus;
+		if (durableIdentity) {
+			IntersectionRootAddressProof2D addressProof =
+					new IntersectionRootAddressProof2D(
+							context.getDefinition().getProvider()
+									.getSemanticSignature(),
+							targetContractSignature(context.getTarget()), canonical);
+			token = tokenSource.nextToken(tokenLineage, addressProof);
+			identityStatus = IdentityStatus.NEW_TOPOLOGICAL_SOLUTION;
+		} else {
+			token = tokenSource.nextRevisionLocalHandle(tokenLineage,
+					revisionEvidence);
+			identityStatus = IdentityStatus.NOT_ESTABLISHED;
+		}
+		IntersectionRootIdentity2D identity = new IntersectionRootIdentity2D(
+				token, context.getQuery().getSourcePairIdentity(),
+				context.getQuery().getConstructiveIntersectionLineage(),
+				candidate.getBranchKey(), context.getQuery().getTopologyContext(),
+				candidate.getContinuationKey(), identityStatus);
 		IntersectionClassification2D classification =
 				new IntersectionClassification2D(candidate.getContactClass(),
 						candidate.getMultiplicityStatus(),
@@ -282,6 +301,16 @@ public final class LocusIntersectionSolver2D {
 		return Verification.accepted(new LocusIntersectionSolution2D(identity,
 				revisionEvidence, evaluation.getPoint(), classification, lineage,
 				diagnostics));
+	}
+
+	private static String targetContractSignature(
+			LocusIntersectionTarget2D target) {
+		IntersectionResidualContract2D contract = target.getResidualContract();
+		return target.getFamily().name() + "|" + contract.getAdapterVersion()
+				+ "|" + contract.getQuantityKind().name() + "|"
+				+ contract.getUnits() + "|"
+				+ contract.getNormalizationProvenance() + "|"
+				+ contract.getCharacteristicScalePolicy();
 	}
 
 	private static List<IntersectionCandidate2D> deduplicate(

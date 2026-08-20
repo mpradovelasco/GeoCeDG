@@ -7,9 +7,10 @@ package org.geocedg.common.main.settings.config;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.nullValue;
 
 import org.geogebra.common.GeoGebraConstants;
+import org.geogebra.common.kernel.commands.Commands;
+import org.geogebra.common.kernel.commands.selector.CommandFilter;
 import org.junit.jupiter.api.Test;
 
 class AppConfigGeoCeDGTest {
@@ -29,7 +30,22 @@ class AppConfigGeoCeDGTest {
 	}
 
 	@Test
-	void startsWithoutCommandRestrictions() {
-		assertThat(config.createCommandFilter(), nullValue());
+	void gatesOnlyDedicatedLocusV2CommandsByDefault() {
+		CommandFilter defaultFilter = config.createCommandFilter();
+		assertThat(defaultFilter.isCommandAllowed(Commands.Point), equalTo(true));
+		assertThat(defaultFilter.isCommandAllowed(Commands.Locus), equalTo(true));
+		assertThat(defaultFilter.isCommandAllowed(Commands.Length), equalTo(true));
+		assertThat(defaultFilter.isCommandAllowed(Commands.Intersect), equalTo(true));
+		assertThat(defaultFilter.isCommandAllowed(Commands.LocusV2),
+				equalTo(false));
+		assertThat(defaultFilter.isCommandAllowed(Commands.LocusLength),
+				equalTo(false));
+
+		CommandFilter enabledFilter = new AppConfigGeoCeDG(true)
+				.createCommandFilter();
+		assertThat(enabledFilter.isCommandAllowed(Commands.LocusV2),
+				equalTo(true));
+		assertThat(enabledFilter.isCommandAllowed(Commands.LocusLength),
+				equalTo(true));
 	}
 }

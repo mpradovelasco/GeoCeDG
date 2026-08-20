@@ -60,7 +60,8 @@ public final class EvaluatorOnlyLocusMetricCapability2D
 		if (component.getLower() == component.getUpper()) {
 			return zeroState(branch, component, key);
 		}
-		if (!component.isLowerClosed() || !component.isUpperClosed()) {
+		if ((!component.isLowerClosed() || !component.isUpperClosed())
+				&& !isPeriodicFundamentalCycle(definition, branch, component)) {
 			throw new LocusMetricComponentBuildException(
 					MetricComputationStatus.LIMIT_NOT_ESTABLISHED,
 					Collections.singletonList(new MetricDiagnostic2D(
@@ -99,6 +100,15 @@ public final class EvaluatorOnlyLocusMetricCapability2D
 							"Evaluator-only refinement failed: "
 									+ exception.getClass().getSimpleName())));
 		}
+	}
+
+	private static boolean isPeriodicFundamentalCycle(
+			LocusDefinition2D definition, LocusBranch2D branch,
+			LocusInterval2D component) {
+		return definition.getProvider().isPeriodic()
+				&& branch.getValidDomainComponents().size() == 1
+				&& component.equals(branch.getDeclaredDriverDomain())
+				&& component.isLowerClosed() != component.isUpperClosed();
 	}
 
 	@Override

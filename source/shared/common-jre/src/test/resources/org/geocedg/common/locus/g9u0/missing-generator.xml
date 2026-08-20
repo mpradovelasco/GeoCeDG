@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<g9u0Fixture purpose="reject a native Locus V2 whose direct generator is absent">
+  <locus label="L" semanticVersion="1"
+      generator="geo:ffffffffffffffffffffffffffffffff"
+      family="SCALAR_STATE"/>
+</g9u0Fixture>

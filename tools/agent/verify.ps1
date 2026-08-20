@@ -47,6 +47,8 @@ $G9A2SpatialPointVerifier = Join-Path $PSScriptRoot `
     "verify-g9a2-spatial-point.ps1"
 $G9A3SpatialLifecycleVerifier = Join-Path $PSScriptRoot `
     "verify-g9a3-spatial-lifecycle.ps1"
+$G9U0LocusPublicSurfaceVerifier = Join-Path $PSScriptRoot `
+    "verify-g9u0-locus-v2-public-surface.ps1"
 $BenchmarkRunner = Join-Path $RepositoryRoot "tools\benchmark\run.ps1"
 $InitialStatus = $null
 
@@ -381,6 +383,67 @@ try {
         & $G9A3SpatialLifecycleVerifier @g9a3Parameters
         Assert-LastScriptSuccess `
             -Description "G9A3 spatial lifecycle and migration hardening"
+    }
+
+    $g9u0EvidenceRoot = Join-Path $RepositoryRoot `
+        "geocedg\validation\locus-v2\g9u0"
+    $g9u0IntegrationArtifacts = @(
+        $G9U0LocusPublicSurfaceVerifier,
+        (Join-Path $g9u0EvidenceRoot `
+            "g9u0-public-surface-evidence.json"),
+        (Join-Path $g9u0EvidenceRoot `
+            "g9u0-public-surface-scenarios.json"),
+        (Join-Path $g9u0EvidenceRoot "g9u0-evidence.sha256"),
+        (Join-Path $g9u0EvidenceRoot "g9u0-compatibility-corpus.json"),
+        (Join-Path $g9u0EvidenceRoot "g9u0-compatibility-corpus.sha256"),
+        (Join-Path $RepositoryRoot `
+            "docs\architecture\locus_v2_public_surface_implementation.md"),
+        (Join-Path $RepositoryRoot `
+            "docs\validation\g9u0_locus_v2_public_surface_migration_report.md")
+    )
+    $g9u0PresentCount = @($g9u0IntegrationArtifacts | Where-Object {
+        Test-Path -LiteralPath $_ -PathType Leaf
+    }).Count
+    if ($g9u0PresentCount -ne 0 -and
+            $g9u0PresentCount -ne $g9u0IntegrationArtifacts.Count) {
+        throw "Incomplete G9U0 verifier/support integration; all paired artifacts are required."
+    }
+    if ($g9u0PresentCount -eq $g9u0IntegrationArtifacts.Count) {
+        $g9u0Evidence = Get-Content -Raw -LiteralPath (
+            Join-Path $g9u0EvidenceRoot `
+                "g9u0-public-surface-evidence.json") |
+            ConvertFrom-Json -Depth 100
+        if ($g9u0Evidence.sourceBoundary.inventoryStatus -eq "FROZEN") {
+            Write-Host "`n==> G9U0 experimental Locus V2 public surface"
+            $g9u0Parameters = @{
+                LogDirectory = Join-Path ([IO.Path]::GetFullPath($LogDirectory)) `
+                    "g9u0-locus-v2-public-surface"
+            }
+            if ($SkipBuild) {
+                $g9u0Parameters.SkipBuild = $true
+            }
+            if ($AllowToolchainDownload) {
+                $g9u0Parameters.AllowToolchainDownload = $true
+            }
+            if ($KeepBuildOutputs) {
+                $g9u0Parameters.KeepBuildOutputs = $true
+            }
+            & $G9U0LocusPublicSurfaceVerifier @g9u0Parameters
+            Assert-LastScriptSuccess `
+                -Description "G9U0 experimental Locus V2 public surface"
+        } elseif ($g9u0Evidence.sourceBoundary.inventoryStatus -eq
+                "OPEN_PENDING_SOURCE_FREEZE") {
+            Write-Host "`n==> G9U0 validation scaffold detected"
+            & $G9U0LocusPublicSurfaceVerifier -SkipBuild `
+                -LogDirectory (Join-Path ([IO.Path]::GetFullPath($LogDirectory)) `
+                    "g9u0-locus-v2-public-surface-scaffold")
+            Assert-LastScriptSuccess `
+                -Description "G9U0 validation scaffold"
+            Write-Host ("    Productive inventory is open; the G9U0 " +
+                "implementation gate is not executed.")
+        } else {
+            throw "Unknown G9U0 source inventory state in candidate evidence."
+        }
     }
 
     Write-Host "`n==> Standalone Windows packaging contracts"

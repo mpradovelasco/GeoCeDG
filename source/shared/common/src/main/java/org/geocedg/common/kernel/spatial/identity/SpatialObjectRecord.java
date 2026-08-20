@@ -73,7 +73,7 @@ public final class SpatialObjectRecord implements SpatialIdentityRecord {
 		this.id = Objects.requireNonNull(id);
 		this.semanticVersion = semanticVersion;
 		this.spatialType = SpatialRecordSupport.requireText(spatialType, "spatialType");
-		this.authority = Objects.requireNonNull(authority);
+		this.authority = requireSpatialAuthority(authority);
 		this.schemaId = SpatialRecordSupport.requireText(schemaId, "schemaId");
 		this.schemaVersion = SpatialRecordSupport.requirePositive(schemaVersion,
 				"schemaVersion");
@@ -128,7 +128,7 @@ public final class SpatialObjectRecord implements SpatialIdentityRecord {
 			throw new IllegalArgumentException(
 					"Version-two spatial objects support POINT only");
 		}
-		this.authority = Objects.requireNonNull(authority);
+		this.authority = requireSpatialAuthority(authority);
 		if (authority != EditAuthorityMode.PROJECTION_DEFINED) {
 			throw new IllegalArgumentException(
 					"Version-two spatial objects require PROJECTION_DEFINED authority");
@@ -172,6 +172,16 @@ public final class SpatialObjectRecord implements SpatialIdentityRecord {
 	@Override
 	public SpatialObjectId getId() {
 		return id;
+	}
+
+	private static EditAuthorityMode requireSpatialAuthority(
+			EditAuthorityMode authority) {
+		EditAuthorityMode checked = Objects.requireNonNull(authority);
+		if (checked == EditAuthorityMode.CONSTRUCTION_DEFINED) {
+			throw new IllegalArgumentException(
+					"A spatial object requires a spatial or projection edit authority");
+		}
+		return checked;
 	}
 
 	@Override
