@@ -29,6 +29,7 @@ insufficient.
 | `docs/adr` | Architectural decisions and alternatives | Accepted ADRs supersede earlier roadmap proposals |
 | `docs/architecture` | System maps, implementation boundaries and impact analysis | Durable design/implementation documentation |
 | `docs/developer` | Internal API, repository and agent operating references | Durable developer documentation |
+| `docs/developer/book_repository_workflow.md` | Two-repository boundary and opt-in book-worktree commands | GeoCeDG operational documentation; never editorial authority |
 | `docs/user/geocedg_user_guide.md` | Current observable/manual workflow and conceptual entry point | Living user/developer guide |
 | `docs/user/geocedg_mathematical_reference.md` | Mathematical definitions and authority links | Living explanatory reference; specifications remain authoritative |
 | `docs/validation` | Phase reports and traceability | Historical evidence is immutable; current traceability is maintained separately; neither is normative semantics |
@@ -38,6 +39,7 @@ insufficient.
 | `tools/agent/evidence-integrity.ps1` | Exact-byte Git blob and frozen G8 evidence helpers | Operational verification source; never rewrites evidence |
 | `tools/knowledge` | Deterministic profile-driven source/knowledge bundle generator, independent artifact verifier and disposable fixtures | Operational source; generated bundles are not authority |
 | `tools/bootstrap` | Workstation onboarding and focused prerequisite installation | Setup/orchestration, not acceptance authority |
+| `tools/book` | Boundary-safe status and explicit delegation for an optional external book worktree | Operational tool, opt-in; never part of `tools/agent/verify.ps1` |
 | `tools/locus-v2` | Explicit developer-only Locus V2 laboratory launcher | Operational tool, opt-in; not product UI |
 | `tools/legacy` | Reproducible ingest and legacy Laboratory loader | Operational tools with immutable originals |
 | `tools/release` | Packaging generation and verification helpers | Reproducible release mechanics, not legal approval |
@@ -45,6 +47,7 @@ insufficient.
 | `packaging` | Windows `jpackage` configuration and notices | Durable packaging source; public release remains blocked |
 | `.github/prompts`, `ai-shell/prompts` | Canonical tasks/reviews and lightweight profiles | Operational instructions, not geometric truth |
 | `.github/workflows` | CI invocation of repository verification | Automation source |
+| local `/book` | Optional filesystem link to the independent `mpradovelasco/geocedg_book` worktree | Ignored local convenience; never GeoCeDG authority, content or Git state |
 | `artifacts` | Packaging, export, `knowledge` bundles and other generated output boundary | Regenerable/ignored except explicit README/manifests |
 | module `build/`, `.gradle/`, `.kotlin/` | Build caches and generated outputs | Regenerable/ignored; verifiers restore entry state |
 

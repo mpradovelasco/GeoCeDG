@@ -6,3 +6,6 @@ build/
 # GeoCeDG-generated evidence. The directory contract remains tracked.
 /artifacts/*
 !/artifacts/README.md
+
+# Local link to the independent geocedg_book repository.
+/book
