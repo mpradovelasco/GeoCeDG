@@ -20,9 +20,10 @@ import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata
 /**
  * Narrow semantic root continuation across at most two topology epochs.
  *
- * <p>Only an explicit continuation key inside the same constructive and branch
- * lineage may preserve a token. Parameters, intervals and coordinates never
- * select identity.</p>
+ * <p>Frozen G8 continuation uses only an explicit key inside the same
+ * constructive and branch lineage. Public G9U0 continuation additionally
+ * requires a token-ledger-certified exact semantic address. Parameter evidence
+ * stays outside the token and coordinates never select identity.</p>
  */
 public final class LocusIntersectionContinuation2D {
 
@@ -37,7 +38,22 @@ public final class LocusIntersectionContinuation2D {
 			LocusIntersectionPolicy2D policy) {
 		java.util.Objects.requireNonNull(policy);
 		return continueRoots(previous, current, policy.getWorkBudget()
-				.getMaximumContinuationComparisons(), false);
+				.getMaximumContinuationComparisons(), false, false);
+	}
+
+	/**
+	 * Applies public continuation only after the token ledger has certified an
+	 * exact revision-to-revision semantic address.
+	 *
+	 * @return current result with only preauthorized tokens continued
+	 */
+	public LocusIntersectionResult2D continuePublicRoots(
+			LocusIntersectionResult2D previous,
+			LocusIntersectionResult2D current,
+			LocusIntersectionPolicy2D policy) {
+		java.util.Objects.requireNonNull(policy);
+		return continueRoots(previous, current, policy.getWorkBudget()
+				.getMaximumContinuationComparisons(), false, true);
 	}
 
 	/**
@@ -51,13 +67,13 @@ public final class LocusIntersectionContinuation2D {
 			LocusPairIntersectionPolicy2D policy) {
 		java.util.Objects.requireNonNull(policy);
 		return continueRoots(previous, current, policy.getPairWorkBudget()
-				.getMaximumPairContinuationComparisons(), true);
+				.getMaximumPairContinuationComparisons(), true, false);
 	}
 
 	private LocusIntersectionResult2D continueRoots(
 			LocusIntersectionResult2D previous,
 			LocusIntersectionResult2D current, long maximumComparisons,
-			boolean pair) {
+			boolean pair, boolean requirePublicAddressProof) {
 		java.util.Objects.requireNonNull(current);
 		if (previous == null || !continuableKind(current.getGeometryKind())
 				|| current.getComputationStatus() != ComputationStatus.SUCCESS
@@ -70,7 +86,7 @@ public final class LocusIntersectionContinuation2D {
 		ArrayList<LocusIntersectionSolution2D> continued = new ArrayList<>();
 		for (LocusIntersectionSolution2D solution : current.getFiniteSolutions()) {
 			ContinuationOutcome outcome = continueOne(previous, current, solution,
-					maximumComparisons, comparisons);
+					maximumComparisons, comparisons, requirePublicAddressProof);
 			comparisons += outcome.comparisons;
 			if (comparisons > maximumComparisons) {
 				return current;
@@ -97,7 +113,8 @@ public final class LocusIntersectionContinuation2D {
 			LocusIntersectionResult2D previous,
 			LocusIntersectionResult2D current,
 			LocusIntersectionSolution2D solution,
-			long maximumComparisons, long alreadyCompared) {
+			long maximumComparisons, long alreadyCompared,
+			boolean requirePublicAddressProof) {
 		Optional<String> key = solution.getIdentity()
 				.getExplicitContinuationKey();
 		if (!key.isPresent()) {
@@ -135,7 +152,12 @@ public final class LocusIntersectionContinuation2D {
 						LineageEventKind.AMBIGUOUS_EVENT,
 						List.of(priorToken), false), comparisons);
 			}
-			String priorToken = samePreviousKey.get(0).getIdentity().getRootToken();
+			LocusIntersectionSolution2D prior = samePreviousKey.get(0);
+			String priorToken = prior.getIdentity().getRootToken();
+			if (requirePublicAddressProof
+					&& !sameLedgerPreauthorizedPublicAddress(prior, solution)) {
+				return new ContinuationOutcome(solution, comparisons);
+			}
 			return new ContinuationOutcome(reidentify(solution, priorToken,
 					IdentityStatus.CONTINUATION_ESTABLISHED,
 					LineageEventKind.UNCHANGED, List.of(priorToken), true),
@@ -153,6 +175,21 @@ public final class LocusIntersectionContinuation2D {
 					comparisons);
 		}
 		return new ContinuationOutcome(solution, comparisons);
+	}
+
+	private static boolean sameLedgerPreauthorizedPublicAddress(
+			LocusIntersectionSolution2D previous,
+			LocusIntersectionSolution2D current) {
+		// The public ledger can reissue a token only after its separately persisted
+		// provider/target/address proof matches. Parameter equality limits G9U0 to
+		// the conservative stable-preimage subset; the parameter remains revision
+		// evidence and is not token material.
+		return previous.getIdentity().getRootToken().equals(
+				current.getIdentity().getRootToken())
+				&& Double.doubleToLongBits(previous.getRevisionEvidence()
+						.getSemanticParameter())
+						== Double.doubleToLongBits(current.getRevisionEvidence()
+								.getSemanticParameter());
 	}
 
 	private static LocusIntersectionSolution2D reidentify(

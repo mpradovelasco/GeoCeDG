@@ -19,10 +19,14 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geogebra.common.AppCommonFactory;
 import org.geogebra.common.awt.AwtFactory;
 import org.geogebra.common.gui.toolbar.ToolBar;
 import org.geogebra.common.io.layout.DockPanelData;
 import org.geogebra.common.io.layout.Perspective;
+import org.geogebra.common.jre.headless.AppCommon;
+import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.main.App;
 import org.geogebra.desktop.awt.AwtFactoryD;
 import org.junit.jupiter.api.BeforeAll;
@@ -90,5 +94,20 @@ class GeoCeDGProfileTest {
 				| InputEvent.SHIFT_DOWN_MASK;
 		assertThat(GeoCeDGMenuBar.DXF_ACTION_ACCELERATOR.getModifiers()
 				& requiredModifiers, equalTo(requiredModifiers));
+		assertNativeLocusV2SaveBoundary();
+	}
+
+	private static void assertNativeLocusV2SaveBoundary() {
+		AppCommon app = AppCommonFactory.create();
+		GeoNumeric legacy = new GeoNumeric(app.getKernel().getConstruction(), 1);
+		legacy.setLabel("legacyNumber");
+		assertThat(GeoCeDGExternalCompatibilityWarning.containsNativeLocusV2(
+				app.getKernel().getConstruction()), is(false));
+
+		GeoLocusV2 locus = new GeoLocusV2(
+				app.getKernel().getConstruction(), "test-locus-identity");
+		locus.setLabel("nativeLocusV2");
+		assertThat(GeoCeDGExternalCompatibilityWarning.containsNativeLocusV2(
+				app.getKernel().getConstruction()), is(true));
 	}
 }

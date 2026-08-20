@@ -81,6 +81,59 @@ function Read-JsonDocument {
     }
 }
 
+function Test-G9U0FrozenPublicSurface {
+    $evidenceRoot = Join-Path $RepositoryRoot `
+        "geocedg\validation\locus-v2\g9u0"
+    $artifacts = @(
+        (Join-Path $PSScriptRoot `
+            "verify-g9u0-locus-v2-public-surface.ps1"),
+        (Join-Path $evidenceRoot "g9u0-public-surface-evidence.json"),
+        (Join-Path $evidenceRoot "g9u0-public-surface-scenarios.json"),
+        (Join-Path $evidenceRoot "g9u0-evidence.sha256"),
+        (Join-Path $evidenceRoot "g9u0-compatibility-corpus.json"),
+        (Join-Path $evidenceRoot "g9u0-compatibility-corpus.sha256")
+    )
+    $present = @($artifacts | Where-Object {
+        Test-Path -LiteralPath $_ -PathType Leaf
+    }).Count
+    if ($present -eq 0) {
+        return $false
+    }
+    if ($present -ne $artifacts.Count) {
+        throw "Incomplete G9U0 integration cannot relax the historical G6 boundary."
+    }
+    $evidence = Get-Content -Raw -LiteralPath $artifacts[1] |
+        ConvertFrom-Json -Depth 100
+    $hasCloseout = $null -ne $evidence.PSObject.Properties["closeout"]
+    $pending = ($evidence.status -eq
+            "IMPLEMENTATION_CANDIDATE_PENDING_AUTHOR_REVIEW" -and
+            -not [bool]$evidence.approval.selfApproved -and
+            -not [bool]$evidence.approval.authorApproved -and
+            -not [bool]$evidence.approval.passClaimed -and
+            [bool]$evidence.approval.reviewRequired -and
+            $evidence.approval.disposition -eq "PENDING_AUTHOR_REVIEW" -and
+            -not $hasCloseout)
+    $approved = ($evidence.status -eq "PASS_AUTHOR_APPROVED" -and
+            -not [bool]$evidence.approval.selfApproved -and
+            [bool]$evidence.approval.authorApproved -and
+            [bool]$evidence.approval.passClaimed -and
+            -not [bool]$evidence.approval.reviewRequired -and
+            $evidence.approval.disposition -eq "PASS_AUTHOR_APPROVED" -and
+            $hasCloseout)
+    Assert-Condition -Condition ($pending -xor $approved) `
+        -Message "G9U0 evidence has a mixed approval tuple at the G6 boundary."
+    if ($evidence.sourceBoundary.inventoryStatus -ne "FROZEN") {
+        return $false
+    }
+
+    & $artifacts[0] -SkipBuild -LogDirectory (Join-Path $LogDirectory `
+        "g9u0-static-boundary")
+    Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
+        -Message ("The frozen G9U0 boundary failed its dedicated static " +
+            "verification; the historical G6 boundary remains closed.")
+    return $true
+}
+
 function Get-NormalizedTextSha256 {
     param([Parameter(Mandatory)] [string]$Path)
 
@@ -147,6 +200,7 @@ $GeneratedState = $null
 try {
     [void](New-Item -ItemType Directory -Path $LogDirectory -Force)
     $InitialStatus = Get-RepositoryStatusText -RepositoryRoot $RepositoryRoot
+    $g9u0FrozenPublicSurface = Test-G9U0FrozenPublicSurface
     if (-not $SkipBuild) {
         $GeneratedState = New-RepositoryGeneratedStateSnapshot `
             -RepositoryRoot $RepositoryRoot -DirectoryNames $GeneratedDirectoryNames `
@@ -398,11 +452,16 @@ try {
     $locusFeature = @($experimental.features | Where-Object {
         $_.id -eq "cedg.locus.v2"
     })
+    $expectedLocusSpecification = if ($g9u0FrozenPublicSurface) {
+        "geocedg/specs/locus/locus-v2-public-surface.md"
+    } else {
+        "geocedg/specs/locus/locus-v2-semantics.md"
+    }
     Assert-Condition -Condition ($locusFeature.Count -eq 1 -and
             $locusFeature[0].maturity -eq "experimental" -and
             -not $locusFeature[0].enabled_by_default -and
             $locusFeature[0].specification -eq
-                "geocedg/specs/locus/locus-v2-semantics.md") `
+                $expectedLocusSpecification) `
         -Message "cedg.locus.v2 must remain experimental and disabled by default."
 
     $report = Get-Content -Raw -LiteralPath (Join-Path $RepositoryRoot `
@@ -518,7 +577,8 @@ try {
             "final class GeoLocusV2 extends GeoElement") -and
             $geoV2Source.Contains("return GeoClass.LOCUS_V2") -and
             $geoV2Source.Contains("return ValueType.VOID") -and
-            $geoV2Source.Contains("throw new UnsupportedOperationException") -and
+            ($geoV2Source.Contains("throw new UnsupportedOperationException") -or
+                $g9u0FrozenPublicSurface) -and
             $geoV2Source.Contains("restoreDefinedStateAfterEquivalentRecompute") -and
             -not $geoV2Source.Contains("myPointList") -and
             -not $geoV2Source.Contains("PathMoverLocus") -and
@@ -567,15 +627,21 @@ try {
             $euclidianDraw.Contains("new DrawLocusV2")) `
         -Message "The dedicated 2D LOCUS_V2 drawable dispatch is missing."
 
-    foreach ($forbiddenReference in @(
-            "org\geogebra\common\kernel\commands\CmdLocus.java",
+    $forbiddenReferences = @(
+        "org\geogebra\common\kernel\commands\CmdLocus.java",
+        "org\geogebra\common\kernel\GeoFactory.java",
+        "org\geogebra\common\kernel\commands\CmdFirst.java",
+        "org\geogebra\common\kernel\commands\CmdPerimeter.java",
+        "org\geogebra\common\kernel\algos\AlgoIntegralODE.java",
+        "org\geogebra\common\geogebra3D\euclidian3D\EuclidianView3D.java"
+    )
+    if (-not $g9u0FrozenPublicSurface) {
+        $forbiddenReferences += @(
             "org\geogebra\common\kernel\algos\AlgoDispatcher.java",
-            "org\geogebra\common\kernel\GeoFactory.java",
-            "org\geogebra\common\kernel\commands\CmdLength.java",
-            "org\geogebra\common\kernel\commands\CmdFirst.java",
-            "org\geogebra\common\kernel\commands\CmdPerimeter.java",
-            "org\geogebra\common\kernel\algos\AlgoIntegralODE.java",
-            "org\geogebra\common\geogebra3D\euclidian3D\EuclidianView3D.java")) {
+            "org\geogebra\common\kernel\commands\CmdLength.java"
+        )
+    }
+    foreach ($forbiddenReference in $forbiddenReferences) {
         $forbiddenText = Get-Content -Raw -LiteralPath (Join-Path $productionRoot `
             $forbiddenReference)
         Assert-Condition -Condition (-not $forbiddenText.Contains("LOCUS_V2") -and

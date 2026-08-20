@@ -1,22 +1,22 @@
 # Manual operativo vivo de GeoCeDG
 
 - Tipo de documento: manual operativo vivo
-- Puerta actual del proyecto: G9O1 **PASS — AUTHOR APPROVED**
+- Puerta actual del proyecto: **G9U0 = PASS — AUTHOR APPROVED**
 - Baseline: GeoGebra 5.4.928.0 at
   `9b93256b7df401ff056c37b502d82df4d72b1522`
 - Plataforma validada: únicamente Windows
-- Última revisión: 2026-08-17
-- Fase actual: G9P-R1, G9P y G9O1 `PASS — AUTHOR APPROVED`; seis especificaciones
-  G9 son normativas y ADR 0010–0015 están Accepted. G9A1 está autorizado pero no
-  iniciado, y ninguna capacidad espacial productiva G9 ha comenzado. G7 y G8 siguen siendo
-  capacidades internas sin comando, persistencia, `Path` ni flujo público.
-- Locus V2: `experimental`, internal/developer-only, disabled by default
+- Última revisión: 2026-08-20
+- Fase actual: G9U0 es `PASS — AUTHOR APPROVED`; G9X1, G9U1, G9B,
+  G9C, G9U2, G10 y las fases posteriores no se han ejecutado.
+- Locus V2: superficie pública `experimental` aprobada para G9U0, exclusiva de
+  GeoCeDG y desactivada por defecto
 - `PACKAGING TECHNICAL STATUS = PASS`
 - `PUBLIC REDISTRIBUTION STATUS = BLOCKED PENDING LICENSE/ASSET APPROVAL`
 
 This guide is the practical entry point for the GeoCeDG author/developer. It
-describes observable product behavior, G7 characterization and the
-author-approved internal G7B metric and G8 intersection kernels. It does not
+describes observable product behavior, G7 characterization, the
+author-approved internal G7B/G8 kernels and the author-approved, default-off
+G9U0 experimental public surface. It does not
 replace the
 [repository README](../../README.md),
 [living technical roadmap](../roadmap/geocedg_roadmap.md), ADRs, specifications, or
@@ -39,9 +39,65 @@ run:
 
 | Reader | What is available now | What is not available |
 |---|---|---|
-| Normal GeoCeDG user | Public `Locus[...]` continues to use the unchanged legacy `GeoLocus` | No public V2 command, toolbar/menu, saved `.ggb`, `Path`, length, intersection or export |
-| Classic diagnostic user | Unchanged legacy `Locus[...]` only | No V2 and no developer laboratory |
-| Authorized developer | Opt-in visual laboratory, internal factory, semantic evaluator/tests and focused verifier | The laboratory is not a stable product UI and its generated construction cannot be saved |
+| Normal GeoCeDG user | Public `Locus[...]` continues to use the unchanged legacy `GeoLocus`; native V2 files can be preserved | New V2 creation remains off by default |
+| Authorized G9U0 evaluator | Explicit opt-in to the approved experimental commands, tools and rich-result inspector described below | The surface remains experimental, not stable or default-on |
+| GeoCeDG Classic diagnostic user | Native V2 objects can be loaded, recomputed and saved without changing their type | No V2 creation command or tool |
+| External upstream GeoGebra user | Legacy constructions remain compatible | Native GeoCeDG V2 objects are outside the compatibility guarantee and are never silently converted to a polyline or legacy locus |
+
+To evaluate the author-approved experimental G9U0 surface in the GeoCeDG
+profile, opt in for that process only:
+
+```powershell
+.\gradlew.bat :desktop:desktop:runGeoCeDG --args="--enableLocusV2=true"
+```
+
+Omitting the argument leaves the feature off. The opt-in exposes these exact
+G9U0 command forms:
+
+| Command | Observable result |
+|---|---|
+| `LocusV2[Q,P]` | Semantic locus driven by a point `P` constrained to a supported segment, circle, circular arc or explicit V2 branch |
+| `LocusV2[Q,s,D]` | Scalar-driven semantic locus with state/true parameter `s` |
+| `LocusV2[Q,t,s,D]` | Mapped scalar locus; `s` is the true parameter and `t` is its dependent state |
+| `Point[L,"generator.main",u]` | Ordinary point bound to the explicit branch and canonical parameter `u` |
+| `LocusLength[L]` | Authoritative rich total-metric result |
+| `LocusLength[L,A,B]` | Authoritative rich metric between two semantic-position points |
+| `Length[L]` | Guarded scalar child of the rich total-metric authority |
+| `Intersect[L,T]` or `Intersect[L1,L2]` | Rich typed intersection result, not an automatically ordered point list |
+| `Intersect[R,"token"]` | Ordinary point selected only by an exact, currently admissible token from rich result `R` |
+
+The domain descriptor is explicit:
+`D={periodic,{a,b,includeA,includeB},...}`. End-point order carries
+orientation. A periodic descriptor has exactly one non-degenerate half-open
+fundamental interval; a finite descriptor can contain ordered disjoint
+components. GeoCeDG does not infer a domain from slider visibility, the
+viewport or samples.
+
+The GeoCeDG menu adds experimental actions for creating a semantic locus,
+creating a semantic point, total and partial semantic length, and inspecting a
+rich result. The existing general Intersect tool accepts supported V2 inputs.
+The inspector reports typed status, completeness, currentness, support,
+numeric guarantee, overlap and diagnostics, and offers only exact tokens that
+are locally point-admissible.
+
+Global completeness and individual admissibility are deliberately independent
+(Option B): a rigorously isolated solution may provide a point even when the
+solver has not established that the whole finite set is complete. Conversely,
+a tangent, ambiguous, stale, overlapping or merely nearby candidate cannot be
+selected as a point. Tokens encode semantic lineage and are not derived from
+coordinates, sample index, list order or proximity.
+
+The initial intersection target registry is limited to line, segment, ray,
+circle, supported conics, bounded function graphs, regular polynomial implicit
+curves and V2-to-V2 rich queries. Arbitrary paths/drivers, unbounded scalar
+domains, unsupported overlaps and automatic point creation are rejected or
+reported explicitly. V2 is not a generic `Path`.
+
+Native `.ggb` save/reopen, copy and undo retain the approved durable semantic
+graph and recompute derived results. Saving a V2-bearing file shows an external
+compatibility warning. GeoCeDG Classic preserves native objects with creation
+off; opening the file in an external upstream distribution is unsupported and
+no lossy repair is attempted.
 
 Validate or open the developer-only laboratory from the repository root:
 
@@ -863,11 +919,14 @@ regression gate. Packaging automatically includes these classes through the
 existing Desktop distribution; its internal-only redistribution status is
 unchanged.
 
-Still pending are public Locus V2 access and its controlled export
-representation, 3D
+At the G5 closeout, public Locus V2 access and its controlled export
+representation were still pending. G9U0 now provides the author-approved,
+default-off experimental surface documented at the start of this guide;
+controlled Locus export, 3D
 objects/projection bindings, Python DSL access, hierarchical layers, drawing
-sheets and advanced PDF/SVG formats. These future capabilities must extend
-approved boundaries and are not present merely because DXF export now exists.
+sheets and advanced PDF/SVG formats remain pending. These future capabilities must extend
+approved boundaries and are not present merely because DXF export exists or
+G9U0 is author-approved.
 
 ## 9. CeDG Laboratory
 
@@ -963,22 +1022,24 @@ Promotion follows `legacy -> research -> experimental -> stable`, or
 | G5 | Approximate curves, legacy Locus, physical units, DXF import and 3D export | Pending | Deliberately excluded until their governing semantic phases/contracts exist |
 | G6A | Legacy Locus characterization, mathematical fixtures, upstream impact audit and normative V2 contract | `PASS — AUTHOR APPROVED`; infrastructure/evidence only | Reproducible tests document current behavior and approved semantics; G6A itself added no product object |
 | G6B | Parallel `GeoLocusV2`, semantic providers/evaluator, explicit branches, revisions, nested composition and dedicated drawable | `PASS`; experimental/internal | Productive shared-kernel foundation exists and is testable, but has no public creation workflow |
-| G6B | Public command, `.ggb` persistence, public `Path`, metrics, intersections, export or 3D behavior | Pending / deliberately absent | Classic and GeoCeDG public `Locus[...]` remain legacy |
+| G6B closeout boundary | Public command, `.ggb` persistence, public `Path`, metrics, intersections, export or 3D behavior | Deliberately absent at G6 closeout | Classic and GeoCeDG public `Locus[...]` remained legacy; G9U0 is the later separately gated, author-approved experimental surface |
 | G6R | Value/lifecycle/session hardening, adaptive render, developer laboratory and API/repository documentation | `PASS`; experimental developer infrastructure | Developers can inspect V2 explicitly without changing normal GeoCeDG or Classic |
 | G7A | Metric semantics, traversal, numerical/index/lifecycle characterization plus focused R1 | `PASS — AUTHOR APPROVED`; evidence only | 51 test-private probes and independent references established the contract; G7A itself added no productive metric |
-| G7B | Native Locus V2 metric kernel | Internal productive kernel; `PASS — AUTHOR APPROVED` | Internal API, rich Geo, scalar adapter, shared component state and laboratory diagnostics exist; no public metric exists |
-| G8 | Native Locus V2 2D metrics and incidence/intersections | G8A/G8B/G8C1/G8C2 and global G8 `PASS — AUTHOR APPROVED` | Internal rich-result, solvers/adapters and token-selected point consumer exist for developer/test use only; no public command, Path, persistence or workflow |
-| G8C | Extended native 2D incidence: typed conics, bounded functions, regular polynomial implicit curves and Locus V2 × Locus V2 | design/G8C1/G8C2 `PASS — AUTHOR APPROVED`; still experimental/internal | Internal developer/test kernels only; no public command, Path, persistence or observable workflow |
-| G9P | Spatial/public/workspace/DXF/operations design | G9P-R1 and G9P `PASS — AUTHOR APPROVED`; six normative specifications and ADR 0010–0015 Accepted | Design authority is closed; no productive G9 behavior is currently observable |
+| G7B | Native Locus V2 metric kernel | Internal productive kernel; `PASS — AUTHOR APPROVED` | Internal API, rich Geo, scalar adapter, shared component state and laboratory diagnostics; no public metric at G7B closeout |
+| G8 | Native Locus V2 2D metrics and incidence/intersections | G8A/G8B/G8C1/G8C2 and global G8 `PASS — AUTHOR APPROVED` | Internal rich-result, solvers/adapters and token-selected point consumer; no public command, Path, persistence or workflow at G8 closeout |
+| G8C | Extended native 2D incidence: typed conics, bounded functions, regular polynomial implicit curves and Locus V2 × Locus V2 | design/G8C1/G8C2 `PASS — AUTHOR APPROVED`; still experimental/internal | Internal developer/test kernels at G8 closeout; G9U0 is the later author-approved experimental public surface |
+| G9P | Spatial/public/workspace/DXF/operations design | G9P-R1 and G9P `PASS — AUTHOR APPROVED`; six normative specifications and ADR 0010–0015 Accepted | Design authority is closed |
 | G9O1 | Deterministic source/knowledge bundles and operational guides | `PASS — AUTHOR APPROVED` | Checked-in operational tooling can generate ignored, independently verified bundles; this adds no product or geometric behavior |
-| G9A1 | Durable identity and persistence foundation | Authorized / not started | Authorization is not implementation; no spatial identity, XML or product behavior is currently observable |
-| G9A2/A3/U/X/B/C/U2 | Later productive G9 capabilities | Designed / not authorized; U2 blocked on global G9 PASS | No G9 geometric, public, workspace, or extended-DXF behavior is currently observable |
+| G9A1/A2/A3 and grouped G9A | Durable identity, persistence and lifecycle/migration foundation | `PASS — AUTHOR APPROVED` | Native G9U0 objects can rely on the approved durable construction identity graph |
+| G9U0 | Experimental public Locus V2 surface | `PASS — AUTHOR APPROVED` | GeoCeDG-only, default-off commands/tools, rich results, native persistence and compatibility boundary documented above |
+| G9X1/G9U1/G9B/G9C/G9U2 | Later productive G9 capabilities | Designed / not authorized; U2 blocked on the approved global G9 gate | No workspace, spatial-primitive, extended-DXF or later G9 implementation is implied by G9U0 |
 
-The approved future compatibility rule is also design, not current behavior.
-Once supported GeoCeDG V2/rich/spatial persisted types exist, the GeoCeDG
-Classic diagnostic path must keep them native and preserve their semantic IDs,
-tokens and bindings under the same kernel. External upstream GeoGebra that does
-not know those types is outside the guarantee; no silent downgrade is allowed.
+The previously approved future compatibility rule is exercised by the
+author-approved G9U0 surface for V2/rich persisted types: the GeoCeDG Classic diagnostic path keeps
+them native and preserves semantic IDs and tokens under the same kernel while
+creation stays off. Future spatial types remain governed by the same rule.
+External upstream GeoGebra that does not know those types is outside the
+guarantee; no silent downgrade is allowed.
 
 ### G6 Locus V2 semantic foundation
 
@@ -990,10 +1051,11 @@ productive, parallel `GeoLocusV2` implementation in the shared Java kernel,
 but its maturity is **experimental** and it is disabled by default in the
 feature manifest.
 
-There is deliberately no public user command, normal menu, toolbar button,
-preference or `.ggb` representation for V2. An authorized developer may use
-the separate opt-in laboratory described above; it creates objects through the
-internal factory and never redirects `Locus[...]`. The focused gate is:
+At the G6 closeout there was deliberately no public user command, normal menu,
+toolbar button, preference or `.ggb` representation for V2. The separate
+opt-in laboratory still creates objects through the internal factory and never
+redirects `Locus[...]`; the later, separately gated G9U0 surface is described
+at the start of this guide. The historical G6-focused gate is:
 
 ```powershell
 .\tools\agent\verify-locus-v2.ps1
@@ -1243,27 +1305,32 @@ eliminates downstream dependence on an upstream sampled locus or full
 dependency-slice regeneration. The later G7B metric service addresses the
 remaining metric risk with semantic-revision-scoped indexes, shared bounded
 ownership and normal-DAG invalidation; this does not promote the legacy models
-or make the metric public.
+or, at the G7B gate, make the metric public.
 
-#### Current public Locus V2 boundary
+#### Current author-approved G9U0 public Locus V2 boundary
 
-- no public GUI, command or end-user activation; only the opt-in developer
-  laboratory exists;
-- no `.ggb` XML, migration or public copy guarantee;
-- no public `Path`, point-on-V2 or legacy incidence;
-- no public length, perimeter or metric command; the G7B metric service/index
-  remains internal and developer-only;
-- no public intersections; G8B contains an author-approved internal minimum,
-  with no command, public point or workflow;
+- a GeoCeDG-only public command/tool surface exists only after explicit
+  per-process opt-in; G9U0 is author-approved while the surface remains
+  experimental and default-off;
+- native `.ggb` XML, copy, undo and reopen preserve the durable semantic graph;
+- `Point[L,branch,parameter]` creates an explicitly addressed ordinary point,
+  but V2 itself remains deliberately outside generic `Path` and legacy
+  incidence;
+- `LocusLength` exposes rich total/partial metric authority and `Length[L]`
+  exposes only its guarded scalar child; and
+- `Intersect` exposes rich supported-target/V2-pair results, while an ordinary
+  point requires an exact currently admissible token;
 - no productive 3D/projection semantics (G9); G9P documents design proposals
-  only;
+  and G9A supplies identity/lifecycle foundations only;
 - no DXF locus export;
-- no canonical-continuation provider;
+- no general cross-revision continuation certificate beyond the exact-address
+  proof supported for the closed single-target families; merge, split and
+  changed canonical addresses burn the old token;
 - no general path support or native infinite provider domain;
 - no concurrency or compiled/flattened evaluation DAG; and
 - no certified numeric error bounds.
 
-These absences are intentional. Locus V2 is not a spline or a denser polyline:
+The remaining absences are intentional. Locus V2 is not a spline or a denser polyline:
 its evaluator/domain/branch identity is the geometric authority, while any
 polyline is a disposable view representation.
 
@@ -1272,16 +1339,18 @@ polyline is a disposable view representation.
 | Phase | Planned area | Current status |
 |---|---|---|
 | G6A | Mathematical/semantic characterization and author review | `PASS — AUTHOR APPROVED` |
-| G6B | Minimal experimental Locus V2 kernel entity | `PASS`; no public workflow |
+| G6B | Minimal experimental Locus V2 kernel entity | `PASS`; no public workflow at G6 closeout |
 | G6R | Hardening, developer laboratory, measured render optimization and developer documentation | `PASS`; developer-only workflow |
 | G7A | Locus V2 metric characterization plus focused R1 | `PASS — AUTHOR APPROVED`; historical evidence |
-| G7B | Minimal native Locus V2 metric kernel | Internal productive kernel; `PASS — AUTHOR APPROVED`; no public metric |
-| G8 planning | Native Locus V2 intersections | `PASS — AUTHOR APPROVED`; no observable feature |
+| G7B | Minimal native Locus V2 metric kernel | Internal productive kernel; `PASS — AUTHOR APPROVED`; no public metric at G7 closeout |
+| G8 planning | Native Locus V2 intersections | `PASS — AUTHOR APPROVED`; no observable feature at G8 closeout |
 | G8A | Characterization and author decisions | `PASS — AUTHOR APPROVED`; test-private evidence only |
 | G8B-R1 | Point admissibility versus global completeness | `PASS — AUTHOR APPROVED`; internal refinement only, no observable feature |
 | G8B | Minimum internal 2D intersection kernel | `PASS — AUTHOR APPROVED`; internal capability only |
 | G8C design/G8C1/G8C2 | Extended 2D Locus V2 incidence/intersection design and internal one-/two-parameter kernels | `PASS — AUTHOR APPROVED`; global G8 closed; no user-observable surface |
-| G9P-R1/G9P design | Spatial identity plus projection-system/dihedral-diagram semantics, general one-dimensional Locus generators, documentation and interoperability foundations | `PASS — AUTHOR APPROVED`; six normative specifications and ADR 0010–0015 Accepted; G9O1 `PASS — AUTHOR APPROVED`; G9A1 authorized/not started; no productive spatial G9 implementation started |
+| G9P-R1/G9P design | Spatial identity plus projection-system/dihedral-diagram semantics, general one-dimensional Locus generators, documentation and interoperability foundations | `PASS — AUTHOR APPROVED`; six normative specifications and ADR 0010–0015 Accepted; G9O1 `PASS — AUTHOR APPROVED` |
+| G9A1/G9A2/G9A3 and grouped G9A | Durable identity, persistence and lifecycle/migration | `PASS — AUTHOR APPROVED` |
+| G9U0 | Experimental public Locus V2 surface | `PASS — AUTHOR APPROVED`; default-off and GeoCeDG-only |
 | G10 | CeDG 3D DSL and workbench | Pending |
 | G11 | Hierarchical layers and view states | Pending |
 | G12 | Extended navigation, zoom and physical scales | Pending |
@@ -1294,7 +1363,7 @@ The existing Classic runtime already has many general 2D/3D facilities. Their
 presence must not be reported as implementation of these future GeoCeDG
 semantic contracts.
 
-### G7B internal metric candidate — no public metric feature
+### Historical G7B internal metric closeout — no public metric at that gate
 
 ```text
 G7B internal productive metric available
@@ -1378,9 +1447,10 @@ The implementation preserves these author-approved requirements:
   state, correct invalidation and cache-off semantic equality.
 
 These measured decisions are author-approved; ADR 0007 is Accepted, the G7
-metric spec is normative, G7B is `PASS — AUTHOR APPROVED`, and G7 is `PASS`. A
-productive internal metric is available only through Java and the opt-in
-developer laboratory; no public metric is available. The complete
+metric spec is normative, G7B is `PASS — AUTHOR APPROVED`, and G7 is `PASS`. At
+that historical gate, the productive metric was available only through Java
+and the opt-in developer laboratory. G9U0 now exposes the guarded,
+author-approved experimental surface documented above. The complete
 scientific evidence includes high-precision ellipse, transcendental and
 difficult-quadrature references, regular and endpoint-degenerate
 reparameterizations, explicit improper outcomes, all open-branch policies,
@@ -1448,10 +1518,13 @@ ADR 0009 is Accepted, and its internal implementation is
 `PASS — AUTHOR APPROVED`. G8 is globally closed. G9P is
 `PASS — AUTHOR APPROVED`; its six specifications are normative, but it implies
 no productive spatial G9 implementation. G9O1 is `PASS — AUTHOR APPROVED`;
-G9A1 is authorized but not started.
+G9A1/G9A2/G9A3 and grouped G9A are `PASS — AUTHOR APPROVED`. G9U0 is
+also `PASS — AUTHOR APPROVED`; its surface remains experimental and default-off.
 
-There is no native Locus V2 intersection command, public point output, public
-incidence/`Path`, persistence, UI, 3D behavior or end-user workflow. The
+At the G8 closeout there was no native Locus V2 intersection command, public
+point output, persistence, UI or end-user workflow. The G9U0 surface now
+exposes rich intersection queries and exact-token points without making V2 a
+generic `Path`; 3D/spatial behavior remains absent. The
 [G8 plan](../roadmap/g8_locus_v2_intersections_plan.md),
 [normative spec](../../geocedg/specs/locus/locus-v2-intersections.md),
 [architecture](../architecture/locus_v2_intersection_architecture.md),
@@ -1467,7 +1540,8 @@ incidence/`Path`, persistence, UI, 3D behavior or end-user workflow. The
 [G8C characterization report](../validation/g8c_locus_v2_extended_intersection_characterization_report.md)
 and [G8C2 kernel report](../validation/g8c2_locus_v2_locus_intersection_kernel_report.md)
 record the author-approved design, contracts and internal implementations.
-Global G8 is closed, but no public G8 workflow or G9 implementation is implied.
+Global G8 is closed; its historical closeout did not itself imply a public
+workflow or G9 implementation.
 
 ## 13. Current limitations
 
@@ -1483,13 +1557,12 @@ Global G8 is closed, but no public G8 workflow or G9 implementation is implied.
 - G5 supports only the exact 2D families listed above. There is no DXF import,
   viewport export, physical-unit contract, text export, approximate general
   curves, legacy Locus export or 3D export.
-- Locus V2 semantic and G7B metric behavior is accessible only through
-  internal/test factories and the explicit developer laboratory. No native
-  public CeDG metric or Locus V2 intersection command, persistence, spatial
-  object/projection identity or DSL exists. The productive V2 metric remains
-  internal; G8B is an author-approved internal minimum, while G8C design is
-  author-approved and G8C1 is an author-approved internal kernel, with no
-  user-observable extended intersection surface.
+- The G9U0 Locus V2 command/tool/metric/intersection surface is author-approved
+  for G9U0 but remains experimental, GeoCeDG-only and disabled by default. It supports
+  only the documented generators, explicit domains and targets; V2 is not a
+  generic `Path`. Native persistence is GeoCeDG-specific, external upstream
+  consumers are outside the compatibility guarantee, and no spatial
+  object/projection, DXF-locus or DSL capability is implied.
 - Legacy macros may have undocumented validity ranges, degeneracies, dynamic
   limitations, and sampled numerical approximations.
 - The 71-model public corpus is an external metadata index, not a local mirror

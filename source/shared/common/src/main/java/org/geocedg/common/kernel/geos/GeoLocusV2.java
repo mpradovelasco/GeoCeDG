@@ -5,6 +5,7 @@
 
 package org.geocedg.common.kernel.geos;
 
+import org.geocedg.common.kernel.algos.AlgoDependentPointLocusV2;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
@@ -13,6 +14,8 @@ import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.DefinitionStatus;
 import org.geocedg.common.kernel.locus.metric.LocusMetricInstrumentation2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricOwnerLease2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricSharedOwner2D;
+import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
+import org.geocedg.common.kernel.spatial.identity.PersistentGeoIdentityListener;
 import org.geogebra.common.io.XMLStringBuilder;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.StringTemplate;
@@ -25,15 +28,15 @@ import org.geogebra.common.plugin.GeoClass;
  * Parallel experimental semantic 2D locus. It deliberately implements neither
  * Path nor any legacy GeoLocus interface in G6B.
  */
-public final class GeoLocusV2 extends GeoElement {
-	private static final String UNSUPPORTED_COPY =
-			"GeoLocusV2 cannot be copied before an approved persistence/lifecycle contract";
-	private final String locusIdentity;
+public final class GeoLocusV2 extends GeoElement
+		implements PersistentGeoIdentityListener {
+	private final String bootstrapIdentity;
 	private final LocusInstrumentation2D instrumentation;
 	private final LocusMetricInstrumentation2D metricInstrumentation;
 	private LocusDefinition2D definition;
 	private boolean explicitlyUndefined;
 	private LocusMetricSharedOwner2D metricOwner;
+	private String metricOwnerIdentity;
 
 	/** Creates an empty internal V2 object with a caller-owned stable identity. */
 	public GeoLocusV2(Construction construction, String locusIdentity) {
@@ -41,23 +44,80 @@ public final class GeoLocusV2 extends GeoElement {
 		if (locusIdentity == null || locusIdentity.trim().isEmpty()) {
 			throw new IllegalArgumentException("Locus V2 identity is required");
 		}
-		this.locusIdentity = locusIdentity;
+		this.bootstrapIdentity = locusIdentity;
 		this.instrumentation = new LocusInstrumentation2D();
 		this.metricInstrumentation = new LocusMetricInstrumentation2D();
 		setEuclidianVisible(true);
 		setAuxiliaryObject(true);
 	}
 
-	public String getLocusIdentity() {
-		return locusIdentity;
+	/** Creates an unassociated copy shell; no semantic snapshot is copied. */
+	public GeoLocusV2(Construction construction) {
+		super(construction);
+		this.bootstrapIdentity = null;
+		this.instrumentation = new LocusInstrumentation2D();
+		this.metricInstrumentation = new LocusMetricInstrumentation2D();
+		setEuclidianVisible(true);
+		setAuxiliaryObject(true);
 	}
 
+	/** @return current lifecycle identity in its external form */
+	public String getLocusIdentity() {
+		PersistentGeoId persistent = getPersistentLocusId();
+		if (persistent != null) {
+			return persistent.toExternalForm();
+		}
+		if (bootstrapIdentity == null) {
+			throw new IllegalStateException(
+					"Locus V2 has no attached durable identity");
+		}
+		return bootstrapIdentity;
+	}
+
+	/** @return current lifecycle-owned locus ID, never a cached pre-copy value */
+	public PersistentGeoId getPersistentLocusId() {
+		return cons.getSpatialIdentityRegistry().getPersistentGeoId(this);
+	}
+
+	@Override
+	public void onPersistentGeoIdentityAttached(PersistentGeoId attachedId) {
+		try {
+			if (!attachedId.equals(getPersistentLocusId())) {
+				setUndefined();
+				return;
+			}
+			if (getParentAlgorithm() != null) {
+				getParentAlgorithm().update();
+			}
+		} catch (RuntimeException exception) {
+			setUndefined();
+		}
+	}
+
+	/** Refreshes only the identity carried by an immutable semantic snapshot. */
+	public void refreshPersistentIdentity() {
+		if (definition == null) {
+			return;
+		}
+		String current = getLocusIdentity();
+		if (!current.equals(definition.getLocusIdentity())) {
+			definition = definition.withLocusIdentity(current);
+			if (metricOwner != null) {
+				metricOwner.releaseSource();
+				metricOwner = null;
+				metricOwnerIdentity = null;
+			}
+		}
+	}
+
+	/** @return current semantic definition, or {@code null} while undefined */
 	public LocusDefinition2D getSemanticDefinition() {
+		refreshPersistentIdentity();
 		return definition;
 	}
 
 	public long getSemanticRevision() {
-		return definition == null ? 0 : definition.getSemanticRevision();
+		return getSemanticDefinition() == null ? 0 : definition.getSemanticRevision();
 	}
 
 	public LocusInstrumentation2D getInstrumentation() {
@@ -76,9 +136,15 @@ public final class GeoLocusV2 extends GeoElement {
 	 * @return one active metric-consumer lease
 	 */
 	public LocusMetricOwnerLease2D acquireMetricOwnerLease() {
-		if (metricOwner == null || metricOwner.isReleased()) {
-			metricOwner = new LocusMetricSharedOwner2D(locusIdentity,
+		String currentIdentity = getLocusIdentity();
+		if (metricOwner == null || metricOwner.isReleased()
+				|| !currentIdentity.equals(metricOwnerIdentity)) {
+			if (metricOwner != null && !metricOwner.isReleased()) {
+				metricOwner.releaseSource();
+			}
+			metricOwner = new LocusMetricSharedOwner2D(currentIdentity,
 					metricInstrumentation);
+			metricOwnerIdentity = currentIdentity;
 		}
 		return metricOwner.acquireLease();
 	}
@@ -90,7 +156,7 @@ public final class GeoLocusV2 extends GeoElement {
 
 	/** Publishes one immutable snapshot from normal AlgoElement recompute only. */
 	public void publishSemanticDefinition(LocusDefinition2D semanticDefinition) {
-		if (!locusIdentity.equals(semanticDefinition.getLocusIdentity())) {
+		if (!getLocusIdentity().equals(semanticDefinition.getLocusIdentity())) {
 			throw new IllegalArgumentException("Definition identity does not match geo");
 		}
 		if (definition != null && semanticDefinition.getSemanticRevision()
@@ -150,13 +216,13 @@ public final class GeoLocusV2 extends GeoElement {
 		return ValueType.VOID;
 	}
 
-	/** @return safe developer-only type text without an upstream translation key */
+	/** @return localized experimental public type text */
 	@Override
 	public String translatedTypeString() {
-		return "Locus V2 (experimental)";
+		return getLoc().getMenu("LocusV2");
 	}
 
-	/** @return safe developer-only Algebra View type text */
+	/** @return localized Algebra View type text */
 	@Override
 	public String translatedTypeStringForAlgebraView() {
 		return translatedTypeString();
@@ -164,18 +230,30 @@ public final class GeoLocusV2 extends GeoElement {
 
 	@Override
 	public GeoElement copy() {
-		throw new UnsupportedOperationException(UNSUPPORTED_COPY);
+		requirePublicPersistence("copy");
+		return copyInternal(cons);
 	}
 
 	@Override
 	public GeoElement copyInternal(Construction targetConstruction) {
-		throw new UnsupportedOperationException(UNSUPPORTED_COPY);
+		requirePublicPersistence("copyInternal");
+		GeoLocusV2 copy = new GeoLocusV2(targetConstruction);
+		copy.setVisualStyle(this);
+		return copy;
 	}
 
 	@Override
 	public void set(GeoElementND geo) {
-		throw new UnsupportedOperationException(
-				"GeoLocusV2 assignment is unavailable before an approved lifecycle contract");
+		if (!isPublicPersistentLocus()) {
+			throw new UnsupportedOperationException(
+					"Internal Locus V2 assignment is not a persistence contract");
+		}
+		if (!(geo instanceof GeoLocusV2)) {
+			setUndefined();
+			return;
+		}
+		definition = null;
+		setUndefined();
 	}
 
 	@Override
@@ -198,9 +276,11 @@ public final class GeoLocusV2 extends GeoElement {
 
 	@Override
 	public void doRemove() {
+		setUndefined();
 		if (metricOwner != null) {
 			metricOwner.releaseSource();
 			metricOwner = null;
+			metricOwnerIdentity = null;
 		}
 		super.doRemove();
 	}
@@ -222,9 +302,25 @@ public final class GeoLocusV2 extends GeoElement {
 		return false;
 	}
 
-	/** G6B is intentionally nonpersistent: no XML element is emitted. */
+	/** Persists only reconstructible parent inputs, styles and the durable ID. */
 	@Override
 	public void getXML(boolean getListenersToo, XMLStringBuilder builder) {
-		// Persistence and migration require a separate author-approved contract.
+		if (!isPublicPersistentLocus()) {
+			return;
+		}
+		super.getXML(getListenersToo, builder);
+	}
+
+	private boolean isPublicPersistentLocus() {
+		return getPersistentLocusId() != null
+				|| getParentAlgorithm() instanceof AlgoDependentPointLocusV2;
+	}
+
+	private void requirePublicPersistence(String operation) {
+		if (!isPublicPersistentLocus()) {
+			throw new UnsupportedOperationException(
+					"Internal Locus V2 " + operation
+							+ " is not a persistence contract");
+		}
 	}
 }

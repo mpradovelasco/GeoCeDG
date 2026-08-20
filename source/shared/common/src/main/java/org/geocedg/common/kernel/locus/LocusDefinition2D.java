@@ -175,6 +175,21 @@ public final class LocusDefinition2D {
 				instrumentation);
 	}
 
+	/**
+	 * Rebinds immutable semantic content to a lifecycle-remapped durable identity.
+	 * This changes no geometry, domain, revision or evaluator evidence.
+	 *
+	 * @return identity-refreshed snapshot
+	 */
+	public LocusDefinition2D withLocusIdentity(String identity) {
+		if (locusIdentity.equals(identity)) {
+			return this;
+		}
+		return new LocusDefinition2D(identity, semanticRevision, definitionStatus,
+				provider, branches, evaluator, determinism, evaluatorSignature,
+				instrumentation);
+	}
+
 	private static List<LocusBranch2D> immutableBranches(List<LocusBranch2D> input) {
 		Objects.requireNonNull(input);
 		ArrayList<LocusBranch2D> copy = new ArrayList<>();

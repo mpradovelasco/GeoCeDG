@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 import org.geocedg.common.kernel.locus.LocusBranch2D;
+import org.geocedg.common.kernel.locus.LocusComponentLineage2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
@@ -51,6 +52,12 @@ public final class LocusMetricPositionBinder2D {
 					branch.getValidDomainComponents().get(index);
 			if (component.contains(parameter,
 					definition.getProvider().getDomainEpsilon())) {
+				if (position.getComponentLineageKey() != null
+						&& !position.getComponentLineageKey().equals(
+								LocusComponentLineage2D.create(
+										branch.getBranchKey(), component))) {
+					continue;
+				}
 				try (LocusEvaluationSession2D session =
 						LocusEvaluationSession2D.reference()) {
 					LocusEvaluation2D evaluation = definition.evaluate(

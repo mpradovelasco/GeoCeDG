@@ -59,7 +59,7 @@ public final class ProjectionBindingRecord implements SpatialIdentityRecord {
 		this.systemId = Objects.requireNonNull(systemId);
 		this.diagramMapId = Objects.requireNonNull(diagramMapId);
 		this.frameId = Objects.requireNonNull(frameId);
-		this.role = Objects.requireNonNull(role);
+		this.role = requireProjectionRole(role);
 		this.representationType = SpatialRecordSupport.requireText(representationType,
 				"representationType");
 		this.expectedSpatialType = SpatialRecordSupport.requireText(expectedSpatialType,
@@ -106,7 +106,7 @@ public final class ProjectionBindingRecord implements SpatialIdentityRecord {
 		this.systemId = Objects.requireNonNull(systemId);
 		this.diagramMapId = Objects.requireNonNull(diagramMapId);
 		this.frameId = Objects.requireNonNull(frameId);
-		this.role = Objects.requireNonNull(role);
+		this.role = requireProjectionRole(role);
 		this.representationType = SpatialRecordSupport.requireText(representationType,
 				"representationType");
 		if (!SpatialObjectRecord.POINT_TYPE.equals(this.representationType)) {
@@ -140,6 +140,16 @@ public final class ProjectionBindingRecord implements SpatialIdentityRecord {
 	@Override
 	public ProjectionBindingId getId() {
 		return id;
+	}
+
+	private static ProjectionBindingRole requireProjectionRole(
+			ProjectionBindingRole role) {
+		ProjectionBindingRole checked = Objects.requireNonNull(role);
+		if (checked == ProjectionBindingRole.NOT_APPLICABLE) {
+			throw new IllegalArgumentException(
+					"A projection binding requires an applicable projection role");
+		}
+		return checked;
 	}
 
 	@Override

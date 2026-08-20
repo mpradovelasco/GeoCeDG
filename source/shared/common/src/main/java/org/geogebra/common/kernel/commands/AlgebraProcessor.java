@@ -32,6 +32,7 @@ import javax.annotation.Nonnull;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityDiagnostic;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityException;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry.RedefinePublicationLease;
+import org.geocedg.common.kernel.spatial.identity.SpatialRedefineCandidateParticipation;
 import org.geocedg.common.kernel.spatial.identity.SpatialRedefineContext;
 import org.geocedg.common.kernel.spatial.identity.SpatialRedefineDecision;
 import org.geocedg.common.kernel.spatial.identity.SpatialRedefineTransaction;
@@ -2084,6 +2085,21 @@ public class AlgebraProcessor {
 
 		GeoElement[] ret;
 		boolean oldMacroMode = cons.isSuppressLabelsActive();
+		SpatialRedefineCandidateParticipation candidateParticipation = null;
+		SpatialRedefineContext candidateContext = evalInfo.getSpatialRedefineContext();
+		if (replaceable != null
+				&& cons.getSpatialIdentityRegistry().isParticipating(replaceable)) {
+			cons.getSpatialIdentityRegistry()
+					.requireExplicitRedefineContextPresent(candidateContext);
+			if (candidateContext.getOldTarget() != replaceable) {
+				throw new SpatialIdentityException(SpatialIdentityDiagnostic.forSubject(
+						SpatialIdentityDiagnostic.Code.REDEFINE_CONTEXT_MISSING,
+						"Explicit redefine context does not match the parsed target",
+						candidateContext.getOldId()));
+			}
+			candidateParticipation = cons.getSpatialIdentityRegistry()
+					.beginRedefineCandidateParticipation(candidateContext);
+		}
 		if (replaceable != null) {
 			evalInfo = evalInfo.withRedefinition(true);
 			cons.setSuppressLabelCreation(true);
@@ -2096,24 +2112,33 @@ public class AlgebraProcessor {
 		// we have to make sure that the macro mode is
 		// set back at the end
 		try {
-			ret = doProcessValidExpression(exp, evalInfo);
-			if (ret == null) { // eg (1,2,3) running in 2D
-				if (isFreehandFunction(exp)) {
-					return kernel.lookupLabel(exp.getLabel()).asArray();
+			try {
+				ret = doProcessValidExpression(exp, evalInfo);
+				if (ret == null) { // eg (1,2,3) running in 2D
+					if (isFreehandFunction(exp)) {
+						return kernel.lookupLabel(exp.getLabel()).asArray();
+					}
+					throw new MyError(loc,
+							loc.getInvalidInputError() + ":\n" + exp);
 				}
-				throw new MyError(loc,
-						loc.getInvalidInputError() + ":\n" + exp);
+			} finally {
+				isRedefining = false;
+				cons.setSuppressLabelCreation(oldMacroMode);
 			}
+			if (candidateParticipation != null) {
+				evalInfo = evalInfo.withSpatialRedefineCandidateParticipation(
+						candidateParticipation.seal());
+			}
+			if (!info.getKeepDefinition()) {
+				stripDefinition(ret);
+			}
+			processReplace(replaceable, ret, exp, evalInfo);
+			return ret;
 		} finally {
-			isRedefining = false;
-			cons.setSuppressLabelCreation(oldMacroMode);
+			if (candidateParticipation != null) {
+				candidateParticipation.close();
+			}
 		}
-		if (!info.getKeepDefinition()) {
-			stripDefinition(ret);
-		}
-		processReplace(replaceable, ret, exp, evalInfo);
-
-		return ret;
 	}
 
 	/**
@@ -2191,6 +2216,11 @@ public class AlgebraProcessor {
 			try {
 				spatialTransaction = prepareSpatialRedefine(replaceable, ret, info);
 			} catch (RuntimeException | MyError failure) {
+				SpatialRedefineCandidateParticipation participation =
+						info.getSpatialRedefineCandidateParticipation();
+				if (participation != null) {
+					participation.abandon();
+				}
 				cons.rollbackSpatialRedefinePreparation(
 						info.getSpatialRedefineContext());
 				throw failure;
@@ -2443,13 +2473,20 @@ public class AlgebraProcessor {
 		SpatialRedefineTransaction transaction =
 				cons.getSpatialIdentityRegistry().prepareRedefine(context,
 						candidates[0], Arrays.asList(candidates),
-						info.isSpatialReplacementOperationSelected());
+						info.isSpatialReplacementOperationSelected(),
+						info.getSpatialRedefineCandidateParticipation());
 		if (transaction.getDecision() == SpatialRedefineDecision.REJECT) {
 			transaction.rollback();
 			throw new SpatialIdentityException(SpatialIdentityDiagnostic.forSubject(
 					SpatialIdentityDiagnostic.Code.REDEFINE_REJECTED,
 					"Provider rejected redefine before host mutation",
 					transaction.getContext().getOldId()));
+		}
+		try {
+			transaction.activateCandidateParticipation();
+		} catch (RuntimeException failure) {
+			transaction.rollback();
+			throw failure;
 		}
 		return transaction;
 	}

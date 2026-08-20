@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<g9u0FixtureManifest
+    purpose="declarative public-surface provider and query coverage; not native GeoGebra construction XML">
+  <provider family="SCALAR_STATE" command="LocusV2(Q,s,D)"/>
+  <provider family="SEGMENT_POINT" command="LocusV2(Q,S)"/>
+  <provider family="CIRCLE_POINT" command="LocusV2(Q,C)"/>
+  <provider family="CIRCULAR_ARC_POINT" command="LocusV2(Q,A)"/>
+  <provider family="LOCUS_BRANCH_POINT" command="LocusV2(Q,P)"/>
+  <query family="TOTAL_METRIC" command="LocusLength(L)"/>
+  <query family="BETWEEN_METRIC" command="LocusLength(L,P1,P2)"/>
+  <query family="GENERAL_INTERSECTION" command="Intersect(L,target)"/>
+  <query family="EXACT_TOKEN_POINT" command="Intersect(R,token)"/>
+</g9u0FixtureManifest>

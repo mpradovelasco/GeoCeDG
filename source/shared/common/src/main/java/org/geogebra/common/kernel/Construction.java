@@ -39,6 +39,8 @@ import java.util.function.Predicate;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
+import org.geocedg.common.kernel.spatial.identity.ConstructionGeoRedefineProvider;
+import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityDiagnostic;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityException;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityId;
@@ -276,6 +278,8 @@ public class Construction {
 		spatialIdentityRegistry.registerLifecycleRuntime(spatialSemanticRuntime);
 		spatialIdentityRegistry.registerRedefineProvider(
 				new SpatialPointPilotRedefineProvider(spatialIdentityRegistry));
+		spatialIdentityRegistry.registerRedefineProvider(
+				new ConstructionGeoRedefineProvider(spatialIdentityRegistry));
 
 		companion = kernel.createConstructionCompanion(this);
 
@@ -367,10 +371,12 @@ public class Construction {
 	 * @return positive construction-confined operation epoch
 	 */
 	public long captureSpatialRedefineHostOperationEpoch() {
-		spatialIdentityRegistry.requireRedefineHostCaptureAllowed();
 		if (collectRedefineCalls && collectedSpatialRedefineHostEpoch > 0) {
+			spatialIdentityRegistry
+					.requireCollectedRedefineHostCaptureAllowed();
 			return collectedSpatialRedefineHostEpoch;
 		}
+		spatialIdentityRegistry.requireRedefineHostCaptureAllowed();
 		spatialRedefineHostEpoch = Math.addExact(spatialRedefineHostEpoch, 1);
 		return spatialRedefineHostEpoch;
 	}
@@ -2085,7 +2091,10 @@ public class Construction {
 				spatialTransaction == null ? null
 						: spatialIdentityRegistry.beginRedefineSerializationOverlay(
 								spatialTransaction)) {
-			if (refreshSpatialGroupXml) {
+			if (spatialTransaction != null || refreshSpatialGroupXml) {
+				// Candidate dependencies are promoted only after provider approval.
+				// Refresh inside the serialization overlay so their element XML and
+				// the transaction record view carry the same durable attachments.
 				isGettingXMLForReplace = true;
 				consXML.setLength(0);
 				consXML.append(getCurrentUndoXML(false));
@@ -2200,9 +2209,68 @@ public class Construction {
 			spatialGeosBeingRemovedForReplace = operationGroup;
 		}
 		try {
+			removeFreshRetiredHostDependents(transaction);
 			prepareReplace(oldGeo, newGeo);
 		} finally {
 			spatialGeosBeingRemovedForReplace = previousSpatialRemovalGroup;
+		}
+	}
+
+	private void removeFreshRetiredHostDependents(
+			SpatialRedefineTransaction transaction) {
+		if (transaction == null || transaction.getState()
+				!= SpatialRedefineTransaction.State.PREPARED
+				|| transaction.getDecision() != SpatialRedefineDecision.FRESH) {
+			return;
+		}
+		Set<GeoElement> providerOutputs = Collections.newSetFromMap(
+				new IdentityHashMap<GeoElement, Boolean>());
+		for (SpatialRedefinePersistedOutput output
+				: transaction.getContext().getOldOutputs().getOutputs()) {
+			providerOutputs.add(output.getGeo());
+		}
+		IdentityHashMap<GeoElement, PersistentGeoId> retiredByGeo =
+				new IdentityHashMap<>();
+		for (SpatialIdentityId retiredId : transaction.getRetiredIds()) {
+			if (retiredId instanceof PersistentGeoId) {
+				PersistentGeoId persistentId = (PersistentGeoId) retiredId;
+				GeoElement geo = spatialIdentityRegistry.getGeo(persistentId);
+				if (geo == null || !persistentId.equals(
+						spatialIdentityRegistry.getPersistentGeoId(geo))) {
+					throw new SpatialIdentityException(
+							SpatialIdentityDiagnostic.forSubject(
+									SpatialIdentityDiagnostic.Code.REDEFINE_CONTEXT_MISSING,
+									"Fresh redefine retirement attachment is no longer current",
+									persistentId));
+				}
+				if (!providerOutputs.contains(geo)) {
+					retiredByGeo.put(geo, persistentId);
+				}
+			}
+		}
+		ArrayList<GeoElement> retiredDependents =
+				new ArrayList<>(retiredByGeo.keySet());
+		Collections.sort(retiredDependents, (first, second) -> {
+			int byConstruction = Integer.compare(second.getConstructionIndex(),
+					first.getConstructionIndex());
+			return byConstruction != 0 ? byConstruction
+					: retiredByGeo.get(first).compareTo(retiredByGeo.get(second));
+		});
+		for (GeoElement retired : retiredDependents) {
+			PersistentGeoId expectedId = retiredByGeo.get(retired);
+			if (spatialIdentityRegistry.getGeo(expectedId) != retired
+					|| !expectedId.equals(
+							spatialIdentityRegistry.getPersistentGeoId(retired))) {
+				throw new SpatialIdentityException(
+						SpatialIdentityDiagnostic.forSubject(
+								SpatialIdentityDiagnostic.Code.REDEFINE_CONTEXT_MISSING,
+								"Fresh redefine retirement attachment is no longer current",
+								expectedId));
+			}
+			if (isInConstructionList(retired)) {
+				retired.setParentGroup(null);
+				retired.remove();
+			}
 		}
 	}
 
@@ -2227,6 +2295,24 @@ public class Construction {
 								output.getId()));
 			}
 			group.add(geo);
+		}
+		if (transaction.getDecision() == SpatialRedefineDecision.FRESH) {
+			for (SpatialIdentityId retiredId : transaction.getRetiredIds()) {
+				if (!(retiredId instanceof PersistentGeoId)) {
+					continue;
+				}
+				PersistentGeoId persistentId = (PersistentGeoId) retiredId;
+				GeoElement geo = spatialIdentityRegistry.getGeo(persistentId);
+				if (geo == null || !persistentId.equals(
+						spatialIdentityRegistry.getPersistentGeoId(geo))) {
+					throw new SpatialIdentityException(
+							SpatialIdentityDiagnostic.forSubject(
+									SpatialIdentityDiagnostic.Code.REDEFINE_CONTEXT_MISSING,
+									"Fresh redefine retirement attachment is no longer current",
+									persistentId));
+				}
+				group.add(geo);
+			}
 		}
 		return group;
 	}
@@ -2320,7 +2406,9 @@ public class Construction {
 			}
 			transaction = spatialIdentityRegistry.prepareRedefine(context, newGeo,
 					java.util.Collections.singletonList(newGeo), info != null
-							&& info.isSpatialReplacementOperationSelected());
+							&& info.isSpatialReplacementOperationSelected(), info == null
+									? null
+									: info.getSpatialRedefineCandidateParticipation());
 		}
 		if (transaction.getDecision() == SpatialRedefineDecision.REJECT) {
 			transaction.rollback();
@@ -2328,6 +2416,12 @@ public class Construction {
 					SpatialIdentityDiagnostic.Code.REDEFINE_REJECTED,
 					"Provider rejected redefine before host mutation",
 					transaction.getContext().getOldId()));
+		}
+		try {
+			transaction.activateCandidateParticipation();
+		} catch (RuntimeException failure) {
+			transaction.rollback();
+			throw failure;
 		}
 		return transaction;
 	}

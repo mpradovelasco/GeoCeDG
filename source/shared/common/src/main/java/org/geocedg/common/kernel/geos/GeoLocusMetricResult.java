@@ -9,6 +9,8 @@ import java.util.Objects;
 
 import org.geocedg.common.kernel.locus.metric.LocusMetricResult2D;
 import org.geocedg.common.kernel.locus.metric.MetricValueKind;
+import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
+import org.geocedg.common.kernel.spatial.identity.PersistentGeoIdentityListener;
 import org.geogebra.common.io.XMLStringBuilder;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.StringTemplate;
@@ -22,11 +24,13 @@ import org.geogebra.common.plugin.GeoClass;
  *
  * <p>It deliberately implements no numeric interface.</p>
  */
-public final class GeoLocusMetricResult extends GeoElement {
-	private final String sourceLocusIdentity;
+public final class GeoLocusMetricResult extends GeoElement
+		implements PersistentGeoIdentityListener {
+	private String sourceLocusIdentity;
 	private long sourceSemanticRevision;
 	private LocusMetricResult2D metricResult;
 	private boolean explicitlyUndefined;
+	private boolean publicPersistence;
 
 	/** Creates an unpublished rich metric result for one source identity. */
 	public GeoLocusMetricResult(Construction construction,
@@ -44,6 +48,20 @@ public final class GeoLocusMetricResult extends GeoElement {
 
 	public String getSourceLocusIdentity() {
 		return sourceLocusIdentity;
+	}
+
+	/** Refreshes the source identity after an authorized copy/load remap. */
+	public void refreshSourceLocusIdentity(String identity) {
+		if (identity == null || identity.trim().isEmpty()) {
+			throw new IllegalArgumentException(
+					"Metric result source identity is required");
+		}
+		sourceLocusIdentity = identity;
+	}
+
+	/** Marks this result as reconstructible through its public parent command. */
+	public void enablePublicPersistence() {
+		publicPersistence = true;
 	}
 
 	public long getSourceSemanticRevision() {
@@ -104,7 +122,7 @@ public final class GeoLocusMetricResult extends GeoElement {
 
 	@Override
 	public String translatedTypeString() {
-		return "Locus metric result (experimental)";
+		return getLoc().getMenu("LocusMetricResult");
 	}
 
 	@Override
@@ -114,13 +132,18 @@ public final class GeoLocusMetricResult extends GeoElement {
 
 	@Override
 	public GeoElement copy() {
-		return new GeoLocusMetricResult(cons, sourceLocusIdentity);
+		GeoLocusMetricResult copy = new GeoLocusMetricResult(cons,
+				sourceLocusIdentity);
+		copy.publicPersistence = publicPersistence;
+		return copy;
 	}
 
 	@Override
 	public GeoElement copyInternal(Construction targetConstruction) {
-		return new GeoLocusMetricResult(targetConstruction,
+		GeoLocusMetricResult copy = new GeoLocusMetricResult(targetConstruction,
 				sourceLocusIdentity);
+		copy.publicPersistence = publicPersistence;
+		return copy;
 	}
 
 	/**
@@ -150,6 +173,23 @@ public final class GeoLocusMetricResult extends GeoElement {
 	}
 
 	@Override
+	public void onPersistentGeoIdentityAttached(PersistentGeoId attachedId) {
+		try {
+			if (!attachedId.equals(cons.getSpatialIdentityRegistry()
+					.getPersistentGeoId(this))) {
+				setUndefined();
+				return;
+			}
+			if (getParentAlgorithm() != null) {
+				getParentAlgorithm().update();
+				updateCascade();
+			}
+		} catch (RuntimeException exception) {
+			setUndefined();
+		}
+	}
+
+	@Override
 	public String toValueString(StringTemplate template) {
 		if (!isDefined()) {
 			return "LocusMetricResult[unpublished]";
@@ -170,9 +210,11 @@ public final class GeoLocusMetricResult extends GeoElement {
 		return false;
 	}
 
-	/** G7B is intentionally nonpersistent: no XML element is emitted. */
+	/** Internal G7B results remain transient; public G9U0 results persist. */
 	@Override
 	public void getXML(boolean getListenersToo, XMLStringBuilder builder) {
-		// Persistence requires a separate future author-approved contract.
+		if (publicPersistence) {
+			super.getXML(getListenersToo, builder);
+		}
 	}
 }

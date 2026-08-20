@@ -13,6 +13,7 @@ import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.metric.BetweenPositionsMetricQuery;
+import org.geocedg.common.kernel.locus.metric.EvaluatorOnlyLocusMetricCapability2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricCapabilityHierarchy2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricComponentBuildException;
 import org.geocedg.common.kernel.locus.metric.LocusMetricEngine2D;
@@ -27,9 +28,12 @@ import org.geocedg.common.kernel.locus.metric.MetricDiagnostic2D;
 import org.geocedg.common.kernel.locus.metric.MetricDiagnosticCode2D;
 import org.geocedg.common.kernel.locus.metric.TotalLocusMetricQuery;
 import org.geocedg.common.kernel.locus.metric.TraversalOutcome;
+import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.algos.Algos;
+import org.geogebra.common.kernel.algos.GetCommand;
+import org.geogebra.common.kernel.commands.Commands;
 import org.geogebra.common.kernel.geos.GeoElement;
 
 /**
@@ -41,6 +45,8 @@ public final class AlgoLocusMetricV2 extends AlgoElement {
 	private final LocusMetricCapabilityHierarchy2D capabilities;
 	private final LocusMetricIndexMode indexMode;
 	private final String consumerIdentity;
+	private final boolean publicCommand;
+	private final GetCommand commandName;
 	private final GeoElement[] configuredInputs;
 	private final GeoLocusMetricResult result;
 	private final LocusMetricEngine2D engine = new LocusMetricEngine2D();
@@ -57,7 +63,33 @@ public final class AlgoLocusMetricV2 extends AlgoElement {
 			LocusMetricCapabilityHierarchy2D capabilities,
 			LocusMetricIndexMode indexMode, String consumerIdentity,
 			GeoElement[] queryDependencies) {
-		super(construction, false);
+		this(construction, source, query, capabilities, indexMode,
+				consumerIdentity, queryDependencies, false, Algos.Expression, null);
+	}
+
+	/** Creates a reconstructible public total rich metric result. */
+	public AlgoLocusMetricV2(Construction construction, String label,
+			GeoLocusV2 source, PersistentGeoId resultId) {
+		this(construction, source,
+				new TotalLocusMetricQuery(initialSourceIdentity(source),
+						initialSemanticRevision(source),
+						LocusMetricPolicy2D.publicExperimental()),
+				new LocusMetricCapabilityHierarchy2D(List.of(
+						new EvaluatorOnlyLocusMetricCapability2D(
+								"g9u0-public-evaluator-metric/v1"))),
+				LocusMetricIndexMode.LAZY_COMPONENT_REVISION,
+				initialConsumerIdentity(construction, resultId,
+						"/total-metric-consumer"), new GeoElement[0], true,
+				Commands.LocusLength, label);
+	}
+
+	private AlgoLocusMetricV2(Construction construction, GeoLocusV2 source,
+			LocusMetricQuery2D query,
+			LocusMetricCapabilityHierarchy2D capabilities,
+			LocusMetricIndexMode indexMode, String consumerIdentity,
+			GeoElement[] queryDependencies, boolean addToConstructionList,
+			GetCommand commandName, String label) {
+		super(construction, addToConstructionList);
 		if (consumerIdentity == null || consumerIdentity.trim().isEmpty()) {
 			throw new IllegalArgumentException(
 					"Metric consumer identity is required for work accounting");
@@ -67,14 +99,24 @@ public final class AlgoLocusMetricV2 extends AlgoElement {
 		this.capabilities = capabilities;
 		this.indexMode = indexMode;
 		this.consumerIdentity = consumerIdentity;
+		this.publicCommand = addToConstructionList;
+		this.commandName = commandName;
 		this.configuredInputs = combineInputs(source, queryDependencies);
 		this.result = new GeoLocusMetricResult(construction,
-				source.getLocusIdentity());
-		this.ownerLease = source.acquireMetricOwnerLease();
+				publicCommand ? initialSourceIdentity(source)
+						: source.getLocusIdentity());
+		if (publicCommand) {
+			result.enablePublicPersistence();
+		}
+		this.ownerLease = publicCommand ? null
+				: source.acquireMetricOwnerLease();
 		setProtectedInput(true);
 		setInputOutput();
 		setDependencies();
 		compute();
+		if (label != null) {
+			result.setLabel(label);
+		}
 	}
 
 	@Override
@@ -85,6 +127,14 @@ public final class AlgoLocusMetricV2 extends AlgoElement {
 
 	@Override
 	public void compute() {
+		if (publicCommand && !publicIdentitiesReady()) {
+			result.setUndefined();
+			return;
+		}
+		if (publicCommand) {
+			result.refreshSourceLocusIdentity(source.getLocusIdentity());
+		}
+		ensureOwnerLease();
 		long revision = Math.max(1, source.getSemanticRevision());
 		result.beginMetricRevision(revision);
 		LocusDefinition2D definition = source.getSemanticDefinition();
@@ -100,7 +150,7 @@ public final class AlgoLocusMetricV2 extends AlgoElement {
 			LocusMetricQuery2D currentQuery = queryForRevision(revision);
 			LocusMetricResult2D candidate = engine.compute(currentQuery, definition,
 					capabilities, ownerLease.getOwner(), indexMode,
-					source.getMetricInstrumentation(), consumerIdentity);
+					source.getMetricInstrumentation(), currentConsumerIdentity());
 			result.publishMetricResult(revision, candidate);
 		} catch (LocusMetricComponentBuildException exception) {
 			publishFailure(revision, exception.getComputationStatus(),
@@ -118,8 +168,10 @@ public final class AlgoLocusMetricV2 extends AlgoElement {
 
 	private LocusMetricQuery2D queryForRevision(long revision) {
 		if (query instanceof TotalLocusMetricQuery
-				&& query.getSemanticRevision() != revision) {
-			query = new TotalLocusMetricQuery(query.getLocusIdentity(), revision,
+				&& (query.getSemanticRevision() != revision
+						|| !query.getLocusIdentity()
+								.equals(source.getLocusIdentity()))) {
+			query = new TotalLocusMetricQuery(source.getLocusIdentity(), revision,
 					query.getPolicy());
 		}
 		return query;
@@ -147,8 +199,39 @@ public final class AlgoLocusMetricV2 extends AlgoElement {
 	}
 
 	@Override
-	public Algos getClassName() {
-		return Algos.Expression;
+	public GetCommand getClassName() {
+		return commandName;
+	}
+
+	private boolean publicIdentitiesReady() {
+		return source.getPersistentLocusId() != null
+				&& cons.getSpatialIdentityRegistry().getPersistentGeoId(result) != null;
+	}
+
+	private void ensureOwnerLease() {
+		if (ownerLease != null
+				&& (ownerLease.getOwner().isReleased()
+						|| !ownerLease.getOwner().getLocusIdentity()
+								.equals(source.getLocusIdentity()))) {
+			ownerLease.close();
+			ownerLease = null;
+		}
+		if (ownerLease == null) {
+			ownerLease = source.acquireMetricOwnerLease();
+		}
+	}
+
+	private String currentConsumerIdentity() {
+		if (!publicCommand) {
+			return consumerIdentity;
+		}
+		PersistentGeoId current = cons.getSpatialIdentityRegistry()
+				.getPersistentGeoId(result);
+		if (current == null) {
+			throw new IllegalStateException(
+					"Public metric result has no attached durable identity");
+		}
+		return current.toExternalForm() + "/total-metric-consumer";
 	}
 
 	private void publishFailure(long revision,
@@ -180,5 +263,29 @@ public final class AlgoLocusMetricV2 extends AlgoElement {
 			}
 		}
 		return inputs.toArray(new GeoElement[0]);
+	}
+
+	private static String initialSourceIdentity(GeoLocusV2 source) {
+		PersistentGeoId current = java.util.Objects.requireNonNull(source)
+				.getPersistentLocusId();
+		return current == null ? "g9u0-pending-locus"
+				: current.toExternalForm();
+	}
+
+	private static long initialSemanticRevision(GeoLocusV2 source) {
+		return source.getPersistentLocusId() == null ? 1
+				: Math.max(1, source.getSemanticRevision());
+	}
+
+	private static String initialConsumerIdentity(Construction construction,
+			PersistentGeoId resultId, String suffix) {
+		if (resultId == null) {
+			if (!construction.isFileLoading()) {
+				throw new IllegalArgumentException(
+						"Public metric result identity is required");
+			}
+			return "g9u0-pending-metric-result" + suffix;
+		}
+		return resultId.toExternalForm() + suffix;
 	}
 }

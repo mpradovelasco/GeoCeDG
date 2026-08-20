@@ -244,7 +244,11 @@ public final class LocusPairIntersectionSolver2D {
 		String branchPair = LocusPairIdentity2D.componentPair(
 				candidate.getFirstBranchKey(), candidate.getFirstComponentKey(),
 				candidate.getSecondBranchKey(), candidate.getSecondComponentKey());
-		String token = tokenSource.nextToken(candidate.getSolutionLineageKey());
+		String token = tokenSource.nextToken(candidate.getSolutionLineageKey(),
+				IntersectionTokenLineage2D.forCanonicalComponentPair(
+						candidate.getFirstBranchKey(), firstComponent.getInterval(),
+						candidate.getSecondBranchKey(), secondComponent.getInterval(),
+						candidate.getContinuationKey()));
 		boolean identityEstablished = candidate.getContinuationKey().isPresent()
 				&& candidate.getLocalIsolation().getStatus()
 						== LocalIsolationStatus.ESTABLISHED;

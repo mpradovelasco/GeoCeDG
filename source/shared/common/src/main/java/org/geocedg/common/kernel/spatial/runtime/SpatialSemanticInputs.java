@@ -1344,6 +1344,9 @@ final class SpatialSemanticInputs {
 					.append(':').append(geo.getBindingRole()).append(':')
 					.append(geo.getStableOutputRole()).append(':')
 					.append(geo.getOutputCardinality());
+			if (geo.getAuthority() == EditAuthorityMode.CONSTRUCTION_DEFINED) {
+				appendIds(result, geo.getDependencies());
+			}
 		} else if (record instanceof ProjectionFrameRecord) {
 			ProjectionFrameRecord frame = (ProjectionFrameRecord) record;
 			appendIds(result, frame.getDefinitionGeoIds());

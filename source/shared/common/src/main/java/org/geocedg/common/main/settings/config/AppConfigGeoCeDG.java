@@ -5,6 +5,7 @@
 
 package org.geocedg.common.main.settings.config;
 
+import org.geocedg.common.main.feature.RuntimeFeatureService;
 import org.geogebra.common.GeoGebraConstants;
 import org.geogebra.common.kernel.commands.selector.CommandFilter;
 import org.geogebra.common.main.settings.config.AppConfigDefault;
@@ -20,6 +21,27 @@ public final class AppConfigGeoCeDG extends AppConfigDefault {
 	public static final String APPLICATION_NAME = "GeoCeDG";
 	/** Preferences key used by the profile contract. */
 	public static final String PREFERENCES_KEY = "geocedg";
+	private final RuntimeFeatureService runtimeFeatureService;
+
+	/** Creates the default-off GeoCeDG profile. */
+	public AppConfigGeoCeDG() {
+		this(false);
+	}
+
+	/**
+	 * @param locusV2CreationEnabled explicit experimental-surface opt-in
+	 */
+	public AppConfigGeoCeDG(boolean locusV2CreationEnabled) {
+		runtimeFeatureService = new RuntimeFeatureService(
+				locusV2CreationEnabled);
+	}
+
+	/**
+	 * @return application-owned runtime feature authority
+	 */
+	public RuntimeFeatureService getRuntimeFeatureService() {
+		return runtimeFeatureService;
+	}
 
 	@Override
 	public String getAppTitle() {
@@ -53,6 +75,6 @@ public final class AppConfigGeoCeDG extends AppConfigDefault {
 
 	@Override
 	public CommandFilter createCommandFilter() {
-		return null;
+		return runtimeFeatureService::isCommandVisible;
 	}
 }

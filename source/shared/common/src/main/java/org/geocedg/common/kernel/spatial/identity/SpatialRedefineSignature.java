@@ -5,6 +5,8 @@
 
 package org.geocedg.common.kernel.spatial.identity;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 /** Immutable provider/type/schema/role/cardinality continuity signature. */
@@ -17,12 +19,23 @@ public final class SpatialRedefineSignature {
 	private final ProjectionBindingRole bindingRole;
 	private final String stableOutputRole;
 	private final int outputCardinality;
+	private final List<PersistentGeoId> dependencies;
 
 	/** Creates the complete provider-owned continuity signature. */
 	public SpatialRedefineSignature(String provider, String family, String schemaId,
 			int schemaVersion, EditAuthorityMode authority,
 			ProjectionBindingRole bindingRole, String stableOutputRole,
 			int outputCardinality) {
+		this(provider, family, schemaId, schemaVersion, authority, bindingRole,
+				stableOutputRole, outputCardinality,
+				Collections.<PersistentGeoId>emptyList());
+	}
+
+	/** Creates the complete dependency-sensitive continuity signature. */
+	public SpatialRedefineSignature(String provider, String family, String schemaId,
+			int schemaVersion, EditAuthorityMode authority,
+			ProjectionBindingRole bindingRole, String stableOutputRole,
+			int outputCardinality, List<PersistentGeoId> dependencies) {
 		this.provider = SpatialRecordSupport.requireText(provider, "provider");
 		this.family = SpatialRecordSupport.requireText(family, "family");
 		this.schemaId = SpatialRecordSupport.requireText(schemaId, "schemaId");
@@ -34,6 +47,12 @@ public final class SpatialRedefineSignature {
 				"stableOutputRole");
 		this.outputCardinality = SpatialRecordSupport.requirePositive(outputCardinality,
 				"outputCardinality");
+		Objects.requireNonNull(dependencies);
+		if (new java.util.HashSet<PersistentGeoId>(dependencies).size()
+				!= dependencies.size()) {
+			throw new IllegalArgumentException("Redefine dependencies must be unique");
+		}
+		this.dependencies = SpatialRecordSupport.immutableIds(dependencies);
 	}
 
 	public String getProvider() {
@@ -68,6 +87,11 @@ public final class SpatialRedefineSignature {
 		return outputCardinality;
 	}
 
+	/** @return sorted exact dependency identities participating in continuity */
+	public List<PersistentGeoId> getDependencies() {
+		return dependencies;
+	}
+
 	/**
 	 * Host class, label and command equality are deliberately absent here.
 	 *
@@ -89,12 +113,13 @@ public final class SpatialRedefineSignature {
 				&& authority == signature.authority
 				&& bindingRole == signature.bindingRole
 				&& stableOutputRole.equals(signature.stableOutputRole)
-				&& outputCardinality == signature.outputCardinality;
+				&& outputCardinality == signature.outputCardinality
+				&& dependencies.equals(signature.dependencies);
 	}
 
 	@Override
 	public int hashCode() {
 		return Objects.hash(provider, family, schemaId, schemaVersion, authority,
-				bindingRole, stableOutputRole, outputCardinality);
+				bindingRole, stableOutputRole, outputCardinality, dependencies);
 	}
 }

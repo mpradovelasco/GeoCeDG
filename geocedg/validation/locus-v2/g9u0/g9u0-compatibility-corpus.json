@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "phase": "G9U0",
+  "status": "IMPLEMENTATION_CANDIDATE_CORPUS_FROZEN",
+  "authorApprovalClaimed": false,
+  "hashesFrozen": true,
+  "boundary": {
+    "externalUpstreamRuntimeEvidence": "NOT_EXECUTED_OR_CLAIMED_BY_THIS_CORPUS",
+    "lossyConversionAuthorized": false,
+    "classicMeaning": "GeoCeDG fork Classic using the shared GeoCeDG kernel"
+  },
+  "entries": [
+    {
+      "id": "G9P-GENERAL",
+      "path": "docs/references/cedg/models/g9p/geocedg-reference-general-construction-workflow.ggb",
+      "sha256": "738e3edcf44e10f0c07b846d1f53127c4d8450cf0ad209ea9a0e3e8cc2c36a2e",
+      "role": "immutable old-file control"
+    },
+    {
+      "id": "G9P-GRAFT",
+      "path": "docs/references/cedg/models/g9p/geocedg-reference-locus-cylindrical-graft-development.ggb",
+      "sha256": "9e220a695a4b1ee2bf60adc77872133e8074740443ae659de1404539de8141f2",
+      "role": "immutable old legacy-Locus workflow"
+    },
+    {
+      "id": "G9P-FOCAL",
+      "path": "docs/references/cedg/models/g9p/geocedg-reference-locus-focal-sphere-illumination.ggb",
+      "sha256": "baec7131aa95676864457d1602f73f8fef3ce37674fc0e48b28efd4feac204a0",
+      "role": "immutable old legacy-Locus workflow"
+    },
+    {
+      "id": "G9P-CONNECTIONS",
+      "path": "docs/references/cedg/models/g9p/geocedg-reference-locus-truncated-cone-cylinder-connections.ggb",
+      "sha256": "18c6fad4d53fc3bb03a1546021a0677656fded2c853b7ec198312b96ee55e155",
+      "role": "immutable old legacy-Locus workflow"
+    },
+    {
+      "id": "G6-LEGACY-THREE-LEVEL",
+      "path": "models/legacy/inter-cil-cono-oblique/original/InterCilConoOblique.ggb",
+      "sha256": "b1cb614f1a4c414144fbff29349ddebda92d1026acb4c535990a2895c589fa27",
+      "role": "legacy nested-Locus control"
+    },
+    {
+      "id": "G6-LEGACY-TWO-LEVEL",
+      "path": "models/legacy/inter-cil-cono-oblique-two-levels/original/InterCilConoObliqueTwoLevels.ggb",
+      "sha256": "587328a8e5b6474aee3169bb6af2fe2a711e98e000a423a96bba6e38274fb2b6",
+      "role": "legacy nested-Locus control"
+    },
+    {
+      "id": "G9U0-PUBLIC-SURFACE-MANIFEST",
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/locus/g9u0/public-surface-provider-query-manifest.xml",
+      "sha256": "e1066bb8c293597f7eebe9c6d2c6f1e8dec304c31bdc8a5a21117de19351cc8d",
+      "role": "declarative provider/query coverage manifest only; not native GeoGebra construction XML"
+    },
+    {
+      "id": "G9U0-FUTURE-PROVIDER",
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/locus/g9u0/future-provider.xml",
+      "sha256": "7216656a63b304ad510eac574b08153b4c0685744b8b1f5f4ede12a070a3cb3d",
+      "role": "hostile unsupported semantic-version XML"
+    },
+    {
+      "id": "G9U0-MISSING-GENERATOR",
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/locus/g9u0/missing-generator.xml",
+      "sha256": "bfc7dcf335b3cd9fad70d19992fef02869bb4f80977b7eca2885bda9db9e0b7f",
+      "role": "hostile missing direct generator reference"
+    },
+    {
+      "id": "G9U0-MISSING-SUPPORT",
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/locus/g9u0/missing-support.xml",
+      "sha256": "587cceb4d163054c113077b27dc36c2e8f2b7134b31d2ec69ea561427baefa61",
+      "role": "hostile missing typed-support reference"
+    },
+    {
+      "id": "G9U0-MISSING-TOKEN",
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/locus/g9u0/missing-token.xml",
+      "sha256": "28453daa2e9d6ea2ae9af15677ee9551e784c9677acb77cadea0952cdcc80e95",
+      "role": "hostile missing exact token evidence"
+    },
+    {
+      "id": "G9U0-DUPLICATE-ID",
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/locus/g9u0/duplicate-id.xml",
+      "sha256": "14d4bc73a0a83e97e1774175fae6a2cda9c59864e37002153b1f1003352e245b",
+      "role": "hostile duplicate durable identity"
+    },
+    {
+      "id": "G9U0-EXTERNAL-UPSTREAM-NO-DOWNGRADE",
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/locus/g9u0/external-upstream-no-downgrade.xml",
+      "sha256": "1ec77830f83face1a555daef396bb803a78f7a144482936afd147b8b0d2525ad",
+      "role": "ordinary external-upstream compatibility boundary control"
+    }
+  ],
+  "entryCount": 13
+}

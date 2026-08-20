@@ -92,6 +92,7 @@ public abstract class MyXMLio {
 	protected Construction cons;
 	/** handler for GGB files */
 	protected MyXMLHandler handler;
+	private boolean restoringRejectedSpatialParse;
 
 	/**
 	 * @param kernel
@@ -400,7 +401,8 @@ public abstract class MyXMLio {
 	final protected void doParseXML(XMLStream stream, boolean clearConstruction,
 			boolean isGGTOrDefaults, boolean mayZoom, boolean settingsBatch,
 			boolean randomize) throws XMLParseException, IOException {
-		String rejectedSpatialRollbackXml = app.getXML();
+		String rejectedSpatialRollbackXml = kernel.isMacroKernel()
+				? null : app.getXML();
 		boolean oldVal = kernel.isNotifyViewsActive();
 		CommandLookupStrategy oldVal2 = kernel.getCommandLookupStrategy();
 		kernel.setLoadingMode(true);
@@ -422,7 +424,7 @@ public abstract class MyXMLio {
 		} catch (CommandNotLoadedError e) {
 			boolean identityBearingParse = handler.isSpatialIdentityBearingParse();
 			handler.abortSpatialIdentityLoad();
-			if (identityBearingParse) {
+			if (identityBearingParse && canRestoreRejectedSpatialParse()) {
 				try {
 					restoreRejectedSpatialParse(rejectedSpatialRollbackXml);
 				} catch (RuntimeException | XMLParseException rollbackFailure) {
@@ -433,7 +435,8 @@ public abstract class MyXMLio {
 		} catch (Error | XMLParseException | IOException | RuntimeException e) {
 			boolean identityBearingParse = handler.isSpatialIdentityBearingParse();
 			handler.abortSpatialIdentityLoad();
-			if (isRejectedSpatialParse(e, identityBearingParse)) {
+			if (isRejectedSpatialParse(e, identityBearingParse)
+					&& canRestoreRejectedSpatialParse()) {
 				try {
 					restoreRejectedSpatialParse(rejectedSpatialRollbackXml);
 				} catch (RuntimeException | XMLParseException rollbackFailure) {
@@ -494,17 +497,34 @@ public abstract class MyXMLio {
 		return failure instanceof SpatialIdentityException || identityBearingParse;
 	}
 
+	private boolean canRestoreRejectedSpatialParse() {
+		return !kernel.isMacroKernel() && !restoringRejectedSpatialParse;
+	}
+
 	private void restoreRejectedSpatialParse(String rollbackXml)
 			throws XMLParseException {
+		if (rollbackXml == null || restoringRejectedSpatialParse) {
+			throw new IllegalStateException(
+					"Rejected spatial parse rollback is unavailable or already active");
+		}
 		cons.getSpatialSemanticRuntime().beginRollbackRestore();
-		cons.setNextSpatialIdentityLoadPurpose(LoadPurpose.ROLLBACK_RESTORE);
+		restoringRejectedSpatialParse = true;
 		boolean restored = false;
 		try {
+			cons.setNextSpatialIdentityLoadPurpose(LoadPurpose.ROLLBACK_RESTORE);
 			processXMLString(rollbackXml, true, false);
 			restored = true;
 		} finally {
-			cons.clearNextSpatialIdentityLoadPurpose();
-			cons.getSpatialSemanticRuntime().finishRollbackRestore(restored);
+			try {
+				cons.clearNextSpatialIdentityLoadPurpose();
+			} finally {
+				try {
+					cons.getSpatialSemanticRuntime()
+							.finishRollbackRestore(restored);
+				} finally {
+					restoringRejectedSpatialParse = false;
+				}
+			}
 		}
 	}
 

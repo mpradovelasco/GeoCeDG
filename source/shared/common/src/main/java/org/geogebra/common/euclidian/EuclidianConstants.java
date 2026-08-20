@@ -448,6 +448,14 @@ public final class EuclidianConstants {
 	public static final int MODE_SHAPE_STADIUM = 130;
 	public static final int MODE_SHAPE_PARALLELOGRAM = 131;
 	public static final int MODE_SHAPE_CURVE = 132;
+	/** GeoCeDG experimental semantic-locus creator; legacy Locus remains mode 47. */
+	public static final int MODE_LOCUS_V2 = 133;
+	/** GeoCeDG exact semantic-position action; GeoLocusV2 remains non-Path. */
+	public static final int MODE_LOCUS_V2_POINT = 134;
+	/** GeoCeDG total rich semantic metric action. */
+	public static final int MODE_LOCUS_V2_LENGTH = 135;
+	/** GeoCeDG between-position rich semantic metric action. */
+	public static final int MODE_LOCUS_V2_LENGTH_BETWEEN = 136;
 
 	/** macro tools ID offset */
 	public static final int MACRO_MODE_ID_OFFSET = 100001;
@@ -765,6 +773,18 @@ public final class EuclidianConstants {
 
 		case EuclidianConstants.MODE_LOCUS:
 			return "Locus.Tool";
+
+		case EuclidianConstants.MODE_LOCUS_V2:
+			return "LocusV2.Tool";
+
+		case EuclidianConstants.MODE_LOCUS_V2_POINT:
+			return "LocusV2.Point.Tool";
+
+		case EuclidianConstants.MODE_LOCUS_V2_LENGTH:
+			return "LocusLength.Total.Tool";
+
+		case EuclidianConstants.MODE_LOCUS_V2_LENGTH_BETWEEN:
+			return "LocusLength.Partial.Tool";
 
 		case EuclidianConstants.MODE_AREA:
 			return "Area";

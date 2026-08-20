@@ -1,0 +1,15 @@
+# G9U0 compatibility corpus - frozen implementation candidate.
+# Binary GGB files use raw-byte SHA-256; text fixtures use canonical LF SHA-256.
+738e3edcf44e10f0c07b846d1f53127c4d8450cf0ad209ea9a0e3e8cc2c36a2e  docs/references/cedg/models/g9p/geocedg-reference-general-construction-workflow.ggb
+9e220a695a4b1ee2bf60adc77872133e8074740443ae659de1404539de8141f2  docs/references/cedg/models/g9p/geocedg-reference-locus-cylindrical-graft-development.ggb
+baec7131aa95676864457d1602f73f8fef3ce37674fc0e48b28efd4feac204a0  docs/references/cedg/models/g9p/geocedg-reference-locus-focal-sphere-illumination.ggb
+18c6fad4d53fc3bb03a1546021a0677656fded2c853b7ec198312b96ee55e155  docs/references/cedg/models/g9p/geocedg-reference-locus-truncated-cone-cylinder-connections.ggb
+b1cb614f1a4c414144fbff29349ddebda92d1026acb4c535990a2895c589fa27  models/legacy/inter-cil-cono-oblique/original/InterCilConoOblique.ggb
+587328a8e5b6474aee3169bb6af2fe2a711e98e000a423a96bba6e38274fb2b6  models/legacy/inter-cil-cono-oblique-two-levels/original/InterCilConoObliqueTwoLevels.ggb
+e1066bb8c293597f7eebe9c6d2c6f1e8dec304c31bdc8a5a21117de19351cc8d  source/shared/common-jre/src/test/resources/org/geocedg/common/locus/g9u0/public-surface-provider-query-manifest.xml
+7216656a63b304ad510eac574b08153b4c0685744b8b1f5f4ede12a070a3cb3d  source/shared/common-jre/src/test/resources/org/geocedg/common/locus/g9u0/future-provider.xml
+bfc7dcf335b3cd9fad70d19992fef02869bb4f80977b7eca2885bda9db9e0b7f  source/shared/common-jre/src/test/resources/org/geocedg/common/locus/g9u0/missing-generator.xml
+587cceb4d163054c113077b27dc36c2e8f2b7134b31d2ec69ea561427baefa61  source/shared/common-jre/src/test/resources/org/geocedg/common/locus/g9u0/missing-support.xml
+28453daa2e9d6ea2ae9af15677ee9551e784c9677acb77cadea0952cdcc80e95  source/shared/common-jre/src/test/resources/org/geocedg/common/locus/g9u0/missing-token.xml
+14d4bc73a0a83e97e1774175fae6a2cda9c59864e37002153b1f1003352e245b  source/shared/common-jre/src/test/resources/org/geocedg/common/locus/g9u0/duplicate-id.xml
+1ec77830f83face1a555daef396bb803a78f7a144482936afd147b8b0d2525ad  source/shared/common-jre/src/test/resources/org/geocedg/common/locus/g9u0/external-upstream-no-downgrade.xml

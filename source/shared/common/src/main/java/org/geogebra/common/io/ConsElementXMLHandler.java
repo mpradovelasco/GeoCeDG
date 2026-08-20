@@ -25,6 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
 import org.geogebra.common.awt.AwtFactory;
 import org.geogebra.common.awt.GColor;
 import org.geogebra.common.awt.GFont;
@@ -2187,6 +2188,20 @@ public class ConsElementXMLHandler {
 		}
 	}
 
+	private void handleLocusIntersectionTokenLedger(
+			Map<String, String> attrs) {
+		if (!(geo instanceof GeoLocusIntersectionResult)) {
+			throw new IllegalArgumentException(
+					"Token-ledger XML requires a rich Locus V2 intersection");
+		}
+		if (attrs.size() != 1 || !attrs.containsKey("state")) {
+			throw new IllegalArgumentException(
+					"Token-ledger XML requires exactly one state attribute");
+		}
+		((GeoLocusIntersectionResult) geo)
+				.restoreTokenLedgerState(attrs.get("state"));
+	}
+
 	/**
 	 * Handle start tag inside &lt;element&gt;
 	 * 
@@ -2380,6 +2395,9 @@ public class ConsElementXMLHandler {
 				break;
 			case "listType":
 				handleListType(attrs);
+				break;
+			case "locusIntersectionTokenLedger":
+				handleLocusIntersectionTokenLedger(attrs);
 				break;
 			case "listener":
 				handleListeners(attrs);
