@@ -1,6 +1,7 @@
 import Desktop_variants_gradle.Variants.nativesLinuxAmd64
 import Desktop_variants_gradle.Variants.nativesMacOSXUniversal
 import Desktop_variants_gradle.Variants.nativesWindowsAmd64
+import java.nio.charset.StandardCharsets
 
 plugins {
     application
@@ -11,6 +12,106 @@ plugins {
 }
 
 description = "Parts of GeoGebra related to desktop platforms"
+
+data class GeoCeDGRepositoryProvenance(
+    val commit: String,
+    val state: String,
+    val source: String
+)
+
+fun runGeoCeDGGit(repository: File, vararg arguments: String): String? = runCatching {
+    val command = listOf("git", "-C", repository.absolutePath) + arguments
+    val process = ProcessBuilder(command).redirectErrorStream(true).start()
+    val output = process.inputStream.bufferedReader(StandardCharsets.UTF_8).use { it.readText() }.trim()
+    if (process.waitFor() == 0) output else null
+}.getOrNull()
+
+fun resolveGeoCeDGRepositoryProvenance(): GeoCeDGRepositoryProvenance {
+    val repository = rootProject.file("../..")
+    val commitPattern = Regex("[0-9a-fA-F]{40}|[0-9a-fA-F]{64}")
+    fun checkedCommit(value: String?, authority: String): String? {
+        val candidate = value?.trim() ?: return null
+        if (!commitPattern.matches(candidate)) {
+            throw GradleException("$authority must be a 40- or 64-digit hexadecimal commit")
+        }
+        return candidate.lowercase()
+    }
+    val propertyCommit = checkedCommit(
+        providers.gradleProperty("geocedgRepositoryCommit").orNull,
+        "geocedgRepositoryCommit"
+    )
+    val githubCommit = checkedCommit(
+        providers.environmentVariable("GITHUB_SHA").orNull,
+        "GITHUB_SHA"
+    )
+    val gitCommit = checkedCommit(
+        runGeoCeDGGit(repository, "rev-parse", "HEAD"),
+        "Git HEAD"
+    )
+    val candidate = propertyCommit ?: githubCommit ?: gitCommit
+    val commit = candidate ?: "UNAVAILABLE"
+    val source = when {
+        commit == "UNAVAILABLE" -> "UNAVAILABLE"
+        propertyCommit != null -> "GRADLE_PROPERTY"
+        githubCommit != null -> "GITHUB_SHA"
+        else -> "GIT_HEAD"
+    }
+    val configuredState = providers.gradleProperty("geocedgRepositoryState").orNull
+        ?: providers.environmentVariable("GEOCEDG_REPOSITORY_STATE").orNull
+    val gitStatus = runGeoCeDGGit(repository, "status", "--porcelain=v1", "--untracked-files=normal")
+    val state = if (commit == "UNAVAILABLE") {
+        if (configuredState != null && configuredState.trim().lowercase() != "unavailable") {
+            throw GradleException("Repository state cannot be established without a commit")
+        }
+        "UNAVAILABLE"
+    } else {
+        when (configuredState?.trim()?.lowercase()) {
+            "clean" -> "CLEAN"
+            "dirty" -> "DIRTY"
+            "unavailable" -> "UNAVAILABLE"
+            null -> if (gitStatus == null) {
+                "UNAVAILABLE"
+            } else if (gitStatus.isEmpty()) {
+                "CLEAN"
+            } else {
+                "DIRTY"
+            }
+            else -> throw GradleException(
+                "geocedgRepositoryState must be clean, dirty, or unavailable"
+            )
+        }
+    }
+    return GeoCeDGRepositoryProvenance(commit, state, source)
+}
+
+val geoCeDGRepositoryProvenance = resolveGeoCeDGRepositoryProvenance()
+val generatedGeoCeDGProvenanceDirectory = layout.buildDirectory.dir(
+    "generated/resources/geocedgProvenance"
+)
+val generatedGeoCeDGProvenanceFile = generatedGeoCeDGProvenanceDirectory.map {
+    it.file("org/geocedg/desktop/export/geocedg-build-provenance.properties")
+}
+val generateGeoCeDGBuildProvenance by tasks.registering {
+    inputs.property("repositoryCommit", geoCeDGRepositoryProvenance.commit)
+    inputs.property("repositoryState", geoCeDGRepositoryProvenance.state)
+    inputs.property("resolutionSource", geoCeDGRepositoryProvenance.source)
+    outputs.file(generatedGeoCeDGProvenanceFile)
+    doLast {
+        val output = generatedGeoCeDGProvenanceFile.get().asFile
+        output.parentFile.mkdirs()
+        output.writeText(
+            "schema.version=1\n" +
+                "repository.commit=${geoCeDGRepositoryProvenance.commit}\n" +
+                "repository.state=${geoCeDGRepositoryProvenance.state}\n" +
+                "resolution.source=${geoCeDGRepositoryProvenance.source}\n",
+            StandardCharsets.UTF_8
+        )
+    }
+}
+
+sourceSets.named("main") {
+    resources.srcDir(generatedGeoCeDGProvenanceDirectory)
+}
 
 val e2eTest: SourceSet by sourceSets.creating {
     compileClasspath += sourceSets.main.get().output
@@ -87,6 +188,7 @@ application {
 }
 
 tasks.processResources {
+    dependsOn(generateGeoCeDGBuildProvenance)
     from(rootProject.file("../../apps/geocedg/application-profile.yml")) {
         into("org/geocedg/desktop")
     }

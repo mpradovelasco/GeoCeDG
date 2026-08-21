@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "phase": "G9X1",
+  "status": "IMPLEMENTATION_CANDIDATE_SCENARIOS_SOURCE_COMPLETE",
+  "countsFrozen": true,
+  "groups": [
+    {
+      "id": "C",
+      "layer": "shared",
+      "testClass": "org.geocedg.common.export.G9X1G5CorpusCompatibilityTest",
+      "cases": [
+        {"id": "X1-C01", "title": "Execute the checked-in G5 corpus source"},
+        {"id": "X1-C02", "title": "Preserve deterministic G5 exact DXF bytes"},
+        {"id": "X1-C03", "title": "Retain every approved exact G5 entity mapping"},
+        {"id": "X1-C04", "title": "Keep the legacy G5 service contract exact-only"}
+      ]
+    },
+    {
+      "id": "P",
+      "layer": "shared",
+      "testClass": "org.geocedg.common.export.G9X1PreflightFidelityTest",
+      "cases": [
+        {"id": "X1-P01", "title": "Classify exact components explicitly"},
+        {"id": "X1-P02", "title": "Classify approximate components explicitly"},
+        {"id": "X1-P03", "title": "Classify unsupported components and reasons"},
+        {"id": "X1-P04", "title": "Classify invalid components and reasons"},
+        {"id": "X1-P05", "title": "Reconcile source and component totals"},
+        {"id": "X1-P06", "title": "Include and report hidden sources"},
+        {"id": "X1-P07", "title": "Default to strict partial-output rejection"},
+        {"id": "X1-P08", "title": "Require a sidecar for every fidelity reduction"},
+        {"id": "X1-P09", "title": "Decide writability before destination access"},
+        {"id": "X1-P10", "title": "Reject a stale source revision before encoding"}
+      ]
+    },
+    {
+      "id": "A",
+      "layer": "shared",
+      "testClass": "org.geocedg.common.export.G9X1AdaptiveCurveExportTest",
+      "cases": [
+        {"id": "X1-A01", "title": "Approximate a bounded parabola deterministically"},
+        {"id": "X1-A02", "title": "Approximate a bounded hyperbola deterministically"},
+        {"id": "X1-A03", "title": "Approximate a bounded function"},
+        {"id": "X1-A04", "title": "Approximate a bounded parametric curve"},
+        {"id": "X1-A05", "title": "Require an explicit finite semantic domain"},
+        {"id": "X1-A06", "title": "Preserve declared discontinuity gaps"},
+        {"id": "X1-A07", "title": "Use deterministic oriented dyadic refinement"},
+        {"id": "X1-A08", "title": "Report sample evidence only as estimated error"},
+        {"id": "X1-A09", "title": "Record requested and achieved tolerance"},
+        {"id": "X1-A10", "title": "Stop deterministically at the evaluation budget"},
+        {"id": "X1-A11", "title": "Stop deterministically at the depth budget"},
+        {"id": "X1-A12", "title": "Stop deterministically at component and total vertex budgets"},
+        {"id": "X1-A13", "title": "Reject non-finite evaluation"},
+        {"id": "X1-A14", "title": "Close only from typed full-period evidence"}
+      ]
+    },
+    {
+      "id": "L",
+      "layer": "shared",
+      "testClass": "org.geocedg.common.export.G9X1LocusV2ExportTest",
+      "cases": [
+        {"id": "X1-L01", "title": "Emit one entity per semantic branch component"},
+        {"id": "X1-L02", "title": "Never bridge an invalid-domain gap"},
+        {"id": "X1-L03", "title": "Preserve semantic component orientation"},
+        {"id": "X1-L04", "title": "Preserve coincident constructive multiplicity"},
+        {"id": "X1-L05", "title": "Honor typed periodic closure evidence"},
+        {"id": "X1-L06", "title": "Reject endpoint proximity as closure evidence"},
+        {"id": "X1-L07", "title": "Reject an unbounded component without export domain"},
+        {"id": "X1-L08", "title": "Accept an explicit bounded export subdomain"},
+        {"id": "X1-L09", "title": "Reject revision change during preflight"},
+        {"id": "X1-L10", "title": "Never read render samples or viewport state"},
+        {"id": "X1-L11", "title": "Leave source geometry and dependency DAG unchanged"},
+        {"id": "X1-L12", "title": "Remain deterministic across recompute and reopen"}
+      ]
+    },
+    {
+      "id": "M",
+      "layer": "desktop",
+      "testClass": "org.geocedg.desktop.export.G9X1DxfManifestTest",
+      "cases": [
+        {"id": "X1-M01", "title": "Emit versioned build and DXF provenance"},
+        {"id": "X1-M02", "title": "Disclose persistent or construction-revision identity scope"},
+        {"id": "X1-M03", "title": "Map neutral entities to actual DXF handles and types"},
+        {"id": "X1-M04", "title": "Record the complete deterministic request policy"},
+        {"id": "X1-M05", "title": "Record approximation method and work evidence"},
+        {"id": "X1-M06", "title": "Record structured warnings and every omission"},
+        {"id": "X1-M07", "title": "Bind the manifest to the DXF SHA-256"},
+        {"id": "X1-M08", "title": "Serialize DXF and manifest deterministically"},
+        {"id": "X1-M09", "title": "Permit sidecar omission for wholly exact output"},
+        {"id": "X1-M10", "title": "Make sidecar mandatory for fidelity reduction"}
+      ]
+    },
+    {
+      "id": "D",
+      "layer": "desktop",
+      "testClass": "org.geocedg.desktop.export.G9X1PairedOutputTest",
+      "cases": [
+        {"id": "X1-D01", "title": "Collision-check both final destinations"},
+        {"id": "X1-D02", "title": "Prepare temporary files in the target directory"},
+        {"id": "X1-D03", "title": "Safely promote an exact DXF without a sidecar"},
+        {"id": "X1-D04", "title": "Validate pair bytes, schema and hash before promotion"},
+        {"id": "X1-D05", "title": "Clean up after DXF promotion failure"},
+        {"id": "X1-D06", "title": "Roll back after manifest promotion failure"},
+        {"id": "X1-D07", "title": "Restore the exact pre-operation state on rollback"},
+        {"id": "X1-D08", "title": "Exercise deterministic injected filesystem failures"}
+      ]
+    },
+    {
+      "id": "S",
+      "layer": "desktop",
+      "testClass": "org.geocedg.desktop.export.G9X1DesktopPreflightContractTest",
+      "cases": [
+        {"id": "X1-S01", "title": "Show preflight before choosing a destination"},
+        {"id": "X1-S02", "title": "Identify approximate output and its evidence"},
+        {"id": "X1-S03", "title": "Keep strict no-partial behavior as the UI default"},
+        {"id": "X1-S04", "title": "Report sidecar, unitless coordinates and warnings"}
+      ]
+    }
+  ],
+  "expectedCounts": {
+    "shared": 40,
+    "desktop": 22,
+    "focusedTotal": 62
+  },
+  "testExecution": {
+    "status": "PASSED",
+    "shared": 40,
+    "desktop": 22,
+    "focusedTotal": 62,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  }
+}

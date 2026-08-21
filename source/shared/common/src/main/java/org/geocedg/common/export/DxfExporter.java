@@ -6,8 +6,10 @@
 package org.geocedg.common.export;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.geocedg.common.export.GeometryExportModel.ArcGeometry;
@@ -32,25 +34,74 @@ public final class DxfExporter {
 	 * @return complete ASCII DXF text
 	 */
 	public String export(GeometryExportModel model) {
+		if (model != null && model.getModelVersion() >= 2) {
+			throw new IllegalArgumentException(
+					"G9X1 models require controlled preflight encoding");
+		}
+		if (model != null && !allEntitiesExact(model)) {
+			throw new IllegalArgumentException(
+					"Approximate geometry requires controlled preflight encoding");
+		}
+		return encode(model).getDxfText();
+	}
+
+	/**
+	 * Encodes one validated neutral model and exposes actual DXF identities.
+	 *
+	 * @param model neutral model
+	 * @return deterministic text and neutral-entity handle mappings
+	 */
+	DxfEncodingResult encode(GeometryExportModel model) {
 		if (model == null) {
 			throw new IllegalArgumentException("Geometry export model is required");
 		}
+		if (model.getModelVersion() >= 2) {
+			for (SourceExportOutcome outcome : model.getOutcomes()) {
+				if (!outcome.isEmitted()) {
+					throw new IllegalArgumentException(
+							"Strict G9X1 model contains a non-emitted component: "
+									+ outcome.getComponentAddress().getComponentKey());
+				}
+			}
+		}
+		Map<String, SourceExportOutcome> emittedOutcomes = emittedOutcomes(model);
 		DxfPairs out = new DxfPairs();
-		writeHeader(out);
+		writeHeader(out, allEntitiesExact(model));
 		writeTables(out, model);
 		out.pair(0, "SECTION");
 		out.pair(2, "ENTITIES");
 		int handle = 0x100;
+		Map<String, DxfEncodingResult.EntityEncoding> encodings =
+				new LinkedHashMap<>();
 		for (Entity entity : model.getEntities()) {
-			writeEntity(out, entity, Integer.toHexString(handle++).toUpperCase());
+			SourceExportOutcome outcome = emittedOutcomes.remove(
+					entity.getNeutralEntityId());
+			if (outcome == null) {
+				throw new IllegalArgumentException(
+						"Neutral entity has no exportable component outcome: "
+								+ entity.getNeutralEntityId());
+			}
+			String actualHandle = Integer.toHexString(handle++).toUpperCase();
+			String entityType = dxfType(entity.getGeometry());
+			writeEntity(out, entity, actualHandle);
+			encodings.put(entity.getNeutralEntityId(),
+					new DxfEncodingResult.EntityEncoding(entity.getNeutralEntityId(),
+							actualHandle, entityType));
+		}
+		if (!emittedOutcomes.isEmpty()) {
+			throw new IllegalArgumentException(
+					"Exportable outcome has no neutral entity: "
+							+ emittedOutcomes.keySet().iterator().next());
 		}
 		out.pair(0, "ENDSEC");
 		out.pair(0, "EOF");
-		return out.toString();
+		return new DxfEncodingResult(model, out.toString(), encodings);
 	}
 
-	private static void writeHeader(DxfPairs out) {
-		out.pair(999, "GeoCeDG neutral 2D geometry export; exact G5 entities only");
+	private static void writeHeader(DxfPairs out, boolean allExact) {
+		out.pair(999, allExact
+				? "GeoCeDG neutral 2D geometry export; exact G5 entities only"
+				: "GeoCeDG neutral 2D geometry export; fidelity sidecar required");
 		out.pair(0, "SECTION");
 		out.pair(2, "HEADER");
 		out.pair(9, "$ACADVER");
@@ -126,6 +177,54 @@ public final class DxfExporter {
 			throw new IllegalArgumentException("Unsupported neutral geometry: "
 					+ geometry.getType());
 		}
+	}
+
+	private static String dxfType(Geometry geometry) {
+		switch (geometry.getType()) {
+		case POINT:
+			return "POINT";
+		case SEGMENT:
+			return "LINE";
+		case RAY:
+			return "RAY";
+		case INFINITE_LINE:
+			return "XLINE";
+		case CIRCLE:
+			return "CIRCLE";
+		case ARC:
+			return "ARC";
+		case ELLIPSE:
+			return "ELLIPSE";
+		case POLYLINE:
+			return "LWPOLYLINE";
+		default:
+			throw new IllegalArgumentException("Unsupported neutral geometry: "
+					+ geometry.getType());
+		}
+	}
+
+	private static Map<String, SourceExportOutcome> emittedOutcomes(
+			GeometryExportModel model) {
+		Map<String, SourceExportOutcome> outcomes = new LinkedHashMap<>();
+		for (SourceExportOutcome outcome : model.getOutcomes()) {
+			if (!outcome.isEmitted()) {
+				continue;
+			}
+			if (outcomes.put(outcome.getNeutralEntityId(), outcome) != null) {
+				throw new IllegalArgumentException("Duplicate exportable outcome: "
+						+ outcome.getNeutralEntityId());
+			}
+		}
+		return outcomes;
+	}
+
+	private static boolean allEntitiesExact(GeometryExportModel model) {
+		for (Entity entity : model.getEntities()) {
+			if (entity.getExactness() != GeometryExportModel.Exactness.EXACT) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private static void writePoint(DxfPairs out, Entity entity, String handle,

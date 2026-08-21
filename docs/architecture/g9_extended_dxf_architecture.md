@@ -1,6 +1,11 @@
 # G9X1 extended DXF architecture
 
-**Status: author-approved G9 architecture under the normative DXF contract. Productive implementation is not authorized.**
+**Status: G9X1 = PASS — AUTHOR APPROVED. The approved implementation remains
+experimental, default-off and strictly outside geometric authority.**
+
+The author-closeout evidence and frozen focused scenario authority live in
+`geocedg/validation/export/g9x1/`; the execution report is
+`docs/validation/g9x1_extended_dxf_implementation_candidate_report.md`.
 
 ## Placement
 

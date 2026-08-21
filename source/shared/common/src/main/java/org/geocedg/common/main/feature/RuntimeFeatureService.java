@@ -27,15 +27,31 @@ public final class RuntimeFeatureService {
 	public static final String LOCUS_V2_FEATURE_ID = "cedg.locus.v2";
 	/** Desktop opt-in argument, used as {@code --enableLocusV2=true}. */
 	public static final String LOCUS_V2_ARGUMENT = "enableLocusV2";
+	/** Experimental extended-DXF feature-manifest identifier. */
+	public static final String EXTENDED_DXF_FEATURE_ID =
+			"cedg.export.dxf.extended";
+	/** Desktop opt-in argument, used as {@code --enableExtendedDxf=true}. */
+	public static final String EXTENDED_DXF_ARGUMENT = "enableExtendedDxf";
 
 	private final boolean locusV2CreationEnabled;
+	private final boolean extendedDxfEnabled;
 	private BooleanSupplier preservationContext = () -> false;
 
 	/**
 	 * @param locusV2CreationEnabled whether the experimental public surface is enabled
 	 */
 	public RuntimeFeatureService(boolean locusV2CreationEnabled) {
+		this(locusV2CreationEnabled, false);
+	}
+
+	/**
+	 * @param locusV2CreationEnabled whether the Locus V2 surface is enabled
+	 * @param extendedDxfEnabled whether the G9X1 export surface is enabled
+	 */
+	public RuntimeFeatureService(boolean locusV2CreationEnabled,
+			boolean extendedDxfEnabled) {
 		this.locusV2CreationEnabled = locusV2CreationEnabled;
+		this.extendedDxfEnabled = extendedDxfEnabled;
 	}
 
 	/**
@@ -52,6 +68,11 @@ public final class RuntimeFeatureService {
 	 */
 	public boolean isLocusV2CreationEnabled() {
 		return locusV2CreationEnabled;
+	}
+
+	/** @return whether the explicit G9X1 preflight/export surface is enabled */
+	public boolean isExtendedDxfEnabled() {
+		return extendedDxfEnabled;
 	}
 
 	/**

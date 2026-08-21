@@ -1,13 +1,14 @@
 # Manual operativo vivo de GeoCeDG
 
 - Tipo de documento: manual operativo vivo
-- Puerta actual del proyecto: **G9U0 = PASS — AUTHOR APPROVED**
+- Puerta actual del proyecto: **G9X1 = PASS — AUTHOR APPROVED**
+- G9U0 = PASS — AUTHOR APPROVED
 - Baseline: GeoGebra 5.4.928.0 at
   `9b93256b7df401ff056c37b502d82df4d72b1522`
 - Plataforma validada: únicamente Windows
-- Última revisión: 2026-08-20
-- Fase actual: G9U0 es `PASS — AUTHOR APPROVED`; G9X1, G9U1, G9B,
-  G9C, G9U2, G10 y las fases posteriores no se han ejecutado.
+- Última revisión: 2026-08-21
+- Fase actual: G9U0 y G9X1 son `PASS — AUTHOR APPROVED`. G9U1, G9B, G9C,
+  G9U2, G10 y las fases posteriores no se han ejecutado ni están autorizadas.
 - Locus V2: superficie pública `experimental` aprobada para G9U0, exclusiva de
   GeoCeDG y desactivada por defecto
 - `PACKAGING TECHNICAL STATUS = PASS`
@@ -15,8 +16,8 @@
 
 This guide is the practical entry point for the GeoCeDG author/developer. It
 describes observable product behavior, G7 characterization, the
-author-approved internal G7B/G8 kernels and the author-approved, default-off
-G9U0 experimental public surface. It does not
+author-approved internal G7B/G8 kernels, the author-approved default-off G9U0
+surface and the author-approved default-off G9X1 export service. It does not
 replace the
 [repository README](../../README.md),
 [living technical roadmap](../roadmap/geocedg_roadmap.md), ADRs, specifications, or
@@ -779,6 +780,42 @@ explicit; an approximate entity without a positive finite tolerance is
 rejected. This is important for a future Locus V2 adapter: legacy display
 samples cannot be relabeled as an exact curve.
 
+### G9X1 author-approved export boundary
+
+G9X1 extends, but does not replace, the exact G5 path. Its preflight classifies
+each source component as `EXACT`, `APPROXIMATE`, `UNSUPPORTED` or `INVALID`
+before any destination is selected or written. Strict no-partial output
+(`partialOutput=false`) is the default. A bounded supported curve may be converted to a deterministic
+`LWPOLYLINE` only over an explicit semantic domain; the preflight and completion
+result identify the output as approximate and disclose its tolerance, guarantee
+and work counts.
+
+The extended export is opt-in with `--enableExtendedDxf=true`; without that
+argument the existing G5 export path remains active. In the extended dialog,
+closed finite driver partitions use semicolon-separated `start:end` entries.
+A source- and branch-specific partition uses
+`source@branch:start:end`, where `source` is the selected object's canonical
+export identifier or label and `branch` is its semantic branch key. The
+preflight displays the resolved branch and interval before any destination is
+chosen; an unknown source, branch or out-of-domain interval rejects the whole
+strict request.
+
+Every approximation or other fidelity reduction requires
+`<drawing>.dxf.manifest.json`. The UTF-8 sidecar records source/component
+provenance, whether identity is persistent or construction-revision scoped,
+requested and achieved tolerance, `ESTIMATED_ERROR` evidence, warnings,
+omissions, DXF handles and the DXF SHA-256. Entirely exact output may omit it.
+DXF and a required sidecar are prepared in same-directory temporary files and
+promoted with rollback; GeoCeDG does not promise universal two-file atomicity.
+
+The coordinate system remains unitless (`$INSUNITS=0`). Locus V2 branches,
+valid components, orientation and gaps are preserved, and export never reads
+render samples or mutates the source construction. Implicit contouring,
+`SPLINE`, legacy `Locus` sampling, physical units, DXF import, 3D export and
+partial-output UI remain unsupported/deferred. G9X1 is `PASS — AUTHOR APPROVED`
+but remains experimental and default-off; the closeout authorizes no later G9
+or productive G10 implementation.
+
 ### Coordinates, units, scale and views
 
 GeoCeDG distinguishes five concepts:
@@ -1032,7 +1069,8 @@ Promotion follows `legacy -> research -> experimental -> stable`, or
 | G9O1 | Deterministic source/knowledge bundles and operational guides | `PASS — AUTHOR APPROVED` | Checked-in operational tooling can generate ignored, independently verified bundles; this adds no product or geometric behavior |
 | G9A1/A2/A3 and grouped G9A | Durable identity, persistence and lifecycle/migration foundation | `PASS — AUTHOR APPROVED` | Native G9U0 objects can rely on the approved durable construction identity graph |
 | G9U0 | Experimental public Locus V2 surface | `PASS — AUTHOR APPROVED` | GeoCeDG-only, default-off commands/tools, rich results, native persistence and compatibility boundary documented above |
-| G9X1/G9U1/G9B/G9C/G9U2 | Later productive G9 capabilities | Designed / not authorized; U2 blocked on the approved global G9 gate | No workspace, spatial-primitive, extended-DXF or later G9 implementation is implied by G9U0 |
+| G9X1 | Extended exact/approximate DXF export | `PASS — AUTHOR APPROVED`; experimental and default-off | External read-only export, strict preflight, conditional mandatory sidecar and bounded estimated-error approximation; no geometric authority |
+| G9U1/G9B/G9C/G9U2 | Later productive G9 capabilities | Not authorized; U2 blocked on the approved global G9 gate | No workspace, spatial-primitive or later G9 implementation is implied by G9X1 |
 
 The previously approved future compatibility rule is exercised by the
 author-approved G9U0 surface for V2/rich persisted types: the GeoCeDG Classic diagnostic path keeps
@@ -1322,7 +1360,8 @@ or, at the G7B gate, make the metric public.
   point requires an exact currently admissible token;
 - no productive 3D/projection semantics (G9); G9P documents design proposals
   and G9A supplies identity/lifecycle foundations only;
-- no DXF locus export;
+- G9U0 alone adds no DXF locus export; the separately approved G9X1 service
+  provides only the bounded read-only export adapter described above;
 - no general cross-revision continuation certificate beyond the exact-address
   proof supported for the closed single-target families; merge, split and
   changed canonical addresses burn the old token;
@@ -1554,15 +1593,17 @@ workflow or G9 implementation.
   commercial redistribution requires the recorded license/brand review.
 - `.ggb` serialization still uses the upstream `classic` app code for
   compatibility; GeoCeDG has no new persisted app code.
-- G5 supports only the exact 2D families listed above. There is no DXF import,
-  viewport export, physical-unit contract, text export, approximate general
-  curves, legacy Locus export or 3D export.
+- G5 remains the exact 2D compatibility baseline. G9X1 adds only
+  the documented bounded approximate families; there is still no DXF import,
+  viewport export, physical-unit contract, text export, legacy Locus export,
+  implicit contouring, `SPLINE` or 3D export.
 - The G9U0 Locus V2 command/tool/metric/intersection surface is author-approved
   for G9U0 but remains experimental, GeoCeDG-only and disabled by default. It supports
   only the documented generators, explicit domains and targets; V2 is not a
   generic `Path`. Native persistence is GeoCeDG-specific, external upstream
   consumers are outside the compatibility guarantee, and no spatial
-  object/projection, DXF-locus or DSL capability is implied.
+  object/projection or DSL capability is implied. Its DXF adapter belongs only
+  to the separate G9X1 export service.
 - Legacy macros may have undocumented validity ranges, degeneracies, dynamic
   limitations, and sampled numerical approximations.
 - The 71-model public corpus is an external metadata index, not a local mirror
@@ -1596,6 +1637,9 @@ git status --short
 
 # Focused G5 geometry/DXF tests, manifests and architecture boundary
 .\tools\agent\verify-dxf.ps1
+
+# Focused G9X1 exact/approximate DXF authority
+.\tools\agent\verify-g9x1-extended-dxf.ps1
 
 # Focused G6A controls plus productive G6B semantic/render gates
 .\tools\agent\verify-locus-v2.ps1
@@ -1655,7 +1699,10 @@ boundary defined by the operational contracts.
   [architecture](../architecture/native_2d_geometry_export.md),
   [normative export contract](../../geocedg/specs/export/geometry-export-foundation.md),
   [regression evidence](../../models/regression/g5-dxf-foundation/expected-entities.yml),
-  and [G5 report](../validation/g5_native_2d_dxf_export_report.md)
+  [G5 report](../validation/g5_native_2d_dxf_export_report.md),
+  [G9X1 fidelity contract](../../geocedg/specs/export/dxf-curve-fidelity-and-approximation.md),
+  [Accepted ADR 0014](../adr/0014-export-only-dxf-approximation-and-sidecar.md),
+  and [G9X1 closeout report](../validation/g9x1_extended_dxf_implementation_candidate_report.md)
 - Locus V2 characterization and experimental kernel:
   [G6 plan](../roadmap/g6_locus_v2_plan.md),
   [semantic model](../architecture/locus_v2_semantic_model.md),

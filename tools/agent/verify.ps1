@@ -51,6 +51,8 @@ $G9U0LocusPublicSurfaceVerifier = Join-Path $PSScriptRoot `
     "verify-g9u0-locus-v2-public-surface.ps1"
 $G9U0R1PublicCreationLifecycleVerifier = Join-Path $PSScriptRoot `
     "verify-g9u0-r1-locus-v2-public-creation-lifecycle.ps1"
+$G9X1ExtendedDxfVerifier = Join-Path $PSScriptRoot `
+    "verify-g9x1-extended-dxf.ps1"
 $BenchmarkRunner = Join-Path $RepositoryRoot "tools\benchmark\run.ps1"
 $InitialStatus = $null
 
@@ -479,6 +481,74 @@ try {
         & $G9U0R1PublicCreationLifecycleVerifier @g9u0R1Parameters
         Assert-LastScriptSuccess `
             -Description "G9U0-R1 public creation and Desktop lifecycle hardening"
+    }
+
+    $g9x1EvidenceRoot = Join-Path $RepositoryRoot `
+        "geocedg\validation\export\g9x1"
+    $g9x1EvidencePath = Join-Path $g9x1EvidenceRoot "g9x1-evidence.json"
+    $g9x1IntegrationArtifacts = @(
+        $G9X1ExtendedDxfVerifier,
+        $g9x1EvidencePath,
+        (Join-Path $g9x1EvidenceRoot "g9x1-scenarios.json"),
+        (Join-Path $g9x1EvidenceRoot "g9x1-evidence.sha256"),
+        (Join-Path $RepositoryRoot `
+            "docs\architecture\g9_extended_dxf_architecture.md"),
+        (Join-Path $RepositoryRoot `
+            "docs\validation\g9x1_extended_dxf_implementation_candidate_report.md")
+    )
+    $g9x1PresentCount = @($g9x1IntegrationArtifacts | Where-Object {
+        Test-Path -LiteralPath $_ -PathType Leaf
+    }).Count
+    if ($g9x1PresentCount -ne 0 -and
+            $g9x1PresentCount -ne $g9x1IntegrationArtifacts.Count) {
+        throw "Incomplete G9X1 verifier/support integration; all paired artifacts are required."
+    }
+    if ($g9x1PresentCount -eq $g9x1IntegrationArtifacts.Count) {
+        $g9x1Evidence = Get-Content -Raw -LiteralPath $g9x1EvidencePath |
+            ConvertFrom-Json -Depth 100
+        if ($g9x1Evidence.sourceBoundary.inventoryStatus -eq "FROZEN") {
+            if ($g9x1Evidence.validation.focused.status -ne "PASSED" -or
+                    $g9x1Evidence.validation.focusedDeterministicRerun.status -ne
+                        "PASSED" -or
+                    -not [bool]$g9x1Evidence.validation.focusedDeterministicRerun.matchesFocused -or
+                    $g9x1Evidence.validation.g5Regression.status -ne "PASSED" -or
+                    $g9x1Evidence.validation.checkstyle -ne "PASSED" -or
+                    $g9x1Evidence.validation.staticVerifier -ne "PASSED" -or
+                    $g9x1Evidence.validation.gitDiffCheck -ne "PASSED" -or
+                    $g9x1Evidence.validation.gitDiffCachedCheck -ne "PASSED") {
+                throw ("Frozen G9X1 evidence must record clean focused, " +
+                    "deterministic, G5, Checkstyle, static and diff gates " +
+                    "before composed verification.")
+            }
+            Write-Host "`n==> G9X1 extended exact/approximate DXF export"
+            $g9x1Parameters = @{
+                LogDirectory = Join-Path ([IO.Path]::GetFullPath($LogDirectory)) `
+                    "g9x1-extended-dxf"
+            }
+            if ($SkipBuild) {
+                $g9x1Parameters.SkipBuild = $true
+            }
+            if ($AllowToolchainDownload) {
+                $g9x1Parameters.AllowToolchainDownload = $true
+            }
+            if ($KeepBuildOutputs) {
+                $g9x1Parameters.KeepBuildOutputs = $true
+            }
+            & $G9X1ExtendedDxfVerifier @g9x1Parameters
+            Assert-LastScriptSuccess `
+                -Description "G9X1 extended exact/approximate DXF export"
+        } elseif ($g9x1Evidence.sourceBoundary.inventoryStatus -eq
+                "OPEN_PENDING_IMPLEMENTATION_FREEZE") {
+            Write-Host "`n==> G9X1 validation scaffold detected"
+            & $G9X1ExtendedDxfVerifier -SkipBuild `
+                -LogDirectory (Join-Path ([IO.Path]::GetFullPath($LogDirectory)) `
+                    "g9x1-extended-dxf-scaffold")
+            Assert-LastScriptSuccess -Description "G9X1 validation scaffold"
+            Write-Host ("    Productive inventory is open; the G9X1 " +
+                "focused implementation gate is not executed.")
+        } else {
+            throw "Unknown G9X1 source inventory state in candidate evidence."
+        }
     }
 
     Write-Host "`n==> Standalone Windows packaging contracts"

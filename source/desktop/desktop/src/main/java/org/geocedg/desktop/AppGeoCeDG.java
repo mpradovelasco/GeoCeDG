@@ -72,7 +72,8 @@ public final class AppGeoCeDG extends App3D {
 		AppConfigGeoCeDG config = (AppConfigGeoCeDG) getConfig();
 		return new AppGeoCeDG(new CommandLineArguments(null), new JPanel(),
 				new AppConfigGeoCeDG(config.getRuntimeFeatureService()
-						.isLocusV2CreationEnabled()));
+						.isLocusV2CreationEnabled(), config.getRuntimeFeatureService()
+								.isExtendedDxfEnabled()));
 	}
 
 	@Override
@@ -100,7 +101,9 @@ public final class AppGeoCeDG extends App3D {
 
 	private static AppConfigGeoCeDG createConfig(CommandLineArguments args) {
 		return new AppConfigGeoCeDG(args != null && args.getBooleanValue(
-				RuntimeFeatureService.LOCUS_V2_ARGUMENT, false));
+				RuntimeFeatureService.LOCUS_V2_ARGUMENT, false),
+				args != null && args.getBooleanValue(
+						RuntimeFeatureService.EXTENDED_DXF_ARGUMENT, false));
 	}
 
 	private void bindFeatureService(AppConfigGeoCeDG config) {

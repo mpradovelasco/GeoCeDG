@@ -32,8 +32,17 @@ public final class AppConfigGeoCeDG extends AppConfigDefault {
 	 * @param locusV2CreationEnabled explicit experimental-surface opt-in
 	 */
 	public AppConfigGeoCeDG(boolean locusV2CreationEnabled) {
+		this(locusV2CreationEnabled, false);
+	}
+
+	/**
+	 * @param locusV2CreationEnabled explicit Locus V2 opt-in
+	 * @param extendedDxfEnabled explicit G9X1 DXF opt-in
+	 */
+	public AppConfigGeoCeDG(boolean locusV2CreationEnabled,
+			boolean extendedDxfEnabled) {
 		runtimeFeatureService = new RuntimeFeatureService(
-				locusV2CreationEnabled);
+				locusV2CreationEnabled, extendedDxfEnabled);
 	}
 
 	/**

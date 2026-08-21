@@ -7,7 +7,9 @@ package org.geocedg.common.export;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Immutable, read-only representation of resolved 2D geometry for exporters.
@@ -55,7 +57,14 @@ public final class GeometryExportModel {
 		NON_FINITE,
 		NOT_2D,
 		DEGENERATE,
-		DUPLICATE_POLYGON_SIDE
+		DUPLICATE_POLYGON_SIDE,
+		MISSING_DOMAIN,
+		INVALID_DOMAIN,
+		DISCONTINUITY_UNRESOLVED,
+		TOLERANCE_NOT_ESTABLISHED,
+		WORK_LIMIT,
+		STALE_SOURCE_REVISION,
+		DUPLICATE_COMPONENT
 	}
 
 	/** Immutable 2D coordinate or vector. */
@@ -368,6 +377,7 @@ public final class GeometryExportModel {
 
 	/** One exportable source entity and its neutral geometry. */
 	public static final class Entity {
+		private final String neutralEntityId;
 		private final String sourceId;
 		private final String sourceType;
 		private final String label;
@@ -391,6 +401,27 @@ public final class GeometryExportModel {
 		public Entity(String sourceId, String sourceType, String label,
 				String layer, Style style, Exactness exactness,
 				Double approximationTolerance, Geometry geometry) {
+			this(defaultNeutralEntityId(sourceId), sourceId, sourceType, label,
+					layer, style, exactness, approximationTolerance, geometry);
+		}
+
+		/**
+		 * Creates an entity with an explicit export-snapshot-local identity.
+		 * @param neutralEntityId identifier used to map this entity to format output
+		 * @param sourceId deterministic identifier for this construction revision
+		 * @param sourceType source GeoGebra type
+		 * @param label optional source label
+		 * @param layer normalized export layer
+		 * @param style transportable presentation metadata
+		 * @param exactness exact or approximate representation status
+		 * @param approximationTolerance positive tolerance for approximate entities
+		 * @param geometry neutral geometry value
+		 */
+		public Entity(String neutralEntityId, String sourceId, String sourceType,
+				String label, String layer, Style style, Exactness exactness,
+				Double approximationTolerance, Geometry geometry) {
+			this.neutralEntityId = requireText(neutralEntityId,
+					"neutral entity id");
 			this.sourceId = requireText(sourceId, "source id");
 			this.sourceType = requireText(sourceType, "source type");
 			this.label = label;
@@ -407,6 +438,10 @@ public final class GeometryExportModel {
 				throw new IllegalArgumentException("Exact entity cannot have a tolerance");
 			}
 			this.approximationTolerance = approximationTolerance;
+		}
+
+		public String getNeutralEntityId() {
+			return neutralEntityId;
 		}
 
 		public String getSourceId() {
@@ -439,6 +474,10 @@ public final class GeometryExportModel {
 
 		public Geometry getGeometry() {
 			return geometry;
+		}
+
+		private static String defaultNeutralEntityId(String sourceId) {
+			return "entity:" + requireText(sourceId, "source id");
 		}
 	}
 
@@ -481,12 +520,14 @@ public final class GeometryExportModel {
 		}
 	}
 
+	private final int modelVersion;
 	private final SelectionMode selectionMode;
 	private final String coordinateSystem;
 	private final Unit sourceUnit;
 	private final Unit targetUnit;
 	private final List<Entity> entities;
 	private final List<Diagnostic> diagnostics;
+	private final List<SourceExportOutcome> outcomes;
 
 	/**
 	 * @param selectionMode source population
@@ -495,12 +536,38 @@ public final class GeometryExportModel {
 	 */
 	public GeometryExportModel(SelectionMode selectionMode, List<Entity> entities,
 			List<Diagnostic> diagnostics) {
+		this(1, selectionMode, entities, diagnostics, legacyOutcomes(entities));
+	}
+
+	/**
+	 * Creates a version-two model with explicit per-component fidelity outcomes.
+	 *
+	 * @param selectionMode source population
+	 * @param entities emitted neutral entities
+	 * @param diagnostics legacy-compatible source diagnostics
+	 * @param outcomes complete per-component fidelity outcomes
+	 */
+	public GeometryExportModel(SelectionMode selectionMode, List<Entity> entities,
+			List<Diagnostic> diagnostics, List<SourceExportOutcome> outcomes) {
+		this(2, selectionMode, entities, diagnostics, outcomes);
+		validateVersionTwo();
+	}
+
+	private GeometryExportModel(int modelVersion, SelectionMode selectionMode,
+			List<Entity> entities, List<Diagnostic> diagnostics,
+			List<SourceExportOutcome> outcomes) {
+		this.modelVersion = modelVersion;
 		this.selectionMode = require(selectionMode, "selection mode");
 		this.coordinateSystem = "GEOGEBRA_CARTESIAN_2D_WORLD";
 		this.sourceUnit = Unit.UNITLESS;
 		this.targetUnit = Unit.UNITLESS;
 		this.entities = immutableCopy(entities);
 		this.diagnostics = immutableCopy(diagnostics);
+		this.outcomes = immutableCopy(outcomes);
+	}
+
+	public int getModelVersion() {
+		return modelVersion;
 	}
 
 	public SelectionMode getSelectionMode() {
@@ -525,6 +592,123 @@ public final class GeometryExportModel {
 
 	public List<Diagnostic> getDiagnostics() {
 		return diagnostics;
+	}
+
+	public List<SourceExportOutcome> getOutcomes() {
+		return outcomes;
+	}
+
+	/** @return whether any component reduces or omits source fidelity */
+	public boolean hasFidelityReduction() {
+		for (SourceExportOutcome outcome : outcomes) {
+			if (outcome.getFidelity() != SourceExportOutcome.Fidelity.EXACT) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private void validateVersionTwo() {
+		Map<String, Entity> entitiesById = new LinkedHashMap<>();
+		for (Entity entity : entities) {
+			if (entity == null) {
+				throw new IllegalArgumentException("Entity is required");
+			}
+			if (entitiesById.put(entity.getNeutralEntityId(), entity) != null) {
+				throw new IllegalArgumentException("Duplicate neutral entity id: "
+						+ entity.getNeutralEntityId());
+			}
+		}
+		Map<String, SourceExportOutcome> emittedById = new LinkedHashMap<>();
+		for (SourceExportOutcome outcome : outcomes) {
+			if (outcome == null) {
+				throw new IllegalArgumentException("Source outcome is required");
+			}
+			if (outcome.isEmitted() && emittedById.put(
+					outcome.getNeutralEntityId(), outcome) != null) {
+				throw new IllegalArgumentException("Duplicate emitted outcome id: "
+						+ outcome.getNeutralEntityId());
+			}
+		}
+		for (Map.Entry<String, Entity> entry : entitiesById.entrySet()) {
+			SourceExportOutcome outcome = emittedById.remove(entry.getKey());
+			if (outcome == null) {
+				throw new IllegalArgumentException("Entity has no emitted outcome: "
+						+ entry.getKey());
+			}
+			validateEntityOutcome(entry.getValue(), outcome);
+		}
+		if (!emittedById.isEmpty()) {
+			throw new IllegalArgumentException("Outcome has no neutral entity: "
+					+ emittedById.keySet().iterator().next());
+		}
+	}
+
+	private static void validateEntityOutcome(Entity entity,
+			SourceExportOutcome outcome) {
+		SourceExportOutcome.Fidelity expected = entity.getExactness()
+				== Exactness.EXACT ? SourceExportOutcome.Fidelity.EXACT
+						: SourceExportOutcome.Fidelity.APPROXIMATE;
+		if (outcome.getFidelity() != expected) {
+			throw new IllegalArgumentException("Entity fidelity does not match outcome: "
+					+ entity.getNeutralEntityId());
+		}
+		if (!entity.getSourceId().equals(outcome.getSourceId())
+				|| !entity.getSourceType().equals(outcome.getSourceType())
+				|| !sameNullable(entity.getLabel(), outcome.getLabel())
+				|| entity.getStyle().isVisible() != outcome.isVisible()) {
+			throw new IllegalArgumentException("Entity provenance does not match outcome: "
+					+ entity.getNeutralEntityId());
+		}
+		if (expected == SourceExportOutcome.Fidelity.APPROXIMATE
+				&& Double.compare(entity.getApproximationTolerance(), outcome
+						.getApproximationEvidence().getRequestedTolerance()) != 0) {
+			throw new IllegalArgumentException("Entity tolerance does not match outcome: "
+					+ entity.getNeutralEntityId());
+		}
+		if (expected == SourceExportOutcome.Fidelity.APPROXIMATE
+				&& entity.getGeometry() instanceof PolylineGeometry) {
+			PolylineGeometry polyline = (PolylineGeometry) entity.getGeometry();
+			long expectedSegments = polyline.isClosed()
+					? polyline.getVertices().size()
+					: polyline.getVertices().size() - 1L;
+			ApproximationEvidence evidence = outcome.getApproximationEvidence();
+			if (evidence.getVertices() != polyline.getVertices().size()
+					|| evidence.getSegments() != expectedSegments) {
+				throw new IllegalArgumentException(
+						"Approximation evidence disagrees with emitted polyline: "
+								+ entity.getNeutralEntityId());
+			}
+		}
+	}
+
+	private static boolean sameNullable(String first, String second) {
+		return first == null ? second == null : first.equals(second);
+	}
+
+	private static List<SourceExportOutcome> legacyOutcomes(List<Entity> entities) {
+		if (entities == null) {
+			throw new IllegalArgumentException("List is required");
+		}
+		List<SourceExportOutcome> result = new ArrayList<>();
+		for (Entity entity : entities) {
+			if (entity == null) {
+				throw new IllegalArgumentException("Entity is required");
+			}
+			boolean exact = entity.getExactness() == Exactness.EXACT;
+			result.add(new SourceExportOutcome(entity.getSourceId(),
+					entity.getSourceType(), entity.getLabel(), 0,
+					entity.getStyle().isVisible(),
+					SourceExportOutcome.IdentityScope.CONSTRUCTION_REVISION,
+					new ComponentAddress(null, entity.getNeutralEntityId()),
+					exact ? SourceExportOutcome.Fidelity.EXACT
+							: SourceExportOutcome.Fidelity.INVALID,
+					exact ? SourceExportOutcome.Reason.NONE
+							: SourceExportOutcome.Reason.TOLERANCE_NOT_ESTABLISHED,
+					exact ? entity.getNeutralEntityId() : null, null,
+					exact ? null : "Legacy model has no approximation evidence."));
+		}
+		return result;
 	}
 
 	private static double normalizeDegrees(double angle) {

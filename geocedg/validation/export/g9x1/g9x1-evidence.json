@@ -1,0 +1,256 @@
+{
+  "schemaVersion": 1,
+  "phase": "G9X1",
+  "status": "PASS_AUTHOR_APPROVED",
+  "provenance": {
+    "entrySha": "f528b2dcbe4a802d3dfdb334f842e39ec7f33015",
+    "branch": "reconcile/g9x1-after-g9u0-r1",
+    "canonicalPromptCanonicalLfSha256": "fab1dd78c85b337a4f5ac29b8b56ca5565761a2b7cc199312634f42cbe975b94",
+    "specificationCanonicalLfSha256": "e5de67f5cc2108cb1f4f85954b3538a8971805ec976ce23a51604574454e147d",
+    "adr0014CanonicalLfSha256": "2bc0a4f7eed551778f1e4b50b6704214ca3dab96a2c69d0514bdc24a9c715eb3",
+    "preAuthorReviewEvidenceCanonicalLfSha256": "1b3f017bd9d3dd53037a0edf6de40866de1f9143ba386101878f6d2dbec0cea9",
+    "originalFrozenCandidate": {
+      "entrySha": "22bcc888ebb2ecb102fbeb5b07c87778fddeb3a0",
+      "branch": "feature/g9x1-extended-dxf-curves",
+      "pathCount": 46,
+      "trackedModifiedCount": 15,
+      "newPathCount": 31,
+      "canonicalLfEvidenceSha256": "472de35266111f994cf9fa21c180cfb048b671ccefa8d48d10481c68f2cd8cd3"
+    },
+    "reconciliation": {
+      "baseSha": "f528b2dcbe4a802d3dfdb334f842e39ec7f33015",
+      "g9x1OnlyPathCount": 42,
+      "r1OnlyPathCount": 9,
+      "overlapPathCount": 4,
+      "absorbedByCorrectedBasePaths": [
+        "tools/agent/verify-g9u0-locus-v2-public-surface.ps1"
+      ],
+      "resultPathCount": 45
+    }
+  },
+  "approval": {
+    "selfApproved": false,
+    "authorApproved": true,
+    "passClaimed": true,
+    "reviewRequired": false,
+    "disposition": "PASS_AUTHOR_APPROVED"
+  },
+  "phaseDisposition": {
+    "G9X1": "PASS_AUTHOR_APPROVED",
+    "G9U1": "NOT_AUTHORIZED_NOT_STARTED",
+    "G9B": "NOT_AUTHORIZED_NOT_STARTED",
+    "G9C": "NOT_AUTHORIZED_NOT_STARTED",
+    "G9U2": "BLOCKED",
+    "productiveG10": "NOT_AUTHORIZED_NOT_STARTED"
+  },
+  "closeout": {
+    "authorDecision": "G9X1_PASS_AUTHOR_APPROVED",
+    "authorReviewDate": "2026-08-21",
+    "completionTag": "geocedg-g9x1-pass",
+    "reconciledCandidatePathCount": 45,
+    "closeoutAdditionalPaths": [
+      "tools/agent/verify-g9u0-r1-locus-v2-public-creation-lifecycle.ps1"
+    ],
+    "finalPathCount": 46,
+    "laterG9OrG10ImplementationExecuted": false
+  },
+  "architecture": {
+    "placement": "READ_ONLY_EXTERNAL_EXPORT_SERVICE",
+    "direction": "AUTHORITATIVE_CEDG_GEOMETRY_TO_EXPORT_REPRESENTATION_TO_DXF_ONLY",
+    "kernelAuthorityChanged": false,
+    "constructionDagMutated": false,
+    "exportFeedbackIntoGeometry": false,
+    "legacyG5ExactContractRetained": true
+  },
+  "fidelityContract": {
+    "outcomes": ["EXACT", "APPROXIMATE", "UNSUPPORTED", "INVALID"],
+    "guarantees": [
+      "CERTIFIED_ERROR_BOUND",
+      "ESTIMATED_ERROR",
+      "FLOATING_POINT_UNCERTIFIED"
+    ],
+    "sampledChordEvidenceMaximumClaim": "ESTIMATED_ERROR",
+    "partialOutputDefault": false,
+    "sidecarMandatoryForFidelityReduction": true,
+    "allExactSidecarOptional": true,
+    "universalTwoFileAtomicityClaimed": false,
+    "runtimeGitInvocationAllowed": false,
+    "units": "UNITLESS"
+  },
+  "sourceBoundary": {
+    "inventoryStatus": "FROZEN",
+    "frozenAgainst": "f528b2dcbe4a802d3dfdb334f842e39ec7f33015",
+    "trackedModifiedCount": 15,
+    "newPathCount": 31,
+    "candidatePaths": [
+      "docs/architecture/g9_extended_dxf_architecture.md",
+      "docs/roadmap/geocedg_roadmap.md",
+      "docs/upstream/modified-files.yml",
+      "docs/user/geocedg_user_guide.md",
+      "docs/validation/g9x1_extended_dxf_implementation_candidate_report.md",
+      "geocedg/features/experimental.yml",
+      "geocedg/validation/export/g9x1/g9x1-evidence.json",
+      "geocedg/validation/export/g9x1/g9x1-evidence.sha256",
+      "geocedg/validation/export/g9x1/g9x1-scenarios.json",
+      "source/desktop/desktop/build.gradle.kts",
+      "source/desktop/desktop/src/main/java/org/geocedg/desktop/AppGeoCeDG.java",
+      "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/DxfExportPreflightPresentation.java",
+      "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/DxfFidelityManifestWriter.java",
+      "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/DxfFileOperations.java",
+      "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/DxfHashing.java",
+      "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/DxfManifestEncoding.java",
+      "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/DxfPairedOutputWriter.java",
+      "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/DxfPreparedOutput.java",
+      "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/DxfWriteException.java",
+      "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/DxfWriteResult.java",
+      "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/GeoCeDGBuildProvenance.java",
+      "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/NioDxfFileOperations.java",
+      "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGDxfExportController.java",
+      "source/desktop/desktop/src/test/java/org/geocedg/desktop/export/G9X1DesktopPreflightContractTest.java",
+      "source/desktop/desktop/src/test/java/org/geocedg/desktop/export/G9X1DxfManifestTest.java",
+      "source/desktop/desktop/src/test/java/org/geocedg/desktop/export/G9X1PairedOutputTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/export/G9X1AdaptiveCurveExportTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/export/G9X1G5CorpusCompatibilityTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/export/G9X1LocusV2ExportTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/export/G9X1PreflightFidelityTest.java",
+      "source/shared/common/src/main/java/org/geocedg/common/export/AdaptiveCurveApproximationBuilder2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/export/ApproximationEvidence.java",
+      "source/shared/common/src/main/java/org/geocedg/common/export/ComponentAddress.java",
+      "source/shared/common/src/main/java/org/geocedg/common/export/DxfEncodingResult.java",
+      "source/shared/common/src/main/java/org/geocedg/common/export/DxfExporter.java",
+      "source/shared/common/src/main/java/org/geocedg/common/export/G9X1GeometryExportAdapter.java",
+      "source/shared/common/src/main/java/org/geocedg/common/export/GeometryExportModel.java",
+      "source/shared/common/src/main/java/org/geocedg/common/export/GeometryExportPreflight.java",
+      "source/shared/common/src/main/java/org/geocedg/common/export/GeometryExportRequest.java",
+      "source/shared/common/src/main/java/org/geocedg/common/export/GeometryExportService.java",
+      "source/shared/common/src/main/java/org/geocedg/common/export/SourceExportOutcome.java",
+      "source/shared/common/src/main/java/org/geocedg/common/main/feature/RuntimeFeatureService.java",
+      "source/shared/common/src/main/java/org/geocedg/common/main/settings/config/AppConfigGeoCeDG.java",
+      "tools/agent/verify-g9u0-r1-locus-v2-public-creation-lifecycle.ps1",
+      "tools/agent/verify-g9x1-extended-dxf.ps1",
+      "tools/agent/verify.ps1"
+    ],
+    "pathCount": 46,
+    "categoryCounts": {
+      "productive": 28,
+      "tests": 7,
+      "validation": 4,
+      "documentation": 4,
+      "supporting": 3
+    }
+  },
+  "scenarioAuthority": {
+    "path": "geocedg/validation/export/g9x1/g9x1-scenarios.json",
+    "groups": ["C", "P", "A", "L", "M", "D", "S"],
+    "expectedShared": 40,
+    "expectedDesktop": 22,
+    "expectedFocusedTotal": 62
+  },
+  "validation": {
+    "staticScaffold": "PASSED",
+    "reconciliationPrerequisites": {
+      "g9u0R1": {
+        "status": "PASSED",
+        "shared": 4,
+        "desktop": 2,
+        "total": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "logDirectory": "artifacts/g9x1/closeout/precommit/r1-focused"
+      },
+      "historicalG9U0": {
+        "status": "PASSED",
+        "shared": 81,
+        "desktop": 12,
+        "total": 93,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "logDirectory": "artifacts/g9x1/closeout/precommit/g9u0-historical"
+      }
+    },
+    "focused": {
+      "status": "PASSED",
+      "shared": 40,
+      "desktop": 22,
+      "total": 62,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "logDirectory": "artifacts/g9x1/closeout/precommit/focused"
+    },
+    "focusedDeterministicRerun": {
+      "status": "PASSED",
+      "shared": 40,
+      "desktop": 22,
+      "total": 62,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "matchesFocused": true,
+      "logDirectory": "artifacts/g9x1/closeout/precommit/focused-deterministic"
+    },
+    "g5Regression": {
+      "status": "PASSED",
+      "shared": 5,
+      "desktop": 5,
+      "total": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "logDirectory": "artifacts/g9x1/closeout/precommit/focused"
+    },
+    "checkstyle": "PASSED",
+    "staticVerifier": "PASSED",
+    "gitDiffCheck": "PASSED",
+    "gitDiffCachedCheck": "PASSED",
+    "composedWithoutSkipBuild": {
+      "status": "PASSED",
+      "exitCode": 0,
+      "terminalOutcome": "All GeoCeDG verification gates passed.",
+      "logDirectory": "artifacts/g9x1/closeout/precommit/composed"
+    }
+  },
+  "hardZeroCounters": {
+    "status": "FROZEN_ZERO",
+    "values": {
+      "kernelGeometryAuthorityChanges": 0,
+      "constructionDagMutations": 0,
+      "temporaryGeoElements": 0,
+      "renderCacheReads": 0,
+      "viewportReads": 0,
+      "dpiReads": 0,
+      "screenCoordinateReads": 0,
+      "wallClockBudgets": 0,
+      "randomOrParallelOrdering": 0,
+      "legacyGeoLocusSampling": 0,
+      "silentApproximation": 0,
+      "silentOmissions": 0,
+      "implicitContouring": 0,
+      "splineEmission": 0,
+      "dxfFeedbackIntoGeometry": 0,
+      "g9u1Implementation": 0,
+      "g9bImplementation": 0,
+      "g9cImplementation": 0,
+      "g9u2Implementation": 0,
+      "productiveG10Implementation": 0,
+      "generatedTrackedArtifacts": 0
+    }
+  },
+  "deferred": [
+    "Implicit contouring remains unsupported.",
+    "Exact or fitted SPLINE output remains unsupported.",
+    "Legacy GeoLocus sampling remains unsupported as export authority.",
+    "Partial output remains disabled; no future partial-output UI is implemented.",
+    "Physical-unit semantics, DXF import and 3D export remain outside G9X1."
+  ],
+  "residualRisks": [
+    "Sample/chord adaptive evidence is an ESTIMATED_ERROR, not a certified global Hausdorff bound.",
+    "The G5 coordinate contract remains unitless ($INSUNITS=0).",
+    "Ordinary G5-compatible sources retain construction-revision identity unless a durable owner-supplied ID exists.",
+    "Same-directory preparation and rollback reduce paired-write risk but do not provide universal two-file atomicity.",
+    "Independent CAD-reader conformance for exact SPLINE has not been established, so SPLINE remains deferred."
+  ],
+  "scopeDeviations": []
+}

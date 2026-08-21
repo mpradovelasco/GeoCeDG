@@ -412,8 +412,9 @@ function Assert-TestAuthority {
     $roadmap = Get-Content -Raw -LiteralPath (Resolve-RequiredFile $RoadmapPath)
     Assert-Condition -Condition ($roadmap.Contains(
             "G9U0-R1 = PASS — AUTHOR APPROVED") -and
-            -not $roadmap.Contains("G9X1 = PASS — AUTHOR APPROVED")) `
-        -Message "Living roadmap does not preserve the bounded G9U0-R1 closeout."
+            $roadmap.Contains("G9X1 = PASS — AUTHOR APPROVED")) `
+        -Message ("Living roadmap does not preserve the bounded G9U0-R1 " +
+            "closeout and the separately approved G9X1 closeout.")
 }
 
 function Assert-ImplementationSeams {

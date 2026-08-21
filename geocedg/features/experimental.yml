@@ -13,6 +13,15 @@
       ]
     },
     {
+      "id": "cedg.export.dxf.extended",
+      "maturity": "experimental",
+      "specification": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md",
+      "enabled_by_default": false,
+      "depends_on": [
+        "cedg.export.dxf.2d"
+      ]
+    },
+    {
       "id": "cedg.laboratory.legacy",
       "maturity": "experimental",
       "specification": "geocedg/specs/legacy/controlled-integration.md",

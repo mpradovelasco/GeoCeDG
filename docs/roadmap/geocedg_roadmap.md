@@ -3,13 +3,13 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Roadmap vivo y normativo de fases; no sustituye las especificaciones ni los ADR aceptados |
-| Versión documental | 3.37 |
+| Versión documental | 3.39 |
 | Fecha de revisión | 21 de agosto de 2026 |
 | Baseline GeoGebra | 5.4.928.0, commit `9b93256b7df401ff056c37b502d82df4d72b1522`, tag `geogebra-baseline-5.4.928.0` |
-| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1, G9A2, G9A3, el track G9A, G9U0, el hardening correctivo G9U0-R1 y la planificación G10P `PASS — AUTHOR APPROVED`; seis especificaciones G9 normativas; ADR 0010–0015 Accepted; G9X1, G9U1, G9B y G9C no están aprobadas, G9U2 sigue bloqueada por la puerta G9 aprobada y ninguna implementación productiva G10 está autorizada; Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
-| Última fase cerrada | G9U0-R1 — hardening correctivo de creación pública y ciclo de vida Locus V2, `PASS — AUTHOR APPROVED` |
-| Última fase ejecutada | G9U0-R1: cierre autoral del hardening correctivo de preview, handoff secuencial e isolación de constantes canónicas |
-| Siguiente puerta | G9X1 permanece `DESIGNED — NOT AUTHORIZED`; requiere autorización separada antes de ejecutarse |
+| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1, G9A2, G9A3, el track G9A, G9U0, el hardening correctivo G9U0-R1, G9X1 y la planificación G10P `PASS — AUTHOR APPROVED`; seis especificaciones G9 normativas; ADR 0010–0015 Accepted; G9X1 conserva su servicio DXF externo, experimental y desactivado por defecto; G9U1, G9B y G9C no están autorizadas, G9U2 sigue bloqueada por la puerta G9 aprobada y ninguna implementación productiva G10 está autorizada; Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
+| Última fase cerrada | G9X1 — exportación DXF extendida exacta/aproximada, `PASS — AUTHOR APPROVED` |
+| Última fase ejecutada | G9X1, cerrada sin trasladar autoridad geométrica al exportador ni ejecutar fases posteriores |
+| Siguiente puerta | Decisión autoral separada sobre G9U1, que permanece `DESIGNED — NOT AUTHORIZED`; no autoriza G9B, G9C, G9U2 ni producto G10 |
 | Primer cliente | Aplicación de escritorio de la familia Classic 5 |
 | Núcleo | Java compartido de GeoGebra, extendido solo cuando la semántica lo requiere |
 
@@ -1127,7 +1127,8 @@ optimización de rendimiento del software.
 | G9A | `PASS — AUTHOR APPROVED` | Identidad/persistencia durable, piloto POINT y ciclo de vida/migración cerrados en G9A1–G9A3 |
 | G9U0 | `PASS — AUTHOR APPROVED` | Superficie pública Locus V2 experimental y desactivada por defecto; 93 pruebas focales y repetición determinista sin fallos; candidato de 114 rutas preservado |
 | G9U0-R1 | `PASS — AUTHOR APPROVED` | Hardening correctivo de preview, creación pública Desktop, handoff secuencial vacío y reconstrucción aislada de constantes canónicas; 6/6 pruebas R1, smoke manual autoral y autoridad compuesta completas |
-| G9X1 / G9U1 | `DESIGNED — NOT AUTHORIZED` | DXF extendido y workspace Construction, cada uno con gate y autorización separados |
+| G9X1 | `PASS — AUTHOR APPROVED` | DXF extendido externo al kernel; 62/62 escenarios focales y 10/10 regresiones G5, repetición determinista, sidecar condicional obligatorio y escritura pareada validados; experimental y default-off |
+| G9U1 | `DESIGNED — NOT AUTHORIZED` | Workspace Construction con gate y autorización separados |
 | G9B / G9C | `DESIGNED — NOT AUTHORIZED` | Track kernel tras cierre de G9A; no depende de completar el cliente G9U1 |
 | G9U2 | `BLOCKED ON THE APPROVED G9 GATE` | Workspace de procedimientos diédrico solo tras `G9 PASS — AUTHOR APPROVED` |
 | G9 spatial solving | `POINT PILOT — AUTHOR APPROVED` | G9A2 se limita a frames/sistemas/mapas/relaciones y reconstrucción projection-defined de punto; no hay primitivas generales, objetos compuestos ni autoridad 3D |
@@ -1461,7 +1462,8 @@ G9A3 = PASS — AUTHOR APPROVED
 G9A = PASS — AUTHOR APPROVED
 G9U0 = PASS — AUTHOR APPROVED
 G9U0-R1 = PASS — AUTHOR APPROVED
-G9X1 / G9U1 / G9B / G9C = DESIGNED — NOT AUTHORIZED
+G9X1 = PASS — AUTHOR APPROVED
+G9U1 / G9B / G9C = DESIGNED — NOT AUTHORIZED
 G10 PRODUCTIVE IMPLEMENTATION = NOT AUTHORIZED — NOT STARTED
 ```
 
@@ -1625,7 +1627,7 @@ G9A3 = PASS — AUTHOR APPROVED
 G9A = PASS — AUTHOR APPROVED
 G9U0 = PASS — AUTHOR APPROVED
 G9U0-R1 = PASS — AUTHOR APPROVED
-G9X1 = DESIGNED — NOT AUTHORIZED
+G9X1 = PASS — AUTHOR APPROVED
 G9U1 = DESIGNED — NOT AUTHORIZED
 G9B = DESIGNED — NOT AUTHORIZED
 G9C = DESIGNED — NOT AUTHORIZED
@@ -1640,8 +1642,9 @@ G9U0-R1 `PASS — AUTHOR APPROVED`; seis especificaciones normativas y ADR
 0010–0015 Accepted.
 G9A cierra identidad/persistencia durable, el piloto projection-defined de punto
 y su ciclo de vida/migración; G9U0 cierra la superficie pública Locus V2
-experimental. G9X1, G9U1, G9B y G9C siguen sin autorización; G9U2 permanece
-bloqueada por la puerta G9 aprobada. El
+experimental. G9X1 está cerrado en `PASS — AUTHOR APPROVED`, con exportación
+externa, experimental y desactivada por defecto. G9U1, G9B y G9C siguen sin autorización; G9U2
+permanece bloqueada por la puerta G9 aprobada. El
 [plan integrado G9P](../architecture/g9p_integrated_plan.md) y el
 [paquete de decisiones](../validation/g9p_author_decisions.md) gobiernan el
 contrato. A1 implementa identidad/persistencia durable y A2 activa únicamente
@@ -1802,16 +1805,25 @@ implementación productiva G10.
 
 ### G9X1 - DXF extendido exacto/aproximado
 
-**Estado:** `DESIGNED — NOT AUTHORIZED`
+**Estado:** `PASS — AUTHOR APPROVED`
 
-Preservará el corpus exacto G5 y añadirá outcomes por componente, preflight,
-sidecar obligatorio para toda reducción de fidelidad y escritura pareada cuando
-corresponda, antes de aproximaciones acotadas por
-dominio semántico. Toda aproximación será export-only, determinista y ajena al
+El candidato preserva el corpus exacto G5 y añade outcomes por componente,
+preflight, sidecar obligatorio para toda reducción de fidelidad y escritura
+pareada cuando corresponde, antes de aproximaciones acotadas por dominio
+semántico. Toda aproximación es export-only, determinista y ajena al
 Construction/render. El modo parcial rechaza por defecto; una opción futura
-exige intención explícita, aviso y sidecar. `SPLINE` e implícitas requieren evidencia posterior.
-Su dependencia dura es G5 más los contratos internos G6-G8; U0 es precedente
-de integración recomendado, no requisito semántico.
+exigiría intención explícita, aviso y sidecar. El muestreo solo establece
+`ESTIMATED_ERROR`; `SPLINE` e implícitas siguen diferidas. Las coordenadas
+continúan sin unidad física, los IDs ordinarios conservan alcance de revisión de
+construcción y la escritura pareada no declara atomicidad universal de dos
+ficheros. Su dependencia dura es G5 más los contratos internos G6-G8; U0 fue el
+precedente de integración recomendado. La
+[evidencia de cierre](../validation/g9x1_extended_dxf_implementation_candidate_report.md)
+registra 62/62 pruebas G9X1, 10/10 regresiones G5, repetición determinista,
+21 contadores de autoridad prohibida a cero y verificación compuesta completa.
+El cierre retiene los riesgos documentados, mantiene el gate experimental
+`cedg.export.dxf.extended` desactivado por defecto y no autoriza G9U1, G9B,
+G9C, G9U2 ni implementación productiva G10.
 
 ### G9U1 - Workspace CeDG Construction
 

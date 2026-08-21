@@ -12,8 +12,8 @@
     {
       "path": "source/desktop/desktop/build.gradle.kts",
       "change": "modified",
-      "purpose": "Package the profile manifest, expose runGeoCeDG, and register the isolated opt-in Locus V2 developer-laboratory task.",
-      "authority": "docs/adr/0001-geocedg-product-profile.md"
+      "purpose": "Package the profile manifest, expose runGeoCeDG, register the isolated opt-in Locus V2 developer-laboratory task, and generate auditable build-time repository provenance for G9X1 sidecars.",
+      "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/geogebra3D/App3D.java",
@@ -42,8 +42,8 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/main/settings/config/AppConfigGeoCeDG.java",
       "change": "added",
-      "purpose": "Define isolated GeoCeDG product identity, default-off Locus V2 command discovery, and Classic-compatible serialization semantics.",
-      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+      "purpose": "Define isolated GeoCeDG product identity, default-off Locus V2 and extended-DXF feature gates, and Classic-compatible serialization semantics.",
+      "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/main/settings/config/AppConfigGeoCeDGTest.java",
@@ -54,8 +54,8 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/AppGeoCeDG.java",
       "change": "added",
-      "purpose": "Instantiate the GeoCeDG config, manifest-defined perspective, GUI manager, default-off Locus V2 flag, GeoCeDG controller, and native-save compatibility warning on Desktop.",
-      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+      "purpose": "Instantiate the GeoCeDG config, manifest-defined perspective, GUI manager, default-off Locus V2 and extended-DXF flags, GeoCeDG controller, and native-save compatibility warning on Desktop.",
+      "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDG.java",
@@ -84,8 +84,8 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/export/GeometryExportModel.java",
       "change": "added",
-      "purpose": "Define the immutable read-only 2D geometry export representation independent of formats and views.",
-      "authority": "docs/adr/0005-neutral-2d-geometry-export.md"
+      "purpose": "Define the immutable read-only 2D export representation and validate G9X1 per-component fidelity outcomes without making export geometry authoritative.",
+      "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/export/GeoElementGeometryExportAdapter.java",
@@ -96,14 +96,14 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/export/GeometryExportService.java",
       "change": "added",
-      "purpose": "Expose a UI-independent export service for tests, Desktop, and future automation.",
-      "authority": "geocedg/specs/export/geometry-export-foundation.md"
+      "purpose": "Expose the retained exact G5 API plus UI-independent G9X1 preflight and validated encoding entry points.",
+      "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/export/DxfExporter.java",
       "change": "added",
-      "purpose": "Encode neutral exact 2D entities as deterministic ASCII DXF AC1015 without external dependencies.",
-      "authority": "docs/adr/0005-neutral-2d-geometry-export.md"
+      "purpose": "Preserve exact G5 bytes while encoding validated G9X1 neutral entities as deterministic ASCII DXF AC1015 with auditable handle mappings.",
+      "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/export/GeometryExportFoundationTest.java",
@@ -126,8 +126,8 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGDxfExportController.java",
       "change": "added",
-      "purpose": "Keep selection dialogs, diagnostics, destination choice, and file I/O outside the shared exporter.",
-      "authority": "geocedg/specs/export/geometry-export-foundation.md"
+      "purpose": "Retain the exact G5 flow and coordinate the opt-in G9X1 request, preflight, acknowledgement, destination, sidecar, and safe paired-write flow outside the kernel.",
+      "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LegacyLocusCharacterizationTest.java",
@@ -2508,8 +2508,8 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/main/feature/RuntimeFeatureService.java",
       "change": "added",
-      "purpose": "Separate default-off interactive Locus V2 creation from native file-load preservation and enforce both discovery and processor boundaries.",
-      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+      "purpose": "Separate default-off interactive Locus V2 creation from native file-load preservation and expose the independent default-off G9X1 extended-DXF runtime gate.",
+      "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/euclidian/EuclidianConstants.java",
@@ -2804,6 +2804,162 @@
       "change": "added",
       "purpose": "Reproduce GeoCeDG Desktop bootstrap-to-EDT scheduled preview and definitive public Locus V2 creation without making the frontend semantic authority.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/DxfExportPreflightPresentation.java",
+      "change": "added",
+      "purpose": "Present completed G9X1 preflight evidence and require approximation acknowledgement before destination selection.",
+      "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/DxfFidelityManifestWriter.java",
+      "change": "added",
+      "purpose": "Create the deterministic mandatory fidelity sidecar and bind source outcomes to actual DXF entity handles.",
+      "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/DxfFileOperations.java",
+      "change": "added",
+      "purpose": "Define the narrow Desktop filesystem port used to validate deterministic paired-output failure behavior.",
+      "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/DxfHashing.java",
+      "change": "added",
+      "purpose": "Provide deterministic byte hashing for collision detection, publication reconciliation, and rollback verification.",
+      "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/DxfManifestEncoding.java",
+      "change": "added",
+      "purpose": "Carry one validated deterministic UTF-8 fidelity-manifest encoding and its digest.",
+      "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/DxfPairedOutputWriter.java",
+      "change": "added",
+      "purpose": "Publish DXF and required sidecar through same-directory temporary files with collision checks, compensation, and verified rollback.",
+      "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/DxfPreparedOutput.java",
+      "change": "added",
+      "purpose": "Represent fully serialized and internally consistent exact or paired G9X1 output before filesystem publication.",
+      "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/DxfWriteException.java",
+      "change": "added",
+      "purpose": "Report typed paired-output failure stages and the truthful rollback disposition.",
+      "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/DxfWriteResult.java",
+      "change": "added",
+      "purpose": "Report the successful final paths, hashes, replacement state, and sidecar state of a safe G9X1 write.",
+      "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/GeoCeDGBuildProvenance.java",
+      "change": "added",
+      "purpose": "Load and validate immutable build-time repository provenance for reproducible G9X1 sidecars without runtime Git invocation.",
+      "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/NioDxfFileOperations.java",
+      "change": "added",
+      "purpose": "Implement the G9X1 Desktop filesystem port with Java NIO operations and no geometric responsibility.",
+      "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/export/G9X1DesktopPreflightContractTest.java",
+      "change": "added",
+      "purpose": "Verify Desktop preflight presentation order, feature gating, approximation acknowledgement, and destination suppression on invalid or stale input.",
+      "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/export/G9X1DxfManifestTest.java",
+      "change": "added",
+      "purpose": "Verify deterministic fidelity-sidecar schema, provenance, entity mappings, and exact-versus-approximate requirements.",
+      "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/export/G9X1PairedOutputTest.java",
+      "change": "added",
+      "purpose": "Verify paired-output collision, replacement, failure injection, compensation, cleanup, and rollback outcomes.",
+      "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/export/G9X1AdaptiveCurveExportTest.java",
+      "change": "added",
+      "purpose": "Verify deterministic export-only adaptive approximation, explicit bounds, budget failures, gaps, orientation, and source immutability.",
+      "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/export/G9X1G5CorpusCompatibilityTest.java",
+      "change": "added",
+      "purpose": "Verify byte-for-byte and semantic compatibility with the versioned exact G5 DXF corpus.",
+      "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/export/G9X1LocusV2ExportTest.java",
+      "change": "added",
+      "purpose": "Verify read-only Locus V2 export by typed branch and component without bridging gaps or changing semantic identity.",
+      "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/export/G9X1PreflightFidelityTest.java",
+      "change": "added",
+      "purpose": "Verify strict preflight classification, exact and approximate outcomes, unsupported reasons, determinism, and no partial output.",
+      "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/export/AdaptiveCurveApproximationBuilder2D.java",
+      "change": "added",
+      "purpose": "Build deterministic bounded model-coordinate curve approximations solely inside the read-only export layer.",
+      "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/export/ApproximationEvidence.java",
+      "change": "added",
+      "purpose": "Record immutable approximation method, requested tolerance, achieved estimate, guarantee, and work counts.",
+      "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/export/ComponentAddress.java",
+      "change": "added",
+      "purpose": "Identify each revision-local source branch or component classified independently by preflight.",
+      "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/export/DxfEncodingResult.java",
+      "change": "added",
+      "purpose": "Return deterministic DXF text together with validated neutral-entity, handle, and DXF-type mappings.",
+      "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/export/G9X1GeometryExportAdapter.java",
+      "change": "added",
+      "purpose": "Adapt sources read-only by retaining exact G5 entities and producing only approved component-wise export approximations.",
+      "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/export/GeometryExportPreflight.java",
+      "change": "added",
+      "purpose": "Represent one immutable complete-request classification before destination selection or serialization.",
+      "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/export/GeometryExportRequest.java",
+      "change": "added",
+      "purpose": "Define explicit approximation policy, semantic domains, guarantees, tolerances, and deterministic work budgets.",
+      "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/export/SourceExportOutcome.java",
+      "change": "added",
+      "purpose": "Record machine-readable exact, approximate, unsupported, or invalid fidelity and provenance per source component.",
+      "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
     }
   ]
 }
