@@ -177,3 +177,48 @@ XML, numerical and implementation choices are owned by their future phase
 gates rather than unresolved G9P semantics. G9O1 is authorized and not started;
 G9A/B/C and G9U0/U1/X1 remain designed but unauthorized, and G9U2 remains
 blocked on an approved global G9 gate.
+
+## 8. Post-closeout G9U0-R2 approved design authority (2026-08-21)
+
+This section records the later author-approved planning/design closeout for
+`G9U0-R2 — PRE-G9U1 PRODUCT / DOCUMENT REFINEMENT`. It does not rewrite the
+author-approved G9P/G9P-R1 decision or its frozen evidence, and it does not
+authorize or start R2 implementation.
+
+After G9U0, G9U0-R1 and G9X1 closed `PASS — AUTHOR APPROVED`, the author
+requested a formal product-refinement gate before G9U1 for two bounded concerns:
+
+- ordinary Locus V2 visual style/Properties/render continuity; and
+- `.cedg` native GeoCeDG document identity with `.ggb` compatibility input.
+
+The approved planning selects **G9U0-R2** as the smallest established naming
+convention. `G9U1A` remains the internal schema/compiler slice already named in
+the workspace contract and is not reused. R2 is nevertheless an independent
+gate with separate specifications, ADR, prompt, verifier, evidence and author
+review.
+
+The approved post-closeout product order is:
+
+```text
+G9U0-R1 PASS --+
+                +--> G9U0-R2 --> G9U1
+G9X1 PASS ------+
+```
+
+G9U0-R2 implementation requires both closed predecessors as an entry/order gate. G9X1 is not
+the semantic authority for styles or document persistence. G9B/G9C retain the
+approved G9A3 dependency and remain independent of U1/R2. A future R2 implementation PASS would
+only make G9U1 eligible for a separate author authorization; it would not start
+or approve U1.
+
+The approved architecture, exact normative supersessions and terminal state
+are in `docs/architecture/g9u0_r2_product_refinement_design.md`. The original
+G9P plan above remains accepted historical authority while the later closeout
+adds this pre-U1 gate:
+
+```text
+G9U0-R2 PLANNING / DESIGN = PASS — AUTHOR APPROVED
+G9U0-R2 IMPLEMENTATION = AUTHORIZATION REQUIRED — NOT STARTED
+implementationAuthorized = false
+G9U1 = DESIGNED — NOT AUTHORIZED
+```

@@ -1,13 +1,19 @@
-# G9 public Locus and workspace validation matrix
+# G9 public Locus, product/document refinement and workspace validation matrix
 
-- Status: **AUTHOR-APPROVED VALIDATION DESIGN / NOT EXECUTED**
-- Date: 2026-08-16
-- Scope: future G9U0 public Locus V2, G9U1 Construction workspace, and the
+- Status: **AUTHOR-APPROVED G9P AND G9U0-R2 VALIDATION DESIGN;
+  G9U0-R2 IMPLEMENTATION NOT AUTHORIZED / NOT STARTED**
+- Date: 2026-08-21
+- Scope: author-approved/historical G9U0 public Locus V2 evidence;
+  author-approved G9U0-R2 product/document-refinement design; future G9U1
+  Construction workspace; and the
   post-G9 G9U2 Dihedral Procedures workspace
-- Productive implementation authorized: **no**
+- G9U0-R2/G9U1/G9U2 productive implementation authorized: **no**
 
-This matrix defines future evidence. It does not claim that public commands,
-persistence, runtime workspace switching, or Dihedral procedures exist.
+The G9U0 rows remain the design source behind separately frozen, author-approved
+G9U0/G9U0-R1 execution evidence. The author-approved `R2-*` design rows define
+future evidence only and do not claim `.cedg`, ordinary Locus V2 style
+integration, workspace switching or Dihedral procedures exist. No R2 row may
+be executed until the canonical implementation prompt is separately authorized.
 
 ## 1. Entry gates
 
@@ -22,10 +28,13 @@ persistence, runtime workspace switching, or Dihedral procedures exist.
 | E-07 | immutable references | hashes in `g9p-reference-inputs.json` match raw bytes | stop; do not resave inputs |
 | E-08 | workspace dependency | G9U0 PASS before public Locus actions enter Construction | disable actions |
 | E-09 | procedure dependency | global G9 PASS before G9U2, absent narrower explicit approval | workspace remains unavailable |
+| E-10 | pre-G9U1 product/document refinement | G9U0-R2 implementation, focused/composed evidence and manual author smoke closed `PASS — AUTHOR APPROVED` | G9U1 remains `DESIGNED — NOT AUTHORIZED`; implementation PASS still requires a separate U1 authorization |
 
 G9U1 is a GUI client/organization phase for already authorized actions. It has
-no semantic dependency on G9B, and G9B must not depend on G9U1. G9U2 is the
-workspace that consumes approved G9 spatial/projection-system semantics and
+no semantic dependency on G9B, and G9B must not depend on G9U1. The
+author-approved R2 design is a product-entry prerequisite for U1, not a G9B
+dependency. G9U2 is
+the workspace that consumes approved G9 spatial/projection-system semantics and
 therefore remains behind the global G9 gate.
 
 ## 2. G9U0 creation, command and dependency tests
@@ -154,7 +163,108 @@ tests. The IDs preserve the numbered cases required by R1.
 | U0-T02 | general Intersect selection | all old types plus every V2 family | old paths delegate unchanged; V2 creates rich result |
 | U0-T03 | result chooser accessibility | keyboard, mouse, screen-reader labels, several/tangent/overlap cases | exact token selection available without color/proximity alone |
 
-## 8. G9U1 workspace schema and behavior tests
+## 8. G9U0-R2 product/document-refinement tests — approved design
+
+These rows are **PLANNED / AUTHOR APPROVED DESIGN**. They do not alter the
+author-approved G9U0/G9U0-R1 evidence and do not authorize or start
+implementation.
+
+### 8.1 Locus V2 ordinary presentation and render continuity
+
+| ID | Requirement | Future test/probe | Expected evidence |
+|---|---|---|---|
+| R2-L01 | color | set several ordinary object colors through Properties/style API and repaint | ordinary `GeoElement` color used by `DrawLocusV2`; exact durable ID, semantic revision, domain and results unchanged |
+| R2-L02 | line thickness | set minimum/default/large supported thickness and repaint at several scales | ordinary thickness/stroke used; no semantic/cache publication and no centerline discontinuity |
+| R2-L03 | line type | exercise continuous and supported dashed/dotted types | ordinary line type persists; intentional dash gaps are identified as stroke presentation, never semantic components |
+| R2-L04 | Properties exposure | select public V2 alone and in compatible multi-selection | ordinary line-style controls available through the host capability; no generic `Path` or unsupported controls exposed |
+| R2-L05 | presentation persistence | set color/thickness/type, ordinary visibility and applicable label presentation; save native `.cedg` and reopen twice | exact supported persistent presentation fields restored through normal XML; same reconstructed semantic parent and durable identities |
+| R2-L06 | copy | supported copy within/across constructions after styling | ordinary visual style copied; owned durable IDs remapped per G9U0; original semantics/style unaffected |
+| R2-L07 | undo/redo | change each undoable presentation property, undo and redo where the host records it | presentation restored deterministically; no semantic revision, metric/intersection recompute or new operation identity |
+| R2-L08 | semantic invariance | snapshot identity/revision/generator/domain/branches/components/metrics/intersections/solution tokens/semantic DAG, mutate every presentation property, compare | all semantic evidence identical; render/style counters only may change |
+| R2-L09 | crossing line | capture fixed-policy render data, add/move/style/delete a crossing line and repeat | same locus semantic revision, vertices and subpath markers; ordinary z-order/overdraw may cover pixels but creates no gap |
+| R2-L10 | crossing circle/conic | repeat R2-L09 with a circle and each supported conic crossing one/multiple times | crossing count and target style have zero authority over Locus render topology or semantic intersections |
+| R2-L11 | no artificial renderer subpath | compare `startsSubpath` count/parameters before and after all unrelated crossing fixtures | byte/canonical-equal fixed-policy render-topology evidence; no crossing-induced component or gap |
+| R2-L12 | genuine discontinuity preserved | disconnected valid components plus open/unbounded clipping, solid/dashed strokes and overdraw | real components/invalid gaps retain distinct subpaths; clipping, overdraw and dash gaps remain separately diagnosed |
+| R2-L13 | ordinary show/hide | toggle visibility through ordinary object/UI paths, including save/reopen and undo/redo where applicable | existing `GeoElement` visibility authority used; hidden state affects presentation only and semantic evidence is unchanged |
+| R2-L14 | applicable label presentation | exercise supported label visibility/mode/style, copy and native round trip | ordinary label authority used where applicable; no label-derived identity, branch or semantic revision |
+| R2-L15 | selection/highlight | select, deselect, multi-select and hover/highlight at crossings and discontinuities | normal transient highlight path used; no persisted selection authority, semantic mutation or render-subpath change |
+
+### 8.2 Native `.cedg` and `.ggb` compatibility-input behavior
+
+| ID | Requirement | Future test/probe | Expected evidence |
+|---|---|---|---|
+| R2-D01 | default Save | save a new unsaved construction | native Save As invoked; filename ends in one lowercase `.cedg` |
+| R2-D02 | Save As and omitted suffix | Save As from new/native/input documents with explicit `.cedg`, no suffix and conflicting suffix | `.cedg` is the only native target; omitted suffix appended once; conflicting suffix handled visibly, never silently rewritten |
+| R2-D03 | native reopen | save `.cedg`, close/reopen and save again | same ZIP/XML semantics, current native path and full construction restored |
+| R2-D04 | mixed-case host handling | open `.CEDG`/mixed-case variants and test overwrite collision on Windows | case-insensitive input/collision handling; new output normalized to `.cedg` |
+| R2-D05 | recent/direct-open surface | chooser, recent menu, drag/drop, command line and Windows shell open for `.cedg` and `.ggb` | all routes classify source consistently and delegate to the validated reader |
+| R2-D06 | legacy `.ggb` open | open canonical old GGBs, G9P references and current GeoCeDG GGB fixtures | compatibility input loads without auto migration; legacy/current semantics preserved |
+| R2-D07 | non-destructive `.ggb` to native save | open `.ggb`, invoke Save and select a distinct `.cedg` | native Save As required; successful target becomes current; no `.ggb` overwrite path |
+| R2-D08 | source unchanged / cancel / failure | hash source before and after successful transition, cancel and injected write failure | exact source bytes/path unchanged; cancellation/failure leaves live construction and source classification usable |
+| R2-D09 | corrupt `.cedg` | truncated ZIP, missing `geogebra.xml`, malformed XML and unsupported semantic version | localized fail-closed diagnostic; no partial construction, fabricated ID, file rewrite or replacement of the live document |
+| R2-D10 | Locus V2 persistence | native round trip of scalar/support/nested/periodic/disconnected V2 fixtures plus styles | full approved generator/preimage/branch semantics and visual style restored |
+| R2-D11 | rich result/token persistence | native round trip of metric result, intersection result and exact-token point under stable/stale topology | reconstructible inputs/tokens restored and recomputed; no cached snapshot or coordinate/list downgrade |
+| R2-D12 | G9 durable identity persistence | native round trip of G9A geo/spatial/frame/system/map/relation/binding corpus | exact durable identities, roles, revisions and broken-reference states follow G9A contracts |
+| R2-D13 | extension is not semantics | copy identical archive bytes under `.ggb` and `.cedg`, then inspect load state without migration | suffix changes only I/O classification; no type, ID, feature or XML semantic inference |
+| R2-D14 | GeoCeDG Classic preservation | direct-open/save/reopen supported `.cedg` plus compatibility `.ggb` in the separate fork Classic process | opened `.cedg` remains `.cedg` and native types/IDs/tokens are preserved; creation/preferences remain isolated; accepting `.cedg` does not change Classic's default new-document identity |
+| R2-D15 | external upstream boundary | characterize `.cedg` and `.ggb` with GeoCeDG-only types in controlled upstream reader where permitted | explicit unsupported boundary; no automatic rename, flattening, legacy-locus or coordinate/list conversion |
+| R2-D16 | archive/app code unchanged | inspect normalized entry inventory, canonical XML header and semantic versions across native reruns | validated entries/XML retained; `app="classic"`; no filename-derived format branch |
+| R2-D17 | Windows packaging/association | static package profile plus MSI/EXE registry probe where explicitly built; app-image/ZIP inspection | Windows installers associate `.cedg` with a GeoCeDG-owned ProgID; no GeoCeDG `.ggb` claim; portable artifacts add no association; no MIME value required unless implementation justifies it; no non-Windows validation claim |
+
+### 8.3 Required regression gates
+
+| ID | Required authority | Future command responsibility | Pass condition |
+|---|---|---|---|
+| R2-R01 | G9U0-R1 | run its focused verifier from the accepted descendant state | all R1 Desktop/shared cases and frozen boundary pass unchanged |
+| R2-R02 | historical G9U0 | run the frozen public-surface authority, including persistence/copy/Classic | all historical scenarios pass; evidence/report remains unmodified |
+| R2-R03 | G9X1 | run extended-DXF focused authority | all exact/approximate/sidecar/G5 regressions pass; no document/style coupling |
+| R2-R04 | G5 | execute exact DXF corpus | exact mappings and external service boundary unchanged |
+| R2-R05 | relevant G9A | run A1–A3 identity/persistence/lifecycle authorities applicable to native round trip | IDs, copy, redefine, migration and Classic behavior unchanged |
+| R2-R06 | legacy Locus | run legacy command/XML/render/save corpus | legacy type, sampled behavior, style, open/save and dispatch unchanged |
+| R2-R07 | composed repository | run `tools/agent/verify.ps1` after focused deterministic reruns | every existing gate plus R2 integration passes without `-SkipBuild` for candidate closeout |
+
+### 8.4 Deterministic rerun and evidence
+
+The planned focused authority is
+`tools/agent/verify-g9u0-r2-product-refinement.ps1`. It must run twice from the
+same fixture bytes and policy, writing separate log directories, and compare:
+
+- semantic/durable IDs and revisions;
+- branch/component and fixed-policy render-subpath evidence;
+- supported visual-style XML;
+- canonical XML plus normalized archive-entry content hashes;
+- `.ggb` source hash before/after native save;
+- typed I/O transitions and diagnostics; and
+- exact scenario/test/counter totals.
+
+ZIP byte identity is not claimed unless timestamps and all archive metadata are
+separately normalized and verified. The required durable future evidence paths
+are under `geocedg/validation/g9u0-r2/`; generated run logs remain below
+`artifacts/g9u0-r2/`.
+
+The future composed integration belongs after the existing G9X1 block and
+before any G9U1 block. It must use the existing paired-artifact and
+`OPEN_PENDING_IMPLEMENTATION_FREEZE`/`FROZEN` pattern, reject partial
+integration and never interpret a scaffold PASS as a productive phase PASS.
+
+### 8.5 Manual author smoke plan
+
+| Step | Author action | Observation to record |
+|---|---|---|
+| M-01 | create and dynamically move the approved circle-driven Locus V2 workflow | existing public creation/lifecycle remains healthy |
+| M-02 | use Properties to change color, thickness, line type, show/hide and applicable label presentation; exercise selection/highlight | controls/presentation are ordinary and responsive; no semantic result changes |
+| M-03 | cross the locus with a line and a circle/conic, then move all objects | no artificial gap/component/subpath; ordinary overdraw/dashes identified correctly |
+| M-04 | inspect a genuine disconnected-component fixture | real discontinuity remains visibly and diagnostically distinct |
+| M-05 | copy the styled locus and undo/redo style changes where applicable | style lifecycle correct; semantic identity policy preserved |
+| M-06 | Save As with no suffix, reopen `.cedg` and inspect V2/rich/token/G9 identity/style | native round trip complete |
+| M-07 | open a copied `.ggb`, invoke Save to `.cedg`, cancel once and complete once | Save As transition visible and original source hash/path unchanged |
+| M-08 | open/save/reopen `.cedg` in GeoCeDG Classic and try a corrupt `.cedg` | no downgrade or creation enablement; Classic new-document default unchanged; corrupt load does not replace the live document |
+| M-09 | when explicitly available, install/test MSI or EXE shell association | `.cedg` opens GeoCeDG; GeoCeDG has not claimed `.ggb` |
+
+The agent may prepare evidence and the checklist but cannot mark manual smoke or
+G9U0-R2 implementation approved.
+
+## 9. G9U1 workspace schema and behavior tests
 
 | ID | Requirement | Test/probe | Expected evidence |
 |---|---|---|---|
@@ -171,20 +281,21 @@ tests. The IDs preserve the numbered cases required by R1.
 | U1-W06 | active selection | switch during multi-slot tool | transaction cancelled, Move active, existing geometry unchanged |
 | U1-W07 | per-workspace preferences | customize docks, restart, alternate workspaces | correct isolated layout restored deterministically |
 | U1-W08 | unknown workspace preference | inject removed/future ID | localized fallback to Construction; no semantic effect |
-| U1-W09 | document layout | open each immutable reference GGB | identified transient Document layout; product manifest unchanged |
-| U1-W10 | reapply workspace | reapply Construction after document layout | construction/object/style bytes and dependencies unchanged |
-| U1-W11 | GeoCeDG Classic route | invoke diagnostic action with controlled settings and a supported semantic file | separate process/profile/preferences; current GeoCeDG state unchanged; native semantic types/IDs preserved with no downgrade |
+| U1-W09 | document layout | open native `.cedg` plus each immutable reference `.ggb` compatibility input | identified transient Document layout; product manifest and document semantics unchanged |
+| U1-W10 | reapply workspace | reapply Construction after native or compatibility document layout | construction/object/style bytes and dependencies unchanged; no save-format transition caused by workspace switching |
+| U1-W11 | GeoCeDG Classic route | invoke diagnostic action with controlled settings and supported `.cedg`/`.ggb` semantic files | separate process/profile/preferences; current GeoCeDG state unchanged; opened `.cedg` and native semantic types/IDs preserved with no downgrade; accepting `.cedg` does not change Classic's default new-document identity |
 | U1-W12 | Laboratory route | open Templatev7 explicitly | hash/ingest checks; legacy toolbar remains document context only |
 | U1-W13 | startup manifest failure | invalid packaged v2 fixture | explicit fallback to last accepted v1; no hidden toolbar authority |
 | U1-W14 | switch rollback | inject view/menu compilation failure | old workspace restored; construction untouched |
 | U1-W15 | public V2 action coverage | inspect Construction action catalog after G9U0 PASS | creation, rich/guarded length, general V2 intersection, token point and supported point-on-Locus actions present as GUI clients only |
 | U1-W16 | no G9B coupling | compile/activate Construction with G9B unavailable but already authorized nonspatial actions available | workspace works; no G9B dependency or semantic fallback |
+| U1-W17 | consume R2 document policy | exercise Save/open actions before/after workspace switches on native and compatibility inputs | one application-owned `.cedg`/`.ggb` state machine; manifest does not duplicate or override it |
 | U1-L01 | workspace localization | names/groups/help/blocked reasons in approved locales | no product literal drift; deterministic fallback |
 | U1-L02 | icon/accessibility | missing icon and all action focus paths | text fallback, accessible name, keyboard navigation |
 | U1-V01 | visual density | reference-size and small/high-DPI layouts | groups usable without giant embedded icons; overflow deterministic |
 | U1-V02 | screenshot comparison | human review against supplied evidence | workflow/panel access accepted; no pixel-copy requirement |
 
-## 9. G9U2 blocked procedure tests
+## 10. G9U2 blocked procedure tests
 
 These tests cannot execute until G9 spatial semantics are productive and
 author-approved.
@@ -201,7 +312,7 @@ author-approved.
 | U2-07 | 3D authority | edit/view derived 3D representation | view remains derived; no independent truth loop |
 | U2-08 | workspace purity | switch Construction ↔ Procedures | no geometric recompute caused by switch alone |
 
-## 10. Scientific regression suite
+## 11. Scientific regression suite
 
 Public commands must rerun the existing G6-G8 invariant suites through the
 public algorithms, not substitute screenshots. Add public/persistent fixtures
@@ -222,7 +333,7 @@ The immutable reference GGBs remain legacy compatibility fixtures. New
 canonical V2 models must be separately authored from approved public commands;
 the reference archives must not be resaved as a shortcut.
 
-## 11. Functional counters and benchmarks
+## 12. Functional counters and benchmarks
 
 Count-based evidence is normative where timing is not deterministic. Wall time
 is characterization only.
@@ -244,7 +355,7 @@ Every semantic benchmark asserts render-evaluation counters remain unchanged
 unless rendering itself is the benchmark. Viewport, zoom and DPI changes must
 not affect metric/intersection results.
 
-## 12. Phase exit criteria
+## 13. Phase exit criteria
 
 ### G9U0 PASS candidate
 
@@ -258,11 +369,40 @@ not affect metric/intersection results.
 - Focused and composed authorities pass without weakened G6-G8 evidence.
 - Author explicitly approves command names and compatibility behavior.
 
+### G9U0-R2 implementation candidate and PASS gate
+
+- Accepted ADR 0016 and both normative R2 specifications were approved during
+  planning closeout before any productive edit, and a separate author
+  instruction invoked the implementation prompt.
+- Every `R2-L01`–`R2-L15`, `R2-D01`–`R2-D17` and `R2-R01`–`R2-R07` row passes.
+- Style changes preserve durable identity, semantic/topology revision, domains,
+  branches/components, metrics and intersections.
+- Unrelated crossings preserve fixed-policy render vertices/subpaths, while
+  genuine components/discontinuities remain separate.
+- `.cedg` is the native Save/open identity; `.ggb` source bytes remain unchanged
+  through native save; the archive/XML and `app="classic"` contract remain.
+- GeoCeDG Classic preserves opened `.cedg` without downgrade, creation
+  enablement or default-new-document change; Windows packaging claims only the
+  approved `.cedg` association and does not freeze an unjustified MIME value.
+- Two focused executions produce matching canonical evidence and the composed
+  authority passes without weakening older gates.
+- User/developer/packaging guide impact is completed only for implemented,
+  validated behavior and historical reports remain unchanged.
+- The agent stops at `IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW` with
+  `selfApproved=false`, `authorApproved=false` and `passClaimed=false`.
+- Manual author smoke and an explicit later author decision are mandatory for
+  `G9U0-R2 IMPLEMENTATION PASS — AUTHOR APPROVED`.
+
 ### G9U1 PASS candidate
 
+- G9U0-R2 implementation is already `PASS — AUTHOR APPROVED`, and a separate
+  author decision has authorized the superseding G9U1 prompt; R2 implementation
+  PASS alone is insufficient.
 - Schema v2 and deterministic v1 migration pass.
 - Construction workspace mapping, panel workflow, localization/icons,
   preferences, Document layout and Classic/Laboratory boundaries pass.
+- Native `.cedg` and compatibility `.ggb` layout/open/save behavior follows the
+  application-owned R2 policy and is not duplicated in the workspace manifest.
 - Workspace switching produces zero semantic mutations.
 - Only already approved public actions are enabled.
 - G9U1 remains a presentation/interaction client: it neither requires G9B nor

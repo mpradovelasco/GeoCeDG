@@ -3,13 +3,13 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Roadmap vivo y normativo de fases; no sustituye las especificaciones ni los ADR aceptados |
-| Versión documental | 3.39 |
+| Versión documental | 3.41 |
 | Fecha de revisión | 21 de agosto de 2026 |
 | Baseline GeoGebra | 5.4.928.0, commit `9b93256b7df401ff056c37b502d82df4d72b1522`, tag `geogebra-baseline-5.4.928.0` |
-| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1, G9A2, G9A3, el track G9A, G9U0, el hardening correctivo G9U0-R1, G9X1 y la planificación G10P `PASS — AUTHOR APPROVED`; seis especificaciones G9 normativas; ADR 0010–0015 Accepted; G9X1 conserva su servicio DXF externo, experimental y desactivado por defecto; G9U1, G9B y G9C no están autorizadas, G9U2 sigue bloqueada por la puerta G9 aprobada y ninguna implementación productiva G10 está autorizada; Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
-| Última fase cerrada | G9X1 — exportación DXF extendida exacta/aproximada, `PASS — AUTHOR APPROVED` |
+| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1, G9A2, G9A3, el track G9A, G9U0, el hardening correctivo G9U0-R1, G9X1, la planificación G10P y la planificación/diseño G9U0-R2 `PASS — AUTHOR APPROVED`; ocho especificaciones G9 normativas y ADR 0010–0016 Accepted; la implementación G9U0-R2 requiere autorización separada y no ha empezado; G9U1, G9B y G9C no están autorizadas, G9U2 sigue bloqueada por la puerta G9 aprobada y ninguna implementación productiva G10 está autorizada; el comportamiento observable todavía no usa `.cedg` ni el refinamiento de presentación R2, y Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
+| Última fase cerrada | G9U0-R2 — PLANNING / DESIGN `PASS — AUTHOR APPROVED`; implementación no autorizada/no iniciada |
 | Última fase ejecutada | G9X1, cerrada sin trasladar autoridad geométrica al exportador ni ejecutar fases posteriores |
-| Siguiente puerta | Decisión autoral separada sobre G9U1, que permanece `DESIGNED — NOT AUTHORIZED`; no autoriza G9B, G9C, G9U2 ni producto G10 |
+| Siguiente puerta | Autorización autoral separada para ejecutar el prompt canónico de implementación G9U0-R2; G9U1 no puede ejecutarse hasta que esa implementación cierre `PASS — AUTHOR APPROVED` y reciba después su propia autorización |
 | Primer cliente | Aplicación de escritorio de la familia Classic 5 |
 | Núcleo | Java compartido de GeoGebra, extendido solo cuando la semántica lo requiere |
 
@@ -1128,7 +1128,9 @@ optimización de rendimiento del software.
 | G9U0 | `PASS — AUTHOR APPROVED` | Superficie pública Locus V2 experimental y desactivada por defecto; 93 pruebas focales y repetición determinista sin fallos; candidato de 114 rutas preservado |
 | G9U0-R1 | `PASS — AUTHOR APPROVED` | Hardening correctivo de preview, creación pública Desktop, handoff secuencial vacío y reconstrucción aislada de constantes canónicas; 6/6 pruebas R1, smoke manual autoral y autoridad compuesta completas |
 | G9X1 | `PASS — AUTHOR APPROVED` | DXF extendido externo al kernel; 62/62 escenarios focales y 10/10 regresiones G5, repetición determinista, sidecar condicional obligatorio y escritura pareada validados; experimental y default-off |
-| G9U1 | `DESIGNED — NOT AUTHORIZED` | Workspace Construction con gate y autorización separados |
+| G9U0-R2 planning/design | `PASS — AUTHOR APPROVED` | Autoridad normativa para la puerta pre-G9U1 de presentación/continuidad Locus V2 e identidad documental nativa `.cedg`; no afirma comportamiento implementado |
+| G9U0-R2 implementation | `AUTHORIZATION REQUIRED — NOT STARTED` | `implementationAuthorized=false`; el próximo paso es una autorización autoral separada del prompt canónico |
+| G9U1 | `DESIGNED — NOT AUTHORIZED` | Workspace Construction con gate y autorización separados; no puede autorizarse para ejecución hasta un futuro G9U0-R2 implementation `PASS — AUTHOR APPROVED` |
 | G9B / G9C | `DESIGNED — NOT AUTHORIZED` | Track kernel tras cierre de G9A; no depende de completar el cliente G9U1 |
 | G9U2 | `BLOCKED ON THE APPROVED G9 GATE` | Workspace de procedimientos diédrico solo tras `G9 PASS — AUTHOR APPROVED` |
 | G9 spatial solving | `POINT PILOT — AUTHOR APPROVED` | G9A2 se limita a frames/sistemas/mapas/relaciones y reconstrucción projection-defined de punto; no hay primitivas generales, objetos compuestos ni autoridad 3D |
@@ -1463,6 +1465,8 @@ G9A = PASS — AUTHOR APPROVED
 G9U0 = PASS — AUTHOR APPROVED
 G9U0-R1 = PASS — AUTHOR APPROVED
 G9X1 = PASS — AUTHOR APPROVED
+G9U0-R2 PLANNING / DESIGN = PASS — AUTHOR APPROVED
+G9U0-R2 IMPLEMENTATION = AUTHORIZATION REQUIRED — NOT STARTED
 G9U1 / G9B / G9C = DESIGNED — NOT AUTHORIZED
 G10 PRODUCTIVE IMPLEMENTATION = NOT AUTHORIZED — NOT STARTED
 ```
@@ -1628,6 +1632,8 @@ G9A = PASS — AUTHOR APPROVED
 G9U0 = PASS — AUTHOR APPROVED
 G9U0-R1 = PASS — AUTHOR APPROVED
 G9X1 = PASS — AUTHOR APPROVED
+G9U0-R2 PLANNING / DESIGN = PASS — AUTHOR APPROVED
+G9U0-R2 IMPLEMENTATION = AUTHORIZATION REQUIRED — NOT STARTED
 G9U1 = DESIGNED — NOT AUTHORIZED
 G9B = DESIGNED — NOT AUTHORIZED
 G9C = DESIGNED — NOT AUTHORIZED
@@ -1643,23 +1649,28 @@ G9U0-R1 `PASS — AUTHOR APPROVED`; seis especificaciones normativas y ADR
 G9A cierra identidad/persistencia durable, el piloto projection-defined de punto
 y su ciclo de vida/migración; G9U0 cierra la superficie pública Locus V2
 experimental. G9X1 está cerrado en `PASS — AUTHOR APPROVED`, con exportación
-externa, experimental y desactivada por defecto. G9U1, G9B y G9C siguen sin autorización; G9U2
+externa, experimental y desactivada por defecto. La planificación/diseño
+G9U0-R2 está en `PASS — AUTHOR APPROVED` y sus contratos son normativos, pero su
+implementación requiere autorización y no ha empezado; `.cedg` y el refinamiento
+visual R2 todavía no son comportamiento observable. G9U1, G9B y G9C siguen sin autorización; G9U2
 permanece bloqueada por la puerta G9 aprobada. El
 [plan integrado G9P](../architecture/g9p_integrated_plan.md) y el
 [paquete de decisiones](../validation/g9p_author_decisions.md) gobiernan el
 contrato. A1 implementa identidad/persistencia durable y A2 activa únicamente
-el piloto espacial projection-defined de punto.
+el piloto espacial projection-defined de punto. El
+[diseño aprobado G9U0-R2](../architecture/g9u0_r2_product_refinement_design.md)
+registra la inserción posterior sin reescribir el cierre histórico G9P.
 
 ### Dependencias y orden recomendado posteriores a G9P
 
 ```text
-                                      +--> G9B --> G9C -----------+
-                                      |                            |
-G9A1 --> G9A2 --> G9A3 ---------------+                            +--> cierre global G9 --> G9U2
-                                      |                            |
-                                      +--> G9U0 -------+           |
-                                                       +--> G9U1 --+
-G5 + autoridad semántica interna G6-G8 --> G9X1 ------+
+track kernel:   G9A1 --> G9A2 --> G9A3 --> G9B --> G9C
+
+track producto: G9A3 --> G9U0 --> G9U0-R1 --+
+                                               +--> G9U0-R2 --> G9U1
+                G5 + autoridad G6-G8 --> G9X1 -+
+
+G9C + G9U1 + evidencia G9O1 --> cierre global G9 --> G9U2
 
 G9O1: primero por recomendación operacional; sin arista semántica hacia G9A1.
 ```
@@ -1667,12 +1678,16 @@ G9O1: primero por recomendación operacional; sin arista semántica hacia G9A1.
 El diagrama expresa dependencias semánticas/contractuales, no un calendario.
 Se distinguen: (1) dependencias duras, (2) predecesores de ejecución
 recomendados y (3) puertas de cierre global/release. El orden de bajo conflicto
-recomendado sigue siendo `G9O1; A1; A2; A3; U0; X1; U1; B; C; cierre; U2`, pero
+recomendado pasa a ser `G9O1; A1; A2; A3; U0; U0-R1; X1; U0-R2; U1; B; C;
+cierre; U2`, pero
 los puntos y coma no son flechas semánticas. Tras A3, el track kernel B/C puede
 avanzar sin U1. U0 sí requiere A3 para publicar objetos persistentes. X1 puede
 consumir snapshots internos G6-G8 y declarar su `id_scope`; ejecutar U0 antes
-de X1 sigue recomendado para la integración pública. U1 integra las acciones
-aprobadas de ambos.
+de X1 sigue recomendado para la integración pública. R2 requiere como puerta de
+entrada el cierre ya aprobado de U0-R1 y X1, pero X1 no se convierte en
+autoridad semántica de estilos o documentos. U1 integra las acciones aprobadas
+solo después de un futuro R2 implementation `PASS — AUTHOR APPROVED` y de una autorización
+autoral de U1 todavía separada.
 
 ### G9O1 - Bundles de conocimiento y guías operativas
 
@@ -1799,8 +1814,9 @@ evaluador aislado. Las 6/6 regresiones R1, las 93/93 históricas G9U0, las
 autoridades G9A/legacy, Checkstyle y la verificación compuesta pasaron. El autor
 reprodujo manualmente el caso original círculo → `C` → `D` en `yAxis` →
 `E = Midpoint(C,D)` → `LocusV2(E,C)`, incluida su manipulación dinámica, sin
-falso error CAS, y aprobó el cierre. La incidencia separada de guardado queda
-fuera de alcance. Este cierre no autoriza G9X1, G9U1, G9B, G9C, G9U2 ni ninguna
+falso error CAS, y aprobó el cierre. La incidencia separada de guardado quedó
+fuera de alcance de R1; el diseño aprobado G9U0-R2 la trata solo después
+del cierre G9X1 y sin reinterpretar el PASS histórico. Este cierre no autoriza G9X1, G9U1, G9B, G9C, G9U2 ni ninguna
 implementación productiva G10.
 
 ### G9X1 - DXF extendido exacto/aproximado
@@ -1825,9 +1841,96 @@ El cierre retiene los riesgos documentados, mantiene el gate experimental
 `cedg.export.dxf.extended` desactivado por defecto y no autoriza G9U1, G9B,
 G9C, G9U2 ni implementación productiva G10.
 
+### G9U0-R2 — PRE-G9U1 PRODUCT / DOCUMENT REFINEMENT
+
+**Estado de planificación/diseño:** `PASS — AUTHOR APPROVED`
+
+**Estado de implementación:** `AUTHORIZATION REQUIRED — NOT STARTED`;
+`implementationAuthorized=false`.
+
+**Racional de nombre:** R2 es el siguiente refinamiento acotado de la familia
+G9U0 después de G9U0-R1. Conserva la convención `-R<n>` ya usada por G7A,
+G8B, G9P y G9U0, evita ocupar el `G9U1A` ya reservado para el futuro
+schema/compiler de workspace y no crea una familia paralela. Pese al sufijo,
+R2 es una puerta de ejecución independiente con prompt, verifier, evidencia y
+aprobación propios. El
+[diseño aprobado](../architecture/g9u0_r2_product_refinement_design.md)
+documenta la comparación completa.
+
+**Prerrequisitos de una futura ejecución:** G9U0-R1 y G9X1 deben conservar
+`PASS — AUTHOR APPROVED`; ADR 0016 Accepted y las dos specs normativas deben
+permanecer como autoridad; el árbol/base de entrada debe ser el autorizado por
+el autor; y el prompt canónico R2 deberá invocarse mediante una autorización
+separada. El PASS de planificación no inicia implementación.
+
+**Alcance aprobado:** (1) integrar Locus V2 con color, grosor, tipo de línea,
+show/hide, presentación de etiqueta aplicable, Properties, selección/highlight,
+estilo persistente, copy y undo/redo ordinarios sin tocar semántica;
+(2) demostrar continuidad de render equivalente a una curva ordinaria cuando
+una línea, circunferencia o cónica cruza el locus, sin crear gap, componente o
+subpath artificial; y (3) establecer `.cedg` como extensión documental nativa
+de GeoCeDG, con `.ggb` como entrada de compatibilidad no destructiva, manteniendo
+el ZIP/XML validado y `app_code: classic` mientras no exista evidencia separada
+que justifique otra decisión.
+
+**Exclusiones:** R2 no convierte Locus V2 en `Path`, no cambia identidad,
+revisión, generador, dominio, ramas/componentes, métricas, intersecciones,
+solution tokens ni autoridad del DAG semántico, no crea un
+modelo paralelo de estilos, no serializa teselación y no implementa workspace
+v2, G9B, G9C, G9U2 ni G10. Tampoco promete que un upstream externo pueda abrir
+tipos GeoCeDG desconocidos ni autoriza exportación `.ggb` con downgrade.
+
+**Política documental aprobada:** en GeoCeDG normal, Save/Save As nativos terminan en `.cedg`;
+una extensión omitida añade `.cedg`; Save sobre un `.ggb` abierto deriva a Save
+As nativo y nunca sobrescribe el origen; reopen, recientes, drag/drop y apertura
+directa admiten `.cedg` y `.ggb`. GeoCeDG Classic abre y preserva `.cedg` sin
+downgrade ni creación habilitada, pero esa capacidad no cambia por sí sola su
+identidad predeterminada de documento nuevo. Un `.cedg` corrupto falla cerrado;
+MSI/EXE Windows asocian `.cedg` mediante ProgID propio y los formatos portables
+no crean asociación. No se congela MIME arbitrario ni se reclama validación de
+asociación fuera de Windows. La extensión enruta I/O pero nunca infiere
+semántica o migración desde el nombre.
+
+**Validación/salida futura:** deberá completar las filas `R2-L*`, `R2-D*` y
+`R2-R*` de la matriz pública existente, dos ejecuciones deterministas del
+verifier focal, regresiones G9U0-R1/G9U0/G9X1/G5/G9A/legacy Locus, composed
+verify, inventario upstream y smoke manual autoral. El prompt termina solo en
+`IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW`; un agente no puede reclamar
+PASS.
+
+**Relación con G9U1 y fases retenidas:** G9U1 ya no es la puerta ejecutable
+inmediata. Solo tras un futuro `G9U0-R2 IMPLEMENTATION PASS — AUTHOR APPROVED` podrá el autor
+considerar, mediante otra decisión explícita, autorizar G9U1. G9B y G9C siguen
+independientes de este track de producto y no están autorizadas; G9U2 conserva
+su bloqueo global y G10 productivo sigue sin autorización.
+
+```text
+G9U0-R2 PLANNING / DESIGN = PASS — AUTHOR APPROVED
+planningSelfApproved = false
+planningAuthorApproved = true
+
+G9U0-R2 IMPLEMENTATION = AUTHORIZATION REQUIRED — NOT STARTED
+implementationAuthorized = false
+implementationStarted = false
+implementationSelfApproved = false
+implementationPassClaimed = false
+
+G9U1 = DESIGNED — NOT AUTHORIZED
+G9B = NOT AUTHORIZED
+G9C = NOT AUTHORIZED
+G9U2 = BLOCKED
+PRODUCTIVE G10 = NOT AUTHORIZED
+```
+
 ### G9U1 - Workspace CeDG Construction
 
 **Estado:** `DESIGNED — NOT AUTHORIZED`
+
+**Entrada adicional obligatoria:** G9U1 no puede autorizarse para ejecución
+hasta que G9U0-R2 implementation cierre `PASS — AUTHOR APPROVED`. Ese cierre no autorizará U1
+automáticamente; seguirá siendo necesaria una decisión autoral separada y un
+prompt canónico que superseda normativamente los supuestos `.ggb` del prompt
+G9P congelado.
 
 Extenderá el manifiesto de perfil como única autoridad para workspaces, vistas,
 docking, input inferior, help contextual, actions, madurez, iconos y localización.
@@ -1864,7 +1967,7 @@ genérica de B-Rep CAD.
 
 El cierre global exige round-trip proyección–objeto–proyección, serialización y
 migración estables, casos canónicos/dinámicos/degenerados, los tracks B/C y
-U0/X1/U1 aprobados, evidencia operacional G9O1, counters y composed verify,
+U0/U0-R1/X1/U0-R2/U1 aprobados, evidencia operacional G9O1, counters y composed verify,
 seguido de aprobación autoral explícita. Solo entonces G9U2 podrá
 implementar el workspace `CeDG Dihedral Procedures` y sus procedimientos
 constructivos consumiendo sistemas/mapas/charnelas tipados; hasta ese momento

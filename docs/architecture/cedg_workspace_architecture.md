@@ -4,6 +4,31 @@
 - Governing normative contract: `geocedg/specs/ui/cedg-workspaces.md`
 - Decision: Accepted ADR 0012
 
+## Approved pre-G9U1 product/document gate
+
+G9U0-R2 planning/design is **PASS — AUTHOR APPROVED**. Its implementation is
+not authorized and not started. The normative native `.cedg` document policy
+and bounded Locus V2 presentation contract must be implemented, validated and
+closed PASS before G9U1 can be considered for separate execution
+authorization. No workspace, manifest or Desktop behavior is implemented by
+this planning closeout.
+
+After R2 implementation passes, this architecture consumes its results as
+inputs rather than owning them:
+
+```text
+ordinary GeoElement/Locus presentation authority --+
+                                                    +--> G9U1 action/layout client
+GeoCeDG native document I/O policy -----------------+
+```
+
+The workspace manifest continues to own views/actions/layout only. It must not
+duplicate the `.cedg`/`.ggb` state machine or style semantics. Its unchanged
+`serialization` declaration continues to mean the current ZIP/XML machinery
+and `app_code: classic`. The exact approved supersession is listed in
+`docs/architecture/g9u0_r2_product_refinement_design.md` and in the
+non-normative notice of the workspace spec.
+
 ## Outcome
 
 The sustainable extension is a schema-v2 evolution of the existing GeoCeDG

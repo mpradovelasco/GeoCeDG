@@ -6,6 +6,40 @@
 - Related Accepted ADR: `docs/adr/0012-manifest-defined-geocedg-workspaces.md`
 - Evidence: `docs/references/cedg/models/g9p/g9p-reference-workflow-audit.md`
 
+## G9U0-R2 approved supersession record
+
+The author closed `G9U0-R2 — PRE-G9U1 PRODUCT / DOCUMENT REFINEMENT`
+planning/design as `PASS — AUTHOR APPROVED`. Its implementation remains not
+authorized and not started. This record normatively refines the future G9U1
+entry/document assumptions below; it does not implement R2 or authorize U1.
+
+Before G9U1 execution, this contract must:
+
+- require `G9U0-R2 IMPLEMENTATION PASS — AUTHOR APPROVED` as an additional U1
+  entry gate, followed by a separate U1 authorization;
+- read `serialization: <unchanged classic compatibility policy>` as retention
+  of the current ZIP/XML machinery and `app_code: classic`, not as retention of
+  `.ggb` as GeoCeDG's native extension;
+- revise §9 so `.cedg` is the native document and a document-carried `.ggb`
+  layout is compatibility input, while workspace preferences remain outside
+  geometric/document semantics;
+- revise §10 so GeoCeDG Classic directly opens and preserves supported `.cedg`
+  without downgrade or creation enablement; accepting `.cedg` does not change
+  its default new-document identity;
+- revise §12/§13 and the U1 validation entry to consume the R2 evidence without
+  changing workspace presentation purity or introducing a G9B dependency.
+
+The owning contracts are the normative
+`geocedg/specs/ui/native-document-identity.md`,
+`geocedg/specs/locus/locus-v2-presentation.md` and Accepted ADR 0016. Until a
+separately authorized R2 implementation is validated and approved, observable
+product behavior continues to use `.ggb`.
+
+ADR 0012 remains Accepted for its workspace/profile, presentation-purity and
+separate-Classic decisions. ADR 0016 supersedes only its former `.ggb`
+native-document assumptions and adds G9U0-R2 implementation PASS as a
+prerequisite for any later, separately authorized G9U1 execution.
+
 ## 1. Purpose
 
 This contract evolves the accepted version-1 GeoCeDG application profile from

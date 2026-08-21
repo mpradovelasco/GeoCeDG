@@ -55,6 +55,7 @@ $EvidenceHashPath = "$EvidenceRoot/g9u0-evidence.sha256"
 $CorpusPath = "$EvidenceRoot/g9u0-compatibility-corpus.json"
 $CorpusHashPath = "$EvidenceRoot/g9u0-compatibility-corpus.sha256"
 $GeneratedStateHelper = Join-Path $PSScriptRoot "repository-generated-state.ps1"
+$EvidenceIntegrityHelper = Join-Path $PSScriptRoot "evidence-integrity.ps1"
 $GeneratedDirectoryNames = @("build", ".gradle", ".kotlin")
 $LogDirectory = [IO.Path]::GetFullPath($LogDirectory)
 $InitialStatus = $null
@@ -78,6 +79,7 @@ $RequiredPaths = @(
     "docs/validation/g9u0_locus_v2_public_surface_migration_report.md",
     "docs/validation/g9u0_locus_v2_public_surface_traceability_matrix.md",
     "docs/validation/g9u0_locus_v2_public_surface_compatibility_matrix.md",
+    "tools/agent/evidence-integrity.ps1",
     "tools/agent/verify-g9u0-locus-v2-public-surface.ps1",
     "tools/agent/verify-g8b-intersections.ps1",
     "tools/agent/verify-locus-v2.ps1",
@@ -179,6 +181,7 @@ $Documents = @(
 )
 
 . $GeneratedStateHelper
+. $EvidenceIntegrityHelper
 
 function Assert-Condition {
     param(
@@ -409,8 +412,11 @@ function Assert-Authority {
             $SpecificationSha256) -Message "The public Locus V2 spec hash changed."
     Assert-Condition -Condition ((Get-CanonicalTextSha256 $AdrPath) -eq
             $AdrSha256) -Message "ADR 0013 hash changed."
-    Assert-Condition -Condition ((Get-CanonicalTextSha256 $MatrixPath) -eq
-            $MatrixSha256) -Message "The G9 public validation matrix hash changed."
+    $frozenMatrixHash = Get-GeoCeDGFrozenCanonicalTextSha256 `
+        -RepositoryRoot $RepositoryRoot -Path $MatrixPath `
+        -Commit $G9U0PromotionCommit
+    Assert-Condition -Condition ($frozenMatrixHash -eq $MatrixSha256) `
+        -Message "The frozen G9U0 public validation matrix hash changed."
 
     $tagObject = (& git -C $RepositoryRoot rev-parse `
         "refs/tags/$G9A3TagName").Trim()

@@ -1,7 +1,7 @@
 # GeoCeDG documentation architecture
 
 - Status: current-state map under the **NORMATIVE / AUTHOR APPROVED** G9 maintenance contract
-- Date: 2026-08-16
+- Date: 2026-08-21
 - Normative maintenance contract: `geocedg/specs/operations/documentation-maintenance.md`
 
 ## Purpose
@@ -38,11 +38,17 @@ contracts remain above prose when they disagree.
 
 ## Current capability boundary
 
-G6-G8 provide productive internal Locus V2 semantic, metric and intersection
-classes. They do not provide public commands, normal toolbar workflows, `Path`,
-copy/XML persistence or saved-file support. G5 DXF is observable and remains an
-experimental exact 2D export. G9 artifacts produced during planning are
-proposals and do not establish product behavior.
+G6-G8 provide the internal Locus V2 semantic, metric and intersection
+foundation. G9U0 and G9U0-R1 now provide an author-approved experimental,
+default-off public surface with durable copy/XML/save support; Locus V2 remains
+non-`Path`. G9X1 provides the author-approved experimental/default-off extended
+DXF adapter. The current observable native-save path and Windows association
+still use `.ggb` and the XML header still uses `app_code: classic`.
+
+G9U0-R2 planning/design is **PASS — AUTHOR APPROVED**. Its normative ordinary
+Locus presentation and `.cedg` native-document contracts are approved future
+authority, but implementation remains unauthorized/not started; they do not
+establish current product behavior or change user-guide claims.
 
 ## G9P audit disposition
 
@@ -101,3 +107,27 @@ capability change
 Generated knowledge bundles consume this topology through explicit profiles.
 They preserve file boundaries, provenance and reading order; they do not
 flatten or replace repository authority.
+
+## G9U0-R2 approved documentation-impact design
+
+Planning authority belongs in the living roadmap,
+`docs/architecture/g9u0_r2_product_refinement_design.md`, Accepted ADR 0016 and
+the two normative specifications. Historical G9U0/G9U0-R1/G9X1 reports and the
+frozen G9P prompt catalog are not rewritten.
+
+The living user guide must continue to describe `.ggb` Save/reopen and package
+association until an R2 implementation is author-approved and observable. A
+future R2 implementation candidate has mandatory `GUIDE_IMPACT` work:
+
+- user guide: native Save/Save As, omitted suffix, `.ggb` compatibility input,
+  reopen/recent/direct-open, Classic diagnostic behavior, corrupt-file failure,
+  `.cedg` Windows association and Locus Properties/style continuity;
+- developer guide: extension routing seams, unchanged ZIP/XML and
+  `app_code: classic`, source classification, no semantic filename inference,
+  render-subpath invariants, focused/composed verifier and upstream-impact
+  inventory; and
+- packaging/release guide: installer-only `.cedg` association, portable
+  non-association and the unchanged redistribution block.
+
+Those guide edits are future implementation evidence, not part of this
+planning closeout.
