@@ -3,12 +3,12 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Roadmap vivo y normativo de fases; no sustituye las especificaciones ni los ADR aceptados |
-| Versión documental | 3.36 |
-| Fecha de revisión | 20 de agosto de 2026 |
+| Versión documental | 3.37 |
+| Fecha de revisión | 21 de agosto de 2026 |
 | Baseline GeoGebra | 5.4.928.0, commit `9b93256b7df401ff056c37b502d82df4d72b1522`, tag `geogebra-baseline-5.4.928.0` |
-| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1, G9A2, G9A3, el track G9A, G9U0 y la planificación G10P `PASS — AUTHOR APPROVED`; seis especificaciones G9 normativas; ADR 0010–0015 Accepted; G9X1, G9U1, G9B y G9C permanecen `DESIGNED — NOT AUTHORIZED`, G9U2 sigue bloqueada por la puerta G9 aprobada y ninguna implementación productiva G10 está autorizada; Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
-| Última fase cerrada | G9U0 — superficie pública experimental Locus V2, `PASS — AUTHOR APPROVED` |
-| Última fase ejecutada | G9U0: cierre autoral y promoción de la superficie pública experimental Locus V2 |
+| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1, G9A2, G9A3, el track G9A, G9U0, el hardening correctivo G9U0-R1 y la planificación G10P `PASS — AUTHOR APPROVED`; seis especificaciones G9 normativas; ADR 0010–0015 Accepted; G9X1, G9U1, G9B y G9C no están aprobadas, G9U2 sigue bloqueada por la puerta G9 aprobada y ninguna implementación productiva G10 está autorizada; Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
+| Última fase cerrada | G9U0-R1 — hardening correctivo de creación pública y ciclo de vida Locus V2, `PASS — AUTHOR APPROVED` |
+| Última fase ejecutada | G9U0-R1: cierre autoral del hardening correctivo de preview, handoff secuencial e isolación de constantes canónicas |
 | Siguiente puerta | G9X1 permanece `DESIGNED — NOT AUTHORIZED`; requiere autorización separada antes de ejecutarse |
 | Primer cliente | Aplicación de escritorio de la familia Classic 5 |
 | Núcleo | Java compartido de GeoGebra, extendido solo cuando la semántica lo requiere |
@@ -1126,6 +1126,7 @@ optimización de rendimiento del software.
 | G9A3 | `PASS — AUTHOR APPROVED` | Hardening de ciclo de vida, migración explícita, copy closure, redefine y recuperación cerrados; completa el track G9A |
 | G9A | `PASS — AUTHOR APPROVED` | Identidad/persistencia durable, piloto POINT y ciclo de vida/migración cerrados en G9A1–G9A3 |
 | G9U0 | `PASS — AUTHOR APPROVED` | Superficie pública Locus V2 experimental y desactivada por defecto; 93 pruebas focales y repetición determinista sin fallos; candidato de 114 rutas preservado |
+| G9U0-R1 | `PASS — AUTHOR APPROVED` | Hardening correctivo de preview, creación pública Desktop, handoff secuencial vacío y reconstrucción aislada de constantes canónicas; 6/6 pruebas R1, smoke manual autoral y autoridad compuesta completas |
 | G9X1 / G9U1 | `DESIGNED — NOT AUTHORIZED` | DXF extendido y workspace Construction, cada uno con gate y autorización separados |
 | G9B / G9C | `DESIGNED — NOT AUTHORIZED` | Track kernel tras cierre de G9A; no depende de completar el cliente G9U1 |
 | G9U2 | `BLOCKED ON THE APPROVED G9 GATE` | Workspace de procedimientos diédrico solo tras `G9 PASS — AUTHOR APPROVED` |
@@ -1459,6 +1460,7 @@ G9A2 = PASS — AUTHOR APPROVED
 G9A3 = PASS — AUTHOR APPROVED
 G9A = PASS — AUTHOR APPROVED
 G9U0 = PASS — AUTHOR APPROVED
+G9U0-R1 = PASS — AUTHOR APPROVED
 G9X1 / G9U1 / G9B / G9C = DESIGNED — NOT AUTHORIZED
 G10 PRODUCTIVE IMPLEMENTATION = NOT AUTHORIZED — NOT STARTED
 ```
@@ -1622,6 +1624,7 @@ G9A2 = PASS — AUTHOR APPROVED
 G9A3 = PASS — AUTHOR APPROVED
 G9A = PASS — AUTHOR APPROVED
 G9U0 = PASS — AUTHOR APPROVED
+G9U0-R1 = PASS — AUTHOR APPROVED
 G9X1 = DESIGNED — NOT AUTHORIZED
 G9U1 = DESIGNED — NOT AUTHORIZED
 G9B = DESIGNED — NOT AUTHORIZED
@@ -1632,8 +1635,9 @@ G9 SPATIAL SOLVING = POINT PILOT — AUTHOR APPROVED; GENERAL PRIMITIVES NOT STA
 
 ## G9 - Semántica espacial y proyecciones canónicas
 
-**Estado:** G9P-R1, G9P, G9O1, G9A1, G9A2, G9A3, el track G9A y G9U0 `PASS —
-AUTHOR APPROVED`; seis especificaciones normativas y ADR 0010–0015 Accepted.
+**Estado:** G9P-R1, G9P, G9O1, G9A1, G9A2, G9A3, el track G9A, G9U0 y
+G9U0-R1 `PASS — AUTHOR APPROVED`; seis especificaciones normativas y ADR
+0010–0015 Accepted.
 G9A cierra identidad/persistencia durable, el piloto projection-defined de punto
 y su ciclo de vida/migración; G9U0 cierra la superficie pública Locus V2
 experimental. G9X1, G9U1, G9B y G9C siguen sin autorización; G9U2 permanece
@@ -1778,6 +1782,23 @@ a cero. La capacidad conserva madurez `experimental` y permanece desactivada
 por defecto. Los commits operacionales concurrentes de `main` se integraron como
 historia independiente y no forman parte del alcance G9U0. No se ejecutó ninguna
 fase posterior G9 ni implementación G10.
+
+#### G9U0-R1 — Hardening correctivo de creación pública y ciclo de vida
+
+**Estado:** `PASS — AUTHOR APPROVED`
+
+R1 conserva íntegros la matemática, la API pública experimental, la identidad
+durable y la política default-off aprobadas en G9U0. Aísla el preview de la
+publicación durable, admite únicamente el merge vacío de instrumentación en un
+handoff secuencial bootstrap/EDT —sin relajar el confinamiento de evidencia no
+vacía— y evita reconstruir constantes canónicas como `yAxis` dentro del
+evaluador aislado. Las 6/6 regresiones R1, las 93/93 históricas G9U0, las
+autoridades G9A/legacy, Checkstyle y la verificación compuesta pasaron. El autor
+reprodujo manualmente el caso original círculo → `C` → `D` en `yAxis` →
+`E = Midpoint(C,D)` → `LocusV2(E,C)`, incluida su manipulación dinámica, sin
+falso error CAS, y aprobó el cierre. La incidencia separada de guardado queda
+fuera de alcance. Este cierre no autoriza G9X1, G9U1, G9B, G9C, G9U2 ni ninguna
+implementación productiva G10.
 
 ### G9X1 - DXF extendido exacto/aproximado
 

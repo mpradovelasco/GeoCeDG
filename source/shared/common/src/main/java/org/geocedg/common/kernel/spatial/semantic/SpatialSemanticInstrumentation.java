@@ -8,6 +8,7 @@ package org.geocedg.common.kernel.spatial.semantic;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityId;
 
@@ -233,11 +234,12 @@ public final class SpatialSemanticInstrumentation {
 	 * @param staged same-thread lifecycle evidence
 	 */
 	public void preflightMergeFrom(SpatialSemanticInstrumentation staged) {
-		checkOwner();
+		Objects.requireNonNull(staged);
 		staged.checkOwner();
-		if (staged == this) {
+		if (staged == this || !staged.hasRecordedEvidence()) {
 			return;
 		}
+		checkOwner();
 		Math.addExact(frameEvaluations, staged.frameEvaluations);
 		Math.addExact(projectionSystemEvaluations,
 				staged.projectionSystemEvaluations);
@@ -282,7 +284,7 @@ public final class SpatialSemanticInstrumentation {
 	 */
 	public void mergeFrom(SpatialSemanticInstrumentation staged) {
 		preflightMergeFrom(staged);
-		if (staged == this) {
+		if (staged == this || !staged.hasRecordedEvidence()) {
 			return;
 		}
 		long mergedFrameEvaluations = Math.addExact(frameEvaluations,
@@ -497,6 +499,29 @@ public final class SpatialSemanticInstrumentation {
 		dependencyUpdates = 0;
 		derivedViewPublications = 0;
 		derivedViewWithdrawals = 0;
+	}
+
+	private boolean hasRecordedEvidence() {
+		return frameEvaluations != 0
+				|| projectionSystemEvaluations != 0
+				|| diagramMapForwardEvaluations != 0
+				|| diagramMapInverseEvaluations != 0
+				|| hingeConsistencyEvaluations != 0
+				|| changeOfPlaneConsistencyEvaluations != 0
+				|| projectionSystemCertificatePublications != 0
+				|| projectionSystemCertificateRejections != 0
+				|| reconstructionAttempts != 0
+				|| rankEvaluations != 0
+				|| candidateObjectsBuilt != 0
+				|| reprojectionEvaluations != 0
+				|| certificatePublications != 0
+				|| failurePublications != 0
+				|| supersededCandidateRejections != 0
+				|| dependencyUpdates != 0
+				|| derivedViewPublications != 0
+				|| derivedViewWithdrawals != 0
+				|| authoritativePublicationEpoch != 0
+				|| !authoritativePublicationCounts.isEmpty();
 	}
 
 	private void checkOwner() {

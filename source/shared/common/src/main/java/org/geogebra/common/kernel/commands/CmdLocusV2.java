@@ -30,6 +30,9 @@ public final class CmdLocusV2 extends CommandProcessor {
 	@Override
 	public GeoElement[] process(Command command, EvalInfo info) throws MyError {
 		RuntimeFeatureService.requireLocusV2Access(cons);
+		if (!info.isScripting()) {
+			return new GeoElement[0];
+		}
 		int argumentCount = command.getArgumentNumber();
 		GeoElement[] arguments = resArgs(command, info);
 		boolean[] valid = new boolean[argumentCount];

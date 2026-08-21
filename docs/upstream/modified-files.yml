@@ -2142,7 +2142,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/semantic/SpatialSemanticInstrumentation.java",
       "change": "added",
-      "purpose": "Implement one reusable G9A2 frame/map/relation, status, numeric-policy, certificate, or projection-defined POINT evaluation component without presentation authority.",
+      "purpose": "Implement one reusable G9A2 frame/map/relation, status, numeric-policy, certificate, or projection-defined POINT evaluation component without presentation authority, retaining evidence-bearing thread confinement while accepting an empty sequential host-lifecycle handoff.",
       "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
     },
     {
@@ -2472,7 +2472,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CmdLocusV2.java",
       "change": "added",
-      "purpose": "Validate the selected typed public Locus V2 overloads and strict explicit domain descriptor before kernel creation.",
+      "purpose": "Validate the selected typed public Locus V2 overloads and strict explicit domain descriptor before kernel creation while keeping provisional input-bar preview outside durable identity publication.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -2712,7 +2712,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/ReconstructibleLocusEvaluator2D.java",
       "change": "added",
-      "purpose": "Evaluate a reconstructible isolated construction slice resolved only by durable identities while excluding labels, coordinates, samples, and XML order as authority.",
+      "purpose": "Evaluate a reconstructible isolated construction slice resolved only by durable identities while excluding labels, coordinates, samples, XML order, and construction-owned canonical constants as copied ordinary-element authority.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -2779,6 +2779,30 @@
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRedefineCandidateParticipation.java",
       "change": "added",
       "purpose": "Stage an exact construction-confined identity graph during candidate parsing so redefine validation and rollback publish no provisional records or labels.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusV2PointDrivenCreationRegressionTest.java",
+      "change": "added",
+      "purpose": "Reproduce the reported circle-point Locus V2 construction and verify native type, generator family, ordinary DAG dependencies, durable identity, and dynamic recomputation.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geogebra/common/kernel/LocusV2InputPreviewLifecycleTest.java",
+      "change": "added",
+      "purpose": "Exercise the real input-bar preview lifecycle and prove that provisional Locus V2 evaluation publishes no durable identity, reservation, algorithm, geo, counter, or semantic revision before definitive creation.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/SpatialSemanticInstrumentationSequentialHandoffTest.java",
+      "change": "added",
+      "purpose": "Verify that an empty staged instrumentation merge permits a sequential host-thread handoff while evidence-bearing cross-thread mutation remains rejected without partial publication.",
+      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/locus/LocusV2DesktopLifecycleRegressionTest.java",
+      "change": "added",
+      "purpose": "Reproduce GeoCeDG Desktop bootstrap-to-EDT scheduled preview and definitive public Locus V2 creation without making the frontend semantic authority.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     }
   ]

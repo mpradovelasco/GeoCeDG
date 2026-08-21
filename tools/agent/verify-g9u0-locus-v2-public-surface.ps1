@@ -16,6 +16,9 @@ $EntrySha = "d4de0e480b0a6439c940a0f6e0cfde51c5e56bd2"
 $ExpectedBranch = "feature/g9u0-locus-v2-public-surface"
 $G9A3TagName = "geocedg-g9a3-pass"
 $G9A3TagObject = "4dd65df131030799465bc47ee4b715cbe043d98e"
+$G9U0TagName = "geocedg-g9u0-pass"
+$G9U0TagObject = "612845c42925bc519f68443d09fd400ff4365251"
+$G9U0PromotionCommit = "bdd20da3e9e711dcc35e818d857d604d7b217385"
 $PreAuthorReviewEvidenceSha256 =
     "480c6b022e8614f0b61b3eb39f40efe791e38e37abcafafdfaaa850622bbd47c"
 $ConcurrentMainObserved = "6eafd868121824b7cf7a4eea6a0c9cce2b936f3f"
@@ -617,22 +620,37 @@ function Assert-CandidateCloseoutBoundary {
         $reconciledPaths = @(& git -C $RepositoryRoot diff --name-only `
             --no-renames $candidate --)
     } else {
-        & git -C $RepositoryRoot merge-base --is-ancestor $candidate HEAD
+        $tagObject = (& git -C $RepositoryRoot rev-parse `
+            "refs/tags/$G9U0TagName").Trim()
+        $tagType = (& git -C $RepositoryRoot cat-file -t $tagObject).Trim()
+        $peeledPromotion = (& git -C $RepositoryRoot rev-parse `
+            "$G9U0TagName^{}").Trim()
+        Assert-Condition -Condition ($LASTEXITCODE -eq 0 -and
+                $tagObject -eq $G9U0TagObject -and $tagType -eq "tag" -and
+                $peeledPromotion -eq $G9U0PromotionCommit) `
+            -Message "The annotated G9U0 author-pass tag is not the frozen authority."
+        & git -C $RepositoryRoot merge-base --is-ancestor $candidate `
+            $G9U0PromotionCommit
         $candidateIsAncestor = $LASTEXITCODE -eq 0
         & git -C $RepositoryRoot merge-base --is-ancestor `
-            $ConcurrentMainObserved HEAD
+            $ConcurrentMainObserved $G9U0PromotionCommit
         $mainIsAncestor = $LASTEXITCODE -eq 0
+        & git -C $RepositoryRoot merge-base --is-ancestor `
+            $G9U0PromotionCommit HEAD
+        $promotionIsAncestor = $LASTEXITCODE -eq 0
         Assert-Condition -Condition ($candidateIsAncestor -and $mainIsAncestor) `
-            -Message "Reconciled HEAD lost the candidate or concurrent main."
+            -Message "The G9U0 promotion lost the candidate or concurrent main."
+        Assert-Condition -Condition $promotionIsAncestor `
+            -Message "The current HEAD does not retain the G9U0 promotion commit."
         $promotionRecord = @((& git -C $RepositoryRoot rev-list --parents -n 1 `
-            HEAD).Trim() -split '\s+')
+            $G9U0PromotionCommit).Trim() -split '\s+')
         Assert-Condition -Condition ($promotionRecord.Count -eq 3 -and
                 $promotionRecord[1] -eq $ConcurrentMainObserved -and
                 $promotionRecord[2] -eq $candidate) `
             -Message ("The G9U0 promotion commit must have concurrent main and " +
                 "the frozen candidate as its ordered parents.")
         $reconciledPaths = @(& git -C $RepositoryRoot diff --name-only `
-            --no-renames $candidate HEAD --)
+            --no-renames $candidate $G9U0PromotionCommit --)
     }
     Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
         -Message "Unable to enumerate the reconciled G9U0 tree."

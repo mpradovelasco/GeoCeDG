@@ -49,6 +49,8 @@ $G9A3SpatialLifecycleVerifier = Join-Path $PSScriptRoot `
     "verify-g9a3-spatial-lifecycle.ps1"
 $G9U0LocusPublicSurfaceVerifier = Join-Path $PSScriptRoot `
     "verify-g9u0-locus-v2-public-surface.ps1"
+$G9U0R1PublicCreationLifecycleVerifier = Join-Path $PSScriptRoot `
+    "verify-g9u0-r1-locus-v2-public-creation-lifecycle.ps1"
 $BenchmarkRunner = Join-Path $RepositoryRoot "tools\benchmark\run.ps1"
 $InitialStatus = $null
 
@@ -444,6 +446,39 @@ try {
         } else {
             throw "Unknown G9U0 source inventory state in candidate evidence."
         }
+    }
+
+    $g9u0R1Report = Join-Path $RepositoryRoot `
+        "docs\validation\g9u0_r1_locus_v2_public_creation_lifecycle_candidate_report.md"
+    $g9u0R1IntegrationArtifacts = @(
+        $G9U0R1PublicCreationLifecycleVerifier,
+        $g9u0R1Report
+    )
+    $g9u0R1PresentCount = @($g9u0R1IntegrationArtifacts | Where-Object {
+        Test-Path -LiteralPath $_ -PathType Leaf
+    }).Count
+    if ($g9u0R1PresentCount -ne 0 -and
+            $g9u0R1PresentCount -ne $g9u0R1IntegrationArtifacts.Count) {
+        throw "Incomplete G9U0-R1 verifier/report integration; both artifacts are required."
+    }
+    if ($g9u0R1PresentCount -eq $g9u0R1IntegrationArtifacts.Count) {
+        Write-Host "`n==> G9U0-R1 public creation and Desktop lifecycle hardening"
+        $g9u0R1Parameters = @{
+            LogDirectory = Join-Path ([IO.Path]::GetFullPath($LogDirectory)) `
+                "g9u0-r1-locus-v2-public-creation-lifecycle"
+        }
+        if ($SkipBuild) {
+            $g9u0R1Parameters.SkipBuild = $true
+        }
+        if ($AllowToolchainDownload) {
+            $g9u0R1Parameters.AllowToolchainDownload = $true
+        }
+        if ($KeepBuildOutputs) {
+            $g9u0R1Parameters.KeepBuildOutputs = $true
+        }
+        & $G9U0R1PublicCreationLifecycleVerifier @g9u0R1Parameters
+        Assert-LastScriptSuccess `
+            -Description "G9U0-R1 public creation and Desktop lifecycle hardening"
     }
 
     Write-Host "`n==> Standalone Windows packaging contracts"

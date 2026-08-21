@@ -71,6 +71,10 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D {
 				throw new IllegalArgumentException(
 						"Evaluator reconstruction slice crosses constructions");
 			}
+			// The isolated MacroKernel supplies its own canonical constants.
+			if (construction.isConstantElement(current)) {
+				continue;
+			}
 			elements.add(current);
 			AlgoElement parent = current.getParentAlgorithm();
 			if (parent != null && parent.isInConstructionList()) {
