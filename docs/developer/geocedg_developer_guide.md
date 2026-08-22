@@ -4,11 +4,11 @@
 - Baseline: GeoGebra 5.4.928.0 at
   `9b93256b7df401ff056c37b502d82df4d72b1522`
 - G9 state in this guide: G9O1, G9A1–G9A3/G9A, G9U0/G9U0-R1 and G9X1
-  `PASS — AUTHOR APPROVED`; G9U0-R2 planning approved and implementation
-  candidate with automated validation complete; manual smoke and author
-  review; G9U1/G9B/G9C unauthorized
-- G9U0-R2 terminal ceiling: `IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW`;
-  no self-approval or phase PASS
+  `PASS — AUTHOR APPROVED`; G9U0-R2 planning and implementation also
+  `PASS — AUTHOR APPROVED` after the bounded R2-L11 correction and accepted
+  interactive re-smoke; G9U1/G9B/G9C remain unauthorized
+- G9U0-R2 closeout: `selfApproved=false`, `authorApproved=true`,
+  `passClaimed=true`; installed MSI/registry smoke `NOT_REQUESTED`
 
 ## Purpose and boundary
 
@@ -82,9 +82,9 @@ manifest to accommodate later prose edits.
 
 G9U0-R2 uses the same operational architecture. Its focused verifier is
 `tools/agent/verify-g9u0-r2-product-refinement.ps1`, and its paired composed
-block runs after G9X1 and before any future G9U1 block. The current evidence is
-complete: exact commands, exits, counts, logs and canonical-summary hashes were
-recorded only after their saved invocations finished. Run the shared and Desktop
+block runs after G9X1 and before any future G9U1 block. The R2-L11 source/fixture
+correction invalidated every prior tuple; replacement focused, historical,
+ancillary and composed evidence now passes. Run the shared and Desktop
 test filters as separate Gradle invocations; a global `--tests` filter must not
 make either module seek the other module's classes. Two identical focused runs
 compare normalized archive-entry/XML evidence and canonical summaries only
@@ -114,13 +114,18 @@ Public commands follow upstream `Commands` registration, dispatcher/factory,
 `CommandProcessor`, algorithm and localization paths. G9U0 exposes the
 author-approved experimental/default-off public Locus V2 creation, metric and
 intersection surface with durable generator/result/token persistence.
-`GeoLocusV2` remains non-`Path`; the G9U0-R2 candidate adds only ordinary
+`GeoLocusV2` remains non-`Path`; G9U0-R2 adds only ordinary
 GeoElement presentation capability and derived-render coverage. It does not
 move metrics, intersections or identity into the drawable.
 The host-level `updatePresentationRepaint()` seam defaults to the historical
 `updateRepaint()` behavior; R2 uses a `GeoLocusV2` override only to prevent
 ordinary Properties changes from cascading into semantic dependents. Do not
 use that hook as a second style or revision model.
+The R2-L11 correction lets `LocusRenderCache2D` reach a periodic presentation
+seam only for one component equal to both declared branch/provider domains on
+a periodic branch/provider. This full-period predicate must not close an
+ordinary half-open interval or bridge disconnected components. The exact
+author fixture and fixed/adaptive negative controls are operational authority.
 
 ## Frontend/profile
 
@@ -139,13 +144,14 @@ round-trip tests before public use. G9U0/G9A provide those public persistence
 contracts for their approved experimental objects.
 
 Accepted ADR 0016 and the native-document specification define `.cedg` as the
-future GeoCeDG-native filename identity while retaining the validated ZIP/XML
+GeoCeDG-native filename identity while retaining the validated ZIP/XML
 machinery and `app="classic"`; `.ggb` remains compatibility input. The
-G9U0-R2 branch contains a Desktop routing candidate, corrupt-input preflight,
-atomic complete-target publication, Classic preservation and Windows
-  installer-only association. The replacement focused A/B, historical and
-  ancillary and composed correction evidence is clean; manual smoke and author review remain pending, so these are
-candidate implementation facts rather than released/main user behavior.
+G9U0-R2 implementation contains Desktop routing, corrupt-input preflight,
+transactional publication/rollback, Classic preservation and Windows
+installer-only `.cedg` association. Replacement focused A/B, historical,
+ancillary and composed evidence for the R2-L11 correction passes, and the author
+accepted the interactive re-smoke. A real installed MSI/registry probe was not
+requested and must not be inferred from static packaging validation.
 Do not infer geometric identity from a filename or offer `.ggb` as native Save
 output.
 
@@ -239,11 +245,11 @@ Generated/restricted material cannot be admitted by those ownership lists.
 G9P designed operational bundles, public V2 exposure, extended DXF, workspaces
 and spatial/projection semantics. G9O1, G9A1–G9A3/G9A, G9U0/G9U0-R1 and G9X1
 are **PASS — AUTHOR APPROVED**. ADR 0010–0016 are Accepted; the R2 Locus
-presentation and native-document specs are normative. G9U0-R2 planning is
-author-approved, and its implementation is authorized/started only as an
-  uncommitted candidate with all automated correction fields complete; manual
-  smoke and author review remain pending.
-`selfApproved=false`, `authorApproved=false`, and `passClaimed=false`.
+presentation and native-document specs are normative. G9U0-R2 planning and
+implementation are author-approved. Its original R2-L11 smoke failure remains
+historical evidence; the bounded correction, all automated evidence including
+composed verification, and the author re-smoke pass.
+`selfApproved=false`, `authorApproved=true`, and `passClaimed=true`.
 
 Phase documents distinguish hard semantic/contract dependencies, recommended
 execution predecessors and global/release gates. G9O1 is recommended first but

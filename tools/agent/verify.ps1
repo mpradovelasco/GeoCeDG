@@ -595,7 +595,20 @@ try {
             $g9u0R2HistoryClean = @($g9u0R2Historical | Where-Object {
                 $_.status -eq "PASSED" -and $_.exitCode -eq 0
             }).Count -eq $g9u0R2Historical.Count
-            if ($g9u0R2Evidence.validation.focused.status -ne "PASSED" -or
+            if ($g9u0R2Evidence.status -ne "PASS_AUTHOR_APPROVED" -or
+                    [bool]$g9u0R2Evidence.approval.selfApproved -or
+                    -not [bool]$g9u0R2Evidence.approval.authorApproved -or
+                    -not [bool]$g9u0R2Evidence.approval.passClaimed -or
+                    [bool]$g9u0R2Evidence.approval.reviewRequired -or
+                    $g9u0R2Evidence.manualAuthorSmoke.status -ne
+                        "PASS_AUTHOR_APPROVED" -or
+                    -not [bool]$g9u0R2Evidence.manualAuthorSmoke.passed -or
+                    $g9u0R2Evidence.manualAuthorSmoke.correction.status -ne
+                        "AUTHOR_VERIFIED_COMPLETE" -or
+                    $g9u0R2Evidence.manualAuthorSmoke.reSmoke.status -ne
+                        "PASS_AUTHOR_APPROVED" -or
+                    -not [bool]$g9u0R2Evidence.manualAuthorSmoke.reSmoke.passed -or
+                    $g9u0R2Evidence.validation.focused.status -ne "PASSED" -or
                     $g9u0R2Evidence.validation.focusedDeterministicRerun.status -ne
                         "PASSED" -or
                     -not [bool]$g9u0R2Evidence.validation.focusedDeterministicRerun.matchesFocused -or
@@ -606,9 +619,11 @@ try {
                     $g9u0R2Evidence.validation.gitDiffCachedCheck.status -ne
                         "PASSED" -or
                     -not $g9u0R2HistoryClean) {
-                throw ("Frozen G9U0-R2 evidence must record clean focused, " +
-                    "deterministic, packaging, Checkstyle, diff and R2-R01..R06 " +
-                    "gates before composed verification.")
+                throw ("Frozen G9U0-R2 PASS evidence must preserve the " +
+                    "historical failed smoke and record the author-approved " +
+                    "re-smoke plus clean focused, deterministic, packaging, " +
+                    "Checkstyle, diff and R2-R01..R06 gates before composed " +
+                    "verification.")
             }
             Write-Host "`n==> G9U0-R2 product/document refinement"
             $g9u0R2Parameters = @{

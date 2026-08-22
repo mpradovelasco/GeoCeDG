@@ -20,6 +20,7 @@ $RepositoryRoot = (Resolve-Path -LiteralPath (
         Join-Path $PSScriptRoot "..\..")).Path
 $RootGradle = Join-Path $RepositoryRoot "gradlew.bat"
 $EntrySha = "ce022b756b51fe12497e1932ba3ae58093dd1405"
+$CandidateCheckpointSha = "bd7b6a5d128d5ac64222e55a76bcd91d8bb992e7"
 $ExpectedBranch = "feature/g9u0-r2-product-refinement"
 $PlanningTagName = "geocedg-g9u0-r2-planning-pass"
 $PlanningTagObject = "40076933fe204f3e3f0ab23485b1e564b47f17e6"
@@ -58,6 +59,15 @@ $TraceabilityPath = "docs/validation/g9_documentation_bundle_traceability.md"
 $PublicMatrixPath = "docs/validation/g9_public_workspace_validation_matrix.md"
 $SpecificationIndexPath = "geocedg/specs/README.md"
 $UpstreamImpactPath = "docs/upstream/modified-files.yml"
+$AuthorSmokeFixturePath =
+    "source/shared/common-jre/src/test/resources/org/geocedg/common/locus/g9u0-r2/locusFromMidpoint.cedg"
+$AuthorSmokeFixtureSha256 =
+    "47280a65aeec2d4f3f8edb969a934bbb40e1974c22dfe7e121011feae47abc7c"
+$CorrectionPendingStatus =
+    "IMPLEMENTATION_CANDIDATE_CORRECTION_VALIDATION_PENDING"
+$AuthorReReviewStatus =
+    "IMPLEMENTATION_CANDIDATE_PENDING_AUTHOR_RE_REVIEW"
+$AuthorApprovedStatus = "PASS_AUTHOR_APPROVED"
 $PackagingVerifier = Join-Path $PSScriptRoot "verify-packaging.ps1"
 $GeneratedDirectoryNames = @("build", ".gradle", ".kotlin")
 $LogDirectory = [IO.Path]::GetFullPath($LogDirectory)
@@ -149,6 +159,21 @@ $RequiredHardZeroNames = @(
     "productiveG10Implementation",
     "generatedTrackedArtifacts"
 )
+$ExpectedFullPeriodPredicateFragments = @(
+    "definition.getProvider().isPeriodic()",
+    "branch.getProperties().contains(BranchProperty.PERIODIC)",
+    "branch.getValidDomainComponents().size() == 1",
+    "component.equals(branch.getDeclaredDriverDomain())",
+    "component.equals(definition.getProvider().getDeclaredDomain())"
+)
+$ExpectedCandidateCategoryCounts = [ordered]@{
+    productive = 22
+    tests = 4
+    validation = 5
+    documentation = 12
+    packaging = 4
+    operational = 4
+}
 $HistoricalVerifiers = [ordered]@{
     "R2-R01 G9U0-R1" = "verify-g9u0-r1-locus-v2-public-creation-lifecycle.ps1"
     "R2-R02 historical G9U0" = "verify-g9u0-locus-v2-public-surface.ps1"
@@ -345,10 +370,25 @@ function Assert-PlanningAuthority {
 
     $head = (& git -C $RepositoryRoot rev-parse HEAD).Trim()
     $branch = ((@(& git -C $RepositoryRoot branch --show-current) -join "")).Trim()
+    $checkpointParent = (& git -C $RepositoryRoot rev-parse `
+        "$CandidateCheckpointSha`^").Trim()
     Assert-Condition -Condition ($LASTEXITCODE -eq 0 -and
-            $head -ceq $EntrySha -and $branch -ceq $ExpectedBranch) `
-        -Message ("The uncommitted R2 candidate must remain on " +
-            "$ExpectedBranch at $EntrySha.")
+            $checkpointParent -ceq $EntrySha) `
+        -Message ("The protected R2 checkpoint must retain the approved " +
+            "planning entry as its sole parent.")
+    $isPreCommitCandidate = $head -ceq $CandidateCheckpointSha -and
+        $branch -ceq $ExpectedBranch
+    $isClosedCandidate = $false
+    if (-not $isPreCommitCandidate -and
+            $branch -in @($ExpectedBranch, "main")) {
+        $headParent = (& git -C $RepositoryRoot rev-parse "$head`^").Trim()
+        $isClosedCandidate = $LASTEXITCODE -eq 0 -and
+            $headParent -ceq $CandidateCheckpointSha
+    }
+    Assert-Condition -Condition ($isPreCommitCandidate -or $isClosedCandidate) `
+        -Message ("R2 verification requires either the uncommitted closeout " +
+            "tree on protected checkpoint $CandidateCheckpointSha, or its " +
+            "single direct closeout child on $ExpectedBranch/main.")
     $staged = @(& git -C $RepositoryRoot diff --cached --name-only --)
     Assert-Condition -Condition ($LASTEXITCODE -eq 0 -and $staged.Count -eq 0) `
         -Message "G9U0-R2 verification requires an empty index."
@@ -397,11 +437,14 @@ function Get-TestSourcePath {
 function Assert-ScenarioAuthority {
     param([Parameter(Mandatory)] [object]$Scenarios)
 
+    $candidateScenarioState = $Scenarios.status -eq
+        "IMPLEMENTATION_CANDIDATE_SCENARIOS_SOURCE_COMPLETE" -and
+        -not [bool]$Scenarios.authorApprovalClaimed
+    $approvedScenarioState = $Scenarios.status -eq
+        $AuthorApprovedStatus -and [bool]$Scenarios.authorApprovalClaimed
     Assert-Condition -Condition ($Scenarios.schemaVersion -eq 1 -and
             $Scenarios.phase -eq "G9U0-R2" -and
-            $Scenarios.status -eq
-                "IMPLEMENTATION_CANDIDATE_SCENARIOS_SOURCE_COMPLETE" -and
-            -not [bool]$Scenarios.authorApprovalClaimed -and
+            ($candidateScenarioState -or $approvedScenarioState) -and
             [bool]$Scenarios.countsFrozen) `
         -Message "G9U0-R2 scenario authority status is invalid."
     $expectedGroups = [ordered]@{
@@ -459,6 +502,37 @@ function Assert-ScenarioAuthority {
         }
     }
 
+    $renderGroup = @($groups | Where-Object { $_.id -eq "L-RENDER" })
+    Assert-Condition -Condition ($renderGroup.Count -eq 1) `
+        -Message "The R2 render scenario group is missing or duplicated."
+    $r2L11 = @($renderGroup[0].cases | Where-Object { $_.id -eq "R2-L11" })
+    Assert-Condition -Condition ($r2L11.Count -eq 1 -and
+            $r2L11[0].authorSmokeProvenance.result -eq
+                "FAILED_RENDER_CONTINUITY" -and
+            $r2L11[0].authorSmokeProvenance.correctiveReSmokeResult -eq
+                $AuthorApprovedStatus -and
+            $r2L11[0].authorSmokeProvenance.originalArtifactPath -eq
+                "artifacts/smoke-test-g9u0-r2/locusFromMidpoint.cedg" -and
+            $r2L11[0].authorSmokeProvenance.trackedFixturePath -eq
+                $AuthorSmokeFixturePath -and
+            $r2L11[0].authorSmokeProvenance.fixtureSha256 -eq
+                $AuthorSmokeFixtureSha256 -and
+            $r2L11[0].authorSmokeProvenance.fixtureSizeBytes -eq 13301 -and
+            $r2L11[0].authorSmokeProvenance.testMethod -eq
+                "exactCanonicalRenderTopologySurvivesAllCrossingFixtures") `
+        -Message "R2-L11 author-smoke provenance or exact fixture drifted."
+    Assert-ExactSet -Actual @(
+            $r2L11[0].fullPeriodClosurePredicateFragments) `
+        -Expected $ExpectedFullPeriodPredicateFragments `
+        -Description "R2-L11 full-period render predicate"
+    Assert-ExactSet -Actual @($r2L11[0].requiredNegativeControls) `
+        -Expected @(
+            "nonperiodic half-open component remains open",
+            "genuinely disconnected components retain separate subpaths",
+            "unrelated line/circle/conic crossings do not change topology",
+            "fixed and adaptive policies reach the same semantic period seam") `
+        -Description "R2-L11 negative control"
+
     $coverageRows = @($Scenarios.supportingPersistenceCoverage)
     Assert-ExactSet -Actual @($coverageRows | ForEach-Object { $_.scenario }) `
         -Expected @($ExpectedSupportingCoverage.Keys) `
@@ -512,6 +586,15 @@ function Assert-ScenarioAuthority {
                 $Scenarios.testExecution.errors -eq 0 -and
                 $Scenarios.testExecution.skipped -eq 0) `
             -Message "Recorded R2 scenario execution is not clean 31 + 1."
+    } else {
+        foreach ($property in
+                $Scenarios.testExecution.PSObject.Properties | Where-Object {
+                    $_.Name -ne "status"
+                }) {
+            Assert-Condition -Condition ($null -eq $property.Value) `
+                -Message ("Pending R2 scenario execution contains result: " +
+                    $property.Name)
+        }
     }
 }
 
@@ -521,20 +604,43 @@ function Assert-EvidenceContract {
         [Parameter(Mandatory)] [object]$Scenarios
     )
 
+    $evidenceStatus = [string]$Evidence.status
+    $correctionValidationPending = $evidenceStatus -eq
+        $CorrectionPendingStatus
+    $pendingAuthorReReview = $evidenceStatus -eq $AuthorReReviewStatus
+    $authorApproved = $evidenceStatus -eq $AuthorApprovedStatus
     Assert-Condition -Condition ($Evidence.schemaVersion -eq 1 -and
             $Evidence.phase -eq "G9U0-R2" -and
-            $Evidence.status -eq
-                "IMPLEMENTATION_CANDIDATE_PENDING_AUTHOR_REVIEW" -and
+            ($correctionValidationPending -or $pendingAuthorReReview -or
+                $authorApproved) -and
             [bool]$Evidence.implementationStarted) `
-        -Message "R2 evidence is not an implementation candidate."
-    Assert-Condition -Condition (-not [bool]$Evidence.approval.selfApproved -and
+        -Message "R2 evidence has an unknown implementation disposition."
+    $expectedApprovalDisposition = if ($correctionValidationPending) {
+        "CORRECTION_VALIDATION_PENDING"
+    } elseif ($pendingAuthorReReview) {
+        "PENDING_AUTHOR_RE_REVIEW"
+    } else {
+        $AuthorApprovedStatus
+    }
+    $approvalStateValid = -not [bool]$Evidence.approval.selfApproved -and
+        $Evidence.approval.disposition -eq $expectedApprovalDisposition
+    if ($authorApproved) {
+        $approvalStateValid = $approvalStateValid -and
+            [bool]$Evidence.approval.authorApproved -and
+            [bool]$Evidence.approval.passClaimed -and
+            -not [bool]$Evidence.approval.reviewRequired
+    } else {
+        $approvalStateValid = $approvalStateValid -and
             -not [bool]$Evidence.approval.authorApproved -and
             -not [bool]$Evidence.approval.passClaimed -and
-            [bool]$Evidence.approval.reviewRequired -and
-            $Evidence.approval.disposition -eq "PENDING_AUTHOR_REVIEW") `
-        -Message "R2 evidence contains an approval or PASS claim."
+            [bool]$Evidence.approval.reviewRequired
+    }
+    Assert-Condition -Condition $approvalStateValid `
+        -Message "R2 approval evidence is inconsistent with its disposition."
     Assert-Condition -Condition (
             $Evidence.provenance.entrySha -eq $EntrySha -and
+            $Evidence.provenance.candidateCheckpointSha -eq
+                $CandidateCheckpointSha -and
             $Evidence.provenance.branch -eq $ExpectedBranch -and
             $Evidence.provenance.planningTag -eq $PlanningTagName -and
             $Evidence.provenance.planningTagObject -eq $PlanningTagObject -and
@@ -549,11 +655,18 @@ function Assert-EvidenceContract {
                 [string]$recordedAuthority.($entry.Key) -ceq $entry.Value) `
             -Message "R2 evidence authority blob drifted: $($entry.Key)"
     }
+    $expectedImplementationDisposition = if ($correctionValidationPending) {
+        $CorrectionPendingStatus
+    } elseif ($pendingAuthorReReview) {
+        $AuthorReReviewStatus
+    } else {
+        $AuthorApprovedStatus
+    }
     Assert-Condition -Condition (
             $Evidence.phaseDisposition.G9U0R2Planning -eq
                 "PASS_AUTHOR_APPROVED" -and
             $Evidence.phaseDisposition.G9U0R2Implementation -eq
-                "IMPLEMENTATION_CANDIDATE_PENDING_AUTHOR_REVIEW" -and
+                $expectedImplementationDisposition -and
             $Evidence.phaseDisposition.G9U1 -eq "DESIGNED_NOT_AUTHORIZED" -and
             $Evidence.phaseDisposition.G9B -eq "NOT_AUTHORIZED" -and
             $Evidence.phaseDisposition.G9C -eq "NOT_AUTHORIZED" -and
@@ -567,6 +680,7 @@ function Assert-EvidenceContract {
             -not [bool]$Evidence.architecture.presentationChangesSemanticRevision -and
             [bool]$Evidence.architecture.renderCacheRemainsDerived -and
             -not [bool]$Evidence.architecture.crossingObjectsAreRenderTopologyInputs -and
+            [bool]$Evidence.architecture.fullPeriodRenderClosurePredicateGuarded -and
             $Evidence.architecture.nativeExtension -eq "cedg" -and
             $Evidence.architecture.compatibilityInputExtension -eq "ggb" -and
             -not [bool]$Evidence.architecture.archiveOrXmlFormatChanged -and
@@ -597,16 +711,85 @@ function Assert-EvidenceContract {
             $Evidence.scenarioAuthority.supportingCoverageScenarios) `
         -Expected @($ExpectedSupportingCoverage.Keys) `
         -Description "R2 evidence supporting-coverage scenario"
-    Assert-Condition -Condition (
-            $Evidence.manualAuthorSmoke.status -eq "PENDING_AUTHOR" -and
+    $manualSmoke = $Evidence.manualAuthorSmoke
+    $commonManualSmokeValid = [bool]$manualSmoke.authorEvidenceRequired -and
+        $manualSmoke.checklistPath -eq $ReportPath -and
+        $manualSmoke.requiredSteps -eq 9 -and
+        @($manualSmoke.evidencePaths).Count -eq 1 -and
+        $manualSmoke.evidencePaths[0] -eq
+            "artifacts/smoke-test-g9u0-r2/locusFromMidpoint.cedg" -and
+        $manualSmoke.completedBy -eq "AUTHOR" -and
+        $manualSmoke.failure.scope -eq "PRESENTATION_RENDER_CONTINUITY" -and
+        $manualSmoke.failure.authoritativeArtifact -eq
+            "artifacts/smoke-test-g9u0-r2/locusFromMidpoint.cedg" -and
+        $manualSmoke.failure.artifactSha256 -eq $AuthorSmokeFixtureSha256 -and
+        -not [bool]$manualSmoke.failure.artifactTracked -and
+        [bool]$manualSmoke.failure.defectPredatesR2 -and
+        $manualSmoke.correction.scenario -eq "R2-L11" -and
+        $manualSmoke.correction.implementationPath -eq
+            "source/shared/common/src/main/java/org/geocedg/common/euclidian/draw/LocusRenderCache2D.java" -and
+        $manualSmoke.correction.testPath -eq
+            "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9U0R2LocusRenderContinuityTest.java" -and
+        $manualSmoke.correction.trackedFixturePath -eq
+            $AuthorSmokeFixturePath -and
+        $manualSmoke.correction.fixtureSha256 -eq $AuthorSmokeFixtureSha256 -and
+        $manualSmoke.correction.fixtureSizeBytes -eq 13301 -and
+        [bool]$manualSmoke.correction.priorAutomatedEvidenceInvalidated
+    Assert-Condition -Condition $commonManualSmokeValid `
+        -Message "The historical failed author-smoke provenance drifted."
+    if ($authorApproved) {
+        Assert-Condition -Condition (
+            $manualSmoke.status -eq $AuthorApprovedStatus -and
+            [bool]$manualSmoke.passed -and
+            @($manualSmoke.failedCriteria).Count -eq 0 -and
+            $manualSmoke.failureDisposition -eq
+                "RESOLVED_BY_BOUNDED_CORRECTION_AND_AUTHOR_RE_SMOKE" -and
+            -not [bool]$manualSmoke.correctionRequired -and
+            -not [bool]$manualSmoke.reSmokeRequired -and
+            $manualSmoke.correction.status -eq "AUTHOR_VERIFIED_COMPLETE" -and
+            $manualSmoke.reSmoke.status -eq $AuthorApprovedStatus -and
+            [bool]$manualSmoke.reSmoke.passed -and
+            $manualSmoke.reSmoke.completedBy -eq "AUTHOR" -and
+            $null -eq $manualSmoke.reSmoke.completedAt) `
+            -Message "The final author smoke/re-smoke PASS is incomplete."
+        Assert-ExactSet -Actual @($manualSmoke.authorFinalVerifiedAreas) `
+            -Expected @(
+                "ordinary Locus V2 styles and Properties",
+                "native .cedg save and reopen",
+                "non-destructive .ggb compatibility workflow",
+                "failed native document-open preservation",
+                "GeoCeDG Classic preservation",
+                "corrected periodic Locus V2 continuity",
+                "continuity under ordinary crossings and zoom",
+                "continuity after .cedg reopen") `
+            -Description "Final R2 author-smoke area"
+    } else {
+        Assert-Condition -Condition (
+            $manualSmoke.status -eq "EXECUTED_FAILED_RENDER_CONTINUITY" -and
             -not [bool]$Evidence.manualAuthorSmoke.passed -and
-            [bool]$Evidence.manualAuthorSmoke.authorEvidenceRequired -and
-            $Evidence.manualAuthorSmoke.checklistPath -eq $ReportPath -and
-            $Evidence.manualAuthorSmoke.requiredSteps -eq 9 -and
-            @($Evidence.manualAuthorSmoke.evidencePaths).Count -eq 0 -and
-            $null -eq $Evidence.manualAuthorSmoke.completedBy -and
-            $null -eq $Evidence.manualAuthorSmoke.completedAt) `
-        -Message "Manual author smoke must remain pending."
+            [bool]$manualSmoke.authorEvidenceRequired -and
+            @($manualSmoke.failedCriteria).Count -eq 1 -and
+            $manualSmoke.failedCriteria[0] -eq "R2-L11" -and
+            [bool]$manualSmoke.correctionRequired -and
+            [bool]$manualSmoke.reSmokeRequired -and
+            $manualSmoke.reSmoke.status -eq "PENDING_AUTHOR" -and
+            -not [bool]$manualSmoke.reSmoke.passed -and
+            $null -eq $manualSmoke.reSmoke.completedBy -and
+            $null -eq $manualSmoke.reSmoke.completedAt) `
+            -Message "The failed author smoke or pending re-smoke drifted."
+        $expectedCorrectionStatus = if ($correctionValidationPending) {
+            "IMPLEMENTED_VALIDATION_PENDING"
+        } else {
+            "AUTOMATED_VALIDATION_COMPLETE"
+        }
+        Assert-Condition -Condition ($manualSmoke.correction.status -eq
+                $expectedCorrectionStatus) `
+            -Message "The R2-L11 correction state is inconsistent."
+    }
+    Assert-ExactSet -Actual @(
+            $manualSmoke.correction.fullPeriodPredicateFragments) `
+        -Expected $ExpectedFullPeriodPredicateFragments `
+        -Description "R2 evidence full-period render predicate"
 
     $inventoryStatus = [string]$Evidence.sourceBoundary.inventoryStatus
     Assert-Condition -Condition ($inventoryStatus -in @(
@@ -630,11 +813,23 @@ function Assert-EvidenceContract {
             -Message "Frozen R2 inventory contains duplicates."
         Assert-ExactSet -Actual @(Get-CandidatePaths) -Expected $expectedPaths `
             -Description "Exact R2 candidate path inventory"
+        Assert-Condition -Condition ($expectedPaths.Count -eq 51 -and
+                @($expectedPaths | Where-Object {
+                    $_.StartsWith("source/", [StringComparison]::Ordinal)
+                }).Count -eq 26) `
+            -Message "R2 correction inventory is not frozen at 51/26."
+        Assert-ExactSet -Actual @(
+                $Evidence.sourceBoundary.categoryCounts.PSObject.Properties.Name) `
+            -Expected @($ExpectedCandidateCategoryCounts.Keys) `
+            -Description "R2 candidate category"
         $categoryTotal = 0
         foreach ($property in
                 $Evidence.sourceBoundary.categoryCounts.PSObject.Properties) {
             Assert-Condition -Condition ($null -ne $property.Value) `
                 -Message "Frozen R2 category is null: $($property.Name)"
+            Assert-Condition -Condition ([int]$property.Value -eq
+                    [int]$ExpectedCandidateCategoryCounts[$property.Name]) `
+                -Message "Frozen R2 category count drifted: $($property.Name)"
             $categoryTotal += [int]$property.Value
         }
         Assert-Condition -Condition ($categoryTotal -eq $expectedPaths.Count) `
@@ -777,6 +972,7 @@ function Assert-EvidenceContract {
         -Message "Unknown R2 deterministic-rerun status."
     if ($deterministic.status -eq "PENDING") {
         Assert-Condition -Condition (
+                $null -eq $deterministic.command -and
                 $null -eq $deterministic.commands.shared -and
                 $null -eq $deterministic.commands.desktop -and
                 $null -eq $deterministic.exitCodes.shared -and
@@ -790,6 +986,8 @@ function Assert-EvidenceContract {
                 $null -eq $deterministic.failures -and
                 $null -eq $deterministic.errors -and
                 $null -eq $deterministic.skipped -and
+                $null -eq $deterministic.logPaths.shared -and
+                $null -eq $deterministic.logPaths.desktop -and
                 @($deterministic.testResultPaths).Count -eq 0 -and
                 $null -eq $deterministic.canonicalSummaryPath -and
                 $null -eq $deterministic.canonicalSummarySha256 -and
@@ -799,10 +997,21 @@ function Assert-EvidenceContract {
     }
     if ($focusedStatus -eq "PENDING") {
         Assert-Condition -Condition (
+                $null -eq $Evidence.validation.focused.command -and
                 $null -eq $Evidence.validation.focused.commands.shared -and
                 $null -eq $Evidence.validation.focused.commands.desktop -and
                 $null -eq $Evidence.validation.focused.exitCodes.shared -and
                 $null -eq $Evidence.validation.focused.exitCodes.desktop -and
+                $null -eq $Evidence.validation.focused.sharedR2 -and
+                $null -eq $Evidence.validation.focused.desktopR2 -and
+                $null -eq $Evidence.validation.focused.r2Total -and
+                $null -eq $Evidence.validation.focused.supportingPersistence -and
+                $null -eq $Evidence.validation.focused.executedJUnitTotal -and
+                $null -eq $Evidence.validation.focused.failures -and
+                $null -eq $Evidence.validation.focused.errors -and
+                $null -eq $Evidence.validation.focused.skipped -and
+                $null -eq $Evidence.validation.focused.logPaths.shared -and
+                $null -eq $Evidence.validation.focused.logPaths.desktop -and
                 @($Evidence.validation.focused.testResultPaths).Count -eq 0 -and
                 $null -eq $Evidence.validation.focused.canonicalSummaryPath -and
                 $null -eq $Evidence.validation.focused.canonicalSummarySha256 -and
@@ -895,7 +1104,7 @@ function Assert-EvidenceContract {
             -not [string]::IsNullOrWhiteSpace([string]$composed.command) -and
                 $composed.exitCode -eq 0 -and
                 $composed.terminalOutcome -eq
-                    "IMPLEMENTATION_CANDIDATE_PENDING_AUTHOR_REVIEW" -and
+                    $evidenceStatus -and
                 -not [string]::IsNullOrWhiteSpace([string]$composed.logPath) -and
                 -not [string]::IsNullOrWhiteSpace(
                     [string]$composed.logDirectory) -and
@@ -909,8 +1118,49 @@ function Assert-EvidenceContract {
                 $checkstyle.status -eq "PASSED" -and
                 $Evidence.validation.gitDiffCheck.status -eq "PASSED" -and
                 $Evidence.validation.gitDiffCachedCheck.status -eq "PASSED" -and
-                $hardZeroStatus -eq "FROZEN_ZERO") `
-            -Message "Composed PASS lacks complete automated candidate evidence."
+                $hardZeroStatus -eq "FROZEN_ZERO" -and
+                ($pendingAuthorReReview -or $authorApproved)) `
+            -Message "Composed PASS lacks complete automated R2 evidence."
+    }
+    if ($pendingAuthorReReview) {
+        Assert-Condition -Condition (
+                $focusedStatus -eq "PASSED" -and
+                $deterministic.status -eq "PASSED" -and
+                @($history.Values | Where-Object {
+                        $_.status -ne "PASSED"
+                    }).Count -eq 0 -and
+                $staticScaffold.status -eq "PASSED" -and
+                $packagingStatic.status -eq "PASSED" -and
+                $checkstyle.status -eq "PASSED" -and
+                $Evidence.validation.gitDiffCheck.status -eq "PASSED" -and
+                $Evidence.validation.gitDiffCachedCheck.status -eq "PASSED" -and
+                $hardZeroStatus -eq "FROZEN_ZERO" -and
+                $Scenarios.testExecution.status -eq "PASSED" -and
+                $Evidence.documentCompatibilityCorpus.sourceHashesVerified -eq
+                    "PASSED") `
+            -Message ("Author re-review state requires complete correction " +
+                "evidence except the composed tuple being executed.")
+    }
+    if ($authorApproved) {
+        Assert-Condition -Condition (
+                $Scenarios.status -eq $AuthorApprovedStatus -and
+                [bool]$Scenarios.authorApprovalClaimed -and
+                $focusedStatus -eq "PASSED" -and
+                $deterministic.status -eq "PASSED" -and
+                @($history.Values | Where-Object {
+                        $_.status -ne "PASSED"
+                    }).Count -eq 0 -and
+                $staticScaffold.status -eq "PASSED" -and
+                $packagingStatic.status -eq "PASSED" -and
+                $checkstyle.status -eq "PASSED" -and
+                $Evidence.validation.gitDiffCheck.status -eq "PASSED" -and
+                $Evidence.validation.gitDiffCachedCheck.status -eq "PASSED" -and
+                $composed.status -eq "PASSED" -and
+                $hardZeroStatus -eq "FROZEN_ZERO" -and
+                $Scenarios.testExecution.status -eq "PASSED" -and
+                $Evidence.documentCompatibilityCorpus.sourceHashesVerified -eq
+                    "PASSED") `
+            -Message "Author-approved R2 evidence is not fully closed."
     }
 }
 
@@ -968,13 +1218,16 @@ function Assert-SourceBoundary {
         -Message "Tracked generated artifacts detected: $($trackedGenerated -join ', ')"
 
     if ($Evidence.sourceBoundary.inventoryStatus -eq "FROZEN") {
-        $impact = Get-Content -Raw -LiteralPath (
-            Resolve-RequiredFile -RelativePath $UpstreamImpactPath)
+        $impact = Read-JsonDocument -RelativePath $UpstreamImpactPath
         foreach ($sourcePath in @($candidatePaths | Where-Object {
                     $_.StartsWith("source/", [StringComparison]::Ordinal)
                 })) {
-            Assert-Condition -Condition ($impact.Contains($sourcePath)) `
-                -Message "Upstream impact manifest omits R2 source path: $sourcePath"
+            $matches = @($impact.modifications | Where-Object {
+                    [string]$_.path -ceq $sourcePath
+                })
+            Assert-Condition -Condition ($matches.Count -eq 1) `
+                -Message ("Upstream impact manifest must register exactly " +
+                    "once: $sourcePath; found $($matches.Count).")
         }
     }
 }
@@ -1016,6 +1269,45 @@ function Assert-ProductStaticContracts {
             $drawable.Contains("getObjectColor()") -and
             $drawable -notmatch '\bGeo(Line|Conic|Circle)\b') `
         -Message "DrawLocusV2 no longer has a derived/independent render boundary."
+
+    $renderCache = Get-Content -Raw -LiteralPath (Resolve-RequiredFile `
+        "source/shared/common/src/main/java/org/geocedg/common/euclidian/draw/LocusRenderCache2D.java")
+    foreach ($fragment in $ExpectedFullPeriodPredicateFragments) {
+        Assert-Condition -Condition ($renderCache.Contains($fragment)) `
+            -Message "R2-L11 full-period render predicate lacks $fragment."
+    }
+    Assert-Condition -Condition (
+            $renderCache.Contains("hasFullPeriodClosure") -and
+            $renderCache.Contains(
+                "(!component.isLowerClosed() && !fullPeriodicCycle)") -and
+            $renderCache.Contains(
+                "(!component.isUpperClosed() && !fullPeriodicCycle)") -and
+            $renderCache -match
+                '(?s)hasFullPeriodClosure.*?isPeriodic\(\).*?BranchProperty\.PERIODIC.*?getValidDomainComponents\(\)\.size\(\)\s*==\s*1.*?getDeclaredDriverDomain\(\).*?getDeclaredDomain\(\)') `
+        -Message ("R2-L11 correction no longer limits presentation closure " +
+            "to one exact declared full period.")
+
+    $fixture = Resolve-RequiredFile -RelativePath $AuthorSmokeFixturePath
+    Assert-Condition -Condition ((Get-Item -LiteralPath $fixture).Length -eq
+            13301 -and
+            (Get-BinarySha256 -RelativePath $AuthorSmokeFixturePath) -ceq
+                $AuthorSmokeFixtureSha256) `
+        -Message "The exact tracked R2-L11 author fixture drifted."
+    $renderTest = Get-Content -Raw -LiteralPath (Resolve-RequiredFile `
+        "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9U0R2LocusRenderContinuityTest.java")
+    foreach ($fragment in @(
+            "exactCanonicalRenderTopologySurvivesAllCrossingFixtures",
+            "loadAuthorMidpointLocus",
+            "assertPeriodicSemanticSeam", "assertPeriodicRenderClosure",
+            "createMinimizedPeriodicLocus", "createMinimizedOpenLocus",
+            "createMinimizedDisconnectedLocus", "adaptivePolicy(20)",
+            "adaptivePolicy(50)", "adaptivePolicy(200)")) {
+        Assert-Condition -Condition ($renderTest.Contains($fragment)) `
+            -Message "R2-L11 author-fixture coverage lacks $fragment."
+    }
+    Assert-Condition -Condition ($renderTest -match
+            '47280a65aeec2d4f3f8edb969a934bbb40e1974c22dfe7e121011fea"\s*\+\s*"e47abc7c') `
+        -Message "R2-L11 test no longer pins the exact author fixture SHA-256."
 
     $extensions = Get-Content -Raw -LiteralPath (Resolve-RequiredFile `
         "source/shared/common/src/main/java/org/geogebra/common/util/FileExtensions.java")
@@ -1145,27 +1437,56 @@ function Assert-ProductStaticContracts {
 function Assert-DocumentationContracts {
     param([Parameter(Mandatory)] [object]$Evidence)
 
+    $expectedCandidateBoundary = if ($Evidence.status -eq
+            $CorrectionPendingStatus) {
+        "IMPLEMENTATION CANDIDATE — CORRECTION VALIDATION PENDING"
+    } elseif ($Evidence.status -eq $AuthorReReviewStatus) {
+        "IMPLEMENTATION CANDIDATE — PENDING AUTHOR RE-REVIEW"
+    } else {
+        "G9U0-R2 IMPLEMENTATION = PASS — AUTHOR APPROVED"
+    }
+    $expectedAuthorApproved = if ($Evidence.status -eq $AuthorApprovedStatus) {
+        "authorApproved = true"
+    } else {
+        "authorApproved = false"
+    }
+    $expectedPassClaimed = if ($Evidence.status -eq $AuthorApprovedStatus) {
+        "passClaimed = true"
+    } else {
+        "passClaimed = false"
+    }
     foreach ($path in @($ArchitecturePath, $ReportPath)) {
         $content = Get-Content -Raw -LiteralPath (
             Resolve-RequiredFile -RelativePath $path)
         foreach ($fragment in @(
-                "IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW",
-                "selfApproved = false", "authorApproved = false",
-                "passClaimed = false", "G9U1 = DESIGNED — NOT AUTHORIZED")) {
+                $expectedCandidateBoundary,
+                "selfApproved = false", $expectedAuthorApproved,
+                $expectedPassClaimed, "G9U1 = DESIGNED — NOT AUTHORIZED")) {
             Assert-Condition -Condition ($content.Contains($fragment)) `
                 -Message "$path is missing the candidate boundary: $fragment"
         }
     }
     $report = Get-Content -Raw -LiteralPath (
         Resolve-RequiredFile -RelativePath $ReportPath)
-    Assert-Condition -Condition ($report.Contains("PENDING AUTHOR; NOT PASSED") -and
-            $report.Contains("Only the author may mark this checklist passed") -and
+    Assert-Condition -Condition (
             $report.Contains("prepareUndoBaseline()") -and
             $report.Contains("commitUndoBaseline()") -and
             $report.Contains("undo-commit") -and
             $report.Contains("PENDING correction rerun") -and
+            $report.Contains("EXECUTED_FAILED_RENDER_CONTINUITY") -and
+            $report.Contains($AuthorSmokeFixturePath) -and
+            $report.Contains($AuthorSmokeFixtureSha256) -and
+            $report.Contains("full-period render predicate") -and
             -not $report.Contains("no general construction or undo rollback")) `
-        -Message "The R2 report does not preserve the pending transactional correction boundary."
+        -Message "The R2 report does not preserve both corrective boundaries."
+    if ($Evidence.status -eq $AuthorApprovedStatus) {
+        Assert-Condition -Condition (
+                $report.Contains("manualAuthorSmoke = PASS") -and
+                $report.Contains("Installed MSI/registry smoke: **NOT_REQUESTED**") -and
+                $report.Contains("corrective re-smoke as") -and
+                $report.Contains("PASS — AUTHOR APPROVED")) `
+            -Message "The R2 report lacks the author-approved smoke closeout."
+    }
     $architecture = Get-Content -Raw -LiteralPath (
         Resolve-RequiredFile -RelativePath $ArchitecturePath)
     Assert-Condition -Condition ($architecture.Contains("loadPreflightedNativeXML") -and
@@ -1175,8 +1496,11 @@ function Assert-DocumentationContracts {
             $architecture.Contains("history generation") -and
             $architecture.Contains("nonthrowing") -and
             $architecture.Contains("correction validation") -and
+            $architecture.Contains("full-period render predicate") -and
+            $architecture.Contains($AuthorSmokeFixturePath) -and
+            $architecture.Contains($AuthorSmokeFixtureSha256) -and
             -not $architecture.Contains("no general construction or undo rollback")) `
-        -Message "The R2 architecture does not record the transactional undo-baseline correction."
+        -Message "The R2 architecture does not record both bounded corrections."
 
     foreach ($path in @(
             $RoadmapPath, $DeveloperGuidePath, $UserGuidePath,
@@ -1184,21 +1508,37 @@ function Assert-DocumentationContracts {
             $PublicMatrixPath, $SpecificationIndexPath)) {
         $content = Get-Content -Raw -LiteralPath (
             Resolve-RequiredFile -RelativePath $path)
+        $stateFragmentPresent = if ($Evidence.status -eq $AuthorApprovedStatus) {
+            $content.Contains("PASS — AUTHOR APPROVED")
+        } else {
+            $content -match '(?i)candidate|candidato'
+        }
         Assert-Condition -Condition (
                 $content.Contains("G9U0-R2") -and
                 $content.Contains(".cedg") -and
-                $content -match '(?i)candidate|candidato') `
-            -Message "$path lacks the current R2 candidate/document boundary."
+                $stateFragmentPresent) `
+            -Message "$path lacks the current R2/document boundary."
     }
 
-    if ($Evidence.validation.focused.status -eq "PASSED") {
+    if ($Evidence.status -eq $AuthorReReviewStatus) {
         foreach ($path in @($RoadmapPath, $DeveloperGuidePath, $UserGuidePath)) {
             $content = Get-Content -Raw -LiteralPath (
                 Resolve-RequiredFile -RelativePath $path)
             Assert-Condition -Condition ($content.Contains("G9U0-R2") -and
                     $content.Contains(".cedg") -and
-                    $content.Contains("PENDING AUTHOR REVIEW")) `
+                    $content.Contains("PENDING AUTHOR RE-REVIEW")) `
                 -Message "$path lacks the validated R2 candidate boundary."
+        }
+    }
+    if ($Evidence.status -eq $AuthorApprovedStatus) {
+        foreach ($path in @($RoadmapPath, $DeveloperGuidePath, $UserGuidePath)) {
+            $content = Get-Content -Raw -LiteralPath (
+                Resolve-RequiredFile -RelativePath $path)
+            Assert-Condition -Condition ($content.Contains("G9U0-R2") -and
+                    $content.Contains(".cedg") -and
+                    $content.Contains("PASS — AUTHOR APPROVED") -and
+                    $content.Contains("NOT_REQUESTED")) `
+                -Message "$path lacks the approved R2 closeout boundary."
         }
     }
 }
@@ -1309,6 +1649,7 @@ function Write-CanonicalSummary {
         schemaVersion = 1
         phase = "G9U0-R2"
         entrySha = $EntrySha
+        candidateCheckpointSha = $CandidateCheckpointSha
         planningTagObject = $PlanningTagObject
         scenarioIds = @($Scenarios.groups | ForEach-Object { $_.cases } |
             ForEach-Object { $_.id } | Sort-Object -CaseSensitive)
@@ -1559,8 +1900,19 @@ try {
 
         Write-Host "G9U0-R2 focused result: 31 R2 JUnit + 31 support JUnit."
         Write-Host "G9U0-R2 packaging static result: R2-D17 passed."
-        Write-Host "G9U0-R2 = IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW"
-        Write-Host "Author approval and implementation PASS are not claimed."
+        if ($evidence.status -eq $AuthorApprovedStatus) {
+            Write-Host "G9U0-R2 = PASS — AUTHOR APPROVED"
+            Write-Host ("selfApproved=false; authorApproved=true; " +
+                "passClaimed=true")
+        } elseif ($evidence.status -eq $AuthorReReviewStatus) {
+            Write-Host ("G9U0-R2 = IMPLEMENTATION CANDIDATE — " +
+                "PENDING AUTHOR RE-REVIEW")
+            Write-Host "Author approval and implementation PASS are not claimed."
+        } else {
+            Write-Host ("G9U0-R2 = IMPLEMENTATION CANDIDATE — " +
+                "CORRECTION VALIDATION PENDING")
+            Write-Host "Author approval and implementation PASS are not claimed."
+        }
     }
 } catch {
     $Failure = $_.Exception

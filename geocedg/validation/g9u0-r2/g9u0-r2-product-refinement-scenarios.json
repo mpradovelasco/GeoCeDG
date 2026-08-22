@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "phase": "G9U0-R2",
-  "status": "IMPLEMENTATION_CANDIDATE_SCENARIOS_SOURCE_COMPLETE",
-  "authorApprovalClaimed": false,
+  "status": "PASS_AUTHOR_APPROVED",
+  "authorApprovalClaimed": true,
   "countsFrozen": true,
   "groups": [
     {
@@ -32,7 +32,32 @@
       "cases": [
         {"id": "R2-L09", "title": "Crossing line cannot change render topology"},
         {"id": "R2-L10", "title": "Crossing circle or conic cannot change render topology"},
-        {"id": "R2-L11", "title": "No artificial renderer subpath"},
+        {
+          "id": "R2-L11",
+          "title": "No artificial renderer subpath",
+          "authorSmokeProvenance": {
+            "result": "FAILED_RENDER_CONTINUITY",
+            "correctiveReSmokeResult": "PASS_AUTHOR_APPROVED",
+            "originalArtifactPath": "artifacts/smoke-test-g9u0-r2/locusFromMidpoint.cedg",
+            "trackedFixturePath": "source/shared/common-jre/src/test/resources/org/geocedg/common/locus/g9u0-r2/locusFromMidpoint.cedg",
+            "fixtureSha256": "47280a65aeec2d4f3f8edb969a934bbb40e1974c22dfe7e121011feae47abc7c",
+            "fixtureSizeBytes": 13301,
+            "testMethod": "exactCanonicalRenderTopologySurvivesAllCrossingFixtures"
+          },
+          "fullPeriodClosurePredicateFragments": [
+            "definition.getProvider().isPeriodic()",
+            "branch.getProperties().contains(BranchProperty.PERIODIC)",
+            "branch.getValidDomainComponents().size() == 1",
+            "component.equals(branch.getDeclaredDriverDomain())",
+            "component.equals(definition.getProvider().getDeclaredDomain())"
+          ],
+          "requiredNegativeControls": [
+            "nonperiodic half-open component remains open",
+            "genuinely disconnected components retain separate subpaths",
+            "unrelated line/circle/conic crossings do not change topology",
+            "fixed and adaptive policies reach the same semantic period seam"
+          ]
+        },
         {"id": "R2-L12", "title": "Genuine semantic discontinuity remains separate"}
       ]
     },

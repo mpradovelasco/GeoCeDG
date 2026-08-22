@@ -13,6 +13,7 @@ import java.util.Map;
 import org.geocedg.common.euclidian.draw.LocusRenderPolicy2D.SamplingStrategy;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusBranch2D;
+import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
@@ -83,18 +84,18 @@ public final class LocusRenderCache2D {
 	private static LocusRenderData2D build(GeoLocusV2 locus,
 			LocusRenderPolicy2D policy) {
 		List<LocusRenderData2D.Vertex> vertices = new ArrayList<>();
-		if (locus.getSemanticDefinition() == null || !locus.isDefined()) {
+		LocusDefinition2D definition = locus.getSemanticDefinition();
+		if (definition == null || !locus.isDefined()) {
 			return new LocusRenderData2D(locus.getSemanticRevision(), policy,
 					vertices);
 		}
 		try (LocusEvaluationSession2D session =
 				new LocusEvaluationSession2D(true, 4096)) {
-			for (LocusBranch2D branch
-					: locus.getSemanticDefinition().getBranches()) {
+			for (LocusBranch2D branch : definition.getBranches()) {
 				for (LocusInterval2D component
 						: branch.getValidDomainComponents()) {
-					appendComponent(locus, branch, component, policy, session,
-							vertices);
+					appendComponent(locus, definition, branch, component, policy,
+							session, vertices);
 				}
 			}
 		}
@@ -102,7 +103,8 @@ public final class LocusRenderCache2D {
 				vertices);
 	}
 
-	private static void appendComponent(GeoLocusV2 locus, LocusBranch2D branch,
+	private static void appendComponent(GeoLocusV2 locus,
+			LocusDefinition2D definition, LocusBranch2D branch,
 			LocusInterval2D component, LocusRenderPolicy2D policy,
 			LocusEvaluationSession2D session,
 			List<LocusRenderData2D.Vertex> vertices) {
@@ -110,12 +112,14 @@ public final class LocusRenderCache2D {
 		double upper = component.getUpper();
 		double span = upper - lower;
 		double inset = span * policy.getEndpointInsetFraction();
-		if (!component.isLowerClosed()
-				|| branch.getProperties().contains(BranchProperty.UNBOUNDED)) {
+		boolean unbounded = branch.getProperties()
+				.contains(BranchProperty.UNBOUNDED);
+		boolean fullPeriodicCycle = hasFullPeriodClosure(definition, branch,
+				component);
+		if (unbounded || (!component.isLowerClosed() && !fullPeriodicCycle)) {
 			lower += inset;
 		}
-		if (!component.isUpperClosed()
-				|| branch.getProperties().contains(BranchProperty.UNBOUNDED)) {
+		if (unbounded || (!component.isUpperClosed() && !fullPeriodicCycle)) {
 			upper -= inset;
 		}
 		if (!(lower <= upper)) {
@@ -128,6 +132,15 @@ public final class LocusRenderCache2D {
 		}
 		appendUniformComponent(locus, branch, lower, upper, policy, session,
 				vertices);
+	}
+
+	private static boolean hasFullPeriodClosure(LocusDefinition2D definition,
+			LocusBranch2D branch, LocusInterval2D component) {
+		return definition.getProvider().isPeriodic()
+				&& branch.getProperties().contains(BranchProperty.PERIODIC)
+				&& branch.getValidDomainComponents().size() == 1
+				&& component.equals(branch.getDeclaredDriverDomain())
+				&& component.equals(definition.getProvider().getDeclaredDomain());
 	}
 
 	private static void appendUniformComponent(GeoLocusV2 locus,

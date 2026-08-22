@@ -39,19 +39,20 @@ contracts remain above prose when they disagree.
 ## Current capability boundary
 
 G6-G8 provide the internal Locus V2 semantic, metric and intersection
-foundation. G9U0 and G9U0-R1 now provide an author-approved experimental,
+foundation. G9U0 and G9U0-R1 provide an author-approved experimental,
 default-off public surface with durable copy/XML/save support; Locus V2 remains
 non-`Path`. G9X1 provides the author-approved experimental/default-off extended
-DXF adapter. The current observable native-save path and Windows association
-still use `.ggb` and the XML header still uses `app_code: classic`.
+DXF adapter. G9U0-R2 now provides the author-approved ordinary Locus V2
+presentation/continuity refinement and `.cedg` native-document identity. The
+internal ZIP/XML machinery and `app_code: classic` remain unchanged; `.ggb` is
+the non-destructive compatibility-input boundary.
 
-G9U0-R2 planning/design is **PASS — AUTHOR APPROVED**. Its normative ordinary
-Locus presentation and `.cedg` native-document contracts are approved future
-authority. Its separately authorized implementation is now an unapproved
-candidate with automated correction evidence complete while manual smoke and
-author review remain pending; it does not yet
-establish released/main product behavior. The user guide records that status
-without replacing its validated `.ggb`/observable instructions.
+G9U0-R2 planning/design and implementation are **PASS — AUTHOR APPROVED**. The
+original R2-L11 smoke failure remains historical evidence; the bounded
+full-period render correction, automated authority and interactive author
+re-smoke all pass. The user guide now records the promoted `.cedg` lifecycle and
+ordinary Locus presentation behavior while retaining the experimental/default-
+off Locus V2 boundary and the unsupported external-upstream boundary.
 
 ## G9P audit disposition
 
@@ -118,10 +119,9 @@ Planning authority belongs in the living roadmap,
 the two normative specifications. Historical G9U0/G9U0-R1/G9X1 reports and the
 frozen G9P prompt catalog are not rewritten.
 
-The living user guide must continue to describe `.ggb` Save/reopen and package
-association until an R2 implementation is author-approved and observable. The
-current R2 implementation candidate completed the mandatory `GUIDE_IMPACT`
-work while keeping candidate behavior explicitly unreleased:
+The living user guide had to retain `.ggb` Save/reopen and package association
+until R2 was author-approved and promoted. The approved R2 closeout completes
+the mandatory `GUIDE_IMPACT` transition:
 
 - user guide: native Save/Save As, omitted suffix, `.ggb` compatibility input,
   reopen/recent/direct-open, Classic diagnostic behavior, corrupt-file failure,
@@ -133,5 +133,6 @@ work while keeping candidate behavior explicitly unreleased:
 - packaging/release guide: installer-only `.cedg` association, portable
   non-association and the unchanged redistribution block.
 
-Those guide edits are implementation-candidate evidence; they neither publish
-the behavior nor supply author approval or a phase PASS.
+Those guide edits describe author-approved behavior after fast-forward
+promotion. They do not claim an installed MSI/registry smoke, public
+redistribution approval, or authorization of G9U1.

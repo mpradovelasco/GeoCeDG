@@ -1,25 +1,23 @@
 # G9 public Locus, product/document refinement and workspace validation matrix
 
 - Status: **AUTHOR-APPROVED G9P AND G9U0-R2 VALIDATION DESIGN;
-  G9U0-R2 IMPLEMENTATION CANDIDATE — AUTOMATED COMPLETE / PENDING AUTHOR
-  REVIEW**
-- Date: 2026-08-21
+  G9U0-R2 IMPLEMENTATION PASS — AUTHOR APPROVED**
+- Date: 2026-08-22
 - Scope: author-approved/historical G9U0 public Locus V2 evidence;
-  author-approved G9U0-R2 product/document-refinement design and current
-  unapproved implementation candidate; future G9U1
+  author-approved G9U0-R2 product/document-refinement design and implementation;
+  future G9U1
   Construction workspace; and the
   post-G9 G9U2 Dihedral Procedures workspace
-- G9U0-R2 implementation authorized/started: **yes, candidate only**;
+- G9U0-R2 implementation: **PASS — AUTHOR APPROVED**;
   G9U1/G9U2 implementation authorized: **no**
 
 The G9U0 rows remain the design source behind separately frozen, author-approved
 G9U0/G9U0-R1 execution evidence. The author separately invoked the canonical
-R2 prompt; the `R2-*` rows now govern its candidate. Replacement focused A/B,
-historical, packaging, Checkstyle, diff and composed results are `PASSED`.
-Manual smoke remains `PENDING_AUTHOR`.
-They do not claim `.cedg` or ordinary Locus V2 style as
-released/main behavior, and they do not imply workspace switching or Dihedral
-procedures.
+R2 prompt; the `R2-*` rows govern its closed implementation. Replacement focused A/B,
+historical, packaging, Checkstyle, diff and composed results pass after the R2-L11
+correction; the author accepted the corrective re-smoke. The original
+author-smoke failure is preserved. These rows do not imply workspace switching,
+Dihedral procedures, an installed MSI/registry smoke or public redistribution.
 
 ## 1. Entry gates
 
@@ -169,14 +167,15 @@ tests. The IDs preserve the numbered cases required by R1.
 | U0-T02 | general Intersect selection | all old types plus every V2 family | old paths delegate unchanged; V2 creates rich result |
 | U0-T03 | result chooser accessibility | keyboard, mouse, screen-reader labels, several/tangent/overlap cases | exact token selection available without color/proximity alone |
 
-## 8. G9U0-R2 product/document-refinement tests — approved design / candidate pending author review
+## 8. G9U0-R2 product/document-refinement tests — PASS — AUTHOR APPROVED
 
-These rows are **AUTHOR-APPROVED DESIGN** and now bind the separately authorized
-implementation candidate. They do not alter the author-approved G9U0/G9U0-R1
-evidence. Replacement focused A/B, supporting histories, ancillary static rows
-and composed verification now record exact commands, exit codes, counts/hashes
-and log paths. Manual smoke remains `PENDING_AUTHOR` and no implementation
-PASS is claimed.
+These rows are **AUTHOR-APPROVED DESIGN AND IMPLEMENTATION EVIDENCE**. They do
+not alter the author-approved G9U0/G9U0-R1
+evidence. The original author smoke failed R2-L11; its exact reproduction and
+bounded correction extend that row without changing the frozen 31+31 counts.
+Replacement focused A/B, supporting histories, ancillary static rows and
+composed verification pass; the corrective re-smoke and implementation are
+`PASS — AUTHOR APPROVED`.
 
 ### 8.1 Locus V2 ordinary presentation and render continuity
 
@@ -192,7 +191,7 @@ PASS is claimed.
 | R2-L08 | semantic invariance | snapshot identity/revision/generator/domain/branches/components/metrics/intersections/solution tokens/semantic DAG, mutate every presentation property, compare | all semantic evidence identical; render/style counters only may change |
 | R2-L09 | crossing line | capture fixed-policy render data, add/move/style/delete a crossing line and repeat | same locus semantic revision, vertices and subpath markers; ordinary z-order/overdraw may cover pixels but creates no gap |
 | R2-L10 | crossing circle/conic | repeat R2-L09 with a circle and each supported conic crossing one/multiple times | crossing count and target style have zero authority over Locus render topology or semantic intersections |
-| R2-L11 | no artificial renderer subpath | compare `startsSubpath` count/parameters before and after all unrelated crossing fixtures | byte/canonical-equal fixed-policy render-topology evidence; no crossing-induced component or gap |
+| R2-L11 | no artificial renderer subpath | preserve the exact author-smoke `locusFromMidpoint.cedg` bytes/SHA; prove its single half-open complete periodic component reaches the seam under fixed and adaptive policies before/after real line/circle/conic crossings; retain minimized nonperiodic-open and disconnected controls | full-period render predicate requires periodic provider + `PERIODIC` branch + exactly one component equal to both declared branch/provider domains; first/last presentation points coincide with one subpath and unchanged identity/revision/fingerprints; no closure of an ordinary open interval, merger of disconnected components or crossing-induced gap |
 | R2-L12 | genuine discontinuity preserved | disconnected valid components plus open/unbounded clipping, solid/dashed strokes and overdraw | real components/invalid gaps retain distinct subpaths; clipping, overdraw and dash gaps remain separately diagnosed |
 | R2-L13 | ordinary show/hide | toggle visibility through ordinary object/UI paths, including save/reopen and undo/redo where applicable | existing `GeoElement` visibility authority used; hidden state affects presentation only and semantic evidence is unchanged |
 | R2-L14 | applicable label presentation | exercise supported label visibility/mode/style, copy and native round trip | ordinary label authority used where applicable; no label-derived identity, branch or semantic revision |
@@ -263,7 +262,13 @@ before any future G9U1 block. It uses the existing paired-artifact and
 `OPEN_PENDING_IMPLEMENTATION_FREEZE`/`FROZEN` pattern, rejects partial
 integration and never interpret a scaffold PASS as a productive phase PASS.
 
-### 8.5 Manual author smoke plan
+### 8.5 Manual author smoke and corrective re-smoke record
+
+The author already executed this checklist once: all reported areas except
+R2-L11 passed, and R2-L11 produced the preserved visible-gap reproduction.
+That attempt remains failed evidence. After every replacement automated tuple
+was clean, the author repeated the focused continuity observations and accepted
+the complete applicable smoke/re-smoke.
 
 | Step | Author action | Observation to record |
 |---|---|---|
@@ -277,8 +282,9 @@ integration and never interpret a scaffold PASS as a productive phase PASS.
 | M-08 | open/save/reopen `.cedg` in GeoCeDG Classic and try a corrupt `.cedg` | no downgrade or creation enablement; Classic new-document default unchanged; corrupt load does not replace the live document |
 | M-09 | when explicitly available, install/test MSI or EXE shell association | `.cedg` opens GeoCeDG; GeoCeDG has not claimed `.ggb` |
 
-The agent may prepare evidence and the checklist but cannot mark manual smoke or
-G9U0-R2 implementation approved.
+The author marked M-01 through M-08 passed. M-09 was `NOT_REQUESTED`; no installed
+MSI/registry result is inferred. `selfApproved=false`, `authorApproved=true`,
+`passClaimed=true`.
 
 ## 9. G9U1 workspace schema and behavior tests
 
@@ -385,7 +391,7 @@ not affect metric/intersection results.
 - Focused and composed authorities pass without weakened G6-G8 evidence.
 - Author explicitly approves command names and compatibility behavior.
 
-### G9U0-R2 implementation candidate and PASS gate
+### G9U0-R2 implementation PASS gate
 
 - Accepted ADR 0016 and both normative R2 specifications were approved during
   planning closeout before any productive edit, and a separate author
@@ -404,10 +410,10 @@ not affect metric/intersection results.
   authority passes without weakening older gates.
 - User/developer/packaging guide impact is completed only for implemented,
   validated behavior and historical reports remain unchanged.
-- The agent stops at `IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW` with
-  `selfApproved=false`, `authorApproved=false` and `passClaimed=false`.
-- Manual author smoke and an explicit later author decision are mandatory for
-  `G9U0-R2 IMPLEMENTATION PASS — AUTHOR APPROVED`.
+- The original failed author smoke remains evidence; the corrective author
+  re-smoke passed and the author explicitly closed
+  `G9U0-R2 IMPLEMENTATION = PASS — AUTHOR APPROVED` with
+  `selfApproved=false`, `authorApproved=true` and `passClaimed=true`.
 
 ### G9U1 PASS candidate
 

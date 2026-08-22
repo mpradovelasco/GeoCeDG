@@ -311,7 +311,7 @@
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/euclidian/draw/LocusRenderCache2D.java",
-      "change": "added", "purpose": "Keep bounded per-view uniform/adaptive render tessellation and diagnostics separate from semantic state.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+      "change": "added", "purpose": "Keep bounded per-view uniform/adaptive render tessellation and diagnostics separate from semantic state, including presentation-only closure of one complete periodic driver cycle without bridging open or disconnected semantic components.", "authority": "geocedg/specs/locus/locus-v2-presentation.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/euclidian/draw/LocusRenderData2D.java",
@@ -3000,7 +3000,13 @@
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9U0R2LocusRenderContinuityTest.java",
       "change": "added",
-      "purpose": "Verify line/circle/conic crossing independence, absence of renderer-generated subpaths and preservation of genuine semantic discontinuities for R2-L09 through R2-L12.",
+      "purpose": "Verify line/circle/conic crossing independence, exact full-period render closure for the author reproduction, absence of renderer-generated subpaths and preservation of genuine open/disconnected semantic discontinuities for R2-L09 through R2-L12.",
+      "authority": "geocedg/specs/locus/locus-v2-presentation.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/locus/g9u0-r2/locusFromMidpoint.cedg",
+      "change": "added",
+      "purpose": "Preserve the author-smoke R2-L11 reproduction byte-for-byte as a tracked regression fixture for periodic full-cycle render closure without making the archive a semantic or product-format authority.",
       "authority": "geocedg/specs/locus/locus-v2-presentation.md"
     },
     {

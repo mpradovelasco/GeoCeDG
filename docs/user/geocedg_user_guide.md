@@ -1,18 +1,17 @@
 # Manual operativo vivo de GeoCeDG
 
 - Tipo de documento: manual operativo vivo
-- Última puerta de producto aprobada/observable: **G9X1 = PASS — AUTHOR APPROVED**
+- Última puerta de producto aprobada/observable: **G9U0-R2 = PASS — AUTHOR APPROVED**
 - G9U0 = PASS — AUTHOR APPROVED
-- Trabajo no publicado: **G9U0-R2 = IMPLEMENTATION CANDIDATE — AUTOMATED
-  COMPLETE / PENDING AUTHOR REVIEW**; smoke y disposición autoral pendientes
+- G9X1 = PASS — AUTHOR APPROVED
+- G9U0-R2: **PASS — AUTHOR APPROVED**; el fallo original R2-L11 se conserva y la
+  corrección, la automatización y el re-smoke interactivo pasan
 - Baseline: GeoGebra 5.4.928.0 at
   `9b93256b7df401ff056c37b502d82df4d72b1522`
 - Plataforma validada: únicamente Windows
-- Última revisión: 2026-08-21
-- Fase actual: G9U0 y G9X1 son `PASS — AUTHOR APPROVED`. R2 está autorizado e
-  iniciado solo en una rama de candidato, con validación automatizada completa
-  pero smoke manual y revisión autoral pendientes; no está aprobado
-  ni promocionado. G9U1, G9B, G9C, G9U2, G10 y las fases posteriores no se han
+- Última revisión: 2026-08-22
+- Fase actual: G9U0, G9X1 y G9U0-R2 son `PASS — AUTHOR APPROVED`. G9U1, G9B,
+  G9C, G9U2, G10 y las fases posteriores no se han
   ejecutado ni están autorizadas.
 - Locus V2: superficie pública `experimental` aprobada para G9U0, exclusiva de
   GeoCeDG y desactivada por defecto
@@ -22,9 +21,8 @@
 This guide is the practical entry point for the GeoCeDG author/developer. It
 describes observable product behavior, G7 characterization, the
 author-approved internal G7B/G8 kernels, the author-approved default-off G9U0
-surface and the author-approved default-off G9X1 export service. It does not
-present the unapproved/unpromoted R2 `.cedg`/style candidate as available behavior. It does not
-replace the
+surface, the author-approved default-off G9X1 export service and the promoted
+G9U0-R2 `.cedg`/ordinary-presentation behavior. It does not replace the
 [repository README](../../README.md),
 [living technical roadmap](../roadmap/geocedg_roadmap.md), ADRs, specifications, or
 architecture documentation. Mathematical definitions are collected in the
@@ -100,11 +98,22 @@ curves and V2-to-V2 rich queries. Arbitrary paths/drivers, unbounded scalar
 domains, unsupported overlaps and automatic point creation are rejected or
 reported explicitly. V2 is not a generic `Path`.
 
-Native `.ggb` save/reopen, copy and undo retain the approved durable semantic
-graph and recompute derived results. Saving a V2-bearing file shows an external
-compatibility warning. GeoCeDG Classic preserves native objects with creation
-off; opening the file in an external upstream distribution is unsupported and
-no lossy repair is attempted.
+Native `.cedg` save/reopen, copy and undo retain the approved durable semantic
+graph and recompute derived results. New documents and Save As default to
+`.cedg`; omitting a suffix appends one lowercase `.cedg`. Opening `.ggb` is a
+compatibility-input workflow: normal Save routes to a distinct `.cedg` Save As
+and never silently overwrites the source. Cancel or failure preserves the live
+document and original `.ggb`. GeoCeDG Classic preserves supported `.cedg`
+objects with experimental creation off; opening native GeoCeDG types in an
+external upstream distribution is unsupported and no lossy repair is attempted.
+
+For a visible Locus V2, ordinary Properties controls govern color, opacity,
+line thickness/type, visibility and applicable label presentation. Copy and
+applicable undo/redo preserve that ordinary style. These presentation changes do
+not alter durable identity, semantic revision, domain, branches, metrics,
+intersections or tokens. Unrelated line/circle/conic crossings and moderate zoom
+must not create a gap or subpath; genuine semantic discontinuities remain
+separate.
 
 Validate or open the developer-only laboratory from the repository root:
 
@@ -426,7 +435,7 @@ Run the generated app-image directly:
 ```
 
 The ZIP contains the same app-image layout. Extract and run it without
-installing or creating a `.ggb` association:
+installing or creating a `.cedg` association:
 
 ```powershell
 $portable = Join-Path $env:TEMP `
@@ -495,28 +504,29 @@ Uninstall the EXE-installed application through Windows **Installed apps** by
 selecting `GeoCeDG` and its displayed **Uninstall** action. The MSI procedure
 remains the exact automated acceptance path.
 
-### Check the `.ggb` association
+### Check the `.cedg` association
 
-MSI and EXE declare the `.ggb` association; app-image and ZIP do not. While an
-installer package is installed, inspect the current-user registration and its
-open command with:
+The current package source declares only the GeoCeDG-owned `.cedg` association
+for MSI and EXE; app-image and ZIP do not create associations. G9U0-R2 validated
+this contract statically, but did not request a real installed MSI/registry
+smoke. If an installer artifact is explicitly built and installed, inspect its
+registration and open command with:
 
 ```powershell
-$extensionKeyPath = "Registry::HKEY_CURRENT_USER\Software\Classes\.ggb"
+$extensionKeyPath = "Registry::HKEY_CURRENT_USER\Software\Classes\.cedg"
 $extensionKey = Get-Item -LiteralPath $extensionKeyPath
 $progId = $extensionKey.GetValue("")
 $openCommand = (Get-Item -LiteralPath `
   "Registry::HKEY_CURRENT_USER\Software\Classes\$progId\shell\open\command").GetValue("")
 $progId
 $openCommand
-cmd /c assoc .ggb
+cmd /c assoc .cedg
 ```
 
-The open command must reference the installed `GeoCeDG.exe`. In the validated
-MSI test, uninstall removed GeoCeDG's current-user association and the
-pre-existing `GeoGebra.File` association became effective again. If a machine
-had no previous association, no previous value can be restored; verify the
-actual post-uninstall state rather than assuming one.
+The open command must reference the installed `GeoCeDG.exe`, the ProgID must be
+GeoCeDG-owned and no `.ggb` association may be claimed. Verify the actual
+post-uninstall state rather than assuming registry cleanup; no G9U0-R2 installed
+artifact result is claimed here.
 
 ### Package composition and exclusions
 
@@ -693,9 +703,10 @@ add DXF import.
 
 Start GeoCeDG with Gradle, an app-image, or an installed package. To open an
 existing construction use the inherited `File > Open...` workflow and select
-its `.ggb` file. To create a construction, use the toolbar or enter commands in
-the input bar. Save the `.ggb` separately if the construction itself must be
-preserved; writing DXF does not save or alter it.
+its native `.cedg` file or a compatibility-input `.ggb`. To create a
+construction, use the toolbar or enter commands in the input bar. Save the
+construction as `.cedg` if it must be preserved; writing DXF does not save or
+alter it.
 
 The G5 action is available only in the window identified as `GeoCeDG`:
 
@@ -1055,7 +1066,7 @@ Promotion follows `legacy -> research -> experimental -> stable`, or
 | G3 | Per-tool geometric correctness, validity domains, degeneracies and expected numerical results | Pending | Required before any tool can be promoted |
 | G4 | Windows app-image, normalized ZIP, MSI and EXE pipeline | Available; stable infrastructure | Reproducible technical packaging outside upstream Gradle; per-build hashes are authoritative and binaries remain internal-only |
 | G4 | Bundled Java runtime and GeoCeDG launcher | Available | App-image and installed MSI run without an external Java runtime |
-| G4 | `.ggb` file association | Available in MSI/EXE | Installer-only shell integration; no serialization change |
+| G4/R2 | `.cedg` file association | Available in MSI/EXE package source; installed R2 smoke `NOT_REQUESTED` | Installer-only shell integration; no `.ggb` claim and no serialization change |
 | G4 | SBOM, manifests, hashes and package exclusions | Available; infrastructure | Exact runtime evidence and exclusion checks; license classification remains incomplete |
 | G4 | Public redistribution | Pending/blocker | Requires human license, third-party, asset, branding and trademark approval |
 | G5 | Neutral read-only 2D geometry export model and reusable service | Available; experimental infrastructure | Separates resolved source adaptation from format encoding without changing the kernel |
@@ -1076,8 +1087,8 @@ Promotion follows `legacy -> research -> experimental -> stable`, or
 | G9A1/A2/A3 and grouped G9A | Durable identity, persistence and lifecycle/migration foundation | `PASS — AUTHOR APPROVED` | Native G9U0 objects can rely on the approved durable construction identity graph |
 | G9U0 | Experimental public Locus V2 surface | `PASS — AUTHOR APPROVED` | GeoCeDG-only, default-off commands/tools, rich results, native persistence and compatibility boundary documented above |
 | G9X1 | Extended exact/approximate DXF export | `PASS — AUTHOR APPROVED`; experimental and default-off | External read-only export, strict preflight, conditional mandatory sidecar and bounded estimated-error approximation; no geometric authority |
-| G9U0-R2 planning/design | Locus V2 presentation/continuity and native `.cedg` identity | `PASS — AUTHOR APPROVED` design only | Normative future contract; does not by itself change this guide's observable Save/style instructions |
-| G9U0-R2 implementation | Candidate on a feature branch | Automated validation complete; manual smoke and author review pending; no PASS | Do not treat `.cedg`, new style controls or the changed installer association as released/main behavior yet |
+| G9U0-R2 planning/design | Locus V2 presentation/continuity and native `.cedg` identity | `PASS — AUTHOR APPROVED` | Normative contract implemented by the separately approved R2 execution |
+| G9U0-R2 implementation | Ordinary presentation/render continuity and native document lifecycle | `PASS — AUTHOR APPROVED`; original R2-L11 failure preserved and correction/re-smoke accepted | `.cedg` is native, `.ggb` is compatibility input; installed MSI/registry smoke remains `NOT_REQUESTED` |
 | G9U1/G9B/G9C/G9U2 | Later productive G9 capabilities | Not authorized; U2 blocked on the approved global G9 gate | No workspace, spatial-primitive or later G9 implementation is implied by G9X1 |
 
 The previously approved future compatibility rule is exercised by the
@@ -1358,7 +1369,8 @@ or, at the G7B gate, make the metric public.
 - a GeoCeDG-only public command/tool surface exists only after explicit
   per-process opt-in; G9U0 is author-approved while the surface remains
   experimental and default-off;
-- native `.ggb` XML, copy, undo and reopen preserve the durable semantic graph;
+- native `.cedg` ZIP/XML, copy, undo and reopen preserve the durable semantic
+  graph; `.ggb` is a non-destructive compatibility input;
 - `Point[L,branch,parameter]` creates an explicitly addressed ordinary point,
   but V2 itself remains deliberately outside generic `Path` and legacy
   incidence;
@@ -1399,7 +1411,7 @@ polyline is a disposable view representation.
 | G9A1/G9A2/G9A3 and grouped G9A | Durable identity, persistence and lifecycle/migration | `PASS — AUTHOR APPROVED` |
 | G9U0 | Experimental public Locus V2 surface | `PASS — AUTHOR APPROVED`; default-off and GeoCeDG-only |
 | G9U0-R2 planning/design | Pre-G9U1 presentation/document contract | `PASS — AUTHOR APPROVED` |
-| G9U0-R2 implementation | Ordinary Locus style/render continuity plus `.cedg` lifecycle | Candidate only; automated validation complete; manual smoke and author review pending; not released/main behavior |
+| G9U0-R2 implementation | Ordinary Locus style/render continuity plus `.cedg` lifecycle | `PASS — AUTHOR APPROVED`; correction and author re-smoke accepted |
 | G10 | CeDG 3D DSL and workbench | Pending |
 | G11 | Hierarchical layers and view states | Pending |
 | G12 | Extended navigation, zoom and physical scales | Pending |
@@ -1601,8 +1613,8 @@ workflow or G9 implementation.
   translation set, style, or installer resource.
 - The runtime still uses inherited Classic strings and UI assets. Public or
   commercial redistribution requires the recorded license/brand review.
-- `.ggb` serialization still uses the upstream `classic` app code for
-  compatibility; GeoCeDG has no new persisted app code.
+- `.cedg` and compatible `.ggb` archives still use the upstream `classic` app
+  code internally; GeoCeDG has no new persisted app code or archive format.
 - G5 remains the exact 2D compatibility baseline. G9X1 adds only
   the documented bounded approximate families; there is still no DXF import,
   viewport export, physical-unit contract, text export, legacy Locus export,

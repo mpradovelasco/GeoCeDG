@@ -11,11 +11,19 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import org.geocedg.common.euclidian.draw.DrawLocusV2;
 import org.geocedg.common.euclidian.draw.LocusRenderCache2D;
@@ -27,6 +35,8 @@ import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.ExplicitNumericDomainProvider2D;
 import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
+import org.geocedg.common.kernel.locus.LocusEvaluation2D;
+import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusLineage2D;
 import org.geocedg.common.kernel.locus.LocusPoint2D;
@@ -131,7 +141,8 @@ class G9U0R2LocusRenderContinuityTest extends G9U0PublicSurfaceTestBase {
 
 	// R2-L11
 	@Test
-	void exactCanonicalRenderTopologySurvivesAllCrossingFixtures() {
+	void exactCanonicalRenderTopologySurvivesAllCrossingFixtures()
+			throws Exception {
 		GeoLocusV2 locus = createParabola();
 		String expected = fingerprint(locus);
 		final String expectedSubpaths = subpathFingerprint(locus);
@@ -154,6 +165,78 @@ class G9U0R2LocusRenderContinuityTest extends G9U0PublicSurfaceTestBase {
 		assertEquals(expected, fingerprint(locus));
 		assertEquals(expectedSubpaths, subpathFingerprint(locus));
 		assertEquals(1, subpathCount(locus));
+
+		GeoLocusV2 authorLocus = loadAuthorMidpointLocus();
+		LocusDefinition2D authorDefinition = authorLocus.getSemanticDefinition();
+		assertNotNull(authorDefinition);
+		assertTrue(authorDefinition.getProvider().isPeriodic());
+		assertEquals(1, authorDefinition.getBranches().size());
+		LocusBranch2D authorBranch = authorDefinition.getBranches().get(0);
+		assertEquals(1, authorBranch.getValidDomainComponents().size());
+		LocusInterval2D authorComponent = authorBranch
+				.getValidDomainComponents().get(0);
+		assertTrue(authorComponent.isLowerClosed());
+		assertFalse(authorComponent.isUpperClosed());
+		assertPeriodicSemanticSeam(authorLocus, authorBranch, authorComponent);
+
+		List<LocusRenderPolicy2D> policies = List.of(FIXED_POLICY,
+				adaptivePolicy(20), adaptivePolicy(50), adaptivePolicy(200));
+		List<String> authorRenderFingerprints = policies.stream()
+				.map(policy -> {
+					assertPeriodicRenderClosure(authorLocus, authorComponent,
+							policy);
+					return fingerprint(authorLocus, policy);
+				}).collect(Collectors.toList());
+		PersistentGeoId authorIdentity = authorLocus.getPersistentLocusId();
+		long authorRevision = authorLocus.getSemanticRevision();
+		GeoElement crossingLine = add("authorCrossLine:x=1.99");
+		GeoElement crossingCircle = add(
+				"authorCrossCircle=Circle((1.99,2.64),1)");
+		GeoElement crossingConic = add("authorCrossConic=Ellipse((1.4,2.64),"
+				+ "(2.58,2.64),1)");
+		GeoLocusIntersectionResult lineCrossings = add(
+				"authorLineCrossings=Intersect(a,authorCrossLine)");
+		GeoLocusIntersectionResult circleCrossings = add(
+				"authorCircleCrossings=Intersect(a,authorCrossCircle)");
+		GeoLocusIntersectionResult conicCrossings = add(
+				"authorConicCrossings=Intersect(a,authorCrossConic)");
+		assertTrue(solutionCount(lineCrossings) > 0);
+		assertTrue(solutionCount(circleCrossings) > 0);
+		assertTrue(solutionCount(conicCrossings) > 0);
+		assertPeriodicTopologyAndRenderUnchanged(authorLocus, authorIdentity,
+				authorDefinition, authorRevision, policies,
+				authorRenderFingerprints);
+		for (GeoElement crossing : List.of(lineCrossings, circleCrossings,
+				conicCrossings, crossingLine, crossingCircle, crossingConic)) {
+			crossing.remove();
+		}
+		assertPeriodicTopologyAndRenderUnchanged(authorLocus, authorIdentity,
+				authorDefinition, authorRevision, policies,
+				authorRenderFingerprints);
+
+		GeoLocusV2 minimized = createMinimizedPeriodicLocus();
+		LocusBranch2D minimizedBranch = minimized.getSemanticDefinition()
+				.getBranches().get(0);
+		LocusInterval2D minimizedComponent = minimizedBranch
+				.getValidDomainComponents().get(0);
+		assertPeriodicSemanticSeam(minimized, minimizedBranch,
+				minimizedComponent);
+		for (LocusRenderPolicy2D policy : policies) {
+			assertPeriodicRenderClosure(minimized, minimizedComponent, policy);
+		}
+
+		GeoLocusV2 nonperiodicOpen = createMinimizedOpenLocus();
+		GeoLocusV2 genuinelyDisconnected = createMinimizedDisconnectedLocus();
+		for (LocusRenderPolicy2D policy : policies) {
+			LocusRenderData2D openData = render(nonperiodicOpen, policy);
+			LocusInterval2D openComponent = nonperiodicOpen
+					.getSemanticDefinition().getBranches().get(0)
+					.getValidDomainComponents().get(0);
+			assertTrue(lastVertex(openData).getSemanticParameter()
+					< openComponent.getUpper());
+			assertEquals(1, startCount(openData));
+			assertEquals(2, startCount(render(genuinelyDisconnected, policy)));
+		}
 	}
 
 	// R2-L12
@@ -242,7 +325,12 @@ class G9U0R2LocusRenderContinuityTest extends G9U0PublicSurfaceTestBase {
 	}
 
 	private static String fingerprint(GeoLocusV2 locus) {
-		return render(locus).getVertices().stream().map(vertex ->
+		return fingerprint(locus, FIXED_POLICY);
+	}
+
+	private static String fingerprint(GeoLocusV2 locus,
+			LocusRenderPolicy2D policy) {
+		return render(locus, policy).getVertices().stream().map(vertex ->
 				Long.toHexString(Double.doubleToLongBits(vertex.getPoint().getX()))
 						+ "," + Long.toHexString(Double.doubleToLongBits(
 								vertex.getPoint().getY()))
@@ -266,7 +354,176 @@ class G9U0R2LocusRenderContinuityTest extends G9U0PublicSurfaceTestBase {
 	}
 
 	private static LocusRenderData2D render(GeoLocusV2 locus) {
-		return new LocusRenderCache2D().getOrBuild(locus, FIXED_POLICY);
+		return render(locus, FIXED_POLICY);
+	}
+
+	private static LocusRenderData2D render(GeoLocusV2 locus,
+			LocusRenderPolicy2D policy) {
+		return new LocusRenderCache2D().getOrBuild(locus, policy);
+	}
+
+	private static LocusRenderPolicy2D adaptivePolicy(double scale) {
+		return LocusRenderPolicy2D.adaptive(1, 895, 626, scale, scale, 96,
+				0.75, 12);
+	}
+
+	private static void assertPeriodicSemanticSeam(GeoLocusV2 locus,
+			LocusBranch2D branch, LocusInterval2D component) {
+		LocusDefinition2D definition = locus.getSemanticDefinition();
+		assertNotNull(definition);
+		assertSame(branch, definition.getBranch(branch.getBranchKey()));
+		double lower = component.getLower();
+		double upper = component.getUpper();
+		double epsilon = (upper - lower) * 1E-9;
+		LocusEvaluation2D lowerEvaluation;
+		LocusEvaluation2D upperEvaluation;
+		try (LocusEvaluationSession2D session =
+				new LocusEvaluationSession2D(true, 4096)) {
+			lowerEvaluation = locus.evaluate(branch.getBranchKey(), lower,
+					session);
+			upperEvaluation = locus.evaluate(branch.getBranchKey(), upper,
+					session);
+			for (double parameter : new double[] {lower, lower + epsilon,
+					upper - epsilon, upper, upper + epsilon}) {
+				double canonical = definition.getProvider()
+						.canonicalize(parameter);
+				assertTrue(branch.containsValidParameter(canonical,
+						definition.getProvider()));
+				assertTrue(locus.evaluate(branch.getBranchKey(), parameter,
+						session).isValid(),
+						"Periodic seam evaluation failed at " + parameter);
+			}
+		}
+		assertPointEquals(lowerEvaluation.getPoint(), upperEvaluation.getPoint(),
+				1E-10);
+	}
+
+	private static void assertPeriodicRenderClosure(GeoLocusV2 locus,
+			LocusInterval2D component, LocusRenderPolicy2D policy) {
+		LocusRenderData2D data = render(locus, policy);
+		assertFalse(data.getVertices().isEmpty());
+		LocusRenderData2D.Vertex first = data.getVertices().get(0);
+		LocusRenderData2D.Vertex last = lastVertex(data);
+		assertEquals(component.getLower(), first.getSemanticParameter(), 0);
+		assertEquals(component.getUpper(), last.getSemanticParameter(), 0,
+				"A periodic render component must reach its presentation seam");
+		assertPointEquals(first.getPoint(), last.getPoint(), 1E-10);
+		assertTrue(first.startsSubpath());
+		assertEquals(1, startCount(data));
+		for (int index = 1; index < data.getVertices().size(); index++) {
+			LocusRenderData2D.Vertex previous = data.getVertices().get(index - 1);
+			LocusRenderData2D.Vertex current = data.getVertices().get(index);
+			assertFalse(current.startsSubpath());
+			assertTrue(current.getSemanticParameter()
+					> previous.getSemanticParameter());
+		}
+	}
+
+	private static void assertPeriodicTopologyAndRenderUnchanged(
+			GeoLocusV2 locus, PersistentGeoId identity,
+			LocusDefinition2D definition, long revision,
+			List<LocusRenderPolicy2D> policies,
+			List<String> renderFingerprints) {
+		assertEquals(identity, locus.getPersistentLocusId());
+		assertSame(definition, locus.getSemanticDefinition());
+		assertEquals(revision, locus.getSemanticRevision());
+		assertEquals(1, definition.getBranches().size());
+		assertEquals(1, definition.getBranches().get(0)
+				.getValidDomainComponents().size());
+		for (int index = 0; index < policies.size(); index++) {
+			assertEquals(renderFingerprints.get(index),
+					fingerprint(locus, policies.get(index)));
+		}
+	}
+
+	private GeoLocusV2 createMinimizedPeriodicLocus() {
+		add("miniT=0");
+		add("MiniQ=(cos(miniT),sin(miniT))");
+		add("MiniD={true,{0,2*pi,true,false}}");
+		GeoLocusV2 locus = add("Mini=LocusV2(MiniQ,miniT,MiniD)");
+		assertNotNull(locus);
+		return locus;
+	}
+
+	private GeoLocusV2 createMinimizedOpenLocus() {
+		add("openMiniT=0");
+		add("OpenMiniQ=(openMiniT,openMiniT)");
+		add("OpenMiniD={false,{0,1,true,false}}");
+		GeoLocusV2 locus = add(
+				"OpenMini=LocusV2(OpenMiniQ,openMiniT,OpenMiniD)");
+		assertNotNull(locus);
+		return locus;
+	}
+
+	private GeoLocusV2 createMinimizedDisconnectedLocus() {
+		add("gapMiniT=0");
+		add("GapMiniQ=(gapMiniT,0)");
+		add("GapMiniD={false,{0,1,true,true},{2,3,true,true}}");
+		GeoLocusV2 locus = add(
+				"GapMini=LocusV2(GapMiniQ,gapMiniT,GapMiniD)");
+		assertNotNull(locus);
+		return locus;
+	}
+
+	private static LocusRenderData2D.Vertex lastVertex(
+			LocusRenderData2D data) {
+		return data.getVertices().get(data.getVertices().size() - 1);
+	}
+
+	private static long startCount(LocusRenderData2D data) {
+		return data.getVertices().stream()
+				.filter(LocusRenderData2D.Vertex::startsSubpath).count();
+	}
+
+	private static void assertPointEquals(LocusPoint2D expected,
+			LocusPoint2D actual, double tolerance) {
+		assertEquals(expected.getX(), actual.getX(), tolerance);
+		assertEquals(expected.getY(), actual.getY(), tolerance);
+	}
+
+	private GeoLocusV2 loadAuthorMidpointLocus() throws Exception {
+		byte[] archive = readResource("/org/geocedg/common/locus/g9u0-r2/"
+				+ "locusFromMidpoint.cedg");
+		assertEquals("47280a65aeec2d4f3f8edb969a934bbb40e1974c22dfe7e121011fea"
+				+ "e47abc7c", sha256(archive));
+		getApp().setXML(readZipEntry(archive, "geogebra.xml"), true);
+		GeoElement loaded = lookup("a");
+		assertTrue(loaded instanceof GeoLocusV2);
+		return (GeoLocusV2) loaded;
+	}
+
+	private static byte[] readResource(String name) throws IOException {
+		try (InputStream input = G9U0R2LocusRenderContinuityTest.class
+				.getResourceAsStream(name)) {
+			assertNotNull(input, "Missing author-smoke fixture " + name);
+			return input.readAllBytes();
+		}
+	}
+
+	private static String readZipEntry(byte[] archive, String name)
+			throws IOException {
+		try (ZipInputStream zip = new ZipInputStream(
+				new java.io.ByteArrayInputStream(archive), StandardCharsets.UTF_8)) {
+			ZipEntry entry;
+			while ((entry = zip.getNextEntry()) != null) {
+				if (name.equals(entry.getName())) {
+					ByteArrayOutputStream output = new ByteArrayOutputStream();
+					zip.transferTo(output);
+					return output.toString(StandardCharsets.UTF_8);
+				}
+			}
+		}
+		throw new IOException("Missing " + name + " in author-smoke fixture");
+	}
+
+	private static String sha256(byte[] value)
+			throws NoSuchAlgorithmException {
+		byte[] digest = MessageDigest.getInstance("SHA-256").digest(value);
+		StringBuilder result = new StringBuilder(digest.length * 2);
+		for (byte current : digest) {
+			result.append(String.format("%02x", current & 0xff));
+		}
+		return result.toString();
 	}
 
 	private static int pathMoveCount(GShape shape) {

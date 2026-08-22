@@ -1,17 +1,18 @@
 # G9U0-R2 product-refinement implementation map
 
-- Status: **IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**
+- Status: **PASS — AUTHOR APPROVED**
 - Entry: `ce022b756b51fe12497e1932ba3ae58093dd1405`
 - Branch: `feature/g9u0-r2-product-refinement`
 - Planning authority: `geocedg-g9u0-r2-planning-pass`
-- Correction validation: **AUTOMATED COMPLETE** — replacement focused A/B,
-  historical, ancillary and full composed evidence is clean; manual author
-  smoke remains pending
-- Manual author smoke: **PENDING AUTHOR**
+- Render-continuity correction validation: **AUTOMATED VALIDATION COMPLETE** —
+  focused A/B, histories, ancillary gates and full composed verification pass
+- Original manual author smoke: **EXECUTED_FAILED_RENDER_CONTINUITY**
+- Corrective re-smoke: **PASS — AUTHOR APPROVED**
+- Installed MSI/registry smoke: **NOT_REQUESTED**
 
 This document maps the bounded implementation to the accepted ADR and specs.
-It does not claim implementation PASS, author approval, release readiness or
-authorization of G9U1.
+The author accepted the implementation and complete applicable manual smoke; it
+does not authorize G9U1 or claim a real installed MSI/registry probe.
 
 ## 1. Placement and preserved authority
 
@@ -54,6 +55,25 @@ topology. An unrelated line, circle or conic never becomes a render-cache
 input; fixed-policy topology tests compare vertices and `startsSubpath`
 markers before and after crossings. Separate semantic components remain
 separate.
+
+The author smoke exposed one narrower derived-presentation defect. A periodic
+provider can represent one complete cycle as a half-open semantic component;
+the previous ordinary open-endpoint inset stopped tessellation before the
+periodic seam. `LocusRenderCache2D` now reaches the upper presentation endpoint
+only when the exact **full-period render predicate** holds: the provider and
+branch are periodic, the branch has one valid component, and that component is
+equal to both the branch and provider declared domains. This does not close an
+arbitrary open interval, merge disconnected components or change semantic
+canonicalization.
+
+R2-L11 binds fixed and adaptive policies, unrelated line/circle/conic
+crossings, a nonperiodic half-open control and a disconnected control to the
+exact tracked author fixture
+`source/shared/common-jre/src/test/resources/org/geocedg/common/locus/g9u0-r2/locusFromMidpoint.cedg`
+(13,301 bytes; SHA-256
+`47280a65aeec2d4f3f8edb969a934bbb40e1974c22dfe7e121011feae47abc7c`).
+The original author artifact remains ignored evidence; the tracked copy is
+test-only and has no document-format or semantic authority.
 
 Focused authorities:
 
@@ -100,9 +120,11 @@ replace undo/redo history. An injected parse or pre-commit failure restores the
 snapshot and leaves the old history authoritative. Prepared-baseline cleanup is
 nonthrowing, and a history generation discards stale asynchronous stores.
 Rollback failure raises `NativeDocumentRollbackException` instead of continuing
-with partial state. Automated correction validation, including composed
-verification, is complete. The no-size-cap point remains a P2
-implementation risk, not new format semantics or authority to expand R2.
+with partial state. The prepared-baseline design correction remains closed and
+its replacement aggregate validation, including composed verification, passes
+after the later R2-L11 source change. The no-size-cap point
+remains a P2 implementation risk, not new format semantics or authority to
+expand R2.
 
 These helpers do not define a new format. The current ZIP entries,
 `geogebra.xml`, semantic versions and `app="classic"` remain authoritative.
@@ -174,9 +196,9 @@ deterministic, regression, Checkstyle, diff and packaging records.
 
 ## 6. Upstream impact
 
-The exact candidate inventory is `FROZEN` against the entry commit at 49
-paths: 21 productive, 3 focused-test, 5 validation, 12 documentation, 4
-packaging and 4 operational paths. All 24 changed `source/` paths are
+The exact candidate inventory is `FROZEN` against the entry commit at 51
+paths: 22 productive, 4 focused-test/resource, 5 validation, 12 documentation,
+4 packaging and 4 operational paths. All 26 changed `source/` paths are
 registered exactly once in `docs/upstream/modified-files.yml` against
 Accepted ADR 0016 or one of the two normative R2 specs. The boundary is
 limited to the ordinary Locus presentation capability, Desktop file
@@ -184,20 +206,27 @@ classification/open/save transaction seams and focused tests. No serializer,
 kernel metric/intersection, legacy Locus, web, 3D semantic, G9U1 or later
 productive path is in scope.
 
-## 7. Remaining author closeout
+## 7. Correction validation and author closeout
 
-The prepared undo-baseline correction invalidated every prior automated tuple.
-Replacement focused A/B, historical regressions, packaging/static validation,
-relevant Checkstyle, both Git diff checks and full composed verification are
-clean and recorded. The automated candidate is technically ready for review.
-The manual author smoke and author disposition remain exclusively author-owned.
-The report therefore retains:
+The R2-L11 correction invalidated every prior automated tuple. Replacement
+focused A/B, historical regressions, packaging/static validation, relevant
+Checkstyle, both Git diff checks, hard-zero/corpus facts and full composed
+verification pass. The original failed author smoke remains durable evidence
+and is not rewritten as unexecuted or passed. The author accepted the focused
+re-smoke in real interactive use, including crossings, moderate zoom and
+`.cedg` reopen. The report therefore records:
 
 ```text
 selfApproved = false
-authorApproved = false
-passClaimed = false
-manualAuthorSmoke = PENDING_AUTHOR
+authorApproved = true
+passClaimed = true
+historicalAuthorSmoke = EXECUTED_FAILED_RENDER_CONTINUITY
+manualAuthorSmoke = PASS
+correctionValidation = PASSED
+authorReSmoke = PASS
+installedMsiRegistrySmoke = NOT_REQUESTED
+
+G9U0-R2 IMPLEMENTATION = PASS — AUTHOR APPROVED
 
 G9U1 = DESIGNED — NOT AUTHORIZED
 G9B = NOT AUTHORIZED
@@ -206,5 +235,4 @@ G9U2 = BLOCKED
 PRODUCTIVE G10 = NOT AUTHORIZED
 ```
 
-Only the author can execute and accept the manual smoke or close the
-implementation as PASS. G9U1 remains separately unauthorized.
+The author has closed G9U0-R2 as PASS. G9U1 remains separately unauthorized.
