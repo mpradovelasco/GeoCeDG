@@ -39,16 +39,16 @@ insufficient.
 | `tools/agent/evidence-integrity.ps1` | Exact-byte Git blob and frozen G8 evidence helpers | Operational verification source; never rewrites evidence |
 | `tools/knowledge` | Deterministic profile-driven source/knowledge bundle generator, independent artifact verifier and disposable fixtures | Operational source; generated bundles are not authority |
 | `tools/bootstrap` | Workstation onboarding and focused prerequisite installation | Setup/orchestration, not acceptance authority |
-| `tools/book` | Boundary-safe status and explicit delegation for an optional external book worktree | Operational tool, opt-in; never part of `tools/agent/verify.ps1` |
+| `tools/book` | Boundary-safe status/alignment, deterministic baseline candidates, G9O1 evidence composition, and explicit delegation for an optional external book worktree | Operational tool; real external-book actions are opt-in and never product authority |
 | `tools/locus-v2` | Explicit developer-only Locus V2 laboratory launcher | Operational tool, opt-in; not product UI |
 | `tools/legacy` | Reproducible ingest and legacy Laboratory loader | Operational tools with immutable originals |
 | `tools/release` | Packaging generation and verification helpers | Reproducible release mechanics, not legal approval |
 | `tools/benchmark`, `benchmarks` | Informational harnesses and reproducible suites | Source definitions; raw outputs generated |
 | `packaging` | Windows `jpackage` configuration and notices | Durable packaging source; public release remains blocked |
-| `.github/prompts`, `ai-shell/prompts` | Canonical tasks/reviews and lightweight profiles | Operational instructions, not geometric truth |
+| `.github/prompts`, `ai-shell/prompts` | Canonical tasks/reviews, bounded book operations, and lightweight profiles | Operational instructions, not geometric or editorial truth; prompts never self-authorize phases |
 | `.github/workflows` | CI invocation of repository verification | Automation source |
 | local `/book` | Optional filesystem link to the independent `mpradovelasco/geocedg_book` worktree | Ignored local convenience; never GeoCeDG authority, content or Git state |
-| `artifacts` | Packaging, export, `knowledge` bundles and other generated output boundary | Regenerable/ignored except explicit README/manifests |
+| `artifacts` | Packaging, export, `knowledge` bundles, book technical-baseline candidates, and other generated output boundary | Regenerable/ignored except explicit README/manifests; generated book evidence is not editorial acceptance |
 | module `build/`, `.gradle/`, `.kotlin/` | Build caches and generated outputs | Regenerable/ignored; verifiers restore entry state |
 
 ## Locus V2 path

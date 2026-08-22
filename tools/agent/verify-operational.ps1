@@ -12,6 +12,8 @@ $ExpectedBaseline = "9b93256b7df401ff056c37b502d82df4d72b1522"
 $ExpectedVersion = "5.4.928.0"
 $ExpectedTag = "geogebra-baseline-5.4.928.0"
 $RepositoryStateVerifier = Join-Path $PSScriptRoot "verify-repository-state.ps1"
+$BookOperationsVerifier = Join-Path $PSScriptRoot `
+    "verify-book-operations.ps1"
 . (Join-Path $PSScriptRoot "upstream-boundary.ps1")
 
 function Write-Step {
@@ -116,6 +118,7 @@ try {
         ".gitignore",
         ".github/prompts/canonical/governance.prompt.md",
         ".github/prompts/canonical/verification.prompt.md",
+        ".github/prompts/canonical/book/operations.prompt.md",
         ".github/prompts/tasks/task-template.prompt.md",
         ".github/prompts/tasks/g1-operational-layer.prompt.md",
         ".github/prompts/tasks/g2-frontend-foundation.prompt.md",
@@ -142,6 +145,7 @@ try {
         "docs/architecture/locus_v2_upstream_impact.md",
         "docs/architecture/locus_v2_implementation.md",
         "docs/developer/locus_v2_api.md",
+        "docs/developer/book_repository_workflow.md",
         "docs/developer/repository_map.md",
         "docs/developer/geocedg_developer_guide.md",
         "docs/developer/geocedg_agent_prompt_guide.md",
@@ -246,6 +250,9 @@ try {
         "tools/knowledge/verify-knowledge-bundle.ps1",
         "tools/knowledge/tests/knowledge-bundle.tests.ps1",
         "tools/knowledge/tests/fixtures/knowledge-bundle-profiles.fixture.json",
+        "tools/book/book-worktree.ps1",
+        "tools/book/tests/book-operations.tests.ps1",
+        "tools/agent/verify-book-operations.ps1",
         "tools/release/build-windows-package.ps1"
     )
     foreach ($requiredFile in $requiredFiles) {
@@ -256,6 +263,11 @@ try {
     & $RepositoryStateVerifier -Quiet:$Quiet
     Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
         -Message "Repository state contracts failed with exit code $LASTEXITCODE."
+
+    Write-Step "BOOK-P0-post book operations (disposable fixtures only)"
+    & $BookOperationsVerifier -Quiet:$Quiet
+    Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
+        -Message "Book operational contracts failed with exit code $LASTEXITCODE."
 
     Write-Step "Repository onboarding contracts"
     $rootReadme = Get-Content -Raw -LiteralPath (Join-Path $RepositoryRoot "README.md")
@@ -298,6 +310,9 @@ try {
         Assert-Condition -Condition $rootIgnore.Contains($generatedRule) `
             -Message ".gitignore is missing generated-state rule '$generatedRule'."
     }
+    Assert-Condition -Condition ([regex]::IsMatch($rootIgnore,
+            '(?m)^/book\s*$')) `
+        -Message ".gitignore must ignore only the root local book link."
     foreach ($forbiddenBootstrapPattern in @(
             '(?im)\bgit\s+push\b',
             '(?im)\bgit\s+reset\b',
@@ -572,7 +587,7 @@ try {
     Write-Step "Operational text hygiene"
     $ownedTextRoots = @(
         ".github", "ai-shell", "geocedg", "models", "benchmarks",
-        "apps", "tools/agent", "tools/knowledge", "tools/benchmark", "tools/bootstrap",
+        "apps", "tools/agent", "tools/book", "tools/knowledge", "tools/benchmark", "tools/bootstrap",
         "tools/legacy", "tools/release", "packaging", "LICENSES"
     )
     $textExtensions = @(".json", ".md", ".ps1", ".psm1", ".txt", ".yml", ".yaml", ".js", ".ggs")
@@ -601,6 +616,7 @@ try {
             "docs/architecture/locus_v2_upstream_impact.md",
             "docs/architecture/locus_v2_implementation.md",
             "docs/developer/locus_v2_api.md",
+            "docs/developer/book_repository_workflow.md",
             "docs/developer/repository_map.md",
             "docs/developer/geocedg_developer_guide.md",
             "docs/developer/geocedg_agent_prompt_guide.md",

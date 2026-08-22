@@ -24,7 +24,8 @@ function Invoke-GeoCeDGGitByteCommand {
     $startInfo.CreateNoWindow = $true
     $startInfo.RedirectStandardOutput = $true
     $startInfo.RedirectStandardError = $true
-    foreach ($argument in @("-C", $RepositoryRoot) + $Arguments) {
+    foreach ($argument in @("--no-optional-locks", "-C", $RepositoryRoot) +
+        $Arguments) {
         [void]$startInfo.ArgumentList.Add($argument)
     }
 

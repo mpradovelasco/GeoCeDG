@@ -56,6 +56,12 @@ try {
 
     $mainState = Get-GeoCeDGRepositoryState `
         -RepositoryRoot $TemporaryRepository
+    $explicitSnapshot = Get-GeoCeDGPhaseSnapshot `
+        -RepositoryRoot $TemporaryRepository -Revision $mainState.Commit
+    Assert-Condition -Condition (
+        $explicitSnapshot.commit -eq $mainState.Commit -and
+        $explicitSnapshot.latest_closed_phase -eq $mainState.LatestIncludedPhase) `
+        -Message "Explicit-ref phase-state resolution diverged from HEAD."
     Assert-Condition -Condition ($mainState.Branch -eq "main" -and
             -not $mainState.IsDetached) `
         -Message "Repository-state resolution failed on main."
@@ -84,8 +90,29 @@ try {
             -Message "Branch state changed the roadmap-derived phase."
     }
 
+    Invoke-TestGit -Arguments @("switch", "--quiet", "main")
+    $fixtureRoadmap = Join-Path $fixtureRoadmapDirectory "geocedg_roadmap.md"
+    [IO.File]::AppendAllText($fixtureRoadmap,
+        "`n| Última fase cerrada | G999 — CONFLICTING FIXTURE |`n",
+        [Text.UTF8Encoding]::new($false))
+    Invoke-TestGit -Arguments @("add", "docs/roadmap/geocedg_roadmap.md")
+    Invoke-TestGit -Arguments @("-c", "user.name=GeoCeDG contract",
+        "-c", "user.email=contract@geocedg.invalid", "commit", "--quiet",
+        "-m", "conflicting roadmap authority fixture")
+    $duplicateRejected = $false
+    try {
+        [void](Get-GeoCeDGRepositoryState `
+                -RepositoryRoot $TemporaryRepository)
+    } catch {
+        $duplicateRejected = $_.Exception.Message.Contains(
+            "must appear exactly once: Última fase cerrada")
+    }
+    Assert-Condition -Condition $duplicateRejected `
+        -Message "Repository-state resolution accepted duplicate phase authority."
+
     if (-not $Quiet) {
-        Write-Host "Repository-state contracts passed: main, work branch, detached HEAD."
+        Write-Host ("Repository-state contracts passed: main, work branch, " +
+            "detached HEAD, duplicate authority rejection.")
     }
 } catch {
     Write-Error $_.Exception.Message

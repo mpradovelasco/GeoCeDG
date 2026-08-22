@@ -1,4 +1,5 @@
 Set-StrictMode -Version Latest
+. (Join-Path $PSScriptRoot "evidence-integrity.ps1")
 
 function Invoke-GeoCeDGRepositoryGit {
     param(
@@ -7,7 +8,7 @@ function Invoke-GeoCeDGRepositoryGit {
         [int[]]$AllowedExitCodes = @(0)
     )
 
-    $output = @(& git -C $RepositoryRoot @Arguments 2>$null)
+    $output = @(& git --no-optional-locks -C $RepositoryRoot @Arguments 2>$null)
     $exitCode = $LASTEXITCODE
     if ($exitCode -notin $AllowedExitCodes) {
         throw "git $($Arguments -join ' ') failed with exit code $exitCode."
@@ -15,6 +16,78 @@ function Invoke-GeoCeDGRepositoryGit {
     return [pscustomobject]@{
         ExitCode = $exitCode
         Output = ($output -join "`n")
+    }
+}
+
+function Get-GeoCeDGMarkdownTableValue {
+    param(
+        [Parameter(Mandatory)] [string]$Markdown,
+        [Parameter(Mandatory)] [string]$Label
+    )
+
+    $pattern = '^\|\s*' + [regex]::Escape($Label) +
+        '\s*\|\s*(?<value>.*?)\s*\|\s*$'
+    $values = @(
+        foreach ($line in $Markdown -split "`n") {
+            $match = [regex]::Match($line, $pattern)
+            if ($match.Success) {
+                $match.Groups['value'].Value.Trim()
+            }
+        }
+    )
+    if ($values.Count -eq 0) {
+        throw "The normative roadmap field is missing: $Label"
+    }
+    if ($values.Count -ne 1) {
+        throw "The normative roadmap field must appear exactly once: $Label"
+    }
+    return $values[0]
+}
+
+function Get-GeoCeDGPhaseSnapshot {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [string]$RepositoryRoot,
+        [string]$Revision = 'HEAD'
+    )
+
+    $root = (Resolve-Path -LiteralPath $RepositoryRoot).Path
+    $commitResult = Invoke-GeoCeDGRepositoryGit -RepositoryRoot $root `
+        -Arguments @('rev-parse', '--verify', "${Revision}^{commit}")
+    $commit = $commitResult.Output.Trim().ToLowerInvariant()
+    if ($commit -notmatch '^[0-9a-f]{40}$') {
+        throw "Git returned an invalid commit for ${Revision}: $commit"
+    }
+
+    $roadmapRepositoryPath = 'docs/roadmap/geocedg_roadmap.md'
+    $roadmap = Get-GeoCeDGFrozenText -RepositoryRoot $root `
+        -Path $roadmapRepositoryPath -Commit $commit
+    $latestPhase = Get-GeoCeDGMarkdownTableValue -Markdown $roadmap `
+        -Label 'Última fase cerrada'
+    $phaseMatch = [regex]::Match($latestPhase,
+        '^G(?<number>[0-9]+)(?<suffix>[A-Z][A-Z0-9-]*)?\s+[—-]\s+\S')
+    if (-not $phaseMatch.Success) {
+        throw "The roadmap has an invalid closed-phase value: $latestPhase"
+    }
+    $phaseNumber = [int]$phaseMatch.Groups['number'].Value
+    $phaseSuffix = $phaseMatch.Groups['suffix'].Value
+
+    return [pscustomobject][ordered]@{
+        source = $roadmapRepositoryPath
+        commit = $commit
+        document_version = Get-GeoCeDGMarkdownTableValue -Markdown $roadmap `
+            -Label 'Versión documental'
+        review_date = Get-GeoCeDGMarkdownTableValue -Markdown $roadmap `
+            -Label 'Fecha de revisión'
+        current_state = Get-GeoCeDGMarkdownTableValue -Markdown $roadmap `
+            -Label 'Estado actual'
+        latest_closed_phase = $latestPhase
+        latest_executed_phase = Get-GeoCeDGMarkdownTableValue `
+            -Markdown $roadmap -Label 'Última fase ejecutada'
+        next_gate = Get-GeoCeDGMarkdownTableValue -Markdown $roadmap `
+            -Label 'Siguiente puerta'
+        latest_closed_phase_id = "G${phaseNumber}${phaseSuffix}"
+        latest_closed_phase_number = $phaseNumber
     }
 }
 
@@ -44,32 +117,15 @@ function Get-GeoCeDGRepositoryState {
         $isDetached = $true
     }
 
-    $roadmapPath = Join-Path $root "docs\roadmap\geocedg_roadmap.md"
-    if (-not (Test-Path -LiteralPath $roadmapPath -PathType Leaf)) {
-        throw "The normative phase roadmap is missing: $roadmapPath"
-    }
-    $roadmap = Get-Content -Raw -LiteralPath $roadmapPath
-    $phaseRows = @([regex]::Matches($roadmap,
-            '(?m)^\|\s*Última fase cerrada\s*\|\s*(?<phase>[^|\r\n]+?)\s*\|\s*$'))
-    if ($phaseRows.Count -ne 1) {
-        throw "The roadmap must contain exactly one 'Última fase cerrada' row."
-    }
-    $latestPhase = $phaseRows[0].Groups["phase"].Value.Trim()
-    $phaseMatch = [regex]::Match($latestPhase,
-        '^G(?<number>[0-9]+)(?<suffix>[A-Z][A-Z0-9-]*)?\s+[—-]\s+\S')
-    if (-not $phaseMatch.Success) {
-        throw "The roadmap has an invalid closed-phase value: $latestPhase"
-    }
-    $phaseNumber = [int]$phaseMatch.Groups["number"].Value
-    $phaseSuffix = $phaseMatch.Groups["suffix"].Value
+    $phase = Get-GeoCeDGPhaseSnapshot -RepositoryRoot $root -Revision $commit
 
     return [pscustomobject]@{
         Branch = $branch
         Commit = $commit.ToLowerInvariant()
         IsDetached = $isDetached
-        LatestIncludedPhase = $latestPhase
-        LatestIncludedPhaseId = "G${phaseNumber}${phaseSuffix}"
-        LatestIncludedPhaseNumber = $phaseNumber
-        PhaseAuthority = "docs/roadmap/geocedg_roadmap.md"
+        LatestIncludedPhase = $phase.latest_closed_phase
+        LatestIncludedPhaseId = $phase.latest_closed_phase_id
+        LatestIncludedPhaseNumber = $phase.latest_closed_phase_number
+        PhaseAuthority = $phase.source
     }
 }
