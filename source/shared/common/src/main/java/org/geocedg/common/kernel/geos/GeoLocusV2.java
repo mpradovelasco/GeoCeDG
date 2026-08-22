@@ -302,6 +302,37 @@ public final class GeoLocusV2 extends GeoElement
 		return false;
 	}
 
+	/**
+	 * Locus V2 is curve-like presentation without adopting the geometric
+	 * {@code Path} contract.
+	 */
+	@Override
+	public boolean showLineProperties() {
+		return true;
+	}
+
+	@Override
+	public boolean hasLineOpacity() {
+		return true;
+	}
+
+	/**
+	 * Public Locus V2 is not directly editable geometric input. Calls from its
+	 * ordinary presentation controls must refresh views without recomputing
+	 * semantic dependents such as metrics or intersections.
+	 */
+	@Override
+	public void updatePresentationRepaint() {
+		update();
+		kernel.notifyRepaint();
+	}
+
+	@Override
+	protected void getStyleXML(XMLStringBuilder builder) {
+		super.getStyleXML(builder);
+		getLineStyleXML(builder);
+	}
+
 	/** Persists only reconstructible parent inputs, styles and the durable ID. */
 	@Override
 	public void getXML(boolean getListenersToo, XMLStringBuilder builder) {

@@ -1,0 +1,3 @@
+# Canonical UTF-8/LF SHA-256. Regenerate whenever either durable JSON source changes.
+518f17101a56068e26f8679734c689efe959144e956eae542511f7d14d831ecd  geocedg/validation/g9u0-r2/g9u0-r2-product-refinement-evidence.json
+b661d645c43d74e6a22241750fe5efa54a3146d52b69ab23d63760268b05b369  geocedg/validation/g9u0-r2/g9u0-r2-product-refinement-scenarios.json

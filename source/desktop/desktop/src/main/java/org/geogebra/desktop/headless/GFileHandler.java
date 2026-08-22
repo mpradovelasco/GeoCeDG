@@ -112,4 +112,26 @@ public class GFileHandler {
 			return false;
 		}
 	}
+
+	/**
+	 * Parses an already-preflighted native document ZIP without publishing path,
+	 * saved state, command dictionary or a new undo history. This entry does not
+	 * accept the legacy base64 wrapper or macro files.
+	 *
+	 * @param app application receiving the native document content
+	 * @param input already-preflighted raw ZIP stream
+	 * @return whether the native content reader accepted the stream
+	 * @throws XMLParseException for invalid XML
+	 * @throws IOException if the stream is invalid
+	 */
+	public static boolean loadPreflightedNativeXML(App app, InputStream input)
+			throws XMLParseException, IOException {
+		app.setMoveMode();
+		app.setActiveView(App.VIEW_EUCLIDIAN);
+		app.getKernel().setEquationBehaviour(
+				app.getConfig().getEquationBehaviour());
+		app.resetUniqueId();
+		((MyXMLioJre) app.getXMLio()).readZipFromInputStream(input, false);
+		return true;
+	}
 }

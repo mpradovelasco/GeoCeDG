@@ -3,7 +3,12 @@
 - Status: current-state first edition
 - Baseline: GeoGebra 5.4.928.0 at
   `9b93256b7df401ff056c37b502d82df4d72b1522`
-- G9 designs in this guide: normative/author-approved; G9O1 `PASS — AUTHOR APPROVED`; G9A1 authorized/not started; geometric G9 not started
+- G9 state in this guide: G9O1, G9A1–G9A3/G9A, G9U0/G9U0-R1 and G9X1
+  `PASS — AUTHOR APPROVED`; G9U0-R2 planning approved and implementation
+  candidate with automated validation complete; manual smoke and author
+  review; G9U1/G9B/G9C unauthorized
+- G9U0-R2 terminal ceiling: `IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW`;
+  no self-approval or phase PASS
 
 ## Purpose and boundary
 
@@ -75,6 +80,16 @@ Historical G7/G8 evidence is verified from the fixed `geocedg-g8-pass` tag;
 living documents are current-HEAD checks. Never update a historical hash
 manifest to accommodate later prose edits.
 
+G9U0-R2 uses the same operational architecture. Its focused verifier is
+`tools/agent/verify-g9u0-r2-product-refinement.ps1`, and its paired composed
+block runs after G9X1 and before any future G9U1 block. The current evidence is
+complete: exact commands, exits, counts, logs and canonical-summary hashes were
+recorded only after their saved invocations finished. Run the shared and Desktop
+test filters as separate Gradle invocations; a global `--tests` filter must not
+make either module seek the other module's classes. Two identical focused runs
+compare normalized archive-entry/XML evidence and canonical summaries only
+after `R2-R01`–`R06` have been recorded separately.
+
 Focused Java tests live primarily in `source/shared/common-jre`; frontend tests
 live with the Desktop module. A passing focused test is evidence for its stated
 scope, not automatic approval, packaging success or public feature maturity.
@@ -96,25 +111,43 @@ A render/view/export layer must not become geometric authority.
 ## Commands, algorithms and GeoElements
 
 Public commands follow upstream `Commands` registration, dispatcher/factory,
-`CommandProcessor`, algorithm and localization paths. Rich internal Locus V2
-metric/intersection classes currently bypass no public dispatcher because no
-public V2 command is authorized. `GeoLocusV2`, metric and intersection result
-geos are internal/nonpersistent and deliberately reject unsupported lifecycle
-operations.
+`CommandProcessor`, algorithm and localization paths. G9U0 exposes the
+author-approved experimental/default-off public Locus V2 creation, metric and
+intersection surface with durable generator/result/token persistence.
+`GeoLocusV2` remains non-`Path`; the G9U0-R2 candidate adds only ordinary
+GeoElement presentation capability and derived-render coverage. It does not
+move metrics, intersections or identity into the drawable.
+The host-level `updatePresentationRepaint()` seam defaults to the historical
+`updateRepaint()` behavior; R2 uses a `GeoLocusV2` override only to prevent
+ordinary Properties changes from cascading into semantic dependents. Do not
+use that hook as a second style or revision model.
 
 ## Frontend/profile
 
 `apps/geocedg/application-profile.yml` declares the conservative default
 perspective/toolbar. Desktop compiles it through GeoCeDG profile classes. Saved
-`.ggb` layouts may restore their own toolbar/perspective. Feature manifest
-membership is metadata; do not assume it is a complete runtime flag service.
+layouts may restore their own toolbar/perspective. Feature manifest membership
+is metadata; do not assume it is a complete runtime flag service. G9U1
+workspace/profile schema v2 remains unauthorized and is not part of R2.
 
 ## Persistence and compatibility
 
-Legacy `.ggb` behavior must remain unchanged unless a versioned migration is
-approved. New semantic objects require stable IDs, semantic version, reconstructible
-inputs, copy/undo/delete behavior and XML round-trip tests before public use.
-Current V2 facilities have no such public contract.
+Legacy `.ggb` compatibility behavior must remain non-destructive unless a
+versioned migration is approved. New semantic objects require stable IDs,
+semantic version, reconstructible inputs, copy/undo/delete behavior and XML
+round-trip tests before public use. G9U0/G9A provide those public persistence
+contracts for their approved experimental objects.
+
+Accepted ADR 0016 and the native-document specification define `.cedg` as the
+future GeoCeDG-native filename identity while retaining the validated ZIP/XML
+machinery and `app="classic"`; `.ggb` remains compatibility input. The
+G9U0-R2 branch contains a Desktop routing candidate, corrupt-input preflight,
+atomic complete-target publication, Classic preservation and Windows
+  installer-only association. The replacement focused A/B, historical and
+  ancillary and composed correction evidence is clean; manual smoke and author review remain pending, so these are
+candidate implementation facts rather than released/main user behavior.
+Do not infer geometric identity from a filename or offer `.ggb` as native Save
+output.
 
 G9P-R1 characterizes redefine as a transaction, not one host operation. The
 current kernel may mutate an existing geo/algo, replace one Java instance, or
@@ -144,10 +177,9 @@ remain ordinary DAG dependencies; session reentry detection is defense in
 depth, not a hidden graph. Durable preimage address and revision/currentness
 binding are separate records.
 
-G9P does not freeze the mapped-scalar command spelling. G9U0 must inspect actual
-GeoGebra overload/localization/XML conventions, compare alternatives and present
-the selected public surface for author review while preserving this semantic
-contract. The rich metric result remains authority; standard total
+G9P did not freeze the mapped-scalar command spelling; G9U0 subsequently
+selected and author-approved the public surface against actual
+overload/localization/XML conventions. The rich metric result remains authority; standard total
 `Length[GeoLocusV2]` is required only as its scalar-admissibility-guarded child,
 and legacy `Length[GeoLocus]` is unchanged.
 
@@ -162,8 +194,8 @@ the unsupported-open boundary and never implement lossy downgrade.
 The G5 path is `GeoElementGeometryExportAdapter -> GeometryExportModel ->
 DxfExporter`. It exports exact resolved 2D entities in unitless world
 coordinates and reports unsupported objects. The exporter is read-only and
-view-independent. The normative G9X1 contract permits approved explicit
-approximation, but it is not implemented. Sidecars are mandatory for every
+view-independent. The author-approved G9X1 implementation permits approved
+explicit approximation behind its experimental/default-off gate. Sidecars are mandatory for every
 fidelity reduction and optional for all-exact output; partial export rejects by
 default, and any future partial option requires explicit intent, warning and a
 sidecar. Unbounded non-native curves require an explicit semantic domain.
@@ -205,14 +237,18 @@ Generated/restricted material cannot be admitted by those ownership lists.
 ## Approved G9 architecture
 
 G9P designed operational bundles, public V2 exposure, extended DXF, workspaces
-and spatial/projection semantics. The six specifications are normative and ADR
-0010–0015 are Accepted. G9O1 is **PASS — AUTHOR APPROVED**. G9A1 is authorized
-but not started; all later productive phases remain future-gated and
-unauthorized. No productive spatial G9 implementation has started.
+and spatial/projection semantics. G9O1, G9A1–G9A3/G9A, G9U0/G9U0-R1 and G9X1
+are **PASS — AUTHOR APPROVED**. ADR 0010–0016 are Accepted; the R2 Locus
+presentation and native-document specs are normative. G9U0-R2 planning is
+author-approved, and its implementation is authorized/started only as an
+  uncommitted candidate with all automated correction fields complete; manual
+  smoke and author review remain pending.
+`selfApproved=false`, `authorApproved=false`, and `passClaimed=false`.
 
 Phase documents distinguish hard semantic/contract dependencies, recommended
 execution predecessors and global/release gates. G9O1 is recommended first but
 is not a semantic prerequisite of G9A1. After G9A3, G9B/G9C can progress
-without G9U1; X1 can consume internal semantic snapshots without a hard U0
-dependency, while the recommended product schedule still runs U0 before X1 and
-integrates both in U1/global closeout.
+without G9U1. The product order is G9U0-R1 plus G9X1 → G9U0-R2 → G9U1.
+R2 cannot authorize G9U1: even an author-approved R2 closeout would still
+require a separate U1 authorization. G9B/G9C remain semantically independent,
+G9U2 remains globally blocked and productive G10 remains unauthorized.

@@ -3369,6 +3369,15 @@ public abstract class GeoElement extends ConstructionElement implements GeoEleme
 	}
 
 	/**
+	 * Refreshes presentation after an ordinary visual-property mutation.
+	 * The default retains the historical update cascade; semantic result types
+	 * may narrow this only when presentation is contractually non-semantic.
+	 */
+	public void updatePresentationRepaint() {
+		updateRepaint();
+	}
+
+	/**
 	 * Updates this object and all dependent ones. Notifies kernel to repaint
 	 * views.
 	 */

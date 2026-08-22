@@ -1,19 +1,25 @@
 # G9 public Locus, product/document refinement and workspace validation matrix
 
 - Status: **AUTHOR-APPROVED G9P AND G9U0-R2 VALIDATION DESIGN;
-  G9U0-R2 IMPLEMENTATION NOT AUTHORIZED / NOT STARTED**
+  G9U0-R2 IMPLEMENTATION CANDIDATE — AUTOMATED COMPLETE / PENDING AUTHOR
+  REVIEW**
 - Date: 2026-08-21
 - Scope: author-approved/historical G9U0 public Locus V2 evidence;
-  author-approved G9U0-R2 product/document-refinement design; future G9U1
+  author-approved G9U0-R2 product/document-refinement design and current
+  unapproved implementation candidate; future G9U1
   Construction workspace; and the
   post-G9 G9U2 Dihedral Procedures workspace
-- G9U0-R2/G9U1/G9U2 productive implementation authorized: **no**
+- G9U0-R2 implementation authorized/started: **yes, candidate only**;
+  G9U1/G9U2 implementation authorized: **no**
 
 The G9U0 rows remain the design source behind separately frozen, author-approved
-G9U0/G9U0-R1 execution evidence. The author-approved `R2-*` design rows define
-future evidence only and do not claim `.cedg`, ordinary Locus V2 style
-integration, workspace switching or Dihedral procedures exist. No R2 row may
-be executed until the canonical implementation prompt is separately authorized.
+G9U0/G9U0-R1 execution evidence. The author separately invoked the canonical
+R2 prompt; the `R2-*` rows now govern its candidate. Replacement focused A/B,
+historical, packaging, Checkstyle, diff and composed results are `PASSED`.
+Manual smoke remains `PENDING_AUTHOR`.
+They do not claim `.cedg` or ordinary Locus V2 style as
+released/main behavior, and they do not imply workspace switching or Dihedral
+procedures.
 
 ## 1. Entry gates
 
@@ -163,15 +169,18 @@ tests. The IDs preserve the numbered cases required by R1.
 | U0-T02 | general Intersect selection | all old types plus every V2 family | old paths delegate unchanged; V2 creates rich result |
 | U0-T03 | result chooser accessibility | keyboard, mouse, screen-reader labels, several/tangent/overlap cases | exact token selection available without color/proximity alone |
 
-## 8. G9U0-R2 product/document-refinement tests — approved design
+## 8. G9U0-R2 product/document-refinement tests — approved design / candidate pending author review
 
-These rows are **PLANNED / AUTHOR APPROVED DESIGN**. They do not alter the
-author-approved G9U0/G9U0-R1 evidence and do not authorize or start
-implementation.
+These rows are **AUTHOR-APPROVED DESIGN** and now bind the separately authorized
+implementation candidate. They do not alter the author-approved G9U0/G9U0-R1
+evidence. Replacement focused A/B, supporting histories, ancillary static rows
+and composed verification now record exact commands, exit codes, counts/hashes
+and log paths. Manual smoke remains `PENDING_AUTHOR` and no implementation
+PASS is claimed.
 
 ### 8.1 Locus V2 ordinary presentation and render continuity
 
-| ID | Requirement | Future test/probe | Expected evidence |
+| ID | Requirement | Candidate test/probe | Expected evidence |
 |---|---|---|---|
 | R2-L01 | color | set several ordinary object colors through Properties/style API and repaint | ordinary `GeoElement` color used by `DrawLocusV2`; exact durable ID, semantic revision, domain and results unchanged |
 | R2-L02 | line thickness | set minimum/default/large supported thickness and repaint at several scales | ordinary thickness/stroke used; no semantic/cache publication and no centerline discontinuity |
@@ -191,7 +200,7 @@ implementation.
 
 ### 8.2 Native `.cedg` and `.ggb` compatibility-input behavior
 
-| ID | Requirement | Future test/probe | Expected evidence |
+| ID | Requirement | Candidate test/probe | Expected evidence |
 |---|---|---|---|
 | R2-D01 | default Save | save a new unsaved construction | native Save As invoked; filename ends in one lowercase `.cedg` |
 | R2-D02 | Save As and omitted suffix | Save As from new/native/input documents with explicit `.cedg`, no suffix and conflicting suffix | `.cedg` is the only native target; omitted suffix appended once; conflicting suffix handled visibly, never silently rewritten |
@@ -201,7 +210,7 @@ implementation.
 | R2-D06 | legacy `.ggb` open | open canonical old GGBs, G9P references and current GeoCeDG GGB fixtures | compatibility input loads without auto migration; legacy/current semantics preserved |
 | R2-D07 | non-destructive `.ggb` to native save | open `.ggb`, invoke Save and select a distinct `.cedg` | native Save As required; successful target becomes current; no `.ggb` overwrite path |
 | R2-D08 | source unchanged / cancel / failure | hash source before and after successful transition, cancel and injected write failure | exact source bytes/path unchanged; cancellation/failure leaves live construction and source classification usable |
-| R2-D09 | corrupt `.cedg` | truncated ZIP, missing `geogebra.xml`, malformed XML and unsupported semantic version | localized fail-closed diagnostic; no partial construction, fabricated ID, file rewrite or replacement of the live document |
+| R2-D09 | corrupt, live-parse-failing or undo-commit-failing `.cedg` | truncated ZIP, missing `geogebra.xml`, malformed XML and unsupported semantic version; plus a preflight-admitted archive forced to fail during live parse and at the prepared undo-baseline commit seam | localized fail-closed diagnostic; no partial construction, fabricated ID or file rewrite; the prior live construction, file/path, saved/recent/loading state and complete undo/redo history are restored before publication; failed prepared-baseline cleanup is nonthrowing and stale asynchronous stores cannot republish old history |
 | R2-D10 | Locus V2 persistence | native round trip of scalar/support/nested/periodic/disconnected V2 fixtures plus styles | full approved generator/preimage/branch semantics and visual style restored |
 | R2-D11 | rich result/token persistence | native round trip of metric result, intersection result and exact-token point under stable/stale topology | reconstructible inputs/tokens restored and recomputed; no cached snapshot or coordinate/list downgrade |
 | R2-D12 | G9 durable identity persistence | native round trip of G9A geo/spatial/frame/system/map/relation/binding corpus | exact durable identities, roles, revisions and broken-reference states follow G9A contracts |
@@ -209,11 +218,18 @@ implementation.
 | R2-D14 | GeoCeDG Classic preservation | direct-open/save/reopen supported `.cedg` plus compatibility `.ggb` in the separate fork Classic process | opened `.cedg` remains `.cedg` and native types/IDs/tokens are preserved; creation/preferences remain isolated; accepting `.cedg` does not change Classic's default new-document identity |
 | R2-D15 | external upstream boundary | characterize `.cedg` and `.ggb` with GeoCeDG-only types in controlled upstream reader where permitted | explicit unsupported boundary; no automatic rename, flattening, legacy-locus or coordinate/list conversion |
 | R2-D16 | archive/app code unchanged | inspect normalized entry inventory, canonical XML header and semantic versions across native reruns | validated entries/XML retained; `app="classic"`; no filename-derived format branch |
-| R2-D17 | Windows packaging/association | static package profile plus MSI/EXE registry probe where explicitly built; app-image/ZIP inspection | Windows installers associate `.cedg` with a GeoCeDG-owned ProgID; no GeoCeDG `.ggb` claim; portable artifacts add no association; no MIME value required unless implementation justifies it; no non-Windows validation claim |
+| R2-D17 | Windows packaging/association | static package profile plus MSI/EXE registry probe where explicitly built; app-image/ZIP inspection | Windows installers associate `.cedg` with a GeoCeDG-owned ProgID; no GeoCeDG `.ggb` claim; portable artifacts add no association; the JDK-required internal unregistered MIME input is not document semantics or a cross-platform claim; no non-Windows validation claim |
+
+`R2-D10`–`D12` and `D14` are not satisfied by their short Desktop routing
+markers alone. The scenario inventory binds `D10` to G9U0 persistence `p01`/
+`p05` plus the two R2 native-style reopen methods; `D11` to G9U0 `p02`, `p03`,
+`p04` and atomic `p16`; `D12` to G9A3 native `compat01`, XML `xml10` and the
+full `R2-R05` spatial corpus; and `D14` to the Desktop Classic round trip,
+G9U0 `p13` and G9A3 native `compat02`/`compat03`.
 
 ### 8.3 Required regression gates
 
-| ID | Required authority | Future command responsibility | Pass condition |
+| ID | Required authority | Candidate command responsibility | Pass condition |
 |---|---|---|---|
 | R2-R01 | G9U0-R1 | run its focused verifier from the accepted descendant state | all R1 Desktop/shared cases and frozen boundary pass unchanged |
 | R2-R02 | historical G9U0 | run the frozen public-surface authority, including persistence/copy/Classic | all historical scenarios pass; evidence/report remains unmodified |
@@ -225,7 +241,7 @@ implementation.
 
 ### 8.4 Deterministic rerun and evidence
 
-The planned focused authority is
+The candidate focused authority is
 `tools/agent/verify-g9u0-r2-product-refinement.ps1`. It must run twice from the
 same fixture bytes and policy, writing separate log directories, and compare:
 
@@ -238,13 +254,13 @@ same fixture bytes and policy, writing separate log directories, and compare:
 - exact scenario/test/counter totals.
 
 ZIP byte identity is not claimed unless timestamps and all archive metadata are
-separately normalized and verified. The required durable future evidence paths
+separately normalized and verified. The required durable evidence paths
 are under `geocedg/validation/g9u0-r2/`; generated run logs remain below
 `artifacts/g9u0-r2/`.
 
-The future composed integration belongs after the existing G9X1 block and
-before any G9U1 block. It must use the existing paired-artifact and
-`OPEN_PENDING_IMPLEMENTATION_FREEZE`/`FROZEN` pattern, reject partial
+The paired composed integration is present after the existing G9X1 block and
+before any future G9U1 block. It uses the existing paired-artifact and
+`OPEN_PENDING_IMPLEMENTATION_FREEZE`/`FROZEN` pattern, rejects partial
 integration and never interpret a scaffold PASS as a productive phase PASS.
 
 ### 8.5 Manual author smoke plan

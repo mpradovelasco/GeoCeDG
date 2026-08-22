@@ -80,7 +80,7 @@ public class CaptionStyleProperty extends AbstractNamedEnumeratedProperty<Intege
 			element.setLabelMode(value);
 		}
 		element.setLabelVisible(value != GeoElementND.LABEL_HIDDEN);
-		element.updateRepaint();
+		element.updatePresentationRepaint();
 	}
 
 	@Override

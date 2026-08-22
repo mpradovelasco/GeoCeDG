@@ -24,6 +24,12 @@ $ErrorActionPreference = "Stop"
 $RepositoryRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\.."))
 $ExpectedMarker = "INTERNAL EVALUATION — NOT FOR REDISTRIBUTION"
 $ExpectedWix = "5.0.2"
+$ExpectedNativeExtension = "cedg"
+$ExpectedInternalMimeType = "application/x-geocedg-cedg"
+$ExpectedMimeBasis = "jdk25-jpackage-required-internal-unregistered"
+$ExpectedAssociationDescription = "GeoCeDG document (internal evaluation)"
+$ExpectedProgIdStrategy = "jdk25-jpackage-generated-geocedg-owned"
+$UpstreamGeoGebraMimeType = "application/vnd.geogebra.file"
 $GeneratedDirectoryNames = @("build", ".gradle", ".kotlin")
 if ([string]::IsNullOrWhiteSpace($ArtifactRoot)) {
     $ArtifactRoot = Join-Path $RepositoryRoot "artifacts\packaging\windows"
@@ -104,6 +110,90 @@ function Resolve-Jpackage {
     throw "Gradle did not report the Java 25 Desktop toolchain."
 }
 
+function Assert-MsiNativeAssociation {
+    param(
+        [Parameter(Mandatory)] [string]$MsiPath,
+        [Parameter(Mandatory)] [string]$WixPath,
+        [Parameter(Mandatory)] [string]$InspectionRoot
+    )
+
+    [void](New-Item -ItemType Directory -Path $InspectionRoot -Force)
+    $msiHashValue = Get-FileHash -LiteralPath $MsiPath -Algorithm SHA256
+    $msiHash = $msiHashValue.Hash.ToLowerInvariant()
+    $decompiledPath = Join-Path $InspectionRoot "msi-$msiHash.wxs"
+    if (Test-Path -LiteralPath $decompiledPath -PathType Leaf) {
+        Remove-Item -LiteralPath $decompiledPath -Force
+    }
+    [void](Invoke-Captured -FilePath $WixPath -ArgumentList @(
+        "msi", "decompile", "-sui", "-o", $decompiledPath, $MsiPath
+    ) -Description "WiX MSI association inspection")
+
+    try {
+        [xml]$source = Get-Content -Raw -LiteralPath $decompiledPath
+    } catch {
+        throw "WiX MSI decompilation did not produce valid XML: $($_.Exception.Message)"
+    }
+    $extensionNodes = @($source.SelectNodes("//*[local-name()='Extension']"))
+    $nativeExtensions = @($extensionNodes | Where-Object {
+        $_.GetAttribute("Id") -ceq $ExpectedNativeExtension
+    })
+    Assert-Condition -Condition ($nativeExtensions.Count -eq 1) `
+        -Message "MSI must contain exactly one .$ExpectedNativeExtension extension registration."
+    Assert-Condition -Condition (@($extensionNodes | Where-Object {
+        $_.GetAttribute("Id") -ieq "ggb"
+    }).Count -eq 0) `
+        -Message "MSI must not claim the .ggb compatibility extension."
+
+    $nativeExtension = $nativeExtensions[0]
+    Assert-Condition -Condition (
+        $nativeExtension.GetAttribute("ContentType") -ceq
+        $ExpectedInternalMimeType) `
+        -Message "MSI native extension has an unexpected MIME value."
+    $mimeNodes = @($nativeExtension.SelectNodes("./*[local-name()='MIME']"))
+    Assert-Condition -Condition (
+        $mimeNodes.Count -eq 1 -and
+        $mimeNodes[0].GetAttribute("ContentType") -ceq
+        $ExpectedInternalMimeType) `
+        -Message "MSI native extension lacks its jpackage-required internal MIME record."
+    Assert-Condition -Condition (@($source.SelectNodes("//*[@ContentType]") |
+        Where-Object {
+            $_.GetAttribute("ContentType") -ceq $UpstreamGeoGebraMimeType
+        }).Count -eq 0) `
+        -Message "MSI must not reuse the upstream GeoGebra MIME identity."
+
+    $progId = $nativeExtension.ParentNode
+    Assert-Condition -Condition (
+        $progId.LocalName -ceq "ProgId" -and
+        -not [string]::IsNullOrWhiteSpace($progId.GetAttribute("Id")) -and
+        $progId.GetAttribute("Description") -ceq
+        $ExpectedAssociationDescription -and
+        $progId.GetAttribute("Id") -notmatch "(?i)geogebra") `
+        -Message "MSI native extension is not owned by a GeoCeDG-described jpackage ProgID."
+
+    $openVerbs = @($nativeExtension.SelectNodes(
+        "./*[local-name()='Verb' and @Id='open']"))
+    Assert-Condition -Condition ($openVerbs.Count -eq 1) `
+        -Message "MSI native extension must contain exactly one open verb."
+    $targetFileId = $openVerbs[0].GetAttribute("TargetFile")
+    Assert-Condition -Condition (
+        -not [string]::IsNullOrWhiteSpace($targetFileId) -and
+        $openVerbs[0].GetAttribute("Argument").Contains("%1")) `
+        -Message "MSI native open verb does not pass the selected document to a launcher."
+    $targetFiles = @($source.SelectNodes("//*[local-name()='File']") |
+        Where-Object { $_.GetAttribute("Id") -ceq $targetFileId })
+    Assert-Condition -Condition ($targetFiles.Count -eq 1) `
+        -Message "MSI native open verb does not resolve to exactly one packaged file."
+    $launcherIdentity = @(
+        $targetFiles[0].GetAttribute("Name"),
+        $targetFiles[0].GetAttribute("Source")
+    ) -join "|"
+    Assert-Condition -Condition ($launcherIdentity -match "(?i)GeoCeDG\.exe") `
+        -Message "MSI native open verb does not target the GeoCeDG launcher."
+
+    Write-Host "MSI association: .$ExpectedNativeExtension -> $($progId.GetAttribute('Id')) -> GeoCeDG.exe"
+    Write-Host "MSI association inspection: $decompiledPath"
+}
+
 $InitialStatus = Get-RepositoryStatusText -RepositoryRoot $RepositoryRoot
 $GeneratedState = $null
 if ($CheckToolchain -or $RequireArtifacts) {
@@ -114,11 +204,13 @@ if ($CheckToolchain -or $RequireArtifacts) {
 [Exception]$Failure = $null
 
 try {
-    Write-Step "G4 durable package contracts"
+    Write-Step "R2-D17 Windows native association and portable-boundary contracts"
     $requiredFiles = @(
         "docs\adr\0004-standalone-windows-packaging.md",
+        "docs\adr\0016-native-geocedg-document-identity.md",
         "geocedg\specs\packaging\windows-packaging.md",
         "geocedg\specs\operations\package-profile.schema.json",
+        "geocedg\specs\ui\native-document-identity.md",
         "packaging\windows\package.yml",
         "packaging\windows\NuGet.Config",
         "packaging\windows\file-associations.properties",
@@ -142,6 +234,14 @@ try {
         Join-Path $RepositoryRoot "geocedg\specs\operations\package-profile.schema.json")
     $assets = Read-JsonFile -Path (
         Join-Path $RepositoryRoot "geocedg\resources\assets-manifest.yml")
+    $associationPath = Join-Path $RepositoryRoot `
+        "packaging\windows\file-associations.properties"
+    try {
+        $association = Get-Content -Raw -LiteralPath $associationPath |
+            ConvertFrom-StringData
+    } catch {
+        throw "$associationPath is not valid Java properties data: $($_.Exception.Message)"
+    }
     Assert-Condition -Condition (
         $schema.type -eq "object" -and $schema.'$id' -eq
         "https://geocedg.local/schemas/package-profile-v1") `
@@ -168,8 +268,36 @@ try {
         -Message "Package profile must declare app-image, ZIP, MSI, and EXE."
     Assert-Condition -Condition (
         $profile.file_association.installers_only -and
-        $profile.file_association.extension -eq "ggb") `
-        -Message "The .ggb association is not constrained to installers."
+        $profile.file_association.extension -ceq $ExpectedNativeExtension -and
+        $profile.file_association.mime_type -ceq $ExpectedInternalMimeType -and
+        $profile.file_association.mime_basis -ceq $ExpectedMimeBasis -and
+        $profile.file_association.description -ceq
+        $ExpectedAssociationDescription -and
+        $profile.file_association.progid_strategy -ceq
+        $ExpectedProgIdStrategy) `
+        -Message "The native .cedg association profile is invalid."
+    Assert-Condition -Condition (
+        $schema.properties.file_association.properties.extension.const -ceq
+        $ExpectedNativeExtension -and
+        $schema.properties.file_association.properties.mime_type.const -ceq
+        $ExpectedInternalMimeType -and
+        $schema.properties.file_association.properties.mime_basis.const -ceq
+        $ExpectedMimeBasis -and
+        $schema.properties.file_association.properties.description.const -ceq
+        $ExpectedAssociationDescription -and
+        $schema.properties.file_association.properties.progid_strategy.const -ceq
+        $ExpectedProgIdStrategy) `
+        -Message "Package schema does not freeze the implemented internal association record."
+    Assert-Condition -Condition (
+        $association.Count -eq 3 -and
+        $association["extension"] -ceq $ExpectedNativeExtension -and
+        $association["mime-type"] -ceq $ExpectedInternalMimeType -and
+        $association["description"] -ceq $ExpectedAssociationDescription) `
+        -Message "jpackage association properties do not match the package profile."
+    Assert-Condition -Condition (
+        $association["extension"] -cne "ggb" -and
+        $association["mime-type"] -cne $UpstreamGeoGebraMimeType) `
+        -Message "GeoCeDG packaging must not claim .ggb or the upstream MIME identity."
     Assert-Condition -Condition (
         $profile.distribution.marker -ceq $ExpectedMarker -and
         $profile.distribution.public_redistribution -eq
@@ -192,6 +320,9 @@ try {
             "org.geocedg.desktop.GeoCeDG",
             "--type", "app-image", "msi", "exe",
             "--file-associations",
+            $ExpectedNativeExtension,
+            $ExpectedInternalMimeType,
+            $ExpectedMimeBasis,
             "geocedg-windows.cdx.json",
             "SHA256SUMS.txt",
             $ExpectedMarker)) {
@@ -201,6 +332,15 @@ try {
     Assert-Condition -Condition (-not $buildScript.Contains(
         "source\desktop\desktop\build\scripts")) `
         -Message "Package builder must not consume the upstream Classic start scripts."
+    $associationSwitch = '"--file-associations"'
+    Assert-Condition -Condition (
+        [regex]::Matches($buildScript, [regex]::Escape(
+            $associationSwitch)).Count -eq 1 -and
+        $buildScript.IndexOf($associationSwitch,
+            [StringComparison]::Ordinal) -gt
+        $buildScript.LastIndexOf('if ($requiresInstaller)',
+            [StringComparison]::Ordinal)) `
+        -Message "File association must be applied exactly once inside the MSI/EXE installer path."
 
     if ($RequireArtifacts) {
         $CheckToolchain = $true
@@ -305,8 +445,27 @@ try {
             $buildManifest.distribution_marker -ceq $ExpectedMarker -and
             $buildManifest.public_redistribution -eq
             "BLOCKED PENDING LICENSE/ASSET APPROVAL" -and
+            $buildManifest.file_association.enabled_for_target -eq $true -and
+            $buildManifest.file_association.registration_scope -ceq
+            "msi-exe-installers-only" -and
+            $buildManifest.file_association.extension -ceq
+            $ExpectedNativeExtension -and
+            $buildManifest.file_association.mime_type -ceq
+            $ExpectedInternalMimeType -and
+            $buildManifest.file_association.mime_basis -ceq
+            $ExpectedMimeBasis -and
+            $buildManifest.file_association.progid_strategy -ceq
+            $ExpectedProgIdStrategy -and
+            $buildManifest.file_association.portable_outputs_association_free -eq
+            $true -and
+            $buildManifest.file_association.compatibility_extension_claimed -eq
+            $false -and
             @($buildManifest.runtime.excluded_non_windows_native_jars).Count -gt 0) `
             -Message "Generated build manifest does not describe a full internal build."
+
+        Assert-MsiNativeAssociation -MsiPath $msi[0].FullName `
+            -WixPath $wix.Source -InspectionRoot (
+                Join-Path $ArtifactRoot "verification")
 
         $hashFile = Join-Path $ArtifactRoot "SHA256SUMS.txt"
         foreach ($line in Get-Content -LiteralPath $hashFile) {

@@ -47,8 +47,11 @@ still use `.ggb` and the XML header still uses `app_code: classic`.
 
 G9U0-R2 planning/design is **PASS — AUTHOR APPROVED**. Its normative ordinary
 Locus presentation and `.cedg` native-document contracts are approved future
-authority, but implementation remains unauthorized/not started; they do not
-establish current product behavior or change user-guide claims.
+authority. Its separately authorized implementation is now an unapproved
+candidate with automated correction evidence complete while manual smoke and
+author review remain pending; it does not yet
+establish released/main product behavior. The user guide records that status
+without replacing its validated `.ggb`/observable instructions.
 
 ## G9P audit disposition
 
@@ -116,8 +119,9 @@ the two normative specifications. Historical G9U0/G9U0-R1/G9X1 reports and the
 frozen G9P prompt catalog are not rewritten.
 
 The living user guide must continue to describe `.ggb` Save/reopen and package
-association until an R2 implementation is author-approved and observable. A
-future R2 implementation candidate has mandatory `GUIDE_IMPACT` work:
+association until an R2 implementation is author-approved and observable. The
+current R2 implementation candidate completed the mandatory `GUIDE_IMPACT`
+work while keeping candidate behavior explicitly unreleased:
 
 - user guide: native Save/Save As, omitted suffix, `.ggb` compatibility input,
   reopen/recent/direct-open, Classic diagnostic behavior, corrupt-file failure,
@@ -129,5 +133,5 @@ future R2 implementation candidate has mandatory `GUIDE_IMPACT` work:
 - packaging/release guide: installer-only `.cedg` association, portable
   non-association and the unchanged redistribution block.
 
-Those guide edits are future implementation evidence, not part of this
-planning closeout.
+Those guide edits are implementation-candidate evidence; they neither publish
+the behavior nor supply author approval or a phase PASS.

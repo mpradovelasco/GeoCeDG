@@ -1622,7 +1622,11 @@ public class GuiManagerD extends GuiManager implements GuiManagerInterfaceD {
 
 		FileExtensions[] fileExtensions;
 		String[] fileDescriptions;
-		fileExtensions = new FileExtensions[] { FileExtensions.GEOGEBRA };
+		FileExtensions documentExtension = getApp().getCurrentFile() != null
+				&& FileExtensions.GEOCEDG.equals(StringUtil.getFileExtension(
+						getApp().getCurrentFile().getName()))
+				? FileExtensions.GEOCEDG : FileExtensions.GEOGEBRA;
+		fileExtensions = new FileExtensions[] { documentExtension };
 		fileDescriptions = new String[] { GeoGebraConstants.APPLICATION_NAME
 				+ " " + loc.getMenu("Files") };
 		getApp().needThumbnailFor3D();
@@ -1826,14 +1830,17 @@ public class GuiManagerD extends GuiManager implements GuiManagerInterfaceD {
 
 		try {
 			// check first for ggb/ggt file
-			if ((processedUrlString.endsWith(".ggb")
-					|| processedUrlString.endsWith(".ggt"))
+			String lowerCaseUrl = StringUtil.toLowerCaseUS(processedUrlString);
+			if ((lowerCaseUrl.endsWith(".ggb")
+					|| lowerCaseUrl.endsWith(".cedg")
+					|| lowerCaseUrl.endsWith(".ggt"))
 					&& !processedUrlString.contains("?")) {
 				// This isn't a ggb file,
 				// however ends with ".ggb":
 				// script.php?file=_circles5.ggb
 				// loadURL_GGB(processedUrlString);
 				getApp().getGgbApi().openFile(processedUrlString);
+				success = true;
 
 				// special case: urlString is from GeoGebraTube
 				// eg http://www.geogebratube.org/student/105 changed to
@@ -1921,6 +1928,7 @@ public class GuiManagerD extends GuiManager implements GuiManagerInterfaceD {
 					FileExtensions ext = StringUtil.getFileExtension(name);
 
 					return ext.equals(FileExtensions.GEOGEBRA)
+							|| ext.equals(FileExtensions.GEOCEDG)
 							|| ext.equals(FileExtensions.GEOGEBRA_TOOL)
 							|| ext.equals(FileExtensions.HTML)
 							|| ext.equals(FileExtensions.HTM)
@@ -1959,7 +1967,9 @@ public class GuiManagerD extends GuiManager implements GuiManagerInterfaceD {
 
 			// GeoGebra File Filter
 			FileExtensionFilter fileFilter = new FileExtensionFilter();
-			fileFilter.addExtension(FileExtensions.GEOGEBRA);
+			for (FileExtensions documentExtension : getDocumentOpenExtensions()) {
+				fileFilter.addExtension(documentExtension);
+			}
 			fileFilter.addExtension(FileExtensions.GEOGEBRA_TOOL);
 			fileFilter.addExtension(FileExtensions.HTML);
 			fileFilter.addExtension(FileExtensions.HTM);
@@ -1984,6 +1994,8 @@ public class GuiManagerD extends GuiManager implements GuiManagerInterfaceD {
 			fileChooser.addChoosableFileFilter(offFilter);
 
 			if (oldCurrentFile == null
+					|| StringUtil.getFileExtension(oldCurrentFile.getName())
+							.equals(FileExtensions.GEOCEDG)
 					|| StringUtil.getFileExtension(oldCurrentFile.getName())
 							.equals(FileExtensions.GEOGEBRA)
 					|| StringUtil.getFileExtension(oldCurrentFile.getName())
@@ -2069,6 +2081,14 @@ public class GuiManagerD extends GuiManager implements GuiManagerInterfaceD {
 	}
 
 	/**
+	 * @return document extensions in product-specific chooser priority order
+	 */
+	protected FileExtensions[] getDocumentOpenExtensions() {
+		return new FileExtensions[] {
+				FileExtensions.GEOGEBRA, FileExtensions.GEOCEDG };
+	}
+
+	/**
 	 * @param files files to open
 	 * @param allowOpeningInThisInstance whether to allow opening in active app
 	 */
@@ -2087,25 +2107,34 @@ public class GuiManagerD extends GuiManager implements GuiManagerInterfaceD {
 				file = files[i];
 
 				if (!file.exists()) {
+					boolean documentExtension = extension.equals(
+							FileExtensions.GEOGEBRA)
+							|| extension.equals(FileExtensions.GEOCEDG);
 					file = addExtension(file, extension);
 					if (extension.equals(FileExtensions.GEOGEBRA)
 							&& !file.exists()) {
 						file = addExtension(removeExtension(file),
+								FileExtensions.GEOCEDG);
+					}
+					if (extension.equals(FileExtensions.GEOCEDG)
+							&& !file.exists()) {
+						file = addExtension(removeExtension(file),
+								FileExtensions.GEOGEBRA);
+					}
+					if (documentExtension && !file.exists()) {
+						file = addExtension(removeExtension(file),
 								FileExtensions.GEOGEBRA_TOOL);
 					}
-					if (extension.equals(FileExtensions.GEOGEBRA)
-							&& !file.exists()) {
+					if (documentExtension && !file.exists()) {
 						file = addExtension(removeExtension(file),
 								FileExtensions.HTML);
 					}
-					if (extension.equals(FileExtensions.GEOGEBRA)
-							&& !file.exists()) {
+					if (documentExtension && !file.exists()) {
 						file = addExtension(removeExtension(file),
 								FileExtensions.HTM);
 					}
 
-					if (extension.equals(FileExtensions.GEOGEBRA)
-							&& !file.exists()) {
+					if (documentExtension && !file.exists()) {
 						file = addExtension(removeExtension(file),
 								FileExtensions.OFF);
 					}
@@ -2153,10 +2182,8 @@ public class GuiManagerD extends GuiManager implements GuiManagerInterfaceD {
 								// create new window for file
 								try {
 									String[] args = { file.getCanonicalPath() };
-									GeoGebraFrame wnd = GeoGebraFrame
-											.createNewWindow(
-													new CommandLineArguments(
-															args));
+									GeoGebraFrame wnd = getApp().createNewWindow(
+											new CommandLineArguments(args));
 									wnd.toFront();
 									wnd.requestFocus();
 								} catch (Exception e) {

@@ -74,7 +74,7 @@ public class CaptionProperty extends AbstractValuedProperty<String> implements
 				ensureCaptionVisible();
 			}
 		}
-		geoElement.updateRepaint();
+		geoElement.updatePresentationRepaint();
 	}
 
 	private void ensureCaptionVisible() {

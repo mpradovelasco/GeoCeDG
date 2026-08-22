@@ -31,6 +31,8 @@ import org.geogebra.common.jre.headless.AppDI;
 import org.geogebra.common.jre.io.MyXMLioJre;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.Kernel;
+import org.geogebra.common.util.FileExtensions;
+import org.geogebra.common.util.StringUtil;
 import org.geogebra.common.util.debug.Log;
 import org.geogebra.desktop.gui.MyImageD;
 
@@ -92,20 +94,21 @@ public class MyXMLioD extends MyXMLioJre {
 	}
 
 	/**
-	 * Get the preview image of a ggb file.
+	 * Get the preview image of a supported construction document.
 	 * 
 	 * @param file
 	 *            file
 	 * @throws IOException
-	 *             when file is not valid ggb
+	 *             when the document archive is invalid
 	 * @return preview image
 	 */
 	public final static BufferedImage getPreviewImage(File file)
 			throws IOException {
-		// just allow preview images for ggb files
-		if (!file.getName().endsWith(".ggb")) {
+		FileExtensions extension = StringUtil.getFileExtension(file.getName());
+		if (!FileExtensions.GEOGEBRA.equals(extension)
+				&& !FileExtensions.GEOCEDG.equals(extension)) {
 			throw new IllegalArgumentException(
-					"Preview image source file has to be of the type .ggb");
+					"Preview image source file must be .ggb or .cedg");
 		}
 
 		FileInputStream fis = new FileInputStream(file);

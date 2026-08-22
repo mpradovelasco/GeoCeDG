@@ -62,6 +62,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -141,6 +142,7 @@ import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.Macro;
 import org.geogebra.common.kernel.commands.CommandDispatcher;
+import org.geogebra.common.kernel.commands.CommandNotLoadedError;
 import org.geogebra.common.kernel.geos.AnimationExportSlider;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoElementGraphicsAdapter;
@@ -149,6 +151,7 @@ import org.geogebra.common.kernel.kernelND.GeoPointND;
 import org.geogebra.common.main.App;
 import org.geogebra.common.main.AppConfig;
 import org.geogebra.common.main.DialogManager;
+import org.geogebra.common.main.MyError;
 import org.geogebra.common.main.MyError.Errors;
 import org.geogebra.common.main.ProverSettings;
 import org.geogebra.common.main.SpreadsheetTableModel;
@@ -207,6 +210,8 @@ import org.geogebra.desktop.gui.layout.LayoutD;
 import org.geogebra.desktop.gui.toolbar.ToolbarContainer;
 import org.geogebra.desktop.gui.util.ImageSelection;
 import org.geogebra.desktop.headless.GFileHandler;
+import org.geogebra.desktop.io.AtomicDocumentFileWriter;
+import org.geogebra.desktop.io.DocumentArchivePreflight;
 import org.geogebra.desktop.io.MyXMLioD;
 import org.geogebra.desktop.io.OFFReader;
 import org.geogebra.desktop.javax.swing.GImageIconD;
@@ -1129,6 +1134,15 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 		GeoGebraFrame.createNewWindow(cmdArgs.getGlobalArguments());
 	}
 
+	/**
+	 * Creates a product-compatible window for a direct-open argument.
+	 * @param arguments command-line arguments
+	 * @return created frame
+	 */
+	public GeoGebraFrame createNewWindow(CommandLineArguments arguments) {
+		return GeoGebraFrame.createNewWindow(arguments);
+	}
+
 	@Override
 	public void fileNew() {
 
@@ -1208,7 +1222,7 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 
 			if (i > 0) { // load in new Window
 				CommandLineArguments windowArgs = args.getGlobalArguments().add(key, fileArgument);
-				SwingUtilities.invokeLater(() -> GeoGebraFrame.createNewWindow(windowArgs));
+				SwingUtilities.invokeLater(() -> createNewWindow(windowArgs));
 			} else {
 
 				try {
@@ -1220,8 +1234,7 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 							.equals(FileExtensions.GEOGEBRA_TOOL);
 
 					if (lowerCase.startsWith("http:")
-							|| lowerCase.startsWith("https:")
-							|| lowerCase.startsWith("file:")) {
+							|| lowerCase.startsWith("https:")) {
 						// replace all whitespace characters by %20 in URL
 						// string
 						String fileArgument2 = fileArgument.replaceAll("\\s",
@@ -1236,6 +1249,11 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 								useFullGui = true;
 							}
 						}
+					} else if (lowerCase.startsWith("file:")) {
+						String escapedArgument = fileArgument.replaceAll("\\s", "%20");
+						File f = new File(new URL(escapedArgument).toURI())
+								.getCanonicalFile();
+						success = loadFile(f, isMacroFile);
 					} else if (lowerCase.startsWith("base64://")) {
 
 						// substring to strip off base64://
@@ -2942,6 +2960,10 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 	 * @return loading status
 	 */
 	public boolean loadExistingFile(File file, boolean isMacroFile) {
+		byte[] nativeArchive = readAndPreflightNativeArchive(file, isMacroFile);
+		if (!isMacroFile && isNativeDocument(file) && nativeArchive == null) {
+			return false;
+		}
 
 		setWaitCursor();
 		if (!isMacroFile) {
@@ -2949,7 +2971,7 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 			setHideConstructionProtocolNavigation();
 		}
 
-		return loadXML(file, isMacroFile);
+		return loadXML(file, isMacroFile, nativeArchive);
 	}
 
 	/**
@@ -2958,9 +2980,20 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 	 * @return true if successful
 	 */
 	final public boolean loadXML(File file, boolean isMacroFile) {
-		FileInputStream fis = null;
+		byte[] nativeArchive = readAndPreflightNativeArchive(file, isMacroFile);
+		if (!isMacroFile && isNativeDocument(file) && nativeArchive == null) {
+			return false;
+		}
+		return loadXML(file, isMacroFile, nativeArchive);
+	}
+
+	private boolean loadXML(File file, boolean isMacroFile, byte[] nativeArchive) {
+		if (nativeArchive != null) {
+			return loadNativeArchive(nativeArchive, file, file.getName());
+		}
+		InputStream input = null;
 		try {
-			fis = new FileInputStream(file);
+			input = new FileInputStream(file);
 
 			boolean success;
 
@@ -2968,10 +3001,10 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 			// update
 			if (!initing) {
 				initing = true;
-				success = doLoadXML(fis, isMacroFile);
+				success = doLoadXML(input, isMacroFile);
 				initing = false;
 			} else {
-				success = doLoadXML(fis, isMacroFile);
+				success = doLoadXML(input, isMacroFile);
 			}
 
 			if (success && !isMacroFile) {
@@ -2986,14 +3019,43 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 			return false;
 		} finally {
 			initing = false;
-			if (fis != null) {
+			if (input != null) {
 				try {
-					fis.close();
+					input.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
 		}
+	}
+
+	private byte[] readAndPreflightNativeArchive(File file, boolean isMacroFile) {
+		if (isMacroFile || !isNativeDocument(file)) {
+			return null;
+		}
+		try {
+			byte[] archive = Files.readAllBytes(file.toPath());
+			if (!DocumentArchivePreflight.validate(archive,
+					createDocumentPreflightConfig())) {
+				showError(Errors.LoadFileFailed, file.getName());
+				return null;
+			}
+			return archive;
+		} catch (Exception exception) {
+			Log.debug(exception);
+			showError(Errors.LoadFileFailed, file.getName());
+			return null;
+		}
+	}
+
+	private static boolean isNativeDocument(File file) {
+		return file != null && FileExtensions.GEOCEDG.equals(
+				StringUtil.getFileExtension(file.getName()));
+	}
+
+	/** @return a fresh parser config for disposable native archive validation */
+	protected AppConfig createDocumentPreflightConfig() {
+		return new org.geogebra.common.main.settings.config.AppConfigDefault();
 	}
 
 	/**
@@ -3002,31 +3064,216 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 	 * @return true if successful
 	 */
 	final public boolean loadXML(URL url, boolean isMacroFile) {
-
+		boolean nativeDocument = !isMacroFile && isNativeDocument(url);
 		try {
-			boolean success = doLoadXML(url.openStream(),
-					isMacroFile);
+			if ("file".equalsIgnoreCase(url.getProtocol())) {
+				return loadXML(new File(url.toURI()), isMacroFile);
+			}
+			byte[] nativeArchive = readAndPreflightNativeArchive(url, isMacroFile);
+			if (nativeDocument && nativeArchive == null) {
+				return false;
+			}
+			if (nativeArchive != null) {
+				return loadNativeArchive(nativeArchive, null, url.getPath());
+			}
+			InputStream input = url.openStream();
+			boolean success;
+			try (InputStream documentInput = input) {
+				success = doLoadXML(documentInput, isMacroFile);
+			}
 
 			// don't clear JavaScript here -- we may have just read one from the
 			// file.
 			// MyXMLio.readZip() handles script resetting
 
-			// set current file
-			if (!isMacroFile && url.toExternalForm().startsWith("file")) {
-				String path = url.getPath();
-				path = path.replaceAll("%20", " ");
-				File f = new File(path);
-				if (f.exists()) {
-					setCurrentFile(f);
-				}
-			}
-
 			return success;
+		} catch (NativeDocumentRollbackException invariantFailure) {
+			throw invariantFailure;
 		} catch (Exception e) {
 			showError(Errors.LoadFileFailed, e.getMessage());
-			setCurrentFile(null);
+			if (!nativeDocument) {
+				setCurrentFile(null);
+			}
 			return false;
 		}
+	}
+
+	private boolean loadNativeArchive(byte[] archive, File file,
+			String sourceName) {
+		NativeDocumentLoadState previousState;
+		try {
+			previousState = captureNativeDocumentLoadState();
+		} catch (IOException | RuntimeException exception) {
+			Log.debug(exception);
+			showError(Errors.LoadFileFailed, sourceName);
+			return false;
+		}
+
+		boolean loaded = false;
+		Throwable loadFailure = null;
+		boolean wasIniting = initing;
+		UndoManagerD undoManager = kernel.isUndoActive()
+				? (UndoManagerD) kernel.getConstruction().getUndoManager() : null;
+		UndoManagerD.PreparedUndoBaseline undoBaseline = null;
+		try (InputStream input = new ByteArrayInputStream(archive)) {
+			if (!wasIniting) {
+				initing = true;
+			}
+			loaded = doLoadNativeXML(input);
+			if (loaded) {
+				if (undoManager != null) {
+					undoBaseline = undoManager.prepareUndoBaseline();
+				}
+				// Keep initing true so path/recent publication cannot invoke fallible
+				// title or window-menu callbacks before the undo baseline commits.
+				updateCommandDictionary();
+				setCurrentFile(file);
+				setSaved();
+				if (undoManager != null) {
+					beforeNativeUndoBaselineCommit();
+					undoManager.commitUndoBaseline(undoBaseline);
+				}
+			}
+		} catch (Exception | MyError | CommandNotLoadedError failure) {
+			loaded = false;
+			loadFailure = failure;
+		} finally {
+			if (undoBaseline != null) {
+				undoBaseline.close();
+			}
+			initing = wasIniting;
+		}
+
+		if (!loaded) {
+			restoreNativeDocumentLoadState(previousState, loadFailure);
+			if (loadFailure != null) {
+				Log.debug(loadFailure);
+				showError(Errors.LoadFileFailed, sourceName);
+			}
+			return false;
+		}
+
+		refreshNativeDocumentPublication(wasIniting);
+		return true;
+	}
+
+	/**
+	 * Hook immediately before the prepared undo baseline is atomically committed.
+	 * Recoverable failures thrown here are handled as native-open failures.
+	 */
+	protected void beforeNativeUndoBaselineCommit() {
+		// Extension point for host validation and deterministic failure tests.
+	}
+
+	private void refreshNativeDocumentPublication(boolean wasIniting) {
+		if (!wasIniting && isUsingFullGui()) {
+			try {
+				updateTitle();
+				getGuiManager().updateMenuWindow();
+			} catch (RuntimeException updateFailure) {
+				Log.debug(updateFailure);
+			}
+		}
+	}
+
+	private NativeDocumentLoadState captureNativeDocumentLoadState()
+			throws IOException {
+		ByteArrayOutputStream archive = new ByteArrayOutputStream();
+		getXMLio().writeGeoGebraFile(archive, false);
+		return new NativeDocumentLoadState(archive.toByteArray(), currentFile,
+				currentPath, isSaved, new LinkedList<>(fileList),
+				kernel.getConstruction().isFileLoading());
+	}
+
+	private void restoreNativeDocumentLoadState(NativeDocumentLoadState state,
+			Throwable originalFailure) {
+		Throwable rollbackFailure = null;
+		try {
+			kernel.setUserStopsLoading(false);
+			getXMLio().readZipFromInputStream(
+					new ByteArrayInputStream(state.archive), false);
+			updateCommandDictionary();
+		} catch (Exception | MyError | CommandNotLoadedError failure) {
+			rollbackFailure = failure;
+		} finally {
+			kernel.getConstruction().setFileLoading(state.fileLoading);
+			currentFile = state.currentFile;
+			currentPath = state.currentPath;
+			isSaved = state.saved;
+			fileList.clear();
+			fileList.addAll(state.recentFiles);
+		}
+		if (rollbackFailure != null) {
+			if (originalFailure != null) {
+				originalFailure.addSuppressed(rollbackFailure);
+			}
+			throw new NativeDocumentRollbackException(
+					"Native document rollback could not restore the live document",
+					originalFailure == null ? rollbackFailure : originalFailure);
+		}
+	}
+
+	private boolean doLoadNativeXML(InputStream inputStream)
+			throws IOException, XMLParseException {
+		storeFrameCenter();
+		boolean ok = GFileHandler.loadPreflightedNativeXML(this, inputStream);
+		if (ok) {
+			hideDockBarPopup();
+		}
+		return ok;
+	}
+
+	private static final class NativeDocumentLoadState {
+		private final byte[] archive;
+		private final File currentFile;
+		private final File currentPath;
+		private final boolean saved;
+		private final LinkedList<File> recentFiles;
+		private final boolean fileLoading;
+
+		private NativeDocumentLoadState(byte[] archive, File currentFile,
+				File currentPath, boolean saved, LinkedList<File> recentFiles,
+				boolean fileLoading) {
+			this.archive = archive;
+			this.currentFile = currentFile;
+			this.currentPath = currentPath;
+			this.saved = saved;
+			this.recentFiles = recentFiles;
+			this.fileLoading = fileLoading;
+		}
+	}
+
+	private static final class NativeDocumentRollbackException
+			extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+
+		private NativeDocumentRollbackException(String message, Throwable cause) {
+			super(message, cause);
+		}
+	}
+
+	private byte[] readAndPreflightNativeArchive(URL url, boolean isMacroFile) {
+		if (isMacroFile || !isNativeDocument(url)) {
+			return null;
+		}
+		try (InputStream input = url.openStream()) {
+			byte[] archive = input.readAllBytes();
+			if (!DocumentArchivePreflight.validate(archive,
+					createDocumentPreflightConfig())) {
+				showError(Errors.LoadFileFailed, url.getPath());
+				return null;
+			}
+			return archive;
+		} catch (Exception exception) {
+			Log.debug(exception);
+			showError(Errors.LoadFileFailed, url.getPath());
+			return null;
+		}
+	}
+
+	private static boolean isNativeDocument(URL url) {
+		return url != null && FileExtensions.GEOCEDG.equals(
+				StringUtil.getFileExtension(url.getPath()));
 	}
 
 	private boolean doLoadXML(InputStream inputStream, boolean isMacroFile)
@@ -3098,7 +3345,12 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 	public boolean saveGeoGebraFile(File file) {
 		try {
 			setWaitCursor();
-			getXMLio().writeGeoGebraFile(file);
+			if (isNativeDocument(file)) {
+				AtomicDocumentFileWriter.write(file.toPath(), temporary ->
+						getXMLio().writeGeoGebraFile(temporary.toFile()));
+			} else {
+				getXMLio().writeGeoGebraFile(file);
+			}
 			setSaved();
 			setDefaultCursor();
 			return true;

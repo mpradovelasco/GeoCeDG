@@ -66,7 +66,7 @@ public class ThicknessProperty extends AbstractRangeProperty<Integer> {
 	protected void setValueSafe(Integer value) {
 		GeoElement element = delegate.getElement();
 		setThickness(element, value);
-		element.updateRepaint();
+		element.updatePresentationRepaint();
 	}
 
 	@Override

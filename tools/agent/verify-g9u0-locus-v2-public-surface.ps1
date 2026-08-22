@@ -1231,12 +1231,16 @@ function Assert-SourceContracts {
     }
     if ($EvidenceIsApproved) {
         $statusDocuments = @($Documents + "docs/user/geocedg_user_guide.md")
+        $staleG9U0CandidatePattern =
+            '(?im)^\s*(?:[-*]\s*)?(?:Status:\s*)?\*{0,2}' +
+            'G9U0(?![-_A-Z0-9])\s*(?:=|:)?\s*\*{0,2}' +
+            'IMPLEMENTATION CANDIDATE\b'
         foreach ($statusDocument in $statusDocuments) {
             $content = Get-Content -Raw -LiteralPath (Resolve-RequiredFile `
                 $statusDocument)
             Assert-Condition -Condition ($content.Contains(
                     "G9U0 = PASS — AUTHOR APPROVED") -and
-                    $content -notmatch '(?i)pending author review') `
+                    $content -notmatch $staleG9U0CandidatePattern) `
                 -Message ("Approved G9U0 documentation is stale: " +
                     $statusDocument)
         }

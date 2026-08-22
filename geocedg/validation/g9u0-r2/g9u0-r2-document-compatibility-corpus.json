@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "phase": "G9U0-R2",
+  "purpose": "Immutable compatibility-input corpus for native .cedg transition and unchanged .ggb source verification",
+  "sourceExtension": "ggb",
+  "nativeTargetExtension": "cedg",
+  "entries": [
+    {
+      "id": "R2-CORPUS-G9P-GENERAL",
+      "path": "docs/references/cedg/models/g9p/geocedg-reference-general-construction-workflow.ggb",
+      "size": 140136,
+      "sha256": "738e3edcf44e10f0c07b846d1f53127c4d8450cf0ad209ea9a0e3e8cc2c36a2e",
+      "coverage": ["G9P_REFERENCE", "LEGACY_GGB_OPEN", "SOURCE_HASH_STABILITY"]
+    },
+    {
+      "id": "R2-CORPUS-G9P-LOCUS-GRAFT",
+      "path": "docs/references/cedg/models/g9p/geocedg-reference-locus-cylindrical-graft-development.ggb",
+      "size": 76870,
+      "sha256": "9e220a695a4b1ee2bf60adc77872133e8074740443ae659de1404539de8141f2",
+      "coverage": ["G9P_REFERENCE", "LEGACY_LOCUS", "SOURCE_HASH_STABILITY"]
+    },
+    {
+      "id": "R2-CORPUS-G9P-LOCUS-SPHERE",
+      "path": "docs/references/cedg/models/g9p/geocedg-reference-locus-focal-sphere-illumination.ggb",
+      "size": 111502,
+      "sha256": "baec7131aa95676864457d1602f73f8fef3ce37674fc0e48b28efd4feac204a0",
+      "coverage": ["G9P_REFERENCE", "LEGACY_LOCUS", "SOURCE_HASH_STABILITY"]
+    },
+    {
+      "id": "R2-CORPUS-G9P-LOCUS-CONNECTIONS",
+      "path": "docs/references/cedg/models/g9p/geocedg-reference-locus-truncated-cone-cylinder-connections.ggb",
+      "size": 97204,
+      "sha256": "18c6fad4d53fc3bb03a1546021a0677656fded2c853b7ec198312b96ee55e155",
+      "coverage": ["G9P_REFERENCE", "LEGACY_LOCUS", "SOURCE_HASH_STABILITY"]
+    },
+    {
+      "id": "R2-CORPUS-LEGACY-TEMPLATE-V7",
+      "path": "models/legacy/template-v7/original/Templatev7.ggb",
+      "size": 48149,
+      "sha256": "f62e5b7a92bcd95f10b8afda348763a57ccbd0c10dbc0c2bccc7049831ed4113",
+      "coverage": ["LEGACY_GGB_OPEN", "CLASSIC_PRESERVATION", "SOURCE_HASH_STABILITY"]
+    },
+    {
+      "id": "R2-CORPUS-LEGACY-OBLIQUE",
+      "path": "models/legacy/inter-cil-cono-oblique/original/InterCilConoOblique.ggb",
+      "size": 78087,
+      "sha256": "b1cb614f1a4c414144fbff29349ddebda92d1026acb4c535990a2895c589fa27",
+      "coverage": ["LEGACY_NESTED_LOCUS", "CLASSIC_PRESERVATION", "SOURCE_HASH_STABILITY"]
+    },
+    {
+      "id": "R2-CORPUS-LEGACY-OBLIQUE-TWO-LEVELS",
+      "path": "models/legacy/inter-cil-cono-oblique-two-levels/original/InterCilConoObliqueTwoLevels.ggb",
+      "size": 80974,
+      "sha256": "587328a8e5b6474aee3169bb6af2fe2a711e98e000a423a96bba6e38274fb2b6",
+      "coverage": ["LEGACY_NESTED_LOCUS", "CLASSIC_PRESERVATION", "SOURCE_HASH_STABILITY"]
+    },
+    {
+      "id": "R2-CORPUS-G9A2-SPATIAL",
+      "path": "models/regression/g9a2-spatial-point-pilot/g9a2-spatial-point-pilot.ggb",
+      "size": 1446,
+      "sha256": "3f150eaf05731b3907b5ba3e653ec4666ca1dcc6f999f1b609de305b98b2a3be",
+      "coverage": ["G9_DURABLE_IDENTITY", "EXTENSION_NOT_SEMANTICS", "SOURCE_HASH_STABILITY"]
+    }
+  ],
+  "invariants": {
+    "sourceFilesAreReadOnlyEvidence": true,
+    "sourceBytesMustRemainUnchanged": true,
+    "extensionDoesNotMigrateSemantics": true,
+    "archiveAndXmlFormatRemainUnchanged": true,
+    "xmlAppCode": "classic",
+    "externalUpstreamSupportClaimed": false
+  }
+}

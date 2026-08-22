@@ -41,9 +41,11 @@
   ],
   "file_association": {
     "installers_only": true,
-    "extension": "ggb",
-    "mime_type": "application/vnd.geogebra.file",
-    "description": "GeoCeDG construction (internal evaluation)"
+    "extension": "cedg",
+    "mime_type": "application/x-geocedg-cedg",
+    "mime_basis": "jdk25-jpackage-required-internal-unregistered",
+    "description": "GeoCeDG document (internal evaluation)",
+    "progid_strategy": "jdk25-jpackage-generated-geocedg-owned"
   },
   "distribution": {
     "status": "internal-evaluation",

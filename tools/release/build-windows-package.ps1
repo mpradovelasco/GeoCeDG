@@ -40,6 +40,12 @@ $NoticePath = Join-Path $RepositoryRoot `
     "packaging\windows\INTERNAL_EVALUATION_ONLY.txt"
 $GradleWrapper = Join-Path $RepositoryRoot "gradlew.bat"
 $ExpectedMarker = "INTERNAL EVALUATION — NOT FOR REDISTRIBUTION"
+$ExpectedNativeExtension = "cedg"
+$ExpectedInternalMimeType = "application/x-geocedg-cedg"
+$ExpectedMimeBasis = "jdk25-jpackage-required-internal-unregistered"
+$ExpectedAssociationDescription = "GeoCeDG document (internal evaluation)"
+$ExpectedProgIdStrategy = "jdk25-jpackage-generated-geocedg-owned"
+$UpstreamGeoGebraMimeType = "application/vnd.geogebra.file"
 
 function Write-Step {
     param([Parameter(Mandatory)] [string]$Message)
@@ -217,6 +223,12 @@ try {
 
     $profile = Get-Content -Raw -LiteralPath $ProfilePath |
         ConvertFrom-Json -Depth 50 -NoEnumerate
+    try {
+        $association = Get-Content -Raw -LiteralPath $AssociationPath |
+            ConvertFrom-StringData
+    } catch {
+        throw "File-association properties are invalid: $($_.Exception.Message)"
+    }
     Assert-Condition -Condition ($profile.schema_version -eq 1) `
         -Message "Unsupported package profile schema version."
     Assert-Condition -Condition ($profile.profile_id -eq "geocedg-windows-internal") `
@@ -230,8 +242,26 @@ try {
     Assert-Condition -Condition ($profile.application.main_class -eq
         "org.geocedg.desktop.GeoCeDG") `
         -Message "Package entry point must be the G2 GeoCeDG launcher."
-    Assert-Condition -Condition ($profile.file_association.installers_only) `
-        -Message "The .ggb association must remain installer-only."
+    Assert-Condition -Condition (
+        $profile.file_association.installers_only -and
+        $profile.file_association.extension -ceq $ExpectedNativeExtension -and
+        $profile.file_association.mime_type -ceq $ExpectedInternalMimeType -and
+        $profile.file_association.mime_basis -ceq $ExpectedMimeBasis -and
+        $profile.file_association.description -ceq
+        $ExpectedAssociationDescription -and
+        $profile.file_association.progid_strategy -ceq
+        $ExpectedProgIdStrategy) `
+        -Message "The native .cedg association profile is invalid."
+    Assert-Condition -Condition (
+        $association.Count -eq 3 -and
+        $association["extension"] -ceq $ExpectedNativeExtension -and
+        $association["mime-type"] -ceq $ExpectedInternalMimeType -and
+        $association["description"] -ceq $ExpectedAssociationDescription) `
+        -Message "jpackage association properties do not match the native profile."
+    Assert-Condition -Condition (
+        $association["extension"] -cne "ggb" -and
+        $association["mime-type"] -cne $UpstreamGeoGebraMimeType) `
+        -Message "GeoCeDG installers must not claim the .ggb extension or upstream MIME identity."
 
     Write-Host $ExpectedMarker
     Write-Host "Target: $Target"
@@ -516,6 +546,17 @@ try {
             name = [string]$profile.application.name
             version = [string]$profile.application.version
             main_class = [string]$profile.application.main_class
+        }
+        file_association = [ordered]@{
+            enabled_for_target = $requiresInstaller
+            registration_scope = "msi-exe-installers-only"
+            extension = [string]$profile.file_association.extension
+            mime_type = [string]$profile.file_association.mime_type
+            mime_basis = [string]$profile.file_association.mime_basis
+            description = [string]$profile.file_association.description
+            progid_strategy = [string]$profile.file_association.progid_strategy
+            portable_outputs_association_free = $true
+            compatibility_extension_claimed = $false
         }
         toolchain = [ordered]@{
             java = $javaVersion

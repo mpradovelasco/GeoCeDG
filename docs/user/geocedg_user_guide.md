@@ -1,14 +1,19 @@
 # Manual operativo vivo de GeoCeDG
 
 - Tipo de documento: manual operativo vivo
-- Puerta actual del proyecto: **G9X1 = PASS — AUTHOR APPROVED**
+- Última puerta de producto aprobada/observable: **G9X1 = PASS — AUTHOR APPROVED**
 - G9U0 = PASS — AUTHOR APPROVED
+- Trabajo no publicado: **G9U0-R2 = IMPLEMENTATION CANDIDATE — AUTOMATED
+  COMPLETE / PENDING AUTHOR REVIEW**; smoke y disposición autoral pendientes
 - Baseline: GeoGebra 5.4.928.0 at
   `9b93256b7df401ff056c37b502d82df4d72b1522`
 - Plataforma validada: únicamente Windows
 - Última revisión: 2026-08-21
-- Fase actual: G9U0 y G9X1 son `PASS — AUTHOR APPROVED`. G9U1, G9B, G9C,
-  G9U2, G10 y las fases posteriores no se han ejecutado ni están autorizadas.
+- Fase actual: G9U0 y G9X1 son `PASS — AUTHOR APPROVED`. R2 está autorizado e
+  iniciado solo en una rama de candidato, con validación automatizada completa
+  pero smoke manual y revisión autoral pendientes; no está aprobado
+  ni promocionado. G9U1, G9B, G9C, G9U2, G10 y las fases posteriores no se han
+  ejecutado ni están autorizadas.
 - Locus V2: superficie pública `experimental` aprobada para G9U0, exclusiva de
   GeoCeDG y desactivada por defecto
 - `PACKAGING TECHNICAL STATUS = PASS`
@@ -18,6 +23,7 @@ This guide is the practical entry point for the GeoCeDG author/developer. It
 describes observable product behavior, G7 characterization, the
 author-approved internal G7B/G8 kernels, the author-approved default-off G9U0
 surface and the author-approved default-off G9X1 export service. It does not
+present the unapproved/unpromoted R2 `.cedg`/style candidate as available behavior. It does not
 replace the
 [repository README](../../README.md),
 [living technical roadmap](../roadmap/geocedg_roadmap.md), ADRs, specifications, or
@@ -1070,6 +1076,8 @@ Promotion follows `legacy -> research -> experimental -> stable`, or
 | G9A1/A2/A3 and grouped G9A | Durable identity, persistence and lifecycle/migration foundation | `PASS — AUTHOR APPROVED` | Native G9U0 objects can rely on the approved durable construction identity graph |
 | G9U0 | Experimental public Locus V2 surface | `PASS — AUTHOR APPROVED` | GeoCeDG-only, default-off commands/tools, rich results, native persistence and compatibility boundary documented above |
 | G9X1 | Extended exact/approximate DXF export | `PASS — AUTHOR APPROVED`; experimental and default-off | External read-only export, strict preflight, conditional mandatory sidecar and bounded estimated-error approximation; no geometric authority |
+| G9U0-R2 planning/design | Locus V2 presentation/continuity and native `.cedg` identity | `PASS — AUTHOR APPROVED` design only | Normative future contract; does not by itself change this guide's observable Save/style instructions |
+| G9U0-R2 implementation | Candidate on a feature branch | Automated validation complete; manual smoke and author review pending; no PASS | Do not treat `.cedg`, new style controls or the changed installer association as released/main behavior yet |
 | G9U1/G9B/G9C/G9U2 | Later productive G9 capabilities | Not authorized; U2 blocked on the approved global G9 gate | No workspace, spatial-primitive or later G9 implementation is implied by G9X1 |
 
 The previously approved future compatibility rule is exercised by the
@@ -1390,6 +1398,8 @@ polyline is a disposable view representation.
 | G9P-R1/G9P design | Spatial identity plus projection-system/dihedral-diagram semantics, general one-dimensional Locus generators, documentation and interoperability foundations | `PASS — AUTHOR APPROVED`; six normative specifications and ADR 0010–0015 Accepted; G9O1 `PASS — AUTHOR APPROVED` |
 | G9A1/G9A2/G9A3 and grouped G9A | Durable identity, persistence and lifecycle/migration | `PASS — AUTHOR APPROVED` |
 | G9U0 | Experimental public Locus V2 surface | `PASS — AUTHOR APPROVED`; default-off and GeoCeDG-only |
+| G9U0-R2 planning/design | Pre-G9U1 presentation/document contract | `PASS — AUTHOR APPROVED` |
+| G9U0-R2 implementation | Ordinary Locus style/render continuity plus `.cedg` lifecycle | Candidate only; automated validation complete; manual smoke and author review pending; not released/main behavior |
 | G10 | CeDG 3D DSL and workbench | Pending |
 | G11 | Hierarchical layers and view states | Pending |
 | G12 | Extended navigation, zoom and physical scales | Pending |

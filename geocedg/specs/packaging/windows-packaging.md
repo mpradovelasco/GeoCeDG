@@ -1,9 +1,10 @@
 # GeoCeDG Windows packaging contract
 
-- Status: Stable technical infrastructure for G4
+- Status: Stable G4 infrastructure refined by the G9U0-R2 implementation candidate
 - Platform: Windows x64 only
 - Distribution status: Internal evaluation; public redistribution blocked
-- Decision: `docs/adr/0004-standalone-windows-packaging.md`
+- Decisions: `docs/adr/0004-standalone-windows-packaging.md` and
+  `docs/adr/0016-native-geocedg-document-identity.md`
 
 ## Inputs and identity
 
@@ -30,7 +31,7 @@ by the validated Desktop Gradle tasks.
 5. create a self-contained `app-image` with JDK 25 `jpackage`;
 6. derive a ZIP with normalized entry ordering and timestamps when requested;
 7. derive MSI and/or EXE through pinned WiX 5.0.2 and its pinned Util/UI
-   extensions, with `.ggb` association;
+   extensions, with the native `.cedg` association;
 8. emit CycloneDX SBOM, build manifest, and SHA-256 checksums.
 
 All outputs are regenerable and ignored below `artifacts/packaging/windows/`.
@@ -41,6 +42,27 @@ Normalization makes the ZIP deterministic for an identical app-image. JDK 25
 `jlink` can nevertheless vary `runtime/lib/modules` between equivalent
 app-image builds, so the contract records per-build hashes and does not promise
 byte-identical ZIP, MSI, or EXE binaries.
+
+## Native document association
+
+MSI and EXE installers register `.cedg` as the GeoCeDG-owned Windows document
+extension. They do not claim `.ggb`, which remains a compatibility/input
+format. The app-image and portable ZIP do not register any file association.
+The build script supplies `--file-associations` only while creating MSI/EXE
+installers.
+
+JDK 25 `jpackage` rejects a file-association group without both an extension
+and a MIME value. The package profile therefore records
+`application/x-geocedg-cedg` as the narrow internal, unregistered value required
+by this Windows implementation. This operational value does not claim the
+upstream `application/vnd.geogebra.file` identity, does not establish a public
+or cross-platform MIME contract, and does not alter document semantics.
+
+JDK 25/WiX generates the ProgID owned by the GeoCeDG installer from the
+GeoCeDG launcher, native extension and owned description. GeoCeDG does not add
+a parallel registry or custom WiX authority. Generated MSI inspection must
+prove the resulting ProgID, `.cedg` extension, internal MIME record and open
+verb to `GeoCeDG.exe`, together with the absence of a `.ggb` claim.
 
 ## Required exclusions
 
@@ -54,7 +76,10 @@ The stable G2 toolbar and the G3 Laboratory are not modified by packaging.
 `tools/agent/verify-packaging.ps1` validates durable contracts by default.
 `-CheckToolchain` additionally requires Java 25 `jpackage`, a compatible .NET
 SDK, and WiX 5.0.2. `-RequireArtifacts` validates a generated full package set,
-its internal marker, exclusions, SBOM, build manifest, and hashes.
+its internal marker, exclusions, SBOM, build manifest, hashes, and the
+decompiled MSI association. Static verification also proves that the package
+profile, schema and Java properties agree and that association arguments occur
+only in the installer path.
 
 The composed authority always runs the static packaging gate. Use
 `tools/agent/verify.ps1 -VerifyPackagingArtifacts` after generating all

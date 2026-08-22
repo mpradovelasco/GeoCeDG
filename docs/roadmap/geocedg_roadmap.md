@@ -3,13 +3,13 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Roadmap vivo y normativo de fases; no sustituye las especificaciones ni los ADR aceptados |
-| Versión documental | 3.41 |
+| Versión documental | 3.42 |
 | Fecha de revisión | 21 de agosto de 2026 |
 | Baseline GeoGebra | 5.4.928.0, commit `9b93256b7df401ff056c37b502d82df4d72b1522`, tag `geogebra-baseline-5.4.928.0` |
-| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1, G9A2, G9A3, el track G9A, G9U0, el hardening correctivo G9U0-R1, G9X1, la planificación G10P y la planificación/diseño G9U0-R2 `PASS — AUTHOR APPROVED`; ocho especificaciones G9 normativas y ADR 0010–0016 Accepted; la implementación G9U0-R2 requiere autorización separada y no ha empezado; G9U1, G9B y G9C no están autorizadas, G9U2 sigue bloqueada por la puerta G9 aprobada y ninguna implementación productiva G10 está autorizada; el comportamiento observable todavía no usa `.cedg` ni el refinamiento de presentación R2, y Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
-| Última fase cerrada | G9U0-R2 — PLANNING / DESIGN `PASS — AUTHOR APPROVED`; implementación no autorizada/no iniciada |
-| Última fase ejecutada | G9X1, cerrada sin trasladar autoridad geométrica al exportador ni ejecutar fases posteriores |
-| Siguiente puerta | Autorización autoral separada para ejecutar el prompt canónico de implementación G9U0-R2; G9U1 no puede ejecutarse hasta que esa implementación cierre `PASS — AUTHOR APPROVED` y reciba después su propia autorización |
+| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1, G9A2, G9A3, el track G9A, G9U0, el hardening correctivo G9U0-R1, G9X1, la planificación G10P y la planificación/diseño G9U0-R2 `PASS — AUTHOR APPROVED`; ocho especificaciones G9 normativas y ADR 0010–0016 Accepted; la implementación G9U0-R2 fue autorizada por separado y está en `IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW`, con toda la validación automatizada, incluido composed, completa pero smoke manual y disposición autoral pendientes, sin aprobación ni PASS; G9U1, G9B y G9C no están autorizadas, G9U2 sigue bloqueada por la puerta G9 aprobada y ninguna implementación productiva G10 está autorizada; el comportamiento liberado/main todavía no usa `.cedg` ni el refinamiento de presentación R2, y Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
+| Última fase cerrada | G9U0-R2 — PLANNING / DESIGN `PASS — AUTHOR APPROVED`; la implementación no está cerrada |
+| Última fase ejecutada | G9U0-R2 implementation, autorizada/iniciada en rama de candidato, con evidencia automatizada completa y smoke/revisión autoral pendientes |
+| Siguiente puerta | Smoke manual y revisión autoral de G9U0-R2. G9U1 no puede ejecutarse hasta que R2 cierre `PASS — AUTHOR APPROVED` y reciba luego su propia autorización |
 | Primer cliente | Aplicación de escritorio de la familia Classic 5 |
 | Núcleo | Java compartido de GeoGebra, extendido solo cuando la semántica lo requiere |
 
@@ -1129,7 +1129,7 @@ optimización de rendimiento del software.
 | G9U0-R1 | `PASS — AUTHOR APPROVED` | Hardening correctivo de preview, creación pública Desktop, handoff secuencial vacío y reconstrucción aislada de constantes canónicas; 6/6 pruebas R1, smoke manual autoral y autoridad compuesta completas |
 | G9X1 | `PASS — AUTHOR APPROVED` | DXF extendido externo al kernel; 62/62 escenarios focales y 10/10 regresiones G5, repetición determinista, sidecar condicional obligatorio y escritura pareada validados; experimental y default-off |
 | G9U0-R2 planning/design | `PASS — AUTHOR APPROVED` | Autoridad normativa para la puerta pre-G9U1 de presentación/continuidad Locus V2 e identidad documental nativa `.cedg`; no afirma comportamiento implementado |
-| G9U0-R2 implementation | `AUTHORIZATION REQUIRED — NOT STARTED` | `implementationAuthorized=false`; el próximo paso es una autorización autoral separada del prompt canónico |
+| G9U0-R2 implementation | `IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW` | Toda la evidencia automatizada de la corrección, incluido composed, está completa; smoke manual y disposición están pendientes; `selfApproved=false`, `authorApproved=false`, `passClaimed=false` |
 | G9U1 | `DESIGNED — NOT AUTHORIZED` | Workspace Construction con gate y autorización separados; no puede autorizarse para ejecución hasta un futuro G9U0-R2 implementation `PASS — AUTHOR APPROVED` |
 | G9B / G9C | `DESIGNED — NOT AUTHORIZED` | Track kernel tras cierre de G9A; no depende de completar el cliente G9U1 |
 | G9U2 | `BLOCKED ON THE APPROVED G9 GATE` | Workspace de procedimientos diédrico solo tras `G9 PASS — AUTHOR APPROVED` |
@@ -1466,7 +1466,7 @@ G9U0 = PASS — AUTHOR APPROVED
 G9U0-R1 = PASS — AUTHOR APPROVED
 G9X1 = PASS — AUTHOR APPROVED
 G9U0-R2 PLANNING / DESIGN = PASS — AUTHOR APPROVED
-G9U0-R2 IMPLEMENTATION = AUTHORIZATION REQUIRED — NOT STARTED
+G9U0-R2 IMPLEMENTATION = IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW
 G9U1 / G9B / G9C = DESIGNED — NOT AUTHORIZED
 G10 PRODUCTIVE IMPLEMENTATION = NOT AUTHORIZED — NOT STARTED
 ```
@@ -1633,7 +1633,7 @@ G9U0 = PASS — AUTHOR APPROVED
 G9U0-R1 = PASS — AUTHOR APPROVED
 G9X1 = PASS — AUTHOR APPROVED
 G9U0-R2 PLANNING / DESIGN = PASS — AUTHOR APPROVED
-G9U0-R2 IMPLEMENTATION = AUTHORIZATION REQUIRED — NOT STARTED
+G9U0-R2 IMPLEMENTATION = IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW
 G9U1 = DESIGNED — NOT AUTHORIZED
 G9B = DESIGNED — NOT AUTHORIZED
 G9C = DESIGNED — NOT AUTHORIZED
@@ -1651,8 +1651,11 @@ y su ciclo de vida/migración; G9U0 cierra la superficie pública Locus V2
 experimental. G9X1 está cerrado en `PASS — AUTHOR APPROVED`, con exportación
 externa, experimental y desactivada por defecto. La planificación/diseño
 G9U0-R2 está en `PASS — AUTHOR APPROVED` y sus contratos son normativos, pero su
-implementación requiere autorización y no ha empezado; `.cedg` y el refinamiento
-visual R2 todavía no son comportamiento observable. G9U1, G9B y G9C siguen sin autorización; G9U2
+implementación fue autorizada por separado y está iniciada en una rama de
+candidato; toda la evidencia automatizada de la corrección está completa, pero
+smoke manual y revisión autoral siguen pendientes y no hay PASS ni aprobación
+autoral de implementación. `.cedg` y el refinamiento visual R2 aún
+no son comportamiento liberado/main. G9U1, G9B y G9C siguen sin autorización; G9U2
 permanece bloqueada por la puerta G9 aprobada. El
 [plan integrado G9P](../architecture/g9p_integrated_plan.md) y el
 [paquete de decisiones](../validation/g9p_author_decisions.md) gobiernan el
@@ -1845,8 +1848,11 @@ G9C, G9U2 ni implementación productiva G10.
 
 **Estado de planificación/diseño:** `PASS — AUTHOR APPROVED`
 
-**Estado de implementación:** `AUTHORIZATION REQUIRED — NOT STARTED`;
-`implementationAuthorized=false`.
+**Estado de implementación:** `IMPLEMENTATION CANDIDATE — PENDING AUTHOR
+REVIEW`; evidencia automatizada completa y smoke/revisión autoral pendientes,
+`implementationAuthorized=true`,
+`implementationStarted=true`, `selfApproved=false`, `authorApproved=false` y
+`passClaimed=false`.
 
 **Racional de nombre:** R2 es el siguiente refinamiento acotado de la familia
 G9U0 después de G9U0-R1. Conserva la convención `-R<n>` ya usada por G7A,
@@ -1857,11 +1863,11 @@ aprobación propios. El
 [diseño aprobado](../architecture/g9u0_r2_product_refinement_design.md)
 documenta la comparación completa.
 
-**Prerrequisitos de una futura ejecución:** G9U0-R1 y G9X1 deben conservar
-`PASS — AUTHOR APPROVED`; ADR 0016 Accepted y las dos specs normativas deben
-permanecer como autoridad; el árbol/base de entrada debe ser el autorizado por
-el autor; y el prompt canónico R2 deberá invocarse mediante una autorización
-separada. El PASS de planificación no inicia implementación.
+**Entrada ejecutada:** el autor invocó por separado el prompt canónico R2 sobre
+el commit aprobado `ce022b756b51fe12497e1932ba3ae58093dd1405`; G9U0-R1 y
+G9X1 conservan `PASS — AUTHOR APPROVED`, ADR 0016 y las dos specs normativas
+permanecen como autoridad. Esta autorización inició únicamente R2 y no
+constituye PASS, aprobación del candidato ni autorización de otra fase.
 
 **Alcance aprobado:** (1) integrar Locus V2 con color, grosor, tipo de línea,
 show/hide, presentación de etiqueta aplicable, Properties, selección/highlight,
@@ -1891,12 +1897,14 @@ no crean asociación. No se congela MIME arbitrario ni se reclama validación de
 asociación fuera de Windows. La extensión enruta I/O pero nunca infiere
 semántica o migración desde el nombre.
 
-**Validación/salida futura:** deberá completar las filas `R2-L*`, `R2-D*` y
-`R2-R*` de la matriz pública existente, dos ejecuciones deterministas del
-verifier focal, regresiones G9U0-R1/G9U0/G9X1/G5/G9A/legacy Locus, composed
-verify, inventario upstream y smoke manual autoral. El prompt termina solo en
-`IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW`; un agente no puede reclamar
-PASS.
+**Validación/salida automatizada:** las filas focales `R2-L*`/`R2-D*`, las
+dos ejecuciones deterministas, las regresiones
+G9U0-R1/G9U0/G9X1/G5/G9A/legacy Locus, packaging, Checkstyle y checks Git de la
+corrección están completos y registrados, incluido `R2-R07` composed con exit
+0. El smoke manual sigue `PENDING_AUTHOR`: está preparado pero
+solo el autor puede ejecutarlo/aceptarlo. El
+prompt termina en `IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW`; ningún
+agente puede reclamar PASS.
 
 **Relación con G9U1 y fases retenidas:** G9U1 ya no es la puerta ejecutable
 inmediata. Solo tras un futuro `G9U0-R2 IMPLEMENTATION PASS — AUTHOR APPROVED` podrá el autor
@@ -1909,11 +1917,12 @@ G9U0-R2 PLANNING / DESIGN = PASS — AUTHOR APPROVED
 planningSelfApproved = false
 planningAuthorApproved = true
 
-G9U0-R2 IMPLEMENTATION = AUTHORIZATION REQUIRED — NOT STARTED
-implementationAuthorized = false
-implementationStarted = false
-implementationSelfApproved = false
-implementationPassClaimed = false
+G9U0-R2 IMPLEMENTATION = IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW
+implementationAuthorized = true
+implementationStarted = true
+selfApproved = false
+authorApproved = false
+passClaimed = false
 
 G9U1 = DESIGNED — NOT AUTHORIZED
 G9B = NOT AUTHORIZED

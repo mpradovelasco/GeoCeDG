@@ -67,6 +67,8 @@ public enum FileExtensions {
 
 	UNKNOWN("?", false, false),
 
+	GEOCEDG("cedg", false, false),
+
 	GEOGEBRA("ggb", false, false),
 
 	GEOGEBRA_TOOL("ggt", false, false);

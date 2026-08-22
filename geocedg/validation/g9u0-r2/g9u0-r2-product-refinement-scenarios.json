@@ -1,0 +1,234 @@
+{
+  "schemaVersion": 1,
+  "phase": "G9U0-R2",
+  "status": "IMPLEMENTATION_CANDIDATE_SCENARIOS_SOURCE_COMPLETE",
+  "authorApprovalClaimed": false,
+  "countsFrozen": true,
+  "groups": [
+    {
+      "id": "L-PRESENTATION",
+      "layer": "shared",
+      "executionKind": "JUNIT",
+      "testClass": "org.geocedg.common.locus.G9U0R2LocusPresentationTest",
+      "cases": [
+        {"id": "R2-L01", "title": "Ordinary GeoElement color authority"},
+        {"id": "R2-L02", "title": "Ordinary line thickness authority"},
+        {"id": "R2-L03", "title": "Ordinary line type and dash presentation"},
+        {"id": "R2-L04", "title": "Properties exposure without Path conformance"},
+        {"id": "R2-L05", "title": "Persistent ordinary presentation"},
+        {"id": "R2-L06", "title": "Supported copy preserves ordinary style"},
+        {"id": "R2-L07", "title": "Applicable style undo and redo"},
+        {"id": "R2-L08", "title": "Semantic invariance under presentation mutation"},
+        {"id": "R2-L13", "title": "Ordinary show and hide"},
+        {"id": "R2-L14", "title": "Applicable label presentation"},
+        {"id": "R2-L15", "title": "Transient selection and highlight"}
+      ]
+    },
+    {
+      "id": "L-RENDER",
+      "layer": "shared",
+      "executionKind": "JUNIT",
+      "testClass": "org.geocedg.common.locus.G9U0R2LocusRenderContinuityTest",
+      "cases": [
+        {"id": "R2-L09", "title": "Crossing line cannot change render topology"},
+        {"id": "R2-L10", "title": "Crossing circle or conic cannot change render topology"},
+        {"id": "R2-L11", "title": "No artificial renderer subpath"},
+        {"id": "R2-L12", "title": "Genuine semantic discontinuity remains separate"}
+      ]
+    },
+    {
+      "id": "D-DOCUMENT",
+      "layer": "desktop",
+      "executionKind": "JUNIT",
+      "testClass": "org.geocedg.desktop.GeoCeDGDocumentLifecycleTest",
+      "cases": [
+        {"id": "R2-D01", "title": "Default native Save identity"},
+        {"id": "R2-D02", "title": "Native Save As and omitted suffix"},
+        {"id": "R2-D03", "title": "Native reopen and subsequent Save"},
+        {"id": "R2-D04", "title": "Mixed-case host handling"},
+        {"id": "R2-D05", "title": "Recent, drop and direct-open routing"},
+        {"id": "R2-D06", "title": "Legacy GGB compatibility input"},
+        {"id": "R2-D07", "title": "Non-destructive GGB to native Save"},
+        {"id": "R2-D08", "title": "Source unchanged on success, cancel and failure"},
+        {"id": "R2-D09", "title": "Corrupt, live-parse and undo-commit failures roll back"},
+        {"id": "R2-D10", "title": "Locus V2 native persistence"},
+        {"id": "R2-D11", "title": "Rich result and token native persistence"},
+        {"id": "R2-D12", "title": "G9 durable identity native persistence"},
+        {"id": "R2-D13", "title": "Extension identity is not semantics"},
+        {"id": "R2-D14", "title": "GeoCeDG Classic preservation boundary"},
+        {"id": "R2-D15", "title": "External upstream boundary without downgrade"},
+        {"id": "R2-D16", "title": "Archive inventory and classic app code unchanged"}
+      ]
+    },
+    {
+      "id": "D-PACKAGING",
+      "layer": "packaging",
+      "executionKind": "POWERSHELL_STATIC_AND_OPTIONAL_ARTIFACT_PROBE",
+      "source": "tools/agent/verify-packaging.ps1",
+      "cases": [
+        {"id": "R2-D17", "title": "Windows installer association and portable boundary"}
+      ]
+    },
+    {
+      "id": "R-REGRESSION",
+      "layer": "composed",
+      "executionKind": "EXISTING_VERIFIER_DELEGATION",
+      "cases": [
+        {"id": "R2-R01", "title": "G9U0-R1 regression", "verifier": "tools/agent/verify-g9u0-r1-locus-v2-public-creation-lifecycle.ps1"},
+        {"id": "R2-R02", "title": "Historical G9U0 regression", "verifier": "tools/agent/verify-g9u0-locus-v2-public-surface.ps1"},
+        {"id": "R2-R03", "title": "G9X1 regression", "verifier": "tools/agent/verify-g9x1-extended-dxf.ps1"},
+        {"id": "R2-R04", "title": "G5 exact DXF regression", "verifier": "tools/agent/verify-dxf.ps1"},
+        {"id": "R2-R05", "title": "Relevant G9A lifecycle regression", "verifier": "tools/agent/verify-g9a3-spatial-lifecycle.ps1"},
+        {"id": "R2-R06", "title": "Legacy Locus regression", "verifier": "tools/agent/verify-locus-v2.ps1"},
+        {"id": "R2-R07", "title": "Composed repository verification", "verifier": "tools/agent/verify.ps1"}
+      ]
+    }
+  ],
+  "supportingPersistenceCoverage": [
+    {
+      "scenario": "R2-D09",
+      "reason": "Corrupt/future native input must reject atomically during disposable preflight; any preflight-admitted second live-parse or prepared undo-baseline commit failure must restore the complete prior live document and undo/redo state before publication.",
+      "authorities": [
+        {
+          "testClass": "org.geocedg.desktop.GeoCeDGDocumentLifecycleTest",
+          "methods": [
+            "corruptNativeArchiveIsRejectedBeforeLiveLoad"
+          ]
+        },
+        {
+          "testClass": "org.geocedg.common.locus.G9U0PersistenceCompatibilityTest",
+          "methods": [
+            "p15UnknownSemanticVersionFailsWithoutLegacyRepair",
+            "p16CorruptOrPartialTokenLedgerFailsAtomically"
+          ]
+        },
+        {
+          "testClass": "org.geocedg.common.spatial.G9A3SpatialCompatibilityXmlTest",
+          "methods": [
+            "xml06DuplicateNativeIdentityRejectsAtomicallyWithoutRemap",
+            "xml07MalformedRolesFamiliesAndSchemaRejectBeforePublication",
+            "xml08UnknownAttributesAndFutureVersionsFailWithoutDowngrade"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "R2-D10",
+      "reason": "Locus V2 native persistence requires the established semantic reopen authority, not suffix routing alone.",
+      "authorities": [
+        {
+          "testClass": "org.geocedg.common.locus.G9U0PersistenceCompatibilityTest",
+          "methods": [
+            "p01EveryPublicGeneratorSaveAndReopenRestoresExactDescriptor",
+            "p05NativeSaveReopenSaveIsByteIdentical"
+          ]
+        },
+        {
+          "testClass": "org.geocedg.common.locus.G9U0R2LocusPresentationTest",
+          "methods": [
+            "completePresentationPersistsAcrossTwoNativeXmlReopens",
+            "everyOrdinaryLineTypePersistsWithoutChangingSubpaths"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "R2-D11",
+      "reason": "Rich metric/intersection results and tokens require exact semantic round trips in addition to byte-preserving routing.",
+      "authorities": [
+        {
+          "testClass": "org.geocedg.common.locus.G9U0PersistenceCompatibilityTest",
+          "methods": [
+            "p02MetricQuerySaveAndReopenRestoresRichParent",
+            "p03EveryIntersectionFamilyReopensWithExactQueryAndLedger",
+            "p04BoundAndTokenPointsSaveAndReopenWithExactAddresses",
+            "p16CorruptOrPartialTokenLedgerFailsAtomically"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "R2-D12",
+      "reason": "G9 durable identity requires the established spatial native-compatibility and canonical reopen suites; the full spatial/frame/system/map/relation/binding corpus remains R2-R05 authority.",
+      "authorities": [
+        {
+          "testClass": "org.geocedg.common.spatial.G9A3SpatialNativeCompatibilityTest",
+          "methods": [
+            "compat01GeoCeDGLoadsRecomputesSavesAndReopensNativePointExactly"
+          ]
+        },
+        {
+          "testClass": "org.geocedg.common.spatial.G9A3SpatialCompatibilityXmlTest",
+          "methods": [
+            "xml10RepeatedReopenProducesOneCanonicalIdentityGraph"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "R2-D14",
+      "reason": "Classic preservation is governed by existing shared-kernel preservation suites, while creation remains disabled.",
+      "authorities": [
+        {
+          "testClass": "org.geocedg.desktop.GeoCeDGDocumentLifecycleTest",
+          "methods": [
+            "classicKeepsClassicDefaultWhileNativeExtensionIsSupported"
+          ]
+        },
+        {
+          "testClass": "org.geocedg.common.locus.G9U0PersistenceCompatibilityTest",
+          "methods": [
+            "p13GeoCeDGClassicPreservesNativeV2WithoutEnablingCreation"
+          ]
+        },
+        {
+          "testClass": "org.geocedg.common.spatial.G9A3SpatialNativeCompatibilityTest",
+          "methods": [
+            "compat02ForkClassicUsesSameKernelForExactNativeRoundTrip",
+            "compat03ClassicCreationStaysDisabledWhileNativeDataIsPreserved"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "R2-D15",
+      "reason": "The external-upstream boundary requires explicit no-downgrade authorities, not filename classification alone.",
+      "authorities": [
+        {
+          "testClass": "org.geocedg.common.locus.G9U0PersistenceCompatibilityTest",
+          "methods": [
+            "p14ExternalUpstreamBoundaryNeverDowngradesToPolyline"
+          ]
+        },
+        {
+          "testClass": "org.geocedg.common.spatial.G9A3SpatialNativeCompatibilityTest",
+          "methods": [
+            "compat04ExternalUpstreamBoundaryIsUnsupportedWithZeroDowngrade"
+          ]
+        }
+      ]
+    }
+  ],
+  "expectedCounts": {
+    "locus": 15,
+    "document": 17,
+    "regression": 7,
+    "matrixTotal": 39,
+    "sharedJUnit": 15,
+    "desktopJUnit": 16,
+    "focusedJUnitTotal": 31,
+    "supportingPersistenceJUnit": 31,
+    "packagingProbe": 1
+  },
+  "testExecution": {
+    "status": "PASSED",
+    "sharedJUnit": 15,
+    "desktopJUnit": 16,
+    "focusedJUnitTotal": 31,
+    "supportingPersistenceJUnit": 31,
+    "packagingProbe": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  }
+}

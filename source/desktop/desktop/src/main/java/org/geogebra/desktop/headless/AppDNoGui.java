@@ -42,6 +42,7 @@ import org.geogebra.common.kernel.commands.CommandDispatcher;
 import org.geogebra.common.kernel.geos.GeoElementGraphicsAdapter;
 import org.geogebra.common.main.App;
 import org.geogebra.common.main.AppCompanion;
+import org.geogebra.common.main.AppConfig;
 import org.geogebra.common.plugin.GgbAPI;
 import org.geogebra.common.plugin.ScriptManager;
 import org.geogebra.common.sound.SoundManager;
@@ -86,7 +87,18 @@ public class AppDNoGui extends AppCommon implements AppDI {
 	 *            whether to mute logging
 	 */
 	public AppDNoGui(LocalizationJre loc, boolean silent) {
-		super(loc, new AwtFactoryD());
+		this(loc, silent, null);
+	}
+
+	/**
+	 * @param loc localization
+	 * @param silent whether to mute logging
+	 * @param config document parser configuration, or {@code null} for Classic
+	 */
+	public AppDNoGui(LocalizationJre loc, boolean silent, AppConfig config) {
+		super(loc, new AwtFactoryD(), config == null
+				? new org.geogebra.common.main.settings.config.AppConfigDefault()
+				: config);
 
 		UtilFactory.setPrototypeIfNull(new UtilFactoryD());
 		loginOperation = new LoginOperationD();

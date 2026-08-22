@@ -39,6 +39,7 @@ import org.geogebra.desktop.io.MyXMLioD;
  * @author Markus Hohenwarter
  */
 public class UndoManagerD extends UndoManager {
+	private long undoHistoryGeneration;
 
 	/**
 	 * Creates a new UndowManager for the given Construction.
@@ -59,7 +60,12 @@ public class UndoManagerD extends UndoManager {
 		// force create event dispatcher before we go to thread
 		app.getEventDispatcher();
 
-		Runnable storeUndoAction = () -> doStoreUndoInfo(currentUndoXML);
+		long scheduledGeneration;
+		synchronized (this) {
+			scheduledGeneration = undoHistoryGeneration;
+		}
+		Runnable storeUndoAction = () -> doStoreUndoInfo(currentUndoXML,
+				scheduledGeneration);
 		new Thread(storeUndoAction).start();
 	}
 
@@ -69,10 +75,15 @@ public class UndoManagerD extends UndoManager {
 	 * @param undoXML
 	 *            string builder with construction XML
 	 */
-	synchronized void doStoreUndoInfo(final StringBuilder undoXML) {
+	synchronized void doStoreUndoInfo(final StringBuilder undoXML,
+			long scheduledGeneration) {
 		try {
 			// save to file
 			AppState appStateToAdd = new FileAppState(undoXML);
+			if (scheduledGeneration != undoHistoryGeneration) {
+				appStateToAdd.delete();
+				return;
+			}
 
 			// insert undo info
 			UndoCommand command = new UndoCommand(appStateToAdd);
@@ -87,6 +98,83 @@ public class UndoManagerD extends UndoManager {
 		}
 
 		onStoreUndo();
+	}
+
+	/**
+	 * Serializes the current construction into a disposable undo baseline without
+	 * changing the live undo or redo history.
+	 *
+	 * @return prepared baseline
+	 * @throws IOException if the baseline cannot be serialized
+	 */
+	public PreparedUndoBaseline prepareUndoBaseline() throws IOException {
+		// Keep dispatcher creation and XML/file serialization on the caller thread so
+		// every recoverable failure happens before the old history is changed.
+		app.getEventDispatcher();
+		return new PreparedUndoBaseline(this, new UndoCommand(
+				new FileAppState(construction.getCurrentUndoXML(true))));
+	}
+
+	/**
+	 * Atomically replaces the undo and redo history with a prepared baseline.
+	 * Any asynchronous store scheduled for an older history generation is
+	 * discarded when it eventually reaches this manager.
+	 *
+	 * @param baseline prepared baseline owned by this manager
+	 */
+	public synchronized void commitUndoBaseline(PreparedUndoBaseline baseline) {
+		UndoCommand command = baseline.commandFor(this);
+		storeUndoInfoForProperties(false);
+		clearUndoInfo();
+		maybeStoreUndoCommand(command);
+		undoHistoryGeneration++;
+		baseline.markCommitted();
+		try {
+			onStoreUndo();
+		} catch (RuntimeException updateFailure) {
+			// The history swap is the commit. UI action refresh is best effort and must
+			// not turn a successfully published document into a failed open.
+			Log.debug(updateFailure);
+		}
+	}
+
+	/**
+	 * Disposable, manager-owned undo baseline prepared before an atomic history
+	 * replacement.
+	 */
+	public static final class PreparedUndoBaseline implements AutoCloseable {
+		private final UndoManagerD owner;
+		private UndoCommand command;
+
+		private PreparedUndoBaseline(UndoManagerD owner, UndoCommand command) {
+			this.owner = owner;
+			this.command = command;
+		}
+
+		private UndoCommand commandFor(UndoManagerD expectedOwner) {
+			if (owner != expectedOwner || command == null) {
+				throw new IllegalStateException("Undo baseline is unavailable");
+			}
+			return command;
+		}
+
+		private void markCommitted() {
+			command = null;
+		}
+
+		@Override
+		public void close() {
+			UndoCommand disposableCommand = command;
+			command = null;
+			if (disposableCommand != null) {
+				try {
+					disposableCommand.delete();
+				} catch (RuntimeException cleanupFailure) {
+					// Cleanup must never mask the load failure that owns this rollback.
+					Log.debug(cleanupFailure);
+				}
+			}
+		}
 	}
 
 	/**

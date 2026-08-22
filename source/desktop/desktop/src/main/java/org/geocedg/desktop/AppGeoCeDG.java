@@ -17,9 +17,12 @@ import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
 import org.geogebra.common.euclidian.EuclidianController;
 import org.geogebra.common.io.layout.Perspective;
 import org.geogebra.common.kernel.Kernel;
+import org.geogebra.common.main.AppConfig;
+import org.geogebra.common.main.MyError.Errors;
 import org.geogebra.desktop.CommandLineArguments;
 import org.geogebra.desktop.geogebra3D.App3D;
 import org.geogebra.desktop.gui.GuiManagerD;
+import org.geogebra.desktop.gui.app.GeoGebraFrame;
 import org.geogebra.desktop.main.AppD;
 
 /**
@@ -68,6 +71,11 @@ public final class AppGeoCeDG extends App3D {
 	}
 
 	@Override
+	public GeoGebraFrame createNewWindow(CommandLineArguments arguments) {
+		return GeoCeDGFrame.createNewWindow(arguments);
+	}
+
+	@Override
 	protected AppD newAppForTemplateOrInsertFile() {
 		AppConfigGeoCeDG config = (AppConfigGeoCeDG) getConfig();
 		return new AppGeoCeDG(new CommandLineArguments(null), new JPanel(),
@@ -93,10 +101,19 @@ public final class AppGeoCeDG extends App3D {
 
 	@Override
 	public boolean saveGeoGebraFile(File file) {
-		if (!GeoCeDGExternalCompatibilityWarning.confirmSave(this)) {
+		if (!GeoCeDGDocumentPolicy.isNative(file)) {
+			showError(Errors.InvalidInput, file == null ? "" : file.getName());
 			return false;
 		}
 		return super.saveGeoGebraFile(file);
+	}
+
+	@Override
+	protected AppConfig createDocumentPreflightConfig() {
+		AppConfigGeoCeDG config = (AppConfigGeoCeDG) getConfig();
+		return new AppConfigGeoCeDG(config.getRuntimeFeatureService()
+				.isLocusV2CreationEnabled(), config.getRuntimeFeatureService()
+						.isExtendedDxfEnabled());
 	}
 
 	private static AppConfigGeoCeDG createConfig(CommandLineArguments args) {

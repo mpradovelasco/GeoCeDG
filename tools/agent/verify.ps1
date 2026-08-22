@@ -53,6 +53,8 @@ $G9U0R1PublicCreationLifecycleVerifier = Join-Path $PSScriptRoot `
     "verify-g9u0-r1-locus-v2-public-creation-lifecycle.ps1"
 $G9X1ExtendedDxfVerifier = Join-Path $PSScriptRoot `
     "verify-g9x1-extended-dxf.ps1"
+$G9U0R2ProductRefinementVerifier = Join-Path $PSScriptRoot `
+    "verify-g9u0-r2-product-refinement.ps1"
 $BenchmarkRunner = Join-Path $RepositoryRoot "tools\benchmark\run.ps1"
 $InitialStatus = $null
 
@@ -548,6 +550,102 @@ try {
                 "focused implementation gate is not executed.")
         } else {
             throw "Unknown G9X1 source inventory state in candidate evidence."
+        }
+    }
+
+    $g9u0R2EvidenceRoot = Join-Path $RepositoryRoot `
+        "geocedg\validation\g9u0-r2"
+    $g9u0R2EvidencePath = Join-Path $g9u0R2EvidenceRoot `
+        "g9u0-r2-product-refinement-evidence.json"
+    $g9u0R2IntegrationArtifacts = @(
+        $G9U0R2ProductRefinementVerifier,
+        $g9u0R2EvidencePath,
+        (Join-Path $g9u0R2EvidenceRoot `
+            "g9u0-r2-product-refinement-scenarios.json"),
+        (Join-Path $g9u0R2EvidenceRoot "g9u0-r2-evidence.sha256"),
+        (Join-Path $g9u0R2EvidenceRoot `
+            "g9u0-r2-document-compatibility-corpus.json"),
+        (Join-Path $g9u0R2EvidenceRoot `
+            "g9u0-r2-document-compatibility-corpus.sha256"),
+        (Join-Path $RepositoryRoot `
+            "docs\architecture\g9u0_r2_product_refinement_implementation.md"),
+        (Join-Path $RepositoryRoot `
+            "docs\validation\g9u0_r2_product_refinement_implementation_candidate_report.md")
+    )
+    $g9u0R2PresentCount = @($g9u0R2IntegrationArtifacts | Where-Object {
+        Test-Path -LiteralPath $_ -PathType Leaf
+    }).Count
+    if ($g9u0R2PresentCount -ne 0 -and
+            $g9u0R2PresentCount -ne $g9u0R2IntegrationArtifacts.Count) {
+        throw ("Incomplete G9U0-R2 verifier/support integration; all paired " +
+            "artifacts are required.")
+    }
+    if ($g9u0R2PresentCount -eq $g9u0R2IntegrationArtifacts.Count) {
+        $g9u0R2Evidence = Get-Content -Raw -LiteralPath $g9u0R2EvidencePath |
+            ConvertFrom-Json -Depth 100
+        if ($g9u0R2Evidence.sourceBoundary.inventoryStatus -eq "FROZEN") {
+            $g9u0R2Historical = @(
+                $g9u0R2Evidence.validation.g9u0R1Regression,
+                $g9u0R2Evidence.validation.historicalG9U0Regression,
+                $g9u0R2Evidence.validation.g9x1Regression,
+                $g9u0R2Evidence.validation.g5Regression,
+                $g9u0R2Evidence.validation.g9aRegression,
+                $g9u0R2Evidence.validation.legacyLocusRegression
+            )
+            $g9u0R2HistoryClean = @($g9u0R2Historical | Where-Object {
+                $_.status -eq "PASSED" -and $_.exitCode -eq 0
+            }).Count -eq $g9u0R2Historical.Count
+            if ($g9u0R2Evidence.validation.focused.status -ne "PASSED" -or
+                    $g9u0R2Evidence.validation.focusedDeterministicRerun.status -ne
+                        "PASSED" -or
+                    -not [bool]$g9u0R2Evidence.validation.focusedDeterministicRerun.matchesFocused -or
+                    $g9u0R2Evidence.validation.packagingStatic.status -ne
+                        "PASSED" -or
+                    $g9u0R2Evidence.validation.checkstyle.status -ne "PASSED" -or
+                    $g9u0R2Evidence.validation.gitDiffCheck.status -ne "PASSED" -or
+                    $g9u0R2Evidence.validation.gitDiffCachedCheck.status -ne
+                        "PASSED" -or
+                    -not $g9u0R2HistoryClean) {
+                throw ("Frozen G9U0-R2 evidence must record clean focused, " +
+                    "deterministic, packaging, Checkstyle, diff and R2-R01..R06 " +
+                    "gates before composed verification.")
+            }
+            Write-Host "`n==> G9U0-R2 product/document refinement"
+            $g9u0R2Parameters = @{
+                HistoricalRegressionsAlreadyComposed = $true
+                LogDirectory = Join-Path ([IO.Path]::GetFullPath($LogDirectory)) `
+                    "g9u0-r2-product-refinement"
+            }
+            if ($SkipBuild) {
+                $g9u0R2Parameters.SkipBuild = $true
+            }
+            if ($AllowToolchainDownload) {
+                $g9u0R2Parameters.AllowToolchainDownload = $true
+            }
+            if ($KeepBuildOutputs) {
+                $g9u0R2Parameters.KeepBuildOutputs = $true
+            }
+            if ($VerifyPackagingArtifacts) {
+                $g9u0R2Parameters.VerifyPackagingArtifacts = $true
+                if (-not [string]::IsNullOrWhiteSpace($PackagingArtifactRoot)) {
+                    $g9u0R2Parameters.PackagingArtifactRoot =
+                        [IO.Path]::GetFullPath($PackagingArtifactRoot)
+                }
+            }
+            & $G9U0R2ProductRefinementVerifier @g9u0R2Parameters
+            Assert-LastScriptSuccess `
+                -Description "G9U0-R2 product/document refinement"
+        } elseif ($g9u0R2Evidence.sourceBoundary.inventoryStatus -eq
+                "OPEN_PENDING_IMPLEMENTATION_FREEZE") {
+            Write-Host "`n==> G9U0-R2 validation scaffold detected"
+            & $G9U0R2ProductRefinementVerifier -SkipBuild `
+                -LogDirectory (Join-Path ([IO.Path]::GetFullPath($LogDirectory)) `
+                    "g9u0-r2-product-refinement-scaffold")
+            Assert-LastScriptSuccess -Description "G9U0-R2 validation scaffold"
+            Write-Host ("    Productive inventory is open; no R2 product " +
+                "tests, phase PASS or G9U1 authorization are claimed.")
+        } else {
+            throw "Unknown G9U0-R2 source inventory state in candidate evidence."
         }
     }
 

@@ -19,6 +19,7 @@ public final class DrawLocusV2 extends Drawable {
 	private final LocusRenderCache2D renderCache = new LocusRenderCache2D();
 	private GeneralPathClipped path;
 	private boolean visible;
+	private boolean labelVisible;
 
 	/** Creates one V2 drawable owned by a single Euclidian view. */
 	public DrawLocusV2(EuclidianView view, GeoLocusV2 locus) {
@@ -41,17 +42,42 @@ public final class DrawLocusV2 extends Drawable {
 		path.resetWithThickness(locus.getLineThickness());
 		LocusRenderData2D data = renderCache.getOrBuild(locus,
 				LocusRenderPolicy2D.from(view));
+		labelVisible = locus.isLabelVisible();
+		boolean labelPositionSet = false;
 		for (LocusRenderData2D.Vertex vertex : data.getVertices()) {
 			LocusPoint2D point = vertex.getPoint();
 			double x = view.toScreenCoordXd(point.getX());
 			double y = view.toScreenCoordYd(point.getY());
+			if (labelVisible && (!labelPositionSet
+					|| !isOnScreen(xLabel, yLabel)) && isOnScreen(x, y)) {
+				xLabel = (int) x;
+				yLabel = (int) y;
+				labelPositionSet = true;
+			}
+			if (labelVisible && !labelPositionSet) {
+				xLabel = (int) x;
+				yLabel = (int) y;
+				labelPositionSet = true;
+			}
 			if (vertex.startsSubpath()) {
 				path.moveTo(x, y);
 			} else {
 				path.lineTo(x, y);
 			}
 		}
+		if (labelVisible && labelPositionSet) {
+			labelDesc = locus.getLabelDescription();
+			xLabel += 5;
+			yLabel += 4 + view.getFontSize();
+			addLabelOffsetEnsureOnScreen(view.getFontLine());
+		} else {
+			labelVisible = false;
+		}
 		visible = view.intersects(path.getGeneralPath());
+	}
+
+	private boolean isOnScreen(double x, double y) {
+		return x >= 0 && x <= view.getWidth() && y >= 0 && y <= view.getHeight();
 	}
 
 	@Override
@@ -67,6 +93,11 @@ public final class DrawLocusV2 extends Drawable {
 		graphics.setPaint(getObjectColor());
 		graphics.setStroke(objStroke);
 		path.draw(graphics);
+		if (labelVisible) {
+			graphics.setFont(view.getFontLine());
+			graphics.setPaint(locus.getLabelColor());
+			drawLabel(graphics);
+		}
 	}
 
 	@Override

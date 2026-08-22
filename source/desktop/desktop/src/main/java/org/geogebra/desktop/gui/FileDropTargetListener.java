@@ -140,8 +140,9 @@ public class FileDropTargetListener implements DropTargetListener {
 	 * @return whether it has .ggb extension
 	 */
 	private static boolean isGGBFile(String fileName) {
-		return StringUtil.getFileExtension(fileName)
-				.equals(FileExtensions.GEOGEBRA);
+		FileExtensions extension = StringUtil.getFileExtension(fileName);
+		return extension.equals(FileExtensions.GEOGEBRA)
+				|| extension.equals(FileExtensions.GEOCEDG);
 	}
 
 	/**
@@ -183,12 +184,13 @@ public class FileDropTargetListener implements DropTargetListener {
 				StringTokenizer st = new StringTokenizer(uris, "\r\n");
 				while (st.hasMoreTokens()) {
 					String uriString = st.nextToken();
-					if (uriString.startsWith("http://")
-							&& isGGBFile(uriString)) {
+					URI uri = new URI(uriString);
+					if ((uriString.startsWith("http://")
+							|| uriString.startsWith("https://"))
+							&& isGGBFile(uri.getPath())) {
 						((GuiManagerD) app.getGuiManager()).loadURL(uriString,
 								true);
 					} else {
-						URI uri = new URI(uriString);
 						al.add(new File(uri));
 					}
 				}

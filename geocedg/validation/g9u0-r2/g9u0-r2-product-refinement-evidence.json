@@ -1,0 +1,420 @@
+{
+  "schemaVersion": 1,
+  "phase": "G9U0-R2",
+  "status": "IMPLEMENTATION_CANDIDATE_AUTHOR_SMOKE_FOUND_RENDER_CONTINUITY_DEFECT",
+  "implementationStarted": true,
+  "provenance": {
+    "entrySha": "ce022b756b51fe12497e1932ba3ae58093dd1405",
+    "branch": "feature/g9u0-r2-product-refinement",
+    "planningTag": "geocedg-g9u0-r2-planning-pass",
+    "planningTagObject": "40076933fe204f3e3f0ab23485b1e564b47f17e6",
+    "planningTagPeeledCommit": "ce022b756b51fe12497e1932ba3ae58093dd1405",
+    "authorityBlobIds": {
+      "canonicalPrompt": "eeb750888c66a90bc7e26926d8367a9e81c07882",
+      "adr0016": "24ed10b62340fdf5ae36fd9f39b221080ba6d252",
+      "locusPresentationSpecification": "5bf619c7048dbe6a9190846e00bc31318b0a17e9",
+      "nativeDocumentSpecification": "c814aeea03ba0e5ed1602785529ef9901baabff3"
+    }
+  },
+  "approval": {
+    "selfApproved": false,
+    "authorApproved": false,
+    "passClaimed": false,
+    "reviewRequired": true,
+    "disposition": "AUTHOR_SMOKE_FOUND_RENDER_CONTINUITY_DEFECT"
+  },
+  "phaseDisposition": {
+    "G9U0R2Planning": "PASS_AUTHOR_APPROVED",
+    "G9U0R2Implementation": "IMPLEMENTATION_CANDIDATE_AUTHOR_SMOKE_FOUND_RENDER_CONTINUITY_DEFECT",
+    "G9U1": "DESIGNED_NOT_AUTHORIZED",
+    "G9B": "NOT_AUTHORIZED",
+    "G9C": "NOT_AUTHORIZED",
+    "G9U2": "BLOCKED",
+    "productiveG10": "NOT_AUTHORIZED"
+  },
+  "architecture": {
+    "ordinaryGeoElementStyleIsSoleAuthority": true,
+    "genericPathAdded": false,
+    "parallelStyleModelAdded": false,
+    "presentationChangesSemanticRevision": false,
+    "renderCacheRemainsDerived": true,
+    "crossingObjectsAreRenderTopologyInputs": false,
+    "nativeExtension": "cedg",
+    "compatibilityInputExtension": "ggb",
+    "archiveOrXmlFormatChanged": false,
+    "xmlAppCode": "classic",
+    "filenameInfersSemanticIdentity": false,
+    "lossyDowngradeAdded": false,
+    "classicCreationEnabled": false,
+    "secondLiveParseFailureRestoresLiveDocument": true,
+    "undoBaselineCommitFailureRestoresLiveDocument": true
+  },
+  "sourceBoundary": {
+    "inventoryStatus": "FROZEN",
+    "frozenAgainst": "ce022b756b51fe12497e1932ba3ae58093dd1405",
+    "candidatePaths": [
+      "docs/architecture/g9u0_r2_product_refinement_implementation.md",
+      "docs/architecture/geocedg_documentation_architecture.md",
+      "docs/developer/geocedg_developer_guide.md",
+      "docs/roadmap/geocedg_roadmap.md",
+      "docs/upstream/modified-files.yml",
+      "docs/user/geocedg_user_guide.md",
+      "docs/validation/g9_documentation_bundle_traceability.md",
+      "docs/validation/g9_public_workspace_validation_matrix.md",
+      "docs/validation/g9u0_r2_product_refinement_implementation_candidate_report.md",
+      "geocedg/specs/operations/package-profile.schema.json",
+      "geocedg/specs/packaging/windows-packaging.md",
+      "geocedg/specs/README.md",
+      "geocedg/validation/g9u0-r2/g9u0-r2-document-compatibility-corpus.json",
+      "geocedg/validation/g9u0-r2/g9u0-r2-document-compatibility-corpus.sha256",
+      "geocedg/validation/g9u0-r2/g9u0-r2-evidence.sha256",
+      "geocedg/validation/g9u0-r2/g9u0-r2-product-refinement-evidence.json",
+      "geocedg/validation/g9u0-r2/g9u0-r2-product-refinement-scenarios.json",
+      "packaging/windows/file-associations.properties",
+      "packaging/windows/package.yml",
+      "packaging/windows/README.md",
+      "source/desktop/desktop/src/main/java/org/geocedg/desktop/AppGeoCeDG.java",
+      "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGDocumentPolicy.java",
+      "source/desktop/desktop/src/main/java/org/geocedg/desktop/GuiManagerGeoCeDG.java",
+      "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/FileDropTargetListener.java",
+      "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/GuiManagerD.java",
+      "source/desktop/desktop/src/main/java/org/geogebra/desktop/headless/AppDNoGui.java",
+      "source/desktop/desktop/src/main/java/org/geogebra/desktop/headless/GFileHandler.java",
+      "source/desktop/desktop/src/main/java/org/geogebra/desktop/io/AtomicDocumentFileWriter.java",
+      "source/desktop/desktop/src/main/java/org/geogebra/desktop/io/DocumentArchivePreflight.java",
+      "source/desktop/desktop/src/main/java/org/geogebra/desktop/io/MyXMLioD.java",
+      "source/desktop/desktop/src/main/java/org/geogebra/desktop/main/AppD.java",
+      "source/desktop/desktop/src/main/java/org/geogebra/desktop/main/GlobalKeyDispatcherD.java",
+      "source/desktop/desktop/src/main/java/org/geogebra/desktop/main/undo/UndoManagerD.java",
+      "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGDocumentLifecycleTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9U0R2LocusPresentationTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9U0R2LocusRenderContinuityTest.java",
+      "source/shared/common/src/main/java/org/geocedg/common/euclidian/draw/DrawLocusV2.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/geos/GeoLocusV2.java",
+      "source/shared/common/src/main/java/org/geogebra/common/kernel/geos/GeoElement.java",
+      "source/shared/common/src/main/java/org/geogebra/common/properties/impl/objects/CaptionProperty.java",
+      "source/shared/common/src/main/java/org/geogebra/common/properties/impl/objects/CaptionStyleProperty.java",
+      "source/shared/common/src/main/java/org/geogebra/common/properties/impl/objects/LabelProperty.java",
+      "source/shared/common/src/main/java/org/geogebra/common/properties/impl/objects/ThicknessProperty.java",
+      "source/shared/common/src/main/java/org/geogebra/common/util/FileExtensions.java",
+      "tools/agent/verify-g9u0-locus-v2-public-surface.ps1",
+      "tools/agent/verify-g9u0-r2-product-refinement.ps1",
+      "tools/agent/verify-packaging.ps1",
+      "tools/agent/verify.ps1",
+      "tools/release/build-windows-package.ps1"
+    ],
+    "pathCount": 49,
+    "categoryCounts": {
+      "productive": 21,
+      "tests": 3,
+      "validation": 5,
+      "documentation": 12,
+      "packaging": 4,
+      "operational": 4
+    }
+  },
+  "scenarioAuthority": {
+    "path": "geocedg/validation/g9u0-r2/g9u0-r2-product-refinement-scenarios.json",
+    "locus": 15,
+    "document": 17,
+    "regression": 7,
+    "matrixTotal": 39,
+    "focusedR2JUnit": 31,
+    "supportingPersistenceJUnit": 31,
+    "supportingCoverageScenarios": [
+      "R2-D09",
+      "R2-D10",
+      "R2-D11",
+      "R2-D12",
+      "R2-D14",
+      "R2-D15"
+    ],
+    "durableIdentityCorpusRegression": "R2-R05"
+  },
+  "documentCompatibilityCorpus": {
+    "path": "geocedg/validation/g9u0-r2/g9u0-r2-document-compatibility-corpus.json",
+    "manifestPath": "geocedg/validation/g9u0-r2/g9u0-r2-document-compatibility-corpus.sha256",
+    "entryCount": 8,
+    "sourceHashesVerified": "PASSED",
+    "manifestCanonicalSha256": "6fd38e659bb331404729abca44a3c935dc8f84aa57576b39df48e91b5f115796",
+    "sourceBytesChanged": false
+  },
+  "validation": {
+    "staticScaffold": {
+      "status": "PASSED",
+      "command": "pwsh -NoProfile -File .\\tools\\agent\\verify-g9u0-r2-product-refinement.ps1 -SkipBuild -LogDirectory artifacts\\g9u0-r2\\transactional-final\\static",
+      "exitCode": 0,
+      "logPath": "artifacts/g9u0-r2/transactional-final/static/static-scaffold.log"
+    },
+    "focused": {
+      "status": "PASSED",
+      "command": ".\\tools\\agent\\verify-g9u0-r2-product-refinement.ps1 -HistoricalRegressionsAlreadyRecorded -KeepBuildOutputs -LogDirectory artifacts\\g9u0-r2\\transactional-final\\focused-a -CanonicalSummaryPath artifacts\\g9u0-r2\\transactional-final\\focused-a\\canonical-summary.json",
+      "commands": {
+        "shared": ".\\gradlew.bat :shared:common-jre:test --tests org.geocedg.common.locus.G9U0R2LocusPresentationTest --tests org.geocedg.common.locus.G9U0R2LocusRenderContinuityTest --tests org.geocedg.common.locus.G9U0PersistenceCompatibilityTest --tests org.geocedg.common.spatial.G9A3SpatialNativeCompatibilityTest --tests org.geocedg.common.spatial.G9A3SpatialCompatibilityXmlTest :shared:common:checkstyleMain :shared:common-jre:checkstyleTest --rerun-tasks --no-build-cache --no-daemon --no-problems-report --console=plain -Dorg.gradle.java.installations.auto-download=false",
+        "desktop": ".\\gradlew.bat :desktop:desktop:test --tests org.geocedg.desktop.GeoCeDGDocumentLifecycleTest :desktop:desktop:checkstyleMain :desktop:desktop:checkstyleTest --rerun-tasks --no-build-cache --no-daemon --no-problems-report --console=plain -Dorg.gradle.java.installations.auto-download=false"
+      },
+      "exitCodes": {
+        "shared": 0,
+        "desktop": 0
+      },
+      "sharedR2": 15,
+      "desktopR2": 16,
+      "r2Total": 31,
+      "supportingPersistence": 31,
+      "executedJUnitTotal": 62,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "logPaths": {
+        "shared": "artifacts/g9u0-r2/transactional-final/focused-a/g9u0-r2-focused-shared-gradle.log",
+        "desktop": "artifacts/g9u0-r2/transactional-final/focused-a/g9u0-r2-focused-desktop-gradle.log"
+      },
+      "testResultPaths": [
+        "source/shared/common-jre/build/test-results/test/TEST-org.geocedg.common.locus.G9U0R2LocusPresentationTest.xml",
+        "source/shared/common-jre/build/test-results/test/TEST-org.geocedg.common.locus.G9U0R2LocusRenderContinuityTest.xml",
+        "source/shared/common-jre/build/test-results/test/TEST-org.geocedg.common.locus.G9U0PersistenceCompatibilityTest.xml",
+        "source/shared/common-jre/build/test-results/test/TEST-org.geocedg.common.spatial.G9A3SpatialNativeCompatibilityTest.xml",
+        "source/shared/common-jre/build/test-results/test/TEST-org.geocedg.common.spatial.G9A3SpatialCompatibilityXmlTest.xml",
+        "source/desktop/desktop/build/test-results/test/TEST-org.geocedg.desktop.GeoCeDGDocumentLifecycleTest.xml"
+      ],
+      "canonicalSummaryPath": "artifacts/g9u0-r2/transactional-final/focused-a/canonical-summary.json",
+      "canonicalSummarySha256": "545c072c1a5c01e9fd91c10abb35571cbca492ce9f10a9ba0033bbbf3b4e0ce4"
+    },
+    "focusedDeterministicRerun": {
+      "status": "PASSED",
+      "command": ".\\tools\\agent\\verify-g9u0-r2-product-refinement.ps1 -HistoricalRegressionsAlreadyRecorded -KeepBuildOutputs -LogDirectory artifacts\\g9u0-r2\\transactional-final\\focused-b -CanonicalSummaryPath artifacts\\g9u0-r2\\transactional-final\\focused-b\\canonical-summary.json -CompareCanonicalSummaryPath artifacts\\g9u0-r2\\transactional-final\\focused-a\\canonical-summary.json",
+      "commands": {
+        "shared": ".\\gradlew.bat :shared:common-jre:test --tests org.geocedg.common.locus.G9U0R2LocusPresentationTest --tests org.geocedg.common.locus.G9U0R2LocusRenderContinuityTest --tests org.geocedg.common.locus.G9U0PersistenceCompatibilityTest --tests org.geocedg.common.spatial.G9A3SpatialNativeCompatibilityTest --tests org.geocedg.common.spatial.G9A3SpatialCompatibilityXmlTest :shared:common:checkstyleMain :shared:common-jre:checkstyleTest --rerun-tasks --no-build-cache --no-daemon --no-problems-report --console=plain -Dorg.gradle.java.installations.auto-download=false",
+        "desktop": ".\\gradlew.bat :desktop:desktop:test --tests org.geocedg.desktop.GeoCeDGDocumentLifecycleTest :desktop:desktop:checkstyleMain :desktop:desktop:checkstyleTest --rerun-tasks --no-build-cache --no-daemon --no-problems-report --console=plain -Dorg.gradle.java.installations.auto-download=false"
+      },
+      "exitCodes": {
+        "shared": 0,
+        "desktop": 0
+      },
+      "matchesFocused": true,
+      "sharedR2": 15,
+      "desktopR2": 16,
+      "r2Total": 31,
+      "supportingPersistence": 31,
+      "executedJUnitTotal": 62,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "logPaths": {
+        "shared": "artifacts/g9u0-r2/transactional-final/focused-b/g9u0-r2-focused-shared-gradle.log",
+        "desktop": "artifacts/g9u0-r2/transactional-final/focused-b/g9u0-r2-focused-desktop-gradle.log"
+      },
+      "testResultPaths": [
+        "source/shared/common-jre/build/test-results/test/TEST-org.geocedg.common.locus.G9U0R2LocusPresentationTest.xml",
+        "source/shared/common-jre/build/test-results/test/TEST-org.geocedg.common.locus.G9U0R2LocusRenderContinuityTest.xml",
+        "source/shared/common-jre/build/test-results/test/TEST-org.geocedg.common.locus.G9U0PersistenceCompatibilityTest.xml",
+        "source/shared/common-jre/build/test-results/test/TEST-org.geocedg.common.spatial.G9A3SpatialNativeCompatibilityTest.xml",
+        "source/shared/common-jre/build/test-results/test/TEST-org.geocedg.common.spatial.G9A3SpatialCompatibilityXmlTest.xml",
+        "source/desktop/desktop/build/test-results/test/TEST-org.geocedg.desktop.GeoCeDGDocumentLifecycleTest.xml"
+      ],
+      "canonicalSummaryPath": "artifacts/g9u0-r2/transactional-final/focused-b/canonical-summary.json",
+      "canonicalSummarySha256": "545c072c1a5c01e9fd91c10abb35571cbca492ce9f10a9ba0033bbbf3b4e0ce4",
+      "comparedSummaryPath": "artifacts/g9u0-r2/transactional-final/focused-a/canonical-summary.json",
+      "comparedSummarySha256": "545c072c1a5c01e9fd91c10abb35571cbca492ce9f10a9ba0033bbbf3b4e0ce4"
+    },
+    "packagingStatic": {
+      "status": "PASSED",
+      "command": "pwsh -NoProfile -File .\\tools\\agent\\verify-g9u0-r2-product-refinement.ps1 -SkipBuild -LogDirectory artifacts\\g9u0-r2\\transactional-final\\static",
+      "exitCode": 0,
+      "logPath": "artifacts/g9u0-r2/transactional-final/static/static-scaffold.log",
+      "scenario": "R2-D17"
+    },
+    "packagingArtifactProbe": {
+      "status": "NOT_REQUESTED",
+      "command": null,
+      "exitCode": null,
+      "logPath": null,
+      "artifactRoot": null
+    },
+    "g9u0R1Regression": {
+      "scenario": "R2-R01",
+      "status": "PASSED",
+      "command": ".\\tools\\agent\\verify-g9u0-r1-locus-v2-public-creation-lifecycle.ps1 -KeepBuildOutputs -LogDirectory artifacts\\g9u0-r2\\transactional-final\\historical\\r01-g9u0-r1-final",
+      "exitCode": 0,
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "logPaths": [
+        "artifacts/g9u0-r2/transactional-final/historical/r01-g9u0-r1-final/g9u0-r1-shared.log",
+        "artifacts/g9u0-r2/transactional-final/historical/r01-g9u0-r1-final/g9u0-r1-desktop.log"
+      ]
+    },
+    "historicalG9U0Regression": {
+      "scenario": "R2-R02",
+      "status": "PASSED",
+      "command": ".\\tools\\agent\\verify-g9u0-locus-v2-public-surface.ps1 -KeepBuildOutputs -LogDirectory artifacts\\g9u0-r2\\transactional-final\\historical\\r02-g9u0",
+      "exitCode": 0,
+      "tests": 93,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "logPaths": [
+        "artifacts/g9u0-r2/transactional-final/historical/r02-g9u0/g9u0-common.log",
+        "artifacts/g9u0-r2/transactional-final/historical/r02-g9u0/g9u0-desktop.log"
+      ]
+    },
+    "g9x1Regression": {
+      "scenario": "R2-R03",
+      "status": "PASSED",
+      "command": ".\\tools\\agent\\verify-g9x1-extended-dxf.ps1 -KeepBuildOutputs -LogDirectory artifacts\\g9u0-r2\\transactional-final\\historical\\r03-g9x1",
+      "exitCode": 0,
+      "tests": 62,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "logPaths": [
+        "artifacts/g9u0-r2/transactional-final/historical/r03-g9x1/g9x1-focused-gradle.log"
+      ]
+    },
+    "g5Regression": {
+      "scenario": "R2-R04",
+      "status": "PASSED",
+      "command": ".\\tools\\agent\\verify-dxf.ps1 -KeepBuildOutputs -LogDirectory artifacts\\g9u0-r2\\transactional-final\\historical\\r04-g5",
+      "exitCode": 0,
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "logPaths": [
+        "artifacts/g9u0-r2/transactional-final/historical/r04-g5/g5-dxf-gradle.log"
+      ]
+    },
+    "g9aRegression": {
+      "scenario": "R2-R05",
+      "status": "PASSED",
+      "command": ".\\tools\\agent\\verify-g9a3-spatial-lifecycle.ps1 -KeepBuildOutputs -LogDirectory artifacts\\g9u0-r2\\transactional-final\\historical\\r05-g9a",
+      "exitCode": 0,
+      "tests": 253,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "logPaths": [
+        "artifacts/g9u0-r2/transactional-final/historical/r05-g9a/g9a3-spatial-lifecycle-tests.log"
+      ]
+    },
+    "legacyLocusRegression": {
+      "scenario": "R2-R06",
+      "status": "PASSED",
+      "command": ".\\tools\\agent\\verify-locus-v2.ps1 -KeepBuildOutputs -LogDirectory artifacts\\g9u0-r2\\transactional-final\\historical\\r06-legacy-locus",
+      "exitCode": 0,
+      "tests": 76,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "logPaths": [
+        "artifacts/g9u0-r2/transactional-final/historical/r06-legacy-locus/g6-locus-v2-gradle.log",
+        "artifacts/g9u0-r2/transactional-final/historical/r06-legacy-locus/g6r-laboratory-gradle.log"
+      ]
+    },
+    "checkstyle": {
+      "status": "PASSED",
+      "commands": {
+        "shared": ".\\gradlew.bat :shared:common-jre:test --tests org.geocedg.common.locus.G9U0R2LocusPresentationTest --tests org.geocedg.common.locus.G9U0R2LocusRenderContinuityTest --tests org.geocedg.common.locus.G9U0PersistenceCompatibilityTest --tests org.geocedg.common.spatial.G9A3SpatialNativeCompatibilityTest --tests org.geocedg.common.spatial.G9A3SpatialCompatibilityXmlTest :shared:common:checkstyleMain :shared:common-jre:checkstyleTest --rerun-tasks --no-build-cache --no-daemon --no-problems-report --console=plain -Dorg.gradle.java.installations.auto-download=false",
+        "desktop": ".\\gradlew.bat :desktop:desktop:test --tests org.geocedg.desktop.GeoCeDGDocumentLifecycleTest :desktop:desktop:checkstyleMain :desktop:desktop:checkstyleTest --rerun-tasks --no-build-cache --no-daemon --no-problems-report --console=plain -Dorg.gradle.java.installations.auto-download=false"
+      },
+      "exitCodes": {
+        "shared": 0,
+        "desktop": 0
+      },
+      "reportPaths": [
+        "source/shared/common/build/reports/checkstyle/main.xml",
+        "source/shared/common-jre/build/reports/checkstyle/test.xml",
+        "source/desktop/desktop/build/reports/checkstyle/main.xml",
+        "source/desktop/desktop/build/reports/checkstyle/test.xml"
+      ],
+      "errorCount": 0
+    },
+    "gitDiffCheck": {
+      "status": "PASSED",
+      "command": "git diff --check",
+      "exitCode": 0,
+      "logPath": "artifacts/g9u0-r2/transactional-final/static/git-diff-check.log"
+    },
+    "gitDiffCachedCheck": {
+      "status": "PASSED",
+      "command": "git diff --cached --check",
+      "exitCode": 0,
+      "logPath": "artifacts/g9u0-r2/transactional-final/static/git-diff-cached-check.log"
+    },
+    "composedWithoutSkipBuild": {
+      "scenario": "R2-R07",
+      "status": "PASSED",
+      "command": ".\\tools\\agent\\verify.ps1 -KeepBuildOutputs -LogDirectory artifacts\\g9u0-r2\\transactional-final\\composed-final",
+      "exitCode": 0,
+      "terminalOutcome": "IMPLEMENTATION_CANDIDATE_PENDING_AUTHOR_REVIEW",
+      "logPath": "artifacts/g9u0-r2/transactional-final/verify-composed-final.log",
+      "logDirectory": "artifacts/g9u0-r2/transactional-final/composed-final"
+    }
+  },
+  "manualAuthorSmoke": {
+    "status": "EXECUTED_FAILED_RENDER_CONTINUITY",
+    "passed": false,
+    "authorEvidenceRequired": true,
+    "checklistPath": "docs/validation/g9u0_r2_product_refinement_implementation_candidate_report.md",
+    "requiredSteps": 9,
+    "evidencePaths": [
+      "artifacts/smoke-test-g9u0-r2/locusFromMidpoint.cedg"
+    ],
+    "completedBy": "AUTHOR",
+    "completedAt": null,
+    "authorReportedPassedAreas": [
+      "ordinary Locus V2 visual styles",
+      "Properties behavior",
+      "copy, undo and redo",
+      "native .cedg save and reopen",
+      "non-destructive .ggb compatibility transition",
+      "corrupt .cedg fail-closed behavior",
+      "GeoCeDG Classic preservation"
+    ],
+    "failedCriteria": [
+      "R2-L11"
+    ],
+    "failure": {
+      "scope": "PRESENTATION_RENDER_CONTINUITY",
+      "observation": "A visible Locus V2 gap occurs while the generator moves continuously through a semantically defined interval.",
+      "authoritativeArtifact": "artifacts/smoke-test-g9u0-r2/locusFromMidpoint.cedg",
+      "artifactSha256": "47280a65aeec2d4f3f8edb969a934bbb40e1974c22dfe7e121011feae47abc7c",
+      "artifactTracked": false,
+      "defectPredatesR2": true
+    },
+    "correctionRequired": true,
+    "reSmokeRequired": true
+  },
+  "hardZeroCounters": {
+    "status": "FROZEN_ZERO",
+    "values": {
+      "genericPathAdditions": 0,
+      "parallelLocusStyleAuthorities": 0,
+      "semanticRevisionChangesFromPresentation": 0,
+      "crossingDrawableTopologyInputs": 0,
+      "serializedRenderCaches": 0,
+      "filenameSemanticIdentityInferences": 0,
+      "archiveFormatMigrations": 0,
+      "xmlAppCodeChanges": 0,
+      "ggbSourceOverwrites": 0,
+      "lossyDowngrades": 0,
+      "g9u1Implementation": 0,
+      "g9bImplementation": 0,
+      "g9cImplementation": 0,
+      "g9u2Implementation": 0,
+      "productiveG10Implementation": 0,
+      "generatedTrackedArtifacts": 0
+    }
+  },
+  "residualRisks": [
+    "AUTHOR_SMOKE_FAILURE_OPEN: the author executed the manual smoke; the listed non-render-continuity areas passed, but R2-L11 failed on artifacts/smoke-test-g9u0-r2/locusFromMidpoint.cedg and requires a bounded correction plus author re-smoke.",
+    "The shared presentation-refresh hook preserves updateRepaint by default; its host-wide Properties callers remain a regression-sensitive boundary covered by the final focused A/B, historical reruns and composed verification.",
+    "Native local and remote archive preflight currently materializes the complete archive bytes without an explicit size cap.",
+    "CLOSED_BY_BOUNDED_TRANSACTIONAL_CORRECTION: the native transaction prepares the replacement undo baseline before mutation, commits it atomically after all fallible publication steps, discards stale asynchronous stores by generation and restores the prior construction plus undo/redo state on injected parse or commit failure; focused A/B, supporting histories and composed verification are clean.",
+    "Windows installer registry behavior is claimed only when an explicit MSI/EXE artifact probe is run; static package-profile validation is separate.",
+    "External upstream GeoGebra remains an unsupported-open boundary for GeoCeDG-native persisted types.",
+    "Public redistribution remains blocked by the existing licensing and asset gate."
+  ],
+  "scopeDeviations": []
+}

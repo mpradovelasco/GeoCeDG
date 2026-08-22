@@ -72,12 +72,21 @@
     "file_association": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["installers_only", "extension", "mime_type", "description"],
+      "required": [
+        "installers_only",
+        "extension",
+        "mime_type",
+        "mime_basis",
+        "description",
+        "progid_strategy"
+      ],
       "properties": {
         "installers_only": { "const": true },
-        "extension": { "const": "ggb" },
-        "mime_type": { "const": "application/vnd.geogebra.file" },
-        "description": { "type": "string", "minLength": 1 }
+        "extension": { "const": "cedg" },
+        "mime_type": { "const": "application/x-geocedg-cedg" },
+        "mime_basis": { "const": "jdk25-jpackage-required-internal-unregistered" },
+        "description": { "const": "GeoCeDG document (internal evaluation)" },
+        "progid_strategy": { "const": "jdk25-jpackage-generated-geocedg-owned" }
       }
     },
     "distribution": {

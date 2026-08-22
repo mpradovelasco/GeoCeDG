@@ -18,9 +18,11 @@ G10 remains unauthorized.
 The G9U0-R2 contracts
 `locus/locus-v2-presentation.md` and
 `ui/native-document-identity.md` are **NORMATIVE / AUTHOR APPROVED** planning
-authorities. G9U0-R2 implementation remains unauthorized/not started, so these
-contracts must not be treated as changing the current `.ggb` product behavior
-or current Locus presentation.
+authorities. These contracts now govern a separately authorized, unapproved implementation
+candidate. Automated correction evidence, including composed verification, is
+complete; manual smoke and author review remain pending, so the
+candidate must not yet be treated as released/main `.cedg` behavior or an
+approved Locus presentation change.
 
 Every specification must state its status, version, authority, scope,
 invariants, compatibility policy, validation evidence, and stop conditions.

@@ -24,8 +24,8 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/GuiManagerD.java",
       "change": "modified",
-      "purpose": "Obtain the product title through the existing frame hook and expose a conservative menu-bar factory with unchanged Classic default.",
-      "authority": "docs/adr/0005-neutral-2d-geometry-export.md"
+      "purpose": "Preserve the product title/menu hooks and add conservative document-open, native-extension and product-window seams for .cedg while retaining Classic defaults.",
+      "authority": "geocedg/specs/ui/native-document-identity.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/app/GeoGebraFrame.java",
@@ -36,8 +36,14 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/main/AppD.java",
       "change": "modified",
-      "purpose": "Install a supplied application config early and allow a profile-specific safe frame icon.",
-      "authority": "docs/adr/0001-geocedg-product-profile.md"
+      "purpose": "Preserve profile bootstrap hooks and add fail-closed one-read .cedg preflight, prepared and atomic undo-baseline commit with full rollback on live-parse or commit failure, product-window routing and current-document preservation without changing ZIP/XML internals.",
+      "authority": "geocedg/specs/ui/native-document-identity.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/main/undo/UndoManagerD.java",
+      "change": "modified",
+      "purpose": "Prepare a disposable undo baseline before native publication, atomically replace history only at commit, discard stale asynchronous stores by generation and make failed-baseline cleanup nonthrowing.",
+      "authority": "geocedg/specs/ui/native-document-identity.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/main/settings/config/AppConfigGeoCeDG.java",
@@ -54,8 +60,8 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/AppGeoCeDG.java",
       "change": "added",
-      "purpose": "Instantiate the GeoCeDG config, manifest-defined perspective, GUI manager, default-off Locus V2 and extended-DXF flags, GeoCeDG controller, and native-save compatibility warning on Desktop.",
-      "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
+      "purpose": "Instantiate the GeoCeDG profile and enforce the .cedg-only native save, product-window and parser-preflight policy while retaining the Classic internal app code and feature gates.",
+      "authority": "geocedg/specs/ui/native-document-identity.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDG.java",
@@ -114,8 +120,8 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GuiManagerGeoCeDG.java",
       "change": "added",
-      "purpose": "Select the GeoCeDG menu surface without changing the Classic GUI manager.",
-      "authority": "docs/adr/0005-neutral-2d-geometry-export.md"
+      "purpose": "Select the GeoCeDG menu surface and implement native .cedg Save/Save As plus non-destructive .ggb compatibility-input state transitions without changing Classic defaults.",
+      "authority": "geocedg/specs/ui/native-document-identity.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGMenuBar.java",
@@ -276,8 +282,8 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/geos/GeoLocusV2.java",
       "change": "added",
-      "purpose": "Represent the public persistent semantic locus with lifecycle-owned identity, reconstructible XML/copy behavior, and a per-source metric owner while remaining separate from Path and render samples.",
-      "authority": "docs/adr/0007-revision-scoped-locus-v2-metric-index.md"
+      "purpose": "Retain the public persistent semantic locus while exposing ordinary curve-style capabilities, style XML and a presentation-only repaint hook without adopting Path or changing semantic revision.",
+      "authority": "geocedg/specs/locus/locus-v2-presentation.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoAnalyticLocusV2.java",
@@ -301,7 +307,7 @@
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/euclidian/draw/DrawLocusV2.java",
-      "change": "added", "purpose": "Draw V2 only from semantic evaluations through a dedicated drawable.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+      "change": "added", "purpose": "Draw V2 only from semantic evaluations using ordinary line, opacity and label presentation while preserving semantic component subpaths across unrelated crossings.", "authority": "geocedg/specs/locus/locus-v2-presentation.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/euclidian/draw/LocusRenderCache2D.java",
@@ -1872,8 +1878,8 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/geos/GeoElement.java",
       "change": "modified",
-      "purpose": "Expose the optional participating-geo durable ID and emit it only in an explicit spatial XML scope.",
-      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+      "purpose": "Preserve durable-ID support and add a narrow visual-property refresh hook whose default remains the historical update cascade; only contractually presentation-only types may narrow it.",
+      "authority": "geocedg/specs/locus/locus-v2-presentation.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/geos/PolygonFactory.java",
@@ -2960,6 +2966,102 @@
       "change": "added",
       "purpose": "Record machine-readable exact, approximate, unsupported, or invalid fidelity and provenance per source component.",
       "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/properties/impl/objects/ThicknessProperty.java",
+      "change": "modified",
+      "purpose": "Route ordinary thickness mutations through the visual-property refresh hook while preserving the historical default cascade for every other GeoElement.",
+      "authority": "geocedg/specs/locus/locus-v2-presentation.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/properties/impl/objects/LabelProperty.java",
+      "change": "modified",
+      "purpose": "Route ordinary label-style mutations through the visual-property refresh hook while preserving the historical default cascade for every other GeoElement.",
+      "authority": "geocedg/specs/locus/locus-v2-presentation.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/properties/impl/objects/CaptionStyleProperty.java",
+      "change": "modified",
+      "purpose": "Route ordinary caption-style mutations through the visual-property refresh hook while preserving the historical default cascade for every other GeoElement.",
+      "authority": "geocedg/specs/locus/locus-v2-presentation.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/properties/impl/objects/CaptionProperty.java",
+      "change": "modified",
+      "purpose": "Route ordinary caption mutations through the visual-property refresh hook while preserving the historical default cascade for every other GeoElement.",
+      "authority": "geocedg/specs/locus/locus-v2-presentation.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9U0R2LocusPresentationTest.java",
+      "change": "added",
+      "purpose": "Verify ordinary Locus V2 style exposure, persistence, copy, undo/redo, inherited update behavior and semantic invariance for R2-L01 through R2-L08 and R2-L13 through R2-L15.",
+      "authority": "geocedg/specs/locus/locus-v2-presentation.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9U0R2LocusRenderContinuityTest.java",
+      "change": "added",
+      "purpose": "Verify line/circle/conic crossing independence, absence of renderer-generated subpaths and preservation of genuine semantic discontinuities for R2-L09 through R2-L12.",
+      "authority": "geocedg/specs/locus/locus-v2-presentation.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/util/FileExtensions.java",
+      "change": "modified",
+      "purpose": "Register .cedg as the GeoCeDG-owned native document suffix alongside the retained .ggb compatibility suffix without assigning geometric semantics.",
+      "authority": "docs/adr/0016-native-geocedg-document-identity.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGDocumentPolicy.java",
+      "change": "added",
+      "purpose": "Centralize native .cedg naming, mixed-case classification and safe .ggb-to-.cedg Save As policy without inferring semantic identity from filenames.",
+      "authority": "geocedg/specs/ui/native-document-identity.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/FileDropTargetListener.java",
+      "change": "modified",
+      "purpose": "Accept supported .cedg documents at the existing Desktop drag-and-drop boundary in addition to compatibility .ggb input.",
+      "authority": "geocedg/specs/ui/native-document-identity.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/headless/AppDNoGui.java",
+      "change": "modified",
+      "purpose": "Allow disposable Desktop archive preflight to use an explicit product parser configuration while retaining the Classic configuration by default.",
+      "authority": "geocedg/specs/ui/native-document-identity.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/headless/GFileHandler.java",
+      "change": "modified",
+      "purpose": "Provide a native-only content reader without path, saved-state or undo publication so the AppD transaction can restore the prior live document before committing a successful .cedg load while preserving legacy loadXML behavior.",
+      "authority": "geocedg/specs/ui/native-document-identity.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/io/AtomicDocumentFileWriter.java",
+      "change": "added",
+      "purpose": "Publish native .cedg archives through same-directory temporary output and atomic replacement so failed or cancelled saves do not damage the prior document.",
+      "authority": "geocedg/specs/ui/native-document-identity.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/io/DocumentArchivePreflight.java",
+      "change": "added",
+      "purpose": "Validate a materialized native .cedg ZIP/XML archive in a disposable product-configured application before the live construction is mutated.",
+      "authority": "geocedg/specs/ui/native-document-identity.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/io/MyXMLioD.java",
+      "change": "modified",
+      "purpose": "Recognize .cedg as a supported document archive for Desktop preview loading without changing archive or XML serialization semantics.",
+      "authority": "geocedg/specs/ui/native-document-identity.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/main/GlobalKeyDispatcherD.java",
+      "change": "modified",
+      "purpose": "Include .cedg documents in the existing recent/open keyboard workflow while retaining .ggb compatibility input.",
+      "authority": "geocedg/specs/ui/native-document-identity.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGDocumentLifecycleTest.java",
+      "change": "added",
+      "purpose": "Verify R2-D01 through R2-D16 across native Save/Save As, reopen, direct/recent/drop/URL input, compatibility preservation, corrupt-preflight rejection, transactional second-live-parse and injected undo-commit rollback, and unchanged ZIP/XML identity.",
+      "authority": "geocedg/specs/ui/native-document-identity.md"
     }
   ]
 }

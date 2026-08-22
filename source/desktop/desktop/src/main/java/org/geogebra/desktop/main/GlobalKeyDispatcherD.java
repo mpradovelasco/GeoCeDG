@@ -305,6 +305,7 @@ public class GlobalKeyDispatcherD extends GlobalKeyDispatcher
 			// ask if OK to discard current file
 			if (app.isSaved() || ((AppD) app).saveCurrentFile()) {
 				FileExtensionFilter fileFilter = new FileExtensionFilter();
+				fileFilter.addExtension(FileExtensions.GEOCEDG);
 				fileFilter.addExtension(FileExtensions.GEOGEBRA);
 				File[] options = ((AppD) app).getCurrentPath()
 						.listFiles(fileFilter);
