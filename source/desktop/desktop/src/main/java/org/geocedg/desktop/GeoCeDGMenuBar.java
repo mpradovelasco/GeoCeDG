@@ -32,6 +32,7 @@ final class GeoCeDGMenuBar extends GeoGebraMenuBar {
 	static final String DXF_ACTION_TEXT =
 			"Export 2D geometry as DXF (experimental)...";
 	private final AppD app;
+	private JMenu productMenu;
 
 	GeoCeDGMenuBar(AppD app) {
 		super(app, (LayoutD) app.getGuiManager().getLayout());
@@ -41,7 +42,27 @@ final class GeoCeDGMenuBar extends GeoGebraMenuBar {
 	@Override
 	public void initMenubar() {
 		super.initMenubar();
-		JMenu productMenu = new JMenu("GeoCeDG");
+		productMenu = new JMenu("GeoCeDG");
+		populateProductMenu();
+		int helpIndex = Math.max(0, getMenuCount() - 1);
+		add(productMenu, helpIndex);
+		app.setComponentOrientation(this);
+	}
+
+	@Override
+	public void updateFonts() {
+		super.updateFonts();
+		if (productMenu != null) {
+			populateProductMenu();
+			GeoGebraMenuBar.setMenuFontRecursive(productMenu,
+					app.getPlainFont());
+			app.setComponentOrientation(productMenu);
+		}
+	}
+
+	private void populateProductMenu() {
+		productMenu.removeAll();
+		productMenu.setText("GeoCeDG");
 		productMenu.setMnemonic(PRODUCT_MENU_MNEMONIC);
 		AbstractAction exportDxf = new AbstractAction(DXF_ACTION_TEXT) {
 			private static final long serialVersionUID = 1L;
@@ -69,9 +90,6 @@ final class GeoCeDGMenuBar extends GeoGebraMenuBar {
 					EuclidianConstants.MODE_LOCUS_V2_LENGTH_BETWEEN));
 			productMenu.add(createInspectorAction());
 		}
-		int helpIndex = Math.max(0, getMenuCount() - 1);
-		add(productMenu, helpIndex);
-		app.setComponentOrientation(this);
 	}
 
 	private AbstractAction createModeAction(String textKey, String helpKey,

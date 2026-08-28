@@ -11,9 +11,15 @@ spatial, public-surface, workspace, extended-DXF, documentation, and bundle
 specifications without implementing them. Those six G9P specifications are
 `NORMATIVE / AUTHOR APPROVED`; implementation authorization remains an
 independent phase status. G9O1, G9A1–G9A3/the G9A track, G9U0, G9U0-R1,
-G9X1 and G9U0-R2 are `PASS — AUTHOR APPROVED` within their recorded scopes. G9U1, G9B
+G9X1, G9U0-R2 and G9U0-R3 are `PASS — AUTHOR APPROVED` within their recorded scopes. G9U1, G9B
 and G9C remain designed but not authorized; G9U2 remains blocked and productive
 G10 remains unauthorized.
+
+`locus/locus-v2-public-ui-exposure.md` is the bounded, author-approved G9U0-R3
+implementation contract. R3 is `PASS — AUTHOR APPROVED`; its retained smoke
+chronology includes the long-token width defect, bounded correction and passing
+re-smoke. This additive authority leaves the hash-frozen G9U0 public-surface
+spec unchanged and assigns graphical candidate markers prospectively to G9U1.
 
 The G9U0-R2 contracts
 `locus/locus-v2-presentation.md` and

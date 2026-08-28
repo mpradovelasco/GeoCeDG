@@ -46,9 +46,12 @@ try {
         -Message "Unable to initialize the repository-state contract fixture."
     $fixtureRoadmapDirectory = Join-Path $TemporaryRepository "docs\roadmap"
     [void](New-Item -ItemType Directory -Path $fixtureRoadmapDirectory -Force)
-    Copy-Item -LiteralPath (Join-Path $RepositoryRoot `
-            "docs\roadmap\geocedg_roadmap.md") `
-        -Destination (Join-Path $fixtureRoadmapDirectory "geocedg_roadmap.md")
+    $fixtureRoadmapPath = Join-Path $fixtureRoadmapDirectory `
+        "geocedg_roadmap.md"
+    $committedRoadmap = Get-GeoCeDGFrozenText -RepositoryRoot $RepositoryRoot `
+        -Path "docs/roadmap/geocedg_roadmap.md" -Commit $actualState.Commit
+    [IO.File]::WriteAllText($fixtureRoadmapPath, $committedRoadmap,
+        [Text.UTF8Encoding]::new($false))
     Invoke-TestGit -Arguments @("add", "docs/roadmap/geocedg_roadmap.md")
     Invoke-TestGit -Arguments @("-c", "user.name=GeoCeDG contract",
         "-c", "user.email=contract@geocedg.invalid", "commit", "--quiet",
@@ -91,8 +94,7 @@ try {
     }
 
     Invoke-TestGit -Arguments @("switch", "--quiet", "main")
-    $fixtureRoadmap = Join-Path $fixtureRoadmapDirectory "geocedg_roadmap.md"
-    [IO.File]::AppendAllText($fixtureRoadmap,
+    [IO.File]::AppendAllText($fixtureRoadmapPath,
         "`n| Última fase cerrada | G999 — CONFLICTING FIXTURE |`n",
         [Text.UTF8Encoding]::new($false))
     Invoke-TestGit -Arguments @("add", "docs/roadmap/geocedg_roadmap.md")

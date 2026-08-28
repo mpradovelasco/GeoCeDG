@@ -126,8 +126,8 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGMenuBar.java",
       "change": "added",
-      "purpose": "Expose experimental DXF and default-off Locus V2 actions only in the GeoCeDG product profile.",
-      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+      "purpose": "Expose experimental DXF and default-off Locus V2 actions only in the GeoCeDG product profile; G9U0-R3 retains one population authority across inherited init/font/localization rebuilds so the public inspector and peer actions do not disappear.",
+      "authority": "geocedg/specs/locus/locus-v2-public-ui-exposure.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGDxfExportController.java",
@@ -2538,8 +2538,8 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGLocusV2Dialogs.java",
       "change": "added",
-      "purpose": "Provide keyboard-accessible text-first semantic-address and rich-result/token dialogs without exposing any action in Classic or the default toolbar.",
-      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+      "purpose": "Provide keyboard-accessible text-first semantic-address and rich-result/token dialogs without exposing any action in Classic or the default toolbar; G9U0-R3 keeps the exact token GeoText as a hidden normal dependency and decouples compact chooser presentation from arbitrarily long token identity.",
+      "authority": "geocedg/specs/locus/locus-v2-public-ui-exposure.md"
     },
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command.properties",
@@ -3068,6 +3068,18 @@
       "change": "added",
       "purpose": "Verify R2-D01 through R2-D16 across native Save/Save As, reopen, direct/recent/drop/URL input, compatibility preservation, corrupt-preflight rejection, transactional second-live-parse and injected undo-commit rollback, and unchanged ZIP/XML identity.",
       "authority": "geocedg/specs/ui/native-document-identity.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U0R3MenuLifecycleTest.java",
+      "change": "added",
+      "purpose": "Verify R3-M01 through R3-M06 for initial/full rebuild, repeated font and localization refresh, the sole Locus V2 opt-in and the approved feature-off menu policy.",
+      "authority": ".github/prompts/tasks/g9u0-r3-public-locus-ui-hardening.prompt.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U0R3InspectorWorkflowTest.java",
+      "change": "added",
+      "purpose": "Exercise the real product-menu inspector route, deterministic rich-result choice, bounded accessible labels over long exact tokens, unchanged token materialization/persistence, cancel/recompute/undo/redo, hidden token copy, and R3 no-marker/no-automatic-point boundaries.",
+      "authority": ".github/prompts/tasks/g9u0-r3-public-locus-ui-hardening.prompt.md"
     }
   ]
 }

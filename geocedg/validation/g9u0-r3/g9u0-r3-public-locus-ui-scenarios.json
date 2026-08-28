@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "phase": "G9U0-R3",
+  "status": "PASS_AUTHOR_APPROVED",
+  "countsFrozen": true,
+  "groups": [
+    {
+      "id": "M",
+      "layer": "desktop",
+      "testClass": "org.geocedg.desktop.G9U0R3MenuLifecycleTest",
+      "cases": [
+        {"id": "R3-M01", "method": "m01ProductMenuIsPopulatedAfterInitMenubar", "title": "Initial and repeated full menubar initialization retain one populated product menu"},
+        {"id": "R3-M02", "method": "m02ProductMenuRemainsPopulatedAfterUpdateFonts", "title": "One inherited font refresh retains every product action"},
+        {"id": "R3-M03", "method": "m03ProductMenuRemainsPopulatedAfterRepeatedUpdateFonts", "title": "Repeated font refresh remains idempotently populated"},
+        {"id": "R3-M04", "method": "m04LocalizationRefreshRebuildsLocalizedItems", "title": "Language refresh rebuilds localized product actions"},
+        {"id": "R3-M05", "method": "m05SingleLocusFlagExposesEveryApprovedProductAction", "title": "The sole Locus V2 flag exposes all five approved V2 actions"},
+        {"id": "R3-M06", "method": "m06FeatureOffKeepsLocusActionsUnavailable", "title": "Feature-off preserves the approved unavailable policy"}
+      ]
+    },
+    {
+      "id": "I",
+      "layer": "desktop",
+      "testClass": "org.geocedg.desktop.G9U0R3InspectorWorkflowTest",
+      "cases": [
+        {"id": "R3-I01", "method": "i01MenuClickInspectsAnAlgebraSelectedIntersectionResult", "title": "Actual menu click inspects an Algebra-selected intersection rich result"},
+        {"id": "R3-I02", "method": "i02SingleUnselectedRichResultIsDiscoveredFromConstruction", "title": "One unselected rich result is discovered from Construction"},
+        {"id": "R3-I03", "method": "i03SeveralRichResultsUseDeterministicConstructionOrderChooser", "title": "Several rich results use deterministic chooser order"},
+        {"id": "R3-I04", "method": "i04CancelCreatesNoPointOrTokenChild", "title": "Cancel creates neither a point nor token child"},
+        {"id": "R3-I05", "method": "i05AcceptCreatesExactlyOneExactTokenPoint", "title": "Accept creates exactly one exact-token point"},
+        {"id": "R3-I06", "method": "i06ExactTokenPointSurvivesEstablishedRecompute", "title": "The exact-token point follows existing continuation semantics"},
+        {"id": "R3-I07", "method": "i07MaterializationUsesNormalUndoAndRedo", "title": "Materialization uses ordinary undo and redo"},
+        {"id": "R3-I08", "method": "i08MetricRichResultRemainsSupportedByTheSameMenuAction", "title": "The public inspector action retains metric-rich-result support"},
+        {"id": "R3-I09", "method": "i09NoRichResultsShowsTheExistingTypedMessage", "title": "No rich result retains the existing typed message"},
+        {"id": "R3-I10", "method": "i10LongExactTokensHaveBoundedDistinctAccessibleChoices", "title": "Long exact tokens use bounded, distinct and accessible compact chooser labels"},
+        {"id": "R3-I11", "method": "i11CompactChoiceUsesAndPersistsTheCompleteExactToken", "title": "Compact chooser selection materializes and persists the complete exact token without persisting presentation order"}
+      ]
+    },
+    {
+      "id": "T",
+      "layer": "desktop",
+      "testClass": "org.geocedg.desktop.G9U0R3InspectorWorkflowTest",
+      "cases": [
+        {"id": "R3-T01", "method": "t01TokenAuxiliaryIsNotEuclidianVisible", "title": "Opaque token auxiliary text is not Euclidian-visible"},
+        {"id": "R3-T02", "method": "t02TokenRemainsExactAndHiddenAfterNativeSaveReopen", "title": "Token remains an exact hidden dependency after native save/reopen"},
+        {"id": "R3-T03", "method": "t03ClosureCopyRemapsExactTokenAndKeepsAuxiliaryHidden", "title": "Closure copy/remap preserves exact hidden token semantics"}
+      ]
+    },
+    {
+      "id": "N",
+      "layer": "desktop",
+      "testClass": "org.geocedg.desktop.G9U0R3InspectorWorkflowTest",
+      "cases": [
+        {"id": "R3-N01", "method": "n01IntersectAloneCreatesNoPersistentPointChildren", "title": "Intersect alone creates no persistent points"},
+        {"id": "R3-N02", "method": "n02R3IntroducesNoRichResultDrawableOrCandidateMarkerGeo", "title": "R3 adds neither rich-result drawing nor candidate-marker GeoElements"}
+      ]
+    }
+  ],
+  "expectedCounts": {
+    "menu": 6,
+    "inspectorTokenNegative": 16,
+    "focusedR3": 22,
+    "supportingFrontend": 17,
+    "executedJUnit": 39
+  },
+  "testExecution": {
+    "status": "PASSED",
+    "focusedR3": 22,
+    "supportingFrontend": 17,
+    "executedJUnit": 39,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "authorReview": {
+    "status": "PASS_AUTHOR_APPROVED",
+    "initialSmokeObservation": "MANUAL SMOKE — FUNCTIONALLY PASSING, UI WIDTH DEFECT FOUND",
+    "boundedWidthCorrectionValidated": true,
+    "correctiveReSmokePassed": true,
+    "completedBy": "AUTHOR"
+  }
+}

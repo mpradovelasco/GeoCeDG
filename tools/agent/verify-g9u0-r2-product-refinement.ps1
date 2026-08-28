@@ -24,6 +24,9 @@ $CandidateCheckpointSha = "bd7b6a5d128d5ac64222e55a76bcd91d8bb992e7"
 $ExpectedBranch = "feature/g9u0-r2-product-refinement"
 $PlanningTagName = "geocedg-g9u0-r2-planning-pass"
 $PlanningTagObject = "40076933fe204f3e3f0ab23485b1e564b47f17e6"
+$PassTagName = "geocedg-g9u0-r2-pass"
+$PassTagObject = "ec92e2deb6e850bc56e61db4ad169b8af5dc0ec7"
+$PassCommitSha = "9694dd4c3c274f627839d0eb5d2827a7910bf0ca"
 $PromptPath = ".github/prompts/tasks/g9u0-r2-product-refinement.prompt.md"
 $AdrPath = "docs/adr/0016-native-geocedg-document-identity.md"
 $LocusSpecPath = "geocedg/specs/locus/locus-v2-presentation.md"
@@ -71,6 +74,8 @@ $AuthorApprovedStatus = "PASS_AUTHOR_APPROVED"
 $PackagingVerifier = Join-Path $PSScriptRoot "verify-packaging.ps1"
 $GeneratedDirectoryNames = @("build", ".gradle", ".kotlin")
 $LogDirectory = [IO.Path]::GetFullPath($LogDirectory)
+$script:R2BoundaryMode = $null
+$script:R2AuthorityCommit = $null
 if ([string]::IsNullOrWhiteSpace($CanonicalSummaryPath)) {
     $CanonicalSummaryPath = Join-Path $LogDirectory "canonical-summary.json"
 } else {
@@ -385,10 +390,54 @@ function Assert-PlanningAuthority {
         $isClosedCandidate = $LASTEXITCODE -eq 0 -and
             $headParent -ceq $CandidateCheckpointSha
     }
-    Assert-Condition -Condition ($isPreCommitCandidate -or $isClosedCandidate) `
-        -Message ("R2 verification requires either the uncommitted closeout " +
-            "tree on protected checkpoint $CandidateCheckpointSha, or its " +
-            "single direct closeout child on $ExpectedBranch/main.")
+    $tagObject = ((@(& git -C $RepositoryRoot rev-parse `
+        "refs/tags/$PassTagName" 2>$null) -join "")).Trim()
+    $hasPassTag = $LASTEXITCODE -eq 0
+    if ($hasPassTag) {
+        Assert-Condition -Condition ($tagObject -ceq $PassTagObject) `
+            -Message "The G9U0-R2 PASS tag object changed."
+        $tagType = (& git -C $RepositoryRoot cat-file -t $tagObject).Trim()
+        Assert-Condition -Condition ($LASTEXITCODE -eq 0 -and
+                $tagType -eq "tag") `
+            -Message "$PassTagName must remain an annotated tag."
+        $authorityCommit = (& git -C $RepositoryRoot rev-parse `
+            "$tagObject^{}").Trim()
+        Assert-Condition -Condition ($LASTEXITCODE -eq 0 -and
+                $authorityCommit -ceq $PassCommitSha) `
+            -Message "The G9U0-R2 PASS tag peel changed."
+        $tagText = @(& git -C $RepositoryRoot cat-file tag $tagObject) -join "`n"
+        Assert-Condition -Condition ($LASTEXITCODE -eq 0 -and
+                $tagText.Contains("G9U0-R2") -and
+                $tagText.Contains("PASS — AUTHOR APPROVED")) `
+            -Message "The G9U0-R2 PASS tag lacks its approved disposition."
+        $closeoutRecord = @((& git -C $RepositoryRoot rev-list --parents `
+            -n 1 $authorityCommit).Trim() -split '\s+')
+        Assert-Condition -Condition ($LASTEXITCODE -eq 0 -and
+                $closeoutRecord.Count -eq 2 -and
+                $closeoutRecord[0] -ceq $PassCommitSha -and
+                $closeoutRecord[1] -ceq $CandidateCheckpointSha) `
+            -Message ("The tagged R2 closeout must remain the single direct " +
+                "child of the protected checkpoint.")
+        & git -C $RepositoryRoot merge-base --is-ancestor `
+            $authorityCommit HEAD
+        Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
+            -Message "Current HEAD does not retain the tagged G9U0-R2 closeout."
+        $script:R2BoundaryMode = "TAGGED_DESCENDANT"
+        $script:R2AuthorityCommit = $authorityCommit
+    } else {
+        Assert-Condition -Condition ($isPreCommitCandidate -or
+                $isClosedCandidate) `
+            -Message ("R2 verification requires either the uncommitted " +
+                "closeout tree on protected checkpoint " +
+                "$CandidateCheckpointSha, or its single direct closeout " +
+                "child on $ExpectedBranch/main.")
+        if ($isPreCommitCandidate) {
+            $script:R2BoundaryMode = "WORKTREE"
+        } else {
+            $script:R2BoundaryMode = "COMMITTED_PRETAG"
+            $script:R2AuthorityCommit = $head
+        }
+    }
     $staged = @(& git -C $RepositoryRoot diff --cached --name-only --)
     Assert-Condition -Condition ($LASTEXITCODE -eq 0 -and $staged.Count -eq 0) `
         -Message "G9U0-R2 verification requires an empty index."
@@ -408,7 +457,7 @@ function Assert-PlanningAuthority {
     }
 }
 
-function Get-CandidatePaths {
+function Get-WorktreeCandidatePaths {
     $tracked = @(& git -C $RepositoryRoot diff --name-only --no-renames `
         $EntrySha --)
     Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
@@ -421,6 +470,29 @@ function Get-CandidatePaths {
     return @(Get-SortedUniqueStrings -Values @($combined |
         Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
         ForEach-Object { $_.Replace("\", "/") }))
+}
+
+function Get-CommitCandidatePaths {
+    param([Parameter(Mandatory)] [string]$Commit)
+
+    $paths = @(& git -C $RepositoryRoot diff --name-only --no-renames `
+        $EntrySha $Commit --)
+    Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
+        -Message "Unable to enumerate committed G9U0-R2 candidate paths."
+    return @(Get-SortedUniqueStrings -Values @($paths |
+        Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
+        ForEach-Object { $_.Replace("\", "/") }))
+}
+
+function Get-CandidatePaths {
+    if ($R2BoundaryMode -eq "WORKTREE") {
+        return @(Get-WorktreeCandidatePaths)
+    }
+    Assert-Condition -Condition ($R2BoundaryMode -in @(
+            "COMMITTED_PRETAG", "TAGGED_DESCENDANT") -and
+            $null -ne $R2AuthorityCommit) `
+        -Message "The G9U0-R2 source boundary mode was not established."
+    return @(Get-CommitCandidatePaths -Commit $R2AuthorityCommit)
 }
 
 function Get-TestSourcePath {

@@ -1,0 +1,194 @@
+{
+  "schemaVersion": 1,
+  "phase": "G9U0-R3",
+  "status": "PASS_AUTHOR_APPROVED",
+  "implementationStarted": true,
+  "provenance": {
+    "entrySha": "88801ba540cceeaeb1c2366be3c3a8d705f1b09d",
+    "branch": "feature/g9u0-r3-public-locus-ui-hardening",
+    "r2PassTag": "geocedg-g9u0-r2-pass",
+    "r2PassTagObject": "ec92e2deb6e850bc56e61db4ad169b8af5dc0ec7",
+    "r2PassCommit": "9694dd4c3c274f627839d0eb5d2827a7910bf0ca",
+    "r2IsAncestorOfEntry": true,
+    "interveningCommits": [
+      {"sha": "88801ba540cceeaeb1c2366be3c3a8d705f1b09d", "subject": "Consolidate BOOK-P0-post operations", "classification": "OPERATIONAL_EDITORIAL"}
+    ]
+  },
+  "approval": {
+    "selfApproved": false,
+    "authorApproved": true,
+    "passClaimed": true,
+    "reviewRequired": false,
+    "disposition": "PASS_AUTHOR_APPROVED",
+    "manualAuthorSmoke": "PASS",
+    "manualAuthorReSmoke": "PASS"
+  },
+  "phaseDisposition": {
+    "G9U0-R2": "PASS_AUTHOR_APPROVED",
+    "G9U0-R3": "PASS_AUTHOR_APPROVED",
+    "G9U1": "DESIGNED_NOT_AUTHORIZED",
+    "G9U0-R4": "PROPOSED_BOUNDED_INVESTIGATION_NOT_EXECUTED_NOT_AUTHORIZED",
+    "G9B": "NOT_AUTHORIZED",
+    "G9C": "NOT_AUTHORIZED",
+    "G9U2": "BLOCKED",
+    "productiveG10": "NOT_AUTHORIZED"
+  },
+  "architecture": {
+    "menuPlacement": "DESKTOP_APPLICATION_FRONTEND",
+    "tokenVisibilityPlacement": "DESKTOP_EXPLICIT_MATERIALIZATION_PRESENTATION_SEAM",
+    "singleLocusV2Argument": "enableLocusV2",
+    "kernelSemanticsChanged": false,
+    "intersectionSolverChanged": false,
+    "durableIdentityChanged": false,
+    "tokenContentsOrLedgerChanged": false,
+    "xmlSemanticsChanged": false,
+    "candidateMarkersImplemented": false,
+    "r2PassTaggedDescendantBoundary": true
+  },
+  "sourceBoundary": {
+    "inventoryStatus": "FROZEN",
+    "frozenAgainst": "88801ba540cceeaeb1c2366be3c3a8d705f1b09d",
+    "candidatePaths": [
+      ".github/prompts/tasks/g9u0-r3-public-locus-ui-hardening.prompt.md",
+      ".github/prompts/tasks/g9u1-construction-workspace-after-g9u0-r3.prompt.md",
+      "docs/architecture/g9u0_r3_public_locus_ui_hardening.md",
+      "docs/developer/geocedg_developer_guide.md",
+      "docs/roadmap/geocedg_roadmap.md",
+      "docs/upstream/modified-files.yml",
+      "docs/user/geocedg_user_guide.md",
+      "docs/validation/g9_documentation_bundle_traceability.md",
+      "docs/validation/g9_public_workspace_validation_matrix.md",
+      "docs/validation/g9u0_r3_public_locus_ui_hardening_candidate_report.md",
+      "geocedg/specs/README.md",
+      "geocedg/specs/locus/locus-v2-public-ui-exposure.md",
+      "geocedg/validation/g9u0-r3/g9u0-r3-evidence.sha256",
+      "geocedg/validation/g9u0-r3/g9u0-r3-public-locus-ui-evidence.json",
+      "geocedg/validation/g9u0-r3/g9u0-r3-public-locus-ui-scenarios.json",
+      "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGLocusV2Dialogs.java",
+      "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGMenuBar.java",
+      "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U0R3InspectorWorkflowTest.java",
+      "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U0R3MenuLifecycleTest.java",
+      "tools/agent/verify-g9u0-r2-product-refinement.ps1",
+      "tools/agent/verify-g9u0-r3-public-locus-ui-hardening.ps1",
+      "tools/agent/verify-repository-state.ps1",
+      "tools/agent/verify.ps1"
+    ],
+    "pathCount": 23,
+    "productivePathCount": 2,
+    "testPathCount": 2,
+    "generatedTrackedArtifacts": 0
+  },
+  "scenarioAuthority": {
+    "path": "geocedg/validation/g9u0-r3/g9u0-r3-public-locus-ui-scenarios.json",
+    "scenarioIds": ["R3-M01", "R3-M02", "R3-M03", "R3-M04", "R3-M05", "R3-M06", "R3-I01", "R3-I02", "R3-I03", "R3-I04", "R3-I05", "R3-I06", "R3-I07", "R3-I08", "R3-I09", "R3-I10", "R3-I11", "R3-T01", "R3-T02", "R3-T03", "R3-N01", "R3-N02"],
+    "focusedR3": 22,
+    "supportingFrontend": 17,
+    "executedJUnit": 39
+  },
+  "uiWidthCorrection": {
+    "status": "AUTHOR_VERIFIED_COMPLETE",
+    "priorAuthorObservation": "MANUAL SMOKE — FUNCTIONALLY PASSING, UI WIDTH DEFECT FOUND",
+    "rootCause": "TokenChoice.toString exposed the complete opaque token as the JComboBox label, making token length Swing layout authority",
+    "exactTokenChanged": false,
+    "tokenChoicePresentation": "LOCALIZED_TRANSIENT_ORDINAL_AND_CONTACT_CLASS",
+    "diagnosticTokenWrap": true,
+    "dialogBoundedByTextViewport": true,
+    "presentationPersisted": false,
+    "g9u1SemanticsChanged": false,
+    "preFixRegression": "FAILED_AT_COMPACT_LABEL_BOUNDARY",
+    "postFixTargetedRegression": "PASSED_2_OF_2"
+  },
+  "validation": {
+    "focusedA": {"status": "PASSED", "total": 39, "failures": 0, "errors": 0, "skipped": 0, "exitCode": 0, "canonicalSummarySha256": "b4dce28910f1a654843a96ee19a291be753928847478354997814d0ab0920a11", "logDirectory": "artifacts/g9u0-r3/closeout/focused-a"},
+    "focusedB": {"status": "PASSED", "total": 39, "failures": 0, "errors": 0, "skipped": 0, "exitCode": 0, "matchesFocusedA": true, "canonicalSummarySha256": "b4dce28910f1a654843a96ee19a291be753928847478354997814d0ab0920a11", "logDirectory": "artifacts/g9u0-r3/closeout/focused-b"},
+    "g9u0Regression": {"status": "PASSED", "total": 93, "failures": 0, "exitCode": 0},
+    "g9u0R1Regression": {"status": "PASSED", "total": 6, "failures": 0, "exitCode": 0},
+    "g9u0R2Regression": {"status": "PASSED", "total": 62, "failures": 0, "exitCode": 0},
+    "g9x1Regression": {"status": "PASSED", "total": 62, "failures": 0, "exitCode": 0},
+    "g5Regression": {"status": "PASSED", "total": 10, "failures": 0, "exitCode": 0},
+    "g9aRegression": {"status": "PASSED", "g9a1": 117, "g9a2": 64, "g9a3Combined": 253, "failures": 0, "exitCode": 0},
+    "legacyLocusRegression": {"status": "PASSED", "legacyCharacterization": 6, "scientificLegacy": 4, "fullLocusAuthority": 76, "failures": 0, "exitCode": 0},
+    "frontendProfileLocalization": {"status": "PASSED", "total": 17, "failures": 0, "errors": 0, "skipped": 0},
+    "checkstyle": "PASSED",
+    "staticVerifier": "PASSED",
+    "gitDiffCheck": "PASSED",
+    "gitDiffCachedCheck": "PASSED",
+    "composedWithoutSkipBuild": {"status": "PASSED", "exitCode": 0, "terminalOutcome": "All GeoCeDG verification gates passed.", "logDirectory": "artifacts/g9u0-r3/closeout/composed-final"}
+  },
+  "hardZeroCounters": {
+    "kernelSemanticChanges": 0,
+    "intersectionSolverChanges": 0,
+    "identityOrTokenLedgerChanges": 0,
+    "xmlSemanticChanges": 0,
+    "automaticPersistentPoints": 0,
+    "candidateMarkerOverlays": 0,
+    "newRuntimeFeatureFlags": 0,
+    "g9u1Implementation": 0,
+    "g9bImplementation": 0,
+    "g9cImplementation": 0,
+    "g9u2Implementation": 0,
+    "productiveG10Implementation": 0,
+    "generatedTrackedArtifacts": 0
+  },
+  "g9u1ProspectiveRevision": {
+    "status": "PLANNING_REVISION_COMPLETE",
+    "historicalPrompt": ".github/prompts/tasks/g9u1-construction-workspace.prompt.md",
+    "historicalPromptCanonicalLfSha256": "502dabbac1f756e01d0f7935a337e389a3c5e26eaabf3452a6ffe953e83b6ddd",
+    "successorPrompt": ".github/prompts/tasks/g9u1-construction-workspace-after-g9u0-r3.prompt.md",
+    "successorPromptCanonicalLfSha256": "46d2e8011188dd69488f52972eff558dbcb73dfd6fa6e111a9ddf515633f073e",
+    "entryDependency": "G9U0_R3_PASS_AUTHOR_APPROVED_PLUS_SEPARATE_G9U1_AUTHORIZATION",
+    "markerPresentationOnly": true,
+    "brandLogicalRoles": {
+      "topbar": "geocedg.brand.topbar",
+      "startup": "geocedg.brand.startup"
+    },
+    "intendedAuthorSourceFilenames": {
+      "topbar": "helixTopBar.png",
+      "startup": "helixSnapshot.png"
+    },
+    "authorBrandAssetsPresent": false,
+    "brandingAssetsIntegratedByR3": false,
+    "g9u0R4EntryDependencyAdded": false,
+    "g9u1Executed": false,
+    "g9u1Authorized": false
+  },
+  "manualAuthorSmoke": {
+    "status": "PASS_AUTHOR_APPROVED",
+    "passed": true,
+    "observation": "MANUAL SMOKE — FUNCTIONALLY PASSING, UI WIDTH DEFECT FOUND",
+    "completedBy": "AUTHOR",
+    "initialSmoke": {
+      "status": "FUNCTIONALLY_PASSING_UI_WIDTH_DEFECT_FOUND",
+      "passed": false
+    },
+    "reSmoke": {
+      "status": "PASS_AUTHOR_APPROVED",
+      "passed": true,
+      "completedBy": "AUTHOR"
+    },
+    "chronology": [
+      "Initial R3 candidate automated validation passed.",
+      "Author smoke confirmed menu, inspector, exact-token materialization, hidden token helper and native reopen behavior but exposed excessive dialog width.",
+      "A bounded presentation-only long-token layout correction was implemented.",
+      "Replacement focused, deterministic and composed validation passed.",
+      "Author corrective re-smoke passed."
+    ],
+    "authorVerifiedAreas": [
+      "public populated GeoCeDG menu",
+      "menu retention after UI, font and localization refresh",
+      "sole --enableLocusV2=true public opt-in",
+      "real Algebra selection and GeoCeDG menu inspector route",
+      "Cancel creates no point",
+      "Accept creates exactly one ordinary exact-token GeoPoint",
+      "durable token auxiliary absent from Graphics",
+      ".cedg save and reopen preserves dynamic point behavior",
+      "bounded long-token inspector with usable compact selector and OK/Cancel",
+      "complete exact token retained unchanged as internal authority"
+    ]
+  },
+  "residualRisks": [
+    "Candidate-marker presentation remains future G9U1 scope and is not implemented by R3.",
+    "The author-provided top-bar and startup branding sources remain future ignored inputs and were not integrated by R3.",
+    "A bounded G9U0-R4 local-admissibility/continuation investigation is proposed but not executed, authorized or made a G9U1 dependency."
+  ]
+}

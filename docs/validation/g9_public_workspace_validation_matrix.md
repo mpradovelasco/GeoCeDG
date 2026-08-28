@@ -1,14 +1,15 @@
 # G9 public Locus, product/document refinement and workspace validation matrix
 
-- Status: **AUTHOR-APPROVED G9P AND G9U0-R2 VALIDATION DESIGN;
-  G9U0-R2 IMPLEMENTATION PASS — AUTHOR APPROVED**
-- Date: 2026-08-22
+- Status: **G9U0-R2 PASS — AUTHOR APPROVED; G9U0-R3 PASS — AUTHOR APPROVED;
+  G9U1 DESIGNED — NOT AUTHORIZED**
+- Date: 2026-08-28
 - Scope: author-approved/historical G9U0 public Locus V2 evidence;
   author-approved G9U0-R2 product/document-refinement design and implementation;
-  future G9U1
+  bounded G9U0-R3 public-UI exposure hardening; future G9U1
   Construction workspace; and the
   post-G9 G9U2 Dihedral Procedures workspace
 - G9U0-R2 implementation: **PASS — AUTHOR APPROVED**;
+  G9U0-R3: **PASS — AUTHOR APPROVED**;
   G9U1/G9U2 implementation authorized: **no**
 
 The G9U0 rows remain the design source behind separately frozen, author-approved
@@ -33,11 +34,12 @@ Dihedral procedures, an installed MSI/registry smoke or public redistribution.
 | E-08 | workspace dependency | G9U0 PASS before public Locus actions enter Construction | disable actions |
 | E-09 | procedure dependency | global G9 PASS before G9U2, absent narrower explicit approval | workspace remains unavailable |
 | E-10 | pre-G9U1 product/document refinement | G9U0-R2 implementation, focused/composed evidence and manual author smoke closed `PASS — AUTHOR APPROVED` | G9U1 remains `DESIGNED — NOT AUTHORIZED`; implementation PASS still requires a separate U1 authorization |
+| E-11 | public Locus UI exposure | G9U0-R3 focused/deterministic/historical/composed evidence plus manual author smoke closed `PASS — AUTHOR APPROVED` | G9U1 remains `DESIGNED — NOT AUTHORIZED`; R3 candidate cannot authorize it |
 
 G9U1 is a GUI client/organization phase for already authorized actions. It has
 no semantic dependency on G9B, and G9B must not depend on G9U1. The
-author-approved R2 design is a product-entry prerequisite for U1, not a G9B
-dependency. G9U2 is
+author-approved R2 implementation and a future author-approved R3 closeout are
+product-entry prerequisites for U1, not G9B dependencies. G9U2 is
 the workspace that consumes approved G9 spatial/projection-system semantics and
 therefore remains behind the global G9 gate.
 
@@ -122,7 +124,7 @@ tests. The IDs preserve the numbered cases required by R1.
 | U0-I10 | work limit | deterministic operation-budget exhaustion | `WORK_LIMIT_REACHED`, work evidence, no stale/partial exact claim |
 | U0-I11 | token overload | materialize point from exact token | child stores token, depends on rich result, never solves |
 | U0-I12 | duplicate/unknown token | malformed, absent and duplicate token probes | point undefined; typed diagnostic |
-| U0-I13 | proximity | click near two admissible markers, then change view | proximity ranks UI only; serialized token unchanged |
+| U0-I13 | proximity (historical G9P design row; not implemented by G9U0) | future click near two admissible presentation markers, then change view | G9U0 established opaque exact-token identity only; graphical proximity/marker ranking belongs to G9U1 and may never establish identity |
 | U0-I14 | stable continuation | perturb source without topology change | same token/point identity and correct coordinate update |
 | U0-I15 | ambiguous continuation | merge/split/equidistant continuation fixture | old point undefined; no automatic retarget |
 | U0-I16 | revision mismatch | stale result/point update ordering probe | prior payload unavailable before work; no stale coordinate frame |
@@ -286,6 +288,43 @@ The author marked M-01 through M-08 passed. M-09 was `NOT_REQUESTED`; no install
 MSI/registry result is inferred. `selfApproved=false`, `authorApproved=true`,
 `passClaimed=true`.
 
+### 8.6 G9U0-R3 public-UI exposure hardening
+
+These rows govern the bounded R3 implementation candidate. They do not alter
+the frozen G9U0/R1/R2 evidence and do not implement G9U1 candidate markers.
+
+| ID | Requirement | Focused test/probe | Expected evidence |
+|---|---|---|---|
+| R3-M01 | init/full rebuild | initialize and reinitialize real GeoCeDG menubar | exactly one populated GeoCeDG menu |
+| R3-M02 | one font update | call inherited Desktop font lifecycle once | all approved items remain visible/enabled |
+| R3-M03 | repeated font updates | call lifecycle repeatedly | idempotent population; no loss/duplication |
+| R3-M04 | localization refresh | switch locale through normal app path | localized action text rebuilt; menu nonempty |
+| R3-M05 | feature ON | launch with only `--enableLocusV2=true` | five approved Locus actions plus independent DXF action |
+| R3-M06 | feature OFF | launch without V2 opt-in | approved unavailable policy; no hidden intersection flag |
+| R3-I01 | selected rich result | click actual menu inspector with Algebra-selected intersection result | controller/dialog route reached for selected result |
+| R3-I02 | sole unselected result | one rich result in Construction, no selection | result discovered and inspected |
+| R3-I03 | several results | several rich results, no selected authority | deterministic chooser behavior |
+| R3-I04 | cancel | cancel admissible-token dialog | zero point and token-child creation |
+| R3-I05 | explicit accept | accept one admissible exact token | exactly one ordinary point; rich+token exact inputs |
+| R3-I06 | recompute | perturb source under established continuation | existing token point recomputes; no re-solving/fallback |
+| R3-I07 | undo/redo | materialize, undo and redo | normal Construction lifecycle |
+| R3-I08 | metric support | invoke same inspector for metric rich result | existing metric diagnostic preserved |
+| R3-I09 | no result | invoke inspector without rich result | existing typed message preserved |
+| R3-I10 | bounded long-token chooser | inspect two admissible solutions with deliberately long valid exact tokens | compact localized labels remain distinct/accessibly named and preferred width is independent of token length |
+| R3-I11 | exact-token/presentation separation | select the second compact entry, materialize, then save/reopen | complete selected token is used and persisted unchanged; transient ordinal/label is neither identity nor XML data |
+| R3-T01 | auxiliary presentation | inspect materialized token helper | auxiliary exact `GeoText` is not Euclidian-visible |
+| R3-T02 | native persistence | save/reopen `.cedg` with token point | exact hidden dependency reconstructed |
+| R3-T03 | copy/remap | closure-copy result/token/point | approved remapping and hidden presentation preserved |
+| R3-N01 | no automatic point | execute `Intersect(L,T)` only | zero persistent point children |
+| R3-N02 | no marker scope | inspect rich result/Construction after R3 workflow | no drawable rich result or candidate-marker GeoElement |
+
+The focused verifier executes these 22 cases plus 17 existing profile,
+runtime-feature, localization/help and tool-surface cases. Two runs must produce
+byte-identical canonical summaries. G9U0, R1, R2, G9X1, G5, relevant G9A,
+legacy Locus, Checkstyle, Git diff checks and composed verification must pass.
+The author smoke was functionally passing but exposed the dialog-width defect;
+the bounded correction requires a separate author re-review.
+
 ## 9. G9U1 workspace schema and behavior tests
 
 | ID | Requirement | Test/probe | Expected evidence |
@@ -316,6 +355,23 @@ MSI/registry result is inferred. `selfApproved=false`, `authorApproved=true`,
 | U1-L02 | icon/accessibility | missing icon and all action focus paths | text fallback, accessible name, keyboard navigation |
 | U1-V01 | visual density | reference-size and small/high-DPI layouts | groups usable without giant embedded icons; overflow deterministic |
 | U1-V02 | screenshot comparison | human review against supplied evidence | workflow/panel access accepted; no pixel-copy requirement |
+| U1-I01 | active rich-result markers | select one rich intersection result containing finite admissible, stale, unresolved, overlap-only and inadmissible states | only currently finite + point-admissible solutions of the active result receive default-on transient markers |
+| U1-I02 | inactive-result suppression | retain several rich results and change Algebra/Graphics selection | only the active/selected result contributes markers; inactive history does not pollute Graphics |
+| U1-I03 | marker presentation purity | inspect Construction, XML, Protocol, undo and copy closure before/after marker display | marker is no GeoElement, ID, XML, DAG/Protocol/undo/copy object and causes zero semantic revision |
+| U1-I04 | exact marker selection | click/rank markers under zoom/DPI/view changes and close solutions | hit/rank preselects an already admissible exact token; coordinate/order/proximity never establishes identity |
+| U1-I05 | explicit one-point materialization | confirm one selected admissible marker/token, then undo/redo | exactly one ordinary exact-token point; normal single user action; no re-solving or fallback |
+| U1-I06 | explicit create-all | invoke optional create-all on mixed current result, then undo/redo | exactly all and only currently point-admissible tokens materialize through exact dependencies; never automatic |
+| U1-I07 | marker preference | toggle active-result marker preference and restart workspace | Construction default is ON; explicit OFF suppresses overlay only and changes no Construction state |
+| U1-B01 | Construction visual identity | compare normal Construction and separate Classic diagnostic route | restrained professional identity is immediately distinguishable; Classic retains diagnostic identity |
+| U1-B02 | theme/accent purity | change supported theme/accent/workspace style with populated Construction | zero Construction/DAG/semantic/undo updates; presentation colors are never geometric authority |
+| U1-B03 | accessibility/scaling | contrast audit plus normal DPI/scaling and keyboard paths | accepted contrast, readable status/help, stable focus/order and usable professional grouping |
+| U1-A01 | top-bar role provenance | resolve `geocedg.brand.topbar` and supplied `helixTopBar.png` from the asset manifest | one canonical source filename/hash/dimensions/format-alpha/provenance authority; frontend chrome only; explicit fallback if absent |
+| U1-A02 | startup role provenance and suitability | resolve `geocedg.brand.startup` and supplied `helixSnapshot.png`; inspect every claimed icon size | one canonical source filename/hash/dimensions/format-alpha/provenance authority; 16x16/32x32 suitability proved rather than assumed |
+| U1-A03 | deterministic brand derivatives | regenerate required startup/application Desktop PNG sizes and Windows ICO twice | identical bytes/hashes from recorded tool/version/options; no hand-copied packaging duplicates or upstream substitute |
+| U1-A04 | brand consumers | inspect top bar separately from startup/frame and, where claimed, app package and `.cedg` association | each logical role resolves only in its approved seam; `.ggb` unclaimed; Classic distinction retained |
+| U1-G01 | complete professional groups | compile the manifest/action registry and all placements | all eleven approved action families represented with stable IDs and deterministic group/overflow order |
+| U1-G02 | one action authority | scan profile/compiler/menu/toolbar plus dispatch tests | localization/help/feature policy resolves from one registry; no duplicate hard-coded product action catalog |
+| U1-G03 | R3 lifecycle retention | init, repeated font refresh and language refresh, then invoke actual inspector | product menu and rich inspector remain populated, localized, visible and enabled according to feature policy |
 
 ## 10. G9U2 blocked procedure tests
 
@@ -417,9 +473,9 @@ not affect metric/intersection results.
 
 ### G9U1 PASS candidate
 
-- G9U0-R2 implementation is already `PASS — AUTHOR APPROVED`, and a separate
-  author decision has authorized the superseding G9U1 prompt; R2 implementation
-  PASS alone is insufficient.
+- G9U0-R2 and G9U0-R3 are already `PASS — AUTHOR APPROVED`, and a separate
+  author decision has authorized the exact post-R3 successor prompt; neither
+  predecessor PASS alone is sufficient.
 - Schema v2 and deterministic v1 migration pass.
 - Construction workspace mapping, panel workflow, localization/icons,
   preferences, Document layout and Classic/Laboratory boundaries pass.
@@ -427,6 +483,15 @@ not affect metric/intersection results.
   application-owned R2 policy and is not duplicated in the workspace manifest.
 - Workspace switching produces zero semantic mutations.
 - Only already approved public actions are enabled.
+- Active-result markers are transient presentation over already admissible
+  exact tokens; explicit one/all-point materialization is exact and undoable,
+  no marker is persisted, and no point is created automatically.
+- The eleven professional groups, accessible GeoCeDG-versus-Classic visual
+  identity and distinct `geocedg.brand.topbar` / `geocedg.brand.startup`
+  provenance seams pass automated and author review. If frontend/packaging
+  branding is claimed, both required author-provided sources are present and
+  validated rather than fabricated, and small startup-derived icons are proved
+  suitable rather than assumed.
 - G9U1 remains a presentation/interaction client: it neither requires G9B nor
   becomes a prerequisite of G9B.
 - Human visual/accessibility review accepts professional density and workflow.

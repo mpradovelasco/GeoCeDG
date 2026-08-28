@@ -45,6 +45,8 @@ import org.geogebra.desktop.main.AppD;
 
 /** Keyboard-accessible, text-first dialogs for experimental Locus V2 actions. */
 final class GeoCeDGLocusV2Dialogs {
+	private static final int INSPECTOR_ROWS = 18;
+	private static final int INSPECTOR_COLUMNS = 72;
 
 	private final AppD app;
 
@@ -295,9 +297,13 @@ final class GeoCeDGLocusV2Dialogs {
 				appendIntersectionDiagnostics(summary,
 						solution.getDiagnostics());
 				if (pointAdmissible) {
-					admissible.add(new TokenChoice(token,
-							localizeEnum(solution.getClassification()
-									.getContactClass())));
+					int choiceNumber = admissible.size() + 1;
+					String presentation = menu(
+							"LocusV2.Results.Field.Solution") + " "
+							+ choiceNumber + " \u2014 "
+							+ localizeEnum(solution.getClassification()
+									.getContactClass());
+					admissible.add(new TokenChoice(token, presentation));
 				}
 			}
 			int overlapNumber = 0;
@@ -351,6 +357,7 @@ final class GeoCeDGLocusV2Dialogs {
 		Construction construction = app.getKernel().getConstruction();
 		GeoText tokenInput = new GeoText(construction, chosen.token);
 		tokenInput.setAuxiliaryObject(true);
+		tokenInput.setEuclidianVisible(false);
 		try {
 			return LocusV2PublicOperations.selectIntersectionPoint(construction,
 					null, rich, tokenInput);
@@ -369,7 +376,8 @@ final class GeoCeDGLocusV2Dialogs {
 	}
 
 	private JTextArea createTextArea(String text) {
-		JTextArea area = new JTextArea(text, 18, 72);
+		JTextArea area = new JTextArea(text, INSPECTOR_ROWS,
+				INSPECTOR_COLUMNS);
 		area.setEditable(false);
 		area.setLineWrap(true);
 		area.setWrapStyleWord(true);
@@ -485,16 +493,16 @@ final class GeoCeDGLocusV2Dialogs {
 
 	private static final class TokenChoice {
 		private final String token;
-		private final String classification;
+		private final String presentation;
 
-		private TokenChoice(String token, String classification) {
+		private TokenChoice(String token, String presentation) {
 			this.token = token;
-			this.classification = classification;
+			this.presentation = presentation;
 		}
 
 		@Override
 		public String toString() {
-			return classification + " \u2014 " + token;
+			return presentation;
 		}
 	}
 }

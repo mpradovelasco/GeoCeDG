@@ -1,16 +1,19 @@
 # Manual operativo vivo de GeoCeDG
 
 - Tipo de documento: manual operativo vivo
-- Última puerta de producto aprobada/observable: **G9U0-R2 = PASS — AUTHOR APPROVED**
+- Última puerta de producto aprobada/observable: **G9U0-R3 = PASS — AUTHOR APPROVED**
 - G9U0 = PASS — AUTHOR APPROVED
 - G9X1 = PASS — AUTHOR APPROVED
 - G9U0-R2: **PASS — AUTHOR APPROVED**; el fallo original R2-L11 se conserva y la
   corrección, la automatización y el re-smoke interactivo pasan
+- G9U0-R3: **PASS — AUTHOR APPROVED**; menú/inspector públicos, auxiliar exacto
+  oculto y selector acotado validados mediante smoke y re-smoke interactivos
 - Baseline: GeoGebra 5.4.928.0 at
   `9b93256b7df401ff056c37b502d82df4d72b1522`
 - Plataforma validada: únicamente Windows
-- Última revisión: 2026-08-22
-- Fase actual: G9U0, G9X1 y G9U0-R2 son `PASS — AUTHOR APPROVED`. G9U1, G9B,
+- Última revisión: 2026-08-28
+- Fase actual: G9U0, G9X1, G9U0-R2 y G9U0-R3 son `PASS — AUTHOR APPROVED`.
+  G9U1, G9U0-R4, G9B,
   G9C, G9U2, G10 y las fases posteriores no se han
   ejecutado ni están autorizadas.
 - Locus V2: superficie pública `experimental` aprobada para G9U0, exclusiva de
@@ -84,6 +87,17 @@ rich result. The existing general Intersect tool accepts supported V2 inputs.
 The inspector reports typed status, completeness, currentness, support,
 numeric guarantee, overlap and diagnostics, and offers only exact tokens that
 are locally point-admissible.
+
+The author-approved R3 implementation repairs the Desktop lifecycle that could
+leave the visible GeoCeDG menu empty after a font or language refresh.
+It also keeps the opaque exact-token helper out of Graphics while retaining it
+as the point's persistent dependency. The inspector now shows compact localized
+solution labels instead of using the potentially long token as a chooser label;
+the complete exact token remains available in the wrapping diagnostic and is
+used unchanged when a point is explicitly created. The first author smoke was
+functionally passing but found the dialog-width defect; replacement automation
+and the corrective author re-smoke pass. No candidate-marker overlay or
+automatic persistent point is part of R3.
 
 Global completeness and individual admissibility are deliberately independent
 (Option B): a rigorously isolated solution may provide a point even when the
@@ -1089,6 +1103,7 @@ Promotion follows `legacy -> research -> experimental -> stable`, or
 | G9X1 | Extended exact/approximate DXF export | `PASS — AUTHOR APPROVED`; experimental and default-off | External read-only export, strict preflight, conditional mandatory sidecar and bounded estimated-error approximation; no geometric authority |
 | G9U0-R2 planning/design | Locus V2 presentation/continuity and native `.cedg` identity | `PASS — AUTHOR APPROVED` | Normative contract implemented by the separately approved R2 execution |
 | G9U0-R2 implementation | Ordinary presentation/render continuity and native document lifecycle | `PASS — AUTHOR APPROVED`; original R2-L11 failure preserved and correction/re-smoke accepted | `.cedg` is native, `.ggb` is compatibility input; installed MSI/registry smoke remains `NOT_REQUESTED` |
+| G9U0-R3 | Public menu/inspector exposure, bounded token chooser and hidden token helper | `PASS — AUTHOR APPROVED` | Frontend-only closeout after smoke/re-smoke; no marker overlay, kernel/XML change or G9U1 authorization |
 | G9U1/G9B/G9C/G9U2 | Later productive G9 capabilities | Not authorized; U2 blocked on the approved global G9 gate | No workspace, spatial-primitive or later G9 implementation is implied by G9X1 |
 
 The previously approved future compatibility rule is exercised by the
@@ -1412,6 +1427,7 @@ polyline is a disposable view representation.
 | G9U0 | Experimental public Locus V2 surface | `PASS — AUTHOR APPROVED`; default-off and GeoCeDG-only |
 | G9U0-R2 planning/design | Pre-G9U1 presentation/document contract | `PASS — AUTHOR APPROVED` |
 | G9U0-R2 implementation | Ordinary Locus style/render continuity plus `.cedg` lifecycle | `PASS — AUTHOR APPROVED`; correction and author re-smoke accepted |
+| G9U0-R3 | Public Locus V2 UI exposure hardening | `PASS — AUTHOR APPROVED`; menu lifecycle, hidden exact-token helper and bounded chooser accepted |
 | G10 | CeDG 3D DSL and workbench | Pending |
 | G11 | Hierarchical layers and view states | Pending |
 | G12 | Extended navigation, zoom and physical scales | Pending |

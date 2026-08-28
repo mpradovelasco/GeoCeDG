@@ -6,7 +6,9 @@
 - G9 state in this guide: G9O1, G9A1–G9A3/G9A, G9U0/G9U0-R1 and G9X1
   `PASS — AUTHOR APPROVED`; G9U0-R2 planning and implementation also
   `PASS — AUTHOR APPROVED` after the bounded R2-L11 correction and accepted
-  interactive re-smoke; G9U1/G9B/G9C remain unauthorized
+  interactive re-smoke; G9U0-R3 is also `PASS — AUTHOR APPROVED` after its
+  bounded long-token layout correction and author re-smoke; G9U1/G9B/G9C remain
+  unauthorized
 - G9U0-R2 closeout: `selfApproved=false`, `authorApproved=true`,
   `passClaimed=true`; installed MSI/registry smoke `NOT_REQUESTED`
 
@@ -90,6 +92,14 @@ make either module seek the other module's classes. Two identical focused runs
 compare normalized archive-entry/XML evidence and canonical summaries only
 after `R2-R01`–`R06` have been recorded separately.
 
+G9U0-R3 follows that same paired architecture with
+`tools/agent/verify-g9u0-r3-public-locus-ui-hardening.ps1`. Its composed block
+runs after R2 and before any future G9U1 gate. Each focused execution runs 20
+R3 cases plus 17 existing Desktop profile/runtime/localization/tool-surface
+cases; the deterministic summary hashes only the four R3 productive/test source
+paths and test/scenario outcomes. Generated logs remain ignored. The author
+smoke is a separate required gate and is not passed by the verifier.
+
 Focused Java tests live primarily in `source/shared/common-jre`; frontend tests
 live with the Desktop module. A passing focused test is evidence for its stated
 scope, not automatic approval, packaging success or public feature maturity.
@@ -134,6 +144,34 @@ perspective/toolbar. Desktop compiles it through GeoCeDG profile classes. Saved
 layouts may restore their own toolbar/perspective. Feature manifest membership
 is metadata; do not assume it is a complete runtime flag service. G9U1
 workspace/profile schema v2 remains unauthorized and is not part of R2.
+
+`GeoGebraMenuBar.updateFonts()` clears every top-level menu so upstream
+`BaseMenu` instances can rebuild lazily. `GeoCeDGMenuBar` is an ordinary
+`JMenu`; R3 therefore repopulates it after the inherited clear using the same
+single `populateProductMenu()` method used at initialization. Do not add a
+second action registry or intersection flag. The sole public V2 opt-in remains
+`--enableLocusV2=true`.
+
+The exact-token materialization dialog creates an auxiliary `GeoText` because
+the token is a reconstructible input of `AlgoLocusIntersectionPointV2`. R3
+keeps that normal DAG/XML dependency and sets only Euclidian visibility false at
+creation. Do not replace it with coordinates/indexes, change token generation,
+or use layers as semantic state. Candidate-marker overlays remain future G9U1
+presentation and are absent from R3.
+
+After the first complete R3 composed run passed, the future operational
+authority was prospectively superseded by
+`.github/prompts/tasks/g9u1-construction-workspace-after-g9u0-r3.prompt.md`.
+The original G9P prompt remains unchanged historical evidence. The successor is
+planning only: it requires an author-approved R3 closeout plus separate G9U1
+authorization, keeps candidate markers as non-persistent active-result
+overlays, retains the eleven professional action groups, and reserves
+`geocedg.brand.topbar` and `geocedg.brand.startup` as distinct logical roles in
+the existing asset-provenance seam. Their intended future author sources are
+`helixTopBar.png` and `helixSnapshot.png`; R3 integrates neither. The startup
+source may produce application/package derivatives only after small-size and
+platform suitability checks. No icon, palette, workspace or marker
+implementation is part of R3.
 
 ## Persistence and compatibility
 
@@ -250,11 +288,23 @@ implementation are author-approved. Its original R2-L11 smoke failure remains
 historical evidence; the bounded correction, all automated evidence including
 composed verification, and the author re-smoke pass.
 `selfApproved=false`, `authorApproved=true`, and `passClaimed=true`.
+G9U0-R3 is separately `PASS — AUTHOR APPROVED` after the initial smoke exposed
+the long-token width defect, replacement automation passed and the author
+re-smoke accepted the correction; `selfApproved=false`, `authorApproved=true`,
+`passClaimed=true`.
+
+R3 keeps opaque exact tokens out of layout-sizing labels as well as out of
+ordinary Graphics presentation. The rich-result chooser renders a localized,
+snapshot-only solution ordinal plus contact classification, but retains and
+passes the complete token unchanged. The ordinal is not persisted, is not
+continuation identity and is never command input; the diagnostic text may show
+the exact token only inside its wrapping/scrolling bounded viewport.
 
 Phase documents distinguish hard semantic/contract dependencies, recommended
 execution predecessors and global/release gates. G9O1 is recommended first but
 is not a semantic prerequisite of G9A1. After G9A3, G9B/G9C can progress
-without G9U1. The product order is G9U0-R1 plus G9X1 → G9U0-R2 → G9U1.
-R2 cannot authorize G9U1: even an author-approved R2 closeout would still
-require a separate U1 authorization. G9B/G9C remain semantically independent,
+without G9U1. The product order is G9U0-R1 plus G9X1 → G9U0-R2 → G9U0-R3 →
+G9U1. R2 cannot authorize G9U1, and the current R3 candidate cannot satisfy its
+entry gate: R3 must first close by author decision and U1 then requires its own
+separate authorization. G9B/G9C remain semantically independent,
 G9U2 remains globally blocked and productive G10 remains unauthorized.

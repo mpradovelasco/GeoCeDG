@@ -55,6 +55,8 @@ $G9X1ExtendedDxfVerifier = Join-Path $PSScriptRoot `
     "verify-g9x1-extended-dxf.ps1"
 $G9U0R2ProductRefinementVerifier = Join-Path $PSScriptRoot `
     "verify-g9u0-r2-product-refinement.ps1"
+$G9U0R3PublicLocusUiVerifier = Join-Path $PSScriptRoot `
+    "verify-g9u0-r3-public-locus-ui-hardening.ps1"
 $BenchmarkRunner = Join-Path $RepositoryRoot "tools\benchmark\run.ps1"
 $InitialStatus = $null
 
@@ -662,6 +664,97 @@ try {
         } else {
             throw "Unknown G9U0-R2 source inventory state in candidate evidence."
         }
+    }
+
+    $g9u0R3EvidenceRoot = Join-Path $RepositoryRoot `
+        "geocedg\validation\g9u0-r3"
+    $g9u0R3EvidencePath = Join-Path $g9u0R3EvidenceRoot `
+        "g9u0-r3-public-locus-ui-evidence.json"
+    $g9u0R3IntegrationArtifacts = @(
+        $G9U0R3PublicLocusUiVerifier,
+        $g9u0R3EvidencePath,
+        (Join-Path $g9u0R3EvidenceRoot `
+            "g9u0-r3-public-locus-ui-scenarios.json"),
+        (Join-Path $g9u0R3EvidenceRoot "g9u0-r3-evidence.sha256"),
+        (Join-Path $RepositoryRoot `
+            "docs\architecture\g9u0_r3_public_locus_ui_hardening.md"),
+        (Join-Path $RepositoryRoot `
+            "docs\validation\g9u0_r3_public_locus_ui_hardening_candidate_report.md")
+    )
+    $g9u0R3PresentCount = @($g9u0R3IntegrationArtifacts | Where-Object {
+        Test-Path -LiteralPath $_ -PathType Leaf
+    }).Count
+    if ($g9u0R3PresentCount -ne 0 -and
+            $g9u0R3PresentCount -ne $g9u0R3IntegrationArtifacts.Count) {
+        throw ("Incomplete G9U0-R3 verifier/support integration; all paired " +
+            "artifacts are required.")
+    }
+    if ($g9u0R3PresentCount -eq $g9u0R3IntegrationArtifacts.Count) {
+        $g9u0R3Evidence = Get-Content -Raw -LiteralPath $g9u0R3EvidencePath |
+            ConvertFrom-Json -Depth 100
+        $g9u0R3Historical = @(
+            $g9u0R3Evidence.validation.g9u0Regression,
+            $g9u0R3Evidence.validation.g9u0R1Regression,
+            $g9u0R3Evidence.validation.g9u0R2Regression,
+            $g9u0R3Evidence.validation.g9x1Regression,
+            $g9u0R3Evidence.validation.g5Regression,
+            $g9u0R3Evidence.validation.g9aRegression,
+            $g9u0R3Evidence.validation.legacyLocusRegression
+        )
+        $g9u0R3HistoryClean = @($g9u0R3Historical | Where-Object {
+            $_.status -eq "PASSED" -and $_.exitCode -eq 0
+        }).Count -eq $g9u0R3Historical.Count
+        $g9u0R3HistoryPendingThisComposed = @($g9u0R3Historical |
+            Where-Object {
+                $_.status -eq "PENDING_CURRENT_COMPOSED" -and
+                $null -eq $_.exitCode
+            }).Count -eq $g9u0R3Historical.Count -and
+            $g9u0R3Evidence.validation.composedWithoutSkipBuild.status -eq
+                "PENDING"
+        if ($g9u0R3Evidence.sourceBoundary.inventoryStatus -ne "FROZEN" -or
+                $g9u0R3Evidence.status -ne "PASS_AUTHOR_APPROVED" -or
+                [bool]$g9u0R3Evidence.approval.selfApproved -or
+                -not [bool]$g9u0R3Evidence.approval.authorApproved -or
+                -not [bool]$g9u0R3Evidence.approval.passClaimed -or
+                [bool]$g9u0R3Evidence.approval.reviewRequired -or
+                $g9u0R3Evidence.approval.disposition -ne
+                    "PASS_AUTHOR_APPROVED" -or
+                $g9u0R3Evidence.approval.manualAuthorSmoke -ne "PASS" -or
+                $g9u0R3Evidence.approval.manualAuthorReSmoke -ne "PASS" -or
+                $g9u0R3Evidence.validation.focusedA.status -ne "PASSED" -or
+                $g9u0R3Evidence.validation.focusedB.status -ne "PASSED" -or
+                -not [bool]$g9u0R3Evidence.validation.focusedB.matchesFocusedA -or
+                $g9u0R3Evidence.validation.frontendProfileLocalization.status -ne
+                    "PASSED" -or
+                $g9u0R3Evidence.validation.checkstyle -ne "PASSED" -or
+                $g9u0R3Evidence.validation.staticVerifier -ne "PASSED" -or
+                $g9u0R3Evidence.validation.gitDiffCheck -ne "PASSED" -or
+                $g9u0R3Evidence.validation.gitDiffCachedCheck -ne "PASSED" -or
+                -not ($g9u0R3HistoryClean -or
+                    $g9u0R3HistoryPendingThisComposed)) {
+            throw ("Frozen author-approved G9U0-R3 evidence must record clean " +
+                "focused A/B, deterministic, frontend, historical, " +
+                "Checkstyle, static and diff gates before composed verification.")
+        }
+
+        Write-Host "`n==> G9U0-R3 public Locus V2 UI exposure hardening"
+        $g9u0R3Parameters = @{
+            HistoricalRegressionsAlreadyComposed = $true
+            LogDirectory = Join-Path ([IO.Path]::GetFullPath($LogDirectory)) `
+                "g9u0-r3-public-locus-ui"
+        }
+        if ($SkipBuild) {
+            $g9u0R3Parameters.SkipBuild = $true
+        }
+        if ($AllowToolchainDownload) {
+            $g9u0R3Parameters.AllowToolchainDownload = $true
+        }
+        if ($KeepBuildOutputs) {
+            $g9u0R3Parameters.KeepBuildOutputs = $true
+        }
+        & $G9U0R3PublicLocusUiVerifier @g9u0R3Parameters
+        Assert-LastScriptSuccess `
+            -Description "G9U0-R3 public Locus V2 UI exposure hardening"
     }
 
     Write-Host "`n==> Standalone Windows packaging contracts"
