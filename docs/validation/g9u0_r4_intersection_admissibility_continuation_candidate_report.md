@@ -534,16 +534,16 @@ The third Desktop method,
 `nativeCedgPreservesDormantAndReactivatedExistingPoints`, covers native
 `2 -> 4 -> 2` dormancy, same-point reactivation and reopen after reactivation;
 it is not evidence of a periodic-`q` native round trip. These counts describe
-the current 54-path candidate, including 31 paths under `source/`. Focused A and
-B each pass 58/58 with zero failures, errors or skips and identical normalized
-summary SHA-256
+the closed 54-path product candidate, including 31 paths under `source/`. At
+product closeout, focused A and B each passed 58/58 with zero failures, errors
+or skips. Their then-identical normalized summary SHA-256 was
 `3e9ea0aa20d511f2828eae61e491c1b3b5d9cb86a0f02166503ee5093d6000fb`.
-Their ignored log roots are respectively
-`artifacts/g9u0-r4/four-root-characterization-a` and
-`artifacts/g9u0-r4/four-root-characterization-b`. The full composed authority
-also exits 0 and terminates with
-`All GeoCeDG verification gates passed.` at
-`artifacts/g9u0-r4/four-root-characterization-composed`.
+That value is retained as historical pre-checkout evidence; it included raw
+working-tree byte hashes and was therefore sensitive to Git LF/CRLF checkout
+materialization. The composed product authority also exited 0 and terminated
+with `All GeoCeDG verification gates passed.`. Product approval remains at
+commit `63c291464111a5bcdbca488d6639662e46c389c4` and annotated tag object
+`0f9b303057b00d23722ad1f9d3594b4609d668a7`, which still peels to that commit.
 
 ## Validation and evidence status
 
@@ -585,10 +585,10 @@ authorities therefore remain green for this candidate. Logs are ignored under
 automated results did not constitute author approval; the separate final author
 re-smokes now do.
 
-Those 50/50 runs, inventory counts and hashes predate the current direct
+Those 50/50 runs, inventory counts and hashes predate the direct
 UI-sized Case B regression and adaptive phase-tube/dormant-allocation
 correction. They remain historical evidence and must not be cited as validating
-the current correction. The replacement current authority instead executed
+that correction. The product-closeout replacement authority instead executed
 focused A and B at 58/58 with an exact normalized-summary match at SHA-256
 `3e9ea0aa20d511f2828eae61e491c1b3b5d9cb86a0f02166503ee5093d6000fb`;
 the full composed verifier exited 0 with the literal terminal
@@ -600,6 +600,34 @@ verifier now recognizes either the historical exact-copy seam or the current
 retained-token seam, but the latter must prove ledger/provenance validation and
 exact-token lookup. No coordinate, extrinsic order, proximity, movement-history
 or lineage fallback was admitted.
+
+## Post-closeout operational source-hash correction
+
+After promotion on Windows with `core.autocrlf=true`, the same tracked R4 tree
+produced summary SHA-256
+`09f7b9694bbb2a0dd19fd023543cc95ffef579611dbeb1ebeece43a1b4bb60ea`.
+Only `deterministicSourceHashes` differed from the historical pre-checkout value
+`3e9ea0aa20d511f2828eae61e491c1b3b5d9cb86a0f02166503ee5093d6000fb`;
+all tests, compilation, Checkstyle and semantic Git content remained unchanged.
+The cause was operational: R4 used `Get-FileHash` over physical working-tree
+bytes, so Git's LF/CRLF checkout conversion became evidence authority.
+
+The bounded post-closeout correction reuses the R3 sealed tagged-descendant
+pattern: tracked product sources are read from the immutable R4 PASS Git blobs,
+UTF-8 text is decoded without BOM and canonicalized to LF before SHA-256, and
+the byte-exact `.cedg` fixtures remain binary-hashed. Working-tree line endings
+are no longer authority. A controlled regression proves LF and CRLF forms hash
+identically while a real content mutation changes the hash. Replacement focused
+A/B each execute 58/58 and match exactly at canonical SHA-256
+`1bda6e3b2d3efa350f945ecb1e8e51b7007dba3ea5fce0d97654cade33ceefd9`;
+the ignored log roots are `artifacts/g9u0-r4/post-closeout-hashing-a` and
+`artifacts/g9u0-r4/post-closeout-hashing-b`, and composed evidence is under
+`artifacts/g9u0-r4/post-closeout-hashing-composed`.
+
+This descendant maintenance changes only verifier/evidence/governance paths.
+It changes no Java product source, geometry, intersection semantics, identity,
+token ledger, persistence, frontend behavior or public command. The R4 PASS tag
+is immutable and continues to designate the author-approved product commit.
 
 ## Retained limitations
 

@@ -1697,9 +1697,8 @@ tras smoke y re-smoke autorales. R4 conserva tres smokes históricos: el primero
 materializó dos raíces pero invalidó un punto durante movimiento regular; el
 segundo encontró cuatro raíces que todavía no podían materializarse y el tercero
 materializó cuatro pero perdió definedness durante movimiento regular. El
-correctivo adaptativo y ledger-v4 supera A/B 58/58 con resumen exacto SHA-256
-`3e9ea0aa20d511f2828eae61e491c1b3b5d9cb86a0f02166503ee5093d6000fb`
-y la autoridad composed completa; los re-smokes finales de cuatro raíces y
+correctivo adaptativo y ledger-v4 supera A/B 58/58 y la autoridad composed
+completa; los re-smokes finales de cuatro raíces y
 reactivación del mismo punto pasan y el autor cierra R4. G9U1, G9B y G9C siguen
 sin autorización; G9U2
 permanece bloqueada por la puerta G9 aprobada. El
@@ -2166,12 +2165,26 @@ El checkpoint protector actual es
 adaptativo/dormant. Sus corridas 50/50 y SHA-256
 `f909aaa28aedc63aa35d01325aa3f84d893ab8a92da64c04e9eb7a661898681c`, así como
 el SHA pre-final `c1d76e86d5174e406ac7bdddd4862f4ccc607d6a68df2ec23c365b9084cce83e`, son
-evidencia histórica y no validan la fuente actual. La autoridad actual A/B pasa
-58/58 con comparación exacta de summary SHA-256
+evidencia histórica y no validan la fuente actual. La autoridad productiva de
+cierre A/B pasó 58/58 con summary SHA-256 histórico pre-checkout
 `3e9ea0aa20d511f2828eae61e491c1b3b5d9cb86a0f02166503ee5093d6000fb`;
-composed sale 0 y termina con `All GeoCeDG verification gates passed.`. Esa
-evidencia automatizada no constituye por sí misma aprobación autoral; los dos
-re-smokes finales aportan la decisión separada del autor.
+composed salió 0 y terminó con `All GeoCeDG verification gates passed.`. Esa
+evidencia automatizada no constituyó por sí misma aprobación autoral; los dos
+re-smokes finales aportaron la decisión separada del autor. La autoridad de
+producto permanece en `63c291464111a5bcdbca488d6639662e46c389c4`, designada
+por el tag anotado inmutable `geocedg-g9u0-r4-pass` (objeto
+`0f9b303057b00d23722ad1f9d3594b4609d668a7`).
+
+Un correctivo operativo posterior al cierre, sin cambio productivo, endurece
+la evidencia de fuente: el hash R4 anterior usaba bytes físicos del worktree y
+dependía de la conversión LF/CRLF de `core.autocrlf`. Siguiendo el precedente R3,
+las fuentes tracked se leen ahora de los Git blobs sellados por el PASS, el
+texto UTF-8 se canoniza a LF y los fixtures `.cedg` conservan hash binario
+byte-exacto. La regresión controlada exige LF = CRLF y contenido real distinto
+!= hash. La autoridad operacional A/B pasa 58/58 con summary canónico
+`1bda6e3b2d3efa350f945ecb1e8e51b7007dba3ea5fce0d97654cade33ceefd9`;
+el tag PASS no se mueve y no se modifica Java, geometría, identidad, ledger,
+persistencia, frontend ni comandos públicos.
 
 Los smokes históricos permanecen registrados como
 `FAILED_POINT_INVALIDATED_DURING_REGULAR_MOTION` e

@@ -23,6 +23,9 @@ $R3PassTagObject = "1c1be8ebb58be9ad4c4e7242bc56105f9f310068"
 $R3PassCommit = "ce7f15c70d50b0639c264fc1cd3356a0d4eb5e2b"
 $AuthorApprovedStatus = "PASS_AUTHOR_APPROVED"
 $PassTagName = "geocedg-g9u0-r4-pass"
+$PassTagObject = "0f9b303057b00d23722ad1f9d3594b4609d668a7"
+$PassCommitSha = "63c291464111a5bcdbca488d6639662e46c389c4"
+$PhaseRankCheckpoint = "4ef2c9df433aec7c6385a488a02581358da83f60"
 $FixturePath =
     "source/shared/common-jre/src/test/resources/org/geocedg/common/locus/g9u0-r2/locusFromMidpoint.cedg"
 $FixtureLength = 13301
@@ -219,11 +222,11 @@ $ExpectedDesktopCount = $ExpectedTestMethods[$DesktopArchiveTestClass].Count
 $ExpectedFocusedCount = $ExpectedPublicKernelCount + $ExpectedLedgerCount +
     $ExpectedDesktopCount
 $ExpectedFocusedRunALogRoot =
-    "artifacts/g9u0-r4/closeout-a"
+    "artifacts/g9u0-r4/post-closeout-hashing-a"
 $ExpectedFocusedRunBLogRoot =
-    "artifacts/g9u0-r4/closeout-b"
+    "artifacts/g9u0-r4/post-closeout-hashing-b"
 $ExpectedComposedLogRoot =
-    "artifacts/g9u0-r4/closeout-composed"
+    "artifacts/g9u0-r4/post-closeout-hashing-composed"
 
 $RequiredProductiveSourcePaths = @(
     $AlgoPath,
@@ -265,6 +268,8 @@ $DeterministicSourcePaths = @(
     $AllowedCandidateSourcePaths +
     $FixturePath
 )
+$script:R4BoundaryMode = $null
+$script:R4AuthorityCommit = $null
 
 function Assert-Condition {
     param(
@@ -276,7 +281,7 @@ function Assert-Condition {
     }
 }
 
-function Resolve-RequiredFile {
+function Resolve-RepositoryPath {
     param([Parameter(Mandatory)] [string]$RelativePath)
 
     $absolute = [IO.Path]::GetFullPath((Join-Path $RepositoryRoot `
@@ -286,9 +291,88 @@ function Resolve-RequiredFile {
     Assert-Condition -Condition ($absolute.StartsWith(
             $prefix, [StringComparison]::OrdinalIgnoreCase)) `
         -Message "Required path escapes repository: $RelativePath"
+    return $absolute
+}
+
+function Resolve-RequiredFile {
+    param([Parameter(Mandatory)] [string]$RelativePath)
+
+    $absolute = Resolve-RepositoryPath $RelativePath
     Assert-Condition -Condition (Test-Path -LiteralPath $absolute -PathType Leaf) `
         -Message "Required G9U0-R4 path is missing: $RelativePath"
     return $absolute
+}
+
+function Get-GitBlobBytes {
+    param([Parameter(Mandatory)] [string]$Object)
+
+    $startInfo = [Diagnostics.ProcessStartInfo]::new()
+    $startInfo.FileName = "git"
+    $startInfo.UseShellExecute = $false
+    $startInfo.CreateNoWindow = $true
+    $startInfo.RedirectStandardOutput = $true
+    $startInfo.RedirectStandardError = $true
+    [void]$startInfo.ArgumentList.Add("-C")
+    [void]$startInfo.ArgumentList.Add($RepositoryRoot)
+    [void]$startInfo.ArgumentList.Add("cat-file")
+    [void]$startInfo.ArgumentList.Add("blob")
+    [void]$startInfo.ArgumentList.Add($Object)
+
+    $process = [Diagnostics.Process]::new()
+    $process.StartInfo = $startInfo
+    $memory = [IO.MemoryStream]::new()
+    try {
+        [void]$process.Start()
+        $copyTask = $process.StandardOutput.BaseStream.CopyToAsync($memory)
+        $errorTask = $process.StandardError.ReadToEndAsync()
+        $process.WaitForExit()
+        [void]$copyTask.GetAwaiter().GetResult()
+        $errorText = $errorTask.GetAwaiter().GetResult()
+        Assert-Condition -Condition ($process.ExitCode -eq 0) `
+            -Message ("Unable to read sealed G9U0-R4 blob ${Object}: " +
+                $errorText.Trim())
+        return ,([byte[]]$memory.ToArray())
+    } finally {
+        $memory.Dispose()
+        $process.Dispose()
+    }
+}
+
+function Get-SourceAuthorityBytes {
+    param([Parameter(Mandatory)] [string]$RelativePath)
+
+    [void](Resolve-RepositoryPath $RelativePath)
+    if ($script:R4BoundaryMode -ne "TAGGED_DESCENDANT" -or
+            $null -eq $script:R4AuthorityCommit) {
+        return ,([IO.File]::ReadAllBytes((Resolve-RequiredFile $RelativePath)))
+    }
+    $normalized = $RelativePath.Replace("\", "/")
+    $object = "$($script:R4AuthorityCommit):$normalized"
+    return ,(Get-GitBlobBytes -Object $object)
+}
+
+function Get-CanonicalLfSha256FromBytes {
+    param([Parameter(Mandatory)] [byte[]]$Bytes)
+
+    $offset = 0
+    if ($Bytes.Length -ge 3 -and $Bytes[0] -eq 0xEF -and
+            $Bytes[1] -eq 0xBB -and $Bytes[2] -eq 0xBF) {
+        $offset = 3
+    }
+    $text = [Text.UTF8Encoding]::new($false, $true).GetString(
+        $Bytes, $offset, $Bytes.Length - $offset)
+    $canonical = $text.Replace("`r`n", "`n").Replace("`r", "`n")
+    return [Convert]::ToHexString(
+        [Security.Cryptography.SHA256]::HashData(
+            [Text.UTF8Encoding]::new($false).GetBytes(
+                $canonical))).ToLowerInvariant()
+}
+
+function Get-CanonicalLfSha256 {
+    param([Parameter(Mandatory)] [string]$RelativePath)
+
+    [byte[]]$bytes = Get-SourceAuthorityBytes $RelativePath
+    return Get-CanonicalLfSha256FromBytes -Bytes $bytes
 }
 
 function Read-JsonDocument {
@@ -306,8 +390,71 @@ function Read-JsonDocument {
 function Get-BinarySha256 {
     param([Parameter(Mandatory)] [string]$RelativePath)
 
-    return (Get-FileHash -Algorithm SHA256 -LiteralPath (
-        Resolve-RequiredFile $RelativePath)).Hash.ToLowerInvariant()
+    [byte[]]$bytes = Get-SourceAuthorityBytes $RelativePath
+    return [Convert]::ToHexString(
+        [Security.Cryptography.SHA256]::HashData($bytes)).ToLowerInvariant()
+}
+
+function Get-DeterministicSourceSha256 {
+    param([Parameter(Mandatory)] [string]$RelativePath)
+
+    if ([IO.Path]::GetExtension($RelativePath).Equals(
+            ".cedg", [StringComparison]::OrdinalIgnoreCase)) {
+        return Get-BinarySha256 $RelativePath
+    }
+    return Get-CanonicalLfSha256 $RelativePath
+}
+
+function Assert-CanonicalSourceHashingContract {
+    $utf8 = [Text.UTF8Encoding]::new($false)
+    [byte[]]$lf = $utf8.GetBytes("tracked-source`nsemantic-line`n")
+    [byte[]]$crlf = $utf8.GetBytes("tracked-source`r`nsemantic-line`r`n")
+    [byte[]]$mutated = $utf8.GetBytes("tracked-source`nsemantic-Line`n")
+    $lfHash = Get-CanonicalLfSha256FromBytes -Bytes $lf
+    $crlfHash = Get-CanonicalLfSha256FromBytes -Bytes $crlf
+    $mutatedHash = Get-CanonicalLfSha256FromBytes -Bytes $mutated
+    Assert-Condition -Condition ($lfHash -ceq $crlfHash) `
+        -Message "Canonical source hashing is not LF/CRLF independent."
+    Assert-Condition -Condition ($lfHash -cne $mutatedHash) `
+        -Message "Canonical source hashing failed to detect semantic content drift."
+
+    [byte[]]$trackedBytes = Get-SourceAuthorityBytes $SelectorPath
+    $trackedHash = Get-CanonicalLfSha256FromBytes -Bytes $trackedBytes
+    [byte[]]$trackedMutation = [byte[]]::new($trackedBytes.Length + 1)
+    [Array]::Copy($trackedBytes, $trackedMutation, $trackedBytes.Length)
+    $trackedMutation[$trackedBytes.Length] = [byte][char]'X'
+    Assert-Condition -Condition ($trackedHash -cne
+            (Get-CanonicalLfSha256FromBytes -Bytes $trackedMutation)) `
+        -Message "Canonical source hashing missed an actual tracked-source mutation."
+
+    if ($script:R4BoundaryMode -eq "TAGGED_DESCENDANT") {
+        $sourceChangedAfterPass = $false
+        & git -C $RepositoryRoot diff --quiet $PassCommitSha HEAD -- source
+        if ($LASTEXITCODE -eq 1) {
+            $sourceChangedAfterPass = $true
+        } elseif ($LASTEXITCODE -ne 0) {
+            throw "Unable to compare post-R4 source history."
+        }
+        if (-not $sourceChangedAfterPass) {
+            foreach ($path in @($DeterministicSourcePaths | Where-Object {
+                        -not [IO.Path]::GetExtension($_).Equals(
+                            ".cedg", [StringComparison]::OrdinalIgnoreCase)
+                    })) {
+                [byte[]]$worktreeBytes = [IO.File]::ReadAllBytes(
+                    (Resolve-RequiredFile $path))
+                Assert-Condition -Condition (
+                        (Get-CanonicalLfSha256FromBytes -Bytes $worktreeBytes) `
+                            -ceq (Get-CanonicalLfSha256 $path)) `
+                    -Message ("Working-tree EOL conversion changed canonical " +
+                        "source evidence for $path.")
+            }
+            Write-Host "Canonical source hash checkout regression: LF/CRLF MATCH"
+        } else {
+            Write-Host ("Canonical source hash checkout comparison skipped: " +
+                "later product source legitimately differs from sealed R4.")
+        }
+    }
+    Write-Host "Canonical source mutation regression: CONTENT CHANGE DETECTED"
 }
 
 function Assert-ExactSet {
@@ -327,7 +474,7 @@ function Assert-ExactSet {
             ($missing -join ", "), ($unexpected -join ", "))
 }
 
-function Get-CandidatePaths {
+function Get-WorktreeCandidatePaths {
     $paths = [Collections.Generic.List[string]]::new()
     foreach ($path in @(& git -C $RepositoryRoot diff --name-only `
             --no-renames $EntrySha HEAD --)) {
@@ -373,14 +520,37 @@ function Get-CandidatePaths {
     return @($paths | Sort-Object -Unique)
 }
 
+function Get-CommitCandidatePaths {
+    param([Parameter(Mandatory)] [string]$Commit)
+
+    $paths = @(& git -C $RepositoryRoot diff --name-only --no-renames `
+        $EntrySha $Commit --)
+    Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
+        -Message "Unable to enumerate sealed R4 candidate paths."
+    return @($paths | Where-Object {
+            -not [string]::IsNullOrWhiteSpace($_)
+        } | ForEach-Object { $_.Replace("\", "/") } |
+        Sort-Object -Unique)
+}
+
+function Get-CandidatePaths {
+    if ($script:R4BoundaryMode -eq "WORKTREE") {
+        return @(Get-WorktreeCandidatePaths)
+    }
+    Assert-Condition -Condition (
+            $script:R4BoundaryMode -eq "TAGGED_DESCENDANT" -and
+            $null -ne $script:R4AuthorityCommit) `
+        -Message "The R4 source-boundary mode was not established."
+    return @(Get-CommitCandidatePaths -Commit $script:R4AuthorityCommit)
+}
+
 function Assert-EntryAuthority {
     $head = (& git -C $RepositoryRoot rev-parse HEAD).Trim()
     Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
         -Message "Unable to resolve current HEAD."
     $branch = (& git -C $RepositoryRoot branch --show-current).Trim()
-    Assert-Condition -Condition ($LASTEXITCODE -eq 0 -and
-            $branch -in @($ExpectedBranch, "main")) `
-        -Message "R4 verification requires $ExpectedBranch or promoted main."
+    Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
+        -Message "Unable to resolve current branch."
     & git -C $RepositoryRoot merge-base --is-ancestor $EntrySha $head
     Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
         -Message "R4 entry is not an ancestor of current HEAD."
@@ -398,25 +568,50 @@ function Assert-EntryAuthority {
             $tagPeel -eq $R3PassCommit -and $R3PassCommit -eq $EntrySha) `
         -Message "The R3 PASS tag peel or R4 entry changed."
 
-    if ($branch -eq "main") {
-        $r4TagObject = ((@(& git -C $RepositoryRoot rev-parse `
-            "refs/tags/$PassTagName" 2>$null) -join "")).Trim()
-        Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
-            -Message "Promoted R4 verification requires $PassTagName."
+    $r4TagObject = ((@(& git -C $RepositoryRoot rev-parse `
+        "refs/tags/$PassTagName" 2>$null) -join "")).Trim()
+    $hasR4PassTag = $LASTEXITCODE -eq 0
+    if ($hasR4PassTag) {
+        Assert-Condition -Condition ($r4TagObject -ceq $PassTagObject) `
+            -Message "The G9U0-R4 PASS tag object changed."
         $r4TagType = (& git -C $RepositoryRoot cat-file -t $r4TagObject).Trim()
         Assert-Condition -Condition ($LASTEXITCODE -eq 0 -and
                 $r4TagType -eq "tag") `
             -Message "$PassTagName must be annotated."
-        $r4TagPeel = (& git -C $RepositoryRoot rev-parse `
+        $authorityCommit = (& git -C $RepositoryRoot rev-parse `
             "$r4TagObject^{}").Trim()
         Assert-Condition -Condition ($LASTEXITCODE -eq 0 -and
-                $r4TagPeel -eq $head) `
-            -Message "$PassTagName must peel to promoted main HEAD."
+                $authorityCommit -ceq $PassCommitSha) `
+            -Message "The G9U0-R4 PASS tag peel changed."
         $r4TagText = @(& git -C $RepositoryRoot cat-file tag $r4TagObject) -join "`n"
         Assert-Condition -Condition ($LASTEXITCODE -eq 0 -and
                 $r4TagText.Contains("G9U0-R4") -and
                 $r4TagText.Contains("PASS — AUTHOR APPROVED")) `
             -Message "$PassTagName lacks the approved disposition."
+        $closeoutRecord = @((& git -C $RepositoryRoot rev-list --parents `
+            -n 1 $authorityCommit).Trim() -split '\s+')
+        Assert-Condition -Condition ($LASTEXITCODE -eq 0 -and
+                $closeoutRecord.Count -eq 2 -and
+                $closeoutRecord[0] -eq $PassCommitSha -and
+                $closeoutRecord[1] -eq $PhaseRankCheckpoint) `
+            -Message "The final R4 closeout ancestry changed."
+        $checkpointRecord = @((& git -C $RepositoryRoot rev-list --parents `
+            -n 1 $PhaseRankCheckpoint).Trim() -split '\s+')
+        Assert-Condition -Condition ($LASTEXITCODE -eq 0 -and
+                $checkpointRecord.Count -eq 2 -and
+                $checkpointRecord[1] -eq $EntrySha) `
+            -Message "The protected R4 checkpoint ancestry changed."
+        & git -C $RepositoryRoot merge-base --is-ancestor $authorityCommit HEAD
+        Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
+            -Message "Current HEAD does not retain the tagged R4 product closeout."
+        $script:R4BoundaryMode = "TAGGED_DESCENDANT"
+        $script:R4AuthorityCommit = $authorityCommit
+    } else {
+        Assert-Condition -Condition ($head -eq $EntrySha -and
+                $branch -eq $ExpectedBranch) `
+            -Message ("Pre-commit R4 verification requires entry HEAD on " +
+                "$ExpectedBranch; promoted verification requires its PASS tag.")
+        $script:R4BoundaryMode = "WORKTREE"
     }
 
     $staged = @(& git -C $RepositoryRoot diff --cached --name-only --)
@@ -511,11 +706,40 @@ function Assert-ScenarioContract {
             -not [bool]$Scenarios.retainedDeferredValidation.r5Dependency) `
         -Message "R4 retained periodic-quarantine round-trip risk drifted."
     Assert-Condition -Condition (
+            $Scenarios.preCanonicalizationEvidence.preCheckoutFrozenSummarySha256 -eq
+                "3e9ea0aa20d511f2828eae61e491c1b3b5d9cb86a0f02166503ee5093d6000fb" -and
+            $Scenarios.preCanonicalizationEvidence.postCheckoutObservedSummarySha256 -eq
+                "09f7b9694bbb2a0dd19fd023543cc95ffef579611dbeb1ebeece43a1b4bb60ea" -and
+            $Scenarios.preCanonicalizationEvidence.onlyDifferingField -eq
+                "deterministicSourceHashes" -and
+            $Scenarios.postCloseoutOperationalCorrection.status -eq
+                "AUTOMATED_VALIDATION_PASS" -and
+            $Scenarios.postCloseoutOperationalCorrection.scope -eq
+                "VERIFIER_AND_EVIDENCE_ONLY" -and
+            [bool]$Scenarios.postCloseoutOperationalCorrection.productAuthorityUnchanged -and
+            $Scenarios.postCloseoutOperationalCorrection.sourceHashAuthority -eq
+                "SEALED_R4_PASS_TAG_GIT_BLOBS" -and
+            $Scenarios.postCloseoutOperationalCorrection.textCanonicalization -eq
+                "UTF8_NO_BOM_LF" -and
+            -not [bool]$Scenarios.postCloseoutOperationalCorrection.workingTreeLineEndingsAreAuthority -and
+            [bool]$Scenarios.postCloseoutOperationalCorrection.regression.lfEqualsCrlf -and
+            [bool]$Scenarios.postCloseoutOperationalCorrection.regression.contentMutationChangesHash -and
+            $Scenarios.postCloseoutOperationalCorrection.regression.controlledWindowsCheckout -eq
+                "PASS" -and
+            -not [bool]$Scenarios.postCloseoutOperationalCorrection.productiveJavaChanged -and
+            -not [bool]$Scenarios.postCloseoutOperationalCorrection.r5Executed -and
+            -not [bool]$Scenarios.postCloseoutOperationalCorrection.g9u1Executed) `
+        -Message "R4 post-closeout canonical-hashing contract drifted."
+    Assert-Condition -Condition (
             $Scenarios.authority.entrySha -eq $EntrySha -and
             $Scenarios.authority.r3PassTagObject -eq $R3PassTagObject -and
             $Scenarios.authority.r3PassPeel -eq $R3PassCommit -and
+            $Scenarios.authority.r4ProductCommit -eq $PassCommitSha -and
+            $Scenarios.authority.r4PassTag -eq $PassTagName -and
+            $Scenarios.authority.r4PassTagObject -eq $PassTagObject -and
+            $Scenarios.authority.r4PassPeel -eq $PassCommitSha -and
             $Scenarios.authority.preCurrentCorrectionCheckpoint.commit -eq
-                "4ef2c9df433aec7c6385a488a02581358da83f60" -and
+                $PhaseRankCheckpoint -and
             $Scenarios.authority.preCurrentCorrectionCheckpoint.disposition -eq
                 "PROTECTIVE_CHECKPOINT_BEFORE_ADAPTIVE_PHASE_TUBE_AND_DORMANT_CLAIM_CORRECTION; NOT_CURRENT_PASS_EVIDENCE" -and
             $Scenarios.fixture.path -eq $FixturePath -and
@@ -1551,6 +1775,17 @@ function Assert-DocumentationContracts {
                 [StringComparison]::OrdinalIgnoreCase)) `
         -Message "Roadmap lacks the independent BOOK-P1 scheduling contract."
 
+    foreach ($text in @($report, $roadmap, $traceability)) {
+        foreach ($fragment in @(
+                $PassCommitSha, $PassTagObject,
+                "1bda6e3b2d3efa350f945ecb1e8e51b7007dba3ea5fce0d97654cade33ceefd9",
+                "LF/CRLF", "Git blob")) {
+            Assert-Condition -Condition ($text.Contains($fragment,
+                    [StringComparison]::OrdinalIgnoreCase)) `
+                -Message "R4 post-closeout documentation lacks '$fragment'."
+        }
+    }
+
     $candidatePaths = Get-CandidatePaths
     Assert-Condition -Condition (@($candidatePaths | Where-Object {
                 $_.StartsWith("artifacts/", [StringComparison]::OrdinalIgnoreCase)
@@ -1758,9 +1993,18 @@ function Write-CanonicalSummary {
         testResults = @($TestResults | Sort-Object { $_.class })
         deterministicSourceHashes = @($DeterministicSourcePaths |
             Sort-Object -CaseSensitive | ForEach-Object {
-                [ordered]@{ path = $_; sha256 = Get-BinarySha256 $_ }
+                [ordered]@{
+                    path = $_
+                    sha256 = Get-DeterministicSourceSha256 $_
+                }
             })
         contract = [ordered]@{
+            deterministicSourceAuthority =
+                "SEALED_R4_PASS_TAG_GIT_BLOBS"
+            deterministicTextCanonicalization = "UTF8_NO_BOM_LF"
+            workingTreeLineEndingsAreAuthority = $false
+            lineEndingRegression =
+                "LF_EQUALS_CRLF_AND_CONTENT_MUTATION_DIFFERS"
             localAdmissibilityRequiresGlobalCompleteness = $false
             initialIdentity =
                 "FRESH_OPAQUE_ALLOCATION_OR_EXACT_LEGACY_SINGLETON_BINDING"
@@ -1892,6 +2136,7 @@ try {
     }
 
     Assert-EntryAuthority
+    Assert-CanonicalSourceHashingContract
     Assert-FixtureAuthority
     $scenarios = Read-JsonDocument $ScenarioPath
     Assert-ScenarioContract -Scenarios $scenarios

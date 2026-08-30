@@ -23,6 +23,10 @@
     "r3PassTag": "geocedg-g9u0-r3-pass",
     "r3PassTagObject": "1c1be8ebb58be9ad4c4e7242bc56105f9f310068",
     "r3PassPeel": "ce7f15c70d50b0639c264fc1cd3356a0d4eb5e2b",
+    "r4ProductCommit": "63c291464111a5bcdbca488d6639662e46c389c4",
+    "r4PassTag": "geocedg-g9u0-r4-pass",
+    "r4PassTagObject": "0f9b303057b00d23722ad1f9d3594b4609d668a7",
+    "r4PassPeel": "63c291464111a5bcdbca488d6639662e46c389c4",
     "preCurrentCorrectionCheckpoint": {
       "commit": "4ef2c9df433aec7c6385a488a02581358da83f60",
       "title": "Checkpoint G9U0-R4 intrinsic phase-rank implementation",
@@ -441,27 +445,52 @@
       "focusedR4": 58,
       "status": "PASS",
       "summaryMatch": "EXACT",
-      "canonicalSummarySha256": "3e9ea0aa20d511f2828eae61e491c1b3b5d9cb86a0f02166503ee5093d6000fb"
+      "canonicalSummarySha256": "1bda6e3b2d3efa350f945ecb1e8e51b7007dba3ea5fce0d97654cade33ceefd9"
     },
-    "canonicalSummarySha256": "3e9ea0aa20d511f2828eae61e491c1b3b5d9cb86a0f02166503ee5093d6000fb",
+    "canonicalSummarySha256": "1bda6e3b2d3efa350f945ecb1e8e51b7007dba3ea5fce0d97654cade33ceefd9",
     "focusedRuns": {
       "A": {
         "status": "PASS",
         "focusedR4": 58,
-        "logRoot": "artifacts/g9u0-r4/closeout-a"
+        "logRoot": "artifacts/g9u0-r4/post-closeout-hashing-a"
       },
       "B": {
         "status": "PASS",
         "focusedR4": 58,
-        "logRoot": "artifacts/g9u0-r4/closeout-b"
+        "logRoot": "artifacts/g9u0-r4/post-closeout-hashing-b"
       }
     },
     "composed": {
       "status": "PASS",
       "exitCode": 0,
       "terminal": "All GeoCeDG verification gates passed.",
-      "logRoot": "artifacts/g9u0-r4/closeout-composed"
+      "logRoot": "artifacts/g9u0-r4/post-closeout-hashing-composed"
     }
+  },
+  "preCanonicalizationEvidence": {
+    "preCheckoutFrozenSummarySha256": "3e9ea0aa20d511f2828eae61e491c1b3b5d9cb86a0f02166503ee5093d6000fb",
+    "postCheckoutObservedSummarySha256": "09f7b9694bbb2a0dd19fd023543cc95ffef579611dbeb1ebeece43a1b4bb60ea",
+    "onlyDifferingField": "deterministicSourceHashes",
+    "rootCause": "WORKTREE_BINARY_HASH_DEPENDED_ON_GIT_AUTOCRLF_MATERIALIZATION",
+    "disposition": "SUPERSEDED_BY_SEALED_GIT_BLOB_AND_CANONICAL_LF_SOURCE_HASHING"
+  },
+  "postCloseoutOperationalCorrection": {
+    "status": "AUTOMATED_VALIDATION_PASS",
+    "scope": "VERIFIER_AND_EVIDENCE_ONLY",
+    "productAuthorityUnchanged": true,
+    "sourceHashAuthority": "SEALED_R4_PASS_TAG_GIT_BLOBS",
+    "textCanonicalization": "UTF8_NO_BOM_LF",
+    "binaryFixturesRemainByteExact": true,
+    "workingTreeLineEndingsAreAuthority": false,
+    "r3Precedent": "GET_GIT_BLOB_BYTES_AND_CANONICAL_LF_SHA256",
+    "regression": {
+      "lfEqualsCrlf": true,
+      "contentMutationChangesHash": true,
+      "controlledWindowsCheckout": "PASS"
+    },
+    "productiveJavaChanged": false,
+    "r5Executed": false,
+    "g9u1Executed": false
   },
   "retainedDeferredValidation": {
     "id": "G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP",
