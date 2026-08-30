@@ -28,6 +28,7 @@ import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
 import org.geogebra.common.awt.AwtFactory;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.geos.GeoElement;
+import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.kernel.geos.GeoText;
 import org.geogebra.common.util.debug.Log;
@@ -158,6 +159,85 @@ class G9U0R4NativeArchivePersistenceTest {
 		assertEquals(directSnapshot, reopenedSnapshot);
 	}
 
+	@Test
+	void nativeCedgPreservesDormantAndReactivatedExistingPoints(
+			@TempDir Path temporaryDirectory) throws Exception {
+		AppGeoCeDG app = enabledApp();
+		eval(app, "reactivationParameter=0");
+		eval(app, "ReactivationGenerator=(reactivationParameter,"
+				+ "(reactivationParameter^2-1)*(reactivationParameter^2-4))");
+		eval(app, "reactivationBound=1.5");
+		eval(app, "reactivationDomain={false,{-reactivationBound,"
+				+ "reactivationBound,true,true}}");
+		eval(app, "reactivationLocus=LocusV2(ReactivationGenerator,"
+				+ "reactivationParameter,reactivationDomain)");
+		eval(app, "reactivationAxis:y=0");
+		GeoLocusIntersectionResult rich = (GeoLocusIntersectionResult) eval(app,
+				"reactivationResult=Intersect(reactivationLocus,reactivationAxis)");
+		assertEquals(2, rich.getIntersectionResult().getFiniteSolutions().size());
+		Map<PersistentGeoId, String> pointTokens = new LinkedHashMap<>();
+		for (int index = 0; index < 2; index++) {
+			LocusIntersectionSolution2D root = rich.getIntersectionResult()
+					.getFiniteSolutions().get(index);
+			String token = root.getIdentity().getRootToken();
+			Construction construction = app.getKernel().getConstruction();
+			GeoText tokenInput = new GeoText(construction, token);
+			tokenInput.setAuxiliaryObject(true);
+			tokenInput.setEuclidianVisible(false);
+			GeoPoint point = LocusV2PublicOperations.selectIntersectionPoint(
+					construction, "reactivationPoint" + index, rich, tokenInput);
+			assertTrue(point.isDefined());
+			pointTokens.put(persistentId(app, point), token);
+		}
+		int constructionSize = app.getKernel().getConstruction()
+				.getGeoSetConstructionOrder().size();
+		GeoNumeric bound = (GeoNumeric) app.getKernel()
+				.lookupLabel("reactivationBound");
+		bound.setValue(3);
+		bound.updateCascade();
+		assertEquals(4, rich.getIntersectionResult().getFiniteSolutions().size());
+		assertEquals(constructionSize, app.getKernel().getConstruction()
+				.getGeoSetConstructionOrder().size());
+		assertDormantPoints(app, pointTokens);
+
+		Path dormantDocument = temporaryDirectory.resolve("r4-dormant.cedg");
+		assertTrue(((GuiManagerGeoCeDG) app.getGuiManager())
+				.saveAsTo(dormantDocument.toFile()));
+		AppGeoCeDG reopenedDormant = enabledApp();
+		assertTrue(reopenedDormant.loadFile(dormantDocument.toFile(), false));
+		GeoLocusIntersectionResult reopenedRich =
+				(GeoLocusIntersectionResult) reopenedDormant.getKernel()
+						.lookupLabel("reactivationResult");
+		assertNotNull(reopenedRich);
+		assertEquals(4,
+				reopenedRich.getIntersectionResult().getFiniteSolutions().size());
+		assertDormantPoints(reopenedDormant, pointTokens);
+
+		GeoNumeric reopenedBound = (GeoNumeric) reopenedDormant.getKernel()
+				.lookupLabel("reactivationBound");
+		reopenedBound.setValue(1.5);
+		reopenedBound.updateCascade();
+		assertEquals(2,
+				reopenedRich.getIntersectionResult().getFiniteSolutions().size());
+		assertPersistedPoints(reopenedDormant, reopenedRich, pointTokens);
+		assertEquals(constructionSize, reopenedDormant.getKernel().getConstruction()
+				.getGeoSetConstructionOrder().size());
+
+		Path reactivatedDocument = temporaryDirectory.resolve(
+				"r4-reactivated.cedg");
+		assertTrue(((GuiManagerGeoCeDG) reopenedDormant.getGuiManager())
+				.saveAsTo(reactivatedDocument.toFile()));
+		AppGeoCeDG reopenedActive = enabledApp();
+		assertTrue(reopenedActive.loadFile(reactivatedDocument.toFile(), false));
+		GeoLocusIntersectionResult activeRich =
+				(GeoLocusIntersectionResult) reopenedActive.getKernel()
+						.lookupLabel("reactivationResult");
+		assertNotNull(activeRich);
+		assertPersistedPoints(reopenedActive, activeRich, pointTokens);
+		assertEquals(constructionSize, reopenedActive.getKernel().getConstruction()
+				.getGeoSetConstructionOrder().size());
+	}
+
 	private static void assertPersistedPoints(AppGeoCeDG app,
 			GeoLocusIntersectionResult rich,
 			Map<PersistentGeoId, String> pointTokens) {
@@ -178,6 +258,25 @@ class G9U0R4NativeArchivePersistenceTest {
 					((AlgoLocusIntersectionPointV2) point.getParentAlgorithm())
 							.getSelectedRootToken());
 			GeoText tokenInput = (GeoText) point.getParentAlgorithm().getInput(1);
+			assertEquals(entry.getValue(), tokenInput.getTextString());
+			assertTrue(tokenInput.isAuxiliaryObject());
+			assertFalse(tokenInput.isEuclidianVisible());
+		}
+	}
+
+	private static void assertDormantPoints(AppGeoCeDG app,
+			Map<PersistentGeoId, String> pointTokens) {
+		SpatialIdentityRegistry registry = app.getKernel().getConstruction()
+				.getSpatialIdentityRegistry();
+		for (Map.Entry<PersistentGeoId, String> entry : pointTokens.entrySet()) {
+			GeoPoint point = (GeoPoint) registry.getGeo(entry.getKey());
+			assertNotNull(point);
+			assertFalse(point.isDefined());
+			AlgoLocusIntersectionPointV2 algorithm =
+					(AlgoLocusIntersectionPointV2) point.getParentAlgorithm();
+			assertEquals(entry.getValue(), algorithm.getSelectedRootToken());
+			assertEquals(entry.getValue(), algorithm.getEffectiveRootToken());
+			GeoText tokenInput = (GeoText) algorithm.getInput(1);
 			assertEquals(entry.getValue(), tokenInput.getTextString());
 			assertTrue(tokenInput.isAuxiliaryObject());
 			assertFalse(tokenInput.isEuclidianVisible());

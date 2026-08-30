@@ -7,12 +7,11 @@
   `PASS — AUTHOR APPROVED`; G9U0-R2 planning and implementation also
   `PASS — AUTHOR APPROVED` after the bounded R2-L11 correction and accepted
   interactive re-smoke; G9U0-R3 is also `PASS — AUTHOR APPROVED` after its
-  bounded long-token layout correction and author re-smoke; G9U1/G9B/G9C remain
-  unauthorized; G9U0-R4 is a deterministic implementation candidate pending
-  author re-review after two failed smokes and the subsequent author-authorized
-  intrinsic semantic phase/rank correction for the four-root selector
-  collisions; G9U0-R5 is a planning-only design candidate whose implementation
-  is not authorized
+  bounded long-token layout correction and author re-smoke; G9U0-R4 is also
+  `PASS — AUTHOR APPROVED` after three retained intermediate smoke failures,
+  replacement automated PASS and final four-root/point-reactivation re-smokes
+  `PASS`. G9U0-R5 and G9U1 remain unexecuted;
+  G9U1/G9B/G9C remain unauthorized, and R5 is a planning-only design candidate
 - G9U0-R2 closeout: `selfApproved=false`, `authorApproved=true`,
   `passClaimed=true`; installed MSI/registry smoke `NOT_REQUESTED`
 
@@ -116,28 +115,66 @@ Component lineage plus typed oriented contact germ form the base selector. When
 that base selector repeats, ADR 0017 permits only an intrinsic phase/rank induced
 by pairwise-disjoint canonical intervals in the explicit oriented component;
 orientation, domain kind and verified group cardinality complete the selector
-context. A unique selector resolves one exact ledger-v3 token. Canonical
+context. A unique selector resolves one exact ledger-v4 token. Canonical
 parameter bits remain revision evidence, not identity; previous/current matching
 is topology/continuity diagnostics only. Solver/list/UI order, parameter
 equality, Cartesian coordinates, movement history and render state remain
-forbidden. Cardinality/orientation/seam transition, tangency and merge/split
-fail closed. An unresolved candidate suppresses admissibility only on its own
-semantic component. Canonical contact orientation makes a line, conic or regular
-polynomial's equivalent nonzero homogeneous/projective representation invisible
-to root binding, while an oriented ray deliberately retains its direction as
-semantic evidence. The focused verifier owns 25 public-kernel, 23 ledger and two
-Desktop native-archive methods (50 total), including all 24 solver permutations,
-direct/incremental/reverse/reopen path independence, broad regular continuity,
-ledger-v1/v2 import, orientation/cardinality barriers, periodic monodromy and
-topology negatives. The byte-exact four-root fixture now proves four unique
-intrinsic selectors and four materializable exact tokens without relaxing its
-estimated-error or `NOT_ESTABLISHED` completeness evidence. The replacement
-composed run exposed the missing
-localized value for `DETERMINISTIC_SELECTION_ESTABLISHED`; adding the same key
+forbidden. Periodic prior-token reuse uses an adaptive intrinsic phase-tube/cell
+certificate separated from the durable selector; `component span / 256` is not
+topology evidence. Same-rank tubes must remain disjoint inside their cyclic root
+cells. Insufficient/nonunique cyclic evidence durably quarantines the group,
+unique offset zero releases/reactivates and proved nonzero offset retires;
+ordinary UI-sized regular motion remains independent of update granularity.
+
+`LocusIntersectionTokenLedger2D` exports v4, imports canonical phase-v3 and
+authentic pre-phase v2/v1, and distinguishes active, claimed-active,
+claimed-dormant and periodic-quarantine allocations. `AlgoLocusIntersectionPointV2` retains/releases the
+exact materialized claim; `GeoLocusIntersectionResult` validates or authorized-
+copy-rebases a current-or-dormant token. During ordinary absence the existing
+`GeoPoint` is undefined, then normal kernel recomputation reactivates that same
+object only when the same selector again resolves uniquely. It never retargets
+or creates a new point. `LocusIntersectionResult2D` indexes unique locally
+point-admissible tokens for exact lookup. An unresolved candidate suppresses
+admissibility only on its own semantic component. Canonical contact orientation
+makes a line, conic or regular polynomial's equivalent nonzero
+homogeneous/projective representation invisible to root binding, while an
+oriented ray deliberately retains its direction as semantic evidence.
+
+The current source declares 27 public-kernel, 28 ledger and three Desktop
+native-archive methods (58 total), including all 24 solver permutations,
+direct/incremental/reverse/reopen path independence, the author-sized direct
+update, 2→4→2 same-point recurrence/no-creation, active/dormant reference counts,
+dormant copy rebase, explicit permanent retirement, versioned import,
+orientation/cardinality barriers, selective periodic monodromy and topology
+negatives. The byte-exact four-root fixture proves four unique intrinsic
+selectors and four materializable exact tokens without relaxing its estimated-
+error or `NOT_ESTABLISHED` completeness evidence. The historical replacement
+composed run exposed the missing localized value for
+`DETERMINISTIC_SELECTION_ESTABLISHED`; adding the same key
 to the base, English and Spanish bundles is a bounded resource correction with
-no kernel-semantic effect. The current candidate inventory is 51 paths,
-including 29 under `source/`. The author has authorized only this bounded
-identity refinement; automation cannot approve the re-smoke or claim phase PASS.
+no kernel-semantic effect. The current candidate inventory is 54 paths,
+including 31 under `source/`. Checkpoint `4ef2c9d` and its 50-method summary are
+pre-current-correction evidence. Current focused A and B each pass 58/58 with an
+exact normalized-summary match at SHA-256
+`3e9ea0aa20d511f2828eae61e491c1b3b5d9cb86a0f02166503ee5093d6000fb`;
+the composed authority exits 0 with
+`All GeoCeDG verification gates passed.`. Automation did not approve the phase;
+the author separately accepted both final re-smokes.
+
+Periodic `q`/`r` persistence is covered at the ledger recompute,
+canonical-export/import and exact-copy seams. The third Desktop test instead
+covers native `.cedg` dormant `2 -> 4 -> 2` same-point reactivation and reopen
+after reactivation; it does not claim a native periodic-quarantine round trip.
+This missing evidence is tracked as nonblocking risk
+`G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP`, due for G9U1 revisit and explicit
+resolution/disposition by global G9 closeout; it is not an implicit R5
+dependency.
+
+The incremental selector/reactivation seam is `O(R log R + P)` for `R` current
+roots and `P` existing materialized bindings: one canonical root ordering plus
+direct selector lookup, with no solve per child and no movement-history replay.
+The legacy whole-transition diagnostic may remain `O(R²)` in the worst case;
+it is non-authoritative.
 
 G9U0-R5 is planning-only in the R4 candidate. Its architecture, draft
 specification, future canonical prompt and validation matrix describe normal
@@ -208,13 +245,15 @@ After the first complete R3 composed run passed, the future operational
 authority was prospectively superseded by
 `.github/prompts/tasks/g9u1-construction-workspace-after-g9u0-r3.prompt.md`.
 The original G9P prompt remains unchanged historical evidence. The successor is
-planning only: it requires author-approved R4 and R5 closeouts plus separate
-G9U1 authorization, keeps candidate markers as non-persistent active-result
+planning only: R4 is now author-approved, while R5 closeout and separate G9U1
+authorization remain mandatory. It keeps candidate markers as non-persistent active-result
 overlays derived from current deterministic root/evidence authority, fixes the
 existing host Continuity option OFF in GeoCeDG while retaining configurable
   Classic behavior, consumes the exact kernel token bound to the intrinsic
-  phase/rank selector without computing a UI rank, and permits optional
-  auto-materialization only as one explicit
+  phase/rank selector without computing a UI rank. It requires create-one,
+  create-selected and create-all actions, one coherent undo transaction per
+  multi-point action, and an inspector session that can remain open and identify
+  already materialized choices. Optional auto-materialization remains one explicit
 visible frontend transaction after a user-requested Intersect action. Kernel
 recompute/load/topology changes never create DAG nodes. It retains the eleven
 professional action groups and reserves
@@ -352,35 +391,48 @@ passes the complete token unchanged. The ordinal is not persisted, is not
 continuation identity and is never command input; the diagnostic text may show
 the exact token only inside its wrapping/scrolling bounded viewport.
 
-G9U0-R4 is currently `IMPLEMENTATION CANDIDATE — PENDING AUTHOR RE-REVIEW`.
-The candidate corrects the false first-publication deadlock in the public rich
+G9U0-R4 is `PASS — AUTHOR APPROVED`.
+The closed phase corrects the false first-publication deadlock in the public rich
 intersection path while retaining the accepted Option B distinction between
 local point admissibility and global enumeration completeness. It introduces
-no new target solver, frontend identity rule, marker or automatic point. The
-first smoke confirmed initial admissibility but failed when a child became
-undefined during regular motion. Current-state selection removed that false
-history dependency. The second smoke then exposed two repeated base-selector
-pairs among four otherwise admissible roots. ADR 0017 now permits an intrinsic
-oriented-domain phase/rank only inside such a collision group. The ledger-v3
-binding imports compatible v1/v2 evidence, keeps the public opaque token
-unchanged, and invalidates rather than rotates tokens at cardinality,
-orientation, topology or periodic-seam identity transitions. Unresolved
-evidence is component-scoped; equivalent homogeneous or projective target forms
-preserve binding, whereas ray direction remains semantic. Its 50-method
-authority and 51-path/29-source inventory include the bounded three-bundle
-status-localization correction, ADR 0017 and one byte-exact four-root fixture.
-All four roots now receive unique selectors/tokens under the existing numerical
-contract; no `DETERMINISTIC_LOCAL` certification relaxation was implemented.
-`selfApproved=false`, `authorApproved=false` and `passClaimed=false`.
+no new target solver, frontend identity rule or marker. Historical smoke 1
+confirmed initial admissibility but invalidated a child during regular motion;
+historical smoke 2 exposed two repeated base-selector pairs among four otherwise
+admissible roots. ADR 0017 then authorized intrinsic oriented-domain phase/rank
+inside such a collision group. A third historical smoke passed Case A and the
+initial four-selector/token/materialization state, then failed ordinary
+regular-motion persistence because the fixed transition-span guard was not
+topology evidence.
+
+The current adaptive phase-tube and ledger-v4 correction preserves ordinary
+motion, selectively fails a proved true seam, keeps an ordinary claimed absence
+dormant and retains insufficient periodic evidence in durable quarantine until
+offset-zero release or proved nonzero retirement. Existing-point reactivation is an automatic kernel lifecycle
+event under the same selector; new-point auto-materialization remains absent and
+may only be a future explicit G9U1 frontend transaction consuming current tokens.
+Unresolved evidence remains component-scoped; equivalent homogeneous or
+projective target forms preserve binding, whereas ray direction remains semantic.
+The source declares 58 methods and a 54-path/31-source inventory. Checkpoint
+`4ef2c9d` is pre-current-correction. Replacement focused A/B pass 58/58 with
+exact canonical SHA-256
+`3e9ea0aa20d511f2828eae61e491c1b3b5d9cb86a0f02166503ee5093d6000fb`,
+and composed verification passes; the final four-root regular-motion and
+active/dormant/reactivation author re-smokes both pass. No
+`DETERMINISTIC_LOCAL` certification relaxation was
+implemented. `selfApproved=false`, `authorApproved=true` and
+`passClaimed=true`.
 
 G9U0-R5 is `DESIGN CANDIDATE — PENDING AUTHOR REVIEW`; productive similarity
-transformation implementation is `NOT AUTHORIZED — NOT STARTED`.
+transformation implementation is `NOT AUTHORIZED — NOT STARTED` and has not been
+executed. G9U1 likewise remains unexecuted and unauthorized.
 
 Phase documents distinguish hard semantic/contract dependencies, recommended
 execution predecessors and global/release gates. G9O1 is recommended first but
 is not a semantic prerequisite of G9A1. After G9A3, G9B/G9C can progress
-without G9U1. The product order is G9U0-R1 plus G9X1 → G9U0-R2 → G9U0-R3 →
-G9U0-R4 → G9U0-R5 → G9U1. R3 is closed; R4 and R5 each require a separate
-author-approved PASS before U1 can receive its own execution authorization.
+without G9U1. The product schedule is G9U0-R1 plus G9X1 → G9U0-R2 → G9U0-R3 →
+G9U0-R4 → BOOK-P1 → G9U0-R5 → G9U1. BOOK-P1 is an independent editorial
+checkpoint, not a software dependency. R3 and R4 are closed; R5 still requires
+a separate author-approved PASS before U1 can receive its own execution
+authorization.
 G9B/G9C remain semantically independent,
 G9U2 remains globally blocked and productive G10 remains unauthorized.

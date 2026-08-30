@@ -27,6 +27,7 @@ public final class AlgoLocusIntersectionPointV2 extends AlgoElement {
 	private final GetCommand commandName;
 	private final GeoPoint point;
 	private String effectiveRootToken;
+	private String registeredRootToken;
 
 	/** Creates a derived consumer; this algorithm never solves or retargets. */
 	public AlgoLocusIntersectionPointV2(Construction construction,
@@ -75,21 +76,48 @@ public final class AlgoLocusIntersectionPointV2 extends AlgoElement {
 
 	@Override
 	public void compute() {
+		String requestedToken = tokenInput == null ? selectedRootToken
+				: tokenInput.getTextString();
+		Optional<LocusIntersectionSolution2D> selected = richInput.isDefined()
+				? richInput.findExactPointAdmissibleSolution(requestedToken)
+				: Optional.empty();
+		if (tokenInput != null) {
+			Optional<String> retained;
+			if (selected.isPresent()) {
+				// A current exact token is sufficient to establish the first durable
+				// point claim. Copy provenance is needed only when the copied result
+				// does not own the token presented by its copied GeoText yet.
+				retained = Optional.of(selected.get().getIdentity().getRootToken());
+			} else {
+				retained = richInput.resolveRetainedMaterializedToken(
+						requestedToken, tokenInput, point);
+			}
+			synchronizeMaterializedClaim(retained.orElse(null));
+			effectiveRootToken = retained.orElse(null);
+			if (retained.isPresent()
+					&& !retained.get().equals(tokenInput.getTextString())) {
+				// Closure copy rebases its exact dependency even while the selected
+				// semantic root is temporarily dormant.
+				tokenInput.setTextString(retained.get());
+			}
+			requestedToken = retained.orElse(requestedToken);
+			if (!selected.isPresent() && retained.isPresent()
+					&& richInput.isDefined()) {
+				selected = richInput.findExactPointAdmissibleSolution(
+						retained.get());
+			}
+		}
 		if (!richInput.isDefined()) {
 			point.setUndefined();
 			return;
 		}
-		String requestedToken = tokenInput == null ? selectedRootToken
-				: tokenInput.getTextString();
-		Optional<LocusIntersectionSolution2D> selected = richInput
-				.findExactPointAdmissibleSolution(requestedToken);
-		if (!selected.isPresent() && tokenInput != null) {
-			selected = richInput
-					.rebaseCopiedPointAdmissibleSolution(requestedToken,
-							tokenInput, point);
+		if (!selected.isPresent() && tokenInput == null) {
+			selected = richInput.findExactPointAdmissibleSolution(requestedToken);
 		}
 		if (!selected.isPresent()) {
-			effectiveRootToken = null;
+			if (tokenInput == null) {
+				effectiveRootToken = null;
+			}
 			point.setUndefined();
 			return;
 		}
@@ -102,6 +130,20 @@ public final class AlgoLocusIntersectionPointV2 extends AlgoElement {
 		}
 		LocusPoint2D value = selected.get().getEvaluatedPoint();
 		point.setCoords(value.getX(), value.getY(), 1);
+	}
+
+	private void synchronizeMaterializedClaim(String retainedToken) {
+		if (tokenInput == null
+				|| java.util.Objects.equals(registeredRootToken, retainedToken)) {
+			return;
+		}
+		String previous = registeredRootToken;
+		registeredRootToken = retainedToken != null
+				&& richInput.retainMaterializedPointToken(retainedToken)
+						? retainedToken : null;
+		if (previous != null) {
+			richInput.releaseMaterializedPointToken(previous);
+		}
 	}
 
 	public GeoLocusIntersectionResult getRichInput() {
@@ -119,6 +161,16 @@ public final class AlgoLocusIntersectionPointV2 extends AlgoElement {
 
 	public GeoPoint getPoint() {
 		return point;
+	}
+
+	@Override
+	public void remove() {
+		String claimed = registeredRootToken;
+		registeredRootToken = null;
+		if (claimed != null) {
+			richInput.releaseMaterializedPointToken(claimed);
+		}
+		super.remove();
 	}
 
 	@Override

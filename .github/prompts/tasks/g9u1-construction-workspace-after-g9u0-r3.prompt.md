@@ -8,6 +8,13 @@ TRANSFORMATIONS`.
 
 **PROPOSED FUTURE SUCCESSOR PROMPT — UNEXECUTED AND NOT AUTHORIZED.**
 
+Current planning status remains closed: G9U0-R4 is `PASS — AUTHOR APPROVED`
+after the retained failed intermediate smokes and the final four-root regular-
+motion and existing-point reactivation smokes both passed. G9U0-R5 and G9U1
+have not been executed. The accepted R4 periodic phase-tube and materialized-
+token dormancy/reactivation contract below is input authority, not authorization
+to start this prompt.
+
 This prompt prospectively supersedes
 `.github/prompts/tasks/g9u1-construction-workspace.prompt.md` for any future
 G9U1 execution. The historical prompt remains immutable G9P evidence with
@@ -116,13 +123,14 @@ runtime opt-in. Workspace membership affects presentation and discoverability,
 not command meaning or feature policy.
 
 Add the prospective author-directed rich-intersection presentation flow below,
-conditional on the final author-approved R4 identity/evidence contract:
+consuming the final author-approved R4 identity/evidence contract:
 
 ```text
 Intersect(L,T)
  -> current deterministic rich result remains semantic authority
  -> every current finite solution exposes separately:
       deterministic-identity status
+      current topology-certificate status
       local numerical/topological evidence class
       global completeness
       current exact-token point-admissibility
@@ -130,21 +138,26 @@ Intersect(L,T)
     CeDG Construction, distinguish exact-token eligible and
     nonmaterializable candidates
  -> marker hit testing preselects only an already identified exact kernel token
- -> explicit create-one/create-all consumes that exact selector/token
+ -> explicit create-one, create-selected and create-all consume the exact
+    selector/token of every selected/current eligible solution
  -> optional user-enabled auto mode executes one second visible frontend
     materialization transaction over that exact eligible-token snapshot after
     an explicit Intersect action
  -> later recomputation never creates persistent GeoPoints
+ -> an existing token-selected GeoPoint may become undefined while its exact
+    allocation is dormant, and the same GeoPoint may reactivate only when the
+    same selector again resolves uniquely
 ```
 
 Only current finite solutions with truthful current presentation evidence may
 receive markers. Only a root already carrying a unique deterministic semantic
 selector/exact token is selectable; no frontend policy may override identity
-ambiguity or numerical/topological evidence. Markers never run a second previous-frame or
-continuous-tracking heuristic. Inactive historical results do not pollute
-Graphics. A workspace/user preference may turn markers off, but the CeDG
-Construction default for the active-result context is on unless later author
-review changes it.
+ambiguity, the current R4 topology certificate or numerical/topological
+evidence. A retained dormant token is not a current selectable token. Markers
+never run a second previous-frame or continuous-tracking heuristic. Inactive
+historical results do not pollute Graphics. A workspace/user preference may
+turn markers off, but the CeDG Construction default for the active-result
+context is on unless later author review changes it.
 
 The intrinsic semantic phase/rank approved by R4 is shared-kernel identity
 evidence inside the exact selector. It is not a presentation ordinal. The
@@ -152,6 +165,13 @@ workspace, marker overlay, chooser and action registry may neither calculate,
 renumber nor persist it. UI list order and marker order are never selector
 authority; frontend hit testing can only return one exact selector/token already
 published by the current rich-result snapshot.
+
+The adaptive intrinsic periodic phase-tube/cell certificate is separate
+revision-scoped kernel topology evidence. It excludes false invalidation from a
+fixed update-size fraction while failing closed for an affected true
+seam/monodromy shift. G9U1 may consume its current outcome only; it may not
+reconstruct phase tubes, treat `span / 256` as topology, or persist the
+certificate as workspace state.
 
 Expose conceptually equivalent preferences without freezing Java enum names:
 
@@ -167,6 +187,16 @@ existing rich result. Recommended review defaults are markers ON and
 auto-materialization OFF. G9U1 may consume only the final R4 kernel
 point-admissibility result; a weaker evidence/materialization tier would require
 separate future author authorization.
+
+The rich-result inspector must support a persistent materialization session.
+Creating one point does not implicitly close the inspector. It must identify
+already-materialized choices without exposing opaque tokens as layout labels,
+allow one or several admissible solutions to be selected, and provide explicit
+create-selected and create-all-currently-eligible actions. Each produced point
+owns its own exact token binding. One multi-point action is one coherent visible
+and undoable compound transaction. Close and cancel remain explicit; cancel
+creates nothing and does not undo earlier separately confirmed actions from the
+same session.
 
 Define a restrained, professional GeoCeDG frontend identity through normal
 application seams: application/window identity, reviewable accent/theme tokens,
@@ -268,6 +298,13 @@ marker is hit or preselected; they never establish, rank, continue or change
 semantic identity. The frontend consumes the kernel selector/token atomically
 and never reconstructs its phase/rank from presentation state.
 
+The R4 durable selector binding, adaptive revision-scoped topology certificate
+and claimed active/dormant/periodic-quarantine token lifecycle all remain
+shared-kernel authority. A dormant or quarantined allocation owned by an existing materialized `GeoPoint` has no
+selectable marker. If the kernel later reactivates that same token through the
+same uniquely resolved selector, G9U1 only redraws current presentation; it does
+not construct, replace or retarget the point.
+
 The existing host `Kernel` Continuity value remains the sole kernel/persistence
 authority. Reverify the frozen setter/XML/preference/UI characterization above,
 then enforce the GeoCeDG product policy at one application-configuration seam
@@ -295,11 +332,13 @@ Record:
 - typed selection and cancellation contracts for each constructive action;
 - marker overlay ownership, active-result lifecycle, admissibility filtering,
   identity/evidence/global-completeness separation, hit-testing/preselection
-  behavior, strict separation from kernel semantic phase/rank,
+  behavior, strict separation from kernel semantic phase/rank and adaptive
+  current topology certificate,
   marker/auto defaults and explicit/opted-in automatic
   one/all-point materialization transactions over exact kernel tokens;
 - exact selector/token persistence through the existing R4 parent-algorithm
-  seam, without a new quality or policy field on ordinary `GeoPoint`;
+  seam, including dormant claimed allocation and same-`GeoPoint` reactivation,
+  without a new quality or policy field on ordinary `GeoPoint`;
 - the host Continuity field/setter, every XML and preference read/write path,
   application-profile policy seam, settings-panel behavior and separate
   Classic behavior, with no duplicate option or serialization field;
@@ -332,6 +371,15 @@ rather than guess. Identical final Construction state and durable IDs reached
 through different regular update histories must produce the same current token
 binding, point definedness and marker set.
 
+The frontend must not confuse durable selector identity with the current
+topology certificate. Adaptive intrinsic periodic phase tubes are kernel-only
+revision evidence: ordinary regular motion is independent of UI update
+granularity, while a true seam/monodromy shift fails only its affected ranked
+group. Insufficient/nonunique cyclic evidence leaves the old group in durable
+non-current quarantine, unique offset zero may release/reactivate it, and proved
+unique nonzero offset permanently retires it. A dormant or quarantined
+materialized token is retained evidence, not a current marker or materialization candidate.
+
 Marker hit testing may preselect only a token already supplied by the current
 deterministic rich result. The frontend may neither relax nor reinterpret the
 kernel's point-admissibility decision; it changes no root computation,
@@ -347,7 +395,9 @@ identity, persisted, or used to choose a different root. The enforced
 `Continuity = OFF` product invariant does not create a frontend continuation
 substitute.
 
-One-point and create-all actions are visible and undoable; cancel and marker
+Create-one, create-selected and create-all actions are visible and undoable;
+the inspector may remain open across several confirmed materializations and
+must identify already-materialized exact-token choices. Cancel and marker
 inspection create no persistent object. Kernel `Intersect(L,T)` always creates
 only the rich result. With explicit user opt-in, auto mode may issue one second
 deterministic create-all transaction immediately after an explicit Intersect
@@ -356,6 +406,11 @@ and never run on recompute, later root appearance, document load/reopen,
 workspace switch, preference restoration or background update. Genuine
 topology, continuation and token lifecycle semantics remain those of the
 approved G9U0/R1/R2/R3/R4/R5 kernel surface.
+
+Dormancy, periodic quarantine and kernel reactivation are recomputation
+lifecycle events for an already materialized point. They never count as an
+explicit Intersect action and never trigger create-one, create-all or
+auto-materialization of a new point.
 
 The existing kernel Continuity option is always off in the GeoCeDG product,
 including while no workspace is active and during workspace transitions. This
@@ -381,6 +436,18 @@ reinterpret an existing point. Loading a document with supported rich results re
 serialized semantic authority and points; it never auto-materializes. Overlay
 presentation is recomputed only for the active result under current workspace
 preference.
+
+If a serialized materialized token is retained dormant, native load/reopen
+restores that exact point/token relationship under the R4 ledger contract. The
+point remains undefined until the same selector resolves uniquely and currently;
+its reactivation is not point creation and produces no marker-driven
+transaction. Periodic `q`/`r` remains non-current kernel evidence; the current
+R4 source authority proves its ledger recompute/export-import/copy lifecycle but
+does not yet claim a native periodic-quarantine round trip. Retained risk
+`G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` must be revisited by G9U1
+validation and resolved or explicitly dispositioned by global G9 closeout.
+G9U1 must not expose or market a stronger native persistence claim without new
+sealed evidence.
 
 The host's existing Continuity persistence remains the only serialization
 seam. GeoCeDG product policy wins over a previously enabled user preference,
@@ -426,23 +493,40 @@ Rich-intersection presentation tests must prove:
 - byte-identical constructions with identical durable IDs at the same final
   regular geometry expose the same token/marker bindings after direct,
   incremental, reverse and save/reopen update paths;
+- one ordinary UI-sized regular update and many smaller updates to the same
+  four-root geometry expose identical current tokens, points and markers; no
+  frontend threshold repairs or masks an R4 topology-certificate failure;
+- a true periodic seam/monodromy shift suppresses only the affected ranked
+  group's current selectable markers and never rotates a token, while an
+  independently certified group remains current;
 - roots lacking current exact-token point admissibility remain nonmaterializable;
   G9U1 introduces no weaker certification or identity override;
 - cancel creates nothing; explicit one-point materialization is exact and
-  normally undoable; explicit create-all creates exactly the currently
-  eligible set as an undoable user action;
+  normally undoable; the inspector remains usable for further choices unless
+  the user explicitly closes it;
+- create-selected materializes exactly the selected eligible token set and
+  create-all exactly the current eligible token set; each is one coherent
+  compound undo action, avoids duplicate children and marks already-materialized
+  choices without using presentation order as identity;
 - auto OFF leaves `Intersect(L,T)` with zero persistent points; auto ON performs
   exactly one separate visible create-all transaction
   for the explicit action's eligible exact-token snapshot, with no list/marker
   order becoming materialization identity;
 - recompute, newly appearing roots, load/reopen, workspace switch and preference
   restoration never auto-create a point;
+- a claimed dormant or periodically quarantined token has no selectable marker and triggers no
+  materialization; when the kernel reactivates the same exact token through the
+  same unique selector, the same `GeoPoint` becomes defined without any new DAG
+  object or automatic frontend transaction;
 - changing marker/auto presentation preferences does not reinterpret existing
   point algorithms;
 - exact selector/token provenance survives save/reopen, supported copy and
   undo/redo;
 - no marker appears in XML, the DAG, Construction Protocol, copy closure or
   undo history.
+- dedicated G9U1 persistence validation revisits
+  `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP`; absence of that evidence may not
+  be hidden by the inspector or marker layer.
 
 Deterministic-product-policy tests must prove:
 
@@ -522,6 +606,8 @@ Stop before or during implementation if:
 - marker UX cannot remain a transient overlay over current deterministic
   root/evidence authority, or a frontend action would override current
   exact-token point admissibility or deterministic-selector ambiguity;
+- marker UX would need to expose a dormant retained allocation as current, or
+  dormancy/reactivation would trigger point creation;
 - marker/list ordering or frontend hit testing would need to calculate,
   renumber, persist or replace the kernel's intrinsic semantic phase/rank;
 - an exact point would require coordinate/order/proximity identity, re-solving
@@ -547,6 +633,12 @@ G9U1 = DESIGNED — NOT AUTHORIZED
 DETERMINISTIC_CONTINUITY_OFF_REQUIRED
 INTRINSIC_SEMANTIC_PHASE_RANK = KERNEL_AUTHORITY_UI_CONSUMER_ONLY
 INTRINSIC_PHASE_RANK_TOKEN_AUTHORITY_REQUIRED
+CURRENT_TOPOLOGY_CERTIFICATE = KERNEL_AUTHORITY_UI_CONSUMER_ONLY
+DORMANT_TOKEN_REACTIVATION = SAME_SELECTOR_SAME_GEOPOINT_NO_CREATION
+PERIODIC_QUARANTINE = KERNEL_AUTHORITY_NO_MARKER_NO_CREATION
+MULTI_MATERIALIZATION_REQUIRED
+PERSISTENT_INSPECTOR_SESSION_REQUIRED
+AUTO_REACTIVATION_EXISTING_POINTS_KERNEL
 AUTO_MATERIALIZATION_FRONTEND_ONLY
 G9B = NOT AUTHORIZED
 G9C = NOT AUTHORIZED

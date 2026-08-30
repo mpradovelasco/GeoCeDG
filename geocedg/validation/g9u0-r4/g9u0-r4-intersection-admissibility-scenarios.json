@@ -2,26 +2,95 @@
   "schemaVersion": 1,
   "phase": "G9U0-R4",
   "title": "Public Locus V2 deterministic intersection admissibility and continuation diagnostics",
-  "status": "IMPLEMENTATION_CANDIDATE_PENDING_AUTHOR_RE_REVIEW",
+  "status": "PASS_AUTHOR_APPROVED",
   "countsFrozen": true,
   "historicalAuthorSmoke": "FAILED_POINT_INVALIDATED_DURING_REGULAR_MOTION",
   "historicalAuthorSmoke2": "IMPROVED_BUT_FOUR_SOLUTIONS_NOT_MATERIALIZABLE",
-  "currentAuthorSmoke": "TWO_ROOT_PASS_FOUR_ROOT_REGULAR_MOTION_FAILURE",
+  "currentAuthorSmoke": "FINAL_FOUR_ROOT_AND_REACTIVATION_RE_SMOKES_PASS",
   "deterministicPolicy": "AUTHOR_APPROVED_DIRECTION",
   "fourSolutionIdentityDisposition": "INTRINSIC_PHASE_RANK_AUTHOR_APPROVED",
   "materializationPolicyStatus": "EXISTING_EXACT_TOKEN_POLICY_RETAINED",
-  "adaptiveCertificationStatus": "NOT_REQUIRED_FOR_SELECTOR_COLLISION",
+  "adaptiveCertificationStatus": "IMPLEMENTED_FOR_PERIODIC_PRIOR_TOKEN_REUSE",
+  "periodicReuseDisposition": "INSUFFICIENT_QUARANTINE_UNIQUE_OFFSET_ZERO_RELEASE_UNIQUE_NONZERO_RETIRE",
   "implementation": {
     "started": true,
     "selfApproved": false,
-    "authorApproved": false,
-    "passClaimed": false
+    "authorApproved": true,
+    "passClaimed": true
   },
   "authority": {
     "entrySha": "ce7f15c70d50b0639c264fc1cd3356a0d4eb5e2b",
     "r3PassTag": "geocedg-g9u0-r3-pass",
     "r3PassTagObject": "1c1be8ebb58be9ad4c4e7242bc56105f9f310068",
-    "r3PassPeel": "ce7f15c70d50b0639c264fc1cd3356a0d4eb5e2b"
+    "r3PassPeel": "ce7f15c70d50b0639c264fc1cd3356a0d4eb5e2b",
+    "preCurrentCorrectionCheckpoint": {
+      "commit": "4ef2c9df433aec7c6385a488a02581358da83f60",
+      "title": "Checkpoint G9U0-R4 intrinsic phase-rank implementation",
+      "disposition": "PROTECTIVE_CHECKPOINT_BEFORE_ADAPTIVE_PHASE_TUBE_AND_DORMANT_CLAIM_CORRECTION; NOT_CURRENT_PASS_EVIDENCE"
+    }
+  },
+  "authorSmokeChronology": [
+    {
+      "sequence": 1,
+      "status": "FAIL",
+      "observation": "TWO_ROOT_POINT_BECAME_UNDEFINED_DURING_ORDINARY_REGULAR_MOTION"
+    },
+    {
+      "sequence": 2,
+      "status": "FAIL",
+      "observation": "FOUR_FINITE_LOCALLY_ISOLATED_ROOTS_COULD_NOT_ALL_BE_MATERIALIZED_BECAUSE_BASE_SELECTORS_COLLIDED"
+    },
+    {
+      "sequence": 3,
+      "status": "FAIL_AFTER_PARTIAL_PASS",
+      "caseA": "TWO_ROOT_PASS",
+      "caseBInitial": "FOUR_ROOTS_SELECTORS_TOKENS_AND_MATERIALIZATION_PASS",
+      "caseBRegularMotion": "FAIL_POINTS_BECAME_UNDEFINED"
+    },
+    {
+      "sequence": 4,
+      "status": "CORRECTION_IMPLEMENTED",
+      "observation": "ADAPTIVE_PHASE_CELL_TUBE_SELECTOR_CERTIFICATE_SEPARATION_AND_DORMANT_REACTIVATION"
+    },
+    {
+      "sequence": 5,
+      "status": "PASS",
+      "observation": "FINAL_AUTHOR_RE_SMOKE_FOUR_ROOT_REGULAR_MOTION"
+    },
+    {
+      "sequence": 6,
+      "status": "PASS",
+      "observation": "FINAL_AUTHOR_RE_SMOKE_EXISTING_POINT_DORMANT_REACTIVATION"
+    }
+  ],
+  "firstFailingProtectedCheckpointSnapshot": {
+    "checkpoint": "4ef2c9df433aec7c6385a488a02581358da83f60",
+    "update": "A.x_3.98_TO_4.18_WITH_A.y_10_AND_B_5.72_2.22",
+    "unchangedRootEvidence": {
+      "branch": "generator.main",
+      "component": "generator.main/component-0",
+      "orientation": "INCREASING",
+      "domain": "PERIODIC_FUNDAMENTAL_INTERVAL",
+      "topologyContext": "g9u0-public-topology/v1",
+      "collisionCardinalityPerGerm": 2,
+      "current": true,
+      "transverse": true,
+      "locallyIsolated": true,
+      "seamEvent": false,
+      "overlap": false,
+      "unresolvedCandidate": false
+    },
+    "roots": [
+      {"slot": "NEGATIVE_OUTER", "uBefore": -2.093511674974421, "uAfterApprox": -2.12592064944333, "germ": "POSITIVE", "rank": 0, "selector": "component+germ+INCREASING+PERIODIC+2+0"},
+      {"slot": "NEGATIVE_INNER", "uBefore": -1.403606948912654, "uAfterApprox": -1.39419682506843, "germ": "NEGATIVE", "rank": 0, "selector": "component+germ+INCREASING+PERIODIC+2+0"},
+      {"slot": "POSITIVE_INNER", "uBefore": 1.4036069489126533, "uAfterApprox": 1.39419682506843, "germ": "POSITIVE", "rank": 1, "selector": "component+germ+INCREASING+PERIODIC+2+1"},
+      {"slot": "POSITIVE_OUTER", "uBefore": 2.0935116749744207, "uAfterApprox": 2.12592064944333, "germ": "NEGATIVE", "rank": 1, "selector": "component+germ+INCREASING+PERIODIC+2+1"}
+    ],
+    "before": "CLAIMED_EXACT_TOKEN+DETERMINISTIC_SELECTION_ESTABLISHED+UNCHANGED+EXPLICIT_KEY+POINT_ADMISSIBLE+CHILD_DEFINED",
+    "afterAtCheckpoint": "REVISION_LOCAL_HANDLE+IDENTITY_DISCONTINUITY+AMBIGUOUS_EVENT+NO_EXPLICIT_KEY+POINT_INADMISSIBLE+OLD_TOKEN_UNRESOLVED+CHILD_UNDEFINED",
+    "firstChangedPredicate": "PRIOR_TOKEN_PERIODIC_REUSE_GUARD",
+    "obsoleteGroupBound": "2_PI_OVER_256_APPROX_0.024543692606",
+    "largestRootDisplacementApprox": 0.032408974469
   },
   "fixture": {
     "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/locus/g9u0-r2/locusFromMidpoint.cedg",
@@ -37,10 +106,10 @@
     "disposition": "BYTE_EXACT_AUTHOR_CHARACTERIZATION_FIXTURE"
   },
   "candidateInventory": {
-    "totalPaths": 51,
-    "sourcePaths": 29,
-    "focusedMethodCount": 50,
-    "disposition": "FINAL_CANDIDATE_INVENTORY"
+    "totalPaths": 54,
+    "sourcePaths": 31,
+    "focusedMethodCount": 58,
+    "disposition": "FINAL_R4_SOURCE_DERIVED_INVENTORY_AUTHOR_APPROVED"
   },
   "localizationCorrection": {
     "trigger": "REPLACEMENT_COMPOSED_RUN_MISSING_LOCALIZATION",
@@ -83,22 +152,41 @@
     ],
     "baseSelectorRemainsUnextendedWhenUnique": true,
     "phaseRankRequiresPairwiseDisjointIsolation": true,
-    "collisionCardinalityChangeInvalidatesTokens": true,
+    "collisionCardinalityChangeInvalidatesCurrentBindings": true,
+    "collisionCardinalityChangePermanentlyRetiresClaimedTokensByItself": false,
     "collisionCardinalityChangeFailsClosed": true,
     "orientationReversalRequiresExplicitMap": true,
     "orientationChangeFailsClosedWithoutDeclaredMap": true,
     "periodicFundamentalIntervalIsDeterministicFrame": true,
     "periodicMonodromyIsIdentityDiscontinuity": true,
-    "periodicRankRotationInvalidatesTokens": true,
+    "provedPeriodicRankRotationPermanentlyRetiresAffectedTokens": true,
+    "insufficientPeriodicEvidencePermanentlyRetiresAffectedTokens": false,
+    "insufficientPeriodicEvidenceDurablyQuarantinesAffectedTokens": true,
+    "periodicQuarantineSurvivesLedgerRecomputeExportImportAndCopy": true,
+    "periodicQuarantineNativeCedgRoundTripClaimed": false,
+    "nativeCedgPreservesNonperiodicDormantAndReactivatedExistingPoints": true,
+    "uniquePeriodicOffsetZeroReleasesQuarantine": true,
+    "provedUniqueNonzeroPeriodicOffsetPermanentlyRetires": true,
+    "absentOrNonuniquePeriodicOffsetRemainsQuarantined": true,
+    "periodicQuarantineBlocksCompetingFreshAllocation": true,
+    "periodicQuarantineOperationsRequireCompleteHomogeneousCollisionGroup": true,
+    "periodicQuarantineRejectsSubsetDuplicateMixedBeforeMutation": true,
+    "periodicQuarantineIsDurableIdentity": false,
     "rankedTokensRotateAcrossPeriodicSeam": false,
+    "adaptiveIntrinsicPeriodicPhaseTubeGuardsPriorTokenReuse": true,
+    "adaptivePhaseTubeIsDurableIdentity": false,
+    "adaptivePhaseTubeIsIndependentOfUiUpdateGranularity": true,
+    "fixedSpanOver256IsTopologyEvidence": false,
+    "boundedContinuationDiagnosticIsTopologyCertificate": false,
     "currentSnapshotSelectorChoosesCurrentRoot": true,
     "transitionRelationOnlyGuardsOldTokenReuse": true,
     "continuationBudgetCannotSelectOrTransferToken": true,
     "directPeriodicPhaseUpdate": "0_TO_NEGATIVE_0_1",
     "directPeriodicPhaseUpdateFailsClosed": true,
-    "directPeriodicOldTokenCountInvalidated": 4,
-    "directPeriodicOldTokensBecomeCurrentAgain": false,
-    "directPeriodicSettledRecomputeUsesFreshAdmissibleTokens": true,
+    "directPeriodicAffectedOldTokenCountPermanentlyRetired": 2,
+    "directPeriodicUnaffectedOldTokenCountRemainingCurrent": 2,
+    "directPeriodicAffectedOldTokensBecomeCurrentAgain": false,
+    "directPeriodicSettledRecomputeUsesFreshAdmissibleTokensForAffectedGroup": true,
     "equivalentTargetScalarRepresentationPreservesSelector": true,
     "canonicalLineAndSegmentContactOrientation": true,
     "canonicalCentralConicAndParabolaContactOrientation": true,
@@ -111,13 +199,16 @@
     "materializationPolicyMayOverrideIdentityAmbiguity": false,
     "certificationPolicyRelaxedByR4": false,
     "adaptiveCertificationMayResolveSelectorCollision": false,
-    "ledgerFormatVersion": "3",
+    "adaptiveCertificationPurpose": "PERIODIC_PRIOR_TOKEN_REUSE_NOT_CURRENT_SELECTOR_COLLISION",
+    "ledgerFormatVersion": "4",
     "selectorCodecVersion": "2",
-    "selectorCodecV2IsNestedInLedgerV3": true,
-    "phaseSelectorLedgerRoundTripVersion": "3",
+    "selectorCodecV2IsNestedInLedgerV4": true,
+    "phaseSelectorLedgerRoundTripVersion": "4",
+    "phaseLedgerFormatVersionAccepted": "3",
     "previousLedgerFormatVersionAccepted": "2",
     "legacyLedgerFormatVersionAccepted": "1",
-    "legacyLedgerFormatVersionsAccepted": ["1", "2"],
+    "ledgerFormatVersionsAcceptedForImport": ["1", "2", "3", "4"],
+    "canonicalLedgerV3MigrationPreservesExactToken": true,
     "authenticPrePhaseLedgerV2MigrationPreservesExactToken": true,
     "ledgerV2MayContainIntrinsicPhaseSelector": false,
     "falselyRelabeledPhaseLedgerV2Rejected": true,
@@ -126,9 +217,29 @@
     "topologyParentEvidenceAdversarialPermutationTested": true,
     "externalTokenEnvelope": "locus-root/v3_UNCHANGED",
     "legacySingletonTokenMaterialPreserved": true,
+    "ordinaryAbsenceOrUnresolvedCertificateDormantsClaimedAllocation": true,
+    "sameExactSelectorReactivatesDormantClaim": true,
+    "sameExistingGeoPointReactivatesInKernel": true,
+    "provedNonreactivatableSeamPermanentlyRetiresOnlyAffectedClaims": true,
+    "permanentRetirementPreventsDormantReactivation": true,
+    "materializedClaimReferenceCountControlsDormantRetention": true,
+    "authorizedCopyMayRebaseDormantClaimByExactProvenance": true,
+    "authorizedCopyPreservesPeriodicQuarantine": true,
+    "authorizedCopyMayReleasePeriodicQuarantine": false,
+    "lastClaimReleasePrunesPeriodicQuarantineGroup": true,
+    "topologyRecomputeAutoMaterializesNewGeoPoints": false,
     "locusPairUsesSingleLocusPhaseRank": false,
     "automaticPersistentPoints": 0,
-    "candidateMarkersIntroduced": 0
+    "candidateMarkersIntroduced": 0,
+    "futureG9U1MarkersAndMaterializationRequireCurrentExactToken": true,
+    "futureG9U1DormantClaimsAreFrontendSelectable": false,
+    "futureG9U1OptionalAutoMaterializationIsSeparateFrontendTransaction": true,
+    "futureG9U1RecomputeOrReactivationMayAutoCreatePoints": false,
+    "incrementalResolverAndReactivationComplexity": "O(R_LOG_R_PLUS_P)",
+    "wholeLegacyTransitionDiagnosticsMayRemain": "O(R_SQUARED)",
+    "additionalGlobalSolvePerMaterializedPoint": false,
+    "g9u0R5Executed": false,
+    "g9u1Executed": false
   },
   "automatedGroups": [
     {
@@ -142,7 +253,7 @@
         {"id": "R4-A04", "method": "authorFourSolutionPointsRemainDefinedThroughoutRegularMotion", "title": "All four exact-token points remain defined and unswapped throughout ordinary seam-free motion"},
         {"id": "R4-A05", "method": "authorMidpointCircleRootsAreInitiallyPointAdmissible", "title": "The byte-exact midpoint/circle fixture publishes two distinct locally admissible initial roots"},
         {"id": "R4-A06", "method": "publishedR3SingletonPositiveControlRemainsAdmissible", "title": "The published singleton-line positive control remains admissible"},
-        {"id": "R4-A07", "method": "preR4V1XmlTokenPointMigratesWithoutTokenChangeAndTracksMotion", "title": "A real pre-R4 format-v1 XML ledger and materialized token point import into v3 without changing token material and then follow regular motion"},
+        {"id": "R4-A07", "method": "preR4V1XmlTokenPointMigratesWithoutTokenChangeAndTracksMotion", "title": "A real pre-R4 format-v1 XML ledger and materialized token point import into canonical v4 without changing token material and then follow regular motion"},
         {"id": "R4-A08", "method": "authorTokenPointsSurviveSaveReopenAndSameStateRecompute", "title": "Author-fixture token points survive reconstruction, regular target motion and same-state recompute"},
         {"id": "R4-A09", "method": "authorMidpointDirectRegularMotionRetainsExactTokenPoints", "title": "One direct regular update retains both exact-token midpoint points"},
         {"id": "R4-A10", "method": "authorMidpointBindingIsPathIndependentAcrossRegularHistories", "title": "Direct, incremental, reversing and reopened paths reach the same deterministic final binding"},
@@ -158,9 +269,11 @@
         {"id": "R4-A20", "method": "repeatedDeterministicSelectorsUseIntrinsicSemanticRank", "title": "Repeated base selectors use only the intrinsic oriented semantic phase/rank and never solver/list order"},
         {"id": "R4-A21", "method": "rankedCollisionGroupAppearanceAndDisappearanceInvalidatesWithoutShift", "title": "Collision-cardinality/topology change invalidates ranked tokens instead of transferring them to a new rank occupant"},
         {"id": "R4-A22", "method": "reversingProviderOrientationNeverTransfersRankedTokensWithoutMap", "title": "Provider orientation reversal cannot reuse ranked tokens without an explicit semantic map"},
-        {"id": "R4-A23", "method": "rankedPeriodicSeamInvalidatesInsteadOfRotatingOpaqueTokens", "title": "Incremental seam traversal and a direct phase 0 to -0.1 update fail closed: all four old tokens are transition parents, every old point invalidates, and the settled same-state recompute exposes only fresh admissible tokens"},
+        {"id": "R4-A23", "method": "rankedPeriodicSeamInvalidatesInsteadOfRotatingOpaqueTokens", "title": "Incremental seam traversal and a direct phase 0 to -0.1 update fail closed selectively: the affected two-root germ group publishes typed transition parents and retires its old tokens, while the unaffected two-root group remains current; settled recompute exposes admissible fresh tokens only for the affected group"},
         {"id": "R4-A24", "method": "mergeCandidateParentKeysRemainExplicitAndNonAdmissible", "title": "Merge-candidate parent tokens and keys remain explicit, canonically ordered and point-inadmissible"},
-        {"id": "R4-A25", "method": "stableSupportedTargetFamiliesReceiveExactOrFailClosedEvidence", "title": "Supported target families receive exact evidence or fail closed, and equivalent nonzero scalar target representations preserve canonical selectors and tokens"}
+        {"id": "R4-A25", "method": "stableSupportedTargetFamiliesReceiveExactOrFailClosedEvidence", "title": "Supported target families receive exact evidence or fail closed, and equivalent nonzero scalar target representations preserve canonical selectors and tokens"},
+        {"id": "R4-A26", "method": "authorFourSolutionCenterDragIgnoresUiUpdateGranularity", "title": "One ordinary UI-sized center update and forty smaller updates to the same regular geometry retain identical selectors, tokens and existing materialized-point bindings under the adaptive intrinsic phase-tube certificate"},
+        {"id": "R4-A27", "method": "existingTwoRootPointsReactivateAfterFourRootTopologyRecurrence", "title": "Across direct, staged, reopened-dormant, many-small and forward/reverse 2-to-4-to-2 paths, the same two existing GeoPoints become dormant and then reactivate under their exact selectors; topology recompute creates no new GeoPoint"}
       ]
     },
     {
@@ -173,16 +286,16 @@
         {"id": "R4-L03", "method": "changedRevisionAddressKeepsUniqueDeterministicIdentity", "title": "A changed revision address keeps the byte-identical token when the deterministic selector remains unique"},
         {"id": "R4-L04", "method": "differentDeterministicSelectorNeverReusesACommittedAddress", "title": "A different selector never inherits a committed token merely because an address is available"},
         {"id": "R4-L05", "method": "selectorRejectsContextMismatchButNotParameterMotion", "title": "Selector resolution rejects constructive-context mismatch but permits regular semantic-parameter motion"},
-        {"id": "R4-L06", "method": "unavailablePublicationBurnsPriorAllocation", "title": "An unavailable publication burns its allocation and cannot silently revive it"},
+        {"id": "R4-L06", "method": "unavailablePublicationBurnsPriorAllocation", "title": "An unavailable publication burns an unclaimed allocation and cannot silently revive it"},
         {"id": "R4-L07", "method": "authorizedCopyRebasesContractAndRetainsIncarnation", "title": "Authorized copy rebases exact provenance and retains the approved incarnation"},
         {"id": "R4-L08", "method": "multiRootCurrentAllocationsCopyThroughOneToOneProvenance", "title": "Distinct current-root allocations copy only through one-to-one exact provenance"},
-        {"id": "R4-L09", "method": "allocationSnapshotRoundTripRetainsExactOpaqueIdentity", "title": "Canonical format-v3 snapshot round trip retains exact opaque token and selector binding"},
+        {"id": "R4-L09", "method": "allocationSnapshotRoundTripRetainsExactOpaqueIdentity", "title": "Canonical format-v4 snapshot round trip retains exact opaque token and selector binding"},
         {"id": "R4-L10", "method": "legacyMintRetainsItsExactReuseAndPersistenceContract", "title": "Historical exact-key mint/reuse behavior retains its compatibility contract"},
-        {"id": "R4-L11", "method": "r3SingletonTokenMigratesWithoutChangingItsExactOpaqueMaterial", "title": "A canonical R3 singleton allocation acquires a v3 selector binding without changing its opaque token"},
+        {"id": "R4-L11", "method": "r3SingletonTokenMigratesWithoutChangingItsExactOpaqueMaterial", "title": "A canonical R3 singleton allocation acquires a canonical-v4 selector binding without changing its opaque token"},
         {"id": "R4-L12", "method": "r3SingletonMigrationRequiresTheExactInitialAddress", "title": "Legacy singleton migration requires its exact initial address and exact current component context"},
         {"id": "R4-L13", "method": "deterministicSelectorRejectsAGermFromAnotherComponent", "title": "A deterministic selector rejects a root germ framed for another component"},
-        {"id": "R4-L14", "method": "intrinsicPhaseSelectorRoundTripPreservesSemanticFrame", "title": "Selector-codec v2 round trip preserves component, germ, orientation, domain kind, cardinality and rank independently of the enclosing ledger-v3 schema"},
-        {"id": "R4-L15", "method": "phaseSelectorLedgerRoundTripRetainsExactOpaqueTokens", "title": "Ledger-v3 phase-selector round trip retains exact tokens; authentic pre-phase ledger-v2 state migrates with its token unchanged; a phase state falsely relabeled v2 and a forged phase binding on legacy-singleton token material are rejected"},
+        {"id": "R4-L14", "method": "intrinsicPhaseSelectorRoundTripPreservesSemanticFrame", "title": "Selector-codec v2 round trip preserves component, germ, orientation, domain kind, cardinality and rank independently of the enclosing ledger-v4 schema"},
+        {"id": "R4-L15", "method": "phaseSelectorLedgerRoundTripRetainsExactOpaqueTokens", "title": "Ledger-v4 phase-selector round trip retains exact tokens; canonical phase-ledger v3 and authentic pre-phase ledger v2 migrate with opaque tokens unchanged; claimed-v4 falsely relabeled v3, phase-v3 falsely relabeled v2 and forged legacy-singleton phase bindings are rejected"},
         {"id": "R4-L16", "method": "changedVerifiedCollisionCardinalityBurnsAllRankedBindings", "title": "Changing verified collision cardinality burns ranked bindings instead of shifting tokens"},
         {"id": "R4-L17", "method": "orientationReversalCannotReuseRankedAllocationsWithoutDeclaredMap", "title": "Orientation reversal cannot reuse ranked allocations without a declared semantic map"},
         {"id": "R4-L18", "method": "publishedContinuationKeyExposesItsExactVersionedSelector", "title": "Prior-snapshot topology diagnostics recover the exact versioned selector from the published continuation key"},
@@ -190,7 +303,12 @@
         {"id": "R4-L20", "method": "persistedBindingRejectsForgedLegacyTokenMaterial", "title": "Persisted selector binding rejects forged legacy token material"},
         {"id": "R4-L21", "method": "persistedSnapshotRejectsDuplicateDeterministicBinding", "title": "Persisted snapshots reject duplicate deterministic bindings"},
         {"id": "R4-L22", "method": "deterministicSelectorResolvesMovedAddressWithoutHistory", "title": "The same selector resolves a moved revision address without previous-root history"},
-        {"id": "R4-L23", "method": "multiRootCopyUsesOneSemanticMappingPerSharedLegacyIncarnation", "title": "Legacy shared-incarnation copy requires one semantic source-to-copy mapping per root"}
+        {"id": "R4-L23", "method": "multiRootCopyUsesOneSemanticMappingPerSharedLegacyIncarnation", "title": "Legacy shared-incarnation copy requires one semantic source-to-copy mapping per root"},
+        {"id": "R4-L24", "method": "claimedAllocationBecomesDormantAndReactivatesByExactSelector", "title": "A materialized claim becomes noncurrent but retained dormant during ordinary absence, then reactivates with the exact same opaque token when its selector returns"},
+        {"id": "R4-L25", "method": "materializedClaimReferenceCountPrunesOnlyAfterLastRelease", "title": "A dormant materialized allocation remains retained until its last exact claim is released, after which recurrence receives fresh token material"},
+        {"id": "R4-L26", "method": "explicitPermanentRetirementPreventsDormantReactivation", "title": "The typed permanent-retirement seam removes even a claimed allocation and prevents later dormant reactivation"},
+        {"id": "R4-L27", "method": "authorizedCopyRebasesDormantClaimBeforeRootReappears", "title": "An authorized exact-provenance copy rebases a dormant claim before recurrence and reactivates the copied token only when its exact selector returns"},
+        {"id": "R4-L28", "method": "periodicQuarantineSurvivesRecomputeReopenAndCopyUntilProvedRelease", "title": "Insufficient periodic cyclic evidence retains a non-current exact group through ledger recompute, canonical export/import and exact-provenance copy; quarantine/release/copy-rebase accept only one complete exact homogeneous collision group and reject subset/duplicate/mixed evidence before mutation; copy cannot release it, unique offset zero may release it, proved nonzero offset retires it and the last claim release prunes it"}
       ]
     },
     {
@@ -199,23 +317,24 @@
       "testClass": "org.geocedg.desktop.G9U0R4NativeArchivePersistenceTest",
       "cases": [
         {"id": "R4-E01", "method": "newMidpointCircleTokensSurviveNativeCedgSaveAndReopen", "title": "Both midpoint/circle token points and auxiliary dependencies survive real native Save As and reopen"},
-        {"id": "R4-E02", "method": "nativeCedgReopenPathMatchesDirectDeterministicBinding", "title": "A native reopen path and direct regular path reach the same deterministic final binding"}
+        {"id": "R4-E02", "method": "nativeCedgReopenPathMatchesDirectDeterministicBinding", "title": "A native reopen path and direct regular path reach the same deterministic final binding"},
+        {"id": "R4-E03", "method": "nativeCedgPreservesDormantAndReactivatedExistingPoints", "title": "Native .cedg preserves the same existing token points through dormant 2-to-4-to-2 reactivation and reopen after reactivation; no new point is created"}
       ]
     }
   ],
   "requiredCoverage": [
-    {"id": "R4-C01", "status": "COVERED_PASS_R4_A03_A04_A09_A10_A11_A17", "title": "Stable transverse motion resolves from current deterministic selectors and remains continuously represented"},
-    {"id": "R4-C02", "status": "COVERED_PASS_R4_A14", "title": "Root disappearance invalidates and never jumps"},
+    {"id": "R4-C01", "status": "COVERED_PASS_R4_A03_A04_A09_A10_A11_A17_A26", "title": "Stable transverse motion resolves from current deterministic selectors, remains continuously represented and is independent of ordinary UI update granularity"},
+    {"id": "R4-C02", "status": "COVERED_PASS_R4_A14_A27_L24", "title": "Root disappearance never jumps: an unclaimed allocation ceases to be current, while an existing materialized point becomes undefined under a retained dormant claim"},
     {"id": "R4-C03", "status": "COVERED_PASS_R4_A14_A21_L04_L16", "title": "A new isolated root/collision-cohort change never inherits an unrelated ranked allocation"},
     {"id": "R4-C04", "status": "COVERED_PASS_R4_A14", "title": "Tangency and multiplicity uncertainty remain fail-closed"},
     {"id": "R4-C05", "status": "COVERED_PASS_R4_A24_AND_SEALED_INTERSECTION_GATES", "title": "Merge/split ambiguity never transfers a token"},
-    {"id": "R4-C06", "status": "COVERED_PASS_R4_A14_L04", "title": "Reappearance does not resurrect identity by proximity"},
+    {"id": "R4-C06", "status": "COVERED_PASS_R4_A14_A27_L04_L24", "title": "Reappearance never resurrects identity by proximity; only a retained claim with the exact returning selector reactivates its existing point"},
     {"id": "R4-C07", "status": "COVERED_PASS_R4_A02_A03_A10_A19_L22", "title": "Current intrinsic evidence, not solver order or movement history, determines the final selector binding"},
     {"id": "R4-C08", "status": "COVERED_PASS_R4_A20_L14_L15", "title": "Repeated base selectors receive only the fully framed intrinsic oriented phase/rank"},
-    {"id": "R4-C09", "status": "COVERED_PASS_R4_A23_AND_AUDITED_TRANSITION_GUARD", "title": "The transition relation only guards reuse of old tokens: on direct periodic phase 0 to -0.1, unavailable bounded comparison cannot select or transfer a token, all four prior tokens fail closed, and the settled current snapshot receives fresh admissible tokens"},
+    {"id": "R4-C09", "status": "COVERED_PASS_R4_A23_L28_AND_ADAPTIVE_TRANSITION_GUARD", "title": "The transition relation only guards reuse of old tokens: insufficient/nonunique periodic evidence durably quarantines, unique offset zero releases, and proved unique nonzero offset selectively retires the affected group; fixed span/256 and bounded diagnostic work cannot select or transfer a token"},
     {"id": "R4-C10", "status": "COVERED_PASS_R4_A18", "title": "Deterministic selectors preserve tokens while two roots reverse Cartesian left/right order"},
-    {"id": "R4-C11", "status": "COVERED_PASS_R4_A01_A02_A03_A04", "title": "Four established transverse roots receive four unique complete selectors and materializable tokens without a certification or completeness upgrade"},
-    {"id": "R4-C12", "status": "COVERED_PASS_R4_A21_A22_A23_L16_L17", "title": "Topology/cardinality/orientation/periodic-monodromy changes fail closed without rank shifting"},
+    {"id": "R4-C11", "status": "COVERED_PASS_R4_A01_A02_A03_A04_A26", "title": "Four established transverse roots receive four unique complete selectors and materializable tokens without a certification or completeness upgrade, and ordinary motion is independent of update granularity"},
+    {"id": "R4-C12", "status": "COVERED_PASS_R4_A21_A22_A23_L16_L17_L26", "title": "Topology/cardinality/orientation/periodic-monodromy changes fail closed without rank shifting; a proved nonreactivatable seam permanently retires only the affected allocations"},
     {"id": "R4-G01", "status": "COVERED_PASS_R4_A01_A05_A13", "title": "Global NOT_ESTABLISHED plus locally admissible roots, including unrelated-component unresolved evidence, allows materialization"},
     {"id": "R4-G02", "status": "COVERED_PASS_R4_A13", "title": "Global COMPLETE plus a locally ambiguous root forbids materialization"},
     {"id": "R4-G03", "status": "COVERED_PASS_R4_A13", "title": "Global INCOMPLETE plus a rigorously admissible root allows materialization"},
@@ -223,7 +342,7 @@
     {"id": "R4-P01", "status": "COVERED_PASS_R4_A15", "title": "Equivalent periodic-seam parameters do not duplicate roots"},
     {"id": "R4-P02", "status": "COVERED_PASS_R4_A15_A20", "title": "The declared oriented periodic fundamental interval is the deterministic phase frame"},
     {"id": "R4-P03", "status": "COVERED_PASS_R4_A16", "title": "A unique base selector preserves canonical seam behavior"},
-    {"id": "R4-P04", "status": "COVERED_PASS_R4_A23", "title": "Incremental traversal and direct phase 0 to -0.1 both expose typed periodic identity transition without token rotation; the direct path invalidates all four old token points and a settled same-state recompute exposes only fresh admissible tokens"},
+    {"id": "R4-P04", "status": "COVERED_PASS_R4_A23_L28", "title": "Periodic reuse has three fail-closed outcomes: insufficient/nonunique offset evidence survives as durable quarantine, unique offset zero releases/reactivates, and proved unique nonzero offset retires without token rotation; the direct 0 to -0.1 control proves the nonzero case selectively"},
     {"id": "R4-F01", "status": "COVERED_PASS_R4_A25", "title": "Line target and equivalent nonzero scalar representation regression"},
     {"id": "R4-F02", "status": "COVERED_PASS_R4_A25", "title": "Segment target and canonical unoriented support-normal regression"},
     {"id": "R4-F03", "status": "COVERED_PASS_R4_A25", "title": "Ray target regression preserving semantic direction"},
@@ -232,20 +351,23 @@
     {"id": "R4-F06", "status": "COVERED_PASS_R4_A25", "title": "Bounded supported function target regression"},
     {"id": "R4-F07", "status": "COVERED_PASS_R4_A25", "title": "Regular polynomial implicit leading-monomial orientation and equivalent-scalar regression"},
     {"id": "R4-F08", "status": "COVERED_PASS_R4_A25_AND_SEALED_G8_PAIR_GATE", "title": "Locus V2 by Locus V2 remains outside the one-sided phase/rank selector and retains pair-isolation authority"},
-    {"id": "R4-D01", "status": "COVERED_PASS_R4_A07_A08_E01_E02_L15", "title": "Format-v1/v2 import and real native .cedg reopen preserve compatible exact-token points and deterministic bindings in ledger v3"},
-    {"id": "R4-D02", "status": "COVERED_PASS_R4_A03_A04_A09_A10_A11_A17_A19", "title": "Ordinary recompute resolves by current semantic selector and remains path-independent"},
+    {"id": "R4-D01", "status": "COVERED_PASS_R4_A07_A08_E01_E02_E03_L09_L15_L24_L28", "title": "Canonical ledger-v4 export/import preserves compatible exact-token bindings and q/r periodic quarantine; separately, real native .cedg reopen preserves the nonperiodic 2-to-4-to-2 dormant/reactivated existing-point lifecycle without claiming a native periodic-quarantine round trip"},
+    {"id": "R4-D02", "status": "COVERED_PASS_R4_A03_A04_A09_A10_A11_A17_A19_A26", "title": "Ordinary recompute resolves by current semantic selector and remains path- and update-granularity-independent"},
     {"id": "R4-D03", "status": "COVERED_PASS_R4_A12", "title": "Undo/redo remains normal"},
-    {"id": "R4-D04", "status": "COVERED_PASS_R4_L07_L08_L23_AND_SEALED_COPY_GATES", "title": "Supported copy/remapping uses exact provenance only"},
+    {"id": "R4-D04", "status": "COVERED_PASS_R4_L07_L08_L23_L27_L28_AND_SEALED_COPY_GATES", "title": "Supported current, dormant or quarantined claim copy/remapping uses exact provenance only; copy never certifies quarantine release"},
     {"id": "R4-D05", "status": "SEALED_GATE_PASS_HISTORICAL_G9U0", "title": "Compatible rename does not establish identity"},
-    {"id": "R4-D06", "status": "COVERED_PASS_R4_A03_A04_A09_A10_A11_A14_A17_A19_A20_A21_A22_A23", "title": "Target movement preserves complete deterministic bindings and invalidates topology, cardinality, orientation or seam ambiguity without guessing"}
+    {"id": "R4-D06", "status": "COVERED_PASS_R4_A03_A04_A09_A10_A11_A14_A17_A19_A20_A21_A22_A23_A26_A27", "title": "Target movement preserves complete deterministic bindings, dormants claimed points through ordinary topology/cardinality absence or unresolved certification, and permanently retires only claims covered by a proved nonreactivatable seam"},
+    {"id": "R4-C13", "status": "COVERED_PASS_R4_A27_E03_L24_L25", "title": "An ordinary 2-to-4-to-2 recurrence keeps exact materialized claims dormant while absent, reactivates the same existing GeoPoints under the same selectors, survives native .cedg reopen, reference-counts retention, and auto-materializes no new point"},
+    {"id": "R4-C14", "status": "COVERED_PASS_R4_A23_L26_L28", "title": "Ordinary absence may be dormant; insufficient periodic cyclic evidence is durably quarantined and recoverable only through unique offset zero; proved nonzero seam/monodromy is permanent retirement for only its affected claims"},
+    {"id": "R4-C15", "status": "COVERED_PASS_R4_L27", "title": "Authorized copy rebases a dormant claim only through exact provenance and reactivates it only when the copied exact selector returns"}
   ],
   "expectedCurrentFocusedCounts": {
-    "publicKernel": 25,
-    "ledgerAllocation": 23,
-    "desktopArchive": 2,
-    "declaredJUnit": 50,
-    "executedJUnit": 50,
-    "disposition": "REPLACEMENT_FOCUSED_AUTHORITY"
+    "publicKernel": 27,
+    "ledgerAllocation": 28,
+    "desktopArchive": 3,
+    "declaredJUnit": 58,
+    "executedJUnit": 58,
+    "disposition": "FINAL_AUTOMATED_AUTHORITY_PASS_AUTHOR_APPROVED"
   },
   "supersededPreCorrectionEvidence": {
     "focusedR4": 27,
@@ -265,8 +387,9 @@
     "canonicalSummarySha256": "c1d76e86d5174e406ac7bdddd4862f4ccc607d6a68df2ec23c365b9084cce83e",
     "disposition": "VALIDATED_BEFORE_FINAL_STABLE_FRESH_TOKEN_ASSERTION; RETAINED_AS_PRE_FREEZE_EVIDENCE"
   },
-  "testExecution": {
+  "preCurrentCorrectionTestExecution": {
     "status": "AUTOMATED_VALIDATION_PASS",
+    "checkpoint": "4ef2c9df433aec7c6385a488a02581358da83f60",
     "focusedR4": 50,
     "failures": 0,
     "errors": 0,
@@ -305,11 +428,63 @@
       "terminalMatchedLiterally": true,
       "evidenceKind": "ACTUAL_EXIT_ZERO_EXECUTION",
       "logRoot": "artifacts/g9u0-r4/four-root-characterization-composed"
+    },
+    "disposition": "HISTORICAL_PRE_ADAPTIVE_PHASE_TUBE_AND_DORMANT_CLAIM_EVIDENCE; NOT_CURRENT_PASS_EVIDENCE"
+  },
+  "currentTestExecution": {
+    "status": "AUTOMATED_VALIDATION_PASS",
+    "focusedR4": 58,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "deterministicRerun": {
+      "focusedR4": 58,
+      "status": "PASS",
+      "summaryMatch": "EXACT",
+      "canonicalSummarySha256": "3e9ea0aa20d511f2828eae61e491c1b3b5d9cb86a0f02166503ee5093d6000fb"
+    },
+    "canonicalSummarySha256": "3e9ea0aa20d511f2828eae61e491c1b3b5d9cb86a0f02166503ee5093d6000fb",
+    "focusedRuns": {
+      "A": {
+        "status": "PASS",
+        "focusedR4": 58,
+        "logRoot": "artifacts/g9u0-r4/closeout-a"
+      },
+      "B": {
+        "status": "PASS",
+        "focusedR4": 58,
+        "logRoot": "artifacts/g9u0-r4/closeout-b"
+      }
+    },
+    "composed": {
+      "status": "PASS",
+      "exitCode": 0,
+      "terminal": "All GeoCeDG verification gates passed.",
+      "logRoot": "artifacts/g9u0-r4/closeout-composed"
     }
   },
+  "retainedDeferredValidation": {
+    "id": "G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP",
+    "origin": "G9U0-R4",
+    "severity": "RETAINED_NONBLOCKING",
+    "semanticArea": "PERIODIC_INTERSECTION_TOKEN_LIFECYCLE_PERSISTENCE",
+    "missingEvidence": "DEDICATED_NATIVE_CEDG_ROUND_TRIP_OF_PERIODIC_QUARANTINE_STATE",
+    "existingEvidence": [
+      "LEDGER_RECOMPUTE",
+      "LEDGER_EXPORT_IMPORT",
+      "AUTHORIZED_COPY",
+      "NONPERIODIC_NATIVE_CEDG_DORMANT_REACTIVATION",
+      "NATIVE_CEDG_REOPEN_AFTER_REACTIVATION"
+    ],
+    "requiredDispositionBy": "GLOBAL_G9_CLOSEOUT",
+    "revisitDuring": "G9U1_VALIDATION",
+    "r5Dependency": false
+  },
   "authorReview": {
-    "status": "PENDING_AUTHOR_RE_REVIEW",
-    "manualSmokePassed": false,
+    "status": "PASS_AUTHOR_APPROVED",
+    "manualSmokePassed": true,
+    "manualAuthorFinalSmokeFourRoot": "PASS",
+    "manualAuthorFinalSmokeReactivation": "PASS",
     "completedBy": "AUTHOR",
     "caseA": {
       "midpointTwoRoot": "PASS"
@@ -318,8 +493,16 @@
       "fourRootsInitiallyDetected": "PASS",
       "fourIntrinsicSelectorsAndTokens": "PASS",
       "fourPointsInitiallyMaterialized": "PASS",
-      "regularMotionPersistence": "FAIL_POINTS_BECAME_UNDEFINED"
+      "regularMotionPersistence": "PASS_AFTER_ADAPTIVE_PHASE_TUBE_CORRECTION",
+      "noTokenRootSwapObserved": true,
+      "directAndIncrementalMotionDeterministic": true
     },
-    "disposition": "CORRECTIVE_ITERATION_REQUIRED_BEFORE_R4_CLOSEOUT"
+    "caseTopologyRecurrence": {
+      "sameExistingGeoPointsReactivate": "PASS",
+      "noNewGeoPointsCreatedDuringRecompute": "PASS",
+      "selectorTokenOwnershipPreserved": "PASS",
+      "saveReopen": "PASS"
+    },
+    "disposition": "G9U0_R4_PASS_AUTHOR_APPROVED"
   }
 }

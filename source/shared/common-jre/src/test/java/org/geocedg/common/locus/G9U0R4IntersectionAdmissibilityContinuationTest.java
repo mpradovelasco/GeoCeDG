@@ -34,8 +34,10 @@ import org.geocedg.common.kernel.algos.AlgoLocusIntersectionPointV2;
 import org.geocedg.common.kernel.algos.AlgoLocusIntersectionV2;
 import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
+import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusPoint2D;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.NumericGuarantee;
 import org.geocedg.common.kernel.locus.intersection.IntersectionCapabilityContext2D;
@@ -47,6 +49,7 @@ import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.CompletenessMethod;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.ComputationStatus;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.ContactClass;
+import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.Currentness;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.DiagnosticCode;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.GeometryKind;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.IdentityStatus;
@@ -73,6 +76,7 @@ import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.kernel.geos.GeoText;
 import org.geogebra.common.kernel.implicit.GeoImplicitCurve;
+import org.geogebra.common.util.DoubleUtil;
 import org.junit.jupiter.api.Test;
 
 /** G9U0-R4 author-fixture initial-admissibility regression. */
@@ -237,6 +241,39 @@ final class G9U0R4IntersectionAdmissibilityContinuationTest
 	}
 
 	@Test
+	void authorFourSolutionCenterDragIgnoresUiUpdateGranularity()
+			throws Exception {
+		loadFourSolutionFixture();
+		GeoLocusIntersectionResult rich =
+				(GeoLocusIntersectionResult) requireLookup("b");
+		List<LocusIntersectionSolution2D> roots = rich.getIntersectionResult()
+				.getFiniteSolutions();
+		assertEquals(4, roots.size(), describeFourSolutionEvidence(rich));
+		for (int index = 0; index < roots.size(); index++) {
+			assertTrue(materialize("fourCenterPoint" + index, rich,
+					roots.get(index)).isDefined());
+		}
+		FourRootDurableBaseline baseline = captureFourRootDurableBaseline(
+				rich, "fourCenterPoint", 4);
+		String byteIdenticalSeed = getApp().getXML();
+
+		FourRootRegularMotionSnapshot direct = runFourSolutionCenterDrag(
+				byteIdenticalSeed, 1, baseline);
+		FourRootRegularMotionSnapshot incremental = runFourSolutionCenterDrag(
+				byteIdenticalSeed, 40, baseline);
+
+		assertEquals(incremental, direct,
+				"One ordinary UI-sized update and forty smaller updates to the "
+						+ "same regular geometry must retain identical selectors, tokens "
+						+ "and materialized-point bindings");
+		assertTrue(direct.roots().values().stream()
+				.allMatch(FourRootRegularBinding::pointAdmissible));
+		assertTrue(direct.points().values().stream()
+				.allMatch(binding -> binding.defined()
+						&& binding.selectedToken().equals(binding.effectiveToken())));
+	}
+
+	@Test
 	void authorMidpointCircleRootsAreInitiallyPointAdmissible() throws Exception {
 		loadAuthorFixture();
 		GeoLocusV2 locus = (GeoLocusV2) requireLookup("a");
@@ -334,7 +371,7 @@ final class G9U0R4IntersectionAdmissibilityContinuationTest
 				(GeoLocusIntersectionResult) requireLookup("legacyRich");
 		GeoPoint point = (GeoPoint) requireLookup("legacyPoint");
 		assertMigratedLegacyPoint(migrated, point, legacy.legacyToken());
-		assertTrue(migrated.getTokenLedgerState().startsWith("3|"));
+		assertTrue(migrated.getTokenLedgerState().startsWith("4|"));
 		assertNotEquals(legacy.legacyState(), migrated.getTokenLedgerState());
 
 		GeoNumeric targetX = (GeoNumeric) requireLookup("legacyTargetX");
@@ -676,13 +713,13 @@ final class G9U0R4IntersectionAdmissibilityContinuationTest
 		LocusIntersectionResult2D reappeared = rich.getIntersectionResult();
 		assertEquals(2, reappeared.getFiniteSolutions().size());
 		Set<String> reappearedTokens = tokens(rich);
-		assertTrue(initialTokens.stream().noneMatch(reappearedTokens::contains));
+		assertEquals(initialTokens, reappearedTokens);
 		assertTrue(reappeared.getFiniteSolutions().stream().allMatch(solution ->
 				solution.getIdentity().getIdentityStatus()
-						== IdentityStatus.NEW_TOPOLOGICAL_SOLUTION
+						== IdentityStatus.DETERMINISTIC_SELECTION_ESTABLISHED
 						&& rich.isPointAdmissible(
 								solution.getIdentity().getRootToken())));
-		assertTrue(oldPoints.stream().noneMatch(GeoPoint::isDefined));
+		assertTrue(oldPoints.stream().allMatch(GeoPoint::isDefined));
 
 		height.setValue(0);
 		height.updateCascade();
@@ -709,6 +746,12 @@ final class G9U0R4IntersectionAdmissibilityContinuationTest
 								solution.getIdentity().getRootToken())
 						&& !rich.isPointAdmissible(
 								solution.getIdentity().getRootToken())));
+		assertTrue(oldPoints.stream().noneMatch(GeoPoint::isDefined));
+
+		height.setValue(1);
+		height.updateCascade();
+		assertEquals(initialTokens, tokens(rich));
+		assertTrue(oldPoints.stream().allMatch(GeoPoint::isDefined));
 	}
 
 	@Test
@@ -960,12 +1003,78 @@ final class G9U0R4IntersectionAdmissibilityContinuationTest
 		height.updateCascade();
 		assertEquals(4, rich.getIntersectionResult().getFiniteSolutions().size());
 		Set<String> restoredTokens = tokens(rich);
-		assertTrue(java.util.Collections.disjoint(fourTokens, restoredTokens));
+		assertEquals(fourTokens, restoredTokens);
 		assertTrue(java.util.Collections.disjoint(twoTokens, restoredTokens));
 		assertTrue(rich.getIntersectionResult().getFiniteSolutions().stream()
 				.allMatch(solution -> rich.isPointAdmissible(
 						solution.getIdentity().getRootToken())));
-		assertTrue(oldPoints.stream().noneMatch(GeoPoint::isDefined));
+		assertTrue(oldPoints.stream().allMatch(GeoPoint::isDefined));
+	}
+
+	@Test
+	void existingTwoRootPointsReactivateAfterFourRootTopologyRecurrence()
+			throws Exception {
+		add("reactivationParameter=0");
+		add("ReactivationGenerator=(reactivationParameter,"
+				+ "(reactivationParameter^2-1)*(reactivationParameter^2-4))");
+		add("reactivationBound=1.5");
+		add("reactivationDomain={false,{-reactivationBound,"
+				+ "reactivationBound,true,true}}");
+		add("reactivationLocus=LocusV2(ReactivationGenerator,"
+				+ "reactivationParameter,reactivationDomain)");
+		add("reactivationAxis:y=0");
+		GeoLocusIntersectionResult rich = add(
+				"reactivationResult=Intersect(reactivationLocus,reactivationAxis)");
+		assertEquals(2, rich.getIntersectionResult().getFiniteSolutions().size());
+		assertTrue(rich.getIntersectionResult().getFiniteSolutions().stream()
+				.allMatch(solution -> rich.isPointAdmissible(
+						solution.getIdentity().getRootToken())),
+				describeFourSolutionEvidence(rich));
+		for (int index = 0; index < 2; index++) {
+			assertTrue(materialize("reactivationPoint" + index, rich,
+					rich.getIntersectionResult().getFiniteSolutions().get(index))
+						.isDefined());
+		}
+		assertCollisionGroupCardinality(rich, 1, "initial two-root state");
+		ReactivationSnapshot baseline = captureReactivationSnapshot(rich,
+				"reactivationPoint", 2);
+		String byteIdenticalSeed = getApp().getXML();
+
+		for (ReactivationPath path : ReactivationPath.values()) {
+			assertEquals(baseline, runTwoFourTwoRecurrence(byteIdenticalSeed,
+					path, baseline), path.name());
+		}
+		assertEquals(2, baseline.activeTokens().size());
+		assertTrue(baseline.points().values().stream().allMatch(binding ->
+				binding.defined()
+						&& binding.identity().selectedToken().equals(
+								binding.identity().effectiveToken())));
+
+		getApp().setXML(byteIdenticalSeed, true);
+		activateUndo();
+		getApp().storeUndoInfo();
+		GeoNumeric undoBound = (GeoNumeric) requireLookup("reactivationBound");
+		setNumeric(undoBound, 3);
+		getApp().storeUndoInfo();
+		assertReactivationPointState(baseline, 4, false,
+				"undo sequence dormant state");
+		setNumeric(undoBound, 1.5);
+		getApp().storeUndoInfo();
+		assertReactivationPointState(baseline, 2, true,
+				"undo sequence reactivated state");
+
+		getKernel().undo();
+		assertReactivationPointState(baseline, 4, false,
+				"undo restored dormant state");
+		getKernel().undo();
+		assertReactivationPointState(baseline, 2, true,
+				"undo restored original active state");
+		getKernel().redo();
+		assertReactivationPointState(baseline, 4, false,
+				"redo restored dormant state");
+		getKernel().redo();
+		assertReactivationPointState(baseline, 2, true,
+				"redo restored reactivated state");
 	}
 
 	@Test
@@ -1107,31 +1216,40 @@ final class G9U0R4IntersectionAdmissibilityContinuationTest
 		directPhase.updateCascade();
 		assertEquals(4,
 				directRich.getIntersectionResult().getFiniteSolutions().size());
-		assertTrue(directRich.getIntersectionResult().getFiniteSolutions().stream()
-				.allMatch(solution -> solution.getIdentity().getIdentityStatus()
-						== IdentityStatus.IDENTITY_DISCONTINUITY));
+		assertEquals(2, directRich.getIntersectionResult().getFiniteSolutions()
+				.stream().filter(solution -> solution.getIdentity()
+						.getIdentityStatus() == IdentityStatus.IDENTITY_DISCONTINUITY)
+				.count(), describeFourSolutionEvidence(directRich));
+		assertEquals(2, directRich.getIntersectionResult().getFiniteSolutions()
+				.stream().filter(solution -> solution.getIdentity()
+						.getIdentityStatus()
+						== IdentityStatus.DETERMINISTIC_SELECTION_ESTABLISHED)
+				.count(), describeFourSolutionEvidence(directRich));
 		Set<String> directTransitionParents = directRich.getIntersectionResult()
 				.getFiniteSolutions().stream()
 				.flatMap(solution -> solution.getLineage()
 						.getCandidateParentTokens().stream())
 				.collect(Collectors.toSet());
-		assertEquals(4, directTransitionParents.size());
-		assertEquals(initialTokens, directTransitionParents,
-				"A direct seam crossing must fail closed for every ranked group "
-						+ "whose previous/current relation was not established");
-		assertTrue(directInitialPoints.values().stream()
-				.noneMatch(GeoPoint::isDefined));
-		assertTrue(java.util.Collections.disjoint(initialTokens,
-				tokens(directRich)));
-		assertTrue(directRich.getIntersectionResult().getFiniteSolutions().stream()
-				.noneMatch(solution -> directRich.isPointAdmissible(
-						solution.getIdentity().getRootToken())));
+		assertEquals(2, directTransitionParents.size());
+		assertTrue(initialTokens.containsAll(directTransitionParents),
+				"Only the germ group whose intrinsic phases crossed the seam may "
+						+ "publish the typed transition parents");
+		Set<String> directTokens = tokens(directRich);
+		for (Map.Entry<String, GeoPoint> entry : directInitialPoints.entrySet()) {
+			assertEquals(!directTransitionParents.contains(entry.getKey()),
+					entry.getValue().isDefined(), entry.getKey());
+		}
+		assertEquals(2, initialTokens.stream().filter(directTokens::contains)
+				.count());
+		assertEquals(2, directRich.getIntersectionResult().getFiniteSolutions()
+				.stream().filter(solution -> directRich.isPointAdmissible(
+						solution.getIdentity().getRootToken())).count());
 
 		directPhase.updateCascade();
 		assertEquals(4,
 				directRich.getIntersectionResult().getFiniteSolutions().size());
-		assertTrue(java.util.Collections.disjoint(initialTokens,
-				tokens(directRich)));
+		assertEquals(2, initialTokens.stream().filter(tokens(directRich)::contains)
+				.count());
 		assertTrue(directRich.getIntersectionResult().getFiniteSolutions().stream()
 				.allMatch(solution -> directRich.isPointAdmissible(
 						solution.getIdentity().getRootToken())));
@@ -1439,8 +1557,10 @@ final class G9U0R4IntersectionAdmissibilityContinuationTest
 		GeoPoint point = add(label + "=Intersect(" + rich.getLabelSimple()
 				+ ",\"" + solution.getIdentity().getRootToken() + "\")");
 		assertNotNull(point);
-		assertEquals(solution.getEvaluatedPoint().getX(), point.getInhomX(), 1e-9);
-		assertEquals(solution.getEvaluatedPoint().getY(), point.getInhomY(), 1e-9);
+		assertEquals(solution.getEvaluatedPoint().getX(), point.getInhomX(), 1e-9,
+				label);
+		assertEquals(solution.getEvaluatedPoint().getY(), point.getInhomY(), 1e-9,
+				label);
 		return point;
 	}
 
@@ -1468,7 +1588,7 @@ final class G9U0R4IntersectionAdmissibilityContinuationTest
 
 		String[] state = currentState.split("\\|", -1);
 		assertEquals(4, state.length);
-		assertEquals("3", state[0]);
+		assertEquals("4", state[0]);
 		assertEquals("-", state[3]);
 		String[] snapshot = state[2].split("~", -1);
 		assertEquals(6, snapshot.length);
@@ -1485,7 +1605,7 @@ final class G9U0R4IntersectionAdmissibilityContinuationTest
 		assertEquals(10, entry.length);
 		assertEquals(Long.toString(decoded.getIncarnation()), entry[1]);
 		assertEquals(hex(branch), entry[3]);
-		String legacyEntry = String.join(",", entry[0], entry[1],
+		String legacyEntry = String.join(",", "a", entry[1],
 				hex(legacySolution), entry[3], hex(legacyContinuation), entry[5],
 				entry[6], entry[7]);
 		String legacySnapshot = String.join("~", snapshot[0], snapshot[1],
@@ -1766,6 +1886,259 @@ final class G9U0R4IntersectionAdmissibilityContinuationTest
 		return capturePathSnapshot("b", "fourPathPoint", 4, "B");
 	}
 
+	private FourRootRegularMotionSnapshot runFourSolutionCenterDrag(String seed,
+			int steps, FourRootDurableBaseline baseline) throws Exception {
+		getApp().setXML(seed, true);
+		GeoLocusIntersectionResult rich =
+				(GeoLocusIntersectionResult) requireLookup("b");
+		GeoLocusV2 locus = (GeoLocusV2) requireLookup("a");
+		assertEquals(baseline, captureFourRootDurableBaseline(rich,
+				"fourCenterPoint", 4), "reopened seed");
+		assertInteriorPeriodicRoots(locus, rich, "reopened seed");
+		GeoPoint center = (GeoPoint) requireLookup("A");
+		double initialX = center.getInhomX();
+		double y = center.getInhomY();
+		double targetX = initialX + 0.20;
+		FourRootRegularMotionSnapshot current = null;
+		for (int step = 1; step <= steps; step++) {
+			double nextX = step == steps ? targetX
+					: initialX + (targetX - initialX) * step / steps;
+			center.setCoords(DoubleUtil.checkDecimalFraction(nextX),
+					DoubleUtil.checkDecimalFraction(y), 1);
+			center.updateCascade();
+			String context = "UI-equivalent step " + step + "/" + steps;
+			current = captureFourRootRegularMotion("b", "fourCenterPoint", 4,
+					"A");
+			assertEquals(baseline, captureFourRootDurableBaseline(rich,
+					"fourCenterPoint", 4), context + ": " + current);
+			assertTrue(current.roots().values().stream()
+					.allMatch(FourRootRegularBinding::pointAdmissible),
+					context + ": " + current);
+			assertTrue(current.points().values().stream().allMatch(binding ->
+					binding.defined()
+							&& binding.selectedToken().equals(
+									binding.effectiveToken())),
+					context + ": " + current);
+			assertInteriorPeriodicRoots(locus, rich, context);
+		}
+		return java.util.Objects.requireNonNull(current);
+	}
+
+	private ReactivationSnapshot runTwoFourTwoRecurrence(String seed,
+			ReactivationPath path, ReactivationSnapshot baseline) throws Exception {
+		getApp().setXML(seed, true);
+		GeoLocusIntersectionResult rich = (GeoLocusIntersectionResult)
+				requireLookup("reactivationResult");
+		GeoNumeric bound = (GeoNumeric) requireLookup("reactivationBound");
+		int constructionSize = getConstruction().getGeoSetConstructionOrder().size();
+		assertEquals(baseline, captureReactivationSnapshot(rich,
+				"reactivationPoint", 2), path + " reopened seed");
+		switch (path) {
+		case DIRECT:
+			setNumeric(bound, 3);
+			break;
+		case STAGED:
+			for (double value : new double[] {1.75, 2.25, 3}) {
+				setNumeric(bound, value);
+			}
+			break;
+		case REOPENED_DORMANT:
+			setNumeric(bound, 3);
+			getApp().setXML(getApp().getXML(), true);
+			rich = (GeoLocusIntersectionResult) requireLookup(
+					"reactivationResult");
+			bound = (GeoNumeric) requireLookup("reactivationBound");
+			break;
+		case MANY_SMALL:
+			setNumericIncrementally(bound, 3, 30);
+			break;
+		case FORWARD_REVERSE:
+			setNumeric(bound, 3);
+			setNumeric(bound, 2.5);
+			setNumeric(bound, 3);
+			break;
+		default:
+			throw new IllegalStateException("Unhandled recurrence path " + path);
+		}
+		assertEquals(4, rich.getIntersectionResult().getFiniteSolutions().size());
+		assertCollisionGroupCardinality(rich, 2, path + " dormant state");
+		assertTrue(java.util.Collections.disjoint(baseline.activeTokens(),
+				tokens(rich)), path + " must not guess a ranked current root for a "
+						+ "retained singleton selector");
+		for (int index = 0; index < 2; index++) {
+			String label = "reactivationPoint" + index;
+			GeoPoint dormant = (GeoPoint) requireLookup(label);
+			assertFalse(dormant.isDefined());
+			AlgoLocusIntersectionPointV2 dormantAlgorithm =
+					(AlgoLocusIntersectionPointV2) dormant.getParentAlgorithm();
+			DurablePointIdentity initial = baseline.points().get(label).identity();
+			assertEquals(initial, captureDurablePointIdentity(dormant),
+					path + " retained " + label);
+			assertTrue(rich.findExactPointAdmissibleSolution(
+					initial.selectedToken()).isEmpty());
+			GeoText tokenInput = (GeoText) dormantAlgorithm.getInput(1);
+			assertEquals(Optional.of(initial.selectedToken()),
+					rich.resolveRetainedMaterializedToken(initial.selectedToken(),
+							tokenInput, dormant), path + " retained ledger claim");
+		}
+		assertEquals(constructionSize,
+				getConstruction().getGeoSetConstructionOrder().size(),
+				"Topology recompute must not auto-materialize new GeoPoints");
+
+		if (path == ReactivationPath.STAGED) {
+			for (double value : new double[] {2.25, 1.75, 1.5}) {
+				setNumeric(bound, value);
+			}
+		} else if (path == ReactivationPath.MANY_SMALL) {
+			setNumericIncrementally(bound, 1.5, 30);
+		} else if (path == ReactivationPath.FORWARD_REVERSE) {
+			setNumeric(bound, 2.25);
+			setNumeric(bound, 2.75);
+			setNumeric(bound, 1.5);
+		} else {
+			setNumeric(bound, 1.5);
+		}
+		rich = (GeoLocusIntersectionResult) requireLookup("reactivationResult");
+		assertEquals(2, rich.getIntersectionResult().getFiniteSolutions().size());
+		assertCollisionGroupCardinality(rich, 1, path + " reactivated state");
+		ReactivationSnapshot reactivated = captureReactivationSnapshot(rich,
+				"reactivationPoint", 2);
+		assertEquals(baseline, reactivated, path + " reactivated binding");
+		getApp().setXML(getApp().getXML(), true);
+		GeoLocusIntersectionResult reopened = (GeoLocusIntersectionResult)
+				requireLookup("reactivationResult");
+		assertEquals(reactivated, captureReactivationSnapshot(reopened,
+				"reactivationPoint", 2),
+				path + " post-reactivation save/reopen binding");
+		return reactivated;
+	}
+
+	private static void setNumeric(GeoNumeric numeric, double value) {
+		numeric.setValue(value);
+		numeric.updateCascade();
+	}
+
+	private static void setNumericIncrementally(GeoNumeric numeric,
+			double target, int steps) {
+		double initial = numeric.getDouble();
+		for (int step = 1; step <= steps; step++) {
+			setNumeric(numeric, step == steps ? target
+					: initial + (target - initial) * step / steps);
+		}
+	}
+
+	private FourRootDurableBaseline captureFourRootDurableBaseline(
+			GeoLocusIntersectionResult rich, String pointPrefix, int pointCount) {
+		Map<String, DurablePointIdentity> points = new LinkedHashMap<>();
+		for (int index = 0; index < pointCount; index++) {
+			GeoPoint point = (GeoPoint) requireLookup(pointPrefix + index);
+			points.put(point.getLabelSimple(), captureDurablePointIdentity(point));
+		}
+		Map<String, DurableSemanticSlot> slots = new LinkedHashMap<>();
+		for (LocusIntersectionSolution2D solution : rich.getIntersectionResult()
+				.getFiniteSolutions()) {
+			IntersectionRootIdentity2D identity = solution.getIdentity();
+			IntersectionRootRevisionEvidence2D evidence =
+					solution.getRevisionEvidence();
+			DurableSemanticSlot duplicate = slots.put(identity.getRootToken(),
+					new DurableSemanticSlot(
+							identity.getSourcePairIdentity(),
+							identity.getEstablishedBranchLineage(),
+							identity.getTopologyContext(),
+							identity.getExplicitContinuationKey().orElseThrow(),
+							evidence.getResolvedValidComponentKey(),
+							evidence.getCurrentRootGerm().orElseThrow()));
+			assertNull(duplicate, "One exact token cannot identify two roots");
+		}
+		return new FourRootDurableBaseline(tokens(rich), Map.copyOf(slots),
+				Map.copyOf(points));
+	}
+
+	private ReactivationSnapshot captureReactivationSnapshot(
+			GeoLocusIntersectionResult rich, String pointPrefix, int pointCount) {
+		Map<String, ReactivatedPointBinding> points = new LinkedHashMap<>();
+		for (int index = 0; index < pointCount; index++) {
+			GeoPoint point = (GeoPoint) requireLookup(pointPrefix + index);
+			points.put(point.getLabelSimple(), new ReactivatedPointBinding(
+					captureDurablePointIdentity(point), point.isDefined(),
+					Double.doubleToLongBits(point.getInhomX()),
+					Double.doubleToLongBits(point.getInhomY())));
+		}
+		return new ReactivationSnapshot(tokens(rich), Map.copyOf(points),
+				getConstruction().getGeoSetConstructionOrder().size());
+	}
+
+	private void assertReactivationPointState(ReactivationSnapshot baseline,
+			int expectedRoots, boolean expectedDefined, String context) {
+		GeoLocusIntersectionResult rich = (GeoLocusIntersectionResult)
+				requireLookup("reactivationResult");
+		assertEquals(expectedRoots,
+				rich.getIntersectionResult().getFiniteSolutions().size(), context);
+		assertEquals(baseline.constructionSize(),
+				getConstruction().getGeoSetConstructionOrder().size(), context);
+		for (Map.Entry<String, ReactivatedPointBinding> entry
+				: baseline.points().entrySet()) {
+			GeoPoint point = (GeoPoint) requireLookup(entry.getKey());
+			assertEquals(entry.getValue().identity(),
+					captureDurablePointIdentity(point), context + " " + entry.getKey());
+			assertEquals(expectedDefined, point.isDefined(),
+					context + " " + entry.getKey());
+		}
+		if (expectedDefined) {
+			assertEquals(baseline.activeTokens(), tokens(rich), context);
+		} else {
+			assertTrue(java.util.Collections.disjoint(baseline.activeTokens(),
+					tokens(rich)), context);
+		}
+	}
+
+	private DurablePointIdentity captureDurablePointIdentity(GeoPoint point) {
+		AlgoLocusIntersectionPointV2 algorithm =
+				(AlgoLocusIntersectionPointV2) point.getParentAlgorithm();
+		GeoText tokenInput = (GeoText) algorithm.getInput(1);
+		return new DurablePointIdentity(persistentId(point),
+				persistentId(tokenInput), algorithm.getSelectedRootToken(),
+				algorithm.getEffectiveRootToken());
+	}
+
+	private String persistentId(org.geogebra.common.kernel.geos.GeoElement geo) {
+		return java.util.Objects.requireNonNull(getConstruction()
+				.getSpatialIdentityRegistry().getPersistentGeoId(geo))
+				.toExternalForm();
+	}
+
+	private static void assertCollisionGroupCardinality(
+			GeoLocusIntersectionResult rich, long expected, String context) {
+		Map<String, Long> byGerm = rich.getIntersectionResult()
+				.getFiniteSolutions().stream().collect(Collectors.groupingBy(
+						solution -> solution.getRevisionEvidence()
+								.getCurrentRootGerm().orElseThrow(),
+						LinkedHashMap::new, Collectors.counting()));
+		assertEquals(2, byGerm.size(), context + " germ classes");
+		assertTrue(byGerm.values().stream()
+				.allMatch(cardinality -> cardinality == expected),
+				context + " collision cardinalities: " + byGerm);
+	}
+
+	private static void assertInteriorPeriodicRoots(GeoLocusV2 locus,
+			GeoLocusIntersectionResult rich, String context) {
+		LocusDefinition2D definition = locus.getSemanticDefinition();
+		assertTrue(definition.getProvider().isPeriodic(), context);
+		LocusInterval2D domain = definition.getProvider().getDeclaredDomain();
+		double epsilon = definition.getProvider().getDomainEpsilon();
+		for (LocusIntersectionSolution2D solution
+				: rich.getIntersectionResult().getFiniteSolutions()) {
+			IntersectionRootRevisionEvidence2D evidence =
+					solution.getRevisionEvidence();
+			assertTrue(evidence.getIsolatingInterval().getLower()
+					> domain.getLower() + epsilon,
+					context + " lower periodic seam: " + evidence);
+			assertTrue(evidence.getIsolatingInterval().getUpper()
+					< domain.getUpper() - epsilon,
+					context + " upper periodic seam: " + evidence);
+		}
+	}
+
 	private void applyMotionPath(GeoPoint radiusPoint, double initialX,
 			double initialY, double finalX, MotionPath path) {
 		switch (path) {
@@ -1777,7 +2150,8 @@ final class G9U0R4IntersectionAdmissibilityContinuationTest
 			break;
 		case FORWARD_REVERSE:
 			movePointX(radiusPoint, finalX, 32);
-			movePointX(radiusPoint, initialX + 0.02, 24);
+			movePointX(radiusPoint,
+					initialX + 0.4 * (finalX - initialX), 24);
 			movePointX(radiusPoint, finalX, 32);
 			break;
 		case REOPENED:
@@ -1839,6 +2213,71 @@ final class G9U0R4IntersectionAdmissibilityContinuationTest
 				Map.copyOf(bindings));
 	}
 
+	private FourRootRegularMotionSnapshot captureFourRootRegularMotion(
+			String richLabel, String pointPrefix, int pointCount,
+			String movedPointLabel) {
+		GeoLocusIntersectionResult rich =
+				(GeoLocusIntersectionResult) requireLookup(richLabel);
+		LocusIntersectionResult2D result = rich.getIntersectionResult();
+		assertEquals(ComputationStatus.SUCCESS, result.getComputationStatus());
+		assertEquals(GeometryKind.FINITE, result.getGeometryKind());
+		assertEquals(Currentness.CURRENT, result.getCurrentness());
+		assertEquals(0, result.getWork().getUnresolvedCandidates());
+		assertTrue(result.getUnresolvedCandidateComponentKeys().isEmpty());
+		assertTrue(result.getOverlapEvidence().isEmpty());
+		assertEquals(4, result.getFiniteSolutions().size(),
+				describeFourSolutionEvidence(rich));
+
+		Map<String, FourRootRegularBinding> roots = new LinkedHashMap<>();
+		for (LocusIntersectionSolution2D solution : result.getFiniteSolutions()) {
+			IntersectionRootRevisionEvidence2D evidence =
+					solution.getRevisionEvidence();
+			assertEquals(LocalIsolationStatus.ESTABLISHED,
+					evidence.getLocalIsolationStatus());
+			assertEquals(ContactClass.TRANSVERSE_ESTABLISHED,
+					solution.getClassification().getContactClass());
+			String germ = evidence.getCurrentRootGerm().orElseThrow();
+			// Parameter bits identify one observation only because both paths have the
+			// byte-identical final semantic snapshot; they are never token authority.
+			String observation = evidence.getBranchSnapshotKey() + "|"
+					+ evidence.getResolvedValidComponentKey() + "|" + germ + "|"
+					+ Long.toHexString(Double.doubleToLongBits(
+							evidence.getSemanticParameter()));
+			FourRootRegularBinding prior = roots.put(observation,
+					new FourRootRegularBinding(
+							solution.getIdentity().getRootToken(),
+							solution.getIdentity().getExplicitContinuationKey()
+									.orElse(""),
+							solution.getIdentity().getIdentityStatus(),
+							solution.getLineage().getEventKind(),
+							rich.isPointAdmissible(
+									solution.getIdentity().getRootToken()),
+							Double.doubleToLongBits(
+									solution.getEvaluatedPoint().getX()),
+							Double.doubleToLongBits(
+									solution.getEvaluatedPoint().getY())));
+			assertNull(prior, "Duplicate final semantic root observation");
+		}
+
+		Map<String, FourRootPointBinding> points = new LinkedHashMap<>();
+		for (int index = 0; index < pointCount; index++) {
+			String label = pointPrefix + index;
+			GeoPoint point = (GeoPoint) requireLookup(label);
+			AlgoLocusIntersectionPointV2 algorithm =
+					(AlgoLocusIntersectionPointV2) point.getParentAlgorithm();
+			points.put(label, new FourRootPointBinding(point.isDefined(),
+					algorithm.getSelectedRootToken(),
+					algorithm.getEffectiveRootToken(),
+					Double.doubleToLongBits(point.getInhomX()),
+					Double.doubleToLongBits(point.getInhomY())));
+		}
+		GeoPoint moved = (GeoPoint) requireLookup(movedPointLabel);
+		return new FourRootRegularMotionSnapshot(rich.getTokenLedgerState(),
+				Double.doubleToLongBits(moved.getInhomX()),
+				Double.doubleToLongBits(moved.getInhomY()), Map.copyOf(roots),
+				Map.copyOf(points));
+	}
+
 	private static void setPoint(GeoPoint point, double x, double y) {
 		point.setCoords(x, y, 1);
 		point.updateCascade();
@@ -1850,6 +2289,14 @@ final class G9U0R4IntersectionAdmissibilityContinuationTest
 		FORWARD_REVERSE,
 		REOPENED,
 		ODD_INCREMENTS
+	}
+
+	private enum ReactivationPath {
+		DIRECT,
+		STAGED,
+		REOPENED_DORMANT,
+		MANY_SMALL,
+		FORWARD_REVERSE
 	}
 
 	private record PathSnapshot(String ledger, long radiusXBits,
@@ -1869,6 +2316,46 @@ final class G9U0R4IntersectionAdmissibilityContinuationTest
 			String explicitContinuationKey, IdentityStatus identityStatus,
 			long parameterBits, long evaluatedXBits, long evaluatedYBits,
 			long pointXBits, long pointYBits) {
+	}
+
+	private record FourRootRegularMotionSnapshot(String ledger,
+			long movedXBits, long movedYBits,
+			Map<String, FourRootRegularBinding> roots,
+			Map<String, FourRootPointBinding> points) {
+	}
+
+	private record FourRootDurableBaseline(Set<String> activeTokens,
+			Map<String, DurableSemanticSlot> semanticSlotsByToken,
+			Map<String, DurablePointIdentity> points) {
+	}
+
+	private record DurableSemanticSlot(String sourcePairIdentity,
+			String establishedBranchLineage, String topologyContext,
+			String explicitContinuationKey, String validComponent,
+			String currentRootGerm) {
+	}
+
+	private record FourRootRegularBinding(String rootToken,
+			String explicitContinuationKey, IdentityStatus identityStatus,
+			LineageEventKind lineageEvent, boolean pointAdmissible,
+			long evaluatedXBits, long evaluatedYBits) {
+	}
+
+	private record FourRootPointBinding(boolean defined, String selectedToken,
+			String effectiveToken, long pointXBits, long pointYBits) {
+	}
+
+	private record ReactivationSnapshot(Set<String> activeTokens,
+			Map<String, ReactivatedPointBinding> points, int constructionSize) {
+	}
+
+	private record DurablePointIdentity(String pointPersistentId,
+			String tokenInputPersistentId, String selectedToken,
+			String effectiveToken) {
+	}
+
+	private record ReactivatedPointBinding(DurablePointIdentity identity,
+			boolean defined, long pointXBits, long pointYBits) {
 	}
 
 	private void loadAuthorFixture() throws Exception {

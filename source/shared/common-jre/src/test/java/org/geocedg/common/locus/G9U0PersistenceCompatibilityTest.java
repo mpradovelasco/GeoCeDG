@@ -309,8 +309,9 @@ class G9U0PersistenceCompatibilityTest extends G9U0PublicSurfaceTestBase {
 				(GeoPoint) registry.getGeo(copiedSelectedRecord.getId());
 		GeoPoint copiedSecond =
 				(GeoPoint) registry.getGeo(copiedSecondRecord.getId());
-		assertTrue(copiedSelected.isDefined());
-		assertTrue(copiedSecond.isDefined());
+		assertTrue(copiedSelected.isDefined(), copiedResult.getTokenLedgerState());
+		assertTrue(copiedSecond.isDefined(),
+				copiedResult.getTokenLedgerState());
 		assertNotEquals(originalToken, firstToken(copiedResult));
 		GeoPoint freshlyTypedOldToken = add("Z=Intersect("
 				+ copiedResult.getLabelSimple() + ",\"" + originalToken + "\")");
@@ -758,18 +759,18 @@ class G9U0PersistenceCompatibilityTest extends G9U0PublicSurfaceTestBase {
 		assertNotNull(missing);
 		assertFalse(missing.isDefined());
 		assertNull(missing.getIntersectionResult());
-		assertEquals("3|1|-|-", missing.getTokenLedgerState());
+		assertEquals("4|1|-|-", missing.getTokenLedgerState());
 
 		String duplicate = valid.replace(tag, tag + tag);
 		assertThrows(RuntimeException.class,
 				() -> loadInFreshApp(duplicate));
 		String noncanonical = valid.replace(tag,
-				tag.replace("state=\"3|", "state=\"03|"));
+				tag.replace("state=\"4|", "state=\"04|"));
 		assertNotEquals(valid, noncanonical);
 		assertThrows(RuntimeException.class,
 				() -> loadInFreshApp(noncanonical));
 		String corrupt = valid.replace(tag,
-				tag.replace("state=\"3|", "state=\"999|"));
+				tag.replace("state=\"4|", "state=\"999|"));
 		assertNotEquals(valid, corrupt);
 		assertThrows(RuntimeException.class,
 				() -> loadInFreshApp(corrupt));
@@ -828,7 +829,7 @@ class G9U0PersistenceCompatibilityTest extends G9U0PublicSurfaceTestBase {
 		assertThrows(IllegalArgumentException.class,
 				() -> orphanedCopySource.importState(
 						"2|1|-|" + stateFields[2]));
-		assertEquals("3|1|-|-", orphanedCopySource.exportState());
+		assertEquals("4|1|-|-", orphanedCopySource.exportState());
 		stateFields[1] = Long.toString(Long.MAX_VALUE);
 		LocusIntersectionTokenLedger2D overflowCopyLedger =
 				new LocusIntersectionTokenLedger2D();
@@ -857,7 +858,8 @@ class G9U0PersistenceCompatibilityTest extends G9U0PublicSurfaceTestBase {
 		String[] recoveredSource = recovered[3].split("~", -1);
 		assertEquals(copiedOwner, unhex(recoveredCurrent[0]));
 		assertEquals(copiedPair, unhex(recoveredCurrent[1]));
-		assertEquals("0", recoveredCurrent[4]);
+		assertEquals("1", recoveredCurrent[4]);
+		assertTrue(recoveredCurrent[5].startsWith("d,"));
 		assertEquals(sourceOwner, unhex(recoveredSource[0]));
 	}
 

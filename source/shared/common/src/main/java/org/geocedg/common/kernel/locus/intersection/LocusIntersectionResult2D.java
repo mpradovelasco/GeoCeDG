@@ -7,8 +7,12 @@ package org.geocedg.common.kernel.locus.intersection;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.NumericGuarantee;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.Completeness;
@@ -34,6 +38,8 @@ public final class LocusIntersectionResult2D {
 	private final List<String> unresolvedCandidateComponentKeys;
 	private final LocusIntersectionInstrumentationSnapshot2D work;
 	private final List<IntersectionDiagnostic2D> diagnostics;
+	private final Map<String, LocusIntersectionSolution2D>
+			pointAdmissibleByToken;
 
 	/** Creates one deeply immutable atomic query result. */
 	public LocusIntersectionResult2D(IntersectionSourceBinding2D sourceBinding,
@@ -80,6 +86,7 @@ public final class LocusIntersectionResult2D {
 		this.work = java.util.Objects.requireNonNull(work);
 		this.diagnostics = immutableDiagnostics(diagnostics);
 		validateShape();
+		this.pointAdmissibleByToken = indexPointAdmissibleSolutions();
 	}
 
 	public IntersectionSourceBinding2D getSourceBinding() {
@@ -153,16 +160,25 @@ public final class LocusIntersectionResult2D {
 				|| supportLevel == SupportLevel.UNSUPPORTED) {
 			return Optional.empty();
 		}
-		LocusIntersectionSolution2D found = null;
+		return Optional.ofNullable(pointAdmissibleByToken.get(rootToken));
+	}
+
+	private Map<String, LocusIntersectionSolution2D>
+			indexPointAdmissibleSolutions() {
+		LinkedHashMap<String, LocusIntersectionSolution2D> indexed =
+				new LinkedHashMap<>();
+		Set<String> duplicates = new HashSet<>();
 		for (LocusIntersectionSolution2D solution : finiteSolutions) {
-			if (solution.getIdentity().getRootToken().equals(rootToken)) {
-				if (!isLocallyPointAdmissible(solution) || found != null) {
-					return Optional.empty();
-				}
-				found = solution;
+			if (!isLocallyPointAdmissible(solution)) {
+				continue;
+			}
+			String token = solution.getIdentity().getRootToken();
+			if (duplicates.contains(token) || indexed.put(token, solution) != null) {
+				indexed.remove(token);
+				duplicates.add(token);
 			}
 		}
-		return Optional.ofNullable(found);
+		return Collections.unmodifiableMap(indexed);
 	}
 
 	/**

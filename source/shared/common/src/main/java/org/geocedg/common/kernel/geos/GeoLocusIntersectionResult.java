@@ -173,12 +173,31 @@ public final class GeoLocusIntersectionResult extends GeoElement
 	public Optional<LocusIntersectionSolution2D>
 			rebaseCopiedPointAdmissibleSolution(String token,
 					GeoText copiedTokenInput, GeoElement copiedPoint) {
-		if (!publicPersistence || !isDefined() || copiedTokenInput == null
+		if (!isDefined()) {
+			return Optional.empty();
+		}
+		return resolveRetainedMaterializedToken(token, copiedTokenInput,
+				copiedPoint).flatMap(this::findExactPointAdmissibleSolution);
+	}
+
+	/**
+	 * Resolves one exact current-or-dormant token for an existing materialized
+	 * point, including the one permitted immediate closure-copy rebase.
+	 *
+	 * @return exact token owned by this result, or empty for invalid provenance
+	 */
+	public Optional<String> resolveRetainedMaterializedToken(String token,
+			GeoText copiedTokenInput, GeoElement copiedPoint) {
+		if (!publicPersistence || token == null || copiedTokenInput == null
 				|| copiedPoint == null) {
 			return Optional.empty();
 		}
 		SpatialIdentityRegistry registry = cons.getSpatialIdentityRegistry();
 		PersistentGeoId ownerId = registry.getPersistentGeoId(this);
+		if (ownerId != null && tokenLedger.validatesRetainedToken(token)
+				&& tokenLedger.hasCurrentOwner(ownerId.toExternalForm())) {
+			return Optional.of(token);
+		}
 		PersistentGeoId tokenId = registry.getPersistentGeoId(copiedTokenInput);
 		PersistentGeoId pointId = registry.getPersistentGeoId(copiedPoint);
 		GeoIdentityRecord ownerRecord = ownerId == null ? null
@@ -199,11 +218,21 @@ public final class GeoLocusIntersectionResult extends GeoElement
 				ownerRecord.getCopySourceId(), tokenRecord.getCopySourceId())) {
 			return Optional.empty();
 		}
-		return tokenLedger.rebaseCopiedToken(token,
+		return tokenLedger.rebaseCopiedRetainedToken(token,
 				ownerId.toExternalForm(),
-				ownerRecord.getCopySourceId().toExternalForm(),
-				intersectionResult)
-				.flatMap(intersectionResult::findPointAdmissibleSolution);
+				ownerRecord.getCopySourceId().toExternalForm());
+	}
+
+	/** @return whether one exact point-child token is now retained */
+	public boolean retainMaterializedPointToken(String token) {
+		return publicPersistence && tokenLedger.retainMaterializedToken(token);
+	}
+
+	/** Releases one existing point-child claim without changing root semantics. */
+	public void releaseMaterializedPointToken(String token) {
+		if (publicPersistence) {
+			tokenLedger.releaseMaterializedToken(token);
+		}
 	}
 
 	/** Strict XML restoration of durable ledger evidence. */
@@ -370,6 +399,11 @@ public final class GeoLocusIntersectionResult extends GeoElement
 					copySource);
 			if (getParentAlgorithm() != null) {
 				getParentAlgorithm().update();
+				// Identity attachment is the publication seam at which an immediate
+				// closure copy gains its final owner and exact rebase authority.
+				// Recompute existing token children once through the normal DAG so
+				// they can consume that authority without waiting for a later edit.
+				updateCascade();
 			}
 		} catch (RuntimeException exception) {
 			deferUntilPersistentIdentityAttachment();

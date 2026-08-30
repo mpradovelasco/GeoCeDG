@@ -3,13 +3,13 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Roadmap vivo y normativo de fases; no sustituye las especificaciones ni los ADR aceptados |
-| Versión documental | 3.53 |
-| Fecha de revisión | 29 de agosto de 2026 |
+| Versión documental | 3.56 |
+| Fecha de revisión | 30 de agosto de 2026 |
 | Baseline GeoGebra | 5.4.928.0, commit `9b93256b7df401ff056c37b502d82df4d72b1522`, tag `geogebra-baseline-5.4.928.0` |
-| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1, G9A2, G9A3, el track G9A, G9U0, G9U0-R1, G9X1, G9U0-R2, G9U0-R3 y la planificación G10P `PASS — AUTHOR APPROVED`; G9U0-R4 es `IMPLEMENTATION CANDIDATE — PENDING AUTHOR RE-REVIEW`: se conservan los dos smokes fallidos y la decisión autoral posterior `INTRINSIC_SEMANTIC_PHASE_RANK_AUTHORIZED`; el candidato distingue las cuatro raíces mediante rango/fase intrínseco del dominio semántico orientado, no por orden extrínseco, comprende 25+23+2 = 50 pruebas focales en 51 rutas/29 bajo `source/`; el A/B pre-final coincide en SHA-256 `c1d76e86d5174e406ac7bdddd4862f4ccc607d6a68df2ec23c365b9084cce83e`, pendiente de sustitución por el refresh final de assertion, y la autoridad composed finaliza exit 0; G9U0-R5 es `DESIGN CANDIDATE — PENDING AUTHOR REVIEW`, con implementación no autorizada; `.cedg` es la identidad documental nativa y `.ggb` la entrada de compatibilidad; G9U1 queda bloqueada hasta PASS autoral separado de R4 y R5, deberá fijar Continuity host a OFF y consumir los tokens/selectores R4 sin autoridad de orden propia; auto-materialization sigue siendo exclusivamente frontend/opt-in; G9B y G9C no están autorizadas, G9U2 sigue bloqueada y ninguna implementación productiva G10 está autorizada; Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
-| Última fase cerrada | G9U0-R3 — `PASS — AUTHOR APPROVED` |
-| Última fase ejecutada | G9U0-R4 — implementación candidata de admisibilidad inicial/continuación, sin PASS ni autoaprobación |
-| Siguiente puerta | Re-smoke y revisión autoral R4 del selector de fase/rango intrínseco ya validado automáticamente; revisión separada del diseño candidato G9U0-R5; R5 productivo no está autorizado y G9U1 sigue `DESIGNED — NOT AUTHORIZED` hasta que ambos gates cierren PASS |
+| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1, G9A2, G9A3, el track G9A, G9U0, G9U0-R1, G9X1, G9U0-R2, G9U0-R3, G9U0-R4 y la planificación G10P `PASS — AUTHOR APPROVED`. R4 conserva tres fallos de smoke intermedios y cierra tras los re-smokes finales de movimiento regular de cuatro raíces y reactivación active/dormant del mismo `GeoPoint`, ambos `PASS`; determinismo actual > heurística de continuidad, sin identidad por coordenada/orden/proximidad/historia y sin creación de puntos por recompute. Autoridad: 27+28+3 = 58 métodos, 54 rutas/31 bajo `source/`, focused A/B deterministas y composed PASS. Riesgo no bloqueante `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP`: falta round trip `.cedg` dedicado de cuarentena periódica; se revisará en G9U1 y se resolverá o dispondrá explícitamente antes del cierre G9, sin convertirlo en dependencia implícita de R5. G9U0-R5 y G9U1 no se han ejecutado; BOOK-P1 es el checkpoint editorial independiente intencionalmente programado entre R4 y R5. G9B/G9C no están autorizadas, G9U2 sigue bloqueada y ninguna implementación productiva G10 está autorizada; Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
+| Última fase cerrada | G9U0-R4 — `PASS — AUTHOR APPROVED` |
+| Última fase ejecutada | G9U0-R4 — identidad determinista de intersección y ciclo active/dormant/reactivated cerrados; `selfApproved=false` |
+| Siguiente puerta | BOOK-P1, revisión editorial independiente planificada; después, decisión autoral separada sobre el diseño/implementación G9U0-R5. G9U1 permanece sin ejecutar y bloqueada hasta R5 PASS y autorización propia |
 | Primer cliente | Aplicación de escritorio de la familia Classic 5 |
 | Núcleo | Java compartido de GeoGebra, extendido solo cuando la semántica lo requiere |
 
@@ -1131,9 +1131,9 @@ optimización de rendimiento del software.
 | G9U0-R2 planning/design | `PASS — AUTHOR APPROVED` | Autoridad normativa para la puerta pre-G9U1 de presentación/continuidad Locus V2 e identidad documental nativa `.cedg`; no afirma comportamiento implementado |
 | G9U0-R2 implementation | `PASS — AUTHOR APPROVED` | El smoke original R2-L11 se conserva; corrección, 31+31, regresiones, gates auxiliares, composed y re-smoke autoral pasan; `selfApproved=false`, `authorApproved=true`, `passClaimed=true`; MSI/registro real `NOT_REQUESTED` |
 | G9U0-R3 | `PASS — AUTHOR APPROVED` | Hardening frontend acotado: ciclo de vida del menú, invisibilidad Euclidian del auxiliar exacto y etiquetas compactas que desacoplan layout e identidad; conserva el smoke que halló el ancho y registra la corrección, reemplazo automatizado y re-smoke PASS; no cambia kernel/XML/identidad ni implementa markers |
-| G9U0-R4 | `IMPLEMENTATION CANDIDATE — PENDING AUTHOR RE-REVIEW` | Correctivo kernel acotado: determinismo > continuidad, selector actual de componente/germen enriquecido solo ante colisión con orientación, tipo de dominio, cardinalidad y fase/rango intrínseco; el fixture autoral obtiene cuatro selectores/tokens materializables sin cambiar evidencia numérica ni completitud; el reuse previo de un grupo ranked periódico exige mapa completo/biyectivo/mismo selector y cualquier ausencia/ambigüedad/budget/mapa incompleto invalida todo el grupo anterior, mientras una relación no periódica ausente no define identidad; ledger v3 admite phase, migra v2 auténtico pre-phase y rechaza phase-v2 relabel; se preservan ambos smokes fallidos; A/B pre-final 50/50 con SHA `c1d76e86d5174e406ac7bdddd4862f4ccc607d6a68df2ec23c365b9084cce83e` pendiente de refresh final, composed exit 0, inventario 51 rutas/29 bajo `source/`; `authorDecision=INTRINSIC_SEMANTIC_PHASE_RANK_AUTHORIZED`, sin PASS ni autoaprobación |
+| G9U0-R4 | `PASS — AUTHOR APPROVED` | Correctivo kernel acotado: determinismo > continuidad; selector durable de componente/germen enriquecido solo ante colisión con orientación, tipo de dominio, cardinalidad y fase/rango intrínseco; certificado topológico periódico adaptativo separado del selector, sin `span / 256`. Ledger v4 conserva claims dormant/quarantined y reactiva el mismo `GeoPoint` únicamente bajo el mismo selector actual; no auto-crea puntos. Se preservan tres fallos intermedios; los re-smokes finales de cuatro raíces y recurrencia/reactivación pasan. Autoridad 27+28+3 = 58 y 54 rutas/31 bajo `source/`; A/B deterministas y composed PASS; checkpoint `4ef2c9d` es evidencia pre-correctiva; `selfApproved=false`, `authorApproved=true`, `passClaimed=true` |
 | G9U0-R5 | `DESIGN CANDIDATE — PENDING AUTHOR REVIEW`; implementation `NOT AUTHORIZED — NOT STARTED` | Diseño futuro de `Translate`/`Rotate`/`Reflect`/`Mirror`/`Dilate` sobre Locus V2 semántico; no hay código productivo R5 en este candidato |
-| G9U1 | `DESIGNED — NOT AUTHORIZED` | Workspace Construction con gate y autorización separados; exige R4 y R5 `PASS — AUTHOR APPROVED`; `Continuity = OFF`; markers y materialización consumen el token exacto ligado al selector de fase/rango intrínseco sin calcular un ordinal UI; auto-materialization solo como transacción frontend visible tras opt-in, nunca desde recompute/load; Classic conserva configuración upstream |
+| G9U1 | `DESIGNED — NOT AUTHORIZED` | Workspace Construction con gate y autorización separados; R4 ya es PASS y exige R5 `PASS — AUTHOR APPROVED`; `Continuity = OFF`; markers, create-one/create-selected/create-all y sesión persistente de inspector consumen tokens exactos sin ordinal UI; multi-creación es una transacción undoable coherente; auto-materialization de puntos nuevos solo frontend explícito, mientras reactivación de puntos existentes pertenece al kernel; Classic conserva configuración upstream |
 | G9B / G9C | `DESIGNED — NOT AUTHORIZED` | Track kernel tras cierre de G9A; no depende de completar el cliente G9U1 |
 | G9U2 | `BLOCKED ON THE APPROVED G9 GATE` | Workspace de procedimientos diédrico solo tras `G9 PASS — AUTHOR APPROVED` |
 | G9 spatial solving | `POINT PILOT — AUTHOR APPROVED` | G9A2 se limita a frames/sistemas/mapas/relaciones y reconstrucción projection-defined de punto; no hay primitivas generales, objetos compuestos ni autoridad 3D |
@@ -1471,10 +1471,17 @@ G9X1 = PASS — AUTHOR APPROVED
 G9U0-R2 PLANNING / DESIGN = PASS — AUTHOR APPROVED
 G9U0-R2 IMPLEMENTATION = PASS — AUTHOR APPROVED
 G9U0-R3 = PASS — AUTHOR APPROVED
-G9U0-R4 = IMPLEMENTATION CANDIDATE — PENDING AUTHOR RE-REVIEW
+G9U0-R4 = PASS — AUTHOR APPROVED
 authorDecision = INTRINSIC_SEMANTIC_PHASE_RANK_AUTHORIZED
 historicalAuthorSmoke1 = FAILED_POINT_INVALIDATED_DURING_REGULAR_MOTION
 historicalAuthorSmoke2 = IMPROVED_BUT_FOUR_SOLUTIONS_NOT_MATERIALIZABLE
+historicalAuthorSmoke3 = TWO_ROOT_PASS_FOUR_ROOT_REGULAR_MOTION_FAILURE
+manualAuthorFinalSmokeFourRoot = PASS
+manualAuthorFinalSmokeReactivation = PASS
+selfApproved = false
+authorApproved = true
+passClaimed = true
+protectiveCheckpoint = 4ef2c9df433aec7c6385a488a02581358da83f60 (PRE_CURRENT_CORRECTION)
 G9U0-R5 = DESIGN CANDIDATE — PENDING AUTHOR REVIEW; IMPLEMENTATION NOT AUTHORIZED
 G9U1 / G9B / G9C = DESIGNED — NOT AUTHORIZED
 G10 PRODUCTIVE IMPLEMENTATION = NOT AUTHORIZED — NOT STARTED
@@ -1644,14 +1651,24 @@ G9X1 = PASS — AUTHOR APPROVED
 G9U0-R2 PLANNING / DESIGN = PASS — AUTHOR APPROVED
 G9U0-R2 IMPLEMENTATION = PASS — AUTHOR APPROVED
 G9U0-R3 = PASS — AUTHOR APPROVED
-G9U0-R4 = IMPLEMENTATION CANDIDATE — PENDING AUTHOR RE-REVIEW
+G9U0-R4 = PASS — AUTHOR APPROVED
 authorDecision = INTRINSIC_SEMANTIC_PHASE_RANK_AUTHORIZED
 historicalAuthorSmoke1 = FAILED_POINT_INVALIDATED_DURING_REGULAR_MOTION
 historicalAuthorSmoke2 = IMPROVED_BUT_FOUR_SOLUTIONS_NOT_MATERIALIZABLE
+historicalAuthorSmoke3 = TWO_ROOT_PASS_FOUR_ROOT_REGULAR_MOTION_FAILURE
+manualAuthorFinalSmokeFourRoot = PASS
+manualAuthorFinalSmokeReactivation = PASS
+selfApproved = false
+authorApproved = true
+passClaimed = true
+protectiveCheckpoint = 4ef2c9df433aec7c6385a488a02581358da83f60 (PRE_CURRENT_CORRECTION)
 G9U0-R5 = DESIGN CANDIDATE — PENDING AUTHOR REVIEW; IMPLEMENTATION NOT AUTHORIZED
 G9U1 = DESIGNED — NOT AUTHORIZED
 G9U1 DETERMINISTIC_CONTINUITY_OFF_REQUIRED
 G9U1 INTRINSIC_PHASE_RANK_TOKEN_AUTHORITY_REQUIRED
+G9U1 MULTI_MATERIALIZATION_REQUIRED
+G9U1 PERSISTENT_INSPECTOR_SESSION_REQUIRED
+G9U1 AUTO_REACTIVATION_EXISTING_POINTS_KERNEL
 G9U1 AUTO_MATERIALIZATION_FRONTEND_ONLY
 G9B = DESIGNED — NOT AUTHORIZED
 G9C = DESIGNED — NOT AUTHORIZED
@@ -1662,9 +1679,9 @@ G9 SPATIAL SOLVING = POINT PILOT — AUTHOR APPROVED; GENERAL PRIMITIVES NOT STA
 ## G9 - Semántica espacial y proyecciones canónicas
 
 **Estado:** G9P-R1, G9P, G9O1, G9A1, G9A2, G9A3, el track G9A, G9U0,
-G9U0-R1, G9X1, G9U0-R2 y G9U0-R3 `PASS — AUTHOR APPROVED`; G9U0-R4 está
-`IMPLEMENTATION CANDIDATE — PENDING AUTHOR RE-REVIEW` y G9U0-R5 está `DESIGN
-CANDIDATE — PENDING AUTHOR REVIEW`, con implementación no autorizada.
+G9U0-R1, G9X1, G9U0-R2, G9U0-R3 y G9U0-R4 `PASS — AUTHOR APPROVED`;
+G9U0-R5 está `DESIGN CANDIDATE — PENDING AUTHOR REVIEW`, con implementación no
+autorizada.
 G9A cierra identidad/persistencia durable, el piloto projection-defined de punto
 y su ciclo de vida/migración; G9U0 cierra la superficie pública Locus V2
 experimental. G9X1 está cerrado en `PASS — AUTHOR APPROVED`, con exportación
@@ -1676,10 +1693,15 @@ incluida composed y el re-smoke autoral pasan. `.cedg` es comportamiento nativo
 de GeoCeDG, `.ggb` queda como entrada de compatibilidad y el refinamiento visual
 R2 está cerrado. R3 conserva esa autoridad y cierra la exposición pública
 frontend del menú/inspector, del auxiliar visual de token y del selector acotado
-tras smoke y re-smoke autorales. El primer smoke R4 materializó las dos raíces,
-pero falló al invalidarse un punto durante movimiento regular; el correctivo
-determinista queda pendiente de automatización de reemplazo y re-revisión
-autoral. G9U1, G9B y G9C siguen sin autorización; G9U2
+tras smoke y re-smoke autorales. R4 conserva tres smokes históricos: el primero
+materializó dos raíces pero invalidó un punto durante movimiento regular; el
+segundo encontró cuatro raíces que todavía no podían materializarse y el tercero
+materializó cuatro pero perdió definedness durante movimiento regular. El
+correctivo adaptativo y ledger-v4 supera A/B 58/58 con resumen exacto SHA-256
+`3e9ea0aa20d511f2828eae61e491c1b3b5d9cb86a0f02166503ee5093d6000fb`
+y la autoridad composed completa; los re-smokes finales de cuatro raíces y
+reactivación del mismo punto pasan y el autor cierra R4. G9U1, G9B y G9C siguen
+sin autorización; G9U2
 permanece bloqueada por la puerta G9 aprobada. El
 [plan integrado G9P](../architecture/g9p_integrated_plan.md) y el
 [paquete de decisiones](../validation/g9p_author_decisions.md) gobiernan el
@@ -1697,6 +1719,9 @@ track producto: G9A3 --> G9U0 --> G9U0-R1 --+
                                                +--> G9U0-R2 --> G9U0-R3 --> G9U0-R4 --> G9U0-R5 --> G9U1
                 G5 + autoridad G6-G8 --> G9X1 -+
 
+checkpoint editorial programado: G9U0-R4 --> BOOK-P1 --> G9U0-R5
+                                (track independiente; no arista semántica software)
+
 G9C + G9U1 + evidencia G9O1 --> cierre global G9 --> G9U2
 
 G9O1: primero por recomendación operacional; sin arista semántica hacia G9A1.
@@ -1705,7 +1730,7 @@ G9O1: primero por recomendación operacional; sin arista semántica hacia G9A1.
 El diagrama expresa dependencias semánticas/contractuales, no un calendario.
 Se distinguen: (1) dependencias duras, (2) predecesores de ejecución
 recomendados y (3) puertas de cierre global/release. El orden de bajo conflicto
-recomendado pasa a ser `G9O1; A1; A2; A3; U0; U0-R1; X1; U0-R2; U0-R3; U0-R4; U0-R5; U1; B; C;
+recomendado pasa a ser `G9O1; A1; A2; A3; U0; U0-R1; X1; U0-R2; U0-R3; U0-R4; BOOK-P1; U0-R5; U1; B; C;
 cierre; U2`, pero
 los puntos y coma no son flechas semánticas. Tras A3, el track kernel B/C puede
 avanzar sin U1. U0 sí requiere A3 para publicar objetos persistentes. X1 puede
@@ -1713,9 +1738,11 @@ consumir snapshots internos G6-G8 y declarar su `id_scope`; ejecutar U0 antes
 de X1 sigue recomendado para la integración pública. R2 requiere como puerta de
 entrada el cierre ya aprobado de U0-R1 y X1, pero X1 no se convierte en
 autoridad semántica de estilos o documentos. R3 es un correctivo público
-frontend separado que ya cerró `PASS — AUTHOR APPROVED`. R4 debe cerrar la
-admisibilidad/continuación pública y R5 las transformaciones semánticas 2D,
-ambos como `PASS — AUTHOR APPROVED`, antes de U1. U1 integra las acciones
+frontend separado que ya cerró `PASS — AUTHOR APPROVED`. R4 ya cerró la
+admisibilidad/continuación pública. BOOK-P1 es una revisión editorial
+independiente intencionalmente programada antes de R5, no una dependencia del
+software. R5 debe cerrar las transformaciones semánticas 2D como `PASS — AUTHOR
+APPROVED` antes de U1. U1 integra las acciones
 aprobadas solo después de esos cierres y de una autorización autoral U1 todavía
 separada.
 
@@ -2008,7 +2035,7 @@ FOUND`; la corrección acotada posterior y el re-smoke autoral pasan.
 
 ### G9U0-R4 — PUBLIC LOCUS V2 INTERSECTION INITIAL ADMISSIBILITY AND CONTINUATION CORRECTION
 
-**Estado:** `IMPLEMENTATION CANDIDATE — PENDING AUTHOR RE-REVIEW`
+**Estado:** `PASS — AUTHOR APPROVED`
 
 **Entrada y reproducción:** R4 parte del `main` publicado
 `ce7f15c70d50b0639c264fc1cd3356a0d4eb5e2b`, que es a la vez el peel del tag
@@ -2055,30 +2082,43 @@ semánticos canónicos disjuntos. Esto no es identidad por orden de enumeración
 el solver puede devolver las raíces en cualquier permutación y la asociación
 semántica permanece igual.
 
-El ledger v3 resuelve el token exacto sin usar el parámetro anterior ni la
-historia de movimiento, importa v1 y v2 auténtico pre-phase bajo compatibilidad
-exacta, rechaza cualquier phase-v2 falsamente reetiquetado y no cambia el
-envelope público `locus-root/v3`. La evidencia anterior/actual queda subordinada
-al selector current-snapshot. Igual geometría final e IDs
-durables alcanzados por actualización directa, pasos pequeños,
-avance/retroceso o save/reopen deben producir la misma vinculación. La
-continuidad emerge mientras el selector determinista siga siendo único.
+El ledger v4 resuelve el token exacto sin usar el parámetro anterior ni la
+historia de movimiento, importa estado canónico phase-v3 y estados auténticos
+pre-phase v2/v1, rechaza reetiquetados o estados claimed incompatibles y no
+cambia el envelope público `locus-root/v3`. El selector durable queda separado
+del certificado topológico de la revisión. Una asignación reclamada por un punto
+materializado que ordinariamente no es actual se conserva `CLAIMED_DORMANT`: el
+mismo `GeoPoint` queda indefinido y el kernel lo reactiva automáticamente, sin
+reemplazarlo, solo cuando el mismo selector vuelve a resolver de forma única y
+admisible. Liberar el último claim permite podar la asignación. Ninguna
+reactivación crea un punto nuevo.
 
-Para reutilizar tokens previos de un grupo ranked periódico completo se exige,
-además, una relación completa y biyectiva que conserve el selector completo de
-cada raíz. Relación ausente, ambigua, agotada por budget, incompleta o no
-biyectiva invalida todo el grupo anterior; solo guarda reuse y nunca selecciona
-la raíz actual. La ausencia de relación acotada en un grupo no periódico no se
-convierte en identidad ni invalida por sí misma su selector actual único.
+Para un grupo ranked periódico, el correctivo construye un certificado
+intrínseco adaptativo de tubos/celdas de fase entre snapshots. Los tubos del
+mismo rango deben conservar el selector, permanecer disjuntos y respetar la
+separación cíclica; el certificado solo guarda reuse y nunca selecciona la raíz
+actual. El umbral fijo `component span / 256` era una cota de actualización, no
+evidencia topológica, y fue retirado de esta autoridad. La ausencia de una
+relación diagnóstica acotada en un grupo no periódico tampoco se convierte en
+identidad ni invalida por sí misma su selector actual único.
+
+En el caso periódico, selector durable y certificado topológico de la revisión
+son autoridades separadas. Evidencia cíclica insuficiente o no única conserva
+el grupo previo no actual en cuarentena durable; un offset único cero lo libera
+y permite reactivar los mismos puntos; un offset único no-cero probado lo
+retira permanentemente. Copy exacto conserva la cuarentena pero no puede
+certificar su liberación, y liberar el último claim permite podar el grupo.
 
 En un componente no periódico, dos intervalos aislados no pueden intercambiar
 su rango orientado sin colisión, pérdida de aislamiento o transición de
 topología. En un componente periódico, el intervalo fundamental explícito
 define el marco de fase; una raíz cuyo intervalo toca el seam no se etiqueta por
-proximidad ni por winding mutable. El grupo afectado publica
-`IDENTITY_DISCONTINUITY` y quema sus tokens antiguos. Este límite de monodromía
-preserva la precedencia determinista aunque no garantice continuidad de token a
-través del seam. Cambio de cardinalidad, orientación o componente,
+proximidad ni por winding mutable. Una costura/monodromía intrínsecamente
+no-reactivable y probada publica `IDENTITY_DISCONTINUITY` y retira de forma
+permanente solo los tokens del grupo afectado; los grupos independientemente
+certificados permanecen actuales. Este límite preserva la precedencia
+determinista aunque no garantice continuidad de token a través del seam. Cambio
+de cardinalidad, orientación o componente,
 tangencia, merge/split, overlap, candidato irresuelto, stale/revision mismatch
 o pair sin aislamiento también falla de forma cerrada y nunca retargetea un
 token por coordenada u orden.
@@ -2091,8 +2131,9 @@ implícitas polinómicas regulares. El rayo conserva deliberadamente su direcci�
 como semántica y no se reduce a su recta soporte no orientada.
 
 **Exclusiones:** R4 no cambia solving geométrico, completitud, residual,
-garantía numérica, formato XML/ZIP, render, inspector, candidate markers,
-`Path`, workspace ni G9U1. No introduce la política
+garantía numérica, estructura XML/ZIP, render, inspector, candidate markers,
+`Path`, workspace ni G9U1. El ledger v4 añade únicamente estado durable de claim
+active/dormant/quarantined dentro del XML ya autorizado. No introduce la política
 `DETERMINISTIC_LOCAL`: las cuatro raíces ya satisfacen la admisibilidad local y
 solo estaban bloqueadas por colisión de identidad. Locus V2 × Locus V2 conserva
 la autoridad simétrica independiente de aislamiento en dos parámetros y no
@@ -2101,41 +2142,79 @@ recibe rango unilateral.
 ```text
 implementationStarted = true
 selfApproved = false
-authorApproved = false
-passClaimed = false
+authorApproved = true
+passClaimed = true
+manualAuthorFinalSmokeFourRoot = PASS
+manualAuthorFinalSmokeReactivation = PASS
 ```
 
-La autoridad focal actual contiene 25 pruebas públicas, 23 de ledger y 2
-Desktop de archivo nativo (50 en total). Cubre admisión inicial, importación
-ledger v1/v2 y emisión v3 sin cambiar el token opaco, las 24 permutaciones del
-solver para el fixture de cuatro raíces, movimiento regular directo e
-incremental, independencia de trayectoria, inversión del orden cartesiano,
-orientación inversa, aparición/desaparición, seam/monodromía periódicos,
-colisiones fail-closed, matriz local/global, topología,
-persistencia/undo/copy, equivalencia entre reopen y ruta directa y ambos
-documentos autorales byte-exactos. Las corridas A/B pre-finales ejecutaron 50/50
-sin fallos, errores ni skips y coinciden exactamente en SHA-256
-`c1d76e86d5174e406ac7bdddd4862f4ccc607d6a68df2ec23c365b9084cce83e`.
-Ese hash queda pendiente de sustitución por el refresh final de assertion. La
-autoridad composed salió con código 0 y el literal
-`All GeoCeDG verification gates passed.` Ninguna evidencia automatizada
-constituye aprobación autoral.
+La fuente actual declara 27 pruebas públicas, 28 de ledger y 3 Desktop de
+archivo nativo (58 en total). Además de la autoridad previa, cubre el update
+directo del tamaño observado en UI, la recurrencia 2→4→2 por varias trayectorias
+incluido reopen en dormancia, el mismo `GeoPoint` reactivado con el mismo token,
+ausencia de auto-creación, claims active/dormant con conteo de referencias,
+cuarentena periódica durable, liberación por offset cero, retiro por offset
+no-cero probado y copy que no libera la cuarentena. La serialización
+emite ledger v4 e importa v3/v2/v1 bajo sus contratos exactos.
+La cuarentena `q`/`r` está cubierta en recompute/export-import/copy del ledger;
+el tercer test Desktop cubre por separado dormancia `2→4→2`, reactivación del
+mismo punto y reopen `.cedg` posterior a la reactivación, no un round-trip
+nativo de cuarentena periódica.
+
+El checkpoint protector actual es
+`4ef2c9df433aec7c6385a488a02581358da83f60`, creado antes del correctivo
+adaptativo/dormant. Sus corridas 50/50 y SHA-256
+`f909aaa28aedc63aa35d01325aa3f84d893ab8a92da64c04e9eb7a661898681c`, así como
+el SHA pre-final `c1d76e86d5174e406ac7bdddd4862f4ccc607d6a68df2ec23c365b9084cce83e`, son
+evidencia histórica y no validan la fuente actual. La autoridad actual A/B pasa
+58/58 con comparación exacta de summary SHA-256
+`3e9ea0aa20d511f2828eae61e491c1b3b5d9cb86a0f02166503ee5093d6000fb`;
+composed sale 0 y termina con `All GeoCeDG verification gates passed.`. Esa
+evidencia automatizada no constituye por sí misma aprobación autoral; los dos
+re-smokes finales aportan la decisión separada del autor.
 
 Los smokes históricos permanecen registrados como
 `FAILED_POINT_INVALIDATED_DURING_REGULAR_MOTION` e
-`IMPROVED_BUT_FOUR_SOLUTIONS_NOT_MATERIALIZABLE`. El segundo demostró cuatro
-raíces finitas, transversales y localmente aisladas agrupadas en dos pares de
-selector base. La decisión autoral ya no está pendiente: autorizó el rango/fase
-intrínseco del dominio orientado, y el candidato obtiene cuatro selectores y
-cuatro tokens distintos sin relajar certificación. R4 sigue sin reclamar PASS.
+`IMPROVED_BUT_FOUR_SOLUTIONS_NOT_MATERIALIZABLE`; el tercer smoke pasó la parte
+de dos raíces y la materialización inicial de cuatro, pero falló después durante
+movimiento regular ordinario. Ese fallo demostró que el
+guard fijo `span / 256` no era evidencia de topología y motivó el certificado
+adaptativo actual. El autor ejecutó después Case 1 de movimiento regular de
+cuatro raíces y Case 2 de recurrencia/reactivación, y aceptó ambos como `PASS`.
 
 La ejecución composed de reemplazo expuso la ausencia de localización pública
 para `DETERMINISTIC_SELECTION_ESTABLISHED`. La corrección acotada añadió la
 misma clave a los bundles base, inglés y español, sin cambiar semántica. El
-inventario candidato comprende así 51 rutas exactas, 29 bajo `source/`, incluida
-la fixture autoral de cuatro soluciones, sin logs ni evidencia generada
-versionados. El PASS automatizado queda registrado, pero no constituye PASS de
-fase ni aprobación autoral: R4 continúa pendiente de re-smoke y revisión.
+inventario fuente candidato comprende 54 rutas exactas, 31 bajo `source/`,
+incluidos el consumidor de punto materializado y el rich result que gestionan el
+claim durable, sin logs ni evidencia generada versionados. El mismo punto puede
+reactivarse por recompute del kernel; crear un punto nuevo, marker o acción
+create-all permanece exclusivamente frontend, explícito y futuro en G9U1, que
+solo podrá consumir tokens actuales. G9U0-R5 y G9U1 no se han ejecutado.
+
+El resolver incremental ordena `R` raíces una vez y valida `P` puntos
+materializados por lookup directo: `O(R log R + P)` sin un solve adicional por
+hijo ni replay de historia. Los diagnósticos legacy de transición completa
+pueden conservar peor caso `O(R²)` porque no seleccionan ni reactivan tokens.
+
+**Riesgo de validación transversal retenido:**
+`G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` (`RETAINED NONBLOCKING`). Su origen
+es R4 y su área es el ciclo de vida/persistencia de tokens periódicos. Falta un
+round trip nativo `.cedg` dedicado del estado de cuarentena; sí existen pruebas
+de recompute/export-import/copy del ledger, dormancia/reactivación no periódica
+en `.cedg` y reopen posterior a reactivación. G9U1 debe revisitarlo porque su UX
+consume esta autoridad persistida; deberá resolverse o recibir disposición
+autoral explícita no más tarde del cierre global G9. No se convierte en requisito
+geométrico implícito de R5.
+
+### BOOK-P1 — revisión editorial independiente programada
+
+**Estado:** checkpoint editorial posterior a R4 y anterior a la decisión R5.
+
+BOOK-P1 pertenece al track independiente del libro. Su posición deliberada en
+el calendario es `G9U0-R4 PASS -> BOOK-P1 -> G9U0-R5`, pero no es una arista de
+dependencia del software, no altera semántica geométrica y no autoriza ni bloquea
+por sí mismo una implementación GeoCeDG.
 
 ### G9U0-R5 — LOCUS V2 2D SIMILARITY TRANSFORMATIONS
 
@@ -2177,9 +2256,9 @@ U1.
 
 **Estado:** `DESIGNED — NOT AUTHORIZED`
 
-**Entrada adicional obligatoria:** G9U0-R2 implementation y G9U0-R3 ya cerraron
-`PASS — AUTHOR APPROVED`. Antes de ejecutar U1 también deben cerrar
-G9U0-R4 y G9U0-R5 como `PASS — AUTHOR APPROVED`. Ninguno de esos cierres
+**Entrada adicional obligatoria:** G9U0-R2 implementation, G9U0-R3 y G9U0-R4 ya
+cerraron `PASS — AUTHOR APPROVED`. Antes de ejecutar U1 debe cerrar G9U0-R5
+como `PASS — AUTHOR APPROVED`. Ninguno de esos cierres
 autoriza U1 automáticamente; sigue siendo necesaria una decisión autoral
 separada y el futuro prompt canónico post-R5 que superseda prospectivamente el
 prompt G9P congelado.
@@ -2205,7 +2284,18 @@ determinista actual como autoridad y añade markers transitorios solo para el
 resultado activo, por defecto visibles únicamente para tokens finitos y
 admisibles. Un marker no es GeoElement/XML/DAG/Protocol/undo ni identidad, ni
 ejecuta seguimiento continuo: solo preselecciona un token exacto actual. Crear
-uno o todos los puntos será siempre una acción explícita y deshacible.
+uno, varios seleccionados o todos los puntos elegibles será una acción explícita
+y deshacible; una creación múltiple será una transacción compuesta coherente.
+El inspector permitirá varias materializaciones en una sesión, identificará las
+ya realizadas sin mostrar tokens opacos como labels de layout y solo cerrará por
+acción explícita. Reactivar un punto ya existente sigue siendo recompute normal
+del kernel; auto-materializar puntos nuevos sigue siendo frontend explícito y
+opt-in.
+
+G9U1 revisitará el riesgo
+`G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP`; no podrá afirmar persistencia
+nativa de cuarentena periódica sin evidencia nueva y el riesgo deberá resolverse
+o recibir disposición autoral explícita antes del cierre global G9.
 
 GeoCeDG reutilizará el ajuste host existente `Continuity` y lo fijará a OFF como
 invariante del producto, por encima de preferencias, workspace, restart y

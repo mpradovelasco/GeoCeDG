@@ -11,43 +11,56 @@ spatial, public-surface, workspace, extended-DXF, documentation, and bundle
 specifications without implementing them. Those six G9P specifications are
 `NORMATIVE / AUTHOR APPROVED`; implementation authorization remains an
 independent phase status. G9O1, G9A1–G9A3/the G9A track, G9U0, G9U0-R1,
-G9X1, G9U0-R2 and G9U0-R3 are `PASS — AUTHOR APPROVED` within their
-recorded scopes. G9U0-R4 is an `IMPLEMENTATION CANDIDATE — PENDING AUTHOR
-RE-REVIEW`. Its first candidate removed the local-admissibility deadlock, but
-the author smoke then found that a materialized point became undefined during
-regular motion. The corrective candidate records the author-approved priority
-`deterministic semantic selection > continuity heuristic`: each recomputation
-resolves an exact ledger token from a unique intrinsic current-snapshot
-selector, independent of the previous parameter, Cartesian position, output
-order or movement history. Continuity is expected while that selector remains
-uniquely valid; topology ambiguity remains fail-closed. Unresolved candidates
-block only solutions on their own semantic component, equivalent homogeneous or
-projective target representations cannot change a deterministic binding, and a
-ray's direction remains semantic evidence rather than being normalized away.
-The second author smoke then exposed a separate boundary: the exact four-root
-fixture publishes four finite, transverse, locally isolated roots, but the
-component-plus-oriented-germ selector repeats in two pairs. The author
-subsequently authorized the narrow intrinsic semantic phase/rank refinement in
+  G9X1, G9U0-R2, G9U0-R3 and G9U0-R4 are `PASS — AUTHOR APPROVED` within their
+  recorded scopes. Historical R4 smoke 1 found two-root invalidation during regular
+motion; historical smoke 2 found four finite roots that were initially not
+materializable. The author subsequently authorized the narrow intrinsic
+semantic phase/rank refinement in
 [ADR 0017](../../docs/adr/0017-deterministic-intersection-phase-rank-identity.md).
 Only repeated base-selector groups are ordered by pairwise-disjoint canonical
 root intervals in the explicit oriented domain; solver/list/UI/coordinate
 order remains non-authoritative. Orientation, domain kind, verified group
-cardinality and intrinsic rank form one versioned selector context. Topology,
-cardinality, orientation and periodic-seam ambiguity invalidate rather than
-retarget old tokens. This fixes identity collision without weakening numerical
-evidence or global completeness. The current focused authority comprises 25
-public-kernel, 23 ledger and 2 Desktop methods (50 total). A replacement
-composed run exposed the missing
+cardinality and intrinsic rank form one versioned durable selector context.
+
+The third historical smoke passed the two-root case plus initial four-root
+detection/selectors/tokens/materialization, then failed persistence during
+ordinary regular motion. The fixed `component span / 256` guard was an
+update-size bound, not topology evidence. The current correction uses a separate
+adaptive intrinsic periodic phase-tube/cell certificate: ordinary regular motion
+preserves tokens; insufficient/nonunique cyclic evidence durably quarantines,
+unique offset zero releases/reactivates and proved unique nonzero
+seam/monodromy permanently retires only the affected ranked group. Ledger v4 imports canonical phase-v3 and authentic
+pre-phase v2/v1 state. A materialized claim ordinarily absent or non-current
+remains dormant or periodically quarantined; the same existing `GeoPoint` is automatically reactivated by
+kernel recomputation only when the same selector again resolves uniquely. This
+does not create a new point. Future G9U1 markers and opt-in auto-materialization
+remain frontend-only, consume current tokens only and have not been executed.
+The adaptive correction and dormant-reactivation lifecycle subsequently passed
+the final four-root and recurrence author re-smokes.
+
+The current source-declared focused authority comprises 27 public-kernel, 28
+ledger and 3 Desktop methods (58 total). Periodic `q`/`r` survives ledger
+recompute/export-import/copy; native `.cedg` separately covers dormant
+`2 -> 4 -> 2` same-point reactivation and reopen after reactivation, not a
+periodic-quarantine native round trip. A historical replacement composed run
+exposed the missing
 localized value for `DETERMINISTIC_SELECTION_ESTABLISHED`; the bounded
-base/English/Spanish bundle addition changes no semantic contract. The final
-candidate inventory is 51 paths, 29 under `source/`; it does not self-approve
-or erase either failed smoke. The four-root case now has four exact selectors
-and tokens under the existing local-evidence contract; full replacement
-validation and author re-review remain mandatory.
+base/English/Spanish bundle addition changes no semantic contract. The current
+candidate inventory is 54 paths, 31 under `source/`. Protective checkpoint
+`4ef2c9d` and its 50-method evidence predate the adaptive/dormant correction;
+current A/B each pass 58/58 with exact canonical SHA-256
+`3e9ea0aa20d511f2828eae61e491c1b3b5d9cb86a0f02166503ee5093d6000fb`
+and composed passes. R4 closes with `selfApproved=false`,
+`authorApproved=true`, `passClaimed=true`; no smoke result is erased.
+Retained risk `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` records the missing
+dedicated native `.cedg` quarantine round trip. It is nonblocking for R4,
+revisited by G9U1 and due for resolution or explicit author disposition by
+global G9 closeout, without becoming an implicit R5 dependency.
 `locus/locus-v2-similarity-transformations.md` is the G9U0-R5 **DRAFT /
-NORMATIVE CANDIDATE**; R5 implementation is not authorized or started. G9U1,
-G9B and G9C remain designed but not authorized; G9U1 is blocked until R4 and R5
-each close `PASS — AUTHOR APPROVED` and its future GeoCeDG product contract
+NORMATIVE CANDIDATE**; R5 implementation is not authorized, started or executed.
+G9U1 likewise remains unexecuted; G9U1, G9B and G9C remain designed but not
+  authorized, and G9U1 is blocked until R5 closes `PASS — AUTHOR APPROVED` and
+  its future GeoCeDG product contract
 requires the host Continuity setting to remain off while Classic stays
 configurable. G9U2 remains blocked and productive G10 remains unauthorized.
 

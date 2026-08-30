@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.Orientation;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.ComputationStatus;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.GeometryKind;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.IdentityStatus;
@@ -31,7 +32,8 @@ import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata
  * revision evidence. Parameter evidence is never selector or token authority.</p>
  */
 public final class LocusIntersectionTokenLedger2D {
-	private static final String FORMAT_VERSION = "3";
+	private static final String FORMAT_VERSION = "4";
+	private static final String PHASE_FORMAT_VERSION = "3";
 	private static final String PREVIOUS_FORMAT_VERSION = "2";
 	private static final String LEGACY_FORMAT_VERSION = "1";
 	private static final String CURRENT_ROOT_ALLOCATION_PREFIX =
@@ -42,6 +44,8 @@ public final class LocusIntersectionTokenLedger2D {
 	private Snapshot current;
 	private Snapshot copySource;
 	private String authorizedCopySourceOwner;
+	private final Map<String, Integer> materializedClaimCounts =
+			new LinkedHashMap<>();
 
 	/**
 	 * Begins one isolated token-minting attempt.
@@ -74,7 +78,7 @@ public final class LocusIntersectionTokenLedger2D {
 		if (evaluation.finished) {
 			throw new IllegalStateException("Token evaluation is already finished");
 		}
-		long committedNextIncarnation = evaluation.usedFreshEpoch
+		final long committedNextIncarnation = evaluation.usedFreshEpoch
 				? Math.max(Math.addExact(nextIncarnation, 1),
 						evaluation.nextAllocatedIncarnation)
 				: nextIncarnation;
@@ -83,7 +87,18 @@ public final class LocusIntersectionTokenLedger2D {
 				|| published.getGeometryKind() == GeometryKind.INFINITELY_MANY
 				|| published.getGeometryKind() == GeometryKind.UNSUPPORTED_OVERLAP;
 		ArrayList<Entry> retained = new ArrayList<>();
+		LinkedHashSet<String> retainedSemanticKeys = new LinkedHashSet<>();
+		java.util.Set<CurrentRootAllocationKey> retainedBindings = new HashSet<>();
+		java.util.Set<PeriodicAllocationGroupKey> claimedPeriodicGroups =
+				claimedPeriodicGroups(evaluation);
 		LinkedHashSet<String> burned = burnedSemanticKeys(evaluation, published);
+		for (String retired : evaluation.permanentlyRetiredTokens) {
+			Entry entry = evaluation.entryForPublishedToken(retired,
+					evaluation.startingSnapshot);
+			if (entry != null) {
+				burned.add(entry.semanticKey());
+			}
+		}
 		if (!nonFiniteAuthority && isFinitePublication(published)) {
 			for (LocusIntersectionSolution2D solution
 					: published.getFiniteSolutions()) {
@@ -100,9 +115,41 @@ public final class LocusIntersectionTokenLedger2D {
 				if (entry != null && !evaluation.duplicateTokens.contains(token)
 						&& evaluation.hasCompatibleStagedCandidate(entry)
 						&& !burned.contains(entry.semanticKey())
-						&& !containsSemanticEntry(retained, entry)) {
-					retained.add(entry.withStatus(Status.ACTIVE));
+						&& retainedSemanticKeys.add(entry.semanticKey())) {
+					Entry retainedEntry = entry.withStatus(isClaimed(evaluation, entry)
+							? Status.CLAIMED_ACTIVE : Status.ACTIVE);
+					retained.add(retainedEntry);
+					retainedEntry.currentRootBinding.ifPresent(retainedBindings::add);
 				}
+			}
+		}
+		for (Entry prior : evaluation.startingEntries) {
+			String priorToken = evaluation.startingSnapshot.token(prior);
+			Entry retainedPrior = evaluation.authorizedCopyQuarantineEntries
+					.getOrDefault(priorToken, prior);
+			CurrentRootAllocationKey copiedBinding =
+					evaluation.authorizedCopySuccessorBindings.get(priorToken);
+			boolean copiedToCurrent = copiedBinding != null
+					&& retainedBindings.contains(copiedBinding);
+			boolean quarantined = !evaluation.releasedPeriodicQuarantineTokens
+					.contains(priorToken)
+					&& (prior.status.isPeriodicallyQuarantined()
+							|| evaluation.periodicallyQuarantinedTokens
+									.contains(priorToken)
+							|| periodicAllocationGroup(prior)
+									.filter(claimedPeriodicGroups::contains)
+									.isPresent());
+			if ((isClaimed(evaluation, prior) || quarantined)
+					&& !evaluation.permanentlyRetiredTokens.contains(priorToken)
+					&& !copiedToCurrent
+					&& retainedSemanticKeys.add(retainedPrior.semanticKey())) {
+				Status retainedStatus = Status.CLAIMED_DORMANT;
+				if (quarantined) {
+					retainedStatus = isClaimed(evaluation, prior)
+							? Status.CLAIMED_PERIODIC_QUARANTINE
+							: Status.PERIODIC_QUARANTINE;
+				}
+				retained.add(retainedPrior.withStatus(retainedStatus));
 			}
 		}
 		Snapshot next = new Snapshot(evaluation.material, retained);
@@ -115,6 +162,37 @@ public final class LocusIntersectionTokenLedger2D {
 		authorizedCopySourceOwner = null;
 		current = next;
 		nextIncarnation = committedNextIncarnation;
+	}
+
+	private boolean isClaimed(Evaluation evaluation, Entry entry) {
+		if (entry.status.isClaimed()) {
+			return true;
+		}
+		String currentToken = evaluation.material.token(entry);
+		if (materializedClaimCounts.getOrDefault(currentToken, 0) > 0) {
+			return true;
+		}
+		String startingToken = evaluation.startingSnapshot == null ? null
+				: evaluation.startingSnapshot.token(entry);
+		return startingToken != null
+				&& materializedClaimCounts.getOrDefault(startingToken, 0) > 0;
+	}
+
+	private java.util.Set<PeriodicAllocationGroupKey> claimedPeriodicGroups(
+			Evaluation evaluation) {
+		java.util.Set<PeriodicAllocationGroupKey> claimed = new HashSet<>();
+		for (Entry entry : evaluation.startingEntries) {
+			if (isClaimed(evaluation, entry)) {
+				periodicAllocationGroup(entry).ifPresent(claimed::add);
+			}
+		}
+		return claimed;
+	}
+
+	private static Optional<PeriodicAllocationGroupKey> periodicAllocationGroup(
+			Entry entry) {
+		return currentRootAllocation(entry)
+				.flatMap(PeriodicAllocationGroupKey::from);
 	}
 
 	/**
@@ -130,13 +208,38 @@ public final class LocusIntersectionTokenLedger2D {
 		}
 	}
 
-	/** Burns identities after an unavailable revision without a spanning proof. */
+	/** Makes claimed identities dormant after an unavailable current revision. */
 	public void observeUnavailable() {
 		authorizedCopySourceOwner = null;
 		if (current == null) {
 			return;
 		}
-		current = new Snapshot(current.material, List.of());
+		java.util.Set<PeriodicAllocationGroupKey> claimedPeriodicGroups =
+				new HashSet<>();
+		for (Entry entry : current.entries) {
+			String token = current.token(entry);
+			if (entry.status.isClaimed()
+					|| materializedClaimCounts.getOrDefault(token, 0) > 0) {
+				periodicAllocationGroup(entry).ifPresent(claimedPeriodicGroups::add);
+			}
+		}
+		ArrayList<Entry> retained = new ArrayList<>();
+		for (Entry entry : current.entries) {
+			String token = current.token(entry);
+			boolean periodicGroupClaimed = periodicAllocationGroup(entry)
+					.filter(claimedPeriodicGroups::contains).isPresent();
+			if (entry.status.isPeriodicallyQuarantined()
+					|| periodicGroupClaimed) {
+				retained.add(entry.withStatus(entry.status.isClaimed()
+						|| materializedClaimCounts.getOrDefault(token, 0) > 0
+								? Status.CLAIMED_PERIODIC_QUARANTINE
+								: Status.PERIODIC_QUARANTINE));
+			} else if (entry.status.isClaimed()
+					|| materializedClaimCounts.getOrDefault(token, 0) > 0) {
+				retained.add(entry.withStatus(Status.CLAIMED_DORMANT));
+			}
+		}
+		current = new Snapshot(current.material, retained);
 	}
 
 	/** Authorizes one immediate G9A closure-copy owner transition. */
@@ -309,6 +412,21 @@ public final class LocusIntersectionTokenLedger2D {
 	public Optional<String> rebaseCopiedToken(String token,
 			String currentOwnerIdentity, String immediateCopySourceOwner,
 			LocusIntersectionResult2D published) {
+		return rebaseCopiedRetainedToken(token, currentOwnerIdentity,
+				immediateCopySourceOwner)
+				.filter(this::validatesCurrentToken)
+				.filter(remapped -> published
+						.findPointAdmissibleSolution(remapped).isPresent());
+	}
+
+	/**
+	 * Validates and remaps one exact retained token from an immediate closure
+	 * copy, without requiring that the selected root is current in this revision.
+	 *
+	 * @return the exact copied current-or-dormant token
+	 */
+	public Optional<String> rebaseCopiedRetainedToken(String token,
+			String currentOwnerIdentity, String immediateCopySourceOwner) {
 		if (copySource == null || current == null || token == null
 				|| currentOwnerIdentity == null
 				|| immediateCopySourceOwner == null
@@ -321,23 +439,121 @@ public final class LocusIntersectionTokenLedger2D {
 			return Optional.empty();
 		}
 		Entry old = sourceEntry.get();
+		String remapped = null;
 		for (Entry candidate : current.entries) {
-			if (candidate.status == Status.ACTIVE
-					&& candidate.incarnation == old.incarnation
+			if (candidate.incarnation == old.incarnation
 					&& candidate.sameAuthorizedCopyContinuity(old)) {
-				String remapped = current.token(candidate);
-				if (published.findPointAdmissibleSolution(remapped).isPresent()) {
-					return Optional.of(remapped);
+				if (remapped != null) {
+					return Optional.empty();
 				}
+				remapped = current.token(candidate);
 			}
 		}
-		return Optional.empty();
+		return Optional.ofNullable(remapped);
 	}
 
 	/** @return whether the exact token is an active entry of this ledger */
 	public boolean validatesCurrentToken(String token) {
 		return current != null && current.validatedEntry(token)
-				.filter(entry -> entry.status == Status.ACTIVE).isPresent();
+				.filter(entry -> entry.status.isActive()).isPresent();
+	}
+
+	/** @return whether the exact token is retained as current or dormant */
+	public boolean validatesRetainedToken(String token) {
+		return current != null && current.validatedEntry(token).isPresent();
+	}
+
+	/**
+	 * Retains one exact allocation for an existing materialized point child.
+	 *
+	 * @return whether the exact current-or-dormant token was retained
+	 */
+	public boolean retainMaterializedToken(String token) {
+		if (current == null || token == null) {
+			return false;
+		}
+		Optional<Entry> validated = current.validatedEntry(token);
+		if (!validated.isPresent()) {
+			return false;
+		}
+		int count;
+		try {
+			count = Math.addExact(materializedClaimCounts.getOrDefault(token, 0), 1);
+		} catch (ArithmeticException exception) {
+			throw new IllegalStateException(
+					"Materialized token claim count exhausted", exception);
+		}
+		materializedClaimCounts.put(token, count);
+		Entry entry = validated.get();
+		if (entry.status == Status.ACTIVE) {
+			current = current.replacing(entry,
+					entry.withStatus(Status.CLAIMED_ACTIVE));
+		} else if (entry.status == Status.PERIODIC_QUARANTINE) {
+			current = current.replacing(entry,
+					entry.withStatus(Status.CLAIMED_PERIODIC_QUARANTINE));
+		}
+		return true;
+	}
+
+	/** Releases one runtime materialized-point claim without retiring identity. */
+	public void releaseMaterializedToken(String token) {
+		Integer count = token == null ? null : materializedClaimCounts.get(token);
+		if (count == null) {
+			return;
+		}
+		if (count > 1) {
+			materializedClaimCounts.put(token, count - 1);
+			return;
+		}
+		materializedClaimCounts.remove(token);
+		if (current == null) {
+			return;
+		}
+		Optional<Entry> validated = current.validatedEntry(token);
+		if (!validated.isPresent()) {
+			return;
+		}
+		Entry entry = validated.get();
+		if (entry.status == Status.CLAIMED_ACTIVE) {
+			current = current.replacing(entry, entry.withStatus(Status.ACTIVE));
+		} else if (entry.status == Status.CLAIMED_DORMANT) {
+			current = current.without(entry);
+		} else if (entry.status == Status.CLAIMED_PERIODIC_QUARANTINE) {
+			Entry unclaimed = entry.withStatus(Status.PERIODIC_QUARANTINE);
+			current = current.replacing(entry, unclaimed);
+			pruneUnclaimedPeriodicQuarantineGroup(unclaimed);
+		}
+	}
+
+	private void pruneUnclaimedPeriodicQuarantineGroup(Entry member) {
+		Optional<CurrentRootAllocationKey> memberBinding =
+				currentRootAllocation(member);
+		if (current == null || !memberBinding.isPresent()) {
+			return;
+		}
+		CurrentRootAllocationKey expected = memberBinding.get();
+		ArrayList<Entry> group = new ArrayList<>();
+		for (Entry entry : current.entries) {
+			Optional<CurrentRootAllocationKey> binding =
+					currentRootAllocation(entry);
+			if (!entry.status.isPeriodicallyQuarantined()
+					|| !binding.isPresent()
+					|| !binding.get().samePhaseGroup(expected)) {
+				continue;
+			}
+			String token = current.token(entry);
+			if (entry.status.isClaimed()
+					|| materializedClaimCounts.getOrDefault(token, 0) > 0) {
+				return;
+			}
+			group.add(entry);
+		}
+		if (group.isEmpty()) {
+			return;
+		}
+		ArrayList<Entry> retained = new ArrayList<>(current.entries);
+		retained.removeAll(group);
+		current = new Snapshot(current.material, retained);
 	}
 
 	/** @return strict compact XML attribute value for this ledger */
@@ -352,6 +568,7 @@ public final class LocusIntersectionTokenLedger2D {
 		String[] fields = requireText(state, "Token-ledger state")
 				.split("\\|", -1);
 		if (fields.length != 4 || (!FORMAT_VERSION.equals(fields[0])
+				&& !PHASE_FORMAT_VERSION.equals(fields[0])
 				&& !PREVIOUS_FORMAT_VERSION.equals(fields[0])
 				&& !LEGACY_FORMAT_VERSION.equals(fields[0]))) {
 			throw new IllegalArgumentException("Unsupported token-ledger state");
@@ -380,6 +597,7 @@ public final class LocusIntersectionTokenLedger2D {
 		current = parsedCurrent;
 		copySource = parsedCopySource;
 		authorizedCopySourceOwner = null;
+		materializedClaimCounts.clear();
 	}
 
 	/** Copies durable lineage only; revision-bound result evidence is excluded. */
@@ -393,6 +611,10 @@ public final class LocusIntersectionTokenLedger2D {
 		private final List<Entry> startingEntries;
 		private final Snapshot startingSnapshot;
 		private final Map<String, Entry> byToken = new LinkedHashMap<>();
+		private final Map<CurrentRootAllocationKey, Entry> stagedByBinding =
+				new LinkedHashMap<>();
+		private final java.util.Set<ContinuityKey> stagedContinuities =
+				new HashSet<>();
 		private final Map<String, Integer> tokenUses = new LinkedHashMap<>();
 		private final Map<String, Integer> semanticUses = new LinkedHashMap<>();
 		private final java.util.Set<String> duplicateTokens = new HashSet<>();
@@ -402,6 +624,16 @@ public final class LocusIntersectionTokenLedger2D {
 		private boolean usedFreshEpoch;
 		private long revisionLocalHandleOrdinal;
 		private final String authorizedCopySourceOwner;
+		private final java.util.Set<String> permanentlyRetiredTokens =
+				new LinkedHashSet<>();
+		private final java.util.Set<String> periodicallyQuarantinedTokens =
+				new LinkedHashSet<>();
+		private final java.util.Set<String> releasedPeriodicQuarantineTokens =
+				new LinkedHashSet<>();
+		private final Map<String, CurrentRootAllocationKey>
+				authorizedCopySuccessorBindings = new LinkedHashMap<>();
+		private final Map<String, Entry> authorizedCopyQuarantineEntries =
+				new LinkedHashMap<>();
 		private boolean finished;
 
 		private Evaluation(Material material, long nextIncarnation,
@@ -439,9 +671,230 @@ public final class LocusIntersectionTokenLedger2D {
 				usedFreshEpoch = true;
 			} else {
 				selected = selected.withAddressProof(addressProof)
-						.withStatus(Status.ACTIVE);
+						.withStatus(selected.status.isClaimed()
+								? Status.CLAIMED_ACTIVE : Status.ACTIVE);
 			}
 			return stage(selected);
+		}
+
+		/**
+		 * Retires one exact prior allocation after the caller has established an
+		 * intrinsically non-reactivatable identity transition (for example typed
+		 * unresolved periodic monodromy). Ordinary ambiguity or absence must not use
+		 * this seam; claimed allocations become dormant instead.
+		 *
+		 * @param token exact prior token to retire permanently
+		 */
+		public void retirePersistedToken(String token) {
+			ensureOpen();
+			if (startingSnapshot == null
+					|| !startingSnapshot.validatedEntry(token).isPresent()) {
+				throw new IllegalArgumentException(
+						"Permanent retirement requires an exact prior token");
+			}
+			periodicallyQuarantinedTokens.remove(token);
+			releasedPeriodicQuarantineTokens.remove(token);
+			permanentlyRetiredTokens.add(token);
+		}
+
+		/**
+		 * Retains exact periodic phase evidence while current cyclic identity is
+		 * insufficiently established. Quarantine is durable, but never becomes root
+		 * identity and never permits a competing fresh allocation.
+		 *
+		 * @param tokens complete exact prior collision-group tokens
+		 */
+		public void quarantinePersistedPeriodicTokens(List<String> tokens) {
+			ensureOpen();
+			List<Entry> validatedGroup = completePeriodicCollisionGroup(tokens,
+					false);
+			boolean retainedConsumer = false;
+			for (Entry entry : validatedGroup) {
+				String token = startingSnapshot.token(entry);
+				if (permanentlyRetiredTokens.contains(token)) {
+					throw new IllegalStateException(
+							"A retired token cannot enter periodic quarantine");
+				}
+				retainedConsumer |= isClaimed(this, entry);
+			}
+			if (retainedConsumer) {
+				periodicallyQuarantinedTokens.addAll(tokens);
+				releasedPeriodicQuarantineTokens.removeAll(tokens);
+			}
+		}
+
+		/**
+		 * Reframes a group entering or already in copied quarantine under the
+		 * destination continuation contract without releasing it or changing its
+		 * selector/incarnation/phase evidence.
+		 */
+		void rebasePersistedPeriodicQuarantineForCopy(List<String> tokens,
+				String successorContract) {
+			ensureOpen();
+			if (authorizedCopySourceOwner == null) {
+				throw new IllegalStateException(
+						"Periodic quarantine rebasing requires an authorized copy");
+			}
+			List<Entry> validatedGroup = completePeriodicCollisionGroup(tokens,
+					false);
+			String contract = requireText(successorContract,
+					"Successor continuation contract");
+			for (Entry source : validatedGroup) {
+				String token = startingSnapshot.token(source);
+				IntersectionRootDeterministicSelector2D selector =
+						currentRootAllocationSelector(source).orElseThrow();
+				String key = currentRootAllocationKey(contract, selector,
+						source.incarnation);
+				Entry rebased = allocatedEntry(source.branchLineage, key,
+						source.addressProof, source.incarnation, contract, selector)
+							.withStatus(source.status);
+				Entry prior = authorizedCopyQuarantineEntries.put(token, rebased);
+				if (prior != null && !prior.semanticKey().equals(
+						rebased.semanticKey())) {
+					throw new IllegalStateException(
+							"A copied quarantine cannot acquire two contracts");
+				}
+			}
+		}
+
+		/**
+		 * Releases one complete quarantined group only after the resolver proves the
+		 * unique zero cyclic offset from its persisted semantic phase evidence.
+		 */
+		public void releasePersistedPeriodicQuarantine(List<String> tokens) {
+			ensureOpen();
+			if (authorizedCopySourceOwner != null) {
+				throw new IllegalStateException(
+						"An authorized copy cannot release periodic quarantine");
+			}
+			completePeriodicCollisionGroup(tokens, true);
+			releasedPeriodicQuarantineTokens.addAll(tokens);
+		}
+
+		private List<Entry> completePeriodicCollisionGroup(List<String> tokens,
+				boolean requireQuarantine) {
+			if (startingSnapshot == null || tokens == null || tokens.isEmpty()) {
+				throw new IllegalArgumentException(
+						"Periodic operation requires prior group evidence");
+			}
+			LinkedHashSet<String> exactTokens = new LinkedHashSet<>();
+			ArrayList<Entry> entries = new ArrayList<>();
+			PeriodicAllocationGroupKey expectedGroup = null;
+			boolean[] ranks = null;
+			for (String token : tokens) {
+				if (token == null || !exactTokens.add(token)) {
+					throw new IllegalArgumentException(
+							"Periodic group tokens must be exact and distinct");
+				}
+				Entry entry = startingSnapshot.validatedEntry(token).orElseThrow(
+						() -> new IllegalArgumentException(
+								"Periodic operation requires an exact prior token"));
+				CurrentRootAllocationKey binding = currentRootAllocation(entry)
+						.orElseThrow(() -> new IllegalArgumentException(
+								"Periodic operation requires a root selector"));
+				PeriodicAllocationGroupKey group = PeriodicAllocationGroupKey
+						.from(binding).orElseThrow(() -> new IllegalArgumentException(
+								"Periodic operation requires periodic phase identity"));
+				if (expectedGroup == null) {
+					expectedGroup = group;
+					ranks = new boolean[group.cardinality];
+				} else if (!expectedGroup.equals(group)) {
+					throw new IllegalArgumentException(
+							"Periodic group tokens must be homogeneous");
+				}
+				int rank = binding.selector.getIntrinsicPhaseRank().orElseThrow();
+				if (ranks[rank]) {
+					throw new IllegalArgumentException(
+							"Periodic group contains a duplicate phase rank");
+				}
+				ranks[rank] = true;
+				if (requireQuarantine
+						&& !entry.status.isPeriodicallyQuarantined()) {
+					throw new IllegalArgumentException(
+							"Periodic group is not wholly quarantined");
+				}
+				entries.add(entry);
+			}
+			PeriodicAllocationGroupKey completeGroup = expectedGroup;
+			LinkedHashSet<String> completeStartingGroup = new LinkedHashSet<>();
+			for (Entry entry : startingEntries) {
+				if (periodicAllocationGroup(entry).filter(completeGroup::equals)
+						.isPresent()) {
+					completeStartingGroup.add(startingSnapshot.token(entry));
+				}
+			}
+			if (ranks == null || entries.size() != ranks.length
+					|| completeStartingGroup.size() != ranks.length
+					|| !completeStartingGroup.equals(exactTokens)) {
+				throw new IllegalArgumentException(
+						"Periodic operation requires one complete collision group");
+			}
+			for (boolean present : ranks) {
+				if (!present) {
+					throw new IllegalArgumentException(
+							"Periodic operation requires every intrinsic phase rank");
+				}
+			}
+			return List.copyOf(entries);
+		}
+
+		/**
+		 * Returns immutable prior periodic phase evidence for one exact query
+		 * contract. Canonical parameter bits are revision evidence, never identity.
+		 */
+		List<PersistedPhaseAllocation> persistedPhaseAllocations(String contract) {
+			ensureOpen();
+			if (startingSnapshot == null) {
+				return List.of();
+			}
+			String expectedContract = requireText(contract,
+					"Continuation contract");
+			ArrayList<PersistedPhaseAllocation> allocations = new ArrayList<>();
+			for (Entry entry : startingEntries) {
+				Optional<CurrentRootAllocationKey> binding =
+						currentRootAllocation(entry);
+				if (!binding.isPresent()
+						|| (!binding.get().contract.equals(expectedContract)
+								&& authorizedCopySourceOwner == null)) {
+					continue;
+				}
+				IntersectionRootDeterministicSelector2D selector =
+						binding.get().selector;
+				if (!selector.hasIntrinsicPhase() || !selector.isPeriodicPhase()) {
+					continue;
+				}
+				allocations.add(new PersistedPhaseAllocation(
+						startingSnapshot.token(entry), selector,
+						Double.longBitsToDouble(entry.addressProof
+								.getCanonicalParameterBits()),
+						entry.status.isPeriodicallyQuarantined()));
+			}
+			allocations.sort(Comparator.comparing(
+					PersistedPhaseAllocation::getSelector));
+			return List.copyOf(allocations);
+		}
+
+		/** Returns one collision group from the immutable batch evidence. */
+		List<PersistedPhaseAllocation> persistedPhaseAllocations(String contract,
+				IntersectionRootDeterministicSelector2D baseSelector) {
+			java.util.Objects.requireNonNull(baseSelector);
+			ArrayList<PersistedPhaseAllocation> matching = new ArrayList<>();
+			for (PersistedPhaseAllocation allocation
+					: persistedPhaseAllocations(contract)) {
+				IntersectionRootDeterministicSelector2D selector =
+						allocation.getSelector();
+				if (selector.getComponentLineage().equals(
+						baseSelector.getComponentLineage())
+						&& selector.getCurrentRootGerm().equals(
+								baseSelector.getCurrentRootGerm())) {
+					matching.add(allocation);
+				}
+			}
+			return List.copyOf(matching);
+		}
+
+		boolean isAuthorizedCopy() {
+			return authorizedCopySourceOwner != null;
 		}
 
 		/**
@@ -511,18 +964,37 @@ public final class LocusIntersectionTokenLedger2D {
 					selected = allocatedEntry(branch,
 							currentRootAllocationKey(contract, selector,
 									copySource.incarnation),
-							addressProof, copySource.incarnation, contract, selector);
+							addressProof, copySource.incarnation, contract, selector)
+							.withStatus(copySource.status.isClaimed()
+									? Status.CLAIMED_ACTIVE : Status.ACTIVE);
+					CurrentRootAllocationKey successorBinding =
+							selected.currentRootBinding.orElseThrow();
+					CurrentRootAllocationKey priorBinding =
+							authorizedCopySuccessorBindings.put(
+									startingSnapshot.token(copySource),
+									successorBinding);
+					if (priorBinding != null
+							&& !priorBinding.equals(successorBinding)) {
+						throw new IllegalStateException(
+								"One copied token cannot acquire two current selectors");
+					}
 					reused = true;
 				}
 			}
 			if (selected == null) {
+				if (hasBlockedPeriodicAllocation(branch, contract, selector,
+						addressProof)) {
+					throw new IllegalStateException(
+							"Periodic quarantine blocks a competing allocation");
+				}
 				long incarnation = allocateIncarnation();
 				selected = allocatedEntry(branch,
 						currentRootAllocationKey(contract, selector, incarnation),
 						addressProof, incarnation, contract, selector);
 			} else {
 				selected = selected.withAddressProof(addressProof)
-						.withStatus(Status.ACTIVE);
+						.withStatus(selected.status.isClaimed()
+								? Status.CLAIMED_ACTIVE : Status.ACTIVE);
 			}
 			String token = stage(selected);
 			return new IntersectionRootAllocation2D(token,
@@ -570,35 +1042,59 @@ public final class LocusIntersectionTokenLedger2D {
 		private Entry uniqueStagedAllocation(String branch, String contract,
 				IntersectionRootDeterministicSelector2D selector,
 				IntersectionRootAddressProof2D addressProof) {
-			Entry found = null;
-			for (Entry entry : byToken.values()) {
-				if (entry.branchLineage.equals(branch)
-						&& isCurrentRootAllocation(entry, contract, selector)
-						&& sameTargetContract(entry, addressProof)) {
-					if (found != null && found != entry) {
-						return null;
-					}
-					found = entry;
-				}
-			}
-			return found;
+			Entry found = stagedByBinding.get(
+					new CurrentRootAllocationKey(contract, selector));
+			return found != null && found.branchLineage.equals(branch)
+					&& sameTargetContract(found, addressProof) ? found : null;
 		}
 
 		private Entry uniqueStartingAllocation(String branch, String contract,
 				IntersectionRootDeterministicSelector2D selector,
 				IntersectionRootAddressProof2D addressProof) {
-			Entry found = null;
+			if (startingSnapshot == null) {
+				return null;
+			}
+			Entry found = startingSnapshot.byBinding.get(
+					new CurrentRootAllocationKey(contract, selector));
+			if (found == null || !found.branchLineage.equals(branch)
+					|| !sameTargetContract(found, addressProof)) {
+				return null;
+			}
+			String token = startingSnapshot.token(found);
+			return !found.status.isPeriodicallyQuarantined()
+					|| releasedPeriodicQuarantineTokens.contains(token)
+							? found : null;
+		}
+
+		private boolean hasBlockedPeriodicAllocation(String branch, String contract,
+				IntersectionRootDeterministicSelector2D selector,
+				IntersectionRootAddressProof2D addressProof) {
+			if (startingSnapshot == null) {
+				return false;
+			}
+			Entry found = startingSnapshot.byBinding.get(
+					new CurrentRootAllocationKey(contract, selector));
+			if (found != null && found.status.isPeriodicallyQuarantined()
+					&& !releasedPeriodicQuarantineTokens.contains(
+							startingSnapshot.token(found))
+					&& found.branchLineage.equals(branch)
+					&& sameTargetContract(found, addressProof)) {
+				return true;
+			}
+			if (authorizedCopySourceOwner == null) {
+				return false;
+			}
 			for (Entry entry : startingEntries) {
-				if (entry.branchLineage.equals(branch)
-						&& isCurrentRootAllocation(entry, contract, selector)
-						&& sameTargetContract(entry, addressProof)) {
-					if (found != null) {
-						return null;
-					}
-					found = entry;
+				if (entry.status.isPeriodicallyQuarantined()
+						&& entry.branchLineage.equals(branch)
+						&& currentRootAllocationSelector(entry)
+								.filter(selector::equals).isPresent()
+						&& entry.addressProof
+								.sameAddressUnderAuthorizedCopy(addressProof)) {
+					return true;
 				}
 			}
-			return found;
+			return false;
 		}
 
 		private Entry uniqueLegacySingletonAllocation(String branch,
@@ -637,7 +1133,8 @@ public final class LocusIntersectionTokenLedger2D {
 				IntersectionRootAddressProof2D addressProof) {
 			Entry found = null;
 			for (Entry entry : startingEntries) {
-				if (entry.branchLineage.equals(branch)
+				if (!entry.status.isPeriodicallyQuarantined()
+						&& entry.branchLineage.equals(branch)
 						&& currentRootAllocationSelector(entry)
 								.filter(selector::equals).isPresent()
 						&& entry.addressProof
@@ -654,6 +1151,9 @@ public final class LocusIntersectionTokenLedger2D {
 		private String stage(Entry selected) {
 			String token = material.token(selected);
 			byToken.put(token, selected);
+			selected.currentRootBinding.ifPresent(binding ->
+					stagedByBinding.put(binding, selected));
+			stagedContinuities.add(selected.continuityKey());
 			String semantic = selected.semanticKey();
 			int semanticCount = semanticUses.getOrDefault(semantic, 0) + 1;
 			semanticUses.put(semantic, semanticCount);
@@ -708,12 +1208,40 @@ public final class LocusIntersectionTokenLedger2D {
 		}
 
 		private boolean hasCompatibleStagedCandidate(Entry published) {
-			for (Entry staged : byToken.values()) {
-				if (staged.sameContinuity(published)) {
-					return true;
-				}
-			}
-			return false;
+			return stagedContinuities.contains(published.continuityKey());
+		}
+	}
+
+	/** Persisted intrinsic phase evidence exposed only to the R4 resolver. */
+	static final class PersistedPhaseAllocation {
+		private final String token;
+		private final IntersectionRootDeterministicSelector2D selector;
+		private final double canonicalParameter;
+		private final boolean periodicallyQuarantined;
+
+		private PersistedPhaseAllocation(String token,
+				IntersectionRootDeterministicSelector2D selector,
+				double canonicalParameter, boolean periodicallyQuarantined) {
+			this.token = token;
+			this.selector = selector;
+			this.canonicalParameter = canonicalParameter;
+			this.periodicallyQuarantined = periodicallyQuarantined;
+		}
+
+		String getToken() {
+			return token;
+		}
+
+		IntersectionRootDeterministicSelector2D getSelector() {
+			return selector;
+		}
+
+		double getCanonicalParameter() {
+			return canonicalParameter;
+		}
+
+		boolean isPeriodicallyQuarantined() {
+			return periodicallyQuarantined;
 		}
 	}
 
@@ -900,6 +1428,13 @@ public final class LocusIntersectionTokenLedger2D {
 			this.selector = selector;
 		}
 
+		private boolean samePhaseGroup(CurrentRootAllocationKey other) {
+			Optional<PeriodicAllocationGroupKey> first =
+					PeriodicAllocationGroupKey.from(this);
+			return first.isPresent()
+					&& first.equals(PeriodicAllocationGroupKey.from(other));
+		}
+
 		@Override
 		public boolean equals(Object other) {
 			if (!(other instanceof CurrentRootAllocationKey)) {
@@ -915,18 +1450,122 @@ public final class LocusIntersectionTokenLedger2D {
 		}
 	}
 
-	private enum Status {
-		ACTIVE("a");
+	private static final class PeriodicAllocationGroupKey {
+		private final String contract;
+		private final String componentLineage;
+		private final String rootGerm;
+		private final Orientation orientation;
+		private final int cardinality;
 
-		private final String code;
-
-		Status(String code) {
-			this.code = code;
+		private PeriodicAllocationGroupKey(String contract,
+				IntersectionRootDeterministicSelector2D selector) {
+			this.contract = contract;
+			this.componentLineage = selector.getComponentLineage();
+			this.rootGerm = selector.getCurrentRootGerm();
+			this.orientation = selector.getPhaseOrientation().orElseThrow();
+			this.cardinality = selector.getCollisionCardinality().orElseThrow();
 		}
 
-		private static Status parse(String value) {
+		private static Optional<PeriodicAllocationGroupKey> from(
+				CurrentRootAllocationKey binding) {
+			IntersectionRootDeterministicSelector2D selector = binding.selector;
+			if (!selector.hasIntrinsicPhase() || !selector.isPeriodicPhase()) {
+				return Optional.empty();
+			}
+			return Optional.of(new PeriodicAllocationGroupKey(binding.contract,
+					selector));
+		}
+
+		@Override
+		public boolean equals(Object other) {
+			if (!(other instanceof PeriodicAllocationGroupKey)) {
+				return false;
+			}
+			PeriodicAllocationGroupKey key = (PeriodicAllocationGroupKey) other;
+			return contract.equals(key.contract)
+					&& componentLineage.equals(key.componentLineage)
+					&& rootGerm.equals(key.rootGerm)
+					&& orientation == key.orientation
+					&& cardinality == key.cardinality;
+		}
+
+		@Override
+		public int hashCode() {
+			return java.util.Objects.hash(contract, componentLineage, rootGerm,
+					orientation, cardinality);
+		}
+	}
+
+	private static final class ContinuityKey {
+		private final String semanticKey;
+		private final IntersectionRootAddressProof2D addressProof;
+		private final Optional<CurrentRootAllocationKey> currentRootBinding;
+
+		private ContinuityKey(String semanticKey,
+				IntersectionRootAddressProof2D addressProof,
+				Optional<CurrentRootAllocationKey> currentRootBinding) {
+			this.semanticKey = semanticKey;
+			this.addressProof = addressProof;
+			this.currentRootBinding = currentRootBinding;
+		}
+
+		@Override
+		public boolean equals(Object other) {
+			if (!(other instanceof ContinuityKey)) {
+				return false;
+			}
+			ContinuityKey key = (ContinuityKey) other;
+			return semanticKey.equals(key.semanticKey)
+					&& addressProof.equals(key.addressProof)
+					&& currentRootBinding.equals(key.currentRootBinding);
+		}
+
+		@Override
+		public int hashCode() {
+			return java.util.Objects.hash(semanticKey, addressProof,
+					currentRootBinding);
+		}
+	}
+
+	private enum Status {
+		ACTIVE("a", true, false, false),
+		CLAIMED_ACTIVE("c", true, true, false),
+		CLAIMED_DORMANT("d", false, true, false),
+		PERIODIC_QUARANTINE("q", false, false, true),
+		CLAIMED_PERIODIC_QUARANTINE("r", false, true, true);
+
+		private final String code;
+		private final boolean active;
+		private final boolean claimed;
+		private final boolean periodicallyQuarantined;
+
+		Status(String code, boolean active, boolean claimed,
+				boolean periodicallyQuarantined) {
+			this.code = code;
+			this.active = active;
+			this.claimed = claimed;
+			this.periodicallyQuarantined = periodicallyQuarantined;
+		}
+
+		private boolean isActive() {
+			return active;
+		}
+
+		private boolean isClaimed() {
+			return claimed;
+		}
+
+		private boolean isPeriodicallyQuarantined() {
+			return periodicallyQuarantined;
+		}
+
+		private static Status parse(String value, String version) {
 			for (Status status : values()) {
 				if (status.code.equals(value)) {
+					if (status != ACTIVE && !FORMAT_VERSION.equals(version)) {
+						throw new IllegalArgumentException(
+								"Legacy token ledger cannot declare retained status");
+					}
 					return status;
 				}
 			}
@@ -999,10 +1638,9 @@ public final class LocusIntersectionTokenLedger2D {
 					branchLineage, continuationKey);
 		}
 
-		private boolean sameContinuity(Entry other) {
-			return semanticKey().equals(other.semanticKey())
-					&& addressProof.equals(other.addressProof)
-					&& currentRootBinding.equals(other.currentRootBinding);
+		private ContinuityKey continuityKey() {
+			return new ContinuityKey(semanticKey(), addressProof,
+					currentRootBinding);
 		}
 
 		private boolean sameAuthorizedCopyContinuity(Entry other) {
@@ -1070,6 +1708,8 @@ public final class LocusIntersectionTokenLedger2D {
 	private static final class Snapshot {
 		private final Material material;
 		private final List<Entry> entries;
+		private final Map<CurrentRootAllocationKey, Entry> byBinding;
+		private final Map<String, Entry> byToken;
 
 		private Snapshot(Material material, List<Entry> entries) {
 			this.material = java.util.Objects.requireNonNull(material);
@@ -1077,8 +1717,9 @@ public final class LocusIntersectionTokenLedger2D {
 			sorted.sort(Comparator.comparing(Entry::semanticKey));
 			this.entries = List.copyOf(sorted);
 			LinkedHashMap<String, Entry> bySemantic = new LinkedHashMap<>();
-			LinkedHashMap<CurrentRootAllocationKey, Entry> byBinding =
+			LinkedHashMap<CurrentRootAllocationKey, Entry> indexedByBinding =
 					new LinkedHashMap<>();
+			LinkedHashMap<String, Entry> indexedByToken = new LinkedHashMap<>();
 			for (Entry entry : this.entries) {
 				if (entry.currentRootBinding.isPresent()
 						&& !currentRootAllocation(entry).equals(
@@ -1093,7 +1734,7 @@ public final class LocusIntersectionTokenLedger2D {
 							"R4 token allocation lacks its selector binding");
 				}
 				if (entry.currentRootBinding.isPresent()
-						&& byBinding.put(entry.currentRootBinding.get(), entry)
+						&& indexedByBinding.put(entry.currentRootBinding.get(), entry)
 								!= null) {
 					throw new IllegalArgumentException(
 							"Token ledger has a duplicate deterministic binding");
@@ -1103,7 +1744,13 @@ public final class LocusIntersectionTokenLedger2D {
 					throw new IllegalArgumentException(
 							"Token ledger has duplicate semantic continuity");
 				}
+				if (indexedByToken.put(token(entry), entry) != null) {
+					throw new IllegalArgumentException(
+							"Token ledger has a duplicate opaque token");
+				}
 			}
+			this.byBinding = java.util.Collections.unmodifiableMap(indexedByBinding);
+			this.byToken = java.util.Collections.unmodifiableMap(indexedByToken);
 		}
 
 		private String token(Entry entry) {
@@ -1111,23 +1758,28 @@ public final class LocusIntersectionTokenLedger2D {
 		}
 
 		private Optional<Entry> validatedEntry(String token) {
-			Optional<LocusSemanticIntersectionToken2D.DecodedToken> decoded =
-					LocusSemanticIntersectionToken2D.decode(token);
-			if (!decoded.isPresent()
-					|| !decoded.get().getResultOwnerIdentity().equals(material.owner)) {
-				return Optional.empty();
+			return token == null ? Optional.empty()
+					: Optional.ofNullable(byToken.get(token));
+		}
+
+		private Snapshot replacing(Entry oldEntry, Entry replacement) {
+			ArrayList<Entry> changed = new ArrayList<>(entries);
+			int index = changed.indexOf(oldEntry);
+			if (index < 0) {
+				throw new IllegalArgumentException(
+						"Token-ledger replacement entry is not current");
 			}
-			for (Entry entry : entries) {
-				if (entry.incarnation == decoded.get().getIncarnation()
-						&& entry.branchLineage.equals(
-								decoded.get().getEstablishedBranchLineage())
-						&& entry.continuationKey.equals(
-								decoded.get().getContinuationKey())
-						&& token(entry).equals(token)) {
-					return Optional.of(entry);
-				}
+			changed.set(index, replacement);
+			return new Snapshot(material, changed);
+		}
+
+		private Snapshot without(Entry oldEntry) {
+			ArrayList<Entry> changed = new ArrayList<>(entries);
+			if (!changed.remove(oldEntry)) {
+				throw new IllegalArgumentException(
+						"Token-ledger removal entry is not current");
 			}
-			return Optional.empty();
+			return new Snapshot(material, changed);
 		}
 	}
 
@@ -1160,6 +1812,10 @@ public final class LocusIntersectionTokenLedger2D {
 				}
 				for (String parent : solution.getLineage()
 						.getCandidateParentTokens()) {
+					if (evaluation.periodicallyQuarantinedTokens
+							.contains(parent)) {
+						continue;
+					}
 					Entry old = evaluation.entryForPublishedToken(parent,
 							evaluation.startingSnapshot);
 					if (old != null) {
@@ -1169,16 +1825,6 @@ public final class LocusIntersectionTokenLedger2D {
 			}
 		}
 		return burned;
-	}
-
-	private static boolean containsSemanticEntry(List<Entry> entries,
-			Entry candidate) {
-		for (Entry entry : entries) {
-			if (entry.semanticKey().equals(candidate.semanticKey())) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	private static String semanticKey(String solution, String branch,
@@ -1275,13 +1921,14 @@ public final class LocusIntersectionTokenLedger2D {
 							: Optional.of(continuation),
 					addressProof,
 					parsePositiveLong(entry[1], "entry incarnation"),
-					Status.parse(entry[0]), binding));
+					Status.parse(entry[0], version), binding));
 		}
 		return new Snapshot(material, entries);
 	}
 
 	private static boolean hasDeterministicBindingFields(String version) {
 		return FORMAT_VERSION.equals(version)
+				|| PHASE_FORMAT_VERSION.equals(version)
 				|| PREVIOUS_FORMAT_VERSION.equals(version);
 	}
 

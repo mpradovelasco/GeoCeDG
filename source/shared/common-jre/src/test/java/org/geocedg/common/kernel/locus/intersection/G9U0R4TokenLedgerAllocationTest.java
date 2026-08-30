@@ -141,7 +141,7 @@ final class G9U0R4TokenLedgerAllocationTest {
 		ledger.commit(evaluation, published(1, 1,
 				new PublishedRoot(first, address,
 						IdentityStatus.NEW_TOPOLOGICAL_SOLUTION)));
-		assertEquals("3|2|" + materialPrefix() + "0|-", ledger.exportState());
+		assertEquals("4|2|" + materialPrefix() + "0|-", ledger.exportState());
 	}
 
 	@Test
@@ -216,9 +216,77 @@ final class G9U0R4TokenLedgerAllocationTest {
 	}
 
 	@Test
+	void claimedAllocationBecomesDormantAndReactivatesByExactSelector() {
+		LocusIntersectionTokenLedger2D ledger = committedSingleAllocation();
+		String token = currentToken(ledger, "provider/r1", 0.25);
+		assertTrue(ledger.retainMaterializedToken(token));
+
+		LocusIntersectionTokenLedger2D.Evaluation unavailable = begin(ledger);
+		ledger.commit(unavailable, publishedEmpty(2, 2));
+		assertFalse(ledger.validatesCurrentToken(token));
+		assertTrue(ledger.validatesRetainedToken(token));
+		assertTrue(ledger.exportState().contains("~1~d,"));
+
+		IntersectionRootAddressProof2D movedProof = proof("provider/r3", 0.75);
+		LocusIntersectionTokenLedger2D.Evaluation returned = begin(ledger);
+		IntersectionRootAllocation2D reactivated = returned.resolveCurrentRoot(
+				BRANCH, CONTINUATION_CONTRACT, NEGATIVE, movedProof);
+		assertTrue(reactivated.isReused());
+		assertEquals(token, reactivated.getRootToken());
+		ledger.commit(returned, published(3, 3,
+				new PublishedRoot(reactivated, movedProof,
+						IdentityStatus.DETERMINISTIC_SELECTION_ESTABLISHED)));
+		assertTrue(ledger.validatesCurrentToken(token));
+		assertTrue(ledger.exportState().contains("~1~c,"));
+	}
+
+	@Test
+	void materializedClaimReferenceCountPrunesOnlyAfterLastRelease() {
+		LocusIntersectionTokenLedger2D ledger = committedSingleAllocation();
+		String token = currentToken(ledger, "provider/r1", 0.25);
+		assertTrue(ledger.retainMaterializedToken(token));
+		assertTrue(ledger.retainMaterializedToken(token));
+		LocusIntersectionTokenLedger2D.Evaluation unavailable = begin(ledger);
+		ledger.commit(unavailable, publishedEmpty(2, 2));
+
+		ledger.releaseMaterializedToken(token);
+		assertTrue(ledger.validatesRetainedToken(token));
+		ledger.releaseMaterializedToken(token);
+		assertFalse(ledger.validatesRetainedToken(token));
+
+		LocusIntersectionTokenLedger2D.Evaluation returned = begin(ledger);
+		IntersectionRootAllocation2D replacement = returned.resolveCurrentRoot(
+				BRANCH, CONTINUATION_CONTRACT, NEGATIVE,
+				proof("provider/r3", 0.25));
+		assertFalse(replacement.isReused());
+		assertNotEquals(token, replacement.getRootToken());
+		ledger.abort(returned);
+	}
+
+	@Test
+	void explicitPermanentRetirementPreventsDormantReactivation() {
+		LocusIntersectionTokenLedger2D ledger = committedSingleAllocation();
+		String token = currentToken(ledger, "provider/r1", 0.25);
+		assertTrue(ledger.retainMaterializedToken(token));
+		LocusIntersectionTokenLedger2D.Evaluation seam = begin(ledger);
+		seam.retirePersistedToken(token);
+		ledger.commit(seam, publishedEmpty(2, 2));
+		assertFalse(ledger.validatesRetainedToken(token));
+
+		LocusIntersectionTokenLedger2D.Evaluation returned = begin(ledger);
+		IntersectionRootAllocation2D replacement = returned.resolveCurrentRoot(
+				BRANCH, CONTINUATION_CONTRACT, NEGATIVE,
+				proof("provider/r3", 0.25));
+		assertFalse(replacement.isReused());
+		assertNotEquals(token, replacement.getRootToken());
+		ledger.abort(returned);
+	}
+
+	@Test
 	void authorizedCopyRebasesContractAndRetainsIncarnation() {
 		LocusIntersectionTokenLedger2D ledger = committedSingleAllocation();
 		String sourceToken = currentToken(ledger, "provider/r1", 0.25);
+		assertTrue(ledger.retainMaterializedToken(sourceToken));
 		long sourceIncarnation = LocusSemanticIntersectionToken2D
 				.decode(sourceToken).orElseThrow().getIncarnation();
 		ledger.authorizeImmediateCopy(OWNER);
@@ -238,6 +306,43 @@ final class G9U0R4TokenLedgerAllocationTest {
 		ledger.commit(copy, copiedPublication);
 		assertEquals(rebased.getRootToken(), ledger.rebaseCopiedToken(sourceToken,
 				"r4-copy-owner", OWNER, copiedPublication).orElseThrow());
+		assertEquals(rebased.getRootToken(), ledger.rebaseCopiedRetainedToken(
+				sourceToken, "r4-copy-owner", OWNER).orElseThrow());
+		assertTrue(ledger.validatesCurrentToken(rebased.getRootToken()));
+		assertFalse(ledger.exportState().contains("~d,"));
+	}
+
+	@Test
+	void authorizedCopyRebasesDormantClaimBeforeRootReappears() {
+		LocusIntersectionTokenLedger2D ledger = committedSingleAllocation();
+		String sourceToken = currentToken(ledger, "provider/r1", 0.25);
+		assertTrue(ledger.retainMaterializedToken(sourceToken));
+		LocusIntersectionTokenLedger2D.Evaluation unavailable = begin(ledger);
+		ledger.commit(unavailable, publishedEmpty(2, 2));
+
+		String copyOwner = "r4-dormant-copy-owner";
+		String copyPair = "r4-dormant-copy-pair";
+		ledger.authorizeImmediateCopy(OWNER);
+		LocusIntersectionTokenLedger2D.Evaluation copied = ledger.begin(copyOwner,
+				copyPair, CONSTRUCTIVE, TOPOLOGY);
+		ledger.commit(copied, publishedEmptyForPair(copyPair, 3, 3));
+		String copiedToken = ledger.rebaseCopiedRetainedToken(sourceToken,
+				copyOwner, OWNER).orElseThrow();
+		assertNotEquals(sourceToken, copiedToken);
+		assertTrue(ledger.validatesRetainedToken(copiedToken));
+		assertFalse(ledger.validatesCurrentToken(copiedToken));
+
+		IntersectionRootAddressProof2D copiedProof = proof("copied/provider", 0.75);
+		LocusIntersectionTokenLedger2D.Evaluation returned = ledger.begin(copyOwner,
+				copyPair, CONSTRUCTIVE, TOPOLOGY);
+		IntersectionRootAllocation2D reactivated = returned.resolveCurrentRoot(
+				BRANCH, CONTINUATION_CONTRACT, NEGATIVE, copiedProof);
+		assertTrue(reactivated.isReused());
+		assertEquals(copiedToken, reactivated.getRootToken());
+		ledger.commit(returned, publishedForPair(copyPair, 4, 4,
+				new PublishedRoot(reactivated, copiedProof,
+						IdentityStatus.DETERMINISTIC_SELECTION_ESTABLISHED)));
+		assertTrue(ledger.validatesCurrentToken(copiedToken));
 	}
 
 	@Test
@@ -380,7 +485,7 @@ final class G9U0R4TokenLedgerAllocationTest {
 						IdentityStatus.DETERMINISTIC_SELECTION_ESTABLISHED)));
 
 		String migratedState = migrated.exportState();
-		assertTrue(migratedState.startsWith("3|"));
+		assertTrue(migratedState.startsWith("4|"));
 		LocusIntersectionTokenLedger2D reopened =
 				new LocusIntersectionTokenLedger2D();
 		reopened.importState(migratedState);
@@ -502,7 +607,7 @@ final class G9U0R4TokenLedgerAllocationTest {
 		LocusIntersectionTokenLedger2D migrated =
 				new LocusIntersectionTokenLedger2D();
 		migrated.importState(HISTORICAL_LEDGER_V2);
-		assertEquals("3" + HISTORICAL_LEDGER_V2.substring(1),
+		assertEquals("4" + HISTORICAL_LEDGER_V2.substring(1),
 				migrated.exportState());
 		LocusIntersectionTokenLedger2D.Evaluation migratedEvaluation =
 				begin(migrated);
@@ -514,6 +619,20 @@ final class G9U0R4TokenLedgerAllocationTest {
 		assertEquals(HISTORICAL_LEDGER_V2_TOKEN,
 				migratedAllocation.getRootToken());
 		migrated.abort(migratedEvaluation);
+
+		String activeV4 = ledger.exportState();
+		String historicalV3 = "3" + activeV4.substring(1);
+		LocusIntersectionTokenLedger2D migratedV3 =
+				new LocusIntersectionTokenLedger2D();
+		migratedV3.importState(historicalV3);
+		assertEquals(activeV4, migratedV3.exportState());
+		assertTrue(migratedV3.validatesCurrentToken(first.getRootToken()));
+		assertTrue(migratedV3.retainMaterializedToken(first.getRootToken()));
+		String claimedV4 = migratedV3.exportState();
+		String falselyRelabeledClaimedV3 = "3" + claimedV4.substring(1);
+		assertThrows(IllegalArgumentException.class,
+				() -> new LocusIntersectionTokenLedger2D()
+						.importState(falselyRelabeledClaimedV3));
 
 		String falselyRelabeledPhaseState = "2|" + encoded.substring(2);
 		assertThrows(IllegalArgumentException.class,
@@ -571,6 +690,203 @@ final class G9U0R4TokenLedgerAllocationTest {
 		assertThrows(IllegalArgumentException.class,
 				() -> new LocusIntersectionTokenLedger2D()
 						.importState(falselyBoundLegacyPhaseState));
+	}
+
+	@Test
+	void periodicQuarantineSurvivesRecomputeReopenAndCopyUntilProvedRelease() {
+		IntersectionRootDeterministicSelector2D firstSelector = phaseSelector(
+				POSITIVE, Orientation.INCREASING, true, 2, 0);
+		IntersectionRootDeterministicSelector2D secondSelector = phaseSelector(
+				POSITIVE, Orientation.INCREASING, true, 2, 1);
+		IntersectionRootDeterministicSelector2D foreignFirstSelector = phaseSelector(
+				NEGATIVE, Orientation.INCREASING, true, 2, 0);
+		IntersectionRootDeterministicSelector2D foreignSecondSelector = phaseSelector(
+				NEGATIVE, Orientation.INCREASING, true, 2, 1);
+		IntersectionRootAddressProof2D firstProof = proof("provider/r1", 1);
+		IntersectionRootAddressProof2D secondProof = proof("provider/r1", 6);
+		IntersectionRootAddressProof2D foreignFirstProof = proof("provider/r1", 2);
+		IntersectionRootAddressProof2D foreignSecondProof = proof("provider/r1", 8);
+		LocusIntersectionTokenLedger2D ledger =
+				new LocusIntersectionTokenLedger2D();
+		LocusIntersectionTokenLedger2D.Evaluation initial = begin(ledger);
+		IntersectionRootAllocation2D first = initial.resolveCurrentRoot(BRANCH,
+				CONTINUATION_CONTRACT, firstSelector, firstProof);
+		IntersectionRootAllocation2D second = initial.resolveCurrentRoot(BRANCH,
+				CONTINUATION_CONTRACT, secondSelector, secondProof);
+		IntersectionRootAllocation2D foreignFirst = initial.resolveCurrentRoot(BRANCH,
+				CONTINUATION_CONTRACT, foreignFirstSelector, foreignFirstProof);
+		IntersectionRootAllocation2D foreignSecond = initial.resolveCurrentRoot(
+				BRANCH, CONTINUATION_CONTRACT, foreignSecondSelector,
+				foreignSecondProof);
+		ledger.commit(initial, published(1, 1,
+				new PublishedRoot(first, firstProof,
+						IdentityStatus.NEW_TOPOLOGICAL_SOLUTION),
+				new PublishedRoot(second, secondProof,
+						IdentityStatus.NEW_TOPOLOGICAL_SOLUTION),
+				new PublishedRoot(foreignFirst, foreignFirstProof,
+						IdentityStatus.NEW_TOPOLOGICAL_SOLUTION),
+				new PublishedRoot(foreignSecond, foreignSecondProof,
+						IdentityStatus.NEW_TOPOLOGICAL_SOLUTION)));
+		assertTrue(ledger.retainMaterializedToken(first.getRootToken()));
+
+		LocusIntersectionTokenLedger2D.Evaluation barrier = begin(ledger);
+		List<LocusIntersectionTokenLedger2D.PersistedPhaseAllocation> evidence =
+				barrier.persistedPhaseAllocations(CONTINUATION_CONTRACT, POSITIVE);
+		assertEquals(2, evidence.size());
+		List<String> groupTokens = evidence.stream()
+				.map(LocusIntersectionTokenLedger2D.PersistedPhaseAllocation::getToken)
+				.sorted().toList();
+		List<String> foreignGroupTokens = barrier.persistedPhaseAllocations(
+				CONTINUATION_CONTRACT, NEGATIVE).stream()
+				.map(LocusIntersectionTokenLedger2D.PersistedPhaseAllocation::getToken)
+				.sorted().toList();
+		assertEquals(2, foreignGroupTokens.size());
+		assertThrows(IllegalArgumentException.class,
+				() -> barrier.quarantinePersistedPeriodicTokens(
+						List.of(groupTokens.get(0))));
+		assertThrows(IllegalArgumentException.class,
+				() -> barrier.quarantinePersistedPeriodicTokens(
+						List.of(groupTokens.get(0), groupTokens.get(0))));
+		assertThrows(IllegalArgumentException.class,
+				() -> barrier.quarantinePersistedPeriodicTokens(
+						List.of(groupTokens.get(0), foreignGroupTokens.get(0))));
+		barrier.quarantinePersistedPeriodicTokens(groupTokens);
+		ledger.commit(barrier, publishedEmpty(2, 2));
+		String quarantinedState = ledger.exportState();
+		assertEquals(1, statusCount(quarantinedState, "r"));
+		assertEquals(1, statusCount(quarantinedState, "q"));
+		assertFalse(ledger.validatesCurrentToken(first.getRootToken()));
+		assertTrue(ledger.validatesRetainedToken(first.getRootToken()));
+		assertTrue(ledger.validatesRetainedToken(second.getRootToken()));
+
+		LocusIntersectionTokenLedger2D restored =
+				new LocusIntersectionTokenLedger2D();
+		restored.importState(quarantinedState);
+		assertEquals(quarantinedState, restored.exportState());
+		LocusIntersectionTokenLedger2D.Evaluation stillBlocked = begin(restored);
+		List<LocusIntersectionTokenLedger2D.PersistedPhaseAllocation>
+				restoredEvidence = stillBlocked.persistedPhaseAllocations(
+						CONTINUATION_CONTRACT, POSITIVE);
+		assertEquals(List.of(1D, 6D), restoredEvidence.stream()
+				.map(LocusIntersectionTokenLedger2D.PersistedPhaseAllocation
+						::getCanonicalParameter).sorted().toList());
+		assertTrue(restoredEvidence.stream().allMatch(
+				LocusIntersectionTokenLedger2D.PersistedPhaseAllocation
+						::isPeriodicallyQuarantined));
+		assertThrows(IllegalStateException.class,
+				() -> stillBlocked.resolveCurrentRoot(BRANCH,
+						CONTINUATION_CONTRACT, firstSelector,
+						proof("provider/r2", 2)));
+		restored.abort(stillBlocked);
+
+		LocusIntersectionTokenLedger2D.Evaluation provedZero = begin(restored);
+		assertThrows(IllegalArgumentException.class,
+				() -> provedZero.releasePersistedPeriodicQuarantine(
+						List.of(groupTokens.get(0))));
+		assertThrows(IllegalArgumentException.class,
+				() -> provedZero.releasePersistedPeriodicQuarantine(
+						List.of(groupTokens.get(0), groupTokens.get(0))));
+		provedZero.releasePersistedPeriodicQuarantine(groupTokens);
+		IntersectionRootAddressProof2D movedFirst = proof("provider/r2", 2);
+		IntersectionRootAddressProof2D movedSecond = proof("provider/r2", 7);
+		IntersectionRootAllocation2D resumedFirst =
+				provedZero.resolveCurrentRoot(BRANCH, CONTINUATION_CONTRACT,
+						firstSelector, movedFirst);
+		IntersectionRootAllocation2D resumedSecond =
+				provedZero.resolveCurrentRoot(BRANCH, CONTINUATION_CONTRACT,
+						secondSelector, movedSecond);
+		assertEquals(first.getRootToken(), resumedFirst.getRootToken());
+		assertEquals(second.getRootToken(), resumedSecond.getRootToken());
+		restored.commit(provedZero, published(3, 3,
+				new PublishedRoot(resumedFirst, movedFirst,
+						IdentityStatus.DETERMINISTIC_SELECTION_ESTABLISHED),
+				new PublishedRoot(resumedSecond, movedSecond,
+						IdentityStatus.DETERMINISTIC_SELECTION_ESTABLISHED)));
+		assertEquals(1, statusCount(restored.exportState(), "c"));
+		assertEquals(1, statusCount(restored.exportState(), "a"));
+		assertEquals(0, statusCount(restored.exportState(), "q"));
+		assertEquals(0, statusCount(restored.exportState(), "r"));
+
+		LocusIntersectionTokenLedger2D copied =
+				new LocusIntersectionTokenLedger2D();
+		copied.importState(quarantinedState);
+		copied.authorizeImmediateCopy(OWNER);
+		String copyOwner = "r4-periodic-quarantine-copy-owner";
+		String copyPair = "r4-periodic-quarantine-copy-pair";
+		String copyContract = "r4-periodic-quarantine-copy-contract";
+		LocusIntersectionTokenLedger2D.Evaluation copy = copied.begin(copyOwner,
+				copyPair, CONSTRUCTIVE, TOPOLOGY);
+		List<LocusIntersectionTokenLedger2D.PersistedPhaseAllocation>
+				copyEvidence = copy.persistedPhaseAllocations(copyContract, POSITIVE);
+		List<String> copySourceTokens = copyEvidence.stream()
+				.map(LocusIntersectionTokenLedger2D.PersistedPhaseAllocation::getToken)
+				.sorted().toList();
+		assertThrows(IllegalArgumentException.class,
+				() -> copy.rebasePersistedPeriodicQuarantineForCopy(
+						List.of(copySourceTokens.get(0)), copyContract));
+		assertThrows(IllegalArgumentException.class,
+				() -> copy.rebasePersistedPeriodicQuarantineForCopy(
+						List.of(copySourceTokens.get(0), copySourceTokens.get(0)),
+						copyContract));
+		copy.rebasePersistedPeriodicQuarantineForCopy(copySourceTokens,
+				copyContract);
+		copy.quarantinePersistedPeriodicTokens(copySourceTokens);
+		assertThrows(IllegalStateException.class,
+				() -> copy.releasePersistedPeriodicQuarantine(copySourceTokens));
+		assertThrows(IllegalStateException.class,
+				() -> copy.resolveCurrentRoot(BRANCH, copyContract, firstSelector,
+						proof("provider/copied", 1)));
+		copied.commit(copy, publishedEmptyForPair(copyPair, 4, 4));
+		String copiedToken = copied.rebaseCopiedRetainedToken(first.getRootToken(),
+				copyOwner, OWNER).orElseThrow();
+		assertNotEquals(first.getRootToken(), copiedToken);
+		assertTrue(copied.validatesRetainedToken(copiedToken));
+		assertFalse(copied.validatesCurrentToken(copiedToken));
+		assertEquals(1, statusCount(copied.exportState(), "r"));
+		assertEquals(1, statusCount(copied.exportState(), "q"));
+		LocusIntersectionTokenLedger2D.Evaluation copiedRecompute = copied.begin(
+				copyOwner, copyPair, CONSTRUCTIVE, TOPOLOGY);
+		List<LocusIntersectionTokenLedger2D.PersistedPhaseAllocation>
+				copiedEvidence = copiedRecompute.persistedPhaseAllocations(
+						copyContract, POSITIVE);
+		assertEquals(2, copiedEvidence.size());
+		assertTrue(copiedEvidence.stream().allMatch(
+				LocusIntersectionTokenLedger2D.PersistedPhaseAllocation
+						::isPeriodicallyQuarantined));
+		assertThrows(IllegalStateException.class,
+				() -> copiedRecompute.resolveCurrentRoot(BRANCH, copyContract,
+						firstSelector, proof("provider/copied", 1)));
+		copied.abort(copiedRecompute);
+		String copiedQuarantineState = copied.exportState();
+		LocusIntersectionTokenLedger2D reopenedCopy =
+				new LocusIntersectionTokenLedger2D();
+		reopenedCopy.importState(copiedQuarantineState);
+		LocusIntersectionTokenLedger2D.Evaluation reopenedRecompute =
+				reopenedCopy.begin(copyOwner, copyPair, CONSTRUCTIVE, TOPOLOGY);
+		assertEquals(2, reopenedRecompute.persistedPhaseAllocations(copyContract,
+				POSITIVE).size());
+		assertThrows(IllegalStateException.class,
+				() -> reopenedRecompute.resolveCurrentRoot(BRANCH, copyContract,
+						firstSelector, proof("provider/copied", 1)));
+		reopenedCopy.abort(reopenedRecompute);
+
+		LocusIntersectionTokenLedger2D prunable =
+				new LocusIntersectionTokenLedger2D();
+		prunable.importState(quarantinedState);
+		assertTrue(prunable.retainMaterializedToken(first.getRootToken()));
+		prunable.releaseMaterializedToken(first.getRootToken());
+		assertFalse(prunable.validatesRetainedToken(first.getRootToken()));
+		assertFalse(prunable.validatesRetainedToken(second.getRootToken()));
+
+		assertEquals(OptionalInt.of(0), PublicIntersectionRootIdentityResolver2D
+				.uniquePeriodicPhaseOffset(List.of(1D, 6D), List.of(2D, 7D),
+						10, 1E-9));
+		assertEquals(OptionalInt.of(1), PublicIntersectionRootIdentityResolver2D
+				.uniquePeriodicPhaseOffset(List.of(1D, 6D), List.of(4D, 9D),
+						10, 1E-9));
+		assertTrue(PublicIntersectionRootIdentityResolver2D
+				.uniquePeriodicPhaseOffset(List.of(1D, 6D),
+						List.of(3.5D, 8.5D), 10, 1E-9).isEmpty());
 	}
 
 	@Test
@@ -856,6 +1172,32 @@ final class G9U0R4TokenLedgerAllocationTest {
 				roots);
 	}
 
+	private static LocusIntersectionResult2D publishedEmpty(long locusRevision,
+			long targetUpdateStamp) {
+		return publishedEmptyForPair(SOURCE_PAIR, locusRevision,
+				targetUpdateStamp);
+	}
+
+	private static LocusIntersectionResult2D publishedEmptyForPair(
+			String sourcePair, long locusRevision, long targetUpdateStamp) {
+		LocusIntersectionPolicy2D policy = LocusIntersectionPolicy2D.initial(
+				"r4-provider", "u");
+		LocusIntersectionQuery2D query = new LocusIntersectionQuery2D(
+				sourcePair, CONSTRUCTIVE, "r4-locus", locusRevision,
+				"r4-target", targetUpdateStamp, TOPOLOGY, policy);
+		return new LocusIntersectionResult2D(
+				new IntersectionSourceBinding2D(query, TargetFamily.LINE),
+				ComputationStatus.SUCCESS,
+				new IntersectionCompletenessEvidence2D(Completeness.COMPLETE,
+						CompletenessMethod.CERTIFIED_DOMAIN_EXCLUSION, 0,
+						List.of(COMPONENT), List.of()),
+				GeometryKind.EMPTY, Currentness.CURRENT,
+				SupportLevel.EXACT_CAPABILITY,
+				NumericGuarantee.CERTIFIED_ERROR_BOUND, List.of(), List.of(),
+				new LocusIntersectionInstrumentation2D(
+						policy.getWorkBudget()).snapshot(), List.of());
+	}
+
 	private static LocusIntersectionResult2D publishedForPair(String sourcePair,
 			long locusRevision, long targetUpdateStamp, PublishedRoot... roots) {
 		LocusIntersectionPolicy2D policy = LocusIntersectionPolicy2D.initial(
@@ -928,7 +1270,7 @@ final class G9U0R4TokenLedgerAllocationTest {
 
 	private static String toLegacyV1State(String currentState) {
 		String[] fields = currentState.split("\\|", -1);
-		assertEquals("3", fields[0]);
+		assertEquals("4", fields[0]);
 		return "1|" + fields[1] + "|" + legacySnapshot(fields[2]) + "|"
 				+ legacySnapshot(fields[3]);
 	}
@@ -943,6 +1285,13 @@ final class G9U0R4TokenLedgerAllocationTest {
 		snapshot[5] = String.join(",", mutation.apply(entry));
 		fields[2] = String.join("~", snapshot);
 		return String.join("|", fields);
+	}
+
+	private static long statusCount(String state, String status) {
+		String[] fields = state.split("\\|", -1);
+		String[] entries = fields[2].split("~", -1);
+		return java.util.Arrays.stream(entries).skip(5)
+				.filter(entry -> entry.startsWith(status + ",")).count();
 	}
 
 	private static String legacySnapshot(String snapshot) {

@@ -1,7 +1,7 @@
 # G9U0-R4 deterministic public intersection identity
 
 - Phase: **G9U0-R4**
-- State: **IMPLEMENTATION CANDIDATE — PENDING AUTHOR RE-REVIEW**
+- State: **PASS — AUTHOR APPROVED**
 - Layer: shared-kernel intersection identity and token ledger
 - Entry: `ce7f15c70d50b0639c264fc1cd3356a0d4eb5e2b`
 - Normative candidate:
@@ -13,10 +13,13 @@
 ```text
 implementationStarted = true
 selfApproved = false
-authorApproved = false
-passClaimed = false
+authorApproved = true
+passClaimed = true
 historicalAuthorSmoke = FAILED_POINT_INVALIDATED_DURING_REGULAR_MOTION
 historicalAuthorSmoke2 = IMPROVED_BUT_FOUR_SOLUTIONS_NOT_MATERIALIZABLE
+historicalAuthorSmoke3 = TWO_ROOT_PASS_FOUR_ROOT_REGULAR_MOTION_FAILURE
+manualAuthorFinalSmokeFourRoot = PASS
+manualAuthorFinalSmokeReactivation = PASS
 deterministicPolicy = AUTHOR_APPROVED_DIRECTION
 ```
 
@@ -40,6 +43,13 @@ persisted address/semantic-parameter equality before it would retain the token.
 A regular moving transverse root normally changes parameter, so the
 previous-snapshot relation incorrectly became the only route to current
 identity. The failed smoke remains recorded; it is not rewritten as a pass.
+
+After the phase/rank correction, the then-current author smoke Case A passed. Case B
+initially exposed four unique selectors and exact tokens and materialized all
+four points, but ordinary interactive movement again made the points undefined
+while four finite, transverse and isolated roots remained. That third historical
+failure is distinct from both earlier failures. The adaptive phase-cell/tube and
+dormant-reactivation correction subsequently passed both final author re-smokes.
 
 ## Authoritative interpretation
 
@@ -98,6 +108,9 @@ enumeration/list slot, screen state or previous-root position. Its ordinal is
 never meaningful outside the full semantic frame. The enclosing ledger
 material and binding separately bind result owner, source pair, constructive
 lineage, topology context, provider/parameter contract and target contract.
+The durable selector binding is independent of the revision-scoped topology
+certificate used to decide whether that allocation is current. Losing the
+current certificate cannot change the selector or transfer its token.
 
 ### Canonical target-contact orientation
 
@@ -146,11 +159,21 @@ the same token, lineage may record that deterministic selection was also
 continuous. No transition edge creates, chooses or transfers a token.
 
 For a complete ranked periodic group, the relation also guards reuse of prior
-tokens: every prior root must map bijectively to one current root with the same
-complete selector. Missing, ambiguous, budget-exhausted, incomplete or
-non-bijective evidence invalidates the whole prior collision group. This is a
-conservative reuse barrier, not a previous-state selector. On an ordinary
-nonperiodic group, a missing bounded relation is not identity authority and does
+tokens through an adaptive intrinsic periodic phase-tube/cell certificate.
+Prior and current canonical phase points and isolating intervals define
+same-rank swept tubes bounded by the nearest cyclic root gaps. The tubes must be
+disjoint and produce a complete same-selector bijection. A fixed
+`component span / 256` threshold was not topology evidence: it coupled identity
+to the isolation work partition and made one ordinary UI-sized update fail when
+many smaller updates to the same final geometry passed. That threshold is not
+used by the periodic ranked-token guard. Missing, intersecting, incomplete or
+non-bijective phase tubes fail closed into durable periodic quarantine. A later
+unique cyclic offset zero releases/reuses that exact group; a proved unique
+nonzero offset permanently retires only its affected group; no offset or
+multiple offsets leave the group quarantined. Unaffected groups retain their
+exact bindings. This certificate is a conservative revision-scoped topology
+barrier, not a previous-state selector or durable identity field. On an ordinary nonperiodic
+group, a missing bounded diagnostic relation is not identity authority and does
 not override the unique current selector.
 
 The direct consequence is path independence inside one regular topology
@@ -163,10 +186,11 @@ materialized point must reach the same final binding after:
 - save/reopen before the final update.
 
 Observed tangency, merge, split, disappearance, overlap, branch ambiguity or
-same-component unresolved isolation remains conservative. The ledger may burn
-an allocation rather than guess. An unresolved candidate on another component
-is still global/work evidence but cannot invalidate this independently proven
-root. No coordinate-proximity resurrection exists.
+same-component unresolved isolation remains conservative. Current admissibility
+may fail rather than guess; a claimed allocation may remain dormant unless an
+intrinsically non-reactivatable transition is proved. An unresolved candidate on
+another component is still global/work evidence but cannot invalidate this
+independently proven root. No coordinate-proximity resurrection exists.
 
 Merge/split diagnostic lineage first sorts the complete parent records by
 opaque root token, then emits parent tokens and their optional continuation keys
@@ -178,18 +202,20 @@ For a complete periodic fundamental cycle, component lineage and canonical
 seam handling make equivalent half-open endpoint parameters one semantic
 context. The declared oriented fundamental interval is the deterministic phase
 frame; no root-dependent moving anchor exists. Within a seam-free chart rank is
-stable. If a repeated-selector interval reaches the seam, the affected group
-publishes `IDENTITY_DISCONTINUITY` and old ranked tokens are invalidated rather
-than cyclically rotated. This explicit monodromy boundary uses neither
+stable. If a repeated-selector interval reaches the seam, current activation
+requires intrinsic cyclic evidence. Insufficient evidence durably quarantines
+the old group; unique offset zero releases it; unique proved nonzero offset
+publishes `IDENTITY_DISCONTINUITY` and permanently retires it rather than
+cyclically rotating its tokens. This explicit monodromy boundary uses neither
 Cartesian proximity nor a mutable winding history.
 
-A byte-identical direct update across the seam may provide no complete
-prior/current bijection even though the destination snapshot has four unique
-selectors. R4 invalidates all old ranked tokens, then permits fresh exact tokens
-on a subsequent stable publication. It never transfers an old token through an
-unproved cyclic permutation.
+A byte-identical direct update across the seam may prove a nonzero cyclic shift for one
+ranked germ group even though the destination snapshot still has four unique
+selectors. R4 invalidates that affected group while leaving an independently
+certified group current. It never transfers an old token through an unproved or
+proved-nonzero cyclic permutation.
 
-## Second author smoke and ADR-0017 correction
+## Four-root author smoke and ADR-0017 correction
 
 The second author smoke used ignored source artifact
 `artifacts/smoke-test-g9u0-r2/fouSolutions.cedg` (historical filename typo).
@@ -217,6 +243,37 @@ isolating intervals are disjoint in the same oriented component, so ADR 0017
 authorizes an intrinsic phase rank within each exact collision group. The four
 complete selectors are unique, receive four distinct exact opaque tokens and
 are point-materializable.
+
+Those statements describe Case B's initial state, which passed in the current
+author smoke. They do not describe its motion outcome. A direct ordinary center
+drag moved one root in each two-root germ group by approximately `0.032409` in a
+`2*pi` phase span. The former fixed `2*pi / 256` bound was approximately
+`0.024544`, so each group lost one transition edge and all four materialized
+points became undefined. The same final geometry reached through smaller steps
+retained them. The adaptive intrinsic periodic phase-tube/cell certificate uses
+the actual cyclic root gaps and isolating intervals instead of that unrelated
+work-partition threshold.
+
+The protected-checkpoint failure is reproduced exactly by `A.x: 3.98 -> 4.18`
+with `A.y = 10` and `B = (5.72, 2.22)`. In both snapshots every root remains on
+`generator.main/component-0`, orientation `INCREASING`, domain
+`PERIODIC_FUNDAMENTAL_INTERVAL`, topology context
+`g9u0-public-topology/v1`, with cardinality two per germ, current, transverse
+and locally isolated:
+
+| slot | `u` before -> after | germ/rank and complete durable selector | publication/point before -> protected-checkpoint failure |
+| --- | --- | --- | --- |
+| negative outer | `-2.093511674974421 -> ~-2.12592064944333` | positive/0; unchanged `(component,germ,INCREASING,PERIODIC,2,0)` | claimed token, deterministic/unchanged/explicit-key/admissible, point defined -> revision-local, identity-discontinuity/ambiguous/no-key/inadmissible, old token unresolved and point undefined |
+| negative inner | `-1.403606948912654 -> ~-1.39419682506843` | negative/0; unchanged `(component,germ,INCREASING,PERIODIC,2,0)` | same active-to-discontinuity and defined-to-undefined transition |
+| positive inner | `1.4036069489126533 -> ~1.39419682506843` | positive/1; unchanged `(component,germ,INCREASING,PERIODIC,2,1)` | same active-to-discontinuity and defined-to-undefined transition |
+| positive outer | `2.0935116749744207 -> ~2.12592064944333` | negative/1; unchanged `(component,germ,INCREASING,PERIODIC,2,1)` | same active-to-discontinuity and defined-to-undefined transition |
+
+No seam, overlap, unresolved candidate, branch/component/cardinality or local
+admissibility change occurred. One outer displacement exceeded the obsolete
+`2*pi/256` group bound and invalidated both ranks of each germ group. The first
+changed predicate was the prior-token periodic reuse guard, not root geometry
+or the current deterministic selector. The candidate report retains the full
+field-by-field evidence.
 
 This is not a numerical-certification failure. Current R4 already allows a
 `VERIFIED_UNCERTIFIED` / `ESTIMATED_ERROR` root to feed a point when its local
@@ -254,16 +311,23 @@ strict local-evidence API and adds no weaker certification policy. The ledger
 remains identity-only: an exact token means exact semantic identity, not exact
 arithmetic.
 
+An exact token claimed by an existing materialized point may remain retained as
+dormant when its selector is temporarily not current or point-admissible. The
+same `GeoPoint` becomes undefined. It may reactivate, without replacement or
+retargeting, only when the same complete selector again resolves uniquely and
+passes the current topology/local-evidence predicate. Recompute, reactivation
+and later root appearance never create a new point automatically.
+
 Any future evidence-policy provenance would belong on
 `AlgoLocusIntersectionPointV2` or a small provider attached to its
 rich-result/token parentage, not as a global quality field on every `GeoPoint`.
 That future work is not part of R4.
 
-## Ledger v3 and exact v1/v2 import
+## Ledger v4 and exact v1/v2/v3 import
 
-`LocusIntersectionTokenLedger2D` now exports strict canonical format v3. Each
-active R4 entry stores the existing opaque token material plus a separate
-current-root binding:
+`LocusIntersectionTokenLedger2D` now exports strict canonical format v4. Each
+R4 entry stores the existing opaque token material, current-root binding and
+active/dormant/quarantined materialized-claim lifecycle:
 
 ```text
 continuation contract
@@ -273,10 +337,14 @@ continuation contract
 The token itself still carries no coordinate or parameter. Recompute replaces
 only revision address evidence after resolving the same binding.
 
-Format v3 prevents an intrinsic phase/rank binding from being interpreted as
-the earlier schema. The importer accepts canonical format v1 and authentic
-pre-phase format v2 for compatibility. Intrinsic phase selectors are legal only
-in ledger v3; a v3 phase snapshot falsely relabeled as v2 is rejected. An R3
+Format v3 first prevented an intrinsic phase/rank binding from being interpreted
+as the earlier schema. Format v4 adds claimed-active, claimed-dormant,
+`PERIODIC_QUARANTINE` (`q`) and `CLAIMED_PERIODIC_QUARANTINE` (`r`) state
+without changing the external token envelope. The importer accepts canonical
+v3 phase state plus canonical v1 and authentic pre-phase v2 state. Claimed
+lifecycle and quarantine state is legal only in v4; a v3 phase snapshot falsely
+relabeled as v2 and a v4 claimed/quarantined state relabeled as an older version
+are rejected. An R3
 public singleton allocation can acquire a current binding
 only when:
 
@@ -288,23 +356,25 @@ only when:
 Import/migration preserves the complete token string byte-for-byte only under
 one compatible semantic binding; otherwise it fails closed. A real XML
 regression loads a pre-R4/v1 ledger with an already materialized token point,
-proves the point defined after the first R4 recompute, verifies v3 state, then
-moves the target and proves resolution through the migrated selector.
+proves the point defined after the first R4 recompute, verifies current state,
+then moves the target and proves resolution through the migrated selector.
 
 The parser rejects noncanonical incarnation suffixes, forged legacy material,
 incomplete or duplicate deterministic bindings, selector/component mismatch and
 phase-bearing state presented under ledger v2. The focused ledger regression
-also imports a fixed authentic pre-phase v2 state, emits canonical v3 and proves
+also imports a fixed authentic pre-phase v2 state, emits canonical v4 and proves
 that the exact opaque token remains unchanged.
 
 Legacy singleton material has an additional fail-closed boundary: it can
 never acquire an intrinsic-phase selector. Runtime migration to a phase selector
 returns a fresh allocation instead of reusing the old token. Import likewise
-rejects a manipulated ledger-v3 snapshot that binds legacy singleton material
-to intrinsic phase. This is distinct from, and additive to, rejection of a
-phase-bearing v3 state falsely relabeled as v2.
+rejects a manipulated current snapshot that binds legacy singleton material to
+intrinsic phase. This is distinct from, and additive to, the versioned phase
+and claimed-lifecycle rejection rules.
 Authorized copy remains an exact provenance operation; it is not a geometric
-matcher.
+matcher. It preserves `q`/`r` and cannot certify offset-zero release. A complete
+quarantined group is retained only while a real materialized claim needs it;
+releasing the final claim prunes that group.
 
 ## Preserved boundaries
 
@@ -322,6 +392,12 @@ matcher.
 - R3 inspector behavior is only a consumer validation path.
 - No markers, frontend selection heuristics, rendering changes, generic `Path`
   or G9U1 implementation belong to R4.
+- Future G9U1 markers and explicit/opted-in auto-materialization may consume
+  only current admissible exact tokens and remain frontend-only. Dormant tokens
+  are not marker/action candidates and reactivation never auto-creates a point.
+- Kernel recomputation may reactivate an already-existing exact-token point;
+  only the future G9U1 frontend may explicitly and undoably materialize a root
+  that has never had a `GeoPoint`.
 
 ## Explicit retained limitations
 
@@ -331,20 +407,31 @@ and pairwise disjoint isolating intervals. A duplicate complete selector,
 cardinality/topology/orientation change, non-isolation or seam-reaching ranked
 interval fails closed. Periodic monodromy is reported as identity
 discontinuity, not hidden by history. A wide/direct periodic update lacking a
-complete bijective same-selector relation may conservatively invalidate the
-whole old ranked group; it does not claim token continuity across the seam.
+complete adaptive phase-tube certificate durably quarantines the affected old
+ranked group; unique offset zero releases it, proved unique nonzero offset
+permanently retires it, and absent/nonunique evidence leaves it quarantined.
+No outcome rotates tokens. Claimed exact allocations may otherwise be
+dormant, but they reactivate only through the same unique selector.
 Pair roots remain outside this selector. No certification-policy relaxation is
 part of the candidate.
 
+For `R` current roots and `P` existing materialized bindings, the incremental
+selector/reactivation pass is `O(R log R + P)`: current roots are canonically
+ordered once and point claims use direct selector lookup. It performs no
+additional global solve per child and stores no movement trajectory. Existing
+whole-transition diagnostics may remain `O(R^2)` in the worst case; those
+diagnostics are non-authoritative and do not change this incremental bound.
+
 ## Validation design
 
-The focused source authority now covers both exact author fixtures, four-root
-phase/rank uniqueness and materialization, every solver enumeration
-permutation, direct and multi-step path independence, broad regular motion,
-periodic canonicalization and monodromy discontinuity, collision-cardinality
-and orientation barriers, v1/v2 import into ledger v3, strict persisted-state
-rejection, component-scoped local/global evidence, target-representation
-invariance, copy provenance and real `.cedg` save/reopen.
+The sealed focused source authority covered both exact author fixtures,
+four-root phase/rank uniqueness and initial materialization, solver enumeration
+permutations, its then-modeled motion paths, periodic canonicalization and
+monodromy discontinuity, collision-cardinality and orientation barriers,
+canonical v1/v2/v3 import into ledger v4, strict persisted-state rejection,
+component-scoped local/global evidence, target-representation invariance, copy
+provenance and real `.cedg` save/reopen. Current author Case B proved that its
+motion granularity did not cover the ordinary direct UI update.
 
 Earlier 27-, 38- and 39-method runs remain historical pre-ADR-0017 evidence.
 They do not validate the current phase/rank implementation. The pre-final
@@ -354,8 +441,31 @@ After the final legacy-singleton and merge-parent assertions, focused A and B
 again executed 50/50 methods (25 public-kernel, 23 ledger and 2 Desktop), with
 zero failures, errors or skips and identical final canonical SHA-256
 `f909aaa28aedc63aa35d01325aa3f84d893ab8a92da64c04e9eb7a661898681c`.
-The final candidate inventory is 51 paths, 29 under `source/`. The full composed
-authority exited 0 and terminated with `All GeoCeDG verification gates passed.`
-Historical gates remain sealed, and no automated result or generated summary
-constitutes author approval. R4 remains pending author re-review; R5 and G9U1
-remain unexecuted.
+Protective checkpoint `4ef2c9df433aec7c6385a488a02581358da83f60`
+records that pre-current-correction state. Its final candidate inventory was 51
+paths, 29 under
+`source/`. Its full composed authority exited 0 and terminated with
+`All GeoCeDG verification gates passed.` Those counts and hashes are historical
+evidence. The adaptive phase-tube and dormant-allocation corrections now have
+replacement focused A/B and composed automated PASS. No automated result or
+generated summary constituted author approval; the two separate final author
+re-smokes now close R4 as `PASS — AUTHOR APPROVED`. R5 and G9U1 remain
+unexecuted.
+
+The current executed authority declares 27 public-kernel, 28 ledger and 3
+Desktop methods (58 total). Focused A and B each pass 58/58, with zero failures,
+errors or skips and an exact normalized-summary match at SHA-256
+`3e9ea0aa20d511f2828eae61e491c1b3b5d9cb86a0f02166503ee5093d6000fb`.
+The full composed verifier exits 0 with
+`All GeoCeDG verification gates passed.`. Ledger `q`/`r` coverage proves recompute,
+canonical export/import and exact-provenance copy. The third Desktop method
+separately proves native `.cedg` dormant `2 -> 4 -> 2` same-point reactivation
+and reopen after reactivation; it is not a periodic-quarantine native round-trip
+claim. The author accepted the final four-root and reactivation re-smokes.
+
+Retained risk `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` records that native
+`.cedg` still lacks one dedicated end-to-end periodic-quarantine round trip.
+Ledger recompute/export-import/copy and nonperiodic native dormant/reactivated
+round trips remain the existing evidence. This is nonblocking for R4, must be
+resolved or explicitly dispositioned by global G9 closeout, must be revisited
+by G9U1 validation, and is not an implicit R5 dependency.

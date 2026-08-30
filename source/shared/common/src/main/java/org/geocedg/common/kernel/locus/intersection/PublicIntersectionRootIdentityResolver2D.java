@@ -14,6 +14,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.Set;
 
 import org.geocedg.common.kernel.locus.LocusBranch2D;
@@ -90,9 +91,9 @@ public final class PublicIntersectionRootIdentityResolver2D {
 			bySelector.computeIfAbsent(root.selector,
 					unused -> new ArrayList<>()).add(root);
 		}
-		Map<LocusIntersectionSolution2D,
-				IntersectionRootDeterministicSelector2D> priorPhaseSelectors =
-				phaseSelectorsBySolution(previous);
+		PriorPhaseIndex priorPhaseIndex = priorPhaseIndex(previous);
+		PersistedPhaseIndex persistedPhaseIndex = persistedPhaseIndex(
+				evaluation.persistedPhaseAllocations(continuationContract));
 		int allocated = 0;
 		int resumed = 0;
 		int ambiguous = 0;
@@ -100,14 +101,31 @@ public final class PublicIntersectionRootIdentityResolver2D {
 		ArrayList<CurrentRoot> uniqueRoots = new ArrayList<>();
 		for (Map.Entry<IntersectionRootDeterministicSelector2D,
 				List<CurrentRoot>> entry : bySelector.entrySet()) {
+			List<LocusIntersectionTokenLedger2D.PersistedPhaseAllocation>
+					persistedPhase = persistedPhaseIndex.group(entry.getKey());
 			if (entry.getValue().size() == 1) {
-				uniqueRoots.add(entry.getValue().get(0));
+				if (persistedPhase.isEmpty()) {
+					uniqueRoots.add(entry.getValue().get(0));
+				} else {
+					List<String> parents = persistedPhaseTokens(persistedPhase);
+					quarantinePersistedPeriodicTokens(evaluation, parents,
+							continuationContract);
+					CurrentRoot root = entry.getValue().get(0);
+					resolved.set(root.solutionIndex,
+							failClosedPhaseTransition(root, evaluation, parents));
+					discontinuous++;
+				}
 			} else {
 				Optional<List<CurrentRoot>> ranked = intrinsicPhaseRanked(
 						entry.getValue(), definition);
 				if (!ranked.isPresent()) {
-					List<String> priorPhaseParents = priorPhaseParentsForBase(
-							entry.getKey(), priorPhaseSelectors);
+					List<String> priorPhaseParents = persistedPhase.isEmpty()
+							? priorPhaseParentsForBase(entry.getKey(), priorPhaseIndex)
+							: persistedPhaseTokens(persistedPhase);
+					if (!persistedPhase.isEmpty()) {
+						quarantinePersistedPeriodicTokens(evaluation,
+								priorPhaseParents, continuationContract);
+					}
 					for (CurrentRoot root : entry.getValue()) {
 						if (priorPhaseParents.isEmpty()) {
 							resolved.set(root.solutionIndex,
@@ -122,13 +140,20 @@ public final class PublicIntersectionRootIdentityResolver2D {
 					}
 					continue;
 				}
-				List<String> phaseParents = observedPhaseTransitionParents(
-						ranked.get(), priorPhaseSelectors, transition);
-				if (!phaseParents.isEmpty()) {
+				PhaseTransitionEvidence phaseTransition =
+						observedPhaseTransitionParents(
+								ranked.get(), persistedPhase, priorPhaseIndex,
+								transition, definition, continuationContract,
+								evaluation);
+				if (!phaseTransition.parentTokens.isEmpty()) {
+					if (phaseTransition.permanentlyNonreactivatable) {
+						retirePersistedTokens(evaluation,
+								phaseTransition.parentTokens);
+					}
 					for (CurrentRoot root : ranked.get()) {
 						resolved.set(root.solutionIndex,
 								failClosedPhaseTransition(root, evaluation,
-										phaseParents));
+										phaseTransition.parentTokens));
 						discontinuous++;
 					}
 					continue;
@@ -545,18 +570,19 @@ public final class PublicIntersectionRootIdentityResolver2D {
 			return Optional.empty();
 		}
 		return Optional.of(new PhaseInterval(Math.max(0, lower),
-				Math.min(span, upper)));
+				Math.min(span, upper), Math.max(0, Math.min(span, point))));
 	}
 
-	private static Map<LocusIntersectionSolution2D,
-			IntersectionRootDeterministicSelector2D> phaseSelectorsBySolution(
-					LocusIntersectionResult2D result) {
+	private static PriorPhaseIndex priorPhaseIndex(
+			LocusIntersectionResult2D result) {
 		if (result == null) {
-			return Map.of();
+			return PriorPhaseIndex.empty();
 		}
 		Map<LocusIntersectionSolution2D,
 				IntersectionRootDeterministicSelector2D> selectors =
 				new IdentityHashMap<>();
+		Map<PhaseGroupKey, MutablePriorPhaseGroup> groups =
+				new LinkedHashMap<>();
 		for (LocusIntersectionSolution2D solution
 				: result.getFiniteSolutions()) {
 			solution.getIdentity().getExplicitContinuationKey()
@@ -564,90 +590,371 @@ public final class PublicIntersectionRootIdentityResolver2D {
 							::selectorFromContinuationKey)
 					.filter(IntersectionRootDeterministicSelector2D
 							::hasIntrinsicPhase)
-					.ifPresent(selector -> selectors.put(solution, selector));
+					.ifPresent(selector -> {
+						selectors.put(solution, selector);
+						groups.computeIfAbsent(PhaseGroupKey.of(selector),
+								unused -> new MutablePriorPhaseGroup())
+								.add(selector, solution);
+					});
 		}
-		return selectors;
+		return PriorPhaseIndex.of(selectors, groups);
 	}
 
 	private static List<String> priorPhaseParentsForBase(
 			IntersectionRootDeterministicSelector2D base,
-			Map<LocusIntersectionSolution2D,
-					IntersectionRootDeterministicSelector2D> priorSelectors) {
-		ArrayList<String> tokens = new ArrayList<>();
-		for (Map.Entry<LocusIntersectionSolution2D,
-				IntersectionRootDeterministicSelector2D> prior
-				: priorSelectors.entrySet()) {
-			IntersectionRootDeterministicSelector2D selector = prior.getValue();
-			if (selector.getComponentLineage().equals(base.getComponentLineage())
-					&& selector.getCurrentRootGerm().equals(
-							base.getCurrentRootGerm())) {
-				tokens.add(prior.getKey().getIdentity().getRootToken());
-			}
-		}
-		Collections.sort(tokens);
-		return List.copyOf(tokens);
+			PriorPhaseIndex priorIndex) {
+		return priorIndex.group(base).map(group -> group.parentTokens)
+				.orElseGet(List::of);
 	}
 
-	private static List<String> observedPhaseTransitionParents(
+	private static PhaseTransitionEvidence observedPhaseTransitionParents(
 			List<CurrentRoot> currentRoots,
-			Map<LocusIntersectionSolution2D,
-					IntersectionRootDeterministicSelector2D> priorSelectors,
-			PublicIntersectionRootTransition2D.Transition transition) {
+			List<LocusIntersectionTokenLedger2D.PersistedPhaseAllocation>
+					persistedPhase,
+			PriorPhaseIndex priorIndex,
+			PublicIntersectionRootTransition2D.Transition transition,
+			LocusDefinition2D definition,
+			String continuationContract,
+			LocusIntersectionTokenLedger2D.Evaluation evaluation) {
 		if (currentRoots.isEmpty()) {
-			return List.of();
-		}
-		List<String> priorGroup = priorPhaseParentsForBase(
-				currentRoots.get(0).selector, priorSelectors);
-		if (priorGroup.isEmpty()) {
-			return List.of();
+			return PhaseTransitionEvidence.none();
 		}
 		/*
 		 * Rank is current-snapshot authority on an oriented nonperiodic component;
 		 * a missing bounded continuation edge must not replace that authority. On a
 		 * complete periodic component, however, the same current ranks can be a
-		 * cyclic permutation across the fundamental seam. Without a semantic lift,
-		 * every prior member therefore has to map one-to-one to the same selector.
-		 * This relation only guards reuse of old tokens; it never selects the current
-		 * root. Cardinality or an actually observed selector change is a topology
-		 * barrier for either domain kind.
+		 * cyclic permutation across the fundamental seam. Persisted ledger phase
+		 * evidence therefore has three outcomes: a unique zero cyclic offset reuses
+		 * the same ranks, a unique nonzero offset proves typed monodromy and retires
+		 * only that group, while missing or multiply coherent offsets quarantine the
+		 * durable group. The certificate only guards token reuse; current intrinsic
+		 * rank remains the root selector.
 		 */
 		boolean periodic = currentRoots.get(0).component.completePeriodicCycle;
-		boolean phaseChanged = priorGroup.size() != currentRoots.size()
-				|| periodic && transition.isBudgetExhausted();
-		Set<String> mappedParents = new HashSet<>();
-		for (CurrentRoot current : currentRoots) {
-			if (periodic && transition.isAmbiguous(current.solution)) {
-				phaseChanged = true;
+		if (periodic) {
+			if (persistedPhase.isEmpty()) {
+				return PhaseTransitionEvidence.none();
 			}
+			List<String> priorGroup = persistedPhaseTokens(persistedPhase);
+			boolean anyQuarantined = persistedPhase.stream().anyMatch(
+					LocusIntersectionTokenLedger2D.PersistedPhaseAllocation
+							::isPeriodicallyQuarantined);
+			boolean allQuarantined = persistedPhase.stream().allMatch(
+					LocusIntersectionTokenLedger2D.PersistedPhaseAllocation
+							::isPeriodicallyQuarantined);
+			if (persistedPhase.size() != currentRoots.size()
+					|| anyQuarantined != allQuarantined
+					|| (evaluation.isAuthorizedCopy() && anyQuarantined)) {
+				quarantinePersistedPeriodicTokens(evaluation, priorGroup,
+						continuationContract);
+				return PhaseTransitionEvidence.recoverable(priorGroup);
+			}
+			PeriodicPhaseOffset offset = periodicPhaseOffset(currentRoots,
+					persistedPhase, definition);
+			if (!offset.isEstablished()) {
+				quarantinePersistedPeriodicTokens(evaluation, priorGroup,
+						continuationContract);
+				return PhaseTransitionEvidence.recoverable(priorGroup);
+			}
+			if (offset.getOffset() != 0) {
+				return PhaseTransitionEvidence.permanent(priorGroup);
+			}
+			if (anyQuarantined) {
+				evaluation.releasePersistedPeriodicQuarantine(priorGroup);
+			}
+			return PhaseTransitionEvidence.none();
+		}
+		List<String> priorGroup = priorPhaseParentsForBase(
+				currentRoots.get(0).selector, priorIndex);
+		if (priorGroup.isEmpty()) {
+			return PhaseTransitionEvidence.none();
+		}
+		boolean phaseChanged = priorGroup.size() != currentRoots.size();
+		for (CurrentRoot current : currentRoots) {
 			Optional<LocusIntersectionSolution2D> prior = transition
 					.priorFor(current.solution);
 			if (!prior.isPresent()) {
-				if (periodic) {
-					phaseChanged = true;
-				}
 				continue;
 			}
 			IntersectionRootDeterministicSelector2D priorSelector =
-					priorSelectors.get(prior.get());
+					priorIndex.selectorFor(prior.get());
 			if (priorSelector == null) {
-				if (periodic) {
-					phaseChanged = true;
-				}
 				continue;
 			}
-			mappedParents.add(prior.get().getIdentity().getRootToken());
 			if (!priorSelector.equals(current.selector)) {
 				phaseChanged = true;
 			}
 		}
-		if (periodic && (!mappedParents.equals(new HashSet<>(priorGroup))
-				|| mappedParents.size() != currentRoots.size())) {
-			phaseChanged = true;
-		}
 		if (!phaseChanged) {
-			return List.of();
+			return PhaseTransitionEvidence.none();
 		}
-		return priorGroup;
+		return PhaseTransitionEvidence.recoverable(priorGroup);
+	}
+
+	private static void quarantinePersistedPeriodicTokens(
+			LocusIntersectionTokenLedger2D.Evaluation evaluation,
+			List<String> tokens, String continuationContract) {
+		if (evaluation.isAuthorizedCopy()) {
+			evaluation.rebasePersistedPeriodicQuarantineForCopy(tokens,
+					continuationContract);
+		}
+		evaluation.quarantinePersistedPeriodicTokens(tokens);
+	}
+
+	private static List<String> persistedPhaseTokens(
+			List<LocusIntersectionTokenLedger2D.PersistedPhaseAllocation>
+					persistedPhase) {
+		ArrayList<String> tokens = new ArrayList<>();
+		for (LocusIntersectionTokenLedger2D.PersistedPhaseAllocation allocation
+				: persistedPhase) {
+			tokens.add(allocation.getToken());
+		}
+		Collections.sort(tokens);
+		return List.copyOf(tokens);
+	}
+
+	private static PersistedPhaseIndex persistedPhaseIndex(
+			List<LocusIntersectionTokenLedger2D.PersistedPhaseAllocation>
+					allocations) {
+		Map<PhaseGroupKey,
+				ArrayList<LocusIntersectionTokenLedger2D.PersistedPhaseAllocation>>
+				groups = new LinkedHashMap<>();
+		for (LocusIntersectionTokenLedger2D.PersistedPhaseAllocation allocation
+				: allocations) {
+			groups.computeIfAbsent(PhaseGroupKey.of(allocation.getSelector()),
+					unused -> new ArrayList<>()).add(allocation);
+		}
+		return PersistedPhaseIndex.of(groups);
+	}
+
+	private static void retirePersistedTokens(
+			LocusIntersectionTokenLedger2D.Evaluation evaluation,
+			List<String> tokens) {
+		for (String token : tokens) {
+			evaluation.retirePersistedToken(token);
+		}
+	}
+
+	/*
+	 * A fixed parameter-step ceiling is not topology evidence: one ordinary UI
+	 * update may be wider than many smaller updates to the same geometry. The
+	 * anchor at intrinsic rank zero selects at most one cyclic offset; all other
+	 * pairs then have to satisfy the same half-nearest-gap and disjoint swept-tube
+	 * certificate. This is O(R log R) per collision group and cannot depend on
+	 * solver enumeration order.
+	 */
+	private static PeriodicPhaseOffset periodicPhaseOffset(
+			List<CurrentRoot> currentRoots,
+			List<LocusIntersectionTokenLedger2D.PersistedPhaseAllocation>
+					persistedPhase,
+			LocusDefinition2D definition) {
+		CurrentRoot first = currentRoots.get(0);
+		double span = first.component.interval.getUpper()
+				- first.component.interval.getLower();
+		double epsilon = definition.getProvider().getDomainEpsilon();
+		if (currentRoots.size() < 2 || !(span > 0)
+				|| !first.component.completePeriodicCycle
+				|| persistedPhase.size() != currentRoots.size()) {
+			return PeriodicPhaseOffset.insufficient();
+		}
+		ArrayList<CurrentRoot> currentByRank = new ArrayList<>(currentRoots);
+		currentByRank.sort(Comparator.comparingInt(root ->
+				root.selector.getIntrinsicPhaseRank().orElse(-1)));
+		ArrayList<LocusIntersectionTokenLedger2D.PersistedPhaseAllocation>
+				priorByRank = new ArrayList<>(persistedPhase);
+		priorByRank.sort(Comparator.comparingInt(allocation -> allocation
+				.getSelector().getIntrinsicPhaseRank().orElse(-1)));
+		ArrayList<Double> priorPoints = new ArrayList<>();
+		ArrayList<Double> currentPoints = new ArrayList<>();
+		for (int rank = 0; rank < currentByRank.size(); rank++) {
+			CurrentRoot current = currentByRank.get(rank);
+			LocusIntersectionTokenLedger2D.PersistedPhaseAllocation prior =
+					priorByRank.get(rank);
+			if (!validPeriodicRank(current.selector, first, rank,
+					currentByRank.size())
+					|| !validPeriodicRank(prior.getSelector(), first, rank,
+							currentByRank.size())
+					|| current.phase == null) {
+				return PeriodicPhaseOffset.insufficient();
+			}
+			Optional<Double> priorPoint = periodicPhasePoint(first.component,
+					prior.getCanonicalParameter(), definition, epsilon);
+			if (!priorPoint.isPresent()) {
+				return PeriodicPhaseOffset.insufficient();
+			}
+			priorPoints.add(priorPoint.get());
+			currentPoints.add(current.phase.point);
+		}
+		if (!strictlyCyclicRanked(priorPoints, span, epsilon)
+				|| !strictlyCyclicRanked(currentPoints, span, epsilon)) {
+			return PeriodicPhaseOffset.insufficient();
+		}
+		OptionalInt selected = uniquePeriodicPhaseOffset(priorPoints,
+				currentPoints, span, epsilon);
+		if (!selected.isPresent()
+				|| !coherentPeriodicPhaseTubes(priorPoints, currentByRank,
+						selected.getAsInt(), span, epsilon)) {
+			return PeriodicPhaseOffset.insufficient();
+		}
+		return PeriodicPhaseOffset.established(selected.getAsInt());
+	}
+
+	private static boolean validPeriodicRank(
+			IntersectionRootDeterministicSelector2D selector, CurrentRoot first,
+			int expectedRank, int expectedCardinality) {
+		return selector.getComponentLineage().equals(first.componentLineage)
+				&& selector.getCurrentRootGerm().equals(
+						first.selector.getCurrentRootGerm())
+				&& selector.isPeriodicPhase()
+				&& selector.getPhaseOrientation().filter(orientation ->
+						orientation == first.component.orientation).isPresent()
+				&& selector.getCollisionCardinality().orElse(-1)
+						== expectedCardinality
+				&& selector.getIntrinsicPhaseRank().orElse(-1) == expectedRank;
+	}
+
+	private static Optional<Double> periodicPhasePoint(ComponentAddress component,
+			double persistedParameter, LocusDefinition2D definition,
+			double epsilon) {
+		double parameter = definition.getProvider().canonicalize(
+				persistedParameter);
+		double start = component.interval.getLower();
+		double end = component.interval.getUpper();
+		double span = end - start;
+		if (!Double.isFinite(parameter) || !(span > 0)
+				|| parameter < start - epsilon || parameter > end + epsilon) {
+			return Optional.empty();
+		}
+		double phase = component.orientation == Orientation.INCREASING
+				? parameter - start : end - parameter;
+		if (phase >= span - epsilon || phase < epsilon) {
+			phase = 0;
+		}
+		return phase >= 0 && phase < span ? Optional.of(phase)
+				: Optional.empty();
+	}
+
+	private static boolean strictlyCyclicRanked(List<Double> points,
+			double span, double epsilon) {
+		if (points.size() < 2) {
+			return false;
+		}
+		for (int index = 0; index < points.size(); index++) {
+			double point = points.get(index);
+			if (!Double.isFinite(point) || point < 0 || point >= span) {
+				return false;
+			}
+			if (index > 0
+					&& !(point - points.get(index - 1) > 2 * epsilon)) {
+				return false;
+			}
+		}
+		return span - points.get(points.size() - 1) + points.get(0)
+				> 2 * epsilon;
+	}
+
+	/**
+	 * Returns the sole offset admitted by the intrinsic half-gap certificate.
+	 * Exposed package-locally only for focused deterministic boundary tests.
+	 */
+	static OptionalInt uniquePeriodicPhaseOffset(List<Double> priorPoints,
+			List<Double> currentPoints, double span, double epsilon) {
+		if (priorPoints == null || currentPoints == null
+				|| priorPoints.size() < 2
+				|| priorPoints.size() != currentPoints.size()
+				|| !(span > 0) || !(epsilon >= 0)
+				|| !strictlyCyclicRanked(priorPoints, span, epsilon)
+				|| !strictlyCyclicRanked(currentPoints, span, epsilon)) {
+			return OptionalInt.empty();
+		}
+		int selectedOffset = -1;
+		double priorGap = nearestCyclicGap(priorPoints, 0, span);
+		for (int offset = 0; offset < currentPoints.size(); offset++) {
+			double currentGap = nearestCyclicGap(currentPoints, offset, span);
+			Optional<Double> delta = centeredCyclicDelta(priorPoints.get(0),
+					currentPoints.get(offset), span, epsilon);
+			if (delta.isPresent()
+					&& Math.abs(delta.get())
+							< Math.min(priorGap, currentGap) / 2 - epsilon) {
+				if (selectedOffset >= 0) {
+					return OptionalInt.empty();
+				}
+				selectedOffset = offset;
+			}
+		}
+		return selectedOffset < 0 ? OptionalInt.empty()
+				: OptionalInt.of(selectedOffset);
+	}
+
+	private static boolean coherentPeriodicPhaseTubes(List<Double> priorPoints,
+			List<CurrentRoot> currentByRank, int offset, double span,
+			double epsilon) {
+		ArrayList<PhaseInterval> swept = new ArrayList<>();
+		for (int priorRank = 0; priorRank < priorPoints.size(); priorRank++) {
+			int currentRank = (priorRank + offset) % priorPoints.size();
+			double prior = priorPoints.get(priorRank);
+			CurrentRoot current = currentByRank.get(currentRank);
+			Optional<Double> delta = centeredCyclicDelta(prior,
+					current.phase.point, span, epsilon);
+			double nearestGap = Math.min(
+					nearestCyclicGap(priorPoints, priorRank, span),
+					nearestCurrentGap(currentByRank, currentRank, span));
+			if (!delta.isPresent() || !(nearestGap > 2 * epsilon)
+					|| Math.abs(delta.get()) >= nearestGap / 2 - epsilon) {
+				return false;
+			}
+			double lift = prior + delta.get() - current.phase.point;
+			double currentLower = current.phase.lower + lift;
+			double currentUpper = current.phase.upper + lift;
+			swept.add(new PhaseInterval(Math.min(prior, currentLower),
+					Math.max(prior, currentUpper), prior));
+		}
+		swept.sort(Comparator.comparingDouble(interval -> interval.lower));
+		for (int index = 1; index < swept.size(); index++) {
+			if (swept.get(index - 1).upper + epsilon
+					>= swept.get(index).lower) {
+				return false;
+			}
+		}
+		PhaseInterval first = swept.get(0);
+		PhaseInterval last = swept.get(swept.size() - 1);
+		return last.upper + epsilon < first.lower + span;
+	}
+
+	private static double nearestCurrentGap(List<CurrentRoot> roots, int index,
+			double span) {
+		double previous = roots.get((index + roots.size() - 1) % roots.size())
+				.phase.point;
+		double current = roots.get(index).phase.point;
+		double next = roots.get((index + 1) % roots.size()).phase.point;
+		return Math.min(forwardPhaseGap(previous, current, span),
+				forwardPhaseGap(current, next, span));
+	}
+
+	private static double nearestCyclicGap(List<Double> points, int index,
+			double span) {
+		double previous = points.get((index + points.size() - 1) % points.size());
+		double current = points.get(index);
+		double next = points.get((index + 1) % points.size());
+		return Math.min(forwardPhaseGap(previous, current, span),
+				forwardPhaseGap(current, next, span));
+	}
+
+	private static Optional<Double> centeredCyclicDelta(double prior,
+			double current, double span, double epsilon) {
+		double delta = current - prior;
+		delta -= Math.floor((delta + span / 2) / span) * span;
+		if (!Double.isFinite(delta)
+				|| Math.abs(Math.abs(delta) - span / 2) <= epsilon) {
+			return Optional.empty();
+		}
+		return Optional.of(delta);
+	}
+
+	private static double forwardPhaseGap(double first, double second,
+			double span) {
+		double gap = second - first;
+		return gap > 0 ? gap : gap + span;
 	}
 
 	private static Map<String, Integer> finiteRootCounts(
@@ -871,10 +1178,199 @@ public final class PublicIntersectionRootIdentityResolver2D {
 	private static final class PhaseInterval {
 		private final double lower;
 		private final double upper;
+		private final double point;
 
-		private PhaseInterval(double lower, double upper) {
+		private PhaseInterval(double lower, double upper, double point) {
 			this.lower = lower;
 			this.upper = upper;
+			this.point = point;
+		}
+	}
+
+	private static final class PeriodicPhaseOffset {
+		private final OptionalInt offset;
+
+		private PeriodicPhaseOffset(OptionalInt offset) {
+			this.offset = offset;
+		}
+
+		private static PeriodicPhaseOffset insufficient() {
+			return new PeriodicPhaseOffset(OptionalInt.empty());
+		}
+
+		private static PeriodicPhaseOffset established(int offset) {
+			return new PeriodicPhaseOffset(OptionalInt.of(offset));
+		}
+
+		private boolean isEstablished() {
+			return offset.isPresent();
+		}
+
+		private int getOffset() {
+			return offset.orElseThrow();
+		}
+	}
+
+	private static final class PhaseTransitionEvidence {
+		private final List<String> parentTokens;
+		private final boolean permanentlyNonreactivatable;
+
+		private PhaseTransitionEvidence(List<String> parentTokens,
+				boolean permanentlyNonreactivatable) {
+			this.parentTokens = List.copyOf(parentTokens);
+			this.permanentlyNonreactivatable = permanentlyNonreactivatable;
+		}
+
+		private static PhaseTransitionEvidence none() {
+			return new PhaseTransitionEvidence(List.of(), false);
+		}
+
+		private static PhaseTransitionEvidence recoverable(List<String> parents) {
+			return new PhaseTransitionEvidence(parents, false);
+		}
+
+		private static PhaseTransitionEvidence permanent(List<String> parents) {
+			return new PhaseTransitionEvidence(parents, true);
+		}
+	}
+
+	private static final class PhaseGroupKey {
+		private final String componentLineage;
+		private final String currentRootGerm;
+
+		private PhaseGroupKey(String componentLineage, String currentRootGerm) {
+			this.componentLineage = componentLineage;
+			this.currentRootGerm = currentRootGerm;
+		}
+
+		private static PhaseGroupKey of(
+				IntersectionRootDeterministicSelector2D selector) {
+			return new PhaseGroupKey(selector.getComponentLineage(),
+					selector.getCurrentRootGerm());
+		}
+
+		@Override
+		public boolean equals(Object other) {
+			if (!(other instanceof PhaseGroupKey)) {
+				return false;
+			}
+			PhaseGroupKey key = (PhaseGroupKey) other;
+			return componentLineage.equals(key.componentLineage)
+					&& currentRootGerm.equals(key.currentRootGerm);
+		}
+
+		@Override
+		public int hashCode() {
+			return 31 * componentLineage.hashCode()
+					+ currentRootGerm.hashCode();
+		}
+	}
+
+	private static final class MutablePriorPhaseGroup {
+		private final ArrayList<String> parentTokens = new ArrayList<>();
+		private final Map<IntersectionRootDeterministicSelector2D,
+				LocusIntersectionSolution2D> bySelector = new LinkedHashMap<>();
+		private boolean duplicateSelector;
+
+		private void add(IntersectionRootDeterministicSelector2D selector,
+				LocusIntersectionSolution2D solution) {
+			parentTokens.add(solution.getIdentity().getRootToken());
+			duplicateSelector |= bySelector.put(selector, solution) != null;
+		}
+
+		private PriorPhaseGroup freeze() {
+			Collections.sort(parentTokens);
+			return new PriorPhaseGroup(parentTokens, bySelector,
+					duplicateSelector);
+		}
+	}
+
+	private static final class PriorPhaseGroup {
+		private final List<String> parentTokens;
+		private final Map<IntersectionRootDeterministicSelector2D,
+				LocusIntersectionSolution2D> bySelector;
+		private final boolean duplicateSelector;
+
+		private PriorPhaseGroup(List<String> parentTokens,
+				Map<IntersectionRootDeterministicSelector2D,
+						LocusIntersectionSolution2D> bySelector,
+				boolean duplicateSelector) {
+			this.parentTokens = List.copyOf(parentTokens);
+			this.bySelector = Collections.unmodifiableMap(
+					new LinkedHashMap<>(bySelector));
+			this.duplicateSelector = duplicateSelector;
+		}
+	}
+
+	private static final class PriorPhaseIndex {
+		private final Map<LocusIntersectionSolution2D,
+				IntersectionRootDeterministicSelector2D> bySolution;
+		private final Map<PhaseGroupKey, PriorPhaseGroup> byGroup;
+
+		private PriorPhaseIndex(Map<LocusIntersectionSolution2D,
+				IntersectionRootDeterministicSelector2D> bySolution,
+				Map<PhaseGroupKey, PriorPhaseGroup> byGroup) {
+			this.bySolution = Collections.unmodifiableMap(
+					new IdentityHashMap<>(bySolution));
+			this.byGroup = Collections.unmodifiableMap(
+					new LinkedHashMap<>(byGroup));
+		}
+
+		private static PriorPhaseIndex empty() {
+			return new PriorPhaseIndex(new IdentityHashMap<>(), Map.of());
+		}
+
+		private static PriorPhaseIndex of(Map<LocusIntersectionSolution2D,
+				IntersectionRootDeterministicSelector2D> selectors,
+				Map<PhaseGroupKey, MutablePriorPhaseGroup> mutableGroups) {
+			Map<PhaseGroupKey, PriorPhaseGroup> groups = new LinkedHashMap<>();
+			for (Map.Entry<PhaseGroupKey, MutablePriorPhaseGroup> entry
+					: mutableGroups.entrySet()) {
+				groups.put(entry.getKey(), entry.getValue().freeze());
+			}
+			return new PriorPhaseIndex(selectors, groups);
+		}
+
+		private Optional<PriorPhaseGroup> group(
+				IntersectionRootDeterministicSelector2D selector) {
+			return Optional.ofNullable(byGroup.get(PhaseGroupKey.of(selector)));
+		}
+
+		private IntersectionRootDeterministicSelector2D selectorFor(
+				LocusIntersectionSolution2D solution) {
+			return bySolution.get(solution);
+		}
+	}
+
+	private static final class PersistedPhaseIndex {
+		private final Map<PhaseGroupKey,
+				List<LocusIntersectionTokenLedger2D.PersistedPhaseAllocation>>
+				byGroup;
+
+		private PersistedPhaseIndex(Map<PhaseGroupKey,
+				List<LocusIntersectionTokenLedger2D.PersistedPhaseAllocation>>
+				byGroup) {
+			this.byGroup = Collections.unmodifiableMap(
+					new LinkedHashMap<>(byGroup));
+		}
+
+		private static PersistedPhaseIndex of(Map<PhaseGroupKey,
+				ArrayList<LocusIntersectionTokenLedger2D.PersistedPhaseAllocation>>
+				mutableGroups) {
+			Map<PhaseGroupKey,
+					List<LocusIntersectionTokenLedger2D.PersistedPhaseAllocation>>
+					groups = new LinkedHashMap<>();
+			for (Map.Entry<PhaseGroupKey,
+					ArrayList<LocusIntersectionTokenLedger2D.PersistedPhaseAllocation>>
+					entry : mutableGroups.entrySet()) {
+				groups.put(entry.getKey(), List.copyOf(entry.getValue()));
+			}
+			return new PersistedPhaseIndex(groups);
+		}
+
+		private List<LocusIntersectionTokenLedger2D.PersistedPhaseAllocation>
+				group(IntersectionRootDeterministicSelector2D selector) {
+			return byGroup.getOrDefault(PhaseGroupKey.of(selector), List.of());
 		}
 	}
 

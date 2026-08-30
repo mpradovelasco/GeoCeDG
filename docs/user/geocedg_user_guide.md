@@ -1,30 +1,32 @@
 # Manual operativo vivo de GeoCeDG
 
 - Tipo de documento: manual operativo vivo
-- Última puerta de producto aprobada/observable: **G9U0-R3 = PASS — AUTHOR APPROVED**
+- Última puerta de producto aprobada/observable: **G9U0-R4 = PASS — AUTHOR APPROVED**
 - G9U0 = PASS — AUTHOR APPROVED
 - G9X1 = PASS — AUTHOR APPROVED
 - G9U0-R2: **PASS — AUTHOR APPROVED**; el fallo original R2-L11 se conserva y la
   corrección, la automatización y el re-smoke interactivo pasan
 - G9U0-R3: **PASS — AUTHOR APPROVED**; menú/inspector públicos, auxiliar exacto
   oculto y selector acotado validados mediante smoke y re-smoke interactivos
-- G9U0-R4: **IMPLEMENTATION CANDIDATE — PENDING AUTHOR RE-REVIEW**; el primer
-  smoke materializó las raíces pero falló al quedar un punto indefinido durante
-  movimiento regular; el segundo smoke confirmó la mejora pero expuso cuatro
-  raíces finitas bloqueadas por dos colisiones del selector base; el autor ha
-  autorizado fase/rango intrínseco del dominio orientado y el candidato obtiene
-  cuatro tokens materializables; tiene 50 métodos focales y un inventario de 51
-  rutas, 29 bajo `source/`; no reclama PASS y requiere re-smoke autoral
+- G9U0-R4: **PASS — AUTHOR APPROVED**; conserva tres fallos intermedios
+  (invalidación de dos raíces, cuatro raíces inicialmente no materializables y
+  pérdida de definedness en movimiento regular de cuatro raíces). El correctivo
+  adaptativo/ledger-v4 declara 58 métodos en
+  54 rutas, 31 bajo `source/`; el checkpoint `4ef2c9d` es anterior a ese
+  correctivo. A/B pasan 58/58 con summary exacto SHA-256
+  `3e9ea0aa20d511f2828eae61e491c1b3b5d9cb86a0f02166503ee5093d6000fb`
+  y composed pasa; los re-smokes finales de cuatro raíces y reactivación del
+  mismo punto pasan
 - G9U0-R5: **DESIGN CANDIDATE — PENDING AUTHOR REVIEW**; transformaciones 2D
   de similitud planificadas, sin implementación productiva autorizada
 - Baseline: GeoGebra 5.4.928.0 at
   `9b93256b7df401ff056c37b502d82df4d72b1522`
 - Plataforma validada: únicamente Windows
-- Última revisión: 2026-08-29
-- Fase actual: G9U0, G9X1, G9U0-R2 y G9U0-R3 son `PASS — AUTHOR APPROVED`.
-  G9U0-R4 es candidato de implementación pendiente de re-revisión; G9U0-R5 es
-  candidato de diseño y su implementación no está autorizada. G9U1 queda
-  bloqueada hasta PASS autoral separado de R4 y R5. G9B, G9C, G9U2, G10 y las
+- Última revisión: 2026-08-30
+- Fase actual: G9U0, G9X1, G9U0-R2, G9U0-R3 y G9U0-R4 son `PASS — AUTHOR
+  APPROVED`. G9U0-R5 es candidato de diseño y su implementación no está
+  autorizada. G9U1 queda bloqueada hasta PASS autoral separado de R5. G9B, G9C,
+  G9U2, G10 y las
   fases posteriores no están autorizadas.
 - Locus V2: superficie pública `experimental` aprobada para G9U0, exclusiva de
   GeoCeDG y desactivada por defecto
@@ -109,17 +111,13 @@ functionally passing but found the dialog-width defect; replacement automation
 and the corrective author re-smoke pass. No candidate-marker overlay or
 automatic persistent point is part of R3.
 
-The current R4 candidate, which is not yet an author-approved observable
-release state, removes a kernel deadlock found with the tracked midpoint-locus
-document: a first current, transverse, locally isolated and semantically
-unambiguous root may receive a fresh opaque ledger identity even when global
-coverage remains `NOT_ESTABLISHED` or `INCOMPLETE`. The exact token remains the
-only point-selection authority. Unresolved, tangent, overlapping, stale,
-merge/split or ambiguous cases remain unavailable, and no marker or automatic
-point is added. Until the separate R4 author smoke closes, treat this paragraph
-as candidate behavior rather than a PASS claim. The first smoke confirmed this
-initial behavior but then found one materialized point undefined during a small
-regular movement; that failure remains part of the record.
+The author-approved R4 release removes a kernel deadlock found with the tracked
+midpoint-locus document:
+a first current, transverse, locally isolated and semantically unambiguous root
+may receive a fresh opaque ledger identity even when global coverage remains
+`NOT_ESTABLISHED` or `INCOMPLETE`. The exact token remains the only
+point-selection authority. Unresolved, tangent, overlapping, stale, merge/split
+or ambiguous cases remain unavailable.
 
 The corrective candidate gives priority to deterministic semantic selection.
 On each recomputation, a unique current base selector from constructive context,
@@ -129,41 +127,73 @@ isolated roots share that base selector, the candidate uses only their intrinsic
 phase/rank in the explicit oriented semantic domain, with orientation, domain
 kind and verified group cardinality. Previous coordinates, prior parameter,
 solver/list/UI order, movement history and screen position never decide
-identity. Continuity is expected while that selector remains uniquely valid;
-tangency, merge/split, overlap, cardinality/orientation change or a periodic
-seam ambiguity invalidates rather than guesses. An unresolved candidate affects only its own semantic
-component. Multiplying an equivalent line/conic/implicit equation by a nonzero
+identity. The fixed `component span / 256` comparison used by an intermediate
+candidate was an update-size bound, not topology evidence: historical Case B passed
+initial four-root selection/materialization and then failed on an ordinary direct
+UI-sized movement. The correction instead uses adaptive intrinsic periodic phase
+tubes/cells, separate from the durable selector. Insufficient/nonunique cyclic
+evidence keeps the old group durably quarantined, unique offset zero may
+release/reactivate it and proved unique nonzero offset permanently retires it.
+An unresolved candidate affects only its own semantic component. Multiplying an
+equivalent line/conic/implicit equation by a nonzero
 homogeneous/projective scale cannot change the binding; a ray is different
 because its direction remains part of its semantics. The replacement composed
 run exposed a missing
 localized label for `DETERMINISTIC_SELECTION_ESTABLISHED`; the bounded
-base/English/Spanish resource correction adds no geometric behavior. The final
-candidate inventory is 51 paths with 29 under `source/`, including the
-byte-exact four-solution fixture and ADR 0017. Its focal authority contains 25
-public-kernel, 23 ledger and two Desktop tests.
+base/English/Spanish resource correction adds no geometric behavior. The current
+source inventory is 54 paths with 31 under `source/`, including the byte-exact
+four-solution fixture and ADR 0017. Its declared focal authority contains 27
+public-kernel, 28 ledger and three Desktop tests. Periodic quarantine is covered
+through ledger recompute/export-import/copy; native `.cedg` separately covers
+dormant `2 -> 4 -> 2` reactivation and reopen after reactivation, not a native
+periodic-quarantine round trip. Checkpoint `4ef2c9d` and its
+50-method hash are pre-current-correction evidence. Current focused A/B each
+pass 58/58 with exact normalized-summary SHA-256
+`3e9ea0aa20d511f2828eae61e491c1b3b5d9cb86a0f02166503ee5093d6000fb`,
+and the full composed authority passes.
 
-The second author smoke was not a certification failure. All four reported
+The second historical author smoke was not a certification failure. All four reported
 roots are current, transverse and locally isolated with estimated numerical
 error, but the positive pair and negative pair each shared one base selector.
 The author has now authorized the intrinsic semantic phase/rank refinement. It
 distinguishes all four without using solver order, coordinates or history and
-without calling estimated numerical evidence exact. A controlled topology or
-periodic-seam identity transition still invalidates rather than retargets an
-old point. This behavior remains a candidate until the author re-smoke passes.
+without calling estimated numerical evidence exact. In the current smoke, the
+canonical two-root Case A passed; Case B passed this initial four-root state and
+then failed regular-motion persistence as described above. A controlled topology or
+periodic-seam identity transition still invalidates rather than retargets an old
+point. Ledger v4 distinguishes an ordinary absent/non-current claim, periodic
+quarantine and a proved non-reactivatable seam: the ordinary allocation remains dormant and
+its existing `GeoPoint` becomes undefined; if the same selector later resolves
+uniquely, kernel recomputation reactivates that same point and token. A proved
+periodic uncertainty remains quarantined across reopen until offset-zero release;
+a proved nonzero seam/monodromy permanently retires only the affected allocation group. Neither
+  case creates a new point. The final four-root regular-motion and
+  active/dormant/reactivation author re-smokes pass.
 
 The future G9U1 CeDG Construction product is planned to keep the existing host
 **Continuity** setting OFF as a deterministic product invariant, including
 after preferences, document load and workspace changes. It will not expose an
 ordinary control to enable it. The separate GeoCeDG Classic diagnostic route
 will retain the upstream configurable setting. This policy is not implemented
-by the current R4 candidate.
+  by R4; it remains future G9U1 work.
 
-G9U1 is also planned to expose current intersection markers and an optional
-user-enabled create-all transaction. Markers and actions will consume the exact
-kernel token bound to the intrinsic selector; a visible `Solution N` label or
-marker order will never be identity.
-Kernel recomputation, root appearance and document load will never create new
-points automatically.
+G9U1 is also planned to expose current intersection markers plus explicit
+create-one, create-selected and create-all transactions in an inspector session
+that may remain open and identifies already-materialized choices. Markers and
+actions will consume only an
+exact current kernel token bound to the intrinsic selector; dormant or quarantined tokens are
+not marker/action candidates, and a visible `Solution N` label or marker order
+will never be identity. Kernel recomputation may reactivate an already existing
+claimed point as described above, but root appearance, recomputation and document
+load never create new points. New-point auto-materialization remains a future,
+  explicit, opted-in frontend transaction. Multi-point creation will be one
+  coherent undo action. G9U0-R5 and G9U1 have not been executed.
+
+Retained nonblocking validation risk
+`G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` means that periodic quarantine has
+ledger recompute/export-import/copy coverage but no dedicated native `.cedg`
+round trip. G9U1 must revisit it and global G9 closeout must resolve or
+explicitly disposition it; it is not an implicit R5 dependency.
 
 Global completeness and individual admissibility are deliberately independent
 (Option B): a rigorously isolated solution may provide a point even when the
@@ -1170,7 +1200,7 @@ Promotion follows `legacy -> research -> experimental -> stable`, or
 | G9U0-R2 planning/design | Locus V2 presentation/continuity and native `.cedg` identity | `PASS — AUTHOR APPROVED` | Normative contract implemented by the separately approved R2 execution |
 | G9U0-R2 implementation | Ordinary presentation/render continuity and native document lifecycle | `PASS — AUTHOR APPROVED`; original R2-L11 failure preserved and correction/re-smoke accepted | `.cedg` is native, `.ggb` is compatibility input; installed MSI/registry smoke remains `NOT_REQUESTED` |
 | G9U0-R3 | Public menu/inspector exposure, bounded token chooser and hidden token helper | `PASS — AUTHOR APPROVED` | Frontend-only closeout after smoke/re-smoke; no marker overlay, kernel/XML change or G9U1 authorization |
-| G9U0-R4 | Initial local intersection admissibility and deterministic current-root resolution | `IMPLEMENTATION CANDIDATE — PENDING AUTHOR RE-REVIEW` | Shared-kernel candidate; both smoke failures preserved; author-authorized intrinsic semantic phase/rank distinguishes the four byte-exact fixture roots without extrinsic order or weaker certification; 25 public + 23 ledger + 2 Desktop methods; final inventory 51 paths/29 under `source/` |
+| G9U0-R4 | Initial local intersection admissibility and deterministic current-root resolution | `PASS — AUTHOR APPROVED` | Shared-kernel closeout; three failed intermediate smokes preserved; adaptive phase tubes and ledger-v4 dormancy/quarantine/reactivation declare 27 public + 28 ledger + 3 Desktop methods in 54 paths/31 under `source/`; A/B/composed and both final author re-smokes PASS; checkpoint `4ef2c9d` remains pre-correction evidence |
 | G9U0-R5 | Locus V2 2D similarity transformations | `DESIGN CANDIDATE — PENDING AUTHOR REVIEW`; implementation not authorized | Planning authority only; no transformed-locus production code in R4 |
 | G9U1/G9B/G9C/G9U2 | Later productive G9 capabilities | Not authorized; U2 blocked on the approved global G9 gate | No workspace, spatial-primitive or later G9 implementation is implied by G9X1 |
 
@@ -1465,12 +1495,16 @@ or, at the G7B gate, make the metric public.
   and G9A supplies identity/lifecycle foundations only;
 - G9U0 alone adds no DXF locus export; the separately approved G9X1 service
   provides only the bounded read-only export adapter described above;
-- the R4 candidate adds fresh eligible first-root allocation and deterministic
-  current-snapshot selector binding in ledger v3. Repeated base selectors may
-  add intrinsic rank from the explicit oriented semantic domain; extrinsic
-  solver/list/UI order, coordinate, proximity and movement history remain
-  forbidden. Topology/cardinality/orientation/seam ambiguity remains
-  fail-closed, and the historical failed smokes still require author re-review;
+- R4 adds fresh eligible first-root allocation and deterministic
+  current-snapshot selector binding in ledger v4. Repeated base selectors may
+  add intrinsic rank from the explicit oriented semantic domain; a separate
+  adaptive periodic phase-tube/cell certificate guards regular-motion reuse
+  without a fixed step threshold. Ordinary claimed absence is dormant;
+  insufficient periodic evidence is durable quarantine and the same existing
+  point can reactivate after unique offset-zero release; a proved nonzero seam
+  permanently retires only its affected group. Extrinsic solver/list/UI order,
+  coordinate, proximity and movement history remain forbidden. No new point is
+  auto-created; both final author re-smokes are accepted;
 - no general path support or native infinite provider domain;
 - no concurrency or compiled/flattened evaluation DAG; and
 - no certified numeric error bounds.
@@ -1499,7 +1533,7 @@ polyline is a disposable view representation.
 | G9U0-R2 planning/design | Pre-G9U1 presentation/document contract | `PASS — AUTHOR APPROVED` |
 | G9U0-R2 implementation | Ordinary Locus style/render continuity plus `.cedg` lifecycle | `PASS — AUTHOR APPROVED`; correction and author re-smoke accepted |
 | G9U0-R3 | Public Locus V2 UI exposure hardening | `PASS — AUTHOR APPROVED`; menu lifecycle, hidden exact-token helper and bounded chooser accepted |
-| G9U0-R4 | Public Locus V2 intersection initial admissibility and continuation correction | `IMPLEMENTATION CANDIDATE — PENDING AUTHOR RE-REVIEW`; no PASS claimed |
+| G9U0-R4 | Public Locus V2 intersection initial admissibility and continuation correction | `PASS — AUTHOR APPROVED`; three failed intermediate smokes retained and both final re-smokes accepted |
 | G9U0-R5 | Locus V2 2D similarity transformations | `DESIGN CANDIDATE — PENDING AUTHOR REVIEW`; implementation not authorized/not started |
 | G10 | CeDG 3D DSL and workbench | Pending |
 | G11 | Hierarchical layers and view states | Pending |

@@ -1,10 +1,10 @@
 # G9 public Locus, product/document refinement and workspace validation matrix
 
 - Status: **G9U0-R2 PASS — AUTHOR APPROVED; G9U0-R3 PASS — AUTHOR APPROVED;
-  G9U0-R4 IMPLEMENTATION CANDIDATE — PENDING AUTHOR RE-REVIEW; G9U0-R5 DESIGN
+  G9U0-R4 PASS — AUTHOR APPROVED; G9U0-R5 DESIGN
   CANDIDATE — PENDING AUTHOR REVIEW / IMPLEMENTATION NOT AUTHORIZED; G9U1
   DESIGNED — NOT AUTHORIZED**
-- Date: 2026-08-29
+- Date: 2026-08-30
 - Scope: author-approved/historical G9U0 public Locus V2 evidence;
   author-approved G9U0-R2 product/document-refinement design and implementation;
   bounded G9U0-R3 public-UI exposure hardening; G9U0-R4 public intersection
@@ -13,7 +13,7 @@
   post-G9 G9U2 Dihedral Procedures workspace
 - G9U0-R2 implementation: **PASS — AUTHOR APPROVED**;
   G9U0-R3: **PASS — AUTHOR APPROVED**;
-  G9U0-R4: **IMPLEMENTATION CANDIDATE — PENDING AUTHOR RE-REVIEW**;
+  G9U0-R4: **PASS — AUTHOR APPROVED**;
   G9U0-R5 implementation authorized: **no**;
   G9U1/G9U2 implementation authorized: **no**
 
@@ -25,23 +25,32 @@ correction; the author accepted the corrective re-smoke. The original
 author-smoke failure is preserved. These rows do not imply workspace switching,
 Dihedral procedures, an installed MSI/registry smoke or public redistribution.
 
-The first R4 candidate admitted and materialized both canonical midpoint roots,
-but author smoke then failed because one point became undefined during small
-regular motion. The corrective authority adopts deterministic current-snapshot
-selection over a continuity heuristic. Unresolved evidence is scoped to its semantic component; equivalent
-homogeneous/projective target representations preserve binding, while ray
-direction remains semantic. The replacement composed run exposed the missing
-localized value for `DETERMINISTIC_SELECTION_ESTABLISHED`; the bounded base,
-English and Spanish bundle correction changes no semantics. A second smoke then
-exposed four finite, locally isolated roots whose current selector collides in
-two positive/negative pairs. The author subsequently authorized intrinsic
-semantic phase/rank induced by the explicit oriented domain. ADR 0017 permits
-that rank only inside a repeated base-selector group and continues to forbid
-solver/list/UI/coordinate/proximity/history order. The focused authority now
-contains 50 methods and the candidate inventory is 51 paths, 29 under
-`source/`, including the byte-exact four-root fixture. Replacement focused runs
-A and B and the composed authority are green; both smoke failures remain
-evidence, R4 has no PASS, and author re-smoke/re-review remains required.
+The first R4 author smoke admitted and materialized both canonical midpoint
+roots, then failed when one point became undefined during ordinary regular
+motion. The deterministic current-selector correction fixed that case, but the
+second smoke exposed four finite, locally isolated roots that could not all be
+materialized because their base selectors collided in two pairs. After the
+author authorized intrinsic semantic phase/rank, the current smoke passed Case
+A and initially passed Case B with four roots, four selectors, four tokens and
+four points, then failed when those points became undefined during ordinary
+regular motion. The current correction therefore keeps the durable selector
+separate from an adaptive intrinsic periodic phase-tube certificate: no fixed
+`span/256` update threshold is topology evidence; ordinary motion preserves
+tokens independent of UI update granularity, while a proved seam/monodromy
+retires only its affected group. Insufficient/nonunique periodic evidence is
+durably quarantined, unique offset zero releases/reactivates and proved unique
+nonzero offset retires. A claimed allocation may be dormant during
+ordinary absence or unresolved certification and the same existing `GeoPoint`
+reactivates in the kernel only when its exact selector returns; recompute never
+auto-materializes a new point. The source-derived authority now declares 27
+public-kernel, 28 ledger and 3 Desktop methods (58 total) across 54 changed paths,
+31 under `source/`. Checkpoint `4ef2c9df433aec7c6385a488a02581358da83f60`
+is a protective pre-current-correction checkpoint. Current A/B pass 58/58 with
+exact canonical SHA-256
+`3e9ea0aa20d511f2828eae61e491c1b3b5d9cb86a0f02166503ee5093d6000fb`,
+and composed exits 0 with `All GeoCeDG verification gates passed.`. R4 has no
+phase PASS; author re-smoke/re-review remains required. R5 and G9U1 remain
+unexecuted/not authorized.
 
 ## 1. Entry gates
 
@@ -378,26 +387,28 @@ completeness.
 | R4-A18 | spatial-order reversal | reverse Cartesian left/right ordering | tokens remain attached to semantic selectors; order establishes no identity |
 | R4-A19 | direct unobserved regular update | make one larger update that crosses no topology event | unique current selector resolves the same token without requiring intermediate history |
 | R4-A20 | intrinsic rank for repeated base selector | publish four isolated roots sharing two component/germ base selectors | orientation/domain/cardinality/rank yields four unique selectors; no solver/list-order identity |
-| R4-A21 | collision-group appearance/disappearance | change one repeated-base group 4→2→4 | old ranked tokens burn; no rank shift retargets an existing point; settled roots may receive fresh selectors |
+| R4-A21 | collision-group appearance/disappearance | change one repeated-base group 4→2→4 without a retained materialized claim | incompatible current ranked tokens burn; no rank shift retargets an existing point; settled roots may receive fresh selectors |
 | R4-A22 | orientation redefinition | reverse the provider's declared semantic orientation without an approved map | prior ranked tokens do not transfer; transition fails closed before any fresh allocation |
-| R4-A23 | ranked periodic seam/monodromy | traverse the seam incrementally, then reload a byte-identical seed and update phase directly from `0` to `-0.1` | direct transition publishes four identity discontinuities whose parent-token union is exactly the four old tokens; all four old points invalidate, no old token remains current, and a settled same-state recompute exposes only fresh admissible tokens |
+| R4-A23 | ranked periodic seam/monodromy | traverse the seam incrementally, then reload a byte-identical seed and update phase directly from `0` to `-0.1` | direct transition publishes two identity discontinuities for the affected germ group and keeps the unaffected two-token group current; only affected old points invalidate, and settled recompute exposes fresh admissible tokens only for that affected group |
 | R4-A24 | merge parent evidence | construct a merge candidate with explicit parent tokens/keys and compare its lineage with the token-sorted pre-event parent records | complete parent records are canonically ordered once by opaque token; each continuation key stays paired with its token; merge remains ambiguous and point-inadmissible, and the ordering creates no identity |
 | R4-A25 | supported target families and representation invariance | exercise line, segment, ray, circle, conic, function, implicit and pair boundary; repeat supported equations through equivalent homogeneous/projective scaling and reverse a ray direction explicitly | equivalent representations preserve exact binding; ray direction remains semantic; otherwise explicit fail-closed result |
+| R4-A26 | UI update-granularity independence | move the four-root fixture center to the same ordinary regular geometry in one UI-sized update and in forty smaller updates | adaptive intrinsic phase tubes produce identical selectors, tokens, point admissibility and existing materialized-point bindings; no fixed update-size ceiling establishes topology |
+| R4-A27 | claimed 2→4→2 recurrence | materialize two roots, traverse direct, staged, reopened-dormant, many-small and forward/reverse paths through four roots, then return to two | the same two existing `GeoPoint` objects become dormant/undefined, then reactivate under their exact selectors; construction size is unchanged and no new point is auto-materialized |
 | R4-L01 | distinct first allocations | allocate two verified current addresses | distinct opaque incarnations unrelated to order |
 | R4-L02 | duplicate current selector | resolve one selector twice in one publication | same staged allocation is returned and duplicate publication remains fail-closed |
 | R4-L03 | changed revision address | change canonical parameter with the same unique selector | exact token survives; parameter bits remain revision evidence only |
 | R4-L04 | different selector | change component/germ selector under the same address context | committed token is not reused |
 | R4-L05 | context versus parameter motion | vary branch/provider/target context and then only the root parameter | context mismatch rejects; ordinary parameter motion does not |
-| R4-L06 | unavailable publication | burn a prior allocation and attempt reuse | stale identity cannot revive |
+| R4-L06 | unavailable unclaimed publication | burn a prior unclaimed allocation and attempt reuse | stale unclaimed identity cannot revive; retained materialized claims follow the separate dormant lifecycle |
 | R4-L07 | authorized copy rebase | rebase through approved copy provenance | exact incarnation retained without label/index/coordinate identity |
 | R4-L08 | current multi-root copy provenance | copy two distinct current-selector allocations | exact one-to-one provenance preserves each incarnation |
-| R4-L09 | snapshot round-trip | export/import current ledger format v3 | deterministic selector binding and exact opaque allocation reconstruct |
+| R4-L09 | snapshot round-trip | export/import current ledger format v4 | deterministic selector binding, claimed lifecycle state and exact opaque allocation reconstruct |
 | R4-L10 | historical mint | exercise sealed exact-key mint behavior | existing compatibility contract remains unchanged |
 | R4-L11 | R3 singleton migration | import one exact legacy token into the new selector model; separately request an intrinsic-phase selector | a compatible base selector preserves exact opaque token material; intrinsic phase never binds the legacy singleton and receives fresh material instead |
 | R4-L12 | migration address guard | migrate from a nonmatching initial address | migration fails closed |
 | R4-L13 | component/germ mismatch | present a germ from another component | deterministic selector rejects it |
-| R4-L14 | phase-selector codec | encode/decode component, germ, orientation, domain kind, cardinality and rank | exact selector-codec-v2 round trip inside the ledger-v3 authority; no coordinate/raw-parameter/order material |
-| R4-L15 | ledger phase/history compatibility | round-trip a phase-ranked ledger-v3 state; import a fixed authentic pre-phase ledger-v2 state; relabel a phase-bearing v3 state as v2; manipulate ledger v3 to bind legacy-singleton material to intrinsic phase | phase-ranked v3 state and complete tokens round-trip exactly; authentic pre-phase v2 migrates to v3 with its opaque token unchanged; falsely relabeled phase-v2 and forged legacy-singleton/phase-v3 bindings are rejected |
+| R4-L14 | phase-selector codec | encode/decode component, germ, orientation, domain kind, cardinality and rank | exact selector-codec-v2 round trip inside the ledger-v4 authority; no coordinate/raw-parameter/order material |
+| R4-L15 | ledger phase/history compatibility | round-trip canonical ledger v4; import canonical phase-ledger v3 and fixed authentic pre-phase v2/v1 states; falsely relabel claimed v4 as v3 or phase v3 as v2; forge legacy-singleton phase binding | v4 and compatible v3/v2/v1 states preserve exact opaque token material; claimed-v4/v3 and phase-v3/v2 schema lies plus forged legacy-singleton phase bindings are rejected |
 | R4-L16 | cardinality topology barrier | commit one ranked group at cardinality 2, then 3, then 2 | every incompatible old binding is burned; no ordinal shift reuse |
 | R4-L17 | orientation barrier | present an equal-looking rank under reversed orientation | allocation is not reused without an explicit semantic map |
 | R4-L18 | published selector recovery | parse the exact selector from a published continuation key | historical/current selector version and semantic frame reconstruct exactly |
@@ -406,41 +417,55 @@ completeness.
 | R4-L21 | duplicate persisted binding | restore two entries for one selector | snapshot import rejects ambiguity |
 | R4-L22 | moved address without history | resolve a unique selector after parameter motion | same token resolves without previous-step state |
 | R4-L23 | legacy multi-root copy mapping | copy roots sharing a historical incarnation | one exact semantic source-to-copy mapping is required per root |
-| R4-E01 | real native archive lifecycle | materialize both midpoint/circle roots, Save As `.cedg`, reopen and move the target | exact ledger v3, persistent point IDs, hidden token dependencies and deterministic dynamic binding survive |
+| R4-L24 | dormant exact-selector reactivation | retain a materialized claim, publish ordinary absence, then return its selector at a moved address | token is noncurrent but retained as `CLAIMED_DORMANT`, then returns as the same exact current token |
+| R4-L25 | materialized claim reference count | retain the same materialized token twice, make it dormant and release each claim | the dormant allocation survives the first release, is pruned after the last release, and later recurrence receives fresh token material |
+| R4-L26 | explicit permanent retirement | retain a materialized claim, invoke the typed permanent-retirement seam and then return the same selector | retired token is neither retained nor reusable; recurrence receives fresh material |
+| R4-L27 | dormant-copy exact provenance | make a retained claim dormant, authorize copy/rebase, then return the copied selector | copied dormant claim retains the approved incarnation and becomes current only under the exact copied selector |
+| R4-L28 | periodic quarantine lifecycle | retain a materialized periodic group with insufficient cyclic evidence, ledger recompute/export-import/copy, then supply offset-zero, nonzero and final-claim-release controls | `q`/`r` survives while claimed; copy cannot release; unique offset zero releases/reactivates; proved nonzero retires; absent/nonunique remains quarantined; final release prunes |
+| R4-E01 | real native archive lifecycle | materialize both midpoint/circle roots, Save As `.cedg`, reopen and move the target | exact ledger v4, persistent point IDs, hidden token dependencies and deterministic dynamic binding survive |
 | R4-E02 | reopen path independence | compare direct final motion with reopen-before-final-motion | identical final token bindings and point definedness |
-| R4-C09 | transition relation is not identity authority | exhaust or omit the bounded prior/current relation on the direct ranked-periodic `0` to `-0.1` update | the relation may guard reuse of every old token, but only the current intrinsic selector chooses a current root; no comparison outcome transfers identity |
-| R4-P04 | direct periodic seam fail-closed boundary | materialize four ranked periodic tokens, update phase directly `0` to `-0.1`, then recompute the settled unchanged state | all four old token points become undefined and never reappear as current; the next stable publication uses fresh, disjoint, point-admissible tokens rather than rotating an ordinal |
+| R4-E03 | native dormant/reactivated lifecycle | save/reopen the existing points around a dormant `2 -> 4 -> 2` recurrence and reopen again after reactivation | the same point IDs/tokens become dormant and reactivate without new point creation; this does not claim native periodic-`q` round trip |
+| G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP | retained nonblocking cross-cutting risk | dedicated native `.cedg` round trip with a quarantined periodic allocation | missing in R4; ledger recompute/export-import/copy and nonperiodic native recurrence evidence exist; revisit in G9U1 and resolve or explicitly disposition by global G9 closeout; not an implicit R5 dependency |
+| R4-C09 | transition relation is not identity authority | compare insufficient, unique-zero and unique-nonzero prior/current periodic evidence | only the current intrinsic selector chooses a root; insufficient/nonunique evidence quarantines, offset zero releases and proved nonzero retires; fixed `span/256`, diagnostic budget and comparison outcome cannot transfer identity |
+| R4-P04 | direct periodic seam fail-closed boundary | exercise ledger quarantine/export-import/release controls, then the direct proved `0` to `-0.1` shift | quarantine is durable but noncurrent; only offset zero releases; the direct proved nonzero path retires only its affected two-token group without rotation |
 
-The current R4 focused authority contains 25 public-kernel, 23 ledger and
-2 Desktop native-archive methods (50 total). The pre-final replacement runs A
-and B each passed 50/50 at canonical SHA-256
-`c1d76e86d5174e406ac7bdddd4862f4ccc607d6a68df2ec23c365b9084cce83e`;
-that hash remains historical pre-final evidence. After the stable-fresh-token,
-legacy singleton/phase and canonical merge-parent assertions, final A and B each
-passed 50/50 with identical canonical SHA-256
-`f909aaa28aedc63aa35d01325aa3f84d893ab8a92da64c04e9eb7a661898681c`.
-La cobertura final incluye una permutación adversarial de padres merge y un
-control legacy/fase con germ idéntico, de modo que ambos límites se prueban sin
-depender del orden normal del solver ni de una discrepancia semántica lateral.
-The historical G8/G9U0/R1/R2/R3/X1/G5/G9A/Locus/frontend authorities are
-recorded as gate `PASS`; their sealed-report counts remain with those sealed
-authorities and are not re-summed as an invented R4 aggregate. Checkstyle and
-diff checks passed. The completed composed verifier exited 0 and ended with the
-literal `All GeoCeDG verification gates passed.`
-Its bounded inventory is 51 paths, including 29 under `source/`; the productive
-three-path increase is exactly the base/English/Spanish localization correction
-discovered by the replacement composed run, followed by one byte-exact
-four-root fixture and ADR 0017. No generated evidence belongs in that
-tracked inventory. The focused authority
-also proves that unresolved candidates are component-scoped, canonical target
-orientation removes representation-scale accidents, and ray direction is not
-erased as semantic evidence.
-The earlier pre-smoke focused run is superseded. Both smoke observations remain:
-`FAILED_POINT_INVALIDATED_DURING_REGULAR_MOTION` and
-`IMPROVED_BUT_FOUR_SOLUTIONS_NOT_MATERIALIZABLE`. The author subsequently
-authorized intrinsic semantic phase/rank; the candidate implements that bounded
-decision and still claims neither PASS nor self-approval.
-Automation stops at `IMPLEMENTATION CANDIDATE — PENDING AUTHOR RE-REVIEW`.
+The source-derived current R4 authority declares 27 public-kernel, 28 ledger and
+3 Desktop native-archive methods (58 total). Its bounded worktree inventory from
+entry commit `ce7f15c70d50b0639c264fc1cd3356a0d4eb5e2b` is 54 paths, including
+31 under `source/`; generated evidence is excluded. The adaptive phase-tube,
+ledger-v4 claimed active/dormant lifecycle, exact-selector reactivation and
+selective permanent retirement plus durable periodic-quarantine correction now
+passes focused A/B at 58/58 with matching canonical summaries SHA-256
+`3e9ea0aa20d511f2828eae61e491c1b3b5d9cb86a0f02166503ee5093d6000fb`
+and passes the full composed authority.
+
+Checkpoint `4ef2c9df433aec7c6385a488a02581358da83f60` is a protective
+pre-current-correction checkpoint. Its 50-method, 51-path/29-source evidence and
+canonical SHA-256
+`f909aaa28aedc63aa35d01325aa3f84d893ab8a92da64c04e9eb7a661898681c`
+remain historical only; the earlier 50-method pre-final SHA-256
+`c1d76e86d5174e406ac7bdddd4862f4ccc607d6a68df2ec23c365b9084cce83e`
+is likewise historical. Current replacement logs are
+`artifacts/g9u0-r4/four-root-characterization-a`,
+`artifacts/g9u0-r4/four-root-characterization-b` and
+`artifacts/g9u0-r4/four-root-characterization-composed`; they are ignored
+generated evidence, not author approval. The final author decision is supplied
+separately by the two accepted re-smokes.
+
+All three interactive observations remain part of the gate chronology: smoke 1
+failed when a two-root point became undefined during ordinary motion; smoke 2
+failed because four initially valid roots could not all be materialized; the
+third smoke passed Case A, initially passed Case B with four roots/selectors/
+tokens/materialized points, then failed Case B regular-motion persistence. The
+current correction does not weaken selection or numerical policy: durable
+current selectors remain authoritative, adaptive phase tubes only certify
+periodic prior-token reuse, and a fixed `span/256` relation is not topology
+evidence. Ordinary absence may make a claim dormant; insufficient periodic
+evidence quarantines durably, unique offset zero releases/reactivates, and a
+proved nonzero seam permanently retires only its affected claims. Final author
+Case 1 accepts four-root regular motion and deterministic binding; final Case 2
+accepts same-point dormant reactivation with no new point creation. R4 is
+`PASS — AUTHOR APPROVED` with `selfApproved=false`.
 
 ### 8.8 G9U0-R5 planning-only transformation matrix
 
@@ -501,6 +526,9 @@ sample authority and all degenerations including valid `k=0`
 | U1-I09 | auto OFF/ON transaction | explicitly create `Intersect(L,T)` with auto OFF and ON | OFF creates only the rich result; ON issues one separate visible deterministic create-all transaction for currently eligible exact tokens and one distinct atomic undo step |
 | U1-I10 | no recompute auto mutation | recompute, create a later root, load/reopen, switch workspace and restore preferences | zero new DAG nodes; new eligible roots appear only as markers until another explicit user action |
 | U1-I11 | point provenance lifecycle | save/reopen, copy and undo/redo a phase-ranked exact-token point | exact token and semantic selector provenance reconstruct; existing point is not reinterpreted from UI order |
+| U1-I12 | persistent inspector session | materialize one point, keep inspecting, select more, identify existing choices, then explicitly close/cancel | one materialization need not close the inspector; already-materialized choices are accessible without exposing opaque-token layout labels; close/cancel is explicit |
+| U1-I13 | selected multi-materialization | select several admissible solutions and invoke create-selected, then undo/redo | exactly the selected distinct exact tokens create one point each in one coherent compound undo action; no ordinal, list or marker-order identity |
+| U1-I14 | periodic quarantine risk revisit | load/save/reopen a native document carrying periodic-quarantine authority once the dedicated fixture exists | resolve or explicitly disposition `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP`; no stronger persistence claim is inferred from marker/inspector behavior |
 | U1-B01 | Construction visual identity | compare normal Construction and separate Classic diagnostic route | restrained professional identity is immediately distinguishable; Classic retains diagnostic identity |
 | U1-B02 | theme/accent purity | change supported theme/accent/workspace style with populated Construction | zero Construction/DAG/semantic/undo updates; presentation colors are never geometric authority |
 | U1-B03 | accessibility/scaling | contrast audit plus normal DPI/scaling and keyboard paths | accepted contrast, readable status/help, stable focus/order and usable professional grouping |
@@ -612,8 +640,8 @@ not affect metric/intersection results.
 
 ### G9U1 PASS candidate
 
-- G9U0-R2 and G9U0-R3 are already `PASS — AUTHOR APPROVED`; G9U0-R4 and
-  G9U0-R5 must also close `PASS — AUTHOR APPROVED`, and a separate author
+- G9U0-R2, G9U0-R3 and G9U0-R4 are already `PASS — AUTHOR APPROVED`; G9U0-R5
+  must also close `PASS — AUTHOR APPROVED`, and a separate author
   decision must authorize the definitive post-R5 successor prompt. No
   predecessor PASS alone is sufficient.
 - Schema v2 and deterministic v1 migration pass.
@@ -627,12 +655,17 @@ not affect metric/intersection results.
 - Workspace switching produces zero semantic mutations.
 - Only already approved public actions are enabled.
 - Active-result markers are transient presentation over current deterministic
-  root/evidence authority, never a continuous/history tracker. Exact token
-  identity, local evidence, global completeness and policy eligibility remain
-  separate. Explicit one/all-point materialization is exact and undoable; an
-  opted-in auto mode is only a second visible frontend transaction after the
-  explicit Intersect action. Recompute, root appearance and load never create
-  new points.
+  root/evidence authority, never a continuous/history tracker. A dormant or quarantined claim
+  is not a frontend-selectable result: prospective markers, explicit actions and
+  any optional auto-materialization consume only a current exact token. Exact
+  token identity, local evidence, global completeness and policy eligibility
+  remain separate. Explicit one/selected/all-point materialization is exact and
+  undoable; the inspector supports several materializations in one session,
+  identifies existing choices and treats a multi-point action as one coherent
+  compound undo transaction;
+  an opted-in auto mode is only a second visible frontend transaction after the
+  explicit Intersect action. Recompute, root appearance, dormant reactivation
+  and load never create new points.
 - The eleven professional groups, accessible GeoCeDG-versus-Classic visual
   identity and distinct `geocedg.brand.topbar` / `geocedg.brand.startup`
   provenance seams pass automated and author review. If frontend/packaging

@@ -308,13 +308,27 @@ try {
         "source\shared\common\src\main\java\org\geocedg\common\kernel\algos\AlgoLocusIntersectionPointV2.java"
     $pointSource = Get-Content -LiteralPath `
         (Join-Path $RepositoryRoot $pointPath) -Raw
+    $frozenPointSource = Get-GeoCeDGFrozenText `
+        -RepositoryRoot $RepositoryRoot -Path $pointPath
     $g9u0FrozenPublicSurface = Test-G9U0FrozenPublicSurface
-    $usesHistoricalTokenSelection = $pointSource.Contains(
+    $usesHistoricalTokenSelection = $frozenPointSource.Contains(
         ".findPointAdmissibleSolution(selectedRootToken)")
+    Assert-Condition -Condition ($usesHistoricalTokenSelection -and
+            -not $frozenPointSource.Contains("distance(") -and
+            -not $frozenPointSource.Contains(
+                "findPointAdmissibleSolutionByLineage")) `
+        -Message "The sealed G8B point consumer lost exact token selection."
+    $usesLegacyCopyTokenResolution = $pointSource.Contains(
+        ".rebaseCopiedPointAdmissibleSolution(requestedToken,")
+    $usesRetainedTokenResolution = $pointSource.Contains(
+        ".resolveRetainedMaterializedToken(") -and
+        $richGeo.Contains(
+            "public Optional<String> resolveRetainedMaterializedToken(String token,") -and
+        $richGeo.Contains("tokenLedger.validatesRetainedToken(token)") -and
+        $richGeo.Contains("tokenLedger.rebaseCopiedRetainedToken(token,")
     $usesLedgerValidatedTokenSelection = $pointSource.Contains(
         ".findExactPointAdmissibleSolution(requestedToken)") -and
-        $pointSource.Contains(
-            ".rebaseCopiedPointAdmissibleSolution(requestedToken,") -and
+        ($usesLegacyCopyTokenResolution -or $usesRetainedTokenResolution) -and
         $richGeo.Contains("tokenLedger.validatesCurrentToken(token)") -and
         $richGeo.Contains(
             "intersectionResult.findPointAdmissibleSolution(token)")
@@ -325,7 +339,10 @@ try {
     }
     Assert-Condition -Condition ($usesExpectedTokenSelection -and
             -not $pointSource.Contains("distance(") -and
+            -not $richGeo.Contains("distance(") -and
             -not $pointSource.Contains(
+                "findPointAdmissibleSolutionByLineage") -and
+            -not $richGeo.Contains(
                 "findPointAdmissibleSolutionByLineage")) `
         -Message "The G8B point consumer must select by token, never coordinates."
     $resultPath = Join-Path $SourceRoot "LocusIntersectionResult2D.java"
