@@ -75,8 +75,9 @@ class G9U0R3InspectorWorkflowTest {
 		app.getSelectionManager().addSelectedGeo(rich);
 
 		try (MockedStatic<JOptionPane> dialogs = mockStatic(JOptionPane.class)) {
+			stubIntersectionDecision(dialogs, JOptionPane.CANCEL_OPTION);
 			inspectorItem(app).doClick();
-			verifyReadOnlyInspector(dialogs, app);
+			verifyIntersectionInspector(dialogs);
 		}
 	}
 
@@ -511,15 +512,6 @@ class G9U0R3InspectorWorkflowTest {
 				any(Component.class), any(), anyString(),
 				eq(JOptionPane.OK_CANCEL_OPTION),
 				eq(JOptionPane.PLAIN_MESSAGE)), times(1));
-	}
-
-	private static void verifyReadOnlyInspector(
-			MockedStatic<JOptionPane> dialogs, AppGeoCeDG app) {
-		dialogs.verify(() -> JOptionPane.showMessageDialog(
-				any(Component.class), any(),
-				eq(app.getLocalization().getMenu(
-						"LocusV2.Results.Inspect")),
-				eq(JOptionPane.INFORMATION_MESSAGE)), times(1));
 	}
 
 	private static JMenuItem inspectorItem(AppGeoCeDG app) {

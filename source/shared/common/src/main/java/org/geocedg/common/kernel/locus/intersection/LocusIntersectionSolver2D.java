@@ -155,6 +155,8 @@ public final class LocusIntersectionSolver2D {
 		List<IntersectionCandidate2D> candidates = deduplicate(context,
 				candidateSet.getCandidates());
 		List<LocusIntersectionSolution2D> solutions = new ArrayList<>();
+		java.util.LinkedHashSet<String> unresolvedComponents =
+				new java.util.LinkedHashSet<>();
 		boolean unresolvedCandidate = false;
 		for (IntersectionCandidate2D candidate : candidates) {
 			Verification verification = verifyCandidate(context, candidate,
@@ -163,6 +165,7 @@ public final class LocusIntersectionSolver2D {
 				solutions.add(verification.solution);
 			} else if (!verification.safeMembershipExclusion) {
 				unresolvedCandidate = true;
+				unresolvedComponents.add(candidate.getComponentKey());
 				context.getInstrumentation().recordUnresolvedCandidate();
 			}
 		}
@@ -189,7 +192,8 @@ public final class LocusIntersectionSolver2D {
 				candidateSet.getSupportLevel(), candidateSet.getNumericGuarantee(),
 				solutions, candidateSet.getOverlapEvidence(),
 				candidateSet.getCoveredComponentKeys(),
-				context.getInstrumentation(), diagnostics);
+				List.copyOf(unresolvedComponents), context.getInstrumentation(),
+				diagnostics);
 	}
 
 	private static Verification verifyCandidate(
@@ -260,8 +264,11 @@ public final class LocusIntersectionSolver2D {
 						canonical, lifted, interval,
 						candidate.getLocalIsolationStatus(), residual,
 						candidate.getSolverMethod(),
-						candidate.getNumericGuarantee());
-		boolean durableIdentity = candidate.getContinuationKey().isPresent();
+						candidate.getNumericGuarantee(),
+						candidate.getContinuationKey());
+		boolean durableIdentity = tokenSource
+				.establishesDurableCandidateIdentity(
+						candidate.getContinuationKey());
 		String token;
 		IdentityStatus identityStatus;
 		if (durableIdentity) {
@@ -269,7 +276,8 @@ public final class LocusIntersectionSolver2D {
 					new IntersectionRootAddressProof2D(
 							context.getDefinition().getProvider()
 									.getSemanticSignature(),
-							targetContractSignature(context.getTarget()), canonical);
+							IntersectionRootAddressProof2D.targetContractSignature(
+									context.getTarget()), canonical);
 			token = tokenSource.nextToken(tokenLineage, addressProof);
 			identityStatus = IdentityStatus.NEW_TOPOLOGICAL_SOLUTION;
 		} else {
@@ -301,16 +309,6 @@ public final class LocusIntersectionSolver2D {
 		return Verification.accepted(new LocusIntersectionSolution2D(identity,
 				revisionEvidence, evaluation.getPoint(), classification, lineage,
 				diagnostics));
-	}
-
-	private static String targetContractSignature(
-			LocusIntersectionTarget2D target) {
-		IntersectionResidualContract2D contract = target.getResidualContract();
-		return target.getFamily().name() + "|" + contract.getAdapterVersion()
-				+ "|" + contract.getQuantityKind().name() + "|"
-				+ contract.getUnits() + "|"
-				+ contract.getNormalizationProvenance() + "|"
-				+ contract.getCharacteristicScalePolicy();
 	}
 
 	private static List<IntersectionCandidate2D> deduplicate(
@@ -360,6 +358,22 @@ public final class LocusIntersectionSolver2D {
 			List<String> coveredComponents,
 			LocusIntersectionInstrumentation2D instrumentation,
 			List<IntersectionDiagnostic2D> diagnostics) {
+		return publish(binding, status, completeness, completenessMethod, kind,
+				supportLevel, guarantee, solutions, overlap, coveredComponents,
+				Collections.emptyList(), instrumentation, diagnostics);
+	}
+
+	private static LocusIntersectionResult2D publish(
+			IntersectionSourceBinding2D binding, ComputationStatus status,
+			Completeness completeness, CompletenessMethod completenessMethod,
+			GeometryKind kind, SupportLevel supportLevel,
+			NumericGuarantee guarantee,
+			List<LocusIntersectionSolution2D> solutions,
+			List<IntersectionOverlapEvidence2D> overlap,
+			List<String> coveredComponents,
+			List<String> unresolvedCandidateComponentKeys,
+			LocusIntersectionInstrumentation2D instrumentation,
+			List<IntersectionDiagnostic2D> diagnostics) {
 		instrumentation.recordPublishedSnapshot();
 		IntersectionCompletenessEvidence2D completenessEvidence =
 				new IntersectionCompletenessEvidence2D(completeness,
@@ -367,8 +381,8 @@ public final class LocusIntersectionSolver2D {
 						diagnostics);
 		return new LocusIntersectionResult2D(binding, status,
 				completenessEvidence, kind, Currentness.CURRENT, supportLevel,
-				guarantee, solutions, overlap, instrumentation.snapshot(),
-				diagnostics);
+				guarantee, solutions, overlap, unresolvedCandidateComponentKeys,
+				instrumentation.snapshot(), diagnostics);
 	}
 
 	private static LocusIntersectionResult2D failure(

@@ -6,6 +6,7 @@
 package org.geocedg.common.kernel.locus.intersection;
 
 import java.util.Objects;
+import java.util.Optional;
 
 /** Source of opaque tokens from explicit, non-coordinate semantic lineage. */
 @FunctionalInterface
@@ -51,6 +52,22 @@ public interface IntersectionRootTokenSource2D {
 	}
 
 	/**
+	 * States whether a candidate-owned key already proves durable identity.
+	 *
+	 * <p>Frozen G8 capabilities may return an explicit semantic continuation
+	 * map and therefore retain the historical default. The public G9U0 adapter
+	 * returns current root-germ evidence only; its post-solve resolver owns the
+	 * stateful previous-to-current relation and overrides this to fail closed.</p>
+	 *
+	 * @param candidateKey candidate-owned semantic key, when present
+	 * @return whether the solver may mint a durable token directly
+	 */
+	default boolean establishesDurableCandidateIdentity(
+			Optional<String> candidateKey) {
+		return Objects.requireNonNull(candidateKey).isPresent();
+	}
+
+	/**
 	 * Adapts a lineage-aware public token source without changing the frozen G8
 	 * functional-interface shape.
 	 *
@@ -87,6 +104,13 @@ public interface IntersectionRootTokenSource2D {
 				return revisionLocalSource.nextHandle(
 						Objects.requireNonNull(lineage),
 						Objects.requireNonNull(revisionEvidence));
+			}
+
+			@Override
+			public boolean establishesDurableCandidateIdentity(
+					Optional<String> candidateKey) {
+				Objects.requireNonNull(candidateKey);
+				return false;
 			}
 		};
 	}

@@ -1116,19 +1116,19 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionRootRevisionEvidence2D.java",
       "change": "added",
-      "purpose": "Implement the internal query-local G8B intersection semantic contract (IntersectionRootRevisionEvidence2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
+      "purpose": "Carry query-local G8B revision evidence; R4 adds the typed current root germ used with component lineage to form a deterministic base selector, while canonical parameter/address data remain nonidentity revision evidence used only to prove intrinsic oriented phase ordering.",
       "authority": "geocedg/specs/locus/locus-v2-intersections.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionRootTokenSource2D.java",
       "change": "added",
-      "purpose": "Implement the internal query-local G8B intersection semantic contract (IntersectionRootTokenSource2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
+      "purpose": "Provide the G8-compatible token-source seam; R4 makes the public semantic adapter reject candidate-owned durable identity and emit revision-local handles until the post-solve deterministic current-selector resolver binds an exact ledger token.",
       "authority": "geocedg/specs/locus/locus-v2-intersections.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionSemanticMetadata2D.java",
       "change": "added",
-      "purpose": "Define the closed G8B/G8C1 target-family, support, evaluation, result, completeness, classification and identity vocabulary.",
+      "purpose": "Define the closed G8B/G8C1 target-family, support, evaluation, result, completeness, classification and identity vocabulary; R4 adds deterministic-selection identity status without making continuity history authoritative.",
       "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
     },
     {
@@ -1152,7 +1152,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionContinuation2D.java",
       "change": "added",
-      "purpose": "Implement the internal query-local G8B intersection semantic contract (LocusIntersectionContinuation2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
+      "purpose": "Implement the internal query-local G8B intersection continuation contract; R4 keeps every merge/split candidate lineage explicitly ambiguous instead of treating a parentless topology event as a new admissible solution.",
       "authority": "geocedg/specs/locus/locus-v2-intersections.md"
     },
     {
@@ -1182,7 +1182,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionResult2D.java",
       "change": "added",
-      "purpose": "Implement the internal query-local G8B intersection semantic contract (LocusIntersectionResult2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
+      "purpose": "Implement the internal query-local G8B intersection result contract; R4 admits only current unique deterministic-selection/new-solution states while merge/split/ambiguous topology remains point-inadmissible.",
       "authority": "geocedg/specs/locus/locus-v2-intersections.md"
     },
     {
@@ -1194,7 +1194,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionSolver2D.java",
       "change": "added",
-      "purpose": "Select the closed G8B/G8C1 capability hierarchy and independently verify typed residual and membership evidence before rich-result publication.",
+      "purpose": "Select the closed G8B/G8C1 capability hierarchy and independently verify typed residual and membership evidence; R4 carries current semantic germ evidence while the public token source prevents durable minting before deterministic selector resolution.",
       "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
     },
     {
@@ -1206,7 +1206,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionTargets2D.java",
       "change": "added",
-      "purpose": "Make closed typed support and snapshot decisions for G8B targets and the authorized G8C1 conic, bounded-function and regular-polynomial subsets.",
+      "purpose": "Make closed typed support and snapshot decisions for G8B/G8C1 targets; R4 canonicalizes line/segment and regular-polynomial contact orientation against equivalent nonzero equation scaling while deliberately retaining oriented ray direction as semantic selector evidence.",
       "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
     },
     {
@@ -1242,7 +1242,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusIntersectionV2.java",
       "change": "added",
-      "purpose": "Publish one coherent immutable G8B/G8C1 rich intersection snapshot through normal Construction DAG dependencies, typed target capture and bounded semantic continuation.",
+      "purpose": "Publish one coherent immutable G8B/G8C1 rich intersection snapshot through normal Construction DAG dependencies and typed target capture; R4 inserts deterministic current-root resolution before atomic ledger-v3 publication, with prior-state transition evidence diagnostic only.",
       "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
     },
     {
@@ -1314,7 +1314,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/ExtendedTargetIntersectionCapability2D.java",
       "change": "added",
-      "purpose": "Provide bounded query-local one-parameter candidate isolation, safeguarded refinement, even-contact discovery and conservative completeness for G8C1 targets.",
+      "purpose": "Provide bounded query-local one-parameter candidate isolation, safeguarded refinement, even-contact discovery and conservative completeness; R4 evaluates and deduplicates the equivalent upper seam only for an exact complete periodic cycle.",
       "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
     },
     {
@@ -1332,13 +1332,13 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/NondegenerateConicIntersectionTarget2D.java",
       "change": "added",
-      "purpose": "Capture authoritative ellipse, parabola and hyperbola matrices and expose a scale-invariant first-order normal residual at regular points.",
+      "purpose": "Capture authoritative ellipse, parabola and hyperbola matrices and expose a scale-invariant first-order normal residual; R4 derives an intrinsic conic contact orientation so equivalent nonzero homogeneous/projective matrix representations cannot change deterministic root binding.",
       "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/RegularPolynomialImplicitIntersectionTarget2D.java",
       "change": "added",
-      "purpose": "Capture finite polynomial implicit coefficients and expose scale-invariant regular first-order residual evidence while rejecting singular normalization.",
+      "purpose": "Capture finite polynomial implicit coefficients and expose scale-invariant regular first-order residual evidence while rejecting singular normalization; R4 canonicalizes contact orientation by the nonzero leading monomial so equivalent polynomial equation scaling cannot change deterministic root binding.",
       "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
     },
     {
@@ -1452,7 +1452,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusPairIntersectionSolver2D.java",
       "change": "added",
-      "purpose": "Coordinate dedicated pair candidate isolation, dual refinement, independent two-source residual verification, completeness, overlap and strict continuation.",
+      "purpose": "Coordinate dedicated pair candidate isolation, dual refinement, independent two-source residual verification, completeness, overlap and strict continuation; R4 propagates the candidate key only as compatibility revision evidence without admitting pair roots through the single-target resolver.",
       "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
     },
     {
@@ -2562,19 +2562,19 @@
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored default type, action, help, and typed-error strings for Locus V2.",
+      "purpose": "Add GeoCeDG-authored default type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds the deterministic-selection status diagnostic.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_en.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored English type, action, help, and typed-error strings for Locus V2.",
+      "purpose": "Add GeoCeDG-authored English type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds the English deterministic-selection status diagnostic.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_es.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored Spanish type, action, help, and typed-error strings for Locus V2.",
+      "purpose": "Add GeoCeDG-authored Spanish type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds the Spanish deterministic-selection status diagnostic.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -2616,7 +2616,7 @@
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9U0IntersectionTokenTest.java",
       "change": "added",
-      "purpose": "Verify the exact I18 rich-intersection, Option B completeness, supported-target, exact-token, continuation, overlap, and no-inference contracts.",
+      "purpose": "Verify the exact I18 rich-intersection, Option B completeness, supported-target, exact-token, overlap and no-inference contracts; R4 updates stable public recompute to exercise deterministic current-selector resolution under parameter motion.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -2628,7 +2628,7 @@
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9U0PersistenceCompatibilityTest.java",
       "change": "added",
-      "purpose": "Verify the exact P16 native XML, byte-stable reopen, closure copy, undo/redo, Classic preservation, no-downgrade, and corrupt-state rejection scenarios.",
+      "purpose": "Verify the exact P16 native XML, byte-stable reopen, closure copy, undo/redo, Classic preservation, no-downgrade and corrupt-state rejection scenarios; R4 imports compatible ledger-v1/v2 token-point evidence into deterministic ledger-v3 bindings without changing opaque token material.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -2742,7 +2742,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionRootAddressProof2D.java",
       "change": "added",
-      "purpose": "Persist exact provider, target, and canonical-preimage evidence for conservative token continuity and authorized closure-copy rebasing without geometric inference.",
+      "purpose": "Persist exact provider, target and canonical-preimage revision evidence for ledger allocation and authorized closure-copy rebasing; R4 keeps this address separate from the deterministic selector so parameter equality/proximity never becomes identity.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -2754,7 +2754,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionTokenLedger2D.java",
       "change": "added",
-      "purpose": "Persist and atomically manage intersection-token incarnations, owner validation, exact continuation evidence, burns, restore, and authorized copy rebasing.",
+      "purpose": "Persist and atomically manage intersection-token incarnations, owner validation, burns, restore and authorized copy rebasing; R4 ledger format v3 alone binds intrinsic-phase selectors, imports canonical v1 and authentic pre-phase v2 state, preserves exact opaque tokens where the semantic binding remains unique, rejects phase-bearing v3 state falsely relabeled as v2 and otherwise fails closed.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -2766,7 +2766,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PublicTargetIntersectionCapability2D.java",
       "change": "added",
-      "purpose": "Adapt approved line, segment, ray, and circle targets to the public rich-intersection contract with stable semantic candidate lineage and no unsupported completeness claim.",
+      "purpose": "Adapt approved one-parameter target families to the public rich-intersection contract; R4 records a deterministic oriented transverse current-root germ that contributes to the component-scoped current selector but is not identity by itself.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -3078,8 +3078,56 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U0R3InspectorWorkflowTest.java",
       "change": "added",
-      "purpose": "Exercise the real product-menu inspector route, deterministic rich-result choice, bounded accessible labels over long exact tokens, unchanged token materialization/persistence, cancel/recompute/undo/redo, hidden token copy, and R3 no-marker/no-automatic-point boundaries.",
+      "purpose": "Exercise the real product-menu inspector route, deterministic rich-result choice, bounded accessible labels over long exact tokens, unchanged token materialization/persistence, cancel/recompute/undo/redo, hidden token copy, and R3 no-marker/no-automatic-point boundaries; R4 confirms the descendant two-root result follows that same public dialog path.",
       "authority": ".github/prompts/tasks/g9u0-r3-public-locus-ui-hardening.prompt.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionRootAllocation2D.java",
+      "change": "added",
+      "purpose": "Carry one immutable opaque R4 ledger allocation result without exposing its serial or semantic-address evidence as geometric identity.",
+      "authority": ".github/prompts/tasks/g9u0-r4-intersection-admissibility-continuation.prompt.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionRootDeterministicSelector2D.java",
+      "change": "added",
+      "purpose": "Encode the component-lineage plus typed oriented-germ base selector and, only for a repeated collision group, the ADR-0017 orientation/domain/cardinality/intrinsic-phase rank; exclude coordinates, raw parameters, solver/list/UI order, screen state and previous-root history.",
+      "authority": ".github/prompts/tasks/g9u0-r4-intersection-admissibility-continuation.prompt.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PublicIntersectionRootIdentityResolver2D.java",
+      "change": "added",
+      "purpose": "Resolve public roots after solving from deterministic current selectors and exact ledger-v3 bindings; repeated base selectors are ranked only by pairwise-disjoint canonical intervals in the explicit oriented domain; reuse for a complete ranked periodic group additionally requires a complete bijective same-selector prior/current map, with missing, ambiguous, budget-exhausted, incomplete or non-bijective evidence invalidating the whole prior group, while a missing nonperiodic relation is not identity authority.",
+      "authority": ".github/prompts/tasks/g9u0-r4-intersection-admissibility-continuation.prompt.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PublicIntersectionRootTransition2D.java",
+      "change": "added",
+      "purpose": "Relate prior and current public roots for bounded continuity/topology diagnostics without choosing the current token; the relation is consumed only as a conservative prior-token reuse guard for a complete ranked periodic group, while deterministic current selection remains authoritative and a missing nonperiodic relation does not define identity.",
+      "authority": ".github/prompts/tasks/g9u0-r4-intersection-admissibility-continuation.prompt.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9U0R4IntersectionAdmissibilityContinuationTest.java",
+      "change": "added",
+      "purpose": "Verify 25 public R4 cases: byte-exact midpoint/circle admission; four unique intrinsic selectors/tokens from the byte-exact four-solution fixture; all 24 solver permutations; path-independent and broad regular motion; v1 migration; Option B; Cartesian-order reversal; orientation/cardinality barriers; incremental seam traversal plus byte-identical direct periodic jump with whole-group old-token invalidation and fresh stable tokens; topology guards and target families.",
+      "authority": ".github/prompts/tasks/g9u0-r4-intersection-admissibility-continuation.prompt.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/locus/g9u0-r4/fourSolutions.cedg",
+      "change": "added",
+      "purpose": "Preserve the 14,601-byte author four-solution smoke document byte-exactly (SHA-256 51dcf7a002cb3984bb4cf5843d50e100f4bc8ef91217d4502fa7987c5b1ec21c) as reproduction evidence for repeated base-selector collisions and the ADR-0017 intrinsic-phase correction; the fixture is not modified or treated as semantic identity authority.",
+      "authority": ".github/prompts/tasks/g9u0-r4-intersection-admissibility-continuation.prompt.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U0R4NativeArchivePersistenceTest.java",
+      "change": "added",
+      "purpose": "Verify two real native .cedg cases: Save As/reopen for both midpoint/circle token points with ledger-v3 dependencies, and path-independent final deterministic binding after reopen versus direct motion.",
+      "authority": ".github/prompts/tasks/g9u0-r4-intersection-admissibility-continuation.prompt.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9U0R4TokenLedgerAllocationTest.java",
+      "change": "added",
+      "purpose": "Verify 23 R4 ledger cases covering current-selector resolution across parameter motion; intrinsic-phase codec and ledger-v3 round trip; fixed authentic pre-phase ledger-v2 migration with exact token retention; rejection of phase-bearing state falsely relabeled as v2; cardinality/orientation burn barriers; exact published-selector recovery; malformed/duplicate rejection; v1 migration; copy provenance; unavailable burn and unchanged legacy mint semantics.",
+      "authority": ".github/prompts/tasks/g9u0-r4-intersection-admissibility-continuation.prompt.md"
     }
   ]
 }

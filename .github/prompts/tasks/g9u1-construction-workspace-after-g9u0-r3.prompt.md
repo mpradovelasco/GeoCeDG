@@ -1,8 +1,10 @@
 # Objective
 
-Implement the manifest-defined **CeDG Construction** workspace after the
-separately approved closeout of `G9U0-R3 — PUBLIC LOCUS V2 UI EXPOSURE
-HARDENING`.
+Implement the manifest-defined **CeDG Construction** workspace only after the
+separately approved closeouts of `G9U0-R3 — PUBLIC LOCUS V2 UI EXPOSURE
+HARDENING`, `G9U0-R4 — PUBLIC LOCUS V2 INTERSECTION INITIAL ADMISSIBILITY AND
+CONTINUATION CORRECTION` and `G9U0-R5 — LOCUS V2 2D SIMILARITY
+TRANSFORMATIONS`.
 
 **PROPOSED FUTURE SUCCESSOR PROMPT — UNEXECUTED AND NOT AUTHORIZED.**
 
@@ -14,38 +16,63 @@ canonical-LF SHA-256
 
 Mandatory entry conditions are all of:
 
-- `G9U0`, `G9U0-R1`, `G9X1`, `G9U0-R2` and `G9U0-R3` are
-  `PASS — AUTHOR APPROVED` on the current clean main;
+- `G9U0`, `G9U0-R1`, `G9X1`, `G9U0-R2`, `G9U0-R3`, `G9U0-R4` and
+  `G9U0-R5` are `PASS — AUTHOR APPROVED` on the current clean main;
 - the annotated phase tags, ancestry, current remote main and composed
   verification agree with the repository authority;
-- ADR 0012 remains Accepted, ADR 0016 remains Accepted, and the normative
-  workspace, Locus V2 presentation/public-surface and native-document
-  contracts are current and mutually consistent;
+- ADR 0012, ADR 0016 and ADR 0017 remain Accepted, the author-approved R4
+  intrinsic semantic phase/rank decision remains current, and the normative
+  workspace, Locus V2 presentation/public-surface, intersection-identity and
+  native-document contracts are mutually consistent;
 - the author has separately authorized this exact successor prompt after
   reviewing its hash; and
 - the author-provided top-bar and startup assets are either present with
   approved provenance or each explicitly recorded as a bounded UI/branding
   review item under the fallback policy below.
 
-An R3 PASS does not authorize G9U1 automatically. At entry, record the exact
+No predecessor PASS authorizes G9U1 automatically. At entry, record the exact
 prompt SHA, branch/base, modified-file boundary and verification baseline.
 
 # Authority and evidence hierarchy
 
 Use current repository code, tests and serialization contracts first; then
-Accepted ADRs 0012 and 0016 and the normative contracts under
+Accepted ADRs 0012, 0016 and 0017 and the
+normative contracts under
 `geocedg/specs/ui/`, `geocedg/specs/locus/` and
-`geocedg/specs/operations/`; then approved G9U0/R1/R2/R3, G9X1 and G9P
+`geocedg/specs/operations/`; then approved G9U0/R1/R2/R3/R4/R5, G9X1 and G9P
 evidence. Generated screenshots, package outputs and previous summaries are
 evidence only.
 
 Read the current application-profile schema and compiler, `AppGeoCeDG`,
 Desktop layout/perspective/menu/controller code, RuntimeFeatureService,
-resource and provenance manifests, Windows package profile and builder, and
-the approved reference-workflow audit before design or code.
+resource and provenance manifests, Windows package profile and builder, the
+host `Kernel` continuity setting and XML/preference lifecycle, the Desktop
+Advanced-settings control, and the approved reference-workflow audit before
+design or code.
+
+The approved host characterization to reverify at entry is exact and bounded:
+
+- `org.geogebra.common.kernel.Kernel` owns the sole `continuous` boolean
+  (default `false`) and the existing `isContinuous()` / `setContinuous(boolean)`
+  API;
+- `Kernel` writes `<kernel><continuous val="..."/></kernel>` and
+  `org.geogebra.common.io.MyXMLHandler.handleKernelContinuous(...)` reads that
+  same document/preference XML through `Kernel.setContinuous(...)`;
+- `org.geogebra.common.main.GeoGebraPreferencesXML` supplies the factory
+  default `<continuous val="false"/>`, while Desktop
+  `GeoGebraPreferencesD.loadXMLPreferences(AppD)` loads saved preference XML
+  through the normal `App.setXML(...)` / `MyXMLHandler` route; and
+- Desktop `OptionsAdvancedD` owns the existing on/off radio controls, reads
+  `Kernel.isContinuous()` and currently writes `Kernel.setContinuous(...)`
+  followed by Construction update/unsaved handling.
+
+This is one host setting shared by document XML and XML preferences, not two
+independent values. Reverify these exact seams against the then-current R4/R5
+main before implementation; if they have materially changed, stop and update
+the prospective design instead of guessing.
 
 Preserve the historical G9U1 prompt and G9P prompt catalog as historical
-evidence. This successor is the only future G9U1 execution authority after R3;
+evidence. This successor is the only future G9U1 execution authority after R5;
 do not maintain two live workspace prompts.
 
 # Scope
@@ -55,6 +82,14 @@ migration, one manifest-owned action registry, named workspaces, views/docking,
 bottom input and contextual help, toolbar/menu groups, maturity and feature
 availability, localization, accessibility, workspace preferences, saved-layout
 policy and workspace switching.
+
+Enforce the GeoCeDG deterministic product policy through the host's existing
+kernel **Continuity** option. In the GeoCeDG product profile and CeDG
+Construction application, `Continuity = OFF` is an invariant, not a workspace
+preference: fresh launch, restart, workspace switching and restored UI state
+must all leave the existing kernel option off. Do not introduce a second
+continuity concept or persistence field. The separate GeoCeDG Classic
+diagnostic route retains the upstream user-configurable Continuity behavior.
 
 The default **CeDG Construction** workspace remains professional and
 non-minimal. Its manifest/action registry must represent at least these approved
@@ -80,23 +115,58 @@ accessible through the same action registry and the sole existing Locus V2
 runtime opt-in. Workspace membership affects presentation and discoverability,
 not command meaning or feature policy.
 
-Add the approved rich-intersection presentation flow:
+Add the prospective author-directed rich-intersection presentation flow below,
+conditional on the final author-approved R4 identity/evidence contract:
 
 ```text
 Intersect(L,T)
- -> rich result remains semantic authority
+ -> current deterministic rich result remains semantic authority
+ -> every current finite solution exposes separately:
+      deterministic-identity status
+      local numerical/topological evidence class
+      global completeness
+      current exact-token point-admissibility
  -> transient markers for the active/selected rich result, default ON in
-    CeDG Construction
- -> click/rank preselects an already admissible exact token
- -> explicit action materializes one ordinary GeoPoint
- -> optional explicit "create all admissible points"
- -> never automatic persistent GeoPoints
+    CeDG Construction, distinguish exact-token eligible and
+    nonmaterializable candidates
+ -> marker hit testing preselects only an already identified exact kernel token
+ -> explicit create-one/create-all consumes that exact selector/token
+ -> optional user-enabled auto mode executes one second visible frontend
+    materialization transaction over that exact eligible-token snapshot after
+    an explicit Intersect action
+ -> later recomputation never creates persistent GeoPoints
 ```
 
-Only currently finite and point-admissible solutions receive markers. Inactive
-historical results do not pollute Graphics. A workspace/user preference may
-turn markers off, but the CeDG Construction default for the active-result
-context is on unless later author review changes it.
+Only current finite solutions with truthful current presentation evidence may
+receive markers. Only a root already carrying a unique deterministic semantic
+selector/exact token is selectable; no frontend policy may override identity
+ambiguity or numerical/topological evidence. Markers never run a second previous-frame or
+continuous-tracking heuristic. Inactive historical results do not pollute
+Graphics. A workspace/user preference may turn markers off, but the CeDG
+Construction default for the active-result context is on unless later author
+review changes it.
+
+The intrinsic semantic phase/rank approved by R4 is shared-kernel identity
+evidence inside the exact selector. It is not a presentation ordinal. The
+workspace, marker overlay, chooser and action registry may neither calculate,
+renumber nor persist it. UI list order and marker order are never selector
+authority; frontend hit testing can only return one exact selector/token already
+published by the current rich-result snapshot.
+
+Expose conceptually equivalent preferences without freezing Java enum names:
+
+```text
+Show intersection candidates: ON / OFF
+Auto-materialize eligible points: OFF / ON
+```
+
+These labels are prospective placeholders, not frozen Java names. Both values
+are isolated GeoCeDG frontend/profile defaults, never document geometry.
+Enabling auto-materialization must not retroactively materialize an already
+existing rich result. Recommended review defaults are markers ON and
+auto-materialization OFF. G9U1 may consume only the final R4 kernel
+point-admissibility result; a weaker evidence/materialization tier would require
+separate future author authorization.
 
 Define a restrained, professional GeoCeDG frontend identity through normal
 application seams: application/window identity, reviewable accent/theme tokens,
@@ -142,18 +212,31 @@ review. GeoCeDG Classic retains its separate diagnostic visual identity.
 
 Do not implement or change geometric semantics, commands, algorithms,
 intersection solving, exact-token identity, Locus V2 topology, metric
-authority, render tessellation, persistence semantics, G9B/G9C spatial
-semantics, G9U2 procedures or productive G10 work.
+authority, render tessellation, or persistence semantics beyond consuming the
+final R4 exact selector/token and current point-admissibility seam. If that
+authority is absent, G9U1 must STOP rather than invent kernel/XML semantics.
+Do not implement G9B/G9C spatial semantics, G9U2
+procedures or productive G10 work.
 
 Do not:
 
 - make a candidate marker a `GeoElement`, durable ID, XML record, Construction
   Protocol entry, DAG node, undo object, semantic revision or token identity;
-- create persistent points automatically from `Intersect(L,T)`;
+- make kernel `Intersect(L,T)`, recompute, load/reopen or background updates
+  create persistent points; only the separately visible user-opted frontend
+  transaction defined below is permitted;
 - identify a solution by coordinate, list order, screen proximity or marker
   identity;
-- show markers for stale solutions, unresolved candidates, overlap-only
-  evidence, non-point-admissible roots or ambiguous/inadmissible tokens;
+- calculate, replace or continue the kernel's intrinsic semantic phase/rank
+  from a UI list position, marker order, presentation ordinal or hit-test rank;
+- continue or reidentify a marker/token from a previous marker position,
+  previous Cartesian root or movement history;
+- make stale/overlap-only/unresolved non-point evidence selectable, or let any
+  marker create identity for an ambiguous/inadmissible token;
+- add a GeoCeDG-only continuity flag, parallel kernel mode, duplicate
+  preference/XML field or workspace-owned continuity state;
+- allow a prior preference, restored workspace, `.cedg` or compatibility
+  `.ggb` to activate Continuity in the GeoCeDG product;
 - create a second hard-coded toolbar/menu/action authority or restore scattered
   product-menu definitions;
 - promote reference macros, disabled procedure placeholders or experimental
@@ -175,9 +258,24 @@ Resource ownership and hashes belong to the existing GeoCeDG asset manifest.
 
 Rich intersection results and exact tokens remain shared-kernel semantic
 authority. Candidate markers are a presentation overlay derived from the
-active result's already admissible exact tokens. Zoom, DPI, camera and screen
-state may determine placement, clipping, hit target and ranking among those
-tokens; they never establish or change token identity.
+active result's current root/evidence assessments. A root may be selectable only
+when R4 supplies a unique, current, point-admissible exact token. A finite
+nonmaterializable root may have a
+nonselectable diagnostic marker when its current point is truthful; stale,
+overlap-only or unresolved non-point evidence has none. Zoom, DPI, camera and
+screen state may determine placement, clipping and which already identified
+marker is hit or preselected; they never establish, rank, continue or change
+semantic identity. The frontend consumes the kernel selector/token atomically
+and never reconstructs its phase/rank from presentation state.
+
+The existing host `Kernel` Continuity value remains the sole kernel/persistence
+authority. Reverify the frozen setter/XML/preference/UI characterization above,
+then enforce the GeoCeDG product policy at one application-configuration seam
+consumed by the existing setter, so every write path is clamped to off for
+`AppGeoCeDG`; make the settings UI omit/disable the on choice or present the
+enforced policy read-only. Do not special-case individual file-open paths. The
+separate Classic configuration continues to permit the same host setting and
+ordinary UI control.
 
 The manifest/action registry is the single declarative authority for action
 IDs, placement, localization/help, icon references, feature requirements and
@@ -186,8 +284,9 @@ namespace.
 
 # Required design/specification
 
-Before productive edits, reconcile the current source against ADRs 0012/0016,
-the normative CeDG workspace and document-identity contracts, the post-R3
+Before productive edits, reconcile the current source against ADRs
+0012/0016/0017,
+the normative CeDG workspace and document-identity contracts, the post-R4/R5
 public Locus surface, the Windows packaging contract and the resource manifest.
 Record:
 
@@ -195,8 +294,15 @@ Record:
 - stable action IDs and complete mappings for all eleven professional groups;
 - typed selection and cancellation contracts for each constructive action;
 - marker overlay ownership, active-result lifecycle, admissibility filtering,
-  hit/rank behavior, preference/default policy and explicit one/all-point
-  materialization transactions;
+  identity/evidence/global-completeness separation, hit-testing/preselection
+  behavior, strict separation from kernel semantic phase/rank,
+  marker/auto defaults and explicit/opted-in automatic
+  one/all-point materialization transactions over exact kernel tokens;
+- exact selector/token persistence through the existing R4 parent-algorithm
+  seam, without a new quality or policy field on ordinary `GeoPoint`;
+- the host Continuity field/setter, every XML and preference read/write path,
+  application-profile policy seam, settings-panel behavior and separate
+  Classic behavior, with no duplicate option or serialization field;
 - presentation-purity, saved-layout and Classic/Laboratory boundaries;
 - GeoCeDG visual tokens, contrast/scaling policy and Classic distinction;
 - `geocedg.brand.topbar` and `geocedg.brand.startup` resolution, independent
@@ -218,13 +324,43 @@ hover, selection and DPI/zoom changes produce zero Construction/DAG/semantic
 updates. The rich result remains authority through finite, stale, unresolved,
 overlap, ambiguous and inadmissible states.
 
-Marker hit testing may preselect only a token already supplied as currently
-admissible by the rich result. Explicit materialization passes that exact token
-to the existing exact-token construction path without re-solving or fallback.
-One-point and create-all actions are explicit and undoable; cancel and marker
-inspection create no persistent object. Genuine topology, continuation and
-token lifecycle semantics remain those of the approved G9U0/R1/R2/R3 kernel
-surface.
+For GeoCeDG, deterministic semantic selection is authoritative over a
+continuity heuristic. Movement history does not decide the current solution.
+Ordinary continuity should emerge when the same current deterministic semantic
+selector remains uniquely valid; genuine topology ambiguity may invalidate
+rather than guess. Identical final Construction state and durable IDs reached
+through different regular update histories must produce the same current token
+binding, point definedness and marker set.
+
+Marker hit testing may preselect only a token already supplied by the current
+deterministic rich result. The frontend may neither relax nor reinterpret the
+kernel's point-admissibility decision; it changes no root computation,
+selector/token meaning, numerical evidence, topology evidence or global
+completeness. An exact token means exact semantic identity, not exact arithmetic.
+Explicit materialization passes that exact token alone to the approved R4
+construction path without re-solving, previous-frame matching or fallback.
+
+The kernel-owned intrinsic phase/rank remains part of that exact selector's
+semantic proof. Marker order, list order and a transient presentation ordinal
+are allowed only for accessibility and display; they cannot be passed back as
+identity, persisted, or used to choose a different root. The enforced
+`Continuity = OFF` product invariant does not create a frontend continuation
+substitute.
+
+One-point and create-all actions are visible and undoable; cancel and marker
+inspection create no persistent object. Kernel `Intersect(L,T)` always creates
+only the rich result. With explicit user opt-in, auto mode may issue one second
+deterministic create-all transaction immediately after an explicit Intersect
+action. It must be a separate atomic undo step, avoid duplicate token children
+and never run on recompute, later root appearance, document load/reopen,
+workspace switch, preference restoration or background update. Genuine
+topology, continuation and token lifecycle semantics remain those of the
+approved G9U0/R1/R2/R3/R4/R5 kernel surface.
+
+The existing kernel Continuity option is always off in the GeoCeDG product,
+including while no workspace is active and during workspace transitions. This
+product policy changes no construction object, semantic revision, DAG edge or
+undo state. GeoCeDG Classic retains ordinary upstream configurability.
 
 No color, icon, highlight, screen position, label, order or proximity is
 semantic identity. Disabled or unavailable spatial/procedure actions expose a
@@ -239,10 +375,22 @@ or infer semantics from a filename.
 
 Marker overlays have no XML, durable ID, DAG/Protocol record or undo state.
 Materialized points and their hidden opaque exact-token dependencies keep the
-existing R3-validated save/reopen, copy/remap and undo/redo behavior. Loading a
-document with supported rich results reconstructs semantic authority; overlay
+existing R3/R4-validated save/reopen, copy/remap and undo/redo behavior. Marker
+and auto preferences are application presentation/workflow state and never
+reinterpret an existing point. Loading a document with supported rich results reconstructs only
+serialized semantic authority and points; it never auto-materializes. Overlay
 presentation is recomputed only for the active result under current workspace
 preference.
+
+The host's existing Continuity persistence remains the only serialization
+seam. GeoCeDG product policy wins over a previously enabled user preference,
+restored profile/window state, workspace switching, application restart, a
+native `.cedg`, and a compatibility `.ggb` that records Continuity on. Normal
+GeoCeDG save records the enforced off value through that existing host seam
+where the host serializes it; do not add a second field or rewrite geometry.
+Opening compatibility input must leave the source `.ggb` untouched under the
+R2 non-destructive transition contract. The separate Classic route keeps its
+own preference namespace and normal configurable value.
 
 Legacy saved perspectives remain explicit Document layout state. GeoCeDG
 Classic opens and preserves supported `.cedg` without experimental creation
@@ -264,18 +412,53 @@ keyboard/accessibility and Classic/Laboratory isolation.
 
 Rich-intersection presentation tests must prove:
 
-- the active/selected result shows only finite point-admissible markers by
-  default and an inactive result shows none;
-- stale, overlap-only, unresolved, ambiguous and inadmissible solutions show
-  none;
+- the active/selected result distinguishes exact-token eligible and
+  nonmaterializable candidates
+  using accessible shape/glyph/text/status cues rather than color alone; an
+  inactive result shows none;
+- stale and overlap-only evidence with no truthful finite point shows none;
+  a finite current nonmaterializable candidate may have only a nonselectable
+  diagnostic marker;
 - zoom/DPI/view changes do not alter exact identity;
-- click/ranking selects only an existing exact token;
+- marker hit testing/preselection returns only an existing exact kernel
+  selector/token and never computes semantic phase/rank or continues a token
+  from UI order, previous marker position or movement history;
+- byte-identical constructions with identical durable IDs at the same final
+  regular geometry expose the same token/marker bindings after direct,
+  incremental, reverse and save/reopen update paths;
+- roots lacking current exact-token point admissibility remain nonmaterializable;
+  G9U1 introduces no weaker certification or identity override;
 - cancel creates nothing; explicit one-point materialization is exact and
   normally undoable; explicit create-all creates exactly the currently
-  admissible set as an undoable user action;
-- `Intersect(L,T)` alone still creates zero persistent points; and
+  eligible set as an undoable user action;
+- auto OFF leaves `Intersect(L,T)` with zero persistent points; auto ON performs
+  exactly one separate visible create-all transaction
+  for the explicit action's eligible exact-token snapshot, with no list/marker
+  order becoming materialization identity;
+- recompute, newly appearing roots, load/reopen, workspace switch and preference
+  restoration never auto-create a point;
+- changing marker/auto presentation preferences does not reinterpret existing
+  point algorithms;
+- exact selector/token provenance survives save/reopen, supported copy and
+  undo/redo;
 - no marker appears in XML, the DAG, Construction Protocol, copy closure or
   undo history.
+
+Deterministic-product-policy tests must prove:
+
+- a fresh GeoCeDG launch has the existing kernel Continuity option off;
+- a previously enabled user preference cannot turn it on in GeoCeDG;
+- a compatibility `.ggb` or native `.cedg` that records Continuity on cannot
+  activate it in the live GeoCeDG product;
+- the Advanced/settings UI cannot switch it on and communicates the product
+  policy accessibly;
+- workspace switching, restored UI/profile state, restart and save/reopen all
+  retain off without changing geometry or creating undo state;
+- GeoCeDG save uses the existing host serialization field and emits no second
+  GeoCeDG continuity field;
+- the original compatibility `.ggb` remains untouched; and
+- the separate GeoCeDG Classic route retains upstream user configurability and
+  its isolated preference behavior.
 
 Visual-identity tests must prove that CeDG Construction is visibly
 distinguishable from Classic, switching style/workspace changes no Construction
@@ -295,23 +478,25 @@ all action IDs/localization/help/feature policies resolve, there is no duplicate
 hard-coded authority, and the R3-fixed menu/inspector survives initialization,
 repeated font updates and language refresh.
 
-Rerun G9U0, G9U0-R1, G9U0-R2, G9U0-R3, G9X1, G5, relevant G9A, legacy Locus,
-frontend/profile/localization, Desktop/document persistence, packaging when
-affected, relevant Checkstyle, `git diff --check`, `git diff --cached --check`
-and the full `tools/agent/verify.ps1` without weakening any gate. Require two
-matching focused executions and terminal
+Rerun G9U0, G9U0-R1, G9U0-R2, G9U0-R3, G9U0-R4, G9U0-R5, G9X1, G5, relevant
+G9A, legacy Locus, frontend/profile/localization, Desktop/document persistence,
+packaging when affected, relevant Checkstyle, `git diff --check`,
+`git diff --cached --check` and the full `tools/agent/verify.ps1` without
+weakening any gate. Require two matching focused executions and terminal
 `All GeoCeDG verification gates passed.` Generated evidence belongs only below
 ignored `artifacts/` except the repository's approved compact durable records.
 
 Manual author review must cover professional workflow/density, markers and
 materialization, accessibility/scaling, Construction-versus-Classic visual
 identity, final palette, the top-bar source in frontend chrome and every claimed
-startup-role application/package derivative.
+startup-role application/package derivative. It must also confirm that
+GeoCeDG exposes the deterministic Continuity-off policy and cannot enable the
+host option while the separate Classic route remains normally configurable.
 
 # Required artifacts
 
 Produce the approved schema/profile/action registry and minimal frontend and
-packaging changes; focused tests and verifier integrated after R3; scenario
+packaging changes; focused tests and verifier integrated after R5; scenario
 matrix, exact evidence/hashes, implementation architecture/report, modified-file
 registry and living roadmap/traceability; owned localization/help/theme
 resources; and the two author-asset provenance/derivation records only when the
@@ -326,13 +511,21 @@ claim only behavior actually validated in the implementation candidate.
 
 Stop before or during implementation if:
 
-- R3 is not `PASS — AUTHOR APPROVED`, this exact successor is not separately
-  authorized, entry authority is dirty/inconsistent, or its hash changed;
-- a workspace/menu repair needs another action authority or requires kernel,
-  command, solver, token, identity or serialization changes;
-- marker UX cannot remain a transient overlay over existing admissible tokens;
+- R3, R4 or R5 is not `PASS — AUTHOR APPROVED`, this exact successor is not
+  separately authorized, entry authority is dirty/inconsistent, or its hash
+  changed;
+- a workspace/menu repair needs another action authority or requires kernel
+  geometry, command, solver, token, identity or serialization changes beyond
+  the approved existing Continuity policy seam;
+- the deterministic product policy cannot be enforced by clamping the existing
+  host Continuity option without a second mode/field or a Classic regression;
+- marker UX cannot remain a transient overlay over current deterministic
+  root/evidence authority, or a frontend action would override current
+  exact-token point admissibility or deterministic-selector ambiguity;
+- marker/list ordering or frontend hit testing would need to calculate,
+  renumber, persist or replace the kernel's intrinsic semantic phase/rank;
 - an exact point would require coordinate/order/proximity identity, re-solving
-  or automatic creation;
+  or DAG creation during recompute/load/background updates;
 - switching, theme, icon or marker presentation mutates Construction state;
 - the resource provenance/license boundary is unclear or an upstream asset
   would need to be copied;
@@ -351,6 +544,10 @@ Until such separate authorization, the terminal state remains:
 
 ```text
 G9U1 = DESIGNED — NOT AUTHORIZED
+DETERMINISTIC_CONTINUITY_OFF_REQUIRED
+INTRINSIC_SEMANTIC_PHASE_RANK = KERNEL_AUTHORITY_UI_CONSUMER_ONLY
+INTRINSIC_PHASE_RANK_TOKEN_AUTHORITY_REQUIRED
+AUTO_MATERIALIZATION_FRONTEND_ONLY
 G9B = NOT AUTHORIZED
 G9C = NOT AUTHORIZED
 G9U2 = BLOCKED

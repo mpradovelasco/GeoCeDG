@@ -23,6 +23,7 @@ public final class NondegenerateConicIntersectionTarget2D
 	private final String targetIdentity;
 	private final long targetUpdateStamp;
 	private final double[] matrix;
+	private final double contactOrientation;
 	private final double characteristicScale;
 	private final IntersectionResidualContract2D contract;
 
@@ -51,6 +52,7 @@ public final class NondegenerateConicIntersectionTarget2D
 						"Conic matrix coefficients must be finite");
 			}
 		}
+		this.contactOrientation = canonicalContactOrientation(conic);
 		this.characteristicScale = conicScale(conic.getHalfAxes());
 		this.contract = new IntersectionResidualContract2D(ADAPTER_VERSION,
 				ResidualQuantityKind.FIRST_ORDER_NORMAL_LENGTH,
@@ -143,11 +145,36 @@ public final class NondegenerateConicIntersectionTarget2D
 			return TargetContactEvidence2D.notEstablished(
 					"Regular conic normal/source tangent normalization failed");
 		}
-		double indicator = (gradientX * tangent.getX()
+		double indicator = contactOrientation * (gradientX * tangent.getX()
 				+ gradientY * tangent.getY()) / (gradientNorm * speed);
 		return TargetContactEvidence2D.established(indicator,
-				"d(first-order-conic-normal-level)/d(source-arc-length)",
-				"Normalized captured conic gradient/source tangent factor");
+				"d(canonical-conic-normal-level)/d(source-arc-length)",
+				"Canonical captured conic gradient/source tangent factor");
+	}
+
+	private double canonicalContactOrientation(GeoConic conic) {
+		if (family == TargetFamily.PARABOLA) {
+			double trace = matrix[0] + matrix[1];
+			if (!Double.isFinite(trace) || trace == 0) {
+				throw new IllegalArgumentException(
+						"Parabola quadratic trace must establish orientation");
+			}
+			return trace > 0 ? 1 : -1;
+		}
+		org.geogebra.common.kernel.geos.GeoVec2D center =
+				conic.getTranslationVector();
+		LocusPoint2D centerPoint = new LocusPoint2D(center.getX(), center.getY());
+		double centerLevel = matrix[0] * centerPoint.getX()
+				* centerPoint.getX()
+				+ matrix[1] * centerPoint.getY() * centerPoint.getY()
+				+ matrix[2] + 2 * matrix[3] * centerPoint.getX()
+				* centerPoint.getY() + 2 * matrix[4] * centerPoint.getX()
+				+ 2 * matrix[5] * centerPoint.getY();
+		if (!Double.isFinite(centerLevel) || centerLevel == 0) {
+			throw new IllegalArgumentException(
+					"Central conic center level must establish orientation");
+		}
+		return centerLevel < 0 ? 1 : -1;
 	}
 
 	private RegularResidual regularResidual(LocusPoint2D point) {

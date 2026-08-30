@@ -1,15 +1,20 @@
 # G9 public Locus, product/document refinement and workspace validation matrix
 
 - Status: **G9U0-R2 PASS — AUTHOR APPROVED; G9U0-R3 PASS — AUTHOR APPROVED;
-  G9U1 DESIGNED — NOT AUTHORIZED**
-- Date: 2026-08-28
+  G9U0-R4 IMPLEMENTATION CANDIDATE — PENDING AUTHOR RE-REVIEW; G9U0-R5 DESIGN
+  CANDIDATE — PENDING AUTHOR REVIEW / IMPLEMENTATION NOT AUTHORIZED; G9U1
+  DESIGNED — NOT AUTHORIZED**
+- Date: 2026-08-29
 - Scope: author-approved/historical G9U0 public Locus V2 evidence;
   author-approved G9U0-R2 product/document-refinement design and implementation;
-  bounded G9U0-R3 public-UI exposure hardening; future G9U1
+  bounded G9U0-R3 public-UI exposure hardening; G9U0-R4 public intersection
+  correction; planning-only G9U0-R5 similarity transformations; future G9U1
   Construction workspace; and the
   post-G9 G9U2 Dihedral Procedures workspace
 - G9U0-R2 implementation: **PASS — AUTHOR APPROVED**;
   G9U0-R3: **PASS — AUTHOR APPROVED**;
+  G9U0-R4: **IMPLEMENTATION CANDIDATE — PENDING AUTHOR RE-REVIEW**;
+  G9U0-R5 implementation authorized: **no**;
   G9U1/G9U2 implementation authorized: **no**
 
 The G9U0 rows remain the design source behind separately frozen, author-approved
@@ -19,6 +24,24 @@ historical, packaging, Checkstyle, diff and composed results pass after the R2-L
 correction; the author accepted the corrective re-smoke. The original
 author-smoke failure is preserved. These rows do not imply workspace switching,
 Dihedral procedures, an installed MSI/registry smoke or public redistribution.
+
+The first R4 candidate admitted and materialized both canonical midpoint roots,
+but author smoke then failed because one point became undefined during small
+regular motion. The corrective authority adopts deterministic current-snapshot
+selection over a continuity heuristic. Unresolved evidence is scoped to its semantic component; equivalent
+homogeneous/projective target representations preserve binding, while ray
+direction remains semantic. The replacement composed run exposed the missing
+localized value for `DETERMINISTIC_SELECTION_ESTABLISHED`; the bounded base,
+English and Spanish bundle correction changes no semantics. A second smoke then
+exposed four finite, locally isolated roots whose current selector collides in
+two positive/negative pairs. The author subsequently authorized intrinsic
+semantic phase/rank induced by the explicit oriented domain. ADR 0017 permits
+that rank only inside a repeated base-selector group and continues to forbid
+solver/list/UI/coordinate/proximity/history order. The focused authority now
+contains 50 methods and the candidate inventory is 51 paths, 29 under
+`source/`, including the byte-exact four-root fixture. Replacement focused runs
+A and B and the composed authority are green; both smoke failures remain
+evidence, R4 has no PASS, and author re-smoke/re-review remains required.
 
 ## 1. Entry gates
 
@@ -35,11 +58,13 @@ Dihedral procedures, an installed MSI/registry smoke or public redistribution.
 | E-09 | procedure dependency | global G9 PASS before G9U2, absent narrower explicit approval | workspace remains unavailable |
 | E-10 | pre-G9U1 product/document refinement | G9U0-R2 implementation, focused/composed evidence and manual author smoke closed `PASS — AUTHOR APPROVED` | G9U1 remains `DESIGNED — NOT AUTHORIZED`; implementation PASS still requires a separate U1 authorization |
 | E-11 | public Locus UI exposure | G9U0-R3 focused/deterministic/historical/composed evidence plus manual author smoke closed `PASS — AUTHOR APPROVED` | G9U1 remains `DESIGNED — NOT AUTHORIZED`; R3 candidate cannot authorize it |
+| E-12 | local public intersection admissibility | G9U0-R4 focused/deterministic/historical/composed evidence plus manual author smoke closed `PASS — AUTHOR APPROVED` | R5/U1 remain blocked; an implementation candidate cannot authorize either |
+| E-13 | Locus V2 similarity transformations | G9U0-R5 design approval, separate implementation authorization, focused/composed evidence and manual author smoke closed `PASS — AUTHOR APPROVED` | G9U1 remains blocked and R5 implementation must not begin from this planning candidate |
 
 G9U1 is a GUI client/organization phase for already authorized actions. It has
 no semantic dependency on G9B, and G9B must not depend on G9U1. The
-author-approved R2 implementation and a future author-approved R3 closeout are
-product-entry prerequisites for U1, not G9B dependencies. G9U2 is
+author-approved R2/R3 implementations plus future author-approved R4 and R5
+closeouts are product-entry prerequisites for U1, not G9B dependencies. G9U2 is
 the workspace that consumes approved G9 spatial/projection-system semantics and
 therefore remains behind the global G9 gate.
 
@@ -325,6 +350,108 @@ legacy Locus, Checkstyle, Git diff checks and composed verification must pass.
 The author smoke was functionally passing but exposed the dialog-width defect;
 the bounded correction requires a separate author re-review.
 
+### 8.7 G9U0-R4 initial admissibility and continuation correction
+
+These rows govern the current implementation candidate and preserve the Option
+B distinction between one root's local admissibility and global enumeration
+completeness.
+
+| ID | Requirement | Focused test/probe | Expected evidence |
+|---|---|---|---|
+| R4-A01 | exact four-root author acceptance | load byte-exact `fourSolutions.cedg` and inspect/materialize every root | four current transverse locally isolated roots, four intrinsic selectors, four distinct exact tokens and four materializable points; global `NOT_ESTABLISHED` and estimated numeric evidence remain truthful |
+| R4-A02 | exhaustive solver-order independence | permute the same four semantic roots through all 24 solver enumerations | identical semantic-root-to-selector/token map for every permutation |
+| R4-A03 | four-root path independence | reach one final regular geometry directly, incrementally, forward/reverse, after reopen and with different legal step sequences | identical collision groups, ranks, tokens, definedness and evaluated points |
+| R4-A04 | four-root regular motion | materialize all four and move through many isolated transverse updates | all remain defined; no swapping or exact-parameter-equality dependence |
+| R4-A05 | midpoint fixture first publication | load byte-exact `locusFromMidpoint.cedg` and run public `Intersect(a,c)` | two distinct locally admissible roots; truthful global `NOT_ESTABLISHED` retained |
+| R4-A06 | R3 positive control | run the one-root line-locus example | historical singleton remains admissible under exact current-root authority |
+| R4-A07 | legacy token-point migration | load a pre-R4 ledger-format-v1 token point | exact opaque token material is unchanged; current deterministic binding is added and regular motion remains defined |
+| R4-A08 | fixture persistence/recompute | materialize both midpoint roots, reconstruct XML and repeat the same state | exact children and ledger survive without parameter-equality identity |
+| R4-A09 | direct regular motion | move the midpoint author target once within a regular topology stratum | both materialized points remain defined under current deterministic selection |
+| R4-A10 | midpoint path independence | reach byte-identical final geometry directly, through small steps, forward/reverse and save/reopen | same token binding, definedness, branch/component and evaluated point; movement history is not authority |
+| R4-A11 | broad regular motion | move both midpoint roots through many ordinary increments away from topology events | both remain continuous and do not swap while their current selectors remain unique |
+| R4-A12 | normal undo/redo | undo and redo one materialized author token point | ordinary Construction lifecycle, no hidden token recreation |
+| R4-A13 | local/global and unresolved-component matrix | combine complete/incomplete/not-established evidence with admissible/ambiguous roots and an unresolved candidate on another semantic component | individual admissibility stays independent of enumeration completeness; unresolved evidence blocks only its own component |
+| R4-A14 | topology fail-closed | exercise disappearance, new appearance and tangency | ambiguity invalidates; no jump or coordinate resurrection |
+| R4-A15 | periodic canonicalization | intersect a half-open complete periodic locus at its seam | equivalent parameters do not duplicate roots |
+| R4-A16 | periodic singleton crossing | move a uniquely based root through the seam of an exact complete periodic cycle | canonical current selector retains the token without duplicate or Cartesian fallback |
+| R4-A17 | stable deterministic motion | move transverse roots while semantic parameter values change | exact children resolve from current selectors, not exact previous-parameter equality |
+| R4-A18 | spatial-order reversal | reverse Cartesian left/right ordering | tokens remain attached to semantic selectors; order establishes no identity |
+| R4-A19 | direct unobserved regular update | make one larger update that crosses no topology event | unique current selector resolves the same token without requiring intermediate history |
+| R4-A20 | intrinsic rank for repeated base selector | publish four isolated roots sharing two component/germ base selectors | orientation/domain/cardinality/rank yields four unique selectors; no solver/list-order identity |
+| R4-A21 | collision-group appearance/disappearance | change one repeated-base group 4→2→4 | old ranked tokens burn; no rank shift retargets an existing point; settled roots may receive fresh selectors |
+| R4-A22 | orientation redefinition | reverse the provider's declared semantic orientation without an approved map | prior ranked tokens do not transfer; transition fails closed before any fresh allocation |
+| R4-A23 | ranked periodic seam/monodromy | traverse the seam incrementally, then reload a byte-identical seed and update phase directly from `0` to `-0.1` | direct transition publishes four identity discontinuities whose parent-token union is exactly the four old tokens; all four old points invalidate, no old token remains current, and a settled same-state recompute exposes only fresh admissible tokens |
+| R4-A24 | merge parent evidence | construct a merge candidate with explicit parent tokens/keys and compare its lineage with the token-sorted pre-event parent records | complete parent records are canonically ordered once by opaque token; each continuation key stays paired with its token; merge remains ambiguous and point-inadmissible, and the ordering creates no identity |
+| R4-A25 | supported target families and representation invariance | exercise line, segment, ray, circle, conic, function, implicit and pair boundary; repeat supported equations through equivalent homogeneous/projective scaling and reverse a ray direction explicitly | equivalent representations preserve exact binding; ray direction remains semantic; otherwise explicit fail-closed result |
+| R4-L01 | distinct first allocations | allocate two verified current addresses | distinct opaque incarnations unrelated to order |
+| R4-L02 | duplicate current selector | resolve one selector twice in one publication | same staged allocation is returned and duplicate publication remains fail-closed |
+| R4-L03 | changed revision address | change canonical parameter with the same unique selector | exact token survives; parameter bits remain revision evidence only |
+| R4-L04 | different selector | change component/germ selector under the same address context | committed token is not reused |
+| R4-L05 | context versus parameter motion | vary branch/provider/target context and then only the root parameter | context mismatch rejects; ordinary parameter motion does not |
+| R4-L06 | unavailable publication | burn a prior allocation and attempt reuse | stale identity cannot revive |
+| R4-L07 | authorized copy rebase | rebase through approved copy provenance | exact incarnation retained without label/index/coordinate identity |
+| R4-L08 | current multi-root copy provenance | copy two distinct current-selector allocations | exact one-to-one provenance preserves each incarnation |
+| R4-L09 | snapshot round-trip | export/import current ledger format v3 | deterministic selector binding and exact opaque allocation reconstruct |
+| R4-L10 | historical mint | exercise sealed exact-key mint behavior | existing compatibility contract remains unchanged |
+| R4-L11 | R3 singleton migration | import one exact legacy token into the new selector model; separately request an intrinsic-phase selector | a compatible base selector preserves exact opaque token material; intrinsic phase never binds the legacy singleton and receives fresh material instead |
+| R4-L12 | migration address guard | migrate from a nonmatching initial address | migration fails closed |
+| R4-L13 | component/germ mismatch | present a germ from another component | deterministic selector rejects it |
+| R4-L14 | phase-selector codec | encode/decode component, germ, orientation, domain kind, cardinality and rank | exact selector-codec-v2 round trip inside the ledger-v3 authority; no coordinate/raw-parameter/order material |
+| R4-L15 | ledger phase/history compatibility | round-trip a phase-ranked ledger-v3 state; import a fixed authentic pre-phase ledger-v2 state; relabel a phase-bearing v3 state as v2; manipulate ledger v3 to bind legacy-singleton material to intrinsic phase | phase-ranked v3 state and complete tokens round-trip exactly; authentic pre-phase v2 migrates to v3 with its opaque token unchanged; falsely relabeled phase-v2 and forged legacy-singleton/phase-v3 bindings are rejected |
+| R4-L16 | cardinality topology barrier | commit one ranked group at cardinality 2, then 3, then 2 | every incompatible old binding is burned; no ordinal shift reuse |
+| R4-L17 | orientation barrier | present an equal-looking rank under reversed orientation | allocation is not reused without an explicit semantic map |
+| R4-L18 | published selector recovery | parse the exact selector from a published continuation key | historical/current selector version and semantic frame reconstruct exactly |
+| R4-L19 | malformed incarnation | restore a noncanonical suffix | snapshot import rejects it |
+| R4-L20 | forged legacy token | restore mismatched persisted token material | binding rejects it |
+| R4-L21 | duplicate persisted binding | restore two entries for one selector | snapshot import rejects ambiguity |
+| R4-L22 | moved address without history | resolve a unique selector after parameter motion | same token resolves without previous-step state |
+| R4-L23 | legacy multi-root copy mapping | copy roots sharing a historical incarnation | one exact semantic source-to-copy mapping is required per root |
+| R4-E01 | real native archive lifecycle | materialize both midpoint/circle roots, Save As `.cedg`, reopen and move the target | exact ledger v3, persistent point IDs, hidden token dependencies and deterministic dynamic binding survive |
+| R4-E02 | reopen path independence | compare direct final motion with reopen-before-final-motion | identical final token bindings and point definedness |
+| R4-C09 | transition relation is not identity authority | exhaust or omit the bounded prior/current relation on the direct ranked-periodic `0` to `-0.1` update | the relation may guard reuse of every old token, but only the current intrinsic selector chooses a current root; no comparison outcome transfers identity |
+| R4-P04 | direct periodic seam fail-closed boundary | materialize four ranked periodic tokens, update phase directly `0` to `-0.1`, then recompute the settled unchanged state | all four old token points become undefined and never reappear as current; the next stable publication uses fresh, disjoint, point-admissible tokens rather than rotating an ordinal |
+
+The current R4 focused authority contains 25 public-kernel, 23 ledger and
+2 Desktop native-archive methods (50 total). The pre-final replacement runs A
+and B each passed 50/50 at canonical SHA-256
+`c1d76e86d5174e406ac7bdddd4862f4ccc607d6a68df2ec23c365b9084cce83e`;
+that hash remains historical pre-final evidence. After the stable-fresh-token,
+legacy singleton/phase and canonical merge-parent assertions, final A and B each
+passed 50/50 with identical canonical SHA-256
+`f909aaa28aedc63aa35d01325aa3f84d893ab8a92da64c04e9eb7a661898681c`.
+La cobertura final incluye una permutación adversarial de padres merge y un
+control legacy/fase con germ idéntico, de modo que ambos límites se prueban sin
+depender del orden normal del solver ni de una discrepancia semántica lateral.
+The historical G8/G9U0/R1/R2/R3/X1/G5/G9A/Locus/frontend authorities are
+recorded as gate `PASS`; their sealed-report counts remain with those sealed
+authorities and are not re-summed as an invented R4 aggregate. Checkstyle and
+diff checks passed. The completed composed verifier exited 0 and ended with the
+literal `All GeoCeDG verification gates passed.`
+Its bounded inventory is 51 paths, including 29 under `source/`; the productive
+three-path increase is exactly the base/English/Spanish localization correction
+discovered by the replacement composed run, followed by one byte-exact
+four-root fixture and ADR 0017. No generated evidence belongs in that
+tracked inventory. The focused authority
+also proves that unresolved candidates are component-scoped, canonical target
+orientation removes representation-scale accidents, and ray direction is not
+erased as semantic evidence.
+The earlier pre-smoke focused run is superseded. Both smoke observations remain:
+`FAILED_POINT_INVALIDATED_DURING_REGULAR_MOTION` and
+`IMPROVED_BUT_FOUR_SOLUTIONS_NOT_MATERIALIZABLE`. The author subsequently
+authorized intrinsic semantic phase/rank; the candidate implements that bounded
+decision and still claims neither PASS nor self-approval.
+Automation stops at `IMPLEMENTATION CANDIDATE — PENDING AUTHOR RE-REVIEW`.
+
+### 8.8 G9U0-R5 planning-only transformation matrix
+
+The complete future matrix is
+[`g9u0_r5_locus_v2_similarity_transformations_validation_matrix.md`](g9u0_r5_locus_v2_similarity_transformations_validation_matrix.md).
+It covers ordinary command routing, new durable identity, exact DAG inputs,
+domain/branch/parameter preservation, metric/intersection/Point covariance,
+composition, dynamic updates, persistence, styles, forbidden generic-Path/
+sample authority and all degenerations including valid `k=0`
+`COLLAPSED_IMAGE`. No R5 row is executed or claimed PASS in this task.
+
 ## 9. G9U1 workspace schema and behavior tests
 
 | ID | Requirement | Test/probe | Expected evidence |
@@ -351,17 +478,29 @@ the bounded correction requires a separate author re-review.
 | U1-W15 | public V2 action coverage | inspect Construction action catalog after G9U0 PASS | creation, rich/guarded length, general V2 intersection, token point and supported point-on-Locus actions present as GUI clients only |
 | U1-W16 | no G9B coupling | compile/activate Construction with G9B unavailable but already authorized nonspatial actions available | workspace works; no G9B dependency or semantic fallback |
 | U1-W17 | consume R2 document policy | exercise Save/open actions before/after workspace switches on native and compatibility inputs | one application-owned `.cedg`/`.ggb` state machine; manifest does not duplicate or override it |
+| U1-D01 | fresh deterministic product | launch GeoCeDG with clean preferences | existing host Continuity option is OFF |
+| U1-D02 | prior preference precedence | preseed the host Continuity preference ON, then launch GeoCeDG | product policy clamps the existing option OFF; no second setting field |
+| U1-D03 | compatibility input precedence | open a `.ggb` carrying Continuity ON | live GeoCeDG remains OFF and the source `.ggb` is unchanged |
+| U1-D04 | native input precedence | open/save/reopen `.cedg` with hostile/legacy Continuity state | live and saved native policy remains OFF through the existing host XML seam |
+| U1-D05 | settings UI lock | inspect/operate Advanced settings by mouse and keyboard | GeoCeDG cannot enable Continuity and exposes an accessible read-only/disabled policy indication |
+| U1-D06 | workspace/profile lifecycle | switch workspaces, restore layout/profile state and restart | Continuity stays OFF with zero Construction/DAG/undo mutation |
+| U1-D07 | no parallel persistence | inspect preferences and XML before/after policy enforcement | only the existing host Continuity field is used |
+| U1-D08 | Classic diagnostic control | launch separate GeoCeDG Classic and toggle/save/reopen Continuity | upstream configurability and isolated Classic preferences remain intact |
 | U1-L01 | workspace localization | names/groups/help/blocked reasons in approved locales | no product literal drift; deterministic fallback |
 | U1-L02 | icon/accessibility | missing icon and all action focus paths | text fallback, accessible name, keyboard navigation |
 | U1-V01 | visual density | reference-size and small/high-DPI layouts | groups usable without giant embedded icons; overflow deterministic |
 | U1-V02 | screenshot comparison | human review against supplied evidence | workflow/panel access accepted; no pixel-copy requirement |
-| U1-I01 | active rich-result markers | select one rich intersection result containing finite admissible, stale, unresolved, overlap-only and inadmissible states | only currently finite + point-admissible solutions of the active result receive default-on transient markers |
+| U1-I01 | active rich-result markers | select one rich intersection result containing exact-token eligible, nonmaterializable, stale and overlap states | active-result markers distinguish truthful current evidence classes accessibly; only roots with unique kernel selectors/tokens are selectable |
 | U1-I02 | inactive-result suppression | retain several rich results and change Algebra/Graphics selection | only the active/selected result contributes markers; inactive history does not pollute Graphics |
 | U1-I03 | marker presentation purity | inspect Construction, XML, Protocol, undo and copy closure before/after marker display | marker is no GeoElement, ID, XML, DAG/Protocol/undo/copy object and causes zero semantic revision |
-| U1-I04 | exact marker selection | click/rank markers under zoom/DPI/view changes and close solutions | hit/rank preselects an already admissible exact token; coordinate/order/proximity never establishes identity |
+| U1-I04 | exact marker selection | click markers under zoom/DPI/view changes and close repeated-base solutions | hit testing preselects an already current exact token whose intrinsic phase/rank was established by the kernel; UI/list/marker order and coordinate/proximity/history never establish or continue identity |
 | U1-I05 | explicit one-point materialization | confirm one selected admissible marker/token, then undo/redo | exactly one ordinary exact-token point; normal single user action; no re-solving or fallback |
-| U1-I06 | explicit create-all | invoke optional create-all on mixed current result, then undo/redo | exactly all and only currently point-admissible tokens materialize through exact dependencies; never automatic |
+| U1-I06 | explicit create-all | invoke create-all on a mixed current result, then undo/redo | exactly all and only currently point-admissible exact tokens materialize through exact dependencies in one visible user action |
 | U1-I07 | marker preference | toggle active-result marker preference and restart workspace | Construction default is ON; explicit OFF suppresses overlay only and changes no Construction state |
+| U1-I08 | one selector authority | compare repeated-root markers, inspector labels and exact materialization | every consumer uses the rich-result token bound to the kernel intrinsic selector; transient `Solution N`/marker order never becomes identity |
+| U1-I09 | auto OFF/ON transaction | explicitly create `Intersect(L,T)` with auto OFF and ON | OFF creates only the rich result; ON issues one separate visible deterministic create-all transaction for currently eligible exact tokens and one distinct atomic undo step |
+| U1-I10 | no recompute auto mutation | recompute, create a later root, load/reopen, switch workspace and restore preferences | zero new DAG nodes; new eligible roots appear only as markers until another explicit user action |
+| U1-I11 | point provenance lifecycle | save/reopen, copy and undo/redo a phase-ranked exact-token point | exact token and semantic selector provenance reconstruct; existing point is not reinterpreted from UI order |
 | U1-B01 | Construction visual identity | compare normal Construction and separate Classic diagnostic route | restrained professional identity is immediately distinguishable; Classic retains diagnostic identity |
 | U1-B02 | theme/accent purity | change supported theme/accent/workspace style with populated Construction | zero Construction/DAG/semantic/undo updates; presentation colors are never geometric authority |
 | U1-B03 | accessibility/scaling | contrast audit plus normal DPI/scaling and keyboard paths | accepted contrast, readable status/help, stable focus/order and usable professional grouping |
@@ -473,19 +612,27 @@ not affect metric/intersection results.
 
 ### G9U1 PASS candidate
 
-- G9U0-R2 and G9U0-R3 are already `PASS — AUTHOR APPROVED`, and a separate
-  author decision has authorized the exact post-R3 successor prompt; neither
+- G9U0-R2 and G9U0-R3 are already `PASS — AUTHOR APPROVED`; G9U0-R4 and
+  G9U0-R5 must also close `PASS — AUTHOR APPROVED`, and a separate author
+  decision must authorize the definitive post-R5 successor prompt. No
   predecessor PASS alone is sufficient.
 - Schema v2 and deterministic v1 migration pass.
 - Construction workspace mapping, panel workflow, localization/icons,
   preferences, Document layout and Classic/Laboratory boundaries pass.
 - Native `.cedg` and compatibility `.ggb` layout/open/save behavior follows the
   application-owned R2 policy and is not duplicated in the workspace manifest.
+- GeoCeDG enforces the existing host Continuity option OFF across preferences,
+  file load/save, workspace/profile state and restart without a second field;
+  the separate Classic diagnostic remains configurable.
 - Workspace switching produces zero semantic mutations.
 - Only already approved public actions are enabled.
-- Active-result markers are transient presentation over already admissible
-  exact tokens; explicit one/all-point materialization is exact and undoable,
-  no marker is persisted, and no point is created automatically.
+- Active-result markers are transient presentation over current deterministic
+  root/evidence authority, never a continuous/history tracker. Exact token
+  identity, local evidence, global completeness and policy eligibility remain
+  separate. Explicit one/all-point materialization is exact and undoable; an
+  opted-in auto mode is only a second visible frontend transaction after the
+  explicit Intersect action. Recompute, root appearance and load never create
+  new points.
 - The eleven professional groups, accessible GeoCeDG-versus-Classic visual
   identity and distinct `geocedg.brand.topbar` / `geocedg.brand.startup`
   provenance seams pass automated and author review. If frontend/packaging

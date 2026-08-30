@@ -57,6 +57,8 @@ $G9U0R2ProductRefinementVerifier = Join-Path $PSScriptRoot `
     "verify-g9u0-r2-product-refinement.ps1"
 $G9U0R3PublicLocusUiVerifier = Join-Path $PSScriptRoot `
     "verify-g9u0-r3-public-locus-ui-hardening.ps1"
+$G9U0R4IntersectionAdmissibilityVerifier = Join-Path $PSScriptRoot `
+    "verify-g9u0-r4-intersection-admissibility-continuation.ps1"
 $BenchmarkRunner = Join-Path $RepositoryRoot "tools\benchmark\run.ps1"
 $InitialStatus = $null
 
@@ -666,31 +668,32 @@ try {
         }
     }
 
-    $g9u0R3EvidenceRoot = Join-Path $RepositoryRoot `
-        "geocedg\validation\g9u0-r3"
-    $g9u0R3EvidencePath = Join-Path $g9u0R3EvidenceRoot `
-        "g9u0-r3-public-locus-ui-evidence.json"
-    $g9u0R3IntegrationArtifacts = @(
-        $G9U0R3PublicLocusUiVerifier,
-        $g9u0R3EvidencePath,
-        (Join-Path $g9u0R3EvidenceRoot `
-            "g9u0-r3-public-locus-ui-scenarios.json"),
-        (Join-Path $g9u0R3EvidenceRoot "g9u0-r3-evidence.sha256"),
-        (Join-Path $RepositoryRoot `
-            "docs\architecture\g9u0_r3_public_locus_ui_hardening.md"),
-        (Join-Path $RepositoryRoot `
-            "docs\validation\g9u0_r3_public_locus_ui_hardening_candidate_report.md")
+    $g9u0R3PassCommit = "ce7f15c70d50b0639c264fc1cd3356a0d4eb5e2b"
+    $g9u0R3EvidenceRelativePath =
+        "geocedg/validation/g9u0-r3/g9u0-r3-public-locus-ui-evidence.json"
+    $g9u0R3AuthorityPaths = @(
+        $g9u0R3EvidenceRelativePath,
+        "geocedg/validation/g9u0-r3/g9u0-r3-public-locus-ui-scenarios.json",
+        "geocedg/validation/g9u0-r3/g9u0-r3-evidence.sha256",
+        "docs/architecture/g9u0_r3_public_locus_ui_hardening.md",
+        "docs/validation/g9u0_r3_public_locus_ui_hardening_candidate_report.md"
     )
-    $g9u0R3PresentCount = @($g9u0R3IntegrationArtifacts | Where-Object {
-        Test-Path -LiteralPath $_ -PathType Leaf
-    }).Count
-    if ($g9u0R3PresentCount -ne 0 -and
-            $g9u0R3PresentCount -ne $g9u0R3IntegrationArtifacts.Count) {
-        throw ("Incomplete G9U0-R3 verifier/support integration; all paired " +
-            "artifacts are required.")
-    }
-    if ($g9u0R3PresentCount -eq $g9u0R3IntegrationArtifacts.Count) {
-        $g9u0R3Evidence = Get-Content -Raw -LiteralPath $g9u0R3EvidencePath |
+    $g9u0R3VerifierPresent = Test-Path -LiteralPath `
+        $G9U0R3PublicLocusUiVerifier -PathType Leaf
+    if ($g9u0R3VerifierPresent) {
+        foreach ($relativePath in $g9u0R3AuthorityPaths) {
+            & git -C $RepositoryRoot cat-file -e `
+                "$($g9u0R3PassCommit):$relativePath" 2>$null
+            if ($LASTEXITCODE -ne 0) {
+                throw "Sealed G9U0-R3 authority is missing $relativePath."
+            }
+        }
+        $g9u0R3EvidenceLines = @(& git -C $RepositoryRoot show `
+            "$($g9u0R3PassCommit):$g9u0R3EvidenceRelativePath" 2>$null)
+        if ($LASTEXITCODE -ne 0) {
+            throw "Unable to read sealed G9U0-R3 evidence."
+        }
+        $g9u0R3Evidence = ($g9u0R3EvidenceLines -join "`n") |
             ConvertFrom-Json -Depth 100
         $g9u0R3Historical = @(
             $g9u0R3Evidence.validation.g9u0Regression,
@@ -755,6 +758,55 @@ try {
         & $G9U0R3PublicLocusUiVerifier @g9u0R3Parameters
         Assert-LastScriptSuccess `
             -Description "G9U0-R3 public Locus V2 UI exposure hardening"
+    }
+
+    $g9u0R4NormativeSpec = Join-Path $RepositoryRoot `
+        "geocedg\specs\locus\locus-v2-intersections.md"
+    $g9u0R4IntegrationArtifacts = @(
+        $G9U0R4IntersectionAdmissibilityVerifier,
+        (Join-Path $RepositoryRoot `
+            "docs\adr\0017-deterministic-intersection-phase-rank-identity.md"),
+        (Join-Path $RepositoryRoot `
+            ".github\prompts\tasks\g9u0-r4-intersection-admissibility-continuation.prompt.md"),
+        (Join-Path $RepositoryRoot `
+            "geocedg\validation\g9u0-r4\g9u0-r4-intersection-admissibility-scenarios.json"),
+        (Join-Path $RepositoryRoot `
+            "source\shared\common-jre\src\test\resources\org\geocedg\common\locus\g9u0-r4\fourSolutions.cedg"),
+        (Join-Path $RepositoryRoot `
+            "docs\architecture\g9u0_r4_intersection_admissibility_continuation.md"),
+        (Join-Path $RepositoryRoot `
+            "docs\validation\g9u0_r4_intersection_admissibility_continuation_candidate_report.md")
+    )
+    $g9u0R4PresentCount = @($g9u0R4IntegrationArtifacts | Where-Object {
+        Test-Path -LiteralPath $_ -PathType Leaf
+    }).Count
+    if ($g9u0R4PresentCount -ne 0 -and
+            $g9u0R4PresentCount -ne $g9u0R4IntegrationArtifacts.Count) {
+        throw ("Incomplete G9U0-R4 candidate integration; accepted ADR 0017, " +
+            "canonical prompt, normative spec, author fixture, scenario " +
+            "inventory, architecture, report and verifier are paired.")
+    }
+    if ($g9u0R4PresentCount -eq $g9u0R4IntegrationArtifacts.Count) {
+        if (-not (Test-Path -LiteralPath $g9u0R4NormativeSpec -PathType Leaf)) {
+            throw "G9U0-R4 normative intersection specification is missing."
+        }
+        Write-Host "`n==> G9U0-R4 public Locus V2 intersection admissibility"
+        $g9u0R4Parameters = @{
+            LogDirectory = Join-Path ([IO.Path]::GetFullPath($LogDirectory)) `
+                "g9u0-r4-intersection-admissibility"
+        }
+        if ($SkipBuild) {
+            $g9u0R4Parameters.SkipBuild = $true
+        }
+        if ($AllowToolchainDownload) {
+            $g9u0R4Parameters.AllowToolchainDownload = $true
+        }
+        if ($KeepBuildOutputs) {
+            $g9u0R4Parameters.KeepBuildOutputs = $true
+        }
+        & $G9U0R4IntersectionAdmissibilityVerifier @g9u0R4Parameters
+        Assert-LastScriptSuccess `
+            -Description "G9U0-R4 public Locus V2 intersection admissibility"
     }
 
     Write-Host "`n==> Standalone Windows packaging contracts"

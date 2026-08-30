@@ -2,13 +2,13 @@
 
 | Field | Value |
 |---|---|
-| Status | **NORMATIVE / AUTHOR-APPROVED R1 REFINEMENT APPLIED** |
-| Version | `1.1` |
-| Phase | G8 planning, G8A, G8B-R1, G8B, G8C design, G8C1 and G8C2 `PASS — AUTHOR APPROVED`; G8 global `PASS — AUTHOR APPROVED` |
+| Status | **NORMATIVE / AUTHOR-APPROVED R1 BASE; AUTHOR-DIRECTED G9U0-R4 DETERMINISTIC-SELECTION REFINEMENT — IMPLEMENTATION CANDIDATE** |
+| Version | `1.1` plus bounded G9U0-R4 candidate refinement |
+| Phase | G8 planning, G8A, G8B-R1, G8B, G8C design, G8C1 and G8C2 `PASS — AUTHOR APPROVED`; G8 global `PASS — AUTHOR APPROVED`; G9U0-R4 implementation candidate pending author re-review after two recorded smoke failures |
 | Scope | Internal two-dimensional Locus V2 intersection semantics |
 | Product state | Experimental, internal, disabled by default |
-| Approval | Author-approved on 2026-08-14 from G8A/G8B; G8C1/G8C2 implementation and global G8 closeout author-approved on 2026-08-15 |
-| Architecture decision | Accepted ADR 0008 with R1 clarification |
+| Approval | G8 base author-approved on 2026-08-14/15; the author made deterministic semantic selection authoritative for R4 and accepted the bounded intrinsic phase/rank identity decision on 2026-08-29; corrected R4 implementation PASS remains pending author re-review |
+| Architecture decision | Accepted ADR 0008 with R1 clarification; Accepted ADR 0017 for the bounded public single-Locus phase/rank selector |
 
 This normative contract incorporates the G8A characterization evidence and
 the final author decisions D1–D17. The separately invoked G8B task produced an
@@ -16,6 +16,14 @@ internal implementation within the boundary below. The final author review
 approves both that minimum kernel and the author-directed G8B-R1 normative
 clarification of selected-solution admissibility. Approval does not make the
 behavior public or close the remaining extended G8 families.
+
+The G9U0-R4 candidate adds only the bounded public current-snapshot selection
+refinement in section 6.2, its tolerance clarification in section 8.2 and its
+public token lifecycle in section 10. Those paragraphs record the author's
+deterministic policy and Accepted ADR 0017 while implementation PASS remains
+pending author re-review. The four-root correction adds an intrinsic oriented
+domain phase/rank only to a repeated base selector; it neither admits extrinsic
+enumeration order nor weakens numerical, topology or ambiguity evidence.
 
 ## 1. Governing principles
 
@@ -285,6 +293,13 @@ is established. Neither tangency nor multiplicity follows from a small
 residual alone. Sign-change isolation is insufficient for even-multiplicity
 roots, and uncertainty must not become a false transverse or no-root result.
 
+When transverse contact orientation participates in the G9U0-R4 current-root
+germ, it is a canonical geometric orientation, not the arbitrary sign of one
+algebraic representation. Equivalent nonzero scalar representations preserve
+the germ for an unoriented line/segment, a central conic, a parabola and a
+regular polynomial implicit curve. Ray direction remains semantic and is not
+canonicalized away as unoriented support-line freedom.
+
 ### 5.2 Domain location
 
 - `INTERIOR`;
@@ -311,8 +326,9 @@ Limit intersections require a separately approved limit contract.
 
 ### 6.1 Identity context
 
-A root continuation token is durable only within the active nonpersistent G8
-algorithm and its source pair. The durable/continuation information
+An internal G8 continuation token remains bounded to its active algorithm and
+source pair. A public G9U0 exact token is durable through its owning rich result
+and persisted token ledger. In both cases the semantic identity context
 contains:
 
 ```text
@@ -342,23 +358,140 @@ because the parameter value or isolating interval changes. Labels, output
 indices, coordinates, render order, and nearest-neighbour screen/world matching
 are excluded.
 
-The per-root identity status is closed and independent of numeric
-validity, with values equivalent to `CONTINUATION_ESTABLISHED`,
-`NEW_TOPOLOGICAL_SOLUTION`, `AMBIGUOUS_CONTINUATION`,
-`IDENTITY_DISCONTINUITY`, and `NOT_ESTABLISHED`.
+The per-root identity status is closed and independent of numeric validity,
+with values equivalent to `CONTINUATION_ESTABLISHED`,
+`DETERMINISTIC_SELECTION_ESTABLISHED`, `NEW_TOPOLOGICAL_SOLUTION`,
+`AMBIGUOUS_CONTINUATION`, `IDENTITY_DISCONTINUITY`, and `NOT_ESTABLISHED`.
 
 ### 6.2 Continuation without topology change
 
-Continuation may preserve a token only when evidence establishes the same
-semantic root through compatible source/branch lineage, topology context,
-successful current-revision refinement/verification, and a proven continuation
-relation. Mapped or predictably continued intervals and semantic parameters may
-support that relation, but are revision-scoped evidence rather than identity.
-G8A characterized ordinary source motion, equivalent monotone
-reparameterization, allowed orientation reversal, and periodic-seam
-representation. The supported subset requires an explicit semantic
-map selecting one continuation. Cartesian nearness was unnecessary and cannot
-decide identity.
+Internal G8 continuation may preserve a token only through its approved
+explicit semantic relation. Mapped intervals and semantic parameters may
+support that relation, but remain revision-scoped evidence rather than
+identity. G8A characterized ordinary source motion, equivalent monotone
+reparameterization, allowed orientation reversal and periodic seams.
+
+For the public one-parameter G9U0-R4 subset, current deterministic selection is
+authoritative. Every eligible current root first defines a base selector from
+its stable semantic component lineage plus a typed oriented transverse
+current-root germ. The germ carries the contact-indicator identity and
+established orientation. When that base selector is already unique, it remains
+the complete root selector and acquires no ordinal dimension.
+
+Only when two or more eligible roots share that exact base selector may the
+resolver enrich it with the intrinsic phase/rank authorized by ADR 0017. The
+complete enriched selector binds:
+
+```text
+stable branch/component lineage
++ typed transverse germ/collision class
++ declared semantic orientation
++ periodic/nonperiodic domain kind
++ verified collision-group cardinality
++ intrinsic oriented phase/rank
+```
+
+The rank is induced by the explicit oriented one-dimensional semantic
+component. Canonical root parameters and pairwise disjoint local isolating
+intervals prove that ordering, but their raw values and bits are not durable
+identity material. Solver discovery order, output/list position, construction
+or XML index, Cartesian left/right order and UI `Solution N` remain
+non-authoritative. The ordinal alone is never identity. The token ledger
+separately binds the result owner, source pair, constructive lineage, topology
+context, provider/parameter contract and target contract.
+
+Contact orientation is canonical under legitimate nonzero scalar changes of
+an equivalent target representation. An unoriented line or segment fixes the
+sign from a deterministic support-normal convention. A central conic fixes it
+from the center level, a parabola from the nonzero quadratic trace, and a
+regular polynomial implicit curve from the leading nonzero monomial ordered by
+total degree then x degree. Exact zero padding does not affect that polynomial
+rule. A ray retains its directed support orientation because reversing a ray
+is a semantic change, not an equivalent representation.
+
+On a nonperiodic component, phase rank starts at the declared component start
+and follows the declared orientation. On a complete periodic component, the
+explicit oriented fundamental interval is the deterministic phase frame and
+its half-open endpoints represent one semantic parameter. A repeated-selector
+interval that reaches that seam is not assigned by a heuristic. The affected
+ranked identity reports a typed discontinuity and old tokens are invalidated
+rather than cyclically rotated. This is the explicit monodromy boundary: R4
+does not add Cartesian proximity, a mutable winding counter or movement history
+to manufacture a globally continuous circle labeling.
+
+Only a complete base or enriched selector unique among the current published
+finite roots for that constructive result may allocate or resolve a durable
+token. Unique selectors are processed in canonical selector order. On first
+publication they receive distinct opaque ledger allocations and report
+`NEW_TOPOLOGICAL_SOLUTION` / `APPEARED`, without claiming historical
+continuation. On recomputation, the same exact ledger binding reports
+`DETERMINISTIC_SELECTION_ESTABLISHED` even when its semantic parameter has
+moved. Exact parameter equality across revisions is not required.
+
+Previous/current root comparison may provide bounded continuity and topology
+diagnostics. It may confirm that deterministic selection was also continuous,
+but it cannot select, mint, transfer or replace a token. Thus the same final
+regular snapshot has the same binding after direct, incremental,
+forward/reverse or save/reopen histories. Determinism remains authoritative
+when a continuity heuristic would disagree.
+
+There is one conservative prior-reuse guard for a complete ranked periodic
+collision group. Reusing any old token requires a complete bijection from every
+prior root to one current root with the same complete selector. A missing,
+ambiguous, budget-exhausted, incomplete or non-bijective relation invalidates
+the whole prior group. The relation still does not select the current root: a
+current unique selector may receive a fresh token after the topology settles.
+For an ordinary nonperiodic group, absence of the bounded relation is not
+identity authority and does not override a unique current-snapshot selector.
+
+If the repeated base-selector group does not have coherent component,
+orientation and domain-kind evidence, pairwise disjoint isolating intervals or
+one verified cardinality, it remains ambiguous and fails closed with
+non-durable revision-local handles. Collision-group membership/cardinality
+change, orientation or component redefinition, tangency, merge/split, overlap,
+root-local unresolved evidence, non-isolation and a periodic rank rotation that
+is observed or cannot be excluded because the prior/current relation is
+missing, ambiguous, budget-exhausted, incomplete or non-bijective are identity
+barriers. No prior token is transferred to whichever root later occupies the
+same integer rank.
+
+Each unresolved candidate records its exact semantic component. One on the
+solution's resolved valid component is a local veto; one on another component
+affects global/work evidence but does not veto the independently established
+root. Global enumeration status remains a separate axis.
+
+The second R4 author smoke supplies the canonical positive case. Its byte-exact
+four-solution midpoint/circle construction publishes four current, transverse,
+locally isolated roots with `ESTIMATED_ERROR`, zero unresolved candidates and
+global `NOT_ESTABLISHED`. All share one semantic component; two have the
+positive oriented circle-residual germ and two the negative germ. Each repeated
+base-selector pair has disjoint semantic isolating intervals, so the authorized
+intrinsic phase dimension produces four unique complete selectors and four
+materializable exact opaque tokens. This establishes no stronger numerical
+certificate and no global completeness claim.
+
+A materialization policy MUST NOT override a duplicate complete selector,
+absent exact token or ambiguous lineage. Bounded adaptive refinement may
+truthfully strengthen local numerical/isolation evidence, but R4 adds no weaker
+certification/materialization tier. The four-root correction is an identity
+refinement, not certification relaxation.
+
+Public ledger persistence uses strict canonical format v3 with a separate
+current-root selector binding. Canonical formats v1 and v2 remain importable
+only for authentic pre-phase state. Format v3 is the only ledger format in which an
+intrinsic phase/rank binding is legal. A v3 phase state falsely relabeled as v2
+is rejected rather than silently interpreted under the earlier schema. An older
+exact token is preserved only under one compatible semantic binding; otherwise
+migration fails closed. The external `locus-root/v3` token envelope remains
+unchanged, and forged, duplicate, incomplete or noncanonical bindings fail
+closed.
+
+Legacy singleton token material is pre-phase by contract and MUST NOT be
+bound to an intrinsic-phase selector. A runtime migration request for such a
+selector allocates fresh opaque material rather than reusing the singleton. A
+persisted ledger-v3 snapshot manipulated to attach that legacy material to an
+intrinsic-phase selector is rejected on import. This restriction is independent
+of the separate rejection of a phase-bearing v3 state relabeled as ledger v2.
 
 ### 6.3 Topology events
 
@@ -370,12 +503,20 @@ preserving an existing token only when continuation is uniquely established:
 |---|---|
 | two simple roots merge at tangency | parents terminate; one tangent-event token records the candidate parent set when robustly established |
 | tangent root splits into two | the tangent-event token terminates; new child tokens record the candidate parent relation when robustly established |
-| root crosses a provider periodic seam | preserve one token using canonical seam equivalence and a lifted continuation coordinate |
+| unique-base-selector root crosses a provider periodic seam | preserve one token only through the already approved canonical seam equivalence |
+| repeated-base-selector phase interval reaches/crosses the periodic seam | publish typed identity discontinuity and invalidate affected ranked tokens; never rotate them by proximity or winding history |
 | root reaches an included component boundary | preserve through the boundary event only while the root remains valid; record boundary classification |
 | root crosses an invalid gap/open boundary | terminate; any later root is new unless approved provider lineage proves a semantic continuation |
 | source branch splits/merges | follow explicit G6 branch lineage, then create corresponding root lineage; no guessed association |
 | source becomes undefined | current result becomes a coherent failure/non-current payload; no old coordinate survives as current |
 | source recovers | reuse a token only if the approved continuation evidence spans the event; otherwise create a new topology epoch |
+
+When merge/split evidence names several candidate parents, the implementation
+MUST canonicalize the parent records once by opaque parent token and derive both
+the published token list and the corresponding continuation-key list from that
+same ordered record sequence. It MUST NOT sort tokens and keys independently or
+lose their association. This ordering makes diagnostics deterministic; it does
+not select a continuation or make token order semantic identity.
 
 G8A tested `2 -> 1 -> 2` and reverse traversal, symmetric cases with
 intrinsically ambiguous child correspondence, periodic-seam interaction, and
@@ -510,8 +651,19 @@ unsupported under this policy rather than assigned a universal scalar.
 
 Deduplication merges duplicate candidate evidence for one semantic preimage;
 it never merges distinct preimages merely because coordinates are close.
-Continuation tolerance is prediction/localization evidence only and cannot
-establish durable identity.
+Continuation tolerance and a bounded semantic-chart tube may support G8
+continuation or R4 continuity diagnostics. They do not participate in the R4
+current selector and cannot establish, change or transfer durable identity.
+R4 token resolution requires one unique current semantic selector and exact
+ledger validation of its persisted binding. Parameter equality across revisions
+is never required for ordinary regular root motion.
+
+For a repeated base selector, canonical semantic parameters and disjoint
+isolating intervals may establish only the intrinsic oriented phase/rank
+defined in §6.2. The rank and collision cardinality enter the complete selector;
+the parameter and interval values themselves remain revision evidence. This
+bounded use of semantic order does not authorize solver enumeration order or a
+coordinate/proximity fallback.
 
 ### 8.3 Tangency quantity
 
@@ -524,6 +676,12 @@ differently scaled equations or unnormalized semantic parameters are not
 comparable. Singular sources or capabilities without the required normalized
 indicator must use analytic/certified evidence or report contact/multiplicity
 as not established.
+
+The signed orientation used by the R4 germ is normalized separately from the
+indicator magnitude: line/segment, central conic/parabola and regular
+polynomial implicit adapters use the canonical representation rules in §6.2.
+Multiplying one of those equivalent equations by a legitimate nonzero scalar
+must preserve the selector. Ray direction remains intentional semantic input.
 
 ### 8.4 Initial versioned values
 
@@ -603,8 +761,24 @@ author-approved runner-specific policy says otherwise.
   authority, coherent source/revision/branch/component bindings, independent
   residual and target-membership verification, `ESTABLISHED` local isolation,
   an explicit semantic continuation key, and identity status
-  `NEW_TOPOLOGICAL_SOLUTION` or `CONTINUATION_ESTABLISHED`. Global
-  completeness is recorded but is not a veto.
+  `NEW_TOPOLOGICAL_SOLUTION`, `DETERMINISTIC_SELECTION_ESTABLISHED` or
+  `CONTINUATION_ESTABLISHED`. Global completeness is not a veto. Unresolved
+  candidates are component-scoped: the solution is blocked by unresolved
+  evidence on its own resolved valid component, while evidence on another
+  component remains global/work information and does not veto that
+  independently established local root.
+- Root existence, deterministic identity, local numerical/topological evidence,
+  global completeness and policy eligibility are distinct result axes. An
+  exact opaque token means exact semantic identity matching; it does not claim
+  exact arithmetic or a certified numerical error bound. Current public
+  materialization may therefore consume a `VERIFIED_UNCERTIFIED` /
+  `ESTIMATED_ERROR` root when all existing local-isolation and identity
+  requirements are satisfied.
+- A repeated base selector may satisfy the identity requirement only through
+  the complete ADR-0017 selector: component, germ, orientation, domain kind,
+  verified collision cardinality and intrinsic phase/rank. Cardinality,
+  topology, orientation or periodic-seam ambiguity invalidates rather than
+  retargets ranked tokens.
 - Absence, non-current evidence, unsupported or unverified candidates,
   residual/membership rejection, overlap-kind results, ambiguous or
   discontinuous identity, computation failure and work-limit failure make the
@@ -635,13 +809,20 @@ capacity and topology epoch. It is not an unbounded cache.
 
 ## 12. Compatibility boundary
 
-Until a separate author decision:
+The following bullets record the original G8 compatibility boundary. Later
+author-approved G9U0 product exposure and the bounded G9U0-R4 token-ledger
+refinement supersede only the explicitly named public/persistence portions;
+the mathematical and Classic-compatibility boundaries remain unchanged:
 
 - legacy `GeoLocus` and Classic intersections are unchanged;
 - `GeoLocusV2` remains experimental/internal and disabled by default;
 - no existing `.ggb` is migrated or changes meaning;
 - no public command, dispatcher route, `Path`, or point-on-locus API is added;
-- no XML, `GeoFactory`, serialization, or migration is added;
+- G8 itself added no XML, `GeoFactory`, serialization, or migration; G9U0-R4
+  changes only the public token-ledger attribute to canonical format v3,
+  imports canonical v1/v2 states under the strict compatibility rules in §6.2,
+  and leaves the external token envelope unchanged, without a new
+  archive/geometric-object format or `GeoFactory` path;
 - no 3D/G9, G5 export, Python DSL, or frontend behavior is added; and
 - G8 internal result support does not imply public incidence support for every
   GeoGebra curve.

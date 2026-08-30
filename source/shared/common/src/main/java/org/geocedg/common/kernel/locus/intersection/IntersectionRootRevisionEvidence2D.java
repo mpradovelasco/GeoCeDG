@@ -5,6 +5,7 @@
 
 package org.geocedg.common.kernel.locus.intersection;
 
+import java.util.Optional;
 import java.util.OptionalDouble;
 
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.NumericGuarantee;
@@ -24,6 +25,7 @@ public final class IntersectionRootRevisionEvidence2D {
 	private final TargetResidual2D residualEvidence;
 	private final SolverMethod solverMethod;
 	private final NumericGuarantee numericGuarantee;
+	private final Optional<String> currentRootGerm;
 
 	/** Creates immutable evidence for exactly one captured source revision. */
 	public IntersectionRootRevisionEvidence2D(long locusSemanticRevision,
@@ -33,7 +35,8 @@ public final class IntersectionRootRevisionEvidence2D {
 			IntersectionParameterInterval2D isolatingInterval,
 			LocalIsolationStatus localIsolationStatus,
 			TargetResidual2D residualEvidence, SolverMethod solverMethod,
-			NumericGuarantee numericGuarantee) {
+			NumericGuarantee numericGuarantee,
+			Optional<String> currentRootGerm) {
 		if (locusSemanticRevision < 1 || targetUpdateStamp < 0
 				|| !Double.isFinite(semanticParameter)) {
 			throw new IllegalArgumentException("Invalid root revision evidence");
@@ -53,6 +56,7 @@ public final class IntersectionRootRevisionEvidence2D {
 		this.residualEvidence = java.util.Objects.requireNonNull(residualEvidence);
 		this.solverMethod = java.util.Objects.requireNonNull(solverMethod);
 		this.numericGuarantee = java.util.Objects.requireNonNull(numericGuarantee);
+		this.currentRootGerm = checkedOptional(currentRootGerm);
 	}
 
 	public long getLocusSemanticRevision() {
@@ -97,6 +101,22 @@ public final class IntersectionRootRevisionEvidence2D {
 
 	public NumericGuarantee getNumericGuarantee() {
 		return numericGuarantee;
+	}
+
+	/**
+	 * @return revision-scoped semantic root-germ discriminator, never a durable
+	 *         identity or continuation certificate
+	 */
+	public Optional<String> getCurrentRootGerm() {
+		return currentRootGerm;
+	}
+
+	private static Optional<String> checkedOptional(Optional<String> value) {
+		java.util.Objects.requireNonNull(value);
+		if (value.isPresent() && value.get().trim().isEmpty()) {
+			throw new IllegalArgumentException("Current root germ cannot be blank");
+		}
+		return value;
 	}
 
 	private static String requireText(String value, String name) {

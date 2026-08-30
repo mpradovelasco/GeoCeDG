@@ -296,7 +296,8 @@ public final class LocusPairIntersectionSolver2D {
 						firstEvidence.getIsolatingInterval(),
 						candidate.getLocalIsolation().getStatus(),
 						compatibilityResidual, candidate.getSolverMethod(),
-						candidate.getNumericGuarantee());
+						candidate.getNumericGuarantee(),
+						candidate.getContinuationKey());
 		IntersectionClassification2D classification =
 				new IntersectionClassification2D(contact, multiplicityStatus,
 						multiplicityStatus == MultiplicityStatus.ESTABLISHED

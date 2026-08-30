@@ -16,6 +16,7 @@ import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.Currentness;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.GeometryKind;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.IdentityStatus;
+import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.LineageEventKind;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.LocalIsolationStatus;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.SupportLevel;
 
@@ -30,6 +31,7 @@ public final class LocusIntersectionResult2D {
 	private final NumericGuarantee numericGuarantee;
 	private final List<LocusIntersectionSolution2D> finiteSolutions;
 	private final List<IntersectionOverlapEvidence2D> overlapEvidence;
+	private final List<String> unresolvedCandidateComponentKeys;
 	private final LocusIntersectionInstrumentationSnapshot2D work;
 	private final List<IntersectionDiagnostic2D> diagnostics;
 
@@ -43,6 +45,25 @@ public final class LocusIntersectionResult2D {
 			List<IntersectionOverlapEvidence2D> overlapEvidence,
 			LocusIntersectionInstrumentationSnapshot2D work,
 			List<IntersectionDiagnostic2D> diagnostics) {
+		this(sourceBinding, computationStatus, completenessEvidence, geometryKind,
+				currentness, supportLevel, numericGuarantee, finiteSolutions,
+				overlapEvidence, Collections.emptyList(), work, diagnostics);
+	}
+
+	/**
+	 * Creates one atomic result retaining the semantic components on which a
+	 * candidate could not be excluded or verified.
+	 */
+	public LocusIntersectionResult2D(IntersectionSourceBinding2D sourceBinding,
+			ComputationStatus computationStatus,
+			IntersectionCompletenessEvidence2D completenessEvidence,
+			GeometryKind geometryKind, Currentness currentness,
+			SupportLevel supportLevel, NumericGuarantee numericGuarantee,
+			List<LocusIntersectionSolution2D> finiteSolutions,
+			List<IntersectionOverlapEvidence2D> overlapEvidence,
+			List<String> unresolvedCandidateComponentKeys,
+			LocusIntersectionInstrumentationSnapshot2D work,
+			List<IntersectionDiagnostic2D> diagnostics) {
 		this.sourceBinding = java.util.Objects.requireNonNull(sourceBinding);
 		this.computationStatus =
 				java.util.Objects.requireNonNull(computationStatus);
@@ -54,6 +75,8 @@ public final class LocusIntersectionResult2D {
 		this.numericGuarantee = java.util.Objects.requireNonNull(numericGuarantee);
 		this.finiteSolutions = immutableSolutions(finiteSolutions);
 		this.overlapEvidence = immutableOverlap(overlapEvidence);
+		this.unresolvedCandidateComponentKeys = immutableUniqueStrings(
+				unresolvedCandidateComponentKeys);
 		this.work = java.util.Objects.requireNonNull(work);
 		this.diagnostics = immutableDiagnostics(diagnostics);
 		validateShape();
@@ -93,6 +116,14 @@ public final class LocusIntersectionResult2D {
 
 	public List<IntersectionOverlapEvidence2D> getOverlapEvidence() {
 		return overlapEvidence;
+	}
+
+	/**
+	 * @return exact revision-scoped semantic components containing at least one
+	 *         candidate that could neither be verified nor safely excluded
+	 */
+	public List<String> getUnresolvedCandidateComponentKeys() {
+		return unresolvedCandidateComponentKeys;
 	}
 
 	public LocusIntersectionInstrumentationSnapshot2D getWork() {
@@ -177,8 +208,14 @@ public final class LocusIntersectionResult2D {
 				solution.getRevisionEvidence();
 		IdentityStatus status = identity.getIdentityStatus();
 		boolean identityAdmissible = status == IdentityStatus.CONTINUATION_ESTABLISHED
+				|| status
+						== IdentityStatus.DETERMINISTIC_SELECTION_ESTABLISHED
 				|| status == IdentityStatus.NEW_TOPOLOGICAL_SOLUTION;
+		LineageEventKind event = solution.getLineage().getEventKind();
+		boolean lineageAdmissible = event == LineageEventKind.APPEARED
+				|| event == LineageEventKind.UNCHANGED;
 		boolean common = identityAdmissible
+				&& lineageAdmissible
 				&& identity.getExplicitContinuationKey().isPresent()
 				&& evidence.getLocalIsolationStatus()
 						== LocalIsolationStatus.ESTABLISHED
@@ -193,7 +230,9 @@ public final class LocusIntersectionResult2D {
 				&& evidence.getLocusSemanticRevision()
 						== sourceBinding.getLocusSemanticRevision()
 				&& evidence.getTargetUpdateStamp()
-						== sourceBinding.getTargetUpdateStamp();
+						== sourceBinding.getTargetUpdateStamp()
+				&& !unresolvedCandidateComponentKeys.contains(
+						evidence.getResolvedValidComponentKey());
 		if (!common || !sourceBinding.isLocusPair()) {
 			return common;
 		}
@@ -246,6 +285,11 @@ public final class LocusIntersectionResult2D {
 			throw new IllegalArgumentException(
 					"Completeness evidence root count must match solutions");
 		}
+		if (work.getUnresolvedCandidates()
+				< unresolvedCandidateComponentKeys.size()) {
+			throw new IllegalArgumentException(
+					"Unresolved component evidence exceeds the work count");
+		}
 	}
 
 	private static List<LocusIntersectionSolution2D> immutableSolutions(
@@ -274,6 +318,21 @@ public final class LocusIntersectionResult2D {
 		ArrayList<IntersectionDiagnostic2D> copy = new ArrayList<>();
 		for (IntersectionDiagnostic2D diagnostic : input) {
 			copy.add(java.util.Objects.requireNonNull(diagnostic));
+		}
+		return Collections.unmodifiableList(copy);
+	}
+
+	private static List<String> immutableUniqueStrings(List<String> input) {
+		java.util.Objects.requireNonNull(input);
+		ArrayList<String> copy = new ArrayList<>();
+		for (String value : input) {
+			if (value == null || value.trim().isEmpty()) {
+				throw new IllegalArgumentException(
+						"Unresolved component keys must be nonblank");
+			}
+			if (!copy.contains(value)) {
+				copy.add(value);
+			}
 		}
 		return Collections.unmodifiableList(copy);
 	}

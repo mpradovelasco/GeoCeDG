@@ -37,6 +37,7 @@ import org.geocedg.common.kernel.locus.intersection.LocusIntersectionSolver2D;
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionTarget2D;
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionTargets2D;
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionTokenLedger2D;
+import org.geocedg.common.kernel.locus.intersection.PublicIntersectionRootIdentityResolver2D;
 import org.geocedg.common.kernel.locus.intersection.PublicTargetIntersectionCapability2D;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geogebra.common.kernel.Construction;
@@ -63,6 +64,8 @@ public final class AlgoLocusIntersectionV2 extends AlgoElement {
 			new LocusIntersectionSolver2D();
 	private final LocusIntersectionContinuation2D continuation =
 			new LocusIntersectionContinuation2D();
+	private final PublicIntersectionRootIdentityResolver2D publicIdentityResolver =
+			new PublicIntersectionRootIdentityResolver2D();
 	private LocusIntersectionResult2D lastContinuableResult;
 	private long targetUpdateStamp;
 	private long nextRootToken;
@@ -217,15 +220,16 @@ public final class AlgoLocusIntersectionV2 extends AlgoElement {
 					beginTokenEvaluation();
 			try {
 				IntersectionRootTokenSource2D tokenSource = evaluation == null
-					? this::nextLegacyToken
-					: IntersectionRootTokenSource2D.semantic(evaluation::mint,
-							evaluation::revisionLocalHandle);
+						? this::nextLegacyToken
+						: IntersectionRootTokenSource2D.semantic(
+								evaluation::mint,
+								evaluation::revisionLocalHandle);
 				LocusIntersectionResult2D candidate = solver.intersect(query,
 						definition, captured, binding, preferredCapability,
 						tokenSource);
 				LocusIntersectionResult2D current = publicCommand
-						? continuation.continuePublicRoots(lastContinuableResult,
-								candidate, policy)
+						? publicIdentityResolver.resolve(lastContinuableResult,
+								candidate, definition, captured, policy, evaluation)
 						: continuation.continueRoots(lastContinuableResult,
 								candidate, policy);
 				publishWithLedger(binding, current, evaluation);

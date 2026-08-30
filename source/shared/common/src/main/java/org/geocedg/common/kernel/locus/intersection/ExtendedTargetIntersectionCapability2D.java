@@ -19,6 +19,7 @@ import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusPoint2D;
+import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.BranchProperty;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.NumericGuarantee;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.Completeness;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.CompletenessMethod;
@@ -161,8 +162,10 @@ public final class ExtendedTargetIntersectionCapability2D
 			boolean[] nonIsolatedZeroRun) {
 		double lower = component.isLowerClosed() ? component.getLower()
 				: Math.nextUp(component.getLower());
-		double upper = component.isUpperClosed() ? component.getUpper()
-				: Math.nextDown(component.getUpper());
+		boolean completePeriodicSeam = hasCompletePeriodicSeam(context,
+				branchKey, component);
+		double upper = component.isUpperClosed() || completePeriodicSeam
+				? component.getUpper() : Math.nextDown(component.getUpper());
 		if (lower > upper) {
 			return;
 		}
@@ -404,8 +407,15 @@ public final class ExtendedTargetIntersectionCapability2D
 					continue;
 				}
 				context.getInstrumentation().recordDeduplicationComparison();
-				if (Math.abs(candidate.parameter - retained.parameter)
-						<= tolerance) {
+				double distance = Math.abs(candidate.parameter
+						- retained.parameter);
+				if (hasCompletePeriodicSeam(context, candidate.branchKey,
+						candidate.component)) {
+					double span = candidate.component.getUpper()
+							- candidate.component.getLower();
+					distance = Math.min(distance, Math.abs(span - distance));
+				}
+				if (distance <= tolerance) {
 					if (isStrongerLocalization(candidate.origin,
 							retained.origin)) {
 						result.set(index, candidate);
@@ -420,6 +430,19 @@ public final class ExtendedTargetIntersectionCapability2D
 			}
 		}
 		return result;
+	}
+
+	private static boolean hasCompletePeriodicSeam(
+			IntersectionCapabilityContext2D context, String branchKey,
+			LocusInterval2D component) {
+		LocusBranch2D branch = context.getDefinition().getBranch(branchKey);
+		return context.getDefinition().getProvider().isPeriodic()
+				&& branch != null
+				&& branch.getProperties().contains(BranchProperty.PERIODIC)
+				&& branch.getValidDomainComponents().size() == 1
+				&& component.equals(branch.getDeclaredDriverDomain())
+				&& component.equals(context.getDefinition().getProvider()
+						.getDeclaredDomain());
 	}
 
 	private static boolean isStrongerLocalization(Origin candidate,

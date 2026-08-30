@@ -10,12 +10,11 @@ import java.util.Objects;
 /**
  * Non-token evidence for one exact semantic root address.
  *
- * <p>The proof is compared only by the public token ledger. It never enters
- * the opaque token material. Exact equality certifies only the conservative
- * G9U0 continuation subset: the same provider and target contracts at the same
- * canonical preimage. The parameter remains revision evidence, not token
- * identity. Moving-parameter continuation requires a future typed cross-revision
- * certificate and is deliberately not inferred from component uniqueness.</p>
+ * <p>The proof is retained only by the public token ledger. It never enters the
+ * opaque token material or deterministic selector. A separately authorized
+ * closure copy may replace the construction-owned provider signature through
+ * its explicit provenance seam. The exact parameter remains current-revision
+ * evidence, not token identity or a cross-revision equality requirement.</p>
  */
 public final class IntersectionRootAddressProof2D {
 	private final String sourceProviderSignature;
@@ -66,6 +65,24 @@ public final class IntersectionRootAddressProof2D {
 
 	public long getCanonicalParameterBits() {
 		return canonicalParameterBits;
+	}
+
+	/**
+	 * Canonical signature of the captured target residual contract.
+	 *
+	 * <p>This is contract evidence only. It contains no target coordinates,
+	 * labels, construction position or screen state.</p>
+	 *
+	 * @return deterministic target-family residual contract
+	 */
+	static String targetContractSignature(LocusIntersectionTarget2D target) {
+		java.util.Objects.requireNonNull(target);
+		IntersectionResidualContract2D contract = target.getResidualContract();
+		return target.getFamily().name() + "|" + contract.getAdapterVersion()
+				+ "|" + contract.getQuantityKind().name() + "|"
+				+ contract.getUnits() + "|"
+				+ contract.getNormalizationProvenance() + "|"
+				+ contract.getCharacteristicScalePolicy();
 	}
 
 	/**

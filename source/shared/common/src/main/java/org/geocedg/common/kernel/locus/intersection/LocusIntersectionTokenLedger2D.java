@@ -23,13 +23,21 @@ import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata
  * Persistent semantic-incarnation ledger for one public rich intersection.
  *
  * <p>The opaque token never stores coordinates, parameters, candidate order or
- * sample indices. Separately, the ledger persists exact provider/target
- * contracts and canonical-parameter bits as conservative revision evidence.
- * That evidence may justify stable-preimage reuse, but is never encoded into
- * token material.</p>
+ * sample indices. Current public allocations bind an intrinsic deterministic
+ * selector in a separate durable binding. New R4 tokens also frame that selector
+ * in their opaque continuation key; an exact R3 token can therefore acquire the
+ * new binding without changing any of its token material. Separately, the ledger
+ * persists exact provider/target contracts and canonical-parameter bits as
+ * revision evidence. Parameter evidence is never selector or token authority.</p>
  */
 public final class LocusIntersectionTokenLedger2D {
-	private static final String FORMAT_VERSION = "1";
+	private static final String FORMAT_VERSION = "3";
+	private static final String PREVIOUS_FORMAT_VERSION = "2";
+	private static final String LEGACY_FORMAT_VERSION = "1";
+	private static final String CURRENT_ROOT_ALLOCATION_PREFIX =
+			"g9u0-r4/ledger-current-root/v2/";
+	private static final String LEGACY_PUBLIC_SINGLETON_PREFIX =
+			"g9u0/g8c1-explicit-unique-local-root/v1/";
 	private long nextIncarnation = 1;
 	private Snapshot current;
 	private Snapshot copySource;
@@ -67,7 +75,9 @@ public final class LocusIntersectionTokenLedger2D {
 			throw new IllegalStateException("Token evaluation is already finished");
 		}
 		long committedNextIncarnation = evaluation.usedFreshEpoch
-				? Math.addExact(nextIncarnation, 1) : nextIncarnation;
+				? Math.max(Math.addExact(nextIncarnation, 1),
+						evaluation.nextAllocatedIncarnation)
+				: nextIncarnation;
 		evaluation.finished = true;
 		boolean nonFiniteAuthority = published.getGeometryKind() == GeometryKind.OVERLAP
 				|| published.getGeometryKind() == GeometryKind.INFINITELY_MANY
@@ -79,6 +89,8 @@ public final class LocusIntersectionTokenLedger2D {
 					: published.getFiniteSolutions()) {
 				IdentityStatus status = solution.getIdentity().getIdentityStatus();
 				if (status != IdentityStatus.CONTINUATION_ESTABLISHED
+						&& status
+								!= IdentityStatus.DETERMINISTIC_SELECTION_ESTABLISHED
 						&& status != IdentityStatus.NEW_TOPOLOGICAL_SOLUTION) {
 					continue;
 				}
@@ -254,13 +266,37 @@ public final class LocusIntersectionTokenLedger2D {
 	private static void validateCopyContinuity(Snapshot source,
 			Snapshot destination) {
 		for (Entry sourceEntry : source.entries) {
+			int sameIncarnation = 0;
+			int compatible = 0;
 			for (Entry destinationEntry : destination.entries) {
-				if (sourceEntry.incarnation == destinationEntry.incarnation
-						&& !destinationEntry.sameAuthorizedCopyContinuity(
-								sourceEntry)) {
-					throw new IllegalArgumentException(
-							"Token-ledger copy entries have incompatible continuity");
+				if (sourceEntry.incarnation == destinationEntry.incarnation) {
+					sameIncarnation++;
+					if (destinationEntry.sameAuthorizedCopyContinuity(
+							sourceEntry)) {
+						compatible++;
+					}
 				}
+			}
+			if (sameIncarnation > 0 && compatible != 1) {
+				throw new IllegalArgumentException(
+						"Token-ledger copy entries lack one semantic mapping");
+			}
+		}
+		for (Entry destinationEntry : destination.entries) {
+			int sameIncarnation = 0;
+			int compatible = 0;
+			for (Entry sourceEntry : source.entries) {
+				if (sourceEntry.incarnation == destinationEntry.incarnation) {
+					sameIncarnation++;
+					if (destinationEntry.sameAuthorizedCopyContinuity(
+							sourceEntry)) {
+						compatible++;
+					}
+				}
+			}
+			if (sameIncarnation > 0 && compatible != 1) {
+				throw new IllegalArgumentException(
+						"Token-ledger copy entries lack one reverse mapping");
 			}
 		}
 	}
@@ -307,19 +343,23 @@ public final class LocusIntersectionTokenLedger2D {
 	/** @return strict compact XML attribute value for this ledger */
 	public String exportState() {
 		return FORMAT_VERSION + "|" + nextIncarnation + "|"
-				+ encodeSnapshot(current) + "|" + encodeSnapshot(copySource);
+				+ encodeSnapshot(current, FORMAT_VERSION) + "|"
+				+ encodeSnapshot(copySource, FORMAT_VERSION);
 	}
 
 	/** Restores only durable lineage/high-water evidence, never numeric results. */
 	public void importState(String state) {
 		String[] fields = requireText(state, "Token-ledger state")
 				.split("\\|", -1);
-		if (fields.length != 4 || !FORMAT_VERSION.equals(fields[0])) {
+		if (fields.length != 4 || (!FORMAT_VERSION.equals(fields[0])
+				&& !PREVIOUS_FORMAT_VERSION.equals(fields[0])
+				&& !LEGACY_FORMAT_VERSION.equals(fields[0]))) {
 			throw new IllegalArgumentException("Unsupported token-ledger state");
 		}
+		String importedVersion = fields[0];
 		long parsedNext = parsePositiveLong(fields[1], "next incarnation");
-		Snapshot parsedCurrent = decodeSnapshot(fields[2]);
-		Snapshot parsedCopySource = decodeSnapshot(fields[3]);
+		Snapshot parsedCurrent = decodeSnapshot(fields[2], importedVersion);
+		Snapshot parsedCopySource = decodeSnapshot(fields[3], importedVersion);
 		if (parsedCurrent == null && parsedCopySource != null) {
 			throw new IllegalArgumentException(
 					"Token-ledger copy source requires a current snapshot");
@@ -329,9 +369,9 @@ public final class LocusIntersectionTokenLedger2D {
 			throw new IllegalArgumentException(
 					"Token-ledger high-water mark is not monotone");
 		}
-		String canonical = FORMAT_VERSION + "|" + parsedNext + "|"
-				+ encodeSnapshot(parsedCurrent) + "|"
-				+ encodeSnapshot(parsedCopySource);
+		String canonical = importedVersion + "|" + parsedNext + "|"
+				+ encodeSnapshot(parsedCurrent, importedVersion) + "|"
+				+ encodeSnapshot(parsedCopySource, importedVersion);
 		if (!canonical.equals(state)) {
 			throw new IllegalArgumentException(
 					"Token-ledger state is not canonically encoded");
@@ -358,6 +398,7 @@ public final class LocusIntersectionTokenLedger2D {
 		private final java.util.Set<String> duplicateTokens = new HashSet<>();
 		private final java.util.Set<String> duplicateSemanticKeys = new HashSet<>();
 		private final long freshEpoch;
+		private long nextAllocatedIncarnation;
 		private boolean usedFreshEpoch;
 		private long revisionLocalHandleOrdinal;
 		private final String authorizedCopySourceOwner;
@@ -367,6 +408,7 @@ public final class LocusIntersectionTokenLedger2D {
 				Snapshot startingSnapshot, String authorizedCopySourceOwner) {
 			this.material = material;
 			this.freshEpoch = nextIncarnation;
+			this.nextAllocatedIncarnation = nextIncarnation;
 			this.startingSnapshot = startingSnapshot;
 			this.startingEntries = startingSnapshot == null ? new ArrayList<>()
 					: new ArrayList<>(startingSnapshot.entries);
@@ -380,9 +422,7 @@ public final class LocusIntersectionTokenLedger2D {
 		 */
 		public String mint(IntersectionTokenLineage2D lineage,
 				IntersectionRootAddressProof2D addressProof) {
-			if (finished) {
-				throw new IllegalStateException("Token evaluation is already finished");
-			}
+			ensureOpen();
 			java.util.Objects.requireNonNull(addressProof);
 			String semantic = semanticKey(lineage.getSolutionLineageKey(),
 					lineage.getEstablishedBranchLineage(),
@@ -401,19 +441,92 @@ public final class LocusIntersectionTokenLedger2D {
 				selected = selected.withAddressProof(addressProof)
 						.withStatus(Status.ACTIVE);
 			}
-			String token = material.token(selected);
-			byToken.put(token, selected);
-			int semanticCount = semanticUses.getOrDefault(semantic, 0) + 1;
-			semanticUses.put(semantic, semanticCount);
-			if (semanticCount > 1) {
-				duplicateSemanticKeys.add(semantic);
+			return stage(selected);
+		}
+
+		/**
+		 * Resolves one unique current root through intrinsic semantic selection.
+		 *
+		 * <p>The selector, branch and provider/target contract are current-snapshot
+		 * authority. A matching committed allocation is resumed independently of
+		 * the root's previous parameter value or the path used to reach this
+		 * snapshot. Exact parameter bits are replaced only as revision evidence.
+		 * Duplicate calls for one selector stage the same token so the ordinary
+		 * duplicate-publication rules fail closed.</p>
+		 *
+		 * @param branchLineage exact stable semantic component lineage
+		 * @param continuationContract stable provider/parameter/target contract
+		 * @param selector unique intrinsic selector in the current snapshot
+		 * @param addressProof current revision address proof
+		 * @return current opaque allocation and lifecycle disposition
+		 */
+		public IntersectionRootAllocation2D resolveCurrentRoot(
+				String branchLineage, String continuationContract,
+				IntersectionRootDeterministicSelector2D selector,
+				IntersectionRootAddressProof2D addressProof) {
+			return resolveCurrentRoot(branchLineage, continuationContract,
+					selector, addressProof, false);
+		}
+
+		/**
+		 * Resolves a current root and, when explicitly safe, binds one exact R3
+		 * singleton allocation to the new selector without changing its token.
+		 *
+		 * @param allowLegacySingletonBinding whether the caller proved that this is
+		 *        the only finite current root on the exact semantic component
+		 * @return current opaque allocation and lifecycle disposition
+		 */
+		public IntersectionRootAllocation2D resolveCurrentRoot(
+				String branchLineage, String continuationContract,
+				IntersectionRootDeterministicSelector2D selector,
+				IntersectionRootAddressProof2D addressProof,
+				boolean allowLegacySingletonBinding) {
+			ensureOpen();
+			String branch = requireText(branchLineage, "Branch lineage");
+			String contract = requireText(continuationContract,
+					"Continuation contract");
+			java.util.Objects.requireNonNull(selector);
+			java.util.Objects.requireNonNull(addressProof);
+			Entry selected = uniqueStagedAllocation(branch, contract, selector,
+					addressProof);
+			boolean reused = selected != null;
+			if (selected == null) {
+				selected = uniqueStartingAllocation(branch, contract, selector,
+						addressProof);
+				reused = selected != null;
 			}
-			int uses = tokenUses.getOrDefault(token, 0) + 1;
-			tokenUses.put(token, uses);
-			if (uses > 1) {
-				duplicateTokens.add(token);
+			if (selected == null && allowLegacySingletonBinding) {
+				selected = uniqueLegacySingletonAllocation(branch, contract,
+						selector, addressProof, false);
+				reused = selected != null;
 			}
-			return token;
+			if (selected == null && authorizedCopySourceOwner != null) {
+				Entry copySource = uniqueAuthorizedCopyStartingAllocation(branch,
+						selector, addressProof);
+				if (copySource == null && allowLegacySingletonBinding) {
+					copySource = uniqueLegacySingletonAllocation(branch, contract,
+							selector, addressProof, true);
+				}
+				if (copySource != null) {
+					selected = allocatedEntry(branch,
+							currentRootAllocationKey(contract, selector,
+									copySource.incarnation),
+							addressProof, copySource.incarnation, contract, selector);
+					reused = true;
+				}
+			}
+			if (selected == null) {
+				long incarnation = allocateIncarnation();
+				selected = allocatedEntry(branch,
+						currentRootAllocationKey(contract, selector, incarnation),
+						addressProof, incarnation, contract, selector);
+			} else {
+				selected = selected.withAddressProof(addressProof)
+						.withStatus(Status.ACTIVE);
+			}
+			String token = stage(selected);
+			return new IntersectionRootAllocation2D(token,
+					selected.continuationKey.orElseThrow(), reused);
 		}
 
 		/**
@@ -434,6 +547,125 @@ public final class LocusIntersectionTokenLedger2D {
 					material.owner, material.sourcePair, material.constructive,
 					material.topology, revisionEvidence,
 					revisionLocalHandleOrdinal);
+		}
+
+		private void ensureOpen() {
+			if (finished) {
+				throw new IllegalStateException(
+						"Token evaluation is already finished");
+			}
+		}
+
+		private long allocateIncarnation() {
+			long incarnation = nextAllocatedIncarnation;
+			if (incarnation == Long.MAX_VALUE) {
+				throw new IllegalStateException(
+						"Root token incarnation sequence exhausted");
+			}
+			nextAllocatedIncarnation = Math.addExact(incarnation, 1);
+			usedFreshEpoch = true;
+			return incarnation;
+		}
+
+		private Entry uniqueStagedAllocation(String branch, String contract,
+				IntersectionRootDeterministicSelector2D selector,
+				IntersectionRootAddressProof2D addressProof) {
+			Entry found = null;
+			for (Entry entry : byToken.values()) {
+				if (entry.branchLineage.equals(branch)
+						&& isCurrentRootAllocation(entry, contract, selector)
+						&& sameTargetContract(entry, addressProof)) {
+					if (found != null && found != entry) {
+						return null;
+					}
+					found = entry;
+				}
+			}
+			return found;
+		}
+
+		private Entry uniqueStartingAllocation(String branch, String contract,
+				IntersectionRootDeterministicSelector2D selector,
+				IntersectionRootAddressProof2D addressProof) {
+			Entry found = null;
+			for (Entry entry : startingEntries) {
+				if (entry.branchLineage.equals(branch)
+						&& isCurrentRootAllocation(entry, contract, selector)
+						&& sameTargetContract(entry, addressProof)) {
+					if (found != null) {
+						return null;
+					}
+					found = entry;
+				}
+			}
+			return found;
+		}
+
+		private Entry uniqueLegacySingletonAllocation(String branch,
+				String contract,
+				IntersectionRootDeterministicSelector2D selector,
+				IntersectionRootAddressProof2D addressProof,
+				boolean authorizedCopy) {
+			if (selector.hasIntrinsicPhase()) {
+				return null;
+			}
+			Entry found = null;
+			for (Entry entry : startingEntries) {
+				boolean matchingAddress = authorizedCopy
+						? entry.addressProof.sameAddressUnderAuthorizedCopy(
+								addressProof)
+						: entry.addressProof.equals(addressProof);
+				if (isLegacyPublicSingletonAllocation(entry, branch)
+						&& matchingAddress) {
+					if (found != null) {
+						return null;
+					}
+					found = entry.withCurrentRootBinding(contract, selector);
+				}
+			}
+			return found;
+		}
+
+		private boolean sameTargetContract(Entry entry,
+				IntersectionRootAddressProof2D addressProof) {
+			return entry.addressProof.getTargetContractSignature().equals(
+					addressProof.getTargetContractSignature());
+		}
+
+		private Entry uniqueAuthorizedCopyStartingAllocation(String branch,
+				IntersectionRootDeterministicSelector2D selector,
+				IntersectionRootAddressProof2D addressProof) {
+			Entry found = null;
+			for (Entry entry : startingEntries) {
+				if (entry.branchLineage.equals(branch)
+						&& currentRootAllocationSelector(entry)
+								.filter(selector::equals).isPresent()
+						&& entry.addressProof
+								.sameAddressUnderAuthorizedCopy(addressProof)) {
+					if (found != null) {
+						return null;
+					}
+					found = entry;
+				}
+			}
+			return found;
+		}
+
+		private String stage(Entry selected) {
+			String token = material.token(selected);
+			byToken.put(token, selected);
+			String semantic = selected.semanticKey();
+			int semanticCount = semanticUses.getOrDefault(semantic, 0) + 1;
+			semanticUses.put(semantic, semanticCount);
+			if (semanticCount > 1) {
+				duplicateSemanticKeys.add(semantic);
+			}
+			int uses = tokenUses.getOrDefault(token, 0) + 1;
+			tokenUses.put(token, uses);
+			if (uses > 1) {
+				duplicateTokens.add(token);
+			}
+			return token;
 		}
 
 		private Entry uniqueStarting(String semantic,
@@ -485,6 +717,204 @@ public final class LocusIntersectionTokenLedger2D {
 		}
 	}
 
+	private static Entry allocatedEntry(String branch, String key,
+			IntersectionRootAddressProof2D addressProof, long incarnation,
+			String contract,
+			IntersectionRootDeterministicSelector2D selector) {
+		Optional<String> continuation = Optional.of(key);
+		String solution = branch + "/solution/" + key;
+		return new Entry(solution, branch, continuation, addressProof,
+				incarnation, Status.ACTIVE).withCurrentRootBinding(contract,
+						selector);
+	}
+
+	private static String currentRootAllocationKey(String contract,
+			IntersectionRootDeterministicSelector2D selector,
+			long incarnation) {
+		String selected = selector.toExternalForm();
+		return CURRENT_ROOT_ALLOCATION_PREFIX + framed(contract)
+				+ framed(selected) + Long.toUnsignedString(incarnation, 16);
+	}
+
+	private static boolean isCurrentRootAllocation(Entry entry,
+			String expectedContract,
+			IntersectionRootDeterministicSelector2D expectedSelector) {
+		return currentRootAllocation(entry).filter(key ->
+				key.contract.equals(expectedContract)
+						&& key.selector.equals(expectedSelector)).isPresent();
+	}
+
+	private static Optional<String> currentRootAllocationContract(Entry entry) {
+		return currentRootAllocation(entry).map(key -> key.contract);
+	}
+
+	private static Optional<IntersectionRootDeterministicSelector2D>
+			currentRootAllocationSelector(Entry entry) {
+		return currentRootAllocation(entry).map(key -> key.selector);
+	}
+
+	/**
+	 * Reads the exact selector framed in one published R4 continuation key.
+	 *
+	 * <p>This is used only as prior-snapshot topology evidence. It avoids
+	 * reconstructing a historical selector with the current domain/provider
+	 * definition. Legacy singleton keys deliberately return empty.</p>
+	 *
+	 * @param continuationKey exact published continuation key
+	 * @return canonical framed selector, or empty for legacy/malformed material
+	 */
+	static Optional<IntersectionRootDeterministicSelector2D>
+			selectorFromContinuationKey(String continuationKey) {
+		if (continuationKey == null
+				|| !continuationKey.startsWith(CURRENT_ROOT_ALLOCATION_PREFIX)) {
+			return Optional.empty();
+		}
+		try {
+			String encoded = continuationKey.substring(
+					CURRENT_ROOT_ALLOCATION_PREFIX.length());
+			Frame contract = readFrame(encoded, 0);
+			Frame selector = readFrame(encoded, contract.nextOffset);
+			String incarnation = encoded.substring(selector.nextOffset);
+			long parsedIncarnation = Long.parseUnsignedLong(incarnation, 16);
+			if (parsedIncarnation < 1
+					|| !Long.toUnsignedString(parsedIncarnation, 16)
+							.equals(incarnation)) {
+				return Optional.empty();
+			}
+			return Optional.of(IntersectionRootDeterministicSelector2D.parse(
+					selector.value));
+		} catch (ArithmeticException | IllegalArgumentException exception) {
+			return Optional.empty();
+		}
+	}
+
+	private static Optional<CurrentRootAllocationKey> currentRootAllocation(
+			Entry entry) {
+		Optional<CurrentRootAllocationKey> encoded =
+				encodedCurrentRootAllocation(entry);
+		if (entry.currentRootBinding.isPresent()) {
+			boolean currentR4Key = entry.continuationKey.filter(key ->
+					key.startsWith(CURRENT_ROOT_ALLOCATION_PREFIX)).isPresent();
+			if (currentR4Key && !entry.currentRootBinding.equals(encoded)) {
+				return Optional.empty();
+			}
+			if (!currentR4Key) {
+				if (!hasLegacyPublicSingletonTokenMaterial(entry,
+						entry.branchLineage)
+						|| entry.currentRootBinding.get().selector
+								.hasIntrinsicPhase()) {
+					return Optional.empty();
+				}
+			}
+			return entry.currentRootBinding;
+		}
+		return encoded;
+	}
+
+	private static Optional<CurrentRootAllocationKey>
+			encodedCurrentRootAllocation(Entry entry) {
+		if (!entry.continuationKey.isPresent()) {
+			return Optional.empty();
+		}
+		String key = entry.continuationKey.get();
+		if (!key.startsWith(CURRENT_ROOT_ALLOCATION_PREFIX)) {
+			return Optional.empty();
+		}
+		try {
+			String encoded = key.substring(
+					CURRENT_ROOT_ALLOCATION_PREFIX.length());
+			Frame contract = readFrame(encoded, 0);
+			Frame selector = readFrame(encoded, contract.nextOffset);
+			String incarnation = encoded.substring(selector.nextOffset);
+			if (!Long.toUnsignedString(entry.incarnation, 16)
+					.equals(incarnation)
+					|| Long.parseUnsignedLong(incarnation, 16)
+							!= entry.incarnation) {
+				return Optional.empty();
+			}
+			return Optional.of(new CurrentRootAllocationKey(contract.value,
+					IntersectionRootDeterministicSelector2D.parse(selector.value)));
+		} catch (ArithmeticException | NumberFormatException exception) {
+			return Optional.empty();
+		} catch (IllegalArgumentException exception) {
+			return Optional.empty();
+		}
+	}
+
+	private static boolean isLegacyPublicSingletonAllocation(Entry entry,
+			String branch) {
+		return !entry.currentRootBinding.isPresent()
+				&& hasLegacyPublicSingletonTokenMaterial(entry, branch);
+	}
+
+	private static boolean hasLegacyPublicSingletonTokenMaterial(Entry entry,
+			String branch) {
+		if (!entry.branchLineage.equals(branch)
+				|| !entry.continuationKey.isPresent()) {
+			return false;
+		}
+		String continuation = entry.continuationKey.get();
+		String expected = LEGACY_PUBLIC_SINGLETON_PREFIX + branch.length()
+				+ ":" + branch;
+		return continuation.equals(expected)
+				&& entry.solutionLineage.equals(branch + "/solution/" + expected);
+	}
+
+	private static Frame readFrame(String value, int offset) {
+		int separator = value.indexOf(':', offset);
+		if (separator <= offset) {
+			throw new IllegalArgumentException("Malformed allocation frame");
+		}
+		String lengthText = value.substring(offset, separator);
+		int length = Integer.parseInt(lengthText);
+		int start = separator + 1;
+		int end = Math.addExact(start, length);
+		if (length < 1 || !Integer.toString(length).equals(lengthText)
+				|| end > value.length()) {
+			throw new IllegalArgumentException("Malformed allocation frame");
+		}
+		return new Frame(value.substring(start, end), end);
+	}
+
+	private static String framed(String value) {
+		return value.length() + ":" + value;
+	}
+
+	private static final class Frame {
+		private final String value;
+		private final int nextOffset;
+
+		Frame(String value, int nextOffset) {
+			this.value = value;
+			this.nextOffset = nextOffset;
+		}
+	}
+
+	private static final class CurrentRootAllocationKey {
+		private final String contract;
+		private final IntersectionRootDeterministicSelector2D selector;
+
+		CurrentRootAllocationKey(String contract,
+				IntersectionRootDeterministicSelector2D selector) {
+			this.contract = contract;
+			this.selector = selector;
+		}
+
+		@Override
+		public boolean equals(Object other) {
+			if (!(other instanceof CurrentRootAllocationKey)) {
+				return false;
+			}
+			CurrentRootAllocationKey key = (CurrentRootAllocationKey) other;
+			return contract.equals(key.contract) && selector.equals(key.selector);
+		}
+
+		@Override
+		public int hashCode() {
+			return 31 * contract.hashCode() + selector.hashCode();
+		}
+	}
+
 	private enum Status {
 		ACTIVE("a");
 
@@ -511,11 +941,21 @@ public final class LocusIntersectionTokenLedger2D {
 		private final IntersectionRootAddressProof2D addressProof;
 		private final long incarnation;
 		private final Status status;
+		private final Optional<CurrentRootAllocationKey> currentRootBinding;
 
 		private Entry(String solutionLineage, String branchLineage,
 				Optional<String> continuationKey,
 				IntersectionRootAddressProof2D addressProof, long incarnation,
 				Status status) {
+			this(solutionLineage, branchLineage, continuationKey, addressProof,
+					incarnation, status, Optional.empty());
+		}
+
+		private Entry(String solutionLineage, String branchLineage,
+				Optional<String> continuationKey,
+				IntersectionRootAddressProof2D addressProof, long incarnation,
+				Status status,
+				Optional<CurrentRootAllocationKey> currentRootBinding) {
 			this.solutionLineage = requireText(solutionLineage,
 					"Solution lineage");
 			this.branchLineage = requireText(branchLineage, "Branch lineage");
@@ -530,17 +970,28 @@ public final class LocusIntersectionTokenLedger2D {
 			}
 			this.incarnation = incarnation;
 			this.status = java.util.Objects.requireNonNull(status);
+			this.currentRootBinding = java.util.Objects.requireNonNull(
+					currentRootBinding);
 		}
 
 		private Entry withStatus(Status newStatus) {
 			return new Entry(solutionLineage, branchLineage, continuationKey,
-					addressProof, incarnation, newStatus);
+					addressProof, incarnation, newStatus, currentRootBinding);
 		}
 
 		private Entry withAddressProof(
 				IntersectionRootAddressProof2D newAddressProof) {
 			return new Entry(solutionLineage, branchLineage, continuationKey,
-					newAddressProof, incarnation, status);
+					newAddressProof, incarnation, status, currentRootBinding);
+		}
+
+		private Entry withCurrentRootBinding(String contract,
+				IntersectionRootDeterministicSelector2D selector) {
+			return new Entry(solutionLineage, branchLineage, continuationKey,
+					addressProof, incarnation, status,
+					Optional.of(new CurrentRootAllocationKey(
+							requireText(contract, "Continuation contract"),
+							java.util.Objects.requireNonNull(selector))));
 		}
 
 		private String semanticKey() {
@@ -550,11 +1001,24 @@ public final class LocusIntersectionTokenLedger2D {
 
 		private boolean sameContinuity(Entry other) {
 			return semanticKey().equals(other.semanticKey())
-					&& addressProof.equals(other.addressProof);
+					&& addressProof.equals(other.addressProof)
+					&& currentRootBinding.equals(other.currentRootBinding);
 		}
 
 		private boolean sameAuthorizedCopyContinuity(Entry other) {
-			return semanticKey().equals(other.semanticKey())
+			boolean copiedAllocation = incarnation == other.incarnation
+					&& branchLineage.equals(other.branchLineage)
+					&& currentRootAllocationSelector(this).isPresent()
+					&& currentRootAllocationSelector(this).equals(
+							currentRootAllocationSelector(other));
+			boolean migratedLegacyAllocation = incarnation == other.incarnation
+					&& branchLineage.equals(other.branchLineage)
+					&& currentRootBinding.isPresent()
+					&& isLegacyPublicSingletonAllocation(other,
+							other.branchLineage);
+			return (copiedAllocation
+					|| migratedLegacyAllocation
+					|| semanticKey().equals(other.semanticKey()))
 					&& addressProof.sameAddressUnderAuthorizedCopy(
 							other.addressProof);
 		}
@@ -613,7 +1077,27 @@ public final class LocusIntersectionTokenLedger2D {
 			sorted.sort(Comparator.comparing(Entry::semanticKey));
 			this.entries = List.copyOf(sorted);
 			LinkedHashMap<String, Entry> bySemantic = new LinkedHashMap<>();
+			LinkedHashMap<CurrentRootAllocationKey, Entry> byBinding =
+					new LinkedHashMap<>();
 			for (Entry entry : this.entries) {
+				if (entry.currentRootBinding.isPresent()
+						&& !currentRootAllocation(entry).equals(
+								entry.currentRootBinding)) {
+					throw new IllegalArgumentException(
+							"Token ledger has an inconsistent root binding");
+				}
+				if (!entry.currentRootBinding.isPresent()
+						&& entry.continuationKey.filter(key -> key.startsWith(
+								CURRENT_ROOT_ALLOCATION_PREFIX)).isPresent()) {
+					throw new IllegalArgumentException(
+							"R4 token allocation lacks its selector binding");
+				}
+				if (entry.currentRootBinding.isPresent()
+						&& byBinding.put(entry.currentRootBinding.get(), entry)
+								!= null) {
+					throw new IllegalArgumentException(
+							"Token ledger has a duplicate deterministic binding");
+				}
 				Entry duplicate = bySemantic.put(entry.semanticKey(), entry);
 				if (duplicate != null) {
 					throw new IllegalArgumentException(
@@ -703,7 +1187,7 @@ public final class LocusIntersectionTokenLedger2D {
 				+ ":" + branch + ":" + continuation.orElse("");
 	}
 
-	private static String encodeSnapshot(Snapshot snapshot) {
+	private static String encodeSnapshot(Snapshot snapshot, String version) {
 		if (snapshot == null) {
 			return "-";
 		}
@@ -724,11 +1208,21 @@ public final class LocusIntersectionTokenLedger2D {
 					.append(hex(entry.addressProof.getTargetContractSignature()))
 					.append(',').append(Long.toHexString(
 							entry.addressProof.getCanonicalParameterBits()));
+			if (hasDeterministicBindingFields(version)) {
+				encoded.append(',').append(hex(entry.currentRootBinding
+						.map(binding -> binding.contract).orElse("")))
+						.append(',').append(hex(entry.currentRootBinding
+						.map(binding -> binding.selector.toExternalForm())
+						.orElse("")));
+			} else if (!LEGACY_FORMAT_VERSION.equals(version)) {
+				throw new IllegalArgumentException(
+						"Unsupported token-ledger encoding version");
+			}
 		}
 		return encoded.toString();
 	}
 
-	private static Snapshot decodeSnapshot(String encoded) {
+	private static Snapshot decodeSnapshot(String encoded, String version) {
 		if ("-".equals(encoded)) {
 			return null;
 		}
@@ -745,21 +1239,50 @@ public final class LocusIntersectionTokenLedger2D {
 		ArrayList<Entry> entries = new ArrayList<>();
 		for (int index = 0; index < count; index++) {
 			String[] entry = parts[index + 5].split(",", -1);
-			if (entry.length != 8) {
+			int expectedFields = hasDeterministicBindingFields(version) ? 10 : 8;
+			if (entry.length != expectedFields) {
 				throw new IllegalArgumentException("Malformed token-ledger entry");
 			}
 			String continuation = unhex(entry[4]);
 			IntersectionRootAddressProof2D addressProof =
 					IntersectionRootAddressProof2D.fromBits(unhex(entry[5]),
 							unhex(entry[6]), parseParameterBits(entry[7]));
+			Optional<CurrentRootAllocationKey> binding = Optional.empty();
+			if (hasDeterministicBindingFields(version)) {
+				String contract = unhex(entry[8]);
+				String selector = unhex(entry[9]);
+				if (contract.isEmpty() != selector.isEmpty()) {
+					throw new IllegalArgumentException(
+							"Incomplete deterministic root binding");
+				}
+				if (!contract.isEmpty()) {
+					IntersectionRootDeterministicSelector2D parsedSelector =
+							IntersectionRootDeterministicSelector2D.parse(selector);
+					if (PREVIOUS_FORMAT_VERSION.equals(version)
+							&& parsedSelector.hasIntrinsicPhase()) {
+						throw new IllegalArgumentException(
+								"Ledger v2 cannot contain intrinsic phase selectors");
+					}
+					binding = Optional.of(new CurrentRootAllocationKey(contract,
+							parsedSelector));
+				}
+			} else if (!LEGACY_FORMAT_VERSION.equals(version)) {
+				throw new IllegalArgumentException(
+						"Unsupported token-ledger decoding version");
+			}
 			entries.add(new Entry(unhex(entry[2]), unhex(entry[3]),
 					continuation.isEmpty() ? Optional.empty()
 							: Optional.of(continuation),
 					addressProof,
 					parsePositiveLong(entry[1], "entry incarnation"),
-					Status.parse(entry[0])));
+					Status.parse(entry[0]), binding));
 		}
 		return new Snapshot(material, entries);
+	}
+
+	private static boolean hasDeterministicBindingFields(String version) {
+		return FORMAT_VERSION.equals(version)
+				|| PREVIOUS_FORMAT_VERSION.equals(version);
 	}
 
 	private static long maximumIncarnation(Snapshot... snapshots) {

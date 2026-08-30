@@ -375,12 +375,17 @@ class G9U0IntersectionTokenTest extends G9U0PublicSurfaceTestBase {
 		GeoPoint oldUniquePoint = add(
 				"Xu=Intersect(Ru,\"" + uniqueBefore + "\")");
 		assertTrue(oldUniquePoint.isDefined());
-		((org.geogebra.common.kernel.geos.GeoNumeric) requireLookup("c"))
-				.setValue(0.5);
-		requireLookup("c").updateCascade();
+		org.geogebra.common.kernel.geos.GeoNumeric c =
+				(org.geogebra.common.kernel.geos.GeoNumeric) requireLookup("c");
+		for (int step = 1; step <= 64; step++) {
+			c.setValue(0.5 * step / 64);
+			c.updateCascade();
+		}
 		String uniqueAfter = firstToken(unique);
-		assertNotEquals(uniqueBefore, uniqueAfter);
-		assertFalse(oldUniquePoint.isDefined());
+		// G9U0-R4 resolves the unique current semantic selector independently of
+		// movement history; the previous snapshot is diagnostic only.
+		assertEquals(uniqueBefore, uniqueAfter);
+		assertTrue(oldUniquePoint.isDefined());
 		assertTrue(value(unique).findPointAdmissibleSolution(uniqueAfter)
 				.isPresent());
 		GeoPoint currentUniquePoint = add(
@@ -402,8 +407,8 @@ class G9U0IntersectionTokenTest extends G9U0PublicSurfaceTestBase {
 				.setValue(1);
 		requireLookup("k").updateCascade();
 		String discontinuousAfter = firstToken(discontinuous);
-		assertNotEquals(discontinuousBefore, discontinuousAfter);
-		assertFalse(oldDiscontinuousPoint.isDefined());
+		assertEquals(discontinuousBefore, discontinuousAfter);
+		assertTrue(oldDiscontinuousPoint.isDefined());
 		GeoPoint currentDiscontinuousPoint = add(
 				"Yjump=Intersect(Rjump,\"" + discontinuousAfter + "\")");
 		assertTrue(currentDiscontinuousPoint.isDefined());

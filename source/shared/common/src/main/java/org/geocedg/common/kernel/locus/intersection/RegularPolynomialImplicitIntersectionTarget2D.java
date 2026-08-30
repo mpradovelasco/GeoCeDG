@@ -22,6 +22,7 @@ public final class RegularPolynomialImplicitIntersectionTarget2D
 	private final String targetIdentity;
 	private final long targetUpdateStamp;
 	private final double[][] coefficients;
+	private final double contactOrientation;
 	private final IntersectionResidualContract2D contract;
 
 	/** Captures finite polynomial coefficients for one target revision. */
@@ -37,6 +38,8 @@ public final class RegularPolynomialImplicitIntersectionTarget2D
 		this.targetIdentity = requireIdentity(targetIdentity);
 		this.targetUpdateStamp = requireStamp(targetUpdateStamp);
 		this.coefficients = copy(target.getCoeff());
+		this.contactOrientation = LocusIntersectionTargets2D
+				.canonicalPolynomialContactOrientation(coefficients);
 		this.contract = new IntersectionResidualContract2D(ADAPTER_VERSION,
 				ResidualQuantityKind.FIRST_ORDER_NORMAL_LENGTH,
 				"model-coordinate",
@@ -148,11 +151,11 @@ public final class RegularPolynomialImplicitIntersectionTarget2D
 			return TargetContactEvidence2D.notEstablished(
 					"Implicit normal/source tangent normalization failed");
 		}
-		double indicator = (gradientX * tangent.getX()
+		double indicator = contactOrientation * (gradientX * tangent.getX()
 				+ gradientY * tangent.getY()) / (gradientNorm * speed);
 		return TargetContactEvidence2D.established(indicator,
-				"d(first-order-implicit-normal-level)/d(source-arc-length)",
-				"Normalized captured polynomial gradient/source tangent factor");
+				"d(canonical-implicit-normal-level)/d(source-arc-length)",
+				"Canonical captured polynomial gradient/source tangent factor");
 	}
 
 	private RegularResidual regularResidual(LocusPoint2D point) {

@@ -199,6 +199,7 @@ public final class LocusIntersectionTargets2D {
 		private final double directionX;
 		private final double directionY;
 		private final double directionSquared;
+		private final double contactOrientation;
 		private final IntersectionResidualContract2D contract;
 
 		LineTarget(GeoLine line, TargetFamily family, String targetIdentity,
@@ -241,6 +242,8 @@ public final class LocusIntersectionTargets2D {
 					|| directionSquared == 0)) {
 				throw new IllegalArgumentException("Degenerate limited line target");
 			}
+			contactOrientation = family == TargetFamily.RAY ? 1
+					: canonicalLineContactOrientation(a, b);
 			contract = new IntersectionResidualContract2D(
 					LINE_ADAPTER_VERSION,
 					ResidualQuantityKind.MODEL_COORDINATE_DISTANCE,
@@ -319,11 +322,12 @@ public final class LocusIntersectionTargets2D {
 				return TargetContactEvidence2D.notEstablished(
 						"Source arc-length normalization is unavailable");
 			}
-			double indicator = (a * tangent.getX() + b * tangent.getY())
+			double indicator = contactOrientation
+					* (a * tangent.getX() + b * tangent.getY())
 					/ (normalLength * speed);
 			return TargetContactEvidence2D.established(indicator,
-					"d(line-distance)/d(source-arc-length)",
-					"Normalized line-normal/source-tangent directional factor");
+					"d(canonical-line-distance)/d(source-arc-length)",
+					"Canonical normalized line-normal/source-tangent factor");
 		}
 	}
 
@@ -429,6 +433,65 @@ public final class LocusIntersectionTargets2D {
 			throw new IllegalArgumentException("Target update stamp is invalid");
 		}
 		return stamp;
+	}
+
+	/**
+	 * Canonicalizes an unoriented line/segment support normal by its largest
+	 * magnitude coefficient (the x coefficient wins exact ties). The offset is
+	 * deliberately excluded, so ordinary translation cannot flip the contact
+	 * germ. A ray does not use this helper because its line orientation encodes
+	 * the ray direction.
+	 */
+	static double canonicalLineContactOrientation(double a, double b) {
+		if (!Double.isFinite(a) || !Double.isFinite(b) || a == 0 && b == 0) {
+			throw new IllegalArgumentException(
+					"Finite nonzero line normal is required");
+		}
+		double pivot = Math.abs(a) >= Math.abs(b) ? a : b;
+		return pivot > 0 ? 1 : -1;
+	}
+
+	/**
+	 * Orients a polynomial zero set by the nonzero leading monomial: highest
+	 * total degree, then highest x degree. The rule is invariant under nonzero
+	 * scalar representation changes and ignores exact zero padding.
+	 */
+	static double canonicalPolynomialContactOrientation(
+			double[][] coefficients) {
+		if (coefficients == null) {
+			throw new IllegalArgumentException(
+					"Polynomial coefficients are required");
+		}
+		int leadingDegree = -1;
+		int leadingXDegree = -1;
+		double leading = 0;
+		for (int xDegree = 0; xDegree < coefficients.length; xDegree++) {
+			double[] row = coefficients[xDegree];
+			if (row == null) {
+				throw new IllegalArgumentException(
+						"Polynomial coefficient rows are required");
+			}
+			for (int yDegree = 0; yDegree < row.length; yDegree++) {
+				double coefficient = row[yDegree];
+				if (!Double.isFinite(coefficient)) {
+					throw new IllegalArgumentException(
+							"Polynomial coefficients must be finite");
+				}
+				int degree = xDegree + yDegree;
+				if (coefficient != 0 && (degree > leadingDegree
+						|| degree == leadingDegree
+								&& xDegree > leadingXDegree)) {
+					leadingDegree = degree;
+					leadingXDegree = xDegree;
+					leading = coefficient;
+				}
+			}
+		}
+		if (leadingDegree < 0) {
+			throw new IllegalArgumentException(
+					"Polynomial coefficients must be nonzero");
+		}
+		return leading > 0 ? 1 : -1;
 	}
 
 	private static void requireFinitePoint(GeoPoint point, String role) {

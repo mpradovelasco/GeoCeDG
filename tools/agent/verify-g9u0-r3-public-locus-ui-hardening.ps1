@@ -22,6 +22,8 @@ $R2PassTagName = "geocedg-g9u0-r2-pass"
 $R2PassTagObject = "ec92e2deb6e850bc56e61db4ad169b8af5dc0ec7"
 $R2PassCommit = "9694dd4c3c274f627839d0eb5d2827a7910bf0ca"
 $PassTagName = "geocedg-g9u0-r3-pass"
+$PassTagObject = "1c1be8ebb58be9ad4c4e7242bc56105f9f310068"
+$PassCommitSha = "ce7f15c70d50b0639c264fc1cd3356a0d4eb5e2b"
 $AuthorApprovedStatus = "PASS_AUTHOR_APPROVED"
 $PromptPath =
     ".github/prompts/tasks/g9u0-r3-public-locus-ui-hardening.prompt.md"
@@ -180,7 +182,7 @@ function Assert-Condition {
     }
 }
 
-function Resolve-RequiredFile {
+function Resolve-RepositoryPath {
     param([Parameter(Mandatory)] [string]$RelativePath)
 
     $absolute = [IO.Path]::GetFullPath((Join-Path $RepositoryRoot `
@@ -190,17 +192,90 @@ function Resolve-RequiredFile {
     Assert-Condition -Condition ($absolute.StartsWith(
             $prefix, [StringComparison]::OrdinalIgnoreCase)) `
         -Message "Required path escapes repository: $RelativePath"
+    return $absolute
+}
+
+function Resolve-RequiredFile {
+    param([Parameter(Mandatory)] [string]$RelativePath)
+
+    $absolute = Resolve-RepositoryPath $RelativePath
     Assert-Condition -Condition (Test-Path -LiteralPath $absolute -PathType Leaf) `
         -Message "Required G9U0-R3 path is missing: $RelativePath"
     return $absolute
+}
+
+function Get-GitBlobBytes {
+    param([Parameter(Mandatory)] [string]$Object)
+
+    $startInfo = [Diagnostics.ProcessStartInfo]::new()
+    $startInfo.FileName = "git"
+    $startInfo.UseShellExecute = $false
+    $startInfo.CreateNoWindow = $true
+    $startInfo.RedirectStandardOutput = $true
+    $startInfo.RedirectStandardError = $true
+    [void]$startInfo.ArgumentList.Add("-C")
+    [void]$startInfo.ArgumentList.Add($RepositoryRoot)
+    [void]$startInfo.ArgumentList.Add("cat-file")
+    [void]$startInfo.ArgumentList.Add("blob")
+    [void]$startInfo.ArgumentList.Add($Object)
+
+    $process = [Diagnostics.Process]::new()
+    $process.StartInfo = $startInfo
+    $memory = [IO.MemoryStream]::new()
+    try {
+        [void]$process.Start()
+        $copyTask = $process.StandardOutput.BaseStream.CopyToAsync($memory)
+        $errorTask = $process.StandardError.ReadToEndAsync()
+        $process.WaitForExit()
+        [void]$copyTask.GetAwaiter().GetResult()
+        $errorText = $errorTask.GetAwaiter().GetResult()
+        Assert-Condition -Condition ($process.ExitCode -eq 0) `
+            -Message ("Unable to read sealed G9U0-R3 blob ${Object}: " +
+                $errorText.Trim())
+        return ,([byte[]]$memory.ToArray())
+    } finally {
+        $memory.Dispose()
+        $process.Dispose()
+    }
+}
+
+function Get-AuthorityBytes {
+    param([Parameter(Mandatory)] [string]$RelativePath)
+
+    [void](Resolve-RepositoryPath $RelativePath)
+    if ($script:R3BoundaryMode -ne "TAGGED_DESCENDANT" -or
+            $null -eq $script:R3AuthorityCommit) {
+        return ,([IO.File]::ReadAllBytes((Resolve-RequiredFile $RelativePath)))
+    }
+    $normalized = $RelativePath.Replace("\", "/")
+    $object = "$($script:R3AuthorityCommit):$normalized"
+    return ,(Get-GitBlobBytes -Object $object)
+}
+
+function Convert-AuthorityBytesToText {
+    param([Parameter(Mandatory)] [byte[]]$Bytes)
+
+    $offset = 0
+    if ($Bytes.Length -ge 3 -and $Bytes[0] -eq 0xEF -and
+            $Bytes[1] -eq 0xBB -and $Bytes[2] -eq 0xBF) {
+        $offset = 3
+    }
+    return [Text.UTF8Encoding]::new($false, $true).GetString(
+        $Bytes, $offset, $Bytes.Length - $offset)
+}
+
+function Get-AuthoritySourceText {
+    param([Parameter(Mandatory)] [string]$RelativePath)
+
+    [byte[]]$bytes = Get-AuthorityBytes $RelativePath
+    return Convert-AuthorityBytesToText -Bytes $bytes
 }
 
 function Read-JsonDocument {
     param([Parameter(Mandatory)] [string]$RelativePath)
 
     try {
-        return Get-Content -Raw -LiteralPath (
-            Resolve-RequiredFile $RelativePath) |
+        return (Get-AuthoritySourceText $RelativePath) |
             ConvertFrom-Json -Depth 100 -NoEnumerate
     } catch {
         throw "$RelativePath is not valid JSON: $($_.Exception.Message)"
@@ -210,7 +285,7 @@ function Read-JsonDocument {
 function Get-CanonicalLfSha256 {
     param([Parameter(Mandatory)] [string]$RelativePath)
 
-    $text = [IO.File]::ReadAllText((Resolve-RequiredFile $RelativePath))
+    $text = Get-AuthoritySourceText $RelativePath
     $canonical = $text.Replace("`r`n", "`n").Replace("`r", "`n")
     return [Convert]::ToHexString(
         [Security.Cryptography.SHA256]::HashData(
@@ -220,8 +295,9 @@ function Get-CanonicalLfSha256 {
 function Get-BinarySha256 {
     param([Parameter(Mandatory)] [string]$RelativePath)
 
-    return (Get-FileHash -Algorithm SHA256 -LiteralPath (
-        Resolve-RequiredFile $RelativePath)).Hash.ToLowerInvariant()
+    [byte[]]$bytes = Get-AuthorityBytes $RelativePath
+    return [Convert]::ToHexString(
+        [Security.Cryptography.SHA256]::HashData($bytes)).ToLowerInvariant()
 }
 
 function Assert-ExactSet {
@@ -320,14 +396,17 @@ function Assert-EntryAuthority {
         "refs/tags/$PassTagName" 2>$null) -join "")).Trim()
     $hasR3PassTag = $LASTEXITCODE -eq 0
     if ($hasR3PassTag) {
+        Assert-Condition -Condition ($r3TagObject -ceq $PassTagObject) `
+            -Message "The G9U0-R3 PASS tag object changed."
         $tagType = (& git -C $RepositoryRoot cat-file -t $r3TagObject).Trim()
         Assert-Condition -Condition ($LASTEXITCODE -eq 0 -and
                 $tagType -eq "tag") `
             -Message "$PassTagName must be an annotated tag."
         $authorityCommit = (& git -C $RepositoryRoot rev-parse `
             "$r3TagObject^{}").Trim()
-        Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
-            -Message "Unable to peel the R3 PASS tag."
+        Assert-Condition -Condition ($LASTEXITCODE -eq 0 -and
+                $authorityCommit -ceq $PassCommitSha) `
+            -Message "The G9U0-R3 PASS tag peel changed."
         $tagText = @(& git -C $RepositoryRoot cat-file tag $r3TagObject) -join "`n"
         Assert-Condition -Condition ($LASTEXITCODE -eq 0 -and
                 $tagText.Contains("G9U0-R3") -and
@@ -337,12 +416,11 @@ function Assert-EntryAuthority {
             -n 1 $authorityCommit).Trim() -split '\s+')
         Assert-Condition -Condition ($LASTEXITCODE -eq 0 -and
                 $closeoutRecord.Count -eq 2 -and
-                $closeoutRecord[0] -eq $authorityCommit -and
+                $closeoutRecord[0] -eq $PassCommitSha -and
                 $closeoutRecord[1] -eq $EntrySha) `
             -Message "The R3 closeout must remain one direct child of entry."
         & git -C $RepositoryRoot merge-base --is-ancestor $authorityCommit HEAD
-        Assert-Condition -Condition ($LASTEXITCODE -eq 0 -and
-                $branch -in @($ExpectedBranch, "main")) `
+        Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
             -Message "Current HEAD does not retain the tagged R3 closeout."
         $script:R3BoundaryMode = "TAGGED_DESCENDANT"
         $script:R3AuthorityCommit = $authorityCommit
@@ -360,7 +438,7 @@ function Assert-EntryAuthority {
 }
 
 function Assert-HashManifest {
-    $lines = @(Get-Content -LiteralPath (Resolve-RequiredFile $EvidenceHashPath) |
+    $lines = @((Get-AuthoritySourceText $EvidenceHashPath) -split "`r?`n" |
         Where-Object { -not [string]::IsNullOrWhiteSpace($_) -and
             -not $_.TrimStart().StartsWith("#") })
     Assert-Condition -Condition ($lines.Count -eq 2) `
@@ -555,8 +633,7 @@ function Assert-EvidenceContract {
                     $SuccessorG9U1PromptCanonicalLfSha256) `
             -Message "Historical or successor G9U1 prompt hash changed."
 
-        $successor = [IO.File]::ReadAllText((Resolve-RequiredFile `
-            $SuccessorG9U1PromptPath))
+        $successor = Get-AuthoritySourceText $SuccessorG9U1PromptPath
         $requiredHeadings = @(
             "# Objective", "# Authority and evidence hierarchy", "# Scope",
             "# Explicitly forbidden scope", "# Architectural placement",
@@ -612,11 +689,10 @@ function Assert-EvidenceContract {
 }
 
 function Assert-ProductStaticContracts {
-    $menu = [IO.File]::ReadAllText((Resolve-RequiredFile $MenuSourcePath))
-    $dialog = [IO.File]::ReadAllText((Resolve-RequiredFile $DialogSourcePath))
-    $feature = [IO.File]::ReadAllText((Resolve-RequiredFile $FeatureServicePath))
-    $r2Verifier = [IO.File]::ReadAllText((Resolve-RequiredFile `
-        $HistoricalR2VerifierPath))
+    $menu = Get-AuthoritySourceText $MenuSourcePath
+    $dialog = Get-AuthoritySourceText $DialogSourcePath
+    $feature = Get-AuthoritySourceText $FeatureServicePath
+    $r2Verifier = Get-AuthoritySourceText $HistoricalR2VerifierPath
 
     Assert-Condition -Condition (
             ([regex]::Matches($menu,
@@ -676,14 +752,14 @@ function Assert-DocumentationContracts {
             $DeveloperGuidePath, $UserGuidePath, $HistoricalG9U1PromptPath,
             $SuccessorG9U1PromptPath,
             $UpstreamImpactPath, $ComposedVerifierPath)) {
-        [void](Resolve-RequiredFile $path)
+        [void](Get-AuthorityBytes $path)
     }
     $combined = @(
         $PromptPath, $ArchitecturePath, $ReportPath, $RoadmapPath,
         $TraceabilityPath, $MatrixPath, $PublicSpecPath,
         $DeveloperGuidePath, $UserGuidePath, $SuccessorG9U1PromptPath
     ) | ForEach-Object {
-        [IO.File]::ReadAllText((Resolve-RequiredFile $_))
+        Get-AuthoritySourceText $_
     }
     $text = $combined -join "`n"
     foreach ($fragment in @(
@@ -696,10 +772,9 @@ function Assert-DocumentationContracts {
             -Message "R3 living documentation lacks '$fragment'."
     }
 
-    $architecture = [IO.File]::ReadAllText((Resolve-RequiredFile `
-        $ArchitecturePath))
-    $report = [IO.File]::ReadAllText((Resolve-RequiredFile $ReportPath))
-    $publicSpec = [IO.File]::ReadAllText((Resolve-RequiredFile $PublicSpecPath))
+    $architecture = Get-AuthoritySourceText $ArchitecturePath
+    $report = Get-AuthoritySourceText $ReportPath
+    $publicSpec = Get-AuthoritySourceText $PublicSpecPath
     foreach ($fragment in @(
             "G9U0-R3 = PASS — AUTHOR APPROVED",
             "selfApproved = false", "authorApproved = true",
@@ -858,18 +933,23 @@ try {
     Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
         -Message "Unable to read initial repository status."
 
+    Assert-EntryAuthority
+    $authorityPaths = @($RequiredCandidatePaths + @(
+            $HistoricalG9U1PromptPath,
+            $SuccessorG9U1PromptPath,
+            $FrozenPublicSpecPath,
+            $FeatureServicePath))
+    foreach ($path in @($authorityPaths | Sort-Object -Unique)) {
+        [void](Get-AuthorityBytes $path)
+    }
     foreach ($path in @(
-            $PromptPath, $ScenarioPath, $EvidencePath, $EvidenceHashPath,
-            $ArchitecturePath, $ReportPath, $RoadmapPath, $TraceabilityPath,
-            $MatrixPath, $PublicSpecPath, $SpecificationIndexPath,
-            $FrozenPublicSpecPath, $DeveloperGuidePath, $UserGuidePath,
-            $UpstreamImpactPath, $MenuSourcePath, $DialogSourcePath,
-            $MenuTestPath, $InspectorTestPath, $FeatureServicePath,
-            $VerifierPath, $ComposedVerifierPath)) {
+            "gradlew.bat",
+            "tools/agent/repository-generated-state.ps1",
+            $MenuSourcePath, $DialogSourcePath, $MenuTestPath,
+            $InspectorTestPath, $FeatureServicePath, $VerifierPath)) {
         [void](Resolve-RequiredFile $path)
     }
 
-    Assert-EntryAuthority
     Assert-HashManifest
     $scenarios = Read-JsonDocument $ScenarioPath
     $evidence = Read-JsonDocument $EvidencePath

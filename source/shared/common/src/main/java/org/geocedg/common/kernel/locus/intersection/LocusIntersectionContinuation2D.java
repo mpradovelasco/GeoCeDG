@@ -106,7 +106,8 @@ public final class LocusIntersectionContinuation2D {
 				current.getComputationStatus(), current.getCompletenessEvidence(),
 				current.getGeometryKind(), current.getCurrentness(),
 				current.getSupportLevel(), current.getNumericGuarantee(), continued,
-				current.getOverlapEvidence(), work, diagnostics);
+				current.getOverlapEvidence(),
+				current.getUnresolvedCandidateComponentKeys(), work, diagnostics);
 	}
 
 	private static ContinuationOutcome continueOne(
@@ -136,9 +137,7 @@ public final class LocusIntersectionContinuation2D {
 					solution.getLineage().getCandidateParentContinuationKeys());
 			return new ContinuationOutcome(reidentify(solution,
 					solution.getIdentity().getRootToken(),
-					parentTokens.isEmpty()
-							? IdentityStatus.NEW_TOPOLOGICAL_SOLUTION
-							: IdentityStatus.AMBIGUOUS_CONTINUATION,
+					IdentityStatus.AMBIGUOUS_CONTINUATION,
 					event, parentTokens, false), comparisons);
 		}
 		if (sameCurrentKey.size() == 1 && samePreviousKey.size() == 1) {
@@ -252,7 +251,9 @@ public final class LocusIntersectionContinuation2D {
 		return solution.getRevisionEvidence().getLocalIsolationStatus()
 					== LocalIsolationStatus.ESTABLISHED
 				&& (status == IdentityStatus.NEW_TOPOLOGICAL_SOLUTION
-						|| status == IdentityStatus.CONTINUATION_ESTABLISHED);
+						|| status == IdentityStatus.CONTINUATION_ESTABLISHED
+						|| status
+								== IdentityStatus.DETERMINISTIC_SELECTION_ESTABLISHED);
 	}
 
 	private static boolean sameConstructiveContext(

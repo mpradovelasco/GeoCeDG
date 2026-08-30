@@ -63,6 +63,7 @@ $GeneratedSnapshot = $null
 $EvidenceIsApproved = $false
 $CandidateBoundaryMode = $null
 $CandidateCommit = $null
+$SealedSourceCommit = $null
 
 $RequiredPaths = @(
     $PromptPath,
@@ -217,6 +218,23 @@ function Read-JsonFile {
     } catch {
         throw "Invalid JSON in ${RelativePath}: $($_.Exception.Message)"
     }
+}
+
+function Get-AuthoritySourceText {
+    param([Parameter(Mandatory)] [string]$RelativePath)
+
+    [void](Resolve-RequiredFile -RelativePath $RelativePath)
+    if ([string]::IsNullOrWhiteSpace($SealedSourceCommit)) {
+        return Get-Content -Raw -LiteralPath (Resolve-RequiredFile `
+            -RelativePath $RelativePath)
+    }
+
+    $normalized = $RelativePath.Replace("\", "/")
+    $object = "$($SealedSourceCommit):$normalized"
+    $lines = @(& git -C $RepositoryRoot show $object 2>$null)
+    Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
+        -Message "Unable to read sealed G9U0 source: $object"
+    return $lines -join "`n"
 }
 
 function Get-CanonicalTextSha256 {
@@ -474,8 +492,8 @@ function Get-TestSourcePath {
 function Get-TestMethods {
     param([Parameter(Mandatory)] [string]$ClassName)
 
-    $source = Get-Content -Raw -LiteralPath (Resolve-RequiredFile `
-        -RelativePath (Get-TestSourcePath -ClassName $ClassName))
+    $source = Get-AuthoritySourceText -RelativePath (
+        Get-TestSourcePath -ClassName $ClassName)
     $pattern = '(?ms)@Test\s+(?:@[^\r\n]+\s+)*' +
         '(?:(?:public|protected|private)\s+)?(?:final\s+)?' +
         'void\s+([A-Za-z0-9_]+)\s*\('
@@ -599,6 +617,7 @@ function Assert-CandidateCloseoutBoundary {
 
     $script:CandidateBoundaryMode = "COMMIT"
     $script:CandidateCommit = "$candidate"
+    $script:SealedSourceCommit = "$candidate"
     if ($head -eq $candidate) {
         Assert-Condition -Condition ($branch -eq $ExpectedBranch) `
             -Message "The frozen candidate HEAD is not on the G9U0 feature branch."
@@ -648,6 +667,7 @@ function Assert-CandidateCloseoutBoundary {
             -Message "The G9U0 promotion lost the candidate or concurrent main."
         Assert-Condition -Condition $promotionIsAncestor `
             -Message "The current HEAD does not retain the G9U0 promotion commit."
+        $script:SealedSourceCommit = $G9U0PromotionCommit
         $promotionRecord = @((& git -C $RepositoryRoot rev-list --parents -n 1 `
             $G9U0PromotionCommit).Trim() -split '\s+')
         Assert-Condition -Condition ($promotionRecord.Count -eq 3 -and
@@ -1082,14 +1102,14 @@ function Assert-SourceContracts {
             Get-TestSourcePath -ClassName $_
         })
     foreach ($path in $testPaths) {
-        $source = Get-Content -Raw -LiteralPath (Resolve-RequiredFile $path)
+        $source = Get-AuthoritySourceText -RelativePath $path
         Assert-Condition -Condition ($source -notmatch
                 '@Disabled|@Ignore|TODO|FIXME') `
             -Message "Focused G9U0 source contains a disabled/TODO seam: $path"
     }
 
-    $facade = Get-Content -Raw -LiteralPath (Resolve-RequiredFile `
-        "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusV2PublicOperations.java")
+    $facade = Get-AuthoritySourceText -RelativePath `
+        "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusV2PublicOperations.java"
     foreach ($operation in @("createPointDriven", "createScalar",
             "createSemanticPoint", "totalMetric", "betweenMetric",
             "scalarLength", "intersect", "selectIntersectionPoint")) {
@@ -1098,16 +1118,16 @@ function Assert-SourceContracts {
             -Message "Public G9U0 facade operation is missing: $operation"
     }
 
-    $pointAlgo = Get-Content -Raw -LiteralPath (Resolve-RequiredFile `
-        "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusIntersectionPointV2.java")
+    $pointAlgo = Get-AuthoritySourceText -RelativePath `
+        "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusIntersectionPointV2.java"
     Assert-Condition -Condition ($pointAlgo.Contains(
             "findExactPointAdmissibleSolution") -and
             $pointAlgo.Contains("rebaseCopiedPointAdmissibleSolution") -and
             -not $pointAlgo.Contains("findPointAdmissibleSolutionByLineage")) `
         -Message "Token-point selection contains a non-ledger lineage fallback."
 
-    $tokenCodec = Get-Content -Raw -LiteralPath (Resolve-RequiredFile `
-        "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusSemanticIntersectionToken2D.java")
+    $tokenCodec = Get-AuthoritySourceText -RelativePath `
+        "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusSemanticIntersectionToken2D.java"
     Assert-Condition -Condition ($tokenCodec.Contains(
             'private static final String PREFIX = "locus-root/v3/"') -and
             $tokenCodec.Contains('"locus-root-local/v1/"') -and
@@ -1123,8 +1143,8 @@ function Assert-SourceContracts {
             'getEvaluatedPoint|getSemanticParameter|candidateIndex|sampleIndex|ordinal') `
         -Message "Token material contains coordinate/order-derived identity."
 
-    $ledger = Get-Content -Raw -LiteralPath (Resolve-RequiredFile `
-        "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionTokenLedger2D.java")
+    $ledger = Get-AuthoritySourceText -RelativePath `
+        "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionTokenLedger2D.java"
     foreach ($contract in @("prepareAttachedOwner", "rebaseCopiedToken",
             "validatePreattachmentContext", "validatePersistedCopySource",
             "validatesCurrentToken", "revisionLocalHandle", "exportState",
@@ -1141,8 +1161,8 @@ function Assert-SourceContracts {
         -Message ("Token-ledger exact-address continuation, overflow " +
             "preflight or strict copy-source import validation is missing.")
 
-    $publicTarget = Get-Content -Raw -LiteralPath (Resolve-RequiredFile `
-        "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PublicTargetIntersectionCapability2D.java")
+    $publicTarget = Get-AuthoritySourceText -RelativePath `
+        "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PublicTargetIntersectionCapability2D.java"
     Assert-Condition -Condition ($publicTarget.Contains(
             "IntersectionTokenLineage2D.stableComponentLineage") -and
             $publicTarget.Contains("G8_UNIQUE_ROOT_PREFIX") -and
@@ -1153,8 +1173,8 @@ function Assert-SourceContracts {
         -Message ("Public target continuation must validate the delegated " +
             "unique-root proof before using stable semantic component lineage.")
 
-    $intersectionTests = Get-Content -Raw -LiteralPath (Resolve-RequiredFile `
-        "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9U0IntersectionTokenTest.java")
+    $intersectionTests = Get-AuthoritySourceText -RelativePath `
+        "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9U0IntersectionTokenTest.java"
     foreach ($requiredFragment in @(
             "G8BIntersectionFixtures::completeEmpty",
             "G8BIntersectionFixtures.completeRoots",
@@ -1174,18 +1194,18 @@ function Assert-SourceContracts {
             -Message "Focused intersection evidence is missing: $requiredFragment"
     }
 
-    $metricTotal = Get-Content -Raw -LiteralPath (Resolve-RequiredFile `
-        "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusMetricV2.java")
-    $metricBetween = Get-Content -Raw -LiteralPath (Resolve-RequiredFile `
-        "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusBetweenMetricV2.java")
+    $metricTotal = Get-AuthoritySourceText -RelativePath `
+        "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusMetricV2.java"
+    $metricBetween = Get-AuthoritySourceText -RelativePath `
+        "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusBetweenMetricV2.java"
     Assert-Condition -Condition ($metricTotal.Contains(
             'current.toExternalForm() + "/total-metric-consumer"') -and
             $metricBetween.Contains(
                 'current.toExternalForm() + "/between-metric-consumer"')) `
         -Message "Public metric consumer IDs are not derived from durable results."
 
-    $rich = Get-Content -Raw -LiteralPath (Resolve-RequiredFile `
-        "source/shared/common/src/main/java/org/geocedg/common/kernel/geos/GeoLocusIntersectionResult.java")
+    $rich = Get-AuthoritySourceText -RelativePath `
+        "source/shared/common/src/main/java/org/geocedg/common/kernel/geos/GeoLocusIntersectionResult.java"
     Assert-Condition -Condition ($rich.Contains(
             'startTag("locusIntersectionTokenLedger")') -and
             $rich.Contains("implements PersistentGeoIdentityListener") -and
@@ -1194,8 +1214,8 @@ function Assert-SourceContracts {
         -Message ("Rich intersection XML/listener persistence or atomic " +
             "preattachment validation seam is missing.")
 
-    $scalar = Get-Content -Raw -LiteralPath (Resolve-RequiredFile `
-        "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusMetricScalarAdapter.java")
+    $scalar = Get-AuthoritySourceText -RelativePath `
+        "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusMetricScalarAdapter.java"
     Assert-Condition -Condition ($scalar -match
             'GeoLocusMetricResult\s+rich(?:Input|Result)' -and
             $scalar -notmatch 'new LocusMetricEngine2D|new LocusMetricIndex') `

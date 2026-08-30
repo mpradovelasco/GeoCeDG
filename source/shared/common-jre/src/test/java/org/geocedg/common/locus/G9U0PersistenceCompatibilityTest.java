@@ -758,18 +758,18 @@ class G9U0PersistenceCompatibilityTest extends G9U0PublicSurfaceTestBase {
 		assertNotNull(missing);
 		assertFalse(missing.isDefined());
 		assertNull(missing.getIntersectionResult());
-		assertEquals("1|1|-|-", missing.getTokenLedgerState());
+		assertEquals("3|1|-|-", missing.getTokenLedgerState());
 
 		String duplicate = valid.replace(tag, tag + tag);
 		assertThrows(RuntimeException.class,
 				() -> loadInFreshApp(duplicate));
 		String noncanonical = valid.replace(tag,
-				tag.replace("state=\"1|", "state=\"01|"));
+				tag.replace("state=\"3|", "state=\"03|"));
 		assertNotEquals(valid, noncanonical);
 		assertThrows(RuntimeException.class,
 				() -> loadInFreshApp(noncanonical));
 		String corrupt = valid.replace(tag,
-				tag.replace("state=\"1|", "state=\"999|"));
+				tag.replace("state=\"3|", "state=\"999|"));
 		assertNotEquals(valid, corrupt);
 		assertThrows(RuntimeException.class,
 				() -> loadInFreshApp(corrupt));
@@ -827,8 +827,8 @@ class G9U0PersistenceCompatibilityTest extends G9U0PublicSurfaceTestBase {
 				new LocusIntersectionTokenLedger2D();
 		assertThrows(IllegalArgumentException.class,
 				() -> orphanedCopySource.importState(
-						"1|1|-|" + stateFields[2]));
-		assertEquals("1|1|-|-", orphanedCopySource.exportState());
+						"2|1|-|" + stateFields[2]));
+		assertEquals("3|1|-|-", orphanedCopySource.exportState());
 		stateFields[1] = Long.toString(Long.MAX_VALUE);
 		LocusIntersectionTokenLedger2D overflowCopyLedger =
 				new LocusIntersectionTokenLedger2D();
