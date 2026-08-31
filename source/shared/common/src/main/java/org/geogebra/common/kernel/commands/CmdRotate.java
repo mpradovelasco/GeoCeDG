@@ -16,6 +16,9 @@
 
 package org.geogebra.common.kernel.commands;
 
+import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.kernel.locus.LocusV2PublicOperations;
+import org.geocedg.common.main.feature.RuntimeFeatureService;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.Transform;
 import org.geogebra.common.kernel.TransformRotate;
@@ -23,6 +26,7 @@ import org.geogebra.common.kernel.advanced.AlgoRotateText;
 import org.geogebra.common.kernel.arithmetic.Command;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoNumberValue;
+import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.kernel.geos.GeoText;
 import org.geogebra.common.kernel.kernelND.GeoPointND;
 import org.geogebra.common.main.MyError;
@@ -97,6 +101,11 @@ public class CmdRotate extends CommandProcessor {
 
 			}
 			GeoNumberValue phi = (GeoNumberValue) arg[1];
+			if (arg[0] instanceof GeoLocusV2) {
+				RuntimeFeatureService.requireLocusV2Access(cons);
+				return new GeoElement[] {LocusV2PublicOperations.rotate(cons,
+						c.getLabel(), (GeoLocusV2) arg[0], phi)};
+			}
 
 			return rotate(c.getLabel(), arg[0], phi);
 		}
@@ -126,6 +135,13 @@ public class CmdRotate extends CommandProcessor {
 						new EvalInfo(false));
 			}
 			GeoNumberValue phi = (GeoNumberValue) arg[1];
+			if (arg[0] instanceof GeoLocusV2 && arg[2] instanceof GeoPoint
+					&& !arg[2].isGeoElement3D()) {
+				RuntimeFeatureService.requireLocusV2Access(cons);
+				return new GeoElement[] {LocusV2PublicOperations.rotate(cons,
+						c.getLabel(), (GeoLocusV2) arg[0], phi,
+						(GeoPoint) arg[2])};
+			}
 			GeoPointND Q = (GeoPointND) arg[2];
 
 			return getAlgoDispatcher().rotate(c.getLabel(), arg[0], phi, Q);

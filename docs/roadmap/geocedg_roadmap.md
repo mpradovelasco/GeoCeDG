@@ -3,13 +3,13 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Roadmap vivo y normativo de fases; no sustituye las especificaciones ni los ADR aceptados |
-| Versión documental | 3.56 |
-| Fecha de revisión | 30 de agosto de 2026 |
+| Versión documental | 3.59 |
+| Fecha de revisión | 31 de agosto de 2026 |
 | Baseline GeoGebra | 5.4.928.0, commit `9b93256b7df401ff056c37b502d82df4d72b1522`, tag `geogebra-baseline-5.4.928.0` |
-| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1, G9A2, G9A3, el track G9A, G9U0, G9U0-R1, G9X1, G9U0-R2, G9U0-R3, G9U0-R4 y la planificación G10P `PASS — AUTHOR APPROVED`. R4 conserva tres fallos de smoke intermedios y cierra tras los re-smokes finales de movimiento regular de cuatro raíces y reactivación active/dormant del mismo `GeoPoint`, ambos `PASS`; determinismo actual > heurística de continuidad, sin identidad por coordenada/orden/proximidad/historia y sin creación de puntos por recompute. Autoridad: 27+28+3 = 58 métodos, 54 rutas/31 bajo `source/`, focused A/B deterministas y composed PASS. Riesgo no bloqueante `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP`: falta round trip `.cedg` dedicado de cuarentena periódica; se revisará en G9U1 y se resolverá o dispondrá explícitamente antes del cierre G9, sin convertirlo en dependencia implícita de R5. G9U0-R5 y G9U1 no se han ejecutado; BOOK-P1 es el checkpoint editorial independiente intencionalmente programado entre R4 y R5. G9B/G9C no están autorizadas, G9U2 sigue bloqueada y ninguna implementación productiva G10 está autorizada; Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
-| Última fase cerrada | G9U0-R4 — `PASS — AUTHOR APPROVED` |
-| Última fase ejecutada | G9U0-R4 — identidad determinista de intersección y ciclo active/dormant/reactivated cerrados; `selfApproved=false` |
-| Siguiente puerta | BOOK-P1, revisión editorial independiente planificada; después, decisión autoral separada sobre el diseño/implementación G9U0-R5. G9U1 permanece sin ejecutar y bloqueada hasta R5 PASS y autorización propia |
+| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1, G9A2, G9A3, el track G9A, G9U0, G9U0-R1, G9X1, G9U0-R2, G9U0-R3, G9U0-R4, G9U0-R5 y la planificación G10P `PASS — AUTHOR APPROVED`. R5 selecciona Option A para `k=0`: conserva la clasificación de dominio `FINITE`/`UNBOUNDED`, añade `COLLAPSED_IMAGE`, produce longitud rica cero desde esa prueba semántica y no fabrica raíces aisladas. Sus siete formas ordinarias producen nuevos Locus V2 semánticos con identidad/DAG propios; evaluación source-first, exclusiones 3D fail-closed, normalización axial segura y publicación transaccional están aprobadas. El smoke final acepta slider, edición explícita del numérico existente, cruces repetidos por cero y save/reopen; la entrada libre `k=0.25` falla antes de R5 como G9A `REDEFINE_CONTEXT_MISSING`, de forma atómica, y queda como requisito UX futuro sin ampliar G9A. R4 conserva tres fallos de smoke intermedios y cierra tras los re-smokes finales de movimiento regular de cuatro raíces y reactivación active/dormant del mismo `GeoPoint`, ambos `PASS`; determinismo actual > heurística de continuidad, sin identidad por coordenada/orden/proximidad/historia y sin creación de puntos por recompute. Riesgo no bloqueante `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP`: falta round trip `.cedg` dedicado de cuarentena periódica; se revisará en G9U1 y se resolverá o dispondrá explícitamente antes del cierre G9. G9S1 es la siguiente fase autorizada tras publicar R5. G9U1 no se ha ejecutado. G9B/G9C no están autorizadas, G9U2 sigue bloqueada y ninguna implementación productiva G10 está autorizada; Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
+| Última fase cerrada | G9U0-R5 — `PASS — AUTHOR APPROVED` |
+| Última fase ejecutada | G9U0-R5 — transformaciones de similitud 2D cerradas; `selfApproved=false`, `authorApproved=true`, `passClaimed=true` |
+| Siguiente puerta | G9S1 — Semantic Spline 2D Capability, autorizada como siguiente fase tras publicar/verificar R5; G9U1 permanece sin ejecutar y requiere autorización propia |
 | Primer cliente | Aplicación de escritorio de la familia Classic 5 |
 | Núcleo | Java compartido de GeoGebra, extendido solo cuando la semántica lo requiere |
 
@@ -1132,8 +1132,9 @@ optimización de rendimiento del software.
 | G9U0-R2 implementation | `PASS — AUTHOR APPROVED` | El smoke original R2-L11 se conserva; corrección, 31+31, regresiones, gates auxiliares, composed y re-smoke autoral pasan; `selfApproved=false`, `authorApproved=true`, `passClaimed=true`; MSI/registro real `NOT_REQUESTED` |
 | G9U0-R3 | `PASS — AUTHOR APPROVED` | Hardening frontend acotado: ciclo de vida del menú, invisibilidad Euclidian del auxiliar exacto y etiquetas compactas que desacoplan layout e identidad; conserva el smoke que halló el ancho y registra la corrección, reemplazo automatizado y re-smoke PASS; no cambia kernel/XML/identidad ni implementa markers |
 | G9U0-R4 | `PASS — AUTHOR APPROVED` | Correctivo kernel acotado: determinismo > continuidad; selector durable de componente/germen enriquecido solo ante colisión con orientación, tipo de dominio, cardinalidad y fase/rango intrínseco; certificado topológico periódico adaptativo separado del selector, sin `span / 256`. Ledger v4 conserva claims dormant/quarantined y reactiva el mismo `GeoPoint` únicamente bajo el mismo selector actual; no auto-crea puntos. Se preservan tres fallos intermedios; los re-smokes finales de cuatro raíces y recurrencia/reactivación pasan. Autoridad 27+28+3 = 58 y 54 rutas/31 bajo `source/`; A/B deterministas y composed PASS; checkpoint `4ef2c9d` es evidencia pre-correctiva; `selfApproved=false`, `authorApproved=true`, `passClaimed=true` |
-| G9U0-R5 | `DESIGN CANDIDATE — PENDING AUTHOR REVIEW`; implementation `NOT AUTHORIZED — NOT STARTED` | Diseño futuro de `Translate`/`Rotate`/`Reflect`/`Mirror`/`Dilate` sobre Locus V2 semántico; no hay código productivo R5 en este candidato |
-| G9U1 | `DESIGNED — NOT AUTHORIZED` | Workspace Construction con gate y autorización separados; R4 ya es PASS y exige R5 `PASS — AUTHOR APPROVED`; `Continuity = OFF`; markers, create-one/create-selected/create-all y sesión persistente de inspector consumen tokens exactos sin ordinal UI; multi-creación es una transacción undoable coherente; auto-materialization de puntos nuevos solo frontend explícito, mientras reactivación de puntos existentes pertenece al kernel; Classic conserva configuración upstream |
+| G9U0-R5 | `PASS — AUTHOR APPROVED` | Siete formas ordinarias `Translate`/`Rotate`/`Reflect`/`Mirror`/`Dilate` crean un nuevo Locus V2 semántico con ID/DAG propios; Option A `k=0` conserva `FINITE`/`UNBOUNDED` y añade `COLLAPSED_IMAGE`; smoke dinámico aceptado con limitación de entrada libre G9A caracterizada; `selfApproved=false`, `authorApproved=true`, `passClaimed=true`; no autoriza G9U1 |
+| G9S1 | `AUTHORIZED NEXT PHASE` | Semantic Spline 2D Capability; comienza solo después de publicación y verificación verde de R5 |
+| G9U1 | `DESIGNED — NOT AUTHORIZED` | Workspace Construction con gate y autorización separados; R4/R5 ya son PASS; `Continuity = OFF`; markers, create-one/create-selected/create-all y sesión persistente de inspector consumen tokens exactos sin ordinal UI; multi-creación es una transacción undoable coherente; auto-materialization de puntos nuevos solo frontend explícito, mientras reactivación de puntos existentes pertenece al kernel; la futura UX de entrada libre debe usar exclusivamente redefine compatible/atómico G9A sin convertir labels en identidad; Classic se caracteriza por separado |
 | G9B / G9C | `DESIGNED — NOT AUTHORIZED` | Track kernel tras cierre de G9A; no depende de completar el cliente G9U1 |
 | G9U2 | `BLOCKED ON THE APPROVED G9 GATE` | Workspace de procedimientos diédrico solo tras `G9 PASS — AUTHOR APPROVED` |
 | G9 spatial solving | `POINT PILOT — AUTHOR APPROVED` | G9A2 se limita a frames/sistemas/mapas/relaciones y reconstrucción projection-defined de punto; no hay primitivas generales, objetos compuestos ni autoridad 3D |
@@ -1482,7 +1483,9 @@ selfApproved = false
 authorApproved = true
 passClaimed = true
 protectiveCheckpoint = 4ef2c9df433aec7c6385a488a02581358da83f60 (PRE_CURRENT_CORRECTION)
-G9U0-R5 = DESIGN CANDIDATE — PENDING AUTHOR REVIEW; IMPLEMENTATION NOT AUTHORIZED
+G9U0-R5 DESIGN = PASS — AUTHOR APPROVED
+G9U0-R5 IMPLEMENTATION = PASS — AUTHOR APPROVED
+G9S1 = AUTHORIZED NEXT PHASE
 G9U1 / G9B / G9C = DESIGNED — NOT AUTHORIZED
 G10 PRODUCTIVE IMPLEMENTATION = NOT AUTHORIZED — NOT STARTED
 ```
@@ -1662,7 +1665,9 @@ selfApproved = false
 authorApproved = true
 passClaimed = true
 protectiveCheckpoint = 4ef2c9df433aec7c6385a488a02581358da83f60 (PRE_CURRENT_CORRECTION)
-G9U0-R5 = DESIGN CANDIDATE — PENDING AUTHOR REVIEW; IMPLEMENTATION NOT AUTHORIZED
+G9U0-R5 DESIGN = PASS — AUTHOR APPROVED
+G9U0-R5 IMPLEMENTATION = PASS — AUTHOR APPROVED
+G9S1 = AUTHORIZED NEXT PHASE
 G9U1 = DESIGNED — NOT AUTHORIZED
 G9U1 DETERMINISTIC_CONTINUITY_OFF_REQUIRED
 G9U1 INTRINSIC_PHASE_RANK_TOKEN_AUTHORITY_REQUIRED
@@ -1679,9 +1684,8 @@ G9 SPATIAL SOLVING = POINT PILOT — AUTHOR APPROVED; GENERAL PRIMITIVES NOT STA
 ## G9 - Semántica espacial y proyecciones canónicas
 
 **Estado:** G9P-R1, G9P, G9O1, G9A1, G9A2, G9A3, el track G9A, G9U0,
-G9U0-R1, G9X1, G9U0-R2, G9U0-R3 y G9U0-R4 `PASS — AUTHOR APPROVED`;
-G9U0-R5 está `DESIGN CANDIDATE — PENDING AUTHOR REVIEW`, con implementación no
-autorizada.
+G9U0-R1, G9X1, G9U0-R2, G9U0-R3, G9U0-R4 y G9U0-R5 `PASS — AUTHOR
+APPROVED`. G9S1 es la siguiente fase autorizada tras publicar/verificar R5.
 G9A cierra identidad/persistencia durable, el piloto projection-defined de punto
 y su ciclo de vida/migración; G9U0 cierra la superficie pública Locus V2
 experimental. G9X1 está cerrado en `PASS — AUTHOR APPROVED`, con exportación
@@ -1740,8 +1744,8 @@ autoridad semántica de estilos o documentos. R3 es un correctivo público
 frontend separado que ya cerró `PASS — AUTHOR APPROVED`. R4 ya cerró la
 admisibilidad/continuación pública. BOOK-P1 es una revisión editorial
 independiente intencionalmente programada antes de R5, no una dependencia del
-software. R5 debe cerrar las transformaciones semánticas 2D como `PASS — AUTHOR
-APPROVED` antes de U1. U1 integra las acciones
+software. R5 ya cerró las transformaciones semánticas 2D como `PASS — AUTHOR
+APPROVED`; G9S1 es la siguiente fase autorizada. U1 integra las acciones
 aprobadas solo después de esos cierres y de una autorización autoral U1 todavía
 separada.
 
@@ -2203,7 +2207,8 @@ incluidos el consumidor de punto materializado y el rich result que gestionan el
 claim durable, sin logs ni evidencia generada versionados. El mismo punto puede
 reactivarse por recompute del kernel; crear un punto nuevo, marker o acción
 create-all permanece exclusivamente frontend, explícito y futuro en G9U1, que
-solo podrá consumir tokens actuales. G9U0-R5 y G9U1 no se han ejecutado.
+solo podrá consumir tokens actuales. R5 sí se ha ejecutado hasta candidato sin
+PASS; G9U1 no se ha ejecutado.
 
 El resolver incremental ordena `R` raíces una vez y valida `P` puntos
 materializados por lookup directo: `O(R log R + P)` sin un solve adicional por
@@ -2231,11 +2236,11 @@ por sí mismo una implementación GeoCeDG.
 
 ### G9U0-R5 — LOCUS V2 2D SIMILARITY TRANSFORMATIONS
 
-**Estado de diseño:** `DESIGN CANDIDATE — PENDING AUTHOR REVIEW`
+**Estado de diseño:** `PASS — AUTHOR APPROVED`
 
-**Estado productivo:** `NOT AUTHORIZED — NOT STARTED`
+**Estado productivo:** `PASS — AUTHOR APPROVED`
 
-R5 planifica que los comandos ordinarios `Translate`, `Rotate`,
+R5 hace que los comandos ordinarios `Translate`, `Rotate`,
 `Reflect`/`Mirror` —solo simetría axial/central, no inversión— y `Dilate`
 acepten `GeoLocusV2` y produzcan un nuevo Locus V2 semántico de DAG normal,
 conceptualmente `L'(u)=T(L(u))`. El resultado obtiene identidad durable nueva,
@@ -2246,42 +2251,69 @@ Las intersecciones transformadas consumirán el selector determinista del
 snapshot actual cerrado por R4; covariancia geométrica no reutiliza tokens ni
 convierte la historia de movimiento en identidad.
 
-El [diseño candidato](../architecture/g9u0_r5_locus_v2_similarity_transformations.md),
-la [especificación normativa candidata](../../geocedg/specs/locus/locus-v2-similarity-transformations.md),
-la [matriz futura](../validation/g9u0_r5_locus_v2_similarity_transformations_validation_matrix.md)
-y el [prompt canónico futuro](../../.github/prompts/tasks/g9u0-r5-locus-v2-similarity-transformations.prompt.md)
-son solo planificación. No existe código productivo R5 en este gate.
+El [diseño aprobado](../architecture/g9u0_r5_locus_v2_similarity_transformations.md),
+la [especificación normativa](../../geocedg/specs/locus/locus-v2-similarity-transformations.md),
+la [matriz de implementación](../validation/g9u0_r5_locus_v2_similarity_transformations_validation_matrix.md)
+y el [prompt canónico](../../.github/prompts/tasks/g9u0-r5-locus-v2-similarity-transformations.prompt.md)
+gobiernan la implementación autorizada. No autorizan G9U1.
 
-La escala uniforme `k=0` queda como **AUTHOR DECISION REQUIRED** antes de
-implementar R5. La opción A recomendada es un locus semántico degenerado válido
-`COLLAPSED_IMAGE`, que conserva dominio/direcciones semánticas, tiene métrica
-cero y no fabrica una raíz de intersección aislada; la opción B es un estado
-transformado explícitamente unsupported/undefined, fail-closed y recuperable.
-Los contratos aceptados y el comportamiento upstream no fuerzan una de las dos,
-y ninguna opción convierte silenciosamente el resultado en `GeoPoint`.
+La escala uniforme `k=0` usa la **Option A — AUTHOR APPROVED**: un locus
+semántico degenerado válido que conserva dominio, `FINITE`/`UNBOUNDED`, branches,
+componentes, orientación y direcciones inválidas de la fuente, y añade
+`COLLAPSED_IMAGE`. Esa propiedad semántica prueba longitud rica cero sobre cada
+componente válido sin sanar gaps ni fabricar una raíz de intersección aislada.
+No se convierte en un `GeoPoint`; la Option B queda rechazada para R5.
 
-R5 debe cerrar posteriormente `PASS — AUTHOR APPROVED` mediante autorización,
-implementación, validación y smoke separados. Su eventual cierre preparará el
-prompt definitivo post-R5 de G9U1; este candidato no modifica ni ejecuta código
-U1.
+Las siete formas públicas producen un objeto nuevo con ID durable y dependencias
+DAG normales. La evaluación consulta primero la fuente. Los interceptores 3D
+rechazan fail-closed ejes, planos y centros 3D; la reflexión axial normaliza
+coeficientes finitos sin overflow; y un transform R5 rechazado antes de su propia
+publicación/redefine revierte sus etiquetas, parent y reservas. Esto no cambia
+la regla host que conserva un subcomando anidado ya exitoso si falla después un
+comando externo no relacionado. R5 no
+modifica `Path`, formato ZIP/XML, solver de intersección, renderer ni G9U1.
+
+El smoke final autoral acepta el deslizador, la edición explícita del numérico
+existente en Algebra, transiciones positivas/negativas/cero repetidas y
+save/reopen. La expresión libre `k=0.25` se rechaza antes de R5 como G9A
+`REDEFINE_CONTEXT_MISSING`; el rechazo es atómico y no corrompe la construcción.
+La limitación queda diferida a la UX prospectiva de G9U1 y no es un fallo de
+`Dilate`; R5 no amplía G9A. `selfApproved=false`, `authorApproved=true`,
+`passClaimed=true`.
 
 ### G9U1 - Workspace CeDG Construction
 
 **Estado:** `DESIGNED — NOT AUTHORIZED`
 
-**Entrada adicional obligatoria:** G9U0-R2 implementation, G9U0-R3 y G9U0-R4 ya
-cerraron `PASS — AUTHOR APPROVED`. Antes de ejecutar U1 debe cerrar G9U0-R5
-como `PASS — AUTHOR APPROVED`. Ninguno de esos cierres
-autoriza U1 automáticamente; sigue siendo necesaria una decisión autoral
-separada y el futuro prompt canónico post-R5 que superseda prospectivamente el
-prompt G9P congelado.
+**Entrada adicional obligatoria:** G9U0-R2 implementation, G9U0-R3, G9U0-R4 y
+G9U0-R5 ya cerraron `PASS — AUTHOR APPROVED`. Ninguno de esos cierres autoriza
+U1 automáticamente; sigue siendo necesaria una decisión autoral separada y la
+autoridad canónica prospectiva vigente tras G9S1.
 
 El prompt G9P histórico
-`.github/prompts/tasks/g9u1-construction-workspace.prompt.md` permanece
-inmutable. Su sucesor prospectivo es
-`.github/prompts/tasks/g9u1-construction-workspace-after-g9u0-r3.prompt.md`.
-Ese sucesor sigue `UNEXECUTED / NOT AUTHORIZED`, ya exige R4 y R5 PASS y debe
-ser congelado por el eventual cierre R5 antes de una autorización U1 separada.
+`.github/prompts/tasks/g9u1-construction-workspace.prompt.md` y el sucesor
+prospectivo post-R3 permanecen inmutables. La única autoridad prospectiva
+definitiva después de R5 es
+`.github/prompts/tasks/g9u1-construction-workspace-after-g9u0-r5.prompt.md`,
+canonical-LF SHA-256
+`d256ce8bb80eb8deab70a6ae5571543c093a0d8de147b2b34bfa1ce92c9387ed`.
+Sigue `UNEXECUTED / NOT AUTHORIZED`. G9S1 deberá preparar la autoridad definitiva
+post-G9S1; U1 seguirá requiriendo autorización separada.
+
+La planificación U1 debe investigar la compatibilidad de entrada libre
+`k=0.25` con el objeto numérico existente exclusivamente mediante la transacción
+de redefine compatible de G9A. El label solo puede localizar el objetivo
+explícitamente pretendido en ese contexto de comando: no es identidad durable.
+El predicado G9A y su atomicidad gobiernan la conservación de ID; objetivos
+ambiguos/inexistentes fallan cerrados y un redefine incompatible sigue la
+semántica de identidad nueva. Undo/redo/save/reopen y la ruta Classic requieren
+caracterización propia. R5 no implementa ni autoriza esta ampliación UX.
+
+Ese sucesor integra las siete formas ordinarias R5 sin comandos paralelos. Un
+Locus transformado es fuente normal para Point, métricas, intersecciones y
+transformaciones posteriores. Sus queries usan tokens nuevos del par fuente
+transformado, nunca tokens de la query original. Para `k=0`, la presentación no
+puede fabricar marker, token o raíz aislada sobre `COLLAPSED_IMAGE`.
 
 Extenderá el manifiesto de perfil como única autoridad para workspaces, vistas,
 docking, input inferior, help contextual, actions, madurez, iconos y localización.

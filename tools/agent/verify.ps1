@@ -59,6 +59,8 @@ $G9U0R3PublicLocusUiVerifier = Join-Path $PSScriptRoot `
     "verify-g9u0-r3-public-locus-ui-hardening.ps1"
 $G9U0R4IntersectionAdmissibilityVerifier = Join-Path $PSScriptRoot `
     "verify-g9u0-r4-intersection-admissibility-continuation.ps1"
+$G9U0R5SimilarityTransformationsVerifier = Join-Path $PSScriptRoot `
+    "verify-g9u0-r5-locus-v2-similarity-transformations.ps1"
 $BenchmarkRunner = Join-Path $RepositoryRoot "tools\benchmark\run.ps1"
 $InitialStatus = $null
 
@@ -807,6 +809,55 @@ try {
         & $G9U0R4IntersectionAdmissibilityVerifier @g9u0R4Parameters
         Assert-LastScriptSuccess `
             -Description "G9U0-R4 public Locus V2 intersection admissibility"
+    }
+
+    $g9u0R5IntegrationArtifacts = @(
+        $G9U0R5SimilarityTransformationsVerifier,
+        (Join-Path $RepositoryRoot `
+            ".github\prompts\tasks\g9u0-r5-locus-v2-similarity-transformations.prompt.md"),
+        (Join-Path $RepositoryRoot `
+            "geocedg\specs\locus\locus-v2-similarity-transformations.md"),
+        (Join-Path $RepositoryRoot `
+            "docs\architecture\g9u0_r5_locus_v2_similarity_transformations.md"),
+        (Join-Path $RepositoryRoot `
+            "docs\validation\g9u0_r5_locus_v2_similarity_transformations_validation_matrix.md"),
+        (Join-Path $RepositoryRoot `
+            "geocedg\validation\g9u0-r5\g9u0-r5-locus-v2-similarity-transformations-scenarios.json"),
+        (Join-Path $RepositoryRoot `
+            "geocedg\validation\g9u0-r5\g9u0-r5-locus-v2-similarity-transformations-evidence.json"),
+        (Join-Path $RepositoryRoot `
+            "geocedg\validation\g9u0-r5\g9u0-r5-evidence.sha256"),
+        (Join-Path $RepositoryRoot `
+            "docs\validation\g9u0_r5_locus_v2_similarity_transformations_candidate_report.md")
+    )
+    $g9u0R5PresentCount = @($g9u0R5IntegrationArtifacts | Where-Object {
+        Test-Path -LiteralPath $_ -PathType Leaf
+    }).Count
+    if ($g9u0R5PresentCount -ne 0 -and
+            $g9u0R5PresentCount -ne $g9u0R5IntegrationArtifacts.Count) {
+        throw ("Incomplete G9U0-R5 candidate integration; canonical prompt, " +
+            "normative spec, architecture, matrix, scenario/evidence/hash, " +
+            "candidate report and focused verifier are paired.")
+    }
+    if ($g9u0R5PresentCount -eq $g9u0R5IntegrationArtifacts.Count) {
+        Write-Host "`n==> G9U0-R5 Locus V2 similarity transformations"
+        $g9u0R5Parameters = @{
+            HistoricalRegressionsAlreadyComposed = $true
+            LogDirectory = Join-Path ([IO.Path]::GetFullPath($LogDirectory)) `
+                "g9u0-r5-locus-v2-similarity-transformations"
+        }
+        if ($SkipBuild) {
+            $g9u0R5Parameters.SkipBuild = $true
+        }
+        if ($AllowToolchainDownload) {
+            $g9u0R5Parameters.AllowToolchainDownload = $true
+        }
+        if ($KeepBuildOutputs) {
+            $g9u0R5Parameters.KeepBuildOutputs = $true
+        }
+        & $G9U0R5SimilarityTransformationsVerifier @g9u0R5Parameters
+        Assert-LastScriptSuccess `
+            -Description "G9U0-R5 Locus V2 similarity transformations"
     }
 
     Write-Host "`n==> Standalone Windows packaging contracts"

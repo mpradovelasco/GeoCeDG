@@ -20,6 +20,7 @@ import org.geocedg.common.kernel.algos.AlgoLocusIntersectionV2;
 import org.geocedg.common.kernel.algos.AlgoLocusLocusIntersectionV2;
 import org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter;
 import org.geocedg.common.kernel.algos.AlgoLocusMetricV2;
+import org.geocedg.common.kernel.algos.AlgoLocusSimilarityTransform2D;
 import org.geocedg.common.kernel.algos.AlgoSemanticLocusPoint2D;
 import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
 import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
@@ -33,17 +34,21 @@ import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
 import org.geocedg.common.main.feature.RuntimeFeatureService;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.Path;
+import org.geogebra.common.kernel.Transform;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.algos.ConstructionElement;
+import org.geogebra.common.kernel.commands.Commands;
 import org.geogebra.common.kernel.geos.GeoConic;
 import org.geogebra.common.kernel.geos.GeoConicPart;
 import org.geogebra.common.kernel.geos.GeoElement;
+import org.geogebra.common.kernel.geos.GeoLine;
 import org.geogebra.common.kernel.geos.GeoList;
 import org.geogebra.common.kernel.geos.GeoNumberValue;
 import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.kernel.geos.GeoSegment;
 import org.geogebra.common.kernel.geos.GeoText;
+import org.geogebra.common.kernel.geos.GeoVec3D;
 import org.geogebra.common.kernel.kernelND.GeoConicNDConstants;
 
 /**
@@ -361,6 +366,82 @@ public final class LocusV2PublicOperations {
 		}
 	}
 
+	/**
+	 * Creates the ordinary semantic translation image of a Locus V2.
+	 *
+	 * @return newly constructed semantic image
+	 */
+	public static GeoLocusV2 translate(Construction construction, String label,
+			GeoLocusV2 source, GeoVec3D vector) {
+		return createSimilarity(construction, label, source, Commands.Translate,
+				vector);
+	}
+
+	/**
+	 * Creates the ordinary semantic rotation image about the origin.
+	 *
+	 * @return newly constructed semantic image
+	 */
+	public static GeoLocusV2 rotate(Construction construction, String label,
+			GeoLocusV2 source, GeoNumberValue angle) {
+		return createSimilarity(construction, label, source, Commands.Rotate,
+				angle.toGeoElement());
+	}
+
+	/**
+	 * Creates the ordinary semantic rotation image about a 2D point.
+	 *
+	 * @return newly constructed semantic image
+	 */
+	public static GeoLocusV2 rotate(Construction construction, String label,
+			GeoLocusV2 source, GeoNumberValue angle, GeoPoint center) {
+		return createSimilarity(construction, label, source, Commands.Rotate,
+				angle.toGeoElement(), center);
+	}
+
+	/**
+	 * Creates the ordinary semantic central-reflection image.
+	 *
+	 * @return newly constructed semantic image
+	 */
+	public static GeoLocusV2 reflect(Construction construction, String label,
+			GeoLocusV2 source, GeoPoint center) {
+		return createSimilarity(construction, label, source, Commands.Mirror,
+				center);
+	}
+
+	/**
+	 * Creates the ordinary semantic axial-reflection image.
+	 *
+	 * @return newly constructed semantic image
+	 */
+	public static GeoLocusV2 reflect(Construction construction, String label,
+			GeoLocusV2 source, GeoLine axis) {
+		return createSimilarity(construction, label, source, Commands.Mirror, axis);
+	}
+
+	/**
+	 * Creates the ordinary semantic dilation image about the origin.
+	 *
+	 * @return newly constructed semantic image
+	 */
+	public static GeoLocusV2 dilate(Construction construction, String label,
+			GeoLocusV2 source, GeoNumberValue factor) {
+		return createSimilarity(construction, label, source, Commands.Dilate,
+				factor.toGeoElement());
+	}
+
+	/**
+	 * Creates the ordinary semantic dilation image about a 2D point.
+	 *
+	 * @return newly constructed semantic image
+	 */
+	public static GeoLocusV2 dilate(Construction construction, String label,
+			GeoLocusV2 source, GeoNumberValue factor, GeoPoint center) {
+		return createSimilarity(construction, label, source, Commands.Dilate,
+				factor.toGeoElement(), center);
+	}
+
 	private static GeoLocusMetricResult totalMetric(Construction construction,
 			String label, GeoLocusV2 source, boolean auxiliary) {
 		requireAccess(construction);
@@ -375,6 +456,42 @@ public final class LocusV2PublicOperations {
 			algorithm = new AlgoLocusMetricV2(construction, label, source, outputId);
 			GeoLocusMetricResult output = algorithm.getResult();
 			finishLabel(output, label, auxiliary);
+			if (!construction.isFileLoading()) {
+				batch.stageReserved(output, outputId, dependencies);
+				batch.publish();
+			}
+			return output;
+		} catch (RuntimeException exception) {
+			batch.abandonBeforePublication();
+			removeFailed(algorithm);
+			throw exception;
+		}
+	}
+
+	private static GeoLocusV2 createSimilarity(Construction construction,
+			String label, GeoLocusV2 source, Commands command,
+			GeoElement... parameters) {
+		requireAccess(construction);
+		ArrayList<GeoElement> directInputs = new ArrayList<>();
+		directInputs.add(source);
+		Collections.addAll(directInputs, parameters);
+		List<GeoElement> dependencies = direct(
+				directInputs.toArray(new GeoElement[0]));
+		ParticipationBatch batch = new ParticipationBatch(construction);
+		if (!construction.isFileLoading()) {
+			batch.prepareAll(dependencies);
+		}
+		PersistentGeoId outputId = batch.reserveOutput();
+		AlgoLocusSimilarityTransform2D algorithm = null;
+		try {
+			algorithm = new AlgoLocusSimilarityTransform2D(construction, command,
+					source, parameters);
+			GeoLocusV2 output = algorithm.getLocus();
+			ensureAttached(construction, algorithm);
+			Transform.setVisualStyleForTransformations(source, output);
+			String outputLabel = label == null
+					? Transform.transformedGeoLabel(source) : label;
+			finishPersistentLabel(output, outputLabel, false);
 			if (!construction.isFileLoading()) {
 				batch.stageReserved(output, outputId, dependencies);
 				batch.publish();
@@ -422,6 +539,29 @@ public final class LocusV2PublicOperations {
 					"A public persistent output requires an ordinary label");
 		}
 		geo.setAuxiliaryObject(auxiliary);
+	}
+
+	private static void finishPersistentLabel(GeoElement geo, String label,
+			boolean auxiliary) {
+		Construction construction = geo.getConstruction();
+		boolean suppressed = construction.isSuppressLabelsActive();
+		try {
+			construction.setSuppressLabelCreation(false);
+			finishLabel(geo, label, auxiliary);
+		} finally {
+			construction.setSuppressLabelCreation(suppressed);
+		}
+	}
+
+	private static void ensureAttached(Construction construction,
+			ConstructionElement element) {
+		boolean suppressed = construction.isSuppressLabelsActive();
+		try {
+			construction.setSuppressLabelCreation(false);
+			construction.addToConstructionList(element, true);
+		} finally {
+			construction.setSuppressLabelCreation(suppressed);
+		}
 	}
 
 	private static void removeFailed(AlgoElement algorithm) {
@@ -520,8 +660,13 @@ public final class LocusV2PublicOperations {
 		}
 
 		private void prepareAll(List<GeoElement> geos) {
-			for (GeoElement geo : geos) {
-				prepare(geo);
+			try {
+				for (GeoElement geo : geos) {
+					prepare(geo);
+				}
+			} catch (RuntimeException exception) {
+				abandonBeforePublication();
+				throw exception;
 			}
 		}
 
@@ -542,10 +687,26 @@ public final class LocusV2PublicOperations {
 			boolean alreadyInConstruction = construction.isInConstructionList(geo);
 			boolean alreadyAuxiliary = geo.isAuxiliaryObject();
 			boolean promoted = !geo.isLabelSet();
-			finishLabel(geo, null, geo.isAuxiliaryObject());
-			if (promoted) {
+			ConstructionElement element = geo.isIndependent() ? geo
+					: geo.getParentAlgorithm();
+			if (element == null) {
+				throw new IllegalArgumentException(
+						"A public dependency must be reconstructible");
+			}
+			if (promoted || !alreadyInConstruction) {
 				promotions.add(new PromotedGeo(geo, alreadyInConstruction,
-						alreadyAuxiliary));
+						alreadyAuxiliary, promoted));
+			}
+			boolean suppressed = construction.isSuppressLabelsActive();
+			try {
+				// Durable command arguments use the ordinary label/construction seam.
+				// Nested-command parsing suppresses labels temporarily, so restore that
+				// seam only for this exact dependency and then restore the host state.
+				construction.setSuppressLabelCreation(false);
+				finishLabel(geo, null, geo.isAuxiliaryObject());
+				construction.addToConstructionList(element, true);
+			} finally {
+				construction.setSuppressLabelCreation(suppressed);
 			}
 			PersistentGeoId reserved = registry.allocatePersistentGeoId();
 			stagedIds.put(geo, reserved);
@@ -558,9 +719,14 @@ public final class LocusV2PublicOperations {
 			if (construction.isFileLoading()) {
 				return null;
 			}
-			PersistentGeoId reserved = registry.allocatePersistentGeoId();
-			reservations.add(reserved);
-			return reserved;
+			try {
+				PersistentGeoId reserved = registry.allocatePersistentGeoId();
+				reservations.add(reserved);
+				return reserved;
+			} catch (RuntimeException exception) {
+				abandonBeforePublication();
+				throw exception;
+			}
 		}
 
 		private void stageReserved(GeoElement geo, PersistentGeoId id,
@@ -659,21 +825,25 @@ public final class LocusV2PublicOperations {
 		private final ConstructionElement constructionElement;
 		private final boolean alreadyInConstruction;
 		private final boolean auxiliary;
+		private final boolean labelPromoted;
 
 		private PromotedGeo(GeoElement geo, boolean alreadyInConstruction,
-				boolean auxiliary) {
+				boolean auxiliary, boolean labelPromoted) {
 			this.geo = geo;
 			constructionElement = geo.isIndependent() ? geo
 					: geo.getParentAlgorithm();
 			this.alreadyInConstruction = alreadyInConstruction;
 			this.auxiliary = auxiliary;
+			this.labelPromoted = labelPromoted;
 		}
 
 		private void rollback(Construction construction) {
-			construction.removeLabel(geo);
-			geo.setLabelSimple(null);
-			geo.setLabelSet(false);
-			geo.setLabelWanted(false);
+			if (labelPromoted) {
+				construction.removeLabel(geo);
+				geo.setLabelSimple(null);
+				geo.setLabelSet(false);
+				geo.setLabelWanted(false);
+			}
 			geo.setAuxiliaryObject(auxiliary);
 			if (!alreadyInConstruction && constructionElement != null) {
 				construction.removeFromConstructionList(constructionElement);

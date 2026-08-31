@@ -10,8 +10,9 @@
   bounded long-token layout correction and author re-smoke; G9U0-R4 is also
   `PASS — AUTHOR APPROVED` after three retained intermediate smoke failures,
   replacement automated PASS and final four-root/point-reactivation re-smokes
-  `PASS`. G9U0-R5 and G9U1 remain unexecuted;
-  G9U1/G9B/G9C remain unauthorized, and R5 is a planning-only design candidate
+  `PASS`. G9U0-R5 design and implementation are `PASS — AUTHOR APPROVED` after
+  the final dynamic-factor characterization. G9U1 remains unexecuted;
+  G9U1/G9B/G9C remain unauthorized
 - G9U0-R2 closeout: `selfApproved=false`, `authorApproved=true`,
   `passClaimed=true`; installed MSI/registry smoke `NOT_REQUESTED`
 
@@ -176,11 +177,44 @@ direct selector lookup, with no solve per child and no movement-history replay.
 The legacy whole-transition diagnostic may remain `O(R²)` in the worst case;
 it is non-authoritative.
 
-G9U0-R5 is planning-only in the R4 candidate. Its architecture, draft
-specification, future canonical prompt and validation matrix describe normal
-`Translate`, `Rotate`, point/line `Reflect` and uniform `Dilate` integration as
-a reconstructible semantic `GeoLocusV2` DAG parent. No R5 Java, command or
-serialization implementation exists or is authorized.
+G9U0-R5 design and implementation are `PASS — AUTHOR APPROVED`.
+`AlgoLocusSimilarityTransform2D`
+publishes a new first-class `GeoLocusV2` with its own durable identity and
+normal dependencies on the source plus the ordinary transform inputs.
+`LocusSimilarityEvaluator2D` evaluates the source first at the unchanged
+branch/parameter address, propagates source invalidity, and only then maps the
+finite point through immutable `LocusSimilarityTransform2D` data. The seven
+ordinary 2D forms are translation, rotation about the origin or a point,
+reflection in a line or point (`Reflect`/`Mirror` aliases), and uniform dilation
+about the origin or a point.
+
+For finite `k=0`, the output retains the source domain classification
+(`FINITE` or `UNBOUNDED`) and adds `COLLAPSED_IMAGE`; it is not converted to an
+unparameterized point. That semantic property is the proof used by the metric
+seam to return exact zero on valid collapsed components, while invalid source
+addresses and gaps remain invalid. Reflection normalizes homogeneous line
+coefficients with scale-safe finite arithmetic. Axis/plane/spatial-center 3D
+routes fail closed before generic host routing. Participation and redefine use
+one exception-safe rollback seam, so an R5 transform rejected before its own
+publication leaves no attached R5 algorithm, ID registration or partially
+published R5 output. This does not change upstream retention of a successful
+nested subcommand when a later unrelated outer command fails.
+Transformed intersections use the R4 identity system in a new transformed
+source-pair context and therefore mint new selectors/tokens rather than reusing
+source-query tokens. R5 does not add `Path`, rendered-sample
+authority, G9U1 workspace behavior or candidate markers.
+
+The final byte-exact dynamic-dilation fixture proves that slider-driven
+`GeoNumeric.setValue()`, explicit editing of the existing Algebra-row numeric,
+repeated positive/negative/zero transitions and save/reopen all recompute the
+same live R5 parent. Free input `k=0.25` is rejected upstream of R5 as
+`REDEFINE_CONTEXT_MISSING` by the accepted G9A redefine contract; that rejection
+is atomic and did not reproduce construction corruption. The author accepted
+this as a nonblocking product-UX limitation. R5 deliberately does not broaden
+G9A. Future G9U1 design must investigate a compatible-redefine command-context
+seam in which a label locates an explicitly intended current object only for the
+transaction, never supplies durable identity, and ambiguous, absent or
+incompatible targets fail closed with normal undo/redo and persistence.
 
 Focused Java tests live primarily in `source/shared/common-jre`; frontend tests
 live with the Desktop module. A passing focused test is evidence for its stated
@@ -241,12 +275,15 @@ creation. Do not replace it with coordinates/indexes, change token generation,
 or use layers as semantic state. Candidate-marker overlays remain future G9U1
 presentation and are absent from R3.
 
-After the first complete R3 composed run passed, the future operational
-authority was prospectively superseded by
-`.github/prompts/tasks/g9u1-construction-workspace-after-g9u0-r3.prompt.md`.
-The original G9P prompt remains unchanged historical evidence. The successor is
-planning only: R4 is now author-approved, while R5 closeout and separate G9U1
-authorization remain mandatory. It keeps candidate markers as non-persistent active-result
+After the first complete R3 composed run passed, a prospective post-R3 prompt
+captured the future operational contract. R5 preserves that file and the
+original G9P prompt as unchanged history. The sole definitive prospective
+successor is now
+`.github/prompts/tasks/g9u1-construction-workspace-after-g9u0-r5.prompt.md`
+(canonical-LF SHA-256
+`d256ce8bb80eb8deab70a6ae5571543c093a0d8de147b2b34bfa1ce92c9387ed`).
+It is planning only: R5 closeout and separate authorization of that exact G9U1
+prompt remain mandatory. It keeps candidate markers as non-persistent active-result
 overlays derived from current deterministic root/evidence authority, fixes the
 existing host Continuity option OFF in GeoCeDG while retaining configurable
   Classic behavior, consumes the exact kernel token bound to the intrinsic
@@ -422,17 +459,18 @@ active/dormant/reactivation author re-smokes both pass. No
 implemented. `selfApproved=false`, `authorApproved=true` and
 `passClaimed=true`.
 
-G9U0-R5 is `DESIGN CANDIDATE — PENDING AUTHOR REVIEW`; productive similarity
-transformation implementation is `NOT AUTHORIZED — NOT STARTED` and has not been
-executed. G9U1 likewise remains unexecuted and unauthorized.
+G9U0-R5 design and productive similarity transformations are `PASS — AUTHOR
+APPROVED`; `selfApproved=false`, `authorApproved=true`, `passClaimed=true`.
+The accepted manual-smoke disposition is `PASS WITH G9A FREE-INPUT LIMITATION
+CHARACTERIZED`. G9U1 remains unexecuted and unauthorized.
 
 Phase documents distinguish hard semantic/contract dependencies, recommended
 execution predecessors and global/release gates. G9O1 is recommended first but
 is not a semantic prerequisite of G9A1. After G9A3, G9B/G9C can progress
 without G9U1. The product schedule is G9U0-R1 plus G9X1 → G9U0-R2 → G9U0-R3 →
-G9U0-R4 → BOOK-P1 → G9U0-R5 → G9U1. BOOK-P1 is an independent editorial
-checkpoint, not a software dependency. R3 and R4 are closed; R5 still requires
-a separate author-approved PASS before U1 can receive its own execution
-authorization.
+  G9U0-R4 → BOOK-P1 → G9U0-R5 → G9S1 → G9U1. BOOK-P1 is an independent editorial
+  checkpoint, not a software dependency. R3, R4 and R5 are closed. G9S1 is the
+  separately authorized next product phase after R5 publication; G9U1 still
+  requires its own execution authorization.
 G9B/G9C remain semantically independent,
 G9U2 remains globally blocked and productive G10 remains unauthorized.

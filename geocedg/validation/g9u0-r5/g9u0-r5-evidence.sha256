@@ -1,0 +1,3 @@
+# Canonical UTF-8/LF SHA-256. Regenerate whenever either durable JSON source changes.
+40bdeed0717248ef3e5f56498522d59192431155d6170fc7f05e163767081623  geocedg/validation/g9u0-r5/g9u0-r5-locus-v2-similarity-transformations-evidence.json
+719da20f26f9dbe7a74131b8f2c0fa9c0235cd36f6351ffd489c9cb7404d5e43  geocedg/validation/g9u0-r5/g9u0-r5-locus-v2-similarity-transformations-scenarios.json

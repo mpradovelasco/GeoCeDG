@@ -16,6 +16,9 @@
 
 package org.geogebra.common.kernel.commands;
 
+import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.kernel.locus.LocusV2PublicOperations;
+import org.geocedg.common.main.feature.RuntimeFeatureService;
 import org.geogebra.common.kernel.CircularDefinitionException;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.algos.AlgoTranslateVector;
@@ -70,6 +73,13 @@ public class CmdTranslate extends CommandProcessor {
 
 				ret[0] = (GeoElement) algo.getTranslatedVector();
 
+				return ret;
+			} else if (arg[0] instanceof GeoLocusV2
+					&& arg[1] instanceof GeoVec3D
+					&& !arg[1].isGeoElement3D()) {
+				RuntimeFeatureService.requireLocusV2Access(cons);
+				ret[0] = LocusV2PublicOperations.translate(cons, label,
+						(GeoLocusV2) arg[0], (GeoVec3D) arg[1]);
 				return ret;
 			} else if ((ok[0] = arg[0] instanceof Translateable
 					|| arg[0] instanceof GeoPolygon || arg[0].isGeoList())

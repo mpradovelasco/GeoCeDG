@@ -474,8 +474,8 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/EvaluatorOnlyLocusMetricCapability2D.java",
       "change": "added",
-      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
-      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+      "purpose": "Retain the G7B semantic total-variation metric and, for the R5 candidate, use the transformed definition's COLLAPSED_IMAGE property as the semantic proof for exact-zero length on valid components while preserving source-invalid gaps and addresses.",
+      "authority": "geocedg/specs/locus/locus-v2-similarity-transformations.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/EvaluatorOnlyPolicy.java",
@@ -2712,8 +2712,8 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusV2PublicOperations.java",
       "change": "added",
-      "purpose": "Centralize feature-gated public creation, atomic identity publication, XML reconstruction, rich metric/intersection queries, and exact-address/token derived points.",
-      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+      "purpose": "Retain centralized feature-gated public creation/persistence/queries and add the seven approved R5 ordinary 2D similarity forms through one atomic, exception-safe construction-participation and durable-identity transaction; an R5 transform rejected before its own publication/redefine rolls back its labels, parent and reservations without changing host retention of an already successful nested subcommand after a later unrelated outer failure.",
+      "authority": "geocedg/specs/locus/locus-v2-similarity-transformations.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/ReconstructibleLocusEvaluator2D.java",
@@ -3128,6 +3128,90 @@
       "change": "added",
       "purpose": "Verify 28 R4 ledger cases covering current-selector resolution across parameter motion; intrinsic-phase codec and canonical ledger-v4 round trip; canonical phase-v3 and authentic pre-phase v2/v1 import with exact compatible token retention; rejection of version relabels; cardinality/orientation barriers; claimed active/dormant reactivation, reference-counted release, explicit permanent retirement and dormant authorized-copy rebase; complete homogeneous periodic-group quarantine/release/copy validation; exact selector recovery, malformed/duplicate rejection, copy provenance and unchanged legacy mint semantics.",
       "authority": ".github/prompts/tasks/g9u0-r4-intersection-admissibility-continuation.prompt.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusSimilarityTransform2D.java",
+      "change": "added",
+      "purpose": "Publish each approved R5 2D similarity image as a new first-class GeoLocusV2 normal-DAG output with the source and ordinary transformation geos as explicit dependencies and with source domain, branch, orientation and parameter authority retained.",
+      "authority": "geocedg/specs/locus/locus-v2-similarity-transformations.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusSimilarityEvaluator2D.java",
+      "change": "added",
+      "purpose": "Evaluate the source locus first at the unchanged semantic address, propagate source-invalid gaps unchanged and apply only the immutable finite 2D similarity to valid source points.",
+      "authority": "geocedg/specs/locus/locus-v2-similarity-transformations.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusSimilarityTransform2D.java",
+      "change": "added",
+      "purpose": "Represent the immutable finite 2D translation, rotation, point/line reflection or uniform dilation used by one R5 semantic recompute, including scale-safe homogeneous-line normalization and the approved finite k=0 collapsed image.",
+      "authority": "geocedg/specs/locus/locus-v2-similarity-transformations.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9U0R5SimilarityTransformationsTest.java",
+      "change": "added",
+      "purpose": "Verify the 26 core R5 contracts for ordinary command routing, first-class semantic images, fresh durable identity, retained semantic addresses, dynamic DAG recomputation, transformation closure, k=0 COLLAPSED_IMAGE, rich metric and point covariance, transformed intersection geometry with fresh tokens, deterministic path independence, persistence, copy, undo/redo, style and excluded transformations.",
+      "authority": ".github/prompts/tasks/g9u0-r5-locus-v2-similarity-transformations.prompt.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9U0R5CommandRoutingPublicSurfaceTest.java",
+      "change": "added",
+      "purpose": "Verify eight public R5 routing and boundary cases: all seven ordinary 2D command forms share one semantic parent; Reflect/Mirror aliases agree; feature-off preserves without creating; legacy overloads remain upstream-owned; inversion and 3D forms fail closed; no Path or mutable-transform conformance is introduced; nested commands serialize once; and failed circular redefinition rolls back R5 participation.",
+      "authority": ".github/prompts/tasks/g9u0-r5-locus-v2-similarity-transformations.prompt.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9U0R5SemanticTransformEdgeCasesTest.java",
+      "change": "added",
+      "purpose": "Verify eight semantic edge cases for periodic negative dilation, disconnected gaps and collapsed images, decreasing orientation, nonfinite and recoverable inputs, multibranch and empty domains, exact zero length for unbounded collapsed images, and overflow-safe reflection-line normalization.",
+      "authority": ".github/prompts/tasks/g9u0-r5-locus-v2-similarity-transformations.prompt.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U0R5NativeArchivePersistenceTest.java",
+      "change": "added",
+      "purpose": "Verify four native .cedg R5 cases: every similarity family reopens with stable new identity and exact dependencies; downstream points, metrics and transformed-intersection token bindings remain deterministic across an intermediate save/reopen path; feature-off plus GeoCeDG Classic preserve supported transformed documents without gaining creation authority; and the byte-exact author dynamic-dilation fixture retains one live parent through slider/existing-object edits, k=0 collapse/recovery and save/reopen while unsupported free-input redefine is rejected atomically by the existing G9A contract.",
+      "authority": ".github/prompts/tasks/g9u0-r5-locus-v2-similarity-transformations.prompt.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/locus/g9u0-r5/fourSolutionsDynamicDilate.cedg",
+      "change": "added",
+      "purpose": "Preserve the byte-exact author smoke construction for final R5 dynamic-dilation characterization, including an ordinary numeric factor, finite k=0 collapsed-image transitions and native reopen evidence; the fixture is regression evidence and its filename is not semantic authority.",
+      "authority": ".github/prompts/tasks/g9u0-r5-locus-v2-similarity-transformations.prompt.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CmdTranslate.java",
+      "change": "modified",
+      "purpose": "Route the approved ordinary 2D Translate[GeoLocusV2, vector] overload to the shared R5 semantic operation while preserving all non-V2 host routes.",
+      "authority": "geocedg/specs/locus/locus-v2-similarity-transformations.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CmdRotate.java",
+      "change": "modified",
+      "purpose": "Route the approved ordinary 2D Rotate[GeoLocusV2, angle] and Rotate[GeoLocusV2, angle, point] overloads to the shared R5 semantic operation while preserving other host routes.",
+      "authority": "geocedg/specs/locus/locus-v2-similarity-transformations.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CmdMirror.java",
+      "change": "modified",
+      "purpose": "Route ordinary 2D Reflect/Mirror of GeoLocusV2 in a point or finite line to the shared R5 semantic operation while retaining circle inversion and every non-V2 host route.",
+      "authority": "geocedg/specs/locus/locus-v2-similarity-transformations.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CmdDilate.java",
+      "change": "modified",
+      "purpose": "Route the approved ordinary 2D Dilate[GeoLocusV2, factor] and Dilate[GeoLocusV2, factor, point] overloads, including finite k=0 COLLAPSED_IMAGE semantics, while preserving other host routes.",
+      "authority": "geocedg/specs/locus/locus-v2-similarity-transformations.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/geogebra3D/kernel3D/commands/CmdRotate3D.java",
+      "change": "modified",
+      "purpose": "Fail closed before generic 3D routing when a GeoLocusV2 is supplied with an axis or spatial center, while leaving the approved ordinary 2D R5 overloads and all non-V2 3D behavior unchanged.",
+      "authority": "geocedg/specs/locus/locus-v2-similarity-transformations.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/geogebra3D/kernel3D/commands/CmdMirror3D.java",
+      "change": "modified",
+      "purpose": "Fail closed before generic 3D routing when a GeoLocusV2 is reflected in a plane or unsupported spatial operand, while leaving approved ordinary 2D point/line reflection and all non-V2 behavior unchanged.",
+      "authority": "geocedg/specs/locus/locus-v2-similarity-transformations.md"
     }
   ]
 }

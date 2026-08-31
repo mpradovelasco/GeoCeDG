@@ -16,6 +16,9 @@
 
 package org.geogebra.common.kernel.commands;
 
+import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.kernel.locus.LocusV2PublicOperations;
+import org.geocedg.common.main.feature.RuntimeFeatureService;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.arithmetic.Command;
 import org.geogebra.common.kernel.geos.GeoCurveCartesian;
@@ -112,6 +115,20 @@ public class CmdMirror extends CommandProcessor {
 				return ret;
 			}
 
+		}
+
+		if (arg[0] instanceof GeoLocusV2) {
+			ok[0] = true;
+			if (arg[1] instanceof GeoPoint && !arg[1].isGeoElement3D()) {
+				RuntimeFeatureService.requireLocusV2Access(cons);
+				return new GeoElement[] {LocusV2PublicOperations.reflect(cons,
+						label, (GeoLocusV2) arg[0], (GeoPoint) arg[1])};
+			}
+			if (arg[1] instanceof GeoLine && !arg[1].isGeoElement3D()) {
+				RuntimeFeatureService.requireLocusV2Access(cons);
+				return new GeoElement[] {LocusV2PublicOperations.reflect(cons,
+						label, (GeoLocusV2) arg[0], (GeoLine) arg[1])};
+			}
 		}
 
 		// mirror object

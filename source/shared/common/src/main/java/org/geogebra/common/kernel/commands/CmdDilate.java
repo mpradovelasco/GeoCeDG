@@ -16,6 +16,9 @@
 
 package org.geogebra.common.kernel.commands;
 
+import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.kernel.locus.LocusV2PublicOperations;
+import org.geocedg.common.main.feature.RuntimeFeatureService;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.Transform;
 import org.geogebra.common.kernel.TransformDilate;
@@ -58,6 +61,13 @@ public class CmdDilate extends CommandProcessor {
 		case 2:
 			arg = resArgs(c, info);
 
+			if (arg[0] instanceof GeoLocusV2
+					&& arg[1] instanceof GeoNumberValue) {
+				RuntimeFeatureService.requireLocusV2Access(cons);
+				return new GeoElement[] {LocusV2PublicOperations.dilate(cons, label,
+						(GeoLocusV2) arg[0], (GeoNumberValue) arg[1])};
+			}
+
 			// dilate point, line or conic
 			if ((ok[0] = arg[0] instanceof Dilateable || arg[0].isGeoPolygon()
 					|| arg[0].isGeoList())
@@ -72,6 +82,16 @@ public class CmdDilate extends CommandProcessor {
 
 		case 3:
 			arg = resArgs(c, info);
+
+			if (arg[0] instanceof GeoLocusV2
+					&& arg[1] instanceof GeoNumberValue
+					&& arg[2] instanceof GeoPoint
+					&& !arg[2].isGeoElement3D()) {
+				RuntimeFeatureService.requireLocusV2Access(cons);
+				return new GeoElement[] {LocusV2PublicOperations.dilate(cons, label,
+						(GeoLocusV2) arg[0], (GeoNumberValue) arg[1],
+						(GeoPoint) arg[2])};
+			}
 
 			// dilate point, line or conic
 			if ((ok[0] = arg[0] instanceof Dilateable || arg[0].isGeoList())

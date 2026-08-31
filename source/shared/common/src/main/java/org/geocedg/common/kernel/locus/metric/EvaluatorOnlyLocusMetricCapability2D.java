@@ -16,6 +16,7 @@ import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusPoint2D;
+import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.BranchProperty;
 
 /**
  * Adaptive world-coordinate evaluator-only metric capability.
@@ -57,6 +58,9 @@ public final class EvaluatorOnlyLocusMetricCapability2D
 			LocusInterval2D component, LocusMetricIndexKey2D key,
 			LocusMetricPolicy2D policy,
 			LocusMetricInstrumentation2D instrumentation) {
+		if (branch.getProperties().contains(BranchProperty.COLLAPSED_IMAGE)) {
+			return collapsedState(branch, component, key);
+		}
 		if (component.getLower() == component.getUpper()) {
 			return zeroState(branch, component, key);
 		}
@@ -217,6 +221,35 @@ public final class EvaluatorOnlyLocusMetricCapability2D
 				Collections.singletonList(new MetricDiagnostic2D(
 						MetricDiagnosticCode2D.ISOLATED_POINT,
 						"An isolated valid-domain point has zero length")));
+	}
+
+	private LocusMetricComponentState2D collapsedState(LocusBranch2D branch,
+			LocusInterval2D component, LocusMetricIndexKey2D key) {
+		// A collapsed image has identically zero arc coordinate on the whole
+		// semantic component. One finite derived reference node is sufficient even
+		// when the retained source component is open or unbounded; the component
+		// interval itself remains the route/domain authority.
+		double reference = Double.isFinite(component.getLower())
+				? component.getLower()
+				: Double.isFinite(component.getUpper()) ? component.getUpper() : 0;
+		double[] parameters = {reference};
+		double[] lengths = new double[0];
+		double[] cumulative = {0};
+		return new LocusMetricComponentState2D(key, component,
+				new MetricComponentPartition2D(parameters, lengths,
+						new double[lengths.length]),
+				new MetricArcCoordinateEvidence2D(parameters, cumulative),
+				new MetricCapabilityMetadata2D(capabilityVersion,
+						MetricEvaluatorMethod2D.POINT_EVALUATOR_ONLY,
+						MetricMethod2D.ADAPTIVE_EVALUATOR_METRIC,
+						branch.getQuality().getConstructionFidelity()),
+				new FiniteMetricValue2D(0), MetricComputationStatus.SUCCESS,
+				MetricRectifiability.RECTIFIABLE,
+				MetricErrorEvidence2D.exact(
+						"semantic collapsed-image branch property"),
+				Collections.singletonList(new MetricDiagnostic2D(
+						MetricDiagnosticCode2D.COLLAPSED_IMAGE,
+						"Semantic component image is collapsed")));
 	}
 
 	private static Node refine(double startParameter, double endParameter,

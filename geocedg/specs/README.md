@@ -56,11 +56,28 @@ Retained risk `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` records the missing
 dedicated native `.cedg` quarantine round trip. It is nonblocking for R4,
 revisited by G9U1 and due for resolution or explicit author disposition by
 global G9 closeout, without becoming an implicit R5 dependency.
-`locus/locus-v2-similarity-transformations.md` is the G9U0-R5 **DRAFT /
-NORMATIVE CANDIDATE**; R5 implementation is not authorized, started or executed.
+`locus/locus-v2-similarity-transformations.md` is the G9U0-R5 **NORMATIVE —
+DESIGN PASS — AUTHOR APPROVED** contract. Implementation is authorized through
+its canonical prompt; Option A governs finite `k=0` as a valid
+source-domain-preserving `COLLAPSED_IMAGE`. The shared-kernel implementation is
+**PASS — AUTHOR APPROVED**.
+It routes all seven approved ordinary 2D transform forms to new first-class
+`GeoLocusV2` DAG outputs, evaluates source-first at the unchanged semantic
+address, preserves finite/unbounded domain classification while adding the
+orthogonal collapsed-image property, and uses that property as the semantic
+proof for exact-zero metric components without making invalid source gaps
+valid. Axis/plane/spatial-center 3D routes fail closed, transformed rich
+intersections receive new R4-context selectors/tokens, and construction
+participation/redefinition rejected before the R5 transform's own publication
+rolls back without R5 residue. R5 does not redefine upstream
+retention of a successful nested subcommand after a later unrelated outer
+failure. The author accepts slider/existing-object dynamic factor updates and
+characterizes free-input `k=0.25` rejection as upstream G9A
+`REDEFINE_CONTEXT_MISSING`, not an R5 semantic failure; R5 does not broaden G9A.
+No G9U1 work is part of R5.
 G9U1 likewise remains unexecuted; G9U1, G9B and G9C remain designed but not
-  authorized, and G9U1 is blocked until R5 closes `PASS — AUTHOR APPROVED` and
-  its future GeoCeDG product contract
+authorized. G9S1 is the separately authorized next phase. The future G9U1
+GeoCeDG product contract
 requires the host Continuity setting to remain off while Classic stays
 configurable. G9U2 remains blocked and productive G10 remains unauthorized.
 

@@ -1,7 +1,7 @@
 # Manual operativo vivo de GeoCeDG
 
 - Tipo de documento: manual operativo vivo
-- Última puerta de producto aprobada/observable: **G9U0-R4 = PASS — AUTHOR APPROVED**
+- Última puerta de producto aprobada/observable: **G9U0-R5 = PASS — AUTHOR APPROVED**
 - G9U0 = PASS — AUTHOR APPROVED
 - G9X1 = PASS — AUTHOR APPROVED
 - G9U0-R2: **PASS — AUTHOR APPROVED**; el fallo original R2-L11 se conserva y la
@@ -17,15 +17,15 @@
   `3e9ea0aa20d511f2828eae61e491c1b3b5d9cb86a0f02166503ee5093d6000fb`
   y composed pasa; los re-smokes finales de cuatro raíces y reactivación del
   mismo punto pasan
-- G9U0-R5: **DESIGN CANDIDATE — PENDING AUTHOR REVIEW**; transformaciones 2D
-  de similitud planificadas, sin implementación productiva autorizada
+- G9U0-R5: diseño e implementación **PASS — AUTHOR APPROVED**; smoke dinámico
+  aceptado con la limitación de entrada libre G9A caracterizada
 - Baseline: GeoGebra 5.4.928.0 at
   `9b93256b7df401ff056c37b502d82df4d72b1522`
 - Plataforma validada: únicamente Windows
-- Última revisión: 2026-08-30
-- Fase actual: G9U0, G9X1, G9U0-R2, G9U0-R3 y G9U0-R4 son `PASS — AUTHOR
-  APPROVED`. G9U0-R5 es candidato de diseño y su implementación no está
-  autorizada. G9U1 queda bloqueada hasta PASS autoral separado de R5. G9B, G9C,
+- Última revisión: 2026-08-31
+- Fase actual: G9U0, G9X1, G9U0-R2, G9U0-R3, G9U0-R4 y G9U0-R5 son `PASS — AUTHOR
+  APPROVED`. G9S1 es la siguiente fase autorizada tras publicar R5. G9U1 sigue
+  sin autorización propia. G9B, G9C,
   G9U2, G10 y las
   fases posteriores no están autorizadas.
 - Locus V2: superficie pública `experimental` aprobada para G9U0, exclusiva de
@@ -187,7 +187,47 @@ will never be identity. Kernel recomputation may reactivate an already existing
 claimed point as described above, but root appearance, recomputation and document
 load never create new points. New-point auto-materialization remains a future,
   explicit, opted-in frontend transaction. Multi-point creation will be one
-  coherent undo action. G9U0-R5 and G9U1 have not been executed.
+  coherent undo action. G9U1 has not been executed.
+
+### G9U0-R5 similarity transformations
+
+This section describes the author-approved R5 product gate. With the existing
+Locus V2 feature opt-in, R5 routes these ordinary 2D command forms to one new first-class
+semantic `GeoLocusV2`:
+
+| Family | Approved forms |
+|---|---|
+| Translation | `Translate[L,v]` |
+| Rotation | `Rotate[L,angle]`, `Rotate[L,angle,point]` |
+| Reflection | `Reflect[L,line]`, `Reflect[L,point]` (`Mirror` is the ordinary alias) |
+| Uniform dilation | `Dilate[L,k]`, `Dilate[L,k,point]` |
+
+Each output has a new durable identity and normal dependencies on the source
+locus and transformation inputs. It preserves the source branch/component,
+oriented domain, semantic parameter and periodic policy, so semantic points,
+rich metrics, rich intersections and further transformations remain normal DAG
+consumers. Evaluation is source-first: an invalid source address remains
+invalid instead of being filled by the transformed image.
+
+For finite `k=0`, the accepted Option A retains the source domain classification
+(`FINITE` or `UNBOUNDED`) and adds `COLLAPSED_IMAGE`; the image is a semantic
+locus over the retained valid addresses, not an unparameterized point. Its rich
+length is exact zero only because that semantic property proves collapse; gaps
+in the source domain remain gaps. Reflections use scale-independent line
+geometry. Axis/plane/spatial-center 3D forms and circle inversion are not R5
+similarity overloads and fail closed for a V2 source. A transformed intersection
+uses new R4 selectors/tokens in the transformed construction context; source
+tokens are never reused. No generic `Path`, candidate marker or G9U1 workspace
+behavior is introduced.
+
+The final dynamic-dilation smoke accepts slider movement, explicit editing of
+the existing numeric object in Algebra, repeated positive/negative/zero
+transitions and save/reopen. Typing the free-input expression `k=0.25` is
+currently rejected before R5 under G9A as `REDEFINE_CONTEXT_MISSING`; rejection
+is atomic and the construction remains unchanged. This is a characterized
+future product-UX requirement, not a `Dilate` failure. R5 does not broaden G9A
+or infer durable identity from `k`. Future G9U1 design must investigate this
+only through the compatible, atomic G9A redefine transaction.
 
 Retained nonblocking validation risk
 `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` means that periodic quarantine has
@@ -1201,7 +1241,7 @@ Promotion follows `legacy -> research -> experimental -> stable`, or
 | G9U0-R2 implementation | Ordinary presentation/render continuity and native document lifecycle | `PASS — AUTHOR APPROVED`; original R2-L11 failure preserved and correction/re-smoke accepted | `.cedg` is native, `.ggb` is compatibility input; installed MSI/registry smoke remains `NOT_REQUESTED` |
 | G9U0-R3 | Public menu/inspector exposure, bounded token chooser and hidden token helper | `PASS — AUTHOR APPROVED` | Frontend-only closeout after smoke/re-smoke; no marker overlay, kernel/XML change or G9U1 authorization |
 | G9U0-R4 | Initial local intersection admissibility and deterministic current-root resolution | `PASS — AUTHOR APPROVED` | Shared-kernel closeout; three failed intermediate smokes preserved; adaptive phase tubes and ledger-v4 dormancy/quarantine/reactivation declare 27 public + 28 ledger + 3 Desktop methods in 54 paths/31 under `source/`; A/B/composed and both final author re-smokes PASS; checkpoint `4ef2c9d` remains pre-correction evidence |
-| G9U0-R5 | Locus V2 2D similarity transformations | `DESIGN CANDIDATE — PENDING AUTHOR REVIEW`; implementation not authorized | Planning authority only; no transformed-locus production code in R4 |
+| G9U0-R5 | Locus V2 2D similarity transformations | `PASS — AUTHOR APPROVED` | Seven ordinary 2D forms produce new semantic DAG loci; dynamic-factor smoke accepted with the G9A free-input limitation characterized; no G9U1 authorization is claimed |
 | G9U1/G9B/G9C/G9U2 | Later productive G9 capabilities | Not authorized; U2 blocked on the approved global G9 gate | No workspace, spatial-primitive or later G9 implementation is implied by G9X1 |
 
 The previously approved future compatibility rule is exercised by the
@@ -1534,7 +1574,7 @@ polyline is a disposable view representation.
 | G9U0-R2 implementation | Ordinary Locus style/render continuity plus `.cedg` lifecycle | `PASS — AUTHOR APPROVED`; correction and author re-smoke accepted |
 | G9U0-R3 | Public Locus V2 UI exposure hardening | `PASS — AUTHOR APPROVED`; menu lifecycle, hidden exact-token helper and bounded chooser accepted |
 | G9U0-R4 | Public Locus V2 intersection initial admissibility and continuation correction | `PASS — AUTHOR APPROVED`; three failed intermediate smokes retained and both final re-smokes accepted |
-| G9U0-R5 | Locus V2 2D similarity transformations | `DESIGN CANDIDATE — PENDING AUTHOR REVIEW`; implementation not authorized/not started |
+| G9U0-R5 | Locus V2 2D similarity transformations | `PASS — AUTHOR APPROVED`; free-input compatible redefine deferred to future G9U1 design |
 | G10 | CeDG 3D DSL and workbench | Pending |
 | G11 | Hierarchical layers and view states | Pending |
 | G12 | Extended navigation, zoom and physical scales | Pending |

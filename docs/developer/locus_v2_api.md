@@ -1,21 +1,24 @@
-# Locus V2 internal developer API
+# Locus V2 developer API
 
 | Field | Value |
 |---|---|
-| Maturity | `experimental`, internal/developer-only, disabled by default |
+| Maturity | `experimental`; public GeoCeDG surface disabled by default plus internal/developer seams |
 | Normative semantics | [`geocedg/specs/locus/locus-v2-semantics.md`](../../geocedg/specs/locus/locus-v2-semantics.md) |
 | Architecture | [`docs/architecture/locus_v2_implementation.md`](../architecture/locus_v2_implementation.md) |
 | Additive metric API | [`docs/developer/locus_v2_metric_api.md`](locus_v2_metric_api.md), G7B internal candidate |
-| Public command/API | None |
-| Persistence / `Path` | None |
-| Date | 2026-08-12 |
+| Public command/API | G9U0 surface and G9U0-R5 similarity transformations `PASS — AUTHOR APPROVED` |
+| Persistence / `Path` | Native `.cedg` persistence for public V2 objects / no generic `Path` conformance |
+| Date | 2026-08-31 |
 
 This reference documents the current Java seams so future kernel work does not
 infer contracts from call sites. Java `public` is used where the shared kernel,
-Desktop laboratory and tests cross packages. It does **not** promise third-party
-API compatibility. The G7B metric layer consumes these seams without changing
-them; its result, route, integration and component-state contracts are kept in
-the separate [metric API reference](locus_v2_metric_api.md).
+public GeoCeDG operations, Desktop laboratory and tests cross packages. It does
+**not** promise third-party API compatibility. The G7B metric layer consumes
+these seams without changing them; its result, route, integration and
+component-state contracts are kept in the separate
+[metric API reference](locus_v2_metric_api.md). Public persistence, commands,
+metrics and rich intersections were added by later approved G9 phases; the R5
+similarity implementation described below is also `PASS — AUTHOR APPROVED`.
 
 ## 1. Packages
 
@@ -157,6 +160,51 @@ upstream immutable definition published at recompute. If the upstream revision
 changes, normal DAG invalidation republishes downstream snapshots. The session
 does not become a second graph.
 
+### R5 similarity transformations
+
+The author-approved R5 design and implementation use one shared kernel seam:
+
+- `LocusV2PublicOperations` receives the seven approved ordinary 2D forms:
+  translation; rotation about the origin or a point; reflection in a line or a
+  point; and uniform dilation about the origin or a point;
+- `AlgoLocusSimilarityTransform2D` is a normal-DAG parent whose inputs are the
+  source `GeoLocusV2` and ordinary transformation geos, and whose output is a
+  new `GeoLocusV2` with a new durable identity;
+- `LocusSimilarityTransform2D` is the immutable finite affine value used by one
+  recompute; its line-reflection constructor normalizes homogeneous line
+  coefficients with scale-safe arithmetic;
+- `LocusSimilarityEvaluator2D` evaluates the source first at the same semantic
+  branch/parameter address, propagates invalidity, and transforms only a valid
+  finite source point.
+
+The transformed definition retains source domain, branches, components,
+orientation, parameter and periodic policy. For finite dilation factor `k=0`,
+it retains the source `FINITE` or `UNBOUNDED` domain property and adds
+`COLLAPSED_IMAGE`. That property is the semantic proof used by
+`EvaluatorOnlyLocusMetricCapability2D` for exact-zero length on valid collapsed
+components; it never turns an invalid source gap into a valid point. A
+transformed rich-intersection query uses the R4 resolver in its new source-pair
+context and receives new selectors/tokens.
+
+The ordinary command processors intercept only the approved 2D `GeoLocusV2`
+overloads. Circle inversion, text/vector-at-point behavior and legacy object
+routes remain host behavior; axis/plane/spatial-center 3D routes fail closed.
+Construction participation and durable-ID publication are one exception-safe
+transaction: an R5 transform rejected before its own publication, including a
+rejected redefine candidate, removes that candidate algorithm/output and rolls
+back its reserved identities. A successful nested subcommand may still remain
+under the existing host rule if a later unrelated outer command fails. R5 does not implement
+`Path`, sample-based transformation, a mutable-transform interface, G9U1
+workspace behavior or candidate markers.
+
+The final author fixture exercises the same live dilation parent through
+slider-driven `GeoNumeric.setValue()`, explicit existing-object editing,
+positive/negative/zero transitions and native save/reopen. The free-input
+expression `k=0.25` is currently rejected before this R5 seam with G9A
+`REDEFINE_CONTEXT_MISSING`; rejection is atomic. R5 does not broaden G9A or
+infer identity from the label. Compatible free-input redefine remains a future
+G9U1 investigation through the accepted G9A transaction/predicate authority.
+
 ## 5. Semantic revision
 
 `GeoLocusV2.getSemanticRevision()` identifies the current immutable semantic
@@ -185,19 +233,24 @@ drawable and become misses when revision/view policy changes.
 
 ## 7. Lifecycle and unsupported cases
 
-The following deliberately throw or remain absent:
+The old G6 internal-factory objects and the later public persistent objects have
+different lifecycle contracts. Public G9U0 objects use durable identity, XML
+reconstruction, copy/remap and normal undo/redo; raw internal objects still may
+reject those operations rather than pretending to be persistable. Callers must
+not catch an unsupported lifecycle operation and fabricate a sample-based
+substitute.
 
-- `GeoLocusV2.copy()`, `copyInternal()` and `set()`;
-- XML serialization, loading, migration and undo/redo persistence;
-- `Path`, public point-on-locus and incidence;
-- `isGeoLocus()` / `isGeoLocusable()` classification;
-- public command/dispatcher creation;
-- legacy `Length`, `Perimeter`, ODE and metrics;
-- G5 export and all 3D/plane-view dispatch.
+These boundaries remain deliberate:
 
-Callers must not catch an unsupported lifecycle operation and fabricate a
-sample-based substitute. If a future phase needs one, it requires an approved
-contract.
+- `GeoLocusV2` does not implement generic `Path`, and point-on-locus incidence
+  uses the explicit branch/parameter public operation;
+- legacy `isGeoLocus()` / `isGeoLocusable()` classification is not semantic V2
+  authority;
+- the approved public metric/intersection APIs remain separate rich-result
+  authorities rather than legacy `Perimeter`, ODE or list-index behavior;
+- G5 export still does not infer V2 geometry from render samples;
+- 3D/plane-view transform dispatch is outside R5 and fails closed for a V2
+  source; it does not convert the locus into a sampled or generic path object.
 
 ## 8. Developer laboratory
 
@@ -226,5 +279,7 @@ its construction cannot be saved as `.ggb`.
   it must not infer identity from labels or samples.
 - A future export adapter must consume branches/domain/evaluator/exactness, not
   `LocusRenderCache2D`. G5 continues to reject V2.
-- New public commands, `Path`, persistence, metrics, intersections, 3D or
-  concurrency remain stop conditions requiring their phase authority.
+- Any new command family, generic `Path` conformance, persistence migration, 3D
+  semantic transform or concurrency contract remains a stop condition requiring
+  its own phase authority. The bounded R5 ordinary 2D similarity overloads do
+  not authorize any of those expansions or G9U1.

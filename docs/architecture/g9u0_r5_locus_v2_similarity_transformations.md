@@ -1,25 +1,29 @@
 # G9U0-R5 Locus V2 2D similarity transformations
 
 - Phase: **G9U0-R5 — LOCUS V2 2D SIMILARITY TRANSFORMATIONS**
-- State: **DESIGN CANDIDATE — PENDING AUTHOR REVIEW**
-- Implementation: **NOT AUTHORIZED — NOT STARTED**
+- State: **DESIGN PASS — AUTHOR APPROVED**
+- Implementation: **PASS — AUTHOR APPROVED**
 - Primary layer: shared Java kernel / semantic Locus V2 DAG
 - Secondary future surface: existing transformation commands; G9U1 workspace
   discoverability
 
 ```text
-G9U0-R5 = DESIGN CANDIDATE — PENDING AUTHOR REVIEW
-implementationStarted = false
-implementationAuthorized = false
+G9U0-R5 DESIGN = PASS — AUTHOR APPROVED
+G9U0-R5 IMPLEMENTATION = PASS — AUTHOR APPROVED
+implementationStarted = true
+implementationAuthorized = true
 selfApproved = false
-authorApproved = false
-passClaimed = false
+designAuthorApproved = true
+implementationAuthorApproved = true
+passClaimed = true
 ```
 
-This note is prospective design authority only. It neither implements R5 nor
-authorizes G9U1. R5 execution requires G9U0-R4 to close `PASS — AUTHOR
-APPROVED`, author approval of this design and a separate author instruction
-invoking the future canonical R5 prompt.
+This note is the author-approved R5 design and implemented architecture. The
+author separately authorized execution of the checked-in canonical R5 prompt,
+selected finite `k=0` Option A and, after the final dynamic-factor
+characterization, closed R5 `PASS — AUTHOR APPROVED` on 2026-08-31. The author,
+not automated evidence, supplies that approval. R5 does not authorize or
+execute G9U1.
 
 ## 1. Objective and semantic form
 
@@ -101,9 +105,9 @@ logic in a command processor.
 
 ## 4. Kernel design recommendation
 
-The smallest architecture-consistent productive design has three roles. Exact
-implementation class names remain an implementation detail and are not frozen
-by this document.
+The implementation candidate realizes the smallest architecture-consistent
+design through three roles. Class names below identify the current code seam;
+the semantic roles, not the names, remain normative.
 
 1. **Public construction operation.** It validates feature access and supported
    2D inputs, reserves a new output identity, builds one normal-DAG parent,
@@ -116,7 +120,18 @@ by this document.
    similarity map and one immutable source definition. Evaluation first calls
    the source definition at the same canonical semantic address and maps only a
    valid finite point. Invalid source evaluations are propagated without stale
-   coordinates. A transformed overflow becomes `NON_FINITE`.
+    coordinates. A transformed overflow becomes `NON_FINITE`.
+
+The corresponding candidate classes are
+`AlgoLocusSimilarityTransform2D`, `LocusSimilarityTransform2D` and
+`LocusSimilarityEvaluator2D`. `LocusV2PublicOperations` remains the single
+feature-gated construction and durable-identity boundary. It publishes a new
+first-class output ID, records the source and every ordinary transformation
+input as direct dependencies, and uses exception-safe participation/redefine
+rollback: an R5 transform rejected before its own publication leaves no promoted
+label, attached parent or reserved identity behind. This does not change the
+upstream rule that a successful nested subcommand may remain when a later,
+unrelated outer command fails.
 
 `AlgoNestedLocusV2` is the inspected precedent for evaluator-to-evaluator
 composition through one scoped `LocusEvaluationSession2D`. It is not itself the
@@ -187,36 +202,22 @@ source semantic orientation.
 | Undefined, infinite or 3D center | undefined transform state |
 | Undefined/nonfinite line or zero line normal | undefined axial-reflection state |
 | Undefined/nonfinite scale factor | undefined dilation state |
-| Finite `k = 0` | **AUTHOR DECISION REQUIRED before implementation:** Option A (recommended), a valid source-domain-preserving degenerate locus with `COLLAPSED_IMAGE`; or Option B, an explicit unsupported/undefined transformed state |
+| Finite `k = 0` | Option A — author approved: valid source-domain-preserving degenerate locus with `COLLAPSED_IMAGE` |
 | Finite `k < 0` | valid uniform dilation; length scale `abs(k)`; parameter traversal retained |
 | Finite coefficients but mapped coordinate overflows | per-address `NON_FINITE`; no stale coordinate |
 | Periodic source | identical provider canonicalization and one semantic seam |
 | Disconnected source | identical component partition; no bridging |
-| Further transformation after `k = 0` | Option A: normal DAG output, still collapsed for finite maps; Option B: no valid collapsed source exists until the factor returns to a supported value |
+| Further transformation after `k = 0` | normal DAG output, still collapsed for finite maps |
 
-The accepted contracts define the consequences **if** a valid collapsed semantic
-image is published, but they do not choose the public `Dilate[GeoLocusV2,0]`
-policy. `COLLAPSED_IMAGE` is an available provider-justified property, and the
-metric contract assigns length zero to such a valid image. Neither contract
-requires this future command overload to publish one. Existing upstream object
-families also handle zero dilation heterogeneously, so host behavior does not
-settle the Locus V2 choice.
-
-The author must select one policy before productive R5 work:
-
-- **Option A (recommended) — valid `COLLAPSED_IMAGE`:** retain the source domain,
-  branches, semantic addresses and invalid gaps; map every source-valid address
-  to the dilation center; keep the result as a semantic `GeoLocusV2`, not a
-  `GeoPoint`; and apply the established collapsed-image metric consequences.
-- **Option B — unsupported/undefined transformed state:** publish no valid
-  transformed locus while `k=0`; expose a typed unsupported/undefined state,
-  publish no stale semantic snapshot, and recover deterministically when the
-  factor becomes supported again.
-
-No implementation may infer the choice. The selected policy must be frozen in
-the author-approved R5 authority. Under Option A, evaluation must consult the
-source first: an invalid source address remains invalid, because zero scale
-cannot erase a semantic gap.
+The author selects **Option A — valid `COLLAPSED_IMAGE`**. The implementation
+retains the source domain, branches, semantic addresses and invalid gaps; maps
+every source-valid address to the dilation center; keeps the result as a
+semantic `GeoLocusV2`, not a `GeoPoint`; and applies the established
+collapsed-image metric consequences. In particular, source `FINITE` or
+`UNBOUNDED` remains the domain classification and `COLLAPSED_IMAGE` is added as
+an independent image property. Evaluation must consult the source first: an
+invalid source address remains invalid because zero scale cannot erase a
+semantic gap. Option B is rejected for R5.
 
 ## 8. Metric covariance
 
@@ -232,14 +233,13 @@ uniform dilation:         length(T(L)) = abs(k) * length(L)
 
 The same relation holds for partial lengths between corresponding valid
 semantic addresses. Tests compare rich values, coverage, diagnostics and error
-evidence within the existing metric contract. Under Option A, `k=0` yields the
-existing typed collapsed-image zero result rather than numeric underflow. Under
-Option B, no metric value may be fabricated while the transformed locus is
-unsupported/undefined.
-
-An initial implementation may use the existing evaluator-only metric authority.
-It must not introduce a scalar shortcut that bypasses the transformed semantic
-locus.
+evidence within the existing metric contract. At `k=0`, the transformed
+branch's provider-justified `COLLAPSED_IMAGE` property is semantic proof that
+every address in each retained valid component has identical image and therefore
+exact rich length zero. Invalid gaps are not valid components and remain
+domain-invalid. This component-state specialization is inside the existing
+evaluator-only metric authority; it is not a displayed-scalar shortcut and does
+not bypass the transformed locus as metric source.
 
 ## 9. Intersection covariance and tokens
 
@@ -274,11 +274,10 @@ matched by coordinates/order/proximity. Geometric covariance likewise does not
 authorize a previous-frame matching heuristic or reuse of a selector
 certificate from the untransformed query.
 
-The non-invertible `k=0` case is excluded from bijective covariance. Under
-Option A, if the collapsed point lies on the target, the current
+The non-invertible `k=0` case is excluded from bijective covariance. If the
+collapsed point lies on the target, the current
 overlap/non-isolated policy remains authoritative; R5 must not fabricate an
-isolated admissible root. Under Option B, no intersection result may be
-fabricated from an unsupported/undefined transformed locus.
+isolated admissible root.
 
 ## 10. Semantic Point-on-Locus covariance
 
@@ -302,6 +301,17 @@ Source, vector, angle, center, axis and factor are normal inputs. A current
 change recomputes the transformed semantic snapshot and every downstream point,
 metric, intersection and transformation through the DAG. No listener, polling,
 view cache or frontend recomputation is an update authority.
+
+The byte-exact author fixture `fourSolutionsDynamicDilate.cedg` closes the final
+dynamic-factor question. Slider-driven `GeoNumeric.setValue()` and explicit
+editing of the existing numeric object in Algebra recompute the same live R5
+parent across positive, negative and zero factors, including repeated
+`nonzero -> 0 -> nonzero` recovery and save/reopen. The free-input expression
+`k=0.25` is rejected before R5 as `REDEFINE_CONTEXT_MISSING` by the accepted G9A
+redefine contract; rejection is atomic and leaves the live construction
+unchanged. The author accepts that characterization as a nonblocking future
+product-UX requirement. R5 does not broaden G9A and does not describe the host
+`Please check your input` response as a dilation failure.
 
 ## 12. Style and presentation
 
@@ -335,9 +345,17 @@ creation authority. No additional runtime flag is introduced.
 
 ## 14. Command and tool boundary
 
-The existing four commands are mandatory public R5 creation routes. Their
+The existing four commands are the candidate's mandatory public R5 creation
+routes. Their
 `GeoLocusV2` branches enforce the same one Locus V2 feature flag and delegate to
 the one kernel authority.
+
+The 3D command subclasses reject Locus V2 axis, plane, 3D-center and oriented-3D
+forms before entering generic 3D transformation algorithms. These exclusions
+are fail-closed and leave construction membership, XML and durable identity
+unchanged. Axial reflection normalizes large finite homogeneous line
+coefficients with scale-safe arithmetic before constructing the semantic map;
+ordinary coefficient rescaling remains invisible to the result.
 
 Current Euclidian transformation tools select objects through mutable
 `TestGeo.TRANSFORMABLE`, `TRANSLATEABLE` and `DILATEABLE` predicates and then
@@ -348,22 +366,26 @@ before G9U1, it needs a separately enumerated, feature-gated GeoCeDG controller
 route that still calls the same public kernel operation; it cannot justify
 generic interface conformance.
 
-## 15. Expected productive boundary
+## 15. Productive candidate boundary
 
-Expected shared-kernel changes for a future authorized implementation are:
+The shared-kernel candidate consists of:
 
 - narrow overload branches in `CmdTranslate`, `CmdRotate`, `CmdMirror` and
   `CmdDilate`;
-- public construction methods in `LocusV2PublicOperations`;
-- one reconstructible Locus V2 transformation parent and immutable similarity
-  evaluator/value types under GeoCeDG-owned packages;
-- focused shared-kernel command/semantic/persistence tests; and
-- the exact four upstream command modifications registered in
-  `docs/upstream/modified-files.yml`.
+- fail-closed Locus V2 exclusions in `CmdRotate3D` and `CmdMirror3D` for 3D
+  axis/plane/center routes that otherwise intercept before the 2D processors;
+- public construction methods plus exception-safe identity participation in
+  `LocusV2PublicOperations`;
+- `AlgoLocusSimilarityTransform2D`, `LocusSimilarityEvaluator2D` and
+  `LocusSimilarityTransform2D` under GeoCeDG-owned packages; and
+- the collapsed-image component specialization in the existing
+  `EvaluatorOnlyLocusMetricCapability2D`.
 
-No change is expected in `Path`, `GeoLocusV2` interface conformance,
-`Transform`, the generic `AlgoTransformation` hierarchy, metric/intersection
-solvers, XML format or Desktop rendering.
+All eleven productive paths are registered in
+`docs/upstream/modified-files.yml`. The candidate changes no `Path` or mutable
+transformation interface conformance, generic `Transform`/
+`AlgoTransformation` semantics, intersection solver, XML/archive format,
+Desktop renderer or G9U1 frontend.
 
 ## 16. Rejected alternatives
 
@@ -378,34 +400,44 @@ solvers, XML format or Desktop rendering.
 - **Reuse source IDs, selector phase/rank or intersection tokens:** confuses
   geometric covariance with durable identity; every transformed query derives
   its own selector in its new source-pair context.
-- **Decide `k=0` implicitly in code:** the accepted contracts describe typed
-  consequences but do not select whether this future command publishes a valid
-  collapsed locus. The choice requires explicit author approval.
+- **Use the rejected Option B at `k=0`:** the author-approved R5 contract requires
+  a valid source-domain-preserving `COLLAPSED_IMAGE`.
 
 ## 17. Entry, validation and exit
 
-Future implementation requires G9U0-R4 `PASS — AUTHOR APPROVED`, author-approved
-R5 design/specification including one explicit `k=0` policy, explicit R5
-authorization and a clean selected main.
+R5 entered from G9U0-R4 `PASS — AUTHOR APPROVED`, the author-approved
+R5 design/specification with Option A, explicit R5 authorization and a clean
+selected main.
+The retained R4 risk
+`G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` remains open and tracked: R5 does
+not resolve it, does not make it an implicit transformation dependency and does
+not weaken its required G9U1/global-G9 disposition.
 The focused matrix in
 `docs/validation/g9u0_r5_locus_v2_similarity_transformations_validation_matrix.md`
 must run deterministically with the historical G6–G9 authorities and full
 composed verifier.
 
-Automated success may produce only:
+Automated implementation initially stopped at the required candidate state. The
+subsequent author decision closes the phase as:
 
 ```text
-G9U0-R5 = IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW
+G9U0-R5 = PASS — AUTHOR APPROVED
 selfApproved = false
-authorApproved = false
-passClaimed = false
+authorApproved = true
+passClaimed = true
+manualAuthorSmoke = PASS WITH G9A FREE-INPUT LIMITATION CHARACTERIZED
+freeInputCompatibleRedefine = DEFERRED TO G9U1 DESIGN / NOT AN R5 BLOCKER
 ```
 
-Only a later author decision may close R5 PASS. That closeout must prepare or
-supersede the definitive post-R5 G9U1 execution prompt, without executing it,
-and retain its already planned kernel-selector/exact-token-only candidate-marker
-hit testing, explicit create-one/create-all and opt-in visible frontend
+The prospective G9U1 authority remains unexecuted and requires its own author
+authorization. It retains kernel-selector/exact-token-only candidate-marker hit
+testing, explicit create-one/create-all and opt-in visible frontend
 auto-materialization, with no UI/list/marker rank authority; professional
 menu/tool, visual-identity, existing-host `Continuity = OFF` GeoCeDG product
 invariant with Classic configurability, and `geocedg.brand.topbar` /
-`geocedg.brand.startup` contracts.
+`geocedg.brand.startup` contracts. It must also investigate free-input
+compatible numeric redefinition only through the accepted G9A compatibility
+predicate and atomic transaction: a label may locate an explicitly intended
+current object in the command context but never becomes durable identity;
+ambiguous, absent or incompatible cases remain fail-closed. That prospective UX
+work did not broaden G9A during R5.

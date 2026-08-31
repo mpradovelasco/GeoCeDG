@@ -16,6 +16,7 @@
 
 package org.geogebra.common.geogebra3D.kernel3D.commands;
 
+import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.arithmetic.Command;
 import org.geogebra.common.kernel.commands.CmdRotate;
@@ -61,6 +62,12 @@ public class CmdRotate3D extends CmdRotate {
 		case 3:
 
 			arg = resArgs(c, info);
+			if (arg[0] instanceof GeoLocusV2 && arg[2].isGeoElement3D()) {
+				throw argErr(c, arg[2]);
+			}
+			if (arg[0] instanceof GeoLocusV2) {
+				return super.process3(c, arg, ok);
+			}
 
 			// ROTATION AROUND LINE
 			if ((ok[1] = arg[1] instanceof GeoNumberValue)
@@ -78,6 +85,9 @@ public class CmdRotate3D extends CmdRotate {
 		case 4:
 			// ROTATION AROUND POINT AND DIRECTION
 			arg = resArgs(c, info);
+			if (arg[0] instanceof GeoLocusV2) {
+				throw argErr(c, arg[0]);
+			}
 
 			// rotate point
 			if ((ok[1] = arg[1] instanceof GeoNumberValue)

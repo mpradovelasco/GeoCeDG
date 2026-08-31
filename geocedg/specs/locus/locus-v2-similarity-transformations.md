@@ -1,16 +1,18 @@
 # Locus V2 2D similarity transformations
 
-- Status: **DRAFT / NORMATIVE CANDIDATE — DESIGN CANDIDATE — PENDING AUTHOR
-  REVIEW**
+- Status: **NORMATIVE — DESIGN PASS — AUTHOR APPROVED**
 - Phase: **G9U0-R5**
-- Implementation: **NOT AUTHORIZED — NOT STARTED**
+- Implementation: **PASS — AUTHOR APPROVED**
 - Semantic base: accepted
   [`Locus V2 semantics`](locus-v2-semantics.md), metrics, intersections, public
   persistence and R2 presentation contracts
 - Required predecessor: G9U0-R4 `PASS — AUTHOR APPROVED`
 
-This document becomes normative only after explicit author approval. It does
-not authorize implementation or G9U1.
+The author approved this design and selected finite `k=0` Option A on
+2026-08-31. A separate author instruction authorized the checked-in canonical
+R5 implementation prompt. After the final dynamic-factor characterization the
+author closed the implementation: `selfApproved=false`, `authorApproved=true`,
+`passClaimed=true`. This document does not authorize G9U1.
 
 ## 1. Scope
 
@@ -118,6 +120,11 @@ R5 supports axial reflection in a valid finite 2D line and central reflection
 in a valid finite 2D point. `Reflect` and `Mirror` are aliases routed through
 the existing command processor.
 
+Homogeneous line coefficients are normalized with scale-safe finite arithmetic.
+Multiplying all coefficients by a nonzero scalar does not change the semantic
+reflection, while zero-normal or effectively nonfinite coefficients fail
+without publication.
+
 A circle/conic second operand denotes inversion in the existing host command.
 It is not included and must not be treated as an ordinary R5 reflection.
 
@@ -126,27 +133,25 @@ It is not included and must not be treated as an ordinary R5 reflection.
 The factor and optional center follow ordinary 2D command conventions. The
 two-argument form uses the ordinary origin. Negative factors are valid.
 
-The finite `k=0` behavior is **AUTHOR DECISION REQUIRED before implementation**.
+The finite `k=0` behavior is **Option A — valid `COLLAPSED_IMAGE` — AUTHOR
+APPROVED**.
 The accepted [Locus V2 semantic contract](locus-v2-semantics.md), its
 [`COLLAPSED_IMAGE` semantic model](../../../docs/architecture/locus_v2_semantic_model.md),
 the accepted [metric contract](locus-v2-metrics.md), and the
 [`COLLAPSED_IMAGE` metric model](../../../docs/architecture/locus_v2_metric_semantic_model.md)
 define consequences when a provider truthfully publishes a valid collapsed
-image; they do not require this future command overload to publish one.
+image; the author-approved Option A requires the R5 overload to publish one.
 
-The author must select exactly one policy:
+R5 shall preserve source domains, branches, semantic addresses and invalid
+gaps, map every source-valid address to the dilation center, and retain a
+semantic `GeoLocusV2` rather than converting it to a `GeoPoint` or sampled
+object. Option B remains a rejected planning alternative and is not implemented
+by R5.
 
-- **Option A (recommended) — valid `COLLAPSED_IMAGE`:** preserve source domains,
-  branches, semantic addresses and invalid gaps, map every source-valid address
-  to the dilation center, and retain a semantic `GeoLocusV2` rather than
-  converting it to a `GeoPoint` or sampled object.
-- **Option B — unsupported/undefined transformed state:** publish no valid
-  transformed locus while `k=0`, expose a typed unsupported/undefined state,
-  retain no stale semantic snapshot, and recover deterministically after a
-  supported factor returns.
-
-The selected policy must be recorded in the author-approved R5 authority before
-productive implementation begins.
+`FINITE` and `UNBOUNDED` classify the retained semantic domain and therefore
+remain exactly as published by the source branch. `COLLAPSED_IMAGE` is an
+additional, independent image property; zero scale must not replace an
+unbounded domain classification with `FINITE`.
 
 ## 6. Definition and evaluation failures
 
@@ -159,12 +164,12 @@ productive implementation begins.
 | Undefined, infinite or 3D center | undefined transform state |
 | Undefined/nonfinite line or zero line normal | undefined axial-reflection state |
 | Undefined/nonfinite scale factor | undefined dilation state |
-| Finite `k=0` | **AUTHOR DECISION REQUIRED:** Option A valid source-domain-preserving `COLLAPSED_IMAGE`, with source-invalid addresses still invalid; or Option B explicit unsupported/undefined transformed state |
+| Finite `k=0` | Option A: valid source-domain-preserving `COLLAPSED_IMAGE`, with source-invalid addresses still invalid |
 | Finite `k<0` | valid dilation with retained semantic traversal and `abs(k)` metric scale |
 | Finite coefficients but mapped coordinate overflows | existing `NON_FINITE` status at that address; no stale coordinate |
 | Periodic source | same provider canonicalization and one semantic seam |
 | Disconnected source | same component partition; no bridging even if images coincide |
-| Further transform after `k=0` | Option A: normal DAG output retaining collapsed-image semantics; Option B: no valid collapsed source until the factor returns to a supported value |
+| Further transform after `k=0` | normal DAG output retaining collapsed-image semantics |
 
 Recovery after a temporary failure uses normal DAG recomputation and semantic
 snapshot publication.
@@ -184,10 +189,12 @@ The same equations hold between corresponding source/transformed semantic
 addresses. The transformed locus itself is the rich metric source. A UI/scalar
 multiplication is not implementation authority.
 
-Under Option A, the established collapsed-image metric contract applies at
-`k=0`: valid length zero with typed `COLLAPSED_IMAGE` evidence, not numeric
-underflow. Under Option B, no metric value may be fabricated while the
-transformed locus is unsupported/undefined.
+The established collapsed-image metric contract applies at `k=0`: a
+provider-justified `COLLAPSED_IMAGE` branch property is semantic proof of exact
+zero total and partial length on each retained valid component, not numeric
+underflow. Transformation evaluation remains source-first. Invalid gaps are
+outside the retained valid components and stay invalid; the metric specialization
+does not make them valid or turn a displayed scalar into authority.
 
 ## 8. Intersection covariance
 
@@ -215,11 +222,10 @@ intrinsic phase/rank selector certificate and tokens. Neither geometric
 covariance nor continuous motion permits reuse of an untransformed or
 previous-frame selector/token certificate.
 
-`k=0` is non-invertible and has no bijective-covariance claim. Under Option A,
-coincidence of a target with the collapsed point remains an
+`k=0` is non-invertible and has no bijective-covariance claim. Coincidence of a
+target with the collapsed point remains an
 overlap/non-isolated case unless the existing solver truthfully establishes a
-stronger result. Under Option B, no intersection result may be fabricated from
-an unsupported/undefined transformed locus.
+stronger result; no isolated root may be fabricated.
 
 ## 9. Semantic Point-on-Locus covariance
 
@@ -263,12 +269,26 @@ make the existing command-backed actions professionally discoverable. Any
 separately approved legacy click-tool route must delegate to the same kernel
 operation and own no semantics.
 
+Any inherited 3D processor that intercepts an axis, plane, 3D center or oriented
+3D overload before the ordinary 2D processor shall reject `GeoLocusV2`
+fail-closed. Rejection must create no algorithm/output, construction-list entry,
+XML fragment or durable identity. Circle inversion, vector-at-point and
+rotate-text routes remain unchanged.
+
 ## 13. Persistence and copy
 
 Save/reopen serializes the existing command inputs and normal durable identity
 records. It shall preserve source dependency, transformation input geos, output
 identity, style and downstream points/metrics/intersections with their own
 transformed-query selector/token bindings.
+
+Public R5 construction and XML/redefine participation shall be exception-safe.
+An R5 transform rejected before its own publication, including a rejected
+redefine candidate, must restore suppressed label state and leave no promoted
+dependency label, attached construction element, reserved identity or partial
+semantic publication. This bounded contract does not redefine the upstream
+parser rule that an already successful nested subcommand may remain constructed
+when a later, unrelated outer command fails.
 
 Copy/remap and undo/redo use existing exact provenance rules. No render
 vertices, point samples, detached matrix snapshot or Java callback is
@@ -297,14 +317,27 @@ The future implementation shall satisfy the complete R5 validation matrix,
 deterministic rerun, historical Locus V2/public/persistence/intersection gates,
 legacy Locus, Checkstyle, Git diff checks and composed verification.
 
-Productive implementation must stop before code if the author-approved R5
-authority does not select exactly one `k=0` policy above. The validation matrix
-then activates only the corresponding conditional zero-scale rows.
+The author-approved R5 authority selects Option A. The validation matrix
+activates the corresponding `A` zero-scale rows; former Option B rows remain
+inactive planning history and must not be implemented.
 
-Automated validation can establish only an implementation candidate. R5 PASS
-and author smoke acceptance require later author decisions. R5 closeout must
-prepare or supersede, but not execute, the definitive post-R5 G9U1 prompt while
-retaining its planned kernel-selector/exact-token-only candidate-marker hit
+Retained risk `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` remains open under
+its R4 authority. R5 neither resolves it nor makes it a transformation
+dependency; G9U1/global-G9 disposition remains mandatory.
+
+Automated validation established the implementation candidate; the subsequent
+author decision closed R5 `PASS — AUTHOR APPROVED`. The final byte-exact
+dynamic-dilation fixture proves slider/existing-object updates, transitions
+through zero and save/reopen. Free input `k=0.25` remains rejected before R5 by
+G9A `REDEFINE_CONTEXT_MISSING`; that atomic rejection is not a dilation failure
+and R5 does not broaden G9A. Future G9U1 authority must investigate compatible
+free-input redefine only through the approved G9A predicate/transaction, with a
+label used solely to locate the explicitly intended command-context target and
+never as durable identity; ambiguous, absent and incompatible targets fail
+closed.
+
+The unexecuted future G9U1 authority retains its planned
+kernel-selector/exact-token-only candidate-marker hit
 testing, explicit create-one/create-all and opt-in visible
 frontend auto-materialization without UI/list/marker rank authority;
 professional-menu/tool, visual-identity, existing-host `Continuity = OFF`

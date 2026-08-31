@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "phase": "G9U0-R5",
+  "status": "PASS_AUTHOR_APPROVED",
+  "zeroScalePolicy": "OPTION_A_COLLAPSED_IMAGE",
+  "matrix": {
+    "path": "docs/validation/g9u0_r5_locus_v2_similarity_transformations_validation_matrix.md",
+    "allRows": 110,
+    "activeRows": 106,
+    "inactiveOptionBRows": ["R5-G07B", "R5-G08B", "R5-M06B", "R5-X08B"]
+  },
+  "groups": [
+    {
+      "id": "C",
+      "title": "Public command routing",
+      "activeScenarioIds": ["R5-C01", "R5-C02", "R5-C03", "R5-C04", "R5-C05", "R5-C06", "R5-C07", "R5-C08", "R5-C09", "R5-C10", "R5-C11", "R5-C12", "R5-C13"]
+    },
+    {
+      "id": "I",
+      "title": "Durable identity and DAG provenance",
+      "activeScenarioIds": ["R5-I01", "R5-I02", "R5-I03", "R5-I04", "R5-I05", "R5-I06", "R5-I07", "R5-I08"]
+    },
+    {
+      "id": "E",
+      "title": "Evaluation and semantic address preservation",
+      "activeScenarioIds": ["R5-E01", "R5-E02", "R5-E03", "R5-E04", "R5-E05", "R5-E06", "R5-E07", "R5-E08", "R5-E09", "R5-E10"]
+    },
+    {
+      "id": "D",
+      "title": "Domain, topology and periodic seam",
+      "activeScenarioIds": ["R5-D01", "R5-D02", "R5-D03", "R5-D04", "R5-D05", "R5-D06", "R5-D07", "R5-D08", "R5-D09"]
+    },
+    {
+      "id": "G",
+      "title": "Degeneration matrix",
+      "activeScenarioIds": ["R5-G01", "R5-G02", "R5-G03", "R5-G04", "R5-G05", "R5-G06", "R5-G07A", "R5-G08A", "R5-G09A", "R5-G10A", "R5-G11", "R5-G12"]
+    },
+    {
+      "id": "M",
+      "title": "Metric covariance",
+      "activeScenarioIds": ["R5-M01", "R5-M02", "R5-M03", "R5-M04", "R5-M05", "R5-M06A", "R5-M07", "R5-M08", "R5-M09", "R5-M10"]
+    },
+    {
+      "id": "P",
+      "title": "Point-on-Locus covariance",
+      "activeScenarioIds": ["R5-P01", "R5-P02", "R5-P03", "R5-P04", "R5-P05", "R5-P06"]
+    },
+    {
+      "id": "X",
+      "title": "Intersection covariance and token isolation",
+      "activeScenarioIds": ["R5-X01", "R5-X02", "R5-X03", "R5-X04", "R5-X05", "R5-X06", "R5-X07", "R5-X08A", "R5-X09A", "R5-X10", "R5-X11", "R5-X12", "R5-X13"]
+    },
+    {
+      "id": "K",
+      "title": "Transformation closure and dynamic DAG",
+      "activeScenarioIds": ["R5-K01", "R5-K02", "R5-K03", "R5-K04", "R5-K05", "R5-K06", "R5-K07", "R5-K08"]
+    },
+    {
+      "id": "S",
+      "title": "Persistence, copy and presentation",
+      "activeScenarioIds": ["R5-S01", "R5-S02", "R5-S03", "R5-S04", "R5-S05", "R5-S06", "R5-S07", "R5-S08", "R5-S09"]
+    },
+    {
+      "id": "N",
+      "title": "Forbidden authority and legacy regressions",
+      "activeScenarioIds": ["R5-N01", "R5-N02", "R5-N03", "R5-N04", "R5-N05", "R5-N06", "R5-N07", "R5-N08"]
+    }
+  ],
+  "focusedJUnit": {
+    "declared": 46,
+    "sharedKernel": 42,
+    "desktopNativeArchive": 4,
+    "classes": [
+      {
+        "name": "org.geocedg.common.locus.G9U0R5SimilarityTransformationsTest",
+        "methods": 26
+      },
+      {
+        "name": "org.geocedg.common.locus.G9U0R5CommandRoutingPublicSurfaceTest",
+        "methods": 8
+      },
+      {
+        "name": "org.geocedg.common.locus.G9U0R5SemanticTransformEdgeCasesTest",
+        "methods": 8
+      },
+      {
+        "name": "org.geocedg.desktop.G9U0R5NativeArchivePersistenceTest",
+        "methods": 4
+      }
+    ],
+    "focusedA": {
+      "status": "PASS",
+      "canonicalSummarySha256": "RECORDED_IN_CANDIDATE_REPORT"
+    },
+    "focusedB": {
+      "status": "PASS",
+      "canonicalSummarySha256": "RECORDED_IN_CANDIDATE_REPORT",
+      "matchesFocusedA": true
+    }
+  },
+  "manualAuthorSmoke": {
+    "status": "PASS_WITH_G9A_FREE_INPUT_LIMITATION_CHARACTERIZED",
+    "passed": true,
+    "dynamicDilationFixtureSha256": "13cde59d54a463413140007e793a50e8cb933cab21d4be286c9d76f6b2f713fe",
+    "freeInputDisposition": "G9A_REDEFINE_CONTEXT_MISSING_DEFERRED_TO_G9U1_NOT_R5_BLOCKER"
+  },
+  "approval": {
+    "implementationStarted": true,
+    "selfApproved": false,
+    "authorApproved": true,
+    "passClaimed": true
+  }
+}

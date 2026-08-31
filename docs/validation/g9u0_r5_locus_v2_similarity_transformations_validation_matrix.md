@@ -3,19 +3,19 @@
 | Field | Value |
 |---|---|
 | Phase | **G9U0-R5 — LOCUS V2 2D SIMILARITY TRANSFORMATIONS** |
-| Status | **DESIGN CANDIDATE — PENDING AUTHOR REVIEW** |
-| Implementation | **NOT AUTHORIZED — NOT STARTED** |
+| Status | **DESIGN PASS — AUTHOR APPROVED** |
+| Implementation | **PASS — AUTHOR APPROVED** |
 | Required predecessor | G9U0-R4 `PASS — AUTHOR APPROVED` |
 | Draft contract | [`locus-v2-similarity-transformations.md`](../../geocedg/specs/locus/locus-v2-similarity-transformations.md) |
-| Zero-scale policy | **AUTHOR DECISION REQUIRED:** Option A (recommended) valid source-domain-preserving `COLLAPSED_IMAGE`, or Option B explicit unsupported/undefined transformed state |
+| Zero-scale policy | **Option A — AUTHOR APPROVED:** valid source-domain-preserving `COLLAPSED_IMAGE`; former Option B rows are inactive planning history |
 | Relevant accepted contracts | [`locus-v2-semantics.md`](../../geocedg/specs/locus/locus-v2-semantics.md), [`semantic model`](../architecture/locus_v2_semantic_model.md), [`locus-v2-metrics.md`](../../geocedg/specs/locus/locus-v2-metrics.md), [`metric model`](../architecture/locus_v2_metric_semantic_model.md), Accepted ADR 0017 intrinsic semantic phase/rank authority |
 
-This matrix designs future deterministic validation. No row is claimed
-executed or passed by the R5 planning candidate.
+This matrix governed the deterministic implementation candidate. Automated
+evidence established readiness only; the separate final author disposition
+closes R5 `PASS — AUTHOR APPROVED` with `selfApproved=false`.
 
-Before productive implementation, the author-approved R5 authority must select
-exactly one zero-scale option. Only that option's conditional rows are then
-active; the other branch remains design evidence and must not be implemented.
+The author-approved R5 authority selects Option A. Only `A` zero-scale rows are
+active; `B` rows remain rejected design evidence and must not be implemented.
 
 ## 1. Public command routing
 
@@ -29,11 +29,11 @@ active; the other branch remains design evidence and must not be implemented.
 | R5-C06 | `Dilate[L,k]` | Existing origin-dilation form creates one semantic output |
 | R5-C07 | `Dilate[L,k,C]` | Existing centered-dilation form creates one semantic output |
 | R5-C08 | `Reflect[L,circle]` | Explicitly outside R5; no accidental inversion-as-reflection support |
-| R5-C09 | shear/stretch/projective/3D forms | Explicitly outside R5; legacy dispatch unchanged |
+| R5-C09 | shear/stretch/projective/3D forms | Explicitly outside R5; Locus V2 axis/plane/3D-center/oriented-3D routes fail closed before generic 3D algorithms, with no construction/XML/identity residue; legacy non-Locus dispatch unchanged |
 | R5-C10 | feature ON | One existing Locus V2 opt-in is sufficient for all supported forms |
 | R5-C11 | feature OFF interactive | Typed unavailable result; no transformed V2 created |
 | R5-C12 | feature OFF file loading | Supported persisted transformed locus reconstructs/preserves without enabling creation |
-| R5-C13 | current host route audit | Basic factory, four 2D processors, dispatcher and four transform wrappers match the approved characterization; vector-at-point, rotate-text and circle-inversion routes are unchanged |
+| R5-C13 | current host route audit | Basic factory, four 2D processors, 3D subclass interception points, dispatcher and four transform wrappers match the approved characterization; vector-at-point, rotate-text and circle-inversion routes are unchanged |
 
 ## 2. Durable identity and DAG provenance
 
@@ -59,7 +59,7 @@ dependent-construction loci.
 | R5-E02 | rotation about origin | Evaluated point equals the ordinary finite 2D rotation |
 | R5-E03 | rotation about dynamic center | Evaluated point equals centered rotation and updates normally |
 | R5-E04 | central reflection | Evaluated point equals `2P-sourcePoint` |
-| R5-E05 | axial reflection | Evaluated point equals reflection in current finite line |
+| R5-E05 | axial reflection | Evaluated point equals reflection in the current finite line; large finite homogeneous coefficient rescaling is normalized safely and changes no semantic map |
 | R5-E06 | positive dilation | Evaluated point equals centered scale by `k` |
 | R5-E07 | negative dilation | Geometry is correct; semantic traversal is not reversed |
 | R5-E08 | source invalid address | Same invalid source status; transformation does not fabricate a point |
@@ -78,7 +78,7 @@ dependent-construction loci.
 | R5-D06 | reflection | Ambient orientation change does not alter branch parameter orientation or make Cartesian orientation phase/rank authority |
 | R5-D07 | negative dilation | Parameter orientation and the semantic phase frame remain the source orientation |
 | R5-D08 | empty domain | `EMPTY_DOMAIN`; no branch/point/sample fabricated |
-| R5-D09 | source split/merge lineage | Current typed lineage is preserved; transform creates no false topology event |
+| R5-D09 | source split/merge lineage and domain classification | Current typed lineage and source `FINITE`/`UNBOUNDED` domain property are preserved; `k=0` adds `COLLAPSED_IMAGE` without reclassifying the domain or creating a false topology event |
 
 ## 5. Degeneration matrix
 
@@ -90,10 +90,10 @@ dependent-construction loci.
 | R5-G04 | undefined/infinite/3D center | No valid 2D output publication |
 | R5-G05 | undefined/nonfinite/zero-normal axis | No valid axial-reflection publication |
 | R5-G06 | undefined/nonfinite factor | No valid dilation publication |
-| R5-G07A | **Option A:** `k=0`, nonempty source domain | Valid semantic output; source domains/branches retained; `COLLAPSED_IMAGE` present |
-| R5-G07B | **Option B:** `k=0`, nonempty source domain | Explicit unsupported/undefined transformed state; no valid or stale semantic snapshot |
-| R5-G08A | **Option A:** `k=0`, source has invalid gap | Gap remains invalid; zero scale does not heal it |
-| R5-G08B | **Option B:** factor changes `nonzero -> 0 -> nonzero` | Unsupported/undefined only at zero; deterministic recovery; no stale point, metric or token |
+| R5-G07A | **Option A:** `k=0`, nonempty source domain | Valid semantic output; source domains/branches and `FINITE`/`UNBOUNDED` classification retained; independent `COLLAPSED_IMAGE` present; finite extreme source/center coordinates return the center before any potentially overflowing subtraction |
+| R5-G07B | **INACTIVE Option B history:** `k=0`, nonempty source domain | Not executed; Option A is author approved |
+| R5-G08A | **Option A:** `k=0`, source has invalid gap | Source-first evaluation preserves the gap as domain-invalid; zero scale and exact-zero metric evidence do not heal it |
+| R5-G08B | **INACTIVE Option B history:** factor changes `nonzero -> 0 -> nonzero` | Not executed; Option A is author approved |
 | R5-G09A | **Option A:** `k=0`, multi-branch source | Branch identities remain distinct even though images coincide |
 | R5-G10A | **Option A:** later finite transform of collapsed output | Normal DAG result; collapsed property/zero metric retained |
 | R5-G11 | factor crosses zero under the selected policy | Exact selected behavior; deterministic revisions/recovery; no stale point, metric or token |
@@ -111,8 +111,8 @@ coverage, diagnostic and error evidence.
 | R5-M03 | axial/central reflection | Total length invariant |
 | R5-M04 | dilation `k>0` | Total length equals `abs(k)` times source |
 | R5-M05 | dilation `k<0` | Total length equals `abs(k)` times source; no orientation sign leak |
-| R5-M06A | **Option A:** `k=0` | Rich zero with typed `COLLAPSED_IMAGE` evidence according to the accepted collapsed-image metric contract |
-| R5-M06B | **Option B:** `k=0` | No metric value is fabricated from the unsupported/undefined transformed locus |
+| R5-M06A | **Option A:** `k=0` | Rich exact zero uses the provider-justified `COLLAPSED_IMAGE` property as semantic proof on retained valid components; invalid gaps remain outside those components |
+| R5-M06B | **INACTIVE Option B history:** `k=0` | Not executed; Option A is author approved |
 | R5-M07 | corresponding partial addresses | Same invariance/scaling as total metric |
 | R5-M08 | periodic wrapped partial route | Same wrap/seam policy; no connector segment |
 | R5-M09 | disconnected/unbounded source | Existing coverage/unsupported/infinite status covaries truthfully |
@@ -151,7 +151,7 @@ token.
 | R5-X07 | coordinate/order perturbation | Selector phase/rank and tokens do not derive from Cartesian order, proximity, solver/list index, marker order or UI ordinal |
 | R5-X08A | **Option A:** `k=0` target misses collapsed point | Zero finite solutions according to ordinary solver evidence |
 | R5-X09A | **Option A:** `k=0` collapsed point lies on target | Existing overlap/non-isolated policy; no fabricated admissible isolated token |
-| R5-X08B | **Option B:** `k=0` with any target | No intersection result is fabricated from the unsupported/undefined transformed locus |
+| R5-X08B | **INACTIVE Option B history:** `k=0` with any target | Not executed; Option A is author approved |
 | R5-X10 | topology transition under dynamic input | Existing R4 deterministic-selector and topology-evidence rules; ambiguity invalidates and no token jumps |
 | R5-X11 | transformed-query path independence | Reach byte-identical final Construction state and durable IDs by direct, incremental, reverse and save/reopen transformation updates; current admissibility, token binding and point definedness are identical |
 | R5-X12 | ordinary regular transformed motion | While the deterministic selector remains uniquely valid, materialized roots remain defined and continuous without previous-Cartesian or update-history authority |
@@ -168,6 +168,7 @@ token.
 | R5-K05 | change vector/angle/center/axis/factor | Exactly normal DAG recomputation; all dependent semantic consumers update |
 | R5-K06 | repeated equivalent update | Deterministic semantic comparison; no presentation-driven revision |
 | R5-K07 | remove/undo/redo one transform | Ordinary lifecycle; no orphan identity/evaluator/cache state |
+| R5-K08 | byte-exact `fourSolutionsDynamicDilate.cedg` dynamic factor | Slider `setValue`, explicit edit of the existing Algebra numeric, repeated positive/negative/zero transitions and save/reopen retain one live parent and approved `COLLAPSED_IMAGE`; free-input `k=0.25` is rejected atomically before R5 as G9A `REDEFINE_CONTEXT_MISSING`, without construction corruption or a dilation-failure claim |
 
 ## 10. Persistence, copy and presentation
 
@@ -180,7 +181,7 @@ token.
 | R5-S05 | undo/redo | Normal transform parent/output and downstream lifecycle |
 | R5-S06 | initial style | Host transformation style convention applied once |
 | R5-S07 | independent output style edit | Ordinary R2 persistence; zero semantic revision/identity effect |
-| R5-S08 | XML/archive inspection | No render vertices, sampled point cloud, detached matrix or serialized callback; `app="classic"` unchanged |
+| R5-S08 | XML/archive inspection and rejected R5 publication/redefine transaction | No render vertices, sampled point cloud, detached matrix or serialized callback; `app="classic"` unchanged; an R5 transform rejected before its own publication leaves no promoted label, parent, reservation or partial publication, without changing upstream retention of an already successful nested subcommand when a later unrelated outer command fails |
 | R5-S09 | Classic diagnostic preservation | Opens/recomputes/saves supported transformed locus without enabling creation |
 
 ## 11. Forbidden-authority and legacy regressions
@@ -193,7 +194,7 @@ token.
 | R5-N04 | ordinary non-Locus transformations | Existing outputs, command routing, labels, styles and XML unchanged |
 | R5-N05 | circle inversion | Existing supported non-Locus behavior unchanged; no Locus R5 claim |
 | R5-N06 | legacy `GeoLocus` | No new overload/migration/behavior change |
-| R5-N07 | 3D command processors | Existing 3D dispatch unchanged; no Locus V2 3D route |
+| R5-N07 | 3D command processors | Existing non-Locus 3D dispatch unchanged; Locus V2 axis, plane, 3D-center and oriented-3D forms reject before Manager3D and leave construction/XML/identity state unchanged |
 | R5-N08 | feature policy | No new flag and no command-visibility regression for ordinary objects |
 
 ## 12. Determinism and evidence
@@ -204,13 +205,18 @@ hashes, source fixture hashes, command counts and exact normalized evidence
 hash. Timing, temporary paths, ZIP timestamps and environment noise are not
 semantic evidence.
 
-Future evidence belongs under:
+Candidate machine evidence belongs under:
 
 ```text
 geocedg/validation/g9u0-r5/
 ```
 
 Generated logs belong only under ignored `artifacts/g9u0-r5/`.
+The living human-readable state is recorded in the
+[`R5 implementation-candidate report`](g9u0_r5_locus_v2_similarity_transformations_candidate_report.md);
+neither that report nor automated output may claim author smoke or PASS.
+The open R4 risk `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` is preserved
+unchanged; R5 evidence does not close it or make it an implicit R5 requirement.
 
 ## 13. Required historical/composed authority
 
@@ -243,10 +249,9 @@ Prepare, but do not self-pass:
    and partial-reverse input updates, then confirm the same intrinsic phase/rank
    selector and exact token binding;
 9. compose at least three transformations;
-10. set `k=0` and verify only the selected policy: Option A yields a valid
+10. set `k=0` and verify the selected Option A policy: a valid
    source-domain-preserving collapsed locus and typed length zero without a
-   fabricated isolated intersection token; Option B yields an explicit
-   unsupported/undefined transformed state with no fabricated downstream value;
+   fabricated isolated intersection token;
 11. restore nonzero `k` and verify deterministic recovery under the selected
     policy;
 12. edit ordinary styles and confirm semantic dependents do not update; and
@@ -256,19 +261,22 @@ The author alone records smoke PASS.
 
 ## 15. Exit condition
 
-Automation may end only at:
+Automation initially ended at the required implementation-candidate boundary.
+The separate author decision records the final state:
 
 ```text
-G9U0-R5 = IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW
+G9U0-R5 = PASS — AUTHOR APPROVED
 implementationStarted = true
 selfApproved = false
-authorApproved = false
-passClaimed = false
+authorApproved = true
+passClaimed = true
+manualAuthorSmoke = PASS WITH G9A FREE-INPUT LIMITATION CHARACTERIZED
+freeInputCompatibleRedefine = DEFERRED TO G9U1 DESIGN / NOT AN R5 BLOCKER
 ```
 
-R5 PASS and G9U1 authorization remain separate author decisions. R5 closeout
-must prepare or supersede the definitive post-R5 G9U1 prompt, without executing
-it, and retain the planned kernel-selector/exact-token-only candidate-marker
+R5 PASS and G9U1 authorization remain separate author decisions. The future
+G9U1 authority remains unexecuted and retains the planned
+kernel-selector/exact-token-only candidate-marker
 hit testing, create-one/create-all and opt-in visible frontend
 auto-materialization with no UI/list/marker rank authority; professional
 menu/tool, visual-identity, existing-host `Continuity = OFF` GeoCeDG product

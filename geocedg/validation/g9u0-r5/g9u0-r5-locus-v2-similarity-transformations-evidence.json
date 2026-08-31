@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "phase": "G9U0-R5",
+  "status": "PASS_AUTHOR_APPROVED",
+  "provenance": {
+    "entrySha": "ab465bfcbd08f168c730ba639ec5f99a4b08b9df",
+    "branch": "feature/g9u0-r5-locus-v2-similarity-transformations",
+    "r4PassTag": "geocedg-g9u0-r4-pass",
+    "r4PassTagObject": "0f9b303057b00d23722ad1f9d3594b4609d668a7",
+    "r4ProductCommit": "63c291464111a5bcdbca488d6639662e46c389c4",
+    "r4PostCloseoutOperationalCommit": "ab465bfcbd08f168c730ba639ec5f99a4b08b9df",
+    "r4PassIsAncestorOfEntry": true
+  },
+  "approval": {
+    "implementationStarted": true,
+    "selfApproved": false,
+    "authorApproved": true,
+    "passClaimed": true,
+    "reviewRequired": false,
+    "disposition": "PASS_AUTHOR_APPROVED"
+  },
+  "authority": {
+    "canonicalPrompt": ".github/prompts/tasks/g9u0-r5-locus-v2-similarity-transformations.prompt.md",
+    "canonicalPromptLfSha256": "87e500964201cd04756a9d8c55c814eaade450ebf8a73c559c835e034522b802",
+    "specification": "geocedg/specs/locus/locus-v2-similarity-transformations.md",
+    "architecture": "docs/architecture/g9u0_r5_locus_v2_similarity_transformations.md",
+    "validationMatrix": "docs/validation/g9u0_r5_locus_v2_similarity_transformations_validation_matrix.md",
+    "futureG9U1Prompt": ".github/prompts/tasks/g9u1-construction-workspace-after-g9u0-r5.prompt.md",
+    "futureG9U1PromptLfSha256": "0b96f571932144f9a99f7681938edf756c8999cb847b61095f82430068e96389",
+    "futureG9U1Status": "DEFINITIVE_PROSPECTIVE_POST_G9U0_R5_SUCCESSOR_UNEXECUTED_NOT_AUTHORIZED",
+    "zeroScalePolicy": "OPTION_A_COLLAPSED_IMAGE",
+    "activeMatrixRows": 106,
+    "inactiveOptionBRows": 4
+  },
+  "architecture": {
+    "placement": "SHARED_KERNEL_SEMANTIC_EXTENSION",
+    "ordinaryCommandFamilies": ["Translate", "Rotate", "Reflect/Mirror", "Dilate"],
+    "parallelCommandsAdded": false,
+    "genericPathConformanceAdded": false,
+    "mutableTransformInterfaceConformanceAdded": false,
+    "renderOrSampleAuthorityAdded": false,
+    "zipXmlFormatChanged": false,
+    "appClassicMarkerChanged": false,
+    "sourceTokensReusedByTransformedQueries": false,
+    "g9u1Executed": false
+  },
+  "deterministicEvidence": {
+    "sourceHashMethod": "GIT_BLOB_OR_CURRENT_CANDIDATE_UTF8_NO_BOM_CANONICAL_LF_SHA256",
+    "workingTreeLineEndingsAreAuthority": false,
+    "contentMutationMustChangeHash": true,
+    "canonicalSummaryIncludes": [
+      "activeScenarioIds",
+      "focusedJUnitResults",
+      "candidatePathInventory",
+      "deterministicSourceHashes",
+      "authorityHashes",
+      "commandFormCount",
+      "openRiskIds"
+    ],
+    "focusedA": {
+      "status": "PASS",
+      "total": 46,
+      "canonicalSummarySha256": "RECORDED_IN_CANDIDATE_REPORT"
+    },
+    "focusedB": {
+      "status": "PASS",
+      "total": 46,
+      "canonicalSummarySha256": "RECORDED_IN_CANDIDATE_REPORT",
+      "matchesFocusedA": true
+    }
+  },
+  "dynamicDilationSmoke": {
+    "status": "PASS_WITH_G9A_FREE_INPUT_LIMITATION_CHARACTERIZED",
+    "fixture": {
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/locus/g9u0-r5/fourSolutionsDynamicDilate.cedg",
+      "bytes": 25704,
+      "sha256": "13cde59d54a463413140007e793a50e8cb933cab21d4be286c9d76f6b2f713fe"
+    },
+    "regressionMethod": "authorDynamicDilateFixtureUsesOneLiveParentAcrossFiniteFactorUpdates",
+    "sliderUpdatePassed": true,
+    "explicitExistingObjectEditPassed": true,
+    "zeroCrossingRecoveryPassed": true,
+    "saveReopenPassed": true,
+    "freeInputDisposition": "G9A_REDEFINE_CONTEXT_MISSING_DEFERRED_TO_G9U1_NOT_R5_BLOCKER",
+    "r5SemanticFailureFound": false
+  },
+  "historicalAuthority": {
+    "mode": "SEALED_TAGGED_DESCENDANT",
+    "r4ProductAuthorityImmutable": true,
+    "r4PostCloseoutOperationalDescendantRecognized": true,
+    "historicalVerifiersWeakened": false
+  },
+  "retainedRisks": [
+    {
+      "id": "G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP",
+      "status": "OPEN_TRACKED_NONBLOCKING",
+      "origin": "G9U0-R4",
+      "r5Disposition": "PRESERVED_NOT_RESOLVED_NOT_AN_IMPLICIT_R5_DEPENDENCY"
+    }
+  ],
+  "phaseDisposition": {
+    "G9U0-R4": "PASS_AUTHOR_APPROVED",
+    "G9U0-R5": "PASS_AUTHOR_APPROVED",
+    "G9U1": "DESIGNED_NOT_AUTHORIZED",
+    "G9B": "NOT_AUTHORIZED",
+    "G9C": "NOT_AUTHORIZED",
+    "G9U2": "BLOCKED",
+    "productiveG10": "NOT_AUTHORIZED"
+  },
+  "manualAuthorSmoke": {
+    "status": "PASS_WITH_G9A_FREE_INPUT_LIMITATION_CHARACTERIZED",
+    "passed": true
+  }
+}

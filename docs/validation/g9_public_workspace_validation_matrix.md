@@ -1,20 +1,19 @@
 # G9 public Locus, product/document refinement and workspace validation matrix
 
 - Status: **G9U0-R2 PASS — AUTHOR APPROVED; G9U0-R3 PASS — AUTHOR APPROVED;
-  G9U0-R4 PASS — AUTHOR APPROVED; G9U0-R5 DESIGN
-  CANDIDATE — PENDING AUTHOR REVIEW / IMPLEMENTATION NOT AUTHORIZED; G9U1
+  G9U0-R4 PASS — AUTHOR APPROVED; G9U0-R5 PASS — AUTHOR APPROVED; G9U1
   DESIGNED — NOT AUTHORIZED**
-- Date: 2026-08-30
+- Date: 2026-08-31
 - Scope: author-approved/historical G9U0 public Locus V2 evidence;
   author-approved G9U0-R2 product/document-refinement design and implementation;
   bounded G9U0-R3 public-UI exposure hardening; G9U0-R4 public intersection
-  correction; planning-only G9U0-R5 similarity transformations; future G9U1
+  correction; author-approved G9U0-R5 similarity transformations; future G9U1
   Construction workspace; and the
   post-G9 G9U2 Dihedral Procedures workspace
 - G9U0-R2 implementation: **PASS — AUTHOR APPROVED**;
   G9U0-R3: **PASS — AUTHOR APPROVED**;
   G9U0-R4: **PASS — AUTHOR APPROVED**;
-  G9U0-R5 implementation authorized: **no**;
+  G9U0-R5 implementation: **PASS — AUTHOR APPROVED**;
   G9U1/G9U2 implementation authorized: **no**
 
 The G9U0 rows remain the design source behind separately frozen, author-approved
@@ -48,9 +47,10 @@ public-kernel, 28 ledger and 3 Desktop methods (58 total) across 54 changed path
 is a protective pre-current-correction checkpoint. Current A/B pass 58/58 with
 exact canonical SHA-256
 `3e9ea0aa20d511f2828eae61e491c1b3b5d9cb86a0f02166503ee5093d6000fb`,
-and composed exits 0 with `All GeoCeDG verification gates passed.`. R4 has no
-phase PASS; author re-smoke/re-review remains required. R5 and G9U1 remain
-unexecuted/not authorized.
+  and composed exits 0 with `All GeoCeDG verification gates passed.`. The author
+  subsequently accepted both final R4 re-smokes; R4 is `PASS — AUTHOR
+  APPROVED`. R5 is also `PASS — AUTHOR APPROVED` after the accepted final
+  dynamic-factor characterization; G9U1 remains unexecuted/not authorized.
 
 ## 1. Entry gates
 
@@ -67,13 +67,13 @@ unexecuted/not authorized.
 | E-09 | procedure dependency | global G9 PASS before G9U2, absent narrower explicit approval | workspace remains unavailable |
 | E-10 | pre-G9U1 product/document refinement | G9U0-R2 implementation, focused/composed evidence and manual author smoke closed `PASS — AUTHOR APPROVED` | G9U1 remains `DESIGNED — NOT AUTHORIZED`; implementation PASS still requires a separate U1 authorization |
 | E-11 | public Locus UI exposure | G9U0-R3 focused/deterministic/historical/composed evidence plus manual author smoke closed `PASS — AUTHOR APPROVED` | G9U1 remains `DESIGNED — NOT AUTHORIZED`; R3 candidate cannot authorize it |
-| E-12 | local public intersection admissibility | G9U0-R4 focused/deterministic/historical/composed evidence plus manual author smoke closed `PASS — AUTHOR APPROVED` | R5/U1 remain blocked; an implementation candidate cannot authorize either |
-| E-13 | Locus V2 similarity transformations | G9U0-R5 design approval, separate implementation authorization, focused/composed evidence and manual author smoke closed `PASS — AUTHOR APPROVED` | G9U1 remains blocked and R5 implementation must not begin from this planning candidate |
+| E-12 | local public intersection admissibility | G9U0-R4 focused/deterministic/historical/composed evidence plus manual author smoke closed `PASS — AUTHOR APPROVED` | satisfied for R5 entry; U1 still requires R5 PASS and separate authorization |
+| E-13 | Locus V2 similarity transformations | G9U0-R5 design approval, separate implementation authorization, focused/composed evidence and manual author smoke closed `PASS — AUTHOR APPROVED` | satisfied; R5 PASS does not authorize G9U1 |
 
 G9U1 is a GUI client/organization phase for already authorized actions. It has
 no semantic dependency on G9B, and G9B must not depend on G9U1. The
-author-approved R2/R3 implementations plus future author-approved R4 and R5
-closeouts are product-entry prerequisites for U1, not G9B dependencies. G9U2 is
+  author-approved R2/R3/R4/R5 implementations are product-entry prerequisites
+  for U1, not G9B dependencies. G9U2 is
 the workspace that consumes approved G9 spatial/projection-system semantics and
 therefore remains behind the global G9 gate.
 
@@ -467,15 +467,28 @@ Case 1 accepts four-root regular motion and deterministic binding; final Case 2
 accepts same-point dormant reactivation with no new point creation. R4 is
 `PASS — AUTHOR APPROVED` with `selfApproved=false`.
 
-### 8.8 G9U0-R5 planning-only transformation matrix
+### 8.8 G9U0-R5 author-approved transformation matrix
 
-The complete future matrix is
+The complete matrix is
 [`g9u0_r5_locus_v2_similarity_transformations_validation_matrix.md`](g9u0_r5_locus_v2_similarity_transformations_validation_matrix.md).
 It covers ordinary command routing, new durable identity, exact DAG inputs,
 domain/branch/parameter preservation, metric/intersection/Point covariance,
 composition, dynamic updates, persistence, styles, forbidden generic-Path/
 sample authority and all degenerations including valid `k=0`
-`COLLAPSED_IMAGE`. No R5 row is executed or claimed PASS in this task.
+`COLLAPSED_IMAGE`. Option A retains the source `FINITE`/`UNBOUNDED` domain
+classification, evaluates source-first, and uses the collapsed property as
+exact-zero metric proof only on retained valid components. R5 also
+requires seven ordinary command forms, fail-closed 3D exclusions, scale-safe
+axial normalization, exception-safe rollback when the R5 transform itself is
+rejected before publication/redefine (without changing host retention of an
+already successful nested subcommand after a later unrelated failure), new
+transformed identities and new R4 selector/token authority. Automated rows did
+not claim author PASS; the separate author decision closed R5. The definitive prospective post-R5
+G9U1 authority is
+`.github/prompts/tasks/g9u1-construction-workspace-after-g9u0-r5.prompt.md`
+(canonical-LF SHA-256
+`d256ce8bb80eb8deab70a6ae5571543c093a0d8de147b2b34bfa1ce92c9387ed`);
+it remains unexecuted and unauthorized.
 
 ## 9. G9U1 workspace schema and behavior tests
 
@@ -500,6 +513,13 @@ sample authority and all degenerations including valid `k=0`
 | U1-W12 | Laboratory route | open Templatev7 explicitly | hash/ingest checks; legacy toolbar remains document context only |
 | U1-W13 | startup manifest failure | invalid packaged v2 fixture | explicit fallback to last accepted v1; no hidden toolbar authority |
 | U1-W14 | switch rollback | inject view/menu compilation failure | old workspace restored; construction untouched |
+| U1-R5-01 | ordinary transformed-Locus actions | resolve all seven R5 forms through manifest action IDs | ordinary commands only; no parallel Locus-specific transform family |
+| U1-R5-02 | transformed result discoverability | select transformed Locus in Point/metric/intersection/further-transform workflows | first-class semantic source; no render/sample conversion |
+| U1-R5-03 | transformed-query token context | compare source and transformed intersection results | markers/materialization use only fresh transformed source-pair tokens; source tokens rejected |
+| U1-R5-04 | transformed path independence | reach same regular geometry by direct/incremental/reverse/save-reopen paths | identical current transformed selector/token/marker binding |
+| U1-R5-05 | collapsed image | inspect/intersect `Dilate[L,0,C]` in hit/miss/overlap cases | no marker or point unless kernel independently publishes a finite uniquely admissible token; no fabricated isolated root |
+| U1-R5-06 | free-input compatible numeric redefine | enter `k=0.25` for one explicitly intended existing compatible numeric and exercise ambiguous, absent and incompatible cases | use the accepted G9A compatibility predicate and atomic transaction; label locates command-context target only and never becomes durable identity; compatible ID graph/undo/redo/save/reopen preserved, other cases fail closed, Classic characterized separately |
+| U1-R5-06 | transformed persistence and composition | save/reopen, copy, undo and compose transforms | ordinary DAG identity/dependencies preserved; no source-token reuse |
 | U1-W15 | public V2 action coverage | inspect Construction action catalog after G9U0 PASS | creation, rich/guarded length, general V2 intersection, token point and supported point-on-Locus actions present as GUI clients only |
 | U1-W16 | no G9B coupling | compile/activate Construction with G9B unavailable but already authorized nonspatial actions available | workspace works; no G9B dependency or semantic fallback |
 | U1-W17 | consume R2 document policy | exercise Save/open actions before/after workspace switches on native and compatibility inputs | one application-owned `.cedg`/`.ggb` state machine; manifest does not duplicate or override it |
@@ -640,9 +660,9 @@ not affect metric/intersection results.
 
 ### G9U1 PASS candidate
 
-- G9U0-R2, G9U0-R3 and G9U0-R4 are already `PASS — AUTHOR APPROVED`; G9U0-R5
-  must also close `PASS — AUTHOR APPROVED`, and a separate author
-  decision must authorize the definitive post-R5 successor prompt. No
+- G9U0-R2, G9U0-R3, G9U0-R4 and G9U0-R5 are `PASS — AUTHOR APPROVED`; a
+  separate author decision must authorize the definitive post-G9S1 successor
+  prompt. No
   predecessor PASS alone is sufficient.
 - Schema v2 and deterministic v1 migration pass.
 - Construction workspace mapping, panel workflow, localization/icons,

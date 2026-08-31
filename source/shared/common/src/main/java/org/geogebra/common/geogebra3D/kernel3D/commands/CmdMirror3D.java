@@ -16,6 +16,7 @@
 
 package org.geogebra.common.geogebra3D.kernel3D.commands;
 
+import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.commands.CmdMirror;
 import org.geogebra.common.kernel.geos.GeoElement;
@@ -45,6 +46,9 @@ public class CmdMirror3D extends CmdMirror {
 	@Override
 	protected GeoElement[] process2(String label, GeoElement[] arg,
 			boolean[] ok) {
+		if (arg[0] instanceof GeoLocusV2) {
+			return super.process2(label, arg, ok);
+		}
 
 		GeoElement[] ret;
 
