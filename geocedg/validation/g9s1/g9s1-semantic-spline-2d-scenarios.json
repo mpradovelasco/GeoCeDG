@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "phase": "G9S1",
+  "status": "PASS_AUTHOR_APPROVED",
+  "matrix": {
+    "path": "docs/validation/g9s1_semantic_spline_2d_capability_validation_matrix.md",
+    "declaredRows": 59
+  },
+  "groups": [
+    {
+      "id": "C",
+      "title": "Public construction and semantic model",
+      "scenarioIds": ["S1-C01", "S1-C02", "S1-C03", "S1-C04", "S1-C05", "S1-C06", "S1-C07", "S1-C08"]
+    },
+    {
+      "id": "D",
+      "title": "Evaluation, DAG and persistence",
+      "scenarioIds": ["S1-D01", "S1-D02", "S1-D03", "S1-D04", "S1-D05", "S1-D06", "S1-D07", "S1-D08"]
+    },
+    {
+      "id": "L",
+      "title": "Rich length",
+      "scenarioIds": ["S1-L01", "S1-L02", "S1-L03", "S1-L04", "S1-L05", "S1-L06", "S1-L07", "S1-L08", "S1-L09", "S1-L10"]
+    },
+    {
+      "id": "I",
+      "title": "One-sided rich intersections",
+      "scenarioIds": ["S1-I01", "S1-I02", "S1-I03", "S1-I04", "S1-I05", "S1-I06", "S1-I07", "S1-I08", "S1-I09", "S1-I10"]
+    },
+    {
+      "id": "P",
+      "title": "Pair intersections and identity",
+      "scenarioIds": ["S1-P01", "S1-P02", "S1-P03", "S1-P04", "S1-P05", "S1-P06", "S1-P07", "S1-P08", "S1-P09"]
+    },
+    {
+      "id": "T",
+      "title": "Transform closure",
+      "scenarioIds": ["S1-T01", "S1-T02", "S1-T03", "S1-T04"]
+    },
+    {
+      "id": "E",
+      "title": "Efficiency and deterministic work",
+      "scenarioIds": ["S1-E01", "S1-E02", "S1-E03", "S1-E04"]
+    },
+    {
+      "id": "N",
+      "title": "Negative and degeneration cases",
+      "scenarioIds": ["S1-N01", "S1-N02", "S1-N03", "S1-N04", "S1-N05", "S1-N06"]
+    }
+  ],
+  "focusedJUnit": {
+    "declared": 37,
+    "sharedKernel": 35,
+    "desktop": 2,
+    "classes": [
+      {
+        "name": "org.geocedg.common.locus.G9S1SemanticSpline2DTest",
+        "methods": 25
+      },
+      {
+        "name": "org.geocedg.common.locus.G9S1SplineIntersectionEfficiencyTest",
+        "methods": 3
+      },
+      {
+        "name": "org.geocedg.common.kernel.locus.intersection.PiecewisePolynomialPairIntersectionCapability2DTest",
+        "methods": 7
+      },
+      {
+        "name": "org.geocedg.desktop.G9S1NativeArchivePersistenceTest",
+        "methods": 2
+      }
+    ],
+    "focusedA": {
+      "status": "PASS",
+      "canonicalSummary": "artifacts/g9s1/focused-a/canonical-summary.json"
+    },
+    "focusedB": {
+      "status": "PASS_DETERMINISTIC_MATCH",
+      "canonicalSummary": "artifacts/g9s1/focused-b/canonical-summary.json",
+      "compareAgainst": "artifacts/g9s1/focused-a/canonical-summary.json",
+      "mustMatchFocusedA": true
+    }
+  },
+  "approval": {
+    "implementationStarted": true,
+    "selfApproved": false,
+    "authorApproved": true,
+    "passClaimed": true
+  },
+  "manualAuthorSmoke": {
+    "status": "PASS",
+    "passed": true,
+    "replacementReSmokeRequired": false,
+    "partialLengthSplineControl": "M_4_MP_2",
+    "partialLengthLocusControl": "GENERATOR_MAIN_LM_2"
+  }
+}

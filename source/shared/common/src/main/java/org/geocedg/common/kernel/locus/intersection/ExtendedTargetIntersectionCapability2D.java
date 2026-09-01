@@ -183,9 +183,10 @@ public final class ExtendedTargetIntersectionCapability2D
 						.getMaximumIsolationSubdivisions());
 		ArrayList<Sample> samples = new ArrayList<>();
 		int zeroRun = 0;
-		for (int index = 0; index <= subdivisions; index++) {
-			double parameter = index == subdivisions ? upper
-					: lower + (upper - lower) * index / subdivisions;
+		List<Double> semanticGrid = semanticGrid(context, branchKey, lower,
+				upper, subdivisions);
+		for (int index = 0; index < semanticGrid.size(); index++) {
+			double parameter = semanticGrid.get(index);
 			Sample current = sample(context, branchKey, parameter,
 					invalidTargetObserved);
 			samples.add(current);
@@ -249,6 +250,44 @@ public final class ExtendedTargetIntersectionCapability2D
 				}
 			}
 		}
+	}
+
+	private static List<Double> semanticGrid(
+			IntersectionCapabilityContext2D context, String branchKey,
+			double lower, double upper, int subdivisions) {
+		ArrayList<Double> boundaries = new ArrayList<>();
+		boundaries.add(lower);
+		for (double breakpoint : context.getInteriorBreakpoints(branchKey,
+				lower, upper)) {
+			if (Double.isFinite(breakpoint) && breakpoint > lower
+					&& breakpoint < upper
+					&& breakpoint > boundaries.get(boundaries.size() - 1)) {
+				boundaries.add(breakpoint);
+			}
+		}
+		boundaries.add(upper);
+		int segmentCount = boundaries.size() - 1;
+		if (subdivisions < segmentCount) {
+			ArrayList<Double> uniform = new ArrayList<>();
+			for (int index = 0; index <= subdivisions; index++) {
+				uniform.add(index == subdivisions ? upper
+						: lower + (upper - lower) * index / subdivisions);
+			}
+			return uniform;
+		}
+		int base = subdivisions / segmentCount;
+		int remainder = subdivisions % segmentCount;
+		ArrayList<Double> parameters = new ArrayList<>();
+		for (int segment = 0; segment < segmentCount; segment++) {
+			double start = boundaries.get(segment);
+			double end = boundaries.get(segment + 1);
+			int count = base + (segment < remainder ? 1 : 0);
+			for (int index = segment == 0 ? 0 : 1; index <= count; index++) {
+				parameters.add(index == count ? end
+						: start + (end - start) * index / count);
+			}
+		}
+		return parameters;
 	}
 
 	private static Refinement refineSignChange(

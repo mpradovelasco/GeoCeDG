@@ -90,6 +90,17 @@ public final class LocusDefinition2D {
 	}
 
 	/**
+	 * Exposes optional semantic evaluator capabilities to kernel consumers.
+	 * Consumers must still use {@link #evaluate(String, double,
+	 * LocusEvaluationSession2D)} for ordinary point evaluation.
+	 *
+	 * @return immutable evaluator captured by this semantic revision
+	 */
+	public LocusEvaluator2D getEvaluatorCapability() {
+		return evaluator;
+	}
+
+	/**
 	 * Evaluates one semantic address through a scoped session.
 	 *
 	 * @return typed semantic evaluation

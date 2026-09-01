@@ -13,6 +13,7 @@ import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.metric.BetweenPositionsMetricQuery;
+import org.geocedg.common.kernel.locus.metric.DifferentialLocusMetricCapability2D;
 import org.geocedg.common.kernel.locus.metric.EvaluatorOnlyLocusMetricCapability2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricCapabilityHierarchy2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricComponentBuildException;
@@ -75,8 +76,10 @@ public final class AlgoLocusMetricV2 extends AlgoElement {
 						initialSemanticRevision(source),
 						LocusMetricPolicy2D.publicExperimental()),
 				new LocusMetricCapabilityHierarchy2D(List.of(
-						new EvaluatorOnlyLocusMetricCapability2D(
-								"g9u0-public-evaluator-metric/v1"))),
+					new DifferentialLocusMetricCapability2D(
+								"g9s1-public-semantic-differential/v1"),
+					new EvaluatorOnlyLocusMetricCapability2D(
+								"g9s1-public-evaluator-route-metric/v1"))),
 				LocusMetricIndexMode.LAZY_COMPONENT_REVISION,
 				initialConsumerIdentity(construction, resultId,
 						"/total-metric-consumer"), new GeoElement[0], true,

@@ -24,6 +24,21 @@ public final class LocusMetricIntegrator2D {
 			double start, double end, LocusMetricPolicy2D policy,
 			double geometricScale,
 			LocusMetricInstrumentation2D instrumentation) {
+		return integrate(speed, start, end, policy, geometricScale,
+				instrumentation, List.of());
+	}
+
+	/**
+	 * Integrates with mandatory semantic partition boundaries (for example,
+	 * polynomial spline knots) under one shared deterministic work budget.
+	 *
+	 * @return typed integration value, evidence and work counters
+	 */
+	public MetricIntegrationResult2D integrate(DoubleUnaryOperator speed,
+			double start, double end, LocusMetricPolicy2D policy,
+			double geometricScale,
+			LocusMetricInstrumentation2D instrumentation,
+			List<Double> semanticBreakpoints) {
 		instrumentation.recordIntegratorCall();
 		double lower = Math.min(start, end);
 		double upper = Math.max(start, end);
@@ -47,15 +62,25 @@ public final class LocusMetricIntegrator2D {
 		}
 		Context context = new Context(policy.getWorkBudget(), instrumentation);
 		try {
-			double middle = midpoint(lower, upper);
-			double fLower = context.evaluate(speed, lower);
-			double fMiddle = context.evaluate(speed, middle);
-			double fUpper = context.evaluate(speed, upper);
-			double whole = simpson(lower, upper, fLower, fMiddle, fUpper);
-			double threshold = policy.threshold(Math.max(geometricScale,
-					Math.abs(whole)));
-			Node root = refine(speed, lower, upper, fLower, fMiddle, fUpper,
-					whole, threshold, 0, context);
+			List<Double> boundaries = boundaries(lower, upper,
+					semanticBreakpoints);
+			Node root = new Node(0, 0);
+			for (int segment = 0; segment + 1 < boundaries.size(); segment++) {
+				double segmentLower = boundaries.get(segment);
+				double segmentUpper = boundaries.get(segment + 1);
+				double middle = midpoint(segmentLower, segmentUpper);
+				double fLower = context.evaluate(speed, segmentLower);
+				double fMiddle = context.evaluate(speed, middle);
+				double fUpper = context.evaluate(speed, segmentUpper);
+				double whole = simpson(segmentLower, segmentUpper, fLower,
+						fMiddle, fUpper);
+				double threshold = policy.threshold(Math.max(geometricScale,
+						Math.abs(whole))) / (boundaries.size() - 1);
+				Node segmentNode = refine(speed, segmentLower, segmentUpper,
+						fLower, fMiddle, fUpper, whole, threshold, 0, context);
+				root = new Node(root.value + segmentNode.value,
+						root.error + segmentNode.error);
+			}
 			context.leaves.sort(Comparator.comparingDouble(leaf -> leaf.start));
 			return success(root, lower, context);
 		} catch (WorkLimitException exception) {
@@ -71,6 +96,19 @@ public final class LocusMetricIntegrator2D {
 					"Differential quadrature failed: "
 							+ exception.getClass().getSimpleName());
 		}
+	}
+
+	private static List<Double> boundaries(double lower, double upper,
+			List<Double> semanticBreakpoints) {
+		ArrayList<Double> result = new ArrayList<>();
+		result.add(lower);
+		if (semanticBreakpoints != null) {
+			semanticBreakpoints.stream().filter(Double::isFinite)
+					.filter(value -> value > lower && value < upper)
+					.sorted().distinct().forEach(result::add);
+		}
+		result.add(upper);
+		return result;
 	}
 
 	private static Node refine(DoubleUnaryOperator speed, double start,

@@ -13,6 +13,8 @@ import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
+import org.geocedg.common.kernel.locus.LocusParameterPartition2D;
+import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.BranchProperty;
 
 /** Deterministic differential-quadrature capability. */
 public final class DifferentialLocusMetricCapability2D
@@ -33,6 +35,18 @@ public final class DifferentialLocusMetricCapability2D
 		this.evaluator = Objects.requireNonNull(evaluator);
 	}
 
+	/**
+	 * Creates a capability that discovers the optional derivative authority from
+	 * each immutable semantic definition rather than from an algorithm class.
+	 */
+	public DifferentialLocusMetricCapability2D(String capabilityVersion) {
+		if (capabilityVersion == null || capabilityVersion.trim().isEmpty()) {
+			throw new IllegalArgumentException("Capability version is required");
+		}
+		this.capabilityVersion = capabilityVersion;
+		this.evaluator = null;
+	}
+
 	@Override
 	public String getCapabilityVersion() {
 		return capabilityVersion;
@@ -47,7 +61,8 @@ public final class DifferentialLocusMetricCapability2D
 	public boolean supports(LocusDefinition2D definition, LocusBranch2D branch,
 			LocusMetricPolicy2D policy) {
 		currentDefinition = definition;
-		return true;
+		LocusDifferentialEvaluator2D current = evaluator(definition);
+		return current != null && current.supportsDifferential(definition);
 	}
 
 	@Override
@@ -60,7 +75,8 @@ public final class DifferentialLocusMetricCapability2D
 		if (component.getLower() == component.getUpper()) {
 			return zeroState(branch, component, key);
 		}
-		if (!component.isLowerClosed() || !component.isUpperClosed()) {
+		if ((!component.isLowerClosed() || !component.isUpperClosed())
+				&& !isPeriodicFundamentalCycle(definition, branch, component)) {
 			return unresolvedImproperState(branch, component, key);
 		}
 		MetricIntegrationResult2D integration = integrate(definition,
@@ -117,10 +133,23 @@ public final class DifferentialLocusMetricCapability2D
 			LocusMetricInstrumentation2D instrumentation) {
 		try (LocusEvaluationSession2D session =
 				LocusEvaluationSession2D.reference()) {
+			LocusDifferentialEvaluator2D current = evaluator(definition);
+			if (current == null || !current.supportsDifferential(definition)) {
+				throw new ArithmeticException(
+						"Semantic derivative capability is unavailable");
+			}
+			List<Double> breakpoints = definition.getEvaluatorCapability()
+					instanceof LocusParameterPartition2D
+							? ((LocusParameterPartition2D) definition
+									.getEvaluatorCapability())
+										.getInteriorBreakpoints(branchKey,
+												Math.min(start, end),
+												Math.max(start, end))
+							: Collections.emptyList();
 			return integrator.integrate(parameter -> {
 				instrumentation.recordDerivativeCall();
 				LocusDifferentialEvaluation2D differential =
-						evaluator.evaluateDifferential(definition, branchKey,
+						current.evaluateDifferential(definition, branchKey,
 								parameter, session);
 				if (differential == null || !differential.isValid()) {
 					throw new ArithmeticException(differential == null
@@ -128,8 +157,20 @@ public final class DifferentialLocusMetricCapability2D
 							: differential.getDiagnostic());
 				}
 				return differential.getSpeed();
-			}, start, end, policy, 0, instrumentation);
+			}, start, end, policy, 0, instrumentation, breakpoints);
 		}
+	}
+
+	private LocusDifferentialEvaluator2D evaluator(
+			LocusDefinition2D definition) {
+		if (evaluator != null) {
+			return evaluator;
+		}
+		return definition.getEvaluatorCapability()
+				instanceof LocusDifferentialEvaluator2D
+						? (LocusDifferentialEvaluator2D) definition
+								.getEvaluatorCapability()
+						: null;
 	}
 
 	private LocusMetricComponentState2D state(LocusBranch2D branch,
@@ -241,10 +282,16 @@ public final class DifferentialLocusMetricCapability2D
 						message)));
 	}
 
-	private static boolean touchesExcludedBoundary(
+	private boolean touchesExcludedBoundary(
 			LocusMetricComponentState2D state,
 			LocusMetricRouteSegment2D segment) {
 		LocusInterval2D extent = state.getComponentExtent();
+		LocusBranch2D branch = currentDefinition == null ? null
+				: currentDefinition.getBranch(state.getBranchKey());
+		if (branch != null && isPeriodicFundamentalCycle(currentDefinition,
+				branch, extent)) {
+			return false;
+		}
 		return !extent.isLowerClosed()
 						&& (segment.getStartCanonicalParameter()
 										== extent.getLower()
@@ -255,6 +302,16 @@ public final class DifferentialLocusMetricCapability2D
 										== extent.getUpper()
 								|| segment.getEndCanonicalParameter()
 										== extent.getUpper());
+	}
+
+	private static boolean isPeriodicFundamentalCycle(
+			LocusDefinition2D definition, LocusBranch2D branch,
+			LocusInterval2D component) {
+		return definition.getProvider().isPeriodic()
+				&& branch.getProperties().contains(BranchProperty.PERIODIC)
+				&& branch.getValidDomainComponents().size() == 1
+				&& component.equals(branch.getDeclaredDriverDomain())
+				&& component.equals(definition.getProvider().getDeclaredDomain());
 	}
 
 	private static LocusMetricComponentBuildException buildFailure(

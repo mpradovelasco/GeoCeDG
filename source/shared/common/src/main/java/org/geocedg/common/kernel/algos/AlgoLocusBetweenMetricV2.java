@@ -11,6 +11,7 @@ import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.metric.BetweenPositionsMetricQuery;
+import org.geocedg.common.kernel.locus.metric.DifferentialLocusMetricCapability2D;
 import org.geocedg.common.kernel.locus.metric.EvaluatorOnlyLocusMetricCapability2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricCapabilityHierarchy2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricComponentBuildException;
@@ -37,7 +38,7 @@ import org.geogebra.common.kernel.geos.GeoPoint;
 /** Reconstructible public rich metric between two exact semantic positions. */
 public final class AlgoLocusBetweenMetricV2 extends AlgoElement {
 	private static final String CAPABILITY =
-			"g9u0-public-evaluator-metric/v1";
+			"g9s1-public-evaluator-route-metric/v1";
 
 	private final GeoLocusV2 source;
 	private final GeoPoint start;
@@ -47,7 +48,10 @@ public final class AlgoLocusBetweenMetricV2 extends AlgoElement {
 			LocusMetricPolicy2D.publicExperimental();
 	private final LocusMetricCapabilityHierarchy2D capabilities =
 			new LocusMetricCapabilityHierarchy2D(List.of(
-					new EvaluatorOnlyLocusMetricCapability2D(CAPABILITY)));
+					new DifferentialLocusMetricCapability2D(
+							"g9s1-public-semantic-differential/v1"),
+					EvaluatorOnlyLocusMetricCapability2D
+							.withDirectRouteRefinement(CAPABILITY)));
 	private final LocusMetricEngine2D engine = new LocusMetricEngine2D();
 	private LocusMetricOwnerLease2D ownerLease;
 
@@ -97,6 +101,11 @@ public final class AlgoLocusBetweenMetricV2 extends AlgoElement {
 					"Source locus has no current semantic definition");
 			return;
 		}
+		if (!start.isDefined() || !target.isDefined()) {
+			publishFailure(revision, MetricComputationStatus.INVALID_QUERY,
+					"Both endpoints must be current defined semantic points");
+			return;
+		}
 		try {
 			AlgoSemanticLocusPoint2D startParent =
 					AlgoSemanticLocusPoint2D.requireSemanticParent(start);
@@ -133,6 +142,9 @@ public final class AlgoLocusBetweenMetricV2 extends AlgoElement {
 					java.util.Optional.of(
 							TraversalOutcome.TARGET_NOT_REACHABLE),
 					exception.getDiagnostics()));
+		} catch (IllegalArgumentException exception) {
+			publishFailure(revision, MetricComputationStatus.INVALID_QUERY,
+					"Between-position metric requires exact semantic addresses");
 		} catch (RuntimeException exception) {
 			publishFailure(revision, MetricComputationStatus.NUMERICAL_FAILURE,
 					"Between-position metric failed: "

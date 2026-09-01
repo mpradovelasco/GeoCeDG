@@ -47,6 +47,8 @@ public final class PublicTargetIntersectionCapability2D
 			"g9u0-r4/current-transverse-root-germ/v1/";
 	private final ExtendedTargetIntersectionCapability2D adaptiveProof =
 			new ExtendedTargetIntersectionCapability2D();
+	private final PolynomialTargetIntersectionCapability2D polynomialProof =
+			new PolynomialTargetIntersectionCapability2D();
 
 	@Override
 	public String getCapabilityId() {
@@ -74,7 +76,8 @@ public final class PublicTargetIntersectionCapability2D
 			throw new IllegalArgumentException(
 					"Target family is outside the G9U0 public capability");
 		}
-		IntersectionCandidateSet2D delegated = adaptiveProof.isolate(context);
+		IntersectionCandidateSet2D delegated = polynomialProof.supports(context)
+				? polynomialProof.isolate(context) : adaptiveProof.isolate(context);
 		boolean finiteAuthority = delegated.getGeometryKind() == GeometryKind.FINITE
 				&& delegated.getOverlapEvidence().isEmpty();
 		ArrayList<IntersectionCandidate2D> publicCandidates = new ArrayList<>();

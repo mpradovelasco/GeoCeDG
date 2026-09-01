@@ -22,6 +22,8 @@ $R4PassTagName = "geocedg-g9u0-r4-pass"
 $R5PassTagName = "geocedg-g9u0-r5-pass"
 $R4PassTagObject = "0f9b303057b00d23722ad1f9d3594b4609d668a7"
 $R4ProductCommit = "63c291464111a5bcdbca488d6639662e46c389c4"
+$R5PassTagObject = "3712595fe2b168ba494379b6b3f0051e4122cfae"
+$R5PassCommit = "5952dfdbd238e71e598f4d2ca92c3e03437df41c"
 $PromptCanonicalLfSha256 =
     "87e500964201cd04756a9d8c55c814eaade450ebf8a73c559c835e034522b802"
 $HistoricalG9U1PromptCanonicalLfSha256 =
@@ -144,6 +146,42 @@ $DesktopTestClasses = @(
     "org.geocedg.desktop.G9U0R5NativeArchivePersistenceTest"
 )
 $ExpectedFocusedCount = 46
+$ExpectedSealedCandidatePaths = @(
+    ".github/prompts/tasks/g9u1-construction-workspace-after-g9u0-r5.prompt.md",
+    "docs/architecture/g9u0_r5_locus_v2_similarity_transformations.md",
+    "docs/developer/geocedg_developer_guide.md",
+    "docs/developer/locus_v2_api.md",
+    "docs/roadmap/geocedg_roadmap.md",
+    "docs/upstream/modified-files.yml",
+    "docs/user/geocedg_user_guide.md",
+    "docs/validation/g9_documentation_bundle_traceability.md",
+    "docs/validation/g9_public_workspace_validation_matrix.md",
+    "docs/validation/g9u0_r5_locus_v2_similarity_transformations_candidate_report.md",
+    "docs/validation/g9u0_r5_locus_v2_similarity_transformations_validation_matrix.md",
+    "geocedg/specs/README.md",
+    "geocedg/specs/locus/locus-v2-similarity-transformations.md",
+    "geocedg/validation/g9u0-r5/g9u0-r5-evidence.sha256",
+    "geocedg/validation/g9u0-r5/g9u0-r5-locus-v2-similarity-transformations-evidence.json",
+    "geocedg/validation/g9u0-r5/g9u0-r5-locus-v2-similarity-transformations-scenarios.json",
+    "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U0R5NativeArchivePersistenceTest.java",
+    "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9U0R5CommandRoutingPublicSurfaceTest.java",
+    "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9U0R5SemanticTransformEdgeCasesTest.java",
+    "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9U0R5SimilarityTransformationsTest.java",
+    "source/shared/common-jre/src/test/resources/org/geocedg/common/locus/g9u0-r5/fourSolutionsDynamicDilate.cedg",
+    "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusSimilarityTransform2D.java",
+    "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusSimilarityEvaluator2D.java",
+    "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusSimilarityTransform2D.java",
+    "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusV2PublicOperations.java",
+    "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/EvaluatorOnlyLocusMetricCapability2D.java",
+    "source/shared/common/src/main/java/org/geogebra/common/geogebra3D/kernel3D/commands/CmdMirror3D.java",
+    "source/shared/common/src/main/java/org/geogebra/common/geogebra3D/kernel3D/commands/CmdRotate3D.java",
+    "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CmdDilate.java",
+    "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CmdMirror.java",
+    "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CmdRotate.java",
+    "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CmdTranslate.java",
+    "tools/agent/verify-g9u0-r5-locus-v2-similarity-transformations.ps1",
+    "tools/agent/verify.ps1"
+)
 $GeneratedDirectoryNames = @("build", ".gradle", ".kotlin")
 $LogDirectory = [IO.Path]::GetFullPath($LogDirectory)
 
@@ -210,7 +248,7 @@ function Get-CanonicalLfSha256 {
     param([Parameter(Mandatory)] [string]$RelativePath)
 
     return Get-CanonicalLfSha256FromBytes -Bytes (
-        [IO.File]::ReadAllBytes((Resolve-RequiredFile $RelativePath)))
+        Get-SourceAuthorityBytes $RelativePath)
 }
 
 function Get-GitBlobBytes {
@@ -247,9 +285,43 @@ function Get-GitBlobBytes {
     }
 }
 
+function Get-SourceAuthorityBytes {
+    param([Parameter(Mandatory)] [string]$RelativePath)
+
+    [void](Resolve-RepositoryPath $RelativePath)
+    if ($script:R5BoundaryMode -ne "TAGGED_DESCENDANT" -or
+            $null -eq $script:R5AuthorityCommit) {
+        return ,([IO.File]::ReadAllBytes((Resolve-RequiredFile $RelativePath)))
+    }
+    $normalized = $RelativePath.Replace("\", "/")
+    return ,(Get-GitBlobBytes -Object "$($script:R5AuthorityCommit):$normalized")
+}
+
+function Convert-AuthorityBytesToText {
+    param([Parameter(Mandatory)] [byte[]]$Bytes)
+
+    $offset = 0
+    if ($Bytes.Length -ge 3 -and $Bytes[0] -eq 0xEF -and
+            $Bytes[1] -eq 0xBB -and $Bytes[2] -eq 0xBF) {
+        $offset = 3
+    }
+    return [Text.UTF8Encoding]::new($false, $true).GetString(
+        $Bytes, $offset, $Bytes.Length - $offset)
+}
+
+function Get-SourceAuthorityText {
+    param([Parameter(Mandatory)] [string]$RelativePath)
+
+    [byte[]]$bytes = Get-SourceAuthorityBytes $RelativePath
+    return Convert-AuthorityBytesToText -Bytes $bytes
+}
+
 function Get-DeterministicSourceAuthorityBytes {
     param([Parameter(Mandatory)] [string]$RelativePath)
 
+    if ($script:R5BoundaryMode -eq "TAGGED_DESCENDANT") {
+        return ,(Get-SourceAuthorityBytes $RelativePath)
+    }
     $normalized = $RelativePath.Replace("\", "/")
     & git -C $RepositoryRoot diff --quiet HEAD -- $normalized
     $diffExit = $LASTEXITCODE
@@ -285,7 +357,7 @@ function Assert-CanonicalSourceHashingContract {
     Assert-Condition -Condition ($lfHash -cne $mutatedHash) `
         -Message "R5 canonical source hashing missed a content mutation."
     $promptBlobHash = Get-CanonicalLfSha256FromBytes -Bytes (
-        Get-GitBlobBytes -Object "HEAD:$PromptPath")
+        Get-SourceAuthorityBytes $PromptPath)
     Assert-Condition -Condition ($promptBlobHash -ceq
             (Get-CanonicalLfSha256 $PromptPath)) `
         -Message "Git blob and checked-out canonical-LF evidence differ."
@@ -295,7 +367,7 @@ function Read-JsonDocument {
     param([Parameter(Mandatory)] [string]$RelativePath)
 
     try {
-        return Get-Content -Raw -LiteralPath (Resolve-RequiredFile $RelativePath) |
+        return (Get-SourceAuthorityText $RelativePath) |
             ConvertFrom-Json -Depth 100 -NoEnumerate
     } catch {
         throw "$RelativePath is not valid JSON: $($_.Exception.Message)"
@@ -319,7 +391,7 @@ function Assert-ExactSet {
             ($missing -join ", "), ($unexpected -join ", "))
 }
 
-function Get-CandidatePaths {
+function Get-WorktreeCandidatePaths {
     $paths = [Collections.Generic.List[string]]::new()
     $pathSets = [Collections.Generic.List[object]]::new()
     $pathSets.Add(@(& git -C $RepositoryRoot diff --name-only --no-renames `
@@ -351,10 +423,34 @@ function Get-CandidatePaths {
     return @($paths | Sort-Object -Unique -CaseSensitive)
 }
 
+function Get-CommitCandidatePaths {
+    param([Parameter(Mandatory)] [string]$Commit)
+
+    $paths = @(& git -C $RepositoryRoot diff --name-only --no-renames `
+        $EntrySha $Commit --)
+    Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
+        -Message "Unable to enumerate sealed R5 candidate paths."
+    return @($paths | Where-Object {
+            -not [string]::IsNullOrWhiteSpace($_)
+        } | ForEach-Object { $_.Replace("\", "/") } |
+        Sort-Object -Unique -CaseSensitive)
+}
+
+function Get-CandidatePaths {
+    if ($script:R5BoundaryMode -eq "WORKTREE") {
+        return @(Get-WorktreeCandidatePaths)
+    }
+    Assert-Condition -Condition (
+            $script:R5BoundaryMode -eq "TAGGED_DESCENDANT" -and
+            $null -ne $script:R5AuthorityCommit) `
+        -Message "The R5 source-boundary mode was not established."
+    return @(Get-CommitCandidatePaths -Commit $script:R5AuthorityCommit)
+}
+
 function Get-TestMethodsFromSource {
     param([Parameter(Mandatory)] [string]$RelativePath)
 
-    $source = Get-Content -Raw -LiteralPath (Resolve-RequiredFile $RelativePath)
+    $source = Get-SourceAuthorityText $RelativePath
     return @([regex]::Matches($source,
             '(?ms)^\s*@Test\s+(?:public\s+)?void\s+([A-Za-z0-9_]+)\s*\(') |
         ForEach-Object { $_.Groups[1].Value })
@@ -368,23 +464,50 @@ function Assert-EntryAuthority {
     Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
         -Message "R5 entry commit is not an ancestor of HEAD."
     $branch = (& git -C $RepositoryRoot branch --show-current).Trim()
-    $main = (& git -C $RepositoryRoot rev-parse main).Trim()
-    $originMain = (& git -C $RepositoryRoot rev-parse origin/main).Trim()
-    $unpromoted = $main -ceq $EntrySha -and $originMain -ceq $EntrySha
-    $promoted = $branch -ceq "main" -and $head -ceq $main -and
-        $main -ceq $originMain
-    if ($unpromoted) {
-        Assert-Condition -Condition ($branch -ceq $ExpectedBranch) `
-            -Message "Unpromoted R5 closeout must remain on $ExpectedBranch."
-    } elseif ($promoted) {
-        $r5TagType = (& git -C $RepositoryRoot cat-file -t $R5PassTagName).Trim()
-        $r5TagPeel = (& git -C $RepositoryRoot rev-parse `
-            "${R5PassTagName}^{}").Trim()
+
+    $r5TagObject = ((@(& git -C $RepositoryRoot rev-parse `
+        "refs/tags/$R5PassTagName" 2>$null) -join "")).Trim()
+    $hasR5PassTag = $LASTEXITCODE -eq 0
+    if ($hasR5PassTag) {
+        Assert-Condition -Condition ($r5TagObject -ceq $R5PassTagObject) `
+            -Message "The G9U0-R5 PASS tag object changed."
+        $r5TagType = (& git -C $RepositoryRoot cat-file -t $r5TagObject).Trim()
         Assert-Condition -Condition ($LASTEXITCODE -eq 0 -and
-                $r5TagType -ceq "tag" -and $r5TagPeel -ceq $head) `
-            -Message "Promoted R5 main requires its immutable annotated PASS tag."
+                $r5TagType -ceq "tag") `
+            -Message "$R5PassTagName must remain annotated."
+        $authorityCommit = (& git -C $RepositoryRoot rev-parse `
+            "$r5TagObject^{}").Trim()
+        Assert-Condition -Condition ($LASTEXITCODE -eq 0 -and
+                $authorityCommit -ceq $R5PassCommit) `
+            -Message "The G9U0-R5 PASS tag peel changed."
+        $r5TagText = @(& git -C $RepositoryRoot cat-file tag $r5TagObject) `
+            -join "`n"
+        Assert-Condition -Condition ($LASTEXITCODE -eq 0 -and
+                $r5TagText.Contains("G9U0-R5") -and
+                $r5TagText.Contains("PASS — AUTHOR APPROVED")) `
+            -Message "$R5PassTagName lacks the approved disposition."
+        $closeoutRecord = @((& git -C $RepositoryRoot rev-list --parents `
+            -n 1 $authorityCommit).Trim() -split '\s+')
+        Assert-Condition -Condition ($LASTEXITCODE -eq 0 -and
+                $closeoutRecord.Count -eq 2 -and
+                $closeoutRecord[0] -ceq $R5PassCommit -and
+                $closeoutRecord[1] -ceq $EntrySha) `
+            -Message "The sealed R5 closeout ancestry changed."
+        & git -C $RepositoryRoot merge-base --is-ancestor `
+            $authorityCommit $head
+        Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
+            -Message "Current HEAD does not retain the tagged R5 closeout."
+        $script:R5BoundaryMode = "TAGGED_DESCENDANT"
+        $script:R5AuthorityCommit = $authorityCommit
+        Assert-ExactSet -Actual @(Get-CandidatePaths) `
+            -Expected $ExpectedSealedCandidatePaths `
+            -Description "sealed R5 candidate inventory"
     } else {
-        throw "R5 Git state is neither the bounded feature closeout nor promoted main."
+        Assert-Condition -Condition ($head -ceq $EntrySha -and
+                $branch -ceq $ExpectedBranch) `
+            -Message ("Pre-commit R5 verification requires entry HEAD on " +
+                "$ExpectedBranch; descendant verification requires its PASS tag.")
+        $script:R5BoundaryMode = "WORKTREE"
     }
 
     $tagObject = (& git -C $RepositoryRoot rev-parse `
@@ -413,7 +536,7 @@ function Assert-EntryAuthority {
 
 function Get-MatrixRows {
     $rows = [Collections.Generic.List[object]]::new()
-    foreach ($line in Get-Content -LiteralPath (Resolve-RequiredFile $MatrixPath)) {
+    foreach ($line in (Get-SourceAuthorityText $MatrixPath) -split "`r?`n") {
         if ($line -match '^\|\s*(R5-[A-Z0-9-]+)\s*\|') {
             $rows.Add([pscustomobject]@{
                     id = $Matches[1]
@@ -526,7 +649,7 @@ function Assert-EvidenceContract {
 
 function Assert-ManifestContract {
     $actual = @{}
-    foreach ($line in Get-Content -LiteralPath (Resolve-RequiredFile $ManifestPath)) {
+    foreach ($line in (Get-SourceAuthorityText $ManifestPath) -split "`r?`n") {
         if ($line -match '^([0-9a-f]{64})\s{2}(.+)$') {
             $actual[$Matches[2]] = $Matches[1]
         }
@@ -545,12 +668,12 @@ function Assert-ProductStaticContracts {
     foreach ($path in @($ProductSourcePaths + $TestSourcePaths)) {
         [void](Resolve-RequiredFile $path)
     }
-    $dynamicFixture = Resolve-RequiredFile $DynamicDilateFixturePath
-    $dynamicFixtureHash = (Get-FileHash -Algorithm SHA256 `
-        -LiteralPath $dynamicFixture).Hash.ToLowerInvariant()
+    [byte[]]$dynamicFixture = Get-SourceAuthorityBytes $DynamicDilateFixturePath
+    $dynamicFixtureHash = [Convert]::ToHexString(
+        [Security.Cryptography.SHA256]::HashData(
+            $dynamicFixture)).ToLowerInvariant()
     Assert-Condition -Condition (
-            (Get-Item -LiteralPath $dynamicFixture).Length -eq
-                $DynamicDilateFixtureSize -and
+            $dynamicFixture.Length -eq $DynamicDilateFixtureSize -and
             $dynamicFixtureHash -ceq $DynamicDilateFixtureSha256) `
         -Message "R5 byte-exact dynamic-dilation author fixture drifted."
     foreach ($entry in $ExpectedTestMethods.GetEnumerator()) {
@@ -569,21 +692,19 @@ function Assert-ProductStaticContracts {
     Assert-Condition -Condition ($declaredTotal -eq $ExpectedFocusedCount) `
         -Message "R5 focused method total drifted from 46."
 
-    $algo = Get-Content -Raw -LiteralPath (
-        Resolve-RequiredFile $ProductSourcePaths[0])
+    $algo = Get-SourceAuthorityText $ProductSourcePaths[0]
     Assert-Condition -Condition ($algo -match
             'class\s+AlgoLocusSimilarityTransform2D\s+extends\s+AlgoLocusV2' -and
             $algo -match 'COLLAPSED_IMAGE') `
         -Message "R5 semantic parent or Option-A collapsed authority is missing."
     $newSemanticSources = ($ProductSourcePaths[0..2] | ForEach-Object {
-            Get-Content -Raw -LiteralPath (Resolve-RequiredFile $_)
+            Get-SourceAuthorityText $_
         }) -join "`n"
     Assert-Condition -Condition ($newSemanticSources -notmatch
             'LocusRenderCache|Euclidian|viewport|screen position|implements\s+Path|implements\s+.*Transformable|implements\s+.*Translateable|implements\s+.*Rotatable|implements\s+.*Mirrorable|implements\s+.*Dilateable') `
         -Message "R5 semantic authority leaked into rendering or mutable Path transforms."
     foreach ($commandPath in $ProductSourcePaths[5..8]) {
-        $command = Get-Content -Raw -LiteralPath (
-            Resolve-RequiredFile $commandPath)
+        $command = Get-SourceAuthorityText $commandPath
         Assert-Condition -Condition ($command -match 'GeoLocusV2' -and
                 $command -match 'LocusV2PublicOperations') `
             -Message "Ordinary R5 command routing is missing in $commandPath."
@@ -593,7 +714,7 @@ function Assert-ProductStaticContracts {
 function Assert-DocumentationContracts {
     $combined = @($SpecPath, $ArchitecturePath, $MatrixPath, $ReportPath) |
         ForEach-Object {
-            Get-Content -Raw -LiteralPath (Resolve-RequiredFile $_)
+            Get-SourceAuthorityText $_
         }
     $text = $combined -join "`n"
     Assert-Condition -Condition ($text -match 'Option A' -and
@@ -602,8 +723,7 @@ function Assert-DocumentationContracts {
             $text -match 'selfApproved\s*=\s*false' -and
             $text -match [regex]::Escape($OpenPeriodicRisk)) `
         -Message "R5 Option-A approved/risk documentation contract drifted."
-    $futurePrompt = Get-Content -Raw -LiteralPath (
-        Resolve-RequiredFile $PostR5G9U1PromptPath)
+    $futurePrompt = Get-SourceAuthorityText $PostR5G9U1PromptPath
     Assert-Condition -Condition ($futurePrompt -match
             'DEFINITIVE PROSPECTIVE POST-G9U0-R5 SUCCESSOR PROMPT' -and
             $futurePrompt -match 'G9U1 = DESIGNED — NOT AUTHORIZED' -and
@@ -613,8 +733,7 @@ function Assert-DocumentationContracts {
             $futurePrompt -match 'COLLAPSED_IMAGE' -and
             $futurePrompt -match 'TRANSFORMED_QUERY_TOKENS') `
         -Message "Definitive prospective post-R5 G9U1 contract drifted."
-    $composed = Get-Content -Raw -LiteralPath (
-        Resolve-RequiredFile $ComposedVerifierPath)
+    $composed = Get-SourceAuthorityText $ComposedVerifierPath
     $r4Index = $composed.IndexOf('& $G9U0R4IntersectionAdmissibilityVerifier',
         [StringComparison]::Ordinal)
     $r5Index = $composed.IndexOf('& $G9U0R5SimilarityTransformationsVerifier',

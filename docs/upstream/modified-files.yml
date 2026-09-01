@@ -474,7 +474,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/EvaluatorOnlyLocusMetricCapability2D.java",
       "change": "added",
-      "purpose": "Retain the G7B semantic total-variation metric and, for the R5 candidate, use the transformed definition's COLLAPSED_IMAGE property as the semantic proof for exact-zero length on valid components while preserving source-invalid gaps and addresses.",
+      "purpose": "Retain the G7B semantic total-variation metric, use R5 COLLAPSED_IMAGE evidence for exact-zero valid components and, for the approved G9S1 partial-length route, derive route-local estimated evidence by bounded adaptive evaluation of the exact semantic interval instead of promoting component arc-coordinate interpolation.",
       "authority": "geocedg/specs/locus/locus-v2-similarity-transformations.md"
     },
     {
@@ -2496,7 +2496,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CmdLength.java",
       "change": "modified",
-      "purpose": "Route GeoLocusV2 through its persisted rich query and reconstruct the internal Length[rich] scalar child while preserving every legacy overload.",
+      "purpose": "Route total and exact-semantic-endpoint GeoLocusV2 measurements through reconstructible rich queries and the guarded scalar adapter while preserving every legacy Length overload.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -2688,7 +2688,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusBetweenMetricV2.java",
       "change": "added",
-      "purpose": "Publish a reconstructible rich metric query between two exact semantic positions through normal kernel dependencies.",
+      "purpose": "Publish a reconstructible rich metric query between two current defined exact semantic positions through normal kernel dependencies and fail closed without stale values during invalid source or endpoint state.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -2712,7 +2712,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusV2PublicOperations.java",
       "change": "added",
-      "purpose": "Retain centralized feature-gated public creation/persistence/queries and add the seven approved R5 ordinary 2D similarity forms through one atomic, exception-safe construction-participation and durable-identity transaction; an R5 transform rejected before its own publication/redefine rolls back its labels, parent and reservations without changing host retention of an already successful nested subcommand after a later unrelated outer failure.",
+      "purpose": "Retain centralized feature-gated public creation/persistence/queries, the seven approved R5 similarity forms and the G9S1 exact-endpoint Length rich-parent-plus-scalar DAG through atomic durable-identity publication.",
       "authority": "geocedg/specs/locus/locus-v2-similarity-transformations.md"
     },
     {
@@ -3212,6 +3212,84 @@
       "change": "modified",
       "purpose": "Fail closed before generic 3D routing when a GeoLocusV2 is reflected in a plane or unsupported spatial operand, while leaving approved ordinary 2D point/line reflection and all non-V2 behavior unchanged.",
       "authority": "geocedg/specs/locus/locus-v2-similarity-transformations.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoSplineV2.java",
+      "change": "added",
+      "purpose": "Own the reconstructible normal-DAG parent for the experimental Option-B SplineV2 public command and publish its explicit semantic spline snapshot as a new GeoLocusV2 while leaving Classic Spline unchanged.",
+      "authority": "geocedg/specs/curves/semantic-spline-2d.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusParameterPartition2D.java",
+      "change": "added",
+      "purpose": "Expose optional provider-owned semantic parameter breakpoints to metric and intersection consumers without treating render samples or array order as semantic authority.",
+      "authority": "geocedg/specs/curves/semantic-spline-2d.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/PiecewisePolynomialLocus2D.java",
+      "change": "added",
+      "purpose": "Expose immutable provider-canonical polynomial span bounds and coefficients for deterministic metric/intersection consumers without reconstructing semantics from rendering or expression trees.",
+      "authority": "geocedg/specs/curves/semantic-spline-2d.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spline/SplinePolynomialModel2D.java",
+      "change": "added",
+      "purpose": "Capture the bounded floating-coefficient polynomial spline family with explicit knots, span ownership, evaluation derivatives and deterministic semantic signature for approved G9S1.",
+      "authority": "geocedg/specs/curves/semantic-spline-2d.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spline/SplineSemanticEvaluator2D.java",
+      "change": "added",
+      "purpose": "Provide viewport-independent semantic and differential evaluation plus provider-canonical span partitioning for one immutable SplineV2 revision.",
+      "authority": "geocedg/specs/curves/semantic-spline-2d.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CmdSplineV2.java",
+      "change": "added",
+      "purpose": "Register the bounded feature-gated public SplineV2 command forms and route them to the semantic GeoLocusV2 parent without changing inherited Classic Spline dispatch.",
+      "authority": ".github/prompts/tasks/g9s1-semantic-spline-2d-capability.prompt.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1SemanticSpline2DTest.java",
+      "change": "added",
+      "purpose": "Exercise the approved G9S1 public command, semantic evaluation, rich and guarded-scalar total/partial metrics, intersections, deterministic exact-token lifecycle, R5 transformations, invalid-state recovery, persistence/copy/undo boundaries and Classic compatibility.",
+      "authority": ".github/prompts/tasks/g9s1-semantic-spline-2d-capability.prompt.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9S1NativeArchivePersistenceTest.java",
+      "change": "added",
+      "purpose": "Exercise native .cedg reconstruction of the SplineV2 command/provider, total rich metric, exact-endpoint partial rich-parent/scalar DAG and one-sided exact-token point dependencies, together with feature-off Classic preservation boundaries.",
+      "authority": ".github/prompts/tasks/g9s1-semantic-spline-2d-capability.prompt.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/PiecewisePolynomialPairIntersectionCapability2DTest.java",
+      "change": "added",
+      "purpose": "Verify deterministic piecewise-polynomial pair discovery, caller-order symmetry, knot/seam deduplication and fail-closed tangency/overlap/budget behavior while preserving the rich-only no-ledger/no-materialization boundary.",
+      "authority": "geocedg/specs/curves/semantic-spline-2d.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1SplineIntersectionEfficiencyTest.java",
+      "change": "added",
+      "purpose": "Bound and expose one-sided and pair spline-intersection instrumentation so G9S1 efficiency claims remain deterministic, measurable and independent of render tessellation.",
+      "authority": ".github/prompts/tasks/g9s1-semantic-spline-2d-capability.prompt.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PiecewisePolynomialPairIntersectionCapability2D.java",
+      "change": "added",
+      "purpose": "Provide symmetric deterministic Bernstein-box rejection, bounded subdivision and safeguarded dual-Newton evidence for piecewise-polynomial Locus V2 pairs while deliberately withholding a public continuation key and materializable token absent certified pair uniqueness.",
+      "authority": "geocedg/specs/curves/semantic-spline-2d.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PolynomialIntersectionTarget2D.java",
+      "change": "added",
+      "purpose": "Define the narrow provider contract by which supported public one-sided targets expose their implicit equation as a polynomial for composition with semantic spline spans.",
+      "authority": "geocedg/specs/curves/semantic-spline-2d.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PolynomialTargetIntersectionCapability2D.java",
+      "change": "added",
+      "purpose": "Discover one-sided spline roots by deterministic polynomial composition, derivative-root partitioning and safeguarded refinement, publishing only truthful locally isolated transverse evidence into the existing R4 selector/token authority.",
+      "authority": "geocedg/specs/curves/semantic-spline-2d.md"
     }
   ]
 }

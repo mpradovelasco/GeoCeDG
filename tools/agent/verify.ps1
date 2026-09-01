@@ -61,6 +61,8 @@ $G9U0R4IntersectionAdmissibilityVerifier = Join-Path $PSScriptRoot `
     "verify-g9u0-r4-intersection-admissibility-continuation.ps1"
 $G9U0R5SimilarityTransformationsVerifier = Join-Path $PSScriptRoot `
     "verify-g9u0-r5-locus-v2-similarity-transformations.ps1"
+$G9S1SemanticSplineVerifier = Join-Path $PSScriptRoot `
+    "verify-g9s1-semantic-spline-2d-capability.ps1"
 $BenchmarkRunner = Join-Path $RepositoryRoot "tools\benchmark\run.ps1"
 $InitialStatus = $null
 
@@ -858,6 +860,61 @@ try {
         & $G9U0R5SimilarityTransformationsVerifier @g9u0R5Parameters
         Assert-LastScriptSuccess `
             -Description "G9U0-R5 Locus V2 similarity transformations"
+    }
+
+    $g9s1IntegrationArtifacts = @(
+        $G9S1SemanticSplineVerifier,
+        (Join-Path $RepositoryRoot `
+            ".github\prompts\tasks\g9s1-semantic-spline-2d-capability.prompt.md"),
+        (Join-Path $RepositoryRoot `
+            "docs\adr\0018-semantic-spline-2d-capability.md"),
+        (Join-Path $RepositoryRoot `
+            "geocedg\specs\curves\semantic-spline-2d.md"),
+        (Join-Path $RepositoryRoot `
+            "docs\architecture\g9s1_semantic_spline_2d_capability.md"),
+        (Join-Path $RepositoryRoot `
+            "docs\research\g9s1_semantic_spline_numerical_methods.md"),
+        (Join-Path $RepositoryRoot `
+            "docs\validation\g9s1_semantic_spline_2d_capability_validation_matrix.md"),
+        (Join-Path $RepositoryRoot `
+            "docs\validation\g9s1_semantic_spline_2d_scientific_traceability.md"),
+        (Join-Path $RepositoryRoot `
+            "geocedg\validation\g9s1\g9s1-semantic-spline-2d-scenarios.json"),
+        (Join-Path $RepositoryRoot `
+            "geocedg\validation\g9s1\g9s1-semantic-spline-2d-evidence.json"),
+        (Join-Path $RepositoryRoot `
+            "geocedg\validation\g9s1\g9s1-evidence.sha256"),
+        (Join-Path $RepositoryRoot `
+            "docs\validation\g9s1_semantic_spline_2d_capability_candidate_report.md")
+    )
+    $g9s1PresentCount = @($g9s1IntegrationArtifacts | Where-Object {
+        Test-Path -LiteralPath $_ -PathType Leaf
+    }).Count
+    if ($g9s1PresentCount -ne 0 -and
+            $g9s1PresentCount -ne $g9s1IntegrationArtifacts.Count) {
+        throw ("Incomplete G9S1 integration; canonical prompt, accepted ADR, " +
+            "normative specification, architecture/research, matrix/traceability, " +
+            "scenario/evidence/hash, closeout report and verifier are paired.")
+    }
+    if ($g9s1PresentCount -eq $g9s1IntegrationArtifacts.Count) {
+        Write-Host "`n==> G9S1 semantic Spline V2 capability"
+        $g9s1Parameters = @{
+            HistoricalRegressionsAlreadyComposed = $true
+            LogDirectory = Join-Path ([IO.Path]::GetFullPath($LogDirectory)) `
+                "g9s1-semantic-spline-2d-capability"
+        }
+        if ($SkipBuild) {
+            $g9s1Parameters.SkipBuild = $true
+        }
+        if ($AllowToolchainDownload) {
+            $g9s1Parameters.AllowToolchainDownload = $true
+        }
+        if ($KeepBuildOutputs) {
+            $g9s1Parameters.KeepBuildOutputs = $true
+        }
+        & $G9S1SemanticSplineVerifier @g9s1Parameters
+        Assert-LastScriptSuccess `
+            -Description "G9S1 semantic Spline V2 capability"
     }
 
     Write-Host "`n==> Standalone Windows packaging contracts"

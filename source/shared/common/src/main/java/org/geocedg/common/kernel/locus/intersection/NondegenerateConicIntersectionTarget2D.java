@@ -15,7 +15,7 @@ import org.geogebra.common.kernel.geos.GeoConic;
 
 /** Captured regular first-order adapter for one nondegenerate full conic. */
 public final class NondegenerateConicIntersectionTarget2D
-		implements LocusIntersectionTarget2D {
+		implements PolynomialIntersectionTarget2D {
 	private static final String ADAPTER_VERSION =
 			"g8c1-nondegenerate-conic-normal-residual/v1";
 
@@ -81,6 +81,14 @@ public final class NondegenerateConicIntersectionTarget2D
 	@Override
 	public IntersectionResidualContract2D getResidualContract() {
 		return contract;
+	}
+
+	@Override
+	public double[][] getImplicitPolynomialCoefficients() {
+		return new double[][] {
+				{matrix[2], 2 * matrix[5], matrix[1]},
+				{2 * matrix[4], 2 * matrix[3]},
+				{matrix[0]}};
 	}
 
 	@Override

@@ -352,6 +352,8 @@ public enum Commands implements CommandsConstants,
 	NSolveODE(TABLE_FUNCTION),
 
 	Spline(TABLE_FUNCTION),
+	/** GeoCeDG semantic piecewise-polynomial spline. */
+	SplineV2(TABLE_FUNCTION),
 
 	BezierCurve(TABLE_FUNCTION),
 

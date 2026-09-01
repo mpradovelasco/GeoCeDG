@@ -17,6 +17,7 @@ import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusPoint2D;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.NumericGuarantee;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.Regularity;
+import org.geocedg.common.kernel.locus.PiecewisePolynomialLocus2D;
 
 /** Coherent query-local context for one canonical pair of semantic loci. */
 public final class LocusPairIntersectionContext2D {
@@ -73,14 +74,14 @@ public final class LocusPairIntersectionContext2D {
 		return secondDefinition.evaluate(branchKey, parameter, session);
 	}
 
-	/** @return query-local finite-difference evidence on the first source */
+	/** @return query-local semantic differential evidence on the first source */
 	public LocusDifferentialEvaluation2D evaluateFirstDifferential(
 			String branchKey, double parameter, LocusInterval2D component) {
 		return differential(true, branchKey, parameter, component,
 				query.getPolicy().getFirstRootTolerance().getValue());
 	}
 
-	/** @return query-local finite-difference evidence on the second source */
+	/** @return query-local semantic differential evidence on the second source */
 	public LocusDifferentialEvaluation2D evaluateSecondDifferential(
 			String branchKey, double parameter, LocusInterval2D component) {
 		return differential(false, branchKey, parameter, component,
@@ -122,6 +123,32 @@ public final class LocusPairIntersectionContext2D {
 			String branchKey, double parameter, LocusInterval2D component,
 			double rootTolerance) {
 		instrumentation.recordDerivativeEvaluation();
+		LocusDefinition2D definition = first ? firstDefinition : secondDefinition;
+		if (definition.getEvaluatorCapability()
+				instanceof PiecewisePolynomialLocus2D) {
+			PiecewisePolynomialLocus2D polynomial =
+					(PiecewisePolynomialLocus2D) definition
+							.getEvaluatorCapability();
+			if (polynomial.supportsPiecewisePolynomial(definition)) {
+				try {
+					LocusPoint2D derivative = polynomial
+							.evaluatePolynomialDerivative(branchKey, parameter);
+					double speed = Math.hypot(derivative.getX(),
+							derivative.getY());
+					if (!Double.isFinite(speed)) {
+						return unknownDifferential(
+								"Semantic polynomial derivative has nonfinite speed");
+					}
+					return new LocusDifferentialEvaluation2D(derivative,
+							speed == 0 ? Regularity.SINGULAR
+									: Regularity.REGULAR,
+							NumericGuarantee.FLOATING_POINT_UNCERTIFIED,
+							"semantic piecewise-polynomial derivative");
+				} catch (IllegalArgumentException exception) {
+					// Fall through to bounded semantic finite differences.
+				}
+			}
+		}
 		double span = component.getUpper() - component.getLower();
 		double step = Math.max(16 * rootTolerance,
 				Math.max(Math.ulp(parameter) * 32, span * 1E-6));

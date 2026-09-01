@@ -1,0 +1,3 @@
+# Canonical UTF-8/LF SHA-256. Regenerate whenever either durable JSON source changes.
+32b5fbcf64e4cd2428e371235f4a8a58db77d71430fe0de1b0a7705bd94e06f8  geocedg/validation/g9s1/g9s1-semantic-spline-2d-evidence.json
+7477fce6bc40271a32871fe29cfff7b3bf532884fe9880b5f5a73e4bc87674de  geocedg/validation/g9s1/g9s1-semantic-spline-2d-scenarios.json

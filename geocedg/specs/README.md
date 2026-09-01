@@ -75,8 +75,25 @@ failure. The author accepts slider/existing-object dynamic factor updates and
 characterizes free-input `k=0.25` rejection as upstream G9A
 `REDEFINE_CONTEXT_MISSING`, not an R5 semantic failure; R5 does not broaden G9A.
 No G9U1 work is part of R5.
+
+`curves/semantic-spline-2d.md` is the G9S1 **NORMATIVE — PASS — AUTHOR
+APPROVED** contract. Accepted ADR 0018 selects Option B: a new experimental
+`SplineV2` semantic parent publishes a new first-class `GeoLocusV2` with
+explicit oriented domain, stable span/knot semantics and normal DAG
+dependencies; Classic `Spline` remains unchanged. Existing Locus V2
+Point/metric/intersection/token, R4 lifecycle, R5 transform and persistence
+authorities are reused. For one-sided intersections against the supported
+polynomial target families, provider-owned spline spans feed deterministic
+polynomial root partition/refinement and locally isolated transverse roots may
+enter the existing R4 selector/token/materialization lifecycle. The present
+piecewise-polynomial Locus V2 x Locus V2 capability is deliberately rich-only:
+its floating box subdivision and dual-Newton evidence do not establish a
+symmetric certified unique pair selector, so it allocates no active ledger
+token and materializes no point. The approved implementation does not invent
+scholarly citations and does not close the periodic-quarantine risk.
+
 G9U1 likewise remains unexecuted; G9U1, G9B and G9C remain designed but not
-authorized. G9S1 is the separately authorized next phase. The future G9U1
+authorized. G9S1 is `PASS — AUTHOR APPROVED`. The future G9U1
 GeoCeDG product contract
 requires the host Continuity setting to remain off while Classic stays
 configurable. G9U2 remains blocked and productive G10 remains unauthorized.

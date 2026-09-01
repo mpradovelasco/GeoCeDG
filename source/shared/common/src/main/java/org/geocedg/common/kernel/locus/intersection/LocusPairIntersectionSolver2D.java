@@ -46,6 +46,9 @@ public final class LocusPairIntersectionSolver2D {
 					"max(1,coordinate-magnitude-of-both-sources)");
 	private final EvaluatorPairIntersectionCapability2D evaluatorFallback =
 			new EvaluatorPairIntersectionCapability2D();
+	private final PiecewisePolynomialPairIntersectionCapability2D
+			polynomialPairCapability =
+					new PiecewisePolynomialPairIntersectionCapability2D();
 
 	/**
 	 * Computes one immutable pair result with no retained intersection state.
@@ -98,7 +101,9 @@ public final class LocusPairIntersectionSolver2D {
 				}
 				LocusPairIntersectionCapability2D capability = preferred != null
 						&& preferred.supports(context) ? preferred
-								: evaluatorFallback;
+								: polynomialPairCapability.supports(context)
+										? polynomialPairCapability
+										: evaluatorFallback;
 				if (!capability.supports(context)) {
 					return failure(binding, ComputationStatus.UNSUPPORTED,
 							DiagnosticCode.PAIR_DOMAIN_UNSUPPORTED,

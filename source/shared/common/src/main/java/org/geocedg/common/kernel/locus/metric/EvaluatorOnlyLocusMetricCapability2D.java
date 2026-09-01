@@ -26,13 +26,33 @@ import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.BranchProperty;
 public final class EvaluatorOnlyLocusMetricCapability2D
 		implements LocusMetricCapability2D {
 	private final String capabilityVersion;
+	private final boolean directRouteRefinement;
+	private LocusDefinition2D currentDefinition;
 
 	/** Creates a versioned point-evaluator-only capability. */
 	public EvaluatorOnlyLocusMetricCapability2D(String capabilityVersion) {
+		this(capabilityVersion, false);
+	}
+
+	/**
+	 * Creates an evaluator capability whose route values are refined on the
+	 * exact semantic route instead of inheriting complete-component evidence.
+	 *
+	 * @param capabilityVersion version participating in metric index keys
+	 * @return route-local evaluator capability
+	 */
+	public static EvaluatorOnlyLocusMetricCapability2D
+			withDirectRouteRefinement(String capabilityVersion) {
+		return new EvaluatorOnlyLocusMetricCapability2D(capabilityVersion, true);
+	}
+
+	private EvaluatorOnlyLocusMetricCapability2D(String capabilityVersion,
+			boolean directRouteRefinement) {
 		if (capabilityVersion == null || capabilityVersion.trim().isEmpty()) {
 			throw new IllegalArgumentException("Capability version is required");
 		}
 		this.capabilityVersion = capabilityVersion;
+		this.directRouteRefinement = directRouteRefinement;
 	}
 
 	@Override
@@ -48,6 +68,7 @@ public final class EvaluatorOnlyLocusMetricCapability2D
 	@Override
 	public boolean supports(LocusDefinition2D definition, LocusBranch2D branch,
 			LocusMetricPolicy2D policy) {
+		currentDefinition = definition;
 		return policy.getEvaluatorOnlyPolicy()
 				!= EvaluatorOnlyPolicy.UNSUPPORTED;
 	}
@@ -58,6 +79,7 @@ public final class EvaluatorOnlyLocusMetricCapability2D
 			LocusInterval2D component, LocusMetricIndexKey2D key,
 			LocusMetricPolicy2D policy,
 			LocusMetricInstrumentation2D instrumentation) {
+		currentDefinition = definition;
 		if (branch.getProperties().contains(BranchProperty.COLLAPSED_IMAGE)) {
 			return collapsedState(branch, component, key);
 		}
@@ -121,19 +143,33 @@ public final class EvaluatorOnlyLocusMetricCapability2D
 			LocusMetricRouteSegment2D segment, LocusMetricPolicy2D policy,
 			LocusMetricInstrumentation2D instrumentation) {
 		requireCompatible(state);
-		double value = state.getArcCoordinateEvidence().estimateLength(
-				segment.getStartCanonicalParameter(),
-				segment.getEndCanonicalParameter());
-		MetricErrorEvidence2D error = subarcError();
-		return new LocusMetricContribution2D(state.getBranchKey(),
-				state.getResolvedValidComponentKey(),
-				new FiniteMetricValue2D(value),
-				MetricComputationStatus.SUCCESS,
-				MetricRectifiability.RECTIFIABLE,
-				state.getCapabilityMetadata().getConstructionFidelity(),
-				MetricEvaluatorMethod2D.POINT_EVALUATOR_ONLY,
-				MetricMethod2D.ADAPTIVE_EVALUATOR_METRIC, error,
-				provenance(state, policy), Collections.emptyList());
+		if (!directRouteRefinement) {
+			double value = state.getArcCoordinateEvidence().estimateLength(
+					segment.getStartCanonicalParameter(),
+					segment.getEndCanonicalParameter());
+			return routeContribution(state, policy, value, subarcError(),
+					Collections.emptyList());
+		}
+		if (currentDefinition == null
+				|| currentDefinition.getSemanticRevision()
+						!= state.getSemanticRevision()) {
+			throw new IllegalStateException(
+					"Evaluator-only capability lacks the coherent source revision");
+		}
+		LocusBranch2D branch = currentDefinition.getBranch(state.getBranchKey());
+		if (branch == null) {
+			throw new IllegalStateException(
+					"Evaluator-only route branch is absent from the source revision");
+		}
+		if (branch.getProperties().contains(BranchProperty.COLLAPSED_IMAGE)) {
+			return routeContribution(state, policy, 0,
+					MetricErrorEvidence2D.exact(
+							"semantic collapsed-image route"),
+					Collections.singletonList(new MetricDiagnostic2D(
+							MetricDiagnosticCode2D.COLLAPSED_IMAGE,
+							"Semantic route image is collapsed")));
+		}
+		return evaluateRouteDirectly(state, segment, policy, instrumentation);
 	}
 
 	@Override
@@ -287,6 +323,87 @@ public final class EvaluatorOnlyLocusMetricCapability2D
 				rightMiddle, end, depth + 1, context);
 		return new Node(leftNode.length + rightNode.length,
 				leftNode.defect + rightNode.defect);
+	}
+
+	private LocusMetricContribution2D evaluateRouteDirectly(
+			LocusMetricComponentState2D state,
+			LocusMetricRouteSegment2D segment, LocusMetricPolicy2D policy,
+			LocusMetricInstrumentation2D instrumentation) {
+		double lower = Math.min(segment.getStartCanonicalParameter(),
+				segment.getEndCanonicalParameter());
+		double upper = Math.max(segment.getStartCanonicalParameter(),
+				segment.getEndCanonicalParameter());
+		if (lower == upper) {
+			return routeContribution(state, policy, 0,
+					MetricErrorEvidence2D.exact(
+							"equal semantic route endpoints"),
+					Collections.emptyList());
+		}
+		Context context = new Context(currentDefinition, state.getBranchKey(),
+				policy, instrumentation);
+		try (LocusEvaluationSession2D session =
+				LocusEvaluationSession2D.reference()) {
+			context.session = session;
+			double middle = midpoint(lower, upper);
+			LocusPoint2D start = context.evaluate(lower);
+			LocusPoint2D mid = context.evaluate(middle);
+			LocusPoint2D end = context.evaluate(upper);
+			Node root = refine(lower, upper, start, mid, end, 0, context);
+			double value = Math.max(0, root.length);
+			List<MetricDiagnostic2D> diagnostics = value == 0
+					? Collections.singletonList(new MetricDiagnostic2D(
+							MetricDiagnosticCode2D.COLLAPSED_IMAGE,
+							"Evaluated route image is collapsed"))
+					: Collections.emptyList();
+			return routeContribution(state, policy, value,
+					routeError(root, value, policy), diagnostics);
+		} catch (WorkLimitException exception) {
+			throw new LocusMetricComponentBuildException(
+					MetricComputationStatus.LIMIT_NOT_ESTABLISHED,
+					Collections.singletonList(new MetricDiagnostic2D(
+							MetricDiagnosticCode2D.WORK_BUDGET_EXHAUSTED,
+							"Evaluator-only route exceeded "
+									+ exception.limit)));
+		} catch (LocusMetricComponentBuildException exception) {
+			throw exception;
+		} catch (RuntimeException exception) {
+			throw new LocusMetricComponentBuildException(
+					MetricComputationStatus.NUMERICAL_FAILURE,
+					Collections.singletonList(new MetricDiagnostic2D(
+							MetricDiagnosticCode2D.NUMERICAL_FAILURE,
+							"Evaluator-only route refinement failed: "
+									+ exception.getClass().getSimpleName())));
+		}
+	}
+
+	private static LocusMetricContribution2D routeContribution(
+			LocusMetricComponentState2D state, LocusMetricPolicy2D policy,
+			double value, MetricErrorEvidence2D error,
+			List<MetricDiagnostic2D> diagnostics) {
+		return new LocusMetricContribution2D(state.getBranchKey(),
+				state.getResolvedValidComponentKey(),
+				new FiniteMetricValue2D(value),
+				MetricComputationStatus.SUCCESS,
+				MetricRectifiability.RECTIFIABLE,
+				state.getCapabilityMetadata().getConstructionFidelity(),
+				MetricEvaluatorMethod2D.POINT_EVALUATOR_ONLY,
+				MetricMethod2D.ADAPTIVE_EVALUATOR_METRIC, error,
+				provenance(state, policy), diagnostics);
+	}
+
+	private static MetricErrorEvidence2D routeError(Node root, double value,
+			LocusMetricPolicy2D policy) {
+		if (policy.getEvaluatorOnlyPolicy()
+				== EvaluatorOnlyPolicy.ESTIMATED_WITH_EXPLICIT_ASSUMPTIONS) {
+			return MetricErrorEvidence2D.estimated(Math.max(0, root.defect),
+					value == 0 ? 0 : root.defect / value,
+					"adaptive evaluator route metric",
+					List.of("route subarc is rectifiable",
+							"route-local refinement defect estimates remaining "
+									+ "variation"));
+		}
+		return MetricErrorEvidence2D.uncertified(
+				"adaptive evaluator route metric");
 	}
 
 	private static MetricErrorEvidence2D subarcError() {

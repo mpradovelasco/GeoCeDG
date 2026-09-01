@@ -1,19 +1,21 @@
 # G9 public Locus, product/document refinement and workspace validation matrix
 
 - Status: **G9U0-R2 PASS — AUTHOR APPROVED; G9U0-R3 PASS — AUTHOR APPROVED;
-  G9U0-R4 PASS — AUTHOR APPROVED; G9U0-R5 PASS — AUTHOR APPROVED; G9U1
-  DESIGNED — NOT AUTHORIZED**
+  G9U0-R4 PASS — AUTHOR APPROVED; G9U0-R5 PASS — AUTHOR APPROVED; G9S1
+  PASS — AUTHOR APPROVED; G9U1 DESIGNED — NOT
+  AUTHORIZED**
 - Date: 2026-08-31
 - Scope: author-approved/historical G9U0 public Locus V2 evidence;
   author-approved G9U0-R2 product/document-refinement design and implementation;
   bounded G9U0-R3 public-UI exposure hardening; G9U0-R4 public intersection
-  correction; author-approved G9U0-R5 similarity transformations; future G9U1
-  Construction workspace; and the
+  correction; author-approved G9U0-R5 similarity transformations and G9S1
+  semantic Spline V2; future G9U1 Construction workspace; and the
   post-G9 G9U2 Dihedral Procedures workspace
 - G9U0-R2 implementation: **PASS — AUTHOR APPROVED**;
   G9U0-R3: **PASS — AUTHOR APPROVED**;
   G9U0-R4: **PASS — AUTHOR APPROVED**;
   G9U0-R5 implementation: **PASS — AUTHOR APPROVED**;
+  G9S1: **PASS — AUTHOR APPROVED**;
   G9U1/G9U2 implementation authorized: **no**
 
 The G9U0 rows remain the design source behind separately frozen, author-approved
@@ -483,12 +485,42 @@ axial normalization, exception-safe rollback when the R5 transform itself is
 rejected before publication/redefine (without changing host retention of an
 already successful nested subcommand after a later unrelated failure), new
 transformed identities and new R4 selector/token authority. Automated rows did
-not claim author PASS; the separate author decision closed R5. The definitive prospective post-R5
-G9U1 authority is
+not claim author PASS; the separate author decision closed R5. Its frozen
+post-R5 G9U1 authority is
 `.github/prompts/tasks/g9u1-construction-workspace-after-g9u0-r5.prompt.md`
 (canonical-LF SHA-256
-`d256ce8bb80eb8deab70a6ae5571543c093a0d8de147b2b34bfa1ce92c9387ed`);
-it remains unexecuted and unauthorized.
+`0b96f571932144f9a99f7681938edf756c8999cb847b61095f82430068e96389`).
+The definitive prospective candidate is now
+`.github/prompts/tasks/g9u1-construction-workspace-after-g9s1.prompt.md`
+(canonical-LF SHA-256
+`6451f15d5e0ecb9cadf8e17160a41606b5c8c27924455d1ee08326cad9b74fb4`);
+it remains unexecuted and unauthorized until G9S1 PASS and separate author
+authorization.
+
+### 8.9 G9S1 semantic Spline V2 approved matrix
+
+The complete candidate matrix is
+[`g9s1_semantic_spline_2d_capability_validation_matrix.md`](g9s1_semantic_spline_2d_capability_validation_matrix.md).
+Option B creates a new experimental `SplineV2` semantic parent that publishes
+a new `GeoLocusV2`; Classic `Spline` remains unchanged. Required rows cover
+domain/span/knot authority, canonical knot ownership, deterministic spanwise
+one-sided polynomial-target intersection evidence, rich length, R4
+selectors/tokens/reactivation, R5 transform covariance, persistence and
+Classic/feature-off compatibility. The current piecewise-polynomial
+Locus V2 x Locus V2 capability is rich-only: without a symmetric certified
+unique pair selector it exposes diagnostic rich evidence but no active ledger
+token, marker or point-materialization action.
+The first author smoke passed except for partial length. The replacement
+implementation preserves `LocusLength(L,P,Q)` as the rich nonnumeric authority and
+adds `Length(L,P,Q)` only as its guarded scalar child. Its dedicated rows
+`S1-L07`–`S1-L10` cover exact endpoint provenance, route-local evaluator
+evidence, dynamic fail-closed recovery, R5 covariance including `k=0`, native
+reopen, copy/undo, Classic compatibility and absence of metric/intersection
+coupling. The reduced author re-smoke passed: `Length(S,P,Q) = 2`, and the
+ordinary Locus V2 control passed with branch key `generator.main`; the earlier
+`scalar-locus/main` instruction was not a product defect.
+ADR 0018 is `Accepted`, the spec is normative, and G9S1 is `PASS — AUTHOR
+APPROVED` with `selfApproved = false`.
 
 ## 9. G9U1 workspace schema and behavior tests
 
@@ -519,7 +551,13 @@ it remains unexecuted and unauthorized.
 | U1-R5-04 | transformed path independence | reach same regular geometry by direct/incremental/reverse/save-reopen paths | identical current transformed selector/token/marker binding |
 | U1-R5-05 | collapsed image | inspect/intersect `Dilate[L,0,C]` in hit/miss/overlap cases | no marker or point unless kernel independently publishes a finite uniquely admissible token; no fabricated isolated root |
 | U1-R5-06 | free-input compatible numeric redefine | enter `k=0.25` for one explicitly intended existing compatible numeric and exercise ambiguous, absent and incompatible cases | use the accepted G9A compatibility predicate and atomic transaction; label locates command-context target only and never becomes durable identity; compatible ID graph/undo/redo/save/reopen preserved, other cases fail closed, Classic characterized separately |
-| U1-R5-06 | transformed persistence and composition | save/reopen, copy, undo and compose transforms | ordinary DAG identity/dependencies preserved; no source-token reuse |
+| U1-R5-07 | transformed persistence and composition | save/reopen, copy, undo and compose transforms | ordinary DAG identity/dependencies preserved; no source-token reuse |
+| U1-S1-01 | semantic Spline V2 action | expose only the G9S1-approved `SplineV2` forms through the manifest | one stable action authority; existing Locus V2 opt-in; Classic `Spline` unchanged |
+| U1-S1-02 | one-sided spline rich-result markers | intersect an active spline against supported polynomial target families at span interior, shared knot and tangency/topology cases | markers consume only current kernel exact tokens for locally admissible one-sided roots; canonical knot ownership; no UI span/rank identity |
+| U1-S1-03 | one-sided spline multi-materialization | create one, selected and all current eligible one-sided spline roots in one inspector session | exact-token points, coherent compound undo, already-materialized choices identified, cancel creates none |
+| U1-S1-04 | transformed spline workflow | transform `SplineV2` output and use Point/length/intersection/transform actions | semantic `GeoLocusV2` closure and fresh transformed-query tokens; no render conversion |
+| U1-S1-05 | spline topology lifecycle | move controls through regular motion, ambiguity/dormancy and unique recurrence | no swapping/proximity identity; existing point may reactivate; no new point from recompute |
+| U1-S1-06 | spline x spline rich-only boundary | inspect a piecewise-polynomial Locus V2 pair result with finite candidates, knot/seam deduplication, tangency and overlap controls | rich evidence remains inspectable, but zero selectable markers and zero create-one/selected/all actions unless a future kernel authority establishes a symmetric certified unique pair selector |
 | U1-W15 | public V2 action coverage | inspect Construction action catalog after G9U0 PASS | creation, rich/guarded length, general V2 intersection, token point and supported point-on-Locus actions present as GUI clients only |
 | U1-W16 | no G9B coupling | compile/activate Construction with G9B unavailable but already authorized nonspatial actions available | workspace works; no G9B dependency or semantic fallback |
 | U1-W17 | consume R2 document policy | exercise Save/open actions before/after workspace switches on native and compatibility inputs | one application-owned `.cedg`/`.ggb` state machine; manifest does not duplicate or override it |
@@ -660,7 +698,7 @@ not affect metric/intersection results.
 
 ### G9U1 PASS candidate
 
-- G9U0-R2, G9U0-R3, G9U0-R4 and G9U0-R5 are `PASS — AUTHOR APPROVED`; a
+- G9U0-R2, G9U0-R3, G9U0-R4, G9U0-R5 and G9S1 are `PASS — AUTHOR APPROVED`; a
   separate author decision must authorize the definitive post-G9S1 successor
   prompt. No
   predecessor PASS alone is sufficient.

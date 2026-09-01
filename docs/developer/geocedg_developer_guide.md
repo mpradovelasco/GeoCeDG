@@ -11,7 +11,8 @@
   `PASS — AUTHOR APPROVED` after three retained intermediate smoke failures,
   replacement automated PASS and final four-root/point-reactivation re-smokes
   `PASS`. G9U0-R5 design and implementation are `PASS — AUTHOR APPROVED` after
-  the final dynamic-factor characterization. G9U1 remains unexecuted;
+  the final dynamic-factor characterization. G9S1 is also `PASS — AUTHOR
+  APPROVED` using Option B after the partial-length re-smoke; G9U1 remains unexecuted;
   G9U1/G9B/G9C remain unauthorized
 - G9U0-R2 closeout: `selfApproved=false`, `authorApproved=true`,
   `passClaimed=true`; installed MSI/registry smoke `NOT_REQUESTED`
@@ -277,13 +278,17 @@ presentation and are absent from R3.
 
 After the first complete R3 composed run passed, a prospective post-R3 prompt
 captured the future operational contract. R5 preserves that file and the
-original G9P prompt as unchanged history. The sole definitive prospective
-successor is now
+original G9P prompt as unchanged history. Its frozen post-R5 successor is
 `.github/prompts/tasks/g9u1-construction-workspace-after-g9u0-r5.prompt.md`
 (canonical-LF SHA-256
-`d256ce8bb80eb8deab70a6ae5571543c093a0d8de147b2b34bfa1ce92c9387ed`).
-It is planning only: R5 closeout and separate authorization of that exact G9U1
-prompt remain mandatory. It keeps candidate markers as non-persistent active-result
+`0b96f571932144f9a99f7681938edf756c8999cb847b61095f82430068e96389`).
+The definitive prospective candidate is now
+`.github/prompts/tasks/g9u1-construction-workspace-after-g9s1.prompt.md`
+(canonical-LF SHA-256
+`45e919c5415f7824fd6d18e01ed46f8f23871adcc6fc0821d653caa82d8c6dad`).
+It remains unexecuted/not authorized and supersedes the post-R5 prompt only
+after G9S1 PASS plus separate authorization of this exact hash. It keeps
+candidate markers as non-persistent active-result
 overlays derived from current deterministic root/evidence authority, fixes the
 existing host Continuity option OFF in GeoCeDG while retaining configurable
   Classic behavior, consumes the exact kernel token bound to the intrinsic
@@ -464,13 +469,63 @@ APPROVED`; `selfApproved=false`, `authorApproved=true`, `passClaimed=true`.
 The accepted manual-smoke disposition is `PASS WITH G9A FREE-INPUT LIMITATION
 CHARACTERIZED`. G9U1 remains unexecuted and unauthorized.
 
+G9S1 is an author-approved product gate. Option B
+introduces a new experimental `SplineV2` parent that publishes a new
+`GeoLocusV2` with an explicit oriented domain, stable semantic spans/knots and
+normal source dependencies. Classic `Spline` is not modified or migrated.
+The output consumes the existing Locus V2 Point, rich-length, guarded scalar
+`Length`, rich-intersection, R4 token/reactivation, R5 transform and persistence
+authorities. Spline-aware
+code may contribute span bounds, local polynomial evaluation and canonical
+knot ownership below those authorities; it must not add parallel public
+metric/token systems or infer identity from a Java array slot, solver order,
+coordinates or render samples.
+
+One-sided polynomial targets are composed with each provider span and partitioned
+at recursively isolated derivative roots. Only an established transverse local
+cell may enter the existing R4 selector/token ledger; evidence remains floating
+and global completeness remains `NOT_ESTABLISHED`. Bounded functions retain the
+existing general rich fallback. The polynomial pair capability is intentionally
+rich-only: deterministic Bernstein-hull boxes and dual Newton provide diagnostic
+finite/overlap/work evidence, but no interval-rounded rectangle+uniqueness
+certificate, public continuation key, active ledger allocation or materialized
+pair point. Do not let Desktop/G9U1 infer the missing pair selector from order or
+coordinates.
+
+Metric consumers split at provider knots and reuse deterministic adaptive
+Simpson integration over the analytic semantic derivative. Knots, coefficients,
+bounds and solver cells are derived from the ordinary list/degree/optional-weight
+dependencies and are not separately serialized.
+
+The partial scalar surface is `Length(L,P,Q)`; `LocusLength(L,P,Q)` remains the
+rich, deliberately nonnumeric result. The former is built only as a hidden
+reconstructible rich between-position query followed by
+`AlgoLocusMetricScalarAdapter`. Evaluator-only sources establish their route
+evidence by bounded adaptive evaluation on the exact semantic interval. They do
+not interpolate a complete-component error estimate, use render samples or
+weaken `isScalarAdmissible()`. Invalid endpoint provenance or transient
+source/endpoint invalidity publishes undefined scalar state and recovers by
+normal DAG recomputation.
+
+The approved design and API are
+[documented here](../architecture/g9s1_semantic_spline_2d_capability.md) and
+[here](semantic_spline_2d_api.md). ADR 0018 is `Accepted`, the spec is
+normative and all numerical certification/completeness claims must
+match the selected source-backed method and focused evidence. Missing
+scholarly support remains an explicit research requirement, never an invented
+citation. The retained periodic-quarantine round-trip risk remains open.
+
+The R5 `k=0.25` free-input limitation remains G9A
+`REDEFINE_CONTEXT_MISSING`; G9S1 does not broaden redefine or use labels as
+identity. The post-G9S1 G9U1 design retains the atomic compatible-redefine UX
+requirement.
+
 Phase documents distinguish hard semantic/contract dependencies, recommended
 execution predecessors and global/release gates. G9O1 is recommended first but
 is not a semantic prerequisite of G9A1. After G9A3, G9B/G9C can progress
 without G9U1. The product schedule is G9U0-R1 plus G9X1 → G9U0-R2 → G9U0-R3 →
   G9U0-R4 → BOOK-P1 → G9U0-R5 → G9S1 → G9U1. BOOK-P1 is an independent editorial
-  checkpoint, not a software dependency. R3, R4 and R5 are closed. G9S1 is the
-  separately authorized next product phase after R5 publication; G9U1 still
-  requires its own execution authorization.
+  checkpoint, not a software dependency. R3, R4, R5 and G9S1 are closed. G9U1
+  still requires its own execution authorization.
 G9B/G9C remain semantically independent,
 G9U2 remains globally blocked and productive G10 remains unauthorized.

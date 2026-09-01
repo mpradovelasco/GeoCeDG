@@ -15,7 +15,7 @@ import org.geogebra.common.kernel.implicit.GeoImplicitCurve;
 
 /** Captured regular first-order adapter for a finite polynomial implicit curve. */
 public final class RegularPolynomialImplicitIntersectionTarget2D
-		implements LocusIntersectionTarget2D {
+		implements PolynomialIntersectionTarget2D {
 	private static final String ADAPTER_VERSION =
 			"g8c1-regular-polynomial-implicit-normal-residual/v1";
 
@@ -87,6 +87,11 @@ public final class RegularPolynomialImplicitIntersectionTarget2D
 	@Override
 	public IntersectionResidualContract2D getResidualContract() {
 		return contract;
+	}
+
+	@Override
+	public double[][] getImplicitPolynomialCoefficients() {
+		return copy(coefficients);
 	}
 
 	@Override

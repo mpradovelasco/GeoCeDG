@@ -3,13 +3,13 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Roadmap vivo y normativo de fases; no sustituye las especificaciones ni los ADR aceptados |
-| Versión documental | 3.59 |
-| Fecha de revisión | 31 de agosto de 2026 |
+| Versión documental | 3.62 |
+| Fecha de revisión | 1 de septiembre de 2026 |
 | Baseline GeoGebra | 5.4.928.0, commit `9b93256b7df401ff056c37b502d82df4d72b1522`, tag `geogebra-baseline-5.4.928.0` |
-| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1, G9A2, G9A3, el track G9A, G9U0, G9U0-R1, G9X1, G9U0-R2, G9U0-R3, G9U0-R4, G9U0-R5 y la planificación G10P `PASS — AUTHOR APPROVED`. R5 selecciona Option A para `k=0`: conserva la clasificación de dominio `FINITE`/`UNBOUNDED`, añade `COLLAPSED_IMAGE`, produce longitud rica cero desde esa prueba semántica y no fabrica raíces aisladas. Sus siete formas ordinarias producen nuevos Locus V2 semánticos con identidad/DAG propios; evaluación source-first, exclusiones 3D fail-closed, normalización axial segura y publicación transaccional están aprobadas. El smoke final acepta slider, edición explícita del numérico existente, cruces repetidos por cero y save/reopen; la entrada libre `k=0.25` falla antes de R5 como G9A `REDEFINE_CONTEXT_MISSING`, de forma atómica, y queda como requisito UX futuro sin ampliar G9A. R4 conserva tres fallos de smoke intermedios y cierra tras los re-smokes finales de movimiento regular de cuatro raíces y reactivación active/dormant del mismo `GeoPoint`, ambos `PASS`; determinismo actual > heurística de continuidad, sin identidad por coordenada/orden/proximidad/historia y sin creación de puntos por recompute. Riesgo no bloqueante `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP`: falta round trip `.cedg` dedicado de cuarentena periódica; se revisará en G9U1 y se resolverá o dispondrá explícitamente antes del cierre G9. G9S1 es la siguiente fase autorizada tras publicar R5. G9U1 no se ha ejecutado. G9B/G9C no están autorizadas, G9U2 sigue bloqueada y ninguna implementación productiva G10 está autorizada; Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
-| Última fase cerrada | G9U0-R5 — `PASS — AUTHOR APPROVED` |
-| Última fase ejecutada | G9U0-R5 — transformaciones de similitud 2D cerradas; `selfApproved=false`, `authorApproved=true`, `passClaimed=true` |
-| Siguiente puerta | G9S1 — Semantic Spline 2D Capability, autorizada como siguiente fase tras publicar/verificar R5; G9U1 permanece sin ejecutar y requiere autorización propia |
+| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1, G9A2, G9A3, el track G9A, G9U0, G9U0-R1, G9X1, G9U0-R2, G9U0-R3, G9U0-R4, G9U0-R5, G9S1 y la planificación G10P `PASS — AUTHOR APPROVED`. G9S1 cierra Option B: el nuevo padre público `SplineV2` produce un `GeoLocusV2` semántico con dominio/span/knot explícitos y no modifica `Spline` clásico; ADR 0018 está `Accepted` y la especificación es normativa. R4 conserva determinismo actual > heurística de continuidad y el riesgo abierto `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP`. G9U1 no se ha ejecutado y requiere una autorización propia. G9B/G9C no están autorizadas, G9U2 sigue bloqueada y ninguna implementación productiva G10 está autorizada; Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
+| Última fase cerrada | G9S1 — `PASS — AUTHOR APPROVED` |
+| Última fase ejecutada | G9S1 — Spline V2 semántica cerrada; `selfApproved=false`, `authorApproved=true`, `passClaimed=true` |
+| Siguiente puerta | Reconciliación completa de diseño G9U1 para revisión autoral; G9U1 permanece sin ejecutar y requiere autorización propia |
 | Primer cliente | Aplicación de escritorio de la familia Classic 5 |
 | Núcleo | Java compartido de GeoGebra, extendido solo cuando la semántica lo requiere |
 
@@ -1133,7 +1133,7 @@ optimización de rendimiento del software.
 | G9U0-R3 | `PASS — AUTHOR APPROVED` | Hardening frontend acotado: ciclo de vida del menú, invisibilidad Euclidian del auxiliar exacto y etiquetas compactas que desacoplan layout e identidad; conserva el smoke que halló el ancho y registra la corrección, reemplazo automatizado y re-smoke PASS; no cambia kernel/XML/identidad ni implementa markers |
 | G9U0-R4 | `PASS — AUTHOR APPROVED` | Correctivo kernel acotado: determinismo > continuidad; selector durable de componente/germen enriquecido solo ante colisión con orientación, tipo de dominio, cardinalidad y fase/rango intrínseco; certificado topológico periódico adaptativo separado del selector, sin `span / 256`. Ledger v4 conserva claims dormant/quarantined y reactiva el mismo `GeoPoint` únicamente bajo el mismo selector actual; no auto-crea puntos. Se preservan tres fallos intermedios; los re-smokes finales de cuatro raíces y recurrencia/reactivación pasan. Autoridad 27+28+3 = 58 y 54 rutas/31 bajo `source/`; A/B deterministas y composed PASS; checkpoint `4ef2c9d` es evidencia pre-correctiva; `selfApproved=false`, `authorApproved=true`, `passClaimed=true` |
 | G9U0-R5 | `PASS — AUTHOR APPROVED` | Siete formas ordinarias `Translate`/`Rotate`/`Reflect`/`Mirror`/`Dilate` crean un nuevo Locus V2 semántico con ID/DAG propios; Option A `k=0` conserva `FINITE`/`UNBOUNDED` y añade `COLLAPSED_IMAGE`; smoke dinámico aceptado con limitación de entrada libre G9A caracterizada; `selfApproved=false`, `authorApproved=true`, `passClaimed=true`; no autoriza G9U1 |
-| G9S1 | `AUTHORIZED NEXT PHASE` | Semantic Spline 2D Capability; comienza solo después de publicación y verificación verde de R5 |
+| G9S1 | `PASS — AUTHOR APPROVED` | Option B: `SplineV2` crea un nuevo `GeoLocusV2` semántico con dominio, spans y knots explícitos; Classic `Spline` permanece intacto; total/parcial scalar `Length` y autoridad rica `LocusLength` validadas; `selfApproved=false`, `authorApproved=true`, `passClaimed=true` |
 | G9U1 | `DESIGNED — NOT AUTHORIZED` | Workspace Construction con gate y autorización separados; R4/R5 ya son PASS; `Continuity = OFF`; markers, create-one/create-selected/create-all y sesión persistente de inspector consumen tokens exactos sin ordinal UI; multi-creación es una transacción undoable coherente; auto-materialization de puntos nuevos solo frontend explícito, mientras reactivación de puntos existentes pertenece al kernel; la futura UX de entrada libre debe usar exclusivamente redefine compatible/atómico G9A sin convertir labels en identidad; Classic se caracteriza por separado |
 | G9B / G9C | `DESIGNED — NOT AUTHORIZED` | Track kernel tras cierre de G9A; no depende de completar el cliente G9U1 |
 | G9U2 | `BLOCKED ON THE APPROVED G9 GATE` | Workspace de procedimientos diédrico solo tras `G9 PASS — AUTHOR APPROVED` |
@@ -1485,7 +1485,7 @@ passClaimed = true
 protectiveCheckpoint = 4ef2c9df433aec7c6385a488a02581358da83f60 (PRE_CURRENT_CORRECTION)
 G9U0-R5 DESIGN = PASS — AUTHOR APPROVED
 G9U0-R5 IMPLEMENTATION = PASS — AUTHOR APPROVED
-G9S1 = AUTHORIZED NEXT PHASE
+G9S1 = PASS — AUTHOR APPROVED
 G9U1 / G9B / G9C = DESIGNED — NOT AUTHORIZED
 G10 PRODUCTIVE IMPLEMENTATION = NOT AUTHORIZED — NOT STARTED
 ```
@@ -1667,7 +1667,7 @@ passClaimed = true
 protectiveCheckpoint = 4ef2c9df433aec7c6385a488a02581358da83f60 (PRE_CURRENT_CORRECTION)
 G9U0-R5 DESIGN = PASS — AUTHOR APPROVED
 G9U0-R5 IMPLEMENTATION = PASS — AUTHOR APPROVED
-G9S1 = AUTHORIZED NEXT PHASE
+G9S1 = PASS — AUTHOR APPROVED
 G9U1 = DESIGNED — NOT AUTHORIZED
 G9U1 DETERMINISTIC_CONTINUITY_OFF_REQUIRED
 G9U1 INTRINSIC_PHASE_RANK_TOKEN_AUTHORITY_REQUIRED
@@ -1684,8 +1684,9 @@ G9 SPATIAL SOLVING = POINT PILOT — AUTHOR APPROVED; GENERAL PRIMITIVES NOT STA
 ## G9 - Semántica espacial y proyecciones canónicas
 
 **Estado:** G9P-R1, G9P, G9O1, G9A1, G9A2, G9A3, el track G9A, G9U0,
-G9U0-R1, G9X1, G9U0-R2, G9U0-R3, G9U0-R4 y G9U0-R5 `PASS — AUTHOR
-APPROVED`. G9S1 es la siguiente fase autorizada tras publicar/verificar R5.
+G9U0-R1, G9X1, G9U0-R2, G9U0-R3, G9U0-R4, G9U0-R5 y G9S1 `PASS — AUTHOR
+APPROVED`. Option B publica `SplineV2` como nuevo Locus V2 semántico y conserva
+Classic `Spline`.
 G9A cierra identidad/persistencia durable, el piloto projection-defined de punto
 y su ciclo de vida/migración; G9U0 cierra la superficie pública Locus V2
 experimental. G9X1 está cerrado en `PASS — AUTHOR APPROVED`, con exportación
@@ -1719,7 +1720,7 @@ registra la inserción posterior sin reescribir el cierre histórico G9P.
 track kernel:   G9A1 --> G9A2 --> G9A3 --> G9B --> G9C
 
 track producto: G9A3 --> G9U0 --> G9U0-R1 --+
-                                               +--> G9U0-R2 --> G9U0-R3 --> G9U0-R4 --> G9U0-R5 --> G9U1
+                                               +--> G9U0-R2 --> G9U0-R3 --> G9U0-R4 --> G9U0-R5 --> G9S1 --> G9U1
                 G5 + autoridad G6-G8 --> G9X1 -+
 
 checkpoint editorial programado: G9U0-R4 --> BOOK-P1 --> G9U0-R5
@@ -1733,7 +1734,7 @@ G9O1: primero por recomendación operacional; sin arista semántica hacia G9A1.
 El diagrama expresa dependencias semánticas/contractuales, no un calendario.
 Se distinguen: (1) dependencias duras, (2) predecesores de ejecución
 recomendados y (3) puertas de cierre global/release. El orden de bajo conflicto
-recomendado pasa a ser `G9O1; A1; A2; A3; U0; U0-R1; X1; U0-R2; U0-R3; U0-R4; BOOK-P1; U0-R5; U1; B; C;
+recomendado pasa a ser `G9O1; A1; A2; A3; U0; U0-R1; X1; U0-R2; U0-R3; U0-R4; BOOK-P1; U0-R5; S1; U1; B; C;
 cierre; U2`, pero
 los puntos y coma no son flechas semánticas. Tras A3, el track kernel B/C puede
 avanzar sin U1. U0 sí requiere A3 para publicar objetos persistentes. X1 puede
@@ -1745,9 +1746,8 @@ frontend separado que ya cerró `PASS — AUTHOR APPROVED`. R4 ya cerró la
 admisibilidad/continuación pública. BOOK-P1 es una revisión editorial
 independiente intencionalmente programada antes de R5, no una dependencia del
 software. R5 ya cerró las transformaciones semánticas 2D como `PASS — AUTHOR
-APPROVED`; G9S1 es la siguiente fase autorizada. U1 integra las acciones
-aprobadas solo después de esos cierres y de una autorización autoral U1 todavía
-separada.
+APPROVED`; G9S1 también cerró `PASS — AUTHOR APPROVED`. U1 integra las acciones
+aprobadas solo después de una autorización autoral U1 todavía separada.
 
 ### G9O1 - Bundles de conocimiento y guías operativas
 
@@ -2281,24 +2281,92 @@ La limitación queda diferida a la UX prospectiva de G9U1 y no es un fallo de
 `Dilate`; R5 no amplía G9A. `selfApproved=false`, `authorApproved=true`,
 `passClaimed=true`.
 
+### G9S1 — SEMANTIC SPLINE 2D CAPABILITY
+
+**Estado:** `PASS — AUTHOR APPROVED`
+
+```text
+implementationStarted = true
+selfApproved = false
+authorApproved = true
+passClaimed = true
+```
+
+La decisión aprobada es Option B: el nuevo comando experimental `SplineV2`
+posee una definición semántica explícita —familia/grado, fuentes, dominio
+orientado, spans, knots, continuidad y degeneraciones— y publica un nuevo
+`GeoLocusV2` de DAG normal. `Spline` clásico conserva su comando, tipo, XML y
+comportamiento upstream; no existe conversión ni migración implícita.
+
+El resultado reutiliza Point-on-Locus, longitud rica total/parcial y el escalar
+ordinario guardado `Length(L)` / `Length(L,P,Q)`,
+intersecciones ricas, tokens y lifecycle R4, transformaciones R5,
+copy/undo/redo y persistencia `.cedg`. La intersección separa descubrimiento,
+aislamiento local, clasificación, selector semántico, admisibilidad y
+completitud global. Los knots tienen ownership canónico; coordenadas, orden del
+solver/lista, samples, viewport, proximidad e historia siguen prohibidos como
+identidad. La ruta polinómica unilateral puede alimentar el selector/token R4
+solo para una celda transversal localmente aislada; mantiene error estimado y
+completitud global `NOT_ESTABLISHED`. La ruta polinómica spline×spline aporta
+evidencia rica simétrica mediante cajas Bernstein y refinamiento dual, pero no
+prueba todavía unicidad rectangular: no crea continuation key pública, entrada
+ledger activa ni punto materializable.
+
+La [ADR 0018 aceptada](../adr/0018-semantic-spline-2d-capability.md),
+la [especificación normativa](../../geocedg/specs/curves/semantic-spline-2d.md),
+la [arquitectura](../architecture/g9s1_semantic_spline_2d_capability.md),
+la [revisión de métodos](../research/g9s1_semantic_spline_numerical_methods.md),
+la [matriz](../validation/g9s1_semantic_spline_2d_capability_validation_matrix.md)
+y el [prompt canónico](../../.github/prompts/tasks/g9s1-semantic-spline-2d-capability.prompt.md)
+gobiernan la implementación cerrada. El prompt tiene canonical-LF SHA-256
+`2e940ff75e20113975e02e5a46db0fbd6f57bffd21e22550dca07ee678d2a324`.
+
+El candidato implementa el solver denso flotante compatible con la familia
+Classic, sustitución polinómica por span y partición por raíces de la derivada
+para targets unilaterales, subdivisión/exclusión Bernstein más Newton dual para
+pares ricos y Simpson adaptativo sobre la derivada para longitud. No implementa
+Sturm/Descartes ni aritmética intervalar certificada, y no se inventa una cita:
+cualquier teorema o garantía superior requiere fuente académica verificada.
+
+El primer smoke autoral pasó salvo la longitud parcial. La caracterización
+probó que `LocusLength(L,P,Q)` ya contenía el valor rico correcto, pero el
+subarco evaluator-only seguía publicando evidencia
+`FLOATING_POINT_UNCERTIFIED` basada en interpolación de coordenada de arco y
+`CmdLength` carecía de la ruta V2 de tres argumentos. El candidato reemplazado
+integra adaptativamente el intervalo semántico exacto para producir evidencia
+local estimada con supuestos explícitos y publica `Length(L,P,Q)` solo mediante
+padre rico oculto más el adaptador escalar existente. El re-smoke reducido
+pasó: el control Spline V2 publicó `M = 4` y `MP = 2`; el control Locus V2
+publicó `LM = 2` usando la clave pública real `generator.main`. La indicación
+previa `scalar-locus/main` era una instrucción de smoke errónea, no un defecto
+del producto.
+
+**Exclusiones:** no modifica `Spline` clásico, no hace `Path` a
+`GeoLocusV2`, no usa render como autoridad, no implementa superficies/3D/CAD,
+no ejecuta G9U1 y no cierra por sí sola
+`G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP`.
+
+**Salida:** G9S1 está cerrado por decisión autoral. G9U1 permanece sin ejecutar
+y necesita autorización propia.
+
 ### G9U1 - Workspace CeDG Construction
 
 **Estado:** `DESIGNED — NOT AUTHORIZED`
 
-**Entrada adicional obligatoria:** G9U0-R2 implementation, G9U0-R3, G9U0-R4 y
-G9U0-R5 ya cerraron `PASS — AUTHOR APPROVED`. Ninguno de esos cierres autoriza
-U1 automáticamente; sigue siendo necesaria una decisión autoral separada y la
-autoridad canónica prospectiva vigente tras G9S1.
+**Entrada adicional obligatoria:** G9U0-R2 implementation, G9U0-R3, G9U0-R4,
+G9U0-R5 y G9S1 ya cerraron `PASS — AUTHOR APPROVED`. Ninguno de esos cierres autoriza U1
+automáticamente; sigue siendo necesaria una decisión autoral separada sobre la
+autoridad canónica prospectiva post-G9S1.
 
 El prompt G9P histórico
 `.github/prompts/tasks/g9u1-construction-workspace.prompt.md` y el sucesor
-prospectivo post-R3 permanecen inmutables. La única autoridad prospectiva
-definitiva después de R5 es
-`.github/prompts/tasks/g9u1-construction-workspace-after-g9u0-r5.prompt.md`,
+prospectivo post-R3 y el sucesor post-R5 permanecen inmutables. La autoridad
+prospectiva preparada por G9S1 es
+`.github/prompts/tasks/g9u1-construction-workspace-after-g9s1.prompt.md`,
 canonical-LF SHA-256
-`d256ce8bb80eb8deab70a6ae5571543c093a0d8de147b2b34bfa1ce92c9387ed`.
-Sigue `UNEXECUTED / NOT AUTHORIZED`. G9S1 deberá preparar la autoridad definitiva
-post-G9S1; U1 seguirá requiriendo autorización separada.
+`6451f15d5e0ecb9cadf8e17160a41606b5c8c27924455d1ee08326cad9b74fb4`.
+Sigue `UNEXECUTED / NOT AUTHORIZED`; el cierre G9S1 satisface su puerta técnica,
+pero su ejecución necesita autorización autoral separada de su hash exacto.
 
 La planificación U1 debe investigar la compatibilidad de entrada libre
 `k=0.25` con el objeto numérico existente exclusivamente mediante la transacción

@@ -147,6 +147,79 @@ public final class LocusSimilarityTransform2D {
 		return new LocusPoint2D(transformedX, transformedY);
 	}
 
+	/**
+	 * Applies only the linear part of this similarity to a semantic derivative.
+	 * Translation therefore leaves derivatives unchanged and a zero dilation
+	 * returns the exact zero vector.
+	 *
+	 * @return finite transformed derivative
+	 */
+	public LocusPoint2D transformDerivative(double derivativeX,
+			double derivativeY) {
+		double transformedX;
+		double transformedY;
+		switch (kind) {
+		case TRANSLATION:
+			transformedX = derivativeX;
+			transformedY = derivativeY;
+			break;
+		case ROTATION:
+			double cosine = Math.cos(values.get(0));
+			double sine = Math.sin(values.get(0));
+			transformedX = cosine * derivativeX - sine * derivativeY;
+			transformedY = sine * derivativeX + cosine * derivativeY;
+			break;
+		case POINT_REFLECTION:
+			transformedX = -derivativeX;
+			transformedY = -derivativeY;
+			break;
+		case LINE_REFLECTION:
+			double normalComponent = values.get(0) * derivativeX
+					+ values.get(1) * derivativeY;
+			transformedX = derivativeX - 2 * values.get(0) * normalComponent;
+			transformedY = derivativeY - 2 * values.get(1) * normalComponent;
+			break;
+		case DILATION:
+			transformedX = values.get(0) * derivativeX;
+			transformedY = values.get(0) * derivativeY;
+			break;
+		default:
+			throw new IllegalStateException("Unsupported similarity family");
+		}
+		return new LocusPoint2D(transformedX, transformedY);
+	}
+
+	/**
+	 * Applies this affine similarity to two equal-degree polynomial coordinate
+	 * arrays. Only the constant coefficient receives the affine translation.
+	 *
+	 * @return defensive transformed x/y descending-power coefficients
+	 */
+	public double[][] transformPolynomialCoefficients(double[] sourceX,
+			double[] sourceY) {
+		if (sourceX == null || sourceY == null
+				|| sourceX.length != sourceY.length || sourceX.length == 0) {
+			throw new IllegalArgumentException(
+					"Equal nonempty coordinate polynomials are required");
+		}
+		LocusPoint2D origin = transform(new LocusPoint2D(0, 0));
+		LocusPoint2D xBasis = transform(new LocusPoint2D(1, 0));
+		LocusPoint2D yBasis = transform(new LocusPoint2D(0, 1));
+		double xx = xBasis.getX() - origin.getX();
+		double xy = yBasis.getX() - origin.getX();
+		double yx = xBasis.getY() - origin.getY();
+		double yy = yBasis.getY() - origin.getY();
+		double[][] transformed = new double[2][sourceX.length];
+		for (int index = 0; index < sourceX.length; index++) {
+			transformed[0][index] = xx * sourceX[index] + xy * sourceY[index];
+			transformed[1][index] = yx * sourceX[index] + yy * sourceY[index];
+		}
+		int constant = sourceX.length - 1;
+		transformed[0][constant] += origin.getX();
+		transformed[1][constant] += origin.getY();
+		return transformed;
+	}
+
 	/** @return family of this immutable transformation */
 	public Kind getKind() {
 		return kind;

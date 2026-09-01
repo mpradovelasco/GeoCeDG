@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "phase": "G9S1",
+  "status": "PASS_AUTHOR_APPROVED",
+  "provenance": {
+    "entrySha": "5952dfdbd238e71e598f4d2ca92c3e03437df41c",
+    "branch": "feature/g9s1-semantic-spline-2d-capability",
+    "r5PassTag": "geocedg-g9u0-r5-pass",
+    "r5PassTagObject": "3712595fe2b168ba494379b6b3f0051e4122cfae",
+    "r5PassCommit": "5952dfdbd238e71e598f4d2ca92c3e03437df41c"
+  },
+  "approval": {
+    "implementationStarted": true,
+    "selfApproved": false,
+    "authorApproved": true,
+    "passClaimed": true,
+    "reviewRequired": false,
+    "disposition": "PASS_AUTHOR_APPROVED"
+  },
+  "authority": {
+    "canonicalPrompt": ".github/prompts/tasks/g9s1-semantic-spline-2d-capability.prompt.md",
+    "canonicalPromptLfSha256": "2e940ff75e20113975e02e5a46db0fbd6f57bffd21e22550dca07ee678d2a324",
+    "specification": "geocedg/specs/curves/semantic-spline-2d.md",
+    "architecture": "docs/architecture/g9s1_semantic_spline_2d_capability.md",
+    "validationMatrix": "docs/validation/g9s1_semantic_spline_2d_capability_validation_matrix.md",
+    "futureG9U1Prompt": ".github/prompts/tasks/g9u1-construction-workspace-after-g9s1.prompt.md",
+    "futureG9U1PromptLfSha256": "6451f15d5e0ecb9cadf8e17160a41606b5c8c27924455d1ee08326cad9b74fb4",
+    "matrixRows": 59,
+    "focusedJUnit": 37,
+    "sharedKernelJUnit": 35,
+    "desktopJUnit": 2,
+    "focusedTestClasses": [
+      {
+        "name": "org.geocedg.common.locus.G9S1SemanticSpline2DTest",
+        "methods": 25
+      },
+      {
+        "name": "org.geocedg.common.locus.G9S1SplineIntersectionEfficiencyTest",
+        "methods": 3
+      },
+      {
+        "name": "org.geocedg.common.kernel.locus.intersection.PiecewisePolynomialPairIntersectionCapability2DTest",
+        "methods": 7
+      },
+      {
+        "name": "org.geocedg.desktop.G9S1NativeArchivePersistenceTest",
+        "methods": 2
+      }
+    ]
+  },
+  "architecture": {
+    "option": "B_SPLINE_V2_RETURNS_NEW_SEMANTIC_GEOLOCUSV2",
+    "placement": "SHARED_KERNEL_SEMANTIC_EXTENSION",
+    "classicSplineModified": false,
+    "parallelMetricModelAdded": false,
+    "parallelTokenModelAdded": false,
+    "genericPathConformanceAdded": false,
+    "renderOrSampleAuthorityAdded": false,
+    "g9u1Executed": false
+  },
+  "deterministicEvidence": {
+    "sourceHashMethod": "GIT_BLOB_OR_CURRENT_CANDIDATE_UTF8_NO_BOM_CANONICAL_LF_SHA256",
+    "workingTreeLineEndingsAreAuthority": false,
+    "contentMutationMustChangeHash": true,
+    "canonicalSummaryIncludes": [
+      "scenarioIds",
+      "focusedJUnitResults",
+      "candidatePathInventory",
+      "deterministicSourceHashes",
+      "authorityHashes",
+      "openRiskIds"
+    ],
+    "focusedA": {
+      "status": "PASS",
+      "canonicalSummary": "artifacts/g9s1/focused-a/canonical-summary.json"
+    },
+    "focusedB": {
+      "status": "PASS_DETERMINISTIC_MATCH",
+      "canonicalSummary": "artifacts/g9s1/focused-b/canonical-summary.json",
+      "compareAgainst": "artifacts/g9s1/focused-a/canonical-summary.json",
+      "mustMatchFocusedA": true
+    }
+  },
+  "retainedRisks": [
+    {
+      "id": "G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP",
+      "status": "OPEN_TRACKED_NONBLOCKING",
+      "g9s1Disposition": "PRESERVED_NOT_RESOLVED"
+    }
+  ],
+  "phaseDisposition": {
+    "G9U0-R5": "PASS_AUTHOR_APPROVED",
+    "G9S1": "PASS_AUTHOR_APPROVED",
+    "G9U1": "DESIGNED_NOT_AUTHORIZED"
+  },
+  "manualAuthorSmoke": {
+    "status": "PASS",
+    "passed": true,
+    "replacementReSmokeRequired": false,
+    "partialLengthSplineControl": "M_4_MP_2",
+    "partialLengthLocusControl": "GENERATOR_MAIN_LM_2",
+    "incorrectSmokeBranchKeyDisposition": "SCALAR_LOCUS_MAIN_WAS_INSTRUCTION_ERROR_NOT_PRODUCT_DEFECT"
+  }
+}

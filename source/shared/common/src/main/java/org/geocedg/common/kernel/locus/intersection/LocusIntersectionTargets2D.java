@@ -186,7 +186,8 @@ public final class LocusIntersectionTargets2D {
 				targetType, diagnostic);
 	}
 
-	private static final class LineTarget implements LocusIntersectionTarget2D {
+	private static final class LineTarget
+			implements PolynomialIntersectionTarget2D {
 		private final TargetFamily family;
 		private final String targetIdentity;
 		private final long targetUpdateStamp;
@@ -273,6 +274,11 @@ public final class LocusIntersectionTargets2D {
 		}
 
 		@Override
+		public double[][] getImplicitPolynomialCoefficients() {
+			return new double[][] {{c, b}, {a}};
+		}
+
+		@Override
 		public TargetResidual2D evaluateResidual(LocusPoint2D point) {
 			double raw = a * point.getX() + b * point.getY() + c;
 			return new TargetResidual2D(raw, normalLength, raw / normalLength,
@@ -332,7 +338,7 @@ public final class LocusIntersectionTargets2D {
 	}
 
 	private static final class CircleTarget
-			implements LocusIntersectionTarget2D {
+			implements PolynomialIntersectionTarget2D {
 		private final String targetIdentity;
 		private final long targetUpdateStamp;
 		private final double centerX;
@@ -380,6 +386,15 @@ public final class LocusIntersectionTargets2D {
 		@Override
 		public IntersectionResidualContract2D getResidualContract() {
 			return contract;
+		}
+
+		@Override
+		public double[][] getImplicitPolynomialCoefficients() {
+			return new double[][] {
+					{centerX * centerX + centerY * centerY - radius * radius,
+							-2 * centerY, 1},
+					{-2 * centerX},
+					{1}};
 		}
 
 		@Override

@@ -22,6 +22,7 @@ import org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter;
 import org.geocedg.common.kernel.algos.AlgoLocusMetricV2;
 import org.geocedg.common.kernel.algos.AlgoLocusSimilarityTransform2D;
 import org.geocedg.common.kernel.algos.AlgoSemanticLocusPoint2D;
+import org.geocedg.common.kernel.algos.AlgoSplineV2;
 import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
 import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
@@ -41,6 +42,7 @@ import org.geogebra.common.kernel.commands.Commands;
 import org.geogebra.common.kernel.geos.GeoConic;
 import org.geogebra.common.kernel.geos.GeoConicPart;
 import org.geogebra.common.kernel.geos.GeoElement;
+import org.geogebra.common.kernel.geos.GeoFunctionNVar;
 import org.geogebra.common.kernel.geos.GeoLine;
 import org.geogebra.common.kernel.geos.GeoList;
 import org.geogebra.common.kernel.geos.GeoNumberValue;
@@ -65,6 +67,46 @@ public final class LocusV2PublicOperations {
 
 	private LocusV2PublicOperations() {
 		// Static public construction boundary.
+	}
+
+	/**
+	 * Creates one reconstructible semantic SplineV2 without changing classic
+	 * {@code Spline} compatibility.
+	 *
+	 * @return public semantic spline represented by the existing Locus V2 shell
+	 */
+	public static GeoLocusV2 createSpline(Construction construction,
+			String label, GeoList points, GeoNumberValue degree,
+			GeoFunctionNVar weight) {
+		requireAccess(construction);
+		ArrayList<GeoElement> directInputs = new ArrayList<>();
+		directInputs.add(points);
+		directInputs.add(degree.toGeoElement());
+		if (weight != null) {
+			directInputs.add(weight);
+		}
+		List<GeoElement> dependencies = direct(
+				directInputs.toArray(new GeoElement[0]));
+		ParticipationBatch batch = new ParticipationBatch(construction);
+		if (!construction.isFileLoading()) {
+			batch.prepareAll(dependencies);
+		}
+		PersistentGeoId outputId = batch.reserveOutput();
+		AlgoSplineV2 algorithm = null;
+		try {
+			algorithm = new AlgoSplineV2(construction, points, degree, weight);
+			GeoLocusV2 output = algorithm.getLocus();
+			finishLabel(output, label, false);
+			if (!construction.isFileLoading()) {
+				batch.stageReserved(output, outputId, dependencies);
+				batch.publish();
+			}
+			return output;
+		} catch (RuntimeException exception) {
+			batch.abandonBeforePublication();
+			removeFailed(algorithm);
+			throw exception;
+		}
 	}
 
 	/**
@@ -245,6 +287,47 @@ public final class LocusV2PublicOperations {
 			finishLabel(scalar, label, false);
 			if (!construction.isFileLoading()) {
 				batch.stageReserved(rich, richId, sourceDependency);
+				batch.stageReserved(scalar, scalarId, direct(rich));
+				batch.publish();
+			}
+			return scalar;
+		} catch (RuntimeException exception) {
+			batch.abandonBeforePublication();
+			removeFailed(scalarAlgorithm);
+			removeFailed(richAlgorithm);
+			throw exception;
+		}
+	}
+
+	/**
+	 * Creates the normalized rich-parent plus scalar
+	 * {@code Length[L,start,end]} DAG.
+	 *
+	 * @return public scalar between-position length result
+	 */
+	public static GeoNumeric scalarBetweenLength(Construction construction,
+			String label, GeoLocusV2 source, GeoPoint start, GeoPoint end) {
+		requireAccess(construction);
+		ParticipationBatch batch = new ParticipationBatch(construction);
+		List<GeoElement> sourceDependencies = direct(source, start, end);
+		if (!construction.isFileLoading()) {
+			batch.prepareAll(sourceDependencies);
+		}
+		PersistentGeoId richId = batch.reserveOutput();
+		PersistentGeoId scalarId = batch.reserveOutput();
+		AlgoLocusBetweenMetricV2 richAlgorithm = null;
+		AlgoLocusMetricScalarAdapter scalarAlgorithm = null;
+		try {
+			richAlgorithm = new AlgoLocusBetweenMetricV2(construction, null,
+					source, start, end, richId);
+			GeoLocusMetricResult rich = richAlgorithm.getResult();
+			finishLabel(rich, null, true);
+			scalarAlgorithm = new AlgoLocusMetricScalarAdapter(construction, label,
+					rich);
+			GeoNumeric scalar = scalarAlgorithm.getScalarOutput();
+			finishLabel(scalar, label, false);
+			if (!construction.isFileLoading()) {
+				batch.stageReserved(rich, richId, sourceDependencies);
 				batch.stageReserved(scalar, scalarId, direct(rich));
 				batch.publish();
 			}

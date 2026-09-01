@@ -29,6 +29,9 @@ public final class LocusIntersectionInstrumentation2D {
 	private long publishedSnapshots;
 	private long failedPrivateComputations;
 	private long retainedTopologyEpochs;
+	private long polynomialSpansExamined;
+	private long polynomialSpansRejected;
+	private long polynomialRootCandidates;
 
 	/** Creates counters for one query and one immutable budget. */
 	public LocusIntersectionInstrumentation2D(
@@ -83,6 +86,29 @@ public final class LocusIntersectionInstrumentation2D {
 		if (candidateIntervals > budget.getMaximumCandidates()) {
 			throw new LocusIntersectionWorkLimitException("candidate count");
 		}
+	}
+
+	/** Records one explicit semantic polynomial span examined for roots. */
+	public void recordPolynomialSpanExamined() {
+		polynomialSpansExamined = increment(polynomialSpansExamined,
+				budget.getMaximumIsolationSubdivisions(),
+				"polynomial spans examined");
+	}
+
+	/** Records one examined polynomial span containing no retained root. */
+	public void recordPolynomialSpanRejected() {
+		polynomialSpansRejected++;
+		if (polynomialSpansRejected > polynomialSpansExamined) {
+			throw new IllegalStateException(
+					"Rejected polynomial span was not examined");
+		}
+	}
+
+	/** Records one raw polynomial root before semantic-knot deduplication. */
+	public void recordPolynomialRootCandidate() {
+		polynomialRootCandidates = increment(polynomialRootCandidates,
+				budget.getMaximumCandidateIntervals(),
+				"polynomial root candidates");
 	}
 
 	/** Records one isolation subdivision and its depth. */
@@ -183,7 +209,9 @@ public final class LocusIntersectionInstrumentation2D {
 				deduplicationComparisons, continuationComparisons,
 				verifiedSolutions, rejectedCandidates, unresolvedCandidates,
 				publishedSnapshots, failedPrivateComputations, 0,
-				retainedTopologyEpochs, 0, 0, 0, 0, 0, 0, 0);
+				retainedTopologyEpochs, 0, 0, 0, 0, 0, 0, 0)
+				.withPolynomialCounters(polynomialSpansExamined,
+						polynomialSpansRejected, polynomialRootCandidates);
 	}
 
 	private static long increment(long current, long maximum, String name) {

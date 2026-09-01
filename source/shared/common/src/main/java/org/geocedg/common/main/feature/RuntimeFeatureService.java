@@ -132,6 +132,7 @@ public final class RuntimeFeatureService {
 	 * @return whether it belongs exclusively to the experimental V2 surface
 	 */
 	public static boolean isDedicatedLocusV2Command(Commands command) {
-		return command == Commands.LocusV2 || command == Commands.LocusLength;
+		return command == Commands.LocusV2 || command == Commands.LocusLength
+				|| command == Commands.SplineV2;
 	}
 }

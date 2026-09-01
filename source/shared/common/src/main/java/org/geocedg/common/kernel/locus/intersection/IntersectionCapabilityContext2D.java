@@ -14,9 +14,11 @@ import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
+import org.geocedg.common.kernel.locus.LocusParameterPartition2D;
 import org.geocedg.common.kernel.locus.LocusPoint2D;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.NumericGuarantee;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.Regularity;
+import org.geocedg.common.kernel.locus.PiecewisePolynomialLocus2D;
 
 /** Bounded query-local context supplied to one isolation capability. */
 public final class IntersectionCapabilityContext2D {
@@ -52,6 +54,23 @@ public final class IntersectionCapabilityContext2D {
 
 	public LocusIntersectionInstrumentation2D getInstrumentation() {
 		return instrumentation;
+	}
+
+	/**
+	 * Returns semantic interior partition boundaries supplied by the immutable
+	 * evaluator. Render samples never participate in this partition.
+	 *
+	 * @return immutable semantic breakpoint list
+	 */
+	public List<Double> getInteriorBreakpoints(String branchKey, double lower,
+			double upper) {
+		if (definition.getEvaluatorCapability()
+				instanceof LocusParameterPartition2D) {
+			return ((LocusParameterPartition2D) definition
+					.getEvaluatorCapability()).getInteriorBreakpoints(branchKey,
+						lower, upper);
+		}
+		return Collections.emptyList();
 	}
 
 	/**
@@ -124,6 +143,29 @@ public final class IntersectionCapabilityContext2D {
 	public LocusDifferentialEvaluation2D evaluateDifferential(String branchKey,
 			double parameter, LocusInterval2D component) {
 		instrumentation.recordDerivativeEvaluation();
+		if (definition.getEvaluatorCapability()
+				instanceof PiecewisePolynomialLocus2D) {
+			PiecewisePolynomialLocus2D polynomial =
+					(PiecewisePolynomialLocus2D) definition
+							.getEvaluatorCapability();
+			if (polynomial.supportsPiecewisePolynomial(definition)) {
+				try {
+					LocusPoint2D derivative = polynomial
+							.evaluatePolynomialDerivative(branchKey, parameter);
+					double speed = Math.hypot(derivative.getX(),
+							derivative.getY());
+					if (Double.isFinite(speed)) {
+						return new LocusDifferentialEvaluation2D(derivative,
+								speed == 0 ? Regularity.SINGULAR
+										: Regularity.REGULAR,
+								NumericGuarantee.FLOATING_POINT_UNCERTIFIED,
+								"semantic piecewise-polynomial derivative");
+					}
+				} catch (IllegalArgumentException exception) {
+					// Fall through to bounded semantic finite differences.
+				}
+			}
+		}
 		double span = component.getUpper() - component.getLower();
 		double rootTolerance = query.getPolicy().getRootParameterTolerance()
 				.getValue();

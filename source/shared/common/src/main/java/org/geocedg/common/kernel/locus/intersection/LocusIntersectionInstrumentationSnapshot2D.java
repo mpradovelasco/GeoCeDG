@@ -47,6 +47,9 @@ public final class LocusIntersectionInstrumentationSnapshot2D {
 	private final long overlapChecks;
 	private final long pairContinuationComparisons;
 	private final long retainedPairEntries;
+	private final long polynomialSpansExamined;
+	private final long polynomialSpansRejected;
+	private final long polynomialRootCandidates;
 
 	/** Creates a complete immutable snapshot. */
 	public LocusIntersectionInstrumentationSnapshot2D(long semanticEvaluations,
@@ -75,7 +78,8 @@ public final class LocusIntersectionInstrumentationSnapshot2D {
 				retainedIndexEntries, retainedTopologyEpochs,
 				wholeLocusRegenerations, renderCacheReads, renderVertexReads,
 				legacySampleReads, viewportReads, pixelToleranceReads,
-				metricIndexReads, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+				metricIndexReads, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0);
 	}
 
 	private LocusIntersectionInstrumentationSnapshot2D(
@@ -97,7 +101,9 @@ public final class LocusIntersectionInstrumentationSnapshot2D {
 			long parameterBoxesRejected, long pairCandidateBoxes,
 			long pairRefinementCalls, long pairRefinementIterations,
 			long jacobianEvaluations, long overlapChecks,
-			long pairContinuationComparisons, long retainedPairEntries) {
+			long pairContinuationComparisons, long retainedPairEntries,
+			long polynomialSpansExamined, long polynomialSpansRejected,
+			long polynomialRootCandidates) {
 		this.semanticEvaluations = semanticEvaluations;
 		this.derivativeEvaluations = derivativeEvaluations;
 		this.targetEvaluations = targetEvaluations;
@@ -138,6 +144,9 @@ public final class LocusIntersectionInstrumentationSnapshot2D {
 		this.overlapChecks = overlapChecks;
 		this.pairContinuationComparisons = pairContinuationComparisons;
 		this.retainedPairEntries = retainedPairEntries;
+		this.polynomialSpansExamined = polynomialSpansExamined;
+		this.polynomialSpansRejected = polynomialSpansRejected;
+		this.polynomialRootCandidates = polynomialRootCandidates;
 	}
 
 	public long getSemanticEvaluations() {
@@ -300,6 +309,21 @@ public final class LocusIntersectionInstrumentationSnapshot2D {
 		return retainedPairEntries;
 	}
 
+	/** @return explicit semantic polynomial spans examined by G9S1 */
+	public long getPolynomialSpansExamined() {
+		return polynomialSpansExamined;
+	}
+
+	/** @return examined semantic polynomial spans with no retained root */
+	public long getPolynomialSpansRejected() {
+		return polynomialSpansRejected;
+	}
+
+	/** @return raw polynomial roots before semantic-knot deduplication */
+	public long getPolynomialRootCandidates() {
+		return polynomialRootCandidates;
+	}
+
 	/** @return whether every forbidden-authority counter is zero */
 	public boolean hasZeroForbiddenAuthorityReads() {
 		return wholeLocusRegenerations == 0 && renderCacheReads == 0
@@ -328,7 +352,9 @@ public final class LocusIntersectionInstrumentationSnapshot2D {
 				branchPairs, componentPairs, parameterBoxesVisited,
 				parameterBoxesRejected, pairCandidateBoxes, pairRefinementCalls,
 				pairRefinementIterations, jacobianEvaluations, overlapChecks,
-				pairContinuationComparisons, retainedPairEntries);
+				pairContinuationComparisons, retainedPairEntries,
+				polynomialSpansExamined, polynomialSpansRejected,
+				polynomialRootCandidates);
 	}
 
 	/** @return copy including query-local G8C2 pair counters */
@@ -356,7 +382,40 @@ public final class LocusIntersectionInstrumentationSnapshot2D {
 				newPairCandidateBoxes, newPairRefinementCalls,
 				newPairRefinementIterations, newJacobianEvaluations,
 				newOverlapChecks, newPairContinuationComparisons,
-				newRetainedPairEntries);
+				newRetainedPairEntries, polynomialSpansExamined,
+				polynomialSpansRejected, polynomialRootCandidates);
+	}
+
+	/** @return copy including query-local G9S1 polynomial-span counters */
+	LocusIntersectionInstrumentationSnapshot2D withPolynomialCounters(
+			long newPolynomialSpansExamined,
+			long newPolynomialSpansRejected,
+			long newPolynomialRootCandidates) {
+		if (newPolynomialSpansExamined < 0 || newPolynomialSpansRejected < 0
+				|| newPolynomialRootCandidates < 0
+				|| newPolynomialSpansRejected > newPolynomialSpansExamined) {
+			throw new IllegalArgumentException(
+					"Polynomial work counters must be coherent");
+		}
+		return new LocusIntersectionInstrumentationSnapshot2D(
+				semanticEvaluations, derivativeEvaluations, targetEvaluations,
+				targetDerivativeEvaluations, targetDomainEvaluations,
+				invalidTargetEvaluations, candidateIntervals,
+				isolationSubdivisions, maximumIsolationDepth, refinementCalls,
+				refinementIterations, residualVerifications, membershipChecks,
+				deduplicationComparisons, continuationComparisons,
+				verifiedSolutions, rejectedCandidates, unresolvedCandidates,
+				publishedSnapshots, failedPrivateComputations,
+				retainedIndexEntries, retainedTopologyEpochs,
+				wholeLocusRegenerations, renderCacheReads, renderVertexReads,
+				legacySampleReads, viewportReads, pixelToleranceReads,
+				metricIndexReads, branchPairs, componentPairs,
+				parameterBoxesVisited, parameterBoxesRejected,
+				pairCandidateBoxes, pairRefinementCalls,
+				pairRefinementIterations, jacobianEvaluations, overlapChecks,
+				pairContinuationComparisons, retainedPairEntries,
+				newPolynomialSpansExamined, newPolynomialSpansRejected,
+				newPolynomialRootCandidates);
 	}
 
 	/** @return copy after bounded two-source continuation work */

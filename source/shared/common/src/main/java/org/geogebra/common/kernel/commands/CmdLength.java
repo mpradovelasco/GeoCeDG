@@ -35,6 +35,7 @@ import org.geogebra.common.kernel.geos.GeoFunction;
 import org.geogebra.common.kernel.geos.GeoList;
 import org.geogebra.common.kernel.geos.GeoLocusable;
 import org.geogebra.common.kernel.geos.GeoNumeric;
+import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.kernel.geos.GeoText;
 import org.geogebra.common.kernel.geos.GeoVec3D;
 import org.geogebra.common.kernel.kernelND.GeoConicPartND;
@@ -141,7 +142,23 @@ public class CmdLength extends CommandProcessor {
 			// Victor Franco 18-04-2007
 		case 3:
 			arg = resArgs(c, info);
-			if ((ok[0] = arg[0].isRealValuedFunction())
+			if ((ok[0] = arg[0] instanceof GeoLocusV2)
+					&& (ok[1] = arg[1] instanceof GeoPoint)
+					&& (ok[2] = arg[2] instanceof GeoPoint)) {
+				RuntimeFeatureService.requireLocusV2Access(cons);
+				try {
+					return new GeoElement[] {
+							LocusV2PublicOperations.scalarBetweenLength(cons,
+									c.getLabel(), (GeoLocusV2) arg[0],
+									(GeoPoint) arg[1], (GeoPoint) arg[2])};
+				} catch (IllegalArgumentException exception) {
+					throw MyError.forCommand(loc,
+							loc.getMenu("LocusV2.InvalidPosition"), c.getName(),
+							exception);
+				}
+			}
+
+			else if ((ok[0] = arg[0].isRealValuedFunction())
 					&& (ok[1] = arg[1].isGeoNumeric())
 					&& (ok[2] = arg[2].isGeoNumeric())) {
 

@@ -11,6 +11,17 @@ import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
 /** Optional explicit differential capability; the G6 point evaluator is unchanged. */
 public interface LocusDifferentialEvaluator2D {
 	/**
+	 * Allows a wrapper evaluator to decline this optional capability when its
+	 * captured source does not provide semantic derivatives.
+	 *
+	 * @param definition coherent semantic definition
+	 * @return whether differential evaluation is available for this revision
+	 */
+	default boolean supportsDifferential(LocusDefinition2D definition) {
+		return true;
+	}
+
+	/**
 	 * @param definition coherent semantic definition
 	 * @param branchKey constructive branch
 	 * @param providerCanonicalParameter provider-canonical parameter

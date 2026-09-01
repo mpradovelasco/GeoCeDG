@@ -1,7 +1,7 @@
 # Manual operativo vivo de GeoCeDG
 
 - Tipo de documento: manual operativo vivo
-- Última puerta de producto aprobada/observable: **G9U0-R5 = PASS — AUTHOR APPROVED**
+- Última puerta de producto aprobada/observable: **G9S1 = PASS — AUTHOR APPROVED**
 - G9U0 = PASS — AUTHOR APPROVED
 - G9X1 = PASS — AUTHOR APPROVED
 - G9U0-R2: **PASS — AUTHOR APPROVED**; el fallo original R2-L11 se conserva y la
@@ -19,13 +19,14 @@
   mismo punto pasan
 - G9U0-R5: diseño e implementación **PASS — AUTHOR APPROVED**; smoke dinámico
   aceptado con la limitación de entrada libre G9A caracterizada
+- G9S1: **PASS — AUTHOR APPROVED**; `SplineV2`, sus consumidores semánticos y
+  la corrección final de longitud parcial fueron aceptados por el autor
 - Baseline: GeoGebra 5.4.928.0 at
   `9b93256b7df401ff056c37b502d82df4d72b1522`
 - Plataforma validada: únicamente Windows
-- Última revisión: 2026-08-31
-- Fase actual: G9U0, G9X1, G9U0-R2, G9U0-R3, G9U0-R4 y G9U0-R5 son `PASS — AUTHOR
-  APPROVED`. G9S1 es la siguiente fase autorizada tras publicar R5. G9U1 sigue
-  sin autorización propia. G9B, G9C,
+- Última revisión: 2026-09-01
+- Fase actual: G9U0, G9X1, G9U0-R2, G9U0-R3, G9U0-R4, G9U0-R5 y G9S1 son `PASS — AUTHOR
+  APPROVED`. G9U1 sigue sin autorización propia. G9B, G9C,
   G9U2, G10 y las
   fases posteriores no están autorizadas.
 - Locus V2: superficie pública `experimental` aprobada para G9U0, exclusiva de
@@ -235,6 +236,36 @@ ledger recompute/export-import/copy coverage but no dedicated native `.cedg`
 round trip. G9U1 must revisit it and global G9 closeout must resolve or
 explicitly disposition it; it is not an implicit R5 dependency.
 
+### G9S1 semantic Spline V2
+
+G9S1 is an author-approved experimental capability. It uses a new
+`SplineV2` command to construct a semantic `GeoLocusV2` with explicit
+orientation, domain, spans and knots. It intentionally leaves the ordinary
+Classic `Spline` command unchanged.
+
+That semantic result uses the same Locus V2 workflow for
+Point-on-Locus, total/partial length and R5 similarity transformations. A
+one-sided `Intersect(SplineV2(...),T)` against a supported target produces a
+rich result; an established transverse isolated root may be materialized only
+through its current exact R4 token. Rendering, sampled polylines, displayed
+root order and coordinates do not define the spline or intersection identity.
+Tangencies, shared knots, overlaps, repeated/degenerate data and work limits
+report truthful typed states.
+
+Ordinary numeric measurement uses
+`Length(S)` and `Length(S,P,Q)`. The corresponding `LocusLength(...)` forms
+remain rich semantic results carrying status, coverage, error/guarantee and
+diagnostics, so they are not displayed as ordinary numbers in Algebra. `P` and
+`Q` must be semantic points on the same source; a merely coincident Cartesian
+point is rejected. The author accepted the reduced controls `Length(S)=4`,
+`Length(S,P,Q)=2`, and ordinary Locus V2 `Length(L,LP,LQ)=2` using the actual
+public branch key `generator.main`. The earlier `scalar-locus/main` suggestion
+was an instruction error, not a product defect.
+
+The approved boundary remains experimental/default-off and preserves the
+documented target-family and floating numerical guarantees. G9U1 presentation
+work is still unexecuted and unauthorized.
+
 Global completeness and individual admissibility are deliberately independent
 (Option B): a rigorously isolated solution may provide a point even when the
 solver has not established that the whole finite set is complete. Conversely,
@@ -242,11 +273,26 @@ a tangent, ambiguous, stale, overlapping or merely nearby candidate cannot be
 selected as a point. Tokens encode semantic lineage and are not derived from
 coordinates, sample index, list order or proximity.
 
-The initial intersection target registry is limited to line, segment, ray,
-circle, supported conics, bounded function graphs, regular polynomial implicit
-curves and V2-to-V2 rich queries. Arbitrary paths/drivers, unbounded scalar
-domains, unsupported overlaps and automatic point creation are rejected or
-reported explicitly. V2 is not a generic `Path`.
+The initial target registry is limited to line, segment, ray, circle, supported
+conics, bounded function graphs, regular polynomial implicit curves and
+V2-to-V2 rich queries. The first six use either the new span-polynomial seam or
+the existing bounded-function rich fallback. A piecewise-polynomial
+SplineV2-to-SplineV2 query can report deterministic rich finite/overlap/work
+evidence, but its floating parameter boxes do not yet establish a symmetric
+unique pair selector: pair roots are therefore not point-materializable and do
+not become G9U1 markers. Arbitrary paths/drivers, unbounded scalar domains,
+unsupported overlaps and automatic point creation are rejected or reported
+explicitly. V2 is not a generic `Path`.
+
+The candidate's arithmetic is floating. One-sided polynomial intersections
+use derivative-root partitioning and safeguarded refinement; global completeness
+remains `NOT_ESTABLISHED`. Pair discovery uses bounded Bernstein-hull
+subdivision and dual-parameter refinement as rich evidence only. Rich length
+uses the existing adaptive-Simpson capability over the analytic spline
+derivative. Evaluator-only Locus V2 partial routes obtain bounded route-local
+estimated evidence rather than reusing a sampled/rendered chord or pretending
+the complete-component error applies to a subarc. None of these claims exact
+arithmetic or symbolic arc length.
 
 Native `.cedg` save/reopen, copy and undo retain the approved durable semantic
 graph and recompute derived results. New documents and Save As default to

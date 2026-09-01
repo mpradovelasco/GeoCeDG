@@ -269,11 +269,14 @@ can produce many different contributions.
 Evaluator-only refinement agreement never creates a certified bound. Without
 explicit assumptions it returns `FLOATING_POINT_UNCERTIFIED` or
 `UNSUPPORTED`. Explicit assumptions can establish estimated evidence for the
-complete component state. A between-position contribution obtained by
+complete component state. A between-position contribution obtained merely by
 interpolating that component's arc-coordinate evidence remains
-`FLOATING_POINT_UNCERTIFIED` until route-local error evidence is established;
-the complete-component estimate is not scaled and relabelled as a subarc
-estimate.
+`FLOATING_POINT_UNCERTIFIED`; the complete-component estimate is never scaled
+and relabelled as a subarc estimate. The approved G9S1 partial-length route instead
+runs the same bounded adaptive evaluator over the exact resolved route segment
+and publishes route-local defect evidence with explicit rectifiability and
+remaining-variation assumptions. The initial/no-assumptions policy remains
+uncertified.
 
 ## 7. Contributions and aggregation
 
@@ -702,8 +705,10 @@ differential, evaluator-only and unsupported strategies. Differential work
 uses a deterministic per-call adaptive Simpson integrator. Evaluator-only
 results are `FLOATING_POINT_UNCERTIFIED` unless explicit assumptions request
 estimated complete-component evidence; refinement agreement alone is never
-certification. Interpolated evaluator-only subarcs remain uncertified unless a
-future implementation establishes route-local evidence directly.
+certification. Interpolated evaluator-only subarcs remain uncertified. The G9S1
+candidate establishes route-local evidence directly for the public
+experimental policy; it does not weaken scalar admissibility or relabel
+interpolation evidence.
 
 ```text
 LocusMetricIndexKey2D
