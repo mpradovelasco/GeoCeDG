@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "phase": "G9U1",
+  "status": "DESIGN_CANDIDATE_PENDING_AUTHOR_REVIEW",
+  "implementationStarted": false,
+  "implementationAuthorized": false,
+  "matrix": {
+    "path": "docs/validation/g9_public_workspace_validation_matrix.md",
+    "declaredRows": 98
+  },
+  "supportingMatrices": [
+    "docs/validation/g9u1_workspace_completeness_matrix.md",
+    "docs/validation/g9u1_command_tool_consistency_matrix.md"
+  ],
+  "groups": [
+    {
+      "id": "S",
+      "title": "Schema and single declarative authority",
+      "scenarioIds": ["U1-S01", "U1-S02", "U1-S03", "U1-S04", "U1-S05"]
+    },
+    {
+      "id": "W",
+      "title": "Workspace lifecycle and public action surface",
+      "scenarioIds": ["U1-W01", "U1-W02", "U1-W03", "U1-W04", "U1-W05", "U1-W06", "U1-W07", "U1-W08", "U1-W09", "U1-W10", "U1-W11", "U1-W12", "U1-W13", "U1-W14", "U1-W15", "U1-W16", "U1-W17"]
+    },
+    {
+      "id": "R5",
+      "title": "Similarity transformations and compatible redefine",
+      "scenarioIds": ["U1-R5-01", "U1-R5-02", "U1-R5-03", "U1-R5-04", "U1-R5-05", "U1-R5-06", "U1-R5-07"]
+    },
+    {
+      "id": "S1",
+      "title": "Semantic Spline V2 integration",
+      "scenarioIds": ["U1-S1-01", "U1-S1-02", "U1-S1-03", "U1-S1-04", "U1-S1-05", "U1-S1-06"]
+    },
+    {
+      "id": "D",
+      "title": "Deterministic Continuity-OFF product policy",
+      "scenarioIds": ["U1-D01", "U1-D02", "U1-D03", "U1-D04", "U1-D05", "U1-D06", "U1-D07", "U1-D08"]
+    },
+    {
+      "id": "L",
+      "title": "Localization and accessibility",
+      "scenarioIds": ["U1-L01", "U1-L02"]
+    },
+    {
+      "id": "V",
+      "title": "Visual density and human review",
+      "scenarioIds": ["U1-V01", "U1-V02"]
+    },
+    {
+      "id": "I",
+      "title": "Rich intersections, markers and materialization",
+      "scenarioIds": ["U1-I01", "U1-I02", "U1-I03", "U1-I04", "U1-I05", "U1-I06", "U1-I07", "U1-I08", "U1-I09", "U1-I10", "U1-I11", "U1-I12", "U1-I13", "U1-I14"]
+    },
+    {
+      "id": "B",
+      "title": "Product visual identity",
+      "scenarioIds": ["U1-B01", "U1-B02", "U1-B03"]
+    },
+    {
+      "id": "A",
+      "title": "Brand asset roles and provenance",
+      "scenarioIds": ["U1-A01", "U1-A02", "U1-A03", "U1-A04"]
+    },
+    {
+      "id": "G",
+      "title": "Professional action groups and R3 menu lifecycle",
+      "scenarioIds": ["U1-G01", "U1-G02", "U1-G03"]
+    },
+    {
+      "id": "C",
+      "title": "Command, help, Algebra and GGBScript parity",
+      "scenarioIds": ["U1-C01", "U1-C02", "U1-C03", "U1-C04", "U1-C05", "U1-C06", "U1-C07", "U1-C08", "U1-C09", "U1-C10", "U1-C11", "U1-C12", "U1-C13", "U1-C14", "U1-C15", "U1-C16", "U1-C17", "U1-C18", "U1-C19", "U1-C20"]
+    },
+    {
+      "id": "Q",
+      "title": "Native periodic-quarantine lifecycle",
+      "scenarioIds": ["U1-Q01", "U1-Q02", "U1-Q03", "U1-Q04", "U1-Q05"]
+    },
+    {
+      "id": "P",
+      "title": "Performance and bounded presentation",
+      "scenarioIds": ["U1-P01", "U1-P02"]
+    }
+  ],
+  "mandatoryPrerequisite": {
+    "id": "G9U0-R6",
+    "name": "SEMANTIC LOCUS POINT INTERACTION SUPPORT",
+    "status": "PROPOSED_NOT_AUTHORIZED",
+    "reason": "Graphical Point-on-Locus interaction needs a kernel-owned deterministic inverse semantic-address resolver."
+  },
+  "retainedLimitations": [
+    {
+      "id": "G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP",
+      "status": "OPEN_TRACKED",
+      "plannedDisposition": "Attempt real native .cedg closure during G9U1 validation; otherwise require explicit author disposition before global G9 closeout."
+    },
+    {
+      "id": "G9S1-SPLINE-PAIR-RICH-ONLY",
+      "status": "NONBLOCKING_CURRENT_AUTHORITY",
+      "plannedDisposition": "No marker or point materialization until a separately approved symmetric certified pair selector exists."
+    }
+  ]
+}

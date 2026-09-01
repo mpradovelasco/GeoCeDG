@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "phase": "G9U1",
+  "status": "DESIGN_CANDIDATE_PENDING_AUTHOR_REVIEW",
+  "provenance": {
+    "planningBranch": "feature/g9u1-construction-workspace-planning",
+    "entryCommit": "de33f3a80102adb051aaa7547a72b7e97409c58c",
+    "entryMain": "de33f3a80102adb051aaa7547a72b7e97409c58c",
+    "g9s1PassTag": "geocedg-g9s1-pass",
+    "g9s1PassTagObject": "ece0ca6f00299d3347e57fac38b7a28cade28644",
+    "g9s1PassCommit": "de33f3a80102adb051aaa7547a72b7e97409c58c",
+    "predecessorPromptCanonicalLfSha256": "6451f15d5e0ecb9cadf8e17160a41606b5c8c27924455d1ee08326cad9b74fb4"
+  },
+  "approval": {
+    "implementationStarted": false,
+    "implementationAuthorized": false,
+    "selfApproved": false,
+    "authorApproved": false,
+    "passClaimed": false,
+    "disposition": "PENDING_AUTHOR_REVIEW"
+  },
+  "stageA": {
+    "status": "PASS_AUTHOR_APPROVED_PUBLISHED",
+    "commit": "de33f3a80102adb051aaa7547a72b7e97409c58c",
+    "focusedG9S1": "37_OF_37_PASS",
+    "focusedR5": "46_OF_46_PASS",
+    "focusedR4": "58_OF_58_PASS",
+    "canonicalSummarySha256": "580c152fbf607191b4ac14cb61476947465fd52bd9f365a2b088cfd42cfcc8c3",
+    "composed": "PASS_EXIT_0_ALL_GEOCEDG_VERIFICATION_GATES_PASSED"
+  },
+  "authority": {
+    "definitivePrompt": ".github/prompts/tasks/g9u1-construction-workspace-after-g9s1.prompt.md",
+    "definitivePromptCanonicalLfSha256": "2319df211f5ea17880b7041844122afca0f2ddced4c6db1fabddce0d53dfa322",
+    "architecture": "docs/architecture/cedg_workspace_architecture.md",
+    "architectureCanonicalLfSha256": "54fa5d599d3dca1d5c4e7c81e6ee72a7106832e345dae2052471d2610ed93bb8",
+    "baseWorkspaceSpec": "geocedg/specs/ui/cedg-workspaces.md",
+    "baseWorkspaceSpecCanonicalLfSha256": "fa11e6c5aae385f992c8f0fdf83c332a2a6f04549a97c8169814ebacc3f21d4a",
+    "interactionSpec": "geocedg/specs/ui/g9u1-construction-interaction.md",
+    "interactionSpecCanonicalLfSha256": "ac50db5aae4668b83d5b5a34abadf3481130e486e951da39666d70ebda6312f3",
+    "candidateSchema": "geocedg/specs/ui/application-profile-v2.candidate.schema.json",
+    "candidateSchemaCanonicalLfSha256": "e95a6ae4133604327ad204c5af08c56b16f605dceca100015ba527a40ecd90cc",
+    "candidateManifest": "geocedg/specs/ui/application-profile-v2.candidate.yml",
+    "candidateManifestCanonicalLfSha256": "e07c356ae7dde2e011b13aafd4f17516d1f0ed0e0cb83a738b16556bf4afe7ec",
+    "workspaceCompletenessMatrix": "docs/validation/g9u1_workspace_completeness_matrix.md",
+    "workspaceCompletenessMatrixCanonicalLfSha256": "1f6fcbec43caed43eb09dbbf025566ff732dd225ea3bd8bbea9c561436a2f75f",
+    "commandToolMatrix": "docs/validation/g9u1_command_tool_consistency_matrix.md",
+    "commandToolMatrixCanonicalLfSha256": "d84ef87d18169f47af575b56386cb91da1a93343893c643b3539b438fdf28d21",
+    "publicValidationMatrix": "docs/validation/g9_public_workspace_validation_matrix.md",
+    "publicValidationMatrixCanonicalLfSha256": "9cbaeae2c53ff2ac33c0b1d973b9e2245ac4f208715450ff4272c520c15bb410",
+    "scenarioInventory": "geocedg/validation/g9u1/g9u1-preexecution-scenarios.json",
+    "scenarioInventoryCanonicalLfSha256": "26be526c6e56b03e6fb436096befa10d7f7b9de8eac0a1d691da02533149a565",
+    "roadmap": "docs/roadmap/geocedg_roadmap.md",
+    "roadmapCanonicalLfSha256": "c794d075ddec3c7d4a3e165f9f35d3700e56310eb78cf8a16ce534fdbdcfe8f5",
+    "traceability": "docs/validation/g9_documentation_bundle_traceability.md",
+    "traceabilityCanonicalLfSha256": "3e8c1e5a51b7c073b8356812e7bcca7fc94f164b06edb7c4b2fd39c2124bf8e2",
+    "specIndex": "geocedg/specs/README.md",
+    "specIndexCanonicalLfSha256": "e4bea011f27f95cd5591ef096656e60cc85d2b5ee91cfb8e0b8de88648540317"
+  },
+  "inventory": {
+    "broadFamilies": 11,
+    "operationalClusters": 18,
+    "stableActions": 110,
+    "publicValidationScenarios": 98,
+    "candidatePaths": 17,
+    "productivePaths": 0,
+    "liveProfilePath": "apps/geocedg/application-profile.yml",
+    "liveProfileSchemaVersion": 1,
+    "liveProfileGitBlob": "fc2a3ebd128fc79ca76840bc391598221bfa02c6",
+    "liveProfileModified": false
+  },
+  "architecturalPlacement": {
+    "workspaceProfile": ["single schema-v2 candidate action catalog", "workspace groups and availability", "presentation preferences"],
+    "desktopFrontend": ["stroke-only hit testing", "rich-result overlays and inspector", "Algebra preview and definition presentation", "ZoomWindow", "accessibility and branding"],
+    "commandHelpLocalization": ["autocomplete and syntax", "GGBScript parity", "English and Spanish product resources with English fallback"],
+    "persistencePreference": ["host Continuity setting clamped OFF", "workspace and layout preferences", "native/compatibility document policy"],
+    "sharedKernelSeparateGate": ["G9U0-R6 deterministic inverse semantic-address resolution"],
+    "deferred": ["broader G12 navigation", "Spline V2 x Spline V2 materialization without a certified pair selector", "G9B/G9C/G9U2/productive G10"]
+  },
+  "mandatoryPrerequisite": {
+    "id": "G9U0-R6",
+    "name": "SEMANTIC LOCUS POINT INTERACTION SUPPORT",
+    "status": "PROPOSED_NOT_AUTHORIZED_NOT_IMPLEMENTED",
+    "blockingCondition": "G9U1 productive execution must stop until R6 or an author-approved equivalent kernel gate is PASS."
+  },
+  "productPolicies": {
+    "continuity": "EXISTING_HOST_SETTING_LOCKED_OFF_IN_GEOCEDG_CLASSIC_UNCHANGED",
+    "semanticPoint": "EXACT_TYPED_COMMAND_CURRENT_R6_REQUIRED_FOR_GRAPHICAL_INVERSE_ADDRESS",
+    "splinePair": "RICH_ONLY_NO_MARKERS_NO_MATERIALIZATION",
+    "newPointAutoMaterialization": "EXPLICIT_VISIBLE_UNDOABLE_FRONTEND_ACTION_ONLY",
+    "existingPointReactivation": "KERNEL_DAG_RECOMPUTE_ONLY",
+    "zoomWindow": "MANDATORY_G9U1_EXISTING_VIEW_RECTANGLE_SEAM",
+    "broaderNavigation": "DEFERRED_G12",
+    "languages": "EN_ES_PRODUCT_WITH_DETERMINISTIC_EN_FALLBACK_CLASSIC_CORPUS_UNCHANGED"
+  },
+  "retainedRisks": [
+    {
+      "id": "G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP",
+      "status": "OPEN_TRACKED",
+      "g9u1Plan": "Attempt closure using a real native .cedg quarantine lifecycle; planning reference alone does not close the risk."
+    }
+  ],
+  "planningValidation": {
+    "staticVerifier": "tools/agent/verify-g9u1-preexecution-design.ps1",
+    "status": "PASS",
+    "exactCandidatePaths": 17,
+    "manifestCounts": "11_BROAD_FAMILIES_18_OPERATIONAL_CLUSTERS_110_STABLE_ACTIONS",
+    "scenarioMatrixMatch": "98_OF_98_UNIQUE",
+    "relativeLinkDocumentsChecked": 11,
+    "canonicalLfManifestEntries": 16,
+    "deterministicRerunLogSha256": "65851350d533e264bd0d9583689d4c7c2db877a5a12662c1c3bb079f74d59ea3",
+    "deterministicRerunMatch": true,
+    "gitDiffCheck": "PASS",
+    "gitDiffCachedCheck": "PASS_EMPTY_INDEX",
+    "composedProductVerifierModified": false,
+    "productTestsExecutedForStageB": false
+  },
+  "terminalState": {
+    "G9S1": "PASS_AUTHOR_APPROVED",
+    "G9U1": "DESIGN_CANDIDATE_PENDING_AUTHOR_REVIEW",
+    "G9B": "NOT_AUTHORIZED",
+    "G9C": "NOT_AUTHORIZED",
+    "G9U2": "BLOCKED",
+    "productiveG10": "NOT_AUTHORIZED"
+  }
+}

@@ -1,17 +1,18 @@
 # CeDG workspace contract
 
 - Status: **NORMATIVE / AUTHOR APPROVED**
-- Phase: G9P design approved; productive G9U1/G9U2 implementation is not authorized
+- Phase: G9P base design approved; definitive G9U1 reconciliation candidate
+  pending author review; productive G9U1/G9U2 implementation is not authorized
 - Normative manifest target: application profile schema version 2
 - Related Accepted ADR: `docs/adr/0012-manifest-defined-geocedg-workspaces.md`
 - Evidence: `docs/references/cedg/models/g9p/g9p-reference-workflow-audit.md`
 
 ## G9U0-R2 approved supersession record
 
-The author closed `G9U0-R2 — PRE-G9U1 PRODUCT / DOCUMENT REFINEMENT`
-planning/design as `PASS — AUTHOR APPROVED`. Its implementation remains not
-authorized and not started. This record normatively refines the future G9U1
-entry/document assumptions below; it does not implement R2 or authorize U1.
+The author closed both the planning/design and implementation of
+`G9U0-R2 — PRE-G9U1 PRODUCT / DOCUMENT REFINEMENT` as
+`PASS — AUTHOR APPROVED`. This record normatively refines the future G9U1
+entry/document assumptions below; it does not authorize U1.
 
 Before G9U1 execution, this contract must:
 
@@ -31,14 +32,61 @@ Before G9U1 execution, this contract must:
 
 The owning contracts are the normative
 `geocedg/specs/ui/native-document-identity.md`,
-`geocedg/specs/locus/locus-v2-presentation.md` and Accepted ADR 0016. Until a
-separately authorized R2 implementation is validated and approved, observable
-product behavior continues to use `.ggb`.
+`geocedg/specs/locus/locus-v2-presentation.md` and Accepted ADR 0016. The
+separately authorized R2 implementation is validated and approved: `.cedg` is
+the native GeoCeDG document identity and `.ggb` is compatibility input under
+the non-destructive transition policy.
 
 ADR 0012 remains Accepted for its workspace/profile, presentation-purity and
 separate-Classic decisions. ADR 0016 supersedes only its former `.ggb`
 native-document assumptions and adds G9U0-R2 implementation PASS as a
 prerequisite for any later, separately authorized G9U1 execution.
+
+## G9U1 definitive pre-execution reconciliation candidate
+
+The post-G9S1 reconciliation is a **DESIGN CANDIDATE — PENDING AUTHOR REVIEW**.
+It is not productive authority and does not change the checked-in version-1
+profile, its reader, Desktop code, kernel code or user preferences. Its bounded
+planning artifacts are:
+
+- `application-profile-v2.candidate.schema.json` and
+  `application-profile-v2.candidate.yml`, which model the proposed version-2
+  manifest without replacing `apps/geocedg/application-profile.yml`;
+- `g9u1-construction-interaction.md`, which assigns each interaction defect to
+  its owning layer and records the proposed pre-U1 semantic-point gate;
+- `docs/validation/g9u1_workspace_completeness_matrix.md` and
+  `docs/validation/g9u1_command_tool_consistency_matrix.md`, which reconcile
+  the complete action surface and the 98-scenario future validation authority;
+- `.github/prompts/tasks/g9u1-construction-workspace-after-g9s1.prompt.md`, the
+  definitive prospective execution prompt whose exact canonical-LF hash still
+  requires author approval and a later implementation authorization.
+
+The eleven professional families accepted below remain the broad workspace
+taxonomy. The candidate manifest refines them into eighteen operational
+clusters for discoverability and validation; this is a one-to-many presentation
+mapping, not a replacement taxonomy and not a second action authority. Every
+menu, toolbar, overflow and help surface must consume the same version-2 action
+catalog after implementation is authorized.
+
+One newly exposed kernel prerequisite remains deliberately outside G9U1:
+interactive click-to-create `Point` on a semantic Locus V2 requires an approved
+inverse semantic-address resolver. The proposed bounded gate is
+`G9U0-R6 — SEMANTIC LOCUS POINT INTERACTION SUPPORT`, with design and
+implementation both **NOT AUTHORIZED**. It is a mandatory precondition for the
+definitive G9U1 prompt unless the author approves an equivalent separately
+numbered kernel gate. G9U1 may consume the existing exact typed
+`Point(L, branch, u)` authority but may not infer a semantic address from render
+samples, pixels or Cartesian proximity.
+
+The candidate also freezes these prospective product rules: the existing host
+`Continuity` setting is clamped OFF for GeoCeDG while Classic remains
+configurable; `ZoomWindow` uses the existing rectangle-view seam while broader
+view-history/fit/layer/scale work remains G12; Locus V2 hit testing uses stroked
+curve geometry rather than filled path interiors; Algebra preview and
+description-mode controls use their normal command/tree seams; rich markers
+consume current deterministic tokens; Spline V2 × Spline V2 remains rich-only;
+and `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` stays open until a real native
+round trip or explicit author disposition closes it.
 
 ## 1. Purpose
 

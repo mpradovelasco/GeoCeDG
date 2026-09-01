@@ -92,11 +92,20 @@ symmetric certified unique pair selector, so it allocates no active ledger
 token and materializes no point. The approved implementation does not invent
 scholarly citations and does not close the periodic-quarantine risk.
 
-G9U1 likewise remains unexecuted; G9U1, G9B and G9C remain designed but not
-authorized. G9S1 is `PASS — AUTHOR APPROVED`. The future G9U1
-GeoCeDG product contract
-requires the host Continuity setting to remain off while Classic stays
-configurable. G9U2 remains blocked and productive G10 remains unauthorized.
+G9S1 is `PASS — AUTHOR APPROVED`. G9U1 remains unexecuted and its definitive
+post-G9S1 reconciliation is a **DESIGN CANDIDATE — PENDING AUTHOR REVIEW**;
+G9B and G9C remain designed but not authorized. The candidate
+`ui/g9u1-construction-interaction.md`,
+`ui/application-profile-v2.candidate.schema.json` and
+`ui/application-profile-v2.candidate.yml` are prospective planning authorities,
+not the live product profile. They require the existing host Continuity setting
+to remain off in GeoCeDG while Classic stays configurable, and propose the
+separate, not-authorized kernel prerequisite
+`G9U0-R6 — SEMANTIC LOCUS POINT INTERACTION SUPPORT` before graphical semantic
+Point-on-Locus interaction can enter G9U1. The current exact typed
+`Point(L, branch, u)` surface remains valid; render samples and Cartesian
+proximity are never semantic-address authority. G9U2 remains blocked and
+productive G10 remains unauthorized.
 
 `locus/locus-v2-public-ui-exposure.md` is the bounded, author-approved G9U0-R3
 implementation contract. R3 is `PASS — AUTHOR APPROVED`; its retained smoke

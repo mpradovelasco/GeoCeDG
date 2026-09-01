@@ -524,6 +524,13 @@ APPROVED` with `selfApproved = false`.
 
 ## 9. G9U1 workspace schema and behavior tests
 
+This section declares exactly **98** prospective G9U1 scenarios. The existing
+71 roadmap rows remain intact; the 27 command/help/script, periodic-quarantine
+and bounded-UI-work rows are additive. Their cross-surface action mapping,
+Product-versus-Classic contract, native-risk closure and compact author smoke
+are defined in
+[`g9u1_command_tool_consistency_matrix.md`](g9u1_command_tool_consistency_matrix.md).
+
 | ID | Requirement | Test/probe | Expected evidence |
 |---|---|---|---|
 | U1-S01 | schema v2 | validate accepted/rejected fixtures, unknown fields, duplicate IDs | deterministic strict validation |
@@ -597,6 +604,33 @@ APPROVED` with `selfApproved = false`.
 | U1-G01 | complete professional groups | compile the manifest/action registry and all placements | all eleven approved action families represented with stable IDs and deterministic group/overflow order |
 | U1-G02 | one action authority | scan profile/compiler/menu/toolbar plus dispatch tests | localization/help/feature policy resolves from one registry; no duplicate hard-coded product action catalog |
 | U1-G03 | R3 lifecycle retention | init, repeated font refresh and language refresh, then invoke actual inspector | product menu and rich inspector remain populated, localized, visible and enabled according to feature policy |
+| U1-C01 | English command discovery | launch GeoCeDG with the Locus V2 feature ON, initialize the English command dictionary and query autocomplete for `SplineV2` | exactly one localized entry maps to internal `Commands.SplineV2`; no duplicate action/command authority |
+| U1-C02 | Spanish command discovery | switch to Spanish, rebuild the command dictionary and query autocomplete for `SplineV2` | the localized entry maps to the same internal command and retains the same feature policy |
+| U1-C03 | exact SplineV2 help grammar | request English and Spanish syntax help for `SplineV2` | all four approved forms appear; the point-wrapping form visibly requires at least three points and does not imply that two points are valid |
+| U1-C04 | feature-off discovery/help parity | launch GeoCeDG with the Locus V2 feature OFF and inspect autocomplete, explicit syntax help and direct Algebra dispatch | autocomplete and help follow one unavailable policy; dispatch fails atomically with no output, ID, XML, undo or Construction mutation |
+| U1-C05 | Classic discovery/help parity | inspect `SplineV2` autocomplete, explicit help and dispatch in the separate Classic diagnostic process | experimental creation is not advertised as available and dispatch fails atomically; upstream `Spline` remains discoverable and executable |
+| U1-C06 | Algebra public-form parity | execute point-list default, point-list+degree, point-list+degree+weight and point-varargs forms through Algebra input | every accepted form creates one semantic `GeoLocusV2` with the declared dependencies and no parallel spline type |
+| U1-C07 | SplineV2 invalid-input atomicity | exercise two-point input, invalid/nonintegral degree, invalid weight, undefined/nonfinite/3D points and bounded-work-policy limits | typed/localized failure or typed undefined result according to the approved contract; zero partial algorithm/output/identity publication |
+| U1-C08 | GGBScript default/list form | execute the default point-list `SplineV2` form from GGBScript with the feature ON | the ordinary AlgebraProcessor path creates the same semantic result and dependency graph as direct Algebra input |
+| U1-C09 | GGBScript degree and weight forms | execute the explicit-degree and weight-function forms from GGBScript | result type, numerical policy, dependencies and failure semantics match direct Algebra input |
+| U1-C10 | GGBScript exact-three varargs | execute `SplineV2(A,B,C)` and compare with `SplineV2({A,B,C})` | both succeed, use default degree three and evaluate equivalently; the complete three-point regression remains authoritative |
+| U1-C11 | localized GGBScript round trip | localize and delocalize EN/ES scripts containing all approved `SplineV2` forms | internal command and argument structure round-trip exactly; labels are not translated as command identity |
+| U1-C12 | feature-off GGBScript gate | execute a `SplineV2` script with the feature OFF | the same runtime gate rejects it atomically; no output, undo entry, identity record or XML change |
+| U1-C13 | Classic GGBScript boundary | execute `SplineV2` and upstream `Spline` scripts in Classic | `SplineV2` creation is rejected atomically while upstream `Spline` retains its existing behavior |
+| U1-C14 | action-command metadata parity | resolve each Spline V2/Locus V2 command-backed manifest action and compare target, selection grammar, localization/help, feature and unavailable policy | one stable action declaration supplies every placement; command help and action help cannot contradict dispatch |
+| U1-C15 | similarity-command and alias parity | resolve all seven R5 forms, including `Reflect`/`Mirror`, through Algebra, GGBScript where applicable and manifest actions | existing command processors remain authority; aliases have identical V2 behavior and no Locus-specific transform command is introduced |
+| U1-C16 | preservation does not publish creation | load a native Spline V2/transformed-Locus document with creation disabled, then rebuild dictionaries/help after load | persisted algorithms reconstruct and recompute, but the preservation context does not leave interactive creation discoverable |
+| U1-C17 | workspace presentation does not filter commands | omit or hide an independently enabled command action in one workspace, then invoke it through Algebra and GGBScript | workspace membership changes discoverability only; runtime feature policy and command semantics remain unchanged |
+| U1-C18 | single public opt-in | inspect launch arguments, command filters, actions and direct dispatch for Spline V2/intersection/transforms | `--enableLocusV2=true` is the only V2 opt-in; no spline-, intersection- or transformation-specific flag exists |
+| U1-C19 | command-cache language lifecycle | alternate EN/ES and trigger repeated font/localization refresh with feature ON and OFF | autocomplete, syntax, action help and unavailable reasons rebuild without stale entries, duplicates or gate drift |
+| U1-C20 | Classic Spline control authority | exercise representative Classic `Spline` overloads through Algebra/help/GGBScript before and after loading a Spline V2 document | Classic result type, overloads, dynamic behavior and serialization remain unchanged |
+| U1-Q01 | native periodic-quarantine archive | create a real periodic allocation, materialize its point, drive it through the resolver into `PERIODIC_QUARANTINE`/`CLAIMED_PERIODIC_QUARANTINE`, then Save As `.cedg` | the native archive persists canonical ledger `q`/`r` state, durable selectors, exact tokens and existing point IDs without fabricated currentness |
+| U1-Q02 | unresolved quarantine round trip | reopen the native quarantined document twice while periodic offset evidence remains insufficient/nonunique | quarantine remains durable and noncurrent, the existing point remains dormant, and no selectable marker, materialization action or new GeoPoint appears |
+| U1-Q03 | unique-zero quarantine release | from a byte-identical reopened quarantined seed, establish the unique periodic offset zero | the same token/selector and same existing GeoPoint reactivate; Construction size and point ID prove no replacement or new materialization |
+| U1-Q04 | proved-nonzero quarantine retirement | from another byte-identical reopened quarantined seed, establish one proved unique nonzero offset | the old allocation retires/fails closed and cannot retarget another root; proximity, solver order and movement history remain unused |
+| U1-Q05 | quarantine preservation boundary | open/save/reopen the native quarantined document with feature-off GeoCeDG and the separate Classic diagnostic route | exact quarantine/token/point authority is preserved without interactive creation, markers, downgrade or change to Classic default document identity |
+| U1-P01 | overlay/materialized-point work bound | profile one active rich result with `R` roots and `P` existing point bindings while showing markers, switching selection and recomputing | roots/selectors are resolved once; frontend consumers perform current-snapshot lookup only, no solve per marker/point and no trajectory history; declared kernel bound remains consistent with `O(R log R + P)` |
+| U1-P02 | bounded inspector and opaque-token layout | inspect many solutions carrying deliberately very long exact tokens at normal/high DPI using mouse and keyboard | compact labels remain distinguishable, token length never controls chooser/dialog width, diagnostic text wraps/scrolls, and OK/Cancel remain reachable |
 
 ## 10. G9U2 blocked procedure tests
 
