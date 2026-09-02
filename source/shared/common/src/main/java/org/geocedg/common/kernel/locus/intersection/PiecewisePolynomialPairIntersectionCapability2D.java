@@ -62,7 +62,9 @@ final class PiecewisePolynomialPairIntersectionCapability2D
 		}
 		PiecewisePolynomialLocus2D first = firstSource(context);
 		PiecewisePolynomialLocus2D second = secondSource(context);
-		if (!first.supportsPiecewisePolynomial(context.getFirstDefinition())
+		if (!hasSafeCompositionDepth(first)
+				|| !hasSafeCompositionDepth(second)
+				|| !first.supportsPiecewisePolynomial(context.getFirstDefinition())
 				|| !second.supportsPiecewisePolynomial(
 						context.getSecondDefinition())) {
 			return false;
@@ -544,10 +546,10 @@ final class PiecewisePolynomialPairIntersectionCapability2D
 					&& lower < upper)) {
 				continue;
 			}
-			double[] x = localPolynomial(source.getPolynomialCoefficients(
-					component.getBranchKey(), span, 0), lower, upper);
-			double[] y = localPolynomial(source.getPolynomialCoefficients(
-					component.getBranchKey(), span, 1), lower, upper);
+			double[][] coordinates = source.getPolynomialCoordinateCoefficients(
+					component.getBranchKey(), span);
+			double[] x = localPolynomial(coordinates[0], lower, upper);
+			double[] y = localPolynomial(coordinates[1], lower, upper);
 			result.add(new PolynomialSpan(lower, upper, x, y, false,
 					lower == component.getInterval().getLower()
 							&& upper == component.getInterval().getUpper()));
@@ -574,9 +576,13 @@ final class PiecewisePolynomialPairIntersectionCapability2D
 				return false;
 			}
 			for (int span = 0; span < spans; span++) {
-				for (int coordinate = 0; coordinate < 2; coordinate++) {
-					double[] coefficients = source.getPolynomialCoefficients(
-							component.getBranchKey(), span, coordinate);
+				double[][] coordinates = source
+						.getPolynomialCoordinateCoefficients(
+								component.getBranchKey(), span);
+				if (coordinates == null || coordinates.length != 2) {
+					return false;
+				}
+				for (double[] coefficients : coordinates) {
 					if (coefficients == null || coefficients.length < 1
 							|| coefficients.length > MAXIMUM_COEFFICIENT_COUNT) {
 						return false;
@@ -590,6 +596,13 @@ final class PiecewisePolynomialPairIntersectionCapability2D
 			}
 		}
 		return true;
+	}
+
+	private static boolean hasSafeCompositionDepth(
+			PiecewisePolynomialLocus2D source) {
+		int compositionDepth = source.getPolynomialCompositionDepth();
+		return compositionDepth > 0 && compositionDepth
+				<= PiecewisePolynomialLocus2D.MAXIMUM_SAFE_COMPOSITION_DEPTH;
 	}
 
 	private static PiecewisePolynomialLocus2D firstSource(

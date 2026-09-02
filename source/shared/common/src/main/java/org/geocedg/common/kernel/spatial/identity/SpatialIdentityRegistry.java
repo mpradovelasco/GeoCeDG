@@ -5540,7 +5540,7 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 		return true;
 	}
 
-	private static void notifyPersistentIdentityAttachments(
+	private void notifyPersistentIdentityAttachments(
 			Map<? extends GeoElement, PersistentGeoId> attachments) {
 		ArrayList<Map.Entry<? extends GeoElement, PersistentGeoId>> ordered =
 				new ArrayList<>(attachments.entrySet());
@@ -5557,6 +5557,16 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 			if (geo instanceof PersistentGeoIdentityListener) {
 				((PersistentGeoIdentityListener) geo)
 						.onPersistentGeoIdentityAttached(attachment.getValue());
+			}
+			SpatialIdentityRecord record = records.get(attachment.getValue());
+			if (record instanceof GeoIdentityRecord
+					&& ConstructionGeoRedefineProvider
+							.INTERACTION_POINT_OUTPUT_ROLE.equals(
+									((GeoIdentityRecord) record).getStableOutputRole())
+					&& geo.getParentAlgorithm()
+							instanceof org.geocedg.common.kernel.algos.AlgoSemanticLocusPoint2D) {
+				((org.geocedg.common.kernel.algos.AlgoSemanticLocusPoint2D)
+						geo.getParentAlgorithm()).restoreOwnedInputPresentation();
 			}
 		}
 	}
@@ -5747,8 +5757,8 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 						== ConstructionGeoRedefineProvider.SCHEMA_VERSION
 				&& record.getAuthority() == EditAuthorityMode.CONSTRUCTION_DEFINED
 				&& record.getBindingRole() == ProjectionBindingRole.NOT_APPLICABLE
-				&& ConstructionGeoRedefineProvider.STABLE_OUTPUT_ROLE.equals(
-						record.getStableOutputRole())
+				&& ConstructionGeoRedefineProvider.supportsStableOutputRole(
+						geo, record.getStableOutputRole())
 				&& record.getOutputCardinality() == 1;
 	}
 

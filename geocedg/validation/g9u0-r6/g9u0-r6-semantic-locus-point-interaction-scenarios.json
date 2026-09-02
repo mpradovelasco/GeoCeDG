@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "phase": "G9U0-R6",
+  "status": "PASS_AUTHOR_APPROVED",
+  "matrix": {
+    "path": "docs/validation/g9u0_r6_semantic_locus_point_interaction_validation_matrix.md",
+    "declaredRows": 72
+  },
+  "groups": [
+    {
+      "id": "A",
+      "title": "Authority, model and API",
+      "scenarioIds": ["R6-A01", "R6-A02", "R6-A03", "R6-A04", "R6-A05", "R6-A06", "R6-A07", "R6-A08"]
+    },
+    {
+      "id": "G",
+      "title": "General Locus V2 inverse resolution",
+      "scenarioIds": ["R6-G01", "R6-G02", "R6-G03", "R6-G04", "R6-G05", "R6-G06", "R6-G07", "R6-G08", "R6-G09", "R6-G10", "R6-G11", "R6-G12"]
+    },
+    {
+      "id": "S",
+      "title": "SplineV2 specialization",
+      "scenarioIds": ["R6-S01", "R6-S02", "R6-S03", "R6-S04", "R6-S05", "R6-S06", "R6-S07", "R6-S08"]
+    },
+    {
+      "id": "P",
+      "title": "Interactive semantic point creation and drag",
+      "scenarioIds": ["R6-P01", "R6-P02", "R6-P03", "R6-P04", "R6-P05", "R6-P06", "R6-P07", "R6-P08", "R6-P09", "R6-P10", "R6-P11", "R6-P12"]
+    },
+    {
+      "id": "T",
+      "title": "Periodic and transformed sources",
+      "scenarioIds": ["R6-T01", "R6-T02", "R6-T03", "R6-T04", "R6-T05", "R6-T06", "R6-T07", "R6-T08", "R6-T09"]
+    },
+    {
+      "id": "L",
+      "title": "Persistence and construction lifecycle",
+      "scenarioIds": ["R6-L01", "R6-L02", "R6-L03", "R6-L04", "R6-L05", "R6-L06", "R6-L07", "R6-L08"]
+    },
+    {
+      "id": "E",
+      "title": "Determinism and performance",
+      "scenarioIds": ["R6-E01", "R6-E02", "R6-E03", "R6-E04", "R6-E05", "R6-E06", "R6-E07"]
+    },
+    {
+      "id": "N",
+      "title": "Negative and regression boundaries",
+      "scenarioIds": ["R6-N01", "R6-N02", "R6-N03", "R6-N04", "R6-N05", "R6-N06", "R6-N07", "R6-N08"]
+    }
+  ],
+  "focusedJUnit": {
+    "declared": 55,
+    "sharedKernel": 52,
+    "desktop": 3,
+    "classes": [
+      {
+        "name": "org.geocedg.common.locus.G9U0R6SemanticLocusPointInteractionTest",
+        "methods": 49
+      },
+      {
+        "name": "org.geocedg.common.kernel.locus.intersection.PolynomialRootIsolation2DTest",
+        "methods": 3
+      },
+      {
+        "name": "org.geocedg.desktop.G9U0R6NativeArchivePersistenceTest",
+        "methods": 3
+      }
+    ],
+    "focusedA": {
+      "status": "PASS"
+    },
+    "focusedB": {
+      "status": "PASS_DETERMINISTIC_MATCH",
+      "mustMatchFocusedA": true
+    }
+  },
+  "approval": {
+    "implementationStarted": true,
+    "selfApproved": false,
+    "authorApproved": true,
+    "passClaimed": true
+  },
+  "manualGuiSmoke": {
+    "status": "DEFERRED_TO_G9U1_BY_DESIGN",
+    "requiredForR6": false,
+    "passed": false
+  },
+  "kernelDiagnosticAcceptance": {
+    "status": "PASS",
+    "acceptedValidationSurface": "TEST_HOST_API",
+    "periodicSeamDrag": "PASS_BIDIRECTIONAL_PATH_INDEPENDENT",
+    "unresolvedSeamControl": "PASS_NO_MUTATION"
+  },
+  "futureG9U1ManualSmoke": {
+    "status": "PLANNED_NOT_EXECUTED",
+    "steps": [
+      "POINT_TOOL_CLICK_LOCUS_V2_OR_SPLINE_V2",
+      "CREATE",
+      "DRAG",
+      "PERIODIC_SEAM_CROSSING",
+      "AMBIGUITY_CHOOSER",
+      "TRANSFORMED_SOURCE",
+      "K_ZERO",
+      "SAVE_REOPEN"
+    ]
+  },
+  "protectedG9U1": {
+    "branch": "feature/g9u1-construction-workspace-planning",
+    "checkpoint": "857de6628489bda0b65a5ba5145e62ca0795fc32",
+    "promptCanonicalLfSha256": "2319df211f5ea17880b7041844122afca0f2ddced4c6db1fabddce0d53dfa322",
+    "mergedIntoR6": false,
+    "implementationAuthorized": false
+  },
+  "retainedRisks": [
+    {
+      "id": "G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP",
+      "status": "OPEN_TRACKED_NONBLOCKING",
+      "r6Disposition": "PRESERVED_NOT_RESOLVED"
+    }
+  ]
+}

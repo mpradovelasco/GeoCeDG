@@ -2625,6 +2625,38 @@ public class Construction {
 		}
 	}
 
+	/**
+	 * Executes one synchronous construction mutation with the same exact host
+	 * snapshot restoration used by participating redefine. This boundary does not
+	 * store undo information: callers remain responsible for grouping a successful
+	 * user gesture into the normal undo history.
+	 *
+	 * <p>A failed restoration is a distinct catastrophic failure. The original
+	 * mutation failure is retained as suppressed evidence rather than allowing the
+	 * caller to continue under the false assumption that the pre-mutation state was
+	 * restored.</p>
+	 *
+	 * @param mutation complete mutation, including publication and postconditions
+	 */
+	public void runAtomicConstructionMutation(Runnable mutation) {
+		Objects.requireNonNull(mutation);
+		String rollbackXml = getCurrentUndoXML(false).toString();
+		try {
+			mutation.run();
+		} catch (RuntimeException | MyError failure) {
+			try {
+				restoreSpatialRedefineSnapshot(rollbackXml);
+			} catch (RuntimeException | MyError rollbackFailure) {
+				IllegalStateException catastrophic = new IllegalStateException(
+						"Atomic construction mutation could not restore its host snapshot",
+						rollbackFailure);
+				catastrophic.addSuppressed(failure);
+				throw catastrophic;
+			}
+			throw failure;
+		}
+	}
+
 	private void restoreSpatialRedefineSnapshot(String rollbackXml) {
 		spatialSemanticRuntime.beginRollbackRestore();
 		setNextSpatialIdentityLoadPurpose(LoadPurpose.ROLLBACK_RESTORE);

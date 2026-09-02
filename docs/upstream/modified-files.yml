@@ -189,7 +189,7 @@
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusDefinition2D.java",
-      "change": "added", "purpose": "Own one immutable revisioned semantic definition and evaluator.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+      "change": "added", "purpose": "Own one immutable revisioned semantic definition/evaluator and propagate the bounded R6 nested-evaluation work-limit signal without converting it into an ordinary evaluator failure.", "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusDriverDomainProvider2D.java",
@@ -209,7 +209,7 @@
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusEvaluationSession2D.java",
-      "change": "added", "purpose": "Provide bounded full-key memoization, coherent revisions and cycle protection.", "authority": "docs/adr/0006-parallel-locus-v2-semantic-entity.md"
+      "change": "added", "purpose": "Provide bounded full-key memoization, coherent revisions and cycle protection, plus caller-bounded nested misses/active composition depth under the shared 128-level safety ceiling for R6.", "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusEvaluator2D.java",
@@ -1422,7 +1422,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusPairIntersectionContext2D.java",
       "change": "added",
-      "purpose": "Own one query-local pair of semantic evaluator sessions and bounded pair-work instrumentation with no retained shared state.",
+      "purpose": "Own one query-local pair of semantic evaluator sessions and bounded pair-work instrumentation with no retained shared state; R6 also rejects excessive polynomial composition depth before the differential fallback can traverse a previously rejected inventory.",
       "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
     },
     {
@@ -1740,8 +1740,8 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialIdentityRegistry.java",
       "change": "added",
-      "purpose": "Preserve G9A1 atomic identity lifecycle while validating, remapping, and publishing exact version-two G9A2 records to the construction semantic runtime.",
-      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+      "purpose": "Preserve G9A1 atomic identity lifecycle while validating, remapping and publishing exact records, including the R6 interaction-owned semantic-point role only for structurally dedicated inputs and restoring their auxiliary/restricted presentation after identity attachment on reopen.",
+      "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialObjectId.java",
@@ -1872,8 +1872,8 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/Construction.java",
       "change": "modified",
-      "purpose": "Own the identity registry and G9A2 semantic runtime, connecting atomic record publication/retirement to normal construction-DAG certificates.",
-      "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+      "purpose": "Own the identity registry and G9A2 semantic runtime and provide the R6 host-wide atomic mutation seam that snapshots/restores the complete Construction around address writes, cascade and postcondition without creating an undo record.",
+      "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/geos/GeoElement.java",
@@ -2694,8 +2694,8 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoSemanticLocusPoint2D.java",
       "change": "added",
-      "purpose": "Construct an ordinary dynamic point from one exact durable Locus V2 preimage address without coordinate, proximity, or order inference.",
-      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+      "purpose": "Construct an ordinary dynamic point from one exact durable Locus V2 preimage address, honor exact persisted component lineage at shared endpoints, fail closed on ambiguous lineage/lift and protect only role-owned structurally dedicated address auxiliaries across reopen/removal.",
+      "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusComponentLineage2D.java",
@@ -2710,16 +2710,28 @@
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusSemanticAddressState2D.java",
+      "change": "added",
+      "purpose": "Encode/decode the versioned reconstructible R6 branch, exact component-lineage, canonical parameter, periodic-lift and seam-side state without persisting click or coordinate identity.",
+      "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/CertifiedAffineLocus2D.java",
+      "change": "added",
+      "purpose": "Expose provider-owned structural F(u)=a u+b evidence for complete requested-component inverse coverage without numerical fitting, render samples or exact-arithmetic overclaim.",
+      "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
+    },
+    {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusV2PublicOperations.java",
       "change": "added",
-      "purpose": "Retain centralized feature-gated public creation/persistence/queries, the seven approved R5 similarity forms and the G9S1 exact-endpoint Length rich-parent-plus-scalar DAG through atomic durable-identity publication.",
-      "authority": "geocedg/specs/locus/locus-v2-similarity-transformations.md"
+      "purpose": "Retain centralized feature-gated public operations and add R6 interaction-owned point creation/move with exact address-state encoding, stable role checks and host Construction snapshot atomicity around mutation/publication, without changing the explicit Point command.",
+      "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/ReconstructibleLocusEvaluator2D.java",
       "change": "added",
-      "purpose": "Evaluate a reconstructible isolated construction slice resolved only by durable identities while excluding labels, coordinates, samples, XML order, and construction-owned canonical constants as copied ordinary-element authority.",
-      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+      "purpose": "Evaluate a reconstructible isolated construction slice by durable identities and capture only a directly proven structural affine F(u)=a u+b certificate for complete R6 inverse coverage, never by labels, samples, fitting, coordinates or XML order.",
+      "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/SemanticGeneratorDescriptor1D.java",
@@ -2772,8 +2784,8 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/ConstructionGeoRedefineProvider.java",
       "change": "added",
-      "purpose": "Provide structural-family and durable-dependency redefine authority for neutral construction geos and typed public G9U0 outputs without label or ordinal inference.",
-      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+      "purpose": "Provide structural-family and durable-dependency redefine authority, validating the R6 LOCUS_INTERACTION_POINT role only when its codec state and independent inputs are exclusive to the semantic-point parent, without label, presentation or ordinal inference.",
+      "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/PersistentGeoIdentityListener.java",
@@ -3138,8 +3150,8 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusSimilarityEvaluator2D.java",
       "change": "added",
-      "purpose": "Evaluate the source locus first at the unchanged semantic address, propagate source-invalid gaps unchanged and apply only the immutable finite 2D similarity to valid source points.",
-      "authority": "geocedg/specs/locus/locus-v2-similarity-transformations.md"
+      "purpose": "Evaluate the source locus first at the unchanged semantic address and additionally propagate certified affine data and paired polynomial coordinates once per R5 layer with O(1) captured composition depth and the shared safety cap.",
+      "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusSimilarityTransform2D.java",
@@ -3228,8 +3240,8 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/PiecewisePolynomialLocus2D.java",
       "change": "added",
-      "purpose": "Expose immutable provider-canonical polynomial span bounds and coefficients for deterministic metric/intersection consumers without reconstructing semantics from rendering or expression trees.",
-      "authority": "geocedg/specs/curves/semantic-spline-2d.md"
+      "purpose": "Expose immutable provider-canonical polynomial spans, coherent paired x/y coefficients and O(1) captured composition depth for bounded R6/metric/intersection consumers without render or expression reconstruction.",
+      "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spline/SplinePolynomialModel2D.java",
@@ -3276,8 +3288,8 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PiecewisePolynomialPairIntersectionCapability2D.java",
       "change": "added",
-      "purpose": "Provide symmetric deterministic Bernstein-box rejection, bounded subdivision and safeguarded dual-Newton evidence for piecewise-polynomial Locus V2 pairs while deliberately withholding a public continuation key and materializable token absent certified pair uniqueness.",
-      "authority": "geocedg/specs/curves/semantic-spline-2d.md"
+      "purpose": "Provide symmetric deterministic polynomial-pair evidence while consuming each provider's coherent x/y snapshot once and enforcing captured-composition depth/work limits, still withholding materialization absent certified pair uniqueness.",
+      "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PolynomialIntersectionTarget2D.java",
@@ -3288,8 +3300,98 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PolynomialTargetIntersectionCapability2D.java",
       "change": "added",
-      "purpose": "Discover one-sided spline roots by deterministic polynomial composition, derivative-root partitioning and safeguarded refinement, publishing only truthful locally isolated transverse evidence into the existing R4 selector/token authority.",
-      "authority": "geocedg/specs/curves/semantic-spline-2d.md"
+      "purpose": "Discover one-sided spline roots using one coherent paired polynomial snapshot plus bounded captured-composition depth, publishing truthful floating isolated evidence through R4 while reusing the R6 root isolator without changing intersection semantics.",
+      "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/interaction/LocusPointInteractionCandidate2D.java",
+      "change": "added",
+      "purpose": "Carry one immutable forward-verified R6 semantic-address candidate with source revision, evaluated world point, residual, regularity, uniqueness and numerical evidence while keeping proximity outside durable identity.",
+      "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/interaction/LocusPointInteractionLocalEvidence2D.java",
+      "change": "added",
+      "purpose": "Type the local regularity/isolation evidence attached to an R6 candidate without conflating bounded floating evidence with complete coverage or exact arithmetic.",
+      "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/interaction/LocusPointInteractionInstrumentation2D.java",
+      "change": "added",
+      "purpose": "Record bounded deterministic semantic-search work for R6 without observing pixels, render tessellation or movement history.",
+      "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/interaction/LocusPointInteractionInstrumentationSnapshot2D.java",
+      "change": "added",
+      "purpose": "Publish an immutable R6 interaction-work snapshot for deterministic performance assertions and diagnostics.",
+      "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/interaction/LocusPointInteractionPolicy2D.java",
+      "change": "added",
+      "purpose": "Define explicit finite world-space acceptance and semantic refinement tolerances for R6 requests without making those tolerances identity authority.",
+      "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/interaction/LocusPointInteractionQuery2D.java",
+      "change": "added",
+      "purpose": "Capture one immutable current-snapshot R6 query over a semantic source, transient world request, bounded policy and optional exact current address constraint.",
+      "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/interaction/LocusPointInteractionResolver2D.java",
+      "change": "added",
+      "purpose": "Resolve bounded world requests through certified-affine complete coverage, bounded paired-polynomial specialization or evaluator-only fail-closed discovery; evaluator coverage never promotes zero/one local candidates to definitive none/unique.",
+      "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/interaction/LocusPointInteractionResult2D.java",
+      "change": "added",
+      "purpose": "Publish one immutable typed R6 result with canonical candidates, deterministic instrumentation and explicit diagnostics.",
+      "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/interaction/LocusPointInteractionStatus2D.java",
+      "change": "added",
+      "purpose": "Distinguish no preimage, unique, multiple, unresolved, invalid, degenerate and unsupported R6 inverse outcomes without collapsing them into a Boolean.",
+      "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/interaction/LocusPointInteractionWorkBudget2D.java",
+      "change": "added",
+      "purpose": "Enforce explicit deterministic ceilings on R6 semantic evaluations, subdivisions and refinements so interactive resolution cannot hide an unbounded solve.",
+      "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/interaction/package-info.java",
+      "change": "added",
+      "purpose": "Declare the shared-kernel R6 semantic point-interaction package and its non-render authority boundary.",
+      "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PolynomialRootIsolation2D.java",
+      "change": "added",
+      "purpose": "Provide one bounded deterministic polynomial root-cell isolator shared by the established spline intersection capability and R6 spline inverse-distance specialization.",
+      "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9U0R6SemanticLocusPointInteractionTest.java",
+      "change": "added",
+      "purpose": "Exercise R6 typed inverse resolution, certified-affine completeness, evaluator-only narrow-minimum fail-closed behavior, paired/depth-bounded polynomial semantics, atomic Construction rollback, ownership/lineage negatives, periodic/transformed sources and normal lifecycle without frontend or Path authority.",
+      "authority": ".github/prompts/tasks/g9u0-r6-semantic-locus-point-interaction-support.prompt.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/PolynomialRootIsolation2DTest.java",
+      "change": "added",
+      "purpose": "Prove the extracted polynomial isolator finds same-sign-endpoint and repeated roots deterministically while preserving explicit zero-polynomial evidence and immutable root cells.",
+      "authority": ".github/prompts/tasks/g9u0-r6-semantic-locus-point-interaction-support.prompt.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U0R6NativeArchivePersistenceTest.java",
+      "change": "added",
+      "purpose": "Verify native .cedg round-trip of an interaction-owned point on an R5-transformed SplineV2, stable-role plus structural auxiliary ownership restored after identity attachment, exact component/address dependencies, post-reopen movement and feature-off/Classic preservation.",
+      "authority": ".github/prompts/tasks/g9u0-r6-semantic-locus-point-interaction-support.prompt.md"
     }
   ]
 }

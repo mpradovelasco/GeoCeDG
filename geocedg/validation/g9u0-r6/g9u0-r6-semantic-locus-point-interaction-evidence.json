@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "phase": "G9U0-R6",
+  "status": "PASS_AUTHOR_APPROVED",
+  "provenance": {
+    "entrySha": "de33f3a80102adb051aaa7547a72b7e97409c58c",
+    "branch": "feature/g9u0-r6-semantic-locus-point-interaction-support",
+    "g9s1PassTag": "geocedg-g9s1-pass",
+    "g9s1PassTagObject": "ece0ca6f00299d3347e57fac38b7a28cade28644",
+    "g9s1PassCommit": "de33f3a80102adb051aaa7547a72b7e97409c58c"
+  },
+  "approval": {
+    "implementationStarted": true,
+    "selfApproved": false,
+    "authorApproved": true,
+    "passClaimed": true,
+    "reviewRequired": false,
+    "disposition": "PASS_AUTHOR_APPROVED"
+  },
+  "authority": {
+    "canonicalPrompt": ".github/prompts/tasks/g9u0-r6-semantic-locus-point-interaction-support.prompt.md",
+    "canonicalPromptLfSha256": "6abf56ccb45fb635f2e09dc239bdf75e1a85e379ac7a544adb07e06025732d2e",
+    "adr": "docs/adr/0019-semantic-locus-point-interaction-support.md",
+    "specification": "geocedg/specs/locus/locus-v2-point-interaction.md",
+    "architecture": "docs/architecture/g9u0_r6_semantic_locus_point_interaction_support.md",
+    "validationMatrix": "docs/validation/g9u0_r6_semantic_locus_point_interaction_validation_matrix.md",
+    "matrixRows": 72,
+    "focusedJUnit": 55,
+    "sharedKernelJUnit": 52,
+    "desktopJUnit": 3,
+    "focusedTestClasses": [
+      {
+        "name": "org.geocedg.common.locus.G9U0R6SemanticLocusPointInteractionTest",
+        "methods": 49
+      },
+      {
+        "name": "org.geocedg.common.kernel.locus.intersection.PolynomialRootIsolation2DTest",
+        "methods": 3
+      },
+      {
+        "name": "org.geocedg.desktop.G9U0R6NativeArchivePersistenceTest",
+        "methods": 3
+      }
+    ]
+  },
+  "architecture": {
+    "placement": "SHARED_KERNEL_SEMANTIC_INTERACTION_CAPABILITY",
+    "typedInverseResult": true,
+    "generalEvaluatorBoundedSearch": true,
+    "certifiedAffineWholeComponentCoverage": true,
+    "evaluatorOnlyZeroOrOneFailsClosed": true,
+    "piecewisePolynomialSpecialization": true,
+    "boundedPolynomialCompositionDepth": true,
+    "normalDagInteractionOwnedAddressState": true,
+    "durableSelectorSeparatedFromCurrentBindingCertificate": true,
+    "hostSnapshotMoveTransaction": true,
+    "persistentRoleOwnedAuxiliaryPresentation": true,
+    "exactPersistedComponentLineage": true,
+    "exactEncodedPeriodicAddressAuthority": true,
+    "bidirectionalPeriodicSeamDrag": true,
+    "periodicSeamPathIndependence": true,
+    "unresolvedPeriodicSeamLeavesPointUnchanged": true,
+    "optionalAffineCaptureFailsClosedWithoutSemanticInvalidation": true,
+    "genericPathConformanceAdded": false,
+    "renderOrViewportAuthorityAdded": false,
+    "publicCommandAdded": false,
+    "frontendImplementationAdded": false,
+    "g9u1Executed": false
+  },
+  "deterministicEvidence": {
+    "sourceHashMethod": "GIT_BLOB_OR_CURRENT_CANDIDATE_UTF8_NO_BOM_CANONICAL_LF_SHA256",
+    "workingTreeLineEndingsAreAuthority": false,
+    "contentMutationMustChangeHash": true,
+    "canonicalSummaryIncludes": [
+      "scenarioIds",
+      "focusedJUnitResults",
+      "candidatePathInventory",
+      "deterministicSourceHashes",
+      "authorityHashes",
+      "protectedG9U1Checkpoint",
+      "openRiskIds"
+    ],
+    "focusedA": {
+      "status": "PASS",
+      "canonicalSummary": "artifacts/g9u0-r6/focused-a/canonical-summary.json"
+    },
+    "focusedB": {
+      "status": "PASS_DETERMINISTIC_MATCH",
+      "canonicalSummary": "artifacts/g9u0-r6/focused-b/canonical-summary.json",
+      "compareAgainst": "artifacts/g9u0-r6/focused-a/canonical-summary.json",
+      "mustMatchFocusedA": true
+    }
+  },
+  "protectedG9U1": {
+    "branch": "feature/g9u1-construction-workspace-planning",
+    "checkpoint": "857de6628489bda0b65a5ba5145e62ca0795fc32",
+    "promptCanonicalLfSha256": "2319df211f5ea17880b7041844122afca0f2ddced4c6db1fabddce0d53dfa322",
+    "mergedIntoR6": false,
+    "implementationAuthorized": false
+  },
+  "retainedRisks": [
+    {
+      "id": "G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP",
+      "status": "OPEN_TRACKED_NONBLOCKING",
+      "r6Disposition": "PRESERVED_NOT_RESOLVED"
+    }
+  ],
+  "phaseDisposition": {
+    "G9S1": "PASS_AUTHOR_APPROVED",
+    "G9U0-R6": "PASS_AUTHOR_APPROVED",
+    "G9U1": "DESIGNED_NOT_AUTHORIZED"
+  },
+  "manualGuiSmoke": {
+    "status": "DEFERRED_TO_G9U1_BY_DESIGN",
+    "passed": false,
+    "requiredForR6": false
+  },
+  "kernelDiagnosticAcceptance": {
+    "status": "PASS",
+    "acceptedValidationSurface": "TEST_HOST_API",
+    "periodicSeamDrag": "PASS_BIDIRECTIONAL_PATH_INDEPENDENT",
+    "unresolvedSeamControl": "PASS_NO_MUTATION"
+  },
+  "futureG9U1ManualSmoke": {
+    "status": "PLANNED_NOT_EXECUTED",
+    "route": "POINT_TOOL_TO_CLICK_TO_CREATE_TO_DRAG_TO_SEAM_TO_CHOOSER_TO_TRANSFORM_TO_K_ZERO_TO_SAVE_REOPEN"
+  }
+}

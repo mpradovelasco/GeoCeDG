@@ -21,8 +21,13 @@ import org.geocedg.common.kernel.locus.LocusSessionDiagnostic2D.Kind;
  * It memoizes results but never owns dependency edges or semantic definitions.
  */
 public final class LocusEvaluationSession2D implements AutoCloseable {
+	/** Shared stack-safe ceiling for nested semantic evaluator composition. */
+	public static final int MAXIMUM_SAFE_ACTIVE_DEPTH = 128;
+
 	private final boolean memoizationEnabled;
 	private final int maximumEntries;
+	private final long maximumMisses;
+	private final int maximumActiveDepth;
 	private final Map<LocusSemanticKey2D, LocusEvaluation2D> cache;
 	private final Map<String, Long> coherentRevisions = new LinkedHashMap<>();
 	private final Set<LocusSemanticKey2D> activeKeys = new HashSet<>();
@@ -40,17 +45,53 @@ public final class LocusEvaluationSession2D implements AutoCloseable {
 	 * @param maximumEntries positive bounded capacity
 	 */
 	public LocusEvaluationSession2D(boolean memoizationEnabled, int maximumEntries) {
+		this(memoizationEnabled, maximumEntries, Long.MAX_VALUE,
+				MAXIMUM_SAFE_ACTIVE_DEPTH);
+	}
+
+	private LocusEvaluationSession2D(boolean memoizationEnabled,
+			int maximumEntries, long maximumMisses, int maximumActiveDepth) {
 		if (maximumEntries < 1) {
 			throw new IllegalArgumentException("A semantic session must be bounded");
 		}
+		if (maximumMisses < 1) {
+			throw new IllegalArgumentException(
+					"A semantic session work limit must be positive");
+		}
+		if (maximumActiveDepth < 1) {
+			throw new IllegalArgumentException(
+					"A semantic session depth limit must be positive");
+		}
 		this.memoizationEnabled = memoizationEnabled;
 		this.maximumEntries = maximumEntries;
+		this.maximumMisses = maximumMisses;
+		this.maximumActiveDepth = maximumActiveDepth;
 		this.cache = new LinkedHashMap<>();
 	}
 
 	/** @return a bounded memoizing batch session */
 	public static LocusEvaluationSession2D memoizing(int maximumEntries) {
 		return new LocusEvaluationSession2D(true, maximumEntries);
+	}
+
+	/**
+	 * Creates a memoizing session whose complete nested evaluator work is bounded.
+	 * Every cache miss, including one issued by a composed semantic evaluator,
+	 * consumes this limit.
+	 *
+	 * @return bounded semantic session
+	 */
+	public static LocusEvaluationSession2D memoizingWithMissLimit(
+			int maximumEntries, long maximumMisses) {
+		return new LocusEvaluationSession2D(true, maximumEntries, maximumMisses,
+				MAXIMUM_SAFE_ACTIVE_DEPTH);
+	}
+
+	/** @return memoizing session with explicit nested-evaluator depth limit */
+	public static LocusEvaluationSession2D memoizingWithLimits(
+			int maximumEntries, long maximumMisses, int maximumActiveDepth) {
+		return new LocusEvaluationSession2D(true, maximumEntries, maximumMisses,
+				maximumActiveDepth);
 	}
 
 	/** @return a reference session with memoization disabled */
@@ -91,6 +132,12 @@ public final class LocusEvaluationSession2D implements AutoCloseable {
 				definition.getInstrumentation().recordDuplicateRequest();
 				return cached;
 			}
+		}
+		if (misses >= maximumMisses) {
+			throw new EvaluationWorkLimitException(maximumMisses);
+		}
+		if (activeStack.size() >= maximumActiveDepth) {
+			throw EvaluationWorkLimitException.forDepth(maximumActiveDepth);
 		}
 		misses++;
 		definition.getInstrumentation().recordSessionMiss();
@@ -204,5 +251,26 @@ public final class LocusEvaluationSession2D implements AutoCloseable {
 		}
 		path.add(repeated);
 		return new LocusSessionDiagnostic2D(kind, message, path);
+	}
+
+	/** Typed hard stop for a caller-supplied semantic evaluation work limit. */
+	public static final class EvaluationWorkLimitException
+			extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+
+		private EvaluationWorkLimitException(long maximumMisses) {
+			super("Semantic evaluation work limit exhausted at " + maximumMisses
+					+ " cache misses");
+		}
+
+		private EvaluationWorkLimitException(String message) {
+			super(message);
+		}
+
+		private static EvaluationWorkLimitException forDepth(int maximumDepth) {
+			return new EvaluationWorkLimitException(
+					"Semantic evaluator composition depth exhausted at "
+							+ maximumDepth + " active definitions");
+		}
 	}
 }

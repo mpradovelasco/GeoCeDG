@@ -11,8 +11,8 @@ spatial, public-surface, workspace, extended-DXF, documentation, and bundle
 specifications without implementing them. Those six G9P specifications are
 `NORMATIVE / AUTHOR APPROVED`; implementation authorization remains an
 independent phase status. G9O1, G9A1–G9A3/the G9A track, G9U0, G9U0-R1,
-  G9X1, G9U0-R2, G9U0-R3 and G9U0-R4 are `PASS — AUTHOR APPROVED` within their
-  recorded scopes. Historical R4 smoke 1 found two-root invalidation during regular
+G9X1, G9U0-R2, G9U0-R3, G9U0-R4, G9U0-R5 and G9S1 are
+`PASS — AUTHOR APPROVED` within their recorded scopes. Historical R4 smoke 1 found two-root invalidation during regular
 motion; historical smoke 2 found four finite roots that were initially not
 materializable. The author subsequently authorized the narrow intrinsic
 semantic phase/rank refinement in
@@ -48,7 +48,7 @@ localized value for `DETERMINISTIC_SELECTION_ESTABLISHED`; the bounded
 base/English/Spanish bundle addition changes no semantic contract. The current
 candidate inventory is 54 paths, 31 under `source/`. Protective checkpoint
 `4ef2c9d` and its 50-method evidence predate the adaptive/dormant correction;
-current A/B each pass 58/58 with exact canonical SHA-256
+current A/B each pass 58/58 with historical closeout canonical SHA-256
 `3e9ea0aa20d511f2828eae61e491c1b3b5d9cb86a0f02166503ee5093d6000fb`
 and composed passes. R4 closes with `selfApproved=false`,
 `authorApproved=true`, `passClaimed=true`; no smoke result is erased.
@@ -57,10 +57,10 @@ dedicated native `.cedg` quarantine round trip. It is nonblocking for R4,
 revisited by G9U1 and due for resolution or explicit author disposition by
 global G9 closeout, without becoming an implicit R5 dependency.
 `locus/locus-v2-similarity-transformations.md` is the G9U0-R5 **NORMATIVE —
-DESIGN PASS — AUTHOR APPROVED** contract. Implementation is authorized through
-its canonical prompt; Option A governs finite `k=0` as a valid
+DESIGN PASS — AUTHOR APPROVED** contract. Its implementation is also
+**PASS — AUTHOR APPROVED**; Option A governs finite `k=0` as a valid
 source-domain-preserving `COLLAPSED_IMAGE`. The shared-kernel implementation is
-**PASS — AUTHOR APPROVED**.
+closed in that same author-approved state.
 It routes all seven approved ordinary 2D transform forms to new first-class
 `GeoLocusV2` DAG outputs, evaluates source-first at the unchanged semantic
 address, preserves finite/unbounded domain classification while adding the
@@ -92,8 +92,43 @@ symmetric certified unique pair selector, so it allocates no active ledger
 token and materializes no point. The approved implementation does not invent
 scholarly citations and does not close the periodic-quarantine risk.
 
+`locus/locus-v2-point-interaction.md` is the G9U0-R6 **NORMATIVE — PASS —
+AUTHOR APPROVED** contract. Accepted ADR 0019 keeps the inverse
+interaction seam in the shared kernel: a transient geometric request produces
+a typed set of semantic preimages, explicit selection creates or edits the
+ordinary point's branch/component/parameter address, and forward evaluation
+remains geometric authority. It does not make `GeoLocusV2` a generic `Path`,
+does not persist click/pixel/render-sample data, and does not implement the
+future Point tool, markers or workspace. The structural affine certificate
+supplies complete finite-component coverage without fitting; evaluator-only
+zero/one results remain unresolved because a narrow unsampled minimum is not
+excluded. SplineV2 uses coherent paired x/y polynomials, O(1) captured
+composition depth, linear similarity propagation and the shared 128-level
+ceiling; floating coefficients do not claim exact arithmetic. Address mutation
+reuses the O(N) host Construction snapshot/restore boundary. Stable role plus
+structurally exclusive inputs govern auxiliary presentation and reopen
+restoration, while exact persisted component lineage disambiguates shared
+endpoints or fails closed. R5 transformed loci, periodic domains and `k=0`
+`COLLAPSED_IMAGE` retain their accepted contracts. The validated matrix contains
+72 scenarios and the focused suite passes 55/55 twice (52 shared-kernel plus 3
+Desktop) with identical canonical summary SHA-256
+`7aaed6a558bf6f86ec93a5b45eb74155d45e66b52b47c373a9ad32f43b156cc9`.
+The author accepts the kernel test-host/API diagnostic surface;
+`manualGuiSmoke = DEFERRED TO G9U1 BY DESIGN` and
+`kernelDiagnosticAcceptance = PASS`.
+
+The independent G9U1 planning branch is protected at checkpoint
+`857de6628489bda0b65a5ba5145e62ca0795fc32`; its checkpoint prompt canonical-LF
+SHA-256 is
+`2319df211f5ea17880b7041844122afca0f2ddced4c6db1fabddce0d53dfa322`.
+R6 neither merges nor executes those 17 planning paths. G9U1 remains
+unexecuted and requires post-R6 reconciliation plus separate execution
+authorization. Retained risk
+`G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` remains `OPEN / TRACKED`.
+
 G9U1 likewise remains unexecuted; G9U1, G9B and G9C remain designed but not
-authorized. G9S1 is `PASS — AUTHOR APPROVED`. The future G9U1
+authorized. G9S1 and R6 are `PASS — AUTHOR APPROVED`.
+The future G9U1
 GeoCeDG product contract
 requires the host Continuity setting to remain off while Classic stays
 configurable. G9U2 remains blocked and productive G10 remains unauthorized.

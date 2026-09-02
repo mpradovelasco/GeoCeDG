@@ -11,6 +11,13 @@ package org.geocedg.common.kernel.locus;
  * parameter and are never recovered from render samples or expression trees.
  */
 public interface PiecewisePolynomialLocus2D extends LocusParameterPartition2D {
+	/**
+	 * Shared hard ceiling for recursive semantic-composition capability access.
+	 * Query-specific policies may impose a smaller limit.
+	 */
+	int MAXIMUM_SAFE_COMPOSITION_DEPTH =
+			LocusEvaluationSession2D.MAXIMUM_SAFE_ACTIVE_DEPTH;
+
 	/** @return whether this captured revision exposes polynomial spans */
 	default boolean supportsPiecewisePolynomial(LocusDefinition2D definition) {
 		return true;
@@ -31,6 +38,28 @@ public interface PiecewisePolynomialLocus2D extends LocusParameterPartition2D {
 	 */
 	double[] getPolynomialCoefficients(String branchKey, int spanIndex,
 			int coordinate);
+
+	/**
+	 * Returns both coordinate polynomials from one coherent capability snapshot.
+	 * Implementations that compose semantic evaluators should override this method
+	 * so requesting x and y does not duplicate the complete composition traversal.
+	 *
+	 * @return defensive x/y descending-power coefficient arrays
+	 */
+	default double[][] getPolynomialCoordinateCoefficients(String branchKey,
+			int spanIndex) {
+		return new double[][] {
+				getPolynomialCoefficients(branchKey, spanIndex, 0),
+				getPolynomialCoefficients(branchKey, spanIndex, 1)};
+	}
+
+	/**
+	 * @return positive semantic-composition depth, available without traversing
+	 *         the evaluator chain
+	 */
+	default int getPolynomialCompositionDepth() {
+		return 1;
+	}
 
 	/**
 	 * Evaluates the analytic first derivative on the canonical owning span.

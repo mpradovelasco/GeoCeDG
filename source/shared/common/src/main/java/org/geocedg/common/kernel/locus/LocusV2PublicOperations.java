@@ -12,6 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.geocedg.common.kernel.algos.AlgoDependentPointLocusV2;
 import org.geocedg.common.kernel.algos.AlgoLocusBetweenMetricV2;
@@ -26,6 +27,11 @@ import org.geocedg.common.kernel.algos.AlgoSplineV2;
 import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
 import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionCandidate2D;
+import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionPolicy2D;
+import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionQuery2D;
+import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionResolver2D;
+import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionResult2D;
 import org.geocedg.common.kernel.spatial.identity.ConstructionGeoRedefineProvider;
 import org.geocedg.common.kernel.spatial.identity.EditAuthorityMode;
 import org.geocedg.common.kernel.spatial.identity.GeoIdentityRecord;
@@ -64,6 +70,9 @@ import org.geogebra.common.kernel.kernelND.GeoConicNDConstants;
  */
 public final class LocusV2PublicOperations {
 	private static final double DEFAULT_DOMAIN_EPSILON = 1e-12;
+	/** Durable role authorizing mutation of dedicated semantic-address inputs. */
+	public static final String INTERACTION_POINT_OUTPUT_ROLE =
+			ConstructionGeoRedefineProvider.INTERACTION_POINT_OUTPUT_ROLE;
 
 	private LocusV2PublicOperations() {
 		// Static public construction boundary.
@@ -191,6 +200,122 @@ public final class LocusV2PublicOperations {
 	public static GeoPoint createSemanticPoint(Construction construction,
 			String label, GeoLocusV2 source, GeoText branch,
 			GeoNumberValue parameter) {
+		return createSemanticPoint(construction, label, source, branch, parameter,
+				ConstructionGeoRedefineProvider.STABLE_OUTPUT_ROLE);
+	}
+
+	/**
+	 * Creates one semantic point with dedicated, hidden address-state inputs.
+	 *
+	 * @return ordinary point with durable R6 interaction ownership
+	 */
+	public static GeoPoint createInteractiveSemanticPoint(
+			Construction construction, String label, GeoLocusV2 source,
+			LocusPointInteractionCandidate2D candidate) {
+		requireAccess(construction);
+		Objects.requireNonNull(candidate);
+		LocusDefinition2D definition = source.getSemanticDefinition();
+		if (definition == null || source.getPersistentLocusId() == null
+				|| candidate.getSourceRevision() != definition.getSemanticRevision()
+				|| !source.getPersistentLocusId().equals(
+						candidate.getAddress().getSourceLocusId())
+				|| !isCurrentCandidate(definition, candidate)) {
+			throw new IllegalArgumentException(
+					"Interaction candidate does not belong to the current locus revision");
+		}
+		GeoText branch = new GeoText(construction);
+		branch.setTextString(LocusSemanticAddressState2D.encode(
+				candidate.getAddress()));
+		branch.setAuxiliaryObject(true);
+		branch.setEuclidianVisible(false);
+		branch.setRestrictedEuclidianVisibility(true);
+		GeoNumeric parameter = new GeoNumeric(construction,
+				rawParameter(definition, candidate.getAddress()));
+		parameter.setAuxiliaryObject(true);
+		parameter.setEuclidianVisible(false);
+		parameter.setRestrictedEuclidianVisibility(true);
+		try {
+			return createSemanticPoint(construction, label, source, branch, parameter,
+					INTERACTION_POINT_OUTPUT_ROLE, candidate.getAddress());
+		} catch (RuntimeException exception) {
+			removeFailedDedicatedInput(branch, exception);
+			removeFailedDedicatedInput(parameter, exception);
+			throw exception;
+		}
+	}
+
+	/**
+	 * Moves only an R6-owned point through current semantic resolver authority.
+	 * Any non-unique result leaves the DAG inputs untouched.
+	 *
+	 * @return typed result of the attempted edit
+	 */
+	public static LocusPointInteractionResult2D moveInteractiveSemanticPoint(
+			GeoPoint point, double targetX, double targetY,
+			LocusPointInteractionPolicy2D policy) {
+		AlgoSemanticLocusPoint2D parent =
+				AlgoSemanticLocusPoint2D.requireSemanticParent(point);
+		Construction construction = point.getConstruction();
+		requireAccess(construction);
+		SpatialIdentityRegistry registry = construction.getSpatialIdentityRegistry();
+		PersistentGeoId pointId = registry.getPersistentGeoId(point);
+		GeoIdentityRecord record = pointId == null ? null
+				: registry.getGeoRecord(pointId);
+		if (record == null || !INTERACTION_POINT_OUTPUT_ROLE
+				.equals(record.getStableOutputRole())
+				|| !ConstructionGeoRedefineProvider
+						.hasDedicatedInteractionPointState(point)) {
+			throw new IllegalArgumentException(
+					"Only an interaction-owned semantic point can be moved");
+		}
+		LocusSemanticAddress2D currentAddress =
+				parent.getCurrentSemanticAddress();
+		if (currentAddress == null) {
+			throw new IllegalStateException(
+					"The interaction-owned point has no current resolved address");
+		}
+		LocusPointInteractionQuery2D query = new LocusPointInteractionQuery2D(
+				parent.getSource(), targetX, targetY, policy,
+				currentAddress);
+		LocusPointInteractionResult2D result =
+				new LocusPointInteractionResolver2D().resolve(query);
+		LocusPointInteractionCandidate2D candidate = result.getUniqueCandidate();
+		if (candidate == null) {
+			return result;
+		}
+		GeoElement parameterGeo = parent.getParameterInput().toGeoElement();
+		if (!(parameterGeo instanceof GeoNumeric)) {
+			throw new IllegalStateException(
+					"Interaction-owned parameter is not an independent numeric");
+		}
+		GeoText branch = parent.getBranchInput();
+		GeoNumeric parameter = (GeoNumeric) parameterGeo;
+		construction.runAtomicConstructionMutation(() -> {
+			branch.setTextString(LocusSemanticAddressState2D.encode(
+					candidate.getAddress()));
+			parameter.setValue(rawParameter(
+					parent.getSource().getSemanticDefinition(), candidate.getAddress()));
+			GeoElement.updateCascade(List.of(branch, parameterGeo));
+			if (!point.isDefined() || !candidate.getAddress().equals(
+					parent.getCurrentSemanticAddress())) {
+				throw new IllegalStateException(
+						"Semantic address edit did not publish the selected candidate");
+			}
+		});
+		return result;
+	}
+
+	private static GeoPoint createSemanticPoint(Construction construction,
+			String label, GeoLocusV2 source, GeoText branch,
+			GeoNumberValue parameter, String stableOutputRole) {
+		return createSemanticPoint(construction, label, source, branch, parameter,
+				stableOutputRole, null);
+	}
+
+	private static GeoPoint createSemanticPoint(Construction construction,
+			String label, GeoLocusV2 source, GeoText branch,
+			GeoNumberValue parameter, String stableOutputRole,
+			LocusSemanticAddress2D requiredAddress) {
 		requireAccess(construction);
 		GeoElement parameterGeo = parameter.toGeoElement();
 		ParticipationBatch batch = new ParticipationBatch(construction);
@@ -204,9 +329,16 @@ public final class LocusV2PublicOperations {
 			algorithm = new AlgoSemanticLocusPoint2D(construction, source, branch,
 					parameter);
 			GeoPoint output = algorithm.getPoint();
+			if (requiredAddress != null && (!output.isDefined()
+					|| !requiredAddress.equals(
+							algorithm.getCurrentSemanticAddress()))) {
+				throw new IllegalArgumentException(
+						"Interaction candidate did not reconstruct exactly");
+			}
 			finishLabel(output, label, false);
 			if (!construction.isFileLoading()) {
-				batch.stageReserved(output, outputId, dependencies);
+				batch.stageReserved(output, outputId, dependencies,
+						stableOutputRole);
 				batch.publish();
 			}
 			return output;
@@ -215,6 +347,41 @@ public final class LocusV2PublicOperations {
 			removeFailed(algorithm);
 			throw exception;
 		}
+	}
+
+	private static boolean isCurrentCandidate(LocusDefinition2D definition,
+			LocusPointInteractionCandidate2D candidate) {
+		LocusSemanticAddress2D address = candidate.getAddress();
+		LocusDriverDomainProvider2D provider = definition.getProvider();
+		if (!provider.getProviderId().equals(address.getProviderVersion())
+				|| Double.doubleToLongBits(provider.canonicalize(
+						address.getCanonicalParameter()))
+						!= Double.doubleToLongBits(address.getCanonicalParameter())) {
+			return false;
+		}
+		LocusBranch2D branch = definition.getBranch(address.getBranchKey());
+		if (branch == null) {
+			return false;
+		}
+		for (LocusInterval2D component : branch.getValidDomainComponents()) {
+			if (address.getComponentLineageKey().equals(
+					LocusComponentLineage2D.create(branch.getBranchKey(), component))
+					&& component.contains(address.getCanonicalParameter(),
+							provider.getDomainEpsilon())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static double rawParameter(LocusDefinition2D definition,
+			LocusSemanticAddress2D address) {
+		if (!definition.getProvider().isPeriodic()) {
+			return address.getCanonicalParameter();
+		}
+		LocusInterval2D domain = definition.getProvider().getDeclaredDomain();
+		double period = domain.getUpper() - domain.getLower();
+		return address.getCanonicalParameter() + address.getPeriodicLift() * period;
 	}
 
 	/**
@@ -653,6 +820,17 @@ public final class LocusV2PublicOperations {
 		}
 	}
 
+	private static void removeFailedDedicatedInput(GeoElement input,
+			RuntimeException originalFailure) {
+		try {
+			if (input.isIndependent() && input.getAlgorithmList().isEmpty()) {
+				input.remove();
+			}
+		} catch (RuntimeException cleanupFailure) {
+			originalFailure.addSuppressed(cleanupFailure);
+		}
+	}
+
 	private static List<GeoElement> direct(GeoElement... geos) {
 		ArrayList<GeoElement> result = new ArrayList<>();
 		Map<GeoElement, Boolean> seen = new IdentityHashMap<>();
@@ -731,6 +909,8 @@ public final class LocusV2PublicOperations {
 		private final Map<GeoElement, PersistentGeoId> stagedIds =
 				new IdentityHashMap<>();
 		private final Map<GeoElement, List<GeoElement>> explicitDependencies =
+				new IdentityHashMap<>();
+		private final Map<GeoElement, String> stableOutputRoles =
 				new IdentityHashMap<>();
 		private final LinkedHashSet<PersistentGeoId> reservations =
 				new LinkedHashSet<>();
@@ -814,14 +994,22 @@ public final class LocusV2PublicOperations {
 
 		private void stageReserved(GeoElement geo, PersistentGeoId id,
 				List<GeoElement> dependencies) {
+			stageReserved(geo, id, dependencies,
+					ConstructionGeoRedefineProvider.STABLE_OUTPUT_ROLE);
+		}
+
+		private void stageReserved(GeoElement geo, PersistentGeoId id,
+				List<GeoElement> dependencies, String stableOutputRole) {
 			if (id == null || registry.getPersistentGeoId(geo) != null
-					|| stagedIds.containsKey(geo)) {
+					|| stagedIds.containsKey(geo) || stableOutputRole == null
+					|| stableOutputRole.trim().isEmpty()) {
 				throw new IllegalArgumentException(
 						"Invalid public output identity reservation");
 			}
 			stagedIds.put(geo, id);
 			explicitDependencies.put(geo,
 					Collections.unmodifiableList(new ArrayList<>(dependencies)));
+			stableOutputRoles.put(geo, stableOutputRole);
 		}
 
 		private List<GeoElement> parentDependencies(GeoElement geo) {
@@ -848,7 +1036,8 @@ public final class LocusV2PublicOperations {
 				}
 				Collections.sort(dependencyIds);
 				participations.put(geo, record(staged.getValue(), geo,
-						dependencyIds));
+						dependencyIds, stableOutputRoles.getOrDefault(geo,
+								ConstructionGeoRedefineProvider.STABLE_OUTPUT_ROLE)));
 			}
 			if (registry.isRedefineCandidateParticipationActive()) {
 				registry.stageRedefineCandidateParticipations(participations);
@@ -877,7 +1066,7 @@ public final class LocusV2PublicOperations {
 		}
 
 		private GeoIdentityRecord record(PersistentGeoId id, GeoElement geo,
-				List<PersistentGeoId> dependencies) {
+				List<PersistentGeoId> dependencies, String stableOutputRole) {
 			return new GeoIdentityRecord(id,
 					ConstructionGeoRedefineProvider.PROVIDER_ID,
 					ConstructionGeoRedefineProvider.familyFor(geo),
@@ -885,7 +1074,7 @@ public final class LocusV2PublicOperations {
 					ConstructionGeoRedefineProvider.SCHEMA_VERSION,
 					EditAuthorityMode.CONSTRUCTION_DEFINED,
 					ProjectionBindingRole.NOT_APPLICABLE,
-					ConstructionGeoRedefineProvider.STABLE_OUTPUT_ROLE, 1,
+					stableOutputRole, 1,
 					dependencies, 0, 0);
 		}
 

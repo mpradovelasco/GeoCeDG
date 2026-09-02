@@ -63,6 +63,8 @@ $G9U0R5SimilarityTransformationsVerifier = Join-Path $PSScriptRoot `
     "verify-g9u0-r5-locus-v2-similarity-transformations.ps1"
 $G9S1SemanticSplineVerifier = Join-Path $PSScriptRoot `
     "verify-g9s1-semantic-spline-2d-capability.ps1"
+$G9U0R6SemanticLocusPointInteractionVerifier = Join-Path $PSScriptRoot `
+    "verify-g9u0-r6-semantic-locus-point-interaction-support.ps1"
 $BenchmarkRunner = Join-Path $RepositoryRoot "tools\benchmark\run.ps1"
 $InitialStatus = $null
 
@@ -915,6 +917,57 @@ try {
         & $G9S1SemanticSplineVerifier @g9s1Parameters
         Assert-LastScriptSuccess `
             -Description "G9S1 semantic Spline V2 capability"
+    }
+
+    $g9u0R6IntegrationArtifacts = @(
+        $G9U0R6SemanticLocusPointInteractionVerifier,
+        (Join-Path $RepositoryRoot `
+            ".github\prompts\tasks\g9u0-r6-semantic-locus-point-interaction-support.prompt.md"),
+        (Join-Path $RepositoryRoot `
+            "docs\adr\0019-semantic-locus-point-interaction-support.md"),
+        (Join-Path $RepositoryRoot `
+            "geocedg\specs\locus\locus-v2-point-interaction.md"),
+        (Join-Path $RepositoryRoot `
+            "docs\architecture\g9u0_r6_semantic_locus_point_interaction_support.md"),
+        (Join-Path $RepositoryRoot `
+            "docs\validation\g9u0_r6_semantic_locus_point_interaction_validation_matrix.md"),
+        (Join-Path $RepositoryRoot `
+            "geocedg\validation\g9u0-r6\g9u0-r6-semantic-locus-point-interaction-scenarios.json"),
+        (Join-Path $RepositoryRoot `
+            "geocedg\validation\g9u0-r6\g9u0-r6-semantic-locus-point-interaction-evidence.json"),
+        (Join-Path $RepositoryRoot `
+            "geocedg\validation\g9u0-r6\g9u0-r6-evidence.sha256"),
+        (Join-Path $RepositoryRoot `
+            "docs\validation\g9u0_r6_semantic_locus_point_interaction_candidate_report.md")
+    )
+    $g9u0R6PresentCount = @($g9u0R6IntegrationArtifacts | Where-Object {
+        Test-Path -LiteralPath $_ -PathType Leaf
+    }).Count
+    if ($g9u0R6PresentCount -ne 0 -and
+            $g9u0R6PresentCount -ne $g9u0R6IntegrationArtifacts.Count) {
+        throw ("Incomplete G9U0-R6 integration; canonical prompt, accepted " +
+            "ADR/specification, architecture, matrix, scenario/evidence/hash, " +
+            "closeout report and verifier are paired.")
+    }
+    if ($g9u0R6PresentCount -eq $g9u0R6IntegrationArtifacts.Count) {
+        Write-Host "`n==> G9U0-R6 semantic Locus point interaction support"
+        $g9u0R6Parameters = @{
+            HistoricalRegressionsAlreadyComposed = $true
+            LogDirectory = Join-Path ([IO.Path]::GetFullPath($LogDirectory)) `
+                "g9u0-r6-semantic-locus-point-interaction-support"
+        }
+        if ($SkipBuild) {
+            $g9u0R6Parameters.SkipBuild = $true
+        }
+        if ($AllowToolchainDownload) {
+            $g9u0R6Parameters.AllowToolchainDownload = $true
+        }
+        if ($KeepBuildOutputs) {
+            $g9u0R6Parameters.KeepBuildOutputs = $true
+        }
+        & $G9U0R6SemanticLocusPointInteractionVerifier @g9u0R6Parameters
+        Assert-LastScriptSuccess `
+            -Description "G9U0-R6 semantic Locus point interaction support"
     }
 
     Write-Host "`n==> Standalone Windows packaging contracts"

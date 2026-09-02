@@ -12,8 +12,10 @@
   replacement automated PASS and final four-root/point-reactivation re-smokes
   `PASS`. G9U0-R5 design and implementation are `PASS — AUTHOR APPROVED` after
   the final dynamic-factor characterization. G9S1 is also `PASS — AUTHOR
-  APPROVED` using Option B after the partial-length re-smoke; G9U1 remains unexecuted;
-  G9U1/G9B/G9C remain unauthorized
+  APPROVED` using Option B after the partial-length re-smoke. G9U0-R6 is also
+  `PASS — AUTHOR APPROVED`; it adds only the bounded shared-kernel inverse
+  semantic point-interaction seam and no productive Desktop Point-tool consumer.
+  G9U1 remains protected/unexecuted; G9U1/G9B/G9C remain unauthorized
 - G9U0-R2 closeout: `selfApproved=false`, `authorApproved=true`,
   `passClaimed=true`; installed MSI/registry smoke `NOT_REQUESTED`
 
@@ -282,20 +284,27 @@ original G9P prompt as unchanged history. Its frozen post-R5 successor is
 `.github/prompts/tasks/g9u1-construction-workspace-after-g9u0-r5.prompt.md`
 (canonical-LF SHA-256
 `0b96f571932144f9a99f7681938edf756c8999cb847b61095f82430068e96389`).
-The definitive prospective candidate is now
-`.github/prompts/tasks/g9u1-construction-workspace-after-g9s1.prompt.md`
-(canonical-LF SHA-256
-`45e919c5415f7824fd6d18e01ed46f8f23871adcc6fc0821d653caa82d8c6dad`).
-It remains unexecuted/not authorized and supersedes the post-R5 prompt only
-after G9S1 PASS plus separate authorization of this exact hash. It keeps
-candidate markers as non-persistent active-result
+The post-G9S1 prompt present on `main`,
+`.github/prompts/tasks/g9u1-construction-workspace-after-g9s1.prompt.md`, is
+historical prospective input with canonical-LF SHA-256
+`6451f15d5e0ecb9cadf8e17160a41606b5c8c27924455d1ee08326cad9b74fb4`.
+The independently reviewed planning advance is protected, not merged, on
+`feature/g9u1-construction-workspace-planning` at checkpoint
+`857de6628489bda0b65a5ba5145e62ca0795fc32`; that checkpoint's same logical
+prompt has canonical-LF SHA-256
+`2319df211f5ea17880b7041844122afca0f2ddced4c6db1fabddce0d53dfa322`.
+Its 17 paths remain unexecuted/not authorized and must be reconciled against
+the actual R6 API after R6 author-approved PASS, then separately authorized.
+The protected candidate keeps candidate markers as non-persistent active-result
 overlays derived from current deterministic root/evidence authority, fixes the
 existing host Continuity option OFF in GeoCeDG while retaining configurable
-  Classic behavior, consumes the exact kernel token bound to the intrinsic
-  phase/rank selector without computing a UI rank. It requires create-one,
-  create-selected and create-all actions, one coherent undo transaction per
-  multi-point action, and an inspector session that can remain open and identify
-  already materialized choices. Optional auto-materialization remains one explicit
+Classic behavior, consumes the exact kernel token bound to the intrinsic
+phase/rank selector without computing a UI rank, and expects a future Point
+tool to consume R6 typed inverse-resolution results rather than render samples.
+It requires create-one, create-selected and create-all actions, one coherent
+undo transaction per multi-point action, and an inspector session that can
+remain open and identify already materialized choices. Optional
+auto-materialization remains one explicit
 visible frontend transaction after a user-requested Intersect action. Kernel
 recompute/load/topology changes never create DAG nodes. It retains the eleven
 professional action groups and reserves
@@ -304,7 +313,7 @@ the existing asset-provenance seam. Their intended future author sources are
 `helixTopBar.png` and `helixSnapshot.png`; R3 integrates neither. The startup
 source may produce application/package derivatives only after small-size and
 platform suitability checks. No icon, palette, workspace or marker
-implementation is part of R3.
+implementation is part of R3 or R6.
 
 ## Persistence and compatibility
 
@@ -515,6 +524,89 @@ match the selected source-backed method and focused evidence. Missing
 scholarly support remains an explicit research requirement, never an invented
 citation. The retained periodic-quarantine round-trip risk remains open.
 
+G9U0-R6 is a bounded `PASS — AUTHOR APPROVED` shared-kernel capability, not a
+productive Desktop Point-tool feature. Its
+[accepted ADR](../adr/0019-semantic-locus-point-interaction-support.md),
+[normative specification](../../geocedg/specs/locus/locus-v2-point-interaction.md)
+and [architecture](../architecture/g9u0_r6_semantic_locus_point_interaction_support.md)
+separate four concerns:
+
+1. a transient geometric request with no durable identity;
+2. a deterministic inverse resolver that returns typed zero/one/many,
+   unresolved, invalid, degenerate or unsupported outcomes plus semantic
+   addresses;
+3. explicit selection of one address when several preimages are valid; and
+4. an ordinary normal-DAG point whose editable state is source identity,
+   branch/component and provider-canonical parameter, evaluated forward.
+
+The implementation exposes `LocusPointInteractionQuery2D`,
+`LocusPointInteractionResolver2D.resolve(...)` and
+`LocusPointInteractionResult2D` as one common typed resolver seam. The public
+construction boundary is
+`LocusV2PublicOperations.createInteractiveSemanticPoint(Construction, String,
+GeoLocusV2, LocusPointInteractionCandidate2D)` and
+`moveInteractiveSemanticPoint(GeoPoint, double, double,
+LocusPointInteractionPolicy2D)`. It also provides a structurally
+certified affine complete-coverage path, a bounded general branch/domain search
+and a SplineV2 specialization over its provider polynomial spans. The affine
+certificate comes from direct reconstructible semantics or algebraic R5
+propagation, never sample fitting. The evaluator-only fallback cannot exclude
+an unsampled narrow minimum, so zero or one local candidate remains
+`UNRESOLVED_NUMERICAL_SEARCH`; only certified-affine or complete polynomial
+coverage can establish definitive none/unique. Candidate enumeration may use
+geometric distance, but durable
+identity never uses nearest previous coordinate, render samples, pixels,
+solver/list index or movement history. Every candidate is verified by forward
+semantic evaluation. Polynomial providers return a coherent x/y coefficient
+pair with O(1) captured composition depth; similarity propagation is linear in
+nesting, bounded by the query and the shared 128-level safety ceiling. These
+floating coefficients and residuals are not exact-arithmetic claims.
+Self-intersections remain multi-preimage, and ambiguity fails closed until the
+caller explicitly selects one address. The source-level seam is documented in
+the Locus V2 API reference. The accepted evidence freezes 55 focused methods
+(52 shared-kernel and 3 Desktop) and the bounded budgets; this shared-kernel API
+does not itself make a final Point-tool frontend or public inverse command.
+
+An interaction-owned point stores a versioned address state plus numeric
+parameter in dedicated independent inputs. Exact persisted component lineage
+selects a shared-endpoint component; absent or nonunique lineage fails closed.
+Those inputs are hidden only when the stable `LOCUS_INTERACTION_POINT` role and
+structural exclusivity both prove ownership. Persistent identity attachment
+restores the auxiliary/restricted presentation after reopen, while an ordinary
+user input that merely resembles the codec remains ordinary and visible.
+
+Move publication reuses the host Construction snapshot/restore transaction:
+address writes, DAG cascade and postcondition are atomic. A failed mutation
+restores the pre-edit construction or reports catastrophic rollback failure.
+The snapshot costs O(N) per edit, creates no undo entry itself and may replace
+Java instances on rollback, so a future gesture owner must group successful
+undo and abort/reacquire objects after failure.
+
+For an invertible R5 similarity, inverse-mapping a request to the source may be
+an optimization, while the selected address and constructed point still belong
+to the transformed locus. A `k=0` `COLLAPSED_IMAGE` query is generally
+degenerate/non-unique, but an already addressed point remains a valid DAG child,
+collapses geometrically and recovers at nonzero scale. Periodic canonicalization
+and seam ambiguity remain provider authority. A unique periodic seam move keeps
+the encoded canonical parameter/lift/seam tuple as exact address authority; the
+hidden numeric is validated as its exact lifted reconstruction rather than
+modularly re-identifying the canonical bits. Bidirectional closed-Spline drag
+and path independence are focused API gates, and the unresolved evaluator-only
+control still leaves point state untouched. Ordinary R6 persistence must not
+be mistaken for resolution of the open
+`G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` risk.
+
+R6 intentionally does not implement generic `Path`, the Desktop Point tool,
+candidate markers, workspace state or new public commands. The future G9U1
+frontend may consume the typed resolver only after reconciliation of the
+protected checkpoint and separate authorization. R6 is
+`PASS — AUTHOR APPROVED` with `selfApproved=false`, `authorApproved=true`,
+`passClaimed=true`.
+R6 has no productive GUI consumer, so its test-host/API diagnostic acceptance
+is `PASS`; `manualGuiSmoke = DEFERRED TO G9U1 BY DESIGN`. The actual Point-tool
+create/drag, seam, chooser, transform, `k=0` and reopen manual smoke is deferred
+to G9U1 by design.
+
 The R5 `k=0.25` free-input limitation remains G9A
 `REDEFINE_CONTEXT_MISSING`; G9S1 does not broaden redefine or use labels as
 identity. The post-G9S1 G9U1 design retains the atomic compatible-redefine UX
@@ -524,8 +616,9 @@ Phase documents distinguish hard semantic/contract dependencies, recommended
 execution predecessors and global/release gates. G9O1 is recommended first but
 is not a semantic prerequisite of G9A1. After G9A3, G9B/G9C can progress
 without G9U1. The product schedule is G9U0-R1 plus G9X1 → G9U0-R2 → G9U0-R3 →
-  G9U0-R4 → BOOK-P1 → G9U0-R5 → G9S1 → G9U1. BOOK-P1 is an independent editorial
-  checkpoint, not a software dependency. R3, R4, R5 and G9S1 are closed. G9U1
-  still requires its own execution authorization.
+G9U0-R4 → BOOK-P1 → G9U0-R5 → G9S1 → G9U0-R6 → G9U1. BOOK-P1 is an independent
+editorial checkpoint, not a software dependency. R3, R4, R5, G9S1 and R6 are
+closed. G9U1 requires post-R6 reconciliation and its own execution
+authorization.
 G9B/G9C remain semantically independent,
 G9U2 remains globally blocked and productive G10 remains unauthorized.

@@ -29,6 +29,7 @@ import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.MultiplicityStatus;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.SolverMethod;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.SupportLevel;
+import org.geocedg.common.kernel.locus.intersection.PolynomialRootIsolation2D.RootCell;
 
 /**
  * Span-wise implicit-polynomial composition for semantic polynomial loci.
@@ -42,7 +43,6 @@ import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata
 final class PolynomialTargetIntersectionCapability2D
 		implements LocusIntersectionCapability2D {
 	private static final int MAXIMUM_COMPOSED_DEGREE = 96;
-	private static final double COEFFICIENT_EPSILON = 512 * Math.ulp(1.0);
 
 	@Override
 	public String getCapabilityId() {
@@ -59,7 +59,10 @@ final class PolynomialTargetIntersectionCapability2D
 		}
 		PiecewisePolynomialLocus2D source = (PiecewisePolynomialLocus2D) context
 				.getDefinition().getEvaluatorCapability();
-		return source.supportsPiecewisePolynomial(context.getDefinition())
+		int compositionDepth = source.getPolynomialCompositionDepth();
+		return compositionDepth > 0 && compositionDepth
+				<= PiecewisePolynomialLocus2D.MAXIMUM_SAFE_COMPOSITION_DEPTH
+				&& source.supportsPiecewisePolynomial(context.getDefinition())
 				&& withinCompositionPolicy(context, source,
 						((PolynomialIntersectionTarget2D) context.getTarget())
 								.getImplicitPolynomialCoefficients());
@@ -102,27 +105,35 @@ final class PolynomialTargetIntersectionCapability2D
 						continue;
 					}
 					context.getInstrumentation().recordPolynomialSpanExamined();
-					double[] x = localPolynomial(source.getPolynomialCoefficients(
-							branch.getBranchKey(), span, 0), lower, upper);
-					double[] y = localPolynomial(source.getPolynomialCoefficients(
-							branch.getBranchKey(), span, 1), lower, upper);
+					double[][] coordinates = source
+							.getPolynomialCoordinateCoefficients(
+									branch.getBranchKey(), span);
+					double[] x = localPolynomial(coordinates[0], lower, upper);
+					double[] y = localPolynomial(coordinates[1], lower, upper);
 					double[] composed = compose(target, x, y);
 					if (composed == null) {
 						throw new IllegalArgumentException(
 								"Composed spline target polynomial exceeds work policy");
 					}
-					NormalizedPolynomial normalized = normalize(composed);
-					if (normalized.zero) {
+					double parameterTolerance = context.getQuery().getPolicy()
+							.getRootParameterTolerance().getValue();
+					PolynomialRootIsolation2D.IsolationResult rootEvidence =
+							PolynomialRootIsolation2D.isolate(composed, 0, 1,
+									parameterTolerance,
+									context.getQuery().getPolicy().getWorkBudget()
+											.getMaximumRefinementIterations(),
+									workRecorder(context));
+					if (rootEvidence.isZeroPolynomial()) {
 						zeroPolynomialSpan = true;
 						continue;
 					}
-					List<RootCell> roots = roots(normalized.coefficients, context);
+					List<RootCell> roots = rootEvidence.getCells();
 					if (roots.isEmpty()) {
 						context.getInstrumentation().recordPolynomialSpanRejected();
 					}
 					for (RootCell root : roots) {
 						context.getInstrumentation().recordPolynomialRootCandidate();
-						double local = canonicalLocal(root.parameter,
+						double local = canonicalLocal(root.getParameter(),
 								context.getQuery().getPolicy()
 										.getRootParameterTolerance().getValue()
 										/ (upper - lower));
@@ -137,10 +148,10 @@ final class PolynomialTargetIntersectionCapability2D
 								: lower + (upper - lower) * local;
 						double cellLower = lowerSeam || upperSeam
 								? component.getLower()
-								: lower + (upper - lower) * root.lower;
+								: lower + (upper - lower) * root.getLower();
 						double cellUpper = lowerSeam || upperSeam
 								? component.getLower()
-								: lower + (upper - lower) * root.upper;
+								: lower + (upper - lower) * root.getUpper();
 						located.add(new LocatedRoot(branch.getBranchKey(),
 								componentKey, component, parameter, cellLower,
 								cellUpper, lowerSeam ? 1 : upperSeam ? 2 : 0));
@@ -195,6 +206,26 @@ final class PolynomialTargetIntersectionCapability2D
 						"G9S1 examined every explicit polynomial span, but "
 								+ "floating coefficient arithmetic is not a certified "
 								+ "global root-count proof")));
+	}
+
+	private static PolynomialRootIsolation2D.WorkRecorder workRecorder(
+			IntersectionCapabilityContext2D context) {
+		return new PolynomialRootIsolation2D.WorkRecorder() {
+			@Override
+			public void recordIsolationSubdivision(int depth) {
+				context.getInstrumentation().recordIsolationSubdivision(depth);
+			}
+
+			@Override
+			public void recordRefinementStarted() {
+				context.getInstrumentation().recordRefinementStarted();
+			}
+
+			@Override
+			public void recordRefinementIteration(long iteration) {
+				context.getInstrumentation().recordRefinementIteration(iteration);
+			}
+		};
 	}
 
 	private static IntersectionCandidateSet2D unresolvedOverlap(
@@ -270,135 +301,6 @@ final class PolynomialTargetIntersectionCapability2D
 		return output;
 	}
 
-	private static List<RootCell> roots(double[] polynomial,
-			IntersectionCapabilityContext2D context) {
-		return roots(polynomial, 0, 1, context, 0);
-	}
-
-	private static List<RootCell> roots(double[] polynomial, double lower,
-			double upper, IntersectionCapabilityContext2D context, int depth) {
-		NormalizedPolynomial normalized = normalize(polynomial);
-		if (normalized.zero || normalized.coefficients.length == 1) {
-			return Collections.emptyList();
-		}
-		int degree = normalized.coefficients.length - 1;
-		if (degree == 1) {
-			double root = -normalized.coefficients[0]
-					/ normalized.coefficients[1];
-			double tolerance = context.getQuery().getPolicy()
-					.getRootParameterTolerance().getValue();
-			if (!Double.isFinite(root) || root < lower - tolerance
-					|| root > upper + tolerance) {
-				return Collections.emptyList();
-			}
-			root = Math.max(lower, Math.min(upper, root));
-			return List.of(new RootCell(root, root, root));
-		}
-		double[] derivative = new double[degree];
-		for (int power = 1; power <= degree; power++) {
-			derivative[power - 1] = power * normalized.coefficients[power];
-		}
-		ArrayList<Double> partition = new ArrayList<>();
-		partition.add(lower);
-		for (RootCell critical : roots(derivative, lower, upper, context,
-				depth + 1)) {
-			if (critical.parameter > lower && critical.parameter < upper) {
-				partition.add(critical.parameter);
-			}
-		}
-		partition.add(upper);
-		partition.sort(Double::compare);
-		partition = unique(partition, Math.max(Math.ulp(1.0) * 32,
-				context.getQuery().getPolicy().getRootParameterTolerance()
-						.getValue()));
-		ArrayList<RootCell> result = new ArrayList<>();
-		double valueTolerance = COEFFICIENT_EPSILON
-				* Math.max(1, normalized.coefficients.length);
-		for (int index = 0; index < partition.size(); index++) {
-			double point = partition.get(index);
-			if (Math.abs(evaluate(normalized.coefficients, point))
-					<= valueTolerance) {
-				double cellLower = index == 0 ? point
-						: partition.get(index - 1);
-				double cellUpper = index + 1 == partition.size() ? point
-						: partition.get(index + 1);
-				result.add(new RootCell(point, cellLower, cellUpper));
-			}
-		}
-		for (int index = 0; index + 1 < partition.size(); index++) {
-			double left = partition.get(index);
-			double right = partition.get(index + 1);
-			double leftValue = evaluate(normalized.coefficients, left);
-			double rightValue = evaluate(normalized.coefficients, right);
-			if (!oppositeSigns(leftValue, rightValue)) {
-				continue;
-			}
-			context.getInstrumentation().recordIsolationSubdivision(1);
-			RootCell root = bisect(normalized.coefficients, left, right,
-					context);
-			result.add(root);
-		}
-		return deduplicateCells(result, context.getQuery().getPolicy()
-				.getRootParameterTolerance().getValue());
-	}
-
-	private static RootCell bisect(double[] polynomial, double initialLower,
-			double initialUpper, IntersectionCapabilityContext2D context) {
-		context.getInstrumentation().recordRefinementStarted();
-		double lower = initialLower;
-		double upper = initialUpper;
-		double lowerValue = evaluate(polynomial, lower);
-		double tolerance = context.getQuery().getPolicy()
-				.getRootParameterTolerance().getValue();
-		for (long iteration = 1; iteration <= context.getQuery().getPolicy()
-				.getWorkBudget().getMaximumRefinementIterations(); iteration++) {
-			context.getInstrumentation().recordRefinementIteration(iteration);
-			if (upper - lower <= tolerance) {
-				break;
-			}
-			double middle = lower + (upper - lower) / 2;
-			double value = evaluate(polynomial, middle);
-			if (value == 0) {
-				return new RootCell(middle, middle, middle);
-			}
-			if (oppositeSigns(lowerValue, value)) {
-				upper = middle;
-			} else {
-				lower = middle;
-				lowerValue = value;
-			}
-		}
-		double parameter = lower + (upper - lower) / 2;
-		return new RootCell(parameter, lower, upper);
-	}
-
-	private static ArrayList<Double> unique(List<Double> input,
-			double tolerance) {
-		ArrayList<Double> result = new ArrayList<>();
-		for (double value : input) {
-			if (result.isEmpty()
-					|| Math.abs(value - result.get(result.size() - 1)) > tolerance) {
-				result.add(value);
-			}
-		}
-		return result;
-	}
-
-	private static List<RootCell> deduplicateCells(List<RootCell> input,
-			double tolerance) {
-		input.sort(Comparator.comparingDouble(root -> root.parameter));
-		ArrayList<RootCell> result = new ArrayList<>();
-		for (RootCell candidate : input) {
-			if (!result.isEmpty() && Math.abs(candidate.parameter
-					- result.get(result.size() - 1).parameter) <= tolerance) {
-				result.get(result.size() - 1).include(candidate);
-			} else {
-				result.add(candidate);
-			}
-		}
-		return result;
-	}
-
 	private static double[] compose(double[][] target, double[] x,
 			double[] y) {
 		int maximumX = target.length - 1;
@@ -445,10 +347,11 @@ final class PolynomialTargetIntersectionCapability2D
 					return false;
 				}
 				for (int span = 0; span < spanCount; span++) {
-					int sourceDegree = Math.max(source.getPolynomialCoefficients(
-							branch.getBranchKey(), span, 0).length,
-							source.getPolynomialCoefficients(branch.getBranchKey(),
-									span, 1).length) - 1;
+					double[][] coordinates = source
+							.getPolynomialCoordinateCoefficients(
+									branch.getBranchKey(), span);
+					int sourceDegree = Math.max(coordinates[0].length,
+							coordinates[1].length) - 1;
 					if ((long) sourceDegree * targetDegree
 							> MAXIMUM_COMPOSED_DEGREE) {
 						return false;
@@ -530,45 +433,6 @@ final class PolynomialTargetIntersectionCapability2D
 		return value;
 	}
 
-	private static NormalizedPolynomial normalize(double[] polynomial) {
-		double scale = 0;
-		for (double coefficient : polynomial) {
-			if (!Double.isFinite(coefficient)) {
-				throw new IllegalArgumentException(
-						"Composed polynomial coefficients must be finite");
-			}
-			scale = Math.max(scale, Math.abs(coefficient));
-		}
-		if (scale == 0) {
-			return new NormalizedPolynomial(new double[] {0}, true);
-		}
-		double[] normalized = polynomial.clone();
-		for (int index = 0; index < normalized.length; index++) {
-			normalized[index] /= scale;
-		}
-		int degree = normalized.length - 1;
-		while (degree > 0 && Math.abs(normalized[degree])
-				<= COEFFICIENT_EPSILON) {
-			degree--;
-		}
-		normalized = java.util.Arrays.copyOf(normalized, degree + 1);
-		boolean zero = degree == 0
-				&& Math.abs(normalized[0]) <= COEFFICIENT_EPSILON;
-		return new NormalizedPolynomial(normalized, zero);
-	}
-
-	private static double evaluate(double[] ascending, double parameter) {
-		double value = 0;
-		for (int index = ascending.length - 1; index >= 0; index--) {
-			value = value * parameter + ascending[index];
-		}
-		return value;
-	}
-
-	private static boolean oppositeSigns(double first, double second) {
-		return first < 0 && second > 0 || first > 0 && second < 0;
-	}
-
 	private static double canonicalLocal(double parameter, double tolerance) {
 		if (Math.abs(parameter) <= tolerance) {
 			return 0;
@@ -618,33 +482,6 @@ final class PolynomialTargetIntersectionCapability2D
 		if (!nonzero) {
 			throw new IllegalArgumentException(
 					"Implicit target polynomial must be nonzero");
-		}
-	}
-
-	private static final class NormalizedPolynomial {
-		private final double[] coefficients;
-		private final boolean zero;
-
-		private NormalizedPolynomial(double[] coefficients, boolean zero) {
-			this.coefficients = coefficients;
-			this.zero = zero;
-		}
-	}
-
-	private static final class RootCell {
-		private final double parameter;
-		private double lower;
-		private double upper;
-
-		private RootCell(double parameter, double lower, double upper) {
-			this.parameter = parameter;
-			this.lower = Math.min(lower, parameter);
-			this.upper = Math.max(upper, parameter);
-		}
-
-		private void include(RootCell other) {
-			lower = Math.min(lower, other.lower);
-			upper = Math.max(upper, other.upper);
 		}
 	}
 

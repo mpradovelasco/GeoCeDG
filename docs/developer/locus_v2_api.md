@@ -4,11 +4,11 @@
 |---|---|
 | Maturity | `experimental`; public GeoCeDG surface disabled by default plus internal/developer seams |
 | Normative semantics | [`geocedg/specs/locus/locus-v2-semantics.md`](../../geocedg/specs/locus/locus-v2-semantics.md) |
-| Architecture | [`docs/architecture/locus_v2_implementation.md`](../architecture/locus_v2_implementation.md) |
+| Architecture | [`docs/architecture/locus_v2_implementation.md`](../architecture/locus_v2_implementation.md); [approved R6 inverse interaction](../architecture/g9u0_r6_semantic_locus_point_interaction_support.md) |
 | Additive metric API | [`docs/developer/locus_v2_metric_api.md`](locus_v2_metric_api.md), G7B internal candidate |
-| Public command/API | G9U0 surface and G9U0-R5 similarity transformations `PASS — AUTHOR APPROVED` |
+| Public command/API | G9U0 surface, G9U0-R5 similarity transformations and R6 shared-kernel inverse point interaction are `PASS — AUTHOR APPROVED`; R6 adds no productive Point-tool frontend |
 | Persistence / `Path` | Native `.cedg` persistence for public V2 objects / no generic `Path` conformance |
-| Date | 2026-08-31 |
+| Date | 2026-09-01 |
 
 This reference documents the current Java seams so future kernel work does not
 infer contracts from call sites. Java `public` is used where the shared kernel,
@@ -19,6 +19,8 @@ component-state contracts are kept in the separate
 [metric API reference](locus_v2_metric_api.md). Public persistence, commands,
 metrics and rich intersections were added by later approved G9 phases; the R5
 similarity implementation described below is also `PASS — AUTHOR APPROVED`.
+The R6 section documents the accepted shared-kernel seam. It is not a claim that
+the future Desktop Point-tool frontend has been implemented or released.
 
 ## 1. Packages
 
@@ -205,6 +207,146 @@ expression `k=0.25` is currently rejected before this R5 seam with G9A
 infer identity from the label. Compatible free-input redefine remains a future
 G9U1 investigation through the accepted G9A transaction/predicate authority.
 
+### R6 inverse semantic point interaction
+
+G9U0-R6 is `PASS — AUTHOR APPROVED`. Accepted
+[ADR 0019](../adr/0019-semantic-locus-point-interaction-support.md) and the
+[normative specification](../../geocedg/specs/locus/locus-v2-point-interaction.md)
+define the roles below through these actual shared-kernel types:
+
+- a transient world-coordinate request and bounded deterministic policy;
+- an immutable typed resolution containing semantic-address candidates and
+  diagnostics, never a bare nearest coordinate;
+- one common resolver/strategy seam, with a certified structural-affine
+  complete-coverage strategy, a bounded general domain strategy and a SplineV2
+  span-specialized strategy;
+- explicit selection of one provider-canonical branch/component/parameter
+  address; and
+- a normal-DAG point algorithm whose editable semantic address is an ordinary
+  input state and whose output is always recomputed by forward evaluation.
+
+The accepted resolver signatures are:
+
+```java
+new LocusPointInteractionQuery2D(GeoLocusV2 source, double targetX,
+    double targetY, LocusPointInteractionPolicy2D policy)
+new LocusPointInteractionQuery2D(GeoLocusV2 source, double targetX,
+    double targetY, LocusPointInteractionPolicy2D policy,
+    LocusSemanticAddress2D currentAddress)
+
+LocusPointInteractionResult2D
+    new LocusPointInteractionResolver2D().resolve(
+        LocusPointInteractionQuery2D query)
+```
+
+The accepted construction/edit signatures are:
+
+```java
+GeoPoint LocusV2PublicOperations.createInteractiveSemanticPoint(
+    Construction construction, String label, GeoLocusV2 source,
+    LocusPointInteractionCandidate2D candidate)
+
+LocusPointInteractionResult2D
+    LocusV2PublicOperations.moveInteractiveSemanticPoint(
+        GeoPoint point, double targetX, double targetY,
+        LocusPointInteractionPolicy2D policy)
+```
+
+`LocusPointInteractionCandidate2D` has a package-owned constructor and exposes
+immutable resolver evidence through getters. The caller must inspect the typed
+result before invoking creation: automatic creation is valid only for
+`UNIQUE_ADMISSIBLE_PREIMAGE`; `MULTIPLE_SEMANTIC_PREIMAGES` requires explicit
+selection of one returned candidate. Discovered evidence from unresolved,
+invalid, degenerate or unsupported results is not a frontend creation route.
+
+`LocusPointInteractionStatus2D` distinguishes
+`NO_ADMISSIBLE_PREIMAGE`, `UNIQUE_ADMISSIBLE_PREIMAGE`,
+`MULTIPLE_SEMANTIC_PREIMAGES`, `UNRESOLVED_NUMERICAL_SEARCH`, `INVALID_SOURCE`,
+`DEGENERATE_SOURCE_IMAGE` and `UNSUPPORTED_CAPABILITY`. Multiple preimages are
+not a failure and must not silently choose. Distance can bound, search or rank
+candidates for the current request, but it never becomes durable identity. Resolver output
+must remain independent of solver enumeration, render tessellation, viewport,
+DPI and movement history. Every candidate address is checked through the current
+semantic evaluator before publication.
+
+`CertifiedAffineLocus2D` supplies provider-owned `F(u)=a u+b` coefficients for
+direct reconstructible affine semantics and algebraically transformed R5
+images. It is not inferred by sampling or fitting. Coverage of every requested
+finite component is therefore complete and may publish definitive no/unique
+results. If algebraic similarity propagation produces nonfinite coefficients,
+the optional certificate is atomically unavailable while the transformed locus
+remains defined and its ordinary evaluator reports `NON_FINITE`; a later finite
+revision may recapture certification. By contrast, the general evaluator strategy searches declared finite
+semantic components using deterministic subdivision/refinement and an explicit
+work budget, but cannot exclude a narrow unsampled minimum. Its zero- or
+one-candidate `BOUNDED_EVALUATOR_SEARCH` result is therefore unresolved, never
+definitive none/unique.
+
+The SplineV2 strategy partitions the distance objective on stable G9S1 spans,
+accounts for endpoints/knots with canonical ownership and retains all tied
+valid preimages. `PiecewisePolynomialLocus2D` exposes paired x/y coefficients
+and a captured O(1) composition depth; similarity composition is linear in
+nesting and bounded by the query plus the shared 128-level safety ceiling.
+`LocusEvaluationSession2D` also bounds nested cache misses and active evaluator
+depth. Coefficients and root/residual evidence remain floating, not exact
+arithmetic. The accepted focused evidence freezes 55 methods (52 shared-kernel
+and 3 Desktop), initial work limits of 32,768 semantic evaluations, 512
+subdivisions, 80 refinement iterations and 1,024 candidates, and paired
+canonical summary SHA-256
+`7aaed6a558bf6f86ec93a5b45eb74155d45e66b52b47c373a9ad32f43b156cc9`.
+
+For an invertible R5 image, inverse-transforming the request can accelerate the
+search but does not change ownership: the semantic address and resulting point
+belong to the transformed locus. For `k=0` `COLLAPSED_IMAGE`, a new inverse
+query is generally degenerate/non-unique; an existing addressed point remains
+forward-evaluable, collapses and recovers when `k` becomes nonzero. Periodic
+addresses use provider canonicalization and fail closed at unresolved seam or
+monodromy ambiguity. A uniquely resolved closed-Spline seam edit preserves the
+exact encoded canonical parameter/lift/seam tuple and checks the hidden numeric
+as its exact lifted reconstruction; it does not regenerate identity from the
+floating modular round trip. The focused API regression crosses in both
+directions and proves direct/incremental path independence, while the bounded
+evaluator-only periodic negative remains unresolved and unchanged.
+
+R6 does not implement `Path`, screen picking, the Point tool, markers, workspace
+state or a parallel public command. Its ordinary point/XML/copy/undo lifecycle
+serializes `LocusSemanticAddressState2D` plus the normal semantic parameter,
+never a click or render sample. Persisted component lineage is authoritative at
+a shared endpoint; missing/nonunique lineage fails closed instead of using list
+order.
+
+`AlgoSemanticLocusPoint2D.getSemanticAddress()` is the durable last-accepted
+selector, not a current-validity predicate. `getCurrentSemanticAddress()` and
+`getMetricPositionBinding()` carry current revalidation state. A temporarily
+undefined point clears its current binding and coordinates but retains the
+selector for exact recovery; movement requires the current address and cannot
+retarget from the retained value. A dormant `.cedg` reopen reconstructs the
+selector from `LocusSemanticAddressState2D` but leaves current state undefined
+until exact revalidation succeeds.
+
+Only a point carrying stable role `LOCUS_INTERACTION_POINT` whose independent
+address inputs are structurally exclusive owns their hidden auxiliary
+presentation. `SpatialIdentityRegistry` restores that presentation after
+identity attachment on reopen. Codec-shaped ordinary user inputs remain
+visible and user-owned.
+
+`LocusV2PublicOperations.moveInteractiveSemanticPoint` publishes address
+mutation through `Construction.runAtomicConstructionMutation`: full host
+snapshot, input writes, cascade and postcondition form one fail-closed unit.
+This O(N) snapshot does not store an undo step and rollback may reconstruct Java
+instances; the future frontend must group successful gestures and reacquire
+objects after failure.
+The independent G9U1 planning checkpoint
+`857de6628489bda0b65a5ba5145e62ca0795fc32` is protected and requires post-R6
+reconciliation plus separate authorization. The retained risk
+`G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` remains open and is not discharged
+by ordinary R6 point round trips.
+
+Because no productive frontend consumes these methods in R6, the accepted R6
+diagnostic surface is the focused test-host/API. The end-to-end Point-tool
+smoke—create, drag, seam crossing, ambiguity chooser, transformed source,
+`k=0` and save/reopen—is explicitly deferred to G9U1.
+
 ## 5. Semantic revision
 
 `GeoLocusV2.getSemanticRevision()` identifies the current immutable semantic
@@ -282,4 +424,7 @@ its construction cannot be saved as `.ggb`.
 - Any new command family, generic `Path` conformance, persistence migration, 3D
   semantic transform or concurrency contract remains a stop condition requiring
   its own phase authority. The bounded R5 ordinary 2D similarity overloads do
-  not authorize any of those expansions or G9U1.
+  not authorize any of those expansions or G9U1. The accepted R6 contract adds
+  only typed inverse semantic resolution and normal-DAG editable address state;
+  it also does not authorize `Path`, screen picking, a new command family or
+  G9U1.

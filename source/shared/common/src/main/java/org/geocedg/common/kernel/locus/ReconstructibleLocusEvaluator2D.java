@@ -24,8 +24,13 @@ import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.Macro;
 import org.geogebra.common.kernel.MacroKernel;
 import org.geogebra.common.kernel.Path;
+import org.geogebra.common.kernel.algos.AlgoDependentPoint;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.algos.ConstructionElement;
+import org.geogebra.common.kernel.arithmetic.ExpressionNode;
+import org.geogebra.common.kernel.arithmetic.ExpressionValue;
+import org.geogebra.common.kernel.arithmetic.MyDouble;
+import org.geogebra.common.kernel.arithmetic.MyVecNode;
 import org.geogebra.common.kernel.geos.GeoConic;
 import org.geogebra.common.kernel.geos.GeoConicPart;
 import org.geogebra.common.kernel.geos.GeoElement;
@@ -39,7 +44,8 @@ import org.geogebra.common.kernel.kernelND.GeoPointND;
  * only through durable IDs; labels, coordinates, samples and XML order are not
  * identity authority.
  */
-public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D {
+public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
+		CertifiedAffineLocus2D {
 	private static final LocusQuality2D QUALITY = new LocusQuality2D(
 			ConstructionFidelity.SEMANTICALLY_CONSTRUCTED,
 			EvaluationMethod.DETERMINISTIC_NUMERIC_DEPENDENCY,
@@ -54,6 +60,7 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D {
 	private final GeoElement isolatedState;
 	private final GeoElement isolatedCoordinate;
 	private final GeoElement isolatedSupport;
+	private final double[][] certifiedAffineCoefficients;
 
 	/** Builds one immutable identity-addressed construction slice. */
 	public ReconstructibleLocusEvaluator2D(Construction construction,
@@ -94,6 +101,7 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D {
 				Macro.addDependentAlgo(parent, elements, usedAlgorithmIds);
 			}
 		}
+		certifiedAffineCoefficients = directScalarAffineCertificate();
 		MacroKernel macroKernel = construction.getKernel().newMacroKernel();
 		macroKernel.setGlobalVariableLookup(false);
 		try {
@@ -158,7 +166,80 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D {
 	/** @return deterministic evaluator reconstruction signature */
 	public String getEvaluatorSignature() {
 		return "reconstructible-construction-slice/v1|"
-				+ descriptor.getSemanticSignature();
+				+ descriptor.getSemanticSignature() + "|affine="
+				+ getCertifiedAffineSignature();
+	}
+
+	@Override
+	public boolean supportsCertifiedAffine(LocusDefinition2D definition) {
+		return certifiedAffineCoefficients != null && !descriptor.isPeriodic()
+				&& definition != null
+				&& definition.getBranch(SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY)
+						!= null;
+	}
+
+	@Override
+	public double[] getCertifiedAffineCoefficients(String branchKey,
+			int coordinate) {
+		if (certifiedAffineCoefficients == null
+				|| !SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY.equals(branchKey)
+				|| coordinate < 0 || coordinate > 1) {
+			throw new IllegalArgumentException(
+					"No certified affine coefficients for the requested branch");
+		}
+		return certifiedAffineCoefficients[coordinate].clone();
+	}
+
+	@Override
+	public String getCertifiedAffineSignature() {
+		if (certifiedAffineCoefficients == null) {
+			return "none";
+		}
+		return "direct-scalar-cartesian/v1|x="
+				+ Double.toHexString(certifiedAffineCoefficients[0][0]) + ","
+				+ Double.toHexString(certifiedAffineCoefficients[0][1]) + "|y="
+				+ Double.toHexString(certifiedAffineCoefficients[1][0]) + ","
+				+ Double.toHexString(certifiedAffineCoefficients[1][1]);
+	}
+
+	private double[][] directScalarAffineCertificate() {
+		if (descriptor.getFamily() != SemanticGeneratorFamily1D.SCALAR_STATE) {
+			return null;
+		}
+		GeoElement dependent = originals.get(descriptor.getDependentPointId());
+		GeoElement coordinate = originals.get(descriptor.getCoordinateId());
+		if (!(coordinate instanceof GeoNumeric)
+				|| !(dependent != null
+						&& dependent.getParentAlgorithm() instanceof AlgoDependentPoint)
+				|| dependent.getDefinition() == null) {
+			return null;
+		}
+		ExpressionValue unwrapped = dependent.getDefinition().unwrap();
+		if (!(unwrapped instanceof MyVecNode)
+				|| ((MyVecNode) unwrapped).hasPolarCoords()) {
+			return null;
+		}
+		MyVecNode vector = (MyVecNode) unwrapped;
+		double[] x = directAffineCoordinate(vector.getX(), coordinate);
+		double[] y = directAffineCoordinate(vector.getY(), coordinate);
+		if (x == null || y == null || x[0] == 0 && y[0] == 0) {
+			return null;
+		}
+		return new double[][] {x, y};
+	}
+
+	private static double[] directAffineCoordinate(ExpressionValue expression,
+			GeoElement coordinate) {
+		ExpressionValue value = expression instanceof ExpressionNode
+				? ((ExpressionNode) expression).unwrap() : expression;
+		if (value == coordinate) {
+			return new double[] {1, 0};
+		}
+		if (value instanceof MyDouble
+				&& Double.isFinite(((MyDouble) value).getDouble())) {
+			return new double[] {0, ((MyDouble) value).getDouble()};
+		}
+		return null;
 	}
 
 	private void applyCoordinate(double parameter) {

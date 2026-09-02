@@ -129,7 +129,10 @@ public final class LocusPairIntersectionContext2D {
 			PiecewisePolynomialLocus2D polynomial =
 					(PiecewisePolynomialLocus2D) definition
 							.getEvaluatorCapability();
-			if (polynomial.supportsPiecewisePolynomial(definition)) {
+			int compositionDepth = polynomial.getPolynomialCompositionDepth();
+			if (compositionDepth > 0 && compositionDepth
+					<= PiecewisePolynomialLocus2D.MAXIMUM_SAFE_COMPOSITION_DEPTH
+					&& polynomial.supportsPiecewisePolynomial(definition)) {
 				try {
 					LocusPoint2D derivative = polynomial
 							.evaluatePolynomialDerivative(branchKey, parameter);

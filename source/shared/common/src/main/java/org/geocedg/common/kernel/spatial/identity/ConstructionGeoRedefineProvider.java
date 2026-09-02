@@ -17,8 +17,11 @@ import org.geocedg.common.kernel.algos.AlgoSemanticLocusPoint2D;
 import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
 import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.kernel.locus.LocusSemanticAddressState2D;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.geos.GeoElement;
+import org.geogebra.common.kernel.geos.GeoNumeric;
+import org.geogebra.common.kernel.geos.GeoText;
 
 /**
  * Provider-validated redefine authority for neutral construction-defined geos.
@@ -31,6 +34,9 @@ public final class ConstructionGeoRedefineProvider
 	public static final String SCHEMA_ID = "geocedg-construction-geo";
 	public static final int SCHEMA_VERSION = 1;
 	public static final String STABLE_OUTPUT_ROLE = "VALUE";
+	/** Durable role reserved for an interaction-owned semantic Locus V2 point. */
+	public static final String INTERACTION_POINT_OUTPUT_ROLE =
+			"LOCUS_INTERACTION_POINT";
 
 	private final SpatialIdentityGraph graph;
 
@@ -66,7 +72,8 @@ public final class ConstructionGeoRedefineProvider
 		}
 		return new SpatialRedefineSignature(old.getProvider(), old.getFamily(),
 				old.getSchemaId(), old.getSchemaVersion(), old.getAuthority(),
-				old.getBindingRole(), old.getStableOutputRole(),
+				old.getBindingRole(), candidateStableOutputRole(candidate,
+						candidateGraph),
 				old.getOutputCardinality(), dependencyIds(candidate,
 						Objects.requireNonNull(candidateGraph)));
 	}
@@ -224,6 +231,62 @@ public final class ConstructionGeoRedefineProvider
 		return parent instanceof AlgoSemanticLocusPoint2D
 				|| parent instanceof AlgoLocusIntersectionPointV2
 				|| parent instanceof AlgoLocusMetricScalarAdapter;
+	}
+
+	/**
+	 * Validates the stable role carried by one neutral construction output.
+	 * Interaction ownership is meaningful only for the semantic-point algorithm;
+	 * every other neutral construction output retains the ordinary VALUE role.
+	 */
+	static boolean supportsStableOutputRole(GeoElement geo, String role) {
+		if (STABLE_OUTPUT_ROLE.equals(role)) {
+			return true;
+		}
+		return INTERACTION_POINT_OUTPUT_ROLE.equals(role)
+				&& hasDedicatedInteractionPointState(geo);
+	}
+
+	/**
+	 * @return whether the semantic point owns independent hidden address inputs
+	 *         rather than borrowing ordinary user construction state
+	 */
+	public static boolean hasDedicatedInteractionPointState(GeoElement geo) {
+		if (!(geo.getParentAlgorithm() instanceof AlgoSemanticLocusPoint2D)) {
+			return false;
+		}
+		AlgoSemanticLocusPoint2D parent =
+				(AlgoSemanticLocusPoint2D) geo.getParentAlgorithm();
+		GeoText branch = parent.getBranchInput();
+		GeoElement parameter = parent.getParameterInput().toGeoElement();
+		try {
+			if (LocusSemanticAddressState2D.decode(branch.getTextString()) == null) {
+				return false;
+			}
+		} catch (IllegalArgumentException exception) {
+			return false;
+		}
+		return parameter instanceof GeoNumeric && branch.isIndependent()
+				&& parameter.isIndependent()
+				&& branch.getConstruction() == geo.getConstruction()
+				&& parameter.getConstruction() == geo.getConstruction()
+				&& branch.getAlgorithmList().size() == 1
+				&& branch.getAlgorithmList().contains(parent)
+				&& parameter.getAlgorithmList().size() == 1
+				&& parameter.getAlgorithmList().contains(parent);
+	}
+
+	private static String candidateStableOutputRole(GeoElement candidate,
+			SpatialIdentityGraph candidateGraph) {
+		PersistentGeoId id = candidateGraph.getPersistentGeoId(candidate);
+		SpatialIdentityRecord record = id == null ? null
+				: candidateGraph.getRecord(id);
+		if (record instanceof GeoIdentityRecord) {
+			String role = ((GeoIdentityRecord) record).getStableOutputRole();
+			if (supportsStableOutputRole(candidate, role)) {
+				return role;
+			}
+		}
+		return STABLE_OUTPUT_ROLE;
 	}
 
 	private static boolean sameBase(SpatialRedefineSignature first,
