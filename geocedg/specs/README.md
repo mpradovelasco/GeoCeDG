@@ -126,12 +126,22 @@ unexecuted and requires post-R6 reconciliation plus separate execution
 authorization. Retained risk
 `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` remains `OPEN / TRACKED`.
 
-G9U1 likewise remains unexecuted; G9U1, G9B and G9C remain designed but not
-authorized. G9S1 and R6 are `PASS — AUTHOR APPROVED`.
-The future G9U1
-GeoCeDG product contract
-requires the host Continuity setting to remain off while Classic stays
-configurable. G9U2 remains blocked and productive G10 remains unauthorized.
+G9U1 remains unexecuted. Its definitive post-R6 reconciliation is **G9U1 DESIGN
+PASS — AUTHOR APPROVED — POST-R6 RECONCILED**, while implementation remains
+**NOT AUTHORIZED / NOT STARTED**; G9B and G9C remain
+designed but not authorized. The candidate
+`ui/g9u1-construction-interaction.md`,
+`ui/application-profile-v2.candidate.schema.json` and
+`ui/application-profile-v2.candidate.yml` are prospective planning authorities,
+not the live product profile. They consume the published R6 typed inverse
+resolver and interaction-owned semantic point creation/move operations; no
+frontend inverse fallback, `Path` conversion or proximity identity is allowed.
+The existing host Continuity setting remains off in GeoCeDG while Classic stays
+configurable. Exact GGBScript forms such as `Point(L, branch, u)` remain the
+scripting authority; pointer resolution is a UI interaction seam. The protected
+pre-R6 checkpoint remains immutable and the canonical successor prompt is
+`.github/prompts/tasks/g9u1-construction-workspace-after-g9u0-r6.prompt.md`.
+G9U2 remains blocked and productive G10 remains unauthorized.
 
 `locus/locus-v2-public-ui-exposure.md` is the bounded, author-approved G9U0-R3
 implementation contract. R3 is `PASS — AUTHOR APPROVED`; its retained smoke

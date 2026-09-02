@@ -1,247 +1,596 @@
-# CeDG workspace architecture
+# CeDG Construction workspace architecture — post-G9U0-R6 approved design
 
-- Status: author-approved G9 architecture; not yet implemented
-- Governing normative contract: `geocedg/specs/ui/cedg-workspaces.md`
-- Decision: Accepted ADR 0012
+- Status: **POST-R6 RECONCILED DESIGN PASS — AUTHOR APPROVED**
+- Phase: G9U1 design approved; implementation `NOT AUTHORIZED / NOT STARTED`
+- Mandatory entry authorities: G9S1 and G9U0-R6
+  `PASS — AUTHOR APPROVED`
+- Published R6 authority: `geocedg-g9u0-r6-pass` ->
+  `3942af594e4507e479f2c75019cef62e3d9fea6f`
+- Protected pre-R6 design checkpoint:
+  `857de6628489bda0b65a5ba5145e62ca0795fc32` (historical and immutable)
+- Product baseline consumed: G9U0 through G9U0-R6, including G9S1,
+  `PASS — AUTHOR APPROVED`
+- Governing normative workspace contract:
+  `geocedg/specs/ui/cedg-workspaces.md`
+- Companion interaction candidate:
+  `geocedg/specs/ui/g9u1-construction-interaction.md`
+- Accepted workspace decision: ADR 0012
 
-## Approved pre-G9U1 product/document gate
-
-G9U0-R2 planning/design is **PASS — AUTHOR APPROVED**. Its implementation is
-not authorized and not started. The normative native `.cedg` document policy
-and bounded Locus V2 presentation contract must be implemented, validated and
-closed PASS before G9U1 can be considered for separate execution
-authorization. No workspace, manifest or Desktop behavior is implemented by
-this planning closeout.
-
-After R2 implementation passes, this architecture consumes its results as
-inputs rather than owning them:
-
-```text
-ordinary GeoElement/Locus presentation authority --+
-                                                    +--> G9U1 action/layout client
-GeoCeDG native document I/O policy -----------------+
-```
-
-The workspace manifest continues to own views/actions/layout only. It must not
-duplicate the `.cedg`/`.ggb` state machine or style semantics. Its unchanged
-`serialization` declaration continues to mean the current ZIP/XML machinery
-and `app_code: classic`. The exact approved supersession is listed in
-`docs/architecture/g9u0_r2_product_refinement_design.md` and in the
-non-normative notice of the workspace spec.
+This document carries the protected pre-R6 planning forward onto published R6
+and replaces every provisional inverse-interaction assumption with the actual
+accepted shared-kernel contract. It changes no product code, does not execute
+G9U1 and does not authorize G9U1 implementation.
 
 ## Outcome
 
-The sustainable extension is a schema-v2 evolution of the existing GeoCeDG
-application profile, not a second toolbar system. A workspace controller applies
-validated presentation state; an independent feature service decides whether
-an action can create an experimental object; the kernel remains unaware of the
-active workspace.
+CeDG Construction remains a schema-v2 evolution of the existing GeoCeDG
+application profile, not a second toolbar, command processor or geometry
+system. One manifest defines stable actions and workspace placement. Product
+configuration owns presentation and policy. The shared kernel owns every
+semantic curve, address, metric, intersection result, token and constructed
+point.
 
-The eleven-group CeDG Construction design remains intentionally professional
-and non-minimal. G9U1 only presents already approved services—including typed
-Locus V2 creation, supported point-on-Locus, rich/guarded metric and rich
-intersection/token actions. It neither owns those semantics nor depends on G9B.
+The eleven approved professional action groups, eighteen operational clusters
+and 110 stable action definitions remain intact. G9U1 presents the closed
+G9U0–R6 and G9S1 capabilities, including semantic Spline V2 and transformed
+Locus V2, without reimplementing them. G9B and G9C remain independent and
+unauthorized; G9U2 remains separately blocked.
+
+The intended dependency direction is:
 
 ```text
 apps/geocedg/application-profile.yml (future schema v2)
-  -> ProfileManifestLoader + schema validation
-  -> ActionRegistry -----------------> localization/icon resolvers
+  -> ProfileManifestLoader + strict schema validation
+  -> ActionRegistry -----------------> localization/help/icon resolvers
   -> WorkspaceRegistry --------------> toolbar/menu/view compilers
   -> WorkspaceController ------------> GuiManager / Layout / controller
   -> WorkspacePreferenceAdapter -----> isolated GeoCeDG preferences
 
-geocedg/features/*.yml
-  -> RuntimeFeatureService ----------> action/command creation gate
+AppConfigGeoCeDG / product policy
+  -> feature availability
+  -> existing host Continuity option forced OFF
+  -> EN/ES product locale policy
 
-kernel construction <---------------- no dependency on workspace state
+shared kernel semantic authority
+  -> GeoLocusV2 / SplineV2 / transformed GeoLocusV2
+  -> rich metric/intersection result + current exact tokens
+  -> existing exact semantic-point algorithms
+  -> R6 query/resolver/result + interaction-owned point operations
+
+Desktop presentation clients
+  <- immutable semantic snapshots only
+  -> explicit normal kernel transactions only
 ```
 
-## Current extension points
+No arrow runs from workspace, hit testing, marker, view coordinates, theme or
+language state back into semantic truth.
 
-| Current source | Existing responsibility | Proposed minimal extension |
+## Gate and authority reconciliation
+
+The architecture consumes these closed product authorities:
+
+- R2: ordinary Locus V2 visual-style authority and native `.cedg` document
+  lifecycle with `.ggb` compatibility input;
+- R3: stable GeoCeDG menu lifecycle, real inspector route, hidden exact-token
+  auxiliary and bounded opaque-token presentation;
+- R4: deterministic current-state selectors/tokens, intrinsic phase/rank,
+  active/dormant/reactivated existing points and Continuity-independent
+  identity;
+- R5: all approved similarity transforms produce new first-class semantic
+  `GeoLocusV2` objects, including truthful `COLLAPSED_IMAGE`; and
+- G9S1: semantic Spline V2 is a `GeoLocusV2` source, with one-sided supported
+  rich intersections and a deliberately rich-only spline×spline boundary where
+  a symmetric materializable selector is not certified; and
+- R6: the accepted shared-kernel inverse resolver maps a finite world request to
+  typed semantic-preimage candidates and provides exact creation/move seams for
+  interaction-owned semantic points without generic `Path` conformance.
+
+The protected checkpoint records how G9U1 review discovered R6 as a mandatory
+kernel prerequisite. Published R6 now satisfies that prerequisite. ADR 0019 and
+`geocedg/specs/locus/locus-v2-point-interaction.md` are the actual authority;
+the protected provisional names and states are historical only. A separate
+author decision is still required before productive G9U1 implementation.
+
+## Architectural placement map
+
+| Existing source/seam | Current responsibility | Prospective bounded owner |
 |---|---|---|
-| `apps/geocedg/application-profile.yml` | one perspective and six toolbar groups | become the sole schema-v2 workspace/action instance after authorization |
-| `geocedg/specs/ui/application-profile.schema.json` | validates schema v1 | versioned v2 schema; retain v1 reader during migration |
-| `source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGProfile.java:33-36,80-139` | loads/validates the packaged manifest | split parsed identity, actions and workspaces into immutable definitions |
-| `source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGProfile.java:142-166` | compiles one numeric toolbar | compile each workspace from action references; no duplicate raw strings |
-| `source/desktop/desktop/src/main/java/org/geocedg/desktop/AppGeoCeDG.java:42-46` | applies default only when no loaded perspective exists | expose workspace controller and a transient Document-layout state |
-| `source/desktop/desktop/src/main/java/org/geocedg/desktop/GuiManagerGeoCeDG.java:19-22` | creates product menu bar | install workspace/menu action adapters |
-| `source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGMenuBar.java:37-54` | inserts hard-coded DXF product menu | render manifest placements through localization keys |
-| `source/shared/common/src/main/java/org/geocedg/common/main/settings/config/AppConfigGeoCeDG.java:50-56` | Classic app code, no command filter | consume runtime feature policy without tying it to workspace choice |
-| `source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDG.java:34-59` | isolated profile preferences | persist active/per-workspace layout keys in the same namespace |
-| `source/desktop/desktop/src/main/java/org/geogebra/desktop/geogebra3D/App3D.java:127-130` | creates `EuclidianControllerFor3DD` | `AppGeoCeDG` may return a GeoCeDG subclass for approved product actions |
-| `source/shared/common/src/main/java/org/geogebra/common/euclidian/EuclidianController.java:2116-2422,2769-2800` | baseline Intersect and legacy Locus selection | product controller delegates baseline behavior and adds only approved typed selections |
-| `tools/legacy/open-laboratory.ps1:36-126` | explicit validated resource launch | remain external; optionally receive a manifest diagnostic-route action |
+| `apps/geocedg/application-profile.yml` | schema-v1 product profile | sole schema-v2 action/workspace instance |
+| `geocedg/specs/ui/application-profile.schema.json` | validates schema v1 | versioned strict v2 schema plus deterministic v1 adapter |
+| `source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGProfile.java` | loads profile and compiles one toolbar | immutable profile/action/workspace definitions; no raw duplicate catalogs |
+| `source/desktop/desktop/src/main/java/org/geocedg/desktop/AppGeoCeDG.java` | product app/profile lifecycle | product-policy selection, workspace controller and presentation-only document layout |
+| `source/desktop/desktop/src/main/java/org/geocedg/desktop/GuiManagerGeoCeDG.java` | product GUI manager | manifest toolbar/menu/view adapters |
+| `source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGMenuBar.java` | R3 product-menu lifecycle | render the single action registry and retain R3 rebuild behavior |
+| `source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGEuclidianController.java` | product action gesture adapter | consume typed kernel results; never solve or infer identity |
+| `source/shared/common/src/main/java/org/geocedg/common/euclidian/draw/DrawLocusV2.java` | semantic-curve render path and current area-like hit | curve-stroke-only presentation hit consistent with semantic subpaths |
+| `source/shared/common/src/main/java/org/geogebra/common/euclidian/EuclidianDraw.java` | drawable routing | keep every `GeoClass.LOCUS_V2` producer on the common drawable seam |
+| `source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/inputbar/AlgebraInputD.java` | preview scheduling and explicit commit | reuse unchanged lifecycle; no GeoCeDG input fork |
+| `source/shared/common/src/main/java/org/geogebra/common/kernel/ScheduledPreviewFromInputBar.java` | host silent preview | one zero-publication preview authority |
+| `source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CmdLocusV2.java` | sealed preview-safe command precedent | contract pattern for every publishing GeoCeDG command |
+| `source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CmdSplineV2.java` | G9S1 command creation | stop non-scripting preview before arguments/default helpers publish |
+| `source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/view/algebra/AlgebraControllerD.java` and `AlgebraViewD.java` | double-click/edit/Properties routing | route noneditable semantic curves to bounded read-only definition inspection |
+| `source/shared/common/src/main/java/org/geogebra/common/gui/dialog/options/model/ObjectNameModel.java` and Desktop `NamePanelD.java` | definition visibility/editor model | separate definition visibility from editability; keep Locus V2 noneditable |
+| `source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/view/algebra/AlgebraHelperBar.java` | Algebra description menu | select exactly one item from the existing Algebra-style setting |
+| `source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/dialog/options/OptionsAlgebraD.java` | existing Algebra-style setting UI | remain the presentation-state authority |
+| `source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/dialog/options/OptionsAdvancedD.java` | host Continuity control | product-specific locked/disabled/read-only presentation |
+| shared `Kernel` / XML settings seams | existing Continuity value and serialization | single setting authority, clamped OFF by GeoCeDG product policy |
+| `source/shared/common/src/main/java/org/geocedg/common/kernel/locus/interaction/LocusPointInteractionQuery2D.java`, `LocusPointInteractionResolver2D.java` and `LocusPointInteractionResult2D.java` | published R6 typed inverse resolution | consume a finite world request and bounded policy; return exact resolver-owned candidates/status, never presentation identity |
+| `source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusV2PublicOperations.java` and `AlgoSemanticLocusPoint2D.java` | exact semantic-point publication plus R6 interaction-owned create/move | G9U1 invokes the public R6 operations; the same point, durable ID, source and exact address state remain kernel-owned |
 
-No productive change to these sources is part of G9P.
+Changes inside upstream-owned source paths must be the minimum compatible patch
+when G9U1 is separately authorized. This architecture authorizes none now and
+does not reopen the published R6 kernel contract.
 
 ## Components
 
-### Profile manifest loader
+### 1. Profile manifest loader and action registry
 
-Reads exactly one packaged profile resource, validates schema version before
-constructing definitions, and fails closed on unknown keys/references. It must
-not scan the filesystem for workspace fragments. Version-1 input is lifted by a
-deterministic in-memory adapter; it is never rewritten automatically.
+The loader reads one packaged profile, validates its schema before constructing
+immutable definitions and fails closed on unknown fields or references. It
+does not scan the filesystem for fragments. A v1 profile is lifted by a
+deterministic in-memory adapter and never rewritten automatically.
 
-### Action registry
+The action registry owns stable IDs and immutable metadata: kind/target,
+selection grammar, maturity, feature dependencies, localization/help keys,
+icon ID, unavailable policy and output category. Toolbars, menus, overflow,
+context actions, inspectors and help consume that same entry. Runtime widgets
+do not repeat targets or product strings.
 
-Owns stable action IDs and immutable metadata: action kind/target, selection
-grammar, maturity, feature dependencies, help/localization keys, icon ID,
-unavailable policy and output category. Toolbar and menu compilers consume the
-same entry. Runtime widgets do not embed product strings or repeat target IDs.
+Workspace membership changes discoverability only. Command existence, runtime
+feature permission, creation permission and compatibility loading remain
+independent decisions. `--enableLocusV2=true` remains the only public V2 opt-in;
+there is no separate spline, intersection or transform flag.
 
-An upstream mode target is resolved against the audited `EuclidianConstants`.
-A command action resolves through ordinary command dispatch. A product action
-uses a narrow application service. A result-inspector action is read-only. A
-diagnostic route launches a separate process.
+The action catalog retains the eleven approved professional groups:
 
-The Locus action set must keep three distinct operations: a point on semantic
-Locus support (durable preimage binding), a rich intersection query, and an
-exact-token point child. Their shared graphical chooser is an adapter only; it
-does not merge their identities or persist proximity.
+1. Inspect and construct;
+2. Linear geometry;
+3. Parameters and drivers;
+4. Relations and intersections;
+5. Circles, conics and curves;
+6. Locus V2 and semantic Spline V2;
+7. Metrics and validation;
+8. Transformations and manual projections;
+9. gated CeDG procedures/developments placeholders;
+10. Presentation and document; and
+11. Automation and import/export.
 
-### Runtime feature service
+Gated placeholders cannot publish an unavailable semantic capability.
 
-Loads the stable and experimental feature manifests once, validates dependency
-closure, combines defaults with an explicit user/developer override policy, and
-publishes immutable capability decisions. It distinguishes:
-
-```text
-LOAD_EXISTING_OBJECT
-CREATE_FROM_COMMAND
-CREATE_FROM_TOOL
-SHOW_ACTION
-DIAGNOSTIC_DUAL_RUN
-```
-
-Workspace changes never modify these decisions. Existing-file preservation may
-remain enabled while interactive creation is disabled.
-
-### Workspace registry and controller
+### 2. Workspace registry and controller
 
 The registry exposes immutable workspace definitions. The controller performs
-an atomic UI transaction:
+one atomic UI-only transition:
 
-1. validate target availability;
-2. cancel the unfinished tool selection and activate Move;
-3. capture current user-customizable dock state under the old workspace ID;
-4. compile/apply target views, toolbar, menu contributions and help policy;
-5. restore compatible saved dock customization;
-6. persist the active workspace ID;
-7. publish a UI-only change notification.
+1. validate the target workspace and action availability;
+2. cancel an unfinished selection/preview transaction and activate Move;
+3. capture customizable dock state under the old workspace ID;
+4. compile and apply views, toolbar, menus, status/help and visual identity;
+5. restore compatible saved dock state;
+6. persist the active workspace ID; and
+7. publish a presentation-only notification.
 
-The transaction has no `Construction`, `Kernel`, command, undo-manager, or
-semantic evaluator write. Functional counters should prove zero construction
-updates and zero Locus evaluations during a switch.
+It writes no `Construction`, `Kernel` geometry, command output, semantic
+revision or undo entry and initiates no Locus evaluation. A failed transition
+restores the previous presentation atomically.
 
-### Selection adapter
+### 3. Semantic-curve stroke selection
 
-The GeoCeDG Euclidian controller subclass handles only approved product action
-IDs. It delegates every inherited mode/type to `super`. For the general
-Intersect mode, it adds V2 type acceptance while retaining all existing
-branches. It uses action-declared selection slots and passes typed inputs to the
-public command/application service; it never duplicates geometric solving.
+All `GeoClass.LOCUS_V2` producers share `DrawLocusV2`. Their selection shape is
+the effective stroke around each current render subpath, not the area enclosed
+by a closed path. The interior of a closed spline/locus is not a hit; a genuine
+semantic gap is not bridged. Normal line thickness and hit tolerance may widen
+the band but never establish semantic incidence.
 
-For a supported point-on-Locus action it passes the selected semantic
-branch/component/preimage (including periodic seam choice) to the public point
-parent. For scalar creation it gathers the declared state, true coordinate and
-domain/mapping roles. It never infers a generator from slider visibility, a
-render vertex or arbitrary dependency ancestors.
+This correction is presentation-only. Hit testing may identify a candidate
+source object for a gesture. It cannot identify branch, component, parameter,
+preimage, point-on-curve membership or token. A `COLLAPSED_IMAGE` presentation
+does not imply a unique retained-domain address.
 
-### Localization, help and icons
+### 4. Algebra preview, commit and definition inspection
 
-Resolvers map declared keys/IDs to GeoCeDG-owned resources. Missing resources
-follow the spec's explicit text fallback and generate validation diagnostics.
-Template/upstream images are not copied. The status presenter renders the next
-selection slot and typed failure reason. Command syntax help remains tied to the
-command registry, not a toolbar label.
+The existing scheduled-preview path remains the single preview authority. A
+GeoCeDG command preview may parse and present syntax/help but must stop before
+arguments, helpers or default dependencies publish anything. There is no geo,
+algorithm, identity reservation, XML, undo, token or semantic-revision change.
+Repeated preview, cancellation and replacement of text are exact no-ops on the
+authoritative Construction.
 
-### Preference and document-layout adapter
+Explicit Enter/commit evaluates once through the ordinary Algebra processor and
+publishes one normal atomic result graph. Spline V2 follows the sealed
+`CmdLocusV2` non-scripting preview precedent rather than creating a parallel
+input system or weakening construction participation.
 
-Preference state contains active workspace and per-workspace presentation
-customization. It is scoped to the existing GeoCeDG settings file and schema
-version. Loaded upstream perspectives become a transient `document-layout`
-presentation. The adapter offers **Reapply workspace** without writing or
-reinterpreting the construction.
+Definition inspection is a separate read-only route. A noneditable
+`GeoLocusV2` exposes the reconstructible parent definition (including
+`SplineV2` and transform composition) in a bounded, copyable, keyboard-
+accessible control. Visibility of a definition is not editability. Inspection
+does not open G9A redefine context and does not mutate Construction.
 
-The separate GeoCeDG Classic diagnostic route receives its own settings file.
-No in-process profile mutation is supported. Supported GeoCeDG semantic objects
-remain native and use the same kernel persistence/recomputation semantics; an
-external upstream distribution that does not know them is a distinct
-unsupported-open boundary, never a reason for lossy downgrade.
+The future free-input `k=0.25` compatible-redefine UX remains a distinct G9A
+consumer: label only locates an explicitly intended command-context target;
+identity preservation requires the accepted compatibility predicate and atomic
+transaction; ambiguous/absent/incompatible targets fail or follow existing
+new-identity semantics. Inspection is never its bypass.
+
+### 5. Algebra description-mode presentation
+
+The description menu has one mutually exclusive selected item derived from the
+existing Algebra-style setting. It must not derive selection from tree sort
+mode, dependency order, menu index or stale widget state. Initial build,
+rebuild, repeated font refresh, English/Spanish switch and component-orientation
+refresh reproduce exactly one correct radio/check state.
+
+Changing it writes only the existing presentation setting and performs zero
+Construction, DAG, identity, semantic revision or undo work.
+
+### 6. GeoCeDG deterministic product policy
+
+GeoCeDG CeDG Construction forces the existing host Continuity setting `OFF`.
+This is application/product policy, not a workspace toggle, new kernel concept
+or second persisted field. Enforcement occurs before loaded or restored state
+can publish geometry and wins over preferences, restart, workspace/profile
+state, native `.cedg` and compatibility `.ggb` input.
+
+The Advanced settings surface cannot enable it and supplies a localized,
+accessible locked-policy indication if the control remains visible. Native
+save records `OFF` through the existing XML setting. A compatibility input is
+not rewritten. Product-policy refresh mutates no Construction.
+
+The separate GeoCeDG Classic diagnostic process retains upstream
+configurability and isolated preferences. Shared kernel defaults are not
+globally changed to implement the product rule.
+
+### 7. Published R6 inverse-address authority and G9U1 consumer
+
+The explicit command `Point(L,"branch",u)` remains the exact scripting/command
+surface when the semantic address is already known. It deliberately does not
+create an R6 interaction-owned point and cannot be moved through the R6 edit
+operation. The ordinary mouse Point tool instead consumes the published R6
+pipeline:
+
+```text
+frontend stroke hit on one semantic curve
+  -> finite world/geometric target + transient world-radius policy
+  -> new LocusPointInteractionQuery2D(source, x, y, policy)
+  -> new LocusPointInteractionResolver2D().resolve(query)
+  -> LocusPointInteractionResult2D
+```
+
+The exact result statuses are:
+
+```text
+NO_ADMISSIBLE_PREIMAGE
+UNIQUE_ADMISSIBLE_PREIMAGE
+MULTIPLE_SEMANTIC_PREIMAGES
+UNRESOLVED_NUMERICAL_SEARCH
+INVALID_SOURCE
+DEGENERATE_SOURCE_IMAGE
+UNSUPPORTED_CAPABILITY
+```
+
+`NO_ADMISSIBLE_PREIMAGE` and `UNIQUE_ADMISSIBLE_PREIMAGE` require complete
+requested-scope evidence. One locally established candidate under
+`BOUNDED_EVALUATOR_SEARCH` remains `UNRESOLVED_NUMERICAL_SEARCH` and is not a
+creation candidate. `MULTIPLE_SEMANTIC_PREIMAGES` exposes resolver-owned
+`LocusPointInteractionCandidate2D` values for an explicit chooser. Their
+constructor is package-owned; the frontend retains and passes the selected
+candidate object exactly rather than rebuilding an address from a UI ordinal.
+Candidate collection order and world distance are transient presentation/work
+evidence, never identity.
+
+Each candidate contains the exact `LocusSemanticAddress2D`, source revision,
+forward-evaluated point, world residual, semantic interval, regularity, numeric
+guarantee, method and established local evidence. Automatic creation is legal
+only for `UNIQUE_ADMISSIBLE_PREIMAGE`; an explicit chooser may select exactly
+one candidate from `MULTIPLE_SEMANTIC_PREIMAGES`. Both paths call:
+
+```java
+LocusV2PublicOperations.createInteractiveSemanticPoint(
+    construction, label, source, selectedCandidate)
+```
+
+Every other status creates no point and supplies localized truthful feedback.
+There is no silent free-point fallback.
+
+An interaction-owned point uses a normal `AlgoSemanticLocusPoint2D` parent,
+stable `LOCUS_INTERACTION_POINT` role and dedicated hidden address-state inputs.
+Its durable selector is source/provider/branch/component/canonical parameter/
+periodic lift/seam side; pointer coordinates disappear as authority after
+selection. Dragging calls:
+
+```java
+LocusV2PublicOperations.moveInteractiveSemanticPoint(
+    point, targetX, targetY, policy)
+```
+
+The operation accepts only an R6-owned point with a current exact address,
+resolves before mutation, and writes the exact address inputs atomically only
+for `UNIQUE_ADMISSIBLE_PREIMAGE`. Ambiguous, unresolved, invalid, degenerate or
+unsupported moves leave the point inputs untouched; dormant points are not
+globally reattached. The frontend groups successful drag edits in ordinary undo
+history. A failed atomic rollback can reconstruct Java instances, so the
+gesture aborts and reacquires current objects rather than retaining stale
+references.
+
+R6 covers certified affine native Locus V2, piecewise-polynomial SplineV2 and
+supported R5 similarity images with complete evidence in their declared scope.
+Its bounded generic-evaluator fallback remains deliberately conservative: zero
+or one locally found preimage without complete scope is unresolved. G9U1 must
+expose that limitation instead of promising arbitrary generic-locus creation.
+It is not a missing frontend workaround and does not authorize another kernel
+gate.
+
+For a closed periodic SplineV2, R6 proves bidirectional seam movement from
+canonical `u=0.98` to `u=0.02` with `periodicLift=1`, reverse movement, no
+duplicate candidate and path-independent final state while preserving the same
+point, durable ID, source, branch and component. The encoded canonical
+IEEE-754 bits, lift and seam side remain exact authority; the frontend neither
+reconstructs nor recanonicalizes them. A genuinely unresolved seam remains
+unchanged and fails closed.
+
+Invertible R5 transforms resolve in the transformed source context, including
+rotation, reflection and negative dilation; transformed and source identities
+remain distinct. At `k=0`, a new query returns
+`DEGENERATE_SOURCE_IMAGE` rather than selecting an arbitrary retained address.
+An existing addressed point keeps its semantic direction, evaluates at the
+collapsed image when currently valid and recovers with the same identity when a
+nonzero factor returns.
+
+Native `.cedg` persistence, dormant selector hydration/reactivation, copy/remap,
+rename and undo/redo are already R6 kernel authority. Requests, candidates,
+world targets and UI ordinals are transient and never serialized. This actual
+contract removes the last kernel prerequisite identified by the G9U1 gap audit;
+stroke hit testing, chooser/feedback/accessibility, drag gesture grouping and
+the first end-to-end GUI smoke remain frontend work in G9U1.
+
+### 8. Rich-result markers and point materialization
+
+For the active/Algebra-selected rich result, the frontend may present markers
+for current finite point-admissible exact tokens. Markers default ON in the
+Construction workspace and remain overlay-only: no geo, ID, XML, DAG, Protocol,
+undo, copy, revision or token. Inactive, stale, dormant, quarantined,
+overlap-only, unresolved or ambiguous evidence has no selectable marker.
+
+Pointer proximity can choose among already established tokens; it cannot
+discover or continue identity. R4 intrinsic phase/rank and current certificate
+remain kernel-only. Spline×spline rich-only candidates without symmetric
+certified uniqueness remain inspectable but not selectable or materializable.
+
+R4 intersection tokens and R6 semantic-preimage candidates remain distinct
+authorities: the former select rich intersection solutions; the latter select
+an address on one semantic source. Neither is converted into the other, and no
+marker ordinal becomes Point-on-Locus identity.
+
+The persistent inspector supports create-one, create-selected and create-all
+for current eligible tokens. Each output gets its own exact token. Multi-create
+is one visible coherent undo transaction. The inspector remains open for
+repeated work, identifies existing outputs, supports keyboard operation and
+uses compact token-independent labels. Cancel commits nothing.
+
+Optional auto-materialization is a separate explicit frontend transaction just
+after rich-query creation. It is visible and undoable. Kernel recompute, load
+and later root appearance never create a new node. R4 automatic reactivation
+applies only to an already-existing exact-token point.
+
+### 9. View navigation and ZoomWindow
+
+View coordinate transforms, pan, zoom, fit and view history are frontend state
+and never metric, clipping, address or identity authority. G9U1 exposes a
+bounded `ZoomWindow` action through the one action registry and real menu,
+toolbar and keyboard routes. It reuses the ordinary Euclidian rectangle gesture
+and view-transform seam, creates no geometric rectangle or Construction undo
+entry, and leaves state unchanged on cancel or an invalid/zero-area rectangle.
+
+Inherited pan, zoom in/out, standard view and show-all/fit-all may share its
+navigation group. `ZoomPrevious`, fit-selection/layer, named views, fixed scale
+and broader navigation history remain G12. View pixels never supply semantic
+clipping, hit, inverse-address or identity evidence.
+
+### 10. Localization, help, branding and accessibility
+
+The initially validated GeoCeDG Construction locale set is English and Spanish.
+Every GeoCeDG-owned action, help text, selection role, error, Continuity-policy
+message, inspector label and accessible name is complete in both. Both map
+localized command discovery/help to the same internal IDs and grammar. Missing
+or unsupported product localization follows an English-base fallback and emits
+a diagnostic; raw keys are not normal UI.
+
+The allowlist/fallback belongs to GeoCeDG product configuration and does not
+delete upstream resources. The exact presentation of unsupported locales
+(hidden or unavailable-with-reason) remains an author-review choice. GeoCeDG
+Classic retains the upstream language surface.
+
+Repeated EN/ES changes rebuild menus, action help, command dictionaries and
+radio/check state without stale entries or duplicates. Status/help presents the
+next typed selection role and bounded failure details.
+
+Visual identity remains restrained, professional, accessible and distinct from
+Classic. Theme/accent changes are presentation-only. The two logical brand
+roles remain:
+
+- `geocedg.brand.topbar` for top-bar/product chrome; and
+- `geocedg.brand.startup` for startup/application identity and only verified
+  deterministic size/platform derivatives.
+
+Each source and derivative has recorded provenance and deterministic hashes.
+Missing author assets use explicit fallback; no substitute logo or upstream
+branding is fabricated. Contrast, focus, keyboard paths and normal/high-DPI
+scaling are mandatory.
+
+### 11. Preferences and document layout
+
+Application preferences own active workspace, per-workspace dock layout,
+marker visibility, inspector presentation, locale and supported theme/accent.
+They are not geometric inputs. Loaded document perspectives remain transient
+`Document layout` presentation and can be replaced by Reapply workspace without
+changing Construction.
+
+`.cedg` remains native and `.ggb` compatibility input. Workspace/UI changes do
+not duplicate or override the R2 open/save state machine. Current ZIP/XML and
+`app="classic"` remain. Candidate markers and preview never serialize. Exact
+semantic addresses/tokens and point children use their existing kernel
+persistence. Continuity alone uses its existing host field, always `OFF` in the
+product.
+
+The R4 risk `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` remains tracked. G9U1
+must execute or receive the required author-approved disposition; marker tests
+cannot silently close it.
 
 ## State ownership
 
-| State | Owner | Persisted where | Geometric authority |
+| State | Owner | Persistence | Geometric authority |
 |---|---|---|---|
-| workspace definitions/actions | checked-in application manifest | packaged resource | none |
-| active workspace | GeoCeDG UI | preferences | none |
-| dock sizes/visibility | user UI | per-workspace preferences | none |
-| document perspective | upstream document UI contract | existing `.ggb` presentation XML | none |
-| runtime feature decision | feature service | manifest + approved override | gates creation only |
-| active tool/selection slots | Euclidian controller | transient | none until command commits |
-| constructed outputs | kernel/Construction | normal `.ggb` contracts | authoritative according to object spec |
+| action/workspace definitions | checked-in profile manifest | packaged resource | none |
+| active workspace and dock layout | GeoCeDG UI | isolated preferences | none |
+| marker/inspector/theme/locale preference | GeoCeDG UI | isolated preferences | none |
+| document perspective | existing document presentation contract | current archive presentation XML where already supported | none |
+| runtime feature decision | feature service | manifests + approved launch override | creation gate only |
+| Continuity | existing host Kernel setting clamped by product config | existing preference/XML seam | deterministic host policy, not geometry identity |
+| preview and active selection slots | input/controller | transient | none before commit |
+| render path and hit stroke | Euclidian view | derived/transient | none |
+| inverse semantic-address evidence | published R6 shared kernel | transient typed query/result/candidates; selected exact address only is persisted by the normal point parent | semantic query authority |
+| rich result/selectors/tokens | shared kernel | existing R4/R5/G9S1 XML/ledger | authoritative in declared scope |
+| materialized point | shared kernel/Construction | normal `.cedg` algorithm graph | authoritative semantic child |
+| view zoom/pan/history | Euclidian frontend | view/preferences under host policy | none |
 
-## Dihedral procedure boundary
+## Performance and instrumentation
 
-The procedure workspace does not own spatial semantics. Its action service asks
-the shared kernel for typed object, ProjectionSystem, frame, binding,
-sufficiency and certificate data. The ProjectionSystem-equivalent supplies
-relative frame relations, intrinsic frame coordinates, the map into the common
-CeDG diagram, orientation/roles, line-of-ground or hinge semantics,
-change-of-plane lineage, revision, consistency and degeneration. A confirmed
-procedure creates ordinary algorithms/objects in the kernel graph and records
-provenance. The UI may group outputs and offer a one-action undo transaction,
-but Construction Protocol exposes the explicit steps.
-
-```text
-typed selection
- -> resolve durable ProjectionSystem/frame/binding IDs
- -> obtain intrinsic coordinates and diagram-map evidence
- -> obtain admissible persisted frame-relation/hinge choices
- -> user confirmation when non-unique
- -> kernel procedure algorithm(s)
- -> auxiliary/result objects + certificate
- -> ordinary update, undo, copy and persistence
-```
-
-No visible-placement or screen-coordinate inference, label association, macro
-side effect, or duplicate editable 3D representation is permitted. Moving a
-view is never a change of projection-system semantics; changing an approved
-diagram map is an explicit kernel/document-semantic operation, not a workspace
-layout mutation.
+- Workspace, language, Algebra-style, theme and view changes perform zero
+  semantic evaluations and Construction writes.
+- Stroke hits use the current drawable selection shape and no kernel solve.
+- Preview performs no durable construction work.
+- One active rich-result snapshot/token index feeds all markers and inspector
+  entries; there is no independent solve per marker or materialized point.
+- Existing point binding remains direct selector lookup and the accepted R4
+  update is reverified around `O(R log R + P)` for `R` roots and `P` bindings.
+- R6 owns inverse-query budgets and counters. The initial policy bounds one
+  query to 32,768 semantic evaluations, 512 subdivisions, 80 refinements and
+  1,024 candidates, with evaluator composition depth capped at 128. Pointer
+  motion may not hide unbounded work, repeat one global solve per candidate or
+  retain movement history.
+- One successful R6 move uses the accepted O(N) Construction snapshot/rollback
+  seam. G9U1 must coalesce/group the user gesture and validate responsiveness;
+  it must not bypass that correctness boundary with frontend-owned state.
+- UI controls, help and opaque-token diagnostics remain bounded at normal and
+  high DPI.
 
 ## Failure and recovery
 
-- Invalid schema/action reference: reject v2 and use the last accepted v1
-  profile with an explicit startup diagnostic.
-- Missing feature dependency: action disabled with reason; never call dispatch.
-- Unknown saved workspace: fall back to Construction and preserve the unknown
-  preference for diagnosis.
-- Document toolbar parse failure: retain construction load, apply Construction
-  workspace, and report presentation recovery.
-- Workspace switch failure: roll back the UI transaction to the old workspace;
-  construction remains untouched.
-- Localization/icon failure: use approved text fallback; never load an
-  unregistered embedded asset.
-- Procedure ambiguity/degeneration: do not commit outputs; present typed kernel
-  evidence.
+- Invalid profile/action reference: reject v2 and use the last accepted v1
+  profile with an explicit diagnostic; never construct a fallback catalog.
+- Workspace switch failure: restore old presentation; Construction untouched.
+- Missing feature: action unavailable with localized reason; dispatch not
+  called.
+- Missing locale/icon/brand source: approved accessible fallback and diagnostic;
+  no unregistered asset.
+- Preview/cancel/failed commit: zero publication and undo change.
+- Definition unavailable: bounded read-only typed state, not editable fallback.
+- Continuity hostile input/preference: clamp OFF before publication; input file
+  untouched.
+- `NO_ADMISSIBLE_PREIMAGE`, `UNRESOLVED_NUMERICAL_SEARCH`, `INVALID_SOURCE`,
+  `DEGENERATE_SOURCE_IMAGE` or `UNSUPPORTED_CAPABILITY`: no point and no free-
+  point fallback. Diagnostic candidates under an unresolved status are not
+  selectable.
+- `MULTIPLE_SEMANTIC_PREIMAGES`: exact resolver candidates only; chooser cancel
+  creates nothing, and selection passes the candidate object rather than an
+  ordinal.
+- Stale/inadmissible token: no marker/materialization.
+- Multi-materialization failure: atomic rollback of the compound action.
+- Rich-only pair or `COLLAPSED_IMAGE`: inspect truthful evidence; fabricate no
+  isolated token/point.
 
-## Implementation slices
+All user-facing failures use English/Spanish localized typed messages. Raw Java
+exceptions, opaque tokens as layout labels, coordinate identity and silent
+semantic fallback are forbidden.
 
-1. Schema-v2 definitions, validator, v1 adapter and static action compiler.
-2. Runtime feature service and consistency checks across command/tool/menu/load.
-3. Construction workspace controller, preferences and Document-layout handling.
-4. GeoCeDG controller extensions as GUI clients for already approved public
-   actions, with point-on-Locus preimage selection and no G9B dependency.
-5. Visual/accessibility/localization/icon validation.
-6. Dihedral Procedures only after G9 global PASS and its own approved semantic
-   procedure contract consuming ProjectionSystem/map/hinge semantics.
+## Validation architecture
 
-G9B must not depend on G9U1, and G9U1 must not depend on G9B. Recommended serial
-execution may still place G9U1 earlier for operational safety; that ordering
-does not create a semantic edge. G9U2 retains the approved global G9 gate.
+`docs/validation/g9_public_workspace_validation_matrix.md` remains the composed
+scenario authority. The definitive implementation must add and execute focused
+families for:
 
-The future implementation validation authority is defined in
-`docs/validation/g9_public_workspace_validation_matrix.md`.
+- `U1-H`: semantic-curve stroke hit/interior/gap behavior;
+- `U1-IN`: zero-mutation preview and one explicit commit;
+- `U1-DEF`: bounded read-only definition inspection;
+- `U1-AV`: description-mode state from the Algebra setting;
+- `U1-D01`–`U1-D08`: Continuity OFF and Classic control;
+- `U1-PNT-01`–`U1-PNT-20`: the actual R6 query/status/candidate/create/move
+  contract through real Point-tool click, exact ambiguity choice, semantic drag,
+  periodic seam, transformed/k=0 states, persistence, undo/copy and view purity;
+- `U1-I01`–`U1-I14`: markers, multi-materialization, persistent inspector,
+  auto transaction and periodic-risk disposition;
+- `U1-C`/`U1-L`: English/Spanish command/action/help parity;
+- `U1-Z`: real `ZoomWindow` menu/toolbar/keyboard paths, rectangle/cancel/
+  zero-area behavior, view purity and broader G12 exclusion;
+- `U1-B`/`U1-A`: visual identity, accessibility and brand provenance; and
+- `U1-P01`–`U1-P02`: overlay/selector performance and bounded token UI.
+
+The future focused verifier runs after every required sealed G9U0/R1/R2/R3/R4/
+R5/G9S1/R6 authority, relevant G9A/G9X1/G5/Classic controls, Checkstyle, Git
+diff checks and full `tools/agent/verify.ps1`. UI tests exercise the real
+Algebra, menu, keyboard and Graphics routes. The G9U1 author smoke is the first
+productive GUI acceptance of R6: Point-tool create/drag on LocusV2 and SplineV2,
+periodic seam crossing, self-intersection chooser/cancel, transformed and
+negative-dilation sources, `k=0`, and save/reopen. No verifier may substitute
+direct-controller invocation for that public path.
+
+## Implementation slices and gates
+
+1. **Published entry authority:** G9S1 and G9U0-R6 are sealed
+   `PASS — AUTHOR APPROVED`; their kernel semantics are consumed, not reopened.
+2. **G9U1A:** strict schema-v2 definitions, v1 adapter, one action registry,
+   feature/localization/help/icon validation and professional group compiler.
+3. **G9U1B:** Construction layout/controller/preferences/document-layout,
+   product Continuity/locale policy, Algebra preview/inspection/description
+   contracts and stroke-only curve hit presentation.
+4. **G9U1C:** R6-consuming interactive semantic Point gesture/drag, current-token
+   markers, persistent inspector and explicit one/selected/all materialization.
+5. **G9U1D:** visual identity, author brand roles, accessibility, performance,
+   packaging consumers where separately in scope and complete regression.
+
+R6 PASS satisfies the last kernel prerequisite found by the complete workspace
+gap audit. G9U1 implementation still begins only after author approval and
+separate authorization of the post-R6 canonical prompt. G9B/G9C remain
+semantically independent. G9U2 remains blocked by its global G9/procedure
+authority. Broader G12 navigation is not folded into these slices.
+
+## Open decisions and STOP boundaries
+
+Author review is still required for:
+
+- initial Properties floating/open state;
+- final product palette/accent and supplied brand-asset suitability;
+- final wording for the locked Continuity and inverse ambiguity states;
+- whether unsupported product locales are hidden or displayed unavailable;
+- final frontend mapping from stroke tolerance to R6 world-radius policy and
+  drag-event/undo grouping within the accepted R6 work contract; and
+- any G12 navigation beyond the bounded G9U1 `ZoomWindow`/host-navigation set.
+
+Stop before implementation if any slice would:
+
+- put semantic truth in a drawable, marker, workspace or input preview;
+- make `GeoLocusV2` a generic `Path`;
+- derive an inverse address from coordinates, nearest distance, screen/order or
+  movement history;
+- begin G9U1 without R6 `PASS — AUTHOR APPROVED`;
+- use a second action, Algebra, Continuity, locale or persistence authority;
+- make definitions editable outside atomic G9A redefine;
+- publish geometry while Continuity is transiently ON;
+- create new points during kernel recompute;
+- broaden R4/R5/G9S1, G9B/G9C/G9U2/G10 or the deferred G12 family; or
+- claim unsupported localization or branding provenance.
+
+Terminal planning state:
+
+```text
+G9U0-R6 = PASS — AUTHOR APPROVED
+G9U1 DESIGN = PASS — AUTHOR APPROVED
+POST-R6 RECONCILED = true
+G9U1 IMPLEMENTATION = NOT AUTHORIZED / NOT STARTED
+implementationStarted = false
+implementationAuthorized = false
+selfApproved = false
+authorApprovedDesign = true
+passClaimedImplementation = false
+```

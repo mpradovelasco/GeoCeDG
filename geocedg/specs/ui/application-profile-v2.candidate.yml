@@ -1,0 +1,570 @@
+{
+  "$schema": "application-profile-v2.candidate.schema.json",
+  "schema_version": 2,
+  "status": "design-approved-not-runtime",
+  "profile_id": "geocedg-desktop",
+  "live_profile": {
+    "path": "apps/geocedg/application-profile.yml",
+    "schema_version": 1,
+    "policy": "unchanged-until-authorized-g9u1-implementation"
+  },
+  "application": {
+    "name": "GeoCeDG",
+    "preferences_key": "geocedg",
+    "windows_app_id": "org.geocedg.desktop",
+    "base_profile": "geogebra-classic-5"
+  },
+  "serialization": {
+    "app_code": "classic",
+    "native_extension": ".cedg",
+    "compatibility_extension": ".ggb",
+    "policy": "preserve-approved-r2-contract"
+  },
+  "default_workspace_id": "cedg-construction",
+  "product_policies": {
+    "continuity": {
+      "host_setting": "continuity",
+      "value": false,
+      "locked": true
+    },
+    "languages": {
+      "offered": ["en", "es"],
+      "fallback": "en",
+      "retain_upstream_corpus": true,
+      "classic_policy": "retain-upstream-language-selection"
+    },
+    "semantic_curves": {
+      "feature_id": "cedg.locus.v2",
+      "additional_runtime_flags": []
+    },
+    "materialization": {
+      "kernel_recompute_creates_new_points": false,
+      "existing_point_reactivation": "kernel-dag",
+      "new_point_auto_materialization": "explicit-visible-undoable-frontend-action"
+    }
+  },
+  "taxonomy": {
+    "broad_families": [
+      {"id": "inspect-construct", "order": 1, "name_key": "GeoCeDG.Workspace.Family.InspectConstruct", "availability": "available"},
+      {"id": "linear-geometry", "order": 2, "name_key": "GeoCeDG.Workspace.Family.LinearGeometry", "availability": "available"},
+      {"id": "parameters-drivers", "order": 3, "name_key": "GeoCeDG.Workspace.Family.ParametersDrivers", "availability": "available"},
+      {"id": "relations-intersections", "order": 4, "name_key": "GeoCeDG.Workspace.Family.RelationsIntersections", "availability": "available"},
+      {"id": "circles-conics-curves", "order": 5, "name_key": "GeoCeDG.Workspace.Family.CirclesConicsCurves", "availability": "available"},
+      {"id": "semantic-curves", "order": 6, "name_key": "GeoCeDG.Workspace.Family.SemanticCurves", "availability": "available"},
+      {"id": "metrics-validation", "order": 7, "name_key": "GeoCeDG.Workspace.Family.MetricsValidation", "availability": "available"},
+      {"id": "transformations-manual-projections", "order": 8, "name_key": "GeoCeDG.Workspace.Family.TransformationsManualProjections", "availability": "available"},
+      {"id": "cedg-procedures-developments", "order": 9, "name_key": "GeoCeDG.Workspace.Family.ProceduresDevelopments", "availability": "disabled-with-reason", "reason_key": "GeoCeDG.Workspace.Unavailable.G9U2"},
+      {"id": "presentation-document", "order": 10, "name_key": "GeoCeDG.Workspace.Family.PresentationDocument", "availability": "available"},
+      {"id": "automation-import-export", "order": 11, "name_key": "GeoCeDG.Workspace.Family.AutomationImportExport", "availability": "available"}
+    ],
+    "operational_clusters": [
+      {"id": "selection-move-inspect", "order": 1, "broad_family_id": "inspect-construct", "name_key": "GeoCeDG.Workspace.Cluster.SelectionMoveInspect"},
+      {"id": "point-construction", "order": 2, "broad_family_id": "inspect-construct", "name_key": "GeoCeDG.Workspace.Cluster.PointConstruction"},
+      {"id": "linear-geometry-tools", "order": 3, "broad_family_id": "linear-geometry", "name_key": "GeoCeDG.Workspace.Cluster.LinearGeometry"},
+      {"id": "parameter-driver-tools", "order": 4, "broad_family_id": "parameters-drivers", "name_key": "GeoCeDG.Workspace.Cluster.ParametersDrivers"},
+      {"id": "relation-intersection-tools", "order": 5, "broad_family_id": "relations-intersections", "name_key": "GeoCeDG.Workspace.Cluster.RelationsIntersections"},
+      {"id": "circle-conic-curve-tools", "order": 6, "broad_family_id": "circles-conics-curves", "name_key": "GeoCeDG.Workspace.Cluster.CirclesConicsCurves"},
+      {"id": "locus-v2-tools", "order": 7, "broad_family_id": "semantic-curves", "name_key": "GeoCeDG.Workspace.Cluster.LocusV2"},
+      {"id": "spline-v2-tools", "order": 8, "broad_family_id": "semantic-curves", "name_key": "GeoCeDG.Workspace.Cluster.SplineV2"},
+      {"id": "metric-validation-tools", "order": 9, "broad_family_id": "metrics-validation", "name_key": "GeoCeDG.Workspace.Cluster.MetricsValidation"},
+      {"id": "similarity-transform-tools", "order": 10, "broad_family_id": "transformations-manual-projections", "name_key": "GeoCeDG.Workspace.Cluster.SimilarityTransformations"},
+      {"id": "manual-projection-authorized", "order": 11, "broad_family_id": "transformations-manual-projections", "related_deferred_broad_family_ids": ["cedg-procedures-developments"], "name_key": "GeoCeDG.Workspace.Cluster.ManualProjectionAuthorized"},
+      {"id": "presentation-visibility-style", "order": 12, "broad_family_id": "presentation-document", "name_key": "GeoCeDG.Workspace.Cluster.PresentationVisibilityStyle"},
+      {"id": "navigation-zoom", "order": 13, "broad_family_id": "presentation-document", "name_key": "GeoCeDG.Workspace.Cluster.NavigationZoom"},
+      {"id": "document-lifecycle", "order": 14, "broad_family_id": "presentation-document", "name_key": "GeoCeDG.Workspace.Cluster.DocumentLifecycle"},
+      {"id": "automation-scripting", "order": 15, "broad_family_id": "automation-import-export", "name_key": "GeoCeDG.Workspace.Cluster.AutomationScripting"},
+      {"id": "import-export-authorized", "order": 16, "broad_family_id": "automation-import-export", "name_key": "GeoCeDG.Workspace.Cluster.ImportExport"},
+      {"id": "help-command-discovery", "order": 17, "broad_family_id": "presentation-document", "name_key": "GeoCeDG.Workspace.Cluster.HelpCommandDiscovery"},
+      {"id": "construction-history-definition", "order": 18, "broad_family_id": "inspect-construct", "name_key": "GeoCeDG.Workspace.Cluster.ConstructionHistoryDefinition"}
+    ]
+  },
+  "policy_profiles": {
+    "effects": [
+      {"id": "mode-create", "construction": "explicit-single", "preview": "none", "undo": "normal"},
+      {"id": "interactive-edit", "construction": "interactive-edit", "preview": "none", "undo": "normal"},
+      {"id": "read-only", "construction": "none", "preview": "none", "undo": "none"},
+      {"id": "preference-only", "construction": "none", "preview": "none", "undo": "none"},
+      {"id": "single-materialization", "construction": "explicit-single", "preview": "none", "undo": "single"},
+      {"id": "compound-materialization", "construction": "explicit-compound", "preview": "none", "undo": "compound"},
+      {"id": "document-lifecycle", "construction": "document-lifecycle", "preview": "none", "undo": "normal"},
+      {"id": "host-history", "construction": "none", "preview": "none", "undo": "host-history"},
+      {"id": "delete-selection", "construction": "explicit-single", "preview": "none", "undo": "single"}
+    ],
+    "availability": [
+      {"id": "host-inherited", "unavailable_policy": "hidden", "geocedg": "available", "classic": "inherited", "external_upstream": "inherited"},
+      {"id": "host-contextual", "unavailable_policy": "hidden", "geocedg": "contextual", "classic": "inherited", "external_upstream": "inherited"},
+      {"id": "locus-v2-product", "unavailable_policy": "hidden", "geocedg": "feature-gated", "classic": "hidden", "external_upstream": "unsupported"},
+      {"id": "locus-v2-contextual", "unavailable_policy": "hidden", "geocedg": "contextual", "classic": "hidden", "external_upstream": "unsupported"},
+      {"id": "product-only", "unavailable_policy": "hidden", "geocedg": "available", "classic": "hidden", "external_upstream": "unsupported"},
+      {"id": "product-contextual", "unavailable_policy": "hidden", "geocedg": "contextual", "classic": "hidden", "external_upstream": "unsupported"},
+      {"id": "document-product", "unavailable_policy": "hidden", "geocedg": "available", "classic": "inherited", "external_upstream": "inherited"},
+      {"id": "dxf-product", "unavailable_policy": "hidden", "geocedg": "feature-gated", "classic": "hidden", "external_upstream": "unsupported"},
+      {"id": "diagnostic-route", "unavailable_policy": "diagnostic-route-only", "geocedg": "available", "classic": "diagnostic-only", "external_upstream": "unsupported"},
+      {"id": "gated-g9u2", "unavailable_policy": "disabled-with-reason", "geocedg": "disabled", "classic": "hidden", "external_upstream": "unsupported"}
+    ],
+    "command_surfaces": [
+      {"id": "mode-only", "algebra_input": "not-applicable", "autocomplete": "not-applicable", "ggbscript": "not-applicable"},
+      {"id": "semantic-command", "algebra_input": "supported", "autocomplete": "supported", "ggbscript": "supported"},
+      {"id": "action-only", "algebra_input": "not-applicable", "autocomplete": "not-applicable", "ggbscript": "not-applicable"},
+      {"id": "document-action", "algebra_input": "not-applicable", "autocomplete": "not-applicable", "ggbscript": "not-applicable"},
+      {"id": "help-action", "algebra_input": "not-applicable", "autocomplete": "not-applicable", "ggbscript": "not-applicable"}
+    ]
+  },
+  "localization_contract": {
+    "required_locales": ["en", "es"],
+    "required_fields": ["name", "short_help", "long_help", "status", "error"],
+    "refs_resolve_at_implementation": true
+  },
+  "icon_contract": {
+    "stable_logical_ids": true,
+    "text_fallback_required": true,
+    "branding_roles": ["geocedg.brand.topbar", "geocedg.brand.startup"]
+  },
+  "actions": [
+    {"id":"construction.move","kind":"upstream-mode","target":{"symbol":"MODE_MOVE","audited_numeric_id":0},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.move","effect_profile_id":"interactive-edit","localization_ref":"upstream.mode.Move","icon_ref":"upstream.mode.Move","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"construction.move-rotate","kind":"upstream-mode","target":{"symbol":"MODE_MOVE_ROTATE","audited_numeric_id":39},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.move-rotate","effect_profile_id":"interactive-edit","localization_ref":"upstream.mode.MoveRotate","icon_ref":"upstream.mode.MoveRotate","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"should","implementation_state":"existing"},
+    {"id":"construction.select","kind":"upstream-mode","target":{"symbol":"MODE_SELECT","audited_numeric_id":77},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.select","effect_profile_id":"read-only","localization_ref":"upstream.mode.Select","icon_ref":"upstream.mode.Select","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"should","implementation_state":"host-characterization-required"},
+    {"id":"construction.attach-detach","kind":"upstream-mode","target":{"symbol":"MODE_ATTACH_DETACH","audited_numeric_id":67},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.attach-detach","effect_profile_id":"interactive-edit","localization_ref":"upstream.mode.AttachDetach","icon_ref":"upstream.mode.AttachDetach","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"should","implementation_state":"existing"},
+    {"id":"edit.delete","kind":"upstream-mode","target":{"symbol":"MODE_DELETE","audited_numeric_id":6},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.delete","effect_profile_id":"delete-selection","localization_ref":"upstream.mode.Delete","icon_ref":"upstream.mode.Delete","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"edit.undo","kind":"product-action","target":{"symbol":"host.edit.undo"},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"none","effect_profile_id":"host-history","localization_ref":"upstream.action.Undo","icon_ref":"upstream.action.Undo","availability_profile_id":"host-inherited","command_surface_profile_id":"action-only","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"edit.redo","kind":"product-action","target":{"symbol":"host.edit.redo"},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"none","effect_profile_id":"host-history","localization_ref":"upstream.action.Redo","icon_ref":"upstream.action.Redo","availability_profile_id":"host-inherited","command_surface_profile_id":"action-only","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"construction.point","kind":"upstream-mode","target":{"symbol":"MODE_POINT","audited_numeric_id":1},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"geocedg.point-or-semantic-curve","effect_profile_id":"mode-create","localization_ref":"upstream.mode.Point","icon_ref":"upstream.mode.Point","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"must","implementation_state":"new-manifest-binding","notes":"For LocusV2/SplineV2 stroke candidates, the frontend consumes the published R6 typed resolver and exact resolver-owned candidate; it never derives a preimage from pixels or proximity."},
+    {"id":"construction.point-on-object","kind":"upstream-mode","target":{"symbol":"MODE_POINT_ON_OBJECT","audited_numeric_id":501},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"geocedg.point-on-object-or-semantic-curve","effect_profile_id":"mode-create","localization_ref":"upstream.mode.PointOnObject","icon_ref":"upstream.mode.PointOnObject","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"must","implementation_state":"new-manifest-binding","notes":"Semantic-curve creation and drag reuse the published R6 resolver/creation/move seams; ambiguity requires explicit candidate selection."},
+    {"id":"construction.line","kind":"upstream-mode","target":{"symbol":"MODE_JOIN","audited_numeric_id":2},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.line","effect_profile_id":"mode-create","localization_ref":"upstream.mode.Join","icon_ref":"upstream.mode.Join","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"construction.segment","kind":"upstream-mode","target":{"symbol":"MODE_SEGMENT","audited_numeric_id":15},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.segment","effect_profile_id":"mode-create","localization_ref":"upstream.mode.Segment","icon_ref":"upstream.mode.Segment","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"construction.fixed-segment","kind":"upstream-mode","target":{"symbol":"MODE_SEGMENT_FIXED","audited_numeric_id":45},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.fixed-segment","effect_profile_id":"mode-create","localization_ref":"upstream.mode.SegmentFixed","icon_ref":"upstream.mode.SegmentFixed","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"should","implementation_state":"existing"},
+    {"id":"construction.ray","kind":"upstream-mode","target":{"symbol":"MODE_RAY","audited_numeric_id":18},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.ray","effect_profile_id":"mode-create","localization_ref":"upstream.mode.Ray","icon_ref":"upstream.mode.Ray","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"construction.vector","kind":"upstream-mode","target":{"symbol":"MODE_VECTOR","audited_numeric_id":7},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.vector","effect_profile_id":"mode-create","localization_ref":"upstream.mode.Vector","icon_ref":"upstream.mode.Vector","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"construction.vector-from-point","kind":"upstream-mode","target":{"symbol":"MODE_VECTOR_FROM_POINT","audited_numeric_id":37},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.vector-from-point","effect_profile_id":"mode-create","localization_ref":"upstream.mode.VectorFromPoint","icon_ref":"upstream.mode.VectorFromPoint","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"should","implementation_state":"existing"},
+    {"id":"construction.parallel-line","kind":"upstream-mode","target":{"symbol":"MODE_PARALLEL","audited_numeric_id":3},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.parallel","effect_profile_id":"mode-create","localization_ref":"upstream.mode.Parallel","icon_ref":"upstream.mode.Parallel","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"construction.perpendicular-line","kind":"upstream-mode","target":{"symbol":"MODE_ORTHOGONAL","audited_numeric_id":4},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.orthogonal","effect_profile_id":"mode-create","localization_ref":"upstream.mode.Orthogonal","icon_ref":"upstream.mode.Orthogonal","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"construction.perpendicular-bisector","kind":"upstream-mode","target":{"symbol":"MODE_LINE_BISECTOR","audited_numeric_id":8},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.line-bisector","effect_profile_id":"mode-create","localization_ref":"upstream.mode.LineBisector","icon_ref":"upstream.mode.LineBisector","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"construction.angle-bisector","kind":"upstream-mode","target":{"symbol":"MODE_ANGULAR_BISECTOR","audited_numeric_id":9},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.angular-bisector","effect_profile_id":"mode-create","localization_ref":"upstream.mode.AngularBisector","icon_ref":"upstream.mode.AngularBisector","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"construction.midpoint","kind":"upstream-mode","target":{"symbol":"MODE_MIDPOINT","audited_numeric_id":19},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.midpoint","effect_profile_id":"mode-create","localization_ref":"upstream.mode.Midpoint","icon_ref":"upstream.mode.Midpoint","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"construction.polyline","kind":"upstream-mode","target":{"symbol":"MODE_POLYLINE","audited_numeric_id":65},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.polyline","effect_profile_id":"mode-create","localization_ref":"upstream.mode.Polyline","icon_ref":"upstream.mode.Polyline","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"should","implementation_state":"existing"},
+    {"id":"construction.polygon","kind":"upstream-mode","target":{"symbol":"MODE_POLYGON","audited_numeric_id":16},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.polygon","effect_profile_id":"mode-create","localization_ref":"upstream.mode.Polygon","icon_ref":"upstream.mode.Polygon","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"construction.regular-polygon","kind":"upstream-mode","target":{"symbol":"MODE_REGULAR_POLYGON","audited_numeric_id":51},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.regular-polygon","effect_profile_id":"mode-create","localization_ref":"upstream.mode.RegularPolygon","icon_ref":"upstream.mode.RegularPolygon","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"should","implementation_state":"existing"},
+    {"id":"construction.rigid-polygon","kind":"upstream-mode","target":{"symbol":"MODE_RIGID_POLYGON","audited_numeric_id":64},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.rigid-polygon","effect_profile_id":"mode-create","localization_ref":"upstream.mode.RigidPolygon","icon_ref":"upstream.mode.RigidPolygon","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"should","implementation_state":"existing"},
+    {"id":"construction.vector-polygon","kind":"upstream-mode","target":{"symbol":"MODE_VECTOR_POLYGON","audited_numeric_id":70},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.vector-polygon","effect_profile_id":"mode-create","localization_ref":"upstream.mode.VectorPolygon","icon_ref":"upstream.mode.VectorPolygon","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"should","implementation_state":"existing"},
+    {"id":"parameter.slider","kind":"upstream-mode","target":{"symbol":"MODE_SLIDER","audited_numeric_id":25},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.slider","effect_profile_id":"mode-create","localization_ref":"upstream.mode.Slider","icon_ref":"upstream.mode.Slider","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"parameter.fixed-angle","kind":"upstream-mode","target":{"symbol":"MODE_ANGLE_FIXED","audited_numeric_id":46},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.fixed-angle","effect_profile_id":"mode-create","localization_ref":"upstream.mode.AngleFixed","icon_ref":"upstream.mode.AngleFixed","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"should","implementation_state":"existing"},
+    {"id":"parameter.checkbox","kind":"upstream-mode","target":{"symbol":"MODE_SHOW_HIDE_CHECKBOX","audited_numeric_id":52},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.checkbox","effect_profile_id":"mode-create","localization_ref":"upstream.mode.ShowHideCheckbox","icon_ref":"upstream.mode.ShowHideCheckbox","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"should","implementation_state":"existing"},
+    {"id":"parameter.button","kind":"upstream-mode","target":{"symbol":"MODE_BUTTON_ACTION","audited_numeric_id":60},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.button","effect_profile_id":"mode-create","localization_ref":"upstream.mode.ButtonAction","icon_ref":"upstream.mode.ButtonAction","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"should","implementation_state":"existing"},
+    {"id":"parameter.input-box","kind":"upstream-mode","target":{"symbol":"MODE_TEXTFIELD_ACTION","audited_numeric_id":61},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.input-box","effect_profile_id":"mode-create","localization_ref":"upstream.mode.TextfieldAction","icon_ref":"upstream.mode.TextfieldAction","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"should","implementation_state":"existing"},
+    {"id":"parameter.animation-toggle","kind":"product-action","target":{"symbol":"host.context.animation-toggle"},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.animatable-object","effect_profile_id":"preference-only","localization_ref":"upstream.action.Animation","icon_ref":"upstream.action.Animation","availability_profile_id":"host-contextual","command_surface_profile_id":"action-only","planning_disposition":"should","implementation_state":"existing"},
+    {"id":"relation.intersect","kind":"upstream-mode","target":{"symbol":"MODE_INTERSECT","audited_numeric_id":5},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.intersect-plus-rich-result","effect_profile_id":"mode-create","localization_ref":"upstream.mode.Intersect","icon_ref":"upstream.mode.Intersect","availability_profile_id":"host-inherited","command_surface_profile_id":"semantic-command","planning_disposition":"must","implementation_state":"new-manifest-binding"},
+    {"id":"relation.tangent","kind":"upstream-mode","target":{"symbol":"MODE_TANGENTS","audited_numeric_id":13},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.tangent","effect_profile_id":"mode-create","localization_ref":"upstream.mode.Tangents","icon_ref":"upstream.mode.Tangents","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"relation.compare","kind":"upstream-mode","target":{"symbol":"MODE_RELATION","audited_numeric_id":14},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.relation","effect_profile_id":"read-only","localization_ref":"upstream.mode.Relation","icon_ref":"upstream.mode.Relation","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"relation.polar-diameter","kind":"upstream-mode","target":{"symbol":"MODE_POLAR_DIAMETER","audited_numeric_id":44},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.polar-diameter","effect_profile_id":"mode-create","localization_ref":"upstream.mode.PolarDiameter","icon_ref":"upstream.mode.PolarDiameter","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"should","implementation_state":"existing"},
+    {"id":"result.inspect-rich","kind":"result-inspector","target":{"symbol":"geocedg.result.inspect"},"maturity":"experimental","feature_requirements":["cedg.locus.v2"],"selection_contract_ref":"geocedg.current-rich-result","effect_profile_id":"read-only","localization_ref":"geocedg.action.ResultInspect","icon_ref":"geocedg.action.ResultInspect","availability_profile_id":"locus-v2-contextual","command_surface_profile_id":"action-only","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"result.show-candidate-markers","kind":"preference-action","target":{"symbol":"geocedg.result.markers.toggle"},"maturity":"experimental","feature_requirements":["cedg.locus.v2"],"selection_contract_ref":"geocedg.active-rich-result","effect_profile_id":"preference-only","localization_ref":"geocedg.action.ResultMarkers","icon_ref":"geocedg.action.ResultMarkers","availability_profile_id":"locus-v2-contextual","command_surface_profile_id":"action-only","planning_disposition":"must","implementation_state":"new-frontend"},
+    {"id":"result.materialize-selected","kind":"materialization-action","target":{"symbol":"geocedg.result.materialize-selected"},"maturity":"experimental","feature_requirements":["cedg.locus.v2"],"selection_contract_ref":"geocedg.selected-admissible-exact-token","effect_profile_id":"single-materialization","localization_ref":"geocedg.action.MaterializeSelected","icon_ref":"geocedg.action.MaterializeSelected","availability_profile_id":"locus-v2-contextual","command_surface_profile_id":"action-only","planning_disposition":"must","implementation_state":"new-frontend"},
+    {"id":"result.materialize-multiple","kind":"materialization-action","target":{"symbol":"geocedg.result.materialize-multiple"},"maturity":"experimental","feature_requirements":["cedg.locus.v2"],"selection_contract_ref":"geocedg.selected-admissible-exact-tokens","effect_profile_id":"compound-materialization","localization_ref":"geocedg.action.MaterializeMultiple","icon_ref":"geocedg.action.MaterializeMultiple","availability_profile_id":"locus-v2-contextual","command_surface_profile_id":"action-only","planning_disposition":"must","implementation_state":"new-frontend"},
+    {"id":"result.materialize-all-eligible","kind":"materialization-action","target":{"symbol":"geocedg.result.materialize-all"},"maturity":"experimental","feature_requirements":["cedg.locus.v2"],"selection_contract_ref":"geocedg.all-current-admissible-exact-tokens","effect_profile_id":"compound-materialization","localization_ref":"geocedg.action.MaterializeAll","icon_ref":"geocedg.action.MaterializeAll","availability_profile_id":"locus-v2-contextual","command_surface_profile_id":"action-only","planning_disposition":"must","implementation_state":"new-frontend"},
+    {"id":"result.auto-materialize-initial","kind":"preference-action","target":{"symbol":"geocedg.result.auto-materialize-initial.toggle"},"maturity":"experimental","feature_requirements":["cedg.locus.v2"],"selection_contract_ref":"geocedg.explicit-new-query-eligible-tokens","effect_profile_id":"preference-only","localization_ref":"geocedg.action.AutoMaterializeInitial","icon_ref":"geocedg.action.AutoMaterializeInitial","availability_profile_id":"locus-v2-product","command_surface_profile_id":"action-only","planning_disposition":"must","implementation_state":"new-frontend","notes":"The explicit frontend action may create initial eligible points; later kernel recompute never creates new GeoPoints."},
+    {"id":"curve.circle-two-points","kind":"upstream-mode","target":{"symbol":"MODE_CIRCLE_TWO_POINTS","audited_numeric_id":10},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.circle-two-points","effect_profile_id":"mode-create","localization_ref":"upstream.mode.CircleTwoPoints","icon_ref":"upstream.mode.CircleTwoPoints","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"curve.circle-three-points","kind":"upstream-mode","target":{"symbol":"MODE_CIRCLE_THREE_POINTS","audited_numeric_id":11},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.circle-three-points","effect_profile_id":"mode-create","localization_ref":"upstream.mode.CircleThreePoints","icon_ref":"upstream.mode.CircleThreePoints","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"curve.circle-center-radius","kind":"upstream-mode","target":{"symbol":"MODE_CIRCLE_POINT_RADIUS","audited_numeric_id":34},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.circle-center-radius","effect_profile_id":"mode-create","localization_ref":"upstream.mode.CirclePointRadius","icon_ref":"upstream.mode.CirclePointRadius","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"curve.compass","kind":"upstream-mode","target":{"symbol":"MODE_COMPASSES","audited_numeric_id":53},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.compass","effect_profile_id":"mode-create","localization_ref":"upstream.mode.Compasses","icon_ref":"upstream.mode.Compasses","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"should","implementation_state":"existing"},
+    {"id":"curve.semicircle","kind":"upstream-mode","target":{"symbol":"MODE_SEMICIRCLE","audited_numeric_id":24},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.semicircle","effect_profile_id":"mode-create","localization_ref":"upstream.mode.Semicircle","icon_ref":"upstream.mode.Semicircle","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"should","implementation_state":"existing"},
+    {"id":"curve.arc-center","kind":"upstream-mode","target":{"symbol":"MODE_CIRCLE_ARC_THREE_POINTS","audited_numeric_id":20},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.arc-center","effect_profile_id":"mode-create","localization_ref":"upstream.mode.CircleArcThreePoints","icon_ref":"upstream.mode.CircleArcThreePoints","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"curve.arc-circumcircle","kind":"upstream-mode","target":{"symbol":"MODE_CIRCUMCIRCLE_ARC_THREE_POINTS","audited_numeric_id":22},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.arc-circumcircle","effect_profile_id":"mode-create","localization_ref":"upstream.mode.CircumcircleArcThreePoints","icon_ref":"upstream.mode.CircumcircleArcThreePoints","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"should","implementation_state":"existing"},
+    {"id":"curve.sector-center","kind":"upstream-mode","target":{"symbol":"MODE_CIRCLE_SECTOR_THREE_POINTS","audited_numeric_id":21},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.sector-center","effect_profile_id":"mode-create","localization_ref":"upstream.mode.CircleSectorThreePoints","icon_ref":"upstream.mode.CircleSectorThreePoints","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"should","implementation_state":"existing"},
+    {"id":"curve.sector-circumcircle","kind":"upstream-mode","target":{"symbol":"MODE_CIRCUMCIRCLE_SECTOR_THREE_POINTS","audited_numeric_id":23},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.sector-circumcircle","effect_profile_id":"mode-create","localization_ref":"upstream.mode.CircumcircleSectorThreePoints","icon_ref":"upstream.mode.CircumcircleSectorThreePoints","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"should","implementation_state":"existing"},
+    {"id":"curve.conic-five-points","kind":"upstream-mode","target":{"symbol":"MODE_CONIC_FIVE_POINTS","audited_numeric_id":12},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.conic-five-points","effect_profile_id":"mode-create","localization_ref":"upstream.mode.ConicFivePoints","icon_ref":"upstream.mode.ConicFivePoints","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"curve.ellipse","kind":"upstream-mode","target":{"symbol":"MODE_ELLIPSE_THREE_POINTS","audited_numeric_id":55},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.ellipse","effect_profile_id":"mode-create","localization_ref":"upstream.mode.EllipseThreePoints","icon_ref":"upstream.mode.EllipseThreePoints","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"curve.hyperbola","kind":"upstream-mode","target":{"symbol":"MODE_HYPERBOLA_THREE_POINTS","audited_numeric_id":56},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.hyperbola","effect_profile_id":"mode-create","localization_ref":"upstream.mode.HyperbolaThreePoints","icon_ref":"upstream.mode.HyperbolaThreePoints","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"should","implementation_state":"existing"},
+    {"id":"curve.parabola","kind":"upstream-mode","target":{"symbol":"MODE_PARABOLA","audited_numeric_id":57},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.parabola","effect_profile_id":"mode-create","localization_ref":"upstream.mode.Parabola","icon_ref":"upstream.mode.Parabola","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"semantic.locus-v2.create","kind":"upstream-mode","target":{"symbol":"MODE_LOCUS_V2","audited_numeric_id":133},"maturity":"experimental","feature_requirements":["cedg.locus.v2"],"selection_contract_ref":"geocedg.locus-v2-generator-domain","effect_profile_id":"mode-create","localization_ref":"geocedg.action.LocusV2Create","icon_ref":"geocedg.action.LocusV2Create","availability_profile_id":"locus-v2-product","command_surface_profile_id":"semantic-command","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"semantic.locus-v2.point-explicit","kind":"upstream-mode","target":{"symbol":"MODE_LOCUS_V2_POINT","audited_numeric_id":134},"maturity":"experimental","feature_requirements":["cedg.locus.v2"],"selection_contract_ref":"geocedg.locus-v2-semantic-point","effect_profile_id":"mode-create","localization_ref":"geocedg.action.LocusV2Point","icon_ref":"geocedg.action.LocusV2Point","availability_profile_id":"locus-v2-product","command_surface_profile_id":"semantic-command","planning_disposition":"must","implementation_state":"existing","notes":"Retained as the exact semantic-address helper and GGBScript command surface; it is not a substitute for the ordinary Point tool's R6 graphical interaction contract."},
+    {"id":"semantic.spline-v2.create","kind":"command","target":{"symbol":"SplineV2"},"maturity":"experimental","feature_requirements":["cedg.locus.v2"],"selection_contract_ref":"geocedg.spline-v2-approved-four-forms","effect_profile_id":"mode-create","localization_ref":"geocedg.command.SplineV2","icon_ref":"geocedg.action.SplineV2Create","availability_profile_id":"locus-v2-product","command_surface_profile_id":"semantic-command","planning_disposition":"must","implementation_state":"new-frontend","notes":"The frontend task must expose all approved forms and state the minimum of three control points."},
+    {"id":"measure.angle","kind":"upstream-mode","target":{"symbol":"MODE_ANGLE","audited_numeric_id":36},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.angle","effect_profile_id":"mode-create","localization_ref":"upstream.mode.Angle","icon_ref":"upstream.mode.Angle","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"measure.distance-length","kind":"upstream-mode","target":{"symbol":"MODE_DISTANCE","audited_numeric_id":38},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.distance-length","effect_profile_id":"mode-create","localization_ref":"upstream.mode.Distance","icon_ref":"upstream.mode.Distance","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"measure.area","kind":"upstream-mode","target":{"symbol":"MODE_AREA","audited_numeric_id":49},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.area","effect_profile_id":"mode-create","localization_ref":"upstream.mode.Area","icon_ref":"upstream.mode.Area","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"measure.slope","kind":"upstream-mode","target":{"symbol":"MODE_SLOPE","audited_numeric_id":50},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.slope","effect_profile_id":"mode-create","localization_ref":"upstream.mode.Slope","icon_ref":"upstream.mode.Slope","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"should","implementation_state":"existing"},
+    {"id":"measure.locus-v2-total-length","kind":"upstream-mode","target":{"symbol":"MODE_LOCUS_V2_LENGTH","audited_numeric_id":135},"maturity":"experimental","feature_requirements":["cedg.locus.v2"],"selection_contract_ref":"geocedg.semantic-curve-total-length","effect_profile_id":"mode-create","localization_ref":"geocedg.action.LocusLengthTotal","icon_ref":"geocedg.action.LocusLengthTotal","availability_profile_id":"locus-v2-product","command_surface_profile_id":"semantic-command","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"measure.locus-v2-partial-length","kind":"upstream-mode","target":{"symbol":"MODE_LOCUS_V2_LENGTH_BETWEEN","audited_numeric_id":136},"maturity":"experimental","feature_requirements":["cedg.locus.v2"],"selection_contract_ref":"geocedg.semantic-curve-partial-length","effect_profile_id":"mode-create","localization_ref":"geocedg.action.LocusLengthPartial","icon_ref":"geocedg.action.LocusLengthPartial","availability_profile_id":"locus-v2-product","command_surface_profile_id":"semantic-command","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"transform.reflect-point","kind":"upstream-mode","target":{"symbol":"MODE_MIRROR_AT_POINT","audited_numeric_id":29},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"geocedg.transform-reflect-point","effect_profile_id":"mode-create","localization_ref":"upstream.mode.MirrorAtPoint","icon_ref":"upstream.mode.MirrorAtPoint","availability_profile_id":"host-inherited","command_surface_profile_id":"semantic-command","planning_disposition":"must","implementation_state":"new-manifest-binding"},
+    {"id":"transform.reflect-line","kind":"upstream-mode","target":{"symbol":"MODE_MIRROR_AT_LINE","audited_numeric_id":30},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"geocedg.transform-reflect-line","effect_profile_id":"mode-create","localization_ref":"upstream.mode.MirrorAtLine","icon_ref":"upstream.mode.MirrorAtLine","availability_profile_id":"host-inherited","command_surface_profile_id":"semantic-command","planning_disposition":"must","implementation_state":"new-manifest-binding"},
+    {"id":"transform.translate-vector","kind":"upstream-mode","target":{"symbol":"MODE_TRANSLATE_BY_VECTOR","audited_numeric_id":31},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"geocedg.transform-translate","effect_profile_id":"mode-create","localization_ref":"upstream.mode.TranslateByVector","icon_ref":"upstream.mode.TranslateByVector","availability_profile_id":"host-inherited","command_surface_profile_id":"semantic-command","planning_disposition":"must","implementation_state":"new-manifest-binding"},
+    {"id":"transform.rotate-angle","kind":"upstream-mode","target":{"symbol":"MODE_ROTATE_BY_ANGLE","audited_numeric_id":32},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"geocedg.transform-rotate","effect_profile_id":"mode-create","localization_ref":"upstream.mode.RotateByAngle","icon_ref":"upstream.mode.RotateByAngle","availability_profile_id":"host-inherited","command_surface_profile_id":"semantic-command","planning_disposition":"must","implementation_state":"new-manifest-binding"},
+    {"id":"transform.dilate-point","kind":"upstream-mode","target":{"symbol":"MODE_DILATE_FROM_POINT","audited_numeric_id":33},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"geocedg.transform-dilate","effect_profile_id":"mode-create","localization_ref":"upstream.mode.DilateFromPoint","icon_ref":"upstream.mode.DilateFromPoint","availability_profile_id":"host-inherited","command_surface_profile_id":"semantic-command","planning_disposition":"must","implementation_state":"new-manifest-binding"},
+    {"id":"workspace.cedg-dihedral-procedures","kind":"workspace-switch","target":{"symbol":"cedg-dihedral-procedures"},"maturity":"experimental","feature_requirements":[],"selection_contract_ref":"none","effect_profile_id":"preference-only","localization_ref":"geocedg.workspace.DihedralProcedures","icon_ref":"geocedg.workspace.DihedralProcedures","availability_profile_id":"gated-g9u2","command_surface_profile_id":"action-only","planning_disposition":"deferred","implementation_state":"new-frontend","notes":"Truthful disabled route only; G9U2 and global G9 authorization are required before execution."},
+    {"id":"presentation.show-hide-object","kind":"upstream-mode","target":{"symbol":"MODE_SHOW_HIDE_OBJECT","audited_numeric_id":27},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.show-hide-object","effect_profile_id":"interactive-edit","localization_ref":"upstream.mode.ShowHideObject","icon_ref":"upstream.mode.ShowHideObject","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"presentation.show-hide-label","kind":"upstream-mode","target":{"symbol":"MODE_SHOW_HIDE_LABEL","audited_numeric_id":28},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.show-hide-label","effect_profile_id":"interactive-edit","localization_ref":"upstream.mode.ShowHideLabel","icon_ref":"upstream.mode.ShowHideLabel","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"presentation.copy-style","kind":"upstream-mode","target":{"symbol":"MODE_COPY_VISUAL_STYLE","audited_numeric_id":35},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.copy-style","effect_profile_id":"interactive-edit","localization_ref":"upstream.mode.CopyVisualStyle","icon_ref":"upstream.mode.CopyVisualStyle","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"presentation.text","kind":"upstream-mode","target":{"symbol":"MODE_TEXT","audited_numeric_id":17},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.text","effect_profile_id":"mode-create","localization_ref":"upstream.mode.Text","icon_ref":"upstream.mode.Text","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"should","implementation_state":"existing"},
+    {"id":"presentation.image","kind":"upstream-mode","target":{"symbol":"MODE_IMAGE","audited_numeric_id":26},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.image","effect_profile_id":"mode-create","localization_ref":"upstream.mode.Image","icon_ref":"upstream.mode.Image","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"should","implementation_state":"existing"},
+    {"id":"presentation.axes-toggle","kind":"view-toggle","target":{"symbol":"host.view.axes-toggle"},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"none","effect_profile_id":"preference-only","localization_ref":"upstream.view.Axes","icon_ref":"upstream.view.Axes","availability_profile_id":"host-inherited","command_surface_profile_id":"action-only","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"presentation.grid-toggle","kind":"view-toggle","target":{"symbol":"host.view.grid-toggle"},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"none","effect_profile_id":"preference-only","localization_ref":"upstream.view.Grid","icon_ref":"upstream.view.Grid","availability_profile_id":"host-inherited","command_surface_profile_id":"action-only","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"navigation.pan-view","kind":"upstream-mode","target":{"symbol":"MODE_TRANSLATE_VIEW","audited_numeric_id":40},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.translate-view","effect_profile_id":"read-only","localization_ref":"upstream.mode.TranslateView","icon_ref":"upstream.mode.TranslateView","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"navigation.zoom-in","kind":"upstream-mode","target":{"symbol":"MODE_ZOOM_IN","audited_numeric_id":41},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.zoom-in","effect_profile_id":"read-only","localization_ref":"upstream.mode.ZoomIn","icon_ref":"upstream.mode.ZoomIn","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"navigation.zoom-out","kind":"upstream-mode","target":{"symbol":"MODE_ZOOM_OUT","audited_numeric_id":42},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.zoom-out","effect_profile_id":"read-only","localization_ref":"upstream.mode.ZoomOut","icon_ref":"upstream.mode.ZoomOut","availability_profile_id":"host-inherited","command_surface_profile_id":"mode-only","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"navigation.zoom-window","kind":"navigation-action","target":{"symbol":"geocedg.navigation.zoom-window"},"maturity":"experimental","feature_requirements":[],"selection_contract_ref":"geocedg.graphics-drag-rectangle","effect_profile_id":"read-only","localization_ref":"geocedg.action.ZoomWindow","icon_ref":"geocedg.action.ZoomWindow","availability_profile_id":"product-only","command_surface_profile_id":"action-only","planning_disposition":"must","implementation_state":"new-frontend","notes":"Menu, toolbar and keyboard interaction; viewport-only and never semantic authority."},
+    {"id":"navigation.standard-view","kind":"navigation-action","target":{"symbol":"host.view.standard-view"},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"none","effect_profile_id":"read-only","localization_ref":"upstream.view.StandardView","icon_ref":"upstream.view.StandardView","availability_profile_id":"host-inherited","command_surface_profile_id":"action-only","planning_disposition":"should","implementation_state":"existing"},
+    {"id":"navigation.show-all-objects","kind":"navigation-action","target":{"symbol":"host.view.show-all-objects"},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"none","effect_profile_id":"read-only","localization_ref":"upstream.view.ShowAllObjects","icon_ref":"upstream.view.ShowAllObjects","availability_profile_id":"host-inherited","command_surface_profile_id":"action-only","planning_disposition":"should","implementation_state":"existing"},
+    {"id":"document.new","kind":"document-action","target":{"symbol":"host.document.new"},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"geocedg.native-document-new","effect_profile_id":"document-lifecycle","localization_ref":"upstream.document.New","icon_ref":"upstream.document.New","availability_profile_id":"document-product","command_surface_profile_id":"document-action","planning_disposition":"must","implementation_state":"new-manifest-binding"},
+    {"id":"document.open","kind":"document-action","target":{"symbol":"host.document.open"},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"geocedg.cedg-native-ggb-compatibility-open","effect_profile_id":"document-lifecycle","localization_ref":"upstream.document.Open","icon_ref":"upstream.document.Open","availability_profile_id":"document-product","command_surface_profile_id":"document-action","planning_disposition":"must","implementation_state":"new-manifest-binding"},
+    {"id":"document.open-recent","kind":"document-action","target":{"symbol":"host.document.open-recent"},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"geocedg.recent-document-open","effect_profile_id":"document-lifecycle","localization_ref":"upstream.document.Recent","icon_ref":"upstream.document.Recent","availability_profile_id":"document-product","command_surface_profile_id":"document-action","planning_disposition":"must","implementation_state":"new-manifest-binding"},
+    {"id":"document.save","kind":"document-action","target":{"symbol":"host.document.save"},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"geocedg.native-save-nondestructive-ggb-transition","effect_profile_id":"document-lifecycle","localization_ref":"upstream.document.Save","icon_ref":"upstream.document.Save","availability_profile_id":"document-product","command_surface_profile_id":"document-action","planning_disposition":"must","implementation_state":"new-manifest-binding"},
+    {"id":"document.save-as","kind":"document-action","target":{"symbol":"host.document.save-as"},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"geocedg.native-save-as","effect_profile_id":"document-lifecycle","localization_ref":"upstream.document.SaveAs","icon_ref":"upstream.document.SaveAs","availability_profile_id":"document-product","command_surface_profile_id":"document-action","planning_disposition":"must","implementation_state":"new-manifest-binding"},
+    {"id":"document.print-preview","kind":"document-action","target":{"symbol":"host.document.print-preview"},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"none","effect_profile_id":"read-only","localization_ref":"upstream.document.PrintPreview","icon_ref":"upstream.document.PrintPreview","availability_profile_id":"host-inherited","command_surface_profile_id":"document-action","planning_disposition":"should","implementation_state":"existing"},
+    {"id":"document.close","kind":"document-action","target":{"symbol":"host.document.close"},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"none","effect_profile_id":"document-lifecycle","localization_ref":"upstream.document.Close","icon_ref":"upstream.document.Close","availability_profile_id":"host-inherited","command_surface_profile_id":"document-action","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"automation.algebra-input-toggle","kind":"view-toggle","target":{"symbol":"host.view.algebra-input"},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"none","effect_profile_id":"preference-only","localization_ref":"upstream.view.InputBar","icon_ref":"upstream.view.InputBar","availability_profile_id":"host-inherited","command_surface_profile_id":"action-only","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"automation.manage-user-tools","kind":"product-action","target":{"symbol":"host.tools.manage"},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"none","effect_profile_id":"preference-only","localization_ref":"upstream.tools.Manage","icon_ref":"upstream.tools.Manage","availability_profile_id":"host-inherited","command_surface_profile_id":"action-only","planning_disposition":"should","implementation_state":"existing","notes":"User tools only; never load Templatev7 by default."},
+    {"id":"automation.object-scripting","kind":"product-action","target":{"symbol":"host.properties.scripting-tab"},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"upstream.scriptable-object","effect_profile_id":"interactive-edit","localization_ref":"upstream.properties.Scripting","icon_ref":"upstream.properties.Scripting","availability_profile_id":"host-contextual","command_surface_profile_id":"action-only","planning_disposition":"should","implementation_state":"host-characterization-required"},
+    {"id":"automation.legacy-laboratory","kind":"diagnostic-route","target":{"symbol":"cedg.laboratory.legacy"},"maturity":"diagnostic","feature_requirements":["cedg.laboratory.legacy"],"selection_contract_ref":"none","effect_profile_id":"read-only","localization_ref":"geocedg.action.LegacyLaboratory","icon_ref":"geocedg.action.LegacyLaboratory","availability_profile_id":"diagnostic-route","command_surface_profile_id":"action-only","planning_disposition":"deferred","implementation_state":"existing"},
+    {"id":"export.dxf-2d","kind":"product-action","target":{"symbol":"geocedg.export.dxf.dialog"},"maturity":"experimental","feature_requirements":["cedg.export.dxf.2d"],"selection_contract_ref":"geocedg.dxf-exportable-visible-geometry","effect_profile_id":"read-only","localization_ref":"geocedg.action.ExportDxf","icon_ref":"geocedg.action.ExportDxf","availability_profile_id":"dxf-product","command_surface_profile_id":"action-only","planning_disposition":"must","implementation_state":"existing","notes":"Extended fidelity remains inside the same exporter under cedg.export.dxf.extended; no duplicate action."},
+    {"id":"help.input-panel","kind":"help-route","target":{"symbol":"host.help.input"},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"none","effect_profile_id":"read-only","localization_ref":"upstream.help.Input","icon_ref":"upstream.help.Input","availability_profile_id":"host-inherited","command_surface_profile_id":"help-action","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"help.command-list","kind":"help-route","target":{"symbol":"host.help.command-list"},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"none","effect_profile_id":"read-only","localization_ref":"upstream.help.Commands","icon_ref":"upstream.help.Commands","availability_profile_id":"host-inherited","command_surface_profile_id":"help-action","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"help.contextual-action","kind":"help-route","target":{"symbol":"geocedg.help.contextual-action"},"maturity":"experimental","feature_requirements":[],"selection_contract_ref":"geocedg.current-action","effect_profile_id":"read-only","localization_ref":"geocedg.help.ContextualAction","icon_ref":"geocedg.help.ContextualAction","availability_profile_id":"product-contextual","command_surface_profile_id":"help-action","planning_disposition":"must","implementation_state":"new-frontend"},
+    {"id":"help.user-guide","kind":"help-route","target":{"symbol":"geocedg.help.user-guide"},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"none","effect_profile_id":"read-only","localization_ref":"geocedg.help.UserGuide","icon_ref":"geocedg.help.UserGuide","availability_profile_id":"product-only","command_surface_profile_id":"help-action","planning_disposition":"must","implementation_state":"new-manifest-binding"},
+    {"id":"help.keyboard-shortcuts","kind":"help-route","target":{"symbol":"host.help.keyboard-shortcuts"},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"none","effect_profile_id":"read-only","localization_ref":"upstream.help.KeyboardShortcuts","icon_ref":"upstream.help.KeyboardShortcuts","availability_profile_id":"host-inherited","command_surface_profile_id":"help-action","planning_disposition":"should","implementation_state":"existing"},
+    {"id":"help.about-geocedg","kind":"help-route","target":{"symbol":"geocedg.help.about"},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"none","effect_profile_id":"read-only","localization_ref":"geocedg.help.About","icon_ref":"geocedg.help.About","availability_profile_id":"product-only","command_surface_profile_id":"help-action","planning_disposition":"must","implementation_state":"new-manifest-binding"},
+    {"id":"diagnostic.open-classic","kind":"diagnostic-route","target":{"symbol":"geocedg.classic"},"maturity":"diagnostic","feature_requirements":[],"selection_contract_ref":"none","effect_profile_id":"read-only","localization_ref":"geocedg.action.OpenClassic","icon_ref":"geocedg.action.OpenClassic","availability_profile_id":"diagnostic-route","command_surface_profile_id":"action-only","planning_disposition":"must","implementation_state":"new-manifest-binding"},
+    {"id":"settings.product-language","kind":"preference-action","target":{"symbol":"geocedg.language.selector"},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"none","effect_profile_id":"preference-only","localization_ref":"geocedg.settings.Language","icon_ref":"geocedg.settings.Language","availability_profile_id":"product-only","command_surface_profile_id":"action-only","planning_disposition":"must","implementation_state":"new-frontend"},
+    {"id":"view.construction-protocol","kind":"view-toggle","target":{"symbol":"host.view.construction-protocol"},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"none","effect_profile_id":"read-only","localization_ref":"upstream.view.ConstructionProtocol","icon_ref":"upstream.view.ConstructionProtocol","availability_profile_id":"host-inherited","command_surface_profile_id":"action-only","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"view.construction-navigation","kind":"view-toggle","target":{"symbol":"host.view.construction-protocol-navigation"},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"none","effect_profile_id":"preference-only","localization_ref":"upstream.view.NavigationBar","icon_ref":"upstream.view.NavigationBar","availability_profile_id":"host-inherited","command_surface_profile_id":"action-only","planning_disposition":"should","implementation_state":"existing"},
+    {"id":"view.properties","kind":"view-toggle","target":{"symbol":"host.view.properties"},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"none","effect_profile_id":"read-only","localization_ref":"upstream.view.Properties","icon_ref":"upstream.view.Properties","availability_profile_id":"host-inherited","command_surface_profile_id":"action-only","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"inspect.definition","kind":"product-action","target":{"symbol":"geocedg.inspect.definition"},"maturity":"experimental","feature_requirements":[],"selection_contract_ref":"geocedg.inspectable-algebra-object","effect_profile_id":"read-only","localization_ref":"geocedg.action.InspectDefinition","icon_ref":"geocedg.action.InspectDefinition","availability_profile_id":"product-contextual","command_surface_profile_id":"action-only","planning_disposition":"must","implementation_state":"new-frontend","notes":"View-only double-click/context action; never an implicit redefine and never a global Algebra description-mode mutation."},
+    {"id":"semantic.curve.inspect-definition","kind":"product-action","target":{"symbol":"geocedg.semantic-curve.inspect-definition"},"maturity":"experimental","feature_requirements":["cedg.locus.v2"],"selection_contract_ref":"geocedg.semantic-curve","effect_profile_id":"read-only","localization_ref":"geocedg.action.SemanticCurveDefinition","icon_ref":"geocedg.action.SemanticCurveDefinition","availability_profile_id":"locus-v2-contextual","command_surface_profile_id":"action-only","planning_disposition":"must","implementation_state":"new-frontend"},
+    {"id":"algebra.description.value","kind":"preference-action","target":{"symbol":"host.preference.algebra-style.VALUE"},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"none","effect_profile_id":"preference-only","localization_ref":"upstream.algebra.Value","icon_ref":"upstream.algebra.Value","availability_profile_id":"host-inherited","command_surface_profile_id":"action-only","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"algebra.description.description","kind":"preference-action","target":{"symbol":"host.preference.algebra-style.DESCRIPTION"},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"none","effect_profile_id":"preference-only","localization_ref":"upstream.algebra.Description","icon_ref":"upstream.algebra.Description","availability_profile_id":"host-inherited","command_surface_profile_id":"action-only","planning_disposition":"must","implementation_state":"existing"},
+    {"id":"algebra.description.definition","kind":"preference-action","target":{"symbol":"host.preference.algebra-style.DEFINITION"},"maturity":"stable","feature_requirements":[],"selection_contract_ref":"none","effect_profile_id":"preference-only","localization_ref":"upstream.algebra.Definition","icon_ref":"upstream.algebra.Definition","availability_profile_id":"host-inherited","command_surface_profile_id":"action-only","planning_disposition":"must","implementation_state":"existing"}
+  ],
+  "clusters": [
+    {
+      "id": "selection-move-inspect",
+      "broad_family_id": "inspect-construct",
+      "toolbar_action_ids": ["construction.move", "edit.delete"],
+      "overflow_action_ids": ["construction.move-rotate", "construction.select", "construction.attach-detach"],
+      "menu_action_ids": ["edit.undo", "edit.redo", "edit.delete"],
+      "context_action_ids": [],
+      "inspector_action_ids": [],
+      "settings_action_ids": []
+    },
+    {
+      "id": "point-construction",
+      "broad_family_id": "inspect-construct",
+      "toolbar_action_ids": ["construction.point", "construction.point-on-object"],
+      "overflow_action_ids": [],
+      "menu_action_ids": [],
+      "context_action_ids": [],
+      "inspector_action_ids": [],
+      "settings_action_ids": []
+    },
+    {
+      "id": "linear-geometry-tools",
+      "broad_family_id": "linear-geometry",
+      "toolbar_action_ids": ["construction.line", "construction.segment", "construction.ray", "construction.vector", "construction.parallel-line", "construction.perpendicular-line", "construction.midpoint", "construction.polygon"],
+      "overflow_action_ids": ["construction.fixed-segment", "construction.vector-from-point", "construction.perpendicular-bisector", "construction.angle-bisector", "construction.polyline", "construction.regular-polygon", "construction.rigid-polygon", "construction.vector-polygon"],
+      "menu_action_ids": [],
+      "context_action_ids": [],
+      "inspector_action_ids": [],
+      "settings_action_ids": []
+    },
+    {
+      "id": "parameter-driver-tools",
+      "broad_family_id": "parameters-drivers",
+      "toolbar_action_ids": ["parameter.slider"],
+      "overflow_action_ids": ["parameter.fixed-angle", "parameter.checkbox", "parameter.button", "parameter.input-box"],
+      "menu_action_ids": [],
+      "context_action_ids": ["parameter.animation-toggle"],
+      "inspector_action_ids": [],
+      "settings_action_ids": []
+    },
+    {
+      "id": "relation-intersection-tools",
+      "broad_family_id": "relations-intersections",
+      "toolbar_action_ids": ["relation.intersect", "relation.tangent"],
+      "overflow_action_ids": ["relation.compare", "relation.polar-diameter"],
+      "menu_action_ids": ["result.inspect-rich", "result.show-candidate-markers"],
+      "context_action_ids": ["result.inspect-rich", "result.materialize-selected"],
+      "inspector_action_ids": ["result.materialize-selected", "result.materialize-multiple", "result.materialize-all-eligible"],
+      "settings_action_ids": ["result.show-candidate-markers", "result.auto-materialize-initial"]
+    },
+    {
+      "id": "circle-conic-curve-tools",
+      "broad_family_id": "circles-conics-curves",
+      "toolbar_action_ids": ["curve.circle-two-points", "curve.circle-three-points", "curve.circle-center-radius", "curve.arc-center", "curve.conic-five-points", "curve.ellipse", "curve.parabola"],
+      "overflow_action_ids": ["curve.compass", "curve.semicircle", "curve.arc-circumcircle", "curve.sector-center", "curve.sector-circumcircle", "curve.hyperbola"],
+      "menu_action_ids": [],
+      "context_action_ids": [],
+      "inspector_action_ids": [],
+      "settings_action_ids": []
+    },
+    {
+      "id": "locus-v2-tools",
+      "broad_family_id": "semantic-curves",
+      "toolbar_action_ids": ["semantic.locus-v2.create"],
+      "overflow_action_ids": ["semantic.locus-v2.point-explicit"],
+      "menu_action_ids": ["semantic.locus-v2.create", "semantic.locus-v2.point-explicit", "semantic.curve.inspect-definition"],
+      "context_action_ids": ["semantic.curve.inspect-definition"],
+      "inspector_action_ids": [],
+      "settings_action_ids": []
+    },
+    {
+      "id": "spline-v2-tools",
+      "broad_family_id": "semantic-curves",
+      "toolbar_action_ids": ["semantic.spline-v2.create"],
+      "overflow_action_ids": [],
+      "menu_action_ids": ["semantic.spline-v2.create", "semantic.curve.inspect-definition"],
+      "context_action_ids": ["semantic.curve.inspect-definition"],
+      "inspector_action_ids": [],
+      "settings_action_ids": []
+    },
+    {
+      "id": "metric-validation-tools",
+      "broad_family_id": "metrics-validation",
+      "toolbar_action_ids": ["measure.angle", "measure.distance-length", "measure.locus-v2-total-length", "measure.locus-v2-partial-length"],
+      "overflow_action_ids": ["measure.area", "measure.slope"],
+      "menu_action_ids": ["measure.locus-v2-total-length", "measure.locus-v2-partial-length", "result.inspect-rich"],
+      "context_action_ids": [],
+      "inspector_action_ids": [],
+      "settings_action_ids": []
+    },
+    {
+      "id": "similarity-transform-tools",
+      "broad_family_id": "transformations-manual-projections",
+      "toolbar_action_ids": ["transform.reflect-point", "transform.reflect-line", "transform.translate-vector", "transform.rotate-angle", "transform.dilate-point"],
+      "overflow_action_ids": [],
+      "menu_action_ids": [],
+      "context_action_ids": [],
+      "inspector_action_ids": [],
+      "settings_action_ids": []
+    },
+    {
+      "id": "manual-projection-authorized",
+      "broad_family_id": "transformations-manual-projections",
+      "toolbar_action_ids": [],
+      "overflow_action_ids": [],
+      "menu_action_ids": ["construction.line", "construction.parallel-line", "construction.perpendicular-line", "construction.midpoint", "transform.reflect-point", "transform.reflect-line", "transform.translate-vector", "transform.rotate-angle", "measure.angle", "measure.distance-length", "presentation.show-hide-object", "workspace.cedg-dihedral-procedures"],
+      "context_action_ids": [],
+      "inspector_action_ids": [],
+      "settings_action_ids": [],
+      "notes": "A task/menu grouping of existing ordinary actions only. The disabled workspace switch is the truthful boundary to independently gated G9U2 procedures; no duplicate toolbar modes or spatial semantic claim."
+    },
+    {
+      "id": "presentation-visibility-style",
+      "broad_family_id": "presentation-document",
+      "toolbar_action_ids": ["presentation.show-hide-object"],
+      "overflow_action_ids": ["presentation.show-hide-label", "presentation.copy-style", "presentation.text", "presentation.image"],
+      "menu_action_ids": ["presentation.axes-toggle", "presentation.grid-toggle", "view.properties"],
+      "context_action_ids": ["view.properties"],
+      "inspector_action_ids": [],
+      "settings_action_ids": ["presentation.axes-toggle", "presentation.grid-toggle"]
+    },
+    {
+      "id": "navigation-zoom",
+      "broad_family_id": "presentation-document",
+      "toolbar_action_ids": ["navigation.pan-view", "navigation.zoom-window"],
+      "overflow_action_ids": ["navigation.zoom-in", "navigation.zoom-out"],
+      "menu_action_ids": ["navigation.zoom-in", "navigation.zoom-out", "navigation.zoom-window", "navigation.standard-view", "navigation.show-all-objects"],
+      "context_action_ids": ["navigation.standard-view", "navigation.show-all-objects"],
+      "inspector_action_ids": [],
+      "settings_action_ids": []
+    },
+    {
+      "id": "document-lifecycle",
+      "broad_family_id": "presentation-document",
+      "toolbar_action_ids": [],
+      "overflow_action_ids": [],
+      "menu_action_ids": ["document.new", "document.open", "document.open-recent", "document.save", "document.save-as", "document.print-preview", "document.close"],
+      "context_action_ids": [],
+      "inspector_action_ids": [],
+      "settings_action_ids": []
+    },
+    {
+      "id": "automation-scripting",
+      "broad_family_id": "automation-import-export",
+      "toolbar_action_ids": [],
+      "overflow_action_ids": [],
+      "menu_action_ids": ["automation.algebra-input-toggle", "automation.manage-user-tools", "automation.legacy-laboratory"],
+      "context_action_ids": ["automation.object-scripting"],
+      "inspector_action_ids": [],
+      "settings_action_ids": []
+    },
+    {
+      "id": "import-export-authorized",
+      "broad_family_id": "automation-import-export",
+      "toolbar_action_ids": [],
+      "overflow_action_ids": [],
+      "menu_action_ids": ["document.open", "export.dxf-2d"],
+      "context_action_ids": [],
+      "inspector_action_ids": [],
+      "settings_action_ids": [],
+      "notes": "The shared document.open action owns .ggb compatibility input; the DXF dialog owns both baseline and independently feature-gated extended fidelity."
+    },
+    {
+      "id": "help-command-discovery",
+      "broad_family_id": "presentation-document",
+      "toolbar_action_ids": [],
+      "overflow_action_ids": [],
+      "menu_action_ids": ["help.input-panel", "help.command-list", "help.user-guide", "help.keyboard-shortcuts", "help.about-geocedg", "diagnostic.open-classic"],
+      "context_action_ids": ["help.contextual-action"],
+      "inspector_action_ids": [],
+      "settings_action_ids": ["settings.product-language"]
+    },
+    {
+      "id": "construction-history-definition",
+      "broad_family_id": "inspect-construct",
+      "toolbar_action_ids": [],
+      "overflow_action_ids": [],
+      "menu_action_ids": ["view.construction-protocol", "view.construction-navigation", "view.properties", "inspect.definition"],
+      "context_action_ids": ["view.properties", "inspect.definition", "semantic.curve.inspect-definition"],
+      "inspector_action_ids": [],
+      "settings_action_ids": ["algebra.description.value", "algebra.description.description", "algebra.description.definition"],
+      "notes": "The Algebra description choices are one exclusive checked state bound to the actual current Desktop AlgebraStyle; definition viewing is not redefine."
+    }
+  ],
+  "workspaces": [
+    {
+      "id": "cedg-construction",
+      "name_key": "GeoCeDG.Workspace.Construction.Name",
+      "description_key": "GeoCeDG.Workspace.Construction.Description",
+      "maturity": "planned",
+      "availability": "available",
+      "perspective": {
+        "views": ["euclidian", "algebra"],
+        "show_toolbar": true,
+        "show_input_panel": true,
+        "show_input_help": true
+      },
+      "toolbar_broad_family_ids": ["inspect-construct", "linear-geometry", "parameters-drivers", "relations-intersections", "circles-conics-curves", "semantic-curves", "metrics-validation", "transformations-manual-projections", "cedg-procedures-developments", "presentation-document", "automation-import-export"],
+      "menu_cluster_ids": ["selection-move-inspect", "point-construction", "linear-geometry-tools", "parameter-driver-tools", "relation-intersection-tools", "circle-conic-curve-tools", "locus-v2-tools", "spline-v2-tools", "metric-validation-tools", "similarity-transform-tools", "manual-projection-authorized", "presentation-visibility-style", "navigation-zoom", "document-lifecycle", "automation-scripting", "import-export-authorized", "help-command-discovery", "construction-history-definition"],
+      "help_policy": "contextual-en-es",
+      "document_layout_policy": "profile-preferences-only"
+    },
+    {
+      "id": "cedg-dihedral-procedures",
+      "name_key": "GeoCeDG.Workspace.DihedralProcedures.Name",
+      "description_key": "GeoCeDG.Workspace.DihedralProcedures.Description",
+      "maturity": "planned",
+      "availability": "disabled-with-reason",
+      "reason_key": "GeoCeDG.Workspace.Unavailable.G9U2",
+      "perspective": {
+        "views": ["euclidian", "algebra"],
+        "show_toolbar": false,
+        "show_input_panel": true,
+        "show_input_help": true
+      },
+      "toolbar_broad_family_ids": ["cedg-procedures-developments"],
+      "menu_cluster_ids": ["manual-projection-authorized"],
+      "help_policy": "unavailable",
+      "document_layout_policy": "unavailable"
+    }
+  ],
+  "workspace_persistence": {
+    "scope": "profile-preferences",
+    "active_workspace_key": "workspace.active",
+    "per_workspace_layout_key_prefix": "workspace.layout.",
+    "unavailable_fallback": "cedg-construction",
+    "document_xml_authority": "none"
+  },
+  "diagnostic_routes": [
+    {
+      "id": "classic-diagnostic",
+      "action_id": "diagnostic.open-classic",
+      "process_profile": "geocedg-classic-diagnostic",
+      "preference_isolation": true
+    },
+    {
+      "id": "legacy-laboratory",
+      "action_id": "automation.legacy-laboratory",
+      "process_profile": "geocedg-legacy-laboratory",
+      "preference_isolation": true
+    }
+  ],
+  "features": [
+    {"id": "cedg.frontend.profile", "source": "geocedg/features/stable.yml", "enabled_by_default": true},
+    {"id": "cedg.frontend.classic-diagnostic", "source": "geocedg/features/stable.yml", "enabled_by_default": true},
+    {"id": "cedg.export.dxf.2d", "source": "geocedg/features/experimental.yml", "enabled_by_default": true},
+    {"id": "cedg.export.dxf.extended", "source": "geocedg/features/experimental.yml", "enabled_by_default": false},
+    {"id": "cedg.laboratory.legacy", "source": "geocedg/features/experimental.yml", "enabled_by_default": false},
+    {"id": "cedg.locus.v2", "source": "geocedg/features/experimental.yml", "enabled_by_default": false}
+  ],
+  "deferred_inventory": [
+    {
+      "id": "legacy.locus-mode",
+      "target": "MODE_LOCUS(47)",
+      "disposition": "classic-only",
+      "reason": "Legacy sampled Locus is not Locus V2 semantic authority.",
+      "required_authority": "Existing Classic compatibility only"
+    },
+    {
+      "id": "transform.circle-inversion",
+      "target": "MODE_MIRROR_AT_CIRCLE(54)",
+      "disposition": "deferred",
+      "reason": "Circle inversion is outside the author-approved R5 similarity-transform scope.",
+      "required_authority": "Separate geometric design and author authorization"
+    },
+    {
+      "id": "template-v7.macros",
+      "target": "cedg.legacy.template-v7.tool.* / modes 100001..100024",
+      "disposition": "diagnostic-only",
+      "reason": "Templatev7 is an authoritative legacy reference but not a future toolbar or semantic authority.",
+      "required_authority": "Per-tool provenance, scientific review and independent promotion"
+    },
+    {
+      "id": "cedg.procedures-developments",
+      "target": "CeDG projection, fold, true-magnitude, section and development procedures",
+      "disposition": "out-of-scope-new-kernel-phase",
+      "reason": "G9U2 remains blocked and no fake macro or frontend semantic implementation is permitted.",
+      "required_authority": "Global G9 PASS plus explicit G9U2 author authorization"
+    },
+    {
+      "id": "spatial.3d-tools",
+      "target": "MODE_* 3D and spatial/projection creation",
+      "disposition": "out-of-scope-new-kernel-phase",
+      "reason": "G9U1 is a frontend workspace client and does not authorize G9B/G9C spatial semantics.",
+      "required_authority": "Independent spatial phase PASS and author authorization"
+    },
+    {
+      "id": "intersection.spline-pair-materialization",
+      "target": "SplineV2 x SplineV2 markers/materialization",
+      "disposition": "out-of-scope-new-kernel-phase",
+      "reason": "G9S1 pair results are rich-only without symmetric certified identity and exact materializable token authority.",
+      "required_authority": "Separate symmetric pair-identity kernel phase"
+    },
+    {
+      "id": "document.sheet-export",
+      "target": "PDF/SVG sheet production and broad CAD import",
+      "disposition": "deferred",
+      "reason": "Only current native/compatibility document handling and approved DXF export are in scope.",
+      "required_authority": "Independent document/export design and author authorization"
+    },
+    {
+      "id": "upstream.noncedg-default-tools",
+      "target": "FitLine, complex-number, freehand, pen, media, statistics, CAS and spreadsheet modes",
+      "disposition": "deferred",
+      "reason": "Useful upstream availability does not by itself justify default CeDG Construction placement.",
+      "required_authority": "Stage-B usability disposition or later explicit workspace review"
+    }
+  ],
+  "host_characterization": [
+    {
+      "id": "desktop-select-mode",
+      "action_ids": ["construction.select"],
+      "question": "Does MODE_SELECT expose a stable, useful Desktop selection gesture distinct from MODE_MOVE in the supported Classic-5 host?",
+      "fail_closed_disposition": "Remove it from visible overflow and classify deferred; MODE_MOVE remains the selection authority."
+    },
+    {
+      "id": "desktop-scripting-route",
+      "action_ids": ["automation.object-scripting"],
+      "question": "Is there a stable Desktop action that opens the selected object's existing Properties/Scripting tab without a parallel script editor?",
+      "fail_closed_disposition": "Expose scripting only through the existing Properties route and do not create a dead standalone action."
+    },
+    {
+      "id": "spline-v2-frontend-seam",
+      "action_ids": ["semantic.spline-v2.create"],
+      "question": "Which existing task/dialog or Algebra-input focus seam can expose all four approved SplineV2 forms without duplicating command parsing?",
+      "fail_closed_disposition": "Use a manifest action that focuses the canonical Algebra Input with localized syntax help; do not implement another parser."
+    },
+    {
+      "id": "image-action-assets",
+      "action_ids": ["presentation.image"],
+      "question": "Can the inherited image action be exposed without adding unreviewed upstream branding or packaging assets?",
+      "fail_closed_disposition": "Keep the action in overflow only or defer it; no asset substitution is authorized."
+    }
+  ]
+}

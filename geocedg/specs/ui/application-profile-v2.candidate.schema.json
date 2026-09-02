@@ -1,0 +1,476 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://geocedg.local/schemas/application-profile-v2-candidate",
+  "title": "GeoCeDG application profile schema v2 planning candidate",
+  "$comment": "Planning authority only. The packaged apps/geocedg/application-profile.yml remains schema v1 until a separately authorized G9U1 implementation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema_version",
+    "status",
+    "profile_id",
+    "live_profile",
+    "application",
+    "serialization",
+    "default_workspace_id",
+    "product_policies",
+    "taxonomy",
+    "policy_profiles",
+    "localization_contract",
+    "icon_contract",
+    "actions",
+    "clusters",
+    "workspaces",
+    "workspace_persistence",
+    "diagnostic_routes",
+    "features",
+    "deferred_inventory",
+    "host_characterization"
+  ],
+  "properties": {
+    "$schema": { "type": "string", "minLength": 1 },
+    "schema_version": { "const": 2 },
+    "status": { "const": "design-approved-not-runtime" },
+    "profile_id": { "$ref": "#/$defs/id" },
+    "live_profile": { "$ref": "#/$defs/liveProfile" },
+    "application": { "$ref": "#/$defs/application" },
+    "serialization": { "$ref": "#/$defs/serialization" },
+    "default_workspace_id": { "$ref": "#/$defs/id" },
+    "product_policies": { "$ref": "#/$defs/productPolicies" },
+    "taxonomy": { "$ref": "#/$defs/taxonomy" },
+    "policy_profiles": { "$ref": "#/$defs/policyProfiles" },
+    "localization_contract": { "$ref": "#/$defs/localizationContract" },
+    "icon_contract": { "$ref": "#/$defs/iconContract" },
+    "actions": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/action" }
+    },
+    "clusters": {
+      "type": "array",
+      "minItems": 18,
+      "maxItems": 18,
+      "items": { "$ref": "#/$defs/cluster" }
+    },
+    "workspaces": {
+      "type": "array",
+      "minItems": 2,
+      "items": { "$ref": "#/$defs/workspace" }
+    },
+    "workspace_persistence": { "$ref": "#/$defs/workspacePersistence" },
+    "diagnostic_routes": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/diagnosticRoute" }
+    },
+    "features": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/feature" }
+    },
+    "deferred_inventory": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/deferredItem" }
+    },
+    "host_characterization": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/hostCharacterization" }
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:[.-][a-z0-9]+)*$"
+    },
+    "stringArray": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "idArray": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/id" }
+    },
+    "liveProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "schema_version", "policy"],
+      "properties": {
+        "path": { "const": "apps/geocedg/application-profile.yml" },
+        "schema_version": { "const": 1 },
+        "policy": { "const": "unchanged-until-authorized-g9u1-implementation" }
+      }
+    },
+    "application": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "preferences_key", "windows_app_id", "base_profile"],
+      "properties": {
+        "name": { "const": "GeoCeDG" },
+        "preferences_key": { "const": "geocedg" },
+        "windows_app_id": { "const": "org.geocedg.desktop" },
+        "base_profile": { "const": "geogebra-classic-5" }
+      }
+    },
+    "serialization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["app_code", "native_extension", "compatibility_extension", "policy"],
+      "properties": {
+        "app_code": { "const": "classic" },
+        "native_extension": { "const": ".cedg" },
+        "compatibility_extension": { "const": ".ggb" },
+        "policy": { "const": "preserve-approved-r2-contract" }
+      }
+    },
+    "productPolicies": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["continuity", "languages", "semantic_curves", "materialization"],
+      "properties": {
+        "continuity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["host_setting", "value", "locked"],
+          "properties": {
+            "host_setting": { "const": "continuity" },
+            "value": { "const": false },
+            "locked": { "const": true }
+          }
+        },
+        "languages": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["offered", "fallback", "retain_upstream_corpus", "classic_policy"],
+          "properties": {
+            "offered": {
+              "type": "array",
+              "prefixItems": [{ "const": "en" }, { "const": "es" }],
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "fallback": { "const": "en" },
+            "retain_upstream_corpus": { "const": true },
+            "classic_policy": { "const": "retain-upstream-language-selection" }
+          }
+        },
+        "semantic_curves": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["feature_id", "additional_runtime_flags"],
+          "properties": {
+            "feature_id": { "const": "cedg.locus.v2" },
+            "additional_runtime_flags": { "type": "array", "maxItems": 0 }
+          }
+        },
+        "materialization": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kernel_recompute_creates_new_points", "existing_point_reactivation", "new_point_auto_materialization"],
+          "properties": {
+            "kernel_recompute_creates_new_points": { "const": false },
+            "existing_point_reactivation": { "const": "kernel-dag" },
+            "new_point_auto_materialization": { "const": "explicit-visible-undoable-frontend-action" }
+          }
+        }
+      }
+    },
+    "taxonomy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["broad_families", "operational_clusters"],
+      "properties": {
+        "broad_families": {
+          "type": "array",
+          "minItems": 11,
+          "maxItems": 11,
+          "items": { "$ref": "#/$defs/broadFamily" }
+        },
+        "operational_clusters": {
+          "type": "array",
+          "minItems": 18,
+          "maxItems": 18,
+          "items": { "$ref": "#/$defs/clusterTaxonomy" }
+        }
+      }
+    },
+    "broadFamily": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "order", "name_key", "availability"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "order": { "type": "integer", "minimum": 1, "maximum": 11 },
+        "name_key": { "type": "string", "minLength": 1 },
+        "availability": { "enum": ["available", "disabled-with-reason"] },
+        "reason_key": { "type": "string", "minLength": 1 }
+      }
+    },
+    "clusterTaxonomy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "order", "broad_family_id", "name_key"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "order": { "type": "integer", "minimum": 1, "maximum": 18 },
+        "broad_family_id": { "$ref": "#/$defs/id" },
+        "related_deferred_broad_family_ids": { "$ref": "#/$defs/idArray" },
+        "name_key": { "type": "string", "minLength": 1 }
+      }
+    },
+    "policyProfiles": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["effects", "availability", "command_surfaces"],
+      "properties": {
+        "effects": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/effectProfile" }
+        },
+        "availability": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/availabilityProfile" }
+        },
+        "command_surfaces": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/commandSurfaceProfile" }
+        }
+      }
+    },
+    "effectProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "construction", "preview", "undo"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "construction": { "enum": ["none", "interactive-edit", "explicit-single", "explicit-compound", "document-lifecycle"] },
+        "preview": { "const": "none" },
+        "undo": { "enum": ["none", "normal", "single", "compound", "host-history"] }
+      }
+    },
+    "availabilityProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "unavailable_policy", "geocedg", "classic", "external_upstream"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "unavailable_policy": { "enum": ["hidden", "disabled-with-reason", "diagnostic-route-only"] },
+        "geocedg": { "enum": ["available", "contextual", "feature-gated", "disabled"] },
+        "classic": { "enum": ["inherited", "restricted-to-upstream-operands", "hidden", "diagnostic-only", "preservation-only"] },
+        "external_upstream": { "enum": ["inherited", "unsupported"] }
+      }
+    },
+    "commandSurfaceProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "algebra_input", "autocomplete", "ggbscript"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "algebra_input": { "enum": ["supported", "not-applicable"] },
+        "autocomplete": { "enum": ["supported", "hidden", "not-applicable"] },
+        "ggbscript": { "enum": ["supported", "unsupported-with-reason", "not-applicable"] }
+      }
+    },
+    "localizationContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required_locales", "required_fields", "refs_resolve_at_implementation"],
+      "properties": {
+        "required_locales": {
+          "type": "array",
+          "prefixItems": [{ "const": "en" }, { "const": "es" }],
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "required_fields": {
+          "type": "array",
+          "prefixItems": [
+            { "const": "name" },
+            { "const": "short_help" },
+            { "const": "long_help" },
+            { "const": "status" },
+            { "const": "error" }
+          ],
+          "minItems": 5,
+          "maxItems": 5
+        },
+        "refs_resolve_at_implementation": { "const": true }
+      }
+    },
+    "iconContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stable_logical_ids", "text_fallback_required", "branding_roles"],
+      "properties": {
+        "stable_logical_ids": { "const": true },
+        "text_fallback_required": { "const": true },
+        "branding_roles": {
+          "type": "array",
+          "prefixItems": [{ "const": "geocedg.brand.topbar" }, { "const": "geocedg.brand.startup" }],
+          "minItems": 2,
+          "maxItems": 2
+        }
+      }
+    },
+    "action": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "target",
+        "maturity",
+        "feature_requirements",
+        "selection_contract_ref",
+        "effect_profile_id",
+        "localization_ref",
+        "icon_ref",
+        "availability_profile_id",
+        "command_surface_profile_id",
+        "planning_disposition",
+        "implementation_state"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "kind": {
+          "enum": [
+            "upstream-mode",
+            "command",
+            "product-action",
+            "view-toggle",
+            "navigation-action",
+            "document-action",
+            "preference-action",
+            "result-inspector",
+            "materialization-action",
+            "help-route",
+            "diagnostic-route",
+            "workspace-switch"
+          ]
+        },
+        "target": { "$ref": "#/$defs/target" },
+        "maturity": { "enum": ["stable", "experimental", "diagnostic"] },
+        "feature_requirements": { "$ref": "#/$defs/idArray" },
+        "selection_contract_ref": { "type": "string", "minLength": 1 },
+        "effect_profile_id": { "$ref": "#/$defs/id" },
+        "localization_ref": { "type": "string", "minLength": 1 },
+        "icon_ref": { "type": "string", "minLength": 1 },
+        "availability_profile_id": { "$ref": "#/$defs/id" },
+        "command_surface_profile_id": { "$ref": "#/$defs/id" },
+        "planning_disposition": { "enum": ["must", "should", "deferred", "out-of-scope-new-kernel-phase"] },
+        "implementation_state": { "enum": ["existing", "new-frontend", "new-manifest-binding", "host-characterization-required"] },
+        "notes": { "type": "string", "minLength": 1 }
+      }
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["symbol"],
+      "properties": {
+        "symbol": { "type": "string", "minLength": 1 },
+        "audited_numeric_id": { "type": "integer" }
+      }
+    },
+    "cluster": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "broad_family_id", "toolbar_action_ids", "overflow_action_ids", "menu_action_ids", "context_action_ids", "inspector_action_ids", "settings_action_ids"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "broad_family_id": { "$ref": "#/$defs/id" },
+        "toolbar_action_ids": { "$ref": "#/$defs/idArray" },
+        "overflow_action_ids": { "$ref": "#/$defs/idArray" },
+        "menu_action_ids": { "$ref": "#/$defs/idArray" },
+        "context_action_ids": { "$ref": "#/$defs/idArray" },
+        "inspector_action_ids": { "$ref": "#/$defs/idArray" },
+        "settings_action_ids": { "$ref": "#/$defs/idArray" },
+        "notes": { "type": "string", "minLength": 1 }
+      }
+    },
+    "workspace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name_key", "description_key", "maturity", "availability", "perspective", "toolbar_broad_family_ids", "menu_cluster_ids", "help_policy", "document_layout_policy"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "name_key": { "type": "string", "minLength": 1 },
+        "description_key": { "type": "string", "minLength": 1 },
+        "maturity": { "enum": ["stable", "experimental", "planned"] },
+        "availability": { "enum": ["available", "disabled-with-reason"] },
+        "reason_key": { "type": "string", "minLength": 1 },
+        "perspective": { "$ref": "#/$defs/perspective" },
+        "toolbar_broad_family_ids": { "$ref": "#/$defs/idArray" },
+        "menu_cluster_ids": { "$ref": "#/$defs/idArray" },
+        "help_policy": { "enum": ["contextual-en-es", "unavailable"] },
+        "document_layout_policy": { "enum": ["profile-preferences-only", "unavailable"] }
+      }
+    },
+    "perspective": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["views", "show_toolbar", "show_input_panel", "show_input_help"],
+      "properties": {
+        "views": { "$ref": "#/$defs/stringArray" },
+        "show_toolbar": { "type": "boolean" },
+        "show_input_panel": { "type": "boolean" },
+        "show_input_help": { "type": "boolean" }
+      }
+    },
+    "workspacePersistence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scope", "active_workspace_key", "per_workspace_layout_key_prefix", "unavailable_fallback", "document_xml_authority"],
+      "properties": {
+        "scope": { "const": "profile-preferences" },
+        "active_workspace_key": { "type": "string", "minLength": 1 },
+        "per_workspace_layout_key_prefix": { "type": "string", "minLength": 1 },
+        "unavailable_fallback": { "$ref": "#/$defs/id" },
+        "document_xml_authority": { "const": "none" }
+      }
+    },
+    "diagnosticRoute": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "action_id", "process_profile", "preference_isolation"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "action_id": { "$ref": "#/$defs/id" },
+        "process_profile": { "type": "string", "minLength": 1 },
+        "preference_isolation": { "const": true }
+      }
+    },
+    "feature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "source", "enabled_by_default"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "source": { "type": "string", "minLength": 1 },
+        "enabled_by_default": { "type": "boolean" }
+      }
+    },
+    "deferredItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "target", "disposition", "reason", "required_authority"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "target": { "type": "string", "minLength": 1 },
+        "disposition": { "enum": ["deferred", "out-of-scope-new-kernel-phase", "diagnostic-only", "classic-only"] },
+        "reason": { "type": "string", "minLength": 1 },
+        "required_authority": { "type": "string", "minLength": 1 }
+      }
+    },
+    "hostCharacterization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "action_ids", "question", "fail_closed_disposition"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "action_ids": { "$ref": "#/$defs/idArray" },
+        "question": { "type": "string", "minLength": 1 },
+        "fail_closed_disposition": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

@@ -1,17 +1,19 @@
 # CeDG workspace contract
 
 - Status: **NORMATIVE / AUTHOR APPROVED**
-- Phase: G9P design approved; productive G9U1/G9U2 implementation is not authorized
+- Phase: G9P base design approved; definitive post-G9U0-R6 G9U1 design
+  `PASS — AUTHOR APPROVED`; productive G9U1/G9U2 implementation is not
+  authorized
 - Normative manifest target: application profile schema version 2
 - Related Accepted ADR: `docs/adr/0012-manifest-defined-geocedg-workspaces.md`
 - Evidence: `docs/references/cedg/models/g9p/g9p-reference-workflow-audit.md`
 
 ## G9U0-R2 approved supersession record
 
-The author closed `G9U0-R2 — PRE-G9U1 PRODUCT / DOCUMENT REFINEMENT`
-planning/design as `PASS — AUTHOR APPROVED`. Its implementation remains not
-authorized and not started. This record normatively refines the future G9U1
-entry/document assumptions below; it does not implement R2 or authorize U1.
+The author closed both the planning/design and implementation of
+`G9U0-R2 — PRE-G9U1 PRODUCT / DOCUMENT REFINEMENT` as
+`PASS — AUTHOR APPROVED`. This record normatively refines the future G9U1
+entry/document assumptions below; it does not authorize U1.
 
 Before G9U1 execution, this contract must:
 
@@ -31,14 +33,69 @@ Before G9U1 execution, this contract must:
 
 The owning contracts are the normative
 `geocedg/specs/ui/native-document-identity.md`,
-`geocedg/specs/locus/locus-v2-presentation.md` and Accepted ADR 0016. Until a
-separately authorized R2 implementation is validated and approved, observable
-product behavior continues to use `.ggb`.
+`geocedg/specs/locus/locus-v2-presentation.md` and Accepted ADR 0016. The
+separately authorized R2 implementation is validated and approved: `.cedg` is
+the native GeoCeDG document identity and `.ggb` is compatibility input under
+the non-destructive transition policy.
 
 ADR 0012 remains Accepted for its workspace/profile, presentation-purity and
 separate-Classic decisions. ADR 0016 supersedes only its former `.ggb`
 native-document assumptions and adds G9U0-R2 implementation PASS as a
 prerequisite for any later, separately authorized G9U1 execution.
+
+## G9U1 definitive post-R6 approved pre-execution design
+
+The post-G9S1/post-G9U0-R6 reconciliation is **G9U1 DESIGN PASS — AUTHOR
+APPROVED**.
+It is approved planning authority, not productive authority, and does not change the checked-in version-1
+profile, its reader, Desktop code, kernel code or user preferences. Its bounded
+planning artifacts are:
+
+- `application-profile-v2.candidate.schema.json` and
+  `application-profile-v2.candidate.yml`, which model the proposed version-2
+  manifest without replacing `apps/geocedg/application-profile.yml`;
+- `g9u1-construction-interaction.md`, which assigns each interaction defect to
+  its owning layer and consumes the published R6 semantic-point authority;
+- `docs/validation/g9u1_workspace_completeness_matrix.md` and
+  `docs/validation/g9u1_command_tool_consistency_matrix.md`, which reconcile
+  the complete 110-action surface, 11 professional families, 18 operational
+  clusters and the 118-scenario future validation authority;
+- `.github/prompts/tasks/g9u1-construction-workspace-after-g9u0-r6.prompt.md`, the
+  definitive prospective execution prompt whose exact canonical-LF hash still
+  requires author approval and a later implementation authorization.
+
+The eleven professional families accepted below remain the broad workspace
+taxonomy. The candidate manifest refines them into eighteen operational
+clusters for discoverability and validation; this is a one-to-many presentation
+mapping, not a replacement taxonomy and not a second action authority. Every
+menu, toolbar, overflow and help surface must consume the same version-2 action
+catalog after implementation is authorized.
+
+The kernel prerequisite discovered during the protected pre-R6 review is now
+closed: `G9U0-R6 — SEMANTIC LOCUS POINT INTERACTION SUPPORT` is
+`PASS — AUTHOR APPROVED` at `geocedg-g9u0-r6-pass` ->
+`3942af594e4507e479f2c75019cef62e3d9fea6f`. The immutable historical planning
+checkpoint is `857de6628489bda0b65a5ba5145e62ca0795fc32`.
+
+G9U1 consumes `LocusPointInteractionQuery2D`,
+`LocusPointInteractionResolver2D`, `LocusPointInteractionResult2D` and the R6
+public create/move operations. The exact command
+`Point(L, branch, u)` remains the scripting route for a known semantic address;
+it is not the mouse inverse-resolution path and does not create an
+interaction-owned R6 point. No render sample, pixel or Cartesian proximity may
+become the semantic address. Published R6 satisfies the last shared-kernel
+prerequisite found by the complete Construction-workspace audit; no further
+kernel gate blocks the accepted G9U1 workflow.
+
+The candidate also freezes these prospective product rules: the existing host
+`Continuity` setting is clamped OFF for GeoCeDG while Classic remains
+configurable; `ZoomWindow` uses the existing rectangle-view seam while broader
+view-history/fit/layer/scale work remains G12; Locus V2 hit testing uses stroked
+curve geometry rather than filled path interiors; Algebra preview and
+description-mode controls use their normal command/tree seams; rich markers
+consume current deterministic tokens; Spline V2 × Spline V2 remains rich-only;
+and `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` stays open until a real native
+round trip or explicit author disposition closes it.
 
 ## 1. Purpose
 
@@ -258,9 +315,10 @@ compatibility placement or command input. It is not the implementation of the
 Locus V2 group.
 
 The supported point-on-Locus action is distinct from the rich-intersection token
-point action. The former selects/persists a semantic source
-branch/component/preimage and may act as the generator of another Locus V2; the
-latter consumes one exact solution token from a rich intersection result.
+point action. The former consumes an exact R6 semantic-preimage candidate and
+persists its source branch/component/address; it may act as the generator of
+another Locus V2. The latter consumes one exact R4 solution token from a rich
+intersection result. R6 candidates and R4 tokens are not interchangeable.
 Neither action persists click proximity or a render/sample vertex.
 
 ### 5.3 Command availability
@@ -372,17 +430,48 @@ The status area displays the next required role, not merely a generic tool
 name. Rejected selection produces a localized reason and leaves earlier valid
 slots intact unless the action declares atomic reset.
 
-For supported point-on-Locus V2 creation, slots identify source locus,
-branch/component and semantic preimage (including periodic seam choice). The
-created ordinary point carries the durable preimage address plus a current
-revision/continuation binding and can be selected as an outer-Locus generator.
-Ambiguous continuation disables downstream creation rather than choosing the
-nearest displayed coordinate.
+For supported point-on-Locus V2/Spline V2 creation, the frontend first uses the
+stroked curve presentation to identify a candidate semantic source; clicking
+merely inside a closed curve does not select it. The finite world target then
+enters the published R6 pipeline:
+
+```text
+LocusPointInteractionQuery2D
+  -> LocusPointInteractionResolver2D.resolve(...)
+  -> LocusPointInteractionResult2D
+```
+
+`UNIQUE_ADMISSIBLE_PREIMAGE` commits the exact resolver-produced candidate by
+`LocusV2PublicOperations.createInteractiveSemanticPoint(...)`.
+`MULTIPLE_SEMANTIC_PREIMAGES` opens a deterministic chooser; the user-selected
+candidate object is passed unchanged, and cancel creates nothing. The other
+typed R6 statuses create no point and produce localized truthful feedback. In
+particular, diagnostic candidates from `UNRESOLVED_NUMERICAL_SEARCH` are not
+selectable. No semantic-curve hit falls back silently to a free point.
+
+Dragging an existing interaction-owned point calls
+`LocusV2PublicOperations.moveInteractiveSemanticPoint(...)`. A unique result
+updates the same point/durable ID/source/address; any nonunique or unresolved
+result leaves it unchanged rather than retargeting by proximity. The frontend
+owns coherent undo grouping and must reacquire object references after a kernel
+rollback. Closed-Spline seam crossing must preserve the same point with the
+canonical wrapped parameter/lift and exact stored semantic-direction bits.
+
+Supported R5 transforms, including negative dilation, use the transformed
+semantic source. At `k=0`, a new query reports `DEGENERATE_SOURCE_IMAGE` and
+creates no arbitrary point; an existing addressed point remains the same point
+at the collapsed image and recovers when the factor becomes nonzero. Native
+save/reopen, undo/redo and copy/remap preserve the selected exact semantic
+address; transient queries and candidates are not serialized.
 
 For rich Locus intersections, candidate markers come only from established
 result solutions. Graphical proximity may preselect among currently admissible
 tokens. The created point stores the exact selected token; proximity and list
 order are never persisted.
+
+Spline V2 × Spline V2 remains rich-only for point materialization until the
+kernel publishes a sufficient symmetric certificate. The R6 inverse resolver
+must not be used to bypass that intersection-token limitation.
 
 Changing workspace cancels the active selection transaction and activates Move.
 It does not delete already constructed outputs or alter the current construction
@@ -475,19 +564,49 @@ unvalidated hard-coded toolbar.
 
 ## 12. Implementation staging and gates
 
+Entry requires both G9S1 and G9U0-R6 `PASS — AUTHOR APPROVED`; the latter is
+already published at the R6 tag/commit recorded above. The protected pre-R6
+candidate remains historical and immutable. After separate G9U1 implementation
+authorization, stage the frontend work as:
+
 1. **G9U1A — schema/compiler foundation:** author-approved version-2 schema,
    action catalog, runtime feature service, deterministic v1 migration, static
    localization/icon validation, no new geometric action.
 2. **G9U1B — CeDG Construction:** workspace controller, panel defaults, curated
    groups, view/menu actions, document-layout state, public G9U0 actions only if
    G9U0 has passed. This slice is a GUI client and has no G9B dependency.
-3. **G9U2 — Dihedral Procedures:** remains blocked until G9 global PASS and a
+3. **G9U1C — semantic interaction and rich results:** consume the actual R6
+   Point create/move contract; add stroke-only selection, ambiguity chooser,
+   current-token markers and explicit selected/multiple/all materialization.
+4. **G9U1D — product hardening:** EN/ES help, Continuity `OFF`, accessibility,
+   DPI/layout, documents/preferences, branding and end-to-end GUI acceptance.
+5. **G9U2 — Dihedral Procedures:** remains blocked until G9 global PASS and a
    dedicated prompt/specification authorize procedures consuming the approved
    ProjectionSystem/frame-map/hinge and binding semantics.
 
 Future implementation evidence is defined in
 `docs/validation/g9_public_workspace_validation_matrix.md`. Approval of this
 contract does not authorize G9U1 or G9U2.
+
+The first productive GUI acceptance of R6 belongs to G9U1: Point-tool create and
+drag on Locus V2 and Spline V2; stroke-vs-interior selection; explicit
+self-intersection chooser/cancel; closed periodic-seam drag; transformed and
+negative-dilation sources; `k=0`; then save/reopen, undo/redo and copy/remap.
+No separate productive R6 GUI existed.
+
+Terminal reconciliation state:
+
+```text
+G9U0-R6 = PASS — AUTHOR APPROVED
+G9U1 DESIGN = PASS — AUTHOR APPROVED
+POST-R6 RECONCILED = true
+G9U1 IMPLEMENTATION = NOT AUTHORIZED / NOT STARTED
+implementationStarted = false
+implementationAuthorized = false
+selfApproved = false
+authorApprovedDesign = true
+passClaimedImplementation = false
+```
 
 ## 13. Approved closeout decisions
 

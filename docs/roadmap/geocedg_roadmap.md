@@ -3,13 +3,13 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Roadmap vivo y normativo de fases; no sustituye las especificaciones ni los ADR aceptados |
-| Versión documental | 3.64 |
+| Versión documental | 3.65 |
 | Fecha de revisión | 2 de septiembre de 2026 |
 | Baseline GeoGebra | 5.4.928.0, commit `9b93256b7df401ff056c37b502d82df4d72b1522`, tag `geogebra-baseline-5.4.928.0` |
-| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1, G9A2, G9A3, el track G9A, G9U0, G9U0-R1, G9X1, G9U0-R2, G9U0-R3, G9U0-R4, G9U0-R5, G9S1, G9U0-R6 y la planificación G10P `PASS — AUTHOR APPROVED`. R6 añade resolución inversa semántica y estado explícito de punto draggable en kernel, incluido cruce periódico bidireccional/path-independent, sin `Path`, render/pixel como autoridad ni frontend G9U1. Al no existir consumidor Desktop productivo R6, el autor acepta el test-host/API como superficie diagnóstica y difiere el smoke GUI a G9U1. El checkpoint G9U1 `857de662...` permanece protegido como evidencia pre-R6 y no se integra en R6. R4 conserva determinismo actual > heurística de continuidad y el riesgo abierto `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP`. G9U1 no se ha ejecutado: su requisito kernel R6 está satisfecho, pero exige reconciliación post-R6, revisión autoral y autorización de implementación separada. G9B/G9C no están autorizadas, G9U2 sigue bloqueada y ninguna implementación productiva G10 está autorizada; Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
+| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1, G9A2, G9A3, el track G9A, G9U0, G9U0-R1, G9X1, G9U0-R2, G9U0-R3, G9U0-R4, G9U0-R5, G9S1, G9U0-R6 y la planificación G10P `PASS — AUTHOR APPROVED`. R6 añade resolución inversa semántica y estado explícito de punto draggable en kernel, incluido cruce periódico bidireccional y path-independent, sin `Path`, render/pixel como autoridad ni frontend G9U1. Al no existir consumidor Desktop productivo R6, el autor acepta el test-host/API como superficie diagnóstica y difiere el smoke GUI a G9U1. El checkpoint G9U1 pre-R6 `857de662...` permanece protegido e inmutable; la rama sucesora reconcilia su diseño contra el contrato R6 publicado y ese diseño es `PASS — AUTHOR APPROVED`. G9U1 no se ha ejecutado y su implementación no está autorizada. R4 conserva determinismo actual > heurística de continuidad y el riesgo abierto `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP`. G9B/G9C no están autorizadas, G9U2 sigue bloqueada y ninguna implementación productiva G10 está autorizada; Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
 | Última fase cerrada | G9U0-R6 — `PASS — AUTHOR APPROVED` |
 | Última fase ejecutada | G9U0-R6 — `PASS — AUTHOR APPROVED`; `selfApproved=false`, `authorApproved=true`, `passClaimed=true`; `manualGuiSmoke=DEFERRED TO G9U1 BY DESIGN`; `kernelDiagnosticAcceptance=PASS` |
-| Siguiente puerta | Reconciliación de diseño post-R6 de G9U1 para revisión autoral; G9U1 permanece sin ejecutar y su implementación no está autorizada |
+| Siguiente puerta | Tarea independiente de rendimiento/gobernanza de verificación y, posteriormente, decisión autoral separada sobre la autorización de implementación G9U1; G9U1 permanece sin ejecutar |
 | Primer cliente | Aplicación de escritorio de la familia Classic 5 |
 | Núcleo | Java compartido de GeoGebra, extendido solo cuando la semántica lo requiere |
 
@@ -1021,7 +1021,9 @@ Funciones objetivo:
 
 - zoom centrado en el cursor;
 - tecla configurable para activar zoom de ventana con anclaje en la posición actual del cursor;
-- `ZoomWindow`, `ZoomPrevious`, `FitSelection`, `FitLayer` y vistas nombradas;
+- `ZoomPrevious`, `FitSelection`, `FitLayer` y vistas nombradas; el
+  `ZoomWindow` básico requerido por el workspace Construction se adelanta a
+  G9U1 mediante el seam de rectángulo de vista existente;
 - navegación precisa por teclado;
 - perfiles de escala muy grandes o muy pequeños;
 - conservación del centro y escala por vista;
@@ -1135,7 +1137,7 @@ optimización de rendimiento del software.
 | G9U0-R5 | `PASS — AUTHOR APPROVED` | Siete formas ordinarias `Translate`/`Rotate`/`Reflect`/`Mirror`/`Dilate` crean un nuevo Locus V2 semántico con ID/DAG propios; Option A `k=0` conserva `FINITE`/`UNBOUNDED` y añade `COLLAPSED_IMAGE`; smoke dinámico aceptado con limitación de entrada libre G9A caracterizada; `selfApproved=false`, `authorApproved=true`, `passClaimed=true`; no autoriza G9U1 |
 | G9S1 | `PASS — AUTHOR APPROVED` | Option B: `SplineV2` crea un nuevo `GeoLocusV2` semántico con dominio, spans y knots explícitos; Classic `Spline` permanece intacto; total/parcial scalar `Length` y autoridad rica `LocusLength` validadas; `selfApproved=false`, `authorApproved=true`, `passClaimed=true` |
 | G9U0-R6 | `PASS — AUTHOR APPROVED` | Puerta kernel acotada entre G9S1 y G9U1: request geométrica transitoria -> resultado tipado con cero/uno/varios preimages -> selección explícita -> punto ordinario con address semántica editable en DAG. Incluye Locus V2, SplineV2 y transformadas R5, además del cruce periódico bidireccional/path-independent del mismo punto y el negativo unresolved sin mutación; no implementa `Path`, Point-tool/frontend ni comando paralelo. ADR 0019 está Accepted y la spec es normativa; `manualGuiSmoke=DEFERRED TO G9U1 BY DESIGN`, `kernelDiagnosticAcceptance=PASS`, `selfApproved=false`, `authorApproved=true`, `passClaimed=true` |
-| G9U1 | `DESIGN CANDIDATE — PROTECTED / NOT AUTHORIZED` | Checkpoint pre-R6 independiente `857de6628489bda0b65a5ba5145e62ca0795fc32`; no forma parte de R6. R6 `PASS — AUTHOR APPROVED` satisface el requisito kernel, pero el Workspace Construction aún requiere reconciliación post-R6, revisión autoral y autorización de implementación separada; `Continuity = OFF`; markers, Point-tool, create-one/create-selected/create-all y sesión persistente siguen exclusivamente prospectivos |
+| G9U1 design | `PASS — AUTHOR APPROVED — POST-R6 RECONCILED` | Sucesor del checkpoint pre-R6 inmutable `857de6628489bda0b65a5ba5145e62ca0795fc32`: workspace Construction con manifiesto v2 candidato, 11 familias/18 clusters y matriz de escenarios validada. El Point tool consume el resolver tipado R6, usa chooser explícito ante múltiples preimages y falla cerrado ante none/unresolved/invalid/degenerate; drag conserva el mismo punto/ID y el cruce periódico usa el contrato R6. `Continuity = OFF`; markers de intersección siguen consumiendo tokens R4, separados de las preimages R6; create-one/create-selected/create-all y sesión persistente siguen prospectivos. La implementación sigue `NOT AUTHORIZED / NOT STARTED` |
 | G9B / G9C | `DESIGNED — NOT AUTHORIZED` | Track kernel tras cierre de G9A; no depende de completar el cliente G9U1 |
 | G9U2 | `BLOCKED ON THE APPROVED G9 GATE` | Workspace de procedimientos diédrico solo tras `G9 PASS — AUTHOR APPROVED` |
 | G9 spatial solving | `POINT PILOT — AUTHOR APPROVED` | G9A2 se limita a frames/sistemas/mapas/relaciones y reconstrucción projection-defined de punto; no hay primitivas generales, objetos compuestos ni autoridad 3D |
@@ -1672,7 +1674,13 @@ G9U0-R5 DESIGN = PASS — AUTHOR APPROVED
 G9U0-R5 IMPLEMENTATION = PASS — AUTHOR APPROVED
 G9S1 = PASS — AUTHOR APPROVED
 G9U0-R6 = PASS — AUTHOR APPROVED
-G9U1 = DESIGN CANDIDATE — PROTECTED / NOT AUTHORIZED
+G9U1 DESIGN = PASS — AUTHOR APPROVED — POST-R6 RECONCILED
+G9U1 IMPLEMENTATION = NOT AUTHORIZED / NOT STARTED
+G9U1 implementationStarted = false
+G9U1 implementationAuthorized = false
+G9U1 selfApproved = false
+G9U1 authorApprovedDesign = true
+G9U1 passClaimedImplementation = false
 G9U1 DETERMINISTIC_CONTINUITY_OFF_REQUIRED
 G9U1 INTRINSIC_PHASE_RANK_TOKEN_AUTHORITY_REQUIRED
 G9U1 MULTI_MATERIALIZATION_REQUIRED
@@ -1738,7 +1746,7 @@ G9O1: primero por recomendación operacional; sin arista semántica hacia G9A1.
 El diagrama expresa dependencias semánticas/contractuales, no un calendario.
 Se distinguen: (1) dependencias duras, (2) predecesores de ejecución
 recomendados y (3) puertas de cierre global/release. El orden de bajo conflicto
-recomendado pasa a ser `G9O1; A1; A2; A3; U0; U0-R1; X1; U0-R2; U0-R3; U0-R4; BOOK-P1; U0-R5; S1; U1; B; C;
+recomendado pasa a ser `G9O1; A1; A2; A3; U0; U0-R1; X1; U0-R2; U0-R3; U0-R4; BOOK-P1; U0-R5; S1; U0-R6; U1; B; C;
 cierre; U2`, pero
 los puntos y coma no son flechas semánticas. Tras A3, el track kernel B/C puede
 avanzar sin U1. U0 sí requiere A3 para publicar objetos persistentes. X1 puede
@@ -2454,80 +2462,110 @@ nativo pendiente del estado de cuarentena del ledger de intersección.
 
 ### G9U1 - Workspace CeDG Construction
 
-**Estado:** `DESIGN CANDIDATE — PROTECTED / NOT AUTHORIZED`
+**Estado del diseño:** `PASS — AUTHOR APPROVED — POST-R6 RECONCILED`
 
-**Entrada adicional obligatoria:** G9U0-R2 implementation, G9U0-R3, G9U0-R4,
-G9U0-R5, G9S1 y G9U0-R6 ya cerraron `PASS — AUTHOR APPROVED`. Ninguno de esos
-cierres autoriza U1 automáticamente. Ahora se requiere reconciliar el checkpoint
-protegido contra el API R6 publicado y obtener una decisión autoral separada
-sobre la autoridad canónica resultante.
+**Estado de implementación:** `NOT AUTHORIZED / NOT STARTED`
 
-El prompt G9P histórico
-`.github/prompts/tasks/g9u1-construction-workspace.prompt.md` y el sucesor
-prospectivo post-R3 y el sucesor post-R5 permanecen inmutables. La autoridad
-prospectiva preparada por G9S1 es
-`.github/prompts/tasks/g9u1-construction-workspace-after-g9s1.prompt.md`,
-canonical-LF SHA-256
+```text
+implementationStarted = false
+implementationAuthorized = false
+selfApproved = false
+authorApprovedDesign = true
+passClaimedImplementation = false
+```
+
+**Entradas obligatorias satisfechas:** G9U0-R2 implementation, G9U0-R3,
+G9U0-R4, G9U0-R5, G9S1 y G9U0-R6 cerraron `PASS — AUTHOR APPROVED`. Ninguno de
+esos cierres autoriza U1 automáticamente. El checkpoint pre-R6 permanece
+inmutable y esta rama sucesora reconcilia su contenido contra las APIs R6
+publicadas. El diseño sucesor está aprobado por el autor; la implementación
+todavía exige una autorización autoral separada.
+
+La revisión post-G9S1 descubrió una dependencia kernel que no cabía en un gate
+frontend: la interacción gráfica ordinaria `Point` sobre un Locus V2 necesitaba
+una resolución inversa determinista desde un objetivo geométrico hasta una
+dirección semántica exacta. G9U0-R6 ya cerró esa dependencia como `PASS — AUTHOR
+APPROVED`. G9U1 consumirá `LocusPointInteractionQuery2D`, el resultado tipado de
+`LocusPointInteractionResolver2D.resolve(...)` y las operaciones públicas de
+creación/movimiento interaction-owned; no reimplementará el resolver ni inferirá
+identidad desde render, píxeles, proximidad u orden. La forma exacta
+`Point(L, branch, u)` sigue siendo la autoridad de comando/GGBScript y no se
+convierte en una API de ratón sintética.
+
+Los prompts históricos G9P, post-R3 y post-R5 permanecen inmutables. El prompt
+post-G9S1 de entrada tenía canonical-LF SHA-256
 `6451f15d5e0ecb9cadf8e17160a41606b5c8c27924455d1ee08326cad9b74fb4`.
-Sigue `UNEXECUTED / NOT AUTHORIZED`; G9S1 y R6 satisfacen sus puertas técnicas,
-pero la reconciliación post-R6 y la autorización autoral separada siguen
-pendientes.
-El checkpoint de planificación protegido posterior conserva las 17 rutas solo
-en `feature/g9u1-construction-workspace-planning` y no altera este main/R6.
+El checkpoint protegido conserva esas 17 rutas en
+`feature/g9u1-construction-workspace-planning` con prompt canonical-LF SHA-256
+`2319df211f5ea17880b7041844122afca0f2ddced4c6db1fabddce0d53dfa322`.
+La autoridad canónica sucesora post-R6 vive en
+`.github/prompts/tasks/g9u1-construction-workspace-after-g9u0-r6.prompt.md`;
+su hash canonical-LF se congela en la evidencia de esta reconciliación. El
+diseño está aprobado; la implementación sigue `UNEXECUTED / NOT AUTHORIZED` y
+requiere una decisión autoral separada.
 
-La planificación U1 debe investigar la compatibilidad de entrada libre
-`k=0.25` con el objeto numérico existente exclusivamente mediante la transacción
-de redefine compatible de G9A. El label solo puede localizar el objetivo
-explícitamente pretendido en ese contexto de comando: no es identidad durable.
-El predicado G9A y su atomicidad gobiernan la conservación de ID; objetivos
-ambiguos/inexistentes fallan cerrados y un redefine incompatible sigue la
-semántica de identidad nueva. Undo/redo/save/reopen y la ruta Classic requieren
-caracterización propia. R5 no implementa ni autoriza esta ampliación UX.
+La versión-1 viva `apps/geocedg/application-profile.yml` no se modifica. El
+schema/manifiesto `application-profile-v2.candidate.*` son solo diseño: un
+catálogo declarativo único alimentará menús, toolbar, overflow y help. Las once
+familias profesionales aceptadas siguen siendo la taxonomía de alto nivel; el
+manifiesto las desarrolla en dieciocho clusters operativos sin crear otra
+autoridad. La matriz de completitud clasifica cada acción como `MUST HAVE`,
+`SHOULD HAVE`, `DEFERRED` u `OUT OF SCOPE / REQUIRES NEW KERNEL PHASE`; conserva
+110 acciones estables y la autoridad post-R6 contiene exactamente 118 escenarios,
+incluidos `U1-PNT-01`–`U1-PNT-20` para el flujo Point real.
 
-Ese sucesor integra las siete formas ordinarias R5 sin comandos paralelos. Un
-Locus transformado es fuente normal para Point, métricas, intersecciones y
-transformaciones posteriores. Sus queries usan tokens nuevos del par fuente
-transformado, nunca tokens de la query original. Para `k=0`, la presentación no
-puede fabricar marker, token o raíz aislada sobre `COLLAPSED_IMAGE`.
+La reconciliación asigna cada defecto observado a su seam normal:
 
-Extenderá el manifiesto de perfil como única autoridad para workspaces, vistas,
-docking, input inferior, help contextual, actions, madurez, iconos y localización.
-Expondrá las acciones aprobadas de creación/métrica/intersección/punto sobre
-Locus V2 y DXF. Los macros específicos de los modelos de referencia no pasan al
-núcleo estable.
-El acceso diagnóstico GeoCeDG Classic seguirá siendo un proceso/path separado
-que cambia presentación, no verdad geométrica, y conserva objetos soportados
-con las mismas semánticas de kernel.
+- hit testing de Locus V2 contra el stroke visible, nunca contra el interior
+  cerrado/relleno del path y sin tocar la semántica del locus;
+- preview Algebra de `SplineV2(...)` en el lifecycle normal de preview de
+  comandos, sin construir durante tecleo incompleto;
+- inspección de Definition como vista de solo lectura de la definición real;
+- indicador radio/check correcto para Description Mode usando el estado del
+  árbol Algebra existente, sin preferencia paralela;
+- `ZoomWindow` obligatorio mediante el rectángulo de vista existente, accesible
+  por menú, toolbar y teclado; pan, zoom in/out, vista estándar y mostrar todos
+  son acompañantes acotados, mientras `ZoomPrevious`, `FitSelection`,
+  `FitLayer`, vistas nombradas y escala/navegación avanzada siguen en G12;
+- entrada libre compatible como `k=0.25` exclusivamente por la transacción
+  redefine atómica G9A: el label localiza el objetivo explícito en el contexto
+  de comando, pero nunca es identidad durable;
+- `Continuity = OFF` mediante el ajuste host existente y un clamp del lifecycle
+  GeoCeDG que prevalece sobre preferencias, restart, workspace y carga
+  `.cedg`/`.ggb`; no existe segundo ajuste y Classic sigue configurable;
+- help/autocomplete/tooltip/status y GGBScript usan los mismos comandos y
+  action IDs, con inglés y español completos y fallback explícito a inglés;
+- accesibilidad por teclado, nombres accesibles, escala/DPI, errores localizados
+  y límites de rendimiento forman parte del mismo gate.
 
-La presentación futura de intersecciones mantiene el resultado rico
-determinista actual como autoridad y añade markers transitorios solo para el
-resultado activo, por defecto visibles únicamente para tokens finitos y
-admisibles. Un marker no es GeoElement/XML/DAG/Protocol/undo ni identidad, ni
-ejecuta seguimiento continuo: solo preselecciona un token exacto actual. Crear
-uno, varios seleccionados o todos los puntos elegibles será una acción explícita
-y deshacible; una creación múltiple será una transacción compuesta coherente.
-El inspector permitirá varias materializaciones en una sesión, identificará las
-ya realizadas sin mostrar tokens opacos como labels de layout y solo cerrará por
-acción explícita. Reactivar un punto ya existente sigue siendo recompute normal
-del kernel; auto-materializar puntos nuevos sigue siendo frontend explícito y
-opt-in.
+Las acciones Locus V2 y Spline V2 consumen las autoridades G9U0–R5/G9S1.
+Transformadas, `COLLAPSED_IMAGE`, métricas total/parcial y rich-result se exponen
+sin comandos paralelos. Spline V2 × Spline V2 permanece **rich-only**: no crea
+selector/tokens/puntos/markers hasta que exista un selector de pares certificado
+y aprobado.
 
-G9U1 revisitará el riesgo
-`G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP`; no podrá afirmar persistencia
-nativa de cuarentena periódica sin evidencia nueva y el riesgo deberá resolverse
-o recibir disposición autoral explícita antes del cierre global G9.
+El resultado rico determinista sigue siendo autoridad de intersección. Markers
+transitorios solo representan tokens actuales del resultado activo; no son
+GeoElement/XML/DAG/Protocol/undo. Crear uno, varios seleccionados o todos los
+puntos elegibles es explícito y deshacible; la multi-creación es una transacción
+compuesta. El inspector queda abierto para materializaciones repetidas e indica
+cuáles ya existen sin usar tokens opacos como labels de layout. La reactivación
+de un punto existente pertenece al recompute kernel; crear puntos nunca vistos
+por política automática es una acción frontend explícita, visible y opt-in, y
+no ocurre durante recompute.
 
-GeoCeDG reutilizará el ajuste host existente `Continuity` y lo fijará a OFF como
-invariante del producto, por encima de preferencias, workspace, restart y
-archivos `.cedg`/`.ggb`; no habrá segundo campo ni control ordinario para
-activarlo. La ruta diagnóstica GeoCeDG Classic conserva la configuración
-upstream. La identidad visual GeoCeDG será exclusivamente frontend,
-distinta de Classic y revisable por el autor. Los roles planificados son
-`geocedg.brand.topbar` para chrome/top bar y `geocedg.brand.startup` para
-startup/aplicación y derivados de plataforma solo tras verificar su idoneidad.
-Sus fuentes autorales futuras son `helixTopBar.png` y `helixSnapshot.png`; R3 no
-integra ni fabrica esos activos y cada procedencia seguirá una autoridad única
-en el manifiesto existente.
+El riesgo `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` sigue `OPEN / TRACKED`.
+La futura validación U1 debe intentar cerrarlo con un round trip `.cedg` nativo
+real de la cuarentena periódica; una referencia de planificación, XML fabricado
+o export/import aislado del ledger no basta. Si no se cierra, requiere
+disposición autoral explícita antes del cierre global G9.
+
+La identidad visual es solo frontend y permanece revisable por el autor. Los
+roles lógicos futuros `geocedg.brand.topbar` y `geocedg.brand.startup` conservan
+una autoridad de procedencia cada uno; esta planificación no integra, copia ni
+fabrica `helixTopBar.png` o `helixSnapshot.png`. GeoCeDG Classic sigue siendo
+un proceso/ruta diagnóstica visualmente distinto, con preferencias separadas y
+la misma preservación semántica compartida.
 
 ### G9B - Proyecciones canónicas de primitivas
 
