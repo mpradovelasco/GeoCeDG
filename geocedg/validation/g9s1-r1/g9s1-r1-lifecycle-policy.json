@@ -324,7 +324,7 @@
     "tools/agent/verify-g9s1-r1-spline-pair-materialization.ps1",
     "tools/agent/verify-verification-infrastructure.ps1"
   ],
-  "maximumInfrastructureCommits": 1,
+  "maximumInfrastructureCommits": 2,
   "closeout": {
     "recordPath": "geocedg/validation/g9s1-r1/g9s1-r1-author-closeout.json",
     "literalReplacements": [

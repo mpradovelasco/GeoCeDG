@@ -340,6 +340,28 @@ function Update-ReceiptFingerprint {
         ([Text.UTF8Encoding]::new($false).GetBytes($identityJson)))
 }
 
+function Get-FixtureIndexAuthority {
+    param([Parameter(Mandatory)] [string]$Root,
+        [Parameter(Mandatory)] [string]$Commit)
+    Assert-Case (@(Invoke-Git $Root @('diff', '--cached', '--name-only',
+        $Commit, '--')).Count -eq 0) 'Fixture index differs from technical commit'
+    # Independent producer oracle: never generate receipt identity with the
+    # commit-to-index reconstruction helper that the consumer is testing.
+    $lines = @(Invoke-Git $Root @('-c', 'core.quotepath=false',
+        'ls-files', '--stage'))
+    $paths = foreach ($line in $lines) {
+        Assert-Case ($line -cmatch '^[0-7]{6} [0-9a-f]{40} 0\t.+$') `
+            'Malformed independent fixture index entry'
+        ($line -split "`t", 2)[1]
+    }
+    return [pscustomobject]@{
+        Lines = $lines
+        Paths = @($paths)
+        IndexSha256 = Get-GeoCeDGPhaseLifecycleHash `
+            ([Text.UTF8Encoding]::new($false).GetBytes($lines -join "`n"))
+    }
+}
+
 function New-TechnicalBundle {
     param([Parameter(Mandatory)] [object]$Fixture,
         [Parameter(Mandatory)] [string]$Name,
@@ -347,7 +369,7 @@ function New-TechnicalBundle {
     $Root = Join-Path $Fixture.Root "artifacts/$Name"
     $TechnicalCommit = $Fixture.TechnicalCommit
     [void][IO.Directory]::CreateDirectory($Root)
-    $tree = Get-GeoCeDGPhaseCommitIndexAuthority $Fixture.Root $TechnicalCommit
+    $tree = Get-FixtureIndexAuthority $Fixture.Root $TechnicalCommit
     $inventory = [Collections.Generic.List[object]]::new()
     [long]$rawBytes = 0
     foreach ($path in @($tree.Paths | Sort-Object -CaseSensitive)) {
@@ -665,6 +687,65 @@ Invoke-LifecycleCase 'sealed scientific and composed verifier authority is uncha
     Assert-R1LifecycleGuardSource
 }
 
+Invoke-LifecycleCase 'commit index matches independent Git mode and blob lines' {
+    $fixture = New-CaseFixture $Base 'index-reconstruction'
+    Write-Text (Join-Path $fixture.Root 'docs/café point.txt') "UTF-8 path`n"
+    [void](Invoke-Git $fixture.Root @('add', '--all'))
+    [void](Invoke-Git $fixture.Root @('update-index', '--chmod=+x',
+        'tools/infra-a.txt'))
+    $commit = Commit-Fixture $fixture.Root 'Independent index oracle'
+    $oracle = Get-FixtureIndexAuthority $fixture.Root $commit
+    $blob = (@(Invoke-Git $fixture.Root @('rev-parse',
+        "$commit`:tools/infra-a.txt")))[0]
+    Assert-Case ($oracle.Lines -ccontains "100755 $blob 0`ttools/infra-a.txt") `
+        'Executable mode and exact blob are absent from oracle'
+    $actual = Get-GeoCeDGPhaseCommitIndexAuthority $fixture.Root $commit
+    Assert-Case ($actual.IndexSha256 -ceq $oracle.IndexSha256 -and
+        ($actual.Paths -join "`n") -ceq ($oracle.Paths -join "`n")) `
+        'Reconstructed index differs from independent producer mode/blob lines'
+}
+
+Invoke-LifecycleCase 'historical 11201-entry technical index retains its recorded hash' {
+    # Reuse immutable Git history, not a duplicated 11,201-line fixture.
+    $actual = Get-GeoCeDGPhaseCommitIndexAuthority $RealRepository `
+        '0d621a91696e3de530f4410d22932c4fd6759f3e'
+    Assert-Case ($actual.Paths.Count -eq 11201 -and $actual.IndexSha256 -ceq
+        'cd92f76f15479852d9b6512311dbd71fa3b0225a61901636d447a050ad41afc5') `
+        'Historical technical index mode/blob reconstruction regressed'
+}
+
+Invoke-LifecycleCase 'receipt rejects malformed reordered mode blob and literal index tampering' {
+    $oracle = Get-FixtureIndexAuthority $Base.Root $Base.TechnicalCommit
+    foreach ($variant in @('malformed', 'reordered', 'mode', 'blob', 'literal')) {
+        $lines = [string[]]$oracle.Lines.Clone()
+        switch ($variant) {
+            'malformed' { $lines[0] = 'not an index entry' }
+            'reordered' { [array]::Reverse($lines) }
+            'mode' { $lines[0] = $lines[0] -creplace '^100644 ', '100755 ' }
+            'blob' { $lines[0] = $lines[0] -creplace '[0-9a-f]{40}', ('0' * 40) }
+            'literal' {
+                $lines = @($lines | ForEach-Object {
+                    $_ -creplace '^[0-7]{6} [0-9a-f]{40}', '{0} {1}'
+                })
+            }
+        }
+        $forgedHash = Get-GeoCeDGPhaseLifecycleHash `
+            ([Text.UTF8Encoding]::new($false).GetBytes($lines -join "`n"))
+        Assert-Case ($forgedHash -cne $oracle.IndexSha256) `
+            "Index tamper was not effective: $variant"
+        $state = New-PendingAuthorFixture $Base "index-$variant" {
+            param($documents)
+            $receipt = $documents['composed-receipt.json']
+            $receipt.inputIdentity.indexSha256 = $forgedHash
+            Update-ReceiptFingerprint $receipt
+        }
+        Assert-Throws { Invoke-FixtureContext $state.Fixture AUTHOR_CLOSEOUT `
+                -Bundle $state.Bundle -PendingCloseout } `
+            'index does not represent the exact technical commit' `
+            "Forged index authority: $variant"
+    }
+}
+
 Invoke-LifecycleCase 'PRECOMMIT authenticates the entry and exact pending paths' {
     $fixture = New-CaseFixture $Base 'precommit-positive'
     $policyBytes = Get-GeoCeDGPhaseLifecycleBlobBytes $fixture.Root `
@@ -822,6 +903,21 @@ Invoke-LifecycleCase 'infrastructure history enforces its exact commit bound' {
     [void](Commit-Fixture $fixture.Root 'Second infrastructure follow-up')
     Assert-Throws { Invoke-FixtureContext $fixture COMMITTED_CANDIDATE } `
         'Too many infrastructure follow-up commits' 'Infrastructure count bound'
+}
+
+Invoke-LifecycleCase 'two authorized infrastructure commits do not authorize a third' {
+    $fixture = New-LifecycleFixture (Join-Path $RunRoot 'two-infra-bound') `
+        -MaximumInfrastructureCommits 2
+    Write-Text (Join-Path $fixture.Root 'tools/infra-a.txt') "bounded hotfix`n"
+    $hotfix = Commit-Fixture $fixture.Root 'Second authorized infrastructure commit'
+    $context = Invoke-FixtureContext $fixture COMMITTED_CANDIDATE
+    Assert-Case ($context.CurrentHead -ceq $hotfix -and
+        -not $context.AuthorApprovedPhase -and -not $context.PassClaimed) `
+        'Bounded second infrastructure commit did not remain a candidate'
+    Write-Text (Join-Path $fixture.Root 'tools/infra-b.txt') "unauthorized third`n"
+    [void](Commit-Fixture $fixture.Root 'Unauthorized third infrastructure commit')
+    Assert-Throws { Invoke-FixtureContext $fixture COMMITTED_CANDIDATE } `
+        'Too many infrastructure follow-up commits' 'Two-commit bound'
 }
 
 Invoke-LifecycleCase 'lifecycle policy strict schema rejects added properties' {

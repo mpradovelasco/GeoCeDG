@@ -239,3 +239,59 @@ The protected G9U1 design remains unchanged and G9U1 implementation remains
 NOT AUTHORIZED. Stage II remains forbidden until a later author instruction both
 approves G9S1-R1 and names the exact reviewed technical commit established after
 fresh postcommit validation.
+
+## 11. Bounded index-reconstruction hotfix after the stopped Stage II attempt
+
+The subsequent author decision approved technical commit
+`0d621a91696e3de530f4410d22932c4fd6759f3e`. Its attempted `AUTHOR_CLOSEOUT`
+exited 1 with `Receipt index does not represent the exact technical commit.`
+The failure is retained as historical evidence, not relabelled as success.
+PowerShell applied `-f` to the final concatenated term instead of the whole
+format string, leaving literal `{0} {1}` in each reconstructed index record.
+The actual 11,201-entry receipt index hash was
+`cd92f76f15479852d9b6512311dbd71fa3b0225a61901636d447a050ad41afc5`;
+the defective reconstruction produced
+`b75409800f6ff40d9bb6e58bbdddd2df61284765a5cfbdf6c451128e5f4550b1`.
+
+The authorized implementation correction only groups the complete format
+string before `-f`. It changes no hash algorithm, receipt meaning, ordering,
+normalization, index check, or scientific assertion. The fixture now obtains
+receipt index evidence independently from Git's `ls-files --stage`, rather
+than generating the oracle with the helper being tested. Controls include
+exact mode/blob records, a UTF-8 path, the historical Git inventory without
+duplicating it, and malformed/reordered/mode/blob/literal-placeholder tampering.
+On the unchanged defective helper the expanded fixture records 32/38 passes
+(exit 1), including failures of both correct synthetic closeout forms.
+
+The author separately authorized changing only
+`maximumInfrastructureCommits: 1 -> 2` so this one additional technical hotfix
+can follow the existing infrastructure commit. The original one-commit-bound
+negative remains, and a new two-commit fixture accepts the bounded second
+commit but rejects a third. Ancestry, path, blob, status, approval and evidence
+assertions are unchanged. No allowlist is enlarged.
+
+The seven pending approval/status files were preserved byte-exactly, with a
+manifest and tracked diff, under ignored
+`artifacts/g9s1-r1-closeout-hotfix/preserved-closeout/`, then restored to the
+reviewed technical HEAD. The author decision is preserved; its prepared
+closeout delta is not part of this hotfix and must not be reapplied without a
+later exact-SHA authorization. The prior FULL remains bound to `0d621a9...`.
+New focused checks and clean FULL are required on the new technical commit.
+The unchanged documentary-link contract also requires separate PHASE A/B and
+COMPOSED roots; a FULL root cannot be renamed to impersonate those executions.
+New run results belong in ignored execution evidence, not in historical records.
+
+```text
+VERIFICATION_INFRASTRUCTURE_IMPACT = UPDATE_REQUIRED
+BOOTSTRAP IMPACT — NO CHANGE REQUIRED
+GUIDE_IMPACT = NONE
+```
+
+The existing PowerShell/JDK/Gradle selection, workstation prerequisites,
+bootstrap entrypoints and developer lifecycle commands are unchanged. This is
+a format-expression fix plus its independently generated infrastructure
+fixtures and the explicitly bounded commit policy; no user or scientific API
+changes. G9U1 is not implemented. The R4 periodic-quarantine round-trip risk
+remains open and tracked. No publication, phase tag or main promotion is
+authorized by this hotfix task; stop after new technical validation for author
+review of the exact new commit.

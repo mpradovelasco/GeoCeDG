@@ -243,7 +243,7 @@ function Get-GeoCeDGPhaseCommitIndexAuthority {
                 'Technical tree contains an unsupported entry.'
             $path = ConvertTo-GeoCeDGPhaseLifecyclePath $match.Groups[4].Value 'technical tree'
             $paths.Add($path)
-            $indexLines.Add(('{0} {1} 0' + "`t" + '{2}' -f $match.Groups[1].Value,
+            $indexLines.Add((('{0} {1} 0' + "`t" + '{2}') -f $match.Groups[1].Value,
                 $match.Groups[3].Value, $path))
         }
     }
