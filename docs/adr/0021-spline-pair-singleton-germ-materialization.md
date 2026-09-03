@@ -1,6 +1,6 @@
 # ADR 0021: Certified singleton-germ SplineV2 pair materialization
 
-- Status: **Accepted design — AUTHOR APPROVED; IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**
+- Status: **Accepted — PASS — AUTHOR APPROVED**
 - Date: 2026-09-03
 - Decision owner: GeoCeDG author
 - Phase: G9S1-R1 — SplineV2 Pair Intersection Materialization
@@ -8,12 +8,12 @@
 - Implementability: **B — PARTIAL IMPLEMENTATION CONTRACT — AUTHOR APPROVED**
 - Specification: [bounded pair materialization](../../geocedg/specs/curves/spline-v2-pair-materialization.md)
 - `implementationAuthorized=true`; `selfApproved=false`;
-  `authorApprovedPhase=false`; `passClaimed=false`.
-- `implementationComplete=true`; `manualAuthorSmoke=PENDING`. Authorized
-  corrections A/B in ADR 0022 are resolved on the tested cohort. PHASE A/B,
-  COMPOSED and FULL `-CleanBuild` complete with exit 0; exact receipts/counts are
-  recorded in the implementation matrix. The approved design and technical
-  completion do not establish implementation PASS or author phase approval.
+  `authorApprovedPhase=true`; `passClaimed=true`.
+- `implementationComplete=true`; `manualAuthorSmoke=PASS`. Authorized
+  corrections A/B in ADR 0022 are resolved on the reviewed technical cohort.
+  PHASE A/B, COMPOSED and FULL `-CleanBuild` evidence remains bound to that exact
+  technical commit; the later explicit author decision establishes phase PASS
+  without relabelling those executions as closeout-commit runs.
 - The earlier numerical-admission and implicit-tangency failures remain
   historical evidence; no assertion, selector or required gate is waived.
 

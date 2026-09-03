@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "phase": "G9S1-R1",
-  "status": "IMPLEMENTATION_CANDIDATE_PENDING_AUTHOR_REVIEW",
+  "status": "PASS_AUTHOR_APPROVED",
   "artifactRole": "SOURCE_CONTRACT_AND_EXECUTION_PROVENANCE_NOT_A_SUBSTITUTE_FOR_LIVE_GATES",
   "entrySha": "109f077fc5e2a40bcde45d3271eb928ee66fdfcc",
   "branch": "codex/g9s1-r1-spline-pair-materialization",
@@ -11,9 +11,9 @@
     "structuralPrerequisiteAuthorized": true,
     "implementationStarted": true,
     "selfApproved": false,
-    "authorApprovedPhase": false,
-    "passClaimed": false,
-    "manualAuthorSmoke": "PENDING",
+    "authorApprovedPhase": true,
+    "passClaimed": true,
+    "manualAuthorSmoke": "PASS",
     "implementationComplete": true,
     "correctionAAuthorized": true,
     "correctionBAuthorized": true

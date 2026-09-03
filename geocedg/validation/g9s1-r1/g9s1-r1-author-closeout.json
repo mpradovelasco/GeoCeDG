@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "phase": "G9S1-R1",
+  "mode": "AUTHOR_CLOSEOUT",
+  "reviewedTechnicalCommit": "a38d4fcde846fc97c51abc8d958de6998302c436",
+  "authorDecision": "PASS_AUTHOR_APPROVED",
+  "evidence": {
+    "bundleDirectory": "artifacts/g9s1-r1-whitespace-hotfix",
+    "bundleManifestPath": "technical-evidence-manifest.json",
+    "bundleManifestSha256": "0757b2d52d3aca85f85961c48dce3b90992efed589df387d41aabc2938585418"
+  },
+  "selfApproved": false
+}

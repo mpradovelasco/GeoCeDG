@@ -1,13 +1,14 @@
 # G9S1-R1 structural prerequisite and implementation candidate
 
-G9S1-R1 = IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW.
+G9S1-R1 = PASS — AUTHOR APPROVED.
 Structural knot/seam continuity remains established for admitted snapshots.
-Both historical-regression blockers are resolved on the frozen corrective
-cohort: fresh PHASE A/B, COMPOSED and clean-output FULL all exited 0.
+Both historical-regression blockers are resolved on the reviewed technical
+cohort: fresh PHASE A/B, COMPOSED and clean-output FULL all exited 0 there.
 `implementationAuthorized=true`, `implementationStarted=true`,
 `implementationComplete=true`, `selfApproved=false`,
-`authorApprovedPhase=false`, `passClaimed=false`, `manualAuthorSmoke=PENDING`.
-No commit, push, promotion, tag, or G9U1 implementation is authorized.
+`authorApprovedPhase=true`, `passClaimed=true`, `manualAuthorSmoke=PASS`.
+The approval-only closeout does not alter product, test or verifier inputs and
+does not authorize or execute G9U1 implementation.
 
 The author accepted the following blocked finding and authorized two bounded
 corrections: higher-precision structural construction/admission and certified

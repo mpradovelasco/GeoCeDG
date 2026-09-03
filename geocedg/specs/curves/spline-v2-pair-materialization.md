@@ -1,13 +1,13 @@
 # SplineV2 pair intersection materialization — bounded singleton-germ contract
 
-- Status: **NORMATIVE DESIGN — AUTHOR APPROVED; IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**
-- `implementationComplete=true`; `manualAuthorSmoke=PENDING`;
-  `selfApproved=false`; `authorApprovedPhase=false`; `passClaimed=false`.
-- Corrections A/B are author authorized under ADR 0022; they do not change the
+- Status: **NORMATIVE / IMPLEMENTED — PASS — AUTHOR APPROVED**
+- `implementationComplete=true`; `manualAuthorSmoke=PASS`;
+  `selfApproved=false`; `authorApprovedPhase=true`; `passClaimed=true`.
+- Corrections A/B are author approved under ADR 0022; they do not change the
   pair singleton-germ selector or its certification requirements. Both recorded
-  blockers are resolved on the tested cohort; fresh PHASE A/B, COMPOSED and
-  FULL `-CleanBuild` complete with exit 0. Technical completion is not author
-  acceptance; earlier failures remain preserved historical evidence.
+  blockers are resolved on the reviewed technical cohort. PHASE A/B, COMPOSED
+  and FULL `-CleanBuild` evidence remains bound to that exact commit; the later
+  author closeout records approval without claiming a new technical execution.
 - Phase: G9S1-R1
 - Decision: [ADR 0021](../../../docs/adr/0021-spline-pair-singleton-germ-materialization.md)
 - Preserved derivation: [D2](../../../docs/architecture/g9s1_r1_d2_pair_sheet_contract.md)
