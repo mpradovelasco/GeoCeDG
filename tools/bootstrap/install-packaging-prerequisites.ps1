@@ -1,3 +1,4 @@
+#requires -Version 7.2
 <#
 .SYNOPSIS
 Inspects or explicitly installs the pinned Windows packaging prerequisites.
@@ -35,9 +36,29 @@ function Invoke-Native {
         [Parameter(Mandatory)] [string]$Description
     )
 
-    $output = @(& $FilePath @ArgumentList 2>&1)
-    if ($LASTEXITCODE -ne 0) {
-        throw "$Description failed with exit code $LASTEXITCODE.`n$($output -join "`n")"
+    $PSNativeCommandUseErrorActionPreference = $false
+    $output = @()
+    $exitCode = $null
+    try {
+        $global:LASTEXITCODE = $null
+        $output = @(& $FilePath @ArgumentList 2>&1)
+        $exitCode = $global:LASTEXITCODE
+        if ($null -eq $exitCode) { throw "The invocation completed without a native exit code." }
+    } catch {
+        $failure = [InvalidOperationException]::new("$Description could not launch or complete native invocation: $($_.Exception.Message)", $_.Exception)
+        $failure.Data["NativeExitCode"] = $null
+        $failure.Data["Stage"] = $Description
+        $failure.Data["FailureClassification"] = "packaging-native-launch-failure"
+        $failure.Data["NativeOutput"] = $output -join [Environment]::NewLine
+        throw $failure
+    }
+    if ($exitCode -ne 0) {
+        $failure = [InvalidOperationException]::new("$Description failed with exit code $exitCode." + [Environment]::NewLine + ($output -join [Environment]::NewLine))
+        $failure.Data["NativeExitCode"] = $exitCode
+        $failure.Data["Stage"] = $Description
+        $failure.Data["FailureClassification"] = if ($Install) { "explicit-packaging-installation-failure" } else { "packaging-prerequisite-inspection-failure" }
+        $failure.Data["NativeOutput"] = $output -join [Environment]::NewLine
+        throw $failure
     }
     return @($output | ForEach-Object { $_.ToString() })
 }
@@ -113,15 +134,23 @@ function Get-WixExtensions {
     if ([string]::IsNullOrWhiteSpace($WixPath)) {
         return @()
     }
-    $output = @(& $WixPath extension list -g 2>&1)
-    $exitCode = $LASTEXITCODE
-    if ($exitCode -eq 0) {
-        return @($output | ForEach-Object { $_.ToString() })
+    $PSNativeCommandUseErrorActionPreference = $false
+    $output = @()
+    $exitCode = $null
+    try {
+        $global:LASTEXITCODE = $null
+        $output = @(& $WixPath extension list -g 2>&1)
+        $exitCode = $global:LASTEXITCODE
+        if ($null -eq $exitCode) { throw "The invocation completed without a native exit code." }
+        return @(ConvertFrom-WixExtensionInventory -ExitCode $exitCode -Output $output)
+    } catch {
+        $failure = [InvalidOperationException]::new("WiX extension inventory failed: $($_.Exception.Message)", $_.Exception)
+        $failure.Data["NativeExitCode"] = $exitCode
+        $failure.Data["Stage"] = "WiX extension inventory"
+        $failure.Data["FailureClassification"] = if ($null -eq $exitCode) { "packaging-native-launch-failure" } elseif ($Install) { "explicit-packaging-installation-failure" } else { "packaging-prerequisite-inspection-failure" }
+        $failure.Data["NativeOutput"] = $output -join [Environment]::NewLine
+        throw $failure
     }
-    if ($exitCode -eq 2 -and $output.Count -eq 0) {
-        return @()
-    }
-    throw "WiX global extension inventory failed with exit code $exitCode.`n$($output -join "`n")"
 }
 
 function Find-Jpackage25 {
@@ -160,91 +189,66 @@ try {
     if (-not $IsWindows) {
         throw "Windows packaging prerequisites can only be prepared on Windows."
     }
-    if ($PSVersionTable.PSVersion.Major -lt 7) {
-        throw "PowerShell 7 or newer is required."
+    if ($PSVersionTable.PSVersion -lt [version]"7.2") {
+        throw "PowerShell 7.2 or newer is required for redirected native stderr handling."
     }
 
     Write-Host "GeoCeDG focused Windows packaging-prerequisite setup"
     Write-Host "Mode: $(if ($Install) { 'INSTALL' } else { 'INSPECT ONLY' })"
     Write-Host "Repository verification is not executed by this action."
 
-    $dotnet = Resolve-DotNet
-    $compatibleSdk = Get-CompatibleDotNetSdk -DotNetPath $dotnet
-    $wixVersion = Get-WixGlobalToolVersion -DotNetPath $dotnet
-    $wix = Resolve-Wix
-    $extensions = Get-WixExtensions -WixPath $wix
-    $jpackage = Find-Jpackage25
-    $winget = Get-Command winget -ErrorAction SilentlyContinue
-    $plan = New-PackagingPrerequisitePlan `
-        -DotNetSdkCompatible ($null -ne $compatibleSdk) `
-        -WixGlobalToolVersion $wixVersion `
-        -InstalledWixExtensions $extensions `
-        -JpackageVersion $(if ($null -eq $jpackage) { "" } else { $jpackage.Version }) `
-        -WingetAvailable ($null -ne $winget)
-
-    if ($Install -and $plan.DotNetAction -eq "INSTALL_DOTNET_8") {
-        Write-Host "Installing the repository-approved .NET 8 SDK through WinGet."
-        [void](Invoke-Native -FilePath $winget.Source -ArgumentList @(
-                "install", "--id", "Microsoft.DotNet.SDK.8", "--exact",
-                "--accept-package-agreements", "--accept-source-agreements",
-                "--disable-interactivity") -Description "Install .NET 8 SDK")
-        Add-ProcessPath -Path (Join-Path $env:ProgramFiles "dotnet")
-        $dotnet = Resolve-DotNet
-        $compatibleSdk = Get-CompatibleDotNetSdk -DotNetPath $dotnet
-        if ($null -eq $compatibleSdk) {
-            throw ".NET installation completed but no compatible SDK is visible. Start a new PowerShell session and rerun."
-        }
-    } elseif ($Install -and $plan.DotNetAction -eq "MANUAL_DOTNET_REQUIRED") {
-        throw "A compatible .NET SDK is missing and WinGet is unavailable. Install manually: winget install --id Microsoft.DotNet.SDK.8 --exact"
-    }
-
-    if ($Install -and $plan.WixAction -ne "NONE") {
-        if ($null -eq $compatibleSdk) {
-            throw "WiX cannot be installed until a compatible .NET SDK is available."
-        }
-        $verb = if ($plan.WixAction -eq "INSTALL_WIX") { "install" } else { "update" }
-        Write-Host "$verb WiX $ExpectedWix as a pinned global .NET tool."
-        [void](Invoke-Native -FilePath $dotnet -ArgumentList @(
-                "tool", $verb, "--global", "wix", "--version", $ExpectedWix,
-                "--add-source", "https://api.nuget.org/v3/index.json",
-                "--ignore-failed-sources") -Description "$verb WiX $ExpectedWix")
-        $globalToolPath = Join-Path (
-            [Environment]::GetFolderPath([Environment+SpecialFolder]::UserProfile)) `
-            ".dotnet\tools"
-        Add-ProcessPath -Path $globalToolPath
-        $wix = Resolve-Wix
-        $wixVersion = Get-WixGlobalToolVersion -DotNetPath $dotnet
-    }
-
-    if ($Install -and $plan.MissingWixExtensions.Count -gt 0) {
-        if ([string]::IsNullOrWhiteSpace($wix)) {
-            throw "WiX is unavailable, so its pinned extensions cannot be installed."
-        }
-        Push-Location -LiteralPath $WixConfigRoot
-        try {
-            foreach ($extension in $plan.MissingWixExtensions) {
-                Write-Host "Installing $extension/$ExpectedWix."
-                [void](Invoke-Native -FilePath $wix -ArgumentList @(
-                        "extension", "add", "-g", "$extension/$ExpectedWix") `
-                    -Description "Install $extension $ExpectedWix")
+    $inventory = {
+        Get-PackagingPrerequisiteInventory -Probe {
+            param($Name, $Value)
+            switch ($Name) {
+                "DotNet" { Resolve-DotNet }
+                "CompatibleSdk" { Get-CompatibleDotNetSdk -DotNetPath $Value }
+                "WixVersion" { Get-WixGlobalToolVersion -DotNetPath $Value }
+                "WixPath" { Resolve-Wix }
+                "WixExtensions" { Get-WixExtensions -WixPath $Value }
+                "Jpackage" { Find-Jpackage25 }
+                "Winget" { Get-Command winget -ErrorAction SilentlyContinue }
+                default { throw "Unknown packaging inventory action: $Name" }
             }
-        } finally {
-            Pop-Location
         }
     }
-
-    $dotnet = Resolve-DotNet
-    $compatibleSdk = Get-CompatibleDotNetSdk -DotNetPath $dotnet
-    $wixVersion = Get-WixGlobalToolVersion -DotNetPath $dotnet
-    $wix = Resolve-Wix
-    $extensions = Get-WixExtensions -WixPath $wix
-    $jpackage = Find-Jpackage25
-    $finalPlan = New-PackagingPrerequisitePlan `
-        -DotNetSdkCompatible ($null -ne $compatibleSdk) `
-        -WixGlobalToolVersion $wixVersion `
-        -InstalledWixExtensions $extensions `
-        -JpackageVersion $(if ($null -eq $jpackage) { "" } else { $jpackage.Version }) `
-        -WingetAvailable ($null -ne $winget)
+    $apply = {
+        param($Action, $State, $Value)
+        switch ($Action) {
+            "InstallDotNetSdk" {
+                Write-Host "Installing the repository-approved .NET 8 SDK through WinGet."
+                [void](Invoke-Native -FilePath $State.Winget.Source -ArgumentList @("install", "--id", "Microsoft.DotNet.SDK.8", "--exact", "--accept-package-agreements", "--accept-source-agreements", "--disable-interactivity") -Description "Install .NET 8 SDK")
+                Add-ProcessPath -Path (Join-Path $env:ProgramFiles "dotnet")
+            }
+            { $_ -in @("InstallWix", "UpdateWix") } {
+                $verb = if ($Action -eq "InstallWix") { "install" } else { "update" }
+                Write-Host "$verb WiX $ExpectedWix as a pinned global .NET tool."
+                [void](Invoke-Native -FilePath $State.DotNet -ArgumentList @("tool", $verb, "--global", "wix", "--version", $ExpectedWix, "--add-source", "https://api.nuget.org/v3/index.json", "--ignore-failed-sources") -Description "$verb WiX $ExpectedWix")
+                $globalToolPath = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::UserProfile)) ".dotnet/tools"
+                Add-ProcessPath -Path $globalToolPath
+            }
+            "AddWixExtension" {
+                Push-Location -LiteralPath $WixConfigRoot
+                try {
+                    Write-Host "Installing $Value/$ExpectedWix."
+                    [void](Invoke-Native -FilePath $State.WixPath -ArgumentList @("extension", "add", "-g", "$Value/$ExpectedWix") -Description "Install $Value $ExpectedWix")
+                } finally { Pop-Location }
+            }
+            default { throw "Unknown packaging installation action: $Action" }
+        }
+    }
+    $result = Invoke-PackagingPrerequisiteWorkflow -Install:$Install -Inventory $inventory -Apply $apply -ExpectedWixVersion $ExpectedWix -RequiredWixExtensions $RequiredWixExtensions
+    $state = $result.Inventory
+    $dotnet = $state.DotNet
+    $compatibleSdk = $state.CompatibleSdk
+    $wixVersion = $state.WixGlobalToolVersion
+    $wix = $state.WixPath
+    $extensions = $state.Extensions
+    $jpackage = $state.Jpackage
+    $finalPlan = $result.Plan
+    if ($state.WixInventoryDeferred) {
+        Write-Host "WiX inventory deferred: a compatible .NET SDK is not available; no SDK-dependent command was attempted."
+    }
 
     Write-Host "`n==> Packaging prerequisite summary"
     Write-Host ".NET SDK 6+: $(if ($null -eq $compatibleSdk) { 'not detected' } else { $compatibleSdk })"
@@ -275,6 +279,7 @@ try {
     exit 0
 } catch {
     Write-Host "FAIL"
-    Write-Error $_.Exception.Message
-    exit 1
+    # Preserve the original exception/Data across an in-process bootstrap caller.
+    # An uncaught terminating error still makes standalone -File invocation fail.
+    throw
 }

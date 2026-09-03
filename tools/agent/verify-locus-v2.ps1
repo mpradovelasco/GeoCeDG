@@ -3,11 +3,17 @@ param(
     [switch]$SkipBuild,
     [switch]$AllowToolchainDownload,
     [switch]$KeepBuildOutputs,
+    [string]$BuildEvidencePath,
+    [switch]$IncrementalBuild,
     [string]$LogDirectory = (Join-Path ([IO.Path]::GetTempPath()) "geocedg-verify-locus-v2")
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+
+Import-Module (Join-Path $PSScriptRoot "verification-runtime.psm1")
+Assert-GeoCeDGChildVerificationMode -SkipBuild:$SkipBuild `
+    -BuildEvidencePath $BuildEvidencePath -IncrementalBuild:$IncrementalBuild
 
 $RepositoryRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot "..\..")).Path
 $RootGradle = Join-Path $RepositoryRoot "gradlew.bat"
@@ -157,6 +163,17 @@ function Invoke-LoggedGradle {
     )
 
     $logPath = Join-Path $LogDirectory $LogName
+    if (-not [string]::IsNullOrWhiteSpace($BuildEvidencePath)) {
+        Confirm-GeoCeDGBuildEvidence -EvidencePath $BuildEvidencePath `
+            -RepositoryRoot $RepositoryRoot -WorkingDirectory $RepositoryRoot `
+            -Arguments $Arguments -LogPath $logPath `
+            -Description $Description -AllowToolchainDownload:$AllowToolchainDownload
+        return
+    }
+    if ($IncrementalBuild) {
+        $Arguments = @(ConvertTo-GeoCeDGIncrementalGradleArguments `
+            -Arguments $Arguments -KeepBuildOutputs:$KeepBuildOutputs)
+    }
     Write-Host "`n==> $Description"
     Write-Host "    log: $logPath"
     $exitCode = -1
@@ -202,9 +219,12 @@ try {
     $InitialStatus = Get-RepositoryStatusText -RepositoryRoot $RepositoryRoot
     $g9u0FrozenPublicSurface = Test-G9U0FrozenPublicSurface
     if (-not $SkipBuild) {
-        $GeneratedState = New-RepositoryGeneratedStateSnapshot `
-            -RepositoryRoot $RepositoryRoot -DirectoryNames $GeneratedDirectoryNames `
-            -Label "verify-locus-v2"
+        if ([string]::IsNullOrWhiteSpace($BuildEvidencePath)) {
+            $GeneratedState = New-RepositoryGeneratedStateSnapshot `
+                -RepositoryRoot $RepositoryRoot -DirectoryNames $GeneratedDirectoryNames `
+                -Label "verify-locus-v2" `
+                -KeepCurrentOutputs:$KeepBuildOutputs
+        }
     }
 
     $requiredFiles = @(

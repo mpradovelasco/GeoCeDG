@@ -1,6 +1,7 @@
 [CmdletBinding()]
 param(
-    [switch]$Quiet
+    [switch]$Quiet,
+    [string]$LogDirectory = (Join-Path (Join-Path ([IO.Path]::GetTempPath()) "geocedg-operational") ([guid]::NewGuid().ToString("N")))
 )
 
 Set-StrictMode -Version Latest
@@ -14,6 +15,8 @@ $ExpectedTag = "geogebra-baseline-5.4.928.0"
 $RepositoryStateVerifier = Join-Path $PSScriptRoot "verify-repository-state.ps1"
 $BookOperationsVerifier = Join-Path $PSScriptRoot `
     "verify-book-operations.ps1"
+$VerificationInfrastructureVerifier = Join-Path $PSScriptRoot `
+    "verify-verification-infrastructure.ps1"
 . (Join-Path $PSScriptRoot "upstream-boundary.ps1")
 
 function Write-Step {
@@ -135,6 +138,12 @@ try {
         "ai-shell/prompts/refactor.md",
         "ai-shell/prompts/architect.md",
         "docs/adr/0002-g1-operational-authority.md",
+        "docs/adr/0020-verification-levels-and-current-run-evidence.md",
+        "geocedg/specs/operations/verification-levels.md",
+        "tools/agent/verification-runtime.psm1",
+        "tools/agent/verify-verification-infrastructure.ps1",
+        "tools/agent/tests/verification-runtime.Tests.ps1",
+        "tools/agent/tests/generated-state.tests.ps1",
         "docs/adr/0001-geocedg-product-profile.md",
         "docs/adr/0003-controlled-legacy-integration.md",
         "docs/adr/0004-standalone-windows-packaging.md",
@@ -263,6 +272,12 @@ try {
     & $RepositoryStateVerifier -Quiet:$Quiet
     Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
         -Message "Repository state contracts failed with exit code $LASTEXITCODE."
+
+    Write-Step "Verification infrastructure (isolated fake-first fixtures only)"
+    & $VerificationInfrastructureVerifier -Quiet:$Quiet `
+        -LogDirectory (Join-Path ([IO.Path]::GetFullPath($LogDirectory)) "verification-infrastructure")
+    Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
+        -Message "Verification infrastructure fixtures failed with exit code $LASTEXITCODE."
 
     Write-Step "BOOK-P0-post book operations (disposable fixtures only)"
     & $BookOperationsVerifier -Quiet:$Quiet
@@ -571,6 +586,49 @@ try {
         Join-Path $RepositoryRoot ".github\workflows\verify.yml")
     Assert-Condition -Condition $workflow.Contains(".\tools\agent\verify.ps1") `
         -Message "CI does not invoke tools/agent/verify.ps1."
+    $workflowLines = $workflow -split "`r?`n"
+    $ciCommands = [Collections.Generic.List[string]]::new()
+    for ($index = 0; $index -lt $workflowLines.Count; $index++) {
+        if ($workflowLines[$index] -match '^\s*\.\\tools\\agent\\verify\.ps1(?:\s|$)') {
+            $parts = [Collections.Generic.List[string]]::new()
+            do {
+                $line = $workflowLines[$index].Trim()
+                $parts.Add($line)
+                $continued = $line.EndsWith([string][char]96, [StringComparison]::Ordinal)
+                if ($continued) { $index++ }
+            } while ($continued -and $index -lt $workflowLines.Count)
+            $ciCommands.Add(($parts -join "`n"))
+        }
+    }
+    Assert-Condition -Condition ($ciCommands.Count -eq 1) `
+        -Message "CI must have one inspectable canonical authority command."
+    $ciTokens = $null
+    $ciErrors = $null
+    $ciAst = [Management.Automation.Language.Parser]::ParseInput(
+        $ciCommands[0], [ref]$ciTokens, [ref]$ciErrors)
+    Assert-Condition -Condition ($ciErrors.Count -eq 0) -Message "CI authority command is not valid PowerShell."
+    $ciStatements = @($ciAst.EndBlock.Statements)
+    Assert-Condition -Condition ($ciStatements.Count -eq 1 -and
+        $ciStatements[0] -is [Management.Automation.Language.PipelineAst] -and
+        $ciStatements[0].PipelineElements.Count -eq 1 -and
+        $ciStatements[0].PipelineElements[0] -is [Management.Automation.Language.CommandAst]) `
+        -Message "CI authority must be a single direct verifier command."
+    $ciCommand = $ciStatements[0].PipelineElements[0]
+    $allCiCommands = @($ciAst.FindAll({ param($node)
+        $node -is [Management.Automation.Language.CommandAst]
+    }, $true))
+    Assert-Condition -Condition ($allCiCommands.Count -eq 1 -and
+        $ciCommand.GetCommandName() -eq '.\tools\agent\verify.ps1') `
+        -Message "CI coverage must be bound to the canonical verifier, without nested commands."
+    $ciElements = @($ciCommand.CommandElements)
+    $ciLevel = @($ciElements | Where-Object {
+        $_ -is [Management.Automation.Language.CommandParameterAst] -and $_.ParameterName -eq "Level"
+    })
+    Assert-Condition -Condition ($ciLevel.Count -eq 1) -Message "CI must explicitly select -Level FULL."
+    $levelIndex = [array]::IndexOf(@($ciElements), $ciLevel[0])
+    Assert-Condition -Condition ($levelIndex + 1 -lt $ciElements.Count -and
+        $ciElements[$levelIndex + 1] -is [Management.Automation.Language.StringConstantExpressionAst] -and
+        $ciElements[$levelIndex + 1].Value -ceq "FULL") -Message "CI authority must use literal FULL coverage."
     Assert-Condition -Condition $workflow.Contains("fetch-depth: 0") `
         -Message "CI must fetch baseline ancestry and tags."
     $javaVersionMatch = [regex]::Match(
@@ -607,6 +665,7 @@ try {
             "UPSTREAM.md",
             "docs/adr/0001-geocedg-product-profile.md",
             "docs/adr/0002-g1-operational-authority.md",
+            "docs/adr/0020-verification-levels-and-current-run-evidence.md",
             "docs/adr/0003-controlled-legacy-integration.md",
             "docs/adr/0004-standalone-windows-packaging.md",
             "docs/adr/0005-neutral-2d-geometry-export.md",

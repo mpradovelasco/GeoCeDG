@@ -1,5 +1,13 @@
+#requires -Version 7.2
 [CmdletBinding()]
 param(
+    [ValidateSet("DEV", "PHASE", "COMPOSED", "FULL")]
+    [string]$Level = "COMPOSED",
+    [ValidateSet("shared", "desktop")] [string]$Module,
+    [string[]]$TestFilter = @(),
+    [string]$Phase,
+    [switch]$IndependentBuilds,
+    [switch]$CleanBuild,
     [switch]$FullTests,
     [switch]$LaunchDesktop,
     [switch]$SkipBuild,
@@ -67,8 +75,26 @@ $G9U0R6SemanticLocusPointInteractionVerifier = Join-Path $PSScriptRoot `
     "verify-g9u0-r6-semantic-locus-point-interaction-support.ps1"
 $BenchmarkRunner = Join-Path $RepositoryRoot "tools\benchmark\run.ps1"
 $InitialStatus = $null
+$repositoryState = $null
+$CanonicalEvidence = $null
+$GeneratedState = $null
+$VerificationFailure = $null
+$CleanupFailures = [Collections.Generic.List[string]]::new()
+$VerificationStarted = [datetime]::UtcNow
+$VerificationTimer = [Diagnostics.Stopwatch]::StartNew()
+$EffectiveLevel = $Level.ToUpperInvariant()
+$DevEvidence = $null
 
 . (Join-Path $PSScriptRoot "repository-state.ps1")
+. (Join-Path $PSScriptRoot "repository-generated-state.ps1")
+Import-Module (Join-Path $PSScriptRoot "verification-runtime.psm1")
+
+function Add-CurrentBuildEvidence {
+    param([Parameter(Mandatory)] [hashtable]$Parameters)
+    if ($null -ne $CanonicalEvidence) {
+        $Parameters.BuildEvidencePath = $CanonicalEvidence.EvidencePath
+    }
+}
 
 function Assert-LastScriptSuccess {
     param([Parameter(Mandatory)] [string]$Description)
@@ -79,6 +105,57 @@ function Assert-LastScriptSuccess {
 }
 
 try {
+    if ($FullTests) {
+        if ($PSBoundParameters.ContainsKey("Level") -and $EffectiveLevel -ne "FULL") {
+            throw "FullTests selects FULL and cannot be combined with a different explicit Level."
+        }
+        $EffectiveLevel = "FULL"
+    }
+    if ($EffectiveLevel -eq "DEV") {
+        if ([string]::IsNullOrWhiteSpace($Module) -or $TestFilter.Count -eq 0 -or
+                @($TestFilter | Where-Object { [string]::IsNullOrWhiteSpace($_) }).Count -gt 0) {
+            throw "DEV requires explicit -Module and -TestFilter selections."
+        }
+    } elseif ($PSBoundParameters.ContainsKey("Module") -or $PSBoundParameters.ContainsKey("TestFilter")) {
+        throw "Module and TestFilter are DEV-only; PHASE/COMPOSED/FULL retain their normative scope."
+    }
+    if ($EffectiveLevel -eq "PHASE") {
+        if ([string]::IsNullOrWhiteSpace($Phase)) { throw "PHASE requires an explicit -Phase identifier." }
+        $phaseDefinition = Get-GeoCeDGPhaseDefinition -Phase $Phase
+    } elseif ($PSBoundParameters.ContainsKey("Phase")) {
+        throw "Phase is valid only with -Level PHASE."
+    }
+    if ($SkipBuild -and ($EffectiveLevel -in @("DEV", "FULL") -or
+            $CleanBuild -or $IndependentBuilds -or $LaunchDesktop)) {
+        throw "SkipBuild is static-only and cannot satisfy the requested real-execution mode."
+    }
+    if ($IndependentBuilds -and $EffectiveLevel -notin @("COMPOSED", "FULL")) {
+        throw "IndependentBuilds is a COMPOSED/FULL diagnostic fallback."
+    }
+    if ($CleanBuild -and ($EffectiveLevel -ne "FULL" -or $IndependentBuilds)) {
+        throw "CleanBuild requires canonical FULL; it clears generated outputs, not dependency caches."
+    }
+    if ($EffectiveLevel -in @("DEV", "PHASE") -and
+            ($LaunchDesktop -or $RunBenchmarks -or $VerifyPackagingArtifacts -or
+                $PSBoundParameters.ContainsKey("BenchmarkOutputPath") -or
+                $PSBoundParameters.ContainsKey("PackagingArtifactRoot"))) {
+        throw "Interactive, packaging and global benchmark options require COMPOSED or FULL."
+    }
+    $LogDirectory = [IO.Path]::GetFullPath($LogDirectory)
+    Assert-VerificationLogDirectoryOutsideGeneratedState `
+        -RepositoryRoot $RepositoryRoot -LogDirectory $LogDirectory
+    $rootPrefix = $RepositoryRoot.TrimEnd('/', '\') + [IO.Path]::DirectorySeparatorChar
+    if ($LogDirectory.Equals($RepositoryRoot, [StringComparison]::OrdinalIgnoreCase)) {
+        throw "The repository root cannot be the generated verification log directory."
+    }
+    if ($LogDirectory.StartsWith($rootPrefix, [StringComparison]::OrdinalIgnoreCase)) {
+        $relativeLog = [IO.Path]::GetRelativePath($RepositoryRoot, $LogDirectory).Replace('\', '/')
+        & git -C $RepositoryRoot check-ignore --quiet -- "$relativeLog/verification-result.json"
+        if ($LASTEXITCODE -ne 0) {
+            throw "In-repository verification logs must be ignored generated artifacts: $relativeLog"
+        }
+    }
+    [void](New-Item -ItemType Directory -Path $LogDirectory -Force)
     $InitialStatus = (& git -C $RepositoryRoot status --porcelain=v1 `
         --untracked-files=all) -join "`n"
     if ($LASTEXITCODE -ne 0) {
@@ -91,14 +168,52 @@ try {
     Write-Host "  Branch: $($repositoryState.Branch)"
     Write-Host "  Commit: $($repositoryState.Commit)"
     Write-Host "  Latest included phase: $($repositoryState.LatestIncludedPhase)"
+    Write-Host "  Verification level: $EffectiveLevel"
+    if ($SkipBuild) { Write-Host "  STATIC ONLY: no runtime acceptance is claimed." }
+
+    if ($EffectiveLevel -eq "DEV") {
+        $GeneratedState = New-RepositoryGeneratedStateSnapshot `
+            -RepositoryRoot $RepositoryRoot -DirectoryNames @("build", ".gradle", ".kotlin") `
+            -Label "verify-dev" -KeepCurrentOutputs:$KeepBuildOutputs
+        $DevEvidence = Invoke-GeoCeDGDevVerification -RepositoryRoot $RepositoryRoot `
+            -Module $Module -TestFilter $TestFilter -LogDirectory (Join-Path $LogDirectory "dev") `
+            -AllowToolchainDownload:$AllowToolchainDownload -KeepBuildOutputs:$KeepBuildOutputs
+    } elseif ($EffectiveLevel -eq "PHASE") {
+        $phaseParameters = @{
+            LogDirectory = Join-Path $LogDirectory ("phase-" + $phaseDefinition.Phase.ToLowerInvariant())
+            KeepBuildOutputs = $KeepBuildOutputs
+            AllowToolchainDownload = $AllowToolchainDownload
+        }
+        if ($SkipBuild) { $phaseParameters.SkipBuild = $true }
+        else { $phaseParameters.IncrementalBuild = $true }
+        Write-Host "PHASE authority: tools/agent/$($phaseDefinition.Verifier)"
+        & (Join-Path $PSScriptRoot $phaseDefinition.Verifier) @phaseParameters
+        Assert-LastScriptSuccess -Description "PHASE $($phaseDefinition.Phase)"
+    } else {
 
     Write-Host "`n==> GeoCeDG operational contracts"
-    & $OperationalVerifier
+    & $OperationalVerifier -LogDirectory (Join-Path $LogDirectory "operational")
     Assert-LastScriptSuccess -Description "GeoCeDG operational contracts"
 
     Write-Host "`n==> Windows workstation operational contracts"
     & $WorkstationVerifier
     Assert-LastScriptSuccess -Description "Windows workstation operational contracts"
+
+    if (-not $SkipBuild -and -not $IndependentBuilds) {
+        # One transaction owns the generated tree for the two canonical module
+        # runs and every live phase assertion; consumers create no nested backup.
+        $GeneratedState = New-RepositoryGeneratedStateSnapshot `
+            -RepositoryRoot $RepositoryRoot -DirectoryNames @("build", ".gradle", ".kotlin") `
+            -Label "verify-canonical" -KeepCurrentOutputs:$KeepBuildOutputs
+        if ($CleanBuild) {
+            Clear-RepositoryGeneratedOutputs -RepositoryRoot $RepositoryRoot `
+                -DirectoryNames @("build", ".gradle", ".kotlin")
+        }
+        $CanonicalEvidence = Invoke-GeoCeDGCanonicalBuild -RepositoryRoot $RepositoryRoot `
+            -Level $EffectiveLevel -LogDirectory (Join-Path $LogDirectory "canonical-build") `
+            -AllowToolchainDownload:$AllowToolchainDownload -KeepBuildOutputs:$KeepBuildOutputs `
+            -RebuildDependencies:$CleanBuild
+    }
 
     Write-Host "`n==> Controlled legacy CeDG integration"
     & $LegacyVerifier
@@ -117,6 +232,7 @@ try {
     if ($KeepBuildOutputs) {
         $dxfParameters.KeepBuildOutputs = $true
     }
+    Add-CurrentBuildEvidence -Parameters $dxfParameters
     & $DxfVerifier @dxfParameters
     Assert-LastScriptSuccess -Description "Native 2D geometry and DXF export"
 
@@ -133,6 +249,7 @@ try {
     if ($KeepBuildOutputs) {
         $locusV2Parameters.KeepBuildOutputs = $true
     }
+    Add-CurrentBuildEvidence -Parameters $locusV2Parameters
     & $LocusV2Verifier @locusV2Parameters
     Assert-LastScriptSuccess -Description "G6 Locus V2"
 
@@ -151,6 +268,7 @@ try {
         if ($KeepBuildOutputs) {
             $g7aMetricParameters.KeepBuildOutputs = $true
         }
+        Add-CurrentBuildEvidence -Parameters $g7aMetricParameters
         & $G7AMetricVerifier @g7aMetricParameters
         Assert-LastScriptSuccess `
             -Description "G7A Locus V2 metric characterization"
@@ -169,6 +287,7 @@ try {
         if ($KeepBuildOutputs) {
             $g7bMetricParameters.KeepBuildOutputs = $true
         }
+        Add-CurrentBuildEvidence -Parameters $g7bMetricParameters
         & $G7BMetricVerifier @g7bMetricParameters
         Assert-LastScriptSuccess -Description "G7B native Locus V2 metric kernel"
     }
@@ -189,6 +308,7 @@ try {
         if ($KeepBuildOutputs) {
             $g8aIntersectionParameters.KeepBuildOutputs = $true
         }
+        Add-CurrentBuildEvidence -Parameters $g8aIntersectionParameters
         & $G8AIntersectionVerifier @g8aIntersectionParameters
         Assert-LastScriptSuccess `
             -Description "G8A Locus V2 intersection characterization and closeout"
@@ -207,6 +327,7 @@ try {
         if ($KeepBuildOutputs) {
             $g8bIntersectionParameters.KeepBuildOutputs = $true
         }
+        Add-CurrentBuildEvidence -Parameters $g8bIntersectionParameters
         & $G8BIntersectionVerifier @g8bIntersectionParameters
         Assert-LastScriptSuccess `
             -Description "G8B native Locus V2 intersection kernel"
@@ -225,6 +346,7 @@ try {
         if ($KeepBuildOutputs) {
             $g8cDesignParameters.KeepBuildOutputs = $true
         }
+        Add-CurrentBuildEvidence -Parameters $g8cDesignParameters
         & $G8CIntersectionDesignVerifier @g8cDesignParameters
         Assert-LastScriptSuccess `
             -Description "G8C extended Locus V2 intersection design"
@@ -246,6 +368,7 @@ try {
             if ($KeepBuildOutputs) {
                 $g8c1IntersectionParameters.KeepBuildOutputs = $true
             }
+            Add-CurrentBuildEvidence -Parameters $g8c1IntersectionParameters
             & $G8C1IntersectionVerifier @g8c1IntersectionParameters
             Assert-LastScriptSuccess `
                 -Description "G8C1 extended one-parameter intersection kernel"
@@ -270,6 +393,7 @@ try {
             if ($KeepBuildOutputs) {
                 $g8c2IntersectionParameters.KeepBuildOutputs = $true
             }
+            Add-CurrentBuildEvidence -Parameters $g8c2IntersectionParameters
             & $G8C2IntersectionVerifier @g8c2IntersectionParameters
             Assert-LastScriptSuccess `
                 -Description "G8C2 Locus V2 x Locus V2 intersection kernel"
@@ -330,6 +454,7 @@ try {
         if ($KeepBuildOutputs) {
             $g9a1Parameters.KeepBuildOutputs = $true
         }
+        Add-CurrentBuildEvidence -Parameters $g9a1Parameters
         & $G9A1SpatialIdentityVerifier @g9a1Parameters
         Assert-LastScriptSuccess `
             -Description "G9A1 durable spatial identity and persistence foundation"
@@ -350,6 +475,7 @@ try {
         if ($KeepBuildOutputs) {
             $g9a2Parameters.KeepBuildOutputs = $true
         }
+        Add-CurrentBuildEvidence -Parameters $g9a2Parameters
         & $G9A2SpatialPointVerifier @g9a2Parameters
         Assert-LastScriptSuccess `
             -Description "G9A2 spatial semantic point pilot"
@@ -396,6 +522,7 @@ try {
         if ($KeepBuildOutputs) {
             $g9a3Parameters.KeepBuildOutputs = $true
         }
+        Add-CurrentBuildEvidence -Parameters $g9a3Parameters
         & $G9A3SpatialLifecycleVerifier @g9a3Parameters
         Assert-LastScriptSuccess `
             -Description "G9A3 spatial lifecycle and migration hardening"
@@ -444,6 +571,7 @@ try {
             if ($KeepBuildOutputs) {
                 $g9u0Parameters.KeepBuildOutputs = $true
             }
+            Add-CurrentBuildEvidence -Parameters $g9u0Parameters
             & $G9U0LocusPublicSurfaceVerifier @g9u0Parameters
             Assert-LastScriptSuccess `
                 -Description "G9U0 experimental Locus V2 public surface"
@@ -490,6 +618,7 @@ try {
         if ($KeepBuildOutputs) {
             $g9u0R1Parameters.KeepBuildOutputs = $true
         }
+        Add-CurrentBuildEvidence -Parameters $g9u0R1Parameters
         & $G9U0R1PublicCreationLifecycleVerifier @g9u0R1Parameters
         Assert-LastScriptSuccess `
             -Description "G9U0-R1 public creation and Desktop lifecycle hardening"
@@ -546,6 +675,7 @@ try {
             if ($KeepBuildOutputs) {
                 $g9x1Parameters.KeepBuildOutputs = $true
             }
+            Add-CurrentBuildEvidence -Parameters $g9x1Parameters
             & $G9X1ExtendedDxfVerifier @g9x1Parameters
             Assert-LastScriptSuccess `
                 -Description "G9X1 extended exact/approximate DXF export"
@@ -657,6 +787,7 @@ try {
                         [IO.Path]::GetFullPath($PackagingArtifactRoot)
                 }
             }
+            Add-CurrentBuildEvidence -Parameters $g9u0R2Parameters
             & $G9U0R2ProductRefinementVerifier @g9u0R2Parameters
             Assert-LastScriptSuccess `
                 -Description "G9U0-R2 product/document refinement"
@@ -761,6 +892,7 @@ try {
         if ($KeepBuildOutputs) {
             $g9u0R3Parameters.KeepBuildOutputs = $true
         }
+        Add-CurrentBuildEvidence -Parameters $g9u0R3Parameters
         & $G9U0R3PublicLocusUiVerifier @g9u0R3Parameters
         Assert-LastScriptSuccess `
             -Description "G9U0-R3 public Locus V2 UI exposure hardening"
@@ -810,6 +942,7 @@ try {
         if ($KeepBuildOutputs) {
             $g9u0R4Parameters.KeepBuildOutputs = $true
         }
+        Add-CurrentBuildEvidence -Parameters $g9u0R4Parameters
         & $G9U0R4IntersectionAdmissibilityVerifier @g9u0R4Parameters
         Assert-LastScriptSuccess `
             -Description "G9U0-R4 public Locus V2 intersection admissibility"
@@ -859,6 +992,7 @@ try {
         if ($KeepBuildOutputs) {
             $g9u0R5Parameters.KeepBuildOutputs = $true
         }
+        Add-CurrentBuildEvidence -Parameters $g9u0R5Parameters
         & $G9U0R5SimilarityTransformationsVerifier @g9u0R5Parameters
         Assert-LastScriptSuccess `
             -Description "G9U0-R5 Locus V2 similarity transformations"
@@ -914,6 +1048,7 @@ try {
         if ($KeepBuildOutputs) {
             $g9s1Parameters.KeepBuildOutputs = $true
         }
+        Add-CurrentBuildEvidence -Parameters $g9s1Parameters
         & $G9S1SemanticSplineVerifier @g9s1Parameters
         Assert-LastScriptSuccess `
             -Description "G9S1 semantic Spline V2 capability"
@@ -965,6 +1100,7 @@ try {
         if ($KeepBuildOutputs) {
             $g9u0R6Parameters.KeepBuildOutputs = $true
         }
+        Add-CurrentBuildEvidence -Parameters $g9u0R6Parameters
         & $G9U0R6SemanticLocusPointInteractionVerifier @g9u0R6Parameters
         Assert-LastScriptSuccess `
             -Description "G9U0-R6 semantic Locus point interaction support"
@@ -986,7 +1122,7 @@ try {
     $baselineParameters = @{
         LogDirectory = [IO.Path]::GetFullPath($LogDirectory)
     }
-    if ($FullTests) {
+    if ($EffectiveLevel -eq "FULL") {
         $baselineParameters.FullTests = $true
     }
     if ($LaunchDesktop) {
@@ -1002,6 +1138,7 @@ try {
         $baselineParameters.KeepBuildOutputs = $true
     }
     Write-Host "`n==> Pinned GeoGebra baseline"
+    Add-CurrentBuildEvidence -Parameters $baselineParameters
     & $BaselineVerifier @baselineParameters
     Assert-LastScriptSuccess -Description "Pinned GeoGebra baseline"
 
@@ -1018,6 +1155,7 @@ try {
         $frontendParameters.KeepBuildOutputs = $true
     }
     Write-Host "`n==> GeoCeDG frontend profile"
+    Add-CurrentBuildEvidence -Parameters $frontendParameters
     & $FrontendVerifier @frontendParameters
     Assert-LastScriptSuccess -Description "GeoCeDG frontend profile"
 
@@ -1033,6 +1171,7 @@ try {
         & $BenchmarkRunner @benchmarkParameters
         Assert-LastScriptSuccess -Description "Informational operational benchmark"
     }
+    }
 
     & git -C $RepositoryRoot diff --check
     if ($LASTEXITCODE -ne 0) {
@@ -1043,20 +1182,85 @@ try {
         throw "git diff --cached --check failed with exit code $LASTEXITCODE."
     }
 
-    $finalStatus = (& git -C $RepositoryRoot status --porcelain=v1 `
-        --untracked-files=all) -join "`n"
-    if ($LASTEXITCODE -ne 0) {
-        throw "Unable to read final repository status."
-    }
-    if ($finalStatus -ne $InitialStatus) {
-        throw "Repository status changed during verification.`nBefore:`n$InitialStatus`nAfter:`n$finalStatus"
-    }
-
-    Write-Host "`nAll GeoCeDG verification gates passed."
-    Write-Host "Logs: $([IO.Path]::GetFullPath($LogDirectory))"
 } catch {
-    Write-Error $_.Exception.Message
-    exit 1
+    $VerificationFailure = $_.Exception.Message
+} finally {
+    if ($null -ne $CanonicalEvidence) {
+        try { Close-GeoCeDGBuildEvidence -OwnerToken $CanonicalEvidence.OwnerToken }
+        catch { $CleanupFailures.Add("Evidence lifecycle: $($_.Exception.Message)") }
+    }
+    if ($null -ne $GeneratedState) {
+        try {
+            Restore-RepositoryGeneratedStateSnapshot -Snapshot $GeneratedState `
+                -KeepCurrentOutputs:$KeepBuildOutputs -Description "$EffectiveLevel build output"
+        } catch { $CleanupFailures.Add($_.Exception.Message) }
+    }
+    if ($null -ne $InitialStatus) {
+        try {
+            $finalStatus = Get-RepositoryStatusText -RepositoryRoot $RepositoryRoot
+            if ($finalStatus -ne $InitialStatus) {
+                throw "Repository status changed during verification.`nBefore:`n$InitialStatus`nAfter:`n$finalStatus"
+            }
+        } catch { $CleanupFailures.Add($_.Exception.Message) }
+    }
+    $VerificationTimer.Stop()
 }
 
+if ($CleanupFailures.Count -gt 0) {
+    $VerificationFailure = (@($VerificationFailure) + @($CleanupFailures) |
+        Where-Object { -not [string]::IsNullOrWhiteSpace($_) }) -join "`n"
+}
+if ($null -ne $InitialStatus) {
+    try {
+    $result = [ordered]@{
+        schemaVersion = 1
+        level = $EffectiveLevel
+        repositoryCommit = $(if ($null -ne $repositoryState) { $repositoryState.Commit } else { $null })
+        phase = $Phase
+        module = $Module
+        testFilters = $TestFilter
+        state = $(if ($VerificationFailure) { "FAILED" }
+            elseif ($SkipBuild) { "STATIC_ONLY_INCOMPLETE" }
+            elseif ($EffectiveLevel -eq "DEV") { "PASS_SCOPED_NOT_ACCEPTANCE" }
+            else { "TECHNICAL_GATES_PASSED_NOT_AUTHOR_APPROVAL" })
+        exitCode = $(if ($VerificationFailure) { 1 } else { 0 })
+        independentBuilds = [bool]$IndependentBuilds
+        cleanGeneratedOutputs = [bool]$CleanBuild
+        dependencyCacheResetRequested = $false
+        keepBuildOutputs = [bool]$KeepBuildOutputs
+        canonicalReceipt = $(if ($null -ne $CanonicalEvidence) { $CanonicalEvidence.EvidencePath } else { $null })
+        devEvidence = $(if ($null -ne $DevEvidence) { $DevEvidence.SummaryPath } else { $null })
+        startedUtc = $VerificationStarted.ToString("o")
+        finishedUtc = [datetime]::UtcNow.ToString("o")
+        elapsedSeconds = [math]::Round($VerificationTimer.Elapsed.TotalSeconds, 3)
+        requestedOptionalGates = [ordered]@{
+            desktopLaunch = [bool]$LaunchDesktop
+            packagingArtifacts = [bool]$VerifyPackagingArtifacts
+            operationalBenchmarks = [bool]$RunBenchmarks
+            scientificBenchmarkBodies = ($env:GEOCEDG_G6A_RUN_SCIENTIFIC_BENCHMARK -eq "1")
+        }
+        failure = $VerificationFailure
+        authorApproved = $false
+        selfApproved = $false
+    }
+        [IO.File]::WriteAllText((Join-Path $LogDirectory "verification-result.json"),
+            (($result | ConvertTo-Json -Depth 20).Replace("`r`n", "`n") + "`n"),
+            [Text.UTF8Encoding]::new($false))
+    } catch {
+        $VerificationFailure = (@($VerificationFailure, "Unable to save result: $($_.Exception.Message)") |
+            Where-Object { $_ }) -join "`n"
+    }
+}
+if ($VerificationFailure) {
+    Write-Error -Message $VerificationFailure -ErrorAction Continue
+    exit 1
+}
+if ($SkipBuild) {
+    Write-Host "`nStatic checks completed. Runtime verification remains INCOMPLETE."
+} elseif ($EffectiveLevel -eq "DEV") {
+    Write-Host "`nDEV selected checks passed. Not an acceptance gate."
+} else {
+    Write-Host "`n$EffectiveLevel technical verification gates passed; author approval is separate."
+}
+Write-Host "Logs: $LogDirectory"
 exit 0

@@ -1,8 +1,10 @@
+#requires -Version 7.2
 [CmdletBinding()]
 param()
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+$PSNativeCommandUseErrorActionPreference = $false
 
 $RepositoryRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\.."))
 $Bootstrap = Join-Path $RepositoryRoot "tools\bootstrap\bootstrap-windows.ps1"
@@ -41,6 +43,12 @@ function Assert-Plan {
 
 $temporaryRepository = $null
 try {
+    Write-Host "==> Workstation prerequisite, import-origin and packaging fake-first fixtures"
+    $fixtureSuite = Join-Path $RepositoryRoot "tools/bootstrap/tests/workstation-prerequisites.tests.ps1"
+    $global:LASTEXITCODE = $null
+    & (Join-Path $PSHOME "pwsh.exe") -NoLogo -NoProfile -File $fixtureSuite -RepositoryRoot $RepositoryRoot
+    $fixtureExitCode = $global:LASTEXITCODE
+    Assert-Condition ($null -ne $fixtureExitCode -and $fixtureExitCode -eq 0) "Workstation prerequisite fixtures failed or returned no native exit code: $fixtureExitCode."
     Write-Host "==> Packaging prerequisite decision matrix"
     $extensions = @(
         "WixToolset.Util.wixext 5.0.2",
@@ -114,16 +122,20 @@ try {
     $temporaryRepository = Join-Path ([IO.Path]::GetTempPath()) (
         "geocedg-generated-state-test-" + [guid]::NewGuid())
     [void](New-Item -ItemType Directory -Path $temporaryRepository -Force)
+    $global:LASTEXITCODE = $null
     & git -C $temporaryRepository init --quiet
-    if ($LASTEXITCODE -ne 0) {
+    $gitExitCode = $global:LASTEXITCODE
+    if ($null -eq $gitExitCode -or $gitExitCode -ne 0) {
         throw "Unable to create the generated-state test repository."
     }
     foreach ($module in @("module", "second")) {
         $source = Join-Path $temporaryRepository "$module\source.txt"
         [void](New-Item -ItemType Directory -Path (Split-Path -Parent $source) -Force)
         [IO.File]::WriteAllText($source, "tracked fixture`n")
+        $global:LASTEXITCODE = $null
         & git -C $temporaryRepository -c core.autocrlf=false add "$module/source.txt"
-        if ($LASTEXITCODE -ne 0) {
+        $gitExitCode = $global:LASTEXITCODE
+        if ($null -eq $gitExitCode -or $gitExitCode -ne 0) {
             throw "Unable to stage the generated-state fixture source."
         }
     }

@@ -3,6 +3,8 @@ param(
     [switch]$SkipBuild,
     [switch]$AllowToolchainDownload,
     [switch]$KeepBuildOutputs,
+    [string]$BuildEvidencePath,
+    [switch]$IncrementalBuild,
     [switch]$ReproduceCharacterization,
     [string]$LogDirectory = (Join-Path ([IO.Path]::GetTempPath()) `
         "geocedg-verify-g7a-metrics")
@@ -10,6 +12,10 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+
+Import-Module (Join-Path $PSScriptRoot "verification-runtime.psm1")
+Assert-GeoCeDGChildVerificationMode -SkipBuild:$SkipBuild `
+    -BuildEvidencePath $BuildEvidencePath -IncrementalBuild:$IncrementalBuild
 
 $RepositoryRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot "..\..")).Path
 $RootGradle = Join-Path $RepositoryRoot "gradlew.bat"
@@ -139,9 +145,12 @@ try {
     $InitialStatus = Get-RepositoryStatusText -RepositoryRoot $RepositoryRoot
     [void](Assert-GeoCeDGFrozenG8Anchor -RepositoryRoot $RepositoryRoot)
     if (-not $SkipBuild) {
-        $GeneratedSnapshot = New-RepositoryGeneratedStateSnapshot `
-            -RepositoryRoot $RepositoryRoot `
-            -DirectoryNames $GeneratedDirectoryNames -Label "g7a-metrics"
+        if ([string]::IsNullOrWhiteSpace($BuildEvidencePath)) {
+            $GeneratedSnapshot = New-RepositoryGeneratedStateSnapshot `
+                -RepositoryRoot $RepositoryRoot `
+                -DirectoryNames $GeneratedDirectoryNames -Label "g7a-metrics" `
+                -KeepCurrentOutputs:$KeepBuildOutputs
+        }
     }
     [void](New-Item -ItemType Directory -Path $LogDirectory -Force)
 
@@ -562,15 +571,27 @@ try {
             $arguments += "-Dorg.gradle.java.installations.auto-download=false"
         }
         $logPath = Join-Path $LogDirectory "g7a-metric-characterization-gradle.log"
-        Push-Location -LiteralPath $RepositoryRoot
-        try {
-            & $RootGradle @arguments 2>&1 | Tee-Object -FilePath $logPath
-            $exitCode = $LASTEXITCODE
-        } finally {
-            Pop-Location
-        }
-        if ($exitCode -ne 0) {
-            throw "G7A Gradle characterization failed with exit code $exitCode. See $logPath"
+        if (-not [string]::IsNullOrWhiteSpace($BuildEvidencePath)) {
+            Confirm-GeoCeDGBuildEvidence -EvidencePath $BuildEvidencePath `
+                -RepositoryRoot $RepositoryRoot -WorkingDirectory $RepositoryRoot `
+                -Arguments $arguments -LogPath $logPath `
+                -Description "G7A metric characterization" `
+                -AllowToolchainDownload:$AllowToolchainDownload
+        } else {
+            if ($IncrementalBuild) {
+                $arguments = @(ConvertTo-GeoCeDGIncrementalGradleArguments `
+                    -Arguments $arguments -KeepBuildOutputs:$KeepBuildOutputs)
+            }
+            Push-Location -LiteralPath $RepositoryRoot
+            try {
+                & $RootGradle @arguments 2>&1 | Tee-Object -FilePath $logPath
+                $exitCode = $LASTEXITCODE
+            } finally {
+                Pop-Location
+            }
+            if ($exitCode -ne 0) {
+                throw "G7A Gradle characterization failed with exit code $exitCode. See $logPath"
+            }
         }
         Assert-TestResult -ClassName `
             "org.geocedg.common.locus.G7AMetricSemanticCharacterizationTest" `

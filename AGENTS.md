@@ -520,6 +520,8 @@ Do not embed new geometric solving logic in the exporter. Python may validate fi
 
 `tools/agent/verify.*` is the executable authority. Prompts and reports must call it rather than duplicating commands ad hoc.
 
+Use the DEV, PHASE, COMPOSED and FULL definitions in `geocedg/specs/operations/verification-levels.md`. Default `verify.ps1` is COMPOSED; DEV is never acceptance evidence. Every task identifies its required level and regression perimeter. Changes to test selection, caching, parallelization, verifier orchestration, bootstrap or numerical baselines are verification-infrastructure changes and require FULL evidence; narrower success does not waive a required FULL gate.
+
 Minimum gates:
 
 - upstream baseline build;
@@ -639,6 +641,8 @@ For each task:
    - test evidence;
    - unresolved risks;
    - generated artifacts and their provenance.
+
+Review bootstrap impact whenever a change affects workstation prerequisites or another assumption consumed by Windows bootstrap. Record the explicit updated/no-change outcome and substantive rationale required by `geocedg/specs/operations/verification-levels.md`, together with infrastructure-impact and required-level evidence. Require justified review, not arbitrary bootstrap edits. Preserve the existing `GUIDE_IMPACT` protocol; technical PASS never implies author approval.
 
 Stop and report rather than guess when:
 

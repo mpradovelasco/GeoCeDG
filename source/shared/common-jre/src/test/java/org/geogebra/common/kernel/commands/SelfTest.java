@@ -14,6 +14,8 @@
  * See https://www.geogebra.org/license for full licensing details
  */
 
+// GeoCeDG modification (2026): test Classic-OFF and explicit V2 opt-in contracts.
+
 package org.geogebra.common.kernel.commands;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -22,13 +24,15 @@ import java.lang.reflect.Method;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.geocedg.common.kernel.commands.GeoCeDGCommandsTest;
 import org.junit.jupiter.api.Test;
 
 class SelfTest {
 	@Test
 	void selfTest() {
 		Set<String> methodNames = new TreeSet<>();
-		Class<?>[] classes = new Class[]{CommandsTest.class, CommandsUsingMockedCasTest.class};
+		Class<?>[] classes = new Class[]{CommandsTest.class,
+				CommandsUsingMockedCasTest.class, GeoCeDGCommandsTest.class};
 		for (Class<?> c : classes) {
 			for (Method mtd : c.getDeclaredMethods()) {
 				if (mtd.getAnnotations().length > 0) {

@@ -3,12 +3,18 @@ param(
     [switch]$SkipBuild,
     [switch]$AllowToolchainDownload,
     [switch]$KeepBuildOutputs,
+    [string]$BuildEvidencePath,
+    [switch]$IncrementalBuild,
     [string]$LogDirectory = (Join-Path ([IO.Path]::GetTempPath()) `
         "geocedg-verify-g9a1-spatial-identity")
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+
+Import-Module (Join-Path $PSScriptRoot "verification-runtime.psm1")
+Assert-GeoCeDGChildVerificationMode -SkipBuild:$SkipBuild `
+    -BuildEvidencePath $BuildEvidencePath -IncrementalBuild:$IncrementalBuild
 
 $RepositoryRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot "..\..")).Path
 $RootGradle = Join-Path $RepositoryRoot "gradlew.bat"
@@ -454,6 +460,17 @@ function Invoke-G9A1Tests {
         "--rerun-tasks", "--no-daemon", "--console=plain",
         "--no-problems-report")
     $logPath = Join-Path $LogDirectory "g9a1-spatial-identity-tests.log"
+    if (-not [string]::IsNullOrWhiteSpace($BuildEvidencePath)) {
+        Confirm-GeoCeDGBuildEvidence -EvidencePath $BuildEvidencePath `
+            -RepositoryRoot $RepositoryRoot -WorkingDirectory $RepositoryRoot `
+            -Arguments $arguments -LogPath $logPath `
+            -Description "G9A1 spatial identity tests" -AllowToolchainDownload:$AllowToolchainDownload
+        return
+    }
+    if ($IncrementalBuild) {
+        $arguments = @(ConvertTo-GeoCeDGIncrementalGradleArguments `
+            -Arguments $arguments -KeepBuildOutputs:$KeepBuildOutputs)
+    }
     $exitCode = $null
     Push-Location -LiteralPath $RepositoryRoot
     try {
@@ -469,9 +486,12 @@ function Invoke-G9A1Tests {
 try {
     $InitialStatus = Get-RepositoryStatusText -RepositoryRoot $RepositoryRoot
     if (-not $SkipBuild) {
-        $GeneratedSnapshot = New-RepositoryGeneratedStateSnapshot `
-            -RepositoryRoot $RepositoryRoot `
-            -DirectoryNames $GeneratedDirectoryNames -Label "g9a1"
+        if ([string]::IsNullOrWhiteSpace($BuildEvidencePath)) {
+            $GeneratedSnapshot = New-RepositoryGeneratedStateSnapshot `
+                -RepositoryRoot $RepositoryRoot `
+                -DirectoryNames $GeneratedDirectoryNames -Label "g9a1" `
+                -KeepCurrentOutputs:$KeepBuildOutputs
+        }
     }
     [void](New-Item -ItemType Directory -Path $LogDirectory -Force)
 

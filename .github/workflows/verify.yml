@@ -50,14 +50,16 @@ jobs:
           conda run -n om_env python --version
           conda run -n om_env python -c "import mpmath; print('mpmath', mpmath.__version__)"
 
-      - name: Run GeoCeDG authority
+      - name: Run GeoCeDG FULL authority
         shell: pwsh
         run: |
           $logRoot = Join-Path $env:RUNNER_TEMP "geocedg-verify"
+          $benchmarkPath = Join-Path $logRoot "operational-benchmark.json"
           .\tools\agent\verify.ps1 `
+            -Level FULL `
             -LogDirectory $logRoot `
             -RunBenchmarks `
-            -BenchmarkOutputPath (Join-Path $logRoot "operational-benchmark.json")
+            -BenchmarkOutputPath $benchmarkPath
 
       - name: Upload verification evidence
         if: always()

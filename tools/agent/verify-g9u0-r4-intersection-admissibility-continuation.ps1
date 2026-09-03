@@ -3,6 +3,8 @@ param(
     [switch]$SkipBuild,
     [switch]$AllowToolchainDownload,
     [switch]$KeepBuildOutputs,
+    [string]$BuildEvidencePath,
+    [switch]$IncrementalBuild,
     [string]$CanonicalSummaryPath,
     [string]$CompareCanonicalSummaryPath,
     [string]$LogDirectory = (Join-Path ([IO.Path]::GetTempPath()) `
@@ -11,6 +13,10 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+
+Import-Module (Join-Path $PSScriptRoot "verification-runtime.psm1")
+Assert-GeoCeDGChildVerificationMode -SkipBuild:$SkipBuild `
+    -BuildEvidencePath $BuildEvidencePath -IncrementalBuild:$IncrementalBuild
 
 $RepositoryRoot = (Resolve-Path -LiteralPath (
         Join-Path $PSScriptRoot "..\..")).Path
@@ -1864,6 +1870,17 @@ function Invoke-LoggedGradle {
         $Arguments += "-Dorg.gradle.java.installations.auto-download=false"
     }
     $logPath = Join-Path $LogDirectory $LogFileName
+    if (-not [string]::IsNullOrWhiteSpace($BuildEvidencePath)) {
+        Confirm-GeoCeDGBuildEvidence -EvidencePath $BuildEvidencePath `
+            -RepositoryRoot $RepositoryRoot -WorkingDirectory $RepositoryRoot `
+            -Arguments $Arguments -LogPath $logPath `
+            -Description $Description -AllowToolchainDownload:$AllowToolchainDownload
+        return
+    }
+    if ($IncrementalBuild) {
+        $Arguments = @(ConvertTo-GeoCeDGIncrementalGradleArguments `
+            -Arguments $Arguments -KeepBuildOutputs:$KeepBuildOutputs)
+    }
     Write-Host "`n==> $Description"
     Write-Host "    log: $logPath"
     Push-Location -LiteralPath $RepositoryRoot
@@ -2154,9 +2171,12 @@ try {
         Write-Host "G9U0-R4 static closeout verification completed."
         Write-Host "G9U0-R4 = PASS — AUTHOR APPROVED (recorded author decision)."
     } else {
-        $GeneratedState = New-RepositoryGeneratedStateSnapshot `
-            -RepositoryRoot $RepositoryRoot `
-            -DirectoryNames $GeneratedDirectoryNames -Label "verify-g9u0-r4"
+        if ([string]::IsNullOrWhiteSpace($BuildEvidencePath)) {
+            $GeneratedState = New-RepositoryGeneratedStateSnapshot `
+                -RepositoryRoot $RepositoryRoot `
+                -DirectoryNames $GeneratedDirectoryNames -Label "verify-g9u0-r4" `
+                -KeepCurrentOutputs:$KeepBuildOutputs
+        }
         $testArguments = @(
             ":shared:common-jre:test"
         )

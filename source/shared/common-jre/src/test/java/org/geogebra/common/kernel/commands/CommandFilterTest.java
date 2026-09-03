@@ -14,14 +14,19 @@
  * See https://www.geogebra.org/license for full licensing details
  */
 
+// GeoCeDG modification (2026): test Classic-OFF and explicit V2 opt-in contracts.
+
 package org.geogebra.common.kernel.commands;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
 import org.geogebra.common.AppCommonFactory;
 import org.geogebra.common.BaseUnitTest;
 import org.geogebra.common.jre.headless.AppCommon;
@@ -34,6 +39,9 @@ import org.junit.jupiter.api.Test;
 
 class CommandFilterTest extends BaseUnitTest {
 
+	private static final List<Commands> GEOCEDG_COMMANDS =
+			List.of(Commands.LocusV2, Commands.LocusLength, Commands.SplineV2);
+
 	@Override
 	public AppCommon createAppCommon() {
 		return AppCommonFactory.create3D();
@@ -41,9 +49,17 @@ class CommandFilterTest extends BaseUnitTest {
 
 	@Test
 	void noCasFilterTest() {
+		checkNoCasFilter(getApp(), false);
+	}
+
+	@Test
+	void noCasFilterWithGeoCeDGOptInTest() {
+		checkNoCasFilter(AppCommonFactory.create3D(new AppConfigGeoCeDG(true)), true);
+	}
+
+	private void checkNoCasFilter(App app, boolean locusV2Enabled) {
 		CommandFilter cf = CommandFilterFactory
 				.createNoCasCommandFilter();
-		App app = getApp();
 		app.getKernel().getAlgebraProcessor().addCommandFilter(cf);
 		for (Commands cmd0 : Commands.values()) {
 			Commands cmd = cmd0;
@@ -57,7 +73,14 @@ class CommandFilterTest extends BaseUnitTest {
 					|| AlgebraTestHelper.internalCAScommand(cmd0)) {
 				continue;
 			}
-			if (cf.isCommandAllowed(cmd)) {
+			if (GEOCEDG_COMMANDS.contains(cmd)) {
+				assertTrue(cf.isCommandAllowed(cmd), cmd.name());
+				assertNotNull(CommandSignatures.getSignature(cmd.name(), app), cmd.name());
+			}
+			if (GEOCEDG_COMMANDS.contains(cmd) && !locusV2Enabled) {
+				AlgebraTestHelper.shouldFail(cmd + "()",
+						app.getLocalization().getMenu("LocusV2.FeatureDisabled"), app);
+			} else if (cf.isCommandAllowed(cmd)) {
 				List<Integer> signature = CommandSignatures
 						.getSignature(cmd.name(), app);
 				if (signature != null && !signature.contains(0)) {

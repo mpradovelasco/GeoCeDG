@@ -3,12 +3,18 @@ param(
     [switch]$SkipBuild,
     [switch]$AllowToolchainDownload,
     [switch]$KeepBuildOutputs,
+    [string]$BuildEvidencePath,
+    [switch]$IncrementalBuild,
     [string]$LogDirectory = (Join-Path ([IO.Path]::GetTempPath()) `
         "geocedg-verify-g9u0-r1-locus-v2-public-creation-lifecycle")
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+
+Import-Module (Join-Path $PSScriptRoot "verification-runtime.psm1")
+Assert-GeoCeDGChildVerificationMode -SkipBuild:$SkipBuild `
+    -BuildEvidencePath $BuildEvidencePath -IncrementalBuild:$IncrementalBuild
 
 $RepositoryRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot "..\..")).Path
 $RootGradle = Join-Path $RepositoryRoot "gradlew.bat"
@@ -482,6 +488,17 @@ function Invoke-LoggedGradle {
         $Arguments += "-Dorg.gradle.java.installations.auto-download=false"
     }
     $logPath = Join-Path $LogDirectory $LogName
+    if (-not [string]::IsNullOrWhiteSpace($BuildEvidencePath)) {
+        Confirm-GeoCeDGBuildEvidence -EvidencePath $BuildEvidencePath `
+            -RepositoryRoot $RepositoryRoot -WorkingDirectory $RepositoryRoot `
+            -Arguments $Arguments -LogPath $logPath `
+            -Description $Description -AllowToolchainDownload:$AllowToolchainDownload
+        return
+    }
+    if ($IncrementalBuild) {
+        $Arguments = @(ConvertTo-GeoCeDGIncrementalGradleArguments `
+            -Arguments $Arguments -KeepBuildOutputs:$KeepBuildOutputs)
+    }
     Write-Host "`n==> $Description"
     Write-Host "    log: $logPath"
     Push-Location -LiteralPath $RepositoryRoot
@@ -541,9 +558,12 @@ try {
             "this invocation did not rerun the six focused tests.")
     } else {
         [void](New-Item -ItemType Directory -Path $LogDirectory -Force)
-        $GeneratedSnapshot = New-RepositoryGeneratedStateSnapshot `
-            -RepositoryRoot $RepositoryRoot `
-            -DirectoryNames $GeneratedDirectoryNames -Label "g9u0-r1"
+        if ([string]::IsNullOrWhiteSpace($BuildEvidencePath)) {
+            $GeneratedSnapshot = New-RepositoryGeneratedStateSnapshot `
+                -RepositoryRoot $RepositoryRoot `
+                -DirectoryNames $GeneratedDirectoryNames -Label "g9u0-r1" `
+                -KeepCurrentOutputs:$KeepBuildOutputs
+        }
 
         $sharedArguments = [Collections.Generic.List[string]]::new()
         $sharedArguments.Add(":shared:common-jre:test")

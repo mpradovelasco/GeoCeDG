@@ -1872,8 +1872,8 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/Construction.java",
       "change": "modified",
-      "purpose": "Own the identity registry and G9A2 semantic runtime and provide the R6 host-wide atomic mutation seam that snapshots/restores the complete Construction around address writes, cascade and postcondition without creating an undo record.",
-      "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
+      "purpose": "Own the identity registry and G9A2 semantic runtime and provide the R6 host-wide atomic mutation seam that snapshots/restores the complete Construction around address writes, cascade and postcondition without creating an undo record. Preserve ordinary collected redefinitions without fabricating an empty spatial completion operation; participating transaction and rollback contracts remain unchanged.",
+      "authority": "docs/architecture/verification-baseline-compatibility-repair.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/geos/GeoElement.java",
@@ -3392,6 +3392,60 @@
       "change": "added",
       "purpose": "Verify native .cedg round-trip of an interaction-owned point on an R5-transformed SplineV2, stable-role plus structural auxiliary ownership restored after identity attachment, exact component/address dependencies, post-reopen movement and feature-off/Classic preservation.",
       "authority": ".github/prompts/tasks/g9u0-r6-semantic-locus-point-interaction-support.prompt.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geogebra/common/kernel/commands/CommandDispatcherTest.java",
+      "change": "modified",
+      "purpose": "Preserve complete command registration checks while explicitly testing default-off Classic and opted-in GeoCeDG command availability.",
+      "authority": "docs/architecture/verification-baseline-compatibility-repair.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geogebra/common/kernel/commands/CommandFilterTest.java",
+      "change": "modified",
+      "purpose": "Retain inherited no-CAS filter assertions in the enabled context and independently verify the default-off V2 feature gate without command exclusions.",
+      "authority": "docs/architecture/verification-baseline-compatibility-repair.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geogebra/common/kernel/commands/CommandsValidationTest.java",
+      "change": "modified",
+      "purpose": "Retain argument-count/type and CAS-table validation while testing both default-off feature rejection and opted-in V2 argument validation.",
+      "authority": "docs/architecture/verification-baseline-compatibility-repair.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geogebra/common/kernel/commands/SelfTest.java",
+      "change": "modified",
+      "purpose": "Discover executable GeoCeDG command tests alongside inherited command coverage without adding exemptions or removing the missing-coverage assertion.",
+      "authority": "docs/architecture/verification-baseline-compatibility-repair.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/commands/GeoCeDGCommandsTest.java",
+      "change": "added",
+      "purpose": "Provide executable LocusV2, LocusLength and SplineV2 command cases discoverable by the inherited command-coverage inventory and the composed GeoCeDG test selection.",
+      "authority": "docs/architecture/verification-baseline-compatibility-repair.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/LegacyCollectedRedefineCompatibilityTest.java",
+      "change": "added",
+      "purpose": "Regress two ordinary collected redefinition/rebuild cycles with dependent values and no spatial identity, while retaining direct rejection of empty spatial completion.",
+      "authority": "docs/architecture/verification-baseline-compatibility-repair.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/util/ImageManagerD.java",
+      "change": "modified",
+      "purpose": "Resolve only the four existing Locus V2 tool modes through their registered GeoCeDG-owned SVG adapter while preserving all other PNG lookup, cache, border and scaling behavior.",
+      "authority": "docs/architecture/verification-baseline-compatibility-repair.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/resources/GeoCeDGToolImageResource.java",
+      "change": "added",
+      "purpose": "Decode the existing registered owned Locus V2 SVG into a fresh loaded 64-pixel Toolkit image using the existing Desktop SVG decoder, without new assets or shared mutable raster state.",
+      "authority": "docs/architecture/verification-baseline-compatibility-repair.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGToolImageResourceTest.java",
+      "change": "added",
+      "purpose": "Exercise all four owned modes through real Desktop 2D/3D resource, border, cache, scaling, toolbar and ToolImage paths, preserving the unmodified inherited resource-availability tests and classic PNG paths.",
+      "authority": "docs/architecture/verification-baseline-compatibility-repair.md"
     }
   ]
 }

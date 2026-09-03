@@ -3,11 +3,17 @@ param(
     [switch]$SkipBuild,
     [switch]$AllowToolchainDownload,
     [switch]$KeepBuildOutputs,
+    [string]$BuildEvidencePath,
+    [switch]$IncrementalBuild,
     [string]$LogDirectory = (Join-Path ([IO.Path]::GetTempPath()) "geocedg-verify-dxf")
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+
+Import-Module (Join-Path $PSScriptRoot "verification-runtime.psm1")
+Assert-GeoCeDGChildVerificationMode -SkipBuild:$SkipBuild `
+    -BuildEvidencePath $BuildEvidencePath -IncrementalBuild:$IncrementalBuild
 
 $RepositoryRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot "..\..")).Path
 $RootGradle = Join-Path $RepositoryRoot "gradlew.bat"
@@ -45,6 +51,17 @@ function Read-JsonDocument {
 function Invoke-LoggedGradle {
     param([Parameter(Mandatory)] [string[]]$Arguments)
     $logPath = Join-Path $LogDirectory "g5-dxf-gradle.log"
+    if (-not [string]::IsNullOrWhiteSpace($BuildEvidencePath)) {
+        Confirm-GeoCeDGBuildEvidence -EvidencePath $BuildEvidencePath `
+            -RepositoryRoot $RepositoryRoot -WorkingDirectory $RepositoryRoot `
+            -Arguments $Arguments -LogPath $logPath `
+            -Description "G5 focused tests and checkstyle" -AllowToolchainDownload:$AllowToolchainDownload
+        return
+    }
+    if ($IncrementalBuild) {
+        $Arguments = @(ConvertTo-GeoCeDGIncrementalGradleArguments `
+            -Arguments $Arguments -KeepBuildOutputs:$KeepBuildOutputs)
+    }
     Write-Host "`n==> G5 focused tests and checkstyle"
     Write-Host "    log: $logPath"
     $exitCode = -1
@@ -89,9 +106,12 @@ try {
     New-Item -ItemType Directory -Path $LogDirectory -Force | Out-Null
     $InitialStatus = Get-RepositoryStatusText -RepositoryRoot $RepositoryRoot
     if (-not $SkipBuild) {
-        $GeneratedState = New-RepositoryGeneratedStateSnapshot `
-            -RepositoryRoot $RepositoryRoot `
-            -DirectoryNames $GeneratedDirectoryNames -Label "verify-dxf"
+        if ([string]::IsNullOrWhiteSpace($BuildEvidencePath)) {
+            $GeneratedState = New-RepositoryGeneratedStateSnapshot `
+                -RepositoryRoot $RepositoryRoot `
+                -DirectoryNames $GeneratedDirectoryNames -Label "verify-dxf" `
+                -KeepCurrentOutputs:$KeepBuildOutputs
+        }
     }
 
     foreach ($required in @(

@@ -3,12 +3,18 @@ param(
     [switch]$SkipBuild,
     [switch]$AllowToolchainDownload,
     [switch]$KeepBuildOutputs,
+    [string]$BuildEvidencePath,
+    [switch]$IncrementalBuild,
     [string]$LogDirectory = (Join-Path ([IO.Path]::GetTempPath()) `
         "geocedg-verify-g8b-intersections")
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+
+Import-Module (Join-Path $PSScriptRoot "verification-runtime.psm1")
+Assert-GeoCeDGChildVerificationMode -SkipBuild:$SkipBuild `
+    -BuildEvidencePath $BuildEvidencePath -IncrementalBuild:$IncrementalBuild
 
 $RepositoryRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot "..\..")).Path
 $RootGradle = Join-Path $RepositoryRoot "gradlew.bat"
@@ -212,6 +218,17 @@ function Invoke-LoggedGradle {
         $Arguments += "-Dorg.gradle.java.installations.auto-download=false"
     }
     $logPath = Join-Path $LogDirectory $LogName
+    if (-not [string]::IsNullOrWhiteSpace($BuildEvidencePath)) {
+        Confirm-GeoCeDGBuildEvidence -EvidencePath $BuildEvidencePath `
+            -RepositoryRoot $RepositoryRoot -WorkingDirectory $RepositoryRoot `
+            -Arguments $Arguments -LogPath $logPath `
+            -Description "G8B productive shared-kernel tests and Checkstyle" -AllowToolchainDownload:$AllowToolchainDownload
+        return
+    }
+    if ($IncrementalBuild) {
+        $Arguments = @(ConvertTo-GeoCeDGIncrementalGradleArguments `
+            -Arguments $Arguments -KeepBuildOutputs:$KeepBuildOutputs)
+    }
     Write-Host "`n==> G8B productive shared-kernel tests and Checkstyle"
     Write-Host "    log: $logPath"
     Push-Location -LiteralPath $RepositoryRoot
@@ -230,9 +247,12 @@ try {
     $InitialStatus = Get-RepositoryStatusText -RepositoryRoot $RepositoryRoot
     [void](Assert-GeoCeDGFrozenG8Anchor -RepositoryRoot $RepositoryRoot)
     if (-not $SkipBuild) {
-        $GeneratedSnapshot = New-RepositoryGeneratedStateSnapshot `
-            -RepositoryRoot $RepositoryRoot `
-            -DirectoryNames $GeneratedDirectoryNames -Label "g8b-intersections"
+        if ([string]::IsNullOrWhiteSpace($BuildEvidencePath)) {
+            $GeneratedSnapshot = New-RepositoryGeneratedStateSnapshot `
+                -RepositoryRoot $RepositoryRoot `
+                -DirectoryNames $GeneratedDirectoryNames -Label "g8b-intersections" `
+                -KeepCurrentOutputs:$KeepBuildOutputs
+        }
     }
     [void](New-Item -ItemType Directory -Path $LogDirectory -Force)
 

@@ -60,8 +60,13 @@ upstream edit and never treat generated reports or restricted assets as source.
 
 ## Toolchain, build and launch
 
-The current Windows contract requires Git, PowerShell 7, JDK 22 for Gradle and
-JDK 25 for Desktop packaging/runtime composition. Use only `gradlew.bat`.
+The current Windows contract requires Git, PowerShell 7.2 or later, JDK 17 for
+compilation/tests, JDK 22 for the Gradle launcher and JDK 25 for Desktop
+packaging/runtime composition. Use only `gradlew.bat`.
+
+The PowerShell minimum follows the
+[verification-level contract](../../geocedg/specs/operations/verification-levels.md);
+it does not claim that every newer runtime version has been tested.
 
 ```powershell
 .\tools\agent\verify.ps1
@@ -80,10 +85,65 @@ pending license and asset approval.
 
 ## Verification
 
-`tools/agent/verify.ps1` is composed executable authority. Use the narrow
-feature verifier first, preserve its log path/exit code, then run the composed
-gate when the task requires it. Do not translate environment, permissions or
-external-runtime failures into product changes.
+`tools/agent/verify.ps1` is executable authority; its default remains COMPOSED.
+The operational implementation candidate is governed by the
+[verification-level contract](../../geocedg/specs/operations/verification-levels.md)
+and [proposed ADR 0020](../adr/0020-verification-levels-and-current-run-evidence.md).
+The level interface governs verification orchestration, not geometric semantics.
+The separately justified [baseline compatibility repairs](../architecture/verification-baseline-compatibility-repair.md)
+are part of this candidate and retain their own regression evidence. Neither the
+interface nor those repairs advance a product phase or infer author approval.
+
+| Level | Use and limit |
+|---|---|
+| DEV | Explicit module/test selection for the inner loop; incomplete global coverage, never acceptance. |
+| PHASE | Named existing capability verifier and its required regression/dependency perimeter. |
+| COMPOSED | Default current-checkout cross-phase scientific/governance candidate gate. |
+| FULL | COMPOSED plus unfiltered shared-JRE/Desktop suites; required for closeout and infrastructure changes. |
+
+```powershell
+.\tools\agent\verify.ps1 -Level DEV -Module shared `
+  -TestFilter 'org.geocedg.common.locus.G9U0R6SemanticLocusPointInteractionTest' `
+  -KeepBuildOutputs
+.\tools\agent\verify.ps1 -Level PHASE -Phase G9U0-R6 -KeepBuildOutputs
+.\tools\agent\verify.ps1 -Level COMPOSED
+.\tools\agent\verify.ps1 -Level FULL
+.\tools\agent\verify.ps1 -Level FULL -CleanBuild
+# Legacy FULL alias and original-orchestration comparison:
+.\tools\agent\verify.ps1 -FullTests
+.\tools\agent\verify.ps1 -Level FULL -IndependentBuilds
+```
+
+DEV requires explicit nonempty test filters; PHASE requires a supported named
+mapping and does not guess from the branch. `-FullTests` cannot be combined with
+an explicitly different level. `-SkipBuild` reports static/incomplete evidence,
+not acceptance or current-run reuse. `-KeepBuildOutputs` is an explicit fast-loop
+retention choice; default verification restores pre-existing generated state.
+`-CleanBuild` is canonical-FULL-only and clears validated repository-generated
+outputs inside that transaction (or with explicit retention); it forces build
+work without task-output cache reuse but never clears downloaded dependencies
+or the Gradle user cache. It cannot be combined with independent/static modes.
+
+Canonical COMPOSED/FULL preserve two separate shared/Desktop test executions.
+They force fresh Test execution and preserve each phase's original live
+assertions through same-run evidence checks; independent mode remains available
+for diagnosis and equivalence comparison. Do not supply an old receipt or assume
+a report's existence proves current coverage. Numerical/reference, historical
+and metadata checks remain independently live. No new test parallelism or
+configuration-cache policy is implied by the level interface.
+
+Start narrow, preserve exact command/log/exit evidence, then run the required
+COMPOSED/FULL gate. Record interactive, packaging and unavailable external-runtime
+checks separately. Do not translate environment, permissions or external-runtime
+failures into product changes. No speed-up is established until the performance
+report contains comparable completed before/after measurements.
+
+Windows bootstrap verifies supported workstation prerequisites and delegates
+product coverage to the canonical authority. Its audited default/stages and
+toolchain requirements are not replaced by DEV. Review bootstrap-impact and
+verification-infrastructure changes using the linked contract; a smaller PHASE
+selection never weakens FULL. CI explicitly selects FULL with the existing
+benchmark/evidence steps and the same level meanings used locally.
 
 Historical G7/G8 evidence is verified from the fixed `geocedg-g8-pass` tag;
 living documents are current-HEAD checks. Never update a historical hash
@@ -394,6 +454,11 @@ traceability documents; preserve PDF hashes/provenance.
 
 At closeout report inspected/changed files, architectural layer, semantic and
 compatibility effects, verifier command/exit/log, skipped checks and risks.
+Also record required versus executed verification levels, verification-
+infrastructure impact, the explicit bootstrap-impact outcome and substantive
+rationale/affected paths from the verification-level contract, and existing
+`GUIDE_IMPACT`. A missing required FULL remains incomplete. An operational
+implementation candidate remains pending author review and creates no phase.
 Commit intentionally, create an annotated phase tag only after author approval,
 and fast-forward promotion branches without rewriting shared history.
 

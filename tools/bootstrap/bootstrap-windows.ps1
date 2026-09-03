@@ -1,3 +1,4 @@
+#requires -Version 7.2
 <#
 .SYNOPSIS
 Prepares and verifies a Windows workstation for GeoCeDG development.
@@ -22,6 +23,10 @@ Runs the informational G1 operational benchmark through verify.ps1.
 Runs the explicit interactive Desktop launch gate. Close the application
 window to let the verification finish.
 
+.PARAMETER LogDirectory
+Parent directory for a unique run folder containing transcript, preflight native
+logs, structured summary and delegated verification logs. Defaults to TEMP/geocedg-bootstrap.
+
 .PARAMETER InstallPackagingPrerequisites
 Runs the focused prerequisite installer and exits without fetching remotes or
 executing repository verification. It installs only an approved missing .NET 8
@@ -34,7 +39,8 @@ param(
     [switch]$SkipBuild,
     [switch]$RunBenchmarks,
     [switch]$LaunchDesktop,
-    [switch]$InstallPackagingPrerequisites
+    [switch]$InstallPackagingPrerequisites,
+    [string]$LogDirectory
 )
 
 Set-StrictMode -Version Latest
@@ -44,8 +50,8 @@ $ExpectedOrigin = "https://github.com/mpradovelasco/GeoCeDG.git"
 $ExpectedUpstream = "https://github.com/geogebra/geogebra.git"
 $ExpectedBaseline = "9b93256b7df401ff056c37b502d82df4d72b1522"
 $ExpectedTag = "geogebra-baseline-5.4.928.0"
-$ExpectedGradleJava = 22
-$ExpectedDesktopJava = 25
+$ExpectedGradleJava = $null
+$ExpectedDesktopJava = $null
 $ExpectedWix = "5.0.2"
 $RepositoryRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\.."))
 $Verifier = Join-Path $RepositoryRoot "tools\agent\verify.ps1"
@@ -53,7 +59,17 @@ $PackagingPrerequisiteInstaller = Join-Path $RepositoryRoot `
     "tools\bootstrap\install-packaging-prerequisites.ps1"
 $BaselineFile = Join-Path $RepositoryRoot "docs\upstream\BASELINE_COMMIT.txt"
 $GradleWrapper = Join-Path $RepositoryRoot "gradlew.bat"
-$LogDirectory = Join-Path ([IO.Path]::GetTempPath()) "geocedg-bootstrap"
+$RequestedLogDirectory = $LogDirectory
+$LogDirectory = $null
+$RunId = [DateTime]::UtcNow.ToString("yyyyMMddTHHmmssfffZ") + "-" + [Guid]::NewGuid().ToString("N")
+$CurrentStage = "diagnostic initialization"
+$TranscriptStarted = $false
+$Outcome = "FAIL"
+$FailureDetails = $null
+$WorkstationFacts = $null
+$NativeRecords = [Collections.Generic.List[object]]::new()
+$WarningRecords = [Collections.Generic.List[object]]::new()
+$BootstrapClock = [Diagnostics.Stopwatch]::StartNew()
 $Warnings = [Collections.Generic.List[string]]::new()
 $InitialRepositoryStatus = $null
 $PackagingJpackage = "not detected"
@@ -64,31 +80,165 @@ $PackagingWixExtensions = "not detected"
 function Write-Step {
     param([Parameter(Mandatory)] [string]$Message)
 
+    $script:CurrentStage = $Message
     Write-Host "`n==> $Message"
 }
 
 function Add-Warning {
-    param([Parameter(Mandatory)] [string]$Message)
-
+    param([Parameter(Mandatory)] [string]$Message, [string]$Classification = "")
+    if ([string]::IsNullOrWhiteSpace($Classification)) {
+        $Classification = if ($CurrentStage -eq "Optional Windows packaging prerequisites") { "optional-packaging-prerequisite" } else { "operational-warning" }
+    }
     $Warnings.Add($Message)
+    $WarningRecords.Add([pscustomobject]@{ Stage = $CurrentStage; Classification = $Classification; Message = $Message })
     Write-Warning $Message
 }
 
-function Invoke-Native {
+function Start-BootstrapDiagnostics {
+    $parent = if ([string]::IsNullOrWhiteSpace($RequestedLogDirectory)) {
+        Join-Path ([IO.Path]::GetTempPath()) "geocedg-bootstrap"
+    } else {
+        [IO.Path]::GetFullPath($RequestedLogDirectory)
+    }
+    $candidateLogDirectory = Join-Path $parent $RunId
+    Assert-VerificationLogDirectoryOutsideGeneratedState -RepositoryRoot $RepositoryRoot -LogDirectory $candidateLogDirectory
+    # Publish the usable path only after the guard succeeds. Finally must not
+    # write a failure summary into a rejected requested directory.
+    $script:LogDirectory = $candidateLogDirectory
+    [void](New-Item -ItemType Directory -Path (Join-Path $LogDirectory "preflight") -Force)
+    [void](New-Item -ItemType Directory -Path (Join-Path $LogDirectory "verification") -Force)
+    Start-Transcript -Path (Join-Path $LogDirectory "bootstrap-transcript.log") -UseMinimalHeader | Out-Null
+    $script:TranscriptStarted = $true
+}
+
+function Complete-BootstrapDiagnostics {
     param(
-        [Parameter(Mandatory)] [string]$FilePath,
-        [Parameter(Mandatory)] [string[]]$ArgumentList,
-        [Parameter(Mandatory)] [string]$Description
+        [Parameter(Mandatory)] [Collections.IDictionary]$Summary,
+        [AllowNull()] [AllowEmptyString()] [string]$LogDirectory,
+        [bool]$TranscriptStarted,
+        [scriptblock]$StopTranscript = { Stop-Transcript | Out-Null },
+        [scriptblock]$SaveSummary = {
+            param($Path, $Json)
+            # Publish only a completely written summary; preserve pending evidence on failure.
+            $pendingPath = $Path + ".pending"
+            if ((Test-Path -LiteralPath $Path) -or (Test-Path -LiteralPath $pendingPath)) { throw "Refusing to overwrite bootstrap diagnostic evidence: $Path" }
+            [IO.File]::WriteAllText($pendingPath, $Json, [Text.UTF8Encoding]::new($false))
+            [IO.File]::Move($pendingPath, $Path)
+        }
     )
 
-    $output = @(& $FilePath @ArgumentList 2>&1)
-    $exitCode = $LASTEXITCODE
-    if ($exitCode -ne 0) {
-        $rendered = @($output | ForEach-Object { $_.ToString() }) -join `
-            [Environment]::NewLine
-        throw "$Description failed with exit code $exitCode.$([Environment]::NewLine)$rendered"
+    $finalizationErrors = [Collections.Generic.List[object]]::new()
+    $transcriptStopped = $false
+    $summarySaved = $false
+    $summaryPath = $null
+    if ($TranscriptStarted) {
+        try { & $StopTranscript | Out-Null; $transcriptStopped = $true }
+        catch { $finalizationErrors.Add([pscustomobject]@{ Stage = "transcript finalization"; Message = $_.Exception.Message }) }
+    } else {
+        $finalizationErrors.Add([pscustomobject]@{ Stage = "transcript finalization"; Message = "Required bootstrap transcript was not started." })
     }
-    return @($output | ForEach-Object { $_.ToString() })
+    $Summary["Diagnostics"] = [ordered]@{
+        TranscriptStarted = $TranscriptStarted; TranscriptStopped = $transcriptStopped
+        SummaryPublication = "atomic pending-file move; pending files are not successful evidence"
+    }
+    if ($finalizationErrors.Count -gt 0) {
+        $Summary["Outcome"] = "FAIL"
+        if ($null -eq $Summary["Failure"]) {
+            $Summary["Failure"] = [ordered]@{ Stage = "diagnostic finalization"; Classification = "diagnostic-finalization-failure"; Message = $finalizationErrors[0].Message; NativeExitCode = $null }
+        }
+    }
+    $Summary["FinalizationErrors"] = @($finalizationErrors.ToArray())
+    try {
+        if ([string]::IsNullOrWhiteSpace($LogDirectory)) { throw "No bootstrap diagnostic directory was initialized." }
+        $summaryPath = Join-Path $LogDirectory "bootstrap-result.json"
+        & $SaveSummary $summaryPath ($Summary | ConvertTo-Json -Depth 12) | Out-Null
+        $summarySaved = $true
+    } catch {
+        $finalizationErrors.Add([pscustomobject]@{ Stage = "summary publication"; Message = $_.Exception.Message })
+        $Summary["Outcome"] = "FAIL"
+        if ($null -eq $Summary["Failure"]) {
+            $Summary["Failure"] = [ordered]@{ Stage = "diagnostic finalization"; Classification = "diagnostic-finalization-failure"; Message = $_.Exception.Message; NativeExitCode = $null }
+        }
+        $Summary["FinalizationErrors"] = @($finalizationErrors.ToArray())
+    }
+    return [pscustomobject]@{
+        Outcome = $Summary["Outcome"]; Failure = $Summary["Failure"]
+        SummarySaved = $summarySaved; SummaryPath = $summaryPath
+        FinalizationErrors = @($finalizationErrors.ToArray())
+    }
+}
+
+function Invoke-NativeResult {
+    param([Parameter(Mandatory)] [object]$Command, [Parameter(Mandatory)] [string[]]$ArgumentList, [Parameter(Mandatory)] [string]$Description)
+    $displayPath = if ($Command -is [Management.Automation.CommandInfo]) {
+        if ([string]::IsNullOrWhiteSpace($Command.Source)) { $Command.Name } else { $Command.Source }
+    } else { [string]$Command }
+    $sequence = $NativeRecords.Count + 1
+    $stem = [regex]::Replace($Description.ToLowerInvariant(), "[^a-z0-9]+", "-").Trim("-")
+    $logPath = Join-Path $LogDirectory ("preflight/{0:D3}-{1}.log" -f $sequence, $stem)
+    $clock = [Diagnostics.Stopwatch]::StartNew()
+    $output = @()
+    $code = $null
+    $invocationFailure = $null
+    try {
+        $PSNativeCommandUseErrorActionPreference = $false
+        # PowerShell writes native exits in global scope; a local sentinel
+        # would shadow the actual process result. Null is not a native success.
+        $global:LASTEXITCODE = $null
+        $output = @(& $Command @ArgumentList 2>&1 | ForEach-Object { $_.ToString() })
+        $code = $global:LASTEXITCODE
+        if ($null -eq $code) { throw "The invocation completed without a native exit code." }
+    } catch {
+        $output += $_.Exception.ToString()
+        $invocationFailure = [InvalidOperationException]::new("$Description failed before a native exit code was captured. Log: $logPath", $_.Exception)
+        $invocationFailure.Data["NativeExitCode"] = $null
+        $invocationFailure.Data["FailureClassification"] = "native-invocation-failure"
+        $invocationFailure.Data["Stage"] = $Description
+        $invocationFailure.Data["NativeOutput"] = $output -join [Environment]::NewLine
+    } finally { $clock.Stop() }
+    $record = [pscustomobject]@{
+        Stage = $CurrentStage; Description = $Description; Command = $displayPath
+        Arguments = $ArgumentList; ExitCode = $code; ElapsedSeconds = $clock.Elapsed.TotalSeconds; LogPath = $logPath; LogSaved = $false
+        InvocationFailed = ($null -ne $invocationFailure)
+        InvocationError = if ($null -eq $invocationFailure) { $null } else { $invocationFailure.InnerException.ToString() }
+        DiagnosticFailure = $null
+    }
+    $NativeRecords.Add($record)
+    try {
+        [IO.File]::WriteAllLines($logPath, [string[]]$output, [Text.UTF8Encoding]::new($false))
+        $record.LogSaved = $true
+    } catch {
+        $record.DiagnosticFailure = [pscustomobject]@{ Stage = "$Description native log publication"; Classification = "diagnostic-write-failure"; Message = $_.Exception.Message; LogPath = $logPath }
+        if ($null -ne $invocationFailure) {
+            # Publication is secondary to the original invocation error. Keep
+            # both, without inventing a native exit or returning a null result.
+            $invocationFailure.Data["DiagnosticFailure"] = $record.DiagnosticFailure
+            throw $invocationFailure
+        }
+        $failure = [IO.IOException]::new("Required native diagnostic log could not be saved for $Description (native exit $code): $logPath. $($_.Exception.Message)", $_.Exception)
+        $failure.Data["NativeExitCode"] = $code
+        $failure.Data["FailureClassification"] = "diagnostic-write-failure"
+        $failure.Data["Stage"] = $Description
+        $failure.Data["NativeOutput"] = $output -join [Environment]::NewLine
+        throw $failure
+    }
+    # Direct consumers (including WiX's integer exit parameter) must never
+    # receive a launch/invocation failure as a nullable successful result.
+    if ($null -ne $invocationFailure) { throw $invocationFailure }
+    return [pscustomobject]@{ Output = $output; ExitCode = $code; LogPath = $logPath }
+}
+
+function Invoke-Native {
+    param([Parameter(Mandatory)] [string]$FilePath, [Parameter(Mandatory)] [string[]]$ArgumentList, [Parameter(Mandatory)] [string]$Description)
+    $result = Invoke-NativeResult -Command $FilePath -ArgumentList $ArgumentList -Description $Description
+    if ($result.ExitCode -ne 0) {
+        $failure = [InvalidOperationException]::new("$Description failed with exit code $($result.ExitCode). Log: $($result.LogPath)" + [Environment]::NewLine + ($result.Output -join [Environment]::NewLine))
+        $failure.Data["NativeExitCode"] = $result.ExitCode
+        $failure.Data["Stage"] = $Description
+        $failure.Data["FailureClassification"] = if (($result.Output -join " ") -match "AccessDeniedException|UnauthorizedAccessException|Access is denied") { "permissions-filesystem" } else { "unknown-native-failure" }
+        throw $failure
+    }
+    return @($result.Output)
 }
 
 function Get-CommandPath {
@@ -99,7 +249,10 @@ function Get-CommandPath {
 
     $command = Get-Command $Name -ErrorAction SilentlyContinue
     if ($null -eq $command) {
-        throw "$Name was not found. $ManualResolution"
+        $failure = [InvalidOperationException]::new("$Name was not found. $ManualResolution")
+        $failure.Data["FailureClassification"] = "unsupported-or-missing-workstation-prerequisite"
+        $failure.Data["Stage"] = "External commands"
+        throw $failure
     }
     return $command.Source
 }
@@ -112,48 +265,6 @@ function Normalize-GitHubUrl {
         $normalized = $normalized.Substring(0, $normalized.Length - 4)
     }
     return $normalized
-}
-
-function Get-GradleToolchain {
-    param(
-        [Parameter(Mandatory)] [string]$Path,
-        [Parameter(Mandatory)] [int]$LanguageVersion
-    )
-
-    $lines = Get-Content -LiteralPath $Path
-    for ($index = 0; $index -lt $lines.Count; $index++) {
-        if ($lines[$index] -notmatch "Language Version:\s*$LanguageVersion\s*$") {
-            continue
-        }
-        $first = $index
-        while ($first -gt 0 -and $lines[$first] -notmatch "^\s+\+\s") {
-            $first--
-        }
-        $last = $index
-        while ($last + 1 -lt $lines.Count -and
-            $lines[$last + 1] -notmatch "^\s+\+\s") {
-            $last++
-        }
-        $window = @($lines[$first..$last])
-        $locationLine = $window | Where-Object { $_ -match "Location:\s*(.+)$" } |
-            Select-Object -First 1
-        $vendorLine = $window | Where-Object { $_ -match "Vendor:\s*(.+)$" } |
-            Select-Object -First 1
-        return [pscustomobject]@{
-            LanguageVersion = $LanguageVersion
-            Location = if ($locationLine -match "Location:\s*(.+)$") {
-                $Matches[1].Trim()
-            } else {
-                "not reported"
-            }
-            Vendor = if ($vendorLine -match "Vendor:\s*(.+)$") {
-                $Matches[1].Trim()
-            } else {
-                "not reported"
-            }
-        }
-    }
-    return $null
 }
 
 function Add-ProcessPath {
@@ -176,6 +287,10 @@ function Get-CompatibleDotNetSdk {
 }
 
 try {
+    . (Join-Path $RepositoryRoot "tools/agent/repository-generated-state.ps1")
+    Start-BootstrapDiagnostics
+    Import-Module (Join-Path $PSScriptRoot "workstation-prerequisites.psm1") -Force
+    Import-Module (Join-Path $PSScriptRoot "packaging-prerequisites.psm1") -Force
     Write-Host "GeoCeDG Windows workstation bootstrap"
     Write-Host "Repository candidate: $RepositoryRoot"
 
@@ -184,19 +299,33 @@ try {
             throw "-InstallPackagingPrerequisites is an independent action and cannot be combined with onboarding or verification options."
         }
         Write-Step "Focused Windows packaging-prerequisite installation"
-        & $PackagingPrerequisiteInstaller -Install
-        $installerExitCode = $LASTEXITCODE
-        if ($installerExitCode -ne 0) {
-            throw "Focused packaging-prerequisite installation failed with exit code $installerExitCode."
+        try {
+            & $PackagingPrerequisiteInstaller -Install
+            $installerExitCode = $LASTEXITCODE
+        } catch {
+            $failure = $_.Exception
+            $failure.Data["InstallerReturnedNormally"] = $false
+            $failure.Data["InstallerExitCode"] = $null
+            if (-not $failure.Data.Contains("FailureClassification")) { $failure.Data["FailureClassification"] = "explicit-packaging-installation-failure" }
+            if (-not $failure.Data.Contains("Stage")) { $failure.Data["Stage"] = $CurrentStage }
+            throw
         }
-        exit 0
-    }
+        if ($installerExitCode -ne 0) {
+            $failure = [InvalidOperationException]::new("Focused packaging-prerequisite installation failed with exit code $installerExitCode.")
+            $failure.Data["NativeExitCode"] = $null
+            $failure.Data["InstallerExitCode"] = $installerExitCode
+            $failure.Data["InstallerReturnedNormally"] = $true
+            $failure.Data["FailureClassification"] = "explicit-packaging-installation-failure"
+            throw $failure
+        }
+        $Outcome = "PASS"
+    } else {
 
     if ($SkipBuild -and $LaunchDesktop) {
         throw "-SkipBuild cannot be combined with -LaunchDesktop."
     }
-    if ($PSVersionTable.PSVersion.Major -lt 7) {
-        throw "PowerShell 7 or newer is required. Install PowerShell 7 manually and rerun this script with pwsh."
+    if ($PSVersionTable.PSVersion -lt [version]"7.2") {
+        throw "PowerShell 7.2 or newer is required for redirected native stderr handling. Install a supported PowerShell manually and rerun with pwsh."
     }
 
     Write-Step "External commands"
@@ -205,21 +334,13 @@ try {
     $pwshCommand = Get-CommandPath -Name "pwsh" -ManualResolution `
         "Install PowerShell 7 manually and rerun from pwsh."
     $javaCommand = Get-CommandPath -Name "java" -ManualResolution `
-        "Install a JDK 22 manually and place its java executable on PATH."
+        "Make a Java executable available on PATH for baseline inspection; the wrapper-selected launcher must match the current profile."
     $gitVersion = (Invoke-Native -FilePath $gitCommand -ArgumentList @("--version") `
         -Description "Git version") -join " "
     $pwshVersion = (Invoke-Native -FilePath $pwshCommand -ArgumentList @("--version") `
         -Description "PowerShell version") -join " "
     $javaVersionOutput = Invoke-Native -FilePath $javaCommand `
         -ArgumentList @("-version") -Description "Java version"
-    $javaVersionText = $javaVersionOutput -join [Environment]::NewLine
-    $javaVersionMatch = [regex]::Match($javaVersionText, 'version "(\d+)(?:\.|"|$)')
-    if (-not $javaVersionMatch.Success) {
-        throw "Unable to determine the Java launcher major version from: $javaVersionText"
-    }
-    if ([int]$javaVersionMatch.Groups[1].Value -ne $ExpectedGradleJava) {
-        throw "Gradle must be launched with Java $ExpectedGradleJava for the validated workstation profile; found Java $($javaVersionMatch.Groups[1].Value). Select a JDK $ExpectedGradleJava manually through JAVA_HOME/PATH and rerun."
-    }
     Write-Host "Git: $gitVersion"
     Write-Host "PowerShell: $pwshVersion"
     Write-Host "Java on PATH: $($javaVersionOutput[0])"
@@ -248,11 +369,7 @@ try {
     if (-not (Test-Path -LiteralPath $GradleWrapper -PathType Leaf)) {
         throw "The repository Gradle wrapper is missing: $GradleWrapper"
     }
-    $InitialRepositoryStatus = @(& $gitCommand -C $RepositoryRoot status `
-        --porcelain=v1 --untracked-files=all)
-    if ($LASTEXITCODE -ne 0) {
-        throw "Unable to inspect initial repository status."
-    }
+    $InitialRepositoryStatus = @(Invoke-Native -FilePath $gitCommand -ArgumentList @("-C", $RepositoryRoot, "status", "--porcelain=v1", "--untracked-files=all") -Description "Initial repository status")
 
     $remoteNames = @(Invoke-Native -FilePath $gitCommand -ArgumentList @(
             "-C", $RepositoryRoot, "remote"
@@ -316,13 +433,32 @@ try {
     }
     Write-Host "$ExpectedTag -> $tagTarget"
 
+    Write-Step "Current workstation prerequisite and import-origin checks"
+    $requirements = Get-WorkstationRequirements -RepositoryRoot $RepositoryRoot
+    $ExpectedGradleJava = $requirements.GradleJava
+    $ExpectedDesktopJava = $requirements.DesktopJava
+    $condaCommand = Get-Command conda -ErrorAction SilentlyContinue
+    $runner = {
+        param($Command, $Arguments, $Description)
+        Invoke-NativeResult -Command $Command -ArgumentList $Arguments -Description $Description
+    }
+    Push-Location -LiteralPath $RepositoryRoot
+    try {
+        $WorkstationFacts = Invoke-WorkstationPrerequisiteCheck -RepositoryRoot $RepositoryRoot -JavaHome $env:JAVA_HOME -Commands @{ Java = $javaCommand; Conda = $condaCommand } -CommandRunner $runner -Requirements $requirements
+    } finally { Pop-Location }
+    Write-Host "Effective Gradle Java: $($WorkstationFacts.EffectiveJava.Path) ($($WorkstationFacts.EffectiveJava.Selection))"
+    Write-Host "Compiler JDK: $($WorkstationFacts.CompilerToolchain.LanguageVersion) at $($WorkstationFacts.CompilerToolchain.Location)"
+    Write-Host "Desktop JDK: $($WorkstationFacts.DesktopToolchain.LanguageVersion) at $($WorkstationFacts.DesktopToolchain.Location)"
+    Write-Host "Conda Python: $($WorkstationFacts.Conda.python_executable); prefix=$($WorkstationFacts.Conda.python_prefix)"
+    Write-Host "mpmath origin: $($WorkstationFacts.Conda.mpmath_file)"
+
     Write-Step "GeoCeDG verification authority"
     $verifyParameters = @{
-        LogDirectory = $LogDirectory
+        LogDirectory = Join-Path $LogDirectory "verification"
     }
     if ($SkipBuild) {
         $verifyParameters.SkipBuild = $true
-        Add-Warning "Compilation was skipped; static, provenance and toolchain gates still run."
+        Add-Warning "Compilation was skipped; static, provenance and toolchain gates still run." -Classification "verification-scope"
     }
     if ($RunBenchmarks) {
         $verifyParameters.RunBenchmarks = $true
@@ -333,12 +469,16 @@ try {
         $verifyParameters.LaunchDesktop = $true
     }
     & $Verifier @verifyParameters
-    if ($LASTEXITCODE -ne 0) {
-        throw "tools/agent/verify.ps1 failed with exit code $LASTEXITCODE. Review $LogDirectory and resolve the reported prerequisite or gate."
+    $verificationExitCode = $LASTEXITCODE
+    if ($verificationExitCode -ne 0) {
+        $failure = [InvalidOperationException]::new("tools/agent/verify.ps1 failed with exit code $verificationExitCode. Review $($verifyParameters.LogDirectory); a delegated failure is not automatically a product regression.")
+        $failure.Data["NativeExitCode"] = $verificationExitCode
+        $failure.Data["FailureClassification"] = "delegated-verification-failure"
+        throw $failure
     }
 
-    $gradleVersionPath = Join-Path $LogDirectory "gradle-version.log"
-    $toolchainPath = Join-Path $LogDirectory "java-toolchains.log"
+    $gradleVersionPath = Join-Path $verifyParameters.LogDirectory "gradle-version.log"
+    $toolchainPath = Join-Path $verifyParameters.LogDirectory "java-toolchains.log"
     if (-not (Test-Path -LiteralPath $gradleVersionPath -PathType Leaf) -or
         -not (Test-Path -LiteralPath $toolchainPath -PathType Leaf)) {
         throw "Verification did not produce the expected Gradle/toolchain evidence in $LogDirectory."
@@ -348,11 +488,13 @@ try {
         Select-Object -First 1
     $daemonJvm = $gradleVersion | Where-Object { $_ -match "^Daemon JVM:" } |
         Select-Object -First 1
-    $desktopToolchain = Get-GradleToolchain -Path $toolchainPath `
-        -LanguageVersion $ExpectedDesktopJava
-    if ($null -eq $desktopToolchain) {
-        throw "Gradle did not detect a Java $ExpectedDesktopJava toolchain required by Desktop run. Install a JDK $ExpectedDesktopJava manually and rerun; automatic download is disabled."
+    $confirmedToolchains = @(ConvertFrom-GradleToolchainOutput -Output (Get-Content -LiteralPath $toolchainPath))
+    foreach ($version in @($requirements.CompilerJava, $requirements.DesktopJava)) {
+        if (@($confirmedToolchains | Where-Object { $_.LanguageVersion -eq $version -and $_.IsJdk }).Count -eq 0) {
+            throw "Delegated verification did not confirm required JDK $version. Review $toolchainPath."
+        }
     }
+    $desktopToolchain = $WorkstationFacts.DesktopToolchain
 
     Write-Step "Optional Windows packaging prerequisites"
     $jpackagePath = Join-Path $desktopToolchain.Location "bin\jpackage.exe"
@@ -390,20 +532,15 @@ try {
     }
     if ($null -eq $observedWix) {
         Add-Warning "WiX $ExpectedWix is missing; it is required only for MSI/EXE packaging. Recommended: dotnet tool install --global wix --version $ExpectedWix --add-source https://api.nuget.org/v3/index.json --ignore-failed-sources"
-    } elseif (-not $observedWix.StartsWith(
-            $ExpectedWix, [StringComparison]::Ordinal)) {
+    } elseif (-not (Test-PinnedWixVersion -Version $observedWix -ExpectedVersion $ExpectedWix)) {
         Add-Warning "WiX $observedWix is installed; G4 requires pinned $ExpectedWix. Recommended: dotnet tool update --global wix --version $ExpectedWix --add-source https://api.nuget.org/v3/index.json --ignore-failed-sources"
         $PackagingWix = $observedWix
     } else {
         $PackagingWix = $observedWix
     }
-    if ($null -ne $observedWix -and $observedWix.StartsWith(
-            $ExpectedWix, [StringComparison]::Ordinal)) {
-        $extensionOutput = @(& $wixCommand.Source extension list -g 2>&1)
-        $extensionExitCode = $LASTEXITCODE
-        if ($extensionExitCode -ne 0) {
-            $extensionOutput = @()
-        }
+    if (Test-PinnedWixVersion -Version $observedWix -ExpectedVersion $ExpectedWix) {
+        $extensionResult = Invoke-NativeResult -Command $wixCommand.Source -ArgumentList @("extension", "list", "-g") -Description "WiX global extension inventory"
+        $extensionOutput = @(ConvertFrom-WixExtensionInventory -ExitCode $extensionResult.ExitCode -Output $extensionResult.Output)
         $requiredWixExtensions = @(
             "WixToolset.Util.wixext",
             "WixToolset.UI.wixext"
@@ -421,11 +558,7 @@ try {
         }
     }
 
-    $finalStatus = @(& $gitCommand -C $RepositoryRoot status --porcelain=v1 `
-        --untracked-files=all)
-    if ($LASTEXITCODE -ne 0) {
-        throw "Unable to inspect final repository status."
-    }
+    $finalStatus = @(Invoke-Native -FilePath $gitCommand -ArgumentList @("-C", $RepositoryRoot, "status", "--porcelain=v1", "--untracked-files=all") -Description "Final repository status")
     if (($finalStatus -join "`n") -ne ($InitialRepositoryStatus -join "`n")) {
         throw "Repository status changed during bootstrap. No worktree change was expected."
     }
@@ -449,20 +582,50 @@ try {
     }
     Write-Host "Repository status entries: $($finalStatus.Count) (preserved by verification)"
     Write-Host "Logs: $LogDirectory"
+    Write-Host "Evidence scope: existing delegated verification; optional packaging inventory is not native artifact acceptance."
+    Write-Host "Current process user profile: $([Environment]::GetFolderPath([Environment+SpecialFolder]::UserProfile))"
 
-    $result = if ($Warnings.Count -eq 0) { "PASS" } else { "PASS WITH WARNINGS" }
-    Write-Host "`n$result"
-    if ($Warnings.Count -gt 0) {
-        foreach ($warning in $Warnings) {
-            Write-Host "- $warning"
-        }
+    $Outcome = if ($Warnings.Count -eq 0) { "PASS" } else { "PASS WITH WARNINGS" }
     }
-    exit 0
 } catch {
-    Write-Host "`n==> Workstation summary"
-    Write-Host "Repository: $RepositoryRoot"
+    $Outcome = "FAIL"
+    $failure = $_.Exception
+    $classification = if ($failure.Data.Contains("FailureClassification")) { [string]$failure.Data["FailureClassification"] } elseif ($failure -is [UnauthorizedAccessException] -or $failure -is [IO.IOException] -or $_.CategoryInfo.Category -in @("PermissionDenied", "WriteError", "OpenError")) { "permissions-filesystem" } elseif ($CurrentStage -eq "diagnostic initialization") { "diagnostic-initialization-failure" } else { "unknown" }
+    $failedStage = if ($failure.Data.Contains("Stage")) { [string]$failure.Data["Stage"] } else { $CurrentStage }
+    $FailureDetails = [ordered]@{ Stage = $failedStage; Classification = $classification; Message = $failure.Message; NativeExitCode = $failure.Data["NativeExitCode"]; NativeOutput = $failure.Data["NativeOutput"]; DiagnosticFailure = $failure.Data["DiagnosticFailure"]; InstallerExitCode = $failure.Data["InstallerExitCode"]; InstallerReturnedNormally = $failure.Data["InstallerReturnedNormally"] }
+    Write-Host "FAIL at $failedStage [$classification]"
     Write-Host "Logs: $LogDirectory"
-    Write-Host "FAIL"
-    Write-Error $_.Exception.Message
-    exit 1
+    Write-Error $failure.Message -ErrorAction Continue
+} finally {
+    $BootstrapClock.Stop()
+    try {
+        $profilePath = [Environment]::GetFolderPath([Environment+SpecialFolder]::UserProfile)
+        $summary = [ordered]@{
+            SchemaVersion = 1; RunId = $RunId; Outcome = $Outcome; Repository = $RepositoryRoot
+            ElapsedSeconds = $BootstrapClock.Elapsed.TotalSeconds; Failure = $FailureDetails
+            Warnings = @($WarningRecords.ToArray()); NativeCommands = @($NativeRecords.ToArray()); WorkstationFacts = $WorkstationFacts
+            Context = [ordered]@{
+                Scope = "current process only; sandbox profile absence is not proof of host absence"
+                UserProfile = $profilePath; PowerShell = $PSVersionTable.PSVersion.ToString()
+                JavaHome = $env:JAVA_HOME
+                GradleUserHomeAssumption = if ([string]::IsNullOrWhiteSpace($env:GRADLE_USER_HOME)) { Join-Path $profilePath ".gradle" } else { $env:GRADLE_USER_HOME }
+                GradleUserHomeScope = "process environment/default-profile assumption only; JVM property and initialization overrides are not resolved by this field"
+            }
+        }
+        $diagnostics = Complete-BootstrapDiagnostics -Summary $summary -LogDirectory $LogDirectory -TranscriptStarted $TranscriptStarted
+        $Outcome = $diagnostics.Outcome
+        $FailureDetails = $diagnostics.Failure
+        foreach ($diagnosticFailure in $diagnostics.FinalizationErrors) {
+            Write-Error ("Required bootstrap diagnostics failed at " + $diagnosticFailure.Stage + ": " + $diagnosticFailure.Message + ". Primary failure: " + $FailureDetails.Message) -ErrorAction Continue
+        }
+    } catch {
+        $Outcome = "FAIL"
+        $primaryMessage = if ($null -eq $FailureDetails) { "none recorded before finalization" } else { $FailureDetails.Message }
+        Write-Error "Unexpected bootstrap diagnostic finalization failure: $($_.Exception.Message). Primary failure: $primaryMessage" -ErrorAction Continue
+    }
 }
+
+if ($Outcome -notin @("PASS", "PASS WITH WARNINGS")) { exit 1 }
+Write-Host ([Environment]::NewLine + $Outcome)
+foreach ($warning in $Warnings) { Write-Host "- $warning" }
+exit 0

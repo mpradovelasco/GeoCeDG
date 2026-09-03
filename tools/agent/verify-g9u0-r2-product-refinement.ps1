@@ -3,6 +3,8 @@ param(
     [switch]$SkipBuild,
     [switch]$AllowToolchainDownload,
     [switch]$KeepBuildOutputs,
+    [string]$BuildEvidencePath,
+    [switch]$IncrementalBuild,
     [switch]$VerifyPackagingArtifacts,
     [switch]$HistoricalRegressionsAlreadyComposed,
     [switch]$HistoricalRegressionsAlreadyRecorded,
@@ -15,6 +17,10 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+
+Import-Module (Join-Path $PSScriptRoot "verification-runtime.psm1")
+Assert-GeoCeDGChildVerificationMode -SkipBuild:$SkipBuild `
+    -BuildEvidencePath $BuildEvidencePath -IncrementalBuild:$IncrementalBuild
 
 $RepositoryRoot = (Resolve-Path -LiteralPath (
         Join-Path $PSScriptRoot "..\..")).Path
@@ -1626,6 +1632,17 @@ function Invoke-LoggedGradle {
         $Arguments += "-Dorg.gradle.java.installations.auto-download=false"
     }
     $logPath = Join-Path $LogDirectory $LogFileName
+    if (-not [string]::IsNullOrWhiteSpace($BuildEvidencePath)) {
+        Confirm-GeoCeDGBuildEvidence -EvidencePath $BuildEvidencePath `
+            -RepositoryRoot $RepositoryRoot -WorkingDirectory $RepositoryRoot `
+            -Arguments $Arguments -LogPath $logPath `
+            -Description $Description -AllowToolchainDownload:$AllowToolchainDownload
+        return
+    }
+    if ($IncrementalBuild) {
+        $Arguments = @(ConvertTo-GeoCeDGIncrementalGradleArguments `
+            -Arguments $Arguments -KeepBuildOutputs:$KeepBuildOutputs)
+    }
     Write-Host "`n==> $Description"
     Write-Host "    log: $logPath"
     Push-Location -LiteralPath $RepositoryRoot
@@ -1795,6 +1812,9 @@ function Invoke-HistoricalVerifier {
     if ($KeepBuildOutputs) {
         $parameters.KeepBuildOutputs = $true
     }
+    if ($IncrementalBuild) {
+        $parameters.IncrementalBuild = $true
+    }
     Write-Host "`n==> $Description"
     & $scriptPath @parameters
     Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
@@ -1868,9 +1888,12 @@ try {
         Assert-Condition -Condition ($evidence.sourceBoundary.inventoryStatus -eq
                 "FROZEN") `
             -Message "Freeze the exact R2 inventory before build validation."
-        $GeneratedState = New-RepositoryGeneratedStateSnapshot `
-            -RepositoryRoot $RepositoryRoot `
-            -DirectoryNames $GeneratedDirectoryNames -Label "verify-g9u0-r2"
+        if ([string]::IsNullOrWhiteSpace($BuildEvidencePath)) {
+            $GeneratedState = New-RepositoryGeneratedStateSnapshot `
+                -RepositoryRoot $RepositoryRoot `
+                -DirectoryNames $GeneratedDirectoryNames -Label "verify-g9u0-r2" `
+                -KeepCurrentOutputs:$KeepBuildOutputs
+        }
 
         $sharedArguments = @(
             ":shared:common-jre:test"

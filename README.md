@@ -13,9 +13,11 @@ DXF experimental. G6 añadió una entidad Locus V2 semántica paralela y G6R la
 endureció con un laboratorio developer-only. G7 cerró métricas semánticas
 internas y G8 cerró intersecciones internas tipadas, ambas autor-aprobadas.
 G9P-R1, G9P y G9O1 son `PASS — AUTHOR APPROVED`; sus seis especificaciones son
-normativas y ADR 0010–0015 están Accepted. G9A1 está autorizado pero no iniciado,
-y no ha comenzado ninguna implementación espacial productiva G9. Locus V2 permanece experimental, interna y
-desactivada por defecto. Ningún recurso legacy se carga por defecto.
+normativas y ADR 0010–0015 están Accepted. El estado vigente de G9 y sus
+autorizaciones se consulta en la [hoja de ruta](docs/roadmap/geocedg_roadmap.md);
+el alcance y la activación de Locus V2 se describen en el
+[manual operativo](docs/user/geocedg_user_guide.md#can-i-use-locus-v2-now).
+Ningún recurso legacy se carga por defecto.
 
 ## Baseline
 
@@ -32,10 +34,15 @@ fijado; la discrepancia y las rutas correctas están documentadas en
 
 ## Primer arranque en Windows
 
-Se requiere Git, PowerShell 7, un JDK 22 para ejecutar Gradle y un JDK 25
-disponible como toolchain para arrancar Desktop. No es necesario instalar
-Gradle: se usa exclusivamente el wrapper del repositorio. Windows es la única
-plataforma validada actualmente.
+Se requiere Git, PowerShell 7.2 o posterior, un JDK 22 para ejecutar Gradle y JDK completos
+17 (compilación y tests) y 25 (Desktop), disponibles como toolchains. El wrapper
+selecciona Java desde `JAVA_HOME` cuando está definido; sólo usa `PATH` si está
+vacío o ausente. Un `JAVA_HOME` inválido no se sustituye silenciosamente por
+`PATH`; `java` debe estar disponible en `PATH` también para el diagnóstico de
+baseline. La verificación numérica requiere Conda y el entorno nombrado
+`om_env`, con CPython **3.12.13** y mpmath **1.4.1**; un Python global no lo
+sustituye. No es necesario instalar Gradle: se usa exclusivamente el wrapper
+del repositorio. Windows es la única plataforma validada actualmente.
 
 ```powershell
 git clone https://github.com/mpradovelasco/GeoCeDG.git
@@ -43,19 +50,33 @@ cd GeoCeDG
 .\tools\bootstrap\bootstrap-windows.ps1
 ```
 
-El bootstrap comprueba el workstation, configura `upstream` sólo si falta,
-verifica el tag fijado y delega las puertas del repositorio en
-`tools/agent/verify.ps1`. Por defecto es idempotente y no instala software. Consulte su
-ayuda con `Get-Help .\tools\bootstrap\bootstrap-windows.ps1 -Detailed`. La
-instalación de requisitos de packaging es una acción separada y explícita con
-`-InstallPackagingPrerequisites`: ejecuta únicamente el instalador focalizado y
-termina, sin `fetch`, builds ni verificaciones G3/G5. La aceptación del
+El bootstrap configura `upstream` sólo si falta, verifica el tag fijado y,
+antes de la verificación costosa del producto, comprueba el Java efectivo, los
+JDK 17/25 y las versiones y el origen de Python/mpmath dentro de `om_env`.
+Delega después en `tools/agent/verify.ps1`, cuyo nivel predeterminado es
+COMPOSED, no FULL; véase el [contrato de niveles](geocedg/specs/operations/verification-levels.md).
+Por defecto es idempotente y no instala software. Consulte su ayuda con
+`Get-Help .\tools\bootstrap\bootstrap-windows.ps1 -Detailed`.
+
+Cada ejecución guarda `bootstrap-transcript.log`, `bootstrap-result.json` y
+los logs de `preflight/` y `verification/` en una carpeta única bajo
+`%TEMP%\geocedg-bootstrap`. `-LogDirectory <directorio>` cambia sólo ese
+directorio padre común, no reutiliza una ejecución anterior. Antes de crear
+logs se rechazan rutas bajo `build`, `.gradle`, `.kotlin`, copias temporales de
+estado generado y ancestros enlazados. Los diagnósticos
+describen el proceso y perfil actuales: la ausencia de una herramienta en un
+sandbox no demuestra su ausencia en el host. Ante un fallo, consulte la etapa,
+clasificación y logs antes de atribuirlo al producto o cambiar el entorno.
+
+La instalación de requisitos de packaging es una acción separada y explícita
+con `-InstallPackagingPrerequisites`: ejecuta únicamente el instalador focalizado
+y termina, sin `fetch`, builds ni verificaciones G3/G5. La aceptación del
 repositorio se ejecuta después, de forma independiente, con
-`tools/agent/verify.ps1`.
+`tools/agent/verify.ps1`; use `-Level FULL` cuando lo exija el contrato de niveles.
 
 ## Verificación, compilación y ejecución
 
-Autoridad compuesta local:
+Autoridad compuesta local (COMPOSED por defecto):
 
 ```powershell
 .\tools\agent\verify.ps1
@@ -67,6 +88,12 @@ según el roadmap versionado. Valida el checkout actual con los mismos gates en
 Las precondiciones históricas de G7 sólo se aplican al solicitar explícitamente
 `verify-g7a-metrics.ps1 -ReproduceCharacterization` o
 `verify-g7b-metrics.ps1 -ReproduceImplementation`.
+
+Para la cobertura exhaustiva de tests compartidos y Desktop, además de las
+puertas compuestas, use `tools/agent/verify.ps1 -Level FULL` (`-FullTests` es un
+alias). DEV/PHASE tienen alcance acotado; `-SkipBuild` sólo aporta evidencia
+estática y de toolchains, nunca aceptación COMPOSED/FULL. Las condiciones que
+requieren FULL figuran en el [contrato de niveles](geocedg/specs/operations/verification-levels.md).
 
 Compilación y arranque GeoCeDG desde la raíz:
 
@@ -104,9 +131,10 @@ La exportación experimental de geometría 2D se invoca desde
 unidades, entidades soportadas y warnings se documentan en
 [el manual operativo](docs/user/geocedg_user_guide.md#8-export-2d-geometry-to-dxf).
 
-Locus V2 no tiene todavía comando público, persistencia ni `Path`. Sus métricas
-G7 e intersecciones G8 son capacidades internas no públicas. Un desarrollador
-puede validar o abrir su laboratorio aislado:
+El alcance vigente de comandos, persistencia, interacción y limitaciones de
+Locus V2 se documenta en el
+[manual operativo](docs/user/geocedg_user_guide.md#can-i-use-locus-v2-now).
+El laboratorio G6R conserva una ruta de desarrollo aislada:
 
 ```powershell
 .\tools\locus-v2\open-locus-v2-laboratory.ps1 -ValidateOnly

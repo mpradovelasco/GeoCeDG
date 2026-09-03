@@ -40,6 +40,7 @@ import javax.annotation.Nonnull;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
+import org.geocedg.desktop.resources.GeoCeDGToolImageResource;
 import org.geogebra.common.awt.MyImage;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.geos.GProperty;
@@ -242,6 +243,10 @@ public class ImageManagerD extends ImageManager {
 	 * @return image for given resource
 	 */
 	public Image getImageResource(ImageResourceD name) {
+		// GeoCeDG (2026-09-03): decode only our registered tool SVG resource.
+		if (name instanceof GeoCeDGToolImageResource) {
+			return ((GeoCeDGToolImageResource) name).renderImage();
+		}
 		return getImageResource(name.getFilename());
 	}
 
@@ -419,7 +424,13 @@ public class ImageManagerD extends ImageManager {
 	 * @return mode icon
 	 */
 	public ImageResourceD getToolImageResource(String modeText) {
-		String filename = "mode_" + StringUtil.toLowerCaseUS(modeText) + ".png";
+		String modeName = StringUtil.toLowerCaseUS(modeText);
+		// GeoCeDG (2026-09-03): preserve PNG lookup for every other mode.
+		GeoCeDGToolImageResource owned = GeoCeDGToolImageResource.forMode(modeName);
+		if (owned != null) {
+			return owned;
+		}
+		String filename = "mode_" + modeName + ".png";
 		String path = getToolbarIconPath() + filename;
 		return new ImageResourceDImpl(path);
 	}

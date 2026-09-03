@@ -3,12 +3,18 @@ param(
     [switch]$SkipBuild,
     [switch]$AllowToolchainDownload,
     [switch]$KeepBuildOutputs,
+    [string]$BuildEvidencePath,
+    [switch]$IncrementalBuild,
     [string]$LogDirectory = (Join-Path ([IO.Path]::GetTempPath()) `
         "geocedg-verify-g8c-intersections-design")
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+
+Import-Module (Join-Path $PSScriptRoot "verification-runtime.psm1")
+Assert-GeoCeDGChildVerificationMode -SkipBuild:$SkipBuild `
+    -BuildEvidencePath $BuildEvidencePath -IncrementalBuild:$IncrementalBuild
 
 $RepositoryRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot "..\..")).Path
 $RootGradle = Join-Path $RepositoryRoot "gradlew.bat"
@@ -193,6 +199,17 @@ function Invoke-G8CTests {
         "--rerun-tasks", "--no-daemon", "--console=plain"
     )
     $logPath = Join-Path $LogDirectory "g8c-design-tests.log"
+    if (-not [string]::IsNullOrWhiteSpace($BuildEvidencePath)) {
+        Confirm-GeoCeDGBuildEvidence -EvidencePath $BuildEvidencePath `
+            -RepositoryRoot $RepositoryRoot -WorkingDirectory $RepositoryRoot `
+            -Arguments $arguments -LogPath $logPath `
+            -Description "G8C design tests" -AllowToolchainDownload:$AllowToolchainDownload
+        return
+    }
+    if ($IncrementalBuild) {
+        $arguments = @(ConvertTo-GeoCeDGIncrementalGradleArguments `
+            -Arguments $arguments -KeepBuildOutputs:$KeepBuildOutputs)
+    }
     Push-Location -LiteralPath $RepositoryRoot
     try {
         & $RootGradle @arguments 2>&1 | Tee-Object -FilePath $logPath
@@ -208,9 +225,12 @@ try {
     $InitialStatus = Get-RepositoryStatusText -RepositoryRoot $RepositoryRoot
     [void](Assert-GeoCeDGFrozenG8Anchor -RepositoryRoot $RepositoryRoot)
     if (-not $SkipBuild) {
-        $GeneratedSnapshot = New-RepositoryGeneratedStateSnapshot `
-            -RepositoryRoot $RepositoryRoot `
-            -DirectoryNames $GeneratedDirectoryNames -Label "g8c-design"
+        if ([string]::IsNullOrWhiteSpace($BuildEvidencePath)) {
+            $GeneratedSnapshot = New-RepositoryGeneratedStateSnapshot `
+                -RepositoryRoot $RepositoryRoot `
+                -DirectoryNames $GeneratedDirectoryNames -Label "g8c-design" `
+                -KeepCurrentOutputs:$KeepBuildOutputs
+        }
     }
     [void](New-Item -ItemType Directory -Path $LogDirectory -Force)
 

@@ -11,7 +11,7 @@
       "arguments": ["-Quiet"],
       "warmup_iterations": 1,
       "measurement_iterations": 3,
-      "timeout_seconds": 30,
+      "timeout_seconds": 600,
       "budget": {
         "metric": "median_elapsed_ms",
         "warning_threshold_ms": 5000

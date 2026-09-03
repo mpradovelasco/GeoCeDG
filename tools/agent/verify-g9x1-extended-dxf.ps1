@@ -3,12 +3,18 @@ param(
     [switch]$SkipBuild,
     [switch]$AllowToolchainDownload,
     [switch]$KeepBuildOutputs,
+    [string]$BuildEvidencePath,
+    [switch]$IncrementalBuild,
     [string]$LogDirectory = (Join-Path ([IO.Path]::GetTempPath()) `
         "geocedg-verify-g9x1-extended-dxf")
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+
+Import-Module (Join-Path $PSScriptRoot "verification-runtime.psm1")
+Assert-GeoCeDGChildVerificationMode -SkipBuild:$SkipBuild `
+    -BuildEvidencePath $BuildEvidencePath -IncrementalBuild:$IncrementalBuild
 
 $RepositoryRoot = (Resolve-Path -LiteralPath (
         Join-Path $PSScriptRoot "..\..")).Path
@@ -601,6 +607,17 @@ function Invoke-LoggedGradle {
     param([Parameter(Mandatory)] [string[]]$Arguments)
 
     $logPath = Join-Path $LogDirectory "g9x1-focused-gradle.log"
+    if (-not [string]::IsNullOrWhiteSpace($BuildEvidencePath)) {
+        Confirm-GeoCeDGBuildEvidence -EvidencePath $BuildEvidencePath `
+            -RepositoryRoot $RepositoryRoot -WorkingDirectory $RepositoryRoot `
+            -Arguments $Arguments -LogPath $logPath `
+            -Description "G9X1 focused tests, G5 regressions and Checkstyle" -AllowToolchainDownload:$AllowToolchainDownload
+        return
+    }
+    if ($IncrementalBuild) {
+        $Arguments = @(ConvertTo-GeoCeDGIncrementalGradleArguments `
+            -Arguments $Arguments -KeepBuildOutputs:$KeepBuildOutputs)
+    }
     Write-Host "`n==> G9X1 focused tests, G5 regressions and Checkstyle"
     Write-Host "    log: $logPath"
     $exitCode = -1
@@ -652,9 +669,12 @@ try {
     $InitialStatus = Get-RepositoryStatusText -RepositoryRoot $RepositoryRoot
     Initialize-G9X1Boundary
     if (-not $SkipBuild) {
-        $GeneratedState = New-RepositoryGeneratedStateSnapshot `
-            -RepositoryRoot $RepositoryRoot `
-            -DirectoryNames $GeneratedDirectoryNames -Label "verify-g9x1"
+        if ([string]::IsNullOrWhiteSpace($BuildEvidencePath)) {
+            $GeneratedState = New-RepositoryGeneratedStateSnapshot `
+                -RepositoryRoot $RepositoryRoot `
+                -DirectoryNames $GeneratedDirectoryNames -Label "verify-g9x1" `
+                -KeepCurrentOutputs:$KeepBuildOutputs
+        }
     }
 
     foreach ($required in @(

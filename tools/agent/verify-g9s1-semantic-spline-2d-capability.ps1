@@ -3,6 +3,8 @@ param(
     [switch]$SkipBuild,
     [switch]$AllowToolchainDownload,
     [switch]$KeepBuildOutputs,
+    [string]$BuildEvidencePath,
+    [switch]$IncrementalBuild,
     [switch]$HistoricalRegressionsAlreadyComposed,
     [string]$CanonicalSummaryPath,
     [string]$CompareCanonicalSummaryPath,
@@ -12,6 +14,10 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+
+Import-Module (Join-Path $PSScriptRoot "verification-runtime.psm1")
+Assert-GeoCeDGChildVerificationMode -SkipBuild:$SkipBuild `
+    -BuildEvidencePath $BuildEvidencePath -IncrementalBuild:$IncrementalBuild
 
 $RepositoryRoot = (Resolve-Path -LiteralPath (
         Join-Path $PSScriptRoot "..\..")).Path
@@ -775,6 +781,17 @@ function Invoke-LoggedGradle {
         $effectiveArguments += "-Dorg.gradle.java.installations.auto-download=false"
     }
     $logPath = Join-Path $LogDirectory $LogFileName
+    if (-not [string]::IsNullOrWhiteSpace($BuildEvidencePath)) {
+        Confirm-GeoCeDGBuildEvidence -EvidencePath $BuildEvidencePath `
+            -RepositoryRoot $RepositoryRoot -WorkingDirectory $RepositoryRoot `
+            -Arguments $effectiveArguments -LogPath $logPath `
+            -Description $Description -AllowToolchainDownload:$AllowToolchainDownload
+        return
+    }
+    if ($IncrementalBuild) {
+        $effectiveArguments = @(ConvertTo-GeoCeDGIncrementalGradleArguments `
+            -Arguments $effectiveArguments -KeepBuildOutputs:$KeepBuildOutputs)
+    }
     Push-Location $RepositoryRoot
     try {
         & $RootGradle @effectiveArguments 2>&1 |
@@ -947,9 +964,12 @@ try {
         Write-Host "G9S1 static approved-authority verification completed."
         Write-Host "G9S1 = PASS — AUTHOR APPROVED"
     } else {
-        $GeneratedState = New-RepositoryGeneratedStateSnapshot `
-            -RepositoryRoot $RepositoryRoot `
-            -DirectoryNames $GeneratedDirectoryNames -Label "verify-g9s1"
+        if ([string]::IsNullOrWhiteSpace($BuildEvidencePath)) {
+            $GeneratedState = New-RepositoryGeneratedStateSnapshot `
+                -RepositoryRoot $RepositoryRoot `
+                -DirectoryNames $GeneratedDirectoryNames -Label "verify-g9s1" `
+                -KeepCurrentOutputs:$KeepBuildOutputs
+        }
         $commonTestArguments = @(
             ":shared:common-jre:test"
         )

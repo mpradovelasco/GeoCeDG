@@ -35,10 +35,18 @@ State legacy, file-format, feature-flag, and migration constraints.
 # Required tests and commands
 
 Name focused checks and the relevant `tools/agent/verify*.ps1` entry point.
+Distinguish DEV, PHASE, COMPOSED and FULL; name explicit DEV filters and the PHASE
+regression perimeter. Identify verification-infrastructure impact and required
+FULL validation under `geocedg/specs/operations/verification-levels.md`. A smaller
+development selection never changes the acceptance gate.
 
 # Required artifacts
 
 List durable sources, generated evidence, and the completion report.
+Include the bootstrap-impact outcome and rationale/affected paths required by
+the verification-level contract, infrastructure-impact assessment, exact
+required-level command/exit/log evidence, and existing `GUIDE_IMPACT`. Distinguish
+technical verification from author approval; explicitly report incomplete gates.
 
 # Stop conditions
 

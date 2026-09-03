@@ -3,11 +3,17 @@ param(
     [switch]$SkipBuild,
     [switch]$AllowToolchainDownload,
     [switch]$KeepBuildOutputs,
+    [string]$BuildEvidencePath,
+    [switch]$IncrementalBuild,
     [string]$LogDirectory = (Join-Path ([IO.Path]::GetTempPath()) "geocedg-verify-frontend")
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+
+Import-Module (Join-Path $PSScriptRoot "verification-runtime.psm1")
+Assert-GeoCeDGChildVerificationMode -SkipBuild:$SkipBuild `
+    -BuildEvidencePath $BuildEvidencePath -IncrementalBuild:$IncrementalBuild
 
 $GeneratedDirectoryNames = @("build", ".gradle", ".kotlin")
 $RepositoryRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot "..\..")).Path
@@ -34,6 +40,24 @@ function Invoke-LoggedNative {
     )
 
     $logPath = Join-Path $LogDirectory $LogName
+    $isVerificationBuild = ($FilePath -eq $RootGradle) -and @(
+        $ArgumentList | Where-Object {
+            $_ -match '(^|:)(compileJava|test|checkstyleMain|checkstyleTest)$'
+        }
+    ).Count -gt 0
+    if ($isVerificationBuild) {
+        if (-not [string]::IsNullOrWhiteSpace($BuildEvidencePath)) {
+            Confirm-GeoCeDGBuildEvidence -EvidencePath $BuildEvidencePath `
+                -RepositoryRoot $RepositoryRoot -WorkingDirectory $WorkingDirectory `
+                -Arguments $ArgumentList -LogPath $logPath `
+                -Description $Description -AllowToolchainDownload:$AllowToolchainDownload
+            return
+        }
+        if ($IncrementalBuild) {
+            $ArgumentList = @(ConvertTo-GeoCeDGIncrementalGradleArguments `
+                -Arguments $ArgumentList -KeepBuildOutputs:$KeepBuildOutputs)
+        }
+    }
     Write-Host "`n==> $Description"
     Write-Host "    cwd: $WorkingDirectory"
     Write-Host "    log: $logPath"
@@ -91,9 +115,12 @@ try {
     New-Item -ItemType Directory -Path $LogDirectory -Force | Out-Null
     $InitialStatus = Get-RepositoryStatusText -RepositoryRoot $RepositoryRoot
     if (-not $SkipBuild) {
-        $GeneratedState = New-RepositoryGeneratedStateSnapshot `
-            -RepositoryRoot $RepositoryRoot `
-            -DirectoryNames $GeneratedDirectoryNames -Label "verify-frontend"
+        if ([string]::IsNullOrWhiteSpace($BuildEvidencePath)) {
+            $GeneratedState = New-RepositoryGeneratedStateSnapshot `
+                -RepositoryRoot $RepositoryRoot `
+                -DirectoryNames $GeneratedDirectoryNames -Label "verify-frontend" `
+                -KeepCurrentOutputs:$KeepBuildOutputs
+        }
     }
 
     if (-not (Test-Path -LiteralPath $ProfilePath -PathType Leaf)) {

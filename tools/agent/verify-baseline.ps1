@@ -5,11 +5,17 @@ param(
     [switch]$SkipBuild,
     [switch]$AllowToolchainDownload,
     [switch]$KeepBuildOutputs,
+    [string]$BuildEvidencePath,
+    [switch]$IncrementalBuild,
     [string]$LogDirectory = (Join-Path ([IO.Path]::GetTempPath()) "geocedg-verify-baseline")
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+
+Import-Module (Join-Path $PSScriptRoot "verification-runtime.psm1")
+Assert-GeoCeDGChildVerificationMode -SkipBuild:$SkipBuild `
+    -BuildEvidencePath $BuildEvidencePath -IncrementalBuild:$IncrementalBuild
 
 $ExpectedBaseline = "9b93256b7df401ff056c37b502d82df4d72b1522"
 $ExpectedVersion = "5.4.928.0"
@@ -68,6 +74,24 @@ function Invoke-LoggedNative {
     )
 
     $logPath = Join-Path $LogDirectory $LogName
+    $isVerificationBuild = ($FilePath -eq $RootGradle) -and @(
+        $ArgumentList | Where-Object {
+            $_ -match '(^|:)(compileJava|test|checkstyleMain|checkstyleTest)$'
+        }
+    ).Count -gt 0
+    if ($isVerificationBuild) {
+        if (-not [string]::IsNullOrWhiteSpace($BuildEvidencePath)) {
+            Confirm-GeoCeDGBuildEvidence -EvidencePath $BuildEvidencePath `
+                -RepositoryRoot $RepositoryRoot -WorkingDirectory $WorkingDirectory `
+                -Arguments $ArgumentList -LogPath $logPath `
+                -Description $Description -AllowToolchainDownload:$AllowToolchainDownload
+            return
+        }
+        if ($IncrementalBuild) {
+            $ArgumentList = @(ConvertTo-GeoCeDGIncrementalGradleArguments `
+                -Arguments $ArgumentList -KeepBuildOutputs:$KeepBuildOutputs)
+        }
+    }
     Write-Host "`n==> $Description"
     Write-Host "    cwd: $WorkingDirectory"
     Write-Host "    log: $logPath"
@@ -111,13 +135,18 @@ try {
     if (-not (Test-Path -LiteralPath (Join-Path $RepositoryRoot ".git"))) {
         throw "Repository root was not resolved correctly: $RepositoryRoot"
     }
+    Assert-VerificationLogDirectoryOutsideGeneratedState `
+        -RepositoryRoot $RepositoryRoot -LogDirectory $LogDirectory
     New-Item -ItemType Directory -Path $LogDirectory -Force | Out-Null
 
     $InitialStatus = Get-RepositoryStatusText -RepositoryRoot $RepositoryRoot
     if (-not $SkipBuild) {
-        $GeneratedState = New-RepositoryGeneratedStateSnapshot `
-            -RepositoryRoot $RepositoryRoot `
-            -DirectoryNames $GeneratedDirectoryNames -Label "verify-baseline"
+        if ([string]::IsNullOrWhiteSpace($BuildEvidencePath)) {
+            $GeneratedState = New-RepositoryGeneratedStateSnapshot `
+                -RepositoryRoot $RepositoryRoot `
+                -DirectoryNames $GeneratedDirectoryNames -Label "verify-baseline" `
+                -KeepCurrentOutputs:$KeepBuildOutputs
+        }
     }
 
     Write-Host "GeoCeDG baseline verification"
@@ -232,17 +261,38 @@ try {
             -Description "Desktop composite compilation"
 
         if ($FullTests) {
+            $independentFullTests = [string]::IsNullOrWhiteSpace($BuildEvidencePath)
+            if ($independentFullTests) {
+                $fullJUnitArchive = Join-Path $LogDirectory (
+                    "independent-full-junit-" + [guid]::NewGuid().ToString("N"))
+                Clear-GeoCeDGIndependentFullTestReports -RepositoryRoot $RepositoryRoot `
+                    -Module shared
+            }
             Invoke-LoggedNative -FilePath $RootGradle -ArgumentList (
                 Get-GradleArguments -Tasks @(
                     ":common-jre:test"
                 )) -WorkingDirectory $SharedBuildRoot -LogName "shared-tests.log" `
                 -Description "Shared JRE tests"
+            if ($independentFullTests) {
+                Assert-GeoCeDGIndependentFullTestOutcome -RepositoryRoot $RepositoryRoot `
+                    -Module shared -WorkingDirectory $SharedBuildRoot `
+                    -LogPath (Join-Path $LogDirectory "shared-tests.log") `
+                    -ArchiveDirectory (Join-Path $fullJUnitArchive "shared")
+                Clear-GeoCeDGIndependentFullTestReports -RepositoryRoot $RepositoryRoot `
+                    -Module desktop
+            }
 
             Invoke-LoggedNative -FilePath $RootGradle -ArgumentList (
                 Get-GradleArguments -Tasks @(
                     ":desktop:desktop:test"
                 )) -WorkingDirectory $RepositoryRoot -LogName "desktop-tests.log" `
                 -Description "Desktop tests"
+            if ($independentFullTests) {
+                Assert-GeoCeDGIndependentFullTestOutcome -RepositoryRoot $RepositoryRoot `
+                    -Module desktop -WorkingDirectory $RepositoryRoot `
+                    -LogPath (Join-Path $LogDirectory "desktop-tests.log") `
+                    -ArchiveDirectory (Join-Path $fullJUnitArchive "desktop")
+            }
         }
 
         if ($LaunchDesktop) {

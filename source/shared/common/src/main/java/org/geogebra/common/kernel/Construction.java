@@ -2822,7 +2822,8 @@ public class Construction {
 				throw new MyError(getApplication().getLocalization(),
 						Errors.ReplaceFailed);
 			}
-			if (spatialRedefineMap != null) {
+			// GeoCeDG: an ordinary batch has no spatial host operation to complete.
+			if (!publicationContexts.isEmpty()) {
 				for (SpatialRedefineTransaction transaction
 						: spatialRedefineMap.values()) {
 					GeoElement result = spatialIdentityRegistry.getGeo(

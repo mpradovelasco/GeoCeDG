@@ -49,7 +49,7 @@ prompt-maintenance entry points are the
 
 ## Run GeoCeDG now
 
-From an already prepared clone, open PowerShell 7 at the repository root and
+From an already prepared clone, open PowerShell 7.2 or newer at the repository root and
 run:
 
 ```powershell
@@ -354,19 +354,30 @@ The validated workstation profile is:
 |---|---|
 | Operating system | Windows 11 is validated; Linux and macOS are not currently claimed as validated |
 | Git | Git for Windows, available as `git` |
-| Shell | PowerShell 7 or newer, available as `pwsh` |
-| Gradle launcher JVM | JDK 22 on `PATH`; the validated installation was Oracle JDK 22.0.2 |
-| Desktop toolchain | A JDK 25 discoverable by Gradle; the validated runtime was Eclipse Temurin 25.0.4 |
+| Shell | PowerShell 7.2 or newer, available as `pwsh`; the floor supports redirected native-stderr handling |
+| Gradle launcher JVM | JDK 22 selected by the wrapper: `JAVA_HOME` takes precedence over `PATH`; the validated installation was Oracle JDK 22.0.2 |
+| Compiler/test toolchain | A full JDK 17 discoverable by Gradle, including `java` and `javac` |
+| Desktop toolchain | A full JDK 25 discoverable by Gradle; the validated runtime was Eclipse Temurin 25.0.4 |
+| Numerical references | Conda with the named environment `om_env`, CPython **3.12.13** and mpmath **1.4.1**, with interpreter and import origins inside that environment |
 | Gradle | Use only `gradlew.bat` from the repository; do not install or invoke a system Gradle |
 | G4 packaging | JDK 25 `jpackage`; MSI/EXE additionally require .NET SDK 6+ and WiX 5.0.2 with Util/UI extensions 5.0.2 |
 | Network | Required by the normal first bootstrap to fetch `origin`, `upstream`, and tags |
 
-The Desktop task requests Java language version 25, while Gradle itself is
-launched with Java 22. Automatic toolchain download is disabled by the normal
-verification path, so install or expose JDK 25 manually if Gradle cannot find
-one.
+The shared Java convention uses JDK 17 for compilation and tests; the Desktop
+runtime task requests Java 25, while Gradle itself is launched with Java 22.
+These are distinct roles, not interchangeable version requirements. Automatic
+toolchain download is disabled by the normal verification path. The bootstrap
+detects prerequisites; it does not install Java or create the Conda environment.
 
-The bootstrap never installs Git, PowerShell, Java, or Gradle. By default it
+The wrapper uses `JAVA_HOME` when it is nonempty and falls back to `PATH` only
+when it is empty or absent. An invalid `JAVA_HOME` is an error, even if a valid
+Java is available on `PATH`. Bootstrap also requires a `java` command on `PATH`
+for its separate baseline diagnostic; that diagnostic does not identify the
+wrapper-selected launcher. Numerical checks use `conda run -n om_env`, not an
+activated or global Python interpreter; preflight checks the exact versions
+and executable/import origins.
+
+The bootstrap never installs Git, PowerShell, Java, Gradle, Conda, or Python. By default it
 also only detects optional packaging prerequisites. The explicit
 `-InstallPackagingPrerequisites` option may install only a missing .NET 8 SDK
 and pinned WiX 5.0.2 plus required extensions. It does not
@@ -465,13 +476,30 @@ The bootstrap:
 - fetches both remotes and tags;
 - checks the annotated tag `geogebra-baseline-5.4.928.0` against the pinned
   baseline SHA;
-- reports the launcher JVM and Desktop toolchain;
-- delegates repository validation to `tools/agent/verify.ps1`;
+- before expensive product verification, checks the effective wrapper launcher,
+  usable JDK 17/25 toolchains, and the exact Python/mpmath versions and origins
+  inside `om_env`;
+- delegates repository validation to `tools/agent/verify.ps1` (default COMPOSED,
+  not FULL);
 - preserves the initial worktree status and reports `PASS`,
   `PASS WITH WARNINGS`, or `FAIL`.
 
 It is idempotent: a second normal execution should produce the same logical
-state without duplicating remotes or changing tracked files.
+state without duplicating remotes or changing tracked files. Each invocation
+creates a new diagnostic run directory, so logs are not reused as evidence.
+
+The default log parent is `%TEMP%\geocedg-bootstrap`. A unique child contains
+`bootstrap-transcript.log`, the structured `bootstrap-result.json`, native
+prerequisite logs in `preflight/`, and delegated gate logs in `verification/`.
+The optional `-LogDirectory <directory>` selects a common parent; it does not
+select or overwrite an existing run. Before creating logs or launching probes,
+bootstrap rejects generated-output directories, generated-state backup trees,
+and linked ancestry. A rejected path is not used later for failure-summary output.
+On failure, inspect the recorded stage,
+classification and native exit/log before treating the result as a product
+regression or changing software. Workstation facts describe the current
+process, user profile and environment; a sandbox's missing tool or profile
+is not evidence that the host lacks it.
 
 Useful options are:
 
@@ -480,18 +508,28 @@ Useful options are:
 .\tools\bootstrap\bootstrap-windows.ps1 -SkipBuild
 .\tools\bootstrap\bootstrap-windows.ps1 -RunBenchmarks
 .\tools\bootstrap\bootstrap-windows.ps1 -LaunchDesktop
+.\tools\bootstrap\bootstrap-windows.ps1 -LogDirectory .\artifacts\bootstrap-logs
 .\tools\bootstrap\bootstrap-windows.ps1 -InstallPackagingPrerequisites
 ```
 
-`-SkipFetch` uses existing local refs. `-SkipBuild` provides only static and
-toolchain evidence. `-RunBenchmarks` adds the informational operational
-benchmark. `-LaunchDesktop` launches **GeoGebra Classic**, because that option
-belongs to the pinned-baseline gate; it does not launch GeoCeDG.
+`-SkipFetch` uses existing local refs; it does not establish current remote
+state or make dependency resolution offline. `-SkipBuild` provides only static
+and toolchain evidence, not repository acceptance, and cannot be combined with
+`-LaunchDesktop`. `-RunBenchmarks` adds the informational operational benchmark.
+`-LaunchDesktop` launches **GeoGebra Classic**, because that option belongs to
+the pinned-baseline gate; it does not launch GeoCeDG.
 `-InstallPackagingPrerequisites` is opt-in and idempotent; use it only on a
-packaging workstation. It is independent of the other bootstrap options,
-cannot be combined with them, and exits after focused prerequisite setup
-without onboarding or repository verification. Exact manual commands are in the
+packaging workstation. It cannot be combined with the other onboarding or
+verification switches; the common `-LogDirectory` diagnostic option remains
+available. It exits after focused prerequisite setup without onboarding or
+repository verification. Exact manual commands are in the
 [root README](../../README.md#requisitos-de-packaging-windows).
+
+Bootstrap success covers its requested scope, not an implicit FULL run. Run
+`tools/agent/verify.ps1 -Level FULL` separately when exhaustive test coverage
+or a required FULL gate is needed; see the
+[verification-level contract](../../geocedg/specs/operations/verification-levels.md).
+An incomplete `-SkipBuild` run cannot satisfy that gate.
 
 See the [root README](../../README.md) for the short repository overview and
 [UPSTREAM.md](../../UPSTREAM.md) for baseline provenance.
@@ -506,11 +544,14 @@ Run commands from the repository root unless stated otherwise.
 .\tools\agent\verify.ps1
 ```
 
-This is the canonical local gate. It composes workstation/operational contracts,
-the G3 legacy catalog, G4 static package contracts, G5 DXF tests, the pinned
-baseline build, and focused GeoCeDG frontend tests.
-It writes logs below `%TEMP%\geocedg-verify` by default and normally removes
-the Gradle outputs it created.
+This is the default COMPOSED local gate: the current applicable cross-phase
+scientific and governance checks, pinned baseline build, and focused
+GeoCeDG tests. It is not the unfiltered FULL test suite. The
+[verification-level contract](../../geocedg/specs/operations/verification-levels.md)
+defines DEV, PHASE, COMPOSED and FULL coverage and when FULL is required,
+including verification/bootstrap infrastructure changes and phase closeout.
+It writes logs below `%TEMP%\geocedg-verify` by default and restores the
+pre-existing generated-output state unless `-KeepBuildOutputs` is explicit.
 
 Include the current informational benchmark with:
 
@@ -518,10 +559,12 @@ Include the current informational benchmark with:
 .\tools\agent\verify.ps1 -RunBenchmarks
 ```
 
-Optional expensive or interactive variants are:
+FULL adds the unfiltered shared-JRE and Desktop test suites while retaining
+COMPOSED checks. The explicit interactive launch remains a separate option:
 
 ```powershell
-.\tools\agent\verify.ps1 -FullTests
+.\tools\agent\verify.ps1 -Level FULL
+.\tools\agent\verify.ps1 -FullTests # Legacy alias for FULL.
 .\tools\agent\verify.ps1 -LaunchDesktop
 ```
 
@@ -545,8 +588,11 @@ baseline Classic launcher. Close its window normally to complete the gate.
 .\tools\agent\verify-g8c-intersections-design.ps1
 ```
 
-Use the composed verifier for an acceptance result. Use a focused verifier to
-diagnose its corresponding layer.
+Use the canonical verifier at the level required by the
+[verification-level contract](../../geocedg/specs/operations/verification-levels.md):
+COMPOSED is the default technical candidate gate, while closeout and infrastructure
+changes require FULL. A technical PASS does not confer author approval. Use a
+focused verifier to diagnose its corresponding layer.
 
 ### Desktop build
 

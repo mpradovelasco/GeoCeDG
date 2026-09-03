@@ -13,14 +13,18 @@
  * non-commercial purposes only.
  * See https://www.geogebra.org/license for full licensing details
  */
+
+// GeoCeDG modification (2026): test Classic-OFF and explicit V2 opt-in contracts.
  
 package org.geogebra.common.kernel.commands;
 
 import static org.geogebra.common.kernel.commands.CommandsConstants.TABLE_CAS;
 import static org.geogebra.test.commands.AlgebraTestHelper.shouldFail;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.List;
 
+import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
 import org.geogebra.common.AppCommonFactory;
 import org.geogebra.common.BaseUnitTest;
 import org.geogebra.common.jre.headless.AppCommon;
@@ -30,6 +34,9 @@ import org.junit.jupiter.api.Test;
 
 class CommandsValidationTest extends BaseUnitTest {
 
+	private static final List<Commands> GEOCEDG_COMMANDS =
+			List.of(Commands.LocusV2, Commands.LocusLength, Commands.SplineV2);
+
 	@Override
 	public AppCommon createAppCommon() {
 		return AppCommonFactory.create3D();
@@ -37,24 +44,52 @@ class CommandsValidationTest extends BaseUnitTest {
 
 	@Test
 	void testArgumentTypeValidation() {
+		checkArgumentTypeValidation(getApp(), false);
+	}
+
+	@Test
+	void testArgumentTypeValidationWithGeoCeDGOptIn() {
+		checkArgumentTypeValidation(
+				AppCommonFactory.create3D(new AppConfigGeoCeDG(true)), true);
+	}
+
+	private void checkArgumentTypeValidation(App app, boolean locusV2Enabled) {
 		for (Commands command: Commands.values()) {
-			List<Integer> signature = CommandSignatures.getSignature(command.name(), getApp());
+			List<Integer> signature = CommandSignatures.getSignature(command.name(), app);
+			if (GEOCEDG_COMMANDS.contains(command)) {
+				assertNotNull(signature, command.name());
+			}
 			if (signature != null && command.getTable() != TABLE_CAS
 					&& !acceptsAnyArgType(command)) {
-				checkArgumentTypeValidation(command.name(), signature);
+				checkArgumentTypeValidation(command.name(), signature, app,
+						GEOCEDG_COMMANDS.contains(command) && !locusV2Enabled);
 			}
 		}
 	}
 
 	@Test
 	void testArgumentNumberValidation() {
+		checkArgumentNumberValidation(getApp(), false);
+	}
+
+	@Test
+	void testArgumentNumberValidationWithGeoCeDGOptIn() {
+		checkArgumentNumberValidation(
+				AppCommonFactory.create3D(new AppConfigGeoCeDG(true)), true);
+	}
+
+	private void checkArgumentNumberValidation(App app, boolean locusV2Enabled) {
 		for (Commands command: Commands.values()) {
-			List<Integer> signature = CommandSignatures.getSignature(command.name(), getApp());
+			List<Integer> signature = CommandSignatures.getSignature(command.name(), app);
+			if (GEOCEDG_COMMANDS.contains(command)) {
+				assertNotNull(signature, command.name());
+			}
 			if (signature != null && command.getTable() != TABLE_CAS
 				&& command != Commands.PenStroke
 				&& command != Commands.SelectObjects
 				&& command != Commands.StartAnimation) {
-				checkArgumentNumberValidation(command.name(), signature);
+				checkArgumentNumberValidation(command.name(), signature, app,
+						GEOCEDG_COMMANDS.contains(command) && !locusV2Enabled);
 			}
 		}
 	}
@@ -69,8 +104,7 @@ class CommandsValidationTest extends BaseUnitTest {
 	}
 
 	private void checkArgumentTypeValidation(String cmdName,
-			List<Integer> signature) {
-		App app = getApp();
+			List<Integer> signature, App app, boolean featureDisabled) {
 		for (int args : signature) {
 			StringBuilder withArgs = new StringBuilder(cmdName).append("(");
 			for (int i = 0; i < args - 1; i++) {
@@ -78,7 +112,12 @@ class CommandsValidationTest extends BaseUnitTest {
 			}
 			withArgs.append("space)");
 			if (args > 0) {
-				shouldFail(withArgs.toString(), "arg", "IllegalArgument:", app);
+				if (featureDisabled) {
+					shouldFail(withArgs.toString(),
+							app.getLocalization().getMenu("LocusV2.FeatureDisabled"), app);
+				} else {
+					shouldFail(withArgs.toString(), "arg", "IllegalArgument:", app);
+				}
 			}
 		}
 	}
@@ -110,13 +149,16 @@ class CommandsValidationTest extends BaseUnitTest {
 	}
 
 	private void checkArgumentNumberValidation(String cmdName,
-			List<Integer> signature) {
-		if (!signature.contains(0)) {
+			List<Integer> signature, App app, boolean featureDisabled) {
+		if (featureDisabled) {
+			shouldFail(cmdName + "()",
+					app.getLocalization().getMenu("LocusV2.FeatureDisabled"), app);
+		} else if (!signature.contains(0)) {
 			shouldFail(cmdName + "()", "Illegal number of arguments: 0",
-					"IllegalArgumentNumber", getApp());
+					"IllegalArgumentNumber", app);
 		} else {
 			shouldFail(cmdName + "(space,space,space,space,space,space,space,space,space)",
-					"Illegal number of arguments: 9", "IllegalArgumentNumber", getApp());
+					"Illegal number of arguments: 9", "IllegalArgumentNumber", app);
 		}
 	}
 }

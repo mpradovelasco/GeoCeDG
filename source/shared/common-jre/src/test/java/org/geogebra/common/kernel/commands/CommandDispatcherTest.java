@@ -14,6 +14,8 @@
  * See https://www.geogebra.org/license for full licensing details
  */
 
+// GeoCeDG modification (2026): test Classic-OFF and explicit V2 opt-in contracts.
+
 package org.geogebra.common.kernel.commands;
 
 import static org.geogebra.common.kernel.commands.Commands.Evaluate;
@@ -25,6 +27,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Arrays;
 import java.util.List;
 
+import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
+import org.geogebra.common.AppCommonFactory;
+import org.geogebra.common.jre.headless.AppCommon;
 import org.geogebra.common.jre.kernel.commands.CommandDispatcher3DJre;
 import org.geogebra.common.kernel.arithmetic.Command;
 import org.geogebra.test.BaseAppTestSetup;
@@ -44,7 +49,19 @@ class CommandDispatcherTest extends BaseAppTestSetup {
 		List<Commands> undef = Arrays.stream(Commands.values()).filter(cmd ->
 			dispatcher.commandTableSwitch(
 					new Command(getKernel(), cmd.name(), false)) == null).toList();
-		// Evaluate is an internal CAS command, the others are unreleased
+		// Classic also hides the registered, default-off GeoCeDG commands.
+		assertEquals(List.of(Commands.LocusV2, Commands.LocusLength, Commands.SplineV2,
+				ImplicitSurface, Polyhedron, Evaluate, SolveQuartic), undef);
+	}
+
+	@Test
+	void testAllCommandsInSwitchWithGeoCeDGOptIn() {
+		AppCommon app = AppCommonFactory.create3D(new AppConfigGeoCeDG(true));
+		CommandDispatcher dispatcher = new CommandDispatcher3DJre(app.getKernel());
+		List<Commands> undef = Arrays.stream(Commands.values()).filter(cmd ->
+				dispatcher.commandTableSwitch(
+						new Command(app.getKernel(), cmd.name(), false)) == null).toList();
+		// Opt-in resolves the new processors while preserving the inherited inventory.
 		assertEquals(List.of(ImplicitSurface, Polyhedron, Evaluate, SolveQuartic), undef);
 	}
 
