@@ -322,9 +322,13 @@
     "tools/agent/tests/verification-runtime.Tests.ps1",
     "tools/agent/verify-baseline.ps1",
     "tools/agent/verify-g9s1-r1-spline-pair-materialization.ps1",
+    "tools/agent/verify-g9s1-semantic-spline-2d-capability.ps1",
+    "tools/agent/verify-g9u0-r4-intersection-admissibility-continuation.ps1",
+    "tools/agent/verify-g9u0-r5-locus-v2-similarity-transformations.ps1",
+    "tools/agent/verify-g9u0-r6-semantic-locus-point-interaction-support.ps1",
     "tools/agent/verify-verification-infrastructure.ps1"
   ],
-  "maximumInfrastructureCommits": 2,
+  "maximumInfrastructureCommits": 3,
   "closeout": {
     "recordPath": "geocedg/validation/g9s1-r1/g9s1-r1-author-closeout.json",
     "literalReplacements": [

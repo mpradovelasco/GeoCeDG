@@ -295,3 +295,101 @@ changes. G9U1 is not implemented. The R4 periodic-quarantine round-trip risk
 remains open and tracked. No publication, phase tag or main promotion is
 authorized by this hotfix task; stop after new technical validation for author
 review of the exact new commit.
+
+## 12. Bounded logical-EOL hotfix after the second stopped Stage II attempt
+
+The author approved technical commit
+`22f9ef4198e34ca79f542eb82a4f72b1f8e51e56`. Its real `AUTHOR_CLOSEOUT`
+attempt exited 1 in the inherited R4 `git diff --check` call (line 2167 of
+that commit). It rejected roadmap line 10's final CR from the approved CRLF
+delimiter as trailing whitespace. There was no trailing ASCII space or tab.
+The failed execution remains FAILED historical evidence under ignored
+`artifacts/g9s1-r1-closeout-hotfix/stage-ii-approved/`; it is not reclassified.
+The roadmap's pending approved raw SHA-256 remains
+`04c5eaed53b437fa7fcc9dbb51a8ef1f392b7ec6999422dcff5564776fb8907f`.
+
+### Audited perimeter and exact correction
+
+The actual documentary-closeout call chain is R1 -> R6 -> G9S1 -> R5 -> R4.
+The audit includes its lifecycle, evidence-integrity, verification-runtime and
+generated-state helpers, import edges, newline splitting and whitespace tests.
+R4 refers to R3 source but does not invoke R3 on this path. The top-level
+PHASE/COMPOSED/FULL orchestrator is not invoked by `AUTHOR_CLOSEOUT`.
+
+| Executed verifier at reviewed commit | Unstaged/staged check lines | Correction |
+|---|---|---|
+| `verify-g9u0-r4-intersection-admissibility-continuation.ps1` | 2167 / 2170 | pin logical-EOL Git policy |
+| `verify-g9u0-r5-locus-v2-similarity-transformations.ps1` | 941 / 944 | same |
+| `verify-g9s1-semantic-spline-2d-capability.ps1` | 956 / 959 | same |
+| `verify-g9u0-r6-semantic-locus-point-interaction-support.ps1` | 1088 / 1091 | same |
+| `verify-g9s1-r1-spline-pair-materialization.ps1` | 593 / 595 | same |
+
+All ten calls now explicitly select Git's normal
+`blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol` policy, following the
+already approved baseline-verifier precedent and section 10 of
+[verification levels](../../geocedg/specs/operations/verification-levels.md).
+Only the final CR delimiter is permitted; actual spaces/tabs before LF or CRLF
+remain errors. This is not an ignore-whitespace option, a broad `TrimEnd`, a
+Git/global configuration edit, or roadmap normalization.
+
+There is no `\s+$` trailing-whitespace predicate in the audited chain.
+Existing `\r?\n` splits are logical-line parsing; the lifecycle helper's
+`TrimEnd("\r", "\n")` handles Git command-output delimiters, not source
+whitespace validation. Path-separator trims and Git index/tree parsers have
+different purposes and remain unchanged. The four helpers contain no affected
+whitespace check. Unrelated standalone verifiers are outside this bounded
+AUTHOR_CLOSEOUT correction; no general verifier refactor is performed.
+
+### Regression and byte-authority separation
+
+The expanded lifecycle suite executes the exact whitespace-command ASTs from
+each of the five verifiers in disposable Git fixtures, never the real closeout.
+The matrix covers LF, CRLF, the byte-exact approved roadmap projection, spaces
+and tabs before each delimiter, and an extra terminal CR. Each runs through
+both unstaged and staged checks with strict and permissive inherited settings.
+The check must not modify file bytes; raw LF and CRLF hashes must remain
+different. Existing raw-cohort, index, receipt and scientific-source assertions
+remain live. No authority hash function, scientific tolerance or source input
+is normalized by this hotfix.
+
+Before the ten-call correction, the expanded suite recorded 39/44 successes
+and five failures: every inherited verifier rejected valid CRLF. These are
+expected regression-red results, not a new product failure. Green focused
+results and fresh technical executions are required and will be recorded as
+new ignored execution evidence after the hotfix commit; none is predicted here.
+
+### Cohort isolation, provenance and impact
+
+The original worktree retains all seven pending approval files byte-exactly.
+An isolated local worktree at `artifacts/r1-eol`, branch
+`codex/g9s1-r1-closeout-whitespace-hotfix`, starts from `22f9ef4...`; it contains
+the technical candidate state, not those pending approval outputs. Its input
+bytes are materialized against the reviewed raw inventory before correction.
+No pending file is removed, reapplied, normalized or committed by this task.
+
+The author's authorization for one additional bounded technical hotfix is
+represented by `maximumInfrastructureCommits: 2 -> 3` and exactly four added
+infrastructure paths: the inherited R4/R5/G9S1/R6 verifiers above. R1's verifier,
+the lifecycle fixture, policy and this report were already listed. Existing
+one- and two-commit rejection fixtures remain; the new three-commit fixture
+rejects a fourth. Candidate blobs, ancestor checks and the entire seven-file
+closeout path/content allowlist are unchanged. This does not authorize any
+arbitrary future follow-up or productive delta.
+
+```text
+VERIFICATION_INFRASTRUCTURE_IMPACT = UPDATE_REQUIRED
+BOOTSTRAP IMPACT — NO CHANGE REQUIRED
+GUIDE_IMPACT = NONE
+Author decision: G9S1-R1 PASS — AUTHOR APPROVED (preserved)
+PUBLISHED CLOSEOUT = PENDING
+```
+
+No PowerShell/JDK/Gradle prerequisite, bootstrap entrypoint, environment policy,
+scientific input or operating command changes. The existing lifecycle guide
+already separates technical evidence from closeout. ADR 0020 requires a fresh
+clean FULL on the new infrastructure cohort; the existing documentary linkage
+also requires independent PHASE A/B and COMPOSED roots. Prior FULL evidence is
+historical, not evidence of this hotfix. Stop after the new technical cohort is
+validated: no real AUTHOR_CLOSEOUT, approval commit, push, tag or promotion.
+G9U1 remains unimplemented and unauthorized; the independent
+`G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` risk remains OPEN / TRACKED.

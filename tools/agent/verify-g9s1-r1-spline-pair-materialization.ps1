@@ -590,9 +590,9 @@ try {
             -SkipBuild -LogDirectory (Join-Path $LogDirectory 'sealed-r6')
         Assert-R1 ($LASTEXITCODE -eq 0) "Historical descendant-safe R6 authority failed."
     }
-    & git -C $RepositoryRoot diff --check
+    & git -c core.whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol -C $RepositoryRoot diff --check
     Assert-R1 ($LASTEXITCODE -eq 0) "git diff --check failed."
-    & git -C $RepositoryRoot diff --cached --check
+    & git -c core.whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol -C $RepositoryRoot diff --cached --check
     Assert-R1 ($LASTEXITCODE -eq 0) "git diff --cached --check failed."
     if ($AuthorCloseoutOnly) {
         Assert-R1 ($SelectedLifecycleMode -ceq "AUTHOR_CLOSEOUT" -and -not $SkipBuild -and

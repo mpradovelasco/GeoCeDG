@@ -920,6 +920,113 @@ Invoke-LifecycleCase 'two authorized infrastructure commits do not authorize a t
         'Too many infrastructure follow-up commits' 'Two-commit bound'
 }
 
+Invoke-LifecycleCase 'three authorized infrastructure commits do not authorize a fourth' {
+    $fixture = New-LifecycleFixture (Join-Path $RunRoot 'three-infra-bound') `
+        -MaximumInfrastructureCommits 3
+    foreach ($number in @(2, 3)) {
+        Write-Text (Join-Path $fixture.Root 'tools/infra-a.txt') "bounded hotfix $number`n"
+        $hotfix = Commit-Fixture $fixture.Root "Authorized infrastructure commit $number"
+    }
+    $context = Invoke-FixtureContext $fixture COMMITTED_CANDIDATE
+    Assert-Case ($context.CurrentHead -ceq $hotfix -and
+        -not $context.AuthorApprovedPhase -and -not $context.PassClaimed) `
+        'Bounded third infrastructure commit did not remain a technical candidate'
+    Write-Text (Join-Path $fixture.Root 'tools/infra-b.txt') "unauthorized fourth`n"
+    [void](Commit-Fixture $fixture.Root 'Unauthorized fourth infrastructure commit')
+    Assert-Throws { Invoke-FixtureContext $fixture COMMITTED_CANDIDATE } `
+        'Too many infrastructure follow-up commits' 'Three-commit bound'
+}
+
+# Execute only the actual Git whitespace command ASTs in disposable repositories.
+# This never invokes the real AUTHOR_CLOSEOUT or writes a real approval file.
+$WhitespaceVerifiers = @(
+    'verify-g9u0-r4-intersection-admissibility-continuation.ps1',
+    'verify-g9u0-r5-locus-v2-similarity-transformations.ps1',
+    'verify-g9s1-semantic-spline-2d-capability.ps1',
+    'verify-g9u0-r6-semantic-locus-point-interaction-support.ps1',
+    'verify-g9s1-r1-spline-pair-materialization.ps1'
+)
+foreach ($verifierName in $WhitespaceVerifiers) {
+    Invoke-LifecycleCase "logical EOL and raw evidence remain distinct: $verifierName" {
+        $sourcePath = Join-Path $RealRepository "tools/agent/$verifierName"
+        $tokens = $null
+        $errors = $null
+        $ast = [Management.Automation.Language.Parser]::ParseFile(
+            $sourcePath, [ref]$tokens, [ref]$errors)
+        Assert-Case (@($errors).Count -eq 0) 'Whitespace verifier must parse'
+        $commands = @($ast.FindAll({ param($node)
+            $node -is [Management.Automation.Language.CommandAst] -and
+            $node.GetCommandName() -ceq 'git' -and
+            @($node.CommandElements | Where-Object { $_.Extent.Text -ceq 'diff' }).Count -eq 1 -and
+            @($node.CommandElements | Where-Object { $_.Extent.Text -ceq '--check' }).Count -eq 1
+        }, $true))
+        Assert-Case ($commands.Count -eq 2) 'Expected exact unstaged and staged whitespace checks'
+        $RepositoryRoot = Join-Path $RunRoot ('whitespace-' + $verifierName.Replace('.ps1', ''))
+        [void][IO.Directory]::CreateDirectory($RepositoryRoot)
+        [void](Invoke-Git $RepositoryRoot @('init', '--quiet'))
+        [void](Invoke-Git $RepositoryRoot @('config', 'core.autocrlf', 'false'))
+        $path = Join-Path $RepositoryRoot 'logical-lines.txt'
+        Write-Text $path "before`n"
+        $roadmapPath = 'docs/roadmap/geocedg_roadmap.md'
+        $technical = '22f9ef4198e34ca79f542eb82a4f72b1f8e51e56'
+        $originalRoadmap = Get-GeoCeDGPhaseLifecycleBlobBytes $RealRepository $technical $roadmapPath
+        $policy = ConvertFrom-GeoCeDGPhaseLifecycleJson `
+            (Get-GeoCeDGPhaseLifecycleBlobBytes $RealRepository $technical `
+                'geocedg/validation/g9s1-r1/g9s1-r1-lifecycle-policy.json') 'frozen whitespace policy fixture'
+        $projected = Get-GeoCeDGPhaseExpectedCloseoutBytes $RealRepository $technical $policy
+        $approvedRoadmap = [byte[]]$projected[$roadmapPath]
+        Assert-Case ((Get-GeoCeDGPhaseLifecycleHash $approvedRoadmap) -ceq
+            '04c5eaed53b437fa7fcc9dbb51a8ef1f392b7ec6999422dcff5564776fb8907f') `
+            'Approved roadmap fixture bytes changed'
+        $fixtureRoadmap = Join-Path $RepositoryRoot $roadmapPath
+        [void][IO.Directory]::CreateDirectory((Split-Path -Parent $fixtureRoadmap))
+        [IO.File]::WriteAllBytes($fixtureRoadmap, $originalRoadmap)
+        [void](Commit-Fixture $RepositoryRoot 'Whitespace fixture baseline')
+        $cases = @(
+            @{ Name = 'LF'; Text = "alpha`nbeta`n"; Pass = $true },
+            @{ Name = 'CRLF'; Text = "alpha`r`nbeta`r`n"; Pass = $true },
+            @{ Name = 'space-LF'; Text = "alpha `nbeta`n"; Pass = $false },
+            @{ Name = 'tab-LF'; Text = "alpha`t`nbeta`n"; Pass = $false },
+            @{ Name = 'space-CRLF'; Text = "alpha `r`nbeta`r`n"; Pass = $false },
+            @{ Name = 'tab-CRLF'; Text = "alpha`t`r`nbeta`r`n"; Pass = $false },
+            @{ Name = 'double-CR'; Text = "alpha`r`r`nbeta`n"; Pass = $false },
+            @{ Name = 'approved-roadmap-CRLF'; Text = "before`n"; Pass = $true }
+        )
+        $lfHash = Get-GeoCeDGPhaseLifecycleHash ([Text.Encoding]::UTF8.GetBytes($cases[0].Text))
+        $crlfHash = Get-GeoCeDGPhaseLifecycleHash ([Text.Encoding]::UTF8.GetBytes($cases[1].Text))
+        Assert-Case ($lfHash -cne $crlfHash) 'Raw authority must distinguish LF from CRLF'
+        foreach ($case in $cases) {
+            foreach ($inheritedPolicy in @('blank-at-eol', '-blank-at-eol,-blank-at-eof,-space-before-tab')) {
+                [void](Invoke-Git $RepositoryRoot @('config', 'core.whitespace', $inheritedPolicy))
+                # read-tree resets only this disposable index, not the real repository.
+                [void](Invoke-Git $RepositoryRoot @('read-tree', 'HEAD'))
+                Write-Text $path $case.Text
+                [IO.File]::WriteAllBytes($fixtureRoadmap, $(if ($case.Name -ceq 'approved-roadmap-CRLF') {
+                    $approvedRoadmap
+                } else { $originalRoadmap }))
+                $beforeHash = Get-Sha256 $path
+                $roadmapHash = Get-Sha256 $fixtureRoadmap
+                foreach ($command in $commands) {
+                    $staged = $command.Extent.Text.Contains('--cached')
+                    if ($staged) { [void](Invoke-Git $RepositoryRoot @('add', '--all')) }
+                    $output = @(. ([scriptblock]::Create($command.Extent.Text)) 2>&1 |
+                        ForEach-Object { $_.ToString() })
+                    $code = $LASTEXITCODE
+                    Assert-Case (($code -eq 0) -eq $case.Pass) `
+                        "$($case.Name), staged=$staged, inherited=${inheritedPolicy}: exit $code; $($output -join '; ')"
+                    if (-not $case.Pass) {
+                        Assert-Case (($output -join "`n") -match 'trailing whitespace') `
+                            'Negative fixture did not fail for actual trailing whitespace'
+                    }
+                    Assert-Case ((Get-Sha256 $path) -ceq $beforeHash -and
+                        (Get-Sha256 $fixtureRoadmap) -ceq $roadmapHash) `
+                        'Whitespace predicate changed raw authority bytes'
+                }
+            }
+        }
+    }
+}
+
 Invoke-LifecycleCase 'lifecycle policy strict schema rejects added properties' {
     $fixture = New-CaseFixture $Base 'policy-extra-property'
     Set-FixturePolicy $fixture { param($policy)

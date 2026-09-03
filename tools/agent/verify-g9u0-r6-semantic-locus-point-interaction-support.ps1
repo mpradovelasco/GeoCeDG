@@ -1085,10 +1085,10 @@ try {
         Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
             -Message "Sealed descendant-safe G9S1 authority failed."
     }
-    & git -C $RepositoryRoot diff --check
+    & git -c core.whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol -C $RepositoryRoot diff --check
     Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
         -Message "git diff --check failed for G9U0-R6."
-    & git -C $RepositoryRoot diff --cached --check
+    & git -c core.whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol -C $RepositoryRoot diff --cached --check
     Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
         -Message "git diff --cached --check failed for G9U0-R6."
 
