@@ -7,6 +7,13 @@ param(
     [string]$BuildEvidencePath,
     [switch]$IncrementalBuild,
     [switch]$HistoricalRegressionsAlreadyComposed,
+    [ValidateSet("AUTO", "PRECOMMIT_CANDIDATE", "COMMITTED_CANDIDATE", "AUTHOR_CLOSEOUT")]
+    [string]$LifecycleMode = "AUTO",
+    [string]$ReviewedTechnicalCommit,
+    [string]$CloseoutRecordPath,
+    [string]$TechnicalEvidenceBundleDirectory,
+    [string]$TechnicalEvidenceBundleSha256,
+    [switch]$AuthorCloseoutOnly,
     [string]$CanonicalSummaryPath,
     [string]$CompareCanonicalSummaryPath,
     [string]$LogDirectory = (Join-Path ([IO.Path]::GetTempPath()) "geocedg-verify-g9s1-r1")
@@ -22,6 +29,10 @@ Assert-GeoCeDGChildVerificationMode -SkipBuild:$SkipBuild `
 $RepositoryRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot "../..")).Path
 $EntrySha = "109f077fc5e2a40bcde45d3271eb928ee66fdfcc"
 $ExpectedBranch = "codex/g9s1-r1-spline-pair-materialization"
+$ImplementationCommit = "f761758bd664504057413539b9729ba444c904c1"
+$LifecyclePolicyPath = "geocedg/validation/g9s1-r1/g9s1-r1-lifecycle-policy.json"
+$LifecycleHelperPath = "tools/agent/phase-lifecycle.ps1"
+$DefaultCloseoutRecordPath = "geocedg/validation/g9s1-r1/g9s1-r1-author-closeout.json"
 $PromptPath = ".github/prompts/tasks/g9s1-r1-spline-pair-intersection-materialization.prompt.md"
 $AdrPath = "docs/adr/0021-spline-pair-singleton-germ-materialization.md"
 $SpecPath = "geocedg/specs/curves/spline-v2-pair-materialization.md"
@@ -237,6 +248,8 @@ $AuthorityPaths = @($PromptPath, $AdrPath, $SpecPath, $MatrixPath, $ScenarioPath
     "docs/adr/0022-structural-spline-continuity.md",
     "docs/architecture/g9s1_r1_structural_spline_continuity.md",
     "docs/research/g9s1_r1_structural_spline_numerics.md")
+$LifecycleContext = $null
+$SelectedLifecycleMode = $LifecycleMode
 $LogDirectory = [IO.Path]::GetFullPath($LogDirectory)
 if ([string]::IsNullOrWhiteSpace($CanonicalSummaryPath)) {
     $CanonicalSummaryPath = Join-Path $LogDirectory "canonical-summary.json"
@@ -314,6 +327,10 @@ function Assert-R1Set {
 }
 
 function Get-R1CandidatePaths {
+    if ($SelectedLifecycleMode -cne "PRECOMMIT_CANDIDATE") {
+        Assert-R1 ($null -ne $LifecycleContext) "R1 lifecycle context was not initialized."
+        return @($LifecycleContext.CandidatePaths)
+    }
     $paths = [Collections.Generic.List[string]]::new()
     foreach ($arguments in @(
         @("diff", "--name-only", "--no-renames", $EntrySha, "HEAD", "--"),
@@ -330,9 +347,15 @@ function Get-R1CandidatePaths {
 
 function Assert-R1Entry {
     $head = (& git -C $RepositoryRoot rev-parse HEAD).Trim()
-    Assert-R1 ($LASTEXITCODE -eq 0 -and $head -ceq $EntrySha) "R1 candidate requires unchanged entry HEAD."
-    $branch = (& git -C $RepositoryRoot branch --show-current).Trim()
-    Assert-R1 ($LASTEXITCODE -eq 0 -and $branch -ceq $ExpectedBranch) "Unexpected R1 implementation branch."
+    Assert-R1 ($LASTEXITCODE -eq 0) "Cannot resolve current R1 HEAD."
+    if ($SelectedLifecycleMode -ceq "PRECOMMIT_CANDIDATE") {
+        Assert-R1 ($head -ceq $EntrySha) "R1 candidate requires unchanged entry HEAD."
+        $branch = (& git -C $RepositoryRoot branch --show-current).Trim()
+        Assert-R1 ($LASTEXITCODE -eq 0 -and $branch -ceq $ExpectedBranch) "Unexpected R1 implementation branch."
+    } else {
+        Assert-R1 ($null -ne $LifecycleContext -and $head -ceq $LifecycleContext.CurrentHead) `
+            "Committed R1 lifecycle HEAD is not authenticated."
+    }
     foreach ($entry in $RequiredHistoricalTags.GetEnumerator()) {
         $object = (& git -C $RepositoryRoot rev-parse "$($entry.Key)^{tag}").Trim()
         Assert-R1 ($LASTEXITCODE -eq 0 -and $object -ceq $entry.Value[0]) "Historical annotated tag changed: $($entry.Key)"
@@ -361,9 +384,29 @@ function Assert-R1PreservedD2 {
 function Assert-R1Contracts {
     param([object]$Scenarios, [object]$Evidence, [string[]]$CandidatePaths)
     Assert-R1 ($Scenarios.phase -ceq "G9S1-R1" -and $Evidence.phase -ceq "G9S1-R1") "Wrong R1 evidence phase."
-    Assert-R1 ($Evidence.status -cin @("IMPLEMENTATION_CANDIDATE_PENDING_AUTHOR_REVIEW",
-        "BLOCKED_AUTHOR_REVIEW_REQUIRED", "BLOCKED_AUTHORIZED_CORRECTIVE_CONTINUATION") -and
-        $Evidence.entrySha -ceq $EntrySha) "R1 candidate state/entry drifted."
+    foreach ($field in @("designApproved", "implementationAuthorized", "selfApproved",
+        "authorApprovedPhase", "passClaimed")) {
+        Assert-R1 ($Evidence.approval.$field -is [bool]) "R1 approval field must be Boolean: $field"
+    }
+    $authorCloseout = $SelectedLifecycleMode -ceq "AUTHOR_CLOSEOUT"
+    if ($authorCloseout) {
+        Assert-R1 ($Evidence.status -ceq "PASS_AUTHOR_APPROVED" -and $Evidence.entrySha -ceq $EntrySha) `
+            "R1 author-closeout state/entry drifted."
+        Assert-R1 ($Evidence.approval.designApproved -and $Evidence.approval.implementationAuthorized -and
+            -not $Evidence.approval.selfApproved -and $Evidence.approval.authorApprovedPhase -and
+            $Evidence.approval.passClaimed) "R1 author-closeout approval flags are inconsistent."
+    } else {
+        Assert-R1 ($Evidence.status -cin @("IMPLEMENTATION_CANDIDATE_PENDING_AUTHOR_REVIEW",
+            "BLOCKED_AUTHOR_REVIEW_REQUIRED", "BLOCKED_AUTHORIZED_CORRECTIVE_CONTINUATION") -and
+            $Evidence.entrySha -ceq $EntrySha) "R1 candidate state/entry drifted."
+        if ($SelectedLifecycleMode -ceq "COMMITTED_CANDIDATE") {
+            Assert-R1 ($Evidence.status -ceq "IMPLEMENTATION_CANDIDATE_PENDING_AUTHOR_REVIEW") `
+                "Committed R1 must retain candidate status."
+        }
+        Assert-R1 ($Evidence.approval.designApproved -and $Evidence.approval.implementationAuthorized -and
+            -not $Evidence.approval.selfApproved -and -not $Evidence.approval.authorApprovedPhase -and
+            -not $Evidence.approval.passClaimed) "R1 design authorization is not phase PASS."
+    }
     if ($Evidence.status -cin @("BLOCKED_AUTHOR_REVIEW_REQUIRED", "BLOCKED_AUTHORIZED_CORRECTIVE_CONTINUATION")) {
         Assert-R1 ($Evidence.approval.implementationComplete -is [bool] -and
             -not $Evidence.approval.implementationComplete) "Blocked R1 cannot claim implementation completion."
@@ -374,9 +417,6 @@ function Assert-R1Contracts {
             $Evidence.approval.correctionBAuthorized -is [bool] -and
             $Evidence.approval.correctionBAuthorized) "Corrective continuation requires explicit A/B author authority."
     }
-    Assert-R1 ([bool]$Evidence.approval.designApproved -and [bool]$Evidence.approval.implementationAuthorized -and
-        -not [bool]$Evidence.approval.selfApproved -and -not [bool]$Evidence.approval.authorApprovedPhase -and
-        -not [bool]$Evidence.approval.passClaimed) "R1 design authorization is not phase PASS."
     Assert-R1Set $CandidatePaths @($Evidence.sourceBoundary.candidatePaths) "R1 exact candidate inventory"
     Assert-R1 (@($CandidatePaths | Where-Object { $_ -match '^(artifacts/|source/desktop/.*/src/main/|source/web/|geocedg/features/)' }).Count -eq 0) "R1 source boundary includes generated/frontend/profile work."
     Assert-R1 (@($CandidatePaths | Where-Object { $_ -match '(^|/)g9u1[^/]*\.prompt\.md$' }).Count -eq 0) "Protected G9U1 prompt changes are outside R1."
@@ -472,6 +512,63 @@ function Get-R1TestResult {
     return [ordered]@{ class = $Class.name; tests = [int]$suite.tests; failures = 0; errors = 0; skipped = 0; methods = @($methods | Sort-Object -CaseSensitive) }
 }
 
+function Initialize-R1Lifecycle {
+    if ($SelectedLifecycleMode -ceq "AUTO") {
+        $record = if ([string]::IsNullOrWhiteSpace($CloseoutRecordPath)) {
+            Join-Path $RepositoryRoot $DefaultCloseoutRecordPath
+        } elseif ([IO.Path]::IsPathRooted($CloseoutRecordPath)) {
+            [IO.Path]::GetFullPath($CloseoutRecordPath)
+        } else { [IO.Path]::GetFullPath((Join-Path $RepositoryRoot $CloseoutRecordPath)) }
+        $script:SelectedLifecycleMode = if (Test-Path -LiteralPath $record -PathType Leaf) {
+            "AUTHOR_CLOSEOUT"
+        } elseif (Test-Path -LiteralPath (Join-Path $RepositoryRoot $LifecyclePolicyPath) -PathType Leaf) {
+            "COMMITTED_CANDIDATE"
+        } else { "PRECOMMIT_CANDIDATE" }
+    }
+    if ($SelectedLifecycleMode -ceq "PRECOMMIT_CANDIDATE") {
+        Assert-R1 (-not $AuthorCloseoutOnly -and [string]::IsNullOrWhiteSpace($ReviewedTechnicalCommit) -and
+            [string]::IsNullOrWhiteSpace($TechnicalEvidenceBundleDirectory) -and
+            [string]::IsNullOrWhiteSpace($TechnicalEvidenceBundleSha256)) `
+            "Precommit mode cannot accept closeout evidence."
+        return
+    }
+    Assert-R1 (($SelectedLifecycleMode -ceq "AUTHOR_CLOSEOUT") -eq [bool]$AuthorCloseoutOnly) `
+        "Author-closeout mode is documentary-only; committed-candidate verification runs live gates."
+    . (Join-Path $RepositoryRoot $LifecycleHelperPath)
+    $script:AuthorityPaths += @(
+        $LifecyclePolicyPath,
+        $LifecycleHelperPath,
+        "tools/agent/tests/phase-lifecycle.Tests.ps1",
+        "tools/agent/verify-verification-infrastructure.ps1",
+        "geocedg/specs/operations/verification-levels.md",
+        "docs/adr/0023-phase-verifier-lifecycle-and-author-closeout.md",
+        "docs/architecture/g9s1_r1_verifier_lifecycle.md",
+        "docs/developer/geocedg_developer_guide.md",
+        "docs/validation/g9s1_r1_verifier_lifecycle_report.md"
+    )
+    $parameters = @{
+        RepositoryRoot = $RepositoryRoot
+        PolicyPath = (Join-Path $RepositoryRoot $LifecyclePolicyPath)
+        ExpectedImplementationCommit = $ImplementationCommit
+        Mode = $SelectedLifecycleMode
+    }
+    if (-not [string]::IsNullOrWhiteSpace($ReviewedTechnicalCommit)) {
+        $parameters.ReviewedTechnicalCommit = $ReviewedTechnicalCommit
+    }
+    $effectiveRecord = if ([string]::IsNullOrWhiteSpace($CloseoutRecordPath)) {
+        Join-Path $RepositoryRoot $DefaultCloseoutRecordPath
+    } elseif ([IO.Path]::IsPathRooted($CloseoutRecordPath)) {
+        [IO.Path]::GetFullPath($CloseoutRecordPath)
+    } else { [IO.Path]::GetFullPath((Join-Path $RepositoryRoot $CloseoutRecordPath)) }
+    if ($SelectedLifecycleMode -ceq "AUTHOR_CLOSEOUT") {
+        $script:AuthorityPaths += $DefaultCloseoutRecordPath
+        $parameters.CloseoutRecordPath = $effectiveRecord
+        $parameters.BundleDirectory = $TechnicalEvidenceBundleDirectory
+        $parameters.BundleSha256 = $TechnicalEvidenceBundleSha256
+    }
+    $script:LifecycleContext = Get-GeoCeDGPhaseLifecycleContext @parameters
+}
+
 $InitialStatus = $null
 $GeneratedState = $null
 $Failure = $null
@@ -480,6 +577,7 @@ try {
     [void](New-Item -ItemType Directory -Path $LogDirectory -Force)
     $InitialStatus = (& git -C $RepositoryRoot status --porcelain=v1 --untracked-files=all) -join "`n"
     Assert-R1 ($LASTEXITCODE -eq 0) "Cannot read repository status."
+    Initialize-R1Lifecycle
     foreach ($path in $AuthorityPaths) { [void](Resolve-R1File $path) }
     Assert-R1Entry
     Assert-R1PreservedD2
@@ -496,7 +594,24 @@ try {
     Assert-R1 ($LASTEXITCODE -eq 0) "git diff --check failed."
     & git -C $RepositoryRoot diff --cached --check
     Assert-R1 ($LASTEXITCODE -eq 0) "git diff --cached --check failed."
-    if ($SkipBuild) {
+    if ($AuthorCloseoutOnly) {
+        Assert-R1 ($SelectedLifecycleMode -ceq "AUTHOR_CLOSEOUT" -and -not $SkipBuild -and
+            [string]::IsNullOrWhiteSpace($BuildEvidencePath) -and -not $IncrementalBuild) `
+            "Author-closeout-only is a documentary consistency check, not build evidence."
+        $closeout = [ordered]@{
+            schemaVersion = 1
+            phase = "G9S1-R1"
+            state = "AUTHOR_CLOSEOUT_CONSISTENCY_LINKED_NOT_NEW_EXECUTION"
+            lifecycle = $LifecycleContext
+            productRuntimeExecuted = $false
+            currentRunReceiptProduced = $false
+            authorDecisionCreatedByVerifier = $false
+        }
+        [IO.File]::WriteAllText((Join-Path $LogDirectory "author-closeout-result.json"),
+            (($closeout | ConvertTo-Json -Depth 100).Replace("`r`n", "`n") + "`n"),
+            [Text.UTF8Encoding]::new($false))
+        Write-Host "G9S1-R1 author-closeout consistency passed; linked technical evidence was not rerun."
+    } elseif ($SkipBuild) {
         if ($evidence.status -ceq "BLOCKED_AUTHOR_REVIEW_REQUIRED") {
             Write-Host 'G9S1-R1 blocked-state static record is coherent; runtime acceptance is BLOCKED/INCOMPLETE, not PASS.'
         } elseif ($evidence.status -ceq "BLOCKED_AUTHORIZED_CORRECTIVE_CONTINUATION") {
@@ -537,6 +652,15 @@ try {
             deterministicSourceHashes = $sourceHashes
             authorityHashes = @($AuthorityPaths | Sort-Object -CaseSensitive | ForEach-Object { [ordered]@{ path = $_; sha256 = Get-R1FileHash $_ } })
             openRisk = $OpenRisk; selfApproved = $false; authorApprovedPhase = $false; passClaimed = $false
+        }
+        if ($SelectedLifecycleMode -cne "PRECOMMIT_CANDIDATE") {
+            $summary["lifecycle"] = [ordered]@{
+                mode = $SelectedLifecycleMode
+                implementationCommit = $LifecycleContext.ImplementationCommit
+                currentHead = $LifecycleContext.CurrentHead
+                infrastructurePaths = @($LifecycleContext.InfrastructurePaths)
+                documentaryEvidenceLinked = [bool]$LifecycleContext.DocumentaryEvidenceLinked
+            }
         }
         $json = ($summary | ConvertTo-Json -Depth 100).Replace("`r`n", "`n") + "`n"
         [void][IO.Directory]::CreateDirectory((Split-Path -Parent $CanonicalSummaryPath))

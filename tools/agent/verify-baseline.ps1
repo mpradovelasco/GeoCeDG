@@ -12,6 +12,8 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+$CanonicalGitWhitespaceConfiguration =
+    "blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol"
 
 Import-Module (Join-Path $PSScriptRoot "verification-runtime.psm1")
 Assert-GeoCeDGChildVerificationMode -SkipBuild:$SkipBuild `
@@ -192,13 +194,16 @@ try {
         -GeneratedDirectoryNames $GeneratedDirectoryNames
 
     Assert-NativeSuccess -Description "Working-tree whitespace check" -Command {
-        & git -C $RepositoryRoot diff --check
+        & git -c "core.whitespace=$CanonicalGitWhitespaceConfiguration" `
+            -C $RepositoryRoot diff --check
     }
     Assert-NativeSuccess -Description "Index whitespace check" -Command {
-        & git -C $RepositoryRoot diff --cached --check
+        & git -c "core.whitespace=$CanonicalGitWhitespaceConfiguration" `
+            -C $RepositoryRoot diff --cached --check
     }
     Assert-NativeSuccess -Description "Bootstrap tree whitespace check" -Command {
-        & git -C $RepositoryRoot diff --check $ExpectedBaseline
+        & git -c "core.whitespace=$CanonicalGitWhitespaceConfiguration" `
+            -C $RepositoryRoot diff --check $ExpectedBaseline
     }
 
     $versionText = Get-Content -Raw -LiteralPath $VersionFile

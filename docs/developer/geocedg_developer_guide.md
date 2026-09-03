@@ -721,3 +721,32 @@ checkpoint; R1 must close and receive separate prospective reconciliation before
 G9U1's own implementation authorization. Current R1 work grants neither.
 G9B/G9C remain semantically independent,
 G9U2 remains globally blocked and productive G10 remains unauthorized.
+
+### Phase verifier lifecycle
+
+Do not weaken a precommit-only phase verifier after committing its candidate.
+Use its explicit lifecycle mode: reproduce the original uncommitted entry with
+`PRECOMMIT_CANDIDATE`, review a sealed technical commit with
+`COMMITTED_CANDIDATE`, and use `AUTHOR_CLOSEOUT` only after an explicit author
+decision names the exact reviewed technical SHA. The last mode validates an
+exhaustively allowlisted status-only delta and links historical evidence; it
+does not rerun or relabel PHASE, COMPOSED or FULL.
+
+For G9S1-R1, normal postcommit PHASE/COMPOSED/FULL execution selects the
+committed-candidate authority from commit/blob provenance, never from the
+current branch name. Start a fresh PowerShell process after changing verifier
+modules. `-SkipBuild` remains static-only and cannot replace technical evidence.
+The later closeout command must receive the exact reviewed commit and retained
+evidence bundle required by ADR 0023. A missing bundle, unexpected source byte,
+productive/test/verifier change or unknown metadata path fails closed.
+
+```text
+VERIFICATION_INFRASTRUCTURE_IMPACT = UPDATE_REQUIRED
+BOOTSTRAP IMPACT — NO CHANGE REQUIRED
+Rationale: the lifecycle helper and fake-first fixtures add no executable,
+toolchain, JDK, Gradle, Conda, packaging or workstation prerequisite. Existing
+PowerShell 7.2 and Git requirements are sufficient and are validated again by
+FULL.
+GUIDE_IMPACT = UPDATED
+GUIDE_PATHS = docs/developer/geocedg_developer_guide.md
+```

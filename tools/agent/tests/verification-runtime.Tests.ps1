@@ -4,6 +4,7 @@ param(
     [string]$ModulePath = (Join-Path $PSScriptRoot "../verification-runtime.psm1"),
     [string]$RootVerifierPath = (Join-Path $PSScriptRoot "../verify.ps1"),
     [string]$OperationalVerifierPath = (Join-Path $PSScriptRoot "../verify-operational.ps1"),
+    [string]$BaselineVerifierPath = (Join-Path $PSScriptRoot "../verify-baseline.ps1"),
     [string]$InfrastructureVerifierPath = (Join-Path $PSScriptRoot "../verify-verification-infrastructure.ps1"),
     [string]$GeneratedStateTestsPath = (Join-Path $PSScriptRoot "generated-state.tests.ps1"),
     [string]$LogDirectory = (Join-Path ([IO.Path]::GetTempPath()) "geocedg-verification-runtime-tests")
@@ -639,6 +640,48 @@ Invoke-RuntimeTest "operational entrypoints declare the PowerShell 7.2 native-st
     }
     Assert-TestCondition (-not $fixture.GitInitialized -and
         @(& $fixture.Module { @($script:FixtureNativeCalls) }).Count -eq 0) "AST-floor fixture requested Git or native work."
+}
+
+Invoke-RuntimeTest "baseline committed whitespace check is CRLF-invariant but rejects real trailing blanks" {
+    param($fixture)
+    $configuration = "blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol"
+    $baselineSource = Get-Content -Raw -LiteralPath $BaselineVerifierPath
+    Assert-TestCondition (@([regex]::Matches($baselineSource,
+                [regex]::Escape('core.whitespace=$CanonicalGitWhitespaceConfiguration'))).Count -eq 3) `
+        "Baseline verifier must bind all three whitespace checks to one explicit canonical policy."
+    Assert-TestCondition ($baselineSource.Contains(
+            '$CanonicalGitWhitespaceConfiguration =')) `
+        "Baseline verifier does not declare the canonical whitespace policy."
+
+    $path = Join-Path $fixture.RepositoryRoot "committed-whitespace.txt"
+    [IO.File]::WriteAllText($path, "alpha`nbeta`n", [Text.UTF8Encoding]::new($false))
+    Invoke-FixtureGit $fixture.RepositoryRoot @("add", "committed-whitespace.txt")
+    Invoke-FixtureGit $fixture.RepositoryRoot @("commit", "-m", "LF baseline")
+    $lfCommit = (& git -C $fixture.RepositoryRoot rev-parse HEAD).Trim()
+
+    [IO.File]::WriteAllText($path, "alpha`r`nbeta`r`n", [Text.UTF8Encoding]::new($false))
+    Invoke-FixtureGit $fixture.RepositoryRoot @("add", "committed-whitespace.txt")
+    Invoke-FixtureGit $fixture.RepositoryRoot @("commit", "-m", "CRLF representation")
+    $crlfCommit = (& git -C $fixture.RepositoryRoot rev-parse HEAD).Trim()
+    Assert-TestCondition (([Text.Encoding]::UTF8.GetString(
+                [IO.File]::ReadAllBytes($path))).Contains("`r`n")) `
+        "Controlled CRLF fixture lost its physical CRLF representation."
+    $PSNativeCommandUseErrorActionPreference = $false
+    $crlfOutput = @(& git -c "core.whitespace=$configuration" -C $fixture.RepositoryRoot `
+            diff --check "$lfCommit..$crlfCommit" 2>&1 | ForEach-Object { $_.ToString() })
+    Assert-TestCondition ($LASTEXITCODE -eq 0 -and $crlfOutput.Count -eq 0) `
+        "Canonical whitespace check treated CRLF representation as trailing blanks."
+
+    [IO.File]::WriteAllText($path, "alpha  `r`nbeta`r`n", [Text.UTF8Encoding]::new($false))
+    Invoke-FixtureGit $fixture.RepositoryRoot @("add", "committed-whitespace.txt")
+    Invoke-FixtureGit $fixture.RepositoryRoot @("commit", "-m", "Real trailing blanks")
+    $blankCommit = (& git -C $fixture.RepositoryRoot rev-parse HEAD).Trim()
+    $blankOutput = @(& git -c "core.whitespace=$configuration" -C $fixture.RepositoryRoot `
+            diff --check "$crlfCommit..$blankCommit" 2>&1 | ForEach-Object { $_.ToString() })
+    $blankExit = $LASTEXITCODE
+    Assert-TestCondition ($blankExit -ne 0 -and
+        (($blankOutput -join $Lf) -match "trailing whitespace")) `
+        "Canonical CRLF policy failed to detect a real committed trailing-space mutation."
 }
 
 Invoke-RuntimeTest "incremental policy retains selectors and context, forces only Test tasks" {

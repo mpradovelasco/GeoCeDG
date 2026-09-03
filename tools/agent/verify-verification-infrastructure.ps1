@@ -33,6 +33,12 @@ try {
             Script = "tests/generated-state.tests.ps1"
             PathParameter = "-HelperPath"
             Source = "repository-generated-state.ps1"
+        },
+        [ordered]@{
+            Name = "phase-lifecycle"
+            Script = "tests/phase-lifecycle.Tests.ps1"
+            PathParameter = "-HelperPath"
+            Source = "phase-lifecycle.ps1"
         }
     )
     foreach ($fixture in $fixtures) {

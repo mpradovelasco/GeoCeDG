@@ -1,0 +1,372 @@
+{
+  "schemaVersion": 1,
+  "phase": "G9S1-R1",
+  "entryCommit": "109f077fc5e2a40bcde45d3271eb928ee66fdfcc",
+  "implementationCommit": "f761758bd664504057413539b9729ba444c904c1",
+  "implementationTree": "e9636950614d73d415e46e77bb32005c40b9d717",
+  "implementationPaths": [
+    {
+      "path": ".github/prompts/tasks/g9s1-r1-spline-pair-intersection-materialization.prompt.md",
+      "sha256": "6567b5bebaa6e62e35b97284f71bed07ccd2517a9c04d05b62904fb831a7e1ba"
+    },
+    {
+      "path": "docs/adr/0021-spline-pair-singleton-germ-materialization.md",
+      "sha256": "cbaab9a7297cc5dc88ed8d9ef0ed7cd848450f7d21fe104566df6b520aa00fee"
+    },
+    {
+      "path": "docs/adr/0022-structural-spline-continuity.md",
+      "sha256": "704b64394652ddcd46985b6c90703941012dd9df11ed919e353debd5355eae06"
+    },
+    {
+      "path": "docs/architecture/g9s1_r1_d2_pair_sheet_contract.md",
+      "sha256": "338d6194179cdd0677769e4bee251dc35d1a60199939cb298ea46a8af3feea9f"
+    },
+    {
+      "path": "docs/architecture/g9s1_r1_pair_materialization_design_review.md",
+      "sha256": "4b2097d500089460ff5946d854dc2383eee3a2a1f2d494436e6ccce8afac2a37"
+    },
+    {
+      "path": "docs/architecture/g9s1_r1_structural_spline_continuity.md",
+      "sha256": "4903e7a6e7d4f380bc1a047feae8ace9e21ed32647c63dd0b66fb750788a2706"
+    },
+    {
+      "path": "docs/architecture/g9s1_r1_symmetric_atlas_design.md",
+      "sha256": "dbf82543c975c0e19ed07ce9921276e84ab62e3e346d228cdfbe81b9acc36b2d"
+    },
+    {
+      "path": "docs/developer/geocedg_developer_guide.md",
+      "sha256": "6fbf4e84b5765a27ac8cc8a2cc4eb99140f8977573a9fbd955b59a44962d5aad"
+    },
+    {
+      "path": "docs/developer/semantic_spline_2d_api.md",
+      "sha256": "7aa833cfa55f389b4817d242655ac82bc2978f82c5b6bf0c380a23ff98a968f6"
+    },
+    {
+      "path": "docs/research/g9s1_r1_structural_spline_numerics.md",
+      "sha256": "4f5dc35119358f6118b7444c341abf0aa5ef40ae7f6d726380f384895a959fb4"
+    },
+    {
+      "path": "docs/research/g9s1_semantic_spline_numerical_methods.md",
+      "sha256": "e46f3630385c2861cf0ea4f35fd366dca7fdf45b517c5014e41d006112930edc"
+    },
+    {
+      "path": "docs/roadmap/geocedg_roadmap.md",
+      "sha256": "37fadb2bbb7e7a175be6e470deeadf3dd2320cff997797ddbb19a7a75fdafff0"
+    },
+    {
+      "path": "docs/upstream/modified-files.yml",
+      "sha256": "1ae2bdc45c0da036677fd7db6139ebe70fd145b4c3bf5c2ffe867a2eb0509997"
+    },
+    {
+      "path": "docs/user/geocedg_user_guide.md",
+      "sha256": "db3b14141313aafc43617c4be3004ed3469608e805004f7c5bddbc31328299fa"
+    },
+    {
+      "path": "docs/validation/g9_documentation_bundle_traceability.md",
+      "sha256": "260e4f7df4f52834d1a10e6b3206ddf3f7c374aab5c7fa848b0ab67055ba7e29"
+    },
+    {
+      "path": "docs/validation/g9s1_r1_implementation_blocker_report.md",
+      "sha256": "a85a65e1808f1760a7ce7d68029bbb783e535bfe362712f9a99e63b2b67e1ba5"
+    },
+    {
+      "path": "docs/validation/g9s1_r1_spline_pair_materialization_validation_matrix.md",
+      "sha256": "e34d4616451514525083be58a75cea80d3fb4bc6bb8e5235da1811dbe9e20b70"
+    },
+    {
+      "path": "docs/validation/g9s1_r1_structural_implementation_candidate_report.md",
+      "sha256": "0a4113886853dcd2b645f02a56f5535169bdd1b8805c98e522ceb75cf91969b5"
+    },
+    {
+      "path": "geocedg/specs/README.md",
+      "sha256": "2c67f083398593b9b73104ef8bf52b10e91cbcbdfff8ed49fd0fdd9bf2b114e9"
+    },
+    {
+      "path": "geocedg/specs/curves/spline-v2-pair-materialization.md",
+      "sha256": "6d73d2a46c7a81b3cdbca32a5293f1fc4988c7b5b5bfb6b6bffeb7dad7a9e912"
+    },
+    {
+      "path": "geocedg/validation/g9s1-r1/g9s1-r1-atlas-design-evidence.json",
+      "sha256": "f1252faf4abe002bec138a8eee64d0af8def08f3439248382da384267fa75fbc"
+    },
+    {
+      "path": "geocedg/validation/g9s1-r1/g9s1-r1-d2-design-evidence.json",
+      "sha256": "21fe616f80bd511d4c0ca08a9e361c9800c4f518835113a72679b625de2f4f46"
+    },
+    {
+      "path": "geocedg/validation/g9s1-r1/g9s1-r1-design-review-evidence.json",
+      "sha256": "cb7a7bebbef2f60f9e9c0d162767360fc7864467eb17c1f2ee1c151d24043bee"
+    },
+    {
+      "path": "geocedg/validation/g9s1-r1/g9s1-r1-evidence.sha256",
+      "sha256": "1c122e7dc90f0d0423c2e7f71aa98d94e9df24f244ad2d1efccbd1ade8489a15"
+    },
+    {
+      "path": "geocedg/validation/g9s1-r1/g9s1-r1-implementation-blocker-evidence.json",
+      "sha256": "d43d320b781c068dacd0091a55fdc6a73658b37f9b4da13d5941a8c8469ec90f"
+    },
+    {
+      "path": "geocedg/validation/g9s1-r1/g9s1-r1-spline-pair-materialization-evidence.json",
+      "sha256": "b5a0d1617feb1038f5f1d18367c41b6b491235fe119286e08272913c0d172347"
+    },
+    {
+      "path": "geocedg/validation/g9s1-r1/g9s1-r1-spline-pair-materialization-scenarios.json",
+      "sha256": "bbbb24f2900db65e28b7b04b459259798aa811fd03e9af5be9b26eaeff682f53"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9S1R1NativeArchivePersistenceTest.java",
+      "sha256": "39d457fbe0e5b99cabbfbb248311a792337fed5d1cb586dc5efa61a843a720d4"
+    },
+    {
+      "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu.properties",
+      "sha256": "77699378a3d426ec3edc899edd6dda6be2b14b28193afa25d3e18865ffd080f9"
+    },
+    {
+      "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_en.properties",
+      "sha256": "7554f6f973c66b212436bcb231f8bf31740c5bb6197b229bae0f388b39e477bf"
+    },
+    {
+      "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_es.properties",
+      "sha256": "d57e9f2bf980cd41ff9aa8e6aa2f7342ff1cc7901db54f483324c24f8c36d802"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1D2PairSheetContractTest.java",
+      "sha256": "5cad9302e03033bfed46f189b812c72f8208dc0ab17790ffc1e90471277fa7ac"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1PairAtlasCharacterizationTest.java",
+      "sha256": "562d0475447ded2969588015d42b17bc0491453da2dc00f66b6a767173ace68c"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1PairSelectorCharacterizationTest.java",
+      "sha256": "d9e864f0dfa7f70694049c0b86e77157f6bb59902d9d4bf36c7362ddd8928df6"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1PairTokenLedgerTest.java",
+      "sha256": "01448515c8ff1dbb324b3d75e0755f2a7e840f46eed2857d17cf92a3aff0d4f2"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1SplinePairIntervalCertificationTest.java",
+      "sha256": "8acb12f02c8d9de305272aecd48503d05d2568dc16fa1d910ae02cc08ab5c1c6"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1StructuralImplicitCertificationTest.java",
+      "sha256": "376116268557a8f8dad935bed2ca7e475c7643c09618376ab4d722f4ed98bfa8"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/spline/G9S1R1SplinePrecisionAdmissionTest.java",
+      "sha256": "6b29a7506a68d5bbc38a919cc164b400b730ed1ca8d77419d656eab4c03fe1ae"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1NativeStructuralPairTest.java",
+      "sha256": "3f75169c14d03ba70c71bafe501f499eea7cd0d946cf5a67ac69b9bdd676392b"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1SplineAtlasHostCharacterizationTest.java",
+      "sha256": "0f7d517d88afab44b1b584a095fcf341f323a04a087bf65fc713337777b0f9e2"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1SplinePairMaterializationTest.java",
+      "sha256": "bae0267ce61a02ffcda8cecd8fb5f827309a9ef7baa57d30c167600a6f25abac"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1StructuralSplineContinuityTest.java",
+      "sha256": "c27851ab33fb07a7adc24354de3570ada3336aff03d9a6ecaccb6ccb522e4606"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1StructuralSplineLifecycleTest.java",
+      "sha256": "7f7f906d176da03c3be3d270cad00f7b671f203713b96c527ec825d619ddfca2"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1SemanticSpline2DTest.java",
+      "sha256": "75ae7079c2232740c9b603cb98a9d244d77fbd3c842c016acdd7f4d30b532bee"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusLocusIntersectionV2.java",
+      "sha256": "b90669b340d222dcbe4bbe825f41bc582eca51f51dff3bdc700728bff8d8e983"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/geos/GeoLocusIntersectionResult.java",
+      "sha256": "634987a5db7b888663ef52e89ee1c39518d979e47f9d779dd42188cc8e6f2815"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/geos/GeoLocusV2.java",
+      "sha256": "71d045966c8b0c239a80f507c96f9aa3e61e6b4ebe2b8c84d56cfdc7596b6434"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusSimilarityEvaluator2D.java",
+      "sha256": "8c756c6e3101362869668afea865fb74a42bdef4a7402003bfdcf7a3a6834224"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusSimilarityTransform2D.java",
+      "sha256": "0bd97b17c6417d3710a043419e36726ded055317e79c29af3f51808bc8d1cc4f"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/PiecewisePolynomialLocus2D.java",
+      "sha256": "6011c988bcb6f8c31de521840bea97ca56d48471a44bb4c3a1c3be85eb334df5"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/interaction/LocusPointInteractionResolver2D.java",
+      "sha256": "45025851b7bc24b129223df1a788773640aa80ccc8a640139fd651cd26b4021e"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionCandidate2D.java",
+      "sha256": "006099b4cda6723520078e1be1e86c15ec6794a2cfb023ec8fb7717a2aec5b41"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionSemanticMetadata2D.java",
+      "sha256": "c720a158f4b65930c891ca47c535e52061a176ff90764bd82297593a8186a091"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionSolver2D.java",
+      "sha256": "6443a8c2b7086faab01c73a5f03dcca9c8214defe10eee968c788d31c0dd82da"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionTokenLedger2D.java",
+      "sha256": "0d28839afc5c05bf5ec1fdc3043538f897e5bdadaba5efa2ef385ac43557257d"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusPairIntersectionSolver2D.java",
+      "sha256": "36a8295e0f1bf6ccaf9bab96d7f2b065a42264dd106fb515cbd9da670799585b"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PairRootAddressProof2D.java",
+      "sha256": "5c260657f3966fd58c3470b6458ca7a2258545100ac317e2c1f6831f1bf03ac1"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PairSemanticSlotSelector2D.java",
+      "sha256": "23bde3ac135a28fda6e81070dd99a0739209a524d206c070aa6d7fad7dd56ad1"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PolynomialRootIsolation2D.java",
+      "sha256": "31c2beb26bbf71bfc9c12fbc24469851caa6fb7f0766d6fd07cea537d741707d"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PolynomialTargetIntersectionCapability2D.java",
+      "sha256": "5d9a85b4e80cbf3ad5e84fb3220ccf6948568f0f406fa1b6ba1f049d687fc8fd"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PublicSplinePairRootIdentityResolver2D.java",
+      "sha256": "d0d01f2bc9e8f828d441d6939c0561edff059a083aae3cf4bae49c2340735a2c"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PublicTargetIntersectionCapability2D.java",
+      "sha256": "12341dcdcdd8bbc3f43001b59b4697e9f3a7626d978c294398f6661a9d73b65b"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/SplineImplicitIntervalCertification2D.java",
+      "sha256": "62b5e8df3574e59c1dd7e5e42aae2fac7d97b45a5bf6f8303d069ccbdb425457"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/SplineIntervalModel2D.java",
+      "sha256": "b4b3a8b8fa76cd0b13d2e6fc7e0fb45abd8b8294e1a38953a320d9951f5b93a8"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/SplineOutwardInterval2D.java",
+      "sha256": "952bf1f102d4805a61ade685f52e11648be2334f0369018fbb1fe3e8e937e59b"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/SplinePairIntervalCertification2D.java",
+      "sha256": "ba4d9195c90e03e446ce77ba099ce2ac741e87e09a149c95aae37fd4a0eb2eb5"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spline/SplineConstructionEvidence2D.java",
+      "sha256": "8de1504aa836ff74af653c22d64339e903ed3e2a43ef1bd6d7102b56928bd1fd"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spline/SplinePolynomialModel2D.java",
+      "sha256": "c4f0e18add9a5dbf9ef5ffb38006a743b0d6ac6d63a736218008f6103df31d1b"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spline/SplinePrecisionSolve2D.java",
+      "sha256": "8a8213a85f3275d6a4bce6b38eb53aee45b66241b24a61938ab3a79d7bbf8dd9"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spline/SplineSemanticEvaluator2D.java",
+      "sha256": "5bc81c960684e3e48ac7c296e06671543df5c497d3ed62b21d59a05381ca53b6"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spline/SplineStructuralModel2D.java",
+      "sha256": "1d94251f77b339b20b7799e5ef2e06c07dca91b60b277798939f09045c2d97a3"
+    },
+    {
+      "path": "tools/agent/tests/verification-runtime.Tests.ps1",
+      "sha256": "f2f2667bb86d814997e4fa5d4894072a09338849701ba1e7c4dbe192d4545504"
+    },
+    {
+      "path": "tools/agent/verification-runtime.psm1",
+      "sha256": "8751c18d463e05012116413e3639084c0d68e5a82ee5803c79a4e208db16811e"
+    },
+    {
+      "path": "tools/agent/verify-g9s1-r1-spline-pair-materialization.ps1",
+      "sha256": "9285001b46961d4ace3ccbdd5ec0a7ee2848c1b67a2446280c96e7a5d299d62a"
+    },
+    {
+      "path": "tools/agent/verify-g9u0-r4-intersection-admissibility-continuation.ps1",
+      "sha256": "334b4e1c621090e3ceb4e51aa671d7d4f7d2b76a8f1d94b4171d1015c5863ca7"
+    },
+    {
+      "path": "tools/agent/verify.ps1",
+      "sha256": "7d5794094016a4018970f693f4aea8e2f1669f0ab20de0dd9df99f9a19f6409c"
+    }
+  ],
+  "infrastructureFollowupPaths": [
+    "docs/adr/0023-phase-verifier-lifecycle-and-author-closeout.md",
+    "docs/architecture/g9s1_r1_verifier_lifecycle.md",
+    "docs/developer/geocedg_developer_guide.md",
+    "docs/validation/g9s1_r1_verifier_lifecycle_report.md",
+    "geocedg/specs/operations/verification-levels.md",
+    "geocedg/validation/g9s1-r1/g9s1-r1-lifecycle-policy.json",
+    "tools/agent/phase-lifecycle.ps1",
+    "tools/agent/tests/phase-lifecycle.Tests.ps1",
+    "tools/agent/tests/verification-runtime.Tests.ps1",
+    "tools/agent/verify-baseline.ps1",
+    "tools/agent/verify-g9s1-r1-spline-pair-materialization.ps1",
+    "tools/agent/verify-verification-infrastructure.ps1"
+  ],
+  "maximumInfrastructureCommits": 1,
+  "closeout": {
+    "recordPath": "geocedg/validation/g9s1-r1/g9s1-r1-author-closeout.json",
+    "literalReplacements": [
+      {
+        "path": "geocedg/validation/g9s1-r1/g9s1-r1-spline-pair-materialization-evidence.json",
+        "before": "  \"status\": \"IMPLEMENTATION_CANDIDATE_PENDING_AUTHOR_REVIEW\",\n  \"artifactRole\": \"SOURCE_CONTRACT_AND_EXECUTION_PROVENANCE_NOT_A_SUBSTITUTE_FOR_LIVE_GATES\",\n  \"entrySha\": \"109f077fc5e2a40bcde45d3271eb928ee66fdfcc\",\n  \"branch\": \"codex/g9s1-r1-spline-pair-materialization\",\n  \"approval\": {\n    \"designApproved\": true,\n    \"implementationAuthorized\": true,\n    \"structuralPrerequisiteAuthorized\": true,\n    \"implementationStarted\": true,\n    \"selfApproved\": false,\n    \"authorApprovedPhase\": false,\n    \"passClaimed\": false,\n    \"manualAuthorSmoke\": \"PENDING\",",
+        "after": "  \"status\": \"PASS_AUTHOR_APPROVED\",\n  \"artifactRole\": \"SOURCE_CONTRACT_AND_EXECUTION_PROVENANCE_NOT_A_SUBSTITUTE_FOR_LIVE_GATES\",\n  \"entrySha\": \"109f077fc5e2a40bcde45d3271eb928ee66fdfcc\",\n  \"branch\": \"codex/g9s1-r1-spline-pair-materialization\",\n  \"approval\": {\n    \"designApproved\": true,\n    \"implementationAuthorized\": true,\n    \"structuralPrerequisiteAuthorized\": true,\n    \"implementationStarted\": true,\n    \"selfApproved\": false,\n    \"authorApprovedPhase\": true,\n    \"passClaimed\": true,\n    \"manualAuthorSmoke\": \"PASS\",",
+        "occurrences": 1
+      },
+      {
+        "path": "docs/roadmap/geocedg_roadmap.md",
+        "before": "| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1, G9A2, G9A3, el track G9A, G9U0, G9U0-R1, G9X1, G9U0-R2, G9U0-R3, G9U0-R4, G9U0-R5, G9S1, G9U0-R6 y la planificación G10P `PASS — AUTHOR APPROVED`. R6 añade resolución inversa semántica y estado explícito de punto draggable en kernel, incluido cruce periódico bidireccional/path-independent, sin `Path`, render/pixel como autoridad ni frontend G9U1. Su aceptación GUI sigue diferida a G9U1 por diseño. R4 conserva determinismo actual > heurística de continuidad y el riesgo abierto `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP`. G9U1 DESIGN post-R6 está aprobado en checkpoint independiente `00982e7e...`; la implementación no está autorizada y queda bloqueada hasta cierre G9S1-R1 y reconciliación separada. El autor aprueba R1-D2, acepta DISPOSITION C para el alcance monodrómico demostrado y autoriza B — PARTIAL IMPLEMENTATION CONTRACT, incluida recurrencia del slot semántico. Tras los bloqueos históricos y sus correcciones autorizadas, R1 está IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW: técnicamente completo tras PHASE A/B, COMPOSED y FULL clean, sin PASS ni aprobación de fase. G9B/G9C no están autorizadas, G9U2 sigue bloqueada y ninguna implementación productiva G10 está autorizada; Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |\n| Última fase cerrada | G9U0-R6 — `PASS — AUTHOR APPROVED` |\r\n| Última fase ejecutada | G9S1-R1 — `IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW`; `implementationComplete=true`, `selfApproved=false`, `authorApprovedPhase=false`, `passClaimed=false`; `manualAuthorSmoke=PENDING`. La última fase cerrada sigue siendo G9U0-R6 |\n| Siguiente puerta | Revisión y smoke del autor para G9S1-R1 — IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW. G9U1 implementación no autorizada y bloqueada hasta cierre R1 y reconciliación separada |",
+        "after": "| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1, G9A2, G9A3, el track G9A, G9U0, G9U0-R1, G9X1, G9U0-R2, G9U0-R3, G9U0-R4, G9U0-R5, G9S1, G9U0-R6, G9S1-R1 y la planificación G10P `PASS — AUTHOR APPROVED`. R6 añade resolución inversa semántica y estado explícito de punto draggable en kernel, incluido cruce periódico bidireccional/path-independent, sin `Path`, render/pixel como autoridad ni frontend G9U1. Su aceptación GUI sigue diferida a G9U1 por diseño. R4 conserva determinismo actual > heurística de continuidad y el riesgo abierto `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP`. G9U1 DESIGN post-R6 está aprobado en checkpoint independiente `00982e7e...`; su implementación no está autorizada y requiere reconciliación post-R1 y autorización separada. El autor aprueba R1-D2, acepta DISPOSITION C para el alcance monodrómico demostrado y autoriza B — PARTIAL IMPLEMENTATION CONTRACT, incluida recurrencia del slot semántico. G9S1-R1 está `PASS — AUTHOR APPROVED`; los bloqueos históricos y sus correcciones permanecen documentados. G9B/G9C no están autorizadas, G9U2 sigue bloqueada y ninguna implementación productiva G10 está autorizada; Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |\n| Última fase cerrada | G9S1-R1 — `PASS — AUTHOR APPROVED` |\r\n| Última fase ejecutada | G9S1-R1 — `PASS — AUTHOR APPROVED`; `implementationComplete=true`, `selfApproved=false`, `authorApprovedPhase=true`, `passClaimed=true`; `manualAuthorSmoke=PASS` |\n| Siguiente puerta | Reconciliación de diseño G9U1 post-G9S1-R1 y autorización autoral separada de implementación. G9U1 implementación sigue no autorizada |",
+        "occurrences": 1
+      },
+      {
+        "path": "docs/adr/0021-spline-pair-singleton-germ-materialization.md",
+        "before": "- Status: **Accepted design — AUTHOR APPROVED; IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**\n- Date: 2026-09-03\n- Decision owner: GeoCeDG author\n- Phase: G9S1-R1 — SplineV2 Pair Intersection Materialization\n- Disposition C: **AUTHOR ACCEPTED**, limited to the demonstrated monodromic scope\n- Implementability: **B — PARTIAL IMPLEMENTATION CONTRACT — AUTHOR APPROVED**\n- Specification: [bounded pair materialization](../../geocedg/specs/curves/spline-v2-pair-materialization.md)\n- `implementationAuthorized=true`; `selfApproved=false`;\n  `authorApprovedPhase=false`; `passClaimed=false`.\n- `implementationComplete=true`; `manualAuthorSmoke=PENDING`. Authorized\n  corrections A/B in ADR 0022 are resolved on the tested cohort. PHASE A/B,\n  COMPOSED and FULL `-CleanBuild` complete with exit 0; exact receipts/counts are\n  recorded in the implementation matrix. The approved design and technical\n  completion do not establish implementation PASS or author phase approval.",
+        "after": "- Status: **Accepted — PASS — AUTHOR APPROVED**\n- Date: 2026-09-03\n- Decision owner: GeoCeDG author\n- Phase: G9S1-R1 — SplineV2 Pair Intersection Materialization\n- Disposition C: **AUTHOR ACCEPTED**, limited to the demonstrated monodromic scope\n- Implementability: **B — PARTIAL IMPLEMENTATION CONTRACT — AUTHOR APPROVED**\n- Specification: [bounded pair materialization](../../geocedg/specs/curves/spline-v2-pair-materialization.md)\n- `implementationAuthorized=true`; `selfApproved=false`;\n  `authorApprovedPhase=true`; `passClaimed=true`.\n- `implementationComplete=true`; `manualAuthorSmoke=PASS`. Authorized\n  corrections A/B in ADR 0022 are resolved on the reviewed technical cohort.\n  PHASE A/B, COMPOSED and FULL `-CleanBuild` evidence remains bound to that exact\n  technical commit; the later explicit author decision establishes phase PASS\n  without relabelling those executions as closeout-commit runs.",
+        "occurrences": 1
+      },
+      {
+        "path": "geocedg/specs/curves/spline-v2-pair-materialization.md",
+        "before": "- Status: **NORMATIVE DESIGN — AUTHOR APPROVED; IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**\n- `implementationComplete=true`; `manualAuthorSmoke=PENDING`;\n  `selfApproved=false`; `authorApprovedPhase=false`; `passClaimed=false`.\n- Corrections A/B are author authorized under ADR 0022; they do not change the\n  pair singleton-germ selector or its certification requirements. Both recorded\n  blockers are resolved on the tested cohort; fresh PHASE A/B, COMPOSED and\n  FULL `-CleanBuild` complete with exit 0. Technical completion is not author\n  acceptance; earlier failures remain preserved historical evidence.\n- Phase: G9S1-R1",
+        "after": "- Status: **NORMATIVE / IMPLEMENTED — PASS — AUTHOR APPROVED**\n- `implementationComplete=true`; `manualAuthorSmoke=PASS`;\n  `selfApproved=false`; `authorApprovedPhase=true`; `passClaimed=true`.\n- Corrections A/B are author approved under ADR 0022; they do not change the\n  pair singleton-germ selector or its certification requirements. Both recorded\n  blockers are resolved on the reviewed technical cohort. PHASE A/B, COMPOSED\n  and FULL `-CleanBuild` evidence remains bound to that exact commit; the later\n  author closeout records approval without claiming a new technical execution.\n- Phase: G9S1-R1",
+        "occurrences": 1
+      },
+      {
+        "path": "docs/validation/g9s1_r1_structural_implementation_candidate_report.md",
+        "before": "G9S1-R1 = IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW.\nStructural knot/seam continuity remains established for admitted snapshots.\nBoth historical-regression blockers are resolved on the frozen corrective\ncohort: fresh PHASE A/B, COMPOSED and clean-output FULL all exited 0.\n`implementationAuthorized=true`, `implementationStarted=true`,\n`implementationComplete=true`, `selfApproved=false`,\n`authorApprovedPhase=false`, `passClaimed=false`, `manualAuthorSmoke=PENDING`.\nNo commit, push, promotion, tag, or G9U1 implementation is authorized.",
+        "after": "G9S1-R1 = PASS — AUTHOR APPROVED.\nStructural knot/seam continuity remains established for admitted snapshots.\nBoth historical-regression blockers are resolved on the reviewed technical\ncohort: fresh PHASE A/B, COMPOSED and clean-output FULL all exited 0 there.\n`implementationAuthorized=true`, `implementationStarted=true`,\n`implementationComplete=true`, `selfApproved=false`,\n`authorApprovedPhase=true`, `passClaimed=true`, `manualAuthorSmoke=PASS`.\nThe approval-only closeout does not alter product, test or verifier inputs and\ndoes not authorize or execute G9U1 implementation.",
+        "occurrences": 1
+      }
+    ],
+    "canonicalLfHashManifests": [
+      {
+        "path": "geocedg/validation/g9s1-r1/g9s1-r1-evidence.sha256",
+        "authorityPaths": [
+          "geocedg/validation/g9s1-r1/g9s1-r1-spline-pair-materialization-evidence.json",
+          "geocedg/validation/g9s1-r1/g9s1-r1-spline-pair-materialization-scenarios.json"
+        ]
+      }
+    ]
+  }
+}

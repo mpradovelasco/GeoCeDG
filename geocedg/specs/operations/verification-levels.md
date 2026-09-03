@@ -397,3 +397,44 @@ This cross-cutting operational task is closed by the explicit
 [author decision in ADR 0020](../../../docs/adr/0020-verification-levels-and-current-run-evidence.md#author-approval-and-closeout).
 Technical execution alone still cannot confer author approval, product-phase
 promotion, release permission or an approved phase tag.
+
+## 10. Phase-candidate and author-closeout lifecycle
+
+A phase verifier whose original entry contract names an uncommitted candidate
+must distinguish three states instead of weakening that contract after the
+candidate is committed:
+
+1. `PRECOMMIT_CANDIDATE` retains the original HEAD, branch, candidate inventory
+   and false-approval assertions. Its evidence belongs only to that raw input
+   cohort.
+2. `COMMITTED_CANDIDATE` names an exact implementation commit, proves its
+   authorized base and complete candidate blob inventory, and permits only an
+   exhaustively listed verification-infrastructure descendant. Branch names are
+   not candidate identity. All scientific, source, scenario, JUnit, style and
+   current-run receipt assertions remain live.
+3. `AUTHOR_CLOSEOUT` requires a later explicit author decision naming the exact
+   reviewed technical commit. It reconstructs every permitted status-only byte
+   change from policy frozen in that commit, rejects productive, test, verifier,
+   tolerance, reference or unknown changes, and proves the reviewed executable
+   input bytes are unchanged.
+
+Historical PHASE, COMPOSED and FULL roots may be linked to an author closeout
+only through their exact hashes, ancestry, complete raw input inventory and an
+exhaustive closeout delta. This is documentary evidence linkage, not a current-
+run receipt and not a new execution. The closeout report must say which commit
+was technically executed and which descendant was checked for status-only
+consistency. Missing artifacts, differing raw executable inputs or an absent
+exact-SHA author decision fail closed and require fresh applicable verification.
+
+The initial implementation of this contract is the G9S1-R1 lifecycle repair in
+[ADR 0023](../../../docs/adr/0023-phase-verifier-lifecycle-and-author-closeout.md).
+It changes verification infrastructure, therefore requires fresh FULL evidence.
+It neither creates nor infers G9S1-R1 author approval.
+
+Commit-range whitespace evidence must declare Git's whitespace policy rather
+than inherit workstation configuration. GeoCeDG uses Git's normal blank-at-EOL,
+blank-at-EOF and space-before-tab checks with `cr-at-eol`, so physical CRLF/LF
+representation alone is not a defect while actual trailing spaces remain an
+error. This operational normalization does not relax raw-byte cohort equality:
+an LF/CRLF byte difference is still a different executable input wherever the
+phase lifecycle requires exact raw equality.

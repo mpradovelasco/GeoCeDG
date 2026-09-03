@@ -1,0 +1,241 @@
+# G9S1-R1 verifier lifecycle Stage I report
+
+- Status: **IN PROGRESS — T1 frozen; verifier-contract T2 and fresh postcommit gates pending**
+- Date: 2026-09-03
+- Phase status: `IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW`
+- Decision: [ADR 0023](../adr/0023-phase-verifier-lifecycle-and-author-closeout.md)
+- Architecture: [verifier lifecycle](../architecture/g9s1_r1_verifier_lifecycle.md)
+- Evidence root: `artifacts/g9s1-r1-verifier-lifecycle/` (ignored operational evidence)
+
+## 1. Accepted conflict characterization
+
+The original
+`tools/agent/verify-g9s1-r1-spline-pair-materialization.ps1` is a PRECOMMIT
+candidate verifier. It requires the exact base `HEAD`, exact feature branch,
+candidate status, and false approval/PASS indicators. The first candidate commit
+therefore leaves its intended domain by construction.
+
+The conflict is verification-lifecycle-specific. No R1 geometry, pair selector,
+interval certificate, token, persistence or public command defect was found.
+The correction must retain the old verifier behavior while adding separately
+authenticated committed-candidate and future author-closeout states.
+
+## 2. Entry and frozen candidate
+
+| Field | Frozen value |
+|---|---|
+| Entry `HEAD` | `109f077fc5e2a40bcde45d3271eb928ee66fdfcc` |
+| Branch | `codex/g9s1-r1-spline-pair-materialization` |
+| Index | empty |
+| Candidate paths | 76 |
+| Full raw input entries | 11,195 |
+| Full raw input inventory SHA-256 | `1921b8d34c7611f585a49026c8a5a4097933fe1290f321a5bfe3709e80c1d529` |
+| Original R1 verifier raw SHA-256 | `9285001b46961d4ace3ccbdd5ec0a7ee2848c1b67a2446280c96e7a5d299d62a` |
+| R1 evidence raw SHA-256 | `b5a0d1617feb1038f5f1d18367c41b6b491235fe119286e08272913c0d172347` |
+| R1 scenarios raw SHA-256 | `bbbb24f2900db65e28b7b04b459259798aa811fd03e9af5be9b26eaeff682f53` |
+| Freeze record SHA-256 | `df89be1e312f7e91d1c9d2a50fa51316011d4841603ab7bbb4959b0c8c88afe8` |
+| Freeze input-list SHA-256 | `1921b8d34c7611f585a49026c8a5a4097933fe1290f321a5bfe3709e80c1d529` |
+
+The freeze record identifies itself as
+`EXACT_PRECOMMIT_COHORT_PROVENANCE_NOT_AUTHOR_APPROVAL`. It records:
+
+```text
+selfApproved = false
+authorApprovedPhase = false
+passClaimed = false
+```
+
+The raw candidate bytes and input inventory were captured after the final
+precommit execution and before T1. No tracked executable/source input was changed
+between that capture and the commit.
+
+## 3. Exact precommit execution evidence
+
+Every run used the original verifier bytes and recorded repository commit
+`109f077fc5e2a40bcde45d3271eb928ee66fdfcc`.
+
+| Run | UTC interval | Result | Root-result SHA-256 |
+|---|---|---|---|
+| PHASE A | 16:10:38–16:11:20 | 192/192, exit 0 | `57423783148cfe6f0402f9cf913cec9c05b5c9cda6b3fd43c405d4a7ad6e5a53` |
+| PHASE B | 16:11:56–16:12:28 | 192/192, exit 0 | `8444a5e5263c354ba06f2114f9ae37afe89a080ce6cb40abb1c34f42fef7e4aa` |
+| COMPOSED | 16:12:55–16:30:19 | 1,281/1,281, exit 0 | `62de39ee7b106b1f4063a5bdbbf18de60d1566181845a018e9c7074efd95b641` |
+| clean FULL | 16:31:00–16:54:40 | 7,770 passing; 11 inherited upstream skips; zero failures/errors; exit 0 | `6aa8be9c9b320db246685de1b059e787ebd232d530bd3e192cebb860b957b51f` |
+
+The canonical R1 summary is identical across all four executions:
+
+```text
+424568ebd5a23dcc3b643586310ad4ed3f1f679725ac9cd79f40d45e06e9618b
+```
+
+The COMPOSED and FULL current-run receipts share input fingerprint:
+
+```text
+5eb5307e93c9c82eedfd8f7a25d2361495ef0ea622478290c9c1162f80a030b8
+```
+
+Additional receipt pins:
+
+| Evidence | COMPOSED | FULL |
+|---|---|---|
+| Build-evidence SHA-256 | `298334cca8817167aace9b84ed9e8f6c3310d1d25084299061c09e2b86c23cc7` | `defb6b8649482efbc9195f7c71b9ef55b86cd0f3e9bccabce76a7f9c33173627` |
+| Receipt input-inventory SHA-256 | `40259fe70013d7ca678f2a871aaafd08e9f703312f08e5c90f88b67b12ae8c45` | same |
+| JUnit tests | 1,281 | 7,781 total, including 11 inherited upstream skips |
+| JUnit failures/errors | 0/0 | 0/0 |
+
+These are precommit technical results. They are not postcommit executions and
+do not confer author approval.
+
+## 4. Technical candidate commit T1
+
+The exact validated candidate was committed without a preparatory source edit:
+
+| Field | Value |
+|---|---|
+| `R1_CANDIDATE_COMMIT` | `f761758bd664504057413539b9729ba444c904c1` |
+| Tree | `e9636950614d73d415e46e77bb32005c40b9d717` |
+| Parent | `109f077fc5e2a40bcde45d3271eb928ee66fdfcc` |
+| Changed paths | 76 |
+| Commit purpose | `Implement G9S1-R1 certified spline pair materialization` |
+
+All 76 T1 blob IDs equal the corresponding `rawGitBlob` values in the freeze;
+the mismatch count is zero. This proves that T1 contains the frozen candidate
+bytes exactly. It does not relabel any precommit result as having run on T1.
+
+## 5. Expected old-verifier domain exit
+
+Immediately after T1, the unmodified old verifier stopped at its entry assertion:
+
+```text
+R1 candidate requires unchanged entry HEAD.
+```
+
+This is recorded as `EXPECTED_VERIFIER_DOMAIN_EXIT`. The invocation log SHA-256
+is:
+
+```text
+323c2084c069c43907ce2c1b0efd9e98a3a70d80db9ab6cfc84544aeac61ef25
+```
+
+The failure occurred before a scientific classification could change. It is not
+a product regression, and no old evidence has been altered to hide it.
+
+## 6. Bounded verifier-contract correction
+
+The Stage I infrastructure delta is limited to exactly twelve paths:
+
+- preserving the original `PRECOMMIT_CANDIDATE` entry semantics;
+- authenticating T1 and a tightly bounded infrastructure descendant in
+  `COMMITTED_CANDIDATE` without branch-name authority;
+- implementing but not activating `AUTHOR_CLOSEOUT` for a future exact reviewed
+  SHA;
+- fixture tests for positive and negative lifecycle/provenance cases;
+- the minimum top-level phase integration;
+- the generic narrow status-only evidence-linkage rule in ADR 0023 and its
+  operational documentation.
+
+Those paths are the lifecycle helper and its fake-first test, the R1, baseline
+and verification-infrastructure entry points, the verification-runtime
+fake-first test, the exact lifecycle policy, ADR 0023, this report, the lifecycle
+architecture, the verification-level contract and the developer-guide impact
+note. There is no `source/` path in this delta.
+
+The correction must retain all live R1 scientific assertions. It may not change
+productive Java, scientific tests, tolerances, numerical references, candidate
+status or approval flags.
+
+The second technical commit is the current unpublished technical HEAD. The
+first committed-candidate COMPOSED attempt passed its canonical 1,281 tests and
+all R1 assertions, then failed the baseline commit-range whitespace gate because
+validated committed CRLF bytes were interpreted as trailing blanks by the
+caller's implicit Git whitespace policy. This is retained as a failed
+postcommit attempt, not relabelled as scientific failure or PASS.
+
+The bounded correction makes the baseline verifier pass Git's explicit normal
+blank rules plus `cr-at-eol`. Its fake-first control requires an LF-to-CRLF-only
+commit range to pass and a real trailing-space mutation to fail. The unpushed T2
+must be amended so the required two-commit architecture remains exact, then all
+focused/PHASE/COMPOSED/FULL evidence must restart against the new T2.
+
+## 7. Future status-only closeout contract
+
+A future author-closeout check will require the author to name one exact
+`REVIEWED_TECHNICAL_COMMIT`. It will prove ancestry, hash-linked technical
+evidence, an exhaustive bounded approval/status delta and raw equality of all
+executable inputs. Any product, test, verifier, tolerance/reference or unknown
+change invalidates the shortcut.
+
+If the proof passes, reporting remains explicit:
+
+```text
+technical PHASE/COMPOSED/FULL executed on T
+author closeout consistency checked on C
+executable payload C == T
+```
+
+It must not say that the old tests executed on C. Stage I tests this mode only
+with synthetic isolated fixtures; actual R1 approval remains false.
+
+## 8. Focused infrastructure evidence and pending Stage I gates
+
+The final precommit infrastructure run completed without Gradle or product
+execution:
+
+| Fixture | Result |
+|---|---:|
+| verification runtime | 114/114 expected after the bounded CRLF fixture |
+| generated-state safety | 18 cases / 143 assertions |
+| phase lifecycle | 34/34 |
+
+The phase-lifecycle result is normalized independently of its random temporary
+fixture path as
+`a3b1074cc07ccf912021d77220a485b6fcdd528b64c4ed4ef46e9320a915a99a`.
+It verifies both positive lifecycle forms and fail-closed mutations of
+ancestry, productive/test/verifier/tolerance paths, approval records, evidence
+manifests, receipts, archives and raw input identity. The documentary link is
+also proved non-consumable as a current-run receipt.
+
+The following remain mandatory and **not yet claimed**:
+
+1. `R1_VERIFIER_CONTRACT_COMMIT` containing only the bounded infrastructure
+   delta;
+2. a fresh shell/process against its clean committed source cohort;
+3. postcommit `G9S1-R1` PHASE;
+4. postcommit COMPOSED;
+5. postcommit clean FULL;
+6. exact designation of `R1_REVIEWED_TECHNICAL_COMMIT`;
+7. final source/inventory/diff and false-approval checks.
+
+The old precommit FULL cannot satisfy the postcommit FULL gate. A future result
+must not be predicted or backfilled into this report.
+
+## 9. Impact review
+
+```text
+VERIFICATION_INFRASTRUCTURE_IMPACT = UPDATE_REQUIRED
+BOOTSTRAP IMPACT — NO CHANGE REQUIRED
+GUIDE_IMPACT = UPDATED
+```
+
+Bootstrap remains unchanged because this work introduces no new executable,
+PowerShell/JDK/Gradle/Conda requirement, download, package, environment variable,
+workstation role or scientific reference. Existing wrappers and toolchain
+selection remain authoritative. The developer guide is updated because operators
+must distinguish PRECOMMIT, COMMITTED and AUTHOR_CLOSEOUT modes and must not
+misstate evidence reuse as a rerun.
+
+## 10. Governance boundary
+
+Current real authority remains:
+
+```text
+G9S1-R1 = IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW
+selfApproved = false
+authorApprovedPhase = false
+passClaimed = false
+```
+
+There has been no tag, main promotion or G9U1 work in this Stage I checkpoint.
+The protected G9U1 design remains unchanged and G9U1 implementation remains
+NOT AUTHORIZED. Stage II remains forbidden until a later author instruction both
+approves G9S1-R1 and names the exact reviewed technical commit established after
+fresh postcommit validation.
