@@ -9,6 +9,10 @@ package org.geocedg.common.kernel.locus;
  * Optional immutable semantic capability for an oriented piecewise-polynomial
  * locus. Coefficients use descending powers of the provider-canonical
  * parameter and are never recovered from render samples or expression trees.
+ * These binary64 arrays may be rounded expansions of a structural source model.
+ * They support floating discovery/evaluation, not an implicit exact-coefficient
+ * or cross-span continuity certificate. Certified consumers must enclose the
+ * actual captured source authority (including its structural constraints).
  */
 public interface PiecewisePolynomialLocus2D extends LocusParameterPartition2D {
 	/**
@@ -34,7 +38,7 @@ public interface PiecewisePolynomialLocus2D extends LocusParameterPartition2D {
 
 	/**
 	 * @param coordinate 0 for x, 1 for y
-	 * @return defensive descending-power coefficients
+	 * @return defensive descending-power floating coefficients, not an exactness claim
 	 */
 	double[] getPolynomialCoefficients(String branchKey, int spanIndex,
 			int coordinate);

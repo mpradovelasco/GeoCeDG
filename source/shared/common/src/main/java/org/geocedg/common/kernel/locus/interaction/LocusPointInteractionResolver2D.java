@@ -600,11 +600,11 @@ public final class LocusPointInteractionResolver2D {
 			double cellLower, double cellUpper, LocusEvaluation2D center,
 			LocusPointInteractionLocalEvidence2D.Method method,
 			LocusEvaluationSession2D session) {
-		if (center.getRegularity() == Regularity.SINGULAR) {
-			return LocusPointInteractionLocalEvidence2D.singular(
-					"The semantic evaluator reports a singular address");
-		}
 		if (component.getLower() == component.getUpper()) {
+			if (center.getRegularity() == Regularity.SINGULAR) {
+				return LocusPointInteractionLocalEvidence2D.singular(
+						"The semantic evaluator reports a singular address");
+			}
 			return LocusPointInteractionLocalEvidence2D.established(method,
 					NumericGuarantee.ESTIMATED_ERROR,
 					"The component contains one explicit semantic address");
@@ -618,11 +618,6 @@ public final class LocusPointInteractionResolver2D {
 		if (left != null && !left.valid || right != null && !right.valid) {
 			return LocusPointInteractionLocalEvidence2D.unresolved(
 					"A local semantic-minimum guard could not be evaluated");
-		}
-		if (left != null && left.regularity == Regularity.SINGULAR
-				|| right != null && right.regularity == Regularity.SINGULAR) {
-			return LocusPointInteractionLocalEvidence2D.singular(
-					"A local semantic-minimum guard is singular");
 		}
 		double centerDistance = squaredDistance(query, center.getPoint());
 		double scale = Math.max(1, centerDistance);
@@ -639,6 +634,18 @@ public final class LocusPointInteractionResolver2D {
 						+ comparisonTolerance) {
 			return LocusPointInteractionLocalEvidence2D.notMinimum(
 					"The refined address is not a local distance minimum");
+		}
+		// A singular address that is already excluded by the same strict
+		// nonminimum test cannot obstruct unrelated regular preimages. No
+		// derivative or nonzero-speed assumption is used for that exclusion.
+		if (center.getRegularity() == Regularity.SINGULAR) {
+			return LocusPointInteractionLocalEvidence2D.singular(
+					"The semantic evaluator reports a singular address");
+		}
+		if (left != null && left.regularity == Regularity.SINGULAR
+				|| right != null && right.regularity == Regularity.SINGULAR) {
+			return LocusPointInteractionLocalEvidence2D.singular(
+					"A local semantic-minimum guard is singular");
 		}
 		boolean strict = left != null
 				&& left.squaredDistance > centerDistance + comparisonTolerance

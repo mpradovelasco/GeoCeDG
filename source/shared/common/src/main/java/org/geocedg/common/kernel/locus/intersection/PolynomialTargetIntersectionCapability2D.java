@@ -29,6 +29,7 @@ import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.MultiplicityStatus;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.SolverMethod;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.SupportLevel;
+import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.TargetFamily;
 import org.geocedg.common.kernel.locus.intersection.PolynomialRootIsolation2D.RootCell;
 
 /**
@@ -81,9 +82,32 @@ final class PolynomialTargetIntersectionCapability2D
 				.getImplicitPolynomialCoefficients();
 		validateTarget(target);
 		ArrayList<LocatedRoot> located = new ArrayList<>();
+		java.util.Map<String, SplineImplicitIntervalCertification2D> certifiers =
+				new java.util.LinkedHashMap<>();
 		ArrayList<String> examinedComponents = new ArrayList<>();
 		boolean zeroPolynomialSpan = false;
+		boolean structuralTarget = context.getTarget().getFamily()
+				== TargetFamily.REGULAR_POLYNOMIAL_IMPLICIT;
 		for (LocusBranch2D branch : context.getDefinition().getBranches()) {
+			SplineImplicitIntervalCertification2D certifier = structuralTarget
+					? SplineImplicitIntervalCertification2D.capture(context.getDefinition(),
+							branch.getBranchKey(), target,
+							context.getQuery().getPolicy().getWorkBudget())
+					: null;
+			if (certifier != null) {
+				certifiers.put(branch.getBranchKey(), certifier);
+			} else if (structuralTarget
+					&& SplineImplicitIntervalCertification2D.isSplineSource(
+							context.getDefinition())) {
+				return new IntersectionCandidateSet2D(Completeness.NOT_ESTABLISHED,
+						CompletenessMethod.NOT_ESTABLISHED, GeometryKind.UNRESOLVED,
+						SupportLevel.VERIFIED_UNCERTIFIED,
+						NumericGuarantee.FLOATING_POINT_UNCERTIFIED,
+						Collections.emptyList(), Collections.emptyList(), Collections.emptyList(),
+						List.of(new IntersectionDiagnostic2D(DiagnosticCode.CANDIDATE_REJECTED,
+								"Spline structural capture unavailable; floating fallback "
+										+ "cannot certify roots")));
+			}
 			for (int componentIndex = 0; componentIndex < branch
 					.getValidDomainComponents().size(); componentIndex++) {
 				String componentKey = IntersectionCapabilityContext2D.componentKey(
@@ -133,28 +157,30 @@ final class PolynomialTargetIntersectionCapability2D
 					}
 					for (RootCell root : roots) {
 						context.getInstrumentation().recordPolynomialRootCandidate();
-						double local = canonicalLocal(root.getParameter(),
+						double local = certifier != null ? root.getParameter()
+								: canonicalLocal(root.getParameter(),
 								context.getQuery().getPolicy()
 										.getRootParameterTolerance().getValue()
 										/ (upper - lower));
-						if (local == 1 && span + 1 < spanCount) {
+						if (certifier == null && local == 1 && span + 1 < spanCount) {
 							continue;
 						}
 						boolean lowerSeam = periodicCycle && span == 0
 								&& local == 0;
 						boolean upperSeam = periodicCycle && span + 1 == spanCount
 								&& local == 1;
-						double parameter = upperSeam ? component.getLower()
+						double parameter = certifier == null && upperSeam ? component.getLower()
 								: lower + (upper - lower) * local;
-						double cellLower = lowerSeam || upperSeam
+						double cellLower = certifier == null && (lowerSeam || upperSeam)
 								? component.getLower()
 								: lower + (upper - lower) * root.getLower();
-						double cellUpper = lowerSeam || upperSeam
+						double cellUpper = certifier == null && (lowerSeam || upperSeam)
 								? component.getLower()
 								: lower + (upper - lower) * root.getUpper();
 						located.add(new LocatedRoot(branch.getBranchKey(),
 								componentKey, component, parameter, cellLower,
-								cellUpper, lowerSeam ? 1 : upperSeam ? 2 : 0));
+								cellUpper, lowerSeam ? 1 : upperSeam ? 2 : 0,
+								root.isStationaryProposal()));
 					}
 				}
 			}
@@ -162,16 +188,58 @@ final class PolynomialTargetIntersectionCapability2D
 		if (zeroPolynomialSpan) {
 			return unresolvedOverlap(examinedComponents);
 		}
-		List<LocatedRoot> roots = deduplicate(context, located);
+		List<LocatedRoot> roots = certifiers.isEmpty() ? deduplicate(context, located) : located;
 		ArrayList<IntersectionCandidate2D> candidates = new ArrayList<>();
+		ArrayList<IntersectionDiagnostic2D> overallDiagnostics = new ArrayList<>();
 		for (LocatedRoot root : roots) {
+			SplineImplicitIntervalCertification2D certifier = certifiers.get(root.branchKey);
+			SplineImplicitIntervalCertification2D.Proof proof = null;
+			if (certifier != null) {
+				proof = certifier.verify(root.component, root.parameter, root.lower, root.upper);
+				if (proof.status == SplineImplicitIntervalCertification2D.Status.EXCLUDED) {
+					context.getInstrumentation().recordRejectedCandidate();
+					continue;
+				}
+			}
 			classify(context, root);
+			if (proof != null) {
+				if (proof.status == SplineImplicitIntervalCertification2D.Status.SIMPLE) {
+					root.parameter = proof.parameter;
+					root.lower = proof.canonicalRoot.lower;
+					root.upper = proof.canonicalRoot.upper;
+					root.contact = ContactClass.TRANSVERSE_ESTABLISHED;
+					if (context.getDefinition().getProvider().isPeriodic()
+							&& root.parameter == root.component.getLower()) {
+						root.periodicSeamSides = 3;
+					}
+				} else {
+					boolean exactBoundary = certifier.hasExactBoundaryZero(root.parameter);
+					if ((root.stationaryProposal || exactBoundary)
+							&& root.contact == ContactClass.TRANSVERSE_ESTABLISHED) {
+						// A tiny nonzero gradient at an approximate stationary seed
+						// does not prove transversality at its true contact.
+						root.contact = ContactClass.CONTACT_UNDETERMINED;
+					}
+					if (!proof.compatibleContact || !root.stationaryProposal && !exactBoundary) {
+						context.getInstrumentation().recordUnresolvedCandidate();
+						overallDiagnostics.add(new IntersectionDiagnostic2D(
+								DiagnosticCode.CANDIDATE_REJECTED,
+								"Floating spline proposal lacks structural root evidence; "
+										+ "not a verified root"));
+						continue;
+					}
+					root.parameter = context.getDefinition().getProvider()
+							.canonicalize(root.parameter);
+					root.lower = Math.min(root.lower, root.parameter);
+					root.upper = Math.max(root.upper, root.parameter);
+				}
+			}
 			if (!acceptable(context, root)) {
 				continue;
 			}
 			LocalIsolationStatus isolation = root.contact
 					== ContactClass.TRANSVERSE_ESTABLISHED
-							&& (!root.isPeriodicSeam()
+							&& (proof != null || !root.isPeriodicSeam()
 									|| root.hasBothPeriodicSeamSides())
 							? LocalIsolationStatus.ESTABLISHED
 							: LocalIsolationStatus.NOT_ESTABLISHED;
@@ -180,10 +248,19 @@ final class PolynomialTargetIntersectionCapability2D
 					isolation == LocalIsolationStatus.ESTABLISHED
 							? DiagnosticCode.LOCAL_ISOLATION_ESTABLISHED
 							: DiagnosticCode.CONTINUATION_AMBIGUOUS,
-					"Root localized by source-span polynomial composition and "
+					proof == null ? "Root localized by source-span polynomial composition and "
 							+ "derivative-partition refinement; floating arithmetic "
-							+ "does not establish global completeness"));
-			candidates.add(new IntersectionCandidate2D(root.branchKey,
+							+ "does not establish global completeness"
+							: isolation == LocalIsolationStatus.ESTABLISHED
+									? "Direct structural Q(S(I))/gradient proof: "
+											+ "strict scalar inclusion or exact "
+											+ "boundary-zero witness "
+											+ "with nonzero derivative; "
+											+ "local, not complete enumeration"
+									: "Estimated stationary/singular contact retained rich-only; "
+											+ "structural interval compatibility is not a "
+											+ "root-multiplicity certificate"));
+			IntersectionCandidate2D candidate = new IntersectionCandidate2D(root.branchKey,
 					root.componentKey, root.parameter,
 					root.isPeriodicSeam()
 							? OptionalDouble.of(root.component.getUpper())
@@ -191,21 +268,30 @@ final class PolynomialTargetIntersectionCapability2D
 					new IntersectionParameterInterval2D(root.lower, root.upper),
 					isolation, Optional.empty(), root.contact,
 					MultiplicityStatus.NOT_ESTABLISHED, OptionalInt.empty(),
-					SolverMethod.SAFEGUARDED_DERIVATIVE,
+					proof != null && isolation == LocalIsolationStatus.ESTABLISHED
+							? SolverMethod.CERTIFIED_INTERVAL : SolverMethod.SAFEGUARDED_DERIVATIVE,
 					NumericGuarantee.ESTIMATED_ERROR, LineageEventKind.APPEARED,
-					Collections.emptyList(), diagnostics));
+					Collections.emptyList(), diagnostics);
+			candidates.add(proof == null ? candidate : candidate.withStructuralCertificate(proof));
 		}
+		for (SplineImplicitIntervalCertification2D certifier : certifiers.values()) {
+			overallDiagnostics.add(new IntersectionDiagnostic2D(
+					DiagnosticCode.COVERAGE_NOT_ESTABLISHED,
+					certifier.workSummary()));
+		}
+		overallDiagnostics.add(new IntersectionDiagnostic2D(DiagnosticCode.COVERAGE_NOT_ESTABLISHED,
+				certifiers.isEmpty()
+						? "G9S1 examined every explicit polynomial span, but floating coefficient "
+								+ "arithmetic is not a certified global root-count proof"
+						: "G9S1 examined every explicit polynomial span; structural "
+								+ "local certificates do not establish complete root enumeration"));
 		return new IntersectionCandidateSet2D(Completeness.NOT_ESTABLISHED,
 				CompletenessMethod.NOT_ESTABLISHED,
 				candidates.isEmpty() ? GeometryKind.UNRESOLVED
 						: GeometryKind.FINITE,
 				SupportLevel.VERIFIED_UNCERTIFIED,
 				NumericGuarantee.ESTIMATED_ERROR, examinedComponents, candidates,
-				Collections.emptyList(), List.of(new IntersectionDiagnostic2D(
-						DiagnosticCode.COVERAGE_NOT_ESTABLISHED,
-						"G9S1 examined every explicit polynomial span, but "
-								+ "floating coefficient arithmetic is not a certified "
-								+ "global root-count proof")));
+				Collections.emptyList(), overallDiagnostics);
 	}
 
 	private static PolynomialRootIsolation2D.WorkRecorder workRecorder(
@@ -489,15 +575,16 @@ final class PolynomialTargetIntersectionCapability2D
 		private final String branchKey;
 		private final String componentKey;
 		private final LocusInterval2D component;
-		private final double parameter;
+		private double parameter;
 		private double lower;
 		private double upper;
 		private int periodicSeamSides;
+		private boolean stationaryProposal;
 		private ContactClass contact = ContactClass.CONTACT_UNDETERMINED;
 
 		private LocatedRoot(String branchKey, String componentKey,
 				LocusInterval2D component, double parameter, double lower,
-				double upper, int periodicSeamSides) {
+				double upper, int periodicSeamSides, boolean stationaryProposal) {
 			this.branchKey = branchKey;
 			this.componentKey = componentKey;
 			this.component = component;
@@ -505,12 +592,14 @@ final class PolynomialTargetIntersectionCapability2D
 			this.lower = Math.min(lower, parameter);
 			this.upper = Math.max(upper, parameter);
 			this.periodicSeamSides = periodicSeamSides;
+			this.stationaryProposal = stationaryProposal;
 		}
 
 		private void include(LocatedRoot other) {
 			lower = Math.min(lower, other.lower);
 			upper = Math.max(upper, other.upper);
 			periodicSeamSides |= other.periodicSeamSides;
+			stationaryProposal |= other.stationaryProposal;
 		}
 
 		private boolean isPeriodicSeam() {

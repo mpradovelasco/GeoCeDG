@@ -282,8 +282,8 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/geos/GeoLocusV2.java",
       "change": "added",
-      "purpose": "Retain the public persistent semantic locus while exposing ordinary curve-style capabilities, style XML and a presentation-only repaint hook without adopting Path or changing semantic revision.",
-      "authority": "geocedg/specs/locus/locus-v2-presentation.md"
+      "purpose": "Retain the public persistent semantic locus, ordinary curve style and presentation-only repaint boundary. R1 additionally honors the existing exact G9A serialization overlay for a staged replacement element without attaching live identity, broadening redefine compatibility, or adopting Path.",
+      "authority": "docs/architecture/g9s1_r1_structural_spline_continuity.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoAnalyticLocusV2.java",
@@ -1050,8 +1050,8 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionCandidate2D.java",
       "change": "added",
-      "purpose": "Implement the internal query-local G8B intersection semantic contract (IntersectionCandidate2D) without public, render, metric-index, persistence, 3D, or G9 authority.",
-      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+      "purpose": "Retain the internal query-local G8B candidate contract while R1 carries typed current structural univariate proof without adding proof boxes or coordinates to durable identity, render or metric authority.",
+      "authority": "docs/adr/0022-structural-spline-continuity.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionCandidateSet2D.java",
@@ -1128,7 +1128,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionSemanticMetadata2D.java",
       "change": "added",
-      "purpose": "Define the closed G8B/G8C1 target-family, support, evaluation, result, completeness, classification and identity vocabulary; R4 adds deterministic-selection identity status without making continuity history authoritative.",
+      "purpose": "Define the closed intersection result/evidence vocabulary; preserve R4 deterministic-selection identity and add R1 pair singleton-certificate diagnostics without conflating source support, root discovery, local proof, class coverage or global completeness.",
       "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
     },
     {
@@ -1194,8 +1194,8 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionSolver2D.java",
       "change": "added",
-      "purpose": "Select the closed G8B/G8C1 capability hierarchy and independently verify typed residual and membership evidence; R4 carries current semantic germ evidence while the public token source prevents durable minting before deterministic selector resolution.",
-      "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
+      "purpose": "Retain the closed capability hierarchy, residual/membership checks and R4 deterministic publication; R1 consumes current structural implicit proof and certified root equivalence without generic proximity deduplication or weakening non-spline contracts.",
+      "authority": "docs/adr/0022-structural-spline-continuity.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionTarget2D.java",
@@ -1254,7 +1254,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/geos/GeoLocusIntersectionResult.java",
       "change": "added",
-      "purpose": "Publish rich intersection authority as a nonnumeric, nondrawable DAG node with reconstructible public persistence and an exact token ledger; validate current-or-dormant materialized tokens, retain/release claims and perform only the authorized exact closure-copy rebase while rejecting incompatible state.",
+      "purpose": "Publish rich intersection authority as a nonnumeric, nondrawable DAG node with reconstructible persistence and an exact token ledger; R1 adds strict two-source pair attachment/copy provenance and retained singleton-slot claims without changing R4 one-source lifecycle or allowing label/coordinate inference.",
       "authority": "geocedg/specs/locus/locus-v2-intersections.md"
     },
     {
@@ -1380,7 +1380,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusLocusIntersectionV2.java",
       "change": "added",
-      "purpose": "Publish one coherent immutable G8C2 locus-pair result through two normal-DAG inputs, query-local solving, semantic continuation and atomic failure handling.",
+      "purpose": "Publish one coherent immutable locus-pair result through two normal-DAG inputs; R1 adds one current symmetric spline certification/selector publication and atomic pair ledger commit while preserving generic pair rich-only behavior and fail-closed recovery.",
       "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
     },
     {
@@ -1452,7 +1452,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusPairIntersectionSolver2D.java",
       "change": "added",
-      "purpose": "Coordinate dedicated pair candidate isolation, dual refinement, independent two-source residual verification, completeness, overlap and strict continuation; R4 propagates the candidate key only as compatibility revision evidence without admitting pair roots through the single-target resolver.",
+      "purpose": "Coordinate pair candidate isolation, dual refinement, independent two-source residual verification, completeness and overlap; R1 publishes authenticated spline singleton-class certificate metadata without promoting generic pairs or using one-sided R4 identity as pair authority.",
       "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
     },
     {
@@ -2562,19 +2562,19 @@
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored default type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds the deterministic-selection status diagnostic.",
+      "purpose": "Add GeoCeDG-authored default type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds the deterministic-selection status diagnostic; G9S1-R1 completes the selector-class evidence and pair-certification work diagnostic labels without G9U1 frontend implementation.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_en.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored English type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds the English deterministic-selection status diagnostic.",
+      "purpose": "Add GeoCeDG-authored English type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds the English deterministic-selection status diagnostic; G9S1-R1 completes the English selector-class evidence and pair-certification work diagnostic labels without G9U1 frontend implementation.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_es.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored Spanish type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds the Spanish deterministic-selection status diagnostic.",
+      "purpose": "Add GeoCeDG-authored Spanish type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds the Spanish deterministic-selection status diagnostic; G9S1-R1 completes the Spanish selector-class evidence and pair-certification work diagnostic labels without G9U1 frontend implementation.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -2766,7 +2766,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionTokenLedger2D.java",
       "change": "added",
-      "purpose": "Persist and atomically manage intersection-token incarnations, owner validation, retirement, restore and authorized copy rebasing; R4 ledger format v4 exports claimed-active/claimed-dormant lifecycle and reference-counted materialized claims, imports canonical phase-v3 and authentic pre-phase v2/v1 state, preserves or dormant-reactivates exact tokens only under the same unique selector, permanently retires explicit non-reactivatable barriers, rejects version relabels/forged bindings and otherwise fails closed.",
+      "purpose": "Persist and atomically manage exact token ownership, claims and copy rebasing; retain R4 v4 and v1-v4 import behavior while R1 adds strictly discriminated pair-bearing v5 state, two-source selector/proof attachment, recoverable pair dormancy/quarantine and exact closure-copy remapping without trajectory history.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -2778,8 +2778,8 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PublicTargetIntersectionCapability2D.java",
       "change": "added",
-      "purpose": "Adapt approved one-parameter target families to the public rich-intersection contract; R4 records a deterministic oriented transverse current-root germ that contributes to the component-scoped current selector but is not identity by itself.",
-      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+      "purpose": "Retain approved one-parameter public target adaptation and R4 oriented germ identity; R1 preserves current structural implicit proof through candidate copies and derives its germ from certified derivative sign with canonical target orientation, without promoting rounded circle/line/conic adapters.",
+      "authority": "docs/adr/0022-structural-spline-continuity.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/ConstructionGeoRedefineProvider.java",
@@ -3150,13 +3150,13 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusSimilarityEvaluator2D.java",
       "change": "added",
-      "purpose": "Evaluate the source locus first at the unchanged semantic address and additionally propagate certified affine data and paired polynomial coordinates once per R5 layer with O(1) captured composition depth and the shared safety cap.",
+      "purpose": "Evaluate the source locus first at the unchanged semantic address and propagate affine/polynomial capabilities with bounded composition depth; expose immutable captured source and transform evidence to R1 interval certification rather than assuming flattened rounded coefficients are exact composition.",
       "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusSimilarityTransform2D.java",
       "change": "added",
-      "purpose": "Represent the immutable finite 2D translation, rotation, point/line reflection or uniform dilation used by one R5 semantic recompute, including scale-safe homogeneous-line normalization and the approved finite k=0 collapsed image.",
+      "purpose": "Represent immutable finite R5 similarities including the approved k=0 collapsed image; provide read-only captured transform parameters for R1 outward enclosure of the actual composed map without changing transform semantics.",
       "authority": "geocedg/specs/locus/locus-v2-similarity-transformations.md"
     },
     {
@@ -3240,20 +3240,20 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/PiecewisePolynomialLocus2D.java",
       "change": "added",
-      "purpose": "Expose immutable provider-canonical polynomial spans, coherent paired x/y coefficients and O(1) captured composition depth for bounded R6/metric/intersection consumers without render or expression reconstruction.",
+      "purpose": "Expose immutable provider-canonical polynomial spans, paired coordinates and bounded composition depth; clarify R1 derived rounded coefficient data versus structural spline proof authority without render or expression reconstruction.",
       "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spline/SplinePolynomialModel2D.java",
       "change": "added",
-      "purpose": "Capture the bounded floating-coefficient polynomial spline family with explicit knots, span ownership, evaluation derivatives and deterministic semantic signature for approved G9S1.",
-      "authority": "geocedg/specs/curves/semantic-spline-2d.md"
+      "purpose": "Retain the bounded SplineV2 interpolation family and input admission while R1 uses structural continuity authority, exact periodic closure, original-equation revalidation and versioned derived signatures; the authorized correction adds bounded higher-precision fallback without tolerance inflation, while rounded spans remain derived numerical data.",
+      "authority": "docs/adr/0022-structural-spline-continuity.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spline/SplineSemanticEvaluator2D.java",
       "change": "added",
-      "purpose": "Provide viewport-independent semantic and differential evaluation plus provider-canonical span partitioning for one immutable SplineV2 revision.",
-      "authority": "geocedg/specs/curves/semantic-spline-2d.md"
+      "purpose": "Provide viewport-independent semantic/differential evaluation and canonical span partitioning; R1 versions structural-model capability signatures without changing durable source, branch/component or semantic address authority.",
+      "authority": "docs/adr/0022-structural-spline-continuity.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CmdSplineV2.java",
@@ -3264,7 +3264,7 @@
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1SemanticSpline2DTest.java",
       "change": "added",
-      "purpose": "Exercise the approved G9S1 public command, semantic evaluation, rich and guarded-scalar total/partial metrics, intersections, deterministic exact-token lifecycle, R5 transformations, invalid-state recovery, persistence/copy/undo boundaries and Classic compatibility.",
+      "purpose": "Exercise the approved G9S1 public command and semantic consumers; R1 changes only the roundedX presentation helper to canonicalize IEEE signed zero after its existing 1e-9 rounding grid, without changing geometric assertions, source semantics, token identity or tolerances.",
       "authority": ".github/prompts/tasks/g9s1-semantic-spline-2d-capability.prompt.md"
     },
     {
@@ -3300,8 +3300,8 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PolynomialTargetIntersectionCapability2D.java",
       "change": "added",
-      "purpose": "Discover one-sided spline roots using one coherent paired polynomial snapshot plus bounded captured-composition depth, publishing truthful floating isolated evidence through R4 while reusing the R6 root isolator without changing intersection semantics.",
-      "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
+      "purpose": "Retain one-sided floating spline root discovery but require current structural interval proof for authenticated spline REGULAR_POLYNOMIAL_IMPLICIT targets before simple-root publication; other target adapters remain under their historical contracts.",
+      "authority": "docs/adr/0022-structural-spline-continuity.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/interaction/LocusPointInteractionCandidate2D.java",
@@ -3342,7 +3342,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/interaction/LocusPointInteractionResolver2D.java",
       "change": "added",
-      "purpose": "Resolve bounded world requests through certified-affine complete coverage, bounded paired-polynomial specialization or evaluator-only fail-closed discovery; evaluator coverage never promotes zero/one local candidates to definitive none/unique.",
+      "purpose": "Preserve bounded R6 semantic inverse resolution and evaluator fail-closed coverage. R1 orders the existing strict nonminimum exclusion before singular-center/guard rejection so excluded distance maxima cannot obstruct unrelated regular preimages; genuinely singular minima and one-address components retain their original fail-closed checks. No new tolerance, identity, Classic or frontend authority.",
       "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
     },
     {
@@ -3372,8 +3372,8 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PolynomialRootIsolation2D.java",
       "change": "added",
-      "purpose": "Provide one bounded deterministic polynomial root-cell isolator shared by the established spline intersection capability and R6 spline inverse-distance specialization.",
-      "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
+      "purpose": "Retain the shared deterministic floating root-cell isolator; R1 adds only stationary-proposal provenance from its existing interior derivative partition and preserves that flag through existing deduplication, without changing numerical roots, tolerances, enumeration or R6 semantics.",
+      "authority": "docs/adr/0022-structural-spline-continuity.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9U0R6SemanticLocusPointInteractionTest.java",
@@ -3446,6 +3446,144 @@
       "change": "added",
       "purpose": "Exercise all four owned modes through real Desktop 2D/3D resource, border, cache, scaling, toolbar and ToolImage paths, preserving the unmodified inherited resource-availability tests and classic PNG paths.",
       "authority": "docs/architecture/verification-baseline-compatibility-repair.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spline/SplineStructuralModel2D.java",
+      "change": "added",
+      "purpose": "Construct the equivalent bounded structural spline basis and exact periodic jet elimination, with numerical solve/validation separated from exact shared numerator relations and derived rounded spans.",
+      "authority": "docs/adr/0022-structural-spline-continuity.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PairSemanticSlotSelector2D.java",
+      "change": "added",
+      "purpose": "Define strict canonical source-associated singleton transverse-germ pair selectors without coordinates, current parameters, knots, proof boxes, enumeration ranks or movement history.",
+      "authority": "geocedg/specs/curves/spline-v2-pair-materialization.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PairRootAddressProof2D.java",
+      "change": "added",
+      "purpose": "Keep both exact current source-address/revision records separate from durable pair identity and transpose them only through exact source association.",
+      "authority": "geocedg/specs/curves/spline-v2-pair-materialization.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PublicSplinePairRootIdentityResolver2D.java",
+      "change": "added",
+      "purpose": "Resolve authenticated current spline singleton-germ certificates into exact ledger tokens, retaining fail-closed generic/repeated-class behavior and no frontend or historical root-matching authority.",
+      "authority": "geocedg/specs/curves/spline-v2-pair-materialization.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/SplineIntervalModel2D.java",
+      "change": "added",
+      "purpose": "Capture authenticated native spline structural numerator/denominator polynomials and actual similarity chains for outward interval evaluation; require exact legacy diagnostic gluing and reject unsupported or collapsed proof contexts.",
+      "authority": "docs/adr/0022-structural-spline-continuity.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/SplineOutwardInterval2D.java",
+      "change": "added",
+      "purpose": "Provide bounded outward-rounded interval arithmetic for R1 proof operations with explicit nonfinite/overflow/division uncertainty, separate from ordinary floating discovery.",
+      "authority": "geocedg/specs/curves/spline-v2-pair-materialization.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/SplinePairIntervalCertification2D.java",
+      "change": "added",
+      "purpose": "Establish bounded current pair-root interval existence/uniqueness and selected-germ component-product coverage; unresolved cells or competing same-germ roots cannot be silently certified.",
+      "authority": "geocedg/specs/curves/spline-v2-pair-materialization.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1PairSelectorCharacterizationTest.java",
+      "change": "added",
+      "purpose": "Preserve initial exact diagnostic projected-rank and multiplicity counterexamples; these model tests are historical evidence, not native pair certification.",
+      "authority": "docs/architecture/g9s1_r1_pair_materialization_design_review.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1PairAtlasCharacterizationTest.java",
+      "change": "added",
+      "purpose": "Preserve the exact diagnostic periodic monodromy, chart-overlap and pair-sheet counterexamples without converting them into a production identity engine.",
+      "authority": "docs/architecture/g9s1_r1_symmetric_atlas_design.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1D2PairSheetContractTest.java",
+      "change": "added",
+      "purpose": "Preserve the author-reviewed D2 diagnostic singleton-slot contract, source symmetry, recurrence and monodromy limitations independently of productive proof.",
+      "authority": "docs/architecture/g9s1_r1_d2_pair_sheet_contract.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1SplineAtlasHostCharacterizationTest.java",
+      "change": "added",
+      "purpose": "Preserve native repeated-traversal spline characterization, deterministic definitions and host XML authority while distinguishing floating spans from exact diagnostic models.",
+      "authority": "docs/architecture/g9s1_r1_symmetric_atlas_design.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1PairTokenLedgerTest.java",
+      "change": "added",
+      "purpose": "Regress strict symmetric selectors, exact pair proofs, v5 discrimination, retained active/dormant/quarantined claims, negative import and exact two-source copy/remap.",
+      "authority": "geocedg/specs/curves/spline-v2-pair-materialization.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1SplinePairIntervalCertificationTest.java",
+      "change": "added",
+      "purpose": "Exercise rigorous arithmetic/enclosure, singleton and repeated sign classes, budget failure, actual composition, exact diagnostic knots/seams and the structural rational coefficient bridge.",
+      "authority": "geocedg/specs/curves/spline-v2-pair-materialization.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1SplinePairMaterializationTest.java",
+      "change": "added",
+      "purpose": "Exercise native public pair materialization, deterministic regular motion, exact token/ID lifecycle, copy/undo/XML, mixed ambiguity and the preserved native-knot predecessor plus corrected structural source.",
+      "authority": "geocedg/specs/curves/spline-v2-pair-materialization.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1StructuralSplineContinuityTest.java",
+      "change": "added",
+      "purpose": "Test exact represented interior/periodic jets, original boundary equations, degree/size/scale admission and the historical native discontinuity separately from numerical interpolation accuracy.",
+      "authority": "docs/adr/0022-structural-spline-continuity.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1StructuralSplineLifecycleTest.java",
+      "change": "added",
+      "purpose": "Test structural source signatures without new durable identity, command reconstruction, R4/R5/R6 consumers, exact periodic direction bits, copy/undo and valid/invalid recovery.",
+      "authority": "docs/adr/0022-structural-spline-continuity.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1NativeStructuralPairTest.java",
+      "change": "added",
+      "purpose": "Exercise real command-backed structural spline pair knots, periodic seams, regular motion, operand symmetry, repeated traversal, tangency/overlap and transformed/collapsed sources without idealized fixture substitution.",
+      "authority": "geocedg/specs/curves/spline-v2-pair-materialization.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9S1R1NativeArchivePersistenceTest.java",
+      "change": "added",
+      "purpose": "Exercise actual native .cedg archives for active/dormant/reactivated pair point ownership and current recomputation, distinct from host XML-only or ledger codec evidence.",
+      "authority": "geocedg/specs/curves/spline-v2-pair-materialization.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spline/SplineConstructionEvidence2D.java",
+      "change": "added",
+      "purpose": "Record immutable per-construction arithmetic route, bounded precision/work and rejection evidence without adding durable identity or serialized coefficient state.",
+      "authority": "docs/adr/0022-structural-spline-continuity.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spline/SplinePrecisionSolve2D.java",
+      "change": "added",
+      "purpose": "Provide deterministic bounded standard-Java higher-precision construction fallback for the same structural spline equations, preserving the original admission guard and failing closed at precision/work limits.",
+      "authority": "docs/adr/0022-structural-spline-continuity.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/SplineImplicitIntervalCertification2D.java",
+      "change": "added",
+      "purpose": "Certify actual structural spline/implicit composition and chain-rule derivative with outward scalar interval inclusion/exclusion before public root classification; unknown or multiple contacts receive no simple transverse proof.",
+      "authority": "docs/adr/0022-structural-spline-continuity.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1StructuralImplicitCertificationTest.java",
+      "change": "added",
+      "purpose": "Exercise native structural implicit simple-root proof, repeated-contact and false-split negatives, exact knot/seam ownership, bounded work, generic-scope rejection and R5 composition.",
+      "authority": "docs/adr/0022-structural-spline-continuity.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/spline/G9S1R1SplinePrecisionAdmissionTest.java",
+      "change": "added",
+      "purpose": "Verify deterministic bounded precision routes, unchanged original admission, genuine singular and inconsistent-system negatives, work/precision caps and the historical quintic recovery without claiming exact interpolation arithmetic.",
+      "authority": "docs/adr/0022-structural-spline-continuity.md"
     }
   ]
 }

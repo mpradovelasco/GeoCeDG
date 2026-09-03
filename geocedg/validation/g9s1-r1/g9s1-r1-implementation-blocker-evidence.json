@@ -1,0 +1,740 @@
+{
+  "schemaVersion": 1,
+  "phase": "G9S1-R1",
+  "evidenceKind": "STOPPED_IMPLEMENTATION_DIAGNOSTIC_NOT_PHASE_ACCEPTANCE",
+  "state": "IMPLEMENTATION IN PROGRESS — STOPPED FOR AUTHOR SCIENTIFIC REVIEW",
+  "date": "2026-09-03",
+  "acceptedDesignFinding": "DISPOSITION C — AUTHOR ACCEPTED",
+  "d2Design": "AUTHOR APPROVED",
+  "partialImplementationContract": "B — AUTHOR APPROVED",
+  "implementationAuthorized": true,
+  "implementationStarted": true,
+  "technicallyComplete": false,
+  "selfApproved": false,
+  "authorApprovedPhase": false,
+  "passClaimed": false,
+  "manualAuthorSmoke": "NOT READY — SCIENTIFIC BLOCKER",
+  "stopCondition": "Author implementation request section 43: required outward/Krawczyk hypotheses cannot be satisfied by the native-knot positive; do not broaden spline semantics.",
+  "entryAndFinalRefs": {
+    "branch": "codex/g9s1-r1-spline-pair-materialization",
+    "head": "109f077fc5e2a40bcde45d3271eb928ee66fdfcc",
+    "main": "109f077fc5e2a40bcde45d3271eb928ee66fdfcc",
+    "originMain": "109f077fc5e2a40bcde45d3271eb928ee66fdfcc",
+    "directRemote": [
+      "00982e7e148a634cd57ed928f322774df267d5e3\trefs/heads/feature/g9u1-construction-workspace-planning-after-r6",
+      "109f077fc5e2a40bcde45d3271eb928ee66fdfcc\trefs/heads/main"
+    ],
+    "priorTags": {
+      "geocedg-g9s1-pass": {
+        "object": "ece0ca6f00299d3347e57fac38b7a28cade28644",
+        "peel": "de33f3a80102adb051aaa7547a72b7e97409c58c",
+        "ancestral": true
+      },
+      "geocedg-g9u0-r4-pass": {
+        "object": "0f9b303057b00d23722ad1f9d3594b4609d668a7",
+        "peel": "63c291464111a5bcdbca488d6639662e46c389c4",
+        "ancestral": true
+      },
+      "geocedg-g9u0-r5-pass": {
+        "object": "3712595fe2b168ba494379b6b3f0051e4122cfae",
+        "peel": "5952dfdbd238e71e598f4d2ca92c3e03437df41c",
+        "ancestral": true
+      },
+      "geocedg-g9u0-r6-pass": {
+        "object": "2ec953c5e32203b3fc5e8ab3ad48e6e2e698239e",
+        "peel": "3942af594e4507e479f2c75019cef62e3d9fea6f",
+        "ancestral": true
+      }
+    },
+    "protectedPlanning": "00982e7e148a634cd57ed928f322774df267d5e3",
+    "originProtectedPlanning": "00982e7e148a634cd57ed928f322774df267d5e3",
+    "planningDivergence": "0\t0",
+    "committed": false,
+    "pushed": false,
+    "merged": false,
+    "tagged": false,
+    "indexEmpty": true,
+    "worktree": "UNCOMMITTED R1 WORK RETAINED"
+  },
+  "scientificBlocker": {
+    "sourceAuthority": {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spline/SplinePolynomialModel2D.java",
+      "canonicalLfSha256": "5bfa82903d53beca4615db4f46c50cd38e11b013572a8269155c31548ef12098",
+      "gitDiffHeadExit": 0
+    },
+    "publicSourceCommands": [
+      "A=(-1,0)",
+      "B=(0,0)",
+      "C=(1,0)",
+      "S=SplineV2({A,B,C},3)"
+    ],
+    "pairCommands": [
+      "h=-0.1",
+      "E=(h,-1)",
+      "F=(h,0)",
+      "G=(h,1)",
+      "T=SplineV2({E,F,G},3)",
+      "R=Intersect(S,T)"
+    ],
+    "intendedExistingNumericUpdates": [
+      -0.05,
+      0,
+      0.05,
+      0.1,
+      0,
+      -0.1
+    ],
+    "firstFailure": "Initial h=-0.1 eligibility assertion, before materialization or planned movement; T already intersects at its native internal knot.",
+    "arithmetic": "Exact dyadic interpretation of actual stored double polynomial coefficients; BigDecimal(double) diagnostic, not rounded decimal literals.",
+    "epsilon": "2^-52",
+    "leftPolynomial": "e*u^3 + 2*u - 1",
+    "rightPolynomial": "-e*u^3 + 4*e*u^2 + (2-2*e)*u - 1",
+    "knot": "1/2",
+    "leftValue": "+2^-55",
+    "rightValue": "-2^-55",
+    "valueJump": "-2^-54",
+    "derivativeJump": "+2^-53",
+    "C0": false,
+    "C1": false,
+    "distinctOneSidedZeros": "Left negative at nextDown(0.5), positive at 0.5; right negative at 0.5, positive at nextUp(0.5). Strict positive derivatives near the join. Two distinct real preimages cannot be silently merged.",
+    "currentClasses": {
+      "positive": "UNRESOLVED",
+      "negative": "UNRESOLVED"
+    },
+    "proofWork": {
+      "boxes": 68,
+      "krawczykAttempts": 0
+    },
+    "theoremAuthority": "Rump (2010), Verification methods: rigorous results using floating-point arithmetic, Theorem 13.3, https://www.tuhh.de/ti3/rump/intlab/ActaNumerica2010.pdf",
+    "noToleranceGluing": true,
+    "noRootMerging": true,
+    "noNativeSplineSemanticChange": true,
+    "positiveTestRetained": "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest.nativeDyadicKnotCrossingKeepsCurrentSingletonSlot",
+    "exactDefectTestPassing": "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest.nativeKnotStoredPolynomialJetDefectIsExactNotTolerance"
+  },
+  "preservedD2": {
+    "originalInventoryCount": 13,
+    "evidence": "geocedg/validation/g9s1-r1/g9s1-r1-d2-design-evidence.json",
+    "evidenceCanonicalLfSha256": "21fe616f80bd511d4c0ca08a9e361c9800c4f518835113a72679b625de2f4f46",
+    "preservedCanonicalLfSha256": {
+      "docs/architecture/g9s1_r1_d2_pair_sheet_contract.md": "338d6194179cdd0677769e4bee251dc35d1a60199939cb298ea46a8af3feea9f",
+      "docs/architecture/g9s1_r1_pair_materialization_design_review.md": "4b2097d500089460ff5946d854dc2383eee3a2a1f2d494436e6ccce8afac2a37",
+      "docs/architecture/g9s1_r1_symmetric_atlas_design.md": "dbf82543c975c0e19ed07ce9921276e84ab62e3e346d228cdfbe81b9acc36b2d",
+      "docs/research/g9s1_semantic_spline_numerical_methods.md": "22d78dc21264a808df799fcba15b111f7a0f819a39690c4053bdce125994691c",
+      "geocedg/validation/g9s1-r1/g9s1-r1-atlas-design-evidence.json": "f1252faf4abe002bec138a8eee64d0af8def08f3439248382da384267fa75fbc",
+      "geocedg/validation/g9s1-r1/g9s1-r1-design-review-evidence.json": "cb7a7bebbef2f60f9e9c0d162767360fc7864467eb17c1f2ee1c151d24043bee",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1D2PairSheetContractTest.java": "5cad9302e03033bfed46f189b812c72f8208dc0ab17790ffc1e90471277fa7ac",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1PairAtlasCharacterizationTest.java": "562d0475447ded2969588015d42b17bc0491453da2dc00f66b6a767173ace68c",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1PairSelectorCharacterizationTest.java": "d9e864f0dfa7f70694049c0b86e77157f6bb59902d9d4bf36c7362ddd8928df6",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1SplineAtlasHostCharacterizationTest.java": "0f7d517d88afab44b1b584a095fcf341f323a04a087bf65fc713337777b0f9e2"
+    },
+    "intentionalLivingUpdates": [
+      "docs/roadmap/geocedg_roadmap.md",
+      "docs/validation/g9_documentation_bundle_traceability.md"
+    ],
+    "negativeFindingsRewritten": false
+  },
+  "attemptedImplementation": {
+    "scope": "Native SplineV2 pairs and supported captured R5-transformed native splines only",
+    "genericLocusPairExtended": false,
+    "selector": "Canonical unordered source IDs with source-associated branch/component/orientation/domain-kind/parameterization contract and normalized transverse germ; enclosed by existing owner/constructive/topology context.",
+    "forbiddenIdentity": [
+      "u/v",
+      "boxes",
+      "Cartesian coordinates",
+      "solver enumeration",
+      "projected rank",
+      "movement history"
+    ],
+    "currentCertificate": "Separate source revision/provider signatures, exact current address proof, outward interval/Krawczyk and germ-specific component-product coverage.",
+    "maximumBudgets": {
+      "boxes": 32768,
+      "krawczykAttempts": 16384
+    },
+    "pairLedgerVersion": 5,
+    "scalarOnlyLedgerVersion": 4,
+    "legacyLedgerVersionsRetained": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "lifecycle": "Current unique singleton-germ slot activates; proof loss leaves claimed token dormant; proven duplicate class quarantines; same current slot can reactivate same existing point. No automatic point creation.",
+    "continuityQualification": "Semantic-slot recurrence is not a certificate of physical-root continuation through topology events.",
+    "monodromicAndRepeatedGermScope": "RICH_ONLY",
+    "noFrontendImplementation": true,
+    "performanceAcceptance": "PENDING; diagnostic work counts only, no asymptotic or production latency acceptance claimed"
+  },
+  "validation": {
+    "level": "DEV — NOT ACCEPTANCE",
+    "command": ".\\tools\\agent\\verify.ps1 -Level DEV -Module shared -TestFilter 'org.geocedg.*G9S1R1*','org.geocedg.common.kernel.locus.intersection.PiecewisePolynomialPairIntersectionCapability2DTest' -KeepBuildOutputs -LogDirectory artifacts/g9s1-r1-implementation/dev-07",
+    "repeatCommandDifference": "Only LogDirectory changes to dev-08",
+    "uniqueTests": 92,
+    "passedPerRun": 91,
+    "failedPerRun": 1,
+    "skippedPerRun": 0,
+    "exactOutcomeInventory": [
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1D2PairSheetContractTest|chartsKnotsParametersAndEnumerationDoNotEnterTheKey()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1D2PairSheetContractTest|collisionAndMissingCoverageNeverAllocateModelPoints()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1D2PairSheetContractTest|diagnosticContractTraceIsEnumerationIndependent()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1D2PairSheetContractTest|diagnosticReloadRechecksCoverageInsteadOfTrustingActiveStatus()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1D2PairSheetContractTest|dormantSlotReactivatesIdenticallyAcrossDifferentHistories()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1D2PairSheetContractTest|explicitCopyMapRenormalizesGermWhenCanonicalIdsReverse()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1D2PairSheetContractTest|operandReversalPreservesSelectorsAcrossOtherProjectedRankExchange()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1D2PairSheetContractTest|oppositeGermRootsDoNotCompeteWithTheCertifiedSingleton()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1D2PairSheetContractTest|repeatedMonodromyOrbitIsOutsideScopeRegardlessOfHistory()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1D2PairSheetContractTest|singleTraversalSeamNeedsNoRetirementWithUniqueCurrentGerm()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1D2PairSheetContractTest|uniqueGermsSurviveProjectedRankExchange()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1D2PairSheetContractTest|wrongSourcesOrLineageCannotRetargetExistingPoint()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest|allEightSpanJoinsIncludingThePeriodicSeamAreExactlyC2()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest|canonicalNumericTraceIgnoresDiagnosticRootEnumeration()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest|contractibleControlLoopHasNoAnalyticPermutation()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest|cubicQuarterHasStrictlyPositiveAngularJacobian()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest|currentRootSetIsPathIndependentButAFullLiftHasMonodromy()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest|diagnosticSnapshotRoundTripContainsOnlyCurrentControlData()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest|equalContactAndLocalDegreeDoNotDistinguishTheTwoSheets()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest|fullSegmentHasFourSeparatedRootsInTwoContactClasses()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest|oneControlCircuitPermutesBothRayPreimages()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest|operandSwapTransposesPreimagesAndReversesContactSign()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest|ordinaryKnotAndSeamCrossingsDoNotCollideAnalyticPreimages()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest|overlappingBoxesAloneDoNotEstablishTheSameRoot()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest|rayPairHasExactlyTwoRegularAnalyticPreimagesThroughoutLoop()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest|reverseAndSecondCircuitsHaveTheExpectedPermutation()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest|reversedCubicCounterexampleExchangesTheSecondProjectionRegularly()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest|sourceControlClosesExactlyWithoutPersistingThePathCoordinate()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest|tangencyAndRootMergeAreRealFailuresRatherThanChartEvents()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest|uniqueCommonRootWitnessPermitsAnOrdinaryChartChange()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1PairSelectorCharacterizationTest|equalDiscoveryCountsDoNotEstablishSemanticRootRank()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1PairSelectorCharacterizationTest|ordinaryMotionReversesFirstProjectionWithoutPairSingularity()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1PairSelectorCharacterizationTest|quarticPairHasNineExactNonsingularPreimagesAtZero()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1PairSelectorCharacterizationTest|quarticPairImplicitVelocitiesExchangeBothProjectionRanks()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1PairSelectorCharacterizationTest|roundedTransformedCoefficientsAreNotSemanticEvaluationAuthority()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1PairSelectorCharacterizationTest|threeRootExampleHasDistinctRegularSemanticPreimagesAtZero()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest|copyWithoutExactTwoSourceAssociationFailsBeforeAllocation()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest|directIncrementalAndDormantHistoriesHaveIdenticalFinalSlotBindings()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest|dormantClosureCopyRetainsExactAssociationAndCanReactivateLater()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest|duplicateStagingFailsClosedAndQuarantineCannotContradictStaging()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest|exactCopyReversesCanonicalAxesAndGermWithoutLosingTokenOwnership()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest|missingCurrentProofMakesClaimDormantAndUniqueRecurrenceReusesIt()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest|oppositeGermsReceiveDistinctOpaqueTokensWithV5PairBindings()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest|ordinaryParameterAndProviderDriftNeverReplaceTheSelectorToken()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest|pairProofRetainsBothExactAddressBitsAndCanonicalAxes()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest|pairQuarantineRoundTripIsNotStickyAndNeverBecomesR4PeriodicState()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest|pairSchemaRejectsDownversionedPayloadsMalformedVariantsAndProofs()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest|selectorRoundTripIsStrictAndContainsNoAddressOrChart()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest|sourceSwapNormalizesGermAndKeepsDescriptorsAssociated()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest|unavailableSnapshotPreservesOnlyClaimsAndDowngradesPairQuarantine()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest|unclaimedAmbiguityAllocatesAndRetainsNoPairToken()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest|wrongSourceOrBranchContextCannotRetargetRetainedPairBinding()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest|canonicalSourceOrderProducesIdenticalCertificates()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest|collapsedImageAndGenericEvaluatorAreNotPromoted()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest|divisionEnclosesRationalValueAndRefusesZeroDivisor()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest|exactKnotGluePermitsRootProofAcrossBothSpanBoundaries()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest|exactPeriodicSeamChartHasOneCanonicalRootPerGerm()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest|incompleteCoverageBudgetCannotClaimUniqueClass()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest|largeTranslatedFlatteningCannotFabricateAnIntervalCertificate()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest|multipleSameGermRootsDoNotBlockCertifiedOppositeSingleton()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest|nestedSimilaritiesUseOriginalCapturedMapRatherThanFlattenedCoefficients()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest|nonzeroFloatingKnotDefectDoesNotBecomeExactGlue()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest|oppositeGermsAreIndependentlyUniqueWithoutClaimingGlobalCompleteness()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest|outwardBasicOperationsContainExactDyadicResults()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest|repeatedPeriodicTraversalRetainsSameGermMultiplicity()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest|singletonTransverseRootHasIndependentExistenceAndClassProof()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest|subnormalUnderflowAndSignedZeroRemainEnclosed()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.PiecewisePolynomialPairIntersectionCapability2DTest|callerOperandSwapKeepsCanonicalSemanticPairs()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.PiecewisePolynomialPairIntersectionCapability2DTest|canonicalKnotAndPeriodicSeamOwnershipPreventDuplicates()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.PiecewisePolynomialPairIntersectionCapability2DTest|multipleRootsInsideOneLegacyGridCellAreFoundSemantically()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.PiecewisePolynomialPairIntersectionCapability2DTest|pairBoxBudgetFailsCoherently()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.PiecewisePolynomialPairIntersectionCapability2DTest|polynomialOverlapNeverManufacturesFiniteRoots()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.PiecewisePolynomialPairIntersectionCapability2DTest|tangencyRemainsRichOnlyAndFailClosed()|PASS",
+      "org.geocedg.common.kernel.locus.intersection.PiecewisePolynomialPairIntersectionCapability2DTest|transversePairRefinementIsInvariantUnderUniformScale()|PASS",
+      "org.geocedg.common.locus.G9S1R1SplineAtlasHostCharacterizationTest|closedControlLoopReturnsExactInputsAndDefinitionsWithoutPointTracking()|PASS",
+      "org.geocedg.common.locus.G9S1R1SplineAtlasHostCharacterizationTest|currentPublicSplinePairRemainsRichOnlyWithoutAssumingRootCount()|PASS",
+      "org.geocedg.common.locus.G9S1R1SplineAtlasHostCharacterizationTest|directIncrementalAndReversePathsRecoverIdenticalCurrentCoefficientBits()|PASS",
+      "org.geocedg.common.locus.G9S1R1SplineAtlasHostCharacterizationTest|doubleTraversalCapturesPublicPeriodicSpansAndFloatingGluing()|PASS",
+      "org.geocedg.common.locus.G9S1R1SplineAtlasHostCharacterizationTest|hostXmlRoundTripRetainsSourceIdsAndCurrentPolynomialDefinitions()|PASS",
+      "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest|closureCopyRemapsBothSourcesAndRebasesPairToken()|PASS",
+      "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest|dormantPointReactivatesSameSlotWithoutAllocatingGeoPoint()|PASS",
+      "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest|genericLocusPairStaysRichOnlyDespiteSharedInfrastructure()|PASS",
+      "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest|identicalFinalDefinitionsResolveIndependentlyOfUpdatePathAndReopen()|PASS",
+      "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest|nativeDyadicKnotCrossingKeepsCurrentSingletonSlot()|FAIL",
+      "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest|nativeKnotStoredPolynomialJetDefectIsExactNotTolerance()|PASS",
+      "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest|projectedRankExchangePreservesBothExactTokensAndPoints()|PASS",
+      "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest|reversedCallerOperandsHaveEquivalentCurrentSlotEvidence()|PASS",
+      "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest|sameGermAmbiguityDoesNotBlockIndependentlyUniqueOppositeGerm()|PASS",
+      "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest|simpleTransversePairMaterializesWithoutGlobalCompleteness()|PASS",
+      "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest|transformedPairHasNewContextAndCollapsedImageHasNoIsolatedSlot()|PASS",
+      "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest|undoRedoRestoresActiveDormantAndReactivatedGraph()|PASS",
+      "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest|xmlReopenPreservesPairSelectorTokenAndDormantClaim()|PASS"
+    ],
+    "deterministicOutcomeSha256": "48f3e86e6c20bb6e11c4b32f64d86e76326dcd5adffbcf57dd7d33d9382332c8",
+    "deterministicScientificTraceSha256": "06ca7d4f2f97c820a40e8180f007478671491e024ca4c2a7fed05dafddb5fc54",
+    "deterministicEquality": true,
+    "canonicalization": "Outcomes: ordinal-sort class|exact JUnit method|PASS/FAIL/SKIP lines. Scientific trace: ordinal-sort preserved system-out lines matching ^(R1_|G9S1_R1). UTF-8 without BOM, LF with one final LF. Time, UUID, stack traces and run-specific raw XML bytes excluded from normalized equality, but archived/raw hashes retained. This is reproducible failure evidence, not acceptance.",
+    "runs": [
+      {
+        "run": "dev-07",
+        "exitCode": 1,
+        "tests": 92,
+        "failures": [
+          "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest|nativeDyadicKnotCrossingKeepsCurrentSingletonSlot()|FAIL"
+        ],
+        "outcomeCanonicalSha256": "48f3e86e6c20bb6e11c4b32f64d86e76326dcd5adffbcf57dd7d33d9382332c8",
+        "scientificTraceCanonicalSha256": "06ca7d4f2f97c820a40e8180f007478671491e024ca4c2a7fed05dafddb5fc54",
+        "scientificTrace": [
+          "G9S1_R1_ATLAS_HOST coefficient_max_abs=0x1.03p-34 differing_coefficient_bits=61 arithmetic=FLOATING_POINT_UNCERTIFIED",
+          "G9S1_R1_ATLAS_HOST control_loop=EXACT_FINAL_DEFINITIONS materialized_pair_points=0 monodromy_certificate=NOT_CLAIMED",
+          "G9S1_R1_ATLAS_HOST gluing_derivative=0 max_abs=0x1.afp-38 exact_certificate=NOT_ESTABLISHED",
+          "G9S1_R1_ATLAS_HOST gluing_derivative=1 max_abs=0x1.c4p-37 exact_certificate=NOT_ESTABLISHED",
+          "G9S1_R1_ATLAS_HOST gluing_derivative=2 max_abs=0x1.3cp-36 exact_certificate=NOT_ESTABLISHED",
+          "G9S1_R1_ATLAS_HOST linear_image_public_degree=3 high_order_coefficient_max_abs=0x1.cp-50",
+          "G9S1_R1_ATLAS_HOST persistence=HOST_XML_ROUNDTRIP native_cedg_zip=NOT_TESTED identical_definition_bits=true",
+          "G9S1_R1_ATLAS_HOST public_pair_status=SUCCESS geometry=FINITE finite_roots=2 completeness=NOT_ESTABLISHED materializable=0 expected_root_count=NOT_ASSERTED",
+          "G9S1_R1_ATLAS_TRACE_SHA256=666ec7734560a75467e4a1e2615eec50d4436004c0758bba5ba43ed7707fae09",
+          "G9S1_R1_D2_CONTRACT_TRACE_SHA256=101cba5816b57b48feb2bd9a2185841809115331fc11a6421ea78550b5797354",
+          "G9S1_R1_INTERVAL germ=-1 status=MULTIPLE boxes=1876 attempts=152 roots=4 diagnostic=",
+          "G9S1_R1_INTERVAL germ=-1 status=UNIQUE boxes=254 attempts=81 roots=2 diagnostic=",
+          "G9S1_R1_INTERVAL germ=-1 status=UNIQUE boxes=260 attempts=138 roots=3 diagnostic=",
+          "G9S1_R1_INTERVAL germ=-1 status=UNIQUE boxes=75 attempts=26 roots=2 diagnostic=",
+          "G9S1_R1_INTERVAL germ=1 status=MULTIPLE boxes=1876 attempts=152 roots=4 diagnostic=",
+          "G9S1_R1_INTERVAL germ=1 status=MULTIPLE boxes=260 attempts=138 roots=3 diagnostic=",
+          "G9S1_R1_INTERVAL germ=1 status=UNIQUE boxes=254 attempts=81 roots=2 diagnostic=",
+          "G9S1_R1_INTERVAL germ=1 status=UNIQUE boxes=75 attempts=26 roots=2 diagnostic=",
+          "R1_NATIVE_JET_EXACT value_jump=-2^-54 derivative_jump=2^-53 C0=false C1=false separate_one_sided_zeros=true",
+          "R1_NATIVE_KNOT S span=0 axis=0 [2.220446049250313E-16, 0.0, 2.0, -1.0]",
+          "R1_NATIVE_KNOT S span=0 axis=1 [0.0, 0.0, 0.0, 0.0]",
+          "R1_NATIVE_KNOT S span=1 axis=0 [-2.220446049250313E-16, 8.881784197001252E-16, 1.9999999999999996, -1.0]",
+          "R1_NATIVE_KNOT S span=1 axis=1 [0.0, -0.0, 0.0, -0.0]",
+          "R1_NATIVE_KNOT T span=0 axis=0 [0.0, 0.0, 2.7755575615628914E-17, -0.1]",
+          "R1_NATIVE_KNOT T span=0 axis=1 [2.220446049250313E-16, 0.0, 2.0, -1.0]",
+          "R1_NATIVE_KNOT T span=1 axis=0 [0.0, 5.551115123125783E-17, 0.0, -0.1]",
+          "R1_NATIVE_KNOT T span=1 axis=1 [-2.220446049250313E-16, 8.881784197001252E-16, 1.9999999999999996, -1.0]"
+        ],
+        "classes": [
+          {
+            "class": "org.geocedg.common.kernel.locus.intersection.G9S1R1D2PairSheetContractTest",
+            "tests": 12,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "xml": "artifacts/g9s1-r1-implementation/dev-07/dev/44307f2e893d409882e441b9623bda26/junit/TEST-org.geocedg.common.kernel.locus.intersection.G9S1R1D2PairSheetContractTest.xml",
+            "rawXmlSha256": "d5c21eb642ce5d9bed228834508a65a65daa18ac20cc11707e026f3908108f48"
+          },
+          {
+            "class": "org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest",
+            "tests": 18,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "xml": "artifacts/g9s1-r1-implementation/dev-07/dev/44307f2e893d409882e441b9623bda26/junit/TEST-org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest.xml",
+            "rawXmlSha256": "c1f3501e766443d9356b83e29d1710a45479d569f3f0c6be485766c1a9de3fb7"
+          },
+          {
+            "class": "org.geocedg.common.kernel.locus.intersection.G9S1R1PairSelectorCharacterizationTest",
+            "tests": 6,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "xml": "artifacts/g9s1-r1-implementation/dev-07/dev/44307f2e893d409882e441b9623bda26/junit/TEST-org.geocedg.common.kernel.locus.intersection.G9S1R1PairSelectorCharacterizationTest.xml",
+            "rawXmlSha256": "92c15d54a805a2a35733b88d796508a23fe970754ecf0fa38633d25a824154bd"
+          },
+          {
+            "class": "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest",
+            "tests": 16,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "xml": "artifacts/g9s1-r1-implementation/dev-07/dev/44307f2e893d409882e441b9623bda26/junit/TEST-org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest.xml",
+            "rawXmlSha256": "f89678e19a9d9b922ce5c0d089ef205afdc61aa0b257ed0b862602cc226814cb"
+          },
+          {
+            "class": "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest",
+            "tests": 15,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "xml": "artifacts/g9s1-r1-implementation/dev-07/dev/44307f2e893d409882e441b9623bda26/junit/TEST-org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest.xml",
+            "rawXmlSha256": "e9cbe815cc50ee12aaf9c37b007d0ec75da344c6d27dc9bf623ec26353d54e49"
+          },
+          {
+            "class": "org.geocedg.common.kernel.locus.intersection.PiecewisePolynomialPairIntersectionCapability2DTest",
+            "tests": 7,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "xml": "artifacts/g9s1-r1-implementation/dev-07/dev/44307f2e893d409882e441b9623bda26/junit/TEST-org.geocedg.common.kernel.locus.intersection.PiecewisePolynomialPairIntersectionCapability2DTest.xml",
+            "rawXmlSha256": "042b5fed1b26f79bbab47d6c41a83ad92ff404ed80ba72b0b6e713a052a6e601"
+          },
+          {
+            "class": "org.geocedg.common.locus.G9S1R1SplineAtlasHostCharacterizationTest",
+            "tests": 5,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "xml": "artifacts/g9s1-r1-implementation/dev-07/dev/44307f2e893d409882e441b9623bda26/junit/TEST-org.geocedg.common.locus.G9S1R1SplineAtlasHostCharacterizationTest.xml",
+            "rawXmlSha256": "9732393850b23fb2f7defd9a598f815cba522c7b53e76abde1b01874c3adcc72"
+          },
+          {
+            "class": "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest",
+            "tests": 13,
+            "failures": 1,
+            "errors": 0,
+            "skipped": 0,
+            "xml": "artifacts/g9s1-r1-implementation/dev-07/dev/44307f2e893d409882e441b9623bda26/junit/TEST-org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest.xml",
+            "rawXmlSha256": "61c87d6f8e138085d482bc5a51cc39acaf696e6e30449978ac245d77b1980816"
+          }
+        ],
+        "log": "artifacts/g9s1-r1-implementation/dev-07/dev/44307f2e893d409882e441b9623bda26/dev-gradle.log",
+        "rawLogSha256": "d03ce096fcb7517d7a7976c87d3a90d1e141c681e9f97d053832d9352886d771"
+      },
+      {
+        "run": "dev-08",
+        "exitCode": 1,
+        "tests": 92,
+        "failures": [
+          "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest|nativeDyadicKnotCrossingKeepsCurrentSingletonSlot()|FAIL"
+        ],
+        "outcomeCanonicalSha256": "48f3e86e6c20bb6e11c4b32f64d86e76326dcd5adffbcf57dd7d33d9382332c8",
+        "scientificTraceCanonicalSha256": "06ca7d4f2f97c820a40e8180f007478671491e024ca4c2a7fed05dafddb5fc54",
+        "scientificTrace": [
+          "G9S1_R1_ATLAS_HOST coefficient_max_abs=0x1.03p-34 differing_coefficient_bits=61 arithmetic=FLOATING_POINT_UNCERTIFIED",
+          "G9S1_R1_ATLAS_HOST control_loop=EXACT_FINAL_DEFINITIONS materialized_pair_points=0 monodromy_certificate=NOT_CLAIMED",
+          "G9S1_R1_ATLAS_HOST gluing_derivative=0 max_abs=0x1.afp-38 exact_certificate=NOT_ESTABLISHED",
+          "G9S1_R1_ATLAS_HOST gluing_derivative=1 max_abs=0x1.c4p-37 exact_certificate=NOT_ESTABLISHED",
+          "G9S1_R1_ATLAS_HOST gluing_derivative=2 max_abs=0x1.3cp-36 exact_certificate=NOT_ESTABLISHED",
+          "G9S1_R1_ATLAS_HOST linear_image_public_degree=3 high_order_coefficient_max_abs=0x1.cp-50",
+          "G9S1_R1_ATLAS_HOST persistence=HOST_XML_ROUNDTRIP native_cedg_zip=NOT_TESTED identical_definition_bits=true",
+          "G9S1_R1_ATLAS_HOST public_pair_status=SUCCESS geometry=FINITE finite_roots=2 completeness=NOT_ESTABLISHED materializable=0 expected_root_count=NOT_ASSERTED",
+          "G9S1_R1_ATLAS_TRACE_SHA256=666ec7734560a75467e4a1e2615eec50d4436004c0758bba5ba43ed7707fae09",
+          "G9S1_R1_D2_CONTRACT_TRACE_SHA256=101cba5816b57b48feb2bd9a2185841809115331fc11a6421ea78550b5797354",
+          "G9S1_R1_INTERVAL germ=-1 status=MULTIPLE boxes=1876 attempts=152 roots=4 diagnostic=",
+          "G9S1_R1_INTERVAL germ=-1 status=UNIQUE boxes=254 attempts=81 roots=2 diagnostic=",
+          "G9S1_R1_INTERVAL germ=-1 status=UNIQUE boxes=260 attempts=138 roots=3 diagnostic=",
+          "G9S1_R1_INTERVAL germ=-1 status=UNIQUE boxes=75 attempts=26 roots=2 diagnostic=",
+          "G9S1_R1_INTERVAL germ=1 status=MULTIPLE boxes=1876 attempts=152 roots=4 diagnostic=",
+          "G9S1_R1_INTERVAL germ=1 status=MULTIPLE boxes=260 attempts=138 roots=3 diagnostic=",
+          "G9S1_R1_INTERVAL germ=1 status=UNIQUE boxes=254 attempts=81 roots=2 diagnostic=",
+          "G9S1_R1_INTERVAL germ=1 status=UNIQUE boxes=75 attempts=26 roots=2 diagnostic=",
+          "R1_NATIVE_JET_EXACT value_jump=-2^-54 derivative_jump=2^-53 C0=false C1=false separate_one_sided_zeros=true",
+          "R1_NATIVE_KNOT S span=0 axis=0 [2.220446049250313E-16, 0.0, 2.0, -1.0]",
+          "R1_NATIVE_KNOT S span=0 axis=1 [0.0, 0.0, 0.0, 0.0]",
+          "R1_NATIVE_KNOT S span=1 axis=0 [-2.220446049250313E-16, 8.881784197001252E-16, 1.9999999999999996, -1.0]",
+          "R1_NATIVE_KNOT S span=1 axis=1 [0.0, -0.0, 0.0, -0.0]",
+          "R1_NATIVE_KNOT T span=0 axis=0 [0.0, 0.0, 2.7755575615628914E-17, -0.1]",
+          "R1_NATIVE_KNOT T span=0 axis=1 [2.220446049250313E-16, 0.0, 2.0, -1.0]",
+          "R1_NATIVE_KNOT T span=1 axis=0 [0.0, 5.551115123125783E-17, 0.0, -0.1]",
+          "R1_NATIVE_KNOT T span=1 axis=1 [-2.220446049250313E-16, 8.881784197001252E-16, 1.9999999999999996, -1.0]"
+        ],
+        "classes": [
+          {
+            "class": "org.geocedg.common.kernel.locus.intersection.G9S1R1D2PairSheetContractTest",
+            "tests": 12,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "xml": "artifacts/g9s1-r1-implementation/dev-08/dev/b220b749d7a846438a27c5be0d1f8c1b/junit/TEST-org.geocedg.common.kernel.locus.intersection.G9S1R1D2PairSheetContractTest.xml",
+            "rawXmlSha256": "0564afec49b798900f02a4ad172fc63a3ad7ae5b6af8a049122d2778d0799be8"
+          },
+          {
+            "class": "org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest",
+            "tests": 18,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "xml": "artifacts/g9s1-r1-implementation/dev-08/dev/b220b749d7a846438a27c5be0d1f8c1b/junit/TEST-org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest.xml",
+            "rawXmlSha256": "3462b6ddf433869ff150d2b468c4413bb71c8e0a782d6e9306cd01dc068ec6b7"
+          },
+          {
+            "class": "org.geocedg.common.kernel.locus.intersection.G9S1R1PairSelectorCharacterizationTest",
+            "tests": 6,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "xml": "artifacts/g9s1-r1-implementation/dev-08/dev/b220b749d7a846438a27c5be0d1f8c1b/junit/TEST-org.geocedg.common.kernel.locus.intersection.G9S1R1PairSelectorCharacterizationTest.xml",
+            "rawXmlSha256": "2ce63cf58f576831fc0a3fc375ca5d0b2c814c367814dc8d21def80149704f95"
+          },
+          {
+            "class": "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest",
+            "tests": 16,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "xml": "artifacts/g9s1-r1-implementation/dev-08/dev/b220b749d7a846438a27c5be0d1f8c1b/junit/TEST-org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest.xml",
+            "rawXmlSha256": "46b0937176ca181860a1d81bdc77278601662834f9c29bb768d71564d5327087"
+          },
+          {
+            "class": "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest",
+            "tests": 15,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "xml": "artifacts/g9s1-r1-implementation/dev-08/dev/b220b749d7a846438a27c5be0d1f8c1b/junit/TEST-org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest.xml",
+            "rawXmlSha256": "61a80eaa2f5b6794f2ce00c1439697600c5fe225a5a167a65016660b6256a199"
+          },
+          {
+            "class": "org.geocedg.common.kernel.locus.intersection.PiecewisePolynomialPairIntersectionCapability2DTest",
+            "tests": 7,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "xml": "artifacts/g9s1-r1-implementation/dev-08/dev/b220b749d7a846438a27c5be0d1f8c1b/junit/TEST-org.geocedg.common.kernel.locus.intersection.PiecewisePolynomialPairIntersectionCapability2DTest.xml",
+            "rawXmlSha256": "3cd3c946fc6fbc78cb070568647915a9ecd679386ee1269d382c4da78b27d4dc"
+          },
+          {
+            "class": "org.geocedg.common.locus.G9S1R1SplineAtlasHostCharacterizationTest",
+            "tests": 5,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "xml": "artifacts/g9s1-r1-implementation/dev-08/dev/b220b749d7a846438a27c5be0d1f8c1b/junit/TEST-org.geocedg.common.locus.G9S1R1SplineAtlasHostCharacterizationTest.xml",
+            "rawXmlSha256": "0695a2ac8078807ffdb18263eb654d28f372305c67ff11abfa6d318dbd7aa414"
+          },
+          {
+            "class": "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest",
+            "tests": 13,
+            "failures": 1,
+            "errors": 0,
+            "skipped": 0,
+            "xml": "artifacts/g9s1-r1-implementation/dev-08/dev/b220b749d7a846438a27c5be0d1f8c1b/junit/TEST-org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest.xml",
+            "rawXmlSha256": "483c5159b3ac9cd3f7efe64a1b5d5227a7608fbf4dd6ceed75ff4355ed51004e"
+          }
+        ],
+        "log": "artifacts/g9s1-r1-implementation/dev-08/dev/b220b749d7a846438a27c5be0d1f8c1b/dev-gradle.log",
+        "rawLogSha256": "c19cbc068a572a4c4c88b03925ffc31a6139a47ec9e9ff6af46c4522af08bd75"
+      }
+    ],
+    "earlierRuns": [
+      {
+        "run": "dev-01",
+        "result": "SANDBOX_COMPILATION_FAILURE",
+        "tests": 0,
+        "classification": "Environment; real-user/toolchain rerun compiled without workaround source edits"
+      },
+      {
+        "run": "dev-02",
+        "tests": 88,
+        "failures": 5
+      },
+      {
+        "run": "dev-03",
+        "tests": 91,
+        "failures": 2
+      },
+      {
+        "run": "dev-04",
+        "tests": 92,
+        "failures": 1
+      },
+      {
+        "run": "dev-05",
+        "tests": 92,
+        "failures": 1
+      },
+      {
+        "run": "dev-06",
+        "tests": 92,
+        "failures": 1
+      }
+    ],
+    "operational": {
+      "path": "artifacts/g9s1-r1-implementation/operational-tests/3c093466b99f40fda1dd6eaa81491be3/verification-runtime-tests.json",
+      "rawSha256": "cdc302fc789824687de64ec8f4094c3380daa36679d5268e7972e5731f5f84da",
+      "tests": 112,
+      "passed": 112,
+      "failed": 0,
+      "gradleExecutions": 0,
+      "exitCode": 0
+    },
+    "checkstyle": {
+      "result": "PASS",
+      "scope": [
+        {
+          "path": "source/shared/common/build/reports/checkstyle/main.xml",
+          "violations": 0,
+          "rawSha256": "be72a7be741da586b52ab32fad284d8a57c085f4969cfb9a221c9ddaf14935e3"
+        },
+        {
+          "path": "source/shared/common-jre/build/reports/checkstyle/test.xml",
+          "violations": 0,
+          "rawSha256": "0053a0622da5a2d5b88e59d00880edf2c3d352120f81821b4d4bf659d869a54b"
+        },
+        {
+          "path": "source/desktop/desktop/build/reports/checkstyle/test.xml",
+          "violations": 0,
+          "rawSha256": "4dd68f2b91bfefcd1c373ba5bacd7d02bc3ad3164b44ffbab58eaf3ed56de670"
+        }
+      ],
+      "log": {
+        "path": "artifacts/g9s1-r1-implementation/checkstyle-closed/r1-checkstyle-gradle.log",
+        "rawSha256": "38158be5b5d2a5e952da3916acd3f507e800db381a13d38402f013a3c8ac470d",
+        "exitCode": 0
+      },
+      "scopeQualification": "Initial full scoped Checkstyle tasks ran; final unchanged reports reused with zero violations and changed main report rerun; no acceptance-build receipt claimed."
+    },
+    "parser": {
+      "files": [
+        "tools/agent/tests/verification-runtime.Tests.ps1",
+        "tools/agent/verification-runtime.psm1",
+        "tools/agent/verify-g9s1-r1-spline-pair-materialization.ps1",
+        "tools/agent/verify.ps1"
+      ],
+      "errors": 0
+    },
+    "diffChecks": {
+      "unstagedExit": 0,
+      "cachedExit": 0,
+      "untrackedFilesCheckedBeforeEvidence": 26
+    },
+    "persistence": {
+      "hostXml": "PASS in selected shared tests",
+      "closureCopyAndReopen": "PASS in selected shared test",
+      "undoRedo": "PASS in selected shared test",
+      "nativeCedg": "TEST WRITTEN AND COMPILED; NOT EXECUTED",
+      "nativeCedgTest": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9S1R1NativeArchivePersistenceTest.java"
+    },
+    "remaining": [
+      "Required native-knot positive",
+      "Complete transformed/seam/lifecycle/performance matrix",
+      "Native .cedg test execution",
+      "Final phase scenarios/evidence/manifest integration",
+      "R1 static acceptance verifier",
+      "PHASE A/B",
+      "Complete historical regressions",
+      "COMPOSED",
+      "FULL-CleanBuild",
+      "Manual author smoke"
+    ]
+  },
+  "impact": {
+    "verificationInfrastructure": "UPDATE_REQUIRED: exact phase registration, focused verifier, composed insertion and one fake-first scope regression",
+    "fullGate": "REQUIRED before completed candidate; unrun while scientific stop active, not waived",
+    "bootstrap": "NO CHANGE REQUIRED: no new runtime, dependency or toolchain",
+    "guides": "GUIDE_IMPACT UPDATED remains required on resumption; user/developer guides and modified-files registry not claimed complete"
+  },
+  "inventory": {
+    "count": 40,
+    "paths": [
+      ".github/prompts/tasks/g9s1-r1-spline-pair-intersection-materialization.prompt.md",
+      "docs/adr/0021-spline-pair-singleton-germ-materialization.md",
+      "docs/architecture/g9s1_r1_d2_pair_sheet_contract.md",
+      "docs/architecture/g9s1_r1_pair_materialization_design_review.md",
+      "docs/architecture/g9s1_r1_symmetric_atlas_design.md",
+      "docs/research/g9s1_semantic_spline_numerical_methods.md",
+      "docs/roadmap/geocedg_roadmap.md",
+      "docs/validation/g9_documentation_bundle_traceability.md",
+      "docs/validation/g9s1_r1_implementation_blocker_report.md",
+      "docs/validation/g9s1_r1_spline_pair_materialization_validation_matrix.md",
+      "geocedg/specs/curves/spline-v2-pair-materialization.md",
+      "geocedg/validation/g9s1-r1/g9s1-r1-atlas-design-evidence.json",
+      "geocedg/validation/g9s1-r1/g9s1-r1-d2-design-evidence.json",
+      "geocedg/validation/g9s1-r1/g9s1-r1-design-review-evidence.json",
+      "geocedg/validation/g9s1-r1/g9s1-r1-implementation-blocker-evidence.json",
+      "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9S1R1NativeArchivePersistenceTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1D2PairSheetContractTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1PairAtlasCharacterizationTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1PairSelectorCharacterizationTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1PairTokenLedgerTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1SplinePairIntervalCertificationTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1SplineAtlasHostCharacterizationTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1SplinePairMaterializationTest.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusLocusIntersectionV2.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/geos/GeoLocusIntersectionResult.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusSimilarityEvaluator2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusSimilarityTransform2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionSemanticMetadata2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionTokenLedger2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusPairIntersectionSolver2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PairRootAddressProof2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PairSemanticSlotSelector2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PublicSplinePairRootIdentityResolver2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/SplineIntervalModel2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/SplineOutwardInterval2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/SplinePairIntervalCertification2D.java",
+      "tools/agent/tests/verification-runtime.Tests.ps1",
+      "tools/agent/verification-runtime.psm1",
+      "tools/agent/verify-g9s1-r1-spline-pair-materialization.ps1",
+      "tools/agent/verify.ps1"
+    ],
+    "productivePaths": [
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusLocusIntersectionV2.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/geos/GeoLocusIntersectionResult.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusSimilarityEvaluator2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusSimilarityTransform2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionSemanticMetadata2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionTokenLedger2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusPairIntersectionSolver2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PairRootAddressProof2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PairSemanticSlotSelector2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PublicSplinePairRootIdentityResolver2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/SplineIntervalModel2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/SplineOutwardInterval2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/SplinePairIntervalCertification2D.java"
+    ],
+    "testPaths": [
+      "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9S1R1NativeArchivePersistenceTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1D2PairSheetContractTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1PairAtlasCharacterizationTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1PairSelectorCharacterizationTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1PairTokenLedgerTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1SplinePairIntervalCertificationTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1SplineAtlasHostCharacterizationTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1SplinePairMaterializationTest.java"
+    ],
+    "generatedPaths": [],
+    "g9u1ProductivePaths": []
+  },
+  "canonicalLfSha256": {
+    ".github/prompts/tasks/g9s1-r1-spline-pair-intersection-materialization.prompt.md": "5c02c3ac4f1b8a6355d4e8a4f201a40493c78b3eb646fa8e2d73fba2fb82024c",
+    "docs/adr/0021-spline-pair-singleton-germ-materialization.md": "71682e35562afa8416e75b179a9594c8f400c86ba3d9688aa61aedf393012e5e",
+    "docs/architecture/g9s1_r1_d2_pair_sheet_contract.md": "338d6194179cdd0677769e4bee251dc35d1a60199939cb298ea46a8af3feea9f",
+    "docs/architecture/g9s1_r1_pair_materialization_design_review.md": "4b2097d500089460ff5946d854dc2383eee3a2a1f2d494436e6ccce8afac2a37",
+    "docs/architecture/g9s1_r1_symmetric_atlas_design.md": "dbf82543c975c0e19ed07ce9921276e84ab62e3e346d228cdfbe81b9acc36b2d",
+    "docs/research/g9s1_semantic_spline_numerical_methods.md": "22d78dc21264a808df799fcba15b111f7a0f819a39690c4053bdce125994691c",
+    "docs/roadmap/geocedg_roadmap.md": "3616e1fc77efa63f4591e4415623bd988a7e5e254afd225c27a79e8b271df434",
+    "docs/validation/g9_documentation_bundle_traceability.md": "f990ee15359d3e2bdf49e9a247b64aa4f3658149406f4fd9d59e23b7350182be",
+    "docs/validation/g9s1_r1_implementation_blocker_report.md": "a85a65e1808f1760a7ce7d68029bbb783e535bfe362712f9a99e63b2b67e1ba5",
+    "docs/validation/g9s1_r1_spline_pair_materialization_validation_matrix.md": "0eac7219dec20945876e02fd22a03e97dbea9efb5bbd689500d4760a094baf5e",
+    "geocedg/specs/curves/spline-v2-pair-materialization.md": "413dd04f2155f2137feefccc905a043b314216287786d628fb0d682f7dc531d7",
+    "geocedg/validation/g9s1-r1/g9s1-r1-atlas-design-evidence.json": "f1252faf4abe002bec138a8eee64d0af8def08f3439248382da384267fa75fbc",
+    "geocedg/validation/g9s1-r1/g9s1-r1-d2-design-evidence.json": "21fe616f80bd511d4c0ca08a9e361c9800c4f518835113a72679b625de2f4f46",
+    "geocedg/validation/g9s1-r1/g9s1-r1-design-review-evidence.json": "cb7a7bebbef2f60f9e9c0d162767360fc7864467eb17c1f2ee1c151d24043bee",
+    "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9S1R1NativeArchivePersistenceTest.java": "60be71f14899265e6ff0a0a65e79409fc316a2624dc14bc77371f03eda70b35e",
+    "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1D2PairSheetContractTest.java": "5cad9302e03033bfed46f189b812c72f8208dc0ab17790ffc1e90471277fa7ac",
+    "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1PairAtlasCharacterizationTest.java": "562d0475447ded2969588015d42b17bc0491453da2dc00f66b6a767173ace68c",
+    "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1PairSelectorCharacterizationTest.java": "d9e864f0dfa7f70694049c0b86e77157f6bb59902d9d4bf36c7362ddd8928df6",
+    "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1PairTokenLedgerTest.java": "01448515c8ff1dbb324b3d75e0755f2a7e840f46eed2857d17cf92a3aff0d4f2",
+    "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1SplinePairIntervalCertificationTest.java": "19ca89ab4367c8312225d5b5c7dbb715eb372ce4bbe2b8d53ed19cd9b3d5d782",
+    "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1SplineAtlasHostCharacterizationTest.java": "0f7d517d88afab44b1b584a095fcf341f323a04a087bf65fc713337777b0f9e2",
+    "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1SplinePairMaterializationTest.java": "6f0665b9f30c3c8206521c7f775a512bc87a3c4b7a42d0378192a411f10e81bb",
+    "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusLocusIntersectionV2.java": "59fba959b7853221804acddda99900715d1fa679458c0b5e436dd7e7e07eff38",
+    "source/shared/common/src/main/java/org/geocedg/common/kernel/geos/GeoLocusIntersectionResult.java": "5b732e2dadc2208ef037ad83675bc5d0242800605df90f99f001ad57c934e7e5",
+    "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionSemanticMetadata2D.java": "8bc1107aeadee2dbec58567cd74d7951077a7ccdbd666d027e1803c46e322534",
+    "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionTokenLedger2D.java": "23ff7d35ebdf2df42c9677803166428a9e0d0f00ca2b98184b111fa1de1b1879",
+    "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusPairIntersectionSolver2D.java": "5e88bb07cf6919848506f1357f70fc1c3ba780593222f82761b7a35ef0745dde",
+    "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PairRootAddressProof2D.java": "5c260657f3966fd58c3470b6458ca7a2258545100ac317e2c1f6831f1bf03ac1",
+    "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PairSemanticSlotSelector2D.java": "23bde3ac135a28fda6e81070dd99a0739209a524d206c070aa6d7fad7dd56ad1",
+    "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PublicSplinePairRootIdentityResolver2D.java": "cecf106da0d58f7e404378e875f6b4367719da79eae7982cefc1e5d170becd4d",
+    "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/SplineIntervalModel2D.java": "5ad2dbce85ef789bbdbe2ce7b97889342a5aa242cfe270b20bf54889a45fcf48",
+    "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/SplineOutwardInterval2D.java": "952bf1f102d4805a61ade685f52e11648be2334f0369018fbb1fe3e8e937e59b",
+    "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/SplinePairIntervalCertification2D.java": "503219a2f73127d2134d9870e29d361a54ce3d559670ffac095bf19d6ebd575c",
+    "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusSimilarityEvaluator2D.java": "71a53ed580089bb9960af604314b0dcef90e6763b59b0f157859f8e2a10c1b64",
+    "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusSimilarityTransform2D.java": "7f0d7460f7097b52e4cf218901c37a0e060f0ae94996577e0ce8b37fe449c134",
+    "tools/agent/tests/verification-runtime.Tests.ps1": "09a7f4c9ae6b2325aebe3a33e3f7231bc55838bdcc8efab0e73347f4ca04b5f1",
+    "tools/agent/verification-runtime.psm1": "8751c18d463e05012116413e3639084c0d68e5a82ee5803c79a4e208db16811e",
+    "tools/agent/verify-g9s1-r1-spline-pair-materialization.ps1": "6392d88ac5a31713776b718818d06107fa42e1d82456619ac3b1c03ba1dd0445",
+    "tools/agent/verify.ps1": "a2ca2495698025f1564693301f51246a2e3c628b10dd8739501a6a5310ba8b07"
+  },
+  "sourceHashPolicy": "Uncommitted named source bytes, UTF-8 strict with optional BOM removed, CRLF/CR canonicalized to LF. Evidence file excludes its own hash to avoid self-reference. Raw execution log/XML SHA-256 is intentionally byte-exact.",
+  "retainedRisk": {
+    "id": "G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP",
+    "state": "OPEN / TRACKED",
+    "independentOfPairPersistence": true
+  },
+  "g9u1": {
+    "design": "PASS — AUTHOR APPROVED",
+    "implementation": "NOT AUTHORIZED; BLOCKED UNTIL G9S1-R1 CLOSEOUT",
+    "protectedCheckpointUnchanged": true,
+    "futureDelta": "Only approved certified singleton-germ pair tokens; repeated-germ, monodromic and uncertified pairs stay rich-only; no proximity bypass"
+  },
+  "nextAuthorDecision": "Authorize bounded representation/certification design correction for native spline joins, with compatibility review; alternatively explicitly narrow knot acceptance to genuinely certified joins and retain unproved native knots rich-only. No tolerance merge or silent semantic substitution."
+}

@@ -26,6 +26,7 @@ import org.geocedg.common.kernel.locus.intersection.IntersectionSourceBinding2D;
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionContinuation2D;
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionPolicy2D;
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionResult2D;
+import org.geocedg.common.kernel.locus.intersection.LocusIntersectionTokenLedger2D;
 import org.geocedg.common.kernel.locus.intersection.LocusPairIdentity2D;
 import org.geocedg.common.kernel.locus.intersection.LocusPairIntersectionCapability2D;
 import org.geocedg.common.kernel.locus.intersection.LocusPairIntersectionInstrumentation2D;
@@ -106,8 +107,11 @@ public final class AlgoLocusLocusIntersectionV2 extends AlgoElement {
 			java.util.Objects.requireNonNull(reservedResultId);
 		}
 		this.commandName = commandName;
-		this.configuredInputs = combineInputs(callerFirst, callerSecond,
-				capabilityDependencies);
+		// Public command arity must survive XML even for Intersect(S,S).
+		// The identity graph separately stores its one distinct dependency.
+		this.configuredInputs = publicCommand
+				? new GeoElement[] {callerFirst, callerSecond}
+				: combineInputs(callerFirst, callerSecond, capabilityDependencies);
 		this.result = new GeoLocusIntersectionResult(construction,
 				sourcePairIdentity);
 		if (publicCommand) {
@@ -176,18 +180,30 @@ public final class AlgoLocusLocusIntersectionV2 extends AlgoElement {
 		IntersectionSourceBinding2D binding =
 				new IntersectionSourceBinding2D(query);
 		result.beginIntersectionRevision(binding);
+		LocusIntersectionTokenLedger2D.Evaluation evaluation = null;
 		try {
+			if (publicCommand) {
+				evaluation = beginTokenEvaluation();
+			}
 			long currentTokenEpoch = nextTokenEpoch();
 			LocusPairRootTokenSource2D tokenSource =
 					lineage -> provisionalToken(lineage, currentTokenEpoch);
 			LocusIntersectionResult2D candidate = solver.intersect(query,
 					canonicalFirst, canonicalSecond, binding, preferredCapability,
-					tokenSource);
-			LocusIntersectionResult2D current = continuation.continuePairRoots(
-					lastContinuableResult, candidate, query.getPolicy());
-			publishWithLedger(binding, current);
+					tokenSource, evaluation);
+			LocusIntersectionResult2D current = publicCommand ? candidate
+					: continuation.continuePairRoots(lastContinuableResult,
+							candidate, query.getPolicy());
+			if (evaluation == null) {
+				result.publishIntersectionResult(binding, current);
+			} else {
+				result.publishIntersectionResult(binding, current, evaluation);
+			}
 			updateContinuationBaseline(current);
 		} catch (RuntimeException exception) {
+			if (evaluation != null) {
+				result.abortTokenEvaluation(evaluation);
+			}
 			publishWithLedger(binding, failure(binding,
 					ComputationStatus.NUMERICAL_FAILURE,
 					DiagnosticCode.INTERNAL_FAILURE,
@@ -206,6 +222,14 @@ public final class AlgoLocusLocusIntersectionV2 extends AlgoElement {
 
 	public GeoLocusV2 getCallerSecond() {
 		return callerSecond;
+	}
+
+	public String getConstructiveIntersectionLineage() {
+		return constructiveIntersectionLineage;
+	}
+
+	public String getTopologyContext() {
+		return topologyContext;
 	}
 
 	@Override
@@ -265,9 +289,19 @@ public final class AlgoLocusLocusIntersectionV2 extends AlgoElement {
 
 	private void publishWithLedger(IntersectionSourceBinding2D binding,
 			LocusIntersectionResult2D current) {
-		// Pair isolation is rich-only until rectangle-plus-uniqueness proof exists.
-		// Never create ACTIVE public-ledger entries from diagnostic pair tokens.
-		result.publishIntersectionResult(binding, current);
+		if (publicCommand) {
+			// An unavailable snapshot makes retained slots dormant, not retired.
+			result.publishIntersectionResult(binding, current,
+					beginTokenEvaluation());
+		} else {
+			result.publishIntersectionResult(binding, current);
+		}
+	}
+
+	private LocusIntersectionTokenLedger2D.Evaluation beginTokenEvaluation() {
+		return result.beginTokenEvaluation(cons.getSpatialIdentityRegistry()
+				.getPersistentGeoId(result).toExternalForm(),
+				constructiveIntersectionLineage, topologyContext);
 	}
 
 	private static LocusIntersectionResult2D failure(

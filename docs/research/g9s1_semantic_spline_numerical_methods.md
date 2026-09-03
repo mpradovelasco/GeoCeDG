@@ -1,6 +1,6 @@
 # G9S1 semantic spline numerical-method review
 
-- Status: **approved implementation characterization — scholarly sources still required**
+- Status: **approved G9S1 implementation characterization; sections 10–11 are unapproved post-closeout R1 research iterations**
 - Phase: G9S1
 - Scope: deterministic 2D spline interpolation/evaluation, rich intersection
   evidence and rich length
@@ -141,7 +141,9 @@ as complete. Timing remains characterization only.
 
 ## 8. Scholarly work still required
 
-No new bibliographic title, author, DOI or theorem is asserted by this note.
+The original G9S1 characterization asserted no new bibliographic title, author,
+DOI or theorem. The separately labeled post-closeout R1 review in section 10
+records subsequently inspected sources without changing G9S1's guarantees.
 Before publication claims method-specific theorems or certification, verify and
 record suitable primary/scholarly sources for:
 
@@ -163,3 +165,82 @@ requirement; it must never be replaced by an invented citation.
 This characterization records what the author-approved G9S1 implementation
 does. ADR 0018 is Accepted and G9S1 is PASS, but neither fact certifies global
 root completeness or authorizes pair-root materialization.
+
+## 10. G9S1-R1 preimplementation research update (2026-09-03)
+
+R1 investigation/implementation is separately authorized, subject to its stop
+conditions. It has stopped before productive mutation at a symmetric-selector
+design question. The [source-backed review and analytic counterexamples](../architecture/g9s1_r1_pair_materialization_design_review.md)
+do not change the rich-only published behavior or the accepted G9S1 report.
+
+Checked primary/scholarly authority:
+
+- S. M. Rump, *Verification methods: Rigorous results using floating-point
+  arithmetic*, Acta Numerica 19 (2010), 287–449,
+  [DOI 10.1017/S096249291000005X](https://doi.org/10.1017/S096249291000005X).
+  The [author manuscript](https://www.tuhh.de/ti3/rump/intlab/ActaNumerica2010.pdf),
+  sections 2, 4, 5 and 13, was inspected. Theorem 13.3 supplies the smooth
+  nonlinear Krawczyk inclusion hypotheses; it does not assign durable roots.
+- R. Krawczyk, *Newton-Algorithmen zur Bestimmung von Nullstellen mit
+  Fehlerschranken*, Computing 4 (1969), 187–201,
+  [DOI 10.1007/BF02234767](https://doi.org/10.1007/BF02234767).
+  Publisher metadata/abstract were checked; the inspected theorem text used
+  here is Rump's, not an assertion of full-text inspection of this paper.
+- T. W. Sederberg and T. Nishita, *Curve intersection using Bézier clipping*,
+  Computer-Aided Design 22(9) (1990), 538–549,
+  [DOI 10.1016/0010-4485(90)90039-F](https://doi.org/10.1016/0010-4485(90)90039-F).
+  Publisher metadata/abstract were checked. This is a discovery/exclusion
+  reference, not evidence that the current rounded conversions are certified.
+- [Java Language Specification 17, section 15.4](https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html#jls-15.4)
+  provides the floating evaluation contract; the
+  [Java Math API](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Math.html)
+  specifies adjacent-representable `nextDown`/`nextUp` operations.
+
+The plausible bounded numerical approach is an internal finite interval type
+and outward Horner/Jacobian Krawczyk proof on original semantic polynomial
+authority. Smoothness, owning-span containment, coefficient provenance and
+transformed composition must all be established; rounded Bernstein conversion,
+approximate knot glue and numerical residual alone cannot discharge them.
+
+The outstanding identity question is independent of that numerical method:
+two projection ranks can change while distinct pair roots remain regular.
+Moreover, rank among discovered roots is not a certified intrinsic rank without
+selector-domain coverage. The review distinguishes these facts from any claim
+of general mathematical impossibility. Broader algebraic/topological cell
+research or an explicitly reviewed bounded chart-validity contract is still
+needed before public pair token allocation.
+
+## 11. Symmetric atlas and genuine monodromy (design iteration 2)
+
+The author accepted the projected-rank counterexamples, not the fallback
+invalidation at ordinary chart/rank boundaries. **DESIGN NOT APPROVED —
+CONTINUE DESIGN** applies to R1. The [new design derivation](../architecture/g9s1_r1_symmetric_atlas_design.md)
+preserves successful certified transitions and distinguishes the fiber boxes
+from a semantic atlas over construction-state space and its durable sheets.
+
+New inspected primary sources:
+
+- Allen Hatcher, *Algebraic Topology*, Cambridge University Press, 2002,
+  [author-hosted chapter 1](https://pi.math.cornell.edu/~hatcher/AT/ATch1.pdf),
+  section 1.3, Proposition 1.30: covering path/homotopy lifting. A local
+  nonsingular solve does not by itself prove all covering hypotheses.
+- Jonathan D. Hauenstein and Margaret H. Regan, *Real monodromy action*,
+  Applied Mathematics and Computation 373 (2020), 124983,
+  [DOI 10.1016/j.amc.2019.124983](https://doi.org/10.1016/j.amc.2019.124983),
+  [NSF-hosted text](https://par.nsf.gov/servlets/purl/10195953), section 3.1,
+  Example 3.1 and Theorem 3.3. Real solution sheets can permute on regular loops;
+  the simply-connected scope has additional restrictions. Their generic system
+  is not claimed to be a SplineV2 pair.
+- Timothy Duff and Kisun Lee, *Certified homotopy tracking using the Krawczyk
+  method*, [arXiv:2402.07053v2](https://arxiv.org/html/2402.07053v2), 29 May 2024,
+  section 3.2, Theorem 3.1. Parametric inclusion can certify a solution throughout
+  a time interval, unlike merely certifying two endpoints. It does not provide
+  global history-independent root labels. Its exact-real/affine-homotopy
+  termination hypotheses are not a Java floating-point termination guarantee.
+
+The new exact dyadic piecewise-cubic double-traversal/radial-segment witness is
+derived in the design note itself. Its all-parameter determinant bound, exhaustive
+two-root description and exact closed-loop transposition establish genuine
+monodromy, not a projected-order artifact. Separate public-host floating spline
+checks cannot silently replace exact C2-glue and all-parameter proof. This
+research adds no productive interval/atlas/ledger code and claims no R1 PASS.

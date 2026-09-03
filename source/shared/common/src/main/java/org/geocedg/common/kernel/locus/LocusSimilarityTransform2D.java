@@ -225,6 +225,16 @@ public final class LocusSimilarityTransform2D {
 		return kind;
 	}
 
+	/**
+	 * Read-only captured operands for rigorous evaluation of the original map.
+	 * The immutable snapshot is not a flattened, rounded polynomial surrogate.
+	 *
+	 * @return finite operands in the order of this family's construction method
+	 */
+	public LocusSourceSnapshot2D getCapturedValues() {
+		return values;
+	}
+
 	/** @return whether the geometric image collapses while addresses remain */
 	public boolean isCollapsed() {
 		return kind == Kind.DILATION && values.get(0) == 0;

@@ -1,0 +1,178 @@
+{
+  "schemaVersion": 1,
+  "phase": "G9S1-R1",
+  "state": "DESIGN_BLOCKER_PENDING_AUTHOR_REVIEW",
+  "date": "2026-09-03",
+  "entryCommit": "109f077fc5e2a40bcde45d3271eb928ee66fdfcc",
+  "branch": "codex/g9s1-r1-spline-pair-materialization",
+  "authorRequestRawSha256": "cf5d59ff58a80fad127c9419587ed1eeffc18ba396dba125b3fa2e253b1528ce",
+  "implementationAuthorized": true,
+  "productiveImplementationStarted": false,
+  "characterizationStarted": true,
+  "selfApproved": false,
+  "authorApproved": false,
+  "passClaimed": false,
+  "manualAuthorSmoke": "NOT_READY_NO_PRODUCTIVE_CANDIDATE",
+  "blocker": {
+    "area": "symmetric semantic pair-selector validity",
+    "finding": "Bare first-axis or dual projection ranks can change while distinct parameter-pair roots remain regular. Local uniqueness also does not establish rank without selector-domain coverage.",
+    "generalImpossibilityClaimed": false,
+    "publicSplineFixtureReproductionClaimed": false,
+    "decisionRequired": "Either explicitly permit additional conservative chart/projection events for a bounded certified-chart materialization scope, or retain the original regular-pair-stratum contract and develop a stronger intrinsic symmetric cell design before productive token publication.",
+    "existingAuthority": [
+      "docs/adr/0009-locus-v2-locus-intersection-pair-semantics.md",
+      "docs/adr/0017-deterministic-intersection-phase-rank-identity.md",
+      "docs/adr/0018-semantic-spline-2d-capability.md"
+    ]
+  },
+  "diagnosticModels": [
+    {
+      "id": "R1-DESIGN-PROJECTION-CROSSING",
+      "first": "C1_t(u)=(u,t), u in [-2,1]",
+      "second": "C2(v)=(v^2-1,v^3-v), v in [-1.25,1.25]",
+      "zeroSnapshotRoots": 3,
+      "outerContactDeterminantsAtZero": [2, 2],
+      "finding": "Outer roots keep distinct v preimages while u projections cross at t=0."
+    },
+    {
+      "id": "R1-DESIGN-DUAL-PROJECTION-CROSSING",
+      "first": "C1(u)=(p(u),u*p(u)/2), p(z)=z^3-z",
+      "second": "C2_t(v)=(v*p(v)/2+t,p(v))",
+      "domain": "[-1.1,1.1]^2",
+      "zeroSnapshotRoots": 9,
+      "contactDeterminant": "p'(u)*p'(v)*(1-u*v/4)",
+      "finding": "All nine preimages are nonsingular at t=0; the four outer roots share contact sign and exchange both projected rank orders locally."
+    },
+    {
+      "id": "R1-DESIGN-SELECTOR-COVERAGE",
+      "finding": "Equal found cardinality does not establish intrinsic semantic rank when different regular roots may be omitted."
+    },
+    {
+      "id": "R1-DESIGN-TRANSFORM-COEFFICIENT-AUTHORITY",
+      "translationX": "0x1.0p54",
+      "parameter": 4,
+      "expandedSlope": 0,
+      "actualSemanticMinusExpandedValue": 4,
+      "finding": "Existing rounded coefficient expansion is not a rigorous enclosure of the actual composed transformation; no production correction is claimed."
+    }
+  ],
+  "validation": {
+    "level": "DEV",
+    "authority": "tools/agent/verify.ps1",
+    "testFilters": [
+      "org.geocedg.common.kernel.locus.intersection.G9S1R1PairSelectorCharacterizationTest",
+      "org.geocedg.common.kernel.locus.intersection.PiecewisePolynomialPairIntersectionCapability2DTest"
+    ],
+    "command": ".\\tools\\agent\\verify.ps1 -Level DEV -Module shared -TestFilter 'org.geocedg.common.kernel.locus.intersection.G9S1R1PairSelectorCharacterizationTest','org.geocedg.common.kernel.locus.intersection.PiecewisePolynomialPairIntersectionCapability2DTest' -KeepBuildOutputs -LogDirectory <run-directory>",
+    "runs": [
+      {
+        "name": "A",
+        "resultPath": "artifacts/g9s1-r1-design-review/dev-a-managed/verification-result.json",
+        "summaryPath": "artifacts/g9s1-r1-design-review/dev-a-managed/dev/bd792d3b200c401194c6430ea64b0e2c/dev-summary.json",
+        "exitCode": 0,
+        "tests": 13,
+        "newDiagnosticTests": 6,
+        "unchangedHistoricalPairTests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "name": "B",
+        "resultPath": "artifacts/g9s1-r1-design-review/dev-b-managed/verification-result.json",
+        "summaryPath": "artifacts/g9s1-r1-design-review/dev-b-managed/dev/05ba0632cf8f449498d5aac95778e234/dev-summary.json",
+        "exitCode": 0,
+        "tests": 13,
+        "newDiagnosticTests": 6,
+        "unchangedHistoricalPairTests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    ],
+    "normalizedCaseOutcomeEncoding": "Ordinal-sorted UTF-8 class#method:status lines, LF, final LF. Excludes timestamps/timing/paths. Not a numerical root certificate or full R1 canonical summary.",
+    "normalizedCaseOutcomeSha256": "dc884d7abff90cff06dcc19803f3c20dfae6b51f45299dfee35edecdd87853b2",
+    "caseOutcomeEquality": true,
+    "checkstyle": {
+      "task": ":shared:common-jre:checkstyleTest",
+      "exitCode": 0,
+      "logPath": "artifacts/g9s1-r1-design-review/checkstyle-quoted.log"
+    },
+    "nonProductFailures": [
+      {
+        "kind": "WINDOWS_SANDBOX_PERMISSION",
+        "logPath": "artifacts/g9s1-r1-design-review/dev-a/dev/a062a6e05fc04fcf9d39fb3bbe0f3e2f/dev-gradle.log",
+        "disposition": "Existing classes were present; diagnostic javap also reported JAR AccessDeniedException. Unchanged tests passed under managed execution; no source change."
+      },
+      {
+        "kind": "POWERSHELL_ARGUMENT_QUOTING",
+        "logPath": "artifacts/g9s1-r1-design-review/checkstyle.log",
+        "disposition": "Quoted the Java -D property; corrected Checkstyle command passed without code changes."
+      }
+    ],
+    "phaseAcceptance": "NOT_RUN_NOT_CLAIMED",
+    "composedAcceptance": "NOT_RUN_NOT_CLAIMED",
+    "fullAcceptance": "NOT_RUN_NOT_CLAIMED",
+    "reason": "Stopped at a design decision before productive implementation or verifier integration. DEV diagnostics do not waive future complete R1 acceptance."
+  },
+  "impact": {
+    "productiveJavaChanges": 0,
+    "frontendChanges": 0,
+    "historicalTestModifications": 0,
+    "verificationInfrastructure": "NONE",
+    "bootstrap": "NO_CHANGE_REQUIRED",
+    "bootstrapReason": "No toolchain, dependency, environment prerequisite, entrypoint or packaging change.",
+    "guideImpact": "NONE",
+    "guideReason": "No observable product or developer API change; existing guides truthfully retain rich-only pair behavior.",
+    "futureAcceptance": "New R1 PHASE registration/integration will require UPDATE_REQUIRED infrastructure review, COMPOSED and clean-output FULL under ADR 0020."
+  },
+  "canonicalLfSha256": {
+    "docs/architecture/g9s1_r1_pair_materialization_design_review.md": "4b2097d500089460ff5946d854dc2383eee3a2a1f2d494436e6ccce8afac2a37",
+    "docs/research/g9s1_semantic_spline_numerical_methods.md": "f1edd541ca3deeaeb685bba126f3625b34f55ab671e1acd9d0e58d54818d403a",
+    "docs/roadmap/geocedg_roadmap.md": "8c428db59fcc9ea57b2ac9b35851a29b7a9c6c05b78f645fe5d2cd9d0d1c82c8",
+    "docs/validation/g9_documentation_bundle_traceability.md": "17d39556d9776f77ce6de8297ccbe1816256069351abf31ef2fe94d5c9f70236",
+    "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1PairSelectorCharacterizationTest.java": "d9e864f0dfa7f70694049c0b86e77157f6bb59902d9d4bf36c7362ddd8928df6"
+  },
+  "changedPaths": [
+    "docs/architecture/g9s1_r1_pair_materialization_design_review.md",
+    "docs/research/g9s1_semantic_spline_numerical_methods.md",
+    "docs/roadmap/geocedg_roadmap.md",
+    "docs/validation/g9_documentation_bundle_traceability.md",
+    "geocedg/validation/g9s1-r1/g9s1-r1-design-review-evidence.json",
+    "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1PairSelectorCharacterizationTest.java"
+  ],
+  "finalReadOnlyChecks": {
+    "jsonAndRecordedCanonicalLfHashes": "PASS",
+    "relativeMarkdownLinkTargetsChecked": 315,
+    "relativeMarkdownLinkTargets": "PASS",
+    "newResearchSectionAnchor": "PASS",
+    "linkCheckScope": "Four changed Markdown documents, excluding fenced/inline code; relative path existence and the newly introduced section anchor, not an all-repository anchor audit.",
+    "gitDiffCheckExitCode": 0,
+    "gitDiffCachedCheckExitCode": 0,
+    "untrackedFileWhitespaceDiagnostics": "NONE",
+    "exactChangedPathCount": 6,
+    "indexEmpty": true,
+    "mainUnchanged": true,
+    "mainOriginDirectRemote": "109f077fc5e2a40bcde45d3271eb928ee66fdfcc",
+    "protectedG9U1LocalOriginDirectRemote": "00982e7e148a634cd57ed928f322774df267d5e3",
+    "protectedG9U1Divergence": "0/0",
+    "g9s1R4R5R6TagObjectsAndPeelsUnchanged": true,
+    "newTrackedLogsOrArtifacts": 0,
+    "existingTrackedArtifactAuthority": "artifacts/README.md (unchanged)"
+  },
+  "protectedG9U1": {
+    "branch": "feature/g9u1-construction-workspace-planning-after-r6",
+    "commit": "00982e7e148a634cd57ed928f322774df267d5e3",
+    "changed": false,
+    "design": "PASS_AUTHOR_APPROVED",
+    "implementation": "NOT_AUTHORIZED_BLOCKED_UNTIL_G9S1_R1_PASS"
+  },
+  "retainedRisk": {
+    "id": "G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP",
+    "state": "OPEN_TRACKED",
+    "authority": "docs/roadmap/geocedg_roadmap.md"
+  },
+  "committed": false,
+  "published": false,
+  "tagged": false
+}

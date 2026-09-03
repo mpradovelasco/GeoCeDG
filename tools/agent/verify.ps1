@@ -73,6 +73,8 @@ $G9S1SemanticSplineVerifier = Join-Path $PSScriptRoot `
     "verify-g9s1-semantic-spline-2d-capability.ps1"
 $G9U0R6SemanticLocusPointInteractionVerifier = Join-Path $PSScriptRoot `
     "verify-g9u0-r6-semantic-locus-point-interaction-support.ps1"
+$G9S1R1SplinePairVerifier = Join-Path $PSScriptRoot `
+    "verify-g9s1-r1-spline-pair-materialization.ps1"
 $BenchmarkRunner = Join-Path $RepositoryRoot "tools\benchmark\run.ps1"
 $InitialStatus = $null
 $repositoryState = $null
@@ -1104,6 +1106,36 @@ try {
         & $G9U0R6SemanticLocusPointInteractionVerifier @g9u0R6Parameters
         Assert-LastScriptSuccess `
             -Description "G9U0-R6 semantic Locus point interaction support"
+    }
+
+    $g9s1R1IntegrationArtifacts = @(
+        $G9S1R1SplinePairVerifier,
+        (Join-Path $RepositoryRoot ".github/prompts/tasks/g9s1-r1-spline-pair-intersection-materialization.prompt.md"),
+        (Join-Path $RepositoryRoot "docs/adr/0021-spline-pair-singleton-germ-materialization.md"),
+        (Join-Path $RepositoryRoot "geocedg/specs/curves/spline-v2-pair-materialization.md"),
+        (Join-Path $RepositoryRoot "docs/validation/g9s1_r1_spline_pair_materialization_validation_matrix.md"),
+        (Join-Path $RepositoryRoot "geocedg/validation/g9s1-r1/g9s1-r1-spline-pair-materialization-scenarios.json"),
+        (Join-Path $RepositoryRoot "geocedg/validation/g9s1-r1/g9s1-r1-spline-pair-materialization-evidence.json"),
+        (Join-Path $RepositoryRoot "geocedg/validation/g9s1-r1/g9s1-r1-evidence.sha256")
+    )
+    $g9s1R1PresentCount = @($g9s1R1IntegrationArtifacts | Where-Object {
+        Test-Path -LiteralPath $_ -PathType Leaf
+    }).Count
+    if ($g9s1R1PresentCount -ne 0 -and $g9s1R1PresentCount -ne $g9s1R1IntegrationArtifacts.Count) {
+        throw "Incomplete G9S1-R1 integration: prompt, ADR/specification, matrix, scenarios/evidence/hash and focused verifier are paired."
+    }
+    if ($g9s1R1PresentCount -eq $g9s1R1IntegrationArtifacts.Count) {
+        Write-Host "`n==> G9S1-R1 certified singleton-germ SplineV2 pair materialization"
+        $g9s1R1Parameters = @{
+            HistoricalRegressionsAlreadyComposed = $true
+            LogDirectory = Join-Path ([IO.Path]::GetFullPath($LogDirectory)) "g9s1-r1-spline-pair-materialization"
+        }
+        if ($SkipBuild) { $g9s1R1Parameters.SkipBuild = $true }
+        if ($AllowToolchainDownload) { $g9s1R1Parameters.AllowToolchainDownload = $true }
+        if ($KeepBuildOutputs) { $g9s1R1Parameters.KeepBuildOutputs = $true }
+        Add-CurrentBuildEvidence -Parameters $g9s1R1Parameters
+        & $G9S1R1SplinePairVerifier @g9s1R1Parameters
+        Assert-LastScriptSuccess -Description "G9S1-R1 SplineV2 pair materialization"
     }
 
     Write-Host "`n==> Standalone Windows packaging contracts"

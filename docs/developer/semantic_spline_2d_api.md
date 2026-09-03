@@ -1,6 +1,13 @@
 # Semantic Spline V2 developer API
 
 - Status: **G9S1 PASS — AUTHOR APPROVED**
+- Current successor: **G9S1-R1 IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW; NOT phase PASS**
+- `implementationComplete=true`: bounded construction-precision and univariate
+  structural-certification corrections pass fresh PHASE A/B, COMPOSED and FULL
+  clean on the archived tested source cohort. Earlier failures remain historical
+  evidence; this later status-only reconciliation is not a new runtime cohort.
+- `manualAuthorSmoke=PENDING`; `selfApproved=false`;
+  `authorApprovedPhase=false`; `passClaimed=false`.
 - Public maturity: experimental, default off with Locus V2
 - Kernel result type: `GeoLocusV2`
 
@@ -34,9 +41,60 @@ Consumers may request:
 - span bounds/local polynomial data where truthfully available;
 - continuity, degeneration and validity diagnostics.
 
-The concrete candidate provider capability is immutable
-piecewise-polynomial data in the normalized oriented parameter. Interior knots
-are right-owned. Equal first/last input points use a periodic half-open domain.
+The provider capability is immutable semantic spline data in the normalized
+oriented parameter. Interior knots are right-owned. Exactly equal finite
+first/last input points can use a periodic half-open domain. Under the authorized
+R1 correction, approximate endpoint coincidence alone cannot establish exact
+periodic closure; an inconsistent closed-source request fails explicitly.
+
+### R1 structural representation prerequisite
+
+The [structural design](../architecture/g9s1_r1_structural_spline_continuity.md)
+and [ADR 0022](../adr/0022-structural-spline-continuity.md) replace independent
+rounded-span authority with an equivalent reduced structural basis. Shared
+truncated powers give C^(d-1) at simple interior knots; exact elimination of
+periodic endpoint jets is a separate obligation. Preserve the original
+interpolation/boundary equations, including selected-span polynomial extension
+rows. Numerical free coefficients and residuals remain numerical: structural
+continuity does not claim exact interpolation arithmetic.
+
+Rounded expanded span arrays may serve ordinary approximate evaluation and
+candidate discovery. The R1 interval certificate must instead outward-enclose
+the exact structural numerator/denominator expansion and actual R5 composition.
+It must not certify a different rounded-cache function. Private independent-span
+diagnostic fixtures carry no inferred structural guarantee. Derived content
+signatures change with representation; source durable identity, oriented
+parameter contract and normal command reconstruction do not.
+
+The original native-knot failure is retained in the
+[blocker report](../validation/g9s1_r1_implementation_blocker_report.md).
+These changes are authorized work in progress, not already validated product
+claims; the complete structural and historical perimeter remains required.
+
+The corrective candidate exposes `SplinePolynomialModel2D.getConstructionEvidence()`
+with policy `spline-structural-precision/v1`: arithmetic route, working/retained
+precision, solve/expansion/admission work and failure categories. This evidence
+is query/revision-local derived data, not a durable selector or XML payload.
+The binary64 route remains preferred when original admission passes; bounded
+higher-precision recovery cannot waive original equations or structural jets.
+
+For `REGULAR_POLYNOMIAL_IMPLICIT` stored coefficient authority,
+`SplineImplicitIntervalCertification2D` verifies
+the actual structural composition and derivative before public classification.
+Floating composed polynomial roots are proposals only. Exclusion publishes no
+verified root; simple/transverse admission requires current existence/uniqueness
+and derivative-sign proof. Genuine but uncertified contacts remain rich-only.
+This is an internal prerequisite correction, not a new command, pair selector,
+materialization policy or GUI feature. Current validation is still incomplete.
+Line/conic/circle historical paths are unchanged: a circle's rounded expanded
+matrix is not exact authority for its center/radius-defined target.
+
+Native replacement serialization reuses the existing G9A lexical identity
+overlay: `GeoLocusV2.getXML` may serialize a staged element with an exact
+`getPersistentGeoIdForSerialization` association before live attachment. This
+does not alter the G9A compatible predicate or explicit incompatible replacement
+transaction and does not assign a durable identity by label. The earlier missing
+staged element, not an unsupported Spline redefine policy, was the bounded defect.
 
 Consumers must not infer meaning from provider array order, render vertices,
 labels or Cartesian coordinates.
@@ -67,10 +125,28 @@ evidence and permits only established transverse isolating cells to reach the
 R4 selector/token ledger. Bounded functions may use the existing general rich
 fallback.
 
-For two piecewise-polynomial loci, G9S1 publishes deterministic rich-only
+For two piecewise-polynomial loci, the published G9S1 baseline provides rich-only
 candidate/overlap/work evidence. There is no certified unique pair selector,
 active ledger allocation or point materialization. Do not treat a diagnostic
 pair token as a durable exact-token point handle.
+
+The bounded R1 successor adds a separate authenticated SplineV2 pair path under
+[ADR 0021](../adr/0021-spline-pair-singleton-germ-materialization.md). A current
+interval existence/uniqueness proof plus complete selected-sign coverage over
+the component product may admit a singleton normalized transverse germ. Both
+opposite signs may qualify; repeated same-germ sheets, unresolved coverage,
+tangency/overlap, generic polynomial providers and uncertifiable composition
+remain rich-only. This is not an uncertified materialization option.
+
+`PairSemanticSlotSelector2D` associates both durable source descriptors with
+their branch/component/orientation/domain and normalized germ. Current u/v,
+proof rectangles, spans, knots, coefficients and revisions stay outside that
+durable selector. Pair-bearing ledger v5 keeps a strict pair/one-source
+discriminator; existing one-source import and opaque `locus-root/v3` token
+semantics remain. `PairRootAddressProof2D` holds current two-source address
+evidence. The same claimed point may become dormant or pair-non-current and
+reactivate only through current unique selector lookup, never a previous
+trajectory. R4 periodic quarantine remains a different lifecycle contract.
 
 ## Identity and lifecycle
 
@@ -101,6 +177,8 @@ solver order.
 
 See the
 [G9S1 matrix](../validation/g9s1_semantic_spline_2d_capability_validation_matrix.md).
-This guide describes the approved G9S1 surface. Executed counts and hashes must
-still be taken from the focused/composed verifier evidence rather than inferred
-from prose.
+The approved G9S1 baseline and authorized-but-unapproved R1 work are explicitly
+separate. The [R1 matrix](../validation/g9s1_r1_spline_pair_materialization_validation_matrix.md)
+adds structural, periodic, pair-proof and lifecycle requirements. Executed
+counts/hashes must come from current PHASE/COMPOSED/FULL evidence, not this guide.
+G9U1 is not implemented and the independent R4 quarantine round-trip risk remains open.

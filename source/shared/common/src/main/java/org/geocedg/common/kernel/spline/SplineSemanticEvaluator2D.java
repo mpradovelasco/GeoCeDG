@@ -27,7 +27,7 @@ import org.geocedg.common.kernel.locus.PiecewisePolynomialLocus2D;
 import org.geocedg.common.kernel.locus.metric.LocusDifferentialEvaluation2D;
 import org.geocedg.common.kernel.locus.metric.LocusDifferentialEvaluator2D;
 
-/** Exact-span, floating-coefficient evaluator for one immutable SplineV2 revision. */
+/** Floating evaluation of one immutable structurally continuous SplineV2 revision. */
 public final class SplineSemanticEvaluator2D implements LocusEvaluator2D,
 		LocusDifferentialEvaluator2D, PiecewisePolynomialLocus2D {
 	private static final LocusQuality2D QUALITY = new LocusQuality2D(
@@ -163,7 +163,7 @@ public final class SplineSemanticEvaluator2D implements LocusEvaluator2D,
 
 	@Override
 	public String getPolynomialCapabilitySignature() {
-		return "spline-v2-piecewise-polynomial/v1|"
+		return "spline-v2-piecewise-polynomial/v2|"
 				+ model.getSemanticSignature();
 	}
 
@@ -187,7 +187,7 @@ public final class SplineSemanticEvaluator2D implements LocusEvaluator2D,
 
 	/** @return deterministic evaluator signature */
 	public String getEvaluatorSignature() {
-		return "spline-v2-evaluator/v1|branch=" + branchKey + "|"
+		return "spline-v2-evaluator/v2|branch=" + branchKey + "|"
 				+ model.getSemanticSignature();
 	}
 }

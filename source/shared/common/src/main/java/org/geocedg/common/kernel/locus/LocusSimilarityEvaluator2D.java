@@ -85,6 +85,16 @@ public final class LocusSimilarityEvaluator2D implements LocusEvaluator2D,
 		return compositionDepth;
 	}
 
+	/** @return immutable source captured by this semantic composition */
+	public LocusDefinition2D getCapturedSourceDefinition() {
+		return sourceDefinition;
+	}
+
+	/** @return immutable map captured by this semantic composition */
+	public LocusSimilarityTransform2D getCapturedTransform() {
+		return transform;
+	}
+
 	@Override
 	public int getPolynomialCompositionDepth() {
 		return compositionDepth;

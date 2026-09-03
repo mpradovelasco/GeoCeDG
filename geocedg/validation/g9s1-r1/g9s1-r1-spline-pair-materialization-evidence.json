@@ -1,0 +1,1307 @@
+{
+  "schemaVersion": 1,
+  "phase": "G9S1-R1",
+  "status": "IMPLEMENTATION_CANDIDATE_PENDING_AUTHOR_REVIEW",
+  "artifactRole": "SOURCE_CONTRACT_AND_EXECUTION_PROVENANCE_NOT_A_SUBSTITUTE_FOR_LIVE_GATES",
+  "entrySha": "109f077fc5e2a40bcde45d3271eb928ee66fdfcc",
+  "branch": "codex/g9s1-r1-spline-pair-materialization",
+  "approval": {
+    "designApproved": true,
+    "implementationAuthorized": true,
+    "structuralPrerequisiteAuthorized": true,
+    "implementationStarted": true,
+    "selfApproved": false,
+    "authorApprovedPhase": false,
+    "passClaimed": false,
+    "manualAuthorSmoke": "PENDING",
+    "implementationComplete": true,
+    "correctionAAuthorized": true,
+    "correctionBAuthorized": true
+  },
+  "authority": {
+    "canonicalPrompt": ".github/prompts/tasks/g9s1-r1-spline-pair-intersection-materialization.prompt.md",
+    "canonicalPromptLfSha256": "6567b5bebaa6e62e35b97284f71bed07ccd2517a9c04d05b62904fb831a7e1ba",
+    "protectedG9U1Checkpoint": "00982e7e148a634cd57ed928f322774df267d5e3",
+    "historicalPreservedLfHashes": {
+      "docs/validation/g9s1_r1_implementation_blocker_report.md": "a85a65e1808f1760a7ce7d68029bbb783e535bfe362712f9a99e63b2b67e1ba5",
+      "geocedg/validation/g9s1-r1/g9s1-r1-implementation-blocker-evidence.json": "d43d320b781c068dacd0091a55fdc6a73658b37f9b4da13d5941a8c8469ec90f",
+      "docs/architecture/g9s1_r1_d2_pair_sheet_contract.md": "338d6194179cdd0677769e4bee251dc35d1a60199939cb298ea46a8af3feea9f",
+      "geocedg/validation/g9s1-r1/g9s1-r1-d2-design-evidence.json": "21fe616f80bd511d4c0ca08a9e361c9800c4f518835113a72679b625de2f4f46"
+    },
+    "previousPromptLfSha256": "3f91794eab27f8cebc66f81b0ce079221ad873c5c044e487c5cbee9aa1e187ff"
+  },
+  "sourceBoundary": {
+    "candidatePathCount": 76,
+    "candidatePaths": [
+      ".github/prompts/tasks/g9s1-r1-spline-pair-intersection-materialization.prompt.md",
+      "docs/adr/0021-spline-pair-singleton-germ-materialization.md",
+      "docs/adr/0022-structural-spline-continuity.md",
+      "docs/architecture/g9s1_r1_d2_pair_sheet_contract.md",
+      "docs/architecture/g9s1_r1_pair_materialization_design_review.md",
+      "docs/architecture/g9s1_r1_structural_spline_continuity.md",
+      "docs/architecture/g9s1_r1_symmetric_atlas_design.md",
+      "docs/developer/geocedg_developer_guide.md",
+      "docs/developer/semantic_spline_2d_api.md",
+      "docs/research/g9s1_r1_structural_spline_numerics.md",
+      "docs/research/g9s1_semantic_spline_numerical_methods.md",
+      "docs/roadmap/geocedg_roadmap.md",
+      "docs/upstream/modified-files.yml",
+      "docs/user/geocedg_user_guide.md",
+      "docs/validation/g9_documentation_bundle_traceability.md",
+      "docs/validation/g9s1_r1_implementation_blocker_report.md",
+      "docs/validation/g9s1_r1_spline_pair_materialization_validation_matrix.md",
+      "docs/validation/g9s1_r1_structural_implementation_candidate_report.md",
+      "geocedg/specs/README.md",
+      "geocedg/specs/curves/spline-v2-pair-materialization.md",
+      "geocedg/validation/g9s1-r1/g9s1-r1-atlas-design-evidence.json",
+      "geocedg/validation/g9s1-r1/g9s1-r1-d2-design-evidence.json",
+      "geocedg/validation/g9s1-r1/g9s1-r1-design-review-evidence.json",
+      "geocedg/validation/g9s1-r1/g9s1-r1-evidence.sha256",
+      "geocedg/validation/g9s1-r1/g9s1-r1-implementation-blocker-evidence.json",
+      "geocedg/validation/g9s1-r1/g9s1-r1-spline-pair-materialization-evidence.json",
+      "geocedg/validation/g9s1-r1/g9s1-r1-spline-pair-materialization-scenarios.json",
+      "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9S1R1NativeArchivePersistenceTest.java",
+      "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu.properties",
+      "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_en.properties",
+      "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_es.properties",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1D2PairSheetContractTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1PairAtlasCharacterizationTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1PairSelectorCharacterizationTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1PairTokenLedgerTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1SplinePairIntervalCertificationTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1StructuralImplicitCertificationTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/spline/G9S1R1SplinePrecisionAdmissionTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1NativeStructuralPairTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1SplineAtlasHostCharacterizationTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1SplinePairMaterializationTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1StructuralSplineContinuityTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1StructuralSplineLifecycleTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1SemanticSpline2DTest.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusLocusIntersectionV2.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/geos/GeoLocusIntersectionResult.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/geos/GeoLocusV2.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusSimilarityEvaluator2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusSimilarityTransform2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/PiecewisePolynomialLocus2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/interaction/LocusPointInteractionResolver2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionCandidate2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionSemanticMetadata2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionSolver2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionTokenLedger2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusPairIntersectionSolver2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PairRootAddressProof2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PairSemanticSlotSelector2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PolynomialRootIsolation2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PolynomialTargetIntersectionCapability2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PublicSplinePairRootIdentityResolver2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PublicTargetIntersectionCapability2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/SplineImplicitIntervalCertification2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/SplineIntervalModel2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/SplineOutwardInterval2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/SplinePairIntervalCertification2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spline/SplineConstructionEvidence2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spline/SplinePolynomialModel2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spline/SplinePrecisionSolve2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spline/SplineSemanticEvaluator2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spline/SplineStructuralModel2D.java",
+      "tools/agent/tests/verification-runtime.Tests.ps1",
+      "tools/agent/verification-runtime.psm1",
+      "tools/agent/verify-g9s1-r1-spline-pair-materialization.ps1",
+      "tools/agent/verify-g9u0-r4-intersection-admissibility-continuation.ps1",
+      "tools/agent/verify.ps1"
+    ],
+    "productiveFrontendChanges": false,
+    "classicSplineChanges": false,
+    "staged": false,
+    "committed": false,
+    "pushed": false,
+    "classifiedPaths": [
+      {
+        "path": ".github/prompts/tasks/g9s1-r1-spline-pair-intersection-materialization.prompt.md",
+        "category": "operational impact"
+      },
+      {
+        "path": "docs/adr/0021-spline-pair-singleton-germ-materialization.md",
+        "category": "specification/ADR"
+      },
+      {
+        "path": "docs/adr/0022-structural-spline-continuity.md",
+        "category": "specification/ADR"
+      },
+      {
+        "path": "docs/architecture/g9s1_r1_d2_pair_sheet_contract.md",
+        "category": "specification/ADR"
+      },
+      {
+        "path": "docs/architecture/g9s1_r1_pair_materialization_design_review.md",
+        "category": "specification/ADR"
+      },
+      {
+        "path": "docs/architecture/g9s1_r1_structural_spline_continuity.md",
+        "category": "specification/ADR"
+      },
+      {
+        "path": "docs/architecture/g9s1_r1_symmetric_atlas_design.md",
+        "category": "specification/ADR"
+      },
+      {
+        "path": "docs/developer/geocedg_developer_guide.md",
+        "category": "developer guide"
+      },
+      {
+        "path": "docs/developer/semantic_spline_2d_api.md",
+        "category": "developer guide"
+      },
+      {
+        "path": "docs/research/g9s1_r1_structural_spline_numerics.md",
+        "category": "research"
+      },
+      {
+        "path": "docs/research/g9s1_semantic_spline_numerical_methods.md",
+        "category": "research"
+      },
+      {
+        "path": "docs/roadmap/geocedg_roadmap.md",
+        "category": "roadmap/status"
+      },
+      {
+        "path": "docs/upstream/modified-files.yml",
+        "category": "operational impact"
+      },
+      {
+        "path": "docs/user/geocedg_user_guide.md",
+        "category": "user guide"
+      },
+      {
+        "path": "docs/validation/g9_documentation_bundle_traceability.md",
+        "category": "validation/evidence"
+      },
+      {
+        "path": "docs/validation/g9s1_r1_implementation_blocker_report.md",
+        "category": "validation/evidence"
+      },
+      {
+        "path": "docs/validation/g9s1_r1_spline_pair_materialization_validation_matrix.md",
+        "category": "validation/evidence"
+      },
+      {
+        "path": "docs/validation/g9s1_r1_structural_implementation_candidate_report.md",
+        "category": "validation/evidence"
+      },
+      {
+        "path": "geocedg/specs/curves/spline-v2-pair-materialization.md",
+        "category": "specification/ADR"
+      },
+      {
+        "path": "geocedg/specs/README.md",
+        "category": "roadmap/status"
+      },
+      {
+        "path": "geocedg/validation/g9s1-r1/g9s1-r1-atlas-design-evidence.json",
+        "category": "validation/evidence"
+      },
+      {
+        "path": "geocedg/validation/g9s1-r1/g9s1-r1-d2-design-evidence.json",
+        "category": "validation/evidence"
+      },
+      {
+        "path": "geocedg/validation/g9s1-r1/g9s1-r1-design-review-evidence.json",
+        "category": "validation/evidence"
+      },
+      {
+        "path": "geocedg/validation/g9s1-r1/g9s1-r1-evidence.sha256",
+        "category": "validation/evidence"
+      },
+      {
+        "path": "geocedg/validation/g9s1-r1/g9s1-r1-implementation-blocker-evidence.json",
+        "category": "validation/evidence"
+      },
+      {
+        "path": "geocedg/validation/g9s1-r1/g9s1-r1-spline-pair-materialization-evidence.json",
+        "category": "validation/evidence"
+      },
+      {
+        "path": "geocedg/validation/g9s1-r1/g9s1-r1-spline-pair-materialization-scenarios.json",
+        "category": "validation/evidence"
+      },
+      {
+        "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9S1R1NativeArchivePersistenceTest.java",
+        "category": "tests"
+      },
+      {
+        "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_en.properties",
+        "category": "existing rich-result diagnostic localization"
+      },
+      {
+        "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_es.properties",
+        "category": "existing rich-result diagnostic localization"
+      },
+      {
+        "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu.properties",
+        "category": "existing rich-result diagnostic localization"
+      },
+      {
+        "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1D2PairSheetContractTest.java",
+        "category": "tests"
+      },
+      {
+        "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1PairAtlasCharacterizationTest.java",
+        "category": "tests"
+      },
+      {
+        "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1PairSelectorCharacterizationTest.java",
+        "category": "tests"
+      },
+      {
+        "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1PairTokenLedgerTest.java",
+        "category": "tests"
+      },
+      {
+        "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1SplinePairIntervalCertificationTest.java",
+        "category": "tests"
+      },
+      {
+        "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1StructuralImplicitCertificationTest.java",
+        "category": "tests"
+      },
+      {
+        "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/spline/G9S1R1SplinePrecisionAdmissionTest.java",
+        "category": "tests"
+      },
+      {
+        "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1NativeStructuralPairTest.java",
+        "category": "tests"
+      },
+      {
+        "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1SplineAtlasHostCharacterizationTest.java",
+        "category": "tests"
+      },
+      {
+        "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1SplinePairMaterializationTest.java",
+        "category": "tests"
+      },
+      {
+        "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1StructuralSplineContinuityTest.java",
+        "category": "tests"
+      },
+      {
+        "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1StructuralSplineLifecycleTest.java",
+        "category": "tests"
+      },
+      {
+        "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1SemanticSpline2DTest.java",
+        "category": "tests"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusLocusIntersectionV2.java",
+        "category": "R1 implementation"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/geos/GeoLocusIntersectionResult.java",
+        "category": "R1 implementation"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/geos/GeoLocusV2.java",
+        "category": "R1 implementation"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/interaction/LocusPointInteractionResolver2D.java",
+        "category": "kernel semantic correction"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionCandidate2D.java",
+        "category": "kernel semantic correction"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionSemanticMetadata2D.java",
+        "category": "R1 implementation"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionSolver2D.java",
+        "category": "kernel semantic correction"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionTokenLedger2D.java",
+        "category": "R1 implementation"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusPairIntersectionSolver2D.java",
+        "category": "R1 implementation"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PairRootAddressProof2D.java",
+        "category": "R1 implementation"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PairSemanticSlotSelector2D.java",
+        "category": "R1 implementation"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PolynomialRootIsolation2D.java",
+        "category": "kernel semantic correction"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PolynomialTargetIntersectionCapability2D.java",
+        "category": "kernel semantic correction"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PublicSplinePairRootIdentityResolver2D.java",
+        "category": "R1 implementation"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PublicTargetIntersectionCapability2D.java",
+        "category": "kernel semantic correction"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/SplineImplicitIntervalCertification2D.java",
+        "category": "kernel semantic correction"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/SplineIntervalModel2D.java",
+        "category": "R1 implementation"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/SplineOutwardInterval2D.java",
+        "category": "R1 implementation"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/SplinePairIntervalCertification2D.java",
+        "category": "R1 implementation"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusSimilarityEvaluator2D.java",
+        "category": "R1 implementation"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusSimilarityTransform2D.java",
+        "category": "R1 implementation"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/PiecewisePolynomialLocus2D.java",
+        "category": "kernel semantic correction"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spline/SplineConstructionEvidence2D.java",
+        "category": "kernel semantic correction"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spline/SplinePolynomialModel2D.java",
+        "category": "kernel semantic correction"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spline/SplinePrecisionSolve2D.java",
+        "category": "kernel semantic correction"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spline/SplineSemanticEvaluator2D.java",
+        "category": "kernel semantic correction"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spline/SplineStructuralModel2D.java",
+        "category": "kernel semantic correction"
+      },
+      {
+        "path": "tools/agent/tests/verification-runtime.Tests.ps1",
+        "category": "operational impact"
+      },
+      {
+        "path": "tools/agent/verification-runtime.psm1",
+        "category": "operational impact"
+      },
+      {
+        "path": "tools/agent/verify-g9s1-r1-spline-pair-materialization.ps1",
+        "category": "operational impact"
+      },
+      {
+        "path": "tools/agent/verify-g9u0-r4-intersection-admissibility-continuation.ps1",
+        "category": "operational impact"
+      },
+      {
+        "path": "tools/agent/verify.ps1",
+        "category": "operational impact"
+      }
+    ],
+    "diagnosticResourceCompletion": {
+      "paths": [
+        "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu.properties",
+        "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_en.properties",
+        "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_es.properties"
+      ],
+      "newKeys": [
+        "PAIR_SELECTOR_CLASS_EVIDENCE",
+        "PAIR_CERTIFICATION_WORK"
+      ],
+      "frontendLogicChanged": false,
+      "g9u1Implemented": false
+    }
+  },
+  "mathematicalContract": {
+    "structuralKnotContinuity": "Exact jets through degree minus one of represented numerator/denominator spline",
+    "periodicSeam": "Separate exact triangular constraint elimination with denominator degree factorial",
+    "interpolation": "Numerical; unchanged original 1E-9 normalized backward-error admission is not exact interpolation",
+    "basis": "Same native interpolation/boundary equation family; truncated powers; source knots unchanged",
+    "proof": "Outward rounded Krawczyk strict inclusion and nonsingular germ, plus complete selected-germ class coverage; disjoint Krawczyk image may exclude a computational cell",
+    "identity": "Symmetric singleton transverse-germ semantic slot; no u/v, rectangle, discovery order, coordinates or movement history in selector",
+    "globalCompleteness": "Not upgraded from discovery; local admissibility is independent",
+    "nearKnot": "Distinct roots are not proximity-merged; proof-region containment alone identifies duplicate computational evidence",
+    "richOnly": [
+      "uncertified roots",
+      "same-germ multiplicity",
+      "nontrivial monodromy witness",
+      "unresolved tangency",
+      "overlap",
+      "repeated traversal",
+      "collapsed image",
+      "stale or invalid source",
+      "work/arithmetic exhaustion"
+    ],
+    "numericCaches": "Rounded spans are approximations, never exact continuity authority",
+    "precisionPolicy": {
+      "version": "spline-structural-precision/v1",
+      "inputAuthority": "EXACT_BINARY64_VALUES",
+      "equilibration": "ROW_AND_COLUMN_NEUTRAL_SCALING",
+      "rounding": "HALF_EVEN",
+      "workingPrecisions": [
+        48,
+        80,
+        112
+      ],
+      "retainedPrecisions": [
+        32,
+        64
+      ],
+      "stability": "TWO_SUCCESSIVE_CANONICAL_COEFFICIENT_ARRAYS_EXACTLY_EQUAL",
+      "binary64RetainedFirst": true,
+      "maximumCountedOperations": 10000000,
+      "serializedDerivedCoefficients": false,
+      "originalBackwardGuard": 1e-9,
+      "originalPivotGuard": "128*ulp(1)*dimension"
+    },
+    "implicitCorrection": "Native/R5 structural SplineV2 against REGULAR_POLYNOMIAL_IMPLICIT only; outward Q(S(I)) and gradient(Q)(S(I)) dot S'(I). Strict scalar inclusion or exact boundary-zero existence, nonzero interval derivative and all independent local/current identity gates. Historical circle/line/conic and generic scalar capability not promoted.",
+    "richContactEvidence": "Stationary derivative-partition proposal OR exact native structural-knot zero witness, with structural g/g' compatibility; estimated rich only, no multiplicity, isolated-root or token claim. Exact native witness refuses transformed surrogate and nonterminating quotient. Original target semantics preserved, no square-free rewrite."
+  },
+  "lifecycle": {
+    "ledger": "v5 discriminated pair bindings; old one-dimensional v1-v4 rules preserved",
+    "activeDormantQuarantined": "Retain exact claimed token and same GeoPoint; current singleton slot may reactivate; never auto-create children",
+    "sameSourceQuery": "Two Intersect command arguments, one unique DAG dependency; rich-only Intersect(S,S) persists/copies without fabricating distinct-source selector",
+    "redefine": "Existing G9A transaction and serialization overlay; native output XML must include the exact overlaid candidate ID without publishing it as live identity",
+    "archiveBoundary": "Native pair active/dormant/reactivated, nonperiodic pair quarantine and periodic active seam are distinct tests; not the R4 quarantine risk",
+    "r6Consumer": "Existing strict local nonminimum rejection precedes singular barrier; singular true minima remain fail closed; historical R6 tests unchanged, no frontend changes."
+  },
+  "performance": {
+    "solveDimensions": "open N+d-1; periodic N-1; original admission still (N-1)(d+1)<=512, N<=32, d<=12",
+    "solveBound": "Row+column-equilibrated binary64 fast path; deterministic 48/80/112 bounded exact-input fallback when original admission fails; unchanged exact+rounded original-equation revalidation and two-successive canonical stability.",
+    "certificateCounters": [
+      "boxesVisited",
+      "krawczykAttempts"
+    ],
+    "certificateCombinatorialBound": "O((S+B)R + R^2 + C log C + CR + E log E + P), plus discovery/model/arithmetic costs",
+    "ordinaryUnchangedChildren": "Expected O(P) direct exact-token lookup; native test invokes 32 child recomputes with unchanged source-evaluation counters and same rich snapshot",
+    "speedupClaimed": false,
+    "precisionDiagnostic": {
+      "ordinaryCubic": {
+        "path": "BINARY64",
+        "solve": 578,
+        "expansion": 200,
+        "exactAdmission": 312
+      },
+      "maximumPointCubic": {
+        "points": 32,
+        "degree": 3,
+        "reducedDimension": 34,
+        "maximumPossibleDimension": 43,
+        "solve": 84270,
+        "expansion": 1992,
+        "exactAdmission": 3784
+      },
+      "quintic": {
+        "path": "HIGH_PRECISION_STRUCTURAL",
+        "workingPrecision": 80,
+        "retainedPrecision": 32,
+        "precisionLevels": 2,
+        "solve": 141338,
+        "expansion": 3546,
+        "exactAdmission": 6180,
+        "exactNumeratorSha256": "5796ba99b8515f2c62ab5d57afc4914ab4196b7d53a20033c08ca50379bdea9a"
+      }
+    },
+    "implicitFalseSplitDiagnostic": {
+      "floatingCandidates": 4,
+      "certifiedExclusions": 0,
+      "simpleAttempts": 164,
+      "simpleSuccesses": 0,
+      "derivativeFailures": 100,
+      "intervalSubdivisions": 164,
+      "precisionEscalations": 0,
+      "unresolvedCandidates": 4,
+      "workLimitHits": 4,
+      "valueEvaluations": 228,
+      "derivativeEvaluations": 164,
+      "boundaryWitnessChecks": 0,
+      "exactBoundaryZeros": 0,
+      "meaning": "Artificial false-split analytic-seed diagnostic, not root enumeration. Zero simple proof; unresolved cannot receive tokens."
+    }
+  },
+  "infrastructureImpact": "UPDATE_REQUIRED",
+  "requiredLevels": [
+    "PHASE",
+    "COMPOSED",
+    "FULL_CLEAN_BUILD"
+  ],
+  "bootstrapImpact": {
+    "outcome": "NO_CHANGE_REQUIRED",
+    "rationale": "Inspected verification-level contract, current Windows PowerShell 7.2+ floor (actual 7.6.5), Corretto/JDK17 Gradle compilation, current wrapper/dependency/generated-output and packaging seams. Uses existing Java BigDecimal and current phase registry only; no new external runtime, dependency, download, installer or bootstrap setting."
+  },
+  "guideImpact": {
+    "outcome": "UPDATED",
+    "paths": [
+      "docs/developer/geocedg_developer_guide.md",
+      "docs/developer/semantic_spline_2d_api.md",
+      "docs/user/geocedg_user_guide.md"
+    ],
+    "rationale": "Candidate pair eligibility, numerical/structural authority, source XML reconstruction and retained rich-only cases must be visible; no future G9U1 UI is represented as implemented."
+  },
+  "historicalRuns": [
+    {
+      "id": "structural-dev-01",
+      "level": "DEV",
+      "tests": 65,
+      "passed": 61,
+      "failed": 4,
+      "exitCode": 1,
+      "path": "artifacts/g9s1-r1-structural/dev-01/dev/3d32d04f02f8406aa05cf3cd607a2a91",
+      "finding": "Degree-12 conditioning, periodic representative, stale disposed copy assertion and NaN host-XML negative; original outcomes retained."
+    },
+    {
+      "id": "structural-dev-02",
+      "level": "DEV",
+      "tests": 65,
+      "passed": 64,
+      "failed": 1,
+      "exitCode": 1,
+      "path": "artifacts/g9s1-r1-structural/dev-02/dev/6cf176e829ec4a10a89ee4f4e10b9358",
+      "finding": "Periodic seam representative remained blocked."
+    },
+    {
+      "id": "structural-dev-03",
+      "level": "DEV",
+      "tests": 73,
+      "passed": 68,
+      "failed": 5,
+      "exitCode": 1,
+      "path": "artifacts/g9s1-r1-structural/dev-03/dev/1701eb165f7b4a7d879d86102a6dbc26",
+      "finding": "New near-tangency, uncontrolled Classic-knot comparison, same-source persistence, explicit redefine controls exposed further gaps."
+    },
+    {
+      "id": "structural-desktop-03",
+      "level": "DEV",
+      "tests": 3,
+      "passed": 0,
+      "failed": 3,
+      "exitCode": 1,
+      "path": "artifacts/g9s1-r1-structural/dev-desktop-03/dev/5975f025f76540ad8da2b04a417577d4",
+      "finding": "Test helper incorrectly required a durable ID for unregistered transitive h, before archive operations."
+    },
+    {
+      "id": "structural-dev-04",
+      "level": "DEV",
+      "tests": 63,
+      "passed": 60,
+      "failed": 3,
+      "exitCode": 1,
+      "path": "artifacts/g9s1-r1-structural/dev-04/dev/8883bebd238041e4ab9e122b91dab2da",
+      "finding": "Same-source controls passed; closer-root coverage and explicit redefine remained under investigation."
+    },
+    {
+      "id": "structural-desktop-04",
+      "level": "DEV",
+      "tests": 3,
+      "passed": 3,
+      "failed": 0,
+      "exitCode": 0,
+      "path": "artifacts/g9s1-r1-structural/dev-desktop-04/dev/7f407198608d458384627514c054c01b",
+      "finding": "Native archives passed on this source cohort; not final-cohort acceptance."
+    },
+    {
+      "id": "structural-dev-05",
+      "level": "DEV",
+      "tests": 69,
+      "passed": 64,
+      "failed": 5,
+      "exitCode": 1,
+      "path": "artifacts/g9s1-r1-structural/dev-05/dev/6d3151b08dfa4a12afa849afdb4f9133",
+      "finding": "Trying smaller proof neighborhoods alone did not establish class coverage. Nonlinear degree12 and dependent explicit replacement still failed."
+    },
+    {
+      "id": "structural-dev-06",
+      "level": "DEV",
+      "tests": 71,
+      "passed": 68,
+      "failed": 3,
+      "exitCode": 1,
+      "path": "artifacts/g9s1-r1-structural/dev-06/dev/330cedc65d6a42b7b359021f9018cf5d",
+      "finding": "Native14/14 and interval19/19 passed after rigorous empty-cell exclusion. Explicit replacements passed; isolated test lacked XML-identity scope. Degree12 rejected."
+    },
+    {
+      "id": "structural-dev-07",
+      "level": "DEV",
+      "tests": 38,
+      "passed": 36,
+      "failed": 2,
+      "exitCode": 1,
+      "path": "artifacts/g9s1-r1-structural/dev-07/dev/9c036c1ed3174027829816d4673e0933",
+      "finding": "Lifecycle20/20 passed. Reproduction of published row-only solver proved both assumed-positive nonlinear degree12 fixtures already rejected by the unchanged backward-error guard. Do not interpret size admission as a universal accuracy guarantee."
+    },
+    {
+      "id": "structural-dev-08",
+      "level": "DEV",
+      "tests": 39,
+      "passed": 37,
+      "failed": 2,
+      "exitCode": 1,
+      "path": "artifacts/g9s1-r1-structural/dev-08/dev/9e4fdf6305524a958080b0d847a40578",
+      "finding": "Lifecycle20/20 passed. Newly attempted 17-point uniform cubic degree12 positive failed numerical admission. Exact reduced rank28 and explicit exact cubic solution prove this is not mathematical singularity; published row-only backward guard also rejects it. Preserve as numerical-rejection control, not tolerance-relaxed positive."
+    },
+    {
+      "id": "structural-dev-09",
+      "level": "DEV",
+      "tests": 73,
+      "passed": 73,
+      "failed": 0,
+      "exitCode": 0,
+      "path": "artifacts/g9s1-r1-structural/dev-09/dev/f002e23396914c998f1ea56a57a27a53",
+      "finding": "Final focused structural20/lifecycle20/native14/interval19 checks pass after removing unsuccessful refinement; not acceptance authority.",
+      "elapsedSeconds": 15.1789961
+    },
+    {
+      "id": "phase-a-style",
+      "level": "PHASE",
+      "tests": 153,
+      "passed": 153,
+      "failed": 0,
+      "exitCode": 1,
+      "path": "artifacts/g9s1-r1/phase-a",
+      "finding": "All selected Java cases passed; acceptance rejected 51 Checkstyle warnings (line width/tab expansion and captured-variable declaration distance). Apply formatting/final-local-only corrections, then replace the entire phase invocation; do not treat this failed phase as acceptance."
+    },
+    {
+      "id": "phase-a2-reporting",
+      "level": "PHASE",
+      "tests": 153,
+      "passed": 153,
+      "failed": 0,
+      "exitCode": 1,
+      "path": "artifacts/g9s1-r1/phase-a2",
+      "finding": "All 153 cases, static contracts and all three Checkstyle reports passed; ordered-dictionary Measure-Object -Property tests failed only while printing aggregate total. Correct projection of integer values is now covered by actual reporting-AST fake-first regression; replace full phase invocation."
+    },
+    {
+      "id": "phase-a3",
+      "level": "PHASE",
+      "tests": 153,
+      "passed": 153,
+      "failed": 0,
+      "exitCode": 0,
+      "path": "artifacts/g9s1-r1/phase-a3",
+      "canonicalSummarySha256": "6be9dd6df9e28f1354de32054b76591a1ffdc343c1ace49b04a260bcf64b285b",
+      "finding": "Completed focused gate on preceding 61-path source cohort only; not historical COMPOSED/FULL acceptance."
+    },
+    {
+      "id": "phase-b3",
+      "level": "PHASE",
+      "tests": 153,
+      "passed": 153,
+      "failed": 0,
+      "exitCode": 0,
+      "path": "artifacts/g9s1-r1/phase-b3",
+      "canonicalSummarySha256": "6be9dd6df9e28f1354de32054b76591a1ffdc343c1ace49b04a260bcf64b285b",
+      "finding": "Deterministic focused rerun identical on same preceding cohort."
+    },
+    {
+      "id": "composed",
+      "level": "COMPOSED",
+      "tests": 1137,
+      "passed": 1131,
+      "failed": 6,
+      "exitCode": 1,
+      "path": "artifacts/g9s1-r1/composed",
+      "finding": "Two G9S1 and four R6 historical failures. Canonical shared module stopped; Desktop and downstream consumers not completed. No FULL acceptance."
+    },
+    {
+      "id": "structural-dev-10",
+      "level": "DEV",
+      "tests": 132,
+      "passed": 126,
+      "failed": 6,
+      "exitCode": 1,
+      "path": "artifacts/g9s1-r1-structural/dev-10/dev/9e8431917c5c404b81fcd6ac786d0e5f",
+      "finding": "Selected historical R6 class 49/49 restored by unchanged nonminimum exclusion before singularity barriers; this is not the complete historical 55-test phase. Historical S1 s29/s15 and direct new regressions still fail. Two new R6 diagnostic tests assumed ideal exact zero derivatives disproved by actual Java bits; correct test interpretation without tolerance changes."
+    },
+    {
+      "id": "structural-dev-11",
+      "level": "DEV",
+      "tests": 132,
+      "passed": 127,
+      "failed": 5,
+      "exitCode": 1,
+      "path": "artifacts/g9s1-r1-structural/dev-11/dev/fcb4734e3c7e41f9be89c49a708e5f86",
+      "finding": "Two historical scientific regressions and their two new reproductions remain failing. The new singular true-minimum diagnostic incorrectly required the entire UNRESOLVED result to have no diagnostic candidates; actual contract forbids a unique selection or singular preimage, not all diagnostic candidates. Correct only the new assertion; historical tests unchanged."
+    },
+    {
+      "id": "structural-dev-12",
+      "level": "DEV",
+      "tests": 132,
+      "passed": 128,
+      "failed": 4,
+      "exitCode": 1,
+      "path": "artifacts/g9s1-r1-structural/dev-12/dev/c6ef6887dfa0423b84aba4fd62fb2136",
+      "finding": "Final diagnostic A: selected R6 49/49 and structural lifecycle 22/22 pass. The only four failures are historical s29/s15 and their explicit structural regressions; no skipped cases or errors. The tangency regression's exact structural y=0, x derivative lower bound and endpoint assertions pass before required dormancy fails."
+    },
+    {
+      "id": "structural-dev-13",
+      "level": "DEV",
+      "tests": 132,
+      "passed": 128,
+      "failed": 4,
+      "exitCode": 1,
+      "path": "artifacts/g9s1-r1-structural/dev-13/dev/8a633e90437941818eb254fc8a7ee182",
+      "finding": "Final diagnostic B on unchanged productive/test cohort: identical normalized outcomes and failure messages to DEV12. Deterministic reproduction of failure is not PASS."
+    }
+  ],
+  "finalExecutionAuthority": {
+    "policy": "Fresh frozen 76-path corrective cohort passed PHASE A/B, COMPOSED and FULL clean. Later status/execution-record documentation and stale complexity-description correction are separate, not retroactive tested inputs or receipt reuse. Preserved failed cohorts remain historical.",
+    "currentVerdict": "TECHNICAL_GATES_PASSED_NOT_AUTHOR_APPROVAL",
+    "absenceOrFailureMeansIncomplete": true,
+    "focusedManifest": {
+      "classes": 14,
+      "methods": 192,
+      "scenarios": 113,
+      "fullCurrentFocusedExecuted": true
+    },
+    "phaseA": "artifacts/g9s1-r1-numerical-corrections/phase-a-02",
+    "phaseB": "artifacts/g9s1-r1-numerical-corrections/phase-b-02",
+    "composed": "artifacts/g9s1-r1-numerical-corrections/composed-02",
+    "fullCleanBuild": "artifacts/g9s1-r1-numerical-corrections/full-clean",
+    "fullCurrentDevExecuted": true,
+    "frozenTestedCohort": {
+      "archive": "artifacts/g9s1-r1-numerical-corrections/tested-cohort/manifest.json",
+      "archiveManifestSha256": "1befc45fe24299e8fb9fe5342296f269309acb97baafe0f1cd748a297ec70eb2",
+      "candidatePathCount": 76,
+      "inputFingerprint": "da13fca3ae2d2679e5f677f28a514d5aecc7897cd9d3c76787a0a5d1fa780931",
+      "promptCanonicalLfSha256": "bc1796cdbf8fc8ffdd3c0726bf0c56941a91df226fb20b055cf9540969bf062d",
+      "evidenceCanonicalLfSha256": "09950b914e8346eae50c70503f06c3540138f9f880323b5d1d1f9ab26931613b",
+      "scenariosCanonicalLfSha256": "bbbb24f2900db65e28b7b04b459259798aa811fd03e9af5be9b26eaeff682f53",
+      "canonicalSummarySha256AllFourRuns": "59793eef3641d8c93b012998c0a795fb949f5cefdb54d30ebcd337542ab155dd",
+      "executableInputsChangedAfterGates": false,
+      "documentaryUpdateScope": "Current status, final execution provenance, manual-smoke readiness and one stale specification complexity estimate corrected to the unchanged source-derived bound.",
+      "closedReceiptsReused": false
+    },
+    "results": [
+      {
+        "run": "phase-a-02",
+        "level": "PHASE",
+        "tests": 192,
+        "passed": 192,
+        "failed": 0,
+        "errors": 0,
+        "skipped": 0,
+        "exitCode": 0,
+        "elapsedSeconds": 31.954,
+        "receipt": "artifacts/g9s1-r1-numerical-corrections/phase-a-02/verification-result.json",
+        "classification": "FROZEN_CORRECTIVE_COHORT_TECHNICAL_NOT_AUTHOR_APPROVAL"
+      },
+      {
+        "run": "phase-b-02",
+        "level": "PHASE",
+        "tests": 192,
+        "passed": 192,
+        "failed": 0,
+        "errors": 0,
+        "skipped": 0,
+        "exitCode": 0,
+        "elapsedSeconds": 31.656,
+        "receipt": "artifacts/g9s1-r1-numerical-corrections/phase-b-02/verification-result.json",
+        "classification": "FROZEN_CORRECTIVE_COHORT_TECHNICAL_NOT_AUTHOR_APPROVAL"
+      },
+      {
+        "run": "composed-02",
+        "level": "COMPOSED",
+        "tests": 1281,
+        "sharedTests": 1176,
+        "desktopTests": 105,
+        "passed": 1281,
+        "failed": 0,
+        "errors": 0,
+        "skipped": 0,
+        "exitCode": 0,
+        "elapsedSeconds": 1071.203,
+        "runId": "a672d381a7b74452b80f6cf7b091303d",
+        "receipt": "artifacts/g9s1-r1-numerical-corrections/composed-02/verification-result.json",
+        "classification": "FROZEN_CORRECTIVE_COHORT_TECHNICAL_NOT_AUTHOR_APPROVAL"
+      },
+      {
+        "run": "full-clean",
+        "level": "FULL",
+        "tests": 7781,
+        "sharedTests": 6599,
+        "desktopTests": 1182,
+        "passed": 7770,
+        "failed": 0,
+        "errors": 0,
+        "skipped": 11,
+        "sharedUpstreamSkips": 10,
+        "desktopUpstreamSkips": 1,
+        "mandatoryGeoCeDGSkips": 0,
+        "exitCode": 0,
+        "elapsedSeconds": 1428.967,
+        "runId": "a51fa12338a94ceabc966a8406f193a2",
+        "cleanGeneratedOutputs": true,
+        "dependencyCacheResetRequested": false,
+        "receipt": "artifacts/g9s1-r1-numerical-corrections/full-clean/verification-result.json",
+        "classification": "FROZEN_CORRECTIVE_COHORT_TECHNICAL_NOT_AUTHOR_APPROVAL"
+      }
+    ],
+    "countingPolicy": "Runtime-discovered cases per independent top-level invocation; do not sum overlapping DEV/PHASE/COMPOSED/FULL or current-run receipt-consumer counts.",
+    "actualFullTerminal": "FULL technical verification gates passed; author approval is separate.",
+    "optionalGates": {
+      "desktopLaunch": "NOT_REQUESTED_MANUAL_AUTHOR_SMOKE_PENDING",
+      "packagingArtifactInspection": "NOT_REQUESTED_NO_PACKAGING_CHANGE",
+      "operationalBenchmarks": "NOT_REQUESTED_NO_SPEEDUP_CLAIM",
+      "scientificBenchmarkBodies": "NOT_REQUESTED_JUNIT_COUNTS_NOT_BENCHMARK_BODY_EVIDENCE"
+    },
+    "historicalPhaseAssertions": {
+      "G9U0_R4": 58,
+      "G9U0_R5": 46,
+      "G9S1": 37,
+      "G9U0_R6": 55,
+      "others": "All applicable G5/G6/G7/G8/G9A/G9U0/R1/R2/R3/G9X1, legacy/scientific/baseline/frontend assertions passed; these are receipt consumers, not additional unique executions."
+    }
+  },
+  "retainedRisks": [
+    {
+      "id": "G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP",
+      "status": "OPEN_TRACKED",
+      "authority": "docs/roadmap/geocedg_roadmap.md",
+      "disposition": "R1 native pair archives do not close the separate R4 one-dimensional periodic-quarantine native .cedg roundtrip gap; explicit disposition required before global G9 closeout."
+    }
+  ],
+  "successor": {
+    "G9U1Design": "PASS_AUTHOR_APPROVED",
+    "G9U1Implementation": "NOT_AUTHORIZED_BLOCKED_UNTIL_R1_AUTHOR_CLOSEOUT",
+    "reconciliation": "Prospective only after R1 author closeout; retain current rich-only repeated-germ/monodromy limits."
+  },
+  "operationalDiagnostics": {
+    "wrapper": "tools/agent/verify-verification-infrastructure.ps1",
+    "path": "artifacts/g9s1-r1/operational-tests",
+    "exitCode": 0,
+    "runtimeCases": 112,
+    "generatedStateCases": 18,
+    "generatedStateAssertions": 143,
+    "classification": "FAKE_FIRST_NOT_PRODUCT_RUNTIME",
+    "sourceCohortNote": "112-case run precedes final added R4 sealed-descendant regression; final PHASE/COMPOSED/FULL must execute updated infrastructure.",
+    "historicalStaticFinding": "R4 canonical source hashes already sealed tagged content, but product lexical predicates still read live ledger and required version4. Reuse existing R5/S1/R6 source-text pattern for R4; preserve historical predicates/inventory/tags and live R4 tests unchanged.",
+    "latestComposedFakeFirst": {
+      "runtimeCases": 113,
+      "generatedStateCases": 18,
+      "generatedStateAssertions": 143,
+      "bootstrapAssertions": 158,
+      "exitCode": 0,
+      "path": "artifacts/g9s1-r1/composed",
+      "classification": "FAKE_FIRST_BEFORE_SCIENTIFIC_COMPOSED_FAILURE_NOT_PRODUCT_ACCEPTANCE"
+    },
+    "finalFrozenCohortFakeFirst": {
+      "runtimeCases": 113,
+      "generatedStateCases": 18,
+      "generatedStateAssertions": 143,
+      "bootstrapAssertions": 158,
+      "exitCode": 0,
+      "paths": [
+        "artifacts/g9s1-r1-numerical-corrections/composed-02/operational",
+        "artifacts/g9s1-r1-numerical-corrections/full-clean/operational"
+      ],
+      "classification": "FAKE_FIRST_NOT_PRODUCT_JUNIT"
+    }
+  },
+  "currentBlockers": [],
+  "correctiveContinuation": {
+    "authorDecision": "TWO_BOUNDED_NUMERICAL_CORRECTIONS_AUTHORIZED_NOT_PHASE_APPROVAL",
+    "entryPathCount": 62,
+    "entryCanonicalEvidenceSha256": "a4bdb5ebc616169aac5fe7f3472a7faa7cc97f052f6d80228b49a1ddfd5739ef",
+    "entryCanonicalScenariosSha256": "fb4f0d9ea83594130acac640939c09e2c994f63368370fa0ec48dda60a2ce6e3",
+    "entryCanonicalPromptSha256": "2ae972589ab796ea4dfa572c6b9a24818c7230c7ff8e5da8152df1c00614459c",
+    "blockedOutcomeSha256": "8772d09041232ec38c0a456b2e3e9f3b468d9c8a0495e3e57de21aa63a561abc",
+    "failingTests": [
+      "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest.historicallyAdmittedTwentyFivePointQuinticRetainsNumericalAdmission",
+      "org.geocedg.common.locus.G9S1R1NativeStructuralPairTest.structuralSplineRetainsHistoricalImplicitTangencyBarrier",
+      "org.geocedg.common.locus.G9S1SemanticSpline2DTest.s29FunctionalWorkIsBoundedAndDeterministic",
+      "org.geocedg.common.locus.G9S1SemanticSpline2DTest.s15AndS16TopologyTransitionDormancyAndReactivationFailClosed"
+    ],
+    "correctionA": "Bounded higher-precision construction, exact binary64 input values, unchanged original admission, structural continuity/seam retained",
+    "correctionB": "Floating implicit composition is discovery only; direct outward structural Q(S(I)) and gradient(Q(S(I))) dot S'(I) plus simple-root existence/uniqueness; unresolved contacts never materializable",
+    "execution": "REQUIRED_DEV_PHASE_COMPOSED_FULL_COMPLETED",
+    "historicalEvidenceScope": "All preceding PHASE/COMPOSED/DEV records remain historical blocked-cohort results, not new-source acceptance.",
+    "expectedValidationSequence": [
+      "DEV admission",
+      "DEV false split",
+      "DEV structural and one-sided historical",
+      "DEV complete R1",
+      "PHASE A/B",
+      "COMPOSED",
+      "FULL_CLEAN_BUILD"
+    ],
+    "entryCandidatePaths": [
+      ".github/prompts/tasks/g9s1-r1-spline-pair-intersection-materialization.prompt.md",
+      "docs/adr/0021-spline-pair-singleton-germ-materialization.md",
+      "docs/adr/0022-structural-spline-continuity.md",
+      "docs/architecture/g9s1_r1_d2_pair_sheet_contract.md",
+      "docs/architecture/g9s1_r1_pair_materialization_design_review.md",
+      "docs/architecture/g9s1_r1_structural_spline_continuity.md",
+      "docs/architecture/g9s1_r1_symmetric_atlas_design.md",
+      "docs/developer/geocedg_developer_guide.md",
+      "docs/developer/semantic_spline_2d_api.md",
+      "docs/research/g9s1_r1_structural_spline_numerics.md",
+      "docs/research/g9s1_semantic_spline_numerical_methods.md",
+      "docs/roadmap/geocedg_roadmap.md",
+      "docs/upstream/modified-files.yml",
+      "docs/user/geocedg_user_guide.md",
+      "docs/validation/g9_documentation_bundle_traceability.md",
+      "docs/validation/g9s1_r1_implementation_blocker_report.md",
+      "docs/validation/g9s1_r1_spline_pair_materialization_validation_matrix.md",
+      "docs/validation/g9s1_r1_structural_implementation_candidate_report.md",
+      "geocedg/specs/README.md",
+      "geocedg/specs/curves/spline-v2-pair-materialization.md",
+      "geocedg/validation/g9s1-r1/g9s1-r1-atlas-design-evidence.json",
+      "geocedg/validation/g9s1-r1/g9s1-r1-d2-design-evidence.json",
+      "geocedg/validation/g9s1-r1/g9s1-r1-design-review-evidence.json",
+      "geocedg/validation/g9s1-r1/g9s1-r1-evidence.sha256",
+      "geocedg/validation/g9s1-r1/g9s1-r1-implementation-blocker-evidence.json",
+      "geocedg/validation/g9s1-r1/g9s1-r1-spline-pair-materialization-evidence.json",
+      "geocedg/validation/g9s1-r1/g9s1-r1-spline-pair-materialization-scenarios.json",
+      "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9S1R1NativeArchivePersistenceTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1D2PairSheetContractTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1PairAtlasCharacterizationTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1PairSelectorCharacterizationTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1PairTokenLedgerTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1SplinePairIntervalCertificationTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1NativeStructuralPairTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1SplineAtlasHostCharacterizationTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1SplinePairMaterializationTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1StructuralSplineContinuityTest.java",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1StructuralSplineLifecycleTest.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusLocusIntersectionV2.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/geos/GeoLocusIntersectionResult.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/geos/GeoLocusV2.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusSimilarityEvaluator2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusSimilarityTransform2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/PiecewisePolynomialLocus2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/interaction/LocusPointInteractionResolver2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionSemanticMetadata2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionTokenLedger2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusPairIntersectionSolver2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PairRootAddressProof2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PairSemanticSlotSelector2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PublicSplinePairRootIdentityResolver2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/SplineIntervalModel2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/SplineOutwardInterval2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/SplinePairIntervalCertification2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spline/SplinePolynomialModel2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spline/SplineSemanticEvaluator2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spline/SplineStructuralModel2D.java",
+      "tools/agent/tests/verification-runtime.Tests.ps1",
+      "tools/agent/verification-runtime.psm1",
+      "tools/agent/verify-g9s1-r1-spline-pair-materialization.ps1",
+      "tools/agent/verify-g9u0-r4-intersection-admissibility-continuation.ps1",
+      "tools/agent/verify.ps1"
+    ],
+    "validationChronology": [
+      {
+        "run": "dev-a-01",
+        "level": "DEV",
+        "exitCode": 1,
+        "testsExecuted": 0,
+        "classification": "COMPILATION_SYNTAX_ERROR",
+        "reason": "Missing closing brace in pivot-search loop; fixed without changing numerical policy.",
+        "receipt": "artifacts/g9s1-r1-numerical-corrections/dev-a-01/verification-result.json",
+        "log": "artifacts/g9s1-r1-numerical-corrections/dev-a-01/dev/c29b57f9ec174ad193b76c099f593124/dev-gradle.log"
+      },
+      {
+        "run": "dev-a-02",
+        "level": "DEV",
+        "exitCode": 0,
+        "tests": 1,
+        "passed": 1,
+        "failed": 0,
+        "classification": "SCOPED_NOT_ACCEPTANCE",
+        "result": "Historical 25-point quintic admitted through stable bounded structural precision; canonical binary64 representation rejection explicitly asserted.",
+        "receipt": "artifacts/g9s1-r1-numerical-corrections/dev-a-02/verification-result.json",
+        "summary": "artifacts/g9s1-r1-numerical-corrections/dev-a-02/dev/45faa30cdb854dab840be8fd3f1f5a4c/dev-summary.json"
+      },
+      {
+        "run": "dev-b-01",
+        "level": "DEV",
+        "exitCode": 0,
+        "tests": 1,
+        "passed": 1,
+        "failed": 0,
+        "classification": "SCOPED_NOT_ACCEPTANCE",
+        "result": "Two genuine estimated double contacts; zero false transverse roots/tokens; four old point children undefined at contact state.",
+        "receipt": "artifacts/g9s1-r1-numerical-corrections/dev-b-01/verification-result.json",
+        "summary": "artifacts/g9s1-r1-numerical-corrections/dev-b-01/dev/1ccb40e167ba41a79ec4c3ada317b818/dev-summary.json"
+      },
+      {
+        "run": "dev-structural-01",
+        "level": "DEV",
+        "exitCode": 1,
+        "tests": 161,
+        "passed": 158,
+        "failed": 3,
+        "errors": 0,
+        "skipped": 0,
+        "classification": "CURRENT_COMPATIBILITY_FAILURES_NOT_WAIVED",
+        "receipt": "artifacts/g9s1-r1-numerical-corrections/dev-structural-01/verification-result.json",
+        "archive": "artifacts/g9s1-r1-numerical-corrections/dev-structural-01/dev/633dd1e7142240e7a9f8d3a26264078e/junit",
+        "failures": [
+          "Invalid new periodic ImplicitCurve(y) test invocation",
+          "Historical rounded-zero test helper distinguished -0.0 from +0.0",
+          "Historical x^3+y^3 singular estimated rich contact omitted"
+        ]
+      },
+      {
+        "run": "dev-structural-02",
+        "level": "DEV",
+        "exitCode": 1,
+        "tests": 166,
+        "passed": 165,
+        "failed": 1,
+        "errors": 0,
+        "skipped": 0,
+        "classification": "BOUNDARY_CONTACT_DISCOVERY_PROVENANCE_GAP",
+        "receipt": "artifacts/g9s1-r1-numerical-corrections/dev-structural-02/verification-result.json",
+        "archive": "artifacts/g9s1-r1-numerical-corrections/dev-structural-02/dev/3d65897ee81047049a6baeb905410194/junit",
+        "result": "All historical G9S1 25 and R6 49 controls pass; new exact tangency at structural knot omitted because boundary proposal lacks interior stationary provenance."
+      },
+      {
+        "run": "dev-structural-03",
+        "tests": 167,
+        "exitCode": 0,
+        "elapsedSeconds": 17.914,
+        "summary": "C:\\DesarrolloyDatos\\Areas\\ProyectosNoFinanciados\\CeDG\\GeoCeDG\\artifacts\\g9s1-r1-numerical-corrections\\dev-structural-03\\dev\\530f786f1d0940189267509b4db46884\\dev-summary.json",
+        "log": "C:\\DesarrolloyDatos\\Areas\\ProyectosNoFinanciados\\CeDG\\GeoCeDG\\artifacts\\g9s1-r1-numerical-corrections\\dev-structural-03\\dev\\530f786f1d0940189267509b4db46884\\dev-gradle.log",
+        "receipt": "artifacts/g9s1-r1-numerical-corrections/dev-structural-03/verification-result.json",
+        "level": "DEV",
+        "passed": 167,
+        "failed": 0,
+        "errors": 0,
+        "skipped": 0,
+        "classification": "SCOPED_NOT_ACCEPTANCE"
+      },
+      {
+        "run": "dev-r1-shared",
+        "tests": 189,
+        "exitCode": 0,
+        "elapsedSeconds": 11.579,
+        "summary": "C:\\DesarrolloyDatos\\Areas\\ProyectosNoFinanciados\\CeDG\\GeoCeDG\\artifacts\\g9s1-r1-numerical-corrections\\dev-r1-shared\\dev\\17fbbce5a2e04a1ea4e27d2508b726e8\\dev-summary.json",
+        "log": "C:\\DesarrolloyDatos\\Areas\\ProyectosNoFinanciados\\CeDG\\GeoCeDG\\artifacts\\g9s1-r1-numerical-corrections\\dev-r1-shared\\dev\\17fbbce5a2e04a1ea4e27d2508b726e8\\dev-gradle.log",
+        "receipt": "artifacts/g9s1-r1-numerical-corrections/dev-r1-shared/verification-result.json",
+        "level": "DEV",
+        "passed": 189,
+        "failed": 0,
+        "errors": 0,
+        "skipped": 0,
+        "classification": "SCOPED_NOT_ACCEPTANCE"
+      },
+      {
+        "run": "dev-r1-desktop",
+        "tests": 3,
+        "exitCode": 0,
+        "elapsedSeconds": 8.137,
+        "summary": "C:\\DesarrolloyDatos\\Areas\\ProyectosNoFinanciados\\CeDG\\GeoCeDG\\artifacts\\g9s1-r1-numerical-corrections\\dev-r1-desktop\\dev\\5f9872598b314401a6a4800ac27b47c3\\dev-summary.json",
+        "log": "C:\\DesarrolloyDatos\\Areas\\ProyectosNoFinanciados\\CeDG\\GeoCeDG\\artifacts\\g9s1-r1-numerical-corrections\\dev-r1-desktop\\dev\\5f9872598b314401a6a4800ac27b47c3\\dev-gradle.log",
+        "receipt": "artifacts/g9s1-r1-numerical-corrections/dev-r1-desktop/verification-result.json",
+        "level": "DEV",
+        "passed": 3,
+        "failed": 0,
+        "errors": 0,
+        "skipped": 0,
+        "classification": "SCOPED_NOT_ACCEPTANCE"
+      },
+      {
+        "run": "phase-a / phase-b",
+        "level": "PHASE",
+        "exitCode": 0,
+        "testsPerRun": 192,
+        "classes": 14,
+        "scenarios": 113,
+        "pathCount": 73,
+        "canonicalSummarySha256": "7d0ba9fcc7de8a5223426a428e1a14d1bee98a64304fb1b8729119c11f89bd8c",
+        "classification": "PASSED_PRE_DIAGNOSTIC_LOCALIZATION_COHORT",
+        "receipts": [
+          "artifacts/g9s1-r1-numerical-corrections/phase-a/verification-result.json",
+          "artifacts/g9s1-r1-numerical-corrections/phase-b/verification-result.json"
+        ]
+      },
+      {
+        "run": "composed",
+        "level": "COMPOSED",
+        "exitCode": 1,
+        "sharedTests": 1176,
+        "sharedFailures": 0,
+        "desktopTests": 105,
+        "desktopFailures": 1,
+        "errors": 0,
+        "skipped": 0,
+        "classification": "MISSING_R1_DIAGNOSTIC_LOCALIZATION_NOT_SCIENTIFIC_FAILURE",
+        "failedTest": "org.geocedg.desktop.locus.G9U0LocalizationHelpTest.l02RichStatusAndDiagnosticLabelsAreLocalized",
+        "missingKeys": [
+          "PAIR_SELECTOR_CLASS_EVIDENCE",
+          "PAIR_CERTIFICATION_WORK"
+        ],
+        "receipt": "artifacts/g9s1-r1-numerical-corrections/composed/verification-result.json",
+        "archive": "artifacts/g9s1-r1-numerical-corrections/composed/canonical-build/9f531150b34244b1b0010bb40311f427/junit",
+        "correction": "Add default/EN/ES text for the two R1 diagnostics already consumed by the existing rich inspector; no Java, frontend flow, test assertion or G9U1 change."
+      },
+      {
+        "run": "dev-localization",
+        "level": "DEV",
+        "exitCode": 0,
+        "tests": 4,
+        "passed": 4,
+        "failed": 0,
+        "errors": 0,
+        "skipped": 0,
+        "classification": "SCOPED_NOT_ACCEPTANCE",
+        "receipt": "artifacts/g9s1-r1-numerical-corrections/dev-localization/verification-result.json",
+        "summary": "artifacts/g9s1-r1-numerical-corrections/dev-localization/dev/7e8f4200d4d043229634c1788c20eefe/dev-summary.json",
+        "result": "Existing default/EN/ES rich diagnostic contract passes unchanged after adding six labels."
+      },
+      {
+        "run": "phase-a-02",
+        "level": "PHASE",
+        "tests": 192,
+        "passed": 192,
+        "failed": 0,
+        "errors": 0,
+        "skipped": 0,
+        "exitCode": 0,
+        "elapsedSeconds": 31.954,
+        "receipt": "artifacts/g9s1-r1-numerical-corrections/phase-a-02/verification-result.json",
+        "classification": "FROZEN_CORRECTIVE_COHORT_TECHNICAL_NOT_AUTHOR_APPROVAL"
+      },
+      {
+        "run": "phase-b-02",
+        "level": "PHASE",
+        "tests": 192,
+        "passed": 192,
+        "failed": 0,
+        "errors": 0,
+        "skipped": 0,
+        "exitCode": 0,
+        "elapsedSeconds": 31.656,
+        "receipt": "artifacts/g9s1-r1-numerical-corrections/phase-b-02/verification-result.json",
+        "classification": "FROZEN_CORRECTIVE_COHORT_TECHNICAL_NOT_AUTHOR_APPROVAL"
+      },
+      {
+        "run": "composed-02",
+        "level": "COMPOSED",
+        "tests": 1281,
+        "sharedTests": 1176,
+        "desktopTests": 105,
+        "passed": 1281,
+        "failed": 0,
+        "errors": 0,
+        "skipped": 0,
+        "exitCode": 0,
+        "elapsedSeconds": 1071.203,
+        "runId": "a672d381a7b74452b80f6cf7b091303d",
+        "receipt": "artifacts/g9s1-r1-numerical-corrections/composed-02/verification-result.json",
+        "classification": "FROZEN_CORRECTIVE_COHORT_TECHNICAL_NOT_AUTHOR_APPROVAL"
+      },
+      {
+        "run": "full-clean",
+        "level": "FULL",
+        "tests": 7781,
+        "sharedTests": 6599,
+        "desktopTests": 1182,
+        "passed": 7770,
+        "failed": 0,
+        "errors": 0,
+        "skipped": 11,
+        "sharedUpstreamSkips": 10,
+        "desktopUpstreamSkips": 1,
+        "mandatoryGeoCeDGSkips": 0,
+        "exitCode": 0,
+        "elapsedSeconds": 1428.967,
+        "runId": "a51fa12338a94ceabc966a8406f193a2",
+        "cleanGeneratedOutputs": true,
+        "dependencyCacheResetRequested": false,
+        "receipt": "artifacts/g9s1-r1-numerical-corrections/full-clean/verification-result.json",
+        "classification": "FROZEN_CORRECTIVE_COHORT_TECHNICAL_NOT_AUTHOR_APPROVAL"
+      }
+    ],
+    "originalScientificTolerancesChanged": false,
+    "proximityRootMerging": false,
+    "floatingCompositionIsMaterializationAuthority": false,
+    "correctionAStatus": "RESOLVED_REQUIRED_TECHNICAL_GATES_PASSED",
+    "correctionBStatus": "RESOLVED_REQUIRED_TECHNICAL_GATES_PASSED"
+  },
+  "historicalBlockedExecutionAuthority": {
+    "policy": "Historical completed receipts remain scoped to their exact source cohort. COMPOSED failed scientific regression; current candidate is BLOCKED. FULL remains mandatory and unrun, never waived. No completed acceptance on current cohort.",
+    "phaseA": "artifacts/g9s1-r1/phase-a3",
+    "phaseB": "artifacts/g9s1-r1/phase-b3",
+    "composed": "artifacts/g9s1-r1/composed",
+    "fullCleanBuild": "artifacts/g9s1-r1/full-clean",
+    "absenceOrFailureMeansIncomplete": true,
+    "currentVerdict": "BLOCKED_NOT_ACCEPTED",
+    "fullCleanBuildStatus": "NOT_RUN_AFTER_SCIENTIFIC_BLOCKER_REQUIRED_GATE_UNSATISFIED",
+    "finalDiagnostic": {
+      "level": "DEV",
+      "a": "artifacts/g9s1-r1-structural/dev-12/dev/c6ef6887dfa0423b84aba4fd62fb2136",
+      "b": "artifacts/g9s1-r1-structural/dev-13/dev/8a633e90437941818eb254fc8a7ee182",
+      "testsEach": 132,
+      "passedEach": 128,
+      "failedEach": 4,
+      "errorsEach": 0,
+      "skippedEach": 0,
+      "exitCodeEach": 1,
+      "selectedR6ClassTests": 49,
+      "selectedR6ClassPassed": 49,
+      "structuralLifecycleTests": 22,
+      "structuralLifecyclePassed": 22,
+      "deterministicOutcomeSha256": "8772d09041232ec38c0a456b2e3e9f3b468d9c8a0495e3e57de21aa63a561abc",
+      "normalization": "Archived JUnit testcase records sorted by className then method, compact JSON array with property order className/method/outcome/message, UTF-8 without BOM or terminal newline; message CRLF/CR converted to LF. Times, stack traces and stdout excluded. Includes all 132 records, including four complete failure messages. Outcome evidence only, not a replacement for source-cohort acceptance.",
+      "verdict": "DETERMINISTIC_SCIENTIFIC_FAILURE_NOT_ACCEPTANCE"
+    },
+    "finalCheckstyle": {
+      "exitCode": 0,
+      "violations": 0,
+      "reports": 3,
+      "log": "artifacts/g9s1-r1-structural/style-final/style-gradle.log",
+      "invocation": "Existing verification-runtime Invoke-VerificationNative; :shared:common:checkstyleMain :shared:common-jre:checkstyleTest :desktop:desktop:checkstyleTest; serial scoped diagnostic, not a replacement PHASE gate."
+    },
+    "focusedManifest": {
+      "classes": 12,
+      "methods": 157,
+      "scenarios": 82,
+      "fullCurrentFocusedExecuted": false
+    }
+  },
+  "historicalEntryBlockers": [
+    {
+      "id": "R1-STRUCTURAL-QUINTIC-ADMISSION",
+      "area": "NUMERICAL_REPRESENTATION_ADMISSION",
+      "fixture": "Published G9S1 s29: 25 points ((i-12)/4,sin(i/3)), degree5, default chord knots",
+      "observed": "Direct model creation throws structural interpolation system singular or numerically inadmissible; published historical test requires source defined.",
+      "newRegression": "historicallyAdmittedTwentyFivePointQuinticRetainsNumericalAdmission",
+      "option": "Evaluate fixed-precision BigDecimal exact-row solve and retain free-coordinate precision until expansion; unchanged pivot/admission and original-equation guard. No productive correction implemented.",
+      "sourceOfArithmeticSuggestion": "Independent read-only exact-rational diagnostic; not Java acceptance or an 80-digit universal guarantee."
+    },
+    {
+      "id": "R1-SINGLE-TARGET-FALSE-TRANSVERSE",
+      "area": "FLOATING_COMPOSITION_ISOLATION_AND_PUBLIC_ADMISSIBILITY",
+      "fixture": "SplineV2{(-2,0),(-2/3,0),(2/3,0),(2,0)},3 vs (x^2-innerRadius)*(x^2-outerRadius)+y, radii .25/2.25 ->1/1",
+      "exactInvariant": "Structural y=0 and x'(u)>3 with x endpoints bracketing +/-1 imply exactly two double contacts, no transverse root.",
+      "observed": "Six finite roots: two tangent rich-only plus four phantom transverses with ESTABLISHED local isolation and materializable tokens; all four old children remain defined.",
+      "newRegression": "structuralSplineRetainsHistoricalImplicitTangencyBarrier",
+      "earliestSeam": "PolynomialTargetIntersectionCapability2D -> floating PolynomialRootIsolation2D -> pointwise contact/residual -> unjustified local-isolation promotion; before selector and ledger.",
+      "option": "Design bounded one-dimensional structural source/target composition enclosure and local existence/uniqueness/contact admission. Existing pair proof cannot certify a different single-target query. Preserve unresolved tangencies rich-only, no general multiple-root materialization required."
+    }
+  ]
+}

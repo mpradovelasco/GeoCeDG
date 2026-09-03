@@ -357,6 +357,19 @@ function Get-SourceAuthorityBytes {
     return ,(Get-GitBlobBytes -Object $object)
 }
 
+function Get-SourceAuthorityText {
+    param([Parameter(Mandatory)] [string]$RelativePath)
+
+    [byte[]]$bytes = Get-SourceAuthorityBytes $RelativePath
+    $offset = 0
+    if ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and
+            $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF) {
+        $offset = 3
+    }
+    return [Text.UTF8Encoding]::new($false, $true).GetString(
+        $bytes, $offset, $bytes.Length - $offset)
+}
+
 function Get-CanonicalLfSha256FromBytes {
     param([Parameter(Mandatory)] [byte[]]$Bytes)
 
@@ -984,43 +997,34 @@ function Assert-ScenarioContract {
 }
 
 function Assert-ProductStaticContracts {
-    $algo = [IO.File]::ReadAllText((Resolve-RequiredFile $AlgoPath))
-    $pointAlgo = [IO.File]::ReadAllText((Resolve-RequiredFile $PointAlgoPath))
-    $richResultGeo = [IO.File]::ReadAllText((Resolve-RequiredFile `
-        $RichResultGeoPath))
-    $address = [IO.File]::ReadAllText((Resolve-RequiredFile $AddressProofPath))
-    $allocation = [IO.File]::ReadAllText((Resolve-RequiredFile $AllocationPath))
-    $extendedCapability = [IO.File]::ReadAllText((Resolve-RequiredFile `
-        $ExtendedCapabilityPath))
-    $revisionEvidence = [IO.File]::ReadAllText((Resolve-RequiredFile `
-        $RevisionEvidencePath))
-    $metadata = [IO.File]::ReadAllText((Resolve-RequiredFile $MetadataPath))
-    $tokenSource = [IO.File]::ReadAllText((Resolve-RequiredFile `
-        $TokenSourcePath))
-    $selector = [IO.File]::ReadAllText((Resolve-RequiredFile $SelectorPath))
-    $resolver = [IO.File]::ReadAllText((Resolve-RequiredFile $ResolverPath))
-    $transition = [IO.File]::ReadAllText((Resolve-RequiredFile `
-        $TransitionPath))
-    $publicCapability = [IO.File]::ReadAllText((Resolve-RequiredFile `
-        $PublicCapabilityPath))
-    $continuation = [IO.File]::ReadAllText((Resolve-RequiredFile `
-        $ContinuationPath))
-    $result = [IO.File]::ReadAllText((Resolve-RequiredFile $ResultPath))
-    $targets = [IO.File]::ReadAllText((Resolve-RequiredFile $TargetsPath))
-    $conicTarget = [IO.File]::ReadAllText((Resolve-RequiredFile `
-        $ConicTargetPath))
-    $implicitTarget = [IO.File]::ReadAllText((Resolve-RequiredFile `
-        $ImplicitTargetPath))
-    $solver = [IO.File]::ReadAllText((Resolve-RequiredFile $SolverPath))
-    $pairSolver = [IO.File]::ReadAllText((Resolve-RequiredFile `
-        $PairSolverPath))
-    $ledger = [IO.File]::ReadAllText((Resolve-RequiredFile $LedgerPath))
-    $menuDefault = [IO.File]::ReadAllText((Resolve-RequiredFile `
-        $MenuDefaultPath))
-    $menuEnglish = [IO.File]::ReadAllText((Resolve-RequiredFile `
-        $MenuEnglishPath))
-    $menuSpanish = [IO.File]::ReadAllText((Resolve-RequiredFile `
-        $MenuSpanishPath))
+    # These lexical contracts characterize the exact author-approved R4 tree.
+    # A tagged descendant may add compatible versioned product semantics; it
+    # must not substitute its current tree for the sealed historical contract.
+    # Current test-source anchors below and fresh execution remain mandatory.
+    $algo = Get-SourceAuthorityText $AlgoPath
+    $pointAlgo = Get-SourceAuthorityText $PointAlgoPath
+    $richResultGeo = Get-SourceAuthorityText $RichResultGeoPath
+    $address = Get-SourceAuthorityText $AddressProofPath
+    $allocation = Get-SourceAuthorityText $AllocationPath
+    $extendedCapability = Get-SourceAuthorityText $ExtendedCapabilityPath
+    $revisionEvidence = Get-SourceAuthorityText $RevisionEvidencePath
+    $metadata = Get-SourceAuthorityText $MetadataPath
+    $tokenSource = Get-SourceAuthorityText $TokenSourcePath
+    $selector = Get-SourceAuthorityText $SelectorPath
+    $resolver = Get-SourceAuthorityText $ResolverPath
+    $transition = Get-SourceAuthorityText $TransitionPath
+    $publicCapability = Get-SourceAuthorityText $PublicCapabilityPath
+    $continuation = Get-SourceAuthorityText $ContinuationPath
+    $result = Get-SourceAuthorityText $ResultPath
+    $targets = Get-SourceAuthorityText $TargetsPath
+    $conicTarget = Get-SourceAuthorityText $ConicTargetPath
+    $implicitTarget = Get-SourceAuthorityText $ImplicitTargetPath
+    $solver = Get-SourceAuthorityText $SolverPath
+    $pairSolver = Get-SourceAuthorityText $PairSolverPath
+    $ledger = Get-SourceAuthorityText $LedgerPath
+    $menuDefault = Get-SourceAuthorityText $MenuDefaultPath
+    $menuEnglish = Get-SourceAuthorityText $MenuEnglishPath
+    $menuSpanish = Get-SourceAuthorityText $MenuSpanishPath
     $authorTest = [IO.File]::ReadAllText((Resolve-RequiredFile `
         $AuthorTestPath))
     $ledgerTest = [IO.File]::ReadAllText((Resolve-RequiredFile `

@@ -5,6 +5,7 @@
 
 package org.geocedg.common.kernel.spline;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 
 import org.geogebra.common.kernel.geos.GeoFunctionNVar;
@@ -15,10 +16,10 @@ import org.geogebra.common.kernel.kernelND.GeoPointND;
  * Immutable, viewport-independent polynomial representation of the 2D spline
  * family produced by the classic {@code Spline} interpolation equations.
  *
- * <p>The coefficient solve remains floating-point and is therefore not a
- * certified-arithmetic authority. The explicit knots, span ownership and
- * power-basis coefficients are nevertheless stable semantic input for
- * deterministic evaluation, metric partitioning and root isolation.</p>
+ * <p>The interpolation solve remains numerical. Native snapshots encode
+ * interior and periodic continuity structurally through exact truncated-power
+ * expansions. Rounded power spans are derived evaluation data, not exact
+ * coefficient authority for a certified algorithm.</p>
  */
 public final class SplinePolynomialModel2D {
 	private static final int MAXIMUM_POINT_COUNT = 32;
@@ -30,6 +31,7 @@ public final class SplinePolynomialModel2D {
 	private final double[] knots;
 	private final double[][][] coefficients;
 	private final boolean closed;
+	private final SplineStructuralModel2D structural;
 	private final String semanticSignature;
 
 	private SplinePolynomialModel2D(int degree, double[] knots,
@@ -37,6 +39,17 @@ public final class SplinePolynomialModel2D {
 		this.degree = degree;
 		this.knots = knots.clone();
 		this.coefficients = deepCopy(coefficients);
+		this.closed = closed;
+		structural = null;
+		semanticSignature = buildSignature();
+	}
+
+	private SplinePolynomialModel2D(int degree, double[] knots,
+			SplineStructuralModel2D structural, boolean closed) {
+		this.degree = degree;
+		this.knots = knots.clone();
+		this.structural = structural;
+		coefficients = structural.getRoundedCoefficients();
 		this.closed = closed;
 		semanticSignature = buildSignature();
 	}
@@ -48,6 +61,13 @@ public final class SplinePolynomialModel2D {
 	 */
 	public static SplinePolynomialModel2D create(GeoList points, int degree,
 			GeoFunctionNVar weight) {
+		return create(points, degree, weight, SplinePrecisionSolve2D.Policy.ordinary());
+	}
+
+	// Test hosts may reduce the fixed policy through its checked package-private
+	// constructor. Ordinary commands always take the public entry above.
+	static SplinePolynomialModel2D create(GeoList points, int degree,
+			GeoFunctionNVar weight, SplinePrecisionSolve2D.Policy precisionPolicy) {
 		if (points == null || !points.isDefined() || degree < 3
 				|| degree > points.size() || points.size() < 3) {
 			throw new IllegalArgumentException(
@@ -96,22 +116,34 @@ public final class SplinePolynomialModel2D {
 		}
 		knots[pointCount - 1] = 1;
 		boolean closed = points.get(0).isEqual(points.get(pointCount - 1));
+		if (closed && (values[0][0] != values[pointCount - 1][0]
+				|| values[0][1] != values[pointCount - 1][1])) {
+			throw new IllegalArgumentException(
+					"SplineV2 periodic closure requires exactly equal finite endpoints");
+		}
 		int order = degree + 1;
-		double[][][] coefficients = new double[pointCount - 1][2][order];
+		double[][][] originalSystems = new double[2][][];
 		for (int coordinate = 0; coordinate < 2; coordinate++) {
-			double[][] system = linearSystem(values, cumulative, coordinate,
-					order, closed);
-			double[] solution = solve(system);
-			if (solution == null) {
-				throw new IllegalArgumentException(
-						"SplineV2 interpolation system is singular");
-			}
+			originalSystems[coordinate] = linearSystem(values, cumulative,
+					coordinate, order, closed);
+		}
+		SplineStructuralModel2D structural = SplineStructuralModel2D.create(
+				values, knots, degree, closed, originalSystems,
+				precisionPolicy);
+		double[][][] coefficients = structural.getRoundedCoefficients();
+		for (int coordinate = 0; coordinate < 2; coordinate++) {
+			double[][] system = originalSystems[coordinate];
+			double[] solution = new double[(pointCount - 1) * order];
 			for (int span = 0; span < pointCount - 1; span++) {
-				System.arraycopy(solution, span * order,
-						coefficients[span][coordinate], 0, order);
+				System.arraycopy(coefficients[span][coordinate], 0,
+						solution, span * order, order);
+			}
+			if (!hasAcceptableBackwardError(system, solution)) {
+				throw new IllegalArgumentException(
+						"SplineV2 structural model fails original equation revalidation");
 			}
 		}
-		return new SplinePolynomialModel2D(degree, knots, coefficients,
+		return new SplinePolynomialModel2D(degree, knots, structural,
 				closed);
 	}
 
@@ -202,6 +234,48 @@ public final class SplinePolynomialModel2D {
 	/** @return defensive descending-power coefficients for one span/coordinate */
 	public double[] getCoefficients(int span, int coordinate) {
 		return coefficients[span][coordinate].clone();
+	}
+
+	/**
+	 * Exact descending span numerator coefficients over the common denominator.
+	 * A certificate must enclose these rationals, not the rounded double cache.
+	 *
+	 * @return defensive exact numerator array
+	 * @throws IllegalStateException for a nonstructural diagnostic snapshot
+	 */
+	public BigDecimal[] getExactCoefficientNumerators(int span, int coordinate) {
+		if (structural == null) {
+			throw new IllegalStateException("Spline snapshot has no structural authority");
+		}
+		return structural.getNumerators(span, coordinate);
+	}
+
+	/** @return positive exact common denominator, or one for diagnostic spans */
+	public int getCoefficientDenominator() {
+		return structural == null ? 1 : structural.getDenominator();
+	}
+
+	/** @return structural knot/seam continuity order, or -1 if not established */
+	public int getStructuralContinuityOrder() {
+		return structural == null ? -1 : degree - 1;
+	}
+
+	/** @return dimension of the actual numerical interpolation solve */
+	public int getSolveSystemDimension() {
+		return structural == null ? getLegacySystemDimension() : structural.getDimension();
+	}
+
+	/** @return dimension of the retained original-equation revalidation system */
+	public int getLegacySystemDimension() {
+		return (knots.length - 1) * (degree + 1);
+	}
+
+	/** @return immutable arithmetic-path/work evidence for the native construction */
+	public SplineConstructionEvidence2D getConstructionEvidence() {
+		if (structural == null) {
+			throw new IllegalStateException("Diagnostic spans have no construction evidence");
+		}
+		return structural.getEvidence();
 	}
 
 	private static double[] cumulativeParameter(double[][] points,
@@ -312,7 +386,11 @@ public final class SplinePolynomialModel2D {
 		return coefficient * Math.pow(parameter, exponent - derivative);
 	}
 
-	private static double[] solve(double[][] matrix) {
+	static double[] solve(double[][] matrix) {
+		return solve(matrix, null);
+	}
+
+	static double[] solve(double[][] matrix, SplinePrecisionSolve2D.Work work) {
 		int length = matrix.length;
 		double[][] original = deepCopy(matrix);
 		for (double[] row : matrix) {
@@ -325,6 +403,24 @@ public final class SplinePolynomialModel2D {
 			}
 			for (int column = 0; column < row.length; column++) {
 				row[column] /= scale;
+				recordSolve(work, 1);
+			}
+		}
+		// The truncated-power variables can have very different units. This
+		// invertible diagonal change equilibrates those variables; it does not
+		// change the spline space, pivot guard or original-equation residual.
+		double[] columnScale = new double[length];
+		for (int column = 0; column < length; column++) {
+			for (int row = 0; row < length; row++) {
+				columnScale[column] = Math.max(columnScale[column],
+						Math.abs(matrix[row][column]));
+			}
+			if (!Double.isFinite(columnScale[column]) || columnScale[column] == 0) {
+				return null;
+			}
+			for (int row = 0; row < length; row++) {
+				matrix[row][column] /= columnScale[column];
+				recordSolve(work, 1);
 			}
 		}
 		double pivotTolerance = PIVOT_TOLERANCE_FACTOR * Math.ulp(1.0)
@@ -346,6 +442,7 @@ public final class SplinePolynomialModel2D {
 			double divisor = matrix[pivot][pivot];
 			for (int column = pivot; column <= length; column++) {
 				matrix[pivot][column] /= divisor;
+				recordSolve(work, 1);
 			}
 			for (int row = 0; row < length; row++) {
 				if (row == pivot) {
@@ -357,12 +454,14 @@ public final class SplinePolynomialModel2D {
 				}
 				for (int column = pivot; column <= length; column++) {
 					matrix[row][column] -= factor * matrix[pivot][column];
+					recordSolve(work, 2);
 				}
 			}
 		}
 		double[] solution = new double[length];
 		for (int row = 0; row < length; row++) {
-			solution[row] = matrix[row][length];
+			solution[row] = matrix[row][length] / columnScale[row];
+			recordSolve(work, 1);
 			if (!Double.isFinite(solution[row])) {
 				return null;
 			}
@@ -370,7 +469,13 @@ public final class SplinePolynomialModel2D {
 		return hasAcceptableBackwardError(original, solution) ? solution : null;
 	}
 
-	private static boolean hasAcceptableBackwardError(double[][] system,
+	private static void recordSolve(SplinePrecisionSolve2D.Work work, long operations) {
+		if (work != null) {
+			work.solve(operations);
+		}
+	}
+
+	static boolean hasAcceptableBackwardError(double[][] system,
 			double[] solution) {
 		double maximumRelativeError = 0;
 		for (double[] row : system) {
@@ -431,10 +536,15 @@ public final class SplinePolynomialModel2D {
 
 	private String buildSignature() {
 		StringBuilder signature = new StringBuilder(
-				"semantic-spline-polynomial/v1|degree=")
+				structural == null ? "semantic-spline-polynomial/v1|degree="
+						: "semantic-spline-polynomial/v2|degree=")
 				.append(degree).append("|closed=").append(closed);
 		for (double knot : knots) {
 			signature.append("|k=").append(Double.toHexString(knot));
+		}
+		if (structural != null) {
+			structural.appendSignature(signature);
+			return signature.toString();
 		}
 		for (double[][] span : coefficients) {
 			for (double[] coordinate : span) {

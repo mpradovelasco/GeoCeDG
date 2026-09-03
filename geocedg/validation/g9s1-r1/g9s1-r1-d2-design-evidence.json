@@ -1,0 +1,607 @@
+{
+  "schemaVersion": 1,
+  "phase": "G9S1-R1",
+  "designIteration": "G9S1-R1-D2",
+  "date": "2026-09-03",
+  "state": "FINAL_DESIGN_CANDIDATE_PENDING_AUTHOR_REVIEW",
+  "acceptedDesignFinding": "DISPOSITION_C_AUTHOR_ACCEPTED",
+  "acceptedFindingScope": "Demonstrated exact repeated-periodic monodromy; not phase PASS, unrestricted selector approval or productive authorization.",
+  "generalRegularPairInvalidation": "REJECTED",
+  "productiveImplementationStarted": false,
+  "productiveImplementationAuthorized": false,
+  "selfApproved": false,
+  "authorApprovedPhase": false,
+  "passClaimed": false,
+  "implementabilityChoice": "B_PARTIAL_IMPLEMENTATION_CONTRACT",
+  "localNumericalCertification": "FEASIBLE_CHARACTERIZED_NOT_IMPLEMENTED",
+  "entryCommit": "109f077fc5e2a40bcde45d3271eb928ee66fdfcc",
+  "branch": "codex/g9s1-r1-spline-pair-materialization",
+  "designAuthority": "docs/architecture/g9s1_r1_d2_pair_sheet_contract.md",
+  "chronology": [
+    "Preserved iteration 1 projected-rank counterexamples and six-path diagnostic candidate; rank/cell-only invalidation was rejected.",
+    "Preserved iteration 2 exact monodromy proof, host floating limitations and all earlier tests/evidence.",
+    "Author accepted Disposition C as a design finding for the demonstrated periodic scope, not as phase approval.",
+    "D2 defines a bounded singleton-germ structural selector and class-complete certificate; general same-germ sheets remain outside this partial contract.",
+    "DEV A/B executed 48 methods each with identical outcomes and diagnostic traces; no productive certification or pair-token lifecycle implemented.",
+    "Final partial scope and structural-slot recurrence require explicit author review before any productive authorization."
+  ],
+  "authorities": [
+    "AGENTS.md",
+    "geocedg/specs/operations/verification-levels.md",
+    "docs/adr/0009-locus-v2-locus-intersection-pair-semantics.md",
+    "docs/adr/0017-deterministic-intersection-phase-rank-identity.md",
+    "docs/adr/0018-semantic-spline-2d-capability.md",
+    "docs/architecture/g9s1_r1_symmetric_atlas_design.md",
+    "docs/architecture/g9s1_r1_d2_pair_sheet_contract.md"
+  ],
+  "partialScope": {
+    "eligible": "One certified regular transverse root of a given normalized germ over one entire source-associated branch/component product.",
+    "maximumEligibleRootsPerComponentPair": 2,
+    "reason": "Only two transverse determinant signs; a same-sign collision has no structural sheet name in this subset.",
+    "notGeneralAtlasMaterialization": true,
+    "sameGermMultipleRoots": "RICH_ONLY",
+    "selfPairQueries": "OUTSIDE_FIRST_SUBSET",
+    "nineRootQuartic": "Both classes repeated (cardinalities 5 and 4); neither class eligible.",
+    "monodromyWitness": "Both same-germ sheets rich-only at all current states, independently of zero/one/inverse/two loop history.",
+    "coverage": "Finite certificate partition of complete relevant component product. Each region zero-free, certified same root, or rigorously incapable of selected sign. Unknown/singular region cannot be ignored.",
+    "globalCompleteness": "Not mandatory: opposite-sign regions may be excluded without enumerating their roots; other component products may remain unresolved. Existing rich publication checks still apply.",
+    "numericalTruth": "No numerical guarantee upgraded by exact identity; work-budget exhaustion is missing evidence, not proved ambiguity."
+  },
+  "selector": {
+    "scheme": "pair-singleton-transverse-germ/v1",
+    "representation": "Discriminated typed tuple with strict canonical length-framed fields; proposed design, no implemented wire format.",
+    "descriptors": "Each durable source ID retains its own stable branch lineage, component lineage, declared orientation, semantic domain kind and parameterization contract version.",
+    "axisOrder": "Exact durable source-ID order; caller order is normalized. Independent sorting of component names is forbidden.",
+    "germ": "sign(det[epsilon_A*C_A'(u), -epsilon_B*C_B'(v)]) in canonical source axes; magnitude/current u,v absent.",
+    "enclosingAuthority": "Exact result owner, unordered pair, constructive lineage and structural topology contract; no mutable topology epoch or revision coefficient signature.",
+    "forbidden": [
+      "u/v values",
+      "certified box boundaries",
+      "chart/span/knot IDs",
+      "projected ranks",
+      "source labels",
+      "Cartesian coordinates/proximity",
+      "solver order",
+      "movement history"
+    ],
+    "currentCertificateSeparate": true,
+    "sourceSwap": "Transpose parameter evidence and normalize caller sign; same structural selector for equivalent unordered context. Distinct rich-result owners do not share tokens.",
+    "copy": "Exact two-source provenance remap; if new canonical source order reverses, transpose addresses and renormalize sign. No independent component sorting.",
+    "transforms": "New source identities and new tokens; exact geometric covariance is not floating-certification evidence."
+  },
+  "trivialization": {
+    "criterion": "Exactly one admissible root in the entire selected sign class under complete class coverage and coherent current sources/revisions.",
+    "argument": "Implicit-function local sections on a connected regular deformation agree by singleton uniqueness; sign labels the sheet. Loops inside this scope have identity permutation.",
+    "notRequired": "No root seed, movement path, arbitrary atlas tree or simply-connected assumption after singleton proof.",
+    "pathLimitation": "Current endpoint certificates do not certify an arbitrary unsampled path; deterministic current resolution does not need that history."
+  },
+  "transitions": {
+    "sufficient": [
+      "Certified common-root existence inside both uniqueness neighborhoods",
+      "Verified root enclosure contained in the other uniqueness region",
+      "Existence in both and uniqueness on justified containing region"
+    ],
+    "insufficient": [
+      "Mere box overlap",
+      "Germ alone without class uniqueness",
+      "Adjacent chart labels",
+      "Projected-rank equality",
+      "Candidate order or proximity"
+    ],
+    "overlap": "Each connected source-state overlap needs certified sections and common-root match; inverse/cocycle consistency. Structural singleton label fixes permutation.",
+    "chartRankBoxChange": "NOT_AN_IDENTITY_BARRIER",
+    "knotSeam": "Compatible certified gluing/regularity and canonical ownership preserve selector; no knot/span/lift history in key.",
+    "floatingHostBoundary": "Unknown glue/composition remains uncertified; exact diagnostic model is not a production floating spline certificate."
+  },
+  "monodromyPolicy": {
+    "type": "CANONICAL_AFFECTED_CLASS_RICH_ONLY_OBSTRUCTION_HANDLING",
+    "acceptedProof": {
+      "kind": "EXACT_ANALYTIC_DERIVATION_PLUS_TEST_ONLY_DIAGNOSTICS",
+      "quarter": "q(t)=(1-3*t^2/2+t^3/2,3*t/2-t^3/2), 0<=t<=1",
+      "closedOval": "Q(s), period 4, four quarter-turn rotations of q; exact C2 joins including seam",
+      "angularJacobian": "det(q,q')=3/2+(3/4)*t^2*(1-t)^2 >= 3/2",
+      "firstSource": "C1(u)=Q(8u), declared oriented periodic domain R/Z, period 1, one component and two traversals",
+      "secondSource": "C2_r(v)=(1/2+v)*r, v in [0,1]",
+      "currentInputs": "Current r only. Diagnostic s is NOT a stored driver, lift, winding counter or source input.",
+      "deformation": "r=Q(s), s from a to a+4; exact same final current source values and identities",
+      "completePreimages": [
+        "(s/8 mod 1,1/2)",
+        "((s+4)/8 mod 1,1/2)"
+      ],
+      "rootCount": 2,
+      "pairSeparation": 0.5,
+      "jacobian": "det D(C1-C2)=8*det(Q,Q') >= 12",
+      "permutation": "Transposition; inverse loop inverse transposition; two circuits identity",
+      "sameLocalGerm": true,
+      "sameLocalBrouwerDegree": 1,
+      "noPairCollision": true,
+      "noTangency": true,
+      "noOverlapFamily": true,
+      "noBranchComponentChange": true,
+      "knotAndSeamCrossing": "Exactly C2 with positive Jacobian; representation/ownership change is not a local topology barrier",
+      "fullSegmentControl": "C2=(4v-2)*r gives four roots, two same-germ classes, |Jacobian|>=48",
+      "scopeLimitation": "Witness is exact semantic polynomial model, not a claimed all-parameter certificate of floating public SplineV2 interpolation.",
+      "globalConclusion": "No continuous, path-independent, cut-free labeling over a semantic state scope containing this full loop. Projected rank swap alone did not prove this."
+    },
+    "currentAmbiguity": "Two distinct certified same-class roots suffice to reject unique activation.",
+    "provedPermutation": "Exact all-path regular loop and exhaustive roots with final transposition reject claimed trivialization of that scope.",
+    "loopCounter": false,
+    "arbitraryCut": false,
+    "permutationHistoryRetirement": false,
+    "futureGeneralSheetContract": "Not defined or silently delegated; outside partial B."
+  },
+  "lifecycle": {
+    "active": "Same selector uniquely resolves under current certificate; same existing ordinary point defined.",
+    "dormant": "Missing root/certificate, stale/invalid source or budget exhaustion retains selector/token and makes point undefined.",
+    "pairQuarantine": "Certified same-class ambiguity or relevant topology/sheet obstruction retains selector/token non-current; never retarget.",
+    "release": "Current valid unique resolution of SAME structural selector; same point/ID/token; no replacement allocation.",
+    "recurrenceMeaning": "Structural germ-slot recurrence after 1 -> many/0 -> 1; not physical-trajectory identity through singularity. Explicit author review required.",
+    "temporaryContextMismatch": "Dormant retained ownership if ordinary recompute may restore context. Never irreversible retirement merely from an intermediate mismatch.",
+    "retirement": "Only actual explicit incompatible durable replacement/disposal under G9A/lifetime rules; no box/rank/chart change, failed proof or remembered loop retires.",
+    "savedState": "Persist selector/owner/claims; imported active/quarantine diagnostics are not proof and must be revalidated from both current sources.",
+    "noNewPointsOnRecompute": true,
+    "boundedHistory": "Current entries plus claimed retained bindings; no trajectory replay or unbounded old-root history."
+  },
+  "actualR4Reuse": {
+    "ledgerVersion": 4,
+    "tokenEnvelope": "locus-root/v3/",
+    "actualPrivateStates": [
+      "ACTIVE(a)",
+      "CLAIMED_ACTIVE(c)",
+      "CLAIMED_DORMANT(d)",
+      "PERIODIC_QUARANTINE(q)",
+      "CLAIMED_PERIODIC_QUARANTINE(r)"
+    ],
+    "genericCurrentRetiredEnumExists": false,
+    "reusable": [
+      "Atomic begin/commit/abort",
+      "Exact framing and duplicate-binding rejection",
+      "Current versus retained validation",
+      "Claim counts/pruning/high-water incarnation",
+      "Existing GeoPoint exact-token compute without solve",
+      "XML attachment and exact immediate-copy checks"
+    ],
+    "notReusable": [
+      "Scalar-target deterministic selector",
+      "One-parameter address proof",
+      "One-dimensional phase/tube/quarantine semantics",
+      "One-source migration as pair migration"
+    ],
+    "requiredFutureBoundary": [
+      "Discriminated pair selector and two-address current certificate",
+      "Pair algorithm ACTIVE ledger publication",
+      "Symmetric two-parent load/attachment validation",
+      "Typed retained pair reason, not R4 periodic quarantine"
+    ],
+    "prospectiveSerialization": "Strict new pair-bearing version v5 if still next; preserve v1-v4 import. Reject down-versioned pair payloads and do not promote old rich-only locus-pair-root diagnostic handles.",
+    "productiveChanges": 0
+  },
+  "sourceAudit": [
+    "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusPairIdentity2D.java",
+    "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocalPairIsolationEvidence2D.java",
+    "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionTokenLedger2D.java",
+    "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionRootDeterministicSelector2D.java",
+    "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionRootAddressProof2D.java",
+    "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PublicIntersectionRootIdentityResolver2D.java",
+    "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusLocusIntersectionV2.java",
+    "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusIntersectionPointV2.java",
+    "source/shared/common/src/main/java/org/geocedg/common/kernel/geos/GeoLocusIntersectionResult.java"
+  ],
+  "diagnosticEvidenceBoundary": {
+    "newModel": "12 test-only contract tests consume declared proof fixtures. Coverage and regularity booleans are assumptions, NOT computed interval certificates.",
+    "analyticPositive": "C1_t(u)=(t,u), C2(v)=(v^2-1,v^3-v), |t|<=0.1. Exhaustive roots v=+/-sqrt(1+t), u=t*v; determinant 2v. Opposite unique germs survive projected rank tie/exchange.",
+    "retainedExactModel": "Accepted polynomial monodromy derivation retained; numerical diagnostics do not replace proof hypotheses.",
+    "publicHost": {
+      "arithmetic": "FLOATING_POINT_UNCERTIFIED",
+      "periodicSpans": 8,
+      "branches": 1,
+      "components": 1,
+      "coefficientMaxAbsDifference": "0x1.03p-34",
+      "differingCoefficientBits": 61,
+      "glueDerivativeMaxAbs": [
+        "0x1.afp-38",
+        "0x1.c4p-37",
+        "0x1.3cp-36"
+      ],
+      "exactGlueCertificate": "NOT_ESTABLISHED",
+      "targetPublicDegree": 3,
+      "targetHigherOrderCoefficientMaxAbs": "0x1.cp-50",
+      "richSnapshot": {
+        "computation": "SUCCESS",
+        "geometry": "FINITE",
+        "finiteRoots": 2,
+        "completeness": "NOT_ESTABLISHED",
+        "materializable": 0,
+        "countIsObservedNotNewAcceptanceBaseline": true
+      },
+      "persistence": "HOST_XML_ROUNDTRIP",
+      "identicalDefinitionBits": true,
+      "publicHostMonodromyCertificate": "NOT_CLAIMED"
+    },
+    "pairPointNativePersistence": "NOT_IMPLEMENTED_NOT_TESTED",
+    "diagnosticReload": "Test-model key/context serialization and existing host source XML reload, not native pair-token .cedg.",
+    "copyModel": "Explicit source-map sign normalization only, not productive closure-copy or undo/redo.",
+    "retainedFixtures": [
+      {
+        "id": "A",
+        "model": "Two-root radial-segment exact pair",
+        "tests": [
+          "rayPairHasExactlyTwoRegularAnalyticPreimagesThroughoutLoop"
+        ],
+        "result": "Two exhaustive isolated transverse preimages"
+      },
+      {
+        "id": "B",
+        "model": "Preserved cubic u-projection swap",
+        "tests": [
+          "ordinaryMotionReversesFirstProjectionWithoutPairSingularity"
+        ],
+        "result": "Rank exchange without singularity; not monodromy"
+      },
+      {
+        "id": "C",
+        "model": "Source-reversed cubic v-projection swap",
+        "tests": [
+          "reversedCubicCounterexampleExchangesTheSecondProjectionRegularly"
+        ],
+        "result": "Second projection exchange without singularity"
+      },
+      {
+        "id": "D",
+        "model": "Preserved quartic dual-rank swap",
+        "tests": [
+          "quarticPairImplicitVelocitiesExchangeBothProjectionRanks"
+        ],
+        "result": "Both projected ranks insufficient"
+      },
+      {
+        "id": "E",
+        "model": "Same quartic single-span pair",
+        "tests": [
+          "quarticPairHasNineExactNonsingularPreimagesAtZero"
+        ],
+        "result": "Nine distinct regular pair preimages at zero"
+      },
+      {
+        "id": "F",
+        "model": "Internal quarter-knot crossing",
+        "tests": [
+          "allEightSpanJoinsIncludingThePeriodicSeamAreExactlyC2",
+          "doubleTraversalCapturesPublicPeriodicSpansAndFloatingGluing"
+        ],
+        "result": "Exact reference C2; floating-host glue separately measured, not certified"
+      },
+      {
+        "id": "G",
+        "model": "Periodic seam",
+        "tests": [
+          "ordinaryKnotAndSeamCrossingsDoNotCollideAnalyticPreimages"
+        ],
+        "result": "No pair collision or duplication in exact model; host provider endpoint canonicalization verified"
+      },
+      {
+        "id": "H",
+        "model": "Operand reversal",
+        "tests": [
+          "operandSwapTransposesPreimagesAndReversesContactSign",
+          "callerOperandSwapKeepsCanonicalSemanticPairs"
+        ],
+        "result": "Exact preimage transposition and typed sign reversal"
+      },
+      {
+        "id": "I",
+        "model": "Contractible out-and-back loop",
+        "tests": [
+          "contractibleControlLoopHasNoAnalyticPermutation"
+        ],
+        "result": "Identity lift; does not prove global triviality"
+      },
+      {
+        "id": "J",
+        "model": "Full repeated-periodic control circuit",
+        "tests": [
+          "oneControlCircuitPermutesBothRayPreimages",
+          "reverseAndSecondCircuitsHaveTheExpectedPermutation"
+        ],
+        "result": "PROVED_NONTRIVIAL_MONODROMY in exact model"
+      },
+      {
+        "id": "K",
+        "model": "Analytic fold",
+        "tests": [
+          "tangencyAndRootMergeAreRealFailuresRatherThanChartEvents"
+        ],
+        "result": "True merge/split barrier"
+      },
+      {
+        "id": "L",
+        "model": "Fold singular snapshot",
+        "tests": [
+          "tangencyAndRootMergeAreRealFailuresRatherThanChartEvents",
+          "tangencyRemainsRichOnlyAndFailClosed"
+        ],
+        "result": "Zero Jacobian; nonmaterializable"
+      }
+    ]
+  },
+  "validation": {
+    "level": "DEV",
+    "state": "PASS_SCOPED_NOT_ACCEPTANCE",
+    "command": ".\\tools\\agent\\verify.ps1 -Level DEV -Module shared -TestFilter 'org.geocedg.common.kernel.locus.intersection.G9S1R1D2PairSheetContractTest','org.geocedg.common.kernel.locus.intersection.G9S1R1PairSelectorCharacterizationTest','org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest','org.geocedg.common.locus.G9S1R1SplineAtlasHostCharacterizationTest','org.geocedg.common.kernel.locus.intersection.PiecewisePolynomialPairIntersectionCapability2DTest' -KeepBuildOutputs -LogDirectory <run-directory>",
+    "runs": [
+      {
+        "name": "A",
+        "resultPath": "artifacts/g9s1-r1-d2-design/dev-a/verification-result.json",
+        "summaryPath": "artifacts/g9s1-r1-d2-design/dev-a/dev/ab792ef48a9d46d2b27beea6063a00ce/dev-summary.json",
+        "exitCode": 0,
+        "tests": 48,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "testTask": "EXECUTED",
+        "compileTestTask": "EXECUTED"
+      },
+      {
+        "name": "B",
+        "resultPath": "artifacts/g9s1-r1-d2-design/dev-b/verification-result.json",
+        "summaryPath": "artifacts/g9s1-r1-d2-design/dev-b/dev/957584a480b6413789e40ae7976c34f5/dev-summary.json",
+        "exitCode": 0,
+        "tests": 48,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "testTask": "EXECUTED",
+        "compileTestTask": "UP-TO-DATE"
+      }
+    ],
+    "testInventory": [
+      {
+        "class": "org.geocedg.common.kernel.locus.intersection.G9S1R1D2PairSheetContractTest",
+        "tests": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "methods": [
+          "chartsKnotsParametersAndEnumerationDoNotEnterTheKey()",
+          "collisionAndMissingCoverageNeverAllocateModelPoints()",
+          "diagnosticContractTraceIsEnumerationIndependent()",
+          "diagnosticReloadRechecksCoverageInsteadOfTrustingActiveStatus()",
+          "dormantSlotReactivatesIdenticallyAcrossDifferentHistories()",
+          "explicitCopyMapRenormalizesGermWhenCanonicalIdsReverse()",
+          "operandReversalPreservesSelectorsAcrossOtherProjectedRankExchange()",
+          "oppositeGermRootsDoNotCompeteWithTheCertifiedSingleton()",
+          "repeatedMonodromyOrbitIsOutsideScopeRegardlessOfHistory()",
+          "singleTraversalSeamNeedsNoRetirementWithUniqueCurrentGerm()",
+          "uniqueGermsSurviveProjectedRankExchange()",
+          "wrongSourcesOrLineageCannotRetargetExistingPoint()"
+        ]
+      },
+      {
+        "class": "org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest",
+        "tests": 18,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "methods": [
+          "allEightSpanJoinsIncludingThePeriodicSeamAreExactlyC2()",
+          "canonicalNumericTraceIgnoresDiagnosticRootEnumeration()",
+          "contractibleControlLoopHasNoAnalyticPermutation()",
+          "cubicQuarterHasStrictlyPositiveAngularJacobian()",
+          "currentRootSetIsPathIndependentButAFullLiftHasMonodromy()",
+          "diagnosticSnapshotRoundTripContainsOnlyCurrentControlData()",
+          "equalContactAndLocalDegreeDoNotDistinguishTheTwoSheets()",
+          "fullSegmentHasFourSeparatedRootsInTwoContactClasses()",
+          "oneControlCircuitPermutesBothRayPreimages()",
+          "operandSwapTransposesPreimagesAndReversesContactSign()",
+          "ordinaryKnotAndSeamCrossingsDoNotCollideAnalyticPreimages()",
+          "overlappingBoxesAloneDoNotEstablishTheSameRoot()",
+          "rayPairHasExactlyTwoRegularAnalyticPreimagesThroughoutLoop()",
+          "reverseAndSecondCircuitsHaveTheExpectedPermutation()",
+          "reversedCubicCounterexampleExchangesTheSecondProjectionRegularly()",
+          "sourceControlClosesExactlyWithoutPersistingThePathCoordinate()",
+          "tangencyAndRootMergeAreRealFailuresRatherThanChartEvents()",
+          "uniqueCommonRootWitnessPermitsAnOrdinaryChartChange()"
+        ]
+      },
+      {
+        "class": "org.geocedg.common.kernel.locus.intersection.G9S1R1PairSelectorCharacterizationTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "methods": [
+          "equalDiscoveryCountsDoNotEstablishSemanticRootRank()",
+          "ordinaryMotionReversesFirstProjectionWithoutPairSingularity()",
+          "quarticPairHasNineExactNonsingularPreimagesAtZero()",
+          "quarticPairImplicitVelocitiesExchangeBothProjectionRanks()",
+          "roundedTransformedCoefficientsAreNotSemanticEvaluationAuthority()",
+          "threeRootExampleHasDistinctRegularSemanticPreimagesAtZero()"
+        ]
+      },
+      {
+        "class": "org.geocedg.common.kernel.locus.intersection.PiecewisePolynomialPairIntersectionCapability2DTest",
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "methods": [
+          "callerOperandSwapKeepsCanonicalSemanticPairs()",
+          "canonicalKnotAndPeriodicSeamOwnershipPreventDuplicates()",
+          "multipleRootsInsideOneLegacyGridCellAreFoundSemantically()",
+          "pairBoxBudgetFailsCoherently()",
+          "polynomialOverlapNeverManufacturesFiniteRoots()",
+          "tangencyRemainsRichOnlyAndFailClosed()",
+          "transversePairRefinementIsInvariantUnderUniformScale()"
+        ]
+      },
+      {
+        "class": "org.geocedg.common.locus.G9S1R1SplineAtlasHostCharacterizationTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "methods": [
+          "closedControlLoopReturnsExactInputsAndDefinitionsWithoutPointTracking()",
+          "currentPublicSplinePairRemainsRichOnlyWithoutAssumingRootCount()",
+          "directIncrementalAndReversePathsRecoverIdenticalCurrentCoefficientBits()",
+          "doubleTraversalCapturesPublicPeriodicSpansAndFloatingGluing()",
+          "hostXmlRoundTripRetainsSourceIdsAndCurrentPolynomialDefinitions()"
+        ]
+      }
+    ],
+    "caseOutcomeEncoding": "Ordinal-sorted UTF-8 class#method:status lines, LF with final LF; excludes timing/path metadata.",
+    "caseOutcomeSha256": "00e1eae24e2c68ed2d2e1c0cae96ecbda752e1c8535aa0eb0e35e07cb193a322",
+    "caseOutcomeEquality": true,
+    "contractModelTraceSha256": "101cba5816b57b48feb2bd9a2185841809115331fc11a6421ea78550b5797354",
+    "contractModelTraceEquality": true,
+    "retainedAtlasNumericTraceSha256": "666ec7734560a75467e4a1e2615eec50d4436004c0758bba5ba43ed7707fae09",
+    "retainedAtlasNumericTraceEquality": true,
+    "checkstyle": {
+      "task": ":shared:common-jre:checkstyleTest",
+      "command": ".\\gradlew.bat ':shared:common-jre:checkstyleTest' '--console=plain' '--no-problems-report' '-Dorg.gradle.java.installations.auto-download=false' '--max-workers=1' '--build-cache' '--no-configuration-cache' '--no-parallel' '--daemon'",
+      "exitCode": 0,
+      "files": 695,
+      "violations": 0,
+      "logPath": "artifacts/g9s1-r1-d2-design/checkstyle.log",
+      "reportPath": "source/shared/common-jre/build/reports/checkstyle/test.xml"
+    },
+    "executionEnvironment": "Managed Windows execution, existing Corretto 17/Gradle 9.4.1 setup and warm daemon; no permission-related source workaround. Test task executed in both runs; not independent clean builds.",
+    "postRunChanges": "Documentation precision, living state reconciliation and evidence only; tested source files unchanged.",
+    "phaseAcceptance": "NOT_RUN_NOT_CLAIMED",
+    "composedAcceptance": "NOT_RUN_NOT_CLAIMED",
+    "fullAcceptance": "NOT_RUN_NOT_CLAIMED",
+    "reason": "Bounded design/test-only task with no production, verification-infrastructure or numerical-baseline change. DEV is explicitly non-acceptance evidence."
+  },
+  "performance": {
+    "designBookkeeping": "O(B + R log R + P) plus actual interval/certificate construction cost; B bounded coverage cells, R current roots, P retained point bindings.",
+    "observedProductCost": "NOT_IMPLEMENTED_NOT_MEASURED",
+    "perChildSolve": false,
+    "trajectoryReplay": false
+  },
+  "impact": {
+    "productiveJavaChanges": 0,
+    "frontendChanges": 0,
+    "existingPublishedTestModifications": 0,
+    "verificationInfrastructure": "NONE",
+    "bootstrap": "NO_CHANGE_REQUIRED",
+    "bootstrapReason": "No toolchain, dependency, prerequisites, wrapper or packaging change.",
+    "guideImpact": "NONE",
+    "guideReason": "No public behavior/API changed; existing guides remain rich-only. Mathematical design/evidence only.",
+    "futureVerification": "Productive certification, ledger or verifier integration requires its separately authorized complete authority; DEV does not waive it."
+  },
+  "preservedPreviousCandidate": {
+    "filesNotEditedThisContinuation": {
+      "docs/architecture/g9s1_r1_pair_materialization_design_review.md": "4b2097d500089460ff5946d854dc2383eee3a2a1f2d494436e6ccce8afac2a37",
+      "docs/architecture/g9s1_r1_symmetric_atlas_design.md": "dbf82543c975c0e19ed07ce9921276e84ab62e3e346d228cdfbe81b9acc36b2d",
+      "docs/research/g9s1_semantic_spline_numerical_methods.md": "22d78dc21264a808df799fcba15b111f7a0f819a39690c4053bdce125994691c",
+      "geocedg/validation/g9s1-r1/g9s1-r1-atlas-design-evidence.json": "f1252faf4abe002bec138a8eee64d0af8def08f3439248382da384267fa75fbc",
+      "geocedg/validation/g9s1-r1/g9s1-r1-design-review-evidence.json": "cb7a7bebbef2f60f9e9c0d162767360fc7864467eb17c1f2ee1c151d24043bee",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1PairAtlasCharacterizationTest.java": "562d0475447ded2969588015d42b17bc0491453da2dc00f66b6a767173ace68c",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1PairSelectorCharacterizationTest.java": "d9e864f0dfa7f70694049c0b86e77157f6bb59902d9d4bf36c7362ddd8928df6",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1SplineAtlasHostCharacterizationTest.java": "0f7d517d88afab44b1b584a095fcf341f323a04a087bf65fc713337777b0f9e2"
+    },
+    "negativeResultsRewritten": false,
+    "priorHashesDescribeTheirOwnLivingDocumentSnapshots": true
+  },
+  "canonicalLfSha256": {
+    "docs/architecture/g9s1_r1_d2_pair_sheet_contract.md": "338d6194179cdd0677769e4bee251dc35d1a60199939cb298ea46a8af3feea9f",
+    "docs/architecture/g9s1_r1_pair_materialization_design_review.md": "4b2097d500089460ff5946d854dc2383eee3a2a1f2d494436e6ccce8afac2a37",
+    "docs/architecture/g9s1_r1_symmetric_atlas_design.md": "dbf82543c975c0e19ed07ce9921276e84ab62e3e346d228cdfbe81b9acc36b2d",
+    "docs/research/g9s1_semantic_spline_numerical_methods.md": "22d78dc21264a808df799fcba15b111f7a0f819a39690c4053bdce125994691c",
+    "docs/roadmap/geocedg_roadmap.md": "ad2b69d491e3ccca6dd29a21a8c0d27f6bfdcd092aa1cb98e225c17626de072d",
+    "docs/validation/g9_documentation_bundle_traceability.md": "310a28204a13ecf2e9086dbb4f69a184a4b1d9ab8303c4eb410ca332d6b2be72",
+    "geocedg/validation/g9s1-r1/g9s1-r1-atlas-design-evidence.json": "f1252faf4abe002bec138a8eee64d0af8def08f3439248382da384267fa75fbc",
+    "geocedg/validation/g9s1-r1/g9s1-r1-design-review-evidence.json": "cb7a7bebbef2f60f9e9c0d162767360fc7864467eb17c1f2ee1c151d24043bee",
+    "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1D2PairSheetContractTest.java": "5cad9302e03033bfed46f189b812c72f8208dc0ab17790ffc1e90471277fa7ac",
+    "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1PairAtlasCharacterizationTest.java": "562d0475447ded2969588015d42b17bc0491453da2dc00f66b6a767173ace68c",
+    "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1PairSelectorCharacterizationTest.java": "d9e864f0dfa7f70694049c0b86e77157f6bb59902d9d4bf36c7362ddd8928df6",
+    "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1SplineAtlasHostCharacterizationTest.java": "0f7d517d88afab44b1b584a095fcf341f323a04a087bf65fc713337777b0f9e2"
+  },
+  "canonicalHashPolicy": "UTF-8 text with CRLF/lone CR canonicalized to LF; no other content normalization. This evidence file excludes its own hash.",
+  "changedPaths": [
+    "docs/architecture/g9s1_r1_d2_pair_sheet_contract.md",
+    "docs/architecture/g9s1_r1_pair_materialization_design_review.md",
+    "docs/architecture/g9s1_r1_symmetric_atlas_design.md",
+    "docs/research/g9s1_semantic_spline_numerical_methods.md",
+    "docs/roadmap/geocedg_roadmap.md",
+    "docs/validation/g9_documentation_bundle_traceability.md",
+    "geocedg/validation/g9s1-r1/g9s1-r1-atlas-design-evidence.json",
+    "geocedg/validation/g9s1-r1/g9s1-r1-d2-design-evidence.json",
+    "geocedg/validation/g9s1-r1/g9s1-r1-design-review-evidence.json",
+    "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1D2PairSheetContractTest.java",
+    "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1PairAtlasCharacterizationTest.java",
+    "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1PairSelectorCharacterizationTest.java",
+    "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1SplineAtlasHostCharacterizationTest.java"
+  ],
+  "changedPathsThisContinuation": [
+    "docs/architecture/g9s1_r1_d2_pair_sheet_contract.md",
+    "docs/roadmap/geocedg_roadmap.md",
+    "docs/validation/g9_documentation_bundle_traceability.md",
+    "geocedg/validation/g9s1-r1/g9s1-r1-d2-design-evidence.json",
+    "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1D2PairSheetContractTest.java"
+  ],
+  "protectedG9U1": {
+    "branch": "feature/g9u1-construction-workspace-planning-after-r6",
+    "commit": "00982e7e148a634cd57ed928f322774df267d5e3",
+    "localOriginDirectRemoteEqual": true,
+    "divergence": "0/0",
+    "changed": false,
+    "design": "PASS_AUTHOR_APPROVED",
+    "implementation": "NOT_AUTHORIZED_BLOCKED_PENDING_R1_DISPOSITION"
+  },
+  "productRefs": {
+    "mainOriginDirectRemote": "109f077fc5e2a40bcde45d3271eb928ee66fdfcc",
+    "unchangedTags": [
+      {
+        "name": "geocedg-g9s1-pass",
+        "object": "ece0ca6f00299d3347e57fac38b7a28cade28644",
+        "peel": "de33f3a80102adb051aaa7547a72b7e97409c58c"
+      },
+      {
+        "name": "geocedg-g9u0-r4-pass",
+        "object": "0f9b303057b00d23722ad1f9d3594b4609d668a7",
+        "peel": "63c291464111a5bcdbca488d6639662e46c389c4"
+      },
+      {
+        "name": "geocedg-g9u0-r5-pass",
+        "object": "3712595fe2b168ba494379b6b3f0051e4122cfae",
+        "peel": "5952dfdbd238e71e598f4d2ca92c3e03437df41c"
+      },
+      {
+        "name": "geocedg-g9u0-r6-pass",
+        "object": "2ec953c5e32203b3fc5e8ab3ad48e6e2e698239e",
+        "peel": "3942af594e4507e479f2c75019cef62e3d9fea6f"
+      }
+    ],
+    "localRemoteTagObjectsAndPeelsMatch": true
+  },
+  "retainedRisk": {
+    "id": "G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP",
+    "state": "OPEN_TRACKED",
+    "authority": "docs/roadmap/geocedg_roadmap.md",
+    "independentOfPairAtlas": true
+  },
+  "nextAuthorDecision": "Approve or reject partial singleton-germ scope (max two eligible roots per component pair) AND structural-slot recurrence after ambiguity, then separately authorize productive implementation if accepted.",
+  "finalReadOnlyChecks": {
+    "jsonAndRecordedCanonicalLfHashes": "VALID",
+    "canonicalSourceHashesChecked": 12,
+    "relativeMarkdownLinkTargetsChecked": 339,
+    "missingRelativeTargets": 0,
+    "linkScope": "Six changed Markdown documents, relative file targets excluding fenced/inline code; no external-link or whole-repository anchor audit.",
+    "gitDiffCheckExitCode": 0,
+    "gitDiffCachedCheckExitCode": 0,
+    "untrackedWhitespaceFilesChecked": 10,
+    "untrackedWhitespaceDiagnostics": "NONE",
+    "exactChangedPathCount": 13,
+    "productiveSourceOrInfrastructurePathCount": 0,
+    "indexEmpty": true,
+    "sourceAuthorityPathsChecked": 9,
+    "tagAncestry": "VALID",
+    "mainAndProtectedRefsUnchanged": true,
+    "newTrackedLogsOrArtifacts": 0,
+    "preliminaryReadOnlyHelperCorrections": "Excluded inline mathematical code from Markdown-link scanning; respected repository CRLF conversion for tracked diff and cr-at-eol for raw untracked checks. False parser/line-ending diagnostics caused no source or historical-file edits."
+  },
+  "committed": false,
+  "published": false,
+  "tagged": false
+}

@@ -893,6 +893,9 @@ final class G9S1SemanticSpline2DTest extends G9U0PublicSurfaceTestBase {
 		return finite(result).stream()
 				.map(solution -> Math.rint(solution.getEvaluatedPoint().getX()
 						* 1E9) / 1E9)
+				// The existing rounded geometric comparison is not IEEE sign-bit
+				// identity. Normalize only an already-rounded zero, not the root.
+				.map(value -> value == 0 ? 0.0 : value)
 				.sorted().toList();
 	}
 

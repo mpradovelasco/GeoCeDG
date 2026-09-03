@@ -336,7 +336,12 @@ public final class GeoLocusV2 extends GeoElement
 	/** Persists only reconstructible parent inputs, styles and the durable ID. */
 	@Override
 	public void getXML(boolean getListenersToo, XMLStringBuilder builder) {
-		if (!isPublicPersistentLocus()) {
+		// A G9A replacement rebuild serializes a staged geo under an exact,
+		// lexical identity overlay before its live identity is attached. Use
+		// the same authority as GeoElement's geocedgId attribute, without
+		// promoting an unattached diagnostic locus or changing live identity.
+		if (!isPublicPersistentLocus() && cons.getSpatialIdentityRegistry()
+				.getPersistentGeoIdForSerialization(this) == null) {
 			return;
 		}
 		super.getXML(getListenersToo, builder);

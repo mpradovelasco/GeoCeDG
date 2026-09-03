@@ -116,7 +116,7 @@ public final class PublicTargetIntersectionCapability2D
 				"Captured an oriented transverse current root germ as "
 						+ "revision evidence; only a unique current semantic "
 						+ "selector may bind it to durable identity"));
-		return new IntersectionCandidate2D(candidate.getBranchKey(),
+		IntersectionCandidate2D enriched = new IntersectionCandidate2D(candidate.getBranchKey(),
 				candidate.getComponentKey(), candidate.getSemanticParameter(),
 				candidate.getLiftedPeriodicParameter(),
 				candidate.getIsolatingInterval(),
@@ -126,6 +126,8 @@ public final class PublicTargetIntersectionCapability2D
 				candidate.getNumericGuarantee(), candidate.getLineageEventKind(),
 				candidate.getCandidateParentContinuationKeys(),
 				diagnostics);
+		return candidate.getStructuralCertificate() == null ? enriched
+				: enriched.withStructuralCertificate(candidate.getStructuralCertificate());
 	}
 
 	private static Optional<String> transverseGerm(
@@ -147,8 +149,20 @@ public final class PublicTargetIntersectionCapability2D
 				evaluation.getPoint(), context.evaluateDifferential(
 						candidate.getBranchKey(), candidate.getSemanticParameter(),
 						component));
-		if (!contact.isEstablished()
-				|| Math.abs(contact.getNormalizedIndicator()) <= context.getQuery()
+		if (!contact.isEstablished()) {
+			return Optional.empty();
+		}
+		SplineImplicitIntervalCertification2D.Proof proof = candidate.getStructuralCertificate();
+		if (proof != null && proof.status == SplineImplicitIntervalCertification2D.Status.SIMPLE
+				&& context.getTarget().getFamily() == TargetFamily.REGULAR_POLYNOMIAL_IMPLICIT) {
+			double orientation = LocusIntersectionTargets2D.canonicalPolynomialContactOrientation(
+					((PolynomialIntersectionTarget2D) context.getTarget())
+						.getImplicitPolynomialCoefficients());
+			double sign = orientation * (proof.derivative.lower > 0 ? 1 : -1);
+			return Optional.of(framed(contact.getIndicatorId())
+					+ (sign > 0 ? "positive" : "negative"));
+		}
+		if (Math.abs(contact.getNormalizedIndicator()) <= context.getQuery()
 						.getPolicy().getTangencyTolerance().getThreshold()) {
 			return Optional.empty();
 		}

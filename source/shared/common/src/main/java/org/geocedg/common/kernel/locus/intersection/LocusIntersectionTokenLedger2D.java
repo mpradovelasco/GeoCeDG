@@ -33,17 +33,21 @@ import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata
  */
 public final class LocusIntersectionTokenLedger2D {
 	private static final String FORMAT_VERSION = "4";
+	private static final String PAIR_FORMAT_VERSION = "5";
 	private static final String PHASE_FORMAT_VERSION = "3";
 	private static final String PREVIOUS_FORMAT_VERSION = "2";
 	private static final String LEGACY_FORMAT_VERSION = "1";
 	private static final String CURRENT_ROOT_ALLOCATION_PREFIX =
 			"g9u0-r4/ledger-current-root/v2/";
+	private static final String PAIR_ROOT_ALLOCATION_PREFIX =
+			"g9s1-r1/ledger-pair-slot/v1/";
 	private static final String LEGACY_PUBLIC_SINGLETON_PREFIX =
 			"g9u0/g8c1-explicit-unique-local-root/v1/";
 	private long nextIncarnation = 1;
 	private Snapshot current;
 	private Snapshot copySource;
 	private String authorizedCopySourceOwner;
+	private Map<String, String> authorizedPairSourceCopy = Map.of();
 	private final Map<String, Integer> materializedClaimCounts =
 			new LinkedHashMap<>();
 
@@ -70,6 +74,65 @@ public final class LocusIntersectionTokenLedger2D {
 				authorizedCopy ? authorizedCopySourceOwner : null);
 	}
 
+	/**
+	 * Supplies the exact source association proved by an immediate G9A closure
+	 * copy. This does not authorize an owner transition by itself.
+	 */
+	public void preparePairSourceCopy(Map<String, String> sourceMapping) {
+		authorizedPairSourceCopy = checkedPairSourceMap(sourceMapping);
+	}
+
+	/**
+	 * Checks pair descriptor association against reconstructed parent dependencies.
+	 * The map is old-source ID to corresponding new-source ID, proved by G9A;
+	 * it is never inferred from sorted IDs or matching parameters.
+	 */
+	public void validatePairSourceAttachments(String firstSource,
+			String secondSource, Map<String, String> sourceMapping) {
+		String expectedPair = LocusPairIdentity2D.sourcePair(firstSource,
+				secondSource);
+		Map<String, String> checked = sourceMapping.isEmpty() ? Map.of()
+				: checkedPairSourceMap(sourceMapping);
+		if (current == null) {
+			return;
+		}
+		for (Entry entry : current.entries) {
+			if (!entry.pairRootBinding.isPresent()) {
+				continue;
+			}
+			PairRootAllocationKey binding = entry.pairRootBinding.get();
+			boolean currentSources = binding.selector.getSourcePairIdentity()
+					.equals(expectedPair);
+			if (!currentSources && (checked.isEmpty()
+					|| !binding.selector.remapSources(checked).getSourcePairIdentity()
+							.equals(expectedPair))) {
+				throw new IllegalArgumentException(
+						"Pair ledger descriptors disagree with source dependencies");
+			}
+			if (currentSources && entry.pairCopyEvidence.isPresent()
+					&& !entry.pairCopyEvidence.get().mapping.equals(checked)) {
+				throw new IllegalArgumentException(
+						"Pair copy association disagrees with exact source provenance");
+			}
+		}
+	}
+
+	private static Map<String, String> checkedPairSourceMap(
+			Map<String, String> mapping) {
+		java.util.Objects.requireNonNull(mapping);
+		if (mapping.size() != 2 || new HashSet<>(mapping.values()).size() != 2) {
+			throw new IllegalArgumentException("Exact two-source copy map is required");
+		}
+		for (Map.Entry<String, String> entry : mapping.entrySet()) {
+			requireText(entry.getKey(), "Copy-source identity");
+			requireText(entry.getValue(), "Copied source identity");
+			if (entry.getKey().equals(entry.getValue())) {
+				throw new IllegalArgumentException("Closure copy needs new source IDs");
+			}
+		}
+		return Map.copyOf(mapping);
+	}
+
 	/** Commits only token evidence represented by the published current result. */
 	public void commit(Evaluation evaluation,
 			LocusIntersectionResult2D published) {
@@ -89,6 +152,7 @@ public final class LocusIntersectionTokenLedger2D {
 		ArrayList<Entry> retained = new ArrayList<>();
 		LinkedHashSet<String> retainedSemanticKeys = new LinkedHashSet<>();
 		java.util.Set<CurrentRootAllocationKey> retainedBindings = new HashSet<>();
+		java.util.Set<PairRootAllocationKey> retainedPairBindings = new HashSet<>();
 		java.util.Set<PeriodicAllocationGroupKey> claimedPeriodicGroups =
 				claimedPeriodicGroups(evaluation);
 		LinkedHashSet<String> burned = burnedSemanticKeys(evaluation, published);
@@ -120,6 +184,7 @@ public final class LocusIntersectionTokenLedger2D {
 							? Status.CLAIMED_ACTIVE : Status.ACTIVE);
 					retained.add(retainedEntry);
 					retainedEntry.currentRootBinding.ifPresent(retainedBindings::add);
+					retainedEntry.pairRootBinding.ifPresent(retainedPairBindings::add);
 				}
 			}
 		}
@@ -127,10 +192,15 @@ public final class LocusIntersectionTokenLedger2D {
 			String priorToken = evaluation.startingSnapshot.token(prior);
 			Entry retainedPrior = evaluation.authorizedCopyQuarantineEntries
 					.getOrDefault(priorToken, prior);
+			retainedPrior = evaluation.pairCopyEntriesByOldToken.getOrDefault(
+					priorToken, retainedPrior);
 			CurrentRootAllocationKey copiedBinding =
 					evaluation.authorizedCopySuccessorBindings.get(priorToken);
 			boolean copiedToCurrent = copiedBinding != null
 					&& retainedBindings.contains(copiedBinding);
+			copiedToCurrent |= evaluation.pairCopyEntriesByOldToken
+					.containsKey(priorToken) && retainedPrior.pairRootBinding
+							.filter(retainedPairBindings::contains).isPresent();
 			boolean quarantined = !evaluation.releasedPeriodicQuarantineTokens
 					.contains(priorToken)
 					&& (prior.status.isPeriodicallyQuarantined()
@@ -148,6 +218,10 @@ public final class LocusIntersectionTokenLedger2D {
 					retainedStatus = isClaimed(evaluation, prior)
 							? Status.CLAIMED_PERIODIC_QUARANTINE
 							: Status.PERIODIC_QUARANTINE;
+				} else if (retainedPrior.pairRootBinding.filter(binding ->
+						evaluation.quarantinedPairSelectors.contains(binding.selector))
+						.isPresent()) {
+					retainedStatus = Status.CLAIMED_PAIR_QUARANTINE;
 				}
 				retained.add(retainedPrior.withStatus(retainedStatus));
 			}
@@ -160,6 +234,7 @@ public final class LocusIntersectionTokenLedger2D {
 					? current : null;
 		}
 		authorizedCopySourceOwner = null;
+		authorizedPairSourceCopy = Map.of();
 		current = next;
 		nextIncarnation = committedNextIncarnation;
 	}
@@ -211,6 +286,7 @@ public final class LocusIntersectionTokenLedger2D {
 	/** Makes claimed identities dormant after an unavailable current revision. */
 	public void observeUnavailable() {
 		authorizedCopySourceOwner = null;
+		authorizedPairSourceCopy = Map.of();
 		if (current == null) {
 			return;
 		}
@@ -463,6 +539,20 @@ public final class LocusIntersectionTokenLedger2D {
 		return current != null && current.validatedEntry(token).isPresent();
 	}
 
+	/** Current eligibility of a retained D2 pair slot, not token identity. */
+	public enum PairBindingState {
+		ACTIVE, DORMANT, QUARANTINED
+	}
+
+	/** @return current pair lifecycle evidence for one exact retained token */
+	public Optional<PairBindingState> getPairBindingState(String token) {
+		return current == null ? Optional.empty() : current.validatedEntry(token)
+				.filter(entry -> entry.pairRootBinding.isPresent())
+				.map(entry -> entry.status.isActive() ? PairBindingState.ACTIVE
+						: entry.status == Status.CLAIMED_PAIR_QUARANTINE
+								? PairBindingState.QUARANTINED : PairBindingState.DORMANT);
+	}
+
 	/**
 	 * Retains one exact allocation for an existing materialized point child.
 	 *
@@ -516,7 +606,8 @@ public final class LocusIntersectionTokenLedger2D {
 		Entry entry = validated.get();
 		if (entry.status == Status.CLAIMED_ACTIVE) {
 			current = current.replacing(entry, entry.withStatus(Status.ACTIVE));
-		} else if (entry.status == Status.CLAIMED_DORMANT) {
+		} else if (entry.status == Status.CLAIMED_DORMANT
+				|| entry.status == Status.CLAIMED_PAIR_QUARANTINE) {
 			current = current.without(entry);
 		} else if (entry.status == Status.CLAIMED_PERIODIC_QUARANTINE) {
 			Entry unclaimed = entry.withStatus(Status.PERIODIC_QUARANTINE);
@@ -558,16 +649,23 @@ public final class LocusIntersectionTokenLedger2D {
 
 	/** @return strict compact XML attribute value for this ledger */
 	public String exportState() {
-		return FORMAT_VERSION + "|" + nextIncarnation + "|"
-				+ encodeSnapshot(current, FORMAT_VERSION) + "|"
-				+ encodeSnapshot(copySource, FORMAT_VERSION);
+		String version = hasPairEntries(current) || hasPairEntries(copySource)
+				? PAIR_FORMAT_VERSION : FORMAT_VERSION;
+		return version + "|" + nextIncarnation + "|"
+				+ encodeSnapshot(current, version) + "|"
+				+ encodeSnapshot(copySource, version);
+	}
+
+	private static boolean hasPairEntries(Snapshot snapshot) {
+		return snapshot != null && !snapshot.byPairBinding.isEmpty();
 	}
 
 	/** Restores only durable lineage/high-water evidence, never numeric results. */
 	public void importState(String state) {
 		String[] fields = requireText(state, "Token-ledger state")
 				.split("\\|", -1);
-		if (fields.length != 4 || (!FORMAT_VERSION.equals(fields[0])
+		if (fields.length != 4 || (!PAIR_FORMAT_VERSION.equals(fields[0])
+				&& !FORMAT_VERSION.equals(fields[0])
 				&& !PHASE_FORMAT_VERSION.equals(fields[0])
 				&& !PREVIOUS_FORMAT_VERSION.equals(fields[0])
 				&& !LEGACY_FORMAT_VERSION.equals(fields[0]))) {
@@ -577,6 +675,10 @@ public final class LocusIntersectionTokenLedger2D {
 		long parsedNext = parsePositiveLong(fields[1], "next incarnation");
 		Snapshot parsedCurrent = decodeSnapshot(fields[2], importedVersion);
 		Snapshot parsedCopySource = decodeSnapshot(fields[3], importedVersion);
+		if (PAIR_FORMAT_VERSION.equals(importedVersion)
+				&& !hasPairEntries(parsedCurrent) && !hasPairEntries(parsedCopySource)) {
+			throw new IllegalArgumentException("Pair format requires a pair binding");
+		}
 		if (parsedCurrent == null && parsedCopySource != null) {
 			throw new IllegalArgumentException(
 					"Token-ledger copy source requires a current snapshot");
@@ -597,6 +699,7 @@ public final class LocusIntersectionTokenLedger2D {
 		current = parsedCurrent;
 		copySource = parsedCopySource;
 		authorizedCopySourceOwner = null;
+		authorizedPairSourceCopy = Map.of();
 		materializedClaimCounts.clear();
 	}
 
@@ -613,6 +716,14 @@ public final class LocusIntersectionTokenLedger2D {
 		private final Map<String, Entry> byToken = new LinkedHashMap<>();
 		private final Map<CurrentRootAllocationKey, Entry> stagedByBinding =
 				new LinkedHashMap<>();
+		private final Map<PairRootAllocationKey, Entry> stagedPairBindings =
+				new LinkedHashMap<>();
+		private final Map<PairRootAllocationKey, Entry> startingPairBindings =
+				new LinkedHashMap<>();
+		private final Map<String, Entry> pairCopyEntriesByOldToken =
+				new LinkedHashMap<>();
+		private final java.util.Set<PairSemanticSlotSelector2D>
+				quarantinedPairSelectors = new HashSet<>();
 		private final java.util.Set<ContinuityKey> stagedContinuities =
 				new HashSet<>();
 		private final Map<String, Integer> tokenUses = new LinkedHashMap<>();
@@ -645,6 +756,89 @@ public final class LocusIntersectionTokenLedger2D {
 			this.startingEntries = startingSnapshot == null ? new ArrayList<>()
 					: new ArrayList<>(startingSnapshot.entries);
 			this.authorizedCopySourceOwner = authorizedCopySourceOwner;
+			for (Entry entry : startingEntries) {
+				if (!entry.pairRootBinding.isPresent()) {
+					continue;
+				}
+				Entry currentEntry = entry;
+				if (authorizedCopySourceOwner != null) {
+					Map<String, String> mapping = checkedPairSourceMap(
+							authorizedPairSourceCopy);
+					currentEntry = copiedPairEntry(entry, mapping);
+					if (!currentEntry.pairRootBinding.get().selector
+							.getSourcePairIdentity().equals(material.sourcePair)) {
+						throw new IllegalArgumentException(
+								"Pair copy map does not match the new source pair");
+					}
+					pairCopyEntriesByOldToken.put(startingSnapshot.token(entry),
+							currentEntry);
+				}
+				startingPairBindings.put(currentEntry.pairRootBinding.get(),
+						currentEntry);
+			}
+		}
+
+		/**
+		 * Resolves one D2 structural slot after the caller has certified singleton
+		 * germ coverage in the current component product. Neither the old address
+		 * nor the old eligibility status controls current deterministic resolution.
+		 *
+		 * @return exact existing allocation, or a new allocation on first publication
+		 */
+		public IntersectionRootAllocation2D resolveCurrentPairRoot(
+				String branchLineage, String continuationContract,
+				PairSemanticSlotSelector2D selector,
+				PairRootAddressProof2D addressProof) {
+			ensureOpen();
+			String branch = requireText(branchLineage, "Pair branch lineage");
+			PairRootAllocationKey binding = new PairRootAllocationKey(
+					continuationContract, selector);
+			java.util.Objects.requireNonNull(addressProof);
+			if (!addressProof.matchesSources(selector)
+					|| !selector.getSourcePairIdentity().equals(material.sourcePair)
+					|| quarantinedPairSelectors.contains(selector)) {
+				throw new IllegalArgumentException(
+						"Current pair proof contradicts its structural binding");
+			}
+			Entry selected = stagedPairBindings.get(binding);
+			if (selected == null) {
+				selected = startingPairBindings.get(binding);
+			}
+			boolean reused = selected != null;
+			if (selected == null) {
+				long incarnation = allocateIncarnation();
+				selected = allocatedPairEntry(branch, binding, addressProof,
+						incarnation, Status.ACTIVE, Optional.empty());
+			} else {
+				if (!selected.branchLineage.equals(branch)) {
+					throw new IllegalArgumentException(
+							"Retained pair branch lineage is incompatible");
+				}
+				selected = selected.withPairAddressProof(addressProof)
+						.withStatus(selected.status.isClaimed()
+								? Status.CLAIMED_ACTIVE : Status.ACTIVE);
+			}
+			String token = stage(selected);
+			return new IntersectionRootAllocation2D(token,
+					selected.continuationKey.orElseThrow(), reused);
+		}
+
+		/**
+		 * Records positively established current multiplicity/ambiguity of one
+		 * structural class. No token is minted; only existing claims are retained.
+		 * Missing proof alone uses ordinary dormancy, not this method.
+		 */
+		public void quarantineCurrentPairSelector(
+				PairSemanticSlotSelector2D selector) {
+			ensureOpen();
+			java.util.Objects.requireNonNull(selector);
+			if (!selector.getSourcePairIdentity().equals(material.sourcePair)
+					|| stagedPairBindings.keySet().stream().anyMatch(binding ->
+							binding.selector.equals(selector))) {
+				throw new IllegalArgumentException(
+						"Pair quarantine contradicts staged current authority");
+			}
+			quarantinedPairSelectors.add(selector);
 		}
 
 		/**
@@ -1107,6 +1301,9 @@ public final class LocusIntersectionTokenLedger2D {
 			}
 			Entry found = null;
 			for (Entry entry : startingEntries) {
+				if (entry.pairRootBinding.isPresent()) {
+					continue;
+				}
 				boolean matchingAddress = authorizedCopy
 						? entry.addressProof.sameAddressUnderAuthorizedCopy(
 								addressProof)
@@ -1124,7 +1321,8 @@ public final class LocusIntersectionTokenLedger2D {
 
 		private boolean sameTargetContract(Entry entry,
 				IntersectionRootAddressProof2D addressProof) {
-			return entry.addressProof.getTargetContractSignature().equals(
+			return entry.addressProof != null
+					&& entry.addressProof.getTargetContractSignature().equals(
 					addressProof.getTargetContractSignature());
 		}
 
@@ -1153,6 +1351,8 @@ public final class LocusIntersectionTokenLedger2D {
 			byToken.put(token, selected);
 			selected.currentRootBinding.ifPresent(binding ->
 					stagedByBinding.put(binding, selected));
+			selected.pairRootBinding.ifPresent(binding ->
+					stagedPairBindings.put(binding, selected));
 			stagedContinuities.add(selected.continuityKey());
 			String semantic = selected.semanticKey();
 			int semanticCount = semanticUses.getOrDefault(semantic, 0) + 1;
@@ -1172,7 +1372,7 @@ public final class LocusIntersectionTokenLedger2D {
 				IntersectionRootAddressProof2D addressProof) {
 			Entry found = null;
 			for (Entry entry : startingEntries) {
-				if (entry.semanticKey().equals(semantic)
+				if (entry.addressProof != null && entry.semanticKey().equals(semantic)
 						&& entry.addressProof.equals(addressProof)) {
 					if (found != null) {
 						return null;
@@ -1187,7 +1387,7 @@ public final class LocusIntersectionTokenLedger2D {
 				IntersectionRootAddressProof2D addressProof) {
 			Entry found = null;
 			for (Entry entry : startingEntries) {
-				if (entry.semanticKey().equals(semantic)
+				if (entry.addressProof != null && entry.semanticKey().equals(semantic)
 						&& entry.addressProof
 								.sameAddressUnderAuthorizedCopy(addressProof)) {
 					if (found != null) {
@@ -1254,6 +1454,33 @@ public final class LocusIntersectionTokenLedger2D {
 		return new Entry(solution, branch, continuation, addressProof,
 				incarnation, Status.ACTIVE).withCurrentRootBinding(contract,
 						selector);
+	}
+
+	private static Entry allocatedPairEntry(String branch,
+			PairRootAllocationKey binding, PairRootAddressProof2D proof,
+			long incarnation, Status status, Optional<PairCopyEvidence> copyEvidence) {
+		String key = pairRootAllocationKey(binding, incarnation);
+		return new Entry(branch + "/solution/" + key, branch, Optional.of(key),
+				null, incarnation, status, Optional.empty(), Optional.of(binding),
+				proof, copyEvidence);
+	}
+
+	private static Entry copiedPairEntry(Entry source,
+			Map<String, String> mapping) {
+		PairRootAllocationKey old = source.pairRootBinding.orElseThrow();
+		PairRootAllocationKey next = new PairRootAllocationKey(old.contract,
+				old.selector.remapSources(mapping));
+		return allocatedPairEntry(source.branchLineage, next,
+				source.pairAddressProof.remapSources(mapping), source.incarnation,
+				source.status, Optional.of(new PairCopyEvidence(old.selector,
+						source.pairAddressProof, mapping)));
+	}
+
+	private static String pairRootAllocationKey(PairRootAllocationKey binding,
+			long incarnation) {
+		return PAIR_ROOT_ALLOCATION_PREFIX + framed(binding.contract)
+				+ framed(binding.selector.toExternalForm())
+				+ Long.toUnsignedString(incarnation, 16);
 	}
 
 	private static String currentRootAllocationKey(String contract,
@@ -1496,17 +1723,81 @@ public final class LocusIntersectionTokenLedger2D {
 		}
 	}
 
+	private static final class PairRootAllocationKey {
+		private final String contract;
+		private final PairSemanticSlotSelector2D selector;
+
+		private PairRootAllocationKey(String contract,
+				PairSemanticSlotSelector2D selector) {
+			this.contract = requireText(contract, "Pair continuation contract");
+			this.selector = java.util.Objects.requireNonNull(selector);
+		}
+
+		@Override
+		public boolean equals(Object other) {
+			return other instanceof PairRootAllocationKey
+					&& contract.equals(((PairRootAllocationKey) other).contract)
+					&& selector.equals(((PairRootAllocationKey) other).selector);
+		}
+
+		@Override
+		public int hashCode() {
+			return java.util.Objects.hash(contract, selector);
+		}
+	}
+
+	/** One exact direct-copy correspondence; never a trajectory history. */
+	private static final class PairCopyEvidence {
+		private final PairSemanticSlotSelector2D sourceSelector;
+		private final PairRootAddressProof2D sourceProof;
+		private final Map<String, String> mapping;
+
+		private PairCopyEvidence(PairSemanticSlotSelector2D sourceSelector,
+				PairRootAddressProof2D sourceProof, Map<String, String> mapping) {
+			this.sourceSelector = java.util.Objects.requireNonNull(sourceSelector);
+			this.sourceProof = java.util.Objects.requireNonNull(sourceProof);
+			this.mapping = checkedPairSourceMap(mapping);
+			if (!sourceProof.matchesSources(sourceSelector)) {
+				throw new IllegalArgumentException("Pair copy proof has wrong sources");
+			}
+			sourceSelector.remapSources(this.mapping);
+		}
+
+		private String external() {
+			return framed(sourceSelector.toExternalForm())
+					+ framed(sourceProof.toExternalForm())
+					+ framed(mapping.get(sourceSelector.getFirst().getSourceId()))
+					+ framed(mapping.get(sourceSelector.getSecond().getSourceId()));
+		}
+
+		private static PairCopyEvidence parse(String value) {
+			List<String> fields = PairSemanticSlotSelector2D.fields(value, 4);
+			PairSemanticSlotSelector2D selector = PairSemanticSlotSelector2D.parse(
+					fields.get(0));
+			return new PairCopyEvidence(selector,
+					PairRootAddressProof2D.parse(fields.get(1)),
+					Map.of(selector.getFirst().getSourceId(), fields.get(2),
+							selector.getSecond().getSourceId(), fields.get(3)));
+		}
+	}
+
 	private static final class ContinuityKey {
 		private final String semanticKey;
 		private final IntersectionRootAddressProof2D addressProof;
 		private final Optional<CurrentRootAllocationKey> currentRootBinding;
+		private final Optional<PairRootAllocationKey> pairRootBinding;
+		private final PairRootAddressProof2D pairAddressProof;
 
 		private ContinuityKey(String semanticKey,
 				IntersectionRootAddressProof2D addressProof,
-				Optional<CurrentRootAllocationKey> currentRootBinding) {
+				Optional<CurrentRootAllocationKey> currentRootBinding,
+				Optional<PairRootAllocationKey> pairRootBinding,
+				PairRootAddressProof2D pairAddressProof) {
 			this.semanticKey = semanticKey;
 			this.addressProof = addressProof;
 			this.currentRootBinding = currentRootBinding;
+			this.pairRootBinding = pairRootBinding;
+			this.pairAddressProof = pairAddressProof;
 		}
 
 		@Override
@@ -1516,14 +1807,16 @@ public final class LocusIntersectionTokenLedger2D {
 			}
 			ContinuityKey key = (ContinuityKey) other;
 			return semanticKey.equals(key.semanticKey)
-					&& addressProof.equals(key.addressProof)
-					&& currentRootBinding.equals(key.currentRootBinding);
+					&& java.util.Objects.equals(addressProof, key.addressProof)
+					&& currentRootBinding.equals(key.currentRootBinding)
+					&& pairRootBinding.equals(key.pairRootBinding)
+					&& java.util.Objects.equals(pairAddressProof, key.pairAddressProof);
 		}
 
 		@Override
 		public int hashCode() {
 			return java.util.Objects.hash(semanticKey, addressProof,
-					currentRootBinding);
+					currentRootBinding, pairRootBinding, pairAddressProof);
 		}
 	}
 
@@ -1532,7 +1825,8 @@ public final class LocusIntersectionTokenLedger2D {
 		CLAIMED_ACTIVE("c", true, true, false),
 		CLAIMED_DORMANT("d", false, true, false),
 		PERIODIC_QUARANTINE("q", false, false, true),
-		CLAIMED_PERIODIC_QUARANTINE("r", false, true, true);
+		CLAIMED_PERIODIC_QUARANTINE("r", false, true, true),
+		CLAIMED_PAIR_QUARANTINE("p", false, true, false);
 
 		private final String code;
 		private final boolean active;
@@ -1562,7 +1856,13 @@ public final class LocusIntersectionTokenLedger2D {
 		private static Status parse(String value, String version) {
 			for (Status status : values()) {
 				if (status.code.equals(value)) {
-					if (status != ACTIVE && !FORMAT_VERSION.equals(version)) {
+					if (status == CLAIMED_PAIR_QUARANTINE
+							&& !PAIR_FORMAT_VERSION.equals(version)) {
+						throw new IllegalArgumentException(
+								"Pair quarantine requires the pair ledger format");
+					}
+					if (status != ACTIVE && !FORMAT_VERSION.equals(version)
+							&& !PAIR_FORMAT_VERSION.equals(version)) {
 						throw new IllegalArgumentException(
 								"Legacy token ledger cannot declare retained status");
 					}
@@ -1581,6 +1881,9 @@ public final class LocusIntersectionTokenLedger2D {
 		private final long incarnation;
 		private final Status status;
 		private final Optional<CurrentRootAllocationKey> currentRootBinding;
+		private final Optional<PairRootAllocationKey> pairRootBinding;
+		private final PairRootAddressProof2D pairAddressProof;
+		private final Optional<PairCopyEvidence> pairCopyEvidence;
 
 		private Entry(String solutionLineage, String branchLineage,
 				Optional<String> continuationKey,
@@ -1595,6 +1898,18 @@ public final class LocusIntersectionTokenLedger2D {
 				IntersectionRootAddressProof2D addressProof, long incarnation,
 				Status status,
 				Optional<CurrentRootAllocationKey> currentRootBinding) {
+			this(solutionLineage, branchLineage, continuationKey, addressProof,
+					incarnation, status, currentRootBinding, Optional.empty(), null,
+					Optional.empty());
+		}
+
+		private Entry(String solutionLineage, String branchLineage,
+				Optional<String> continuationKey,
+				IntersectionRootAddressProof2D addressProof, long incarnation,
+				Status status, Optional<CurrentRootAllocationKey> currentRootBinding,
+				Optional<PairRootAllocationKey> pairRootBinding,
+				PairRootAddressProof2D pairAddressProof,
+				Optional<PairCopyEvidence> pairCopyEvidence) {
 			this.solutionLineage = requireText(solutionLineage,
 					"Solution lineage");
 			this.branchLineage = requireText(branchLineage, "Branch lineage");
@@ -1603,7 +1918,7 @@ public final class LocusIntersectionTokenLedger2D {
 					&& continuationKey.get().trim().isEmpty()) {
 				throw new IllegalArgumentException("Continuation key cannot be blank");
 			}
-			this.addressProof = java.util.Objects.requireNonNull(addressProof);
+			this.addressProof = addressProof;
 			if (incarnation <= 0) {
 				throw new IllegalArgumentException("Incarnation must be positive");
 			}
@@ -1611,17 +1926,44 @@ public final class LocusIntersectionTokenLedger2D {
 			this.status = java.util.Objects.requireNonNull(status);
 			this.currentRootBinding = java.util.Objects.requireNonNull(
 					currentRootBinding);
+			this.pairRootBinding = java.util.Objects.requireNonNull(pairRootBinding);
+			this.pairAddressProof = pairAddressProof;
+			this.pairCopyEvidence = java.util.Objects.requireNonNull(pairCopyEvidence);
+			if (pairRootBinding.isPresent()) {
+				if (addressProof != null || currentRootBinding.isPresent()
+						|| pairAddressProof == null || status.isPeriodicallyQuarantined()
+						|| !pairAddressProof.matchesSources(pairRootBinding.get().selector)
+						|| pairCopyEvidence.filter(copy -> !copy.sourceSelector
+								.remapSources(copy.mapping)
+								.equals(pairRootBinding.get().selector)).isPresent()) {
+					throw new IllegalArgumentException("Inconsistent pair entry variant");
+				}
+			} else if (addressProof == null || pairAddressProof != null
+					|| pairCopyEvidence.isPresent()
+					|| status == Status.CLAIMED_PAIR_QUARANTINE) {
+				throw new IllegalArgumentException("Inconsistent scalar entry variant");
+			}
 		}
 
 		private Entry withStatus(Status newStatus) {
 			return new Entry(solutionLineage, branchLineage, continuationKey,
-					addressProof, incarnation, newStatus, currentRootBinding);
+					addressProof, incarnation, newStatus, currentRootBinding,
+					pairRootBinding, pairAddressProof, pairCopyEvidence);
 		}
 
 		private Entry withAddressProof(
 				IntersectionRootAddressProof2D newAddressProof) {
+			if (pairRootBinding.isPresent()) {
+				throw new IllegalArgumentException("Pair entry cannot use scalar proof");
+			}
 			return new Entry(solutionLineage, branchLineage, continuationKey,
 					newAddressProof, incarnation, status, currentRootBinding);
+		}
+
+		private Entry withPairAddressProof(PairRootAddressProof2D newProof) {
+			return new Entry(solutionLineage, branchLineage, continuationKey,
+					null, incarnation, status, Optional.empty(), pairRootBinding,
+					newProof, pairCopyEvidence);
 		}
 
 		private Entry withCurrentRootBinding(String contract,
@@ -1640,10 +1982,21 @@ public final class LocusIntersectionTokenLedger2D {
 
 		private ContinuityKey continuityKey() {
 			return new ContinuityKey(semanticKey(), addressProof,
-					currentRootBinding);
+					currentRootBinding, pairRootBinding, pairAddressProof);
 		}
 
 		private boolean sameAuthorizedCopyContinuity(Entry other) {
+			if (pairRootBinding.isPresent() || other.pairRootBinding.isPresent()) {
+				return pairRootBinding.isPresent() && other.pairRootBinding.isPresent()
+						&& incarnation == other.incarnation
+						&& branchLineage.equals(other.branchLineage)
+						&& pairRootBinding.get().contract.equals(
+								other.pairRootBinding.get().contract)
+						&& pairCopyEvidence.filter(copy -> copy.sourceSelector.equals(
+								other.pairRootBinding.get().selector)
+								&& copy.sourceProof.equals(other.pairAddressProof))
+								.isPresent();
+			}
 			boolean copiedAllocation = incarnation == other.incarnation
 					&& branchLineage.equals(other.branchLineage)
 					&& currentRootAllocationSelector(this).isPresent()
@@ -1709,6 +2062,7 @@ public final class LocusIntersectionTokenLedger2D {
 		private final Material material;
 		private final List<Entry> entries;
 		private final Map<CurrentRootAllocationKey, Entry> byBinding;
+		private final Map<PairRootAllocationKey, Entry> byPairBinding;
 		private final Map<String, Entry> byToken;
 
 		private Snapshot(Material material, List<Entry> entries) {
@@ -1719,8 +2073,28 @@ public final class LocusIntersectionTokenLedger2D {
 			LinkedHashMap<String, Entry> bySemantic = new LinkedHashMap<>();
 			LinkedHashMap<CurrentRootAllocationKey, Entry> indexedByBinding =
 					new LinkedHashMap<>();
+			LinkedHashMap<PairRootAllocationKey, Entry> indexedByPairBinding =
+					new LinkedHashMap<>();
 			LinkedHashMap<String, Entry> indexedByToken = new LinkedHashMap<>();
 			for (Entry entry : this.entries) {
+				if (entry.pairRootBinding.isPresent()) {
+					PairRootAllocationKey pairBinding = entry.pairRootBinding.get();
+					String expectedKey = pairRootAllocationKey(pairBinding,
+							entry.incarnation);
+					if (!entry.continuationKey.filter(expectedKey::equals).isPresent()
+							|| !entry.solutionLineage.equals(
+									entry.branchLineage + "/solution/" + expectedKey)
+							|| !pairBinding.selector.getSourcePairIdentity().equals(
+									material.sourcePair)
+							|| indexedByPairBinding.put(pairBinding, entry) != null) {
+						throw new IllegalArgumentException(
+								"Token ledger has an inconsistent or duplicate pair binding");
+					}
+				} else if (entry.continuationKey.filter(key -> key.startsWith(
+						PAIR_ROOT_ALLOCATION_PREFIX)).isPresent()) {
+					throw new IllegalArgumentException(
+							"Pair token allocation lacks its pair binding");
+				}
 				if (entry.currentRootBinding.isPresent()
 						&& !currentRootAllocation(entry).equals(
 								entry.currentRootBinding)) {
@@ -1750,6 +2124,8 @@ public final class LocusIntersectionTokenLedger2D {
 				}
 			}
 			this.byBinding = java.util.Collections.unmodifiableMap(indexedByBinding);
+			this.byPairBinding = java.util.Collections.unmodifiableMap(
+					indexedByPairBinding);
 			this.byToken = java.util.Collections.unmodifiableMap(indexedByToken);
 		}
 
@@ -1844,11 +2220,27 @@ public final class LocusIntersectionTokenLedger2D {
 				.append(hex(snapshot.material.topology)).append('~')
 				.append(snapshot.entries.size());
 		for (Entry entry : snapshot.entries) {
-			encoded.append('~').append(entry.status.code).append(',')
+			encoded.append('~');
+			if (PAIR_FORMAT_VERSION.equals(version)) {
+				encoded.append(entry.pairRootBinding.isPresent() ? "P," : "S,");
+			} else if (entry.pairRootBinding.isPresent()) {
+				throw new IllegalArgumentException("Pair entries require ledger v5");
+			}
+			encoded.append(entry.status.code).append(',')
 					.append(entry.incarnation).append(',')
 					.append(hex(entry.solutionLineage)).append(',')
 					.append(hex(entry.branchLineage)).append(',')
-					.append(hex(entry.continuationKey.orElse(""))).append(',')
+					.append(hex(entry.continuationKey.orElse(""))).append(',');
+			if (entry.pairRootBinding.isPresent()) {
+				PairRootAllocationKey binding = entry.pairRootBinding.get();
+				encoded.append(hex(binding.contract)).append(',')
+						.append(hex(binding.selector.toExternalForm())).append(',')
+						.append(hex(entry.pairAddressProof.toExternalForm())).append(',')
+						.append(hex(entry.pairCopyEvidence.map(PairCopyEvidence::external)
+								.orElse("")));
+				continue;
+			}
+			encoded
 					.append(hex(entry.addressProof.getSourceProviderSignature()))
 					.append(',')
 					.append(hex(entry.addressProof.getTargetContractSignature()))
@@ -1885,6 +2277,16 @@ public final class LocusIntersectionTokenLedger2D {
 		ArrayList<Entry> entries = new ArrayList<>();
 		for (int index = 0; index < count; index++) {
 			String[] entry = parts[index + 5].split(",", -1);
+			if (PAIR_FORMAT_VERSION.equals(version)) {
+				if (entry.length == 10 && "P".equals(entry[0])) {
+					entries.add(decodePairEntry(entry));
+					continue;
+				}
+				if (entry.length != 11 || !"S".equals(entry[0])) {
+					throw new IllegalArgumentException("Malformed ledger entry variant");
+				}
+				entry = java.util.Arrays.copyOfRange(entry, 1, entry.length);
+			}
 			int expectedFields = hasDeterministicBindingFields(version) ? 10 : 8;
 			if (entry.length != expectedFields) {
 				throw new IllegalArgumentException("Malformed token-ledger entry");
@@ -1926,8 +2328,21 @@ public final class LocusIntersectionTokenLedger2D {
 		return new Snapshot(material, entries);
 	}
 
+	private static Entry decodePairEntry(String[] entry) {
+		PairRootAllocationKey binding = new PairRootAllocationKey(unhex(entry[6]),
+				PairSemanticSlotSelector2D.parse(unhex(entry[7])));
+		String copy = unhex(entry[9]);
+		return new Entry(unhex(entry[3]), unhex(entry[4]),
+				Optional.of(unhex(entry[5])), null,
+				parsePositiveLong(entry[2], "pair incarnation"),
+				Status.parse(entry[1], PAIR_FORMAT_VERSION), Optional.empty(),
+				Optional.of(binding), PairRootAddressProof2D.parse(unhex(entry[8])),
+				copy.isEmpty() ? Optional.empty()
+						: Optional.of(PairCopyEvidence.parse(copy)));
+	}
+
 	private static boolean hasDeterministicBindingFields(String version) {
-		return FORMAT_VERSION.equals(version)
+		return PAIR_FORMAT_VERSION.equals(version) || FORMAT_VERSION.equals(version)
 				|| PHASE_FORMAT_VERSION.equals(version)
 				|| PREVIOUS_FORMAT_VERSION.equals(version);
 	}

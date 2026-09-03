@@ -52,6 +52,7 @@ $script:PhaseVerifiers = [ordered]@{
     "G9U0-R5" = "verify-g9u0-r5-locus-v2-similarity-transformations.ps1"
     G9S1 = "verify-g9s1-semantic-spline-2d-capability.ps1"
     "G9U0-R6" = "verify-g9u0-r6-semantic-locus-point-interaction-support.ps1"
+    "G9S1-R1" = "verify-g9s1-r1-spline-pair-materialization.ps1"
 }
 
 function Get-TextSha256 {

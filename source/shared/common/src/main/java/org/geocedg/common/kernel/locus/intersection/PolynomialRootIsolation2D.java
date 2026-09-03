@@ -38,11 +38,14 @@ public final class PolynomialRootIsolation2D {
 		private final double parameter;
 		private final double lower;
 		private final double upper;
+		private final boolean stationaryProposal;
 
-		private RootCell(double parameter, double lower, double upper) {
+		private RootCell(double parameter, double lower, double upper,
+				boolean stationaryProposal) {
 			this.parameter = parameter;
 			this.lower = Math.min(lower, parameter);
 			this.upper = Math.max(upper, parameter);
+			this.stationaryProposal = stationaryProposal;
 		}
 
 		/** @return representative root parameter */
@@ -59,6 +62,17 @@ public final class PolynomialRootIsolation2D {
 		public double getUpper() {
 			return upper;
 		}
+
+		/**
+		 * Whether this discovery cell includes an interior derivative-partition
+		 * proposal, possibly merged with another proposal by the existing policy.
+		 * This is discovery provenance, not a multiplicity or existence proof.
+		 *
+		 * @return whether a stationary proposal contributed to this cell
+		 */
+		public boolean isStationaryProposal() {
+			return stationaryProposal;
+		}
 	}
 
 	/** Immutable isolation outcome, including explicit zero-polynomial evidence. */
@@ -72,7 +86,7 @@ public final class PolynomialRootIsolation2D {
 			ArrayList<RootCell> immutableRoots = new ArrayList<>(roots.size());
 			for (MutableRootCell root : roots) {
 				immutableRoots.add(new RootCell(root.parameter, root.lower,
-						root.upper));
+						root.upper, root.stationaryProposal));
 			}
 			rootCells = Collections.unmodifiableList(immutableRoots);
 		}
@@ -185,7 +199,9 @@ public final class PolynomialRootIsolation2D {
 						: partition.get(index - 1);
 				double cellUpper = index + 1 == partition.size() ? point
 						: partition.get(index + 1);
-				result.add(new MutableRootCell(point, cellLower, cellUpper));
+				MutableRootCell candidate = new MutableRootCell(point, cellLower, cellUpper);
+				candidate.stationaryProposal = index > 0 && index + 1 < partition.size();
+				result.add(candidate);
 			}
 		}
 		for (int index = 0; index + 1 < partition.size(); index++) {
@@ -316,6 +332,7 @@ public final class PolynomialRootIsolation2D {
 		private final double parameter;
 		private double lower;
 		private double upper;
+		private boolean stationaryProposal;
 
 		private MutableRootCell(double parameter, double lower, double upper) {
 			this.parameter = parameter;
@@ -326,6 +343,7 @@ public final class PolynomialRootIsolation2D {
 		private void include(MutableRootCell other) {
 			lower = Math.min(lower, other.lower);
 			upper = Math.max(upper, other.upper);
+			stationaryProposal |= other.stationaryProposal;
 		}
 	}
 }

@@ -1,5 +1,13 @@
 # GeoCeDG specifications
 
+Current R1: **IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**.
+The authorized A/B corrections pass fresh PHASE A/B, COMPOSED and FULL clean
+on the archived tested cohort. `implementationComplete=true`;
+`manualAuthorSmoke=PENDING`; no self/phase approval or PASS is claimed.
+This later status-only documentary reconciliation does not replace the tested
+hashes/receipts. Earlier blocked findings retain their historical scope; see the
+[current R1 report](../../docs/validation/g9s1_r1_structural_implementation_candidate_report.md).
+
 This directory contains durable GeoCeDG contracts. A specification owns
 behavioral meaning; prompts and verification scripts reference it and must not
 restate its geometric rules.
@@ -86,11 +94,27 @@ authorities are reused. For one-sided intersections against the supported
 polynomial target families, provider-owned spline spans feed deterministic
 polynomial root partition/refinement and locally isolated transverse roots may
 enter the existing R4 selector/token/materialization lifecycle. The present
-piecewise-polynomial Locus V2 x Locus V2 capability is deliberately rich-only:
+published G9S1 piecewise-polynomial Locus V2 x Locus V2 capability is deliberately rich-only:
 its floating box subdivision and dual-Newton evidence do not establish a
 symmetric certified unique pair selector, so it allocates no active ledger
 token and materializes no point. The approved implementation does not invent
 scholarly citations and does not close the periodic-quarantine risk.
+
+`curves/spline-v2-pair-materialization.md` is the **AUTHOR-APPROVED BOUNDED
+DESIGN / IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW** R1 successor, not phase PASS. ADR 0021
+permits only authenticated spline-pair certified singleton transverse-germ
+classes, with symmetric source-associated selectors, current class coverage,
+strict pair-bearing ledger v5 and exact claimed-slot recurrence. Generic pairs,
+same-germ multi-sheet classes and the demonstrated monodromic scope remain
+rich-only. ADR 0022 authorizes the prerequisite structural continuity correction
+inside the same bounded native spline family; exact periodic elimination and
+outward enclosure of the represented structural function replace neither
+numerical interpolation validation nor pair proof. The old scientific blocker
+and D2 evidence remain unchanged. See the
+[structural design](../../docs/architecture/g9s1_r1_structural_spline_continuity.md)
+and [current R1 matrix](../../docs/validation/g9s1_r1_spline_pair_materialization_validation_matrix.md).
+Technical completion is recorded above; author approval, G9U1 implementation
+and R4 risk closure are not implied.
 
 `locus/locus-v2-point-interaction.md` is the G9U0-R6 **NORMATIVE — PASS —
 AUTHOR APPROVED** contract. Accepted ADR 0019 keeps the inverse

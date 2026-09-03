@@ -36,6 +36,7 @@ public final class IntersectionCandidate2D {
 	private final LineageEventKind lineageEventKind;
 	private final List<String> candidateParentContinuationKeys;
 	private final List<IntersectionDiagnostic2D> diagnostics;
+	private final SplineImplicitIntervalCertification2D.Proof structuralCertificate;
 
 	/** Creates an immutable candidate with explicit evidence strength. */
 	public IntersectionCandidate2D(String branchKey, String componentKey,
@@ -49,6 +50,22 @@ public final class IntersectionCandidate2D {
 			LineageEventKind lineageEventKind,
 			List<String> candidateParentContinuationKeys,
 			List<IntersectionDiagnostic2D> diagnostics) {
+		this(branchKey, componentKey, semanticParameter, liftedPeriodicParameter,
+				isolatingInterval, localIsolationStatus, continuationKey, contactClass,
+				multiplicityStatus, establishedMultiplicity, solverMethod, numericGuarantee,
+				lineageEventKind, candidateParentContinuationKeys, diagnostics, null);
+	}
+
+	private IntersectionCandidate2D(String branchKey, String componentKey,
+			double semanticParameter, OptionalDouble liftedPeriodicParameter,
+			IntersectionParameterInterval2D isolatingInterval,
+			LocalIsolationStatus localIsolationStatus, Optional<String> continuationKey,
+			ContactClass contactClass, MultiplicityStatus multiplicityStatus,
+			OptionalInt establishedMultiplicity, SolverMethod solverMethod,
+			NumericGuarantee numericGuarantee, LineageEventKind lineageEventKind,
+			List<String> candidateParentContinuationKeys,
+			List<IntersectionDiagnostic2D> diagnostics,
+			SplineImplicitIntervalCertification2D.Proof structuralCertificate) {
 		this.branchKey = requireText(branchKey, "Branch key");
 		this.componentKey = requireText(componentKey, "Component key");
 		if (!Double.isFinite(semanticParameter)) {
@@ -93,6 +110,21 @@ public final class IntersectionCandidate2D {
 		this.candidateParentContinuationKeys = immutableStrings(
 				candidateParentContinuationKeys);
 		this.diagnostics = immutableDiagnostics(diagnostics);
+		this.structuralCertificate = structuralCertificate;
+	}
+
+	IntersectionCandidate2D withStructuralCertificate(
+			SplineImplicitIntervalCertification2D.Proof certificate) {
+		return new IntersectionCandidate2D(branchKey, componentKey, semanticParameter,
+				liftedPeriodicParameter, isolatingInterval, localIsolationStatus,
+				continuationKey, contactClass, multiplicityStatus, establishedMultiplicity,
+				solverMethod, numericGuarantee, lineageEventKind,
+				candidateParentContinuationKeys, diagnostics,
+				java.util.Objects.requireNonNull(certificate));
+	}
+
+	SplineImplicitIntervalCertification2D.Proof getStructuralCertificate() {
+		return structuralCertificate;
 	}
 
 	public String getBranchKey() {

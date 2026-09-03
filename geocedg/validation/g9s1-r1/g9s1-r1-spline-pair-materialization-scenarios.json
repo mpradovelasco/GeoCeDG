@@ -1,0 +1,1419 @@
+{
+  "schemaVersion": 1,
+  "phase": "G9S1-R1",
+  "artifactRole": "REQUIRED_EXECUTION_AND_COVERAGE_INVENTORY_NOT_A_TEST_RESULT",
+  "status": "BLOCKED_AUTHORIZED_CORRECTIVE_CONTINUATION",
+  "implementationComplete": false,
+  "entrySha": "109f077fc5e2a40bcde45d3271eb928ee66fdfcc",
+  "acceptancePolicy": {
+    "selfApproved": false,
+    "authorApprovedPhase": false,
+    "passClaimed": false,
+    "sourceMethodsAreNotPassingEvidence": true,
+    "devIsNeverAcceptance": true,
+    "requiredLevels": [
+      "PHASE_A",
+      "PHASE_B",
+      "COMPOSED",
+      "FULL_CLEAN_BUILD"
+    ],
+    "manualAuthorSmoke": "PENDING",
+    "historicalDiagnosticDoesNotSubstituteForNativeProof": true
+  },
+  "authority": {
+    "canonicalPrompt": ".github/prompts/tasks/g9s1-r1-spline-pair-intersection-materialization.prompt.md",
+    "matrix": "docs/validation/g9s1_r1_spline_pair_materialization_validation_matrix.md",
+    "specification": "geocedg/specs/curves/spline-v2-pair-materialization.md",
+    "structuralDesign": "docs/architecture/g9s1_r1_structural_spline_continuity.md",
+    "acceptedDesignAdrs": [
+      "docs/adr/0021-spline-pair-singleton-germ-materialization.md",
+      "docs/adr/0022-structural-spline-continuity.md"
+    ],
+    "verifier": "tools/agent/verify-g9s1-r1-spline-pair-materialization.ps1",
+    "entryPoint": "tools/agent/verify.ps1",
+    "historicalBlockerReport": "docs/validation/g9s1_r1_implementation_blocker_report.md",
+    "historicalBlockerEvidence": "geocedg/validation/g9s1-r1/g9s1-r1-implementation-blocker-evidence.json"
+  },
+  "scenarioIds": [
+    "R1-N01",
+    "R1-N02",
+    "R1-N03",
+    "R1-N04",
+    "R1-N05",
+    "R1-N06",
+    "R1-N07",
+    "R1-N08",
+    "R1-I01",
+    "R1-I02",
+    "R1-I03",
+    "R1-I04",
+    "R1-I05",
+    "R1-I06",
+    "R1-I07",
+    "R1-I08",
+    "R1-I09",
+    "R1-I10",
+    "R1-I11",
+    "R1-I12",
+    "R1-M01",
+    "R1-M02",
+    "R1-M03",
+    "R1-M04",
+    "R1-M05",
+    "R1-M06",
+    "R1-L01",
+    "R1-L02",
+    "R1-L03",
+    "R1-L04",
+    "R1-L05",
+    "R1-L06",
+    "R1-L07",
+    "R1-L08",
+    "R1-L09",
+    "R1-L10",
+    "R1-P01",
+    "R1-P02",
+    "R1-P03",
+    "R1-P04",
+    "R1-P05",
+    "R1-P06",
+    "R1-P07",
+    "R1-P08",
+    "R1-B01",
+    "R1-B02",
+    "R1-B03",
+    "R1-B04",
+    "R1-V01",
+    "R1-V02",
+    "R1-V03",
+    "R1-V04",
+    "R1-S01",
+    "R1-S02",
+    "R1-S03",
+    "R1-S04",
+    "R1-S05",
+    "R1-S06",
+    "R1-S07",
+    "R1-S08",
+    "R1-S09",
+    "R1-S10",
+    "R1-S11",
+    "R1-S12",
+    "R1-S13",
+    "R1-S14",
+    "R1-S15",
+    "R1-S16",
+    "R1-S17",
+    "R1-S18",
+    "R1-S19",
+    "R1-S20",
+    "R1-C01",
+    "R1-C02",
+    "R1-C03",
+    "R1-C04",
+    "R1-C05",
+    "R1-C06",
+    "R1-C07",
+    "R1-C08",
+    "R1-C09",
+    "R1-C10",
+    "R1-A01",
+    "R1-A02",
+    "R1-A03",
+    "R1-A04",
+    "R1-A05",
+    "R1-A06",
+    "R1-A07",
+    "R1-A08",
+    "R1-A09",
+    "R1-A10",
+    "R1-A11",
+    "R1-A12",
+    "R1-A13",
+    "R1-A14",
+    "R1-A15",
+    "R1-A16",
+    "R1-U01",
+    "R1-U02",
+    "R1-U03",
+    "R1-U04",
+    "R1-U05",
+    "R1-U06",
+    "R1-U07",
+    "R1-U08",
+    "R1-U09",
+    "R1-U10",
+    "R1-U11",
+    "R1-U12",
+    "R1-U13",
+    "R1-U14",
+    "R1-U15"
+  ],
+  "focusedJUnit": {
+    "classes": [
+      {
+        "name": "org.geocedg.common.kernel.locus.intersection.G9S1R1D2PairSheetContractTest",
+        "source": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1D2PairSheetContractTest.java",
+        "methods": [
+          "uniqueGermsSurviveProjectedRankExchange",
+          "operandReversalPreservesSelectorsAcrossOtherProjectedRankExchange",
+          "chartsKnotsParametersAndEnumerationDoNotEnterTheKey",
+          "collisionAndMissingCoverageNeverAllocateModelPoints",
+          "dormantSlotReactivatesIdenticallyAcrossDifferentHistories",
+          "wrongSourcesOrLineageCannotRetargetExistingPoint",
+          "explicitCopyMapRenormalizesGermWhenCanonicalIdsReverse",
+          "singleTraversalSeamNeedsNoRetirementWithUniqueCurrentGerm",
+          "repeatedMonodromyOrbitIsOutsideScopeRegardlessOfHistory",
+          "diagnosticReloadRechecksCoverageInsteadOfTrustingActiveStatus",
+          "oppositeGermRootsDoNotCompeteWithTheCertifiedSingleton",
+          "diagnosticContractTraceIsEnumerationIndependent"
+        ],
+        "evidenceRole": "PRESERVED_D2_DIAGNOSTIC_NOT_NATIVE_CERTIFICATION"
+      },
+      {
+        "name": "org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest",
+        "source": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1PairAtlasCharacterizationTest.java",
+        "methods": [
+          "cubicQuarterHasStrictlyPositiveAngularJacobian",
+          "rayPairHasExactlyTwoRegularAnalyticPreimagesThroughoutLoop",
+          "fullSegmentHasFourSeparatedRootsInTwoContactClasses",
+          "oneControlCircuitPermutesBothRayPreimages",
+          "reverseAndSecondCircuitsHaveTheExpectedPermutation",
+          "sourceControlClosesExactlyWithoutPersistingThePathCoordinate",
+          "allEightSpanJoinsIncludingThePeriodicSeamAreExactlyC2",
+          "ordinaryKnotAndSeamCrossingsDoNotCollideAnalyticPreimages",
+          "operandSwapTransposesPreimagesAndReversesContactSign",
+          "reversedCubicCounterexampleExchangesTheSecondProjectionRegularly",
+          "equalContactAndLocalDegreeDoNotDistinguishTheTwoSheets",
+          "contractibleControlLoopHasNoAnalyticPermutation",
+          "uniqueCommonRootWitnessPermitsAnOrdinaryChartChange",
+          "overlappingBoxesAloneDoNotEstablishTheSameRoot",
+          "currentRootSetIsPathIndependentButAFullLiftHasMonodromy",
+          "diagnosticSnapshotRoundTripContainsOnlyCurrentControlData",
+          "canonicalNumericTraceIgnoresDiagnosticRootEnumeration",
+          "tangencyAndRootMergeAreRealFailuresRatherThanChartEvents"
+        ],
+        "evidenceRole": "PRESERVED_D2_DIAGNOSTIC_NOT_NATIVE_CERTIFICATION"
+      },
+      {
+        "name": "org.geocedg.common.kernel.locus.intersection.G9S1R1PairSelectorCharacterizationTest",
+        "source": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1PairSelectorCharacterizationTest.java",
+        "methods": [
+          "threeRootExampleHasDistinctRegularSemanticPreimagesAtZero",
+          "ordinaryMotionReversesFirstProjectionWithoutPairSingularity",
+          "quarticPairHasNineExactNonsingularPreimagesAtZero",
+          "quarticPairImplicitVelocitiesExchangeBothProjectionRanks",
+          "equalDiscoveryCountsDoNotEstablishSemanticRootRank",
+          "roundedTransformedCoefficientsAreNotSemanticEvaluationAuthority"
+        ],
+        "evidenceRole": "PRESERVED_D2_DIAGNOSTIC_NOT_NATIVE_CERTIFICATION"
+      },
+      {
+        "name": "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest",
+        "source": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1PairTokenLedgerTest.java",
+        "methods": [
+          "sourceSwapNormalizesGermAndKeepsDescriptorsAssociated",
+          "selectorRoundTripIsStrictAndContainsNoAddressOrChart",
+          "pairProofRetainsBothExactAddressBitsAndCanonicalAxes",
+          "oppositeGermsReceiveDistinctOpaqueTokensWithV5PairBindings",
+          "ordinaryParameterAndProviderDriftNeverReplaceTheSelectorToken",
+          "missingCurrentProofMakesClaimDormantAndUniqueRecurrenceReusesIt",
+          "pairQuarantineRoundTripIsNotStickyAndNeverBecomesR4PeriodicState",
+          "unavailableSnapshotPreservesOnlyClaimsAndDowngradesPairQuarantine",
+          "unclaimedAmbiguityAllocatesAndRetainsNoPairToken",
+          "duplicateStagingFailsClosedAndQuarantineCannotContradictStaging",
+          "wrongSourceOrBranchContextCannotRetargetRetainedPairBinding",
+          "pairSchemaRejectsDownversionedPayloadsMalformedVariantsAndProofs",
+          "exactCopyReversesCanonicalAxesAndGermWithoutLosingTokenOwnership",
+          "dormantClosureCopyRetainsExactAssociationAndCanReactivateLater",
+          "copyWithoutExactTwoSourceAssociationFailsBeforeAllocation",
+          "directIncrementalAndDormantHistoriesHaveIdenticalFinalSlotBindings"
+        ],
+        "evidenceRole": "CURRENT_R1_SCIENTIFIC_OR_HOST_REGRESSION"
+      },
+      {
+        "name": "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest",
+        "source": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1SplinePairIntervalCertificationTest.java",
+        "methods": [
+          "structuralRationalCoefficientBridgeProvesExactBounds",
+          "outwardBasicOperationsContainExactDyadicResults",
+          "subnormalUnderflowAndSignedZeroRemainEnclosed",
+          "divisionEnclosesRationalValueAndRefusesZeroDivisor",
+          "singletonTransverseRootHasIndependentExistenceAndClassProof",
+          "oppositeGermsAreIndependentlyUniqueWithoutClaimingGlobalCompleteness",
+          "productiveCandidateEnumerationReversalPreservesExactSelectorTokenBindings",
+          "syntheticGlobalCompleteDoesNotMaterializeActualMultipleGermClasses",
+          "syntheticGlobalIncompleteRetainsActuallyCertifiedLocalPairEligibility",
+          "multipleSameGermRootsDoNotBlockCertifiedOppositeSingleton",
+          "exactKnotGluePermitsRootProofAcrossBothSpanBoundaries",
+          "nonzeroFloatingKnotDefectDoesNotBecomeExactGlue",
+          "incompleteCoverageBudgetCannotClaimUniqueClass",
+          "nestedSimilaritiesUseOriginalCapturedMapRatherThanFlattenedCoefficients",
+          "largeTranslatedFlatteningCannotFabricateAnIntervalCertificate",
+          "collapsedImageAndGenericEvaluatorAreNotPromoted",
+          "canonicalSourceOrderProducesIdenticalCertificates",
+          "exactPeriodicSeamChartHasOneCanonicalRootPerGerm",
+          "repeatedPeriodicTraversalRetainsSameGermMultiplicity"
+        ],
+        "evidenceRole": "CURRENT_R1_SCIENTIFIC_OR_HOST_REGRESSION"
+      },
+      {
+        "name": "org.geocedg.common.locus.G9S1R1NativeStructuralPairTest",
+        "source": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1NativeStructuralPairTest.java",
+        "methods": [
+          "structuralSplineRetainsHistoricalImplicitTangencyBarrier",
+          "nativePeriodicLoopAndStraightSplineCertifyTwoCurrentSingletonGerms",
+          "existingPairChildrenConsumeOnePublishedSnapshotWithoutAnotherSolve",
+          "nativePeriodicSeamHasOneOwnerAndRetainsPointsAcrossRegularCrossing",
+          "nativeBothSourceInternalKnotRootMaterializesExactlyOnce",
+          "nativeOneSourceKnotRootUsesStructuralChartWithoutDuplicatePoint",
+          "nativeOnlySecondCallerSourceKnotHasTheSameCertifiedSemanticRoot",
+          "nativeDistinctRootsOnOppositeSidesOfOneKnotAreNeverProximityMerged",
+          "nativeNearTangencyDepthExhaustionKeepsTwoDistinctRichOnlyPreimages",
+          "nativeNearKnotMotionCannotRetireCurrentSingletonToken",
+          "nativePeriodicOperandsRemainSymmetricAndNegativeTransformHasNewContext",
+          "nativePeriodicTangencyDoesNotAcquireTransverseMaterializationAuthority",
+          "nativeOverlappingSplineImagesNeverProduceIsolatedPairTokens",
+          "nativeRepeatedPeriodicTraversalHasFourRootsButNoSingletonGerm",
+          "nativeCollapsedPeriodicImageInvalidatesAndRecoversOnlyExistingPoints"
+        ],
+        "evidenceRole": "CURRENT_R1_SCIENTIFIC_OR_HOST_REGRESSION"
+      },
+      {
+        "name": "org.geocedg.common.locus.G9S1R1SplineAtlasHostCharacterizationTest",
+        "source": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1SplineAtlasHostCharacterizationTest.java",
+        "methods": [
+          "doubleTraversalCapturesPublicPeriodicSpansAndFloatingGluing",
+          "directIncrementalAndReversePathsRecoverIdenticalCurrentCoefficientBits",
+          "closedControlLoopReturnsExactInputsAndDefinitionsWithoutPointTracking",
+          "hostXmlRoundTripRetainsSourceIdsAndCurrentPolynomialDefinitions",
+          "currentPublicSplinePairRemainsRichOnlyWithoutAssumingRootCount"
+        ],
+        "evidenceRole": "PRESERVED_D2_DIAGNOSTIC_NOT_NATIVE_CERTIFICATION"
+      },
+      {
+        "name": "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest",
+        "source": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1SplinePairMaterializationTest.java",
+        "methods": [
+          "simpleTransversePairMaterializesWithoutGlobalCompleteness",
+          "projectedRankExchangePreservesBothExactTokensAndPoints",
+          "identicalFinalDefinitionsResolveIndependentlyOfUpdatePathAndReopen",
+          "undoRedoRestoresActiveDormantAndReactivatedGraph",
+          "closureCopyRemapsBothSourcesAndRebasesPairToken",
+          "reversedCallerOperandsHaveEquivalentCurrentSlotEvidence",
+          "dormantPointReactivatesSameSlotWithoutAllocatingGeoPoint",
+          "xmlReopenPreservesPairSelectorTokenAndDormantClaim",
+          "sameGermAmbiguityDoesNotBlockIndependentlyUniqueOppositeGerm",
+          "nativeDyadicKnotCrossingKeepsCurrentSingletonSlot",
+          "nativeKnotStoredPolynomialJetDefectIsExactNotTolerance",
+          "genericLocusPairStaysRichOnlyDespiteSharedInfrastructure",
+          "transformedPairHasNewContextAndCollapsedImageHasNoIsolatedSlot"
+        ],
+        "evidenceRole": "CURRENT_R1_SCIENTIFIC_OR_HOST_REGRESSION"
+      },
+      {
+        "name": "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest",
+        "source": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1StructuralSplineContinuityTest.java",
+        "methods": [
+          "historicalIndependentSpansHaveExactNonzeroNativeKnotDefect",
+          "nativeBlockerHasStructuralJetsThroughCubicOrderMinusOne",
+          "asymmetricCubicKnotsAreStructuralRatherThanToleranceGlued",
+          "intermediateDegreesRetainAllStructuralJetsAndOriginalBoundaryRows",
+          "degreeTwelveNativeModelRetainsElevenExactKnotJets",
+          "maximumPointCountUsesReducedBoundedSystem",
+          "historicallyAdmittedTwentyFivePointQuinticRetainsNumericalAdmission",
+          "periodicCubicSeamAndInteriorJetsAreExact",
+          "periodicIntermediateAndDegreeTwelveSeamsAreStructural",
+          "roundedNormalizedKnotsKeepExactStructuralMeaning",
+          "finiteSmallLargeAndMixedSignCoordinatesRetainStructuralJets",
+          "nontrivialHighDegreeCurvesPreserveClassicFamilyGeometryAndBoundaryRows",
+          "defaultClassicFloatChordKnotsAreNotTheNativeDoubleKnotAuthority",
+          "admittedNonlinearDegreeSevenMatchesIndependentNativeEquationOracle",
+          "previouslyRejectedOpenDegreeTwelveInputsRemainExplicitNumericalRejections",
+          "fullRankDyadicDegreeTwelveInputStillRequiresNumericalAdmission",
+          "differentCoordinateScalesDoNotBecomeContinuityTolerance",
+          "exactStructuralNumeratorsAreDefensiveAndSignatureIsVersioned",
+          "approximateClosedEndpointsAreRejectedWithoutAveraging",
+          "signedZeroClosingCoordinatesDoNotBreakExactPeriodicity",
+          "existingPointDegreeAndDenseAdmissionPolicyRemainBounded"
+        ],
+        "evidenceRole": "CURRENT_R1_SCIENTIFIC_OR_HOST_REGRESSION"
+      },
+      {
+        "name": "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest",
+        "source": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1StructuralSplineLifecycleTest.java",
+        "methods": [
+          "highPrecisionQuinticRebuildsExactDerivedAuthorityAfterXmlAndUndo",
+          "highPrecisionQuinticCopyRemapsIdentityWithoutCopyingNumericalAuthority",
+          "palindromicSplineNonminimumGuardsDoNotObstructCrossingResolution",
+          "nativeRetracedSplineSingularTrueMinimumStillFailsClosed",
+          "commandSchemaRebuildsVersionedModelWithoutPersistingDerivedState",
+          "modelRevisionChangesWithoutChangingProviderSourceOrAddressIdentity",
+          "invalidSourceRecoveryRetainsInteractionOwnedPointAndExactDirection",
+          "compatibleRenamePreservesStructuralModelAndExistingBindings",
+          "closureCopyRemapsSourceAndPointButPreservesSemanticDirection",
+          "undoRedoRestoresInvalidAndValidSourceWithoutReplacingDurableIdentity",
+          "oneSidedR4TokenReactivatesAfterStructuralSourceRecomputation",
+          "transformedPartialMetricAndPointRecoverAcrossNegativeAndZeroDilation",
+          "periodicInteractionDirectionBitsAndLiftSurviveStructuralModelReopen",
+          "approximateHostEndpointEqualityCannotDeclareStructuralPeriodicClosure",
+          "exactDistinctEndpointObjectsRetainClosedProviderAndCanonicalOwnership",
+          "currentReopenAndDifferentRegularUpdatePathsYieldIdenticalModelSignatures",
+          "sameSourceRichOnlyQueryRetainsItsSingleDependencyAcrossReopen",
+          "sameSourceRichOnlyClosureCopyRemapsOneActualSourceWithoutPairAllocation",
+          "explicitCompatibleNumericRedefinePreservesPairSourceTokenAndPoint",
+          "incompatibleSplineReplacementRetiresOldPairAndPointWithoutRetargeting",
+          "nativeSplineExplicitReplacementSucceedsWithoutPairConsumers",
+          "nativeSplineExplicitReplacementRetiresRichOnlyPairWithoutPointChild",
+          "nativeSplineExplicitReplacementRebuildsWithOrdinarySemanticPointOnly",
+          "stagedSplineOutputUsesExactSerializationOverlayWithoutPublishingLiveIdentity"
+        ],
+        "evidenceRole": "CURRENT_R1_SCIENTIFIC_OR_HOST_REGRESSION"
+      },
+      {
+        "name": "org.geocedg.common.kernel.locus.intersection.PiecewisePolynomialPairIntersectionCapability2DTest",
+        "source": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/PiecewisePolynomialPairIntersectionCapability2DTest.java",
+        "methods": [
+          "multipleRootsInsideOneLegacyGridCellAreFoundSemantically",
+          "callerOperandSwapKeepsCanonicalSemanticPairs",
+          "transversePairRefinementIsInvariantUnderUniformScale",
+          "canonicalKnotAndPeriodicSeamOwnershipPreventDuplicates",
+          "tangencyRemainsRichOnlyAndFailClosed",
+          "polynomialOverlapNeverManufacturesFiniteRoots",
+          "pairBoxBudgetFailsCoherently"
+        ],
+        "evidenceRole": "PRESERVED_GENERIC_PAIR_DISCOVERY_AND_NEGATIVES"
+      },
+      {
+        "name": "org.geocedg.desktop.G9S1R1NativeArchivePersistenceTest",
+        "source": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9S1R1NativeArchivePersistenceTest.java",
+        "methods": [
+          "nativeCedgActiveDormantAndReactivatedPairPreservesExactOwnership",
+          "nativeCedgPairQuarantineRestoresCurrentMultiplicityAndReactivatesSamePoint",
+          "nativeCedgPeriodicActiveSeamPreservesBothExactTokenBindings"
+        ],
+        "evidenceRole": "NATIVE_DESKTOP_ARCHIVE"
+      },
+      {
+        "name": "org.geocedg.common.kernel.spline.G9S1R1SplinePrecisionAdmissionTest",
+        "source": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/spline/G9S1R1SplinePrecisionAdmissionTest.java",
+        "methods": [
+          "ordinaryCubicUsesBinary64WithoutPrecisionEscalation",
+          "historicalQuinticPrecisionAndCanonicalExpansionRepeatExactly",
+          "oneFallbackLevelFailsClosedWithoutSuccessiveStability",
+          "arithmeticWorkCapRejectsBeforeReturningAModel",
+          "precisionPolicyMaximumsCannotBeExpanded",
+          "genuinelySingularLinearSystemIsRejectedAtEveryPrecision",
+          "originalBackwardErrorRejectsAnIncorrectSolution",
+          "precisionFallbackCannotBypassInconsistentOriginalEquation",
+          "invalidSemanticInputsNeverEnterPrecisionFallback",
+          "highSupportedDegreeAndPeriodicModelsReportArithmeticRoutes"
+        ],
+        "evidenceRole": "CURRENT_PRODUCTIVE_CORRECTIVE_REGRESSION_NOT_EXECUTION_EVIDENCE"
+      },
+      {
+        "name": "org.geocedg.common.kernel.locus.intersection.G9S1R1StructuralImplicitCertificationTest",
+        "source": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/G9S1R1StructuralImplicitCertificationTest.java",
+        "methods": [
+          "simpleImplicitRootHasStructuralExistenceAndUniqueMaterialization",
+          "separatedSimpleRootsPreserveBothCurrentTokens",
+          "nonzeroTinyDerivativeUsesIntervalSignInsteadOfTangencyEpsilon",
+          "exactTangencyRemainsOneEstimatedRichContactWithoutToken",
+          "singularImplicitContactRemainsRichWithoutInventedMultiplicity",
+          "stationaryDiscoveryProvenanceDoesNotCertifyMultiplicity",
+          "exactBoundaryContactIsSeparateFromStationaryDiscoveryAndMultiplicity",
+          "threeSimpleRootsRemainDistinctWithoutCoordinateZeroSnapping",
+          "squaredTargetRetainsTwoRichContactsAndNoFalseTransverseRoot",
+          "floatingArtificialSplitCannotAcquireSimpleRootCertificate",
+          "veryCloseDistinctSimpleRootsAreNotMergedByParameterTolerance",
+          "certifiedRootsBelowLegacyDeduplicationToleranceRemainDistinct",
+          "derivativeIntervalContainingZeroCannotProveTransversality",
+          "structuralValueIntervalExcludesAFalseCandidate",
+          "boundedWorkExhaustionPublishesNoSimpleCertificate",
+          "exactStructuralKnotHasOneCertifiedRootNotTwoSpanCandidates",
+          "openSplineIncludedEndpointHasNoArtificialPeriodicChartBarrier",
+          "periodicSeamHasOneCanonicalRootAndNoEndpointDuplicate",
+          "liftedPeriodicProofUsesOutwardCanonicalEnclosureAndCertifiedDeduplication",
+          "translatedSplineCertifiesOriginalCompositionNotExpandedSurrogate",
+          "negativeDilationRetainsCertifiedOneSidedRoot",
+          "arithmeticUncertaintyCannotTurnSquaredContactIntoSimpleRoot",
+          "genericScalarLocusDoesNotAcquireTheStructuralSplineCapability"
+        ],
+        "evidenceRole": "CURRENT_PRODUCTIVE_CORRECTIVE_REGRESSION_NOT_EXECUTION_EVIDENCE"
+      }
+    ],
+    "inventoryRule": "Every source @Test method must appear here and in current-run JUnit without failure, error or skip. All listed methods execute even when a row is also backed by static/historical authority.",
+    "canonicalComparisonRule": "Compare normalized exact-source PHASE A/B summaries; no test timing, absolute temporary path or wall-clock value may define scientific identity."
+  },
+  "coverage": [
+    {
+      "id": "R1-N01",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#singletonTransverseRootHasIndependentExistenceAndClassProof",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#oppositeGermsAreIndependentlyUniqueWithoutClaimingGlobalCompleteness",
+        "org.geocedg.common.locus.G9S1R1NativeStructuralPairTest#nativePeriodicLoopAndStraightSplineCertifyTwoCurrentSingletonGerms",
+        "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest#simpleTransversePairMaterializesWithoutGlobalCompleteness"
+      ],
+      "coverageNote": "Independent interval proof and actual public-command materialization are complementary."
+    },
+    {
+      "id": "R1-N02",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#structuralRationalCoefficientBridgeProvesExactBounds",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#outwardBasicOperationsContainExactDyadicResults",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#divisionEnclosesRationalValueAndRefusesZeroDivisor"
+      ],
+      "coverageNote": "Exact BigDecimal/rational comparisons test the actual interval endpoints over varied inputs; not a claim of exact interpolation."
+    },
+    {
+      "id": "R1-N03",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#singletonTransverseRootHasIndependentExistenceAndClassProof",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#nonzeroFloatingKnotDefectDoesNotBecomeExactGlue",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#incompleteCoverageBudgetCannotClaimUniqueClass",
+        "org.geocedg.common.locus.G9S1R1NativeStructuralPairTest#nativePeriodicTangencyDoesNotAcquireTransverseMaterializationAuthority"
+      ]
+    },
+    {
+      "id": "R1-N04",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1NativeStructuralPairTest#nativePeriodicTangencyDoesNotAcquireTransverseMaterializationAuthority",
+        "org.geocedg.common.locus.G9S1R1NativeStructuralPairTest#nativeNearTangencyDepthExhaustionKeepsTwoDistinctRichOnlyPreimages",
+        "org.geocedg.common.kernel.locus.intersection.PiecewisePolynomialPairIntersectionCapability2DTest#tangencyRemainsRichOnlyAndFailClosed",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest#tangencyAndRootMergeAreRealFailuresRatherThanChartEvents",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1D2PairSheetContractTest#collisionAndMissingCoverageNeverAllocateModelPoints",
+        "org.geocedg.common.locus.G9S1R1NativeStructuralPairTest#nativeOverlappingSplineImagesNeverProduceIsolatedPairTokens",
+        "org.geocedg.common.kernel.locus.intersection.PiecewisePolynomialPairIntersectionCapability2DTest#polynomialOverlapNeverManufacturesFiniteRoots"
+      ],
+      "coverageNote": "The depth-exhausted near-tangency fixture is still transverse; lack of certificate is not declared tangency."
+    },
+    {
+      "id": "R1-N05",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#subnormalUnderflowAndSignedZeroRemainEnclosed",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#divisionEnclosesRationalValueAndRefusesZeroDivisor",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#largeTranslatedFlatteningCannotFabricateAnIntervalCertificate",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#invalidSourceRecoveryRetainsInteractionOwnedPointAndExactDirection"
+      ]
+    },
+    {
+      "id": "R1-N06",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#incompleteCoverageBudgetCannotClaimUniqueClass",
+        "org.geocedg.common.kernel.locus.intersection.PiecewisePolynomialPairIntersectionCapability2DTest#pairBoxBudgetFailsCoherently",
+        "org.geocedg.common.locus.G9S1R1NativeStructuralPairTest#nativeNearTangencyDepthExhaustionKeepsTwoDistinctRichOnlyPreimages",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest#missingCurrentProofMakesClaimDormantAndUniqueRecurrenceReusesIt"
+      ]
+    },
+    {
+      "id": "R1-N07",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#historicalIndependentSpansHaveExactNonzeroNativeKnotDefect",
+        "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest#nativeKnotStoredPolynomialJetDefectIsExactNotTolerance",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#nonzeroFloatingKnotDefectDoesNotBecomeExactGlue",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#nativeBlockerHasStructuralJetsThroughCubicOrderMinusOne",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#periodicCubicSeamAndInteriorJetsAreExact"
+      ],
+      "coverageNote": "Historical independent-span defect remains a diagnostic; native structural continuity is proved separately."
+    },
+    {
+      "id": "R1-N08",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#nestedSimilaritiesUseOriginalCapturedMapRatherThanFlattenedCoefficients",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#largeTranslatedFlatteningCannotFabricateAnIntervalCertificate",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairSelectorCharacterizationTest#roundedTransformedCoefficientsAreNotSemanticEvaluationAuthority",
+        "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest#transformedPairHasNewContextAndCollapsedImageHasNoIsolatedSlot"
+      ]
+    },
+    {
+      "id": "R1-I01",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest#oppositeGermsReceiveDistinctOpaqueTokensWithV5PairBindings",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#oppositeGermsAreIndependentlyUniqueWithoutClaimingGlobalCompleteness",
+        "org.geocedg.common.locus.G9S1R1NativeStructuralPairTest#nativePeriodicLoopAndStraightSplineCertifyTwoCurrentSingletonGerms"
+      ]
+    },
+    {
+      "id": "R1-I02",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest#sourceSwapNormalizesGermAndKeepsDescriptorsAssociated",
+        "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest#reversedCallerOperandsHaveEquivalentCurrentSlotEvidence",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#canonicalSourceOrderProducesIdenticalCertificates",
+        "org.geocedg.common.kernel.locus.intersection.PiecewisePolynomialPairIntersectionCapability2DTest#callerOperandSwapKeepsCanonicalSemanticPairs",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest#operandSwapTransposesPreimagesAndReversesContactSign"
+      ],
+      "coverageNote": "Separate rich-result owners have different opaque tokens; source-normalized semantic mapping is the invariant."
+    },
+    {
+      "id": "R1-I03",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#productiveCandidateEnumerationReversalPreservesExactSelectorTokenBindings",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1D2PairSheetContractTest#diagnosticContractTraceIsEnumerationIndependent",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest#canonicalNumericTraceIgnoresDiagnosticRootEnumeration"
+      ],
+      "coverageNote": "The productive test reverses actual capability submission and checks the real publisher/ledger. Historical diagnostics alone are not sufficient."
+    },
+    {
+      "id": "R1-I04",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest#projectedRankExchangePreservesBothExactTokensAndPoints",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1D2PairSheetContractTest#uniqueGermsSurviveProjectedRankExchange",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairSelectorCharacterizationTest#ordinaryMotionReversesFirstProjectionWithoutPairSingularity"
+      ]
+    },
+    {
+      "id": "R1-I05",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest#reversedCallerOperandsHaveEquivalentCurrentSlotEvidence",
+        "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest#projectedRankExchangePreservesBothExactTokensAndPoints",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1D2PairSheetContractTest#operandReversalPreservesSelectorsAcrossOtherProjectedRankExchange",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest#reversedCubicCounterexampleExchangesTheSecondProjectionRegularly"
+      ],
+      "coverageNote": "Native source-reversal controls complement the exact second-projection diagnostic; neither projection rank is a selector."
+    },
+    {
+      "id": "R1-I06",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest#selectorRoundTripIsStrictAndContainsNoAddressOrChart",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest#pairProofRetainsBothExactAddressBitsAndCanonicalAxes",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest#ordinaryParameterAndProviderDriftNeverReplaceTheSelectorToken",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1D2PairSheetContractTest#chartsKnotsParametersAndEnumerationDoNotEnterTheKey",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#modelRevisionChangesWithoutChangingProviderSourceOrAddressIdentity"
+      ]
+    },
+    {
+      "id": "R1-I07",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#repeatedPeriodicTraversalRetainsSameGermMultiplicity",
+        "org.geocedg.common.locus.G9S1R1NativeStructuralPairTest#nativeRepeatedPeriodicTraversalHasFourRootsButNoSingletonGerm",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest#unclaimedAmbiguityAllocatesAndRetainsNoPairToken",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest#fullSegmentHasFourSeparatedRootsInTwoContactClasses"
+      ]
+    },
+    {
+      "id": "R1-I08",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#multipleSameGermRootsDoNotBlockCertifiedOppositeSingleton",
+        "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest#sameGermAmbiguityDoesNotBlockIndependentlyUniqueOppositeGerm",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1D2PairSheetContractTest#oppositeGermRootsDoNotCompeteWithTheCertifiedSingleton"
+      ]
+    },
+    {
+      "id": "R1-I09",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#incompleteCoverageBudgetCannotClaimUniqueClass",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#multipleSameGermRootsDoNotBlockCertifiedOppositeSingleton",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#oppositeGermsAreIndependentlyUniqueWithoutClaimingGlobalCompleteness"
+      ],
+      "coverageNote": "Class coverage must exclude every unresolved leaf able to carry that sign; independent opposite-sign exclusion is not global completeness."
+    },
+    {
+      "id": "R1-I10",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest#sourceSwapNormalizesGermAndKeepsDescriptorsAssociated",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest#wrongSourceOrBranchContextCannotRetargetRetainedPairBinding",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1D2PairSheetContractTest#wrongSourcesOrLineageCannotRetargetExistingPoint"
+      ]
+    },
+    {
+      "id": "R1-I11",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest#genericLocusPairStaysRichOnlyDespiteSharedInfrastructure",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#collapsedImageAndGenericEvaluatorAreNotPromoted",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#sameSourceRichOnlyQueryRetainsItsSingleDependencyAcrossReopen",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#sameSourceRichOnlyClosureCopyRemapsOneActualSourceWithoutPairAllocation",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1StructuralImplicitCertificationTest#genericScalarLocusDoesNotAcquireTheStructuralSplineCapability"
+      ]
+    },
+    {
+      "id": "R1-I12",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest#simpleTransversePairMaterializesWithoutGlobalCompleteness",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#syntheticGlobalCompleteDoesNotMaterializeActualMultipleGermClasses",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#syntheticGlobalIncompleteRetainsActuallyCertifiedLocalPairEligibility"
+      ],
+      "coverageNote": "COMPLETE/INCOMPLETE are controlled publication-axis contrasts; underlying numerical root certificates and actual ledger stay unchanged."
+    },
+    {
+      "id": "R1-M01",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.PiecewisePolynomialPairIntersectionCapability2DTest#multipleRootsInsideOneLegacyGridCellAreFoundSemantically",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#oppositeGermsAreIndependentlyUniqueWithoutClaimingGlobalCompleteness",
+        "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest#sameGermAmbiguityDoesNotBlockIndependentlyUniqueOppositeGerm"
+      ]
+    },
+    {
+      "id": "R1-M02",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#exactKnotGluePermitsRootProofAcrossBothSpanBoundaries",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest#uniqueCommonRootWitnessPermitsAnOrdinaryChartChange",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest#overlappingBoxesAloneDoNotEstablishTheSameRoot",
+        "org.geocedg.common.locus.G9S1R1NativeStructuralPairTest#nativeNearKnotMotionCannotRetireCurrentSingletonToken",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest#ordinaryKnotAndSeamCrossingsDoNotCollideAnalyticPreimages"
+      ],
+      "coverageNote": "Abstract common-root/overlap counterexamples remain diagnostic; actual interval and native knot tests consume current production proof."
+    },
+    {
+      "id": "R1-M03",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest#nativeDyadicKnotCrossingKeepsCurrentSingletonSlot",
+        "org.geocedg.common.locus.G9S1R1NativeStructuralPairTest#nativeBothSourceInternalKnotRootMaterializesExactlyOnce",
+        "org.geocedg.common.locus.G9S1R1NativeStructuralPairTest#nativeOneSourceKnotRootUsesStructuralChartWithoutDuplicatePoint",
+        "org.geocedg.common.locus.G9S1R1NativeStructuralPairTest#nativeNearKnotMotionCannotRetireCurrentSingletonToken"
+      ]
+    },
+    {
+      "id": "R1-M04",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1NativeStructuralPairTest#nativePeriodicSeamHasOneOwnerAndRetainsPointsAcrossRegularCrossing",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#exactPeriodicSeamChartHasOneCanonicalRootPerGerm",
+        "org.geocedg.common.kernel.locus.intersection.PiecewisePolynomialPairIntersectionCapability2DTest#canonicalKnotAndPeriodicSeamOwnershipPreventDuplicates"
+      ]
+    },
+    {
+      "id": "R1-M05",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1D2PairSheetContractTest#repeatedMonodromyOrbitIsOutsideScopeRegardlessOfHistory",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest#oneControlCircuitPermutesBothRayPreimages",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest#reverseAndSecondCircuitsHaveTheExpectedPermutation",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest#currentRootSetIsPathIndependentButAFullLiftHasMonodromy",
+        "org.geocedg.common.locus.G9S1R1NativeStructuralPairTest#nativeRepeatedPeriodicTraversalHasFourRootsButNoSingletonGerm",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest#cubicQuarterHasStrictlyPositiveAngularJacobian",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest#rayPairHasExactlyTwoRegularAnalyticPreimagesThroughoutLoop",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest#allEightSpanJoinsIncludingThePeriodicSeamAreExactlyC2",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest#diagnosticSnapshotRoundTripContainsOnlyCurrentControlData",
+        "org.geocedg.common.locus.G9S1R1SplineAtlasHostCharacterizationTest#doubleTraversalCapturesPublicPeriodicSpansAndFloatingGluing"
+      ],
+      "coverageNote": "Exact zero/one/reverse/two-circuit witness is preserved diagnostic authority; native repeated traversal is a current rich-only negative, not a global labeling theorem."
+    },
+    {
+      "id": "R1-M06",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairSelectorCharacterizationTest#quarticPairHasNineExactNonsingularPreimagesAtZero",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairSelectorCharacterizationTest#quarticPairImplicitVelocitiesExchangeBothProjectionRanks",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairSelectorCharacterizationTest#threeRootExampleHasDistinctRegularSemanticPreimagesAtZero",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairSelectorCharacterizationTest#equalDiscoveryCountsDoNotEstablishSemanticRootRank"
+      ],
+      "coverageNote": "These frozen mathematical counterexamples are not certified native singleton positives."
+    },
+    {
+      "id": "R1-L01",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest#simpleTransversePairMaterializesWithoutGlobalCompleteness",
+        "org.geocedg.common.locus.G9S1R1NativeStructuralPairTest#nativePeriodicLoopAndStraightSplineCertifyTwoCurrentSingletonGerms",
+        "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest#dormantPointReactivatesSameSlotWithoutAllocatingGeoPoint"
+      ],
+      "coverageNote": "Explicit public token creation is tested here. Unchanged inspector Cancel/accept behavior is additionally governed by the historical R3 frontend suite and manual author smoke.",
+      "authority": "tools/agent/verify-g9u0-r3-public-locus-ui-hardening.ps1; source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusV2PublicOperations.java#selectIntersectionPoint; existing R3 inspector, no new frontend."
+    },
+    {
+      "id": "R1-L02",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest#projectedRankExchangePreservesBothExactTokensAndPoints",
+        "org.geocedg.common.locus.G9S1R1NativeStructuralPairTest#nativePeriodicSeamHasOneOwnerAndRetainsPointsAcrossRegularCrossing",
+        "org.geocedg.common.locus.G9S1R1NativeStructuralPairTest#nativeNearKnotMotionCannotRetireCurrentSingletonToken"
+      ]
+    },
+    {
+      "id": "R1-L03",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest#identicalFinalDefinitionsResolveIndependentlyOfUpdatePathAndReopen",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest#directIncrementalAndDormantHistoriesHaveIdenticalFinalSlotBindings",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#currentReopenAndDifferentRegularUpdatePathsYieldIdenticalModelSignatures",
+        "org.geocedg.common.locus.G9S1R1SplineAtlasHostCharacterizationTest#directIncrementalAndReversePathsRecoverIdenticalCurrentCoefficientBits",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest#sourceControlClosesExactlyWithoutPersistingThePathCoordinate",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest#contractibleControlLoopHasNoAnalyticPermutation",
+        "org.geocedg.common.locus.G9S1R1SplineAtlasHostCharacterizationTest#closedControlLoopReturnsExactInputsAndDefinitionsWithoutPointTracking"
+      ]
+    },
+    {
+      "id": "R1-L04",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest#missingCurrentProofMakesClaimDormantAndUniqueRecurrenceReusesIt",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest#unavailableSnapshotPreservesOnlyClaimsAndDowngradesPairQuarantine",
+        "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest#dormantPointReactivatesSameSlotWithoutAllocatingGeoPoint",
+        "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest#xmlReopenPreservesPairSelectorTokenAndDormantClaim"
+      ]
+    },
+    {
+      "id": "R1-L05",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest#pairQuarantineRoundTripIsNotStickyAndNeverBecomesR4PeriodicState",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest#duplicateStagingFailsClosedAndQuarantineCannotContradictStaging",
+        "org.geocedg.desktop.G9S1R1NativeArchivePersistenceTest#nativeCedgPairQuarantineRestoresCurrentMultiplicityAndReactivatesSamePoint"
+      ]
+    },
+    {
+      "id": "R1-L06",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest#dormantPointReactivatesSameSlotWithoutAllocatingGeoPoint",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest#directIncrementalAndDormantHistoriesHaveIdenticalFinalSlotBindings",
+        "org.geocedg.desktop.G9S1R1NativeArchivePersistenceTest#nativeCedgPairQuarantineRestoresCurrentMultiplicityAndReactivatesSamePoint",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1D2PairSheetContractTest#dormantSlotReactivatesIdenticallyAcrossDifferentHistories"
+      ]
+    },
+    {
+      "id": "R1-L07",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest#missingCurrentProofMakesClaimDormantAndUniqueRecurrenceReusesIt",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest#unavailableSnapshotPreservesOnlyClaimsAndDowngradesPairQuarantine",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest#pairQuarantineRoundTripIsNotStickyAndNeverBecomesR4PeriodicState",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1D2PairSheetContractTest#repeatedMonodromyOrbitIsOutsideScopeRegardlessOfHistory"
+      ],
+      "coverageNote": "A diagnostic monodromy loop never creates a hidden retirement key; current proof and structural source context remain separate."
+    },
+    {
+      "id": "R1-L08",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest#wrongSourceOrBranchContextCannotRetargetRetainedPairBinding",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#incompatibleSplineReplacementRetiresOldPairAndPointWithoutRetargeting",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#nativeSplineExplicitReplacementSucceedsWithoutPairConsumers",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#nativeSplineExplicitReplacementRetiresRichOnlyPairWithoutPointChild"
+      ],
+      "coverageNote": "Existing G9A explicit incompatible replacement, not label inference, governs disposal; exact current methods are refreshed at freeze."
+    },
+    {
+      "id": "R1-L09",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1NativeStructuralPairTest#existingPairChildrenConsumeOnePublishedSnapshotWithoutAnotherSolve",
+        "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest#dormantPointReactivatesSameSlotWithoutAllocatingGeoPoint",
+        "org.geocedg.desktop.G9S1R1NativeArchivePersistenceTest#nativeCedgPairQuarantineRestoresCurrentMultiplicityAndReactivatesSamePoint"
+      ],
+      "coverageNote": "Repeated child compute asserts identical published result and unchanged source evaluator-call counters; host/native lifecycle asserts no new point. Inspect the call chain as well: interval-only work cannot be ruled out from evaluator counters alone.",
+      "authority": "docs/architecture/g9s1_r1_structural_spline_continuity.md#8-source-derived-work-and-materialized-child-boundary; AlgoLocusIntersectionPointV2.compute/synchronizeMaterializedClaim; GeoLocusIntersectionResult.findExactPointAdmissibleSolution; LocusIntersectionResult2D.indexPointAdmissibleSolutions; LocusIntersectionTokenLedger2D.Snapshot.validatedEntry."
+    },
+    {
+      "id": "R1-L10",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest#unavailableSnapshotPreservesOnlyClaimsAndDowngradesPairQuarantine",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest#unclaimedAmbiguityAllocatesAndRetainsNoPairToken"
+      ],
+      "coverageNote": "Release/removal assertions in ledger tests cover retained claims. Complexity is source-derived, not a heap/time benchmark.",
+      "authority": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionTokenLedger2D.java#releaseMaterializedToken; docs/architecture/g9s1_r1_structural_spline_continuity.md#8-source-derived-work-and-materialized-child-boundary"
+    },
+    {
+      "id": "R1-P01",
+      "methods": [
+        "org.geocedg.desktop.G9S1R1NativeArchivePersistenceTest#nativeCedgActiveDormantAndReactivatedPairPreservesExactOwnership",
+        "org.geocedg.desktop.G9S1R1NativeArchivePersistenceTest#nativeCedgPeriodicActiveSeamPreservesBothExactTokenBindings",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#commandSchemaRebuildsVersionedModelWithoutPersistingDerivedState",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#highPrecisionQuinticRebuildsExactDerivedAuthorityAfterXmlAndUndo"
+      ],
+      "coverageNote": "Desktop methods use actual native archives. The command-schema test is current runtime XML reconstruction, not a byte-exact historical SplineV2 archive."
+    },
+    {
+      "id": "R1-P02",
+      "methods": [
+        "org.geocedg.desktop.G9S1R1NativeArchivePersistenceTest#nativeCedgActiveDormantAndReactivatedPairPreservesExactOwnership",
+        "org.geocedg.desktop.G9S1R1NativeArchivePersistenceTest#nativeCedgPairQuarantineRestoresCurrentMultiplicityAndReactivatesSamePoint"
+      ],
+      "coverageNote": "R1 pair QUARANTINED is not the distinct R4 periodic-quarantine state; this does not close the R4 open risk."
+    },
+    {
+      "id": "R1-P03",
+      "methods": [
+        "org.geocedg.desktop.G9S1R1NativeArchivePersistenceTest#nativeCedgActiveDormantAndReactivatedPairPreservesExactOwnership",
+        "org.geocedg.desktop.G9S1R1NativeArchivePersistenceTest#nativeCedgPairQuarantineRestoresCurrentMultiplicityAndReactivatesSamePoint"
+      ]
+    },
+    {
+      "id": "R1-P04",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest#undoRedoRestoresActiveDormantAndReactivatedGraph",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#undoRedoRestoresInvalidAndValidSourceWithoutReplacingDurableIdentity",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#highPrecisionQuinticRebuildsExactDerivedAuthorityAfterXmlAndUndo"
+      ]
+    },
+    {
+      "id": "R1-P05",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest#closureCopyRemapsBothSourcesAndRebasesPairToken",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest#exactCopyReversesCanonicalAxesAndGermWithoutLosingTokenOwnership",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest#dormantClosureCopyRetainsExactAssociationAndCanReactivateLater",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest#copyWithoutExactTwoSourceAssociationFailsBeforeAllocation",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#closureCopyRemapsSourceAndPointButPreservesSemanticDirection",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1D2PairSheetContractTest#explicitCopyMapRenormalizesGermWhenCanonicalIdsReverse",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#highPrecisionQuinticCopyRemapsIdentityWithoutCopyingNumericalAuthority"
+      ]
+    },
+    {
+      "id": "R1-P06",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#compatibleRenamePreservesStructuralModelAndExistingBindings",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#explicitCompatibleNumericRedefinePreservesPairSourceTokenAndPoint",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#incompatibleSplineReplacementRetiresOldPairAndPointWithoutRetargeting",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#nativeSplineExplicitReplacementSucceedsWithoutPairConsumers",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#nativeSplineExplicitReplacementRetiresRichOnlyPairWithoutPointChild",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#nativeSplineExplicitReplacementRebuildsWithOrdinarySemanticPointOnly",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#stagedSplineOutputUsesExactSerializationOverlayWithoutPublishingLiveIdentity"
+      ]
+    },
+    {
+      "id": "R1-P07",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest#pairSchemaRejectsDownversionedPayloadsMalformedVariantsAndProofs",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest#duplicateStagingFailsClosedAndQuarantineCannotContradictStaging",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest#unavailableSnapshotPreservesOnlyClaimsAndDowngradesPairQuarantine",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1D2PairSheetContractTest#diagnosticReloadRechecksCoverageInsteadOfTrustingActiveStatus"
+      ],
+      "coverageNote": "Strict productive ledger tests are primary; frozen reload model remains a design contrast."
+    },
+    {
+      "id": "R1-P08",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairTokenLedgerTest#pairSchemaRejectsDownversionedPayloadsMalformedVariantsAndProofs",
+        "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest#genericLocusPairStaysRichOnlyDespiteSharedInfrastructure",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#oneSidedR4TokenReactivatesAfterStructuralSourceRecomputation"
+      ],
+      "coverageNote": "R1 tests forbid downversioned pair payloads. Accepted R4 v1-v4 migration assertions remain mandatory through the historical verifier, not duplicated here.",
+      "authority": "tools/agent/verify-g9u0-r4-intersection-admissibility-continuation.ps1; no coordinate/ordinal migration of old locus-pair-root diagnostic handles."
+    },
+    {
+      "id": "R1-B01",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#nestedSimilaritiesUseOriginalCapturedMapRatherThanFlattenedCoefficients",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#largeTranslatedFlatteningCannotFabricateAnIntervalCertificate",
+        "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest#transformedPairHasNewContextAndCollapsedImageHasNoIsolatedSlot",
+        "org.geocedg.common.locus.G9S1R1NativeStructuralPairTest#nativePeriodicOperandsRemainSymmetricAndNegativeTransformHasNewContext",
+        "org.geocedg.common.kernel.locus.intersection.PiecewisePolynomialPairIntersectionCapability2DTest#transversePairRefinementIsInvariantUnderUniformScale"
+      ],
+      "coverageNote": "Actual composition capture and negative-dilation identities are focused; the complete ordinary transform family/covariance remains in R5 regression authority.",
+      "authority": "tools/agent/verify-g9u0-r5-locus-v2-similarity-transformations.ps1"
+    },
+    {
+      "id": "R1-B02",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest#transformedPairHasNewContextAndCollapsedImageHasNoIsolatedSlot",
+        "org.geocedg.common.locus.G9S1R1NativeStructuralPairTest#nativeCollapsedPeriodicImageInvalidatesAndRecoversOnlyExistingPoints",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#transformedPartialMetricAndPointRecoverAcrossNegativeAndZeroDilation",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#collapsedImageAndGenericEvaluatorAreNotPromoted"
+      ]
+    },
+    {
+      "id": "R1-B03",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#transformedPartialMetricAndPointRecoverAcrossNegativeAndZeroDilation",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#periodicInteractionDirectionBitsAndLiftSurviveStructuralModelReopen",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#approximateHostEndpointEqualityCannotDeclareStructuralPeriodicClosure",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#defaultClassicFloatChordKnotsAreNotTheNativeDoubleKnotAuthority",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#nontrivialHighDegreeCurvesPreserveClassicFamilyGeometryAndBoundaryRows"
+      ],
+      "coverageNote": "Focused consumer checks complement unmodified G7/G9S1/R5/R6/Classic authorities; equal-family comparison uses equal knot authority.",
+      "authority": "tools/agent/verify-g9s1-semantic-spline-2d-capability.ps1; tools/agent/verify-g9u0-r6-semantic-locus-point-interaction-support.ps1; tools/agent/verify-g7b-metrics.ps1"
+    },
+    {
+      "id": "R1-B04",
+      "methods": [],
+      "coverageNote": "No productive Desktop/web/profile/G9U1 implementation paths are permitted. Existing inspector accepts current exact tokens without redesign.",
+      "authority": "tools/agent/verify-g9s1-r1-spline-pair-materialization.ps1#Assert-R1Entry/Assert-R1Contracts; protected G9U1 ref 00982e7e148a634cd57ed928f322774df267d5e3; tools/agent/verify-g9u0-r3-public-locus-ui-hardening.ps1."
+    },
+    {
+      "id": "R1-V01",
+      "methods": [],
+      "coverageNote": "Only completed PHASE A/B with exact source/scenario/live JUnit membership and identical normalized summaries can satisfy this row.",
+      "authority": "tools/agent/verify.ps1 -Level PHASE -Phase G9S1-R1; tools/agent/verify-g9s1-r1-spline-pair-materialization.ps1#Get-R1TestResult; canonical-summary.json and canonical-summary.sha256 from each invocation."
+    },
+    {
+      "id": "R1-V02",
+      "methods": [],
+      "coverageNote": "Fake-first registration/runtime tests are operational evidence, not scientific or real Gradle acceptance.",
+      "authority": "tools/agent/tests/verification-runtime.Tests.ps1: R1 phase registration is exact and cannot broaden an unknown phase; tools/agent/verify-verification-infrastructure.ps1; tools/agent/verification-runtime.psm1."
+    },
+    {
+      "id": "R1-V03",
+      "methods": [],
+      "coverageNote": "No row is satisfied by DEV; completed same-source-cohort COMPOSED and FULL -CleanBuild root results are required.",
+      "authority": "tools/agent/verify.ps1 -Level COMPOSED; tools/agent/verify.ps1 -Level FULL -CleanBuild; docs/adr/0020-verification-levels-and-current-run-evidence.md; geocedg/specs/operations/verification-levels.md."
+    },
+    {
+      "id": "R1-V04",
+      "methods": [],
+      "coverageNote": "Final hashes/inventory and zero style/diff errors are execution evidence; this mapping file itself claims none.",
+      "authority": "tools/agent/verify-g9s1-r1-spline-pair-materialization.ps1#Assert-R1Contracts/Assert-R1PreservedD2; tools/agent/verify-operational.ps1; git diff --check; git diff --cached --check; affected Checkstyle reports."
+    },
+    {
+      "id": "R1-S01",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#historicalIndependentSpansHaveExactNonzeroNativeKnotDefect",
+        "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest#nativeKnotStoredPolynomialJetDefectIsExactNotTolerance",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#nativeBlockerHasStructuralJetsThroughCubicOrderMinusOne",
+        "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest#nativeDyadicKnotCrossingKeepsCurrentSingletonSlot"
+      ]
+    },
+    {
+      "id": "R1-S02",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#nativeBlockerHasStructuralJetsThroughCubicOrderMinusOne",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#asymmetricCubicKnotsAreStructuralRatherThanToleranceGlued"
+      ]
+    },
+    {
+      "id": "R1-S03",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#intermediateDegreesRetainAllStructuralJetsAndOriginalBoundaryRows",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#nontrivialHighDegreeCurvesPreserveClassicFamilyGeometryAndBoundaryRows",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#defaultClassicFloatChordKnotsAreNotTheNativeDoubleKnotAuthority"
+      ],
+      "coverageNote": "Original higher-degree selected-span boundary rows are tested. Controlled Classic comparison supplies identical constant-weight knots; default Classic float-chord knots are characterized separately."
+    },
+    {
+      "id": "R1-S04",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#degreeTwelveNativeModelRetainsElevenExactKnotJets",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#periodicIntermediateAndDegreeTwelveSeamsAreStructural",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#previouslyRejectedOpenDegreeTwelveInputsRemainExplicitNumericalRejections",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#fullRankDyadicDegreeTwelveInputStillRequiresNumericalAdmission"
+      ],
+      "coverageNote": "Degree-12 positives are the admitted open straight and nonlinear periodic sources. Reconstructed published and current solves retain the explicit rejected nonlinear open fixtures under the same backward guard; exact full rank does not imply finite-precision admission. No universal forward-error or finite-input admission claim is made."
+    },
+    {
+      "id": "R1-S05",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#nativeBlockerHasStructuralJetsThroughCubicOrderMinusOne",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#existingPointDegreeAndDenseAdmissionPolicyRemainBounded"
+      ]
+    },
+    {
+      "id": "R1-S06",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#maximumPointCountUsesReducedBoundedSystem",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#existingPointDegreeAndDenseAdmissionPolicyRemainBounded"
+      ],
+      "coverageNote": "Reduced/legacy dimension and numerator-size evidence is not a measured speedup."
+    },
+    {
+      "id": "R1-S07",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#asymmetricCubicKnotsAreStructuralRatherThanToleranceGlued",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#roundedNormalizedKnotsKeepExactStructuralMeaning",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#nontrivialHighDegreeCurvesPreserveClassicFamilyGeometryAndBoundaryRows"
+      ]
+    },
+    {
+      "id": "R1-S08",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#nativeBlockerHasStructuralJetsThroughCubicOrderMinusOne",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#exactStructuralNumeratorsAreDefensiveAndSignatureIsVersioned",
+        "org.geocedg.common.locus.G9S1R1NativeStructuralPairTest#nativeBothSourceInternalKnotRootMaterializesExactlyOnce"
+      ]
+    },
+    {
+      "id": "R1-S09",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#roundedNormalizedKnotsKeepExactStructuralMeaning",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#periodicIntermediateAndDegreeTwelveSeamsAreStructural",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#structuralRationalCoefficientBridgeProvesExactBounds"
+      ]
+    },
+    {
+      "id": "R1-S10",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#finiteSmallLargeAndMixedSignCoordinatesRetainStructuralJets",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#differentCoordinateScalesDoNotBecomeContinuityTolerance"
+      ]
+    },
+    {
+      "id": "R1-S11",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#finiteSmallLargeAndMixedSignCoordinatesRetainStructuralJets",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#largeTranslatedFlatteningCannotFabricateAnIntervalCertificate",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#subnormalUnderflowAndSignedZeroRemainEnclosed"
+      ]
+    },
+    {
+      "id": "R1-S12",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#differentCoordinateScalesDoNotBecomeContinuityTolerance",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#nontrivialHighDegreeCurvesPreserveClassicFamilyGeometryAndBoundaryRows",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#admittedNonlinearDegreeSevenMatchesIndependentNativeEquationOracle",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#previouslyRejectedOpenDegreeTwelveInputsRemainExplicitNumericalRejections",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#fullRankDyadicDegreeTwelveInputStillRequiresNumericalAdmission"
+      ],
+      "coverageNote": "Mixed coordinate scales, admitted same-knot family comparison and the independent nonlinear degree-7 original-equation oracle are separate from exact continuity. Preserved baseline/current degree-12 numerical rejections are explicit controls, not silently removed tests or a mathematical singularity claim."
+    },
+    {
+      "id": "R1-S13",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest#nativeDyadicKnotCrossingKeepsCurrentSingletonSlot",
+        "org.geocedg.common.locus.G9S1R1NativeStructuralPairTest#nativeBothSourceInternalKnotRootMaterializesExactlyOnce",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#exactKnotGluePermitsRootProofAcrossBothSpanBoundaries"
+      ]
+    },
+    {
+      "id": "R1-S14",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1NativeStructuralPairTest#nativeDistinctRootsOnOppositeSidesOfOneKnotAreNeverProximityMerged",
+        "org.geocedg.common.locus.G9S1R1NativeStructuralPairTest#nativeNearTangencyDepthExhaustionKeepsTwoDistinctRichOnlyPreimages"
+      ],
+      "coverageNote": "Keep both the bounded near-knot positive and the closer transverse depth-exhaustion negative; do not infer universal materializability from local geometric plausibility."
+    },
+    {
+      "id": "R1-S15",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1NativeStructuralPairTest#nativeBothSourceInternalKnotRootMaterializesExactlyOnce",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#exactKnotGluePermitsRootProofAcrossBothSpanBoundaries"
+      ]
+    },
+    {
+      "id": "R1-S16",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1NativeStructuralPairTest#nativeOneSourceKnotRootUsesStructuralChartWithoutDuplicatePoint",
+        "org.geocedg.common.locus.G9S1R1NativeStructuralPairTest#nativeNearKnotMotionCannotRetireCurrentSingletonToken"
+      ]
+    },
+    {
+      "id": "R1-S17",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1NativeStructuralPairTest#nativeOnlySecondCallerSourceKnotHasTheSameCertifiedSemanticRoot",
+        "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest#reversedCallerOperandsHaveEquivalentCurrentSlotEvidence"
+      ]
+    },
+    {
+      "id": "R1-S18",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest#sameGermAmbiguityDoesNotBlockIndependentlyUniqueOppositeGerm",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#multipleSameGermRootsDoNotBlockCertifiedOppositeSingleton",
+        "org.geocedg.common.locus.G9S1R1NativeStructuralPairTest#nativeRepeatedPeriodicTraversalHasFourRootsButNoSingletonGerm"
+      ]
+    },
+    {
+      "id": "R1-S19",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#nestedSimilaritiesUseOriginalCapturedMapRatherThanFlattenedCoefficients",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#largeTranslatedFlatteningCannotFabricateAnIntervalCertificate",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#transformedPartialMetricAndPointRecoverAcrossNegativeAndZeroDilation",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#periodicInteractionDirectionBitsAndLiftSurviveStructuralModelReopen"
+      ]
+    },
+    {
+      "id": "R1-S20",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1NativeStructuralPairTest#nativePeriodicOperandsRemainSymmetricAndNegativeTransformHasNewContext",
+        "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest#transformedPairHasNewContextAndCollapsedImageHasNoIsolatedSlot",
+        "org.geocedg.common.locus.G9S1R1NativeStructuralPairTest#nativeCollapsedPeriodicImageInvalidatesAndRecoversOnlyExistingPoints",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#transformedPartialMetricAndPointRecoverAcrossNegativeAndZeroDilation"
+      ]
+    },
+    {
+      "id": "R1-C01",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#periodicCubicSeamAndInteriorJetsAreExact",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#periodicIntermediateAndDegreeTwelveSeamsAreStructural",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#roundedNormalizedKnotsKeepExactStructuralMeaning"
+      ]
+    },
+    {
+      "id": "R1-C02",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#approximateClosedEndpointsAreRejectedWithoutAveraging",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#signedZeroClosingCoordinatesDoNotBreakExactPeriodicity",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#approximateHostEndpointEqualityCannotDeclareStructuralPeriodicClosure",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#exactDistinctEndpointObjectsRetainClosedProviderAndCanonicalOwnership"
+      ]
+    },
+    {
+      "id": "R1-C03",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1NativeStructuralPairTest#nativePeriodicSeamHasOneOwnerAndRetainsPointsAcrossRegularCrossing",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#exactPeriodicSeamChartHasOneCanonicalRootPerGerm",
+        "org.geocedg.desktop.G9S1R1NativeArchivePersistenceTest#nativeCedgPeriodicActiveSeamPreservesBothExactTokenBindings"
+      ]
+    },
+    {
+      "id": "R1-C04",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1NativeStructuralPairTest#nativePeriodicSeamHasOneOwnerAndRetainsPointsAcrossRegularCrossing",
+        "org.geocedg.common.locus.G9S1R1NativeStructuralPairTest#nativePeriodicOperandsRemainSymmetricAndNegativeTransformHasNewContext",
+        "org.geocedg.desktop.G9S1R1NativeArchivePersistenceTest#nativeCedgPeriodicActiveSeamPreservesBothExactTokenBindings",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1D2PairSheetContractTest#singleTraversalSeamNeedsNoRetirementWithUniqueCurrentGerm"
+      ]
+    },
+    {
+      "id": "R1-C05",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1NativeStructuralPairTest#nativeRepeatedPeriodicTraversalHasFourRootsButNoSingletonGerm",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1SplinePairIntervalCertificationTest#repeatedPeriodicTraversalRetainsSameGermMultiplicity",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1D2PairSheetContractTest#repeatedMonodromyOrbitIsOutsideScopeRegardlessOfHistory",
+        "org.geocedg.common.locus.G9S1R1SplineAtlasHostCharacterizationTest#currentPublicSplinePairRemainsRichOnlyWithoutAssumingRootCount",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1PairAtlasCharacterizationTest#equalContactAndLocalDegreeDoNotDistinguishTheTwoSheets"
+      ],
+      "coverageNote": "Historical abstract/host monodromy records are preserved; current repeated native source gives the production rich-only control."
+    },
+    {
+      "id": "R1-C06",
+      "methods": [
+        "org.geocedg.desktop.G9S1R1NativeArchivePersistenceTest#nativeCedgPeriodicActiveSeamPreservesBothExactTokenBindings",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#periodicInteractionDirectionBitsAndLiftSurviveStructuralModelReopen",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#oneSidedR4TokenReactivatesAfterStructuralSourceRecomputation",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#transformedPartialMetricAndPointRecoverAcrossNegativeAndZeroDilation",
+        "org.geocedg.common.locus.G9S1R1SplineAtlasHostCharacterizationTest#hostXmlRoundTripRetainsSourceIdsAndCurrentPolynomialDefinitions"
+      ],
+      "coverageNote": "Native pair-state round trips and R6 point seam are distinct from the retained R4 periodic-quarantine risk. No historical byte-exact spline archive is claimed by current-runtime reconstruction."
+    },
+    {
+      "id": "R1-C07",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#historicallyAdmittedTwentyFivePointQuinticRetainsNumericalAdmission",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#highPrecisionQuinticRebuildsExactDerivedAuthorityAfterXmlAndUndo"
+      ],
+      "coverageNote": "Preserved historical scientific failure. Targeted corrected DEV passed, but full fresh-cohort acceptance is still required; the original positive is not replaced by a rejection control."
+    },
+    {
+      "id": "R1-C08",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1NativeStructuralPairTest#structuralSplineRetainsHistoricalImplicitTangencyBarrier"
+      ],
+      "coverageNote": "Preserved false-transverse failure. Targeted corrected DEV passed, but full fresh-cohort acceptance is still required. Two genuine contacts remain rich, without four false simple roots."
+    },
+    {
+      "id": "R1-C09",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#palindromicSplineNonminimumGuardsDoNotObstructCrossingResolution"
+      ],
+      "coverageNote": "Test the actual represented jets and strict nonminimum exclusion before singular rejection; do not assume ideal zero derivatives at interpolated extrema."
+    },
+    {
+      "id": "R1-C10",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#nativeRetracedSplineSingularTrueMinimumStillFailsClosed"
+      ],
+      "coverageNote": "An actual exactly singular represented minimum remains unresolved, with no candidate selection, point creation or retargeting."
+    },
+    {
+      "id": "R1-A01",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#historicallyAdmittedTwentyFivePointQuinticRetainsNumericalAdmission",
+        "org.geocedg.common.kernel.spline.G9S1R1SplinePrecisionAdmissionTest#historicalQuinticPrecisionAndCanonicalExpansionRepeatExactly",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#highPrecisionQuinticRebuildsExactDerivedAuthorityAfterXmlAndUndo"
+      ]
+    },
+    {
+      "id": "R1-A02",
+      "methods": [
+        "org.geocedg.common.kernel.spline.G9S1R1SplinePrecisionAdmissionTest#historicalQuinticPrecisionAndCanonicalExpansionRepeatExactly",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#highPrecisionQuinticRebuildsExactDerivedAuthorityAfterXmlAndUndo"
+      ]
+    },
+    {
+      "id": "R1-A03",
+      "methods": [
+        "org.geocedg.common.kernel.spline.G9S1R1SplinePrecisionAdmissionTest#ordinaryCubicUsesBinary64WithoutPrecisionEscalation"
+      ]
+    },
+    {
+      "id": "R1-A04",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#intermediateDegreesRetainAllStructuralJetsAndOriginalBoundaryRows",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#degreeTwelveNativeModelRetainsElevenExactKnotJets",
+        "org.geocedg.common.kernel.spline.G9S1R1SplinePrecisionAdmissionTest#highSupportedDegreeAndPeriodicModelsReportArithmeticRoutes"
+      ]
+    },
+    {
+      "id": "R1-A05",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#previouslyRejectedOpenDegreeTwelveInputsRemainExplicitNumericalRejections",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#fullRankDyadicDegreeTwelveInputStillRequiresNumericalAdmission",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#degreeTwelveNativeModelRetainsElevenExactKnotJets"
+      ],
+      "coverageNote": "Earlier baseline rejections remain explicit; current recovery is allowed only after unchanged original admission, not presumed or forced."
+    },
+    {
+      "id": "R1-A06",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#asymmetricCubicKnotsAreStructuralRatherThanToleranceGlued",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#roundedNormalizedKnotsKeepExactStructuralMeaning"
+      ]
+    },
+    {
+      "id": "R1-A07",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#finiteSmallLargeAndMixedSignCoordinatesRetainStructuralJets"
+      ]
+    },
+    {
+      "id": "R1-A08",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#finiteSmallLargeAndMixedSignCoordinatesRetainStructuralJets",
+        "org.geocedg.common.kernel.spline.G9S1R1SplinePrecisionAdmissionTest#invalidSemanticInputsNeverEnterPrecisionFallback"
+      ]
+    },
+    {
+      "id": "R1-A09",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#differentCoordinateScalesDoNotBecomeContinuityTolerance",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#finiteSmallLargeAndMixedSignCoordinatesRetainStructuralJets"
+      ]
+    },
+    {
+      "id": "R1-A10",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#maximumPointCountUsesReducedBoundedSystem",
+        "org.geocedg.common.kernel.spline.G9S1R1SplinePrecisionAdmissionTest#highSupportedDegreeAndPeriodicModelsReportArithmeticRoutes",
+        "org.geocedg.common.kernel.spline.G9S1R1SplinePrecisionAdmissionTest#arithmeticWorkCapRejectsBeforeReturningAModel"
+      ]
+    },
+    {
+      "id": "R1-A11",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#periodicCubicSeamAndInteriorJetsAreExact",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest#periodicIntermediateAndDegreeTwelveSeamsAreStructural",
+        "org.geocedg.common.kernel.spline.G9S1R1SplinePrecisionAdmissionTest#highSupportedDegreeAndPeriodicModelsReportArithmeticRoutes"
+      ]
+    },
+    {
+      "id": "R1-A12",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#transformedPartialMetricAndPointRecoverAcrossNegativeAndZeroDilation",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#highPrecisionQuinticRebuildsExactDerivedAuthorityAfterXmlAndUndo"
+      ]
+    },
+    {
+      "id": "R1-A13",
+      "methods": [
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest#transformedPartialMetricAndPointRecoverAcrossNegativeAndZeroDilation",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1StructuralImplicitCertificationTest#negativeDilationRetainsCertifiedOneSidedRoot"
+      ]
+    },
+    {
+      "id": "R1-A14",
+      "methods": [
+        "org.geocedg.common.kernel.spline.G9S1R1SplinePrecisionAdmissionTest#genuinelySingularLinearSystemIsRejectedAtEveryPrecision"
+      ],
+      "coverageNote": "Explicit singular numerical-system test seam; not a claim that every public spline boundary system is singular or classified exactly."
+    },
+    {
+      "id": "R1-A15",
+      "methods": [
+        "org.geocedg.common.kernel.spline.G9S1R1SplinePrecisionAdmissionTest#originalBackwardErrorRejectsAnIncorrectSolution",
+        "org.geocedg.common.kernel.spline.G9S1R1SplinePrecisionAdmissionTest#precisionFallbackCannotBypassInconsistentOriginalEquation",
+        "org.geocedg.common.kernel.spline.G9S1R1SplinePrecisionAdmissionTest#invalidSemanticInputsNeverEnterPrecisionFallback"
+      ]
+    },
+    {
+      "id": "R1-A16",
+      "methods": [
+        "org.geocedg.common.kernel.spline.G9S1R1SplinePrecisionAdmissionTest#oneFallbackLevelFailsClosedWithoutSuccessiveStability",
+        "org.geocedg.common.kernel.spline.G9S1R1SplinePrecisionAdmissionTest#arithmeticWorkCapRejectsBeforeReturningAModel",
+        "org.geocedg.common.kernel.spline.G9S1R1SplinePrecisionAdmissionTest#precisionPolicyMaximumsCannotBeExpanded",
+        "org.geocedg.common.kernel.spline.G9S1R1SplinePrecisionAdmissionTest#precisionFallbackCannotBypassInconsistentOriginalEquation"
+      ],
+      "coverageNote": "The 112-digit exhaustion negative injects an explicitly inconsistent original row in a bounded test seam; the public constructor derives its rows. It is not exhaustion evidence for an otherwise valid public source."
+    },
+    {
+      "id": "R1-U01",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1StructuralImplicitCertificationTest#simpleImplicitRootHasStructuralExistenceAndUniqueMaterialization"
+      ]
+    },
+    {
+      "id": "R1-U02",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1StructuralImplicitCertificationTest#separatedSimpleRootsPreserveBothCurrentTokens",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1StructuralImplicitCertificationTest#threeSimpleRootsRemainDistinctWithoutCoordinateZeroSnapping"
+      ]
+    },
+    {
+      "id": "R1-U03",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1StructuralImplicitCertificationTest#nonzeroTinyDerivativeUsesIntervalSignInsteadOfTangencyEpsilon",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1StructuralImplicitCertificationTest#veryCloseDistinctSimpleRootsAreNotMergedByParameterTolerance"
+      ],
+      "coverageNote": "Tiny derivative coefficient and close simple-root controls are separate from the exact tangency negative."
+    },
+    {
+      "id": "R1-U04",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1StructuralImplicitCertificationTest#exactTangencyRemainsOneEstimatedRichContactWithoutToken",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1StructuralImplicitCertificationTest#singularImplicitContactRemainsRichWithoutInventedMultiplicity",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1StructuralImplicitCertificationTest#stationaryDiscoveryProvenanceDoesNotCertifyMultiplicity",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1StructuralImplicitCertificationTest#exactBoundaryContactIsSeparateFromStationaryDiscoveryAndMultiplicity"
+      ],
+      "coverageNote": "Stationary discovery origin OR an exact native structural boundary-zero witness, with compatible enclosures, supports retained rich contact evidence. No boundary shortcut is inferred from transformed rounded coordinates; neither origin proves multiplicity or simple-root isolation."
+    },
+    {
+      "id": "R1-U05",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1StructuralImplicitCertificationTest#squaredTargetRetainsTwoRichContactsAndNoFalseTransverseRoot"
+      ]
+    },
+    {
+      "id": "R1-U06",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1StructuralImplicitCertificationTest#floatingArtificialSplitCannotAcquireSimpleRootCertificate",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1StructuralImplicitCertificationTest#squaredTargetRetainsTwoRichContactsAndNoFalseTransverseRoot"
+      ]
+    },
+    {
+      "id": "R1-U07",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1StructuralImplicitCertificationTest#veryCloseDistinctSimpleRootsAreNotMergedByParameterTolerance",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1StructuralImplicitCertificationTest#certifiedRootsBelowLegacyDeduplicationToleranceRemainDistinct"
+      ],
+      "coverageNote": "The below-legacy-dedup test supplies analytic candidate seeds to exercise certified root equivalence/publication. It does not claim floating discovery completeness at that separation; the separate native close-root query covers actual discovery."
+    },
+    {
+      "id": "R1-U08",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1StructuralImplicitCertificationTest#arithmeticUncertaintyCannotTurnSquaredContactIntoSimpleRoot"
+      ]
+    },
+    {
+      "id": "R1-U09",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1StructuralImplicitCertificationTest#derivativeIntervalContainingZeroCannotProveTransversality"
+      ]
+    },
+    {
+      "id": "R1-U10",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1StructuralImplicitCertificationTest#structuralValueIntervalExcludesAFalseCandidate"
+      ]
+    },
+    {
+      "id": "R1-U11",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1StructuralImplicitCertificationTest#boundedWorkExhaustionPublishesNoSimpleCertificate"
+      ]
+    },
+    {
+      "id": "R1-U12",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1StructuralImplicitCertificationTest#exactStructuralKnotHasOneCertifiedRootNotTwoSpanCandidates",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1StructuralImplicitCertificationTest#openSplineIncludedEndpointHasNoArtificialPeriodicChartBarrier",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1StructuralImplicitCertificationTest#exactBoundaryContactIsSeparateFromStationaryDiscoveryAndMultiplicity"
+      ]
+    },
+    {
+      "id": "R1-U13",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1StructuralImplicitCertificationTest#periodicSeamHasOneCanonicalRootAndNoEndpointDuplicate",
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1StructuralImplicitCertificationTest#liftedPeriodicProofUsesOutwardCanonicalEnclosureAndCertifiedDeduplication"
+      ]
+    },
+    {
+      "id": "R1-U14",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1StructuralImplicitCertificationTest#translatedSplineCertifiesOriginalCompositionNotExpandedSurrogate"
+      ]
+    },
+    {
+      "id": "R1-U15",
+      "methods": [
+        "org.geocedg.common.kernel.locus.intersection.G9S1R1StructuralImplicitCertificationTest#negativeDilationRetainsCertifiedOneSidedRoot"
+      ]
+    }
+  ],
+  "retainedRisk": {
+    "id": "G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP",
+    "status": "OPEN_TRACKED",
+    "authority": "docs/roadmap/geocedg_roadmap.md",
+    "distinction": "R1 native pair QUARANTINED and R6 point seam evidence do not close the separate R4 periodic-quarantine archive requirement."
+  },
+  "scopeNotes": [
+    "Root geometry remains numerical; exact structural jet equality and outward local pair proof do not certify exact interpolation or global completeness.",
+    "Controlled COMPLETE/INCOMPLETE publication contrasts retain actual root certificates and ledger bindings; their global statuses are synthetic test axes only.",
+    "The closer transverse near-knot fixture remains a named depth-budget negative. No numerical tolerance, selector identity, or budget is relaxed to make every plausible root materializable.",
+    "Current native archive and command-schema reconstruction are distinguished from a historical byte-exact SplineV2 archive, which is not claimed by current-runtime serialization.",
+    "No G9U1 productive source, protected planning-prompt change, frontend Point/marker implementation, commit, publication or phase approval is authorized."
+  ]
+}

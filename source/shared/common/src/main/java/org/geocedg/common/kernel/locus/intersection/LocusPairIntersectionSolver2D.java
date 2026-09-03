@@ -62,6 +62,24 @@ public final class LocusPairIntersectionSolver2D {
 			IntersectionSourceBinding2D binding,
 			LocusPairIntersectionCapability2D preferred,
 			LocusPairRootTokenSource2D tokenSource) {
+		return intersect(query, firstDefinition, secondDefinition, binding,
+				preferred, tokenSource, null);
+	}
+
+	/**
+	 * Public D2 publication, restricted by the authenticated spline capability.
+	 * Internal/generic pair callers retain the original rich-only route.
+	 *
+	 * @return current rich result with independently certified eligible pair slots
+	 */
+	public LocusIntersectionResult2D intersect(
+			LocusPairIntersectionQuery2D query,
+			LocusDefinition2D firstDefinition,
+			LocusDefinition2D secondDefinition,
+			IntersectionSourceBinding2D binding,
+			LocusPairIntersectionCapability2D preferred,
+			LocusPairRootTokenSource2D tokenSource,
+			LocusIntersectionTokenLedger2D.Evaluation pairEvaluation) {
 		LocusPairIntersectionInstrumentation2D instrumentation =
 				new LocusPairIntersectionInstrumentation2D(query.getPolicy());
 		try {
@@ -110,9 +128,12 @@ public final class LocusPairIntersectionSolver2D {
 							"Only finite components and periodic fundamental domains "
 									+ "are supported", instrumentation);
 				}
-				return verifyAndPublish(binding, context,
+				LocusIntersectionResult2D discovered = verifyAndPublish(binding, context,
 						capability.isolate(context),
 						java.util.Objects.requireNonNull(tokenSource));
+				return pairEvaluation == null ? discovered
+						: PublicSplinePairRootIdentityResolver2D.publish(context,
+								discovered, pairEvaluation);
 			}
 		} catch (LocusIntersectionWorkLimitException exception) {
 			instrumentation.recordFailedPrivateComputation();
@@ -187,7 +208,7 @@ public final class LocusPairIntersectionSolver2D {
 				context.getInstrumentation(), diagnostics);
 	}
 
-	private static LocusIntersectionSolution2D verifyCandidate(
+	static LocusIntersectionSolution2D verifyCandidate(
 			LocusPairIntersectionContext2D context,
 			LocusPairIntersectionCandidate2D candidate,
 			LocusPairRootTokenSource2D tokenSource) {

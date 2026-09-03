@@ -711,6 +711,113 @@ Invoke-RuntimeTest "child modes reject evidence/static/incremental combinations"
     }
 }
 
+Invoke-RuntimeTest "R1 phase registration is exact and cannot broaden an unknown phase" -WithoutGit {
+    param($fixture)
+    $phase = & $fixture.Module { Get-GeoCeDGPhaseDefinition -Phase 'G9S1-R1' }
+    Assert-TestCondition ($phase.Phase -ceq 'G9S1-R1' -and
+        $phase.Verifier -ceq 'verify-g9s1-r1-spline-pair-materialization.ps1') "R1 PHASE did not select its bounded scientific verifier."
+    $lowerCase = & $fixture.Module { Get-GeoCeDGPhaseDefinition -Phase 'g9s1-r1' }
+    Assert-TestCondition ($lowerCase.Phase -ceq $phase.Phase -and
+        $lowerCase.Verifier -ceq $phase.Verifier) "Canonical case normalization changed the R1 phase authority."
+    Assert-TestThrows {
+        & $fixture.Module { Get-GeoCeDGPhaseDefinition -Phase 'G9S1-R1-UNKNOWN' }
+    } "Unknown PHASE" "Unknown R1-like phase must not silently select R1 or a broader gate"
+    Assert-TestCondition (-not $fixture.GitInitialized -and
+        @(& $fixture.Module { @($script:FixtureNativeCalls) }).Count -eq 0) "Phase lookup launched Git or a fake build."
+    $r1Verifier = Join-Path (Split-Path -Parent $RootVerifierPath) $phase.Verifier
+    $tokens = $null
+    $errors = $null
+    $ast = [Management.Automation.Language.Parser]::ParseFile(
+        $r1Verifier, [ref]$tokens, [ref]$errors)
+    $sum = @($ast.FindAll({ param($node)
+        $node -is [Management.Automation.Language.AssignmentStatementAst] -and
+            $node.Left.Extent.Text -ceq '$total'
+    }, $true))
+    Assert-TestCondition ($errors.Count -eq 0 -and $sum.Count -eq 1) "R1 total expression is ambiguous."
+    $actual = & {
+        param($assignment)
+        $results = @([ordered]@{ class = 'shared'; tests = 150 },
+            [ordered]@{ class = 'desktop'; tests = 3 })
+        . $assignment
+        $total
+    } ([scriptblock]::Create($sum[0].Extent.Text))
+    Assert-TestCondition ($actual -eq 153) "R1 reporting must sum validated ordered-dictionary counts."
+}
+
+Invoke-RuntimeTest "R4 descendant lexical authority is sealed while current compatibility tests remain live" -WithoutGit {
+    param($fixture)
+    $r4Verifier = Join-Path (Split-Path -Parent $RootVerifierPath) `
+        "verify-g9u0-r4-intersection-admissibility-continuation.ps1"
+    $tokens = $null
+    $errors = $null
+    $ast = [Management.Automation.Language.Parser]::ParseFile(
+        $r4Verifier, [ref]$tokens, [ref]$errors)
+    Assert-TestCondition ($errors.Count -eq 0) "R4 authority helper source does not parse."
+    $functionNames = @("Assert-Condition", "Resolve-RepositoryPath", "Resolve-RequiredFile",
+        "Get-SourceAuthorityBytes", "Get-SourceAuthorityText")
+    $functions = @($ast.FindAll({ param($node)
+        $node -is [Management.Automation.Language.FunctionDefinitionAst] -and
+            $node.Name -cin $functionNames
+    }, $true))
+    Assert-TestCondition ($functions.Count -eq $functionNames.Count) "R4 exact authority helpers are missing."
+    $definitions = ($functions | ForEach-Object { $_.Extent.Text }) -join $Lf
+    $productContract = @($ast.FindAll({ param($node)
+        $node -is [Management.Automation.Language.FunctionDefinitionAst] -and
+            $node.Name -ceq "Assert-ProductStaticContracts"
+    }, $true))
+    Assert-TestCondition ($productContract.Count -eq 1 -and
+        $productContract[0].Extent.Text.Contains('$ledger = Get-SourceAuthorityText $LedgerPath') -and
+        $productContract[0].Extent.Text.Contains('$authorTest = [IO.File]::ReadAllText(') -and
+        $productContract[0].Extent.Text.Contains('$ledgerTest = [IO.File]::ReadAllText(') -and
+        $productContract[0].Extent.Text.Contains('$nativeArchiveTest = [IO.File]::ReadAllText(')) `
+        "R4 product history or current compatibility-test source boundary drifted."
+    $relativePath = "source/fixture-ledger.java"
+    $workingPath = Join-Path $fixture.RepositoryRoot $relativePath
+    Write-FixtureText $workingPath 'private static final String FORMAT_VERSION = "5";'
+    $authorityModule = New-Module -Name ("R4AuthorityFixture" + [guid]::NewGuid().ToString("N")) `
+        -ArgumentList $definitions, $fixture.RepositoryRoot -ScriptBlock {
+        param($Definitions, $Root)
+        . ([scriptblock]::Create($Definitions))
+        $script:RepositoryRoot = $Root
+        $script:R4BoundaryMode = "TAGGED_DESCENDANT"
+        $script:R4AuthorityCommit = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        $script:LastBlobObject = $null
+        function Get-GitBlobBytes {
+            param([Parameter(Mandatory)] [string]$Object)
+            $script:LastBlobObject = $Object
+            if ($Object -cne "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:source/fixture-ledger.java") {
+                throw "Unexpected historical blob request: $Object"
+            }
+            return ,([Text.UTF8Encoding]::new($false).GetBytes(
+                'private static final String FORMAT_VERSION = "4";'))
+        }
+    }
+    try {
+        $sealed = & $authorityModule { param($Path) Get-SourceAuthorityText $Path } $relativePath
+        Assert-TestCondition ($sealed -ceq 'private static final String FORMAT_VERSION = "4";') `
+            "Current v5 product source replaced sealed v4 historical authority."
+        Write-FixtureText $workingPath 'private static final String FORMAT_VERSION = "SEMANTIC_MUTATION";'
+        $sealedAgain = & $authorityModule { param($Path) Get-SourceAuthorityText $Path } $relativePath
+        Assert-TestCondition ($sealedAgain -ceq $sealed) "A working-tree mutation changed sealed historical authority."
+        $live = & $authorityModule {
+            param($Path)
+            $script:R4BoundaryMode = "WORKTREE"
+            $script:R4AuthorityCommit = $null
+            $script:LastBlobObject = $null
+            Get-SourceAuthorityText $Path
+        } $relativePath
+        Assert-TestCondition ($live -ceq 'private static final String FORMAT_VERSION = "SEMANTIC_MUTATION";' -and
+            $null -eq (& $authorityModule { $script:LastBlobObject })) `
+            "An unsealed candidate failed to consume actual current source bytes."
+        Assert-TestThrows {
+            & $authorityModule { Get-SourceAuthorityText "../outside.java" }
+        } "escapes repository" "Historical helper allowed a source path to escape the repository"
+    } finally { Remove-Module -ModuleInfo $authorityModule -ErrorAction SilentlyContinue }
+    Assert-TestCondition (-not $fixture.GitInitialized -and
+        @(& $fixture.Module { @($script:FixtureNativeCalls) }).Count -eq 0) `
+        "Sealed-authority regression invoked Git or a fake build."
+}
+
 Invoke-RuntimeTest "canonical producer runs two isolated module selections and honest consumers" {
     param($fixture)
     $build = Invoke-CanonicalFixture $fixture

@@ -1,5 +1,15 @@
 # Manual operativo vivo de GeoCeDG
 
+Nota del candidato R1: **IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**.
+Las correcciones A/B superan PHASE A/B (192 casos cada una), COMPOSED
+(1281 casos, sin fallos ni omisiones) y FULL clean (7781 casos: 7770 pasan,
+11 omisiones upstream, sin fallos); las ejecuciones terminan con código 0.
+La implementación está técnicamente completa, pero no aprobada por el autor;
+el smoke sigue PENDING. Esta actualización documental es posterior al conjunto
+de fuentes validado y archivado; no sustituye sus recibos. Los bloqueos previos
+se conservan como cronología en el
+[informe R1](../validation/g9s1_r1_structural_implementation_candidate_report.md).
+
 - Tipo de documento: manual operativo vivo
 - Última puerta de producto aprobada/observable: **G9S1 = PASS — AUTHOR APPROVED**
 - G9U0 = PASS — AUTHOR APPROVED
@@ -21,6 +31,13 @@
   aceptado con la limitación de entrada libre G9A caracterizada
 - G9S1: **PASS — AUTHOR APPROVED**; `SplineV2`, sus consumidores semánticos y
   la corrección final de longitud parcial fueron aceptados por el autor
+- G9S1-R1: **IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**, incluida la
+  corrección estructural de continuidad de splines. Las regresiones históricas
+  de admisión numérica y materialización en tangencia se corrigieron mediante
+  las correcciones A/B autorizadas y la validación completa indicada arriba;
+  sus ejecuciones fallidas se conservan. `implementationComplete=true`,
+  `manualAuthorSmoke=PENDING`, `selfApproved=false`,
+  `authorApprovedPhase=false`, `passClaimed=false`.
 - Baseline: GeoGebra 5.4.928.0 at
   `9b93256b7df401ff056c37b502d82df4d72b1522`
 - Plataforma validada: únicamente Windows
@@ -273,16 +290,41 @@ a tangent, ambiguous, stale, overlapping or merely nearby candidate cannot be
 selected as a point. Tokens encode semantic lineage and are not derived from
 coordinates, sample index, list order or proximity.
 
-The initial target registry is limited to line, segment, ray, circle, supported
+The published G9S1 target registry is limited to line, segment, ray, circle, supported
 conics, bounded function graphs, regular polynomial implicit curves and
 V2-to-V2 rich queries. The first six use either the new span-polynomial seam or
 the existing bounded-function rich fallback. A piecewise-polynomial
-SplineV2-to-SplineV2 query can report deterministic rich finite/overlap/work
+SplineV2-to-SplineV2 query in that baseline can report deterministic rich finite/overlap/work
 evidence, but its floating parameter boxes do not yet establish a symmetric
 unique pair selector: pair roots are therefore not point-materializable and do
 not become G9U1 markers. Arbitrary paths/drivers, unbounded scalar domains,
 unsupported overlaps and automatic point creation are rejected or reported
 explicitly. V2 is not a generic `Path`.
+
+**Current R1 work — not yet approved:** the bounded successor is being validated
+to materialize a spline-pair root only when the kernel proves one unique
+transverse solution in its intrinsic orientation class over the relevant
+component pair. Opposite classes may each supply a point; repeated roots in the
+same class, tangency, overlaps, unsupported sources or missing proof remain
+nonmaterializable. Numerical accuracy and global completeness are still reported
+truthfully. This is not a manual force option and not a new frontend tool.
+
+When that current authority makes a root eligible, the existing GeoCeDG rich
+result inspector is the consumer: select the rich result, inspect it, choose
+one compact solution entry and accept its exact token. Intersect alone creates
+no point. An existing point may be undefined while its selector lacks proof and
+reactivate when the same selector is uniquely established again; no new points
+are created silently. Do not treat this description as completed author smoke.
+
+R1 also corrects how the native spline is represented across its knots, preserving
+the existing bounded family. Shared structural continuity is distinct from
+numerical interpolation error. A periodic source requires genuine endpoint/jet
+closure; merely nearly coincident endpoints do not justify exact closure. The
+earlier native-knot failure is retained in the
+[scientific record](../validation/g9s1_r1_implementation_blocker_report.md).
+Current tests and author review remain pending under the
+[R1 validation matrix](../validation/g9s1_r1_spline_pair_materialization_validation_matrix.md).
+Classic Spline and the approved metric/transform commands are not replaced.
 
 The candidate's arithmetic is floating. One-sided polynomial intersections
 use derivative-root partitioning and safeguarded refinement; global completeness

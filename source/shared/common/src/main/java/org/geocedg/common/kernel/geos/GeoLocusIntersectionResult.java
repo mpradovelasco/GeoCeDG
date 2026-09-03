@@ -5,14 +5,17 @@
 
 package org.geocedg.common.kernel.geos;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
 import org.geocedg.common.kernel.algos.AlgoLocusIntersectionV2;
+import org.geocedg.common.kernel.algos.AlgoLocusLocusIntersectionV2;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSourceBinding2D;
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionResult2D;
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionSolution2D;
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionTokenLedger2D;
+import org.geocedg.common.kernel.locus.intersection.LocusPairIdentity2D;
 import org.geocedg.common.kernel.spatial.identity.GeoIdentityRecord;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoIdentityListener;
@@ -329,6 +332,11 @@ public final class GeoLocusIntersectionResult extends GeoElement
 		if (!publicPersistence || !tokenLedger.hasCurrentSnapshot()) {
 			return;
 		}
+		if (getParentAlgorithm() instanceof AlgoLocusLocusIntersectionV2) {
+			validatePairIdentityAttachment(attachedId, attachedRecord,
+					prospectiveRecord, immediateCopy);
+			return;
+		}
 		if (!(getParentAlgorithm() instanceof AlgoLocusIntersectionV2)) {
 			throw new IllegalArgumentException(
 					"Persisted token ledger has no public intersection parent");
@@ -397,6 +405,20 @@ public final class GeoLocusIntersectionResult extends GeoElement
 					: record.getCopySourceId().toExternalForm();
 			tokenLedger.prepareAttachedOwner(attachedId.toExternalForm(),
 					copySource);
+			if (copySource != null && !tokenLedger.hasCurrentOwner(
+					attachedId.toExternalForm()) && getParentAlgorithm()
+					instanceof AlgoLocusLocusIntersectionV2) {
+				AlgoLocusLocusIntersectionV2 pair =
+						(AlgoLocusLocusIntersectionV2) getParentAlgorithm();
+				SpatialIdentityRegistry registry = cons.getSpatialIdentityRegistry();
+				GeoIdentityRecord first = registry.getGeoRecord(
+						registry.getPersistentGeoId(pair.getCallerFirst()));
+				GeoIdentityRecord second = registry.getGeoRecord(
+						registry.getPersistentGeoId(pair.getCallerSecond()));
+				if (pair.getCallerFirst() != pair.getCallerSecond()) {
+					tokenLedger.preparePairSourceCopy(pairSourceCopyMap(first, second));
+				}
+			}
 			if (getParentAlgorithm() != null) {
 				getParentAlgorithm().update();
 				// Identity attachment is the publication seam at which an immediate
@@ -470,6 +492,64 @@ public final class GeoLocusIntersectionResult extends GeoElement
 		return record.getDependencies().size() == 2
 				&& record.getDependencies().contains(first)
 				&& record.getDependencies().contains(second);
+	}
+
+	private void validatePairIdentityAttachment(PersistentGeoId attachedId,
+			GeoIdentityRecord attachedRecord,
+			Function<GeoElement, GeoIdentityRecord> prospectiveRecord,
+			boolean immediateCopy) {
+		AlgoLocusLocusIntersectionV2 parent =
+				(AlgoLocusLocusIntersectionV2) getParentAlgorithm();
+		GeoIdentityRecord first = prospectiveRecord.apply(parent.getCallerFirst());
+		GeoIdentityRecord second = prospectiveRecord.apply(parent.getCallerSecond());
+		if (first == null || second == null
+				|| !(first.getId().equals(second.getId())
+						? attachedRecord.getDependencies().size() == 1
+								&& attachedRecord.getDependencies().contains(first.getId())
+						: hasExactDependencies(attachedRecord, first.getId(), second.getId()))) {
+			throw new IllegalArgumentException("Pair ledger lacks exact source dependencies");
+		}
+		String owner = attachedId.toExternalForm();
+		String copyOwner = attachedRecord.getCopySourceId() == null ? null
+				: attachedRecord.getCopySourceId().toExternalForm();
+		// Intersect(S,S) is a valid rich-only query with one actual DAG source.
+		// It cannot own a distinct-source pair selector. Keep the exact context
+		// validation below; do not fabricate a two-source copy association.
+		Map<String, String> mapping = copyOwner == null || first.getId().equals(second.getId())
+				? Map.of()
+				: pairSourceCopyMap(first, second);
+		String expectedPair = pairSource(first.getId(), second.getId());
+		String expectedCopyPair = null;
+		if (tokenLedger.hasCurrentOwner(owner)) {
+			if (copyOwner != null) {
+				expectedCopyPair = pairSource(first.getCopySourceId(),
+						second.getCopySourceId());
+			}
+		} else {
+			if (!immediateCopy || copyOwner == null) {
+				throw new IllegalArgumentException("Pair ledger owner lacks exact copy provenance");
+			}
+			expectedPair = pairSource(first.getCopySourceId(), second.getCopySourceId());
+		}
+		tokenLedger.validatePreattachmentContext(owner, expectedPair,
+				parent.getConstructiveIntersectionLineage(), parent.getTopologyContext(),
+				copyOwner, expectedCopyPair, immediateCopy);
+		tokenLedger.validatePairSourceAttachments(first.getId().toExternalForm(),
+				second.getId().toExternalForm(), mapping);
+	}
+
+	private static Map<String, String> pairSourceCopyMap(GeoIdentityRecord first,
+			GeoIdentityRecord second) {
+		if (first == null || second == null || first.getCopySourceId() == null
+				|| second.getCopySourceId() == null) {
+			throw new IllegalArgumentException("Pair copy lacks source-associated provenance");
+		}
+		return Map.of(first.getCopySourceId().toExternalForm(), first.getId().toExternalForm(),
+				second.getCopySourceId().toExternalForm(), second.getId().toExternalForm());
+	}
+
+	private static String pairSource(PersistentGeoId first, PersistentGeoId second) {
+		return LocusPairIdentity2D.sourcePair(first.toExternalForm(), second.toExternalForm());
 	}
 
 	private static String sourcePair(PersistentGeoId source,

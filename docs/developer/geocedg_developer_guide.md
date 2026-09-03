@@ -16,6 +16,14 @@
   `PASS — AUTHOR APPROVED`; it adds only the bounded shared-kernel inverse
   semantic point-interaction seam and no productive Desktop Point-tool consumer.
   G9U1 remains protected/unexecuted; G9U1/G9B/G9C remain unauthorized
+- Current G9S1-R1: bounded pair materialization and structural spline continuity
+  are **IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**, not phase PASS.
+  `implementationComplete=true`: corrections A/B pass fresh PHASE A/B,
+  COMPOSED and FULL clean on the archived tested source cohort. Earlier
+  quintic-admission, implicit-tangency and diagnostic-label failures remain
+  historical evidence. This status-only documentary reconciliation does not
+  replace that cohort's receipts. `manualAuthorSmoke=PENDING`,
+  `selfApproved=false`, `authorApprovedPhase=false`, `passClaimed=false`.
 - G9U0-R2 closeout: `selfApproved=false`, `authorApproved=true`,
   `passClaimed=true`; installed MSI/registry smoke `NOT_REQUESTED`
 
@@ -562,12 +570,34 @@ One-sided polynomial targets are composed with each provider span and partitione
 at recursively isolated derivative roots. Only an established transverse local
 cell may enter the existing R4 selector/token ledger; evidence remains floating
 and global completeness remains `NOT_ESTABLISHED`. Bounded functions retain the
-existing general rich fallback. The polynomial pair capability is intentionally
+existing general rich fallback. The published G9S1 polynomial pair capability is
 rich-only: deterministic Bernstein-hull boxes and dual Newton provide diagnostic
 finite/overlap/work evidence, but no interval-rounded rectangle+uniqueness
 certificate, public continuation key, active ledger allocation or materialized
 pair point. Do not let Desktop/G9U1 infer the missing pair selector from order or
 coordinates.
+
+The current unapproved R1 implementation extends only authenticated SplineV2
+pair singleton-germ classes under [ADR 0021](../adr/0021-spline-pair-singleton-germ-materialization.md).
+It requires actual outward-rounded local proof and full selected-sign coverage,
+not equal discovery counts or a small residual. Its symmetric durable selector
+keeps both source-associated descriptors and normalized germ; proof addresses,
+boxes, knots and coefficients are current certificate data. Pair ledger v5
+retains old one-source compatibility and supports exact claimed-slot dormancy/
+reactivation without another global solve per child. Repeated same-germ sheets,
+generic providers and unresolved proof remain rich-only. No frontend is added.
+
+The native knot failure remains preserved as historical evidence. Its authorized
+prerequisite [ADR 0022](../adr/0022-structural-spline-continuity.md) makes native
+continuity structural in the same bounded spline space and preserves the actual
+interpolation/boundary equations. Exact periodic elimination is separate from
+interior smoothness. Numerical interpolation accuracy is still validated; a
+rounded expanded span cache does not become the interval certifier's authority.
+The bridge must enclose the represented structural function and its composed
+derivatives. See the [live API guide](semantic_spline_2d_api.md) for this boundary
+and the [R1 matrix](../validation/g9s1_r1_spline_pair_materialization_validation_matrix.md)
+for uncompleted acceptance obligations. Classic Spline, durable source identity,
+ordinary reconstruction and R6 semantic direction bits remain unchanged.
 
 Metric consumers split at provider knots and reuse deterministic adaptive
 Simpson integration over the analytic semantic derivative. Knots, coefficients,
@@ -684,9 +714,10 @@ Phase documents distinguish hard semantic/contract dependencies, recommended
 execution predecessors and global/release gates. G9O1 is recommended first but
 is not a semantic prerequisite of G9A1. After G9A3, G9B/G9C can progress
 without G9U1. The product schedule is G9U0-R1 plus G9X1 → G9U0-R2 → G9U0-R3 →
-G9U0-R4 → BOOK-P1 → G9U0-R5 → G9S1 → G9U0-R6 → G9U1. BOOK-P1 is an independent
+G9U0-R4 → BOOK-P1 → G9U0-R5 → G9S1 → G9U0-R6 → G9S1-R1 → G9U1. BOOK-P1 is an independent
 editorial checkpoint, not a software dependency. R3, R4, R5, G9S1 and R6 are
-closed. G9U1 requires post-R6 reconciliation and its own execution
-authorization.
+closed. The approved post-R6 G9U1 design remains on its protected planning
+checkpoint; R1 must close and receive separate prospective reconciliation before
+G9U1's own implementation authorization. Current R1 work grants neither.
 G9B/G9C remain semantically independent,
 G9U2 remains globally blocked and productive G10 remains unauthorized.

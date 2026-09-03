@@ -311,7 +311,7 @@ public final class LocusIntersectionSolver2D {
 				diagnostics));
 	}
 
-	private static List<IntersectionCandidate2D> deduplicate(
+	static List<IntersectionCandidate2D> deduplicate(
 			IntersectionCapabilityContext2D context,
 			List<IntersectionCandidate2D> input) {
 		ArrayList<IntersectionCandidate2D> result = new ArrayList<>();
@@ -332,6 +332,24 @@ public final class LocusIntersectionSolver2D {
 					continue;
 				}
 				context.getInstrumentation().recordDeduplicationComparison();
+				if (candidate.getStructuralCertificate() != null
+						|| retained.getStructuralCertificate() != null) {
+					SplineImplicitIntervalCertification2D.Proof proof =
+							candidate.getStructuralCertificate();
+					SplineImplicitIntervalCertification2D.Proof previous =
+							retained.getStructuralCertificate();
+					duplicate = proof != null && previous != null
+							&& (proof.sameCertifiedRoot(previous)
+									|| proof.status
+											!= SplineImplicitIntervalCertification2D.Status.SIMPLE
+											&& previous.status == proof.status
+											&& candidate.getSemanticParameter()
+													== retained.getSemanticParameter());
+					if (duplicate) {
+						break;
+					}
+					continue;
+				}
 				if (Math.abs(candidate.getSemanticParameter()
 						- retained.getSemanticParameter()) <= tolerance
 						&& candidate.getIsolatingInterval().overlaps(

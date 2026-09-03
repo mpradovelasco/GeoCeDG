@@ -1,5 +1,169 @@
 # G9 documentation and knowledge-bundle traceability
 
+Current R1: **IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**.
+`implementationComplete=true`; `manualAuthorSmoke=PENDING`;
+`selfApproved=false`; `authorApprovedPhase=false`; `passClaimed=false`.
+Fresh PHASE A/B each pass 192 cases with identical SHA-256
+`59793eef3641d8c93b012998c0a795fb949f5cefdb54d30ebcd337542ab155dd`.
+COMPOSED passes 1281 cases with zero failures/skips. FULL clean exits 0 with
+7781 cases: 7770 passed, zero failures and 11 upstream skips. These results
+belong to the byte-exact archived 76-path tested cohort; this later status-only
+documentary reconciliation neither replaces its hashes nor reuses its receipts.
+Earlier blocked-state findings remain chronology, not current failed gates.
+See [current R1 execution report](g9s1_r1_structural_implementation_candidate_report.md).
+
+## Current G9S1-R1 implementation candidate — bounded A/B corrections validated
+
+The author subsequently approved D2 and **B — PARTIAL IMPLEMENTATION CONTRACT**,
+accepted Disposition C for the proved monodromic scope, and authorized productive
+R1 including semantic-slot recurrence. [ADR 0021](../adr/0021-spline-pair-singleton-germ-materialization.md)
+and the [bounded specification](../../geocedg/specs/curves/spline-v2-pair-materialization.md)
+record that decision. Earlier D2 documents/evidence/tests remain byte-exact;
+their pending language belongs to their historical review checkpoint.
+
+The [canonical implementation prompt](../../.github/prompts/tasks/g9s1-r1-spline-pair-intersection-materialization.prompt.md),
+[productive matrix](g9s1_r1_spline_pair_materialization_validation_matrix.md) and
+[focused verifier](../../tools/agent/verify-g9s1-r1-spline-pair-materialization.ps1)
+are the requirement authority; author acceptance remains pending. The historical
+[scientific blocker report](g9s1_r1_implementation_blocker_report.md) and
+[blocker evidence](../../geocedg/validation/g9s1-r1/g9s1-r1-implementation-blocker-evidence.json)
+record the preserved predecessor's DEV executions and failing native knot-crossing
+positive. Its independent polynomial pieces lacked the exact C0/C1 gluing
+required by the certificate. Those files remain byte-exact. The subsequent
+author decision authorizes [ADR 0022](../adr/0022-structural-spline-continuity.md),
+the [structural design](../architecture/g9s1_r1_structural_spline_continuity.md)
+and a [separate research note](../research/g9s1_r1_structural_spline_numerics.md).
+They preserve the original spline space/boundary equations, establish interior
+continuity structurally, handle exact periodic elimination separately and require
+outward enclosure of the same structural function. Numerical interpolation and
+pair proof are not silently exact. Do not substitute an ideal diagnostic positive
+or relax tolerances. Twenty structural cases and separate periodic cases extend
+the complete original R1 matrix. The mandatory PHASE A/B, COMPOSED and FULL
+`-CleanBuild` completed on the archived tested cohort described above;
+historical consumers retain their live assertions and sealed hashes. The old
+D2 DEV trace is not a production certificate or native pair-token archive test.
+
+**Historical blocked-cohort chronology before corrections A/B (not current state):**
+
+`implementationStarted=true`, `implementationAuthorized=true`,
+`selfApproved=false`, `authorApprovedPhase=false`, `passClaimed=false`;
+`G9S1-R1=BLOCKED — AUTHORIZED CORRECTIVE CONTINUATION`.
+`implementationComplete=false`. Current COMPOSED/targeted diagnostics reproduce
+two scientific regressions: historical 25-point quintic admission and spurious
+transverse materialization at implicit-target tangency. These are current
+blockers, distinct from preserved earlier failures. FULL remains required,
+unrun and incomplete. The bounded R6 nonminimum/singularity filter-order
+correction does not resolve those two failures. The subsequent author disposition
+authorizes only A (bounded higher-precision construction under the original
+admission criteria) and B (outward univariate verification of the actual
+structural spline/implicit composition). This authorization is not evidence
+that the failures have been corrected. The earlier focused 153/153 result,
+COMPOSED 1137 tests with six failures and final targeted 132 tests with four
+failures remain separate historical cohorts. R6 selected controls 49/49 and
+lifecycle controls 22/22 do not waive either scientific regression. Resume DEV,
+then fresh PHASE A/B, COMPOSED and FULL; no acceptance may reuse the old results.
+
+**Current disposition:** those corrective gates now pass on the separately
+archived final tested cohort. Earlier failures, including the intermediate
+missing diagnostic-label failure, remain in the execution report. Technical
+completion does not grant author approval or authorize G9U1.
+
+Only authenticated SplineV2 pair singleton-germ classes may qualify. Generic
+Locus pairs, repeated same-germ sheets and the proved monodromic scope retain
+rich-only. Current proof and durable selector remain separate; reactivation is
+of the same structural slot, not historical physical-trajectory tracking.
+
+GUIDE_IMPACT=UPDATED: [Spline API](../developer/semantic_spline_2d_api.md),
+[developer guide](../developer/geocedg_developer_guide.md) and
+[user guide](../user/geocedg_user_guide.md) distinguish the published G9S1 baseline
+from the technically complete R1 candidate awaiting author approval, structural
+continuity from interpolation accuracy, and
+eligible singleton classes from rich-only ambiguity. The spec index and modified-
+files registry track the current bounded source boundary. No new runtime,
+toolchain or dependency is required by the selected standard-Java arithmetic;
+bootstrap NO CHANGE REQUIRED is retained after source/dependency verification.
+New phase registration remains infrastructure UPDATE_REQUIRED; its required
+FULL clean execution completed with the results above.
+
+Protected G9U1 DESIGN checkpoint `00982e7e148a634cd57ed928f322774df267d5e3`
+remains untouched. Future reconciliation may consume only exact eligible R1
+tokens and must preserve rich-only reasons. G9U1 implementation is NOT AUTHORIZED
+and blocked until R1 closeout. The independent R4 risk
+`G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` remains OPEN / TRACKED.
+
+## Retained G9S1-R1-D2 final bounded design checkpoint
+
+The following records D2 before the subsequent approval above; its negative
+findings and diagnostic evidence are not rewritten.
+
+**DISPOSITION C — AUTHOR ACCEPTED** is now the accepted design finding for the
+proved periodic scope. It is not R1 PASS or productive implementation approval.
+Generic regular-pair invalidation remains rejected. The
+[D2 contract](../architecture/g9s1_r1_d2_pair_sheet_contract.md) closes the bounded
+proposal as **B — PARTIAL IMPLEMENTATION CONTRACT**: a structurally named
+singleton transverse-germ sheet per canonical component pair, with complete
+class coverage, unique chart transitions and current-state retained ownership.
+Multiple same-germ roots remain rich-only; arbitrary atlas labels are not a
+substitute for a durable semantic selector.
+
+The [D2 evidence](../../geocedg/validation/g9s1-r1/g9s1-r1-d2-design-evidence.json)
+records diagnostic DEV, not a productive certifier or pair-token lifecycle.
+Prior reports/tests/evidence remain unchanged; their hashes describe their own
+iterations, not subsequent living-roadmap edits. R4 generic ledger transaction,
+claims and ordinary-point recompute are reusable; its one-dimensional selector,
+phase quarantine and one-address persistence are not pair semantics.
+
+`productiveImplementationStarted=false`,
+`productiveImplementationAuthorized=false`, `selfApproved=false`,
+`authorApprovedPhase=false`, `passClaimed=false`. G9U1 DESIGN remains approved
+on the protected checkpoint; implementation stays blocked/not authorized.
+`G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` remains OPEN / TRACKED independently.
+
+## Retained G9S1-R1 atlas research continuation (2026-09-03)
+
+The following records iteration 2 before the subsequent finding acceptance
+above. Its mathematical/diagnostic evidence is not rewritten.
+
+The author accepts the projected-rank counterexamples but rejects the first
+iteration's extra invalidation merely at rank/chart changes. Current state:
+**G9S1-R1 DESIGN NOT APPROVED — CONTINUE DESIGN**; productive implementation
+has not started. The [symmetric atlas design candidate](../architecture/g9s1_r1_symmetric_atlas_design.md)
+proves a separate regular-loop monodromy witness and distinguishes unique chart
+transitions from genuine global sheet obstruction. Its **Disposition C** is
+limited to that demonstrated periodic scope, not a product PASS or a general
+license to invalidate regular pairs. The [new evidence](../../geocedg/validation/g9s1-r1/g9s1-r1-atlas-design-evidence.json)
+records diagnostic DEV only; prior report/evidence/test files remain retained.
+
+No productive R1, G9U1, token, persistence or frontend contract is changed.
+Protected G9U1 design remains approved; implementation is unauthorized and
+blocked pending R1 disposition. The independent R4 periodic-quarantine native
+round-trip risk remains OPEN / TRACKED in the roadmap.
+
+## Current G9S1-R1 review delta (2026-09-03)
+
+The following is the retained first-iteration record, superseded in design
+recommendation (not in its negative evidence) by the continuation above.
+
+The following supersedes only stale prospective G9U1 status in the historical
+R6 closeout narrative below. G9U1 DESIGN is author-approved at the independent
+protected checkpoint `00982e7e148a634cd57ed928f322774df267d5e3`; implementation is
+NOT AUTHORIZED and blocked until G9S1-R1 PASS and separate design reconciliation.
+The checkpoint branch is not imported or changed.
+
+G9S1-R1 is authorized but stopped **before productive implementation** at the
+[symmetric-selector design review](../architecture/g9s1_r1_pair_materialization_design_review.md).
+Its [research update](../research/g9s1_semantic_spline_numerical_methods.md#10-g9s1-r1-preimplementation-research-update-2026-09-03)
+maps numerical proof hypotheses separately from durable pair identity. The
+[diagnostic evidence](../../geocedg/validation/g9s1-r1/g9s1-r1-design-review-evidence.json)
+is not PHASE/COMPOSED/FULL acceptance. No certificate, public pair ledger or
+materialization behavior has been changed. Historical reports/ADRs remain
+unchanged; SplineV2 pair intersections are still rich-only.
+
+`G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` stays OPEN / TRACKED in the
+[canonical roadmap](../roadmap/geocedg_roadmap.md), not resolved by this review.
+
+## Published phase narrative
+
 - Status: G9O1, G9A1–G9A3/G9A, G9U0/G9U0-R1, G9X1, G9U0-R2, G9U0-R3,
   G9U0-R4, G9U0-R5 and G9S1 are `PASS — AUTHOR APPROVED`. Historical corrective-smoke
   records remain unchanged. R4 smoke 1 admitted/materialized the two roots but

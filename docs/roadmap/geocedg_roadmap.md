@@ -3,13 +3,13 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Roadmap vivo y normativo de fases; no sustituye las especificaciones ni los ADR aceptados |
-| Versión documental | 3.64 |
-| Fecha de revisión | 2 de septiembre de 2026 |
+| Versión documental | 3.69 |
+| Fecha de revisión | 3 de septiembre de 2026 |
 | Baseline GeoGebra | 5.4.928.0, commit `9b93256b7df401ff056c37b502d82df4d72b1522`, tag `geogebra-baseline-5.4.928.0` |
-| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1, G9A2, G9A3, el track G9A, G9U0, G9U0-R1, G9X1, G9U0-R2, G9U0-R3, G9U0-R4, G9U0-R5, G9S1, G9U0-R6 y la planificación G10P `PASS — AUTHOR APPROVED`. R6 añade resolución inversa semántica y estado explícito de punto draggable en kernel, incluido cruce periódico bidireccional/path-independent, sin `Path`, render/pixel como autoridad ni frontend G9U1. Al no existir consumidor Desktop productivo R6, el autor acepta el test-host/API como superficie diagnóstica y difiere el smoke GUI a G9U1. El checkpoint G9U1 `857de662...` permanece protegido como evidencia pre-R6 y no se integra en R6. R4 conserva determinismo actual > heurística de continuidad y el riesgo abierto `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP`. G9U1 no se ha ejecutado: su requisito kernel R6 está satisfecho, pero exige reconciliación post-R6, revisión autoral y autorización de implementación separada. G9B/G9C no están autorizadas, G9U2 sigue bloqueada y ninguna implementación productiva G10 está autorizada; Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
+| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1, G9A2, G9A3, el track G9A, G9U0, G9U0-R1, G9X1, G9U0-R2, G9U0-R3, G9U0-R4, G9U0-R5, G9S1, G9U0-R6 y la planificación G10P `PASS — AUTHOR APPROVED`. R6 añade resolución inversa semántica y estado explícito de punto draggable en kernel, incluido cruce periódico bidireccional/path-independent, sin `Path`, render/pixel como autoridad ni frontend G9U1. Su aceptación GUI sigue diferida a G9U1 por diseño. R4 conserva determinismo actual > heurística de continuidad y el riesgo abierto `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP`. G9U1 DESIGN post-R6 está aprobado en checkpoint independiente `00982e7e...`; la implementación no está autorizada y queda bloqueada hasta cierre G9S1-R1 y reconciliación separada. El autor aprueba R1-D2, acepta DISPOSITION C para el alcance monodrómico demostrado y autoriza B — PARTIAL IMPLEMENTATION CONTRACT, incluida recurrencia del slot semántico. Tras los bloqueos históricos y sus correcciones autorizadas, R1 está IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW: técnicamente completo tras PHASE A/B, COMPOSED y FULL clean, sin PASS ni aprobación de fase. G9B/G9C no están autorizadas, G9U2 sigue bloqueada y ninguna implementación productiva G10 está autorizada; Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
 | Última fase cerrada | G9U0-R6 — `PASS — AUTHOR APPROVED` |
-| Última fase ejecutada | G9U0-R6 — `PASS — AUTHOR APPROVED`; `selfApproved=false`, `authorApproved=true`, `passClaimed=true`; `manualGuiSmoke=DEFERRED TO G9U1 BY DESIGN`; `kernelDiagnosticAcceptance=PASS` |
-| Siguiente puerta | Reconciliación de diseño post-R6 de G9U1 para revisión autoral; G9U1 permanece sin ejecutar y su implementación no está autorizada |
+| Última fase ejecutada | G9S1-R1 — `IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW`; `implementationComplete=true`, `selfApproved=false`, `authorApprovedPhase=false`, `passClaimed=false`; `manualAuthorSmoke=PENDING`. La última fase cerrada sigue siendo G9U0-R6 |
+| Siguiente puerta | Revisión y smoke del autor para G9S1-R1 — IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW. G9U1 implementación no autorizada y bloqueada hasta cierre R1 y reconciliación separada |
 | Primer cliente | Aplicación de escritorio de la familia Classic 5 |
 | Núcleo | Java compartido de GeoGebra, extendido solo cuando la semántica lo requiere |
 
@@ -21,6 +21,164 @@ especificación o un ADR posterior aceptado contradice una propuesta anterior de
 este documento, prevalece la autoridad posterior y el roadmap debe registrar la
 supersesión. La [guía de usuario](../user/geocedg_user_guide.md) describe las
 capacidades observables vigentes.
+
+### G9S1-R1 — diseño D2 aprobado; continuidad estructural autorizada
+
+**Estado técnico final, 3 de septiembre:** las correcciones A/B superan PHASE
+A/B (192 casos cada una, SHA-256 idéntico
+`59793eef3641d8c93b012998c0a795fb949f5cefdb54d30ebcd337542ab155dd`),
+COMPOSED (1281 casos, cero fallos/omisiones) y FULL clean (7781 casos: 7770
+pasan, 11 omisiones upstream, cero fallos), todas con código de salida 0.
+`implementationComplete=true`; `manualAuthorSmoke=PENDING`. Los 76 archivos
+del conjunto de fuentes probado están archivados; esta reconciliación de estado
+documental es posterior y no reemplaza sus hashes ni recibos. Los bloqueos de
+la cronología siguiente no son fallos de estas ejecuciones finales. No hay
+aprobación de fase ni autovalidación autoral.
+
+La decisión autoral posterior acepta el contrato B y la reactivación del mismo
+slot semántico, y autoriza la implementación productiva acotada. El
+[ADR 0021](../adr/0021-spline-pair-singleton-germ-materialization.md) y la
+[especificación R1](../../geocedg/specs/curves/spline-v2-pair-materialization.md)
+registran esta decisión sin modificar los 13 documentos/tests/evidencias de D2,
+salvo estas autoridades vivas. La palabra pendiente en los archivos D2 describe
+su checkpoint histórico, no revoca la aprobación posterior.
+
+`G9S1-R1-D2 DESIGN=AUTHOR APPROVED`;
+`DISPOSITION C=AUTHOR ACCEPTED`;
+`IMPLEMENTABILITY=B — PARTIAL IMPLEMENTATION CONTRACT — AUTHOR APPROVED`;
+`implementationStarted=true`, `implementationAuthorized=true`,
+`selfApproved=false`, `authorApprovedPhase=false`, `passClaimed=false`.
+La [ejecución canónica](../../.github/prompts/tasks/g9s1-r1-spline-pair-intersection-materialization.prompt.md)
+y [matriz productiva](../validation/g9s1_r1_spline_pair_materialization_validation_matrix.md)
+exigen PHASE A/B, COMPOSED y FULL con limpieza de outputs; no se declara ningún
+resultado por la mera existencia del código o del diseño aprobado.
+
+La prueba positiva nativa de cruce de nudo expuso saltos C0/C1 no nulos en los
+polinomios binarios independientes. La negativa del certificador fue correcta
+bajo D2; se conserva ese fallo, la condición de parada aplicada y el
+[informe del bloqueo](../validation/g9s1_r1_implementation_blocker_report.md)
+y su [evidencia durable](../../geocedg/validation/g9s1-r1/g9s1-r1-implementation-blocker-evidence.json)
+sin reescribirlos como éxito. La decisión posterior autoriza la corrección
+acotada del [ADR 0022](../adr/0022-structural-spline-continuity.md): base directa
+equivalente con continuidad estructural, eliminación periódica exacta y puente
+de intervalos sobre esa misma función. Conserva las ecuaciones originales,
+la familia bounded Classic-compatible y validación numérica sin elevar tolerancias.
+La [arquitectura](../architecture/g9s1_r1_structural_spline_continuity.md) y
+[nota de investigación sucesora](../research/g9s1_r1_structural_spline_numerics.md)
+separan derivación, igualdad estructural, aproximación y evidencia.
+
+**Cronología histórica del conjunto bloqueado anterior a A/B (no estado actual):**
+
+`G9S1-R1=BLOCKED — AUTHORIZED CORRECTIVE CONTINUATION`.
+`implementationComplete=false`. COMPOSED y diagnóstico dirigido reproducen dos
+regresiones científicas actuales: rechazo de la spline quíntica histórica de 25
+puntos y raíces transversales materializables espurias en una tangencia implícita.
+Se conservan como fallos obligatorios; FULL continúa requerido, no ejecutado e
+incompleto. La corrección acotada del orden de filtros R6 no resuelve estos dos
+bloqueos. La disposición autoral posterior autoriza A (construcción con precisión
+superior acotada, mismas ecuaciones y admisión) y B (certificación univariada de
+la composición estructural con la implícita). No declara resuelto ninguno.
+Se conservan PHASE 153/153, COMPOSED 1137 con seis fallos y diagnóstico A/B 132
+con cuatro fallos como conjuntos históricos diferentes; R6 49/49 y lifecycle
+22/22 no sustituyen los fallos científicos. Se reanuda DEV antes de PHASE,
+COMPOSED y FULL del nuevo conjunto de fuentes, sin reducir ningún requisito.
+La finalización técnica requiere los recibos completados PHASE A/B, COMPOSED y FULL
+del mismo conjunto de fuentes; este registro no declara PASS ni aprobación manual.
+El caso nativo, 20 casos estructurales y la costura periódica independiente deben
+validarse junto con todos los requisitos previos de R1.
+
+**Disposición técnica actual:** esos requisitos se ejecutaron con los resultados
+finales indicados arriba. Se conservan los recibos fallidos y el conjunto probado
+final por separado; solo está pendiente la revisión/smoke del autor.
+
+El alcance es SplineV2 x SplineV2 autenticado y transformaciones certificables,
+no pares LocusV2 genéricos. Una clase de germen transversal única certificada por
+producto completo de componentes puede materializarse; `+,+,-` puede admitir
+solo la clase singleton. Rangos proyectados, nudos, cajas e historial no son
+identidad. La recurrencia es del slot estructural, no de una trayectoria física
+a través de singularidades. Grupos same-germ y el testigo monodrómico conservan
+rich-only. No se implementa G9U1 ni se modifica su checkpoint protegido.
+
+Orden vigente: `G9S1 PASS -> R6 PASS -> R1 structural correction + complete validation -> R1 author closeout ->
+G9U1 design reconciliation -> separate G9U1 implementation authorization`.
+El riesgo `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` permanece OPEN / TRACKED;
+la persistencia de cuarentena de pares R1 no sustituye su evidencia nativa R4.
+
+### G9S1-R1-D2 — registro conservado previo a aprobación productiva
+
+El siguiente texto conserva la cronología del checkpoint D2 anterior a la
+decisión autoral registrada arriba; no es el estado actual de autorización.
+
+El autor acepta `G9S1-R1 DESIGN FINDING = DISPOSITION C — AUTHOR ACCEPTED`
+para la monodromía periódica demostrada. No es PASS de R1 ni autorización
+productiva. `generalRegularPairInvalidation=REJECTED`;
+`productiveImplementationStarted=false`,
+`productiveImplementationAuthorized=false`, `selfApproved=false`,
+`authorApprovedPhase=false`, `passClaimed=false`.
+
+El [contrato final D2](../architecture/g9s1_r1_d2_pair_sheet_contract.md) propone
+**B — PARTIAL IMPLEMENTATION CONTRACT**: selector simétrico de clase de germen
+transversal única certificada en el producto completo de componentes, sin
+parámetros, cajas, rangos proyectados ni historial en la identidad. Como máximo
+dos raíces elegibles por par de componentes; grupos con varias raíces del mismo
+germen permanecen rich-only, incluido el testigo periódico aceptado. La pérdida
+temporal de certificado conserva el selector; su recurrencia única reactiva el
+mismo punto, sin afirmar una trayectoria histórica a través de singularidades.
+Este alcance parcial y la recurrencia del slot estructural requieren revisión
+autoral explícita antes de cualquier implementación. Las transiciones de carta,
+nudo o rango certificadas no invalidan por sí mismas.
+
+`G9S1-R1-D2 = FINAL DESIGN CANDIDATE — PENDING AUTHOR REVIEW`.
+G9U1 DESIGN sigue aprobado en el checkpoint protegido, sin cambios; su
+implementación permanece no autorizada y bloqueada hasta disposición autoral
+R1 y reconciliación separada. No se abre otra fase de investigación. La
+[evidencia D2](../../geocedg/validation/g9s1-r1/g9s1-r1-d2-design-evidence.json)
+es DEV, no aceptación productiva. El riesgo R4 periódico nativo sigue abierto.
+
+### Registro conservado de entrada G9S1-R1 (3 de septiembre de 2026)
+
+El texto de las iteraciones anteriores queda conservado como cronología; la
+aceptación posterior del hallazgo y el contrato actual son los de D2 arriba.
+
+**Iteración de diseño 2 — decisión autoral posterior:** los contraejemplos de
+rango proyectado se aceptan como evidencia, pero el fallback que invalidaba por
+cambio de rango/región durante movimiento transversal regular **NO está
+aprobado**. `G9S1-R1 DESIGN = NOT APPROVED — CONTINUE DESIGN`;
+`implementationStarted=false`, `selfApproved=false`, `authorApproved=false`,
+`passClaimed=false`. La [continuación de atlas y monodromía](../architecture/g9s1_r1_symmetric_atlas_design.md)
+separa certificados numéricos, cartas actuales y selector durable. Las
+transiciones certificadas únicas no invalidan por cruzar cajas, rangos o cartas.
+Una familia exacta de splines cúbicas periódicas recorridas dos veces demuestra
+una permutación tras un bucle regular; esto justifica estudiar cortes/alcances
+con monodromía, no cuarentena indiscriminada ni una implementación aprobada.
+Disposición de diseño **C — MONODROMY-AWARE ATLAS / QUARANTINE REQUIRED** en ese
+alcance demostrado; el esquema general y su política de cortes siguen sujetos
+a revisión. La evidencia diagnóstica anterior se conserva como primera iteración.
+
+Esta actualización sustituye el estado prospectivo pre-reconciliación de G9U1
+que conservan las secciones históricas de R6 más abajo. El diseño post-R6 está
+`PASS — AUTHOR APPROVED` en el checkpoint independiente
+`00982e7e148a634cd57ed928f322774df267d5e3`, rama
+`feature/g9u1-construction-workspace-planning-after-r6`. No se integra esa rama
+ni se ejecuta G9U1. El main de entrada es `109f077fc5e2a40bcde45d3271eb928ee66fdfcc`;
+los descendientes de verificación/workstation de R6 no son fases geométricas.
+
+La secuencia autorizada queda `G9S1 PASS -> G9U0-R6 PASS -> G9S1-R1 -> G9U1`.
+Esta continuación autoriza **solo diseño, sin implementación productiva**:
+los rangos de ambas proyecciones paramétricas no garantizan por sí solos un
+selector estable de raíces del dominio producto. La
+[primera revisión matemática y de código](../architecture/g9s1_r1_pair_materialization_design_review.md)
+se conserva como evidencia histórica. Su alternativa de invalidación por
+cambio de carta/rango fue rechazada; no es la propuesta actual. La nueva
+iteración demuestra una obstrucción monodrómica en un alcance explícito, no
+una imposibilidad general ni materialización lograda.
+
+Dependencia semántica: G9U1 no puede materializar pares mediante proximidad para
+eludir R1. Orden recomendado: tras disposición autoral de R1, revisión acotada separada del diseño
+G9U1 protegido y autorización explícita de implementación. Puerta global:
+`G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` permanece `OPEN / TRACKED`, con su
+disposición exigida antes del cierre global G9; esta revisión no aporta el
+round-trip nativo pendiente. R1 no tiene aprobación ni PASS.
 
 ---
 
@@ -1135,7 +1293,7 @@ optimización de rendimiento del software.
 | G9U0-R5 | `PASS — AUTHOR APPROVED` | Siete formas ordinarias `Translate`/`Rotate`/`Reflect`/`Mirror`/`Dilate` crean un nuevo Locus V2 semántico con ID/DAG propios; Option A `k=0` conserva `FINITE`/`UNBOUNDED` y añade `COLLAPSED_IMAGE`; smoke dinámico aceptado con limitación de entrada libre G9A caracterizada; `selfApproved=false`, `authorApproved=true`, `passClaimed=true`; no autoriza G9U1 |
 | G9S1 | `PASS — AUTHOR APPROVED` | Option B: `SplineV2` crea un nuevo `GeoLocusV2` semántico con dominio, spans y knots explícitos; Classic `Spline` permanece intacto; total/parcial scalar `Length` y autoridad rica `LocusLength` validadas; `selfApproved=false`, `authorApproved=true`, `passClaimed=true` |
 | G9U0-R6 | `PASS — AUTHOR APPROVED` | Puerta kernel acotada entre G9S1 y G9U1: request geométrica transitoria -> resultado tipado con cero/uno/varios preimages -> selección explícita -> punto ordinario con address semántica editable en DAG. Incluye Locus V2, SplineV2 y transformadas R5, además del cruce periódico bidireccional/path-independent del mismo punto y el negativo unresolved sin mutación; no implementa `Path`, Point-tool/frontend ni comando paralelo. ADR 0019 está Accepted y la spec es normativa; `manualGuiSmoke=DEFERRED TO G9U1 BY DESIGN`, `kernelDiagnosticAcceptance=PASS`, `selfApproved=false`, `authorApproved=true`, `passClaimed=true` |
-| G9U1 | `DESIGN CANDIDATE — PROTECTED / NOT AUTHORIZED` | Checkpoint pre-R6 independiente `857de6628489bda0b65a5ba5145e62ca0795fc32`; no forma parte de R6. R6 `PASS — AUTHOR APPROVED` satisface el requisito kernel, pero el Workspace Construction aún requiere reconciliación post-R6, revisión autoral y autorización de implementación separada; `Continuity = OFF`; markers, Point-tool, create-one/create-selected/create-all y sesión persistente siguen exclusivamente prospectivos |
+| G9U1 | `DESIGN PASS — AUTHOR APPROVED / IMPLEMENTATION NOT AUTHORIZED` | Checkpoint post-R6 independiente `00982e7e148a634cd57ed928f322774df267d5e3`, sin integrar; el pre-R6 `857de662...` se preserva. Implementación bloqueada hasta disposición autoral G9S1-R1, reconciliación acotada y autorización separada. `Continuity = OFF`; markers, Point-tool, create-one/create-selected/create-all y sesión persistente siguen exclusivamente prospectivos |
 | G9B / G9C | `DESIGNED — NOT AUTHORIZED` | Track kernel tras cierre de G9A; no depende de completar el cliente G9U1 |
 | G9U2 | `BLOCKED ON THE APPROVED G9 GATE` | Workspace de procedimientos diédrico solo tras `G9 PASS — AUTHOR APPROVED` |
 | G9 spatial solving | `POINT PILOT — AUTHOR APPROVED` | G9A2 se limita a frames/sistemas/mapas/relaciones y reconstrucción projection-defined de punto; no hay primitivas generales, objetos compuestos ni autoridad 3D |
