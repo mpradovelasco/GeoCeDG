@@ -1,10 +1,13 @@
 # GeoCeDG verification levels and bootstrap-impact contract
 
-- Status: **PROPOSED / IMPLEMENTATION_CANDIDATE_PENDING_AUTHOR_REVIEW**
+- Status: **NORMATIVE / AUTHOR APPROVED**
 - Scope: operational/build/verification infrastructure; no product semantics
-- Decision: [proposed ADR 0020](../../../docs/adr/0020-verification-levels-and-current-run-evidence.md)
+- Decision: [accepted ADR 0020 and author closeout](../../../docs/adr/0020-verification-levels-and-current-run-evidence.md#author-approval-and-closeout)
 - Existing authority: [ADR 0002](../../../docs/adr/0002-g1-operational-authority.md)
-- Evidence state: applied implementation candidate; original characterization and
+- Current evidence state: implementation and independent technical review complete;
+  author approval applies to `2b82034dbedf6f26250ad4aefb9eead700e33e66` and its
+  status-only closeout. The technical contract below is unchanged.
+- Historical pre-final02 checkpoint: applied implementation candidate; original characterization and
   completed/pending candidate checks are recorded separately in the
   [performance report](../../../docs/validation/verification_performance_report.md)
   and [bootstrap audit](../../../docs/validation/bootstrap_workstation_report.md).
@@ -23,20 +26,23 @@
   The applied default-only invocation-unique directory correction passed its
   focused 111-runtime/18-generated-case,143-assertion operational validation;
   that fake-first result is not FULL or a benchmark. Replacement attempt02 remains
-  pending in the reports.
+  pending at that historical checkpoint, not at the accepted closeout above.
 
-### Documentary checkpoint and final execution record
+### Historical documentary checkpoint and final execution record
 
-This source is frozen before replacement exact-source FULL attempt
-`final-full-ci-profile-02`; its outcome was not yet executed at this documentary
-checkpoint and no exit 0 is predicted. Attempt `final-full-ci-profile-01` remains
+The document version retained in reviewed implementation
+`2b82034dbedf6f26250ad4aefb9eead700e33e66` was frozen before replacement
+exact-source FULL attempt `final-full-ci-profile-02`.
+Its original pending language records that checkpoint, not the current closeout:
+final02 subsequently passed. Attempt `final-full-ci-profile-01` remains
 FAILED at the delegated benchmark precheck; an intermediate receipt does not
 replace its failed root. Later completion is recorded in the designated
 [measurement](../../../artifacts/verification-performance-bootstrap/after/final-full-ci-profile-02/measurement-result.json),
 [final root result](../../../artifacts/verification-performance-bootstrap/after/final-full-ci-profile-02/authority/verification-result.json),
 [delegated benchmark JSON](../../../artifacts/verification-performance-bootstrap/after/final-full-ci-profile-02/authority/operational-benchmark.json)
 and [final candidate closeout](../../../artifacts/verification-performance-bootstrap/inventory/final-candidate-closeout.md),
-not by rewriting the tested source after execution. A missing or failed record
+as separate saved execution evidence. These status-only closeout edits do not
+alter executable inputs or those records. A missing or failed record
 does not satisfy the gate. These ignored local artifacts require the retained
 artifact tree or a separately supplied bundle; they do not confer author approval.
 
@@ -48,7 +54,7 @@ executable authority remains `tools/agent/verify.ps1` and the focused verifiers
 it composes. This contract does not replace their assertions or accepted feature
 specifications. It is not a GeoCeDG product phase and authorizes no future phase.
 
-The interface below is the implementation candidate. Commands are not evidence
+The interface below is the accepted implementation. Commands are not evidence
 of execution; implementation and measured results must be reported separately.
 Existing accepted gates remain in force throughout adoption.
 
@@ -171,7 +177,7 @@ with the independent path is demonstrated. Keep two sequential Gradle test
 invocations: shared-JRE tests with shared build/style work, then Desktop tests
 with Desktop build/style work. Do not combine cross-module `--tests` filters.
 
-The candidate COMPOSED test selection is:
+The accepted COMPOSED test selection is:
 
 | Module | Test filters |
 |---|---|
@@ -387,5 +393,7 @@ minimum, not an executed compatibility result; 7.2 itself remains UNTESTED.
 Record the actual runtime version with validation evidence and do not generalize
 one host's result to every version at or above the floor.
 
-This task closes only as `IMPLEMENTATION_CANDIDATE_PENDING_AUTHOR_REVIEW`.
-No author approval, phase promotion, release permission or approved tag is inferred.
+This cross-cutting operational task is closed by the explicit
+[author decision in ADR 0020](../../../docs/adr/0020-verification-levels-and-current-run-evidence.md#author-approval-and-closeout).
+Technical execution alone still cannot confer author approval, product-phase
+promotion, release permission or an approved phase tag.

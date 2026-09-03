@@ -1,7 +1,7 @@
-# Verification performance and infrastructure candidate
+# Verification performance and infrastructure closeout
 
-- Status: **IMPLEMENTATION_CANDIDATE_PENDING_AUTHOR_REVIEW**
-- Evidence state: original characterization and Gradle mechanism controls complete,
+- Status: **Closed** — [author decision in ADR 0020](../adr/0020-verification-levels-and-current-run-evidence.md#author-approval-and-closeout)
+- Historical pre-final02 evidence checkpoint: original characterization and Gradle mechanism controls complete,
   including failed original FULL; applied DEV first/repeat, R6 PHASE, COMPOSED01,
   shared/Desktop correctness focuses, failed FULL01 and successful technical FULL02
   recorded; original union-repeat, phase-to-COMPOSED01 and bounded original-shared-
@@ -15,13 +15,31 @@
   documentary checkpoint
 - Scope: operational/build orchestration and governance, not a product phase
 - Source contract: [verification levels](../../geocedg/specs/operations/verification-levels.md)
-- Design: [proposed ADR 0020](../adr/0020-verification-levels-and-current-run-evidence.md)
+- Design: [accepted ADR 0020](../adr/0020-verification-levels-and-current-run-evidence.md)
 
-This documents an applied implementation candidate, not an approved phase or
-release. Completed measurements, failed attempts and still-pending obligations
-are separate. Pending or provisional evidence is not a PASS, estimated improvement
-or final closeout result. The exact tested candidate state matters: the same HEAD
-also has intentional worktree changes and later bounded correctness repairs.
+The author closed this cross-cutting operational task on 2026-09-03 after the
+independent review accepted implementation `2b82034dbedf6f26250ad4aefb9eead700e33e66`
+without source corrections. The normative approval and scope are recorded in
+ADR 0020, not inferred from test success or from this report.
+
+Final `final-full-ci-profile-02` completed with native/root exit 0 in about
+44 min 49 s: 7,585 passing cases, 11 inherited omissions, 703 XML and zero
+failures/errors. Its archived audit revalidated 1,453 evidence entries. Clean
+FULL, COMPOSED, native bootstrap03 and the independent review's fresh DEV, PHASE,
+shared-Java and Desktop checks were accepted with their recorded source-cohort
+boundaries. Status-only closeout leaves executable source unchanged and reuses
+that evidence; it does not repeat the expensive campaign.
+
+The completed operational benchmark median is 214.277636 s against an
+informational 5 s target: accepted non-blocking technical debt, not a target met.
+Configuration cache, additional parallelism and further optimization remain
+deferred. Remote CI, interactive GUI and installer/packaging generation were
+not performed in the local campaign.
+
+The implementation chronology and pre-final02 checkpoint below are historical
+records from the reviewed commit. Their pending wording is not current status;
+failed attempts, provisional instruments and source-cohort distinctions remain
+unchanged. This approval promotes no scientific/product phase or release.
 
 ## 1. Entry and authority
 
@@ -32,9 +50,10 @@ The annotated `geocedg-g9u0-r6-pass` object
 remote tag object. The latest normative closed phase was G9U0-R6, not G9U1.
 The roadmap was v3.64. Unmerged G9U1 planning branches were not execution authority.
 
-Task branch: `codex/verification-performance-bootstrap-governance`. No merge,
-stash, history rewrite, unrelated publication, author approval or phase tag was
-performed. `.github/copilot-instructions.md` was absent and was not approximated.
+Task branch: `codex/verification-performance-bootstrap-governance`. At the
+implementation checkpoint no merge, stash, history rewrite, unrelated
+publication, author approval or phase tag had been performed.
+`.github/copilot-instructions.md` was absent and was not approximated.
 
 Inspected authority includes root AGENTS, canonical governance/verification
 and task/review prompts, ADR 0002/0015/0019, current developer/user guidance,
@@ -1246,7 +1265,7 @@ Replacement final02 is reserved below and remains pending.
 These slots do not claim a pending or provisional result. Populate them only from
 completed saved evidence, with exact source state and requested optional gates.
 
-| Gate / comparison | Current bounded status and required completion record |
+| Gate / comparison | Historical checkpoint status and required completion record |
 |---|---|
 | BOOTSTRAP_NORMAL_RESULT | Attempts -01/-02 remain **FAILED AS OBSERVED**, B18/B19. Bootstrap03 actual normal path and nested COMPOSED completed native/runner/root 0, 1,096 tests/zero skips, only SkipFetch warning; original envelope 2 is preserved separately. Separate archive-only UTC/link/raw-case reconciliation completed with exit 0, retaining the failed envelope and explicit post-run pin. No fetch/install/GUI or arbitrary extra successful-bootstrap repetition is claimed. |
 | CLEAN_FULL_RESULT | **COMPLETED**: `after/clean-full-applied-01`, final root/measurement/environment exit0, same source60 and 7,596 cases; detailed profile, restoration and coverage contrast above. It does not establish a pristine workstation or cleared dependency cache. |
@@ -1273,18 +1292,21 @@ daemon profile differs from FULL02's retained-output/info run, so it is not a
 matched FULL02 performance pair. Verify final root completion and benchmark JSON,
 not merely the benchmark child exit or an intermediate canonical receipt.
 
-### Documentary checkpoint and final execution record
+### Historical documentary checkpoint and final execution record
 
-This source is frozen before replacement exact-source FULL attempt
-`final-full-ci-profile-02`; its outcome was not yet executed at this documentary
-checkpoint and no exit 0 is predicted. Attempt `final-full-ci-profile-01` remains
+The document version retained in reviewed implementation
+`2b82034dbedf6f26250ad4aefb9eead700e33e66` was frozen before replacement
+exact-source FULL attempt `final-full-ci-profile-02`.
+Its original pending language records that checkpoint, not the current closeout:
+final02 subsequently passed. Attempt `final-full-ci-profile-01` remains
 FAILED at the delegated benchmark precheck; an intermediate receipt does not
 replace its failed root. Later completion is recorded in the designated
 [measurement](../../artifacts/verification-performance-bootstrap/after/final-full-ci-profile-02/measurement-result.json),
 [final root result](../../artifacts/verification-performance-bootstrap/after/final-full-ci-profile-02/authority/verification-result.json),
 [delegated benchmark JSON](../../artifacts/verification-performance-bootstrap/after/final-full-ci-profile-02/authority/operational-benchmark.json)
 and [final candidate closeout](../../artifacts/verification-performance-bootstrap/inventory/final-candidate-closeout.md),
-not by rewriting the tested source after execution. A missing or failed record
+as separate saved execution evidence. These status-only closeout edits do not
+alter executable inputs or those records. A missing or failed record
 does not satisfy the gate. These ignored local artifacts require the retained
 artifact tree or a separately supplied bundle; they do not confer author approval.
 
@@ -1311,12 +1333,18 @@ within the existing 61 paths, not additional phase authorization.
 
 The root instructions, canonical verification prompt, task template and review
 prompt require substantive bootstrap and verification-infrastructure impact review,
-not an automatic script edit or a keyword-only acceptance. ADR 0020 remains Proposed
-and the level specification remains an implementation candidate. Current results,
-impact declarations and even a later technical FULL PASS do not constitute author
-approval, phase authorization, release permission or an approved tag.
+not an automatic script edit or a keyword-only acceptance. ADR 0020 is now Accepted
+and the level specification is normative through the separate
+[author decision](../adr/0020-verification-levels-and-current-run-evidence.md#author-approval-and-closeout).
+That record also owns the status-only closeout impact declaration; the UPDATED
+declarations above describe implementation changes. Technical results and impact
+declarations alone do not grant phase authorization, release permission or a tag.
 
-## 10. Remaining closeout obligations
+## 10. Historical pre-final02 closeout obligations
+
+This checkpoint checklist is preserved from the reviewed implementation commit;
+the completed outcome and author closeout at the top of this report supersede
+its pending status without relabelling failed evidence.
 
 Source application, the separately designed shared/Desktop correctness repairs,
 their focused checks, DEV first/repeat, R6 PHASE, COMPOSED01 and the saved original
@@ -1346,7 +1374,9 @@ not completion. A pre-existing stale product-state paragraph in
 `docs/developer/geocedg_agent_prompt_guide.md` was identified separately and remains
 deferred outside this task's 61-path set; current product authority is the living
 roadmap/manual, not that historical wording. No frozen record is rewritten to
-resolve it. Required status: `IMPLEMENTATION_CANDIDATE_PENDING_AUTHOR_REVIEW`.
+resolve it. The then-required status was
+`IMPLEMENTATION_CANDIDATE_PENDING_AUTHOR_REVIEW`, superseded by the explicit
+author decision in ADR 0020, not by a test result.
 
 ## Appendix K. Every intentional changed path
 

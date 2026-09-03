@@ -1,6 +1,16 @@
 # Compatibility prerequisites discovered by FULL verification
 
-Status: **IMPLEMENTATION_CANDIDATE_PENDING_AUTHOR_REVIEW**. This is a bounded
+Status: **Closed** — [author decision in ADR 0020](../adr/0020-verification-levels-and-current-run-evidence.md#author-approval-and-closeout).
+The independent review accepted all ten Java paths in implementation
+`2b82034dbedf6f26250ad4aefb9eead700e33e66` without corrections; all six modified
+upstream-origin files were necessary minimal compatibility changes. This
+status-only closeout changes none of their technical content or regression tests.
+
+## Historical validation checkpoint
+
+The following chronology is retained from the reviewed pre-final02 checkpoint;
+pending wording below is historical, not the accepted closeout status.
+This is a bounded
 correctness prerequisite to the operational verification-performance task, not
 a new product phase, phase approval or performance optimization. The shared
 and Desktop repairs are applied. Their focused 85-case shared and 34-case Desktop
@@ -262,18 +272,21 @@ require a new bootstrap behavior. The reports preserve final01 measurement/root
 and TEMP archive evidence; the unexecuted real-run success-only auditor21ce is
 not an authority for that failed run.
 
-### Documentary checkpoint and final execution record
+### Historical documentary checkpoint and final execution record
 
-This source is frozen before replacement exact-source FULL attempt
-`final-full-ci-profile-02`; its outcome was not yet executed at this documentary
-checkpoint and no exit 0 is predicted. Attempt `final-full-ci-profile-01` remains
+The document version retained in reviewed implementation
+`2b82034dbedf6f26250ad4aefb9eead700e33e66` was frozen before replacement
+exact-source FULL attempt `final-full-ci-profile-02`.
+Its original pending language records that checkpoint, not the current closeout:
+final02 subsequently passed. Attempt `final-full-ci-profile-01` remains
 FAILED at the delegated benchmark precheck; an intermediate receipt does not
 replace its failed root. Later completion is recorded in the designated
 [measurement](../../artifacts/verification-performance-bootstrap/after/final-full-ci-profile-02/measurement-result.json),
 [final root result](../../artifacts/verification-performance-bootstrap/after/final-full-ci-profile-02/authority/verification-result.json),
 [delegated benchmark JSON](../../artifacts/verification-performance-bootstrap/after/final-full-ci-profile-02/authority/operational-benchmark.json)
 and [final candidate closeout](../../artifacts/verification-performance-bootstrap/inventory/final-candidate-closeout.md),
-not by rewriting the tested source after execution. A missing or failed record
+as separate saved execution evidence. These status-only closeout edits do not
+alter executable inputs or those records. A missing or failed record
 does not satisfy the gate. These ignored local artifacts require the retained
 artifact tree or a separately supplied bundle; they do not confer author approval.
 

@@ -1,13 +1,14 @@
 # ADR 0020: Verification levels and current-run evidence
 
-- Status: **Proposed / IMPLEMENTATION_CANDIDATE_PENDING_AUTHOR_REVIEW**
+- Status: **Accepted — PASS — AUTHOR APPROVED**
 - Date: 2026-09-02
+- Accepted: 2026-09-03; decision owner: GeoCeDG author
 - Scope: operational/build/verification infrastructure only
 - Entry: `3942af594e4507e479f2c75019cef62e3d9fea6f`, approved G9U0-R6
 - Product/phase effect: none; G9U1 and later phase authorization remain unchanged
 - Contract: [verification levels](../../geocedg/specs/operations/verification-levels.md)
-- Implementation state: applied candidate; completed and outstanding validation
-  are distinguished in the performance and bootstrap audit reports
+- Implementation state: closed; reviewed implementation
+  `2b82034dbedf6f26250ad4aefb9eead700e33e66`; see [author approval](#author-approval-and-closeout)
 
 ## Context
 
@@ -25,10 +26,10 @@ incomplete Desktop scope remain preserved, not relabeled as a successful baselin
 
 [ADR 0002](0002-g1-operational-authority.md) remains accepted authority for
 composition, current-checkout applicability, CI/local consistency and generated
-state restoration. This proposed decision refines execution reuse, not the
+state restoration. This accepted decision refines execution reuse, not the
 meaning of its existing validation guarantees.
 
-## Proposed decision
+## Decision
 
 1. Keep `tools/agent/verify.ps1` as executable authority. Default to COMPOSED;
    expose explicit DEV, PHASE and FULL, preserve the legacy `-FullTests` FULL
@@ -103,7 +104,14 @@ guides carry concise instructions and references rather than second copies.
 | Require a bootstrap script edit for every task | Rejected; explicit review and justified updates/no-change rationale are the contract. |
 | Treat a PR keyword as sufficient impact compliance | Rejected; machine-checkable structure does not replace substantive review. |
 
-## Evidence and remaining candidate-validation gates
+## Historical implementation checkpoint
+
+The following evidence chronology is retained from reviewed implementation
+`2b82034dbedf6f26250ad4aefb9eead700e33e66`; it describes a documentary checkpoint
+written before final02 completed.
+Its pending-gate wording describes that checkpoint, not the current closeout.
+The completed review and subsequent author decision are recorded in
+[Author approval and closeout](#author-approval-and-closeout).
 
 The [performance report](../validation/verification_performance_report.md) and
 [bootstrap audit](../validation/bootstrap_workstation_report.md) distinguish
@@ -184,25 +192,77 @@ hide not-requested bodies.
 - Accepted ADRs, sealed phase prompts/hash manifests and scientific baselines are
   not rewritten. No product Java change is justified solely by this proposal.
 
-### Documentary checkpoint and final execution record
+### Historical documentary checkpoint and final execution record
 
-This source is frozen before replacement exact-source FULL attempt
-`final-full-ci-profile-02`; its outcome was not yet executed at this documentary
-checkpoint and no exit 0 is predicted. Attempt `final-full-ci-profile-01` remains
+The document version retained in reviewed implementation
+`2b82034dbedf6f26250ad4aefb9eead700e33e66` was frozen before replacement
+exact-source FULL attempt `final-full-ci-profile-02`.
+Its original pending language records that checkpoint, not the current closeout:
+final02 subsequently passed. Attempt `final-full-ci-profile-01` remains
 FAILED at the delegated benchmark precheck; an intermediate receipt does not
 replace its failed root. Later completion is recorded in the designated
 [measurement](../../artifacts/verification-performance-bootstrap/after/final-full-ci-profile-02/measurement-result.json),
 [final root result](../../artifacts/verification-performance-bootstrap/after/final-full-ci-profile-02/authority/verification-result.json),
 [delegated benchmark JSON](../../artifacts/verification-performance-bootstrap/after/final-full-ci-profile-02/authority/operational-benchmark.json)
 and [final candidate closeout](../../artifacts/verification-performance-bootstrap/inventory/final-candidate-closeout.md),
-not by rewriting the tested source after execution. A missing or failed record
+as separate saved execution evidence. These status-only closeout edits do not
+alter executable inputs or those records. A missing or failed record
 does not satisfy the gate. These ignored local artifacts require the retained
 artifact tree or a separately supplied bundle; they do not confer author approval.
 
-## Approval boundary
+## Author approval and closeout
 
-Implementation authorization for this operational task is not author acceptance
-of its result. The required closeout is
-`IMPLEMENTATION_CANDIDATE_PENDING_AUTHOR_REVIEW`. The author must review coverage,
-equivalence, measurements, bootstrap behaviour and governance before approval.
-No approved phase tag, roadmap advancement or release permission is created.
+On 2026-09-03 the GeoCeDG author explicitly granted **PASS — AUTHOR APPROVED**
+for **GeoCeDG Verification Performance + Bootstrap / Workstation Verification
+Audit and Governance Hardening**. This section is the normative approval record;
+the specification, reports and developer guide reference it.
+
+Approval is limited to reviewed implementation
+`2b82034dbedf6f26250ad4aefb9eead700e33e66` on
+`codex/verification-performance-bootstrap-governance`, based on
+`3942af594e4507e479f2c75019cef62e3d9fea6f`, and its separate status-only closeout
+commit. The independent review accepted all 61 paths without source corrections,
+classified all six upstream-origin Java modifications as
+`NECESSARY_MINIMAL_UPSTREAM_CHANGE`, and confirmed that no tests were removed or
+merged and no scientific assertion, tolerance, reference or lifecycle contract
+was weakened. DEV → PHASE → COMPOSED → FULL retains independent gate assurance.
+
+The verification-performance architecture, bootstrap/workstation audit and
+governance hardening are closed. The accepted evidence includes final02 FULL
+(exit 0; 7,585 passing cases, 11 inherited omissions, 703 XML, zero failures/errors),
+clean-output FULL, COMPOSED, native bootstrap03 exit 0, the benchmark campaign,
+the 1,453-entry archived-evidence audit and the independent review's fresh DEV,
+PHASE, shared-Java and Desktop checks. The [independent review](../../artifacts/verification-performance-bootstrap/closeout-review-20260903/closeout-review.md)
+and [saved checks](../../artifacts/verification-performance-bootstrap/closeout-review-20260903/review-checks.json)
+retain their pre-approval meaning; this author decision does not rewrite them.
+
+At approval entry, all 11,152 source-file byte hashes matched final02's
+[input inventory](../../artifacts/verification-performance-bootstrap/after/final-full-ci-profile-02/authority/canonical-build/9284974de4004c8d817ec6cf89e1a027/input-inventory.json)
+(SHA-256 `390aadeb44f03bd75fb499a94f252888dc572ce0dc03be652855e6958478785d`).
+This closeout changes status/documentation only, not executable inputs or the
+technical verification contract. Earlier clean-FULL/bootstrap records keep
+their reviewed, explicitly bounded source-cohort applicability; they are not
+relabelled as whole-tree final02 runs. Heavy execution is reused, not repeated.
+Bootstrap03's separate timestamp-link envelope remains exit 2; the successful
+native result and archived reconciliation do not erase that instrument failure.
+
+Accepted non-blocking residuals remain: operational benchmark median
+214.277636 s versus the informational 5 s target; configuration-cache support,
+additional parallelism and further optimization deferred. Remote CI, interactive
+GUI and installer/packaging generation were not performed in the local campaign.
+The declared PowerShell 7.2 minimum remains untested on that exact version.
+Approval does not report any of these items as completed or targets as achieved.
+
+```text
+BOOTSTRAP IMPACT — NO CHANGE REQUIRED
+Rationale: approval/status edits only; reviewed JDK, Conda, wrapper, build,
+verification, numerical-reference and packaging assumptions remain unchanged.
+GUIDE_IMPACT = UPDATED
+GUIDE_PATHS = docs/developer/geocedg_developer_guide.md
+```
+
+The author authorized a separate approval commit and ordinary fast-forward
+promotion to main, preserving the reviewed implementation ancestry. This is a
+cross-cutting operational closeout, not a new geometric/product phase. No phase
+tag is required or created for it; G9U1 and all later phase authorizations,
+scientific baselines and release/licensing permissions remain unchanged.

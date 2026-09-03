@@ -1,6 +1,6 @@
 # Bootstrap and workstation audit report
 
-Status: **IMPLEMENTATION_CANDIDATE_PENDING_AUTHOR_REVIEW** — real bootstrap03 and nested COMPOSED completed; two earlier preflight failures and the separate r3 envelope failure retained; final CI-profile01 failed at benchmark precheck; replacement final02 remains pending at the documentary checkpoint.
+Status: **Closed** — [author decision in ADR 0020][approval]. Native bootstrap03 and nested COMPOSED passed; the separate r3 envelope remains failed. Final02 and independent closeout review subsequently passed.
 
 Evidence update: 2026-09-03; cited completed measurements span 2026-09-02–03 UTC. Individual saved records retain their exact UTC timestamps.
 
@@ -10,9 +10,31 @@ Inspected original HEAD: 3942af594e4507e479f2c75019cef62e3d9fea6f
 
 Task branch: codex/verification-performance-bootstrap-governance
 
+## Current operational closeout
+
+The author accepted reviewed implementation
+`2b82034dbedf6f26250ad4aefb9eead700e33e66` on 2026-09-03; [ADR 0020][approval]
+is the normative approval record. This status-only closeout changes no bootstrap,
+workstation, Java, build or verification behavior and needs no repeated native
+bootstrap. The reviewed source-cohort boundaries remain explicit: native
+bootstrap03/nested COMPOSED exit 0 and the separate timestamp-link envelope exit 2
+are different results. The archived reconciliation preserves the failed envelope.
+Final02 FULL and the independent review complete the formerly pending gate.
+
+JDK 22 launcher, build/test JDK 17, Desktop JDK 25, Gradle-wrapper authority and
+the documented optional packaging support remain unchanged. Actual installation,
+installer generation, interactive GUI and remote CI are not newly claimed.
+The approval-only bootstrap/guide impact is recorded in ADR 0020; the UPDATED
+declarations below belong to implementation, not to this metadata closeout.
+
+### Historical implementation checkpoint
+
+The following pre-final02 chronology is preserved from the reviewed commit. Its
+pending wording and pre-approval status describe that checkpoint only.
+
 This report records an applied implementation candidate, not a completed validation or approval record. The unchanged original bootstrap and its COMPOSED delegation completed successfully. Original FULL subsequently failed in the unfiltered shared-JRE suite before unfiltered Desktop ran; one spreadsheet failure also reproduced in isolation. Those are original baseline failures, not failures of the successful original bootstrap scope. The coordinator has since applied the candidate operational sources. Saved applied infrastructure/workstation checks and a real inspect-only packaging run are reported below. Representative DEV49 first/repeat, PHASE, COMPOSED01 and technical FULL02 have completed against their recorded checkpoints; the bounded DEV49 and original-shared-to-FULL02 relations are also complete. Clean-output FULL subsequently completed with the same source60 and saved coverage/context plus six identical canonical summaries as FULL02, under explicitly different clean/reuse policies. The first real candidate bootstrap falsely rejected a legitimate Conda display identity; its origin-preserving correction passed a 150-assertion workstation focus. The second attempt accepted that identity but failed when the Gradle parser's parameter rejected native blank lines. Both failures are retained below; neither reached nested product verification. The separate blank-line correction then passed its 158-assertion workstation focus. The corrected bootstrap03 normal SkipFetch path and nested COMPOSED then completed with native/runner/root exit 0. Its separate r3 linked envelope failed because of mixed local/UTC DateTime comparison; that failure and null Link are preserved, with artifact-only reconciliation separately reviewed. Final CI-profile01 subsequently failed at benchmark precheck because implicit operational invocations shared a fixed evidence directory. That failed root and prior generated-state result remain preserved. The applied default-only unique-directory correction passed 111 runtime cases and 18 generated-state cases/143 assertions; replacement final02 remains pending at this documentary checkpoint.
 
-The bootstrap/workstation changes and this report do not introduce geometric semantics, numerical tolerances, serialization changes, scientific-reference updates, feature promotion, licensing decisions or author approval. Separate baseline-compatibility changes and product-level validation remain coordinator-owned and must not be concealed by this operational scope statement. The status remains IMPLEMENTATION_CANDIDATE_PENDING_AUTHOR_REVIEW; completed focused checks do not complete missing required gates.
+The bootstrap/workstation changes do not introduce geometric semantics, numerical tolerances, serialization changes, scientific-reference updates, feature promotion or licensing decisions. Separate baseline-compatibility changes and product-level validation must not be concealed by this operational scope statement. At this historical checkpoint the status was IMPLEMENTATION_CANDIDATE_PENDING_AUTHOR_REVIEW; focused checks alone did not complete missing required gates. The later explicit author decision is recorded separately above.
 
 ## 1. Authority, scope and evidence levels
 
@@ -709,18 +731,21 @@ slot only from its saved result. Preserve all earlier failures and distinguish
 inspection, normal verification and explicitly authorized installation. Do not
 substitute an estimate, fixture pass or another level.
 
-### Documentary checkpoint and final execution record
+### Historical documentary checkpoint and final execution record
 
-This source is frozen before replacement exact-source FULL attempt
-`final-full-ci-profile-02`; its outcome was not yet executed at this documentary
-checkpoint and no exit 0 is predicted. Attempt `final-full-ci-profile-01` remains
+The document version retained in reviewed implementation
+`2b82034dbedf6f26250ad4aefb9eead700e33e66` was frozen before replacement
+exact-source FULL attempt `final-full-ci-profile-02`.
+Its original pending language records that checkpoint, not the current closeout:
+final02 subsequently passed. Attempt `final-full-ci-profile-01` remains
 FAILED at the delegated benchmark precheck; an intermediate receipt does not
 replace its failed root. Later completion is recorded in the designated
 [measurement](../../artifacts/verification-performance-bootstrap/after/final-full-ci-profile-02/measurement-result.json),
 [final root result](../../artifacts/verification-performance-bootstrap/after/final-full-ci-profile-02/authority/verification-result.json),
 [delegated benchmark JSON](../../artifacts/verification-performance-bootstrap/after/final-full-ci-profile-02/authority/operational-benchmark.json)
 and [final candidate closeout](../../artifacts/verification-performance-bootstrap/inventory/final-candidate-closeout.md),
-not by rewriting the tested source after execution. A missing or failed record
+as separate saved execution evidence. These status-only closeout edits do not
+alter executable inputs or those records. A missing or failed record
 does not satisfy the gate. These ignored local artifacts require the retained
 artifact tree or a separately supplied bundle; they do not confer author approval.
 
@@ -742,7 +767,8 @@ GUIDE_PATHS = README.md; docs/user/geocedg_user_guide.md; docs/developer/geocedg
 
 The inspected guides describe the PowerShell 7.2 minimum, Java 17/22/25 roles, named numerical environment, bootstrap/delegated-level boundary and logging/installation workflow. The subsequent applied review qualifies technical acceptance by the required COMPOSED/FULL level, links the separate correctness prerequisites, and replaces stale README capability claims with the living roadmap/manual rather than duplicating product semantics. This declaration follows the existing [documentation-impact protocol][documentation-impact]; it neither claims tested PowerShell 7.2 nor certifies installer idempotence. This report-only proposal changes no guide; it records the coordinator's already applied operational guide updates.
 
-Before treating the implementation candidate as technically complete:
+The historical pre-final02 completion checklist, subsequently assessed by the
+independent closeout review, was:
 
 1. Reconcile completed original bootstrap/COMPOSED/FULL native, child-log and coverage ledgers, including failed FULL, missing unfiltered Desktop coverage and the isolated reproduction's unreliable native-exit field. Resolve or explicitly retain baseline failures under the coordinator's compatibility authority; do not relabel them as passed.
 2. Keep the declared PowerShell 7.2 floor aligned across applied scripts/tests/docs; do not claim an executed 7.2 compatibility result.
@@ -755,7 +781,7 @@ Before treating the implementation candidate as technically complete:
 
 Remaining limitations include the failed/incomplete original FULL baseline (now followed by the separately documented shared/Desktop repairs and successful technical FULL02), the isolated control's native-exit capture defect, focused installer discovery outside default JDK locations, unexecuted real installation/upgrade/idempotence paths, possible filesystem check/use races, original sandbox failed-log overwrite, the retained B18/B19 candidate preflight failures, the preserved r3 timestamp-link failure despite successful bootstrap03, the final01 operational evidence collision, and the still-unexecuted replacement final02 result at this documentary checkpoint. Completed operational/inspection/product checks do not fill that final gate. Scientific references and product semantics are not changed by the bootstrap/workstation portion of this task; the separate bounded Java correctness changes are recorded in the [compatibility design][compatibility-design].
 
-This report records an applied implementation candidate and preserved evidence; it is not an approval or an independent product-validation authority. No author approval, phase promotion or release permission is inferred. The actual completed bootstrap03 scope is evidence, not approval. Status: IMPLEMENTATION_CANDIDATE_PENDING_AUTHOR_REVIEW.
+This report preserves implementation evidence; it is not an independent product-validation or approval authority. Native bootstrap03 success alone did not confer approval. The former IMPLEMENTATION_CANDIDATE_PENDING_AUTHOR_REVIEW status is superseded only by the explicit [author decision in ADR 0020][approval], without granting a new product phase or release permission.
 
 ## Source and evidence references
 
@@ -766,6 +792,7 @@ generated evidence, not files published by the Git repository. Their relative
 links require the preserved local artifact tree or a separately supplied
 evidence bundle; repository access alone does not make those artifacts available.
 
+[approval]: ../adr/0020-verification-levels-and-current-run-evidence.md#author-approval-and-closeout
 [original-bootstrap]: https://github.com/mpradovelasco/GeoCeDG/blob/3942af594e4507e479f2c75019cef62e3d9fea6f/tools/bootstrap/bootstrap-windows.ps1#L32
 [original-verify]: https://github.com/mpradovelasco/GeoCeDG/blob/3942af594e4507e479f2c75019cef62e3d9fea6f/tools/agent/verify.ps1#L19
 [java-convention]: ../../source/build-logic/convention/src/main/kotlin/java-conventions.gradle.kts

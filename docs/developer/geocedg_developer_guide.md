@@ -86,13 +86,14 @@ pending license and asset approval.
 ## Verification
 
 `tools/agent/verify.ps1` is executable authority; its default remains COMPOSED.
-The operational implementation candidate is governed by the
+The accepted operational implementation is governed by the
 [verification-level contract](../../geocedg/specs/operations/verification-levels.md)
-and [proposed ADR 0020](../adr/0020-verification-levels-and-current-run-evidence.md).
+and [accepted ADR 0020](../adr/0020-verification-levels-and-current-run-evidence.md).
 The level interface governs verification orchestration, not geometric semantics.
 The separately justified [baseline compatibility repairs](../architecture/verification-baseline-compatibility-repair.md)
-are part of this candidate and retain their own regression evidence. Neither the
-interface nor those repairs advance a product phase or infer author approval.
+retain their own regression evidence and are covered by the explicit
+[operational author closeout](../adr/0020-verification-levels-and-current-run-evidence.md#author-approval-and-closeout).
+Neither the interface nor those repairs advance a product phase.
 
 | Level | Use and limit |
 |---|---|
@@ -457,8 +458,10 @@ compatibility effects, verifier command/exit/log, skipped checks and risks.
 Also record required versus executed verification levels, verification-
 infrastructure impact, the explicit bootstrap-impact outcome and substantive
 rationale/affected paths from the verification-level contract, and existing
-`GUIDE_IMPACT`. A missing required FULL remains incomplete. An operational
-implementation candidate remains pending author review and creates no phase.
+`GUIDE_IMPACT`. A missing required FULL remains incomplete. Technical candidates
+require separate author approval; this operational task is closed under
+[ADR 0020](../adr/0020-verification-levels-and-current-run-evidence.md#author-approval-and-closeout)
+and creates no product phase.
 Commit intentionally, create an annotated phase tag only after author approval,
 and fast-forward promotion branches without rewriting shared history.
 
