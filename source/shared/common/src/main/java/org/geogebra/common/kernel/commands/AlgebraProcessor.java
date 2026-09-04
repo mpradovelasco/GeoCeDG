@@ -4131,6 +4131,20 @@ public class AlgebraProcessor {
 	 */
 	public String getSyntax(CommandSyntax syntax, String internalCommandName, Settings settings) {
 		int dim = settings.getEuclidian(-1).isEnabled() ? 3 : 2;
+		// GeoCeDG: explicit help must obey the same runtime command filter as
+		// autocomplete/dispatch, including the early CAS-enabled syntax path.
+		if (app.getConfig() instanceof org.geocedg.common.main.settings.config.AppConfigGeoCeDG) {
+			Commands productCommand = null;
+			try {
+				productCommand = Commands.valueOf(internalCommandName);
+			} catch (IllegalArgumentException exception) {
+				// Existing macro/unknown-command handling remains below.
+			}
+			if (productCommand != null
+					&& !cmdDispatcher.isAllowedByCommandFilters(productCommand)) {
+				return null;
+			}
+		}
 		if (cmdDispatcher.isCASAllowed()) {
 			return syntax.getCommandSyntax(internalCommandName, dim);
 		}

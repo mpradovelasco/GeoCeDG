@@ -9,12 +9,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.awt.Component;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 
@@ -31,9 +28,9 @@ import org.junit.jupiter.api.Test;
 class G9U0R3MenuLifecycleTest {
 
 	private static final List<String> LOCUS_ACTION_KEYS = List.of(
-			"LocusV2.Tool", "LocusV2.Point.Tool",
-			"LocusLength.Total.Tool", "LocusLength.Partial.Tool",
-			"LocusV2.Results.Inspect");
+			"semantic.locus-v2.create", "semantic.locus-v2.point-explicit",
+			"measure.locus-v2-total-length", "measure.locus-v2-partial-length",
+			"result.inspect-rich");
 
 	@BeforeAll
 	static void initializeDesktop() {
@@ -48,10 +45,10 @@ class G9U0R3MenuLifecycleTest {
 		AppGeoCeDG app = appWithLocusV2(true);
 		GeoCeDGMenuBar menuBar = initializeMenuBar(app);
 
-		assertApprovedEnabledItems(app, productMenu(menuBar));
+		assertApprovedEnabledItems(menuBar);
 		menuBar.initMenubar();
-		assertEquals(1, productMenuCount(menuBar));
-		assertApprovedEnabledItems(app, productMenu(menuBar));
+		assertEquals(5, menuBar.getMenuCount());
+		assertApprovedEnabledItems(menuBar);
 	}
 
 	@Test
@@ -61,7 +58,7 @@ class G9U0R3MenuLifecycleTest {
 
 		menuBar.updateFonts();
 
-		assertApprovedEnabledItems(app, productMenu(menuBar));
+		assertApprovedEnabledItems(menuBar);
 	}
 
 	@Test
@@ -73,7 +70,7 @@ class G9U0R3MenuLifecycleTest {
 		menuBar.updateFonts();
 		menuBar.updateFonts();
 
-		assertApprovedEnabledItems(app, productMenu(menuBar));
+		assertApprovedEnabledItems(menuBar);
 	}
 
 	@Test
@@ -83,10 +80,9 @@ class G9U0R3MenuLifecycleTest {
 
 		app.setLocale(new Locale("es"));
 
-		JMenu productMenu = productMenu(menuBar);
-		assertApprovedEnabledItems(app, productMenu);
-		assertTrue(itemTexts(productMenu).contains(
-				"Inspeccionar resultado rico de Locus V2"));
+		assertApprovedEnabledItems(menuBar);
+		assertEquals(GeoCeDGProfile.getText("geocedg.action.ResultInspect.name", "es"),
+				item(menuBar, "result.inspect-rich").getText());
 	}
 
 	@Test
@@ -96,7 +92,7 @@ class G9U0R3MenuLifecycleTest {
 
 		assertTrue(RuntimeFeatureService.mayCreateLocusV2(
 				app.getKernel().getConstruction()));
-		assertApprovedEnabledItems(app, productMenu(menuBar));
+		assertApprovedEnabledItems(menuBar);
 	}
 
 	@Test
@@ -106,8 +102,10 @@ class G9U0R3MenuLifecycleTest {
 
 		assertFalse(RuntimeFeatureService.mayCreateLocusV2(
 				app.getKernel().getConstruction()));
-		assertEquals(List.of(GeoCeDGMenuBar.DXF_ACTION_TEXT),
-				itemTexts(productMenu(menuBar)));
+		for (String id : LOCUS_ACTION_KEYS) {
+			assertFalse(item(menuBar, id).isEnabled(), id);
+		}
+		assertTrue(item(menuBar, "export.dxf-2d").isEnabled());
 	}
 
 	private static AppGeoCeDG appWithLocusV2(boolean enabled) {
@@ -120,50 +118,23 @@ class G9U0R3MenuLifecycleTest {
 		return (GeoCeDGMenuBar) app.getGuiManager().getMenuBar();
 	}
 
-	private static JMenu productMenu(GeoCeDGMenuBar menuBar) {
+	private static JMenuItem item(GeoCeDGMenuBar menuBar, String id) {
 		for (int index = 0; index < menuBar.getMenuCount(); index++) {
-			JMenu candidate = menuBar.getMenu(index);
-			if (candidate != null && "GeoCeDG".equals(candidate.getText())) {
-				return candidate;
+			JMenuItem item = G9U1WorkspaceSurfaceTest.findItem(menuBar.getMenu(index), id);
+			if (item != null) {
+				return item;
 			}
 		}
-		throw new AssertionError("GeoCeDG product menu is missing");
+		throw new AssertionError("Missing product action " + id);
 	}
 
-	private static int productMenuCount(GeoCeDGMenuBar menuBar) {
-		int count = 0;
-		for (int index = 0; index < menuBar.getMenuCount(); index++) {
-			JMenu candidate = menuBar.getMenu(index);
-			if (candidate != null && "GeoCeDG".equals(candidate.getText())) {
-				count++;
-			}
+	private static void assertApprovedEnabledItems(GeoCeDGMenuBar menuBar) {
+		for (String id : LOCUS_ACTION_KEYS) {
+			assertTrue(item(menuBar, id).isVisible(), id);
+			assertTrue(item(menuBar, id).isEnabled(), id);
 		}
-		return count;
-	}
-
-	private static void assertApprovedEnabledItems(AppGeoCeDG app,
-			JMenu productMenu) {
-		List<String> expected = new ArrayList<>();
-		expected.add(GeoCeDGMenuBar.DXF_ACTION_TEXT);
-		for (String key : LOCUS_ACTION_KEYS) {
-			expected.add(app.getLocalization().getMenu(key));
-		}
-		assertEquals(expected, itemTexts(productMenu));
-		for (Component component : productMenu.getMenuComponents()) {
-			if (component instanceof JMenuItem) {
-				assertTrue(component.isVisible());
-				assertTrue(component.isEnabled());
-			}
-		}
-	}
-
-	private static List<String> itemTexts(JMenu menu) {
-		List<String> texts = new ArrayList<>();
-		for (Component component : menu.getMenuComponents()) {
-			if (component instanceof JMenuItem) {
-				texts.add(((JMenuItem) component).getText());
-			}
-		}
-		return texts;
+		assertTrue(item(menuBar, "export.dxf-2d").isEnabled());
+		assertEquals(GeoCeDGMenuBar.DXF_ACTION_ACCELERATOR,
+				item(menuBar, "export.dxf-2d").getAccelerator());
 	}
 }

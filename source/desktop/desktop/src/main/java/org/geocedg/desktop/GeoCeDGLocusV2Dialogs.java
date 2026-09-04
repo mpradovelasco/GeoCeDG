@@ -12,18 +12,25 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
+import javax.swing.Timer;
 
 import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
 import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusV2PublicOperations;
+import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionCandidate2D;
+import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionResult2D;
+import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionStatus2D;
 import org.geocedg.common.kernel.locus.intersection.IntersectionDiagnostic2D;
 import org.geocedg.common.kernel.locus.intersection.IntersectionOverlapEvidence2D;
 import org.geocedg.common.kernel.locus.intersection.LocalPairIsolationEvidence2D;
@@ -36,7 +43,6 @@ import org.geocedg.common.kernel.locus.metric.MetricDiagnostic2D;
 import org.geocedg.common.kernel.locus.metric.MetricErrorAmount2D;
 import org.geocedg.common.kernel.locus.metric.MetricValue2D;
 import org.geocedg.common.main.feature.RuntimeFeatureService;
-import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoNumberValue;
 import org.geogebra.common.kernel.geos.GeoPoint;
@@ -49,9 +55,107 @@ final class GeoCeDGLocusV2Dialogs {
 	private static final int INSPECTOR_COLUMNS = 72;
 
 	private final AppD app;
+	private final GeoCeDGIntersectionSession intersectionSession;
 
 	GeoCeDGLocusV2Dialogs(AppD app) {
+		this(app, new GeoCeDGIntersectionSession(app));
+	}
+
+	GeoCeDGLocusV2Dialogs(AppD app, GeoCeDGIntersectionSession session) {
 		this.app = app;
+		intersectionSession = session;
+	}
+
+	GeoLocusV2 chooseSemanticSource(List<GeoLocusV2> sources) {
+		if (sources.size() == 1) {
+			return sources.get(0);
+		}
+		Object choice = JOptionPane.showInputDialog(app.getMainComponent(),
+				text("point.choose"), text("point.choose"), JOptionPane.QUESTION_MESSAGE,
+				null, sources.toArray(), null);
+		return sources.contains(choice) ? (GeoLocusV2) choice : null;
+	}
+
+	GeoPoint chooseOwnedPoint(List<GeoPoint> points) {
+		if (points.size() == 1) {
+			return points.get(0);
+		}
+		List<ResultChoice> choices = new ArrayList<>();
+		for (GeoPoint point : points) {
+			choices.add(new ResultChoice(point));
+		}
+		Object choice = JOptionPane.showInputDialog(app.getMainComponent(),
+				text("point.choose"), text("point.choose"), JOptionPane.QUESTION_MESSAGE,
+				null, choices.toArray(), null);
+		return choices.contains(choice) ? (GeoPoint) ((ResultChoice) choice).geo : null;
+	}
+
+	LocusPointInteractionCandidate2D chooseSemanticPreimage(
+			LocusPointInteractionResult2D result) {
+		List<PreimageChoice> choices = new ArrayList<>();
+		for (LocusPointInteractionCandidate2D candidate : result.getCandidates()) {
+			choices.add(new PreimageChoice(candidate));
+		}
+		Object choice = JOptionPane.showInputDialog(app.getMainComponent(),
+				text("point.ambiguous"), text("point.choose"), JOptionPane.QUESTION_MESSAGE,
+				null, choices.toArray(), null);
+		return choices.contains(choice) ? ((PreimageChoice) choice).candidate : null;
+	}
+
+	String interactionMessage(LocusPointInteractionResult2D result) {
+		if (result == null || result.getStatus() == LocusPointInteractionStatus2D.INVALID_SOURCE) {
+			return text("point.invalid");
+		}
+		return text(result.getStatus() == LocusPointInteractionStatus2D.DEGENERATE_SOURCE_IMAGE
+				? "point.degenerate" : "point.unresolved");
+	}
+
+	void showInteractionOutcome(LocusPointInteractionResult2D result, boolean creation) {
+		// Cancelling the explicit chooser is not an error.
+		if (creation && result != null && result.getStatus()
+				== LocusPointInteractionStatus2D.MULTIPLE_SEMANTIC_PREIMAGES) {
+			return;
+		}
+		if (app.isErrorDialogsActive()) {
+			JOptionPane.showMessageDialog(app.getMainComponent(), interactionMessage(result),
+					text("point.choose"), JOptionPane.INFORMATION_MESSAGE);
+		}
+	}
+
+	void showStaleIntersection() {
+		if (app.isErrorDialogsActive()) {
+			JOptionPane.showMessageDialog(app.getMainComponent(), text("intersection.stale"),
+					menu("LocusV2.Results.Inspect"), JOptionPane.WARNING_MESSAGE);
+		}
+	}
+
+	LocusIntersectionSolution2D chooseMarkerSolution(List<LocusIntersectionSolution2D> roots) {
+		if (roots.size() == 1) {
+			return roots.get(0);
+		}
+		List<MarkerChoice> choices = new ArrayList<>();
+		for (LocusIntersectionSolution2D root : roots) {
+			choices.add(new MarkerChoice(root, choices.size() + 1));
+		}
+		Object choice = JOptionPane.showInputDialog(app.getMainComponent(),
+				text("intersection.selection"), menu("LocusV2.Results.Inspect"),
+				JOptionPane.QUESTION_MESSAGE, null, choices.toArray(), null);
+		return choices.contains(choice) ? ((MarkerChoice) choice).root : null;
+	}
+
+	void inspectActiveIntersection() {
+		GeoLocusIntersectionResult active = intersectionSession.getActive();
+		if (active != null) {
+			GeoPoint point = showIntersection(active);
+			if (point != null) {
+				app.storeUndoInfo();
+				app.getKernel().notifyRepaint();
+			}
+		}
+	}
+
+	private String text(String key) {
+		return GeoCeDGProfile.getText(key, app.getLocale().getLanguage());
 	}
 
 	GeoPoint createSemanticPoint(GeoLocusV2 source) {
@@ -138,6 +242,9 @@ final class GeoCeDGLocusV2Dialogs {
 			}
 		}
 		if (candidates.isEmpty()) {
+			if (intersectionSession.getActive() != null) {
+				return intersectionSession.getActive();
+			}
 			for (GeoElement geo : app.getKernel().getConstruction()
 					.getGeoSetConstructionOrder()) {
 				if (isRichResult(geo)) {
@@ -211,6 +318,7 @@ final class GeoCeDGLocusV2Dialogs {
 	}
 
 	private GeoPoint showIntersection(GeoLocusIntersectionResult rich) {
+		intersectionSession.activate(rich);
 		StringBuilder summary = new StringBuilder();
 		List<TokenChoice> admissible = new ArrayList<>();
 		if (rich.isDefined()) {
@@ -245,7 +353,9 @@ final class GeoCeDGLocusV2Dialogs {
 				appendField(summary, "LocusV2.Results.Field.Solution",
 						solutionNumber);
 				appendField(summary, "LocusV2.Results.Field.PointAdmissible",
-						localizeBoolean(pointAdmissible));
+						localizeBoolean(pointAdmissible) + " \u2014 "
+								+ text(pointAdmissible ? "intersection.eligible"
+										: "intersection.richOnly"));
 				appendField(summary, "LocusV2.Results.Field.Contact",
 						localizeEnum(solution.getClassification()
 								.getContactClass()));
@@ -334,6 +444,16 @@ final class GeoCeDGLocusV2Dialogs {
 		JTextArea inspector = createTextArea(summary.toString());
 		JComboBox<TokenChoice> tokens = new JComboBox<>(
 				admissible.toArray(new TokenChoice[0]));
+		Set<String> previousSelection = intersectionSession.selectedTokens();
+		if (!previousSelection.isEmpty()) {
+			tokens.setSelectedItem(null);
+			for (TokenChoice choice : admissible) {
+				if (previousSelection.contains(choice.token)) {
+					tokens.setSelectedItem(choice);
+					break;
+				}
+			}
+		}
 		String tokenLabel = menu("LocusV2.Results.ExactToken");
 		tokens.getAccessibleContext().setAccessibleName(tokenLabel);
 		JLabel prompt = new JLabel(tokenLabel);
@@ -343,28 +463,118 @@ final class GeoCeDGLocusV2Dialogs {
 		JPanel tokenRow = new JPanel(new BorderLayout(8, 0));
 		tokenRow.add(prompt, BorderLayout.WEST);
 		tokenRow.add(tokens, BorderLayout.CENTER);
-		chooser.add(tokenRow, BorderLayout.SOUTH);
-		int decision = JOptionPane.showConfirmDialog(app.getMainComponent(),
-				chooser, menu("LocusV2.Results.Inspect"),
-				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+		JList<TokenChoice> multiple = new JList<>(admissible.toArray(new TokenChoice[0]));
+		multiple.setVisibleRowCount(Math.min(6, admissible.size()));
+		multiple.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		multiple.setSelectedIndices(java.util.stream.IntStream.range(0, admissible.size())
+				.filter(index -> previousSelection.contains(admissible.get(index).token))
+				.toArray());
+		multiple.getAccessibleContext().setAccessibleName(text("intersection.selection"));
+		multiple.addListSelectionListener(event -> {
+			List<String> selectedTokens = new ArrayList<>();
+			for (TokenChoice choice : multiple.getSelectedValuesList()) {
+				selectedTokens.add(choice.token);
+			}
+			intersectionSession.select(selectedTokens);
+		});
+		JPanel buttons = new JPanel();
+		Object inspectedSnapshot = rich.getIntersectionResult();
+		JButton one = new JButton(text("intersection.one"));
+		JButton selected = new JButton(text("intersection.selected"));
+		JButton all = new JButton(text("intersection.all"));
+		one.addActionListener(event -> {
+			if (!requireCurrentInspection(rich, inspectedSnapshot)) {
+				return;
+			}
+			TokenChoice choice = (TokenChoice) tokens.getSelectedItem();
+			if (choice != null) {
+				materializeInSession(List.of(choice.token), multiple, tokens);
+			}
+		});
+		selected.addActionListener(event -> {
+			if (!requireCurrentInspection(rich, inspectedSnapshot)) {
+				return;
+			}
+			List<String> selectedTokens = new ArrayList<>();
+			for (TokenChoice choice : multiple.getSelectedValuesList()) {
+				selectedTokens.add(choice.token);
+			}
+			materializeInSession(selectedTokens, multiple, tokens);
+		});
+		all.addActionListener(event -> {
+			if (requireCurrentInspection(rich, inspectedSnapshot)) {
+				materializeInSession(intersectionSession.eligibleTokens(), multiple, tokens);
+			}
+		});
+		buttons.add(one);
+		buttons.add(selected);
+		buttons.add(all);
+		JPanel persistentControls = new JPanel(new BorderLayout(0, 6));
+		persistentControls.add(tokenRow, BorderLayout.NORTH);
+		persistentControls.add(new JScrollPane(multiple), BorderLayout.CENTER);
+		persistentControls.add(buttons, BorderLayout.SOUTH);
+		chooser.add(persistentControls, BorderLayout.SOUTH);
+		JLabel currentness = new JLabel();
+		chooser.add(currentness, BorderLayout.NORTH);
+		Timer refresh = new Timer(250, event -> {
+			boolean sameSnapshot = intersectionSession.getActive() == rich && rich.isDefined()
+					&& rich.getIntersectionResult() == inspectedSnapshot;
+			currentness.setText(sameSnapshot ? "" : text("intersection.stale"));
+			one.setEnabled(sameSnapshot);
+			selected.setEnabled(sameSnapshot);
+			all.setEnabled(sameSnapshot);
+			multiple.repaint();
+			tokens.repaint();
+		});
+		int decision;
+		refresh.start();
+		try {
+			String close = text("intersection.close");
+			decision = JOptionPane.showOptionDialog(app.getMainComponent(),
+					chooser, menu("LocusV2.Results.Inspect"),
+					JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null,
+					new String[] {text("intersection.one-close"), close}, close);
+		} finally {
+			refresh.stop();
+		}
 		if (decision != JOptionPane.OK_OPTION) {
+			return null;
+		}
+		if (!requireCurrentInspection(rich, inspectedSnapshot)) {
 			return null;
 		}
 		TokenChoice chosen = (TokenChoice) tokens.getSelectedItem();
 		if (chosen == null) {
 			return null;
 		}
-		Construction construction = app.getKernel().getConstruction();
-		GeoText tokenInput = new GeoText(construction, chosen.token);
-		tokenInput.setAuxiliaryObject(true);
-		tokenInput.setEuclidianVisible(false);
 		try {
-			return LocusV2PublicOperations.selectIntersectionPoint(construction,
-					null, rich, tokenInput);
+			List<GeoPoint> points = intersectionSession.materialize(List.of(chosen.token), false);
+			return points.isEmpty() ? null : points.get(0);
 		} catch (IllegalArgumentException exception) {
 			showMessage("LocusV2.InvalidToken", "LocusV2.Results.Inspect",
 					JOptionPane.ERROR_MESSAGE);
 			return null;
+		}
+	}
+
+	private boolean requireCurrentInspection(GeoLocusIntersectionResult rich,
+			Object inspectedSnapshot) {
+		if (intersectionSession.getActive() != rich || !rich.isDefined()
+				|| rich.getIntersectionResult() != inspectedSnapshot) {
+			showStaleIntersection();
+			return false;
+		}
+		return true;
+	}
+
+	private void materializeInSession(List<String> selected, JList<TokenChoice> multiple,
+			JComboBox<TokenChoice> tokens) {
+		try {
+			intersectionSession.materialize(selected, true);
+			multiple.repaint();
+			tokens.repaint();
+		} catch (IllegalArgumentException exception) {
+			showStaleIntersection();
 		}
 	}
 
@@ -463,8 +673,9 @@ final class GeoCeDGLocusV2Dialogs {
 	private String localizeEnum(Enum<?> value) {
 		String key = "LocusV2.Results.Value." + value.name();
 		String localized = menu(key);
-		return key.equals(localized)
-				? menu("LocusV2.Results.Value.UNAVAILABLE") : localized;
+		// New typed kernel diagnostics remain inspectable before a localized
+		// friendly description exists. The code is evidence, never identity.
+		return key.equals(localized) ? value.name() : localized;
 	}
 
 	private String notApplicable() {
@@ -491,7 +702,7 @@ final class GeoCeDGLocusV2Dialogs {
 		}
 	}
 
-	private static final class TokenChoice {
+	private final class TokenChoice {
 		private final String token;
 		private final String presentation;
 
@@ -502,7 +713,39 @@ final class GeoCeDGLocusV2Dialogs {
 
 		@Override
 		public String toString() {
-			return presentation;
+			return presentation + (intersectionSession.materializedTokens().contains(token)
+					? " \u2014 " + text("intersection.created") : "");
+		}
+	}
+
+	private static final class PreimageChoice {
+		private final LocusPointInteractionCandidate2D candidate;
+
+		private PreimageChoice(LocusPointInteractionCandidate2D candidate) {
+			this.candidate = candidate;
+		}
+
+		@Override
+		public String toString() {
+			return candidate.getAddress().getBranchKey() + " / "
+					+ candidate.getAddress().getComponentLineageKey() + " : "
+					+ candidate.getAddress().getCanonicalParameter();
+		}
+	}
+
+	private final class MarkerChoice {
+		private final LocusIntersectionSolution2D root;
+		private final int displayNumber;
+
+		private MarkerChoice(LocusIntersectionSolution2D root, int displayNumber) {
+			this.root = root;
+			this.displayNumber = displayNumber;
+		}
+
+		@Override
+		public String toString() {
+			return menu("LocusV2.Results.Field.Solution") + " " + displayNumber + " \u2014 "
+					+ localizeEnum(root.getClassification().getContactClass());
 		}
 	}
 }

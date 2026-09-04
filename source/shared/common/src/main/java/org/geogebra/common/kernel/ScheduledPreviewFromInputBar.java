@@ -21,6 +21,7 @@ import java.util.Set;
 
 import javax.annotation.CheckForNull;
 
+import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
 import org.geogebra.common.kernel.arithmetic.Inspecting;
 import org.geogebra.common.kernel.arithmetic.SymbolicMode;
 import org.geogebra.common.kernel.arithmetic.ValidExpression;
@@ -98,6 +99,9 @@ public class ScheduledPreviewFromInputBar implements Runnable {
 	private void setInput(String str, ErrorHandler validation) {
 		this.input = str;
 		this.validation = validation;
+		if (kernel.getApplication().getConfig() instanceof AppConfigGeoCeDG) {
+			validInput = null;
+		}
 		if (StringUtil.emptyTrim(str)) {
 			Log.debug("empty");
 			validInput = "";
@@ -162,6 +166,21 @@ public class ScheduledPreviewFromInputBar implements Runnable {
 
 	@Override
 	public void run() {
+		// GeoCeDG: the ordinary input preview is syntax-only. In particular no
+		// command, nested argument, redefine or slider cleanup may mutate the DAG.
+		if (kernel.getApplication().getConfig() instanceof AppConfigGeoCeDG) {
+			previewGeos = null;
+			if (validation != null) {
+				if (StringUtil.emptyTrim(input) || !StringUtil.empty(validInput)) {
+					validation.resetError();
+				} else {
+					validation.showError(maxLength != DEFAULT_MAX_LENGTH ? null
+							: kernel.getLocalization().getInvalidInputError());
+				}
+			}
+			kernel.notifyUpdatePreviewFromInputBar(null);
+			return;
+		}
 		cleanOldSliders();
 		if (StringUtil.emptyTrim(input)) {
 			if (validation != null) {
@@ -365,6 +384,9 @@ public class ScheduledPreviewFromInputBar implements Runnable {
 	 *            slider names
 	 */
 	public void addSliders(String string) {
+		if (kernel.getApplication().getConfig() instanceof AppConfigGeoCeDG) {
+			return;
+		}
 		cleanOldSliders();
 		sliders = string.split(",");
 	}

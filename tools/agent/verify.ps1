@@ -75,6 +75,8 @@ $G9U0R6SemanticLocusPointInteractionVerifier = Join-Path $PSScriptRoot `
     "verify-g9u0-r6-semantic-locus-point-interaction-support.ps1"
 $G9S1R1SplinePairVerifier = Join-Path $PSScriptRoot `
     "verify-g9s1-r1-spline-pair-materialization.ps1"
+$G9U1ConstructionVerifier = Join-Path $PSScriptRoot `
+    "verify-g9u1-construction-workspace.ps1"
 $BenchmarkRunner = Join-Path $RepositoryRoot "tools\benchmark\run.ps1"
 $InitialStatus = $null
 $repositoryState = $null
@@ -1136,6 +1138,31 @@ try {
         Add-CurrentBuildEvidence -Parameters $g9s1R1Parameters
         & $G9S1R1SplinePairVerifier @g9s1R1Parameters
         Assert-LastScriptSuccess -Description "G9S1-R1 SplineV2 pair materialization"
+    }
+
+    $g9u1IntegrationArtifacts = @(
+        $G9U1ConstructionVerifier,
+        (Join-Path $RepositoryRoot "geocedg/validation/g9u1/g9u1-construction-workspace-evidence.json"),
+        (Join-Path $RepositoryRoot "geocedg/validation/g9u1/g9u1-construction-workspace-scenarios.json"),
+        (Join-Path $RepositoryRoot "geocedg/validation/g9u1/g9u1-construction-workspace-evidence.sha256"),
+        (Join-Path $RepositoryRoot "docs/validation/g9u1_construction_workspace_implementation_candidate_report.md")
+    )
+    $g9u1Present = @($g9u1IntegrationArtifacts | Where-Object { Test-Path -LiteralPath $_ -PathType Leaf }).Count
+    if ($g9u1Present -ne 0 -and $g9u1Present -ne $g9u1IntegrationArtifacts.Count) {
+        throw "Incomplete G9U1 integration: focused verifier, evidence, scenarios, hash and report must be paired."
+    }
+    if ($g9u1Present -eq $g9u1IntegrationArtifacts.Count) {
+        Write-Host "`n==> G9U1 CeDG Construction workspace"
+        $g9u1Parameters = @{
+            HistoricalRegressionsAlreadyComposed = $true
+            LogDirectory = Join-Path ([IO.Path]::GetFullPath($LogDirectory)) "g9u1-construction-workspace"
+        }
+        if ($SkipBuild) { $g9u1Parameters.SkipBuild = $true }
+        if ($AllowToolchainDownload) { $g9u1Parameters.AllowToolchainDownload = $true }
+        if ($KeepBuildOutputs) { $g9u1Parameters.KeepBuildOutputs = $true }
+        Add-CurrentBuildEvidence -Parameters $g9u1Parameters
+        & $G9U1ConstructionVerifier @g9u1Parameters
+        Assert-LastScriptSuccess -Description "G9U1 CeDG Construction workspace"
     }
 
     Write-Host "`n==> Standalone Windows packaging contracts"

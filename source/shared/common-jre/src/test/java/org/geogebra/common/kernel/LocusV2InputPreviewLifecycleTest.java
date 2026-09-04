@@ -68,8 +68,8 @@ class LocusV2InputPreviewLifecycleTest extends BaseUnitTest {
 		preview.updatePreviewFromInputBar("L=LocusV2(E,C)", errors);
 		GeoElement[] previewGeos = preview.getPreview("L=LocusV2(E,C)");
 
-		assertNotNull(previewGeos);
-		assertEquals(0, previewGeos.length);
+		// G9U1 GeoCeDG preview parses syntax without evaluating a command.
+		assertNull(previewGeos);
 		assertEquals("", errors.getErrors());
 		preview.clear();
 		assertNull(lookup("L"));

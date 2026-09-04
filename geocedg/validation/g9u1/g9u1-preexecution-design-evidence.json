@@ -1,0 +1,262 @@
+{
+  "schemaVersion": 1,
+  "phase": "G9U1",
+  "status": "DESIGN_PASS_AUTHOR_APPROVED",
+  "reconciliationStatus": "POST_R1_RECONCILED",
+  "provenance": {
+    "planningBranch": "codex/g9u1-construction-workspace-after-r1",
+    "entryCommit": "f8a21a087234b18fc13741a0ac2baf80608e9022",
+    "entryMain": "f8a21a087234b18fc13741a0ac2baf80608e9022",
+    "g9s1PassTag": "geocedg-g9s1-pass",
+    "g9s1PassTagObject": "ece0ca6f00299d3347e57fac38b7a28cade28644",
+    "g9s1PassCommit": "de33f3a80102adb051aaa7547a72b7e97409c58c",
+    "g9u0R6PassTag": "geocedg-g9u0-r6-pass",
+    "g9u0R6PassTagObject": "2ec953c5e32203b3fc5e8ab3ad48e6e2e698239e",
+    "g9u0R6PassCommit": "3942af594e4507e479f2c75019cef62e3d9fea6f",
+    "protectedPreR6PlanningBranch": "feature/g9u1-construction-workspace-planning",
+    "protectedPreR6Checkpoint": "857de6628489bda0b65a5ba5145e62ca0795fc32",
+    "protectedPreR6Prompt": ".github/prompts/tasks/g9u1-construction-workspace-after-g9s1.prompt.md",
+    "protectedPreR6PromptCanonicalLfSha256": "2319df211f5ea17880b7041844122afca0f2ddced4c6db1fabddce0d53dfa322",
+    "earlierPostG9S1DraftCanonicalLfSha256": "6451f15d5e0ecb9cadf8e17160a41606b5c8c27924455d1ee08326cad9b74fb4",
+    "protectedPostR6Checkpoint": "00982e7e148a634cd57ed928f322774df267d5e3",
+    "protectedPostR6PlanningBranch": "feature/g9u1-construction-workspace-planning-after-r6",
+    "protectedPostR6Prompt": ".github/prompts/tasks/g9u1-construction-workspace-after-g9u0-r6.prompt.md",
+    "protectedPostR6PromptCanonicalLfSha256": "561546019efc1e1d5e4367ddde73e9a2b0a0d767343eb9348b46d9e9c06f12df",
+    "r1ReviewedTechnicalCommit": "a38d4fcde846fc97c51abc8d958de6998302c436",
+    "r1CloseoutCommit": "af459d856f1cdc384805f3035203acce8e6f6104",
+    "r1PassTag": "geocedg-g9s1-r1-pass",
+    "importMethod": "15 canonical Git-blob-identical snapshot imports before reconciliation; 3 overlapping authorities semantic-merged preserving operational/R1 descendants; protected refs immutable."
+  },
+  "approval": {
+    "implementationStarted": false,
+    "implementationAuthorized": true,
+    "selfApproved": false,
+    "authorApprovedDesign": true,
+    "passClaimedImplementation": false,
+    "disposition": "DESIGN_PASS_AUTHOR_APPROVED_IMPLEMENTATION_AUTHORIZED_NOT_STARTED",
+    "authorApprovedImplementation": false
+  },
+  "stageA": {
+    "status": "PASS_AUTHOR_APPROVED_PUBLISHED",
+    "phase": "G9U0-R6",
+    "commit": "3942af594e4507e479f2c75019cef62e3d9fea6f",
+    "passTag": "geocedg-g9u0-r6-pass",
+    "passTagObject": "2ec953c5e32203b3fc5e8ab3ad48e6e2e698239e",
+    "focusedR6A": "55_OF_55_PASS",
+    "focusedR6B": "55_OF_55_PASS",
+    "focusedG9S1": "37_OF_37_PASS",
+    "focusedR5": "46_OF_46_PASS",
+    "focusedR4": "58_OF_58_PASS",
+    "canonicalSummarySha256": "7aaed6a558bf6f86ec93a5b45eb74155d45e66b52b47c373a9ad32f43b156cc9",
+    "manualGuiSmoke": "DEFERRED_TO_G9U1_BY_DESIGN",
+    "kernelDiagnosticAcceptance": "PASS",
+    "composed": "PASS_EXIT_0_ALL_GEOCEDG_VERIFICATION_GATES_PASSED"
+  },
+  "authority": {
+    "historicalPreR6Prompt": ".github/prompts/tasks/g9u1-construction-workspace-after-g9s1.prompt.md",
+    "historicalPreR6PromptCanonicalLfSha256": "2319df211f5ea17880b7041844122afca0f2ddced4c6db1fabddce0d53dfa322",
+    "definitivePrompt": ".github/prompts/tasks/g9u1-construction-workspace-after-g9s1-r1.prompt.md",
+    "definitivePromptCanonicalLfSha256": "c9b56474fe22368bffaee7417511a3237cbde0f9e31d777b36532232b61f1451",
+    "architecture": "docs/architecture/cedg_workspace_architecture.md",
+    "architectureCanonicalLfSha256": "0f4ada0b14673c192e544d9c0f71f5d9a4f8233aac0ffbf730132433cb8f5dc7",
+    "baseWorkspaceSpec": "geocedg/specs/ui/cedg-workspaces.md",
+    "baseWorkspaceSpecCanonicalLfSha256": "46d75ee309cfabbafca0734180abbffc3e1da0ffce16575f697f6d6bd31bdeee",
+    "interactionSpec": "geocedg/specs/ui/g9u1-construction-interaction.md",
+    "interactionSpecCanonicalLfSha256": "3a5ba2693965c69955dcbba51fd8fa2ecc62881345fc39bf9d838eccefb77b17",
+    "candidateSchema": "geocedg/specs/ui/application-profile-v2.candidate.schema.json",
+    "candidateSchemaCanonicalLfSha256": "f3373cd760bdeef22f8afb5018defbcf38747c3681ef13b84e07af26eb3b82ba",
+    "candidateManifest": "geocedg/specs/ui/application-profile-v2.candidate.yml",
+    "candidateManifestCanonicalLfSha256": "76fc569fc4ba40c045e73b0bb263cdd730aa0d667213ec4d90103dd0f6b3bc2c",
+    "workspaceCompletenessMatrix": "docs/validation/g9u1_workspace_completeness_matrix.md",
+    "workspaceCompletenessMatrixCanonicalLfSha256": "52e17874e420ddb9939b896eef5efda309ca473bf0330cf629cf8d667bcd38c9",
+    "commandToolMatrix": "docs/validation/g9u1_command_tool_consistency_matrix.md",
+    "commandToolMatrixCanonicalLfSha256": "917b0d9edda2cf7fb19b6110d96282bda04b6586898d4872647dd11572a28002",
+    "publicValidationMatrix": "docs/validation/g9_public_workspace_validation_matrix.md",
+    "publicValidationMatrixCanonicalLfSha256": "f3bcd6fddae48979121a6ddf372975c65cc3b347fdf2dad1c0b4f23feec20be0",
+    "scenarioInventory": "geocedg/validation/g9u1/g9u1-preexecution-scenarios.json",
+    "scenarioInventoryCanonicalLfSha256": "9b8b56ec157e8edc02a0a959c40a50f8cc1dcc786b9b9f67557cd87ade93f488",
+    "roadmap": "docs/roadmap/geocedg_roadmap.md",
+    "roadmapCanonicalLfSha256": "5ca15d38a78bfa45b2bec2ab8c12e853805346ef6a9dae96c29e01d431de057e",
+    "traceability": "docs/validation/g9_documentation_bundle_traceability.md",
+    "traceabilityCanonicalLfSha256": "1ee51e052797500fd27df021477f39da2ba3ef722b8f5781c30ae3f82975b6ad",
+    "specIndex": "geocedg/specs/README.md",
+    "specIndexCanonicalLfSha256": "8541e1b36c068af056086cd6ccf23ccbf8c6cf95f6d89bb4533c67daa041391d",
+    "historicalPostR6Prompt": ".github/prompts/tasks/g9u1-construction-workspace-after-g9u0-r6.prompt.md",
+    "historicalPostR6PromptCanonicalLfSha256": "561546019efc1e1d5e4367ddde73e9a2b0a0d767343eb9348b46d9e9c06f12df"
+  },
+  "inventory": {
+    "broadFamilies": 11,
+    "operationalClusters": 18,
+    "stableActions": 110,
+    "publicValidationScenarios": 138,
+    "candidatePaths": 19,
+    "productivePaths": 0,
+    "liveProfilePath": "apps/geocedg/application-profile.yml",
+    "liveProfileSchemaVersion": 1,
+    "liveProfileGitBlob": "fc2a3ebd128fc79ca76840bc391598221bfa02c6",
+    "liveProfileModified": false
+  },
+  "architecturalPlacement": {
+    "workspaceProfile": [
+      "single schema-v2 candidate action catalog",
+      "workspace groups and availability",
+      "presentation preferences"
+    ],
+    "desktopFrontend": [
+      "stroke-only curve nomination",
+      "R6 result orchestration and deterministic ambiguity chooser",
+      "interaction-owned semantic Point creation and drag",
+      "rich-result overlays and inspector",
+      "Algebra preview and definition presentation",
+      "ZoomWindow",
+      "accessibility and branding"
+    ],
+    "commandHelpLocalization": [
+      "autocomplete and syntax",
+      "GGBScript parity",
+      "English and Spanish product resources with English fallback"
+    ],
+    "persistencePreference": [
+      "host Continuity setting clamped OFF",
+      "workspace and layout preferences",
+      "native/compatibility document policy"
+    ],
+    "sharedKernelPublishedAuthority": [
+      "G9U0-R6 deterministic typed semantic-preimage resolution",
+      "interaction-owned semantic point creation/update",
+      "periodic seam and fail-closed ambiguity semantics",
+      "G9S1-R1 structural interval local certification plus singleton transverse-germ pair selector"
+    ],
+    "deferred": [
+      "broader G12 navigation",
+      "G9B/G9C/G9U2/productive G10",
+      "generic Locus pair materialization beyond R1 certified subset"
+    ]
+  },
+  "mandatoryPrerequisite": {
+    "id": "G9U0-R6",
+    "name": "SEMANTIC LOCUS POINT INTERACTION SUPPORT",
+    "status": "PASS_AUTHOR_APPROVED_PUBLISHED",
+    "passTag": "geocedg-g9u0-r6-pass",
+    "passCommit": "3942af594e4507e479f2c75019cef62e3d9fea6f",
+    "blockingCondition": "SATISFIED; published R6 and R1 authorities plus explicit conditional authorization; no material novelty found.",
+    "furtherKernelPrerequisite": "NONE_IDENTIFIED_BY_POST_R1_WORKSPACE_GAP_AUDIT"
+  },
+  "publishedR6Authority": {
+    "queryType": "LocusPointInteractionQuery2D",
+    "queryForms": [
+      "creation query: source,targetX,targetY,policy",
+      "move query: source,targetX,targetY,policy,currentAddress"
+    ],
+    "resolver": "LocusPointInteractionResolver2D.resolve(LocusPointInteractionQuery2D)",
+    "resultType": "LocusPointInteractionResult2D",
+    "candidateType": "LocusPointInteractionCandidate2D",
+    "creationSeam": "LocusV2PublicOperations.createInteractiveSemanticPoint(Construction,String,GeoLocusV2,LocusPointInteractionCandidate2D)",
+    "moveSeam": "LocusV2PublicOperations.moveInteractiveSemanticPoint(GeoPoint,double,double,LocusPointInteractionPolicy2D)",
+    "statuses": [
+      "NO_ADMISSIBLE_PREIMAGE",
+      "UNIQUE_ADMISSIBLE_PREIMAGE",
+      "MULTIPLE_SEMANTIC_PREIMAGES",
+      "UNRESOLVED_NUMERICAL_SEARCH",
+      "INVALID_SOURCE",
+      "DEGENERATE_SOURCE_IMAGE",
+      "UNSUPPORTED_CAPABILITY"
+    ],
+    "uniqueCreationRule": "Only a current published candidate from UNIQUE_ADMISSIBLE_PREIMAGE or an explicitly selected exact candidate from MULTIPLE_SEMANTIC_PREIMAGES reaches the creation seam.",
+    "moveRule": "Only an R6 interaction-owned semantic point may move; nonunique results leave its dedicated DAG inputs untouched.",
+    "frontendForbiddenAuthority": [
+      "pixels",
+      "screen coordinates",
+      "render tessellation",
+      "Cartesian proximity",
+      "solver/list order",
+      "pointer history",
+      "generic Path"
+    ],
+    "periodicSeam": "Published R6 accepts bidirectional path-independent closed-Spline seam movement with exact persisted semantic direction bits; UNRESOLVED leaves the point unchanged."
+  },
+  "productPolicies": {
+    "continuity": "EXISTING_HOST_SETTING_LOCKED_OFF_IN_GEOCEDG_CLASSIC_UNCHANGED",
+    "semanticPoint": "EXACT_COMMAND_REMAINS_FOR_GGBSCRIPT_GRAPHICAL_POINT_CONSUMES_PUBLISHED_R6_TYPED_CANDIDATES",
+    "splinePair": "R1_CERTIFIED_SINGLETON_GERM_EXACT_TOKENS_OTHER_CASES_RICH_ONLY",
+    "newPointAutoMaterialization": "EXPLICIT_VISIBLE_UNDOABLE_FRONTEND_ACTION_ONLY",
+    "existingPointReactivation": "KERNEL_DAG_RECOMPUTE_ONLY",
+    "zoomWindow": "MANDATORY_G9U1_EXISTING_VIEW_RECTANGLE_SEAM",
+    "broaderNavigation": "DEFERRED_G12",
+    "languages": "EN_ES_PRODUCT_WITH_DETERMINISTIC_EN_FALLBACK_CLASSIC_CORPUS_UNCHANGED"
+  },
+  "retainedRisks": [
+    {
+      "id": "G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP",
+      "status": "OPEN_TRACKED",
+      "g9u1Plan": "Execute native experiment; unresolved without demonstrated corruption/kernel/persistence violation is nonblocking for this candidate under explicit author disposition; global G9 still requires resolution."
+    }
+  ],
+  "planningValidation": {
+    "staticVerifier": "tools/agent/verify-g9u1-preexecution-design.ps1",
+    "status": "PENDING",
+    "exactCandidatePaths": 19,
+    "manifestCounts": "11_BROAD_FAMILIES_18_OPERATIONAL_CLUSTERS_110_STABLE_ACTIONS",
+    "scenarioMatrixMatch": "138_OF_138_UNIQUE_EXPECTED",
+    "relativeLinkDocumentsChecked": 13,
+    "canonicalLfManifestEntries": 18,
+    "deterministicRerunLogSha256": "PENDING",
+    "deterministicRerunMatch": false,
+    "gitDiffCheck": "PENDING",
+    "gitDiffCachedCheck": "PENDING",
+    "composedProductVerifierModified": false,
+    "productTestsExecutedForReconciliation": false
+  },
+  "terminalState": {
+    "G9S1": "PASS_AUTHOR_APPROVED",
+    "G9U0-R6": "PASS_AUTHOR_APPROVED",
+    "G9U1-DESIGN": "PASS_AUTHOR_APPROVED",
+    "G9U1-IMPLEMENTATION": "AUTHORIZED_NOT_STARTED",
+    "postR6Reconciled": true,
+    "implementationStarted": false,
+    "implementationAuthorized": true,
+    "selfApproved": false,
+    "authorApprovedDesign": true,
+    "passClaimedImplementation": false,
+    "G9B": "NOT_AUTHORIZED",
+    "G9C": "NOT_AUTHORIZED",
+    "G9U2": "BLOCKED",
+    "productiveG10": "NOT_AUTHORIZED",
+    "G9S1-R1": "PASS_AUTHOR_APPROVED",
+    "postR1Reconciled": true
+  },
+  "publishedR1Authority": {
+    "selectorVersion": "pair-singleton-transverse-germ/v1",
+    "certificate": "structural interval existence/uniqueness and transversality",
+    "eligibility": "current unique canonical component/germ slot",
+    "multipleDistinctRoots": "independently certified opposite-germ roots can each materialize, including same span pair",
+    "sameGermCollision": "+,+,- permits the singleton negative; positive collisions remain rich-only",
+    "operandReversal": "equivalent canonical pair/slot evidence; independently owned rich results intentionally have different opaque tokens",
+    "globalCompleteness": "independent from local admissibility",
+    "frontend": "consume current rich result once; existing one/selected/all token actions; no R6/proximity fallback"
+  },
+  "materialNoveltyAudit": {
+    "result": "NONE_IDENTIFIED",
+    "implementationAuthorization": "CONDITIONAL_AUTHORIZATION_SATISFIED",
+    "upstreamModeIdsResolved": 66,
+    "newKernelApi": false,
+    "newPersistenceIdentityField": false,
+    "newWorkspaceFamily": false,
+    "productiveClassicSemanticChange": false
+  },
+  "historicalPostR6PlanningValidation": {
+    "staticVerifier": "tools/agent/verify-g9u1-preexecution-design.ps1",
+    "status": "PASS",
+    "exactCandidatePaths": 18,
+    "manifestCounts": "11_BROAD_FAMILIES_18_OPERATIONAL_CLUSTERS_110_STABLE_ACTIONS",
+    "scenarioMatrixMatch": "118_OF_118_UNIQUE_EXPECTED",
+    "relativeLinkDocumentsChecked": 12,
+    "canonicalLfManifestEntries": 17,
+    "deterministicRerunLogSha256": "4a3c37c27bc1b64c3e555d0b38baf680a5fa4ccd45c9776de8603ae53f9284e2",
+    "deterministicRerunMatch": true,
+    "gitDiffCheck": "PASS",
+    "gitDiffCachedCheck": "PASS_EMPTY_INDEX",
+    "composedProductVerifierModified": false,
+    "productTestsExecutedForStageB": false
+  }
+}

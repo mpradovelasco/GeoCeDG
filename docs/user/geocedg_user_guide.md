@@ -1,6 +1,13 @@
 # Manual operativo vivo de GeoCeDG
 
-Nota del candidato R1: **IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**.
+Estado publicado R1: **PASS — AUTHOR APPROVED**, smoke autoral **PASS**.
+Tag `geocedg-g9s1-r1-pass` ->
+`af459d856f1cdc384805f3035203acce8e6f6104`.
+G9U1 está en implementación autorizada como candidato; no tiene aprobación de
+implementación ni smoke autoral. Los resultados R1 del párrafo siguiente son
+históricos y pertenecen a sus fuentes archivadas, no a una ejecución nueva.
+
+Nota histórica del candidato R1:
 Las correcciones A/B superan PHASE A/B (192 casos cada una), COMPOSED
 (1281 casos, sin fallos ni omisiones) y FULL clean (7781 casos: 7770 pasan,
 11 omisiones upstream, sin fallos); las ejecuciones terminan con código 0.
@@ -11,7 +18,7 @@ se conservan como cronología en el
 [informe R1](../validation/g9s1_r1_structural_implementation_candidate_report.md).
 
 - Tipo de documento: manual operativo vivo
-- Última puerta de producto aprobada/observable: **G9S1 = PASS — AUTHOR APPROVED**
+- Última puerta de producto aprobada/observable: **G9S1-R1 = PASS — AUTHOR APPROVED**
 - G9U0 = PASS — AUTHOR APPROVED
 - G9X1 = PASS — AUTHOR APPROVED
 - G9U0-R2: **PASS — AUTHOR APPROVED**; el fallo original R2-L11 se conserva y la
@@ -31,7 +38,7 @@ se conservan como cronología en el
   aceptado con la limitación de entrada libre G9A caracterizada
 - G9S1: **PASS — AUTHOR APPROVED**; `SplineV2`, sus consumidores semánticos y
   la corrección final de longitud parcial fueron aceptados por el autor
-- G9S1-R1: **IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**, incluida la
+- Histórico del candidato G9S1-R1 anterior al cierre: incluida la
   corrección estructural de continuidad de splines. Las regresiones históricas
   de admisión numérica y materialización en tangencia se corrigieron mediante
   las correcciones A/B autorizadas y la validación completa indicada arriba;
@@ -43,7 +50,8 @@ se conservan como cronología en el
 - Plataforma validada: únicamente Windows
 - Última revisión: 2026-09-01
 - Fase actual: G9U0, G9X1, G9U0-R2, G9U0-R3, G9U0-R4, G9U0-R5 y G9S1 son `PASS — AUTHOR
-  APPROVED`. G9U1 sigue sin autorización propia. G9B, G9C,
+  APPROVED`; también R6 y R1 están publicados. G9U1 tiene autorización explícita
+  para implementar el diseño post-R1 como candidato, no para autoaprobarlo. G9B, G9C,
   G9U2, G10 y las
   fases posteriores no están autorizadas.
 - Locus V2: superficie pública `experimental` aprobada para G9U0, exclusiva de
@@ -944,7 +952,69 @@ application identity from icons alone.
 
 ## 7. Current GeoCeDG GUI
 
-The initial GeoCeDG perspective contains:
+### G9U1 implementation candidate
+
+This branch contains the authorized post-R1 workspace implementation candidate,
+not an author-approved G9U1 release. Desktop DEV20 exercised 193 cases with
+exit 0, including the current workspace consumers and historical R3 menu /
+inspector cases. Final PHASE/FULL and author GUI smoke remain separate pending
+gates; see the [candidate report](../validation/g9u1_construction_workspace_implementation_candidate_report.md).
+
+The live schema-v2 profile has one catalog of 110 actions in 18 operational
+clusters and 11 professional families. Menus, family palette, toolbar, help and
+disabled-action reasons consume that catalog. File, Construction, View,
+Automation and Help are compact menu projections, not separate action sources.
+The experimental V2 opt-in remains `--enableLocusV2=true`; no additional Point,
+Spline, intersection or transformation launch argument is needed. The product
+locks Continuity OFF; Classic remains separately configurable.
+
+With V2 enabled, select the ordinary Point tool and click the curve stroke of a
+LocusV2 or SplineV2. Clicking merely inside a closed curve does not select it.
+A uniquely resolved semantic preimage creates one point. If several preimages
+exist, explicitly choose a candidate or cancel; no point is chosen by proximity.
+Move/drag updates an interaction-owned point through the kernel while keeping
+its identity. An unresolved move does not retarget it. Exact scripted
+`Point(S,"spline-v2/main",u)` remains a distinct explicit-address route, not a
+synthetic mouse gesture.
+
+Create a rich result with `R=Intersect(S,T)` and inspect that result. Markers
+are temporary presentation, not saved points. The inspector can create one,
+the explicitly selected group, or all currently eligible exact-token roots,
+and remains available for further materialization. Already created choices are
+identified. A tangent, ambiguous, stale or insufficiently certified root cannot
+be promoted by clicking its display. Distinct R1-certified spline-pair roots
+can each be eligible even when global completeness is not established.
+Temporary inadmissibility makes an existing point dormant; only its kernel
+selector can reactivate that same point. Recompute never creates new points.
+
+Optional auto-materialization is an explicit frontend opt-in for a newly
+submitted rich query. The query and opted-in points form one compound undo/redo
+step for that Enter/tool confirmation; a later explicit inspector operation
+has its own undo step. It does not run merely when selecting, reopening or
+recomputing a result. Typing/previews,
+focus loss and Escape create no construction objects; Enter is the explicit
+submit operation. An explicit compatible numeric assignment such as `k=0.25`
+uses the existing atomic redefine seam, not label-based durable identity.
+Definition inspection is read-only and does not change global Algebra style.
+
+Use ordinary similarity tools or commands on semantic curves; their results
+are semantic sources with new identity, not transformed render samples. For
+measurements use `Length(S)` or `Length(S,P,Q)`; `LocusLength(...)` remains the
+rich evidence surface. ZoomWindow changes only the view. English and Spanish
+are the offered product languages, with English fallback. Save/reopen uses
+native `.cedg`; `.ggb` remains compatibility input under the existing document
+policy. Author branding bitmaps are absent, so existing text/default fallback
+is used without a new logo or derivative-asset claim.
+
+The diagnostic legacy-file chooser opens an explicitly selected file in a
+separate Classic process; it does not certify that file against the catalog.
+Use `tools/legacy/open-laboratory.ps1` for registered hash-verified resources.
+Invalid live v2 configuration has an explicit validated historical-v1 fallback,
+not a silently synthesized second workspace catalog.
+
+### Historical G2 / schema-v1 baseline
+
+The original G2 perspective contained:
 
 - the Algebra view and primary 2D Graphics view;
 - visible axes with a unit axes ratio;
@@ -953,7 +1023,7 @@ The initial GeoCeDG perspective contains:
 - Spreadsheet, CAS, Properties, and 3D views available but initially closed.
 
 The stable toolbar is generated from
-`apps/geocedg/application-profile.yml`. Its six current groups contain only
+the then-current `apps/geocedg/application-profile.yml`. Its six groups contained only
 existing upstream modes:
 
 | Group | Available tools |
@@ -966,15 +1036,17 @@ existing upstream modes:
 | Measurement and validation | Angle and distance/length |
 
 The toolbar organization is GeoCeDG-owned, but these are not new CeDG
-algorithms. G2 added no geometric mode or command. The profile currently
+algorithms. G2 added no geometric mode or command. The G2 profile
 installs no command filter, so inherited Classic kernel commands remain
 available through the normal application mechanisms even when they are not in
 the reduced default toolbar.
 
 The planned toolbar categories for descriptive projections, plane changes and
 developments and native CeDG tools are explicitly **not implemented** and are
-not emitted into the toolbar. G5 adds DXF through a separate GeoCeDG menu; it
-does not alter the stable G2 toolbar.
+not emitted into that toolbar. G5 added DXF through a separate GeoCeDG menu;
+it did not alter the stable G2 toolbar. The historical v1 baseline is retained
+in `apps/geocedg/application-profile-v1.yml`; the candidate above is the sole
+live v2 authority.
 
 ## 8. Export 2D geometry to DXF
 
@@ -997,8 +1069,9 @@ The G5 action is available only in the window identified as `GeoCeDG`:
 1. Construct the required 2D objects.
 2. For selection-only export, select the intended objects before opening the
    dialog. Use the Move tool and normal Ctrl-click selection behavior.
-3. Choose `GeoCeDG > Export 2D geometry as DXF (experimental)...`. The menu
-   mnemonic is `Alt+G`; `Ctrl+Shift+D` invokes the action directly.
+3. Choose the DXF export action in the candidate File/import-export group or
+   family palette. In the historical G5/R3 layout the same dialog was reached
+   through `GeoCeDG > Export 2D geometry as DXF (experimental)...`.
 4. Choose `Complete labeled 2D construction` or `Current selection`.
 5. Review any unsupported/invalid-object diagnostics. `OK` explicitly accepts
    writing the supported subset; `Cancel` writes nothing.

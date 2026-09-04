@@ -7,15 +7,21 @@ package org.geocedg.desktop;
 
 import java.io.File;
 
+import javax.swing.JMenu;
+import javax.swing.JPopupMenu;
+
 import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
 import org.geogebra.common.main.MyError.Errors;
 import org.geogebra.common.util.FileExtensions;
 import org.geogebra.desktop.geogebra3D.gui.GuiManager3D;
 import org.geogebra.desktop.gui.menubar.GeoGebraMenuBar;
+import org.geogebra.desktop.gui.toolbar.ToolbarContainer;
 import org.geogebra.desktop.main.AppD;
 
 /** GeoCeDG GUI manager preserving all inherited 3D/Desktop behavior. */
 final class GuiManagerGeoCeDG extends GuiManager3D {
+	private GeoCeDGActionRegistry actionRegistry;
+	private GeoCeDGWorkspaceController workspaceController;
 
 	GuiManagerGeoCeDG(AppD app) {
 		super(app);
@@ -23,12 +29,71 @@ final class GuiManagerGeoCeDG extends GuiManager3D {
 
 	@Override
 	protected GeoGebraMenuBar newMenuBar() {
+		if (GeoCeDGProfile.isLegacyFallback()) {
+			return new GeoGebraMenuBar(getApp(),
+					(org.geogebra.desktop.gui.layout.LayoutD) getLayout()) {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void initMenubar() {
+					super.initMenubar();
+					JMenu diagnostic = new JMenu("GeoCeDG v1");
+					diagnostic.setToolTipText(GeoCeDGProfile.getFallbackDiagnostic(
+							getApp().getLocale().getLanguage()));
+					diagnostic.getAccessibleContext().setAccessibleDescription(
+							diagnostic.getToolTipText());
+					diagnostic.setEnabled(false);
+					add(diagnostic);
+				}
+			};
+		}
 		return new GeoCeDGMenuBar(getApp());
+	}
+
+	GeoCeDGActionRegistry getActionRegistry() {
+		if (actionRegistry == null) {
+			actionRegistry = new GeoCeDGActionRegistry(getApp());
+		}
+		return actionRegistry;
+	}
+
+	GeoCeDGWorkspaceController getWorkspaceController() {
+		if (workspaceController == null) {
+			workspaceController = new GeoCeDGWorkspaceController(getApp(), getActionRegistry());
+		}
+		return workspaceController;
+	}
+
+	@Override
+	protected ToolbarContainer newToolbarContainer() {
+		if (GeoCeDGProfile.isLegacyFallback()) {
+			return super.newToolbarContainer();
+		}
+		return new GeoCeDGToolbarContainer(getApp(), getWorkspaceController());
+	}
+
+	@Override
+	protected void decorateProductContextMenu(JPopupMenu menu) {
+		if (GeoCeDGProfile.isLegacyFallback()) {
+			return;
+		}
+		JPopupMenu projection = getWorkspaceController().createContextMenu();
+		JMenu product = new JMenu("GeoCeDG");
+		while (projection.getComponentCount() > 0) {
+			product.add(projection.getComponent(0));
+		}
+		menu.addSeparator();
+		menu.add(product);
 	}
 
 	@Override
 	protected FileExtensions[] getDocumentOpenExtensions() {
 		return GeoCeDGDocumentPolicy.documentOpenExtensions();
+	}
+
+	@Override
+	protected String getDocumentOpenDescription() {
+		return AppConfigGeoCeDG.APPLICATION_NAME + " " + getLocalization().getMenu("Files");
 	}
 
 	@Override

@@ -85,8 +85,9 @@ class LocusV2DesktopLifecycleRegressionTest {
 					.getInputPreviewHelper().updatePreviewFromInputBar(
 							"L=LocusV2(E,C)", previewErrors));
 			assertTrue(previewUpdated.await(10, TimeUnit.SECONDS));
-			assertNotNull(previewOutput.get());
-			assertEquals(0, previewOutput.get().length);
+			// G9U1 product preview is syntax-only: the EDT notification clears
+			// presentation without evaluating even a transient command result.
+			assertNull(previewOutput.get());
 			assertEquals("", previewErrors.getErrors());
 			assertEquals(recordsBefore, registry.size());
 			assertEquals(reservationsBefore,

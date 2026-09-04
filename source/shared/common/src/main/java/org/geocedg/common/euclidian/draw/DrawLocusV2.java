@@ -40,6 +40,7 @@ public final class DrawLocusV2 extends Drawable {
 			path = new GeneralPathClipped(view);
 		}
 		path.resetWithThickness(locus.getLineThickness());
+		strokedShape = null;
 		LocusRenderData2D data = renderCache.getOrBuild(locus,
 				LocusRenderPolicy2D.from(view));
 		labelVisible = locus.isLabelVisible();
@@ -102,7 +103,16 @@ public final class DrawLocusV2 extends Drawable {
 
 	@Override
 	public boolean hit(int x, int y, int hitThreshold) {
-		return visible && path != null && path.intersects(x, y, hitThreshold);
+		if (!visible || path == null) {
+			return false;
+		}
+		// A semantic curve has no selectable interior. This is presentation only:
+		// the subsequent Point query is resolved by the kernel in world space.
+		if (strokedShape == null) {
+			strokedShape = objStroke.createStrokedShape(path.getGeneralPath(), 256);
+		}
+		return strokedShape.intersects(x - hitThreshold, y - hitThreshold,
+				2 * hitThreshold, 2 * hitThreshold);
 	}
 
 	@Override

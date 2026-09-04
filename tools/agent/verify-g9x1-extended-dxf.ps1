@@ -49,6 +49,7 @@ $script:G9X1BoundaryMode = $null
 $script:G9X1AuthorityCommit = $null
 
 . (Join-Path $PSScriptRoot "repository-generated-state.ps1")
+. (Join-Path $PSScriptRoot "dxf-authority-validation.ps1")
 
 function Assert-Condition {
     param([bool]$Condition, [Parameter(Mandatory)] [string]$Message)
@@ -589,17 +590,7 @@ function Assert-ProductStaticBoundaries {
     foreach ($relativePath in $productiveJavaPaths) {
         $path = Resolve-RequiredFile -RelativePath $relativePath
         $content = Get-Content -Raw -LiteralPath $path
-        foreach ($forbidden in @(
-                "evaluateForRender", "LocusRenderCache", "myPointList",
-                "EuclidianView", "System.nanoTime", "System.currentTimeMillis",
-                "ThreadLocalRandom", "Math.random", "parallelStream")) {
-            Assert-Condition -Condition (-not $content.Contains($forbidden)) `
-                -Message "$relativePath uses forbidden G9X1 authority: $forbidden"
-        }
-        Assert-Condition -Condition (
-                $content -notmatch '(?i)ProcessBuilder\s*\([^\)]*["'']git["'']' -and
-                $content -notmatch '(?i)Runtime\.getRuntime\(\)\.exec\s*\([^\)]*git') `
-            -Message "$relativePath invokes Git at export runtime."
+        Assert-GeoCeDGDxfSourceAuthority -RelativePath $relativePath -Content $content
     }
 }
 
@@ -748,6 +739,9 @@ try {
         Assert-TestScenarioMarkers -Scenarios $scenarios
         Assert-ProductStaticBoundaries -Evidence $evidence
     }
+    & (Join-Path $PSScriptRoot "tests/dxf-authority-validation.Tests.ps1") `
+        -LogDirectory (Join-Path $LogDirectory "authority-infrastructure")
+    Assert-Condition -Condition ($?) -Message "G9X1 DXF authority infrastructure fixtures failed."
 
     & git -C $RepositoryRoot diff --check
     Assert-Condition -Condition ($LASTEXITCODE -eq 0) `

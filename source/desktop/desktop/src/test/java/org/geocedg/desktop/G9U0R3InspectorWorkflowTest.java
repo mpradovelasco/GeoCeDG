@@ -251,10 +251,10 @@ class G9U0R3InspectorWorkflowTest {
 		AtomicReference<JPanel> chooserSeen = new AtomicReference<>();
 
 		try (MockedStatic<JOptionPane> dialogs = mockStatic(JOptionPane.class)) {
-			dialogs.when(() -> JOptionPane.showConfirmDialog(
+			dialogs.when(() -> JOptionPane.showOptionDialog(
 					any(Component.class), any(), anyString(),
-					eq(JOptionPane.OK_CANCEL_OPTION),
-					eq(JOptionPane.PLAIN_MESSAGE))).thenAnswer(invocation -> {
+					eq(JOptionPane.DEFAULT_OPTION), eq(JOptionPane.PLAIN_MESSAGE),
+					isNull(), any(Object[].class), any())).thenAnswer(invocation -> {
 				chooserSeen.set(invocation.getArgument(1));
 				return JOptionPane.CANCEL_OPTION;
 			});
@@ -306,10 +306,10 @@ class G9U0R3InspectorWorkflowTest {
 		AtomicReference<String> compactLabel = new AtomicReference<>();
 
 		try (MockedStatic<JOptionPane> dialogs = mockStatic(JOptionPane.class)) {
-			dialogs.when(() -> JOptionPane.showConfirmDialog(
+			dialogs.when(() -> JOptionPane.showOptionDialog(
 					any(Component.class), any(), anyString(),
-					eq(JOptionPane.OK_CANCEL_OPTION),
-					eq(JOptionPane.PLAIN_MESSAGE))).thenAnswer(invocation -> {
+					eq(JOptionPane.DEFAULT_OPTION), eq(JOptionPane.PLAIN_MESSAGE),
+					isNull(), any(Object[].class), any())).thenAnswer(invocation -> {
 				JPanel chooser = invocation.getArgument(1);
 				JComboBox<?> combo = findComponent(chooser, JComboBox.class);
 				assertNotNull(combo);
@@ -500,37 +500,29 @@ class G9U0R3InspectorWorkflowTest {
 
 	private static void stubIntersectionDecision(
 			MockedStatic<JOptionPane> dialogs, int decision) {
-		dialogs.when(() -> JOptionPane.showConfirmDialog(
+		dialogs.when(() -> JOptionPane.showOptionDialog(
 				any(Component.class), any(), anyString(),
-				eq(JOptionPane.OK_CANCEL_OPTION),
-				eq(JOptionPane.PLAIN_MESSAGE))).thenReturn(decision);
+				eq(JOptionPane.DEFAULT_OPTION), eq(JOptionPane.PLAIN_MESSAGE),
+				isNull(), any(Object[].class), any())).thenReturn(decision);
 	}
 
 	private static void verifyIntersectionInspector(
 			MockedStatic<JOptionPane> dialogs) {
-		dialogs.verify(() -> JOptionPane.showConfirmDialog(
+		dialogs.verify(() -> JOptionPane.showOptionDialog(
 				any(Component.class), any(), anyString(),
-				eq(JOptionPane.OK_CANCEL_OPTION),
-				eq(JOptionPane.PLAIN_MESSAGE)), times(1));
+				eq(JOptionPane.DEFAULT_OPTION), eq(JOptionPane.PLAIN_MESSAGE),
+				isNull(), any(Object[].class), any()), times(1));
 	}
 
 	private static JMenuItem inspectorItem(AppGeoCeDG app) {
 		app.getGuiManager().initMenubar();
 		GeoCeDGMenuBar menuBar =
 				(GeoCeDGMenuBar) app.getGuiManager().getMenuBar();
-		String inspectorText = app.getLocalization()
-				.getMenu("LocusV2.Results.Inspect");
 		for (int menuIndex = 0; menuIndex < menuBar.getMenuCount(); menuIndex++) {
 			JMenu menu = menuBar.getMenu(menuIndex);
-			if (menu == null || !"GeoCeDG".equals(menu.getText())) {
-				continue;
-			}
-			for (Component component : menu.getMenuComponents()) {
-				if (component instanceof JMenuItem
-						&& inspectorText.equals(
-								((JMenuItem) component).getText())) {
-					return (JMenuItem) component;
-				}
+			JMenuItem item = G9U1WorkspaceSurfaceTest.findItem(menu, "result.inspect-rich");
+			if (item != null) {
+				return item;
 			}
 		}
 		throw new AssertionError("Rich-result inspector action is missing");

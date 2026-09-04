@@ -15,15 +15,15 @@
   APPROVED` using Option B after the partial-length re-smoke. G9U0-R6 is also
   `PASS — AUTHOR APPROVED`; it adds only the bounded shared-kernel inverse
   semantic point-interaction seam and no productive Desktop Point-tool consumer.
-  G9U1 remains protected/unexecuted; G9U1/G9B/G9C remain unauthorized
-- Current G9S1-R1: bounded pair materialization and structural spline continuity
-  are **IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**, not phase PASS.
-  `implementationComplete=true`: corrections A/B pass fresh PHASE A/B,
-  COMPOSED and FULL clean on the archived tested source cohort. Earlier
-  quintic-admission, implicit-tangency and diagnostic-label failures remain
-  historical evidence. This status-only documentary reconciliation does not
-  replace that cohort's receipts. `manualAuthorSmoke=PENDING`,
-  `selfApproved=false`, `authorApprovedPhase=false`, `passClaimed=false`.
+  G9U1 design is approved and post-R1 reconciled; its current implementation is
+  an authorized candidate, not implementation PASS. G9B/G9C remain unauthorized.
+- G9S1-R1 bounded pair materialization and structural spline continuity are
+  **PASS — AUTHOR APPROVED**, author smoke **PASS**, published at
+  `geocedg-g9s1-r1-pass` -> `af459d856f1cdc384805f3035203acce8e6f6104`.
+  The reviewed technical cohort is `a38d4fcde846fc97c51abc8d958de6998302c436`;
+  operational successor `f8a21a087234b18fc13741a0ac2baf80608e9022`
+  does not replace that phase-tag target. Historical failed and successful
+  executions retain their exact cohorts; none is claimed as rerun here.
 - G9U0-R2 closeout: `selfApproved=false`, `authorApproved=true`,
   `passClaimed=true`; installed MSI/registry smoke `NOT_REQUESTED`
 
@@ -327,11 +327,46 @@ author fixture and fixed/adaptive negative controls are operational authority.
 
 ## Frontend/profile
 
-`apps/geocedg/application-profile.yml` declares the conservative default
-perspective/toolbar. Desktop compiles it through GeoCeDG profile classes. Saved
-layouts may restore their own toolbar/perspective. Feature manifest membership
-is metadata; do not assume it is a complete runtime flag service. G9U1
-workspace/profile schema v2 remains unauthorized and is not part of R2.
+`apps/geocedg/application-profile.yml` is the single live schema-v2 G9U1
+candidate catalog: 11 families, 18 clusters and 110 stable actions. Strict
+schema/reference validation precedes compilation into the action registry,
+menus, toolbar, family palette and help. The versioned v1 profile/schema is
+only an explicit validated degraded fallback, not a parallel live action
+catalog. Saved workspace preferences are presentation-only. Feature manifest
+membership does not itself grant kernel creation authority.
+
+G9U1 implementation is conditionally author-authorized and post-R1 reconciled;
+it remains a candidate with implementation approval and manual author smoke
+pending. The immutable post-R6 approved checkpoint is
+`00982e7e148a634cd57ed928f322774df267d5e3`. The current frozen execution
+prompt is `g9u1-construction-workspace-after-g9s1-r1.prompt.md`, canonical-LF
+SHA-256 `c9b56474fe22368bffaee7417511a3237cbde0f9e31d777b36532232b61f1451`.
+The [candidate report](../validation/g9u1_construction_workspace_implementation_candidate_report.md)
+separates the historical planning freeze, iterative failed/passing DEV runs and
+the final technical gates.
+
+`GeoCeDGPointInteraction` consumes the actual R6 query/resolver, exact creation
+and move APIs. Stroke hit-testing supplies only a world target. The
+`GeoCeDGIntersectionSession` instead consumes a current rich intersection
+snapshot and its exact owner tokens; it never uses the R6 inverse resolver to
+materialize pair roots. `GeoCeDGSimilarityTools` is ordinary Desktop tool
+plumbing to existing R5 operations. None defines new geometry, persistence
+identity, a generic Path adapter or a solver.
+
+For R1 pairs, preserve the `pair-singleton-transverse-germ/v1` admission
+boundary. Canonical source-pair/slot evidence is operand symmetric, while
+independent rich-result owners deliberately have distinct token namespaces.
+Global completeness is not local admissibility. Same-germ collisions,
+uncertified/tangent/overlap/monodromic candidates stay rich-only.
+
+Shared host changes are product-gated syntax-only preview, existing Continuity
+OFF enforcement and command-help visibility; numerical solvers, token ledgers
+and source definitions are unchanged. Explicit submission uses the existing
+atomic G9A seam. The current-run verifier preserves raw input/HEAD/index/status
+checks; final PHASE supplies focused A and FULL executes the entire COMPOSED
+scope plus focused B using its own live receipt. No receipt is reused from a
+previous process. The standalone preexecution verifier remains historical
+planning evidence after productive edits.
 
 `GeoGebraMenuBar.updateFonts()` clears every top-level menu so upstream
 `BaseMenu` instances can rebuild lazily. `GeoCeDGMenuBar` is an ordinary
@@ -345,7 +380,8 @@ the token is a reconstructible input of `AlgoLocusIntersectionPointV2`. R3
 keeps that normal DAG/XML dependency and sets only Euclidian visibility false at
 creation. Do not replace it with coordinates/indexes, change token generation,
 or use layers as semantic state. Candidate-marker overlays remain future G9U1
-presentation and are absent from R3.
+presentation and are absent from R3 itself; the current G9U1 candidate adds
+them without changing that historical R3 contract.
 
 After the first complete R3 composed run passed, a prospective post-R3 prompt
 captured the future operational contract. R5 preserves that file and the
@@ -362,8 +398,9 @@ The independently reviewed planning advance is protected, not merged, on
 `857de6628489bda0b65a5ba5145e62ca0795fc32`; that checkpoint's same logical
 prompt has canonical-LF SHA-256
 `2319df211f5ea17880b7041844122afca0f2ddced4c6db1fabddce0d53dfa322`.
-Its 17 paths remain unexecuted/not authorized and must be reconciled against
-the actual R6 API after R6 author-approved PASS, then separately authorized.
+Its 17-path snapshot remains the historical pre-R6 design. Subsequent approved
+post-R6 planning and the current post-R1 reconciliation/conditional execution
+authorization do not rewrite that protected checkpoint.
 The protected candidate keeps candidate markers as non-persistent active-result
 overlays derived from current deterministic root/evidence authority, fixes the
 existing host Continuity option OFF in GeoCeDG while retaining configurable
@@ -373,8 +410,10 @@ tool to consume R6 typed inverse-resolution results rather than render samples.
 It requires create-one, create-selected and create-all actions, one coherent
 undo transaction per multi-point action, and an inspector session that can
 remain open and identify already materialized choices. Optional
-auto-materialization remains one explicit
-visible frontend transaction after a user-requested Intersect action. Kernel
+auto-materialization remains an explicit visible frontend operation inside the
+same user-requested Intersect compound transaction: one final undo store for
+the query and its opted-in points, not two racing asynchronous stores. A later
+explicit inspector materialization remains a separate atomic action. Kernel
 recompute/load/topology changes never create DAG nodes. It retains the eleven
 professional action groups and reserves
 `geocedg.brand.topbar` and `geocedg.brand.startup` as distinct logical roles in
@@ -552,7 +591,7 @@ implemented. `selfApproved=false`, `authorApproved=true` and
 G9U0-R5 design and productive similarity transformations are `PASS — AUTHOR
 APPROVED`; `selfApproved=false`, `authorApproved=true`, `passClaimed=true`.
 The accepted manual-smoke disposition is `PASS WITH G9A FREE-INPUT LIMITATION
-CHARACTERIZED`. G9U1 remains unexecuted and unauthorized.
+CHARACTERIZED`. The later explicit G9U1 authorization is independent of R5.
 
 G9S1 is an author-approved product gate. Option B
 introduces a new experimental `SplineV2` parent that publishes a new
@@ -577,7 +616,7 @@ certificate, public continuation key, active ledger allocation or materialized
 pair point. Do not let Desktop/G9U1 infer the missing pair selector from order or
 coordinates.
 
-The current unapproved R1 implementation extends only authenticated SplineV2
+The published author-approved R1 implementation extends only authenticated SplineV2
 pair singleton-germ classes under [ADR 0021](../adr/0021-spline-pair-singleton-germ-materialization.md).
 It requires actual outward-rounded local proof and full selected-sign coverage,
 not equal discovery counts or a small residual. Its symmetric durable selector

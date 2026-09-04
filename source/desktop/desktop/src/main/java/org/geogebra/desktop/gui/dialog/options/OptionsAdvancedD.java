@@ -463,6 +463,11 @@ public class OptionsAdvancedD implements OptionPanelD,
 
 		continuityRadioOn.setSelected(app.getKernel().isContinuous());
 		continuityRadioOff.setSelected(!app.getKernel().isContinuous());
+		// GeoCeDG's deterministic policy is locked; Classic remains configurable.
+		boolean productContinuity = app.getConfig()
+				instanceof org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
+		continuityRadioOn.setEnabled(!productContinuity);
+		continuityRadioOff.setEnabled(!productContinuity);
 
 		usePathAndRegionParametersRadioOn.setSelected(app
 				.getKernel().usePathAndRegionParameters == PathRegionHandling.ON);

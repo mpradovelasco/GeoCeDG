@@ -26,6 +26,7 @@ $DesktopResult = Join-Path $RepositoryRoot (
     "source\desktop\desktop\build\test-results\test\" +
     "TEST-org.geocedg.desktop.GeoCeDGProfileTest.xml")
 . (Join-Path $PSScriptRoot "repository-generated-state.ps1")
+. (Join-Path $PSScriptRoot "workspace-profile-validation.ps1")
 
 function Assert-Condition {
     param([bool]$Condition, [string]$Message)
@@ -139,9 +140,14 @@ try {
             $dxfFeatures[0].enabled_by_default) `
         -Message "The experimental DXF feature manifest is invalid."
 
-    $profile = Read-JsonDocument "apps/geocedg/application-profile.yml"
-    Assert-Condition -Condition (@($profile.features) -contains
-            "cedg.export.dxf.2d") `
+    # The live v2 catalog has case-distinct localization keys. Its strict
+    # schema validator returns a case-sensitive map. V2 registers typed feature
+    # records rather than v1 string IDs; preserve the G5 enabled/default rule.
+    $profile = Assert-GeoCeDGLiveWorkspaceProfile -RepositoryRoot $RepositoryRoot
+    $profileDxf = @($profile.features | Where-Object { $_.id -ceq "cedg.export.dxf.2d" })
+    Assert-Condition -Condition ($profileDxf.Count -eq 1 -and
+            $profileDxf[0].source -ceq "geocedg/features/experimental.yml" -and
+            $profileDxf[0].enabled_by_default -eq $true) `
         -Message "The GeoCeDG application profile does not register G5 DXF."
 
     $regression = Read-JsonDocument "geocedg/validation/regression/catalog.yml"

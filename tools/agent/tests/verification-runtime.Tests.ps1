@@ -754,6 +754,18 @@ Invoke-RuntimeTest "child modes reject evidence/static/incremental combinations"
     }
 }
 
+Invoke-RuntimeTest "G9U1 phase registration retains explicit scope and no implicit build" -WithoutGit {
+    param($fixture)
+    $phase = & $fixture.Module { Get-GeoCeDGPhaseDefinition -Phase 'G9U1' }
+    Assert-TestCondition ($phase.Phase -ceq 'G9U1' -and
+        $phase.Verifier -ceq 'verify-g9u1-construction-workspace.ps1') "G9U1 PHASE mapping is not exact."
+    Assert-TestThrows {
+        & $fixture.Module { Get-GeoCeDGPhaseDefinition -Phase 'G9U1-UNKNOWN' }
+    } "Unknown PHASE" "Unknown workspace phase must not broaden scope"
+    Assert-TestCondition (-not $fixture.GitInitialized -and
+        @(& $fixture.Module { @($script:FixtureNativeCalls) }).Count -eq 0) "Phase lookup launched a build."
+}
+
 Invoke-RuntimeTest "R1 phase registration is exact and cannot broaden an unknown phase" -WithoutGit {
     param($fixture)
     $phase = & $fixture.Module { Get-GeoCeDGPhaseDefinition -Phase 'G9S1-R1' }

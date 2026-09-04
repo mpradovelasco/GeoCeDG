@@ -423,6 +423,16 @@ public class PropertiesPanelD extends JPanel implements SetLabels, UpdateFonts,
 		tabs.setSelectedIndex(1);
 	}
 
+	/** @return whether the existing scripting tab could be selected */
+	public boolean showScriptingTab() {
+		int index = scriptTab == null ? -1 : tabs.indexOfComponent(scriptTab);
+		if (index < 0) {
+			return false;
+		}
+		tabs.setSelectedIndex(index);
+		return true;
+	}
+
 	/**
 	 * Set min arc size from model
 	 */

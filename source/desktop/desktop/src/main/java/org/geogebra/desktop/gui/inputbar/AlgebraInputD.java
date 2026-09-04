@@ -38,6 +38,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
+import org.geocedg.desktop.GeoCeDGAlgebraInputSubmission;
 import org.geogebra.common.gui.SetLabels;
 import org.geogebra.common.kernel.commands.EvalInfo;
 import org.geogebra.common.kernel.kernelND.GeoElementND;
@@ -74,6 +76,7 @@ public class AlgebraInputD extends JPanel implements ActionListener,
 	private final LocalizationD loc;
 
 	private String autoInput;
+	private boolean productSubmissionPending;
 
 	/**
 	 * creates new AlgebraInput
@@ -361,6 +364,16 @@ public class AlgebraInputD extends JPanel implements ActionListener,
 			onEnterPressed(true);
 
 			break;
+		case KeyEvent.VK_ESCAPE:
+			if (app.getConfig() instanceof AppConfigGeoCeDG) {
+				app.getKernel().getInputPreviewHelper().clear();
+				clear();
+				autoInput = null;
+				e.consume();
+				return;
+			}
+			app.getGlobalKeyDispatcher().handleGeneralKeys(e);
+			break;
 		default:
 			app.getGlobalKeyDispatcher().handleGeneralKeys(e); // handle eg
 																// ctrl-tab
@@ -368,6 +381,10 @@ public class AlgebraInputD extends JPanel implements ActionListener,
 	}
 
 	private void onEnterPressed(boolean explicit) {
+		boolean product = app.getConfig() instanceof AppConfigGeoCeDG;
+		if (product && (!explicit || productSubmissionPending)) {
+			return;
+		}
 		if (!explicit && autoInput != null
 				&& autoInput.equals(getTextField().getText())) {
 			return;
@@ -390,14 +407,25 @@ public class AlgebraInputD extends JPanel implements ActionListener,
 			AsyncOperation<GeoElementND[]> callback =
 					new InputBarCallback(app, inputField, input,
 							app.getKernel().getConstructionStep());
-			app.getKernel().getAlgebraProcessor()
-					.processAlgebraCommandNoExceptionHandling(input, true,
-							getErrorHandler(valid, explicit), info, callback);
+			if (product) {
+				productSubmissionPending = true;
+				GeoCeDGAlgebraInputSubmission.submit(app, input, info,
+						getErrorHandler(valid, explicit), result -> {
+							productSubmissionPending = false;
+							callback.callback(result);
+						});
+			} else {
+				app.getKernel().getAlgebraProcessor()
+						.processAlgebraCommandNoExceptionHandling(input, true,
+								getErrorHandler(valid, explicit), info, callback);
+			}
 
 		} catch (Exception ee) {
+			productSubmissionPending = false;
 			inputField.addToHistory(getTextField().getText());
 			app.showGenericError(ee);
 		} catch (MyError ee) {
+			productSubmissionPending = false;
 			inputField.addToHistory(getTextField().getText());
 			inputField.showError(ee);
 		}
@@ -419,6 +447,9 @@ public class AlgebraInputD extends JPanel implements ActionListener,
 
 			@Override
 			public void showError(String msg) {
+				if (msg != null) {
+					productSubmissionPending = false;
+				}
 				if (explicit) {
 					app.getDefaultErrorHandler().showError(msg);
 					storeFaultyInput();
@@ -433,6 +464,7 @@ public class AlgebraInputD extends JPanel implements ActionListener,
 
 			@Override
 			public void showCommandError(String command, String message) {
+				productSubmissionPending = false;
 				if (explicit) {
 					app.getDefaultErrorHandler().showCommandError(command,
 							message);
@@ -452,11 +484,19 @@ public class AlgebraInputD extends JPanel implements ActionListener,
 				if (explicit) {
 					if (valid) {
 						return app.getGuiManager()
-								.checkAutoCreateSliders(string, callback);
+								.checkAutoCreateSliders(string, values -> {
+									if (app.getConfig() instanceof AppConfigGeoCeDG
+											&& (values == null || values.length == 0
+													|| "0".equals(values[0]))) {
+										productSubmissionPending = false;
+									}
+									callback.callback(values);
+								});
 					} else if (loc
 							.getReverseCommand(getCurrentCommand()) != null) {
 						ErrorHelper.handleCommandError(loc, getCurrentCommand(),
 								app.getDefaultErrorHandler());
+						productSubmissionPending = false;
 
 						return false;
 					}

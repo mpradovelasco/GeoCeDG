@@ -18,6 +18,7 @@ $BookOperationsVerifier = Join-Path $PSScriptRoot `
 $VerificationInfrastructureVerifier = Join-Path $PSScriptRoot `
     "verify-verification-infrastructure.ps1"
 . (Join-Path $PSScriptRoot "upstream-boundary.ps1")
+. (Join-Path $PSScriptRoot "workspace-profile-validation.ps1")
 
 function Write-Step {
     param([Parameter(Mandatory)] [string]$Message)
@@ -354,15 +355,7 @@ try {
         "# Required artifacts",
         "# Stop conditions"
     )
-    $taskPromptRoot = Join-Path $RepositoryRoot ".github\prompts\tasks"
-    foreach ($taskPrompt in Get-ChildItem -LiteralPath $taskPromptRoot -Filter "*.prompt.md" -File) {
-        $content = Get-Content -Raw -LiteralPath $taskPrompt.FullName
-        foreach ($heading in $requiredTaskHeadings) {
-            Assert-Condition -Condition ([regex]::IsMatch(
-                    $content, "(?m)^$([regex]::Escape($heading))\r?$")) `
-                -Message "$($taskPrompt.FullName) is missing heading '$heading'."
-        }
-    }
+    Assert-GeoCeDGTaskPromptContracts -RepositoryRoot $RepositoryRoot -RequiredHeadings $requiredTaskHeadings
 
     $profileNames = @("ask", "plan", "verify", "refactor", "architect")
     foreach ($profileName in $profileNames) {
@@ -450,26 +443,15 @@ try {
     }
 
     $applicationProfilePath = "apps/geocedg/application-profile.yml"
-    $applicationProfile = Read-JsonCompatibleYaml -RelativePath $applicationProfilePath
-    Assert-Properties -Value $applicationProfile -Names @(
-        '$schema', 'schema_version', 'profile_id', 'application', 'serialization',
-        'perspective', 'toolbar', 'features') -Description $applicationProfilePath
-    Assert-Condition -Condition (
-        $applicationProfile.schema_version -eq 1 -and
-        $applicationProfile.profile_id -eq "geocedg-desktop" -and
-        $applicationProfile.application.name -eq "GeoCeDG" -and
-        $applicationProfile.application.preferences_key -eq "geocedg" -and
-        $applicationProfile.application.windows_app_id -eq "org.geocedg.desktop") `
-        -Message "GeoCeDG application profile identity is invalid."
-    Assert-Condition -Condition (
-        $applicationProfile.serialization.app_code -eq "classic" -and
-        $applicationProfile.serialization.policy -eq "preserve-upstream-g2") `
-        -Message "G2 must preserve Classic serialization semantics."
-    Assert-Condition -Condition (@($applicationProfile.toolbar.categories).Count -gt 0) `
-        -Message "GeoCeDG toolbar has no active categories."
-    foreach ($featureId in @($applicationProfile.features)) {
-        Assert-Condition -Condition $allFeatureIds.Contains([string]$featureId) `
-            -Message "Application profile references unknown feature: $featureId"
+    $applicationProfile = Assert-GeoCeDGLiveWorkspaceProfile -RepositoryRoot $RepositoryRoot
+    foreach ($feature in @($applicationProfile.features)) {
+        Assert-Condition -Condition $allFeatureIds.Contains([string]$feature.id) `
+            -Message "Application profile references unknown feature: $($feature.id)"
+        $sourceManifest = Read-JsonCompatibleYaml -RelativePath $feature.source
+        $sourceRecord = @($sourceManifest.features | Where-Object { $_.id -ceq $feature.id })
+        Assert-Condition -Condition ($sourceRecord.Count -eq 1 -and
+            $sourceRecord[0].enabled_by_default -eq $feature.enabled_by_default) `
+            -Message "Application profile feature source/default differs: $($feature.id)"
     }
 
     $upstreamModificationsPath = "docs/upstream/modified-files.yml"

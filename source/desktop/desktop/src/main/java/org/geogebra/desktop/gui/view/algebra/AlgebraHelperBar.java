@@ -22,12 +22,16 @@ import java.awt.event.ActionListener;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JToolBar;
 
+import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
 import org.geogebra.common.gui.view.algebra.AlgebraView.SortMode;
 import org.geogebra.common.main.settings.AlgebraStyle;
 import org.geogebra.desktop.gui.util.PopupMenuButtonD;
@@ -216,8 +220,14 @@ public class AlgebraHelperBar extends JToolBar implements ActionListener {
 		add(title);
 		descriptionMenu.add(title);
 
+		// GeoCeDG: description state is independent of the tree's grouping mode.
+		boolean product = app.getConfig() instanceof AppConfigGeoCeDG;
+		ButtonGroup descriptions = new ButtonGroup();
 		algebraStyles.forEach(style -> {
-			JCheckBoxMenuItem mi = new JCheckBoxMenuItem();
+			JMenuItem mi = product ? new JRadioButtonMenuItem() : new JCheckBoxMenuItem();
+			if (product) {
+				descriptions.add(mi);
+			}
 			mi.setFont(app.getPlainFont());
 			mi.setBackground(Color.white);
 			mi.setText(loc.getMenu(style.getTranslationKey()));
@@ -226,7 +236,8 @@ public class AlgebraHelperBar extends JToolBar implements ActionListener {
 				app.getKernel().updateConstruction(false);
 				buildDescriptionMenu();
 			});
-			mi.setSelected(algebraView.getTreeMode() == SortMode.DEPENDENCY);
+			mi.setSelected(product ? app.getSettings().getAlgebra().getStyle() == style
+					: algebraView.getTreeMode() == SortMode.DEPENDENCY);
 			descriptionMenu.add(mi);
 		});
 

@@ -745,6 +745,11 @@ public class PropertiesViewD extends PropertiesView implements SetLabels {
 		return wrappedPanel;
 	}
 
+	/** @return whether the selected object's existing scripting tab is available */
+	public boolean showScriptingTab() {
+		return getObjectPanel().getPropPanel().showScriptingTab();
+	}
+
 	/**
 	 * @param app application
 	 * @param type properties view tab

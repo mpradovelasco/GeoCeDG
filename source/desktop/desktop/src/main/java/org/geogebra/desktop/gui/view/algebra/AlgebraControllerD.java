@@ -72,7 +72,13 @@ public class AlgebraControllerD extends AlgebraTreeController
 			app.updateSelection(false);
 			ev.resetMode();
 			if (geo != null && !AppD.isControlDown(e)) {
-				getView().startEditItem(geo);
+				if (app.getConfig()
+						instanceof org.geocedg.common.main.settings.config.AppConfigGeoCeDG
+						&& !geo.isAlgebraViewEditable()) {
+					org.geocedg.desktop.GeoCeDGDefinitionInspector.show((AppD) app, geo);
+				} else {
+					getView().startEditItem(geo);
+				}
 			}
 			return true;
 		}

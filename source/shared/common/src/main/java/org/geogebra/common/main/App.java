@@ -3343,7 +3343,9 @@ public abstract class App implements UpdateSelection, AppInterface, EuclidianHos
 		if (showConsProtNavigation == null) {
 			showConsProtNavigation = new HashMap<>();
 		} else {
-			if ((flag == showConsProtNavigation(id))
+			// GeoCeDG: the protocol view getter is always true; restoration must
+			// compare the stored presentation flag, not that availability shortcut.
+			if ((flag == Boolean.TRUE.equals(showConsProtNavigation.get(id)))
 					&& !getShowCPNavNeedsUpdate(id)) {
 				return;
 			}

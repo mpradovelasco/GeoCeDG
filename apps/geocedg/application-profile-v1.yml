@@ -1,0 +1,114 @@
+{
+  "$schema": "../../geocedg/specs/ui/application-profile.schema.json",
+  "schema_version": 1,
+  "profile_id": "geocedg-desktop",
+  "application": {
+    "name": "GeoCeDG",
+    "preferences_key": "geocedg",
+    "windows_app_id": "org.geocedg.desktop",
+    "base_profile": "geogebra-classic-5"
+  },
+  "serialization": {
+    "app_code": "classic",
+    "policy": "preserve-upstream-g2"
+  },
+  "perspective": {
+    "id": "geocedg-initial",
+    "divider": 0.24,
+    "views": [
+      {
+        "id": "euclidian",
+        "visible": true,
+        "embedded_definition": "1",
+        "embedded_size": 600
+      },
+      {
+        "id": "algebra",
+        "visible": true,
+        "embedded_definition": "3",
+        "embedded_size": 240
+      },
+      {
+        "id": "spreadsheet",
+        "visible": false,
+        "embedded_definition": "1,1",
+        "embedded_size": 300
+      },
+      {
+        "id": "cas",
+        "visible": false,
+        "embedded_definition": "1,3",
+        "embedded_size": 300
+      },
+      {
+        "id": "properties",
+        "visible": false,
+        "embedded_definition": "1,1,1,1",
+        "embedded_size": 400
+      },
+      {
+        "id": "euclidian3d",
+        "visible": false,
+        "embedded_definition": "1,1,1",
+        "embedded_size": 500
+      }
+    ],
+    "show_toolbar": true,
+    "show_grid": false,
+    "show_axes": true,
+    "unit_axes_ratio": true,
+    "show_input_panel": true,
+    "show_input_help": true
+  },
+  "toolbar": {
+    "categories": [
+      {
+        "id": "selection-construction",
+        "modes": [0]
+      },
+      {
+        "id": "primitives-incidence",
+        "modes": [1, 2, 15, 18, 7, 16, 3, 4]
+      },
+      {
+        "id": "curves",
+        "modes": [10, 11, 12]
+      },
+      {
+        "id": "intersections-locus",
+        "modes": [5, 47]
+      },
+      {
+        "id": "transformations",
+        "modes": [30, 31, 32]
+      },
+      {
+        "id": "measurement-validation",
+        "modes": [36, 38]
+      }
+    ],
+    "planned_categories": [
+      {
+        "id": "descriptive-projections",
+        "status": "not-implemented"
+      },
+      {
+        "id": "plane-changes-and-developments",
+        "status": "not-implemented"
+      },
+      {
+        "id": "cedg-tools",
+        "status": "not-implemented"
+      },
+      {
+        "id": "import-export",
+        "status": "not-implemented"
+      }
+    ]
+  },
+  "features": [
+    "cedg.frontend.profile",
+    "cedg.frontend.classic-diagnostic",
+    "cedg.export.dxf.2d"
+  ]
+}

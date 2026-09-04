@@ -29,6 +29,7 @@ $DesktopResult = Join-Path $RepositoryRoot (
     "TEST-org.geocedg.desktop.GeoCeDGProfileTest.xml")
 $LogDirectory = [IO.Path]::GetFullPath($LogDirectory)
 . (Join-Path $PSScriptRoot "repository-generated-state.ps1")
+. (Join-Path $PSScriptRoot "workspace-profile-validation.ps1")
 
 function Invoke-LoggedNative {
     param(
@@ -128,26 +129,22 @@ try {
     }
     try {
         $profile = Get-Content -Raw -LiteralPath $ProfilePath |
-            ConvertFrom-Json -Depth 100 -NoEnumerate
+            ConvertFrom-Json -Depth 100 -NoEnumerate -AsHashtable
     } catch {
         throw "GeoCeDG application profile is invalid JSON-compatible YAML: " +
             $_.Exception.Message
     }
-    if ($profile.schema_version -ne 1 -or $profile.profile_id -ne "geocedg-desktop" -or
-            $profile.application.name -ne "GeoCeDG" -or
-            $profile.serialization.app_code -ne "classic") {
-        throw "GeoCeDG application profile identity or serialization policy is invalid."
-    }
+    $profile = Assert-GeoCeDGLiveWorkspaceProfile -RepositoryRoot $RepositoryRoot
 
     $desktopBuild = Get-Content -Raw -LiteralPath $DesktopBuildFile
     foreach ($requiredFragment in @(
             'tasks.register<JavaExec>("runGeoCeDG")',
-            'mainClass = "org.geocedg.desktop.GeoCeDG"',
-            'apps/geocedg/application-profile.yml')) {
+            'mainClass = "org.geocedg.desktop.GeoCeDG"')) {
         if (-not $desktopBuild.Contains($requiredFragment)) {
             throw "Desktop build does not contain required frontend contract: $requiredFragment"
         }
     }
+    Assert-GeoCeDGProfileResourcePackaging -DesktopBuild $desktopBuild
     Write-Host "GeoCeDG frontend contract validation passed."
 
     if ($SkipBuild) {

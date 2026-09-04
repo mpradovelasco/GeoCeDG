@@ -999,7 +999,10 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	 *            true if continuous
 	 */
 	public void setContinuous(boolean continuous) {
-		this.continuous = continuous;
+		// GeoCeDG product policy reuses this setting, including XML/preferences
+		// restoration. Classic and other application configurations are unchanged.
+		this.continuous = continuous && !(app.getConfig()
+				instanceof org.geocedg.common.main.settings.config.AppConfigGeoCeDG);
 	}
 
 	/**

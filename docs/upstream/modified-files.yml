@@ -12,7 +12,7 @@
     {
       "path": "source/desktop/desktop/build.gradle.kts",
       "change": "modified",
-      "purpose": "Package the profile manifest, expose runGeoCeDG, register the isolated opt-in Locus V2 developer-laboratory task, and generate auditable build-time repository provenance for G9X1 sidecars.",
+      "purpose": "Package the profile manifest, expose runGeoCeDG, register the isolated opt-in Locus V2 developer-laboratory task, and generate auditable build-time repository provenance for G9X1 sidecars. G9U1: Package the sole schema-v2 workspace catalog, historical v1 fallback/schema and owned guide through existing Desktop resources. Authority: geocedg/specs/ui/g9u1-construction-interaction.md.",
       "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
     },
     {
@@ -24,7 +24,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/GuiManagerD.java",
       "change": "modified",
-      "purpose": "Preserve the product title/menu hooks and add conservative document-open, native-extension and product-window seams for .cedg while retaining Classic defaults.",
+      "purpose": "Preserve the product title/menu hooks and add conservative document-open, native-extension and product-window seams for .cedg while retaining Classic defaults. G9U1: Expose protected view-construction and document-filter-description seams for the product-specific interaction view and branding, preserving Classic defaults. Authority: geocedg/specs/ui/g9u1-construction-interaction.md.",
       "authority": "geocedg/specs/ui/native-document-identity.md"
     },
     {
@@ -36,7 +36,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/main/AppD.java",
       "change": "modified",
-      "purpose": "Preserve profile bootstrap hooks and add fail-closed one-read .cedg preflight, prepared and atomic undo-baseline commit with full rollback on live-parse or commit failure, product-window routing and current-document preservation without changing ZIP/XML internals.",
+      "purpose": "Preserve profile bootstrap hooks and add fail-closed one-read .cedg preflight, prepared and atomic undo-baseline commit with full rollback on live-parse or commit failure, product-window routing and current-document preservation without changing ZIP/XML internals. G9U1: capture native transaction UI state before hiding navigation, so rollback can restore the prior presentation; non-native ordering and formats are unchanged.",
       "authority": "geocedg/specs/ui/native-document-identity.md"
     },
     {
@@ -60,7 +60,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/AppGeoCeDG.java",
       "change": "added",
-      "purpose": "Instantiate the GeoCeDG profile and enforce the .cedg-only native save, product-window and parser-preflight policy while retaining the Classic internal app code and feature gates.",
+      "purpose": "Instantiate the GeoCeDG profile and enforce the .cedg-only native save, product-window and parser-preflight policy while retaining the Classic internal app code and feature gates. G9U1: Apply approved Construction workspace, language and Continuity policy without changing Classic or geometry. Authority: geocedg/specs/ui/g9u1-construction-interaction.md.",
       "authority": "geocedg/specs/ui/native-document-identity.md"
     },
     {
@@ -78,13 +78,13 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGProfile.java",
       "change": "added",
-      "purpose": "Load the maintainable profile manifest and compile its toolbar and perspective contracts.",
+      "purpose": "Load the maintainable profile manifest and compile its toolbar and perspective contracts. G9U1: Strictly compile live schema v2 and preserve explicit historical v1 fallback compatibility. Authority: geocedg/specs/ui/g9u1-construction-interaction.md.",
       "authority": "apps/geocedg/application-profile.yml"
     },
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGProfileTest.java",
       "change": "added",
-      "purpose": "Verify profile identity/layout, the explicit experimental DXF action, and detection of native Locus V2 data at the GeoCeDG save boundary.",
+      "purpose": "Verify profile identity/layout, the explicit experimental DXF action, and detection of native Locus V2 data at the GeoCeDG save boundary. G9U1: Retain historical test names while validating live v2 and explicit v1 migration. Authority: geocedg/specs/ui/g9u1-construction-interaction.md.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -120,13 +120,13 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GuiManagerGeoCeDG.java",
       "change": "added",
-      "purpose": "Select the GeoCeDG menu surface and implement native .cedg Save/Save As plus non-destructive .ggb compatibility-input state transitions without changing Classic defaults.",
+      "purpose": "Select the GeoCeDG menu surface and implement native .cedg Save/Save As plus non-destructive .ggb compatibility-input state transitions without changing Classic defaults. G9U1: Connect the registry/workspace to existing Desktop document and view seams. Authority: geocedg/specs/ui/g9u1-construction-interaction.md.",
       "authority": "geocedg/specs/ui/native-document-identity.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGMenuBar.java",
       "change": "added",
-      "purpose": "Expose experimental DXF and default-off Locus V2 actions only in the GeoCeDG product profile; G9U0-R3 retains one population authority across inherited init/font/localization rebuilds so the public inspector and peer actions do not disappear.",
+      "purpose": "Expose experimental DXF and default-off Locus V2 actions only in the GeoCeDG product profile; G9U0-R3 retains one population authority across inherited init/font/localization rebuilds so the public inspector and peer actions do not disappear. G9U1: Project declarative stable actions into accessible menus without a second action catalog. Authority: geocedg/specs/ui/g9u1-construction-interaction.md.",
       "authority": "geocedg/specs/locus/locus-v2-public-ui-exposure.md"
     },
     {
@@ -307,7 +307,7 @@
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/euclidian/draw/DrawLocusV2.java",
-      "change": "added", "purpose": "Draw V2 only from semantic evaluations using ordinary line, opacity and label presentation while preserving semantic component subpaths across unrelated crossings.", "authority": "geocedg/specs/locus/locus-v2-presentation.md"
+      "change": "added", "purpose": "Draw V2 only from semantic evaluations using ordinary line, opacity and label presentation while preserving semantic component subpaths across unrelated crossings. G9U1: Select only the semantic curve stroke, not the filled interior, without changing geometric authority. Authority: geocedg/specs/ui/g9u1-construction-interaction.md.", "authority": "geocedg/specs/locus/locus-v2-presentation.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/euclidian/draw/LocusRenderCache2D.java",
@@ -1854,7 +1854,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/AlgebraProcessor.java",
       "change": "modified",
-      "purpose": "Capture the explicit old-target identity context and enforce provider-gated RETAIN, explicit FRESH, or atomic REJECT across host redefine routes.",
+      "purpose": "Capture the explicit old-target identity context and enforce provider-gated RETAIN, explicit FRESH, or atomic REJECT across host redefine routes. G9U1: Make product help availability follow existing semantic feature policy without changing numerical command behavior. Authority: geocedg/specs/ui/g9u1-construction-interaction.md.",
       "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
     },
     {
@@ -1890,7 +1890,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/Kernel.java",
       "change": "modified",
-      "purpose": "Terminate an expected rejected semantic macro invocation without publishing its output or macro-use registration.",
+      "purpose": "Terminate an expected rejected semantic macro invocation without publishing its output or macro-use registration. G9U1: Clamp the existing Continuous setting OFF only in GeoCeDG, preserving Classic configuration. Authority: geocedg/specs/ui/g9u1-construction-interaction.md.",
       "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
     },
     {
@@ -2526,7 +2526,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGEuclidianController.java",
       "change": "added",
-      "purpose": "Provide GeoCeDG-only creation, semantic-position, rich metric, rich inspector/token and general-intersection actions for enabled Locus V2 sessions.",
+      "purpose": "Provide GeoCeDG-only creation, semantic-position, rich metric, rich inspector/token and general-intersection actions for enabled Locus V2 sessions. G9U1: Orchestrate exact R6 Point creation/drag, transient token markers and view-only ZoomWindow. Authority: geocedg/specs/ui/g9u1-construction-interaction.md.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -2538,25 +2538,25 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGLocusV2Dialogs.java",
       "change": "added",
-      "purpose": "Provide keyboard-accessible text-first semantic-address and rich-result/token dialogs without exposing any action in Classic or the default toolbar; G9U0-R3 keeps the exact token GeoText as a hidden normal dependency and decouples compact chooser presentation from arbitrarily long token identity.",
+      "purpose": "Provide keyboard-accessible text-first semantic-address and rich-result/token dialogs without exposing any action in Classic or the default toolbar; G9U0-R3 keeps the exact token GeoText as a hidden normal dependency and decouples compact chooser presentation from arbitrarily long token identity. G9U1: Expose a persistent rich inspector with exact-token one/selected/all materialization and bounded labels. Authority: geocedg/specs/ui/g9u1-construction-interaction.md.",
       "authority": "geocedg/specs/locus/locus-v2-public-ui-exposure.md"
     },
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored default command names and overload help for the experimental Locus V2 surface.",
+      "purpose": "Add GeoCeDG-authored default command names and overload help for the experimental Locus V2 surface. G9U1: Align owned SplineV2 help grammar with the existing three-point minimum. Authority: geocedg/specs/ui/g9u1-construction-interaction.md.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command_en.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored English command names and overload help for the experimental Locus V2 surface.",
+      "purpose": "Add GeoCeDG-authored English command names and overload help for the experimental Locus V2 surface. G9U1: Align English SplineV2 help grammar with the existing three-point minimum. Authority: geocedg/specs/ui/g9u1-construction-interaction.md.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command_es.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored Spanish command names and overload help for the experimental Locus V2 surface.",
+      "purpose": "Add GeoCeDG-authored Spanish command names and overload help for the experimental Locus V2 surface. G9U1: Align Spanish SplineV2 help grammar with the existing three-point minimum. Authority: geocedg/specs/ui/g9u1-construction-interaction.md.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -2808,8 +2808,8 @@
     {
       "path": "source/shared/common-jre/src/test/java/org/geogebra/common/kernel/LocusV2InputPreviewLifecycleTest.java",
       "change": "added",
-      "purpose": "Exercise the real input-bar preview lifecycle and prove that provisional Locus V2 evaluation publishes no durable identity, reservation, algorithm, geo, counter, or semantic revision before definitive creation.",
-      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+      "purpose": "Exercise the real input-bar preview lifecycle and prove that provisional Locus V2 evaluation publishes no durable identity, reservation, algorithm, geo, counter, or semantic revision before definitive creation; G9U1 updates only the callback expectation from an empty evaluated-preview array to null for the approved syntax-only product preview, retaining all zero-publication and definitive-execution assertions.",
+      "authority": "geocedg/specs/locus/locus-v2-public-surface.md; geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/SpatialSemanticInstrumentationSequentialHandoffTest.java",
@@ -2820,7 +2820,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/locus/LocusV2DesktopLifecycleRegressionTest.java",
       "change": "added",
-      "purpose": "Reproduce GeoCeDG Desktop bootstrap-to-EDT scheduled preview and definitive public Locus V2 creation without making the frontend semantic authority.",
+      "purpose": "Reproduce GeoCeDG Desktop bootstrap-to-EDT scheduled preview and definitive public Locus V2 creation without making the frontend semantic authority. G9U1: require null syntax-only product preview output while preserving the existing EDT callback and zero registry/reservation/geometry/algorithm/error invariants. Authority: geocedg/specs/ui/g9u1-construction-interaction.md.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -3078,19 +3078,19 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGDocumentLifecycleTest.java",
       "change": "added",
-      "purpose": "Verify R2-D01 through R2-D16 across native Save/Save As, reopen, direct/recent/drop/URL input, compatibility preservation, corrupt-preflight rejection, transactional second-live-parse and injected undo-commit rollback, and unchanged ZIP/XML identity.",
+      "purpose": "Verify R2-D01 through R2-D16 across native Save/Save As, reopen, direct/recent/drop/URL input, compatibility preservation, corrupt-preflight rejection, transactional second-live-parse and injected undo-commit rollback, and unchanged ZIP/XML identity. G9U1: preserve exact whole-XML rollback equality and assert the existing navigation-view ID before and after rollback; no tolerance or geometric assertion is relaxed.",
       "authority": "geocedg/specs/ui/native-document-identity.md"
     },
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U0R3MenuLifecycleTest.java",
       "change": "added",
-      "purpose": "Verify R3-M01 through R3-M06 for initial/full rebuild, repeated font and localization refresh, the sole Locus V2 opt-in and the approved feature-off menu policy.",
+      "purpose": "Verify R3-M01 through R3-M06 for initial/full rebuild, repeated font and localization refresh, the sole Locus V2 opt-in and the approved feature-off menu policy. G9U1 adapts only menu discovery to the same stable action ID in the schema-v2 projection; original lifecycle assertions remain.",
       "authority": ".github/prompts/tasks/g9u0-r3-public-locus-ui-hardening.prompt.md"
     },
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U0R3InspectorWorkflowTest.java",
       "change": "added",
-      "purpose": "Exercise the real product-menu inspector route, deterministic rich-result choice, bounded accessible labels over long exact tokens, unchanged token materialization/persistence, cancel/recompute/undo/redo, hidden token copy, and R3 no-marker/no-automatic-point boundaries; R4 confirms the descendant two-root result follows that same public dialog path.",
+      "purpose": "Exercise the real product-menu inspector route, deterministic rich-result choice, bounded accessible labels over long exact tokens, unchanged token materialization/persistence, cancel/recompute/undo/redo, hidden token copy, and R3 no-marker/no-automatic-point boundaries; R4 confirms the descendant two-root result follows that same public dialog path. G9U1 adapts menu discovery through the declared action identity while preserving the original selected-token and lifecycle assertions.",
       "authority": ".github/prompts/tasks/g9u0-r3-public-locus-ui-hardening.prompt.md"
     },
     {
@@ -3584,6 +3584,192 @@
       "change": "added",
       "purpose": "Verify deterministic bounded precision routes, unchanged original admission, genuine singular and inconsistent-system negatives, work/precision caps and the historical quintic recovery without claiming exact interpolation arithmetic.",
       "authority": "docs/adr/0022-structural-spline-continuity.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGActionRegistry.java",
+      "change": "added",
+      "purpose": "Bind every declared stable action to one frontend target with localized availability and shared state.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGAlgebraInputSubmission.java",
+      "change": "added",
+      "purpose": "Route explicit Enter and compatible numeric redefine through the existing atomic G9A transaction with coherent undo.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGDefinitionInspector.java",
+      "change": "added",
+      "purpose": "Show reconstructible semantic definitions read-only without changing global Algebra presentation or Construction.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGEuclidianView.java",
+      "change": "added",
+      "purpose": "Render transient exact-token markers and view-only ZoomWindow feedback without creating semantic objects.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGIntersectionSession.java",
+      "change": "added",
+      "purpose": "Consume one current rich result for exact-token selection and atomic one/selected/all materialization without a second solve.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGPointInteraction.java",
+      "change": "added",
+      "purpose": "Consume R6 typed inverse resolution and exact creation/move APIs without frontend identity inference.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGProfileSchema.java",
+      "change": "added",
+      "purpose": "Fail-closed validation of supported profile schema keywords and cross-references.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGToolbarContainer.java",
+      "change": "added",
+      "purpose": "Attach the declarative family palette to the normal Desktop toolbar without invented mode IDs.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGWorkspaceController.java",
+      "change": "added",
+      "purpose": "Project family/context actions and isolate workspace/layout preferences from semantic construction state.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/dialog/options/OptionsAdvancedD.java",
+      "change": "modified",
+      "purpose": "Expose locked GeoCeDG Continuity OFF while retaining Classic configuration.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/dialog/PropertiesPanelD.java",
+      "change": "modified",
+      "purpose": "Provide product semantic-definition inspection through the ordinary Properties panel.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/inputbar/AlgebraInputD.java",
+      "change": "modified",
+      "purpose": "Make explicit product submission atomic while focus loss, preview and Escape create no objects.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/menubar/OptionsMenuD.java",
+      "change": "modified",
+      "purpose": "Offer English and Spanish product languages without deleting or restricting Classic translations.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/view/algebra/AlgebraControllerD.java",
+      "change": "modified",
+      "purpose": "Expose read-only semantic definitions in Algebra without granting incompatible redefine authority.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/view/algebra/AlgebraHelperBar.java",
+      "change": "modified",
+      "purpose": "Reflect the actual description-style setting using exclusive menu state independently of tree sort.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/view/properties/PropertiesViewD.java",
+      "change": "modified",
+      "purpose": "Integrate the bounded read-only semantic-definition tab into the normal product Properties lifecycle.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1ActionRegistryTest.java",
+      "change": "added",
+      "purpose": "Exercise G9U1ActionRegistry workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1AlgebraSubmissionTest.java",
+      "change": "added",
+      "purpose": "Exercise G9U1AlgebraSubmission workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1IntersectionSessionTest.java",
+      "change": "added",
+      "purpose": "Exercise G9U1IntersectionSession workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1PeriodicQuarantineNativeTest.java",
+      "change": "added",
+      "purpose": "Exercise G9U1PeriodicQuarantineNative workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1ProductPolicyTest.java",
+      "change": "added",
+      "purpose": "Exercise G9U1ProductPolicy workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1ProfileCompilerTest.java",
+      "change": "added",
+      "purpose": "Exercise G9U1ProfileCompiler workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1ScriptWorkflowTest.java",
+      "change": "added",
+      "purpose": "Exercise G9U1ScriptWorkflow workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1SemanticPointInteractionTest.java",
+      "change": "added",
+      "purpose": "Exercise G9U1SemanticPointInteraction workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1TestApp.java",
+      "change": "added",
+      "purpose": "Provide isolated Desktop setup and ordinary command helpers for workspace consumer tests.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1WorkspaceSurfaceTest.java",
+      "change": "added",
+      "purpose": "Exercise G9U1WorkspaceSurface workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/workspace/G9U1InputPolicyTest.java",
+      "change": "added",
+      "purpose": "Exercise G9U1InputPolicy workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGSimilarityTools.java",
+      "change": "added",
+      "purpose": "Route ordinary Desktop similarity-tool operands to existing R5 public operations for semantic curves; preview/cancel creates no geometry and no new transformation or identity semantics are introduced.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1SimilarityToolsTest.java",
+      "change": "added",
+      "purpose": "Exercise ordinary tool and controller routing, preview/cancel, atomic invalid input, dynamic zero recovery and inherited-geometry preservation over existing R5 authority.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/ScheduledPreviewFromInputBar.java",
+      "change": "modified",
+      "purpose": "Use syntax-only product preview so typing creates no productive objects, algorithms or undo records.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/main/App.java",
+      "change": "modified",
+      "purpose": "G9U1 application presentation correction: compare the existing stored construction-navigation flag in the setter shortcut so native rollback can restore its prior value; retain the special public visibility getter, serialized format, identities and kernel semantics.",
+      "authority": "geocedg/specs/ui/native-document-identity.md"
     }
   ]
 }

@@ -189,7 +189,15 @@ application {
 
 tasks.processResources {
     dependsOn(generateGeoCeDGBuildProvenance)
-    from(rootProject.file("../../apps/geocedg/application-profile.yml")) {
+    from(rootProject.file("../../apps/geocedg")) {
+        include("application-profile.yml", "application-profile-v1.yml")
+        into("org/geocedg/desktop")
+    }
+    from(rootProject.file("../../geocedg/specs/ui")) {
+        include("application-profile.schema.json", "application-profile-v1.schema.json")
+        into("org/geocedg/desktop")
+    }
+    from(rootProject.file("../../docs/user/geocedg_user_guide.md")) {
         into("org/geocedg/desktop")
     }
 }

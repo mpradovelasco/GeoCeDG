@@ -30,6 +30,7 @@ import javax.swing.JMenu;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.SwingConstants;
 
+import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
 import org.geogebra.common.gui.menubar.MenuInterface;
 import org.geogebra.common.kernel.ConstructionDefaults;
 import org.geogebra.common.kernel.geos.GeoElement;
@@ -131,6 +132,21 @@ public class OptionsMenuD extends BaseMenu
 	 */
 	public static void addLanguageMenuItems(AppD app, JComponent menu,
 			LanguageActionListener listener) {
+		// GeoCeDG exposes only the approved complete product locales.
+		if (app.getConfig() instanceof AppConfigGeoCeDG) {
+			ButtonGroup languages = new ButtonGroup();
+			for (Language language : new Language[] {Language.English_US, Language.Spanish}) {
+				JRadioButtonMenuItem item = new LanguageRadioButtonMenuItem(language.name);
+				item.setFont(app.getPlainFont());
+				item.setSelected(language == Language.Spanish
+						? "es".equals(app.getLocale().getLanguage())
+						: !"es".equals(app.getLocale().getLanguage()));
+				item.addActionListener(event -> listener.setLanguage(language));
+				languages.add(item);
+				menu.add(item);
+			}
+			return;
+		}
 		JRadioButtonMenuItem mi;
 		ButtonGroup bg = new ButtonGroup();
 		boolean rtl = app.getLocalization().isRightToLeftReadingOrder();

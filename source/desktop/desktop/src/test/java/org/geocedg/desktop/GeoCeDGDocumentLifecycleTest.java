@@ -36,6 +36,7 @@ import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
 import org.geogebra.common.GeoGebraConstants;
 import org.geogebra.common.jre.io.MyXMLioJre;
 import org.geogebra.common.kernel.geos.GeoNumeric;
+import org.geogebra.common.main.App;
 import org.geogebra.common.main.AppConfig;
 import org.geogebra.common.main.settings.config.AppConfigDefault;
 import org.geogebra.common.main.undo.UndoManager;
@@ -392,6 +393,12 @@ class GeoCeDGDocumentLifecycleTest {
 		assertEquals(43, ((GeoNumeric) commitLive.getKernel()
 				.lookupLabel("liveSentinel")).getDouble(), 0);
 		commitLive.setUnsaved();
+		commitLive.setHideConstructionProtocolNavigation();
+		assertEquals("", commitLive.getConsProtNavigationIds().toString());
+		commitLive.setShowConstructionProtocolNavigation(true,
+				App.VIEW_CONSTRUCTION_PROTOCOL);
+		assertTrue(commitLive.showConsProtNavigation(App.VIEW_CONSTRUCTION_PROTOCOL));
+		assertEquals("32", commitLive.getConsProtNavigationIds().toString());
 
 		final String commitLiveXml = commitLive.getXML();
 		final String commitLiveUniqueId = commitLive.getUniqueId();
@@ -414,6 +421,8 @@ class GeoCeDGDocumentLifecycleTest {
 		assertArrayEquals(admittedBytes, Files.readAllBytes(admittedPath));
 		assertArrayEquals(liveFileBytes, Files.readAllBytes(livePath));
 		assertEquals(commitLiveXml, commitLive.getXML());
+		assertTrue(commitLive.showConsProtNavigation(App.VIEW_CONSTRUCTION_PROTOCOL));
+		assertEquals("32", commitLive.getConsProtNavigationIds().toString());
 		assertEquals(commitLiveUniqueId, commitLive.getUniqueId());
 		assertEquals(commitLiveCurrentFile, commitLive.getCurrentFile());
 		assertEquals(commitLiveCurrentPath, commitLive.getCurrentPath());

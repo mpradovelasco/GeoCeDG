@@ -1,7 +1,13 @@
 {
   "$schema": "../../geocedg/specs/ui/application-profile.schema.json",
-  "schema_version": 1,
+  "schema_version": 2,
+  "status": "implementation-candidate",
   "profile_id": "geocedg-desktop",
+  "live_profile": {
+    "path": "apps/geocedg/application-profile.yml",
+    "schema_version": 2,
+    "policy": "single-live-runtime-authority"
+  },
   "application": {
     "name": "GeoCeDG",
     "preferences_key": "geocedg",
@@ -10,11 +16,2983 @@
   },
   "serialization": {
     "app_code": "classic",
-    "policy": "preserve-upstream-g2"
+    "native_extension": ".cedg",
+    "compatibility_extension": ".ggb",
+    "policy": "preserve-approved-r2-contract"
   },
-  "perspective": {
-    "id": "geocedg-initial",
+  "default_workspace_id": "cedg-construction",
+  "product_policies": {
+    "continuity": {
+      "host_setting": "continuity",
+      "value": false,
+      "locked": true
+    },
+    "languages": {
+      "offered": [
+        "en",
+        "es"
+      ],
+      "fallback": "en",
+      "retain_upstream_corpus": true,
+      "classic_policy": "retain-upstream-language-selection"
+    },
+    "semantic_curves": {
+      "feature_id": "cedg.locus.v2",
+      "additional_runtime_flags": []
+    },
+    "materialization": {
+      "kernel_recompute_creates_new_points": false,
+      "existing_point_reactivation": "kernel-dag",
+      "new_point_auto_materialization": "explicit-visible-undoable-frontend-action"
+    }
+  },
+  "taxonomy": {
+    "broad_families": [
+      {
+        "id": "inspect-construct",
+        "order": 1,
+        "name_key": "GeoCeDG.Workspace.Family.InspectConstruct",
+        "availability": "available"
+      },
+      {
+        "id": "linear-geometry",
+        "order": 2,
+        "name_key": "GeoCeDG.Workspace.Family.LinearGeometry",
+        "availability": "available"
+      },
+      {
+        "id": "parameters-drivers",
+        "order": 3,
+        "name_key": "GeoCeDG.Workspace.Family.ParametersDrivers",
+        "availability": "available"
+      },
+      {
+        "id": "relations-intersections",
+        "order": 4,
+        "name_key": "GeoCeDG.Workspace.Family.RelationsIntersections",
+        "availability": "available"
+      },
+      {
+        "id": "circles-conics-curves",
+        "order": 5,
+        "name_key": "GeoCeDG.Workspace.Family.CirclesConicsCurves",
+        "availability": "available"
+      },
+      {
+        "id": "semantic-curves",
+        "order": 6,
+        "name_key": "GeoCeDG.Workspace.Family.SemanticCurves",
+        "availability": "available"
+      },
+      {
+        "id": "metrics-validation",
+        "order": 7,
+        "name_key": "GeoCeDG.Workspace.Family.MetricsValidation",
+        "availability": "available"
+      },
+      {
+        "id": "transformations-manual-projections",
+        "order": 8,
+        "name_key": "GeoCeDG.Workspace.Family.TransformationsManualProjections",
+        "availability": "available"
+      },
+      {
+        "id": "cedg-procedures-developments",
+        "order": 9,
+        "name_key": "GeoCeDG.Workspace.Family.ProceduresDevelopments",
+        "availability": "disabled-with-reason",
+        "reason_key": "GeoCeDG.Workspace.Unavailable.G9U2"
+      },
+      {
+        "id": "presentation-document",
+        "order": 10,
+        "name_key": "GeoCeDG.Workspace.Family.PresentationDocument",
+        "availability": "available"
+      },
+      {
+        "id": "automation-import-export",
+        "order": 11,
+        "name_key": "GeoCeDG.Workspace.Family.AutomationImportExport",
+        "availability": "available"
+      }
+    ],
+    "operational_clusters": [
+      {
+        "id": "selection-move-inspect",
+        "order": 1,
+        "broad_family_id": "inspect-construct",
+        "name_key": "GeoCeDG.Workspace.Cluster.SelectionMoveInspect"
+      },
+      {
+        "id": "point-construction",
+        "order": 2,
+        "broad_family_id": "inspect-construct",
+        "name_key": "GeoCeDG.Workspace.Cluster.PointConstruction"
+      },
+      {
+        "id": "linear-geometry-tools",
+        "order": 3,
+        "broad_family_id": "linear-geometry",
+        "name_key": "GeoCeDG.Workspace.Cluster.LinearGeometry"
+      },
+      {
+        "id": "parameter-driver-tools",
+        "order": 4,
+        "broad_family_id": "parameters-drivers",
+        "name_key": "GeoCeDG.Workspace.Cluster.ParametersDrivers"
+      },
+      {
+        "id": "relation-intersection-tools",
+        "order": 5,
+        "broad_family_id": "relations-intersections",
+        "name_key": "GeoCeDG.Workspace.Cluster.RelationsIntersections"
+      },
+      {
+        "id": "circle-conic-curve-tools",
+        "order": 6,
+        "broad_family_id": "circles-conics-curves",
+        "name_key": "GeoCeDG.Workspace.Cluster.CirclesConicsCurves"
+      },
+      {
+        "id": "locus-v2-tools",
+        "order": 7,
+        "broad_family_id": "semantic-curves",
+        "name_key": "GeoCeDG.Workspace.Cluster.LocusV2"
+      },
+      {
+        "id": "spline-v2-tools",
+        "order": 8,
+        "broad_family_id": "semantic-curves",
+        "name_key": "GeoCeDG.Workspace.Cluster.SplineV2"
+      },
+      {
+        "id": "metric-validation-tools",
+        "order": 9,
+        "broad_family_id": "metrics-validation",
+        "name_key": "GeoCeDG.Workspace.Cluster.MetricsValidation"
+      },
+      {
+        "id": "similarity-transform-tools",
+        "order": 10,
+        "broad_family_id": "transformations-manual-projections",
+        "name_key": "GeoCeDG.Workspace.Cluster.SimilarityTransformations"
+      },
+      {
+        "id": "manual-projection-authorized",
+        "order": 11,
+        "broad_family_id": "transformations-manual-projections",
+        "related_deferred_broad_family_ids": [
+          "cedg-procedures-developments"
+        ],
+        "name_key": "GeoCeDG.Workspace.Cluster.ManualProjectionAuthorized"
+      },
+      {
+        "id": "presentation-visibility-style",
+        "order": 12,
+        "broad_family_id": "presentation-document",
+        "name_key": "GeoCeDG.Workspace.Cluster.PresentationVisibilityStyle"
+      },
+      {
+        "id": "navigation-zoom",
+        "order": 13,
+        "broad_family_id": "presentation-document",
+        "name_key": "GeoCeDG.Workspace.Cluster.NavigationZoom"
+      },
+      {
+        "id": "document-lifecycle",
+        "order": 14,
+        "broad_family_id": "presentation-document",
+        "name_key": "GeoCeDG.Workspace.Cluster.DocumentLifecycle"
+      },
+      {
+        "id": "automation-scripting",
+        "order": 15,
+        "broad_family_id": "automation-import-export",
+        "name_key": "GeoCeDG.Workspace.Cluster.AutomationScripting"
+      },
+      {
+        "id": "import-export-authorized",
+        "order": 16,
+        "broad_family_id": "automation-import-export",
+        "name_key": "GeoCeDG.Workspace.Cluster.ImportExport"
+      },
+      {
+        "id": "help-command-discovery",
+        "order": 17,
+        "broad_family_id": "presentation-document",
+        "name_key": "GeoCeDG.Workspace.Cluster.HelpCommandDiscovery"
+      },
+      {
+        "id": "construction-history-definition",
+        "order": 18,
+        "broad_family_id": "inspect-construct",
+        "name_key": "GeoCeDG.Workspace.Cluster.ConstructionHistoryDefinition"
+      }
+    ]
+  },
+  "policy_profiles": {
+    "effects": [
+      {
+        "id": "mode-create",
+        "construction": "explicit-single",
+        "preview": "none",
+        "undo": "normal"
+      },
+      {
+        "id": "interactive-edit",
+        "construction": "interactive-edit",
+        "preview": "none",
+        "undo": "normal"
+      },
+      {
+        "id": "read-only",
+        "construction": "none",
+        "preview": "none",
+        "undo": "none"
+      },
+      {
+        "id": "preference-only",
+        "construction": "none",
+        "preview": "none",
+        "undo": "none"
+      },
+      {
+        "id": "single-materialization",
+        "construction": "explicit-single",
+        "preview": "none",
+        "undo": "single"
+      },
+      {
+        "id": "compound-materialization",
+        "construction": "explicit-compound",
+        "preview": "none",
+        "undo": "compound"
+      },
+      {
+        "id": "document-lifecycle",
+        "construction": "document-lifecycle",
+        "preview": "none",
+        "undo": "normal"
+      },
+      {
+        "id": "host-history",
+        "construction": "none",
+        "preview": "none",
+        "undo": "host-history"
+      },
+      {
+        "id": "delete-selection",
+        "construction": "explicit-single",
+        "preview": "none",
+        "undo": "single"
+      }
+    ],
+    "availability": [
+      {
+        "id": "host-inherited",
+        "unavailable_policy": "hidden",
+        "geocedg": "available",
+        "classic": "inherited",
+        "external_upstream": "inherited"
+      },
+      {
+        "id": "host-contextual",
+        "unavailable_policy": "hidden",
+        "geocedg": "contextual",
+        "classic": "inherited",
+        "external_upstream": "inherited"
+      },
+      {
+        "id": "locus-v2-product",
+        "unavailable_policy": "hidden",
+        "geocedg": "feature-gated",
+        "classic": "hidden",
+        "external_upstream": "unsupported"
+      },
+      {
+        "id": "locus-v2-contextual",
+        "unavailable_policy": "hidden",
+        "geocedg": "contextual",
+        "classic": "hidden",
+        "external_upstream": "unsupported"
+      },
+      {
+        "id": "product-only",
+        "unavailable_policy": "hidden",
+        "geocedg": "available",
+        "classic": "hidden",
+        "external_upstream": "unsupported"
+      },
+      {
+        "id": "product-contextual",
+        "unavailable_policy": "hidden",
+        "geocedg": "contextual",
+        "classic": "hidden",
+        "external_upstream": "unsupported"
+      },
+      {
+        "id": "document-product",
+        "unavailable_policy": "hidden",
+        "geocedg": "available",
+        "classic": "inherited",
+        "external_upstream": "inherited"
+      },
+      {
+        "id": "dxf-product",
+        "unavailable_policy": "hidden",
+        "geocedg": "feature-gated",
+        "classic": "hidden",
+        "external_upstream": "unsupported"
+      },
+      {
+        "id": "diagnostic-route",
+        "unavailable_policy": "diagnostic-route-only",
+        "geocedg": "available",
+        "classic": "diagnostic-only",
+        "external_upstream": "unsupported"
+      },
+      {
+        "id": "gated-g9u2",
+        "unavailable_policy": "disabled-with-reason",
+        "geocedg": "disabled",
+        "classic": "hidden",
+        "external_upstream": "unsupported"
+      }
+    ],
+    "command_surfaces": [
+      {
+        "id": "mode-only",
+        "algebra_input": "not-applicable",
+        "autocomplete": "not-applicable",
+        "ggbscript": "not-applicable"
+      },
+      {
+        "id": "semantic-command",
+        "algebra_input": "supported",
+        "autocomplete": "supported",
+        "ggbscript": "supported"
+      },
+      {
+        "id": "action-only",
+        "algebra_input": "not-applicable",
+        "autocomplete": "not-applicable",
+        "ggbscript": "not-applicable"
+      },
+      {
+        "id": "document-action",
+        "algebra_input": "not-applicable",
+        "autocomplete": "not-applicable",
+        "ggbscript": "not-applicable"
+      },
+      {
+        "id": "help-action",
+        "algebra_input": "not-applicable",
+        "autocomplete": "not-applicable",
+        "ggbscript": "not-applicable"
+      }
+    ]
+  },
+  "localization_contract": {
+    "required_locales": [
+      "en",
+      "es"
+    ],
+    "required_fields": [
+      "name",
+      "short_help",
+      "long_help",
+      "status",
+      "error"
+    ],
+    "refs_resolve_at_implementation": true
+  },
+  "icon_contract": {
+    "stable_logical_ids": true,
+    "text_fallback_required": true,
+    "branding_roles": [
+      "geocedg.brand.topbar",
+      "geocedg.brand.startup"
+    ]
+  },
+  "actions": [
+    {
+      "id": "construction.move",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_MOVE",
+        "audited_numeric_id": 0
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.move",
+      "effect_profile_id": "interactive-edit",
+      "localization_ref": "upstream.mode.Move",
+      "icon_ref": "upstream.mode.Move",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "construction.move-rotate",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_MOVE_ROTATE",
+        "audited_numeric_id": 39
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.move-rotate",
+      "effect_profile_id": "interactive-edit",
+      "localization_ref": "upstream.mode.MoveRotate",
+      "icon_ref": "upstream.mode.MoveRotate",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "should",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "construction.select",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_SELECT",
+        "audited_numeric_id": 77
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.select",
+      "effect_profile_id": "read-only",
+      "localization_ref": "upstream.mode.Select",
+      "icon_ref": "upstream.mode.Select",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "should",
+      "implementation_state": "host-characterization-required"
+    },
+    {
+      "id": "construction.attach-detach",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_ATTACH_DETACH",
+        "audited_numeric_id": 67
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.attach-detach",
+      "effect_profile_id": "interactive-edit",
+      "localization_ref": "upstream.mode.AttachDetach",
+      "icon_ref": "upstream.mode.AttachDetach",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "should",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "edit.delete",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_DELETE",
+        "audited_numeric_id": 6
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.delete",
+      "effect_profile_id": "delete-selection",
+      "localization_ref": "upstream.mode.Delete",
+      "icon_ref": "upstream.mode.Delete",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "edit.undo",
+      "kind": "product-action",
+      "target": {
+        "symbol": "host.edit.undo"
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "none",
+      "effect_profile_id": "host-history",
+      "localization_ref": "upstream.action.Undo",
+      "icon_ref": "upstream.action.Undo",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "edit.redo",
+      "kind": "product-action",
+      "target": {
+        "symbol": "host.edit.redo"
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "none",
+      "effect_profile_id": "host-history",
+      "localization_ref": "upstream.action.Redo",
+      "icon_ref": "upstream.action.Redo",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "construction.point",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_POINT",
+        "audited_numeric_id": 1
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "geocedg.point-or-semantic-curve",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.Point",
+      "icon_ref": "upstream.mode.Point",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "must",
+      "implementation_state": "new-manifest-binding",
+      "notes": "For LocusV2/SplineV2 stroke candidates, the frontend consumes the published R6 typed resolver and exact resolver-owned candidate; it never derives a preimage from pixels or proximity."
+    },
+    {
+      "id": "construction.point-on-object",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_POINT_ON_OBJECT",
+        "audited_numeric_id": 501
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "geocedg.point-on-object-or-semantic-curve",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.PointOnObject",
+      "icon_ref": "upstream.mode.PointOnObject",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "must",
+      "implementation_state": "new-manifest-binding",
+      "notes": "Semantic-curve creation and drag reuse the published R6 resolver/creation/move seams; ambiguity requires explicit candidate selection."
+    },
+    {
+      "id": "construction.line",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_JOIN",
+        "audited_numeric_id": 2
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.line",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.Join",
+      "icon_ref": "upstream.mode.Join",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "construction.segment",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_SEGMENT",
+        "audited_numeric_id": 15
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.segment",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.Segment",
+      "icon_ref": "upstream.mode.Segment",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "construction.fixed-segment",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_SEGMENT_FIXED",
+        "audited_numeric_id": 45
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.fixed-segment",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.SegmentFixed",
+      "icon_ref": "upstream.mode.SegmentFixed",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "should",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "construction.ray",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_RAY",
+        "audited_numeric_id": 18
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.ray",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.Ray",
+      "icon_ref": "upstream.mode.Ray",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "construction.vector",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_VECTOR",
+        "audited_numeric_id": 7
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.vector",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.Vector",
+      "icon_ref": "upstream.mode.Vector",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "construction.vector-from-point",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_VECTOR_FROM_POINT",
+        "audited_numeric_id": 37
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.vector-from-point",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.VectorFromPoint",
+      "icon_ref": "upstream.mode.VectorFromPoint",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "should",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "construction.parallel-line",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_PARALLEL",
+        "audited_numeric_id": 3
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.parallel",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.Parallel",
+      "icon_ref": "upstream.mode.Parallel",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "construction.perpendicular-line",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_ORTHOGONAL",
+        "audited_numeric_id": 4
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.orthogonal",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.Orthogonal",
+      "icon_ref": "upstream.mode.Orthogonal",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "construction.perpendicular-bisector",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_LINE_BISECTOR",
+        "audited_numeric_id": 8
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.line-bisector",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.LineBisector",
+      "icon_ref": "upstream.mode.LineBisector",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "construction.angle-bisector",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_ANGULAR_BISECTOR",
+        "audited_numeric_id": 9
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.angular-bisector",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.AngularBisector",
+      "icon_ref": "upstream.mode.AngularBisector",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "construction.midpoint",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_MIDPOINT",
+        "audited_numeric_id": 19
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.midpoint",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.Midpoint",
+      "icon_ref": "upstream.mode.Midpoint",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "construction.polyline",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_POLYLINE",
+        "audited_numeric_id": 65
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.polyline",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.Polyline",
+      "icon_ref": "upstream.mode.Polyline",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "should",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "construction.polygon",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_POLYGON",
+        "audited_numeric_id": 16
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.polygon",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.Polygon",
+      "icon_ref": "upstream.mode.Polygon",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "construction.regular-polygon",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_REGULAR_POLYGON",
+        "audited_numeric_id": 51
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.regular-polygon",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.RegularPolygon",
+      "icon_ref": "upstream.mode.RegularPolygon",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "should",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "construction.rigid-polygon",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_RIGID_POLYGON",
+        "audited_numeric_id": 64
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.rigid-polygon",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.RigidPolygon",
+      "icon_ref": "upstream.mode.RigidPolygon",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "should",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "construction.vector-polygon",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_VECTOR_POLYGON",
+        "audited_numeric_id": 70
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.vector-polygon",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.VectorPolygon",
+      "icon_ref": "upstream.mode.VectorPolygon",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "should",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "parameter.slider",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_SLIDER",
+        "audited_numeric_id": 25
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.slider",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.Slider",
+      "icon_ref": "upstream.mode.Slider",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "parameter.fixed-angle",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_ANGLE_FIXED",
+        "audited_numeric_id": 46
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.fixed-angle",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.AngleFixed",
+      "icon_ref": "upstream.mode.AngleFixed",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "should",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "parameter.checkbox",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_SHOW_HIDE_CHECKBOX",
+        "audited_numeric_id": 52
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.checkbox",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.ShowHideCheckbox",
+      "icon_ref": "upstream.mode.ShowHideCheckbox",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "should",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "parameter.button",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_BUTTON_ACTION",
+        "audited_numeric_id": 60
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.button",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.ButtonAction",
+      "icon_ref": "upstream.mode.ButtonAction",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "should",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "parameter.input-box",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_TEXTFIELD_ACTION",
+        "audited_numeric_id": 61
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.input-box",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.TextfieldAction",
+      "icon_ref": "upstream.mode.TextfieldAction",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "should",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "parameter.animation-toggle",
+      "kind": "product-action",
+      "target": {
+        "symbol": "host.context.animation-toggle"
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.animatable-object",
+      "effect_profile_id": "preference-only",
+      "localization_ref": "upstream.action.Animation",
+      "icon_ref": "upstream.action.Animation",
+      "availability_profile_id": "host-contextual",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "should",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "relation.intersect",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_INTERSECT",
+        "audited_numeric_id": 5
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.intersect-plus-rich-result",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.Intersect",
+      "icon_ref": "upstream.mode.Intersect",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "semantic-command",
+      "planning_disposition": "must",
+      "implementation_state": "new-manifest-binding"
+    },
+    {
+      "id": "relation.tangent",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_TANGENTS",
+        "audited_numeric_id": 13
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.tangent",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.Tangents",
+      "icon_ref": "upstream.mode.Tangents",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "relation.compare",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_RELATION",
+        "audited_numeric_id": 14
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.relation",
+      "effect_profile_id": "read-only",
+      "localization_ref": "upstream.mode.Relation",
+      "icon_ref": "upstream.mode.Relation",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "relation.polar-diameter",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_POLAR_DIAMETER",
+        "audited_numeric_id": 44
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.polar-diameter",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.PolarDiameter",
+      "icon_ref": "upstream.mode.PolarDiameter",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "should",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "result.inspect-rich",
+      "kind": "result-inspector",
+      "target": {
+        "symbol": "geocedg.result.inspect"
+      },
+      "maturity": "experimental",
+      "feature_requirements": [
+        "cedg.locus.v2"
+      ],
+      "selection_contract_ref": "geocedg.current-rich-result",
+      "effect_profile_id": "read-only",
+      "localization_ref": "geocedg.action.ResultInspect",
+      "icon_ref": "geocedg.action.ResultInspect",
+      "availability_profile_id": "locus-v2-contextual",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "result.show-candidate-markers",
+      "kind": "preference-action",
+      "target": {
+        "symbol": "geocedg.result.markers.toggle"
+      },
+      "maturity": "experimental",
+      "feature_requirements": [
+        "cedg.locus.v2"
+      ],
+      "selection_contract_ref": "geocedg.active-rich-result",
+      "effect_profile_id": "preference-only",
+      "localization_ref": "geocedg.action.ResultMarkers",
+      "icon_ref": "geocedg.action.ResultMarkers",
+      "availability_profile_id": "locus-v2-contextual",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "must",
+      "implementation_state": "new-frontend"
+    },
+    {
+      "id": "result.materialize-selected",
+      "kind": "materialization-action",
+      "target": {
+        "symbol": "geocedg.result.materialize-selected"
+      },
+      "maturity": "experimental",
+      "feature_requirements": [
+        "cedg.locus.v2"
+      ],
+      "selection_contract_ref": "geocedg.selected-admissible-exact-token",
+      "effect_profile_id": "single-materialization",
+      "localization_ref": "geocedg.action.MaterializeSelected",
+      "icon_ref": "geocedg.action.MaterializeSelected",
+      "availability_profile_id": "locus-v2-contextual",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "must",
+      "implementation_state": "new-frontend"
+    },
+    {
+      "id": "result.materialize-multiple",
+      "kind": "materialization-action",
+      "target": {
+        "symbol": "geocedg.result.materialize-multiple"
+      },
+      "maturity": "experimental",
+      "feature_requirements": [
+        "cedg.locus.v2"
+      ],
+      "selection_contract_ref": "geocedg.selected-admissible-exact-tokens",
+      "effect_profile_id": "compound-materialization",
+      "localization_ref": "geocedg.action.MaterializeMultiple",
+      "icon_ref": "geocedg.action.MaterializeMultiple",
+      "availability_profile_id": "locus-v2-contextual",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "must",
+      "implementation_state": "new-frontend"
+    },
+    {
+      "id": "result.materialize-all-eligible",
+      "kind": "materialization-action",
+      "target": {
+        "symbol": "geocedg.result.materialize-all"
+      },
+      "maturity": "experimental",
+      "feature_requirements": [
+        "cedg.locus.v2"
+      ],
+      "selection_contract_ref": "geocedg.all-current-admissible-exact-tokens",
+      "effect_profile_id": "compound-materialization",
+      "localization_ref": "geocedg.action.MaterializeAll",
+      "icon_ref": "geocedg.action.MaterializeAll",
+      "availability_profile_id": "locus-v2-contextual",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "must",
+      "implementation_state": "new-frontend"
+    },
+    {
+      "id": "result.auto-materialize-initial",
+      "kind": "preference-action",
+      "target": {
+        "symbol": "geocedg.result.auto-materialize-initial.toggle"
+      },
+      "maturity": "experimental",
+      "feature_requirements": [
+        "cedg.locus.v2"
+      ],
+      "selection_contract_ref": "geocedg.explicit-new-query-eligible-tokens",
+      "effect_profile_id": "preference-only",
+      "localization_ref": "geocedg.action.AutoMaterializeInitial",
+      "icon_ref": "geocedg.action.AutoMaterializeInitial",
+      "availability_profile_id": "locus-v2-product",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "must",
+      "implementation_state": "new-frontend",
+      "notes": "The explicit frontend action may create initial eligible points; later kernel recompute never creates new GeoPoints."
+    },
+    {
+      "id": "curve.circle-two-points",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_CIRCLE_TWO_POINTS",
+        "audited_numeric_id": 10
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.circle-two-points",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.CircleTwoPoints",
+      "icon_ref": "upstream.mode.CircleTwoPoints",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "curve.circle-three-points",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_CIRCLE_THREE_POINTS",
+        "audited_numeric_id": 11
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.circle-three-points",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.CircleThreePoints",
+      "icon_ref": "upstream.mode.CircleThreePoints",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "curve.circle-center-radius",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_CIRCLE_POINT_RADIUS",
+        "audited_numeric_id": 34
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.circle-center-radius",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.CirclePointRadius",
+      "icon_ref": "upstream.mode.CirclePointRadius",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "curve.compass",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_COMPASSES",
+        "audited_numeric_id": 53
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.compass",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.Compasses",
+      "icon_ref": "upstream.mode.Compasses",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "should",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "curve.semicircle",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_SEMICIRCLE",
+        "audited_numeric_id": 24
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.semicircle",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.Semicircle",
+      "icon_ref": "upstream.mode.Semicircle",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "should",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "curve.arc-center",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_CIRCLE_ARC_THREE_POINTS",
+        "audited_numeric_id": 20
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.arc-center",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.CircleArcThreePoints",
+      "icon_ref": "upstream.mode.CircleArcThreePoints",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "curve.arc-circumcircle",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_CIRCUMCIRCLE_ARC_THREE_POINTS",
+        "audited_numeric_id": 22
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.arc-circumcircle",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.CircumcircleArcThreePoints",
+      "icon_ref": "upstream.mode.CircumcircleArcThreePoints",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "should",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "curve.sector-center",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_CIRCLE_SECTOR_THREE_POINTS",
+        "audited_numeric_id": 21
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.sector-center",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.CircleSectorThreePoints",
+      "icon_ref": "upstream.mode.CircleSectorThreePoints",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "should",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "curve.sector-circumcircle",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_CIRCUMCIRCLE_SECTOR_THREE_POINTS",
+        "audited_numeric_id": 23
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.sector-circumcircle",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.CircumcircleSectorThreePoints",
+      "icon_ref": "upstream.mode.CircumcircleSectorThreePoints",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "should",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "curve.conic-five-points",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_CONIC_FIVE_POINTS",
+        "audited_numeric_id": 12
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.conic-five-points",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.ConicFivePoints",
+      "icon_ref": "upstream.mode.ConicFivePoints",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "curve.ellipse",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_ELLIPSE_THREE_POINTS",
+        "audited_numeric_id": 55
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.ellipse",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.EllipseThreePoints",
+      "icon_ref": "upstream.mode.EllipseThreePoints",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "curve.hyperbola",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_HYPERBOLA_THREE_POINTS",
+        "audited_numeric_id": 56
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.hyperbola",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.HyperbolaThreePoints",
+      "icon_ref": "upstream.mode.HyperbolaThreePoints",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "should",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "curve.parabola",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_PARABOLA",
+        "audited_numeric_id": 57
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.parabola",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.Parabola",
+      "icon_ref": "upstream.mode.Parabola",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "semantic.locus-v2.create",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_LOCUS_V2",
+        "audited_numeric_id": 133
+      },
+      "maturity": "experimental",
+      "feature_requirements": [
+        "cedg.locus.v2"
+      ],
+      "selection_contract_ref": "geocedg.locus-v2-generator-domain",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "geocedg.action.LocusV2Create",
+      "icon_ref": "geocedg.action.LocusV2Create",
+      "availability_profile_id": "locus-v2-product",
+      "command_surface_profile_id": "semantic-command",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "semantic.locus-v2.point-explicit",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_LOCUS_V2_POINT",
+        "audited_numeric_id": 134
+      },
+      "maturity": "experimental",
+      "feature_requirements": [
+        "cedg.locus.v2"
+      ],
+      "selection_contract_ref": "geocedg.locus-v2-semantic-point",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "geocedg.action.LocusV2Point",
+      "icon_ref": "geocedg.action.LocusV2Point",
+      "availability_profile_id": "locus-v2-product",
+      "command_surface_profile_id": "semantic-command",
+      "planning_disposition": "must",
+      "implementation_state": "existing",
+      "notes": "Retained as the exact semantic-address helper and GGBScript command surface; it is not a substitute for the ordinary Point tool's R6 graphical interaction contract."
+    },
+    {
+      "id": "semantic.spline-v2.create",
+      "kind": "command",
+      "target": {
+        "symbol": "SplineV2"
+      },
+      "maturity": "experimental",
+      "feature_requirements": [
+        "cedg.locus.v2"
+      ],
+      "selection_contract_ref": "geocedg.spline-v2-approved-four-forms",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "geocedg.command.SplineV2",
+      "icon_ref": "geocedg.action.SplineV2Create",
+      "availability_profile_id": "locus-v2-product",
+      "command_surface_profile_id": "semantic-command",
+      "planning_disposition": "must",
+      "implementation_state": "new-frontend",
+      "notes": "The frontend task must expose all approved forms and state the minimum of three control points."
+    },
+    {
+      "id": "measure.angle",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_ANGLE",
+        "audited_numeric_id": 36
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.angle",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.Angle",
+      "icon_ref": "upstream.mode.Angle",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "measure.distance-length",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_DISTANCE",
+        "audited_numeric_id": 38
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.distance-length",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.Distance",
+      "icon_ref": "upstream.mode.Distance",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "measure.area",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_AREA",
+        "audited_numeric_id": 49
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.area",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.Area",
+      "icon_ref": "upstream.mode.Area",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "measure.slope",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_SLOPE",
+        "audited_numeric_id": 50
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.slope",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.Slope",
+      "icon_ref": "upstream.mode.Slope",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "should",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "measure.locus-v2-total-length",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_LOCUS_V2_LENGTH",
+        "audited_numeric_id": 135
+      },
+      "maturity": "experimental",
+      "feature_requirements": [
+        "cedg.locus.v2"
+      ],
+      "selection_contract_ref": "geocedg.semantic-curve-total-length",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "geocedg.action.LocusLengthTotal",
+      "icon_ref": "geocedg.action.LocusLengthTotal",
+      "availability_profile_id": "locus-v2-product",
+      "command_surface_profile_id": "semantic-command",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "measure.locus-v2-partial-length",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_LOCUS_V2_LENGTH_BETWEEN",
+        "audited_numeric_id": 136
+      },
+      "maturity": "experimental",
+      "feature_requirements": [
+        "cedg.locus.v2"
+      ],
+      "selection_contract_ref": "geocedg.semantic-curve-partial-length",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "geocedg.action.LocusLengthPartial",
+      "icon_ref": "geocedg.action.LocusLengthPartial",
+      "availability_profile_id": "locus-v2-product",
+      "command_surface_profile_id": "semantic-command",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "transform.reflect-point",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_MIRROR_AT_POINT",
+        "audited_numeric_id": 29
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "geocedg.transform-reflect-point",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.MirrorAtPoint",
+      "icon_ref": "upstream.mode.MirrorAtPoint",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "semantic-command",
+      "planning_disposition": "must",
+      "implementation_state": "new-manifest-binding"
+    },
+    {
+      "id": "transform.reflect-line",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_MIRROR_AT_LINE",
+        "audited_numeric_id": 30
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "geocedg.transform-reflect-line",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.MirrorAtLine",
+      "icon_ref": "upstream.mode.MirrorAtLine",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "semantic-command",
+      "planning_disposition": "must",
+      "implementation_state": "new-manifest-binding"
+    },
+    {
+      "id": "transform.translate-vector",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_TRANSLATE_BY_VECTOR",
+        "audited_numeric_id": 31
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "geocedg.transform-translate",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.TranslateByVector",
+      "icon_ref": "upstream.mode.TranslateByVector",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "semantic-command",
+      "planning_disposition": "must",
+      "implementation_state": "new-manifest-binding"
+    },
+    {
+      "id": "transform.rotate-angle",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_ROTATE_BY_ANGLE",
+        "audited_numeric_id": 32
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "geocedg.transform-rotate",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.RotateByAngle",
+      "icon_ref": "upstream.mode.RotateByAngle",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "semantic-command",
+      "planning_disposition": "must",
+      "implementation_state": "new-manifest-binding"
+    },
+    {
+      "id": "transform.dilate-point",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_DILATE_FROM_POINT",
+        "audited_numeric_id": 33
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "geocedg.transform-dilate",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.DilateFromPoint",
+      "icon_ref": "upstream.mode.DilateFromPoint",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "semantic-command",
+      "planning_disposition": "must",
+      "implementation_state": "new-manifest-binding"
+    },
+    {
+      "id": "workspace.cedg-dihedral-procedures",
+      "kind": "workspace-switch",
+      "target": {
+        "symbol": "cedg-dihedral-procedures"
+      },
+      "maturity": "experimental",
+      "feature_requirements": [],
+      "selection_contract_ref": "none",
+      "effect_profile_id": "preference-only",
+      "localization_ref": "geocedg.workspace.DihedralProcedures",
+      "icon_ref": "geocedg.workspace.DihedralProcedures",
+      "availability_profile_id": "gated-g9u2",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "deferred",
+      "implementation_state": "new-frontend",
+      "notes": "Truthful disabled route only; G9U2 and global G9 authorization are required before execution."
+    },
+    {
+      "id": "presentation.show-hide-object",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_SHOW_HIDE_OBJECT",
+        "audited_numeric_id": 27
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.show-hide-object",
+      "effect_profile_id": "interactive-edit",
+      "localization_ref": "upstream.mode.ShowHideObject",
+      "icon_ref": "upstream.mode.ShowHideObject",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "presentation.show-hide-label",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_SHOW_HIDE_LABEL",
+        "audited_numeric_id": 28
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.show-hide-label",
+      "effect_profile_id": "interactive-edit",
+      "localization_ref": "upstream.mode.ShowHideLabel",
+      "icon_ref": "upstream.mode.ShowHideLabel",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "presentation.copy-style",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_COPY_VISUAL_STYLE",
+        "audited_numeric_id": 35
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.copy-style",
+      "effect_profile_id": "interactive-edit",
+      "localization_ref": "upstream.mode.CopyVisualStyle",
+      "icon_ref": "upstream.mode.CopyVisualStyle",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "presentation.text",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_TEXT",
+        "audited_numeric_id": 17
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.text",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.Text",
+      "icon_ref": "upstream.mode.Text",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "should",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "presentation.image",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_IMAGE",
+        "audited_numeric_id": 26
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.image",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "upstream.mode.Image",
+      "icon_ref": "upstream.mode.Image",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "should",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "presentation.axes-toggle",
+      "kind": "view-toggle",
+      "target": {
+        "symbol": "host.view.axes-toggle"
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "none",
+      "effect_profile_id": "preference-only",
+      "localization_ref": "upstream.view.Axes",
+      "icon_ref": "upstream.view.Axes",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "presentation.grid-toggle",
+      "kind": "view-toggle",
+      "target": {
+        "symbol": "host.view.grid-toggle"
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "none",
+      "effect_profile_id": "preference-only",
+      "localization_ref": "upstream.view.Grid",
+      "icon_ref": "upstream.view.Grid",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "navigation.pan-view",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_TRANSLATE_VIEW",
+        "audited_numeric_id": 40
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.translate-view",
+      "effect_profile_id": "read-only",
+      "localization_ref": "upstream.mode.TranslateView",
+      "icon_ref": "upstream.mode.TranslateView",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "navigation.zoom-in",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_ZOOM_IN",
+        "audited_numeric_id": 41
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.zoom-in",
+      "effect_profile_id": "read-only",
+      "localization_ref": "upstream.mode.ZoomIn",
+      "icon_ref": "upstream.mode.ZoomIn",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "navigation.zoom-out",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_ZOOM_OUT",
+        "audited_numeric_id": 42
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.zoom-out",
+      "effect_profile_id": "read-only",
+      "localization_ref": "upstream.mode.ZoomOut",
+      "icon_ref": "upstream.mode.ZoomOut",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "navigation.zoom-window",
+      "kind": "navigation-action",
+      "target": {
+        "symbol": "geocedg.navigation.zoom-window"
+      },
+      "maturity": "experimental",
+      "feature_requirements": [],
+      "selection_contract_ref": "geocedg.graphics-drag-rectangle",
+      "effect_profile_id": "read-only",
+      "localization_ref": "geocedg.action.ZoomWindow",
+      "icon_ref": "geocedg.action.ZoomWindow",
+      "availability_profile_id": "product-only",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "must",
+      "implementation_state": "new-frontend",
+      "notes": "Menu, toolbar and keyboard interaction; viewport-only and never semantic authority."
+    },
+    {
+      "id": "navigation.standard-view",
+      "kind": "navigation-action",
+      "target": {
+        "symbol": "host.view.standard-view"
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "none",
+      "effect_profile_id": "read-only",
+      "localization_ref": "upstream.view.StandardView",
+      "icon_ref": "upstream.view.StandardView",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "should",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "navigation.show-all-objects",
+      "kind": "navigation-action",
+      "target": {
+        "symbol": "host.view.show-all-objects"
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "none",
+      "effect_profile_id": "read-only",
+      "localization_ref": "upstream.view.ShowAllObjects",
+      "icon_ref": "upstream.view.ShowAllObjects",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "should",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "document.new",
+      "kind": "document-action",
+      "target": {
+        "symbol": "host.document.new"
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "geocedg.native-document-new",
+      "effect_profile_id": "document-lifecycle",
+      "localization_ref": "upstream.document.New",
+      "icon_ref": "upstream.document.New",
+      "availability_profile_id": "document-product",
+      "command_surface_profile_id": "document-action",
+      "planning_disposition": "must",
+      "implementation_state": "new-manifest-binding"
+    },
+    {
+      "id": "document.open",
+      "kind": "document-action",
+      "target": {
+        "symbol": "host.document.open"
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "geocedg.cedg-native-ggb-compatibility-open",
+      "effect_profile_id": "document-lifecycle",
+      "localization_ref": "upstream.document.Open",
+      "icon_ref": "upstream.document.Open",
+      "availability_profile_id": "document-product",
+      "command_surface_profile_id": "document-action",
+      "planning_disposition": "must",
+      "implementation_state": "new-manifest-binding"
+    },
+    {
+      "id": "document.open-recent",
+      "kind": "document-action",
+      "target": {
+        "symbol": "host.document.open-recent"
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "geocedg.recent-document-open",
+      "effect_profile_id": "document-lifecycle",
+      "localization_ref": "upstream.document.Recent",
+      "icon_ref": "upstream.document.Recent",
+      "availability_profile_id": "document-product",
+      "command_surface_profile_id": "document-action",
+      "planning_disposition": "must",
+      "implementation_state": "new-manifest-binding"
+    },
+    {
+      "id": "document.save",
+      "kind": "document-action",
+      "target": {
+        "symbol": "host.document.save"
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "geocedg.native-save-nondestructive-ggb-transition",
+      "effect_profile_id": "document-lifecycle",
+      "localization_ref": "upstream.document.Save",
+      "icon_ref": "upstream.document.Save",
+      "availability_profile_id": "document-product",
+      "command_surface_profile_id": "document-action",
+      "planning_disposition": "must",
+      "implementation_state": "new-manifest-binding"
+    },
+    {
+      "id": "document.save-as",
+      "kind": "document-action",
+      "target": {
+        "symbol": "host.document.save-as"
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "geocedg.native-save-as",
+      "effect_profile_id": "document-lifecycle",
+      "localization_ref": "upstream.document.SaveAs",
+      "icon_ref": "upstream.document.SaveAs",
+      "availability_profile_id": "document-product",
+      "command_surface_profile_id": "document-action",
+      "planning_disposition": "must",
+      "implementation_state": "new-manifest-binding"
+    },
+    {
+      "id": "document.print-preview",
+      "kind": "document-action",
+      "target": {
+        "symbol": "host.document.print-preview"
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "none",
+      "effect_profile_id": "read-only",
+      "localization_ref": "upstream.document.PrintPreview",
+      "icon_ref": "upstream.document.PrintPreview",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "document-action",
+      "planning_disposition": "should",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "document.close",
+      "kind": "document-action",
+      "target": {
+        "symbol": "host.document.close"
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "none",
+      "effect_profile_id": "document-lifecycle",
+      "localization_ref": "upstream.document.Close",
+      "icon_ref": "upstream.document.Close",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "document-action",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "automation.algebra-input-toggle",
+      "kind": "view-toggle",
+      "target": {
+        "symbol": "host.view.algebra-input"
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "none",
+      "effect_profile_id": "preference-only",
+      "localization_ref": "upstream.view.InputBar",
+      "icon_ref": "upstream.view.InputBar",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "automation.manage-user-tools",
+      "kind": "product-action",
+      "target": {
+        "symbol": "host.tools.manage"
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "none",
+      "effect_profile_id": "preference-only",
+      "localization_ref": "upstream.tools.Manage",
+      "icon_ref": "upstream.tools.Manage",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "should",
+      "implementation_state": "existing",
+      "notes": "User tools only; never load Templatev7 by default."
+    },
+    {
+      "id": "automation.object-scripting",
+      "kind": "product-action",
+      "target": {
+        "symbol": "host.properties.scripting-tab"
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "upstream.scriptable-object",
+      "effect_profile_id": "interactive-edit",
+      "localization_ref": "upstream.properties.Scripting",
+      "icon_ref": "upstream.properties.Scripting",
+      "availability_profile_id": "host-contextual",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "should",
+      "implementation_state": "host-characterization-required"
+    },
+    {
+      "id": "automation.legacy-laboratory",
+      "kind": "diagnostic-route",
+      "target": {
+        "symbol": "cedg.laboratory.legacy"
+      },
+      "maturity": "diagnostic",
+      "feature_requirements": [
+        "cedg.laboratory.legacy"
+      ],
+      "selection_contract_ref": "none",
+      "effect_profile_id": "read-only",
+      "localization_ref": "geocedg.action.LegacyLaboratory",
+      "icon_ref": "geocedg.action.LegacyLaboratory",
+      "availability_profile_id": "diagnostic-route",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "deferred",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "export.dxf-2d",
+      "kind": "product-action",
+      "target": {
+        "symbol": "geocedg.export.dxf.dialog"
+      },
+      "maturity": "experimental",
+      "feature_requirements": [
+        "cedg.export.dxf.2d"
+      ],
+      "selection_contract_ref": "geocedg.dxf-exportable-visible-geometry",
+      "effect_profile_id": "read-only",
+      "localization_ref": "geocedg.action.ExportDxf",
+      "icon_ref": "geocedg.action.ExportDxf",
+      "availability_profile_id": "dxf-product",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing",
+      "notes": "Extended fidelity remains inside the same exporter under cedg.export.dxf.extended; no duplicate action."
+    },
+    {
+      "id": "help.input-panel",
+      "kind": "help-route",
+      "target": {
+        "symbol": "host.help.input"
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "none",
+      "effect_profile_id": "read-only",
+      "localization_ref": "upstream.help.Input",
+      "icon_ref": "upstream.help.Input",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "help-action",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "help.command-list",
+      "kind": "help-route",
+      "target": {
+        "symbol": "host.help.command-list"
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "none",
+      "effect_profile_id": "read-only",
+      "localization_ref": "upstream.help.Commands",
+      "icon_ref": "upstream.help.Commands",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "help-action",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "help.contextual-action",
+      "kind": "help-route",
+      "target": {
+        "symbol": "geocedg.help.contextual-action"
+      },
+      "maturity": "experimental",
+      "feature_requirements": [],
+      "selection_contract_ref": "geocedg.current-action",
+      "effect_profile_id": "read-only",
+      "localization_ref": "geocedg.help.ContextualAction",
+      "icon_ref": "geocedg.help.ContextualAction",
+      "availability_profile_id": "product-contextual",
+      "command_surface_profile_id": "help-action",
+      "planning_disposition": "must",
+      "implementation_state": "new-frontend"
+    },
+    {
+      "id": "help.user-guide",
+      "kind": "help-route",
+      "target": {
+        "symbol": "geocedg.help.user-guide"
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "none",
+      "effect_profile_id": "read-only",
+      "localization_ref": "geocedg.help.UserGuide",
+      "icon_ref": "geocedg.help.UserGuide",
+      "availability_profile_id": "product-only",
+      "command_surface_profile_id": "help-action",
+      "planning_disposition": "must",
+      "implementation_state": "new-manifest-binding"
+    },
+    {
+      "id": "help.keyboard-shortcuts",
+      "kind": "help-route",
+      "target": {
+        "symbol": "host.help.keyboard-shortcuts"
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "none",
+      "effect_profile_id": "read-only",
+      "localization_ref": "upstream.help.KeyboardShortcuts",
+      "icon_ref": "upstream.help.KeyboardShortcuts",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "help-action",
+      "planning_disposition": "should",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "help.about-geocedg",
+      "kind": "help-route",
+      "target": {
+        "symbol": "geocedg.help.about"
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "none",
+      "effect_profile_id": "read-only",
+      "localization_ref": "geocedg.help.About",
+      "icon_ref": "geocedg.help.About",
+      "availability_profile_id": "product-only",
+      "command_surface_profile_id": "help-action",
+      "planning_disposition": "must",
+      "implementation_state": "new-manifest-binding"
+    },
+    {
+      "id": "diagnostic.open-classic",
+      "kind": "diagnostic-route",
+      "target": {
+        "symbol": "geocedg.classic"
+      },
+      "maturity": "diagnostic",
+      "feature_requirements": [],
+      "selection_contract_ref": "none",
+      "effect_profile_id": "read-only",
+      "localization_ref": "geocedg.action.OpenClassic",
+      "icon_ref": "geocedg.action.OpenClassic",
+      "availability_profile_id": "diagnostic-route",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "must",
+      "implementation_state": "new-manifest-binding"
+    },
+    {
+      "id": "settings.product-language",
+      "kind": "preference-action",
+      "target": {
+        "symbol": "geocedg.language.selector"
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "none",
+      "effect_profile_id": "preference-only",
+      "localization_ref": "geocedg.settings.Language",
+      "icon_ref": "geocedg.settings.Language",
+      "availability_profile_id": "product-only",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "must",
+      "implementation_state": "new-frontend"
+    },
+    {
+      "id": "view.construction-protocol",
+      "kind": "view-toggle",
+      "target": {
+        "symbol": "host.view.construction-protocol"
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "none",
+      "effect_profile_id": "read-only",
+      "localization_ref": "upstream.view.ConstructionProtocol",
+      "icon_ref": "upstream.view.ConstructionProtocol",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "view.construction-navigation",
+      "kind": "view-toggle",
+      "target": {
+        "symbol": "host.view.construction-protocol-navigation"
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "none",
+      "effect_profile_id": "preference-only",
+      "localization_ref": "upstream.view.NavigationBar",
+      "icon_ref": "upstream.view.NavigationBar",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "should",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "view.properties",
+      "kind": "view-toggle",
+      "target": {
+        "symbol": "host.view.properties"
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "none",
+      "effect_profile_id": "read-only",
+      "localization_ref": "upstream.view.Properties",
+      "icon_ref": "upstream.view.Properties",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "inspect.definition",
+      "kind": "product-action",
+      "target": {
+        "symbol": "geocedg.inspect.definition"
+      },
+      "maturity": "experimental",
+      "feature_requirements": [],
+      "selection_contract_ref": "geocedg.inspectable-algebra-object",
+      "effect_profile_id": "read-only",
+      "localization_ref": "geocedg.action.InspectDefinition",
+      "icon_ref": "geocedg.action.InspectDefinition",
+      "availability_profile_id": "product-contextual",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "must",
+      "implementation_state": "new-frontend",
+      "notes": "View-only double-click/context action; never an implicit redefine and never a global Algebra description-mode mutation."
+    },
+    {
+      "id": "semantic.curve.inspect-definition",
+      "kind": "product-action",
+      "target": {
+        "symbol": "geocedg.semantic-curve.inspect-definition"
+      },
+      "maturity": "experimental",
+      "feature_requirements": [
+        "cedg.locus.v2"
+      ],
+      "selection_contract_ref": "geocedg.semantic-curve",
+      "effect_profile_id": "read-only",
+      "localization_ref": "geocedg.action.SemanticCurveDefinition",
+      "icon_ref": "geocedg.action.SemanticCurveDefinition",
+      "availability_profile_id": "locus-v2-contextual",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "must",
+      "implementation_state": "new-frontend"
+    },
+    {
+      "id": "algebra.description.value",
+      "kind": "preference-action",
+      "target": {
+        "symbol": "host.preference.algebra-style.VALUE"
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "none",
+      "effect_profile_id": "preference-only",
+      "localization_ref": "upstream.algebra.Value",
+      "icon_ref": "upstream.algebra.Value",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "algebra.description.description",
+      "kind": "preference-action",
+      "target": {
+        "symbol": "host.preference.algebra-style.DESCRIPTION"
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "none",
+      "effect_profile_id": "preference-only",
+      "localization_ref": "upstream.algebra.Description",
+      "icon_ref": "upstream.algebra.Description",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
+      "id": "algebra.description.definition",
+      "kind": "preference-action",
+      "target": {
+        "symbol": "host.preference.algebra-style.DEFINITION"
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "none",
+      "effect_profile_id": "preference-only",
+      "localization_ref": "upstream.algebra.Definition",
+      "icon_ref": "upstream.algebra.Definition",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    }
+  ],
+  "clusters": [
+    {
+      "id": "selection-move-inspect",
+      "broad_family_id": "inspect-construct",
+      "toolbar_action_ids": [
+        "construction.move",
+        "edit.delete"
+      ],
+      "overflow_action_ids": [
+        "construction.move-rotate",
+        "construction.select",
+        "construction.attach-detach"
+      ],
+      "menu_action_ids": [
+        "edit.undo",
+        "edit.redo",
+        "edit.delete"
+      ],
+      "context_action_ids": [],
+      "inspector_action_ids": [],
+      "settings_action_ids": []
+    },
+    {
+      "id": "point-construction",
+      "broad_family_id": "inspect-construct",
+      "toolbar_action_ids": [
+        "construction.point",
+        "construction.point-on-object"
+      ],
+      "overflow_action_ids": [],
+      "menu_action_ids": [],
+      "context_action_ids": [],
+      "inspector_action_ids": [],
+      "settings_action_ids": []
+    },
+    {
+      "id": "linear-geometry-tools",
+      "broad_family_id": "linear-geometry",
+      "toolbar_action_ids": [
+        "construction.line",
+        "construction.segment",
+        "construction.ray",
+        "construction.vector",
+        "construction.parallel-line",
+        "construction.perpendicular-line",
+        "construction.midpoint",
+        "construction.polygon"
+      ],
+      "overflow_action_ids": [
+        "construction.fixed-segment",
+        "construction.vector-from-point",
+        "construction.perpendicular-bisector",
+        "construction.angle-bisector",
+        "construction.polyline",
+        "construction.regular-polygon",
+        "construction.rigid-polygon",
+        "construction.vector-polygon"
+      ],
+      "menu_action_ids": [],
+      "context_action_ids": [],
+      "inspector_action_ids": [],
+      "settings_action_ids": []
+    },
+    {
+      "id": "parameter-driver-tools",
+      "broad_family_id": "parameters-drivers",
+      "toolbar_action_ids": [
+        "parameter.slider"
+      ],
+      "overflow_action_ids": [
+        "parameter.fixed-angle",
+        "parameter.checkbox",
+        "parameter.button",
+        "parameter.input-box"
+      ],
+      "menu_action_ids": [],
+      "context_action_ids": [
+        "parameter.animation-toggle"
+      ],
+      "inspector_action_ids": [],
+      "settings_action_ids": []
+    },
+    {
+      "id": "relation-intersection-tools",
+      "broad_family_id": "relations-intersections",
+      "toolbar_action_ids": [
+        "relation.intersect",
+        "relation.tangent"
+      ],
+      "overflow_action_ids": [
+        "relation.compare",
+        "relation.polar-diameter"
+      ],
+      "menu_action_ids": [
+        "result.inspect-rich",
+        "result.show-candidate-markers"
+      ],
+      "context_action_ids": [
+        "result.inspect-rich",
+        "result.materialize-selected"
+      ],
+      "inspector_action_ids": [
+        "result.materialize-selected",
+        "result.materialize-multiple",
+        "result.materialize-all-eligible"
+      ],
+      "settings_action_ids": [
+        "result.show-candidate-markers",
+        "result.auto-materialize-initial"
+      ]
+    },
+    {
+      "id": "circle-conic-curve-tools",
+      "broad_family_id": "circles-conics-curves",
+      "toolbar_action_ids": [
+        "curve.circle-two-points",
+        "curve.circle-three-points",
+        "curve.circle-center-radius",
+        "curve.arc-center",
+        "curve.conic-five-points",
+        "curve.ellipse",
+        "curve.parabola"
+      ],
+      "overflow_action_ids": [
+        "curve.compass",
+        "curve.semicircle",
+        "curve.arc-circumcircle",
+        "curve.sector-center",
+        "curve.sector-circumcircle",
+        "curve.hyperbola"
+      ],
+      "menu_action_ids": [],
+      "context_action_ids": [],
+      "inspector_action_ids": [],
+      "settings_action_ids": []
+    },
+    {
+      "id": "locus-v2-tools",
+      "broad_family_id": "semantic-curves",
+      "toolbar_action_ids": [
+        "semantic.locus-v2.create"
+      ],
+      "overflow_action_ids": [
+        "semantic.locus-v2.point-explicit"
+      ],
+      "menu_action_ids": [
+        "semantic.locus-v2.create",
+        "semantic.locus-v2.point-explicit",
+        "semantic.curve.inspect-definition"
+      ],
+      "context_action_ids": [
+        "semantic.curve.inspect-definition"
+      ],
+      "inspector_action_ids": [],
+      "settings_action_ids": []
+    },
+    {
+      "id": "spline-v2-tools",
+      "broad_family_id": "semantic-curves",
+      "toolbar_action_ids": [
+        "semantic.spline-v2.create"
+      ],
+      "overflow_action_ids": [],
+      "menu_action_ids": [
+        "semantic.spline-v2.create",
+        "semantic.curve.inspect-definition"
+      ],
+      "context_action_ids": [
+        "semantic.curve.inspect-definition"
+      ],
+      "inspector_action_ids": [],
+      "settings_action_ids": []
+    },
+    {
+      "id": "metric-validation-tools",
+      "broad_family_id": "metrics-validation",
+      "toolbar_action_ids": [
+        "measure.angle",
+        "measure.distance-length",
+        "measure.locus-v2-total-length",
+        "measure.locus-v2-partial-length"
+      ],
+      "overflow_action_ids": [
+        "measure.area",
+        "measure.slope"
+      ],
+      "menu_action_ids": [
+        "measure.locus-v2-total-length",
+        "measure.locus-v2-partial-length",
+        "result.inspect-rich"
+      ],
+      "context_action_ids": [],
+      "inspector_action_ids": [],
+      "settings_action_ids": []
+    },
+    {
+      "id": "similarity-transform-tools",
+      "broad_family_id": "transformations-manual-projections",
+      "toolbar_action_ids": [
+        "transform.reflect-point",
+        "transform.reflect-line",
+        "transform.translate-vector",
+        "transform.rotate-angle",
+        "transform.dilate-point"
+      ],
+      "overflow_action_ids": [],
+      "menu_action_ids": [],
+      "context_action_ids": [],
+      "inspector_action_ids": [],
+      "settings_action_ids": []
+    },
+    {
+      "id": "manual-projection-authorized",
+      "broad_family_id": "transformations-manual-projections",
+      "toolbar_action_ids": [],
+      "overflow_action_ids": [],
+      "menu_action_ids": [
+        "construction.line",
+        "construction.parallel-line",
+        "construction.perpendicular-line",
+        "construction.midpoint",
+        "transform.reflect-point",
+        "transform.reflect-line",
+        "transform.translate-vector",
+        "transform.rotate-angle",
+        "measure.angle",
+        "measure.distance-length",
+        "presentation.show-hide-object",
+        "workspace.cedg-dihedral-procedures"
+      ],
+      "context_action_ids": [],
+      "inspector_action_ids": [],
+      "settings_action_ids": [],
+      "notes": "A task/menu grouping of existing ordinary actions only. The disabled workspace switch is the truthful boundary to independently gated G9U2 procedures; no duplicate toolbar modes or spatial semantic claim."
+    },
+    {
+      "id": "presentation-visibility-style",
+      "broad_family_id": "presentation-document",
+      "toolbar_action_ids": [
+        "presentation.show-hide-object"
+      ],
+      "overflow_action_ids": [
+        "presentation.show-hide-label",
+        "presentation.copy-style",
+        "presentation.text",
+        "presentation.image"
+      ],
+      "menu_action_ids": [
+        "presentation.axes-toggle",
+        "presentation.grid-toggle",
+        "view.properties"
+      ],
+      "context_action_ids": [
+        "view.properties"
+      ],
+      "inspector_action_ids": [],
+      "settings_action_ids": [
+        "presentation.axes-toggle",
+        "presentation.grid-toggle"
+      ]
+    },
+    {
+      "id": "navigation-zoom",
+      "broad_family_id": "presentation-document",
+      "toolbar_action_ids": [
+        "navigation.pan-view",
+        "navigation.zoom-window"
+      ],
+      "overflow_action_ids": [
+        "navigation.zoom-in",
+        "navigation.zoom-out"
+      ],
+      "menu_action_ids": [
+        "navigation.zoom-in",
+        "navigation.zoom-out",
+        "navigation.zoom-window",
+        "navigation.standard-view",
+        "navigation.show-all-objects"
+      ],
+      "context_action_ids": [
+        "navigation.standard-view",
+        "navigation.show-all-objects"
+      ],
+      "inspector_action_ids": [],
+      "settings_action_ids": []
+    },
+    {
+      "id": "document-lifecycle",
+      "broad_family_id": "presentation-document",
+      "toolbar_action_ids": [],
+      "overflow_action_ids": [],
+      "menu_action_ids": [
+        "document.new",
+        "document.open",
+        "document.open-recent",
+        "document.save",
+        "document.save-as",
+        "document.print-preview",
+        "document.close"
+      ],
+      "context_action_ids": [],
+      "inspector_action_ids": [],
+      "settings_action_ids": []
+    },
+    {
+      "id": "automation-scripting",
+      "broad_family_id": "automation-import-export",
+      "toolbar_action_ids": [],
+      "overflow_action_ids": [],
+      "menu_action_ids": [
+        "automation.algebra-input-toggle",
+        "automation.manage-user-tools",
+        "automation.legacy-laboratory"
+      ],
+      "context_action_ids": [
+        "automation.object-scripting"
+      ],
+      "inspector_action_ids": [],
+      "settings_action_ids": []
+    },
+    {
+      "id": "import-export-authorized",
+      "broad_family_id": "automation-import-export",
+      "toolbar_action_ids": [],
+      "overflow_action_ids": [],
+      "menu_action_ids": [
+        "document.open",
+        "export.dxf-2d"
+      ],
+      "context_action_ids": [],
+      "inspector_action_ids": [],
+      "settings_action_ids": [],
+      "notes": "The shared document.open action owns .ggb compatibility input; the DXF dialog owns both baseline and independently feature-gated extended fidelity."
+    },
+    {
+      "id": "help-command-discovery",
+      "broad_family_id": "presentation-document",
+      "toolbar_action_ids": [],
+      "overflow_action_ids": [],
+      "menu_action_ids": [
+        "help.input-panel",
+        "help.command-list",
+        "help.user-guide",
+        "help.keyboard-shortcuts",
+        "help.about-geocedg",
+        "diagnostic.open-classic"
+      ],
+      "context_action_ids": [
+        "help.contextual-action"
+      ],
+      "inspector_action_ids": [],
+      "settings_action_ids": [
+        "settings.product-language"
+      ]
+    },
+    {
+      "id": "construction-history-definition",
+      "broad_family_id": "inspect-construct",
+      "toolbar_action_ids": [],
+      "overflow_action_ids": [],
+      "menu_action_ids": [
+        "view.construction-protocol",
+        "view.construction-navigation",
+        "view.properties",
+        "inspect.definition"
+      ],
+      "context_action_ids": [
+        "view.properties",
+        "inspect.definition",
+        "semantic.curve.inspect-definition"
+      ],
+      "inspector_action_ids": [],
+      "settings_action_ids": [
+        "algebra.description.value",
+        "algebra.description.description",
+        "algebra.description.definition"
+      ],
+      "notes": "The Algebra description choices are one exclusive checked state bound to the actual current Desktop AlgebraStyle; definition viewing is not redefine."
+    }
+  ],
+  "workspaces": [
+    {
+      "id": "cedg-construction",
+      "name_key": "GeoCeDG.Workspace.Construction.Name",
+      "description_key": "GeoCeDG.Workspace.Construction.Description",
+      "maturity": "planned",
+      "availability": "available",
+      "perspective": {
+        "views": [
+          "euclidian",
+          "algebra"
+        ],
+        "show_toolbar": true,
+        "show_input_panel": true,
+        "show_input_help": true
+      },
+      "toolbar_broad_family_ids": [
+        "inspect-construct",
+        "linear-geometry",
+        "parameters-drivers",
+        "relations-intersections",
+        "circles-conics-curves",
+        "semantic-curves",
+        "metrics-validation",
+        "transformations-manual-projections",
+        "cedg-procedures-developments",
+        "presentation-document",
+        "automation-import-export"
+      ],
+      "menu_cluster_ids": [
+        "selection-move-inspect",
+        "point-construction",
+        "linear-geometry-tools",
+        "parameter-driver-tools",
+        "relation-intersection-tools",
+        "circle-conic-curve-tools",
+        "locus-v2-tools",
+        "spline-v2-tools",
+        "metric-validation-tools",
+        "similarity-transform-tools",
+        "manual-projection-authorized",
+        "presentation-visibility-style",
+        "navigation-zoom",
+        "document-lifecycle",
+        "automation-scripting",
+        "import-export-authorized",
+        "help-command-discovery",
+        "construction-history-definition"
+      ],
+      "help_policy": "contextual-en-es",
+      "document_layout_policy": "profile-preferences-only"
+    },
+    {
+      "id": "cedg-dihedral-procedures",
+      "name_key": "GeoCeDG.Workspace.DihedralProcedures.Name",
+      "description_key": "GeoCeDG.Workspace.DihedralProcedures.Description",
+      "maturity": "planned",
+      "availability": "disabled-with-reason",
+      "reason_key": "GeoCeDG.Workspace.Unavailable.G9U2",
+      "perspective": {
+        "views": [
+          "euclidian",
+          "algebra"
+        ],
+        "show_toolbar": false,
+        "show_input_panel": true,
+        "show_input_help": true
+      },
+      "toolbar_broad_family_ids": [
+        "cedg-procedures-developments"
+      ],
+      "menu_cluster_ids": [
+        "manual-projection-authorized"
+      ],
+      "help_policy": "unavailable",
+      "document_layout_policy": "unavailable"
+    }
+  ],
+  "workspace_persistence": {
+    "scope": "profile-preferences",
+    "active_workspace_key": "workspace.active",
+    "per_workspace_layout_key_prefix": "workspace.layout.",
+    "unavailable_fallback": "cedg-construction",
+    "document_xml_authority": "none"
+  },
+  "diagnostic_routes": [
+    {
+      "id": "classic-diagnostic",
+      "action_id": "diagnostic.open-classic",
+      "process_profile": "geocedg-classic-diagnostic",
+      "preference_isolation": true
+    },
+    {
+      "id": "legacy-laboratory",
+      "action_id": "automation.legacy-laboratory",
+      "process_profile": "geocedg-legacy-laboratory",
+      "preference_isolation": true
+    }
+  ],
+  "features": [
+    {
+      "id": "cedg.frontend.profile",
+      "source": "geocedg/features/stable.yml",
+      "enabled_by_default": true
+    },
+    {
+      "id": "cedg.frontend.classic-diagnostic",
+      "source": "geocedg/features/stable.yml",
+      "enabled_by_default": true
+    },
+    {
+      "id": "cedg.export.dxf.2d",
+      "source": "geocedg/features/experimental.yml",
+      "enabled_by_default": true
+    },
+    {
+      "id": "cedg.export.dxf.extended",
+      "source": "geocedg/features/experimental.yml",
+      "enabled_by_default": false
+    },
+    {
+      "id": "cedg.laboratory.legacy",
+      "source": "geocedg/features/experimental.yml",
+      "enabled_by_default": false
+    },
+    {
+      "id": "cedg.locus.v2",
+      "source": "geocedg/features/experimental.yml",
+      "enabled_by_default": false
+    }
+  ],
+  "deferred_inventory": [
+    {
+      "id": "legacy.locus-mode",
+      "target": "MODE_LOCUS(47)",
+      "disposition": "classic-only",
+      "reason": "Legacy sampled Locus is not Locus V2 semantic authority.",
+      "required_authority": "Existing Classic compatibility only"
+    },
+    {
+      "id": "transform.circle-inversion",
+      "target": "MODE_MIRROR_AT_CIRCLE(54)",
+      "disposition": "deferred",
+      "reason": "Circle inversion is outside the author-approved R5 similarity-transform scope.",
+      "required_authority": "Separate geometric design and author authorization"
+    },
+    {
+      "id": "template-v7.macros",
+      "target": "cedg.legacy.template-v7.tool.* / modes 100001..100024",
+      "disposition": "diagnostic-only",
+      "reason": "Templatev7 is an authoritative legacy reference but not a future toolbar or semantic authority.",
+      "required_authority": "Per-tool provenance, scientific review and independent promotion"
+    },
+    {
+      "id": "cedg.procedures-developments",
+      "target": "CeDG projection, fold, true-magnitude, section and development procedures",
+      "disposition": "out-of-scope-new-kernel-phase",
+      "reason": "G9U2 remains blocked and no fake macro or frontend semantic implementation is permitted.",
+      "required_authority": "Global G9 PASS plus explicit G9U2 author authorization"
+    },
+    {
+      "id": "spatial.3d-tools",
+      "target": "MODE_* 3D and spatial/projection creation",
+      "disposition": "out-of-scope-new-kernel-phase",
+      "reason": "G9U1 is a frontend workspace client and does not authorize G9B/G9C spatial semantics.",
+      "required_authority": "Independent spatial phase PASS and author authorization"
+    },
+    {
+      "id": "document.sheet-export",
+      "target": "PDF/SVG sheet production and broad CAD import",
+      "disposition": "deferred",
+      "reason": "Only current native/compatibility document handling and approved DXF export are in scope.",
+      "required_authority": "Independent document/export design and author authorization"
+    },
+    {
+      "id": "upstream.noncedg-default-tools",
+      "target": "FitLine, complex-number, freehand, pen, media, statistics, CAS and spreadsheet modes",
+      "disposition": "deferred",
+      "reason": "Useful upstream availability does not by itself justify default CeDG Construction placement.",
+      "required_authority": "Stage-B usability disposition or later explicit workspace review"
+    }
+  ],
+  "host_characterization": [
+    {
+      "id": "desktop-select-mode",
+      "action_ids": [
+        "construction.select"
+      ],
+      "question": "Does MODE_SELECT expose a stable, useful Desktop selection gesture distinct from MODE_MOVE in the supported Classic-5 host?",
+      "fail_closed_disposition": "Remove it from visible overflow and classify deferred; MODE_MOVE remains the selection authority."
+    },
+    {
+      "id": "desktop-scripting-route",
+      "action_ids": [
+        "automation.object-scripting"
+      ],
+      "question": "Is there a stable Desktop action that opens the selected object's existing Properties/Scripting tab without a parallel script editor?",
+      "fail_closed_disposition": "Expose scripting only through the existing Properties route and do not create a dead standalone action."
+    },
+    {
+      "id": "spline-v2-frontend-seam",
+      "action_ids": [
+        "semantic.spline-v2.create"
+      ],
+      "question": "Which existing task/dialog or Algebra-input focus seam can expose all four approved SplineV2 forms without duplicating command parsing?",
+      "fail_closed_disposition": "Use a manifest action that focuses the canonical Algebra Input with localized syntax help; do not implement another parser."
+    },
+    {
+      "id": "image-action-assets",
+      "action_ids": [
+        "presentation.image"
+      ],
+      "question": "Can the inherited image action be exposed without adding unreviewed upstream branding or packaging assets?",
+      "fail_closed_disposition": "Keep the action in overflow only or defer it; no asset substitution is authorized."
+    }
+  ],
+  "runtime_layout": {
+    "id": "cedg-construction",
     "divider": 0.24,
+    "split_panes": [
+      {"location": "", "divider": 0.24, "orientation": 1},
+      {"location": "0", "divider": 0.65, "orientation": 0}
+    ],
     "views": [
       {
         "id": "euclidian",
@@ -25,7 +3003,7 @@
       {
         "id": "algebra",
         "visible": true,
-        "embedded_definition": "3",
+        "embedded_definition": "3,0",
         "embedded_size": 240
       },
       {
@@ -51,6 +3029,12 @@
         "visible": false,
         "embedded_definition": "1,1,1",
         "embedded_size": 500
+      },
+      {
+        "id": "construction-protocol",
+        "visible": true,
+        "embedded_definition": "3,2",
+        "embedded_size": 220
       }
     ],
     "show_toolbar": true,
@@ -60,55 +3044,1213 @@
     "show_input_panel": true,
     "show_input_help": true
   },
-  "toolbar": {
-    "categories": [
-      {
-        "id": "selection-construction",
-        "modes": [0]
-      },
-      {
-        "id": "primitives-incidence",
-        "modes": [1, 2, 15, 18, 7, 16, 3, 4]
-      },
-      {
-        "id": "curves",
-        "modes": [10, 11, 12]
-      },
-      {
-        "id": "intersections-locus",
-        "modes": [5, 47]
-      },
-      {
-        "id": "transformations",
-        "modes": [30, 31, 32]
-      },
-      {
-        "id": "measurement-validation",
-        "modes": [36, 38]
-      }
-    ],
-    "planned_categories": [
-      {
-        "id": "descriptive-projections",
-        "status": "not-implemented"
-      },
-      {
-        "id": "plane-changes-and-developments",
-        "status": "not-implemented"
-      },
-      {
-        "id": "cedg-tools",
-        "status": "not-implemented"
-      },
-      {
-        "id": "import-export",
-        "status": "not-implemented"
-      }
-    ]
-  },
-  "features": [
-    "cedg.frontend.profile",
-    "cedg.frontend.classic-diagnostic",
-    "cedg.export.dxf.2d"
-  ]
+  "menu_sections": [
+    {
+      "id": "file",
+      "name_key": "Menu.File",
+      "cluster_ids": [
+        "document-lifecycle",
+        "import-export-authorized"
+      ]
+    },
+    {
+      "id": "construction",
+      "name_key": "Menu.Construction",
+      "cluster_ids": [
+        "selection-move-inspect",
+        "point-construction",
+        "linear-geometry-tools",
+        "parameter-driver-tools",
+        "relation-intersection-tools",
+        "circle-conic-curve-tools",
+        "locus-v2-tools",
+        "spline-v2-tools",
+        "metric-validation-tools",
+        "similarity-transform-tools",
+        "manual-projection-authorized"
+      ]
+    },
+    {
+      "id": "view",
+      "name_key": "Menu.View",
+      "cluster_ids": [
+        "presentation-visibility-style",
+        "navigation-zoom",
+        "construction-history-definition"
+      ]
+    },
+    {
+      "id": "automation",
+      "name_key": "Menu.Automation",
+      "cluster_ids": [
+        "automation-scripting"
+      ]
+    },
+    {
+      "id": "help",
+      "name_key": "Menu.Help",
+      "cluster_ids": [
+        "help-command-discovery"
+      ]
+    }
+  ],
+  "localized_text": {
+    "Similarity.OrdinaryAxisRequired": {"en": "The built-in coordinate axes have no ordinary persistent object identity. Construct a line explicitly (for example, a: y = 0), then select that line for the semantic reflection.", "es": "Los ejes incorporados no tienen identidad persistente de objeto ordinario. Construya una recta expl\u00edcitamente (por ejemplo, a: y = 0) y selecci\u00f3nela para la reflexi\u00f3n sem\u00e1ntica."},
+    "Workspace.Laboratory": {"en": "Open diagnostic legacy resource", "es": "Abrir recurso antiguo de diagn\u00f3stico"},
+    "Workspace.LaboratoryWarning": {"en": "This explicit user-selected file opens in a separate diagnostic Classic process with isolated preferences. It is NOT checked against the canonical legacy catalog by this dialog and is not promoted or trusted as scientific authority. For registered, hash-verified canonical resources use tools/legacy/open-laboratory.ps1. No legacy toolbar is installed in the Construction workspace.", "es": "Este archivo elegido expl\u00edcitamente se abre en un proceso Classic de diagn\u00f3stico separado, con preferencias aisladas. Este di\u00e1logo NO lo verifica contra el cat\u00e1logo can\u00f3nico ni lo promueve como autoridad cient\u00edfica. Para recursos can\u00f3nicos registrados y verificados por hash use tools/legacy/open-laboratory.ps1. No se instala ninguna barra antigua en el espacio Construcci\u00f3n."},
+    "Workspace.DocumentLayout": {"en": "Document layout", "es": "Disposici\u00f3n del documento"},
+    "Workspace.ApplyFailed": {"en": "Workspace change failed. The previous presentation was restored.", "es": "No se pudo cambiar el espacio de trabajo. Se restaur\u00f3 la presentaci\u00f3n anterior."},
+    "upstream.action.Undo.name": {
+      "en": "Undo",
+      "es": "Deshacer"
+    },
+    "upstream.action.Undo.short_help": {
+      "en": "Undo. Use the current construction and its explicit selection.",
+      "es": "Deshacer. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.action.Undo.long_help": {
+      "en": "Undo. Use the current construction and its explicit selection.",
+      "es": "Deshacer. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.action.Undo.status": {
+      "en": "Ready: Undo",
+      "es": "Disponible: Deshacer"
+    },
+    "upstream.action.Undo.error": {
+      "en": "Cannot perform Undo in the current context.",
+      "es": "No se puede ejecutar Deshacer en el contexto actual."
+    },
+    "upstream.action.Redo.name": {
+      "en": "Redo",
+      "es": "Rehacer"
+    },
+    "upstream.action.Redo.short_help": {
+      "en": "Redo. Use the current construction and its explicit selection.",
+      "es": "Rehacer. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.action.Redo.long_help": {
+      "en": "Redo. Use the current construction and its explicit selection.",
+      "es": "Rehacer. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.action.Redo.status": {
+      "en": "Ready: Redo",
+      "es": "Disponible: Rehacer"
+    },
+    "upstream.action.Redo.error": {
+      "en": "Cannot perform Redo in the current context.",
+      "es": "No se puede ejecutar Rehacer en el contexto actual."
+    },
+    "upstream.action.Animation.name": {
+      "en": "Animate selected object",
+      "es": "Animar objeto seleccionado"
+    },
+    "upstream.action.Animation.short_help": {
+      "en": "Animate selected object. Use the current construction and its explicit selection.",
+      "es": "Animar objeto seleccionado. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.action.Animation.long_help": {
+      "en": "Animate selected object. Use the current construction and its explicit selection.",
+      "es": "Animar objeto seleccionado. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.action.Animation.status": {
+      "en": "Ready: Animate selected object",
+      "es": "Disponible: Animar objeto seleccionado"
+    },
+    "upstream.action.Animation.error": {
+      "en": "Cannot perform Animate selected object in the current context.",
+      "es": "No se puede ejecutar Animar objeto seleccionado en el contexto actual."
+    },
+    "geocedg.action.ResultInspect.name": {
+      "en": "Inspect rich result",
+      "es": "Inspeccionar resultado rico"
+    },
+    "geocedg.action.ResultInspect.short_help": {
+      "en": "Inspect rich result. Use the current construction and its explicit selection.",
+      "es": "Inspeccionar resultado rico. Usa la construcción actual y su selección explícita."
+    },
+    "geocedg.action.ResultInspect.long_help": {
+      "en": "Inspect rich result. Use the current construction and its explicit selection.",
+      "es": "Inspeccionar resultado rico. Usa la construcción actual y su selección explícita."
+    },
+    "geocedg.action.ResultInspect.status": {
+      "en": "Ready: Inspect rich result",
+      "es": "Disponible: Inspeccionar resultado rico"
+    },
+    "geocedg.action.ResultInspect.error": {
+      "en": "Cannot perform Inspect rich result in the current context.",
+      "es": "No se puede ejecutar Inspeccionar resultado rico en el contexto actual."
+    },
+    "geocedg.action.ResultMarkers.name": {
+      "en": "Show solution markers",
+      "es": "Mostrar marcadores de soluciones"
+    },
+    "geocedg.action.ResultMarkers.short_help": {
+      "en": "Show solution markers. Use the current construction and its explicit selection.",
+      "es": "Mostrar marcadores de soluciones. Usa la construcción actual y su selección explícita."
+    },
+    "geocedg.action.ResultMarkers.long_help": {
+      "en": "Show solution markers. Use the current construction and its explicit selection.",
+      "es": "Mostrar marcadores de soluciones. Usa la construcción actual y su selección explícita."
+    },
+    "geocedg.action.ResultMarkers.status": {
+      "en": "Ready: Show solution markers",
+      "es": "Disponible: Mostrar marcadores de soluciones"
+    },
+    "geocedg.action.ResultMarkers.error": {
+      "en": "Cannot perform Show solution markers in the current context.",
+      "es": "No se puede ejecutar Mostrar marcadores de soluciones en el contexto actual."
+    },
+    "geocedg.action.MaterializeSelected.name": {
+      "en": "Create selected intersection point",
+      "es": "Crear punto de intersección seleccionado"
+    },
+    "geocedg.action.MaterializeSelected.short_help": {
+      "en": "Create selected intersection point. Use the current construction and its explicit selection.",
+      "es": "Crear punto de intersección seleccionado. Usa la construcción actual y su selección explícita."
+    },
+    "geocedg.action.MaterializeSelected.long_help": {
+      "en": "Create selected intersection point. Use the current construction and its explicit selection.",
+      "es": "Crear punto de intersección seleccionado. Usa la construcción actual y su selección explícita."
+    },
+    "geocedg.action.MaterializeSelected.status": {
+      "en": "Ready: Create selected intersection point",
+      "es": "Disponible: Crear punto de intersección seleccionado"
+    },
+    "geocedg.action.MaterializeSelected.error": {
+      "en": "Cannot perform Create selected intersection point in the current context.",
+      "es": "No se puede ejecutar Crear punto de intersección seleccionado en el contexto actual."
+    },
+    "geocedg.action.MaterializeMultiple.name": {
+      "en": "Create selected intersection points",
+      "es": "Crear puntos de intersección seleccionados"
+    },
+    "geocedg.action.MaterializeMultiple.short_help": {
+      "en": "Create selected intersection points. Use the current construction and its explicit selection.",
+      "es": "Crear puntos de intersección seleccionados. Usa la construcción actual y su selección explícita."
+    },
+    "geocedg.action.MaterializeMultiple.long_help": {
+      "en": "Create selected intersection points. Use the current construction and its explicit selection.",
+      "es": "Crear puntos de intersección seleccionados. Usa la construcción actual y su selección explícita."
+    },
+    "geocedg.action.MaterializeMultiple.status": {
+      "en": "Ready: Create selected intersection points",
+      "es": "Disponible: Crear puntos de intersección seleccionados"
+    },
+    "geocedg.action.MaterializeMultiple.error": {
+      "en": "Cannot perform Create selected intersection points in the current context.",
+      "es": "No se puede ejecutar Crear puntos de intersección seleccionados en el contexto actual."
+    },
+    "geocedg.action.MaterializeAll.name": {
+      "en": "Create all eligible intersection points",
+      "es": "Crear todos los puntos de intersección admisibles"
+    },
+    "geocedg.action.MaterializeAll.short_help": {
+      "en": "Create all eligible intersection points. Use the current construction and its explicit selection.",
+      "es": "Crear todos los puntos de intersección admisibles. Usa la construcción actual y su selección explícita."
+    },
+    "geocedg.action.MaterializeAll.long_help": {
+      "en": "Create all eligible intersection points. Use the current construction and its explicit selection.",
+      "es": "Crear todos los puntos de intersección admisibles. Usa la construcción actual y su selección explícita."
+    },
+    "geocedg.action.MaterializeAll.status": {
+      "en": "Ready: Create all eligible intersection points",
+      "es": "Disponible: Crear todos los puntos de intersección admisibles"
+    },
+    "geocedg.action.MaterializeAll.error": {
+      "en": "Cannot perform Create all eligible intersection points in the current context.",
+      "es": "No se puede ejecutar Crear todos los puntos de intersección admisibles en el contexto actual."
+    },
+    "geocedg.action.AutoMaterializeInitial.name": {
+      "en": "Auto-create eligible points for new explicit queries",
+      "es": "Crear automáticamente puntos admisibles de nuevas consultas explícitas"
+    },
+    "geocedg.action.AutoMaterializeInitial.short_help": {
+      "en": "Auto-create eligible points for new explicit queries. Use the current construction and its explicit selection.",
+      "es": "Crear automáticamente puntos admisibles de nuevas consultas explícitas. Usa la construcción actual y su selección explícita."
+    },
+    "geocedg.action.AutoMaterializeInitial.long_help": {
+      "en": "Auto-create eligible points for new explicit queries. Use the current construction and its explicit selection.",
+      "es": "Crear automáticamente puntos admisibles de nuevas consultas explícitas. Usa la construcción actual y su selección explícita."
+    },
+    "geocedg.action.AutoMaterializeInitial.status": {
+      "en": "Ready: Auto-create eligible points for new explicit queries",
+      "es": "Disponible: Crear automáticamente puntos admisibles de nuevas consultas explícitas"
+    },
+    "geocedg.action.AutoMaterializeInitial.error": {
+      "en": "Cannot perform Auto-create eligible points for new explicit queries in the current context.",
+      "es": "No se puede ejecutar Crear automáticamente puntos admisibles de nuevas consultas explícitas en el contexto actual."
+    },
+    "geocedg.command.SplineV2.name": {
+      "en": "Spline V2",
+      "es": "Spline V2"
+    },
+    "geocedg.command.SplineV2.short_help": {
+      "en": "Spline V2. Use the current construction and its explicit selection.",
+      "es": "Spline V2. Usa la construcción actual y su selección explícita."
+    },
+    "geocedg.command.SplineV2.long_help": {
+      "en": "Spline V2. Use the current construction and its explicit selection.",
+      "es": "Spline V2. Usa la construcción actual y su selección explícita."
+    },
+    "geocedg.command.SplineV2.status": {
+      "en": "Ready: Spline V2",
+      "es": "Disponible: Spline V2"
+    },
+    "geocedg.command.SplineV2.error": {
+      "en": "Cannot perform Spline V2 in the current context.",
+      "es": "No se puede ejecutar Spline V2 en el contexto actual."
+    },
+    "geocedg.workspace.DihedralProcedures.name": {
+      "en": "CeDG dihedral procedures (not authorized)",
+      "es": "Procedimientos diédricos CeDG (no autorizados)"
+    },
+    "geocedg.workspace.DihedralProcedures.short_help": {
+      "en": "CeDG dihedral procedures (not authorized). Use the current construction and its explicit selection.",
+      "es": "Procedimientos diédricos CeDG (no autorizados). Usa la construcción actual y su selección explícita."
+    },
+    "geocedg.workspace.DihedralProcedures.long_help": {
+      "en": "CeDG dihedral procedures (not authorized). Use the current construction and its explicit selection.",
+      "es": "Procedimientos diédricos CeDG (no autorizados). Usa la construcción actual y su selección explícita."
+    },
+    "geocedg.workspace.DihedralProcedures.status": {
+      "en": "Ready: CeDG dihedral procedures (not authorized)",
+      "es": "Disponible: Procedimientos diédricos CeDG (no autorizados)"
+    },
+    "geocedg.workspace.DihedralProcedures.error": {
+      "en": "Cannot perform CeDG dihedral procedures (not authorized) in the current context.",
+      "es": "No se puede ejecutar Procedimientos diédricos CeDG (no autorizados) en el contexto actual."
+    },
+    "upstream.view.Axes.name": {
+      "en": "Axes",
+      "es": "Ejes"
+    },
+    "upstream.view.Axes.short_help": {
+      "en": "Axes. Use the current construction and its explicit selection.",
+      "es": "Ejes. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.view.Axes.long_help": {
+      "en": "Axes. Use the current construction and its explicit selection.",
+      "es": "Ejes. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.view.Axes.status": {
+      "en": "Ready: Axes",
+      "es": "Disponible: Ejes"
+    },
+    "upstream.view.Axes.error": {
+      "en": "Cannot perform Axes in the current context.",
+      "es": "No se puede ejecutar Ejes en el contexto actual."
+    },
+    "upstream.view.Grid.name": {
+      "en": "Grid",
+      "es": "Cuadrícula"
+    },
+    "upstream.view.Grid.short_help": {
+      "en": "Grid. Use the current construction and its explicit selection.",
+      "es": "Cuadrícula. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.view.Grid.long_help": {
+      "en": "Grid. Use the current construction and its explicit selection.",
+      "es": "Cuadrícula. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.view.Grid.status": {
+      "en": "Ready: Grid",
+      "es": "Disponible: Cuadrícula"
+    },
+    "upstream.view.Grid.error": {
+      "en": "Cannot perform Grid in the current context.",
+      "es": "No se puede ejecutar Cuadrícula en el contexto actual."
+    },
+    "geocedg.action.ZoomWindow.name": {
+      "en": "Zoom to rectangle",
+      "es": "Zoom por rectángulo"
+    },
+    "geocedg.action.ZoomWindow.short_help": {
+      "en": "Zoom to rectangle. Use the current construction and its explicit selection.",
+      "es": "Zoom por rectángulo. Usa la construcción actual y su selección explícita."
+    },
+    "geocedg.action.ZoomWindow.long_help": {
+      "en": "Zoom to rectangle. Use the current construction and its explicit selection.",
+      "es": "Zoom por rectángulo. Usa la construcción actual y su selección explícita."
+    },
+    "geocedg.action.ZoomWindow.status": {
+      "en": "Ready: Zoom to rectangle",
+      "es": "Disponible: Zoom por rectángulo"
+    },
+    "geocedg.action.ZoomWindow.error": {
+      "en": "Cannot perform Zoom to rectangle in the current context.",
+      "es": "No se puede ejecutar Zoom por rectángulo en el contexto actual."
+    },
+    "upstream.view.StandardView.name": {
+      "en": "Standard view",
+      "es": "Vista estándar"
+    },
+    "upstream.view.StandardView.short_help": {
+      "en": "Standard view. Use the current construction and its explicit selection.",
+      "es": "Vista estándar. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.view.StandardView.long_help": {
+      "en": "Standard view. Use the current construction and its explicit selection.",
+      "es": "Vista estándar. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.view.StandardView.status": {
+      "en": "Ready: Standard view",
+      "es": "Disponible: Vista estándar"
+    },
+    "upstream.view.StandardView.error": {
+      "en": "Cannot perform Standard view in the current context.",
+      "es": "No se puede ejecutar Vista estándar en el contexto actual."
+    },
+    "upstream.view.ShowAllObjects.name": {
+      "en": "Show all objects",
+      "es": "Mostrar todos los objetos"
+    },
+    "upstream.view.ShowAllObjects.short_help": {
+      "en": "Show all objects. Use the current construction and its explicit selection.",
+      "es": "Mostrar todos los objetos. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.view.ShowAllObjects.long_help": {
+      "en": "Show all objects. Use the current construction and its explicit selection.",
+      "es": "Mostrar todos los objetos. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.view.ShowAllObjects.status": {
+      "en": "Ready: Show all objects",
+      "es": "Disponible: Mostrar todos los objetos"
+    },
+    "upstream.view.ShowAllObjects.error": {
+      "en": "Cannot perform Show all objects in the current context.",
+      "es": "No se puede ejecutar Mostrar todos los objetos en el contexto actual."
+    },
+    "upstream.document.New.name": {
+      "en": "New construction",
+      "es": "Nueva construcción"
+    },
+    "upstream.document.New.short_help": {
+      "en": "New construction. Use the current construction and its explicit selection.",
+      "es": "Nueva construcción. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.document.New.long_help": {
+      "en": "New construction. Use the current construction and its explicit selection.",
+      "es": "Nueva construcción. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.document.New.status": {
+      "en": "Ready: New construction",
+      "es": "Disponible: Nueva construcción"
+    },
+    "upstream.document.New.error": {
+      "en": "Cannot perform New construction in the current context.",
+      "es": "No se puede ejecutar Nueva construcción en el contexto actual."
+    },
+    "upstream.document.Open.name": {
+      "en": "Open…",
+      "es": "Abrir…"
+    },
+    "upstream.document.Open.short_help": {
+      "en": "Open…. Use the current construction and its explicit selection.",
+      "es": "Abrir…. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.document.Open.long_help": {
+      "en": "Open…. Use the current construction and its explicit selection.",
+      "es": "Abrir…. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.document.Open.status": {
+      "en": "Ready: Open…",
+      "es": "Disponible: Abrir…"
+    },
+    "upstream.document.Open.error": {
+      "en": "Cannot perform Open… in the current context.",
+      "es": "No se puede ejecutar Abrir… en el contexto actual."
+    },
+    "upstream.document.Recent.name": {
+      "en": "Open recent…",
+      "es": "Abrir reciente…"
+    },
+    "upstream.document.Recent.short_help": {
+      "en": "Open recent…. Use the current construction and its explicit selection.",
+      "es": "Abrir reciente…. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.document.Recent.long_help": {
+      "en": "Open recent…. Use the current construction and its explicit selection.",
+      "es": "Abrir reciente…. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.document.Recent.status": {
+      "en": "Ready: Open recent…",
+      "es": "Disponible: Abrir reciente…"
+    },
+    "upstream.document.Recent.error": {
+      "en": "Cannot perform Open recent… in the current context.",
+      "es": "No se puede ejecutar Abrir reciente… en el contexto actual."
+    },
+    "upstream.document.Save.name": {
+      "en": "Save",
+      "es": "Guardar"
+    },
+    "upstream.document.Save.short_help": {
+      "en": "Save. Use the current construction and its explicit selection.",
+      "es": "Guardar. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.document.Save.long_help": {
+      "en": "Save. Use the current construction and its explicit selection.",
+      "es": "Guardar. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.document.Save.status": {
+      "en": "Ready: Save",
+      "es": "Disponible: Guardar"
+    },
+    "upstream.document.Save.error": {
+      "en": "Cannot perform Save in the current context.",
+      "es": "No se puede ejecutar Guardar en el contexto actual."
+    },
+    "upstream.document.SaveAs.name": {
+      "en": "Save as…",
+      "es": "Guardar como…"
+    },
+    "upstream.document.SaveAs.short_help": {
+      "en": "Save as…. Use the current construction and its explicit selection.",
+      "es": "Guardar como…. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.document.SaveAs.long_help": {
+      "en": "Save as…. Use the current construction and its explicit selection.",
+      "es": "Guardar como…. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.document.SaveAs.status": {
+      "en": "Ready: Save as…",
+      "es": "Disponible: Guardar como…"
+    },
+    "upstream.document.SaveAs.error": {
+      "en": "Cannot perform Save as… in the current context.",
+      "es": "No se puede ejecutar Guardar como… en el contexto actual."
+    },
+    "upstream.document.PrintPreview.name": {
+      "en": "Print preview…",
+      "es": "Vista previa de impresión…"
+    },
+    "upstream.document.PrintPreview.short_help": {
+      "en": "Print preview…. Use the current construction and its explicit selection.",
+      "es": "Vista previa de impresión…. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.document.PrintPreview.long_help": {
+      "en": "Print preview…. Use the current construction and its explicit selection.",
+      "es": "Vista previa de impresión…. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.document.PrintPreview.status": {
+      "en": "Ready: Print preview…",
+      "es": "Disponible: Vista previa de impresión…"
+    },
+    "upstream.document.PrintPreview.error": {
+      "en": "Cannot perform Print preview… in the current context.",
+      "es": "No se puede ejecutar Vista previa de impresión… en el contexto actual."
+    },
+    "upstream.document.Close.name": {
+      "en": "Close",
+      "es": "Cerrar"
+    },
+    "upstream.document.Close.short_help": {
+      "en": "Close. Use the current construction and its explicit selection.",
+      "es": "Cerrar. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.document.Close.long_help": {
+      "en": "Close. Use the current construction and its explicit selection.",
+      "es": "Cerrar. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.document.Close.status": {
+      "en": "Ready: Close",
+      "es": "Disponible: Cerrar"
+    },
+    "upstream.document.Close.error": {
+      "en": "Cannot perform Close in the current context.",
+      "es": "No se puede ejecutar Cerrar en el contexto actual."
+    },
+    "upstream.view.InputBar.name": {
+      "en": "Algebra Input",
+      "es": "Entrada algebraica"
+    },
+    "upstream.view.InputBar.short_help": {
+      "en": "Algebra Input. Use the current construction and its explicit selection.",
+      "es": "Entrada algebraica. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.view.InputBar.long_help": {
+      "en": "Algebra Input. Use the current construction and its explicit selection.",
+      "es": "Entrada algebraica. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.view.InputBar.status": {
+      "en": "Ready: Algebra Input",
+      "es": "Disponible: Entrada algebraica"
+    },
+    "upstream.view.InputBar.error": {
+      "en": "Cannot perform Algebra Input in the current context.",
+      "es": "No se puede ejecutar Entrada algebraica en el contexto actual."
+    },
+    "upstream.tools.Manage.name": {
+      "en": "Manage user tools…",
+      "es": "Gestionar herramientas de usuario…"
+    },
+    "upstream.tools.Manage.short_help": {
+      "en": "Manage user tools…. Use the current construction and its explicit selection.",
+      "es": "Gestionar herramientas de usuario…. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.tools.Manage.long_help": {
+      "en": "Manage user tools…. Use the current construction and its explicit selection.",
+      "es": "Gestionar herramientas de usuario…. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.tools.Manage.status": {
+      "en": "Ready: Manage user tools…",
+      "es": "Disponible: Gestionar herramientas de usuario…"
+    },
+    "upstream.tools.Manage.error": {
+      "en": "Cannot perform Manage user tools… in the current context.",
+      "es": "No se puede ejecutar Gestionar herramientas de usuario… en el contexto actual."
+    },
+    "upstream.properties.Scripting.name": {
+      "en": "Object properties and scripting…",
+      "es": "Propiedades y guiones del objeto…"
+    },
+    "upstream.properties.Scripting.short_help": {
+      "en": "Object properties and scripting…. Use the current construction and its explicit selection.",
+      "es": "Propiedades y guiones del objeto…. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.properties.Scripting.long_help": {
+      "en": "Object properties and scripting…. Use the current construction and its explicit selection.",
+      "es": "Propiedades y guiones del objeto…. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.properties.Scripting.status": {
+      "en": "Ready: Object properties and scripting…",
+      "es": "Disponible: Propiedades y guiones del objeto…"
+    },
+    "upstream.properties.Scripting.error": {
+      "en": "Cannot perform Object properties and scripting… in the current context.",
+      "es": "No se puede ejecutar Propiedades y guiones del objeto… en el contexto actual."
+    },
+    "geocedg.action.LegacyLaboratory.name": {
+      "en": "Legacy laboratory (separate session)",
+      "es": "Laboratorio heredado (sesión separada)"
+    },
+    "geocedg.action.LegacyLaboratory.short_help": {
+      "en": "Legacy laboratory (separate session). Use the current construction and its explicit selection.",
+      "es": "Laboratorio heredado (sesión separada). Usa la construcción actual y su selección explícita."
+    },
+    "geocedg.action.LegacyLaboratory.long_help": {
+      "en": "Legacy laboratory (separate session). Use the current construction and its explicit selection.",
+      "es": "Laboratorio heredado (sesión separada). Usa la construcción actual y su selección explícita."
+    },
+    "geocedg.action.LegacyLaboratory.status": {
+      "en": "Ready: Legacy laboratory (separate session)",
+      "es": "Disponible: Laboratorio heredado (sesión separada)"
+    },
+    "geocedg.action.LegacyLaboratory.error": {
+      "en": "Cannot perform Legacy laboratory (separate session) in the current context.",
+      "es": "No se puede ejecutar Laboratorio heredado (sesión separada) en el contexto actual."
+    },
+    "geocedg.action.ExportDxf.name": {
+      "en": "Export 2D geometry as DXF (experimental)…",
+      "es": "Exportar geometría 2D como DXF (experimental)…"
+    },
+    "geocedg.action.ExportDxf.short_help": {
+      "en": "Export 2D geometry as DXF (experimental)…. Use the current construction and its explicit selection.",
+      "es": "Exportar geometría 2D como DXF (experimental)…. Usa la construcción actual y su selección explícita."
+    },
+    "geocedg.action.ExportDxf.long_help": {
+      "en": "Export 2D geometry as DXF (experimental)…. Use the current construction and its explicit selection.",
+      "es": "Exportar geometría 2D como DXF (experimental)…. Usa la construcción actual y su selección explícita."
+    },
+    "geocedg.action.ExportDxf.status": {
+      "en": "Ready: Export 2D geometry as DXF (experimental)…",
+      "es": "Disponible: Exportar geometría 2D como DXF (experimental)…"
+    },
+    "geocedg.action.ExportDxf.error": {
+      "en": "Cannot perform Export 2D geometry as DXF (experimental)… in the current context.",
+      "es": "No se puede ejecutar Exportar geometría 2D como DXF (experimental)… en el contexto actual."
+    },
+    "upstream.help.Input.name": {
+      "en": "Input help",
+      "es": "Ayuda de entrada"
+    },
+    "upstream.help.Input.short_help": {
+      "en": "Input help. Use the current construction and its explicit selection.",
+      "es": "Ayuda de entrada. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.help.Input.long_help": {
+      "en": "Input help. Use the current construction and its explicit selection.",
+      "es": "Ayuda de entrada. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.help.Input.status": {
+      "en": "Ready: Input help",
+      "es": "Disponible: Ayuda de entrada"
+    },
+    "upstream.help.Input.error": {
+      "en": "Cannot perform Input help in the current context.",
+      "es": "No se puede ejecutar Ayuda de entrada en el contexto actual."
+    },
+    "upstream.help.Commands.name": {
+      "en": "Command list",
+      "es": "Lista de comandos"
+    },
+    "upstream.help.Commands.short_help": {
+      "en": "Command list. Use the current construction and its explicit selection.",
+      "es": "Lista de comandos. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.help.Commands.long_help": {
+      "en": "Command list. Use the current construction and its explicit selection.",
+      "es": "Lista de comandos. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.help.Commands.status": {
+      "en": "Ready: Command list",
+      "es": "Disponible: Lista de comandos"
+    },
+    "upstream.help.Commands.error": {
+      "en": "Cannot perform Command list in the current context.",
+      "es": "No se puede ejecutar Lista de comandos en el contexto actual."
+    },
+    "geocedg.help.ContextualAction.name": {
+      "en": "Current tool help",
+      "es": "Ayuda de herramienta actual"
+    },
+    "geocedg.help.ContextualAction.short_help": {
+      "en": "Current tool help. Use the current construction and its explicit selection.",
+      "es": "Ayuda de herramienta actual. Usa la construcción actual y su selección explícita."
+    },
+    "geocedg.help.ContextualAction.long_help": {
+      "en": "Current tool help. Use the current construction and its explicit selection.",
+      "es": "Ayuda de herramienta actual. Usa la construcción actual y su selección explícita."
+    },
+    "geocedg.help.ContextualAction.status": {
+      "en": "Ready: Current tool help",
+      "es": "Disponible: Ayuda de herramienta actual"
+    },
+    "geocedg.help.ContextualAction.error": {
+      "en": "Cannot perform Current tool help in the current context.",
+      "es": "No se puede ejecutar Ayuda de herramienta actual en el contexto actual."
+    },
+    "geocedg.help.UserGuide.name": {
+      "en": "GeoCeDG user guide",
+      "es": "Guía de usuario de GeoCeDG"
+    },
+    "geocedg.help.UserGuide.short_help": {
+      "en": "GeoCeDG user guide. Use the current construction and its explicit selection.",
+      "es": "Guía de usuario de GeoCeDG. Usa la construcción actual y su selección explícita."
+    },
+    "geocedg.help.UserGuide.long_help": {
+      "en": "GeoCeDG user guide. Use the current construction and its explicit selection.",
+      "es": "Guía de usuario de GeoCeDG. Usa la construcción actual y su selección explícita."
+    },
+    "geocedg.help.UserGuide.status": {
+      "en": "Ready: GeoCeDG user guide",
+      "es": "Disponible: Guía de usuario de GeoCeDG"
+    },
+    "geocedg.help.UserGuide.error": {
+      "en": "Cannot perform GeoCeDG user guide in the current context.",
+      "es": "No se puede ejecutar Guía de usuario de GeoCeDG en el contexto actual."
+    },
+    "upstream.help.KeyboardShortcuts.name": {
+      "en": "Keyboard shortcuts",
+      "es": "Atajos de teclado"
+    },
+    "upstream.help.KeyboardShortcuts.short_help": {
+      "en": "Keyboard shortcuts. Use the current construction and its explicit selection.",
+      "es": "Atajos de teclado. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.help.KeyboardShortcuts.long_help": {
+      "en": "Keyboard shortcuts. Use the current construction and its explicit selection.",
+      "es": "Atajos de teclado. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.help.KeyboardShortcuts.status": {
+      "en": "Ready: Keyboard shortcuts",
+      "es": "Disponible: Atajos de teclado"
+    },
+    "upstream.help.KeyboardShortcuts.error": {
+      "en": "Cannot perform Keyboard shortcuts in the current context.",
+      "es": "No se puede ejecutar Atajos de teclado en el contexto actual."
+    },
+    "geocedg.help.About.name": {
+      "en": "About GeoCeDG",
+      "es": "Acerca de GeoCeDG"
+    },
+    "geocedg.help.About.short_help": {
+      "en": "About GeoCeDG. Use the current construction and its explicit selection.",
+      "es": "Acerca de GeoCeDG. Usa la construcción actual y su selección explícita."
+    },
+    "geocedg.help.About.long_help": {
+      "en": "About GeoCeDG. Use the current construction and its explicit selection.",
+      "es": "Acerca de GeoCeDG. Usa la construcción actual y su selección explícita."
+    },
+    "geocedg.help.About.status": {
+      "en": "Ready: About GeoCeDG",
+      "es": "Disponible: Acerca de GeoCeDG"
+    },
+    "geocedg.help.About.error": {
+      "en": "Cannot perform About GeoCeDG in the current context.",
+      "es": "No se puede ejecutar Acerca de GeoCeDG en el contexto actual."
+    },
+    "geocedg.action.OpenClassic.name": {
+      "en": "Open Classic diagnostic session",
+      "es": "Abrir sesión de diagnóstico Classic"
+    },
+    "geocedg.action.OpenClassic.short_help": {
+      "en": "Open Classic diagnostic session. Use the current construction and its explicit selection.",
+      "es": "Abrir sesión de diagnóstico Classic. Usa la construcción actual y su selección explícita."
+    },
+    "geocedg.action.OpenClassic.long_help": {
+      "en": "Open Classic diagnostic session. Use the current construction and its explicit selection.",
+      "es": "Abrir sesión de diagnóstico Classic. Usa la construcción actual y su selección explícita."
+    },
+    "geocedg.action.OpenClassic.status": {
+      "en": "Ready: Open Classic diagnostic session",
+      "es": "Disponible: Abrir sesión de diagnóstico Classic"
+    },
+    "geocedg.action.OpenClassic.error": {
+      "en": "Cannot perform Open Classic diagnostic session in the current context.",
+      "es": "No se puede ejecutar Abrir sesión de diagnóstico Classic en el contexto actual."
+    },
+    "geocedg.settings.Language.name": {
+      "en": "Product language…",
+      "es": "Idioma del producto…"
+    },
+    "geocedg.settings.Language.short_help": {
+      "en": "Product language…. Use the current construction and its explicit selection.",
+      "es": "Idioma del producto…. Usa la construcción actual y su selección explícita."
+    },
+    "geocedg.settings.Language.long_help": {
+      "en": "Product language…. Use the current construction and its explicit selection.",
+      "es": "Idioma del producto…. Usa la construcción actual y su selección explícita."
+    },
+    "geocedg.settings.Language.status": {
+      "en": "Ready: Product language…",
+      "es": "Disponible: Idioma del producto…"
+    },
+    "geocedg.settings.Language.error": {
+      "en": "Cannot perform Product language… in the current context.",
+      "es": "No se puede ejecutar Idioma del producto… en el contexto actual."
+    },
+    "upstream.view.ConstructionProtocol.name": {
+      "en": "Construction protocol",
+      "es": "Protocolo de construcción"
+    },
+    "upstream.view.ConstructionProtocol.short_help": {
+      "en": "Construction protocol. Use the current construction and its explicit selection.",
+      "es": "Protocolo de construcción. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.view.ConstructionProtocol.long_help": {
+      "en": "Construction protocol. Use the current construction and its explicit selection.",
+      "es": "Protocolo de construcción. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.view.ConstructionProtocol.status": {
+      "en": "Ready: Construction protocol",
+      "es": "Disponible: Protocolo de construcción"
+    },
+    "upstream.view.ConstructionProtocol.error": {
+      "en": "Cannot perform Construction protocol in the current context.",
+      "es": "No se puede ejecutar Protocolo de construcción en el contexto actual."
+    },
+    "upstream.view.NavigationBar.name": {
+      "en": "Construction navigation",
+      "es": "Navegación por la construcción"
+    },
+    "upstream.view.NavigationBar.short_help": {
+      "en": "Construction navigation. Use the current construction and its explicit selection.",
+      "es": "Navegación por la construcción. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.view.NavigationBar.long_help": {
+      "en": "Construction navigation. Use the current construction and its explicit selection.",
+      "es": "Navegación por la construcción. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.view.NavigationBar.status": {
+      "en": "Ready: Construction navigation",
+      "es": "Disponible: Navegación por la construcción"
+    },
+    "upstream.view.NavigationBar.error": {
+      "en": "Cannot perform Construction navigation in the current context.",
+      "es": "No se puede ejecutar Navegación por la construcción en el contexto actual."
+    },
+    "upstream.view.Properties.name": {
+      "en": "Properties…",
+      "es": "Propiedades…"
+    },
+    "upstream.view.Properties.short_help": {
+      "en": "Properties…. Use the current construction and its explicit selection.",
+      "es": "Propiedades…. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.view.Properties.long_help": {
+      "en": "Properties…. Use the current construction and its explicit selection.",
+      "es": "Propiedades…. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.view.Properties.status": {
+      "en": "Ready: Properties…",
+      "es": "Disponible: Propiedades…"
+    },
+    "upstream.view.Properties.error": {
+      "en": "Cannot perform Properties… in the current context.",
+      "es": "No se puede ejecutar Propiedades… en el contexto actual."
+    },
+    "geocedg.action.InspectDefinition.name": {
+      "en": "Inspect definition…",
+      "es": "Inspeccionar definición…"
+    },
+    "geocedg.action.InspectDefinition.short_help": {
+      "en": "Inspect definition…. Use the current construction and its explicit selection.",
+      "es": "Inspeccionar definición…. Usa la construcción actual y su selección explícita."
+    },
+    "geocedg.action.InspectDefinition.long_help": {
+      "en": "Inspect definition…. Use the current construction and its explicit selection.",
+      "es": "Inspeccionar definición…. Usa la construcción actual y su selección explícita."
+    },
+    "geocedg.action.InspectDefinition.status": {
+      "en": "Ready: Inspect definition…",
+      "es": "Disponible: Inspeccionar definición…"
+    },
+    "geocedg.action.InspectDefinition.error": {
+      "en": "Cannot perform Inspect definition… in the current context.",
+      "es": "No se puede ejecutar Inspeccionar definición… en el contexto actual."
+    },
+    "geocedg.action.SemanticCurveDefinition.name": {
+      "en": "Inspect semantic curve definition…",
+      "es": "Inspeccionar definición de curva semántica…"
+    },
+    "geocedg.action.SemanticCurveDefinition.short_help": {
+      "en": "Inspect semantic curve definition…. Use the current construction and its explicit selection.",
+      "es": "Inspeccionar definición de curva semántica…. Usa la construcción actual y su selección explícita."
+    },
+    "geocedg.action.SemanticCurveDefinition.long_help": {
+      "en": "Inspect semantic curve definition…. Use the current construction and its explicit selection.",
+      "es": "Inspeccionar definición de curva semántica…. Usa la construcción actual y su selección explícita."
+    },
+    "geocedg.action.SemanticCurveDefinition.status": {
+      "en": "Ready: Inspect semantic curve definition…",
+      "es": "Disponible: Inspeccionar definición de curva semántica…"
+    },
+    "geocedg.action.SemanticCurveDefinition.error": {
+      "en": "Cannot perform Inspect semantic curve definition… in the current context.",
+      "es": "No se puede ejecutar Inspeccionar definición de curva semántica… en el contexto actual."
+    },
+    "upstream.algebra.Value.name": {
+      "en": "Value",
+      "es": "Valor"
+    },
+    "upstream.algebra.Value.short_help": {
+      "en": "Value. Use the current construction and its explicit selection.",
+      "es": "Valor. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.algebra.Value.long_help": {
+      "en": "Value. Use the current construction and its explicit selection.",
+      "es": "Valor. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.algebra.Value.status": {
+      "en": "Ready: Value",
+      "es": "Disponible: Valor"
+    },
+    "upstream.algebra.Value.error": {
+      "en": "Cannot perform Value in the current context.",
+      "es": "No se puede ejecutar Valor en el contexto actual."
+    },
+    "upstream.algebra.Description.name": {
+      "en": "Description",
+      "es": "Descripción"
+    },
+    "upstream.algebra.Description.short_help": {
+      "en": "Description. Use the current construction and its explicit selection.",
+      "es": "Descripción. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.algebra.Description.long_help": {
+      "en": "Description. Use the current construction and its explicit selection.",
+      "es": "Descripción. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.algebra.Description.status": {
+      "en": "Ready: Description",
+      "es": "Disponible: Descripción"
+    },
+    "upstream.algebra.Description.error": {
+      "en": "Cannot perform Description in the current context.",
+      "es": "No se puede ejecutar Descripción en el contexto actual."
+    },
+    "upstream.algebra.Definition.name": {
+      "en": "Definition",
+      "es": "Definición"
+    },
+    "upstream.algebra.Definition.short_help": {
+      "en": "Definition. Use the current construction and its explicit selection.",
+      "es": "Definición. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.algebra.Definition.long_help": {
+      "en": "Definition. Use the current construction and its explicit selection.",
+      "es": "Definición. Usa la construcción actual y su selección explícita."
+    },
+    "upstream.algebra.Definition.status": {
+      "en": "Ready: Definition",
+      "es": "Disponible: Definición"
+    },
+    "upstream.algebra.Definition.error": {
+      "en": "Cannot perform Definition in the current context.",
+      "es": "No se puede ejecutar Definición en el contexto actual."
+    },
+    "GeoCeDG.Workspace.Family.InspectConstruct": {
+      "en": "Inspect and construct",
+      "es": "Inspección y construcción"
+    },
+    "GeoCeDG.Workspace.Family.LinearGeometry": {
+      "en": "Linear geometry",
+      "es": "Geometría lineal"
+    },
+    "GeoCeDG.Workspace.Family.ParametersDrivers": {
+      "en": "Parameters and drivers",
+      "es": "Parámetros y controladores"
+    },
+    "GeoCeDG.Workspace.Family.RelationsIntersections": {
+      "en": "Relations and intersections",
+      "es": "Relaciones e intersecciones"
+    },
+    "GeoCeDG.Workspace.Family.CirclesConicsCurves": {
+      "en": "Circles, conics and curves",
+      "es": "Circunferencias, cónicas y curvas"
+    },
+    "GeoCeDG.Workspace.Family.SemanticCurves": {
+      "en": "Semantic curves",
+      "es": "Curvas semánticas"
+    },
+    "GeoCeDG.Workspace.Family.MetricsValidation": {
+      "en": "Metrics and validation",
+      "es": "Medidas y validación"
+    },
+    "GeoCeDG.Workspace.Family.TransformationsManualProjections": {
+      "en": "Transforms and manual projections",
+      "es": "Transformaciones y proyecciones manuales"
+    },
+    "GeoCeDG.Workspace.Family.ProceduresDevelopments": {
+      "en": "CeDG procedures and developments",
+      "es": "Procedimientos CeDG y desarrollos"
+    },
+    "GeoCeDG.Workspace.Family.PresentationDocument": {
+      "en": "Presentation and document",
+      "es": "Presentación y documento"
+    },
+    "GeoCeDG.Workspace.Family.AutomationImportExport": {
+      "en": "Automation and import/export",
+      "es": "Automatización e importación/exportación"
+    },
+    "GeoCeDG.Workspace.Cluster.SelectionMoveInspect": {
+      "en": "Select, move, inspect",
+      "es": "Seleccionar, mover, inspeccionar"
+    },
+    "GeoCeDG.Workspace.Cluster.PointConstruction": {
+      "en": "Points",
+      "es": "Puntos"
+    },
+    "GeoCeDG.Workspace.Cluster.LinearGeometry": {
+      "en": "Linear geometry",
+      "es": "Geometría lineal"
+    },
+    "GeoCeDG.Workspace.Cluster.ParametersDrivers": {
+      "en": "Parameters and drivers",
+      "es": "Parámetros y controladores"
+    },
+    "GeoCeDG.Workspace.Cluster.RelationsIntersections": {
+      "en": "Relations and intersections",
+      "es": "Relaciones e intersecciones"
+    },
+    "GeoCeDG.Workspace.Cluster.CirclesConicsCurves": {
+      "en": "Circles, conics and curves",
+      "es": "Circunferencias, cónicas y curvas"
+    },
+    "GeoCeDG.Workspace.Cluster.LocusV2": {
+      "en": "Locus V2",
+      "es": "Locus V2"
+    },
+    "GeoCeDG.Workspace.Cluster.SplineV2": {
+      "en": "Spline V2",
+      "es": "Spline V2"
+    },
+    "GeoCeDG.Workspace.Cluster.MetricsValidation": {
+      "en": "Metrics and validation",
+      "es": "Medidas y validación"
+    },
+    "GeoCeDG.Workspace.Cluster.SimilarityTransformations": {
+      "en": "Similarity transforms",
+      "es": "Transformaciones de semejanza"
+    },
+    "GeoCeDG.Workspace.Cluster.ManualProjectionAuthorized": {
+      "en": "Manual projections",
+      "es": "Proyecciones manuales"
+    },
+    "GeoCeDG.Workspace.Cluster.PresentationVisibilityStyle": {
+      "en": "Visibility and style",
+      "es": "Visibilidad y estilo"
+    },
+    "GeoCeDG.Workspace.Cluster.NavigationZoom": {
+      "en": "Navigation and zoom",
+      "es": "Navegación y zoom"
+    },
+    "GeoCeDG.Workspace.Cluster.DocumentLifecycle": {
+      "en": "Documents",
+      "es": "Documentos"
+    },
+    "GeoCeDG.Workspace.Cluster.AutomationScripting": {
+      "en": "Automation and scripting",
+      "es": "Automatización y guiones"
+    },
+    "GeoCeDG.Workspace.Cluster.ImportExport": {
+      "en": "Import and export",
+      "es": "Importación y exportación"
+    },
+    "GeoCeDG.Workspace.Cluster.HelpCommandDiscovery": {
+      "en": "Help and commands",
+      "es": "Ayuda y comandos"
+    },
+    "GeoCeDG.Workspace.Cluster.ConstructionHistoryDefinition": {
+      "en": "History and definitions",
+      "es": "Historia y definiciones"
+    },
+    "Menu.File": {
+      "en": "File",
+      "es": "Archivo"
+    },
+    "Menu.Construction": {
+      "en": "Construction",
+      "es": "Construcción"
+    },
+    "Menu.View": {
+      "en": "View",
+      "es": "Vista"
+    },
+    "Menu.Automation": {
+      "en": "Automation",
+      "es": "Automatización"
+    },
+    "Menu.Help": {
+      "en": "Help",
+      "es": "Ayuda"
+    },
+    "GeoCeDG.Workspace.Construction.Name": {
+      "en": "CeDG Construction",
+      "es": "Construcción CeDG"
+    },
+    "GeoCeDG.Workspace.Construction.Description": {
+      "en": "Explicit dynamic geometric construction",
+      "es": "Construcción geométrica dinámica explícita"
+    },
+    "GeoCeDG.Workspace.DihedralProcedures.Name": {
+      "en": "Dihedral procedures",
+      "es": "Procedimientos diédricos"
+    },
+    "GeoCeDG.Workspace.DihedralProcedures.Description": {
+      "en": "Future independently authorized procedures",
+      "es": "Futuros procedimientos con autorización independiente"
+    },
+    "GeoCeDG.Workspace.Unavailable.G9U2": {
+      "en": "G9U2 procedures are not authorized.",
+      "es": "Los procedimientos G9U2 no están autorizados."
+    },
+    "Action.Unavailable.Feature": {
+      "en": "Enable the required feature for this action.",
+      "es": "Activa la función requerida para esta acción."
+    },
+    "Action.Unavailable.Selection": {
+      "en": "Select the required object first.",
+      "es": "Selecciona primero el objeto requerido."
+    },
+    "Action.Unavailable.Result": {
+      "en": "Select a current rich intersection result.",
+      "es": "Selecciona un resultado rico de intersección vigente."
+    },
+    "Action.Unavailable.NoFiles": {
+      "en": "There are no recent files.",
+      "es": "No hay archivos recientes."
+    },
+    "Action.Unavailable.Failed": {
+      "en": "The action could not complete. The construction was not silently reassigned.",
+      "es": "La acción no pudo completarse. No se ha reasignado la construcción silenciosamente."
+    },
+    "Workspace.More": {
+      "en": "Workspace actions",
+      "es": "Acciones del espacio de trabajo"
+    },
+    "Workspace.Help": {
+      "en": "Context help",
+      "es": "Ayuda contextual"
+    },
+    "Workspace.Restore": {
+      "en": "Restore Construction layout",
+      "es": "Restaurar distribución de Construcción"
+    },
+    "Workspace.Scripting": {
+      "en": "Use the Scripting tab in the existing Properties dialog.",
+      "es": "Usa la pestaña Guiones del diálogo de Propiedades."
+    },
+    "Workspace.SplineHelp": {
+      "en": "Enter SplineV2({A,B,C},2), SplineV2({A,B,C,D},3), or its closed/parameter forms in Algebra Input. No object is created until Enter.",
+      "es": "Introduce SplineV2({A,B,C},2), SplineV2({A,B,C,D},3) o sus formas cerradas/paramétricas en Entrada algebraica. No se crea ningún objeto hasta Intro."
+    },
+    "Workspace.About": {
+      "en": "GeoCeDG — explicit constructive descriptive geometry. Geometry and identity belong to the shared kernel. Upstream compatibility is preserved; this is an author-review implementation candidate.",
+      "es": "GeoCeDG — geometría descriptiva constructiva explícita. La geometría y la identidad pertenecen al núcleo compartido. Se conserva la compatibilidad heredada; este es un candidato de implementación para revisión del autor."
+    },
+    "Workspace.Shortcuts": {
+      "en": "Enter: commit Algebra Input; Escape: cancel; Ctrl+Z: undo; Ctrl+Y: redo. Use Zoom to rectangle for view-only navigation. Tab navigates controls; F1 opens tool help.",
+      "es": "Intro: confirmar Entrada algebraica; Esc: cancelar; Ctrl+Z: deshacer; Ctrl+Y: rehacer. Usa Zoom por rectángulo para navegación visual. Tab recorre controles; F1 abre la ayuda."
+    },
+    "point.choose": {
+      "en": "Choose a semantic location",
+      "es": "Elija una posición semántica"
+    },
+    "point.ambiguous": {
+      "en": "Several semantic preimages: choose explicitly, or cancel.",
+      "es": "Varias preimágenes semánticas: elija explícitamente o cancele."
+    },
+    "point.unresolved": {
+      "en": "No uniquely certified semantic position; no point was changed.",
+      "es": "No hay una posición semántica certificada única; no se modificó ningún punto."
+    },
+    "point.degenerate": {
+      "en": "Collapsed source: a new point has no unique preimage.",
+      "es": "Fuente colapsada: un punto nuevo no tiene preimagen única."
+    },
+    "point.invalid": {
+      "en": "The source or selected semantic position is no longer current.",
+      "es": "La fuente o posición semántica seleccionada ya no es actual."
+    },
+    "intersection.one": {
+      "en": "Create one",
+      "es": "Crear uno"
+    },
+    "intersection.one-close": {
+      "en": "Create one and close",
+      "es": "Crear uno y cerrar"
+    },
+    "intersection.close": {
+      "en": "Close",
+      "es": "Cerrar"
+    },
+    "intersection.selected": {
+      "en": "Create selected",
+      "es": "Crear seleccionados"
+    },
+    "intersection.all": {
+      "en": "Create all eligible",
+      "es": "Crear todos los admisibles"
+    },
+    "intersection.created": {
+      "en": "Already materialized",
+      "es": "Ya materializado"
+    },
+    "intersection.eligible": {
+      "en": "Certified; eligible",
+      "es": "Certificado; admisible"
+    },
+    "intersection.richOnly": {
+      "en": "Rich result only",
+      "es": "Solo resultado enriquecido"
+    },
+    "intersection.stale": {
+      "en": "The result changed; refresh selection before creating points.",
+      "es": "El resultado cambió; actualice la selección antes de crear puntos."
+    },
+    "intersection.selection": {
+      "en": "Select solutions (Ctrl/Shift for several)",
+      "es": "Seleccione soluciones (Ctrl/Mayús para varias)"
+    },
+    "intersection.auto": {
+      "en": "Automatically materialize eligible solutions only for new explicit queries",
+      "es": "Materializar automáticamente soluciones admisibles solo para nuevas consultas explícitas"
+    },
+    "Workspace.Guide": {
+      "en": "Length(L) and Length(L,P,Q) return scalar metrics; LocusLength returns rich evidence. Intersect uses the shared rich result: create only eligible exact-token points. Point on Locus V2/Spline V2 uses an explicit semantic preimage. Continuity is OFF. Save native constructions as .cedg.",
+      "es": "Length(L) y Length(L,P,Q) devuelven medidas escalares; LocusLength devuelve evidencia rica. Intersect usa el resultado rico compartido: crea solo puntos admisibles con token exacto. Punto sobre Locus V2/Spline V2 usa una preimagen semántica explícita. Continuidad está desactivada. Guarda las construcciones nativas como .cedg."
+    }
+  }
 }

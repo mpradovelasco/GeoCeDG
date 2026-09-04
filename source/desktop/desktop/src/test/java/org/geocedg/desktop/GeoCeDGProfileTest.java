@@ -43,9 +43,10 @@ class GeoCeDGProfileTest {
 	void compilesManifestToolbarIntoExistingGrammar() {
 		String toolbar = GeoCeDGProfile.getToolbarDefinition();
 		assertThat(GeoCeDGProfile.getProfileId(), equalTo("geocedg-desktop"));
-		assertThat(toolbar,
-				equalTo("0 | 1 2 15 18 7 16 3 4 | 10 11 12 | 5 47 | 30 31 32 | 36 38"));
-		assertThat(ToolBar.parseToolbarString(toolbar), hasSize(6));
+		assertThat(GeoCeDGProfile.getActions(), hasSize(110));
+		assertThat(ToolBar.parseToolbarString(toolbar), hasSize(9));
+		assertThat(Arrays.asList(toolbar.split("[ |]+")),
+				not(org.hamcrest.Matchers.hasItem("47")));
 	}
 
 	@Test
@@ -57,7 +58,8 @@ class GeoCeDGProfileTest {
 		assertThat(panels.get(App.VIEW_EUCLIDIAN).isVisible(), is(true));
 		assertThat(panels.get(App.VIEW_ALGEBRA).isVisible(), is(true));
 		assertThat(panels.get(App.VIEW_EUCLIDIAN3D).isVisible(), is(false));
-		assertThat(perspective.getId(), equalTo("geocedg-initial"));
+		assertThat(perspective.getId(), equalTo("cedg-construction"));
+		assertThat(panels.get(App.VIEW_CONSTRUCTION_PROTOCOL).isVisible(), is(true));
 		assertThat(perspective.isUserDefined(), is(false));
 		assertThat(perspective.getShowGrid(), is(false));
 		assertThat(perspective.getShowAxes(), is(true));

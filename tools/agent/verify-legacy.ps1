@@ -8,6 +8,7 @@ $ErrorActionPreference = "Stop"
 
 $RepositoryRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot "..\..")).Path
 $RootPrefix = $RepositoryRoot + [IO.Path]::DirectorySeparatorChar
+. (Join-Path $PSScriptRoot "workspace-profile-validation.ps1")
 $ExpectedResourceId = "cedg.legacy.template-v7"
 $ExpectedArtifactHash = "f62e5b7a92bcd95f10b8afda348763a57ccbd0c10dbc0c2bccc7049831ed4113"
 $ExpectedToolNames = @(
@@ -407,7 +408,7 @@ try {
             -Message "Pilot candidate $($pilot.material_id) was imported or is not indexed."
     }
 
-    Write-Step "CeDG Laboratory opt-in policy and stable G2 toolbar"
+    Write-Step "CeDG Laboratory opt-in policy and preserved G2 toolbar migration"
     $stableFeatures = Read-JsonCompatibleYaml `
         -RelativePath "geocedg/features/stable.yml"
     $experimentalFeatures = Read-JsonCompatibleYaml `
@@ -422,24 +423,34 @@ try {
         -not $laboratoryFeature[0].enabled_by_default) `
         -Message "G3 feature maturity or Laboratory default state is invalid."
 
-    $profile = Read-JsonCompatibleYaml `
-        -RelativePath "apps/geocedg/application-profile.yml"
-    Assert-SequenceEqual -Actual @($profile.toolbar.categories.id) `
+    # G9U1 deliberately replaces the live v1 toolbar with the schema-v2
+    # action authority. Preserve every G2 mode/category assertion on the
+    # exact v1 migration fixture and check the new live authority separately.
+    $legacyProfilePath = "apps/geocedg/application-profile-v1.yml"
+    $legacyProfile = Read-JsonCompatibleYaml -RelativePath $legacyProfilePath
+    $legacyBlob = (& git -C $RepositoryRoot hash-object `
+        --path=apps/geocedg/application-profile.yml -- $legacyProfilePath).Trim()
+    Assert-Condition -Condition ($LASTEXITCODE -eq 0 -and
+        $legacyBlob -ceq "fc2a3ebd128fc79ca76840bc391598221bfa02c6") `
+        -Message "The historical v1 fallback differs from the published pre-G9U1 profile."
+    Assert-SequenceEqual -Actual @($legacyProfile.toolbar.categories.id) `
         -Expected @($ExpectedStableToolbar.Keys) -Description "G2 toolbar categories"
-    foreach ($category in @($profile.toolbar.categories)) {
+    foreach ($category in @($legacyProfile.toolbar.categories)) {
         Assert-SequenceEqual -Actual @($category.modes) `
             -Expected @($ExpectedStableToolbar[$category.id]) `
             -Description "G2 toolbar modes for $($category.id)"
     }
+    $profile = Assert-GeoCeDGLiveWorkspaceProfile -RepositoryRoot $RepositoryRoot
     $g2FeatureIds = @(
         "cedg.frontend.profile", "cedg.frontend.classic-diagnostic")
     $selectedG2Features = @($profile.features | Where-Object {
-            $g2FeatureIds -contains $_
-        })
+            $g2FeatureIds -ccontains $_.id -and $_.enabled_by_default -eq $true
+        } | ForEach-Object { $_.id })
     Assert-SequenceEqual -Actual $selectedG2Features -Expected $g2FeatureIds `
         -Description "G2 profile feature selection"
-    Assert-Condition -Condition (-not (@($profile.features) -contains
-            "cedg.laboratory.legacy")) `
+    $laboratoryProfile = @($profile.features | Where-Object { $_.id -ceq "cedg.laboratory.legacy" })
+    Assert-Condition -Condition ($laboratoryProfile.Count -eq 1 -and
+        $laboratoryProfile[0].enabled_by_default -eq $false) `
         -Message "The experimental Laboratory must remain disabled in the profile."
 
     & (Join-Path $RepositoryRoot "tools\legacy\open-laboratory.ps1") `

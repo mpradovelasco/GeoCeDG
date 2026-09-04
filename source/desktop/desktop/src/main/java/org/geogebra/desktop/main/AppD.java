@@ -2966,7 +2966,7 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 		}
 
 		setWaitCursor();
-		if (!isMacroFile) {
+		if (!isMacroFile && nativeArchive == null) {
 			// hide navigation bar for construction steps if visible
 			setHideConstructionProtocolNavigation();
 		}
@@ -3116,6 +3116,8 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 				? (UndoManagerD) kernel.getConstruction().getUndoManager() : null;
 		UndoManagerD.PreparedUndoBaseline undoBaseline = null;
 		try (InputStream input = new ByteArrayInputStream(archive)) {
+			// Native rollback must capture presentation state before changing it.
+			setHideConstructionProtocolNavigation();
 			if (!wasIniting) {
 				initing = true;
 			}

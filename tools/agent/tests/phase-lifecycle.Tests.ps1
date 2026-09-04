@@ -135,6 +135,57 @@ function Get-AstElementText {
     return $matches[0].Extent.Text.Replace("`r`n", "`n").Replace("`r", "`n")
 }
 
+function Assert-TopLevelPreservedWithG9U1 {
+    param([Parameter(Mandatory)] [string]$Current,
+        [Parameter(Mandatory)] [string]$Sealed)
+    $currentLf = $Current.Replace("`r`n", "`n")
+    $sealedLf = $Sealed.Replace("`r`n", "`n")
+    if ($currentLf -ceq $sealedLf) { return }
+    # This is the exact additive G9U1 integration, not an erase-by-prefix rule.
+    # Every prior character, task/filter argument and assertion must survive.
+    $declaration = @'
+$G9U1ConstructionVerifier = Join-Path $PSScriptRoot `
+    "verify-g9u1-construction-workspace.ps1"
+'@
+    $consumer = @'
+    $g9u1IntegrationArtifacts = @(
+        $G9U1ConstructionVerifier,
+        (Join-Path $RepositoryRoot "geocedg/validation/g9u1/g9u1-construction-workspace-evidence.json"),
+        (Join-Path $RepositoryRoot "geocedg/validation/g9u1/g9u1-construction-workspace-scenarios.json"),
+        (Join-Path $RepositoryRoot "geocedg/validation/g9u1/g9u1-construction-workspace-evidence.sha256"),
+        (Join-Path $RepositoryRoot "docs/validation/g9u1_construction_workspace_implementation_candidate_report.md")
+    )
+    $g9u1Present = @($g9u1IntegrationArtifacts | Where-Object { Test-Path -LiteralPath $_ -PathType Leaf }).Count
+    if ($g9u1Present -ne 0 -and $g9u1Present -ne $g9u1IntegrationArtifacts.Count) {
+        throw "Incomplete G9U1 integration: focused verifier, evidence, scenarios, hash and report must be paired."
+    }
+    if ($g9u1Present -eq $g9u1IntegrationArtifacts.Count) {
+        Write-Host "`n==> G9U1 CeDG Construction workspace"
+        $g9u1Parameters = @{
+            HistoricalRegressionsAlreadyComposed = $true
+            LogDirectory = Join-Path ([IO.Path]::GetFullPath($LogDirectory)) "g9u1-construction-workspace"
+        }
+        if ($SkipBuild) { $g9u1Parameters.SkipBuild = $true }
+        if ($AllowToolchainDownload) { $g9u1Parameters.AllowToolchainDownload = $true }
+        if ($KeepBuildOutputs) { $g9u1Parameters.KeepBuildOutputs = $true }
+        Add-CurrentBuildEvidence -Parameters $g9u1Parameters
+        & $G9U1ConstructionVerifier @g9u1Parameters
+        Assert-LastScriptSuccess -Description "G9U1 CeDG Construction workspace"
+    }
+'@
+    $declarationAnchor = '$BenchmarkRunner = Join-Path $RepositoryRoot "tools\benchmark\run.ps1"'
+    $consumerAnchor = '    Write-Host "`n==> Standalone Windows packaging contracts"'
+    foreach ($anchor in @($declarationAnchor, $consumerAnchor)) {
+        Assert-Case ([regex]::Matches($sealedLf, [regex]::Escape($anchor)).Count -eq 1) `
+            'Top-level historical anchor is missing or ambiguous'
+    }
+    $expected = $sealedLf.Replace($declarationAnchor,
+        $declaration.Replace("`r`n", "`n") + "`n" + $declarationAnchor).Replace(
+        $consumerAnchor, $consumer.Replace("`r`n", "`n") + "`n`n" + $consumerAnchor)
+    Assert-Case ($currentLf -ceq $expected) `
+        'Top-level verifier differs outside the exact additive G9U1 integration'
+}
+
 function Assert-R1ScientificSourcePreserved {
     $current = [IO.File]::ReadAllText($R1VerifierPath)
     $sealed = Get-GitBlobText $RealRepository `
@@ -166,8 +217,7 @@ function Assert-R1ScientificSourcePreserved {
         'R1 scientific contract tail changed after lifecycle repair'
     $sealedTop = Get-GitBlobText $RealRepository "$ImplementationCommit`:tools/agent/verify.ps1"
     $currentTop = [IO.File]::ReadAllText($RootVerifierPath)
-    Assert-Case ($currentTop.Replace("`r`n", "`n") -ceq $sealedTop.Replace(
-            "`r`n", "`n")) 'Top-level verifier changed during lifecycle repair'
+    Assert-TopLevelPreservedWithG9U1 -Current $currentTop -Sealed $sealedTop
 }
 
 function Assert-R1LifecycleGuardSource {
@@ -685,6 +735,47 @@ $WideBase = New-LifecycleFixture (Join-Path $RunRoot 'wide-base') `
 Invoke-LifecycleCase 'sealed scientific and composed verifier authority is unchanged' {
     Assert-R1ScientificSourcePreserved
     Assert-R1LifecycleGuardSource
+}
+
+Invoke-LifecycleCase 'historical top-level bytes remain accepted without G9U1 additions' {
+    $sealed = Get-GitBlobText $RealRepository "$ImplementationCommit`:tools/agent/verify.ps1"
+    Assert-TopLevelPreservedWithG9U1 -Current $sealed -Sealed $sealed
+}
+
+Invoke-LifecycleCase 'G9U1 integration cannot mutate historical test-filter forwarding' {
+    $sealed = Get-GitBlobText $RealRepository "$ImplementationCommit`:tools/agent/verify.ps1"
+    $current = [IO.File]::ReadAllText($RootVerifierPath)
+    $mutated = $current.Replace('-TestFilter $TestFilter', '-TestFilter "different.scope"')
+    Assert-Case ($mutated -cne $current) 'Historical filter mutation fixture did not change input'
+    Assert-Throws { Assert-TopLevelPreservedWithG9U1 -Current $mutated -Sealed $sealed } `
+        'outside the exact additive' 'Historical test-filter mutation'
+}
+
+Invoke-LifecycleCase 'G9U1 integration rejects an unrelated top-level addition' {
+    $sealed = Get-GitBlobText $RealRepository "$ImplementationCommit`:tools/agent/verify.ps1"
+    $current = [IO.File]::ReadAllText($RootVerifierPath) + "`nWrite-Host 'unapproved extra command'`n"
+    Assert-Throws { Assert-TopLevelPreservedWithG9U1 -Current $current -Sealed $sealed } `
+        'outside the exact additive' 'Unrelated top-level addition'
+}
+
+Invoke-LifecycleCase 'G9U1 integration rejects a changed phase acceptance gate' {
+    $sealed = Get-GitBlobText $RealRepository "$ImplementationCommit`:tools/agent/verify.ps1"
+    $current = [IO.File]::ReadAllText($RootVerifierPath)
+    $mutated = $current.Replace('Assert-LastScriptSuccess -Description "G9U1 CeDG Construction workspace"',
+        'Write-Host "G9U1 CeDG Construction workspace"')
+    Assert-Case ($mutated -cne $current) 'G9U1 gate mutation fixture did not change input'
+    Assert-Throws { Assert-TopLevelPreservedWithG9U1 -Current $mutated -Sealed $sealed } `
+        'outside the exact additive' 'Changed G9U1 acceptance gate'
+}
+
+Invoke-LifecycleCase 'G9U1 integration rejects changed placement or declaration' {
+    $sealed = Get-GitBlobText $RealRepository "$ImplementationCommit`:tools/agent/verify.ps1"
+    $current = [IO.File]::ReadAllText($RootVerifierPath)
+    $mutated = $current.Replace('    "verify-g9u1-construction-workspace.ps1"',
+        '    "verify-other-workspace.ps1"')
+    Assert-Case ($mutated -cne $current) 'G9U1 declaration fixture did not change input'
+    Assert-Throws { Assert-TopLevelPreservedWithG9U1 -Current $mutated -Sealed $sealed } `
+        'outside the exact additive' 'Changed G9U1 declaration'
 }
 
 Invoke-LifecycleCase 'commit index matches independent Git mode and blob lines' {

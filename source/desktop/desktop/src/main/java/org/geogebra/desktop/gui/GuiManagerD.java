@@ -727,10 +727,15 @@ public class GuiManagerD extends GuiManager implements GuiManagerInterfaceD {
 	 */
 	public ToolbarContainer getToolbarPanel() {
 		if (toolbarPanel == null) {
-			toolbarPanel = new ToolbarContainer(getApp(), true);
+			toolbarPanel = newToolbarContainer();
 		}
 
 		return toolbarPanel;
+	}
+
+	/** @return the main toolbar container; product subclasses may add action surfaces */
+	protected ToolbarContainer newToolbarContainer() {
+		return new ToolbarContainer(getApp(), true);
 	}
 
 	@Override
@@ -1010,6 +1015,7 @@ public class GuiManagerD extends GuiManager implements GuiManagerInterfaceD {
 			screenPos.translate(p.x, p.y);
 
 			popupMenu = new ContextMenuGeoElementD(getApp(), geos, screenPos);
+			decorateProductContextMenu(popupMenu.getWrappedPopup());
 			popupMenu.getWrappedPopup().show(invoker, p.x, p.y);
 		}
 
@@ -1040,10 +1046,18 @@ public class GuiManagerD extends GuiManager implements GuiManagerInterfaceD {
 
 			popupMenu = new ContextMenuChooseGeoD(getApp(), view,
 					selectedGeos, geos, screenPos, p);
+			decorateProductContextMenu(popupMenu.getWrappedPopup());
 			// popupMenu = new ContextMenuGeoElement(app, geos, screenPos);
 			popupMenu.getWrappedPopup().show(invoker, p.x, p.y);
 		}
 
+	}
+
+	/** Product-only decoration; Classic keeps its existing context menu unchanged.
+	 * @param menu already constructed host popup
+	 */
+	protected void decorateProductContextMenu(javax.swing.JPopupMenu menu) {
+		// No additions in Classic.
 	}
 
 	/**
@@ -1973,8 +1987,7 @@ public class GuiManagerD extends GuiManager implements GuiManagerInterfaceD {
 			fileFilter.addExtension(FileExtensions.GEOGEBRA_TOOL);
 			fileFilter.addExtension(FileExtensions.HTML);
 			fileFilter.addExtension(FileExtensions.HTM);
-			fileFilter.setDescription(
-					GeoGebraConstants.APPLICATION_NAME + loc.getMenu("Files"));
+			fileFilter.setDescription(getDocumentOpenDescription());
 			fileChooser.resetChoosableFileFilters();
 			fileChooser.addChoosableFileFilter(fileFilter);
 
@@ -2086,6 +2099,11 @@ public class GuiManagerD extends GuiManager implements GuiManagerInterfaceD {
 	protected FileExtensions[] getDocumentOpenExtensions() {
 		return new FileExtensions[] {
 				FileExtensions.GEOGEBRA, FileExtensions.GEOCEDG };
+	}
+
+	/** @return localized product name for the existing document filter */
+	protected String getDocumentOpenDescription() {
+		return GeoGebraConstants.APPLICATION_NAME + loc.getMenu("Files");
 	}
 
 	/**

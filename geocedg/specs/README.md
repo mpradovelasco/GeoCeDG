@@ -1,6 +1,12 @@
 # GeoCeDG specifications
 
-Current R1: **IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**.
+Current published R1: **PASS — AUTHOR APPROVED**, author smoke **PASS**;
+`geocedg-g9s1-r1-pass` -> `af459d856f1cdc384805f3035203acce8e6f6104`.
+Reviewed technical commit: `a38d4fcde846fc97c51abc8d958de6998302c436`;
+operational successor: `f8a21a087234b18fc13741a0ac2baf80608e9022`.
+
+The following retained pre-closeout paragraph is historical evidence, not the
+current approval state or a newly executed verification campaign:
 The authorized A/B corrections pass fresh PHASE A/B, COMPOSED and FULL clean
 on the archived tested cohort. `implementationComplete=true`;
 `manualAuthorSmoke=PENDING`; no self/phase approval or PASS is claimed.
@@ -150,12 +156,25 @@ unexecuted and requires post-R6 reconciliation plus separate execution
 authorization. Retained risk
 `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` remains `OPEN / TRACKED`.
 
-G9U1 likewise remains unexecuted; G9U1, G9B and G9C remain designed but not
-authorized. G9S1 and R6 are `PASS — AUTHOR APPROVED`.
-The future G9U1
-GeoCeDG product contract
-requires the host Continuity setting to remain off while Classic stays
-configurable. G9U2 remains blocked and productive G10 remains unauthorized.
+G9U1's protected post-R6 design is **PASS — AUTHOR APPROVED**. Its post-R1
+reconciliation passed before productive edits; implementation is now an
+**IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW** under the explicit
+conditional authorization after the no-novelty audit; G9B and G9C remain
+designed but not authorized. The candidate
+`ui/g9u1-construction-interaction.md`,
+`ui/application-profile-v2.candidate.schema.json` and
+`ui/application-profile-v2.candidate.yml` are prospective planning authorities,
+not a second live product profile. The schema-v2 catalog in
+`../../apps/geocedg/application-profile.yml` is the sole runtime authority;
+the candidate sources preserve planning provenance. They consume the published R6 typed inverse
+resolver and interaction-owned semantic point creation/move operations; no
+frontend inverse fallback, `Path` conversion or proximity identity is allowed.
+The existing host Continuity setting remains off in GeoCeDG while Classic stays
+configurable. Exact GGBScript forms such as `Point(L, branch, u)` remain the
+scripting authority; pointer resolution is a UI interaction seam. The protected
+pre-R6 checkpoint remains immutable and the canonical successor prompt is
+`.github/prompts/tasks/g9u1-construction-workspace-after-g9s1-r1.prompt.md`.
+G9U2 remains blocked and productive G10 remains unauthorized.
 
 `locus/locus-v2-public-ui-exposure.md` is the bounded, author-approved G9U0-R3
 implementation contract. R3 is `PASS — AUTHOR APPROVED`; its retained smoke
@@ -175,3 +194,19 @@ the existing ZIP/XML plus `app="classic"` internals remain unchanged.
 Every specification must state its status, version, authority, scope,
 invariants, compatibility policy, validation evidence, and stop conditions.
 Use `templates/specification-template.md` as the starting structure.
+
+
+## Current G9U1 post-R1 reconciliation
+
+Protected approved checkpoint `00982e7e148a634cd57ed928f322774df267d5e3`
+and its post-R6 prompt remain immutable. The successor preserves 11 families,
+18 clusters and 110 actions; 20 R1-consumption cases supplement 118 approved
+scenarios (138 total). R1 singleton transverse-germ certificates/tokens are
+consumed through existing rich-result actions, not a new solver or R6 preimage
+fallback. Operand symmetry means equivalent canonical slots, not equal opaque
+tokens across independently owned rich results. Same-germ ambiguity,
+tangent/multiple-contact, overlap, monodromy and uncertified roots remain
+rich-only. Current conditional implementation authorization is satisfied;
+implementation has not started at planning freeze and is not author-approved.
+The R4 native-quarantine risk remains OPEN / TRACKED and nonblocking for this
+candidate unless its experiment demonstrates a real kernel/persistence defect.
