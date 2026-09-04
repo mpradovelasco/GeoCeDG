@@ -33,9 +33,11 @@ import org.geogebra.desktop.geogebra3D.App3D;
 import org.geogebra.desktop.main.AppD;
 import org.geogebra.test.commands.ErrorAccumulator;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
 /** Script consumption of public commands, not a second command or identity model. */
+@ExtendWith(G9U1TestApp.Lifecycle.class)
 class G9U1ScriptWorkflowTest {
 
 	@Test
@@ -160,6 +162,7 @@ class G9U1ScriptWorkflowTest {
 		AppGeoCeDG disabled = G9U1TestApp.create(false);
 		App3D classic = new App3D(new CommandLineArguments(new String[] {"--silent"}),
 				new JPanel());
+		G9U1TestApp.withoutWindowDispatcher(classic);
 		classic.setErrorDialogsActive(false);
 		for (AppD host : new AppD[] {disabled, classic}) {
 			assertTrue(host.loadFile(file.toFile(), false));
@@ -183,6 +186,7 @@ class G9U1ScriptWorkflowTest {
 		G9U1TestApp.create(); // Initialize the shared AWT platform before the Classic host.
 		App3D classic = new App3D(new CommandLineArguments(new String[] {"--silent"}),
 				new JPanel());
+		G9U1TestApp.withoutWindowDispatcher(classic);
 		classic.setErrorDialogsActive(false);
 		GeoElement trigger = classic.getKernel().getAlgebraProcessor()
 				.processAlgebraCommand("O=(0,0)", false)[0].toGeoElement();

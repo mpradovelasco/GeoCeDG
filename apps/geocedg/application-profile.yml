@@ -2395,8 +2395,7 @@
       "id": "selection-move-inspect",
       "broad_family_id": "inspect-construct",
       "toolbar_action_ids": [
-        "construction.move",
-        "edit.delete"
+        "construction.move"
       ],
       "overflow_action_ids": [
         "construction.move-rotate",
@@ -2628,10 +2627,9 @@
     {
       "id": "presentation-visibility-style",
       "broad_family_id": "presentation-document",
-      "toolbar_action_ids": [
-        "presentation.show-hide-object"
-      ],
+      "toolbar_action_ids": [],
       "overflow_action_ids": [
+        "presentation.show-hide-object",
         "presentation.show-hide-label",
         "presentation.copy-style",
         "presentation.text",
@@ -3054,10 +3052,16 @@
       ]
     },
     {
+      "id": "edit",
+      "name_key": "Menu.Edit",
+      "cluster_ids": [
+        "selection-move-inspect"
+      ]
+    },
+    {
       "id": "construction",
       "name_key": "Menu.Construction",
       "cluster_ids": [
-        "selection-move-inspect",
         "point-construction",
         "linear-geometry-tools",
         "parameter-driver-tools",
@@ -4099,6 +4103,62 @@
     "Menu.File": {
       "en": "File",
       "es": "Archivo"
+    },
+    "Menu.Edit": {
+      "en": "Edit",
+      "es": "Editar"
+    },
+    "Definition.ReadOnly": {
+      "en": "Read-only definition. Edit the defining inputs; this object has no approved direct redefine operation.",
+      "es": "Definición de solo lectura. Edite los datos que la definen; este objeto no admite redefinición directa aprobada."
+    },
+    "UserTools.Title": { "en": "User tools", "es": "Herramientas de usuario" },
+    "UserTools.Install": { "en": "Install .ggt…", "es": "Instalar .ggt…" },
+    "UserTools.Remove": { "en": "Remove installed package", "es": "Eliminar paquete instalado" },
+    "UserTools.Pin": { "en": "Pin to toolbar", "es": "Fijar en barra de herramientas" },
+    "UserTools.Unpin": { "en": "Unpin from toolbar", "es": "Quitar de barra de herramientas" },
+    "UserTools.Document": { "en": "Document tools (local only)…", "es": "Herramientas del documento (solo locales)…" },
+    "UserTools.Installed": { "en": "Installed packages", "es": "Paquetes instalados" },
+    "UserTools.Empty": { "en": "No installed user tools", "es": "No hay herramientas de usuario instaladas" },
+    "UserTools.Failure": { "en": "Cannot use this tool: ", "es": "No se puede usar esta herramienta: " },
+    "UserTools.Scope": {
+      "en": "Installation changes application preferences, not this construction. Use only trusted tools you have permission to use.",
+      "es": "La instalación cambia las preferencias de la aplicación, no esta construcción. Use solo herramientas de confianza con permiso de uso."
+    },
+    "UserTools.RemoveConfirm": {
+      "en": "Remove this installed package? Existing constructed objects and document tools remain unchanged.",
+      "es": "¿Eliminar este paquete instalado? Los objetos construidos y herramientas del documento no cambian."
+    },
+    "UserTools.Unavailable": { "en": "Unavailable", "es": "No disponible" },
+    "UserTools.Close": { "en": "Close", "es": "Cerrar" },
+    "UserTools.LibraryError": {
+      "en": "User-tool library could not be read. Existing data was not replaced.",
+      "es": "No se pudo leer la biblioteca de herramientas. No se han sustituido los datos existentes."
+    },
+    "UserTools.LibraryBusy": {
+      "en": "Another window is updating the user-tool library. Try again.",
+      "es": "Otra ventana está actualizando la biblioteca de herramientas. Inténtelo de nuevo."
+    },
+    "UserTools.DocumentConflict": {
+      "en": "A document tool already uses this command name.",
+      "es": "Una herramienta del documento ya usa este nombre de comando."
+    },
+    "UserTools.Limit": {
+      "en": "User-tool package or library exceeds the supported size limit.",
+      "es": "El paquete o la biblioteca supera el límite de tamaño admitido."
+    },
+    "UserTools.Unknown": { "en": "The installed tool no longer exists.", "es": "La herramienta instalada ya no existe." },
+    "UserTools.InvalidArchive": {
+      "en": "Invalid or unsupported .ggt package or library metadata.",
+      "es": "Paquete .ggt o metadatos de biblioteca no válidos o no admitidos."
+    },
+    "UserTools.CommandConflict": {
+      "en": "This command name conflicts with a native, installed or document tool.",
+      "es": "Este nombre de comando coincide con uno nativo, instalado o del documento."
+    },
+    "UserTools.UnsupportedBody": {
+      "en": "This tool needs unsupported scripts, semantic objects or non-planar operations; use the explicit Laboratory route.",
+      "es": "Esta herramienta requiere scripts, objetos semánticos u operaciones no planas no admitidas; utilice Laboratorio explícitamente."
     },
     "Menu.Construction": {
       "en": "Construction",

@@ -216,6 +216,16 @@ G9U1 interaction. A label may locate an explicitly intended command-context
 target there, but never becomes durable identity. This inspection contract must
 not be used to bypass the G9A compatibility predicate or atomic transaction.
 
+Round-1 review extends the same read-only affordance to non-editable rich-result
+objects and presents metric scalar public intent from the actual rich parent.
+For a rich `o=LocusLength(L,P,Q)` and scalar `Length(o)`, ordinary human-facing
+definition templates may display `Length(L,P,Q)`. XML/internal expression inputs
+remain `Length(o)`; the rich authority is not flattened out of the DAG, and no
+integration is duplicated. `Length(...)` remains scalar; `LocusLength(...)`
+remains rich. P/Q must already carry exact semantic addresses on the same source:
+free interpolation nodes A/C are not admitted merely because they lie on the
+spline. Invalid provenance keeps the rich diagnostic and scalar undefined.
+
 ## 4. Algebra description-mode state
 
 The Algebra description-mode menu is one mutually exclusive presentation
@@ -466,6 +476,21 @@ menu rebuild must leave actions, help, feature policy and selected UI state
 current, without duplicates or stale strings.
 
 ## 10. Documents, preferences and compatibility
+
+The round-1 native lifecycle correction preserves existing ZIP/XML and identity
+schema. Normal producer registration refreshes only the derived dependency IDs
+of already-participating construction records affected by newly participating
+direct inputs, within the existing atomic registry/runtime publication. It
+validates the old and prospective DAGs and preserves IDs, roles and revisions;
+G9A staging and captured-context guards are not bypassed. Native load/copy do not
+repair supplied records. A stale historical dependency record still fails closed.
+
+Before atomic replacement, explicit native Save validates the temporary archive
+with the existing disposable-kernel reader. Failure preserves the previous file
+and unsaved state. This adds one reconstruction to explicit Save, not ordinary
+recompute; it is neither a second persistence model nor an archive sanitizer.
+Exact fixture diagnosis, rollback controls and cost limits are recorded in the
+[native lifecycle review](../../../docs/validation/g9u1_native_lifecycle_review.md).
 
 - `.cedg` remains native GeoCeDG identity; `.ggb` remains non-destructive
   compatibility input.

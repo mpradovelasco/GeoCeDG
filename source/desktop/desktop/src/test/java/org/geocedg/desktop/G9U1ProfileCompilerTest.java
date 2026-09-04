@@ -17,11 +17,14 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 import org.geogebra.common.awt.AwtFactory;
+import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.move.ggtapi.models.json.JSONObject;
 import org.geogebra.desktop.awt.AwtFactoryD;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+@ExtendWith(G9U1TestApp.Lifecycle.class)
 class G9U1ProfileCompilerTest {
 
 	@BeforeAll
@@ -41,12 +44,18 @@ class G9U1ProfileCompilerTest {
 	}
 
 	@Test
-	void toolbarContainsExactlySixtySixUniqueRealModeIds() {
+	void toolbarContainsThirtyTwoCuratedModesWhileCatalogRetainsAllSixtySix() {
 		String[] modes = GeoCeDGProfile.getToolbarDefinition().split("[ |]+");
-		assertEquals(66, modes.length);
-		assertEquals(66, new HashSet<>(Arrays.asList(modes)).size());
+		assertEquals(32, modes.length);
+		assertEquals(32, new HashSet<>(Arrays.asList(modes)).size());
+		assertEquals(66, GeoCeDGProfile.getActions().stream()
+				.filter(action -> action.mode() != null).count());
 		assertFalse(Arrays.asList(modes).contains("47"));
 		assertFalse(Arrays.asList(modes).contains("54"));
+		assertFalse(Arrays.asList(modes).contains(
+				Integer.toString(EuclidianConstants.MODE_DELETE)));
+		assertFalse(Arrays.asList(modes).contains(
+				Integer.toString(EuclidianConstants.MODE_SHOW_HIDE_OBJECT)));
 	}
 
 	@Test

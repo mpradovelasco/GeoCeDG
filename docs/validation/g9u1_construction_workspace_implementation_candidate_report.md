@@ -9,6 +9,287 @@
   `passClaimedImplementation = false`
 - `manualAuthorSmoke = PENDING`
 
+## Author-review stabilization successor — current source freeze
+
+This section supersedes only the live review status and execution perimeter.
+The narrative below is preserved as historical evidence of checkpoint
+`b492194082f1adc9f981d85d92a58ef57490196f`, not rewritten as if the review
+findings had never happened. Its non-PASS annotated tag is
+`geocedg-g9u1-author-review-checkpoint-1`, object
+`755f22bd2b101d4ca2ad6bea98429bc2ba941af9`, peeling to that checkpoint.
+The prior cohort remains 96 paths, 132 focused methods and 138 scenarios.
+
+Historical author review was **COMPLETED WITH FINDINGS — NOT PASS**.
+The current successor is **IMPLEMENTATION CANDIDATE — PENDING AUTHOR RE-REVIEW**;
+`manualAuthorSmoke = PENDING`, `selfApproved = false`,
+`authorApprovedImplementation = false`, `passClaimedImplementation = false`.
+No product main/PASS tag is advanced and no author approval is inferred.
+
+The [round-one record](g9u1_author_manual_review_round1.md) preserves the actual
+author observations and every diagnostic failure. The original
+`TestBasic1.cedg` is byte-exact in the Desktop test resources: 31,885 bytes,
+raw SHA-256
+`0791895e1133d4a44ff26c88760cfc951db787c42056a8b5758c79a9b5687be0`.
+It is a valid ZIP/XML archive with a stale producer dependency record and
+remains rejected by unchanged strict admission. It is not sanitized or
+retroactively relabeled as a successful save/reopen.
+
+The bounded corrections and retained semantics are:
+
+- Public scalar definition presents `Length(S,P,Q)` while the hidden rich
+  parent, actual DAG and XML remain authoritative. Free interpolation points
+  are not semantic endpoints; no Cartesian preimage inference is introduced.
+  Straight SplineV2 and ordinary LocusV2 controls provide total 4 / partial 2.
+- Late identity participation refreshes affected existing producer dependency
+  records atomically, preserving IDs/revisions and the G9A transaction rules.
+  The loader is not relaxed. Native save preflights before replacing a target;
+  failure preserves that target and the current construction.
+- Six ordinary application menus project all 110 stable actions. The compact
+  toolbar is a strict subset: 32 native modes plus SplineV2 and ZoomWindow.
+  Eleven families and eighteen clusters remain one manifest authority. A
+  product-only startup hook suppresses the inherited Classic perspective
+  chooser; Classic retains its normal startup behavior.
+- Algebra/Properties affordances follow each object's existing edit contract.
+  Semantic definitions are explicitly read-only; ordinary numeric editing
+  keeps the approved atomic compatible-redefine path. No blanket semantic
+  edit policy or new redefine predicate is introduced.
+- Four owned SVG tool icons retain text/tooltip/accessibility meaning at normal
+  and high DPI. User tools use an explicit bounded persistent application
+  library, separate from document macros, with collision/unsafe-content
+  rejection and no new native action IDs.
+- The [quick guide](../user/geocedg_construction_quick_guide.md) and
+  [re-smoke checklist](g9u1_author_resmoke_checklist.md) describe the actual
+  public workflow. Templatev7 contributes curation references only; no legacy
+  bundle is automatically installed.
+
+Exactly two shared productive kernel paths are authorized in this review:
+`AlgoLocusMetricScalarAdapter.java` for public provenance presentation and
+`SpatialIdentityRegistry.java` for the producer dependency-coherence defect.
+The verifier exhaustively names these paths; it does not permit a generic
+kernel expansion. Metric integration, semantic endpoints, identity/token
+definitions, persistence schema/admission, scientific tolerances, R1/R4/R5/R6
+semantics and Classic contracts are preserved.
+
+The frozen cumulative inventory is **122 paths / 70 source paths** relative to
+product base `f8a21a087234b18fc13741a0ac2baf80608e9022`; the bounded review
+delta is **62 paths** relative to `b492194...`. Both exact path lists and the
+historical blob pins live in the
+[evidence JSON](../../geocedg/validation/g9u1/g9u1-construction-workspace-evidence.json).
+No artifacts, author-input assets beyond the explicitly preserved regression
+archive, or unrelated repository files are included.
+
+All 138 historical scenario meanings survive; fifteen bounded review scenarios
+`U1-RV01`–`U1-RV15` yield **153 scenarios**. The three obsolete toolbar test
+names map explicitly to their reviewed menu/toolbar replacements. The focused
+perimeter is **183 methods / 18 classes**: 169 Desktop and 14 shared methods.
+This is an exact source/test inventory, not a claim that the frozen cohort has
+already run. Historical 132-method results are never used as new evidence.
+
+`VERIFICATION_INFRASTRUCTURE_IMPACT = UPDATE_REQUIRED`: the successor
+perimeter adds review assertions and exact history/fixture/inventory linkage,
+without changing top-level orchestration, historical R1 scientific assertions,
+test acceptance or geometric references. **Fresh PHASE and clean FULL are
+required.** PHASE A is recorded under
+`artifacts/g9u1-review-round1/final-phase-07`; FULL, including the actual
+COMPOSED scope and focused B, under
+`artifacts/g9u1-review-round1/final-full-03`. Their canonical summaries must
+match for the same frozen source cohort. Current-run receipts may prevent
+duplicate execution, but no old receipt or old FULL is reused as a new run.
+The tracked report/evidence is frozen before execution; actual exit codes and
+hashes are read from these run records and the final handoff, not preclaimed.
+
+The first successor `final-phase` attempt failed before Gradle execution:
+the inherited R4 authority requires `G9U0-R4 candidate verification requires
+an empty index.` The outer R1 static failure is preserved in its root record,
+raw SHA-256
+`907a33654b53823077b0930ac75d733ca7dbb43fe1bdaba95e01448764be63e2`.
+Only the 52 review paths were unstaged; candidate worktree bytes and all
+verifier assertions remained unchanged. The current report/evidence records
+this operational precondition failure and the new `final-phase-02` destination;
+the failed attempt is not relabeled, hidden or treated as a product regression.
+Final PHASE/FULL execute from the same newly frozen cohort with an empty index.
+
+The subsequent `final-phase-02` attempt executed all 178 declared focused
+methods successfully (zero failures/errors/skips) but failed the mandatory
+Checkstyle gate with 13 findings. Its root remains **FAILED**, raw SHA-256
+`95fccdba265b5ffd228ab1b3c51055fe649ad852bd7476c2559ce193f23866d9`.
+The eighteen JUnit XML and four Checkstyle reports remain under
+`artifacts/g9u1-review-round1/final-phase-02/preserved-reports/{shared,desktop}`.
+Javadoc, import order, line width/ASCII and declaration-distance corrections
+do not waive that gate. A separate bounded preference-library robustness
+review also requires focused transaction/multi-window regressions before the
+new freeze. These added tests and their implementation are not covered by
+the failed earlier execution. `final-phase-03` was the next required PHASE;
+`final-full` remains the pending fresh clean FULL destination.
+
+The three new preference-library cases recheck a second window's command
+collision against the current store, preserve unrelated packages during
+concurrent pin/removal, and reject a busy lock without replacing preferences.
+They extend existing review scenarios RV10–RV12; no action/scenario ID, kernel
+transaction, persistence schema or G9A policy is added.
+
+The ownership diagnostic `dev-user-tools-ownership-01` then ran 24 cases and
+failed one newly added assertion in the existing activation test: the macro
+retained its isolated validation kernel rather than the live application
+kernel. Its root SHA-256 is
+`05e6efd8be6c13115d155ff6554340164738c8676e4c88ebc49232cc16cd2b05`;
+the log and JUnit XML remain under that run's
+`dev/57e3d1cd4b4a468c98537ac8be94cb54` directory. The other 23 tests passed.
+Activation must use the existing application-owned macro loading seam, without
+a second tool engine or new geometric semantics. The diagnostic is preserved
+as FAILED/non-acceptance; the assertion remains in the final 181-method scope.
+
+The subsequent canonical `dev-user-tools-ownership-02` passed 24/24 (exit 0),
+root SHA-256
+`6fa28152d6d53a750b99b61a3d010c02c92e84d0feac21f3b5bd74852714095b`.
+The corrected activation uses host macro-only XML loading after detached
+validation and verifies complete registration/ownership with bounded rollback.
+The tests cover host-owned removal/reactivation, partial-package rejection and
+failure rollback as well as multi-window preferences. This scoped DEV result
+does not replace the pending final PHASE/Checkstyle/FULL or author re-smoke;
+complete native ToolManager editing interoperability is not inferred.
+
+That `final-phase-03` attempt passed all 181 focused JUnit methods but retained
+four mandatory Checkstyle failures, so its root remains **FAILED**, SHA-256
+`fac7f89c43dd11c28fa8737b0c1816511bebeeeb3dabdd08e3f4565c92eededa9`.
+Its eighteen JUnit XML/four style reports remain under
+`artifacts/g9u1-review-round1/final-phase-03/preserved-reports`. The correction
+only wraps one comment and marks three captured test values final; assertions,
+behavior and counts do not change. Fresh PHASE is now `final-phase-04` with
+those four exact corrections; no FULL has executed for this successor yet. Neither
+failed PHASE attempt is relabeled as an acceptance result.
+
+`final-phase-04` subsequently passed 181/181 and all focused technical gates,
+root SHA-256
+`e3b0af4644b3cf97a1482c98b961a382ce08ac294491769e4506435a43703236`,
+canonical summary
+`56a3254f6c4546b019bdbd7a26aa63bfc13abbc62964b75495e79b5ada88adc4`.
+Its following clean `final-full` failed after 1105.037 seconds, root SHA-256
+`15f46a7b39db952a295f1ca2edf3d7213e81c2a43564cb044fa64c99e3a0bdcd`.
+Archived shared XML contains 6613 cases: 6603 passed, ten skipped, zero failed.
+Desktop contains 1349 cases: 1348 executed, one skipped, 1341 passed and seven
+failed. One failure was R3 m01's obsolete five-menu constant; six were heap
+exhaustion in inherited SvgLoadTest, CommandsSuiteTest and SpecialPointsTest.
+The FULL root/log/XML archive remains historical and FAILED; successful earlier
+PHASE evidence does not waive it or cover subsequent changed test inputs.
+
+The R3 adaptation reads current `menu_sections` cardinality and retains all six
+named lifecycle cases and their action/localization/feature assertions. The R3
+sealed verifier/tag/evidence remain unchanged. Isolated SvgLoadTest then passed
+6/6 with the same 512 MiB heap (`dev-svg-memory-01`, root
+`4b85745bb05ed0d490e67d74709799c8bca7fd2b7b6cdf47253015c383fd34f9`).
+Inspection identified globally registered keyboard dispatchers retaining
+windowless test applications and their kernels. Only embedded test fixtures
+now release that unused registration. Native product/Classic windowed keyboard
+lifecycle, heap limits, SVG implementation and scientific assertions are not
+changed. The one new fixture regression checks native registration, windowless
+cleanup and restoration; it extends RV13 without adding a scenario/action ID.
+
+Canonical `dev-review-memory-02` passed 191/191, zero failures/errors/skips,
+root SHA-256
+`e8a7b4e8e2ab4a69ddfa27f0148ef3e477861ec43445c90dfc81f0473d27ed3c`,
+summary SHA-256
+`2028b4e8a89b44f8708b410f090c561b127ac29da507f41de8df7571d992d197`.
+It combines all G9U1 Desktop tests with R3 menus and the previously failing
+inherited SVG/command/special-point classes. This is scoped DEV, not FULL.
+Only captured-value final qualifiers/comment wrapping followed that execution.
+The final declared cohort is now 182 focused methods / 153 scenarios; it must
+execute fresh `final-phase-05` and clean `final-full-02`. No old receipt, test
+execution or author approval is reused for that new source cohort.
+
+
+`final-phase-05` then passed 182/182 on its exact prior 58-path review cohort,
+root SHA-256 `32d0464b4f85c85b0e8ac268832586176d50561b082503e8bf7445476e8ca8af`,
+canonical summary
+`f4b48ab49483a128e938651a0c1060d8dae6b8a214d40f1f59aefe94bb254af2`.
+Its clean `final-full-02` again failed, after 977.191 seconds, root SHA-256
+`5cc4ab27bf20b1e4a7c65ffdd790aa2f7b89d859a68ed6b0060701b85d2c40ad`.
+Shared had 6603 passes/ten skips; Desktop reported 1342 cases with sixteen
+heap-exhaustion failures and one skip. The failed evidence is preserved;
+dispatcher-only fixture cleanup did not solve all strong global roots.
+
+`dev-memory-all-01` failed when an unquoted wildcard expanded into a filesystem
+task argument (root `2dc5c6cbcc142f8ea4d4c99d90da3a61c547aa84e4cbab77dc065aa3f8d4250b`).
+`dev-memory-all-02` retained a failed full-Desktop heap diagnostic, root
+`a3d0dc5e1cba34f5dec44a0143ac5317a9974a6569a42e7983949c4e6adeeda8`.
+Its read-only HPROF traversal proves 278 live AppGeoCeDG objects, 284
+DockManagerD objects and 283 GeoGebraFrame objects, with explicit strong paths
+from Toolkit's registered listeners and GeoGebraFrame's static instance list.
+The bounded forensic record is
+`artifacts/g9u1-review-round1/dev-memory-all-02/heap/hprof-retention-evidence.json`,
+raw SHA-256 `611446f3f2cf9af35ed84c93acd122e61c397b85c7a545cc81900a937f3cfc0a`.
+This diagnostic does not alter the normal heap policy or supply acceptance.
+
+The correction is exclusively test-host lifecycle: all sixteen G9U1 Desktop
+classes use before/after identity snapshots. Teardown removes only newly
+registered DockManagerD listeners and newly created nonvisible/non-displayable
+lazy frames owned by embedded JPanel hosts, plus their unused dispatcher.
+Preexisting registrations remain; a visible/displayable or non-embedded owner
+fails closed before teardown. No exit, global clear, reflection, product
+window lifecycle or solver/test assertion is introduced or changed. One
+deterministic WorkspaceSurface regression proves exact registration/removal,
+preserved preexisting roots and unchanged app bindings without relying on GC.
+It extends RV13: 183 focused methods, still 153 scenarios and 122 cumulative
+paths; the review delta is now 62 paths, including four existing G9U1 test
+classes newly annotated for teardown. Earlier 52/58-path raw freezes remain
+historical. The new normal-policy DEV destination is `dev-memory-all-03`;
+fresh acceptance destinations are `final-phase-06` and `final-full-03`.
+No failed run, prior receipt or author approval is relabeled.
+
+The normal-policy `dev-memory-all-03` then completed Gradle **BUILD SUCCESSFUL**:
+1351 Desktop XML cases, 1350 passed, zero failures/errors and one inherited
+disabled case, `org.geogebra.CasValueExtractor`. Nevertheless its DEV root is
+**FAILED**, exit 1, because DEV requires no mandatory skipped tests:
+`Mandatory tests were skipped: org.geogebra.CasValueExtractor`.
+Root SHA-256:
+`bb394b904f508510fb666e13aec4cd431ffa52b51cdd206dcf7da6be24fc2bcf`;
+archived Gradle log SHA-256:
+`44effae8c4d38471de3f236bd16767d10763280b450a05380585e7a7595c05b9`.
+The run lasted 120.23 seconds, from `2026-09-04T12:06:19.1632061Z` to
+`2026-09-04T12:08:19.3951166Z`; log/XML are preserved under its
+`dev/9e7903996bf84a68a8b9dc6db8c8c9c5` directory. This complete Desktop runtime
+shows no recurrence of OOM with the bounded fixture teardown, but is not DEV
+PASS or FULL acceptance. No disabled-case policy is weakened; canonical FULL
+must independently apply its existing inherited-skip contract. Only this
+chronology/evidence hash metadata changes after that run; executable and test
+inputs remain unchanged. The fresh PHASE/FULL gates are still pending.
+
+`final-phase-06` subsequently passed all 183 focused JUnit methods (zero
+failures/errors/skips), but its mandatory Checkstyle gate found one 101-column
+comment in `G9U1TestApp.java`; the root remains **FAILED**, exit 1, SHA-256
+`2229b04489e24308c0aa9b92c5518a004e75c3617e045edf7d6cae133a5b0049`.
+The run lasted 103.547 seconds, `2026-09-04T12:15:27.4106930Z` through
+`2026-09-04T12:17:10.9610399Z`. Eighteen JUnit and four Checkstyle XML reports
+are byte-exact under that run's `preserved-reports/{shared,desktop}` directory.
+Only that comment was wrapped; no test assertion, behavior or count changed.
+The new PHASE destination is `final-phase-07`; `final-full-03` has not run and
+remains required. The failed PHASE06 evidence is not relabeled or regenerated.
+
+Separate read-only observation: native archive preflight uses an AppDNoGui
+scratch loader whose inherited XML route may start animation for
+`startAnimation=true`, without a characterized scratch-animation teardown.
+The author archive and current regressions have animation disabled. This is
+an **UNCHARACTERIZED animated-scratch resource observation**, not the demonstrated
+Toolkit/frame retention cause, a proved geometry/persistence failure, or a new
+risk ID. No product correction or broader investigation is included here.
+
+`BOOTSTRAP IMPACT — NO CHANGE REQUIRED`: no new workstation/toolchain
+requirement. `GUIDE_IMPACT = UPDATE_REQUIRED`: new practical public
+workflow documentation is included. Limited agent GUI observation confirmed
+the six-menu/compact-toolbar arrangement. A subsequent fresh launch compiled
+and exited 0, but its capture was occluded; visual confirmation of the startup
+popup correction and complete manual workflow acceptance remain pending.
+
+`G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP = OPEN / TRACKED`.
+These native producer/metric regressions do not close that independent risk.
+G9B/G9C and productive G10 remain NOT AUTHORIZED; G9U2 remains BLOCKED.
+
+## Preserved historical checkpoint narrative
+
+The following sections are the prior 96-path candidate account. Their counts,
+failures, pending source-freeze execution paths and scoped GUI observations
+belong to that checkpoint, not to the successor above.
+
 ## Entry and reconciliation gate
 
 Published product main/base:

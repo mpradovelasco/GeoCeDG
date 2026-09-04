@@ -3348,8 +3348,19 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 		try {
 			setWaitCursor();
 			if (isNativeDocument(file)) {
-				AtomicDocumentFileWriter.write(file.toPath(), temporary ->
-						getXMLio().writeGeoGebraFile(temporary.toFile()));
+				AtomicDocumentFileWriter.write(file.toPath(), temporary -> {
+					getXMLio().writeGeoGebraFile(temporary.toFile());
+					// Validate the exact unpublished bytes with the ordinary reader.
+					// A failed native save must not replace an earlier good document.
+					try {
+						if (!DocumentArchivePreflight.validate(Files.readAllBytes(temporary),
+								createDocumentPreflightConfig())) {
+							throw new IOException("Native archive failed save preflight");
+						}
+					} catch (XMLParseException exception) {
+						throw new IOException("Native archive failed save preflight", exception);
+					}
+				});
 			} else {
 				getXMLio().writeGeoGebraFile(file);
 			}

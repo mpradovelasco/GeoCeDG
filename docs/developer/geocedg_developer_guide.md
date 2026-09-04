@@ -330,10 +330,21 @@ author fixture and fixed/adaptive negative controls are operational authority.
 `apps/geocedg/application-profile.yml` is the single live schema-v2 G9U1
 candidate catalog: 11 families, 18 clusters and 110 stable actions. Strict
 schema/reference validation precedes compilation into the action registry,
-menus, toolbar, family palette and help. The versioned v1 profile/schema is
+menus, toolbar, context actions and help. The versioned v1 profile/schema is
 only an explicit validated degraded fallback, not a parallel live action
 catalog. Saved workspace preferences are presentation-only. Feature manifest
 membership does not itself grant kernel creation authority.
+
+Round-1 author-review stabilization retains all 110 actions, 11 families and 18
+clusters, but compiles six ordinary menus and 34 primary toolbar actions from
+that same catalog. The remaining commands/actions remain discoverable through
+menus, overflow and help. Product user-tool installation/pinning is separate
+application-library state, exposed through the existing user-tools action; it
+does not add hard-coded stable product actions. `GeoCeDGUserToolLibrary` stores
+validated original `.ggt` packages in isolated preferences and invokes the
+existing host macro engine only after explicit activation. Document macros do
+not auto-install; Templatev7 remains historical provenance, never an automatic
+tool or asset import. See the [user-tool review](../validation/g9u1_user_tools_review.md).
 
 G9U1 implementation is conditionally author-authorized and post-R1 reconciled;
 it remains a candidate with implementation approval and manual author smoke
@@ -361,7 +372,10 @@ uncertified/tangent/overlap/monodromic candidates stay rich-only.
 
 Shared host changes are product-gated syntax-only preview, existing Continuity
 OFF enforcement and command-help visibility; numerical solvers, token ledgers
-and source definitions are unchanged. Explicit submission uses the existing
+and source definitions are unchanged. The round-1 bounded additions are metric
+definition presentation and atomic registry dependency coherence, described below;
+they introduce no metric admission or new identity/persistence schema.
+Explicit submission uses the existing
 atomic G9A seam. The current-run verifier preserves raw input/HEAD/index/status
 checks; final PHASE supplies focused A and FULL executes the entire COMPOSED
 scope plus focused B using its own live receipt. No receipt is reused from a
@@ -374,6 +388,17 @@ planning evidence after productive edits.
 single `populateProductMenu()` method used at initialization. Do not add a
 second action registry or intersection flag. The sole public V2 opt-in remains
 `--enableLocusV2=true`.
+
+`AlgoLocusMetricScalarAdapter.getDefinition` may present `Length(L[,P,Q])` from
+its actual `AlgoLocusMetricV2`/`AlgoLocusBetweenMetricV2` parent for human-facing
+templates. Keep the adapter's single rich-result input and XML/internal command
+expression intact (`Length(o)` when o is that rich parent). No new integration,
+numeric tolerance or endpoint lookup is permitted. P/Q require existing exact
+semantic addresses on the same source; free interpolation inputs A/C must remain
+invalid endpoints. The [quick guide](../user/geocedg_construction_quick_guide.md)
+uses explicit semantic points and distinguishes ordinary `Length` from rich
+`LocusLength`. The [re-smoke checklist](../validation/g9u1_author_resmoke_checklist.md)
+is the current author-review procedure, not an assertion of author acceptance.
 
 The exact-token materialization dialog creates an auxiliary `GeoText` because
 the token is a reconstructible input of `AlgoLocusIntersectionPointV2`. R3
@@ -424,6 +449,24 @@ platform suitability checks. No icon, palette, workspace or marker
 implementation is part of R3 or R6.
 
 ## Persistence and compatibility
+
+The round-1 native-save correction uses the existing archive reader to preflight
+the temporary `.cedg` before atomic target replacement. Failure leaves the old
+file and unsaved state intact. It adds one disposable reconstruction/solve to
+explicit Save only; the archive format, IDs and normal recomputation are unchanged.
+
+`SpatialIdentityRegistry.publishBatch` also maintains the already-required
+construction-DAG record invariant when a preexisting direct input first gains an
+explicit durable ID. Affected existing construction records are validated against
+the old graph, then their derived dependency sets join the new attachments in
+one prospective runtime/registry switch. IDs, roles, schema and revisions remain;
+the geometric definition and actual input edges did not change. Failure rolls
+back the complete switch. G9A staging/captured signatures remain protected and
+native load/copy never uses this producer refresh to repair supplied records.
+The malformed historical author archive remains immutable and rejected. See
+[native lifecycle review](../validation/g9u1_native_lifecycle_review.md) for the
+exact failure and the bounded publication cost, including non-linear existing
+dependency validation. This is not a schema migration or relaxed loader.
 
 Legacy `.ggb` compatibility behavior must remain non-destructive unless a
 versioned migration is approved. New semantic objects require stable IDs,

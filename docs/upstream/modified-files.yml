@@ -12,7 +12,7 @@
     {
       "path": "source/desktop/desktop/build.gradle.kts",
       "change": "modified",
-      "purpose": "Package the profile manifest, expose runGeoCeDG, register the isolated opt-in Locus V2 developer-laboratory task, and generate auditable build-time repository provenance for G9X1 sidecars. G9U1: Package the sole schema-v2 workspace catalog, historical v1 fallback/schema and owned guide through existing Desktop resources. Authority: geocedg/specs/ui/g9u1-construction-interaction.md.",
+      "purpose": "Package the profile manifest, expose runGeoCeDG, register the isolated opt-in Locus V2 developer-laboratory task, and generate auditable build-time repository provenance for G9X1 sidecars. G9U1: Package the sole schema-v2 workspace catalog, historical v1 fallback/schema and owned guide through existing Desktop resources. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: package the owned Construction quick guide using the existing processResources seam.",
       "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
     },
     {
@@ -36,7 +36,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/main/AppD.java",
       "change": "modified",
-      "purpose": "Preserve profile bootstrap hooks and add fail-closed one-read .cedg preflight, prepared and atomic undo-baseline commit with full rollback on live-parse or commit failure, product-window routing and current-document preservation without changing ZIP/XML internals. G9U1: capture native transaction UI state before hiding navigation, so rollback can restore the prior presentation; non-native ordering and formats are unchanged.",
+      "purpose": "Preserve profile bootstrap hooks and add fail-closed one-read .cedg preflight, prepared and atomic undo-baseline commit with full rollback on live-parse or commit failure, product-window routing and current-document preservation without changing ZIP/XML internals. G9U1: capture native transaction UI state before hiding navigation, so rollback can restore the prior presentation; non-native ordering and formats are unchanged. G9U1 review round 1: preflight the temporary native save archive with the existing disposable reader before atomic replacement, preserving the previous target and unsaved state on failure; no schema or loader repair.",
       "authority": "geocedg/specs/ui/native-document-identity.md"
     },
     {
@@ -60,7 +60,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/AppGeoCeDG.java",
       "change": "added",
-      "purpose": "Instantiate the GeoCeDG profile and enforce the .cedg-only native save, product-window and parser-preflight policy while retaining the Classic internal app code and feature gates. G9U1: Apply approved Construction workspace, language and Continuity policy without changing Classic or geometry. Authority: geocedg/specs/ui/g9u1-construction-interaction.md.",
+      "purpose": "Instantiate the GeoCeDG profile and enforce the .cedg-only native save, product-window and parser-preflight policy while retaining the Classic internal app code and feature gates. G9U1: Apply approved Construction workspace, language and Continuity policy without changing Classic or geometry. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: suppress the inherited startup perspective popup and separate document-local macro preference snapshots from explicit application-library installation; Classic and document macro serialization remain unchanged.",
       "authority": "geocedg/specs/ui/native-document-identity.md"
     },
     {
@@ -78,7 +78,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGProfile.java",
       "change": "added",
-      "purpose": "Load the maintainable profile manifest and compile its toolbar and perspective contracts. G9U1: Strictly compile live schema v2 and preserve explicit historical v1 fallback compatibility. Authority: geocedg/specs/ui/g9u1-construction-interaction.md.",
+      "purpose": "Load the maintainable profile manifest and compile its toolbar and perspective contracts. G9U1: Strictly compile live schema v2 and preserve explicit historical v1 fallback compatibility. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: validate and compile reduced primary toolbar placements and six ordinary menu sections while retaining 110 action IDs.",
       "authority": "apps/geocedg/application-profile.yml"
     },
     {
@@ -126,7 +126,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGMenuBar.java",
       "change": "added",
-      "purpose": "Expose experimental DXF and default-off Locus V2 actions only in the GeoCeDG product profile; G9U0-R3 retains one population authority across inherited init/font/localization rebuilds so the public inspector and peer actions do not disappear. G9U1: Project declarative stable actions into accessible menus without a second action catalog. Authority: geocedg/specs/ui/g9u1-construction-interaction.md.",
+      "purpose": "Expose experimental DXF and default-off Locus V2 actions only in the GeoCeDG product profile; G9U0-R3 retains one population authority across inherited init/font/localization rebuilds so the public inspector and peer actions do not disappear. G9U1: Project declarative stable actions into accessible menus without a second action catalog. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: compile six normal top-level sections from the same profile and expose explicit installed user tools without duplicating catalog authority.",
       "authority": "geocedg/specs/locus/locus-v2-public-ui-exposure.md"
     },
     {
@@ -173,111 +173,165 @@
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/ExplicitNumericDomainProvider2D.java",
-      "change": "added", "purpose": "Implement the approved explicit numeric driver-domain provider.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+      "change": "added",
+      "purpose": "Implement the approved explicit numeric driver-domain provider.",
+      "authority": "geocedg/specs/locus/locus-v2-semantics.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusBranch2D.java",
-      "change": "added", "purpose": "Represent immutable branch identity, valid components, lineage, provenance and quality.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+      "change": "added",
+      "purpose": "Represent immutable branch identity, valid components, lineage, provenance and quality.",
+      "authority": "geocedg/specs/locus/locus-v2-semantics.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusBranchSnapshot2D.java",
-      "change": "added", "purpose": "Publish provider-owned branch snapshots independently from samples.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+      "change": "added",
+      "purpose": "Publish provider-owned branch snapshots independently from samples.",
+      "authority": "geocedg/specs/locus/locus-v2-semantics.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusBranchSnapshotFunction2D.java",
-      "change": "added", "purpose": "Define the internal typed dynamic branch-snapshot seam.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+      "change": "added",
+      "purpose": "Define the internal typed dynamic branch-snapshot seam.",
+      "authority": "geocedg/specs/locus/locus-v2-semantics.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusDefinition2D.java",
-      "change": "added", "purpose": "Own one immutable revisioned semantic definition/evaluator and propagate the bounded R6 nested-evaluation work-limit signal without converting it into an ordinary evaluator failure.", "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
+      "change": "added",
+      "purpose": "Own one immutable revisioned semantic definition/evaluator and propagate the bounded R6 nested-evaluation work-limit signal without converting it into an ordinary evaluator failure.",
+      "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusDriverDomainProvider2D.java",
-      "change": "added", "purpose": "Define provider-owned semantic parameter and domain contracts.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+      "change": "added",
+      "purpose": "Define provider-owned semantic parameter and domain contracts.",
+      "authority": "geocedg/specs/locus/locus-v2-semantics.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusDualRunDiagnostic2D.java",
-      "change": "added", "purpose": "Label legacy sampled and V2 semantic comparison evidence without redirecting Locus.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+      "change": "added",
+      "purpose": "Label legacy sampled and V2 semantic comparison evidence without redirecting Locus.",
+      "authority": "geocedg/specs/locus/locus-v2-semantics.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusDynamicPointFunction2D.java",
-      "change": "added", "purpose": "Define internal evaluation over immutable dynamic source snapshots.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+      "change": "added",
+      "purpose": "Define internal evaluation over immutable dynamic source snapshots.",
+      "authority": "geocedg/specs/locus/locus-v2-semantics.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusEvaluation2D.java",
-      "change": "added", "purpose": "Return typed valid or invalid semantic evaluations without stale coordinates.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+      "change": "added",
+      "purpose": "Return typed valid or invalid semantic evaluations without stale coordinates.",
+      "authority": "geocedg/specs/locus/locus-v2-semantics.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusEvaluationSession2D.java",
-      "change": "added", "purpose": "Provide bounded full-key memoization, coherent revisions and cycle protection, plus caller-bounded nested misses/active composition depth under the shared 128-level safety ceiling for R6.", "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
+      "change": "added",
+      "purpose": "Provide bounded full-key memoization, coherent revisions and cycle protection, plus caller-bounded nested misses/active composition depth under the shared 128-level safety ceiling for R6.",
+      "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusEvaluator2D.java",
-      "change": "added", "purpose": "Define the viewport-independent pointwise semantic evaluator contract.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+      "change": "added",
+      "purpose": "Define the viewport-independent pointwise semantic evaluator contract.",
+      "authority": "geocedg/specs/locus/locus-v2-semantics.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusInstrumentation2D.java",
-      "change": "added", "purpose": "Expose deterministic evaluation, session, revision and forbidden-work counters.", "authority": ".github/prompts/tasks/g6b-locus-v2-kernel.prompt.md"
+      "change": "added",
+      "purpose": "Expose deterministic evaluation, session, revision and forbidden-work counters.",
+      "authority": ".github/prompts/tasks/g6b-locus-v2-kernel.prompt.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusInterval2D.java",
-      "change": "added", "purpose": "Represent explicit finite oriented-domain endpoint policies for G6B.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+      "change": "added",
+      "purpose": "Represent explicit finite oriented-domain endpoint policies for G6B.",
+      "authority": "geocedg/specs/locus/locus-v2-semantics.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusLineage2D.java",
-      "change": "added", "purpose": "Represent typed appeared, disappeared, split and merged lineage.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+      "change": "added",
+      "purpose": "Represent typed appeared, disappeared, split and merged lineage.",
+      "authority": "geocedg/specs/locus/locus-v2-semantics.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusParameterMap2D.java",
-      "change": "added", "purpose": "Define typed semantic parameter composition between nested loci.", "authority": "docs/adr/0006-parallel-locus-v2-semantic-entity.md"
+      "change": "added",
+      "purpose": "Define typed semantic parameter composition between nested loci.",
+      "authority": "docs/adr/0006-parallel-locus-v2-semantic-entity.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusPathPointFunction2D.java",
-      "change": "added", "purpose": "Define the characterized path-driver pointwise transformation seam.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+      "change": "added",
+      "purpose": "Define the characterized path-driver pointwise transformation seam.",
+      "authority": "geocedg/specs/locus/locus-v2-semantics.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusPoint2D.java",
-      "change": "added", "purpose": "Represent immutable finite two-dimensional semantic coordinates.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+      "change": "added",
+      "purpose": "Represent immutable finite two-dimensional semantic coordinates.",
+      "authority": "geocedg/specs/locus/locus-v2-semantics.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusPointFunction2D.java",
-      "change": "added", "purpose": "Define the internal pointwise analytic evaluator seam.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+      "change": "added",
+      "purpose": "Define the internal pointwise analytic evaluator seam.",
+      "authority": "geocedg/specs/locus/locus-v2-semantics.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusPointTransform2D.java",
-      "change": "added", "purpose": "Define typed downstream transformation of nested semantic points.", "authority": "docs/adr/0006-parallel-locus-v2-semantic-entity.md"
+      "change": "added",
+      "purpose": "Define typed downstream transformation of nested semantic points.",
+      "authority": "docs/adr/0006-parallel-locus-v2-semantic-entity.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusQuality2D.java",
-      "change": "added", "purpose": "Keep construction fidelity, method, role and numeric guarantee independent.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+      "change": "added",
+      "purpose": "Keep construction fidelity, method, role and numeric guarantee independent.",
+      "authority": "geocedg/specs/locus/locus-v2-semantics.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusSemanticKey2D.java",
-      "change": "added", "purpose": "Address session evaluations by identity, revision, branch and canonical parameter.", "authority": "docs/adr/0006-parallel-locus-v2-semantic-entity.md"
+      "change": "added",
+      "purpose": "Address session evaluations by identity, revision, branch and canonical parameter.",
+      "authority": "docs/adr/0006-parallel-locus-v2-semantic-entity.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusSemanticMetadata2D.java",
-      "change": "added", "purpose": "Define the separated semantic status, property, quality and determinism axes.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+      "change": "added",
+      "purpose": "Define the separated semantic status, property, quality and determinism axes.",
+      "authority": "geocedg/specs/locus/locus-v2-semantics.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusSourceSnapshot2D.java",
-      "change": "added", "purpose": "Capture dynamic numeric inputs during normal recompute for query-independent evaluation.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+      "change": "added",
+      "purpose": "Capture dynamic numeric inputs during normal recompute for query-independent evaluation.",
+      "authority": "geocedg/specs/locus/locus-v2-semantics.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusV2Factory.java",
-      "change": "added", "purpose": "Provide the internal typed creation seam without a public command.", "authority": "docs/adr/0006-parallel-locus-v2-semantic-entity.md"
+      "change": "added",
+      "purpose": "Provide the internal typed creation seam without a public command.",
+      "authority": "docs/adr/0006-parallel-locus-v2-semantic-entity.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusV2Mode.java",
-      "change": "added", "purpose": "Represent internal LEGACY, V2 and DUAL diagnostic modes.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+      "change": "added",
+      "purpose": "Represent internal LEGACY, V2 and DUAL diagnostic modes.",
+      "authority": "geocedg/specs/locus/locus-v2-semantics.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusValidationTolerance2D.java",
-      "change": "added", "purpose": "Implement the author-approved uncertified scale-aware validation envelope.", "authority": "geocedg/validation/locus-v2/tolerance-policy.yml"
+      "change": "added",
+      "purpose": "Implement the author-approved uncertified scale-aware validation envelope.",
+      "authority": "geocedg/validation/locus-v2/tolerance-policy.yml"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/StablePathDomainProvider2D.java",
-      "change": "added", "purpose": "Implement only the approved segment, circle and ellipse semantic mappings.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+      "change": "added",
+      "purpose": "Implement only the approved segment, circle and ellipse semantic mappings.",
+      "authority": "geocedg/specs/locus/locus-v2-semantics.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/geos/GeoLocusV2.java",
@@ -287,159 +341,237 @@
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoAnalyticLocusV2.java",
-      "change": "added", "purpose": "Publish explicit-numeric pointwise semantic definitions through normal dependencies.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+      "change": "added",
+      "purpose": "Publish explicit-numeric pointwise semantic definitions through normal dependencies.",
+      "authority": "geocedg/specs/locus/locus-v2-semantics.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoDynamicBranchLocusV2.java",
-      "change": "added", "purpose": "Publish immutable dynamic topology and lineage snapshots through normal dependencies.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+      "change": "added",
+      "purpose": "Publish immutable dynamic topology and lineage snapshots through normal dependencies.",
+      "authority": "geocedg/specs/locus/locus-v2-semantics.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusV2.java",
-      "change": "added", "purpose": "Provide the normal-DAG revisioned semantic snapshot algorithm base.", "authority": "docs/adr/0006-parallel-locus-v2-semantic-entity.md"
+      "change": "added",
+      "purpose": "Provide the normal-DAG revisioned semantic snapshot algorithm base.",
+      "authority": "docs/adr/0006-parallel-locus-v2-semantic-entity.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoNestedLocusV2.java",
-      "change": "added", "purpose": "Compose upstream V2 semantic evaluators recursively through a shared session.", "authority": "docs/adr/0006-parallel-locus-v2-semantic-entity.md"
+      "change": "added",
+      "purpose": "Compose upstream V2 semantic evaluators recursively through a shared session.",
+      "authority": "docs/adr/0006-parallel-locus-v2-semantic-entity.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoSegmentPathLocusV2.java",
-      "change": "added", "purpose": "Integrate the approved live segment provider through normal kernel inputs.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+      "change": "added",
+      "purpose": "Integrate the approved live segment provider through normal kernel inputs.",
+      "authority": "geocedg/specs/locus/locus-v2-semantics.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/euclidian/draw/DrawLocusV2.java",
-      "change": "added", "purpose": "Draw V2 only from semantic evaluations using ordinary line, opacity and label presentation while preserving semantic component subpaths across unrelated crossings. G9U1: Select only the semantic curve stroke, not the filled interior, without changing geometric authority. Authority: geocedg/specs/ui/g9u1-construction-interaction.md.", "authority": "geocedg/specs/locus/locus-v2-presentation.md"
+      "change": "added",
+      "purpose": "Draw V2 only from semantic evaluations using ordinary line, opacity and label presentation while preserving semantic component subpaths across unrelated crossings. G9U1: Select only the semantic curve stroke, not the filled interior, without changing geometric authority. Authority: geocedg/specs/ui/g9u1-construction-interaction.md.",
+      "authority": "geocedg/specs/locus/locus-v2-presentation.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/euclidian/draw/LocusRenderCache2D.java",
-      "change": "added", "purpose": "Keep bounded per-view uniform/adaptive render tessellation and diagnostics separate from semantic state, including presentation-only closure of one complete periodic driver cycle without bridging open or disconnected semantic components.", "authority": "geocedg/specs/locus/locus-v2-presentation.md"
+      "change": "added",
+      "purpose": "Keep bounded per-view uniform/adaptive render tessellation and diagnostics separate from semantic state, including presentation-only closure of one complete periodic driver cycle without bridging open or disconnected semantic components.",
+      "authority": "geocedg/specs/locus/locus-v2-presentation.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/euclidian/draw/LocusRenderData2D.java",
-      "change": "added", "purpose": "Represent derived presentation vertices and subpaths without semantic exposure.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+      "change": "added",
+      "purpose": "Represent derived presentation vertices and subpaths without semantic exposure.",
+      "authority": "geocedg/specs/locus/locus-v2-semantics.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/euclidian/draw/LocusRenderPolicy2D.java",
-      "change": "added", "purpose": "Own bounded uniform-reference and adaptive-visual sampling solely as render policies.", "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+      "change": "added",
+      "purpose": "Own bounded uniform-reference and adaptive-visual sampling solely as render policies.",
+      "authority": "geocedg/specs/locus/locus-v2-semantics.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusV2FunctionalBenchmarkTest.java",
-      "change": "added", "purpose": "Gate q*d nested cost, exact-key reuse and bounded session behavior.", "authority": ".github/prompts/tasks/g6b-locus-v2-kernel.prompt.md"
+      "change": "added",
+      "purpose": "Gate q*d nested cost, exact-key reuse and bounded session behavior.",
+      "authority": ".github/prompts/tasks/g6b-locus-v2-kernel.prompt.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusV2KernelIntegrationTest.java",
-      "change": "added", "purpose": "Verify G6 providers/topology/revisions/nesting plus append-only G7B metric and G8B intersection GeoClass ordering and the unchanged public compatibility boundary.", "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+      "change": "added",
+      "purpose": "Verify G6 providers/topology/revisions/nesting plus append-only G7B metric and G8B intersection GeoClass ordering and the unchanged public compatibility boundary.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusV2RenderSeparationTest.java",
-      "change": "added", "purpose": "Verify zoom/render variation without semantic variation or upstream render consumption.", "authority": ".github/prompts/tasks/g6b-locus-v2-kernel.prompt.md"
+      "change": "added",
+      "purpose": "Verify zoom/render variation without semantic variation or upstream render consumption.",
+      "authority": ".github/prompts/tasks/g6b-locus-v2-kernel.prompt.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusV2ValueContractsTest.java",
-      "change": "added", "purpose": "Verify immutable value axes, providers, branches and numeric envelope.", "authority": ".github/prompts/tasks/g6b-locus-v2-kernel.prompt.md"
+      "change": "added",
+      "purpose": "Verify immutable value axes, providers, branches and numeric envelope.",
+      "authority": ".github/prompts/tasks/g6b-locus-v2-kernel.prompt.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusSessionDiagnostic2D.java",
-      "change": "added", "purpose": "Expose typed immutable cycle, revision-coherence and disposed-session diagnostics.", "authority": "docs/validation/g6r_locus_v2_hardening_report.md"
+      "change": "added",
+      "purpose": "Expose typed immutable cycle, revision-coherence and disposed-session diagnostics.",
+      "authority": "docs/validation/g6r_locus_v2_hardening_report.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusInstrumentationSnapshot2D.java",
-      "change": "added", "purpose": "Provide immutable observations of Locus V2 functional counters.", "authority": "docs/validation/g6r_locus_v2_hardening_report.md"
+      "change": "added",
+      "purpose": "Provide immutable observations of Locus V2 functional counters.",
+      "authority": "docs/validation/g6r_locus_v2_hardening_report.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/package-info.java",
-      "change": "added", "purpose": "Document the internal semantic package boundary and forbidden public contracts.", "authority": "docs/developer/locus_v2_api.md"
+      "change": "added",
+      "purpose": "Document the internal semantic package boundary and forbidden public contracts.",
+      "authority": "docs/developer/locus_v2_api.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/euclidian/draw/package-info.java",
-      "change": "added", "purpose": "Document that Locus V2 presentation data is never semantic authority.", "authority": "docs/architecture/locus_v2_implementation.md"
+      "change": "added",
+      "purpose": "Document that Locus V2 presentation data is never semantic authority.",
+      "authority": "docs/architecture/locus_v2_implementation.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/locus/LocusV2Laboratory.java",
-      "change": "added", "purpose": "Provide an explicit opt-in developer-only entry point with temporary preferences.", "authority": "docs/validation/g6r_locus_v2_hardening_report.md"
+      "change": "added",
+      "purpose": "Provide an explicit opt-in developer-only entry point with temporary preferences.",
+      "authority": "docs/validation/g6r_locus_v2_hardening_report.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/locus/LocusV2LaboratoryFrame.java",
-      "change": "added", "purpose": "Give the laboratory a distinct visible/process identity and initialize it outside normal GeoCeDG.", "authority": "docs/validation/g6r_locus_v2_hardening_report.md"
+      "change": "added",
+      "purpose": "Give the laboratory a distinct visible/process identity and initialize it outside normal GeoCeDG.",
+      "authority": "docs/validation/g6r_locus_v2_hardening_report.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/locus/LocusV2LaboratoryFixtures.java",
-      "change": "added", "purpose": "Create bounded analytic, topology, discontinuity, unbounded and nested developer fixtures through the internal factory.", "authority": "docs/validation/g6r_locus_v2_hardening_report.md"
+      "change": "added",
+      "purpose": "Create bounded analytic, topology, discontinuity, unbounded and nested developer fixtures through the internal factory.",
+      "authority": "docs/validation/g6r_locus_v2_hardening_report.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/locus/LocusV2LaboratoryController.java",
-      "change": "added", "purpose": "Present G6R semantic and phase G7B rich metric/component-owner diagnostics, with explicit removal on window close, without creating a public command, toolbar or persistence surface. Reusing the opt-in laboratory is the minimal UI edit.", "authority": "docs/validation/g7b_locus_v2_metric_kernel_report.md"
+      "change": "added",
+      "purpose": "Present G6R semantic and phase G7B rich metric/component-owner diagnostics, with explicit removal on window close, without creating a public command, toolbar or persistence surface. Reusing the opt-in laboratory is the minimal UI edit.",
+      "authority": "docs/validation/g7b_locus_v2_metric_kernel_report.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/locus/package-info.java",
-      "change": "added", "purpose": "Document the developer-only Desktop package boundary.", "authority": "docs/developer/locus_v2_api.md"
+      "change": "added",
+      "purpose": "Document the developer-only Desktop package boundary.",
+      "authority": "docs/developer/locus_v2_api.md"
     },
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/locus/LocusV2LaboratoryContractTest.java",
-      "change": "added", "purpose": "Verify fixture coverage, temporary settings and exclusion from public legacy contracts.", "authority": "docs/validation/g6r_locus_v2_hardening_report.md"
+      "change": "added",
+      "purpose": "Verify fixture coverage, temporary settings and exclusion from public legacy contracts.",
+      "authority": "docs/validation/g6r_locus_v2_hardening_report.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusV2HardeningValueContractsTest.java",
-      "change": "added", "purpose": "Verify defensive immutable values, finite canonical keys, signed zero and typed lineage shapes.", "authority": "docs/validation/g6r_locus_v2_hardening_report.md"
+      "change": "added",
+      "purpose": "Verify defensive immutable values, finite canonical keys, signed zero and typed lineage shapes.",
+      "authority": "docs/validation/g6r_locus_v2_hardening_report.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusV2SessionHardeningTest.java",
-      "change": "added", "purpose": "Verify bounded eviction, typed cycles, exception cleanup, revision coherence and disposal.", "authority": "docs/validation/g6r_locus_v2_hardening_report.md"
+      "change": "added",
+      "purpose": "Verify bounded eviction, typed cycles, exception cleanup, revision coherence and disposal.",
+      "authority": "docs/validation/g6r_locus_v2_hardening_report.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusV2LifecycleHardeningTest.java",
-      "change": "added", "purpose": "Verify revisions, undefined recovery, removal and explicitly unsupported copy/persistence seams.", "authority": "docs/validation/g6r_locus_v2_hardening_report.md"
+      "change": "added",
+      "purpose": "Verify revisions, undefined recovery, removal and explicitly unsupported copy/persistence seams.",
+      "authority": "docs/validation/g6r_locus_v2_hardening_report.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusV2RenderHardeningTest.java",
-      "change": "added", "purpose": "Verify adaptive/reference render separation, topology, seam, clipping and cache behavior.", "authority": "docs/validation/g6r_locus_v2_hardening_report.md"
+      "change": "added",
+      "purpose": "Verify adaptive/reference render separation, topology, seam, clipping and cache behavior.",
+      "authority": "docs/validation/g6r_locus_v2_hardening_report.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusV2HardeningBenchmarkTest.java",
-      "change": "added", "purpose": "Measure nested/session/invalidation/render/provider distributions while enforcing functional budgets.", "authority": "docs/validation/g6r_locus_v2_hardening_report.md"
+      "change": "added",
+      "purpose": "Measure nested/session/invalidation/render/provider distributions while enforcing functional budgets.",
+      "authority": "docs/validation/g6r_locus_v2_hardening_report.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G7AMetricSemanticModel.java",
-      "change": "added", "purpose": "Provide test-private immutable position/route values, structurally optional traversal, closed sentinel-free rich-result/error variants and aggregation candidates for G7A/R1 without adding a productive metric API.", "authority": "docs/validation/g7a_r1_locus_v2_metric_refinement_report.md"
+      "change": "added",
+      "purpose": "Provide test-private immutable position/route values, structurally optional traversal, closed sentinel-free rich-result/error variants and aggregation candidates for G7A/R1 without adding a productive metric API.",
+      "authority": "docs/validation/g7a_r1_locus_v2_metric_refinement_report.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G7AMetricSemanticCharacterizationTest.java",
-      "change": "added", "purpose": "Characterize semantic positions, revision bindings, traversal policies, constructive total aggregation and scalar admissibility with no render or legacy-sample authority.", "authority": "docs/validation/g7a_locus_v2_metric_characterization_report.md"
+      "change": "added",
+      "purpose": "Characterize semantic positions, revision bindings, traversal policies, constructive total aggregation and scalar admissibility with no render or legacy-sample authority.",
+      "authority": "docs/validation/g7a_locus_v2_metric_characterization_report.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G7AMetricNumerics.java",
-      "change": "added", "purpose": "Provide deterministic test-private adaptive quadrature, evaluator-only refinement and independent evaluation/subdivision/depth work-budget candidates.", "authority": "docs/validation/g7a_r1_locus_v2_metric_refinement_report.md"
+      "change": "added",
+      "purpose": "Provide deterministic test-private adaptive quadrature, evaluator-only refinement and independent evaluation/subdivision/depth work-budget candidates.",
+      "authority": "docs/validation/g7a_r1_locus_v2_metric_refinement_report.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G7AMetricNumericalCharacterizationTest.java",
-      "change": "added", "purpose": "Compare total variation, analytic and differential methods, independent references, reparameterization, tolerances, improper outcomes and truthful evaluator-only guarantees.", "authority": "docs/validation/g7a_locus_v2_metric_characterization_report.md"
+      "change": "added",
+      "purpose": "Compare total variation, analytic and differential methods, independent references, reparameterization, tolerances, improper outcomes and truthful evaluator-only guarantees.",
+      "authority": "docs/validation/g7a_locus_v2_metric_characterization_report.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G7AMetricIndexExperiment.java",
-      "change": "added", "purpose": "Implement equivalent test-private no-reuse, eager-revision and lazy-component index strategies with complete keys, counters and bounded lifecycle.", "authority": "docs/adr/0007-revision-scoped-locus-v2-metric-index.md"
+      "change": "added",
+      "purpose": "Implement equivalent test-private no-reuse, eager-revision and lazy-component index strategies with complete keys, counters and bounded lifecycle.",
+      "authority": "docs/adr/0007-revision-scoped-locus-v2-metric-index.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G7AMetricIndexCharacterizationTest.java",
-      "change": "added", "purpose": "Measure 1/10/100 repeated route, total and policy traces, deterministic eviction, invalidation, failure cleanup, arc-coordinate reuse and index ON/OFF equality.", "authority": "docs/validation/g7a_locus_v2_metric_characterization_report.md"
+      "change": "added",
+      "purpose": "Measure 1/10/100 repeated route, total and policy traces, deterministic eviction, invalidation, failure cleanup, arc-coordinate reuse and index ON/OFF equality.",
+      "authority": "docs/validation/g7a_locus_v2_metric_characterization_report.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G7ANestedMetricCharacterizationTest.java",
-      "change": "added", "purpose": "Characterize a three-level metric/locus dependency chain with normal invalidation and zero render, legacy-sample, whole-locus or per-point index work.", "authority": "docs/validation/g7a_locus_v2_metric_characterization_report.md"
+      "change": "added",
+      "purpose": "Characterize a three-level metric/locus dependency chain with normal invalidation and zero render, legacy-sample, whole-locus or per-point index work.",
+      "authority": "docs/validation/g7a_locus_v2_metric_characterization_report.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G7AMetricGeoLifecycleCharacterizationTest.java",
-      "change": "added", "purpose": "Characterize test-private rich-result creation, P1 current-revision failure publication, copy/set isolation, invalidation, removal, recovery and exception cleanup.", "authority": "docs/validation/g7a_r1_locus_v2_metric_refinement_report.md"
+      "change": "added",
+      "purpose": "Characterize test-private rich-result creation, P1 current-revision failure publication, copy/set isolation, invalidation, removal, recovery and exception cleanup.",
+      "authority": "docs/validation/g7a_r1_locus_v2_metric_refinement_report.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G7AR1MultiConsumerMetricIndexExperiment.java",
-      "change": "added", "purpose": "Compare test-private algorithm-local, locus-attached, Construction-scoped and dedicated per-locus component-state ownership with endpoint-free complete keys, route-specific contribution derivation, deterministic lifecycle and retained-memory counters.", "authority": "docs/validation/g7a_r1_locus_v2_metric_refinement_report.md"
+      "change": "added",
+      "purpose": "Compare test-private algorithm-local, locus-attached, Construction-scoped and dedicated per-locus component-state ownership with endpoint-free complete keys, route-specific contribution derivation, deterministic lifecycle and retained-memory counters.",
+      "authority": "docs/validation/g7a_r1_locus_v2_metric_refinement_report.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G7AR1MultiConsumerMetricIndexTest.java",
-      "change": "added", "purpose": "Measure cross-result reuse for 1/3/10/100 consumers, query-order invariance, policy and Construction isolation, revision/topology transitions, removal and nested composition.", "authority": "docs/validation/g7a_r1_locus_v2_metric_refinement_report.md"
+      "change": "added",
+      "purpose": "Measure cross-result reuse for 1/3/10/100 consumers, query-order invariance, policy and Construction isolation, revision/topology transitions, removal and nested composition.",
+      "authority": "docs/validation/g7a_r1_locus_v2_metric_refinement_report.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G7AR1MetricValueAndWorkBudgetTest.java",
-      "change": "added", "purpose": "Characterize closed metric values, sentinel-free error evidence, direct reuse of the normative G6 guarantee and independent deterministic integration work ceilings.", "authority": "docs/validation/g7a_r1_locus_v2_metric_refinement_report.md"
+      "change": "added",
+      "purpose": "Characterize closed metric values, sentinel-free error evidence, direct reuse of the normative G6 guarantee and independent deterministic integration work ceilings.",
+      "authority": "docs/validation/g7a_r1_locus_v2_metric_refinement_report.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/AbsentMetricValue2D.java",
@@ -918,7 +1050,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusMetricScalarAdapter.java",
       "change": "added",
-      "purpose": "Phase G7B semantic adapter: expose only admissible finite rich results through a derived GeoNumeric without making the rich Geo numeric authority.",
+      "purpose": "Phase G7B semantic adapter: expose only admissible finite rich results through a derived GeoNumeric without making the rich Geo numeric authority. G9U1 review round 1: human-facing definitions expose the exact rich-parent Length intent while XML, internal expressions, metric admission and the rich-to-scalar DAG stay unchanged.",
       "authority": "geocedg/specs/locus/locus-v2-metrics.md"
     },
     {
@@ -1740,7 +1872,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialIdentityRegistry.java",
       "change": "added",
-      "purpose": "Preserve G9A1 atomic identity lifecycle while validating, remapping and publishing exact records, including the R6 interaction-owned semantic-point role only for structurally dedicated inputs and restoring their auxiliary/restricted presentation after identity attachment on reopen.",
+      "purpose": "Preserve G9A1 atomic identity lifecycle while validating, remapping and publishing exact records, including the R6 interaction-owned semantic-point role only for structurally dedicated inputs and restoring their auxiliary/restricted presentation after identity attachment on reopen. G9U1 review round 1: update affected existing construction dependency records during ordinary late-input participation in the same atomic registry/runtime publication, preserving IDs/schema/revisions and G9A guards; strict native load/copy never repairs stale records.",
       "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
     },
     {
@@ -3084,7 +3216,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U0R3MenuLifecycleTest.java",
       "change": "added",
-      "purpose": "Verify R3-M01 through R3-M06 for initial/full rebuild, repeated font and localization refresh, the sole Locus V2 opt-in and the approved feature-off menu policy. G9U1 adapts only menu discovery to the same stable action ID in the schema-v2 projection; original lifecycle assertions remain.",
+      "purpose": "Verify R3-M01 through R3-M06 for initial/full rebuild, repeated font and localization refresh, the sole Locus V2 opt-in and the approved feature-off menu policy. G9U1 adapts only menu discovery to the same stable action ID in the schema-v2 projection; original lifecycle assertions remain. G9U1 author review: retain all six R3 lifecycle assertions while reading top-level menu cardinality from the current validated profile and releasing the windowless fixture's unused global keyboard dispatcher.",
       "authority": ".github/prompts/tasks/g9u0-r3-public-locus-ui-hardening.prompt.md"
     },
     {
@@ -3438,7 +3570,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/resources/GeoCeDGToolImageResource.java",
       "change": "added",
-      "purpose": "Decode the existing registered owned Locus V2 SVG into a fresh loaded 64-pixel Toolkit image using the existing Desktop SVG decoder, without new assets or shared mutable raster state.",
+      "purpose": "Decode the existing registered owned Locus V2 SVG into a fresh loaded 64-pixel Toolkit image using the existing Desktop SVG decoder, without new assets or shared mutable raster state. G9U1 review round 1: map four newly registered owned semantic-point, spline, rich-result and materialization SVGs through the existing decoder; no upstream asset copying.",
       "authority": "docs/architecture/verification-baseline-compatibility-repair.md"
     },
     {
@@ -3588,7 +3720,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGActionRegistry.java",
       "change": "added",
-      "purpose": "Bind every declared stable action to one frontend target with localized availability and shared state.",
+      "purpose": "Bind every declared stable action to one frontend target with localized availability and shared state. G9U1 review round 1: route the existing user-tools action, quick-guide help and differentiated registered product icons without additional stable action IDs.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -3600,7 +3732,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGDefinitionInspector.java",
       "change": "added",
-      "purpose": "Show reconstructible semantic definitions read-only without changing global Algebra presentation or Construction.",
+      "purpose": "Show reconstructible semantic definitions read-only without changing global Algebra presentation or Construction. G9U1 review round 1: include rich metric/intersection definitions in the same bounded read-only affordance.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -3630,13 +3762,13 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGToolbarContainer.java",
       "change": "added",
-      "purpose": "Attach the declarative family palette to the normal Desktop toolbar without invented mode IDs.",
+      "purpose": "Attach the declarative family palette to the normal Desktop toolbar without invented mode IDs. G9U1 review round 1: replace the permanent family-selector row with the reduced manifest-owned product toolbar.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGWorkspaceController.java",
       "change": "added",
-      "purpose": "Project family/context actions and isolate workspace/layout preferences from semantic construction state.",
+      "purpose": "Project family/context actions and isolate workspace/layout preferences from semantic construction state. G9U1 review round 1: project the compact non-mode toolbar, menu workspace selector and deduplicated object-context actions from the existing catalog.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -3666,7 +3798,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/view/algebra/AlgebraControllerD.java",
       "change": "modified",
-      "purpose": "Expose read-only semantic definitions in Algebra without granting incompatible redefine authority.",
+      "purpose": "Expose read-only semantic definitions in Algebra without granting incompatible redefine authority. G9U1 review round 1: apply the same product-gated read-only definition route to rich results.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -3684,61 +3816,61 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1ActionRegistryTest.java",
       "change": "added",
-      "purpose": "Exercise G9U1ActionRegistry workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority.",
+      "purpose": "Exercise G9U1ActionRegistry workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority. G9U1 author review: release unused global keyboard dispatcher references for embedded windowless fixtures; all behavioral assertions and native product keyboard registration remain unchanged. Review fixture isolation: per-test Swing-root snapshots release only newly registered embedded-host dock listeners and nonvisible/non-displayable lazy frames, preserving preexisting roots and native runtime behavior.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1AlgebraSubmissionTest.java",
       "change": "added",
-      "purpose": "Exercise G9U1AlgebraSubmission workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority.",
+      "purpose": "Exercise G9U1AlgebraSubmission workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority. Review fixture isolation: per-test Swing-root snapshots release only newly registered embedded-host dock listeners and nonvisible/non-displayable lazy frames, preserving preexisting roots and native runtime behavior.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1IntersectionSessionTest.java",
       "change": "added",
-      "purpose": "Exercise G9U1IntersectionSession workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority.",
+      "purpose": "Exercise G9U1IntersectionSession workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority. Review fixture isolation: per-test Swing-root snapshots release only newly registered embedded-host dock listeners and nonvisible/non-displayable lazy frames, preserving preexisting roots and native runtime behavior.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1PeriodicQuarantineNativeTest.java",
       "change": "added",
-      "purpose": "Exercise G9U1PeriodicQuarantineNative workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority.",
+      "purpose": "Exercise G9U1PeriodicQuarantineNative workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority. Review fixture isolation: per-test Swing-root snapshots release only newly registered embedded-host dock listeners and nonvisible/non-displayable lazy frames, preserving preexisting roots and native runtime behavior.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1ProductPolicyTest.java",
       "change": "added",
-      "purpose": "Exercise G9U1ProductPolicy workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority.",
+      "purpose": "Exercise G9U1ProductPolicy workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority. G9U1 author review: release unused global keyboard dispatcher references for embedded windowless fixtures; all behavioral assertions and native product keyboard registration remain unchanged. Review fixture isolation: per-test Swing-root snapshots release only newly registered embedded-host dock listeners and nonvisible/non-displayable lazy frames, preserving preexisting roots and native runtime behavior.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1ProfileCompilerTest.java",
       "change": "added",
-      "purpose": "Exercise G9U1ProfileCompiler workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority.",
+      "purpose": "Exercise G9U1ProfileCompiler workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority. G9U1 review round 1: assert unchanged 110-action taxonomy and reduced 34-action toolbar with six normal menus. Review fixture isolation: per-test Swing-root snapshots release only newly registered embedded-host dock listeners and nonvisible/non-displayable lazy frames, preserving preexisting roots and native runtime behavior.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1ScriptWorkflowTest.java",
       "change": "added",
-      "purpose": "Exercise G9U1ScriptWorkflow workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority.",
+      "purpose": "Exercise G9U1ScriptWorkflow workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority. G9U1 author review: release unused global keyboard dispatcher references for embedded windowless fixtures; all behavioral assertions and native product keyboard registration remain unchanged. Review fixture isolation: per-test Swing-root snapshots release only newly registered embedded-host dock listeners and nonvisible/non-displayable lazy frames, preserving preexisting roots and native runtime behavior.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1SemanticPointInteractionTest.java",
       "change": "added",
-      "purpose": "Exercise G9U1SemanticPointInteraction workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority.",
+      "purpose": "Exercise G9U1SemanticPointInteraction workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority. G9U1 author review: release unused global keyboard dispatcher references for embedded windowless fixtures; all behavioral assertions and native product keyboard registration remain unchanged. Review fixture isolation: per-test Swing-root snapshots release only newly registered embedded-host dock listeners and nonvisible/non-displayable lazy frames, preserving preexisting roots and native runtime behavior.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1TestApp.java",
       "change": "added",
-      "purpose": "Provide isolated Desktop setup and ordinary command helpers for workspace consumer tests.",
+      "purpose": "Provide isolated Desktop setup and ordinary command helpers for workspace consumer tests. G9U1 author review: unregister only unused global keyboard dispatchers of verified embedded windowless fixtures, preventing retained test kernels without changing native windowed application lifecycle. Review fixture isolation: per-test Swing-root snapshots release only newly registered embedded-host dock listeners and nonvisible/non-displayable lazy frames, preserving preexisting roots and native runtime behavior.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1WorkspaceSurfaceTest.java",
       "change": "added",
-      "purpose": "Exercise G9U1WorkspaceSurface workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority.",
+      "purpose": "Exercise G9U1WorkspaceSurface workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority. G9U1 review round 1: cover normal menu composition, reduced toolbar and context deduplication. Review fixture isolation: per-test Swing-root snapshots release only newly registered embedded-host dock listeners and nonvisible/non-displayable lazy frames, preserving preexisting roots and native runtime behavior.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -3756,7 +3888,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1SimilarityToolsTest.java",
       "change": "added",
-      "purpose": "Exercise ordinary tool and controller routing, preview/cancel, atomic invalid input, dynamic zero recovery and inherited-geometry preservation over existing R5 authority.",
+      "purpose": "Exercise ordinary tool and controller routing, preview/cancel, atomic invalid input, dynamic zero recovery and inherited-geometry preservation over existing R5 authority. Review fixture isolation: per-test Swing-root snapshots release only newly registered embedded-host dock listeners and nonvisible/non-displayable lazy frames, preserving preexisting roots and native runtime behavior.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -3770,6 +3902,96 @@
       "change": "modified",
       "purpose": "G9U1 application presentation correction: compare the existing stored construction-navigation flag in the setter shortcut so native rollback can restore its prior value; retain the special public visibility getter, serialized format, identities and kernel semantics.",
       "authority": "geocedg/specs/ui/native-document-identity.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/dialog/NamePanelD.java",
+      "change": "modified",
+      "purpose": "G9U1 author-review round 1: Apply product-gated read-only definition visibility to rich results, preserving the upstream editable-object path.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGUserToolLibrary.java",
+      "change": "added",
+      "purpose": "G9U1 author-review round 1: Store explicitly installed bounded validated user GGT packages and digests in isolated application preferences; reuse the native macro engine, reject collisions/unsupported content and never auto-install document or Template tools.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGUserTools.java",
+      "change": "added",
+      "purpose": "G9U1 author-review round 1: Expose explicit persistent user-tool install/remove/pin/activate controls and distinguish installed tools from document-local host management through the existing action.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1AuthorArchiveReviewTest.java",
+      "change": "added",
+      "purpose": "G9U1 author-review round 1: Reproduce the byte-exact author archive and preserve strict rejection of its historical stale construction dependency record; no fixture sanitization. Review fixture isolation: per-test Swing-root snapshots release only newly registered embedded-host dock listeners and nonvisible/non-displayable lazy frames, preserving preexisting roots and native runtime behavior.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1DefinitionAffordanceTest.java",
+      "change": "added",
+      "purpose": "G9U1 author-review round 1: Exercise product read-only definition affordances for semantic curves and rich results with the inherited editable-object control. Review fixture isolation: per-test Swing-root snapshots release only newly registered embedded-host dock listeners and nonvisible/non-displayable lazy frames, preserving preexisting roots and native runtime behavior.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1IconReviewTest.java",
+      "change": "added",
+      "purpose": "G9U1 author-review round 1: Verify differentiated registered product icon decoding without shared mutable images or new upstream asset provenance. Review fixture isolation: per-test Swing-root snapshots release only newly registered embedded-host dock listeners and nonvisible/non-displayable lazy frames, preserving preexisting roots and native runtime behavior.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1MetricReviewTest.java",
+      "change": "added",
+      "purpose": "G9U1 author-review round 1: Characterize invalid free endpoints, valid exact semantic endpoints, dynamic metrics, public-intent definition and unchanged rich-to-scalar XML/native identity. Review fixture isolation: per-test Swing-root snapshots release only newly registered embedded-host dock listeners and nonvisible/non-displayable lazy frames, preserving preexisting roots and native runtime behavior.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1NativeLifecycleReviewTest.java",
+      "change": "added",
+      "purpose": "G9U1 author-review round 1: Exercise native save/reopen after late input participation and failed temporary-archive preflight preserving the prior target and unsaved state. Review fixture isolation: per-test Swing-root snapshots release only newly registered embedded-host dock listeners and nonvisible/non-displayable lazy frames, preserving preexisting roots and native runtime behavior.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1UserToolLibraryTest.java",
+      "change": "added",
+      "purpose": "G9U1 author-review round 1: Exercise explicit installation, reload, activation, pin/remove, document separation, collisions, restricted package validation and isolated preference behavior without importing historical Template tools. Review fixture isolation: per-test Swing-root snapshots release only newly registered embedded-host dock listeners and nonvisible/non-displayable lazy frames, preserving preexisting roots and native runtime behavior.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/resources/org/geocedg/desktop/g9u1-review/TestBasic1.cedg",
+      "change": "added",
+      "purpose": "G9U1 author-review round 1: Preserve the exact read-only author smoke fixture, 31885 bytes and SHA-256 0791895e1133d4a44ff26c88760cfc951db787c42056a8b5758c79a9b5687be0, as diagnostic regression evidence.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9U1ConstructionParticipationReviewTest.java",
+      "change": "added",
+      "purpose": "G9U1 author-review round 1: Verify late participation dependency coherence, unchanged identity/revisions, strict historical-load rejection, transactional rollback and untouched G9A staging/captured-signature safeguards.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/shared/common/src/main/resources/org/geogebra/common/icons/svg/web/toolIcons/mode_geocedg_materialize.svg",
+      "change": "added",
+      "purpose": "G9U1 author-review round 1: GeoCeDG-owned review-round-1 materialize tool icon, independently authored and registered in the asset manifest; presentation only, not inherited trademark/artwork.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/shared/common/src/main/resources/org/geogebra/common/icons/svg/web/toolIcons/mode_geocedg_richresult.svg",
+      "change": "added",
+      "purpose": "G9U1 author-review round 1: GeoCeDG-owned review-round-1 richresult tool icon, independently authored and registered in the asset manifest; presentation only, not inherited trademark/artwork.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/shared/common/src/main/resources/org/geogebra/common/icons/svg/web/toolIcons/mode_geocedg_semanticpoint.svg",
+      "change": "added",
+      "purpose": "G9U1 author-review round 1: GeoCeDG-owned review-round-1 semanticpoint tool icon, independently authored and registered in the asset manifest; presentation only, not inherited trademark/artwork.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/shared/common/src/main/resources/org/geogebra/common/icons/svg/web/toolIcons/mode_geocedg_splinev2.svg",
+      "change": "added",
+      "purpose": "G9U1 author-review round 1: GeoCeDG-owned review-round-1 splinev2 tool icon, independently authored and registered in the asset manifest; presentation only, not inherited trademark/artwork.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     }
   ]
 }

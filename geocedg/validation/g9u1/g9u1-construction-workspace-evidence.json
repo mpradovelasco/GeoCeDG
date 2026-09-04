@@ -6,7 +6,7 @@
   "implementationAuthorized": true,
   "implementationStarted": true,
   "implementationComplete": true,
-  "completionMeaning": "FUNCTIONAL_SCOPE_IMPLEMENTED; final technical gates are pending at this source freeze and must be read from their exact execution records; no author implementation approval.",
+  "completionMeaning": "AUTHOR_REVIEW_STABILIZATION_FUNCTIONAL_SCOPE_IMPLEMENTED; fresh PHASE/FULL technical gates belong only to the exact recorded successor cohort; author re-smoke remains pending.",
   "selfApproved": false,
   "authorApprovedDesign": true,
   "authorApprovedImplementation": false,
@@ -31,13 +31,21 @@
       "docs/developer/geocedg_developer_guide.md",
       "docs/roadmap/geocedg_roadmap.md",
       "docs/upstream/modified-files.yml",
+      "docs/user/geocedg_construction_quick_guide.md",
       "docs/user/geocedg_user_guide.md",
       "docs/validation/g9_documentation_bundle_traceability.md",
       "docs/validation/g9_public_workspace_validation_matrix.md",
+      "docs/validation/g9u1_author_manual_review_round1.md",
+      "docs/validation/g9u1_author_resmoke_checklist.md",
       "docs/validation/g9u1_command_tool_consistency_matrix.md",
       "docs/validation/g9u1_construction_workspace_implementation_candidate_report.md",
+      "docs/validation/g9u1_frontend_review_matrix.md",
+      "docs/validation/g9u1_icon_review.md",
+      "docs/validation/g9u1_native_lifecycle_review.md",
       "docs/validation/g9u1_preexecution_design_candidate_report.md",
+      "docs/validation/g9u1_user_tools_review.md",
       "docs/validation/g9u1_workspace_completeness_matrix.md",
+      "geocedg/resources/assets-manifest.yml",
       "geocedg/specs/README.md",
       "geocedg/specs/ui/application-profile-v1.schema.json",
       "geocedg/specs/ui/application-profile-v2.candidate.schema.json",
@@ -66,8 +74,12 @@
       "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGProfileSchema.java",
       "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGSimilarityTools.java",
       "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGToolbarContainer.java",
+      "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGUserToolLibrary.java",
+      "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGUserTools.java",
       "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGWorkspaceController.java",
       "source/desktop/desktop/src/main/java/org/geocedg/desktop/GuiManagerGeoCeDG.java",
+      "source/desktop/desktop/src/main/java/org/geocedg/desktop/resources/GeoCeDGToolImageResource.java",
+      "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/dialog/NamePanelD.java",
       "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/dialog/options/OptionsAdvancedD.java",
       "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/dialog/PropertiesPanelD.java",
       "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/GuiManagerD.java",
@@ -81,7 +93,12 @@
       "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U0R3MenuLifecycleTest.java",
       "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1ActionRegistryTest.java",
       "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1AlgebraSubmissionTest.java",
+      "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1AuthorArchiveReviewTest.java",
+      "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1DefinitionAffordanceTest.java",
+      "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1IconReviewTest.java",
       "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1IntersectionSessionTest.java",
+      "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1MetricReviewTest.java",
+      "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1NativeLifecycleReviewTest.java",
       "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1PeriodicQuarantineNativeTest.java",
       "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1ProductPolicyTest.java",
       "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1ProfileCompilerTest.java",
@@ -89,20 +106,29 @@
       "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1SemanticPointInteractionTest.java",
       "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1SimilarityToolsTest.java",
       "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1TestApp.java",
+      "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1UserToolLibraryTest.java",
       "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1WorkspaceSurfaceTest.java",
       "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGDocumentLifecycleTest.java",
       "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGProfileTest.java",
       "source/desktop/desktop/src/test/java/org/geocedg/desktop/locus/LocusV2DesktopLifecycleRegressionTest.java",
+      "source/desktop/desktop/src/test/resources/org/geocedg/desktop/g9u1-review/TestBasic1.cedg",
       "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command_en.properties",
       "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command_es.properties",
       "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command.properties",
+      "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9U1ConstructionParticipationReviewTest.java",
       "source/shared/common-jre/src/test/java/org/geocedg/common/workspace/G9U1InputPolicyTest.java",
       "source/shared/common-jre/src/test/java/org/geogebra/common/kernel/LocusV2InputPreviewLifecycleTest.java",
       "source/shared/common/src/main/java/org/geocedg/common/euclidian/draw/DrawLocusV2.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusMetricScalarAdapter.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialIdentityRegistry.java",
       "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/AlgebraProcessor.java",
       "source/shared/common/src/main/java/org/geogebra/common/kernel/Kernel.java",
       "source/shared/common/src/main/java/org/geogebra/common/kernel/ScheduledPreviewFromInputBar.java",
       "source/shared/common/src/main/java/org/geogebra/common/main/App.java",
+      "source/shared/common/src/main/resources/org/geogebra/common/icons/svg/web/toolIcons/mode_geocedg_materialize.svg",
+      "source/shared/common/src/main/resources/org/geogebra/common/icons/svg/web/toolIcons/mode_geocedg_richresult.svg",
+      "source/shared/common/src/main/resources/org/geogebra/common/icons/svg/web/toolIcons/mode_geocedg_semanticpoint.svg",
+      "source/shared/common/src/main/resources/org/geogebra/common/icons/svg/web/toolIcons/mode_geocedg_splinev2.svg",
       "tools/agent/dxf-authority-validation.ps1",
       "tools/agent/tests/dxf-authority-validation.Tests.ps1",
       "tools/agent/tests/phase-lifecycle.Tests.ps1",
@@ -119,106 +145,307 @@
       "tools/agent/verify.ps1",
       "tools/agent/workspace-profile-validation.ps1"
     ],
-    "state": "FINAL_CANDIDATE_FROZEN_FOR_TECHNICAL_VERIFICATION",
-    "pathCount": 96,
-    "sourcePathCount": 52
+    "pathCount": 122,
+    "sourcePathCount": 70,
+    "baseCommit": "f8a21a087234b18fc13741a0ac2baf80608e9022",
+    "state": "FINAL_SUCCESSOR_SOURCE_FREEZE_PENDING_EXECUTION"
   },
   "verification": {
-    "DEV": "DESKTOP_20_PASS_SCOPED_193_SHARED_03_PASS_SCOPED_10",
-    "PHASE": "PENDING_AT_SOURCE_FREEZE_READ_EXECUTION_RECORD",
-    "COMPOSED": "PENDING_AT_SOURCE_FREEZE_WITHIN_FULL_READ_EXECUTION_RECORD",
-    "FULL": "CLEAN_OUTPUT_REQUIRED_PENDING_AT_SOURCE_FREEZE_READ_EXECUTION_RECORD",
-    "infrastructureImpact": "UPDATE_REQUIRED",
-    "bootstrapImpact": "NO_CHANGE_REQUIRED",
-    "guideImpact": "UPDATE_REQUIRED",
-    "devExecution": {
-      "path": "artifacts/g9u1-after-r1/dev-desktop-20/verification-result.json",
-      "sha256": "4abfae88b4e66dfb3e335004392fc580ef7dc6981ddae0b0883e5d0e40c2101e",
-      "summaryPath": "artifacts/g9u1-after-r1/dev-desktop-20/dev/cbaf365388f14b02a973939975e67f11/dev-summary.json",
-      "summarySha256": "c880ab371726fc798bcce73ffc11b5429e2e07174242620201f78a80e85c6b82",
-      "exitCode": 0,
-      "tests": 193,
-      "g9u1DesktopTests": 125,
-      "historicalR3Tests": 22,
-      "historicalOtherDesktopTests": 46,
-      "state": "PASS_SCOPED_NOT_ACCEPTANCE"
+    "DEV": "DIAGNOSTIC_ONLY; retained individual runs under artifacts/g9u1-review-round1; failures are preserved and are not relabeled.",
+    "PHASE": "PENDING_FRESH_SUCCESSOR_EXECUTION",
+    "COMPOSED": "PENDING_WITHIN_FINAL_FULL",
+    "FULL": "REQUIRED_FRESH_CLEAN_SUCCESSOR_EXECUTION",
+    "VERIFICATION_INFRASTRUCTURE_IMPACT": "UPDATE_REQUIRED",
+    "BOOTSTRAP_IMPACT": "NO_CHANGE_REQUIRED",
+    "bootstrapRationale": "No workstation, JDK, Gradle or toolchain prerequisite changed; profile/runtime paths use existing modules and application preferences.",
+    "GUIDE_IMPACT": "UPDATE_REQUIRED",
+    "guideRationale": "Public scalar metric provenance, ordinary menu/toolbar routes, legal editability, native reopen and user-tool workflow require the quick guide and reduced author re-smoke.",
+    "finalSequence": {
+      "PHASE": "tools/agent/verify.ps1 -Level PHASE -Phase G9U1 -KeepBuildOutputs -LogDirectory artifacts/g9u1-review-round1/final-phase-07",
+      "FULL": "tools/agent/verify.ps1 -Level FULL -CleanBuild -KeepBuildOutputs -LogDirectory artifacts/g9u1-review-round1/final-full-03",
+      "COMPOSED": "Complete COMPOSED scope executes within FULL; no additional root or invented separate execution.",
+      "deterministicComparison": "PHASE phase-g9u1/canonical-summary.json against FULL g9u1-construction-workspace/canonical-summary.json for the same frozen successor cohort.",
+      "receiptPolicy": "FULL owns one process/runspace-local receipt while each phase preserves live assertions; no prior-run receipt is reused.",
+      "phaseRoot": "artifacts/g9u1-review-round1/final-phase-07/verification-result.json",
+      "phaseSummary": "artifacts/g9u1-review-round1/final-phase-07/phase-g9u1/canonical-summary.json",
+      "fullRoot": "artifacts/g9u1-review-round1/final-full-03/verification-result.json",
+      "fullSummary": "artifacts/g9u1-review-round1/final-full-03/g9u1-construction-workspace/canonical-summary.json",
+      "sourceFreezePolicy": "Paths designate forthcoming actual execution records, not preclaimed success. Preserve tracked inputs during execution; report later results in the external run records, never as pre-executed or author-approved evidence."
     },
-    "styleDiagnostic": {
-      "path": "artifacts/g9u1-after-r1/dev-checkstyle-05",
-      "tasks": 4,
-      "xmlErrors": 0,
-      "exitCode": 0,
-      "state": "PASS_SCOPED_CHECKSTYLE_NOT_PHASE_OR_FULL"
-    },
-    "profileInfrastructure": {
-      "pathA": "artifacts/g9u1-after-r1/final-profile-prompts-a2/workspace-profile-tests.json",
-      "pathB": "artifacts/g9u1-after-r1/final-profile-prompts-b2/workspace-profile-tests.json",
-      "testsPerRun": 37,
-      "exitCodeA": 0,
-      "exitCodeB": 0,
-      "identicalSha256": "f42179695086d8bd26810ac84ffd624d88890cd74e8df08472c7da0a846efa51",
-      "historical26CaseSha256": "ed6a54585ae589ec00e9b76676270e484bbc96fa6aba48f34ebe700484004ddb"
-    },
-    "sharedDevExecution": {
-      "path": "artifacts/g9u1-after-r1/dev-shared-03/verification-result.json",
-      "sha256": "46c1a6d2697c6441a5c3cdcb37350c480328754683f96eb5aca18801f125707d",
-      "summaryPath": "artifacts/g9u1-after-r1/dev-shared-03/dev/c67c81eb8908472eaeea0746905aa677/dev-summary.json",
-      "summarySha256": "c29cc400fe900718cfd524617681dcaf2784f403f0b457e3d994ff24596611a9",
-      "tests": 10,
-      "g9u1Tests": 7,
-      "exitCode": 0,
-      "state": "PASS_SCOPED_NOT_ACCEPTANCE",
-      "historicalShared02RootSha256": "b1e13f1d99e365e6f1c2732190146676b45fe7b7dea2e4c681ab94e84aa451c6"
-    },
-    "lifecycleInfrastructure": {
-      "path": "artifacts/g9u1-after-r1/static-sweep-v2/lifecycle/cc5808e8af9342c19aa92539cdb5e960/canonical-summary.json",
-      "canonicalLfSha256": "aef491fe2f64b2c70c826c0db6f0cad07be3027bea7388fdfa71f37c3c1de9c6",
-      "tests": 61,
-      "exitCode": 0,
-      "state": "PASS_FAKE_FIRST_NOT_PRODUCT_EXECUTION"
-    },
-    "dxfAuthorityInfrastructure": {
-      "pathA": "artifacts/g9u1-after-r1/final-dxf-authority-a/dxf-authority-tests.json",
-      "pathB": "artifacts/g9u1-after-r1/final-dxf-authority-b/dxf-authority-tests.json",
-      "testsPerRun": 57,
-      "exitCodeA": 0,
-      "exitCodeB": 0,
-      "identicalSha256": "bc52367329d057bf786397708b498f0f69f02c7ffe8d05861af05b7938465fa0",
-      "liveStaticPath": "artifacts/g9u1-after-r1/final-dxf-authority-static",
-      "liveStaticExitCode": 0,
-      "state": "PASS_INFRASTRUCTURE_AND_STATIC_NOT_PRODUCT_EXECUTION"
-    },
-    "historicalFull01": {
-      "path": "artifacts/g9u1-after-r1/final-full/verification-result.json",
-      "sha256": "b1e97d8f1ac29b19f0407a4918f2c6476466403bfde99a0186f1d184b7a13cae",
+    "historicalReviewPhase01": {
+      "path": "artifacts/g9u1-review-round1/final-phase/verification-result.json",
+      "rawSha256": "907a33654b53823077b0930ac75d733ca7dbb43fe1bdaba95e01448764be63e2",
       "state": "FAILED",
       "exitCode": 1,
-      "sharedTestsCompleted": 6606,
-      "sharedTestsFailed": 1,
-      "sharedTestsSkipped": 10,
-      "failure": "Historical shared preview fixture required a nonnull empty array; approved G9U1 syntax-only preview returns null. Only that fixture expectation changes; all zero-publication and definitive-execution assertions remain.",
-      "retainedAuthority": "Original final-source-freeze-v3, final-phase-a and final-full records remain historical and are not regenerated or relabeled for the new cohort."
+      "rootFailure": "Published R1 live static authority failed.",
+      "inheritedCause": "G9U0-R4 candidate verification requires an empty index.",
+      "gradleExecutionStarted": false,
+      "classification": "PRECONDITION_MISMATCH_STAGED_INDEX_NOT_PRODUCT_REGRESSION",
+      "disposition": "Only the 52 review paths were unstaged; candidate worktree bytes and verifier assertions were unchanged. This failed execution remains historical. Current evidence/report path metadata requires a fresh frozen PHASE cohort with an empty index; no old execution is relabeled."
     },
-    "finalSequence": {
-      "PHASE": "tools/agent/verify.ps1 -Level PHASE -Phase G9U1 -KeepBuildOutputs -LogDirectory artifacts/g9u1-after-r1/final-phase-b",
-      "FULL": "tools/agent/verify.ps1 -Level FULL -CleanBuild -KeepBuildOutputs -LogDirectory artifacts/g9u1-after-r1/final-full-02",
-      "COMPOSED": "Complete COMPOSED scope is executed within FULL by the same top-level branch; no separate COMPOSED root or execution is invented.",
-      "deterministicComparison": "PHASE phase-g9u1/canonical-summary.json against FULL g9u1-construction-workspace/canonical-summary.json, same frozen input cohort.",
-      "receiptPolicy": "FULL owns one process/runspace-local receipt; every phase runs its live assertions. No prior-run receipt is reused.",
-      "phaseRoot": "artifacts/g9u1-after-r1/final-phase-b/verification-result.json",
-      "phaseSummary": "artifacts/g9u1-after-r1/final-phase-b/phase-g9u1/canonical-summary.json",
-      "fullRoot": "artifacts/g9u1-after-r1/final-full-02/verification-result.json",
-      "fullSummary": "artifacts/g9u1-after-r1/final-full-02/g9u1-construction-workspace/canonical-summary.json",
-      "sourceFreezePolicy": "These paths designate forthcoming actual execution records, not preclaimed success. Keep this source cohort unchanged; report later root outcomes and hashes without relabeling precommit execution as postcommit execution."
+    "historicalUserToolOwnershipDev01": {
+      "path": "artifacts/g9u1-review-round1/dev-user-tools-ownership-01/verification-result.json",
+      "rawSha256": "05e6efd8be6c13115d155ff6554340164738c8676e4c88ebc49232cc16cd2b05",
+      "archive": "artifacts/g9u1-review-round1/dev-user-tools-ownership-01/dev/57e3d1cd4b4a468c98537ac8be94cb54",
+      "state": "FAILED",
+      "exitCode": 1,
+      "tests": 24,
+      "failures": 1,
+      "scope": "An added assertion in the existing activation test exposed a live macro still bound to the isolated validation kernel instead of the application's kernel. Other 23 tests, including the three multi-window preference tests, passed.",
+      "disposition": "The correction must register through the existing application's macro-loading seam; no second macro engine or new geometry policy is authorized. This DEV diagnostic remains failed historical evidence, not acceptance."
+    },
+    "userToolOwnershipDev02": {
+      "path": "artifacts/g9u1-review-round1/dev-user-tools-ownership-02/verification-result.json",
+      "rawSha256": "6fa28152d6d53a750b99b61a3d010c02c92e84d0feac21f3b5bd74852714095b",
+      "archive": "artifacts/g9u1-review-round1/dev-user-tools-ownership-02/dev/4a3c077485aa422983c08af821cbc8dc",
+      "state": "PASS_SCOPED_NOT_ACCEPTANCE",
+      "exitCode": 0,
+      "tests": 24,
+      "failures": 0,
+      "scope": "Existing host macro loading now establishes application-kernel ownership, owner-directed removal/reactivation, partial-package rejection and failed-registration rollback; the multi-window preference cases also pass.",
+      "limitation": "Focused DEV does not replace final PHASE, Checkstyle, clean FULL or author re-smoke; it does not claim complete ToolManager editing interoperability."
+    },
+    "historicalReviewPhase02": {
+      "path": "artifacts/g9u1-review-round1/final-phase-02/verification-result.json",
+      "preservedReports": "artifacts/g9u1-review-round1/final-phase-02/preserved-reports",
+      "rawSha256": "95fccdba265b5ffd228ab1b3c51055fe649ad852bd7476c2559ce193f23866d9",
+      "state": "FAILED",
+      "exitCode": 1,
+      "failure": "G9U1 Checkstyle errors: source/desktop/desktop/build/reports/checkstyle/main.xml",
+      "focusedTestsPassed": 178,
+      "focusedFailures": 0,
+      "focusedErrors": 0,
+      "focusedSkipped": 0,
+      "checkstyleViolations": 13,
+      "classification": "CHECKSTYLE_FAILURE_NOT_ACCEPTANCE",
+      "logs": [
+        {
+          "path": "artifacts/g9u1-review-round1/final-phase-02/phase-g9u1/g9u1-shared-gradle.log",
+          "rawSha256": "5988ad255ff5a847e8c100d224e2fae460e30ae5e997b7cec6de30582782d1d5"
+        },
+        {
+          "path": "artifacts/g9u1-review-round1/final-phase-02/phase-g9u1/g9u1-desktop-gradle.log",
+          "rawSha256": "b4af536f59c54c4043bfa56b798ad4aae711b6db44b808fa9a76475cfd8f65f4"
+        },
+        {
+          "path": "artifacts/g9u1-review-round1/final-phase-02/phase-g9u1/g9u1-checkstyle.log",
+          "rawSha256": "d30d59723aff646ad2d9b6f8e08c8b87a415f99940a1cf2736826611a899c924"
+        }
+      ],
+      "disposition": "All 13 Checkstyle findings must be corrected. The separate bounded application-preference/library review adds focused transaction/multi-window tests; the successor requires new PHASE/FULL evidence. Eighteen JUnit XML reports and four Checkstyle reports are archived under preservedReports. The failed 178-method attempt is historical, not regenerated or claimed for the new cohort."
+    },
+    "historicalReviewPhase03": {
+      "path": "artifacts/g9u1-review-round1/final-phase-03/verification-result.json",
+      "preservedReports": "artifacts/g9u1-review-round1/final-phase-03/preserved-reports",
+      "rawSha256": "fac7f89c43dd11c28fa8737b0c1816511bebeeeb3dabdd08e3f4565c92eededa9",
+      "state": "FAILED",
+      "exitCode": 1,
+      "failure": "G9U1 Checkstyle errors: source/desktop/desktop/build/reports/checkstyle/main.xml",
+      "focusedTestsPassed": 181,
+      "focusedFailures": 0,
+      "focusedErrors": 0,
+      "focusedSkipped": 0,
+      "checkstyleViolations": 4,
+      "classification": "CHECKSTYLE_FAILURE_NOT_ACCEPTANCE",
+      "logs": [
+        {
+          "path": "artifacts/g9u1-review-round1/final-phase-03/phase-g9u1/g9u1-shared-gradle.log",
+          "rawSha256": "6f8c7efb77bc6f437c18f691720235f8f0751ea656e68bda373e5d8994189a72"
+        },
+        {
+          "path": "artifacts/g9u1-review-round1/final-phase-03/phase-g9u1/g9u1-desktop-gradle.log",
+          "rawSha256": "d4d29a1bb577d787fa903562a0e21d9402947952040bf35393f1a569aa197e8a"
+        },
+        {
+          "path": "artifacts/g9u1-review-round1/final-phase-03/phase-g9u1/g9u1-checkstyle.log",
+          "rawSha256": "4cb716b60f82693b92f2dd60dd1c115529dbe9c87f4c2be8169913175fbe43a4"
+        }
+      ],
+      "disposition": "Only comment wrapping and final snapshot qualifiers in user-tool code/tests correct the four remaining style violations; no assertions, semantics or counts change. Final PHASE is rerun as final-phase-04; no FULL has run yet. The failed execution and its 18 JUnit/four Checkstyle archives remain historical."
+    },
+    "historicalReviewPhase04": {
+      "path": "artifacts/g9u1-review-round1/final-phase-04/verification-result.json",
+      "rawSha256": "e3b0af4644b3cf97a1482c98b961a382ce08ac294491769e4506435a43703236",
+      "canonicalSummary": "artifacts/g9u1-review-round1/final-phase-04/phase-g9u1/canonical-summary.json",
+      "canonicalSha256": "56a3254f6c4546b019bdbd7a26aa63bfc13abbc62964b75495e79b5ada88adc4",
+      "state": "TECHNICAL_GATES_PASSED_NOT_AUTHOR_APPROVAL",
+      "exitCode": 0,
+      "tests": 181,
+      "scope": "Exact earlier source cohort only. Later historical-menu test adaptation and fixture lifecycle cleanup require fresh PHASE/FULL; this successful execution is not relabeled."
+    },
+    "historicalReviewFull01": {
+      "path": "artifacts/g9u1-review-round1/final-full/verification-result.json",
+      "rawSha256": "15f46a7b39db952a295f1ca2edf3d7213e81c2a43564cb044fa64c99e3a0bdcd",
+      "archive": "artifacts/g9u1-review-round1/final-full/canonical-build/aef361be0c47404380e283123c07ea3b",
+      "state": "FAILED",
+      "exitCode": 1,
+      "elapsedSeconds": 1105.037,
+      "shared": {
+        "tests": 6613,
+        "passed": 6603,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 10
+      },
+      "desktop": {
+        "tests": 1349,
+        "passed": 1341,
+        "executed": 1348,
+        "failures": 7,
+        "errors": 0,
+        "skipped": 1
+      },
+      "failures": [
+        {
+          "class": "org.geocedg.desktop.G9U0R3MenuLifecycleTest",
+          "count": 1,
+          "cause": "Historical m01 retained fixed five-menu count although the approved current profile declares six."
+        },
+        {
+          "class": "org.geogebra.desktop.gui.util.SvgLoadTest",
+          "count": 1,
+          "cause": "OutOfMemoryError in full shared-JVM desktop execution."
+        },
+        {
+          "class": "org.geogebra.suite.CommandsSuiteTest",
+          "count": 1,
+          "cause": "OutOfMemoryError in full shared-JVM desktop execution."
+        },
+        {
+          "class": "org.geogebra.suite.SpecialPointsTest",
+          "count": 4,
+          "cause": "OutOfMemoryError in full shared-JVM desktop execution."
+        }
+      ],
+      "disposition": "Preserve failed root/logs/JUnit unchanged. Adapt only R3 menu cardinality to current profile, preserving all six lifecycle tests. Embedded windowless test applications must unregister their unused global keyboard dispatcher so the JVM does not retain their entire kernels. No heap/build/runtime acceptance, SVG source, product keyboard lifecycle or scientific assertions are changed."
+    },
+    "historicalSvgMemoryDev01": {
+      "path": "artifacts/g9u1-review-round1/dev-svg-memory-01/verification-result.json",
+      "rawSha256": "4b85745bb05ed0d490e67d74709799c8bca7fd2b7b6cdf47253015c383fd34f9",
+      "state": "PASS_SCOPED_NOT_ACCEPTANCE",
+      "exitCode": 0,
+      "tests": 6,
+      "scope": "Inherited SvgLoadTest passes in isolation under the same 512 MiB test heap; this does not replace failed full-suite evidence."
+    },
+    "reviewMemoryDev02": {
+      "path": "artifacts/g9u1-review-round1/dev-review-memory-02/verification-result.json",
+      "rawSha256": "e8a7b4e8e2ab4a69ddfa27f0148ef3e477861ec43445c90dfc81f0473d27ed3c",
+      "summary": "artifacts/g9u1-review-round1/dev-review-memory-02/dev/b7b174f56dd34c03bccb8130a6f32050/dev-summary.json",
+      "summarySha256": "2028b4e8a89b44f8708b410f090c561b127ac29da507f41de8df7571d992d197",
+      "state": "PASS_SCOPED_NOT_ACCEPTANCE",
+      "exitCode": 0,
+      "tests": 191,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "scope": "All G9U1 Desktop tests plus historical R3 menu, SVG, CommandsSuite and SpecialPoints pass together after test-only windowless dispatcher cleanup. One new fixture lifecycle regression leaves native registration intact and checks cleanup/restoration. Later final qualifiers/comment wrapping change no assertions. Fresh PHASE and clean FULL remain required."
+    },
+    "historicalReviewPhase05": {
+      "path": "artifacts/g9u1-review-round1/final-phase-05/verification-result.json",
+      "rawSha256": "32d0464b4f85c85b0e8ac268832586176d50561b082503e8bf7445476e8ca8af",
+      "canonicalSummary": "artifacts/g9u1-review-round1/final-phase-05/phase-g9u1/canonical-summary.json",
+      "canonicalSha256": "f4b48ab49483a128e938651a0c1060d8dae6b8a214d40f1f59aefe94bb254af2",
+      "state": "TECHNICAL_GATES_PASSED_NOT_AUTHOR_APPROVAL",
+      "exitCode": 0,
+      "tests": 182,
+      "scope": "Exact prior 58-path review cohort only. The later test-owned Swing root teardown requires a fresh cohort; this PHASE is not relabeled."
+    },
+    "historicalReviewFull02": {
+      "path": "artifacts/g9u1-review-round1/final-full-02/verification-result.json",
+      "rawSha256": "5cc4ab27bf20b1e4a7c65ffdd790aa2f7b89d859a68ed6b0060701b85d2c40ad",
+      "state": "FAILED",
+      "exitCode": 1,
+      "elapsedSeconds": 977.191,
+      "shared": {
+        "passed": 6603,
+        "skipped": 10,
+        "failures": 0
+      },
+      "desktop": {
+        "tests": 1342,
+        "failures": 16,
+        "skipped": 1
+      },
+      "classification": "TEST_HOST_GLOBAL_SWING_ROOT_RETENTION_NOT_PRODUCT_SVG_FAILURE",
+      "disposition": "Preserve failed FULL/JUnit unchanged. Dispatcher-only cleanup was insufficient. Test-only teardown now owns new DockManagerD Toolkit listeners and lazy GeoGebraFrame static registrations after each test; no production, heap, SVG, filter or existing assertion changes."
+    },
+    "historicalMemoryAllDev01": {
+      "path": "artifacts/g9u1-review-round1/dev-memory-all-01/verification-result.json",
+      "rawSha256": "2dc5c6cbcc142f8ea4d4c99d90da3a61c547aa84e4cbab77dc065aa3f8d4250b",
+      "state": "FAILED",
+      "exitCode": 1,
+      "classification": "POWERSHELL_WILDCARD_EXPANSION_IN_DIAGNOSTIC_INVOCATION",
+      "scope": "An unquoted wildcard expanded to a filesystem task argument. This failed diagnostic supplies no test acceptance evidence."
+    },
+    "historicalMemoryAllDev02": {
+      "path": "artifacts/g9u1-review-round1/dev-memory-all-02/verification-result.json",
+      "rawSha256": "a3d0dc5e1cba34f5dec44a0143ac5317a9974a6569a42e7983949c4e6adeeda8",
+      "state": "FAILED",
+      "exitCode": 1,
+      "classification": "HEAP_DIAGNOSTIC_CONFIRMS_TEST_HOST_RETENTION",
+      "scope": "Diagnostic heap capture is not acceptance or a product heap-policy change. Subsequent canonical invocations retain normal execution policy."
+    },
+    "fixtureGlobalRootDiagnosis": {
+      "path": "artifacts/g9u1-review-round1/dev-memory-all-02/heap/hprof-retention-evidence.json",
+      "rawSha256": "611446f3f2cf9af35ed84c93acd122e61c397b85c7a545cc81900a937f3cfc0a",
+      "state": "DIAGNOSTIC_NOT_ACCEPTANCE",
+      "liveObjects": {
+        "AppGeoCeDG": 278,
+        "DockManagerD": 284,
+        "GeoGebraFrame": 283
+      },
+      "verifiedRoots": [
+        "Toolkit.toolkit -> eventListener -> multicaster/selective listener -> DockManagerD.app",
+        "GeoGebraFrame.instances -> ArrayList.elementData -> GeoGebraFrame.app"
+      ],
+      "correction": "Per-test identity snapshots preserve preexisting registrations and remove only new embedded-host DockManagerD listeners and nonvisible/nondisplayable lazy frames. Real windows fail closed. Existing command/geometry assertions, native construction, heap limits and logger setup are unchanged.",
+      "nextDev": "artifacts/g9u1-review-round1/dev-memory-all-03/verification-result.json",
+      "sourcePolicy": "Earlier 52/58-path raw freeze records and failed executions remain historical; none is regenerated against this new test cohort."
+    },
+    "historicalMemoryAllDev03": {
+      "path": "artifacts/g9u1-review-round1/dev-memory-all-03/verification-result.json",
+      "rawSha256": "bb394b904f508510fb666e13aec4cd431ffa52b51cdd206dcf7da6be24fc2bcf",
+      "archive": "artifacts/g9u1-review-round1/dev-memory-all-03/dev/9e7903996bf84a68a8b9dc6db8c8c9c5",
+      "logRawSha256": "44effae8c4d38471de3f236bd16767d10763280b450a05380585e7a7595c05b9",
+      "state": "FAILED",
+      "exitCode": 1,
+      "startedUtc": "2026-09-04T12:06:19.1632061Z",
+      "finishedUtc": "2026-09-04T12:08:19.3951166Z",
+      "elapsedSeconds": 120.23,
+      "gradleResult": "BUILD SUCCESSFUL",
+      "tests": 1351,
+      "passed": 1350,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 1,
+      "skippedClass": "org.geogebra.CasValueExtractor",
+      "failure": "Mandatory tests were skipped: org.geogebra.CasValueExtractor",
+      "classification": "DEV_MANDATORY_SKIP_REJECTION_WITH_SUCCESSFUL_DESKTOP_RUNTIME",
+      "scope": "Full Desktop org.* execution completed under normal heap policy with zero failures/errors and no OOM after test-owned Swing-root teardown. DEV correctly rejected the inherited disabled class; this is not DEV PASS or acceptance. No skip policy is changed. Canonical FULL must independently apply its existing inherited-skip contract.",
+      "sourceLinkage": "The executed 62-path review cohort remains archived. Subsequent edits record only this chronology and refreshed hashes; no executable/test/verifier input changes. Fresh PHASE/FULL destinations remain final-phase-06/final-full-03."
+    },
+    "historicalReviewPhase06": {
+      "path": "artifacts/g9u1-review-round1/final-phase-06/verification-result.json",
+      "rawSha256": "2229b04489e24308c0aa9b92c5518a004e75c3617e045edf7d6cae133a5b0049",
+      "preservedReports": "artifacts/g9u1-review-round1/final-phase-06/preserved-reports",
+      "state": "FAILED",
+      "exitCode": 1,
+      "startedUtc": "2026-09-04T12:15:27.4106930Z",
+      "finishedUtc": "2026-09-04T12:17:10.9610399Z",
+      "elapsedSeconds": 103.547,
+      "tests": 183,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "checkstyleErrors": 1,
+      "classification": "SINGLE_CHECKSTYLE_LINE_LENGTH_FAILURE_NOT_ACCEPTANCE",
+      "disposition": "Only the 101-column comment in G9U1TestApp.java is wrapped. Existing assertions, behavior and counts remain unchanged. Eighteen JUnit/four Checkstyle XML reports remain byte-exact in preservedReports. Fresh PHASE is final-phase-07; final-full-03 has not executed."
     }
   },
   "agentGuiSmoke": {
-    "state": "PARTIAL_AGENT_EXECUTED_NOT_AUTHOR_APPROVAL",
-    "record": "artifacts/g9u1-after-r1/gui-smoke/agent-smoke.md",
-    "recordSha256": "2d1f8e059c00f2f1a829e12948d950895886f1004345e17d73985d908cb3775b",
-    "nativeArchive": "artifacts/g9u1-after-r1/gui-smoke/spline-point-drag.cedg",
-    "nativeArchiveSha256": "05d9d0ce03ae7f8862783e8fb4e696fa98739849f63ae971b9126b676a3cb27a",
-    "scope": "Zero-object typing preview; Enter spline creation; real Point-tool stroke creation and Move drag; native save and a fresh-process reopen. Later inspector/layout/filter corrections have automated evidence, not a repeated complete GUI smoke.",
+    "state": "LIMITED_AGENT_OBSERVATION_NOT_AUTHOR_APPROVAL",
+    "record": "docs/validation/g9u1_author_manual_review_round1.md",
+    "scope": "Fresh isolated Desktop launch observed the real six-menu bar and compact toolbar. The inherited Classic startup chooser was found and then corrected product-only; full interactive and author re-smoke acceptance remains pending.",
     "manualAuthorSmoke": "PENDING"
   },
   "periodicRisk": {
@@ -229,5 +456,283 @@
       "U1-Q04 proved nonzero retirement",
       "U1-Q05 feature-off/Classic native quarantine preservation"
     ]
+  },
+  "historicalCheckpointVerification": {
+    "checkpoint": "b492194082f1adc9f981d85d92a58ef57490196f",
+    "meaning": "Verbatim prior candidate verification metadata; historical only, not reused as successor execution.",
+    "records": {
+      "DEV": "DESKTOP_20_PASS_SCOPED_193_SHARED_03_PASS_SCOPED_10",
+      "PHASE": "PENDING_AT_SOURCE_FREEZE_READ_EXECUTION_RECORD",
+      "COMPOSED": "PENDING_AT_SOURCE_FREEZE_WITHIN_FULL_READ_EXECUTION_RECORD",
+      "FULL": "CLEAN_OUTPUT_REQUIRED_PENDING_AT_SOURCE_FREEZE_READ_EXECUTION_RECORD",
+      "infrastructureImpact": "UPDATE_REQUIRED",
+      "bootstrapImpact": "NO_CHANGE_REQUIRED",
+      "guideImpact": "UPDATE_REQUIRED",
+      "devExecution": {
+        "path": "artifacts/g9u1-after-r1/dev-desktop-20/verification-result.json",
+        "sha256": "4abfae88b4e66dfb3e335004392fc580ef7dc6981ddae0b0883e5d0e40c2101e",
+        "summaryPath": "artifacts/g9u1-after-r1/dev-desktop-20/dev/cbaf365388f14b02a973939975e67f11/dev-summary.json",
+        "summarySha256": "c880ab371726fc798bcce73ffc11b5429e2e07174242620201f78a80e85c6b82",
+        "exitCode": 0,
+        "tests": 193,
+        "g9u1DesktopTests": 125,
+        "historicalR3Tests": 22,
+        "historicalOtherDesktopTests": 46,
+        "state": "PASS_SCOPED_NOT_ACCEPTANCE"
+      },
+      "styleDiagnostic": {
+        "path": "artifacts/g9u1-after-r1/dev-checkstyle-05",
+        "tasks": 4,
+        "xmlErrors": 0,
+        "exitCode": 0,
+        "state": "PASS_SCOPED_CHECKSTYLE_NOT_PHASE_OR_FULL"
+      },
+      "profileInfrastructure": {
+        "pathA": "artifacts/g9u1-after-r1/final-profile-prompts-a2/workspace-profile-tests.json",
+        "pathB": "artifacts/g9u1-after-r1/final-profile-prompts-b2/workspace-profile-tests.json",
+        "testsPerRun": 37,
+        "exitCodeA": 0,
+        "exitCodeB": 0,
+        "identicalSha256": "f42179695086d8bd26810ac84ffd624d88890cd74e8df08472c7da0a846efa51",
+        "historical26CaseSha256": "ed6a54585ae589ec00e9b76676270e484bbc96fa6aba48f34ebe700484004ddb"
+      },
+      "sharedDevExecution": {
+        "path": "artifacts/g9u1-after-r1/dev-shared-03/verification-result.json",
+        "sha256": "46c1a6d2697c6441a5c3cdcb37350c480328754683f96eb5aca18801f125707d",
+        "summaryPath": "artifacts/g9u1-after-r1/dev-shared-03/dev/c67c81eb8908472eaeea0746905aa677/dev-summary.json",
+        "summarySha256": "c29cc400fe900718cfd524617681dcaf2784f403f0b457e3d994ff24596611a9",
+        "tests": 10,
+        "g9u1Tests": 7,
+        "exitCode": 0,
+        "state": "PASS_SCOPED_NOT_ACCEPTANCE",
+        "historicalShared02RootSha256": "b1e13f1d99e365e6f1c2732190146676b45fe7b7dea2e4c681ab94e84aa451c6"
+      },
+      "lifecycleInfrastructure": {
+        "path": "artifacts/g9u1-after-r1/static-sweep-v2/lifecycle/cc5808e8af9342c19aa92539cdb5e960/canonical-summary.json",
+        "canonicalLfSha256": "aef491fe2f64b2c70c826c0db6f0cad07be3027bea7388fdfa71f37c3c1de9c6",
+        "tests": 61,
+        "exitCode": 0,
+        "state": "PASS_FAKE_FIRST_NOT_PRODUCT_EXECUTION"
+      },
+      "dxfAuthorityInfrastructure": {
+        "pathA": "artifacts/g9u1-after-r1/final-dxf-authority-a/dxf-authority-tests.json",
+        "pathB": "artifacts/g9u1-after-r1/final-dxf-authority-b/dxf-authority-tests.json",
+        "testsPerRun": 57,
+        "exitCodeA": 0,
+        "exitCodeB": 0,
+        "identicalSha256": "bc52367329d057bf786397708b498f0f69f02c7ffe8d05861af05b7938465fa0",
+        "liveStaticPath": "artifacts/g9u1-after-r1/final-dxf-authority-static",
+        "liveStaticExitCode": 0,
+        "state": "PASS_INFRASTRUCTURE_AND_STATIC_NOT_PRODUCT_EXECUTION"
+      },
+      "historicalFull01": {
+        "path": "artifacts/g9u1-after-r1/final-full/verification-result.json",
+        "sha256": "b1e97d8f1ac29b19f0407a4918f2c6476466403bfde99a0186f1d184b7a13cae",
+        "state": "FAILED",
+        "exitCode": 1,
+        "sharedTestsCompleted": 6606,
+        "sharedTestsFailed": 1,
+        "sharedTestsSkipped": 10,
+        "failure": "Historical shared preview fixture required a nonnull empty array; approved G9U1 syntax-only preview returns null. Only that fixture expectation changes; all zero-publication and definitive-execution assertions remain.",
+        "retainedAuthority": "Original final-source-freeze-v3, final-phase-a and final-full records remain historical and are not regenerated or relabeled for the new cohort."
+      },
+      "finalSequence": {
+        "PHASE": "tools/agent/verify.ps1 -Level PHASE -Phase G9U1 -KeepBuildOutputs -LogDirectory artifacts/g9u1-after-r1/final-phase-b",
+        "FULL": "tools/agent/verify.ps1 -Level FULL -CleanBuild -KeepBuildOutputs -LogDirectory artifacts/g9u1-after-r1/final-full-02",
+        "COMPOSED": "Complete COMPOSED scope is executed within FULL by the same top-level branch; no separate COMPOSED root or execution is invented.",
+        "deterministicComparison": "PHASE phase-g9u1/canonical-summary.json against FULL g9u1-construction-workspace/canonical-summary.json, same frozen input cohort.",
+        "receiptPolicy": "FULL owns one process/runspace-local receipt; every phase runs its live assertions. No prior-run receipt is reused.",
+        "phaseRoot": "artifacts/g9u1-after-r1/final-phase-b/verification-result.json",
+        "phaseSummary": "artifacts/g9u1-after-r1/final-phase-b/phase-g9u1/canonical-summary.json",
+        "fullRoot": "artifacts/g9u1-after-r1/final-full-02/verification-result.json",
+        "fullSummary": "artifacts/g9u1-after-r1/final-full-02/g9u1-construction-workspace/canonical-summary.json",
+        "sourceFreezePolicy": "These paths designate forthcoming actual execution records, not preclaimed success. Keep this source cohort unchanged; report later root outcomes and hashes without relabeling precommit execution as postcommit execution."
+      }
+    }
+  },
+  "historicalCheckpointAgentGuiSmoke": {
+    "state": "PARTIAL_AGENT_EXECUTED_NOT_AUTHOR_APPROVAL",
+    "record": "artifacts/g9u1-after-r1/gui-smoke/agent-smoke.md",
+    "recordSha256": "2d1f8e059c00f2f1a829e12948d950895886f1004345e17d73985d908cb3775b",
+    "nativeArchive": "artifacts/g9u1-after-r1/gui-smoke/spline-point-drag.cedg",
+    "nativeArchiveSha256": "05d9d0ce03ae7f8862783e8fb4e696fa98739849f63ae971b9126b676a3cb27a",
+    "scope": "Zero-object typing preview; Enter spline creation; real Point-tool stroke creation and Move drag; native save and a fresh-process reopen. Later inspector/layout/filter corrections have automated evidence, not a repeated complete GUI smoke.",
+    "manualAuthorSmoke": "PENDING"
+  },
+  "authorReviewStabilization": {
+    "checkpoint": {
+      "commit": "b492194082f1adc9f981d85d92a58ef57490196f",
+      "tag": "geocedg-g9u1-author-review-checkpoint-1",
+      "tagObject": "755f22bd2b101d4ca2ad6bea98429bc2ba941af9",
+      "branch": "codex/g9u1-construction-workspace-after-r1",
+      "pathCount": 96,
+      "focusedTests": 132,
+      "scenarioCount": 138,
+      "authorityBlobs": [
+        {
+          "path": "geocedg/validation/g9u1/g9u1-construction-workspace-evidence.json",
+          "mode": "100644",
+          "blobOid": "882c87cdf55400b58284a5e6f82eff8d02eabc8b"
+        },
+        {
+          "path": "geocedg/validation/g9u1/g9u1-construction-workspace-scenarios.json",
+          "mode": "100644",
+          "blobOid": "7a626473fb7c8703ceaca7257af0b7db99c60861"
+        },
+        {
+          "path": "geocedg/validation/g9u1/g9u1-construction-workspace-evidence.sha256",
+          "mode": "100644",
+          "blobOid": "957cdeaa4e0d107b5e48a727fd0158b0182a5669"
+        },
+        {
+          "path": "docs/validation/g9u1_construction_workspace_implementation_candidate_report.md",
+          "mode": "100644",
+          "blobOid": "e44376ffff38b7623a09aa18e2348b094610ca3e"
+        },
+        {
+          "path": "tools/agent/verify-g9u1-construction-workspace.ps1",
+          "mode": "100644",
+          "blobOid": "b973ff97d7b616e5ae88641bda2cc69710051096"
+        }
+      ],
+      "canonicalLfHashes": {
+        "evidence": "ca3e89049843e5262e7e557d7fb4827d51783dddcc1699489146c6599102de0e",
+        "scenarios": "8d3dd074726d247c0cda5dd12fc29f0c1588e2f337dda71e78b84ffd85411c4a",
+        "report": "b142342db4e8144a729c8fe86f91a75997308da24821a0e4d70dc773dd4da75e"
+      }
+    },
+    "historicalAuthorReview": "COMPLETED_WITH_FINDINGS_NOT_PASS",
+    "authorResmoke": "PENDING",
+    "noNewGeometricSemantics": true,
+    "inventory": {
+      "baseCommit": "b492194082f1adc9f981d85d92a58ef57490196f",
+      "deltaPathCount": 62,
+      "deltaPaths": [
+        "apps/geocedg/application-profile.yml",
+        "docs/architecture/cedg_workspace_architecture.md",
+        "docs/developer/geocedg_developer_guide.md",
+        "docs/roadmap/geocedg_roadmap.md",
+        "docs/upstream/modified-files.yml",
+        "docs/user/geocedg_construction_quick_guide.md",
+        "docs/user/geocedg_user_guide.md",
+        "docs/validation/g9_documentation_bundle_traceability.md",
+        "docs/validation/g9u1_author_manual_review_round1.md",
+        "docs/validation/g9u1_author_resmoke_checklist.md",
+        "docs/validation/g9u1_construction_workspace_implementation_candidate_report.md",
+        "docs/validation/g9u1_frontend_review_matrix.md",
+        "docs/validation/g9u1_icon_review.md",
+        "docs/validation/g9u1_native_lifecycle_review.md",
+        "docs/validation/g9u1_user_tools_review.md",
+        "geocedg/resources/assets-manifest.yml",
+        "geocedg/specs/ui/cedg-workspaces.md",
+        "geocedg/specs/ui/g9u1-construction-interaction.md",
+        "geocedg/validation/g9u1/g9u1-construction-workspace-evidence.json",
+        "geocedg/validation/g9u1/g9u1-construction-workspace-evidence.sha256",
+        "geocedg/validation/g9u1/g9u1-construction-workspace-scenarios.json",
+        "source/desktop/desktop/build.gradle.kts",
+        "source/desktop/desktop/src/main/java/org/geocedg/desktop/AppGeoCeDG.java",
+        "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGActionRegistry.java",
+        "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGDefinitionInspector.java",
+        "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGMenuBar.java",
+        "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGProfile.java",
+        "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGToolbarContainer.java",
+        "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGUserToolLibrary.java",
+        "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGUserTools.java",
+        "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGWorkspaceController.java",
+        "source/desktop/desktop/src/main/java/org/geocedg/desktop/resources/GeoCeDGToolImageResource.java",
+        "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/dialog/NamePanelD.java",
+        "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/view/algebra/AlgebraControllerD.java",
+        "source/desktop/desktop/src/main/java/org/geogebra/desktop/main/AppD.java",
+        "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U0R3MenuLifecycleTest.java",
+        "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1ActionRegistryTest.java",
+        "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1AlgebraSubmissionTest.java",
+        "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1AuthorArchiveReviewTest.java",
+        "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1DefinitionAffordanceTest.java",
+        "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1IconReviewTest.java",
+        "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1IntersectionSessionTest.java",
+        "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1MetricReviewTest.java",
+        "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1NativeLifecycleReviewTest.java",
+        "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1PeriodicQuarantineNativeTest.java",
+        "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1ProductPolicyTest.java",
+        "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1ProfileCompilerTest.java",
+        "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1ScriptWorkflowTest.java",
+        "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1SemanticPointInteractionTest.java",
+        "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1SimilarityToolsTest.java",
+        "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1TestApp.java",
+        "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1UserToolLibraryTest.java",
+        "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1WorkspaceSurfaceTest.java",
+        "source/desktop/desktop/src/test/resources/org/geocedg/desktop/g9u1-review/TestBasic1.cedg",
+        "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9U1ConstructionParticipationReviewTest.java",
+        "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusMetricScalarAdapter.java",
+        "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialIdentityRegistry.java",
+        "source/shared/common/src/main/resources/org/geogebra/common/icons/svg/web/toolIcons/mode_geocedg_materialize.svg",
+        "source/shared/common/src/main/resources/org/geogebra/common/icons/svg/web/toolIcons/mode_geocedg_richresult.svg",
+        "source/shared/common/src/main/resources/org/geogebra/common/icons/svg/web/toolIcons/mode_geocedg_semanticpoint.svg",
+        "source/shared/common/src/main/resources/org/geogebra/common/icons/svg/web/toolIcons/mode_geocedg_splinev2.svg",
+        "tools/agent/verify-g9u1-construction-workspace.ps1"
+      ]
+    },
+    "allowedSharedKernelCorrections": [
+      {
+        "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusMetricScalarAdapter.java",
+        "authority": "Explicit author review: public scalar result must expose truthful Length provenance while hidden rich parent remains.",
+        "scope": "PRESENTATION_ADAPTER_ONLY_NO_METRIC_OR_IDENTITY_CHANGE"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialIdentityRegistry.java",
+        "authority": "Explicit author review: isolate and correct the producer-side persistence defect; do not normalize or relax malformed archive admission.",
+        "scope": "ATOMIC_EXISTING_PARTICIPATION_DEPENDENCY_COHERENCE_IDS_REVISIONS_G9A_UNCHANGED"
+      }
+    ],
+    "authorFixture": {
+      "path": "source/desktop/desktop/src/test/resources/org/geocedg/desktop/g9u1-review/TestBasic1.cedg",
+      "original": "artifacts/smoke-test-g9u1/TestBasic1.cedg",
+      "bytes": 31885,
+      "rawSha256": "0791895e1133d4a44ff26c88760cfc951db787c42056a8b5758c79a9b5687be0",
+      "historicalResult": "VALID_ZIP_XML_BUT_STALE_DEPENDENCY_RECORD_REJECTED",
+      "modified": false
+    },
+    "documentationPaths": [
+      "docs/user/geocedg_construction_quick_guide.md",
+      "docs/validation/g9u1_author_manual_review_round1.md",
+      "docs/validation/g9u1_author_resmoke_checklist.md",
+      "docs/validation/g9u1_frontend_review_matrix.md",
+      "docs/validation/g9u1_icon_review.md",
+      "docs/validation/g9u1_native_lifecycle_review.md",
+      "docs/validation/g9u1_user_tools_review.md"
+    ],
+    "requiredVerification": {
+      "PHASE": "FRESH_SUCCESSOR_COHORT",
+      "COMPOSED": "EXECUTED_WITHIN_FULL_NOT_A_SEPARATE_ROOT",
+      "FULL": "FRESH_CLEAN_SUCCESSOR_COHORT",
+      "historicalExecutionReusedAsNew": false
+    },
+    "focusedInventory": {
+      "classes": 18,
+      "methods": 183,
+      "desktopMethods": 169,
+      "sharedMethods": 14,
+      "scenarios": 153,
+      "historicalScenarios": 138,
+      "addedReviewScenarios": 15
+    },
+    "workspace": {
+      "families": 11,
+      "clusters": 18,
+      "actions": 110,
+      "normalMenus": 6,
+      "nativeToolbarModes": 32,
+      "nonModeToolbarActions": 2
+    },
+    "preservedContracts": {
+      "freeInterpolationPointIsNotSemanticEndpoint": true,
+      "cartesianEndpointInference": false,
+      "richMetricParentPreserved": true,
+      "sourceAndTokenIdentityUnchanged": true,
+      "historicalArchiveUnsanitized": true,
+      "newNativeSchema": false,
+      "unrestrictedRedefine": false,
+      "userToolsAreApplicationPreferencesNotGeometryAuthority": true
+    }
   }
 }

@@ -5,10 +5,6 @@
 
 package org.geocedg.desktop;
 
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -16,15 +12,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import javax.swing.Action;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
+import javax.swing.JToolBar;
 
 import org.geogebra.common.awt.AwtFactory;
 import org.geogebra.common.euclidian.EuclidianConstants;
@@ -172,38 +167,34 @@ public final class GeoCeDGWorkspaceController {
 				&& replacedDocumentLayout != app.getTmpPerspective();
 	}
 
-	/** @return workspace control generated from the catalog, not a new action authority */
-	JButton createWorkspaceSelector() {
-		JButton button = new JButton(registry.text(usesDocumentLayout()
-				? "Workspace.DocumentLayout" : "GeoCeDG.Workspace.Construction.Name"));
-		button.setFont(app.getPlainFont());
-		button.setToolTipText(registry.text("Workspace.Restore"));
-		button.getAccessibleContext().setAccessibleDescription(button.getToolTipText());
-		button.addActionListener(event -> {
-			JPopupMenu menu = new JPopupMenu();
-			try {
-				JSONArray workspaces = GeoCeDGProfile.getCatalog().getJSONArray("workspaces");
-				for (int i = 0; i < workspaces.length(); i++) {
-					JSONObject workspace = workspaces.getJSONObject(i);
-					String id = workspace.getString("id");
-					JMenuItem item = new JMenuItem(registry.text(workspace.getString("name_key")));
-					item.setEnabled("available".equals(workspace.getString("availability")));
-					item.setToolTipText(registry.text(workspace.getString(item.isEnabled()
-							? "description_key" : "reason_key")));
-					item.addActionListener(select -> {
-						if (!applyWorkspace(id)) {
-							JOptionPane.showMessageDialog(app.getMainComponent(),
-									registry.text("Workspace.ApplyFailed"));
-						}
-					});
-					menu.add(item);
-				}
-			} catch (JSONException exception) {
-				throw new IllegalStateException(exception);
+	/** @return workspace menu generated from the catalog, not a new action authority */
+	JMenu createWorkspaceMenu() {
+		JMenu menu = new JMenu(registry.text("Workspace.Restore"));
+		menu.setFont(app.getPlainFont());
+		menu.putClientProperty("geocedg.document-layout", usesDocumentLayout());
+		menu.getAccessibleContext().setAccessibleDescription(usesDocumentLayout()
+				? registry.text("Workspace.DocumentLayout") : menu.getText());
+		try {
+			JSONArray workspaces = GeoCeDGProfile.getCatalog().getJSONArray("workspaces");
+			for (int i = 0; i < workspaces.length(); i++) {
+				JSONObject workspace = workspaces.getJSONObject(i);
+				String id = workspace.getString("id");
+				JMenuItem item = new JMenuItem(registry.text(workspace.getString("name_key")));
+				item.setEnabled("available".equals(workspace.getString("availability")));
+				item.setToolTipText(registry.text(workspace.getString(item.isEnabled()
+						? "description_key" : "reason_key")));
+				item.addActionListener(select -> {
+					if (!applyWorkspace(id)) {
+						JOptionPane.showMessageDialog(app.getMainComponent(),
+								registry.text("Workspace.ApplyFailed"));
+					}
+				});
+				menu.add(item);
 			}
-			menu.show(button, 0, button.getHeight());
-		});
-		return button;
+		} catch (JSONException exception) {
+			throw new IllegalStateException(exception);
+		}
+		return menu;
 	}
 
 	static String encodeLayout(Perspective perspective) throws JSONException {
@@ -313,83 +304,36 @@ public final class GeoCeDGWorkspaceController {
 		return comma < 0 ? "" : path.substring(0, comma);
 	}
 
-	/** @return scalable family palette including non-mode actions without fake mode IDs */
-	JScrollPane createActionPalette() {
-		JPanel row = new JPanel(new FlowLayout(FlowLayout.LEADING, 4, 2));
+	/** @return compact non-mode toolbar projection; the application menu is the superset */
+	JToolBar createProductToolbar() {
+		JToolBar toolbar = new JToolBar();
+		toolbar.setFloatable(false);
+		toolbar.setBorder(null);
+		toolbar.getAccessibleContext().setAccessibleName(registry.text("Menu.Construction"));
 		try {
 			JSONObject catalog = GeoCeDGProfile.getCatalog();
-			JSONArray families = catalog.getJSONObject("taxonomy").getJSONArray("broad_families");
 			JSONArray clusters = catalog.getJSONArray("clusters");
-			for (int i = 0; i < families.length(); i++) {
-				JSONObject family = families.getJSONObject(i);
-				String name = registry.text(family.getString("name_key"));
-				JButton button = new JButton(name);
-				button.setFont(app.getPlainFont());
-				button.getAccessibleContext().setAccessibleName(name);
-				button.putClientProperty("geocedg.family.id", family.getString("id"));
-				button.addFocusListener(new FocusAdapter() {
-					@Override
-					public void focusGained(FocusEvent event) {
-						row.scrollRectToVisible(button.getBounds());
-					}
-				});
-				List<String> clusterIds = new ArrayList<>();
-				for (int c = 0; c < clusters.length(); c++) {
-					JSONObject cluster = clusters.getJSONObject(c);
-					if (family.getString("id").equals(cluster.getString("broad_family_id"))) {
-						clusterIds.add(cluster.getString("id"));
+			Set<String> included = new LinkedHashSet<>();
+			for (int c = 0; c < clusters.length(); c++) {
+				for (String id : GeoCeDGProfile.strings(clusters.getJSONObject(c)
+						.getJSONArray("toolbar_action_ids"))) {
+					if (GeoCeDGProfile.getAction(id).mode() == null && included.add(id)) {
+						Action action = registry.get(id);
+						JButton button = new JButton(action);
+						button.putClientProperty(GeoCeDGActionRegistry.ACTION_ID, id);
+						button.setFont(app.getPlainFont());
+						button.getAccessibleContext().setAccessibleName(
+								(String) action.getValue(Action.NAME));
+						button.getAccessibleContext().setAccessibleDescription(
+								(String) action.getValue(Action.SHORT_DESCRIPTION));
+						toolbar.add(button);
 					}
 				}
-				if ("disabled-with-reason".equals(family.getString("availability"))) {
-					button.setEnabled(false);
-					button.setToolTipText(registry.text(family.getString("reason_key")));
-				} else {
-					button.addActionListener(event -> {
-						registry.refresh();
-						JPopupMenu popup = familyPopup(clusterIds);
-						popup.show(button, 0, button.getHeight());
-					});
-					button.setToolTipText(name);
-				}
-				row.add(button);
 			}
 		} catch (JSONException exception) {
 			throw new IllegalStateException(exception);
 		}
-		JScrollPane scroll = new JScrollPane(row, ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,
-				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		scroll.setBorder(null);
-		scroll.setPreferredSize(new Dimension(640, row.getPreferredSize().height + 20));
-		scroll.setMinimumSize(new Dimension(80, row.getPreferredSize().height + 20));
-		scroll.getAccessibleContext().setAccessibleName(registry.text("Workspace.More"));
-		return scroll;
-	}
-
-	private JPopupMenu familyPopup(List<String> clusterIds) {
-		JPopupMenu popup = new JPopupMenu();
-		try {
-			JSONObject catalog = GeoCeDGProfile.getCatalog();
-			for (String id : clusterIds) {
-				JSONObject cluster = GeoCeDGMenuBar.find(catalog.getJSONArray("clusters"), id);
-				JSONObject taxonomy = GeoCeDGMenuBar.find(catalog.getJSONObject("taxonomy")
-						.getJSONArray("operational_clusters"), id);
-				JMenu group = new JMenu(registry.text(taxonomy.getString("name_key")));
-				Set<String> actions = new LinkedHashSet<>();
-				for (String key : List.of("toolbar_action_ids", "overflow_action_ids",
-						"menu_action_ids", "context_action_ids", "inspector_action_ids",
-						"settings_action_ids")) {
-					actions.addAll(GeoCeDGProfile.strings(cluster.getJSONArray(key)));
-				}
-				ButtonGroup radios = new ButtonGroup();
-				for (String action : actions) {
-					group.add(GeoCeDGMenuBar.createItem(registry.get(action), radios));
-				}
-				popup.add(group);
-			}
-		} catch (JSONException exception) {
-			throw new IllegalStateException(exception);
-		}
-		return popup;
+		return toolbar;
 	}
 
 	private JPopupMenu actionPopup(Set<String> ids) {
@@ -414,6 +358,10 @@ public final class GeoCeDGWorkspaceController {
 		} catch (JSONException exception) {
 			throw new IllegalStateException(exception);
 		}
+		// The normal host object context already supplies Properties. Both
+		// definition aliases expose the same read-only view, so retain one route.
+		ids.remove("view.properties");
+		ids.remove("semantic.curve.inspect-definition");
 		return actionPopup(ids);
 	}
 }

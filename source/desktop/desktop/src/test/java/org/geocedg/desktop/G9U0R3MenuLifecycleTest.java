@@ -41,13 +41,14 @@ class G9U0R3MenuLifecycleTest {
 	}
 
 	@Test
-	void m01ProductMenuIsPopulatedAfterInitMenubar() {
+	void m01ProductMenuIsPopulatedAfterInitMenubar() throws Exception {
 		AppGeoCeDG app = appWithLocusV2(true);
 		GeoCeDGMenuBar menuBar = initializeMenuBar(app);
 
 		assertApprovedEnabledItems(menuBar);
 		menuBar.initMenubar();
-		assertEquals(5, menuBar.getMenuCount());
+		assertEquals(GeoCeDGProfile.getCatalog().getJSONArray("menu_sections").length(),
+				menuBar.getMenuCount());
 		assertApprovedEnabledItems(menuBar);
 	}
 

@@ -32,8 +32,10 @@ import org.geogebra.desktop.gui.view.algebra.AlgebraHelperBar;
 import org.geogebra.desktop.gui.view.algebra.AlgebraViewD;
 import org.geogebra.desktop.main.AppD;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /** Locale/help/definition/presentation policy stays separate from geometry. */
+@ExtendWith(G9U1TestApp.Lifecycle.class)
 class G9U1ProductPolicyTest {
 
 	@Test
@@ -46,6 +48,7 @@ class G9U1ProductPolicyTest {
 		}
 		AppD classic = new AppD(new CommandLineArguments(new String[] {"--silent"}),
 				new javax.swing.JPanel(), true);
+		G9U1TestApp.withoutWindowDispatcher(classic);
 		Method description = GuiManagerD.class.getDeclaredMethod("getDocumentOpenDescription");
 		description.setAccessible(true);
 		assertEquals("GeoGebra" + classic.getLocalization().getMenu("Files"),
@@ -130,6 +133,7 @@ class G9U1ProductPolicyTest {
 		G9U1TestApp.create();
 		AppGeoCeDG disabled = new AppGeoCeDG(new CommandLineArguments(
 				new String[] {"--silent"}), new javax.swing.JPanel());
+		G9U1TestApp.withoutWindowDispatcher(disabled);
 		assertNull(disabled.getKernel().getAlgebraProcessor().getSyntax(
 				disabled.getLocalization().getCommandSyntax(), "SplineV2", disabled.getSettings()));
 		assertNotNull(disabled.getKernel().getAlgebraProcessor().getSyntax(

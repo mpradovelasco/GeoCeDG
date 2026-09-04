@@ -41,7 +41,7 @@ unauthorized; G9U2 remains separately blocked.
 The intended dependency direction is:
 
 ```text
-apps/geocedg/application-profile.yml (future schema v2)
+apps/geocedg/application-profile.yml (live schema v2)
   -> ProfileManifestLoader + strict schema validation
   -> ActionRegistry -----------------> localization/help/icon resolvers
   -> WorkspaceRegistry --------------> toolbar/menu/view compilers
@@ -90,8 +90,9 @@ The architecture consumes these closed product authorities:
 The protected checkpoint records how G9U1 review discovered R6 as a mandatory
 kernel prerequisite. Published R6 now satisfies that prerequisite. ADR 0019 and
 `geocedg/specs/locus/locus-v2-point-interaction.md` are the actual authority;
-the protected provisional names and states are historical only. A separate
-author decision is still required before productive G9U1 implementation.
+the protected provisional names and states are historical only. The subsequent
+conditional author decision authorized the current implementation candidate;
+implementation acceptance remains a separate author decision.
 
 ## Architectural placement map
 
@@ -615,3 +616,38 @@ and the 20 additive `U1-PAIR` rows (138 total). The R4 periodic risk remains
 OPEN / TRACKED; an inconclusive native experiment without a real kernel or
 persistence violation does not block this candidate under the author's explicit
 disposition. No other workspace scope is expanded.
+
+## Author-review stabilization, round 1
+
+This successor remains an implementation candidate pending author re-smoke; it
+does not rewrite the protected original candidate's executable evidence. The
+single live profile now projects the unchanged 110 stable actions into six
+ordinary menus (File, Edit, Construction, View, Automation, Help) and a reduced
+34-action primary toolbar. Eleven professional families and eighteen clusters
+remain catalog taxonomy, not eleven mandatory permanent toolbar buttons. Menus,
+overflow and command help continue to consume the same registry.
+
+`GeoCeDGUserToolLibrary` stores explicitly installed, validated user `.ggt`
+packages in isolated application preferences. Installed entries and pins are
+presentation/library state, not additional stable product actions. Definitions
+enter the current document only on explicit activation through the existing
+macro engine. Document-local tools never auto-install; the historical Template
+archive and assets remain read-only provenance, not bundled product tools.
+
+Public metric definitions display reconstructible `Length(L[,P,Q])` intent when
+the scalar's rich parent supplies that exact operation. The real DAG remains
+`rich metric -> scalar adapter`, including `Length(o)` XML where o is the rich
+parent. Free interpolation points are not semantic endpoints; no proximity or
+vertex-index admission is added.
+
+The review also corrects two bounded lifecycle seams without changing geometry
+or serialization schema: ordinary registry publication atomically refreshes
+derived dependency records when existing inputs first participate, and native
+Save preflights its temporary archive using the existing reader before replacing
+the target. G9A staging/leases, strict load rejection and exact IDs remain; no
+historical-file repair or migration is introduced. See the
+[native lifecycle review](../validation/g9u1_native_lifecycle_review.md),
+[frontend review matrix](../validation/g9u1_frontend_review_matrix.md),
+[user-tool review](../validation/g9u1_user_tools_review.md),
+[quick guide](../user/geocedg_construction_quick_guide.md) and
+[author re-smoke checklist](../validation/g9u1_author_resmoke_checklist.md).

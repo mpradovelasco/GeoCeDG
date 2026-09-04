@@ -200,6 +200,9 @@ tasks.processResources {
     from(rootProject.file("../../docs/user/geocedg_user_guide.md")) {
         into("org/geocedg/desktop")
     }
+    from(rootProject.file("../../docs/user/geocedg_construction_quick_guide.md")) {
+        into("org/geocedg/desktop")
+    }
 }
 
 tasks.register<JavaExec>("runGeoCeDG") {

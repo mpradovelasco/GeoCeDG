@@ -26,9 +26,11 @@ import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.kernel.geos.GeoText;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
 /** Native R4 single-locus periodic quarantine, not the distinct R1 pair lifecycle. */
+@ExtendWith(G9U1TestApp.Lifecycle.class)
 class G9U1PeriodicQuarantineNativeTest {
 
 	@Test

@@ -7,7 +7,10 @@ package org.geocedg.desktop;
 
 import java.awt.Container;
 import java.awt.Image;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Locale;
 
 import javax.swing.JFrame;
@@ -121,6 +124,12 @@ public final class AppGeoCeDG extends App3D {
 	}
 
 	@Override
+	protected void showPerspectivePopup() {
+		// Construction already has its declarative workspace. Do not cover startup
+		// with the inherited Classic perspective chooser; explicit Classic stays separate.
+	}
+
+	@Override
 	protected GuiManagerD newGuiManager() {
 		return new GuiManagerGeoCeDG(this);
 	}
@@ -152,5 +161,30 @@ public final class AppGeoCeDG extends App3D {
 	private void bindFeatureService(AppConfigGeoCeDG config) {
 		config.getRuntimeFeatureService().bindPreservationContext(
 				() -> getKernel().getConstruction().isFileLoading());
+	}
+
+	@Override
+	public byte[] getMacroFileAsByteArray() {
+		// This host hook is consumed only by Save Settings. Never install all
+		// document-local macros implicitly as application-wide startup tools.
+		// Native document writing and explicit Tool Manager GGT export are separate.
+		try {
+			ByteArrayOutputStream output = new ByteArrayOutputStream();
+			getXMLio().writeMacroStream(output, new ArrayList<>(), new ArrayList<>());
+			return output.toByteArray();
+		} catch (IOException exception) {
+			throw new IllegalStateException("Cannot create empty tool-preference snapshot",
+					exception);
+		}
+	}
+
+	@Override
+	public void loadMacroFileFromByteArray(byte[] bytes, boolean removeOldMacros) {
+		if (!removeOldMacros) {
+			// Explicit host Tool Manager dependency loading is document-local.
+			super.loadMacroFileFromByteArray(bytes, false);
+		}
+		// The true branch is exclusively inherited startup preference loading.
+		// Explicit installation lives in the isolated GeoCeDG user-tool library.
 	}
 }

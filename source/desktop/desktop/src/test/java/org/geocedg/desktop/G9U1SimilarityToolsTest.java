@@ -25,9 +25,11 @@ import org.geogebra.common.euclidian.Hits;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedStatic;
 
 /** Ordinary tool dispatch to R5, without adding transform interfaces to the locus. */
+@ExtendWith(G9U1TestApp.Lifecycle.class)
 class G9U1SimilarityToolsTest {
 
 	@Test

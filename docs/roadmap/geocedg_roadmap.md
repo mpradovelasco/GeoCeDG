@@ -2631,6 +2631,15 @@ reconciliación post-R1 sin novedad material bajo autorización explícita actua
 
 **Estado de implementación:** `IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW`
 
+Revisión autoral 1: **COMPLETED WITH FINDINGS — NOT PASS**. El checkpoint
+`geocedg-g9u1-author-review-checkpoint-1` conserva `b492194082f1adc9f981d85d92a58ef57490196f`.
+La estabilización autorizada trabaja en `codex/g9u1-author-review-stabilization-1`,
+sin promoción a main ni tag PASS. Menús normales, barra curada, herramientas
+propias persistentes y correcciones del productor documental/presentación métrica
+se describen en [la revisión](../validation/g9u1_author_manual_review_round1.md).
+La salida prevista es **FRONTEND REVIEW CANDIDATE — PENDING AUTHOR RE-SMOKE**;
+ninguna ejecución técnica sustituye ese re-smoke.
+
 ```text
 implementationStarted = true
 implementationAuthorized = true
@@ -2670,15 +2679,17 @@ diseño base está aprobado; el sucesor post-R1 está autorizado para producir
 un candidato sin autoaprobación. El prompt post-R6 conserva su hash exacto
 `561546019efc1e1d5e4367ddde73e9a2b0a0d767343eb9348b46d9e9c06f12df`.
 
-La versión-1 viva `apps/geocedg/application-profile.yml` no se modifica. El
-schema/manifiesto `application-profile-v2.candidate.*` son solo diseño: un
-catálogo declarativo único alimentará menús, toolbar, overflow y help. Las once
+El perfil vivo `apps/geocedg/application-profile.yml` usa schema-v2 en el
+candidato implementado; `application-profile-v2.candidate.*` preserva el diseño
+histórico. Un catálogo declarativo único alimenta menús, toolbar y help. Las once
 familias profesionales aceptadas siguen siendo la taxonomía de alto nivel; el
 manifiesto las desarrolla en dieciocho clusters operativos sin crear otra
 autoridad. La matriz de completitud clasifica cada acción como `MUST HAVE`,
 `SHOULD HAVE`, `DEFERRED` u `OUT OF SCOPE / REQUIRES NEW KERNEL PHASE`; conserva
-110 acciones estables y la autoridad post-R6 contiene exactamente 138 escenarios (118 preservados y 20 `U1-PAIR`),
-incluidos `U1-PNT-01`–`U1-PNT-20` para el flujo Point real.
+110 acciones estables. La reconciliación post-R1 preservó 118 escenarios post-R6
+y añadió 20 `U1-PAIR` (138); la estabilización añade escenarios de revisión sin
+eliminar esa historia, con inventario exacto en la evidencia G9U1 vigente.
+Se retienen `U1-PNT-01`–`U1-PNT-20` para el flujo Point real.
 
 La reconciliación asigna cada defecto observado a su seam normal:
 

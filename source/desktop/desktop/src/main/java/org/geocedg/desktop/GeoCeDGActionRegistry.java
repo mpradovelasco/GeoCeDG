@@ -5,6 +5,7 @@
 
 package org.geocedg.desktop;
 
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
@@ -29,11 +30,11 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.geocedg.common.main.feature.RuntimeFeatureService;
 import org.geocedg.desktop.GeoCeDGProfile.ActionDefinition;
+import org.geocedg.desktop.resources.GeoCeDGToolImageResource;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.main.App;
 import org.geogebra.common.main.settings.AlgebraStyle;
 import org.geogebra.desktop.gui.GuiManagerD;
-import org.geogebra.desktop.gui.dialog.ToolManagerDialogD;
 import org.geogebra.desktop.gui.inputbar.AlgebraInputD;
 import org.geogebra.desktop.gui.menubar.GeoGebraMenuBar;
 import org.geogebra.desktop.gui.menubar.LoadFileListener;
@@ -84,6 +85,17 @@ public final class GeoCeDGActionRegistry {
 				}
 			};
 			action.putValue(ACTION_ID, definition.id());
+			GeoCeDGToolImageResource artwork = GeoCeDGToolImageResource
+					.forIconKey(definition.iconKey());
+			if (artwork != null) {
+				Image image = artwork.renderImage();
+				if (image != null) {
+					action.putValue(Action.SMALL_ICON,
+							app.getImageManager().getResponsiveScaledIcon(image, 20));
+					action.putValue(Action.LARGE_ICON_KEY,
+							app.getImageManager().getResponsiveScaledIcon(image, 32));
+				}
+			}
 			if ("geocedg.export.dxf.dialog".equals(definition.target())) {
 				action.putValue(Action.ACCELERATOR_KEY, GeoCeDGMenuBar.DXF_ACTION_ACCELERATOR);
 			}
@@ -265,7 +277,7 @@ public final class GeoCeDGActionRegistry {
 			app.setShowAlgebraInput(!app.showAlgebraInput(), true);
 			break;
 		case "host.tools.manage":
-			new ToolManagerDialogD(app).setVisible(true);
+			GeoCeDGUserTools.showManager(app);
 			break;
 		case "host.properties.scripting-tab":
 			app.getDialogManager()
@@ -464,7 +476,7 @@ public final class GeoCeDGActionRegistry {
 
 	private void showUserGuide() {
 		try (InputStream stream = GeoCeDGActionRegistry.class.getResourceAsStream(
-				"/org/geocedg/desktop/geocedg_user_guide.md")) {
+				"/org/geocedg/desktop/geocedg_construction_quick_guide.md")) {
 			if (stream == null) {
 				throw new IOException("Packaged GeoCeDG guide is missing");
 			}

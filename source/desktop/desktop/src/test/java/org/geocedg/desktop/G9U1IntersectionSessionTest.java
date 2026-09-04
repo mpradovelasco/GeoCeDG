@@ -55,11 +55,13 @@ import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.util.InternalClipboard;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 
 /** G9U1 consumes rich-result authority; tests do not implement or repeat solvers. */
+@ExtendWith(G9U1TestApp.Lifecycle.class)
 class G9U1IntersectionSessionTest {
 	@BeforeAll
 	static void initializeDesktop() {

@@ -1,0 +1,676 @@
+/* GeoCeDG
+ * Copyright (c) 2026 GeoCeDG contributors
+ * SPDX-License-Identifier: EUPL-1.2
+ */
+
+package org.geocedg.desktop;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
+import java.nio.channels.OverlappingFileLockException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.HexFormat;
+import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.geocedg.common.main.feature.RuntimeFeatureService;
+import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
+import org.geogebra.common.euclidian.EuclidianConstants;
+import org.geogebra.common.kernel.Kernel;
+import org.geogebra.common.kernel.Macro;
+import org.geogebra.common.kernel.MacroKernel;
+import org.geogebra.common.kernel.MacroManager;
+import org.geogebra.common.kernel.commands.Commands;
+import org.geogebra.common.kernel.commands.CommandsConstants;
+import org.geogebra.common.kernel.geos.GeoElement;
+import org.geogebra.common.move.ggtapi.models.json.JSONArray;
+import org.geogebra.common.move.ggtapi.models.json.JSONException;
+import org.geogebra.common.move.ggtapi.models.json.JSONObject;
+import org.geogebra.desktop.io.MyXMLioD;
+import org.geogebra.desktop.main.AppD;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+/** Explicit application-owned GGT packages; document macros never install themselves. */
+final class GeoCeDGUserToolLibrary {
+
+	static final int MAX_BYTES = 8 * 1024 * 1024;
+	private static final Pattern CALL = Pattern.compile("([\\p{L}_][\\p{L}\\p{N}_]*)\\s*[\\[(]");
+	private static final Set<Integer> SAFE_TABLES = Set.of(CommandsConstants.TABLE_GEOMETRY,
+			CommandsConstants.TABLE_ALGEBRA, CommandsConstants.TABLE_TEXT,
+			CommandsConstants.TABLE_LOGICAL, CommandsConstants.TABLE_FUNCTION,
+			CommandsConstants.TABLE_CONIC, CommandsConstants.TABLE_LIST,
+			CommandsConstants.TABLE_VECTOR, CommandsConstants.TABLE_TRANSFORMATION);
+	private static final Set<String> PLANAR_TYPES = Set.of("point", "numeric", "angle",
+			"line", "segment", "ray", "vector", "conic", "conicpart", "polygon", "polyline",
+			"list", "function", "functionnvar", "curvecartesian", "text", "boolean",
+			"implicitpoly");
+	private final AppD app;
+	private final Path storage;
+	private final Map<String, Package> packages = new LinkedHashMap<>();
+	private final Map<Macro, String> activated = new IdentityHashMap<>();
+	private final List<Runnable> listeners = new ArrayList<>();
+
+	/** Original exchange bytes plus application-only pin preferences. */
+	static final class Package {
+		private final String id;
+		private final String name;
+		private final byte[] bytes;
+		private final String xml;
+		private final List<String> commands;
+		private final Set<String> pinned = new LinkedHashSet<>();
+
+		Package(String name, byte[] bytes, String xml, List<String> commands) {
+			this.id = digest(bytes);
+			this.name = name;
+			this.bytes = bytes.clone();
+			this.xml = xml;
+			this.commands = List.copyOf(commands);
+		}
+
+		String id() {
+			return id;
+		}
+
+		String name() {
+			return name;
+		}
+
+		List<String> commands() {
+			return commands;
+		}
+
+		boolean isPinned(String command) {
+			return pinned.contains(command);
+		}
+
+		@Override
+		public String toString() {
+			return name + " \u2014 " + String.join(", ", commands);
+		}
+	}
+
+	GeoCeDGUserToolLibrary(AppD app, Path storage) throws IOException {
+		if (!(app.getConfig() instanceof AppConfigGeoCeDG)) {
+			throw new IllegalArgumentException("GeoCeDG profile required");
+		}
+		this.app = app;
+		this.storage = storage.toAbsolutePath();
+		refresh();
+	}
+
+	List<Package> packages() {
+		return List.copyOf(packages.values());
+	}
+
+	void addListener(Runnable listener) {
+		listeners.add(listener);
+	}
+
+	Package install(String fileName, byte[] bytes) throws IOException {
+		return editStore(() -> installCurrent(fileName, bytes));
+	}
+
+	private Package installCurrent(String fileName, byte[] bytes) throws IOException {
+		if (packages.size() >= 64) {
+			throw new IOException("UserTools.Limit");
+		}
+		Package proposed = inspect(fileName, bytes);
+		Set<String> existing = installedCommands();
+		for (String command : proposed.commands) {
+			if (existing.contains(key(command)) || app.getKernel().getMacro(command) != null) {
+				throw new IOException("UserTools.CommandConflict: " + command);
+			}
+		}
+		validateWithHost(proposed);
+		Map<String, Package> next = new LinkedHashMap<>(packages);
+		next.put(proposed.id, proposed);
+		persist(next);
+		packages.put(proposed.id, proposed);
+		return proposed;
+	}
+
+	void remove(String id) throws IOException {
+		editStore(() -> {
+			requirePackage(id);
+			Map<String, Package> next = new LinkedHashMap<>(packages);
+			next.remove(id);
+			persist(next);
+			packages.remove(id);
+			// Existing document definitions/AlgoMacro outputs remain document-owned.
+			return null;
+		});
+	}
+
+	void pin(String id, String command, boolean pinned) throws IOException {
+		editStore(() -> {
+			pinCurrent(id, command, pinned);
+			return null;
+		});
+	}
+
+	private void pinCurrent(String id, String command, boolean pinned) throws IOException {
+		Package tool = requirePackage(id);
+		if (!tool.commands.contains(command)) {
+			throw new IOException("UserTools.Unknown");
+		}
+		boolean previous = tool.pinned.contains(command);
+		if (pinned) {
+			tool.pinned.add(command);
+		} else {
+			tool.pinned.remove(command);
+		}
+		try {
+			persist(packages);
+		} catch (IOException exception) {
+			if (previous) {
+				tool.pinned.add(command);
+			} else {
+				tool.pinned.remove(command);
+			}
+			throw exception;
+		}
+	}
+
+	private <T> T editStore(StoreAction<T> action) throws IOException {
+		Files.createDirectories(storage.getParent());
+		Path lockPath = storage.resolveSibling(storage.getFileName() + ".lock");
+		final T result;
+		try (FileChannel channel = FileChannel.open(lockPath, StandardOpenOption.CREATE,
+				StandardOpenOption.WRITE); FileLock lock = channel.tryLock()) {
+			if (lock == null) {
+				throw new IOException("UserTools.LibraryBusy");
+			}
+			// Another window/process may have installed, removed or pinned a tool.
+			// Revalidate the whole store before changing it, never merge stale snapshots.
+			refresh();
+			result = action.execute();
+		} catch (OverlappingFileLockException exception) {
+			throw new IOException("UserTools.LibraryBusy", exception);
+		}
+		notifyListeners();
+		return result;
+	}
+
+	@FunctionalInterface
+	private interface StoreAction<T> {
+		T execute() throws IOException;
+	}
+
+	/** Register only after explicit activation; no source is inferred from screen geometry. */
+	Macro activate(String id, String command) throws IOException {
+		refresh();
+		Package tool = requirePackage(id);
+		if (!tool.commands.contains(command)) {
+			throw new IOException("UserTools.Unknown");
+		}
+		// Reinspect current policy; a file-load preservation flag is never creation authority.
+		inspect(tool.name, tool.bytes);
+		validateWithHost(tool);
+		if (registeredCount(tool) == tool.commands.size()) {
+			return app.getKernel().getMacro(command);
+		}
+		registerWithHost(tool);
+		return app.getKernel().getMacro(command);
+	}
+
+	private int registeredCount(Package tool) throws IOException {
+		int count = 0;
+		for (String name : tool.commands) {
+			Macro current = app.getKernel().getMacro(name);
+			if (current != null) {
+				if (!tool.id.equals(activated.get(current))
+						|| current.getKernel() != app.getKernel()) {
+					throw new IOException("UserTools.DocumentConflict: " + name);
+				}
+				count++;
+			}
+		}
+		// Never let the host parser rename collisions in a partially present package.
+		if (count != 0 && count != tool.commands.size()) {
+			throw new IOException("UserTools.DocumentConflict");
+		}
+		return count;
+	}
+
+	private void registerWithHost(Package tool) throws IOException {
+		Set<Macro> previous = Collections.newSetFromMap(new IdentityHashMap<>());
+		previous.addAll(registeredMacros());
+		boolean complete = false;
+		try {
+			// The live host owns explicitly activated definitions; validation macros never do.
+			// GGT-only processing neither clears nor loads the active document construction.
+			app.getXMLio().processXMLString(tool.xml, false, true, false);
+			List<Macro> current = registeredMacros();
+			if (current.size() != previous.size() + tool.commands.size()
+					|| !current.containsAll(previous)) {
+				throw new IOException("UserTools.InvalidArchive");
+			}
+			for (String name : tool.commands) {
+				Macro macro = app.getKernel().getMacro(name);
+				if (macro == null || previous.contains(macro)
+						|| macro.getKernel() != app.getKernel()) {
+					throw new IOException("UserTools.InvalidArchive");
+				}
+			}
+			for (String name : tool.commands) {
+				Macro macro = app.getKernel().getMacro(name);
+				macro.setShowInToolBar(false);
+				activated.put(macro, tool.id);
+			}
+			app.updateCommandDictionary();
+			complete = true;
+		} catch (Exception exception) {
+			throw new IOException("UserTools.InvalidArchive", exception);
+		} finally {
+			if (!complete) {
+				for (Macro macro : registeredMacros()) {
+					if (!previous.contains(macro)) {
+						app.getKernel().removeMacro(macro);
+						activated.remove(macro);
+					}
+				}
+				app.updateCommandDictionary();
+			}
+		}
+	}
+
+	private List<Macro> registeredMacros() {
+		List<Macro> current = app.getKernel().getAllMacros();
+		return current == null ? List.of() : List.copyOf(current);
+	}
+
+	void select(String id, String command) throws IOException {
+		Macro macro = activate(id, command);
+		app.setMode(EuclidianConstants.MACRO_MODE_ID_OFFSET
+				+ app.getKernel().getMacroID(macro));
+	}
+
+	String unavailableReason(Package tool) {
+		try {
+			inspect(tool.name, tool.bytes);
+			registeredCount(tool);
+			return null;
+		} catch (IOException exception) {
+			return exception.getMessage().split(":", 2)[0];
+		}
+	}
+
+	private Package requirePackage(String id) throws IOException {
+		Package tool = packages.get(id);
+		if (tool == null) {
+			throw new IOException("UserTools.Unknown");
+		}
+		return tool;
+	}
+
+	private Set<String> installedCommands() {
+		Set<String> result = new HashSet<>();
+		for (Package tool : packages.values()) {
+			for (String command : tool.commands) {
+				result.add(key(command));
+			}
+		}
+		return result;
+	}
+
+	private Package inspect(String name, byte[] bytes) throws IOException {
+		if (name == null || !name.toLowerCase(Locale.ROOT).endsWith(".ggt")
+				|| bytes == null || bytes.length == 0 || bytes.length > MAX_BYTES) {
+			throw new IOException("UserTools.InvalidArchive");
+		}
+		String xml = readMacroXml(bytes);
+		try {
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+			factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+			factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+			factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+			factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+			factory.setXIncludeAware(false);
+			factory.setExpandEntityReferences(false);
+			Element root = factory.newDocumentBuilder().parse(new ByteArrayInputStream(
+					xml.getBytes(StandardCharsets.UTF_8))).getDocumentElement();
+			if (!"geogebra".equals(root.getTagName())) {
+				throw new IOException("UserTools.InvalidArchive");
+			}
+			List<String> names = new ArrayList<>();
+			Set<String> unique = new HashSet<>();
+			for (Node node = root.getFirstChild(); node != null; node = node.getNextSibling()) {
+				if (node instanceof Element) {
+					Element macro = (Element) node;
+					String command = macro.getAttribute("cmdName");
+					if (!"macro".equals(macro.getTagName())
+							|| !command.matches("[\\p{L}][\\p{L}\\p{N}_]{0,63}")
+							|| !unique.add(key(command)) || nativeCommand(command) != null) {
+						throw new IOException("UserTools.CommandConflict: " + command);
+					}
+					names.add(command);
+				}
+			}
+			if (names.isEmpty() || names.size() > 64) {
+				throw new IOException("UserTools.InvalidArchive");
+			}
+			NodeList all = root.getElementsByTagName("*");
+			for (int i = 0; i < all.getLength(); i++) {
+				Element element = (Element) all.item(i);
+				validateElement(element, unique);
+			}
+			return new Package(name, bytes, xml, names);
+		} catch (IOException exception) {
+			throw exception;
+		} catch (Exception exception) {
+			throw new IOException("UserTools.InvalidArchive", exception);
+		}
+	}
+
+	private void validateElement(Element element, Set<String> macros) throws IOException {
+		String tag = element.getTagName();
+		if ("element".equals(tag) && !PLANAR_TYPES.contains(
+				element.getAttribute("type").toLowerCase(Locale.ROOT))) {
+			throw new IOException("UserTools.UnsupportedBody");
+		}
+		// Ordinary identity records may accompany native macro XML;
+		// spatial/semantic models may not.
+		if (element.getParentNode() instanceof Element
+				&& "geocedgSpatial".equals(((Element) element.getParentNode()).getTagName())
+				&& !"geo".equals(tag)) {
+			throw new IOException("UserTools.UnsupportedBody");
+		}
+		if ("ggbscript".equals(tag) || "javascript".equals(tag)) {
+			for (int i = 0; i < element.getAttributes().getLength(); i++) {
+				if (!element.getAttributes().item(i).getNodeValue().isBlank()) {
+					throw new IOException("UserTools.UnsupportedBody");
+				}
+			}
+			if (!element.getTextContent().isBlank()) {
+				throw new IOException("UserTools.UnsupportedBody");
+			}
+		}
+		if (tag.startsWith("cedg") || tag.startsWith("spatial") || tag.startsWith("locusV2")) {
+			throw new IOException("UserTools.UnsupportedBody");
+		}
+		if ("command".equals(tag)) {
+			validateCommand(element.getAttribute("name"), macros, true);
+		}
+		// Nested commands in expression/input attributes must not bypass the command-node check.
+		if ("expression".equals(tag) || "input".equals(tag)) {
+			for (int i = 0; i < element.getAttributes().getLength(); i++) {
+				Matcher calls = CALL.matcher(element.getAttributes().item(i).getNodeValue());
+				while (calls.find()) {
+					validateCommand(calls.group(1), macros, false);
+				}
+			}
+		}
+	}
+
+	private void validateCommand(String name, Set<String> macros, boolean required)
+			throws IOException {
+		if (macros.contains(key(name))) {
+			return;
+		}
+		String internal = nativeCommand(name);
+		if (internal == null) {
+			if (required) {
+				throw new IOException("UserTools.UnsupportedBody: " + name);
+			}
+			return;
+		}
+		Commands command = Commands.valueOf(internal);
+		if (RuntimeFeatureService.isDedicatedLocusV2Command(command)) {
+			boolean enabled = ((AppConfigGeoCeDG) app.getConfig()).getRuntimeFeatureService()
+					.isLocusV2CreationEnabled();
+			throw new IOException((enabled ? "UserTools.UnsupportedBody: "
+					: "LocusV2.FeatureDisabled: ") + name);
+		}
+		if (!SAFE_TABLES.contains(command.getTable())) {
+			throw new IOException("UserTools.UnsupportedBody: " + name);
+		}
+	}
+
+	private String nativeCommand(String name) {
+		String internal = Commands.lookupInternal(name);
+		if (internal == null) {
+			internal = Commands.lookupInternal(app.getInternalCommand(name));
+		}
+		return internal;
+	}
+
+	private List<Macro> validateWithHost(Package tool) throws IOException {
+		ValidationKernel kernel = new ValidationKernel(app.getKernel());
+		try {
+			new MyXMLioD(kernel, kernel.getConstruction()).processXMLString(tool.xml,
+					false, true, false);
+			List<Macro> result = kernel.getAllMacros();
+			if (result.size() != tool.commands.size()) {
+				throw new IOException("UserTools.InvalidArchive");
+			}
+			for (int i = 0; i < result.size(); i++) {
+				Macro macro = result.get(i);
+				if (!tool.commands.get(i).equals(macro.getCommandName())
+						|| macro.getMacroInput() == null || macro.getMacroInput().length == 0
+						|| macro.getMacroOutput() == null || macro.getMacroOutput().length == 0) {
+					throw new IOException("UserTools.InvalidArchive");
+				}
+				for (GeoElement geo : macro.getMacroInput()[0].getConstruction()
+						.getGeoSetConstructionOrder()) {
+					if (geo.isGeoElement3D()) {
+						throw new IOException("UserTools.UnsupportedBody");
+					}
+				}
+			}
+			return result;
+		} catch (Exception exception) {
+			throw new IOException("UserTools.InvalidArchive", exception);
+		}
+	}
+
+	private static String readMacroXml(byte[] bytes) throws IOException {
+		Set<String> entries = new HashSet<>();
+		String xml = null;
+		int total = 0;
+		try (ZipInputStream zip = new ZipInputStream(new ByteArrayInputStream(bytes))) {
+			ZipEntry entry;
+			while ((entry = zip.getNextEntry()) != null) {
+				String name = entry.getName();
+				if (!entries.add(name) || entries.size() > 128 || name.contains("..")
+						|| name.startsWith("/") || name.contains("\\") || name.contains(":")) {
+					throw new IOException("UserTools.InvalidArchive");
+				}
+				ByteArrayOutputStream output = new ByteArrayOutputStream();
+				byte[] buffer = new byte[8192];
+				int read;
+				while ((read = zip.read(buffer)) != -1) {
+					total += read;
+					if (total > MAX_BYTES) {
+						throw new IOException("UserTools.Limit");
+					}
+					output.write(buffer, 0, read);
+				}
+				if ("geogebra_macro.xml".equals(name)) {
+					xml = output.toString(StandardCharsets.UTF_8);
+				} else if (!name.toLowerCase(Locale.ROOT).matches(".*\\.(png|jpg|jpeg|gif|svg)")) {
+					throw new IOException("UserTools.InvalidArchive");
+				}
+			}
+		}
+		if (xml == null) {
+			throw new IOException("UserTools.InvalidArchive");
+		}
+		return xml;
+	}
+
+	void refresh() throws IOException {
+		Map<String, Package> validated = readStored();
+		boolean changed = !packages.keySet().equals(validated.keySet());
+		for (Package fresh : validated.values()) {
+			Package existing = packages.get(fresh.id);
+			changed |= existing == null || !existing.name.equals(fresh.name)
+					|| !existing.pinned.equals(fresh.pinned);
+		}
+		if (!changed) {
+			return;
+		}
+		// Publish only after every package, hash and pin has validated successfully.
+		// Keep existing presentation objects live where the original package is unchanged.
+		Map<String, Package> next = new LinkedHashMap<>();
+		for (Package fresh : validated.values()) {
+			Package existing = packages.get(fresh.id);
+			if (existing != null && existing.name.equals(fresh.name)) {
+				existing.pinned.clear();
+				existing.pinned.addAll(fresh.pinned);
+				next.put(existing.id, existing);
+			} else {
+				next.put(fresh.id, fresh);
+			}
+		}
+		packages.clear();
+		packages.putAll(next);
+	}
+
+	private Map<String, Package> readStored() throws IOException {
+		Map<String, Package> validated = new LinkedHashMap<>();
+		if (!Files.exists(storage)) {
+			return validated;
+		}
+		if (Files.size(storage) > 2L * MAX_BYTES) {
+			throw new IOException("UserTools.Limit");
+		}
+		try {
+			JSONObject root = new JSONObject(Files.readString(storage));
+			if (root.length() != 2 || root.getInt("version") != 1) {
+				throw new IOException("UserTools.InvalidArchive");
+			}
+			JSONArray stored = root.getJSONArray("packages");
+			if (stored.length() > 64) {
+				throw new IOException("UserTools.Limit");
+			}
+			Set<String> names = new HashSet<>();
+			for (int i = 0; i < stored.length(); i++) {
+				JSONObject entry = stored.getJSONObject(i);
+				byte[] bytes = Base64.getDecoder().decode(entry.getString("ggt"));
+				Package tool = inspect(entry.getString("name"), bytes);
+				if (entry.length() != 4 || !tool.id.equals(entry.getString("sha256"))
+						|| validated.containsKey(tool.id)) {
+					throw new IOException("UserTools.InvalidArchive");
+				}
+				for (String command : tool.commands) {
+					if (!names.add(key(command))) {
+						throw new IOException("UserTools.CommandConflict: " + command);
+					}
+				}
+				JSONArray pins = entry.getJSONArray("pinned");
+				for (int p = 0; p < pins.length(); p++) {
+					String pin = pins.getString(p);
+					if (!tool.commands.contains(pin) || !tool.pinned.add(pin)) {
+						throw new IOException("UserTools.InvalidArchive");
+					}
+				}
+				validated.put(tool.id, tool);
+			}
+		} catch (JSONException | IllegalArgumentException exception) {
+			throw new IOException("UserTools.InvalidArchive", exception);
+		}
+		return validated;
+	}
+
+	private void persist(Map<String, Package> next) throws IOException {
+		String json;
+		try {
+			JSONArray entries = new JSONArray();
+			for (Package tool : next.values()) {
+				JSONArray pins = new JSONArray();
+				for (String name : tool.pinned) {
+					pins.put(name);
+				}
+				entries.put(new JSONObject().put("name", tool.name).put("sha256", tool.id)
+						.put("ggt", Base64.getEncoder().encodeToString(tool.bytes))
+						.put("pinned", pins));
+			}
+			json = new JSONObject().put("version", 1).put("packages", entries).toString();
+		} catch (JSONException exception) {
+			throw new IOException("UserTools.InvalidArchive", exception);
+		}
+		if (json.getBytes(StandardCharsets.UTF_8).length > 2L * MAX_BYTES) {
+			throw new IOException("UserTools.Limit");
+		}
+		Files.createDirectories(storage.getParent());
+		Path temporary = Files.createTempFile(storage.getParent(), "user-tools-", ".tmp");
+		try {
+			Files.writeString(temporary, json, StandardCharsets.UTF_8);
+			Files.move(temporary, storage, StandardCopyOption.ATOMIC_MOVE,
+					StandardCopyOption.REPLACE_EXISTING);
+		} finally {
+			Files.deleteIfExists(temporary);
+		}
+	}
+
+	private void notifyListeners() {
+		for (Runnable listener : List.copyOf(listeners)) {
+			listener.run();
+		}
+	}
+
+	private static String key(String command) {
+		return command.toLowerCase(Locale.ROOT);
+	}
+
+	private static String digest(byte[] bytes) {
+		try {
+			return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(bytes));
+		} catch (NoSuchAlgorithmException exception) {
+			throw new IllegalStateException(exception);
+		}
+	}
+
+	/** Reuse the host parser/engine with an isolated registration table, never the live table. */
+	private static final class ValidationKernel extends MacroKernel {
+		private final MacroManager macros = new MacroManager();
+
+		ValidationKernel(Kernel parent) {
+			super(parent);
+			setGlobalVariableLookup(false);
+		}
+
+		@Override
+		public void addMacro(Macro macro) {
+			macros.addMacro(macro);
+		}
+
+		@Override
+		public Macro getMacro(String name) {
+			return macros.getMacro(name);
+		}
+
+		@Override
+		public ArrayList<Macro> getAllMacros() {
+			return macros.getAllMacros();
+		}
+	}
+}

@@ -3,8 +3,12 @@
 Estado publicado R1: **PASS — AUTHOR APPROVED**, smoke autoral **PASS**.
 Tag `geocedg-g9s1-r1-pass` ->
 `af459d856f1cdc384805f3035203acce8e6f6104`.
-G9U1 está en implementación autorizada como candidato; no tiene aprobación de
-implementación ni smoke autoral. Los resultados R1 del párrafo siguiente son
+G9U1 está en estabilización autorizada tras una primera revisión autoral con
+hallazgos, no PASS. Su implementación sigue sin aprobación; el re-smoke está
+pendiente. La [guía práctica Construction](geocedg_construction_quick_guide.md)
+y el [checklist](../validation/g9u1_author_resmoke_checklist.md) describen la ruta
+actual de menús, métricas, guardado y herramientas propias.
+Los resultados R1 del párrafo siguiente son
 históricos y pertenecen a sus fuentes archivadas, no a una ejecución nueva.
 
 Nota histórica del candidato R1:

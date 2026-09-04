@@ -287,3 +287,26 @@ rich-only. Current conditional implementation authorization is satisfied;
 implementation has not started at planning freeze and is not author-approved.
 The R4 native-quarantine risk remains OPEN / TRACKED and nonblocking for this
 candidate unless its experiment demonstrates a real kernel/persistence defect.
+
+## Current G9U1 author-review stabilization, round 1
+
+This unapproved successor preserves the original candidate and failed author
+smoke chronology. It retains 110 actions / 11 families / 18 clusters; the current
+profile projects six ordinary menus and 34 primary toolbar actions. The review
+does not promote Templatev7, create a second workspace authority, broaden metric
+endpoint admission or repair historical malformed archives.
+
+| Review concern | Current source/contract | Evidence and user procedure |
+|---|---|---|
+| Toolbar/menu discoverability | sole live `apps/geocedg/application-profile.yml`; [workspace contract](../../geocedg/specs/ui/cedg-workspaces.md); [architecture](../architecture/cedg_workspace_architecture.md) | [frontend matrix](g9u1_frontend_review_matrix.md), [icon review](g9u1_icon_review.md), [quick guide](../user/geocedg_construction_quick_guide.md) |
+| Persistent explicit user tools | `GeoCeDGUserToolLibrary` / `GeoCeDGUserTools`; unchanged host macro engine and isolated application preferences | [user-tool review](g9u1_user_tools_review.md); no document auto-install, no Template promotion |
+| Metric/definition presentation | `AlgoLocusMetricScalarAdapter`, real rich-parent DAG; [interaction contract](../../geocedg/specs/ui/g9u1-construction-interaction.md) | `G9U1MetricReviewTest`; free A/C endpoints remain invalid, exact semantic endpoints are the positive control |
+| Producer/save lifecycle | `SpatialIdentityRegistry` ordinary atomic publication; `AppD` temporary-native preflight through existing reader | [native lifecycle review](g9u1_native_lifecycle_review.md), exact `TestBasic1.cedg`, `G9U1ConstructionParticipationReviewTest`, `G9U1AuthorArchiveReviewTest`, `G9U1NativeLifecycleReviewTest`; strict historical rejection retained |
+| Author acceptance boundary | successor remains implementation candidate, not G9U1 PASS | [round-1 record](g9u1_author_manual_review_round1.md), [re-smoke checklist](g9u1_author_resmoke_checklist.md); automated DEV is not author acceptance |
+
+The seven producer-focused DEV tests and the 76-case Desktop DEV (including two
+native-lifecycle cases) passed in their recorded execution cohorts; final
+acceptance evidence and later input changes remain the parent verification
+report's responsibility. These counts are diagnostic history, not PHASE/FULL or
+manual-author PASS. `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` remains
+OPEN / TRACKED independently of the list-dependency/save correction.

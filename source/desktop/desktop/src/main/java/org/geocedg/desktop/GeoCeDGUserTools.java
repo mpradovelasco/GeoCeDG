@@ -1,0 +1,349 @@
+/* GeoCeDG
+ * Copyright (c) 2026 GeoCeDG contributors
+ * SPDX-License-Identifier: EUPL-1.2
+ */
+
+package org.geocedg.desktop;
+
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Map;
+import java.util.WeakHashMap;
+
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JList;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
+import org.geocedg.desktop.GeoCeDGUserToolLibrary.Package;
+import org.geogebra.desktop.gui.dialog.ToolManagerDialogD;
+import org.geogebra.desktop.main.AppD;
+import org.geogebra.desktop.main.GeoGebraPreferencesD;
+
+/** Dynamic application tools are separate from the immutable product action catalog. */
+public final class GeoCeDGUserTools {
+
+	private static final Map<AppD, WeakReference<GeoCeDGUserTools>> INSTANCES =
+			new WeakHashMap<>();
+	private final AppD app;
+	private final GeoCeDGActionRegistry registry;
+	private final GeoCeDGUserToolLibrary library;
+	private final String loadFailure;
+
+	private GeoCeDGUserTools(AppD app) {
+		this.app = app;
+		this.registry = ((GuiManagerGeoCeDG) app.getGuiManager()).getActionRegistry();
+		GeoCeDGUserToolLibrary loaded = null;
+		String failure = null;
+		try {
+			loaded = new GeoCeDGUserToolLibrary(app, storagePath());
+		} catch (IOException exception) {
+			failure = exception.getMessage();
+		}
+		library = loaded;
+		loadFailure = failure;
+	}
+
+	GeoCeDGUserTools(AppD app, GeoCeDGUserToolLibrary library) {
+		this.app = app;
+		this.registry = ((GuiManagerGeoCeDG) app.getGuiManager()).getActionRegistry();
+		this.library = library;
+		this.loadFailure = null;
+	}
+
+	private static Path storagePath() {
+		Path preferences;
+		try {
+			preferences = GeoGebraPreferencesD.getFile().toPath().toAbsolutePath();
+		} catch (NullPointerException exception) {
+			preferences = GeoCeDG.getDefaultPreferencesFile();
+		}
+		return preferences.resolveSibling(preferences.getFileName() + ".user-tools-v1.json");
+	}
+
+	private static synchronized GeoCeDGUserTools get(AppD app) {
+		WeakReference<GeoCeDGUserTools> reference = INSTANCES.get(app);
+		GeoCeDGUserTools result = reference == null ? null : reference.get();
+		if (result == null) {
+			result = new GeoCeDGUserTools(app);
+			INSTANCES.put(app, new WeakReference<>(result));
+		}
+		return result;
+	}
+
+	/**
+	 * @param app product app
+	 * @return current installed tools and the existing management action
+	 */
+	public static JMenu createMenu(AppD app) {
+		GeoCeDGUserTools tools = get(app);
+		JMenu menu = new JMenu(tools.text("UserTools.Title"));
+		menu.getAccessibleContext().setAccessibleName(menu.getText());
+		menu.addMenuListener(new MenuListener() {
+			@Override
+			public void menuSelected(MenuEvent event) {
+				tools.populate(menu);
+			}
+
+			@Override
+			public void menuDeselected(MenuEvent event) {
+				// No geometric state is attached to menu presentation.
+			}
+
+			@Override
+			public void menuCanceled(MenuEvent event) {
+				// Cancelling creates nothing.
+			}
+		});
+		tools.populate(menu);
+		return menu;
+	}
+
+	/**
+	 * @param app product app
+	 * @return independent pinned user-tool group, empty when unpinned
+	 */
+	public static JComponent createPinnedToolbar(AppD app) {
+		GeoCeDGUserTools tools = get(app);
+		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEADING, 2, 0));
+		panel.getAccessibleContext().setAccessibleName(tools.text("UserTools.Title"));
+		Runnable refresh = () -> tools.populatePins(panel);
+		if (tools.library != null) {
+			WeakReference<JPanel> reference = new WeakReference<>(panel);
+			tools.library.addListener(() -> {
+				JPanel live = reference.get();
+				if (live != null) {
+					tools.populatePins(live);
+				}
+			});
+		}
+		refresh.run();
+		return panel;
+	}
+
+	/** @param app product app whose explicitly installed library is managed */
+	public static void showManager(AppD app) {
+		get(app).showDialog();
+	}
+
+	void populate(JMenu menu) {
+		menu.removeAll();
+		registry.refresh();
+		JMenuItem management = GeoCeDGMenuBar.createItem(
+				registry.get("automation.manage-user-tools"), new ButtonGroup());
+		management.setFont(app.getPlainFont());
+		menu.add(management);
+		menu.addSeparator();
+		if (!refreshLibrary()) {
+			JMenuItem failure = new JMenuItem(text("UserTools.LibraryError"));
+			failure.setFont(app.getPlainFont());
+			failure.setEnabled(false);
+			menu.add(failure);
+			return;
+		}
+		if (library.packages().isEmpty()) {
+			JMenuItem empty = new JMenuItem(text("UserTools.Empty"));
+			empty.setFont(app.getPlainFont());
+			empty.setEnabled(false);
+			menu.add(empty);
+		}
+		for (Package tool : library.packages()) {
+			String reason = library.unavailableReason(tool);
+			for (String command : tool.commands()) {
+				JMenuItem item = new JMenuItem(command);
+				item.setFont(app.getPlainFont());
+				item.setToolTipText(reason == null ? tool.name() : explain(reason));
+				item.setEnabled(reason == null);
+				item.getAccessibleContext().setAccessibleDescription(item.getToolTipText());
+				item.addActionListener(event -> invoke(tool, command));
+				menu.add(item);
+			}
+		}
+	}
+
+	void populatePins(JPanel panel) {
+		panel.removeAll();
+		if (refreshLibrary()) {
+			for (Package tool : library.packages()) {
+				String reason = library.unavailableReason(tool);
+				for (String command : tool.commands()) {
+					if (tool.isPinned(command)) {
+						JButton button = new JButton(command);
+						button.setFont(app.getPlainFont());
+						button.setEnabled(reason == null);
+						button.setToolTipText(reason == null
+								? text("UserTools.Title") + ": " + tool.name() : explain(reason));
+						button.getAccessibleContext()
+								.setAccessibleDescription(button.getToolTipText());
+						button.addActionListener(event -> invoke(tool, command));
+						panel.add(button);
+					}
+				}
+			}
+		}
+		panel.setVisible(panel.getComponentCount() > 0);
+		panel.revalidate();
+		panel.repaint();
+	}
+
+	private void invoke(Package tool, String command) {
+		try {
+			library.select(tool.id(), command);
+		} catch (IOException exception) {
+			failure(exception.getMessage());
+		}
+	}
+
+	private void showDialog() {
+		if (!refreshLibrary()) {
+			failure("UserTools.LibraryError" + ": " + explain(loadFailure));
+			return;
+		}
+		final JDialog dialog = new JDialog(app.getFrame(), text("UserTools.Title"), true);
+		JPanel content = new JPanel(new BorderLayout(6, 6));
+		content.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+		JTextArea scope = new JTextArea(text("UserTools.Scope"), 3, 50);
+		scope.setEditable(false);
+		scope.setLineWrap(true);
+		scope.setWrapStyleWord(true);
+		scope.setOpaque(false);
+		scope.setFont(app.getPlainFont());
+		content.add(scope, BorderLayout.NORTH);
+		JList<Package> list = new JList<>();
+		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		list.setListData(library.packages().toArray(new Package[0]));
+		list.getAccessibleContext().setAccessibleName(text("UserTools.Installed"));
+		JScrollPane scroll = new JScrollPane(list);
+		scroll.setPreferredSize(new Dimension(620, 180));
+		content.add(scroll, BorderLayout.CENTER);
+		JPanel south = new JPanel(new BorderLayout());
+		JPanel pins = new JPanel(new FlowLayout(FlowLayout.LEADING));
+		south.add(pins, BorderLayout.NORTH);
+		JPanel buttons = new JPanel(new FlowLayout(FlowLayout.TRAILING));
+		JButton install = new JButton(text("UserTools.Install"));
+		JButton remove = new JButton(text("UserTools.Remove"));
+		JButton document = new JButton(text("UserTools.Document"));
+		JButton close = new JButton(text("UserTools.Close"));
+		buttons.add(install);
+		buttons.add(remove);
+		buttons.add(document);
+		buttons.add(close);
+		south.add(buttons, BorderLayout.SOUTH);
+		content.add(south, BorderLayout.SOUTH);
+		list.addListSelectionListener(event -> {
+			pins.removeAll();
+			Package tool = list.getSelectedValue();
+			remove.setEnabled(tool != null);
+			if (tool != null) {
+				for (String command : tool.commands()) {
+					JCheckBox pin = new JCheckBox(command, tool.isPinned(command));
+					pin.setToolTipText(text("UserTools.Pin"));
+					pin.getAccessibleContext().setAccessibleDescription(pin.getToolTipText());
+					pin.addActionListener(action -> {
+						try {
+							library.pin(tool.id(), command, pin.isSelected());
+						} catch (IOException exception) {
+							pin.setSelected(tool.isPinned(command));
+							failure(exception.getMessage());
+						}
+					});
+					pins.add(pin);
+				}
+			}
+			pins.revalidate();
+			pins.repaint();
+		});
+		remove.setEnabled(false);
+		install.addActionListener(event -> {
+			JFileChooser chooser = new JFileChooser();
+			chooser.setFileFilter(new FileNameExtensionFilter("GeoGebra tools (.ggt)", "ggt"));
+			chooser.setAcceptAllFileFilterUsed(false);
+			if (chooser.showOpenDialog(dialog) == JFileChooser.APPROVE_OPTION) {
+				try {
+					Path file = chooser.getSelectedFile().toPath();
+					if (Files.size(file) > GeoCeDGUserToolLibrary.MAX_BYTES) {
+						throw new IOException("UserTools.Limit");
+					}
+					library.install(file.getFileName().toString(), Files.readAllBytes(file));
+					list.setListData(library.packages().toArray(new Package[0]));
+				} catch (IOException exception) {
+					failure(exception.getMessage());
+				}
+			}
+		});
+		remove.addActionListener(event -> {
+			Package selected = list.getSelectedValue();
+			if (selected != null && JOptionPane.showConfirmDialog(dialog,
+					text("UserTools.RemoveConfirm"), text("UserTools.Title"),
+					JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+				try {
+					library.remove(selected.id());
+					list.setListData(library.packages().toArray(new Package[0]));
+				} catch (IOException exception) {
+					failure(exception.getMessage());
+				}
+			}
+		});
+		document.addActionListener(event -> {
+			dialog.dispose();
+			new ToolManagerDialogD(app).setVisible(true);
+		});
+		close.addActionListener(event -> dialog.dispose());
+		dialog.setContentPane(content);
+		dialog.getRootPane().setDefaultButton(close);
+		app.setComponentOrientation(dialog);
+		dialog.pack();
+		dialog.setLocationRelativeTo(app.getMainComponent());
+		dialog.setVisible(true);
+	}
+
+	private String text(String key) {
+		return registry.text(key);
+	}
+
+	private boolean refreshLibrary() {
+		if (library == null) {
+			return false;
+		}
+		try {
+			library.refresh();
+			return true;
+		} catch (IOException exception) {
+			return false;
+		}
+	}
+
+	private String explain(String detail) {
+		if (detail == null) {
+			return text("UserTools.Unavailable");
+		}
+		int separator = detail.indexOf(':');
+		return separator < 0 ? text(detail)
+				: text(detail.substring(0, separator)) + detail.substring(separator);
+	}
+
+	private void failure(String reason) {
+		JOptionPane.showMessageDialog(app.getMainComponent(),
+				text("UserTools.Failure") + explain(reason), text("UserTools.Title"),
+				JOptionPane.WARNING_MESSAGE);
+	}
+}

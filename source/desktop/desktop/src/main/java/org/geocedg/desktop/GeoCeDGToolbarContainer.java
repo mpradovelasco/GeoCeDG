@@ -6,35 +6,45 @@
 package org.geocedg.desktop;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 
+import javax.swing.BoxLayout;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
 import org.geogebra.desktop.gui.toolbar.ToolbarContainer;
 import org.geogebra.desktop.main.AppD;
 
-/** Adds a scrollable declarative action palette without inventing kernel modes. */
+/** Compact native tool flyouts plus declared non-mode actions; menus remain primary discovery. */
 final class GeoCeDGToolbarContainer extends ToolbarContainer {
 
 	private static final long serialVersionUID = 1L;
 	private final GeoCeDGWorkspaceController workspace;
+	private final AppD app;
 
 	GeoCeDGToolbarContainer(AppD app, GeoCeDGWorkspaceController workspace) {
 		super(app, true);
 		this.workspace = workspace;
+		this.app = app;
 	}
 
 	@Override
 	public void buildGui() {
 		super.buildGui();
 		if (workspace != null) {
-			JScrollPane palette = workspace.createActionPalette();
-			JPanel controls = new JPanel(new BorderLayout());
-			controls.add(workspace.createWorkspaceSelector(), BorderLayout.WEST);
-			controls.add(palette, BorderLayout.CENTER);
-			add(controls, orientation == SwingConstants.NORTH || orientation == SwingConstants.SOUTH
-					? BorderLayout.SOUTH : BorderLayout.EAST);
+			boolean horizontal = orientation == SwingConstants.NORTH
+					|| orientation == SwingConstants.SOUTH;
+			String placement = horizontal ? BorderLayout.WEST : BorderLayout.NORTH;
+			Component nativeTools = ((BorderLayout) getLayout()).getLayoutComponent(placement);
+			JPanel tools = new JPanel();
+			tools.setLayout(new BoxLayout(tools, horizontal ? BoxLayout.X_AXIS : BoxLayout.Y_AXIS));
+			if (nativeTools != null) {
+				remove(nativeTools);
+				tools.add(nativeTools);
+			}
+			tools.add(workspace.createProductToolbar());
+			tools.add(GeoCeDGUserTools.createPinnedToolbar(app));
+			add(tools, placement);
 			revalidate();
 		}
 	}

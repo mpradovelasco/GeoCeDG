@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "phase": "G9U1",
-  "status": "IMPLEMENTATION_CONSUMER_MAPPING_PENDING_FINAL_EXECUTION",
+  "status": "AUTHOR_REVIEW_STABILIZATION_CONSUMER_MAPPING_PENDING_FRESH_EXECUTION",
   "focusedJUnit": {
     "classes": [
       {
@@ -96,7 +96,7 @@
         "module": "desktop",
         "methods": [
           "liveProfileStrictlyCompilesOneHundredTenActions",
-          "toolbarContainsExactlySixtySixUniqueRealModeIds",
+          "toolbarContainsThirtyTwoCuratedModesWhileCatalogRetainsAllSixtySix",
           "historicalV1FixtureRetainsExactOriginalToolbar",
           "unknownTopLevelPropertyFailsClosed",
           "unknownNestedPropertyFailsClosed",
@@ -168,7 +168,7 @@
         "methods": [
           "allActionsAreReachableThroughTheManifestMenuProjection",
           "repeatedMenuRebuildKeepsOneProjectionPerDeclaredPlacement",
-          "familyPaletteRetainsAllElevenFamiliesAtHighDpi",
+          "compactProductToolbarUsesOnlyDeclaredNonModeActionsAtHighDpi",
           "contextProjectionUsesSameStableActionIds",
           "layoutRoundTripIsPreferenceOnlyAndRetainsProfileAuthority",
           "corruptedLayoutFailsToSafeProfileWithoutGeometryParsing",
@@ -179,9 +179,11 @@
           "savedLayoutWithOverlappingLeafFailsClosedBeforeHostApplication",
           "unrealizedDockRatiosCannotBePersistedOrInvented",
           "laterDocumentLayoutIsNotMistakenForPreviouslyReappliedWorkspace",
-          "keyboardFocusScrollsOffscreenFamilyIntoNarrowViewport",
+          "realApplicationMenuIsAboveContentAndToolbarIsItsStrictSubset",
           "liveHostLayoutRoundTripRetainsHiddenPanelsAndEditedDivider",
-          "savedLayoutWithUnknownViewIdStillFailsClosed"
+          "savedLayoutWithUnknownViewIdStillFailsClosed",
+          "constructionStartupDoesNotOpenClassicChooserButClassicStillDoes",
+          "embeddedHostTeardownReleasesOnlyNewDockListenersAndLazyFrames"
         ]
       },
       {
@@ -211,6 +213,104 @@
           "continuityCannotBeEnabledInProduct",
           "loadedContinuousPreferenceCannotOverrideProductInvariant",
           "classicContinuityRemainsConfigurable"
+        ]
+      },
+      {
+        "name": "org.geocedg.desktop.G9U1AuthorArchiveReviewTest",
+        "source": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1AuthorArchiveReviewTest.java",
+        "module": "desktop",
+        "methods": [
+          "historicalAuthorArchiveRemainsByteExactAndTruthfullyRejected"
+        ]
+      },
+      {
+        "name": "org.geocedg.desktop.G9U1DefinitionAffordanceTest",
+        "source": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1DefinitionAffordanceTest.java",
+        "module": "desktop",
+        "methods": [
+          "propertiesShowsReadOnlySemanticDefinitionsWithoutChangingConstruction",
+          "readOnlyPropertiesRejectsEnterAndFocusLossWithoutAnyRedefine",
+          "ordinaryAndSemanticScalarPointChildrenRetainTheirExistingHostEditFlags",
+          "numericPropertiesUsesExistingAtomicCompatibleRedefine",
+          "readOnlyExplanationHasBothProductLanguagesAndClassicEditorIsUnchanged",
+          "ordinaryNoneditableImageKeepsHostPropertiesInsteadOfSemanticDefinition"
+        ]
+      },
+      {
+        "name": "org.geocedg.desktop.G9U1IconReviewTest",
+        "source": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1IconReviewTest.java",
+        "module": "desktop",
+        "methods": [
+          "manifestIconsResolveWithoutChangingActionIdentityOrText",
+          "vectorFamilyRendersAtNormalAndHighDpiWithoutColorOnlyMeaning"
+        ]
+      },
+      {
+        "name": "org.geocedg.desktop.G9U1MetricReviewTest",
+        "source": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1MetricReviewTest.java",
+        "module": "desktop",
+        "methods": [
+          "originalSplineInputsRemainTruthfullyInvalidMetricEndpoints",
+          "exactSemanticEndpointsPublishAndRecomputeThroughTheRichParent",
+          "totalAndPartialPresentationUsesLocalizedPublicProvenanceWithoutChangingXml",
+          "partialScalarPreservesHiddenParentAndIdentityAcrossTwoNativeReopens",
+          "foreignOrCoincidentPointsNeverReceiveInferredMetricPreimages",
+          "ordinaryLocusQuickGuideUsesTheSameSemanticMetricAuthority"
+        ]
+      },
+      {
+        "name": "org.geocedg.desktop.G9U1NativeLifecycleReviewTest",
+        "source": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1NativeLifecycleReviewTest.java",
+        "module": "desktop",
+        "methods": [
+          "lateFreeEndpointParticipationSurvivesUndoSaveAndTwoReopens",
+          "failedNativeSavePreflightPreservesExistingTargetAndLiveState"
+        ]
+      },
+      {
+        "name": "org.geocedg.desktop.G9U1UserToolLibraryTest",
+        "source": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1UserToolLibraryTest.java",
+        "module": "desktop",
+        "methods": [
+          "installDoesNotChangeConstructionOrDocumentArchive",
+          "restartAndNewDocumentRetainLibraryWithoutRegisteringDocumentMacros",
+          "explicitActivationUsesExistingMacroEngineAndDynamicInputs",
+          "installedToolIsInvocableThroughNativeCommandDispatcher",
+          "pinsAreApplicationPreferencesAndDoNotChangeConstruction",
+          "removalDoesNotDeleteExistingDocumentMacroOrOutput",
+          "documentMacrosNeverAutoInstallOrBecomePreferenceSnapshot",
+          "preferenceRestoreCannotSmuggleDocumentMacrosButExplicitLoadStillWorks",
+          "classicRetainsInheritedPreferenceMacroContract",
+          "nativeLengthCollisionFailsClosed",
+          "nativeIntersectCollisionFailsClosed",
+          "nativePointCollisionFailsClosed",
+          "nativeSplineV2CollisionFailsClosed",
+          "nativeMidpointCollisionFailsClosed",
+          "installedCommandCollisionPreservesOriginalLibraryBytes",
+          "documentCollisionAtInstallOrActivationDoesNotReplaceMacro",
+          "malformedArchiveAndDoctypeFailWithoutMutation",
+          "scriptsAndSerializedSemanticObjectsAreRejected",
+          "featureDisabledBodyCannotBypassPolicyThroughFileLoadOrExpression",
+          "tamperedStoredPackageFailsClosedAndIsNotRewritten",
+          "dynamicMenuAndPinsReuseManagementActionWithoutAddingProductIds",
+          "secondWindowRechecksInstalledCommandCollisionAgainstCurrentStore",
+          "concurrentWindowPinAndRemovePreserveOtherPackagesAndRejectRemovedActivation",
+          "busyLibraryLockRejectsWithoutReplacingPreferences",
+          "windowlessFixtureReleasesGlobalDispatcherWithoutChangingNativeRegistration"
+        ]
+      },
+      {
+        "name": "org.geocedg.common.spatial.G9U1ConstructionParticipationReviewTest",
+        "source": "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9U1ConstructionParticipationReviewTest.java",
+        "module": "shared",
+        "methods": [
+          "lateParticipationPreservesExistingListIdentityAndRevisions",
+          "singletonPublicationAndLaterBatchYieldExactReloadableDependencies",
+          "failedRuntimeSwitchRollsBackNewInputAndExistingDerivedRecordTogether",
+          "malformedNewBatchCannotRefreshOrPartiallyPublishAnything",
+          "historicalMissingDependencyArchiveStillFailsClosedWithoutRepair",
+          "g9aCandidateStagingDoesNotRefreshLiveExistingRecords",
+          "g9aSealedProviderPermissionCannotChangeCapturedDependencySignature"
         ]
       }
     ]
@@ -283,7 +383,7 @@
       "group": "S",
       "assertion": "ID maps to audited constant; future actions do not reserve arbitrary IDs",
       "tests": [
-        "org.geocedg.desktop.G9U1ProfileCompilerTest#toolbarContainsExactlySixtySixUniqueRealModeIds",
+        "org.geocedg.desktop.G9U1ProfileCompilerTest#toolbarContainsThirtyTwoCuratedModesWhileCatalogRetainsAllSixtySix",
         "org.geocedg.desktop.G9U1ProfileCompilerTest#wrongModeConstantFailsClosed",
         "org.geocedg.desktop.G9U1ProfileCompilerTest#unknownModeSymbolFailsClosed"
       ],
@@ -1096,7 +1196,7 @@
       "assertion": "text fallback, accessible name, keyboard navigation",
       "tests": [
         "org.geocedg.desktop.G9U1ActionRegistryTest#everyActionHasExactlyOneBoundTargetAndReadableName",
-        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest#keyboardFocusScrollsOffscreenFamilyIntoNarrowViewport"
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest#realApplicationMenuIsAboveContentAndToolbarIsItsStrictSubset"
       ],
       "topic": "icon/accessibility",
       "procedure": "missing icon and all action focus paths",
@@ -1109,7 +1209,7 @@
       "group": "V",
       "assertion": "groups usable without giant embedded icons; overflow deterministic",
       "tests": [
-        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest#familyPaletteRetainsAllElevenFamiliesAtHighDpi"
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest#compactProductToolbarUsesOnlyDeclaredNonModeActionsAtHighDpi"
       ],
       "topic": "visual density",
       "procedure": "reference-size and small/high-DPI layouts",
@@ -1354,7 +1454,7 @@
       "group": "B",
       "assertion": "accepted contrast, readable status/help, stable focus/order and usable professional grouping",
       "tests": [
-        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest#familyPaletteRetainsAllElevenFamiliesAtHighDpi"
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest#compactProductToolbarUsesOnlyDeclaredNonModeActionsAtHighDpi"
       ],
       "topic": "accessibility/scaling",
       "procedure": "contrast audit plus normal DPI/scaling and keyboard paths",
@@ -2063,7 +2163,275 @@
       "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
       "automatedScope": "Only the explicitly named test methods are executable evidence; their saved JUnit results are required. Manual interaction, full variant coverage and author acceptance are not inferred.",
       "remaining": "Complete the corresponding author GUI smoke and any scenario variants not exercised by the named methods."
+    },
+    {
+      "id": "U1-RV01",
+      "group": "RV",
+      "assertion": "Exact 31885-byte SHA-256 fixture remains unchanged; malformed historical dependency state is rejected truthfully and does not corrupt the current construction.",
+      "tests": [
+        "org.geocedg.desktop.G9U1AuthorArchiveReviewTest#historicalAuthorArchiveRemainsByteExactAndTruthfullyRejected"
+      ],
+      "topic": "preserved author archive",
+      "procedure": "Inspect the exact TestBasic1.cedg and attempt open without resaving or normalizing it.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "Only the named tests prove their assertions on the fresh successor cohort; historical checkpoint execution is not reused or relabeled.",
+      "remaining": "Author re-smoke and any variants outside the named saved JUnit results remain pending; this is not author approval."
+    },
+    {
+      "id": "U1-RV02",
+      "group": "RV",
+      "assertion": "Free/coincident/foreign endpoints remain invalid without inferred preimages; exact same-source semantic endpoints yield the approved rich/scalar partial metric and recompute.",
+      "tests": [
+        "org.geocedg.desktop.G9U1MetricReviewTest#originalSplineInputsRemainTruthfullyInvalidMetricEndpoints",
+        "org.geocedg.desktop.G9U1MetricReviewTest#exactSemanticEndpointsPublishAndRecomputeThroughTheRichParent",
+        "org.geocedg.desktop.G9U1MetricReviewTest#foreignOrCoincidentPointsNeverReceiveInferredMetricPreimages",
+        "org.geocedg.desktop.G9U1MetricReviewTest#ordinaryLocusQuickGuideUsesTheSameSemanticMetricAuthority"
+      ],
+      "topic": "partial semantic length and endpoint identity",
+      "procedure": "Compare the author's free spline interpolation inputs with explicit semantic Point endpoints; move source and endpoint parameters.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "Only the named tests prove their assertions on the fresh successor cohort; historical checkpoint execution is not reused or relabeled.",
+      "remaining": "Author re-smoke and any variants outside the named saved JUnit results remain pending; this is not author approval."
+    },
+    {
+      "id": "U1-RV03",
+      "group": "RV",
+      "assertion": "Public Length intent is readable without removing the rich parent, changing XML or assigning identity from its hidden label; exact scalar/rich/endpoint graph survives reopen.",
+      "tests": [
+        "org.geocedg.desktop.G9U1MetricReviewTest#totalAndPartialPresentationUsesLocalizedPublicProvenanceWithoutChangingXml",
+        "org.geocedg.desktop.G9U1MetricReviewTest#partialScalarPreservesHiddenParentAndIdentityAcrossTwoNativeReopens"
+      ],
+      "topic": "public scalar provenance",
+      "procedure": "Inspect total/partial scalar metric definitions in English and Spanish, then save and reopen twice.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "Only the named tests prove their assertions on the fresh successor cohort; historical checkpoint execution is not reused or relabeled.",
+      "remaining": "Author re-smoke and any variants outside the named saved JUnit results remain pending; this is not author approval."
+    },
+    {
+      "id": "U1-RV04",
+      "group": "RV",
+      "assertion": "Existing dependency records follow the unchanged actual DAG atomically while IDs/revisions/roles persist; malformed load still fails and G9A staging/lease is not bypassed.",
+      "tests": [
+        "org.geocedg.common.spatial.G9U1ConstructionParticipationReviewTest#lateParticipationPreservesExistingListIdentityAndRevisions",
+        "org.geocedg.common.spatial.G9U1ConstructionParticipationReviewTest#singletonPublicationAndLaterBatchYieldExactReloadableDependencies",
+        "org.geocedg.common.spatial.G9U1ConstructionParticipationReviewTest#failedRuntimeSwitchRollsBackNewInputAndExistingDerivedRecordTogether",
+        "org.geocedg.common.spatial.G9U1ConstructionParticipationReviewTest#malformedNewBatchCannotRefreshOrPartiallyPublishAnything",
+        "org.geocedg.common.spatial.G9U1ConstructionParticipationReviewTest#historicalMissingDependencyArchiveStillFailsClosedWithoutRepair",
+        "org.geocedg.common.spatial.G9U1ConstructionParticipationReviewTest#g9aCandidateStagingDoesNotRefreshLiveExistingRecords",
+        "org.geocedg.common.spatial.G9U1ConstructionParticipationReviewTest#g9aSealedProviderPermissionCannotChangeCapturedDependencySignature"
+      ],
+      "topic": "late participation producer coherence",
+      "procedure": "Publish an existing algorithm input's durable participation after its dependent list; exercise batch failure and G9A candidate/sealed scopes.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "Only the named tests prove their assertions on the fresh successor cohort; historical checkpoint execution is not reused or relabeled.",
+      "remaining": "Author re-smoke and any variants outside the named saved JUnit results remain pending; this is not author approval."
+    },
+    {
+      "id": "U1-RV05",
+      "group": "RV",
+      "assertion": "Successful native save reconstructs with unchanged schema and graph; failed preflight retains the previous target and live state without sanitizing historical evidence.",
+      "tests": [
+        "org.geocedg.desktop.G9U1NativeLifecycleReviewTest#lateFreeEndpointParticipationSurvivesUndoSaveAndTwoReopens",
+        "org.geocedg.desktop.G9U1NativeLifecycleReviewTest#failedNativeSavePreflightPreservesExistingTargetAndLiveState"
+      ],
+      "topic": "save undo redo and successive reopen",
+      "procedure": "Create the valid late-participation sequence; save, undo, redo, save-after-undo, close, first reopen, second reopen; inject invalid save preflight.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "Only the named tests prove their assertions on the fresh successor cohort; historical checkpoint execution is not reused or relabeled.",
+      "remaining": "The exact unspecified author gesture preceding disappearance is not claimed reproduced; the identified producer defect and required saved lifecycle sequence have bounded regression evidence. Final GUI re-smoke remains pending."
+    },
+    {
+      "id": "U1-RV06",
+      "group": "RV",
+      "assertion": "One 110-action registry supplies six normal menus and a strict toolbar subset: 32 native modes plus two nonmode controls; no horizontal eleven-family menu strip.",
+      "tests": [
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest#allActionsAreReachableThroughTheManifestMenuProjection",
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest#repeatedMenuRebuildKeepsOneProjectionPerDeclaredPlacement",
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest#compactProductToolbarUsesOnlyDeclaredNonModeActionsAtHighDpi",
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest#realApplicationMenuIsAboveContentAndToolbarIsItsStrictSubset",
+        "org.geocedg.desktop.G9U1ProfileCompilerTest#toolbarContainsThirtyTwoCuratedModesWhileCatalogRetainsAllSixtySix",
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest#constructionStartupDoesNotOpenClassicChooserButClassicStillDoes"
+      ],
+      "topic": "normal menu and compact toolbar",
+      "procedure": "Use the real host top menu at normal/high DPI; inspect all curated toolbar actions and their menu/help route.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "Only the named tests prove their assertions on the fresh successor cohort; historical checkpoint execution is not reused or relabeled.",
+      "remaining": "Author re-smoke and any variants outside the named saved JUnit results remain pending; this is not author approval."
+    },
+    {
+      "id": "U1-RV07",
+      "group": "RV",
+      "assertion": "Existing host editability/G9A compatibility remains authoritative; semantic read-only definitions are visible and explained, synthetic edit cannot publish, redundant context routes are absent.",
+      "tests": [
+        "org.geocedg.desktop.G9U1DefinitionAffordanceTest#propertiesShowsReadOnlySemanticDefinitionsWithoutChangingConstruction",
+        "org.geocedg.desktop.G9U1DefinitionAffordanceTest#readOnlyPropertiesRejectsEnterAndFocusLossWithoutAnyRedefine",
+        "org.geocedg.desktop.G9U1DefinitionAffordanceTest#ordinaryAndSemanticScalarPointChildrenRetainTheirExistingHostEditFlags",
+        "org.geocedg.desktop.G9U1DefinitionAffordanceTest#numericPropertiesUsesExistingAtomicCompatibleRedefine",
+        "org.geocedg.desktop.G9U1DefinitionAffordanceTest#readOnlyExplanationHasBothProductLanguagesAndClassicEditorIsUnchanged",
+        "org.geocedg.desktop.G9U1DefinitionAffordanceTest#ordinaryNoneditableImageKeepsHostPropertiesInsteadOfSemanticDefinition",
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest#contextProjectionUsesSameStableActionIds"
+      ],
+      "topic": "Algebra Properties and legal redefine",
+      "procedure": "Inspect semantic curves/rich results and ordinary free/dependent/numeric/point/image families; try Enter/focus loss on read-only Properties; edit an ordinary number.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "Only the named tests prove their assertions on the fresh successor cohort; historical checkpoint execution is not reused or relabeled.",
+      "remaining": "Author re-smoke and any variants outside the named saved JUnit results remain pending; this is not author approval."
+    },
+    {
+      "id": "U1-RV08",
+      "group": "RV",
+      "assertion": "Owned vector assets have consistent logical IDs, shape/text fallback and provenance; unchanged action identity and no color-only meaning; absent author branding is not fabricated.",
+      "tests": [
+        "org.geocedg.desktop.G9U1IconReviewTest#manifestIconsResolveWithoutChangingActionIdentityOrText",
+        "org.geocedg.desktop.G9U1IconReviewTest#vectorFamilyRendersAtNormalAndHighDpiWithoutColorOnlyMeaning"
+      ],
+      "topic": "owned icon family",
+      "procedure": "Resolve declared icon_ref through the existing registry and render normal/high-DPI SplineV2/semantic-point/rich-result/materialization icons.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "Only the named tests prove their assertions on the fresh successor cohort; historical checkpoint execution is not reused or relabeled.",
+      "remaining": "Author re-smoke and any variants outside the named saved JUnit results remain pending; this is not author approval."
+    },
+    {
+      "id": "U1-RV09",
+      "group": "RV",
+      "assertion": "Installation changes only isolated application preferences until explicit invocation; original package bytes persist and native macro outputs retain ordinary dynamic inputs.",
+      "tests": [
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#installDoesNotChangeConstructionOrDocumentArchive",
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#restartAndNewDocumentRetainLibraryWithoutRegisteringDocumentMacros",
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#explicitActivationUsesExistingMacroEngineAndDynamicInputs",
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#installedToolIsInvocableThroughNativeCommandDispatcher"
+      ],
+      "topic": "persistent user-tool installation",
+      "procedure": "Explicitly install a valid planar .ggt; open a new document/restart the library; activate and invoke through the host macro/command engine.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "Only the named tests prove their assertions on the fresh successor cohort; historical checkpoint execution is not reused or relabeled.",
+      "remaining": "Author re-smoke and any variants outside the named saved JUnit results remain pending; this is not author approval."
+    },
+    {
+      "id": "U1-RV10",
+      "group": "RV",
+      "assertion": "Same existing management action; no product action per macro; placement is preference-only and explicit removal never deletes constructed outputs or document definitions.",
+      "tests": [
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#pinsAreApplicationPreferencesAndDoNotChangeConstruction",
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#removalDoesNotDeleteExistingDocumentMacroOrOutput",
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#dynamicMenuAndPinsReuseManagementActionWithoutAddingProductIds",
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#concurrentWindowPinAndRemovePreserveOtherPackagesAndRejectRemovedActivation"
+      ],
+      "topic": "dynamic menu pins and removal",
+      "procedure": "Pin/unpin installed tools, inspect the Automation submenu and dedicated group, invoke and remove the package.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "Only the named tests prove their assertions on the fresh successor cohort; historical checkpoint execution is not reused or relabeled. Multi-window preference changes re-read the current shared store and preserve unrelated packages.",
+      "remaining": "Author re-smoke and any variants outside the named saved JUnit results remain pending; this is not author approval."
+    },
+    {
+      "id": "U1-RV11",
+      "group": "RV",
+      "assertion": "Every collision fails closed without overriding native semantics or replacing installed/document definitions; labels remain command UI context, not durable geometric identity.",
+      "tests": [
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#nativeLengthCollisionFailsClosed",
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#nativeIntersectCollisionFailsClosed",
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#nativePointCollisionFailsClosed",
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#nativeSplineV2CollisionFailsClosed",
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#nativeMidpointCollisionFailsClosed",
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#installedCommandCollisionPreservesOriginalLibraryBytes",
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#documentCollisionAtInstallOrActivationDoesNotReplaceMacro",
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#secondWindowRechecksInstalledCommandCollisionAgainstCurrentStore"
+      ],
+      "topic": "native and document name collisions",
+      "procedure": "Attempt packages named Length, Intersect, Point, SplineV2, Midpoint and duplicate installed/document commands.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "Only the named tests prove their assertions on the fresh successor cohort; historical checkpoint execution is not reused or relabeled. A second application window checks current installed-command ownership, not a stale snapshot.",
+      "remaining": "Author re-smoke and any variants outside the named saved JUnit results remain pending; this is not author approval."
+    },
+    {
+      "id": "U1-RV12",
+      "group": "RV",
+      "assertion": "Unsupported package bodies and feature-gate bypasses are rejected before live publication; invalid stored data is not replaced; no alternate geometry or tool engine is introduced.",
+      "tests": [
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#malformedArchiveAndDoctypeFailWithoutMutation",
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#scriptsAndSerializedSemanticObjectsAreRejected",
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#featureDisabledBodyCannotBypassPolicyThroughFileLoadOrExpression",
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#tamperedStoredPackageFailsClosedAndIsNotRewritten",
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#busyLibraryLockRejectsWithoutReplacingPreferences"
+      ],
+      "topic": "invalid unsafe or gated user-tool body",
+      "procedure": "Attempt malformed/DOCTYPE archives, scripted/nonplanar/serialized semantic bodies, gated semantic expressions and tampered stored packages.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "Only the named tests prove their assertions on the fresh successor cohort; historical checkpoint execution is not reused or relabeled. A busy preference-library lock fails closed without replacing installed data.",
+      "remaining": "Author re-smoke and any variants outside the named saved JUnit results remain pending; this is not author approval."
+    },
+    {
+      "id": "U1-RV13",
+      "group": "RV",
+      "assertion": "Document macros do not auto-install or leak through product preference snapshots; explicit document loading and Classic behavior remain unchanged.",
+      "tests": [
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#documentMacrosNeverAutoInstallOrBecomePreferenceSnapshot",
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#preferenceRestoreCannotSmuggleDocumentMacrosButExplicitLoadStillWorks",
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#classicRetainsInheritedPreferenceMacroContract",
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#windowlessFixtureReleasesGlobalDispatcherWithoutChangingNativeRegistration",
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest#embeddedHostTeardownReleasesOnlyNewDockListenersAndLazyFrames"
+      ],
+      "topic": "document-local versus application tool scope",
+      "procedure": "Open document macros and restore product preferences without explicit installation; compare Classic's inherited preferences.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "Only the named tests prove their assertions on the fresh successor cohort; historical checkpoint execution is not reused or relabeled. Windowless test-host disposal removes only its unused global keyboard registration; a regression proves native registration and focus-manager restoration remain intact. This is fixture isolation, not changed product keyboard semantics. After-each test ownership snapshots additionally remove only new DockManagerD Toolkit listeners and lazy GeoGebraFrame registrations; a deterministic regression preserves preexisting registrations and app bindings without relying on GC. Production window lifecycle, scientific assertions and heap policy remain unchanged.",
+      "remaining": "Author re-smoke and any variants outside the named saved JUnit results remain pending; this is not author approval."
+    },
+    {
+      "id": "U1-RV14",
+      "group": "RV",
+      "assertion": "No automatic 24-tool bundle; postLocus/listLength/listLength12 are not promoted as preferred replacements; no spatial/G9U2 semantics or copied legacy icons are installed by default.",
+      "tests": [
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#restartAndNewDocumentRetainLibraryWithoutRegisteringDocumentMacros",
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#scriptsAndSerializedSemanticObjectsAreRejected"
+      ],
+      "topic": "Templatev7 curation and safe import route",
+      "procedure": "Read the declared curation/provenance mapping before using a non-obsolete planar convenience tool; keep all other tools in their classified legacy/Laboratory/future scope.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "Only the named tests prove their assertions on the fresh successor cohort; historical checkpoint execution is not reused or relabeled. The per-tool curation is documentary authority in the user-tools review, not proof of executing every historical macro.",
+      "remaining": "Review the specific user's trusted .ggt rights/provenance and chosen planar tool during manual re-smoke; no bundled historical macro approval is inferred."
+    },
+    {
+      "id": "U1-RV15",
+      "group": "RV",
+      "assertion": "Guide/checklist links resolve and distinguish current implemented behavior, exact semantic endpoints, read-only boundaries, historical malformed file and pending author acceptance.",
+      "tests": [
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest#guideIsPackagedWithDeclaredSourceContent",
+        "org.geocedg.desktop.G9U1DefinitionAffordanceTest#readOnlyExplanationHasBothProductLanguagesAndClassicEditorIsUnchanged"
+      ],
+      "topic": "practical guide and coherent re-smoke",
+      "procedure": "Follow the quick guide and author re-smoke checklist on a new Revision1.cedg through metric, menu, editing, tools, undo/save/reopen and language steps.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "Only the named tests prove their assertions on the fresh successor cohort; historical checkpoint execution is not reused or relabeled. File/link checks cover the declared quick guide/review documents; the author must execute the full visual checklist.",
+      "remaining": "Author re-smoke and any variants outside the named saved JUnit results remain pending; this is not author approval."
     }
   ],
-  "coveragePolicy": "Every approved scenario ID and required workflow is retained. U1-I09 clarifies the latest single-confirmation/one-transaction requirement: query plus opted-in points share one compound undo step; the frozen planning snapshot remains historical. A test reference proves only the named assertion in that test, not all manual/persistence/performance variants in the scenario. Runtime results are sealed separately; manual author smoke is pending."
+  "coveragePolicy": "Every approved scenario ID and required workflow is retained. U1-I09 clarifies the latest single-confirmation/one-transaction requirement: query plus opted-in points share one compound undo step; the frozen planning snapshot remains historical. A test reference proves only the named assertion in that test, not all manual/persistence/performance variants in the scenario. Runtime results are sealed separately; manual author smoke is pending.",
+  "authorReview": {
+    "checkpoint": "b492194082f1adc9f981d85d92a58ef57490196f",
+    "historicalScenarios": 138,
+    "historicalFocusedTests": 132,
+    "additionalScenarioIds": [
+      "U1-RV01",
+      "U1-RV02",
+      "U1-RV03",
+      "U1-RV04",
+      "U1-RV05",
+      "U1-RV06",
+      "U1-RV07",
+      "U1-RV08",
+      "U1-RV09",
+      "U1-RV10",
+      "U1-RV11",
+      "U1-RV12",
+      "U1-RV13",
+      "U1-RV14",
+      "U1-RV15"
+    ],
+    "methodReplacements": {
+      "toolbarContainsExactlySixtySixUniqueRealModeIds": "toolbarContainsThirtyTwoCuratedModesWhileCatalogRetainsAllSixtySix",
+      "familyPaletteRetainsAllElevenFamiliesAtHighDpi": "compactProductToolbarUsesOnlyDeclaredNonModeActionsAtHighDpi",
+      "keyboardFocusScrollsOffscreenFamilyIntoNarrowViewport": "realApplicationMenuIsAboveContentAndToolbarIsItsStrictSubset"
+    }
+  }
 }

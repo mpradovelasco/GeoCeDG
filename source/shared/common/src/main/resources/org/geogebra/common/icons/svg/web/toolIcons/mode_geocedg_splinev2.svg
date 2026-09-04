@@ -1,0 +1,7 @@
+<!-- GeoCeDG-authored; SPDX-License-Identifier: EUPL-1.2 -->
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+  <path d="M3 18L8 6l8 12 5-12" fill="none" stroke="#555" stroke-width="1.1" stroke-dasharray="2 2"/>
+  <path d="M3 18C5 18 5 6 8 6S13 18 16 18s4-12 5-12" fill="none" stroke="#111" stroke-width="1.8" stroke-linecap="round"/>
+  <g fill="#fff" stroke="#111" stroke-width="1.2"><circle cx="3" cy="18" r="2"/><circle cx="8" cy="6" r="2"/><circle cx="16" cy="18" r="2"/><circle cx="21" cy="6" r="2"/></g>
+  <circle cx="11.2" cy="10.9" r="2" fill="#4b6fff" stroke="#111" stroke-width="1.2"/>
+</svg>

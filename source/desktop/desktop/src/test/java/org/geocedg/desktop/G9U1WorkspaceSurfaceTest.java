@@ -8,11 +8,19 @@ package org.geocedg.desktop;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
+import java.awt.EventQueue;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -20,7 +28,7 @@ import javax.swing.JButton;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+import javax.swing.JToolBar;
 
 import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.io.XMLStringBuilder;
@@ -29,15 +37,58 @@ import org.geogebra.common.io.layout.DockSplitPaneData;
 import org.geogebra.common.io.layout.Perspective;
 import org.geogebra.common.main.App;
 import org.geogebra.common.move.ggtapi.models.json.JSONObject;
+import org.geogebra.desktop.gui.app.GeoGebraFrame;
+import org.geogebra.desktop.gui.layout.DockManagerD;
 import org.geogebra.desktop.gui.layout.LayoutD;
+import org.geogebra.desktop.main.AppD;
+import org.geogebra.desktop.main.DockBarInterface;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+@ExtendWith(G9U1TestApp.Lifecycle.class)
 class G9U1WorkspaceSurfaceTest {
 
 	@BeforeAll
 	static void initializeDesktop() {
 		G9U1ActionRegistryTest.initializeDesktop();
+	}
+
+	@Test
+	void embeddedHostTeardownReleasesOnlyNewDockListenersAndLazyFrames() throws Exception {
+		try (G9U1TestApp.GlobalRoots outer = G9U1TestApp.GlobalRoots.capture()) {
+			AppGeoCeDG existing = G9U1TestApp.create();
+			final DockManagerD existingManager = ((LayoutD) existing.getGuiManager().getLayout())
+					.getDockManager();
+			existing.getDrawEquation();
+			final GeoGebraFrame existingFrame = (GeoGebraFrame) existing.getFrame();
+			assertTrue(G9U1TestApp.dockManagers().contains(existingManager));
+			assertTrue(GeoGebraFrame.getInstances().contains(existingFrame));
+
+			final AppGeoCeDG added;
+			final DockManagerD addedManager;
+			final GeoGebraFrame addedFrame;
+			try (G9U1TestApp.GlobalRoots inner = G9U1TestApp.GlobalRoots.capture()) {
+				added = G9U1TestApp.create();
+				addedManager = ((LayoutD) added.getGuiManager().getLayout()).getDockManager();
+				assertSame(added, addedManager.getLayout().getApplication());
+				assertTrue(G9U1TestApp.dockManagers().contains(addedManager));
+				added.getDrawEquation();
+				addedFrame = (GeoGebraFrame) added.getFrame();
+				assertSame(added, addedFrame.getApplication());
+				assertTrue(GeoGebraFrame.getInstances().contains(addedFrame));
+				assertFalse(addedFrame.isVisible());
+				assertFalse(addedFrame.isDisplayable());
+			}
+			assertFalse(G9U1TestApp.dockManagers().contains(addedManager));
+			assertFalse(GeoGebraFrame.getInstances().contains(addedFrame));
+			assertTrue(G9U1TestApp.dockManagers().contains(existingManager));
+			assertTrue(GeoGebraFrame.getInstances().contains(existingFrame));
+			assertSame(existing, existingManager.getLayout().getApplication());
+			assertSame(existing, existingFrame.getApplication());
+			assertSame(added, addedManager.getLayout().getApplication());
+			assertSame(added, addedFrame.getApplication());
+		}
 	}
 
 	@Test
@@ -50,7 +101,7 @@ class G9U1WorkspaceSurfaceTest {
 			collect(component, ids);
 		}
 		assertEquals(110, ids.size());
-		assertEquals(5, bar.getMenuCount());
+		assertEquals(6, bar.getMenuCount());
 		assertTrue(ids.contains("navigation.zoom-window"));
 	}
 
@@ -62,27 +113,53 @@ class G9U1WorkspaceSurfaceTest {
 		for (int i = 0; i < 3; i++) {
 			bar.initMenubar();
 			bar.updateFonts();
-			assertEquals(5, bar.getMenuCount());
+			assertEquals(6, bar.getMenuCount());
 		}
 	}
 
 	@Test
-	void familyPaletteRetainsAllElevenFamiliesAtHighDpi() {
+	void constructionStartupDoesNotOpenClassicChooserButClassicStillDoes() throws Exception {
+		AppGeoCeDG product = spy(G9U1ActionRegistryTest.app(true));
+		DockBarInterface productBar = mock(DockBarInterface.class);
+		doReturn(productBar).when(product).getDockBar();
+		product.setAllowPopups(true);
+		product.setShowDockBar(true, false);
+		final String before = product.getXML();
+		product.showPopUps();
+
+		AppD classic = mock(AppD.class, CALLS_REAL_METHODS);
+		DockBarInterface classicBar = mock(DockBarInterface.class);
+		doReturn(classicBar).when(classic).getDockBar();
+		doReturn(true).when(classic).isAllowPopups();
+		doReturn(true).when(classic).isShowDockBar();
+		classic.showPopUps();
+		EventQueue.invokeAndWait(() -> {
+			// Flush the inherited deferred startup callback in both applications.
+		});
+		verify(product).showPerspectivePopup();
+		verify(productBar, never()).showPopup();
+		verify(classicBar).showPopup();
+		assertEquals(before, product.getXML());
+	}
+
+	@Test
+	void compactProductToolbarUsesOnlyDeclaredNonModeActionsAtHighDpi() {
 		AppGeoCeDG app = G9U1ActionRegistryTest.app(true);
 		GeoCeDGWorkspaceController workspace = new GeoCeDGWorkspaceController(app,
 				new GeoCeDGActionRegistry(app));
-		JScrollPane pane = workspace.createActionPalette();
-		JPanel row = (JPanel) pane.getViewport().getView();
-		assertEquals(11, row.getComponentCount());
-		for (Component component : row.getComponents()) {
+		JToolBar toolbar = workspace.createProductToolbar();
+		assertEquals(2, toolbar.getComponentCount());
+		Set<String> ids = new HashSet<>();
+		for (Component component : toolbar.getComponents()) {
 			JButton button = (JButton) component;
+			ids.add((String) button.getClientProperty(GeoCeDGActionRegistry.ACTION_ID));
 			button.setFont(button.getFont().deriveFont(28f));
+			assertNull(button.getClientProperty("geocedg.family.id"));
 			assertNotNull(button.getAccessibleContext().getAccessibleName());
 			assertTrue(button.getPreferredSize().height >= 28);
 		}
-		assertTrue(pane.getMinimumSize().height > 0);
-		assertEquals(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED,
-				pane.getHorizontalScrollBarPolicy());
+		assertEquals(Set.of("semantic.spline-v2.create", "navigation.zoom-window"), ids);
+		assertFalse(toolbar.isFloatable());
 	}
 
 	@Test
@@ -96,6 +173,8 @@ class G9U1WorkspaceSurfaceTest {
 		}
 		assertTrue(ids.contains("inspect.definition"));
 		assertTrue(ids.contains("result.materialize-selected"));
+		assertFalse(ids.contains("view.properties"));
+		assertFalse(ids.contains("semantic.curve.inspect-definition"));
 	}
 
 	@Test
@@ -243,32 +322,51 @@ class G9U1WorkspaceSurfaceTest {
 		assertFalse(workspace.usesDocumentLayout());
 		app.setTmpPerspective(new Perspective());
 		assertTrue(workspace.usesDocumentLayout());
-		assertEquals(GeoCeDGProfile.getText("Workspace.DocumentLayout", "en"),
-				workspace.createWorkspaceSelector().getText());
+		assertEquals(Boolean.TRUE, workspace.createWorkspaceMenu()
+				.getClientProperty("geocedg.document-layout"));
 		app.setTmpPerspective(null);
 		assertFalse(workspace.usesDocumentLayout());
 		assertEquals(construction, constructionXml(app));
 	}
 
 	@Test
-	void keyboardFocusScrollsOffscreenFamilyIntoNarrowViewport() {
+	void realApplicationMenuIsAboveContentAndToolbarIsItsStrictSubset() throws Exception {
 		AppGeoCeDG app = G9U1ActionRegistryTest.app(true);
-		GeoCeDGWorkspaceController workspace = new GeoCeDGWorkspaceController(app,
-				new GeoCeDGActionRegistry(app));
-		JScrollPane scroll = workspace.createActionPalette();
-		JPanel row = (JPanel) scroll.getViewport().getView();
-		row.setSize(row.getPreferredSize());
-		row.doLayout();
-		scroll.setSize(260, scroll.getPreferredSize().height);
-		scroll.doLayout();
-		scroll.getViewport().doLayout();
-		JButton last = (JButton) row.getComponent(row.getComponentCount() - 1);
-		assertFalse(scroll.getViewport().getViewRect().contains(last.getBounds()));
-		for (FocusListener listener : last.getFocusListeners()) {
-			listener.focusGained(new FocusEvent(last, FocusEvent.FOCUS_GAINED));
+		app.getGuiManager().initMenubar();
+		GeoCeDGMenuBar bar = (GeoCeDGMenuBar) app.getGuiManager().getMenuBar();
+		JPanel content = new JPanel();
+		JPanel host = AppD.getMenuBarPanel(app, content);
+		assertSame(bar, ((BorderLayout) host.getLayout()).getLayoutComponent(BorderLayout.NORTH));
+		assertSame(content, ((BorderLayout) host.getLayout())
+				.getLayoutComponent(BorderLayout.CENTER));
+		Set<String> menuIds = new HashSet<>();
+		for (Component component : bar.getComponents()) {
+			collect(component, menuIds);
 		}
-		assertTrue(scroll.getViewport().getViewPosition().x > 0);
-		assertTrue(scroll.getViewport().getViewRect().intersects(last.getBounds()));
+		Set<String> toolbarIds = new HashSet<>();
+		var clusters = GeoCeDGProfile.getCatalog().getJSONArray("clusters");
+		for (int i = 0; i < clusters.length(); i++) {
+			toolbarIds.addAll(GeoCeDGProfile.strings(clusters.getJSONObject(i)
+					.getJSONArray("toolbar_action_ids")));
+		}
+		assertEquals(34, toolbarIds.size());
+		assertEquals(110, menuIds.size());
+		assertTrue(menuIds.containsAll(toolbarIds));
+		GeoCeDGActionRegistry registry = ((GuiManagerGeoCeDG) app.getGuiManager())
+				.getActionRegistry();
+		for (String id : toolbarIds) {
+			JMenuItem item = null;
+			for (Component component : bar.getComponents()) {
+				JMenuItem found = findItem(component, id);
+				if (found != null) {
+					item = found;
+					break;
+				}
+			}
+			assertNotNull(item, id);
+			assertSame(registry.get(id), item.getAction(), id);
+			assertNotNull(item.getToolTipText(), id);
+		}
 	}
 
 	static void collect(Component component, Set<String> ids) {

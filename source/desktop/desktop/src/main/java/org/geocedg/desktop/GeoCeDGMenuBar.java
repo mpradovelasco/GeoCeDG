@@ -75,12 +75,24 @@ final class GeoCeDGMenuBar extends GeoGebraMenuBar {
 					}
 					ButtonGroup radios = new ButtonGroup();
 					for (String actionId : actions) {
+						if ("automation.manage-user-tools".equals(actionId)) {
+							// The dynamic User Tools submenu owns this same registry route.
+							continue;
+						}
 						JMenuItem item = createItem(registry.get(actionId), radios);
 						group.add(item);
 					}
 					if (group.getItemCount() > 0) {
 						menu.add(group);
 					}
+				}
+				if ("view".equals(section.getString("id"))) {
+					menu.addSeparator();
+					menu.add(((GuiManagerGeoCeDG) app.getGuiManager())
+							.getWorkspaceController().createWorkspaceMenu());
+				} else if ("automation".equals(section.getString("id"))) {
+					menu.addSeparator();
+					menu.add(GeoCeDGUserTools.createMenu(app));
 				}
 				menu.addMenuListener(new MenuListener() {
 					@Override

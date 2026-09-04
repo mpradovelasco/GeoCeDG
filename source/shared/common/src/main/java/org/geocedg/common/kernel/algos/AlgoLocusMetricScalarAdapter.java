@@ -7,9 +7,11 @@ package org.geocedg.common.kernel.algos;
 
 import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
 import org.geogebra.common.kernel.Construction;
+import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.algos.Algos;
 import org.geogebra.common.kernel.algos.GetCommand;
+import org.geogebra.common.kernel.arithmetic.ExpressionNodeConstants.StringType;
 import org.geogebra.common.kernel.commands.Commands;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoNumeric;
@@ -72,6 +74,41 @@ public final class AlgoLocusMetricScalarAdapter extends AlgoElement {
 
 	public GeoNumeric getScalarOutput() {
 		return scalarOutput;
+	}
+
+	/**
+	 * Presents the public construction without replacing its rich dependency.
+	 * XML, symbolic exports and internal adapters retain the actual input.
+	 */
+	@Override
+	public String getDefinition(StringTemplate template) {
+		AlgoElement richParent = richInput.getParentAlgorithm();
+		if (commandName != Commands.Length
+				|| !isPublicPresentation(template)
+				|| !(richParent instanceof AlgoLocusMetricV2
+						|| richParent instanceof AlgoLocusBetweenMetricV2)) {
+			return super.getDefinition(template);
+		}
+		StringBuilder description = new StringBuilder(
+				template.isPrintLocalizedCommandNames()
+						? getLoc().getCommand(Commands.Length.name())
+						: Commands.Length.name());
+		description.append(template.leftCommandBracket(getLoc()));
+		for (int index = 0; index < richParent.getInputLength(); index++) {
+			if (index > 0) {
+				description.append(',');
+				template.appendOptionalSpace(description);
+			}
+			description.append(richParent.getInput(index).getLabel(template));
+		}
+		description.append(template.rightCommandBracket(getLoc()));
+		return description.toString();
+	}
+
+	private static boolean isPublicPresentation(StringTemplate template) {
+		return template.hasType(StringType.GEOGEBRA) || template.isLatex()
+				|| template.hasType(StringType.SCREEN_READER_ASCII)
+				|| template.hasType(StringType.SCREEN_READER_UNICODE);
 	}
 
 	@Override

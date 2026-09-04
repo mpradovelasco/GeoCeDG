@@ -29,9 +29,11 @@ import org.geogebra.desktop.gui.inputbar.AlgebraInputD;
 import org.geogebra.desktop.main.undo.UndoManagerD;
 import org.geogebra.test.commands.ErrorAccumulator;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
 /** Real input adapter, explicit G9A transactions and ordinary native persistence. */
+@ExtendWith(G9U1TestApp.Lifecycle.class)
 class G9U1AlgebraSubmissionTest {
 
 	@Test

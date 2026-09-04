@@ -5469,6 +5469,10 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 			prospectiveIdsByGeo.put(attachment.getKey(), attachment.getValue());
 			prospectiveGeosById.put(attachment.getValue(), attachment.getKey());
 		}
+		if (!copied && !allowExactIssuedRestore) {
+			refreshNewlyParticipatingDependencies(attachments, prospectiveRecords,
+					prospectiveIdsByGeo);
+		}
 		SpatialLifecycleProspectiveGraph graph = prospectiveGraphSnapshot(
 				SpatialLifecycleOperationKind.ADMITTED_TOPOLOGY_CHANGE,
 				"registry-publication", prospectiveRecords, prospectiveIdsByGeo,
@@ -5495,6 +5499,71 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 		}
 		flushRuntimeAnnouncementsWhenUnleased();
 		notifyPersistentIdentityAttachments(attachments);
+	}
+
+	/**
+	 * Keeps the persisted projection of existing direct algorithm inputs coherent
+	 * when one of those inputs first acquires an explicit durable identity. This
+	 * is part of ordinary publication, never a load/copy repair or a redefine.
+	 */
+	private void refreshNewlyParticipatingDependencies(
+			IdentityHashMap<GeoElement, PersistentGeoId> attachments,
+			Map<SpatialIdentityId, SpatialIdentityRecord> prospectiveRecords,
+			IdentityHashMap<GeoElement, PersistentGeoId> prospectiveIdsByGeo) {
+		if (attachments.isEmpty()) {
+			return;
+		}
+		IdentityHashMap<GeoElement, GeoIdentityRecord> affected =
+				new IdentityHashMap<>();
+		for (Map.Entry<GeoElement, PersistentGeoId> current : idsByGeo.entrySet()) {
+			GeoIdentityRecord record = getGeoRecord(current.getValue());
+			if (record == null || !hasDirectedConstructionDependencies(record)) {
+				continue;
+			}
+			for (GeoElement input : ConstructionGeoRedefineProvider
+					.durableDependencyGeos(current.getKey())) {
+				if (attachments.containsKey(input)) {
+					affected.put(current.getKey(), record);
+					break;
+				}
+			}
+		}
+		if (affected.isEmpty()) {
+			return;
+		}
+		// A sealed redefine's special permission to register inspected inputs is
+		// not permission to change any already-captured dependency signature.
+		requireGraphSwitchNotInProgress();
+		validateConstructionIdentityDependencyDags(affected,
+				geo -> getGeoRecord(idsByGeo.get(geo)));
+		IdentityHashMap<GeoElement, GeoIdentityRecord> replacements =
+				new IdentityHashMap<>();
+		for (Map.Entry<GeoElement, GeoIdentityRecord> current : affected.entrySet()) {
+			ArrayList<PersistentGeoId> dependencies = new ArrayList<>();
+			for (GeoElement input : ConstructionGeoRedefineProvider
+					.durableDependencyGeos(current.getKey())) {
+				PersistentGeoId id = prospectiveIdsByGeo.get(input);
+				if (id != null && !dependencies.contains(id)) {
+					dependencies.add(id);
+				}
+			}
+			Collections.sort(dependencies);
+			GeoIdentityRecord old = current.getValue();
+			GeoIdentityRecord replacement = new GeoIdentityRecord(old.getId(),
+					old.getProvider(), old.getFamily(), old.getSchemaId(),
+					old.getSchemaVersion(), old.getAuthority(), old.getBindingRole(),
+					old.getStableOutputRole(), old.getOutputCardinality(), dependencies,
+					old.getDefinitionRevision(), old.getTopologyRevision(),
+					old.getCopySourceId());
+			replacements.put(current.getKey(), replacement);
+			prospectiveRecords.put(replacement.getId(), replacement);
+		}
+		validateConstructionIdentityDependencyDags(replacements, geo -> {
+			SpatialIdentityRecord record = prospectiveRecords.get(
+					prospectiveIdsByGeo.get(geo));
+			return record instanceof GeoIdentityRecord ? (GeoIdentityRecord) record
+					: null;
+		});
 	}
 
 	private boolean validateSealedProviderPublication(

@@ -113,7 +113,8 @@ public final class GeoCeDGProfile {
 
 	/** Validated declarative action; no geometry or solver lives in this catalog. */
 	public record ActionDefinition(String id, String kind, String target, Integer mode,
-			List<String> features, String selection, String availability, String textKey) {
+			List<String> features, String selection, String availability, String textKey,
+			String iconKey) {
 	}
 
 	/**
@@ -329,7 +330,7 @@ public final class GeoCeDGProfile {
 					strings(action.getJSONArray("feature_requirements")),
 					action.getString("selection_contract_ref"),
 					action.getString("availability_profile_id"),
-					action.getString("localization_ref")));
+					action.getString("localization_ref"), action.getString("icon_ref")));
 		}
 		if (actions.size() != 110) {
 			throw new IllegalStateException("Approved G9U1 catalog requires 110 actions");
@@ -427,12 +428,10 @@ public final class GeoCeDGProfile {
 			for (int c = 0; c < clusters.length(); c++) {
 				JSONObject cluster = clusters.getJSONObject(c);
 				if (familyId.equals(cluster.getString("broad_family_id"))) {
-					for (String placement : List.of("toolbar_action_ids", "overflow_action_ids")) {
-						for (String id : strings(cluster.getJSONArray(placement))) {
-							Integer mode = byId.get(id).mode();
-							if (mode != null && included.add(mode)) {
-								group.add(mode.toString());
-							}
+					for (String id : strings(cluster.getJSONArray("toolbar_action_ids"))) {
+						Integer mode = byId.get(id).mode();
+						if (mode != null && included.add(mode)) {
+							group.add(mode.toString());
 						}
 					}
 				}

@@ -21,6 +21,24 @@ Assert-GeoCeDGChildVerificationMode -SkipBuild:$SkipBuild -BuildEvidencePath $Bu
 . (Join-Path $PSScriptRoot "workspace-profile-validation.ps1")
 $RepositoryRoot = (Resolve-Path (Join-Path $PSScriptRoot "../..")).Path
 $BaseCommit = "f8a21a087234b18fc13741a0ac2baf80608e9022"
+$ReviewCheckpoint = "b492194082f1adc9f981d85d92a58ef57490196f"
+$ReviewCheckpointTag = "geocedg-g9u1-author-review-checkpoint-1"
+$ReviewCheckpointTagObject = "755f22bd2b101d4ca2ad6bea98429bc2ba941af9"
+# These two producer/presentation repairs implement the explicit author-review
+# correction. They do not authorize another kernel path or new geometry.
+$ReviewKernelPaths = @(
+    "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusMetricScalarAdapter.java",
+    "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialIdentityRegistry.java"
+)
+$ReviewScenarioIds = @(1..15 | ForEach-Object { "U1-RV{0:D2}" -f $_ })
+$ReviewMethodReplacements = [ordered]@{
+    "toolbarContainsExactlySixtySixUniqueRealModeIds" =
+        "toolbarContainsThirtyTwoCuratedModesWhileCatalogRetainsAllSixtySix"
+    "familyPaletteRetainsAllElevenFamiliesAtHighDpi" =
+        "compactProductToolbarUsesOnlyDeclaredNonModeActionsAtHighDpi"
+    "keyboardFocusScrollsOffscreenFamilyIntoNarrowViewport" =
+        "realApplicationMenuIsAboveContentAndToolbarIsItsStrictSubset"
+}
 $PromptPath = ".github/prompts/tasks/g9u1-construction-workspace-after-g9s1-r1.prompt.md"
 $EvidencePath = "geocedg/validation/g9u1/g9u1-construction-workspace-evidence.json"
 $ScenarioPath = "geocedg/validation/g9u1/g9u1-construction-workspace-scenarios.json"
@@ -75,6 +93,109 @@ function Assert-U1Set {
     Assert-U1 ($a.Count -eq $Actual.Count -and $e.Count -eq $Expected.Count -and
         @((Compare-Object $a $e -CaseSensitive)).Count -eq 0) "$Description differs or contains duplicates."
 }
+
+function Read-U1Checkpoint {
+    param([string]$Path)
+    return [Text.UTF8Encoding]::new($false, $true).GetString(
+        (Get-GeoCeDGPhaseLifecycleBlobBytes $RepositoryRoot $ReviewCheckpoint $Path))
+}
+function Assert-U1ReviewContracts {
+    param([object]$Evidence, [object]$Scenarios, [string[]]$Paths)
+    [void](Get-U1Git @("merge-base", "--is-ancestor", $ReviewCheckpoint, "HEAD"))
+    Assert-U1 ((Get-U1Git @("rev-parse", "refs/tags/$ReviewCheckpointTag")).Trim() -ceq
+        $ReviewCheckpointTagObject) "The non-PASS author-review checkpoint tag changed."
+    Assert-U1 ((Get-U1Git @("cat-file", "-t", "refs/tags/$ReviewCheckpointTag")).Trim() -ceq
+        "tag") "The protected author-review checkpoint is not annotated."
+    Assert-U1 ((Get-U1Git @("rev-parse", "refs/tags/$ReviewCheckpointTag^{}")).Trim() -ceq
+        $ReviewCheckpoint) "The protected author-review checkpoint peel changed."
+    foreach ($ref in @("refs/heads/codex/g9u1-construction-workspace-after-r1",
+        "refs/remotes/origin/codex/g9u1-construction-workspace-after-r1")) {
+        Assert-U1 ((Get-U1Git @("rev-parse", $ref)).Trim() -ceq $ReviewCheckpoint) "The protected candidate ref changed: $ref"
+    }
+    $review = $Evidence.authorReviewStabilization
+    Assert-U1 ($review.checkpoint.commit -ceq $ReviewCheckpoint -and
+        $review.checkpoint.tag -ceq $ReviewCheckpointTag -and
+        $review.checkpoint.tagObject -ceq $ReviewCheckpointTagObject -and
+        $review.historicalAuthorReview -ceq "COMPLETED_WITH_FINDINGS_NOT_PASS" -and
+        $review.authorResmoke -ceq "PENDING" -and
+        $review.noNewGeometricSemantics -eq $true) "Missing or inconsistent author-review successor authority."
+    $historicalEvidence = Read-U1Checkpoint $EvidencePath | ConvertFrom-Json -Depth 100
+    $historicalScenarios = Read-U1Checkpoint $ScenarioPath | ConvertFrom-Json -Depth 100
+    Assert-U1 (@($historicalEvidence.inventory.paths).Count -eq 96 -and
+        $historicalEvidence.inventory.pathCount -eq 96 -and
+        @($historicalScenarios.scenarios).Count -eq 138 -and
+        @($historicalScenarios.focusedJUnit.classes.methods).Count -eq 132 -and
+        $review.checkpoint.pathCount -eq 96 -and $review.checkpoint.focusedTests -eq 132 -and
+        $review.checkpoint.scenarioCount -eq 138) "Historical 96-path/132-test/138-scenario cohort was reinterpreted."
+    foreach ($pin in @($review.checkpoint.authorityBlobs)) {
+        Assert-U1 ($pin.path -cin @($EvidencePath, $ScenarioPath, $HashPath, $ReportPath,
+            "tools/agent/verify-g9u1-construction-workspace.ps1")) "Unknown historical review authority."
+        $tree = (Get-U1Git @("ls-tree", $ReviewCheckpoint, "--", $pin.path)).Trim()
+        Assert-U1 ($tree -ceq "$($pin.mode) blob $($pin.blobOid)`t$($pin.path)") "Historical review authority blob changed: $($pin.path)"
+    }
+    Assert-U1Set @($review.checkpoint.authorityBlobs.path) @($EvidencePath, $ScenarioPath,
+        $HashPath, $ReportPath, "tools/agent/verify-g9u1-construction-workspace.ps1") "Historical review authority pins"
+    Assert-U1Set @($review.allowedSharedKernelCorrections.path) $ReviewKernelPaths "Author-review kernel correction allowlist"
+    $kernel = @($Paths | Where-Object { $_ -match '^source/.*/org/geocedg/common/kernel/' })
+    Assert-U1Set $kernel $ReviewKernelPaths "Only the two expressly authorized kernel implementation repairs are allowed"
+    $delta = @((Get-U1Git @("diff", "--name-only", $ReviewCheckpoint)).Split("`n") +
+        (Get-U1Git @("ls-files", "--others", "--exclude-standard")).Split("`n") |
+        Where-Object { $_ } | Sort-Object -Unique -CaseSensitive)
+    Assert-U1Set $delta @($review.inventory.deltaPaths) "Exact author-review successor delta"
+    Assert-U1 ($review.inventory.deltaPathCount -eq $delta.Count -and
+        $Evidence.inventory.pathCount -eq $Paths.Count -and
+        $Evidence.inventory.sourcePathCount -eq @($Paths | Where-Object { $_ -cmatch '^source/' }).Count) "Review inventory counters drifted."
+    foreach ($original in @($historicalScenarios.scenarios)) {
+        $current = @($Scenarios.scenarios | Where-Object { $_.id -ceq $original.id })
+        Assert-U1 ($current.Count -eq 1) "Historical scenario was dropped/duplicated: $($original.id)"
+        foreach ($field in @("id", "group", "assertion", "topic", "procedure")) {
+            Assert-U1 ($current[0].$field -ceq $original.$field) "Historical scenario meaning changed: $($original.id)/$field"
+        }
+    }
+    foreach ($historicalClass in @($historicalScenarios.focusedJUnit.classes)) {
+        $currentClass = @($Scenarios.focusedJUnit.classes | Where-Object { $_.name -ceq $historicalClass.name })
+        Assert-U1 ($currentClass.Count -eq 1 -and $currentClass[0].source -ceq $historicalClass.source -and
+            $currentClass[0].module -ceq $historicalClass.module) "Historical focused class changed: $($historicalClass.name)"
+        foreach ($method in @($historicalClass.methods)) {
+            $mapped = if ($ReviewMethodReplacements.Contains($method)) { $ReviewMethodReplacements[$method] } else { $method }
+            Assert-U1 ($mapped -cin @($currentClass[0].methods)) "Historical focused obligation was dropped: $($historicalClass.name)#$method"
+        }
+    }
+    $fixture = $review.authorFixture
+    Assert-U1 ($fixture.path -ceq "source/desktop/desktop/src/test/resources/org/geocedg/desktop/g9u1-review/TestBasic1.cedg" -and
+        $fixture.bytes -eq 31885 -and $fixture.rawSha256 -ceq
+        "0791895e1133d4a44ff26c88760cfc951db787c42056a8b5758c79a9b5687be0") "Author archive provenance changed."
+    $fixturePath = Resolve-GeoCeDGPhaseLifecycleChild $RepositoryRoot $fixture.path "author archive"
+    Assert-U1 ((Get-Item -LiteralPath $fixturePath).Length -eq $fixture.bytes -and
+        (Get-FileHash -LiteralPath $fixturePath -Algorithm SHA256).Hash.ToLowerInvariant() -ceq
+        $fixture.rawSha256) "The historical malformed author archive was modified."
+    Assert-U1 ($review.requiredVerification.PHASE -ceq "FRESH_SUCCESSOR_COHORT" -and
+        $review.requiredVerification.FULL -ceq "FRESH_CLEAN_SUCCESSOR_COHORT" -and
+        $review.requiredVerification.COMPOSED -ceq "EXECUTED_WITHIN_FULL_NOT_A_SEPARATE_ROOT" -and
+        $review.requiredVerification.historicalExecutionReusedAsNew -eq $false) "Review verification cannot reuse the previous product cohort as new execution."
+    Assert-U1Set @($review.documentationPaths) @(
+        "docs/user/geocedg_construction_quick_guide.md",
+        "docs/validation/g9u1_author_manual_review_round1.md",
+        "docs/validation/g9u1_author_resmoke_checklist.md",
+        "docs/validation/g9u1_frontend_review_matrix.md",
+        "docs/validation/g9u1_icon_review.md",
+        "docs/validation/g9u1_native_lifecycle_review.md",
+        "docs/validation/g9u1_user_tools_review.md") "Required author-review documentation"
+    foreach ($path in @($review.documentationPaths)) {
+        $text = Read-U1 $path
+        foreach ($link in [regex]::Matches($text, '(?<!!)\[[^\]]*\]\((?<target>[^)]+)\)')) {
+            $target = $link.Groups["target"].Value.Trim().Trim([char[]]"<>")
+            if ($target -match '^(https?://|mailto:|#)') { continue }
+            $target = ($target -split '#', 2)[0]
+            if ([string]::IsNullOrWhiteSpace($target)) { continue }
+            $relative = [IO.Path]::GetRelativePath($RepositoryRoot, [IO.Path]::GetFullPath(
+                (Join-Path (Split-Path -Parent (Join-Path $RepositoryRoot $path)) $target))).Replace('\', '/')
+            $resolved = Resolve-GeoCeDGPhaseLifecycleChild $RepositoryRoot $relative "author-review documentation link"
+            Assert-U1 (Test-Path -LiteralPath $resolved) "Broken review link: $path -> $target"
+        }
+    }
+}
+
 function Invoke-U1Gradle {
     param([string[]]$Arguments, [string]$Description, [string]$LogName)
     $effective = @($Arguments) + @("--rerun-tasks", "--no-build-cache", "--no-daemon",
@@ -141,7 +262,7 @@ function Assert-U1Contracts {
     $materialization = Get-GeoCeDGMaterializationConfig $RepositoryRoot
     [void](Assert-GeoCeDGMaterializationAttributes -RepositoryRoot $RepositoryRoot `
         -Paths $paths -ConfiguredFilterDrivers $materialization.configuredFilterDrivers)
-    Assert-U1 (@($paths | Where-Object { $_ -match '^source/.*/org/geocedg/common/kernel/' }).Count -eq 0) "G9U1 changed kernel geometric authority."
+    Assert-U1ReviewContracts $Evidence $Scenarios $paths
     Assert-U1 (@($paths | Where-Object { $_ -match '^artifacts/|^book/' }).Count -eq 0) "Generated/independent-book path in candidate."
     $profile = Read-U1 "apps/geocedg/application-profile.yml" | ConvertFrom-Json -Depth 100 -AsHashtable
     [void](Assert-GeoCeDGLiveWorkspaceProfile -RepositoryRoot $RepositoryRoot)
@@ -154,8 +275,10 @@ function Assert-U1Contracts {
     Assert-U1 ($profile.product_policies.languages.fallback -ceq "en") "G9U1 English fallback absent."
     $ids = @($Scenarios.scenarios | ForEach-Object { $_.id })
     $approved = Read-U1 "geocedg/validation/g9u1/g9u1-preexecution-scenarios.json" | ConvertFrom-Json -Depth 100
-    Assert-U1Set $ids @($approved.groups | ForEach-Object { $_.scenarioIds }) "G9U1 approved scenario coverage"
-    Assert-U1 ($ids.Count -eq 138) "G9U1 requires all 138 scenarios."
+    $approvedIds = @($approved.groups | ForEach-Object { $_.scenarioIds })
+    Assert-U1 ($approvedIds.Count -eq 138) "The historical approved scenario baseline changed."
+    Assert-U1Set $ids @($approvedIds + $ReviewScenarioIds) "All historical and bounded author-review scenarios"
+    Assert-U1 ($ids.Count -eq 153) "G9U1 requires 138 historical plus 15 author-review scenarios."
     $methodKeys = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
     foreach ($class in $Scenarios.focusedJUnit.classes) {
         Assert-U1 ($class.module -cin @("shared", "desktop") -and @($class.methods).Count -gt 0) "Empty/invalid G9U1 test class."

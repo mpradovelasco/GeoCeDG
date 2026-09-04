@@ -137,6 +137,12 @@ class NamePanelD extends JPanel implements ActionListener, ErrorHandler, FocusLi
 
 	@Override
 	public void updateGUI(boolean showDefinition, boolean showCaption) {
+		// GeoCeDG: visibility of a semantic definition is not permission to redefine it.
+		if (isProductReadOnlyDefinition()) {
+			showDefinition = true;
+			updateDefinition(model.getCurrentGeo());
+			defLabel.setText(loc.getMenu("Definition") + ":");
+		}
 		int newRows = 1;
 		removeAll();
 
@@ -248,12 +254,21 @@ class NamePanelD extends JPanel implements ActionListener, ErrorHandler, FocusLi
 
 		tfDefinition.removeActionListener(this);
 		model.getDefInputHandler().setGeoElement(geo);
-		String text = ObjectNameModel.getDefText(geo);
+		String text = isProductReadOnlyDefinition()
+				? org.geocedg.desktop.GeoCeDGDefinitionInspector.definition(geo.toGeoElement())
+				: ObjectNameModel.getDefText(geo);
+		if (app.getConfig()
+				instanceof org.geocedg.common.main.settings.config.AppConfigGeoCeDG) {
+			tfDefinition.setEditable(!isProductReadOnlyDefinition());
+			tfDefinition.setToolTipText(isProductReadOnlyDefinition()
+					? org.geocedg.desktop.GeoCeDGDefinitionInspector.readOnlyExplanation(app)
+					: null);
+		}
 		if (app.isMacOS()) {
 			if (text.length() > 300) {
 				text = text.substring(0, 300);
 				tfDefinition.setEditable(false);
-			} else {
+			} else if (!isProductReadOnlyDefinition()) {
 				tfDefinition.setEditable(true);
 			}
 		}
@@ -301,6 +316,10 @@ class NamePanelD extends JPanel implements ActionListener, ErrorHandler, FocusLi
 			model.applyNameChange(tfName.getText(), app.getDefaultErrorHandler());
 
 		} else if (source == tfDefinition) {
+			if (!tfDefinition.isEditable()) {
+				model.setBusy(false);
+				return;
+			}
 			if (errorLabel.isVisible()) {
 				resetError();
 			}
@@ -328,6 +347,14 @@ class NamePanelD extends JPanel implements ActionListener, ErrorHandler, FocusLi
 		}
 
 		SwingUtilities.invokeLater(doActionStopped);
+	}
+
+	private boolean isProductReadOnlyDefinition() {
+		return app.getConfig()
+				instanceof org.geocedg.common.main.settings.config.AppConfigGeoCeDG
+				&& model.getCurrentGeo() != null
+				&& org.geocedg.desktop.GeoCeDGDefinitionInspector
+						.isReadOnly(model.getCurrentGeo().toGeoElement());
 	}
 
 	@Override

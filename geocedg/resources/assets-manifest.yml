@@ -23,7 +23,40 @@
       "id": "geocedg.locus-v2-tool-icon",
       "path": "source/shared/common/src/main/resources/org/geogebra/common/icons/svg/web/toolIcons/mode_locusv2.svg",
       "kind": "svg-tool-icon",
+      "canonical_lf_sha256": "7c4d664846312adb726a68824316580102217c30b8b40abe76a2bf007fdf5b5a",
       "provenance": "GeoCeDG-authored G9U0 semantic locus icon; accessible text fallback is localized by LocusV2.Tool",
+      "redistribution_status": "GeoCeDG-owned EUPL-1.2 source asset"
+    },
+    {
+      "id": "geocedg.spline-v2-tool-icon",
+      "path": "source/shared/common/src/main/resources/org/geogebra/common/icons/svg/web/toolIcons/mode_geocedg_splinev2.svg",
+      "kind": "svg-tool-icon",
+      "canonical_lf_sha256": "2e2f3a331b135a8d1e1618b5cb144a98dc26b99244f4e0593e54ef2468926da0",
+      "provenance": "GeoCeDG-authored G9U1 review; editable vector source, no inherited icon pixels",
+      "redistribution_status": "GeoCeDG-owned EUPL-1.2 source asset"
+    },
+    {
+      "id": "geocedg.semantic-point-tool-icon",
+      "path": "source/shared/common/src/main/resources/org/geogebra/common/icons/svg/web/toolIcons/mode_geocedg_semanticpoint.svg",
+      "kind": "svg-tool-icon",
+      "canonical_lf_sha256": "04d08d7d0929795b4a67dcb22acca20b5c8caa0fe56581e6a9c8c9fc5d74b93c",
+      "provenance": "GeoCeDG-authored G9U1 review; semantic parameter arrow, not screen matching",
+      "redistribution_status": "GeoCeDG-owned EUPL-1.2 source asset"
+    },
+    {
+      "id": "geocedg.rich-result-tool-icon",
+      "path": "source/shared/common/src/main/resources/org/geogebra/common/icons/svg/web/toolIcons/mode_geocedg_richresult.svg",
+      "kind": "svg-tool-icon",
+      "canonical_lf_sha256": "e0fffc73a397b525227eb974e0bdce2dc52547338e166e185fb16b2b0d029c26",
+      "provenance": "GeoCeDG-authored G9U1 review; result card with hollow candidate marker",
+      "redistribution_status": "GeoCeDG-owned EUPL-1.2 source asset"
+    },
+    {
+      "id": "geocedg.materialize-tool-icon",
+      "path": "source/shared/common/src/main/resources/org/geogebra/common/icons/svg/web/toolIcons/mode_geocedg_materialize.svg",
+      "kind": "svg-tool-icon",
+      "canonical_lf_sha256": "8cb42414f546080d048f2bcea4e8f7b8484df0e9efb66e39177c80c8820b0c45",
+      "provenance": "GeoCeDG-authored G9U1 review; hollow candidate to solid point and eligibility check",
       "redistribution_status": "GeoCeDG-owned EUPL-1.2 source asset"
     },
     {

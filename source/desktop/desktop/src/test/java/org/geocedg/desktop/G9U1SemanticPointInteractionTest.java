@@ -53,10 +53,12 @@ import org.geogebra.desktop.euclidian.event.MouseEventD;
 import org.geogebra.desktop.util.LoggerD;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.MockedStatic;
 
 /** Frontend R6 consumers; numerical correctness remains the R6 kernel authority. */
+@ExtendWith(G9U1TestApp.Lifecycle.class)
 class G9U1SemanticPointInteractionTest {
 	@BeforeAll
 	static void initializeDesktop() {
@@ -452,6 +454,7 @@ class G9U1SemanticPointInteractionTest {
 	static AppGeoCeDG app() {
 		AppGeoCeDG app = new AppGeoCeDG(new CommandLineArguments(new String[] {
 				"--silent", "--enableLocusV2=true"}), new JPanel());
+		G9U1TestApp.withoutWindowDispatcher(app);
 		app.setErrorDialogsActive(false);
 		// Embedded test panels have no window manager to establish their viewport.
 		// A real positive-sized canvas is required for clipping and stroke/point hits.

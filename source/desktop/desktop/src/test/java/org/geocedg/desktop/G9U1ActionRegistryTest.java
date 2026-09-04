@@ -29,8 +29,10 @@ import org.geogebra.desktop.awt.AwtFactoryD;
 import org.geogebra.desktop.util.LoggerD;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
+@ExtendWith(G9U1TestApp.Lifecycle.class)
 class G9U1ActionRegistryTest {
 
 	@BeforeAll
@@ -42,8 +44,9 @@ class G9U1ActionRegistryTest {
 	}
 
 	static AppGeoCeDG app(boolean feature) {
-		return new AppGeoCeDG(new CommandLineArguments(new String[] {
-				"--silent", "--enableLocusV2=" + feature}), new JPanel());
+		return G9U1TestApp.withoutWindowDispatcher(new AppGeoCeDG(
+				new CommandLineArguments(new String[] {
+						"--silent", "--enableLocusV2=" + feature}), new JPanel()));
 	}
 
 	@Test
