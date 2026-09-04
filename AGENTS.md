@@ -520,7 +520,7 @@ Do not embed new geometric solving logic in the exporter. Python may validate fi
 
 `tools/agent/verify.*` is the executable authority. Prompts and reports must call it rather than duplicating commands ad hoc.
 
-Use the DEV, PHASE, COMPOSED and FULL definitions in `geocedg/specs/operations/verification-levels.md`. Default `verify.ps1` is COMPOSED; DEV is never acceptance evidence. Every task identifies its required level and regression perimeter. Changes to test selection, caching, parallelization, verifier orchestration, bootstrap or numerical baselines are verification-infrastructure changes and require FULL evidence; narrower success does not waive a required FULL gate.
+Use the DEV, PHASE, COMPOSED and FULL definitions in `geocedg/specs/operations/verification-levels.md`. Default `verify.ps1` is COMPOSED; DEV is never acceptance evidence. Every task identifies its required level and regression perimeter. Changes to test selection, caching, parallelization, verifier orchestration, bootstrap or numerical baselines are verification-infrastructure changes and require FULL evidence; narrower success does not waive a required FULL gate. The only evidence-preserving verifier-repair exception is the explicitly author-authorized, exhaustively proven identity/provenance correction in section 11 of that specification and ADR 0024; failure of any required equivalence proof restores the normal FULL requirement.
 
 Minimum gates:
 

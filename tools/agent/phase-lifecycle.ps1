@@ -261,7 +261,9 @@ function Assert-GeoCeDGPhaseRawEvidenceClosure {
         [object]$Receipt,
         [object[]]$BundleEntries,
         [string]$BundleDirectory,
-        [string[]]$MetadataPaths
+        [string[]]$MetadataPaths,
+        [string]$CloseoutCommit,
+        [switch]$PendingCloseout
     )
     $identityJson = $Receipt.inputIdentity | ConvertTo-Json -Depth 20 -Compress
     Assert-GeoCeDGPhaseLifecycle ((Get-GeoCeDGPhaseLifecycleHash `
@@ -300,18 +302,18 @@ function Assert-GeoCeDGPhaseRawEvidenceClosure {
         [string]$Receipt.inputIdentity.rawTreeSha256 -and
         $inventory.Count -eq [int]$Receipt.inputIdentity.rawFiles -and
         $bytes -eq [long]$Receipt.inputIdentity.rawBytes) 'Raw input inventory summary is inconsistent.'
-    $current = Get-GeoCeDGPhaseRawInputSnapshot $RepositoryRoot
-    $recordPath = @($MetadataPaths | Select-Object -Last 1)
-    $expectedCurrentPaths = @($paths) + @($recordPath | Where-Object { $_ -cnotin $paths })
-    Assert-GeoCeDGPhaseLifecycleSet @($current.Records.path) $expectedCurrentPaths 'Current closeout input paths'
-    $archived = @{}; foreach ($record in $inventory) { $archived[[string]$record.path] = $record }
-    foreach ($record in @($current.Records)) {
-        $path = [string]$record.path
-        if ($path -cin $MetadataPaths) { continue }
-        Assert-GeoCeDGPhaseLifecycle ($archived.ContainsKey($path) -and [bool]$record.exists -and
-            [long]$record.bytes -eq [long]$archived[$path].bytes -and
-            [string]$record.sha256 -ceq [string]$archived[$path].sha256) `
-            "Current raw input differs from reviewed evidence: $path"
+    # The inventory above is the immutable physical cohort actually executed.
+    # It is NOT a durable byte representation for a later Git checkout (ADR 0024).
+    # The caller separately proves the exact allowed status-content projection.
+    . (Join-Path $PSScriptRoot 'repository-input-identity.ps1')
+    if ($PendingCloseout) {
+        [void](Assert-GeoCeDGWorktreeMaterialization -RepositoryRoot $RepositoryRoot `
+            -ExpectedCommit $TechnicalCommit -AllowedStatusPaths $MetadataPaths)
+    } else {
+        [void](Assert-GeoCeDGRepositoryTreeDelta -RepositoryRoot $RepositoryRoot `
+            -ReviewedCommit $TechnicalCommit -CloseoutCommit $CloseoutCommit -AllowedPaths $MetadataPaths)
+        [void](Assert-GeoCeDGWorktreeMaterialization -RepositoryRoot $RepositoryRoot `
+            -ExpectedCommit $CloseoutCommit)
     }
 }
 
@@ -546,7 +548,7 @@ function Assert-GeoCeDGTechnicalEvidenceLink {
             }).Count -eq 1) 'Native log is not part of the audit inventory.'
         }
         Assert-GeoCeDGPhaseRawEvidenceClosure $RepositoryRoot $TechnicalCommit $receipt $entries `
-            $BundleDirectory $metadataPaths
+            $BundleDirectory $metadataPaths -CloseoutCommit $CloseoutCommit -PendingCloseout:$PendingCloseout
     }
     if ($PendingCloseout) {
         Assert-GeoCeDGPhaseLifecycle ($CloseoutCommit -ceq $TechnicalCommit) `
@@ -567,6 +569,151 @@ function Assert-GeoCeDGTechnicalEvidenceLink {
         authorApproved = $true
         documentaryEvidenceLinked = $true
         consumableBuildReceipt = $false
+    }
+}
+
+function Get-GeoCeDGPhaseAuthorCloseoutTargetContext {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [string]$RepositoryRoot,
+        [Parameter(Mandatory)] [string]$ReviewedTechnicalCommit,
+        [Parameter(Mandatory)] [string]$CloseoutCommit,
+        [Parameter(Mandatory)] [string]$PolicyPath,
+        [Parameter(Mandatory)] [string]$BundleDirectory,
+        [Parameter(Mandatory)] [string]$BundleSha256
+    )
+    # Verification implementation lives in this script's cohort. RepositoryRoot
+    # names the independently checked-out phase target, never an inferred HEAD.
+    . (Join-Path $PSScriptRoot 'repository-input-identity.ps1')
+    $root = [IO.Path]::GetFullPath($RepositoryRoot)
+    [void](Resolve-GeoCeDGPhaseLifecycleCommit $root $ReviewedTechnicalCommit)
+    [void](Resolve-GeoCeDGPhaseLifecycleCommit $root $CloseoutCommit)
+    $materialization = Assert-GeoCeDGWorktreeMaterialization -RepositoryRoot $root -ExpectedCommit $CloseoutCommit
+    $relativePolicy = ConvertTo-GeoCeDGRepositoryPath $root $PolicyPath
+    $policyT = Get-GeoCeDGPhaseLifecycleBlobBytes $root $ReviewedTechnicalCommit $relativePolicy
+    $policyC = Get-GeoCeDGPhaseLifecycleBlobBytes $root $CloseoutCommit $relativePolicy
+    Assert-GeoCeDGPhaseLifecycle ((Get-GeoCeDGPhaseLifecycleHash $policyT) -ceq
+        (Get-GeoCeDGPhaseLifecycleHash $policyC)) 'Closeout changed its reviewed lifecycle policy.'
+    $policy = Read-GeoCeDGPhaseLifecyclePolicy $root (Join-Path $root $relativePolicy)
+    Assert-GeoCeDGPhaseImplementationAuthority $root $policy
+    Assert-GeoCeDGPhaseInfrastructureHistory $root $policy $ReviewedTechnicalCommit
+    $expected = Get-GeoCeDGPhaseExpectedCloseoutBytes $root $ReviewedTechnicalCommit $policy
+    $recordPath = [string]$policy.closeout.recordPath
+    $allowed = @($expected.Keys) + $recordPath
+    $treeProof = Assert-GeoCeDGRepositoryTreeDelta -RepositoryRoot $root `
+        -ReviewedCommit $ReviewedTechnicalCommit -CloseoutCommit $CloseoutCommit -AllowedPaths $allowed
+    foreach ($path in $expected.Keys) {
+        $actual = Get-GeoCeDGPhaseLifecycleBlobBytes $root $CloseoutCommit $path
+        Assert-GeoCeDGPhaseLifecycle ((Get-GeoCeDGPhaseLifecycleHash $actual) -ceq
+            (Get-GeoCeDGPhaseLifecycleHash ([byte[]]$expected[$path]))) "Closeout target content mismatch: $path"
+        $before = Invoke-GeoCeDGPhaseLifecycleGitText $root @('ls-tree', $ReviewedTechnicalCommit, '--', $path)
+        $after = Invoke-GeoCeDGPhaseLifecycleGitText $root @('ls-tree', $CloseoutCommit, '--', $path)
+        Assert-GeoCeDGPhaseLifecycle (($before -split ' ')[0] -ceq ($after -split ' ')[0]) `
+            "Closeout changed metadata mode: $path"
+    }
+    $recordEntry = Invoke-GeoCeDGPhaseLifecycleGitText $root @('ls-tree', $CloseoutCommit, '--', $recordPath)
+    Assert-GeoCeDGPhaseLifecycle ($recordEntry.StartsWith('100644 blob ', [StringComparison]::Ordinal)) `
+        'Closeout decision must be a normal non-executable tracked file.'
+    $record = ConvertFrom-GeoCeDGPhaseLifecycleJson `
+        (Get-GeoCeDGPhaseLifecycleBlobBytes $root $CloseoutCommit $recordPath) 'closeout target record'
+    Assert-GeoCeDGPhaseCloseoutRecord $record $policy $ReviewedTechnicalCommit $BundleSha256
+    $link = Assert-GeoCeDGTechnicalEvidenceLink -RepositoryRoot $root -TechnicalCommit $ReviewedTechnicalCommit `
+        -CloseoutCommit $CloseoutCommit -Policy $policy -CloseoutRecord $record `
+        -BundleDirectory $BundleDirectory -BundleSha256 $BundleSha256
+    return [pscustomobject][ordered]@{
+        mode = 'AUTHOR_CLOSEOUT'
+        phase = [string]$policy.phase
+        reviewedTechnicalCommit = $ReviewedTechnicalCommit
+        closeoutCommit = $CloseoutCommit
+        repositoryIdentity = $treeProof
+        materialization = $materialization
+        documentaryEvidenceLinked = [bool]$link.documentaryEvidenceLinked
+        technicalExecutionRepeated = $false
+        authorApproved = $true
+        selfApproved = $false
+    }
+}
+
+function Get-GeoCeDGPhasePublishedRegressionContext {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [string]$RepositoryRoot,
+        [Parameter(Mandatory)] [string]$PublishedAuthorityPath,
+        [Parameter(Mandatory)] [string]$ExpectedReviewedTechnicalCommit,
+        [Parameter(Mandatory)] [string]$ExpectedCloseoutCommit,
+        [Parameter(Mandatory)] [string]$ExpectedPolicyPath
+    )
+    # Historical approval is proven against exact immutable T/C. This context
+    # does not authorize reuse of their tests on the current execution cohort:
+    # the caller must still execute all live scientific/current-run assertions.
+    . (Join-Path $PSScriptRoot 'repository-input-identity.ps1')
+    $root = [IO.Path]::GetFullPath($RepositoryRoot)
+    [void](Get-GeoCeDGMaterializationConfig $root)
+    $authorityPath = ConvertTo-GeoCeDGPhaseLifecyclePath $PublishedAuthorityPath 'published authority'
+    $authority = ConvertFrom-GeoCeDGPhaseLifecycleJson `
+        ([IO.File]::ReadAllBytes((Resolve-GeoCeDGPhaseLifecycleChild $root $authorityPath 'published authority'))) `
+        'published regression authority'
+    Assert-GeoCeDGPhaseLifecycleProperties $authority @('schemaVersion', 'phase', 'mode',
+        'reviewedTechnicalCommit', 'closeoutCommit', 'policyPath', 'recordPath', 'authorDecision') `
+        'Published regression authority'
+    Assert-GeoCeDGPhaseLifecycle ($authority.schemaVersion -is [long] -and $authority.schemaVersion -eq 1 -and
+        [string]$authority.mode -ceq 'PUBLISHED_REGRESSION' -and
+        [string]$authority.reviewedTechnicalCommit -ceq $ExpectedReviewedTechnicalCommit -and
+        [string]$authority.closeoutCommit -ceq $ExpectedCloseoutCommit -and
+        [string]$authority.policyPath -ceq $ExpectedPolicyPath -and
+        [string]$authority.authorDecision -ceq 'PASS_AUTHOR_APPROVED') `
+        'Published regression authority differs from exact approved targets.'
+    $technical = Resolve-GeoCeDGPhaseLifecycleCommit $root $ExpectedReviewedTechnicalCommit
+    $closeout = Resolve-GeoCeDGPhaseLifecycleCommit $root $ExpectedCloseoutCommit
+    $policyPath = ConvertTo-GeoCeDGPhaseLifecyclePath $ExpectedPolicyPath 'published policy'
+    $policyT = Get-GeoCeDGPhaseLifecycleBlobBytes $root $technical $policyPath
+    $policyC = Get-GeoCeDGPhaseLifecycleBlobBytes $root $closeout $policyPath
+    Assert-GeoCeDGPhaseLifecycle ((Get-GeoCeDGPhaseLifecycleHash $policyT) -ceq
+        (Get-GeoCeDGPhaseLifecycleHash $policyC)) 'Published closeout changed its reviewed lifecycle policy.'
+    $policy = ConvertFrom-GeoCeDGPhaseLifecycleJson $policyT 'reviewed published lifecycle policy'
+    Assert-GeoCeDGPhaseLifecycleProperties $policy @('schemaVersion', 'phase', 'entryCommit',
+        'implementationCommit', 'implementationTree', 'implementationPaths',
+        'infrastructureFollowupPaths', 'maximumInfrastructureCommits', 'closeout') 'Reviewed published policy'
+    Assert-GeoCeDGPhaseLifecycle ($policy.schemaVersion -is [long] -and $policy.schemaVersion -eq 1 -and
+        [string]$policy.phase -ceq [string]$authority.phase -and
+        [string]$policy.closeout.recordPath -ceq [string]$authority.recordPath) 'Published phase/policy mismatch.'
+    Assert-GeoCeDGPhaseImplementationAuthority $root $policy
+    Assert-GeoCeDGPhaseInfrastructureHistory $root $policy $technical
+    $expected = Get-GeoCeDGPhaseExpectedCloseoutBytes $root $technical $policy
+    $recordPath = ConvertTo-GeoCeDGPhaseLifecyclePath ([string]$policy.closeout.recordPath) 'published decision'
+    $treeProof = Assert-GeoCeDGRepositoryTreeDelta -RepositoryRoot $root -ReviewedCommit $technical `
+        -CloseoutCommit $closeout -AllowedPaths (@($expected.Keys) + $recordPath)
+    $parent = @(Invoke-GeoCeDGPhaseLifecycleGitText $root @('rev-list', '--parents', '-n', '1', $closeout)) -split ' '
+    Assert-GeoCeDGPhaseLifecycle ($parent.Count -eq 2 -and $parent[1] -ceq $technical) `
+        'Published closeout is not the direct status-only child of reviewed technical authority.'
+    foreach ($path in $expected.Keys) {
+        $actual = Get-GeoCeDGPhaseLifecycleBlobBytes $root $closeout $path
+        Assert-GeoCeDGPhaseLifecycle ((Get-GeoCeDGPhaseLifecycleHash $actual) -ceq
+            (Get-GeoCeDGPhaseLifecycleHash ([byte[]]$expected[$path]))) "Published closeout content mismatch: $path"
+        $before = Invoke-GeoCeDGPhaseLifecycleGitText $root @('ls-tree', $technical, '--', $path)
+        $after = Invoke-GeoCeDGPhaseLifecycleGitText $root @('ls-tree', $closeout, '--', $path)
+        Assert-GeoCeDGPhaseLifecycle (($before -split ' ')[0] -ceq ($after -split ' ')[0]) `
+            "Published closeout changed metadata mode: $path"
+    }
+    $recordEntry = Invoke-GeoCeDGPhaseLifecycleGitText $root @('ls-tree', $closeout, '--', $recordPath)
+    Assert-GeoCeDGPhaseLifecycle ($recordEntry.StartsWith('100644 blob ', [StringComparison]::Ordinal)) `
+        'Published author decision must be a normal non-executable tracked file.'
+    $record = ConvertFrom-GeoCeDGPhaseLifecycleJson `
+        (Get-GeoCeDGPhaseLifecycleBlobBytes $root $closeout $recordPath) 'published author decision'
+    Assert-GeoCeDGPhaseCloseoutRecord $record $policy $technical ([string]$record.evidence.bundleManifestSha256)
+    $head = Invoke-GeoCeDGPhaseLifecycleGitText $root @('rev-parse', 'HEAD')
+    $ancestor = Invoke-GeoCeDGGitByteCommand $root @('merge-base', '--is-ancestor', $closeout, $head) -AllowFailure
+    Assert-GeoCeDGPhaseLifecycle ($ancestor.ExitCode -eq 0) 'Published closeout is not ancestral to current execution.'
+    return [pscustomobject][ordered]@{
+        Mode = 'PUBLISHED_REGRESSION'; CurrentHead = $head; phase = [string]$policy.phase
+        ImplementationCommit = [string]$policy.implementationCommit
+        CandidatePaths = @(Get-GeoCeDGPhaseLifecycleChangedPaths $root ([string]$policy.entryCommit) ([string]$policy.implementationCommit))
+        InfrastructurePaths = @(Get-GeoCeDGPhaseLifecycleChangedPaths $root ([string]$policy.implementationCommit) $technical)
+        sourceAuthorityCommit = $head; reviewedTechnicalCommit = $technical; closeoutCommit = $closeout
+        repositoryIdentity = $treeProof; AuthorApprovedPhase = $true; PassClaimed = $true; SelfApproved = $false
+        DocumentaryEvidenceLinked = $false; consumableBuildReceipt = $false
+        historicalApprovalAuthenticated = $true; liveScientificVerificationRequired = $true
+        currentCohortEquivalentToHistoricalTechnicalExecution = $false
     }
 }
 

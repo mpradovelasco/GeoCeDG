@@ -74,7 +74,10 @@ FULL run is technical evidence, not author approval or release permission.
 FULL is required for phase closeout, release, major integration, build/toolchain
 or verifier/bootstrap changes, shared kernel infrastructure changes, and changes
 whose regression perimeter cannot be bounded reliably. The infrastructure-impact
-rule in section 8 also applies.
+rule in section 8 also applies. Section 10 permits explicit linkage for a
+status-only closeout; section 11 defines the newly author-authorized narrow
+evidence-preserving identity/provenance repair exception. Neither permits a
+receipt from a previous process to become a current-run capability.
 
 ## 3. Entry points and parameter contracts
 
@@ -299,7 +302,8 @@ inside the repository before removal/movement; never operate on a broad root.
 
 Explicit `-KeepBuildOutputs` avoids an unnecessary snapshot copy and retains
 current generated outputs. This opt-in does not waive source/index/status checks.
-A clean-output FULL validation remains required for infrastructure changes;
+A clean-output FULL validation remains required for infrastructure changes
+unless every condition of the narrow section 11 exception is established;
 use `-Level FULL -CleanBuild` for the candidate's explicit clean-output path.
 Clean generated outputs and an empty dependency/download cache are different
 conditions and must be reported separately; this mode never requests the latter.
@@ -335,8 +339,9 @@ Every task distinguishes DEV, PHASE, COMPOSED and FULL evidence and records the
 required level/perimeter. Review changes to test selection, cache policy,
 parallelization, verifier orchestration, bootstrap and numerical baselines as
 verification-infrastructure changes. Such changes require FULL evidence in
-addition to focused operational tests. An unrun/failed FULL is incomplete, not
-an implicit exemption.
+addition to focused operational tests, except for the exhaustively proven
+identity/provenance repair defined in section 11. An unrun/failed required FULL
+is incomplete, not an implicit exemption.
 
 Any repository advance changing workstation prerequisites, supported JDK or
 toolchain versions, Gradle behaviour, build/verification entrypoints, numerical
@@ -413,28 +418,139 @@ candidate is committed:
    not candidate identity. All scientific, source, scenario, JUnit, style and
    current-run receipt assertions remain live.
 3. `AUTHOR_CLOSEOUT` requires a later explicit author decision naming the exact
-   reviewed technical commit. It reconstructs every permitted status-only byte
-   change from policy frozen in that commit, rejects productive, test, verifier,
-   tolerance, reference or unknown changes, and proves the reviewed executable
-   input bytes are unchanged.
+   reviewed technical commit and an exact closeout target commit. It reconstructs
+   every permitted status-only blob change from policy frozen in the reviewed
+   commit, rejects productive, test, verifier, tolerance, reference or unknown
+   changes, and proves unchanged non-allowlisted tracked paths, modes and blobs.
+   A later clean checkout may use a different supported LF/CRLF materialization;
+   that does not change the versioned repository authority.
 
 Historical PHASE, COMPOSED and FULL roots may be linked to an author closeout
-only through their exact hashes, ancestry, complete raw input inventory and an
-exhaustive closeout delta. This is documentary evidence linkage, not a current-
-run receipt and not a new execution. The closeout report must say which commit
-was technically executed and which descendant was checked for status-only
-consistency. Missing artifacts, differing raw executable inputs or an absent
-exact-SHA author decision fail closed and require fresh applicable verification.
+only through their exact hashes, ancestry, authenticated historical raw input
+inventory and an exhaustive Git-tree closeout delta. This is documentary
+evidence linkage, not a current-run receipt and not a new execution. The report
+must distinguish the technical execution commit, closeout target commit and
+verification-code cohort. Missing artifacts, changed non-allowlisted tracked
+blobs/modes/paths, differing consumed-untracked inputs, invalid materialization
+or an absent exact-SHA author decision fail closed.
 
 The initial implementation of this contract is the G9S1-R1 lifecycle repair in
 [ADR 0023](../../../docs/adr/0023-phase-verifier-lifecycle-and-author-closeout.md).
-It changes verification infrastructure, therefore requires fresh FULL evidence.
-It neither creates nor infers G9S1-R1 author approval.
+Its historical raw cross-checkout requirement is narrowly superseded by
+[ADR 0024](../../../docs/adr/0024-verification-input-identity.md); prior execution
+and failure records remain unchanged. Neither contract creates author approval.
+
+An already published phase may subsequently run live regression through a
+distinct `PUBLISHED_REGRESSION` context. Explicit committed authority identifies
+the exact historical reviewed/closeout commits; their frozen policy, approved
+delta, author record and ancestry are authenticated. The current HEAD must
+descend from that closeout, but branch name is not authority and later product
+inputs are not claimed identical to the historical reviewed cohort. Every
+scientific/source/scenario/JUnit/Checkstyle assertion and same-run raw receipt
+check remains live. Historical candidate paths describe original phase scope.
+This context does not link archived execution, require a historical build bundle
+for new execution, skip tests, or manufacture a current build receipt. It is
+separate from the three candidate/author-decision lifecycle states above.
 
 Commit-range whitespace evidence must declare Git's whitespace policy rather
 than inherit workstation configuration. GeoCeDG uses Git's normal blank-at-EOL,
 blank-at-EOF and space-before-tab checks with `cr-at-eol`, so physical CRLF/LF
 representation alone is not a defect while actual trailing spaces remain an
-error. This operational normalization does not relax raw-byte cohort equality:
-an LF/CRLF byte difference is still a different executable input wherever the
-phase lifecycle requires exact raw equality.
+error. This interpretation does not relax same-run raw-byte identity: an LF/CRLF
+change during an active verification invocation invalidates its receipt. Across
+checkouts, Git tracked identity and supported materialization, not equality to
+an older physical raw inventory, are authoritative as defined below.
+
+## 11. Verification input identities and evidence-preserving repair
+
+This section is a new, explicit author authorization for a bounded operational
+repair. It was not a general exemption implicit in ADR 0020 or ADR 0023.
+The decision and exact scope are in [ADR 0024](../../../docs/adr/0024-verification-input-identity.md).
+
+### 11.1 Three independent authorities
+
+- **Repository identity:** tracked repository path, Git mode and blob OID from
+  an exact commit tree. A deterministic digest may serialize only these facts.
+  For reviewed technical commit `T` and closeout commit `C`, prove ancestry and
+  the complete exact allowlisted `T..C` tree/content delta. No non-allowlisted
+  tracked path, mode or blob may change.
+- **Same-run identity:** preserve the existing physical raw SHA-256 inventory,
+  separate HEAD/index/status, process/runspace ownership, loaded-module identity,
+  environment/external configuration and report seals. Compare at start, after
+  required module runs, before sealing, at consumers and completion. Git-clean
+  status is never a substitute for this concurrent-mutation defence.
+- **Materialization validity:** the target checkout's index tree must equal its
+  explicitly expected commit tree and tracked working files must be Git-clean.
+  Audit effective Git attributes and configuration before allowing Git's
+  clean/smudge semantics. Support declared ordinary text/EOL and binary handling;
+  reject unsupported effective external/custom filters, encodings, entry kinds
+  or other conversion contracts. Do not normalize the repository or rewrite
+  line endings. Report LF/CRLF physical differences without changing raw seals.
+
+Configured but unused filter definitions are not applied transformations.
+Effective `text`, `eol`, `working-tree-encoding`, `ident` and `filter` attributes,
+attributes-file sources, and relevant `core.autocrlf`, `core.eol` and mode policy
+must be inspected. Unsupported effective transformations fail before invoking
+their external programs. Supported native transformations require fixture
+evidence; unsupported native transformations also fail closed.
+
+Partition inputs explicitly: tracked inputs use Git authority across checkouts;
+consumed untracked inputs retain exact raw hashes and exhaustive membership;
+ignored generated state retains its current explicit lifecycle/exclusion
+contract; external build/JVM inputs retain their current fingerprint contract.
+Historical raw inventories remain authenticated evidence of the physical inputs
+actually executed. They are never rewritten or treated as newly executed.
+
+Cross-checkout closeout invocation names exact `ReviewedTechnicalCommit` and
+`CloseoutCommit`. A newer verification-code cohort may inspect those fixed
+authorities through an independent clean target worktree; the verifier must not
+substitute its own HEAD or branch for either target. Policy/content approval
+rules are read from the reviewed technical authority, not silently broadened
+by a newer working copy.
+
+### 11.2 Narrow evidence-preserving verifier repair
+
+`EVIDENCE_PRESERVING_VERIFIER_REPAIR = true` is permitted only when all fifteen
+conditions below are proven for the final operational repair cohort:
+
+1. No product Java change.
+2. No Desktop product or UI change.
+3. No scientific-test change.
+4. No numerical reference or tolerance change.
+5. No Gradle or build-script change.
+6. No test task/filter selection change.
+7. No required Java/toolchain change.
+8. No numerical-command change.
+9. No JUnit pass/fail acceptance-semantics change.
+10. No generated-state lifecycle change affecting test execution.
+11. Changed executable functions are limited to input identity, provenance and
+    cross-checkout closeout validation; focused fixtures validate that scope.
+12. Prior successful PHASE/COMPOSED/FULL evidence is sealed and names the exact
+    scientific/product cohort to which the linkage applies.
+13. The complete dedicated identity/lifecycle infrastructure suite passes twice
+    with deterministic results, including tampering and materialization negatives.
+14. Bounded real canonical shared-module and Desktop verification integrations
+    pass, alongside parser/static checks, Git whitespace checks and the actual
+    previously failing R1 closeout/materialization case.
+15. An authenticated deterministic execution-plan/impact comparison establishes
+    unchanged tasks, module roots, test filters, Checkstyle requirements,
+    numerical/reference commands, JVM/toolchain requirements, relevant execution
+    environment/system-property policy and result acceptance semantics.
+
+A file-name allowlist alone is not proof of condition 15. Compare actual
+declarations/functions or their exact Git content, include transitive execution
+authorities, and reject unclassified changes. A caller-supplied success Boolean
+cannot replace this proof. Sealed prior evidence remains documentary linkage,
+not an active receipt for a new invocation.
+
+When every condition holds, link the old heavy scientific evidence and new
+focused infrastructure evidence explicitly without rerunning or claiming another
+PHASE/COMPOSED/FULL campaign. Otherwise record
+`EVIDENCE_PRESERVING_VERIFIER_REPAIR = false` and apply the normal required
+levels, including FULL. Do not launch repeated heavy campaigns on intermediate
+fixes; freeze the final executable cohort before the required fallback run.
+
+This exception changes neither coverage nor scientific success criteria and
+does not authorize generic evidence reuse across product/test/build changes.
+Bootstrap impact and GUIDE_IMPACT still require substantive review. Technical
+success never supplies a product-phase author decision.

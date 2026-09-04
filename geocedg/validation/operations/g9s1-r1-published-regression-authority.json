@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "phase": "G9S1-R1",
+  "mode": "PUBLISHED_REGRESSION",
+  "reviewedTechnicalCommit": "a38d4fcde846fc97c51abc8d958de6998302c436",
+  "closeoutCommit": "af459d856f1cdc384805f3035203acce8e6f6104",
+  "policyPath": "geocedg/validation/g9s1-r1/g9s1-r1-lifecycle-policy.json",
+  "recordPath": "geocedg/validation/g9s1-r1/g9s1-r1-author-closeout.json",
+  "authorDecision": "PASS_AUTHOR_APPROVED"
+}

@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 1,
+  "kind": "BOUNDED_INPUT_IDENTITY_REPAIR_POLICY",
+  "reviewedTechnicalCommit": "a38d4fcde846fc97c51abc8d958de6998302c436",
+  "closeoutCommit": "af459d856f1cdc384805f3035203acce8e6f6104",
+  "contract": "ADR_0024_NARROW_EVIDENCE_PRESERVING_VERIFIER_REPAIR",
+  "closeoutPaths": [
+    "docs/adr/0021-spline-pair-singleton-germ-materialization.md",
+    "docs/roadmap/geocedg_roadmap.md",
+    "docs/validation/g9s1_r1_structural_implementation_candidate_report.md",
+    "geocedg/specs/curves/spline-v2-pair-materialization.md",
+    "geocedg/validation/g9s1-r1/g9s1-r1-author-closeout.json",
+    "geocedg/validation/g9s1-r1/g9s1-r1-evidence.sha256",
+    "geocedg/validation/g9s1-r1/g9s1-r1-spline-pair-materialization-evidence.json"
+  ],
+  "repairPaths": [
+    {
+      "path": "AGENTS.md",
+      "kind": "Documentation"
+    },
+    {
+      "path": "docs/adr/0024-verification-input-identity.md",
+      "kind": "Documentation"
+    },
+    {
+      "path": "docs/developer/geocedg_developer_guide.md",
+      "kind": "Documentation"
+    },
+    {
+      "path": "docs/validation/verification_input_identity_report.md",
+      "kind": "Documentation"
+    },
+    {
+      "path": "geocedg/specs/operations/verification-levels.md",
+      "kind": "Documentation"
+    },
+    {
+      "path": "geocedg/validation/operations/g9s1-r1-published-regression-authority.json",
+      "kind": "Documentation"
+    },
+    {
+      "path": "geocedg/validation/operations/input-identity-repair-policy.json",
+      "kind": "Documentation"
+    },
+    {
+      "path": "tools/agent/phase-lifecycle.ps1",
+      "kind": "IdentityInfrastructure",
+      "functions": [
+        "Get-GeoCeDGPhaseAuthorCloseoutTargetContext",
+        "Get-GeoCeDGPhasePublishedRegressionContext"
+      ],
+      "replacements": [
+        {
+          "before": "        [object]$Receipt,\n        [object[]]$BundleEntries,\n        [string]$BundleDirectory,\n        [string[]]$MetadataPaths\n    )\n    $identityJson = $Receipt.inputIdentity | ConvertTo-Json -Depth 20 -Compress\n    Assert-GeoCeDGPhaseLifecycle ((Get-GeoCeDGPhaseLifecycleHash `\n",
+          "after": "        [object]$Receipt,\n        [object[]]$BundleEntries,\n        [string]$BundleDirectory,\n        [string[]]$MetadataPaths,\n        [string]$CloseoutCommit,\n        [switch]$PendingCloseout\n    )\n    $identityJson = $Receipt.inputIdentity | ConvertTo-Json -Depth 20 -Compress\n    Assert-GeoCeDGPhaseLifecycle ((Get-GeoCeDGPhaseLifecycleHash `\n"
+        },
+        {
+          "before": "        [string]$Receipt.inputIdentity.rawTreeSha256 -and\n        $inventory.Count -eq [int]$Receipt.inputIdentity.rawFiles -and\n        $bytes -eq [long]$Receipt.inputIdentity.rawBytes) 'Raw input inventory summary is inconsistent.'\n    $current = Get-GeoCeDGPhaseRawInputSnapshot $RepositoryRoot\n    $recordPath = @($MetadataPaths | Select-Object -Last 1)\n    $expectedCurrentPaths = @($paths) + @($recordPath | Where-Object { $_ -cnotin $paths })\n    Assert-GeoCeDGPhaseLifecycleSet @($current.Records.path) $expectedCurrentPaths 'Current closeout input paths'\n    $archived = @{}; foreach ($record in $inventory) { $archived[[string]$record.path] = $record }\n    foreach ($record in @($current.Records)) {\n        $path = [string]$record.path\n        if ($path -cin $MetadataPaths) { continue }\n        Assert-GeoCeDGPhaseLifecycle ($archived.ContainsKey($path) -and [bool]$record.exists -and\n            [long]$record.bytes -eq [long]$archived[$path].bytes -and\n            [string]$record.sha256 -ceq [string]$archived[$path].sha256) `\n            \"Current raw input differs from reviewed evidence: $path\"\n    }\n}\n\n",
+          "after": "        [string]$Receipt.inputIdentity.rawTreeSha256 -and\n        $inventory.Count -eq [int]$Receipt.inputIdentity.rawFiles -and\n        $bytes -eq [long]$Receipt.inputIdentity.rawBytes) 'Raw input inventory summary is inconsistent.'\n    # The inventory above is the immutable physical cohort actually executed.\n    # It is NOT a durable byte representation for a later Git checkout (ADR 0024).\n    # The caller separately proves the exact allowed status-content projection.\n    . (Join-Path $PSScriptRoot 'repository-input-identity.ps1')\n    if ($PendingCloseout) {\n        [void](Assert-GeoCeDGWorktreeMaterialization -RepositoryRoot $RepositoryRoot `\n            -ExpectedCommit $TechnicalCommit -AllowedStatusPaths $MetadataPaths)\n    } else {\n        [void](Assert-GeoCeDGRepositoryTreeDelta -RepositoryRoot $RepositoryRoot `\n            -ReviewedCommit $TechnicalCommit -CloseoutCommit $CloseoutCommit -AllowedPaths $MetadataPaths)\n        [void](Assert-GeoCeDGWorktreeMaterialization -RepositoryRoot $RepositoryRoot `\n            -ExpectedCommit $CloseoutCommit)\n    }\n}\n\n"
+        },
+        {
+          "before": "            }).Count -eq 1) 'Native log is not part of the audit inventory.'\n        }\n        Assert-GeoCeDGPhaseRawEvidenceClosure $RepositoryRoot $TechnicalCommit $receipt $entries `\n            $BundleDirectory $metadataPaths\n    }\n    if ($PendingCloseout) {\n        Assert-GeoCeDGPhaseLifecycle ($CloseoutCommit -ceq $TechnicalCommit) `\n",
+          "after": "            }).Count -eq 1) 'Native log is not part of the audit inventory.'\n        }\n        Assert-GeoCeDGPhaseRawEvidenceClosure $RepositoryRoot $TechnicalCommit $receipt $entries `\n            $BundleDirectory $metadataPaths -CloseoutCommit $CloseoutCommit -PendingCloseout:$PendingCloseout\n    }\n    if ($PendingCloseout) {\n        Assert-GeoCeDGPhaseLifecycle ($CloseoutCommit -ceq $TechnicalCommit) `\n"
+        }
+      ]
+    },
+    {
+      "path": "tools/agent/repository-input-identity.ps1",
+      "kind": "IdentityInfrastructure",
+      "functions": [],
+      "replacements": []
+    },
+    {
+      "path": "tools/agent/tests/phase-lifecycle.Tests.ps1",
+      "kind": "InfrastructureTest",
+      "functions": [],
+      "replacements": [
+        {
+          "before": "    } finally { Remove-Module $module -Force }\n}\n\n$summary = [ordered]@{\n    schemaVersion = 1\n    evidenceKind = 'FAKE_FIRST_PHASE_LIFECYCLE_TESTS_NOT_BUILD_OR_AUTHOR_EVIDENCE'\n",
+          "after": "    } finally { Remove-Module $module -Force }\n}\n\nfunction Invoke-ExplicitTargetFixtureContext {\n    param([Parameter(Mandatory)] [object]$State,\n        [Parameter(Mandatory)] [string]$CloseoutCommit,\n        [string]$ReviewedCommit = $State.Fixture.TechnicalCommit)\n    return Get-GeoCeDGPhaseAuthorCloseoutTargetContext `\n        -RepositoryRoot $State.Fixture.Root `\n        -ReviewedTechnicalCommit $ReviewedCommit -CloseoutCommit $CloseoutCommit `\n        -PolicyPath $State.Fixture.PolicyPath `\n        -BundleDirectory $State.Bundle.Root -BundleSha256 $State.Bundle.ManifestSha256\n}\n\nInvoke-LifecycleCase 'explicit target links reviewed T to exact clean closeout C' {\n    $state = New-PendingAuthorFixture $Base 'explicit-target-positive'\n    $closeout = Commit-Fixture $state.Fixture.Root 'Explicit target closeout'\n    $context = Invoke-ExplicitTargetFixtureContext $state $closeout\n    Assert-Case ($context.reviewedTechnicalCommit -ceq $state.Fixture.TechnicalCommit -and\n        $context.closeoutCommit -ceq $closeout -and $context.documentaryEvidenceLinked -and\n        -not $context.technicalExecutionRepeated -and $context.authorApproved -and -not $context.selfApproved) `\n        'Explicit target conflated technical execution, checkout or approval authority'\n}\n\nInvoke-LifecycleCase 'explicit target accepts different LF CRLF materialization of same tracked verifier' {\n    $state = New-PendingAuthorFixture $Base 'explicit-target-crlf'\n    $closeout = Commit-Fixture $state.Fixture.Root 'Explicit target CRLF closeout'\n    $lf = Invoke-ExplicitTargetFixtureContext $state $closeout\n    $path = Join-Path $state.Fixture.Root 'tools/phase-verifier.ps1'\n    $rawLf = Get-Sha256 $path\n    [void](Invoke-Git $state.Fixture.Root @('config', 'core.autocrlf', 'true'))\n    $text = [IO.File]::ReadAllText($path)\n    Write-Text $path $text.Replace(\"`n\", \"`r`n\")\n    $rawCrlf = Get-Sha256 $path\n    $crlf = Invoke-ExplicitTargetFixtureContext $state $closeout\n    Assert-Case ($rawLf -cne $rawCrlf -and\n        $lf.materialization.trackedSha256 -ceq $crlf.materialization.trackedSha256 -and\n        $crlf.documentaryEvidenceLinked -and -not $crlf.technicalExecutionRepeated) `\n        'Cross-checkout proof changed tracked identity or relabeled a historical execution'\n}\n\nInvoke-LifecycleCase 'explicit target rejects wrong reviewed technical SHA' {\n    $state = New-PendingAuthorFixture $Base 'explicit-target-wrong-reviewed'\n    $closeout = Commit-Fixture $state.Fixture.Root 'Explicit target wrong T'\n    Assert-Throws { Invoke-ExplicitTargetFixtureContext $state $closeout `\n            -ReviewedCommit $state.Fixture.ImplementationCommit } `\n        'Git.*failed|does not exist|Invalid author-closeout record|Wrong evidence-bundle authority' `\n        'Explicit target wrong reviewed commit'\n}\n\nInvoke-LifecycleCase 'explicit target rejects wrong closeout SHA independently of branch HEAD' {\n    $state = New-PendingAuthorFixture $Base 'explicit-target-wrong-closeout'\n    [void](Commit-Fixture $state.Fixture.Root 'Explicit target wrong C')\n    Assert-Throws { Invoke-ExplicitTargetFixtureContext $state $state.Fixture.TechnicalCommit } `\n        'Index differs from expected commit tree' 'Explicit target wrong closeout commit'\n}\n\nInvoke-LifecycleCase 'explicit target rejects product delta outside closeout allowlist' {\n    $state = New-PendingAuthorFixture $Base 'explicit-target-product-delta'\n    Write-Text (Join-Path $state.Fixture.Root 'source/product.java') \"final class Product { int value = 2; }`n\"\n    $closeout = Commit-Fixture $state.Fixture.Root 'Forbidden product delta'\n    Assert-Throws { Invoke-ExplicitTargetFixtureContext $state $closeout } `\n        'exact closeout allowlist' 'Explicit target product mutation'\n}\n\nInvoke-LifecycleCase 'explicit target rejects verifier delta outside closeout allowlist' {\n    $state = New-PendingAuthorFixture $Base 'explicit-target-verifier-delta'\n    Write-Text (Join-Path $state.Fixture.Root 'tools/phase-verifier.ps1') \"# unauthorized verifier behavior`n\"\n    $closeout = Commit-Fixture $state.Fixture.Root 'Forbidden verifier delta'\n    Assert-Throws { Invoke-ExplicitTargetFixtureContext $state $closeout } `\n        'exact closeout allowlist' 'Explicit target verifier mutation'\n}\n\nInvoke-LifecycleCase 'explicit target rejects tampered historical evidence manifest' {\n    $state = New-PendingAuthorFixture $Base 'explicit-target-tampered-evidence'\n    $closeout = Commit-Fixture $state.Fixture.Root 'Explicit target evidence tamper'\n    Write-Text (Join-Path $state.Bundle.Root $state.Bundle.ManifestPath) \"{}`n\"\n    Assert-Throws { Invoke-ExplicitTargetFixtureContext $state $closeout } `\n        'Evidence-bundle manifest hash mismatch' 'Explicit target evidence tamper'\n}\n\nInvoke-LifecycleCase 'explicit target rejects missing author decision despite candidate execution success' {\n    $state = New-PendingAuthorFixture $Base 'explicit-target-no-approval'\n    $path = Join-Path $state.Fixture.Root $state.Fixture.RecordPath\n    $record = Read-Json $path\n    $record.authorDecision = 'PENDING_AUTHOR_REVIEW'\n    Write-Json $path $record\n    $closeout = Commit-Fixture $state.Fixture.Root 'Explicit target absent decision'\n    Assert-Throws { Invoke-ExplicitTargetFixtureContext $state $closeout } `\n        'Invalid author-closeout record' 'Explicit target technical success is not approval'\n}\n\nfunction New-PublishedRegressionFixture {\n    param([Parameter(Mandatory)] [string]$Name)\n    $state = New-PendingAuthorFixture $Base $Name\n    $closeout = Commit-Fixture $state.Fixture.Root 'Synthetic published phase closeout'\n    $authorityPath = 'geocedg/published-regression-authority.json'\n    $authority = [ordered]@{\n        schemaVersion = 1\n        phase = 'G9S1-R1-FIXTURE'\n        mode = 'PUBLISHED_REGRESSION'\n        reviewedTechnicalCommit = $state.Fixture.TechnicalCommit\n        closeoutCommit = $closeout\n        policyPath = $state.Fixture.PolicyPath\n        recordPath = $state.Fixture.RecordPath\n        authorDecision = 'PASS_AUTHOR_APPROVED'\n    }\n    Write-Json (Join-Path $state.Fixture.Root $authorityPath) $authority\n    $current = Commit-Fixture $state.Fixture.Root 'Synthetic operational successor'\n    return [pscustomobject]@{ State = $state; CloseoutCommit = $closeout; CurrentCommit = $current\n        AuthorityPath = $authorityPath; Authority = $authority }\n}\n\nfunction Invoke-PublishedRegressionFixtureContext {\n    param([Parameter(Mandatory)] [object]$Published,\n        [string]$ReviewedCommit = $Published.State.Fixture.TechnicalCommit,\n        [string]$CloseoutCommit = $Published.CloseoutCommit)\n    return Get-GeoCeDGPhasePublishedRegressionContext `\n        -RepositoryRoot $Published.State.Fixture.Root -PublishedAuthorityPath $Published.AuthorityPath `\n        -ExpectedReviewedTechnicalCommit $ReviewedCommit -ExpectedCloseoutCommit $CloseoutCommit `\n        -ExpectedPolicyPath $Published.State.Fixture.PolicyPath\n}\n\nInvoke-LifecycleCase 'published regression authenticates old approval but requires live scientific execution' {\n    $published = New-PublishedRegressionFixture 'published-live-positive'\n    $context = Invoke-PublishedRegressionFixtureContext $published\n    Assert-Case ($context.Mode -ceq 'PUBLISHED_REGRESSION' -and\n        $context.sourceAuthorityCommit -ceq $published.CurrentCommit -and\n        $context.reviewedTechnicalCommit -ceq $published.State.Fixture.TechnicalCommit -and\n        $context.closeoutCommit -ceq $published.CloseoutCommit -and\n        $context.historicalApprovalAuthenticated -and $context.liveScientificVerificationRequired -and\n        -not $context.DocumentaryEvidenceLinked -and -not $context.consumableBuildReceipt -and\n        -not $context.currentCohortEquivalentToHistoricalTechnicalExecution) `\n        'Published regression incorrectly substituted historical tests for current scientific execution'\n}\n\nInvoke-LifecycleCase 'published regression rejects wrong exact reviewed or closeout SHA' {\n    $published = New-PublishedRegressionFixture 'published-wrong-targets'\n    Assert-Throws { Invoke-PublishedRegressionFixtureContext $published `\n            -ReviewedCommit $published.State.Fixture.ImplementationCommit } `\n        'differs from exact approved targets' 'Published wrong reviewed technical target'\n    Assert-Throws { Invoke-PublishedRegressionFixtureContext $published `\n            -CloseoutCommit $published.State.Fixture.TechnicalCommit } `\n        'differs from exact approved targets' 'Published wrong closeout target'\n}\n\nInvoke-LifecycleCase 'published regression rejects premature approval indicators' {\n    $published = New-PublishedRegressionFixture 'published-premature-approval'\n    $published.Authority.authorDecision = 'PENDING_AUTHOR_REVIEW'\n    Write-Json (Join-Path $published.State.Fixture.Root $published.AuthorityPath) $published.Authority\n    Assert-Throws { Invoke-PublishedRegressionFixtureContext $published } `\n        'differs from exact approved targets' 'Published premature author approval'\n}\n\nInvoke-LifecycleCase 'published regression requires closeout ancestry of current execution' {\n    $published = New-PublishedRegressionFixture 'published-no-ancestry'\n    [void](Invoke-Git $published.State.Fixture.Root @('checkout', '--detach', '--quiet',\n        $published.State.Fixture.TechnicalCommit))\n    Write-Json (Join-Path $published.State.Fixture.Root $published.AuthorityPath) $published.Authority\n    Assert-Throws { Invoke-PublishedRegressionFixtureContext $published } `\n        'not ancestral to current execution' 'Published missing closeout ancestry'\n}\n\n$summary = [ordered]@{\n    schemaVersion = 1\n    evidenceKind = 'FAKE_FIRST_PHASE_LIFECYCLE_TESTS_NOT_BUILD_OR_AUTHOR_EVIDENCE'\n"
+        },
+        {
+          "before": "}\n$summaryPath = Join-Path $EvidenceRoot 'phase-lifecycle-tests.json'\nWrite-Json $summaryPath $summary\nWrite-Host \"Phase lifecycle fake-first tests: $($summary.passed)/$($summary.tests) passed.\"\nWrite-Host \"Saved lifecycle test evidence: $summaryPath\"\nWrite-Host \"Retained lifecycle fixtures: $RunRoot\"\nif ($summary.failed -ne 0) { exit 1 }\n",
+          "after": "}\n$summaryPath = Join-Path $EvidenceRoot 'phase-lifecycle-tests.json'\nWrite-Json $summaryPath $summary\n$canonicalSummary = [ordered]@{\n    schemaVersion = 1\n    evidenceKind = 'DETERMINISTIC_LIFECYCLE_INFRASTRUCTURE_FIXTURES'\n    tests = $summary.tests\n    passed = $summary.passed\n    failed = $summary.failed\n    gradleExecutions = 0\n    authorApproved = $false\n    selfApproved = $false\n    results = @($Results | ForEach-Object { [ordered]@{ name = $_.name; status = $_.status } })\n}\n$canonicalSummaryPath = Join-Path $EvidenceRoot 'canonical-summary.json'\nWrite-Json $canonicalSummaryPath $canonicalSummary\n$canonicalSummaryHash = Get-CanonicalLfSha256 $canonicalSummaryPath\nWrite-Text (Join-Path $EvidenceRoot 'canonical-summary.sha256') ($canonicalSummaryHash + \"`n\")\nWrite-Host \"Phase lifecycle fake-first tests: $($summary.passed)/$($summary.tests) passed.\"\nWrite-Host \"Deterministic lifecycle fixture SHA-256: $canonicalSummaryHash\"\nWrite-Host \"Saved lifecycle test evidence: $summaryPath\"\nWrite-Host \"Retained lifecycle fixtures: $RunRoot\"\nif ($summary.failed -ne 0) { exit 1 }\n"
+        }
+      ]
+    },
+    {
+      "path": "tools/agent/tests/repository-input-identity.Tests.ps1",
+      "kind": "InfrastructureTest"
+    },
+    {
+      "path": "tools/agent/tests/verification-repair-equivalence.Tests.ps1",
+      "kind": "InfrastructureTest"
+    },
+    {
+      "path": "tools/agent/verification-repair-equivalence.ps1",
+      "kind": "IdentityInfrastructure",
+      "functions": [],
+      "replacements": []
+    },
+    {
+      "path": "tools/agent/verify-g9s1-r1-spline-pair-materialization.ps1",
+      "kind": "IdentityInfrastructure",
+      "functions": [],
+      "replacements": [
+        {
+          "before": "    [string]$BuildEvidencePath,\n    [switch]$IncrementalBuild,\n    [switch]$HistoricalRegressionsAlreadyComposed,\n    [ValidateSet(\"AUTO\", \"PRECOMMIT_CANDIDATE\", \"COMMITTED_CANDIDATE\", \"AUTHOR_CLOSEOUT\")]\n    [string]$LifecycleMode = \"AUTO\",\n    [string]$ReviewedTechnicalCommit,\n    [string]$CloseoutRecordPath,\n",
+          "after": "    [string]$BuildEvidencePath,\n    [switch]$IncrementalBuild,\n    [switch]$HistoricalRegressionsAlreadyComposed,\n    [ValidateSet(\"AUTO\", \"PRECOMMIT_CANDIDATE\", \"COMMITTED_CANDIDATE\", \"AUTHOR_CLOSEOUT\", \"PUBLISHED_REGRESSION\")]\n    [string]$LifecycleMode = \"AUTO\",\n    [string]$ReviewedTechnicalCommit,\n    [string]$CloseoutRecordPath,\n"
+        },
+        {
+          "before": "$LifecyclePolicyPath = \"geocedg/validation/g9s1-r1/g9s1-r1-lifecycle-policy.json\"\n$LifecycleHelperPath = \"tools/agent/phase-lifecycle.ps1\"\n$DefaultCloseoutRecordPath = \"geocedg/validation/g9s1-r1/g9s1-r1-author-closeout.json\"\n$PromptPath = \".github/prompts/tasks/g9s1-r1-spline-pair-intersection-materialization.prompt.md\"\n$AdrPath = \"docs/adr/0021-spline-pair-singleton-germ-materialization.md\"\n$SpecPath = \"geocedg/specs/curves/spline-v2-pair-materialization.md\"\n",
+          "after": "$LifecyclePolicyPath = \"geocedg/validation/g9s1-r1/g9s1-r1-lifecycle-policy.json\"\n$LifecycleHelperPath = \"tools/agent/phase-lifecycle.ps1\"\n$DefaultCloseoutRecordPath = \"geocedg/validation/g9s1-r1/g9s1-r1-author-closeout.json\"\n$PublishedRegressionAuthorityPath = \"geocedg/validation/operations/g9s1-r1-published-regression-authority.json\"\n$PublishedReviewedTechnicalCommit = \"a38d4fcde846fc97c51abc8d958de6998302c436\"\n$PublishedCloseoutCommit = \"af459d856f1cdc384805f3035203acce8e6f6104\"\n$PromptPath = \".github/prompts/tasks/g9s1-r1-spline-pair-intersection-materialization.prompt.md\"\n$AdrPath = \"docs/adr/0021-spline-pair-singleton-germ-materialization.md\"\n$SpecPath = \"geocedg/specs/curves/spline-v2-pair-materialization.md\"\n"
+        },
+        {
+          "before": "        \"authorApprovedPhase\", \"passClaimed\")) {\n        Assert-R1 ($Evidence.approval.$field -is [bool]) \"R1 approval field must be Boolean: $field\"\n    }\n    $authorCloseout = $SelectedLifecycleMode -ceq \"AUTHOR_CLOSEOUT\"\n    if ($authorCloseout) {\n        Assert-R1 ($Evidence.status -ceq \"PASS_AUTHOR_APPROVED\" -and $Evidence.entrySha -ceq $EntrySha) `\n            \"R1 author-closeout state/entry drifted.\"\n",
+          "after": "        \"authorApprovedPhase\", \"passClaimed\")) {\n        Assert-R1 ($Evidence.approval.$field -is [bool]) \"R1 approval field must be Boolean: $field\"\n    }\n    $authorCloseout = $SelectedLifecycleMode -cin @(\"AUTHOR_CLOSEOUT\", \"PUBLISHED_REGRESSION\")\n    if ($authorCloseout) {\n        Assert-R1 ($Evidence.status -ceq \"PASS_AUTHOR_APPROVED\" -and $Evidence.entrySha -ceq $EntrySha) `\n            \"R1 author-closeout state/entry drifted.\"\n"
+        },
+        {
+          "before": "        } elseif ([IO.Path]::IsPathRooted($CloseoutRecordPath)) {\n            [IO.Path]::GetFullPath($CloseoutRecordPath)\n        } else { [IO.Path]::GetFullPath((Join-Path $RepositoryRoot $CloseoutRecordPath)) }\n        $script:SelectedLifecycleMode = if (Test-Path -LiteralPath $record -PathType Leaf) {\n            \"AUTHOR_CLOSEOUT\"\n        } elseif (Test-Path -LiteralPath (Join-Path $RepositoryRoot $LifecyclePolicyPath) -PathType Leaf) {\n            \"COMMITTED_CANDIDATE\"\n",
+          "after": "        } elseif ([IO.Path]::IsPathRooted($CloseoutRecordPath)) {\n            [IO.Path]::GetFullPath($CloseoutRecordPath)\n        } else { [IO.Path]::GetFullPath((Join-Path $RepositoryRoot $CloseoutRecordPath)) }\n        $script:SelectedLifecycleMode = if (-not $AuthorCloseoutOnly -and\n                (Test-Path -LiteralPath (Join-Path $RepositoryRoot $PublishedRegressionAuthorityPath) -PathType Leaf)) {\n            \"PUBLISHED_REGRESSION\"\n        } elseif (Test-Path -LiteralPath $record -PathType Leaf) {\n            \"AUTHOR_CLOSEOUT\"\n        } elseif (Test-Path -LiteralPath (Join-Path $RepositoryRoot $LifecyclePolicyPath) -PathType Leaf) {\n            \"COMMITTED_CANDIDATE\"\n"
+        },
+        {
+          "before": "    Assert-R1 (($SelectedLifecycleMode -ceq \"AUTHOR_CLOSEOUT\") -eq [bool]$AuthorCloseoutOnly) `\n        \"Author-closeout mode is documentary-only; committed-candidate verification runs live gates.\"\n    . (Join-Path $RepositoryRoot $LifecycleHelperPath)\n    $script:AuthorityPaths += @(\n        $LifecyclePolicyPath,\n        $LifecycleHelperPath,\n",
+          "after": "    Assert-R1 (($SelectedLifecycleMode -ceq \"AUTHOR_CLOSEOUT\") -eq [bool]$AuthorCloseoutOnly) `\n        \"Author-closeout mode is documentary-only; committed-candidate verification runs live gates.\"\n    . (Join-Path $RepositoryRoot $LifecycleHelperPath)\n    if ($SelectedLifecycleMode -ceq \"PUBLISHED_REGRESSION\") {\n        Assert-R1 ([string]::IsNullOrWhiteSpace($ReviewedTechnicalCommit) -and\n            [string]::IsNullOrWhiteSpace($CloseoutRecordPath) -and\n            [string]::IsNullOrWhiteSpace($TechnicalEvidenceBundleDirectory) -and\n            [string]::IsNullOrWhiteSpace($TechnicalEvidenceBundleSha256)) `\n            \"Published regression cannot accept documentary closeout evidence or overridden targets.\"\n        $script:AuthorityPaths += @($PublishedRegressionAuthorityPath, $LifecyclePolicyPath,\n            $LifecycleHelperPath, \"tools/agent/repository-input-identity.ps1\")\n        $script:LifecycleContext = Get-GeoCeDGPhasePublishedRegressionContext `\n            -RepositoryRoot $RepositoryRoot -PublishedAuthorityPath $PublishedRegressionAuthorityPath `\n            -ExpectedReviewedTechnicalCommit $PublishedReviewedTechnicalCommit `\n            -ExpectedCloseoutCommit $PublishedCloseoutCommit -ExpectedPolicyPath $LifecyclePolicyPath\n        return\n    }\n    $script:AuthorityPaths += @(\n        $LifecyclePolicyPath,\n        $LifecycleHelperPath,\n"
+        }
+      ]
+    },
+    {
+      "path": "tools/agent/verify-input-identity-repair.ps1",
+      "kind": "IdentityInfrastructure",
+      "functions": [],
+      "replacements": []
+    },
+    {
+      "path": "tools/agent/verify-phase-author-closeout.ps1",
+      "kind": "IdentityInfrastructure",
+      "functions": [],
+      "replacements": []
+    }
+  ]
+}

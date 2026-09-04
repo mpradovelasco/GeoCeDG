@@ -733,12 +733,15 @@ exhaustively allowlisted status-only delta and links historical evidence; it
 does not rerun or relabel PHASE, COMPOSED or FULL.
 
 For G9S1-R1, normal postcommit PHASE/COMPOSED/FULL execution selects the
-committed-candidate authority from commit/blob provenance, never from the
-current branch name. Start a fresh PowerShell process after changing verifier
+committed-candidate authority, or the published-regression authority after
+closeout, from explicit commit/blob provenance, never from the current branch
+name. Start a fresh PowerShell process after changing verifier
 modules. `-SkipBuild` remains static-only and cannot replace technical evidence.
 The later closeout command must receive the exact reviewed commit and retained
-evidence bundle required by ADR 0023. A missing bundle, unexpected source byte,
-productive/test/verifier change or unknown metadata path fails closed.
+evidence bundle required by ADR 0023, as narrowly refined by
+[ADR 0024](../adr/0024-verification-input-identity.md). A missing bundle,
+non-allowlisted tracked blob/mode/path change, consumed-untracked byte change,
+invalid materialization or unknown metadata path fails closed.
 
 ```text
 VERIFICATION_INFRASTRUCTURE_IMPACT = UPDATE_REQUIRED
@@ -750,3 +753,37 @@ FULL.
 GUIDE_IMPACT = UPDATED
 GUIDE_PATHS = docs/developer/geocedg_developer_guide.md
 ```
+
+### Cross-checkout verification input identity
+
+Do not equate physical checkout bytes with durable Git source identity.
+Same-run verification still compares raw bytes before/after execution and at
+every receipt consumer; even a line-ending-only concurrent mutation fails.
+Across clean checkouts, tracked authority is path + mode + blob OID. A supported
+LF/CRLF materialization may differ physically while retaining that authority.
+The exact target index and Git-clean materialization, effective attributes and
+conversion configuration are checked independently. Unsupported filters or
+encodings fail closed; do not normalize files to bypass the check.
+
+Cross-checkout closeout names both the exact reviewed technical commit and the
+exact closeout commit. The newer verification code and its checkout are a
+separate operational cohort. Use the dedicated
+`tools/agent/verify-phase-author-closeout.ps1` entry point with an independent
+clean target repository when inspecting a historical target from newer code.
+It links authenticated historical technical evidence; it does not claim those
+tests ran on the closeout or activate an archived receipt.
+
+Normal new regression on a closeout descendant uses `PUBLISHED_REGRESSION`,
+authenticated by the explicit operational R1 published-authority record. It
+verifies the historical exact T/C decision separately from the current source
+cohort. All live scientific tests/assertions and raw current-run receipt checks
+remain active; no archived build is reused or required for this new execution.
+Do not use `-AuthorCloseoutOnly` to run product regression: that switch selects
+documentary closeout, not the scientific phase gate.
+
+The [section 11 repair rule](../../geocedg/specs/operations/verification-levels.md#112-narrow-evidence-preserving-verifier-repair)
+is a new, narrow author-authorized exception for input-identity/provenance-only
+verification repairs. It requires all fifteen conditions, deterministic focused
+fixtures, real shared/Desktop integrations and actual execution-plan equivalence.
+It is not a general waiver of FULL for infrastructure changes. If any condition
+cannot be proven, the normal required heavy levels apply.

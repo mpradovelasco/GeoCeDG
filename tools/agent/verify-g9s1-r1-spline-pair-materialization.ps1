@@ -7,7 +7,7 @@ param(
     [string]$BuildEvidencePath,
     [switch]$IncrementalBuild,
     [switch]$HistoricalRegressionsAlreadyComposed,
-    [ValidateSet("AUTO", "PRECOMMIT_CANDIDATE", "COMMITTED_CANDIDATE", "AUTHOR_CLOSEOUT")]
+    [ValidateSet("AUTO", "PRECOMMIT_CANDIDATE", "COMMITTED_CANDIDATE", "AUTHOR_CLOSEOUT", "PUBLISHED_REGRESSION")]
     [string]$LifecycleMode = "AUTO",
     [string]$ReviewedTechnicalCommit,
     [string]$CloseoutRecordPath,
@@ -33,6 +33,9 @@ $ImplementationCommit = "f761758bd664504057413539b9729ba444c904c1"
 $LifecyclePolicyPath = "geocedg/validation/g9s1-r1/g9s1-r1-lifecycle-policy.json"
 $LifecycleHelperPath = "tools/agent/phase-lifecycle.ps1"
 $DefaultCloseoutRecordPath = "geocedg/validation/g9s1-r1/g9s1-r1-author-closeout.json"
+$PublishedRegressionAuthorityPath = "geocedg/validation/operations/g9s1-r1-published-regression-authority.json"
+$PublishedReviewedTechnicalCommit = "a38d4fcde846fc97c51abc8d958de6998302c436"
+$PublishedCloseoutCommit = "af459d856f1cdc384805f3035203acce8e6f6104"
 $PromptPath = ".github/prompts/tasks/g9s1-r1-spline-pair-intersection-materialization.prompt.md"
 $AdrPath = "docs/adr/0021-spline-pair-singleton-germ-materialization.md"
 $SpecPath = "geocedg/specs/curves/spline-v2-pair-materialization.md"
@@ -388,7 +391,7 @@ function Assert-R1Contracts {
         "authorApprovedPhase", "passClaimed")) {
         Assert-R1 ($Evidence.approval.$field -is [bool]) "R1 approval field must be Boolean: $field"
     }
-    $authorCloseout = $SelectedLifecycleMode -ceq "AUTHOR_CLOSEOUT"
+    $authorCloseout = $SelectedLifecycleMode -cin @("AUTHOR_CLOSEOUT", "PUBLISHED_REGRESSION")
     if ($authorCloseout) {
         Assert-R1 ($Evidence.status -ceq "PASS_AUTHOR_APPROVED" -and $Evidence.entrySha -ceq $EntrySha) `
             "R1 author-closeout state/entry drifted."
@@ -519,7 +522,10 @@ function Initialize-R1Lifecycle {
         } elseif ([IO.Path]::IsPathRooted($CloseoutRecordPath)) {
             [IO.Path]::GetFullPath($CloseoutRecordPath)
         } else { [IO.Path]::GetFullPath((Join-Path $RepositoryRoot $CloseoutRecordPath)) }
-        $script:SelectedLifecycleMode = if (Test-Path -LiteralPath $record -PathType Leaf) {
+        $script:SelectedLifecycleMode = if (-not $AuthorCloseoutOnly -and
+                (Test-Path -LiteralPath (Join-Path $RepositoryRoot $PublishedRegressionAuthorityPath) -PathType Leaf)) {
+            "PUBLISHED_REGRESSION"
+        } elseif (Test-Path -LiteralPath $record -PathType Leaf) {
             "AUTHOR_CLOSEOUT"
         } elseif (Test-Path -LiteralPath (Join-Path $RepositoryRoot $LifecyclePolicyPath) -PathType Leaf) {
             "COMMITTED_CANDIDATE"
@@ -535,6 +541,20 @@ function Initialize-R1Lifecycle {
     Assert-R1 (($SelectedLifecycleMode -ceq "AUTHOR_CLOSEOUT") -eq [bool]$AuthorCloseoutOnly) `
         "Author-closeout mode is documentary-only; committed-candidate verification runs live gates."
     . (Join-Path $RepositoryRoot $LifecycleHelperPath)
+    if ($SelectedLifecycleMode -ceq "PUBLISHED_REGRESSION") {
+        Assert-R1 ([string]::IsNullOrWhiteSpace($ReviewedTechnicalCommit) -and
+            [string]::IsNullOrWhiteSpace($CloseoutRecordPath) -and
+            [string]::IsNullOrWhiteSpace($TechnicalEvidenceBundleDirectory) -and
+            [string]::IsNullOrWhiteSpace($TechnicalEvidenceBundleSha256)) `
+            "Published regression cannot accept documentary closeout evidence or overridden targets."
+        $script:AuthorityPaths += @($PublishedRegressionAuthorityPath, $LifecyclePolicyPath,
+            $LifecycleHelperPath, "tools/agent/repository-input-identity.ps1")
+        $script:LifecycleContext = Get-GeoCeDGPhasePublishedRegressionContext `
+            -RepositoryRoot $RepositoryRoot -PublishedAuthorityPath $PublishedRegressionAuthorityPath `
+            -ExpectedReviewedTechnicalCommit $PublishedReviewedTechnicalCommit `
+            -ExpectedCloseoutCommit $PublishedCloseoutCommit -ExpectedPolicyPath $LifecyclePolicyPath
+        return
+    }
     $script:AuthorityPaths += @(
         $LifecyclePolicyPath,
         $LifecycleHelperPath,

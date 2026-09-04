@@ -1310,6 +1310,166 @@ Invoke-LifecycleCase 'documentary linkage cannot be consumed as active build evi
     } finally { Remove-Module $module -Force }
 }
 
+function Invoke-ExplicitTargetFixtureContext {
+    param([Parameter(Mandatory)] [object]$State,
+        [Parameter(Mandatory)] [string]$CloseoutCommit,
+        [string]$ReviewedCommit = $State.Fixture.TechnicalCommit)
+    return Get-GeoCeDGPhaseAuthorCloseoutTargetContext `
+        -RepositoryRoot $State.Fixture.Root `
+        -ReviewedTechnicalCommit $ReviewedCommit -CloseoutCommit $CloseoutCommit `
+        -PolicyPath $State.Fixture.PolicyPath `
+        -BundleDirectory $State.Bundle.Root -BundleSha256 $State.Bundle.ManifestSha256
+}
+
+Invoke-LifecycleCase 'explicit target links reviewed T to exact clean closeout C' {
+    $state = New-PendingAuthorFixture $Base 'explicit-target-positive'
+    $closeout = Commit-Fixture $state.Fixture.Root 'Explicit target closeout'
+    $context = Invoke-ExplicitTargetFixtureContext $state $closeout
+    Assert-Case ($context.reviewedTechnicalCommit -ceq $state.Fixture.TechnicalCommit -and
+        $context.closeoutCommit -ceq $closeout -and $context.documentaryEvidenceLinked -and
+        -not $context.technicalExecutionRepeated -and $context.authorApproved -and -not $context.selfApproved) `
+        'Explicit target conflated technical execution, checkout or approval authority'
+}
+
+Invoke-LifecycleCase 'explicit target accepts different LF CRLF materialization of same tracked verifier' {
+    $state = New-PendingAuthorFixture $Base 'explicit-target-crlf'
+    $closeout = Commit-Fixture $state.Fixture.Root 'Explicit target CRLF closeout'
+    $lf = Invoke-ExplicitTargetFixtureContext $state $closeout
+    $path = Join-Path $state.Fixture.Root 'tools/phase-verifier.ps1'
+    $rawLf = Get-Sha256 $path
+    [void](Invoke-Git $state.Fixture.Root @('config', 'core.autocrlf', 'true'))
+    $text = [IO.File]::ReadAllText($path)
+    Write-Text $path $text.Replace("`n", "`r`n")
+    $rawCrlf = Get-Sha256 $path
+    $crlf = Invoke-ExplicitTargetFixtureContext $state $closeout
+    Assert-Case ($rawLf -cne $rawCrlf -and
+        $lf.materialization.trackedSha256 -ceq $crlf.materialization.trackedSha256 -and
+        $crlf.documentaryEvidenceLinked -and -not $crlf.technicalExecutionRepeated) `
+        'Cross-checkout proof changed tracked identity or relabeled a historical execution'
+}
+
+Invoke-LifecycleCase 'explicit target rejects wrong reviewed technical SHA' {
+    $state = New-PendingAuthorFixture $Base 'explicit-target-wrong-reviewed'
+    $closeout = Commit-Fixture $state.Fixture.Root 'Explicit target wrong T'
+    Assert-Throws { Invoke-ExplicitTargetFixtureContext $state $closeout `
+            -ReviewedCommit $state.Fixture.ImplementationCommit } `
+        'Git.*failed|does not exist|Invalid author-closeout record|Wrong evidence-bundle authority' `
+        'Explicit target wrong reviewed commit'
+}
+
+Invoke-LifecycleCase 'explicit target rejects wrong closeout SHA independently of branch HEAD' {
+    $state = New-PendingAuthorFixture $Base 'explicit-target-wrong-closeout'
+    [void](Commit-Fixture $state.Fixture.Root 'Explicit target wrong C')
+    Assert-Throws { Invoke-ExplicitTargetFixtureContext $state $state.Fixture.TechnicalCommit } `
+        'Index differs from expected commit tree' 'Explicit target wrong closeout commit'
+}
+
+Invoke-LifecycleCase 'explicit target rejects product delta outside closeout allowlist' {
+    $state = New-PendingAuthorFixture $Base 'explicit-target-product-delta'
+    Write-Text (Join-Path $state.Fixture.Root 'source/product.java') "final class Product { int value = 2; }`n"
+    $closeout = Commit-Fixture $state.Fixture.Root 'Forbidden product delta'
+    Assert-Throws { Invoke-ExplicitTargetFixtureContext $state $closeout } `
+        'exact closeout allowlist' 'Explicit target product mutation'
+}
+
+Invoke-LifecycleCase 'explicit target rejects verifier delta outside closeout allowlist' {
+    $state = New-PendingAuthorFixture $Base 'explicit-target-verifier-delta'
+    Write-Text (Join-Path $state.Fixture.Root 'tools/phase-verifier.ps1') "# unauthorized verifier behavior`n"
+    $closeout = Commit-Fixture $state.Fixture.Root 'Forbidden verifier delta'
+    Assert-Throws { Invoke-ExplicitTargetFixtureContext $state $closeout } `
+        'exact closeout allowlist' 'Explicit target verifier mutation'
+}
+
+Invoke-LifecycleCase 'explicit target rejects tampered historical evidence manifest' {
+    $state = New-PendingAuthorFixture $Base 'explicit-target-tampered-evidence'
+    $closeout = Commit-Fixture $state.Fixture.Root 'Explicit target evidence tamper'
+    Write-Text (Join-Path $state.Bundle.Root $state.Bundle.ManifestPath) "{}`n"
+    Assert-Throws { Invoke-ExplicitTargetFixtureContext $state $closeout } `
+        'Evidence-bundle manifest hash mismatch' 'Explicit target evidence tamper'
+}
+
+Invoke-LifecycleCase 'explicit target rejects missing author decision despite candidate execution success' {
+    $state = New-PendingAuthorFixture $Base 'explicit-target-no-approval'
+    $path = Join-Path $state.Fixture.Root $state.Fixture.RecordPath
+    $record = Read-Json $path
+    $record.authorDecision = 'PENDING_AUTHOR_REVIEW'
+    Write-Json $path $record
+    $closeout = Commit-Fixture $state.Fixture.Root 'Explicit target absent decision'
+    Assert-Throws { Invoke-ExplicitTargetFixtureContext $state $closeout } `
+        'Invalid author-closeout record' 'Explicit target technical success is not approval'
+}
+
+function New-PublishedRegressionFixture {
+    param([Parameter(Mandatory)] [string]$Name)
+    $state = New-PendingAuthorFixture $Base $Name
+    $closeout = Commit-Fixture $state.Fixture.Root 'Synthetic published phase closeout'
+    $authorityPath = 'geocedg/published-regression-authority.json'
+    $authority = [ordered]@{
+        schemaVersion = 1
+        phase = 'G9S1-R1-FIXTURE'
+        mode = 'PUBLISHED_REGRESSION'
+        reviewedTechnicalCommit = $state.Fixture.TechnicalCommit
+        closeoutCommit = $closeout
+        policyPath = $state.Fixture.PolicyPath
+        recordPath = $state.Fixture.RecordPath
+        authorDecision = 'PASS_AUTHOR_APPROVED'
+    }
+    Write-Json (Join-Path $state.Fixture.Root $authorityPath) $authority
+    $current = Commit-Fixture $state.Fixture.Root 'Synthetic operational successor'
+    return [pscustomobject]@{ State = $state; CloseoutCommit = $closeout; CurrentCommit = $current
+        AuthorityPath = $authorityPath; Authority = $authority }
+}
+
+function Invoke-PublishedRegressionFixtureContext {
+    param([Parameter(Mandatory)] [object]$Published,
+        [string]$ReviewedCommit = $Published.State.Fixture.TechnicalCommit,
+        [string]$CloseoutCommit = $Published.CloseoutCommit)
+    return Get-GeoCeDGPhasePublishedRegressionContext `
+        -RepositoryRoot $Published.State.Fixture.Root -PublishedAuthorityPath $Published.AuthorityPath `
+        -ExpectedReviewedTechnicalCommit $ReviewedCommit -ExpectedCloseoutCommit $CloseoutCommit `
+        -ExpectedPolicyPath $Published.State.Fixture.PolicyPath
+}
+
+Invoke-LifecycleCase 'published regression authenticates old approval but requires live scientific execution' {
+    $published = New-PublishedRegressionFixture 'published-live-positive'
+    $context = Invoke-PublishedRegressionFixtureContext $published
+    Assert-Case ($context.Mode -ceq 'PUBLISHED_REGRESSION' -and
+        $context.sourceAuthorityCommit -ceq $published.CurrentCommit -and
+        $context.reviewedTechnicalCommit -ceq $published.State.Fixture.TechnicalCommit -and
+        $context.closeoutCommit -ceq $published.CloseoutCommit -and
+        $context.historicalApprovalAuthenticated -and $context.liveScientificVerificationRequired -and
+        -not $context.DocumentaryEvidenceLinked -and -not $context.consumableBuildReceipt -and
+        -not $context.currentCohortEquivalentToHistoricalTechnicalExecution) `
+        'Published regression incorrectly substituted historical tests for current scientific execution'
+}
+
+Invoke-LifecycleCase 'published regression rejects wrong exact reviewed or closeout SHA' {
+    $published = New-PublishedRegressionFixture 'published-wrong-targets'
+    Assert-Throws { Invoke-PublishedRegressionFixtureContext $published `
+            -ReviewedCommit $published.State.Fixture.ImplementationCommit } `
+        'differs from exact approved targets' 'Published wrong reviewed technical target'
+    Assert-Throws { Invoke-PublishedRegressionFixtureContext $published `
+            -CloseoutCommit $published.State.Fixture.TechnicalCommit } `
+        'differs from exact approved targets' 'Published wrong closeout target'
+}
+
+Invoke-LifecycleCase 'published regression rejects premature approval indicators' {
+    $published = New-PublishedRegressionFixture 'published-premature-approval'
+    $published.Authority.authorDecision = 'PENDING_AUTHOR_REVIEW'
+    Write-Json (Join-Path $published.State.Fixture.Root $published.AuthorityPath) $published.Authority
+    Assert-Throws { Invoke-PublishedRegressionFixtureContext $published } `
+        'differs from exact approved targets' 'Published premature author approval'
+}
+
+Invoke-LifecycleCase 'published regression requires closeout ancestry of current execution' {
+    $published = New-PublishedRegressionFixture 'published-no-ancestry'
+    [void](Invoke-Git $published.State.Fixture.Root @('checkout', '--detach', '--quiet',
+        $published.State.Fixture.TechnicalCommit))
+    Write-Json (Join-Path $published.State.Fixture.Root $published.AuthorityPath) $published.Authority
+    Assert-Throws { Invoke-PublishedRegressionFixtureContext $published } `
+        'not ancestral to current execution' 'Published missing closeout ancestry'
+}
+
 $summary = [ordered]@{
     schemaVersion = 1
     evidenceKind = 'FAKE_FIRST_PHASE_LIFECYCLE_TESTS_NOT_BUILD_OR_AUTHOR_EVIDENCE'
@@ -1327,7 +1487,23 @@ $summary = [ordered]@{
 }
 $summaryPath = Join-Path $EvidenceRoot 'phase-lifecycle-tests.json'
 Write-Json $summaryPath $summary
+$canonicalSummary = [ordered]@{
+    schemaVersion = 1
+    evidenceKind = 'DETERMINISTIC_LIFECYCLE_INFRASTRUCTURE_FIXTURES'
+    tests = $summary.tests
+    passed = $summary.passed
+    failed = $summary.failed
+    gradleExecutions = 0
+    authorApproved = $false
+    selfApproved = $false
+    results = @($Results | ForEach-Object { [ordered]@{ name = $_.name; status = $_.status } })
+}
+$canonicalSummaryPath = Join-Path $EvidenceRoot 'canonical-summary.json'
+Write-Json $canonicalSummaryPath $canonicalSummary
+$canonicalSummaryHash = Get-CanonicalLfSha256 $canonicalSummaryPath
+Write-Text (Join-Path $EvidenceRoot 'canonical-summary.sha256') ($canonicalSummaryHash + "`n")
 Write-Host "Phase lifecycle fake-first tests: $($summary.passed)/$($summary.tests) passed."
+Write-Host "Deterministic lifecycle fixture SHA-256: $canonicalSummaryHash"
 Write-Host "Saved lifecycle test evidence: $summaryPath"
 Write-Host "Retained lifecycle fixtures: $RunRoot"
 if ($summary.failed -ne 0) { exit 1 }
