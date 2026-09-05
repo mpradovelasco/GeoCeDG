@@ -98,12 +98,14 @@ implementation acceptance remains a separate author decision.
 
 | Existing source/seam | Current responsibility | Prospective bounded owner |
 |---|---|---|
-| `apps/geocedg/application-profile.yml` | schema-v1 product profile | sole schema-v2 action/workspace instance |
-| `geocedg/specs/ui/application-profile.schema.json` | validates schema v1 | versioned strict v2 schema plus deterministic v1 adapter |
-| `source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGProfile.java` | loads profile and compiles one toolbar | immutable profile/action/workspace definitions; no raw duplicate catalogs |
+| `apps/geocedg/application-profile.yml` | live schema-v2 product profile | sole action/workspace/taxonomy/presentation authority |
+| `geocedg/specs/ui/application-profile.schema.json` | validates live schema v2 | strict action, workspace, presentation-group, toolbar and typed menu-entry contract |
+| `source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGProfile.java` | loads/validates the profile and compiles its presentation projection | immutable profile/action/workspace definitions; no raw duplicate catalogs |
 | `source/desktop/desktop/src/main/java/org/geocedg/desktop/AppGeoCeDG.java` | product app/profile lifecycle | product-policy selection, workspace controller and presentation-only document layout |
 | `source/desktop/desktop/src/main/java/org/geocedg/desktop/GuiManagerGeoCeDG.java` | product GUI manager | manifest toolbar/menu/view adapters |
-| `source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGMenuBar.java` | R3 product-menu lifecycle | render the single action registry and retain R3 rebuild behavior |
+| `source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGMenuBar.java` | product-menu lifecycle | render profile-declared groups/actions/separators/host controls from the single registry |
+| `source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGHostMenuFactory.java` | bounded bridge to existing host view/preference state | construct checked/radio View and Options controls without a second preference store |
+| `source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGUserToolLibrary.java` and `GeoCeDGUserTools.java` | isolated installed-tool preference, host Macro activation and dynamic presentation | versioned definition-digest equivalence, grouped pins and optional app-only PNG icons; embedded document macro remains reconstruction authority |
 | `source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGEuclidianController.java` | product action gesture adapter | consume typed kernel results; never solve or infer identity |
 | `source/shared/common/src/main/java/org/geocedg/common/euclidian/draw/DrawLocusV2.java` | semantic-curve render path and current area-like hit | curve-stroke-only presentation hit consistent with semantic subpaths |
 | `source/shared/common/src/main/java/org/geogebra/common/euclidian/EuclidianDraw.java` | drawable routing | keep every `GeoClass.LOCUS_V2` producer on the common drawable seam |
@@ -138,6 +140,14 @@ selection grammar, maturity, feature dependencies, localization/help keys,
 icon ID, unavailable policy and output category. Toolbars, menus, overflow,
 context actions, inspectors and help consume that same entry. Runtime widgets
 do not repeat targets or product strings.
+
+The 11 professional families and 18 operational clusters are classification and
+traceability. The same manifest separately declares 28 ordered presentation
+groups, 12 primary-toolbar group references and typed menu entries. The
+compiler proves exact action reachability and uniqueness before constructing
+the seven menus. File/Edit flattening, separators and host-control placeholders
+therefore remain profile data rather than Java-owned ordering. Construction and
+the toolbar reference the same final semantic presentation groups.
 
 Workspace membership changes discoverability only. Command existence, runtime
 feature permission, creation permission and compatibility loading remain
@@ -416,12 +426,17 @@ Visual identity remains restrained, professional, accessible and distinct from
 Classic. Theme/accent changes are presentation-only. The two logical brand
 roles remain:
 
-- `geocedg.brand.topbar` for top-bar/product chrome; and
-- `geocedg.brand.startup` for startup/application identity and only verified
-  deterministic size/platform derivatives.
+- `geocedg.brand.topbar` for the application/window frame and deterministic
+  Windows-package icon derivatives of `helixTopBar.png`; and
+- `geocedg.brand.startup` for the startup/splash derivative of
+  `helixSnapshot.png` only.
 
 Each source and derivative has recorded provenance and deterministic hashes.
-Missing author assets use explicit fallback; no substitute logo or upstream
+The byte-exact promoted sources live under the versioned Desktop resource tree;
+the 64×64 frame PNG, 16/24/32/48/64/128/256 Windows ICO and 542×720 splash are
+deterministic contain/center derivatives with transparent padding and no crop or
+distortion. The ignored author-ingestion directory is not a build dependency.
+Missing declared resources fail validation; no substitute logo or upstream
 branding is fabricated. Contrast, focus, keyboard paths and normal/high-DPI
 scaling are mandatory.
 
@@ -682,6 +697,72 @@ The inspector is only a presenter over typed kernel data. For a semantic curve
 it shows published branch/component structure; for a semantic point it shows
 its durable address and whether a current address is admissible. It never parses
 the displayed definition or infers an address from coordinates. Product version
-and window/About identity derive from the packaging authority. No authorized
-GeoCeDG frame/splash asset exists in this cohort, so `AUTHOR_ASSET_MISSING` is
-reported rather than substituting an upstream trademark asset.
+and window/About identity derive from the packaging authority. In the Round-2
+cohort no authorized GeoCeDG frame/splash asset existed, so
+`AUTHOR_ASSET_MISSING` was reported rather than substituting an upstream
+trademark asset.
+
+## Author-review stabilization, round 3
+
+Round 3 is a successor technical candidate, not approval or PASS. It retains the
+taxonomy and 110 stable actions while moving all UI ordering into the profile's
+single presentation projection. `GeoCeDGMenuBar` renders File/Edit direct action
+runs and separators, semantic Construction groups, host View controls and host
+Options controls. `GeoCeDGWorkspaceController` compiles the toolbar from the
+same semantic presentation groups. Neither owns a fallback taxonomy. Input Help
+remains outside the tool container at its existing right-hand layout position.
+
+The bounded host bridge reads and writes existing presentation state only:
+Graphics-view construction navigation, Algebra/Graphics 2/Spreadsheet/CAS/
+Properties-view visibility, global Preferences, Algebra display/sort, rounding,
+labeling, font size and Save Settings. It adds no document or preference model,
+does not expose 3D in this candidate, and creates no Construction/undo state.
+Continuity and locale policy remain owned by the existing product controls.
+
+The real `Revision3.cedg` failure was an application-startup ownership mismatch,
+not an R5 Dilate, G9A compatibility or spatial-instrumentation defect. GeoCeDG
+previously created the Construction and its metric owner on the launcher thread,
+then dispatched ordinary Algebra gestures on Swing EDT. The product-specific
+three-argument `GeoGebra.doMain(...)` overload now constructs the
+`GeoCeDGFrame`/`AppGeoCeDG` and runs `GeoGebraFrame.init(...)` synchronously on
+Swing EDT; splash resolution and presentation still happen first, outside that
+EDT initialization boundary. The original two-argument Classic launcher and
+kernel thread-confinement rules remain unchanged. Both the byte-exact author
+fixture and its clean deterministic fallback cover ROW, DOUBLE_CLICK, F2 and
+FREE_INPUT. They retain the same `GeoNumeric` reference and durable ID across
+`1 -> 0 -> 0.25 -> -1 -> 1`, with the existing atomic redefine/update, undo and
+native persistence paths.
+
+Installed user-tool preferences use a version-3 record. Raw `.ggt` SHA-256
+remains package integrity/identity; each command additionally records a
+version-1 normalized definition digest from host-parsed `Macro.getXML()`. Only
+`showInToolBar` is normalized because it is presentation. A complete equal set
+adopts the document's existing Macro objects for application presentation; it
+never registers, renames or replaces them. Partial or mismatched sets fail
+closed. The embedded macro therefore remains the self-contained `.cedg`
+reconstruction authority even when the installed package is absent.
+
+Optional pinned-tool icons are bounded app preferences rather than document
+assets: PNG signature and `.png` basename, 256-KiB encoded maximum, decoded
+dimensions 1..1024 per side and at most 1,048,576 pixels. Exact bytes/name/hash/
+dimensions persist; a validated 64×64 centered, bicubic, aspect-fit ARGB image
+with transparent padding is derived on load. Replacing the icon, unpinning or
+removing the package deterministically removes the only inline reference. No
+Macro icon name, external-image registry, `.cedg`, undo or Construction state
+is touched.
+
+The author-confirmed brand sources are now tracked byte-exact under
+`source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/source/`.
+Deterministic resources in `derived/` supply the application frame, startup
+splash and Windows package icon. `GeoCeDGBrandingResource` resolves only these
+registered roles. `GeoGebra` retains its original two-argument Classic launcher;
+the narrow product-specific overload accepts the GeoCeDG splash supplier and
+places only frame/application creation and initialization on Swing EDT after the
+splash has been prepared. Public redistribution remains independently blocked
+by the asset/licensing authority.
+
+`GeoCeDGProductInfo` consumes the same build/package provenance rather than a
+second version constant: semantic package version `0.9.0` is presented as
+`GeoCeDG 0.9` in the frame title and About surface. About also identifies the
+recorded GeoGebra baseline and `Manuel Prado-Velasco, Universidad de Sevilla`,
+while retaining mandatory upstream credits and license notice.

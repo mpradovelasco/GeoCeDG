@@ -524,15 +524,24 @@ must pass contrast, keyboard, focus, normal/high-DPI and text-scaling checks.
 
 Branding retains two provenance-owned logical roles:
 
-- `geocedg.brand.topbar`: frontend/top-bar/product chrome; and
-- `geocedg.brand.startup`: startup/application identity and only suitable,
-  verified deterministic frame/package/`.cedg` association derivatives.
+- `geocedg.brand.topbar`: application/window frame icon and deterministic
+  Windows-package icon derivatives from the promoted `helixTopBar.png`; and
+- `geocedg.brand.startup`: startup/splash presentation from the promoted
+  `helixSnapshot.png` only.
 
 Each author source records filename, SHA-256, dimensions, format/alpha and
 provenance. Derived assets record tool, version and options and reproduce
-identical bytes. Missing sources use an explicit text/default fallback; the
-implementation does not fabricate a logo or copy upstream branding. Classic
-retains a visibly distinct diagnostic identity.
+identical bytes. The tracked derivatives use aspect-preserving contain/center
+scaling and transparent padding, never cropping or distortion. Missing declared
+resources fail focused candidate validation; the implementation does not
+fabricate a logo or copy upstream branding. The ignored ingestion files are not
+runtime or packaging inputs. Classic retains a visibly distinct diagnostic
+identity.
+
+One build/package provenance authority supplies semantic version `0.9.0` and
+the visible `GeoCeDG 0.9` form to both window title and About. About also records
+the current GeoGebra baseline and `Manuel Prado-Velasco, Universidad de Sevilla`
+without removing mandatory upstream credits or license information.
 
 ## 12. Performance contract
 
@@ -597,6 +606,70 @@ remain real dependencies but are auxiliary and hidden from Euclidian rendering
 by default. Definition inspection exposes typed branch, component and semantic
 address data read-only; it never reconstructs them from coordinates or labels.
 
+### 13.2 Author-review round-3 stabilization contract
+
+Round 3 preserves the one schema-v2 action authority and separates its approved
+11-family/18-cluster taxonomy from its ordered presentation projection. The
+profile declares 28 presentation groups, 12 primary-toolbar groups and seven
+menu sections. File/Edit flattening, separators, View host toggles,
+Construction semantic grouping and Options host controls are therefore data,
+not parallel Java taxonomies. All 110 stable action IDs remain unchanged and
+menu projection admits each exactly once.
+
+Construction presents **Lines and vectors**, **Polygons**, **Derived
+constructions**, **Circles and conics**, **Semantic curves**, and **Annotations
+and media**. The explicit-address helper keeps its stable action/target but is
+named **Point on semantic curve**; ordinary Point remains the graphical R6
+inverse-resolution workflow. Text and Image create document objects and appear
+under Construction, never View. The toolbar compiles the same final semantic
+groups, while Input Help remains outside and to the right of the tool-group
+container.
+
+View reuses host visibility state for the compatible Algebra, Graphics 2,
+Spreadsheet, CAS and Properties-view surfaces; 3D is not exposed by this
+candidate. **Show construction navigation bar** targets the Graphics-view host
+control, reflects its checked state and creates no Construction/undo mutation.
+Options reuses the current Algebra display style (one Value/Description/
+Definition radio item), Algebra sort, rounding, labeling, font-size and save-
+settings authorities. Its global Preferences route does not synthesize an
+object selection. Continuity remains OFF, EN/ES remains the product locale
+allowlist, and Classic policy is unchanged.
+
+The preserved `Revision3.cedg` exposed an application-startup ownership defect:
+GeoCeDG created the Construction and metric owner on the launcher thread while
+ordinary Algebra gestures ran on Swing EDT. This was not a Dilate, numeric-
+compatibility or spatial-instrumentation defect. The GeoCeDG-only three-argument
+`GeoGebra.doMain(...)` overload resolves and shows the splash first, then
+synchronously constructs the product frame/application and runs
+`GeoGebraFrame.init(...)` on Swing EDT. The original two-argument Classic launch
+path and all kernel thread-confinement rules remain unchanged. The byte-exact
+author fixture and the clean deterministic fallback each cover ROW,
+DOUBLE_CLICK, F2 and FREE_INPUT. The same ordinary `GeoNumeric` identity supports
+`1 -> 0 -> 0.25 -> -1 -> 1` through the existing G9A-compatible edit
+transaction, with dependent recompute, undo/redo and native reopen. No new
+numeric, redefine predicate, instrumentation handoff or semantic transform
+contract is introduced.
+
+Persistent tool preferences advance to version 3. Each command stores a
+normalized macro-definition SHA-256 obtained through the existing isolated
+MacroKernel/XML host. Normalization ignores only the `showInToolBar`
+presentation flag. After reopen, a digest-equivalent embedded macro remains the
+document's reconstruction authority while the matching installed package owns
+the user-facing library entry; no duplicate local choice or collision disables
+it. An absent package leaves the document portable. A mismatched or incomplete
+package fails closed. Equality never follows from command label, coordinates,
+object order or Java reference.
+
+An installed/pinned tool may optionally retain a PNG presentation icon only in
+application preferences: at most 256 KiB, maximum decoded edge 1024 and at most
+1024×1024 pixels. The store records original bytes/name, SHA-256 and dimensions;
+the toolbar derives a deterministic aspect-preserving, transparent-padded 64×64
+ARGB image. Change, unpin and removal clean up unreferenced icon data. Icon
+state never enters `.cedg`, changes tool identity, registers a macro or mutates
+Construction. Without an icon the toolbar renders a compact square initial,
+retains the full localized tool identity in tooltip/accessibility metadata and
+keeps grouped tools on the normal compact dropdown footprint.
+
 ## 14. Validation
 
 The future G9U1 validation matrix must cover at least:
@@ -615,6 +688,7 @@ The future G9U1 validation matrix must cover at least:
 | `U1-B`/`U1-A` | visual identity, accessibility, two brand roles and deterministic assets |
 | `U1-P01`–`U1-P02` | overlay/selector work bound and bounded long-token inspector layout |
 | `U1-R2` | native macro archive reopen/undo; hidden typed helpers; ordinary numeric double-click/F2 editing; seven-menu/Options/help invariants; grouped user-tool pins; product-version authority |
+| `U1-R3` | real `Revision3.cedg` Algebra EDT edit path; deterministic brand resources/package icon; installed/embedded macro equivalence and mismatch; File/Edit/View/Construction/Options projection; menu/toolbar semantic-group parity; optional bounded user-tool PNG icon and cleanup |
 
 The current round-2 matrix contains 163 unique scenarios: 138 from the
 post-R1 implementation design, 15 retained author-review round-1 scenarios and

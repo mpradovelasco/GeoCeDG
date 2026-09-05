@@ -18,6 +18,20 @@ because they select the upstream Classic launcher. Packaging selects
 `org.geocedg.desktop.GeoCeDG` directly and preserves all four JVM options used
 by the validated Desktop Gradle tasks.
 
+The profile also names one versioned GeoCeDG-owned Windows ICO below the
+Desktop application-resource tree. The builder passes it to the `app-image`
+invocation through `jpackage --icon`; MSI and EXE are then derived from that
+same application image. No copied packaging icon or inherited GeoGebra icon is
+an authority. The author source, byte-exact promoted source, deterministic
+derivation contract, sizes and hashes live in
+`geocedg/resources/assets-manifest.yml`.
+
+The tracked source and derivative blobs, together with their raw hashes, are
+the package-input authority. Normal packaging validates those blobs and the ICO
+container directly and does not rerun a platform image encoder. Exact derivative
+regeneration is a separate provenance check restricted to the accepted
+PowerShell/.NET/System.Drawing/Windows runtime recorded in the asset manifest.
+
 ## Pipeline
 
 `tools/release/build-windows-package.ps1` performs these reproducible stages:

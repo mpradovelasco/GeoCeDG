@@ -30,6 +30,11 @@ $ExpectedMimeBasis = "jdk25-jpackage-required-internal-unregistered"
 $ExpectedAssociationDescription = "GeoCeDG document (internal evaluation)"
 $ExpectedProgIdStrategy = "jdk25-jpackage-generated-geocedg-owned"
 $UpstreamGeoGebraMimeType = "application/vnd.geogebra.file"
+$ExpectedIconRelativePath = "source/desktop/desktop/src/main/resources/" +
+    "org/geocedg/desktop/branding/v1/derived/geocedg-application.ico"
+$ExpectedIconSha256 =
+    "e5dac1dd3a556f4ce9747f00d272281e9a571ecc5e757180ba1c6750b664cd73"
+$ExpectedIconSizes = @(16, 24, 32, 48, 64, 128, 256)
 $GeneratedDirectoryNames = @("build", ".gradle", ".kotlin")
 if ([string]::IsNullOrWhiteSpace($ArtifactRoot)) {
     $ArtifactRoot = Join-Path $RepositoryRoot "artifacts\packaging\windows"
@@ -80,6 +85,66 @@ function Invoke-Captured {
         throw "$Description failed with exit code $LASTEXITCODE.`n$($output -join "`n")"
     }
     return @($output | ForEach-Object { $_.ToString() })
+}
+
+function Assert-PngEmbeddedIcon {
+    param([Parameter(Mandatory)] [string]$Path)
+
+    Assert-Condition -Condition (Test-Path -LiteralPath $Path -PathType Leaf) `
+        -Message "GeoCeDG package icon is missing: $Path"
+    $bytes = [IO.File]::ReadAllBytes($Path)
+    Assert-Condition -Condition (
+        $bytes.Length -ge 6 -and
+        [BitConverter]::ToUInt16($bytes, 0) -eq 0 -and
+        [BitConverter]::ToUInt16($bytes, 2) -eq 1) `
+        -Message "GeoCeDG package icon lacks a valid ICO header."
+    $count = [BitConverter]::ToUInt16($bytes, 4)
+    Assert-Condition -Condition ($count -eq $ExpectedIconSizes.Count) `
+        -Message "GeoCeDG package icon has an unexpected image count."
+    $actualSizes = [Collections.Generic.List[int]]::new()
+    for ($index = 0; $index -lt $count; $index++) {
+        $entry = 6 + 16 * $index
+        Assert-Condition -Condition ($entry + 16 -le $bytes.Length) `
+            -Message "GeoCeDG package icon directory is truncated."
+        $width = if ($bytes[$entry] -eq 0) { 256 } else { $bytes[$entry] }
+        $height = if ($bytes[$entry + 1] -eq 0) { 256 } else {
+            $bytes[$entry + 1]
+        }
+        $planes = [BitConverter]::ToUInt16($bytes, $entry + 4)
+        $bits = [BitConverter]::ToUInt16($bytes, $entry + 6)
+        $length = [BitConverter]::ToUInt32($bytes, $entry + 8)
+        $offset = [BitConverter]::ToUInt32($bytes, $entry + 12)
+        Assert-Condition -Condition (
+            $width -eq $height -and $planes -eq 1 -and $bits -eq 32 -and
+            $length -ge 8 -and $offset + $length -le $bytes.Length) `
+            -Message "GeoCeDG package icon entry $index is invalid."
+        $signature = [Convert]::ToHexString($bytes[$offset..($offset + 7)])
+        Assert-Condition -Condition ($signature -ceq "89504E470D0A1A0A") `
+            -Message "GeoCeDG package icon entry $index is not PNG-embedded."
+        $actualSizes.Add($width)
+    }
+    Assert-Condition -Condition (
+        (@($actualSizes) -join ",") -ceq ($ExpectedIconSizes -join ",")) `
+        -Message "GeoCeDG package icon sizes/order differ."
+    Assert-Condition -Condition (
+        (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant() `
+        -ceq $ExpectedIconSha256) `
+        -Message "GeoCeDG package icon SHA-256 differs."
+}
+
+function Assert-TrackedBrandResource {
+    param(
+        [Parameter(Mandatory)] [object]$Asset,
+        [Parameter(Mandatory)] [string]$Description
+    )
+
+    $path = Join-Path $RepositoryRoot ([string]$Asset.path).Replace("/", "\")
+    Assert-Condition -Condition (Test-Path -LiteralPath $path -PathType Leaf) `
+        -Message "$Description is missing: $path"
+    Assert-Condition -Condition (
+        (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant() `
+        -ceq [string]$Asset.raw_sha256) `
+        -Message "$Description SHA-256 differs from the tracked asset authority."
 }
 
 function Resolve-Jpackage {
@@ -220,7 +285,9 @@ try {
         "LICENSES\README.md",
         "NOTICE.md",
         "THIRD_PARTY.md",
-        "geocedg\resources\assets-manifest.yml"
+        "geocedg\resources\assets-manifest.yml",
+        "tools\resources\generate-geocedg-branding.ps1",
+        $ExpectedIconRelativePath.Replace("/", "\")
     )
     foreach ($relative in $requiredFiles) {
         Assert-Condition -Condition (Test-Path -LiteralPath (
@@ -234,6 +301,8 @@ try {
         Join-Path $RepositoryRoot "geocedg\specs\operations\package-profile.schema.json")
     $assets = Read-JsonFile -Path (
         Join-Path $RepositoryRoot "geocedg\resources\assets-manifest.yml")
+    $packageIconPath = Join-Path $RepositoryRoot `
+        $ExpectedIconRelativePath.Replace("/", "\")
     $associationPath = Join-Path $RepositoryRoot `
         "packaging\windows\file-associations.properties"
     try {
@@ -251,10 +320,15 @@ try {
         $profile.profile_id -eq "geocedg-windows-internal" -and
         $profile.application.name -eq "GeoCeDG" -and
         $profile.application.main_class -eq "org.geocedg.desktop.GeoCeDG" -and
+        $profile.application.icon -ceq $ExpectedIconRelativePath -and
         $profile.toolchain.gradle_java -eq 22 -and
         $profile.toolchain.desktop_java -eq 25 -and
         $profile.toolchain.wix -eq $ExpectedWix) `
         -Message "Package profile identity or toolchain contract is invalid."
+    Assert-Condition -Condition (
+        $schema.properties.application.properties.icon.const -ceq
+        $ExpectedIconRelativePath) `
+        -Message "Package schema does not freeze the versioned GeoCeDG icon."
     Assert-Condition -Condition (
         @($profile.toolchain.wix_extensions).Count -eq 2 -and
         $profile.toolchain.wix_extensions[0] -eq
@@ -303,11 +377,78 @@ try {
         $profile.distribution.public_redistribution -eq
         "blocked-pending-license-and-asset-approval") `
         -Message "Internal distribution status is not explicit."
+    $topBarBrand = @($assets.branding_assets | Where-Object {
+        $_.id -ceq "geocedg.brand.topbar"
+    })
+    $startupBrand = @($assets.branding_assets | Where-Object {
+        $_.id -ceq "geocedg.brand.startup"
+    })
     Assert-Condition -Condition (
         $assets.distribution_marker -ceq $ExpectedMarker -and
-        $null -eq $assets.package_icon -and
-        @($assets.deliberate_exclusions).Count -ge 5) `
-        -Message "Asset manifest does not preserve the G4 exclusion boundary."
+        @($assets.deliberate_exclusions).Count -ge 5 -and
+        $topBarBrand.Count -eq 1 -and $startupBrand.Count -eq 1 -and
+        $assets.package_icon.asset_id -ceq
+        "geocedg.brand.topbar.windows-ico-v1" -and
+        $assets.package_icon.path -ceq $ExpectedIconRelativePath -and
+        $assets.package_icon.raw_sha256 -ceq $ExpectedIconSha256) `
+        -Message "Asset manifest does not preserve branding provenance/exclusions."
+    Assert-Condition -Condition (
+        $topBarBrand[0].author_input.original_filename -ceq "helixTopBar.png" -and
+        $topBarBrand[0].author_input.raw_sha256 -ceq
+        "08ef4481b51e801bdf0842635d645bd09042b0a4473b24faca555048e3bd52c1" -and
+        $topBarBrand[0].author_input.width -eq 969 -and
+        $topBarBrand[0].author_input.height -eq 815 -and
+        $startupBrand[0].author_input.original_filename -ceq
+        "helixSnapshot.png" -and
+        $startupBrand[0].author_input.raw_sha256 -ceq
+        "abcf272553c1b42d5eb016cdf564023439e901ed7d7e943212c220431ecf5637" -and
+        $startupBrand[0].author_input.width -eq 1197 -and
+        $startupBrand[0].author_input.height -eq 1591) `
+        -Message "Author branding input provenance differs."
+    $frameAsset = @($topBarBrand[0].derivatives | Where-Object {
+        $_.id -ceq "geocedg.brand.topbar.frame-64-v1"
+    })
+    $iconAsset = @($topBarBrand[0].derivatives | Where-Object {
+        $_.id -ceq "geocedg.brand.topbar.windows-ico-v1"
+    })
+    $splashAsset = @($startupBrand[0].derivatives | Where-Object {
+        $_.id -ceq "geocedg.brand.startup.splash-542x720-v1"
+    })
+    Assert-Condition -Condition (
+        $frameAsset.Count -eq 1 -and
+        $frameAsset[0].raw_sha256 -ceq
+        "448ea5b510f952d27ddddec3005911b4e1f1203ee35f55fcca857098e53fed97" -and
+        $frameAsset[0].width -eq 64 -and $frameAsset[0].height -eq 64 -and
+        $iconAsset.Count -eq 1 -and
+        $iconAsset[0].raw_sha256 -ceq $ExpectedIconSha256 -and
+        (@($iconAsset[0].png_embedded_sizes) -join ",") -ceq
+        ($ExpectedIconSizes -join ",") -and
+        $splashAsset.Count -eq 1 -and
+        $splashAsset[0].raw_sha256 -ceq
+        "04d5e79b99b0f25536690b8af9d71ba034fbaf2b0d401ae40b5822942b917a78" -and
+        $splashAsset[0].width -eq 542 -and $splashAsset[0].height -eq 720) `
+        -Message "Derived branding resource provenance differs."
+    Assert-Condition -Condition (
+        $topBarBrand[0].derivation.tool -ceq
+            "tools/resources/generate-geocedg-branding.ps1" -and
+        $startupBrand[0].derivation.tool -ceq
+            "tools/resources/generate-geocedg-branding.ps1" -and
+        -not [string]::IsNullOrWhiteSpace(
+            [string]$topBarBrand[0].derivation.accepted_generation_runtime) -and
+        $startupBrand[0].derivation.accepted_generation_runtime -ceq
+            $topBarBrand[0].derivation.accepted_generation_runtime) `
+        -Message "Branding derivation runtime/provenance authority differs."
+    Assert-TrackedBrandResource -Asset $topBarBrand[0].promoted_source `
+        -Description "Promoted GeoCeDG icon source"
+    Assert-TrackedBrandResource -Asset $startupBrand[0].promoted_source `
+        -Description "Promoted GeoCeDG splash source"
+    Assert-TrackedBrandResource -Asset $frameAsset[0] `
+        -Description "GeoCeDG frame icon"
+    Assert-TrackedBrandResource -Asset $iconAsset[0] `
+        -Description "GeoCeDG Windows icon"
+    Assert-TrackedBrandResource -Asset $splashAsset[0] `
+        -Description "GeoCeDG startup splash"
+    Assert-PngEmbeddedIcon -Path $packageIconPath
     foreach ($legalPath in @("LICENSE", "LICENSES\README.md", "NOTICE.md", "THIRD_PARTY.md")) {
         $content = Get-Content -Raw -LiteralPath (Join-Path $RepositoryRoot $legalPath)
         Assert-Condition -Condition $content.Contains($ExpectedMarker) `
@@ -319,6 +460,7 @@ try {
     foreach ($requiredText in @(
             "org.geocedg.desktop.GeoCeDG",
             "--type", "app-image", "msi", "exe",
+            "--icon",
             "--file-associations",
             $ExpectedNativeExtension,
             $ExpectedInternalMimeType,
@@ -332,6 +474,13 @@ try {
     Assert-Condition -Condition (-not $buildScript.Contains(
         "source\desktop\desktop\build\scripts")) `
         -Message "Package builder must not consume the upstream Classic start scripts."
+    $iconSwitch = '"--icon"'
+    Assert-Condition -Condition (
+        [regex]::Matches($buildScript, [regex]::Escape($iconSwitch)).Count -eq 1 -and
+        $buildScript.IndexOf($iconSwitch, [StringComparison]::Ordinal) -lt
+        $buildScript.IndexOf('$appImage = Join-Path',
+            [StringComparison]::Ordinal)) `
+        -Message "The versioned icon must be applied exactly once while building the app-image."
     $associationSwitch = '"--file-associations"'
     Assert-Condition -Condition (
         [regex]::Matches($buildScript, [regex]::Escape(
@@ -445,6 +594,8 @@ try {
             $buildManifest.distribution_marker -ceq $ExpectedMarker -and
             $buildManifest.public_redistribution -eq
             "BLOCKED PENDING LICENSE/ASSET APPROVAL" -and
+            $buildManifest.application.icon.path -ceq $ExpectedIconRelativePath -and
+            $buildManifest.application.icon.sha256 -ceq $ExpectedIconSha256 -and
             $buildManifest.file_association.enabled_for_target -eq $true -and
             $buildManifest.file_association.registration_scope -ceq
             "msi-exe-installers-only" -and

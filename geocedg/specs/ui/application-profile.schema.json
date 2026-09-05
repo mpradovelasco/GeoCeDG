@@ -28,6 +28,8 @@
     "deferred_inventory",
     "host_characterization",
     "runtime_layout",
+    "presentation_groups",
+    "toolbar_group_ids",
     "menu_sections",
     "localized_text"
   ],
@@ -196,7 +198,8 @@
         "required": [
           "id",
           "name_key",
-          "cluster_ids"
+          "cluster_ids",
+          "entries"
         ],
         "properties": {
           "id": {
@@ -211,9 +214,26 @@
           },
           "action_ids": {
             "$ref": "#/$defs/idArray"
+          },
+          "entries": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/$defs/menuEntry"
+            }
           }
         }
       }
+    },
+    "presentation_groups": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/presentationGroup"
+      }
+    },
+    "toolbar_group_ids": {
+      "$ref": "#/$defs/idArray"
     },
     "localized_text": {
       "type": "object",
@@ -894,6 +914,58 @@
         "notes": {
           "type": "string",
           "minLength": 1
+        }
+      }
+    },
+    "presentationGroup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name_key",
+        "action_ids",
+        "toolbar_action_ids"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "name_key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "action_ids": {
+          "$ref": "#/$defs/idArray"
+        },
+        "toolbar_action_ids": {
+          "$ref": "#/$defs/idArray"
+        }
+      }
+    },
+    "menuEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "group",
+            "actions",
+            "separator",
+            "workspace-switcher",
+            "user-tools",
+            "host-views",
+            "sort-by",
+            "rounding",
+            "labeling",
+            "font-size",
+            "save-settings"
+          ]
+        },
+        "group_id": {
+          "$ref": "#/$defs/id"
         }
       }
     },

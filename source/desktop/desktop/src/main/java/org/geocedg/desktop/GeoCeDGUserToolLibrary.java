@@ -5,6 +5,9 @@
 
 package org.geocedg.desktop;
 
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -24,6 +27,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.HexFormat;
 import java.util.IdentityHashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -34,12 +38,16 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.geocedg.common.main.feature.RuntimeFeatureService;
 import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
 import org.geogebra.common.euclidian.EuclidianConstants;
+import org.geogebra.common.io.XMLStringBuilder;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.Macro;
 import org.geogebra.common.kernel.MacroKernel;
@@ -60,7 +68,17 @@ import org.w3c.dom.NodeList;
 final class GeoCeDGUserToolLibrary {
 
 	static final int MAX_BYTES = 8 * 1024 * 1024;
+	static final int MAX_ICON_BYTES = 256 * 1024;
+	static final int MAX_ICON_EDGE = 1024;
+	static final int TOOLBAR_ICON_SIZE = 64;
+	private static final int STORE_VERSION = 3;
+	private static final int DEFINITION_DIGEST_VERSION = 1;
+	private static final int ICON_NORMALIZATION_VERSION = 1;
 	private static final int MAX_PIN_ORDER = 4095;
+	private static final byte[] PNG_SIGNATURE = new byte[] {
+			(byte) 0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a};
+	private static final Pattern TOOLBAR_ATTRIBUTE = Pattern.compile(
+			" showInToolBar=\"(?:true|false)\"");
 	private static final Pattern CALL = Pattern.compile("([\\p{L}_][\\p{L}\\p{N}_]*)\\s*[\\[(]");
 	private static final Set<Integer> SAFE_TABLES = Set.of(CommandsConstants.TABLE_GEOMETRY,
 			CommandsConstants.TABLE_ALGEBRA, CommandsConstants.TABLE_TEXT,
@@ -84,6 +102,7 @@ final class GeoCeDGUserToolLibrary {
 		private final byte[] bytes;
 		private final String xml;
 		private final List<String> commands;
+		private final Map<String, String> definitionDigests = new LinkedHashMap<>();
 		private final Map<String, PinLayout> pinned = new LinkedHashMap<>();
 
 		Package(String name, byte[] bytes, String xml, List<String> commands) {
@@ -104,6 +123,10 @@ final class GeoCeDGUserToolLibrary {
 
 		List<String> commands() {
 			return commands;
+		}
+
+		String definitionDigest(String command) {
+			return definitionDigests.get(command);
 		}
 
 		boolean isPinned(String command) {
@@ -153,26 +176,99 @@ final class GeoCeDGUserToolLibrary {
 		int order() {
 			return layout.order;
 		}
+
+		PinIcon icon() {
+			return layout.icon;
+		}
+	}
+
+	/** Validated application-preference PNG and its deterministic toolbar derivative. */
+	static final class PinIcon {
+		private final String sourceName;
+		private final String sourceDigest;
+		private final int sourceWidth;
+		private final int sourceHeight;
+		private final byte[] sourceBytes;
+		private final byte[] toolbarBytes;
+
+		private PinIcon(String sourceName, String sourceDigest, int sourceWidth,
+				int sourceHeight, byte[] sourceBytes, byte[] toolbarBytes) {
+			this.sourceName = sourceName;
+			this.sourceDigest = sourceDigest;
+			this.sourceWidth = sourceWidth;
+			this.sourceHeight = sourceHeight;
+			this.sourceBytes = sourceBytes.clone();
+			this.toolbarBytes = toolbarBytes.clone();
+		}
+
+		String sourceName() {
+			return sourceName;
+		}
+
+		String sourceDigest() {
+			return sourceDigest;
+		}
+
+		int sourceWidth() {
+			return sourceWidth;
+		}
+
+		int sourceHeight() {
+			return sourceHeight;
+		}
+
+		byte[] sourceBytes() {
+			return sourceBytes.clone();
+		}
+
+		byte[] toolbarBytes() {
+			return toolbarBytes.clone();
+		}
+
+		@Override
+		public boolean equals(Object other) {
+			if (!(other instanceof PinIcon)) {
+				return false;
+			}
+			PinIcon icon = (PinIcon) other;
+			return sourceWidth == icon.sourceWidth && sourceHeight == icon.sourceHeight
+					&& sourceName.equals(icon.sourceName)
+					&& sourceDigest.equals(icon.sourceDigest)
+					&& java.util.Arrays.equals(sourceBytes, icon.sourceBytes)
+					&& java.util.Arrays.equals(toolbarBytes, icon.toolbarBytes);
+		}
+
+		@Override
+		public int hashCode() {
+			return sourceDigest.hashCode();
+		}
 	}
 
 	private static final class PinLayout {
 		private final String group;
 		private final int order;
+		private final PinIcon icon;
 
 		PinLayout(String group, int order) {
+			this(group, order, null);
+		}
+
+		PinLayout(String group, int order, PinIcon icon) {
 			this.group = group;
 			this.order = order;
+			this.icon = icon;
 		}
 
 		@Override
 		public boolean equals(Object other) {
 			return other instanceof PinLayout && order == ((PinLayout) other).order
-					&& group.equals(((PinLayout) other).group);
+					&& group.equals(((PinLayout) other).group)
+					&& java.util.Objects.equals(icon, ((PinLayout) other).icon);
 		}
 
 		@Override
 		public int hashCode() {
-			return 31 * group.hashCode() + order;
+			return java.util.Objects.hash(group, order, icon);
 		}
 	}
 
@@ -228,13 +324,16 @@ final class GeoCeDGUserToolLibrary {
 			throw new IOException("UserTools.Limit");
 		}
 		Package proposed = inspect(fileName, bytes);
+		verifyDefinitionDigests(proposed, null);
 		Set<String> existing = installedCommands();
 		for (String command : proposed.commands) {
-			if (existing.contains(key(command)) || app.getKernel().getMacro(command) != null) {
+			if (existing.contains(key(command))) {
 				throw new IOException("UserTools.CommandConflict: " + command);
 			}
 		}
-		validateWithHost(proposed);
+		// An explicit install may adopt a complete equivalent document definition, but
+		// a partial or different same-name definition is never renamed or replaced.
+		registeredCount(proposed, false);
 		Map<String, Package> next = new LinkedHashMap<>(packages);
 		next.put(proposed.id, proposed);
 		persist(next);
@@ -249,6 +348,7 @@ final class GeoCeDGUserToolLibrary {
 			next.remove(id);
 			persist(next);
 			packages.remove(id);
+			activated.entrySet().removeIf(entry -> id.equals(entry.getValue()));
 			// Existing document definitions/AlgoMacro outputs remain document-owned.
 			return null;
 		});
@@ -256,12 +356,39 @@ final class GeoCeDGUserToolLibrary {
 
 	void pin(String id, String command, boolean pinned) throws IOException {
 		editStore(() -> {
-			pinCurrent(id, command, pinned);
+			pinCurrent(id, command, pinned, null, false);
 			return null;
 		});
 	}
 
-	private void pinCurrent(String id, String command, boolean pinned) throws IOException {
+	void pin(String id, String command, String iconName, byte[] iconBytes)
+			throws IOException {
+		PinIcon icon = createPinIcon(iconName, iconBytes);
+		editStore(() -> {
+			pinCurrent(id, command, true, icon, true);
+			return null;
+		});
+	}
+
+	void setPinIcon(String id, String command, String iconName, byte[] iconBytes)
+			throws IOException {
+		PinIcon icon = iconBytes == null ? null : createPinIcon(iconName, iconBytes);
+		editStore(() -> {
+			Package tool = requirePinned(id, command);
+			PinLayout previous = tool.pinned.get(command);
+			tool.pinned.put(command, new PinLayout(previous.group, previous.order, icon));
+			try {
+				persist(packages);
+			} catch (IOException exception) {
+				tool.pinned.put(command, previous);
+				throw exception;
+			}
+			return null;
+		});
+	}
+
+	private void pinCurrent(String id, String command, boolean pinned, PinIcon icon,
+			boolean replaceIcon) throws IOException {
 		Package tool = requirePackage(id);
 		if (!tool.commands.contains(command)) {
 			throw new IOException("UserTools.Unknown");
@@ -269,7 +396,10 @@ final class GeoCeDGUserToolLibrary {
 		PinLayout previous = tool.pinned.get(command);
 		if (pinned) {
 			if (previous == null) {
-				tool.pinned.put(command, new PinLayout("", nextPinOrder()));
+				tool.pinned.put(command, new PinLayout("", nextPinOrder(), icon));
+			} else if (replaceIcon) {
+				tool.pinned.put(command,
+						new PinLayout(previous.group, previous.order, icon));
 			}
 		} else {
 			tool.pinned.remove(command);
@@ -292,7 +422,7 @@ final class GeoCeDGUserToolLibrary {
 			String validated = validateGroup(group);
 			Map<Package, Map<String, PinLayout>> previous = snapshotPinLayouts();
 			PinLayout layout = tool.pinned.get(command);
-			tool.pinned.put(command, new PinLayout(validated, layout.order));
+			tool.pinned.put(command, new PinLayout(validated, layout.order, layout.icon));
 			normalizeGroupBlocks();
 			try {
 				persist(packages);
@@ -394,7 +524,7 @@ final class GeoCeDGUserToolLibrary {
 	private static void applyPinOrder(List<PinnedCommand> ordered) {
 		for (int i = 0; i < ordered.size(); i++) {
 			PinnedCommand pin = ordered.get(i);
-			pin.tool().pinned.put(pin.command(), new PinLayout(pin.group(), i));
+			pin.tool().pinned.put(pin.command(), new PinLayout(pin.group(), i, pin.icon()));
 		}
 	}
 
@@ -484,23 +614,30 @@ final class GeoCeDGUserToolLibrary {
 		}
 		// Reinspect current policy; a file-load preservation flag is never creation authority.
 		inspect(tool.name, tool.bytes);
-		validateWithHost(tool);
-		if (registeredCount(tool) == tool.commands.size()) {
+		verifyDefinitionDigests(tool, tool.definitionDigests);
+		if (registeredCount(tool, true) == tool.commands.size()) {
 			return app.getKernel().getMacro(command);
 		}
 		registerWithHost(tool);
 		return app.getKernel().getMacro(command);
 	}
 
-	private int registeredCount(Package tool) throws IOException {
+	private int registeredCount(Package tool, boolean adoptEquivalent) throws IOException {
+		pruneActivated();
 		int count = 0;
+		Map<Macro, String> equivalent = new IdentityHashMap<>();
 		for (String name : tool.commands) {
 			Macro current = app.getKernel().getMacro(name);
 			if (current != null) {
-				if (!tool.id.equals(activated.get(current))
-						|| current.getKernel() != app.getKernel()) {
+				if (current.getKernel() != app.getKernel()
+						|| !tool.definitionDigest(name).equals(definitionDigest(current))) {
+					throw new IOException("UserTools.DefinitionMismatch: " + name);
+				}
+				String owner = activated.get(current);
+				if (owner != null && !tool.id.equals(owner)) {
 					throw new IOException("UserTools.DocumentConflict: " + name);
 				}
+				equivalent.put(current, tool.id);
 				count++;
 			}
 		}
@@ -508,7 +645,21 @@ final class GeoCeDGUserToolLibrary {
 		if (count != 0 && count != tool.commands.size()) {
 			throw new IOException("UserTools.DocumentConflict");
 		}
+		if (adoptEquivalent && count == tool.commands.size()) {
+			// The live objects remain document-owned reconstruction authority. This map only
+			// records which installed package may present and invoke those exact definitions.
+			activated.putAll(equivalent);
+		}
 		return count;
+	}
+
+	private void pruneActivated() {
+		activated.entrySet().removeIf(entry -> {
+			Macro macro = entry.getKey();
+			return macro.getKernel() != app.getKernel()
+					|| app.getKernel().getMacro(macro.getCommandName()) != macro
+					|| !packages.containsKey(entry.getValue());
+		});
 	}
 
 	private void registerWithHost(Package tool) throws IOException {
@@ -527,7 +678,8 @@ final class GeoCeDGUserToolLibrary {
 			for (String name : tool.commands) {
 				Macro macro = app.getKernel().getMacro(name);
 				if (macro == null || previous.contains(macro)
-						|| macro.getKernel() != app.getKernel()) {
+						|| macro.getKernel() != app.getKernel()
+						|| !tool.definitionDigest(name).equals(definitionDigest(macro))) {
 					throw new IOException("UserTools.InvalidArchive");
 				}
 			}
@@ -567,7 +719,7 @@ final class GeoCeDGUserToolLibrary {
 	String unavailableReason(Package tool) {
 		try {
 			inspect(tool.name, tool.bytes);
-			registeredCount(tool);
+			registeredCount(tool, false);
 			return null;
 		} catch (IOException exception) {
 			return exception.getMessage().split(":", 2)[0];
@@ -743,6 +895,135 @@ final class GeoCeDGUserToolLibrary {
 		}
 	}
 
+	private void verifyDefinitionDigests(Package tool, Map<String, String> expected)
+			throws IOException {
+		Map<String, String> calculated = new LinkedHashMap<>();
+		for (Macro macro : validateWithHost(tool)) {
+			calculated.put(macro.getCommandName(), definitionDigest(macro));
+		}
+		Map<String, String> prior = expected == null ? Map.of()
+				: new LinkedHashMap<>(expected);
+		if (!prior.isEmpty() && !prior.equals(calculated)) {
+			throw new IOException("UserTools.InvalidArchive");
+		}
+		tool.definitionDigests.clear();
+		tool.definitionDigests.putAll(calculated);
+	}
+
+	private static String definitionDigest(Macro macro) throws IOException {
+		XMLStringBuilder builder = new XMLStringBuilder();
+		macro.getXML(builder);
+		String xml = builder.toString();
+		Matcher toolbar = TOOLBAR_ATTRIBUTE.matcher(xml);
+		if (!toolbar.find()) {
+			throw new IOException("UserTools.InvalidArchive");
+		}
+		// Toolbar exposure belongs to the application profile. Every other macro field,
+		// including command, metadata, inputs, outputs and normalized construction XML,
+		// remains definition-bearing and therefore participates in equivalence.
+		String normalized = toolbar.replaceFirst(" showInToolBar=\"application\"");
+		return digest(("GeoCeDG macro definition\n"
+				+ DEFINITION_DIGEST_VERSION + "\n" + normalized)
+				.getBytes(StandardCharsets.UTF_8));
+	}
+
+	private static PinIcon createPinIcon(String fileName, byte[] bytes) throws IOException {
+		return createPinIconForSource(basePngName(fileName), bytes);
+	}
+
+	private static PinIcon createPinIconForSource(String sourceName, byte[] bytes)
+			throws IOException {
+		if (bytes == null || bytes.length == 0 || bytes.length < PNG_SIGNATURE.length) {
+			throw new IOException("UserTools.InvalidIcon");
+		}
+		if (bytes.length > MAX_ICON_BYTES) {
+			throw new IOException("UserTools.Limit");
+		}
+		for (int i = 0; i < PNG_SIGNATURE.length; i++) {
+			if (bytes[i] != PNG_SIGNATURE[i]) {
+				throw new IOException("UserTools.InvalidIcon");
+			}
+		}
+		BufferedImage source;
+		int width;
+		int height;
+		try (ImageInputStream input = ImageIO.createImageInputStream(
+				new ByteArrayInputStream(bytes))) {
+			if (input == null) {
+				throw new IOException("UserTools.InvalidIcon");
+			}
+			Iterator<ImageReader> readers = ImageIO.getImageReaders(input);
+			if (!readers.hasNext()) {
+				throw new IOException("UserTools.InvalidIcon");
+			}
+			ImageReader reader = readers.next();
+			try {
+				if (!"png".equalsIgnoreCase(reader.getFormatName())) {
+					throw new IOException("UserTools.InvalidIcon");
+				}
+				reader.setInput(input, true, true);
+				width = reader.getWidth(0);
+				height = reader.getHeight(0);
+				if (width < 1 || height < 1 || width > MAX_ICON_EDGE
+						|| height > MAX_ICON_EDGE
+						|| (long) width * height > (long) MAX_ICON_EDGE * MAX_ICON_EDGE) {
+					throw new IOException("UserTools.Limit");
+				}
+				source = reader.read(0);
+			} finally {
+				reader.dispose();
+			}
+		} catch (IOException exception) {
+			if (exception.getMessage() != null
+					&& exception.getMessage().startsWith("UserTools.")) {
+				throw exception;
+			}
+			throw new IOException("UserTools.InvalidIcon", exception);
+		}
+		if (source == null || source.getWidth() != width || source.getHeight() != height) {
+			throw new IOException("UserTools.InvalidIcon");
+		}
+		BufferedImage normalized = new BufferedImage(TOOLBAR_ICON_SIZE, TOOLBAR_ICON_SIZE,
+				BufferedImage.TYPE_INT_ARGB);
+		double scale = Math.min((double) TOOLBAR_ICON_SIZE / width,
+				(double) TOOLBAR_ICON_SIZE / height);
+		int scaledWidth = Math.max(1, (int) Math.round(width * scale));
+		int scaledHeight = Math.max(1, (int) Math.round(height * scale));
+		Graphics2D graphics = normalized.createGraphics();
+		try {
+			graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+					RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+			graphics.setRenderingHint(RenderingHints.KEY_RENDERING,
+					RenderingHints.VALUE_RENDER_QUALITY);
+			graphics.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION,
+					RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+			graphics.drawImage(source, (TOOLBAR_ICON_SIZE - scaledWidth) / 2,
+					(TOOLBAR_ICON_SIZE - scaledHeight) / 2, scaledWidth, scaledHeight, null);
+		} finally {
+			graphics.dispose();
+		}
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		if (!ImageIO.write(normalized, "png", output)) {
+			throw new IOException("UserTools.InvalidIcon");
+		}
+		return new PinIcon(sourceName, digest(bytes), width, height, bytes,
+				output.toByteArray());
+	}
+
+	private static String basePngName(String fileName) throws IOException {
+		if (fileName == null) {
+			throw new IOException("UserTools.InvalidIcon");
+		}
+		String portable = fileName.replace('\\', '/');
+		String name = portable.substring(portable.lastIndexOf('/') + 1).strip();
+		if (name.isEmpty() || name.length() > 128
+				|| !name.toLowerCase(Locale.ROOT).endsWith(".png")
+				|| !name.matches("[\\p{L}\\p{N} ._()-]+")) {
+			throw new IOException("UserTools.InvalidIcon");
+		}
+		return name;
+	}
+
 	private static String readMacroXml(byte[] bytes) throws IOException {
 		Set<String> entries = new HashSet<>();
 		String xml = null;
@@ -817,7 +1098,11 @@ final class GeoCeDGUserToolLibrary {
 		try {
 			JSONObject root = new JSONObject(Files.readString(storage));
 			int version = root.getInt("version");
-			if (root.length() != 2 || (version != 1 && version != 2)) {
+			int expectedRootLength = version == STORE_VERSION ? 3 : 2;
+			if (root.length() != expectedRootLength
+					|| (version != 1 && version != 2 && version != STORE_VERSION)
+					|| version == STORE_VERSION && root.getInt("definitionDigestVersion")
+							!= DEFINITION_DIGEST_VERSION) {
 				throw new IOException("UserTools.InvalidArchive");
 			}
 			JSONArray stored = root.getJSONArray("packages");
@@ -829,12 +1114,19 @@ final class GeoCeDGUserToolLibrary {
 			int migratedOrder = 0;
 			for (int i = 0; i < stored.length(); i++) {
 				JSONObject entry = stored.getJSONObject(i);
+				if (entry.length() != (version == STORE_VERSION ? 5 : 4)) {
+					throw new IOException("UserTools.InvalidArchive");
+				}
 				byte[] bytes = Base64.getDecoder().decode(entry.getString("ggt"));
 				Package tool = inspect(entry.getString("name"), bytes);
-				if (entry.length() != 4 || !tool.id.equals(entry.getString("sha256"))
+				if (!tool.id.equals(entry.getString("sha256"))
 						|| validated.containsKey(tool.id)) {
 					throw new IOException("UserTools.InvalidArchive");
 				}
+				Map<String, String> storedDefinitions = version == STORE_VERSION
+						? readDefinitionDigests(entry.getJSONArray("definitions"), tool)
+						: null;
+				verifyDefinitionDigests(tool, storedDefinitions);
 				for (String command : tool.commands) {
 					if (!names.add(key(command))) {
 						throw new IOException("UserTools.CommandConflict: " + command);
@@ -851,7 +1143,7 @@ final class GeoCeDGUserToolLibrary {
 						order = migratedOrder++;
 					} else {
 						JSONObject layout = pins.getJSONObject(p);
-						if (layout.length() != 3) {
+						if (layout.length() != (version == STORE_VERSION ? 4 : 3)) {
 							throw new IOException("UserTools.InvalidArchive");
 						}
 						pin = layout.getString("command");
@@ -862,7 +1154,9 @@ final class GeoCeDGUserToolLibrary {
 							|| order < 0 || order > MAX_PIN_ORDER || !pinOrders.add(order)) {
 						throw new IOException("UserTools.InvalidArchive");
 					}
-					tool.pinned.put(pin, new PinLayout(group, order));
+					PinIcon icon = version == STORE_VERSION && !pins.getJSONObject(p).isNull("icon")
+							? readPinIcon(pins.getJSONObject(p).getJSONObject("icon")) : null;
+					tool.pinned.put(pin, new PinLayout(group, order, icon));
 				}
 				validated.put(tool.id, tool);
 			}
@@ -872,6 +1166,45 @@ final class GeoCeDGUserToolLibrary {
 		return validated;
 	}
 
+	private static Map<String, String> readDefinitionDigests(JSONArray stored,
+			Package tool) throws IOException, JSONException {
+		if (stored.length() != tool.commands.size()) {
+			throw new IOException("UserTools.InvalidArchive");
+		}
+		Map<String, String> definitions = new LinkedHashMap<>();
+		for (int i = 0; i < stored.length(); i++) {
+			JSONObject entry = stored.getJSONObject(i);
+			String command = entry.getString("command");
+			String sha256 = entry.getString("sha256");
+			if (entry.length() != 2 || !tool.commands.contains(command)
+					|| definitions.put(command, sha256) != null
+					|| !sha256.matches("[0-9a-f]{64}")) {
+				throw new IOException("UserTools.InvalidArchive");
+			}
+		}
+		return definitions;
+	}
+
+	private static PinIcon readPinIcon(JSONObject stored) throws IOException, JSONException {
+		if (stored.length() != 6
+				|| stored.getInt("normalizationVersion") != ICON_NORMALIZATION_VERSION) {
+			throw new IOException("UserTools.InvalidArchive");
+		}
+		byte[] source = Base64.getDecoder().decode(stored.getString("source"));
+		PinIcon icon;
+		try {
+			icon = createPinIcon(stored.getString("sourceName"), source);
+		} catch (IOException exception) {
+			throw new IOException("UserTools.InvalidArchive", exception);
+		}
+		if (!icon.sourceDigest.equals(stored.getString("sourceSha256"))
+				|| icon.sourceWidth != stored.getInt("sourceWidth")
+				|| icon.sourceHeight != stored.getInt("sourceHeight")) {
+			throw new IOException("UserTools.InvalidArchive");
+		}
+		return icon;
+	}
+
 	private void persist(Map<String, Package> next) throws IOException {
 		String json;
 		try {
@@ -879,15 +1212,28 @@ final class GeoCeDGUserToolLibrary {
 			for (Package tool : next.values()) {
 				JSONArray pins = new JSONArray();
 				for (Map.Entry<String, PinLayout> pin : tool.pinned.entrySet()) {
+					PinIcon icon = pin.getValue().icon;
 					pins.put(new JSONObject().put("command", pin.getKey())
 							.put("group", pin.getValue().group)
-							.put("order", pin.getValue().order));
+							.put("order", pin.getValue().order)
+							.put("icon", icon == null ? JSONObject.NULL : iconJson(icon)));
+				}
+				JSONArray definitions = new JSONArray();
+				for (String command : tool.commands) {
+					String definition = tool.definitionDigest(command);
+					if (definition == null) {
+						throw new IOException("UserTools.InvalidArchive");
+					}
+					definitions.put(new JSONObject().put("command", command)
+							.put("sha256", definition));
 				}
 				entries.put(new JSONObject().put("name", tool.name).put("sha256", tool.id)
 						.put("ggt", Base64.getEncoder().encodeToString(tool.bytes))
-						.put("pinned", pins));
+						.put("definitions", definitions).put("pinned", pins));
 			}
-			json = new JSONObject().put("version", 2).put("packages", entries).toString();
+			json = new JSONObject().put("version", STORE_VERSION)
+					.put("definitionDigestVersion", DEFINITION_DIGEST_VERSION)
+					.put("packages", entries).toString();
 		} catch (JSONException exception) {
 			throw new IOException("UserTools.InvalidArchive", exception);
 		}
@@ -903,6 +1249,15 @@ final class GeoCeDGUserToolLibrary {
 		} finally {
 			Files.deleteIfExists(temporary);
 		}
+	}
+
+	private static JSONObject iconJson(PinIcon icon) throws JSONException {
+		return new JSONObject().put("normalizationVersion", ICON_NORMALIZATION_VERSION)
+				.put("sourceName", icon.sourceName)
+				.put("sourceSha256", icon.sourceDigest)
+				.put("sourceWidth", icon.sourceWidth)
+				.put("sourceHeight", icon.sourceHeight)
+				.put("source", Base64.getEncoder().encodeToString(icon.sourceBytes));
 	}
 
 	private void notifyListeners() {

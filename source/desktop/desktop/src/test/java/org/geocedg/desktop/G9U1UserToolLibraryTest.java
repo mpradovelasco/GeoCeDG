@@ -8,6 +8,7 @@ package org.geocedg.desktop;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -19,9 +20,12 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 
+import java.awt.Color;
 import java.awt.DefaultKeyboardFocusManager;
+import java.awt.Graphics2D;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -36,15 +40,19 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HexFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.UnaryOperator;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
 
 import org.geocedg.desktop.GeoCeDGUserToolLibrary.Package;
@@ -178,7 +186,7 @@ class G9U1UserToolLibraryTest {
 						.map(GeoCeDGUserToolLibrary.PinnedCommand::command).toList());
 		assertEquals(List.of("Bisectors", "Bisectors", ""), reopened.pinnedCommands()
 				.stream().map(GeoCeDGUserToolLibrary.PinnedCommand::group).toList());
-		assertEquals(2, new JSONObject(Files.readString(storage)).getInt("version"));
+		assertEquals(3, new JSONObject(Files.readString(storage)).getInt("version"));
 		assertEquals(before, app.getXML());
 		assertEquals(steps, app.getKernel().getConstruction().steps());
 		assertEquals(undo, app.getKernel().getConstruction().getUndoManager().undoPossible());
@@ -193,6 +201,175 @@ class G9U1UserToolLibraryTest {
 				.getClientProperty("geocedg.userTool.groupSize"));
 		assertEquals("ThirdMidpoint", ((JToggleButton) pins.getComponent(1))
 				.getClientProperty("geocedg.userTool.command"));
+	}
+
+	@Test
+	void iconlessPinnedButtonsAndGroupsStayCompactWithFullAccessibleIdentity()
+			throws Exception {
+		Package tool = library.install("owned.ggt",
+				midpointPackage("FirstMidpoint", "SecondMidpoint", "ThirdMidpoint"));
+		library.pin(tool.id(), "FirstMidpoint", true);
+		library.pin(tool.id(), "SecondMidpoint", true);
+		library.pin(tool.id(), "ThirdMidpoint", true);
+		library.setPinGroup(tool.id(), "FirstMidpoint", "Bisectors");
+		library.setPinGroup(tool.id(), "SecondMidpoint", "Bisectors");
+
+		JPanel toolbar = new JPanel();
+		new GeoCeDGUserTools(app, library).populatePins(toolbar);
+		assertEquals(2, toolbar.getComponentCount());
+		JToggleButton group = (JToggleButton) toolbar.getComponent(0);
+		JToggleButton command = (JToggleButton) toolbar.getComponent(1);
+		for (JToggleButton button : List.of(group, command)) {
+			assertNull(button.getIcon());
+			assertEquals(app.getScaledIconSize() + 12,
+					button.getPreferredSize().width);
+			assertEquals(button.getPreferredSize().width,
+					button.getPreferredSize().height);
+			assertEquals(button.getPreferredSize(), button.getMinimumSize());
+			assertEquals(button.getPreferredSize(), button.getMaximumSize());
+			assertEquals(button.getToolTipText(),
+					button.getAccessibleContext().getAccessibleDescription());
+		}
+		assertEquals("B\u25be", group.getText());
+		assertEquals("Bisectors", group.getAccessibleContext().getAccessibleName());
+		assertTrue(group.getToolTipText().contains("Bisectors"));
+		assertTrue(group.getToolTipText().contains("FirstMidpoint"));
+		assertTrue(group.getToolTipText().contains("SecondMidpoint"));
+		JPopupMenu popup = (JPopupMenu) group.getClientProperty("geocedg.userTool.popup");
+		for (int i = 0; i < popup.getComponentCount(); i++) {
+			JMenuItem item = (JMenuItem) popup.getComponent(i);
+			assertEquals(item.getText(), item.getAccessibleContext().getAccessibleName());
+			assertEquals(item.getToolTipText(),
+					item.getAccessibleContext().getAccessibleDescription());
+		}
+		assertEquals("T", command.getText());
+		assertEquals("ThirdMidpoint",
+				command.getAccessibleContext().getAccessibleName());
+		assertTrue(command.getToolTipText().contains("ThirdMidpoint"));
+		assertTrue(command.getToolTipText().contains(tool.name()));
+	}
+
+	@Test
+	void pngPinIconPersistsDigestAndTransparentAspectPaddingWithoutDocumentMutation()
+			throws Exception {
+		Package tool = library.install("owned.ggt", midpointPackage("OwnedMidpoint"));
+		G9U1TestApp.eval(app, "P=(3,4)");
+		final String before = app.getXML();
+		final byte[] beforeArchive = archiveXml(app);
+		final int steps = app.getKernel().getConstruction().steps();
+		byte[] source = png(80, 20, new Color(20, 80, 160, 220));
+
+		library.pin(tool.id(), "OwnedMidpoint", "wide-source.png", source);
+		GeoCeDGUserToolLibrary.PinnedCommand pin = library.pinnedCommands().get(0);
+		GeoCeDGUserToolLibrary.PinIcon icon = pin.icon();
+		assertNotNull(icon);
+		assertEquals("wide-source.png", icon.sourceName());
+		assertEquals(80, icon.sourceWidth());
+		assertEquals(20, icon.sourceHeight());
+		assertArrayEquals(source, icon.sourceBytes());
+		assertEquals(HexFormat.of().formatHex(
+				MessageDigest.getInstance("SHA-256").digest(source)), icon.sourceDigest());
+		BufferedImage normalized = ImageIO.read(new ByteArrayInputStream(icon.toolbarBytes()));
+		assertEquals(GeoCeDGUserToolLibrary.TOOLBAR_ICON_SIZE, normalized.getWidth());
+		assertEquals(GeoCeDGUserToolLibrary.TOOLBAR_ICON_SIZE, normalized.getHeight());
+		assertEquals(0, normalized.getRGB(0, 0) >>> 24);
+		assertTrue(normalized.getRGB(32, 32) >>> 24 > 0);
+
+		JSONObject root = new JSONObject(Files.readString(storage));
+		assertEquals(3, root.getInt("version"));
+		assertEquals(1, root.getInt("definitionDigestVersion"));
+		assertTrue(Files.readString(storage).contains(icon.sourceDigest()));
+		GeoCeDGUserToolLibrary reopened = new GeoCeDGUserToolLibrary(app, storage);
+		assertEquals(icon.sourceDigest(), reopened.pinnedCommands().get(0).icon()
+				.sourceDigest());
+		JPanel toolbar = new JPanel();
+		new GeoCeDGUserTools(app, reopened).populatePins(toolbar);
+		JToggleButton button = (JToggleButton) toolbar.getComponent(0);
+		assertNotNull(button.getIcon());
+		assertEquals("OwnedMidpoint", button.getAccessibleContext().getAccessibleName());
+		assertEquals(app.getScaledIconSize() + 12, button.getPreferredSize().height);
+		assertEquals(button.getPreferredSize().height, button.getPreferredSize().width);
+
+		assertEquals(before, app.getXML());
+		assertArrayEquals(beforeArchive, archiveXml(app));
+		assertEquals(steps, app.getKernel().getConstruction().steps());
+		assertEquals(0, app.getKernel().getMacroNumber());
+	}
+
+	@Test
+	void changingUnpinningAndRemovingPngIconsCleansInlineApplicationData() throws Exception {
+		Package tool = library.install("owned.ggt", midpointPackage("OwnedMidpoint"));
+		final String before = app.getXML();
+		byte[] first = png(64, 16, Color.RED);
+		byte[] second = png(16, 64, Color.BLUE);
+		library.pin(tool.id(), "OwnedMidpoint", "first.png", first);
+		String firstDigest = library.pinnedCommands().get(0).icon().sourceDigest();
+		library.setPinIcon(tool.id(), "OwnedMidpoint", "second.png", second);
+		String secondDigest = library.pinnedCommands().get(0).icon().sourceDigest();
+		assertNotEquals(firstDigest, secondDigest);
+		assertFalse(Files.readString(storage).contains(firstDigest));
+		assertTrue(Files.readString(storage).contains(secondDigest));
+
+		library.setPinIcon(tool.id(), "OwnedMidpoint", null, null);
+		assertNull(library.pinnedCommands().get(0).icon());
+		assertFalse(Files.readString(storage).contains(secondDigest));
+		library.pin(tool.id(), "OwnedMidpoint", "second.png", second);
+		library.pin(tool.id(), "OwnedMidpoint", false);
+		assertFalse(Files.readString(storage).contains(secondDigest));
+		library.pin(tool.id(), "OwnedMidpoint", "first.png", first);
+		library.remove(tool.id());
+		assertFalse(Files.readString(storage).contains(firstDigest));
+		assertEquals(before, app.getXML());
+		assertEquals(0, app.getKernel().getMacroNumber());
+	}
+
+	@Test
+	void invalidSpoofedOversizedAndDimensionBombPngFailWithoutMutation() throws Exception {
+		Package tool = library.install("owned.ggt", midpointPackage("OwnedMidpoint"));
+		library.pin(tool.id(), "OwnedMidpoint", true);
+		byte[] preferences = Files.readAllBytes(storage);
+		String before = app.getXML();
+		assertThrows(IOException.class,
+				() -> library.setPinIcon(tool.id(), "OwnedMidpoint", "icon.jpg",
+						png(16, 16, Color.RED)));
+		assertThrows(IOException.class,
+				() -> library.setPinIcon(tool.id(), "OwnedMidpoint", "spoof.png",
+						new byte[] {(byte) 0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a}));
+		assertThrows(IOException.class,
+				() -> library.setPinIcon(tool.id(), "OwnedMidpoint", "large.png",
+						new byte[GeoCeDGUserToolLibrary.MAX_ICON_BYTES + 1]));
+		assertThrows(IOException.class,
+				() -> library.setPinIcon(tool.id(), "OwnedMidpoint", "bomb.png",
+						png(GeoCeDGUserToolLibrary.MAX_ICON_EDGE + 1, 1, Color.RED)));
+		assertArrayEquals(preferences, Files.readAllBytes(storage));
+		assertNull(library.pinnedCommands().get(0).icon());
+		assertEquals(before, app.getXML());
+		assertEquals(0, app.getKernel().getMacroNumber());
+	}
+
+	@Test
+	void groupedPngPinsKeepIndividualPopupIconsWithoutChangingToolIdentity()
+			throws Exception {
+		Package tool = library.install("owned.ggt",
+				midpointPackage("FirstMidpoint", "SecondMidpoint"));
+		library.pin(tool.id(), "FirstMidpoint", "first.png", png(32, 16, Color.RED));
+		library.pin(tool.id(), "SecondMidpoint", "second.png", png(16, 32, Color.BLUE));
+		library.setPinGroup(tool.id(), "FirstMidpoint", "Pair");
+		library.setPinGroup(tool.id(), "SecondMidpoint", "Pair");
+		JPanel toolbar = new JPanel();
+		new GeoCeDGUserTools(app, library).populatePins(toolbar);
+		assertEquals(1, toolbar.getComponentCount());
+		JToggleButton group = (JToggleButton) toolbar.getComponent(0);
+		assertNotNull(group.getIcon());
+		JPopupMenu popup = (JPopupMenu) group.getClientProperty("geocedg.userTool.popup");
+		assertEquals(2, popup.getComponentCount());
+		for (int i = 0; i < popup.getComponentCount(); i++) {
+			assertNotNull(((JMenuItem) popup.getComponent(i)).getIcon());
+		}
+		assertEquals(List.of("FirstMidpoint", "SecondMidpoint"),
+				library.pinnedCommands().stream()
+						.map(GeoCeDGUserToolLibrary.PinnedCommand::command).toList());
+		assertEquals(0, app.getKernel().getMacroNumber());
 	}
 
 	@Test
@@ -229,6 +406,27 @@ class G9U1UserToolLibraryTest {
 				.isEnabled());
 		assertEquals(before, app.getXML());
 		assertEquals(0, app.getKernel().getMacroNumber());
+	}
+
+	@Test
+	void iconChooserPresentationIsLocalizedAndAccessibleInEnglishAndSpanish()
+			throws Exception {
+		Package tool = library.install("owned.ggt", midpointPackage("OwnedMidpoint"));
+		library.pin(tool.id(), "OwnedMidpoint", true);
+		GeoCeDGUserTools presentation = new GeoCeDGUserTools(app, library);
+		for (Locale locale : List.of(Locale.ENGLISH, new Locale("es"))) {
+			app.setLocale(locale);
+			JPanel manager = new JPanel();
+			presentation.populateManagerPins(manager, tool);
+			JButton icon = (JButton) ((JPanel) manager.getComponent(0)).getComponent(4);
+			String expected = locale.getLanguage().equals("es")
+					? "Elegir icono PNG…" : "Choose PNG icon…";
+			assertEquals(expected, icon.getText());
+			assertEquals(expected, icon.getAccessibleContext().getAccessibleName());
+			assertFalse(icon.getToolTipText().isBlank());
+			assertEquals(icon.getToolTipText(),
+					icon.getAccessibleContext().getAccessibleDescription());
+		}
 	}
 
 	@Test
@@ -283,7 +481,7 @@ class G9U1UserToolLibraryTest {
 		assertEquals(0, migrated.pinnedCommands().get(0).order());
 		assertEquals(1, new JSONObject(Files.readString(storage)).getInt("version"));
 		migrated.setPinGroup(id, "OwnedMidpoint", "Planar");
-		assertEquals(2, new JSONObject(Files.readString(storage)).getInt("version"));
+		assertEquals(3, new JSONObject(Files.readString(storage)).getInt("version"));
 		assertEquals("Planar", new GeoCeDGUserToolLibrary(app, storage)
 				.pinnedCommands().get(0).group());
 		assertEquals(0, app.getKernel().getMacroNumber());
@@ -501,35 +699,65 @@ class G9U1UserToolLibraryTest {
 	}
 
 	@Test
-	void documentCollisionAtInstallOrActivationDoesNotReplaceMacro() throws Exception {
+	void equivalentEmbeddedMacroIsAdoptedWithoutDuplicateOrReplacement() throws Exception {
 		byte[] bytes = midpointPackage("OwnedMidpoint");
 		Package tool = library.install("owned.ggt", bytes);
 		app.loadMacroFileFromByteArray(bytes, false);
 		Macro document = app.getKernel().getMacro("OwnedMidpoint");
 		assertNotNull(document);
-		assertEquals("UserTools.DocumentConflict", library.unavailableReason(tool));
-		assertThrows(IOException.class, () -> library.activate(tool.id(), "OwnedMidpoint"));
+		document.setShowInToolBar(!document.isShowInToolBar());
+		String before = app.getXML();
+		assertNull(library.unavailableReason(tool));
+		assertSame(document, library.activate(tool.id(), "OwnedMidpoint"));
 		assertSame(document, app.getKernel().getMacro("OwnedMidpoint"));
+		assertNull(app.getKernel().getMacro("OwnedMidpoint1"));
+		assertEquals(1, app.getKernel().getMacroNumber());
+		assertEquals(before, app.getXML());
 		GeoCeDGUserToolLibrary other = new GeoCeDGUserToolLibrary(app,
 				temporary.resolve("other.json"));
-		assertThrows(IOException.class, () -> other.install("owned.ggt", bytes));
+		Package installedFromDocument = other.install("owned.ggt", bytes);
+		assertNull(other.unavailableReason(installedFromDocument));
+		assertSame(document, other.activate(installedFromDocument.id(), "OwnedMidpoint"));
+	}
+
+	@Test
+	void mismatchedOrPartialEmbeddedPackageFailsClosedWithoutRenameOrReplacement()
+			throws Exception {
+		byte[] installedBytes = midpointPackage("OwnedMidpoint");
+		Package tool = library.install("owned.ggt", installedBytes);
+		app.loadMacroFileFromByteArray(linePackage("OwnedMidpoint"), false);
+		Macro document = app.getKernel().getMacro("OwnedMidpoint");
+		assertNotNull(document);
+		String before = app.getXML();
+		byte[] preferences = Files.readAllBytes(storage);
+		assertEquals("UserTools.DefinitionMismatch", library.unavailableReason(tool));
+		assertThrows(IOException.class, () -> library.activate(tool.id(), "OwnedMidpoint"));
+		assertSame(document, app.getKernel().getMacro("OwnedMidpoint"));
+		assertNull(app.getKernel().getMacro("OwnedMidpoint1"));
+		assertEquals(before, app.getXML());
+		assertArrayEquals(preferences, Files.readAllBytes(storage));
+		GeoCeDGUserToolLibrary other = new GeoCeDGUserToolLibrary(app,
+				temporary.resolve("mismatch-install.json"));
+		IOException installMismatch = assertThrows(IOException.class,
+				() -> other.install("owned.ggt", installedBytes));
+		assertTrue(installMismatch.getMessage().startsWith("UserTools.DefinitionMismatch"));
 		assertTrue(other.packages().isEmpty());
+
+		document.getKernel().removeMacro(document);
 		Package pair = library.install("pair.ggt",
 				midpointPackage("FirstMidpoint", "SecondMidpoint"));
-		final Macro first = library.activate(pair.id(), "FirstMidpoint");
-		Macro second = app.getKernel().getMacro("SecondMidpoint");
-		assertSame(app.getKernel(), second.getKernel());
-		second.getKernel().removeMacro(second);
-		String before = app.getXML();
-		final byte[] preferences = Files.readAllBytes(storage);
+		app.loadMacroFileFromByteArray(midpointPackage("FirstMidpoint"), false);
+		Macro first = app.getKernel().getMacro("FirstMidpoint");
+		String partialBefore = app.getXML();
+		final byte[] partialPreferences = Files.readAllBytes(storage);
 		assertEquals("UserTools.DocumentConflict", library.unavailableReason(pair));
 		assertThrows(IOException.class, () -> library.activate(pair.id(), "FirstMidpoint"));
 		assertSame(first, app.getKernel().getMacro("FirstMidpoint"));
-		assertSame(document, app.getKernel().getMacro("OwnedMidpoint"));
 		assertNull(app.getKernel().getMacro("SecondMidpoint"));
-		assertEquals(2, app.getKernel().getMacroNumber());
-		assertEquals(before, app.getXML());
-		assertArrayEquals(preferences, Files.readAllBytes(storage));
+		assertNull(app.getKernel().getMacro("FirstMidpoint1"));
+		assertEquals(1, app.getKernel().getMacroNumber());
+		assertEquals(partialBefore, app.getXML());
+		assertArrayEquals(partialPreferences, Files.readAllBytes(storage));
 	}
 
 	@Test
@@ -607,11 +835,22 @@ class G9U1UserToolLibraryTest {
 	@Test
 	void tamperedStoredPackageFailsClosedAndIsNotRewritten() throws Exception {
 		Package tool = library.install("owned.ggt", midpointPackage("OwnedMidpoint"));
-		String tampered = Files.readString(storage).replace(tool.id(), "0".repeat(64));
+		byte[] original = Files.readAllBytes(storage);
+		String tampered = new String(original, StandardCharsets.UTF_8)
+				.replace(tool.id(), "0".repeat(64));
 		Files.writeString(storage, tampered);
 		byte[] before = Files.readAllBytes(storage);
 		assertThrows(IOException.class, () -> new GeoCeDGUserToolLibrary(app, storage));
 		assertArrayEquals(before, Files.readAllBytes(storage));
+		assertEquals(0, app.getKernel().getMacroNumber());
+
+		Files.write(storage, original);
+		String definitionTampered = Files.readString(storage).replace(
+				tool.definitionDigest("OwnedMidpoint"), "f".repeat(64));
+		Files.writeString(storage, definitionTampered);
+		byte[] definitionBefore = Files.readAllBytes(storage);
+		assertThrows(IOException.class, () -> new GeoCeDGUserToolLibrary(app, storage));
+		assertArrayEquals(definitionBefore, Files.readAllBytes(storage));
 		assertEquals(0, app.getKernel().getMacroNumber());
 	}
 
@@ -661,6 +900,34 @@ class G9U1UserToolLibraryTest {
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
 		source.getXMLio().writeMacroStream(output, macros,
 				new ArrayList<>());
+		return output.toByteArray();
+	}
+
+	private static byte[] linePackage(String name) throws Exception {
+		AppGeoCeDG source = G9U1TestApp.create();
+		GeoElement a = G9U1TestApp.eval(source, "A=(0,0)");
+		GeoElement b = G9U1TestApp.eval(source, "B=(2,0)");
+		GeoElement line = G9U1TestApp.eval(source, "g=Line(A,B)");
+		Macro macro = new Macro(source.getKernel(), name, new GeoElement[] {a, b},
+				new GeoElement[] {line});
+		source.getKernel().addMacro(macro);
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		source.getXMLio().writeMacroStream(output, new ArrayList<>(List.of(macro)),
+				new ArrayList<>());
+		return output.toByteArray();
+	}
+
+	private static byte[] png(int width, int height, Color color) throws IOException {
+		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D graphics = image.createGraphics();
+		try {
+			graphics.setColor(color);
+			graphics.fillRect(0, 0, width, height);
+		} finally {
+			graphics.dispose();
+		}
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		assertTrue(ImageIO.write(image, "png", output));
 		return output.toByteArray();
 	}
 

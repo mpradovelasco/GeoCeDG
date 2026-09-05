@@ -8,6 +8,7 @@
     "vendor": "GeoCeDG Project",
     "main_jar": "desktop.jar",
     "main_class": "org.geocedg.desktop.GeoCeDG",
+    "icon": "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/derived/geocedg-application.ico",
     "upgrade_uuid": "b52d8e6d-3996-4bc5-b9ba-4f51f73c6e44",
     "jvm_options": [
       "--add-exports=java.base/java.lang=ALL-UNNAMED",

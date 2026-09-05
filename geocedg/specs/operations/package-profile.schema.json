@@ -22,13 +22,14 @@
     "application": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["name", "version", "vendor", "main_jar", "main_class", "upgrade_uuid", "jvm_options"],
+      "required": ["name", "version", "vendor", "main_jar", "main_class", "icon", "upgrade_uuid", "jvm_options"],
       "properties": {
         "name": { "const": "GeoCeDG" },
         "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
         "vendor": { "type": "string", "minLength": 1 },
         "main_jar": { "type": "string", "pattern": "^[^/\\\\]+\\.jar$" },
         "main_class": { "const": "org.geocedg.desktop.GeoCeDG" },
+        "icon": { "const": "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/derived/geocedg-application.ico" },
         "upgrade_uuid": { "type": "string", "format": "uuid" },
         "jvm_options": { "type": "array", "minItems": 4, "items": { "type": "string" }, "uniqueItems": true }
       }

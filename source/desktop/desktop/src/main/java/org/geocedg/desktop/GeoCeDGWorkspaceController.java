@@ -312,15 +312,23 @@ public final class GeoCeDGWorkspaceController {
 		toolbar.getAccessibleContext().setAccessibleName(registry.text("Menu.Construction"));
 		try {
 			JSONObject catalog = GeoCeDGProfile.getCatalog();
-			JSONArray clusters = catalog.getJSONArray("clusters");
+			JSONArray groups = catalog.getJSONArray("presentation_groups");
 			Set<String> included = new LinkedHashSet<>();
-			for (int c = 0; c < clusters.length(); c++) {
-				for (String id : GeoCeDGProfile.strings(clusters.getJSONObject(c)
-						.getJSONArray("toolbar_action_ids"))) {
+			for (String groupId : GeoCeDGProfile.strings(
+					catalog.getJSONArray("toolbar_group_ids"))) {
+				JSONObject group = GeoCeDGMenuBar.find(groups, groupId);
+				boolean groupStarted = false;
+				for (String id : GeoCeDGProfile.strings(
+						group.getJSONArray("toolbar_action_ids"))) {
 					if (GeoCeDGProfile.getAction(id).mode() == null && included.add(id)) {
+						if (!groupStarted && toolbar.getComponentCount() > 0) {
+							toolbar.addSeparator();
+						}
+						groupStarted = true;
 						Action action = registry.get(id);
 						JButton button = new JButton(action);
 						button.putClientProperty(GeoCeDGActionRegistry.ACTION_ID, id);
+						button.putClientProperty("geocedg.presentation.group.id", groupId);
 						button.setFont(app.getPlainFont());
 						button.getAccessibleContext().setAccessibleName(
 								(String) action.getValue(Action.NAME));

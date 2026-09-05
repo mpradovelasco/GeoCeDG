@@ -122,3 +122,26 @@ semantics.
   coupling enough to justify its maintenance cost.
 - Which owned and reviewed translations, icons, styles, and other assets will
   replace inherited baseline materials before redistribution.
+
+## G9U1 Round-3 presentation supersession note
+
+Decision item 8 and its G2 validation statement describe the historical G2
+cohort; they are not a permanent ban on later provenance-cleared GeoCeDG-owned
+assets. The G9U1 Round-3 implementation candidate now consumes two explicitly
+author-authorized sources: `helixTopBar.png` for application/window and Windows
+package icons, and `helixSnapshot.png` for startup presentation. Both are
+promoted byte-exact into a versioned GeoCeDG resource namespace; every runtime
+derivative is deterministic, recorded in the asset manifest and validated
+without depending on the ignored ingestion directory. Classic remains unchanged
+and no upstream branding is used as fallback.
+
+The same bounded product launch seam prepares the GeoCeDG splash before it
+synchronously constructs and initializes the GeoCeDG frame/application on Swing
+EDT. This aligns Construction ownership with the thread used by ordinary
+Algebra gestures without changing the original two-argument Classic launch path
+or relaxing kernel thread confinement.
+
+This note records an additive application-presentation evolution under ADR 0012
+and the current workspace/profile specs. It does not change G2 kernel or
+serialization semantics, does not declare G9U1 PASS, and does not clear the
+independent public-redistribution/license gate.

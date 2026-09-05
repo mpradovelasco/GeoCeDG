@@ -1302,6 +1302,7 @@ optimización de rendimiento del software.
 | G9S1 | `PASS — AUTHOR APPROVED` | Option B: `SplineV2` crea un nuevo `GeoLocusV2` semántico con dominio, spans y knots explícitos; Classic `Spline` permanece intacto; total/parcial scalar `Length` y autoridad rica `LocusLength` validadas; `selfApproved=false`, `authorApproved=true`, `passClaimed=true` |
 | G9U0-R6 | `PASS — AUTHOR APPROVED` | Puerta kernel acotada entre G9S1 y G9U1: request geométrica transitoria -> resultado tipado con cero/uno/varios preimages -> selección explícita -> punto ordinario con address semántica editable en DAG. Incluye Locus V2, SplineV2 y transformadas R5, además del cruce periódico bidireccional/path-independent del mismo punto y el negativo unresolved sin mutación; no implementa `Path`, Point-tool/frontend ni comando paralelo. ADR 0019 está Accepted y la spec es normativa; `manualGuiSmoke=DEFERRED TO G9U1 BY DESIGN`, `kernelDiagnosticAcceptance=PASS`, `selfApproved=false`, `authorApproved=true`, `passClaimed=true` |
 | G9U1 | `DESIGN PASS — AUTHOR APPROVED / POST-R1 RECONCILED / IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW` | Checkpoint post-R6 `00982e7e148a634cd57ed928f322774df267d5e3` inmutable; R1 publicado satisface la capacidad de pares certificada. Auditoría sin novedad material; autorización condicional actual satisfecha. 11 familias, 18 clusters, 110 acciones y 163 escenarios; Point R6 distinto de materialización de tokens R1. La implementación round 2 está completa como candidato sucesor, pendiente de re-smoke y closeout explícitos del autor; nunca autoaprobada |
+| G9U1 Round 3 | `TECHNICAL STABILIZATION CANDIDATE — VALIDATION/AUTHOR CLOSEOUT PENDING` | Sucesor acotado de `5f492d4ee77289d9def89aa6ed431226d2de3457`; conserva 11 familias, 18 clusters y 110 acciones. Corrige el gesto Álgebra/EDT de `kesc`, reconcilia macro embebida con paquete instalado equivalente, añade icono PNG app-only, promociona branding autoral versionado y proyecta menús/toolbar desde la única autoridad schema-v2. No modifica main, no crea tag PASS y no sustituye el re-smoke autoral |
 | G9B / G9C | `DESIGNED — NOT AUTHORIZED` | Track kernel tras cierre de G9A; no depende de completar el cliente G9U1 |
 | G9U2 | `BLOCKED ON THE APPROVED G9 GATE` | Workspace de procedimientos diédrico solo tras `G9 PASS — AUTHOR APPROVED` |
 | G9 spatial solving | `POINT PILOT — AUTHOR APPROVED` | G9A2 se limita a frames/sistemas/mapas/relaciones y reconstrucción projection-defined de punto; no hay primitivas generales, objetos compuestos ni autoridad 3D |
@@ -2671,6 +2672,41 @@ autorales. Los hashes canónicos del cohort round 2 quedan congelados en la
 autoridad versionada. Las ejecuciones técnicas aplicables se conservan como
 receipts externos y se reportan en el handoff final; no sustituyen el re-smoke
 autoral ni declaran PASS.
+
+Revisión autoral 3: la rama sucesora
+`codex/g9u1-author-review-stabilization-3` parte byte-exactamente del candidato
+Round 2 publicado. Conserva la evidencia fallida y el checklist autoral. La
+corrección acotada identifica el rechazo real de `Revision3.cedg` como una
+inicialización de la Construction/metric owner de GeoCeDG en el launcher thread
+antes de los gestos Álgebra del Swing EDT. El overload de arranque exclusivo de
+GeoCeDG crea e inicializa frame/aplicación sincrónicamente en el EDT, después de
+preparar el splash; Classic, Dilate, G9A, `GeoNumeric` y el confinamiento kernel
+no cambian. El fixture autoral y el fallback limpio cubren ROW, DOUBLE_CLICK, F2
+y FREE_INPUT. Los recursos `helixTopBar.png`/`helixSnapshot.png` se promueven
+con provenance y derivados deterministas para frame/package y splash,
+respectivamente; el gate de redistribución pública permanece bloqueado.
+
+El catálogo mantiene 11 familias, 18 clusters y 110 acciones. Una nueva
+proyección declarativa dentro del mismo perfil —28 grupos de presentación, 12
+grupos primarios de toolbar y entries de menú tipadas— organiza
+**File, Edit, View, Construction, Options, Automation, Help** sin duplicar
+autoridad. File/Edit quedan planos con separadores; Construction contiene
+Rectas y vectores, Polígonos, Construcciones derivadas, Círculos y cónicas,
+Curvas semánticas y Anotaciones y medios; View/Options reutilizan estado host.
+La navegación es view-specific y las preferencias globales no seleccionan un
+objeto implícito.
+
+La biblioteca de tools usa store v3: digest crudo del `.ggt`, digest normalizado
+por definición (solo `showInToolBar` se neutraliza) y, opcionalmente, PNG acotado
+con derivado 64×64 app-only. Una macro embebida equivalente sigue siendo
+autoridad de reconstrucción documental mientras la entrada instalada conserva
+la presentación; diferencia o conjunto parcial falla cerrado. No se implementa
+otro motor Macro ni se hace depender `.cedg` de preferencias externas.
+
+Esta revisión permanece **IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**.
+Sus escenarios, hashes y receipts exactos se congelarán únicamente sobre el
+cohort técnico final. Hasta entonces no hay PASS, promoción a `main`, tag
+`geocedg-g9u1-pass` ni autoaprobación.
 
 ```text
 implementationStarted = true

@@ -38,7 +38,7 @@ public final class LocusV2Laboratory {
 		laboratoryArguments[laboratoryArguments.length - 1] =
 				"--settingsFile=" + settings;
 		GeoGebra.doMain(withoutUpstreamSplash(laboratoryArguments),
-				LocusV2LaboratoryFrame::new);
+				LocusV2LaboratoryFrame::new, () -> null);
 	}
 
 	private static String[] withoutUpstreamSplash(String[] args) {

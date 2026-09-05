@@ -8,7 +8,6 @@ package org.geocedg.desktop;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.swing.Action;
@@ -39,6 +38,7 @@ final class GeoCeDGMenuBar extends GeoGebraMenuBar {
 			"Export 2D geometry as DXF (experimental)...";
 	private final AppD app;
 	private GeoCeDGActionRegistry registry;
+	private boolean legacyFallback;
 
 	GeoCeDGMenuBar(AppD app) {
 		super(app, (LayoutD) app.getGuiManager().getLayout());
@@ -47,77 +47,87 @@ final class GeoCeDGMenuBar extends GeoGebraMenuBar {
 
 	@Override
 	public void initMenubar() {
-		registry = ((GuiManagerGeoCeDG) app.getGuiManager()).getActionRegistry();
-		populateProductMenu();
+		populateFromCatalog(GeoCeDGProfile.getCatalog());
 	}
 
-	private void populateProductMenu() {
+	void populateFromCatalog(JSONObject catalog) {
+		legacyFallback = catalog.optInt("schema_version") == 1;
+		if (legacyFallback) {
+			populateLegacyFallback();
+			return;
+		}
+		if (catalog.optInt("schema_version") != 2) {
+			throw new IllegalStateException("Unsupported GeoCeDG menu profile");
+		}
+		registry = ((GuiManagerGeoCeDG) app.getGuiManager()).getActionRegistry();
+		populateProductMenu(catalog);
+	}
+
+	private void populateLegacyFallback() {
+		registry = null;
+		super.initMenubar();
+		JMenu diagnostic = new JMenu("GeoCeDG v1");
+		diagnostic.setToolTipText(GeoCeDGProfile.getFallbackDiagnostic(
+				app.getLocale().getLanguage()));
+		diagnostic.getAccessibleContext().setAccessibleName(diagnostic.getText());
+		diagnostic.getAccessibleContext().setAccessibleDescription(
+				diagnostic.getToolTipText());
+		diagnostic.setEnabled(false);
+		add(diagnostic);
+	}
+
+	private void populateProductMenu(JSONObject catalog) {
 		removeAll();
-		JSONObject catalog = GeoCeDGProfile.getCatalog();
 		try {
 			JSONArray sections = catalog.getJSONArray("menu_sections");
-			Set<String> directMenuActions = new LinkedHashSet<>();
-			for (int i = 0; i < sections.length(); i++) {
-				JSONObject section = sections.getJSONObject(i);
-				JSONArray actionIds = section.optJSONArray("action_ids");
-				if (actionIds != null) {
-					directMenuActions.addAll(GeoCeDGProfile.strings(actionIds));
-				}
-			}
+			JSONArray presentationGroups = catalog.getJSONArray("presentation_groups");
 			Set<String> projectedActions = new LinkedHashSet<>();
 			for (int i = 0; i < sections.length(); i++) {
 				JSONObject section = sections.getJSONObject(i);
 				JMenu menu = new JMenu(registry.text(section.getString("name_key")));
 				menu.putClientProperty("geocedg.menu.id", section.getString("id"));
 				menu.getAccessibleContext().setAccessibleDescription(menu.getText());
-				for (String id : GeoCeDGProfile.strings(section.getJSONArray("cluster_ids"))) {
-					JSONObject cluster = find(catalog.getJSONArray("clusters"), id);
-					JSONObject taxonomy = find(catalog.getJSONObject("taxonomy")
-							.getJSONArray("operational_clusters"), id);
-					JMenu group = new JMenu(registry.text(taxonomy.getString("name_key")));
-					group.putClientProperty("geocedg.cluster.id", id);
-					Set<String> actions = new LinkedHashSet<>();
-					for (String placement : new String[] {"toolbar_action_ids",
-							"overflow_action_ids",
-							"menu_action_ids", "context_action_ids", "inspector_action_ids",
-							"settings_action_ids"}) {
-						actions.addAll(GeoCeDGProfile.strings(cluster.getJSONArray(placement)));
-					}
-					ButtonGroup radios = new ButtonGroup();
-					for (String actionId : actions) {
-						if ("automation.manage-user-tools".equals(actionId)) {
-							// The dynamic User Tools submenu owns this same registry route.
-							continue;
+				JSONArray entries = section.getJSONArray("entries");
+				for (int e = 0; e < entries.length(); e++) {
+					JSONObject entry = entries.getJSONObject(e);
+					String kind = entry.getString("kind");
+					if ("group".equals(kind) || "actions".equals(kind)) {
+						JSONObject groupDefinition = find(presentationGroups,
+								entry.getString("group_id"));
+						if ("group".equals(kind)) {
+							JMenu group = new JMenu(registry.text(
+									groupDefinition.getString("name_key")));
+							group.putClientProperty("geocedg.presentation.group.id",
+									groupDefinition.getString("id"));
+							addActions(group, groupDefinition, projectedActions);
+							menu.add(group);
+						} else {
+							addActions(menu, groupDefinition, projectedActions);
 						}
-						if (directMenuActions.contains(actionId)
-								|| !projectedActions.add(actionId)) {
-							continue;
-						}
-						JMenuItem item = createItem(registry.get(actionId), radios);
-						group.add(item);
+					} else if ("separator".equals(kind)) {
+						menu.addSeparator();
+					} else if ("workspace-switcher".equals(kind)) {
+						menu.add(((GuiManagerGeoCeDG) app.getGuiManager())
+								.getWorkspaceController().createWorkspaceMenu());
+					} else if ("user-tools".equals(kind)) {
+						claimActions(find(presentationGroups, entry.getString("group_id")),
+								projectedActions);
+						menu.add(GeoCeDGUserTools.createMenu(app));
+					} else if ("host-views".equals(kind)) {
+						menu.add(GeoCeDGHostMenuFactory.views(app));
+					} else if ("sort-by".equals(kind)) {
+						menu.add(GeoCeDGHostMenuFactory.sortBy(app));
+					} else if ("rounding".equals(kind)) {
+						menu.add(GeoCeDGHostMenuFactory.rounding(app));
+					} else if ("labeling".equals(kind)) {
+						menu.add(GeoCeDGHostMenuFactory.labeling(app));
+					} else if ("font-size".equals(kind)) {
+						menu.add(GeoCeDGHostMenuFactory.fontSize(app));
+					} else if ("save-settings".equals(kind)) {
+						menu.add(GeoCeDGHostMenuFactory.saveSettings(app));
+					} else {
+						throw new IllegalStateException("Unknown validated menu entry " + kind);
 					}
-					if (group.getItemCount() > 0) {
-						menu.add(group);
-					}
-				}
-				JSONArray declaredActions = section.optJSONArray("action_ids");
-				List<String> actionIds = declaredActions == null ? List.of()
-						: GeoCeDGProfile.strings(declaredActions);
-				ButtonGroup directRadios = new ButtonGroup();
-				for (String actionId : actionIds) {
-					if (!projectedActions.add(actionId)) {
-						throw new IllegalStateException(
-								"Duplicate menu action projection " + actionId);
-					}
-					menu.add(createItem(registry.get(actionId), directRadios));
-				}
-				if ("view".equals(section.getString("id"))) {
-					menu.addSeparator();
-					menu.add(((GuiManagerGeoCeDG) app.getGuiManager())
-							.getWorkspaceController().createWorkspaceMenu());
-				} else if ("automation".equals(section.getString("id"))) {
-					menu.addSeparator();
-					menu.add(GeoCeDGUserTools.createMenu(app));
 				}
 				menu.addMenuListener(new MenuListener() {
 					@Override
@@ -138,11 +148,34 @@ final class GeoCeDGMenuBar extends GeoGebraMenuBar {
 				add(menu);
 				GeoGebraMenuBar.setMenuFontRecursive(menu, app.getPlainFont());
 			}
+			if (!projectedActions.equals(registry.ids())) {
+				throw new IllegalStateException("Menu projection does not match action catalog");
+			}
 			app.setComponentOrientation(this);
 			revalidate();
 			repaint();
 		} catch (JSONException exception) {
 			throw new IllegalStateException("Validated profile placement failed", exception);
+		}
+	}
+
+	private void addActions(JMenu menu, JSONObject group, Set<String> projectedActions)
+			throws JSONException {
+		ButtonGroup radios = new ButtonGroup();
+		for (String actionId : GeoCeDGProfile.strings(group.getJSONArray("action_ids"))) {
+			if (!projectedActions.add(actionId)) {
+				throw new IllegalStateException("Duplicate menu action projection " + actionId);
+			}
+			menu.add(createItem(registry.get(actionId), radios));
+		}
+	}
+
+	private static void claimActions(JSONObject group, Set<String> projectedActions)
+			throws JSONException {
+		for (String actionId : GeoCeDGProfile.strings(group.getJSONArray("action_ids"))) {
+			if (!projectedActions.add(actionId)) {
+				throw new IllegalStateException("Duplicate menu action projection " + actionId);
+			}
 		}
 	}
 
@@ -175,15 +208,19 @@ final class GeoCeDGMenuBar extends GeoGebraMenuBar {
 
 	@Override
 	public void updateFonts() {
-		if (registry != null) {
+		if (legacyFallback) {
+			super.updateFonts();
+		} else if (registry != null) {
 			registry.refresh();
-			populateProductMenu();
+			populateProductMenu(GeoCeDGProfile.getCatalog());
 		}
 	}
 
 	@Override
 	public void updateMenubar() {
-		if (registry != null) {
+		if (legacyFallback) {
+			super.updateMenubar();
+		} else if (registry != null) {
 			registry.refresh();
 		}
 	}

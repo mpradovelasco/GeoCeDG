@@ -2286,14 +2286,14 @@
     },
     {
       "id": "view.properties",
-      "kind": "view-toggle",
+      "kind": "preference-action",
       "target": {
-        "symbol": "host.view.properties"
+        "symbol": "host.preference.global-properties"
       },
       "maturity": "stable",
       "feature_requirements": [],
       "selection_contract_ref": "none",
-      "effect_profile_id": "read-only",
+      "effect_profile_id": "preference-only",
       "localization_ref": "upstream.view.Properties",
       "icon_ref": "upstream.view.Properties",
       "availability_profile_id": "host-inherited",
@@ -3041,6 +3041,190 @@
     "show_input_panel": true,
     "show_input_help": true
   },
+  "presentation_groups": [
+    {
+      "id": "file-open",
+      "name_key": "Group.File.Open",
+      "action_ids": ["document.new", "document.open", "document.open-recent"],
+      "toolbar_action_ids": []
+    },
+    {
+      "id": "file-save",
+      "name_key": "Group.File.Save",
+      "action_ids": ["document.save", "document.save-as"],
+      "toolbar_action_ids": []
+    },
+    {
+      "id": "file-print",
+      "name_key": "Group.File.Print",
+      "action_ids": ["document.print-preview"],
+      "toolbar_action_ids": []
+    },
+    {
+      "id": "file-import-export",
+      "name_key": "Group.File.ImportExport",
+      "action_ids": ["export.dxf-2d"],
+      "toolbar_action_ids": []
+    },
+    {
+      "id": "file-close",
+      "name_key": "Group.File.Close",
+      "action_ids": ["document.close"],
+      "toolbar_action_ids": []
+    },
+    {
+      "id": "edit-history",
+      "name_key": "Group.Edit.History",
+      "action_ids": ["edit.undo", "edit.redo"],
+      "toolbar_action_ids": []
+    },
+    {
+      "id": "edit-selection",
+      "name_key": "Group.Edit.Selection",
+      "action_ids": ["construction.move", "construction.move-rotate", "construction.select", "construction.attach-detach"],
+      "toolbar_action_ids": ["construction.move"]
+    },
+    {
+      "id": "edit-delete",
+      "name_key": "Group.Edit.Delete",
+      "action_ids": ["edit.delete"],
+      "toolbar_action_ids": []
+    },
+    {
+      "id": "view-visibility-style",
+      "name_key": "Group.View.VisibilityStyle",
+      "action_ids": ["presentation.show-hide-object", "presentation.show-hide-label", "presentation.copy-style"],
+      "toolbar_action_ids": []
+    },
+    {
+      "id": "view-navigation",
+      "name_key": "Group.View.Navigation",
+      "action_ids": ["navigation.pan-view", "navigation.zoom-window", "navigation.zoom-in", "navigation.zoom-out", "navigation.standard-view", "navigation.show-all-objects"],
+      "toolbar_action_ids": ["navigation.pan-view", "navigation.zoom-window"]
+    },
+    {
+      "id": "view-construction",
+      "name_key": "Group.View.Construction",
+      "action_ids": ["view.construction-protocol", "view.construction-navigation", "inspect.definition"],
+      "toolbar_action_ids": []
+    },
+    {
+      "id": "construction-points",
+      "name_key": "Group.Construction.Points",
+      "action_ids": ["construction.point", "construction.point-on-object"],
+      "toolbar_action_ids": ["construction.point", "construction.point-on-object"]
+    },
+    {
+      "id": "construction-lines-vectors",
+      "name_key": "Group.Construction.LinesVectors",
+      "action_ids": ["construction.line", "construction.segment", "construction.ray", "construction.vector", "construction.fixed-segment", "construction.vector-from-point"],
+      "toolbar_action_ids": ["construction.line", "construction.segment", "construction.ray", "construction.vector"]
+    },
+    {
+      "id": "construction-polygons",
+      "name_key": "Group.Construction.Polygons",
+      "action_ids": ["construction.polygon", "construction.polyline", "construction.regular-polygon", "construction.rigid-polygon", "construction.vector-polygon"],
+      "toolbar_action_ids": ["construction.polygon"]
+    },
+    {
+      "id": "construction-derived",
+      "name_key": "Group.Construction.Derived",
+      "action_ids": ["construction.parallel-line", "construction.perpendicular-line", "construction.midpoint", "construction.perpendicular-bisector", "construction.angle-bisector"],
+      "toolbar_action_ids": ["construction.parallel-line", "construction.perpendicular-line", "construction.midpoint"]
+    },
+    {
+      "id": "construction-parameters",
+      "name_key": "Group.Construction.Parameters",
+      "action_ids": ["parameter.slider", "parameter.fixed-angle", "parameter.checkbox", "parameter.button", "parameter.input-box", "parameter.animation-toggle"],
+      "toolbar_action_ids": ["parameter.slider"]
+    },
+    {
+      "id": "construction-relations",
+      "name_key": "Group.Construction.Relations",
+      "action_ids": ["relation.intersect", "relation.tangent", "relation.compare", "relation.polar-diameter", "result.inspect-rich", "result.materialize-selected", "result.materialize-multiple", "result.materialize-all-eligible"],
+      "toolbar_action_ids": ["relation.intersect", "relation.tangent"]
+    },
+    {
+      "id": "construction-circles-conics",
+      "name_key": "Group.Construction.CirclesConics",
+      "action_ids": ["curve.circle-two-points", "curve.circle-three-points", "curve.circle-center-radius", "curve.arc-center", "curve.conic-five-points", "curve.ellipse", "curve.parabola", "curve.compass", "curve.semicircle", "curve.arc-circumcircle", "curve.sector-center", "curve.sector-circumcircle", "curve.hyperbola"],
+      "toolbar_action_ids": ["curve.circle-two-points", "curve.circle-three-points", "curve.circle-center-radius", "curve.arc-center", "curve.conic-five-points", "curve.ellipse", "curve.parabola"]
+    },
+    {
+      "id": "construction-semantic-curves",
+      "name_key": "Group.Construction.SemanticCurves",
+      "action_ids": ["semantic.locus-v2.create", "semantic.locus-v2.point-explicit", "semantic.spline-v2.create", "semantic.curve.inspect-definition"],
+      "toolbar_action_ids": ["semantic.locus-v2.create", "semantic.spline-v2.create"]
+    },
+    {
+      "id": "construction-metrics",
+      "name_key": "Group.Construction.Metrics",
+      "action_ids": ["measure.angle", "measure.distance-length", "measure.locus-v2-total-length", "measure.locus-v2-partial-length", "measure.area", "measure.slope"],
+      "toolbar_action_ids": ["measure.angle", "measure.distance-length", "measure.locus-v2-total-length", "measure.locus-v2-partial-length"]
+    },
+    {
+      "id": "construction-transforms",
+      "name_key": "Group.Construction.Transforms",
+      "action_ids": ["transform.reflect-point", "transform.reflect-line", "transform.translate-vector", "transform.rotate-angle", "transform.dilate-point"],
+      "toolbar_action_ids": ["transform.reflect-point", "transform.reflect-line", "transform.translate-vector", "transform.rotate-angle", "transform.dilate-point"]
+    },
+    {
+      "id": "construction-annotations-media",
+      "name_key": "Group.Construction.AnnotationsMedia",
+      "action_ids": ["presentation.text", "presentation.image"],
+      "toolbar_action_ids": []
+    },
+    {
+      "id": "construction-manual-projection",
+      "name_key": "Group.Construction.ManualProjection",
+      "action_ids": ["workspace.cedg-dihedral-procedures"],
+      "toolbar_action_ids": []
+    },
+    {
+      "id": "options-algebra-display",
+      "name_key": "Group.Options.AlgebraDisplay",
+      "action_ids": ["algebra.description.value", "algebra.description.description", "algebra.description.definition"],
+      "toolbar_action_ids": []
+    },
+    {
+      "id": "options-product",
+      "name_key": "Group.Options.Product",
+      "action_ids": ["view.properties", "presentation.axes-toggle", "presentation.grid-toggle", "settings.product-language", "result.show-candidate-markers", "result.auto-materialize-initial"],
+      "toolbar_action_ids": []
+    },
+    {
+      "id": "automation-actions",
+      "name_key": "Group.Automation.Actions",
+      "action_ids": ["automation.algebra-input-toggle", "automation.legacy-laboratory", "automation.object-scripting"],
+      "toolbar_action_ids": []
+    },
+    {
+      "id": "automation-user-tools",
+      "name_key": "UserTools.Title",
+      "action_ids": ["automation.manage-user-tools"],
+      "toolbar_action_ids": []
+    },
+    {
+      "id": "help-actions",
+      "name_key": "Group.Help.Actions",
+      "action_ids": ["help.input-panel", "help.command-list", "help.user-guide", "help.keyboard-shortcuts", "help.about-geocedg", "diagnostic.open-classic", "help.contextual-action"],
+      "toolbar_action_ids": []
+    }
+  ],
+  "toolbar_group_ids": [
+    "edit-selection",
+    "construction-points",
+    "construction-lines-vectors",
+    "construction-polygons",
+    "construction-derived",
+    "construction-parameters",
+    "construction-relations",
+    "construction-circles-conics",
+    "construction-semantic-curves",
+    "construction-metrics",
+    "construction-transforms",
+    "view-navigation"
+  ],
   "menu_sections": [
     {
       "id": "file",
@@ -3048,6 +3232,17 @@
       "cluster_ids": [
         "document-lifecycle",
         "import-export-authorized"
+      ],
+      "entries": [
+        {"kind": "actions", "group_id": "file-open"},
+        {"kind": "separator"},
+        {"kind": "actions", "group_id": "file-save"},
+        {"kind": "separator"},
+        {"kind": "actions", "group_id": "file-print"},
+        {"kind": "separator"},
+        {"kind": "actions", "group_id": "file-import-export"},
+        {"kind": "separator"},
+        {"kind": "actions", "group_id": "file-close"}
       ]
     },
     {
@@ -3055,6 +3250,13 @@
       "name_key": "Menu.Edit",
       "cluster_ids": [
         "selection-move-inspect"
+      ],
+      "entries": [
+        {"kind": "actions", "group_id": "edit-history"},
+        {"kind": "separator"},
+        {"kind": "actions", "group_id": "edit-selection"},
+        {"kind": "separator"},
+        {"kind": "actions", "group_id": "edit-delete"}
       ]
     },
     {
@@ -3064,6 +3266,15 @@
         "presentation-visibility-style",
         "navigation-zoom",
         "construction-history-definition"
+      ],
+      "entries": [
+        {"kind": "host-views"},
+        {"kind": "separator"},
+        {"kind": "group", "group_id": "view-visibility-style"},
+        {"kind": "group", "group_id": "view-navigation"},
+        {"kind": "group", "group_id": "view-construction"},
+        {"kind": "separator"},
+        {"kind": "workspace-switcher"}
       ]
     },
     {
@@ -3080,22 +3291,37 @@
         "metric-validation-tools",
         "similarity-transform-tools",
         "manual-projection-authorized"
+      ],
+      "entries": [
+        {"kind": "group", "group_id": "construction-points"},
+        {"kind": "group", "group_id": "construction-lines-vectors"},
+        {"kind": "group", "group_id": "construction-polygons"},
+        {"kind": "group", "group_id": "construction-derived"},
+        {"kind": "group", "group_id": "construction-parameters"},
+        {"kind": "group", "group_id": "construction-relations"},
+        {"kind": "group", "group_id": "construction-circles-conics"},
+        {"kind": "group", "group_id": "construction-semantic-curves"},
+        {"kind": "group", "group_id": "construction-metrics"},
+        {"kind": "group", "group_id": "construction-transforms"},
+        {"kind": "group", "group_id": "construction-annotations-media"},
+        {"kind": "group", "group_id": "construction-manual-projection"}
       ]
     },
     {
       "id": "options",
       "name_key": "Menu.Options",
       "cluster_ids": [],
-      "action_ids": [
-        "view.properties",
-        "presentation.axes-toggle",
-        "presentation.grid-toggle",
-        "algebra.description.value",
-        "algebra.description.description",
-        "algebra.description.definition",
-        "result.show-candidate-markers",
-        "result.auto-materialize-initial",
-        "settings.product-language"
+      "entries": [
+        {"kind": "group", "group_id": "options-algebra-display"},
+        {"kind": "sort-by"},
+        {"kind": "separator"},
+        {"kind": "rounding"},
+        {"kind": "labeling"},
+        {"kind": "font-size"},
+        {"kind": "separator"},
+        {"kind": "actions", "group_id": "options-product"},
+        {"kind": "separator"},
+        {"kind": "save-settings"}
       ]
     },
     {
@@ -3103,6 +3329,11 @@
       "name_key": "Menu.Automation",
       "cluster_ids": [
         "automation-scripting"
+      ],
+      "entries": [
+        {"kind": "actions", "group_id": "automation-actions"},
+        {"kind": "separator"},
+        {"kind": "user-tools", "group_id": "automation-user-tools"}
       ]
     },
     {
@@ -3110,10 +3341,40 @@
       "name_key": "Menu.Help",
       "cluster_ids": [
         "help-command-discovery"
+      ],
+      "entries": [
+        {"kind": "actions", "group_id": "help-actions"}
       ]
     }
   ],
   "localized_text": {
+    "Group.File.Open": {"en": "Open", "es": "Abrir"},
+    "Group.File.Save": {"en": "Save", "es": "Guardar"},
+    "Group.File.Print": {"en": "Print", "es": "Imprimir"},
+    "Group.File.ImportExport": {"en": "Import and export", "es": "Importar y exportar"},
+    "Group.File.Close": {"en": "Close", "es": "Cerrar"},
+    "Group.Edit.History": {"en": "History", "es": "Historial"},
+    "Group.Edit.Selection": {"en": "Selection and editing", "es": "Selección y edición"},
+    "Group.Edit.Delete": {"en": "Delete", "es": "Eliminar"},
+    "Group.View.VisibilityStyle": {"en": "Visibility and style", "es": "Visibilidad y estilo"},
+    "Group.View.Navigation": {"en": "Navigation", "es": "Navegación"},
+    "Group.View.Construction": {"en": "Construction inspection", "es": "Inspección de la construcción"},
+    "Group.Construction.Points": {"en": "Points", "es": "Puntos"},
+    "Group.Construction.LinesVectors": {"en": "Lines and vectors", "es": "Rectas y vectores"},
+    "Group.Construction.Polygons": {"en": "Polygons", "es": "Polígonos"},
+    "Group.Construction.Derived": {"en": "Derived constructions", "es": "Construcciones derivadas"},
+    "Group.Construction.Parameters": {"en": "Parameters and drivers", "es": "Parámetros y controladores"},
+    "Group.Construction.Relations": {"en": "Relations and intersections", "es": "Relaciones e intersecciones"},
+    "Group.Construction.CirclesConics": {"en": "Circles and conics", "es": "Círculos y cónicas"},
+    "Group.Construction.SemanticCurves": {"en": "Semantic curves", "es": "Curvas semánticas"},
+    "Group.Construction.Metrics": {"en": "Metrics and validation", "es": "Métricas y validación"},
+    "Group.Construction.Transforms": {"en": "Similarity transformations", "es": "Transformaciones de semejanza"},
+    "Group.Construction.AnnotationsMedia": {"en": "Annotations and media", "es": "Anotaciones y medios"},
+    "Group.Construction.ManualProjection": {"en": "Manual projection procedures", "es": "Procedimientos de proyección manual"},
+    "Group.Options.AlgebraDisplay": {"en": "Algebra display", "es": "Presentación de Álgebra"},
+    "Group.Options.Product": {"en": "GeoCeDG options", "es": "Opciones de GeoCeDG"},
+    "Group.Automation.Actions": {"en": "Automation", "es": "Automatización"},
+    "Group.Help.Actions": {"en": "Help", "es": "Ayuda"},
     "Similarity.OrdinaryAxisRequired": {"en": "The built-in coordinate axes have no ordinary persistent object identity. Construct a line explicitly (for example, a: y = 0), then select that line for the semantic reflection.", "es": "Los ejes incorporados no tienen identidad persistente de objeto ordinario. Construya una recta expl\u00edcitamente (por ejemplo, a: y = 0) y selecci\u00f3nela para la reflexi\u00f3n sem\u00e1ntica."},
     "Workspace.Laboratory": {"en": "Open diagnostic legacy resource", "es": "Abrir recurso antiguo de diagn\u00f3stico"},
     "Workspace.LaboratoryWarning": {"en": "This explicit user-selected file opens in a separate diagnostic Classic process with isolated preferences. It is NOT checked against the canonical legacy catalog by this dialog and is not promoted or trusted as scientific authority. For registered, hash-verified canonical resources use tools/legacy/open-laboratory.ps1. No legacy toolbar is installed in the Construction workspace.", "es": "Este archivo elegido expl\u00edcitamente se abre en un proceso Classic de diagn\u00f3stico separado, con preferencias aisladas. Este di\u00e1logo NO lo verifica contra el cat\u00e1logo can\u00f3nico ni lo promueve como autoridad cient\u00edfica. Para recursos can\u00f3nicos registrados y verificados por hash use tools/legacy/open-laboratory.ps1. No se instala ninguna barra antigua en el espacio Construcci\u00f3n."},
@@ -3860,8 +4121,8 @@
       "es": "No se puede ejecutar Protocolo de construcción en el contexto actual."
     },
     "upstream.view.NavigationBar.name": {
-      "en": "Construction navigation",
-      "es": "Navegación por la construcción"
+      "en": "Show construction navigation bar",
+      "es": "Mostrar barra de navegación de la construcción"
     },
     "upstream.view.NavigationBar.short_help": {
       "en": "Show or hide construction-step navigation controls.",
@@ -3872,32 +4133,32 @@
       "es": "Alterne la barra upstream para inspeccionar pasos de construcción; navegar no reescribe el grafo de dependencias."
     },
     "upstream.view.NavigationBar.status": {
-      "en": "Ready: Construction navigation",
-      "es": "Disponible: Navegación por la construcción"
+      "en": "Ready: Show construction navigation bar",
+      "es": "Disponible: Mostrar barra de navegación de la construcción"
     },
     "upstream.view.NavigationBar.error": {
-      "en": "Cannot perform Construction navigation in the current context.",
-      "es": "No se puede ejecutar Navegación por la construcción en el contexto actual."
+      "en": "Cannot change the construction navigation bar in the current context.",
+      "es": "No se puede cambiar la barra de navegación de la construcción en el contexto actual."
     },
     "upstream.view.Properties.name": {
-      "en": "Properties…",
-      "es": "Propiedades…"
+      "en": "Preferences…",
+      "es": "Preferencias…"
     },
     "upstream.view.Properties.short_help": {
-      "en": "Open properties for the current selection or active view.",
-      "es": "Abre las propiedades de la selección actual o de la vista activa."
+      "en": "Open the host global preferences without selecting a construction object.",
+      "es": "Abre las preferencias globales del host sin seleccionar un objeto de la construcción."
     },
     "upstream.view.Properties.long_help": {
-      "en": "Use the upstream properties surface for supported graphics, Algebra, object, and presentation settings; GeoCeDG policy continues to block semantic or deterministic changes.",
-      "es": "Use la superficie upstream de propiedades para ajustes compatibles de gráficos, Álgebra, objetos y presentación; la política GeoCeDG sigue bloqueando cambios semánticos o de determinismo."
+      "en": "Open the upstream global preferences surface for compatible application and view settings. Object Properties remains available from an explicit object context; this route never chooses an object implicitly. GeoCeDG keeps Continuity off and restricts product languages to English and Spanish.",
+      "es": "Abre la superficie upstream de preferencias globales para ajustes compatibles de aplicación y vista. Propiedades de objeto sigue disponible desde un contexto de objeto explícito; esta ruta nunca elige un objeto implícitamente. GeoCeDG mantiene Continuidad desactivada y limita los idiomas del producto a inglés y español."
     },
     "upstream.view.Properties.status": {
-      "en": "Ready: Properties…",
-      "es": "Disponible: Propiedades…"
+      "en": "Ready: Preferences…",
+      "es": "Disponible: Preferencias…"
     },
     "upstream.view.Properties.error": {
-      "en": "Cannot perform Properties… in the current context.",
-      "es": "No se puede ejecutar Propiedades… en el contexto actual."
+      "en": "Cannot open Preferences in the current context.",
+      "es": "No se pueden abrir Preferencias en el contexto actual."
     },
     "geocedg.action.InspectDefinition.name": {
       "en": "Inspect definition…",

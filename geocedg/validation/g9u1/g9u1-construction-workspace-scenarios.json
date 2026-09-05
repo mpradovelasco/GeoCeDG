@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "phase": "G9U1",
-  "status": "AUTHOR_REVIEW_STABILIZATION_ROUND2_CONSUMER_MAPPING_PENDING_FRESH_EXECUTION",
+  "status": "AUTHOR_REVIEW_STABILIZATION_ROUND3_CONSUMER_MAPPING_PENDING_FRESH_EXECUTION",
   "focusedJUnit": {
     "classes": [
       {
@@ -18,8 +18,10 @@
           "materializationRequiresCurrentResultContext",
           "contextualHelpIsSpecificLocalizedAndUsesDistinctLongDescriptions",
           "aboutUsesCentralProductVersionAndRetainsOriginCredits",
+          "globalPropertiesActionDispatchesToHostPreferencesWithoutSelection",
           "diagnosticLaunchUsesSeparateHostAndExplicitFileWithoutChangingWorkspace",
-          "diagnosticLaunchRejectsUnsupportedResource"
+          "diagnosticLaunchRejectsUnsupportedResource",
+          "constructionNavigationUsesTheGraphicsHostBarWithoutDagOrUndoMutation"
         ]
       },
       {
@@ -109,8 +111,13 @@
           "missingSpanishTextFailsClosed",
           "unresolvedActionPlacementFailsClosed",
           "unresolvedPolicyReferenceFailsClosed",
-          "duplicateMenuClusterFailsClosed",
-          "unknownAndDuplicateDirectMenuActionsFailClosed",
+          "duplicateMenuPresentationGroupFailsClosed",
+          "unknownAndDuplicatePresentationActionsFailClosed",
+          "presentationGroupsCoverCatalogOnceAndDriveToolbarOrder",
+          "malformedPresentationEntryAndUnreachableToolbarGroupFailClosed",
+          "toolbarPresentationCannotDriftFromOperationalCatalog",
+          "dynamicUserToolsEntryIsRequiredExactlyOnceAndCannotBecomeAGroup",
+          "globalPropertiesActionIsDeclaredAsPreferenceOnly",
           "continuityAndLanguagePolicyCannotBeWeakened",
           "unknownSchemaVersionFailsClosed",
           "allOwnedTextHasEnglishSpanishAndDeterministicFallback",
@@ -171,7 +178,13 @@
         "module": "desktop",
         "methods": [
           "allActionsAreReachableThroughTheManifestMenuProjection",
-          "menuOrderOptionsProjectionAndActionIdentityComeFromOneCatalog",
+          "menuOrderPresentationAndActionIdentityComeFromOneCatalog",
+          "fileAndEditAreFlatWhileConstructionUsesDeclaredSemanticGroups",
+          "hostOptionsAndViewsReuseLiveHostStateWithoutCatalogDuplication",
+          "legacyV1CatalogBuildsSafeRealFrontendMenuWithoutV2Arrays",
+          "hostViewCheckboxAndSortRadioRefreshFromAuthorityWhenSubmenusOpen",
+          "hostPreferenceRadiosRefreshFromAuthorityWhenSubmenusOpen",
+          "toolbarExtensionsPreserveTheHostHelpControlsAtTheFarEdge",
           "repeatedMenuRebuildKeepsOneProjectionPerDeclaredPlacement",
           "compactProductToolbarUsesOnlyDeclaredNonModeActionsAtHighDpi",
           "contextProjectionUsesSameStableActionIds",
@@ -299,7 +312,8 @@
           "nativeSplineV2CollisionFailsClosed",
           "nativeMidpointCollisionFailsClosed",
           "installedCommandCollisionPreservesOriginalLibraryBytes",
-          "documentCollisionAtInstallOrActivationDoesNotReplaceMacro",
+          "equivalentEmbeddedMacroIsAdoptedWithoutDuplicateOrReplacement",
+          "mismatchedOrPartialEmbeddedPackageFailsClosedWithoutRenameOrReplacement",
           "malformedArchiveAndDoctypeFailWithoutMutation",
           "scriptsAndSerializedSemanticObjectsAreRejected",
           "featureDisabledBodyCannotBypassPolicyThroughFileLoadOrExpression",
@@ -308,7 +322,13 @@
           "secondWindowRechecksInstalledCommandCollisionAgainstCurrentStore",
           "concurrentWindowPinAndRemovePreserveOtherPackagesAndRejectRemovedActivation",
           "busyLibraryLockRejectsWithoutReplacingPreferences",
-          "windowlessFixtureReleasesGlobalDispatcherWithoutChangingNativeRegistration"
+          "windowlessFixtureReleasesGlobalDispatcherWithoutChangingNativeRegistration",
+          "pngPinIconPersistsDigestAndTransparentAspectPaddingWithoutDocumentMutation",
+          "changingUnpinningAndRemovingPngIconsCleansInlineApplicationData",
+          "invalidSpoofedOversizedAndDimensionBombPngFailWithoutMutation",
+          "groupedPngPinsKeepIndividualPopupIconsWithoutChangingToolIdentity",
+          "iconlessPinnedButtonsAndGroupsStayCompactWithFullAccessibleIdentity",
+          "iconChooserPresentationIsLocalizedAndAccessibleInEnglishAndSpanish"
         ]
       },
       {
@@ -317,7 +337,10 @@
         "module": "desktop",
         "methods": [
           "doubleClickEditsDilateFactorWithIdentityUndoRedoAndReopen",
-          "f2EditsDilateFactorWithIdentityUndoRedoAndReopen"
+          "f2EditsDilateFactorWithIdentityUndoRedoAndReopen",
+          "rowEditorEditsDilateFactorWithProductSwingOwnership",
+          "freeInputEditsExistingDilateFactorWithoutReplacingIt",
+          "deterministicFixtureCoversAllAlgebraEditRoutes"
         ]
       },
       {
@@ -342,6 +365,24 @@
         ]
       },
       {
+        "name": "org.geocedg.desktop.GeoCeDGBrandingResourceTest",
+        "source": "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGBrandingResourceTest.java",
+        "module": "desktop",
+        "methods": [
+          "promotedAuthorSourcesRemainByteExact",
+          "runtimeRolesResolveOnlyVersionedGeoCeDGResources"
+        ]
+      },
+      {
+        "name": "org.geocedg.desktop.GeoGebraStartupThreadTest",
+        "source": "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoGebraStartupThreadTest.java",
+        "module": "desktop",
+        "methods": [
+          "productInitializationIsMarshalledFromLauncherThreadToSwing",
+          "productInitializationRunsDirectlyWhenAlreadyOnSwing"
+        ]
+      },
+      {
         "name": "org.geocedg.common.spatial.G9U1ConstructionParticipationReviewTest",
         "source": "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9U1ConstructionParticipationReviewTest.java",
         "module": "shared",
@@ -357,6 +398,18 @@
       }
     ]
   },
+  "externalDiagnosticMethods": [
+    {
+      "className": "org.geocedg.desktop.G9U1Revision3AlgebraEditingDiagnostic",
+      "source": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1Revision3AlgebraEditingDiagnostic.java",
+      "method": "authorRevision3ExercisesEveryOrdinaryAlgebraEditRoute",
+      "input": "artifacts/smoke-test-g9u1/Revision3.cedg",
+      "canonicalSuiteDependency": false,
+      "acceptanceAuthority": false,
+      "execution": "EXPLICIT_DEV_FILTER_ONLY",
+      "state": "PASS_SCOPED_NOT_ACCEPTANCE"
+    }
+  ],
   "scenarios": [
     {
       "id": "U1-S01",
@@ -2590,9 +2643,227 @@
       "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
       "automatedScope": "The named lifecycle tests reproduce the stale scalar update and cover the explicit update-after relation to the already existing rich parent; no G7 value, endpoint or public-command semantics change.",
       "remaining": "Final author re-smoke remains pending; oriented/inverse length requests remain separate post-U1 design work."
+    },
+    {
+      "id": "U1-R3-01",
+      "group": "R3",
+      "assertion": "Ordinary Algebra double-click, F2, row-editor and free-input compatible redefine of a numeric Dilate driver crosses zero and returns while preserving the same numeric/source identities, current rich/scalar results, undo/redo and native reopen.",
+      "tests": [
+        "org.geocedg.desktop.G9U1AlgebraGestureEditingTest#doubleClickEditsDilateFactorWithIdentityUndoRedoAndReopen",
+        "org.geocedg.desktop.G9U1AlgebraGestureEditingTest#f2EditsDilateFactorWithIdentityUndoRedoAndReopen",
+        "org.geocedg.desktop.G9U1AlgebraGestureEditingTest#rowEditorEditsDilateFactorWithProductSwingOwnership",
+        "org.geocedg.desktop.G9U1AlgebraGestureEditingTest#freeInputEditsExistingDilateFactorWithoutReplacingIt"
+      ],
+      "topic": "ordinary Algebra editing across the Desktop thread boundary",
+      "procedure": "Load/create a Dilate construction on the launcher host, edit the existing numeric through each ordinary Algebra gesture on the event thread, then undo, redo, save and reopen.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "The named tests cover the three inherited Algebra gestures plus existing G9A-compatible free input, exact numeric identity and existing downstream DAG authority. They authorize no arbitrary semantic-object redefine.",
+      "remaining": "The author must repeat the visible Revision3 workflow; agent execution is not author smoke or closeout approval."
+    },
+    {
+      "id": "U1-R3-02",
+      "group": "R3",
+      "assertion": "GeoCeDG construction initialization is owned by the Swing event thread and the canonical clean-checkout regression always executes all four Algebra edit routes on a deterministic fixture; the byte-exact Revision3 exercise is separate DEV diagnostic evidence and never changes the canonical suite.",
+      "tests": [
+        "org.geocedg.desktop.G9U1AlgebraGestureEditingTest#deterministicFixtureCoversAllAlgebraEditRoutes",
+        "org.geocedg.desktop.GeoGebraStartupThreadTest#productInitializationIsMarshalledFromLauncherThreadToSwing",
+        "org.geocedg.desktop.GeoGebraStartupThreadTest#productInitializationRunsDirectlyWhenAlreadyOnSwing"
+      ],
+      "topic": "author Revision3 reproduction and canonical Swing startup ownership",
+      "procedure": "Launch GeoCeDG from a non-Swing host, require construction initialization to marshal to Swing, and execute double-click, F2, row and free-input routes on the deterministic clean-checkout fixture. Separately invoke the explicitly filtered DEV diagnostic to authenticate and exercise Revision3 when that ignored author input is available.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "The startup tests establish one Swing-owned GeoCeDG application/kernel lifecycle while preserving Classic direct initialization and all thread-confined semantic owners. Canonical focused/PHASE/FULL execution always uses the same synthetic four-route fixture and never branches on ignored artifacts.",
+      "remaining": "The separately filtered Revision3 DEV diagnostic must authenticate the ignored archive and publish its own receipt; it is not canonical acceptance evidence and author-visible acceptance remains pending."
+    },
+    {
+      "id": "U1-R3-03",
+      "group": "R3",
+      "assertion": "The two explicitly authorized author images are promoted byte-exactly into versioned GeoCeDG resources, and the frame/startup roles resolve only to tracked GeoCeDG assets while central version/origin credits remain intact.",
+      "tests": [
+        "org.geocedg.desktop.GeoCeDGBrandingResourceTest#promotedAuthorSourcesRemainByteExact",
+        "org.geocedg.desktop.GeoCeDGBrandingResourceTest#runtimeRolesResolveOnlyVersionedGeoCeDGResources",
+        "org.geocedg.desktop.G9U1ActionRegistryTest#aboutUsesCentralProductVersionAndRetainsOriginCredits"
+      ],
+      "topic": "versioned product branding",
+      "procedure": "Compare promoted source digests, resolve the frame and splash resource roles, inspect dimensions/transparency and verify no upstream branding path is selected.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "The named tests prove source provenance and runtime resource selection. The manifest and packaging verifier independently pin every deterministic derivative, including the multi-size ICO.",
+      "remaining": "The author must visually approve the resulting frame/startup presentation; upstream credits and licensing remain mandatory."
+    },
+    {
+      "id": "U1-R3-04",
+      "group": "R3",
+      "assertion": "Branding derivatives use deterministic contain/center scaling with transparent padding, preserve aspect ratio, and supply the exact declared Windows icon without modifying the ignored author originals.",
+      "tests": [
+        "org.geocedg.desktop.GeoCeDGBrandingResourceTest#promotedAuthorSourcesRemainByteExact",
+        "org.geocedg.desktop.GeoCeDGBrandingResourceTest#runtimeRolesResolveOnlyVersionedGeoCeDGResources"
+      ],
+      "topic": "deterministic branding derivation and packaging role",
+      "procedure": "Run the generator in verify-only mode, validate the tracked derivative hashes/sizes and run the existing packaging contract against the declared ICO.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "JUnit checks runtime PNG roles; the Round-3 verifier pins all binary raw hashes and COMPOSED/FULL invoke the separately authoritative packaging verifier. No generated artifact is treated as source authority.",
+      "remaining": "A packaged application visual smoke remains an author/release concern; no upstream installer or trademark is authorized."
+    },
+    {
+      "id": "U1-R3-05",
+      "group": "R3",
+      "assertion": "A complete embedded document macro equivalent to an installed application package remains the sole reconstruction object while the installed tool remains the single active presentation, with native save/reopen and uninstall fallback intact.",
+      "tests": [
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#equivalentEmbeddedMacroIsAdoptedWithoutDuplicateOrReplacement",
+        "org.geocedg.desktop.G9U1MacroNativeArchivePersistenceTest#ellipseAxisInvocationSurvivesNativeSaveUndoAndTwoReopens"
+      ],
+      "topic": "installed macro presentation versus embedded reconstruction",
+      "procedure": "Install, invoke, save and reopen with the package installed; require normalized-definition equivalence and one user-facing tool, then remove the package and reopen from the embedded document definition.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "The named tests preserve Macro/MacroKernel/ToolManager and document portability; equivalence is a complete-set normalized definition digest, never command label or behavior.",
+      "remaining": "The author must repeat the visible EllipseAxis installed/reopen/uninstall workflow."
+    },
+    {
+      "id": "U1-R3-06",
+      "group": "R3",
+      "assertion": "A mismatched or partial embedded macro package is never adopted as the installed implementation and cannot rename, replace or silently disable either authority.",
+      "tests": [
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#mismatchedOrPartialEmbeddedPackageFailsClosedWithoutRenameOrReplacement",
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#tamperedStoredPackageFailsClosedAndIsNotRewritten"
+      ],
+      "topic": "macro definition equivalence fail-closed boundary",
+      "procedure": "Present partial and definition-mismatched embedded packages plus tampered application storage, then require explicit collision/rejection without substitution or mutation.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "The negative tests cover exact definition-set/digest and application-store integrity. No second macro engine or label-only equivalence is added.",
+      "remaining": "Other untrusted macro bodies remain governed by the existing parser/policy negative perimeter."
+    },
+    {
+      "id": "U1-R3-07",
+      "group": "R3",
+      "assertion": "An optional pinned-tool PNG is bounded, digested and stored only as application preference data; its deterministic aspect-preserving toolbar derivative survives restart and change/unpin/remove cleans unreferenced inline data without Construction mutation.",
+      "tests": [
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#pngPinIconPersistsDigestAndTransparentAspectPaddingWithoutDocumentMutation",
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#changingUnpinningAndRemovingPngIconsCleansInlineApplicationData",
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#pinsAreApplicationPreferencesAndDoNotChangeConstruction"
+      ],
+      "topic": "persistent user-tool icon preference lifecycle",
+      "procedure": "Pin with a PNG, restart, inspect digest/dimensions/padding, replace it, unpin and remove while comparing Construction XML and undo state.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "The named tests cover application-owned inline source/provenance and deterministic 64x64 derivation. Icons never become macro/document identity or stable product actions.",
+      "remaining": "Author visual sizing/group-button approval remains pending."
+    },
+    {
+      "id": "U1-R3-08",
+      "group": "R3",
+      "assertion": "Spoofed, oversized, over-dimensioned or pixel-bomb PNG icon inputs fail atomically without preference, macro, document or undo mutation.",
+      "tests": [
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#invalidSpoofedOversizedAndDimensionBombPngFailWithoutMutation",
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#busyLibraryLockRejectsWithoutReplacingPreferences"
+      ],
+      "topic": "bounded user-tool icon admission",
+      "procedure": "Attempt invalid signatures, byte limits, decoded edge/pixel limits and concurrent preference mutation, then compare the exact prior application/document state.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "The tests prove PNG-only bounded decoding and atomic preference failure; no arbitrary image decoder, document media field or toolbar identity inference is authorized.",
+      "remaining": "Broader formats or shared icon stores require separate design."
+    },
+    {
+      "id": "U1-R3-09",
+      "group": "R3",
+      "assertion": "Grouped persistent tools retain one coherent compact toolbar group, individual popup icons and identity-independent localized icon selection in English and Spanish.",
+      "tests": [
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#groupedPngPinsKeepIndividualPopupIconsWithoutChangingToolIdentity",
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#iconlessPinnedButtonsAndGroupsStayCompactWithFullAccessibleIdentity",
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#iconChooserPresentationIsLocalizedAndAccessibleInEnglishAndSpanish",
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#groupedPinsRemainOneContiguousVisualUnitWhenReordered",
+        "org.geocedg.desktop.G9U1ProfileCompilerTest#dynamicUserToolsEntryIsRequiredExactlyOnceAndCannotBecomeAGroup"
+      ],
+      "topic": "professional persistent-tool toolbar presentation",
+      "procedure": "Create/reorder a multi-tool group with distinct optional icons, open its popup and inspect accessible EN/ES icon chooser/help/error text.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "The tests cover deterministic grouping, preference persistence, icons and localized accessibility while keeping all dynamic tools outside the 110 stable action IDs.",
+      "remaining": "Author GUI review of footprint/dropdown behavior remains pending."
+    },
+    {
+      "id": "U1-R3-10",
+      "group": "R3",
+      "assertion": "The one schema-v2 authority separates operational clusters from 28 unique semantic presentation groups, projects each of 110 actions exactly once, drives 12 toolbar groups and rejects unknown, duplicate, unreachable or drifting placement declarations.",
+      "tests": [
+        "org.geocedg.desktop.G9U1ProfileCompilerTest#presentationGroupsCoverCatalogOnceAndDriveToolbarOrder",
+        "org.geocedg.desktop.G9U1ProfileCompilerTest#duplicateMenuPresentationGroupFailsClosed",
+        "org.geocedg.desktop.G9U1ProfileCompilerTest#unknownAndDuplicatePresentationActionsFailClosed",
+        "org.geocedg.desktop.G9U1ProfileCompilerTest#malformedPresentationEntryAndUnreachableToolbarGroupFailClosed",
+        "org.geocedg.desktop.G9U1ProfileCompilerTest#toolbarPresentationCannotDriftFromOperationalCatalog",
+        "org.geocedg.desktop.G9U1ProfileCompilerTest#dynamicUserToolsEntryIsRequiredExactlyOnceAndCannotBecomeAGroup",
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest#legacyV1CatalogBuildsSafeRealFrontendMenuWithoutV2Arrays",
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest#menuOrderPresentationAndActionIdentityComeFromOneCatalog"
+      ],
+      "topic": "single action authority and semantic presentation taxonomy",
+      "procedure": "Compile the live profile and malformed variants, compare operational/visual toolbar membership and rebuild all menus from declared group/action/separator entries.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "The tests prove one stable action registry and deterministic presentation projection; no second toolbar/menu action authority is introduced.",
+      "remaining": "Author visual review of the professional grouping remains pending."
+    },
+    {
+      "id": "U1-R3-11",
+      "group": "R3",
+      "assertion": "File and Edit expose final actions directly with declared separators, while Construction owns precise Lines and vectors, Polygons, Derived constructions, Circles and conics, Semantic curves, and Annotations and media groups without duplicate actions.",
+      "tests": [
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest#fileAndEditAreFlatWhileConstructionUsesDeclaredSemanticGroups",
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest#allActionsAreReachableThroughTheManifestMenuProjection",
+        "org.geocedg.desktop.G9U1ProfileCompilerTest#presentationGroupsCoverCatalogOnceAndDriveToolbarOrder"
+      ],
+      "topic": "Construction/File/Edit menu reorganization",
+      "procedure": "Inspect declared entry types/order/labels, verify Text/Image are construction actions and rebuild menus in both product languages.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "The named tests prove taxonomy and reachability from the same stable IDs. Labels change presentation only; semantic command implementations do not move.",
+      "remaining": "Author visual and keyboard discoverability review remains pending."
+    },
+    {
+      "id": "U1-R3-12",
+      "group": "R3",
+      "assertion": "View host controls reuse actual view state and Show construction navigation bar toggles the Graphics-view host control with truthful checked state, no Construction mutation and no undo entry.",
+      "tests": [
+        "org.geocedg.desktop.G9U1ActionRegistryTest#constructionNavigationUsesTheGraphicsHostBarWithoutDagOrUndoMutation",
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest#hostOptionsAndViewsReuseLiveHostStateWithoutCatalogDuplication",
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest#hostViewCheckboxAndSortRadioRefreshFromAuthorityWhenSubmenusOpen"
+      ],
+      "topic": "host View and construction-navigation integration",
+      "procedure": "Toggle each declared safe host view and the Graphics construction-navigation bar, rebuild the menu and compare checked state, Construction XML and undo history.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "The tests use existing host view/navigation authorities and deliberately expose no new 3D spatial authority or parallel layout state.",
+      "remaining": "Author must visually verify intended bars/views in the final re-smoke."
+    },
+    {
+      "id": "U1-R3-13",
+      "group": "R3",
+      "assertion": "Options exposes host Algebra display and sort radio groups plus bounded rounding, labeling, font and save-settings controls; global Preferences opens without implicit object selection, while Continuity and product-language policies remain locked.",
+      "tests": [
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest#hostOptionsAndViewsReuseLiveHostStateWithoutCatalogDuplication",
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest#hostPreferenceRadiosRefreshFromAuthorityWhenSubmenusOpen",
+        "org.geocedg.desktop.G9U1ActionRegistryTest#globalPropertiesActionDispatchesToHostPreferencesWithoutSelection",
+        "org.geocedg.desktop.G9U1ActionRegistryTest#algebraDescriptionCheckedStateTracksActualHostSetting",
+        "org.geocedg.desktop.G9U1ProfileCompilerTest#globalPropertiesActionIsDeclaredAsPreferenceOnly",
+        "org.geocedg.desktop.G9U1ProductPolicyTest#descriptionMenuReflectsOnlyCurrentStyleNotTreeSort",
+        "org.geocedg.common.workspace.G9U1InputPolicyTest#continuityCannotBeEnabledInProduct"
+      ],
+      "topic": "professional Options surface using host preference authority",
+      "procedure": "Inspect radio state, change safe host settings, rebuild/refresh language and invoke global Preferences with no selected object while comparing Construction and undo state.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "The named tests cover host-state reuse, locked product policy and action selection semantics. No duplicate preference store or implicit geometry identity is added.",
+      "remaining": "Author visual approval and any host-dialog variants not named by the tests remain pending."
+    },
+    {
+      "id": "U1-R3-14",
+      "group": "R3",
+      "assertion": "The product toolbar mirrors declared final semantic Construction groups, preserves compact native/product and persistent-tool sizing, and leaves the existing Input Help control at the far right outside all toolbar groups.",
+      "tests": [
+        "org.geocedg.desktop.G9U1ProfileCompilerTest#presentationGroupsCoverCatalogOnceAndDriveToolbarOrder",
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest#compactProductToolbarUsesOnlyDeclaredNonModeActionsAtHighDpi",
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest#toolbarExtensionsPreserveTheHostHelpControlsAtTheFarEdge"
+      ],
+      "topic": "toolbar semantic grouping and Input Help placement",
+      "procedure": "Build the Construction toolbar from declared toolbar groups, append dynamic persistent-tool groups and inspect the host BorderLayout at normal/high DPI.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "The tests prove ordering/group boundaries and host Input Help placement from one profile authority; dynamic tools remain application preferences outside stable product action IDs.",
+      "remaining": "Author visual sizing/flyout/DPI re-smoke remains pending."
     }
   ],
-  "coveragePolicy": "Every approved scenario ID and required workflow is retained. U1-I09 clarifies the latest single-confirmation/one-transaction requirement: query plus opted-in points share one compound undo step; the frozen planning snapshot remains historical. Round-one U1-RV06 is explicitly superseded, not erased, by the author's seven-menu U1-R2-05 amendment. A test reference proves only the named assertion in that test, not all manual/persistence/performance variants in the scenario. Runtime results are sealed separately; final manual author re-smoke is pending.",
+  "coveragePolicy": "Every approved scenario ID and required workflow is retained. U1-I09 clarifies the latest single-confirmation/one-transaction requirement: query plus opted-in points share one compound undo step; the frozen planning snapshot remains historical. Round-one U1-RV06 is explicitly superseded, not erased, by the author's seven-menu U1-R2-05 amendment. Round-two U1-R2-07 and U1-R2-08 remain historical and are superseded, not rewritten, by the bounded Round-three icon and promoted-branding contracts. A test reference proves only the named assertion in that test, not all manual/persistence/performance variants in the scenario. Runtime results are sealed separately; final manual author re-smoke is pending.",
   "authorReview": {
     "checkpoint": "b492194082f1adc9f981d85d92a58ef57490196f",
     "historicalScenarios": 138,
@@ -2648,6 +2919,41 @@
       "U1-R2-09",
       "U1-R2-10"
     ],
+    "manualAuthorResmoke": "PENDING"
+  },
+  "authorReviewRound3": {
+    "baselineCommit": "5f492d4ee77289d9def89aa6ed431226d2de3457",
+    "historicalScenarioCount": 163,
+    "historicalFocusedTests": 204,
+    "additionalScenarioIds": [
+      "U1-R3-01",
+      "U1-R3-02",
+      "U1-R3-03",
+      "U1-R3-04",
+      "U1-R3-05",
+      "U1-R3-06",
+      "U1-R3-07",
+      "U1-R3-08",
+      "U1-R3-09",
+      "U1-R3-10",
+      "U1-R3-11",
+      "U1-R3-12",
+      "U1-R3-13",
+      "U1-R3-14"
+    ],
+    "methodReplacements": {
+      "duplicateMenuClusterFailsClosed": "duplicateMenuPresentationGroupFailsClosed",
+      "unknownAndDuplicateDirectMenuActionsFailClosed": "unknownAndDuplicatePresentationActionsFailClosed",
+      "menuOrderOptionsProjectionAndActionIdentityComeFromOneCatalog": "menuOrderPresentationAndActionIdentityComeFromOneCatalog",
+      "documentCollisionAtInstallOrActivationDoesNotReplaceMacro": "equivalentEmbeddedMacroIsAdoptedWithoutDuplicateOrReplacement"
+    },
+    "supersededHistoricalScenarios": [
+      "U1-R2-07",
+      "U1-R2-08"
+    ],
+    "authorChecklist": "docs/validation/g9u1_author_resmoke_checklist.md",
+    "authorChecklistModified": false,
+    "ignoredAuthorFixturesAreProductInputs": false,
     "manualAuthorResmoke": "PENDING"
   }
 }

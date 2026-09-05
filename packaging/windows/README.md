@@ -16,6 +16,16 @@ required only for MSI/EXE. Per-build hashes are authoritative; `jlink` output
 is not guaranteed to be byte-identical between equivalent runs. Every output
 is marked `INTERNAL EVALUATION — NOT FOR REDISTRIBUTION`.
 
+The application image, launcher and installer shortcuts use the single
+versioned GeoCeDG-owned ICO declared by `package.yml`. Its PNG-embedded sizes
+and source provenance are recorded in `geocedg/resources/assets-manifest.yml`.
+Packaging consumes and hash-checks the tracked derivative; it does not make the
+image encoder used for one-time derivation a packaging prerequisite.
+`tools/resources/generate-geocedg-branding.ps1 -VerifyOnly` reproduces the
+tracked source/runtime assets only on the exact accepted generation runtime
+recorded in that manifest; it neither requires nor reads the ignored author
+inputs.
+
 Only MSI/EXE installers register the native `.cedg` document extension. The
 app-image and portable ZIP are association-free, and GeoCeDG does not claim the
 compatibility/input `.ggb` extension. JDK 25 `jpackage` requires MIME metadata

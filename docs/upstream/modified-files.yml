@@ -60,13 +60,13 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/AppGeoCeDG.java",
       "change": "added",
-      "purpose": "Instantiate the GeoCeDG profile and enforce the .cedg-only native save, product-window and parser-preflight policy while retaining the Classic internal app code and feature gates. G9U1: Apply approved Construction workspace, language and Continuity policy without changing Classic or geometry. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: suppress the inherited startup perspective popup and separate document-local macro preference snapshots from explicit application-library installation; Classic and document macro serialization remain unchanged.",
+      "purpose": "Instantiate the GeoCeDG profile and enforce the .cedg-only native save, product-window and parser-preflight policy while retaining the Classic internal app code and feature gates. G9U1: Apply approved Construction workspace, language and Continuity policy without changing Classic or geometry. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: suppress the inherited startup perspective popup and separate document-local macro preference snapshots from explicit application-library installation; Classic and document macro serialization remain unchanged. G9U1 review round 3: resolve the tracked GeoCeDG frame icon and startup resource without upstream branding fallback.",
       "authority": "geocedg/specs/ui/native-document-identity.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDG.java",
       "change": "added",
-      "purpose": "Provide the explicit GeoCeDG Desktop process entry point and isolated preferences path.",
+      "purpose": "Provide the explicit GeoCeDG Desktop process entry point, isolated preferences path and product-owned splash supplier; use the product-specific launch overload to create/init the frame and application synchronously on Swing EDT after splash preparation while preserving the Classic launcher contract.",
       "authority": "geocedg/specs/ui/application-profile.md"
     },
     {
@@ -78,13 +78,13 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGProfile.java",
       "change": "added",
-      "purpose": "Load the maintainable profile manifest and compile its toolbar and perspective contracts. G9U1: Strictly compile live schema v2 and preserve explicit historical v1 fallback compatibility. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: validate and compile reduced primary toolbar placements and six ordinary menu sections while retaining 110 action IDs.",
+      "purpose": "Load the maintainable profile manifest and compile its toolbar and perspective contracts. G9U1: Strictly compile live schema v2 and preserve explicit historical v1 fallback compatibility. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: validate and compile reduced primary toolbar placements and six ordinary menu sections while retaining 110 action IDs. G9U1 review round 3: distinguish the 11-family/18-cluster taxonomy from the sole profile-owned presentation projection, validate 28 presentation groups and compile 12 toolbar groups plus typed menu entries without duplicate actions.",
       "authority": "apps/geocedg/application-profile.yml"
     },
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGProfileTest.java",
       "change": "added",
-      "purpose": "Verify profile identity/layout, the explicit experimental DXF action, and detection of native Locus V2 data at the GeoCeDG save boundary. G9U1: Retain historical test names while validating live v2 and explicit v1 migration. Authority: geocedg/specs/ui/g9u1-construction-interaction.md.",
+      "purpose": "Verify profile identity/layout, the explicit experimental DXF action, and detection of native Locus V2 data at the GeoCeDG save boundary. G9U1: Retain historical test names while validating live v2 and explicit v1 migration. Round 3 also verifies the product frame icon/startup resource bindings without upstream fallback. Authority: geocedg/specs/ui/g9u1-construction-interaction.md.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -126,7 +126,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGMenuBar.java",
       "change": "added",
-      "purpose": "Expose experimental DXF and default-off Locus V2 actions only in the GeoCeDG product profile; G9U0-R3 retains one population authority across inherited init/font/localization rebuilds so the public inspector and peer actions do not disappear. G9U1: Project declarative stable actions into accessible menus without a second action catalog. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: compile six normal top-level sections from the same profile and expose explicit installed user tools without duplicating catalog authority.",
+      "purpose": "Expose experimental DXF and default-off Locus V2 actions only in the GeoCeDG product profile; G9U0-R3 retains one population authority across inherited init/font/localization rebuilds so the public inspector and peer actions do not disappear. G9U1: Project declarative stable actions into accessible menus without a second action catalog. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: compile six normal top-level sections from the same profile and expose explicit installed user tools without duplicating catalog authority. G9U1 review round 3: render seven profile-declared menus, flattened File/Edit groups, separators, semantic Construction groups and bounded host View/Options controls from one action authority.",
       "authority": "geocedg/specs/locus/locus-v2-public-ui-exposure.md"
     },
     {
@@ -2694,19 +2694,19 @@
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored default type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds the deterministic-selection status diagnostic; G9S1-R1 completes the selector-class evidence and pair-certification work diagnostic labels without G9U1 frontend implementation.",
+      "purpose": "Add GeoCeDG-authored default type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds the deterministic-selection status diagnostic; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Point on semantic curve and adds the default user-tool definition/icon and menu-presentation text.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_en.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored English type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds the English deterministic-selection status diagnostic; G9S1-R1 completes the English selector-class evidence and pair-certification work diagnostic labels without G9U1 frontend implementation.",
+      "purpose": "Add GeoCeDG-authored English type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds deterministic-selection diagnostics; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Point on semantic curve and adds complete English user-tool definition/icon and menu-presentation text.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_es.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored Spanish type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds the Spanish deterministic-selection status diagnostic; G9S1-R1 completes the Spanish selector-class evidence and pair-certification work diagnostic labels without G9U1 frontend implementation.",
+      "purpose": "Add GeoCeDG-authored Spanish type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds deterministic-selection diagnostics; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Punto sobre curva semántica and adds complete Spanish user-tool definition/icon and menu-presentation text.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -3720,7 +3720,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGActionRegistry.java",
       "change": "added",
-      "purpose": "Bind every declared stable action to one frontend target with localized availability and shared state. G9U1 review round 1: route the existing user-tools action, quick-guide help and differentiated registered product icons without additional stable action IDs.",
+      "purpose": "Bind every declared stable action to one frontend target with localized availability and shared state. G9U1 review round 1: route the existing user-tools action, quick-guide help and differentiated registered product icons without additional stable action IDs. G9U1 review round 3: use the view-specific construction-navigation seam, expose global preferences without implicit object selection and retain all 110 action IDs.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -3768,7 +3768,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGWorkspaceController.java",
       "change": "added",
-      "purpose": "Project family/context actions and isolate workspace/layout preferences from semantic construction state. G9U1 review round 1: project the compact non-mode toolbar, menu workspace selector and deduplicated object-context actions from the existing catalog.",
+      "purpose": "Project family/context actions and isolate workspace/layout preferences from semantic construction state. G9U1 review round 1: project the compact non-mode toolbar, menu workspace selector and deduplicated object-context actions from the existing catalog. G9U1 review round 3: compile the primary toolbar from the same final semantic presentation groups as Construction while preserving Input Help outside the tool container.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -3816,7 +3816,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1ActionRegistryTest.java",
       "change": "added",
-      "purpose": "Exercise G9U1ActionRegistry workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority. G9U1 author review: release unused global keyboard dispatcher references for embedded windowless fixtures; all behavioral assertions and native product keyboard registration remain unchanged. Review fixture isolation: per-test Swing-root snapshots release only newly registered embedded-host dock listeners and nonvisible/non-displayable lazy frames, preserving preexisting roots and native runtime behavior.",
+      "purpose": "Exercise G9U1ActionRegistry workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority. G9U1 author review: release unused global keyboard dispatcher references for embedded windowless fixtures; all behavioral assertions and native product keyboard registration remain unchanged. Round 3 verifies view-specific construction-navigation state and zero Construction/undo mutation. Review fixture isolation preserves preexisting Swing roots and native runtime behavior.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -3846,7 +3846,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1ProfileCompilerTest.java",
       "change": "added",
-      "purpose": "Exercise G9U1ProfileCompiler workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority. G9U1 review round 1: assert unchanged 110-action taxonomy and reduced 34-action toolbar with six normal menus. Review fixture isolation: per-test Swing-root snapshots release only newly registered embedded-host dock listeners and nonvisible/non-displayable lazy frames, preserving preexisting roots and native runtime behavior.",
+      "purpose": "Exercise G9U1ProfileCompiler workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority. G9U1 review round 1 asserted the unchanged 110-action taxonomy and reduced toolbar. Round 3 verifies 28 presentation groups, 12 semantic toolbar groups, seven typed menu sections, exact catalog coverage and fail-closed duplicate/unknown/unreachable references. Review fixture isolation preserves preexisting Swing roots and native runtime behavior.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -3870,7 +3870,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1WorkspaceSurfaceTest.java",
       "change": "added",
-      "purpose": "Exercise G9U1WorkspaceSurface workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority. G9U1 review round 1: cover normal menu composition, reduced toolbar and context deduplication. Review fixture isolation: per-test Swing-root snapshots release only newly registered embedded-host dock listeners and nonvisible/non-displayable lazy frames, preserving preexisting roots and native runtime behavior.",
+      "purpose": "Exercise G9U1WorkspaceSurface workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority. G9U1 review round 3 verifies flattened File/Edit separators, Construction semantic grouping, Text/Image placement, host View/Options state, one stable menu occurrence and toolbar/presentation parity. Review fixture isolation preserves preexisting Swing roots and native runtime behavior.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -3912,13 +3912,13 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGUserToolLibrary.java",
       "change": "added",
-      "purpose": "G9U1 author-review round 1: Store explicitly installed bounded validated user GGT packages and digests in isolated application preferences; reuse the native macro engine, reject collisions/unsupported content and never auto-install document or Template tools.",
+      "purpose": "G9U1 author-review round 1: Store explicitly installed bounded validated user GGT packages and digests in isolated application preferences; reuse the native macro engine, reject collisions/unsupported content and never auto-install document or Template tools. Round 3: migrate to store v3 with complete normalized per-command definition digests, adopt only equivalent embedded document Macro objects for installed presentation ownership, and persist optional bounded PNG pin icons entirely outside document state.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGUserTools.java",
       "change": "added",
-      "purpose": "G9U1 author-review round 1: Expose explicit persistent user-tool install/remove/pin/activate controls and distinguish installed tools from document-local host management through the existing action.",
+      "purpose": "G9U1 author-review round 1: Expose explicit persistent user-tool install/remove/pin/activate controls and distinguish installed tools from document-local host management through the existing action. Round 3: offer optional validated PNG selection at pin/presentation edit time, render normalized native-footprint icons or compact accessible initials, and preserve grouped dropdown/order semantics without registering a macro for display.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -3954,7 +3954,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1UserToolLibraryTest.java",
       "change": "added",
-      "purpose": "G9U1 author-review round 1: Exercise explicit installation, reload, activation, pin/remove, document separation, collisions, restricted package validation and isolated preference behavior without importing historical Template tools. Review fixture isolation: per-test Swing-root snapshots release only newly registered embedded-host dock listeners and nonvisible/non-displayable lazy frames, preserving preexisting roots and native runtime behavior.",
+      "purpose": "G9U1 author-review round 1: Exercise explicit installation, reload, activation, pin/remove, document separation, collisions, restricted package validation and isolated preference behavior without importing historical Template tools. Round 3 adds store-v3 migration, complete definition-digest equivalence/mismatch, bounded optional PNG icon validation, persistence and cleanup, and compact accessible iconless pins with zero document/undo mutation. Review fixture isolation preserves preexisting Swing roots and native runtime behavior.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -4008,14 +4008,80 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1AlgebraGestureEditingTest.java",
       "change": "added",
-      "purpose": "G9U1 author-review round 2: Verify ordinary numeric double-click/F2 editing, durable identity, dependent Dilate recompute, undo/redo and native reopen without broadening semantic redefine.",
+      "purpose": "G9U1 author-review round 2: Verify ordinary numeric double-click/F2 editing, durable identity, dependent Dilate recompute, undo/redo and native reopen without broadening semantic redefine. Round 3 reproduces the real Revision3 startup-ownership failure and verifies ROW/DOUBLE_CLICK/F2/FREE_INPUT, 1/0/0.25/-1/1, the same numeric reference/ID and 26-object defined Dilate lifecycle; the clean deterministic fixture covers all four routes independently of ignored author evidence.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1Revision3AlgebraEditingDiagnostic.java",
+      "change": "added",
+      "purpose": "G9U1 author-review round 3: Run the explicit byte-sealed Revision3 diagnostic over the ignored author archive when available, separately from the clean deterministic four-route acceptance fixture.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1MacroNativeArchivePersistenceTest.java",
       "change": "added",
-      "purpose": "G9U1 author-review round 2: Verify invoked user-tool macro output survives native save, undo/redo, save-after-undo and two reopens from document-owned definition authority, plus incompatible merge rejection.",
+      "purpose": "G9U1 author-review round 2: Verify invoked user-tool macro output survives native save, undo/redo, save-after-undo and two reopens from document-owned definition authority, plus incompatible merge rejection. Round 3 verifies that a definition-digest-equivalent installed package remains the sole user-facing entry while the embedded Macro remains portable, and that unequal/partial definitions fail closed.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGHostMenuFactory.java",
+      "change": "added",
+      "purpose": "G9U1 author-review round 3: Bridge profile-declared View and Options entries to existing checked/radio host view, Algebra sort/display, rounding, labeling, font, global preferences and save-settings state without a second preference store or Construction mutation.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/GeoGebra.java",
+      "change": "modified",
+      "purpose": "G9U1 author-review round 3: Add one product-specific splash-resource overload that prepares the splash first, then creates and initializes the supplied frame synchronously on Swing EDT; retain the existing two-argument Classic launcher behavior unchanged.",
+      "authority": "geocedg/specs/ui/application-profile.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoGebraStartupThreadTest.java",
+      "change": "added",
+      "purpose": "G9U1 author-review round 3: Verify that product-specific initialization marshals synchronously from a launcher thread to Swing EDT and executes directly without deadlock when already on Swing EDT.",
+      "authority": "geocedg/specs/ui/application-profile.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/resources/GeoCeDGBrandingResource.java",
+      "change": "added",
+      "purpose": "G9U1 author-review round 3: Resolve only tracked versioned GeoCeDG frame and splash resources through stable logical brand roles without upstream-brand fallback.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGBrandingResourceTest.java",
+      "change": "added",
+      "purpose": "G9U1 author-review round 3: Verify frame/splash role resolution, tracked source provenance and exact deterministic branding derivatives.",
+      "authority": "geocedg/resources/assets-manifest.yml"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/source/helixTopBar.png",
+      "change": "added",
+      "purpose": "G9U1 author-review round 3: Preserve the byte-exact author-supplied 969x815 application/window icon source in the tracked product resource namespace.",
+      "authority": "geocedg/resources/assets-manifest.yml"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/source/helixSnapshot.png",
+      "change": "added",
+      "purpose": "G9U1 author-review round 3: Preserve the byte-exact author-supplied 1197x1591 startup/splash source in the tracked product resource namespace.",
+      "authority": "geocedg/resources/assets-manifest.yml"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/derived/geocedg-application-icon-64.png",
+      "change": "added",
+      "purpose": "G9U1 author-review round 3: Provide the deterministic 64x64 aspect-preserving transparent-padded frame-icon derivative.",
+      "authority": "geocedg/resources/assets-manifest.yml"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/derived/geocedg-application.ico",
+      "change": "added",
+      "purpose": "G9U1 author-review round 3: Provide the deterministic multi-size PNG-embedded Windows package icon derivative.",
+      "authority": "geocedg/resources/assets-manifest.yml"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/derived/geocedg-startup-542x720.png",
+      "change": "added",
+      "purpose": "G9U1 author-review round 3: Provide the deterministic 542x720 aspect-preserving startup/splash derivative.",
+      "authority": "geocedg/resources/assets-manifest.yml"
     }
   ]
 }

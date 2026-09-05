@@ -34,6 +34,8 @@ $RepositoryRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\.."))
 $ArtifactRoot = Join-Path $RepositoryRoot "artifacts\packaging\windows"
 $ExpectedArtifactRoot = [IO.Path]::GetFullPath($ArtifactRoot)
 $ProfilePath = Join-Path $RepositoryRoot "packaging\windows\package.yml"
+$AssetsManifestPath = Join-Path $RepositoryRoot `
+    "geocedg\resources\assets-manifest.yml"
 $AssociationPath = Join-Path $RepositoryRoot `
     "packaging\windows\file-associations.properties"
 $NoticePath = Join-Path $RepositoryRoot `
@@ -216,13 +218,27 @@ try {
             (Join-Path $RepositoryRoot "NOTICE.md"),
             (Join-Path $RepositoryRoot "THIRD_PARTY.md"),
             (Join-Path $RepositoryRoot "LICENSES\README.md"),
-            (Join-Path $RepositoryRoot "geocedg\resources\assets-manifest.yml"))) {
+            $AssetsManifestPath)) {
         Assert-Condition -Condition (Test-Path -LiteralPath $required -PathType Leaf) `
             -Message "Required package input is missing: $required"
     }
 
     $profile = Get-Content -Raw -LiteralPath $ProfilePath |
         ConvertFrom-Json -Depth 50 -NoEnumerate
+    $assets = Get-Content -Raw -LiteralPath $AssetsManifestPath |
+        ConvertFrom-Json -Depth 50 -NoEnumerate
+    $packageIconPath = [IO.Path]::GetFullPath((Join-Path $RepositoryRoot `
+        ([string]$profile.application.icon).Replace("/", "\")))
+    Assert-Condition -Condition (Test-Path -LiteralPath $packageIconPath -PathType Leaf) `
+        -Message "Declared GeoCeDG package icon is missing: $packageIconPath"
+    Assert-Condition -Condition (
+        $assets.package_icon.path -ceq [string]$profile.application.icon -and
+        $assets.package_icon.raw_sha256 -ceq
+        (Get-FileHash -LiteralPath $packageIconPath -Algorithm SHA256).Hash.ToLowerInvariant()) `
+        -Message "Package icon path/hash differs from the asset provenance authority."
+    # Packaging consumes the tracked, hash-pinned derivative. Regeneration is a
+    # separate provenance operation bound to the exact runtime recorded in the
+    # asset manifest; it is not a workstation packaging prerequisite.
     try {
         $association = Get-Content -Raw -LiteralPath $AssociationPath |
             ConvertFrom-StringData
@@ -402,6 +418,7 @@ try {
             "--input", $inputRoot,
             "--main-jar", [string]$profile.application.main_jar,
             "--main-class", [string]$profile.application.main_class,
+            "--icon", $packageIconPath,
             "--app-version", [string]$profile.application.version,
             "--vendor", [string]$profile.application.vendor,
             "--description", $ExpectedMarker,
@@ -546,6 +563,8 @@ try {
             name = [string]$profile.application.name
             version = [string]$profile.application.version
             main_class = [string]$profile.application.main_class
+            icon = Get-FileEvidence -Path $packageIconPath `
+                -RelativeTo $RepositoryRoot
         }
         file_association = [ordered]@{
             enabled_for_target = $requiresInstaller

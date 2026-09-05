@@ -6,12 +6,11 @@
 package org.geocedg.desktop;
 
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.geogebra.common.util.StringUtil;
+import org.geocedg.desktop.resources.GeoCeDGBrandingResource;
 import org.geogebra.desktop.CommandLineArguments;
 import org.geogebra.desktop.GeoGebra;
 import org.geogebra.desktop.main.GeoGebraPreferencesD;
@@ -32,8 +31,9 @@ public final class GeoCeDG {
 	 * @param args command line arguments
 	 */
 	public static void main(String[] args) {
-		String[] safeArguments = withoutUpstreamSplash(args);
-		CommandLineArguments parsedArguments = new CommandLineArguments(safeArguments);
+		String[] effectiveArguments = args == null ? new String[0] : args;
+		CommandLineArguments parsedArguments = new CommandLineArguments(
+				effectiveArguments);
 		if (!parsedArguments.containsArg("settingsfile")) {
 			Path preferencesFile = getDefaultPreferencesFile();
 			try {
@@ -45,7 +45,8 @@ public final class GeoCeDG {
 			}
 			GeoGebraPreferencesD.setPropertyFileName(preferencesFile.toString());
 		}
-		GeoGebra.doMain(safeArguments, GeoCeDGFrame::new);
+		GeoGebra.doMain(effectiveArguments, GeoCeDGFrame::new,
+				GeoCeDG::getSplashResource);
 	}
 
 	/**
@@ -59,16 +60,7 @@ public final class GeoCeDG {
 		return base.resolve("5.4").resolve(SETTINGS_FILE).toAbsolutePath();
 	}
 
-	static String[] withoutUpstreamSplash(String[] args) {
-		List<String> safeArguments = new ArrayList<>();
-		if (args != null) {
-			for (String argument : args) {
-				if (!StringUtil.toLowerCaseUS(argument).startsWith("--showsplash")) {
-					safeArguments.add(argument);
-				}
-			}
-		}
-		safeArguments.add("--showSplash=false");
-		return safeArguments.toArray(new String[0]);
+	static URL getSplashResource() {
+		return GeoCeDGBrandingResource.STARTUP_SPLASH.getRequiredUrl();
 	}
 }

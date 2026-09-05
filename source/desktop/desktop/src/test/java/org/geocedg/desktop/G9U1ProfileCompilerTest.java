@@ -15,7 +15,9 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import org.geogebra.common.awt.AwtFactory;
 import org.geogebra.common.euclidian.EuclidianConstants;
@@ -142,27 +144,104 @@ class G9U1ProfileCompilerTest {
 	}
 
 	@Test
-	void duplicateMenuClusterFailsClosed() throws Exception {
+	void duplicateMenuPresentationGroupFailsClosed() throws Exception {
 		JSONObject profile = GeoCeDGProfile.getCatalog();
+		JSONObject duplicate = profile.getJSONArray("menu_sections").getJSONObject(1)
+				.getJSONArray("entries").getJSONObject(0);
 		profile.getJSONArray("menu_sections").getJSONObject(0)
-				.getJSONArray("cluster_ids").put("document-lifecycle");
+				.getJSONArray("entries").put(duplicate);
 		assertThrows(IllegalStateException.class,
 				() -> GeoCeDGProfile.compileProfile(profile.toString()));
 	}
 
 	@Test
-	void unknownAndDuplicateDirectMenuActionsFailClosed() throws Exception {
+	void dynamicUserToolsEntryIsRequiredExactlyOnceAndCannotBecomeAGroup()
+			throws Exception {
+		JSONObject staticGroup = GeoCeDGProfile.getCatalog();
+		JSONObject userTools = userToolsEntry(staticGroup);
+		userTools.put("kind", "group");
+		assertThrows(IllegalStateException.class,
+				() -> GeoCeDGProfile.compileProfile(staticGroup.toString()));
+
+		JSONObject duplicated = GeoCeDGProfile.getCatalog();
+		JSONObject duplicate = new JSONObject(userToolsEntry(duplicated).toString());
+		GeoCeDGMenuBar.find(duplicated.getJSONArray("menu_sections"), "help")
+				.getJSONArray("entries").put(duplicate);
+		assertThrows(IllegalStateException.class,
+				() -> GeoCeDGProfile.compileProfile(duplicated.toString()));
+	}
+
+	@Test
+	void globalPropertiesActionIsDeclaredAsPreferenceOnly() throws Exception {
+		JSONObject properties = GeoCeDGMenuBar.find(
+				GeoCeDGProfile.getCatalog().getJSONArray("actions"), "view.properties");
+		assertEquals("preference-action", properties.getString("kind"));
+		assertEquals("host.preference.global-properties",
+				properties.getJSONObject("target").getString("symbol"));
+		assertEquals("preference-only", properties.getString("effect_profile_id"));
+	}
+
+	@Test
+	void unknownAndDuplicatePresentationActionsFailClosed() throws Exception {
 		JSONObject unknown = GeoCeDGProfile.getCatalog();
-		unknown.getJSONArray("menu_sections").getJSONObject(4)
+		unknown.getJSONArray("presentation_groups").getJSONObject(0)
 				.getJSONArray("action_ids").put("not.an.action");
 		assertThrows(IllegalStateException.class,
 				() -> GeoCeDGProfile.compileProfile(unknown.toString()));
 
 		JSONObject duplicate = GeoCeDGProfile.getCatalog();
-		duplicate.getJSONArray("menu_sections").getJSONObject(4)
-				.getJSONArray("action_ids").put("view.properties");
+		duplicate.getJSONArray("presentation_groups").getJSONObject(0)
+				.getJSONArray("action_ids").put("document.save");
 		assertThrows(IllegalStateException.class,
 				() -> GeoCeDGProfile.compileProfile(duplicate.toString()));
+	}
+
+	@Test
+	void presentationGroupsCoverCatalogOnceAndDriveToolbarOrder() throws Exception {
+		JSONObject profile = GeoCeDGProfile.getCatalog();
+		Set<String> ids = new HashSet<>();
+		for (int i = 0; i < profile.getJSONArray("presentation_groups").length(); i++) {
+			JSONObject group = profile.getJSONArray("presentation_groups").getJSONObject(i);
+			for (String id : GeoCeDGProfile.strings(group.getJSONArray("action_ids"))) {
+				assertTrue(ids.add(id), id);
+			}
+		}
+		assertEquals(110, ids.size());
+		assertEquals(List.of("edit-selection", "construction-points",
+				"construction-lines-vectors", "construction-polygons",
+				"construction-derived", "construction-parameters",
+				"construction-relations", "construction-circles-conics",
+				"construction-semantic-curves", "construction-metrics",
+				"construction-transforms", "view-navigation"),
+				GeoCeDGProfile.strings(profile.getJSONArray("toolbar_group_ids")));
+	}
+
+	@Test
+	void malformedPresentationEntryAndUnreachableToolbarGroupFailClosed() throws Exception {
+		JSONObject missingGroup = GeoCeDGProfile.getCatalog();
+		missingGroup.getJSONArray("menu_sections").getJSONObject(0)
+				.getJSONArray("entries").getJSONObject(0).put("group_id", "not.a.group");
+		assertThrows(IllegalStateException.class,
+				() -> GeoCeDGProfile.compileProfile(missingGroup.toString()));
+
+		JSONObject unreachable = GeoCeDGProfile.getCatalog();
+		unreachable.getJSONArray("toolbar_group_ids").remove(0);
+		assertThrows(IllegalStateException.class,
+				() -> GeoCeDGProfile.compileProfile(unreachable.toString()));
+	}
+
+	@Test
+	void toolbarPresentationCannotDriftFromOperationalCatalog() throws Exception {
+		JSONObject profile = GeoCeDGProfile.getCatalog();
+		for (int i = 0; i < profile.getJSONArray("presentation_groups").length(); i++) {
+			JSONObject group = profile.getJSONArray("presentation_groups").getJSONObject(i);
+			if (group.getJSONArray("toolbar_action_ids").length() > 0) {
+				group.getJSONArray("toolbar_action_ids").remove(0);
+				break;
+			}
+		}
+		assertThrows(IllegalStateException.class,
+				() -> GeoCeDGProfile.compileProfile(profile.toString()));
 	}
 
 	@Test
@@ -259,5 +338,17 @@ class G9U1ProfileCompilerTest {
 				schema);
 		assertThrows(IllegalStateException.class,
 				() -> GeoCeDGProfileSchema.validate(new JSONObject().put("name", "other"), schema));
+	}
+
+	private static JSONObject userToolsEntry(JSONObject profile) throws Exception {
+		JSONObject automation = GeoCeDGMenuBar.find(
+				profile.getJSONArray("menu_sections"), "automation");
+		for (int i = 0; i < automation.getJSONArray("entries").length(); i++) {
+			JSONObject entry = automation.getJSONArray("entries").getJSONObject(i);
+			if ("user-tools".equals(entry.getString("kind"))) {
+				return entry;
+			}
+		}
+		throw new AssertionError("Missing user-tools fixture entry");
 	}
 }

@@ -84,25 +84,128 @@
       "id": "geocedg.locus-v2-menu-localization-default",
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu.properties",
       "kind": "localization-key-additions",
-      "provenance": "G9U0 Locus V2 menu keys are GeoCeDG-authored; the containing upstream bundle retains its recorded provenance",
+      "provenance": "G9U0 Locus V2 and G9U1 persistent-user-tool menu keys are GeoCeDG-authored; the containing upstream bundle retains its recorded provenance",
       "redistribution_status": "pending containing-bundle license audit"
     },
     {
       "id": "geocedg.locus-v2-menu-localization-en",
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_en.properties",
       "kind": "localization-key-additions",
-      "provenance": "G9U0 English Locus V2 menu keys are GeoCeDG-authored; the containing upstream bundle retains its recorded provenance",
+      "provenance": "G9U0 English Locus V2 and G9U1 persistent-user-tool menu keys are GeoCeDG-authored; the containing upstream bundle retains its recorded provenance",
       "redistribution_status": "pending containing-bundle license audit"
     },
     {
       "id": "geocedg.locus-v2-menu-localization-es",
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_es.properties",
       "kind": "localization-key-additions",
-      "provenance": "G9U0 Spanish Locus V2 menu keys are GeoCeDG-authored; the containing upstream bundle retains its recorded provenance",
+      "provenance": "G9U0 Spanish Locus V2 and G9U1 persistent-user-tool menu keys are GeoCeDG-authored; the containing upstream bundle retains its recorded provenance",
       "redistribution_status": "pending containing-bundle license audit"
     }
   ],
-  "package_icon": null,
+  "branding_assets": [
+    {
+      "id": "geocedg.brand.topbar",
+      "resource_version": 1,
+      "role": "GeoCeDG application/window and packaged Windows icon",
+      "author_input": {
+        "original_filename": "helixTopBar.png",
+        "ingestion_path": "artifacts/author-input/g9u1-branding/helixTopBar.png",
+        "raw_sha256": "08ef4481b51e801bdf0842635d645bd09042b0a4473b24faca555048e3bd52c1",
+        "bytes": 113783,
+        "width": 969,
+        "height": 815,
+        "media_type": "image/png",
+        "png_bit_depth": 8,
+        "png_color_type": 6,
+        "alpha": "RGBA channel present; all 789735 source pixels are opaque",
+        "pixel_density": "9448 pixels/metre in both axes (approximately 239.9792 dpi)"
+      },
+      "promoted_source": {
+        "path": "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/source/helixTopBar.png",
+        "raw_sha256": "08ef4481b51e801bdf0842635d645bd09042b0a4473b24faca555048e3bd52c1",
+        "transformation": "byte-exact copy of the checked author input"
+      },
+      "derivatives": [
+        {
+          "id": "geocedg.brand.topbar.frame-64-v1",
+          "path": "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/derived/geocedg-application-icon-64.png",
+          "raw_sha256": "448ea5b510f952d27ddddec3005911b4e1f1203ee35f55fcca857098e53fed97",
+          "bytes": 5676,
+          "width": 64,
+          "height": 64,
+          "media_type": "image/png",
+          "alpha": "640 transparent padding pixels and 3456 opaque pixels"
+        },
+        {
+          "id": "geocedg.brand.topbar.windows-ico-v1",
+          "path": "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/derived/geocedg-application.ico",
+          "raw_sha256": "e5dac1dd3a556f4ce9747f00d272281e9a571ecc5e757180ba1c6750b664cd73",
+          "bytes": 65873,
+          "media_type": "image/vnd.microsoft.icon",
+          "png_embedded_sizes": [16, 24, 32, 48, 64, 128, 256],
+          "bit_depth": 32
+        }
+      ],
+      "derivation": {
+        "tool": "tools/resources/generate-geocedg-branding.ps1",
+        "tool_contract_version": 1,
+        "accepted_generation_runtime": "PowerShell 7.6.5; .NET 10.0.11; System.Drawing.Common 10.0.0.0; Windows 10.0.26200",
+        "options": "sRGB source decoded without embedded colour management; contain and centre; no crop; no distortion; transparent square padding; HighQualityBicubic interpolation; 3780 pixels/metre output (approximately 95.9866 dpi); ascending ICO directory with exact PNG payloads"
+      },
+      "provenance": "Author-supplied Round-3 asset; the author identified this exact filename as the GeoCeDG application/window icon and authorized product integration",
+      "license_review_state": "authorized for this internal technical candidate; public redistribution rights remain subject to human review",
+      "redistribution_status": "internal-evaluation-only"
+    },
+    {
+      "id": "geocedg.brand.startup",
+      "resource_version": 1,
+      "role": "GeoCeDG startup splash",
+      "author_input": {
+        "original_filename": "helixSnapshot.png",
+        "ingestion_path": "artifacts/author-input/g9u1-branding/helixSnapshot.png",
+        "raw_sha256": "abcf272553c1b42d5eb016cdf564023439e901ed7d7e943212c220431ecf5637",
+        "bytes": 251689,
+        "width": 1197,
+        "height": 1591,
+        "media_type": "image/png",
+        "png_bit_depth": 8,
+        "png_color_type": 6,
+        "alpha": "RGBA channel present; all 1904427 source pixels are opaque",
+        "pixel_density": "9448 pixels/metre in both axes (approximately 239.9792 dpi)"
+      },
+      "promoted_source": {
+        "path": "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/source/helixSnapshot.png",
+        "raw_sha256": "abcf272553c1b42d5eb016cdf564023439e901ed7d7e943212c220431ecf5637",
+        "transformation": "byte-exact copy of the checked author input"
+      },
+      "derivatives": [
+        {
+          "id": "geocedg.brand.startup.splash-542x720-v1",
+          "path": "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/derived/geocedg-startup-542x720.png",
+          "raw_sha256": "04d5e79b99b0f25536690b8af9d71ba034fbaf2b0d401ae40b5822942b917a78",
+          "bytes": 155029,
+          "width": 542,
+          "height": 720,
+          "media_type": "image/png",
+          "alpha": "RGBA channel present; all 390240 pixels are opaque"
+        }
+      ],
+      "derivation": {
+        "tool": "tools/resources/generate-geocedg-branding.ps1",
+        "tool_contract_version": 1,
+        "accepted_generation_runtime": "PowerShell 7.6.5; .NET 10.0.11; System.Drawing.Common 10.0.0.0; Windows 10.0.26200",
+        "options": "sRGB source decoded without embedded colour management; contain within 542x720 and centre; no crop; no distortion; HighQualityBicubic interpolation; 3780 pixels/metre output (approximately 95.9866 dpi)"
+      },
+      "provenance": "Author-supplied Round-3 asset; the author identified this exact filename as the GeoCeDG startup/splash image and authorized product integration",
+      "license_review_state": "authorized for this internal technical candidate; public redistribution rights remain subject to human review",
+      "redistribution_status": "internal-evaluation-only"
+    }
+  ],
+  "package_icon": {
+    "asset_id": "geocedg.brand.topbar.windows-ico-v1",
+    "path": "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/derived/geocedg-application.ico",
+    "raw_sha256": "e5dac1dd3a556f4ce9747f00d272281e9a571ecc5e757180ba1c6750b664cd73"
+  },
   "deliberate_exclusions": [
     "upstream GeoGebra logos and trademarks",
     "upstream installer resources",

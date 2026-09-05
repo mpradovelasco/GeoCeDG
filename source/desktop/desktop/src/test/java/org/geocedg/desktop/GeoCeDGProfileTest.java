@@ -6,7 +6,6 @@
 package org.geocedg.desktop;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -44,7 +43,7 @@ class GeoCeDGProfileTest {
 		String toolbar = GeoCeDGProfile.getToolbarDefinition();
 		assertThat(GeoCeDGProfile.getProfileId(), equalTo("geocedg-desktop"));
 		assertThat(GeoCeDGProfile.getActions(), hasSize(110));
-		assertThat(ToolBar.parseToolbarString(toolbar), hasSize(9));
+		assertThat(ToolBar.parseToolbarString(toolbar), hasSize(12));
 		assertThat(Arrays.asList(toolbar.split("[ |]+")),
 				not(org.hamcrest.Matchers.hasItem("47")));
 	}
@@ -75,12 +74,11 @@ class GeoCeDGProfileTest {
 				equalTo("GeoCeDG 0.9 — Revision1.cedg"));
 		assertThat(GeoCeDGFrame.APPLICATION_USER_MODEL_ID,
 				equalTo("org.geocedg.desktop"));
-		String[] arguments = GeoCeDG.withoutUpstreamSplash(new String[] {
-			"--showSplash=true", "--settingsFile=C:\\temp\\geocedg.properties"
-		});
-		assertThat(arguments, arrayContaining(
-				"--settingsFile=C:\\temp\\geocedg.properties", "--showSplash=false"));
-		assertThat(String.join(" ", arguments), not(containsString("showSplash=true")));
+		String splash = GeoCeDG.getSplashResource().toExternalForm();
+		assertThat(splash, containsString(
+				"/org/geocedg/desktop/branding/v1/derived/"
+						+ "geocedg-startup-542x720.png"));
+		assertThat(splash, not(containsString("/org/geogebra/desktop/splash.png")));
 	}
 
 	@Test

@@ -9,6 +9,145 @@
   `passClaimedImplementation = false`
 - `manualAuthorSmoke = PENDING`
 
+## Author-review stabilization round 3 — current candidate
+
+Round 3 starts from the immutable published Round-2 candidate
+`5f492d4ee77289d9def89aa6ed431226d2de3457` on
+`codex/g9u1-author-review-stabilization-2`. The Round-2 131-path/76-source,
+21-class/204-method and 163-scenario authority remains historical: its report,
+evidence, scenario, hash, verifier and roadmap blobs are pinned from that commit.
+Neither its intermediate failures nor its pending author re-smoke are rewritten.
+The author-owned [re-smoke checklist](g9u1_author_resmoke_checklist.md) remains
+unchanged and is input, not agent execution evidence. The bounded
+[Round-3 disposition](g9u1_author_review_round3.md) records the pre-mutation
+classification.
+
+The real ignored `Revision3.cedg` reproduced the remaining ordinary Algebra
+editing failure at the Desktop launcher-thread to Swing-event-thread boundary.
+The G9A-compatible redefine itself, `GeoNumeric` identity, `Dilate`, zero/nonzero
+semantics and saved construction were valid. GeoCeDG had created the
+Construction/metric owner on the launcher thread and later dispatched ordinary
+Algebra gestures on Swing. The bounded correction is solely the product-specific
+three-argument Desktop startup seam: it resolves the splash resource first and
+synchronously constructs/initializes GeoCeDG on the Swing event thread. The
+developer-only Locus V2 laboratory uses that same three-argument seam with its
+splash explicitly disabled. Classic's two-argument startup remains direct, and
+shared semantic owner/thread confinement is unchanged.
+
+The canonical Algebra perimeter always executes double-click, F2, row editing
+and free input against a deterministic synthetic construction; it never branches
+on ignored files. A separately filtered, non-acceptance DEV diagnostic authenticates
+and exercises the byte-exact ignored Revision3 archive and its
+`1 -> 0 -> 0.25 -> -1 -> 1` lifecycle. Revision2 is likewise retained only as
+byte-pinned author evidence. Neither archive is a clean-checkout product or
+canonical-suite input.
+
+Round 3 preserves the complete failed-run chronology. A sandboxed Gradle attempt
+failed with Windows `AccessDenied` before supplying product evidence. A four-test
+shared handoff run passed only the subsequently rejected empty-publication-handoff
+hypothesis and is retained as **SUPERSEDED historical evidence**, not acceptance.
+The first Desktop run failed compilation because the test lacked the static
+`assertNotSame` import; the second supplied several class names as one invalid
+filter and executed no tests. The third was a valid 110-test diagnostic run with
+five failures: three Algebra routes exposed the wrong startup ownership, one
+negative drift fixture mutated an empty array, and one historical expectation
+still required nine rather than twelve toolbar groups. None is erased or promoted
+to final-cohort evidence.
+
+The affected nine-class Desktop DEV perimeter passed **120/120**
+(`dev-desktop-round3-08`; result SHA-256
+`96c161c571527a7aeea702d20641acfba0c6cbfb44da452b8c1c7b608e144ae8`).
+The separately filtered, byte-authenticated Revision3 diagnostic passed **1/1**
+(`dev-revision3-diagnostic-01`; result SHA-256
+`a5c97a14bc0d01a42118d270febb6ec1e96da656ad8eeb71fe680b365d2af0e9`).
+Both are explicitly scoped DEV evidence, not G9U1 acceptance or author smoke.
+They precede four bounded Checkstyle-only conformance edits: declaration-helper
+extraction in `GeoCeDGUserToolLibrary`, a Unicode escape in `GeoCeDGUserTools`,
+a `final` test-local declaration in `G9U1UserToolLibraryTest`, and the required
+source header in `GeoGebraStartupThreadTest`. Those edits change no product or
+scientific contract and do not relabel the earlier DEV execution as final-cohort
+evidence; fresh final acceptance gates remain required.
+
+The first final COMPOSED attempt (`composed-final-01`) failed after its canonical
+run because the new test-only startup class was named
+`org.geogebra.desktop.GeoGebraStartupThreadTest`, outside the existing canonical
+`org.geocedg.*` COMPOSED selection. Its failed result remains archived at raw
+SHA-256 `d58d0599d31d4da03c55c2dae6aa25ddcaca77c6382a7f8b4a90b7420e0c9103`.
+The two unchanged test obligations were relocated to
+`org.geocedg.desktop.GeoGebraStartupThreadTest` and invoke the package-private
+Desktop helper reflectively. This is a test-only selection repair; the global
+execution plan and product source are unchanged, and that failed run is not
+reused.
+
+The next COMPOSED attempt (`composed-final-02`) correctly failed because the
+upstream modification registry still named the test's former
+`org/geogebra/desktop` path. Its result remains archived at raw SHA-256
+`999ea0fcba0c01d494f3bf8ca486941eac5fd1562a607d9b4ef6a97932678356`.
+The inventory entry now names the extant `org/geocedg/desktop` test source;
+this documentation-only reconciliation changes no test obligation, product
+source or execution plan, and the failed run is not reused.
+
+The expressly named author images are promoted into tracked versioned GeoCeDG
+resources. The promoted source PNGs retain the input SHA-256 values; deterministic
+contain/center derivatives supply a transparent 64x64 frame icon, a 542x720
+startup image and a PNG-embedded 16/24/32/48/64/128/256 Windows ICO. Runtime,
+manifest and packaging authorities use hash-pinned tracked resources; packaging
+also validates the ICO structure directly and does not rerun the image encoder.
+The generator remains a separate `VerifyOnly` provenance check. The ignored
+ingestion originals are not changed, and no upstream GeoGebra branding or
+redistribution conclusion is introduced.
+
+Persistent installed tools and document reconstruction macros remain distinct
+authorities. A versioned normalized complete-definition digest may prove that an
+embedded package is equivalent to the installed application package. In that
+case, the embedded macro stays the sole portable document reconstruction object
+while the installed package supplies the one user-facing tool. Partial or
+mismatched sets fail closed. Version-three pin preferences add bounded PNG source
+bytes/name/SHA/dimensions and deterministic toolbar presentation; this remains
+application preference state, never `.cedg` geometry or macro identity.
+
+The same 110 stable actions, 18 operational clusters and 11 professional
+families remain authoritative. Schema v2 now declares 28 semantic presentation
+groups and 12 ordered toolbar groups inside that one profile. File/Edit flattening,
+typed separators, host View/Options controls, `Semantic curves`, precise linear
+subgroups, `Annotations and media`, compact persistent-tool groups and the
+rightmost host Input Help control are projections of the same action IDs. No
+second menu/toolbar taxonomy or new stable action is added. Continuity remains
+locked OFF and product languages remain English/Spanish with deterministic
+English fallback.
+
+Fourteen bounded scenarios `U1-R3-01`–`U1-R3-14` preserve all 163 historical
+Round-1/Round-2 scenarios and bring the focused perimeter to **177 scenarios**,
+**23 classes / 231 methods** (**217 Desktop / 14 shared**), plus one explicitly
+filtered **1-method DEV diagnostic** over the ignored Revision3 archive that is
+not canonical acceptance coverage. Historical scenario
+objects are meaning-preserved; renamed implementation tests have explicit
+one-for-one obligation mappings. `U1-R2-07` and `U1-R2-08` remain visible
+historical records and are superseded, not erased, only by the now-authorized
+icon and promoted-branding contracts.
+
+The exact cumulative and Round-3 path inventories are frozen in the
+[evidence JSON](../../geocedg/validation/g9u1/g9u1-construction-workspace-evidence.json)
+and canonical-LF sidecar: **159 cumulative paths / 92 source paths**, with a
+**59-path / 30-source-path** Round-3 delta over the immutable Round-2 candidate.
+Binary author fixture/product resources have explicit
+raw SHA-256 records rather than being decoded as text. Same-run physical bytes,
+tracked Git path/mode/blob authority and ignored local ingestion evidence remain
+separate.
+
+This tracked report is frozen before the final executions. Fresh focused A/B,
+G9U1 PHASE, COMPOSED and one clean FULL belong only to the exact final Round-3
+cohort and are recorded under `artifacts/g9u1-author-review-round3`; no Round-2
+receipt is reused or relabeled. Post-commit lifecycle validation must authenticate
+the exact technical commit. Runtime paths/hashes in the handoff come from saved
+receipts, not retroactive edits to this report.
+
+Current terminal status remains **IMPLEMENTATION CANDIDATE — PENDING AUTHOR
+REVIEW**. `selfApproved = false`, `authorApprovedImplementation = false`,
+`passClaimedImplementation = false`, and `manualAuthorSmoke = PENDING`. Even if
+all technical gates pass, ADR 0023 requires a later exact-SHA author decision;
+no PASS tag or main promotion is authorized by Round 3.
+
 ## Author-review stabilization round 2 — current candidate
 
 The current successor starts from published round-one candidate

@@ -18,8 +18,11 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.MessageDigest;
 import java.util.Enumeration;
+import java.util.HexFormat;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BooleanSupplier;
 
@@ -34,11 +37,14 @@ import org.geocedg.common.kernel.algos.AlgoLocusSimilarityTransform2D;
 import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
+import org.geogebra.common.kernel.commands.EvalInfo;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoNumeric;
+import org.geogebra.common.kernel.kernelND.GeoElementND;
 import org.geogebra.desktop.gui.GuiManagerD;
 import org.geogebra.desktop.gui.view.algebra.AlgebraViewD;
 import org.geogebra.desktop.main.undo.UndoManagerD;
+import org.geogebra.test.commands.ErrorAccumulator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
@@ -46,44 +52,159 @@ import org.junit.jupiter.api.io.TempDir;
 /** Ordinary numeric editing continues to use the real inherited Algebra gestures. */
 @ExtendWith(G9U1TestApp.Lifecycle.class)
 class G9U1AlgebraGestureEditingTest {
+	static final String REVISION3_PATH =
+			"artifacts/smoke-test-g9u1/Revision3.cedg";
+	static final String REVISION3_SHA256 =
+			"351955499d47d0407ab11c906da6e9b6d2ab636b0beef4e67c3edfddecccd939";
 
 	@Test
 	void doubleClickEditsDilateFactorWithIdentityUndoRedoAndReopen(
 			@TempDir Path directory) throws Exception {
-		assertGestureLifecycle(EditGesture.DOUBLE_CLICK, directory);
+		assertGestureLifecycle(EditRoute.DOUBLE_CLICK, directory);
 	}
 
 	@Test
 	void f2EditsDilateFactorWithIdentityUndoRedoAndReopen(
 			@TempDir Path directory) throws Exception {
-		assertGestureLifecycle(EditGesture.F2, directory);
+		assertGestureLifecycle(EditRoute.F2, directory);
 	}
 
-	private static void assertGestureLifecycle(EditGesture gesture, Path directory)
+	@Test
+	void rowEditorEditsDilateFactorWithProductSwingOwnership(
+			@TempDir Path directory) throws Exception {
+		assertGestureLifecycle(EditRoute.ROW, directory);
+	}
+
+	@Test
+	void freeInputEditsExistingDilateFactorWithoutReplacingIt(
+			@TempDir Path directory) throws Exception {
+		assertGestureLifecycle(EditRoute.FREE_INPUT, directory);
+	}
+
+	@Test
+	void deterministicFixtureCoversAllAlgebraEditRoutes(
+			@TempDir Path directory) throws Exception {
+		for (EditRoute route : EditRoute.values()) {
+			assertGestureLifecycle(route, directory);
+		}
+	}
+
+	static void assertRevision3Archive(Path archive, Path directory) throws Exception {
+		assertTrue(Files.isRegularFile(archive), archive.toString());
+		byte[] original = Files.readAllBytes(archive);
+		assertEquals(14_110, original.length);
+		assertEquals(REVISION3_SHA256, sha256(original));
+
+		// GeoCeDG product startup owns the construction on the same Swing EDT
+		// that later handles Algebra gestures.
+		AtomicReference<Revision3Scenario> scenarioReference = new AtomicReference<>();
+		onEventThread(() -> scenarioReference.set(createRevision3Scenario(archive)));
+		Revision3Scenario scenario = scenarioReference.get();
+		AppGeoCeDG app = scenario.app;
+		GeoNumeric factor = scenario.factor;
+		GeoLocusV2 image = scenario.image;
+		AlgoLocusSimilarityTransform2D transform = scenario.transform;
+		PersistentGeoId factorId = scenario.factorId;
+		PersistentGeoId imageId = scenario.imageId;
+		int constructionSize = scenario.constructionSize;
+		AlgebraViewD algebra = scenario.algebra;
+		UndoManagerD undo = scenario.undo;
+		flushEventQueue();
+		await(() -> undo.getHistorySize() == 0);
+
+		EditRoute[] routes = {EditRoute.DOUBLE_CLICK, EditRoute.F2,
+				EditRoute.ROW, EditRoute.FREE_INPUT};
+		String[] inputs = {"0", ".25", "-1", "1"};
+		double[] values = {0, 0.25, -1, 1};
+		for (int index = 0; index < routes.length; index++) {
+			int expectedHistorySize = index + 1;
+			EditRoute route = routes[index];
+			String input = inputs[index];
+			double value = values[index];
+			onEventThread(() -> editThroughRoute(app, algebra, factor, route, input));
+			flushEventQueue();
+			await(() -> undo.getHistorySize() == expectedHistorySize);
+			onEventThread(() -> assertRevision3State(app, factor, factorId, image,
+					imageId, transform, constructionSize, value));
+		}
+
+		onEventThread(() -> app.getKernel().undo());
+		flushEventQueue();
+		onEventThread(() -> assertRevision3Value(app, factorId, imageId,
+				constructionSize, -1));
+		onEventThread(() -> app.getKernel().redo());
+		flushEventQueue();
+		onEventThread(() -> assertRevision3Value(app, factorId, imageId,
+				constructionSize, 1));
+
+		Path saved = directory.resolve("Revision3-algebra-edited.cedg");
+		onEventThread(() -> assertTrue(((GuiManagerGeoCeDG) app.getGuiManager())
+				.saveAsTo(saved.toFile())));
+		onEventThread(() -> {
+			AppGeoCeDG reopened = G9U1TestApp.create();
+			assertTrue(reopened.loadFile(saved.toFile(), false));
+			assertRevision3Value(reopened, factorId, imageId, constructionSize, 1);
+		});
+		assertEquals(REVISION3_SHA256, sha256(Files.readAllBytes(archive)));
+	}
+
+	private static Revision3Scenario createRevision3Scenario(Path archive) {
+		AppGeoCeDG app = G9U1TestApp.create();
+		assertTrue(app.loadFile(archive.toFile(), false));
+		GeoNumeric factor = (GeoNumeric) lookup(app, "kesc");
+		GeoLocusV2 image = (GeoLocusV2) lookup(app, "T");
+		AlgoLocusSimilarityTransform2D transform =
+				(AlgoLocusSimilarityTransform2D) image.getParentAlgorithm();
+		PersistentGeoId factorId = app.getKernel().getConstruction()
+				.getSpatialIdentityRegistry().getPersistentGeoId(factor);
+		PersistentGeoId imageId = app.getKernel().getConstruction()
+				.getSpatialIdentityRegistry().getPersistentGeoId(image);
+		assertNotNull(factorId);
+		assertNotNull(imageId);
+		int constructionSize = app.getKernel().getConstruction()
+				.getGeoSetConstructionOrder().size();
+		assertEquals(26, constructionSize);
+		UndoManagerD undo = (UndoManagerD) app.getKernel().getConstruction()
+				.getUndoManager();
+		app.getKernel().initUndoInfo();
+		return new Revision3Scenario(app, factor, image, transform, factorId,
+				imageId, constructionSize, attachedAlgebra(app), undo);
+	}
+
+	private static void assertGestureLifecycle(EditRoute gesture, Path directory)
 			throws Exception {
-		AtomicReference<Scenario> reference = new AtomicReference<>();
-		onEventThread(() -> reference.set(createScenario()));
-		Scenario scenario = reference.get();
+		AtomicReference<Scenario> scenarioReference = new AtomicReference<>();
+		onEventThread(() -> scenarioReference.set(createScenario()));
+		Scenario scenario = scenarioReference.get();
 		flushEventQueue();
 		await(() -> scenario.undo.getHistorySize() == 0);
 		onEventThread(() -> assertEquals(0, scenario.undo.getHistorySize()));
 
-		onEventThread(() -> editThroughGesture(scenario.app, scenario.algebra,
-				scenario.factor, gesture, "2"));
-		flushEventQueue();
-		await(() -> scenario.undo.getHistorySize() == 1);
-		onEventThread(() -> assertEditedState(scenario));
+		String[] inputs = {"0", ".25", "-1", "1"};
+		double[] values = {0, 0.25, -1, 1};
+		double[] lengths = {0, 1, 4, 4};
+		for (int index = 0; index < inputs.length; index++) {
+			int expectedHistorySize = index + 1;
+			double value = values[index];
+			double length = lengths[index];
+			onEventThread(() -> editThroughRoute(scenario.app, scenario.algebra,
+					scenario.factor, gesture, inputs[expectedHistorySize - 1]));
+			flushEventQueue();
+			await(() -> scenario.undo.getHistorySize() == expectedHistorySize);
+			onEventThread(() -> assertEditedState(scenario, value, length,
+					expectedHistorySize));
+		}
 
 		onEventThread(() -> scenario.app.getKernel().undo());
 		flushEventQueue();
 		onEventThread(() -> {
 			assertTrue(scenario.undo.redoPossible());
-			assertState(scenario.app, scenario.factorId, 1, 4);
+			assertState(scenario.app, scenario.factorId, -1, 4);
 		});
 
 		onEventThread(() -> scenario.app.getKernel().redo());
 		flushEventQueue();
-		onEventThread(() -> assertState(scenario.app, scenario.factorId, 2, 8));
+		onEventThread(() -> assertState(scenario.app, scenario.factorId, 1, 4));
 
 		Path file = directory.resolve("ordinary-numeric-" + gesture + ".cedg");
 		onEventThread(() -> {
@@ -91,7 +212,7 @@ class G9U1AlgebraGestureEditingTest {
 					.saveAsTo(file.toFile()));
 			AppGeoCeDG reopened = G9U1TestApp.create();
 			assertTrue(reopened.loadFile(file.toFile(), false));
-			assertState(reopened, scenario.factorId, 2, 8);
+			assertState(reopened, scenario.factorId, 1, 4);
 		});
 	}
 
@@ -119,31 +240,37 @@ class G9U1AlgebraGestureEditingTest {
 		return new Scenario(app, factor, factorId, attachedAlgebra(app), undo);
 	}
 
-	private static void assertEditedState(Scenario scenario) {
+	private static void assertEditedState(Scenario scenario, double value,
+			double expectedLength, int expectedHistorySize) {
 		assertSame(scenario.factor, lookup(scenario.app, "kesc"));
 		GeoLocusV2 image = (GeoLocusV2) lookup(scenario.app, "d");
 		AlgoLocusSimilarityTransform2D transform =
 				(AlgoLocusSimilarityTransform2D) image.getParentAlgorithm();
-		assertEquals(2, transform.getTransformSnapshot().getLengthScale(), 0);
+		assertEquals(Math.abs(value),
+				transform.getTransformSnapshot().getLengthScale(), 0);
 		GeoNumeric metric = (GeoNumeric) lookup(scenario.app, "m");
 		AlgoLocusMetricScalarAdapter scalarAdapter =
 				(AlgoLocusMetricScalarAdapter) metric.getParentAlgorithm();
 		GeoLocusMetricResult richMetric = scalarAdapter.getRichInput();
-		assertEquals(8, richMetric.getMetricResult().getMetricValue()
+		assertEquals(expectedLength, richMetric.getMetricResult().getMetricValue()
 				.getFiniteValue().orElse(Double.NaN), 1E-8);
 		assertTrue(scenario.factor.algoUpdateSetContains(scalarAdapter));
-		assertEquals(1, scenario.undo.getHistorySize());
-		assertState(scenario.app, scenario.factorId, 2, 8);
+		assertEquals(expectedHistorySize, scenario.undo.getHistorySize());
+		assertState(scenario.app, scenario.factorId, value, expectedLength);
 	}
 
-	private static void editThroughGesture(AppGeoCeDG app, AlgebraViewD algebra,
-			GeoNumeric factor, EditGesture gesture, String value) throws Exception {
+	private static void editThroughRoute(AppGeoCeDG app, AlgebraViewD algebra,
+			GeoNumeric factor, EditRoute route, String value) throws Exception {
 		Runnable edit = () -> {
+			if (route == EditRoute.FREE_INPUT) {
+				submitFreeInput(app, factor.getLabelSimple() + " = " + value);
+				return;
+			}
 			TreePath path = pathFor(algebra, factor);
 			algebra.expandPath(path.getParentPath());
 			algebra.scrollPathToVisible(path);
 			algebra.setSelectionPath(path);
-			if (gesture == EditGesture.DOUBLE_CLICK) {
+			if (route == EditRoute.DOUBLE_CLICK) {
 				Rectangle bounds = algebra.getPathBounds(path);
 				assertNotNull(bounds);
 				assertTrue(bounds.width > algebra.getIconShownHeight() + 2);
@@ -154,15 +281,17 @@ class G9U1AlgebraGestureEditingTest {
 						when, 0, x, y, 2, false, MouseEvent.BUTTON1));
 				algebra.dispatchEvent(new MouseEvent(algebra, MouseEvent.MOUSE_RELEASED,
 						when, 0, x, y, 2, false, MouseEvent.BUTTON1));
-			} else {
+			} else if (route == EditRoute.F2) {
 				app.getSelectionManager().clearSelectedGeos();
 				app.getSelectionManager().addSelectedGeo(factor);
 				KeyEvent event = new KeyEvent(algebra, KeyEvent.KEY_PRESSED,
 						System.currentTimeMillis(), 0, KeyEvent.VK_F2,
 						KeyEvent.CHAR_UNDEFINED);
 				assertTrue(app.getGlobalKeyDispatcher().dispatchKeyEvent(event));
+			} else {
+				algebra.startEditItem(factor);
 			}
-			assertTrue(algebra.isEditItem(), gesture.name());
+			assertTrue(algebra.isEditItem(), route.name());
 			JTextField editor = findComponent(algebra, JTextField.class);
 			assertNotNull(editor);
 			assertTrue(editor.getText().contains(factor.getLabelSimple()));
@@ -170,6 +299,66 @@ class G9U1AlgebraGestureEditingTest {
 			assertTrue(algebra.stopEditing());
 		};
 		edit.run();
+	}
+
+	private static void submitFreeInput(AppGeoCeDG app, String command) {
+		AtomicReference<GeoElementND[]> output = new AtomicReference<>();
+		ErrorAccumulator errors = new ErrorAccumulator();
+		try {
+			GeoCeDGAlgebraInputSubmission.submit(app, command,
+					new EvalInfo(true, true).withSliders(true).withSymbolic(true),
+					errors, output::set);
+		} catch (Exception exception) {
+			throw new AssertionError(command, exception);
+		}
+		assertEquals("", errors.getErrors(), command);
+		assertNotNull(output.get(), command);
+		assertEquals(1, output.get().length, command);
+	}
+
+	private static void assertRevision3State(AppGeoCeDG app, GeoNumeric factor,
+			PersistentGeoId factorId, GeoLocusV2 image, PersistentGeoId imageId,
+			AlgoLocusSimilarityTransform2D transform, int constructionSize,
+			double value) {
+		assertSame(factor, lookup(app, "kesc"));
+		assertSame(image, lookup(app, "T"));
+		assertSame(transform, image.getParentAlgorithm());
+		assertTrue(factor.algoUpdateSetContains(transform));
+		assertRevision3Value(app, factorId, imageId, constructionSize, value);
+	}
+
+	private static void assertRevision3Value(AppGeoCeDG app,
+			PersistentGeoId factorId, PersistentGeoId imageId, int constructionSize,
+			double value) {
+		GeoNumeric factor = (GeoNumeric) lookup(app, "kesc");
+		GeoLocusV2 image = (GeoLocusV2) lookup(app, "T");
+		assertEquals(factorId, app.getKernel().getConstruction()
+				.getSpatialIdentityRegistry().getPersistentGeoId(factor));
+		assertEquals(imageId, app.getKernel().getConstruction()
+				.getSpatialIdentityRegistry().getPersistentGeoId(image));
+		assertEquals(constructionSize, app.getKernel().getConstruction()
+				.getGeoSetConstructionOrder().size());
+		assertEquals(value, factor.getDouble(), 0);
+		assertTrue(image.isDefined());
+		assertEquals(Math.abs(value), ((AlgoLocusSimilarityTransform2D)
+				image.getParentAlgorithm()).getTransformSnapshot().getLengthScale(), 0);
+	}
+
+	private static String sha256(byte[] value) throws Exception {
+		return HexFormat.of().formatHex(
+				MessageDigest.getInstance("SHA-256").digest(value));
+	}
+
+	static Path findRepositoryRoot() {
+		Path candidate = Path.of("").toAbsolutePath().normalize();
+		while (candidate != null) {
+			if (Files.isRegularFile(candidate.resolve("AGENTS.md"))
+					&& Files.isDirectory(candidate.resolve("geocedg"))) {
+				return candidate;
+			}
+			candidate = candidate.getParent();
+		}
+		throw new IllegalStateException("GeoCeDG repository root not found");
 	}
 
 	private static AlgebraViewD attachedAlgebra(AppGeoCeDG app) {
@@ -285,8 +474,37 @@ class G9U1AlgebraGestureEditingTest {
 		}
 	}
 
-	private enum EditGesture {
+	private static final class Revision3Scenario {
+		private final AppGeoCeDG app;
+		private final GeoNumeric factor;
+		private final GeoLocusV2 image;
+		private final AlgoLocusSimilarityTransform2D transform;
+		private final PersistentGeoId factorId;
+		private final PersistentGeoId imageId;
+		private final int constructionSize;
+		private final AlgebraViewD algebra;
+		private final UndoManagerD undo;
+
+		private Revision3Scenario(AppGeoCeDG app, GeoNumeric factor,
+				GeoLocusV2 image, AlgoLocusSimilarityTransform2D transform,
+				PersistentGeoId factorId, PersistentGeoId imageId,
+				int constructionSize, AlgebraViewD algebra, UndoManagerD undo) {
+			this.app = app;
+			this.factor = factor;
+			this.image = image;
+			this.transform = transform;
+			this.factorId = factorId;
+			this.imageId = imageId;
+			this.constructionSize = constructionSize;
+			this.algebra = algebra;
+			this.undo = undo;
+		}
+	}
+
+	private enum EditRoute {
 		DOUBLE_CLICK,
-		F2
+		F2,
+		ROW,
+		FREE_INPUT
 	}
 }

@@ -18,8 +18,11 @@ package org.geogebra.desktop;
 
 import java.awt.Frame;
 import java.awt.Toolkit;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.function.Supplier;
+
+import javax.swing.SwingUtilities;
 
 import org.geogebra.common.main.PreviewFeature;
 import org.geogebra.common.util.debug.Log;
@@ -48,6 +51,27 @@ public class GeoGebra {
 	 * @param frameFactory frame constructor
 	 */
 	public static void doMain(String[] cmdArgs, Supplier<GeoGebraFrame> frameFactory) {
+		doMain(cmdArgs, frameFactory,
+				() -> GeoGebra.class.getResource(GuiResourcesD.SPLASH.getFilename()),
+				false);
+	}
+
+	/**
+	 * Start a Desktop product with its own splash resource while preserving all
+	 * existing command-line and lifecycle behavior.
+	 *
+	 * @param cmdArgs command line arguments
+	 * @param frameFactory frame constructor
+	 * @param splashResource product splash resource supplier
+	 */
+	public static void doMain(String[] cmdArgs, Supplier<GeoGebraFrame> frameFactory,
+			Supplier<URL> splashResource) {
+		doMain(cmdArgs, frameFactory, splashResource, true);
+	}
+
+	private static void doMain(String[] cmdArgs,
+			Supplier<GeoGebraFrame> frameFactory, Supplier<URL> splashResource,
+			boolean initializeOnEventDispatchThread) {
 
 		CommandLineArguments args = new CommandLineArguments(cmdArgs);
 
@@ -71,7 +95,7 @@ public class GeoGebra {
 
 		if (showSplash) {
 			// Show splash screen
-			URL imageURL = GeoGebra.class.getResource(GuiResourcesD.SPLASH.getFilename());
+			URL imageURL = splashResource.get();
 			if (imageURL != null) {
 				splashFrame = SplashWindow.splash(
 						Toolkit.getDefaultToolkit().createImage(imageURL));
@@ -82,7 +106,12 @@ public class GeoGebra {
 
 		// Start GeoGebra
 		try {
-			GeoGebraFrame.init(args, frameFactory.get());
+			Runnable initialize = () -> GeoGebraFrame.init(args, frameFactory.get());
+			if (initializeOnEventDispatchThread) {
+				runOnEventDispatchThreadAndWait(initialize);
+			} else {
+				initialize.run();
+			}
 		} catch (Throwable e) {
 			Log.debug(e);
 			System.err.flush();
@@ -93,6 +122,15 @@ public class GeoGebra {
 		if (splashFrame != null) {
 			splashFrame.setVisible(false);
 		}
+	}
+
+	static void runOnEventDispatchThreadAndWait(Runnable action)
+			throws InterruptedException, InvocationTargetException {
+		if (SwingUtilities.isEventDispatchThread()) {
+			action.run();
+			return;
+		}
+		SwingUtilities.invokeAndWait(action);
 	}
 
 	/**

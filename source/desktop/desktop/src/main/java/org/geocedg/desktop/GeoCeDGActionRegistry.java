@@ -34,6 +34,7 @@ import org.geocedg.desktop.resources.GeoCeDGToolImageResource;
 import org.geogebra.common.GeoGebraConstants;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.main.App;
+import org.geogebra.common.main.OptionType;
 import org.geogebra.common.main.settings.AlgebraStyle;
 import org.geogebra.desktop.gui.GuiManagerD;
 import org.geogebra.desktop.gui.inputbar.AlgebraInputD;
@@ -62,7 +63,8 @@ public final class GeoCeDGActionRegistry {
 			"host.help.command-list", "geocedg.help.contextual-action", "geocedg.help.user-guide",
 			"host.help.keyboard-shortcuts", "geocedg.help.about", "geocedg.classic",
 			"geocedg.language.selector", "host.view.construction-protocol",
-			"host.view.construction-protocol-navigation", "host.view.properties",
+			"host.view.construction-protocol-navigation",
+			"host.preference.global-properties",
 			"geocedg.inspect.definition", "geocedg.semantic-curve.inspect-definition",
 			"host.preference.algebra-style.VALUE", "host.preference.algebra-style.DESCRIPTION",
 			"host.preference.algebra-style.DEFINITION");
@@ -325,11 +327,10 @@ public final class GeoCeDGActionRegistry {
 			toggleView(App.VIEW_CONSTRUCTION_PROTOCOL);
 			break;
 		case "host.view.construction-protocol-navigation":
-			app.setShowConstructionProtocolNavigation(!app.showConsProtNavigation());
+			app.toggleShowConstructionProtocolNavigation(App.VIEW_EUCLIDIAN);
 			break;
-		case "host.view.properties":
-			app.getDialogManager()
-					.showPropertiesDialog(app.getSelectionManager().getSelectedGeos());
+		case "host.preference.global-properties":
+			app.getDialogManager().showPropertiesDialog(OptionType.GLOBAL, null);
 			break;
 		case "geocedg.inspect.definition":
 		case "geocedg.semantic-curve.inspect-definition":
@@ -361,7 +362,7 @@ public final class GeoCeDGActionRegistry {
 		case "host.view.construction-protocol":
 			return app.getGuiManager().showView(App.VIEW_CONSTRUCTION_PROTOCOL);
 		case "host.view.construction-protocol-navigation":
-			return app.showConsProtNavigation();
+			return app.showConsProtNavigation(App.VIEW_EUCLIDIAN);
 		case "geocedg.result.markers.toggle":
 			return controller().isIntersectionMarkersVisible();
 		case "geocedg.result.auto-materialize-initial.toggle":

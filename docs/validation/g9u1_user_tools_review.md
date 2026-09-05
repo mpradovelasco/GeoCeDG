@@ -1,6 +1,6 @@
 # G9U1 persistent user-tool review
 
-Status: **FRONTEND REVIEW CANDIDATE — PENDING AUTHOR RE-SMOKE**.
+Status: **ROUND-3 FRONTEND REVIEW CANDIDATE — PENDING AUTHOR RE-SMOKE**.
 This is application/tool-library design and validation, not macro promotion,
 new kernel semantics, or G9U1 approval.
 
@@ -76,7 +76,7 @@ conditional selection and sheet setup. They inform frequency/grouping only.
 | Startup/new document | Host may load snapshot macros | Library entries remain available as dynamic menu/pinned choices, without injecting definitions into a blank document |
 | Install/remove/pin | Not separately application-owned | Change isolated application preference only; no construction/undo/document mutation |
 | Invoke | Existing macro mode and ordinary AlgoMacro dependency | Explicit user activation imports validated tool into current document; invocation creates normal host outputs |
-| Document macros | `.ggb`/`.cedg` may contain local macros | Never auto-install; local collisions reject library activation, never silent rename/override |
+| Document macros | `.ggb`/`.cedg` may contain local macros | Never auto-install; complete versioned definition-digest equality adopts only installed presentation ownership, while partial/mismatched collisions reject activation; never silent rename/override |
 
 The library stores original `.ggt` bytes plus application metadata and digest.
 Dynamic entries are not schema-v2 action declarations. Pinning is application
@@ -94,21 +94,27 @@ group remain one contiguous visual unit: members can be reordered inside the
 dropdown, while crossing an external boundary moves the whole group. The stored
 order and the rendered toolbar therefore cannot disagree through interleaving.
 
-User-tool icons remain explicitly deferred. The inherited
-`Macro.getIconFileName()` / `AppD.getModeIcon()` path requires both a macro
-already registered in the active kernel and an image already admitted to the
-application external-image registry. Using that path merely to render a pinned
-preference would mutate the document host before invocation. There is not yet an
-approved application-library seam defining image provenance, accepted media and
-size limits, digest binding or cleanup. Pinned tools therefore use the bounded
-text fallback in this candidate. No Templatev7 image is imported automatically;
-icon support requires a later reviewed preference/provenance contract, not a
-silent reuse of document registration.
+Round 3 supplies the separately authorized application-library icon seam without
+using `Macro.getIconFileName()` or the document external-image registry. A
+pinned package may optionally store a PNG basename ending in `.png`, the exact
+source bytes, SHA-256 and decoded dimensions. Admission requires a real PNG
+signature, no more than 256 KiB, each dimension in `1..1024`, and no more than
+1,048,576 decoded pixels; dimensions are inspected before decode. The toolbar
+derives a deterministic bicubic 64×64 ARGB image by aspect-fit/centering with
+transparent padding, never crop or distortion. Changing an icon, unpinning or
+removing its package atomically removes the only inline preference reference.
+The icon neither changes tool identity nor touches Macro icon fields, `.cedg`,
+Construction, undo or document images. No Templatev7 image is imported
+automatically. When no icon is supplied, the pin remains a compact square
+control using a deterministic short initial (and the normal dropdown marker for
+a group); the full tool identity remains available through its tooltip and
+accessible name, so a long command label cannot widen the toolbar.
 
 Validation must precede any active-document registration: bounded ZIP/XML,
 unambiguous macro declarations, recognized/allowed dependencies, no scripts or
-unapproved semantic/presentation side effects, native command and macro-name
-collisions, and current feature policy. Unsupported tools fail with a reason;
+unapproved semantic/presentation side effects, native command collisions,
+definition-digest-checked macro collisions, and current feature policy.
+Unsupported tools fail with a reason;
 file loading is not a feature-enable loophole. Detached validation uses the host
 macro machinery and must leave active construction XML, IDs, macros and settings
 unchanged. Before activation recheck the exact current document name bindings;
@@ -175,6 +181,39 @@ save/reopen, undo/redo and save after undo. The `.cedg` therefore remains portab
 the installed library is a convenience preference, never document geometry
 authority.
 
+## Round-3 installed/embedded equivalence reconciliation
+
+Reopen necessarily reconstructs fresh document-owned `Macro` objects, so Java
+reference identity cannot decide whether a persistent application package and
+the embedded reconstruction definition are equivalent. The former Round-2
+instance map therefore produced a false collision after a valid portable
+reopen.
+
+The version-3 library record preserves the raw `.ggt` SHA-256 for package
+identity/integrity and adds `definitionDigestVersion=1` with a command/digest
+entry for every definition. Each SHA-256 is computed from the host-parsed
+`Macro.getXML()` after isolated `MacroKernel`/`MyXMLioD` validation.
+Normalization changes only `showInToolBar=true|false` to one application value;
+command, metadata, inputs, outputs and host-normalized construction XML all
+remain evidence. Equivalence requires an exact complete command-name set and an
+equal digest for every member. A partial set reports `UserTools.DocumentConflict`;
+an unequal definition reports `UserTools.DefinitionMismatch`; both fail closed.
+
+When the complete definitions match, the application adopts the *existing
+document Macro objects* only for installed-tool presentation ownership. It does
+not parse a replacement into the document, rename a command or remove the
+embedded payload. The installed entry therefore stays enabled without a
+duplicate local-tool presentation, while `.cedg` remains self-contained. After
+uninstall, the same embedded Macro continues to reconstruct and may be exposed
+through the document-local host surface. Opening a document never installs its
+payload globally.
+
+Store version 3 also owns the optional pinned-icon record
+`normalizationVersion=1`, source basename, SHA-256, dimensions and base64 source
+bytes. Versions 1 and 2 migrate deterministically without inventing icons or
+definition equality. Temporary-write plus atomic-replacement and rollback
+semantics remain unchanged.
+
 ## Multiple-window preference transaction review
 
 The final read-only audit found a concrete stale-cache defect: two open windows
@@ -217,7 +256,16 @@ still declares 24 tests. The final round-two focused, PHASE, COMPOSED and FULL
 cohorts execute those 24 cases successfully; this does not claim ToolManager
 editing interoperability beyond the explicitly tested host seams.
 
+Round-3 acceptance requires a new final cohort: install/invoke/save/reopen with
+the package still installed (one user-facing entry and equal definition), then
+uninstall/reopen portability; unequal/partial definition negatives; version-1/
+version-2 store migration; valid and invalid PNG admission; icon persistence,
+replacement, unpin/removal cleanup and exact zero Construction/undo/archive
+mutation. Those executions belong to the final Round-3 evidence report; this
+review does not relabel earlier runs or author smoke as having executed them.
+
 BOOTSTRAP IMPACT — NO CHANGE REQUIRED: existing JVM, ZIP/XML and isolated
 preferences are sufficient. GUIDE_IMPACT — UPDATE_REQUIRED: the quick guide
-must explain explicit installation versus document-local tools, removal and
-pinning, and the unchanged Laboratory/provenance boundary.
+must explain explicit installation versus document-local reconstruction,
+digest-equivalent reopen, optional bounded PNG icons, removal/pinning, and the
+unchanged Laboratory/provenance boundary.

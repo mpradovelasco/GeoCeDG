@@ -11,6 +11,10 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 import java.awt.event.ActionEvent;
 import java.io.IOException;
@@ -24,10 +28,15 @@ import javax.swing.JPanel;
 
 import org.geogebra.common.GeoGebraConstants;
 import org.geogebra.common.awt.AwtFactory;
+import org.geogebra.common.io.XMLStringBuilder;
+import org.geogebra.common.main.App;
+import org.geogebra.common.main.OptionType;
 import org.geogebra.common.main.settings.AlgebraStyle;
 import org.geogebra.common.util.debug.Log;
 import org.geogebra.desktop.CommandLineArguments;
 import org.geogebra.desktop.awt.AwtFactoryD;
+import org.geogebra.desktop.main.DialogManagerMinimal;
+import org.geogebra.desktop.main.undo.UndoManagerD;
 import org.geogebra.desktop.util.LoggerD;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -40,9 +49,7 @@ class G9U1ActionRegistryTest {
 	@BeforeAll
 	static void initializeDesktop() {
 		AwtFactory.setPrototypeIfNull(new AwtFactoryD());
-		if (Log.getLogger() == null) {
-			Log.setLogger(new LoggerD());
-		}
+		Log.setLogger(new LoggerD());
 	}
 
 	static AppGeoCeDG app(boolean feature) {
@@ -137,6 +144,37 @@ class G9U1ActionRegistryTest {
 	}
 
 	@Test
+	void globalPropertiesActionDispatchesToHostPreferencesWithoutSelection() {
+		AppGeoCeDG product = spy(app(true));
+		DialogManagerMinimal dialogs = mock(DialogManagerMinimal.class);
+		doReturn(dialogs).when(product).getDialogManager();
+		GeoCeDGActionRegistry registry = new GeoCeDGActionRegistry(product);
+		registry.invoke("view.properties", new ActionEvent(this, 1, "test"));
+		verify(dialogs).showPropertiesDialog(OptionType.GLOBAL, null);
+	}
+
+	@Test
+	void constructionNavigationUsesTheGraphicsHostBarWithoutDagOrUndoMutation()
+			throws IOException {
+		AppGeoCeDG app = app(true);
+		app.setShowConstructionProtocolNavigation(false, App.VIEW_EUCLIDIAN);
+		UndoManagerD undo = (UndoManagerD) app.getKernel().getConstruction()
+				.getUndoManager();
+		try (UndoManagerD.PreparedUndoBaseline baseline = undo.prepareUndoBaseline()) {
+			undo.commitUndoBaseline(baseline);
+		}
+		int historySize = undo.getHistorySize();
+		String before = constructionXml(app);
+		GeoCeDGActionRegistry registry = new GeoCeDGActionRegistry(app);
+		registry.invoke("view.construction-navigation", new ActionEvent(this, 1, "test"));
+		assertTrue(app.showConsProtNavigation(App.VIEW_EUCLIDIAN));
+		assertEquals(Boolean.TRUE, registry.get("view.construction-navigation")
+				.getValue(Action.SELECTED_KEY));
+		assertEquals(before, constructionXml(app));
+		assertEquals(historySize, undo.getHistorySize());
+	}
+
+	@Test
 	void languageRefreshDoesNotReplaceActionIdentity() {
 		AppGeoCeDG app = app(true);
 		GeoCeDGActionRegistry registry = new GeoCeDGActionRegistry(app);
@@ -173,5 +211,11 @@ class G9U1ActionRegistryTest {
 		Path resource = Files.createFile(directory.resolve("not-a-model.txt"));
 		assertThrows(IOException.class, () -> GeoCeDGActionRegistry.diagnosticCommand(
 				directory.resolve("java"), directory.resolve("prefs"), resource.toFile()));
+	}
+
+	private static String constructionXml(AppGeoCeDG app) {
+		XMLStringBuilder xml = new XMLStringBuilder();
+		app.getKernel().getConstruction().getConstructionXML(xml, true);
+		return xml.toString();
 	}
 }

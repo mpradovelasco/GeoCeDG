@@ -27,6 +27,22 @@ $ReviewCheckpointTagObject = "755f22bd2b101d4ca2ad6bea98429bc2ba941af9"
 $Round1CandidateCommit = "fa6339204b87385af79331e434778ca16cd8dcf0"
 $Round1CandidateBranch = "codex/g9u1-author-review-stabilization-1"
 $Round2AuthorInputCommit = "01c0bec77a30b43b7ebcf75acacdd098840fa2fe"
+$Round2CandidateCommit = "5f492d4ee77289d9def89aa6ed431226d2de3457"
+$Round2CandidateBranch = "codex/g9u1-author-review-stabilization-2"
+$Round2AuthorityBlobs = [ordered]@{
+    "docs/roadmap/geocedg_roadmap.md" = "7eb5f4dceb402e8188afffed83f6ce6d07bfe3a3"
+    "docs/validation/g9u1_author_review_round2.md" = "7c9baa952abc87786d92bbb0b68fe0c7d35d0755"
+    "docs/validation/g9u1_construction_workspace_implementation_candidate_report.md" =
+        "df9570fe2f8d0793142128c24dd8e01ba54640b2"
+    "geocedg/validation/g9u1/g9u1-construction-workspace-evidence.json" =
+        "41f3e2bfe7997109897b27bcc1e5f63ae76a4b45"
+    "geocedg/validation/g9u1/g9u1-construction-workspace-evidence.sha256" =
+        "525d91f3304580a5769f86d771810b8b17135b67"
+    "geocedg/validation/g9u1/g9u1-construction-workspace-scenarios.json" =
+        "ef5b8faa2039325156e65e1f93b43a42b7210b69"
+    "tools/agent/verify-g9u1-construction-workspace.ps1" =
+        "598abd1816d05721d3908bf2e77d9944674991e0"
+}
 $Round1AuthorityBlobs = [ordered]@{
     "docs/roadmap/geocedg_roadmap.md" = "78e91680174b2b44070c004b9cfe9c2ed35ac0bf"
     "docs/validation/g9u1_construction_workspace_implementation_candidate_report.md" =
@@ -60,6 +76,63 @@ $Round2SharedHostPaths = @(
 $Round2SharedLifecyclePaths = @(
     "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusMetricScalarAdapter.java"
 )
+$Round3ScenarioIds = @(1..14 | ForEach-Object { "U1-R3-{0:D2}" -f $_ })
+$Round3DispositionPath = "docs/validation/g9u1_author_review_round3.md"
+$Round3SharedInstrumentationPaths = @()
+$Round3SharedLocalizationPaths = @(
+    "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu.properties",
+    "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_en.properties",
+    "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_es.properties"
+)
+$Round3ExternalDiagnostic = [ordered]@{
+    className = "org.geocedg.desktop.G9U1Revision3AlgebraEditingDiagnostic"
+    source = "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1Revision3AlgebraEditingDiagnostic.java"
+    method = "authorRevision3ExercisesEveryOrdinaryAlgebraEditRoute"
+    input = "artifacts/smoke-test-g9u1/Revision3.cedg"
+    result = "artifacts/g9u1-author-review-round3/dev-revision3-diagnostic-01/verification-result.json"
+    resultRawSha256 = "a5c97a14bc0d01a42118d270febb6ec1e96da656ad8eeb71fe680b365d2af0e9"
+    summaryRawSha256 = "234269d032c6e78bd53d7fe5fa0448be242c9aeaaa23a9fef5a198881040f46b"
+    junitRawSha256 = "2a1aa315d0cf8ddeb2eff1916cab97dd3f83500111ca8e43cb7b73d788963bf1"
+}
+$Round3BrandingResourcePins = [ordered]@{
+    "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/source/helixTopBar.png" =
+        @(113783, "08ef4481b51e801bdf0842635d645bd09042b0a4473b24faca555048e3bd52c1")
+    "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/source/helixSnapshot.png" =
+        @(251689, "abcf272553c1b42d5eb016cdf564023439e901ed7d7e943212c220431ecf5637")
+    "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/derived/geocedg-application-icon-64.png" =
+        @(5676, "448ea5b510f952d27ddddec3005911b4e1f1203ee35f55fcca857098e53fed97")
+    "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/derived/geocedg-application.ico" =
+        @(65873, "e5dac1dd3a556f4ce9747f00d272281e9a571ecc5e757180ba1c6750b664cd73")
+    "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/derived/geocedg-startup-542x720.png" =
+        @(155029, "04d5e79b99b0f25536690b8af9d71ba034fbaf2b0d401ae40b5822942b917a78")
+}
+$Round3LocalAuthorInputPins = [ordered]@{
+    "artifacts/smoke-test-g9u1/Revision2.cedg" =
+        @(17209, "527f96b516afdd93923e228ad0ffe0a3fc0bebd79e30b228bec7e7455ed53ab6")
+    "artifacts/smoke-test-g9u1/Revision3.cedg" =
+        @(14110, "351955499d47d0407ab11c906da6e9b6d2ab636b0beef4e67c3edfddecccd939")
+    "artifacts/author-input/g9u1-branding/helixTopBar.png" =
+        @(113783, "08ef4481b51e801bdf0842635d645bd09042b0a4473b24faca555048e3bd52c1")
+    "artifacts/author-input/g9u1-branding/helixSnapshot.png" =
+        @(251689, "abcf272553c1b42d5eb016cdf564023439e901ed7d7e943212c220431ecf5637")
+}
+$CanonicalBinaryInventoryPaths = @(
+    "source/desktop/desktop/src/test/resources/org/geocedg/desktop/g9u1-review/TestBasic1.cedg",
+    "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/source/helixTopBar.png",
+    "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/source/helixSnapshot.png",
+    "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/derived/geocedg-application-icon-64.png",
+    "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/derived/geocedg-application.ico",
+    "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/derived/geocedg-startup-542x720.png"
+)
+$Round3MethodReplacements = [ordered]@{
+    "duplicateMenuClusterFailsClosed" = "duplicateMenuPresentationGroupFailsClosed"
+    "unknownAndDuplicateDirectMenuActionsFailClosed" =
+        "unknownAndDuplicatePresentationActionsFailClosed"
+    "menuOrderOptionsProjectionAndActionIdentityComeFromOneCatalog" =
+        "menuOrderPresentationAndActionIdentityComeFromOneCatalog"
+    "documentCollisionAtInstallOrActivationDoesNotReplaceMacro" =
+        "equivalentEmbeddedMacroIsAdoptedWithoutDuplicateOrReplacement"
+}
 $ReviewMethodReplacements = [ordered]@{
     "toolbarContainsExactlySixtySixUniqueRealModeIds" =
         "toolbarContainsThirtyTwoCuratedModesWhileCatalogRetainsAllSixtySix"
@@ -121,6 +194,17 @@ function Assert-U1Set {
     $e = @($Expected | Sort-Object -Unique -CaseSensitive)
     Assert-U1 ($a.Count -eq $Actual.Count -and $e.Count -eq $Expected.Count -and
         @((Compare-Object $a $e -CaseSensitive)).Count -eq 0) "$Description differs or contains duplicates."
+}
+
+function Resolve-U1TestReference {
+    param([string]$Reference)
+    $parts = $Reference -split '#', 2
+    Assert-U1 ($parts.Count -eq 2) "Invalid G9U1 test reference: $Reference"
+    $method = $parts[1]
+    if ($Round3MethodReplacements.Contains($method)) {
+        return "$($parts[0])#$($Round3MethodReplacements[$method])"
+    }
+    return $Reference
 }
 
 function Read-U1Commit {
@@ -195,7 +279,12 @@ function Assert-U1ReviewContracts {
         Assert-U1 ($currentClass.Count -eq 1 -and $currentClass[0].source -ceq $historicalClass.source -and
             $currentClass[0].module -ceq $historicalClass.module) "Historical focused class changed: $($historicalClass.name)"
         foreach ($method in @($historicalClass.methods)) {
-            $mapped = if ($ReviewMethodReplacements.Contains($method)) { $ReviewMethodReplacements[$method] } else { $method }
+            $mapped = if ($ReviewMethodReplacements.Contains($method)) {
+                $ReviewMethodReplacements[$method]
+            } else { $method }
+            if ($Round3MethodReplacements.Contains($mapped)) {
+                $mapped = $Round3MethodReplacements[$mapped]
+            }
             Assert-U1 ($mapped -cin @($currentClass[0].methods)) "Historical focused obligation was dropped: $($historicalClass.name)#$method"
         }
     }
@@ -273,9 +362,9 @@ function Assert-U1Round2Contracts {
             $Round1AuthorityBlobs[$pin.path] -ceq $pin.blobOid) `
             "Round-one authority pin differs: $($pin.path)"
     }
-    $round2Delta = @((Get-U1Git @("diff", "--name-only", $Round1CandidateCommit)).Split("`n") +
-        (Get-U1Git @("ls-files", "--others", "--exclude-standard")).Split("`n") |
-        Where-Object { $_ } | Sort-Object -Unique -CaseSensitive)
+    $round2Delta = @((Get-U1Git @("diff", "--name-only", $Round1CandidateCommit,
+        $Round2CandidateCommit)).Split("`n") | Where-Object { $_ } |
+        Sort-Object -Unique -CaseSensitive)
     Assert-U1Set $round2Delta @($round2.inventory.deltaPaths) `
         "Exact author-review round-two successor delta"
     Assert-U1 ($round2.inventory.baseCommit -ceq $Round1CandidateCommit -and
@@ -415,6 +504,245 @@ function Assert-U1Round2Contracts {
     }
 }
 
+function Assert-U1Round3Contracts {
+    param([object]$Evidence, [object]$Scenarios, [string[]]$Paths)
+    Assert-U1 ((Get-U1Git @("rev-parse", "$Round2CandidateCommit^" )).Trim() -ceq
+        $Round2AuthorInputCommit) "The round-two candidate parent changed."
+    [void](Get-U1Git @("merge-base", "--is-ancestor", $Round2CandidateCommit, "HEAD"))
+    foreach ($ref in @("refs/heads/$Round2CandidateBranch",
+        "refs/remotes/origin/$Round2CandidateBranch")) {
+        Assert-U1 ((Get-U1Git @("rev-parse", $ref)).Trim() -ceq $Round2CandidateCommit) `
+            "The published round-two stabilization ref changed: $ref"
+    }
+    foreach ($pin in $Round2AuthorityBlobs.GetEnumerator()) {
+        $tree = (Get-U1Git @("ls-tree", $Round2CandidateCommit, "--", $pin.Key)).Trim()
+        Assert-U1 ($tree -ceq "100644 blob $($pin.Value)`t$($pin.Key)") `
+            "Round-two stabilization authority changed: $($pin.Key)"
+    }
+
+    $round2Evidence = Read-U1Commit $Round2CandidateCommit $EvidencePath |
+        ConvertFrom-Json -Depth 100
+    $round2Scenarios = Read-U1Commit $Round2CandidateCommit $ScenarioPath |
+        ConvertFrom-Json -Depth 100
+    Assert-U1 (($Evidence.authorReviewStabilizationRound2 |
+        ConvertTo-Json -Depth 100 -Compress) -ceq
+        ($round2Evidence.authorReviewStabilizationRound2 |
+        ConvertTo-Json -Depth 100 -Compress)) `
+        "The published round-two review record was rewritten."
+    Assert-U1 (@($round2Evidence.inventory.paths).Count -eq 131 -and
+        $round2Evidence.inventory.pathCount -eq 131 -and
+        $round2Evidence.inventory.sourcePathCount -eq 76 -and
+        @($round2Scenarios.scenarios).Count -eq 163 -and
+        @($round2Scenarios.focusedJUnit.classes).Count -eq 21 -and
+        @($round2Scenarios.focusedJUnit.classes.methods).Count -eq 204) `
+        "Published round-two inventory/test/scenario authority differs."
+    foreach ($historical in @($round2Scenarios.scenarios)) {
+        $current = @($Scenarios.scenarios | Where-Object { $_.id -ceq $historical.id })
+        Assert-U1 ($current.Count -eq 1) `
+            "Round-two scenario was dropped/duplicated: $($historical.id)"
+        Assert-U1 (($current[0] | ConvertTo-Json -Depth 100 -Compress) -ceq
+            ($historical | ConvertTo-Json -Depth 100 -Compress)) `
+            "Published round-two scenario meaning changed: $($historical.id)"
+    }
+    foreach ($historicalClass in @($round2Scenarios.focusedJUnit.classes)) {
+        $currentClass = @($Scenarios.focusedJUnit.classes | Where-Object {
+            $_.name -ceq $historicalClass.name })
+        Assert-U1 ($currentClass.Count -eq 1 -and
+            $currentClass[0].source -ceq $historicalClass.source -and
+            $currentClass[0].module -ceq $historicalClass.module) `
+            "Round-two focused class changed: $($historicalClass.name)"
+        foreach ($method in @($historicalClass.methods)) {
+            $mapped = if ($Round3MethodReplacements.Contains($method)) {
+                $Round3MethodReplacements[$method]
+            } else { $method }
+            Assert-U1 ($mapped -cin @($currentClass[0].methods)) `
+                "Round-two focused obligation was dropped: $($historicalClass.name)#$method"
+        }
+    }
+
+    $round3 = $Evidence.authorReviewStabilizationRound3
+    Assert-U1 ($round3.baseline.commit -ceq $Round2CandidateCommit -and
+        $round3.baseline.branch -ceq $Round2CandidateBranch -and
+        $round3.historicalRound2 -ceq "PUBLISHED_CANDIDATE_PRESERVED" -and
+        $round3.dispositionRecord -ceq $Round3DispositionPath -and
+        $round3.nextAuthorCloseout -ceq "EXACT_TECHNICAL_COMMIT_REQUIRED" -and
+        $round3.manualAuthorResmoke -ceq "PENDING" -and
+        $round3.noNewGeometricSemantics -eq $true) `
+        "Missing or inconsistent round-three successor authority."
+    Assert-U1Set @($round3.baseline.authorityBlobs.path) @($Round2AuthorityBlobs.Keys) `
+        "Round-two authority pins in round three"
+    foreach ($pin in @($round3.baseline.authorityBlobs)) {
+        Assert-U1 ($pin.mode -ceq "100644" -and
+            $Round2AuthorityBlobs[$pin.path] -ceq $pin.blobOid) `
+            "Round-two authority pin differs: $($pin.path)"
+    }
+
+    $round3Delta = @((Get-U1Git @("diff", "--name-only", $Round2CandidateCommit)).Split("`n") +
+        (Get-U1Git @("ls-files", "--others", "--exclude-standard")).Split("`n") |
+        Where-Object { $_ } | Sort-Object -Unique -CaseSensitive)
+    Assert-U1Set $round3Delta @($round3.inventory.deltaPaths) `
+        "Exact author-review round-three successor delta"
+    Assert-U1 ($round3.inventory.baseCommit -ceq $Round2CandidateCommit -and
+        $round3.inventory.deltaPathCount -eq $round3Delta.Count -and
+        $round3.inventory.sourcePathCount -eq
+            @($round3Delta | Where-Object { $_ -cmatch '^source/' }).Count -and
+        $Evidence.inventory.pathCount -eq $Paths.Count -and
+        $Evidence.inventory.sourcePathCount -eq
+            @($Paths | Where-Object { $_ -cmatch '^source/' }).Count) `
+        "Round-three inventory counters drifted."
+    $round3SharedMain = @($round3Delta | Where-Object {
+        $_ -cmatch '^source/shared/.*/src/main/' })
+    Assert-U1Set $round3SharedMain @($Round3SharedInstrumentationPaths +
+        $Round3SharedLocalizationPaths) `
+        "Only the authorized shared instrumentation/localization round-three paths are allowed"
+    Assert-U1Set @($round3.allowedSharedInstrumentationCorrection |
+        ForEach-Object { $_.path }) `
+        $Round3SharedInstrumentationPaths "Round-three shared instrumentation allowlist"
+    Assert-U1Set @($round3.allowedSharedLocalization.path) `
+        $Round3SharedLocalizationPaths "Round-three shared localization allowlist"
+
+    Assert-U1Set @($round3.branding.resources.path) @($Round3BrandingResourcePins.Keys) `
+        "Round-three promoted/derived branding pins"
+    Assert-U1 ($round3.branding.packagingAuthority -ceq
+            "HASH_PINNED_TRACKED_DERIVATIVES_WITH_DIRECT_ICO_STRUCTURE_VALIDATION" -and
+        $round3.branding.packagingGeneratorDependency -eq $false -and
+        $round3.branding.generatorRole -ceq "SEPARATE_VERIFY_ONLY_PROVENANCE_CHECK") `
+        "Round-three packaging branding authority differs."
+    foreach ($pin in @($round3.branding.resources)) {
+        $expected = $Round3BrandingResourcePins[$pin.path]
+        Assert-U1 ($pin.bytes -eq $expected[0] -and $pin.rawSha256 -ceq $expected[1]) `
+            "Branding evidence pin differs: $($pin.path)"
+        $full = Resolve-GeoCeDGPhaseLifecycleChild $RepositoryRoot $pin.path `
+            "round-three branding resource"
+        Assert-U1 ((Get-Item -LiteralPath $full).Length -eq $pin.bytes -and
+            (Get-FileHash -LiteralPath $full -Algorithm SHA256).Hash.ToLowerInvariant() `
+                -ceq $pin.rawSha256) "Branding resource differs: $($pin.path)"
+    }
+    Assert-U1Set @($round3.localAuthorInputs.path) @($Round3LocalAuthorInputPins.Keys) `
+        "Round-three optional local author-input pins"
+    foreach ($input in @($round3.localAuthorInputs)) {
+        $expected = $Round3LocalAuthorInputPins[$input.path]
+        Assert-U1 ($input.bytes -eq $expected[0] -and
+            $input.rawSha256 -ceq $expected[1] -and
+            $input.requiredForCleanCheckout -eq $false) `
+            "Optional local author-input evidence pin differs: $($input.path)"
+        Assert-U1 ($input.path -cnotin $Paths) `
+            "Ignored author input entered the canonical tracked/untracked inventory: $($input.path)"
+        Assert-U1 ((Get-U1Git @("check-ignore", "--no-index", "--", $input.path)).Trim() `
+                -ceq $input.path) `
+            "Round-three local author input is not isolated by repository ignore policy: $($input.path)"
+    }
+
+    $external = $round3.externalDiagnostics.revision3AlgebraEditing
+    Assert-U1 ($external.state -ceq "PASS_SCOPED_NOT_ACCEPTANCE" -and
+        $external.tests -eq 1 -and $external.failures -eq 0 -and
+        $external.acceptanceAuthority -eq $false -and
+        $external.canonicalSuiteDependency -eq $false -and
+        $external.className -ceq $Round3ExternalDiagnostic.className -and
+        $external.source -ceq $Round3ExternalDiagnostic.source -and
+        $external.method -ceq $Round3ExternalDiagnostic.method -and
+        $external.input -ceq $Round3ExternalDiagnostic.input -and
+        $external.result -ceq $Round3ExternalDiagnostic.result -and
+        $external.resultRawSha256 -ceq $Round3ExternalDiagnostic.resultRawSha256 -and
+        $external.summaryRawSha256 -ceq $Round3ExternalDiagnostic.summaryRawSha256 -and
+        $external.junitRawSha256 -ceq $Round3ExternalDiagnostic.junitRawSha256) `
+        "Round-three external Revision3 diagnostic contract differs."
+    Assert-U1 (@($Scenarios.externalDiagnosticMethods).Count -eq 1) `
+        "Round three requires exactly one non-acceptance external diagnostic."
+    $scenarioExternal = $Scenarios.externalDiagnosticMethods[0]
+    Assert-U1 ($scenarioExternal.className -ceq $Round3ExternalDiagnostic.className -and
+        $scenarioExternal.source -ceq $Round3ExternalDiagnostic.source -and
+        $scenarioExternal.method -ceq $Round3ExternalDiagnostic.method -and
+        $scenarioExternal.input -ceq $Round3ExternalDiagnostic.input -and
+        $scenarioExternal.state -ceq "PASS_SCOPED_NOT_ACCEPTANCE" -and
+        $scenarioExternal.acceptanceAuthority -eq $false -and
+        $scenarioExternal.canonicalSuiteDependency -eq $false) `
+        "Round-three external diagnostic scenario metadata differs."
+    Assert-U1 (@($Scenarios.focusedJUnit.classes | Where-Object {
+        $_.name -ceq $Round3ExternalDiagnostic.className }).Count -eq 0) `
+        "The ignored Revision3 diagnostic entered the canonical focused suite."
+    Assert-U1 ($Round3ExternalDiagnostic.className -cnotmatch 'Test$') `
+        "The external author-input diagnostic must not enter default JUnit discovery."
+    $externalSource = Read-U1 $Round3ExternalDiagnostic.source
+    $externalMethods = @([regex]::Matches($externalSource,
+        '(?s)@Test\s+(?:public\s+)?void\s+([A-Za-z0-9_]+)\s*\(') |
+        ForEach-Object { $_.Groups[1].Value })
+    Assert-U1Set $externalMethods @($Round3ExternalDiagnostic.method) `
+        "Round-three external Revision3 diagnostic methods"
+    $algebraGestureSource = Read-U1 `
+        "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1AlgebraGestureEditingTest.java"
+    Assert-U1 ($algebraGestureSource -cmatch
+        '(?s)void deterministicFixtureCoversAllAlgebraEditRoutes\s*\([^)]*\)\s*throws Exception\s*\{\s*for \(EditRoute route : EditRoute\.values\(\)\)\s*\{\s*assertGestureLifecycle\(route, directory\);') `
+        "The canonical Algebra route regression is not an unconditional deterministic fixture."
+
+    $geogebraSource = Read-U1 `
+        "source/desktop/desktop/src/main/java/org/geogebra/desktop/GeoGebra.java"
+    $geocedgSource = Read-U1 `
+        "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDG.java"
+    $laboratorySource = Read-U1 `
+        "source/desktop/desktop/src/main/java/org/geocedg/desktop/locus/LocusV2Laboratory.java"
+    Assert-U1 ($geogebraSource -cmatch
+        '(?s)public static void doMain\(String\[\] cmdArgs, Supplier<GeoGebraFrame> frameFactory\)\s*\{\s*doMain\(cmdArgs, frameFactory,.*?GuiResourcesD\.SPLASH\.getFilename\(\)\),\s*false\);\s*\}') `
+        "Classic two-argument Desktop startup no longer preserves direct initialization."
+    Assert-U1 ($geogebraSource -cmatch
+        '(?s)public static void doMain\(String\[\] cmdArgs, Supplier<GeoGebraFrame> frameFactory,\s*Supplier<URL> splashResource\)\s*\{\s*doMain\(cmdArgs, frameFactory, splashResource, true\);\s*\}') `
+        "The product-specific three-argument startup does not request Swing initialization."
+    Assert-U1 ($geocedgSource -cmatch
+        '(?s)GeoGebra\.doMain\(effectiveArguments, GeoCeDGFrame::new,\s*GeoCeDG::getSplashResource\);') `
+        "GeoCeDG main does not consume the product-specific three-argument startup seam."
+    Assert-U1 ($laboratorySource -cmatch
+        '(?s)GeoGebra\.doMain\(withoutUpstreamSplash\(laboratoryArguments\),\s*LocusV2LaboratoryFrame::new, \(\) -> null\);') `
+        "The GeoCeDG Locus V2 laboratory does not consume the Swing-owned three-argument startup seam."
+
+    Assert-U1 ($Scenarios.authorReviewRound3.baselineCommit -ceq
+        $Round2CandidateCommit -and
+        $Scenarios.authorReviewRound3.historicalScenarioCount -eq 163 -and
+        $Scenarios.authorReviewRound3.historicalFocusedTests -eq 204 -and
+        $Scenarios.authorReviewRound3.manualAuthorResmoke -ceq "PENDING" -and
+        $Scenarios.authorReviewRound3.authorChecklistModified -eq $false) `
+        "Round-three scenario provenance differs."
+    Assert-U1Set @($Scenarios.authorReviewRound3.additionalScenarioIds) `
+        $Round3ScenarioIds "Round-three scenario IDs"
+    foreach ($entry in $Round3MethodReplacements.GetEnumerator()) {
+        Assert-U1 ($Scenarios.authorReviewRound3.methodReplacements.$($entry.Key) -ceq
+            $entry.Value) "Round-three test-method mapping differs: $($entry.Key)"
+    }
+    Assert-U1 ($round3.focusedInventory.classes -eq 23 -and
+        $round3.focusedInventory.methods -eq 231 -and
+        $round3.focusedInventory.desktopMethods -eq 217 -and
+        $round3.focusedInventory.sharedMethods -eq 14 -and
+        $round3.focusedInventory.scenarios -eq 177 -and
+        $round3.focusedInventory.historicalScenarios -eq 163 -and
+        $round3.focusedInventory.addedRound3Scenarios -eq 14) `
+        "Round-three focused inventory differs."
+    Assert-U1 ($round3.workspace.families -eq 11 -and
+        $round3.workspace.clusters -eq 18 -and
+        $round3.workspace.actions -eq 110 -and
+        $round3.workspace.normalMenus -eq 7 -and
+        $round3.workspace.presentationGroups -eq 28 -and
+        $round3.workspace.toolbarGroups -eq 12) `
+        "Round-three workspace counts differ."
+    Assert-U1Set @($round3.supersededHistoricalScenarios) @("U1-R2-07", "U1-R2-08") `
+        "Round-three superseded-but-preserved scenarios"
+    Assert-U1 ([string]::IsNullOrEmpty((Get-U1Git @("tag", "--list",
+        "geocedg-g9u1-pass")).Trim())) "A G9U1 PASS tag exists before author closeout."
+    foreach ($path in @($round3.documentationPaths)) {
+        $text = Read-U1 $path
+        foreach ($link in [regex]::Matches($text, '(?<!!)\[[^\]]*\]\((?<target>[^)]+)\)')) {
+            $target = $link.Groups["target"].Value.Trim().Trim([char[]]"<>")
+            if ($target -match '^(https?://|mailto:|#)') { continue }
+            $target = ($target -split '#', 2)[0]
+            if ([string]::IsNullOrWhiteSpace($target)) { continue }
+            $relative = [IO.Path]::GetRelativePath($RepositoryRoot, [IO.Path]::GetFullPath(
+                (Join-Path (Split-Path -Parent (Join-Path $RepositoryRoot $path)) $target))).Replace('\', '/')
+            $resolved = Resolve-GeoCeDGPhaseLifecycleChild $RepositoryRoot $relative `
+                "round-three documentation link"
+            Assert-U1 (Test-Path -LiteralPath $resolved) `
+                "Broken round-three review link: $path -> $target"
+        }
+    }
+}
+
 function Invoke-U1Gradle {
     param([string[]]$Arguments, [string]$Description, [string]$LogName)
     $effective = @($Arguments) + @("--rerun-tasks", "--no-build-cache", "--no-daemon",
@@ -483,12 +811,16 @@ function Assert-U1Contracts {
         -Paths $paths -ConfiguredFilterDrivers $materialization.configuredFilterDrivers)
     Assert-U1ReviewContracts $Evidence $Scenarios $paths
     Assert-U1Round2Contracts $Evidence $Scenarios $paths
+    Assert-U1Round3Contracts $Evidence $Scenarios $paths
     Assert-U1 (@($paths | Where-Object { $_ -match '^artifacts/|^book/' }).Count -eq 0) "Generated/independent-book path in candidate."
     $profile = Read-U1 "apps/geocedg/application-profile.yml" | ConvertFrom-Json -Depth 100 -AsHashtable
     [void](Assert-GeoCeDGLiveWorkspaceProfile -RepositoryRoot $RepositoryRoot)
     Assert-U1 ($profile.schema_version -eq 2 -and $profile.profile_id -ceq "geocedg-desktop") "G9U1 requires live schema v2."
     Assert-U1 (@($profile.actions).Count -eq 110 -and @($profile.clusters).Count -eq 18 -and
         @($profile.taxonomy.broad_families).Count -eq 11) "G9U1 11/18/110 action authority differs."
+    Assert-U1 (@($profile.presentation_groups).Count -eq 28 -and
+        @($profile.toolbar_group_ids).Count -eq 12) `
+        "G9U1 round-three presentation/toolbar groups differ."
     Assert-U1 ($profile.product_policies.continuity.value -eq $false -and
         $profile.product_policies.continuity.locked -eq $true) "GeoCeDG Continuity OFF is not locked."
     Assert-U1Set @($profile.product_policies.languages.offered) @("en", "es") "G9U1 product languages"
@@ -502,10 +834,11 @@ function Assert-U1Contracts {
     $approved = Read-U1 "geocedg/validation/g9u1/g9u1-preexecution-scenarios.json" | ConvertFrom-Json -Depth 100
     $approvedIds = @($approved.groups | ForEach-Object { $_.scenarioIds })
     Assert-U1 ($approvedIds.Count -eq 138) "The historical approved scenario baseline changed."
-    Assert-U1Set $ids @($approvedIds + $ReviewScenarioIds + $Round2ScenarioIds) `
+    Assert-U1Set $ids @($approvedIds + $ReviewScenarioIds + $Round2ScenarioIds +
+        $Round3ScenarioIds) `
         "All historical and bounded author-review scenarios"
-    Assert-U1 ($ids.Count -eq 163) `
-        "G9U1 requires 138 historical plus 15 round-one and 10 round-two scenarios."
+    Assert-U1 ($ids.Count -eq 177) `
+        "G9U1 requires 138 historical plus 15 round-one, 10 round-two and 14 round-three scenarios."
     $methodKeys = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
     foreach ($class in $Scenarios.focusedJUnit.classes) {
         Assert-U1 ($class.module -cin @("shared", "desktop") -and @($class.methods).Count -gt 0) "Empty/invalid G9U1 test class."
@@ -531,7 +864,11 @@ function Assert-U1Contracts {
         } else {
             Assert-U1 ($scenario.coverage -ceq $exception) "Unapproved scenario disposition: $($scenario.id)"
         }
-        foreach ($test in $scenario.tests) { Assert-U1 ($methodKeys.Contains($test)) "Unknown test mapping $test ($($scenario.id))." }
+        foreach ($test in $scenario.tests) {
+            $resolvedTest = Resolve-U1TestReference $test
+            Assert-U1 ($methodKeys.Contains($resolvedTest)) `
+                "Unknown test mapping $test -> $resolvedTest ($($scenario.id))."
+        }
         foreach ($field in @("assertion", "procedure", "automatedScope", "remaining")) {
             Assert-U1 (-not [string]::IsNullOrWhiteSpace($scenario.$field)) "Missing $field evidence meaning: $($scenario.id)"
         }
@@ -544,6 +881,11 @@ function Assert-U1Contracts {
         Assert-U1 ($hashed.Add($parts[1]) -and $parts[1] -cne $HashPath) "Duplicate/self G9U1 hash record."
         Assert-U1 ((Get-U1Hash $parts[1]) -ceq $parts[0]) "G9U1 authority hash mismatch: $($parts[1])"
     }
+    $expectedHashed = @($paths | Where-Object {
+        $_ -cne $HashPath -and $_ -cnotin $CanonicalBinaryInventoryPaths
+    })
+    Assert-U1Set @($hashed) $expectedHashed `
+        "G9U1 canonical-LF manifest coverage (binary/raw pins and self excluded)"
     foreach ($path in @($PromptPath, $EvidencePath, $ScenarioPath, $ReportPath,
         "tools/agent/verify-g9u1-construction-workspace.ps1")) {
         Assert-U1 ($hashed.Contains($path)) "Missing required G9U1 hash: $path"
@@ -602,9 +944,10 @@ try {
             Assert-U1 (@($style.SelectNodes("//error")).Count -eq 0) "G9U1 Checkstyle errors: $path"
         }
         $summary = [ordered]@{
-            schemaVersion = 1; phase = "G9U1"; state = "ROUND2_TECHNICAL_FOCUSED_PASSED_NOT_AUTHOR_APPROVAL"
+            schemaVersion = 1; phase = "G9U1"; state = "ROUND3_TECHNICAL_FOCUSED_PASSED_NOT_AUTHOR_APPROVAL"
             baseCommit = $BaseCommit; promptHash = Get-U1Hash $PromptPath
             authorReviewRound2Baseline = $Round1CandidateCommit
+            authorReviewRound3Baseline = $Round2CandidateCommit
             authorReviewInputCommit = $Round2AuthorInputCommit
             authorReviewInputEntryHash = $Round2AuthorInputEntryCanonicalHash
             authorReviewInputHash = $Round2AuthorInputLiveCanonicalHash

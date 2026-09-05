@@ -23,6 +23,8 @@ import java.util.function.BooleanSupplier;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import javax.swing.JMenu;
+
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityException;
@@ -79,6 +81,26 @@ class G9U1MacroNativeArchivePersistenceTest {
 				.contains("cmdName=\"EllipseAxis\""));
 		assertTrue(readZipEntry(firstSave, "geogebra.xml")
 				.contains("name=\"EllipseAxis\""));
+
+		// Reopening while the package remains installed adopts the equivalent embedded
+		// definition. The document Macro stays the sole live implementation.
+		AppGeoCeDG installedReopen = reopen(firstSave);
+		GeoCeDGUserToolLibrary installedLibrary =
+				new GeoCeDGUserToolLibrary(installedReopen, storage);
+		GeoCeDGUserToolLibrary.Package installedTool = installedLibrary.packages().get(0);
+		Macro embedded = installedReopen.getKernel().getMacro("EllipseAxis");
+		assertNotNull(embedded);
+		assertNull(installedLibrary.unavailableReason(installedTool));
+		assertSame(embedded,
+				installedLibrary.activate(installedTool.id(), "EllipseAxis"));
+		assertEquals(1, installedReopen.getKernel().getMacroNumber());
+		assertNull(installedReopen.getKernel().getMacro("EllipseAxis1"));
+		JMenu installedMenu = new JMenu();
+		new GeoCeDGUserTools(installedReopen, installedLibrary).populate(installedMenu);
+		assertEquals("EllipseAxis", installedMenu.getItem(2).getText());
+		assertTrue(installedMenu.getItem(2).isEnabled());
+		assertEquals(3, installedMenu.getItemCount());
+		assertPersistentMacroResult(installedReopen, splineId);
 
 		// The document must now own everything needed by AlgoMacro.
 		library.remove(tool.id());

@@ -8,6 +8,7 @@ package org.geocedg.desktop;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -21,6 +22,8 @@ import static org.mockito.Mockito.verify;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.EventQueue;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -32,15 +35,23 @@ import javax.swing.JButton;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JSeparator;
 import javax.swing.JToolBar;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
 
 import org.geogebra.common.euclidian.EuclidianConstants;
+import org.geogebra.common.gui.view.algebra.AlgebraView.SortMode;
 import org.geogebra.common.io.XMLStringBuilder;
 import org.geogebra.common.io.layout.DockPanelData;
 import org.geogebra.common.io.layout.DockSplitPaneData;
 import org.geogebra.common.io.layout.Perspective;
 import org.geogebra.common.main.App;
+import org.geogebra.common.main.settings.LabelVisibility;
 import org.geogebra.common.move.ggtapi.models.json.JSONObject;
+import org.geogebra.common.properties.impl.general.RoundingIndexProperty;
+import org.geogebra.common.util.Util;
 import org.geogebra.desktop.gui.app.GeoGebraFrame;
 import org.geogebra.desktop.gui.layout.DockManagerD;
 import org.geogebra.desktop.gui.layout.LayoutD;
@@ -110,7 +121,7 @@ class G9U1WorkspaceSurfaceTest {
 	}
 
 	@Test
-	void menuOrderOptionsProjectionAndActionIdentityComeFromOneCatalog() throws Exception {
+	void menuOrderPresentationAndActionIdentityComeFromOneCatalog() throws Exception {
 		AppGeoCeDG app = G9U1ActionRegistryTest.app(true);
 		app.getGuiManager().initMenubar();
 		GeoCeDGMenuBar bar = (GeoCeDGMenuBar) app.getGuiManager().getMenuBar();
@@ -121,21 +132,23 @@ class G9U1WorkspaceSurfaceTest {
 		assertEquals(List.of("file", "edit", "view", "construction", "options",
 				"automation", "help"), sections);
 
-		JMenu options = bar.getMenu(4);
-		List<String> projected = new ArrayList<>();
-		for (Component component : options.getMenuComponents()) {
-			if (component instanceof JMenuItem) {
-				JMenuItem item = (JMenuItem) component;
-				projected.add((String) item.getClientProperty(
-						GeoCeDGActionRegistry.ACTION_ID));
-				assertSame(((GuiManagerGeoCeDG) app.getGuiManager()).getActionRegistry()
-						.get(projected.get(projected.size() - 1)), item.getAction());
-			}
-		}
 		JSONObject optionsDefinition = GeoCeDGMenuBar.find(
 				GeoCeDGProfile.getCatalog().getJSONArray("menu_sections"), "options");
-		assertEquals(GeoCeDGProfile.strings(optionsDefinition.getJSONArray("action_ids")),
-				projected);
+		List<String> optionKinds = new ArrayList<>();
+		for (int i = 0; i < optionsDefinition.getJSONArray("entries").length(); i++) {
+			optionKinds.add(optionsDefinition.getJSONArray("entries")
+					.getJSONObject(i).getString("kind"));
+		}
+		assertEquals(List.of("group", "sort-by", "separator", "rounding",
+				"labeling", "font-size", "separator", "actions", "separator",
+				"save-settings"), optionKinds);
+		JMenu algebraDisplay = findPresentationGroup(bar.getMenu(4),
+				"options-algebra-display");
+		assertNotNull(algebraDisplay);
+		assertEquals(3, algebraDisplay.getItemCount());
+		for (int i = 0; i < algebraDisplay.getItemCount(); i++) {
+			assertTrue(algebraDisplay.getItem(i) instanceof JRadioButtonMenuItem);
+		}
 
 		Map<String, Integer> occurrences = new LinkedHashMap<>();
 		for (Component component : bar.getComponents()) {
@@ -144,6 +157,29 @@ class G9U1WorkspaceSurfaceTest {
 		assertEquals(((GuiManagerGeoCeDG) app.getGuiManager()).getActionRegistry().ids(),
 				occurrences.keySet());
 		occurrences.forEach((id, count) -> assertEquals(1, count, id));
+	}
+
+	@Test
+	void fileAndEditAreFlatWhileConstructionUsesDeclaredSemanticGroups() {
+		AppGeoCeDG app = G9U1ActionRegistryTest.app(true);
+		app.getGuiManager().initMenubar();
+		GeoCeDGMenuBar bar = (GeoCeDGMenuBar) app.getGuiManager().getMenuBar();
+		for (int menuIndex : new int[] {0, 1}) {
+			for (Component component : bar.getMenu(menuIndex).getMenuComponents()) {
+				assertTrue(component instanceof JMenuItem || component instanceof JSeparator);
+				assertFalse(component instanceof JMenu);
+			}
+		}
+		assertNotNull(findPresentationGroup(bar.getMenu(3),
+				"construction-semantic-curves"));
+		assertNotNull(findPresentationGroup(bar.getMenu(3),
+				"construction-lines-vectors"));
+		assertNotNull(findPresentationGroup(bar.getMenu(3), "construction-polygons"));
+		assertNotNull(findPresentationGroup(bar.getMenu(3), "construction-derived"));
+		assertNotNull(findItem(bar.getMenu(3), "presentation.text"));
+		assertNotNull(findItem(bar.getMenu(3), "presentation.image"));
+		assertNull(findItem(bar.getMenu(2), "presentation.text"));
+		assertNull(findItem(bar.getMenu(2), "presentation.image"));
 	}
 
 	@Test
@@ -156,6 +192,128 @@ class G9U1WorkspaceSurfaceTest {
 			bar.updateFonts();
 			assertEquals(7, bar.getMenuCount());
 		}
+	}
+
+	@Test
+	void legacyV1CatalogBuildsSafeRealFrontendMenuWithoutV2Arrays() throws Exception {
+		JSONObject legacy;
+		try (InputStream stream = getClass().getResourceAsStream(
+				"application-profile-v1.yml")) {
+			assertNotNull(stream);
+			legacy = new JSONObject(new String(stream.readAllBytes(), StandardCharsets.UTF_8));
+		}
+		assertEquals(1, legacy.getInt("schema_version"));
+		assertFalse(legacy.has("presentation_groups"));
+		AppGeoCeDG app = G9U1ActionRegistryTest.app(true);
+		GeoCeDGMenuBar bar = new GeoCeDGMenuBar(app);
+		for (int i = 0; i < 2; i++) {
+			bar.populateFromCatalog(legacy);
+			assertEquals(8, bar.getMenuCount());
+			JMenu diagnostic = bar.getMenu(7);
+			assertEquals("GeoCeDG v1", diagnostic.getText());
+			assertFalse(diagnostic.isEnabled());
+			assertFalse(diagnostic.getToolTipText().isBlank());
+			assertEquals(diagnostic.getText(),
+					diagnostic.getAccessibleContext().getAccessibleName());
+			assertEquals(diagnostic.getToolTipText(),
+					diagnostic.getAccessibleContext().getAccessibleDescription());
+		}
+	}
+
+	@Test
+	void hostOptionsAndViewsReuseLiveHostStateWithoutCatalogDuplication() {
+		AppGeoCeDG app = G9U1ActionRegistryTest.app(true);
+		app.getGuiManager().initMenubar();
+		GeoCeDGMenuBar bar = (GeoCeDGMenuBar) app.getGuiManager().getMenuBar();
+		JMenu options = bar.getMenu(4);
+		JMenu algebraDisplay = findPresentationGroup(options,
+				"options-algebra-display");
+		assertEquals(1, countSelected(algebraDisplay));
+		assertEquals(1, countSelectedHostControls(options, "sort-by."));
+		assertEquals(1, countSelectedHostControls(options, "rounding."));
+		assertEquals(1, countSelectedHostControls(options, "labeling."));
+		assertEquals(1, countSelectedHostControls(options, "font-size."));
+		JMenuItem typeSort = findHostControl(bar.getMenu(4), "sort-by.TYPE");
+		assertNotNull(typeSort);
+		typeSort.doClick();
+		assertEquals(SortMode.TYPE, app.getSettings().getAlgebra().getTreeMode());
+		assertTrue(typeSort.isSelected());
+		JMenuItem definition = findItem(options, "algebra.description.definition");
+		assertNotNull(definition);
+		definition.doClick();
+		app.setLocale(new java.util.Locale("es"));
+		bar.initMenubar();
+		options = bar.getMenu(4);
+		assertTrue(findItem(options, "algebra.description.definition").isSelected());
+		assertEquals(1, countSelected(findPresentationGroup(options,
+				"options-algebra-display")));
+		assertTrue(findHostControl(options, "sort-by.TYPE").isSelected());
+		assertEquals(1, countSelectedHostControls(options, "sort-by."));
+		assertNotNull(findHostControl(bar.getMenu(4), "rounding.0"));
+		assertNotNull(findHostControl(bar.getMenu(4), "labeling.Automatic"));
+		assertNotNull(findHostControl(bar.getMenu(4), "font-size.12"));
+		assertNotNull(findHostControl(bar.getMenu(4), "save-settings"));
+		assertNotNull(findHostControl(bar.getMenu(2), "view." + App.VIEW_ALGEBRA));
+		assertNull(findHostControl(bar.getMenu(2), "view." + App.VIEW_EUCLIDIAN3D));
+	}
+
+	@Test
+	void hostViewCheckboxAndSortRadioRefreshFromAuthorityWhenSubmenusOpen() {
+		AppGeoCeDG app = G9U1ActionRegistryTest.app(true);
+		JMenu views = GeoCeDGHostMenuFactory.views(app);
+		JMenuItem algebra = findHostControl(views, "view." + App.VIEW_ALGEBRA);
+		boolean initiallyVisible = app.getGuiManager().showView(App.VIEW_ALGEBRA);
+		assertEquals(initiallyVisible, algebra.isSelected());
+		app.getGuiManager().setShowView(!initiallyVisible, App.VIEW_ALGEBRA);
+		assertEquals(initiallyVisible, algebra.isSelected());
+		openMenu(views);
+		assertEquals(!initiallyVisible, algebra.isSelected());
+
+		JMenu sort = GeoCeDGHostMenuFactory.sortBy(app);
+		SortMode initialSort = app.getSettings().getAlgebra().getTreeMode();
+		SortMode changedSort = initialSort == SortMode.TYPE ? SortMode.LAYER : SortMode.TYPE;
+		app.getSettings().getAlgebra().setTreeMode(changedSort);
+		JMenuItem changed = findHostControl(sort, "sort-by." + changedSort.name());
+		assertFalse(changed.isSelected());
+		openMenu(sort);
+		assertTrue(changed.isSelected());
+		assertEquals(1, countSelectedHostControls(sort, "sort-by."));
+	}
+
+	@Test
+	void hostPreferenceRadiosRefreshFromAuthorityWhenSubmenusOpen() {
+		AppGeoCeDG app = G9U1ActionRegistryTest.app(true);
+
+		JMenu rounding = GeoCeDGHostMenuFactory.rounding(app);
+		RoundingIndexProperty roundingAuthority = new RoundingIndexProperty(app,
+				app.getLocalization());
+		int currentRounding = roundingAuthority.getValues().indexOf(
+				roundingAuthority.getValue());
+		int nextRounding = (currentRounding + 1) % roundingAuthority.getValues().size();
+		roundingAuthority.setIndex(nextRounding);
+		openMenu(rounding);
+		assertTrue(findHostControl(rounding, "rounding." + nextRounding).isSelected());
+		assertEquals(1, countSelectedHostControls(rounding, "rounding."));
+
+		JMenu labeling = GeoCeDGHostMenuFactory.labeling(app);
+		LabelVisibility currentLabeling = app.getSettings().getLabelSettings()
+				.getLabelVisibilityForMenu();
+		LabelVisibility nextLabeling = currentLabeling == LabelVisibility.AlwaysOff
+				? LabelVisibility.AlwaysOn : LabelVisibility.AlwaysOff;
+		app.setLabelingStyle(nextLabeling.getValue());
+		openMenu(labeling);
+		assertTrue(findHostControl(labeling,
+				"labeling." + nextLabeling.name()).isSelected());
+		assertEquals(1, countSelectedHostControls(labeling, "labeling."));
+
+		JMenu fontSize = GeoCeDGHostMenuFactory.fontSize(app);
+		int nextFontSize = Util.menuFontSizes(0) == app.getFontSize()
+				? Util.menuFontSizes(1) : Util.menuFontSizes(0);
+		app.setFontSize(nextFontSize, false);
+		openMenu(fontSize);
+		assertTrue(findHostControl(fontSize,
+				"font-size." + nextFontSize).isSelected());
+		assertEquals(1, countSelectedHostControls(fontSize, "font-size."));
 	}
 
 	@Test
@@ -189,18 +347,37 @@ class G9U1WorkspaceSurfaceTest {
 		GeoCeDGWorkspaceController workspace = new GeoCeDGWorkspaceController(app,
 				new GeoCeDGActionRegistry(app));
 		JToolBar toolbar = workspace.createProductToolbar();
-		assertEquals(2, toolbar.getComponentCount());
+		assertEquals(3, toolbar.getComponentCount());
 		Set<String> ids = new HashSet<>();
 		for (Component component : toolbar.getComponents()) {
+			if (component instanceof JToolBar.Separator) {
+				continue;
+			}
 			JButton button = (JButton) component;
 			ids.add((String) button.getClientProperty(GeoCeDGActionRegistry.ACTION_ID));
 			button.setFont(button.getFont().deriveFont(28f));
 			assertNull(button.getClientProperty("geocedg.family.id"));
+			assertNotNull(button.getClientProperty("geocedg.presentation.group.id"));
 			assertNotNull(button.getAccessibleContext().getAccessibleName());
 			assertTrue(button.getPreferredSize().height >= 28);
 		}
 		assertEquals(Set.of("semantic.spline-v2.create", "navigation.zoom-window"), ids);
 		assertFalse(toolbar.isFloatable());
+	}
+
+	@Test
+	void toolbarExtensionsPreserveTheHostHelpControlsAtTheFarEdge() {
+		AppGeoCeDG app = G9U1ActionRegistryTest.app(true);
+		GeoCeDGWorkspaceController workspace = new GeoCeDGWorkspaceController(app,
+				new GeoCeDGActionRegistry(app));
+		GeoCeDGToolbarContainer container = new GeoCeDGToolbarContainer(app, workspace);
+		container.buildGui();
+		BorderLayout layout = (BorderLayout) container.getLayout();
+		Component tools = layout.getLayoutComponent(app.getLocalization().borderWest());
+		Component helpControls = layout.getLayoutComponent(app.getLocalization().borderEast());
+		assertNotNull(tools);
+		assertNotNull(helpControls);
+		assertNotSame(tools, helpControls);
 	}
 
 	@Test
@@ -452,5 +629,67 @@ class G9U1WorkspaceSurfaceTest {
 			}
 		}
 		return null;
+	}
+
+	private static JMenu findPresentationGroup(JMenu menu, String id) {
+		for (Component component : menu.getMenuComponents()) {
+			if (component instanceof JMenu && id.equals(((JMenu) component)
+					.getClientProperty("geocedg.presentation.group.id"))) {
+				return (JMenu) component;
+			}
+		}
+		return null;
+	}
+
+	private static JMenuItem findHostControl(Component component, String id) {
+		if (component instanceof JMenuItem && id.equals(((JMenuItem) component)
+				.getClientProperty(GeoCeDGHostMenuFactory.HOST_CONTROL_ID))) {
+			return (JMenuItem) component;
+		}
+		if (component instanceof JMenu) {
+			for (Component child : ((JMenu) component).getMenuComponents()) {
+				JMenuItem found = findHostControl(child, id);
+				if (found != null) {
+					return found;
+				}
+			}
+		}
+		return null;
+	}
+
+	private static int countSelected(Component component) {
+		int selected = component instanceof JMenuItem
+				&& ((JMenuItem) component).isSelected() ? 1 : 0;
+		if (component instanceof JMenu) {
+			for (Component child : ((JMenu) component).getMenuComponents()) {
+				selected += countSelected(child);
+			}
+		}
+		return selected;
+	}
+
+	private static int countSelectedHostControls(Component component, String prefix) {
+		int selected = 0;
+		if (component instanceof JMenuItem) {
+			JMenuItem item = (JMenuItem) component;
+			Object id = item.getClientProperty(GeoCeDGHostMenuFactory.HOST_CONTROL_ID);
+			if (id instanceof String && ((String) id).startsWith(prefix)
+					&& item.isSelected()) {
+				selected++;
+			}
+		}
+		if (component instanceof JMenu) {
+			for (Component child : ((JMenu) component).getMenuComponents()) {
+				selected += countSelectedHostControls(child, prefix);
+			}
+		}
+		return selected;
+	}
+
+	private static void openMenu(JMenu menu) {
+		MenuEvent event = new MenuEvent(menu);
+		for (MenuListener listener : menu.getMenuListeners()) {
+			listener.menuSelected(event);
+		}
 	}
 }

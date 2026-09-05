@@ -1,7 +1,9 @@
-# G9U1 author-review round 2: deferred semantic requests
+# G9U1 author-review: deferred semantic requests
 
 - Status: **ANALYSIS ONLY — DEFERRED BEYOND G9U1**
 - Recorded: 2026-09-05
+- Round-3 reconciliation: installed/embedded macro equivalence moved into the
+  bounded G9U1 candidate; only broader detach/version policy remains deferred
 - Productive implementation: **not authorized by this record**
 - Source: the author-reviewed
   [`g9u1_author_resmoke_checklist.md`](../validation/g9u1_author_resmoke_checklist.md)
@@ -84,13 +86,19 @@ its construction. An installed package is an application preference and may be
 absent or changed on another workstation; it cannot silently replace that
 document authority.
 
-A later persistence design may recognize semantic equivalence through a
-versioned package digest and declared provenance while still retaining the
-embedded definition. It must define unequal-digest collisions, package removal,
-portable reopen and `.ggb` compatibility. An explicit expand/detach operation
-may be investigated if the host can convert results to normal construction
-steps without loss. Merely removing the local macro and depending on the
-installed package is rejected.
+Round 3 implements the bounded application/persistence reconciliation authorized
+inside G9U1: the raw `.ggt` digest remains package identity, while a versioned
+digest of every host-parsed macro definition proves equality after reopen. Only
+the non-semantic `showInToolBar` flag is normalized. Complete equality adopts
+the already embedded Macro objects for installed-tool presentation; partial or
+unequal definitions fail closed. The embedded definition is never removed or
+replaced, so portable reopen and `.ggb`/`.cedg` reconstruction do not depend on
+application preferences.
+
+What remains POST-U1 is only a distinct optional **expand/detach** operation, if
+the host can convert macro results to ordinary construction steps without loss,
+and any broader cross-version semantic-equivalence policy beyond the exact
+versioned digest contract. Neither is implemented or implied by Round 3.
 
 ## POST-U1-7 — optional `branchKey`
 

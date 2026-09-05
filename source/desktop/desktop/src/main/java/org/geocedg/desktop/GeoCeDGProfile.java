@@ -345,6 +345,7 @@ public final class GeoCeDGProfile {
 		JSONArray families = root.getJSONObject("taxonomy").getJSONArray("broad_families");
 		Set<String> clusterIds = new HashSet<>();
 		Set<String> placed = new HashSet<>();
+		Set<String> declaredToolbarActions = new HashSet<>();
 		for (int i = 0; i < clusters.length(); i++) {
 			JSONObject cluster = clusters.getJSONObject(i);
 			if (!clusterIds.add(cluster.getString("id"))) {
@@ -358,6 +359,11 @@ public final class GeoCeDGProfile {
 							throw new IllegalStateException("Unknown placement " + actionId);
 						}
 						placed.add(actionId);
+						if ("toolbar_action_ids".equals(key)
+								&& !declaredToolbarActions.add(actionId)) {
+							throw new IllegalStateException(
+									"Duplicate toolbar action placement " + actionId);
+						}
 					}
 				}
 			}
@@ -365,9 +371,62 @@ public final class GeoCeDGProfile {
 		if (!placed.equals(ids)) {
 			throw new IllegalStateException("Unplaced workspace action");
 		}
+		JSONArray presentationGroups = root.getJSONArray("presentation_groups");
+		Set<String> presentationGroupIds = new HashSet<>();
+		Set<String> presentationActions = new HashSet<>();
+		Set<String> toolbarActions = new HashSet<>();
+		for (int i = 0; i < presentationGroups.length(); i++) {
+			JSONObject group = presentationGroups.getJSONObject(i);
+			String groupId = group.getString("id");
+			if (!presentationGroupIds.add(groupId)) {
+				throw new IllegalStateException("Duplicate presentation group " + groupId);
+			}
+			root.getJSONObject("localized_text").getJSONObject(group.getString("name_key"));
+			Set<String> groupActions = new HashSet<>();
+			for (String actionId : strings(group.getJSONArray("action_ids"))) {
+				if (!ids.contains(actionId) || !groupActions.add(actionId)
+						|| !presentationActions.add(actionId)) {
+					throw new IllegalStateException(
+							"Unknown/duplicate presentation action " + actionId);
+				}
+			}
+			for (String actionId : strings(group.getJSONArray("toolbar_action_ids"))) {
+				if (!groupActions.contains(actionId) || !toolbarActions.add(actionId)) {
+					throw new IllegalStateException(
+							"Unknown/duplicate toolbar presentation action " + actionId);
+				}
+			}
+		}
+		if (!presentationActions.equals(ids)) {
+			throw new IllegalStateException("Presentation does not cover the action catalog");
+		}
+		Set<String> toolbarGroups = new HashSet<>();
+		Set<String> referencedToolbarActions = new HashSet<>();
+		for (String groupId : strings(root.getJSONArray("toolbar_group_ids"))) {
+			if (!presentationGroupIds.contains(groupId) || !toolbarGroups.add(groupId)) {
+				throw new IllegalStateException("Unknown/duplicate toolbar group " + groupId);
+			}
+			if (find(presentationGroups, groupId).getJSONArray("toolbar_action_ids").length()
+					== 0) {
+				throw new IllegalStateException("Empty toolbar group " + groupId);
+			}
+			referencedToolbarActions.addAll(strings(find(presentationGroups, groupId)
+					.getJSONArray("toolbar_action_ids")));
+		}
+		if (!referencedToolbarActions.equals(toolbarActions)) {
+			throw new IllegalStateException("Unreachable toolbar presentation action");
+		}
+		if (!toolbarActions.equals(declaredToolbarActions)) {
+			throw new IllegalStateException(
+					"Toolbar presentation does not match the operational catalog");
+		}
+
 		Set<String> menuClusters = new HashSet<>();
 		Set<String> menuSectionIds = new HashSet<>();
-		Set<String> directMenuActions = new HashSet<>();
+		Set<String> menuGroups = new HashSet<>();
+		Set<String> menuActions = new HashSet<>();
+		Set<String> specialEntries = new HashSet<>();
+		int userToolsEntries = 0;
 		JSONArray sections = root.getJSONArray("menu_sections");
 		for (int i = 0; i < sections.length(); i++) {
 			JSONObject section = sections.getJSONObject(i);
@@ -380,18 +439,64 @@ public final class GeoCeDGProfile {
 					throw new IllegalStateException("Unknown/duplicate menu cluster " + id);
 				}
 			}
-			JSONArray actionIds = section.optJSONArray("action_ids");
-			if (actionIds != null) {
-				for (String actionId : strings(actionIds)) {
-					if (!ids.contains(actionId) || !directMenuActions.add(actionId)) {
+			JSONArray deprecatedActions = section.optJSONArray("action_ids");
+			if (deprecatedActions != null && deprecatedActions.length() != 0) {
+				throw new IllegalStateException("Menu actions must use presentation groups");
+			}
+			JSONArray entries = section.getJSONArray("entries");
+			boolean separator = true;
+			for (int e = 0; e < entries.length(); e++) {
+				JSONObject entry = entries.getJSONObject(e);
+				String kind = entry.getString("kind");
+				if ("user-tools".equals(kind) && ++userToolsEntries > 1) {
+					throw new IllegalStateException("Duplicate dynamic user-tools menu entry");
+				}
+				boolean grouped = "group".equals(kind) || "actions".equals(kind)
+						|| "user-tools".equals(kind);
+				if (grouped != entry.has("group_id")) {
+					throw new IllegalStateException("Invalid menu entry " + kind);
+				}
+				if (grouped) {
+					String groupId = entry.getString("group_id");
+					if (!presentationGroupIds.contains(groupId) || !menuGroups.add(groupId)) {
 						throw new IllegalStateException(
-								"Unknown/duplicate direct menu action " + actionId);
+								"Unknown/duplicate menu presentation group " + groupId);
 					}
+					for (String actionId : strings(find(presentationGroups, groupId)
+							.getJSONArray("action_ids"))) {
+						if (!menuActions.add(actionId)) {
+							throw new IllegalStateException(
+									"Duplicate menu action " + actionId);
+						}
+					}
+					separator = false;
+				} else if ("separator".equals(kind)) {
+					if (separator || e == entries.length() - 1) {
+						throw new IllegalStateException("Invalid menu separator");
+					}
+					separator = true;
+				} else {
+					if (!Set.of("workspace-switcher", "user-tools", "host-views",
+							"sort-by", "rounding", "labeling", "font-size",
+							"save-settings").contains(kind)) {
+						throw new IllegalStateException("Unknown menu entry " + kind);
+					}
+					if ("workspace-switcher".equals(kind) && !specialEntries.add(kind)) {
+						throw new IllegalStateException("Duplicate special menu entry " + kind);
+					}
+					separator = false;
 				}
 			}
 		}
 		if (!menuClusters.equals(clusterIds)) {
 			throw new IllegalStateException("Unreachable menu cluster");
+		}
+		if (userToolsEntries != 1) {
+			throw new IllegalStateException(
+					"Exactly one dynamic user-tools menu entry is required");
+		}
+		if (!menuActions.equals(ids) || !menuGroups.equals(presentationGroupIds)) {
+			throw new IllegalStateException("Menu presentation does not cover the catalog");
 		}
 		JSONArray workspaces = root.getJSONArray("workspaces");
 		requireReference(workspaces, root.getString("default_workspace_id"));
@@ -434,20 +539,14 @@ public final class GeoCeDGProfile {
 		}
 		List<String> groups = new ArrayList<>();
 		Set<Integer> included = new HashSet<>();
-		JSONArray families = root.getJSONObject("taxonomy").getJSONArray("broad_families");
-		JSONArray clusters = root.getJSONArray("clusters");
-		for (int f = 0; f < families.length(); f++) {
-			String familyId = families.getJSONObject(f).getString("id");
+		JSONArray presentationGroups = root.getJSONArray("presentation_groups");
+		for (String groupId : strings(root.getJSONArray("toolbar_group_ids"))) {
 			List<String> group = new ArrayList<>();
-			for (int c = 0; c < clusters.length(); c++) {
-				JSONObject cluster = clusters.getJSONObject(c);
-				if (familyId.equals(cluster.getString("broad_family_id"))) {
-					for (String id : strings(cluster.getJSONArray("toolbar_action_ids"))) {
-						Integer mode = byId.get(id).mode();
-						if (mode != null && included.add(mode)) {
-							group.add(mode.toString());
-						}
-					}
+			for (String id : strings(find(presentationGroups, groupId)
+					.getJSONArray("toolbar_action_ids"))) {
+				Integer mode = byId.get(id).mode();
+				if (mode != null && included.add(mode)) {
+					group.add(mode.toString());
 				}
 			}
 			if (!group.isEmpty()) {
@@ -455,6 +554,16 @@ public final class GeoCeDGProfile {
 			}
 		}
 		return String.join(" | ", groups);
+	}
+
+	private static JSONObject find(JSONArray array, String id) throws JSONException {
+		for (int i = 0; i < array.length(); i++) {
+			JSONObject item = array.getJSONObject(i);
+			if (id.equals(item.getString("id"))) {
+				return item;
+			}
+		}
+		throw new IllegalStateException("Unresolved profile reference " + id);
 	}
 
 	private static String compileToolbar(JSONArray categories) throws JSONException {

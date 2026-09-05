@@ -6,7 +6,7 @@
   "implementationAuthorized": true,
   "implementationStarted": true,
   "implementationComplete": true,
-  "completionMeaning": "AUTHOR_REVIEW_STABILIZATION_ROUND2_FUNCTIONAL_SCOPE_IMPLEMENTED; round-one authority remains immutable; fresh PHASE/COMPOSED/FULL technical gates belong only to the exact round-two cohort; final author re-smoke remains pending.",
+  "completionMeaning": "AUTHOR_REVIEW_STABILIZATION_ROUND3_FUNCTIONAL_SCOPE_IMPLEMENTED; Round-one and Round-two authorities remain immutable; fresh focused A/B, PHASE, COMPOSED and clean FULL gates belong only to the exact Round-three cohort; final author re-smoke and exact-SHA AUTHOR_CLOSEOUT remain pending.",
   "selfApproved": false,
   "authorApprovedDesign": true,
   "authorApprovedImplementation": false,
@@ -22,14 +22,18 @@
   },
   "inventory": {
     "paths": [
+      ".gitattributes",
       ".github/prompts/tasks/g9u1-construction-workspace-after-g9s1-r1.prompt.md",
       ".github/prompts/tasks/g9u1-construction-workspace-after-g9s1.prompt.md",
       ".github/prompts/tasks/g9u1-construction-workspace-after-g9u0-r6.prompt.md",
       "apps/geocedg/application-profile-v1.yml",
       "apps/geocedg/application-profile.yml",
+      "docs/adr/0001-geocedg-product-profile.md",
+      "docs/adr/0004-standalone-windows-packaging.md",
       "docs/architecture/cedg_workspace_architecture.md",
       "docs/architecture/g9u1_post_u1_design_notes.md",
       "docs/developer/geocedg_developer_guide.md",
+      "docs/licensing/component-matrix.md",
       "docs/roadmap/geocedg_roadmap.md",
       "docs/upstream/modified-files.yml",
       "docs/user/geocedg_construction_quick_guide.md",
@@ -39,6 +43,7 @@
       "docs/validation/g9u1_author_manual_review_round1.md",
       "docs/validation/g9u1_author_resmoke_checklist.md",
       "docs/validation/g9u1_author_review_round2.md",
+      "docs/validation/g9u1_author_review_round3.md",
       "docs/validation/g9u1_command_tool_consistency_matrix.md",
       "docs/validation/g9u1_construction_workspace_implementation_candidate_report.md",
       "docs/validation/g9u1_frontend_review_matrix.md",
@@ -49,6 +54,9 @@
       "docs/validation/g9u1_workspace_completeness_matrix.md",
       "geocedg/resources/assets-manifest.yml",
       "geocedg/specs/README.md",
+      "geocedg/specs/operations/package-profile.schema.json",
+      "geocedg/specs/packaging/windows-packaging.md",
+      "geocedg/specs/ui/application-profile.md",
       "geocedg/specs/ui/application-profile-v1.schema.json",
       "geocedg/specs/ui/application-profile-v2.candidate.schema.json",
       "geocedg/specs/ui/application-profile-v2.candidate.yml",
@@ -61,14 +69,17 @@
       "geocedg/validation/g9u1/g9u1-preexecution-design-evidence.json",
       "geocedg/validation/g9u1/g9u1-preexecution-design-evidence.sha256",
       "geocedg/validation/g9u1/g9u1-preexecution-scenarios.json",
+      "packaging/windows/README.md",
       "packaging/windows/package.yml",
       "source/desktop/desktop/build.gradle.kts",
       "source/desktop/desktop/src/main/java/org/geocedg/desktop/AppGeoCeDG.java",
+      "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDG.java",
       "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGActionRegistry.java",
       "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGAlgebraInputSubmission.java",
       "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGDefinitionInspector.java",
       "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGEuclidianController.java",
       "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGEuclidianView.java",
+      "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGHostMenuFactory.java",
       "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGIntersectionSession.java",
       "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGLocusV2Dialogs.java",
       "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGMenuBar.java",
@@ -80,10 +91,12 @@
       "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGUserToolLibrary.java",
       "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGUserTools.java",
       "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGWorkspaceController.java",
+      "source/desktop/desktop/src/main/java/org/geocedg/desktop/locus/LocusV2Laboratory.java",
       "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/GeoCeDGBuildProvenance.java",
       "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGFrame.java",
       "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGProductInfo.java",
       "source/desktop/desktop/src/main/java/org/geocedg/desktop/GuiManagerGeoCeDG.java",
+      "source/desktop/desktop/src/main/java/org/geocedg/desktop/resources/GeoCeDGBrandingResource.java",
       "source/desktop/desktop/src/main/java/org/geocedg/desktop/resources/GeoCeDGToolImageResource.java",
       "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/dialog/NamePanelD.java",
       "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/dialog/options/OptionsAdvancedD.java",
@@ -95,6 +108,12 @@
       "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/view/algebra/AlgebraHelperBar.java",
       "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/view/properties/PropertiesViewD.java",
       "source/desktop/desktop/src/main/java/org/geogebra/desktop/main/AppD.java",
+      "source/desktop/desktop/src/main/java/org/geogebra/desktop/GeoGebra.java",
+      "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/derived/geocedg-application-icon-64.png",
+      "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/derived/geocedg-application.ico",
+      "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/derived/geocedg-startup-542x720.png",
+      "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/source/helixSnapshot.png",
+      "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/source/helixTopBar.png",
       "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U0R3InspectorWorkflowTest.java",
       "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U0R3MenuLifecycleTest.java",
       "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1ActionRegistryTest.java",
@@ -110,6 +129,7 @@
       "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1PeriodicQuarantineNativeTest.java",
       "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1ProductPolicyTest.java",
       "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1ProfileCompilerTest.java",
+      "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1Revision3AlgebraEditingDiagnostic.java",
       "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1ScriptWorkflowTest.java",
       "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1SemanticPointInteractionTest.java",
       "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1SimilarityToolsTest.java",
@@ -117,12 +137,17 @@
       "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1UserToolLibraryTest.java",
       "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1WorkspaceSurfaceTest.java",
       "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGDocumentLifecycleTest.java",
+      "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGBrandingResourceTest.java",
       "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGProfileTest.java",
       "source/desktop/desktop/src/test/java/org/geocedg/desktop/locus/LocusV2DesktopLifecycleRegressionTest.java",
+      "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoGebraStartupThreadTest.java",
       "source/desktop/desktop/src/test/resources/org/geocedg/desktop/g9u1-review/TestBasic1.cedg",
       "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command_en.properties",
       "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command_es.properties",
       "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command.properties",
+      "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu.properties",
+      "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_en.properties",
+      "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_es.properties",
       "source/shared/common-jre/src/main/java/org/geogebra/common/jre/io/MyXMLioJre.java",
       "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9U1ConstructionParticipationReviewTest.java",
       "source/shared/common-jre/src/test/java/org/geocedg/common/workspace/G9U1InputPolicyTest.java",
@@ -151,36 +176,43 @@
       "tools/agent/verify-g9x1-extended-dxf.ps1",
       "tools/agent/verify-legacy.ps1",
       "tools/agent/verify-operational.ps1",
+      "tools/agent/verify-packaging.ps1",
       "tools/agent/verify.ps1",
-      "tools/agent/workspace-profile-validation.ps1"
+      "tools/agent/workspace-profile-validation.ps1",
+      "tools/release/build-windows-package.ps1",
+      "tools/resources/generate-geocedg-branding.ps1"
     ],
-    "pathCount": 131,
-    "sourcePathCount": 76,
+    "pathCount": 159,
+    "sourcePathCount": 92,
     "baseCommit": "f8a21a087234b18fc13741a0ac2baf80608e9022",
-    "state": "ROUND2_SUCCESSOR_SOURCE_FREEZE_PENDING_EXECUTION"
+    "state": "ROUND3_SUCCESSOR_SOURCE_FREEZE_PENDING_EXECUTION"
   },
   "verification": {
-    "DEV": "DIAGNOSTIC_ONLY; round-one and round-two intermediate failures remain historical and are never relabeled as acceptance.",
-    "PHASE": "PENDING_FRESH_ROUND2_SUCCESSOR_EXECUTION",
-    "COMPOSED": "PENDING_FRESH_ROUND2_SUCCESSOR_EXECUTION",
-    "FULL": "REQUIRED_FRESH_CLEAN_ROUND2_SUCCESSOR_EXECUTION",
+    "DEV": "DIAGNOSTIC_ONLY; round-one, round-two and round-three intermediate failures remain historical and are never relabeled as acceptance.",
+    "PHASE": "PENDING_FRESH_ROUND3_SUCCESSOR_EXECUTION",
+    "COMPOSED": "PENDING_FRESH_ROUND3_SUCCESSOR_EXECUTION",
+    "FULL": "REQUIRED_FRESH_CLEAN_ROUND3_SUCCESSOR_EXECUTION",
     "VERIFICATION_INFRASTRUCTURE_IMPACT": "UPDATE_REQUIRED",
     "BOOTSTRAP_IMPACT": "NO_CHANGE_REQUIRED",
-    "bootstrapRationale": "No workstation, JDK, Gradle or toolchain prerequisite changed; profile/runtime paths use existing modules and application preferences.",
+    "bootstrapRationale": "No workstation, JDK, Gradle or toolchain prerequisite changed; branding generation uses the existing bundled Python/Pillow verification environment and runtime/profile paths use existing modules and application preferences.",
     "GUIDE_IMPACT": "UPDATE_REQUIRED",
-    "guideRationale": "Round-two menu/options, contextual help, native user-tool persistence, ordinary numeric editing, semantic helper presentation, user-tool layout and central product-version behavior require synchronized guide/re-smoke authority.",
+    "guideRationale": "Round-three semantic menu/toolbar presentation, host View/Options surfaces, promoted branding, installed-versus-embedded tool reconciliation, user-tool PNG icons and the ordinary Algebra thread-boundary correction require synchronized guide/re-smoke authority.",
     "finalSequence": {
-      "PHASE": "tools/agent/verify.ps1 -Level PHASE -Phase G9U1 -KeepBuildOutputs -LogDirectory artifacts/g9u1-author-review-round2/final-phase",
-      "COMPOSED": "tools/agent/verify.ps1 -Level COMPOSED -KeepBuildOutputs -LogDirectory artifacts/g9u1-author-review-round2/final-composed",
-      "FULL": "tools/agent/verify.ps1 -Level FULL -CleanBuild -KeepBuildOutputs -LogDirectory artifacts/g9u1-author-review-round2/final-full",
-      "deterministicComparison": "Run the round-two G9U1 focused authority twice on the identical frozen cohort and require identical canonical-summary SHA-256; PHASE/COMPOSED/FULL remain separately attributed by ADR 0020/0023/0024.",
+      "focusedA": "tools/agent/verify-g9u1-construction-workspace.ps1 -KeepBuildOutputs -LogDirectory artifacts/g9u1-author-review-round3/focused-a -CanonicalSummaryPath artifacts/g9u1-author-review-round3/focused-a/canonical-summary.json",
+      "focusedB": "tools/agent/verify-g9u1-construction-workspace.ps1 -KeepBuildOutputs -LogDirectory artifacts/g9u1-author-review-round3/focused-b -CanonicalSummaryPath artifacts/g9u1-author-review-round3/focused-b/canonical-summary.json -CompareCanonicalSummaryPath artifacts/g9u1-author-review-round3/focused-a/canonical-summary.json",
+      "PHASE": "tools/agent/verify.ps1 -Level PHASE -Phase G9U1 -KeepBuildOutputs -LogDirectory artifacts/g9u1-author-review-round3/final-phase",
+      "COMPOSED": "tools/agent/verify.ps1 -Level COMPOSED -KeepBuildOutputs -LogDirectory artifacts/g9u1-author-review-round3/final-composed",
+      "FULL": "tools/agent/verify.ps1 -Level FULL -CleanBuild -KeepBuildOutputs -LogDirectory artifacts/g9u1-author-review-round3/final-full",
+      "postcommit": "tools/agent/verify-g9u1-construction-workspace.ps1 -SkipBuild -HistoricalRegressionsAlreadyComposed -LogDirectory artifacts/g9u1-author-review-round3/postcommit-static",
+      "deterministicComparison": "Run the Round-three G9U1 focused authority twice on the identical frozen cohort and require identical canonical-summary SHA-256; PHASE/COMPOSED/FULL and postcommit lifecycle evidence remain separately attributed by ADR 0020/0023/0024.",
       "receiptPolicy": "FULL owns one process/runspace-local receipt while each phase preserves live assertions; no prior-run receipt is reused.",
-      "phaseRoot": "artifacts/g9u1-author-review-round2/final-phase/verification-result.json",
-      "phaseSummary": "artifacts/g9u1-author-review-round2/final-phase/phase-g9u1/canonical-summary.json",
-      "composedRoot": "artifacts/g9u1-author-review-round2/final-composed/verification-result.json",
-      "fullRoot": "artifacts/g9u1-author-review-round2/final-full/verification-result.json",
-      "fullSummary": "artifacts/g9u1-author-review-round2/final-full/g9u1-construction-workspace/canonical-summary.json",
-      "sourceFreezePolicy": "Paths designate forthcoming actual round-two execution records, not preclaimed success. Preserve tracked inputs during execution; report later results in external run records, never as pre-executed or author-approved evidence."
+      "phaseRoot": "artifacts/g9u1-author-review-round3/final-phase/verification-result.json",
+      "phaseSummary": "artifacts/g9u1-author-review-round3/final-phase/phase-g9u1/canonical-summary.json",
+      "composedRoot": "artifacts/g9u1-author-review-round3/final-composed/verification-result.json",
+      "fullRoot": "artifacts/g9u1-author-review-round3/final-full/verification-result.json",
+      "fullSummary": "artifacts/g9u1-author-review-round3/final-full/g9u1-construction-workspace/canonical-summary.json",
+      "postcommitStatic": "artifacts/g9u1-author-review-round3/postcommit-static",
+      "sourceFreezePolicy": "Paths designate forthcoming actual Round-three execution records, not preclaimed success. Preserve tracked inputs during execution; report later results in external run records, never as pre-executed or author-approved evidence."
     },
     "historicalReviewPhase01": {
       "path": "artifacts/g9u1-review-round1/final-phase/verification-result.json",
@@ -924,6 +956,495 @@
       "userToolLayoutIsApplicationPreference": true,
       "newStableActionIds": 0,
       "authorAssetMissing": true
+    }
+  },
+  "authorReviewStabilizationRound3": {
+    "baseline": {
+      "commit": "5f492d4ee77289d9def89aa6ed431226d2de3457",
+      "branch": "codex/g9u1-author-review-stabilization-2",
+      "pathCount": 131,
+      "sourcePathCount": 76,
+      "focusedTests": 204,
+      "scenarioCount": 163,
+      "authorityBlobs": [
+        {
+          "path": "docs/roadmap/geocedg_roadmap.md",
+          "mode": "100644",
+          "blobOid": "7eb5f4dceb402e8188afffed83f6ce6d07bfe3a3"
+        },
+        {
+          "path": "docs/validation/g9u1_author_review_round2.md",
+          "mode": "100644",
+          "blobOid": "7c9baa952abc87786d92bbb0b68fe0c7d35d0755"
+        },
+        {
+          "path": "docs/validation/g9u1_construction_workspace_implementation_candidate_report.md",
+          "mode": "100644",
+          "blobOid": "df9570fe2f8d0793142128c24dd8e01ba54640b2"
+        },
+        {
+          "path": "geocedg/validation/g9u1/g9u1-construction-workspace-evidence.json",
+          "mode": "100644",
+          "blobOid": "41f3e2bfe7997109897b27bcc1e5f63ae76a4b45"
+        },
+        {
+          "path": "geocedg/validation/g9u1/g9u1-construction-workspace-evidence.sha256",
+          "mode": "100644",
+          "blobOid": "525d91f3304580a5769f86d771810b8b17135b67"
+        },
+        {
+          "path": "geocedg/validation/g9u1/g9u1-construction-workspace-scenarios.json",
+          "mode": "100644",
+          "blobOid": "ef5b8faa2039325156e65e1f93b43a42b7210b69"
+        },
+        {
+          "path": "tools/agent/verify-g9u1-construction-workspace.ps1",
+          "mode": "100644",
+          "blobOid": "598abd1816d05721d3908bf2e77d9944674991e0"
+        }
+      ]
+    },
+    "historicalRound2": "PUBLISHED_CANDIDATE_PRESERVED",
+    "dispositionRecord": "docs/validation/g9u1_author_review_round3.md",
+    "nextAuthorCloseout": "EXACT_TECHNICAL_COMMIT_REQUIRED",
+    "manualAuthorResmoke": "PENDING",
+    "noNewGeometricSemantics": true,
+    "inventory": {
+      "baseCommit": "5f492d4ee77289d9def89aa6ed431226d2de3457",
+      "deltaPathCount": 59,
+      "sourcePathCount": 30,
+      "deltaPaths": [
+        ".gitattributes",
+        "apps/geocedg/application-profile.yml",
+        "docs/adr/0001-geocedg-product-profile.md",
+        "docs/adr/0004-standalone-windows-packaging.md",
+        "docs/architecture/cedg_workspace_architecture.md",
+        "docs/architecture/g9u1_post_u1_design_notes.md",
+        "docs/licensing/component-matrix.md",
+        "docs/roadmap/geocedg_roadmap.md",
+        "docs/upstream/modified-files.yml",
+        "docs/user/geocedg_construction_quick_guide.md",
+        "docs/validation/g9u1_author_review_round3.md",
+        "docs/validation/g9u1_construction_workspace_implementation_candidate_report.md",
+        "docs/validation/g9u1_user_tools_review.md",
+        "geocedg/resources/assets-manifest.yml",
+        "geocedg/specs/operations/package-profile.schema.json",
+        "geocedg/specs/packaging/windows-packaging.md",
+        "geocedg/specs/ui/application-profile.md",
+        "geocedg/specs/ui/application-profile.schema.json",
+        "geocedg/specs/ui/cedg-workspaces.md",
+        "geocedg/specs/ui/g9u1-construction-interaction.md",
+        "geocedg/validation/g9u1/g9u1-construction-workspace-evidence.json",
+        "geocedg/validation/g9u1/g9u1-construction-workspace-evidence.sha256",
+        "geocedg/validation/g9u1/g9u1-construction-workspace-scenarios.json",
+        "packaging/windows/package.yml",
+        "packaging/windows/README.md",
+        "source/desktop/desktop/src/main/java/org/geocedg/desktop/AppGeoCeDG.java",
+        "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDG.java",
+        "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGActionRegistry.java",
+        "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGHostMenuFactory.java",
+        "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGMenuBar.java",
+        "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGProfile.java",
+        "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGUserToolLibrary.java",
+        "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGUserTools.java",
+        "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGWorkspaceController.java",
+        "source/desktop/desktop/src/main/java/org/geocedg/desktop/locus/LocusV2Laboratory.java",
+        "source/desktop/desktop/src/main/java/org/geocedg/desktop/resources/GeoCeDGBrandingResource.java",
+        "source/desktop/desktop/src/main/java/org/geogebra/desktop/GeoGebra.java",
+        "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/derived/geocedg-application-icon-64.png",
+        "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/derived/geocedg-application.ico",
+        "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/derived/geocedg-startup-542x720.png",
+        "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/source/helixSnapshot.png",
+        "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/source/helixTopBar.png",
+        "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1ActionRegistryTest.java",
+        "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1AlgebraGestureEditingTest.java",
+        "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1MacroNativeArchivePersistenceTest.java",
+        "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1ProfileCompilerTest.java",
+        "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1Revision3AlgebraEditingDiagnostic.java",
+        "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1UserToolLibraryTest.java",
+        "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1WorkspaceSurfaceTest.java",
+        "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGBrandingResourceTest.java",
+        "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGProfileTest.java",
+        "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoGebraStartupThreadTest.java",
+        "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_en.properties",
+        "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_es.properties",
+        "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu.properties",
+        "tools/agent/verify-g9u1-construction-workspace.ps1",
+        "tools/agent/verify-packaging.ps1",
+        "tools/release/build-windows-package.ps1",
+        "tools/resources/generate-geocedg-branding.ps1"
+      ]
+    },
+  "allowedSharedInstrumentationCorrection": [],
+    "allowedSharedLocalization": [
+      {
+        "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu.properties",
+        "authority": "Existing host menu-key English fallback for the bounded GeoCeDG semantic presentation and persistent-tool icon UI."
+      },
+      {
+        "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_en.properties",
+        "authority": "English presentation for the bounded GeoCeDG semantic menu, host option and persistent-tool icon routes."
+      },
+      {
+        "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_es.properties",
+        "authority": "Spanish presentation for the bounded GeoCeDG semantic menu, host option and persistent-tool icon routes."
+      }
+    ],
+  "branding": {
+    "derivation": "Versioned promoted author PNG sources plus deterministic aspect-preserving contain/center derivatives; no ignored author path is a clean-checkout runtime input.",
+    "packagingAuthority": "HASH_PINNED_TRACKED_DERIVATIVES_WITH_DIRECT_ICO_STRUCTURE_VALIDATION",
+    "packagingGeneratorDependency": false,
+    "generatorRole": "SEPARATE_VERIFY_ONLY_PROVENANCE_CHECK",
+    "publicRedistributionAuthorized": false,
+      "resources": [
+        {
+          "path": "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/source/helixTopBar.png",
+          "role": "PROMOTED_FRAME_ICON_SOURCE",
+          "bytes": 113783,
+          "rawSha256": "08ef4481b51e801bdf0842635d645bd09042b0a4473b24faca555048e3bd52c1"
+        },
+        {
+          "path": "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/source/helixSnapshot.png",
+          "role": "PROMOTED_STARTUP_SOURCE",
+          "bytes": 251689,
+          "rawSha256": "abcf272553c1b42d5eb016cdf564023439e901ed7d7e943212c220431ecf5637"
+        },
+        {
+          "path": "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/derived/geocedg-application-icon-64.png",
+          "role": "SWING_FRAME_ICON_64",
+          "bytes": 5676,
+          "rawSha256": "448ea5b510f952d27ddddec3005911b4e1f1203ee35f55fcca857098e53fed97"
+        },
+        {
+          "path": "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/derived/geocedg-application.ico",
+          "role": "WINDOWS_MULTI_SIZE_APPLICATION_ICON",
+          "bytes": 65873,
+          "rawSha256": "e5dac1dd3a556f4ce9747f00d272281e9a571ecc5e757180ba1c6750b664cd73"
+        },
+        {
+          "path": "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/derived/geocedg-startup-542x720.png",
+          "role": "GEOCEDG_STARTUP_PRESENTATION",
+          "bytes": 155029,
+          "rawSha256": "04d5e79b99b0f25536690b8af9d71ba034fbaf2b0d401ae40b5822942b917a78"
+        }
+      ]
+    },
+    "localAuthorInputs": [
+      {
+        "path": "artifacts/smoke-test-g9u1/Revision2.cedg",
+        "role": "IGNORED_AUTHOR_SMOKE_EVIDENCE",
+        "bytes": 17209,
+        "rawSha256": "527f96b516afdd93923e228ad0ffe0a3fc0bebd79e30b228bec7e7455ed53ab6",
+        "requiredForCleanCheckout": false
+      },
+      {
+        "path": "artifacts/smoke-test-g9u1/Revision3.cedg",
+      "role": "IGNORED_AUTHOR_SMOKE_EVIDENCE_EXPLICIT_DEV_DIAGNOSTIC_INPUT",
+        "bytes": 14110,
+        "rawSha256": "351955499d47d0407ab11c906da6e9b6d2ab636b0beef4e67c3edfddecccd939",
+        "requiredForCleanCheckout": false
+      },
+      {
+        "path": "artifacts/author-input/g9u1-branding/helixTopBar.png",
+        "role": "IGNORED_AUTHOR_BRANDING_INGESTION_SOURCE",
+        "bytes": 113783,
+        "rawSha256": "08ef4481b51e801bdf0842635d645bd09042b0a4473b24faca555048e3bd52c1",
+        "requiredForCleanCheckout": false
+      },
+      {
+        "path": "artifacts/author-input/g9u1-branding/helixSnapshot.png",
+        "role": "IGNORED_AUTHOR_BRANDING_INGESTION_SOURCE",
+        "bytes": 251689,
+        "rawSha256": "abcf272553c1b42d5eb016cdf564023439e901ed7d7e943212c220431ecf5637",
+        "requiredForCleanCheckout": false
+      }
+    ],
+  "externalDiagnostics": {
+    "revision3AlgebraEditing": {
+      "className": "org.geocedg.desktop.G9U1Revision3AlgebraEditingDiagnostic",
+      "source": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1Revision3AlgebraEditingDiagnostic.java",
+      "method": "authorRevision3ExercisesEveryOrdinaryAlgebraEditRoute",
+      "input": "artifacts/smoke-test-g9u1/Revision3.cedg",
+      "inputBytes": 14110,
+      "inputRawSha256": "351955499d47d0407ab11c906da6e9b6d2ab636b0beef4e67c3edfddecccd939",
+      "execution": "EXPLICIT_DEV_FILTER_ONLY",
+      "state": "PASS_SCOPED_NOT_ACCEPTANCE",
+      "tests": 1,
+      "failures": 0,
+      "result": "artifacts/g9u1-author-review-round3/dev-revision3-diagnostic-01/verification-result.json",
+      "resultRawSha256": "a5c97a14bc0d01a42118d270febb6ec1e96da656ad8eeb71fe680b365d2af0e9",
+      "summary": "artifacts/g9u1-author-review-round3/dev-revision3-diagnostic-01/dev/ac15aac7c7274cec8c38019aeaa07a6e/dev-summary.json",
+      "summaryRawSha256": "234269d032c6e78bd53d7fe5fa0448be242c9aeaaa23a9fef5a198881040f46b",
+      "junit": "artifacts/g9u1-author-review-round3/dev-revision3-diagnostic-01/dev/ac15aac7c7274cec8c38019aeaa07a6e/junit/TEST-org.geocedg.desktop.G9U1Revision3AlgebraEditingDiagnostic.xml",
+      "junitRawSha256": "2a1aa315d0cf8ddeb2eff1916cab97dd3f83500111ca8e43cb7b73d788963bf1",
+      "canonicalSuiteDependency": false,
+      "acceptanceAuthority": false,
+      "contract": "Focused, PHASE and FULL always execute the deterministic synthetic four-route regression and never select this non-Test-suffixed diagnostic. A separately requested DEV run authenticates and exercises the ignored Revision3 bytes without replacing canonical coverage."
+    }
+  },
+    "historicalDiagnostics": [
+      {
+        "id": "ROUND3-SANDBOX-GRADLE-ACCESS-DENIED",
+        "state": "FAILED_ENVIRONMENTAL",
+        "durableArtifact": null,
+        "classification": "WINDOWS_SANDBOX_ACCESS_DENIED_BEFORE_CANONICAL_RUN_RECORD",
+        "disposition": "The managed sandbox denial was retried only through the approved execution boundary. It is not a product, test or scientific failure and supplies no acceptance evidence."
+      },
+      {
+        "id": "ROUND3-DEV-SHARED-01",
+        "path": "artifacts/g9u1-author-review-round3/dev-shared-01/verification-result.json",
+        "rawSha256": "72a52b12779a4e3427f5ad2f29a1e923973d01e0f6d9ed24081a572c9ddbaf54",
+        "log": "artifacts/g9u1-author-review-round3/dev-shared-01/dev/282005a135ab492abed7b0acc749f35a/dev-gradle.log",
+        "logRawSha256": "dfd84e716f8026143bd698dcd50f00397958d7674919fe8ca08288b0b6da77dd",
+        "state": "FAILED",
+        "exitCode": 1,
+        "classification": "INCOMPLETE_SHARED_OUTPUT_COHORT_AND_CONCURRENT_STATUS_CHANGE",
+        "disposition": "No fresh JUnit report was produced. Missing renderer/common classes and concurrent documentation status mutation made this execution invalid; it is not product evidence."
+      },
+      {
+        "id": "ROUND3-DEV-SHARED-HANDOFF-02",
+        "path": "artifacts/g9u1-author-review-round3/dev-shared-handoff-02/verification-result.json",
+        "rawSha256": "52bd151739205815277667906ec729abb49e12e011bc022e5c741a3e5335f830",
+        "summary": "artifacts/g9u1-author-review-round3/dev-shared-handoff-02/dev/78cd775f83aa42e6a6b96b22e34068b7/dev-summary.json",
+        "summaryRawSha256": "c30abc67b27fa00727d4bfcce9939d459fb7a61db87b942e5c61c3b3b5b2a08f",
+        "junit": "artifacts/g9u1-author-review-round3/dev-shared-handoff-02/dev/78cd775f83aa42e6a6b96b22e34068b7/junit/TEST-org.geocedg.common.spatial.SpatialSemanticInstrumentationSequentialHandoffTest.xml",
+        "junitRawSha256": "30d711f3d8ba088361e6a4f03195807437d1e426b47536d2cf6d60758f1ade62",
+        "state": "PASS_SCOPED_NOT_ACCEPTANCE",
+        "exitCode": 0,
+        "tests": 4,
+        "classification": "SUPERSEDED_HISTORICAL_PROVISIONAL_EMPTY_HANDOFF_HYPOTHESIS",
+        "disposition": "The four tests passed only the provisional empty-publication handoff hypothesis. The final design rejects that hypothesis and this run remains historical, not reusable acceptance evidence."
+      },
+      {
+        "id": "ROUND3-DEV-DESKTOP-01",
+        "path": "artifacts/g9u1-author-review-round3/dev-desktop-round3-01/verification-result.json",
+        "rawSha256": "1d1b8702f59ec475ac6d26ea25dd45e37f840577d79b264d6049b8fb41585d2e",
+        "log": "artifacts/g9u1-author-review-round3/dev-desktop-round3-01/dev/7d1ea17cbb324b6391771875036511e4/dev-gradle.log",
+        "logRawSha256": "102b81d736cbebf7398e9e1cbf1422e26aeb7a4c9463eb84cb606652942c27d4",
+        "state": "FAILED",
+        "exitCode": 1,
+        "classification": "TEST_COMPILE_ERROR",
+        "cause": "G9U1WorkspaceSurfaceTest referenced assertNotSame without the required static import.",
+        "disposition": "A bounded test-source import correction was required; no test case executed and no product conclusion follows."
+      },
+      {
+        "id": "ROUND3-DEV-DESKTOP-02",
+        "path": "artifacts/g9u1-author-review-round3/dev-desktop-round3-02/verification-result.json",
+        "rawSha256": "79a60c863f77aca2bd8fc4e430067bcd1d72ffd0f368679e8470e663b4766e96",
+        "log": "artifacts/g9u1-author-review-round3/dev-desktop-round3-02/dev/28f5affa39034a0cb031c952078a50b8/dev-gradle.log",
+        "logRawSha256": "a62fb013d974dc5336138caa00b6bb52ad11c47beaf64ea9404d25288776a707",
+        "state": "FAILED",
+        "exitCode": 1,
+        "classification": "INVALID_DEV_TEST_FILTER_INVOCATION",
+        "cause": "Eight class names were supplied as one comma-separated --tests filter, so Gradle found no matching test.",
+        "disposition": "The invocation was corrected; zero test execution is never relabeled as evidence."
+      },
+      {
+        "id": "ROUND3-DEV-DESKTOP-03",
+        "path": "artifacts/g9u1-author-review-round3/dev-desktop-round3-03/verification-result.json",
+        "rawSha256": "5be61c400ed526b5381fb94d82223ff3300b8d0977c0599e7f72b52ec05fb5c0",
+        "log": "artifacts/g9u1-author-review-round3/dev-desktop-round3-03/dev/61359913762c41c99bbd353f90a59e9d/dev-gradle.log",
+        "logRawSha256": "8e6bb88b809d1a254f84f1e641098173fd9a85be93443c4a09b94716fe42292b",
+        "state": "FAILED",
+        "exitCode": 1,
+        "tests": 110,
+        "failures": 5,
+        "classification": "VALID_DIAGNOSTIC_EXECUTION_WITH_FIVE_REPRODUCED_FAILURES",
+        "failuresByContract": {
+          "algebraGestureRoutes": 3,
+          "presentationDriftNegativeFixture": 1,
+          "historicalToolbarGroupExpectation": 1
+        },
+        "cause": "Double-click, F2 and row edits reached a metric owner created on the launcher thread; the drift negative mutated an empty array; GeoCeDGProfileTest still expected nine rather than twelve toolbar groups.",
+        "disposition": "All five failures remain historical diagnostic evidence. They were corrected and rerun on the later Round-three DEV cohort; no partial PASS is inferred."
+      },
+      {
+        "id": "ROUND3-DEV-DESKTOP-04",
+        "path": "artifacts/g9u1-author-review-round3/dev-desktop-round3-04/verification-result.json",
+        "rawSha256": "15e29e3c48e90e3e71a731bbe7f986fc2499c1ece874b9c8eec69264828b7acd",
+        "log": "artifacts/g9u1-author-review-round3/dev-desktop-round3-04/dev/f00625397701403b8ae9eaf4b5e01b26/dev-gradle.log",
+        "logRawSha256": "96904bb88311f3b74fef92675a30233b6176f6a9ae8865e8b85a0cc286e5ca69",
+        "state": "FAILED",
+        "exitCode": 1,
+        "tests": 120,
+        "failures": 2,
+        "classification": "VALID_DIAGNOSTIC_EXECUTION_WITH_TWO_FRONTEND_TEST_FAILURES",
+        "cause": "Construction navigation still asserted the wrong host selection state, and the injected presentation-failure fixture surfaced its intentional exception instead of completing the rollback assertion.",
+        "disposition": "Both remain failed historical evidence; the bounded frontend/test correction was rerun later."
+      },
+      {
+        "id": "ROUND3-DEV-DESKTOP-05",
+        "path": "artifacts/g9u1-author-review-round3/dev-desktop-round3-05/verification-result.json",
+        "rawSha256": "0be0f4cd90e36ef11b82c77c1e2a8d2cce019af6c1f17329e09d41508a58f93f",
+        "log": "artifacts/g9u1-author-review-round3/dev-desktop-round3-05/dev/463a369ea4954bbb9c597780a7c72258/dev-gradle.log",
+        "logRawSha256": "913a4ff14f79db820adf2d2e8ff97ab806f9adf0f3c245fe82f390870df117cb",
+        "state": "FAILED",
+        "exitCode": 1,
+        "tests": 38,
+        "failures": 1,
+        "classification": "VALID_DIAGNOSTIC_EXECUTION_WITH_NAVIGATION_EXPECTATION_FAILURE",
+        "cause": "The focused navigation test expected an unavailable host-bar state (-1) while the real bounded host initialized state 0.",
+        "disposition": "The failed run remains historical; the assertion was reconciled with the real host navigation seam and rerun."
+      },
+      {
+        "id": "ROUND3-DEV-DESKTOP-06",
+        "path": "artifacts/g9u1-author-review-round3/dev-desktop-round3-06/verification-result.json",
+        "rawSha256": "78e3b067e7dc0793110374bc71d2424176258e96963ed6115326b82df5fb71a7",
+        "log": "artifacts/g9u1-author-review-round3/dev-desktop-round3-06/dev/f384d7c9edde4013a1cc1b3c100ac8cd/dev-gradle.log",
+        "logRawSha256": "7efe2bbff250b62bab84dca9bd4723e70f1e2e17056aa07bf7eb661b6467162f",
+        "state": "FAILED",
+        "exitCode": 1,
+        "tests": 38,
+        "failures": 1,
+        "classification": "VALID_DIAGNOSTIC_EXECUTION_WITH_NAVIGATION_INSTRUMENTATION_FAILURE",
+        "cause": "The focused navigation fixture still asserted an unobserved host-bar callback rather than the actual bounded navigation state transition.",
+        "disposition": "The failed run remains historical; the test was made to observe the real host state and rerun."
+      },
+      {
+        "id": "ROUND3-DEV-DESKTOP-07",
+        "path": "artifacts/g9u1-author-review-round3/dev-desktop-round3-07/verification-result.json",
+        "rawSha256": "46ce9ae6993f1211281ac05bd5f452287f012763108b5c7cf4090e23a302b03e",
+        "summary": "artifacts/g9u1-author-review-round3/dev-desktop-round3-07/dev/9a3ed44d9b35403d97d351e50107d989/dev-summary.json",
+        "summaryRawSha256": "dcbc943656ac97092b50d957007418ef1800cd758b608aa3e917ba979c4b77e7",
+        "state": "PASS_SCOPED_NOT_ACCEPTANCE",
+        "exitCode": 0,
+        "tests": 13,
+        "failures": 0,
+        "classification": "ISOLATED_ACTION_REGISTRY_DEV_CONFIRMATION",
+        "disposition": "This isolated pass confirmed the corrected navigation/action seam but is not phase acceptance evidence."
+      },
+      {
+        "id": "ROUND3-DEV-DESKTOP-08",
+        "path": "artifacts/g9u1-author-review-round3/dev-desktop-round3-08/verification-result.json",
+        "rawSha256": "96c161c571527a7aeea702d20641acfba0c6cbfb44da452b8c1c7b608e144ae8",
+        "summary": "artifacts/g9u1-author-review-round3/dev-desktop-round3-08/dev/9abe4b9277f14260a700aca2ab1044ca/dev-summary.json",
+        "summaryRawSha256": "58a1d5260fd1b927ef36e3f54ee9aec35f560fa570393e713a467bb6a9d9d824",
+        "state": "PASS_SCOPED_NOT_ACCEPTANCE",
+        "exitCode": 0,
+        "tests": 120,
+        "failures": 0,
+        "classification": "STABILIZED_ROUND3_DESKTOP_DEV_PERIMETER",
+        "disposition": "The nine affected Desktop classes passed on stabilized product/test sources. This is DEV evidence, not focused A/B, PHASE, COMPOSED, FULL or author approval."
+      },
+      {
+        "id": "ROUND3-COMPOSED-FINAL-01",
+        "path": "artifacts/g9u1-author-review-round3/composed-final-01/verification-result.json",
+        "rawSha256": "d58d0599d31d4da03c55c2dae6aa25ddcaca77c6382a7f8b4a90b7420e0c9103",
+        "state": "FAILED",
+        "exitCode": 1,
+        "classification": "CANONICAL_TEST_SELECTION_DID_NOT_COVER_NEW_UPSTREAM_PACKAGE_TEST",
+        "cause": "The test-only org.geogebra.desktop.GeoGebraStartupThreadTest name was outside the canonical COMPOSED org.geocedg.* test selection.",
+        "disposition": "The test was relocated without changing its two obligations to org.geocedg.desktop and invokes the existing package-private helper reflectively. No global execution-plan or product change was made; this failed COMPOSED run remains historical and must not be reused."
+      },
+      {
+        "id": "ROUND3-COMPOSED-FINAL-02",
+        "path": "artifacts/g9u1-author-review-round3/composed-final-02/verification-result.json",
+        "rawSha256": "999ea0fcba0c01d494f3bf8ca486941eac5fd1562a607d9b4ef6a97932678356",
+        "state": "FAILED",
+        "exitCode": 1,
+        "classification": "STALE_UPSTREAM_MODIFICATION_INVENTORY_AFTER_TEST_RELOCATION",
+        "cause": "The upstream modification registry still named source/desktop/desktop/src/test/java/org/geogebra/desktop/GeoGebraStartupThreadTest.java after the test-only relocation.",
+        "disposition": "The registry path was corrected to the extant org/geocedg/desktop test source. No product, test obligation or execution-plan change was made; this failed COMPOSED run remains historical and must not be reused."
+      }
+    ],
+    "postFocusedCheckstyleConformance": {
+      "state": "FOUR_BOUNDED_SOURCE_CONFORMANCE_EDITS_APPLIED_FINAL_ACCEPTANCE_GATES_PENDING",
+      "paths": [
+        "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGUserToolLibrary.java",
+        "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGUserTools.java",
+        "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1UserToolLibraryTest.java",
+        "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoGebraStartupThreadTest.java"
+      ],
+      "changes": "Declaration helper extraction, Unicode escape, final test-local declaration and source header only.",
+      "productSemanticContractChanged": false,
+      "scientificContractChanged": false,
+      "testSelectionChanged": false,
+      "priorFocusedDevReusedAsFinalAcceptance": false
+    },
+    "macroEquivalence": {
+      "installedAuthority": "APPLICATION_PREFERENCE_LIBRARY",
+      "documentAuthority": "EMBEDDED_PORTABLE_RECONSTRUCTION_MACRO",
+      "equivalence": "VERSIONED_NORMALIZED_COMPLETE_DEFINITION_DIGEST",
+      "labelOnlyEquivalenceForbidden": true,
+      "mismatchDisposition": "FAIL_CLOSED_NO_RENAME_REPLACEMENT_OR_DUPLICATE_ADOPTION"
+    },
+    "userToolIcons": {
+      "preferenceVersion": 3,
+      "format": "BOUNDED_PNG_ONLY",
+      "identityAuthority": false,
+      "documentState": false,
+      "derivation": "DETERMINISTIC_ASPECT_PRESERVING_CONTAIN_WITH_TRANSPARENT_PADDING",
+      "cleanup": "REFERENCE_AWARE_ON_CHANGE_UNPIN_AND_REMOVE"
+    },
+    "requiredVerification": {
+      "focused": "FRESH_AB_DETERMINISTIC_ROUND3_COHORT",
+      "PHASE": "FRESH_ROUND3_SUCCESSOR_COHORT",
+      "COMPOSED": "FRESH_ROUND3_SUCCESSOR_COHORT",
+      "FULL": "FRESH_CLEAN_ROUND3_SUCCESSOR_COHORT",
+      "postcommit": "EXACT_TECHNICAL_COMMIT_STATIC_LIFECYCLE",
+      "historicalExecutionReusedAsNew": false
+    },
+    "focusedInventory": {
+      "classes": 23,
+      "methods": 231,
+      "desktopMethods": 217,
+      "sharedMethods": 14,
+      "scenarios": 177,
+      "historicalScenarios": 163,
+      "addedRound3Scenarios": 14
+    },
+    "workspace": {
+      "families": 11,
+      "clusters": 18,
+      "actions": 110,
+      "normalMenus": 7,
+      "presentationGroups": 28,
+      "toolbarGroups": 12
+    },
+    "supersededHistoricalScenarios": [
+      "U1-R2-07",
+      "U1-R2-08"
+    ],
+    "documentationPaths": [
+      "docs/adr/0001-geocedg-product-profile.md",
+      "docs/adr/0004-standalone-windows-packaging.md",
+      "docs/architecture/cedg_workspace_architecture.md",
+      "docs/architecture/g9u1_post_u1_design_notes.md",
+      "docs/licensing/component-matrix.md",
+      "docs/roadmap/geocedg_roadmap.md",
+      "docs/user/geocedg_construction_quick_guide.md",
+      "docs/validation/g9u1_author_review_round3.md",
+      "docs/validation/g9u1_construction_workspace_implementation_candidate_report.md",
+      "docs/validation/g9u1_user_tools_review.md",
+      "geocedg/specs/packaging/windows-packaging.md",
+      "geocedg/specs/ui/application-profile.md",
+      "geocedg/specs/ui/cedg-workspaces.md",
+      "geocedg/specs/ui/g9u1-construction-interaction.md",
+      "packaging/windows/README.md"
+    ],
+    "verificationImpact": "UPDATE_REQUIRED",
+    "bootstrapImpact": "NO_CHANGE_REQUIRED",
+    "guideImpact": "UPDATE_REQUIRED",
+    "preservedContracts": {
+      "round1AndRound2EvidenceAreHistorical": true,
+      "authorChecklistIsInputNotAgentEvidence": true,
+      "ignoredAuthorInputsAreNotCleanCheckoutAuthority": true,
+      "canonicalVerifierReadsLiveIgnoredInputs": false,
+      "canonicalAlgebraRegressionIsIndependentOfRevision3Presence": true,
+      "singleActionAuthority": true,
+      "continuityLockedOff": true,
+      "productLanguages": [
+        "en",
+        "es"
+      ],
+      "installedMacroLibraryIsNotDocumentAuthority": true,
+      "embeddedMacroRemainsPortableReconstructionAuthority": true,
+      "semanticDirectionNotReconstructedFromCoordinates": true,
+      "ordinaryNumericEditingDoesNotEnableSemanticRedefine": true,
+      "userToolLayoutAndIconsAreApplicationPreferences": true,
+      "newStableActionIds": 0,
+      "authorApprovedImplementation": false,
+      "passClaimedImplementation": false
     }
   }
 }

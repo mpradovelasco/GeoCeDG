@@ -1,8 +1,10 @@
 # GeoCeDG Construction — guía rápida del candidato en revisión
 
-Esta guía acompaña la estabilización posterior a la primera revisión del autor.
+Esta guía acompaña la estabilización técnica Round 3 posterior a la revisión del autor.
 **No es una declaración de PASS.** Use una construcción nueva o una copia de
 trabajo; conserve intacto `TestBasic1.cedg` como evidencia del fallo histórico.
+`Revision2.cedg` y `Revision3.cedg` también son entradas autorales de diagnóstico:
+ábralas sólo para revisión y guarde cualquier cambio con otro nombre.
 El [checklist](../validation/g9u1_author_resmoke_checklist.md) permite anotar el
 resultado de una sesión completa.
 
@@ -19,6 +21,9 @@ proceso. Omitirlo no habilita esos comandos. Construction es el perfil CeDG;
 Classic diagnóstico conserva sus herramientas y configuración upstream.
 GeoCeDG mantiene **Continuidad desactivada**: las selecciones semánticas son
 deterministas, no una búsqueda del punto más cercano a su posición anterior.
+El título y **Ayuda → Acerca de GeoCeDG** identifican la autoridad central
+`GeoCeDG 0.9`, el baseline GeoGebra y la autoría; el icono de ventana y la
+pantalla de inicio usan los recursos GeoCeDG versionados aprobados.
 
 ## 2. Menú completo, barra de uso frecuente
 
@@ -27,8 +32,11 @@ Automatización y Ayuda**. Los submenús agrupan las herramientas del catálogo.
 Opciones ofrece sólo ajustes host declarados por el perfil: Continuidad permanece
 desactivada en Construction y el idioma de producto se limita a inglés/español.
 Una misma acción referenciada desde varios grupos aparece una sola vez.
-La barra es deliberadamente más pequeña: 32 modos habituales en grupos
-desplegables, más Spline V2 y Zoom por ventana. Las herramientas menos frecuentes
+Archivo y Editar muestran directamente sus acciones, separadas por función. En
+Construcción encontrará **Rectas y vectores**, **Polígonos**, **Construcciones
+derivadas**, **Círculos y cónicas**, **Curvas semánticas** y **Anotaciones y
+medios**; Texto e Imagen no son vistas. La barra es deliberadamente más pequeña:
+34 acciones habituales en 12 grupos semánticos desplegables. Las herramientas menos frecuentes
 siguen en el menú. Una opción deshabilitada muestra una razón, no crea objetos.
 Un archivo puede conservar su distribución visual; **Ver → Reaplicar espacio de
 trabajo → Construction** recupera la organización del producto sin reconstruir
@@ -36,18 +44,18 @@ la geometría.
 
 | Quiero… | Ruta Classic | Ruta GeoCeDG / menú | Barra | Comando o nota |
 | --- | --- | --- | --- | --- |
-| Crear un punto libre o una recta | Punto / Recta | Construcción → puntos/geometría lineal | Grupos Punto y Recta | `A=(0,0)`, `Line(A,B)` |
+| Crear un punto libre o una recta | Punto / Recta | Construcción → Puntos / Rectas y vectores | Grupos Punto y Recta | `A=(0,0)`, `Line(A,B)` |
 | Crear un parámetro | Deslizador / Entrada | Construcción → parámetros | Deslizador | `k=1`; editar su fila o deslizador |
-| Crear un locus semántico | Locus clásico muestreado, distinto | Construcción → Locus V2 | Locus V2 | Dominio explícito; ejemplo abajo |
-| Crear una spline semántica | Spline clásico, distinto | Construcción → Spline V2 | Spline V2 | `S=SplineV2({A,B,C,D},3)` |
+| Crear un locus semántico | Locus clásico muestreado, distinto | Construcción → Curvas semánticas | Curvas semánticas | Dominio explícito; ejemplo abajo |
+| Crear una spline semántica | Spline clásico, distinto | Construcción → Curvas semánticas | Curvas semánticas | `S=SplineV2({A,B,C,D},3)` |
 | Colocar y arrastrar un punto sobre la curva | Punto sobre objeto | Punto y clic sobre el **trazo** semántico | Punto | Resolver semánticamente; escoger si hay ambigüedad |
-| Crear un punto con parámetro conocido | Entrada | Construcción → Locus V2 / Entrada | Menú o Entrada | `P=Point(S,"spline-v2/main",0.25)` |
+| Crear un punto con parámetro conocido | Entrada | Construcción → Curvas semánticas → Punto sobre curva semántica / Entrada | Menú o Entrada | `P=Point(S,"spline-v2/main",0.25)` |
 | Intersectar curvas | Intersección | Construcción → intersecciones | Intersección | `R=Intersect(S,g)` produce resultado rico |
 | Materializar soluciones | Puntos de intersección | Inspector del resultado; Construcción → materialización | Menú/inspector | Una, varias seleccionadas o todas las admisibles |
 | Medir longitud | Longitud | Construcción → medición | Grupo medición | `Length(S)` o `Length(S,P,Q)` |
 | Transformar | Traslada / Rota / Refleja / Homotecia | Construcción → transformaciones | Grupos de transformación | `Translate`, `Rotate`, `Reflect`, `Dilate` |
 | Inspeccionar definición | Descripción / Propiedades | Contexto → definición; Propiedades | Contexto | Inspección no implica permiso de redefinición |
-| Ver dependencias en secuencia | Protocolo de construcción | Ver → protocolo | Menú | No es una segunda autoridad geométrica |
+| Ver dependencias en secuencia | Protocolo de construcción | Ver → Protocolo / Mostrar barra de navegación de la construcción | Menú | La barra se asocia a la Vista Gráfica y no crea undo |
 | Ampliar un rectángulo | Zoom / navegación | Ver → navegación → Zoom por ventana | Zoom por ventana | Arrastrar rectángulo; Escape cancela |
 | Zoom desde teclado | Atajos de vista | Foco en Vista Gráfica | No necesario | `Ctrl`+`+` y `Ctrl`+`-`; no escribirlos en Entrada |
 | Guardar / abrir | `.ggb` | Archivo → Guardar / Abrir | Menú | Trabajo nativo `.cedg`; compatibilidad `.ggb` |
@@ -147,8 +155,12 @@ T=Dilate(S,k,O)
 ```
 
 Trasladar, rotar, reflejar y dilatar producen **otra curva semántica** con sus
-dependencias. Edite k mediante su deslizador o fila numérica; la entrada compatible
-`k=0.25` usa la transacción G9A, no identidad derivada de la etiqueta.
+dependencias. Edite k mediante su deslizador o la fila numérica ordinaria:
+doble clic, F2 o edición directa de fila, escriba el nuevo valor y confirme con
+Intro. En la Entrada libre puede confirmar `k=0.25`. Edición de fila, doble
+clic, F2 y Entrada libre conservan el mismo `GeoNumeric` mediante la transacción
+compatible G9A; la etiqueta localiza la edición explícita, pero no se convierte
+en identidad durable.
 La longitud de T se escala por `abs(k)`. En k=0 la imagen colapsa pero conserva
 su dominio válido; no es un punto sin parametrización. Un clic nuevo no debe
 inventar una preimagen. Restaurar k recupera los puntos semánticos existentes
@@ -169,6 +181,17 @@ descripción de Álgebra. El menú de descripción indica el modo actual.
 La Entrada muestra previsualización sin crear objetos: Intro confirma una
 transacción, Escape cancela. Una redefinición incompatible no promete conservar
 identidad. El Protocolo de construcción ayuda a revisar el procedimiento.
+
+**Ver → Vistas** reutiliza las vistas host compatibles (Álgebra, Gráficos 2,
+Hoja de cálculo, CAS y Vista de propiedades); 3D no se habilita en este
+candidato. **Mostrar barra de navegación de la construcción** muestra u oculta
+el control de la Vista Gráfica y refleja su estado, sin crear objetos ni undo.
+
+En **Opciones**, Presentación de Álgebra contiene Valor/Descripción/Definición
+como radio; Ordenar por, Redondeo, Etiquetado, Tamaño de fuente y Guardar
+configuración usan los ajustes host existentes. **Preferencias…** abre la
+configuración global sin seleccionar por sorpresa el primer objeto. Propiedades
+de un objeto sigue siendo una acción contextual sobre selección explícita.
 
 Para zoom con teclado, haga clic en un espacio vacío de la Vista Gráfica y use
 `Ctrl`+`+` / `Ctrl`+`-`; el teclado numérico también sirve. En configuración
@@ -192,15 +215,23 @@ ventana está tanto en Ver/navegación como en la barra. El zoom no cambia métr
    grupo aparecen en un desplegable de barra, sin convertirse en acciones de
    producto permanentes. Un grupo se mantiene como una unidad visual contigua:
    sus miembros se ordenan dentro del desplegable y al cruzar otro elemento se
-   desplaza el grupo completo.
+   desplaza el grupo completo. Al fijar o editar la presentación puede elegir
+    opcionalmente un PNG propio. El gestor limita tamaño/dimensiones, muestra el
+    recurso normalizado sin recortar y lo guarda sólo como preferencia de la
+    aplicación; quitar el icono, desfijar o desinstalar limpia esa copia. Sin
+    icono, la barra muestra una inicial compacta y conserva el nombre completo
+    en la ayuda emergente y la información de accesibilidad.
 6. Cierre el documento, abra uno nuevo o reinicie: la instalación explícita sigue
    disponible. Eliminar la instalación no borra resultados ya construidos.
 
-Si un documento reabierto ya contiene una macro con el mismo nombre, la entrada
-instalada señala la colisión y no la reemplaza. La herramienta local sigue
-perteneciendo al documento; **Herramientas del documento (solo locales)…** permite
-gestionarla. Para probar la entrada instalada sin esa colisión, use un documento
-nuevo. El gestor persistente importa paquetes; no es un nuevo editor de macros.
+Si un documento reabierto contiene la macro embebida equivalente a la instalada,
+GeoCeDG comprueba el conjunto completo de definiciones y sus digests: la entrada
+instalada sigue siendo la única elección visible y habilitada, pero la macro
+embebida continúa perteneciendo al documento y reconstruyendo sus resultados.
+No se elimina ni se sustituye. Si el paquete es parcial o su definición difiere,
+se muestra una colisión/desajuste y no se elige por nombre. Sin paquete instalado,
+**Herramientas del documento (solo locales)…** permite gestionar la definición
+portable. El gestor persistente importa paquetes; no es un nuevo editor de macros.
 Con varias ventanas, el gestor vuelve a comprobar la biblioteca antes de cambiarla;
 si otra ventana está actualizándola, reintente después del aviso. Abrir el menú
 actualiza la lista de herramientas instaladas.
@@ -236,5 +267,8 @@ archivo histórico requeriría una actuación separada y explícita.
 Persisten las limitaciones de certificación/monodromía, la edición semántica no
 autorizada y los bloqueos de G9U2/G9B/G9C/G10. El riesgo
 `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` conserva su disposición canónica;
-este re-smoke no lo cierra por inferencia. Faltan fuentes autorales de branding
-de inicio/topbar; no se han fabricado sustitutos.
+este re-smoke no lo cierra por inferencia. Las fuentes autorales
+`helixTopBar.png` y `helixSnapshot.png` se han promovido byte-exactas a recursos
+versionados; los iconos/splash derivados son deterministas y no dependen del
+directorio ignorado de ingestión. Su autorización interna no resuelve por sí
+sola el gate independiente de redistribución pública.

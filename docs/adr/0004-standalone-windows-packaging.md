@@ -47,6 +47,23 @@ Toolset 5.0.2, its Util/UI extensions 5.0.2, and the existing .NET 8 SDK.
    builds, or acceptance gates. JDK installation remains manual. Repository
    acceptance and focused packaging-toolchain diagnosis remain separate actions.
 
+### G9U1 Round-3 icon refinement
+
+On 2026-09-05 the author supplied and explicitly authorized the GeoCeDG
+application artwork. This refinement supersedes the no-custom-icon part of
+decision 5: the Windows profile names one versioned, deterministic, multi-size
+ICO derived from that artwork. The builder applies it exactly once to the
+`app-image` with `jpackage --icon`; portable and installer targets derive from
+that same application image. The source, transformation and hashes are governed
+by `geocedg/resources/assets-manifest.yml`. The internal-evaluation marker and
+public-redistribution block remain unchanged.
+
+The tracked, hash-pinned derivative is package authority. The packaging path
+validates it without re-running the platform image encoder; exact regeneration
+is a separate provenance operation bound to the accepted derivation runtime
+recorded in the asset manifest. This prevents the general PowerShell 7.2+
+workstation contract from becoming an accidental byte-encoder requirement.
+
 ## Package composition boundary
 
 The package contains the resolved Desktop runtime JARs, a linked Java 25

@@ -87,6 +87,42 @@ become the semantic address. Published R6 satisfies the last shared-kernel
 prerequisite found by the complete Construction-workspace audit; no further
 kernel gate blocks the accepted G9U1 workflow.
 
+## G9U1 author-review stabilization round 3
+
+The live schema-v2 implementation remains an **implementation candidate pending
+author review**. Round 3 preserves the approved 11 professional families, 18
+operational clusters and 110 stable action IDs, and adds an explicit
+presentation projection inside the same profile authority. It does not add a
+second menu or toolbar catalog. The profile currently declares 28 ordered
+presentation groups and selects 12 of them for the primary toolbar; every
+stable action remains reachable exactly once through the declared menu
+projection.
+
+The seven top-level menus are, in order, **File, Edit, View, Construction,
+Options, Automation, Help**. File and Edit render final actions directly with
+profile-declared separators. Construction uses the final semantic groups,
+including **Lines and vectors**, **Polygons**, **Derived constructions**,
+**Circles and conics**, **Semantic curves**, and **Annotations and media**.
+Text and Image therefore remain construction actions and no longer appear under
+View. The same semantic group IDs and ordering compile the primary toolbar.
+
+View and Options consume existing host state through bounded adapters. View
+exposes compatible view toggles and the view-specific **Show construction
+navigation bar** action. Options groups the existing Algebra display modes as
+one radio group and reuses host Sort by, Rounding, Labeling, Font size and Save
+Settings authorities. Its preferences route is global and never selects an
+arbitrary construction object. These controls create no construction or undo
+state; Continuity remains locked OFF and product language remains EN/ES.
+
+Round 3 also promotes the author-supplied frame and splash sources into tracked
+GeoCeDG resources with deterministic derivatives and recorded provenance.
+Installed user tools retain application-owned order/group/pin state and may
+carry an optional bounded PNG icon in version-3 preferences. Their embedded
+document macro remains the portable reconstruction authority. A normalized
+definition digest may recognize a provably equivalent installed definition for
+presentation ownership without deleting or replacing the embedded macro;
+non-equivalence fails closed.
+
 The candidate also freezes these prospective product rules: the existing host
 `Continuity` setting is clamped OFF for GeoCeDG while Classic remains
 configurable; `ZoomWindow` uses the existing rectangle-view seam while broader
@@ -147,22 +183,21 @@ A future implementation of this contract must preserve all of the following:
 
 ## 3. Current source boundary
 
-The accepted version-1 authority is
-`apps/geocedg/application-profile.yml`, governed by
-`geocedg/specs/ui/application-profile.md` and ADR 0001.
-`source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGProfile.java:80-139`
-currently reads one perspective, and the same file at `:142-166` compiles one
-array of numeric mode IDs.
-`source/desktop/desktop/src/main/java/org/geocedg/desktop/AppGeoCeDG.java:42-46`
-lets a loaded/saved perspective take precedence. This contract changes none of
-those files; it defines a future, separately gated schema-v2 implementation.
+The live candidate authority is `apps/geocedg/application-profile.yml`, governed
+by `geocedg/specs/ui/application-profile.schema.json`, this contract and ADR
+0012. `GeoCeDGProfile` loads and validates schema version 2, compiles its action,
+workspace and presentation references, and retains a deterministic in-memory
+version-1 compatibility adapter. `GeoCeDGMenuBar` and
+`GeoCeDGWorkspaceController` consume the compiled profile; they do not own a
+parallel list of product actions or semantic groups. A loaded document layout
+remains presentation evidence and does not mutate the profile.
 
 ## 4. Schema version 2 contract
 
-Version 2 should retain the version-1 `profile_id`, `application`,
-`serialization`, and top-level feature declarations. It should replace the
-singular `perspective`/`toolbar` fields with one action catalog and a set of
-workspaces:
+Version 2 retains the version-1 `profile_id`, `application`, `serialization`,
+and top-level feature declarations. It replaces the singular
+`perspective`/`toolbar` fields with one action catalog, a taxonomy, an ordered
+presentation projection and a set of workspaces:
 
 ```text
 schema_version: 2
@@ -183,6 +218,17 @@ actions:
     icon
     unavailable_policy
 
+taxonomy:
+  broad_families[]
+  operational_clusters[]
+
+presentation_groups:
+  - id
+    name_key
+    action_ids[]
+
+toolbar_group_ids[]
+
 workspaces:
   - id
     name_key
@@ -194,6 +240,10 @@ workspaces:
     menus[].action_ids[]
     help_policy
     document_layout_policy
+
+menu_sections:
+  - id
+    entries[]: group | actions | separator | approved host-control
 
 workspace_persistence:
   scope: profile-preferences
@@ -246,7 +296,9 @@ Each workspace declares only presentation state:
 - user-customizable state fields.
 
 No command processor, algorithm, object type, tolerance, or geometric policy is
-defined in a workspace manifest.
+defined in a workspace manifest. The taxonomy is traceability/classification;
+`presentation_groups`, `toolbar_group_ids` and `menu_sections` are its one
+ordered UI projection. Both layers reference the same stable action catalog.
 
 ### 4.3 Version migration
 
@@ -292,11 +344,11 @@ Symbolic action IDs remain the manifest authority.
 | Proposed group | Primary actions | Current mapping | Maturity/gate |
 |---|---|---|---|
 | Inspect and construct | Move; point; point on object; Algebra/Protocol/Properties toggles; undo/redo; object inspection | modes `0`, `1`, `501` plus product view actions | stable organization in G9U1 |
-| Linear geometry | line, segment, ray, vector, parallel, perpendicular, midpoint | modes `2`, `15`, `18`, `7`, `3`, `4`, `19` | inherited stable |
+| Linear geometry | line, segment, ray, vector, polygon families, parallel, perpendicular, midpoint | modes `2`, `15`, `18`, `7`, `3`, `4`, `19` and inherited polygon modes | inherited stable; presented as Lines and vectors, Polygons, and Derived constructions |
 | Parameters and drivers | explicit scalar domains/maps and true-driver roles; numeric parameters; point generators on segment/circle/arc; orientation, periodicity and animation controls | Algebra/product actions plus mode `501`; typed V2 generator metadata is kernel semantics, not toolbar state | inherited parameters; semantic generators require G9U0 |
 | Relations and intersections | general Intersect, tangent, relation; rich-result inspector; separate exact-token point materialization | modes `5`, `13`, `14`; V2 actions after G9U0 | V2 actions require `cedg.locus.v2` |
-| Circles, conics and curves | circle families, ellipse/conic, tangent, approved axis helpers; function/curve entry | modes `10`, `11`, `12`, `55` and inherited commands | axis helpers require separate characterization |
-| Locus V2 | create semantic locus from typed scalar/point generator; create supported point on Locus V2; total/partial rich length; inspect semantic branches/components/preimages | future symbolic actions; legacy mode `47` and generic `Path` are not reused | G9U0 PASS; experimental flag until promotion |
+| Circles and conics | circle, arc, sector, ellipse, parabola, hyperbola and conic families | modes `10`, `11`, `12`, `55` and inherited commands | inherited stable; semantic curves are not placed here |
+| Semantic curves | create Locus V2 or Spline V2; create an explicit-address semantic point; inspect semantic branches/components/preimages | symbolic actions; legacy mode `47` and generic `Path` are not reused | G9U0/G9S1/R6 authority; experimental flag until promotion |
 | Metrics and validation | distance, angle, area, authoritative rich Locus length plus guarded standard scalar, semantic status/certificates | modes `38`, `36`, `49`; command/result actions | inherited plus G9U0 result inspectors/adapters |
 | Transformations and manual projections | reflect in line, translate, rotate; ordinary manual auxiliary construction | modes `30`, `31`, `32` | inherited; no spatial claim |
 | CeDG procedures and developments | projection change, fold, true magnitude, section, development procedure | no productive target yet | disabled until approved G9 procedure phase |
@@ -322,15 +374,43 @@ one profile/action registry; menu rebuild, EN/ES localization and overflow must
 preserve discoverability and availability. These seven menus are presentation
 sections, not new workspace families or separate command authority.
 
+Round 3 makes that projection explicit in schema-v2. File and Edit are flattened
+with separators; View owns host view visibility, presentation/navigation and
+workspace switching; Construction owns object-producing actions; Options owns
+audited host/product preferences; Automation owns input/scripting/Laboratory and
+dynamic user tools; Help owns discovery and the single Classic diagnostic route.
+The semantic-curve presentation group generalizes the existing explicit-address
+point label to **Point on semantic curve** without changing its action ID or R6
+semantics. The ordinary graphical Point tool remains the inverse-resolution
+workflow.
+
 Persistent user tools reuse `automation.manage-user-tools`. Explicit installation,
 removal, pinning, pin order and pin grouping affect isolated GeoCeDG application
 preferences only; a group with several tools is rendered as a normal toolbar
-dropdown and does not mint stable product-action IDs. Activation uses the
+dropdown and does not mint stable product-action IDs. An optional PNG icon is
+also application preference: source bytes/name, SHA-256 and decoded dimensions
+are recorded; inputs are limited to 256 KiB, maximum edge 1024 and at most
+1024×1024 decoded pixels; the toolbar uses a deterministic aspect-preserving
+64×64 transparent-padded ARGB derivative. Changing, unpinning or removing a
+tool removes unreferenced application icon data. Neither icons nor layout enter
+`.cedg` or register a macro. An iconless pin uses a compact square initial while
+retaining the complete localized tool name in tooltip and accessibility
+metadata; long command labels therefore do not resize the toolbar. Activation uses the
 existing macro engine and then ordinary document-local definitions. The native
 document archive must embed the macro definition required by each `AlgoMacro`;
 reopen must never depend on the application library still being installed.
 Installing a package does not alter a blank document, and opening a document with
 macros does not install them into the application library.
+
+When the embedded definition and an installed package have the same normalized,
+versioned command-definition digest, reopen adopts only user-facing presentation
+ownership for the installed entry and suppresses a duplicate local-tool choice.
+The embedded macro remains the reconstruction/fallback authority. Normalization
+may ignore only the non-semantic `showInToolBar` presentation flag; command name,
+construction, inputs, outputs, coordinates, order and references remain part of
+the definition evidence. Missing installed packages preserve portable document
+reconstruction; mismatched or partial packages report a collision and fail
+closed.
 No Templatev7 tool or asset is automatically imported, bundled or promoted.
 See the [user-tool review](../../../docs/validation/g9u1_user_tools_review.md).
 
@@ -345,7 +425,24 @@ another Locus V2. The latter consumes one exact R4 solution token from a rich
 intersection result. R6 candidates and R4 tokens are not interchangeable.
 Neither action persists click proximity or a render/sample vertex.
 
-### 5.3 Command availability
+### 5.3 View and Options projection
+
+The View menu reuses host visibility state for Algebra, Graphics 2,
+Spreadsheet, CAS and the Properties view. It does not expose 3D in
+this candidate and does not imply spatial semantic authority. The Construction
+Protocol and the Graphics-view construction navigation bar remain distinct: the
+latter is toggled through its view-specific host seam, reports its real checked
+state, and creates no Construction or undo mutation.
+
+The Options menu contains one **Algebra display** radio group for Value,
+Description and Definition, plus host-owned **Sort by**, **Rounding**,
+**Labeling**, **Font size** and **Save Settings** controls. Menu rebuild and
+language refresh read the current host state. **Preferences…** opens the global
+settings surface without selecting a construction object; object-specific
+Properties remains an explicit-selection/context action. GeoCeDG owns no second
+copy of these settings.
+
+### 5.4 Command availability
 
 Workspace membership does not filter commands. The following are separate:
 
@@ -525,6 +622,15 @@ manifest with rights evidence. Embedded Templatev7 or upstream UI images are
 workflow evidence only and must not be copied into the product without the
 license/asset gate. Text-only fallback must keep every action usable, and icons
 require accessible names.
+
+GeoCeDG branding has two distinct tracked roles: the byte-exact promoted
+`helixTopBar.png` source supplies the frame/application role and deterministic
+64-pixel and Windows-package derivatives; the byte-exact promoted
+`helixSnapshot.png` source supplies the startup role and its deterministic
+542×720 splash derivative. The asset manifest records ingestion filenames,
+SHA-256 values, promoted paths, transformation parameters and redistribution
+status. Runtime and packaging consumers resolve these tracked resources; the
+ignored `artifacts/author-input/` ingestion area is never a build dependency.
 
 ## 9. Persistence and document layout
 

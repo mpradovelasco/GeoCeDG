@@ -18,6 +18,7 @@ import javax.swing.JPanel;
 
 import org.geocedg.common.main.feature.RuntimeFeatureService;
 import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
+import org.geocedg.desktop.resources.GeoCeDGBrandingResource;
 import org.geogebra.common.euclidian.EuclidianController;
 import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.io.layout.Perspective;
@@ -120,7 +121,11 @@ public final class AppGeoCeDG extends App3D {
 
 	@Override
 	protected Image getFrameIcon() {
-		return null;
+		return getInternalImage(getFrameIconResource());
+	}
+
+	static GeoCeDGBrandingResource getFrameIconResource() {
+		return GeoCeDGBrandingResource.APPLICATION_ICON;
 	}
 
 	@Override

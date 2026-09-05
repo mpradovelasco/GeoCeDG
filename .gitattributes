@@ -12,3 +12,7 @@ models/legacy/**/original/*.ggt binary
 geocedg/validation/spatial/g9a2/point-reference-values.json text eol=lf
 models/regression/g9a2-spatial-point-pilot/geogebra.xml text eol=lf
 models/regression/g9a2-spatial-point-pilot/g9a2-spatial-point-pilot.ggb binary
+
+# G9U1 Round-3 author branding sources and deterministic binary derivatives.
+source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/**/*.png binary
+source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/**/*.ico binary
