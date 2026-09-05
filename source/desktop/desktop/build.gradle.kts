@@ -85,6 +85,19 @@ fun resolveGeoCeDGRepositoryProvenance(): GeoCeDGRepositoryProvenance {
 }
 
 val geoCeDGRepositoryProvenance = resolveGeoCeDGRepositoryProvenance()
+val geoCeDGPackageProfile = rootProject.file("../../packaging/windows/package.yml")
+val geoCeDGApplicationVersion = run {
+    val matches = Regex("\\\"version\\\"\\s*:\\s*\\\"([0-9]+\\.[0-9]+\\.[0-9]+)\\\"")
+        .findAll(geoCeDGPackageProfile.readText(StandardCharsets.UTF_8))
+        .map { it.groupValues[1] }
+        .toList()
+    if (matches.size != 1) {
+        throw GradleException(
+            "packaging/windows/package.yml must declare exactly one semantic application version"
+        )
+    }
+    matches.single()
+}
 val generatedGeoCeDGProvenanceDirectory = layout.buildDirectory.dir(
     "generated/resources/geocedgProvenance"
 )
@@ -92,6 +105,8 @@ val generatedGeoCeDGProvenanceFile = generatedGeoCeDGProvenanceDirectory.map {
     it.file("org/geocedg/desktop/export/geocedg-build-provenance.properties")
 }
 val generateGeoCeDGBuildProvenance by tasks.registering {
+    inputs.file(geoCeDGPackageProfile)
+    inputs.property("applicationVersion", geoCeDGApplicationVersion)
     inputs.property("repositoryCommit", geoCeDGRepositoryProvenance.commit)
     inputs.property("repositoryState", geoCeDGRepositoryProvenance.state)
     inputs.property("resolutionSource", geoCeDGRepositoryProvenance.source)
@@ -100,7 +115,8 @@ val generateGeoCeDGBuildProvenance by tasks.registering {
         val output = generatedGeoCeDGProvenanceFile.get().asFile
         output.parentFile.mkdirs()
         output.writeText(
-            "schema.version=1\n" +
+            "schema.version=2\n" +
+                "application.version=$geoCeDGApplicationVersion\n" +
                 "repository.commit=${geoCeDGRepositoryProvenance.commit}\n" +
                 "repository.state=${geoCeDGRepositoryProvenance.state}\n" +
                 "resolution.source=${geoCeDGRepositoryProvenance.source}\n",

@@ -7,6 +7,7 @@ package org.geocedg.desktop;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -21,6 +22,7 @@ import java.util.Locale;
 import javax.swing.Action;
 import javax.swing.JPanel;
 
+import org.geogebra.common.GeoGebraConstants;
 import org.geogebra.common.awt.AwtFactory;
 import org.geogebra.common.main.settings.AlgebraStyle;
 import org.geogebra.common.util.debug.Log;
@@ -58,6 +60,40 @@ class G9U1ActionRegistryTest {
 			assertFalse(((String) registry.get(id).getValue(Action.NAME)).isBlank(), id);
 			assertNotNull(registry.get(id).getValue(Action.SHORT_DESCRIPTION), id);
 		}
+	}
+
+	@Test
+	void contextualHelpIsSpecificLocalizedAndUsesDistinctLongDescriptions() {
+		AppGeoCeDG product = app(true);
+		product.setLocale(Locale.ENGLISH);
+		GeoCeDGActionRegistry registry = new GeoCeDGActionRegistry(product);
+		for (GeoCeDGProfile.ActionDefinition definition : GeoCeDGProfile.getActions()) {
+			if (definition.mode() == null) {
+				String shortHelp = (String) registry.get(definition.id())
+						.getValue(Action.SHORT_DESCRIPTION);
+				String longHelp = (String) registry.get(definition.id())
+						.getValue(Action.LONG_DESCRIPTION);
+				assertNotEquals(shortHelp, longHelp, definition.id());
+				assertEquals(GeoCeDGProfile.getText(
+						definition.textKey() + ".long_help", "en"), longHelp,
+						definition.id());
+				assertFalse(shortHelp.contains(
+						"Use the current construction and its explicit selection."),
+						definition.id());
+				assertFalse(longHelp.toLowerCase(Locale.ROOT).matches(
+						".*\\b(todo|tbd|placeholder|lorem ipsum)\\b.*"), definition.id());
+			}
+		}
+	}
+
+	@Test
+	void aboutUsesCentralProductVersionAndRetainsOriginCredits() {
+		GeoCeDGActionRegistry registry = new GeoCeDGActionRegistry(app(true));
+		String about = registry.aboutText();
+		assertTrue(about.contains(GeoCeDGProductInfo.applicationTitle()));
+		assertTrue(about.contains(GeoGebraConstants.VERSION_STRING));
+		assertTrue(about.contains("Manuel Prado-Velasco, Universidad de Sevilla"));
+		assertTrue(about.contains("LICENSE"));
 	}
 
 	@Test

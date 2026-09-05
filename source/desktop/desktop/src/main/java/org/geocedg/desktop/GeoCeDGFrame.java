@@ -19,8 +19,8 @@ public final class GeoCeDGFrame extends GeoGebraFrame3D {
 
 	private static final long serialVersionUID = 1L;
 
-	/** Visible provisional title. */
-	public static final String APPLICATION_TITLE = "GeoCeDG";
+	/** Visible versioned product title. */
+	public static final String APPLICATION_TITLE = GeoCeDGProductInfo.applicationTitle();
 	/** Windows process identity. */
 	public static final String APPLICATION_USER_MODEL_ID = "org.geocedg.desktop";
 
@@ -37,6 +37,20 @@ public final class GeoCeDGFrame extends GeoGebraFrame3D {
 	@Override
 	public String getApplicationTitle() {
 		return APPLICATION_TITLE;
+	}
+
+	@Override
+	public void setTitle(String title) {
+		String effectiveTitle = title;
+		if (app != null) {
+			if (APPLICATION_TITLE.equals(title)) {
+				effectiveTitle = GeoCeDGProductInfo.windowTitle(null);
+			} else if (app.getCurrentFile() != null
+					&& app.getCurrentFile().getName().equals(title)) {
+				effectiveTitle = GeoCeDGProductInfo.windowTitle(title);
+			}
+		}
+		super.setTitle(effectiveTitle);
 	}
 
 	@Override

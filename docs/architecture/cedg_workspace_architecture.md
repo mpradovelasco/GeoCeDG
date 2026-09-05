@@ -609,8 +609,9 @@ passClaimedImplementation = false
 The approved post-R6 checkpoint `00982e7e148a634cd57ed928f322774df267d5e3`
 remains immutable. This successor consumes published G9S1-R1 without changing
 R6 Point semantics or adding an action/family. The current conditional author
-authorization is satisfied by the no-material-novelty audit. Implementation has
-not started at this planning freeze and is never self-approved. See the
+authorization is satisfied by the no-material-novelty audit. Implementation is
+now a review candidate pending author re-smoke/closeout and is never
+self-approved. See the
 [published R1 pair-consumer contract](../../geocedg/specs/ui/g9u1-construction-interaction.md#published-g9s1-r1-pair-consumer-contract)
 and the 20 additive `U1-PAIR` rows (138 total). The R4 periodic risk remains
 OPEN / TRACKED; an inconclusive native experiment without a real kernel or
@@ -621,7 +622,7 @@ disposition. No other workspace scope is expanded.
 
 This successor remains an implementation candidate pending author re-smoke; it
 does not rewrite the protected original candidate's executable evidence. The
-single live profile now projects the unchanged 110 stable actions into six
+round-1 live profile projected the unchanged 110 stable actions into six
 ordinary menus (File, Edit, Construction, View, Automation, Help) and a reduced
 34-action primary toolbar. Eleven professional families and eighteen clusters
 remain catalog taxonomy, not eleven mandatory permanent toolbar buttons. Menus,
@@ -651,3 +652,36 @@ historical-file repair or migration is introduced. See the
 [user-tool review](../validation/g9u1_user_tools_review.md),
 [quick guide](../user/geocedg_construction_quick_guide.md) and
 [author re-smoke checklist](../validation/g9u1_author_resmoke_checklist.md).
+
+## Author-review stabilization, round 2
+
+The second bounded candidate applies the author's presentation amendment while
+retaining the same 110 stable actions. The sole declarative profile now projects
+them into **File, Edit, View, Construction, Options, Automation, Help**. Options
+contains only profile-declared, audited preference/property actions; it is not a
+restored parallel upstream menu. Global menu projection rejects or removes
+duplicate placements, so one stable ID always resolves to the same registry
+action in menu, toolbar, context and help surfaces. Construction keeps
+Continuity locked OFF and offers only EN/ES; diagnostic Classic retains its
+upstream policy.
+
+Installed user-tool commands remain outside the stable catalog. Their app-only
+preference record may retain pin order and an optional presentation group;
+several tools in one group render as a dropdown. Populating the toolbar never
+registers the macro. Explicit selection activates the host Macro definition in
+the current document, and only invocation creates construction results.
+
+A native archive with both document macros and G9 spatial identities has two
+parsing steps but one restore purpose: after the macro preamble clears the
+construction, the following `geogebra.xml` remains a full native/undo restore,
+not a generic identity merge. The reader communicates that existing one-shot
+load purpose without relaxing `GENERIC_MERGE_FORBIDDEN`. Thus an invoked macro
+is document-owned and reconstructible without the installed preference package.
+
+The inspector is only a presenter over typed kernel data. For a semantic curve
+it shows published branch/component structure; for a semantic point it shows
+its durable address and whether a current address is admissible. It never parses
+the displayed definition or infers an address from coordinates. Product version
+and window/About identity derive from the packaging authority. No authorized
+GeoCeDG frame/splash asset exists in this cohort, so `AUTHOR_ASSET_MISSING` is
+reported rather than substituting an upstream trademark asset.

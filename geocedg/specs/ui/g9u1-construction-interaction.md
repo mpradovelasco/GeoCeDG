@@ -578,6 +578,25 @@ All failures are localized, typed and fail closed:
 Raw Java exceptions, opaque token strings as layout-sizing labels and silent
 fallback to screen/coordinate identity are forbidden public recovery paths.
 
+### 13.1 Author-review round-2 frontend amendment
+
+The round-2 review keeps schema-v2 as the sole action authority while changing
+its projection to File, Edit, View, Construction, Options, Automation and Help.
+Options exposes only declared, profile-governed host settings; Continuity remains
+OFF in Construction and product-language selection remains EN/ES. Duplicate
+action references do not produce duplicate menu entries. Action help must use a
+specific localized name, short input/effect description and procedural long
+description; the former generic selection suffix is forbidden.
+
+Persistent user-tool pin order/grouping is application preference state. A
+multi-tool group is one toolbar dropdown and does not extend the 110 stable
+action IDs. Invoking a tool creates ordinary document-owned macro results, and
+native save/reopen carries the document macro required to reconstruct them even
+if the installed library is later removed. Internal semantic-direction helpers
+remain real dependencies but are auxiliary and hidden from Euclidian rendering
+by default. Definition inspection exposes typed branch, component and semantic
+address data read-only; it never reconstructs them from coordinates or labels.
+
 ## 14. Validation
 
 The future G9U1 validation matrix must cover at least:
@@ -595,10 +614,13 @@ The future G9U1 validation matrix must cover at least:
 | `U1-Z` | real menu/toolbar/keyboard `ZoomWindow`, rectangle/cancel/zero-area behavior and zero Construction mutation; broader G12 navigation remains excluded |
 | `U1-B`/`U1-A` | visual identity, accessibility, two brand roles and deterministic assets |
 | `U1-P01`–`U1-P02` | overlay/selector work bound and bounded long-token inspector layout |
+| `U1-R2` | native macro archive reopen/undo; hidden typed helpers; ordinary numeric double-click/F2 editing; seven-menu/Options/help invariants; grouped user-tool pins; product-version authority |
 
-The complete prospective matrix contains 138 unique scenarios while retaining
-the 11 professional families, 18 operational clusters and 110 stable action
-definitions. Every family requires deterministic rerun where applicable,
+The current round-2 matrix contains 163 unique scenarios: 138 from the
+post-R1 implementation design, 15 retained author-review round-1 scenarios and
+10 round-2 stabilization scenarios. It retains the 11 professional families,
+18 operational clusters and 110 stable action definitions. Every family
+requires deterministic rerun where applicable,
 relevant G9U0/R1/R2/R3/R4/R5/G9S1/R6, G9A, G9X1, G5 and Classic controls,
 Checkstyle, Git diff
 checks and full `tools/agent/verify.ps1`. UI automation must exercise actual

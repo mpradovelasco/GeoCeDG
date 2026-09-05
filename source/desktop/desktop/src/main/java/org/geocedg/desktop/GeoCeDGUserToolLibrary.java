@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.HexFormat;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -61,6 +60,7 @@ import org.w3c.dom.NodeList;
 final class GeoCeDGUserToolLibrary {
 
 	static final int MAX_BYTES = 8 * 1024 * 1024;
+	private static final int MAX_PIN_ORDER = 4095;
 	private static final Pattern CALL = Pattern.compile("([\\p{L}_][\\p{L}\\p{N}_]*)\\s*[\\[(]");
 	private static final Set<Integer> SAFE_TABLES = Set.of(CommandsConstants.TABLE_GEOMETRY,
 			CommandsConstants.TABLE_ALGEBRA, CommandsConstants.TABLE_TEXT,
@@ -84,7 +84,7 @@ final class GeoCeDGUserToolLibrary {
 		private final byte[] bytes;
 		private final String xml;
 		private final List<String> commands;
-		private final Set<String> pinned = new LinkedHashSet<>();
+		private final Map<String, PinLayout> pinned = new LinkedHashMap<>();
 
 		Package(String name, byte[] bytes, String xml, List<String> commands) {
 			this.id = digest(bytes);
@@ -107,12 +107,72 @@ final class GeoCeDGUserToolLibrary {
 		}
 
 		boolean isPinned(String command) {
-			return pinned.contains(command);
+			return pinned.containsKey(command);
+		}
+
+		String pinGroup(String command) {
+			PinLayout layout = pinned.get(command);
+			return layout == null ? "" : layout.group;
+		}
+
+		int pinOrder(String command) {
+			PinLayout layout = pinned.get(command);
+			return layout == null ? Integer.MAX_VALUE : layout.order;
 		}
 
 		@Override
 		public String toString() {
 			return name + " \u2014 " + String.join(", ", commands);
+		}
+	}
+
+	/** Application-only placement of one installed command in the product toolbar. */
+	static final class PinnedCommand {
+		private final Package tool;
+		private final String command;
+		private final PinLayout layout;
+
+		PinnedCommand(Package tool, String command, PinLayout layout) {
+			this.tool = tool;
+			this.command = command;
+			this.layout = layout;
+		}
+
+		Package tool() {
+			return tool;
+		}
+
+		String command() {
+			return command;
+		}
+
+		String group() {
+			return layout.group;
+		}
+
+		int order() {
+			return layout.order;
+		}
+	}
+
+	private static final class PinLayout {
+		private final String group;
+		private final int order;
+
+		PinLayout(String group, int order) {
+			this.group = group;
+			this.order = order;
+		}
+
+		@Override
+		public boolean equals(Object other) {
+			return other instanceof PinLayout && order == ((PinLayout) other).order
+					&& group.equals(((PinLayout) other).group);
+		}
+
+		@Override
+		public int hashCode() {
+			return 31 * group.hashCode() + order;
 		}
 	}
 
@@ -127,6 +187,32 @@ final class GeoCeDGUserToolLibrary {
 
 	List<Package> packages() {
 		return List.copyOf(packages.values());
+	}
+
+	Package packageById(String id) {
+		return packages.get(id);
+	}
+
+	List<PinnedCommand> pinnedCommands() {
+		List<PinnedCommand> result = new ArrayList<>();
+		for (Package tool : packages.values()) {
+			for (String command : tool.commands) {
+				PinLayout layout = tool.pinned.get(command);
+				if (layout != null) {
+					result.add(new PinnedCommand(tool, command, layout));
+				}
+			}
+		}
+		result.sort((first, second) -> {
+			int byOrder = Integer.compare(first.order(), second.order());
+			if (byOrder != 0) {
+				return byOrder;
+			}
+			int byPackage = first.tool().id().compareTo(second.tool().id());
+			return byPackage != 0 ? byPackage
+					: first.command().compareToIgnoreCase(second.command());
+		});
+		return List.copyOf(result);
 	}
 
 	void addListener(Runnable listener) {
@@ -180,22 +266,188 @@ final class GeoCeDGUserToolLibrary {
 		if (!tool.commands.contains(command)) {
 			throw new IOException("UserTools.Unknown");
 		}
-		boolean previous = tool.pinned.contains(command);
+		PinLayout previous = tool.pinned.get(command);
 		if (pinned) {
-			tool.pinned.add(command);
+			if (previous == null) {
+				tool.pinned.put(command, new PinLayout("", nextPinOrder()));
+			}
 		} else {
 			tool.pinned.remove(command);
 		}
 		try {
 			persist(packages);
 		} catch (IOException exception) {
-			if (previous) {
-				tool.pinned.add(command);
+			if (previous != null) {
+				tool.pinned.put(command, previous);
 			} else {
 				tool.pinned.remove(command);
 			}
 			throw exception;
 		}
+	}
+
+	void setPinGroup(String id, String command, String group) throws IOException {
+		editStore(() -> {
+			Package tool = requirePinned(id, command);
+			String validated = validateGroup(group);
+			Map<Package, Map<String, PinLayout>> previous = snapshotPinLayouts();
+			PinLayout layout = tool.pinned.get(command);
+			tool.pinned.put(command, new PinLayout(validated, layout.order));
+			normalizeGroupBlocks();
+			try {
+				persist(packages);
+			} catch (IOException exception) {
+				restorePinLayouts(previous);
+				throw exception;
+			}
+			return null;
+		});
+	}
+
+	void movePinned(String id, String command, int delta) throws IOException {
+		if (delta != -1 && delta != 1) {
+			throw new IllegalArgumentException("delta");
+		}
+		editStore(() -> {
+			Package tool = requirePinned(id, command);
+			List<PinnedCommand> ordered = new ArrayList<>(pinnedCommands());
+			int current = -1;
+			for (int i = 0; i < ordered.size(); i++) {
+				PinnedCommand pin = ordered.get(i);
+				if (pin.tool() == tool && pin.command().equals(command)) {
+					current = i;
+					break;
+				}
+			}
+			int target = current + delta;
+			if (current < 0 || target < 0 || target >= ordered.size()) {
+				return null;
+			}
+			Map<Package, Map<String, PinLayout>> previous = snapshotPinLayouts();
+			PinnedCommand own = ordered.get(current);
+			PinnedCommand other = ordered.get(target);
+			if (!own.group().isEmpty() && own.group().equals(other.group())) {
+				Collections.swap(ordered, current, target);
+			} else {
+				List<List<PinnedCommand>> units = visualUnits(ordered);
+				int unit = unitContaining(units, tool, command);
+				int targetUnit = unit + delta;
+				if (unit < 0 || targetUnit < 0 || targetUnit >= units.size()) {
+					return null;
+				}
+				Collections.swap(units, unit, targetUnit);
+				ordered = units.stream().flatMap(List::stream).toList();
+			}
+			applyPinOrder(ordered);
+			try {
+				persist(packages);
+			} catch (IOException exception) {
+				restorePinLayouts(previous);
+				throw exception;
+			}
+			return null;
+		});
+	}
+
+	private void normalizeGroupBlocks() {
+		List<PinnedCommand> ordered = pinnedCommands();
+		List<PinnedCommand> normalized = new ArrayList<>();
+		Set<String> emitted = new HashSet<>();
+		for (PinnedCommand pin : ordered) {
+			if (pin.group().isEmpty()) {
+				normalized.add(pin);
+			} else if (emitted.add(pin.group())) {
+				for (PinnedCommand candidate : ordered) {
+					if (pin.group().equals(candidate.group())) {
+						normalized.add(candidate);
+					}
+				}
+			}
+		}
+		applyPinOrder(normalized);
+	}
+
+	private static List<List<PinnedCommand>> visualUnits(List<PinnedCommand> ordered) {
+		List<List<PinnedCommand>> units = new ArrayList<>();
+		for (PinnedCommand pin : ordered) {
+			if (pin.group().isEmpty() || units.isEmpty()
+					|| !pin.group().equals(units.get(units.size() - 1).get(0).group())) {
+				units.add(new ArrayList<>());
+			}
+			units.get(units.size() - 1).add(pin);
+		}
+		return units;
+	}
+
+	private static int unitContaining(List<List<PinnedCommand>> units, Package tool,
+			String command) {
+		for (int i = 0; i < units.size(); i++) {
+			for (PinnedCommand pin : units.get(i)) {
+				if (pin.tool() == tool && pin.command().equals(command)) {
+					return i;
+				}
+			}
+		}
+		return -1;
+	}
+
+	private static void applyPinOrder(List<PinnedCommand> ordered) {
+		for (int i = 0; i < ordered.size(); i++) {
+			PinnedCommand pin = ordered.get(i);
+			pin.tool().pinned.put(pin.command(), new PinLayout(pin.group(), i));
+		}
+	}
+
+	private Map<Package, Map<String, PinLayout>> snapshotPinLayouts() {
+		Map<Package, Map<String, PinLayout>> snapshot = new IdentityHashMap<>();
+		for (Package tool : packages.values()) {
+			snapshot.put(tool, new LinkedHashMap<>(tool.pinned));
+		}
+		return snapshot;
+	}
+
+	private static void restorePinLayouts(
+			Map<Package, Map<String, PinLayout>> snapshot) {
+		for (Map.Entry<Package, Map<String, PinLayout>> entry : snapshot.entrySet()) {
+			entry.getKey().pinned.clear();
+			entry.getKey().pinned.putAll(entry.getValue());
+		}
+	}
+
+	private Package requirePinned(String id, String command) throws IOException {
+		Package tool = requirePackage(id);
+		if (!tool.commands.contains(command) || !tool.pinned.containsKey(command)) {
+			throw new IOException("UserTools.Unknown");
+		}
+		return tool;
+	}
+
+	private int nextPinOrder() throws IOException {
+		int maximum = -1;
+		Set<Integer> occupied = new HashSet<>();
+		for (Package tool : packages.values()) {
+			for (PinLayout layout : tool.pinned.values()) {
+				maximum = Math.max(maximum, layout.order);
+				occupied.add(layout.order);
+			}
+		}
+		if (maximum < MAX_PIN_ORDER) {
+			return maximum + 1;
+		}
+		for (int candidate = MAX_PIN_ORDER - 1; candidate >= 0; candidate--) {
+			if (!occupied.contains(candidate)) {
+				return candidate;
+			}
+		}
+		throw new IOException("UserTools.Limit");
+	}
+
+	private static String validateGroup(String group) throws IOException {
+		String candidate = group == null ? "" : group.strip();
+		if (candidate.length() > 48 || !candidate.matches("[\\p{L}\\p{N} ._-]*")) {
+			throw new IOException("UserTools.InvalidLayout");
+		}
+		return candidate;
 	}
 
 	private <T> T editStore(StoreAction<T> action) throws IOException {
@@ -544,7 +796,7 @@ final class GeoCeDGUserToolLibrary {
 			Package existing = packages.get(fresh.id);
 			if (existing != null && existing.name.equals(fresh.name)) {
 				existing.pinned.clear();
-				existing.pinned.addAll(fresh.pinned);
+				existing.pinned.putAll(fresh.pinned);
 				next.put(existing.id, existing);
 			} else {
 				next.put(fresh.id, fresh);
@@ -564,7 +816,8 @@ final class GeoCeDGUserToolLibrary {
 		}
 		try {
 			JSONObject root = new JSONObject(Files.readString(storage));
-			if (root.length() != 2 || root.getInt("version") != 1) {
+			int version = root.getInt("version");
+			if (root.length() != 2 || (version != 1 && version != 2)) {
 				throw new IOException("UserTools.InvalidArchive");
 			}
 			JSONArray stored = root.getJSONArray("packages");
@@ -572,6 +825,8 @@ final class GeoCeDGUserToolLibrary {
 				throw new IOException("UserTools.Limit");
 			}
 			Set<String> names = new HashSet<>();
+			Set<Integer> pinOrders = new HashSet<>();
+			int migratedOrder = 0;
 			for (int i = 0; i < stored.length(); i++) {
 				JSONObject entry = stored.getJSONObject(i);
 				byte[] bytes = Base64.getDecoder().decode(entry.getString("ggt"));
@@ -587,10 +842,27 @@ final class GeoCeDGUserToolLibrary {
 				}
 				JSONArray pins = entry.getJSONArray("pinned");
 				for (int p = 0; p < pins.length(); p++) {
-					String pin = pins.getString(p);
-					if (!tool.commands.contains(pin) || !tool.pinned.add(pin)) {
+					String pin;
+					String group;
+					int order;
+					if (version == 1) {
+						pin = pins.getString(p);
+						group = "";
+						order = migratedOrder++;
+					} else {
+						JSONObject layout = pins.getJSONObject(p);
+						if (layout.length() != 3) {
+							throw new IOException("UserTools.InvalidArchive");
+						}
+						pin = layout.getString("command");
+						group = validateGroup(layout.getString("group"));
+						order = layout.getInt("order");
+					}
+					if (!tool.commands.contains(pin) || tool.pinned.containsKey(pin)
+							|| order < 0 || order > MAX_PIN_ORDER || !pinOrders.add(order)) {
 						throw new IOException("UserTools.InvalidArchive");
 					}
+					tool.pinned.put(pin, new PinLayout(group, order));
 				}
 				validated.put(tool.id, tool);
 			}
@@ -606,14 +878,16 @@ final class GeoCeDGUserToolLibrary {
 			JSONArray entries = new JSONArray();
 			for (Package tool : next.values()) {
 				JSONArray pins = new JSONArray();
-				for (String name : tool.pinned) {
-					pins.put(name);
+				for (Map.Entry<String, PinLayout> pin : tool.pinned.entrySet()) {
+					pins.put(new JSONObject().put("command", pin.getKey())
+							.put("group", pin.getValue().group)
+							.put("order", pin.getValue().order));
 				}
 				entries.put(new JSONObject().put("name", tool.name).put("sha256", tool.id)
 						.put("ggt", Base64.getEncoder().encodeToString(tool.bytes))
 						.put("pinned", pins));
 			}
-			json = new JSONObject().put("version", 1).put("packages", entries).toString();
+			json = new JSONObject().put("version", 2).put("packages", entries).toString();
 		} catch (JSONException exception) {
 			throw new IOException("UserTools.InvalidArchive", exception);
 		}

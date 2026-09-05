@@ -9,7 +9,94 @@
   `passClaimedImplementation = false`
 - `manualAuthorSmoke = PENDING`
 
-## Author-review stabilization successor — current source freeze
+## Author-review stabilization round 2 — current candidate
+
+The current successor starts from published round-one candidate
+`fa6339204b87385af79331e434778ca16cd8dcf0` on
+`codex/g9u1-author-review-stabilization-1`. That commit, its 122-path / 70-source
+inventory, 153 scenarios, 18 classes and 183 focused methods remain immutable
+historical authority. The six pinned round-one roadmap/report/evidence/hash/
+scenario/verifier blobs are recorded in the
+[evidence JSON](../../geocedg/validation/g9u1/g9u1-construction-workspace-evidence.json).
+No round-one PASS, FAIL or intermediate execution is rewritten as round-two
+evidence.
+
+The complete
+[author re-smoke checklist](g9u1_author_resmoke_checklist.md) is author input,
+not an agent test result. Its entry raw and canonical-LF SHA-256 are both
+`b87a74b6a1e421e6909c6949a442bd3e935920b57a60f9a571a7ec34f6b89f02`;
+its single-path provenance commit is
+`01c0bec77a30b43b7ebcf75acacdd098840fa2fe`, whose parent is the published
+round-one candidate. The agent does not populate or relabel its author PASS/FAIL fields. The
+[round-two disposition record](g9u1_author_review_round2.md) owns the
+reproduction/layer/scope/test matrix and preserves the observed failures.
+
+The bounded current candidate covers:
+
+- native `.cedg` reconstruction of invoked document-owned macro definitions,
+  including undo/redo, save-after-undo and two reopens, while the installed user
+  tool remains an application preference rather than document authority;
+- existing auxiliary/drawable presentation seams for typed semantic point
+  helpers; ordinary `GeoNumeric` double-click/F2 editing without broadening
+  compatible redefine; the existing rich-parent-before-scalar metric DAG order
+  after a reconstructed update set; and typed branch/component/address
+  inspection;
+- the author-approved seven-menu order
+  `File | Edit | View | Construction | Options | Automation | Help`, with one
+  110-action authority, locked Construction continuity, EN/ES policy, cleaned
+  File/Help routes and action-specific contextual help;
+- ordered/grouped user-tool pins as application preference state, central
+  GeoCeDG 0.9 product metadata/About consumption, and explicit
+  `AUTHOR_ASSET_MISSING` where no unambiguous author startup image exists.
+
+The previous scenario `U1-RV06` is retained verbatim as the historical
+six-menu assertion and marked
+`SUPERSEDED_BY_AUTHOR_ROUND2_AMENDMENT`; it is not silently edited into a
+seven-menu test. Ten new scenarios `U1-R2-01`–`U1-R2-10` own the round-two
+contract. The resulting perimeter is **163 scenarios**, **204 focused methods
+in 21 classes** (190 Desktop, 14 shared), and the workspace remains **11
+families / 18 clusters / 110 stable actions**.
+
+The frozen cumulative candidate inventory is **131 paths / 76 source paths**
+relative to product base `f8a21a087234b18fc13741a0ac2baf80608e9022`.
+The bounded round-two delta is **40 paths / 21 source paths** relative to
+`fa633920...`. Its two explicitly allowlisted shared-main paths are the native
+macro-host restore seam in `MyXMLioJre.java` and the existing metric-adapter DAG
+ordering declaration in `AlgoLocusMetricScalarAdapter.java`. The latter changes
+neither G7 value/endpoint semantics nor the approved rich/scalar architecture;
+it ensures the existing rich parent updates before its scalar child after
+native update-set reconstruction. Exact cumulative and delta inventories are
+machine checked by the verifier.
+
+Current status remains **IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**.
+Fresh round-two PHASE, COMPOSED and clean FULL results are required for the
+final executable cohort. Until those runs and the author's re-smoke complete,
+`selfApproved = false`, `authorApprovedImplementation = false`,
+`passClaimedImplementation = false`, and `manualAuthorSmoke = PENDING`.
+
+### Round-two COMPOSED baseline-whitespace chronology
+
+`artifacts/g9u1-author-review-round2/final-composed` executed **1,480 tests**
+and produced green phase canonical summaries, but its top-level result remains
+**FAILED**. The final inherited baseline whitespace check exited 2 because it
+treated the 28 intentional CommonMark two-space hard breaks in the author-input
+checklist as trailing whitespace. The run is retained as failed historical
+evidence; neither its green child results nor its final failure is relabeled as
+round-two acceptance or author smoke.
+
+The author-input bytes remain frozen at their one-path provenance commit
+`01c0bec77a30b43b7ebcf75acacdd098840fa2fe`, canonical-LF SHA-256
+`b87a74b6a1e421e6909c6949a442bd3e935920b57a60f9a571a7ec34f6b89f02` and Git
+blob `b4a2cbb5cca0176be43e1d0c5dad4705683a31ea`. The live review representation
+uses a reversible mechanical substitution of those 28 hard breaks by explicit
+`<br>` markers, with canonical-LF SHA-256
+`ba036c052dfc8e03837c1bae2672623b3e0a813b529f1a87c4ecf6647f0ec26b` and Git
+blob `b253da52983049938dfdb74571b89bc76e112ee4`. No author assertion, result or
+status changed. The canonical source hashes are frozen in the 129-entry
+sidecar; execution receipts remain external run evidence reported at handoff.
+G9U1 is still **IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**.
+
+## Author-review stabilization round 1 — published source freeze
 
 This section supersedes only the live review status and execution perimeter.
 The narrative below is preserved as historical evidence of checkpoint

@@ -31,6 +31,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.geocedg.common.main.feature.RuntimeFeatureService;
 import org.geocedg.desktop.GeoCeDGProfile.ActionDefinition;
 import org.geocedg.desktop.resources.GeoCeDGToolImageResource;
+import org.geogebra.common.GeoGebraConstants;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.main.App;
 import org.geogebra.common.main.settings.AlgebraStyle;
@@ -128,11 +129,15 @@ public final class GeoCeDGActionRegistry {
 			String name = definition.mode() == null ? text(definition.textKey() + ".name")
 					: app.getToolName(definition.mode());
 			String reason = unavailableReason(definition);
-			String help = definition.mode() == null ? text(definition.textKey() + ".short_help")
+			String shortHelp = definition.mode() == null
+					? text(definition.textKey() + ".short_help")
 					: app.getToolHelp(definition.mode());
+			String longHelp = definition.mode() == null
+					? text(definition.textKey() + ".long_help") : shortHelp;
 			action.putValue(Action.NAME, name);
-			action.putValue(Action.SHORT_DESCRIPTION, reason == null ? help : reason);
-			action.putValue(Action.LONG_DESCRIPTION, help);
+			action.putValue(Action.SHORT_DESCRIPTION,
+					reason == null ? shortHelp : reason);
+			action.putValue(Action.LONG_DESCRIPTION, longHelp);
 			action.setEnabled(reason == null);
 			action.putValue(Action.SELECTED_KEY, checked(definition.target()));
 		}
@@ -308,7 +313,7 @@ public final class GeoCeDGActionRegistry {
 			message(text("Workspace.Shortcuts"));
 			break;
 		case "geocedg.help.about":
-			message(text("Workspace.About"));
+			message(aboutText());
 			break;
 		case "geocedg.classic":
 			openDiagnostic(false);
@@ -495,6 +500,15 @@ public final class GeoCeDGActionRegistry {
 		return GeoCeDGProfile.getText(key, app.getLocale().getLanguage());
 	}
 
+	String aboutText() {
+		return GeoCeDGProductInfo.applicationTitle() + "\n\n"
+				+ text("Workspace.About") + "\n\n"
+				+ text("About.UpstreamBaseline") + ": "
+				+ GeoGebraConstants.VERSION_STRING + "\n"
+				+ text("About.Author") + "\n\n"
+				+ text("About.Licenses");
+	}
+
 	private void message(String text) {
 		JTextArea area = new JTextArea(text, 8, 54);
 		area.setEditable(false);
@@ -502,6 +516,6 @@ public final class GeoCeDGActionRegistry {
 		area.setWrapStyleWord(true);
 		area.setFont(app.getPlainFont());
 		JOptionPane.showMessageDialog(app.getMainComponent(), new JScrollPane(area),
-				"GeoCeDG", JOptionPane.INFORMATION_MESSAGE);
+				GeoCeDGProductInfo.applicationTitle(), JOptionPane.INFORMATION_MESSAGE);
 	}
 }

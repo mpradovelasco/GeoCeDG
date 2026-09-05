@@ -263,7 +263,7 @@ control using the actual public branch key `generator.main`. The earlier
 | canonical primitive projections (G9B) | [normative spatial/projection contract](../../geocedg/specs/spatial/g9-spatial-projection-semantics.md) | [ADR 0010 — Accepted](../adr/0010-role-gated-spatial-authority-and-durable-identity.md); [ADR 0011 — Accepted](../adr/0011-g9-spatial-persistence-and-phase-gates.md) | [primitive sufficiency architecture](../architecture/g9_projection_sufficiency_and_primitives.md) | [developer guide](../developer/geocedg_developer_guide.md); [mathematical reference](../user/geocedg_mathematical_reference.md) | [G9B — unexecuted/not authorized](../../.github/prompts/tasks/g9b-canonical-primitive-projections.prompt.md) | [G9P closeout verifier](../../tools/agent/verify-g9p-design.ps1); productive G9B verifier absent | [spatial validation plan](g9_spatial_validation_and_benchmark_plan.md); family stages and guarantees are normative design/not implemented |
 | composed spatial objects (G9C) | [normative spatial/projection contract](../../geocedg/specs/spatial/g9-spatial-projection-semantics.md) | [S11 accepted boundary](g9p_author_decisions.md); [ADR 0010 base authority — Accepted](../adr/0010-role-gated-spatial-authority-and-durable-identity.md) | [semantic model](../architecture/g9_spatial_semantic_model.md); [primitive prerequisites](../architecture/g9_projection_sufficiency_and_primitives.md) | [developer guide](../developer/geocedg_developer_guide.md); [mathematical reference](../user/geocedg_mathematical_reference.md) | [G9C — unexecuted/not authorized](../../.github/prompts/tasks/g9c-composed-spatial-objects.prompt.md) | [G9P closeout verifier](../../tools/agent/verify-g9p-design.ps1); productive G9C verifier absent | [spatial validation plan](g9_spatial_validation_and_benchmark_plan.md); boundary is normative design/not implemented |
 | G9 global closeout | [integrated approved plan](../architecture/g9p_integrated_plan.md) | [R4 closeout decision](g9p_author_decisions.md) | no new semantic architecture; integrates approved A/B/C/U/X evidence | [developer guide](../developer/geocedg_developer_guide.md); [agent prompt guide](../developer/geocedg_agent_prompt_guide.md) | no implementation prompt: closeout is an author/verifier action | composed [verification authority](../../tools/agent/verify.ps1) plus each approved focused gate | no current G9 global closeout; G9P closeout is distinct and cannot authorize or add G9 implementation semantics |
-| G9 dependency topology and recommended order | [normative documentation-maintenance contract](../../geocedg/specs/operations/documentation-maintenance.md); [integrated plan with post-closeout R2 addendum](../architecture/g9p_integrated_plan.md) | [R1–R4 decisions](g9p_author_decisions.md); [ADR 0015 — Accepted](../adr/0015-deterministic-source-knowledge-bundle-ownership.md); [ADR 0016 — Accepted](../adr/0016-native-geocedg-document-identity.md); [ADR 0019 — Accepted](../adr/0019-semantic-locus-point-interaction-support.md) | [R2 insertion](../architecture/g9u0_r2_product_refinement_design.md), [R3 frontend refinement](../architecture/g9u0_r3_public_locus_ui_hardening.md), [R4 correction](../architecture/g9u0_r4_intersection_admissibility_continuation.md), [R5 approved implementation](../architecture/g9u0_r5_locus_v2_similarity_transformations.md), [G9S1 approved implementation](../architecture/g9s1_semantic_spline_2d_capability.md) and [R6 approved implementation](../architecture/g9u0_r6_semantic_locus_point_interaction_support.md) | [roadmap](../roadmap/geocedg_roadmap.md) and user guide | G9O1/G9A/G9U0/R1/G9X1/R2/R3/R4/R5/G9S1/R6 are closed; G9U1 awaits post-R6 design reconciliation and separate authorization, G9B/G9C remain unauthorized and G9U2 blocked | historical verifiers preserve frozen evidence; the R6 focused authority is inserted after G9S1 and before future G9U1 without rewriting historical gates | Required product schedule is G9S1 -> R6 -> G9U1; R6 PASS satisfies the kernel prerequisite, while G9U1 still requires reconciled design approval and separate implementation authorization; BOOK-P1 remains an independent editorial checkpoint and U1 never becomes a semantic prerequisite for independent G9B/G9C |
+| G9 dependency topology and recommended order | [normative documentation-maintenance contract](../../geocedg/specs/operations/documentation-maintenance.md); [integrated plan with post-closeout R2 addendum](../architecture/g9p_integrated_plan.md) | [R1–R4 decisions](g9p_author_decisions.md); [ADR 0015 — Accepted](../adr/0015-deterministic-source-knowledge-bundle-ownership.md); [ADR 0016 — Accepted](../adr/0016-native-geocedg-document-identity.md); [ADR 0019 — Accepted](../adr/0019-semantic-locus-point-interaction-support.md) | [R2 insertion](../architecture/g9u0_r2_product_refinement_design.md), [R3 frontend refinement](../architecture/g9u0_r3_public_locus_ui_hardening.md), [R4 correction](../architecture/g9u0_r4_intersection_admissibility_continuation.md), [R5 approved implementation](../architecture/g9u0_r5_locus_v2_similarity_transformations.md), [G9S1 approved implementation](../architecture/g9s1_semantic_spline_2d_capability.md), [R6 approved implementation](../architecture/g9u0_r6_semantic_locus_point_interaction_support.md) and published G9S1-R1 authority | [roadmap](../roadmap/geocedg_roadmap.md) and user guide | G9O1/G9A/G9U0/R1/G9X1/R2/R3/R4/R5/G9S1/R6/G9S1-R1 are closed; G9U1 design is author-approved and its implementation remains a candidate pending author re-smoke/closeout; G9B/G9C remain unauthorized and G9U2 blocked | historical verifiers preserve frozen evidence; the current G9U1 consumer verifier composes R6 Point interaction and G9S1-R1 pair-materialization authority without rewriting historical gates | Required product schedule reached G9S1 -> R6 -> G9S1-R1 -> G9U1; the kernel prerequisites and implementation authorization are satisfied, while implementation PASS still requires author re-smoke and closeout; BOOK-P1 remains an independent editorial checkpoint and U1 never becomes a semantic prerequisite for independent G9B/G9C |
 
 ## Sustainable checks
 
@@ -284,7 +284,8 @@ fallback. Operand symmetry means equivalent canonical slots, not equal opaque
 tokens across independently owned rich results. Same-germ ambiguity,
 tangent/multiple-contact, overlap, monodromy and uncertified roots remain
 rich-only. Current conditional implementation authorization is satisfied;
-implementation has not started at planning freeze and is not author-approved.
+implementation has started and remains a candidate pending author re-smoke/
+closeout, without author implementation approval.
 The R4 native-quarantine risk remains OPEN / TRACKED and nonblocking for this
 candidate unless its experiment demonstrates a real kernel/persistence defect.
 
@@ -310,3 +311,48 @@ acceptance evidence and later input changes remain the parent verification
 report's responsibility. These counts are diagnostic history, not PHASE/FULL or
 manual-author PASS. `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` remains
 OPEN / TRACKED independently of the list-dependency/save correction.
+
+## Current G9U1 author-review stabilization, round 2
+
+Published round-one candidate
+`fa6339204b87385af79331e434778ca16cd8dcf0` remains immutable. The complete
+[author re-smoke checklist](g9u1_author_resmoke_checklist.md) is author input,
+not agent-executed evidence; its exact one-path provenance commit is
+`01c0bec77a30b43b7ebcf75acacdd098840fa2fe`. The agent-owned
+[round-two disposition](g9u1_author_review_round2.md) records reproduction,
+ownership and scope without overwriting its PASS/FAIL chronology. The
+[implementation-candidate report](g9u1_construction_workspace_implementation_candidate_report.md),
+[scenario authority](../../geocedg/validation/g9u1/g9u1-construction-workspace-scenarios.json)
+and [machine evidence](../../geocedg/validation/g9u1/g9u1-construction-workspace-evidence.json)
+bind the exact successor.
+
+The round-two amendment keeps 11 families, 18 clusters and 110 stable actions,
+while projecting them through seven normal menus. Historical six-menu scenario
+`U1-RV06` remains explicit as superseded; `U1-R2-01`–`U1-R2-10` cover native
+macro invocation persistence, fail-closed merge, semantic helper presentation,
+ordinary numeric Algebra gestures, menu/options/help authority, ordered/grouped
+user tools, central product version/About, typed semantic-address inspection and
+existing rich-parent-before-scalar DAG ordering after native reconstruction.
+The current perimeter is 163 scenarios and 204 focused methods in 21 classes.
+No technical result is relabeled as author smoke and no PASS tag exists. Final
+technical run results remain external receipts reported at handoff; author
+re-smoke remains pending.
+
+The first round-two `final-composed` root executed 1,480 tests and produced green
+phase canonical summaries, then remained **FAILED** when the inherited baseline
+whitespace gate interpreted the checklist's 28 intentional CommonMark two-space
+hard breaks as trailing whitespace. That root remains historical failed evidence
+under `artifacts/g9u1-author-review-round2/final-composed`; its successful child
+results are not promoted into acceptance evidence.
+
+The original author input is unchanged at provenance commit
+`01c0bec77a30b43b7ebcf75acacdd098840fa2fe`, canonical-LF SHA-256
+`b87a74b6a1e421e6909c6949a442bd3e935920b57a60f9a571a7ec34f6b89f02`, Git blob
+`b4a2cbb5cca0176be43e1d0c5dad4705683a31ea`. Its live presentation now uses the
+reversible mechanical `<br>` spelling for exactly those 28 hard breaks,
+canonical-LF SHA-256
+`ba036c052dfc8e03837c1bae2672623b3e0a813b529f1a87c4ecf6647f0ec26b`, Git blob
+`b253da52983049938dfdb74571b89bc76e112ee4`. No author statement or status is
+changed. The canonical source hashes are frozen in the 129-entry sidecar;
+execution receipts remain external run evidence reported at handoff. G9U1
+continues as an implementation candidate pending author review, not PASS.

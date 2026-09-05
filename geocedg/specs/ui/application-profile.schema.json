@@ -208,6 +208,9 @@
           },
           "cluster_ids": {
             "$ref": "#/$defs/idArray"
+          },
+          "action_ids": {
+            "$ref": "#/$defs/idArray"
           }
         }
       }

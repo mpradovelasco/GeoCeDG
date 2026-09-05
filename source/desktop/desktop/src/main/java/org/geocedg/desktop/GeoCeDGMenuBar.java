@@ -8,6 +8,7 @@ package org.geocedg.desktop;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.swing.Action;
@@ -55,6 +56,15 @@ final class GeoCeDGMenuBar extends GeoGebraMenuBar {
 		JSONObject catalog = GeoCeDGProfile.getCatalog();
 		try {
 			JSONArray sections = catalog.getJSONArray("menu_sections");
+			Set<String> directMenuActions = new LinkedHashSet<>();
+			for (int i = 0; i < sections.length(); i++) {
+				JSONObject section = sections.getJSONObject(i);
+				JSONArray actionIds = section.optJSONArray("action_ids");
+				if (actionIds != null) {
+					directMenuActions.addAll(GeoCeDGProfile.strings(actionIds));
+				}
+			}
+			Set<String> projectedActions = new LinkedHashSet<>();
 			for (int i = 0; i < sections.length(); i++) {
 				JSONObject section = sections.getJSONObject(i);
 				JMenu menu = new JMenu(registry.text(section.getString("name_key")));
@@ -79,12 +89,27 @@ final class GeoCeDGMenuBar extends GeoGebraMenuBar {
 							// The dynamic User Tools submenu owns this same registry route.
 							continue;
 						}
+						if (directMenuActions.contains(actionId)
+								|| !projectedActions.add(actionId)) {
+							continue;
+						}
 						JMenuItem item = createItem(registry.get(actionId), radios);
 						group.add(item);
 					}
 					if (group.getItemCount() > 0) {
 						menu.add(group);
 					}
+				}
+				JSONArray declaredActions = section.optJSONArray("action_ids");
+				List<String> actionIds = declaredActions == null ? List.of()
+						: GeoCeDGProfile.strings(declaredActions);
+				ButtonGroup directRadios = new ButtonGroup();
+				for (String actionId : actionIds) {
+					if (!projectedActions.add(actionId)) {
+						throw new IllegalStateException(
+								"Duplicate menu action projection " + actionId);
+					}
+					menu.add(createItem(registry.get(actionId), directRadios));
 				}
 				if ("view".equals(section.getString("id"))) {
 					menu.addSeparator();

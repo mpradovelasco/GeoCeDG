@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Locale;
 
 import org.geogebra.common.awt.AwtFactory;
 import org.geogebra.common.euclidian.EuclidianConstants;
@@ -150,6 +151,21 @@ class G9U1ProfileCompilerTest {
 	}
 
 	@Test
+	void unknownAndDuplicateDirectMenuActionsFailClosed() throws Exception {
+		JSONObject unknown = GeoCeDGProfile.getCatalog();
+		unknown.getJSONArray("menu_sections").getJSONObject(4)
+				.getJSONArray("action_ids").put("not.an.action");
+		assertThrows(IllegalStateException.class,
+				() -> GeoCeDGProfile.compileProfile(unknown.toString()));
+
+		JSONObject duplicate = GeoCeDGProfile.getCatalog();
+		duplicate.getJSONArray("menu_sections").getJSONObject(4)
+				.getJSONArray("action_ids").put("view.properties");
+		assertThrows(IllegalStateException.class,
+				() -> GeoCeDGProfile.compileProfile(duplicate.toString()));
+	}
+
+	@Test
 	void continuityAndLanguagePolicyCannotBeWeakened() throws Exception {
 		JSONObject profile = GeoCeDGProfile.getCatalog();
 		profile.getJSONObject("product_policies").getJSONObject("continuity").put("value", true);
@@ -168,8 +184,18 @@ class G9U1ProfileCompilerTest {
 	void allOwnedTextHasEnglishSpanishAndDeterministicFallback() throws Exception {
 		JSONObject texts = GeoCeDGProfile.getCatalog().getJSONObject("localized_text");
 		for (String key : texts.keySet()) {
-			assertFalse(GeoCeDGProfile.getText(key, "en").isBlank(), key);
-			assertFalse(GeoCeDGProfile.getText(key, "es").isBlank(), key);
+			String english = GeoCeDGProfile.getText(key, "en");
+			String spanish = GeoCeDGProfile.getText(key, "es");
+			assertFalse(english.isBlank(), key);
+			assertFalse(spanish.isBlank(), key);
+			assertFalse(english.contains(
+					"Use the current construction and its explicit selection."), key);
+			assertFalse(spanish.contains(
+					"Usa la construcción actual y su selección explícita."), key);
+			if (key.endsWith(".short_help") || key.endsWith(".long_help")) {
+				assertFalse(english.toLowerCase(Locale.ROOT).matches(
+						".*\\b(todo|tbd|placeholder|lorem ipsum)\\b.*"), key);
+			}
 			assertEquals(GeoCeDGProfile.getText(key, "en"), GeoCeDGProfile.getText(key, "fr"));
 		}
 		assertNotEquals(GeoCeDGProfile.getText("Menu.File", "en"),

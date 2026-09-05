@@ -366,13 +366,27 @@ public final class GeoCeDGProfile {
 			throw new IllegalStateException("Unplaced workspace action");
 		}
 		Set<String> menuClusters = new HashSet<>();
+		Set<String> menuSectionIds = new HashSet<>();
+		Set<String> directMenuActions = new HashSet<>();
 		JSONArray sections = root.getJSONArray("menu_sections");
 		for (int i = 0; i < sections.length(); i++) {
 			JSONObject section = sections.getJSONObject(i);
+			if (!menuSectionIds.add(section.getString("id"))) {
+				throw new IllegalStateException("Duplicate menu section");
+			}
 			root.getJSONObject("localized_text").getJSONObject(section.getString("name_key"));
 			for (String id : strings(section.getJSONArray("cluster_ids"))) {
 				if (!clusterIds.contains(id) || !menuClusters.add(id)) {
 					throw new IllegalStateException("Unknown/duplicate menu cluster " + id);
+				}
+			}
+			JSONArray actionIds = section.optJSONArray("action_ids");
+			if (actionIds != null) {
+				for (String actionId : strings(actionIds)) {
+					if (!ids.contains(actionId) || !directMenuActions.add(actionId)) {
+						throw new IllegalStateException(
+								"Unknown/duplicate direct menu action " + actionId);
+					}
 				}
 			}
 		}

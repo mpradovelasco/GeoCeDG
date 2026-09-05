@@ -24,6 +24,22 @@ $BaseCommit = "f8a21a087234b18fc13741a0ac2baf80608e9022"
 $ReviewCheckpoint = "b492194082f1adc9f981d85d92a58ef57490196f"
 $ReviewCheckpointTag = "geocedg-g9u1-author-review-checkpoint-1"
 $ReviewCheckpointTagObject = "755f22bd2b101d4ca2ad6bea98429bc2ba941af9"
+$Round1CandidateCommit = "fa6339204b87385af79331e434778ca16cd8dcf0"
+$Round1CandidateBranch = "codex/g9u1-author-review-stabilization-1"
+$Round2AuthorInputCommit = "01c0bec77a30b43b7ebcf75acacdd098840fa2fe"
+$Round1AuthorityBlobs = [ordered]@{
+    "docs/roadmap/geocedg_roadmap.md" = "78e91680174b2b44070c004b9cfe9c2ed35ac0bf"
+    "docs/validation/g9u1_construction_workspace_implementation_candidate_report.md" =
+        "06222556c2f1a7483473a5a4b89250d849386472"
+    "geocedg/validation/g9u1/g9u1-construction-workspace-evidence.json" =
+        "22f3fedb4a254768349ac19335b2566961239a8d"
+    "geocedg/validation/g9u1/g9u1-construction-workspace-evidence.sha256" =
+        "ff988c9d397bc79f6b5f7a781ba799c56aab1a96"
+    "geocedg/validation/g9u1/g9u1-construction-workspace-scenarios.json" =
+        "f46b5151033bd81889887ff5c8d44d5408c86f87"
+    "tools/agent/verify-g9u1-construction-workspace.ps1" =
+        "18a462f83fe2507c4a25a47be9c176cfb0642f1f"
+}
 # These two producer/presentation repairs implement the explicit author-review
 # correction. They do not authorize another kernel path or new geometry.
 $ReviewKernelPaths = @(
@@ -31,6 +47,19 @@ $ReviewKernelPaths = @(
     "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialIdentityRegistry.java"
 )
 $ReviewScenarioIds = @(1..15 | ForEach-Object { "U1-RV{0:D2}" -f $_ })
+$Round2ScenarioIds = @(1..10 | ForEach-Object { "U1-R2-{0:D2}" -f $_ })
+$Round2AuthorInputPath = "docs/validation/g9u1_author_resmoke_checklist.md"
+$Round2AuthorInputEntryCanonicalHash = "b87a74b6a1e421e6909c6949a442bd3e935920b57a60f9a571a7ec34f6b89f02"
+$Round2AuthorInputEntryBlobOid = "b4a2cbb5cca0176be43e1d0c5dad4705683a31ea"
+$Round2AuthorInputLiveCanonicalHash = "ba036c052dfc8e03837c1bae2672623b3e0a813b529f1a87c4ecf6647f0ec26b"
+$Round2AuthorInputLiveBlobOid = "b253da52983049938dfdb74571b89bc76e112ee4"
+$Round2AuthorInputHardBreakCount = 28
+$Round2SharedHostPaths = @(
+    "source/shared/common-jre/src/main/java/org/geogebra/common/jre/io/MyXMLioJre.java"
+)
+$Round2SharedLifecyclePaths = @(
+    "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusMetricScalarAdapter.java"
+)
 $ReviewMethodReplacements = [ordered]@{
     "toolbarContainsExactlySixtySixUniqueRealModeIds" =
         "toolbarContainsThirtyTwoCuratedModesWhileCatalogRetainsAllSixtySix"
@@ -94,14 +123,19 @@ function Assert-U1Set {
         @((Compare-Object $a $e -CaseSensitive)).Count -eq 0) "$Description differs or contains duplicates."
 }
 
+function Read-U1Commit {
+    param([string]$Commit, [string]$Path)
+    return [Text.UTF8Encoding]::new($false, $true).GetString(
+        (Get-GeoCeDGPhaseLifecycleBlobBytes $RepositoryRoot $Commit $Path))
+}
 function Read-U1Checkpoint {
     param([string]$Path)
-    return [Text.UTF8Encoding]::new($false, $true).GetString(
-        (Get-GeoCeDGPhaseLifecycleBlobBytes $RepositoryRoot $ReviewCheckpoint $Path))
+    return Read-U1Commit $ReviewCheckpoint $Path
 }
 function Assert-U1ReviewContracts {
     param([object]$Evidence, [object]$Scenarios, [string[]]$Paths)
     [void](Get-U1Git @("merge-base", "--is-ancestor", $ReviewCheckpoint, "HEAD"))
+    [void](Get-U1Git @("merge-base", "--is-ancestor", $ReviewCheckpoint, $Round1CandidateCommit))
     Assert-U1 ((Get-U1Git @("rev-parse", "refs/tags/$ReviewCheckpointTag")).Trim() -ceq
         $ReviewCheckpointTagObject) "The non-PASS author-review checkpoint tag changed."
     Assert-U1 ((Get-U1Git @("cat-file", "-t", "refs/tags/$ReviewCheckpointTag")).Trim() -ceq
@@ -121,6 +155,10 @@ function Assert-U1ReviewContracts {
         $review.noNewGeometricSemantics -eq $true) "Missing or inconsistent author-review successor authority."
     $historicalEvidence = Read-U1Checkpoint $EvidencePath | ConvertFrom-Json -Depth 100
     $historicalScenarios = Read-U1Checkpoint $ScenarioPath | ConvertFrom-Json -Depth 100
+    $round1Evidence = Read-U1Commit $Round1CandidateCommit $EvidencePath | ConvertFrom-Json -Depth 100
+    Assert-U1 (($review | ConvertTo-Json -Depth 100 -Compress) -ceq
+        ($round1Evidence.authorReviewStabilization | ConvertTo-Json -Depth 100 -Compress)) `
+        "The published round-one review record was rewritten."
     Assert-U1 (@($historicalEvidence.inventory.paths).Count -eq 96 -and
         $historicalEvidence.inventory.pathCount -eq 96 -and
         @($historicalScenarios.scenarios).Count -eq 138 -and
@@ -138,9 +176,9 @@ function Assert-U1ReviewContracts {
     Assert-U1Set @($review.allowedSharedKernelCorrections.path) $ReviewKernelPaths "Author-review kernel correction allowlist"
     $kernel = @($Paths | Where-Object { $_ -match '^source/.*/org/geocedg/common/kernel/' })
     Assert-U1Set $kernel $ReviewKernelPaths "Only the two expressly authorized kernel implementation repairs are allowed"
-    $delta = @((Get-U1Git @("diff", "--name-only", $ReviewCheckpoint)).Split("`n") +
-        (Get-U1Git @("ls-files", "--others", "--exclude-standard")).Split("`n") |
-        Where-Object { $_ } | Sort-Object -Unique -CaseSensitive)
+    $delta = @((Get-U1Git @("diff", "--name-only", $ReviewCheckpoint,
+        $Round1CandidateCommit)).Split("`n") | Where-Object { $_ } |
+        Sort-Object -Unique -CaseSensitive)
     Assert-U1Set $delta @($review.inventory.deltaPaths) "Exact author-review successor delta"
     Assert-U1 ($review.inventory.deltaPathCount -eq $delta.Count -and
         $Evidence.inventory.pathCount -eq $Paths.Count -and
@@ -192,6 +230,187 @@ function Assert-U1ReviewContracts {
                 (Join-Path (Split-Path -Parent (Join-Path $RepositoryRoot $path)) $target))).Replace('\', '/')
             $resolved = Resolve-GeoCeDGPhaseLifecycleChild $RepositoryRoot $relative "author-review documentation link"
             Assert-U1 (Test-Path -LiteralPath $resolved) "Broken review link: $path -> $target"
+        }
+    }
+}
+
+function Assert-U1Round2Contracts {
+    param([object]$Evidence, [object]$Scenarios, [string[]]$Paths)
+    [void](Get-U1Git @("merge-base", "--is-ancestor", $Round1CandidateCommit, "HEAD"))
+    Assert-U1 ((Get-U1Git @("rev-parse", "$Round2AuthorInputCommit^")).Trim() -ceq
+        $Round1CandidateCommit) "The round-two author-input commit parent changed."
+    [void](Get-U1Git @("merge-base", "--is-ancestor", $Round2AuthorInputCommit, "HEAD"))
+    $authorInputDelta = @((Get-U1Git @("diff-tree", "--no-commit-id", "--name-only", "-r",
+        $Round2AuthorInputCommit)).Split("`n") | Where-Object { $_ })
+    Assert-U1Set $authorInputDelta @($Round2AuthorInputPath) `
+        "Round-two author-input provenance commit delta"
+    $authorInputTree = (Get-U1Git @("ls-tree", $Round2AuthorInputCommit, "--",
+        $Round2AuthorInputPath)).Trim()
+    Assert-U1 ($authorInputTree -ceq
+        "100644 blob $Round2AuthorInputEntryBlobOid`t$Round2AuthorInputPath") `
+        "The round-two author-input provenance blob changed."
+    foreach ($ref in @("refs/heads/$Round1CandidateBranch",
+        "refs/remotes/origin/$Round1CandidateBranch")) {
+        Assert-U1 ((Get-U1Git @("rev-parse", $ref)).Trim() -ceq $Round1CandidateCommit) `
+            "The published round-one stabilization ref changed: $ref"
+    }
+    foreach ($pin in $Round1AuthorityBlobs.GetEnumerator()) {
+        $tree = (Get-U1Git @("ls-tree", $Round1CandidateCommit, "--", $pin.Key)).Trim()
+        Assert-U1 ($tree -ceq "100644 blob $($pin.Value)`t$($pin.Key)") `
+            "Round-one stabilization authority changed: $($pin.Key)"
+    }
+    $round2 = $Evidence.authorReviewStabilizationRound2
+    Assert-U1 ($round2.baseline.commit -ceq $Round1CandidateCommit -and
+        $round2.baseline.branch -ceq $Round1CandidateBranch -and
+        $round2.historicalRound1 -ceq "PUBLISHED_CANDIDATE_PRESERVED" -and
+        $round2.nextAuthorResmoke -ceq "PENDING" -and
+        $round2.noNewGeometricSemantics -eq $true) `
+        "Missing or inconsistent round-two successor authority."
+    Assert-U1Set @($round2.baseline.authorityBlobs.path) @($Round1AuthorityBlobs.Keys) `
+        "Round-one successor authority pins"
+    foreach ($pin in @($round2.baseline.authorityBlobs)) {
+        Assert-U1 ($pin.mode -ceq "100644" -and
+            $Round1AuthorityBlobs[$pin.path] -ceq $pin.blobOid) `
+            "Round-one authority pin differs: $($pin.path)"
+    }
+    $round2Delta = @((Get-U1Git @("diff", "--name-only", $Round1CandidateCommit)).Split("`n") +
+        (Get-U1Git @("ls-files", "--others", "--exclude-standard")).Split("`n") |
+        Where-Object { $_ } | Sort-Object -Unique -CaseSensitive)
+    Assert-U1Set $round2Delta @($round2.inventory.deltaPaths) `
+        "Exact author-review round-two successor delta"
+    Assert-U1 ($round2.inventory.baseCommit -ceq $Round1CandidateCommit -and
+        $round2.inventory.deltaPathCount -eq $round2Delta.Count -and
+        $round2.inventory.sourcePathCount -eq
+            @($round2Delta | Where-Object { $_ -cmatch '^source/' }).Count) `
+        "Round-two inventory counters drifted."
+    $round2Shared = @($round2Delta | Where-Object {
+        $_ -cmatch '^source/shared/common-jre/src/main/' })
+    Assert-U1Set $round2Shared $Round2SharedHostPaths `
+        "Only the expressly authorized shared macro-host correction is allowed"
+    $round2SharedLifecycle = @($round2Delta | Where-Object {
+        $_ -cmatch '^source/shared/common/src/main/' })
+    Assert-U1Set $round2SharedLifecycle $Round2SharedLifecyclePaths `
+        "Only the expressly authorized existing metric-DAG lifecycle correction is allowed"
+    Assert-U1Set @($round2.allowedSharedMacroHostCorrection.path) $Round2SharedHostPaths `
+        "Round-two shared macro-host allowlist"
+    Assert-U1Set @($round2.allowedSharedMetricLifecycleCorrection.path) `
+        $Round2SharedLifecyclePaths "Round-two metric lifecycle allowlist"
+    $authorInput = $round2.authorInput
+    Assert-U1 ($authorInput.path -ceq $Round2AuthorInputPath -and
+        $authorInput.commit -ceq $Round2AuthorInputCommit -and
+        $authorInput.parentCommit -ceq $Round1CandidateCommit -and
+        @($authorInput.commitDeltaPaths).Count -eq 1 -and
+        $authorInput.commitDeltaPaths[0] -ceq $Round2AuthorInputPath -and
+        $authorInput.entryRawSha256 -ceq $Round2AuthorInputEntryCanonicalHash -and
+        $authorInput.entryCanonicalLfSha256 -ceq $Round2AuthorInputEntryCanonicalHash -and
+        $authorInput.entryGitCanonicalBlobOid -ceq $Round2AuthorInputEntryBlobOid -and
+        $authorInput.classification -ceq "AUTHOR_INPUT_NOT_AGENT_EXECUTION" -and
+        $authorInput.authorStatementsModified -eq $false -and
+        $authorInput.liveRepresentation.canonicalLfSha256 -ceq
+            $Round2AuthorInputLiveCanonicalHash -and
+        $authorInput.liveRepresentation.gitCanonicalBlobOid -ceq
+            $Round2AuthorInputLiveBlobOid -and
+        $authorInput.liveRepresentation.replacementCount -eq
+            $Round2AuthorInputHardBreakCount -and
+        $authorInput.liveRepresentation.authorStatementsModified -eq $false -and
+        $authorInput.liveRepresentation.exactlyReversibleToProvenanceBlob -eq $true -and
+        $authorInput.liveRepresentation.classification -ceq
+            "COMMONMARK_PRESENTATION_NORMALIZATION_NOT_AGENT_EXECUTION_EVIDENCE") `
+        "Round-two author-input authority differs."
+    $authorInputEntryBytes = Get-GeoCeDGPhaseLifecycleBlobBytes $RepositoryRoot `
+        $Round2AuthorInputCommit $Round2AuthorInputPath
+    Assert-U1 ((Get-GeoCeDGPhaseLifecycleHash $authorInputEntryBytes) -ceq
+        $Round2AuthorInputEntryCanonicalHash) `
+        "The byte-exact author-input provenance content changed."
+    $authorInputEntry = [Text.UTF8Encoding]::new($false, $true).GetString(
+        $authorInputEntryBytes).Replace("`r`n", "`n").Replace("`r", "`n")
+    $entryHorizontalWhitespace = @([regex]::Matches(
+        $authorInputEntry, '(?m)[ \t]+(?=\n|\z)'))
+    Assert-U1 ($entryHorizontalWhitespace.Count -eq $Round2AuthorInputHardBreakCount -and
+        @($entryHorizontalWhitespace | Where-Object { $_.Value -cne "  " }).Count -eq 0) `
+        "The author-input provenance hard-break inventory changed."
+    $authorInputLive = (Read-U1 $Round2AuthorInputPath).Replace(
+        "`r`n", "`n").Replace("`r", "`n")
+    $expectedLive = $authorInputEntry.Replace("  `n", "<br>`n")
+    Assert-U1 ($authorInputLive -ceq $expectedLive) `
+        "The live author checklist is not the exact presentation-only normalization."
+    Assert-U1 (@([regex]::Matches($authorInputLive, '(?m)<br>(?=\n|\z)')).Count -eq
+        $Round2AuthorInputHardBreakCount) "The normalized CommonMark hard-break count differs."
+    Assert-U1 (@([regex]::Matches($authorInputLive, '(?m)[ \t]+(?=\n|\z)')).Count -eq 0) `
+        "The normalized author checklist retains horizontal trailing whitespace."
+    Assert-U1 ($authorInputLive.Replace("<br>`n", "  `n") -ceq $authorInputEntry) `
+        "The author checklist normalization is not exactly reversible."
+    Assert-U1 ((Get-U1Hash $Round2AuthorInputPath) -ceq
+        $Round2AuthorInputLiveCanonicalHash) `
+        "The live author checklist normalized representation changed."
+    Assert-U1 ((Get-U1Git @("hash-object", "--path=$Round2AuthorInputPath", "--",
+        $Round2AuthorInputPath)).Trim() -ceq $Round2AuthorInputLiveBlobOid) `
+        "The live author checklist normalized Git content changed."
+    $round1Scenarios = Read-U1Commit $Round1CandidateCommit $ScenarioPath |
+        ConvertFrom-Json -Depth 100
+    Assert-U1 (@($round1Scenarios.scenarios).Count -eq 153 -and
+        @($round1Scenarios.focusedJUnit.classes).Count -eq 18 -and
+        @($round1Scenarios.focusedJUnit.classes.methods).Count -eq 183) `
+        "Published round-one scenario/test authority differs."
+    foreach ($historical in @($round1Scenarios.scenarios)) {
+        $current = @($Scenarios.scenarios | Where-Object { $_.id -ceq $historical.id })
+        Assert-U1 ($current.Count -eq 1) "Round-one scenario was dropped/duplicated: $($historical.id)"
+        Assert-U1 (($current[0] | ConvertTo-Json -Depth 100 -Compress) -ceq
+            ($historical | ConvertTo-Json -Depth 100 -Compress)) `
+            "Published round-one scenario meaning changed: $($historical.id)"
+    }
+    Assert-U1 ($Scenarios.authorReviewRound2.baselineCommit -ceq $Round1CandidateCommit -and
+        $Scenarios.authorReviewRound2.authorInputCommit -ceq $Round2AuthorInputCommit -and
+        $Scenarios.authorReviewRound2.authorInput -ceq $Round2AuthorInputPath -and
+        $Scenarios.authorReviewRound2.authorInputEntryCanonicalLfSha256 -ceq
+            $Round2AuthorInputEntryCanonicalHash -and
+        $Scenarios.authorReviewRound2.authorInputLiveCanonicalLfSha256 -ceq
+            $Round2AuthorInputLiveCanonicalHash -and
+        $Scenarios.authorReviewRound2.authorInputEntryBlobOid -ceq
+            $Round2AuthorInputEntryBlobOid -and
+        $Scenarios.authorReviewRound2.authorInputLiveBlobOid -ceq
+            $Round2AuthorInputLiveBlobOid -and
+        $Scenarios.authorReviewRound2.hardBreakNormalization -ceq
+            "TWO_ASCII_SPACES_PLUS_LF_TO_EXPLICIT_HTML_BR_PLUS_LF" -and
+        $Scenarios.authorReviewRound2.hardBreakReplacementCount -eq
+            $Round2AuthorInputHardBreakCount -and
+        $Scenarios.authorReviewRound2.exactlyReversibleToProvenanceBlob -eq $true -and
+        $Scenarios.authorReviewRound2.authorStatementsModified -eq $false -and
+        $Scenarios.authorReviewRound2.liveRepresentationClassification -ceq
+            "COMMONMARK_PRESENTATION_NORMALIZATION_NOT_AGENT_EXECUTION_EVIDENCE" -and
+        $Scenarios.authorReviewRound2.historicalScenarioCount -eq 153 -and
+        $Scenarios.authorReviewRound2.historicalFocusedTests -eq 183 -and
+        $Scenarios.authorReviewRound2.supersededHistoricalScenario -ceq "U1-RV06" -and
+        $Scenarios.authorReviewRound2.manualAuthorResmoke -ceq "PENDING") `
+        "Round-two scenario provenance differs."
+    Assert-U1Set @($Scenarios.authorReviewRound2.additionalScenarioIds) $Round2ScenarioIds `
+        "Round-two scenario IDs"
+    Assert-U1 ($round2.focusedInventory.classes -eq 21 -and
+        $round2.focusedInventory.methods -eq 204 -and
+        $round2.focusedInventory.desktopMethods -eq 190 -and
+        $round2.focusedInventory.sharedMethods -eq 14 -and
+        $round2.focusedInventory.scenarios -eq 163 -and
+        $round2.focusedInventory.historicalScenarios -eq 153 -and
+        $round2.focusedInventory.addedRound2Scenarios -eq 10) `
+        "Round-two focused inventory differs."
+    Assert-U1 ($round2.workspace.families -eq 11 -and
+        $round2.workspace.clusters -eq 18 -and $round2.workspace.actions -eq 110 -and
+        $round2.workspace.normalMenus -eq 7) "Round-two workspace counts differ."
+    Assert-U1 ([string]::IsNullOrEmpty((Get-U1Git @("tag", "--list",
+        "geocedg-g9u1-pass")).Trim())) "A G9U1 PASS tag exists before author closeout."
+    foreach ($path in @($round2.documentationPaths)) {
+        $text = Read-U1 $path
+        foreach ($link in [regex]::Matches($text, '(?<!!)\[[^\]]*\]\((?<target>[^)]+)\)')) {
+            $target = $link.Groups["target"].Value.Trim().Trim([char[]]"<>")
+            if ($target -match '^(https?://|mailto:|#)') { continue }
+            $target = ($target -split '#', 2)[0]
+            if ([string]::IsNullOrWhiteSpace($target)) { continue }
+            $relative = [IO.Path]::GetRelativePath($RepositoryRoot, [IO.Path]::GetFullPath(
+                (Join-Path (Split-Path -Parent (Join-Path $RepositoryRoot $path)) $target))).Replace('\', '/')
+            $resolved = Resolve-GeoCeDGPhaseLifecycleChild $RepositoryRoot $relative `
+                "round-two documentation link"
+            Assert-U1 (Test-Path -LiteralPath $resolved) `
+                "Broken round-two review link: $path -> $target"
         }
     }
 }
@@ -263,6 +482,7 @@ function Assert-U1Contracts {
     [void](Assert-GeoCeDGMaterializationAttributes -RepositoryRoot $RepositoryRoot `
         -Paths $paths -ConfiguredFilterDrivers $materialization.configuredFilterDrivers)
     Assert-U1ReviewContracts $Evidence $Scenarios $paths
+    Assert-U1Round2Contracts $Evidence $Scenarios $paths
     Assert-U1 (@($paths | Where-Object { $_ -match '^artifacts/|^book/' }).Count -eq 0) "Generated/independent-book path in candidate."
     $profile = Read-U1 "apps/geocedg/application-profile.yml" | ConvertFrom-Json -Depth 100 -AsHashtable
     [void](Assert-GeoCeDGLiveWorkspaceProfile -RepositoryRoot $RepositoryRoot)
@@ -273,12 +493,19 @@ function Assert-U1Contracts {
         $profile.product_policies.continuity.locked -eq $true) "GeoCeDG Continuity OFF is not locked."
     Assert-U1Set @($profile.product_policies.languages.offered) @("en", "es") "G9U1 product languages"
     Assert-U1 ($profile.product_policies.languages.fallback -ceq "en") "G9U1 English fallback absent."
+    Assert-U1Set @($profile.menu_sections.id) @("file", "edit", "view", "construction",
+        "options", "automation", "help") "G9U1 round-two menu IDs"
+    Assert-U1 ((@($profile.menu_sections.id) -join ',') -ceq
+        "file,edit,view,construction,options,automation,help") `
+        "G9U1 round-two menu order differs."
     $ids = @($Scenarios.scenarios | ForEach-Object { $_.id })
     $approved = Read-U1 "geocedg/validation/g9u1/g9u1-preexecution-scenarios.json" | ConvertFrom-Json -Depth 100
     $approvedIds = @($approved.groups | ForEach-Object { $_.scenarioIds })
     Assert-U1 ($approvedIds.Count -eq 138) "The historical approved scenario baseline changed."
-    Assert-U1Set $ids @($approvedIds + $ReviewScenarioIds) "All historical and bounded author-review scenarios"
-    Assert-U1 ($ids.Count -eq 153) "G9U1 requires 138 historical plus 15 author-review scenarios."
+    Assert-U1Set $ids @($approvedIds + $ReviewScenarioIds + $Round2ScenarioIds) `
+        "All historical and bounded author-review scenarios"
+    Assert-U1 ($ids.Count -eq 163) `
+        "G9U1 requires 138 historical plus 15 round-one and 10 round-two scenarios."
     $methodKeys = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
     foreach ($class in $Scenarios.focusedJUnit.classes) {
         Assert-U1 ($class.module -cin @("shared", "desktop") -and @($class.methods).Count -gt 0) "Empty/invalid G9U1 test class."
@@ -375,8 +602,12 @@ try {
             Assert-U1 (@($style.SelectNodes("//error")).Count -eq 0) "G9U1 Checkstyle errors: $path"
         }
         $summary = [ordered]@{
-            schemaVersion = 1; phase = "G9U1"; state = "TECHNICAL_FOCUSED_PASSED_NOT_AUTHOR_APPROVAL"
+            schemaVersion = 1; phase = "G9U1"; state = "ROUND2_TECHNICAL_FOCUSED_PASSED_NOT_AUTHOR_APPROVAL"
             baseCommit = $BaseCommit; promptHash = Get-U1Hash $PromptPath
+            authorReviewRound2Baseline = $Round1CandidateCommit
+            authorReviewInputCommit = $Round2AuthorInputCommit
+            authorReviewInputEntryHash = $Round2AuthorInputEntryCanonicalHash
+            authorReviewInputHash = $Round2AuthorInputLiveCanonicalHash
             actions = 110; clusters = 18; families = 11; scenarios = @($scenarios.scenarios.id | Sort-Object -CaseSensitive)
             tests = @($results | Sort-Object { $_.class })
             sourceEvidence = @($evidence.inventory.paths | Sort-Object -CaseSensitive | ForEach-Object {

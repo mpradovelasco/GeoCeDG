@@ -31,21 +31,29 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.Base64;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.function.UnaryOperator;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JMenu;
 import javax.swing.JPanel;
+import javax.swing.JToggleButton;
 
 import org.geocedg.desktop.GeoCeDGUserToolLibrary.Package;
 import org.geogebra.common.io.XMLParseException;
 import org.geogebra.common.kernel.Macro;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoPoint;
+import org.geogebra.common.move.ggtapi.models.json.JSONArray;
+import org.geogebra.common.move.ggtapi.models.json.JSONObject;
 import org.geogebra.desktop.CommandLineArguments;
 import org.geogebra.desktop.io.MyXMLioD;
 import org.geogebra.desktop.main.AppD;
@@ -147,6 +155,162 @@ class G9U1UserToolLibraryTest {
 		assertFalse(new GeoCeDGUserToolLibrary(app, storage).packages().get(0)
 				.isPinned("OwnedMidpoint"));
 		assertEquals(before, app.getXML());
+	}
+
+	@Test
+	void pinLayoutPersistsOrderAndGroupsWithoutChangingDocument() throws Exception {
+		Package tool = library.install("owned.ggt",
+				midpointPackage("FirstMidpoint", "SecondMidpoint", "ThirdMidpoint"));
+		G9U1TestApp.eval(app, "P=(3,4)");
+		final String before = app.getXML();
+		final int steps = app.getKernel().getConstruction().steps();
+		final boolean undo = app.getKernel().getConstruction().getUndoManager().undoPossible();
+		library.pin(tool.id(), "FirstMidpoint", true);
+		library.pin(tool.id(), "SecondMidpoint", true);
+		library.pin(tool.id(), "ThirdMidpoint", true);
+		library.setPinGroup(tool.id(), "FirstMidpoint", "Bisectors");
+		library.setPinGroup(tool.id(), "SecondMidpoint", "Bisectors");
+		library.movePinned(tool.id(), "SecondMidpoint", -1);
+
+		GeoCeDGUserToolLibrary reopened = new GeoCeDGUserToolLibrary(app, storage);
+		assertEquals(List.of("SecondMidpoint", "FirstMidpoint", "ThirdMidpoint"),
+				reopened.pinnedCommands().stream()
+						.map(GeoCeDGUserToolLibrary.PinnedCommand::command).toList());
+		assertEquals(List.of("Bisectors", "Bisectors", ""), reopened.pinnedCommands()
+				.stream().map(GeoCeDGUserToolLibrary.PinnedCommand::group).toList());
+		assertEquals(2, new JSONObject(Files.readString(storage)).getInt("version"));
+		assertEquals(before, app.getXML());
+		assertEquals(steps, app.getKernel().getConstruction().steps());
+		assertEquals(undo, app.getKernel().getConstruction().getUndoManager().undoPossible());
+		assertEquals(0, app.getKernel().getMacroNumber());
+
+		JPanel pins = new JPanel();
+		new GeoCeDGUserTools(app, reopened).populatePins(pins);
+		assertEquals(2, pins.getComponentCount());
+		assertEquals("Bisectors", ((JToggleButton) pins.getComponent(0))
+				.getClientProperty("geocedg.userTool.group"));
+		assertEquals(2, ((JToggleButton) pins.getComponent(0))
+				.getClientProperty("geocedg.userTool.groupSize"));
+		assertEquals("ThirdMidpoint", ((JToggleButton) pins.getComponent(1))
+				.getClientProperty("geocedg.userTool.command"));
+	}
+
+	@Test
+	void managerReflectsAndRefreshesEffectivePinOrderAndGroup() throws Exception {
+		Package tool = library.install("owned.ggt",
+				midpointPackage("FirstMidpoint", "SecondMidpoint", "ThirdMidpoint"));
+		final String before = app.getXML();
+		library.pin(tool.id(), "FirstMidpoint", true);
+		library.pin(tool.id(), "SecondMidpoint", true);
+		library.pin(tool.id(), "ThirdMidpoint", true);
+		library.setPinGroup(tool.id(), "FirstMidpoint", "Bisectors");
+		library.setPinGroup(tool.id(), "SecondMidpoint", "Bisectors");
+		library.movePinned(tool.id(), "SecondMidpoint", -1);
+
+		JPanel manager = new JPanel();
+		new GeoCeDGUserTools(app, library).populateManagerPins(manager, tool);
+		JPanel firstRow = (JPanel) manager.getComponent(0);
+		assertEquals("SecondMidpoint",
+				firstRow.getClientProperty("geocedg.userTool.command"));
+		assertEquals(0, firstRow.getClientProperty("geocedg.userTool.order"));
+		assertEquals("1. SecondMidpoint", ((JCheckBox) firstRow.getComponent(0)).getText());
+		assertEquals("Bisectors", ((JButton) firstRow.getComponent(1)).getText());
+
+		((JButton) firstRow.getComponent(3)).doClick();
+		assertEquals("FirstMidpoint", ((JPanel) manager.getComponent(0))
+				.getClientProperty("geocedg.userTool.command"));
+		assertEquals("SecondMidpoint", ((JPanel) manager.getComponent(1))
+				.getClientProperty("geocedg.userTool.command"));
+		assertEquals("Bisectors", ((JButton) ((JPanel) manager.getComponent(0))
+				.getComponent(1)).getText());
+		assertFalse(((JButton) ((JPanel) manager.getComponent(0)).getComponent(2))
+				.isEnabled());
+		assertFalse(((JButton) ((JPanel) manager.getComponent(2)).getComponent(3))
+				.isEnabled());
+		assertEquals(before, app.getXML());
+		assertEquals(0, app.getKernel().getMacroNumber());
+	}
+
+	@Test
+	void groupedPinsRemainOneContiguousVisualUnitWhenReordered() throws Exception {
+		Package tool = library.install("owned.ggt",
+				midpointPackage("FirstMidpoint", "SecondMidpoint", "ThirdMidpoint"));
+		library.pin(tool.id(), "FirstMidpoint", true);
+		library.pin(tool.id(), "SecondMidpoint", true);
+		library.pin(tool.id(), "ThirdMidpoint", true);
+		library.setPinGroup(tool.id(), "FirstMidpoint", "Bisectors");
+		library.setPinGroup(tool.id(), "ThirdMidpoint", "Bisectors");
+
+		assertEquals(List.of("FirstMidpoint", "ThirdMidpoint", "SecondMidpoint"),
+				library.pinnedCommands().stream()
+						.map(GeoCeDGUserToolLibrary.PinnedCommand::command).toList());
+		JPanel pins = new JPanel();
+		new GeoCeDGUserTools(app, library).populatePins(pins);
+		assertEquals(2, pins.getComponentCount());
+		assertEquals("Bisectors", ((JToggleButton) pins.getComponent(0))
+				.getClientProperty("geocedg.userTool.group"));
+		assertEquals("SecondMidpoint", ((JToggleButton) pins.getComponent(1))
+				.getClientProperty("geocedg.userTool.command"));
+
+		library.movePinned(tool.id(), "ThirdMidpoint", 1);
+		assertEquals(List.of("SecondMidpoint", "FirstMidpoint", "ThirdMidpoint"),
+				library.pinnedCommands().stream()
+						.map(GeoCeDGUserToolLibrary.PinnedCommand::command).toList());
+		pins = new JPanel();
+		new GeoCeDGUserTools(app, library).populatePins(pins);
+		assertEquals("SecondMidpoint", ((JToggleButton) pins.getComponent(0))
+				.getClientProperty("geocedg.userTool.command"));
+		assertEquals("Bisectors", ((JToggleButton) pins.getComponent(1))
+				.getClientProperty("geocedg.userTool.group"));
+	}
+
+	@Test
+	void versionOnePinPreferenceMigratesWithoutRegisteringItsMacro() throws Exception {
+		byte[] bytes = midpointPackage("OwnedMidpoint");
+		String id = HexFormat.of().formatHex(
+				MessageDigest.getInstance("SHA-256").digest(bytes));
+		JSONArray pins = new JSONArray().put("OwnedMidpoint");
+		JSONArray packages = new JSONArray().put(new JSONObject().put("name", "owned.ggt")
+				.put("sha256", id).put("ggt", Base64.getEncoder().encodeToString(bytes))
+				.put("pinned", pins));
+		Files.writeString(storage,
+				new JSONObject().put("version", 1).put("packages", packages).toString());
+
+		GeoCeDGUserToolLibrary migrated = new GeoCeDGUserToolLibrary(app, storage);
+		assertEquals(List.of("OwnedMidpoint"), migrated.pinnedCommands().stream()
+				.map(GeoCeDGUserToolLibrary.PinnedCommand::command).toList());
+		assertEquals("", migrated.pinnedCommands().get(0).group());
+		assertEquals(0, migrated.pinnedCommands().get(0).order());
+		assertEquals(1, new JSONObject(Files.readString(storage)).getInt("version"));
+		migrated.setPinGroup(id, "OwnedMidpoint", "Planar");
+		assertEquals(2, new JSONObject(Files.readString(storage)).getInt("version"));
+		assertEquals("Planar", new GeoCeDGUserToolLibrary(app, storage)
+				.pinnedCommands().get(0).group());
+		assertEquals(0, app.getKernel().getMacroNumber());
+	}
+
+	@Test
+	void maximumStoredPinOrderStillAllowsAValidNewPin() throws Exception {
+		byte[] bytes = midpointPackage("FirstMidpoint", "SecondMidpoint");
+		String id = HexFormat.of().formatHex(
+				MessageDigest.getInstance("SHA-256").digest(bytes));
+		JSONArray pins = new JSONArray().put(new JSONObject()
+				.put("command", "FirstMidpoint").put("group", "").put("order", 4095));
+		JSONArray packages = new JSONArray().put(new JSONObject().put("name", "owned.ggt")
+				.put("sha256", id).put("ggt", Base64.getEncoder().encodeToString(bytes))
+				.put("pinned", pins));
+		Files.writeString(storage,
+				new JSONObject().put("version", 2).put("packages", packages).toString());
+
+		GeoCeDGUserToolLibrary boundary = new GeoCeDGUserToolLibrary(app, storage);
+		boundary.pin(id, "SecondMidpoint", true);
+		GeoCeDGUserToolLibrary reopened = new GeoCeDGUserToolLibrary(app, storage);
+		List<Integer> orders = reopened.pinnedCommands().stream()
+				.map(GeoCeDGUserToolLibrary.PinnedCommand::order).toList();
+		assertEquals(2, orders.size());
+		assertTrue(orders.stream().allMatch(order -> order >= 0 && order <= 4095));
+		assertFalse(orders.get(0).equals(orders.get(1)));
+		assertEquals(0, app.getKernel().getMacroNumber());
 	}
 
 	@Test

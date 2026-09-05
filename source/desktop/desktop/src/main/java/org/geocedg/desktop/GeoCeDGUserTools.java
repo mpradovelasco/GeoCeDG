@@ -8,11 +8,17 @@ package org.geocedg.desktop;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Insets;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
 
 import javax.swing.BorderFactory;
@@ -27,14 +33,17 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JToggleButton;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.geocedg.desktop.GeoCeDGUserToolLibrary.Package;
+import org.geocedg.desktop.GeoCeDGUserToolLibrary.PinnedCommand;
 import org.geogebra.desktop.gui.dialog.ToolManagerDialogD;
 import org.geogebra.desktop.main.AppD;
 import org.geogebra.desktop.main.GeoGebraPreferencesD;
@@ -183,26 +192,82 @@ public final class GeoCeDGUserTools {
 	void populatePins(JPanel panel) {
 		panel.removeAll();
 		if (refreshLibrary()) {
-			for (Package tool : library.packages()) {
-				String reason = library.unavailableReason(tool);
-				for (String command : tool.commands()) {
-					if (tool.isPinned(command)) {
-						JButton button = new JButton(command);
-						button.setFont(app.getPlainFont());
-						button.setEnabled(reason == null);
-						button.setToolTipText(reason == null
-								? text("UserTools.Title") + ": " + tool.name() : explain(reason));
-						button.getAccessibleContext()
-								.setAccessibleDescription(button.getToolTipText());
-						button.addActionListener(event -> invoke(tool, command));
-						panel.add(button);
+			List<PinnedCommand> ordered = library.pinnedCommands();
+			Map<String, List<PinnedCommand>> grouped = new LinkedHashMap<>();
+			for (PinnedCommand pin : ordered) {
+				if (!pin.group().isEmpty()) {
+					grouped.computeIfAbsent(pin.group(), ignored -> new ArrayList<>()).add(pin);
+				}
+			}
+			Set<String> renderedGroups = new LinkedHashSet<>();
+			for (PinnedCommand pin : ordered) {
+				if (pin.group().isEmpty()) {
+					panel.add(createPinnedButton(pin));
+				} else if (renderedGroups.add(pin.group())) {
+					List<PinnedCommand> group = grouped.get(pin.group());
+					if (group.size() == 1) {
+						panel.add(createPinnedButton(group.get(0)));
+					} else {
+						panel.add(createPinnedGroup(pin.group(), group));
 					}
+				} else {
+					// The first command already rendered the shared dropdown.
 				}
 			}
 		}
 		panel.setVisible(panel.getComponentCount() > 0);
 		panel.revalidate();
 		panel.repaint();
+	}
+
+	private JToggleButton createPinnedButton(PinnedCommand pin) {
+		String reason = library.unavailableReason(pin.tool());
+		JToggleButton button = new JToggleButton(pin.command());
+		configurePinnedButton(button, reason == null
+				? text("UserTools.Title") + ": " + pin.tool().name() : explain(reason));
+		button.setEnabled(reason == null);
+		button.putClientProperty("geocedg.userTool.command", pin.command());
+		button.putClientProperty("geocedg.userTool.group", pin.group());
+		button.addActionListener(event -> {
+			button.setSelected(false);
+			invoke(pin.tool(), pin.command());
+		});
+		return button;
+	}
+
+	private JToggleButton createPinnedGroup(String name, List<PinnedCommand> commands) {
+		JToggleButton button = new JToggleButton(name + " \u25be");
+		configurePinnedButton(button, name);
+		button.putClientProperty("geocedg.userTool.group", name);
+		button.putClientProperty("geocedg.userTool.groupSize", commands.size());
+		JPopupMenu popup = new JPopupMenu();
+		for (PinnedCommand pin : commands) {
+			String reason = library.unavailableReason(pin.tool());
+			JMenuItem item = new JMenuItem(pin.command());
+			item.setFont(app.getPlainFont());
+			item.setEnabled(reason == null);
+			item.setToolTipText(reason == null ? pin.tool().name() : explain(reason));
+			item.addActionListener(event -> invoke(pin.tool(), pin.command()));
+			popup.add(item);
+		}
+		button.addActionListener(event -> {
+			button.setSelected(false);
+			popup.show(button, 0, button.getHeight());
+		});
+		return button;
+	}
+
+	private void configurePinnedButton(JToggleButton button, String description) {
+		button.setFont(app.getPlainFont());
+		button.setFocusable(false);
+		button.setMargin(new Insets(2, 6, 2, 6));
+		Dimension size = button.getPreferredSize();
+		size.height = app.getScaledIconSize() + 12;
+		button.setPreferredSize(size);
+		button.setMinimumSize(size);
+		button.setMaximumSize(size);
+		button.setToolTipText(description);
+		button.getAccessibleContext().setAccessibleDescription(description);
 	}
 
 	private void invoke(Package tool, String command) {
@@ -250,27 +315,9 @@ public final class GeoCeDGUserTools {
 		south.add(buttons, BorderLayout.SOUTH);
 		content.add(south, BorderLayout.SOUTH);
 		list.addListSelectionListener(event -> {
-			pins.removeAll();
 			Package tool = list.getSelectedValue();
 			remove.setEnabled(tool != null);
-			if (tool != null) {
-				for (String command : tool.commands()) {
-					JCheckBox pin = new JCheckBox(command, tool.isPinned(command));
-					pin.setToolTipText(text("UserTools.Pin"));
-					pin.getAccessibleContext().setAccessibleDescription(pin.getToolTipText());
-					pin.addActionListener(action -> {
-						try {
-							library.pin(tool.id(), command, pin.isSelected());
-						} catch (IOException exception) {
-							pin.setSelected(tool.isPinned(command));
-							failure(exception.getMessage());
-						}
-					});
-					pins.add(pin);
-				}
-			}
-			pins.revalidate();
-			pins.repaint();
+			populateManagerPins(pins, tool);
 		});
 		remove.setEnabled(false);
 		install.addActionListener(event -> {
@@ -314,6 +361,97 @@ public final class GeoCeDGUserTools {
 		dialog.pack();
 		dialog.setLocationRelativeTo(app.getMainComponent());
 		dialog.setVisible(true);
+	}
+
+	void populateManagerPins(JPanel panel, Package selected) {
+		panel.removeAll();
+		Package tool = selected == null ? null : library.packageById(selected.id());
+		if (tool != null) {
+			List<PinnedCommand> ordered = library.pinnedCommands();
+			List<String> commands = new ArrayList<>();
+			for (PinnedCommand pin : ordered) {
+				if (pin.tool().id().equals(tool.id())) {
+					commands.add(pin.command());
+				}
+			}
+			for (String command : tool.commands()) {
+				if (!tool.isPinned(command)) {
+					commands.add(command);
+				}
+			}
+			for (String command : commands) {
+				int position = pinnedPosition(ordered, tool, command);
+				JPanel row = new JPanel(new FlowLayout(FlowLayout.LEADING, 4, 0));
+				row.putClientProperty("geocedg.userTool.command", command);
+				row.putClientProperty("geocedg.userTool.order", position);
+				String label = position < 0 ? command : (position + 1) + ". " + command;
+				JCheckBox pin = new JCheckBox(label, tool.isPinned(command));
+				pin.setToolTipText(text("UserTools.Pin"));
+				pin.getAccessibleContext().setAccessibleDescription(pin.getToolTipText());
+				row.add(pin);
+				String groupName = tool.pinGroup(command);
+				JButton group = new JButton(groupName.isEmpty()
+						? text("UserTools.Ungrouped") : groupName);
+				group.putClientProperty("geocedg.userTool.group", groupName);
+				group.setEnabled(position >= 0);
+				group.setToolTipText(text("UserTools.Group"));
+				group.addActionListener(action -> editGroup(tool, command, panel));
+				JButton up = new JButton(text("UserTools.MoveUp"));
+				JButton down = new JButton(text("UserTools.MoveDown"));
+				up.setEnabled(position > 0);
+				down.setEnabled(position >= 0 && position + 1 < ordered.size());
+				up.addActionListener(action -> move(tool, command, -1, panel));
+				down.addActionListener(action -> move(tool, command, 1, panel));
+				pin.addActionListener(action -> {
+					try {
+						library.pin(tool.id(), command, pin.isSelected());
+					} catch (IOException exception) {
+						failure(exception.getMessage());
+					}
+					populateManagerPins(panel, tool);
+				});
+				row.add(group);
+				row.add(up);
+				row.add(down);
+				panel.add(row);
+			}
+		}
+		panel.revalidate();
+		panel.repaint();
+	}
+
+	private static int pinnedPosition(List<PinnedCommand> ordered, Package tool,
+			String command) {
+		for (int i = 0; i < ordered.size(); i++) {
+			PinnedCommand pin = ordered.get(i);
+			if (pin.tool().id().equals(tool.id()) && pin.command().equals(command)) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	private void editGroup(Package tool, String command, JPanel panel) {
+		Object value = JOptionPane.showInputDialog(app.getMainComponent(),
+				text("UserTools.Group"), text("UserTools.Title"), JOptionPane.PLAIN_MESSAGE,
+				null, null, tool.pinGroup(command));
+		if (value != null) {
+			try {
+				library.setPinGroup(tool.id(), command, value.toString());
+			} catch (IOException exception) {
+				failure(exception.getMessage());
+			}
+		}
+		populateManagerPins(panel, tool);
+	}
+
+	private void move(Package tool, String command, int delta, JPanel panel) {
+		try {
+			library.movePinned(tool.id(), command, delta);
+		} catch (IOException exception) {
+			failure(exception.getMessage());
+		}
+		populateManagerPins(panel, tool);
 	}
 
 	private String text(String key) {

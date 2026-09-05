@@ -36,6 +36,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry.LoadPurpose;
 import org.geogebra.common.awt.MyImage;
 import org.geogebra.common.awt.annotations.HasNativeSubclass;
 import org.geogebra.common.io.MyXMLHandler;
@@ -207,6 +208,13 @@ public abstract class MyXMLioJre extends MyXMLio {
 		if (!isGGTFile && xmlFileBuffer != null) {
 			kernel.getConstruction().setFileLoading(true);
 			app.getCompanion().resetEuclidianViewForPlaneIds();
+			if (macroXmlFileBuffer != null) {
+				// Macro XML already cleared the construction for this archive. The
+				// following XML is still the archive's full native construction, not
+				// a generic merge; keep the registered macros while restoring identities.
+				kernel.getConstruction().setNextSpatialIdentityLoadPurpose(
+						LoadPurpose.NATIVE_OR_UNDO_RESTORE);
+			}
 			processXMLBuffer(xmlFileBuffer, macroXmlFileBuffer == null, isGGTFile);
 			kernel.getConstruction().setFileLoading(false);
 		}

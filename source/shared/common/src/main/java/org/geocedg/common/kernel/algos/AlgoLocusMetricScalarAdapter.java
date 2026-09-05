@@ -45,6 +45,7 @@ public final class AlgoLocusMetricScalarAdapter extends AlgoElement {
 		this.scalarOutput = new GeoNumeric(construction, false);
 		setProtectedInput(true);
 		setInputOutput();
+		setUpdateAfterAlgo(richInput.getParentAlgorithm());
 		setDependencies();
 		compute();
 		if (label != null) {

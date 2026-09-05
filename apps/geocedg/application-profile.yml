@@ -2714,13 +2714,12 @@
       "toolbar_action_ids": [],
       "overflow_action_ids": [],
       "menu_action_ids": [
-        "document.open",
         "export.dxf-2d"
       ],
       "context_action_ids": [],
       "inspector_action_ids": [],
       "settings_action_ids": [],
-      "notes": "The shared document.open action owns .ggb compatibility input; the DXF dialog owns both baseline and independently feature-gated extended fidelity."
+      "notes": "The document-lifecycle cluster owns the shared .cedg/.ggb open route; the DXF dialog owns both baseline and independently feature-gated extended fidelity."
     },
     {
       "id": "help-command-discovery",
@@ -3059,6 +3058,15 @@
       ]
     },
     {
+      "id": "view",
+      "name_key": "Menu.View",
+      "cluster_ids": [
+        "presentation-visibility-style",
+        "navigation-zoom",
+        "construction-history-definition"
+      ]
+    },
+    {
       "id": "construction",
       "name_key": "Menu.Construction",
       "cluster_ids": [
@@ -3075,12 +3083,19 @@
       ]
     },
     {
-      "id": "view",
-      "name_key": "Menu.View",
-      "cluster_ids": [
-        "presentation-visibility-style",
-        "navigation-zoom",
-        "construction-history-definition"
+      "id": "options",
+      "name_key": "Menu.Options",
+      "cluster_ids": [],
+      "action_ids": [
+        "view.properties",
+        "presentation.axes-toggle",
+        "presentation.grid-toggle",
+        "algebra.description.value",
+        "algebra.description.description",
+        "algebra.description.definition",
+        "result.show-candidate-markers",
+        "result.auto-materialize-initial",
+        "settings.product-language"
       ]
     },
     {
@@ -3109,12 +3124,12 @@
       "es": "Deshacer"
     },
     "upstream.action.Undo.short_help": {
-      "en": "Undo. Use the current construction and its explicit selection.",
-      "es": "Deshacer. Usa la construcción actual y su selección explícita."
+      "en": "Undo the latest construction or presentation change.",
+      "es": "Deshace el último cambio de construcción o presentación."
     },
     "upstream.action.Undo.long_help": {
-      "en": "Undo. Use the current construction and its explicit selection.",
-      "es": "Deshacer. Usa la construcción actual y su selección explícita."
+      "en": "Choose Undo or press Ctrl+Z to reverse the latest undoable change in this document.",
+      "es": "Elija Deshacer o pulse Ctrl+Z para revertir el último cambio deshacible de este documento."
     },
     "upstream.action.Undo.status": {
       "en": "Ready: Undo",
@@ -3129,12 +3144,12 @@
       "es": "Rehacer"
     },
     "upstream.action.Redo.short_help": {
-      "en": "Redo. Use the current construction and its explicit selection.",
-      "es": "Rehacer. Usa la construcción actual y su selección explícita."
+      "en": "Restore the latest undone construction or presentation change.",
+      "es": "Rehace el último cambio de construcción o presentación deshecho."
     },
     "upstream.action.Redo.long_help": {
-      "en": "Redo. Use the current construction and its explicit selection.",
-      "es": "Rehacer. Usa la construcción actual y su selección explícita."
+      "en": "Choose Redo or press Ctrl+Y to restore the latest change reversed by Undo.",
+      "es": "Elija Rehacer o pulse Ctrl+Y para restaurar el último cambio revertido con Deshacer."
     },
     "upstream.action.Redo.status": {
       "en": "Ready: Redo",
@@ -3149,12 +3164,12 @@
       "es": "Animar objeto seleccionado"
     },
     "upstream.action.Animation.short_help": {
-      "en": "Animate selected object. Use the current construction and its explicit selection.",
-      "es": "Animar objeto seleccionado. Usa la construcción actual y su selección explícita."
+      "en": "Start or stop animation for the selected animatable objects.",
+      "es": "Inicia o detiene la animación de los objetos animables seleccionados."
     },
     "upstream.action.Animation.long_help": {
-      "en": "Animate selected object. Use the current construction and its explicit selection.",
-      "es": "Animar objeto seleccionado. Usa la construcción actual y su selección explícita."
+      "en": "Select one or more animatable objects, then use this action to toggle their animation state.",
+      "es": "Seleccione uno o varios objetos animables y use esta acción para alternar su estado de animación."
     },
     "upstream.action.Animation.status": {
       "en": "Ready: Animate selected object",
@@ -3169,12 +3184,12 @@
       "es": "Inspeccionar resultado rico"
     },
     "geocedg.action.ResultInspect.short_help": {
-      "en": "Inspect rich result. Use the current construction and its explicit selection.",
-      "es": "Inspeccionar resultado rico. Usa la construcción actual y su selección explícita."
+      "en": "Inspect the selected rich intersection result without changing it.",
+      "es": "Inspecciona el resultado rico de intersección seleccionado sin modificarlo."
     },
     "geocedg.action.ResultInspect.long_help": {
-      "en": "Inspect rich result. Use the current construction and its explicit selection.",
-      "es": "Inspeccionar resultado rico. Usa la construcción actual y su selección explícita."
+      "en": "Select one rich intersection result to open its read-only status, candidates, identities, residuals, and diagnostics.",
+      "es": "Seleccione un resultado rico de intersección para abrir en modo de solo lectura su estado, candidatos, identidades, residuos y diagnósticos."
     },
     "geocedg.action.ResultInspect.status": {
       "en": "Ready: Inspect rich result",
@@ -3189,12 +3204,12 @@
       "es": "Mostrar marcadores de soluciones"
     },
     "geocedg.action.ResultMarkers.short_help": {
-      "en": "Show solution markers. Use the current construction and its explicit selection.",
-      "es": "Mostrar marcadores de soluciones. Usa la construcción actual y su selección explícita."
+      "en": "Show or hide candidate markers for the active rich intersection result.",
+      "es": "Muestra u oculta los marcadores candidatos del resultado rico de intersección activo."
     },
     "geocedg.action.ResultMarkers.long_help": {
-      "en": "Show solution markers. Use the current construction and its explicit selection.",
-      "es": "Mostrar marcadores de soluciones. Usa la construcción actual y su selección explícita."
+      "en": "Toggle viewport markers for current candidates; this presentation setting neither materializes points nor changes the construction.",
+      "es": "Alterne los marcadores de vista de los candidatos actuales; este ajuste de presentación no materializa puntos ni cambia la construcción."
     },
     "geocedg.action.ResultMarkers.status": {
       "en": "Ready: Show solution markers",
@@ -3209,12 +3224,12 @@
       "es": "Crear punto de intersección seleccionado"
     },
     "geocedg.action.MaterializeSelected.short_help": {
-      "en": "Create selected intersection point. Use the current construction and its explicit selection.",
-      "es": "Crear punto de intersección seleccionado. Usa la construcción actual y su selección explícita."
+      "en": "Create a dependent point for the selected eligible intersection candidate.",
+      "es": "Crea un punto dependiente para el candidato de intersección válido seleccionado."
     },
     "geocedg.action.MaterializeSelected.long_help": {
-      "en": "Create selected intersection point. Use the current construction and its explicit selection.",
-      "es": "Crear punto de intersección seleccionado. Usa la construcción actual y su selección explícita."
+      "en": "Select one eligible candidate in the rich-result inspector, then create a document point bound to its exact durable token.",
+      "es": "Seleccione un candidato válido en el inspector de resultados ricos y cree un punto documental ligado a su token durable exacto."
     },
     "geocedg.action.MaterializeSelected.status": {
       "en": "Ready: Create selected intersection point",
@@ -3229,12 +3244,12 @@
       "es": "Crear puntos de intersección seleccionados"
     },
     "geocedg.action.MaterializeMultiple.short_help": {
-      "en": "Create selected intersection points. Use the current construction and its explicit selection.",
-      "es": "Crear puntos de intersección seleccionados. Usa la construcción actual y su selección explícita."
+      "en": "Create dependent points for the selected eligible intersection candidates.",
+      "es": "Crea puntos dependientes para los candidatos de intersección válidos seleccionados."
     },
     "geocedg.action.MaterializeMultiple.long_help": {
-      "en": "Create selected intersection points. Use the current construction and its explicit selection.",
-      "es": "Crear puntos de intersección seleccionados. Usa la construcción actual y su selección explícita."
+      "en": "Select several eligible candidates in the rich-result inspector, then create document points bound to their exact durable tokens.",
+      "es": "Seleccione varios candidatos válidos en el inspector de resultados ricos y cree puntos documentales ligados a sus tokens durables exactos."
     },
     "geocedg.action.MaterializeMultiple.status": {
       "en": "Ready: Create selected intersection points",
@@ -3249,12 +3264,12 @@
       "es": "Crear todos los puntos de intersección admisibles"
     },
     "geocedg.action.MaterializeAll.short_help": {
-      "en": "Create all eligible intersection points. Use the current construction and its explicit selection.",
-      "es": "Crear todos los puntos de intersección admisibles. Usa la construcción actual y su selección explícita."
+      "en": "Create dependent points for every eligible candidate in the active result.",
+      "es": "Crea puntos dependientes para todos los candidatos válidos del resultado activo."
     },
     "geocedg.action.MaterializeAll.long_help": {
-      "en": "Create all eligible intersection points. Use the current construction and its explicit selection.",
-      "es": "Crear todos los puntos de intersección admisibles. Usa la construcción actual y su selección explícita."
+      "en": "For the active rich intersection result, create document points for all currently eligible exact candidate tokens.",
+      "es": "Para el resultado rico de intersección activo, crea puntos documentales para todos los tokens exactos de candidatos actualmente válidos."
     },
     "geocedg.action.MaterializeAll.status": {
       "en": "Ready: Create all eligible intersection points",
@@ -3269,12 +3284,12 @@
       "es": "Crear automáticamente puntos admisibles de nuevas consultas explícitas"
     },
     "geocedg.action.AutoMaterializeInitial.short_help": {
-      "en": "Auto-create eligible points for new explicit queries. Use the current construction and its explicit selection.",
-      "es": "Crear automáticamente puntos admisibles de nuevas consultas explícitas. Usa la construcción actual y su selección explícita."
+      "en": "Automatically create initially eligible points for new explicit intersection queries.",
+      "es": "Crea automáticamente los puntos inicialmente válidos de nuevas consultas explícitas de intersección."
     },
     "geocedg.action.AutoMaterializeInitial.long_help": {
-      "en": "Auto-create eligible points for new explicit queries. Use the current construction and its explicit selection.",
-      "es": "Crear automáticamente puntos admisibles de nuevas consultas explícitas. Usa la construcción actual y su selección explícita."
+      "en": "Toggle the product preference for future explicit rich intersection queries; existing results and document history are not changed.",
+      "es": "Alterne la preferencia de producto para futuras consultas explícitas de intersección rica; no cambia resultados existentes ni el historial documental."
     },
     "geocedg.action.AutoMaterializeInitial.status": {
       "en": "Ready: Auto-create eligible points for new explicit queries",
@@ -3289,12 +3304,12 @@
       "es": "Spline V2"
     },
     "geocedg.command.SplineV2.short_help": {
-      "en": "Spline V2. Use the current construction and its explicit selection.",
-      "es": "Spline V2. Usa la construcción actual y su selección explícita."
+      "en": "Prepare a SplineV2 command from selected interpolation points and a degree.",
+      "es": "Prepara un comando SplineV2 a partir de puntos de interpolación seleccionados y un grado."
     },
     "geocedg.command.SplineV2.long_help": {
-      "en": "Spline V2. Use the current construction and its explicit selection.",
-      "es": "Spline V2. Usa la construcción actual y su selección explícita."
+      "en": "Select at least three interpolation points and provide an integral degree; the action focuses Algebra Input with the explicit SplineV2 command form.",
+      "es": "Seleccione al menos tres puntos de interpolación e indique un grado entero; la acción enfoca la Entrada Algebraica con la forma explícita del comando SplineV2."
     },
     "geocedg.command.SplineV2.status": {
       "en": "Ready: Spline V2",
@@ -3309,12 +3324,12 @@
       "es": "Procedimientos diédricos CeDG (no autorizados)"
     },
     "geocedg.workspace.DihedralProcedures.short_help": {
-      "en": "CeDG dihedral procedures (not authorized). Use the current construction and its explicit selection.",
-      "es": "Procedimientos diédricos CeDG (no autorizados). Usa la construcción actual y su selección explícita."
+      "en": "CeDG dihedral procedures are unavailable until G9U2 authorization.",
+      "es": "Los procedimientos diédrico CeDG no están disponibles hasta la autorización G9U2."
     },
     "geocedg.workspace.DihedralProcedures.long_help": {
-      "en": "CeDG dihedral procedures (not authorized). Use the current construction and its explicit selection.",
-      "es": "Procedimientos diédricos CeDG (no autorizados). Usa la construcción actual y su selección explícita."
+      "en": "This disabled entry records the planned workspace surface; it provides no substitute construction or hidden fallback in G9U1.",
+      "es": "Esta entrada deshabilitada registra la superficie de trabajo planificada; no ofrece una construcción sustituta ni un fallback oculto en G9U1."
     },
     "geocedg.workspace.DihedralProcedures.status": {
       "en": "Ready: CeDG dihedral procedures (not authorized)",
@@ -3329,12 +3344,12 @@
       "es": "Ejes"
     },
     "upstream.view.Axes.short_help": {
-      "en": "Axes. Use the current construction and its explicit selection.",
-      "es": "Ejes. Usa la construcción actual y su selección explícita."
+      "en": "Show or hide axes in the active graphics view.",
+      "es": "Muestra u oculta los ejes en la vista gráfica activa."
     },
     "upstream.view.Axes.long_help": {
-      "en": "Axes. Use the current construction and its explicit selection.",
-      "es": "Ejes. Usa la construcción actual y su selección explícita."
+      "en": "Toggle the upstream axes presentation for the active graphics view; object definitions and dependencies are unchanged.",
+      "es": "Alterne la presentación upstream de ejes en la vista gráfica activa; las definiciones y dependencias de objetos no cambian."
     },
     "upstream.view.Axes.status": {
       "en": "Ready: Axes",
@@ -3349,12 +3364,12 @@
       "es": "Cuadrícula"
     },
     "upstream.view.Grid.short_help": {
-      "en": "Grid. Use the current construction and its explicit selection.",
-      "es": "Cuadrícula. Usa la construcción actual y su selección explícita."
+      "en": "Show or hide the grid in the active graphics view.",
+      "es": "Muestra u oculta la cuadrícula en la vista gráfica activa."
     },
     "upstream.view.Grid.long_help": {
-      "en": "Grid. Use the current construction and its explicit selection.",
-      "es": "Cuadrícula. Usa la construcción actual y su selección explícita."
+      "en": "Toggle the upstream grid presentation for the active graphics view; it does not alter geometric semantics.",
+      "es": "Alterne la presentación upstream de cuadrícula en la vista gráfica activa; no altera la semántica geométrica."
     },
     "upstream.view.Grid.status": {
       "en": "Ready: Grid",
@@ -3369,12 +3384,12 @@
       "es": "Zoom por rectángulo"
     },
     "geocedg.action.ZoomWindow.short_help": {
-      "en": "Zoom to rectangle. Use the current construction and its explicit selection.",
-      "es": "Zoom por rectángulo. Usa la construcción actual y su selección explícita."
+      "en": "Zoom the active graphics view to a dragged rectangle.",
+      "es": "Amplía la vista gráfica activa al rectángulo arrastrado."
     },
     "geocedg.action.ZoomWindow.long_help": {
-      "en": "Zoom to rectangle. Use the current construction and its explicit selection.",
-      "es": "Zoom por rectángulo. Usa la construcción actual y su selección explícita."
+      "en": "Choose the action, drag a rectangle in the active 2D view, and release to fit it; canceling or zooming does not change the construction.",
+      "es": "Elija la acción, arrastre un rectángulo en la vista 2D activa y suéltelo para ajustarlo; cancelar o ampliar no cambia la construcción."
     },
     "geocedg.action.ZoomWindow.status": {
       "en": "Ready: Zoom to rectangle",
@@ -3389,12 +3404,12 @@
       "es": "Vista estándar"
     },
     "upstream.view.StandardView.short_help": {
-      "en": "Standard view. Use the current construction and its explicit selection.",
-      "es": "Vista estándar. Usa la construcción actual y su selección explícita."
+      "en": "Restore the standard viewport in the active graphics view.",
+      "es": "Restaura la vista estándar en la vista gráfica activa."
     },
     "upstream.view.StandardView.long_help": {
-      "en": "Standard view. Use the current construction and its explicit selection.",
-      "es": "Vista estándar. Usa la construcción actual y su selección explícita."
+      "en": "Reset the active graphics view to the upstream standard scale and position without changing construction objects.",
+      "es": "Restablezca la escala y posición estándar upstream de la vista gráfica activa sin cambiar los objetos de construcción."
     },
     "upstream.view.StandardView.status": {
       "en": "Ready: Standard view",
@@ -3409,12 +3424,12 @@
       "es": "Mostrar todos los objetos"
     },
     "upstream.view.ShowAllObjects.short_help": {
-      "en": "Show all objects. Use the current construction and its explicit selection.",
-      "es": "Mostrar todos los objetos. Usa la construcción actual y su selección explícita."
+      "en": "Fit all visible construction objects in the active graphics view.",
+      "es": "Ajusta todos los objetos visibles de la construcción en la vista gráfica activa."
     },
     "upstream.view.ShowAllObjects.long_help": {
-      "en": "Show all objects. Use the current construction and its explicit selection.",
-      "es": "Mostrar todos los objetos. Usa la construcción actual y su selección explícita."
+      "en": "Adjust the active viewport to include the currently visible objects; hidden state and geometric definitions remain unchanged.",
+      "es": "Ajuste la vista activa para incluir los objetos actualmente visibles; el estado oculto y las definiciones geométricas permanecen sin cambios."
     },
     "upstream.view.ShowAllObjects.status": {
       "en": "Ready: Show all objects",
@@ -3425,36 +3440,36 @@
       "es": "No se puede ejecutar Mostrar todos los objetos en el contexto actual."
     },
     "upstream.document.New.name": {
-      "en": "New construction",
-      "es": "Nueva construcción"
+      "en": "New file",
+      "es": "Nuevo archivo"
     },
     "upstream.document.New.short_help": {
-      "en": "New construction. Use the current construction and its explicit selection.",
-      "es": "Nueva construcción. Usa la construcción actual y su selección explícita."
+      "en": "Start a new, empty construction file.",
+      "es": "Inicia un archivo de construcción nuevo y vacío."
     },
     "upstream.document.New.long_help": {
-      "en": "New construction. Use the current construction and its explicit selection.",
-      "es": "Nueva construcción. Usa la construcción actual y su selección explícita."
+      "en": "Create a blank document through the native lifecycle; the host asks how to handle unsaved changes before replacing the current document.",
+      "es": "Cree un documento vacío mediante el ciclo de vida nativo; el host pregunta qué hacer con los cambios sin guardar antes de sustituir el documento actual."
     },
     "upstream.document.New.status": {
-      "en": "Ready: New construction",
-      "es": "Disponible: Nueva construcción"
+      "en": "Ready: New file",
+      "es": "Disponible: Nuevo archivo"
     },
     "upstream.document.New.error": {
-      "en": "Cannot perform New construction in the current context.",
-      "es": "No se puede ejecutar Nueva construcción en el contexto actual."
+      "en": "Cannot create a new file in the current context.",
+      "es": "No se puede crear un archivo nuevo en el contexto actual."
     },
     "upstream.document.Open.name": {
       "en": "Open…",
       "es": "Abrir…"
     },
     "upstream.document.Open.short_help": {
-      "en": "Open…. Use the current construction and its explicit selection.",
-      "es": "Abrir…. Usa la construcción actual y su selección explícita."
+      "en": "Open a GeoCeDG document or supported compatibility file.",
+      "es": "Abre un documento GeoCeDG o un archivo de compatibilidad admitido."
     },
     "upstream.document.Open.long_help": {
-      "en": "Open…. Use the current construction and its explicit selection.",
-      "es": "Abrir…. Usa la construcción actual y su selección explícita."
+      "en": "Choose a .cedg document, or a supported .ggb compatibility input, using the native open lifecycle and validation.",
+      "es": "Elija un documento .cedg o una entrada de compatibilidad .ggb admitida mediante el ciclo de apertura y validación nativo."
     },
     "upstream.document.Open.status": {
       "en": "Ready: Open…",
@@ -3469,12 +3484,12 @@
       "es": "Abrir reciente…"
     },
     "upstream.document.Recent.short_help": {
-      "en": "Open recent…. Use the current construction and its explicit selection.",
-      "es": "Abrir reciente…. Usa la construcción actual y su selección explícita."
+      "en": "Open a document from the native recent-files list.",
+      "es": "Abre un documento de la lista nativa de archivos recientes."
     },
     "upstream.document.Recent.long_help": {
-      "en": "Open recent…. Use the current construction and its explicit selection.",
-      "es": "Abrir reciente…. Usa la construcción actual y su selección explícita."
+      "en": "Choose a previously opened supported document; availability depends on the host recent-files history.",
+      "es": "Elija un documento compatible abierto anteriormente; la disponibilidad depende del historial de archivos recientes del host."
     },
     "upstream.document.Recent.status": {
       "en": "Ready: Open recent…",
@@ -3489,12 +3504,12 @@
       "es": "Guardar"
     },
     "upstream.document.Save.short_help": {
-      "en": "Save. Use the current construction and its explicit selection.",
-      "es": "Guardar. Usa la construcción actual y su selección explícita."
+      "en": "Validate and save the current document in native GeoCeDG format.",
+      "es": "Valida y guarda el documento actual en el formato nativo de GeoCeDG."
     },
     "upstream.document.Save.long_help": {
-      "en": "Save. Use the current construction and its explicit selection.",
-      "es": "Guardar. Usa la construcción actual y su selección explícita."
+      "en": "Save through the .cedg prevalidation boundary; a validation failure is reported and must not replace the previously saved file.",
+      "es": "Guarde mediante la frontera de prevalidación .cedg; un fallo de validación se informa y no debe sustituir el archivo guardado anteriormente."
     },
     "upstream.document.Save.status": {
       "en": "Ready: Save",
@@ -3509,12 +3524,12 @@
       "es": "Guardar como…"
     },
     "upstream.document.SaveAs.short_help": {
-      "en": "Save as…. Use the current construction and its explicit selection.",
-      "es": "Guardar como…. Usa la construcción actual y su selección explícita."
+      "en": "Validate and save the current document to a chosen .cedg file.",
+      "es": "Valida y guarda el documento actual en un archivo .cedg elegido."
     },
     "upstream.document.SaveAs.long_help": {
-      "en": "Save as…. Use the current construction and its explicit selection.",
-      "es": "Guardar como…. Usa la construcción actual y su selección explícita."
+      "en": "Choose a destination and save through native .cedg prevalidation; failed validation leaves any existing destination unchanged.",
+      "es": "Elija un destino y guarde mediante la prevalidación nativa .cedg; si falla, cualquier archivo de destino existente queda sin cambios."
     },
     "upstream.document.SaveAs.status": {
       "en": "Ready: Save as…",
@@ -3529,12 +3544,12 @@
       "es": "Vista previa de impresión…"
     },
     "upstream.document.PrintPreview.short_help": {
-      "en": "Print preview…. Use the current construction and its explicit selection.",
-      "es": "Vista previa de impresión…. Usa la construcción actual y su selección explícita."
+      "en": "Preview the printable document before sending it to a printer.",
+      "es": "Previsualiza el documento imprimible antes de enviarlo a una impresora."
     },
     "upstream.document.PrintPreview.long_help": {
-      "en": "Print preview…. Use the current construction and its explicit selection.",
-      "es": "Vista previa de impresión…. Usa la construcción actual y su selección explícita."
+      "en": "Open the upstream print-preview surface for the current presentation; previewing does not alter construction semantics.",
+      "es": "Abra la previsualización de impresión upstream para la presentación actual; previsualizar no altera la semántica de construcción."
     },
     "upstream.document.PrintPreview.status": {
       "en": "Ready: Print preview…",
@@ -3549,12 +3564,12 @@
       "es": "Cerrar"
     },
     "upstream.document.Close.short_help": {
-      "en": "Close. Use the current construction and its explicit selection.",
-      "es": "Cerrar. Usa la construcción actual y su selección explícita."
+      "en": "Close the current GeoCeDG window through the native document lifecycle.",
+      "es": "Cierra la ventana GeoCeDG actual mediante el ciclo de vida nativo del documento."
     },
     "upstream.document.Close.long_help": {
-      "en": "Close. Use the current construction and its explicit selection.",
-      "es": "Cerrar. Usa la construcción actual y su selección explícita."
+      "en": "Request window closure; the host prompts before discarding unsaved document changes.",
+      "es": "Solicite cerrar la ventana; el host avisa antes de descartar cambios del documento sin guardar."
     },
     "upstream.document.Close.status": {
       "en": "Ready: Close",
@@ -3569,12 +3584,12 @@
       "es": "Entrada algebraica"
     },
     "upstream.view.InputBar.short_help": {
-      "en": "Algebra Input. Use the current construction and its explicit selection.",
-      "es": "Entrada algebraica. Usa la construcción actual y su selección explícita."
+      "en": "Show or hide Algebra Input for command and expression entry.",
+      "es": "Muestra u oculta la Entrada Algebraica para introducir comandos y expresiones."
     },
     "upstream.view.InputBar.long_help": {
-      "en": "Algebra Input. Use the current construction and its explicit selection.",
-      "es": "Entrada algebraica. Usa la construcción actual y su selección explícita."
+      "en": "Toggle the upstream Algebra Input surface; submitted expressions still pass through the approved command and kernel routes.",
+      "es": "Alterne la superficie upstream de Entrada Algebraica; las expresiones enviadas siguen pasando por las rutas aprobadas de comandos y kernel."
     },
     "upstream.view.InputBar.status": {
       "en": "Ready: Algebra Input",
@@ -3589,12 +3604,12 @@
       "es": "Gestionar herramientas de usuario…"
     },
     "upstream.tools.Manage.short_help": {
-      "en": "Manage user tools…. Use the current construction and its explicit selection.",
-      "es": "Gestionar herramientas de usuario…. Usa la construcción actual y su selección explícita."
+      "en": "Open the manager for installed user tools.",
+      "es": "Abre el gestor de herramientas de usuario instaladas."
     },
     "upstream.tools.Manage.long_help": {
-      "en": "Manage user tools…. Use the current construction and its explicit selection.",
-      "es": "Gestionar herramientas de usuario…. Usa la construcción actual y su selección explícita."
+      "en": "Review, install, remove, pin, and organize user tools stored in the GeoCeDG application profile; library changes do not edit the document.",
+      "es": "Revise, instale, elimine, fije y organice herramientas guardadas en el perfil de aplicación GeoCeDG; los cambios de biblioteca no editan el documento."
     },
     "upstream.tools.Manage.status": {
       "en": "Ready: Manage user tools…",
@@ -3609,12 +3624,12 @@
       "es": "Propiedades y guiones del objeto…"
     },
     "upstream.properties.Scripting.short_help": {
-      "en": "Object properties and scripting…. Use the current construction and its explicit selection.",
-      "es": "Propiedades y guiones del objeto…. Usa la construcción actual y su selección explícita."
+      "en": "Open the scripting properties for the single selected object.",
+      "es": "Abre las propiedades de scripting del único objeto seleccionado."
     },
     "upstream.properties.Scripting.long_help": {
-      "en": "Object properties and scripting…. Use the current construction and its explicit selection.",
-      "es": "Propiedades y guiones del objeto…. Usa la construcción actual y su selección explícita."
+      "en": "Select exactly one object, then inspect or edit its supported host scripting properties; this does not authorize new geometric semantics.",
+      "es": "Seleccione exactamente un objeto y revise o edite sus propiedades de scripting admitidas por el host; esto no autoriza semántica geométrica nueva."
     },
     "upstream.properties.Scripting.status": {
       "en": "Ready: Object properties and scripting…",
@@ -3629,12 +3644,12 @@
       "es": "Laboratorio heredado (sesión separada)"
     },
     "geocedg.action.LegacyLaboratory.short_help": {
-      "en": "Legacy laboratory (separate session). Use the current construction and its explicit selection.",
-      "es": "Laboratorio heredado (sesión separada). Usa la construcción actual y su selección explícita."
+      "en": "Open an explicitly chosen legacy resource in an isolated diagnostic process.",
+      "es": "Abre un recurso legacy elegido explícitamente en un proceso de diagnóstico aislado."
     },
     "geocedg.action.LegacyLaboratory.long_help": {
-      "en": "Legacy laboratory (separate session). Use the current construction and its explicit selection.",
-      "es": "Laboratorio heredado (sesión separada). Usa la construcción actual y su selección explícita."
+      "en": "Choose a supported legacy file to launch in a separate Classic process with isolated preferences; it is not installed, promoted, or treated as current GeoCeDG semantics.",
+      "es": "Elija un archivo legacy compatible para iniciarlo en un proceso Classic separado con preferencias aisladas; no se instala, promociona ni trata como semántica GeoCeDG actual."
     },
     "geocedg.action.LegacyLaboratory.status": {
       "en": "Ready: Legacy laboratory (separate session)",
@@ -3649,12 +3664,12 @@
       "es": "Exportar geometría 2D como DXF (experimental)…"
     },
     "geocedg.action.ExportDxf.short_help": {
-      "en": "Export 2D geometry as DXF (experimental)…. Use the current construction and its explicit selection.",
-      "es": "Exportar geometría 2D como DXF (experimental)…. Usa la construcción actual y su selección explícita."
+      "en": "Export supported 2D construction geometry through the experimental DXF adapter.",
+      "es": "Exporta la geometría 2D compatible mediante el adaptador DXF experimental."
     },
     "geocedg.action.ExportDxf.long_help": {
-      "en": "Export 2D geometry as DXF (experimental)…. Use the current construction and its explicit selection.",
-      "es": "Exportar geometría 2D como DXF (experimental)…. Usa la construcción actual y su selección explícita."
+      "en": "Open the DXF preflight dialog, review supported entities and fidelity limits, then choose a destination; export reads the document without becoming geometric authority.",
+      "es": "Abra el diálogo de preflight DXF, revise las entidades compatibles y los límites de fidelidad y elija un destino; la exportación lee el documento sin convertirse en autoridad geométrica."
     },
     "geocedg.action.ExportDxf.status": {
       "en": "Ready: Export 2D geometry as DXF (experimental)…",
@@ -3669,12 +3684,12 @@
       "es": "Ayuda de entrada"
     },
     "upstream.help.Input.short_help": {
-      "en": "Input help. Use the current construction and its explicit selection.",
-      "es": "Ayuda de entrada. Usa la construcción actual y su selección explícita."
+      "en": "Show guidance for entering commands and expressions.",
+      "es": "Muestra ayuda para introducir comandos y expresiones."
     },
     "upstream.help.Input.long_help": {
-      "en": "Input help. Use the current construction and its explicit selection.",
-      "es": "Ayuda de entrada. Usa la construcción actual y su selección explícita."
+      "en": "Open the upstream input help for syntax and entry workflow; command availability remains governed by the GeoCeDG profile.",
+      "es": "Abra la ayuda upstream de entrada para consultar sintaxis y flujo de introducción; la disponibilidad de comandos sigue gobernada por el perfil GeoCeDG."
     },
     "upstream.help.Input.status": {
       "en": "Ready: Input help",
@@ -3689,12 +3704,12 @@
       "es": "Lista de comandos"
     },
     "upstream.help.Commands.short_help": {
-      "en": "Command list. Use the current construction and its explicit selection.",
-      "es": "Lista de comandos. Usa la construcción actual y su selección explícita."
+      "en": "Browse the command reference available to the current product.",
+      "es": "Consulta la referencia de comandos disponible para el producto actual."
     },
     "upstream.help.Commands.long_help": {
-      "en": "Command list. Use the current construction and its explicit selection.",
-      "es": "Lista de comandos. Usa la construcción actual y su selección explícita."
+      "en": "Open the upstream command list filtered by the current GeoCeDG command availability; disabled semantics are not enabled by this help view.",
+      "es": "Abra la lista upstream de comandos filtrada por la disponibilidad actual de GeoCeDG; esta ayuda no habilita semánticas desactivadas."
     },
     "upstream.help.Commands.status": {
       "en": "Ready: Command list",
@@ -3709,12 +3724,12 @@
       "es": "Ayuda de herramienta actual"
     },
     "geocedg.help.ContextualAction.short_help": {
-      "en": "Current tool help. Use the current construction and its explicit selection.",
-      "es": "Ayuda de herramienta actual. Usa la construcción actual y su selección explícita."
+      "en": "Show help for the currently active construction tool.",
+      "es": "Muestra ayuda para la herramienta de construcción activa."
     },
     "geocedg.help.ContextualAction.long_help": {
-      "en": "Current tool help. Use the current construction and its explicit selection.",
-      "es": "Ayuda de herramienta actual. Usa la construcción actual y su selección explícita."
+      "en": "Activate a tool first, then open this help to see its required inputs, selection order, effect, and current availability.",
+      "es": "Active primero una herramienta y abra esta ayuda para consultar sus entradas requeridas, orden de selección, efecto y disponibilidad actual."
     },
     "geocedg.help.ContextualAction.status": {
       "en": "Ready: Current tool help",
@@ -3729,12 +3744,12 @@
       "es": "Guía de usuario de GeoCeDG"
     },
     "geocedg.help.UserGuide.short_help": {
-      "en": "GeoCeDG user guide. Use the current construction and its explicit selection.",
-      "es": "Guía de usuario de GeoCeDG. Usa la construcción actual y su selección explícita."
+      "en": "Open the bundled GeoCeDG construction guide.",
+      "es": "Abre la guía de construcción GeoCeDG incluida."
     },
     "geocedg.help.UserGuide.long_help": {
-      "en": "GeoCeDG user guide. Use the current construction and its explicit selection.",
-      "es": "Guía de usuario de GeoCeDG. Usa la construcción actual y su selección explícita."
+      "en": "Read the packaged guide for the approved workspace, document lifecycle, semantic tools, validation surfaces, and current limitations.",
+      "es": "Consulte la guía incluida sobre el espacio aprobado, ciclo documental, herramientas semánticas, superficies de validación y limitaciones actuales."
     },
     "geocedg.help.UserGuide.status": {
       "en": "Ready: GeoCeDG user guide",
@@ -3749,12 +3764,12 @@
       "es": "Atajos de teclado"
     },
     "upstream.help.KeyboardShortcuts.short_help": {
-      "en": "Keyboard shortcuts. Use the current construction and its explicit selection.",
-      "es": "Atajos de teclado. Usa la construcción actual y su selección explícita."
+      "en": "Show keyboard shortcuts supported by the Desktop host.",
+      "es": "Muestra los atajos de teclado admitidos por el host Desktop."
     },
     "upstream.help.KeyboardShortcuts.long_help": {
-      "en": "Keyboard shortcuts. Use the current construction and its explicit selection.",
-      "es": "Atajos de teclado. Usa la construcción actual y su selección explícita."
+      "en": "Open the shortcut reference for navigation and common actions; shortcuts invoke the same registered product actions.",
+      "es": "Abra la referencia de atajos para navegación y acciones comunes; los atajos invocan las mismas acciones registradas del producto."
     },
     "upstream.help.KeyboardShortcuts.status": {
       "en": "Ready: Keyboard shortcuts",
@@ -3769,12 +3784,12 @@
       "es": "Acerca de GeoCeDG"
     },
     "geocedg.help.About.short_help": {
-      "en": "About GeoCeDG. Use the current construction and its explicit selection.",
-      "es": "Acerca de GeoCeDG. Usa la construcción actual y su selección explícita."
+      "en": "Show GeoCeDG version, origin baseline, authorship, and license information.",
+      "es": "Muestra la versión, base de origen, autoría y licencias de GeoCeDG."
     },
     "geocedg.help.About.long_help": {
-      "en": "About GeoCeDG. Use the current construction and its explicit selection.",
-      "es": "Acerca de GeoCeDG. Usa la construcción actual y su selección explícita."
+      "en": "Open About to review the packaged GeoCeDG version, upstream GeoGebra baseline, Manuel Prado-Velasco and Universidad de Sevilla attribution, and retained credits and licenses.",
+      "es": "Abra Acerca de para consultar la versión empaquetada de GeoCeDG, la base upstream de GeoGebra, la atribución a Manuel Prado-Velasco y la Universidad de Sevilla y los créditos y licencias conservados."
     },
     "geocedg.help.About.status": {
       "en": "Ready: About GeoCeDG",
@@ -3789,12 +3804,12 @@
       "es": "Abrir sesión de diagnóstico Classic"
     },
     "geocedg.action.OpenClassic.short_help": {
-      "en": "Open Classic diagnostic session. Use the current construction and its explicit selection.",
-      "es": "Abrir sesión de diagnóstico Classic. Usa la construcción actual y su selección explícita."
+      "en": "Open a separate Classic diagnostic session with isolated preferences.",
+      "es": "Abre una sesión Classic de diagnóstico separada con preferencias aisladas."
     },
     "geocedg.action.OpenClassic.long_help": {
-      "en": "Open Classic diagnostic session. Use the current construction and its explicit selection.",
-      "es": "Abrir sesión de diagnóstico Classic. Usa la construcción actual y su selección explícita."
+      "en": "Launch Classic in a separate process for diagnosis; it does not replace the Construction profile or silently transfer the active document.",
+      "es": "Inicie Classic en un proceso separado para diagnóstico; no sustituye el perfil Construcción ni transfiere silenciosamente el documento activo."
     },
     "geocedg.action.OpenClassic.status": {
       "en": "Ready: Open Classic diagnostic session",
@@ -3809,12 +3824,12 @@
       "es": "Idioma del producto…"
     },
     "geocedg.settings.Language.short_help": {
-      "en": "Product language…. Use the current construction and its explicit selection.",
-      "es": "Idioma del producto…. Usa la construcción actual y su selección explícita."
+      "en": "Choose English or Spanish for GeoCeDG product surfaces.",
+      "es": "Elige inglés o español para las superficies del producto GeoCeDG."
     },
     "geocedg.settings.Language.long_help": {
-      "en": "Product language…. Use the current construction and its explicit selection.",
-      "es": "Idioma del producto…. Usa la construcción actual y su selección explícita."
+      "en": "Select EN or ES for the GeoCeDG application profile; the choice updates localized product presentation without changing construction semantics.",
+      "es": "Seleccione EN o ES para el perfil de aplicación GeoCeDG; la opción actualiza la presentación localizada sin cambiar la semántica de construcción."
     },
     "geocedg.settings.Language.status": {
       "en": "Ready: Product language…",
@@ -3829,12 +3844,12 @@
       "es": "Protocolo de construcción"
     },
     "upstream.view.ConstructionProtocol.short_help": {
-      "en": "Construction protocol. Use the current construction and its explicit selection.",
-      "es": "Protocolo de construcción. Usa la construcción actual y su selección explícita."
+      "en": "Show or hide the Construction Protocol procedure view.",
+      "es": "Muestra u oculta la vista de procedimiento del Protocolo de Construcción."
     },
     "upstream.view.ConstructionProtocol.long_help": {
-      "en": "Construction protocol. Use the current construction and its explicit selection.",
-      "es": "Protocolo de construcción. Usa la construcción actual y su selección explícita."
+      "en": "Toggle the upstream procedure view of construction steps; it observes the kernel dependency graph and is not a redefine mechanism.",
+      "es": "Alterne la vista upstream de los pasos de construcción; observa el grafo de dependencias del kernel y no es un mecanismo de redefinición."
     },
     "upstream.view.ConstructionProtocol.status": {
       "en": "Ready: Construction protocol",
@@ -3849,12 +3864,12 @@
       "es": "Navegación por la construcción"
     },
     "upstream.view.NavigationBar.short_help": {
-      "en": "Construction navigation. Use the current construction and its explicit selection.",
-      "es": "Navegación por la construcción. Usa la construcción actual y su selección explícita."
+      "en": "Show or hide construction-step navigation controls.",
+      "es": "Muestra u oculta los controles de navegación por pasos de construcción."
     },
     "upstream.view.NavigationBar.long_help": {
-      "en": "Construction navigation. Use the current construction and its explicit selection.",
-      "es": "Navegación por la construcción. Usa la construcción actual y su selección explícita."
+      "en": "Toggle the upstream navigation bar used to inspect construction steps; navigation does not rewrite the dependency graph.",
+      "es": "Alterne la barra upstream para inspeccionar pasos de construcción; navegar no reescribe el grafo de dependencias."
     },
     "upstream.view.NavigationBar.status": {
       "en": "Ready: Construction navigation",
@@ -3869,12 +3884,12 @@
       "es": "Propiedades…"
     },
     "upstream.view.Properties.short_help": {
-      "en": "Properties…. Use the current construction and its explicit selection.",
-      "es": "Propiedades…. Usa la construcción actual y su selección explícita."
+      "en": "Open properties for the current selection or active view.",
+      "es": "Abre las propiedades de la selección actual o de la vista activa."
     },
     "upstream.view.Properties.long_help": {
-      "en": "Properties…. Use the current construction and its explicit selection.",
-      "es": "Propiedades…. Usa la construcción actual y su selección explícita."
+      "en": "Use the upstream properties surface for supported graphics, Algebra, object, and presentation settings; GeoCeDG policy continues to block semantic or deterministic changes.",
+      "es": "Use la superficie upstream de propiedades para ajustes compatibles de gráficos, Álgebra, objetos y presentación; la política GeoCeDG sigue bloqueando cambios semánticos o de determinismo."
     },
     "upstream.view.Properties.status": {
       "en": "Ready: Properties…",
@@ -3889,12 +3904,12 @@
       "es": "Inspeccionar definición…"
     },
     "geocedg.action.InspectDefinition.short_help": {
-      "en": "Inspect definition…. Use the current construction and its explicit selection.",
-      "es": "Inspeccionar definición…. Usa la construcción actual y su selección explícita."
+      "en": "Inspect the selected object's definition and semantic address.",
+      "es": "Inspecciona la definición y dirección semántica del objeto seleccionado."
     },
     "geocedg.action.InspectDefinition.long_help": {
-      "en": "Inspect definition…. Use the current construction and its explicit selection.",
-      "es": "Inspeccionar definición…. Usa la construcción actual y su selección explícita."
+      "en": "Select exactly one object. The read-only inspector shows dependencies and, when present, branch/component metadata and the exact durable direction of a semantic point; it never infers direction from coordinates.",
+      "es": "Seleccione exactamente un objeto. El inspector de solo lectura muestra dependencias y, cuando existen, metadatos de rama/componente y la dirección durable exacta de un punto semántico; nunca infiere la dirección desde coordenadas."
     },
     "geocedg.action.InspectDefinition.status": {
       "en": "Ready: Inspect definition…",
@@ -3909,12 +3924,12 @@
       "es": "Inspeccionar definición de curva semántica…"
     },
     "geocedg.action.SemanticCurveDefinition.short_help": {
-      "en": "Inspect semantic curve definition…. Use the current construction and its explicit selection.",
-      "es": "Inspeccionar definición de curva semántica…. Usa la construcción actual y su selección explícita."
+      "en": "Inspect branch, component, and semantic addresses for the selected Locus V2 or Spline V2 object.",
+      "es": "Inspecciona las direcciones de rama, componente y semántica del Locus V2 o Spline V2 seleccionado."
     },
     "geocedg.action.SemanticCurveDefinition.long_help": {
-      "en": "Inspect semantic curve definition…. Use the current construction and its explicit selection.",
-      "es": "Inspeccionar definición de curva semántica…. Usa la construcción actual y su selección explícita."
+      "en": "Select exactly one semantic curve. The read-only inspector reports typed branch/component structure and durable addresses; no branch is omitted and no preimage is inferred from geometry.",
+      "es": "Seleccione exactamente una curva semántica. El inspector de solo lectura informa la estructura tipada de rama/componente y las direcciones durables; no omite ramas ni infiere preimágenes desde la geometría."
     },
     "geocedg.action.SemanticCurveDefinition.status": {
       "en": "Ready: Inspect semantic curve definition…",
@@ -3929,12 +3944,12 @@
       "es": "Valor"
     },
     "upstream.algebra.Value.short_help": {
-      "en": "Value. Use the current construction and its explicit selection.",
-      "es": "Valor. Usa la construcción actual y su selección explícita."
+      "en": "Display Algebra rows as current values.",
+      "es": "Muestra las filas de Álgebra como valores actuales."
     },
     "upstream.algebra.Value.long_help": {
-      "en": "Value. Use the current construction and its explicit selection.",
-      "es": "Valor. Usa la construcción actual y su selección explícita."
+      "en": "Choose Value to change only the Algebra presentation style; object definitions and dependencies remain unchanged.",
+      "es": "Elija Valor para cambiar solo el estilo de presentación de Álgebra; las definiciones y dependencias de objetos permanecen sin cambios."
     },
     "upstream.algebra.Value.status": {
       "en": "Ready: Value",
@@ -3949,12 +3964,12 @@
       "es": "Descripción"
     },
     "upstream.algebra.Description.short_help": {
-      "en": "Description. Use the current construction and its explicit selection.",
-      "es": "Descripción. Usa la construcción actual y su selección explícita."
+      "en": "Display Algebra rows as object descriptions.",
+      "es": "Muestra las filas de Álgebra como descripciones de objetos."
     },
     "upstream.algebra.Description.long_help": {
-      "en": "Description. Use the current construction and its explicit selection.",
-      "es": "Descripción. Usa la construcción actual y su selección explícita."
+      "en": "Choose Description to change only the Algebra presentation style; object definitions and dependencies remain unchanged.",
+      "es": "Elija Descripción para cambiar solo el estilo de presentación de Álgebra; las definiciones y dependencias de objetos permanecen sin cambios."
     },
     "upstream.algebra.Description.status": {
       "en": "Ready: Description",
@@ -3969,12 +3984,12 @@
       "es": "Definición"
     },
     "upstream.algebra.Definition.short_help": {
-      "en": "Definition. Use the current construction and its explicit selection.",
-      "es": "Definición. Usa la construcción actual y su selección explícita."
+      "en": "Display Algebra rows as construction definitions.",
+      "es": "Muestra las filas de Álgebra como definiciones de construcción."
     },
     "upstream.algebra.Definition.long_help": {
-      "en": "Definition. Use the current construction and its explicit selection.",
-      "es": "Definición. Usa la construcción actual y su selección explícita."
+      "en": "Choose Definition to show each supported object's defining expression without redefining it or changing dependencies.",
+      "es": "Elija Definición para mostrar la expresión definitoria de cada objeto compatible sin redefinirlo ni cambiar dependencias."
     },
     "upstream.algebra.Definition.status": {
       "en": "Ready: Definition",
@@ -4117,6 +4132,11 @@
     "UserTools.Remove": { "en": "Remove installed package", "es": "Eliminar paquete instalado" },
     "UserTools.Pin": { "en": "Pin to toolbar", "es": "Fijar en barra de herramientas" },
     "UserTools.Unpin": { "en": "Unpin from toolbar", "es": "Quitar de barra de herramientas" },
+    "UserTools.Group": { "en": "Toolbar group", "es": "Grupo de barra de herramientas" },
+    "UserTools.Order": { "en": "Toolbar order", "es": "Orden de barra de herramientas" },
+    "UserTools.MoveUp": { "en": "Move up", "es": "Subir" },
+    "UserTools.MoveDown": { "en": "Move down", "es": "Bajar" },
+    "UserTools.Ungrouped": { "en": "Ungrouped", "es": "Sin agrupar" },
     "UserTools.Document": { "en": "Document tools (local only)…", "es": "Herramientas del documento (solo locales)…" },
     "UserTools.Installed": { "en": "Installed packages", "es": "Paquetes instalados" },
     "UserTools.Empty": { "en": "No installed user tools", "es": "No hay herramientas de usuario instaladas" },
@@ -4167,6 +4187,10 @@
     "Menu.View": {
       "en": "View",
       "es": "Vista"
+    },
+    "Menu.Options": {
+      "en": "Options",
+      "es": "Opciones"
     },
     "Menu.Automation": {
       "en": "Automation",
@@ -4240,6 +4264,48 @@
       "en": "GeoCeDG — explicit constructive descriptive geometry. Geometry and identity belong to the shared kernel. Upstream compatibility is preserved; this is an author-review implementation candidate.",
       "es": "GeoCeDG — geometría descriptiva constructiva explícita. La geometría y la identidad pertenecen al núcleo compartido. Se conserva la compatibilidad heredada; este es un candidato de implementación para revisión del autor."
     },
+    "About.UpstreamBaseline": {
+      "en": "GeoGebra upstream baseline",
+      "es": "Versión base upstream de GeoGebra"
+    },
+    "About.Author": {
+      "en": "Manuel Prado-Velasco, Universidad de Sevilla",
+      "es": "Manuel Prado-Velasco, Universidad de Sevilla"
+    },
+    "About.Licenses": {
+      "en": "Required upstream credits and licenses are retained in LICENSE, NOTICE.md, and THIRD_PARTY.md.",
+      "es": "Los créditos y licencias upstream obligatorios se conservan en LICENSE, NOTICE.md y THIRD_PARTY.md."
+    },
+    "Definition.SemanticStructure": {
+      "en": "Semantic structure",
+      "es": "Estructura semántica"
+    },
+    "Definition.Branch": { "en": "Branch", "es": "Rama" },
+    "Definition.Component": { "en": "Component", "es": "Componente" },
+    "Definition.SemanticAddress": {
+      "en": "Semantic address",
+      "es": "Dirección semántica"
+    },
+    "Definition.AddressStatus": {
+      "en": "Address status",
+      "es": "Estado de la dirección"
+    },
+    "Definition.AddressCurrent": {
+      "en": "Current and admissible",
+      "es": "Actual y admisible"
+    },
+    "Definition.AddressRetainedDormant": {
+      "en": "Retained/dormant — not current",
+      "es": "Retenida/inactiva — no actual"
+    },
+    "Definition.Source": { "en": "Source", "es": "Fuente" },
+    "Definition.Provider": { "en": "Provider", "es": "Proveedor" },
+    "Definition.Parameter": { "en": "Parameter", "es": "Parámetro" },
+    "Definition.PeriodicLift": {
+      "en": "Periodic lift",
+      "es": "Elevación periódica"
+    },
+    "Definition.Seam": { "en": "Seam side", "es": "Lado de costura" },
     "Workspace.Shortcuts": {
       "en": "Enter: commit Algebra Input; Escape: cancel; Ctrl+Z: undo; Ctrl+Y: redo. Use Zoom to rectangle for view-only navigation. Tab navigates controls; F1 opens tool help.",
       "es": "Intro: confirmar Entrada algebraica; Esc: cancelar; Ctrl+Z: deshacer; Ctrl+Y: rehacer. Usa Zoom por rectángulo para navegación visual. Tab recorre controles; F1 abre la ayuda."

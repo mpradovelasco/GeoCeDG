@@ -68,7 +68,11 @@ class GeoCeDGProfileTest {
 
 	@Test
 	void usesTextualIdentityAndNoUpstreamSplash() {
-		assertThat(GeoCeDGFrame.APPLICATION_TITLE, equalTo("GeoCeDG"));
+		assertThat(GeoCeDGProductInfo.semanticVersion(), equalTo("0.9.0"));
+		assertThat(GeoCeDGProductInfo.displayVersion(), equalTo("0.9"));
+		assertThat(GeoCeDGFrame.APPLICATION_TITLE, equalTo("GeoCeDG 0.9"));
+		assertThat(GeoCeDGProductInfo.windowTitle("Revision1.cedg"),
+				equalTo("GeoCeDG 0.9 — Revision1.cedg"));
 		assertThat(GeoCeDGFrame.APPLICATION_USER_MODEL_ID,
 				equalTo("org.geocedg.desktop"));
 		String[] arguments = GeoCeDG.withoutUpstreamSplash(new String[] {

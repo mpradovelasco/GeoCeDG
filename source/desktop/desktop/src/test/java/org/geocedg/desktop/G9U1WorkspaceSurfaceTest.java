@@ -21,7 +21,11 @@ import static org.mockito.Mockito.verify;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.EventQueue;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.swing.JButton;
@@ -101,8 +105,45 @@ class G9U1WorkspaceSurfaceTest {
 			collect(component, ids);
 		}
 		assertEquals(110, ids.size());
-		assertEquals(6, bar.getMenuCount());
+		assertEquals(7, bar.getMenuCount());
 		assertTrue(ids.contains("navigation.zoom-window"));
+	}
+
+	@Test
+	void menuOrderOptionsProjectionAndActionIdentityComeFromOneCatalog() throws Exception {
+		AppGeoCeDG app = G9U1ActionRegistryTest.app(true);
+		app.getGuiManager().initMenubar();
+		GeoCeDGMenuBar bar = (GeoCeDGMenuBar) app.getGuiManager().getMenuBar();
+		List<String> sections = new ArrayList<>();
+		for (int i = 0; i < bar.getMenuCount(); i++) {
+			sections.add((String) bar.getMenu(i).getClientProperty("geocedg.menu.id"));
+		}
+		assertEquals(List.of("file", "edit", "view", "construction", "options",
+				"automation", "help"), sections);
+
+		JMenu options = bar.getMenu(4);
+		List<String> projected = new ArrayList<>();
+		for (Component component : options.getMenuComponents()) {
+			if (component instanceof JMenuItem) {
+				JMenuItem item = (JMenuItem) component;
+				projected.add((String) item.getClientProperty(
+						GeoCeDGActionRegistry.ACTION_ID));
+				assertSame(((GuiManagerGeoCeDG) app.getGuiManager()).getActionRegistry()
+						.get(projected.get(projected.size() - 1)), item.getAction());
+			}
+		}
+		JSONObject optionsDefinition = GeoCeDGMenuBar.find(
+				GeoCeDGProfile.getCatalog().getJSONArray("menu_sections"), "options");
+		assertEquals(GeoCeDGProfile.strings(optionsDefinition.getJSONArray("action_ids")),
+				projected);
+
+		Map<String, Integer> occurrences = new LinkedHashMap<>();
+		for (Component component : bar.getComponents()) {
+			collectOccurrences(component, occurrences);
+		}
+		assertEquals(((GuiManagerGeoCeDG) app.getGuiManager()).getActionRegistry().ids(),
+				occurrences.keySet());
+		occurrences.forEach((id, count) -> assertEquals(1, count, id));
 	}
 
 	@Test
@@ -113,7 +154,7 @@ class G9U1WorkspaceSurfaceTest {
 		for (int i = 0; i < 3; i++) {
 			bar.initMenubar();
 			bar.updateFonts();
-			assertEquals(6, bar.getMenuCount());
+			assertEquals(7, bar.getMenuCount());
 		}
 	}
 
@@ -378,6 +419,21 @@ class G9U1WorkspaceSurfaceTest {
 			Object id = ((JMenuItem) component).getClientProperty(GeoCeDGActionRegistry.ACTION_ID);
 			if (id != null) {
 				ids.add(id.toString());
+			}
+		}
+	}
+
+	private static void collectOccurrences(Component component,
+			Map<String, Integer> occurrences) {
+		if (component instanceof JMenu) {
+			for (Component child : ((JMenu) component).getMenuComponents()) {
+				collectOccurrences(child, occurrences);
+			}
+		} else if (component instanceof JMenuItem) {
+			Object id = ((JMenuItem) component).getClientProperty(
+					GeoCeDGActionRegistry.ACTION_ID);
+			if (id != null) {
+				occurrences.merge(id.toString(), 1, Integer::sum);
 			}
 		}
 	}

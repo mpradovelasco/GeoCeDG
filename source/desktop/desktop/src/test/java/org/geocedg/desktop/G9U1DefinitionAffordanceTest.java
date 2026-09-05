@@ -10,6 +10,7 @@ import static org.geocedg.desktop.G9U1TestApp.lookup;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -26,7 +27,10 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
+import org.geocedg.common.kernel.algos.AlgoSemanticLocusPoint2D;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.kernel.locus.LocusComponentLineage2D;
+import org.geocedg.common.kernel.locus.LocusSemanticAddress2D;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoImage;
 import org.geogebra.common.kernel.geos.GeoNumeric;
@@ -122,6 +126,98 @@ class G9U1DefinitionAffordanceTest {
 		assertEquals(0.25, ((GeoNumeric) lookup(app, "k")).getDouble());
 		assertEquals(id, app.getKernel().getConstruction().getSpatialIdentityRegistry()
 				.getPersistentGeoId(lookup(app, "k")));
+	}
+
+	@Test
+	void inspectorShowsTypedBranchComponentAndSemanticAddressInBothLanguages() {
+		AppGeoCeDG app = G9U1TestApp.create();
+		GeoLocusV2 spline = (GeoLocusV2) eval(app,
+				"S=SplineV2({(-2,0),(0,0),(2,0)},3)");
+		GeoPoint point = new GeoCeDGPointInteraction(app).create(spline, 1, 0,
+				0.1, result -> null);
+		assertNotNull(point);
+		AlgoSemanticLocusPoint2D parent =
+				(AlgoSemanticLocusPoint2D) point.getParentAlgorithm();
+		LocusSemanticAddress2D address = parent.getCurrentSemanticAddress();
+		assertNotNull(address);
+		String branchKey = spline.getSemanticDefinition().getBranches().get(0)
+				.getBranchKey();
+		String componentKey = LocusComponentLineage2D.create(branchKey,
+				spline.getSemanticDefinition().getBranches().get(0)
+						.getValidDomainComponents().get(0));
+		String xml = app.getXML();
+
+		for (Locale locale : new Locale[] {Locale.ENGLISH, Locale.forLanguageTag("es")}) {
+			app.setLocale(locale);
+			String language = locale.getLanguage();
+			String locusDetails = GeoCeDGDefinitionInspector.semanticDetails(app, spline);
+			assertTrue(locusDetails.contains(GeoCeDGProfile.getText(
+					"Definition.SemanticStructure", language)));
+			assertTrue(locusDetails.contains(GeoCeDGProfile.getText(
+					"Definition.Branch", language) + ": " + branchKey));
+			assertTrue(locusDetails.contains(GeoCeDGProfile.getText(
+					"Definition.Component", language) + ": " + componentKey));
+
+			String pointDetails = GeoCeDGDefinitionInspector.semanticDetails(app, point);
+			assertTrue(pointDetails.contains(GeoCeDGProfile.getText(
+					"Definition.SemanticAddress", language)));
+			assertTrue(pointDetails.contains(GeoCeDGProfile.getText(
+					"Definition.Branch", language) + ": " + address.getBranchKey()));
+			assertTrue(pointDetails.contains(GeoCeDGProfile.getText(
+					"Definition.Component", language) + ": "
+					+ address.getComponentLineageKey()));
+			assertTrue(pointDetails.contains(GeoCeDGProfile.getText(
+					"Definition.Parameter", language) + ": "
+					+ Double.toString(address.getCanonicalParameter())));
+		}
+		assertEquals(xml, app.getXML());
+	}
+
+	@Test
+	void inspectorDistinguishesCurrentAddressFromRetainedDormantAddressAndRecovery() {
+		AppGeoCeDG app = G9U1TestApp.create();
+		GeoPoint anchor = (GeoPoint) eval(app, "A=(-2,0)");
+		GeoLocusV2 spline = (GeoLocusV2) eval(app,
+				"S=SplineV2({A,(0,0),(2,0)},3)");
+		GeoPoint point = new GeoCeDGPointInteraction(app).create(spline, 1, 0,
+				0.1, result -> null);
+		assertNotNull(point);
+		AlgoSemanticLocusPoint2D parent =
+				(AlgoSemanticLocusPoint2D) point.getParentAlgorithm();
+		assertNotNull(parent.getCurrentSemanticAddress());
+		assertTrue(GeoCeDGDefinitionInspector.semanticDetails(app, point).contains(
+				GeoCeDGProfile.getText("Definition.AddressCurrent", "en")));
+
+		anchor.setUndefined();
+		anchor.updateRepaint();
+		assertFalse(point.isDefined());
+		assertNull(parent.getCurrentSemanticAddress());
+		assertNotNull(parent.getSemanticAddress());
+		for (Locale locale : new Locale[] {Locale.ENGLISH, Locale.forLanguageTag("es")}) {
+			app.setLocale(locale);
+			String language = locale.getLanguage();
+			String details = GeoCeDGDefinitionInspector.semanticDetails(app, point);
+			assertTrue(details.contains(GeoCeDGProfile.getText(
+					"Definition.AddressStatus", language)));
+			assertTrue(details.contains(GeoCeDGProfile.getText(
+					"Definition.AddressRetainedDormant", language)));
+			assertFalse(details.contains(GeoCeDGProfile.getText(
+					"Definition.AddressCurrent", language)));
+		}
+
+		anchor.setCoords(-2, 0, 1);
+		anchor.updateRepaint();
+		assertTrue(point.isDefined());
+		assertNotNull(parent.getCurrentSemanticAddress());
+		for (Locale locale : new Locale[] {Locale.ENGLISH, Locale.forLanguageTag("es")}) {
+			app.setLocale(locale);
+			String language = locale.getLanguage();
+			String details = GeoCeDGDefinitionInspector.semanticDetails(app, point);
+			assertTrue(details.contains(GeoCeDGProfile.getText(
+					"Definition.AddressCurrent", language)));
+			assertFalse(details.contains(GeoCeDGProfile.getText(
+					"Definition.AddressRetainedDormant", language)));
+		}
 	}
 
 	@Test

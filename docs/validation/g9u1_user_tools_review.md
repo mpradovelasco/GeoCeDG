@@ -82,6 +82,28 @@ The library stores original `.ggt` bytes plus application metadata and digest.
 Dynamic entries are not schema-v2 action declarations. Pinning is application
 presentation state, displayed in a separate User Tools group. Product/native,
 installed, document-local and legacy/Laboratory contexts are labelled separately.
+The round-2 layout record adds deterministic pin order and optional user-named
+groups in the same application-preference file. A group containing several tools
+is presented as one dropdown with normal toolbar sizing. Version-1 string pins
+migrate in place. Grouping, ordering and pinning do not register a macro, create
+Construction objects or enter the document undo stack. The manager presents
+pinned commands in effective global order, displays that ordinal and the current
+group, disables movement at the real global boundaries and rebuilds its controls
+from persisted state after each pin, group or movement edit. Commands sharing a
+group remain one contiguous visual unit: members can be reordered inside the
+dropdown, while crossing an external boundary moves the whole group. The stored
+order and the rendered toolbar therefore cannot disagree through interleaving.
+
+User-tool icons remain explicitly deferred. The inherited
+`Macro.getIconFileName()` / `AppD.getModeIcon()` path requires both a macro
+already registered in the active kernel and an image already admitted to the
+application external-image registry. Using that path merely to render a pinned
+preference would mutate the document host before invocation. There is not yet an
+approved application-library seam defining image provenance, accepted media and
+size limits, digest binding or cleanup. Pinned tools therefore use the bounded
+text fallback in this candidate. No Templatev7 image is imported automatically;
+icon support requires a later reviewed preference/provenance contract, not a
+silent reuse of document registration.
 
 Validation must precede any active-document registration: bounded ZIP/XML,
 unambiguous macro declarations, recognized/allowed dependencies, no scripts or
@@ -132,6 +154,27 @@ available through the inherited document tool manager. New macro authoring can
 use Classic's existing Create Tool workflow, then export a user-owned `.ggt` and
 install explicitly in GeoCeDG. No alternate tool engine was added.
 
+## Round-2 native archive defect and bounded correction
+
+The author smoke preserved the failing native archive as
+`artifacts/smoke-test-g9u1/Revision1.cedg` (17,209 bytes; SHA-256
+`c8c1a314d50ce2b3f41074ba4f37990f5e816a91f845f4e0225c62d29657b570`).
+The installed `EllipseAxis.ggt` package has SHA-256
+`01437a90761366b619178cde37a3ebb88bc7ac51b6de0b04e3369d38ac77040b`.
+The invocation produced an ordinary document-owned `AlgoMacro`/`GeoConic` and
+the native archive already contained both `geogebra_macro.xml` and the command.
+The failure occurred when the second archive entry was classified as a generic
+merge after macro XML had been read, so spatial-identity preflight rejected the
+otherwise native reconstruction.
+
+The bounded correction marks only that second parse as native/undo restore while
+preserving `clearConstruction=false`, document-local macros and the rejection of
+an actual generic merge. Regression authority covers install, activate, invoke,
+save, removal of the application-library entry, reopen, dynamic update, a second
+save/reopen, undo/redo and save after undo. The `.cedg` therefore remains portable:
+the installed library is a convenience preference, never document geometry
+authority.
+
 ## Multiple-window preference transaction review
 
 The final read-only audit found a concrete stale-cache defect: two open windows
@@ -170,9 +213,9 @@ the complete new macro set and its host ownership. Failure removes exactly the
 new objects (including unexpected renamed registrations), retaining all previous
 document macros. Existing tests now check owner-directed removal/re-activation,
 partial-package rejection and injected parser/registration rollback. The class
-still declares 24 tests. Execution of this repaired cohort remains pending the
-root's next canonical DEV; no full ToolManager editing interoperability is
-claimed from the earlier invocation-only evidence.
+still declares 24 tests. The final round-two focused, PHASE, COMPOSED and FULL
+cohorts execute those 24 cases successfully; this does not claim ToolManager
+editing interoperability beyond the explicitly tested host seams.
 
 BOOTSTRAP IMPACT — NO CHANGE REQUIRED: existing JVM, ZIP/XML and isolated
 preferences are sufficient. GUIDE_IMPACT — UPDATE_REQUIRED: the quick guide

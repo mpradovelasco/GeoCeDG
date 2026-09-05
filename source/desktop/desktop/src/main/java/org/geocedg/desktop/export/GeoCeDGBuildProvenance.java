@@ -12,8 +12,6 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
-import org.geogebra.common.GeoGebraConstants;
-
 /** Immutable build-time GeoCeDG repository provenance. */
 public final class GeoCeDGBuildProvenance {
 
@@ -102,12 +100,13 @@ public final class GeoCeDGBuildProvenance {
 			throw new IllegalStateException(
 					"Cannot load GeoCeDG build provenance", exception);
 		}
-		if (!"1".equals(properties.getProperty("schema.version"))) {
+		if (!"2".equals(properties.getProperty("schema.version"))) {
 			throw new IllegalStateException(
 					"Unsupported GeoCeDG build provenance schema");
 		}
 		try {
-			return new GeoCeDGBuildProvenance(GeoGebraConstants.VERSION_STRING,
+			return new GeoCeDGBuildProvenance(
+					properties.getProperty("application.version"),
 					properties.getProperty("repository.commit"),
 					RepositoryState.valueOf(properties.getProperty(
 							"repository.state")),
@@ -121,6 +120,15 @@ public final class GeoCeDGBuildProvenance {
 
 	public String getApplicationVersion() {
 		return applicationVersion;
+	}
+
+	/**
+	 * @return concise product version for visible Desktop surfaces
+	 */
+	public String getDisplayApplicationVersion() {
+		return applicationVersion.endsWith(".0")
+				? applicationVersion.substring(0, applicationVersion.length() - 2)
+				: applicationVersion;
 	}
 
 	public String getRepositoryCommit() {

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "phase": "G9U1",
-  "status": "AUTHOR_REVIEW_STABILIZATION_CONSUMER_MAPPING_PENDING_FRESH_EXECUTION",
+  "status": "AUTHOR_REVIEW_STABILIZATION_ROUND2_CONSUMER_MAPPING_PENDING_FRESH_EXECUTION",
   "focusedJUnit": {
     "classes": [
       {
@@ -16,6 +16,8 @@
           "algebraDescriptionCheckedStateTracksActualHostSetting",
           "languageRefreshDoesNotReplaceActionIdentity",
           "materializationRequiresCurrentResultContext",
+          "contextualHelpIsSpecificLocalizedAndUsesDistinctLongDescriptions",
+          "aboutUsesCentralProductVersionAndRetainsOriginCredits",
           "diagnosticLaunchUsesSeparateHostAndExplicitFileWithoutChangingWorkspace",
           "diagnosticLaunchRejectsUnsupportedResource"
         ]
@@ -108,6 +110,7 @@
           "unresolvedActionPlacementFailsClosed",
           "unresolvedPolicyReferenceFailsClosed",
           "duplicateMenuClusterFailsClosed",
+          "unknownAndDuplicateDirectMenuActionsFailClosed",
           "continuityAndLanguagePolicyCannotBeWeakened",
           "unknownSchemaVersionFailsClosed",
           "allOwnedTextHasEnglishSpanishAndDeterministicFallback",
@@ -150,6 +153,7 @@
           "realPointMousePathCreatesAndMovesWithoutReplacement",
           "viewportChangeDoesNotChangeStoredSemanticIdentity",
           "nativeReopenReusesOwnedPointAndMoveAdapter",
+          "interactivePointHelpersStayOffCanvasAndFollowAlgebraAuxiliaryFilterAcrossLifecycle",
           "periodicSplineCrossesSeamAndReturnsSamePoint",
           "zoomWindowIsPresentationOnlyAndCanBeCancelledByToolChange",
           "everyInvertibleTransformUsesItsOwnSourceBinding",
@@ -167,6 +171,7 @@
         "module": "desktop",
         "methods": [
           "allActionsAreReachableThroughTheManifestMenuProjection",
+          "menuOrderOptionsProjectionAndActionIdentityComeFromOneCatalog",
           "repeatedMenuRebuildKeepsOneProjectionPerDeclaredPlacement",
           "compactProductToolbarUsesOnlyDeclaredNonModeActionsAtHighDpi",
           "contextProjectionUsesSameStableActionIds",
@@ -232,6 +237,8 @@
           "readOnlyPropertiesRejectsEnterAndFocusLossWithoutAnyRedefine",
           "ordinaryAndSemanticScalarPointChildrenRetainTheirExistingHostEditFlags",
           "numericPropertiesUsesExistingAtomicCompatibleRedefine",
+          "inspectorShowsTypedBranchComponentAndSemanticAddressInBothLanguages",
+          "inspectorDistinguishesCurrentAddressFromRetainedDormantAddressAndRecovery",
           "readOnlyExplanationHasBothProductLanguagesAndClassicEditorIsUnchanged",
           "ordinaryNoneditableImageKeepsHostPropertiesInsteadOfSemanticDefinition"
         ]
@@ -277,6 +284,11 @@
           "explicitActivationUsesExistingMacroEngineAndDynamicInputs",
           "installedToolIsInvocableThroughNativeCommandDispatcher",
           "pinsAreApplicationPreferencesAndDoNotChangeConstruction",
+          "pinLayoutPersistsOrderAndGroupsWithoutChangingDocument",
+          "managerReflectsAndRefreshesEffectivePinOrderAndGroup",
+          "groupedPinsRemainOneContiguousVisualUnitWhenReordered",
+          "versionOnePinPreferenceMigratesWithoutRegisteringItsMacro",
+          "maximumStoredPinOrderStillAllowsAValidNewPin",
           "removalDoesNotDeleteExistingDocumentMacroOrOutput",
           "documentMacrosNeverAutoInstallOrBecomePreferenceSnapshot",
           "preferenceRestoreCannotSmuggleDocumentMacrosButExplicitLoadStillWorks",
@@ -297,6 +309,36 @@
           "concurrentWindowPinAndRemovePreserveOtherPackagesAndRejectRemovedActivation",
           "busyLibraryLockRejectsWithoutReplacingPreferences",
           "windowlessFixtureReleasesGlobalDispatcherWithoutChangingNativeRegistration"
+        ]
+      },
+      {
+        "name": "org.geocedg.desktop.G9U1AlgebraGestureEditingTest",
+        "source": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1AlgebraGestureEditingTest.java",
+        "module": "desktop",
+        "methods": [
+          "doubleClickEditsDilateFactorWithIdentityUndoRedoAndReopen",
+          "f2EditsDilateFactorWithIdentityUndoRedoAndReopen"
+        ]
+      },
+      {
+        "name": "org.geocedg.desktop.G9U1MacroNativeArchivePersistenceTest",
+        "source": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1MacroNativeArchivePersistenceTest.java",
+        "module": "desktop",
+        "methods": [
+          "ellipseAxisInvocationSurvivesNativeSaveUndoAndTwoReopens",
+          "explicitIdentityMergeRemainsForbidden"
+        ]
+      },
+      {
+        "name": "org.geocedg.desktop.GeoCeDGProfileTest",
+        "source": "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGProfileTest.java",
+        "module": "desktop",
+        "methods": [
+          "compilesManifestToolbarIntoExistingGrammar",
+          "createsConservativeInitialPerspective",
+          "usesTextualIdentityAndNoUpstreamSplash",
+          "isolatesDefaultPreferencesPath",
+          "exposesExperimentalDxfOnlyThroughGeoCeDGMenu"
         ]
       },
       {
@@ -2404,9 +2446,153 @@
       "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
       "automatedScope": "Only the named tests prove their assertions on the fresh successor cohort; historical checkpoint execution is not reused or relabeled. File/link checks cover the declared quick guide/review documents; the author must execute the full visual checklist.",
       "remaining": "Author re-smoke and any variants outside the named saved JUnit results remain pending; this is not author approval."
+    },
+    {
+      "id": "U1-R2-01",
+      "group": "R2",
+      "assertion": "A valid invoked planar user-tool macro is embedded as document reconstruction authority and survives native save, undo/redo, save-after-undo and two reopens without depending on the installed application library.",
+      "tests": [
+        "org.geocedg.desktop.G9U1MacroNativeArchivePersistenceTest#ellipseAxisInvocationSurvivesNativeSaveUndoAndTwoReopens"
+      ],
+      "topic": "native persistence of an invoked user tool",
+      "procedure": "Install, activate and invoke an EllipseAxis-equivalent .ggt, save .cedg, remove the application package, reopen, exercise undo/redo and save/reopen again.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "The named test covers the existing Macro/MacroKernel/AlgoMacro native archive path and document-owned reconstruction; it does not relabel the author's prior failed save as agent execution.",
+      "remaining": "Author must repeat the visible EllipseAxis workflow in the final re-smoke; no PASS or product closeout is inferred."
+    },
+    {
+      "id": "U1-R2-02",
+      "group": "R2",
+      "assertion": "The bounded native macro restore purpose does not weaken explicit merge admission or repair an incompatible identity-bearing construction.",
+      "tests": [
+        "org.geocedg.desktop.G9U1MacroNativeArchivePersistenceTest#explicitIdentityMergeRemainsForbidden"
+      ],
+      "topic": "fail-closed macro archive boundary",
+      "procedure": "Attempt an explicit identity-bearing merge outside native document/undo restoration.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "The named negative test proves the generic merge contract remains rejected after the native archive correction.",
+      "remaining": "Other unsupported macro bodies and collisions remain governed by the retained round-one negative suite."
+    },
+    {
+      "id": "U1-R2-03",
+      "group": "R2",
+      "assertion": "Interaction-owned semantic point helpers retain exact typed direction and real dependencies while remaining auxiliary, restricted and absent from the Euclidian canvas by default.",
+      "tests": [
+        "org.geocedg.desktop.G9U1SemanticPointInteractionTest#interactivePointHelpersStayOffCanvasAndFollowAlgebraAuxiliaryFilterAcrossLifecycle"
+      ],
+      "topic": "semantic point helper presentation",
+      "procedure": "Create and move an R6-owned point, toggle the existing Algebra auxiliary-object filter and exercise native lifecycle without deriving direction from coordinates.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "The named test checks drawable/hit visibility, upstream auxiliary filtering and exact helper lifecycle; it introduces no new ownership or garbage-collection semantics.",
+      "remaining": "Author visual confirmation remains pending; unrelated tool-created degree-helper ownership stays deferred."
+    },
+    {
+      "id": "U1-R2-04",
+      "group": "R2",
+      "assertion": "An ordinary GeoNumeric driving Dilate remains editable through both Algebra double-click and F2 with the same durable identity, dynamic recompute, undo/redo and native reopen.",
+      "tests": [
+        "org.geocedg.desktop.G9U1AlgebraGestureEditingTest#doubleClickEditsDilateFactorWithIdentityUndoRedoAndReopen",
+        "org.geocedg.desktop.G9U1AlgebraGestureEditingTest#f2EditsDilateFactorWithIdentityUndoRedoAndReopen"
+      ],
+      "topic": "ordinary numeric Algebra editing",
+      "procedure": "Edit kesc through the two ordinary host gestures while it drives Dilate, cross valid values, undo/redo, save and reopen.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "The named tests exercise existing host edit routes and G9A-compatible identity; they do not authorize arbitrary SplineV2/LocusV2 redefine.",
+      "remaining": "Author visible gesture re-smoke remains pending."
+    },
+    {
+      "id": "U1-R2-05",
+      "group": "R2",
+      "assertion": "One 110-action schema-v2 authority projects exactly File, Edit, View, Construction, Options, Automation and Help in order, with one menu occurrence per action and no second settings authority.",
+      "tests": [
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest#menuOrderOptionsProjectionAndActionIdentityComeFromOneCatalog",
+        "org.geocedg.desktop.G9U1ProfileCompilerTest#unknownAndDuplicateDirectMenuActionsFailClosed",
+        "org.geocedg.desktop.G9U1ProfileCompilerTest#liveProfileStrictlyCompilesOneHundredTenActions"
+      ],
+      "topic": "seven-menu professional workspace amendment",
+      "procedure": "Inspect the seven declared menus, Options policy projection, global deduplication and stable action identity at normal/high DPI.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "The named tests prove manifest compilation, menu order/deduplication and negative schema admission; Classic remains separate.",
+      "remaining": "Author visual and keyboard re-smoke remains pending; U1-RV06 is retained only as superseded round-one history."
+    },
+    {
+      "id": "U1-R2-06",
+      "group": "R2",
+      "assertion": "File/Help routes are unambiguous and every non-mode action has specific localized short and long help without the prohibited generic selection suffix or manifest placeholder.",
+      "tests": [
+        "org.geocedg.desktop.G9U1ActionRegistryTest#contextualHelpIsSpecificLocalizedAndUsesDistinctLongDescriptions",
+        "org.geocedg.desktop.G9U1ActionRegistryTest#everyActionHasExactlyOneBoundTargetAndReadableName",
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest#constructionStartupDoesNotOpenClassicChooserButClassicStillDoes"
+      ],
+      "topic": "document navigation and contextual help cleanup",
+      "procedure": "Review New file, Open, the single Classic diagnostic route, Legacy Laboratory explanation and action-specific English/Spanish help.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "The named tests inspect the single registry projection and owned localized text; they do not claim the author has accepted wording or layout.",
+      "remaining": "Final author wording/discoverability re-smoke remains pending."
+    },
+    {
+      "id": "U1-R2-07",
+      "group": "R2",
+      "assertion": "Pinned user tools retain application-preference-only order and grouping, each named group remains one contiguous reorderable toolbar unit, version-one pins migrate in place and no document or undo state changes.",
+      "tests": [
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#pinLayoutPersistsOrderAndGroupsWithoutChangingDocument",
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#managerReflectsAndRefreshesEffectivePinOrderAndGroup",
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#groupedPinsRemainOneContiguousVisualUnitWhenReordered",
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#versionOnePinPreferenceMigratesWithoutRegisteringItsMacro",
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#maximumStoredPinOrderStillAllowsAValidNewPin",
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#pinsAreApplicationPreferencesAndDoNotChangeConstruction"
+      ],
+      "topic": "professional user-tool toolbar layout",
+      "procedure": "Pin tools, assign/reorder groups, restart the preference library, migrate a version-one pin and verify the construction/undo baseline is unchanged.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "The named tests cover deterministic preference persistence/migration, contiguous group movement and no document mutation; dynamic tools do not become stable product action IDs.",
+      "remaining": "Author visual dropdown/sizing re-smoke and any future user-supplied icon policy remain pending."
+    },
+    {
+      "id": "U1-R2-08",
+      "group": "R2",
+      "assertion": "One central package version supplies GeoCeDG 0.9 title/About while upstream baseline, author credit and required licenses remain visible; absent author artwork is not fabricated.",
+      "tests": [
+        "org.geocedg.desktop.G9U1ActionRegistryTest#aboutUsesCentralProductVersionAndRetainsOriginCredits",
+        "org.geocedg.desktop.GeoCeDGProfileTest#usesTextualIdentityAndNoUpstreamSplash"
+      ],
+      "topic": "product version branding and provenance",
+      "procedure": "Inspect the frame title and About in a named/unnamed document, then confirm the existing textual fallback when no unambiguous author asset exists.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "The named tests prove central version consumption and retained origin/licensing text; AUTHOR_ASSET_MISSING is recorded rather than synthesized.",
+      "remaining": "Author visual approval and supply/provenance of any future startup asset remain pending."
+    },
+    {
+      "id": "U1-R2-09",
+      "group": "R2",
+      "assertion": "Definition inspection presents typed source, branch/component and canonical semantic address details in English and Spanish, and distinguishes a current binding from a retained dormant address without parsing labels, coordinates or serialized tokens as identity.",
+      "tests": [
+        "org.geocedg.desktop.G9U1DefinitionAffordanceTest#inspectorShowsTypedBranchComponentAndSemanticAddressInBothLanguages",
+        "org.geocedg.desktop.G9U1DefinitionAffordanceTest#inspectorDistinguishesCurrentAddressFromRetainedDormantAddressAndRecovery",
+        "org.geocedg.desktop.G9U1DefinitionAffordanceTest#propertiesShowsReadOnlySemanticDefinitionsWithoutChangingConstruction"
+      ],
+      "topic": "branch component and semantic-address discoverability",
+      "procedure": "Inspect LocusV2/SplineV2 and an interaction-owned point in both product languages, including periodic address fields and current/retained lifecycle state when present.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "The named tests consume typed kernel state through a read-only presenter; no optional branchKey overload or coordinate inference is added.",
+      "remaining": "Author visual re-smoke remains pending."
+    },
+    {
+      "id": "U1-R2-10",
+      "group": "R2",
+      "assertion": "After an approved atomic G9A edit keeps the same ordinary GeoNumeric driver, native update-set reconstruction evaluates the existing rich metric parent before its public scalar adapter, so dependent Dilate length is current rather than stale.",
+      "tests": [
+        "org.geocedg.desktop.G9U1AlgebraGestureEditingTest#doubleClickEditsDilateFactorWithIdentityUndoRedoAndReopen",
+        "org.geocedg.desktop.G9U1AlgebraGestureEditingTest#f2EditsDilateFactorWithIdentityUndoRedoAndReopen"
+      ],
+      "topic": "existing metric DAG lifecycle after ordinary numeric edit",
+      "procedure": "Edit the retained Dilate factor through both ordinary Algebra gestures, require rich and scalar lengths to update in parent-before-child order, then exercise undo/redo and reopen.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "The named lifecycle tests reproduce the stale scalar update and cover the explicit update-after relation to the already existing rich parent; no G7 value, endpoint or public-command semantics change.",
+      "remaining": "Final author re-smoke remains pending; oriented/inverse length requests remain separate post-U1 design work."
     }
   ],
-  "coveragePolicy": "Every approved scenario ID and required workflow is retained. U1-I09 clarifies the latest single-confirmation/one-transaction requirement: query plus opted-in points share one compound undo step; the frozen planning snapshot remains historical. A test reference proves only the named assertion in that test, not all manual/persistence/performance variants in the scenario. Runtime results are sealed separately; manual author smoke is pending.",
+  "coveragePolicy": "Every approved scenario ID and required workflow is retained. U1-I09 clarifies the latest single-confirmation/one-transaction requirement: query plus opted-in points share one compound undo step; the frozen planning snapshot remains historical. Round-one U1-RV06 is explicitly superseded, not erased, by the author's seven-menu U1-R2-05 amendment. A test reference proves only the named assertion in that test, not all manual/persistence/performance variants in the scenario. Runtime results are sealed separately; final manual author re-smoke is pending.",
   "authorReview": {
     "checkpoint": "b492194082f1adc9f981d85d92a58ef57490196f",
     "historicalScenarios": 138,
@@ -2433,5 +2619,35 @@
       "familyPaletteRetainsAllElevenFamiliesAtHighDpi": "compactProductToolbarUsesOnlyDeclaredNonModeActionsAtHighDpi",
       "keyboardFocusScrollsOffscreenFamilyIntoNarrowViewport": "realApplicationMenuIsAboveContentAndToolbarIsItsStrictSubset"
     }
+  },
+  "authorReviewRound2": {
+    "baselineCommit": "fa6339204b87385af79331e434778ca16cd8dcf0",
+    "authorInputCommit": "01c0bec77a30b43b7ebcf75acacdd098840fa2fe",
+    "authorInput": "docs/validation/g9u1_author_resmoke_checklist.md",
+    "authorInputEntryCanonicalLfSha256": "b87a74b6a1e421e6909c6949a442bd3e935920b57a60f9a571a7ec34f6b89f02",
+    "authorInputLiveCanonicalLfSha256": "ba036c052dfc8e03837c1bae2672623b3e0a813b529f1a87c4ecf6647f0ec26b",
+    "authorInputEntryBlobOid": "b4a2cbb5cca0176be43e1d0c5dad4705683a31ea",
+    "authorInputLiveBlobOid": "b253da52983049938dfdb74571b89bc76e112ee4",
+    "hardBreakNormalization": "TWO_ASCII_SPACES_PLUS_LF_TO_EXPLICIT_HTML_BR_PLUS_LF",
+    "hardBreakReplacementCount": 28,
+    "exactlyReversibleToProvenanceBlob": true,
+    "authorStatementsModified": false,
+    "liveRepresentationClassification": "COMMONMARK_PRESENTATION_NORMALIZATION_NOT_AGENT_EXECUTION_EVIDENCE",
+    "historicalScenarioCount": 153,
+    "historicalFocusedTests": 183,
+    "supersededHistoricalScenario": "U1-RV06",
+    "additionalScenarioIds": [
+      "U1-R2-01",
+      "U1-R2-02",
+      "U1-R2-03",
+      "U1-R2-04",
+      "U1-R2-05",
+      "U1-R2-06",
+      "U1-R2-07",
+      "U1-R2-08",
+      "U1-R2-09",
+      "U1-R2-10"
+    ],
+    "manualAuthorResmoke": "PENDING"
   }
 }

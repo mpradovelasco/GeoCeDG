@@ -4,7 +4,7 @@
   "profile_id": "geocedg-windows-internal",
   "application": {
     "name": "GeoCeDG",
-    "version": "0.4.0",
+    "version": "0.9.0",
     "vendor": "GeoCeDG Project",
     "main_jar": "desktop.jar",
     "main_class": "org.geocedg.desktop.GeoCeDG",

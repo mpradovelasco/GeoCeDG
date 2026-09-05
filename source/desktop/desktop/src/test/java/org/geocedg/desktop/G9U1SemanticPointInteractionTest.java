@@ -23,12 +23,14 @@ import java.awt.event.MouseEvent;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BooleanSupplier;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.geocedg.common.euclidian.draw.DrawLocusV2;
 import org.geocedg.common.kernel.algos.AlgoSemanticLocusPoint2D;
@@ -39,9 +41,12 @@ import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionCandidat
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionStatus2D;
 import org.geocedg.common.kernel.spatial.identity.GeoIdentityRecord;
 import org.geogebra.common.awt.AwtFactory;
+import org.geogebra.common.awt.GPoint;
+import org.geogebra.common.euclidian.Drawable;
 import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.euclidian.event.AbstractEvent;
+import org.geogebra.common.euclidian.event.PointerEventType;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.geos.GeoPoint;
@@ -50,6 +55,8 @@ import org.geogebra.common.util.debug.Log;
 import org.geogebra.desktop.CommandLineArguments;
 import org.geogebra.desktop.awt.AwtFactoryD;
 import org.geogebra.desktop.euclidian.event.MouseEventD;
+import org.geogebra.desktop.gui.GuiManagerD;
+import org.geogebra.desktop.gui.view.algebra.AlgebraViewD;
 import org.geogebra.desktop.util.LoggerD;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -228,6 +235,61 @@ class G9U1SemanticPointInteractionTest {
 		assertTrue(GeoCeDGPointInteraction.owns(restored));
 		assertEquals(address, parent(restored).getCurrentSemanticAddress());
 		assertTrue(new GeoCeDGPointInteraction(reopened).move(restored, -1, 0, 0.1));
+	}
+
+	@Test
+	void interactivePointHelpersStayOffCanvasAndFollowAlgebraAuxiliaryFilterAcrossLifecycle(
+			@TempDir Path directory) throws Exception {
+		AppGeoCeDG app = app();
+		GeoLocusV2 source = line(app);
+		showOnly(app, source);
+		final AlgebraViewD algebra = attachedAlgebra(app);
+		app.getKernel().initUndoInfo();
+		var undo = app.getKernel().getConstruction().getUndoManager();
+		await(() -> !undo.undoPossible());
+
+		app.setMode(EuclidianConstants.MODE_POINT);
+		controller(app).wrapMousePressed(event(app, 0.4, 0));
+		controller(app).wrapMouseReleased(event(app, 0.4, 0));
+		GeoPoint point = app.getKernel().getConstruction().getGeoSetConstructionOrder()
+				.stream().filter(geo -> geo instanceof GeoPoint
+						&& GeoCeDGPointInteraction.owns((GeoPoint) geo))
+				.map(geo -> (GeoPoint) geo).findFirst().orElseThrow();
+		String pointLabel = point.getLabelSimple();
+		Object pointId = app.getKernel().getConstruction().getSpatialIdentityRegistry()
+				.getPersistentGeoId(point);
+		AlgoSemanticLocusPoint2D parent = parent(point);
+		String branchLabel = parent.getBranchInput().getLabelSimple();
+		String parameterLabel = parent.getParameterInput().toGeoElement().getLabelSimple();
+		assertNotNull(pointLabel);
+		assertNotNull(pointId);
+		assertNotNull(branchLabel);
+		assertNotNull(parameterLabel);
+		assertHelperPresentation(app, algebra, point);
+		await(undo::undoPossible);
+
+		app.getKernel().undo();
+		await(undo::redoPossible);
+		await(() -> app.getKernel().lookupLabel(pointLabel) == null);
+		assertNull(app.getKernel().lookupLabel(branchLabel));
+		assertNull(app.getKernel().lookupLabel(parameterLabel));
+
+		app.getKernel().redo();
+		await(() -> app.getKernel().lookupLabel(pointLabel) != null);
+		GeoPoint restored = (GeoPoint) app.getKernel().lookupLabel(pointLabel);
+		assertEquals(pointId, app.getKernel().getConstruction().getSpatialIdentityRegistry()
+				.getPersistentGeoId(restored));
+		assertHelperPresentation(app, algebra, restored);
+
+		Path file = directory.resolve("semantic-point-helper-presentation.cedg");
+		assertTrue(((GuiManagerGeoCeDG) app.getGuiManager()).saveAsTo(file.toFile()));
+		AppGeoCeDG reopened = app();
+		assertTrue(reopened.loadFile(file.toFile(), false));
+		GeoPoint reopenedPoint = (GeoPoint) reopened.getKernel().lookupLabel(pointLabel);
+		assertNotNull(reopenedPoint);
+		assertEquals(pointId, reopened.getKernel().getConstruction()
+				.getSpatialIdentityRegistry().getPersistentGeoId(reopenedPoint));
+		assertHelperPresentation(reopened, attachedAlgebra(reopened), reopenedPoint);
 	}
 
 	@Test
@@ -449,6 +511,66 @@ class G9U1SemanticPointInteractionTest {
 			geo.updateRepaint();
 		}
 		app.getEuclidianView1().updateAllDrawables(true);
+	}
+
+	private static AlgebraViewD attachedAlgebra(AppGeoCeDG app) {
+		GuiManagerD gui = (GuiManagerD) app.getGuiManager();
+		gui.attachAlgebraView();
+		AlgebraViewD algebra = gui.getAlgebraView();
+		algebra.setSize(new Dimension(600, 400));
+		algebra.doLayout();
+		algebra.setShowAuxiliaryObjects(false);
+		return algebra;
+	}
+
+	private static void assertHelperPresentation(AppGeoCeDG app, AlgebraViewD algebra,
+			GeoPoint point) {
+		AlgoSemanticLocusPoint2D pointParent = parent(point);
+		app.getEuclidianView1().updateAllDrawables(true);
+		for (GeoElement helper : new GeoElement[] {pointParent.getBranchInput(),
+				pointParent.getParameterInput().toGeoElement()}) {
+			assertTrue(helper.isAuxiliaryObject());
+			assertFalse(helper.isEuclidianVisible());
+			assertFalse(helper.isEuclidianToggleable());
+			Object drawable = app.getEuclidianView1().getDrawableFor(helper);
+			if (drawable instanceof Drawable) {
+				assertFalse(((Drawable) drawable).isEuclidianVisible());
+			}
+			assertFalse(algebraContains(algebra, helper));
+		}
+		int screenX = app.getEuclidianView1().toScreenCoordX(point.getInhomX());
+		int screenY = app.getEuclidianView1().toScreenCoordY(point.getInhomY());
+		app.getEuclidianView1().setHits(new GPoint(screenX, screenY),
+				PointerEventType.MOUSE);
+		assertFalse(app.getEuclidianView1().getHits().contains(
+				pointParent.getBranchInput()));
+		assertFalse(app.getEuclidianView1().getHits().contains(
+				pointParent.getParameterInput().toGeoElement()));
+
+		algebra.setShowAuxiliaryObjects(true);
+		assertTrue(algebraContains(algebra, pointParent.getBranchInput()));
+		assertTrue(algebraContains(algebra,
+				pointParent.getParameterInput().toGeoElement()));
+		algebra.setShowAuxiliaryObjects(false);
+		assertFalse(algebraContains(algebra, pointParent.getBranchInput()));
+		assertFalse(algebraContains(algebra,
+				pointParent.getParameterInput().toGeoElement()));
+	}
+
+	private static boolean algebraContains(AlgebraViewD algebra, GeoElement target) {
+		Object root = algebra.getModel().getRoot();
+		if (!(root instanceof DefaultMutableTreeNode)) {
+			return false;
+		}
+		Enumeration<?> nodes = ((DefaultMutableTreeNode) root).depthFirstEnumeration();
+		while (nodes.hasMoreElements()) {
+			Object node = nodes.nextElement();
+			if (node instanceof DefaultMutableTreeNode
+					&& ((DefaultMutableTreeNode) node).getUserObject() == target) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	static AppGeoCeDG app() {

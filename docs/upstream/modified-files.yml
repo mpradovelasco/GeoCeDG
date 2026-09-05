@@ -1050,7 +1050,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusMetricScalarAdapter.java",
       "change": "added",
-      "purpose": "Phase G7B semantic adapter: expose only admissible finite rich results through a derived GeoNumeric without making the rich Geo numeric authority. G9U1 review round 1: human-facing definitions expose the exact rich-parent Length intent while XML, internal expressions, metric admission and the rich-to-scalar DAG stay unchanged.",
+      "purpose": "Phase G7B semantic adapter: expose only admissible finite rich results through a derived GeoNumeric without making the rich Geo numeric authority. G9U1 review round 1: human-facing definitions expose the exact rich-parent Length intent while XML, internal expressions, metric admission and the rich-to-scalar DAG stay unchanged. G9U1 review round 2: declare the existing rich parent as update-before authority so a native reconstructed update set cannot publish a stale scalar after compatible editing; value/endpoint semantics remain unchanged.",
       "authority": "geocedg/specs/locus/locus-v2-metrics.md"
     },
     {
@@ -3991,6 +3991,30 @@
       "path": "source/shared/common/src/main/resources/org/geogebra/common/icons/svg/web/toolIcons/mode_geocedg_splinev2.svg",
       "change": "added",
       "purpose": "G9U1 author-review round 1: GeoCeDG-owned review-round-1 splinev2 tool icon, independently authored and registered in the asset manifest; presentation only, not inherited trademark/artwork.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGProductInfo.java",
+      "change": "added",
+      "purpose": "G9U1 author-review round 2: Provide one GeoCeDG-owned product name/version/origin/author authority consumed by Desktop title and About presentation without replacing mandatory upstream credits.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/main/java/org/geogebra/common/jre/io/MyXMLioJre.java",
+      "change": "modified",
+      "purpose": "G9U1 author-review round 2: Permit the existing native document/undo restore path to attach an already parsed document-owned macro definition while keeping explicit incompatible identity merge fail-closed and installed application tools non-authoritative for document reconstruction.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1AlgebraGestureEditingTest.java",
+      "change": "added",
+      "purpose": "G9U1 author-review round 2: Verify ordinary numeric double-click/F2 editing, durable identity, dependent Dilate recompute, undo/redo and native reopen without broadening semantic redefine.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1MacroNativeArchivePersistenceTest.java",
+      "change": "added",
+      "purpose": "G9U1 author-review round 2: Verify invoked user-tool macro output survives native save, undo/redo, save-after-undo and two reopens from document-owned definition authority, plus incompatible merge rejection.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     }
   ]

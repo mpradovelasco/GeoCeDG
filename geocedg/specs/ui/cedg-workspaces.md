@@ -311,19 +311,26 @@ Show/Hide, Copy Visual Style, image/freehand tools, rigid/vector polygon and
 several circle-arc variants—remain available through menus, context actions,
 overflow groups, shortcuts, or algebra input.
 
-In the round-1 review candidate, the live profile projects that catalog into six
-ordinary menus and a 34-action primary toolbar. The 11-family/18-cluster taxonomy
-does not require every catalog action to be a permanent button. Every reduced
-placement still resolves through the one profile/action registry; menu rebuild,
-EN/ES localization and overflow must preserve discoverability and availability.
-File/Edit/Construction/View/Automation/Help are presentation sections, not new
-workspace families or separate command authority.
+The round-2 author-review amendment projects the live catalog into seven ordinary
+menus, in this order: File, Edit, View, Construction, Options, Automation and
+Help. The 34-action primary toolbar and the 11-family/18-cluster taxonomy do not
+require every catalog action to be a permanent button. Options is a declarative
+projection of existing action IDs for safe host settings; it is not a second
+settings registry. An action referenced by more than one cluster is rendered at
+most once in the menu bar. Every reduced placement still resolves through the
+one profile/action registry; menu rebuild, EN/ES localization and overflow must
+preserve discoverability and availability. These seven menus are presentation
+sections, not new workspace families or separate command authority.
 
 Persistent user tools reuse `automation.manage-user-tools`. Explicit installation,
-removal and pinning affect isolated GeoCeDG application preferences only;
-activation uses the existing macro engine and then ordinary document-local
-definitions. Installing a package does not alter a blank document, and opening
-a document with macros does not install them into the application library.
+removal, pinning, pin order and pin grouping affect isolated GeoCeDG application
+preferences only; a group with several tools is rendered as a normal toolbar
+dropdown and does not mint stable product-action IDs. Activation uses the
+existing macro engine and then ordinary document-local definitions. The native
+document archive must embed the macro definition required by each `AlgoMacro`;
+reopen must never depend on the application library still being installed.
+Installing a package does not alter a blank document, and opening a document with
+macros does not install them into the application library.
 No Templatev7 tool or asset is automatically imported, bundled or promoted.
 See the [user-tool review](../../../docs/validation/g9u1_user_tools_review.md).
 

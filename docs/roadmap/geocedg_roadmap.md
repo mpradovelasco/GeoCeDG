@@ -1301,7 +1301,7 @@ optimización de rendimiento del software.
 | G9U0-R5 | `PASS — AUTHOR APPROVED` | Siete formas ordinarias `Translate`/`Rotate`/`Reflect`/`Mirror`/`Dilate` crean un nuevo Locus V2 semántico con ID/DAG propios; Option A `k=0` conserva `FINITE`/`UNBOUNDED` y añade `COLLAPSED_IMAGE`; smoke dinámico aceptado con limitación de entrada libre G9A caracterizada; `selfApproved=false`, `authorApproved=true`, `passClaimed=true`; no autoriza G9U1 |
 | G9S1 | `PASS — AUTHOR APPROVED` | Option B: `SplineV2` crea un nuevo `GeoLocusV2` semántico con dominio, spans y knots explícitos; Classic `Spline` permanece intacto; total/parcial scalar `Length` y autoridad rica `LocusLength` validadas; `selfApproved=false`, `authorApproved=true`, `passClaimed=true` |
 | G9U0-R6 | `PASS — AUTHOR APPROVED` | Puerta kernel acotada entre G9S1 y G9U1: request geométrica transitoria -> resultado tipado con cero/uno/varios preimages -> selección explícita -> punto ordinario con address semántica editable en DAG. Incluye Locus V2, SplineV2 y transformadas R5, además del cruce periódico bidireccional/path-independent del mismo punto y el negativo unresolved sin mutación; no implementa `Path`, Point-tool/frontend ni comando paralelo. ADR 0019 está Accepted y la spec es normativa; `manualGuiSmoke=DEFERRED TO G9U1 BY DESIGN`, `kernelDiagnosticAcceptance=PASS`, `selfApproved=false`, `authorApproved=true`, `passClaimed=true` |
-| G9U1 | `DESIGN PASS — AUTHOR APPROVED / POST-R1 RECONCILED / IMPLEMENTATION AUTHORIZED` | Checkpoint post-R6 `00982e7e148a634cd57ed928f322774df267d5e3` inmutable; R1 publicado satisface la capacidad de pares certificada. Auditoría sin novedad material; autorización condicional actual satisfecha. 11 familias, 18 clusters, 110 acciones y 138 escenarios; Point R6 distinto de materialización de tokens R1. Implementación aún no iniciada en este freeze; nunca autoaprobada |
+| G9U1 | `DESIGN PASS — AUTHOR APPROVED / POST-R1 RECONCILED / IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW` | Checkpoint post-R6 `00982e7e148a634cd57ed928f322774df267d5e3` inmutable; R1 publicado satisface la capacidad de pares certificada. Auditoría sin novedad material; autorización condicional actual satisfecha. 11 familias, 18 clusters, 110 acciones y 163 escenarios; Point R6 distinto de materialización de tokens R1. La implementación round 2 está completa como candidato sucesor, pendiente de re-smoke y closeout explícitos del autor; nunca autoaprobada |
 | G9B / G9C | `DESIGNED — NOT AUTHORIZED` | Track kernel tras cierre de G9A; no depende de completar el cliente G9U1 |
 | G9U2 | `BLOCKED ON THE APPROVED G9 GATE` | Workspace de procedimientos diédrico solo tras `G9 PASS — AUTHOR APPROVED` |
 | G9 spatial solving | `POINT PILOT — AUTHOR APPROVED` | G9A2 se limita a frames/sistemas/mapas/relaciones y reconstrucción projection-defined de punto; no hay primitivas generales, objetos compuestos ni autoridad 3D |
@@ -2640,6 +2640,38 @@ se describen en [la revisión](../validation/g9u1_author_manual_review_round1.md
 La salida prevista es **FRONTEND REVIEW CANDIDATE — PENDING AUTHOR RE-SMOKE**;
 ninguna ejecución técnica sustituye ese re-smoke.
 
+Revisión autoral 2: el candidato sucesor parte del commit publicado e inmutable
+`fa6339204b87385af79331e434778ca16cd8dcf0`. El checklist completo
+`docs/validation/g9u1_author_resmoke_checklist.md` es input autoral y no se
+reescribe como evidencia del agente; su contenido quedó fijado en el commit de
+procedencia de un solo path `01c0bec77a30b43b7ebcf75acacdd098840fa2fe`.
+La disposición acotada vive en
+`docs/validation/g9u1_author_review_round2.md`: persistencia documental nativa
+de invocaciones de user tools, helpers semánticos no visibles por defecto,
+edición algebraica ordinaria, enmienda de siete menús, ayuda específica,
+pin/group/order de user tools, versión/About central y discoverability de la
+dirección semántica. `U1-RV06` conserva exactamente la afirmación histórica de
+seis menús como `SUPERSEDED_BY_AUTHOR_ROUND2_AMENDMENT`; `U1-R2-01`–`U1-R2-10`
+representan la autoridad vigente. Este sucesor sigue siendo
+**IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**, sin promoción a `main`,
+sin tag `geocedg-g9u1-pass` y con re-smoke autoral pendiente.
+
+La ejecución `final-composed` de esta segunda estabilización completó 1.480
+tests y dejó verdes los resúmenes canónicos de fase, pero el resultado compuesto
+final se conserva como **FAILED**: el check heredado de whitespace del baseline
+interpretó como whitespace inválido los 28 hard breaks CommonMark de dos espacios
+del checklist. El input autoral byte-exacto no cambia en su commit de procedencia
+`01c0bec77a30b43b7ebcf75acacdd098840fa2fe` (SHA-256 canonical-LF
+`b87a74b6a1e421e6909c6949a442bd3e935920b57a60f9a571a7ec34f6b89f02`, blob
+`b4a2cbb5cca0176be43e1d0c5dad4705683a31ea`). La representación viva sustituye
+de forma mecánica y reversible solo esos 28 hard breaks por `<br>` (SHA-256
+canonical-LF `ba036c052dfc8e03837c1bae2672623b3e0a813b529f1a87c4ecf6647f0ec26b`, blob
+`b253da52983049938dfdb74571b89bc76e112ee4`), sin cambiar afirmaciones ni estados
+autorales. Los hashes canónicos del cohort round 2 quedan congelados en la
+autoridad versionada. Las ejecuciones técnicas aplicables se conservan como
+receipts externos y se reportan en el handoff final; no sustituyen el re-smoke
+autoral ni declaran PASS.
+
 ```text
 implementationStarted = true
 implementationAuthorized = true
@@ -2687,8 +2719,11 @@ manifiesto las desarrolla en dieciocho clusters operativos sin crear otra
 autoridad. La matriz de completitud clasifica cada acción como `MUST HAVE`,
 `SHOULD HAVE`, `DEFERRED` u `OUT OF SCOPE / REQUIRES NEW KERNEL PHASE`; conserva
 110 acciones estables. La reconciliación post-R1 preservó 118 escenarios post-R6
-y añadió 20 `U1-PAIR` (138); la estabilización añade escenarios de revisión sin
-eliminar esa historia, con inventario exacto en la evidencia G9U1 vigente.
+y añadió 20 `U1-PAIR` (138); la primera estabilización añadió 15 `U1-RV` (153)
+y la segunda añade diez `U1-R2` (163), sin eliminar esa historia. El perímetro
+round 2 contiene 204 métodos focales en 21 clases (190 Desktop y 14 shared), con
+inventario exacto en la evidencia G9U1 vigente. La enmienda de presentación
+proyecta los mismos 110 IDs en siete menús normales; no crea acciones nuevas.
 Se retienen `U1-PNT-01`–`U1-PNT-20` para el flujo Point real.
 
 La reconciliación asigna cada defecto observado a su seam normal:

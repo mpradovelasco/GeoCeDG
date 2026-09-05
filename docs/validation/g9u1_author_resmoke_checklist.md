@@ -28,7 +28,7 @@ evidencia.
 
 ### A. Correcciones/aceptación G9U1 antes de un nuevo re-smoke autoral
 
-**G9U1-B1 — bloqueo de guardado tras herramienta persistente.**  
+**G9U1-B1 — bloqueo de guardado tras herramienta persistente.**<br>
 La invocación de `EllipseAxis`/`ellipseAxis` desde la biblioteca persistente
 produce una elipse visible, pero el guardado posterior falla y la elipse no queda
 serializada en `Revision1.cedg`. Es un bloqueo de cierre: reproducir, aislar causa,
@@ -36,7 +36,7 @@ corregir sin cambiar la semántica del motor `Macro`, y validar guardar →
 cerrar → reabrir, incluyendo undo/redo y save-after-undo. Conservar el artefacto
 fallido y el log.
 
-**G9U1-B2 — auxiliares internos de interacción.**  
+**G9U1-B2 — auxiliares internos de interacción.**<br>
 Los auxiliares creados por GeoCeDG para un punto semántico interactivo
 (p. ej. `text3`, `f` en una definición interna `Point(b,text3,f)`) no deben
 aparecer sobre el lienzo ni confundirse con objetos autorales. Deben seguir
@@ -45,12 +45,12 @@ auxiliar/interna coherente y no visible en la Vista Gráfica por defecto.
 Reutilizar, si es suficiente, la semántica upstream de objetos auxiliares y su
 control de visualización; no crear una segunda autoridad de dependencias.
 
-**G9U1-B3 — edición ordinaria de parámetros.**  
+**G9U1-B3 — edición ordinaria de parámetros.**<br>
 Un número ordinario usado como factor, p. ej. `kesc` en `Dilate(b,kesc)`, debe
 seguir siendo editable por las rutas algebraicas ordinarias aprobadas, además
 del slider. No ampliar redefine semántico de Locus/Spline para resolverlo.
 
-**G9U1-A1 — ayudas contextualizadas.**  
+**G9U1-A1 — ayudas contextualizadas.**<br>
 Eliminar la coletilla genérica
 `Use the current construction and its explicit selection.` /
 `Usa la construcción actual y su selección explícita.` cuando no describe la
@@ -59,7 +59,7 @@ añadir información real de uso, inputs/selección, efectos, límites o
 disponibilidad. Revisar especialmente Undo/Redo, idioma, Spline V2,
 materialización, herramientas persistentes y Laboratory.
 
-**G9U1-A2 — organización profesional del menú y settings.**  
+**G9U1-A2 — organización profesional del menú y settings.**<br>
 La revisión autoral prefiere aproximar CeDG Construction a la organización
 familiar de GeoGebra: `File`, `Edit`, `View`, `Construction`, `Options`,
 `Automation`, `Help`; `Construction` se añade tras `View` y `Automation`
@@ -72,14 +72,14 @@ Al tratarse de una modificación respecto al diseño de seis menús del candidat
 actualizar de forma coherente manifest/spec/guía/validación como enmienda de
 revisión autoral de G9U1.
 
-**G9U1-A3 — limpieza de navegación documental.**  
+**G9U1-A3 — limpieza de navegación documental.**<br>
 Usar un rótulo inequívoco para `Documents → New construction`, preferentemente
 `New file` / `New construction file` y equivalente ES. Eliminar
 `File → Import and export → Open` si solo duplica `Documents → Open`.
 Auditar también la duplicación de `Open Classic diagnostic session`: debe quedar
 una ruta clara, no dos entradas equivalentes sin razón.
 
-**G9U1-A4 — herramientas persistentes en toolbar.**  
+**G9U1-A4 — herramientas persistentes en toolbar.**<br>
 La fijación de herramientas de usuario debe integrarse visualmente con la barra:
 mismo tamaño/apariencia que herramientas normales, orden configurable,
 posibilidad de agrupación desplegable y soporte de icono cuando pueda reutilizarse
@@ -88,7 +88,7 @@ explícitamente por el usuario. Posición, grupo e icono son preferencias de
 presentación del perfil, no acciones estables nuevas ni geometría documental.
 No importar iconos históricos de Templatev7 sin autoridad/licencia.
 
-**G9U1-A5 — branding/versionado de producto.**  
+**G9U1-A5 — branding/versionado de producto.**<br>
 Definir una única fuente de versión GeoCeDG y usar **0.9** para este candidato.
 La ventana/título debe presentar de forma profesional el icono GeoCeDG y
 `GeoCeDG 0.9 — <nombre de archivo>` (o equivalente coherente con convenciones
@@ -98,13 +98,13 @@ preservando créditos/licencias upstream requeridos. Usar la imagen autoral de
 arranque solo si está realmente disponible e identificada en repo/worktree;
 no fabricar ni adivinar un asset ausente.
 
-**G9U1-A6 — discoverability de branch/component.**  
+**G9U1-A6 — discoverability de branch/component.**<br>
 El usuario no debe necesitar conocer de memoria `spline-v2/main` o
 `generator.main`. El inspector/ayuda debe mostrar branch/component/semantic
 address de forma legible cuando proceda. Esto no autoriza aún un overload que
 omita `branchKey` en el comando público.
 
-**G9U1-A7 — variables auxiliares creadas por herramientas.**  
+**G9U1-A7 — variables auxiliares creadas por herramientas.**<br>
 El grado que un diálogo de Spline V2 materializa como número ordinario puede ser
 útil para edición/slider, pero debe identificarse claramente como auxiliar
 creado por la herramienta y quedar oculto por defecto según la política upstream
@@ -117,7 +117,7 @@ objetos que puedan ser autorales.
 
 ### B. Requisitos autorales registrados, pero fuera del alcance semántico actual de G9U1
 
-**POST-U1-1 — `Length(S,A,C)` con nodos de interpolación.**  
+**POST-U1-1 — `Length(S,A,C)` con nodos de interpolación.**<br>
 Se desea admitir longitud parcial cuando `A` y `C` son nodos que definen
 `SplineV2`, aunque no hayan sido creados mediante
 `Point(S,"spline-v2/main",u)`. El contrato actual exige endpoints con dirección
@@ -128,14 +128,14 @@ Debe resolver explícitamente nodos repetidos, múltiples preimágenes, spline
 periódica, autointersecciones, revisión y persistencia. No implementar por
 proximidad ni como parche frontend.
 
-**POST-U1-2 — orden inverso y longitud orientada.**  
+**POST-U1-2 — orden inverso y longitud orientada.**<br>
 La revisión autoral desea que invertir endpoints pueda producir una longitud
 algebraicamente orientada, por ejemplo `Length(S,Q,P) = -Length(S,P,Q)`.
 Esto contradice el contrato G7 vigente, donde la longitud es no negativa y
 `FORWARD/REVERSE` selecciona la ruta. Tratarlo como revisión de contrato
 métrico/público, no como bug G9U1.
 
-**POST-U1-3 — recorrido forzado en la dirección positiva del locus.**  
+**POST-U1-3 — recorrido forzado en la dirección positiva del locus.**<br>
 También se desea un modo explícito que, para
 `start → A → B → end`, permita desde `B` a `A` recorrer la dirección positiva,
 con resultado conceptual
@@ -145,7 +145,7 @@ pública actual no debe ampliarse durante G9U1 sin diseño. Estudiar un argument
 overload o comando separado sin fijar el nombre antes de revisar compatibilidad,
 periodicidad, gaps y políticas de borde.
 
-**POST-U1-4 — redefinición de `SplineV2` / `LocusV2`.**  
+**POST-U1-4 — redefinición de `SplineV2` / `LocusV2`.**<br>
 Investigar una operación explícita de redefinición/reemplazo. El candidato
 actual los presenta read-only salvo redefine compatible aprobado por G9A.
 Una redefinición incompatible o un reemplazo real debe producir identidad nueva;
@@ -153,7 +153,7 @@ no se permite `delete + recreate` conservando la identidad antigua bajo cuerda.
 Cualquier preservación de downstream debe ser transaccional y compatible con
 DAG, undo/redo, save/reopen y reglas de identidad.
 
-**POST-U1-5 — hipótesis de “retroceder el protocolo” para redefinir.**  
+**POST-U1-5 — hipótesis de “retroceder el protocolo” para redefinir.**<br>
 Analizar la idea como requisito de orden de construcción, pero no usar la
 navegación del Construction Protocol como autoridad semántica. El protocolo es
 una vista/historial del procedimiento, no el mecanismo correcto para reescribir
@@ -161,7 +161,7 @@ el DAG. Si existe una necesidad real de mantener posición/orden de construcció
 estudiar los seams kernel/upstream de reemplazo y transacción; documentar si la
 hipótesis debe rechazarse o reformularse.
 
-**POST-U1-6 — colisión entre macro local e instalada.**  
+**POST-U1-6 — colisión entre macro local e instalada.**<br>
 Se desea estudiar una resolución explícita de colisión que permita preferir la
 herramienta instalada. No eliminar del `.cedg` una definición macro que sea
 necesaria para reconstruir `AlgoMacro` ni convertir silenciosamente un documento
@@ -170,13 +170,13 @@ equivalencia por digest/provenance, posible migración o expansión explícita d
 resultados, y portabilidad `.ggb` → `.cedg`. No implementar en G9U1 sin contrato
 de persistencia.
 
-**G12 — zoom por teclado configurable centrado en cursor.**  
+**G12 — zoom por teclado configurable centrado en cursor.**<br>
 El roadmap ya reserva para G12 zoom centrado en cursor, tecla configurable,
 navegación precisa y escalas avanzadas. Mantener en G9U1 el `ZoomWindow` básico
 y `Ctrl`+`+` / `Ctrl`+`-`; registrar/verificar que el requisito autoral queda
 cubierto por G12, sin adelantarlo.
 
-**POST-U1-7 — branchKey opcional.**  
+**POST-U1-7 — branchKey opcional.**<br>
 Analizar posteriormente si un overload sin `branchKey` puede usar una rama
 principal únicamente cuando la fuente tenga una única rama principal inequívoca.
 No introducir un default que oculte ambigüedad en loci multirrama. La
@@ -184,7 +184,7 @@ discoverability del branch sí pertenece a G9U1-A6.
 
 ## Observaciones numeradas del smoke
 
-**1. Spline V2 y grado auxiliar.**  
+**1. Spline V2 y grado auxiliar.**<br>
 El grado del spline se lleva a una variable visible en Álgebra y puede
 modificarse incluso mediante slider. Esto puede ser útil, pero un grado
 fraccionario deja correctamente de producir una spline válida: el contrato
@@ -192,37 +192,37 @@ admite grado integral. Debe revisarse la presentación/propiedad del helper,
 su estado auxiliar y la limpieza segura si queda sin consumidor. Véase
 G9U1-A7.
 
-**2. `Length(b,P,Q)` y orden inverso.**  
+**2. `Length(b,P,Q)` y orden inverso.**<br>
 `Length(b,P,Q)` funciona. Al escribir `Length(b,Q,P)` se observa error/estado no
 definido. Caracterizar primero si se trata de error sintáctico/preview o del
 resultado semántico `TARGET_NOT_REACHABLE` bajo la política actual. La petición
 de signo negativo es POST-U1-2 y no debe incorporarse silenciosamente al contrato
 G7.
 
-**3. Punto semántico interactivo y auxiliares.**  
+**3. Punto semántico interactivo y auxiliares.**<br>
 Tras crear el punto `E`, la inspección muestra una definición interna del tipo
 `Point(b,text3,f)`. `text3` y `f` aparecen como auxiliares. La trazabilidad es
 aceptable, pero estos helpers internos deben tener presentación coherente y no
 ser visibles sobre el lienzo por defecto. Véase G9U1-B2.
 
-**4. `Length(L,U,V)` y orden inverso.**  
+**4. `Length(L,U,V)` y orden inverso.**<br>
 El caso directo funciona. La petición de signo contrario al conmutar U/V y la
 petición de recorrido positivo pasando por `end/start` quedan en POST-U1-2 y
 POST-U1-3. No modificar G7 como parte de una corrección frontend.
 
-**5. Factor de `Dilate`.**  
+**5. Factor de `Dilate`.**<br>
 Con `Dilate(b,kesc)` el slider modifica `kesc`, pero no se consiguió editarlo por
 la ruta algebraica habitual. Debe conservarse edición ordinaria de números.
 Véase G9U1-B3.
 
-**6. Herramientas persistentes, colisiones y Laboratory.**  
+**6. Herramientas persistentes, colisiones y Laboratory.**<br>
 La biblioteca persistente funciona y `Legacy Laboratory` resulta útil para
 abrir `.ggb`/`.ggt` históricos e incluso apoyar creación/inspección de `.ggt`.
 Debe mantenerse, mejorando su ayuda. La sustitución de una macro local por una
 instalada se difiere a POST-U1-6. La integración profesional de las herramientas
 fijadas en toolbar se trata en G9U1-A4.
 
-**7. Fallo de guardado tras `EllipseAxis`.**  
+**7. Fallo de guardado tras `EllipseAxis`.**<br>
 Después de invocar la herramienta aparece la elipse, pero el guardado falla y
 la elipse no queda persistida en `Revision1.cedg`. Es G9U1-B1 y bloquea el
 closeout hasta corrección y revalidación.
@@ -299,7 +299,7 @@ si:
 
 Después de ese estado sigue siendo necesaria una **decisión explícita del autor**.
 
-Autor: Manuel Prado-Velasco  
-Fecha de revisión: 5 de septiembre de 2026  
-Resultado del autor: **PENDIENTE DE CORRECCIÓN Y NUEVO RE-SMOKE**  
+Autor: Manuel Prado-Velasco<br>
+Fecha de revisión: 5 de septiembre de 2026<br>
+Resultado del autor: **PENDIENTE DE CORRECCIÓN Y NUEVO RE-SMOKE**<br>
 Incidencias principales: **G9U1-B1, G9U1-B2, G9U1-B3; refinamientos A1–A7; requisitos POST-U1/G12 registrados**

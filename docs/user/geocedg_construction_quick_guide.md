@@ -22,8 +22,11 @@ deterministas, no una búsqueda del punto más cercano a su posición anterior.
 
 ## 2. Menú completo, barra de uso frecuente
 
-El menú superior normal contiene **Archivo, Editar, Construcción, Ver,
+El menú superior normal contiene **Archivo, Editar, Ver, Construcción, Opciones,
 Automatización y Ayuda**. Los submenús agrupan las herramientas del catálogo.
+Opciones ofrece sólo ajustes host declarados por el perfil: Continuidad permanece
+desactivada en Construction y el idioma de producto se limita a inglés/español.
+Una misma acción referenciada desde varios grupos aparece una sola vez.
 La barra es deliberadamente más pequeña: 32 modos habituales en grupos
 desplegables, más Spline V2 y Zoom por ventana. Las herramientas menos frecuentes
 siguen en el menú. Una opción deshabilitada muestra una razón, no crea objetos.
@@ -184,7 +187,12 @@ ventana está tanto en Ver/navegación como en la barra. El zoom no cambia métr
 3. Pulse **Instalar .ggt…** y elija el archivo; revise el nombre y cualquier rechazo.
 4. Elija la herramienta en el menú para activarla: registra la definición en el
    documento; después seleccione sus inputs para crear los resultados.
-5. Marque/desmarque su fijación a la barra desde el administrador.
+5. Marque/desmarque su fijación a la barra desde el administrador. Puede ordenar
+   las herramientas fijadas y asignarles un grupo; varias herramientas del mismo
+   grupo aparecen en un desplegable de barra, sin convertirse en acciones de
+   producto permanentes. Un grupo se mantiene como una unidad visual contigua:
+   sus miembros se ordenan dentro del desplegable y al cruzar otro elemento se
+   desplaza el grupo completo.
 6. Cierre el documento, abra uno nuevo o reinicie: la instalación explícita sigue
    disponible. Eliminar la instalación no borra resultados ya construidos.
 
@@ -202,6 +210,11 @@ de 110 acciones. Las macros de un documento no se instalan automáticamente.
 No pueden sobrescribir `Point`, `Length`, `LocusV2`, `SplineV2`, `Intersect` u otro
 comando nativo. Scripts/cuerpos semánticos o procedimientos no admitidos se rechazan
 con una explicación; no se eluden flags de producto.
+
+Al invocar una herramienta, su definición necesaria pasa a ser autoridad local
+del documento. Guarde, elimine después la instalación de la biblioteca y reabra:
+el resultado debe reconstruirse desde el `.cedg`. La biblioteca instalada no es
+un requisito externo de portabilidad para objetos ya creados.
 
 Templatev7 es evidencia histórica, no un paquete instalado por defecto. Sus 24
 herramientas están [clasificadas](../validation/g9u1_user_tools_review.md).
