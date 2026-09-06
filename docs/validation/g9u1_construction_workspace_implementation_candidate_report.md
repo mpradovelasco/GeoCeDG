@@ -9,7 +9,32 @@
   `passClaimedImplementation = false`
 - `manualAuthorSmoke = PENDING`
 
-## Final micro-presentation successor — current candidate
+## Native-toolbar visual normalization — current successor
+
+The author functionally accepted published checkpoint
+`e4ef3d48ea95a0c3243e57dfc703b539d455c33e`, which remains immutable, and
+authorized one final presentation-only normalization before exact-SHA closeout.
+The remaining mismatch was not a profile or action-catalog defect: mixed
+Semantic Curves/Navigation flyouts and persistent user-tool buttons used a local
+`scaledIconSize + 12` approximation instead of the live Swing geometry of an
+upstream `ModeToggleMenuD`/`ToolToggleButton`.
+
+The successor derives the adapters' complete dimensions, margin, border,
+alignment and container layout from an actual native toolbar component. At
+HiDPI the focused structural tests compare the live native and adapter
+components before and after last-used action changes. No screenshot baseline,
+fixed vertical offset, document state or geometric identity is introduced. The
+profile and its 11 groups, 52 projected toolbar actions and 110 stable IDs are
+unchanged. This successor requires its own focused A/B, PHASE, COMPOSED and
+clean FULL evidence and remains **IMPLEMENTATION CANDIDATE — PENDING AUTHOR
+REVIEW** with all approval/PASS flags false and `manualAuthorSmoke = PENDING`.
+
+The bounded authority remains the
+[final micro-presentation disposition](g9u1_final_micro_presentation_adjustments.md).
+Main and `geocedg-g9u1-pass` remain untouched until the author explicitly
+approves the exact new technical SHA.
+
+## Final micro-presentation successor — historical technical checkpoint
 
 The author functionally accepted checkpoint
 `34ffdd9af5f94ded2765e7d495ee66543d4d751f`, which remains immutable, then

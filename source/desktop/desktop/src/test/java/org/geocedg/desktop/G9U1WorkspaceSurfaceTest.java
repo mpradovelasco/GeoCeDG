@@ -356,6 +356,7 @@ class G9U1WorkspaceSurfaceTest {
 	@Test
 	void toolbarUsesExactProfileOrderAndNormalLastUsedMixedFlyoutsAtHighDpi() {
 		AppGeoCeDG app = G9U1ActionRegistryTest.app(true);
+		app.setFontSize(32, false);
 		GeoCeDGActionRegistry registry = new GeoCeDGActionRegistry(app);
 		GeoCeDGWorkspaceController workspace = new GeoCeDGWorkspaceController(app, registry);
 		GeoCeDGToolbarContainer container = new GeoCeDGToolbarContainer(app, workspace);
@@ -404,18 +405,29 @@ class G9U1WorkspaceSurfaceTest {
 		assertEquals(new ArrayList<>(expected.keySet()), rendered.stream()
 				.map(component -> (String) ((JComponent) component)
 						.getClientProperty("geocedg.presentation.group.id")).toList());
+		toolbar.setSize(toolbar.getPreferredSize());
+		toolbar.doLayout();
+		JComponent nativeGroup = (JComponent) rendered.get(0);
+		JToggleButton nativeButton = GeoCeDGToolbarContainer.toolbarButton(nativeGroup);
 		for (Component component : rendered) {
 			JComponent groupComponent = (JComponent) component;
+			groupComponent.setSize(groupComponent.getPreferredSize());
+			groupComponent.doLayout();
 			String group = (String) groupComponent.getClientProperty(
 					"geocedg.presentation.group.id");
 			assertEquals(expected.get(group),
 					groupComponent.getClientProperty("geocedg.toolbar.action.ids"));
+			JToggleButton button = GeoCeDGToolbarContainer.toolbarButton(groupComponent);
+			assertNativeToolbarGeometry(nativeButton, button);
+			assertEquals(nativeGroup.getBounds().y, groupComponent.getBounds().y, group);
+			assertEquals(nativeGroup.getBounds().height,
+					groupComponent.getBounds().height, group);
 			if (!group.equals("construction-semantic-curves")
 					&& !group.equals("view-navigation")) {
 				assertTrue(component instanceof ModeToggleMenuD, group);
 				continue;
 			}
-			JToggleButton button = (JToggleButton) component;
+			assertTrue(component instanceof JPanel, group);
 			JPopupMenu popup = (JPopupMenu) button.getClientProperty("geocedg.toolbar.popup");
 			assertNotNull(popup);
 			assertEquals(expected.get(group).size(), popup.getComponentCount());
@@ -436,12 +448,28 @@ class G9U1WorkspaceSurfaceTest {
 			assertNull(button.getText());
 			assertEquals(registry.get(activeId).getValue(javax.swing.Action.NAME),
 					button.getAccessibleContext().getAccessibleName());
-			button.setFont(button.getFont().deriveFont(28f));
 			assertNotNull(button.getAccessibleContext().getAccessibleName());
-			assertEquals(app.getScaledIconSize() + 12, button.getPreferredSize().height);
-			assertEquals(button.getPreferredSize().height, button.getPreferredSize().width);
+			assertNativeToolbarGeometry(nativeButton, button);
 		}
 		assertFalse(toolbar.isFloatable());
+	}
+
+	private static void assertNativeToolbarGeometry(JToggleButton reference,
+			JToggleButton actual) {
+		assertEquals(reference.getPreferredSize(), actual.getPreferredSize());
+		assertEquals(reference.getMinimumSize(), actual.getMinimumSize());
+		assertEquals(reference.getMaximumSize(), actual.getMaximumSize());
+		assertEquals(reference.getMargin(), actual.getMargin());
+		assertSame(reference.getBorder(), actual.getBorder());
+		assertEquals(reference.getAlignmentX(), actual.getAlignmentX());
+		assertEquals(reference.getAlignmentY(), actual.getAlignmentY());
+		assertEquals(reference.getHorizontalAlignment(), actual.getHorizontalAlignment());
+		assertEquals(reference.getVerticalAlignment(), actual.getVerticalAlignment());
+		assertEquals(reference.getHorizontalTextPosition(),
+				actual.getHorizontalTextPosition());
+		assertEquals(reference.getVerticalTextPosition(), actual.getVerticalTextPosition());
+		assertEquals(reference.getIconTextGap(), actual.getIconTextGap());
+		assertEquals(reference.getComponentOrientation(), actual.getComponentOrientation());
 	}
 
 	@Test

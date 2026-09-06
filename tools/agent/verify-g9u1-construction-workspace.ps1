@@ -32,6 +32,8 @@ $Round2CandidateBranch = "codex/g9u1-author-review-stabilization-2"
 $Round3CandidateCommit = "56cf32c922baefeb30c7dff02dbdd5091107ea1a"
 $Round3CandidateBranch = "codex/g9u1-author-review-stabilization-3"
 $FinalPolishCandidateCommit = "34ffdd9af5f94ded2765e7d495ee66543d4d751f"
+$FinalMicroCandidateCommit = "e4ef3d48ea95a0c3243e57dfc703b539d455c33e"
+$FinalMicroCandidateTree = "6fbee30b71076cdb35d561e8f179a92c88a2be38"
 $Round2AuthorityBlobs = [ordered]@{
     "docs/roadmap/geocedg_roadmap.md" = "7eb5f4dceb402e8188afffed83f6ce6d07bfe3a3"
     "docs/validation/g9u1_author_review_round2.md" = "7c9baa952abc87786d92bbb0b68fe0c7d35d0755"
@@ -112,6 +114,22 @@ $FinalMicroTestPaths = @(
     "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1ProfileCompilerTest.java",
     "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1UserToolLibraryTest.java",
     "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1WorkspaceSurfaceTest.java"
+)
+$FinalToolbarVisualMainPaths = @(
+    "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGToolbarContainer.java",
+    "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGUserTools.java",
+    "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGWorkspaceController.java"
+)
+$FinalToolbarVisualTestPaths = @(
+    "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1UserToolLibraryTest.java",
+    "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1WorkspaceSurfaceTest.java"
+)
+$FinalToolbarVisualScenarioIds = @("U1-FM-03", "U1-FM-04", "U1-FM-06")
+$FinalToolbarVisualMethods = @(
+    "org.geocedg.desktop.G9U1WorkspaceSurfaceTest#toolbarUsesExactProfileOrderAndNormalLastUsedMixedFlyoutsAtHighDpi",
+    "org.geocedg.desktop.G9U1UserToolLibraryTest#iconlessPinnedButtonsAndGroupsStayCompactWithFullAccessibleIdentity",
+    "org.geocedg.desktop.G9U1UserToolLibraryTest#pngPinIconPersistsDigestAndTransparentAspectPaddingWithoutDocumentMutation",
+    "org.geocedg.desktop.G9U1UserToolLibraryTest#groupedPngPinsKeepIndividualPopupIconsWithoutChangingToolIdentity"
 )
 $FinalPolishBrandingPins = [ordered]@{
     "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/source/helixSnapshot.png" =
@@ -1118,6 +1136,168 @@ function Assert-U1FinalMicroPresentationContracts {
         "geocedg-g9u1-pass")).Trim())) "A G9U1 PASS tag exists before author closeout."
 }
 
+function Assert-U1FinalToolbarVisualNormalizationContracts {
+    param([object]$Evidence, [object]$Scenarios)
+    [void](Get-U1Git @("merge-base", "--is-ancestor", $FinalMicroCandidateCommit,
+        "HEAD"))
+    Assert-U1 ((Get-U1Git @("rev-parse", "$FinalMicroCandidateCommit^{tree}")).Trim() `
+        -ceq $FinalMicroCandidateTree) "The accepted final-micro checkpoint tree changed."
+
+    $visual = $Evidence.finalToolbarVisualNormalization
+    Assert-U1 ($visual.baseline.commit -ceq $FinalMicroCandidateCommit -and
+        $visual.baseline.tree -ceq $FinalMicroCandidateTree -and
+        $visual.baseline.branch -ceq $Round3CandidateBranch -and
+        $visual.historicalFinalMicro -ceq
+            "FUNCTIONALLY_ACCEPTED_TECHNICAL_CHECKPOINT_PRESERVED" -and
+        $visual.dispositionRecord -ceq $FinalMicroDispositionPath -and
+        $visual.nextAuthorCloseout -ceq "EXACT_NEW_TECHNICAL_COMMIT_REQUIRED" -and
+        $visual.manualAuthorResmoke -ceq "PENDING" -and
+        $visual.scope -ceq "DESKTOP_SWING_PRESENTATION_ONLY") `
+        "Missing or inconsistent final toolbar visual-normalization authority."
+
+    $historicalEvidence = Read-U1Commit $FinalMicroCandidateCommit $EvidencePath |
+        ConvertFrom-Json -Depth 100
+    $historicalScenarios = Read-U1Commit $FinalMicroCandidateCommit $ScenarioPath |
+        ConvertFrom-Json -Depth 100
+    Assert-U1 ($visual.baseline.pathCount -eq $historicalEvidence.inventory.pathCount -and
+        $visual.baseline.sourcePathCount -eq
+            $historicalEvidence.inventory.sourcePathCount) `
+        "Final toolbar visual baseline inventory differs from the immutable checkpoint."
+    Assert-U1 (($Evidence.finalMicroPresentation | ConvertTo-Json -Depth 100 -Compress) `
+        -ceq ($historicalEvidence.finalMicroPresentation |
+            ConvertTo-Json -Depth 100 -Compress)) `
+        "The immutable final-micro evidence authority was rewritten."
+    Assert-U1 (($Scenarios.finalMicroPresentation | ConvertTo-Json -Depth 100 -Compress) `
+        -ceq ($historicalScenarios.finalMicroPresentation |
+            ConvertTo-Json -Depth 100 -Compress)) `
+        "The immutable final-micro scenario authority was rewritten."
+
+    $visualDelta = @((Get-U1Git @("diff", "--name-only",
+        $FinalMicroCandidateCommit)).Split("`n") +
+        (Get-U1Git @("ls-files", "--others", "--exclude-standard")).Split("`n") |
+        Where-Object { $_ } | Sort-Object -Unique -CaseSensitive)
+    Assert-U1Set $visualDelta @($visual.inventory.deltaPaths) `
+        "Exact final toolbar visual-normalization delta"
+    Assert-U1 ($visual.inventory.baseCommit -ceq $FinalMicroCandidateCommit -and
+        $visual.inventory.deltaPathCount -eq $visualDelta.Count -and
+        $visual.inventory.sourcePathCount -eq
+            @($visualDelta | Where-Object { $_ -cmatch '^source/' }).Count) `
+        "Final toolbar visual-normalization inventory counters drifted."
+    Assert-U1Set @($visualDelta | Where-Object { $_ -cmatch '^source/.*/src/main/' }) `
+        $FinalToolbarVisualMainPaths `
+        "Final toolbar visual productive paths must remain bounded to Desktop Swing"
+    Assert-U1Set @($visualDelta | Where-Object { $_ -cmatch '^source/.*/src/test/' }) `
+        $FinalToolbarVisualTestPaths "Final toolbar visual focused test paths"
+    Assert-U1 (@($visualDelta | Where-Object {
+        $_ -cmatch '^source/shared/|^apps/geocedg/application-profile\.yml$'
+    }).Count -eq 0) `
+        "Final toolbar visual normalization changed shared or profile authority."
+
+    Assert-U1 (@($historicalScenarios.scenarios).Count -eq 192 -and
+        @($Scenarios.scenarios).Count -eq 192) `
+        "Final toolbar visual normalization must not alter the scenario inventory."
+    foreach ($historical in @($historicalScenarios.scenarios)) {
+        $current = @($Scenarios.scenarios | Where-Object { $_.id -ceq $historical.id })
+        Assert-U1 ($current.Count -eq 1 -and
+            ($current[0] | ConvertTo-Json -Depth 100 -Compress) -ceq
+            ($historical | ConvertTo-Json -Depth 100 -Compress)) `
+            "Final toolbar visual normalization rewrote scenario: $($historical.id)"
+    }
+    foreach ($historicalClass in @($historicalScenarios.focusedJUnit.classes)) {
+        $currentClass = @($Scenarios.focusedJUnit.classes | Where-Object {
+            $_.name -ceq $historicalClass.name })
+        Assert-U1 ($currentClass.Count -eq 1 -and
+            ($currentClass[0] | ConvertTo-Json -Depth 100 -Compress) -ceq
+            ($historicalClass | ConvertTo-Json -Depth 100 -Compress)) `
+            "Final toolbar visual normalization changed focused inventory: $($historicalClass.name)"
+    }
+    $scenarioRecord = $Scenarios.finalToolbarVisualNormalization
+    Assert-U1 ($scenarioRecord.baselineCommit -ceq $FinalMicroCandidateCommit -and
+        $scenarioRecord.historicalScenarioCount -eq 192 -and
+        $scenarioRecord.historicalFocusedTests -eq 238 -and
+        @($scenarioRecord.newScenarioIds).Count -eq 0 -and
+        $scenarioRecord.strengthenedContract -ceq
+            "EXACT_LIVE_NATIVE_TOOL_GEOMETRY_ALIGNMENT_AND_CONTAINER_AT_HIDPI" -and
+        $scenarioRecord.authorChecklistModified -eq $false -and
+        $scenarioRecord.newStableActionIds -eq 0 -and
+        $scenarioRecord.manualAuthorResmoke -ceq "PENDING" -and
+        $scenarioRecord.nextAuthorCloseout -ceq
+            "EXACT_NEW_TECHNICAL_COMMIT_REQUIRED") `
+        "Final toolbar visual scenario provenance differs."
+    Assert-U1Set @($scenarioRecord.reusedScenarioIds) $FinalToolbarVisualScenarioIds `
+        "Final toolbar visual strengthened scenarios"
+    Assert-U1Set @($scenarioRecord.strengthenedTestMethods) $FinalToolbarVisualMethods `
+        "Final toolbar visual strengthened test methods"
+
+    Assert-U1 ($visual.focusedInventory.classes -eq 24 -and
+        $visual.focusedInventory.methods -eq 238 -and
+        $visual.focusedInventory.desktopMethods -eq 224 -and
+        $visual.focusedInventory.sharedMethods -eq 14 -and
+        $visual.focusedInventory.scenarios -eq 192 -and
+        $visual.focusedInventory.historicalScenarios -eq 192 -and
+        $visual.focusedInventory.addedScenarios -eq 0) `
+        "Final toolbar visual focused inventory differs."
+    Assert-U1Set @($visual.focusedInventory.strengthenedScenarios) `
+        $FinalToolbarVisualScenarioIds "Final toolbar visual evidence scenarios"
+    Assert-U1Set @($visual.nativePresentationAuthority.copiedProperties) @(
+        "preferredSize", "minimumSize", "maximumSize", "margin", "border",
+        "alignmentX", "alignmentY", "horizontalAlignment", "verticalAlignment",
+        "horizontalTextPosition", "verticalTextPosition", "iconTextGap",
+        "componentOrientation") "Native toolbar presentation properties"
+    Assert-U1 ($visual.nativePresentationAuthority.component -ceq
+            "ModeToggleMenuD/ToolToggleButton" -and
+        $visual.nativePresentationAuthority.liveReference -ceq
+            "FIRST_NATIVE_BUTTON_IN_PROFILE_TOOLBAR" -and
+        $visual.nativePresentationAuthority.mixedFlyoutContainer -ceq
+            "JPANEL_BOXLAYOUT_X_AXIS_MATCHING_MODE_TOGGLE_MENU_D" -and
+        $visual.nativePresentationAuthority.screenshotGolden -eq $false -and
+        $visual.nativePresentationAuthority.arbitraryButtonSizeConstant -eq $false) `
+        "Final toolbar native presentation contract differs."
+    Assert-U1 ($visual.preservedContracts.checkpointImmutable -eq $true -and
+        $visual.preservedContracts.singleActionAuthority -eq $true -and
+        $visual.preservedContracts.profileByteUnchanged -eq $true -and
+        $visual.preservedContracts.stableActionIds -eq 110 -and
+        $visual.preservedContracts.newStableActionIds -eq 0 -and
+        $visual.preservedContracts.toolbarGroups -eq 11 -and
+        $visual.preservedContracts.toolbarActions -eq 52 -and
+        $visual.preservedContracts.kernelScientificPersistenceChanged -eq $false -and
+        $visual.preservedContracts.authorApprovedImplementation -eq $false -and
+        $visual.preservedContracts.passClaimedImplementation -eq $false) `
+        "Final toolbar visual preserved contracts differ."
+
+    $toolbarSource = Read-U1 $FinalToolbarVisualMainPaths[0]
+    $userToolsSource = Read-U1 $FinalToolbarVisualMainPaths[1]
+    $workspaceSource = Read-U1 $FinalToolbarVisualMainPaths[2]
+    Assert-U1 (($toolbarSource + $userToolsSource + $workspaceSource) -cnotmatch
+        'getScaledIconSize\(\)\s*\+\s*12') `
+        "Final toolbar adapters retain the rejected local button-size approximation."
+    Assert-U1 ($toolbarSource -cmatch 'applyNativeToolPresentation' -and
+        $toolbarSource -cmatch 'new BoxLayout\(panel, BoxLayout\.X_AXIS\)' -and
+        $workspaceSource -cmatch 'nativeVisualReference' -and
+        $userToolsSource -cmatch 'applyNativeToolPresentation') `
+        "Final toolbar adapters do not consume the native Swing presentation seam."
+    foreach ($path in @($visual.documentationPaths)) {
+        $text = Read-U1 $path
+        foreach ($link in [regex]::Matches($text,
+            '(?<!!)\[[^\]]*\]\((?<target>[^)]+)\)')) {
+            $target = $link.Groups["target"].Value.Trim().Trim([char[]]"<>")
+            if ($target -match '^(https?://|mailto:|#)') { continue }
+            $target = ($target -split '#', 2)[0]
+            if ([string]::IsNullOrWhiteSpace($target)) { continue }
+            $document = Join-Path $RepositoryRoot $path
+            $targetPath = Join-Path (Split-Path -Parent $document) $target
+            $relative = [IO.Path]::GetRelativePath($RepositoryRoot,
+                [IO.Path]::GetFullPath($targetPath)).Replace('\', '/')
+            $resolved = Resolve-GeoCeDGPhaseLifecycleChild $RepositoryRoot $relative `
+                "final toolbar visual documentation link"
+            Assert-U1 (Test-Path -LiteralPath $resolved) `
+                "Broken final toolbar visual documentation link: $path -> $target"
+        }
+    }
+    Assert-U1 ([string]::IsNullOrEmpty((Get-U1Git @("tag", "--list",
+        "geocedg-g9u1-pass")).Trim())) "A G9U1 PASS tag exists before author closeout."
+}
+
 function Invoke-U1Gradle {
     param([string[]]$Arguments, [string]$Description, [string]$LogName)
     $effective = @($Arguments) + @("--rerun-tasks", "--no-build-cache", "--no-daemon",
@@ -1189,6 +1369,7 @@ function Assert-U1Contracts {
     Assert-U1Round3Contracts $Evidence $Scenarios $paths
     Assert-U1FinalPresentationPolishContracts $Evidence $Scenarios $paths
     Assert-U1FinalMicroPresentationContracts $Evidence $Scenarios $paths
+    Assert-U1FinalToolbarVisualNormalizationContracts $Evidence $Scenarios
     Assert-U1 (@($paths | Where-Object { $_ -match '^artifacts/|^book/' }).Count -eq 0) "Generated/independent-book path in candidate."
     $profile = Read-U1 "apps/geocedg/application-profile.yml" | ConvertFrom-Json -Depth 100 -AsHashtable
     [void](Assert-GeoCeDGLiveWorkspaceProfile -RepositoryRoot $RepositoryRoot)
@@ -1321,12 +1502,13 @@ try {
             Assert-U1 (@($style.SelectNodes("//error")).Count -eq 0) "G9U1 Checkstyle errors: $path"
         }
         $summary = [ordered]@{
-            schemaVersion = 1; phase = "G9U1"; state = "FINAL_MICRO_PRESENTATION_FOCUSED_PASSED_NOT_AUTHOR_APPROVAL"
+            schemaVersion = 1; phase = "G9U1"; state = "FINAL_TOOLBAR_VISUAL_NORMALIZATION_FOCUSED_PASSED_NOT_AUTHOR_APPROVAL"
             baseCommit = $BaseCommit; promptHash = Get-U1Hash $PromptPath
             authorReviewRound2Baseline = $Round1CandidateCommit
             authorReviewRound3Baseline = $Round2CandidateCommit
             finalPresentationPolishBaseline = $Round3CandidateCommit
             finalMicroPresentationBaseline = $FinalPolishCandidateCommit
+            finalToolbarVisualNormalizationBaseline = $FinalMicroCandidateCommit
             authorReviewInputCommit = $Round2AuthorInputCommit
             authorReviewInputEntryHash = $Round2AuthorInputEntryCanonicalHash
             authorReviewInputHash = $Round2AuthorInputLiveCanonicalHash

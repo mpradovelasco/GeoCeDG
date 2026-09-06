@@ -14,7 +14,6 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -67,6 +66,7 @@ public final class GeoCeDGUserTools {
 	private final GeoCeDGActionRegistry registry;
 	private final GeoCeDGUserToolLibrary library;
 	private final String loadFailure;
+	private JToggleButton nativeVisualReference;
 
 	private GeoCeDGUserTools(AppD app) {
 		this.app = app;
@@ -80,6 +80,7 @@ public final class GeoCeDGUserTools {
 		}
 		library = loaded;
 		loadFailure = failure;
+		nativeVisualReference = GeoCeDGToolbarContainer.createNativeToolReference(app);
 	}
 
 	GeoCeDGUserTools(AppD app, GeoCeDGUserToolLibrary library) {
@@ -87,6 +88,7 @@ public final class GeoCeDGUserTools {
 		this.registry = ((GuiManagerGeoCeDG) app.getGuiManager()).getActionRegistry();
 		this.library = library;
 		this.loadFailure = null;
+		this.nativeVisualReference = GeoCeDGToolbarContainer.createNativeToolReference(app);
 	}
 
 	private static Path storagePath() {
@@ -139,10 +141,13 @@ public final class GeoCeDGUserTools {
 
 	/**
 	 * @param app product app
+	 * @param nativeVisualReference actual native button in the containing toolbar
 	 * @return independent pinned user-tool group, empty when unpinned
 	 */
-	public static JComponent createPinnedToolbar(AppD app) {
+	public static JComponent createPinnedToolbar(AppD app,
+			JToggleButton nativeVisualReference) {
 		GeoCeDGUserTools tools = get(app);
+		tools.nativeVisualReference = nativeVisualReference;
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEADING, 2, 0));
 		panel.getAccessibleContext().setAccessibleName(tools.text("UserTools.Title"));
 		Runnable refresh = () -> tools.populatePins(panel);
@@ -284,18 +289,10 @@ public final class GeoCeDGUserTools {
 	}
 
 	private void configurePinnedButton(JToggleButton button, String description) {
-		button.setFont(app.getPlainFont());
-		button.setFocusable(false);
-		button.setMargin(new Insets(2, 6, 2, 6));
-		Dimension size = button.getPreferredSize();
-		size.height = app.getScaledIconSize() + 12;
-		if (button.getIcon() == null
-				|| button.getText() == null || button.getText().isEmpty()) {
-			size.width = size.height;
-		}
-		button.setPreferredSize(size);
-		button.setMinimumSize(size);
-		button.setMaximumSize(size);
+		GeoCeDGToolbarContainer.applyNativeToolPresentation(button,
+				nativeVisualReference);
+		button.putClientProperty("geocedg.toolbar.nativeVisualReference",
+				nativeVisualReference);
 		button.setToolTipText(description);
 		button.getAccessibleContext().setAccessibleDescription(description);
 	}

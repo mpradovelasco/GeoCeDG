@@ -207,6 +207,7 @@ class G9U1UserToolLibraryTest {
 	@Test
 	void iconlessPinnedButtonsAndGroupsStayCompactWithFullAccessibleIdentity()
 			throws Exception {
+		app.setFontSize(32, false);
 		assertEquals("A", GeoCeDGUserTools.monogram("  --alpha"));
 		assertEquals("A", GeoCeDGUserTools.monogram("  7 axis"));
 		assertEquals("\u2022", GeoCeDGUserTools.monogram(" -- "));
@@ -226,12 +227,7 @@ class G9U1UserToolLibraryTest {
 		for (JToggleButton button : List.of(group, command)) {
 			assertNotNull(button.getIcon());
 			assertNull(button.getText());
-			assertEquals(app.getScaledIconSize() + 12,
-					button.getPreferredSize().width);
-			assertEquals(button.getPreferredSize().width,
-					button.getPreferredSize().height);
-			assertEquals(button.getPreferredSize(), button.getMinimumSize());
-			assertEquals(button.getPreferredSize(), button.getMaximumSize());
+			assertNativeToolbarGeometry(button);
 			assertEquals(button.getToolTipText(),
 					button.getAccessibleContext().getAccessibleDescription());
 		}
@@ -256,6 +252,7 @@ class G9U1UserToolLibraryTest {
 		assertEquals("SecondMidpoint",
 				group.getClientProperty("geocedg.userTool.activeCommand"));
 		assertEquals("S", group.getClientProperty("geocedg.userTool.monogram"));
+		assertNativeToolbarGeometry(group);
 		assertEquals("monogram",
 				command.getClientProperty("geocedg.userTool.icon.source"));
 		assertEquals("T", command.getClientProperty("geocedg.userTool.monogram"));
@@ -268,6 +265,7 @@ class G9U1UserToolLibraryTest {
 	@Test
 	void pngPinIconPersistsDigestAndTransparentAspectPaddingWithoutDocumentMutation()
 			throws Exception {
+		app.setFontSize(32, false);
 		Package tool = library.install("owned.ggt", midpointPackage("OwnedMidpoint"));
 		G9U1TestApp.eval(app, "P=(3,4)");
 		final String before = app.getXML();
@@ -308,8 +306,7 @@ class G9U1UserToolLibraryTest {
 		assertNull(button.getClientProperty("geocedg.userTool.monogram"));
 		assertNull(button.getText());
 		assertEquals("OwnedMidpoint", button.getAccessibleContext().getAccessibleName());
-		assertEquals(app.getScaledIconSize() + 12, button.getPreferredSize().height);
-		assertEquals(button.getPreferredSize().height, button.getPreferredSize().width);
+		assertNativeToolbarGeometry(button);
 
 		assertEquals(before, app.getXML());
 		assertArrayEquals(beforeArchive, archiveXml(app));
@@ -371,6 +368,7 @@ class G9U1UserToolLibraryTest {
 	@Test
 	void groupedPngPinsKeepIndividualPopupIconsWithoutChangingToolIdentity()
 			throws Exception {
+		app.setFontSize(32, false);
 		Package tool = library.install("owned.ggt",
 				midpointPackage("FirstMidpoint", "SecondMidpoint"));
 		library.pin(tool.id(), "FirstMidpoint", "first.png", png(32, 16, Color.RED));
@@ -388,6 +386,7 @@ class G9U1UserToolLibraryTest {
 		assertNull(group.getClientProperty("geocedg.userTool.monogram"));
 		assertEquals("FirstMidpoint",
 				group.getClientProperty("geocedg.userTool.activeCommand"));
+		assertNativeToolbarGeometry(group);
 		JPopupMenu popup = (JPopupMenu) group.getClientProperty("geocedg.userTool.popup");
 		assertEquals(2, popup.getComponentCount());
 		for (int i = 0; i < popup.getComponentCount(); i++) {
@@ -397,6 +396,26 @@ class G9U1UserToolLibraryTest {
 				library.pinnedCommands().stream()
 						.map(GeoCeDGUserToolLibrary.PinnedCommand::command).toList());
 		assertEquals(0, app.getKernel().getMacroNumber());
+	}
+
+	private static void assertNativeToolbarGeometry(JToggleButton actual) {
+		JToggleButton reference = (JToggleButton) actual.getClientProperty(
+				"geocedg.toolbar.nativeVisualReference");
+		assertNotNull(reference);
+		assertEquals(reference.getPreferredSize(), actual.getPreferredSize());
+		assertEquals(reference.getMinimumSize(), actual.getMinimumSize());
+		assertEquals(reference.getMaximumSize(), actual.getMaximumSize());
+		assertEquals(reference.getMargin(), actual.getMargin());
+		assertSame(reference.getBorder(), actual.getBorder());
+		assertEquals(reference.getAlignmentX(), actual.getAlignmentX());
+		assertEquals(reference.getAlignmentY(), actual.getAlignmentY());
+		assertEquals(reference.getHorizontalAlignment(), actual.getHorizontalAlignment());
+		assertEquals(reference.getVerticalAlignment(), actual.getVerticalAlignment());
+		assertEquals(reference.getHorizontalTextPosition(),
+				actual.getHorizontalTextPosition());
+		assertEquals(reference.getVerticalTextPosition(), actual.getVerticalTextPosition());
+		assertEquals(reference.getIconTextGap(), actual.getIconTextGap());
+		assertEquals(reference.getComponentOrientation(), actual.getComponentOrientation());
 	}
 
 	@Test

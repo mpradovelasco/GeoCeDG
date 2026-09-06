@@ -1739,5 +1739,112 @@
       "authorApprovedImplementation": false,
       "passClaimedImplementation": false
     }
+  },
+  "finalToolbarVisualNormalization": {
+    "baseline": {
+      "commit": "e4ef3d48ea95a0c3243e57dfc703b539d455c33e",
+      "tree": "6fbee30b71076cdb35d561e8f179a92c88a2be38",
+      "branch": "codex/g9u1-author-review-stabilization-3",
+      "pathCount": 164,
+      "sourcePathCount": 95
+    },
+    "historicalFinalMicro": "FUNCTIONALLY_ACCEPTED_TECHNICAL_CHECKPOINT_PRESERVED",
+    "dispositionRecord": "docs/validation/g9u1_final_micro_presentation_adjustments.md",
+    "nextAuthorCloseout": "EXACT_NEW_TECHNICAL_COMMIT_REQUIRED",
+    "manualAuthorResmoke": "PENDING",
+    "scope": "DESKTOP_SWING_PRESENTATION_ONLY",
+    "inventory": {
+      "baseCommit": "e4ef3d48ea95a0c3243e57dfc703b539d455c33e",
+      "deltaPathCount": 11,
+      "sourcePathCount": 5,
+      "deltaPaths": [
+        "docs/validation/g9u1_construction_workspace_implementation_candidate_report.md",
+        "docs/validation/g9u1_final_micro_presentation_adjustments.md",
+        "geocedg/validation/g9u1/g9u1-construction-workspace-evidence.json",
+        "geocedg/validation/g9u1/g9u1-construction-workspace-evidence.sha256",
+        "geocedg/validation/g9u1/g9u1-construction-workspace-scenarios.json",
+        "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGToolbarContainer.java",
+        "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGUserTools.java",
+        "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGWorkspaceController.java",
+        "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1UserToolLibraryTest.java",
+        "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1WorkspaceSurfaceTest.java",
+        "tools/agent/verify-g9u1-construction-workspace.ps1"
+      ]
+    },
+    "nativePresentationAuthority": {
+      "component": "ModeToggleMenuD/ToolToggleButton",
+      "liveReference": "FIRST_NATIVE_BUTTON_IN_PROFILE_TOOLBAR",
+      "isolatedFallback": "GENUINE_MODE_TOGGLE_MENU_MOVE_BUTTON",
+      "copiedProperties": [
+        "preferredSize",
+        "minimumSize",
+        "maximumSize",
+        "margin",
+        "border",
+        "alignmentX",
+        "alignmentY",
+        "horizontalAlignment",
+        "verticalAlignment",
+        "horizontalTextPosition",
+        "verticalTextPosition",
+        "iconTextGap",
+        "componentOrientation"
+      ],
+      "mixedFlyoutContainer": "JPANEL_BOXLAYOUT_X_AXIS_MATCHING_MODE_TOGGLE_MENU_D",
+      "copiedAsAuthority": false,
+      "independentProperties": [
+        "action",
+        "model",
+        "icon",
+        "lastUsedUiState"
+      ],
+      "screenshotGolden": false,
+      "arbitraryButtonSizeConstant": false
+    },
+    "focusedInventory": {
+      "classes": 24,
+      "methods": 238,
+      "desktopMethods": 224,
+      "sharedMethods": 14,
+      "scenarios": 192,
+      "historicalScenarios": 192,
+      "addedScenarios": 0,
+      "strengthenedScenarios": [
+        "U1-FM-03",
+        "U1-FM-04",
+        "U1-FM-06"
+      ]
+    },
+    "requiredVerification": {
+      "focused": "FRESH_AB_DETERMINISTIC_FINAL_TOOLBAR_VISUAL_NORMALIZATION_COHORT",
+      "PHASE": "FRESH_FINAL_TOOLBAR_VISUAL_NORMALIZATION_COHORT",
+      "COMPOSED": "FRESH_FINAL_TOOLBAR_VISUAL_NORMALIZATION_COHORT",
+      "FULL": "FRESH_CLEAN_FINAL_TOOLBAR_VISUAL_NORMALIZATION_COHORT",
+      "postcommit": "EXACT_NEW_TECHNICAL_COMMIT_STATIC_LIFECYCLE",
+      "historicalCheckpointReceiptsReusedAsFinalAcceptance": false
+    },
+    "documentationPaths": [
+      "docs/validation/g9u1_construction_workspace_implementation_candidate_report.md",
+      "docs/validation/g9u1_final_micro_presentation_adjustments.md"
+    ],
+    "verificationImpact": "UPDATE_REQUIRED_FRESH_FULL",
+    "bootstrapImpact": "NO_CHANGE_REQUIRED",
+    "guideImpact": "NO_CHANGE_REQUIRED",
+    "preservedContracts": {
+      "checkpointImmutable": true,
+      "authorChecklistIsInputNotAgentEvidence": true,
+      "singleActionAuthority": true,
+      "profileByteUnchanged": true,
+      "stableActionIds": 110,
+      "newStableActionIds": 0,
+      "toolbarGroups": 11,
+      "toolbarActions": 52,
+      "continuityLockedOff": true,
+      "classicIsolationUnchanged": true,
+      "inputHelpRemainsFarRight": true,
+      "kernelScientificPersistenceChanged": false,
+      "authorApprovedImplementation": false,
+      "passClaimedImplementation": false
+    }
   }
 }

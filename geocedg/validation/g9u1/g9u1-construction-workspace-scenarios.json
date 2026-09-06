@@ -3236,5 +3236,28 @@
     "newStableActionIds": 0,
     "manualAuthorResmoke": "PENDING",
     "nextAuthorCloseout": "EXACT_NEW_TECHNICAL_COMMIT_REQUIRED"
+  },
+  "finalToolbarVisualNormalization": {
+    "baselineCommit": "e4ef3d48ea95a0c3243e57dfc703b539d455c33e",
+    "historicalScenarioCount": 192,
+    "historicalFocusedTests": 238,
+    "reusedScenarioIds": [
+      "U1-FM-03",
+      "U1-FM-04",
+      "U1-FM-06"
+    ],
+    "strengthenedTestMethods": [
+      "org.geocedg.desktop.G9U1WorkspaceSurfaceTest#toolbarUsesExactProfileOrderAndNormalLastUsedMixedFlyoutsAtHighDpi",
+      "org.geocedg.desktop.G9U1UserToolLibraryTest#iconlessPinnedButtonsAndGroupsStayCompactWithFullAccessibleIdentity",
+      "org.geocedg.desktop.G9U1UserToolLibraryTest#pngPinIconPersistsDigestAndTransparentAspectPaddingWithoutDocumentMutation",
+      "org.geocedg.desktop.G9U1UserToolLibraryTest#groupedPngPinsKeepIndividualPopupIconsWithoutChangingToolIdentity"
+    ],
+    "strengthenedContract": "EXACT_LIVE_NATIVE_TOOL_GEOMETRY_ALIGNMENT_AND_CONTAINER_AT_HIDPI",
+    "newScenarioIds": [],
+    "dispositionRecord": "docs/validation/g9u1_final_micro_presentation_adjustments.md",
+    "authorChecklistModified": false,
+    "newStableActionIds": 0,
+    "manualAuthorResmoke": "PENDING",
+    "nextAuthorCloseout": "EXACT_NEW_TECHNICAL_COMMIT_REQUIRED"
   }
 }

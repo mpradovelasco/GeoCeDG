@@ -6,10 +6,8 @@
 package org.geocedg.desktop;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
@@ -320,15 +318,17 @@ public final class GeoCeDGWorkspaceController {
 	 * @param nameKey localized group name
 	 * @param actionIds exact ordered action projection
 	 * @param selectionGroup shared toolbar selection group
+	 * @param nativeVisualReference actual native toolbar button presentation authority
 	 * @return one normal-sized icon flyout
 	 */
 	JToggleButton createProfileFlyout(String groupId, String nameKey,
-			List<String> actionIds, ButtonGroup selectionGroup) {
+			List<String> actionIds, ButtonGroup selectionGroup,
+			JToggleButton nativeVisualReference) {
 		if (actionIds.isEmpty()) {
 			throw new IllegalStateException("Empty profile flyout " + groupId);
 		}
 		final String name = registry.text(nameKey);
-		ProfileFlyoutButton button = new ProfileFlyoutButton();
+		ProfileFlyoutButton button = new ProfileFlyoutButton(nativeVisualReference);
 		final JPopupMenu popup = new JPopupMenu();
 		ButtonGroup radios = new ButtonGroup();
 		for (String id : actionIds) {
@@ -339,18 +339,12 @@ public final class GeoCeDGWorkspaceController {
 			item.addActionListener(event -> selectProfileFlyoutAction(button, id));
 			popup.add(item);
 		}
-		button.setFont(app.getPlainFont());
-		button.setFocusable(false);
-		button.setMargin(new Insets(2, 6, 2, 6));
-		Dimension size = new Dimension(app.getScaledIconSize() + 12,
-				app.getScaledIconSize() + 12);
-		button.setPreferredSize(size);
-		button.setMinimumSize(size);
-		button.setMaximumSize(size);
 		button.putClientProperty("geocedg.presentation.group.id", groupId);
 		button.putClientProperty("geocedg.toolbar.action.ids", List.copyOf(actionIds));
 		button.putClientProperty("geocedg.toolbar.popup", popup);
 		button.putClientProperty("geocedg.toolbar.group.name", name);
+		button.putClientProperty("geocedg.toolbar.nativeVisualReference",
+				nativeVisualReference);
 		button.setPopup(popup);
 		selectionGroup.add(button);
 		selectProfileFlyoutAction(button, actionIds.get(0));
@@ -393,6 +387,9 @@ public final class GeoCeDGWorkspaceController {
 		button.getAccessibleContext().setAccessibleDescription(
 				(String) action.getValue(Action.SHORT_DESCRIPTION));
 		button.putClientProperty("geocedg.toolbar.active.action.id", id);
+		GeoCeDGToolbarContainer.applyNativeToolPresentation(button,
+				(JToggleButton) button.getClientProperty(
+						"geocedg.toolbar.nativeVisualReference"));
 	}
 
 	private Icon actionIcon(String id) {
@@ -407,18 +404,51 @@ public final class GeoCeDGWorkspaceController {
 
 	private static final class ProfileFlyoutButton extends JToggleButton {
 		private static final long serialVersionUID = 1L;
-		private static final int ARROW_ZONE = 12;
+		private final JToggleButton nativeVisualReference;
 		private boolean popupRequest;
 		private JPopupMenu popup;
 
-		ProfileFlyoutButton() {
+		ProfileFlyoutButton(JToggleButton nativeVisualReference) {
+			this.nativeVisualReference = nativeVisualReference;
 			addMouseListener(new MouseAdapter() {
 				@Override
 				public void mousePressed(MouseEvent event) {
-					popupRequest = popup != null && (event.getX() >= getWidth() - ARROW_ZONE
-							|| event.getY() >= getHeight() - ARROW_ZONE);
+					popupRequest = popup != null && (event.getX() >= arrowX() - arrowWidth()
+							|| event.getY() >= arrowY() - arrowHeight());
 				}
 			});
+		}
+
+		private int nativeIconWidth() {
+			return nativeVisualReference.getIcon().getIconWidth();
+		}
+
+		private int nativeIconHeight() {
+			return nativeVisualReference.getIcon().getIconHeight();
+		}
+
+		private int nativeHorizontalBorder() {
+			return (nativeVisualReference.getPreferredSize().width - nativeIconWidth()) / 2;
+		}
+
+		private int nativeVerticalBorder() {
+			return (nativeVisualReference.getPreferredSize().height - nativeIconHeight()) / 2;
+		}
+
+		private int arrowWidth() {
+			return nativeIconWidth() <= 40 ? 6 : 8;
+		}
+
+		private int arrowHeight() {
+			return nativeIconWidth() <= 40 ? 5 : 7;
+		}
+
+		private int arrowX() {
+			return nativeHorizontalBorder() + nativeIconWidth() + 2;
+		}
+
+		private int arrowY() {
+			return nativeVerticalBorder() + nativeIconHeight() + 1;
 		}
 
 		void setPopup(JPopupMenu popup) {
@@ -439,10 +469,12 @@ public final class GeoCeDGWorkspaceController {
 				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 						RenderingHints.VALUE_ANTIALIAS_ON);
 				g2.setColor(isEnabled() ? getForeground() : Color.GRAY);
-				int x = getWidth() - 9;
-				int y = getHeight() - 7;
-				g2.fillPolygon(new int[] {x - 4, x + 2, x - 1},
-						new int[] {y - 3, y - 3, y + 1}, 3);
+				int x = arrowX();
+				int y = arrowY();
+				int width = arrowWidth();
+				int height = arrowHeight();
+				g2.fillPolygon(new int[] {x - width, x, x - width / 2},
+						new int[] {y - height, y - height, y}, 3);
 			} finally {
 				g2.dispose();
 			}
