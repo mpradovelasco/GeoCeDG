@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "phase": "G9U1",
-  "status": "AUTHOR_REVIEW_STABILIZATION_ROUND3_CONSUMER_MAPPING_PENDING_FRESH_EXECUTION",
+  "status": "FINAL_PRESENTATION_POLISH_CONSUMER_MAPPING_PENDING_FRESH_EXECUTION",
   "focusedJUnit": {
     "classes": [
       {
@@ -21,7 +21,8 @@
           "globalPropertiesActionDispatchesToHostPreferencesWithoutSelection",
           "diagnosticLaunchUsesSeparateHostAndExplicitFileWithoutChangingWorkspace",
           "diagnosticLaunchRejectsUnsupportedResource",
-          "constructionNavigationUsesTheGraphicsHostBarWithoutDagOrUndoMutation"
+          "constructionNavigationUsesTheGraphicsHostBarWithoutDagOrUndoMutation",
+          "semanticCurveCreationNamesAreSymmetricWithoutChangingHostModeText"
         ]
       },
       {
@@ -100,7 +101,7 @@
         "module": "desktop",
         "methods": [
           "liveProfileStrictlyCompilesOneHundredTenActions",
-          "toolbarContainsThirtyTwoCuratedModesWhileCatalogRetainsAllSixtySix",
+          "nativeToolbarContainsFortyFourCuratedModesWhileCatalogRetainsAllSixtySix",
           "historicalV1FixtureRetainsExactOriginalToolbar",
           "unknownTopLevelPropertyFailsClosed",
           "unknownNestedPropertyFailsClosed",
@@ -127,7 +128,10 @@
           "validV2DoesNotUseFallback",
           "invalidFallbackCannotBecomeAnUnvalidatedWorkspace",
           "dockTreeCannotPlaceAPanelOnItsOwnSplitNode",
-          "jsonSchemaPatternsMatchSubstringsUnlessExplicitlyAnchored"
+          "jsonSchemaPatternsMatchSubstringsUnlessExplicitlyAnchored",
+          "toolbarProjectionRegroupsExistingActionsAndDeclaresOnlyTwoMixedFlyouts",
+          "nativeToolbarFlyoutsMatchTheRequestedConstructionGroups",
+          "unknownToolbarRenderingFailsClosed"
         ]
       },
       {
@@ -186,7 +190,7 @@
           "hostPreferenceRadiosRefreshFromAuthorityWhenSubmenusOpen",
           "toolbarExtensionsPreserveTheHostHelpControlsAtTheFarEdge",
           "repeatedMenuRebuildKeepsOneProjectionPerDeclaredPlacement",
-          "compactProductToolbarUsesOnlyDeclaredNonModeActionsAtHighDpi",
+          "profileFlyoutsGroupMixedActionsWithoutDetachedSplineButtonAtHighDpi",
           "contextProjectionUsesSameStableActionIds",
           "layoutRoundTripIsPreferenceOnlyAndRetainsProfileAuthority",
           "corruptedLayoutFailsToSafeProfileWithoutGeometryParsing",
@@ -362,6 +366,16 @@
           "usesTextualIdentityAndNoUpstreamSplash",
           "isolatesDefaultPreferencesPath",
           "exposesExperimentalDxfOnlyThroughGeoCeDGMenu"
+        ]
+      },
+      {
+        "name": "org.geocedg.desktop.GeoCeDGSplashWindowTest",
+        "source": "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGSplashWindowTest.java",
+        "module": "desktop",
+        "methods": [
+          "productForegroundPolicyShowsBeforeRaisingAndRequestsAlwaysOnTop",
+          "productForegroundPolicyStillRaisesWhenAlwaysOnTopIsUnsupported",
+          "classicPolicyRetainsInheritedOrderingWithoutAlwaysOnTop"
         ]
       },
       {
@@ -2861,9 +2875,125 @@
       "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
       "automatedScope": "The tests prove ordering/group boundaries and host Input Help placement from one profile authority; dynamic tools remain application preferences outside stable product action IDs.",
       "remaining": "Author visual sizing/flyout/DPI re-smoke remains pending."
+    },
+    {
+      "id": "U1-FP-01",
+      "group": "FP",
+      "assertion": "The GeoCeDG startup role uses the deterministic 361x480 derivative, approximately two thirds of the prior visual dimensions, while the author-supplied source remains byte-exact.",
+      "tests": [
+        "org.geocedg.desktop.GeoCeDGBrandingResourceTest#promotedAuthorSourcesRemainByteExact",
+        "org.geocedg.desktop.GeoCeDGBrandingResourceTest#runtimeRolesResolveOnlyVersionedGeoCeDGResources",
+        "org.geocedg.desktop.GeoCeDGProfileTest#usesTextualIdentityAndNoUpstreamSplash"
+      ],
+      "topic": "bounded startup-branding scale",
+      "procedure": "Resolve the startup resource, check its dimensions and product-only path, then verify the tracked author source hash and deterministic generator/packaging pins.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "The tests and static packaging authority prove resource selection, dimensions and source provenance; they do not claim author visual acceptance.",
+      "remaining": "The author must visually confirm the resulting startup scale."
+    },
+    {
+      "id": "U1-FP-02",
+      "group": "FP",
+      "assertion": "Only the GeoCeDG startup overload requests foreground presentation: it shows the splash before raising it and requests always-on-top when supported, while Classic retains its inherited ordering and policy.",
+      "tests": [
+        "org.geocedg.desktop.GeoCeDGSplashWindowTest#productForegroundPolicyShowsBeforeRaisingAndRequestsAlwaysOnTop",
+        "org.geocedg.desktop.GeoCeDGSplashWindowTest#productForegroundPolicyStillRaisesWhenAlwaysOnTopIsUnsupported",
+        "org.geocedg.desktop.GeoCeDGSplashWindowTest#classicPolicyRetainsInheritedOrderingWithoutAlwaysOnTop"
+      ],
+      "topic": "product-specific startup foreground policy",
+      "procedure": "Exercise the product and Classic splash presentation policies with and without platform always-on-top support, preserving call order.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "The tests prove the bounded Window-call contract without opening a real display or changing Classic startup.",
+      "remaining": "The author must confirm foreground behavior on the target Windows desktop."
+    },
+    {
+      "id": "U1-FP-03",
+      "group": "FP",
+      "assertion": "The sole Locus V2 and Spline V2 creation actions have symmetric EN/ES product names without duplicating actions or changing the inherited host mode label.",
+      "tests": [
+        "org.geocedg.desktop.G9U1ActionRegistryTest#semanticCurveCreationNamesAreSymmetricWithoutChangingHostModeText",
+        "org.geocedg.desktop.G9U1ActionRegistryTest#everyActionHasExactlyOneBoundTargetAndReadableName"
+      ],
+      "topic": "symmetric semantic-curve presentation",
+      "procedure": "Build the same 110-action registry in English and Spanish, compare Locus V2/Spline V2 names and inspect the inherited mode text separately.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "The tests establish one action per semantic operation and a product-only presentation override; geometry and Classic localization are unchanged.",
+      "remaining": "The author must inspect the visible menu and flyout labels."
+    },
+    {
+      "id": "U1-FP-04",
+      "group": "FP",
+      "assertion": "Semantic Curves is one profile flyout containing Locus V2, Spline V2 and Point on semantic curve through the same registered actions, with no detached Spline button.",
+      "tests": [
+        "org.geocedg.desktop.G9U1ProfileCompilerTest#toolbarProjectionRegroupsExistingActionsAndDeclaresOnlyTwoMixedFlyouts",
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest#profileFlyoutsGroupMixedActionsWithoutDetachedSplineButtonAtHighDpi"
+      ],
+      "topic": "Semantic Curves toolbar parity",
+      "procedure": "Compile the profile projection, build the product toolbar and compare exact popup membership, order and Action object identity.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "The tests prove a profile-owned mixed flyout and absence of a separate product-action button; the native toolbar compiler skips that group.",
+      "remaining": "The author must confirm flyout footprint and interaction in the real toolbar."
+    },
+    {
+      "id": "U1-FP-05",
+      "group": "FP",
+      "assertion": "The native Move flyout includes Move/Rotate around Point, while the point/intersection flyout contains Point, Point on Object, Attach/Detach, Intersect and Tangent exactly once.",
+      "tests": [
+        "org.geocedg.desktop.G9U1ProfileCompilerTest#nativeToolbarFlyoutsMatchTheRequestedConstructionGroups",
+        "org.geocedg.desktop.G9U1ProfileCompilerTest#toolbarProjectionRegroupsExistingActionsAndDeclaresOnlyTwoMixedFlyouts"
+      ],
+      "topic": "Move and point/intersection toolbar grouping",
+      "procedure": "Compile the native toolbar grammar from the declared presentation groups and compare exact existing mode/action membership and uniqueness.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "The profile tests prove reuse of existing upstream modes with no new IDs or semantic Construction-menu regrouping.",
+      "remaining": "The author must confirm native flyout icons and ordering visually."
+    },
+    {
+      "id": "U1-FP-06",
+      "group": "FP",
+      "assertion": "The Graphics-view navigation flyout contains Pan, ZoomWindow, Zoom In, Zoom Out and Copy Visual Style as existing actions and introduces no viewport authority into geometry.",
+      "tests": [
+        "org.geocedg.desktop.G9U1ProfileCompilerTest#toolbarProjectionRegroupsExistingActionsAndDeclaresOnlyTwoMixedFlyouts",
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest#profileFlyoutsGroupMixedActionsWithoutDetachedSplineButtonAtHighDpi"
+      ],
+      "topic": "Graphics-view navigation flyout",
+      "procedure": "Build the declared mixed navigation popup and compare exact action order and shared registry identities.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "The tests cover presentation grouping only; existing Pan/Zoom/Style implementations and semantic boundaries are reused.",
+      "remaining": "The author must verify the visible navigation workflow."
+    },
+    {
+      "id": "U1-FP-07",
+      "group": "FP",
+      "assertion": "Lines and vectors, Polygons and Derived constructions remain three distinct native flyouts and each includes every interactive action in its corresponding Construction group.",
+      "tests": [
+        "org.geocedg.desktop.G9U1ProfileCompilerTest#nativeToolbarFlyoutsMatchTheRequestedConstructionGroups",
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest#fileAndEditAreFlatWhileConstructionUsesDeclaredSemanticGroups"
+      ],
+      "topic": "parallel linear-construction toolbar groups",
+      "procedure": "Compare each native toolbar group with its profile-owned Construction menu group and verify exact mode membership.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "Every listed action is an existing interactive host mode, so no exclusion or new tool semantics are introduced.",
+      "remaining": "The author must confirm the three visible flyouts are usable at normal and high DPI."
+    },
+    {
+      "id": "U1-FP-08",
+      "group": "FP",
+      "assertion": "Parameters and drivers exposes Slider, Fixed Angle, Checkbox, Button and Input Box; the complete toolbar projection remains duplicate-free, keeps 110 stable IDs and leaves Input Help at the far right.",
+      "tests": [
+        "org.geocedg.desktop.G9U1ProfileCompilerTest#nativeToolbarFlyoutsMatchTheRequestedConstructionGroups",
+        "org.geocedg.desktop.G9U1ProfileCompilerTest#presentationGroupsCoverCatalogOnceAndDriveToolbarOrder",
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest#toolbarExtensionsPreserveTheHostHelpControlsAtTheFarEdge",
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest#repeatedMenuRebuildKeepsOneProjectionPerDeclaredPlacement"
+      ],
+      "topic": "complete Parameters flyout and toolbar invariants",
+      "procedure": "Compile and rebuild the profile toolbar, inspect parameter-mode membership, global toolbar uniqueness and the host Input Help placement.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "The five interactive creation modes are projected from the existing catalog; the contextual Animation action remains outside the toolbar.",
+      "remaining": "The author must confirm the visible parameter flyout and Input Help placement."
     }
   ],
-  "coveragePolicy": "Every approved scenario ID and required workflow is retained. U1-I09 clarifies the latest single-confirmation/one-transaction requirement: query plus opted-in points share one compound undo step; the frozen planning snapshot remains historical. Round-one U1-RV06 is explicitly superseded, not erased, by the author's seven-menu U1-R2-05 amendment. Round-two U1-R2-07 and U1-R2-08 remain historical and are superseded, not rewritten, by the bounded Round-three icon and promoted-branding contracts. A test reference proves only the named assertion in that test, not all manual/persistence/performance variants in the scenario. Runtime results are sealed separately; final manual author re-smoke is pending.",
+  "coveragePolicy": "Every approved scenario ID and required workflow is retained. U1-I09 clarifies the latest single-confirmation/one-transaction requirement: query plus opted-in points share one compound undo step; the frozen planning snapshot remains historical. Round-one U1-RV06 is explicitly superseded, not erased, by the author's seven-menu U1-R2-05 amendment. Round-two U1-R2-07 and U1-R2-08 remain historical and are superseded, not rewritten, by the bounded Round-three icon and promoted-branding contracts. Final-polish scenarios add only presentation/resource checks on top of the immutable published Round-three candidate. A test reference proves only the named assertion in that test, not all manual/persistence/performance variants in the scenario. Runtime results are sealed separately; final manual author re-smoke is pending.",
   "authorReview": {
     "checkpoint": "b492194082f1adc9f981d85d92a58ef57490196f",
     "historicalScenarios": 138,
@@ -2955,5 +3085,29 @@
     "authorChecklistModified": false,
     "ignoredAuthorFixturesAreProductInputs": false,
     "manualAuthorResmoke": "PENDING"
+  },
+  "finalPresentationPolish": {
+    "baselineCommit": "56cf32c922baefeb30c7dff02dbdd5091107ea1a",
+    "historicalScenarioCount": 177,
+    "historicalFocusedTests": 231,
+    "additionalScenarioIds": [
+      "U1-FP-01",
+      "U1-FP-02",
+      "U1-FP-03",
+      "U1-FP-04",
+      "U1-FP-05",
+      "U1-FP-06",
+      "U1-FP-07",
+      "U1-FP-08"
+    ],
+    "methodReplacements": {
+      "toolbarContainsThirtyTwoCuratedModesWhileCatalogRetainsAllSixtySix": "nativeToolbarContainsFortyFourCuratedModesWhileCatalogRetainsAllSixtySix",
+      "compactProductToolbarUsesOnlyDeclaredNonModeActionsAtHighDpi": "profileFlyoutsGroupMixedActionsWithoutDetachedSplineButtonAtHighDpi"
+    },
+    "dispositionRecord": "docs/validation/g9u1_final_presentation_polish.md",
+    "authorChecklistModified": false,
+    "newStableActionIds": 0,
+    "manualAuthorResmoke": "PENDING",
+    "nextAuthorCloseout": "EXACT_NEW_TECHNICAL_COMMIT_REQUIRED"
   }
 }

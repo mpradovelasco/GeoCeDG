@@ -266,8 +266,8 @@ Publish-OrVerify -RelativePath "derived\geocedg-application.ico" `
     -Bytes (New-PngEmbeddedIcoBytes -PngBySize $iconPngs)
 
 $splash = New-ContainedPngBytes -SourceBytes $snapshot `
-    -CanvasWidth 542 -CanvasHeight 720
-Publish-OrVerify -RelativePath "derived\geocedg-startup-542x720.png" `
+    -CanvasWidth 361 -CanvasHeight 480
+Publish-OrVerify -RelativePath "derived\geocedg-startup-361x480.png" `
     -Bytes $splash
 
 Write-Host "Branding resources $($(if ($VerifyOnly) { 'verified' } else { 'generated' }))."

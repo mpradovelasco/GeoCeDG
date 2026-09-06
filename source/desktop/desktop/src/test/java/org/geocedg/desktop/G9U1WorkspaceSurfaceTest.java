@@ -35,8 +35,10 @@ import javax.swing.JButton;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSeparator;
+import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
@@ -342,26 +344,44 @@ class G9U1WorkspaceSurfaceTest {
 	}
 
 	@Test
-	void compactProductToolbarUsesOnlyDeclaredNonModeActionsAtHighDpi() {
+	void profileFlyoutsGroupMixedActionsWithoutDetachedSplineButtonAtHighDpi() {
 		AppGeoCeDG app = G9U1ActionRegistryTest.app(true);
-		GeoCeDGWorkspaceController workspace = new GeoCeDGWorkspaceController(app,
-				new GeoCeDGActionRegistry(app));
+		GeoCeDGActionRegistry registry = new GeoCeDGActionRegistry(app);
+		GeoCeDGWorkspaceController workspace = new GeoCeDGWorkspaceController(app, registry);
 		JToolBar toolbar = workspace.createProductToolbar();
 		assertEquals(3, toolbar.getComponentCount());
-		Set<String> ids = new HashSet<>();
+		Map<String, List<String>> expected = Map.of(
+				"construction-semantic-curves", List.of("semantic.locus-v2.create",
+						"semantic.spline-v2.create", "semantic.locus-v2.point-explicit"),
+				"view-navigation", List.of("navigation.pan-view", "navigation.zoom-window",
+						"navigation.zoom-in", "navigation.zoom-out", "presentation.copy-style"));
+		Set<String> groups = new HashSet<>();
 		for (Component component : toolbar.getComponents()) {
 			if (component instanceof JToolBar.Separator) {
 				continue;
 			}
-			JButton button = (JButton) component;
-			ids.add((String) button.getClientProperty(GeoCeDGActionRegistry.ACTION_ID));
+			JToggleButton button = (JToggleButton) component;
+			String group = (String) button.getClientProperty(
+					"geocedg.presentation.group.id");
+			assertTrue(groups.add(group), group);
+			assertEquals(expected.get(group),
+					button.getClientProperty("geocedg.toolbar.action.ids"));
+			JPopupMenu popup = (JPopupMenu) button.getClientProperty("geocedg.toolbar.popup");
+			assertNotNull(popup);
+			assertEquals(expected.get(group).size(), popup.getComponentCount());
+			for (int index = 0; index < popup.getComponentCount(); index++) {
+				JMenuItem item = (JMenuItem) popup.getComponent(index);
+				String actionId = expected.get(group).get(index);
+				assertEquals(actionId,
+						item.getClientProperty(GeoCeDGActionRegistry.ACTION_ID));
+				assertSame(registry.get(actionId), item.getAction());
+			}
 			button.setFont(button.getFont().deriveFont(28f));
 			assertNull(button.getClientProperty("geocedg.family.id"));
-			assertNotNull(button.getClientProperty("geocedg.presentation.group.id"));
 			assertNotNull(button.getAccessibleContext().getAccessibleName());
 			assertTrue(button.getPreferredSize().height >= 28);
 		}
-		assertEquals(Set.of("semantic.spline-v2.create", "navigation.zoom-window"), ids);
+		assertEquals(expected.keySet(), groups);
 		assertFalse(toolbar.isFloatable());
 	}
 
@@ -567,7 +587,7 @@ class G9U1WorkspaceSurfaceTest {
 			toolbarIds.addAll(GeoCeDGProfile.strings(clusters.getJSONObject(i)
 					.getJSONArray("toolbar_action_ids")));
 		}
-		assertEquals(34, toolbarIds.size());
+		assertEquals(52, toolbarIds.size());
 		assertEquals(110, menuIds.size());
 		assertTrue(menuIds.containsAll(toolbarIds));
 		GeoCeDGActionRegistry registry = ((GuiManagerGeoCeDG) app.getGuiManager())

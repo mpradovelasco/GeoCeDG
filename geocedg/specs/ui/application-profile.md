@@ -84,9 +84,18 @@ and retains required upstream credits/licenses.
 
 The live `apps/geocedg/application-profile.yml` is now schema version 2. One
 110-action catalog feeds 11 professional families, 18 operational clusters, 28
-ordered presentation groups, 12 primary-toolbar groups, workspaces, seven menu
+ordered presentation groups, 11 primary-toolbar groups, workspaces, seven menu
 sections and help/localization. Taxonomy and presentation are distinct fields
 of the same authority: Java does not maintain a second action/menu/toolbar list.
+
+The final presentation-polish successor retains 44 native toolbar modes and two
+profile-declared mixed flyouts. `Semantic Curves` combines the existing Locus
+V2 mode, Spline V2 command action and exact-address Point-on-semantic-curve
+action; `View navigation` combines the existing Pan, ZoomWindow, Zoom In, Zoom
+Out and Copy Visual Style actions. A mixed flyout is a rendering instruction for
+existing registry actions, never a second action catalog. Product presentation
+may override an inherited mode name (`Locus V2`) without changing the Classic
+mode localization or its semantic target.
 
 File and Edit use direct actions plus separators. View includes bounded host
 view controls. Construction owns object-producing groups, including semantic

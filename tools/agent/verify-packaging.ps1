@@ -412,7 +412,7 @@ try {
         $_.id -ceq "geocedg.brand.topbar.windows-ico-v1"
     })
     $splashAsset = @($startupBrand[0].derivatives | Where-Object {
-        $_.id -ceq "geocedg.brand.startup.splash-542x720-v1"
+        $_.id -ceq "geocedg.brand.startup.splash-361x480-v2"
     })
     Assert-Condition -Condition (
         $frameAsset.Count -eq 1 -and
@@ -425,8 +425,8 @@ try {
         ($ExpectedIconSizes -join ",") -and
         $splashAsset.Count -eq 1 -and
         $splashAsset[0].raw_sha256 -ceq
-        "04d5e79b99b0f25536690b8af9d71ba034fbaf2b0d401ae40b5822942b917a78" -and
-        $splashAsset[0].width -eq 542 -and $splashAsset[0].height -eq 720) `
+        "664ece93d38a6fc57ae3b29ede79161f928265b4fb069b5e72519b9aab494195" -and
+        $splashAsset[0].width -eq 361 -and $splashAsset[0].height -eq 480) `
         -Message "Derived branding resource provenance differs."
     Assert-Condition -Condition (
         $topBarBrand[0].derivation.tool -ceq

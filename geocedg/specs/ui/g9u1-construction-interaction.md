@@ -608,7 +608,7 @@ address data read-only; it never reconstructs them from coordinates or labels.
 
 ### 13.2 Author-review round-3 stabilization contract
 
-Round 3 preserves the one schema-v2 action authority and separates its approved
+Published Round 3 preserves the one schema-v2 action authority and separates its approved
 11-family/18-cluster taxonomy from its ordered presentation projection. The
 profile declares 28 presentation groups, 12 primary-toolbar groups and seven
 menu sections. File/Edit flattening, separators, View host toggles,
@@ -669,6 +669,38 @@ state never enters `.cedg`, changes tool identity, registers a macro or mutates
 Construction. Without an icon the toolbar renders a compact square initial,
 retains the full localized tool identity in tooltip/accessibility metadata and
 keeps grouped tools on the normal compact dropdown footprint.
+
+### 13.3 Final presentation-polish contract
+
+The bounded successor changes presentation only. The catalog remains 110 stable
+actions in 11 families and 18 clusters, with 28 presentation groups and seven
+menus. Eleven presentation groups now project to the primary toolbar: 44 native
+mode entries plus two profile-owned mixed flyouts. `toolbar_rendering =
+profile-flyout` is valid only as a view of already registered actions; it does
+not define commands, modes, selection policy or geometry.
+
+The sole Locus V2 creation action uses a product presentation key so the menu
+and mixed flyout read **Locus V2** / **Spline V2** in both supported product
+languages. The inherited Classic mode label is unchanged. **Semantic Curves**
+contains those two actions plus **Point on semantic curve**; the definition
+inspector remains a menu/context action. The separate graphical Point workflow
+continues to use R6 and is not conflated with the exact-address helper.
+
+Native toolbar groups add only existing modes: Move/Rotate beside Move; Point,
+Point on Object and Attach/Detach beside Intersect/Tangent; complete and
+separate Lines-and-vectors, Polygons and Derived-constructions flyouts; and the
+five interactive Parameters-and-drivers creation modes. Animation remains a
+contextual state action. The profile-owned navigation flyout reuses Pan,
+ZoomWindow, Zoom In, Zoom Out and Copy Visual Style. Standard View and Show All
+Objects remain menu actions. No action appears twice in the toolbar projection,
+and Input Help remains outside it at the far right.
+
+The GeoCeDG splash role selects the deterministic 361×480 derivative and the
+GeoCeDG startup overload requests foreground display when the platform supports
+it. The byte-exact author input and historical 542×720 derivative are retained;
+Classic keeps its inherited splash ordering and always-on-top policy. These
+changes affect no kernel, persistence, macro, Continuity or semantic-identity
+contract.
 
 ## 14. Validation
 

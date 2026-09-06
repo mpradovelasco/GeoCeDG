@@ -128,8 +128,13 @@ public final class GeoCeDGActionRegistry {
 	public void refresh() {
 		for (ActionDefinition definition : GeoCeDGProfile.getActions()) {
 			Action action = get(definition.id());
-			String name = definition.mode() == null ? text(definition.textKey() + ".name")
-					: app.getToolName(definition.mode());
+			String name;
+			if (definition.presentationNameKey() != null) {
+				name = text(definition.presentationNameKey());
+			} else {
+				name = definition.mode() == null ? text(definition.textKey() + ".name")
+						: app.getToolName(definition.mode());
+			}
 			String reason = unavailableReason(definition);
 			String shortHelp = definition.mode() == null
 					? text(definition.textKey() + ".short_help")

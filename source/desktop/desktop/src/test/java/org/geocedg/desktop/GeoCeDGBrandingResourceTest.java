@@ -60,8 +60,8 @@ class GeoCeDGBrandingResourceTest {
 		assertEquals(64, frameImage.getWidth());
 		assertEquals(64, frameImage.getHeight());
 		assertEquals(0, frameImage.getRGB(0, 0) >>> 24);
-		assertEquals(542, splashImage.getWidth());
-		assertEquals(720, splashImage.getHeight());
+		assertEquals(361, splashImage.getWidth());
+		assertEquals(480, splashImage.getHeight());
 	}
 
 	private static void assertSource(String relativePath, int width, int height,

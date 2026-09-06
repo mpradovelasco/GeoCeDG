@@ -143,7 +143,7 @@ do not repeat targets or product strings.
 
 The 11 professional families and 18 operational clusters are classification and
 traceability. The same manifest separately declares 28 ordered presentation
-groups, 12 primary-toolbar group references and typed menu entries. The
+groups, 11 primary-toolbar group references and typed menu entries. The
 compiler proves exact action reachability and uniqueness before constructing
 the seven menus. File/Edit flattening, separators and host-control placeholders
 therefore remain profile data rather than Java-owned ordering. Construction and
@@ -433,9 +433,10 @@ roles remain:
 
 Each source and derivative has recorded provenance and deterministic hashes.
 The byte-exact promoted sources live under the versioned Desktop resource tree;
-the 64×64 frame PNG, 16/24/32/48/64/128/256 Windows ICO and 542×720 splash are
+the 64×64 frame PNG, 16/24/32/48/64/128/256 Windows ICO and current 361×480 splash are
 deterministic contain/center derivatives with transparent padding and no crop or
-distortion. The ignored author-ingestion directory is not a build dependency.
+distortion. The published 542×720 splash remains a byte-exact historical
+derivative. The ignored author-ingestion directory is not a build dependency.
 Missing declared resources fail validation; no substitute logo or upstream
 branding is fabricated. Contrast, focus, keyboard paths and normal/high-DPI
 scaling are mandatory.
@@ -766,3 +767,28 @@ second version constant: semantic package version `0.9.0` is presented as
 `GeoCeDG 0.9` in the frame title and About surface. About also identifies the
 recorded GeoGebra baseline and `Manuel Prado-Velasco, Universidad de Sevilla`,
 while retaining mandatory upstream credits and license notice.
+
+## Final presentation-polish successor
+
+The published Round-3 technical candidate is immutable at
+`56cf32c922baefeb30c7dff02dbdd5091107ea1a`. Its bounded successor retains the
+same registry and 110 IDs while extending the schema-v2 presentation projection
+with `presentation_name_key` and `toolbar_rendering`. The former is a
+product-only label override; the latter has only `native` and `profile-flyout`
+values and is rejected if unknown. A profile flyout contains the same `Action`
+instances as menu/help dispatch and never owns a command or mode.
+
+Native toolbar grammar now produces 44 unique modes. Two mixed action groups are
+rendered beside it: Semantic Curves (Locus V2, Spline V2, Point on semantic
+curve) and Graphics-view navigation (Pan, ZoomWindow, Zoom In, Zoom Out, Copy
+Visual Style). The point/intersection, Move, three linear and Parameters groups
+are populated solely with their already-declared upstream modes. Exactly 52
+stable actions are projected to the toolbar across native and mixed groups; no
+action is duplicated and Input Help remains outside the tool container.
+
+Startup branding uses a new deterministic 361×480 derivative without altering
+the author source or the historical 542×720 derivative. Only the GeoCeDG startup
+overload requests supported always-on-top foreground presentation; Classic
+retains its inherited call order and policy. This layer owns presentation only:
+kernel geometry, R6/R1 identity, G9A redefine, macros and `.cedg` persistence are
+unchanged.

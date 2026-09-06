@@ -53,7 +53,7 @@ public class GeoGebra {
 	public static void doMain(String[] cmdArgs, Supplier<GeoGebraFrame> frameFactory) {
 		doMain(cmdArgs, frameFactory,
 				() -> GeoGebra.class.getResource(GuiResourcesD.SPLASH.getFilename()),
-				false);
+				false, false);
 	}
 
 	/**
@@ -66,12 +66,12 @@ public class GeoGebra {
 	 */
 	public static void doMain(String[] cmdArgs, Supplier<GeoGebraFrame> frameFactory,
 			Supplier<URL> splashResource) {
-		doMain(cmdArgs, frameFactory, splashResource, true);
+		doMain(cmdArgs, frameFactory, splashResource, true, true);
 	}
 
 	private static void doMain(String[] cmdArgs,
 			Supplier<GeoGebraFrame> frameFactory, Supplier<URL> splashResource,
-			boolean initializeOnEventDispatchThread) {
+			boolean initializeOnEventDispatchThread, boolean foregroundSplash) {
 
 		CommandLineArguments args = new CommandLineArguments(cmdArgs);
 
@@ -98,7 +98,7 @@ public class GeoGebra {
 			URL imageURL = splashResource.get();
 			if (imageURL != null) {
 				splashFrame = SplashWindow.splash(
-						Toolkit.getDefaultToolkit().createImage(imageURL));
+						Toolkit.getDefaultToolkit().createImage(imageURL), foregroundSplash);
 			} else {
 				System.err.println("Splash image not found");
 			}

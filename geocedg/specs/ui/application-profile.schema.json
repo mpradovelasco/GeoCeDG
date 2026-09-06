@@ -825,6 +825,10 @@
           "type": "string",
           "minLength": 1
         },
+        "presentation_name_key": {
+          "type": "string",
+          "minLength": 1
+        },
         "icon_ref": {
           "type": "string",
           "minLength": 1
@@ -939,6 +943,12 @@
         },
         "toolbar_action_ids": {
           "$ref": "#/$defs/idArray"
+        },
+        "toolbar_rendering": {
+          "enum": [
+            "native",
+            "profile-flyout"
+          ]
         }
       }
     },

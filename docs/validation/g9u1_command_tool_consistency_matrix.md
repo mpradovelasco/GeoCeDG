@@ -18,10 +18,10 @@
   [`g9_public_workspace_validation_matrix.md`](g9_public_workspace_validation_matrix.md),
   exactly **138 G9U1 rows**
 
-This document reconciles the complete future workspace/action surface. It is
-planning evidence, not productive G9U1 implementation and not a second command
-registry. Stable action IDs, placement and unavailable policy must be declared
-once in the future schema-v2 application manifest. Command parsing, geometry,
+This document originated as the complete workspace/action reconciliation and is
+now consumed by the live implementation candidate. It is not a second command
+registry. Stable action IDs, placement and unavailable policy are declared once
+in the live schema-v2 application manifest. Command parsing, geometry,
 metrics, intersections, selectors, tokens and reactivation remain shared-kernel
 authority.
 
@@ -30,6 +30,14 @@ create/move seams remove the last kernel prerequisite found by the workspace
 gap audit. G9U1 adds only the frontend, help and localization consumers defined
 below. Published R1 now supplies bounded certified SplineV2 pair tokens;
 no further kernel prerequisite was found for the intended workspace.
+
+The final presentation-polish successor changes no row's command/tool semantic
+contract. It regroups existing toolbar projections only: Move/Rotate joins Move;
+Point, Point on Object and Attach/Detach join Intersect/Tangent; three separate
+linear flyouts mirror their Construction groups; Parameters exposes its five
+interactive creation modes; and two mixed profile flyouts reuse the registered
+Semantic Curves and Graphics-navigation actions. Product labels are symmetric
+`Locus V2` / `Spline V2`; Classic naming and all 110 stable IDs remain intact.
 
 ## 1. Cross-surface invariants
 

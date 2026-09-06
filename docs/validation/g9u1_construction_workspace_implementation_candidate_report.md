@@ -9,7 +9,48 @@
   `passClaimedImplementation = false`
 - `manualAuthorSmoke = PENDING`
 
-## Author-review stabilization round 3 — current candidate
+## Final presentation-polish successor — current candidate
+
+The author accepted the technical bug-fix state at
+`56cf32c922baefeb30c7dff02dbdd5091107ea1a` and authorized one final bounded
+presentation iteration before closeout. That commit remains the immutable
+published Round-3 technical authority. This successor does not reinterpret it as
+G9U1 PASS and requires a new exact-SHA author decision under ADR 0023.
+
+The [pre-mutation disposition](g9u1_final_presentation_polish.md) confirms one
+Locus V2 creation operation, not two: the asymmetry came from its inherited host
+mode label. The existing schema-v2 profile now presents **Locus V2** and
+**Spline V2** symmetrically, supplies two explicitly declared mixed-action
+flyouts, completes the existing native mode groups and retains all 110 stable
+IDs. Eleven toolbar groups project 52 stable actions in total; the native
+grammar contains 44 distinct modes. No action implementation, menu semantic
+group, kernel solver, R6/R1 selector, G9A transaction, macro or `.cedg`
+persistence contract changes.
+
+The startup role uses a deterministic 361×480 derivative and a product-only
+foreground policy. The author source SHA-256 remains
+`abcf272553c1b42d5eb016cdf564023439e901ed7d7e943212c220431ecf5637`;
+the new derivative is 94,272 bytes with SHA-256
+`664ece93d38a6fc57ae3b29ede79161f928265b4fb069b5e72519b9aab494195`.
+The published 542×720 derivative is retained byte-exact as historical Round-3
+authority and Classic keeps its inherited startup policy.
+
+Two early DEV attempts remain non-acceptance diagnostics. The first passed a
+PowerShell/JVM property in an invalid direct-Gradle position and executed no
+valid test perimeter. The second encountered stale/incomplete Gradle output
+materialization before test execution. Neither is a product failure or final
+evidence. The canonical verifier uses `--rerun-tasks --no-build-cache` and the
+final successor must obtain its own focused A/B, PHASE, COMPOSED and clean FULL
+evidence; no receipt from `56cf32c...` is reused as acceptance for the changed
+presentation cohort.
+
+Current status remains **IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**.
+`selfApproved = false`, `authorApprovedImplementation = false`,
+`passClaimedImplementation = false`, and `manualAuthorSmoke = PENDING`. After a
+clean technical commit, the required next step is an explicit author approval
+that names that exact new SHA. Main and `geocedg-g9u1-pass` remain untouched.
+
+## Author-review stabilization round 3 — published technical authority
 
 Round 3 starts from the immutable published Round-2 candidate
 `5f492d4ee77289d9def89aa6ed431226d2de3457` on
@@ -135,14 +176,14 @@ raw SHA-256 records rather than being decoded as text. Same-run physical bytes,
 tracked Git path/mode/blob authority and ignored local ingestion evidence remain
 separate.
 
-This tracked report is frozen before the final executions. Fresh focused A/B,
+This historical Round-3 section was frozen before its final executions. Fresh focused A/B,
 G9U1 PHASE, COMPOSED and one clean FULL belong only to the exact final Round-3
 cohort and are recorded under `artifacts/g9u1-author-review-round3`; no Round-2
 receipt is reused or relabeled. Post-commit lifecycle validation must authenticate
 the exact technical commit. Runtime paths/hashes in the handoff come from saved
 receipts, not retroactive edits to this report.
 
-Current terminal status remains **IMPLEMENTATION CANDIDATE — PENDING AUTHOR
+The Round-3 terminal status remained **IMPLEMENTATION CANDIDATE — PENDING AUTHOR
 REVIEW**. `selfApproved = false`, `authorApprovedImplementation = false`,
 `passClaimedImplementation = false`, and `manualAuthorSmoke = PENDING`. Even if
 all technical gates pass, ADR 0023 requires a later exact-SHA author decision;

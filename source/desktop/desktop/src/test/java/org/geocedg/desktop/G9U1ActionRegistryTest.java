@@ -28,6 +28,7 @@ import javax.swing.JPanel;
 
 import org.geogebra.common.GeoGebraConstants;
 import org.geogebra.common.awt.AwtFactory;
+import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.io.XMLStringBuilder;
 import org.geogebra.common.main.App;
 import org.geogebra.common.main.OptionType;
@@ -110,6 +111,26 @@ class G9U1ActionRegistryTest {
 		assertFalse(registry.get("semantic.locus-v2.create").isEnabled());
 		assertTrue(registry.get("construction.point").isEnabled());
 		assertNotNull(registry.unavailableReason("semantic.spline-v2.create"));
+	}
+
+	@Test
+	void semanticCurveCreationNamesAreSymmetricWithoutChangingHostModeText() {
+		AppGeoCeDG app = app(true);
+		app.setLocale(Locale.ENGLISH);
+		GeoCeDGActionRegistry registry = new GeoCeDGActionRegistry(app);
+		assertEquals("Locus V2",
+				registry.get("semantic.locus-v2.create").getValue(Action.NAME));
+		assertEquals("Spline V2",
+				registry.get("semantic.spline-v2.create").getValue(Action.NAME));
+		assertEquals("Semantic Locus V2 (experimental)",
+				app.getToolName(EuclidianConstants.MODE_LOCUS_V2));
+
+		app.setLocale(new Locale("es"));
+		registry.refresh();
+		assertEquals("Locus V2",
+				registry.get("semantic.locus-v2.create").getValue(Action.NAME));
+		assertEquals("Spline V2",
+				registry.get("semantic.spline-v2.create").getValue(Action.NAME));
 	}
 
 	@Test

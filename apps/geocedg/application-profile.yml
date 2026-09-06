@@ -1407,6 +1407,7 @@
       "selection_contract_ref": "geocedg.locus-v2-generator-domain",
       "effect_profile_id": "mode-create",
       "localization_ref": "geocedg.action.LocusV2Create",
+      "presentation_name_key": "geocedg.action.LocusV2Create.name",
       "icon_ref": "geocedg.action.LocusV2Create",
       "availability_profile_id": "locus-v2-product",
       "command_surface_profile_id": "semantic-command",
@@ -2395,12 +2396,12 @@
       "id": "selection-move-inspect",
       "broad_family_id": "inspect-construct",
       "toolbar_action_ids": [
-        "construction.move"
+        "construction.move",
+        "construction.move-rotate",
+        "construction.attach-detach"
       ],
       "overflow_action_ids": [
-        "construction.move-rotate",
-        "construction.select",
-        "construction.attach-detach"
+        "construction.select"
       ],
       "menu_action_ids": [
         "edit.undo",
@@ -2432,21 +2433,20 @@
         "construction.segment",
         "construction.ray",
         "construction.vector",
+        "construction.fixed-segment",
+        "construction.vector-from-point",
         "construction.parallel-line",
         "construction.perpendicular-line",
         "construction.midpoint",
-        "construction.polygon"
-      ],
-      "overflow_action_ids": [
-        "construction.fixed-segment",
-        "construction.vector-from-point",
         "construction.perpendicular-bisector",
         "construction.angle-bisector",
+        "construction.polygon",
         "construction.polyline",
         "construction.regular-polygon",
         "construction.rigid-polygon",
         "construction.vector-polygon"
       ],
+      "overflow_action_ids": [],
       "menu_action_ids": [],
       "context_action_ids": [],
       "inspector_action_ids": [],
@@ -2456,14 +2456,13 @@
       "id": "parameter-driver-tools",
       "broad_family_id": "parameters-drivers",
       "toolbar_action_ids": [
-        "parameter.slider"
-      ],
-      "overflow_action_ids": [
+        "parameter.slider",
         "parameter.fixed-angle",
         "parameter.checkbox",
         "parameter.button",
         "parameter.input-box"
       ],
+      "overflow_action_ids": [],
       "menu_action_ids": [],
       "context_action_ids": [
         "parameter.animation-toggle"
@@ -2529,11 +2528,10 @@
       "id": "locus-v2-tools",
       "broad_family_id": "semantic-curves",
       "toolbar_action_ids": [
-        "semantic.locus-v2.create"
-      ],
-      "overflow_action_ids": [
+        "semantic.locus-v2.create",
         "semantic.locus-v2.point-explicit"
       ],
+      "overflow_action_ids": [],
       "menu_action_ids": [
         "semantic.locus-v2.create",
         "semantic.locus-v2.point-explicit",
@@ -2627,11 +2625,12 @@
     {
       "id": "presentation-visibility-style",
       "broad_family_id": "presentation-document",
-      "toolbar_action_ids": [],
+      "toolbar_action_ids": [
+        "presentation.copy-style"
+      ],
       "overflow_action_ids": [
         "presentation.show-hide-object",
         "presentation.show-hide-label",
-        "presentation.copy-style",
         "presentation.text",
         "presentation.image"
       ],
@@ -2654,12 +2653,11 @@
       "broad_family_id": "presentation-document",
       "toolbar_action_ids": [
         "navigation.pan-view",
-        "navigation.zoom-window"
-      ],
-      "overflow_action_ids": [
+        "navigation.zoom-window",
         "navigation.zoom-in",
         "navigation.zoom-out"
       ],
+      "overflow_action_ids": [],
       "menu_action_ids": [
         "navigation.zoom-in",
         "navigation.zoom-out",
@@ -3082,7 +3080,7 @@
       "id": "edit-selection",
       "name_key": "Group.Edit.Selection",
       "action_ids": ["construction.move", "construction.move-rotate", "construction.select", "construction.attach-detach"],
-      "toolbar_action_ids": ["construction.move"]
+      "toolbar_action_ids": ["construction.move", "construction.move-rotate"]
     },
     {
       "id": "edit-delete",
@@ -3100,7 +3098,8 @@
       "id": "view-navigation",
       "name_key": "Group.View.Navigation",
       "action_ids": ["navigation.pan-view", "navigation.zoom-window", "navigation.zoom-in", "navigation.zoom-out", "navigation.standard-view", "navigation.show-all-objects"],
-      "toolbar_action_ids": ["navigation.pan-view", "navigation.zoom-window"]
+      "toolbar_action_ids": ["navigation.pan-view", "navigation.zoom-window", "navigation.zoom-in", "navigation.zoom-out", "presentation.copy-style"],
+      "toolbar_rendering": "profile-flyout"
     },
     {
       "id": "view-construction",
@@ -3112,37 +3111,37 @@
       "id": "construction-points",
       "name_key": "Group.Construction.Points",
       "action_ids": ["construction.point", "construction.point-on-object"],
-      "toolbar_action_ids": ["construction.point", "construction.point-on-object"]
+      "toolbar_action_ids": []
     },
     {
       "id": "construction-lines-vectors",
       "name_key": "Group.Construction.LinesVectors",
       "action_ids": ["construction.line", "construction.segment", "construction.ray", "construction.vector", "construction.fixed-segment", "construction.vector-from-point"],
-      "toolbar_action_ids": ["construction.line", "construction.segment", "construction.ray", "construction.vector"]
+      "toolbar_action_ids": ["construction.line", "construction.segment", "construction.ray", "construction.vector", "construction.fixed-segment", "construction.vector-from-point"]
     },
     {
       "id": "construction-polygons",
       "name_key": "Group.Construction.Polygons",
       "action_ids": ["construction.polygon", "construction.polyline", "construction.regular-polygon", "construction.rigid-polygon", "construction.vector-polygon"],
-      "toolbar_action_ids": ["construction.polygon"]
+      "toolbar_action_ids": ["construction.polygon", "construction.polyline", "construction.regular-polygon", "construction.rigid-polygon", "construction.vector-polygon"]
     },
     {
       "id": "construction-derived",
       "name_key": "Group.Construction.Derived",
       "action_ids": ["construction.parallel-line", "construction.perpendicular-line", "construction.midpoint", "construction.perpendicular-bisector", "construction.angle-bisector"],
-      "toolbar_action_ids": ["construction.parallel-line", "construction.perpendicular-line", "construction.midpoint"]
+      "toolbar_action_ids": ["construction.parallel-line", "construction.perpendicular-line", "construction.midpoint", "construction.perpendicular-bisector", "construction.angle-bisector"]
     },
     {
       "id": "construction-parameters",
       "name_key": "Group.Construction.Parameters",
       "action_ids": ["parameter.slider", "parameter.fixed-angle", "parameter.checkbox", "parameter.button", "parameter.input-box", "parameter.animation-toggle"],
-      "toolbar_action_ids": ["parameter.slider"]
+      "toolbar_action_ids": ["parameter.slider", "parameter.fixed-angle", "parameter.checkbox", "parameter.button", "parameter.input-box"]
     },
     {
       "id": "construction-relations",
       "name_key": "Group.Construction.Relations",
       "action_ids": ["relation.intersect", "relation.tangent", "relation.compare", "relation.polar-diameter", "result.inspect-rich", "result.materialize-selected", "result.materialize-multiple", "result.materialize-all-eligible"],
-      "toolbar_action_ids": ["relation.intersect", "relation.tangent"]
+      "toolbar_action_ids": ["construction.point", "construction.point-on-object", "construction.attach-detach", "relation.intersect", "relation.tangent"]
     },
     {
       "id": "construction-circles-conics",
@@ -3154,7 +3153,8 @@
       "id": "construction-semantic-curves",
       "name_key": "Group.Construction.SemanticCurves",
       "action_ids": ["semantic.locus-v2.create", "semantic.locus-v2.point-explicit", "semantic.spline-v2.create", "semantic.curve.inspect-definition"],
-      "toolbar_action_ids": ["semantic.locus-v2.create", "semantic.spline-v2.create"]
+      "toolbar_action_ids": ["semantic.locus-v2.create", "semantic.spline-v2.create", "semantic.locus-v2.point-explicit"],
+      "toolbar_rendering": "profile-flyout"
     },
     {
       "id": "construction-metrics",
@@ -3213,7 +3213,6 @@
   ],
   "toolbar_group_ids": [
     "edit-selection",
-    "construction-points",
     "construction-lines-vectors",
     "construction-polygons",
     "construction-derived",
@@ -3348,6 +3347,7 @@
     }
   ],
   "localized_text": {
+    "geocedg.action.LocusV2Create.name": {"en": "Locus V2", "es": "Locus V2"},
     "Group.File.Open": {"en": "Open", "es": "Abrir"},
     "Group.File.Save": {"en": "Save", "es": "Guardar"},
     "Group.File.Print": {"en": "Print", "es": "Imprimir"},

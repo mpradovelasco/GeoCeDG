@@ -1,6 +1,6 @@
 # GeoCeDG Construction — guía rápida del candidato en revisión
 
-Esta guía acompaña la estabilización técnica Round 3 posterior a la revisión del autor.
+Esta guía acompaña el sucesor técnico de presentación final posterior a Round 3.
 **No es una declaración de PASS.** Use una construcción nueva o una copia de
 trabajo; conserve intacto `TestBasic1.cedg` como evidencia del fallo histórico.
 `Revision2.cedg` y `Revision3.cedg` también son entradas autorales de diagnóstico:
@@ -23,7 +23,9 @@ GeoCeDG mantiene **Continuidad desactivada**: las selecciones semánticas son
 deterministas, no una búsqueda del punto más cercano a su posición anterior.
 El título y **Ayuda → Acerca de GeoCeDG** identifican la autoridad central
 `GeoCeDG 0.9`, el baseline GeoGebra y la autoría; el icono de ventana y la
-pantalla de inicio usan los recursos GeoCeDG versionados aprobados.
+pantalla de inicio usan los recursos GeoCeDG versionados aprobados. El splash
+actual es más compacto y el arranque GeoCeDG solicita traerlo al primer plano;
+esta política no se aplica al lanzador Classic.
 
 ## 2. Menú completo, barra de uso frecuente
 
@@ -35,9 +37,17 @@ Una misma acción referenciada desde varios grupos aparece una sola vez.
 Archivo y Editar muestran directamente sus acciones, separadas por función. En
 Construcción encontrará **Rectas y vectores**, **Polígonos**, **Construcciones
 derivadas**, **Círculos y cónicas**, **Curvas semánticas** y **Anotaciones y
-medios**; Texto e Imagen no son vistas. La barra es deliberadamente más pequeña:
-34 acciones habituales en 12 grupos semánticos desplegables. Las herramientas menos frecuentes
-siguen en el menú. Una opción deshabilitada muestra una razón, no crea objetos.
+medios**; Texto e Imagen no son vistas. La barra proyecta 52 acciones habituales
+en 11 grupos, sin duplicarlas: Move incluye Move/Rotate; Punto/Intersección reúne
+Punto, Punto sobre objeto, Limitar/Liberar, Intersección y Tangente; Rectas y
+vectores, Polígonos y Construcciones derivadas conservan tres flyouts separados;
+Parámetros incluye Deslizador, Ángulo fijo, Casilla, Botón y Campo de entrada.
+Los flyouts mixtos **Curvas semánticas** y **Navegación** consumen las mismas
+acciones del catálogo. El primero muestra `Locus V2`, `Spline V2` y Punto sobre
+curva semántica; el segundo reúne Pan, Zoom por ventana, Acercar, Alejar y Copiar
+estilo visual. Las herramientas menos frecuentes siguen en el menú y **Ayuda de
+entrada** permanece en el extremo derecho. Una opción deshabilitada muestra una
+razón, no crea objetos.
 Un archivo puede conservar su distribución visual; **Ver → Reaplicar espacio de
 trabajo → Construction** recupera la organización del producto sin reconstruir
 la geometría.

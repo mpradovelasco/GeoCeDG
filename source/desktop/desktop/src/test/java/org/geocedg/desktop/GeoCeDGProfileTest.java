@@ -43,7 +43,7 @@ class GeoCeDGProfileTest {
 		String toolbar = GeoCeDGProfile.getToolbarDefinition();
 		assertThat(GeoCeDGProfile.getProfileId(), equalTo("geocedg-desktop"));
 		assertThat(GeoCeDGProfile.getActions(), hasSize(110));
-		assertThat(ToolBar.parseToolbarString(toolbar), hasSize(12));
+		assertThat(ToolBar.parseToolbarString(toolbar), hasSize(9));
 		assertThat(Arrays.asList(toolbar.split("[ |]+")),
 				not(org.hamcrest.Matchers.hasItem("47")));
 	}
@@ -77,7 +77,7 @@ class GeoCeDGProfileTest {
 		String splash = GeoCeDG.getSplashResource().toExternalForm();
 		assertThat(splash, containsString(
 				"/org/geocedg/desktop/branding/v1/derived/"
-						+ "geocedg-startup-542x720.png"));
+						+ "geocedg-startup-361x480.png"));
 		assertThat(splash, not(containsString("/org/geogebra/desktop/splash.png")));
 	}
 

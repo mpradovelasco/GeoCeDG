@@ -5,6 +5,8 @@
 
 package org.geocedg.desktop;
 
+import java.awt.Dimension;
+import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -19,6 +21,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 
 import org.geogebra.common.awt.AwtFactory;
@@ -304,7 +307,7 @@ public final class GeoCeDGWorkspaceController {
 		return comma < 0 ? "" : path.substring(0, comma);
 	}
 
-	/** @return compact non-mode toolbar projection; the application menu is the superset */
+	/** @return profile-owned mixed-action flyouts; the application menu is the superset */
 	JToolBar createProductToolbar() {
 		JToolBar toolbar = new JToolBar();
 		toolbar.setFloatable(false);
@@ -317,9 +320,20 @@ public final class GeoCeDGWorkspaceController {
 			for (String groupId : GeoCeDGProfile.strings(
 					catalog.getJSONArray("toolbar_group_ids"))) {
 				JSONObject group = GeoCeDGMenuBar.find(groups, groupId);
+				List<String> groupActionIds = GeoCeDGProfile.strings(
+						group.getJSONArray("toolbar_action_ids"));
+				if ("profile-flyout".equals(
+						group.optString("toolbar_rendering", "native"))) {
+					if (toolbar.getComponentCount() > 0) {
+						toolbar.addSeparator();
+					}
+					toolbar.add(createProfileFlyout(groupId,
+							group.getString("name_key"), groupActionIds));
+					included.addAll(groupActionIds);
+					continue;
+				}
 				boolean groupStarted = false;
-				for (String id : GeoCeDGProfile.strings(
-						group.getJSONArray("toolbar_action_ids"))) {
+				for (String id : groupActionIds) {
 					if (GeoCeDGProfile.getAction(id).mode() == null && included.add(id)) {
 						if (!groupStarted && toolbar.getComponentCount() > 0) {
 							toolbar.addSeparator();
@@ -344,11 +358,40 @@ public final class GeoCeDGWorkspaceController {
 		return toolbar;
 	}
 
+	private JToggleButton createProfileFlyout(String groupId, String nameKey,
+			List<String> actionIds) {
+		String name = registry.text(nameKey);
+		JToggleButton button = new JToggleButton(name + " \u25be");
+		final JPopupMenu popup = actionPopup(new LinkedHashSet<>(actionIds));
+		button.setFont(app.getPlainFont());
+		button.setFocusable(false);
+		button.setMargin(new Insets(2, 6, 2, 6));
+		Dimension size = button.getPreferredSize();
+		size.height = app.getScaledIconSize() + 12;
+		button.setPreferredSize(size);
+		button.setMinimumSize(size);
+		button.setMaximumSize(size);
+		button.setToolTipText(name);
+		button.getAccessibleContext().setAccessibleName(name);
+		button.getAccessibleContext().setAccessibleDescription(name);
+		button.putClientProperty("geocedg.presentation.group.id", groupId);
+		button.putClientProperty("geocedg.toolbar.action.ids",
+				List.copyOf(actionIds));
+		button.putClientProperty("geocedg.toolbar.popup", popup);
+		button.addActionListener(event -> {
+			button.setSelected(false);
+			popup.show(button, 0, button.getHeight());
+		});
+		return button;
+	}
+
 	private JPopupMenu actionPopup(Set<String> ids) {
 		JPopupMenu popup = new JPopupMenu();
 		ButtonGroup radios = new ButtonGroup();
 		for (String id : ids) {
-			popup.add(GeoCeDGMenuBar.createItem(registry.get(id), radios));
+			JMenuItem item = GeoCeDGMenuBar.createItem(registry.get(id), radios);
+			item.setFont(app.getPlainFont());
+			popup.add(item);
 		}
 		return popup;
 	}

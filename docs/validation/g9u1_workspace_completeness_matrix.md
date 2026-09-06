@@ -3,11 +3,9 @@
 - Status: **DESIGN PASS — AUTHOR APPROVED — POST-R1 RECONCILED**
 - Phase: G9U1 pre-execution scope reconciliation
 - Product implementation: **IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**
-- Runtime manifest: `apps/geocedg/application-profile.yml`, schema v1,
-  intentionally unchanged by this candidate
-- Future schema authority:
-  `geocedg/specs/ui/application-profile-v2.candidate.schema.json`
-- Future complete action instance:
+- Runtime manifest: `apps/geocedg/application-profile.yml`, live schema v2
+- Historical design schema/instance:
+  `geocedg/specs/ui/application-profile-v2.candidate.schema.json` and
   `geocedg/specs/ui/application-profile-v2.candidate.yml`
 - Accepted architectural authority:
   `docs/adr/0012-manifest-defined-geocedg-workspaces.md`
@@ -29,9 +27,9 @@ cluster declarations. An action is declared exactly once; a cluster may
 reference the same action ID on another surface. Reuse is intentional. It must
 not compile to duplicated toolbar modes or a second action implementation.
 
-This is planning authority only. It does not change the live profile, product
-menus, Java code, command dispatch, geometry, persistence, localization
-resources, or packaging.
+The live candidate implements this matrix through the same profile authority.
+The final presentation-polish delta changes only its toolbar/name/resource
+projection; command dispatch, geometry and persistence remain unchanged.
 
 The protected pre-R6 design checkpoint
 `857de6628489bda0b65a5ba5145e62ca0795fc32` remains immutable. This post-R6
@@ -113,9 +111,9 @@ classification.
 | Stable action ID | Target | Placement | Disposition | Gap / prerequisite |
 |---|---|---|---|---|
 | `construction.move` | `MODE_MOVE(0)` | toolbar | MUST | existing |
-| `construction.move-rotate` | `MODE_MOVE_ROTATE(39)` | overflow | SHOULD | existing |
+| `construction.move-rotate` | `MODE_MOVE_ROTATE(39)` | toolbar | SHOULD | existing; grouped with Move |
 | `construction.select` | `MODE_SELECT(77)` | overflow | SHOULD | characterize supported Desktop behavior; otherwise remove visibly |
-| `construction.attach-detach` | `MODE_ATTACH_DETACH(67)` | overflow | SHOULD | existing |
+| `construction.attach-detach` | `MODE_ATTACH_DETACH(67)` | toolbar | SHOULD | existing; grouped with Point/intersection tools |
 | `edit.delete` | `MODE_DELETE(6)` | toolbar/menu | MUST | normal undo |
 | `edit.undo` | `host.edit.undo` | toolbar/menu | MUST | host history |
 | `edit.redo` | `host.edit.redo` | toolbar/menu | MUST | host history |
@@ -164,11 +162,9 @@ supported copy/remap preserve the exact R6 source/address graph.
 
 | Stable action IDs | Exact targets | Placement | Disposition |
 |---|---|---|---|
-| `construction.line`, `construction.segment`, `construction.ray`, `construction.vector` | `MODE_JOIN(2)`, `MODE_SEGMENT(15)`, `MODE_RAY(18)`, `MODE_VECTOR(7)` | toolbar | MUST |
-| `construction.parallel-line`, `construction.perpendicular-line`, `construction.midpoint`, `construction.polygon` | `MODE_PARALLEL(3)`, `MODE_ORTHOGONAL(4)`, `MODE_MIDPOINT(19)`, `MODE_POLYGON(16)` | toolbar | MUST |
-| `construction.perpendicular-bisector`, `construction.angle-bisector` | `MODE_LINE_BISECTOR(8)`, `MODE_ANGULAR_BISECTOR(9)` | overflow | MUST |
-| `construction.fixed-segment`, `construction.vector-from-point`, `construction.polyline` | `MODE_SEGMENT_FIXED(45)`, `MODE_VECTOR_FROM_POINT(37)`, `MODE_POLYLINE(65)` | overflow | SHOULD |
-| `construction.regular-polygon`, `construction.rigid-polygon`, `construction.vector-polygon` | `MODE_REGULAR_POLYGON(51)`, `MODE_RIGID_POLYGON(64)`, `MODE_VECTOR_POLYGON(70)` | overflow | SHOULD |
+| `construction.line`, `construction.segment`, `construction.ray`, `construction.vector`, `construction.fixed-segment`, `construction.vector-from-point` | existing modes `2`, `15`, `18`, `7`, `45`, `37` | toolbar: Lines and vectors | MUST |
+| `construction.polygon`, `construction.polyline`, `construction.regular-polygon`, `construction.rigid-polygon`, `construction.vector-polygon` | existing modes `16`, `65`, `51`, `64`, `70` | toolbar: Polygons | MUST |
+| `construction.parallel-line`, `construction.perpendicular-line`, `construction.midpoint`, `construction.perpendicular-bisector`, `construction.angle-bisector` | existing modes `3`, `4`, `19`, `8`, `9` | toolbar: Derived constructions | MUST |
 
 All are inherited host semantics. Workspace membership changes discovery only.
 
@@ -177,10 +173,10 @@ All are inherited host semantics. Workspace membership changes discovery only.
 | Stable action ID | Target | Placement | Disposition |
 |---|---|---|---|
 | `parameter.slider` | `MODE_SLIDER(25)` | toolbar | MUST |
-| `parameter.fixed-angle` | `MODE_ANGLE_FIXED(46)` | overflow | SHOULD |
-| `parameter.checkbox` | `MODE_SHOW_HIDE_CHECKBOX(52)` | overflow | SHOULD |
-| `parameter.button` | `MODE_BUTTON_ACTION(60)` | overflow | SHOULD |
-| `parameter.input-box` | `MODE_TEXTFIELD_ACTION(61)` | overflow | SHOULD |
+| `parameter.fixed-angle` | `MODE_ANGLE_FIXED(46)` | toolbar | SHOULD |
+| `parameter.checkbox` | `MODE_SHOW_HIDE_CHECKBOX(52)` | toolbar | SHOULD |
+| `parameter.button` | `MODE_BUTTON_ACTION(60)` | toolbar | SHOULD |
+| `parameter.input-box` | `MODE_TEXTFIELD_ACTION(61)` | toolbar | SHOULD |
 | `parameter.animation-toggle` | existing object context animation | context | SHOULD |
 
 The Algebra Input preview/commit and G9A-compatible redefine contracts are
@@ -224,7 +220,7 @@ R5 similarity transformation.
 | Stable action ID | Target | Placement | Disposition | Boundary |
 |---|---|---|---|---|
 | `semantic.locus-v2.create` | `MODE_LOCUS_V2(133)` | toolbar/menu | MUST | `cedg.locus.v2` |
-| `semantic.locus-v2.point-explicit` | `MODE_LOCUS_V2_POINT(134)` | overflow/menu | MUST | retained exact-address helper; ordinary Point consumes R6 typed preimages instead of duplicating this command |
+| `semantic.locus-v2.point-explicit` | `MODE_LOCUS_V2_POINT(134)` | toolbar/menu | MUST | retained exact-address helper in Semantic Curves; ordinary Point consumes R6 typed preimages instead of duplicating this command |
 | `semantic.curve.inspect-definition` | read-only semantic definition action | context/menu | MUST | shared with SplineV2 and definition cluster |
 
 Legacy `MODE_LOCUS(47)` is not exposed as Locus V2 authority.
@@ -289,7 +285,7 @@ no active projection, fold, true-magnitude, section, or development procedures.
 |---|---|---|---|---|
 | `presentation.show-hide-object` | `MODE_SHOW_HIDE_OBJECT(27)` | toolbar/menu | MUST | presentation only |
 | `presentation.show-hide-label` | `MODE_SHOW_HIDE_LABEL(28)` | overflow | MUST | presentation only |
-| `presentation.copy-style` | `MODE_COPY_VISUAL_STYLE(35)` | overflow | MUST | zero semantic revision |
+| `presentation.copy-style` | `MODE_COPY_VISUAL_STYLE(35)` | toolbar | MUST | navigation flyout; zero semantic revision |
 | `presentation.text` | `MODE_TEXT(17)` | overflow | SHOULD | inherited |
 | `presentation.image` | `MODE_IMAGE(26)` | overflow | SHOULD | characterize asset/licensing behavior; defer if new unreviewed assets would be required |
 | `presentation.axes-toggle` | existing host view action | menu/settings | MUST | viewport only |
@@ -301,8 +297,8 @@ no active projection, fold, true-magnitude, section, or development procedures.
 | Stable action ID | Target | Placement | Disposition | Boundary |
 |---|---|---|---|---|
 | `navigation.pan-view` | `MODE_TRANSLATE_VIEW(40)` | toolbar | MUST | viewport only |
-| `navigation.zoom-in` | `MODE_ZOOM_IN(41)` | overflow/menu | MUST | viewport only |
-| `navigation.zoom-out` | `MODE_ZOOM_OUT(42)` | overflow/menu | MUST | viewport only |
+| `navigation.zoom-in` | `MODE_ZOOM_IN(41)` | toolbar/menu | MUST | viewport only |
+| `navigation.zoom-out` | `MODE_ZOOM_OUT(42)` | toolbar/menu | MUST | viewport only |
 | `navigation.zoom-window` | new GeoCeDG frontend rectangle action | toolbar/menu/keyboard | MUST | no semantic state |
 | `navigation.standard-view` | existing `standardView` host action | menu/context | SHOULD | existing |
 | `navigation.show-all-objects` | existing `showAllObjects` host action | menu/context | SHOULD | existing |

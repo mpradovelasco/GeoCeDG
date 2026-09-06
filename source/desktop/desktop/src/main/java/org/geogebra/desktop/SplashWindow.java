@@ -190,12 +190,21 @@ public class SplashWindow extends Window {
 	 * @return Returns the frame that owns the SplashWindow.
 	 */
 	public static Frame splash(Image splashImage) {
+		return splash(splashImage, false);
+	}
+
+	/**
+	 * Constructs and displays a splash window with an explicit product foreground policy.
+	 *
+	 * @param splashImage image to display
+	 * @param foreground whether the product requests an always-on-top startup presentation
+	 * @return frame that owns the splash window
+	 */
+	public static Frame splash(Image splashImage, boolean foreground) {
 		Frame f = new Frame();
 		SplashWindow w = new SplashWindow(f, splashImage, false);
 
-		// Show the window.
-		w.toFront();
-		w.setVisible(true);
+		showSplashWindow(w, foreground);
 
 		// Note: To make sure the user gets a chance to see the
 		// splash window we wait until its paint method has been
@@ -212,5 +221,19 @@ public class SplashWindow extends Window {
 		}
 
 		return f;
+	}
+
+	static void showSplashWindow(SplashWindow window, boolean foreground) {
+		if (foreground) {
+			if (window.isAlwaysOnTopSupported()) {
+				window.setAlwaysOnTop(true);
+			}
+			window.setVisible(true);
+			window.toFront();
+			return;
+		}
+		// Preserve the inherited Classic ordering and policy exactly.
+		window.toFront();
+		window.setVisible(true);
 	}
 }

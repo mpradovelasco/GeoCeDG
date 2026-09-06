@@ -15,7 +15,7 @@ public enum GeoCeDGBrandingResource implements ImageResourceD {
 	APPLICATION_ICON("geocedg.brand.topbar",
 			"derived/geocedg-application-icon-64.png"),
 	STARTUP_SPLASH("geocedg.brand.startup",
-			"derived/geocedg-startup-542x720.png");
+			"derived/geocedg-startup-361x480.png");
 
 	private static final String RESOURCE_ROOT =
 			"/org/geocedg/desktop/branding/v1/";

@@ -114,7 +114,7 @@ public final class GeoCeDGProfile {
 	/** Validated declarative action; no geometry or solver lives in this catalog. */
 	public record ActionDefinition(String id, String kind, String target, Integer mode,
 			List<String> features, String selection, String availability, String textKey,
-			String iconKey) {
+			String presentationNameKey, String iconKey) {
 	}
 
 	/**
@@ -321,6 +321,10 @@ public final class GeoCeDGProfile {
 					texts.getJSONObject(action.getString("localization_ref") + "." + field);
 				}
 			}
+			String presentationNameKey = action.optString("presentation_name_key", null);
+			if (presentationNameKey != null) {
+				texts.getJSONObject(presentationNameKey);
+			}
 			for (String[] pair : new String[][] {{"effects", "effect_profile_id"},
 					{"availability", "availability_profile_id"},
 					{"command_surfaces", "command_surface_profile_id"}}) {
@@ -330,7 +334,8 @@ public final class GeoCeDGProfile {
 					strings(action.getJSONArray("feature_requirements")),
 					action.getString("selection_contract_ref"),
 					action.getString("availability_profile_id"),
-					action.getString("localization_ref"), action.getString("icon_ref")));
+					action.getString("localization_ref"), presentationNameKey,
+					action.getString("icon_ref")));
 		}
 		if (actions.size() != 110) {
 			throw new IllegalStateException("Approved G9U1 catalog requires 110 actions");
@@ -391,10 +396,15 @@ public final class GeoCeDGProfile {
 				}
 			}
 			for (String actionId : strings(group.getJSONArray("toolbar_action_ids"))) {
-				if (!groupActions.contains(actionId) || !toolbarActions.add(actionId)) {
+				if (!ids.contains(actionId) || !toolbarActions.add(actionId)) {
 					throw new IllegalStateException(
 							"Unknown/duplicate toolbar presentation action " + actionId);
 				}
+			}
+			String toolbarRendering = group.optString("toolbar_rendering", "native");
+			if (!"native".equals(toolbarRendering)
+					&& !"profile-flyout".equals(toolbarRendering)) {
+				throw new IllegalStateException("Unknown toolbar rendering " + toolbarRendering);
 			}
 		}
 		if (!presentationActions.equals(ids)) {
@@ -541,8 +551,13 @@ public final class GeoCeDGProfile {
 		Set<Integer> included = new HashSet<>();
 		JSONArray presentationGroups = root.getJSONArray("presentation_groups");
 		for (String groupId : strings(root.getJSONArray("toolbar_group_ids"))) {
+			JSONObject presentationGroup = find(presentationGroups, groupId);
+			if ("profile-flyout".equals(
+					presentationGroup.optString("toolbar_rendering", "native"))) {
+				continue;
+			}
 			List<String> group = new ArrayList<>();
-			for (String id : strings(find(presentationGroups, groupId)
+			for (String id : strings(presentationGroup
 					.getJSONArray("toolbar_action_ids"))) {
 				Integer mode = byId.get(id).mode();
 				if (mode != null && included.add(mode)) {

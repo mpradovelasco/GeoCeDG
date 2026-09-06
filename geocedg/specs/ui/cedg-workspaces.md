@@ -89,12 +89,13 @@ kernel gate blocks the accepted G9U1 workflow.
 
 ## G9U1 author-review stabilization round 3
 
-The live schema-v2 implementation remains an **implementation candidate pending
-author review**. Round 3 preserves the approved 11 professional families, 18
+The published Round-3 schema-v2 implementation at
+`56cf32c922baefeb30c7dff02dbdd5091107ea1a` remains historical technical
+authority, not phase PASS. Round 3 preserves the approved 11 professional families, 18
 operational clusters and 110 stable action IDs, and adds an explicit
 presentation projection inside the same profile authority. It does not add a
-second menu or toolbar catalog. The profile currently declares 28 ordered
-presentation groups and selects 12 of them for the primary toolbar; every
+second menu or toolbar catalog. That published profile declared 28 ordered
+presentation groups and selected 12 of them for the primary toolbar; every
 stable action remains reachable exactly once through the declared menu
 projection.
 
@@ -133,6 +134,34 @@ consume current deterministic tokens, including individually R1-certified
 Spline V2 × Spline V2 singleton-germ slots; uncertified/ambiguous roots stay rich-only;
 and `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` stays open until a real native
 round trip or explicit author disposition closes it.
+
+## G9U1 final presentation-polish successor
+
+The current bounded successor remains **implementation candidate pending author
+review**. It preserves the same 11 families, 18 operational clusters, 110 stable
+actions, 28 presentation groups and seven menus, while selecting 11 toolbar
+groups. The apparent second Locus operation did not exist: the sole inherited
+Locus V2 mode had an asymmetric host label. GeoCeDG now presents the two creation
+actions symmetrically as **Locus V2** and **Spline V2**, without changing the
+Classic label or duplicating an action.
+
+The toolbar projection contains three separate native flyouts for **Lines and
+vectors**, **Polygons** and **Derived constructions**; a complete interactive
+**Parameters and drivers** flyout; Move plus Move/Rotate around Point; and a
+point/intersection flyout containing Point, Point on Object, Attach/Detach,
+Intersect and Tangent. Two mixed profile flyouts use the same registry action
+objects: **Semantic Curves** contains Locus V2, Spline V2 and Point on semantic
+curve, while **View navigation** contains Pan, ZoomWindow, Zoom In, Zoom Out and
+Copy Visual Style. The semantic inspector, parameter Animation toggle, Standard
+View and Show All Objects remain menu/context operations because they are not
+interactive creation/navigation tools. Input Help remains at the host toolbar's
+far right.
+
+The startup role now selects a deterministic `361 x 480` derivative and requests
+foreground presentation only through the GeoCeDG overload. The author source and
+the published Round-3 `542 x 720` derivative remain byte-exact historical
+resources. No kernel, construction persistence, macro lifecycle, Continuity or
+Classic contract changes.
 
 ## 1. Purpose
 
@@ -626,8 +655,9 @@ require accessible names.
 GeoCeDG branding has two distinct tracked roles: the byte-exact promoted
 `helixTopBar.png` source supplies the frame/application role and deterministic
 64-pixel and Windows-package derivatives; the byte-exact promoted
-`helixSnapshot.png` source supplies the startup role and its deterministic
-542×720 splash derivative. The asset manifest records ingestion filenames,
+`helixSnapshot.png` source supplies the startup role and its current deterministic
+361×480 splash derivative; the prior 542×720 derivative remains tracked as the
+published Round-3 artifact. The asset manifest records ingestion filenames,
 SHA-256 values, promoted paths, transformation parameters and redistribution
 status. Runtime and packaging consumers resolve these tracked resources; the
 ignored `artifacts/author-input/` ingestion area is never a build dependency.

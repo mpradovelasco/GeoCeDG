@@ -180,21 +180,21 @@
       },
       "derivatives": [
         {
-          "id": "geocedg.brand.startup.splash-542x720-v1",
-          "path": "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/derived/geocedg-startup-542x720.png",
-          "raw_sha256": "04d5e79b99b0f25536690b8af9d71ba034fbaf2b0d401ae40b5822942b917a78",
-          "bytes": 155029,
-          "width": 542,
-          "height": 720,
+          "id": "geocedg.brand.startup.splash-361x480-v2",
+          "path": "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/derived/geocedg-startup-361x480.png",
+          "raw_sha256": "664ece93d38a6fc57ae3b29ede79161f928265b4fb069b5e72519b9aab494195",
+          "bytes": 94272,
+          "width": 361,
+          "height": 480,
           "media_type": "image/png",
-          "alpha": "RGBA channel present; all 390240 pixels are opaque"
+          "alpha": "RGBA channel present; all 173280 pixels are opaque"
         }
       ],
       "derivation": {
         "tool": "tools/resources/generate-geocedg-branding.ps1",
-        "tool_contract_version": 1,
+        "tool_contract_version": 2,
         "accepted_generation_runtime": "PowerShell 7.6.5; .NET 10.0.11; System.Drawing.Common 10.0.0.0; Windows 10.0.26200",
-        "options": "sRGB source decoded without embedded colour management; contain within 542x720 and centre; no crop; no distortion; HighQualityBicubic interpolation; 3780 pixels/metre output (approximately 95.9866 dpi)"
+        "options": "sRGB source decoded without embedded colour management; contain within 361x480 and centre; no crop; no distortion; HighQualityBicubic interpolation; 3780 pixels/metre output (approximately 95.9866 dpi)"
       },
       "provenance": "Author-supplied Round-3 asset; the author identified this exact filename as the GeoCeDG startup/splash image and authorized product integration",
       "license_review_state": "authorized for this internal technical candidate; public redistribution rights remain subject to human review",

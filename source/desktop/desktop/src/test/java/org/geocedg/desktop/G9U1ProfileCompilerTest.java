@@ -47,10 +47,10 @@ class G9U1ProfileCompilerTest {
 	}
 
 	@Test
-	void toolbarContainsThirtyTwoCuratedModesWhileCatalogRetainsAllSixtySix() {
+	void nativeToolbarContainsFortyFourCuratedModesWhileCatalogRetainsAllSixtySix() {
 		String[] modes = GeoCeDGProfile.getToolbarDefinition().split("[ |]+");
-		assertEquals(32, modes.length);
-		assertEquals(32, new HashSet<>(Arrays.asList(modes)).size());
+		assertEquals(44, modes.length);
+		assertEquals(44, new HashSet<>(Arrays.asList(modes)).size());
 		assertEquals(66, GeoCeDGProfile.getActions().stream()
 				.filter(action -> action.mode() != null).count());
 		assertFalse(Arrays.asList(modes).contains("47"));
@@ -207,13 +207,71 @@ class G9U1ProfileCompilerTest {
 			}
 		}
 		assertEquals(110, ids.size());
-		assertEquals(List.of("edit-selection", "construction-points",
-				"construction-lines-vectors", "construction-polygons",
+		assertEquals(List.of("edit-selection", "construction-lines-vectors",
+				"construction-polygons",
 				"construction-derived", "construction-parameters",
 				"construction-relations", "construction-circles-conics",
 				"construction-semantic-curves", "construction-metrics",
 				"construction-transforms", "view-navigation"),
 				GeoCeDGProfile.strings(profile.getJSONArray("toolbar_group_ids")));
+	}
+
+	@Test
+	void toolbarProjectionRegroupsExistingActionsAndDeclaresOnlyTwoMixedFlyouts()
+			throws Exception {
+		JSONObject profile = GeoCeDGProfile.getCatalog();
+		JSONObject relations = GeoCeDGMenuBar.find(
+				profile.getJSONArray("presentation_groups"), "construction-relations");
+		assertEquals(List.of("construction.point", "construction.point-on-object",
+				"construction.attach-detach", "relation.intersect", "relation.tangent"),
+				GeoCeDGProfile.strings(relations.getJSONArray("toolbar_action_ids")));
+
+		JSONObject semantic = GeoCeDGMenuBar.find(
+				profile.getJSONArray("presentation_groups"), "construction-semantic-curves");
+		assertEquals("profile-flyout", semantic.getString("toolbar_rendering"));
+		assertEquals(List.of("semantic.locus-v2.create", "semantic.spline-v2.create",
+				"semantic.locus-v2.point-explicit"),
+				GeoCeDGProfile.strings(semantic.getJSONArray("toolbar_action_ids")));
+
+		JSONObject navigation = GeoCeDGMenuBar.find(
+				profile.getJSONArray("presentation_groups"), "view-navigation");
+		assertEquals("profile-flyout", navigation.getString("toolbar_rendering"));
+		assertEquals(List.of("navigation.pan-view", "navigation.zoom-window",
+				"navigation.zoom-in", "navigation.zoom-out", "presentation.copy-style"),
+				GeoCeDGProfile.strings(navigation.getJSONArray("toolbar_action_ids")));
+	}
+
+	@Test
+	void nativeToolbarFlyoutsMatchTheRequestedConstructionGroups() throws Exception {
+		JSONObject profile = GeoCeDGProfile.getCatalog();
+		var groups = profile.getJSONArray("presentation_groups");
+		assertEquals(List.of("construction.move", "construction.move-rotate"),
+				toolbarIds(groups, "edit-selection"));
+		assertEquals(List.of("construction.line", "construction.segment", "construction.ray",
+				"construction.vector", "construction.fixed-segment",
+				"construction.vector-from-point"),
+				toolbarIds(groups, "construction-lines-vectors"));
+		assertEquals(List.of("construction.polygon", "construction.polyline",
+				"construction.regular-polygon", "construction.rigid-polygon",
+				"construction.vector-polygon"),
+				toolbarIds(groups, "construction-polygons"));
+		assertEquals(List.of("construction.parallel-line", "construction.perpendicular-line",
+				"construction.midpoint", "construction.perpendicular-bisector",
+				"construction.angle-bisector"),
+				toolbarIds(groups, "construction-derived"));
+		assertEquals(List.of("parameter.slider", "parameter.fixed-angle",
+				"parameter.checkbox", "parameter.button", "parameter.input-box"),
+				toolbarIds(groups, "construction-parameters"));
+		assertTrue(toolbarIds(groups, "construction-points").isEmpty());
+	}
+
+	@Test
+	void unknownToolbarRenderingFailsClosed() throws Exception {
+		JSONObject profile = GeoCeDGProfile.getCatalog();
+		GeoCeDGMenuBar.find(profile.getJSONArray("presentation_groups"),
+				"construction-semantic-curves").put("toolbar_rendering", "invented");
+		assertThrows(IllegalStateException.class,
+				() -> GeoCeDGProfile.compileProfile(profile.toString()));
 	}
 
 	@Test
@@ -319,6 +377,13 @@ class G9U1ProfileCompilerTest {
 	@Test
 	void invalidFallbackCannotBecomeAnUnvalidatedWorkspace() {
 		assertThrows(IllegalStateException.class, () -> GeoCeDGProfile.loadDefinition("", ""));
+	}
+
+	private static List<String> toolbarIds(
+			org.geogebra.common.move.ggtapi.models.json.JSONArray groups, String id)
+			throws Exception {
+		return GeoCeDGProfile.strings(
+				GeoCeDGMenuBar.find(groups, id).getJSONArray("toolbar_action_ids"));
 	}
 
 	@Test
