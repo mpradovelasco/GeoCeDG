@@ -39,6 +39,15 @@ interactive creation modes; and two mixed profile flyouts reuse the registered
 Semantic Curves and Graphics-navigation actions. Product labels are symmetric
 `Locus V2` / `Spline V2`; Classic naming and all 110 stable IDs remain intact.
 
+The final micro-presentation successor again changes no command/tool semantic
+contract. The exact eleven-group order comes from the profile. Fixed Angle and
+Tangent are toolbar-only members of Derived constructions and retain their menu
+taxonomy. Semantic Curves and Navigation display the last selected registered
+action in a compact icon flyout. File owns the unchanged Classic diagnostic
+route after Open Recent; Help owns exactly its six help actions. An iconless
+installed tool receives only an in-memory monogram, never a new command or
+persisted asset.
+
 ## 1. Cross-surface invariants
 
 1. One manifest action declaration supplies every toolbar, menu, overflow,
@@ -165,7 +174,7 @@ not freeze an arbitrary concrete ID before schema-v2 implementation.
 | gated CeDG procedure controls | unavailable placeholder roles | future procedure/development actions | no productive selection grammar before their gates | no output before authorization | hidden or disabled with localized reason | procedures/developments group remains professional but fail-closed | U1-S03, U1-W04, U1-G01..G02 |
 | presentation/document controls | product/document action roles | style/show-hide/view plus Save/Save As/open/recent/direct-open | existing presentation and R2 document contracts | no geometric semantics from workspace state | document policy independent of workspace | Presentation and document; `.cedg` native/`.ggb` compatibility | U1-W05, W07..W17, U1-B02 |
 | automation/import/export controls | script/export action roles | GGBScript, approved automation and DXF/import/export actions | each independent command/adapter contract | normal command DAG or read-only export model | each independent feature/provenance policy | Automation and import/export; no second geometry authority | U1-C08..C13, U1-G01..G02 |
-| Classic diagnostic route | diagnostic-route role | separate Classic process/profile | explicit process launch; never an in-process workspace switch | shared persistence/recompute, separate UI/preferences | no experimental creation authority | visible diagnostic route; Classic identity retained | U1-W11, U1-D08, U1-C05, C13, C20 |
+| Classic diagnostic route | diagnostic-route role | separate Classic process/profile | explicit process launch; never an in-process workspace switch | shared persistence/recompute, separate UI/preferences | no experimental creation authority | File immediately after Open Recent; Classic identity retained | U1-W11, U1-D08, U1-C05, C13, C20 |
 | visual identity and brand consumers | theme/brand roles | frontend theme plus `geocedg.brand.topbar` and `geocedg.brand.startup` | presentation/resource resolution only | no kernel result | author provenance/suitability gate | distinct accessible GeoCeDG chrome; Classic remains distinct | U1-B01..B03, U1-A01..A04 |
 
 ## 5. Required post-G9U1 product/Classic behavior

@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -57,6 +58,8 @@ import org.geogebra.common.util.Util;
 import org.geogebra.desktop.gui.app.GeoGebraFrame;
 import org.geogebra.desktop.gui.layout.DockManagerD;
 import org.geogebra.desktop.gui.layout.LayoutD;
+import org.geogebra.desktop.gui.toolbar.ModeToggleMenuD;
+import org.geogebra.desktop.gui.toolbar.ToolbarD;
 import org.geogebra.desktop.main.AppD;
 import org.geogebra.desktop.main.DockBarInterface;
 import org.junit.jupiter.api.BeforeAll;
@@ -133,6 +136,13 @@ class G9U1WorkspaceSurfaceTest {
 		}
 		assertEquals(List.of("file", "edit", "view", "construction", "options",
 				"automation", "help"), sections);
+		assertEquals(List.of("document.new", "document.open", "document.open-recent",
+				"diagnostic.open-classic", "document.save", "document.save-as",
+				"document.print-preview", "export.dxf-2d", "document.close"),
+				directActionIds(bar.getMenu(0)));
+		assertEquals(List.of("help.input-panel", "help.contextual-action",
+				"help.command-list", "help.user-guide", "help.keyboard-shortcuts",
+				"help.about-geocedg"), directActionIds(bar.getMenu(6)));
 
 		JSONObject optionsDefinition = GeoCeDGMenuBar.find(
 				GeoCeDGProfile.getCatalog().getJSONArray("menu_sections"), "options");
@@ -344,28 +354,68 @@ class G9U1WorkspaceSurfaceTest {
 	}
 
 	@Test
-	void profileFlyoutsGroupMixedActionsWithoutDetachedSplineButtonAtHighDpi() {
+	void toolbarUsesExactProfileOrderAndNormalLastUsedMixedFlyoutsAtHighDpi() {
 		AppGeoCeDG app = G9U1ActionRegistryTest.app(true);
 		GeoCeDGActionRegistry registry = new GeoCeDGActionRegistry(app);
 		GeoCeDGWorkspaceController workspace = new GeoCeDGWorkspaceController(app, registry);
-		JToolBar toolbar = workspace.createProductToolbar();
-		assertEquals(3, toolbar.getComponentCount());
-		Map<String, List<String>> expected = Map.of(
-				"construction-semantic-curves", List.of("semantic.locus-v2.create",
-						"semantic.spline-v2.create", "semantic.locus-v2.point-explicit"),
-				"view-navigation", List.of("navigation.pan-view", "navigation.zoom-window",
-						"navigation.zoom-in", "navigation.zoom-out", "presentation.copy-style"));
-		Set<String> groups = new HashSet<>();
+		GeoCeDGToolbarContainer container = new GeoCeDGToolbarContainer(app, workspace);
+		container.buildGui();
+		final ToolbarD toolbar = container.getToolbar(-1);
+		Map<String, List<String>> expected = new LinkedHashMap<>();
+		expected.put("edit-selection", List.of("construction.move",
+				"construction.move-rotate"));
+		expected.put("construction-relations", List.of("construction.point",
+				"construction.point-on-object", "construction.attach-detach",
+				"relation.intersect"));
+		expected.put("construction-lines-vectors", List.of("construction.line",
+				"construction.segment", "construction.ray", "construction.vector",
+				"construction.fixed-segment", "construction.vector-from-point"));
+		expected.put("construction-polygons", List.of("construction.polygon",
+				"construction.polyline", "construction.regular-polygon",
+				"construction.rigid-polygon", "construction.vector-polygon"));
+		expected.put("construction-derived", List.of("construction.parallel-line",
+				"construction.perpendicular-line", "construction.midpoint",
+				"construction.perpendicular-bisector", "construction.angle-bisector",
+				"parameter.fixed-angle", "relation.tangent"));
+		expected.put("construction-circles-conics", List.of("curve.circle-two-points",
+				"curve.circle-three-points", "curve.circle-center-radius",
+				"curve.arc-center", "curve.conic-five-points", "curve.ellipse",
+				"curve.parabola"));
+		expected.put("construction-semantic-curves", List.of("semantic.locus-v2.create",
+				"semantic.spline-v2.create", "semantic.locus-v2.point-explicit"));
+		expected.put("construction-metrics", List.of("measure.angle",
+				"measure.distance-length", "measure.locus-v2-total-length",
+				"measure.locus-v2-partial-length"));
+		expected.put("construction-transforms", List.of("transform.reflect-point",
+				"transform.reflect-line", "transform.translate-vector",
+				"transform.rotate-angle", "transform.dilate-point"));
+		expected.put("construction-parameters", List.of("parameter.slider",
+				"parameter.checkbox", "parameter.button", "parameter.input-box"));
+		expected.put("view-navigation", List.of("navigation.pan-view",
+				"navigation.zoom-window", "navigation.zoom-in", "navigation.zoom-out",
+				"presentation.copy-style"));
+		List<Component> rendered = new ArrayList<>();
 		for (Component component : toolbar.getComponents()) {
 			if (component instanceof JToolBar.Separator) {
 				continue;
 			}
-			JToggleButton button = (JToggleButton) component;
-			String group = (String) button.getClientProperty(
+			rendered.add(component);
+		}
+		assertEquals(new ArrayList<>(expected.keySet()), rendered.stream()
+				.map(component -> (String) ((JComponent) component)
+						.getClientProperty("geocedg.presentation.group.id")).toList());
+		for (Component component : rendered) {
+			JComponent groupComponent = (JComponent) component;
+			String group = (String) groupComponent.getClientProperty(
 					"geocedg.presentation.group.id");
-			assertTrue(groups.add(group), group);
 			assertEquals(expected.get(group),
-					button.getClientProperty("geocedg.toolbar.action.ids"));
+					groupComponent.getClientProperty("geocedg.toolbar.action.ids"));
+			if (!group.equals("construction-semantic-curves")
+					&& !group.equals("view-navigation")) {
+				assertTrue(component instanceof ModeToggleMenuD, group);
+				continue;
+			}
+			JToggleButton button = (JToggleButton) component;
 			JPopupMenu popup = (JPopupMenu) button.getClientProperty("geocedg.toolbar.popup");
 			assertNotNull(popup);
 			assertEquals(expected.get(group).size(), popup.getComponentCount());
@@ -375,13 +425,22 @@ class G9U1WorkspaceSurfaceTest {
 				assertEquals(actionId,
 						item.getClientProperty(GeoCeDGActionRegistry.ACTION_ID));
 				assertSame(registry.get(actionId), item.getAction());
+				assertNotNull(item.getIcon(), actionId);
 			}
+			JMenuItem lastUsed = (JMenuItem) popup.getComponent(1);
+			String activeId = expected.get(group).get(1);
+			workspace.selectProfileFlyoutAction(button, activeId);
+			assertEquals(activeId,
+					button.getClientProperty("geocedg.toolbar.active.action.id"));
+			assertSame(lastUsed.getIcon(), button.getIcon());
+			assertNull(button.getText());
+			assertEquals(registry.get(activeId).getValue(javax.swing.Action.NAME),
+					button.getAccessibleContext().getAccessibleName());
 			button.setFont(button.getFont().deriveFont(28f));
-			assertNull(button.getClientProperty("geocedg.family.id"));
 			assertNotNull(button.getAccessibleContext().getAccessibleName());
-			assertTrue(button.getPreferredSize().height >= 28);
+			assertEquals(app.getScaledIconSize() + 12, button.getPreferredSize().height);
+			assertEquals(button.getPreferredSize().height, button.getPreferredSize().width);
 		}
-		assertEquals(expected.keySet(), groups);
 		assertFalse(toolbar.isFloatable());
 	}
 
@@ -633,6 +692,20 @@ class G9U1WorkspaceSurfaceTest {
 				occurrences.merge(id.toString(), 1, Integer::sum);
 			}
 		}
+	}
+
+	private static List<String> directActionIds(JMenu menu) {
+		List<String> ids = new ArrayList<>();
+		for (Component component : menu.getMenuComponents()) {
+			if (component instanceof JMenuItem && !(component instanceof JMenu)) {
+				Object id = ((JMenuItem) component).getClientProperty(
+						GeoCeDGActionRegistry.ACTION_ID);
+				if (id != null) {
+					ids.add(id.toString());
+				}
+			}
+		}
+		return ids;
 	}
 
 	static JMenuItem findItem(Component component, String id) {

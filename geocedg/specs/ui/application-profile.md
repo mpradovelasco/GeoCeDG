@@ -97,6 +97,17 @@ existing registry actions, never a second action catalog. Product presentation
 may override an inherited mode name (`Locus V2`) without changing the Classic
 mode localization or its semantic target.
 
+The final micro-presentation successor also makes the ordered `toolbar_groups`
+array the exact left-to-right toolbar authority. Its eleven groups are Move,
+Point/intersection, Lines/vectors, Polygons, Derived constructions,
+Circles/conics, Semantic curves, Metrics, Transformations,
+Parameters/drivers and Navigation. Fixed Angle and Tangent are toolbar-only
+members of Derived constructions while retaining their existing menu taxonomy.
+The two mixed flyouts render with the normal compact active-action icon and
+arrow; their last-used selection is transient UI state. An iconless installed
+user tool uses a deterministic in-memory monogram, while an assigned PNG keeps
+precedence. None of these presentation states belongs to a construction.
+
 File and Edit use direct actions plus separators. View includes bounded host
 view controls. Construction owns object-producing groups, including semantic
 curves and annotations/media. Options reuses host Algebra display/sort,

@@ -5,8 +5,15 @@
 
 package org.geocedg.desktop;
 
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Insets;
+import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -16,13 +23,12 @@ import java.util.function.Consumer;
 
 import javax.swing.Action;
 import javax.swing.ButtonGroup;
-import javax.swing.JButton;
+import javax.swing.Icon;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
-import javax.swing.JToolBar;
 
 import org.geogebra.common.awt.AwtFactory;
 import org.geogebra.common.euclidian.EuclidianConstants;
@@ -307,82 +313,140 @@ public final class GeoCeDGWorkspaceController {
 		return comma < 0 ? "" : path.substring(0, comma);
 	}
 
-	/** @return profile-owned mixed-action flyouts; the application menu is the superset */
-	JToolBar createProductToolbar() {
-		JToolBar toolbar = new JToolBar();
-		toolbar.setFloatable(false);
-		toolbar.setBorder(null);
-		toolbar.getAccessibleContext().setAccessibleName(registry.text("Menu.Construction"));
-		try {
-			JSONObject catalog = GeoCeDGProfile.getCatalog();
-			JSONArray groups = catalog.getJSONArray("presentation_groups");
-			Set<String> included = new LinkedHashSet<>();
-			for (String groupId : GeoCeDGProfile.strings(
-					catalog.getJSONArray("toolbar_group_ids"))) {
-				JSONObject group = GeoCeDGMenuBar.find(groups, groupId);
-				List<String> groupActionIds = GeoCeDGProfile.strings(
-						group.getJSONArray("toolbar_action_ids"));
-				if ("profile-flyout".equals(
-						group.optString("toolbar_rendering", "native"))) {
-					if (toolbar.getComponentCount() > 0) {
-						toolbar.addSeparator();
-					}
-					toolbar.add(createProfileFlyout(groupId,
-							group.getString("name_key"), groupActionIds));
-					included.addAll(groupActionIds);
-					continue;
-				}
-				boolean groupStarted = false;
-				for (String id : groupActionIds) {
-					if (GeoCeDGProfile.getAction(id).mode() == null && included.add(id)) {
-						if (!groupStarted && toolbar.getComponentCount() > 0) {
-							toolbar.addSeparator();
-						}
-						groupStarted = true;
-						Action action = registry.get(id);
-						JButton button = new JButton(action);
-						button.putClientProperty(GeoCeDGActionRegistry.ACTION_ID, id);
-						button.putClientProperty("geocedg.presentation.group.id", groupId);
-						button.setFont(app.getPlainFont());
-						button.getAccessibleContext().setAccessibleName(
-								(String) action.getValue(Action.NAME));
-						button.getAccessibleContext().setAccessibleDescription(
-								(String) action.getValue(Action.SHORT_DESCRIPTION));
-						toolbar.add(button);
-					}
-				}
-			}
-		} catch (JSONException exception) {
-			throw new IllegalStateException(exception);
+	/**
+	 * Build the compact adapter needed only for profile groups which mix host modes and
+	 * registered non-mode actions. Native-only groups continue to use ModeToggleMenuD.
+	 * @param groupId stable presentation group
+	 * @param nameKey localized group name
+	 * @param actionIds exact ordered action projection
+	 * @param selectionGroup shared toolbar selection group
+	 * @return one normal-sized icon flyout
+	 */
+	JToggleButton createProfileFlyout(String groupId, String nameKey,
+			List<String> actionIds, ButtonGroup selectionGroup) {
+		if (actionIds.isEmpty()) {
+			throw new IllegalStateException("Empty profile flyout " + groupId);
 		}
-		return toolbar;
-	}
-
-	private JToggleButton createProfileFlyout(String groupId, String nameKey,
-			List<String> actionIds) {
-		String name = registry.text(nameKey);
-		JToggleButton button = new JToggleButton(name + " \u25be");
-		final JPopupMenu popup = actionPopup(new LinkedHashSet<>(actionIds));
+		final String name = registry.text(nameKey);
+		ProfileFlyoutButton button = new ProfileFlyoutButton();
+		final JPopupMenu popup = new JPopupMenu();
+		ButtonGroup radios = new ButtonGroup();
+		for (String id : actionIds) {
+			Action action = registry.get(id);
+			JMenuItem item = GeoCeDGMenuBar.createItem(action, radios);
+			item.setFont(app.getPlainFont());
+			item.setIcon(actionIcon(id));
+			item.addActionListener(event -> selectProfileFlyoutAction(button, id));
+			popup.add(item);
+		}
 		button.setFont(app.getPlainFont());
 		button.setFocusable(false);
 		button.setMargin(new Insets(2, 6, 2, 6));
-		Dimension size = button.getPreferredSize();
-		size.height = app.getScaledIconSize() + 12;
+		Dimension size = new Dimension(app.getScaledIconSize() + 12,
+				app.getScaledIconSize() + 12);
 		button.setPreferredSize(size);
 		button.setMinimumSize(size);
 		button.setMaximumSize(size);
-		button.setToolTipText(name);
-		button.getAccessibleContext().setAccessibleName(name);
-		button.getAccessibleContext().setAccessibleDescription(name);
 		button.putClientProperty("geocedg.presentation.group.id", groupId);
-		button.putClientProperty("geocedg.toolbar.action.ids",
-				List.copyOf(actionIds));
+		button.putClientProperty("geocedg.toolbar.action.ids", List.copyOf(actionIds));
 		button.putClientProperty("geocedg.toolbar.popup", popup);
+		button.putClientProperty("geocedg.toolbar.group.name", name);
+		button.setPopup(popup);
+		selectionGroup.add(button);
+		selectProfileFlyoutAction(button, actionIds.get(0));
 		button.addActionListener(event -> {
-			button.setSelected(false);
-			popup.show(button, 0, button.getHeight());
+			if (button.consumePopupRequest()) {
+				if (button.isShowing()) {
+					popup.show(button, 0, button.getHeight());
+				}
+				return;
+			}
+			String activeId = (String) button.getClientProperty(
+					"geocedg.toolbar.active.action.id");
+			registry.get(activeId).actionPerformed(new ActionEvent(button,
+					ActionEvent.ACTION_PERFORMED, activeId));
 		});
 		return button;
+	}
+
+	boolean selectProfileFlyoutMode(JToggleButton button, int mode) {
+		@SuppressWarnings("unchecked")
+		List<String> ids = (List<String>) button.getClientProperty(
+				"geocedg.toolbar.action.ids");
+		for (String id : ids) {
+			if (Integer.valueOf(mode).equals(GeoCeDGProfile.getAction(id).mode())) {
+				selectProfileFlyoutAction(button, id);
+				button.setSelected(true);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	void selectProfileFlyoutAction(JToggleButton button, String id) {
+		Action action = registry.get(id);
+		button.setIcon(actionIcon(id));
+		button.setText(null);
+		button.setEnabled(action.isEnabled());
+		button.setToolTipText((String) action.getValue(Action.SHORT_DESCRIPTION));
+		button.getAccessibleContext().setAccessibleName((String) action.getValue(Action.NAME));
+		button.getAccessibleContext().setAccessibleDescription(
+				(String) action.getValue(Action.SHORT_DESCRIPTION));
+		button.putClientProperty("geocedg.toolbar.active.action.id", id);
+	}
+
+	private Icon actionIcon(String id) {
+		Action action = registry.get(id);
+		Icon icon = (Icon) action.getValue(Action.LARGE_ICON_KEY);
+		if (icon == null) {
+			icon = (Icon) action.getValue(Action.SMALL_ICON);
+		}
+		Integer mode = GeoCeDGProfile.getAction(id).mode();
+		return icon == null && mode != null ? app.getModeIcon(mode) : icon;
+	}
+
+	private static final class ProfileFlyoutButton extends JToggleButton {
+		private static final long serialVersionUID = 1L;
+		private static final int ARROW_ZONE = 12;
+		private boolean popupRequest;
+		private JPopupMenu popup;
+
+		ProfileFlyoutButton() {
+			addMouseListener(new MouseAdapter() {
+				@Override
+				public void mousePressed(MouseEvent event) {
+					popupRequest = popup != null && (event.getX() >= getWidth() - ARROW_ZONE
+							|| event.getY() >= getHeight() - ARROW_ZONE);
+				}
+			});
+		}
+
+		void setPopup(JPopupMenu popup) {
+			this.popup = popup;
+		}
+
+		boolean consumePopupRequest() {
+			boolean requested = popupRequest;
+			popupRequest = false;
+			return requested;
+		}
+
+		@Override
+		protected void paintComponent(Graphics graphics) {
+			super.paintComponent(graphics);
+			Graphics2D g2 = (Graphics2D) graphics.create();
+			try {
+				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+						RenderingHints.VALUE_ANTIALIAS_ON);
+				g2.setColor(isEnabled() ? getForeground() : Color.GRAY);
+				int x = getWidth() - 9;
+				int y = getHeight() - 7;
+				g2.fillPolygon(new int[] {x - 4, x + 2, x - 1},
+						new int[] {y - 3, y - 3, y + 1}, 3);
+			} finally {
+				g2.dispose();
+			}
+		}
 	}
 
 	private JPopupMenu actionPopup(Set<String> ids) {

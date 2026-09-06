@@ -47,6 +47,7 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JMenu;
@@ -206,6 +207,9 @@ class G9U1UserToolLibraryTest {
 	@Test
 	void iconlessPinnedButtonsAndGroupsStayCompactWithFullAccessibleIdentity()
 			throws Exception {
+		assertEquals("A", GeoCeDGUserTools.monogram("  --alpha"));
+		assertEquals("A", GeoCeDGUserTools.monogram("  7 axis"));
+		assertEquals("\u2022", GeoCeDGUserTools.monogram(" -- "));
 		Package tool = library.install("owned.ggt",
 				midpointPackage("FirstMidpoint", "SecondMidpoint", "ThirdMidpoint"));
 		library.pin(tool.id(), "FirstMidpoint", true);
@@ -220,7 +224,8 @@ class G9U1UserToolLibraryTest {
 		JToggleButton group = (JToggleButton) toolbar.getComponent(0);
 		JToggleButton command = (JToggleButton) toolbar.getComponent(1);
 		for (JToggleButton button : List.of(group, command)) {
-			assertNull(button.getIcon());
+			assertNotNull(button.getIcon());
+			assertNull(button.getText());
 			assertEquals(app.getScaledIconSize() + 12,
 					button.getPreferredSize().width);
 			assertEquals(button.getPreferredSize().width,
@@ -230,7 +235,11 @@ class G9U1UserToolLibraryTest {
 			assertEquals(button.getToolTipText(),
 					button.getAccessibleContext().getAccessibleDescription());
 		}
-		assertEquals("B\u25be", group.getText());
+		assertEquals("monogram",
+				group.getClientProperty("geocedg.userTool.icon.source"));
+		assertEquals("F", group.getClientProperty("geocedg.userTool.monogram"));
+		assertEquals("FirstMidpoint",
+				group.getClientProperty("geocedg.userTool.activeCommand"));
 		assertEquals("Bisectors", group.getAccessibleContext().getAccessibleName());
 		assertTrue(group.getToolTipText().contains("Bisectors"));
 		assertTrue(group.getToolTipText().contains("FirstMidpoint"));
@@ -241,8 +250,15 @@ class G9U1UserToolLibraryTest {
 			assertEquals(item.getText(), item.getAccessibleContext().getAccessibleName());
 			assertEquals(item.getToolTipText(),
 					item.getAccessibleContext().getAccessibleDescription());
+			assertNotNull(item.getIcon());
 		}
-		assertEquals("T", command.getText());
+		((JMenuItem) popup.getComponent(1)).doClick();
+		assertEquals("SecondMidpoint",
+				group.getClientProperty("geocedg.userTool.activeCommand"));
+		assertEquals("S", group.getClientProperty("geocedg.userTool.monogram"));
+		assertEquals("monogram",
+				command.getClientProperty("geocedg.userTool.icon.source"));
+		assertEquals("T", command.getClientProperty("geocedg.userTool.monogram"));
 		assertEquals("ThirdMidpoint",
 				command.getAccessibleContext().getAccessibleName());
 		assertTrue(command.getToolTipText().contains("ThirdMidpoint"));
@@ -286,6 +302,11 @@ class G9U1UserToolLibraryTest {
 		new GeoCeDGUserTools(app, reopened).populatePins(toolbar);
 		JToggleButton button = (JToggleButton) toolbar.getComponent(0);
 		assertNotNull(button.getIcon());
+		assertTrue(button.getIcon() instanceof ImageIcon);
+		assertEquals("custom",
+				button.getClientProperty("geocedg.userTool.icon.source"));
+		assertNull(button.getClientProperty("geocedg.userTool.monogram"));
+		assertNull(button.getText());
 		assertEquals("OwnedMidpoint", button.getAccessibleContext().getAccessibleName());
 		assertEquals(app.getScaledIconSize() + 12, button.getPreferredSize().height);
 		assertEquals(button.getPreferredSize().height, button.getPreferredSize().width);
@@ -361,6 +382,12 @@ class G9U1UserToolLibraryTest {
 		assertEquals(1, toolbar.getComponentCount());
 		JToggleButton group = (JToggleButton) toolbar.getComponent(0);
 		assertNotNull(group.getIcon());
+		assertNull(group.getText());
+		assertEquals("custom",
+				group.getClientProperty("geocedg.userTool.icon.source"));
+		assertNull(group.getClientProperty("geocedg.userTool.monogram"));
+		assertEquals("FirstMidpoint",
+				group.getClientProperty("geocedg.userTool.activeCommand"));
 		JPopupMenu popup = (JPopupMenu) group.getClientProperty("geocedg.userTool.popup");
 		assertEquals(2, popup.getComponentCount());
 		for (int i = 0; i < popup.getComponentCount(); i++) {

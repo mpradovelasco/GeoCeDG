@@ -190,7 +190,7 @@
           "hostPreferenceRadiosRefreshFromAuthorityWhenSubmenusOpen",
           "toolbarExtensionsPreserveTheHostHelpControlsAtTheFarEdge",
           "repeatedMenuRebuildKeepsOneProjectionPerDeclaredPlacement",
-          "profileFlyoutsGroupMixedActionsWithoutDetachedSplineButtonAtHighDpi",
+          "toolbarUsesExactProfileOrderAndNormalLastUsedMixedFlyoutsAtHighDpi",
           "contextProjectionUsesSameStableActionIds",
           "layoutRoundTripIsPreferenceOnlyAndRetainsProfileAuthority",
           "corruptedLayoutFailsToSafeProfileWithoutGeometryParsing",
@@ -2991,9 +2991,109 @@
       "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
       "automatedScope": "The five interactive creation modes are projected from the existing catalog; the contextual Animation action remains outside the toolbar.",
       "remaining": "The author must confirm the visible parameter flyout and Input Help placement."
+    },
+    {
+      "id": "U1-FM-01",
+      "group": "FM",
+      "assertion": "The primary toolbar renders the exact eleven profile groups in the author-specified left-to-right order, with each of its 52 actions projected exactly once from the single 110-action catalog.",
+      "tests": [
+        "org.geocedg.desktop.G9U1ProfileCompilerTest#presentationGroupsCoverCatalogOnceAndDriveToolbarOrder",
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest#toolbarUsesExactProfileOrderAndNormalLastUsedMixedFlyoutsAtHighDpi"
+      ],
+      "topic": "exact primary-toolbar order and unique projection",
+      "procedure": "Compile application-profile.yml and build the real toolbar container, then compare every group ID and action membership in rendered order.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "The tests prove the exact eleven-group structure and duplicate-free projection from one authority.",
+      "remaining": "The author must confirm the visual order in the launched product."
+    },
+    {
+      "id": "U1-FM-02",
+      "group": "FM",
+      "assertion": "Fixed Angle and Tangent occur only in the Derived constructions toolbar flyout, while their existing Parameters and Relations menu taxonomy remains unchanged.",
+      "tests": [
+        "org.geocedg.desktop.G9U1ProfileCompilerTest#nativeToolbarFlyoutsMatchTheRequestedConstructionGroups",
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest#fileAndEditAreFlatWhileConstructionUsesDeclaredSemanticGroups"
+      ],
+      "topic": "toolbar-only regrouping without menu semantic change",
+      "procedure": "Compare exact native toolbar membership and Construction-menu membership by stable action ID.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "The tests prove the two actions move only in the toolbar projection and are not duplicated.",
+      "remaining": "The author must confirm the resulting Derived flyout visually."
+    },
+    {
+      "id": "U1-FM-03",
+      "group": "FM",
+      "assertion": "Semantic Curves is a normal-size compact flyout whose active icon follows the last selected registered action among Locus V2, Spline V2 and Point on semantic curve.",
+      "tests": [
+        "org.geocedg.desktop.G9U1ProfileCompilerTest#toolbarProjectionRegroupsExistingActionsAndDeclaresOnlyTwoMixedFlyouts",
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest#toolbarUsesExactProfileOrderAndNormalLastUsedMixedFlyoutsAtHighDpi"
+      ],
+      "topic": "Semantic Curves active-icon and last-used presentation",
+      "procedure": "Build the mixed flyout, select each entry and verify popup membership, compact dimensions, active action identity and visible icon.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "The adapter tests prove presentation behavior while invoking the same registry action and persisting no document state.",
+      "remaining": "The author must approve the real flyout interaction and icons."
+    },
+    {
+      "id": "U1-FM-04",
+      "group": "FM",
+      "assertion": "Navigation is a normal-size compact flyout whose active icon follows the last selected registered Pan, ZoomWindow, Zoom In, Zoom Out or Copy Visual Style action.",
+      "tests": [
+        "org.geocedg.desktop.G9U1ProfileCompilerTest#toolbarProjectionRegroupsExistingActionsAndDeclaresOnlyTwoMixedFlyouts",
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest#toolbarUsesExactProfileOrderAndNormalLastUsedMixedFlyoutsAtHighDpi"
+      ],
+      "topic": "Navigation active-icon and last-used presentation",
+      "procedure": "Build the mixed navigation flyout, select each entry and verify compact dimensions, exact membership, active action and existing icons.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "The tests cover presentation state only; existing view actions remain the implementation authority.",
+      "remaining": "The author must approve the real flyout interaction and icons."
+    },
+    {
+      "id": "U1-FM-05",
+      "group": "FM",
+      "assertion": "Help has exactly Input Help, Current Tool Help, Command List, GeoCeDG User Guide, Keyboard Shortcuts and About in that order; File places the unchanged Classic diagnostic action immediately after Open Recent.",
+      "tests": [
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest#menuOrderPresentationAndActionIdentityComeFromOneCatalog",
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest#repeatedMenuRebuildKeepsOneProjectionPerDeclaredPlacement"
+      ],
+      "topic": "exact Help order and Classic diagnostic File placement",
+      "procedure": "Build and rebuild the live menu bar from the profile and compare exact IDs, order and shared Action identity.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "The tests prove menu projection and absence of a duplicate Help route without changing Classic isolation.",
+      "remaining": "The author must confirm the visible menu wording and discoverability."
+    },
+    {
+      "id": "U1-FM-06",
+      "group": "FM",
+      "assertion": "An iconless persistent user tool uses a deterministic in-memory letter monogram in the normal toolbar footprint; a validated custom PNG wins, and a grouped button follows its active tool.",
+      "tests": [
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#iconlessPinnedButtonsAndGroupsStayCompactWithFullAccessibleIdentity",
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#pngPinIconPersistsDigestAndTransparentAspectPaddingWithoutDocumentMutation",
+        "org.geocedg.desktop.G9U1UserToolLibraryTest#groupedPngPinsKeepIndividualPopupIconsWithoutChangingToolIdentity"
+      ],
+      "topic": "persistent user-tool monogram fallback and icon precedence",
+      "procedure": "Render iconless, custom-PNG and grouped pins, switch the active member and compare dimensions, icon source, accessibility identity and unchanged document state.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "The tests prove deterministic fallback rendering, custom-icon precedence and active-member presentation without adding assets or stable actions.",
+      "remaining": "The author must inspect legibility and sizing in the target desktop."
+    },
+    {
+      "id": "U1-FM-07",
+      "group": "FM",
+      "assertion": "The final micro presentation retains 110 stable action IDs, one application-profile authority, EN/ES, locked Continuity OFF, Classic isolation and Input Help at the far right outside every toolbar group.",
+      "tests": [
+        "org.geocedg.desktop.G9U1ProfileCompilerTest#liveProfileStrictlyCompilesOneHundredTenActions",
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest#toolbarExtensionsPreserveTheHostHelpControlsAtTheFarEdge",
+        "org.geocedg.common.workspace.G9U1InputPolicyTest#continuityCannotBeEnabledInProduct"
+      ],
+      "topic": "preserved final-candidate profile and product invariants",
+      "procedure": "Compile the live profile, inspect the host toolbar edge and exercise the locked product policy under the same focused cohort.",
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "The tests cover the catalog count, single projection, Input Help placement and product Continuity policy.",
+      "remaining": "Final author re-smoke and exact-SHA closeout remain pending."
     }
   ],
-  "coveragePolicy": "Every approved scenario ID and required workflow is retained. U1-I09 clarifies the latest single-confirmation/one-transaction requirement: query plus opted-in points share one compound undo step; the frozen planning snapshot remains historical. Round-one U1-RV06 is explicitly superseded, not erased, by the author's seven-menu U1-R2-05 amendment. Round-two U1-R2-07 and U1-R2-08 remain historical and are superseded, not rewritten, by the bounded Round-three icon and promoted-branding contracts. Final-polish scenarios add only presentation/resource checks on top of the immutable published Round-three candidate. A test reference proves only the named assertion in that test, not all manual/persistence/performance variants in the scenario. Runtime results are sealed separately; final manual author re-smoke is pending.",
+  "coveragePolicy": "Every approved scenario ID and required workflow is retained. U1-I09 clarifies the latest single-confirmation/one-transaction requirement: query plus opted-in points share one compound undo step; the frozen planning snapshot remains historical. Round-one U1-RV06 is explicitly superseded, not erased, by the author's seven-menu U1-R2-05 amendment. Round-two U1-R2-07 and U1-R2-08 remain historical and are superseded, not rewritten, by the bounded Round-three icon and promoted-branding contracts. Final-polish scenarios remain historical at immutable checkpoint 34ffdd9a; U1-FP-05, U1-FP-07 and U1-FP-08 are explicitly superseded, not rewritten, by the final-micro toolbar amendment. Final-micro scenarios add presentation-only checks. A test reference proves only the named assertion in that test, not all manual/persistence/performance variants in the scenario. Runtime results are sealed separately; final manual author re-smoke is pending.",
   "authorReview": {
     "checkpoint": "b492194082f1adc9f981d85d92a58ef57490196f",
     "historicalScenarios": 138,
@@ -3105,6 +3205,33 @@
       "compactProductToolbarUsesOnlyDeclaredNonModeActionsAtHighDpi": "profileFlyoutsGroupMixedActionsWithoutDetachedSplineButtonAtHighDpi"
     },
     "dispositionRecord": "docs/validation/g9u1_final_presentation_polish.md",
+    "authorChecklistModified": false,
+    "newStableActionIds": 0,
+    "manualAuthorResmoke": "PENDING",
+    "nextAuthorCloseout": "EXACT_NEW_TECHNICAL_COMMIT_REQUIRED"
+  },
+  "finalMicroPresentation": {
+    "baselineCommit": "34ffdd9af5f94ded2765e7d495ee66543d4d751f",
+    "historicalScenarioCount": 185,
+    "historicalFocusedTests": 238,
+    "additionalScenarioIds": [
+      "U1-FM-01",
+      "U1-FM-02",
+      "U1-FM-03",
+      "U1-FM-04",
+      "U1-FM-05",
+      "U1-FM-06",
+      "U1-FM-07"
+    ],
+    "methodReplacements": {
+      "profileFlyoutsGroupMixedActionsWithoutDetachedSplineButtonAtHighDpi": "toolbarUsesExactProfileOrderAndNormalLastUsedMixedFlyoutsAtHighDpi"
+    },
+    "supersededHistoricalScenarios": [
+      "U1-FP-05",
+      "U1-FP-07",
+      "U1-FP-08"
+    ],
+    "dispositionRecord": "docs/validation/g9u1_final_micro_presentation_adjustments.md",
     "authorChecklistModified": false,
     "newStableActionIds": 0,
     "manualAuthorResmoke": "PENDING",

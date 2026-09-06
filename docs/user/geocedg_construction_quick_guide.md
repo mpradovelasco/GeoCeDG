@@ -1,6 +1,7 @@
 # GeoCeDG Construction — guía rápida del candidato en revisión
 
-Esta guía acompaña el sucesor técnico de presentación final posterior a Round 3.
+Esta guía acompaña el sucesor técnico de microajustes finales posterior al
+checkpoint funcionalmente aceptado `34ffdd9a...`.
 **No es una declaración de PASS.** Use una construcción nueva o una copia de
 trabajo; conserve intacto `TestBasic1.cedg` como evidencia del fallo histórico.
 `Revision2.cedg` y `Revision3.cedg` también son entradas autorales de diagnóstico:
@@ -38,16 +39,27 @@ Archivo y Editar muestran directamente sus acciones, separadas por función. En
 Construcción encontrará **Rectas y vectores**, **Polígonos**, **Construcciones
 derivadas**, **Círculos y cónicas**, **Curvas semánticas** y **Anotaciones y
 medios**; Texto e Imagen no son vistas. La barra proyecta 52 acciones habituales
-en 11 grupos, sin duplicarlas: Move incluye Move/Rotate; Punto/Intersección reúne
-Punto, Punto sobre objeto, Limitar/Liberar, Intersección y Tangente; Rectas y
-vectores, Polígonos y Construcciones derivadas conservan tres flyouts separados;
-Parámetros incluye Deslizador, Ángulo fijo, Casilla, Botón y Campo de entrada.
-Los flyouts mixtos **Curvas semánticas** y **Navegación** consumen las mismas
-acciones del catálogo. El primero muestra `Locus V2`, `Spline V2` y Punto sobre
-curva semántica; el segundo reúne Pan, Zoom por ventana, Acercar, Alejar y Copiar
-estilo visual. Las herramientas menos frecuentes siguen en el menú y **Ayuda de
-entrada** permanece en el extremo derecho. Una opción deshabilitada muestra una
-razón, no crea objetos.
+en este orden exacto de 11 grupos: Move; Punto/Intersección; Rectas y vectores;
+Polígonos; Construcciones derivadas; Círculos y cónicas; Curvas semánticas;
+Ángulos y longitudes; Transformaciones; Parámetros y controladores; Navegación.
+Move incluye Move/Rotate; Punto/Intersección reúne Punto, Punto sobre objeto,
+Limitar/Liberar e Intersección. El flyout Construcciones derivadas añade Ángulo
+de amplitud dada y Tangentes solo como organización de toolbar; sus grupos del
+menú Construcción no cambian. Parámetros reúne Deslizador, Casilla, Botón y Campo
+de entrada.
+
+Los flyouts mixtos compactos **Curvas semánticas** y **Navegación** consumen las
+mismas acciones del catálogo y muestran como botón principal la última acción
+elegida. El primero ofrece `Locus V2`, `Spline V2` y Punto sobre curva semántica;
+el segundo reúne Pan, Zoom por ventana, Acercar, Alejar y Copiar estilo visual.
+La selección recordada es solo estado visual. Las herramientas menos frecuentes
+siguen en el menú y **Ayuda de entrada** permanece en el extremo derecho. Una
+opción deshabilitada muestra una razón, no crea objetos.
+
+En Archivo, **Abrir sesión Classic de diagnóstico** aparece inmediatamente
+después de **Abrir recientes**. Ayuda se ordena como Ayuda de entrada, Ayuda de la
+herramienta actual, Lista de comandos, Guía de GeoCeDG, Atajos de teclado y
+Acerca de GeoCeDG.
 Un archivo puede conservar su distribución visual; **Ver → Reaplicar espacio de
 trabajo → Construction** recupera la organización del producto sin reconstruir
 la geometría.

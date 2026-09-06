@@ -6,10 +6,16 @@
 package org.geocedg.desktop;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.RenderingHints;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.nio.file.Files;
@@ -25,6 +31,7 @@ import java.util.WeakHashMap;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -225,9 +232,8 @@ public final class GeoCeDGUserTools {
 
 	private JToggleButton createPinnedButton(PinnedCommand pin) {
 		String reason = library.unavailableReason(pin.tool());
-		JToggleButton button = pin.icon() == null
-				? new JToggleButton(compactLabel(pin.command(), false))
-				: new JToggleButton(toolbarIcon(pin.icon()));
+		JToggleButton button = new JToggleButton();
+		applyPinnedIcon(button, pin, false);
 		configurePinnedButton(button, reason == null
 				? pin.command() + " \u2014 " + pin.tool().name() : explain(reason));
 		button.setEnabled(reason == null);
@@ -242,14 +248,10 @@ public final class GeoCeDGUserTools {
 	}
 
 	private JToggleButton createPinnedGroup(String name, List<PinnedCommand> commands) {
-		JToggleButton button = new JToggleButton(compactLabel(name, true));
-		for (PinnedCommand command : commands) {
-			if (command.icon() != null) {
-				button.setIcon(toolbarIcon(command.icon()));
-				button.setText("\u25be");
-				break;
-			}
-		}
+		JToggleButton button = new JToggleButton();
+		applyPinnedIcon(button, commands.get(0), true);
+		button.putClientProperty("geocedg.userTool.activeCommand",
+				commands.get(0).command());
 		String description = name + " \u2014 " + String.join(", ", commands.stream()
 				.map(PinnedCommand::command).toList());
 		configurePinnedButton(button, description);
@@ -260,15 +262,17 @@ public final class GeoCeDGUserTools {
 		for (PinnedCommand pin : commands) {
 			String reason = library.unavailableReason(pin.tool());
 			JMenuItem item = new JMenuItem(pin.command());
-			if (pin.icon() != null) {
-				item.setIcon(toolbarIcon(pin.icon()));
-			}
+			item.setIcon(pinnedIcon(pin));
 			item.setFont(app.getPlainFont());
 			item.setEnabled(reason == null);
 			item.setToolTipText(reason == null ? pin.tool().name() : explain(reason));
 			item.getAccessibleContext().setAccessibleName(pin.command());
 			item.getAccessibleContext().setAccessibleDescription(item.getToolTipText());
-			item.addActionListener(event -> invoke(pin.tool(), pin.command()));
+			item.addActionListener(event -> {
+				applyPinnedIcon(button, pin, true);
+				button.putClientProperty("geocedg.userTool.activeCommand", pin.command());
+				invoke(pin.tool(), pin.command());
+			});
 			popup.add(item);
 		}
 		button.putClientProperty("geocedg.userTool.popup", popup);
@@ -296,18 +300,113 @@ public final class GeoCeDGUserTools {
 		button.getAccessibleContext().setAccessibleDescription(description);
 	}
 
-	private static String compactLabel(String fullName, boolean dropdown) {
+	private void applyPinnedIcon(JToggleButton button, PinnedCommand pin,
+			boolean dropdown) {
+		Icon icon = pinnedIcon(pin);
+		button.setIcon(dropdown ? new DropdownIcon(icon) : icon);
+		button.setText(null);
+		button.putClientProperty("geocedg.userTool.icon.source",
+				pin.icon() == null ? "monogram" : "custom");
+		button.putClientProperty("geocedg.userTool.monogram",
+				pin.icon() == null ? monogram(pin.command()) : null);
+	}
+
+	private Icon pinnedIcon(PinnedCommand pin) {
+		return pin.icon() == null
+				? new MonogramIcon(monogram(pin.command()), app.getScaledIconSize())
+				: toolbarIcon(pin.icon());
+	}
+
+	static String monogram(String fullName) {
 		String value = fullName == null ? "" : fullName.strip();
-		String initial = value.isEmpty() ? "\u2022"
-				: new String(Character.toChars(value.codePointAt(0)))
-						.toUpperCase(Locale.ROOT);
-		return dropdown ? initial + "\u25be" : initial;
+		return value.codePoints().filter(Character::isLetter).findFirst()
+				.stream().mapToObj(codePoint -> new String(Character.toChars(codePoint))
+						.toUpperCase(Locale.ROOT)).findFirst().orElse("\u2022");
 	}
 
 	private ImageIcon toolbarIcon(GeoCeDGUserToolLibrary.PinIcon icon) {
 		ImageIcon source = new ImageIcon(icon.toolbarBytes());
 		int size = app.getScaledIconSize();
 		return new ImageIcon(source.getImage().getScaledInstance(size, size, Image.SCALE_SMOOTH));
+	}
+
+	private static final class MonogramIcon implements Icon {
+		private static final Color BACKGROUND = new Color(0xe7edf5);
+		private static final Color BORDER = new Color(0x74849a);
+		private static final Color FOREGROUND = new Color(0x26384f);
+		private final String monogram;
+		private final int size;
+
+		MonogramIcon(String monogram, int size) {
+			this.monogram = monogram;
+			this.size = size;
+		}
+
+		@Override
+		public int getIconWidth() {
+			return size;
+		}
+
+		@Override
+		public int getIconHeight() {
+			return size;
+		}
+
+		@Override
+		public void paintIcon(java.awt.Component component, Graphics graphics, int x, int y) {
+			Graphics2D g2 = (Graphics2D) graphics.create();
+			try {
+				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+						RenderingHints.VALUE_ANTIALIAS_ON);
+				g2.setColor(BACKGROUND);
+				g2.fillRoundRect(x + 1, y + 1, size - 2, size - 2, size / 4, size / 4);
+				g2.setColor(BORDER);
+				g2.drawRoundRect(x + 1, y + 1, size - 3, size - 3, size / 4, size / 4);
+				Font font = new Font(Font.SANS_SERIF, Font.BOLD,
+						Math.max(12, Math.round(size * 0.55f)));
+				g2.setFont(font);
+				FontMetrics metrics = g2.getFontMetrics();
+				int textX = x + (size - metrics.stringWidth(monogram)) / 2;
+				int textY = y + (size - metrics.getHeight()) / 2 + metrics.getAscent();
+				g2.setColor(MonogramIcon.FOREGROUND);
+				g2.drawString(monogram, textX, textY);
+			} finally {
+				g2.dispose();
+			}
+		}
+	}
+
+	private static final class DropdownIcon implements Icon {
+		private final Icon delegate;
+
+		DropdownIcon(Icon delegate) {
+			this.delegate = delegate;
+		}
+
+		@Override
+		public int getIconWidth() {
+			return delegate.getIconWidth();
+		}
+
+		@Override
+		public int getIconHeight() {
+			return delegate.getIconHeight();
+		}
+
+		@Override
+		public void paintIcon(java.awt.Component component, Graphics graphics, int x, int y) {
+			delegate.paintIcon(component, graphics, x, y);
+			Graphics2D g2 = (Graphics2D) graphics.create();
+			try {
+				g2.setColor(MonogramIcon.FOREGROUND);
+				int right = x + getIconWidth() - 3;
+				int bottom = y + getIconHeight() - 3;
+				g2.fillPolygon(new int[] {right - 6, right, right - 3},
+						new int[] {bottom - 4, bottom - 4, bottom}, 3);
+			} finally {
+				g2.dispose();
+			}
+		}
 	}
 
 	private void invoke(Package tool, String command) {

@@ -163,6 +163,25 @@ the published Round-3 `542 x 720` derivative remain byte-exact historical
 resources. No kernel, construction persistence, macro lifecycle, Continuity or
 Classic contract changes.
 
+## G9U1 final micro-presentation successor
+
+The functionally accepted checkpoint
+`34ffdd9af5f94ded2765e7d495ee66543d4d751f` remains immutable. Its successor
+keeps the same 110 actions and projects the exact requested eleven-group toolbar
+order from `application-profile.yml`. Fixed Angle and Tangent move only in the
+toolbar to **Derived constructions**; menu Construction continues to present
+them under their existing semantic groups. The point/intersection toolbar group
+therefore contains Point, Point on Object, Attach/Detach and Intersect.
+
+**Semantic Curves** and **Navigation** are compact normal-size flyouts whose
+main icon follows the last selected registered action. Their state is transient
+frontend presentation and is neither persisted in the document nor used for
+identity. Iconless installed user tools likewise use an in-memory monogram;
+validated custom PNGs retain precedence and the application-owned pin/group
+preferences remain unchanged. File owns the isolated Classic diagnostic route
+immediately after Open Recent. Help contains, in order, Input Help, Current Tool
+Help, Command List, GeoCeDG User Guide, Keyboard Shortcuts and About GeoCeDG.
+
 ## 1. Purpose
 
 This contract evolves the accepted version-1 GeoCeDG application profile from

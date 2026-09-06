@@ -666,7 +666,7 @@ application preferences: at most 256 KiB, maximum decoded edge 1024 and at most
 the toolbar derives a deterministic aspect-preserving, transparent-padded 64×64
 ARGB image. Change, unpin and removal clean up unreferenced icon data. Icon
 state never enters `.cedg`, changes tool identity, registers a macro or mutates
-Construction. Without an icon the toolbar renders a compact square initial,
+Construction. Without an icon the toolbar renders a compact square monogram,
 retains the full localized tool identity in tooltip/accessibility metadata and
 keeps grouped tools on the normal compact dropdown footprint.
 
@@ -701,6 +701,24 @@ it. The byte-exact author input and historical 542×720 derivative are retained;
 Classic keeps its inherited splash ordering and always-on-top policy. These
 changes affect no kernel, persistence, macro, Continuity or semantic-identity
 contract.
+
+### 13.4 Final micro-presentation contract
+
+The schema-v2 toolbar projection is ordered exactly as Move;
+Point/intersection; Lines/vectors; Polygons; Derived constructions;
+Circles/conics; Semantic curves; Metrics; Transformations;
+Parameters/drivers; Navigation. Fixed Angle and Tangent are projected only in
+the Derived toolbar flyout; their semantic menu placement is unchanged. All
+mode-only groups continue to use the host flyout. The two mixed groups use a
+bounded presentation adapter with the same compact active-icon, arrow and
+last-used behavior; selecting an entry still invokes the one registered action.
+
+Last-used flyout state is not serialized and never participates in geometry,
+selection or identity. An installed user tool with no custom icon renders a
+normal-size deterministic in-memory monogram from its first meaningful letter;
+an assigned PNG always wins, including for the currently active member of a
+user-tool group. File and Help ordering are likewise profile-owned. Input Help
+remains at the far right of the host toolbar, outside all eleven tool groups.
 
 ## 14. Validation
 

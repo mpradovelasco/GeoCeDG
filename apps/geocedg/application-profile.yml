@@ -2681,6 +2681,7 @@
         "document.new",
         "document.open",
         "document.open-recent",
+        "diagnostic.open-classic",
         "document.save",
         "document.save-as",
         "document.print-preview",
@@ -2726,11 +2727,11 @@
       "overflow_action_ids": [],
       "menu_action_ids": [
         "help.input-panel",
+        "help.contextual-action",
         "help.command-list",
         "help.user-guide",
         "help.keyboard-shortcuts",
-        "help.about-geocedg",
-        "diagnostic.open-classic"
+        "help.about-geocedg"
       ],
       "context_action_ids": [
         "help.contextual-action"
@@ -3043,7 +3044,7 @@
     {
       "id": "file-open",
       "name_key": "Group.File.Open",
-      "action_ids": ["document.new", "document.open", "document.open-recent"],
+      "action_ids": ["document.new", "document.open", "document.open-recent", "diagnostic.open-classic"],
       "toolbar_action_ids": []
     },
     {
@@ -3129,19 +3130,19 @@
       "id": "construction-derived",
       "name_key": "Group.Construction.Derived",
       "action_ids": ["construction.parallel-line", "construction.perpendicular-line", "construction.midpoint", "construction.perpendicular-bisector", "construction.angle-bisector"],
-      "toolbar_action_ids": ["construction.parallel-line", "construction.perpendicular-line", "construction.midpoint", "construction.perpendicular-bisector", "construction.angle-bisector"]
+      "toolbar_action_ids": ["construction.parallel-line", "construction.perpendicular-line", "construction.midpoint", "construction.perpendicular-bisector", "construction.angle-bisector", "parameter.fixed-angle", "relation.tangent"]
     },
     {
       "id": "construction-parameters",
       "name_key": "Group.Construction.Parameters",
       "action_ids": ["parameter.slider", "parameter.fixed-angle", "parameter.checkbox", "parameter.button", "parameter.input-box", "parameter.animation-toggle"],
-      "toolbar_action_ids": ["parameter.slider", "parameter.fixed-angle", "parameter.checkbox", "parameter.button", "parameter.input-box"]
+      "toolbar_action_ids": ["parameter.slider", "parameter.checkbox", "parameter.button", "parameter.input-box"]
     },
     {
       "id": "construction-relations",
       "name_key": "Group.Construction.Relations",
       "action_ids": ["relation.intersect", "relation.tangent", "relation.compare", "relation.polar-diameter", "result.inspect-rich", "result.materialize-selected", "result.materialize-multiple", "result.materialize-all-eligible"],
-      "toolbar_action_ids": ["construction.point", "construction.point-on-object", "construction.attach-detach", "relation.intersect", "relation.tangent"]
+      "toolbar_action_ids": ["construction.point", "construction.point-on-object", "construction.attach-detach", "relation.intersect"]
     },
     {
       "id": "construction-circles-conics",
@@ -3207,21 +3208,21 @@
     {
       "id": "help-actions",
       "name_key": "Group.Help.Actions",
-      "action_ids": ["help.input-panel", "help.command-list", "help.user-guide", "help.keyboard-shortcuts", "help.about-geocedg", "diagnostic.open-classic", "help.contextual-action"],
+      "action_ids": ["help.input-panel", "help.contextual-action", "help.command-list", "help.user-guide", "help.keyboard-shortcuts", "help.about-geocedg"],
       "toolbar_action_ids": []
     }
   ],
   "toolbar_group_ids": [
     "edit-selection",
+    "construction-relations",
     "construction-lines-vectors",
     "construction-polygons",
     "construction-derived",
-    "construction-parameters",
-    "construction-relations",
     "construction-circles-conics",
     "construction-semantic-curves",
     "construction-metrics",
     "construction-transforms",
+    "construction-parameters",
     "view-navigation"
   ],
   "menu_sections": [

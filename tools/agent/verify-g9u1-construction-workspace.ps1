@@ -31,6 +31,7 @@ $Round2CandidateCommit = "5f492d4ee77289d9def89aa6ed431226d2de3457"
 $Round2CandidateBranch = "codex/g9u1-author-review-stabilization-2"
 $Round3CandidateCommit = "56cf32c922baefeb30c7dff02dbdd5091107ea1a"
 $Round3CandidateBranch = "codex/g9u1-author-review-stabilization-3"
+$FinalPolishCandidateCommit = "34ffdd9af5f94ded2765e7d495ee66543d4d751f"
 $Round2AuthorityBlobs = [ordered]@{
     "docs/roadmap/geocedg_roadmap.md" = "7eb5f4dceb402e8188afffed83f6ce6d07bfe3a3"
     "docs/validation/g9u1_author_review_round2.md" = "7c9baa952abc87786d92bbb0b68fe0c7d35d0755"
@@ -80,8 +81,10 @@ $Round2SharedLifecyclePaths = @(
 )
 $Round3ScenarioIds = @(1..14 | ForEach-Object { "U1-R3-{0:D2}" -f $_ })
 $FinalPolishScenarioIds = @(1..8 | ForEach-Object { "U1-FP-{0:D2}" -f $_ })
+$FinalMicroScenarioIds = @(1..7 | ForEach-Object { "U1-FM-{0:D2}" -f $_ })
 $Round3DispositionPath = "docs/validation/g9u1_author_review_round3.md"
 $FinalPolishDispositionPath = "docs/validation/g9u1_final_presentation_polish.md"
+$FinalMicroDispositionPath = "docs/validation/g9u1_final_micro_presentation_adjustments.md"
 $FinalPolishMainPaths = @(
     "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGActionRegistry.java",
     "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGProfile.java",
@@ -98,6 +101,17 @@ $FinalPolishTestPaths = @(
     "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGBrandingResourceTest.java",
     "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGProfileTest.java",
     "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGSplashWindowTest.java"
+)
+$FinalMicroMainPaths = @(
+    "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGToolbarContainer.java",
+    "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGUserTools.java",
+    "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGWorkspaceController.java",
+    "source/desktop/desktop/src/main/java/org/geocedg/desktop/resources/GeoCeDGToolImageResource.java"
+)
+$FinalMicroTestPaths = @(
+    "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1ProfileCompilerTest.java",
+    "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1UserToolLibraryTest.java",
+    "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1WorkspaceSurfaceTest.java"
 )
 $FinalPolishBrandingPins = [ordered]@{
     "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/source/helixSnapshot.png" =
@@ -166,6 +180,10 @@ $FinalPolishMethodReplacements = [ordered]@{
         "nativeToolbarContainsFortyFourCuratedModesWhileCatalogRetainsAllSixtySix"
     "compactProductToolbarUsesOnlyDeclaredNonModeActionsAtHighDpi" =
         "profileFlyoutsGroupMixedActionsWithoutDetachedSplineButtonAtHighDpi"
+}
+$FinalMicroMethodReplacements = [ordered]@{
+    "profileFlyoutsGroupMixedActionsWithoutDetachedSplineButtonAtHighDpi" =
+        "toolbarUsesExactProfileOrderAndNormalLastUsedMixedFlyoutsAtHighDpi"
 }
 $ReviewMethodReplacements = [ordered]@{
     "toolbarContainsExactlySixtySixUniqueRealModeIds" =
@@ -240,6 +258,9 @@ function Resolve-U1TestReference {
     }
     if ($FinalPolishMethodReplacements.Contains($method)) {
         $method = $FinalPolishMethodReplacements[$method]
+    }
+    if ($FinalMicroMethodReplacements.Contains($method)) {
+        $method = $FinalMicroMethodReplacements[$method]
     }
     return "$($parts[0])#$method"
 }
@@ -324,6 +345,9 @@ function Assert-U1ReviewContracts {
             }
             if ($FinalPolishMethodReplacements.Contains($mapped)) {
                 $mapped = $FinalPolishMethodReplacements[$mapped]
+            }
+            if ($FinalMicroMethodReplacements.Contains($mapped)) {
+                $mapped = $FinalMicroMethodReplacements[$mapped]
             }
             Assert-U1 ($mapped -cin @($currentClass[0].methods)) "Historical focused obligation was dropped: $($historicalClass.name)#$method"
         }
@@ -598,6 +622,9 @@ function Assert-U1Round3Contracts {
             if ($FinalPolishMethodReplacements.Contains($mapped)) {
                 $mapped = $FinalPolishMethodReplacements[$mapped]
             }
+            if ($FinalMicroMethodReplacements.Contains($mapped)) {
+                $mapped = $FinalMicroMethodReplacements[$mapped]
+            }
             Assert-U1 ($mapped -cin @($currentClass[0].methods)) `
                 "Round-two focused obligation was dropped: $($historicalClass.name)#$method"
         }
@@ -781,6 +808,9 @@ function Assert-U1Round3Contracts {
             $mapped = if ($FinalPolishMethodReplacements.Contains($method)) {
                 $FinalPolishMethodReplacements[$method]
             } else { $method }
+            if ($FinalMicroMethodReplacements.Contains($mapped)) {
+                $mapped = $FinalMicroMethodReplacements[$mapped]
+            }
             Assert-U1 ($mapped -cin @($currentClass[0].methods)) `
                 "Round-three focused obligation was dropped: $($historicalClass.name)#$method"
         }
@@ -823,7 +853,7 @@ function Assert-U1Round3Contracts {
 
 function Assert-U1FinalPresentationPolishContracts {
     param([object]$Evidence, [object]$Scenarios, [string[]]$Paths)
-    [void](Get-U1Git @("merge-base", "--is-ancestor", $Round3CandidateCommit, "HEAD"))
+    [void](Get-U1Git @("merge-base", "--is-ancestor", $FinalPolishCandidateCommit, "HEAD"))
     $final = $Evidence.finalPresentationPolish
     Assert-U1 ($final.baseline.commit -ceq $Round3CandidateCommit -and
         $final.baseline.branch -ceq $Round3CandidateBranch -and
@@ -834,8 +864,8 @@ function Assert-U1FinalPresentationPolishContracts {
         $final.noNewGeometricSemantics -eq $true) `
         "Missing or inconsistent final-presentation-polish authority."
 
-    $finalDelta = @((Get-U1Git @("diff", "--name-only", $Round3CandidateCommit)).Split("`n") +
-        (Get-U1Git @("ls-files", "--others", "--exclude-standard")).Split("`n") |
+    $finalDelta = @((Get-U1Git @("diff", "--name-only", $Round3CandidateCommit,
+        $FinalPolishCandidateCommit)).Split("`n") |
         Where-Object { $_ } | Sort-Object -Unique -CaseSensitive)
     Assert-U1Set $finalDelta @($final.inventory.deltaPaths) `
         "Exact final-presentation-polish delta"
@@ -940,6 +970,154 @@ function Assert-U1FinalPresentationPolishContracts {
         "geocedg-g9u1-pass")).Trim())) "A G9U1 PASS tag exists before author closeout."
 }
 
+function Assert-U1FinalMicroPresentationContracts {
+    param([object]$Evidence, [object]$Scenarios, [string[]]$Paths)
+    [void](Get-U1Git @("merge-base", "--is-ancestor", $FinalPolishCandidateCommit,
+        "HEAD"))
+    $micro = $Evidence.finalMicroPresentation
+    Assert-U1 ($micro.baseline.commit -ceq $FinalPolishCandidateCommit -and
+        $micro.baseline.branch -ceq $Round3CandidateBranch -and
+        $micro.historicalFinalPolish -ceq
+            "FUNCTIONALLY_ACCEPTED_TECHNICAL_CHECKPOINT_PRESERVED" -and
+        $micro.dispositionRecord -ceq $FinalMicroDispositionPath -and
+        $micro.nextAuthorCloseout -ceq "EXACT_NEW_TECHNICAL_COMMIT_REQUIRED" -and
+        $micro.manualAuthorResmoke -ceq "PENDING" -and
+        $micro.noNewGeometricSemantics -eq $true) `
+        "Missing or inconsistent final-micro-presentation authority."
+
+    $historicalEvidence = Read-U1Commit $FinalPolishCandidateCommit $EvidencePath |
+        ConvertFrom-Json -Depth 100
+    Assert-U1 (($micro.baseline.pathCount -eq $historicalEvidence.inventory.pathCount) -and
+        ($micro.baseline.sourcePathCount -eq $historicalEvidence.inventory.sourcePathCount)) `
+        "Final-micro baseline inventory differs from the immutable checkpoint."
+    Assert-U1 (($Evidence.finalPresentationPolish | ConvertTo-Json -Depth 100 -Compress) -ceq
+        ($historicalEvidence.finalPresentationPolish | ConvertTo-Json -Depth 100 -Compress)) `
+        "The immutable final-presentation-polish authority was rewritten."
+
+    $microDelta = @((Get-U1Git @("diff", "--name-only",
+        $FinalPolishCandidateCommit)).Split("`n") +
+        (Get-U1Git @("ls-files", "--others", "--exclude-standard")).Split("`n") |
+        Where-Object { $_ } | Sort-Object -Unique -CaseSensitive)
+    Assert-U1Set $microDelta @($micro.inventory.deltaPaths) `
+        "Exact final-micro-presentation delta"
+    Assert-U1 ($micro.inventory.baseCommit -ceq $FinalPolishCandidateCommit -and
+        $micro.inventory.deltaPathCount -eq $microDelta.Count -and
+        $micro.inventory.sourcePathCount -eq
+            @($microDelta | Where-Object { $_ -cmatch '^source/' }).Count -and
+        $Evidence.inventory.pathCount -eq $Paths.Count -and
+        $Evidence.inventory.sourcePathCount -eq
+            @($Paths | Where-Object { $_ -cmatch '^source/' }).Count) `
+        "Final-micro-presentation inventory counters drifted."
+    $mainPaths = @($microDelta | Where-Object { $_ -cmatch '^source/.*/src/main/' })
+    $testPaths = @($microDelta | Where-Object { $_ -cmatch '^source/.*/src/test/' })
+    Assert-U1Set $mainPaths $FinalMicroMainPaths `
+        "Final micro productive paths must remain bounded to Desktop presentation"
+    Assert-U1Set $testPaths $FinalMicroTestPaths "Final micro focused test paths"
+    Assert-U1 (@($microDelta | Where-Object { $_ -cmatch '^source/shared/' }).Count -eq 0) `
+        "Final micro presentation must not change shared kernel sources or tests."
+
+    $historicalScenarios = Read-U1Commit $FinalPolishCandidateCommit $ScenarioPath |
+        ConvertFrom-Json -Depth 100
+    Assert-U1 (@($historicalScenarios.scenarios).Count -eq 185) `
+        "The immutable final-polish scenario count differs."
+    foreach ($historical in @($historicalScenarios.scenarios)) {
+        $current = @($Scenarios.scenarios | Where-Object { $_.id -ceq $historical.id })
+        Assert-U1 ($current.Count -eq 1) `
+            "Final-polish scenario was dropped/duplicated: $($historical.id)"
+        Assert-U1 (($current[0] | ConvertTo-Json -Depth 100 -Compress) -ceq
+            ($historical | ConvertTo-Json -Depth 100 -Compress)) `
+            "Immutable final-polish scenario meaning changed: $($historical.id)"
+    }
+    foreach ($historicalClass in @($historicalScenarios.focusedJUnit.classes)) {
+        $currentClass = @($Scenarios.focusedJUnit.classes | Where-Object {
+            $_.name -ceq $historicalClass.name })
+        Assert-U1 ($currentClass.Count -eq 1 -and
+            $currentClass[0].source -ceq $historicalClass.source -and
+            $currentClass[0].module -ceq $historicalClass.module) `
+            "Final-polish focused class changed: $($historicalClass.name)"
+        foreach ($method in @($historicalClass.methods)) {
+            $mapped = if ($FinalMicroMethodReplacements.Contains($method)) {
+                $FinalMicroMethodReplacements[$method]
+            } else { $method }
+            Assert-U1 ($mapped -cin @($currentClass[0].methods)) `
+                "Final-polish focused obligation was dropped: $($historicalClass.name)#$method"
+        }
+    }
+
+    Assert-U1 ($Scenarios.finalMicroPresentation.baselineCommit -ceq
+        $FinalPolishCandidateCommit -and
+        $Scenarios.finalMicroPresentation.historicalScenarioCount -eq 185 -and
+        $Scenarios.finalMicroPresentation.historicalFocusedTests -eq 238 -and
+        $Scenarios.finalMicroPresentation.authorChecklistModified -eq $false -and
+        $Scenarios.finalMicroPresentation.newStableActionIds -eq 0 -and
+        $Scenarios.finalMicroPresentation.manualAuthorResmoke -ceq "PENDING" -and
+        $Scenarios.finalMicroPresentation.nextAuthorCloseout -ceq
+            "EXACT_NEW_TECHNICAL_COMMIT_REQUIRED") `
+        "Final-micro-presentation scenario provenance differs."
+    Assert-U1Set @($Scenarios.finalMicroPresentation.additionalScenarioIds) `
+        $FinalMicroScenarioIds "Final-micro-presentation scenario IDs"
+    Assert-U1Set @($Scenarios.finalMicroPresentation.supersededHistoricalScenarios) `
+        @("U1-FP-05", "U1-FP-07", "U1-FP-08") `
+        "Final-micro superseded historical scenarios"
+    foreach ($entry in $FinalMicroMethodReplacements.GetEnumerator()) {
+        Assert-U1 ($Scenarios.finalMicroPresentation.methodReplacements.$($entry.Key) -ceq
+            $entry.Value) "Final-micro test-method mapping differs: $($entry.Key)"
+    }
+    Assert-U1 ($micro.focusedInventory.classes -eq 24 -and
+        $micro.focusedInventory.methods -eq 238 -and
+        $micro.focusedInventory.desktopMethods -eq 224 -and
+        $micro.focusedInventory.sharedMethods -eq 14 -and
+        $micro.focusedInventory.scenarios -eq 192 -and
+        $micro.focusedInventory.historicalScenarios -eq 185 -and
+        $micro.focusedInventory.addedFinalMicroScenarios -eq 7) `
+        "Final-micro-presentation focused inventory differs."
+    Assert-U1 ($micro.workspace.families -eq 11 -and
+        $micro.workspace.clusters -eq 18 -and
+        $micro.workspace.actions -eq 110 -and
+        $micro.workspace.normalMenus -eq 7 -and
+        $micro.workspace.presentationGroups -eq 28 -and
+        $micro.workspace.toolbarGroups -eq 11 -and
+        $micro.workspace.toolbarActions -eq 52 -and
+        $micro.workspace.nativeToolbarModes -eq 44 -and
+        $micro.workspace.profileFlyouts -eq 2 -and
+        (@($micro.workspace.toolbarGroupIds) -join ',') -ceq
+            'construction-move,construction-relations,construction-lines,' +
+            'construction-polygons,construction-derived,construction-curves,' +
+            'construction-semantic-curves,construction-metrics,' +
+            'construction-transforms,construction-parameters,view-navigation') `
+        "Final-micro-presentation workspace authority differs."
+    Assert-U1 ($micro.preservedContracts.singleActionAuthority -eq $true -and
+        $micro.preservedContracts.stableActionIds -eq 110 -and
+        $micro.preservedContracts.newStableActionIds -eq 0 -and
+        $micro.preservedContracts.continuityLockedOff -eq $true -and
+        $micro.preservedContracts.classicIsolationUnchanged -eq $true -and
+        $micro.preservedContracts.inputHelpRemainsFarRight -eq $true -and
+        $micro.preservedContracts.kernelScientificPersistenceChanged -eq $false -and
+        $micro.preservedContracts.authorApprovedImplementation -eq $false -and
+        $micro.preservedContracts.passClaimedImplementation -eq $false) `
+        "Final-micro-presentation preserved contracts differ."
+    foreach ($path in @($micro.documentationPaths)) {
+        $text = Read-U1 $path
+        foreach ($link in [regex]::Matches($text,
+            '(?<!!)\[[^\]]*\]\((?<target>[^)]+)\)')) {
+            $target = $link.Groups["target"].Value.Trim().Trim([char[]]"<>")
+            if ($target -match '^(https?://|mailto:|#)') { continue }
+            $target = ($target -split '#', 2)[0]
+            if ([string]::IsNullOrWhiteSpace($target)) { continue }
+            $document = Join-Path $RepositoryRoot $path
+            $targetPath = Join-Path (Split-Path -Parent $document) $target
+            $relative = [IO.Path]::GetRelativePath($RepositoryRoot,
+                [IO.Path]::GetFullPath($targetPath)).Replace('\', '/')
+            $resolved = Resolve-GeoCeDGPhaseLifecycleChild $RepositoryRoot $relative `
+                "final-micro documentation link"
+            Assert-U1 (Test-Path -LiteralPath $resolved) `
+                "Broken final-micro documentation link: $path -> $target"
+        }
+    }
+    Assert-U1 ([string]::IsNullOrEmpty((Get-U1Git @("tag", "--list",
+        "geocedg-g9u1-pass")).Trim())) "A G9U1 PASS tag exists before author closeout."
+}
+
 function Invoke-U1Gradle {
     param([string[]]$Arguments, [string]$Description, [string]$LogName)
     $effective = @($Arguments) + @("--rerun-tasks", "--no-build-cache", "--no-daemon",
@@ -1010,6 +1188,7 @@ function Assert-U1Contracts {
     Assert-U1Round2Contracts $Evidence $Scenarios $paths
     Assert-U1Round3Contracts $Evidence $Scenarios $paths
     Assert-U1FinalPresentationPolishContracts $Evidence $Scenarios $paths
+    Assert-U1FinalMicroPresentationContracts $Evidence $Scenarios $paths
     Assert-U1 (@($paths | Where-Object { $_ -match '^artifacts/|^book/' }).Count -eq 0) "Generated/independent-book path in candidate."
     $profile = Read-U1 "apps/geocedg/application-profile.yml" | ConvertFrom-Json -Depth 100 -AsHashtable
     [void](Assert-GeoCeDGLiveWorkspaceProfile -RepositoryRoot $RepositoryRoot)
@@ -1033,10 +1212,10 @@ function Assert-U1Contracts {
     $approvedIds = @($approved.groups | ForEach-Object { $_.scenarioIds })
     Assert-U1 ($approvedIds.Count -eq 138) "The historical approved scenario baseline changed."
     Assert-U1Set $ids @($approvedIds + $ReviewScenarioIds + $Round2ScenarioIds +
-        $Round3ScenarioIds + $FinalPolishScenarioIds) `
+        $Round3ScenarioIds + $FinalPolishScenarioIds + $FinalMicroScenarioIds) `
         "All historical and bounded author-review scenarios"
-    Assert-U1 ($ids.Count -eq 185) `
-        "G9U1 requires 138 historical plus 15 round-one, 10 round-two, 14 round-three and 8 final-polish scenarios."
+    Assert-U1 ($ids.Count -eq 192) `
+        "G9U1 requires 138 historical plus 15 round-one, 10 round-two, 14 round-three, 8 final-polish and 7 final-micro scenarios."
     $methodKeys = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
     foreach ($class in $Scenarios.focusedJUnit.classes) {
         Assert-U1 ($class.module -cin @("shared", "desktop") -and @($class.methods).Count -gt 0) "Empty/invalid G9U1 test class."
@@ -1142,11 +1321,12 @@ try {
             Assert-U1 (@($style.SelectNodes("//error")).Count -eq 0) "G9U1 Checkstyle errors: $path"
         }
         $summary = [ordered]@{
-            schemaVersion = 1; phase = "G9U1"; state = "FINAL_PRESENTATION_POLISH_FOCUSED_PASSED_NOT_AUTHOR_APPROVAL"
+            schemaVersion = 1; phase = "G9U1"; state = "FINAL_MICRO_PRESENTATION_FOCUSED_PASSED_NOT_AUTHOR_APPROVAL"
             baseCommit = $BaseCommit; promptHash = Get-U1Hash $PromptPath
             authorReviewRound2Baseline = $Round1CandidateCommit
             authorReviewRound3Baseline = $Round2CandidateCommit
             finalPresentationPolishBaseline = $Round3CandidateCommit
+            finalMicroPresentationBaseline = $FinalPolishCandidateCommit
             authorReviewInputCommit = $Round2AuthorInputCommit
             authorReviewInputEntryHash = $Round2AuthorInputEntryCanonicalHash
             authorReviewInputHash = $Round2AuthorInputLiveCanonicalHash

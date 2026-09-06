@@ -207,12 +207,13 @@ class G9U1ProfileCompilerTest {
 			}
 		}
 		assertEquals(110, ids.size());
-		assertEquals(List.of("edit-selection", "construction-lines-vectors",
+		assertEquals(List.of("edit-selection", "construction-relations",
+				"construction-lines-vectors",
 				"construction-polygons",
-				"construction-derived", "construction-parameters",
-				"construction-relations", "construction-circles-conics",
+				"construction-derived", "construction-circles-conics",
 				"construction-semantic-curves", "construction-metrics",
-				"construction-transforms", "view-navigation"),
+				"construction-transforms", "construction-parameters",
+				"view-navigation"),
 				GeoCeDGProfile.strings(profile.getJSONArray("toolbar_group_ids")));
 	}
 
@@ -223,7 +224,7 @@ class G9U1ProfileCompilerTest {
 		JSONObject relations = GeoCeDGMenuBar.find(
 				profile.getJSONArray("presentation_groups"), "construction-relations");
 		assertEquals(List.of("construction.point", "construction.point-on-object",
-				"construction.attach-detach", "relation.intersect", "relation.tangent"),
+				"construction.attach-detach", "relation.intersect"),
 				GeoCeDGProfile.strings(relations.getJSONArray("toolbar_action_ids")));
 
 		JSONObject semantic = GeoCeDGMenuBar.find(
@@ -257,10 +258,11 @@ class G9U1ProfileCompilerTest {
 				toolbarIds(groups, "construction-polygons"));
 		assertEquals(List.of("construction.parallel-line", "construction.perpendicular-line",
 				"construction.midpoint", "construction.perpendicular-bisector",
-				"construction.angle-bisector"),
+				"construction.angle-bisector", "parameter.fixed-angle",
+				"relation.tangent"),
 				toolbarIds(groups, "construction-derived"));
-		assertEquals(List.of("parameter.slider", "parameter.fixed-angle",
-				"parameter.checkbox", "parameter.button", "parameter.input-box"),
+		assertEquals(List.of("parameter.slider", "parameter.checkbox",
+				"parameter.button", "parameter.input-box"),
 				toolbarIds(groups, "construction-parameters"));
 		assertTrue(toolbarIds(groups, "construction-points").isEmpty());
 	}

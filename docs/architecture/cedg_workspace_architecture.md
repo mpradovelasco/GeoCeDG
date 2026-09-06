@@ -792,3 +792,25 @@ overload requests supported always-on-top foreground presentation; Classic
 retains its inherited call order and policy. This layer owns presentation only:
 kernel geometry, R6/R1 identity, G9A redefine, macros and `.cedg` persistence are
 unchanged.
+
+## Final micro-presentation successor
+
+The functionally accepted technical checkpoint
+`34ffdd9af5f94ded2765e7d495ee66543d4d751f` remains immutable. Its bounded
+successor changes only the projection of the same schema-v2 action catalog. The
+primary toolbar now follows the profile's exact eleven-group order: Move;
+Point/intersection; Lines/vectors; Polygons; Derived constructions;
+Circles/conics; Semantic curves; Metrics; Transformations;
+Parameters/drivers; Navigation. Fixed Angle and Tangent move only in the
+toolbar projection to Derived constructions; their Construction-menu taxonomy
+does not change.
+
+Native mode-only groups continue to use upstream `ModeToggleMenuD`. Semantic
+Curves and Navigation mix mode and non-mode registry actions, so a bounded
+Desktop adapter provides the same compact icon-and-arrow interaction and keeps
+the most recently selected action visible. That last-used state is transient UI
+state, not document state or geometric authority. Persistent user tools use
+their validated custom PNG when present and otherwise render a deterministic
+in-memory monogram in the normal toolbar footprint. Help and File ordering are
+also profile projections: Help has the six approved help actions, while the
+unchanged isolated Classic diagnostic action follows Open Recent in File.

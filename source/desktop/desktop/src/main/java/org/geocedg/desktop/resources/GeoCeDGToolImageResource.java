@@ -10,28 +10,35 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.net.URL;
 
 import javax.annotation.CheckForNull;
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
 import org.geogebra.desktop.gui.util.JSVGIcon;
 import org.geogebra.desktop.util.ImageResourceD;
 
-/** Desktop adapter for the registered GeoCeDG-owned tool artwork. */
+/** Desktop adapter for profile-registered owned or explicitly reused tool artwork. */
 public enum GeoCeDGToolImageResource implements ImageResourceD {
 
 	LOCUS_V2("mode_locusv2"),
 	SPLINE_V2("mode_geocedg_splinev2"),
 	SEMANTIC_POINT("mode_geocedg_semanticpoint"),
 	RICH_RESULT("mode_geocedg_richresult"),
-	MATERIALIZE("mode_geocedg_materialize");
+	MATERIALIZE("mode_geocedg_materialize"),
+	ZOOM_WINDOW("/org/geogebra/common/icons_toolbar/p64/", "mode_zoom", ".png");
 
 	private static final int RASTER_SIZE = 64;
-	private final String resourceName;
+	private final String filename;
 
 	GeoCeDGToolImageResource(String resourceName) {
-		this.resourceName = resourceName;
+		this("/org/geogebra/common/icons/svg/web/toolIcons/", resourceName, ".svg");
+	}
+
+	GeoCeDGToolImageResource(String directory, String resourceName, String extension) {
+		this.filename = directory + resourceName + extension;
 	}
 
 	/**
@@ -58,6 +65,8 @@ public enum GeoCeDGToolImageResource implements ImageResourceD {
 		case "geocedg.action.MaterializeAll":
 		case "geocedg.action.AutoMaterializeInitial":
 			return MATERIALIZE;
+		case "geocedg.action.ZoomWindow":
+			return ZOOM_WINDOW;
 		default:
 			return null;
 		}
@@ -81,7 +90,7 @@ public enum GeoCeDGToolImageResource implements ImageResourceD {
 
 	@Override
 	public String getFilename() {
-		return "/org/geogebra/common/icons/svg/web/toolIcons/" + resourceName + ".svg";
+		return filename;
 	}
 
 	/**
@@ -92,6 +101,13 @@ public enum GeoCeDGToolImageResource implements ImageResourceD {
 		URL resource = GeoCeDGToolImageResource.class.getResource(getFilename());
 		if (resource == null) {
 			return null;
+		}
+		if (!getFilename().endsWith(".svg")) {
+			try {
+				return ImageIO.read(resource);
+			} catch (IOException exception) {
+				return null;
+			}
 		}
 		JSVGIcon icon = new JSVGIcon(resource);
 		icon.setAntiAlias(true);

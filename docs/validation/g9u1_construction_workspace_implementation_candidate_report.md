@@ -9,7 +9,25 @@
   `passClaimedImplementation = false`
 - `manualAuthorSmoke = PENDING`
 
-## Final presentation-polish successor — current candidate
+## Final micro-presentation successor — current candidate
+
+The author functionally accepted checkpoint
+`34ffdd9af5f94ded2765e7d495ee66543d4d751f`, which remains immutable, then
+authorized one last presentation-only successor before author closeout. The
+[bounded disposition](g9u1_final_micro_presentation_adjustments.md) records the
+exact delta: profile-defined eleven-group order; Fixed Angle and Tangent moved
+only in the toolbar to Derived constructions; compact last-used Semantic Curves
+and Navigation flyouts; exact File/Help ordering; and deterministic in-memory
+monograms for iconless persistent user tools. It preserves the 110 IDs and
+changes no kernel, scientific, persistence, macro or `.cedg` contract.
+
+This successor requires its own focused A/B, PHASE, COMPOSED and clean FULL
+evidence. It remains **IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**, with
+`selfApproved = false`, `authorApprovedImplementation = false`,
+`passClaimedImplementation = false`, and `manualAuthorSmoke = PENDING`. Main and
+`geocedg-g9u1-pass` remain untouched until a later exact-SHA author decision.
+
+## Final presentation-polish successor — historical technical checkpoint
 
 The author accepted the technical bug-fix state at
 `56cf32c922baefeb30c7dff02dbdd5091107ea1a` and authorized one final bounded

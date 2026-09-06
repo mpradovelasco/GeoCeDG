@@ -28,8 +28,9 @@ reference the same action ID on another surface. Reuse is intentional. It must
 not compile to duplicated toolbar modes or a second action implementation.
 
 The live candidate implements this matrix through the same profile authority.
-The final presentation-polish delta changes only its toolbar/name/resource
-projection; command dispatch, geometry and persistence remain unchanged.
+The final micro-presentation delta changes only toolbar order/membership,
+mixed-flyout state, File/Help placement and iconless user-tool presentation;
+command dispatch, geometry and persistence remain unchanged.
 
 The protected pre-R6 design checkpoint
 `857de6628489bda0b65a5ba5145e62ca0795fc32` remains immutable. This post-R6
@@ -55,9 +56,9 @@ finds no further shared-kernel prerequisite for the intended Point workflow.
 | 12 | Presentation / visibility / style | Presentation and document | presentation only; never geometric authority |
 | 13 | Navigation / zoom | Presentation and document | viewport only |
 | 14 | Document lifecycle | Presentation and document | approved R2 native/compatibility policy |
-| 15 | Automation / scripting | Automation and import/export | host input/tools plus controlled diagnostic route |
+| 15 | Automation / scripting | Automation and import/export | host input/tools; the isolated Classic diagnostic route is projected in File |
 | 16 | Authorized import / export | Automation and import/export | `.ggb` compatibility open plus approved DXF |
-| 17 | Help / command discovery | Presentation and document | EN/ES product discovery and Classic diagnostic route |
+| 17 | Help / command discovery | Presentation and document | EN/ES product discovery in the exact six-action Help order |
 | 18 | Construction history / definition | Inspect and construct | view-only definition/protocol access |
 
 The ninth broad family, **CeDG procedures and developments**, remains present
@@ -164,7 +165,7 @@ supported copy/remap preserve the exact R6 source/address graph.
 |---|---|---|---|
 | `construction.line`, `construction.segment`, `construction.ray`, `construction.vector`, `construction.fixed-segment`, `construction.vector-from-point` | existing modes `2`, `15`, `18`, `7`, `45`, `37` | toolbar: Lines and vectors | MUST |
 | `construction.polygon`, `construction.polyline`, `construction.regular-polygon`, `construction.rigid-polygon`, `construction.vector-polygon` | existing modes `16`, `65`, `51`, `64`, `70` | toolbar: Polygons | MUST |
-| `construction.parallel-line`, `construction.perpendicular-line`, `construction.midpoint`, `construction.perpendicular-bisector`, `construction.angle-bisector` | existing modes `3`, `4`, `19`, `8`, `9` | toolbar: Derived constructions | MUST |
+| `construction.parallel-line`, `construction.perpendicular-line`, `construction.midpoint`, `construction.perpendicular-bisector`, `construction.angle-bisector`, `parameter.fixed-angle`, `relation.tangent` | existing modes `3`, `4`, `19`, `8`, `9`, `46`, `13` | toolbar: Derived constructions | MUST; the last two retain their existing Construction-menu groups |
 
 All are inherited host semantics. Workspace membership changes discovery only.
 
@@ -173,7 +174,7 @@ All are inherited host semantics. Workspace membership changes discovery only.
 | Stable action ID | Target | Placement | Disposition |
 |---|---|---|---|
 | `parameter.slider` | `MODE_SLIDER(25)` | toolbar | MUST |
-| `parameter.fixed-angle` | `MODE_ANGLE_FIXED(46)` | toolbar | SHOULD |
+| `parameter.fixed-angle` | `MODE_ANGLE_FIXED(46)` | menu: Parameters; toolbar: Derived constructions | SHOULD |
 | `parameter.checkbox` | `MODE_SHOW_HIDE_CHECKBOX(52)` | toolbar | SHOULD |
 | `parameter.button` | `MODE_BUTTON_ACTION(60)` | toolbar | SHOULD |
 | `parameter.input-box` | `MODE_TEXTFIELD_ACTION(61)` | toolbar | SHOULD |
@@ -187,7 +188,7 @@ cross-cutting requirements below; they are not duplicate construction actions.
 | Stable action ID | Target | Placement | Disposition | Boundary |
 |---|---|---|---|---|
 | `relation.intersect` | `MODE_INTERSECT(5)` / ordinary `Intersect` dispatch | toolbar | MUST | rich result remains kernel authority |
-| `relation.tangent` | `MODE_TANGENTS(13)` | toolbar | MUST | inherited |
+| `relation.tangent` | `MODE_TANGENTS(13)` | menu: Relations; toolbar: Derived constructions | MUST | inherited; toolbar regrouping only |
 | `relation.compare` | `MODE_RELATION(14)` | overflow | MUST | read-only relation |
 | `relation.polar-diameter` | `MODE_POLAR_DIAMETER(44)` | overflow | SHOULD | inherited |
 | `result.inspect-rich` | current R3 inspector route | menu/context | MUST | feature/current-result dependent |
@@ -354,7 +355,7 @@ not authorized here.
 | `help.user-guide` | GeoCeDG user guide route | help/menu | MUST | validated living guide |
 | `help.keyboard-shortcuts` | existing shortcut help | help/menu | SHOULD | include ZoomWindow and workspace keys |
 | `help.about-geocedg` | GeoCeDG About route | help/menu | MUST | product identity |
-| `diagnostic.open-classic` | isolated Classic launcher | help/menu | MUST | separate process/preferences |
+| `diagnostic.open-classic` | isolated Classic launcher | File immediately after Open Recent | MUST | separate process/preferences |
 | `settings.product-language` | GeoCeDG EN/ES selector | settings | MUST | retain upstream corpus; Classic remains unrestricted |
 
 Every visible action must resolve name, short help, long help, status, and error
