@@ -1,6 +1,7 @@
 #requires -Version 7.2
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+. (Join-Path $PSScriptRoot 'evidence-integrity.ps1')
 
 # Receipt authority is confined to one module instance and one live invocation.
 $script:ActiveEvidence = $null
@@ -54,6 +55,7 @@ $script:PhaseVerifiers = [ordered]@{
     "G9U0-R6" = "verify-g9u0-r6-semantic-locus-point-interaction-support.ps1"
     "G9S1-R1" = "verify-g9s1-r1-spline-pair-materialization.ps1"
     G9U1 = "verify-g9u1-construction-workspace.ps1"
+    "VERIFICATION-INFRASTRUCTURE" = "verify-verification-infrastructure.ps1"
 }
 
 function Get-TextSha256 {
@@ -850,12 +852,9 @@ function Invoke-GeoCeDGCanonicalBuild {
         $selections = [ordered]@{}
         foreach ($module in @("shared", "desktop")) {
             Remove-CurrentJUnitReports -RepositoryRoot $RepositoryRoot -Module $module
-            $filters = @()
-            if ($Level -eq "COMPOSED") {
-                $filters = @("org.geocedg.*")
-                if ($module -eq "shared") { $filters += $script:MandatoryUpstreamClasses }
-            }
-            $selections[$module] = [ordered]@{ task = $script:ModuleDefinitions[$module].Task; unfiltered = ($Level -eq "FULL"); filters = $filters }
+            $selectionPlan = Get-GeoCeDGCanonicalSelectionPlan -Level $Level
+            $filters = @($selectionPlan.$module.filters)
+            $selections[$module] = $selectionPlan.$module
             $arguments = Get-TestBuildArguments -Module $module -Filters $filters -IncludeCheckstyle -AllowToolchainDownload:$AllowToolchainDownload -KeepBuildOutputs:$KeepBuildOutputs -RebuildDependencies:$RebuildDependencies
             $run = Invoke-VerificationNative -FilePath $wrapper -Arguments $arguments -WorkingDirectory $RepositoryRoot -LogPath (Join-Path $runRoot "$module-gradle.log") -Description "Canonical $Level $module tests and Checkstyle"
             $nativeRuns.Add($run)
@@ -976,6 +975,970 @@ function Assert-ReportHash {
         if (-not (Test-Path -LiteralPath $path -PathType Leaf) -or (Get-RawFileSha256 $path) -cne $Report.sha256) {
             throw "Missing or altered current-run report: $path"
         }
+    }
+}
+
+function Get-GeoCeDGCanonicalSelectionPlan {
+    [CmdletBinding()]
+    param([Parameter(Mandatory)] [ValidateSet("COMPOSED", "FULL")] [string]$Level)
+    Assert-LoadedRuntimeSource
+    $normalized = $Level.ToUpperInvariant()
+    $selections = [ordered]@{}
+    foreach ($module in @("shared", "desktop")) {
+        $filters = @()
+        if ($normalized -ceq "COMPOSED") {
+            $filters = @("org.geocedg.*")
+            if ($module -ceq "shared") {
+                $filters += @($script:MandatoryUpstreamClasses)
+            }
+        }
+        $selections[$module] = [pscustomobject][ordered]@{
+            task = [string]$script:ModuleDefinitions[$module].Task
+            unfiltered = ($normalized -ceq "FULL")
+            filters = @($filters)
+        }
+    }
+    return [pscustomobject]$selections
+}
+
+function Get-GeoCeDGVerificationExecutionPlan {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [ValidateSet('COMPOSED', 'FULL')]
+        [string]$Level,
+        [Parameter(Mandatory)] [string]$Phase
+    )
+    Assert-LoadedRuntimeSource
+    $normalized = $Level.ToUpperInvariant()
+    $integration = Get-GeoCeDGAcceptancePhaseIntegration -Phase $Phase
+    # This is the central executable orchestration contract consumed by both
+    # readiness and verify.ps1.  COMPOSED and FULL share exactly this ordered
+    # gate graph; their only permitted differences are the canonical Test
+    # selection and the baseline FullTests confirmation below.
+    $gateIds = [object[]]@(
+        'OPERATIONAL_CONTRACTS',
+        'WORKSTATION_CONTRACTS',
+        'CANONICAL_FULL_BUILD',
+        'LEGACY_INTEGRATION',
+        'DXF_AND_NATIVE_2D',
+        'DECLARED_PHASE_ASSERTION_SUITE',
+        'PACKAGING_CONTRACTS',
+        'BASELINE_FULL_CONFIRMATION',
+        'FRONTEND_PROFILE',
+        'GIT_WHITESPACE_INTEGRITY'
+    )
+    return [pscustomobject][ordered]@{
+        schemaVersion = 1
+        kind = 'GEOCEDG_VERIFICATION_EXECUTION_PLAN'
+        level = $normalized
+        orchestrationFamily = 'COMPOSED_FULL_SHARED_BODY_V1'
+        commonGateIds = $gateIds
+        canonicalBuild = [ordered]@{
+            level = $normalized
+            selection = Get-GeoCeDGCanonicalSelectionPlan -Level $normalized
+        }
+        baseline = [ordered]@{
+            fullTests = ($normalized -ceq 'FULL')
+        }
+        nestedAcceptancePhase = $integration
+        repositoryDeclaredPerimeter = [ordered]@{
+            strategy = 'SAME_REPOSITORY_STATE_DECLARED_GATES'
+            differsByVerificationLevel = $false
+        }
+        allowedDifferenceDimensions = [object[]]@(
+            'canonicalBuild.level',
+            'canonicalBuild.selection',
+            'baseline.fullTests',
+            'level'
+        )
+    }
+}
+
+function Get-GeoCeDGAcceptancePhaseIntegration {
+    [CmdletBinding()]
+    param([Parameter(Mandatory)] [string]$Phase)
+    Assert-LoadedRuntimeSource
+    $definition = Get-GeoCeDGPhaseDefinition -Phase $Phase
+    switch ([string]$definition.Phase) {
+        'VERIFICATION-INFRASTRUCTURE' {
+            return [pscustomobject][ordered]@{
+                phase = 'VERIFICATION-INFRASTRUCTURE'
+                orchestratorPath = 'tools/agent/verify-operational.ps1'
+                verifierPath = 'tools/agent/verify-verification-infrastructure.ps1'
+                evidencePath = 'operational/verification-infrastructure/verification-infrastructure.json'
+                expectedState = 'PASS_FAKE_FIRST_OPERATIONAL_ONLY'
+                rootInvocation = [object[]]@(
+                    [ordered]@{ name = 'LogDirectory'; value = 'CAMPAIGN_ROOT/operational' }
+                )
+            }
+        }
+        default {
+            throw "PHASE '$($definition.Phase)' has no declared integration in the single FULL acceptance campaign."
+        }
+    }
+}
+
+function Assert-GeoCeDGArchivedCanonicalProperties {
+    param(
+        [Parameter(Mandatory)] [object]$Object,
+        [Parameter(Mandatory)] [string[]]$Names,
+        [Parameter(Mandatory)] [string]$Description
+    )
+    if ($null -eq $Object) { throw "$Description is null." }
+    $actual = @($Object.PSObject.Properties.Name)
+    if ($actual.Count -ne $Names.Count -or
+            @($actual | Where-Object { $_ -cnotin $Names }).Count -ne 0 -or
+            @($Names | Where-Object { $_ -cnotin $actual }).Count -ne 0) {
+        throw "$Description has unsupported, missing, or case-mismatched properties."
+    }
+}
+
+function Test-GeoCeDGArchivedCanonicalInteger {
+    param([object]$Value)
+    if ($Value -is [double]) {
+        return -not [double]::IsNaN($Value) -and
+            -not [double]::IsInfinity($Value) -and
+            $Value -eq [math]::Truncate($Value)
+    }
+    if ($Value -is [single]) {
+        return -not [single]::IsNaN($Value) -and
+            -not [single]::IsInfinity($Value) -and
+            $Value -eq [math]::Truncate($Value)
+    }
+    if ($Value -is [decimal]) {
+        return $Value -eq [decimal]::Truncate($Value)
+    }
+    return $Value -is [byte] -or $Value -is [sbyte] -or
+        $Value -is [int16] -or $Value -is [uint16] -or
+        $Value -is [int32] -or $Value -is [uint32] -or
+        $Value -is [int64] -or $Value -is [uint64]
+}
+
+function Assert-GeoCeDGArchivedCanonicalFile {
+    param(
+        [Parameter(Mandatory)] [string]$Path,
+        [Parameter(Mandatory)] [string]$Sha256,
+        [Parameter(Mandatory)] [string]$Description
+    )
+    if (-not [IO.Path]::IsPathRooted($Path) -or
+            $Sha256 -cnotmatch '^[0-9a-f]{64}$') {
+        throw "$Description has invalid absolute-path/hash authority."
+    }
+    $fullPath = [IO.Path]::GetFullPath($Path)
+    if (-not (Test-Path -LiteralPath $fullPath -PathType Leaf) -or
+            (Get-Item -LiteralPath $fullPath -Force).Length -le 0 -or
+            (Get-RawFileSha256 $fullPath) -cne $Sha256) {
+        throw "$Description is missing, empty, or hash-mismatched: $fullPath"
+    }
+    return $fullPath
+}
+
+function Read-GeoCeDGArchivedCanonicalJsonArray {
+    param(
+        [Parameter(Mandatory)] [string]$Path,
+        [Parameter(Mandatory)] [string]$Description
+    )
+    $bytes = [IO.File]::ReadAllBytes($Path)
+    try {
+        $text = [Text.UTF8Encoding]::new($false, $true).GetString($bytes)
+        if ($text.Length -gt 0 -and $text[0] -eq [char]0xFEFF) {
+            throw "$Description must be UTF-8 without BOM."
+        }
+        $value = ConvertFrom-Json -InputObject $text -Depth 100 -NoEnumerate `
+            -ErrorAction Stop
+    } catch {
+        throw "$Description is not strict canonical JSON: $($_.Exception.Message)"
+    }
+    if ($value -isnot [object[]]) {
+        throw "$Description must be a top-level JSON array."
+    }
+    return [pscustomobject][ordered]@{ value = $value; bytes = $bytes }
+}
+
+function Invoke-GeoCeDGArchivedCanonicalGitBytes {
+    param(
+        [Parameter(Mandatory)] [string]$RepositoryRoot,
+        [Parameter(Mandatory)] [string[]]$Arguments
+    )
+    $result = Invoke-GeoCeDGGitByteCommand -RepositoryRoot $RepositoryRoot `
+        -Arguments $Arguments
+    return ,([byte[]]$result.Bytes)
+}
+
+function Get-GeoCeDGArchivedCanonicalTechnicalTree {
+    param(
+        [Parameter(Mandatory)] [string]$RepositoryRoot,
+        [Parameter(Mandatory)] [string]$TechnicalCommit
+    )
+    $bytes = Invoke-GeoCeDGArchivedCanonicalGitBytes -RepositoryRoot $RepositoryRoot `
+        -Arguments @('ls-tree', '-r', '-z', '--full-tree', $TechnicalCommit)
+    try {
+        $text = [Text.UTF8Encoding]::new($false, $true).GetString($bytes)
+    } catch {
+        throw "Technical tree paths are not strict UTF-8: $($_.Exception.Message)"
+    }
+    if ($text.Length -eq 0 -or $text[$text.Length - 1] -ne [char]0) {
+        throw 'Technical tree inventory is empty or not NUL-terminated.'
+    }
+    $map = [Collections.Generic.Dictionary[string,object]]::new(
+        [StringComparer]::Ordinal)
+    foreach ($row in $text.Substring(0, $text.Length - 1).Split([char]0)) {
+        if ($row -cnotmatch '^(\d{6}) (blob|commit) ([0-9a-f]{40})\t(.+)$') {
+            throw 'Technical tree contains an unsupported Git record.'
+        }
+        $mode = $Matches[1]
+        $kind = $Matches[2]
+        $oid = $Matches[3]
+        $path = $Matches[4]
+        if ([IO.Path]::IsPathRooted($path) -or
+                $path -cmatch '[\x00-\x1f\x7f\\:"]' -or
+                @($path.Split('/') | Where-Object {
+                        $_ -cin @('', '.', '..')
+                    }).Count -ne 0 -or
+                $kind -cne 'blob' -or $mode -cnotin @('100644', '100755') -or
+                $map.ContainsKey($path)) {
+            throw "Technical tree contains an unsupported path/mode: $path"
+        }
+        $map.Add($path, [pscustomobject][ordered]@{
+                path = $path; mode = $mode; blobOid = $oid
+            })
+    }
+    $paths = [string[]]@($map.Keys)
+    [Array]::Sort($paths, [StringComparer]::Ordinal)
+    $entries = @($paths | ForEach-Object { $map[$_] })
+    $bindingText = ($entries | ForEach-Object {
+            "$($_.path)`0$($_.mode)`0$($_.blobOid)`n"
+        }) -join ''
+    return [pscustomobject][ordered]@{
+        entries = $entries
+        pathCount = $entries.Count
+        pathAndBlobAuthoritySha256 = Get-TextSha256 $bindingText
+    }
+}
+
+function Assert-GeoCeDGArchivedCanonicalInputInventory {
+    param(
+        [Parameter(Mandatory)] [string]$Path,
+        [Parameter(Mandatory)] [object]$InputIdentity,
+        [Parameter(Mandatory)] [object]$TechnicalTree,
+        [Parameter(Mandatory)] [string]$RepositoryRoot,
+        [Parameter(Mandatory)] [string]$TechnicalCommit,
+        [switch]$RequireExactCurrentMaterialization
+    )
+    $document = Read-GeoCeDGArchivedCanonicalJsonArray $Path `
+        'Archived canonical input inventory'
+    $records = [object[]]$document.value
+    if ($records.Count -ne $TechnicalTree.pathCount) {
+        throw 'Archived canonical input inventory path set differs from exact T.'
+    }
+    $expectedPaths = [Collections.Generic.HashSet[string]]::new(
+        [StringComparer]::Ordinal)
+    foreach ($entry in @($TechnicalTree.entries)) {
+        [void]$expectedPaths.Add([string]$entry.path)
+    }
+    $seenPaths = [Collections.Generic.HashSet[string]]::new(
+        [StringComparer]::Ordinal)
+    $canonical = [Collections.Generic.List[object]]::new()
+    [long]$rawBytes = 0
+    for ($index = 0; $index -lt $records.Count; $index++) {
+        $record = $records[$index]
+        Assert-GeoCeDGArchivedCanonicalProperties $record @('path', 'exists',
+            'bytes', 'sha256') 'Archived canonical input-inventory record'
+        $pathValue = [string]$record.path
+        $byteValue = $record.bytes
+        if (-not $expectedPaths.Contains($pathValue) -or
+                -not $seenPaths.Add($pathValue) -or
+                $record.exists -isnot [bool] -or -not $record.exists -or
+                -not (Test-GeoCeDGArchivedCanonicalInteger $byteValue) -or
+                [decimal]$byteValue -lt 0 -or
+                [decimal]$byteValue -gt [long]::MaxValue -or
+                [string]$record.sha256 -cnotmatch '^[0-9a-f]{64}$') {
+            throw "Archived canonical input inventory is invalid or outside exact T: $pathValue"
+        }
+        $length = [long]$byteValue
+        if ($rawBytes -gt [long]::MaxValue - $length) {
+            throw 'Archived canonical input inventory byte total overflows Int64.'
+        }
+        $rawBytes += $length
+        $canonical.Add([ordered]@{
+                path = $pathValue
+                exists = $true
+                bytes = $length
+                sha256 = [string]$record.sha256
+            })
+    }
+    $canonicalJson = ConvertTo-Json -InputObject ([object[]]$canonical.ToArray()) `
+        -Depth 10 -Compress
+    $rawTreeSha256 = Get-TextSha256 $canonicalJson
+    if (-not (Test-GeoCeDGArchivedCanonicalInteger $InputIdentity.rawFiles) -or
+            [long]$InputIdentity.rawFiles -ne $records.Count -or
+            -not (Test-GeoCeDGArchivedCanonicalInteger $InputIdentity.rawBytes) -or
+            [long]$InputIdentity.rawBytes -ne $rawBytes -or
+            [string]$InputIdentity.rawTreeSha256 -cne $rawTreeSha256) {
+        throw 'Archived canonical input inventory rawTree/rawFiles/rawBytes summary is inconsistent.'
+    }
+    $physicalMaterializationVerified = $false
+    if ($RequireExactCurrentMaterialization) {
+        $head = (@(Invoke-VerificationGit -RepositoryRoot $RepositoryRoot `
+                    -Arguments @('rev-parse', '--verify', 'HEAD^{commit}')) -join '').Trim()
+        $status = @(Invoke-VerificationGit -RepositoryRoot $RepositoryRoot `
+            -Arguments @('status', '--porcelain=v1', '--untracked-files=all'))
+        if ($head -cne $TechnicalCommit -or $status.Count -ne 0) {
+            throw 'Physical input closure requires exact clean HEAD=T before PREPARE.'
+        }
+        $current = Get-RawInputInventory -RepositoryRoot $RepositoryRoot
+        if ($current.Files -ne $records.Count -or $current.Bytes -ne $rawBytes) {
+            throw 'Physical clean-T input closure differs in file/byte totals.'
+        }
+        $archivedByPath = [Collections.Generic.Dictionary[string,object]]::new(
+            [StringComparer]::Ordinal)
+        foreach ($record in $canonical) {
+            $archivedByPath.Add([string]$record.path, $record)
+        }
+        foreach ($record in @($current.Records)) {
+            $recordPath = [string]$record.path
+            if (-not $archivedByPath.ContainsKey($recordPath)) {
+                throw "Physical clean-T input closure has an unexpected path: $recordPath"
+            }
+            $archived = $archivedByPath[$recordPath]
+            if ($record.exists -isnot [bool] -or -not $record.exists -or
+                    [long]$record.bytes -ne [long]$archived.bytes -or
+                    [string]$record.sha256 -cne [string]$archived.sha256) {
+                throw "Physical clean-T input closure raw byte mismatch: $recordPath"
+            }
+        }
+        $physicalMaterializationVerified = $true
+    }
+    return [pscustomobject][ordered]@{
+        files = $records.Count
+        bytes = $rawBytes
+        rawTreeSha256 = $rawTreeSha256
+        auditArtifactSha256 = Get-RawFileSha256 $Path
+        technicalTreePathAndBlobAuthoritySha256 = `
+            [string]$TechnicalTree.pathAndBlobAuthoritySha256
+        exactTechnicalTreePathSet = $true
+        recordSchemaAndSummaryVerified = $true
+        physicalMaterializationCompared = [bool]$RequireExactCurrentMaterialization
+        exactPhysicalMaterializationVerified = $physicalMaterializationVerified
+    }
+}
+
+function Assert-GeoCeDGArchivedCanonicalExternalConfiguration {
+    param(
+        [Parameter(Mandatory)] [string]$Path,
+        [Parameter(Mandatory)] [string]$ExpectedSha256
+    )
+    $document = Read-GeoCeDGArchivedCanonicalJsonArray $Path `
+        'Archived canonical external configuration'
+    $records = [object[]]$document.value
+    if ($records.Count -eq 0) {
+        throw 'Archived canonical external configuration is empty.'
+    }
+    $canonical = [Collections.Generic.List[object]]::new()
+    $previous = $null
+    foreach ($record in $records) {
+        Assert-GeoCeDGArchivedCanonicalProperties $record @('path', 'kind', 'sha256') `
+            'Archived canonical external-configuration record'
+        $recordPath = [string]$record.path
+        $kind = [string]$record.kind
+        if (-not [IO.Path]::IsPathRooted($recordPath) -or
+                ($null -ne $previous -and
+                    [StringComparer]::Ordinal.Compare($previous, $recordPath) -ge 0) -or
+                $kind -cnotin @('file', 'directory', 'absent') -or
+                ($kind -ceq 'file' -and
+                    [string]$record.sha256 -cnotmatch '^[0-9a-f]{64}$') -or
+                ($kind -cne 'file' -and $null -ne $record.sha256)) {
+            throw "Archived canonical external configuration record is invalid: $recordPath"
+        }
+        $previous = $recordPath
+        $canonical.Add([ordered]@{
+                path = $recordPath
+                kind = $kind
+                sha256 = $(if ($kind -ceq 'file') { [string]$record.sha256 } else { $null })
+            })
+    }
+    $canonicalJson = ConvertTo-Json -InputObject ([object[]]$canonical.ToArray()) `
+        -Depth 10 -Compress
+    $actualSha256 = Get-TextSha256 $canonicalJson
+    if ($ExpectedSha256 -cne $actualSha256) {
+        throw 'Archived canonical externalConfigurationSha256 is inconsistent with canonical content.'
+    }
+    return [pscustomobject][ordered]@{
+        records = $records.Count
+        canonicalRecords = [object[]]$canonical.ToArray()
+        externalConfigurationSha256 = $actualSha256
+        canonicalContentVerified = $true
+    }
+}
+
+function Assert-GeoCeDGArchivedCanonicalBuildReceipt {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [object]$Receipt,
+        [Parameter(Mandatory)] [ValidateSet('COMPOSED', 'FULL')]
+        [string]$Level,
+        [Parameter(Mandatory)] [string]$RepositoryRoot,
+        [Parameter(Mandatory)] [string]$TechnicalCommit,
+        [Parameter(Mandatory)] [string]$ExpectedIndexSha256,
+        [Parameter(Mandatory)] [string]$ExpectedStatusSha256,
+        [switch]$RequireExactCurrentMaterialization
+    )
+    $Level = $Level.ToUpperInvariant()
+    $RepositoryRoot = [IO.Path]::GetFullPath($RepositoryRoot)
+    if ($TechnicalCommit -cnotmatch '^[0-9a-f]{40}$' -or
+            $ExpectedIndexSha256 -cnotmatch '^[0-9a-f]{64}$' -or
+            $ExpectedStatusSha256 -cnotmatch '^[0-9a-f]{64}$') {
+        throw 'Archived canonical validation requires exact lowercase T/index/status identities.'
+    }
+    Assert-GeoCeDGArchivedCanonicalProperties $Receipt @(
+        'schemaVersion', 'kind', 'runId', 'level', 'repositoryRoot', 'state',
+        'authorApproved', 'selfApproved', 'inputFingerprint', 'inputIdentity',
+        'initialFingerprintSeconds', 'allowToolchainDownload',
+        'testResultReuseAcrossRuns', 'configurationCache', 'newTestParallelism',
+        'selections', 'selectedTestJvms', 'auditArtifacts', 'tasks', 'junit',
+        'checkstyle', 'nativeRuns', 'tests', 'skippedUpstreamTests', 'sealedUtc'
+    ) 'Archived canonical receipt'
+    $receiptRoot = [IO.Path]::GetFullPath([string]$Receipt.repositoryRoot)
+    $pathComparison = if ($IsWindows) {
+        [StringComparison]::OrdinalIgnoreCase
+    } else { [StringComparison]::Ordinal }
+    $pathComparer = if ($IsWindows) {
+        [StringComparer]::OrdinalIgnoreCase
+    } else { [StringComparer]::Ordinal }
+    $sealedUtc = [datetime]::MinValue
+    $sealedUtcValid = if ($Receipt.sealedUtc -is [datetime]) {
+        $sealedUtc = [datetime]$Receipt.sealedUtc
+        $true
+    } else {
+        [datetime]::TryParseExact([string]$Receipt.sealedUtc, 'o',
+            [Globalization.CultureInfo]::InvariantCulture,
+            [Globalization.DateTimeStyles]::RoundtripKind, [ref]$sealedUtc)
+    }
+    if ($Receipt.schemaVersion -isnot [long] -or $Receipt.schemaVersion -ne 1 -or
+            [string]$Receipt.kind -cne 'CURRENT_RUN_BUILD_EVIDENCE' -or
+            [string]$Receipt.runId -cnotmatch '^[0-9a-f]{32}$' -or
+            [string]$Receipt.level -cne $Level -or
+            -not $receiptRoot.Equals($RepositoryRoot, $pathComparison) -or
+            [string]$Receipt.state -cne
+                'TEST_EXECUTION_VERIFIED_PHASE_ASSERTIONS_PENDING' -or
+            $Receipt.authorApproved -isnot [bool] -or $Receipt.authorApproved -or
+            $Receipt.selfApproved -isnot [bool] -or $Receipt.selfApproved -or
+            $Receipt.testResultReuseAcrossRuns -isnot [bool] -or
+                $Receipt.testResultReuseAcrossRuns -or
+            $Receipt.configurationCache -isnot [bool] -or $Receipt.configurationCache -or
+            $Receipt.newTestParallelism -isnot [bool] -or $Receipt.newTestParallelism -or
+            $Receipt.allowToolchainDownload -isnot [bool] -or
+            $Receipt.initialFingerprintSeconds -isnot [double] -or
+                [double]$Receipt.initialFingerprintSeconds -lt 0 -or
+            -not $sealedUtcValid) {
+        throw 'Archived canonical receipt header/state is invalid.'
+    }
+    foreach ($arrayProperty in @('tasks', 'junit', 'checkstyle', 'nativeRuns',
+            'auditArtifacts')) {
+        if ($Receipt.$arrayProperty -isnot [Array]) {
+            throw "Archived canonical receipt property must be a JSON array: $arrayProperty"
+        }
+    }
+
+    Assert-GeoCeDGArchivedCanonicalProperties $Receipt.inputIdentity @(
+        'head', 'indexSha256', 'statusSha256', 'rawTreeSha256', 'rawFiles',
+        'rawBytes', 'environmentSha256', 'externalConfigurationSha256',
+        'gradleUserHome') 'Archived canonical input identity'
+    if ([string]$Receipt.inputIdentity.head -cne $TechnicalCommit -or
+            [string]$Receipt.inputIdentity.indexSha256 -cne $ExpectedIndexSha256 -or
+            [string]$Receipt.inputIdentity.statusSha256 -cne $ExpectedStatusSha256 -or
+            [string]$Receipt.inputIdentity.rawTreeSha256 -cnotmatch '^[0-9a-f]{64}$' -or
+            [string]$Receipt.inputIdentity.environmentSha256 -cnotmatch '^[0-9a-f]{64}$' -or
+            [string]$Receipt.inputIdentity.externalConfigurationSha256 -cnotmatch
+                '^[0-9a-f]{64}$' -or
+            -not (Test-GeoCeDGArchivedCanonicalInteger $Receipt.inputIdentity.rawFiles) -or
+            [long]$Receipt.inputIdentity.rawFiles -le 0 -or
+            -not (Test-GeoCeDGArchivedCanonicalInteger $Receipt.inputIdentity.rawBytes) -or
+            [long]$Receipt.inputIdentity.rawBytes -le 0 -or
+            [string]::IsNullOrWhiteSpace([string]$Receipt.inputIdentity.gradleUserHome)) {
+        throw 'Archived canonical receipt is not exact clean-T input identity.'
+    }
+    $fingerprint = Get-TextSha256 ($Receipt.inputIdentity |
+        ConvertTo-Json -Depth 10 -Compress)
+    if ([string]$Receipt.inputFingerprint -cne $fingerprint) {
+        throw 'Archived canonical input fingerprint is inconsistent.'
+    }
+
+    Assert-GeoCeDGArchivedCanonicalProperties $Receipt.selections @('shared', 'desktop') `
+        'Archived canonical selections'
+    foreach ($module in @('shared', 'desktop')) {
+        $selection = $Receipt.selections.$module
+        Assert-GeoCeDGArchivedCanonicalProperties $selection @('task', 'unfiltered',
+            'filters') "Archived canonical $module selection"
+        $expectedFilters = if ($Level -ceq 'FULL') {
+            @()
+        } elseif ($module -ceq 'shared') {
+            @('org.geocedg.*') + @($script:MandatoryUpstreamClasses)
+        } else { @('org.geocedg.*') }
+        if ($selection.filters -isnot [Array] -or
+                [string]$selection.task -cne $script:ModuleDefinitions[$module].Task -or
+                $selection.unfiltered -isnot [bool] -or
+                [bool]$selection.unfiltered -ne ($Level -ceq 'FULL') -or
+                (@($selection.filters | ForEach-Object { [string]$_ }) -join "`n") -cne
+                    ($expectedFilters -join "`n")) {
+            throw "Archived canonical $Level/$module selection is not exact."
+        }
+    }
+
+    foreach ($task in @($Receipt.tasks)) {
+        Assert-GeoCeDGArchivedCanonicalProperties $task @('task', 'outcome',
+            'headingOccurrences', 'observedOutcomes') 'Archived canonical task'
+        $taskName = [string]$task.task
+        $outcome = [string]$task.outcome
+        # A canonical build runs shared and desktop in separate native Gradle
+        # invocations. Dependency tasks may therefore have one receipt entry per
+        # invocation; each entry is authoritative even when its task name repeats.
+        if ([string]::IsNullOrWhiteSpace($taskName) -or
+                $outcome -cnotin @('EXECUTED', 'UP-TO-DATE', 'FROM-CACHE', 'NO-SOURCE',
+                    'SKIPPED') -or
+                -not (Test-GeoCeDGArchivedCanonicalInteger $task.headingOccurrences) -or
+                [long]$task.headingOccurrences -le 0 -or
+                $task.observedOutcomes -isnot [Array] -or
+                (@($task.observedOutcomes | ForEach-Object { [string]$_ }) -join "`n") -cne
+                    $outcome) {
+            throw "Archived canonical task authority is invalid: $taskName"
+        }
+    }
+    foreach ($module in @('shared', 'desktop')) {
+        $testTask = $script:ModuleDefinitions[$module].Task
+        $matches = @($Receipt.tasks | Where-Object {
+                [string]$_.task -ceq $testTask -and [string]$_.outcome -ceq 'EXECUTED'
+            })
+        if ($matches.Count -ne 1) {
+            throw "Archived canonical $module Test task was not freshly EXECUTED."
+        }
+    }
+
+    $junitPaths = [Collections.Generic.HashSet[string]]::new($pathComparer)
+    $junitTests = 0L
+    $junitSkipped = 0L
+    foreach ($module in @('shared', 'desktop')) {
+        $moduleReports = @($Receipt.junit | Where-Object {
+                [string]$_.module -ceq $module
+            })
+        if ($moduleReports.Count -eq 0) {
+            throw "Archived canonical receipt has no $module JUnit evidence."
+        }
+        $moduleTests = 0L
+        foreach ($report in $moduleReports) {
+            Assert-GeoCeDGArchivedCanonicalProperties $report @('module', 'class',
+                'livePath', 'archivePath', 'sha256', 'tests', 'failures', 'errors',
+                'skipped', 'cases') "Archived canonical $module JUnit report"
+            foreach ($counter in @('tests', 'failures', 'errors', 'skipped')) {
+                if (-not (Test-GeoCeDGArchivedCanonicalInteger $report.$counter) -or
+                        [long]$report.$counter -lt 0) {
+                    throw "Archived canonical JUnit $counter is invalid."
+                }
+            }
+            $archivePath = Assert-GeoCeDGArchivedCanonicalFile `
+                ([string]$report.archivePath) ([string]$report.sha256) `
+                "Archived canonical $module JUnit XML"
+            if (-not $junitPaths.Add($archivePath)) {
+                throw 'Archived canonical JUnit archive path is duplicated.'
+            }
+            $expectedLivePrefix = $script:ModuleDefinitions[$module].ResultDirectory + '/'
+            if ([string]$report.module -cne $module -or
+                    -not ([string]$report.livePath).StartsWith($expectedLivePrefix,
+                        [StringComparison]::Ordinal) -or
+                    [IO.Path]::GetFileName([string]$report.livePath) -cnotmatch
+                        '^TEST-.+\.xml$') {
+                throw "Archived canonical $module JUnit path authority is invalid."
+            }
+            $document = Read-VerificationXml $archivePath
+            $suite = $document.DocumentElement
+            if ($null -eq $suite -or $suite.psbase.Name -cne 'testsuite' -or
+                    $suite.psbase.NamespaceURI -cne '' -or
+                    [string]::IsNullOrWhiteSpace([string]$report.class) -or
+                    [string]$report.class -cne $suite.GetAttribute('name') -or
+                    @($suite.SelectNodes('.//*') | Where-Object {
+                            $_.psbase.NamespaceURI -cne ''
+                        }).Count -ne 0 -or
+                    @($suite.SelectNodes('*') | Where-Object {
+                            $_.psbase.Name -cnotin @('properties', 'testcase',
+                                'system-out', 'system-err')
+                        }).Count -ne 0) {
+                throw "Archived canonical $module JUnit XML root is invalid."
+            }
+            $xmlCaseNodes = @($suite.SelectNodes('testcase'))
+            foreach ($caseNode in $xmlCaseNodes) {
+                $outcomes = @($caseNode.SelectNodes('failure|error|skipped'))
+                if ($outcomes.Count -gt 1 -or
+                        @($caseNode.SelectNodes('*') | Where-Object {
+                                $_.psbase.Name -cnotin @('failure', 'error', 'skipped',
+                                    'properties', 'system-out', 'system-err')
+                            }).Count -ne 0) {
+                    throw "Archived canonical $module JUnit testcase XML is invalid."
+                }
+            }
+            $xmlCases = @($xmlCaseNodes | ForEach-Object {
+                $status = if ($_.SelectNodes('failure').Count -gt 0) {
+                    'FAILURE'
+                } elseif ($_.SelectNodes('error').Count -gt 0) {
+                    'ERROR'
+                } elseif ($_.SelectNodes('skipped').Count -gt 0) {
+                    'SKIPPED'
+                } else { 'PASS' }
+                [pscustomobject][ordered]@{
+                    class = $_.GetAttribute('classname')
+                    name = $_.GetAttribute('name')
+                    status = $status
+                }
+            } | Sort-Object { $_.class }, { $_.name })
+            $recordedCases = @($report.cases)
+            if ($report.cases -isnot [Array]) {
+                throw "Archived canonical $module JUnit cases must be a JSON array."
+            }
+            foreach ($case in $recordedCases) {
+                Assert-GeoCeDGArchivedCanonicalProperties $case @('class', 'name',
+                    'status') 'Archived canonical JUnit case'
+                if ([string]$case.status -cnotin @('PASS', 'FAILURE', 'ERROR', 'SKIPPED')) {
+                    throw 'Archived canonical JUnit case status is invalid.'
+                }
+            }
+            $xmlCounters = [ordered]@{
+                tests = $xmlCases.Count
+                failures = @($xmlCases | Where-Object status -ceq 'FAILURE').Count
+                errors = @($xmlCases | Where-Object status -ceq 'ERROR').Count
+                skipped = @($xmlCases | Where-Object status -ceq 'SKIPPED').Count
+            }
+            $declaredTests = 0
+            $declaredFailures = 0
+            $declaredErrors = 0
+            $declaredSkipped = 0
+            if (-not [int]::TryParse($suite.GetAttribute('tests'), [ref]$declaredTests) -or
+                    -not [int]::TryParse($suite.GetAttribute('failures'), [ref]$declaredFailures) -or
+                    -not [int]::TryParse($suite.GetAttribute('errors'), [ref]$declaredErrors) -or
+                    -not [int]::TryParse($suite.GetAttribute('skipped'), [ref]$declaredSkipped) -or
+                    $declaredTests -ne $xmlCounters.tests -or
+                    $declaredFailures -ne $xmlCounters.failures -or
+                    $declaredErrors -ne $xmlCounters.errors -or
+                    $declaredSkipped -ne $xmlCounters.skipped) {
+                throw "Archived canonical $module JUnit XML counters are inconsistent."
+            }
+            $xmlCasesJson = ConvertTo-Json -InputObject ([object[]]$xmlCases) -Depth 10 -Compress
+            $recordedCasesJson = ConvertTo-Json -InputObject ([object[]]$recordedCases) `
+                -Depth 10 -Compress
+            if ($recordedCases.Count -ne [long]$report.tests -or
+                    $xmlCounters.tests -ne [long]$report.tests -or
+                    $xmlCounters.failures -ne [long]$report.failures -or
+                    $xmlCounters.errors -ne [long]$report.errors -or
+                    $xmlCounters.skipped -ne [long]$report.skipped -or
+                    [long]$report.failures -ne 0 -or [long]$report.errors -ne 0 -or
+                    $xmlCasesJson -cne $recordedCasesJson) {
+                throw "Archived canonical $module JUnit counters/cases are inconsistent."
+            }
+            $moduleTests += [long]$report.tests
+            $junitSkipped += [long]$report.skipped
+        }
+        if ($moduleTests -le 0) {
+            throw "Archived canonical $module JUnit evidence has zero tests."
+        }
+        $junitTests += $moduleTests
+    }
+    if (@($Receipt.junit | Where-Object {
+                [string]$_.module -cnotin @('shared', 'desktop')
+            }).Count -ne 0 -or
+            -not (Test-GeoCeDGArchivedCanonicalInteger $Receipt.tests) -or
+            [long]$Receipt.tests -ne $junitTests -or
+            -not (Test-GeoCeDGArchivedCanonicalInteger $Receipt.skippedUpstreamTests) -or
+            [long]$Receipt.skippedUpstreamTests -ne $junitSkipped) {
+        throw 'Archived canonical aggregate JUnit counters are inconsistent.'
+    }
+
+    $expectedStyles = [Collections.Generic.Dictionary[string,string]]::new(
+        [StringComparer]::Ordinal)
+    foreach ($module in @('shared', 'desktop')) {
+        foreach ($entry in $script:ModuleDefinitions[$module].Styles.GetEnumerator()) {
+            $expectedStyles.Add([string]$entry.Key, [string]$entry.Value)
+        }
+    }
+    if (@($Receipt.checkstyle).Count -ne $expectedStyles.Count) {
+        throw 'Archived canonical Checkstyle evidence set is incomplete.'
+    }
+    $styleTasks = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+    $styleArchivePaths = [Collections.Generic.HashSet[string]]::new($pathComparer)
+    foreach ($style in @($Receipt.checkstyle)) {
+        Assert-GeoCeDGArchivedCanonicalProperties $style @('task', 'livePath',
+            'archivePath', 'sha256') 'Archived canonical Checkstyle report'
+        $styleTask = [string]$style.task
+        if (-not $expectedStyles.ContainsKey($styleTask) -or
+                -not $styleTasks.Add($styleTask) -or
+                [string]$style.livePath -cne [string]$expectedStyles[$styleTask]) {
+            throw "Archived canonical Checkstyle authority is invalid: $styleTask"
+        }
+        $archivePath = Assert-GeoCeDGArchivedCanonicalFile `
+            ([string]$style.archivePath) ([string]$style.sha256) `
+            "Archived canonical Checkstyle XML $styleTask"
+        if (-not $styleArchivePaths.Add($archivePath) -or
+                $junitPaths.Contains($archivePath)) {
+            throw 'Archived canonical report archive path is duplicated.'
+        }
+        $document = Read-VerificationXml $archivePath
+        $root = $document.DocumentElement
+        if ($null -eq $root -or $root.psbase.Name -cne 'checkstyle' -or
+                $root.psbase.NamespaceURI -cne '' -or
+                @($root.SelectNodes('.//*') | Where-Object {
+                        $_.psbase.NamespaceURI -cne '' -or
+                        $_.psbase.Name -cnotin @('file', 'error')
+                    }).Count -ne 0 -or
+                @($root.SelectNodes('*') | Where-Object {
+                        $_.psbase.Name -cne 'file'
+                    }).Count -ne 0 -or $document.SelectNodes('//error').Count -ne 0) {
+            throw "Archived canonical Checkstyle XML is not clean: $styleTask"
+        }
+        $taskMatches = @($Receipt.tasks | Where-Object {
+                [string]$_.task -ceq $styleTask -and
+                @('EXECUTED', 'UP-TO-DATE', 'FROM-CACHE') -ccontains
+                    [string]$_.outcome
+            })
+        if ($taskMatches.Count -ne 1) {
+            throw "Archived canonical Checkstyle task is not evidenced: $styleTask"
+        }
+    }
+
+    Assert-GeoCeDGArchivedCanonicalProperties $Receipt.selectedTestJvms @(
+        'shared', 'desktop') 'Archived canonical selected Test JVMs'
+    $selectedJvmEntriesByModule = [ordered]@{}
+    foreach ($module in @('shared', 'desktop')) {
+        $entries = $Receipt.selectedTestJvms.$module
+        if ($entries -isnot [Array] -or @($entries).Count -eq 0) {
+            throw "Archived canonical selected Test JVM evidence is empty or non-array: $module"
+        }
+        $paths = [Collections.Generic.HashSet[string]]::new($pathComparer)
+        foreach ($entry in @($entries)) {
+            Assert-GeoCeDGArchivedCanonicalProperties $entry @('path', 'sha256') `
+                "Archived canonical selected Test JVM $module entry"
+            $jvmPath = [string]$entry.path
+            if (-not [IO.Path]::IsPathRooted($jvmPath) -or
+                    [string]$entry.sha256 -cnotmatch '^[0-9a-f]{64}$' -or
+                    -not $paths.Add([IO.Path]::GetFullPath($jvmPath))) {
+                throw "Archived canonical selected Test JVM authority is invalid: $module"
+            }
+        }
+        $selectedJvmEntriesByModule[$module] = @($entries)
+    }
+
+    $nativeRunCount = @($Receipt.nativeRuns).Count
+    $expectedNativeRunCount = if ([bool]$Receipt.allowToolchainDownload) { 5 } else { 4 }
+    if ($nativeRunCount -ne $expectedNativeRunCount) {
+        throw 'Archived canonical native-run provenance has an unexpected producer run count.'
+    }
+    $nativeLogs = [Collections.Generic.HashSet[string]]::new($pathComparer)
+    $nativeRuns = @($Receipt.nativeRuns)
+    $wrapper = [IO.Path]::GetFullPath((Join-Path $RepositoryRoot 'gradlew.bat'))
+    $moduleNativeRuns = [ordered]@{}
+    for ($runIndex = 0; $runIndex -lt $nativeRuns.Count; $runIndex++) {
+        $run = $nativeRuns[$runIndex]
+        Assert-GeoCeDGArchivedCanonicalProperties $run @('file', 'arguments',
+            'workingDirectory', 'logPath', 'startedUtc', 'finishedUtc',
+            'elapsedSeconds', 'exitCode') 'Archived canonical native run'
+        $runRoot = [IO.Path]::GetFullPath([string]$run.workingDirectory)
+        $started = [datetime]::MinValue
+        $finished = [datetime]::MinValue
+        $startedValid = if ($run.startedUtc -is [datetime]) {
+            $started = [datetime]$run.startedUtc
+            $true
+        } else {
+            [datetime]::TryParseExact([string]$run.startedUtc, 'o',
+                [Globalization.CultureInfo]::InvariantCulture,
+                [Globalization.DateTimeStyles]::RoundtripKind, [ref]$started)
+        }
+        $finishedValid = if ($run.finishedUtc -is [datetime]) {
+            $finished = [datetime]$run.finishedUtc
+            $true
+        } else {
+            [datetime]::TryParseExact([string]$run.finishedUtc, 'o',
+                [Globalization.CultureInfo]::InvariantCulture,
+                [Globalization.DateTimeStyles]::RoundtripKind, [ref]$finished)
+        }
+        if (-not ([IO.Path]::GetFullPath([string]$run.file)).Equals(
+                    $wrapper, $pathComparison) -or
+                $run.arguments -isnot [Array] -or @($run.arguments).Count -eq 0 -or
+                -not $runRoot.Equals($RepositoryRoot, $pathComparison) -or
+                -not [IO.Path]::IsPathRooted([string]$run.logPath) -or
+                -not $nativeLogs.Add([IO.Path]::GetFullPath([string]$run.logPath)) -or
+                -not (Test-GeoCeDGArchivedCanonicalInteger $run.exitCode) -or
+                [long]$run.exitCode -ne 0 -or $run.elapsedSeconds -isnot [double] -or
+                [double]$run.elapsedSeconds -lt 0 -or
+                -not $startedValid -or -not $finishedValid -or
+                $finished -lt $started) {
+            throw 'Archived canonical native-run provenance is invalid.'
+        }
+    }
+
+    function Test-ArchivedCanonicalArgumentsEqual {
+        param([object[]]$Actual, [object[]]$Expected)
+        return ((@($Actual | ForEach-Object { [string]$_ }) -join "`n") -ceq
+            (@($Expected | ForEach-Object { [string]$_ }) -join "`n"))
+    }
+    if (-not (Test-ArchivedCanonicalArgumentsEqual @($nativeRuns[0].arguments) `
+            @('--version', '--no-daemon', '--no-problems-report'))) {
+        throw 'Archived canonical native-run wrapper version probe argv is invalid.'
+    }
+    $toolchainIndex = 1
+    if ([bool]$Receipt.allowToolchainDownload) {
+        $prepareBase = @(':shared:common-jre:compileTestJava',
+            ':desktop:desktop:compileTestJava', '--info', '--console=plain',
+            '--no-problems-report')
+        $prepareMatchesProducer = $false
+        foreach ($keep in @($false, $true)) {
+            $candidate = @(ConvertTo-GeoCeDGIncrementalGradleArguments `
+                -Arguments $prepareBase -KeepBuildOutputs:$keep)
+            if (Test-ArchivedCanonicalArgumentsEqual `
+                    @($nativeRuns[1].arguments) $candidate) {
+                $prepareMatchesProducer = $true
+            }
+        }
+        if (-not $prepareMatchesProducer) {
+            throw 'Archived canonical toolchain-preparation probe argv is invalid.'
+        }
+        $toolchainIndex = 2
+    }
+    $toolchainArguments = @('-q', 'javaToolchains', '--no-daemon',
+        '--no-configuration-cache', '--no-problems-report', '--console=plain')
+    if (-not [bool]$Receipt.allowToolchainDownload) {
+        $toolchainArguments += '-Dorg.gradle.java.installations.auto-download=false'
+    }
+    if (-not (Test-ArchivedCanonicalArgumentsEqual `
+            @($nativeRuns[$toolchainIndex].arguments) $toolchainArguments)) {
+        throw 'Archived canonical javaToolchains probe argv is invalid.'
+    }
+    $moduleStart = $toolchainIndex + 1
+    foreach ($offset in 0..1) {
+        $module = @('shared', 'desktop')[$offset]
+        $run = $nativeRuns[$moduleStart + $offset]
+        $filters = @($Receipt.selections.$module.filters)
+        $matchesProducer = $false
+        foreach ($keep in @($false, $true)) {
+            foreach ($rebuild in @($false, $true)) {
+                $parameters = @{
+                    Module = $module
+                    Filters = $filters
+                    IncludeCheckstyle = $true
+                    AllowToolchainDownload = [bool]$Receipt.allowToolchainDownload
+                    KeepBuildOutputs = $keep
+                    RebuildDependencies = $rebuild
+                }
+                $candidate = @(Get-TestBuildArguments @parameters)
+                if (Test-ArchivedCanonicalArgumentsEqual `
+                        @($run.arguments) $candidate) {
+                    $matchesProducer = $true
+                }
+            }
+        }
+        if (-not $matchesProducer) {
+            throw "Archived canonical $module producer argv is invalid."
+        }
+        $moduleNativeRuns[$module] = $run
+    }
+
+    $auditPaths = [Collections.Generic.HashSet[string]]::new($pathComparer)
+    foreach ($artifact in @($Receipt.auditArtifacts)) {
+        Assert-GeoCeDGArchivedCanonicalProperties $artifact @('path', 'sha256') `
+            'Archived canonical audit artifact'
+        $artifactPath = Assert-GeoCeDGArchivedCanonicalFile ([string]$artifact.path) `
+            ([string]$artifact.sha256) 'Archived canonical audit artifact'
+        if (-not $auditPaths.Add($artifactPath)) {
+            throw 'Archived canonical audit artifact path is duplicated.'
+        }
+    }
+    $inputInventoryPaths = @($auditPaths | Where-Object {
+            [IO.Path]::GetFileName($_) -ceq 'input-inventory.json'
+        })
+    $externalConfigurationPaths = @($auditPaths | Where-Object {
+            [IO.Path]::GetFileName($_) -ceq 'external-configuration.json'
+        })
+    if ($auditPaths.Count -ne (2 + $nativeLogs.Count) -or
+            $inputInventoryPaths.Count -ne 1 -or
+            $externalConfigurationPaths.Count -ne 1 -or
+            @($nativeLogs | Where-Object { -not $auditPaths.Contains($_) }).Count -ne 0) {
+        throw 'Archived canonical audit inventory must contain exact input/external inventories and every native log.'
+    }
+    $technicalTree = Get-GeoCeDGArchivedCanonicalTechnicalTree `
+        -RepositoryRoot $RepositoryRoot -TechnicalCommit $TechnicalCommit
+    $inputInventoryProof = Assert-GeoCeDGArchivedCanonicalInputInventory `
+        -Path $inputInventoryPaths[0] -InputIdentity $Receipt.inputIdentity `
+        -TechnicalTree $technicalTree -RepositoryRoot $RepositoryRoot `
+        -TechnicalCommit $TechnicalCommit `
+        -RequireExactCurrentMaterialization:$RequireExactCurrentMaterialization
+    $externalConfigurationProof = `
+        Assert-GeoCeDGArchivedCanonicalExternalConfiguration `
+        -Path $externalConfigurationPaths[0] `
+        -ExpectedSha256 ([string]$Receipt.inputIdentity.externalConfigurationSha256)
+
+    # Reconstruct the producer's selected Test-JVM evidence from the exact
+    # archived module logs, then bind every selected java.exe path/hash to the
+    # canonical external-configuration inventory.  This prevents an otherwise
+    # well-shaped receipt from inventing a JVM or combining both Test tasks in
+    # one synthetic native run.
+    $externalFiles = [Collections.Generic.Dictionary[string,string]]::new(
+        $pathComparer)
+    foreach ($record in @($externalConfigurationProof.canonicalRecords)) {
+        if ([string]$record.kind -cne 'file') { continue }
+        $externalPath = [IO.Path]::GetFullPath([string]$record.path)
+        if ($externalFiles.ContainsKey($externalPath)) {
+            throw 'Archived canonical external configuration has an ambiguous file path.'
+        }
+        $externalFiles.Add($externalPath, [string]$record.sha256)
+    }
+    foreach ($module in @('shared', 'desktop')) {
+        $run = $moduleNativeRuns[$module]
+        $logText = [IO.File]::ReadAllText([IO.Path]::GetFullPath(
+                [string]$run.logPath))
+        $executorMatches = @([regex]::Matches($logText,
+                '(?m)^Starting process ''Gradle Test Executor \d+''\.[^\r\n]*?Command: (?:(?:"([^"\r\n]+[\\/]java\.exe)")|([^\r\n]+?[\\/]java\.exe))(?:\s|$)'))
+        if ($executorMatches.Count -eq 0) {
+            throw "Archived canonical $module native log has no Test-JVM launch evidence."
+        }
+        $loggedPaths = [Collections.Generic.HashSet[string]]::new($pathComparer)
+        foreach ($match in $executorMatches) {
+            $value = if ($match.Groups[1].Success) {
+                $match.Groups[1].Value
+            } else { $match.Groups[2].Value }
+            if (-not [IO.Path]::IsPathRooted($value)) {
+                throw "Archived canonical $module native log has a relative Test-JVM path."
+            }
+            [void]$loggedPaths.Add([IO.Path]::GetFullPath($value))
+        }
+        $selectedPaths = [Collections.Generic.HashSet[string]]::new($pathComparer)
+        foreach ($entry in @($selectedJvmEntriesByModule[$module])) {
+            $selectedPath = [IO.Path]::GetFullPath([string]$entry.path)
+            Assert-GeoCeDGArchivedCanonicalProperties $entry @('path', 'sha256') `
+                "Archived canonical selected Test JVM $module entry"
+            if (-not $selectedPaths.Add($selectedPath) -or
+                    -not $externalFiles.ContainsKey($selectedPath) -or
+                    [string]$externalFiles[$selectedPath] -cne [string]$entry.sha256) {
+                throw "Archived canonical selected Test JVM is not bound to external configuration: $module"
+            }
+        }
+        if ($selectedPaths.Count -ne $loggedPaths.Count -or
+                @($selectedPaths | Where-Object {
+                        -not $loggedPaths.Contains($_)
+                    }).Count -ne 0) {
+            throw "Archived canonical selected Test JVMs differ from the $module native log."
+        }
+    }
+
+    return [pscustomobject][ordered]@{
+        schemaVersion = 1
+        level = $Level
+        reviewedTechnicalCommit = $TechnicalCommit
+        tests = $junitTests
+        skipped = $junitSkipped
+        junitReports = @($Receipt.junit).Count
+        checkstyleReports = @($Receipt.checkstyle).Count
+        nativeRuns = @($Receipt.nativeRuns).Count
+        auditArtifacts = @($Receipt.auditArtifacts).Count
+        inputInventory = $inputInventoryProof
+        externalConfiguration = $externalConfigurationProof
+        exactCleanTechnicalIdentity = $true
+        archivedContentVerified = $true
+        selfApproved = $false
     }
 }
 
@@ -1165,4 +2128,4 @@ function Invoke-GeoCeDGDevVerification {
     return [pscustomobject]@{ SummaryPath = Join-Path $runRoot "dev-summary.json"; Tests = $summary.tests }
 }
 
-Export-ModuleMember -Function ConvertTo-GeoCeDGIncrementalGradleArguments, Assert-GeoCeDGChildVerificationMode, Invoke-GeoCeDGCanonicalBuild, Confirm-GeoCeDGBuildEvidence, Close-GeoCeDGBuildEvidence, Get-GeoCeDGPhaseDefinition, Invoke-GeoCeDGDevVerification, Clear-GeoCeDGIndependentFullTestReports, Assert-GeoCeDGIndependentFullTestOutcome
+Export-ModuleMember -Function ConvertTo-GeoCeDGIncrementalGradleArguments, Assert-GeoCeDGChildVerificationMode, Invoke-GeoCeDGCanonicalBuild, Confirm-GeoCeDGBuildEvidence, Close-GeoCeDGBuildEvidence, Get-GeoCeDGAcceptancePhaseIntegration, Get-GeoCeDGCanonicalSelectionPlan, Get-GeoCeDGVerificationExecutionPlan, Get-GeoCeDGPhaseDefinition, Invoke-GeoCeDGDevVerification, Clear-GeoCeDGIndependentFullTestReports, Assert-GeoCeDGIndependentFullTestOutcome, Assert-GeoCeDGArchivedCanonicalBuildReceipt

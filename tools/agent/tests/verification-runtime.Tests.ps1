@@ -3,6 +3,7 @@
 param(
     [string]$ModulePath = (Join-Path $PSScriptRoot "../verification-runtime.psm1"),
     [string]$RootVerifierPath = (Join-Path $PSScriptRoot "../verify.ps1"),
+    [string]$CloseoutWorkflowPath = (Join-Path $PSScriptRoot "../closeout-workflow.ps1"),
     [string]$OperationalVerifierPath = (Join-Path $PSScriptRoot "../verify-operational.ps1"),
     [string]$BaselineVerifierPath = (Join-Path $PSScriptRoot "../verify-baseline.ps1"),
     [string]$InfrastructureVerifierPath = (Join-Path $PSScriptRoot "../verify-verification-infrastructure.ps1"),
@@ -22,8 +23,13 @@ $ErrorActionPreference = "Stop"
 # Exports, identity hashing, receipt ownership, XML parsing, and consumers remain
 # unchanged. Fixture repositories and logs are retained as explicit evidence.
 $ModulePath = (Resolve-Path -LiteralPath $ModulePath).Path
+$CloseoutWorkflowPath = (Resolve-Path -LiteralPath $CloseoutWorkflowPath).Path
+$EvidenceIntegrityPath = (Resolve-Path -LiteralPath (Join-Path `
+        (Split-Path -Parent $ModulePath) 'evidence-integrity.ps1')).Path
 $RuntimeFixturePath = $PSCommandPath
 $ModuleSha256 = (Get-FileHash -LiteralPath $ModulePath -Algorithm SHA256).Hash.ToLowerInvariant()
+$EvidenceIntegritySha256 = (Get-FileHash -LiteralPath $EvidenceIntegrityPath `
+    -Algorithm SHA256).Hash.ToLowerInvariant()
 $RunId = [guid]::NewGuid().ToString("N")
 $EvidenceRoot = Join-Path ([IO.Path]::GetFullPath($LogDirectory)) $RunId
 # Git-created fixture repositories must not inherit arbitrary report-path depth.
@@ -443,8 +449,14 @@ function New-TestFixture {
     }
     $copyPath = Join-Path $caseRoot ("verification-runtime-fixture-" + [guid]::NewGuid().ToString("N") + ".psm1")
     [IO.File]::Copy($ModulePath, $copyPath, $false)
+    $evidenceIntegrityCopy = Join-Path $caseRoot 'evidence-integrity.ps1'
+    [IO.File]::Copy($EvidenceIntegrityPath, $evidenceIntegrityCopy, $false)
     if ((Get-FileHash -LiteralPath $copyPath -Algorithm SHA256).Hash.ToLowerInvariant() -cne $ModuleSha256) {
         throw "Runtime module changed during fixture creation; mixed-source tests are invalid."
+    }
+    if ((Get-FileHash -LiteralPath $evidenceIntegrityCopy `
+            -Algorithm SHA256).Hash.ToLowerInvariant() -cne $EvidenceIntegritySha256) {
+        throw "Evidence-integrity dependency changed during fixture creation; mixed-source tests are invalid."
     }
     $module = Import-Module -Name $copyPath -PassThru
     $fixture = [pscustomobject]@{
@@ -628,7 +640,7 @@ function Invoke-RuntimeTest {
 Invoke-RuntimeTest "operational entrypoints declare the PowerShell 7.2 native-stderr floor" -WithoutGit {
     param($fixture)
     $minimum = [version]"7.2"
-    foreach ($entryPath in @($RootVerifierPath, $ModulePath, $InfrastructureVerifierPath,
+    foreach ($entryPath in @($RootVerifierPath, $CloseoutWorkflowPath, $ModulePath, $InfrastructureVerifierPath,
             $RuntimeFixturePath, $GeneratedStateTestsPath)) {
         $tokens = $null
         $errors = $null
@@ -640,6 +652,151 @@ Invoke-RuntimeTest "operational entrypoints declare the PowerShell 7.2 native-st
     }
     Assert-TestCondition (-not $fixture.GitInitialized -and
         @(& $fixture.Module { @($script:FixtureNativeCalls) }).Count -eq 0) "AST-floor fixture requested Git or native work."
+}
+
+Invoke-RuntimeTest "root acceptance integration validates readiness before campaign work" -WithoutGit {
+    param($fixture)
+    $tokens = $null
+    $errors = $null
+    $rootAst = [Management.Automation.Language.Parser]::ParseFile(
+        (Resolve-Path -LiteralPath $RootVerifierPath).Path,
+        [ref]$tokens, [ref]$errors)
+    Assert-TestCondition (@($errors).Count -eq 0) "Root verifier does not parse."
+    $parameterNames = @($rootAst.ParamBlock.Parameters | ForEach-Object {
+        $_.Name.VariablePath.UserPath
+    })
+    Assert-TestCondition ($parameterNames -ccontains "CloseoutReadinessPath") `
+        "Root verifier does not expose the closeout-readiness receipt."
+
+    $source = [IO.File]::ReadAllText((Resolve-Path -LiteralPath $RootVerifierPath).Path)
+    $preflightIndex = $source.IndexOf("Test-GeoCeDGCloseoutAcceptancePreflight",
+        [StringComparison]::Ordinal)
+    $finalPreflightIndex = $source.LastIndexOf("Test-GeoCeDGCloseoutAcceptancePreflight",
+        [StringComparison]::Ordinal)
+    $campaignIndex = $source.IndexOf('$HeavyCampaignStarted = $true',
+        [StringComparison]::Ordinal)
+    Assert-TestCondition ($preflightIndex -ge 0 -and $campaignIndex -gt $preflightIndex) `
+        "Acceptance preflight is not ordered before the technical campaign marker."
+    $preflightCalls = @($rootAst.FindAll({ param($node)
+            $node -is [Management.Automation.Language.CommandAst] -and
+            $node.GetCommandName() -ceq "Test-GeoCeDGCloseoutAcceptancePreflight"
+    }, $true))
+    Assert-TestCondition ($preflightCalls.Count -eq 2 -and
+        @($preflightCalls.CommandElements | Where-Object {
+            $_.Extent.Text -ceq "-CloseoutMode"
+        }).Count -eq 0) `
+        "Initial and final technical acceptance preflights must remain mode-neutral."
+    $consumableIndex = $source.IndexOf('$CloseoutConsumable = $true',
+        [StringComparison]::Ordinal)
+    Assert-TestCondition ($finalPreflightIndex -gt $campaignIndex -and
+        $consumableIndex -gt $finalPreflightIndex -and
+        $source.Contains(
+            'Closeout readiness acceptance plan changed after the technical campaign.')) `
+        "Final readiness revalidation is not fail-closed before consumability."
+    Assert-TestCondition ($source.Contains(
+            '$PSBoundParameters.ContainsKey("CloseoutReadinessPath")') -and
+        $source.Contains('"FINAL_ACCEPTANCE"')) `
+        "Requested final-acceptance intent is not retained independently of preflight success."
+    foreach ($field in @("requestedEvidenceUse", "evidenceUse", "repositoryCohort",
+            "reviewedCandidate", "closeoutMode", "validatedCloseoutModes",
+            "acceptancePlanSha256", "readinessReceiptPath",
+            "readinessReceiptSha256", "closeoutConsumable", "reason",
+            "heavyCampaignStarted")) {
+        Assert-TestCondition ($source.Contains($field + " =")) `
+            "Root verification result omits machine-readable field '$field'."
+    }
+    Assert-TestCondition ($source.Contains(
+            'CloseoutReadinessPath selects exactly one canonical FULL physical campaign; PHASE and COMPOSED are authenticated coverage claims, not separate runs.') -and
+        $source.Contains(
+            'CloseoutReadinessPath requires CleanBuild for the acceptance FULL required by closeout policy.') -and
+        $source.Contains(
+            'CloseoutReadinessPath requires an explicit fresh LogDirectory for this technical level.') -and
+        $source.Contains(
+            'CloseoutReadinessPath requires a fresh LogDirectory that does not already exist or contain evidence.')) `
+        "Root verifier does not seal readiness-bound runs to canonical levels and fresh evidence roots."
+    Assert-TestCondition (-not $fixture.GitInitialized -and
+        @(& $fixture.Module { @($script:FixtureNativeCalls) }).Count -eq 0) `
+        "Static root-acceptance integration inspection launched Git or a fake build."
+}
+
+Invoke-RuntimeTest "central COMPOSED FULL plan has only four declared differences and binds root execution" -WithoutGit {
+    param($fixture)
+    $plans = & $fixture.Module {
+        [pscustomobject]@{
+            Composed = Get-GeoCeDGVerificationExecutionPlan -Level COMPOSED `
+                -Phase VERIFICATION-INFRASTRUCTURE
+            Full = Get-GeoCeDGVerificationExecutionPlan -Level FULL `
+                -Phase VERIFICATION-INFRASTRUCTURE
+        }
+    }
+    $expectedDifferenceDimensions = @('canonicalBuild.level',
+        'canonicalBuild.selection', 'baseline.fullTests', 'level')
+    $expectedGateIds = @('OPERATIONAL_CONTRACTS', 'WORKSTATION_CONTRACTS',
+        'CANONICAL_FULL_BUILD', 'LEGACY_INTEGRATION', 'DXF_AND_NATIVE_2D',
+        'DECLARED_PHASE_ASSERTION_SUITE', 'PACKAGING_CONTRACTS',
+        'BASELINE_FULL_CONFIRMATION', 'FRONTEND_PROFILE',
+        'GIT_WHITESPACE_INTEGRITY')
+    foreach ($plan in @($plans.Composed, $plans.Full)) {
+        Assert-TestSequence $expectedDifferenceDimensions `
+            @($plan.allowedDifferenceDimensions | ForEach-Object { [string]$_ }) `
+            "Central plan allowed-difference dimensions"
+        Assert-TestSequence $expectedGateIds `
+            @($plan.commonGateIds | ForEach-Object { [string]$_ }) `
+            "Central plan common gate order"
+        Assert-TestCondition ([string]$plan.orchestrationFamily -ceq
+                'COMPOSED_FULL_SHARED_BODY_V1' -and
+            -not [bool]$plan.repositoryDeclaredPerimeter.differsByVerificationLevel) `
+            "Central plan broadened the repository-declared perimeter."
+    }
+    Assert-TestCondition ([string]$plans.Composed.canonicalBuild.level -ceq
+            'COMPOSED' -and -not [bool]$plans.Composed.baseline.fullTests -and
+        [string]$plans.Full.canonicalBuild.level -ceq 'FULL' -and
+        [bool]$plans.Full.baseline.fullTests -and
+        -not [bool]$plans.Composed.canonicalBuild.selection.shared.unfiltered -and
+        [bool]$plans.Full.canonicalBuild.selection.shared.unfiltered -and
+        @($plans.Full.canonicalBuild.selection.shared.filters).Count -eq 0 -and
+        @($plans.Full.canonicalBuild.selection.desktop.filters).Count -eq 0) `
+        "Central plan reduced or relabelled canonical COMPOSED/FULL coverage."
+
+    $composedNeutral = $plans.Composed | ConvertTo-Json -Depth 100 |
+        ConvertFrom-Json -Depth 100
+    $fullNeutral = $plans.Full | ConvertTo-Json -Depth 100 |
+        ConvertFrom-Json -Depth 100
+    foreach ($plan in @($composedNeutral, $fullNeutral)) {
+        $plan.level = 'NEUTRALIZED_DECLARED_DIMENSION'
+        $plan.canonicalBuild.level = 'NEUTRALIZED_DECLARED_DIMENSION'
+        $plan.canonicalBuild.selection = 'NEUTRALIZED_DECLARED_DIMENSION'
+        $plan.baseline.fullTests = 'NEUTRALIZED_DECLARED_DIMENSION'
+    }
+    Assert-TestCondition (($composedNeutral | ConvertTo-Json -Depth 100 -Compress) `
+            -ceq ($fullNeutral | ConvertTo-Json -Depth 100 -Compress)) `
+        "COMPOSED and FULL differ outside the four declared dimensions."
+
+    $rootSource = [IO.File]::ReadAllText(
+        (Resolve-Path -LiteralPath $RootVerifierPath).Path)
+    $planIndex = $rootSource.IndexOf(
+        '$VerificationExecutionPlan = Get-GeoCeDGVerificationExecutionPlan',
+        [StringComparison]::Ordinal)
+    $heavyIndex = $rootSource.IndexOf('$HeavyCampaignStarted = $true',
+        [StringComparison]::Ordinal)
+    foreach ($literal in @(
+            '-Level FULL -Phase ([string]$readiness.phase)',
+            '$CanonicalBuildLevel = [string]$VerificationExecutionPlan.canonicalBuild.level',
+            '$BaselineFullTests = [bool]$VerificationExecutionPlan.baseline.fullTests',
+            '-Level $CanonicalBuildLevel -LogDirectory',
+            'if ($BaselineFullTests)',
+            '$expectedGateIds = @($VerificationExecutionPlan.commonGateIds',
+            '$actualGateIds = @($ExecutedAcceptanceCommonGates)',
+            'Assert-CommonVerificationBodyUsesCentralLevelPlan')) {
+        Assert-TestCondition ($rootSource.Contains($literal,
+                [StringComparison]::Ordinal)) `
+            "Root verifier bypasses central plan binding: $literal"
+    }
+    Assert-TestCondition ($planIndex -ge 0 -and $heavyIndex -gt $planIndex) `
+        "Root verifier reads the central acceptance plan after heavy work starts."
+    Assert-TestCondition (-not $fixture.GitInitialized -and
+        @(& $fixture.Module { @($script:FixtureNativeCalls) }).Count -eq 0) `
+        "Central-plan contract test launched Git or native work."
 }
 
 Invoke-RuntimeTest "baseline committed whitespace check is CRLF-invariant but rejects real trailing blanks" {
@@ -764,6 +921,24 @@ Invoke-RuntimeTest "G9U1 phase registration retains explicit scope and no implic
     } "Unknown PHASE" "Unknown workspace phase must not broaden scope"
     Assert-TestCondition (-not $fixture.GitInitialized -and
         @(& $fixture.Module { @($script:FixtureNativeCalls) }).Count -eq 0) "Phase lookup launched a build."
+}
+
+Invoke-RuntimeTest "verification infrastructure phase registration is exact and bounded" -WithoutGit {
+    param($fixture)
+    $phase = & $fixture.Module {
+        Get-GeoCeDGPhaseDefinition -Phase 'verification-infrastructure'
+    }
+    Assert-TestCondition ($phase.Phase -ceq 'VERIFICATION-INFRASTRUCTURE' -and
+        $phase.Verifier -ceq 'verify-verification-infrastructure.ps1') `
+        "Verification-infrastructure PHASE mapping is not exact."
+    Assert-TestThrows {
+        & $fixture.Module {
+            Get-GeoCeDGPhaseDefinition -Phase 'VERIFICATION-INFRASTRUCTURE-EXTRA'
+        }
+    } "Unknown PHASE" "Unknown verification-infrastructure phase must not broaden scope"
+    Assert-TestCondition (-not $fixture.GitInitialized -and
+        @(& $fixture.Module { @($script:FixtureNativeCalls) }).Count -eq 0) `
+        "Verification-infrastructure phase lookup launched Git or a fake build."
 }
 
 Invoke-RuntimeTest "R1 phase registration is exact and cannot broaden an unknown phase" -WithoutGit {
@@ -2113,6 +2288,8 @@ Invoke-RuntimeTest "root rejects invalid CleanBuild and execution-level combinat
     $rootCopy = Join-Path $agentDirectory "verify.ps1"
     [IO.File]::Copy($rootSource, $rootCopy, $false)
     [IO.File]::Copy($ModulePath, (Join-Path $agentDirectory "verification-runtime.psm1"), $false)
+    [IO.File]::Copy((Join-Path (Split-Path -Parent $ModulePath) "evidence-integrity.ps1"),
+        (Join-Path $agentDirectory "evidence-integrity.ps1"), $false)
     $guardPath = Join-Path $fixture.Root "unexpected-root-execution.txt"
     $quotedGuard = $guardPath.Replace("'", "''")
     Write-FixtureText (Join-Path $agentDirectory "repository-state.ps1") (
@@ -2142,14 +2319,38 @@ Invoke-RuntimeTest "root rejects invalid CleanBuild and execution-level combinat
         @{ Arguments = @("-Level", "DEV", "-Module", "shared"); FilterLiteral = "@('SharedTest', ' ')"; Pattern = "DEV requires explicit" },
         @{ Arguments = @("-Level", "DEV", "-Module", "shared", "-TestFilter", "org.geocedg.fixture.SharedTest", "-SkipBuild"); Pattern = "SkipBuild is static-only" },
         @{ Arguments = @("-Level", "DEV", "-Module", "shared", "-TestFilter", "org.geocedg.fixture.SharedTest", "-CleanBuild"); Pattern = "CleanBuild requires canonical FULL" },
-        @{ Arguments = @("-Level", "DEV", "-FullTests"); Pattern = "FullTests selects FULL" }
+        @{ Arguments = @("-Level", "DEV", "-FullTests"); Pattern = "FullTests selects FULL" },
+        @{ Arguments = @("-Level", "DEV", "-Module", "shared", "-TestFilter",
+                "org.geocedg.fixture.SharedTest", "-CloseoutReadinessPath", "fixture.json");
+            Pattern = "CloseoutReadinessPath selects exactly one canonical FULL" },
+        @{ Arguments = @("-Level", "PHASE", "-Phase", "G9U0-R6",
+                "-CloseoutReadinessPath", "fixture.json");
+            Pattern = "CloseoutReadinessPath selects exactly one canonical FULL" },
+        @{ Arguments = @("-Level", "COMPOSED", "-CloseoutReadinessPath", "fixture.json");
+            Pattern = "CloseoutReadinessPath selects exactly one canonical FULL" },
+        @{ Arguments = @("-Level", "FULL", "-CloseoutReadinessPath", "fixture.json");
+            Pattern = "CloseoutReadinessPath requires CleanBuild" },
+        @{ Arguments = @("-Level", "FULL", "-CleanBuild",
+                "-CloseoutReadinessPath", "fixture.json"); OmitLogDirectory = $true;
+            Pattern = "CloseoutReadinessPath requires an explicit fresh LogDirectory" },
+        @{ Arguments = @("-Level", "FULL", "-CleanBuild",
+                "-CloseoutReadinessPath", "fixture.json"); ExistingLogDirectory = $true;
+            Pattern = "CloseoutReadinessPath requires a fresh LogDirectory that does not already exist" }
     )
     $pwsh = Join-Path $PSHOME $(if ($IsWindows) { "pwsh.exe" } else { "pwsh" })
     $PSNativeCommandUseErrorActionPreference = $false
     $index = 0
     foreach ($case in $cases) {
         $index++
-        $arguments = @("-NoProfile", "-File", $rootCopy, "-LogDirectory", (Join-Path $fixture.Root ("root-mode-" + $index))) + $case.Arguments
+        $caseLogDirectory = Join-Path $fixture.Root ("root-mode-" + $index)
+        if ($case.ContainsKey("ExistingLogDirectory")) {
+            [void][IO.Directory]::CreateDirectory($caseLogDirectory)
+        }
+        $arguments = @("-NoProfile", "-File", $rootCopy)
+        if (-not $case.ContainsKey("OmitLogDirectory")) {
+            $arguments += @("-LogDirectory", $caseLogDirectory)
+        }
+        $arguments += $case.Arguments
         if ($case.ContainsKey("FilterLiteral")) {
             # A fixture script preserves empty string/array elements even on
             # PowerShell 7.2's legacy native-argument marshalling. The copied
@@ -2168,6 +2369,62 @@ Invoke-RuntimeTest "root rejects invalid CleanBuild and execution-level combinat
         Assert-TestCondition ($nativeExitCode -eq 1 -and $text -match $case.Pattern) ("Invalid root flags failed for the wrong reason: " + ($case.Arguments -join " ") + "; " + $text)
         Assert-TestCondition (-not (Test-Path -LiteralPath $guardPath)) "Invalid root flags reached execution beyond validation."
     }
+}
+
+Invoke-RuntimeTest "dirty final acceptance is classified and rejected before heavy work" {
+    param($fixture)
+    $agentDirectory = Join-Path $fixture.RepositoryRoot "tools/agent"
+    [void][IO.Directory]::CreateDirectory($agentDirectory)
+    $rootCopy = Join-Path $agentDirectory "verify.ps1"
+    [IO.File]::Copy((Resolve-Path -LiteralPath $RootVerifierPath).Path, $rootCopy, $false)
+    [IO.File]::Copy($ModulePath,
+        (Join-Path $agentDirectory "verification-runtime.psm1"), $false)
+    [IO.File]::Copy((Join-Path (Split-Path -Parent $ModulePath) "evidence-integrity.ps1"),
+        (Join-Path $agentDirectory "evidence-integrity.ps1"), $false)
+
+    $technicalCommit = (& git -C $fixture.RepositoryRoot rev-parse HEAD).Trim()
+    Assert-TestCondition ($LASTEXITCODE -eq 0 -and
+        $technicalCommit -cmatch '^[0-9a-f]{40}$') `
+        "Dirty-acceptance fixture does not have an exact technical commit."
+    $quotedCommit = $technicalCommit.Replace("'", "''")
+    Write-FixtureText (Join-Path $agentDirectory "repository-state.ps1") (
+        "function Get-GeoCeDGRepositoryState { param([string]`$RepositoryRoot) [pscustomobject]@{ Branch='main'; Commit='" +
+        $quotedCommit + "'; LatestIncludedPhase='FIXTURE' } }" + $Lf)
+    $guardPath = Join-Path $fixture.Root "dirty-acceptance-heavy-work.txt"
+    $quotedGuard = $guardPath.Replace("'", "''")
+    Write-FixtureText (Join-Path $agentDirectory "repository-generated-state.ps1") (
+        "function Assert-VerificationLogDirectoryOutsideGeneratedState { param([string]`$RepositoryRoot,[string]`$LogDirectory) }" + $Lf +
+        "function New-RepositoryGeneratedStateSnapshot { param([string]`$RepositoryRoot,[string[]]`$DirectoryNames,[string]`$Label,[switch]`$KeepCurrentOutputs) [IO.File]::WriteAllText('" +
+        $quotedGuard + "', 'unexpected heavy work'); throw 'FIXTURE_HEAVY_WORK_STARTED' }" + $Lf)
+
+    $logDirectory = Join-Path $fixture.Root "dirty-final-acceptance"
+    $readinessPath = Join-Path $fixture.Root "not-consumed-readiness.json"
+    $pwsh = Join-Path $PSHOME $(if ($IsWindows) { "pwsh.exe" } else { "pwsh" })
+    $PSNativeCommandUseErrorActionPreference = $false
+    $arguments = @("-NoProfile", "-File", $rootCopy, "-Level", "FULL", "-CleanBuild",
+        "-CloseoutReadinessPath", $readinessPath, "-LogDirectory", $logDirectory)
+    $output = @(& $pwsh @arguments 2>&1 |
+        ForEach-Object { $_.ToString() })
+    $nativeExitCode = $LASTEXITCODE
+    Write-FixtureText (Join-Path $fixture.Root "dirty-final-acceptance.log") ($output -join $Lf)
+    Assert-TestCondition ($nativeExitCode -eq 1 -and
+        ($output -join $Lf) -match 'dirty/precommit cohorts are diagnostic only') `
+        "Dirty final acceptance failed for the wrong reason."
+    Assert-TestCondition (-not (Test-Path -LiteralPath $guardPath)) `
+        "Dirty final acceptance reached heavy campaign work."
+    $resultPath = Join-Path $logDirectory "verification-result.json"
+    Assert-TestCondition (Test-Path -LiteralPath $resultPath -PathType Leaf) `
+        "Dirty final acceptance did not publish its machine-readable rejection."
+    $result = Get-Content -LiteralPath $resultPath -Raw | ConvertFrom-Json
+    Assert-TestCondition ($result.state -ceq "FAILED" -and
+        $result.requestedEvidenceUse -ceq "FINAL_ACCEPTANCE" -and
+        $result.evidenceUse -ceq "DEVELOPMENT_DIAGNOSTIC" -and
+        $result.repositoryCohort -ceq "DIRTY_PRECOMMIT" -and
+        $result.reason -ceq "DIRTY_PRECOMMIT_COHORT" -and
+        $result.closeoutConsumable -eq $false -and
+        $result.heavyCampaignStarted -eq $false -and
+        $null -eq $result.technicalCampaign) `
+        "Dirty final acceptance was not classified as a non-consumable precommit cohort."
 }
 
 Invoke-RuntimeTest "original native wrapper ignores caller shadows and captures real child exits" -UseOriginalNative {

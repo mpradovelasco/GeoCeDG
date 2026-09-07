@@ -102,6 +102,9 @@ The separately justified [baseline compatibility repairs](../architecture/verifi
 retain their own regression evidence and are covered by the explicit
 [operational author closeout](../adr/0020-verification-levels-and-current-run-evidence.md#author-approval-and-closeout).
 Neither the interface nor those repairs advance a product phase.
+The prospective [ADR 0025](../adr/0025-commit-first-acceptance-and-dual-closeout.md)
+adds commit-first final acceptance and dual closeout as an operational
+implementation candidate; it is `AUTHOR REVIEW READY`, not author-approved.
 
 | Level | Use and limit |
 |---|---|
@@ -140,6 +143,184 @@ for diagnosis and equivalence comparison. Do not supply an old receipt or assume
 a report's existence proves current coverage. Numerical/reference, historical
 and metadata checks remain independently live. No new test parallelism or
 configuration-cache policy is implied by the level interface.
+
+### Commit-first final acceptance and closeout
+
+An ordinary PHASE/COMPOSED/FULL invocation is development/diagnostic evidence,
+even on a clean checkout. Its result records `evidenceUse`,
+`repositoryCohort`, `closeoutConsumable`, `reviewedCandidate`, `closeoutMode`,
+readiness path/hash, `reason` and whether the heavy campaign started. A dirty
+successful run is truthfully `DEVELOPMENT_DIAGNOSTIC`, `DIRTY_PRECOMMIT`,
+`closeoutConsumable=false`, reason `DIRTY_PRECOMMIT_COHORT`. Never relabel it as
+evidence for a later commit.
+
+For final acceptance, first finish focal work and create technical commit `T`.
+Then run the cheap, mode-neutral readiness gate before any heavy acceptance
+command. It validates exactly both `VERIFIED` and `AUTHOR_OPERATED`; supplying
+`-CloseoutMode` here is an error:
+
+```powershell
+.\tools\agent\phase-closeout.ps1 -Action READINESS `
+  -TechnicalCommit <full-T> `
+  -PolicyPath <phase-policy.json> `
+  -ReadinessReceiptPath <ignored-or-external-readiness.json>
+```
+
+Readiness requires `HEAD=T`, a clean index/worktree, linear single-parent
+ancestry from the sealed promotion anchor, exact-SHA evidence binding, both
+complete declarative closeout routes, sealed credential-free hashes of the
+configured remote identity, a reproducibly creatable nonignored decision-record
+path, no branch/`latest` authority, no impossible SHA/evidence self-reference
+and no known lifecycle repair after FULL. A failed readiness prevents the
+acceptance campaign.
+
+Readiness compares the real PHASE, COMPOSED and FULL plans before heavy work.
+When FULL contains all COMPOSED coverage and the required phase verifier is
+integrated and attestable inside FULL, run one canonical physical campaign.
+This is the only way to select `FINAL_ACCEPTANCE`; the receipt is unavailable
+with DEV/PHASE/COMPOSED, `-SkipBuild` or `-IndependentBuilds`:
+
+```powershell
+.\tools\agent\verify.ps1 -Level FULL -CleanBuild `
+  -CloseoutReadinessPath <readiness.json> `
+  -LogDirectory <new-full-evidence-root>
+```
+
+The acceptance `-LogDirectory` is explicit and absent before the run; the
+verifier refuses to reuse it. Its authenticated envelope separates three
+obligations without inventing executions: physically nested PHASE evidence,
+COMPOSED coverage derived by exact plan subsumption, and the physical FULL root.
+Schema v2 accepts only complete FULL subsumption and therefore seals
+`complements=[]`. If comparison finds a concrete uncovered obligation,
+READINESS must fail; extend the approved generic schema, producer and consumer
+before running only that minimal complement.
+
+Schema-v2 closeout requires clean-output FULL; neither closeout mode changes
+technical coverage. A consumable PASS records exact `T`, `closeoutMode=null`,
+both `validatedCloseoutModes`, the mode-neutral `acceptancePlanSha256` and
+`READINESS_BOUND_TECHNICAL_GATES_PASSED`. `FULL=PASS` without this binding
+remains useful technical evidence but is not closeout-consumable.
+
+`AUTHOR REVIEW READY` means only that the product is prepared for author
+review. `AUTHOR CLOSEOUT READY` means exact `T` was acceptance-verified from a
+clean committed checkout, its one FULL root and authenticated
+PHASE/COMPOSED/FULL claims are closeout-consumable, one post-approval route is
+explicitly selected, and PREPARE validates that route against the mode-neutral
+readiness plan. The current index/worktree then contains only the exact staged
+closeout delta; it is not clean. Only after review/smoke does the explicit
+author decision naming exact `T` select one mode. Readiness itself never means
+author approval.
+
+`VERIFIED` retains ADR 0023/0024: after exact-SHA author approval, validate
+`AUTHOR_CLOSEOUT`, create the bounded status-only `C`, create the annotated
+phase tag and fast-forward `main`, with full ancestry, content/mode, provenance
+and `selfApproved=false` guarantees. For schema-v2 policy the generic
+preparation gate is `phase-closeout.ps1 -Action PREPARE -CloseoutMode VERIFIED`;
+it stages the proven projected delta but cannot yet claim the complete
+`AUTHOR_CLOSEOUT` that requires exact `C`. `-Action FINALIZE -CloseoutMode
+VERIFIED` revalidates PREPARE, creates and validates direct child `C` and the
+annotated tag, fast-forwards `main`, performs a non-force atomic push limited to
+the literal branch and tag refspecs, and automatically runs the audit. It
+disables ref expansion and the pre-push hook; remote mirror mode or a configured
+`push.pushOption` is rejected. Exact `C` plus that PASS complete the verified
+`AUTHOR_CLOSEOUT`.
+`FINALIZE` is rejected for `AUTHOR_OPERATED`.
+
+```powershell
+.\tools\agent\phase-closeout.ps1 -Action FINALIZE `
+  -CloseoutMode VERIFIED `
+  -TechnicalCommit <full-T> `
+  -PolicyPath <phase-policy.json> `
+  -ReadinessReceiptPath <readiness.json> `
+  -TechnicalCampaignPath <full-verification-result.json> `
+  -AuthorApprovalPath <explicit-author-decision.json> `
+  -PreparationResultPath <verified-prepare-result.json> `
+  -ResultPath <ignored-or-external-finalization-result.json>
+```
+
+Both routes use the same PREPARE interface after approval; substitute the
+explicit selected mode and keep the single frozen FULL result root:
+
+```powershell
+.\tools\agent\phase-closeout.ps1 -Action PREPARE `
+  -CloseoutMode <VERIFIED-or-AUTHOR_OPERATED> `
+  -TechnicalCommit <full-T> `
+  -PolicyPath <phase-policy.json> `
+  -ReadinessReceiptPath <readiness.json> `
+  -TechnicalCampaignPath <full-verification-result.json> `
+  -AuthorApprovalPath <explicit-author-decision.json> `
+  -ResultPath <ignored-or-external-prepare-result.json>
+```
+
+For `AUTHOR_OPERATED`, after the author has approved exact `T`, prepare the
+status-only delta with the readiness receipt, the single technical campaign and
+its authenticated coverage claims, plus the explicit author decision. The
+decision JSON uses kind
+`GEOCEDG_EXPLICIT_AUTHOR_APPROVAL`, names the policy phase, exact full `T` and
+selected mode, records `decision=PASS_AUTHOR_APPROVED`, `authority=AUTHOR` and
+`selfApproved=false`; automation validates but never originates that decision:
+
+Preparation verifies approval/evidence, writes and stages only the projected
+status/decision delta, then stops. It prints `T`, the complete expected delta,
+tag and the commit/tag/fast-forward/non-force atomic branch-plus-tag push steps
+reserved to the author. It never commits, tags, merges, rebases, promotes or
+pushes.
+Status replacements may use documentation and `geocedg/specs/operations/`;
+product/scientific specs and validation Markdown are not closeout targets.
+The returned operation plan contains only structured `program` and `arguments`
+vectors plus explicit placeholders; it contains no interpolated shell command,
+and the CLI renders argv as non-executable JSON data.
+
+PREPARE persists its optional result receipt atomically. After the first bounded
+repository write, any failure preserves the index and worktree for inspection;
+it never auto-restores paths across a possible concurrent Git/worktree update.
+The failure reports `UNKNOWN_REQUIRES_INSPECTION`, possible partial mutation and
+the policy-declared status/decision scope to inspect. Before retrying, the
+author/operator explicitly restores and proves exact clean `T`.
+
+After the author personally commits `C`, creates the tag, fast-forwards and
+pushes, run the read-only post-promotion audit (apart from its result file):
+
+```powershell
+.\tools\agent\phase-closeout.ps1 -Action AUDIT `
+  -CloseoutMode AUTHOR_OPERATED `
+  -TechnicalCommit <full-T> -CloseoutCommit <full-C> `
+  -PolicyPath <phase-policy.json> `
+  -ReadinessReceiptPath <readiness.json> `
+  -TechnicalCampaignPath <full-verification-result.json> `
+  -AuthorApprovalPath <explicit-author-decision.json> `
+  -ResultPath <ignored-or-external-audit-result.json>
+```
+
+The audit verifies exact ancestry/delta and unchanged executable inputs,
+annotated-tag target, linear fast-forward history, absence of SHA substitution,
+agreement of local `main`, `origin/main` and live remote, clean worktree/index,
+technical evidence still attributed to `T`, and `selfApproved=false`. A failure
+is reported; the tool does not move refs or reinterpret evidence to repair it.
+
+Phase policy schema v2 carries the phase-specific data: required coverage
+levels, single-FULL campaign strategy, exact nested/subsumed/root claim
+definitions, a fail-closed empty-complement contract, clean-FULL rule,
+`lifecycleRepairRequired=false`, supported modes, decision record, bounded
+Markdown literal replacements, an empty hash-manifest list, exact tag/message,
+closeout message, branch and remote. Keep scientific assertions in the phase
+verifier and generic readiness/promotion logic in
+`tools/agent/closeout-workflow.ps1`.
+
+ADR 0024 section 11.2 remains an exceptional fifteen-condition repair for its
+bounded input-identity/provenance defect. Do not use it as normal closeout, to
+justify a known post-FULL lifecycle repair or to waive FULL for a deliberate
+verification-methodology change.
+
+```text
+PRODUCT_PHASE_EFFECT = NONE
+BOOTSTRAP IMPACT — NO CHANGE REQUIRED
+Rationale: commit-first classification and Git closeout checks add no
+PowerShell, Git, JDK, Gradle, Conda, packaging or workstation prerequisite.
+GUIDE_IMPACT = UPDATED
+GUIDE_PATHS = docs/developer/geocedg_developer_guide.md;
+  docs/developer/geocedg_agent_prompt_guide.md
+```
 
 Start narrow, preserve exact command/log/exit evidence, then run the required
 COMPOSED/FULL gate. Record interactive, packaging and unavailable external-runtime
@@ -806,6 +987,13 @@ G9U2 remains globally blocked and productive G10 remains unauthorized.
 
 ### Phase verifier lifecycle
 
+For future closable phases, use the commit-first workflow above so the final
+PHASE, COMPOSED and FULL obligations are discharged and evidenced against clean
+`T`. Do not plan to repair a precommit-only lifecycle after the heavy campaign.
+The G9U1 precommit evidence and later
+lifecycle normalization remain distinct historical cohorts; ADR 0025 does not
+rewrite either their receipts or published closeout.
+
 Do not weaken a precommit-only phase verifier after committing its candidate.
 Use its explicit lifecycle mode: reproduce the original uncommitted entry with
 `PRECOMMIT_CANDIDATE`, review a sealed technical commit with
@@ -867,5 +1055,7 @@ The [section 11 repair rule](../../geocedg/specs/operations/verification-levels.
 is a new, narrow author-authorized exception for input-identity/provenance-only
 verification repairs. It requires all fifteen conditions, deterministic focused
 fixtures, real shared/Desktop integrations and actual execution-plan equivalence.
-It is not a general waiver of FULL for infrastructure changes. If any condition
-cannot be proven, the normal required heavy levels apply.
+It is not a general waiver of FULL for infrastructure changes or a normal phase
+closeout mechanism. It cannot waive the deliberate commit-first/dual-closeout
+methodology change. If any condition cannot be proven, the normal required
+heavy levels apply.

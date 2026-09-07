@@ -24,6 +24,7 @@ function Invoke-GeoCeDGRepositoryIdentityGit {
         [AllowEmptyString()] [string]$InputText,
         [switch]$AllowFailure
     )
+    Assert-GeoCeDGGitInvocationEnvironment -RepositoryRoot $RepositoryRoot
     # Do not allow optional index writes, external diff/textconv, or fsmonitor
     # hooks to become an unrecorded input of this read-only proof.
     $safeArguments = @('-c', 'core.fsmonitor=false') + $Arguments
@@ -39,7 +40,10 @@ function Invoke-GeoCeDGRepositoryIdentityGit {
     $start.RedirectStandardInput = $true
     $start.RedirectStandardOutput = $true
     $start.RedirectStandardError = $true
-    foreach ($argument in @('--no-optional-locks', '-C', $RepositoryRoot) + $safeArguments) {
+    $start.Environment['GIT_OPTIONAL_LOCKS'] = '0'
+    $start.Environment['GIT_PAGER'] = 'cat'
+    foreach ($argument in @('--no-replace-objects', '--no-optional-locks',
+            '--no-pager', '-C', $RepositoryRoot) + $safeArguments) {
         [void]$start.ArgumentList.Add($argument)
     }
     $process = [Diagnostics.Process]::new()

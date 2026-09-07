@@ -1,0 +1,279 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://geocedg.local/schemas/phase-closeout-policy-v2",
+  "title": "GeoCeDG declarative phase closeout policy",
+  "description": "Schema-v2 policy frozen in the technical commit. Commit identities and generated evidence belong in runtime receipts, never in this policy.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "phase",
+    "technicalEvidence",
+    "promotion",
+    "closeout"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 2
+    },
+    "phase": {
+      "type": "string",
+      "pattern": "^[A-Z0-9][A-Z0-9.-]+$"
+    },
+    "technicalEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requiredLevels",
+        "campaignStrategy",
+        "physicalCampaignLevel",
+        "requiredClaims",
+        "complements",
+        "fullRequiresCleanBuild",
+        "lifecycleRepairRequired"
+      ],
+      "properties": {
+        "requiredLevels": {
+          "type": "array",
+          "prefixItems": [
+            { "const": "PHASE" },
+            { "const": "COMPOSED" },
+            { "const": "FULL" }
+          ],
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "campaignStrategy": {
+          "const": "SINGLE_FULL_WITH_AUTHENTICATED_CLAIMS"
+        },
+        "physicalCampaignLevel": {
+          "const": "FULL"
+        },
+        "requiredClaims": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "level",
+                "fulfillment",
+                "orchestratorPath",
+                "verifierPath",
+                "evidencePath",
+                "expectedState"
+              ],
+              "properties": {
+                "level": { "const": "PHASE" },
+                "fulfillment": { "const": "NESTED_EXECUTED" },
+                "orchestratorPath": {
+                  "type": "string",
+                  "pattern": "^tools/agent/[A-Za-z0-9._/-]+\\.ps1$",
+                  "not": { "pattern": "(^|/)\\.\\.?(/|$)" }
+                },
+                "verifierPath": {
+                  "type": "string",
+                  "pattern": "^tools/agent/[A-Za-z0-9._/-]+\\.ps1$",
+                  "not": { "pattern": "(^|/)\\.\\.?(/|$)" }
+                },
+                "evidencePath": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9._/-]+\\.json$",
+                  "not": { "pattern": "(^|/)\\.\\.?(/|$)" }
+                },
+                "expectedState": {
+                  "type": "string",
+                  "pattern": "^[A-Z][A-Z0-9_]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "level",
+                "fulfillment",
+                "sourceLevel",
+                "canonicalSelection"
+              ],
+              "properties": {
+                "level": { "const": "COMPOSED" },
+                "fulfillment": { "const": "NORMATIVE_SUBSUMPTION" },
+                "sourceLevel": { "const": "FULL" },
+                "canonicalSelection": { "const": "UNFILTERED_SHARED_AND_DESKTOP" }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "level",
+                "fulfillment",
+                "sourceLevel",
+                "canonicalSelection"
+              ],
+              "properties": {
+                "level": { "const": "FULL" },
+                "fulfillment": { "const": "ROOT_PHYSICAL_CAMPAIGN" },
+                "sourceLevel": { "const": "FULL" },
+                "canonicalSelection": { "const": "UNFILTERED_SHARED_AND_DESKTOP" }
+              }
+            }
+          ],
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "complements": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "fullRequiresCleanBuild": {
+          "const": true
+        },
+        "lifecycleRepairRequired": {
+          "const": false
+        }
+      }
+    },
+    "promotion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "branch",
+        "remote",
+        "tagName",
+        "tagMessage",
+        "closeoutCommitMessage"
+      ],
+      "properties": {
+        "branch": {
+          "const": "main"
+        },
+        "remote": {
+          "const": "origin"
+        },
+        "tagName": {
+          "type": "string",
+          "pattern": "^(?!.*\\.\\.)(?!.*\\.lock$)[a-z0-9](?:[a-z0-9.-]*[a-z0-9-])?$"
+        },
+        "tagMessage": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]+$"
+        },
+        "closeoutCommitMessage": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]+$"
+        }
+      }
+    },
+    "closeout": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "supportedModes",
+        "recordPath",
+        "literalReplacements",
+        "canonicalLfHashManifests"
+      ],
+      "properties": {
+        "supportedModes": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "VERIFIED",
+              "AUTHOR_OPERATED"
+            ]
+          },
+          "minItems": 2,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "allOf": [
+            { "contains": { "const": "VERIFIED" } },
+            { "contains": { "const": "AUTHOR_OPERATED" } }
+          ]
+        },
+        "recordPath": {
+          "type": "string",
+          "pattern": "^geocedg/validation/[A-Za-z0-9._/-]+\\.json$",
+          "not": {
+            "pattern": "(^|/)\\.\\.?(/|$)"
+          }
+        },
+        "literalReplacements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/literalReplacement"
+          }
+        },
+        "canonicalLfHashManifests": {
+          "type": "array",
+          "maxItems": 0,
+          "items": {
+            "$ref": "#/$defs/canonicalLfHashManifest"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "repositoryPath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(docs|geocedg/specs|geocedg/validation)/[^\\\\]*$"
+    },
+    "literalReplacement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "before",
+        "after",
+        "occurrences"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "pattern": "^(docs|geocedg/specs/operations)/[^\\\\]*\\.md$",
+          "not": {
+            "pattern": "(^|/)\\.\\.?(/|$)"
+          }
+        },
+        "before": {
+          "type": "string",
+          "minLength": 1
+        },
+        "after": {
+          "type": "string"
+        },
+        "occurrences": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "canonicalLfHashManifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "authorityPaths"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/repositoryPath"
+        },
+        "authorityPaths": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      }
+    }
+  }
+}

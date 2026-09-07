@@ -32,7 +32,13 @@ similarly named roadmap or generated report is not a substitute.
    documentation.
 5. Identify source authority, generated evidence, smallest edit set and focused
    verifier.
-6. Stop when an entry gate, source, approval or semantic policy is missing.
+6. If the task can close a phase, identify a declarative policy that supports
+   both `VERIFIED` and `AUTHOR_OPERATED`. READINESS validates both without
+   selecting either; select exactly one mode only in the post-review,
+   post-approval PREPARE chain, never from branch, credentials or repository
+   state.
+7. Stop when an entry gate, source, approval, closeout route or semantic policy
+   is missing.
 
 Concise launch examples:
 
@@ -57,11 +63,23 @@ files are assessed separately.
 - Confirm the exact entry commit/tag and require ancestry before work.
 - Characterization phases are read-only with respect to productive source.
 - Implementation phases require explicit authorization and an approved design.
-- Review candidates may remain uncommitted; do not create a commit merely to
-  make evidence convenient.
+- Development and diagnostic review candidates may remain uncommitted. Final
+  acceptance may not: create a clean technical commit `T`, run
+  mode-neutral `CLOSEOUT_READINESS` for both routes, compare the real level
+  plans, and bind one canonical FULL campaign with authenticated
+  PHASE/COMPOSED/FULL claims to that receipt.
 - Author approval is a separate state from tests passing.
-- After approval, closeout may commit/tag and fast-forward the intended branch;
-  never force-push or rewrite shared history.
+- `AUTHOR REVIEW READY` means only prepared for author review. `AUTHOR CLOSEOUT
+  READY` additionally requires clean exact `T`, consumable acceptance evidence,
+  one explicitly selected post-approval route and a PREPARE-valid binding to
+  the mode-neutral readiness plan. Readiness never creates approval or chooses
+  a mode.
+- After explicit approval of exact `T`, `VERIFIED` retains the verified
+  status-only commit/tag/fast-forward path. `AUTHOR_OPERATED` preparation stages
+  only the projected closeout delta and stops; the author personally commits,
+  tags, fast-forwards and pushes, followed by automatic audit.
+- Never force-push or rewrite shared history. Never let tooling silently perform
+  a Git operation reserved to the selected author-operated mode.
 - Create the next phase branch only from its approved entry gate.
 
 For every future phase, read three separate fields rather than interpreting a
@@ -93,6 +111,25 @@ Run repository wrappers under `tools/agent/`, retain command, exit code and log
 path, and distinguish static/fake-first/skipped/real-runtime evidence. Generated
 logs/build outputs remain evidence, not source.
 
+For final acceptance, first run
+`tools/agent/phase-closeout.ps1 -Action READINESS` with exact `T`, policy,
+and receipt path, without `-CloseoutMode`; then pass the resulting receipt to
+one `verify.ps1 -Level FULL -CleanBuild` invocation through
+`-CloseoutReadinessPath`. Its same-run envelope must truthfully distinguish
+physically nested PHASE, plan-subsumed COMPOSED and physical-root FULL claims.
+Run a lower standalone level only for a concrete uncovered obligation reported
+by readiness. Without the receipt the result is explicitly
+`DEVELOPMENT_DIAGNOSTIC`, even if clean. A dirty successful run remains
+`closeoutConsumable=false`; never reattribute it after commit.
+
+After review/smoke and exact-SHA approval, select one mode explicitly and use
+`phase-closeout.ps1 -Action PREPARE -CloseoutMode <mode>`. In
+`AUTHOR_OPERATED`, stop for the author's commit/tag/fast-forward/push and run
+`-Action AUDIT` after publication. An audit failure is evidence of a failed
+promotion, not permission to move refs, reinterpret receipts or rerun fewer
+technical gates. Use the exact interface and evidence classification in
+[`verification-levels.md` section 12](../../geocedg/specs/operations/verification-levels.md#12-commit-first-acceptance-and-dual-closeout).
+
 ## Stop conditions
 
 Stop rather than guess for unclear licensing, missing cited sources,
@@ -106,6 +143,13 @@ Prompts reference specs/ADRs and list scope, gates and artifacts. They do not
 copy mathematical definitions. Guides explain how to operate prompts. Reports
 record what happened. When a living guide changes, do not rewrite historical
 evidence manifests.
+
+Closable phase prompts declare policy data consumed by the generic
+`tools/agent/closeout-workflow.ps1` helper; they do not clone readiness,
+preparation or audit logic into one verifier per phase. Preserve the G9U1
+precommit receipts, later lifecycle normalization and published closeout as
+separate historical cohorts. ADR 0024 section 11.2 remains exceptional and
+cannot waive FULL for a deliberate verification-methodology change.
 
 When maintaining the G9 prompts, reference the approved projection-system,
 redefine and one-dimensional-generator contracts instead of copying their
@@ -147,3 +191,13 @@ Bundles are generated evidence, not authority. Follow every `FILE:` path back
 to the repository before editing. G9O1 is **PASS — AUTHOR APPROVED**. G9A1 is
 authorized but not started, and no productive spatial G9 implementation has
 started.
+
+```text
+PRODUCT_PHASE_EFFECT = NONE
+BOOTSTRAP IMPACT — NO CHANGE REQUIRED
+Rationale: commit-first evidence classification and closeout Git checks add no
+PowerShell, Git, JDK, Gradle, Conda, packaging or workstation prerequisite.
+GUIDE_IMPACT = UPDATED
+GUIDE_PATHS = docs/developer/geocedg_developer_guide.md;
+  docs/developer/geocedg_agent_prompt_guide.md
+```

@@ -1,10 +1,12 @@
 # GeoCeDG verification levels and bootstrap-impact contract
 
-- Status: **NORMATIVE / AUTHOR APPROVED**
+- Status: **NORMATIVE / AUTHOR APPROVED through section 11**;
+  section 12 is an **IMPLEMENTATION CANDIDATE — AUTHOR REVIEW READY** amendment
 - Scope: operational/build/verification infrastructure; no product semantics
 - Decision: [accepted ADR 0020 and author closeout](../../../docs/adr/0020-verification-levels-and-current-run-evidence.md#author-approval-and-closeout)
 - Existing authority: [ADR 0002](../../../docs/adr/0002-g1-operational-authority.md)
-- Current evidence state: implementation and independent technical review complete;
+- Prospective amendment: [ADR 0025](../../../docs/adr/0025-commit-first-acceptance-and-dual-closeout.md)
+- Accepted sections 1–11 evidence state: implementation and independent technical review complete;
   author approval applies to `2b82034dbedf6f26250ad4aefb9eead700e33e66` and its
   status-only closeout. The technical contract below is unchanged.
 - Historical pre-final02 checkpoint: applied implementation candidate; original characterization and
@@ -54,8 +56,9 @@ executable authority remains `tools/agent/verify.ps1` and the focused verifiers
 it composes. This contract does not replace their assertions or accepted feature
 specifications. It is not a GeoCeDG product phase and authorizes no future phase.
 
-The interface below is the accepted implementation. Commands are not evidence
-of execution; implementation and measured results must be reported separately.
+The interface in sections 1–11 is the accepted implementation. Section 12 is a
+prospective implementation-candidate amendment. Commands are not evidence of
+execution; implementation and measured results must be reported separately.
 Existing accepted gates remain in force throughout adoption.
 
 ## 2. Four verification levels
@@ -69,15 +72,20 @@ Existing accepted gates remain in force throughout adoption.
 
 The levels describe coverage and intended use, not phase authorization. A
 smaller DEV or PHASE selection never reduces COMPOSED/FULL coverage. A successful
-FULL run is technical evidence, not author approval or release permission.
+FULL run is technical evidence, not author approval or release permission. Its
+technical result is also independent of closeout consumability: section 12
+requires an explicit evidence use and clean exact-commit cohort before a run
+can be consumed as final acceptance evidence.
 
 FULL is required for phase closeout, release, major integration, build/toolchain
 or verifier/bootstrap changes, shared kernel infrastructure changes, and changes
 whose regression perimeter cannot be bounded reliably. The infrastructure-impact
 rule in section 8 also applies. Section 10 permits explicit linkage for a
-status-only closeout; section 11 defines the newly author-authorized narrow
-evidence-preserving identity/provenance repair exception. Neither permits a
-receipt from a previous process to become a current-run capability.
+status-only closeout; section 11 defines the author-approved narrow
+evidence-preserving identity/provenance repair exception. The prospective
+section 12 amendment makes final acceptance commit-first and adds two explicit
+post-approval closeout modes. None permits a receipt from a previous process to
+become a current-run capability.
 
 ## 3. Entry points and parameter contracts
 
@@ -337,7 +345,8 @@ unknown/unbounded or infrastructure changes.
 
 Every task distinguishes DEV, PHASE, COMPOSED and FULL evidence and records the
 required level/perimeter. Review changes to test selection, cache policy,
-parallelization, verifier orchestration, bootstrap and numerical baselines as
+parallelization, verifier orchestration, acceptance classification, closeout
+readiness/mode, promotion audit, bootstrap and numerical baselines as
 verification-infrastructure changes. Such changes require FULL evidence in
 addition to focused operational tests, except for the exhaustively proven
 identity/provenance repair defined in section 11. An unrun/failed required FULL
@@ -550,7 +559,451 @@ PHASE/COMPOSED/FULL campaign. Otherwise record
 levels, including FULL. Do not launch repeated heavy campaigns on intermediate
 fixes; freeze the final executable cohort before the required fallback run.
 
+This exception is never the ordinary candidate-to-closeout workflow. It cannot
+waive FULL for a deliberate change to verification policy, orchestration,
+acceptance-purpose classification, `CLOSEOUT_READINESS`, closeout modes or
+promotion audit, and it cannot make a known post-FULL lifecycle repair an
+acceptable plan. Such changes use focused evidence plus the normal required
+levels, including a fresh FULL on their final executable cohort.
+
 This exception changes neither coverage nor scientific success criteria and
 does not authorize generic evidence reuse across product/test/build changes.
 Bootstrap impact and GUIDE_IMPACT still require substantive review. Technical
 success never supplies a product-phase author decision.
+
+## 12. Commit-first acceptance and dual closeout
+
+This section is the prospective implementation-candidate amendment governed by
+[ADR 0025](../../../docs/adr/0025-commit-first-acceptance-and-dual-closeout.md).
+It changes operational lifecycle only. Until the author approves an exact
+implementation commit, it must be reported as `AUTHOR REVIEW READY`, not as an
+accepted replacement for sections 1–11.
+
+### 12.1 Final-acceptance order
+
+A closable future phase uses this order:
+
+```text
+implementation
+  -> DEV/focal
+  -> clean technical commit T
+  -> CLOSEOUT_READINESS(T; both routes validated, no mode selected)
+  -> compare the real PHASE/COMPOSED/FULL execution plans
+  -> one canonical clean FULL(T), carrying authenticated PHASE,
+     COMPOSED and FULL coverage claims
+  -> applicable author review/smoke
+  -> explicit author approval of exact T
+  -> selected closeout path
+```
+
+`T` is the immutable technical candidate, not a branch, `latest`, moving ref or
+future tag. The acceptance-intended canonical FULL campaign must execute with
+`HEAD=T` and a clean index/worktree under the input and materialization rules in
+sections 5 and 11. A dirty/precommit PHASE/COMPOSED/FULL remains permitted for
+explicit development or diagnosis, but can never become acceptance or closeout
+evidence for a later commit. Equal bytes or tree provenance do not change the
+execution cohort recorded by a historical result.
+
+Verification levels are coverage/evidence obligations, not a mandate to repeat
+their work in separate physical processes. Before heavy acceptance execution,
+READINESS compares the real executable plans. A higher-level run may discharge
+a lower-level obligation only when the same cohort and root execution
+authenticates every lower-level assertion and artifact. For the canonical
+schema-v2 route, one physical FULL run supplies three separable claims:
+
+- `PHASE`: a physically executed, same-run nested phase verifier with its exact
+  mapping, argv, exit, verifier blob and evidence hashes;
+- `COMPOSED`: a normative subsumption proof that the unfiltered FULL selection
+  and common gates contain the complete COMPOSED plan; this is not reported as
+  an independent execution; and
+- `FULL`: the physical root campaign and its complete canonical receipt.
+
+Schema v2 is valid only when the compared FULL plan executes and authenticates
+every required obligation, and therefore seals `complements=[]`. If comparison
+finds an uncovered PHASE or COMPOSED obligation, READINESS fails before heavy
+execution. Running the exact minimal complement first requires an approved
+generic extension of the schema, producer and consumer; it may not be inferred
+or attached ad hoc. Removing duplicate campaigns never removes tests,
+Checkstyle, numerical/reference checks, phase assertions or acceptance criteria.
+
+### 12.2 Machine-readable evidence classification
+
+Every verification root records evidence use separately from its technical
+outcome:
+
+| Field | Required meaning |
+|---|---|
+| `evidenceUse` | Explicitly `DEVELOPMENT_DIAGNOSTIC` or `FINAL_ACCEPTANCE`; final acceptance is selected only by a validated readiness receipt, never inferred from level, cleanliness or branch. |
+| `requestedEvidenceUse` | Preserves the caller's explicit intent (`FINAL_ACCEPTANCE` when a readiness receipt was supplied) even if preflight fails before heavy execution. |
+| `repositoryCohort` | `DIRTY_PRECOMMIT` or `CLEAN_COMMIT`, evaluated and recorded for the actual execution. |
+| `technicalResult` / existing `status` | PASS/failure result for the requested verification coverage; it does not imply consumability. |
+| `closeoutConsumable` | Boolean independent of technical PASS; true only after the bound final-acceptance gate succeeds on exact `T`. |
+| `reviewedCandidate` | Exact full commit SHA `T` for final acceptance; otherwise null. |
+| `closeoutMode` | Null throughout the mode-neutral technical campaign. The explicit `VERIFIED` or `AUTHOR_OPERATED` value first appears in the post-approval decision/PREPARE/AUDIT chain. |
+| `validatedCloseoutModes` / `acceptancePlanSha256` | Exact two-route set and mode-neutral plan identity inherited from readiness; neither permits an inferred mode. |
+| `readinessReceiptPath` / `readinessReceiptSha256` | Exact receipt identity consumed for final acceptance; otherwise null. |
+| `reason` | One deterministic reason code describing current consumability. |
+| `heavyCampaignStarted` | Whether expensive acceptance execution began; false for a rejected preflight. |
+
+A technically successful dirty or precommit run reports:
+
+```json
+{
+  "evidenceUse": "DEVELOPMENT_DIAGNOSTIC",
+  "repositoryCohort": "DIRTY_PRECOMMIT",
+  "closeoutConsumable": false,
+  "reviewedCandidate": null,
+  "reason": "DIRTY_PRECOMMIT_COHORT"
+}
+```
+
+A consumable acceptance root reports:
+
+```json
+{
+  "evidenceUse": "FINAL_ACCEPTANCE",
+  "repositoryCohort": "CLEAN_COMMIT",
+  "closeoutConsumable": true,
+  "reviewedCandidate": "<exact full T>",
+  "closeoutMode": null,
+  "validatedCloseoutModes": ["VERIFIED", "AUTHOR_OPERATED"],
+  "acceptancePlanSha256": "<mode-neutral-plan-sha256>",
+  "reason": "READINESS_BOUND_TECHNICAL_GATES_PASSED"
+}
+```
+
+The closeout consumer must revalidate the one archived canonical FULL campaign,
+its authenticated coverage-claim envelope and the evidence behind every claim.
+This includes exact clean-`T` input/index/status identity, exact unfiltered
+shared/Desktop selection, one fresh execution of each canonical test task, the
+archived JUnit XML and case/counter agreement, the complete clean Checkstyle
+authority set, successful native-run/JVM provenance, the nested phase result,
+the COMPOSED plan-subsumption proof and an exact hashed audit inventory
+containing every native log plus the input and external-configuration
+inventories. A root or receipt with case-mismatched levels, narrowed filters,
+string-typed booleans, missing files, inconsistent counters, invented physical
+lower-level runs or empty synthetic evidence is not consumable.
+
+The canonical reason vocabulary is `DIRTY_PRECOMMIT_COHORT`,
+`NO_CLOSEOUT_READINESS_RECEIPT`, `CLOSEOUT_READINESS_FAILED`,
+`TECHNICAL_CAMPAIGN_PENDING`, `TECHNICAL_CAMPAIGN_FAILED`,
+`READINESS_BOUND_TECHNICAL_GATES_PASSED` and the fail-closed
+`ACCEPTANCE_BINDING_INCOMPLETE`. A later commit, clean checkout,
+policy edit or evidence link cannot mutate these fields in sealed historical
+results.
+
+`tools/agent/verify.ps1 -Level FULL -CleanBuild -CloseoutReadinessPath <receipt>`
+explicitly selects `FINAL_ACCEPTANCE`. The verifier must validate the live
+receipt and its pre-heavy plan comparison before starting work. This parameter
+is accepted only for FULL, is incompatible with DEV/PHASE/COMPOSED,
+`-SkipBuild` and `-IndependentBuilds`, and requires an explicit, previously
+nonexistent `-LogDirectory`. The one acceptance root must be new and must carry
+the authenticated PHASE/COMPOSED/FULL claim envelope; it never pretends that
+the derived COMPOSED claim was a separate execution. Without the receipt, any
+level is `DEVELOPMENT_DIAGNOSTIC`, even when the worktree happens to be clean. A
+dirty checkout, invalid receipt, candidate/HEAD mismatch, uncovered plan delta
+or incomplete binding rejects final acceptance with
+`heavyCampaignStarted=false`.
+
+### 12.3 `CLOSEOUT_READINESS`
+
+The generic entry point is:
+
+```powershell
+.\tools\agent\phase-closeout.ps1 -Action READINESS `
+  -TechnicalCommit <full-T> `
+  -PolicyPath <repository-relative-policy> `
+  -ReadinessReceiptPath <ignored-or-external-path>
+```
+
+`CLOSEOUT_READINESS` is a cheap mandatory gate before the acceptance-intended
+canonical FULL campaign. It writes a `GEOCEDG_CLOSEOUT_READINESS` receipt and
+must prove all of the following:
+
+1. exact `T` resolves to a commit and tree, `HEAD` is exactly `T`, and the
+   repository index/worktree are clean and supported; the sealed promotion
+   anchor reaches `T` only through linear single-parent history;
+2. future acceptance roots/receipts will be bound to that exact SHA and source
+   cohort;
+3. the phase has one complete declarative closeout policy and both exact
+   `VERIFIED` and `AUTHOR_OPERATED` routes are constructible;
+4. candidate, author-decision, tag and promotion authority contain no branch
+   name, `latest`, moving ref or other inferred identity;
+5. the expected status-only projection contains no impossible SHA/evidence
+   self-reference;
+6. the expected delta can be constructed and content/mode audited for either
+   later explicit selection, and its future decision-record path is physically
+   absent, nonignored and safely materializable as a regular `100644` blob;
+7. the exact tag, target branch and remote authority required by the policy are
+   defined without performing promotion; configured fetch/push URL identities
+   are identical, single-authority and hash-sealed without persisting credential
+   material; and
+8. the actual PHASE, COMPOSED and FULL executable plans were compared; FULL
+   contains all COMPOSED coverage, the applicable phase verifier has an exact
+   live FULL integration mapping, and no obligation remains uncovered under the
+   schema-v2 empty-complement contract; and
+9. there is no known missing lifecycle or verifier change that would need to be
+   repaired after FULL.
+
+The readiness result is bound to the policy bytes, exact `T`, both validated
+routes, a mode-neutral acceptance-plan hash and relevant repository/remote
+configuration. It records `closeoutMode=null`; supplying `-CloseoutMode` to
+READINESS is an error. A change to any bound input
+invalidates it. `CLOSEOUT_READINESS = FAIL` means the acceptance FULL campaign
+must not start; it is not an invitation to run first and repair provenance
+later.
+
+### 12.4 Declarative phase policy
+
+The generic `tools/agent/closeout-workflow.ps1` authority supplies readiness,
+closeout preparation, verified closeout validation and post-promotion audit;
+`tools/agent/phase-closeout.ps1` is its operator entry point. A future closable
+phase supplies data, not a copy of the helper logic. Policy schema v2 declares
+at least:
+
+- `phase` and exact technical/base ancestry constraints;
+- `technicalEvidence.requiredLevels` exactly `PHASE`, `COMPOSED`, `FULL`, a
+  `SINGLE_FULL_WITH_AUTHENTICATED_CLAIMS` strategy, physical level `FULL`, exact
+  PHASE-nested/COMPOSED-subsumed/FULL-root claims, `complements=[]`,
+  `fullRequiresCleanBuild=true` and the false `lifecycleRepairRequired`
+  readiness invariant;
+- `closeout.supportedModes` containing exactly `VERIFIED` and
+  `AUTHOR_OPERATED`, `recordPath` and bounded `literalReplacements`; schema-v2
+  requires `canonicalLfHashManifests=[]` so a status closeout cannot rewrite
+  executable, tolerance or reference authority;
+- author-decision record and evidence-role closure; and
+- `promotion.branch`, `remote`, `tagName`, `tagMessage` and
+  `closeoutCommitMessage`.
+
+Unknown or missing fields, a post-approval selection containing zero or more
+than one mode, an unprojectable delta, path-only approval, or dependency on
+inferred branch/`latest` state fail closed.
+Literal replacements may target Markdown documentation or
+`geocedg/specs/operations/`, but never a product/scientific specification or a
+Markdown file under validation authority; the only validation-tree creation is
+the exact policy-declared JSON decision record.
+Scientific and phase-specific assertions remain in their existing authorities;
+they are not duplicated in lifecycle code or policy.
+
+PREPARE uses bounded writes and atomic persistence for its result receipt. Once
+its first bounded repository mutation begins, any failure preserves the current
+index and worktree for inspection; automation must not perform a destructive
+rollback across the index/worktree concurrency boundary. The failure must report
+`UNKNOWN_REQUIRES_INSPECTION`, `partialMutationPossible=true`, the bounded paths
+to inspect through the policy-declared status/decision scope, and no rollback
+proof. It may not claim `mutationState=NONE` or exact clean `T`. A fresh PREPARE
+is permitted only after the author/operator explicitly restores and
+re-establishes exact clean `T`.
+
+### 12.5 Exactly two closeout modes
+
+`CLOSEOUT_MODE` is explicitly one of `VERIFIED` or `AUTHOR_OPERATED`. It is
+selected only after technical evidence and author review, in the explicit
+author approval consumed by PREPARE/AUDIT. READINESS validates both routes but
+never selects or infers one. The selected mode is recorded in the author-facing
+closeout plan. It
+affects only the post-approval Git-operation boundary. It never changes the
+single-FULL plan or its PHASE/COMPOSED/FULL coverage claims, tasks, filters,
+numerical/reference work, tests, tolerances, acceptance semantics, author smoke
+or exact-SHA approval rule.
+
+#### `VERIFIED`
+
+The existing ADR 0023/0024 guarantees remain intact:
+
+```text
+T
+  -> explicit AUTHOR APPROVAL of T
+  -> verified AUTHOR_CLOSEOUT
+  -> status-only closeout commit C
+  -> annotated phase tag
+  -> fast-forward main
+```
+
+Exact ancestry, evidence linkage, complete delta/path/mode/content authority,
+materialization validity, unchanged executable inputs, no-self-approval and
+publication checks remain mandatory. Section 12 does not relax any existing
+`AUTHOR_CLOSEOUT` assertion. For schema-v2 policies,
+`phase-closeout.ps1 -Action PREPARE -CloseoutMode VERIFIED` is the generic
+verified `AUTHOR_CLOSEOUT` preparation gate: it validates exact
+approval/evidence and stages the bounded projected delta, but does not yet claim
+the section-10 gate requiring exact `C`. `-Action FINALIZE -CloseoutMode
+VERIFIED` then revalidates PREPARE and repository state, creates and validates
+exact direct child `C`, creates the annotated tag, fast-forwards the protected
+branch, performs one non-force atomic push containing only the literal branch
+and tag refspecs, and automatically runs the same post-promotion audit. The push
+must disable ref expansion and its pre-push hook; an effective remote mirror or
+configured `push.pushOption` fails closed. The complete verified
+`AUTHOR_CLOSEOUT` is established only by that validated `C` plus the passing audit.
+`FINALIZE` is rejected for `AUTHOR_OPERATED`.
+
+```powershell
+.\tools\agent\phase-closeout.ps1 -Action FINALIZE `
+  -CloseoutMode VERIFIED `
+  -TechnicalCommit <full-T> `
+  -PolicyPath <repository-relative-policy> `
+  -ReadinessReceiptPath <receipt> `
+  -TechnicalCampaignPath <FULL-verification-result> `
+  -AuthorApprovalPath <explicit-author-decision.json> `
+  -PreparationResultPath <verified-prepare-result.json> `
+  -ResultPath <ignored-or-external-finalization-result.json>
+```
+
+#### `AUTHOR_OPERATED`
+
+After an explicit author decision naming `T`, the author supplies this exact
+decision shape. Tooling may persist and validate a decision already made in the
+conversation, but may not originate it:
+
+```json
+{
+  "schemaVersion": 1,
+  "kind": "GEOCEDG_EXPLICIT_AUTHOR_APPROVAL",
+  "phase": "<exact-policy-phase>",
+  "reviewedTechnicalCommit": "<full-T>",
+  "closeoutMode": "AUTHOR_OPERATED",
+  "decision": "PASS_AUTHOR_APPROVED",
+  "authority": "AUTHOR",
+  "selfApproved": false
+}
+```
+
+Preparation then uses:
+
+```powershell
+.\tools\agent\phase-closeout.ps1 -Action PREPARE `
+  -CloseoutMode AUTHOR_OPERATED `
+  -TechnicalCommit <full-T> `
+  -PolicyPath <repository-relative-policy> `
+  -ReadinessReceiptPath <receipt> `
+  -TechnicalCampaignPath <FULL-verification-result> `
+  -AuthorApprovalPath <explicit-author-decision.json> `
+  -ResultPath <ignored-or-external-path>
+```
+
+Preparation validates approval and the single FULL campaign plus all three
+authenticated coverage claims, constructs the exact expected
+status/documentation delta and stages only that delta/decision record. It then
+stops. Its output must display:
+
+- exact approved technical SHA `T`;
+- every expected closeout path, mode and bounded content transformation;
+- the expected annotated tag and target;
+- the declared promotion branch and remote; and
+- the remaining human-owned commit `C`, tag, fast-forward and push operations.
+
+Remaining operations are machine-readable data (`program`, an `arguments`
+array, explicit placeholder inputs/outputs and expected parent), never an
+interpolated shell command. Operator UIs may serialize that argv vector for
+inspection but must not concatenate or execute it implicitly.
+
+The human boundary contains exactly seven structured Git operations: create
+`C`, capture its exact SHA, verify its direct parent, create the annotated tag,
+switch to the promotion branch, fast-forward it and push branch plus tag. The
+mandatory read-only post-promotion audit is emitted as a separate structured
+action with its complete parameter binding; it is not a human Git operation.
+
+Preparation in this mode must not commit, tag, merge, rebase, fast-forward,
+push, force-push or otherwise mutate refs/remotes. The author performs those Git
+operations. When executable inputs have not changed, no second PHASE/COMPOSED/
+FULL run is required merely because the status-only commit and promotion were
+human-operated.
+
+The mandatory post-promotion audit is Git-read-only except for its ignored or
+external result file:
+
+```powershell
+.\tools\agent\phase-closeout.ps1 -Action AUDIT `
+  -CloseoutMode AUTHOR_OPERATED `
+  -TechnicalCommit <full-T> `
+  -CloseoutCommit <full-C> `
+  -PolicyPath <repository-relative-policy> `
+  -ReadinessReceiptPath <receipt> `
+  -TechnicalCampaignPath <FULL-verification-result> `
+  -AuthorApprovalPath <explicit-author-decision.json> `
+  -ResultPath <ignored-or-external-path>
+```
+
+It verifies at least:
+
+1. `T` is an ancestor of `C`;
+2. `T..C` contains exactly the policy-authorized status/documentation delta and
+   allowed content, paths and modes;
+3. product, test, verifier, build inputs, tolerances, numerical references and
+   every other executable input are unchanged;
+4. the expected tag is annotated and peels to the policy-defined target;
+5. the target branch advanced through the required linear fast-forward, with no
+   merge commit, unexpected parent, rebase/substitution or force-push;
+6. local `main`, `origin/main` and the queried live remote agree at `C`;
+7. worktree and index are clean;
+8. technical evidence still names `T`, never `C`; and
+9. `selfApproved=false` is explicit and coherent with the author decision.
+
+Remote-tracking refs alone are not a live-remote audit. The audit records the
+remote URL/identity and queried exact refs without silently repairing them. Any
+mismatch is a reported closeout failure; the tool must not mutate history, move
+tags or reinterpret evidence to obtain PASS.
+
+The repository-visible proof of "no force-push" is necessarily bounded: the
+sealed readiness anchor must remain an ancestor of exact `T` and `C`, `C` must
+be the direct single-parent child of `T`, and all current local/tracking/live
+refs must equal `C`. A transient server-side force update that ultimately
+restores the same object graph is not observable without an independent hosting
+audit log; do not claim that stronger historical fact from Git objects alone.
+
+### 12.6 Readiness vocabulary
+
+`AUTHOR REVIEW READY` means only that the candidate is prepared for author
+review. It does not assert clean-commit acceptance, closeout-consumable evidence,
+a selected viable route or permission to promote.
+
+`AUTHOR CLOSEOUT READY` means exact `T` was accepted from a clean committed
+checkout, the single FULL campaign and its authenticated PHASE/COMPOSED/FULL
+claims passed and are closeout-consumable for `T`, one post-approval route is
+explicitly selected, and PREPARE validated that route against the mode-neutral
+`CLOSEOUT_READINESS` plan. The current index/worktree then contains exclusively
+the exact staged closeout delta; it is not misreported as clean. Under schema v2,
+applicable review/smoke and the explicit exact-`T` author decision precede that
+selection/PREPARE state. Readiness alone never means `AUTHOR APPROVED` and
+never chooses a mode; automation may validate but not originate approval.
+
+### 12.7 Compatibility and historical boundary
+
+Existing ADR 0023/0024 closeouts and G9U1 artifacts retain their original
+meaning. In particular, the G9U1 heavy executions remain attributed to their
+recorded dirty precommit cohort, while the later lifecycle normalization and
+published closeout retain their existing distinct SHAs. Do not edit old
+receipts, change their classification, or claim that this prospective rule was
+in force for them.
+
+The focused contract suite covers dirty final-acceptance rejection, clean exact
+`T` acceptance, missing/invalid route and self-reference readiness failures,
+both mode-positive paths, and proof that preparation performs no final Git/ref/
+remote operation. Post-promotion negatives include substituted SHA,
+wrong/lightweight tag, merge or non-linear history, productive/executable
+change, extra closeout delta, dirty state and local/tracking/live-remote
+divergence. It also proves evidence remains attributed to `T`,
+`selfApproved=false`, one physical FULL campaign supplies truthful separable
+PHASE/COMPOSED/FULL claims, and the same frozen campaign/claim plan is consumed
+by both modes.
+
+This amendment authorizes no product phase. Its infrastructure implementation
+requires focused positive/negative coverage and one normal clean FULL gate
+under section 8, with authenticated lower-level claims; section 11.2 cannot be
+used to avoid that deliberate methodology validation.
+
+```text
+PRODUCT_PHASE_EFFECT = NONE
+VERIFICATION_INFRASTRUCTURE_IMPACT = UPDATE_REQUIRED
+BOOTSTRAP IMPACT — NO CHANGE REQUIRED
+Rationale: no workstation prerequisite, supported runtime/toolchain, Gradle,
+Conda, packaging, download or environment contract changes.
+GUIDE_IMPACT = UPDATED
+GUIDE_PATHS = docs/developer/geocedg_developer_guide.md;
+  docs/developer/geocedg_agent_prompt_guide.md;
+  .github/prompts/canonical/verification.prompt.md;
+  .github/prompts/canonical/governance.prompt.md;
+  .github/prompts/reviews/change-review.prompt.md;
+  .github/prompts/tasks/task-template.prompt.md
+selfApproved = false
+```

@@ -15,6 +15,7 @@ param(
     [switch]$KeepBuildOutputs,
     [switch]$RunBenchmarks,
     [switch]$VerifyPackagingArtifacts,
+    [string]$CloseoutReadinessPath,
     [string]$LogDirectory = (Join-Path ([IO.Path]::GetTempPath()) "geocedg-verify"),
     [string]$BenchmarkOutputPath,
     [string]$PackagingArtifactRoot
@@ -88,6 +89,32 @@ $VerificationStarted = [datetime]::UtcNow
 $VerificationTimer = [Diagnostics.Stopwatch]::StartNew()
 $EffectiveLevel = $Level.ToUpperInvariant()
 $DevEvidence = $null
+$RequestedEvidenceUse = $(if ($PSBoundParameters.ContainsKey("CloseoutReadinessPath")) {
+    "FINAL_ACCEPTANCE"
+} else {
+    "DEVELOPMENT_DIAGNOSTIC"
+})
+$EvidenceUse = "DEVELOPMENT_DIAGNOSTIC"
+$RepositoryCohort = $null
+$ReviewedCandidate = $null
+$CloseoutMode = $null
+$ValidatedCloseoutModes = @()
+$AcceptancePlanSha256 = $null
+$CloseoutPolicyPath = $null
+$ResolvedCloseoutReadinessPath = $null
+$CloseoutReadinessSha256 = $null
+$CloseoutConsumable = $false
+$CloseoutConsumabilityReason = "VERIFICATION_NOT_STARTED"
+$HeavyCampaignStarted = $false
+$TechnicalCampaignPlanComparison = $null
+$TechnicalCampaignEvidence = $null
+$AcceptancePhaseExecution = $null
+$AcceptanceBaselineExecution = $null
+$AcceptanceCommonGateCompletion = $null
+$ExecutedAcceptanceCommonGates = [Collections.Generic.List[string]]::new()
+$VerificationExecutionPlan = $null
+$CanonicalBuildLevel = $null
+$BaselineFullTests = $false
 
 . (Join-Path $PSScriptRoot "repository-state.ps1")
 . (Join-Path $PSScriptRoot "repository-generated-state.ps1")
@@ -105,6 +132,56 @@ function Assert-LastScriptSuccess {
 
     if ($LASTEXITCODE -ne 0) {
         throw "$Description failed with exit code $LASTEXITCODE."
+    }
+}
+
+function Add-AcceptanceCommonGate {
+    param([Parameter(Mandatory)] [string]$GateId)
+    if ($EvidenceUse -ceq "FINAL_ACCEPTANCE") {
+        if ($null -eq $VerificationExecutionPlan) {
+            throw 'Final acceptance has no central executable verification plan.'
+        }
+        $expected = @($VerificationExecutionPlan.commonGateIds)
+        $next = $ExecutedAcceptanceCommonGates.Count
+        if ($next -ge $expected.Count -or
+                [string]$expected[$next] -cne $GateId) {
+            throw "Executed acceptance gate is absent or out of order in the central plan: $GateId"
+        }
+        $ExecutedAcceptanceCommonGates.Add($GateId)
+    }
+}
+
+function Assert-CommonVerificationBodyUsesCentralLevelPlan {
+    $source = [IO.File]::ReadAllText($PSCommandPath)
+    $startMarker = '# BEGIN ' + 'COMPOSED_FULL_COMMON_BODY'
+    $endMarker = '# END ' + 'COMPOSED_FULL_COMMON_BODY'
+    $start = $source.IndexOf($startMarker, [StringComparison]::Ordinal)
+    $end = $source.IndexOf($endMarker, [StringComparison]::Ordinal)
+    if ($start -lt 0 -or $end -le $start -or
+            $source.IndexOf($startMarker, $start + $startMarker.Length,
+                [StringComparison]::Ordinal) -ge 0 -or
+            $source.IndexOf($endMarker, $end + $endMarker.Length,
+                [StringComparison]::Ordinal) -ge 0) {
+        throw 'COMPOSED/FULL common-body level guard markers are missing or ambiguous.'
+    }
+    $tokens = $null
+    $parseErrors = $null
+    $ast = [Management.Automation.Language.Parser]::ParseFile(
+        $PSCommandPath, [ref]$tokens, [ref]$parseErrors)
+    if (@($parseErrors).Count -ne 0) {
+        throw 'Cannot prove the COMPOSED/FULL common body because verify.ps1 has parse errors.'
+    }
+    $bodyStart = $start + $startMarker.Length
+    $forbiddenVariables = @('EffectiveLevel', 'Level', 'FullTests')
+    $violations = @($ast.FindAll({
+                param($node)
+                $node -is [Management.Automation.Language.VariableExpressionAst] -and
+                $node.Extent.StartOffset -ge $bodyStart -and
+                $node.Extent.EndOffset -le $end -and
+                $forbiddenVariables -ccontains $node.VariablePath.UserPath
+            }, $true))
+    if ($violations.Count -ne 0) {
+        throw 'COMPOSED/FULL common body contains an undeclared level-specific branch.'
     }
 }
 
@@ -136,6 +213,22 @@ try {
     if ($IndependentBuilds -and $EffectiveLevel -notin @("COMPOSED", "FULL")) {
         throw "IndependentBuilds is a COMPOSED/FULL diagnostic fallback."
     }
+    if ($PSBoundParameters.ContainsKey("CloseoutReadinessPath") -and
+            [string]::IsNullOrWhiteSpace($CloseoutReadinessPath)) {
+        throw "CloseoutReadinessPath must identify a readiness receipt."
+    }
+    if (-not [string]::IsNullOrWhiteSpace($CloseoutReadinessPath) -and
+            ($EffectiveLevel -cne "FULL" -or $SkipBuild -or $IndependentBuilds)) {
+        throw "CloseoutReadinessPath selects exactly one canonical FULL physical campaign; PHASE and COMPOSED are authenticated coverage claims, not separate runs."
+    }
+    if (-not [string]::IsNullOrWhiteSpace($CloseoutReadinessPath) -and
+            $EffectiveLevel -ceq "FULL" -and -not $CleanBuild) {
+        throw "CloseoutReadinessPath requires CleanBuild for the acceptance FULL required by closeout policy."
+    }
+    if (-not [string]::IsNullOrWhiteSpace($CloseoutReadinessPath) -and
+            -not $PSBoundParameters.ContainsKey("LogDirectory")) {
+        throw "CloseoutReadinessPath requires an explicit fresh LogDirectory for this technical level."
+    }
     if ($CleanBuild -and ($EffectiveLevel -ne "FULL" -or $IndependentBuilds)) {
         throw "CleanBuild requires canonical FULL; it clears generated outputs, not dependency caches."
     }
@@ -145,7 +238,13 @@ try {
                 $PSBoundParameters.ContainsKey("PackagingArtifactRoot"))) {
         throw "Interactive, packaging and global benchmark options require COMPOSED or FULL."
     }
+    $CanonicalBuildLevel = $EffectiveLevel
+    $BaselineFullTests = ($EffectiveLevel -ceq 'FULL')
     $LogDirectory = [IO.Path]::GetFullPath($LogDirectory)
+    if (-not [string]::IsNullOrWhiteSpace($CloseoutReadinessPath) -and
+            (Test-Path -LiteralPath $LogDirectory)) {
+        throw "CloseoutReadinessPath requires a fresh LogDirectory that does not already exist or contain evidence."
+    }
     Assert-VerificationLogDirectoryOutsideGeneratedState `
         -RepositoryRoot $RepositoryRoot -LogDirectory $LogDirectory
     $rootPrefix = $RepositoryRoot.TrimEnd('/', '\') + [IO.Path]::DirectorySeparatorChar
@@ -165,6 +264,11 @@ try {
     if ($LASTEXITCODE -ne 0) {
         throw "Unable to read initial repository status."
     }
+    $RepositoryCohort = $(if ([string]::IsNullOrWhiteSpace($InitialStatus)) {
+        "CLEAN_COMMIT"
+    } else {
+        "DIRTY_PRECOMMIT"
+    })
 
     $repositoryState = Get-GeoCeDGRepositoryState `
         -RepositoryRoot $RepositoryRoot
@@ -174,6 +278,91 @@ try {
     Write-Host "  Latest included phase: $($repositoryState.LatestIncludedPhase)"
     Write-Host "  Verification level: $EffectiveLevel"
     if ($SkipBuild) { Write-Host "  STATIC ONLY: no runtime acceptance is claimed." }
+
+    if (-not [string]::IsNullOrWhiteSpace($CloseoutReadinessPath)) {
+        if ($RepositoryCohort -ceq "DIRTY_PRECOMMIT") {
+            $CloseoutConsumabilityReason = "DIRTY_PRECOMMIT_COHORT"
+            throw "Final acceptance requires a clean committed checkout; dirty/precommit cohorts are diagnostic only."
+        }
+        $CloseoutConsumabilityReason = "CLOSEOUT_READINESS_FAILED"
+        $ResolvedCloseoutReadinessPath = [IO.Path]::GetFullPath($CloseoutReadinessPath)
+        if (-not (Test-Path -LiteralPath $ResolvedCloseoutReadinessPath -PathType Leaf)) {
+            throw "Closeout readiness receipt does not exist: $ResolvedCloseoutReadinessPath"
+        }
+        $readinessHashBefore = (Get-FileHash -LiteralPath $ResolvedCloseoutReadinessPath `
+            -Algorithm SHA256).Hash.ToLowerInvariant()
+        $CloseoutReadinessSha256 = $readinessHashBefore
+        try {
+            . (Join-Path $PSScriptRoot "closeout-workflow.ps1")
+            $readinessInput = Get-Content -LiteralPath $ResolvedCloseoutReadinessPath `
+                -Raw -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop
+            $readiness = Test-GeoCeDGCloseoutAcceptancePreflight `
+                -RepositoryRoot $RepositoryRoot `
+                -TechnicalCommit ([string]$readinessInput.reviewedTechnicalCommit) `
+                -PolicyPath ([string]$readinessInput.policyPath) `
+                -ReadinessReceiptPath $ResolvedCloseoutReadinessPath
+            $readinessModes = @($readiness.validatedCloseoutModes |
+                ForEach-Object { [string]$_ })
+            if ($null -ne $readiness.closeoutMode -or
+                    $readinessModes.Count -ne 2 -or
+                    -not ($readinessModes -ccontains "VERIFIED") -or
+                    -not ($readinessModes -ccontains "AUTHOR_OPERATED") -or
+                    [string]$readiness.acceptancePlanSha256 -cnotmatch '^[0-9a-f]{64}$') {
+                throw "Readiness did not preserve the mode-neutral acceptance plan."
+            }
+            $VerificationExecutionPlan = Get-GeoCeDGVerificationExecutionPlan `
+                -Level FULL -Phase ([string]$readiness.phase)
+            $currentRuntimePlanJson = $VerificationExecutionPlan |
+                ConvertTo-Json -Depth 100 -Compress
+            $sealedRuntimePlanJson = $readiness.technicalCampaignPlan.
+                runtimeExecutionPlans.FULL | ConvertTo-Json -Depth 100 -Compress
+            if ($currentRuntimePlanJson -cne $sealedRuntimePlanJson) {
+                throw 'The central executable FULL plan differs from CLOSEOUT_READINESS.'
+            }
+            $CanonicalBuildLevel = [string]$VerificationExecutionPlan.canonicalBuild.level
+            $BaselineFullTests = [bool]$VerificationExecutionPlan.baseline.fullTests
+            if ($EffectiveLevel -ceq "PHASE" -and
+                    [string]$readiness.phase -cne $phaseDefinition.Phase) {
+                throw "Readiness phase '$($readiness.phase)' does not match requested PHASE '$($phaseDefinition.Phase)'."
+            }
+        } catch {
+            $CloseoutConsumabilityReason = "CLOSEOUT_READINESS_FAILED"
+            throw "CLOSEOUT_READINESS failed before the technical campaign: $($_.Exception.Message)"
+        }
+        $CloseoutReadinessSha256 = (Get-FileHash `
+            -LiteralPath $ResolvedCloseoutReadinessPath -Algorithm SHA256).Hash.ToLowerInvariant()
+        if ($CloseoutReadinessSha256 -cne $readinessHashBefore) {
+            throw "CLOSEOUT_READINESS failed before the technical campaign: readiness receipt changed during validation."
+        }
+        $EvidenceUse = "FINAL_ACCEPTANCE"
+        $ReviewedCandidate = [string]$readiness.reviewedTechnicalCommit
+        $ValidatedCloseoutModes = $readinessModes
+            $AcceptancePlanSha256 = [string]$readiness.acceptancePlanSha256
+            $CloseoutPolicyPath = [string]$readiness.policyPath
+            $TechnicalCampaignPlanComparison = `
+                Compare-GeoCeDGCloseoutPreHeavyExecutionPlan `
+                    -ReadinessReceipt $readiness -RequestedLevel $EffectiveLevel `
+                    -CleanGeneratedOutputs ([bool]$CleanBuild) `
+                    -IndependentBuilds ([bool]$IndependentBuilds)
+            $CloseoutConsumabilityReason = "TECHNICAL_CAMPAIGN_PENDING"
+        Write-Host "  Evidence use: $EvidenceUse"
+        Write-Host "  Reviewed candidate: $ReviewedCandidate"
+        Write-Host "  Validated closeout modes: $($ValidatedCloseoutModes -join ', ')"
+        Write-Host "  CLOSEOUT_READINESS: PASS"
+    } elseif ($RepositoryCohort -ceq "DIRTY_PRECOMMIT") {
+        $CloseoutConsumabilityReason = "DIRTY_PRECOMMIT_COHORT"
+        Write-Host "  Evidence use: $EvidenceUse (not consumable for closeout)"
+    } else {
+        $CloseoutConsumabilityReason = "NO_CLOSEOUT_READINESS_RECEIPT"
+        Write-Host "  Evidence use: $EvidenceUse (not consumable for closeout)"
+    }
+
+    if ($EffectiveLevel -in @("PHASE", "COMPOSED", "FULL") -and -not $SkipBuild) {
+        $HeavyCampaignStarted = $true
+    }
+    if ($EvidenceUse -ceq 'FINAL_ACCEPTANCE') {
+        Assert-CommonVerificationBodyUsesCentralLevelPlan
+    }
 
     if ($EffectiveLevel -eq "DEV") {
         $GeneratedState = New-RepositoryGeneratedStateSnapshot `
@@ -194,14 +383,42 @@ try {
         & (Join-Path $PSScriptRoot $phaseDefinition.Verifier) @phaseParameters
         Assert-LastScriptSuccess -Description "PHASE $($phaseDefinition.Phase)"
     } else {
+    # BEGIN COMPOSED_FULL_COMMON_BODY
 
     Write-Host "`n==> GeoCeDG operational contracts"
-    & $OperationalVerifier -LogDirectory (Join-Path $LogDirectory "operational")
+    $operationalLogDirectory = Join-Path $LogDirectory "operational"
+    $phaseBefore = $null
+    $phaseStartedUtc = $null
+    if ($EvidenceUse -ceq "FINAL_ACCEPTANCE") {
+        $phaseBefore = Get-GeoCeDGCloseoutCohortSnapshot $RepositoryRoot
+        $phaseStartedUtc = [datetime]::UtcNow.ToString("o")
+    }
+    & $OperationalVerifier -LogDirectory $operationalLogDirectory
+    $operationalExitCode = $LASTEXITCODE
+    $phaseFinishedUtc = [datetime]::UtcNow.ToString("o")
+    if ($EvidenceUse -ceq "FINAL_ACCEPTANCE") {
+        $phaseAfter = Get-GeoCeDGCloseoutCohortSnapshot $RepositoryRoot
+        $AcceptancePhaseExecution = [pscustomobject][ordered]@{
+            startedUtc = $phaseStartedUtc
+            finishedUtc = $phaseFinishedUtc
+            exitCode = [long]$operationalExitCode
+            program = 'tools/agent/verify-operational.ps1'
+            arguments = [object[]]@(
+                [ordered]@{ name = 'LogDirectory'; value = 'CAMPAIGN_ROOT/operational' }
+            )
+            beforeHead = [string]$phaseBefore.head
+            afterHead = [string]$phaseAfter.head
+            beforeStatusSha256 = [string]$phaseBefore.statusSha256
+            afterStatusSha256 = [string]$phaseAfter.statusSha256
+        }
+    }
     Assert-LastScriptSuccess -Description "GeoCeDG operational contracts"
+    Add-AcceptanceCommonGate 'OPERATIONAL_CONTRACTS'
 
     Write-Host "`n==> Windows workstation operational contracts"
     & $WorkstationVerifier
     Assert-LastScriptSuccess -Description "Windows workstation operational contracts"
+    Add-AcceptanceCommonGate 'WORKSTATION_CONTRACTS'
 
     if (-not $SkipBuild -and -not $IndependentBuilds) {
         # One transaction owns the generated tree for the two canonical module
@@ -213,15 +430,21 @@ try {
             Clear-RepositoryGeneratedOutputs -RepositoryRoot $RepositoryRoot `
                 -DirectoryNames @("build", ".gradle", ".kotlin")
         }
+        if ($EvidenceUse -ceq 'FINAL_ACCEPTANCE' -and
+                $CanonicalBuildLevel -cne 'FULL') {
+            throw 'Central executable plan changed the requested physical campaign level.'
+        }
         $CanonicalEvidence = Invoke-GeoCeDGCanonicalBuild -RepositoryRoot $RepositoryRoot `
-            -Level $EffectiveLevel -LogDirectory (Join-Path $LogDirectory "canonical-build") `
+            -Level $CanonicalBuildLevel -LogDirectory (Join-Path $LogDirectory "canonical-build") `
             -AllowToolchainDownload:$AllowToolchainDownload -KeepBuildOutputs:$KeepBuildOutputs `
             -RebuildDependencies:$CleanBuild
+        Add-AcceptanceCommonGate 'CANONICAL_FULL_BUILD'
     }
 
     Write-Host "`n==> Controlled legacy CeDG integration"
     & $LegacyVerifier
     Assert-LastScriptSuccess -Description "Controlled legacy CeDG integration"
+    Add-AcceptanceCommonGate 'LEGACY_INTEGRATION'
 
     Write-Host "`n==> Native 2D geometry and DXF export"
     $dxfParameters = @{
@@ -239,6 +462,7 @@ try {
     Add-CurrentBuildEvidence -Parameters $dxfParameters
     & $DxfVerifier @dxfParameters
     Assert-LastScriptSuccess -Description "Native 2D geometry and DXF export"
+    Add-AcceptanceCommonGate 'DXF_AND_NATIVE_2D'
 
     Write-Host "`n==> G6 Locus V2 characterization and experimental kernel"
     $locusV2Parameters = @{
@@ -1164,6 +1388,7 @@ try {
         & $G9U1ConstructionVerifier @g9u1Parameters
         Assert-LastScriptSuccess -Description "G9U1 CeDG Construction workspace"
     }
+    Add-AcceptanceCommonGate 'DECLARED_PHASE_ASSERTION_SUITE'
 
     Write-Host "`n==> Standalone Windows packaging contracts"
     $packagingParameters = @{}
@@ -1177,11 +1402,12 @@ try {
     }
     & $PackagingVerifier @packagingParameters
     Assert-LastScriptSuccess -Description "Standalone Windows packaging"
+    Add-AcceptanceCommonGate 'PACKAGING_CONTRACTS'
 
     $baselineParameters = @{
         LogDirectory = [IO.Path]::GetFullPath($LogDirectory)
     }
-    if ($EffectiveLevel -eq "FULL") {
+    if ($BaselineFullTests) {
         $baselineParameters.FullTests = $true
     }
     if ($LaunchDesktop) {
@@ -1198,8 +1424,21 @@ try {
     }
     Write-Host "`n==> Pinned GeoGebra baseline"
     Add-CurrentBuildEvidence -Parameters $baselineParameters
+    $baselineStartedUtc = [datetime]::UtcNow.ToString("o")
     & $BaselineVerifier @baselineParameters
+    $baselineExitCode = $LASTEXITCODE
+    $baselineFinishedUtc = [datetime]::UtcNow.ToString("o")
+    if ($EvidenceUse -ceq "FINAL_ACCEPTANCE") {
+        $AcceptanceBaselineExecution = [pscustomobject][ordered]@{
+            startedUtc = $baselineStartedUtc
+            finishedUtc = $baselineFinishedUtc
+            exitCode = [long]$baselineExitCode
+            fullTests = [bool]$baselineParameters.FullTests
+            canonicalReceiptPath = [string]$CanonicalEvidence.EvidencePath
+        }
+    }
     Assert-LastScriptSuccess -Description "Pinned GeoGebra baseline"
+    Add-AcceptanceCommonGate 'BASELINE_FULL_CONFIRMATION'
 
     $frontendParameters = @{
         LogDirectory = Join-Path ([IO.Path]::GetFullPath($LogDirectory)) "frontend"
@@ -1217,6 +1456,7 @@ try {
     Add-CurrentBuildEvidence -Parameters $frontendParameters
     & $FrontendVerifier @frontendParameters
     Assert-LastScriptSuccess -Description "GeoCeDG frontend profile"
+    Add-AcceptanceCommonGate 'FRONTEND_PROFILE'
 
     if ($RunBenchmarks) {
         if ([string]::IsNullOrWhiteSpace($BenchmarkOutputPath)) {
@@ -1240,6 +1480,35 @@ try {
     if ($LASTEXITCODE -ne 0) {
         throw "git diff --cached --check failed with exit code $LASTEXITCODE."
     }
+    Add-AcceptanceCommonGate 'GIT_WHITESPACE_INTEGRITY'
+    # END COMPOSED_FULL_COMMON_BODY
+    if ($EvidenceUse -ceq "FINAL_ACCEPTANCE") {
+        $expectedGateIds = @($VerificationExecutionPlan.commonGateIds |
+            ForEach-Object { [string]$_ })
+        if (($expectedGateIds -join "`n") -cne
+                (@($readiness.technicalCampaignPlan.commonGatePlan) -join "`n")) {
+            throw 'Executed central gate plan differs from CLOSEOUT_READINESS.'
+        }
+        $actualGateIds = @($ExecutedAcceptanceCommonGates)
+        $expectedGatePlanHash = [string]$readiness.technicalCampaignPlan.
+            commonGatePlanSha256
+        $executedGatePlanBasis = [ordered]@{
+            authority = $readiness.technicalCampaignPlan.authorities.root
+            runtimeAuthority = `
+                $readiness.technicalCampaignPlan.authorities.canonicalRuntime
+            gateIds = $actualGateIds
+        }
+        $AcceptanceCommonGateCompletion = [pscustomobject][ordered]@{
+            state = 'PASS'
+            exitCode = [long]0
+            completedUtc = [datetime]::UtcNow.ToString("o")
+            expectedGateIds = $expectedGateIds
+            actualGateIds = $actualGateIds
+            expectedGatePlanSha256 = $expectedGatePlanHash
+            executedGatePlanSha256 = `
+                Get-GeoCeDGCloseoutStructuredSha256 $executedGatePlanBasis
+        }
+    }
 
 } catch {
     $VerificationFailure = $_.Exception.Message
@@ -1260,6 +1529,34 @@ try {
             if ($finalStatus -ne $InitialStatus) {
                 throw "Repository status changed during verification.`nBefore:`n$InitialStatus`nAfter:`n$finalStatus"
             }
+            if ($EvidenceUse -ceq "FINAL_ACCEPTANCE") {
+                $finalHead = ((& git -C $RepositoryRoot rev-parse --verify HEAD) -join "").Trim()
+                if ($LASTEXITCODE -ne 0 -or $finalHead -cne $ReviewedCandidate) {
+                    throw "Acceptance candidate HEAD changed during verification."
+                }
+                if (-not (Test-Path -LiteralPath $ResolvedCloseoutReadinessPath `
+                        -PathType Leaf) -or
+                        (Get-FileHash -LiteralPath $ResolvedCloseoutReadinessPath `
+                            -Algorithm SHA256).Hash.ToLowerInvariant() -cne
+                        $CloseoutReadinessSha256) {
+                    throw "Closeout readiness receipt changed during verification."
+                }
+                $finalReadiness = Test-GeoCeDGCloseoutAcceptancePreflight `
+                    -RepositoryRoot $RepositoryRoot `
+                    -TechnicalCommit $ReviewedCandidate `
+                    -PolicyPath $CloseoutPolicyPath `
+                    -ReadinessReceiptPath $ResolvedCloseoutReadinessPath
+                if ($null -ne $finalReadiness.closeoutMode -or
+                        [string]$finalReadiness.acceptancePlanSha256 -cne
+                        $AcceptancePlanSha256) {
+                    throw "Closeout readiness acceptance plan changed after the technical campaign."
+                }
+                if ((Get-FileHash -LiteralPath $ResolvedCloseoutReadinessPath `
+                            -Algorithm SHA256).Hash.ToLowerInvariant() -cne
+                        $CloseoutReadinessSha256) {
+                    throw "Closeout readiness receipt changed during final validation."
+                }
+            }
         } catch { $CleanupFailures.Add($_.Exception.Message) }
     }
     $VerificationTimer.Stop()
@@ -1269,13 +1566,53 @@ if ($CleanupFailures.Count -gt 0) {
     $VerificationFailure = (@($VerificationFailure) + @($CleanupFailures) |
         Where-Object { -not [string]::IsNullOrWhiteSpace($_) }) -join "`n"
 }
+if (-not $VerificationFailure -and $EvidenceUse -ceq "FINAL_ACCEPTANCE") {
+    try {
+        if ($null -eq $CanonicalEvidence -or
+                $null -eq $TechnicalCampaignPlanComparison -or
+                $null -eq $AcceptancePhaseExecution -or
+                $null -eq $AcceptanceBaselineExecution -or
+                $null -eq $AcceptanceCommonGateCompletion) {
+            throw "Single FULL acceptance campaign did not produce every required execution envelope."
+        }
+        $TechnicalCampaignEvidence = New-GeoCeDGCloseoutSingleFullCampaignEnvelope `
+            -RepositoryRoot $RepositoryRoot -TechnicalCommit $ReviewedCandidate `
+            -PolicyPath $CloseoutPolicyPath `
+            -ReadinessReceiptPath $ResolvedCloseoutReadinessPath `
+            -CampaignRoot $LogDirectory `
+            -CanonicalReceiptPath $CanonicalEvidence.EvidencePath `
+            -PreHeavyPlanComparison $TechnicalCampaignPlanComparison `
+            -PhaseExecution $AcceptancePhaseExecution `
+            -BaselineExecution $AcceptanceBaselineExecution `
+            -CommonGateCompletion $AcceptanceCommonGateCompletion
+    } catch {
+        $VerificationFailure = "Unable to seal single FULL acceptance campaign: $($_.Exception.Message)"
+        $CloseoutConsumabilityReason = "TECHNICAL_CAMPAIGN_FAILED"
+    }
+}
 if ($null -ne $InitialStatus) {
     try {
+    if ($VerificationFailure) {
+        $CloseoutConsumable = $false
+        if ($EvidenceUse -ceq "FINAL_ACCEPTANCE" -and
+                $CloseoutConsumabilityReason -ceq "TECHNICAL_CAMPAIGN_PENDING") {
+            $CloseoutConsumabilityReason = "TECHNICAL_CAMPAIGN_FAILED"
+        }
+    } elseif ($EvidenceUse -ceq "FINAL_ACCEPTANCE" -and
+            $RepositoryCohort -ceq "CLEAN_COMMIT" -and
+            $ReviewedCandidate -ceq [string]$repositoryState.Commit -and
+            $HeavyCampaignStarted -and $null -ne $TechnicalCampaignEvidence) {
+        $CloseoutConsumable = $true
+        $CloseoutConsumabilityReason = "READINESS_BOUND_TECHNICAL_GATES_PASSED"
+    } elseif ($EvidenceUse -ceq "FINAL_ACCEPTANCE") {
+        $CloseoutConsumable = $false
+        $CloseoutConsumabilityReason = "ACCEPTANCE_BINDING_INCOMPLETE"
+    }
     $result = [ordered]@{
         schemaVersion = 1
         level = $EffectiveLevel
         repositoryCommit = $(if ($null -ne $repositoryState) { $repositoryState.Commit } else { $null })
-        phase = $Phase
+        phase = $(if ($EffectiveLevel -ceq "PHASE") { $phaseDefinition.Phase } else { $null })
         module = $Module
         testFilters = $TestFilter
         state = $(if ($VerificationFailure) { "FAILED" }
@@ -1289,6 +1626,19 @@ if ($null -ne $InitialStatus) {
         keepBuildOutputs = [bool]$KeepBuildOutputs
         canonicalReceipt = $(if ($null -ne $CanonicalEvidence) { $CanonicalEvidence.EvidencePath } else { $null })
         devEvidence = $(if ($null -ne $DevEvidence) { $DevEvidence.SummaryPath } else { $null })
+        requestedEvidenceUse = $RequestedEvidenceUse
+        evidenceUse = $EvidenceUse
+        repositoryCohort = $RepositoryCohort
+        reviewedCandidate = $ReviewedCandidate
+        closeoutMode = $CloseoutMode
+        validatedCloseoutModes = @($ValidatedCloseoutModes)
+        acceptancePlanSha256 = $AcceptancePlanSha256
+        readinessReceiptPath = $ResolvedCloseoutReadinessPath
+        readinessReceiptSha256 = $CloseoutReadinessSha256
+        closeoutConsumable = [bool]$CloseoutConsumable
+        reason = $CloseoutConsumabilityReason
+        heavyCampaignStarted = [bool]$HeavyCampaignStarted
+        technicalCampaign = $TechnicalCampaignEvidence
         startedUtc = $VerificationStarted.ToString("o")
         finishedUtc = [datetime]::UtcNow.ToString("o")
         elapsedSeconds = [math]::Round($VerificationTimer.Elapsed.TotalSeconds, 3)
@@ -1303,7 +1653,7 @@ if ($null -ne $InitialStatus) {
         selfApproved = $false
     }
         [IO.File]::WriteAllText((Join-Path $LogDirectory "verification-result.json"),
-            (($result | ConvertTo-Json -Depth 20).Replace("`r`n", "`n") + "`n"),
+            (($result | ConvertTo-Json -Depth 100).Replace("`r`n", "`n") + "`n"),
             [Text.UTF8Encoding]::new($false))
     } catch {
         $VerificationFailure = (@($VerificationFailure, "Unable to save result: $($_.Exception.Message)") |

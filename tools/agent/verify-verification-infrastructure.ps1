@@ -1,6 +1,10 @@
 #requires -Version 7.2
 [CmdletBinding()]
 param(
+    [switch]$SkipBuild,
+    [switch]$AllowToolchainDownload,
+    [switch]$KeepBuildOutputs,
+    [switch]$IncrementalBuild,
     [string]$LogDirectory = (Join-Path ([IO.Path]::GetTempPath()) "geocedg-verification-infrastructure"),
     [switch]$Quiet
 )
@@ -8,6 +12,9 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 $PSNativeCommandUseErrorActionPreference = $false
+Import-Module (Join-Path $PSScriptRoot "verification-runtime.psm1")
+Assert-GeoCeDGChildVerificationMode -SkipBuild:$SkipBuild `
+    -IncrementalBuild:$IncrementalBuild
 $RepositoryRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot "../.."))
 $LogDirectory = [IO.Path]::GetFullPath($LogDirectory)
 $pwshCommand = Join-Path $PSHOME $(if ($IsWindows) { "pwsh.exe" } else { "pwsh" })
@@ -39,6 +46,12 @@ try {
             Script = "tests/phase-lifecycle.Tests.ps1"
             PathParameter = "-HelperPath"
             Source = "phase-lifecycle.ps1"
+        },
+        [ordered]@{
+            Name = "phase-closeout"
+            Script = "tests/phase-closeout.Tests.ps1"
+            PathParameter = "-HelperPath"
+            Source = "closeout-workflow.ps1"
         }
     )
     foreach ($fixture in $fixtures) {

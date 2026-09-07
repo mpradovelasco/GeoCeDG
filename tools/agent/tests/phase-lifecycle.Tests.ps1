@@ -14,6 +14,10 @@ $ErrorActionPreference = 'Stop'
 $PSNativeCommandUseErrorActionPreference = $false
 $Lf = [string][char]10
 $ImplementationCommit = 'f761758bd664504057413539b9729ba444c904c1'
+# This allowlist admits only the reviewed operational orchestration. The AST
+# projection below independently seals the historical scientific authority.
+$ApprovedOperationalVerifierCanonicalLfSha256 = `
+    '0097de87d13aef3853436004a00d565575fed9c092c967877d56d16a71ed63de'
 $EntryCommit = '109f077fc5e2a40bcde45d3271eb928ee66fdfcc'
 $RealRepository = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../..'))
 $HelperPath = [IO.Path]::GetFullPath($HelperPath)
@@ -91,6 +95,19 @@ function Get-CanonicalLfSha256 {
         [Security.Cryptography.SHA256]::HashData($bytes)).ToLowerInvariant()
 }
 
+function ConvertTo-CanonicalLf {
+    param([Parameter(Mandatory)] [AllowEmptyString()] [string]$Text)
+    return $Text.Replace("`r`n", "`n").Replace("`r", "`n")
+}
+
+function Get-CanonicalTextSha256 {
+    param([Parameter(Mandatory)] [AllowEmptyString()] [string]$Text)
+    $bytes = [Text.UTF8Encoding]::new($false).GetBytes(
+        (ConvertTo-CanonicalLf $Text))
+    return [Convert]::ToHexString(
+        [Security.Cryptography.SHA256]::HashData($bytes)).ToLowerInvariant()
+}
+
 function Write-Json {
     param([Parameter(Mandatory)] [string]$Path,
         [Parameter(Mandatory)] [object]$Value)
@@ -135,55 +152,186 @@ function Get-AstElementText {
     return $matches[0].Extent.Text.Replace("`r`n", "`n").Replace("`r", "`n")
 }
 
-function Assert-TopLevelPreservedWithG9U1 {
+function Get-ParsedPowerShellAst {
+    param([Parameter(Mandatory)] [string]$Text,
+        [Parameter(Mandatory)] [string]$Description)
+    $tokens = $null
+    $errors = $null
+    $ast = [Management.Automation.Language.Parser]::ParseInput(
+        $Text, [ref]$tokens, [ref]$errors)
+    Assert-Case (@($errors).Count -eq 0) `
+        "$Description contains PowerShell parse errors"
+    return $ast
+}
+
+function Get-AssignmentRootName {
+    param([Parameter(Mandatory)]
+        [Management.Automation.Language.AssignmentStatementAst]$Assignment)
+    $left = $Assignment.Left.Extent.Text
+    if ($left -cmatch '^\$([A-Za-z][A-Za-z0-9]*)(?:\.|\[|$)') {
+        return $Matches[1]
+    }
+    return $null
+}
+
+function Get-AssignmentTextsForRoot {
+    param([Parameter(Mandatory)]
+        [Management.Automation.Language.Ast]$Ast,
+        [Parameter(Mandatory)] [string]$Root)
+    return @($Ast.FindAll({ param($node)
+        $node -is [Management.Automation.Language.AssignmentStatementAst]
+    }, $true) | Where-Object {
+        (Get-AssignmentRootName $_) -ceq $Root
+    } | ForEach-Object { ConvertTo-CanonicalLf $_.Extent.Text })
+}
+
+function Get-VariableCommandTexts {
+    param([Parameter(Mandatory)]
+        [Management.Automation.Language.Ast]$Ast,
+        [Parameter(Mandatory)] [string]$VariableName)
+    return @($Ast.FindAll({ param($node)
+        $node -is [Management.Automation.Language.CommandAst]
+    }, $true) | Where-Object {
+        $elements = @($_.CommandElements)
+        $elements.Count -gt 0 -and
+            $elements[0] -is [Management.Automation.Language.VariableExpressionAst] -and
+            $elements[0].VariablePath.UserPath -ceq $VariableName
+    } | ForEach-Object { ConvertTo-CanonicalLf $_.Extent.Text })
+}
+
+function Get-NamedCommandTexts {
+    param([Parameter(Mandatory)]
+        [Management.Automation.Language.Ast]$Ast,
+        [Parameter(Mandatory)] [string]$CommandName)
+    return @($Ast.FindAll({ param($node)
+        $node -is [Management.Automation.Language.CommandAst]
+    }, $true) | Where-Object {
+        $_.GetCommandName() -ceq $CommandName
+    } | ForEach-Object { ConvertTo-CanonicalLf $_.Extent.Text })
+}
+
+function Get-NamedParameterText {
+    param([Parameter(Mandatory)]
+        [Management.Automation.Language.Ast]$Ast,
+        [Parameter(Mandatory)] [string]$Name)
+    $matches = @($Ast.FindAll({ param($node)
+        $node -is [Management.Automation.Language.ParameterAst]
+    }, $true) | Where-Object {
+        $_.Name.VariablePath.UserPath -ceq $Name
+    })
+    Assert-Case ($matches.Count -eq 1) `
+        "Expected one top-level parameter AST for $Name"
+    return ConvertTo-CanonicalLf $matches[0].Extent.Text
+}
+
+function Get-DevSelectionGateText {
+    param([Parameter(Mandatory)]
+        [Management.Automation.Language.Ast]$Ast)
+    $matches = @($Ast.FindAll({ param($node)
+        $node -is [Management.Automation.Language.IfStatementAst]
+    }, $true) | Where-Object {
+        $_.Extent.Text.Contains(
+            'DEV requires explicit -Module and -TestFilter selections.') -and
+        $_.Extent.Text.Contains(
+            'Module and TestFilter are DEV-only; PHASE/COMPOSED/FULL retain their normative scope.')
+    })
+    Assert-Case ($matches.Count -eq 1) `
+        'Expected one DEV Module/TestFilter selection gate'
+    return ConvertTo-CanonicalLf $matches[0].Extent.Text
+}
+
+function Assert-AstTextSequenceEqual {
+    param([Parameter(Mandatory)] [AllowEmptyCollection()] [object[]]$Current,
+        [Parameter(Mandatory)] [AllowEmptyCollection()] [object[]]$Sealed,
+        [Parameter(Mandatory)] [string]$Description)
+    Assert-Case ($Current.Count -eq $Sealed.Count) `
+        "$Description count changed"
+    for ($index = 0; $index -lt $Sealed.Count; $index++) {
+        Assert-Case ([string]$Current[$index] -ceq [string]$Sealed[$index]) `
+            "$Description changed at occurrence $($index + 1)"
+    }
+}
+
+function Assert-HistoricalScientificTopLevelProjection {
     param([Parameter(Mandatory)] [string]$Current,
         [Parameter(Mandatory)] [string]$Sealed)
-    $currentLf = $Current.Replace("`r`n", "`n")
-    $sealedLf = $Sealed.Replace("`r`n", "`n")
-    if ($currentLf -ceq $sealedLf) { return }
-    # This is the exact additive G9U1 integration, not an erase-by-prefix rule.
-    # Every prior character, task/filter argument and assertion must survive.
-    $declaration = @'
-$G9U1ConstructionVerifier = Join-Path $PSScriptRoot `
-    "verify-g9u1-construction-workspace.ps1"
-'@
-    $consumer = @'
-    $g9u1IntegrationArtifacts = @(
-        $G9U1ConstructionVerifier,
-        (Join-Path $RepositoryRoot "geocedg/validation/g9u1/g9u1-construction-workspace-evidence.json"),
-        (Join-Path $RepositoryRoot "geocedg/validation/g9u1/g9u1-construction-workspace-scenarios.json"),
-        (Join-Path $RepositoryRoot "geocedg/validation/g9u1/g9u1-construction-workspace-evidence.sha256"),
-        (Join-Path $RepositoryRoot "docs/validation/g9u1_construction_workspace_implementation_candidate_report.md")
-    )
-    $g9u1Present = @($g9u1IntegrationArtifacts | Where-Object { Test-Path -LiteralPath $_ -PathType Leaf }).Count
-    if ($g9u1Present -ne 0 -and $g9u1Present -ne $g9u1IntegrationArtifacts.Count) {
-        throw "Incomplete G9U1 integration: focused verifier, evidence, scenarios, hash and report must be paired."
-    }
-    if ($g9u1Present -eq $g9u1IntegrationArtifacts.Count) {
-        Write-Host "`n==> G9U1 CeDG Construction workspace"
-        $g9u1Parameters = @{
-            HistoricalRegressionsAlreadyComposed = $true
-            LogDirectory = Join-Path ([IO.Path]::GetFullPath($LogDirectory)) "g9u1-construction-workspace"
+    $currentAst = Get-ParsedPowerShellAst $Current 'Current top-level verifier'
+    $sealedAst = Get-ParsedPowerShellAst $Sealed 'Sealed top-level verifier'
+    $sealedAssignments = @($sealedAst.FindAll({ param($node)
+        $node -is [Management.Automation.Language.AssignmentStatementAst]
+    }, $true))
+
+    $verifierRoots = @($sealedAssignments | ForEach-Object {
+        Get-AssignmentRootName $_
+    } | Where-Object { $_ -cmatch 'Verifier$' } | Sort-Object -Unique)
+    Assert-Case ($verifierRoots.Count -gt 0) `
+        'Sealed verifier declarations could not be reconstructed'
+    foreach ($root in $verifierRoots) {
+        Assert-AstTextSequenceEqual `
+            -Current @(Get-AssignmentTextsForRoot $currentAst $root) `
+            -Sealed @(Get-AssignmentTextsForRoot $sealedAst $root) `
+            -Description "Historical verifier declaration '$root'"
+        if ($root -cne 'OperationalVerifier') {
+            Assert-AstTextSequenceEqual `
+                -Current @(Get-VariableCommandTexts $currentAst $root) `
+                -Sealed @(Get-VariableCommandTexts $sealedAst $root) `
+                -Description "Historical verifier invocation '$root'"
         }
-        if ($SkipBuild) { $g9u1Parameters.SkipBuild = $true }
-        if ($AllowToolchainDownload) { $g9u1Parameters.AllowToolchainDownload = $true }
-        if ($KeepBuildOutputs) { $g9u1Parameters.KeepBuildOutputs = $true }
-        Add-CurrentBuildEvidence -Parameters $g9u1Parameters
-        & $G9U1ConstructionVerifier @g9u1Parameters
-        Assert-LastScriptSuccess -Description "G9U1 CeDG Construction workspace"
     }
-'@
-    $declarationAnchor = '$BenchmarkRunner = Join-Path $RepositoryRoot "tools\benchmark\run.ps1"'
-    $consumerAnchor = '    Write-Host "`n==> Standalone Windows packaging contracts"'
-    foreach ($anchor in @($declarationAnchor, $consumerAnchor)) {
-        Assert-Case ([regex]::Matches($sealedLf, [regex]::Escape($anchor)).Count -eq 1) `
-            'Top-level historical anchor is missing or ambiguous'
+
+    $parameterRoots = @($sealedAssignments | ForEach-Object {
+        Get-AssignmentRootName $_
+    } | Where-Object { $_ -cmatch 'Parameters$' } | Sort-Object -Unique)
+    Assert-Case ($parameterRoots.Count -gt 0) `
+        'Sealed verifier parameter assignments could not be reconstructed'
+    foreach ($root in $parameterRoots) {
+        Assert-AstTextSequenceEqual `
+            -Current @(Get-AssignmentTextsForRoot $currentAst $root) `
+            -Sealed @(Get-AssignmentTextsForRoot $sealedAst $root) `
+            -Description "Historical verifier parameter assignment '$root'"
     }
-    $expected = $sealedLf.Replace($declarationAnchor,
-        $declaration.Replace("`r`n", "`n") + "`n" + $declarationAnchor).Replace(
-        $consumerAnchor, $consumer.Replace("`r`n", "`n") + "`n`n" + $consumerAnchor)
-    Assert-Case ($currentLf -ceq $expected) `
-        'Top-level verifier differs outside the exact additive G9U1 integration'
+
+    foreach ($name in @('Module', 'TestFilter')) {
+        Assert-Case ((Get-NamedParameterText $currentAst $name) -ceq
+            (Get-NamedParameterText $sealedAst $name)) `
+            "Historical DEV selection parameter changed: $name"
+    }
+    Assert-Case ((Get-DevSelectionGateText $currentAst) -ceq
+        (Get-DevSelectionGateText $sealedAst)) `
+        'Historical DEV Module/TestFilter selection gate changed'
+    Assert-AstTextSequenceEqual `
+        -Current @(Get-NamedCommandTexts $currentAst `
+            'Invoke-GeoCeDGDevVerification') `
+        -Sealed @(Get-NamedCommandTexts $sealedAst `
+            'Invoke-GeoCeDGDevVerification') `
+        -Description 'Historical DEV verifier forwarding'
+
+    $currentCanonical = @(Get-NamedCommandTexts $currentAst `
+        'Invoke-GeoCeDGCanonicalBuild')
+    $sealedCanonical = @(Get-NamedCommandTexts $sealedAst `
+        'Invoke-GeoCeDGCanonicalBuild')
+    Assert-Case ($currentCanonical.Count -eq 1 -and
+        $sealedCanonical.Count -eq 1) `
+        'Expected one historical and one current canonical build invocation'
+    $expectedCanonical = $sealedCanonical[0].Replace(
+        '-Level $EffectiveLevel', '-Level $CanonicalBuildLevel')
+    Assert-Case ($expectedCanonical -cne $sealedCanonical[0]) `
+        'Sealed canonical build level argument is missing or ambiguous'
+    Assert-Case ($currentCanonical[0] -ceq $expectedCanonical) `
+        'Historical canonical build forwarding changed outside the approved derived level'
+}
+
+function Assert-TopLevelPreservedWithApprovedOperationalEvolution {
+    param([Parameter(Mandatory)] [string]$Current,
+        [Parameter(Mandatory)] [string]$Sealed)
+    $currentLf = ConvertTo-CanonicalLf $Current
+    $sealedLf = ConvertTo-CanonicalLf $Sealed
+    if ($currentLf -ceq $sealedLf) { return }
+    Assert-HistoricalScientificTopLevelProjection -Current $currentLf `
+        -Sealed $sealedLf
+    Assert-Case ((Get-CanonicalTextSha256 $currentLf) -ceq
+        $ApprovedOperationalVerifierCanonicalLfSha256) `
+        'Top-level verifier is not the exact approved commit-first/SINGLE_FULL operational evolution'
 }
 
 function Assert-R1ScientificSourcePreserved {
@@ -217,7 +365,8 @@ function Assert-R1ScientificSourcePreserved {
         'R1 scientific contract tail changed after lifecycle repair'
     $sealedTop = Get-GitBlobText $RealRepository "$ImplementationCommit`:tools/agent/verify.ps1"
     $currentTop = [IO.File]::ReadAllText($RootVerifierPath)
-    Assert-TopLevelPreservedWithG9U1 -Current $currentTop -Sealed $sealedTop
+    Assert-TopLevelPreservedWithApprovedOperationalEvolution `
+        -Current $currentTop -Sealed $sealedTop
 }
 
 function Assert-R1LifecycleGuardSource {
@@ -732,50 +881,74 @@ $Base = New-LifecycleFixture (Join-Path $RunRoot 'base')
 $WideBase = New-LifecycleFixture (Join-Path $RunRoot 'wide-base') `
     -MaximumInfrastructureCommits 4
 
-Invoke-LifecycleCase 'sealed scientific and composed verifier authority is unchanged' {
+Invoke-LifecycleCase 'sealed scientific authority survives the approved operational evolution' {
     Assert-R1ScientificSourcePreserved
     Assert-R1LifecycleGuardSource
 }
 
-Invoke-LifecycleCase 'historical top-level bytes remain accepted without G9U1 additions' {
+Invoke-LifecycleCase 'historical top-level bytes remain accepted without operational evolution' {
     $sealed = Get-GitBlobText $RealRepository "$ImplementationCommit`:tools/agent/verify.ps1"
-    Assert-TopLevelPreservedWithG9U1 -Current $sealed -Sealed $sealed
+    Assert-TopLevelPreservedWithApprovedOperationalEvolution `
+        -Current $sealed -Sealed $sealed
 }
 
-Invoke-LifecycleCase 'G9U1 integration cannot mutate historical test-filter forwarding' {
+Invoke-LifecycleCase 'operational evolution cannot mutate historical test-filter forwarding' {
     $sealed = Get-GitBlobText $RealRepository "$ImplementationCommit`:tools/agent/verify.ps1"
     $current = [IO.File]::ReadAllText($RootVerifierPath)
     $mutated = $current.Replace('-TestFilter $TestFilter', '-TestFilter "different.scope"')
     Assert-Case ($mutated -cne $current) 'Historical filter mutation fixture did not change input'
-    Assert-Throws { Assert-TopLevelPreservedWithG9U1 -Current $mutated -Sealed $sealed } `
-        'outside the exact additive' 'Historical test-filter mutation'
+    Assert-Throws {
+        Assert-TopLevelPreservedWithApprovedOperationalEvolution `
+            -Current $mutated -Sealed $sealed
+    } 'Historical DEV verifier forwarding' 'Historical test-filter mutation'
 }
 
-Invoke-LifecycleCase 'G9U1 integration rejects an unrelated top-level addition' {
+Invoke-LifecycleCase 'approved operational evolution rejects an unrelated top-level addition' {
     $sealed = Get-GitBlobText $RealRepository "$ImplementationCommit`:tools/agent/verify.ps1"
     $current = [IO.File]::ReadAllText($RootVerifierPath) + "`nWrite-Host 'unapproved extra command'`n"
-    Assert-Throws { Assert-TopLevelPreservedWithG9U1 -Current $current -Sealed $sealed } `
-        'outside the exact additive' 'Unrelated top-level addition'
+    Assert-Throws {
+        Assert-TopLevelPreservedWithApprovedOperationalEvolution `
+            -Current $current -Sealed $sealed
+    } 'not the exact approved' 'Unrelated top-level addition'
 }
 
-Invoke-LifecycleCase 'G9U1 integration rejects a changed phase acceptance gate' {
+Invoke-LifecycleCase 'approved operational evolution rejects a changed phase acceptance gate' {
     $sealed = Get-GitBlobText $RealRepository "$ImplementationCommit`:tools/agent/verify.ps1"
     $current = [IO.File]::ReadAllText($RootVerifierPath)
     $mutated = $current.Replace('Assert-LastScriptSuccess -Description "G9U1 CeDG Construction workspace"',
         'Write-Host "G9U1 CeDG Construction workspace"')
     Assert-Case ($mutated -cne $current) 'G9U1 gate mutation fixture did not change input'
-    Assert-Throws { Assert-TopLevelPreservedWithG9U1 -Current $mutated -Sealed $sealed } `
-        'outside the exact additive' 'Changed G9U1 acceptance gate'
+    Assert-Throws {
+        Assert-TopLevelPreservedWithApprovedOperationalEvolution `
+            -Current $mutated -Sealed $sealed
+    } 'not the exact approved' 'Changed G9U1 acceptance gate'
 }
 
-Invoke-LifecycleCase 'G9U1 integration rejects changed placement or declaration' {
+Invoke-LifecycleCase 'approved operational evolution rejects changed G9U1 placement or declaration' {
     $sealed = Get-GitBlobText $RealRepository "$ImplementationCommit`:tools/agent/verify.ps1"
-    $current = [IO.File]::ReadAllText($RootVerifierPath)
-    $mutated = $current.Replace('    "verify-g9u1-construction-workspace.ps1"',
-        '    "verify-other-workspace.ps1"')
-    Assert-Case ($mutated -cne $current) 'G9U1 declaration fixture did not change input'
-    Assert-Throws { Assert-TopLevelPreservedWithG9U1 -Current $mutated -Sealed $sealed } `
-        'outside the exact additive' 'Changed G9U1 declaration'
+    $current = ConvertTo-CanonicalLf ([IO.File]::ReadAllText($RootVerifierPath))
+    $declaration = @'
+$G9U1ConstructionVerifier = Join-Path $PSScriptRoot `
+    "verify-g9u1-construction-workspace.ps1"
+'@
+    Assert-Case ([regex]::Matches($current,
+            [regex]::Escape($declaration)).Count -eq 1) `
+        'G9U1 declaration fixture anchor is missing or ambiguous'
+    $mutations = [ordered]@{
+        declaration = $current.Replace(
+            '    "verify-g9u1-construction-workspace.ps1"',
+            '    "verify-other-workspace.ps1"')
+        placement = $current.Replace($declaration + "`n", '') +
+            "`n" + $declaration + "`n"
+    }
+    foreach ($mutation in $mutations.GetEnumerator()) {
+        Assert-Case ($mutation.Value -cne $current) `
+            "G9U1 $($mutation.Key) fixture did not change input"
+        Assert-Throws {
+            Assert-TopLevelPreservedWithApprovedOperationalEvolution `
+                -Current $mutation.Value -Sealed $sealed
+        } 'not the exact approved' "Changed G9U1 $($mutation.Key)"
+    }
 }
 
 Invoke-LifecycleCase 'commit index matches independent Git mode and blob lines' {
