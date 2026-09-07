@@ -8,6 +8,8 @@
   "required": [
     "schemaVersion",
     "phase",
+    "verificationPlan",
+    "singleIntegratorDefaults",
     "technicalEvidence",
     "promotion",
     "closeout"
@@ -19,6 +21,55 @@
     "phase": {
       "type": "string",
       "pattern": "^[A-Z0-9][A-Z0-9.-]+$"
+    },
+    "verificationPlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "verificationClass",
+        "frozenAtPhaseStart",
+        "plannedAcceptanceLevel",
+        "integratedCoverageAdditional",
+        "globalInfrastructureChange",
+        "focusedEvidenceRequired",
+        "escalationRequestKind"
+      ],
+      "properties": {
+        "verificationClass": {
+          "enum": [
+            "BOUNDED_PHASE",
+            "INTEGRATED_PHASE",
+            "GLOBAL_IMPACT",
+            "RELEASE_OR_MILESTONE",
+            "OPERATIONAL_VERIFICATION_INFRASTRUCTURE",
+            "DOCUMENTATION_STATUS_ONLY"
+          ]
+        },
+        "frozenAtPhaseStart": { "const": true },
+        "plannedAcceptanceLevel": {
+          "enum": ["STATIC", "PHASE", "COMPOSED", "FULL"]
+        },
+        "integratedCoverageAdditional": { "type": "boolean" },
+        "globalInfrastructureChange": { "type": "boolean" },
+        "focusedEvidenceRequired": { "type": "boolean" },
+        "escalationRequestKind": {
+          "const": "VERIFICATION_ESCALATION_REQUEST"
+        }
+      }
+    },
+    "singleIntegratorDefaults": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "verificationClass",
+        "closeoutMode",
+        "closeoutModeRequiresExplicitSelection"
+      ],
+      "properties": {
+        "verificationClass": { "const": "BOUNDED_PHASE" },
+        "closeoutMode": { "const": "AUTHOR_OPERATED" },
+        "closeoutModeRequiresExplicitSelection": { "const": true }
+      }
     },
     "technicalEvidence": {
       "type": "object",

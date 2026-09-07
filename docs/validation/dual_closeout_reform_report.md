@@ -29,6 +29,15 @@ an uncovered obligation blocks READINESS until an approved generic extension
 can represent and verify the exact minimal complement. The current executable
 plan proves complete subsumption and requires none.
 
+The phase policy also freezes the impact class and planned acceptance level
+before final evidence. The single-integrator planning defaults are
+`BOUNDED_PHASE` and `AUTHOR_OPERATED`, while mode selection remains an explicit
+post-review author decision. This transversal reform is classified
+`OPERATIONAL_VERIFICATION_INFRASTRUCTURE` with a global infrastructure change,
+so its frozen plan requires the focused operational suite plus one FULL.
+Any higher level than a future frozen plan fails with
+`VERIFICATION_ESCALATION_REQUEST` instead of being launched defensively.
+
 Root verification results now distinguish technical success from evidence use,
 repository cohort and closeout consumability. Runs without a validated
 readiness receipt remain development/diagnostic evidence. A dirty/precommit

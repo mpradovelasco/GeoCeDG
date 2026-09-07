@@ -11,27 +11,30 @@ overrides those sources and must not restate geometric truth.
 
 ## Execution discipline
 
-1. Classify the task and affected architectural layer.
+1. Classify the task and affected architectural layer; for a phase, freeze its
+   explicit impact-based `VERIFICATION_CLASS` and acceptance level.
 2. Inspect repository state and the named source-of-truth files from disk.
 3. Record assumptions, contradictions, generated artifacts, and stop
    conditions.
 4. Produce or identify the required design/specification before code.
 5. Change the smallest coherent GeoCeDG-owned file set; preserve upstream
    layout and unrelated work.
-6. Add focused tests or deterministic structural checks with the change.
-7. Run `tools/agent/verify.ps1` or the narrow executable authority it composes.
+6. Do not increase a frozen verification level defensively. Emit
+   `VERIFICATION_ESCALATION_REQUEST` for a concrete uncovered obligation and
+   wait for author authorization.
+7. Add focused tests or deterministic structural checks with the change.
+8. Run `tools/agent/verify.ps1` or the narrow executable authority it composes.
    If the run is intended for final acceptance, first create clean exact
    technical commit `T`, pass mode-neutral
    `tools/agent/phase-closeout.ps1 -Action READINESS` for both routes, and bind
-   one canonical clean FULL run to that receipt. Require its authenticated
-   envelope to prove the PHASE, COMPOSED and FULL coverage obligations without
-   inventing lower-level physical runs. Schema v2 requires complete FULL
-   subsumption; if readiness finds an uncovered obligation, it must block until
-   an approved schema/orchestrator extension represents and verifies the exact
-   minimal complement. Only after
+   the one frozen acceptance campaign to that receipt. When the frozen class
+   requires FULL, its authenticated envelope proves PHASE, COMPOSED and FULL
+   obligations without inventing lower-level physical runs. If readiness finds
+   an uncovered obligation, it blocks and emits the escalation request rather
+   than increasing coverage automatically. Only after
    author review and exact-`T` approval, explicitly select one closeout mode for
    PREPARE.
-8. Report files, layer, semantic and compatibility effects, exact commands,
+9. Report files, layer, semantic and compatibility effects, exact commands,
    exit codes, logs, skipped gates, and remaining risks.
 
 ## Acceptance and closeout authority

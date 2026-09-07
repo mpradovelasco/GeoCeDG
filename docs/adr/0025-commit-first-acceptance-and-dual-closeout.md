@@ -355,6 +355,18 @@ uncovered obligation; none may be run merely to duplicate coverage. Commands,
 exits and saved evidence are recorded in the linked implementation report;
 pending or failed execution is not a PASS.
 
+The final candidate also freezes verification by impact at phase start.
+`BOUNDED_PHASE` requires PHASE; `INTEGRATED_PHASE` adds COMPOSED only for a
+declared additional integration obligation; `GLOBAL_IMPACT` and
+`RELEASE_OR_MILESTONE` require FULL; global operational verification changes
+require focused operational evidence plus FULL; and documentation/status-only
+changes require static validation without FULL. Any higher unplanned campaign
+must stop with `VERIFICATION_ESCALATION_REQUEST` and await author authority.
+The single-integrator defaults are explicitly declared as `BOUNDED_PHASE` and
+`AUTHOR_OPERATED`; the latter remains an author choice after review, never an
+inferred approval. This reform itself is a global verification-infrastructure
+change, so its frozen final plan remains focused evidence plus one FULL.
+
 ## Consequences
 
 - Final acceptance evidence has one immutable candidate identity before the

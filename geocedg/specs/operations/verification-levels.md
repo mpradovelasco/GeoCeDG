@@ -992,6 +992,43 @@ requires focused positive/negative coverage and one normal clean FULL gate
 under section 8, with authenticated lower-level claims; section 11.2 cannot be
 used to avoid that deliberate methodology validation.
 
+### 12.8 Frozen impact classification
+
+Every phase freezes one explicit `VERIFICATION_CLASS` before implementation
+begins. The class selects the minimum acceptance coverage; it is not a hint that
+an agent may increase by prudence:
+
+| Class | Frozen acceptance requirement |
+|---|---|
+| `BOUNDED_PHASE` | PHASE is sufficient. |
+| `INTEGRATED_PHASE` | PHASE; add COMPOSED only when the frozen plan identifies concrete additional integration coverage. |
+| `GLOBAL_IMPACT` | FULL. |
+| `RELEASE_OR_MILESTONE` | FULL. |
+| `OPERATIONAL_VERIFICATION_INFRASTRUCTURE` | Corresponding focused operational evidence, plus FULL only when global verification infrastructure changes. |
+| `DOCUMENTATION_STATUS_ONLY` | Static validation only; no FULL. |
+
+The phase policy records the class, `frozenAtPhaseStart=true`, the planned
+acceptance level and the impact facts that select it. `CLOSEOUT_READINESS`
+binds that plan to exact `T` before any costly acceptance work. A requested
+physical level above the frozen plan must fail with
+`VERIFICATION_ESCALATION_REQUEST`; the agent reports the concrete uncovered
+obligation and waits for explicit author authorization. It may not silently
+escalate to COMPOSED, FULL, A/B repetition or another campaign.
+
+For a single developer/integrator, the planning defaults are
+`VERIFICATION_CLASS=BOUNDED_PHASE` and `CLOSEOUT_MODE=AUTHOR_OPERATED`.
+They are defaults for an explicit declaration, never inferred approval:
+READINESS remains mode-neutral and the author must still select the closeout
+mode explicitly after reviewing exact `T`.
+
+This subsection supersedes the universal-FULL wording elsewhere in section 12
+for future phases whose frozen class requires less coverage. Commit-first
+identity, exact-SHA attribution, pre-campaign READINESS, evidence
+consumability, the two closeout modes and the exceptional-only status of
+section 11.2 remain unchanged. When a higher level completely executes and
+authenticates lower obligations in the same cohort, it remains one physical
+campaign rather than repeated lower runs.
+
 ```text
 PRODUCT_PHASE_EFFECT = NONE
 VERIFICATION_INFRASTRUCTURE_IMPACT = UPDATE_REQUIRED

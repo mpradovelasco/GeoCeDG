@@ -2,6 +2,12 @@
 
 State one concrete outcome.
 
+Declare and freeze `VERIFICATION_CLASS` and the planned acceptance level before
+implementation. For one developer/integrator, default explicitly to
+`BOUNDED_PHASE` and propose `AUTHOR_OPERATED`; later closeout selection remains
+an explicit author decision. A higher campaign requires a concrete
+`VERIFICATION_ESCALATION_REQUEST` and author authorization before execution.
+
 # Authority and evidence hierarchy
 
 Reference `AGENTS.md`, current code/build, accepted specifications/ADRs, and

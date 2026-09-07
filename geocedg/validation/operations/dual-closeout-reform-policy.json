@@ -1,6 +1,20 @@
 {
   "schemaVersion": 2,
   "phase": "VERIFICATION-INFRASTRUCTURE",
+  "verificationPlan": {
+    "verificationClass": "OPERATIONAL_VERIFICATION_INFRASTRUCTURE",
+    "frozenAtPhaseStart": true,
+    "plannedAcceptanceLevel": "FULL",
+    "integratedCoverageAdditional": false,
+    "globalInfrastructureChange": true,
+    "focusedEvidenceRequired": true,
+    "escalationRequestKind": "VERIFICATION_ESCALATION_REQUEST"
+  },
+  "singleIntegratorDefaults": {
+    "verificationClass": "BOUNDED_PHASE",
+    "closeoutMode": "AUTHOR_OPERATED",
+    "closeoutModeRequiresExplicitSelection": true
+  },
   "technicalEvidence": {
     "requiredLevels": [
       "PHASE",

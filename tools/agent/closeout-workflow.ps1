@@ -460,6 +460,85 @@ function Assert-GeoCeDGCloseoutStatusOnlyPath {
     return $safe
 }
 
+function Get-GeoCeDGVerificationImpactPlan {
+    param([Parameter(Mandatory)] [object]$Plan)
+    Assert-GeoCeDGPhaseLifecycleProperties $Plan @('verificationClass',
+        'frozenAtPhaseStart', 'plannedAcceptanceLevel',
+        'integratedCoverageAdditional', 'globalInfrastructureChange',
+        'focusedEvidenceRequired', 'escalationRequestKind') `
+        'Phase verification-impact plan'
+    Assert-GeoCeDGCloseoutWorkflow ($Plan.verificationClass -is [string] -and
+        $Plan.plannedAcceptanceLevel -is [string] -and
+        $Plan.frozenAtPhaseStart -is [bool] -and $Plan.frozenAtPhaseStart -and
+        $Plan.integratedCoverageAdditional -is [bool] -and
+        $Plan.globalInfrastructureChange -is [bool] -and
+        $Plan.focusedEvidenceRequired -is [bool] -and
+        $Plan.escalationRequestKind -is [string] -and
+        [string]$Plan.escalationRequestKind -ceq
+            'VERIFICATION_ESCALATION_REQUEST') `
+        'Verification plan must be frozen at phase start with the canonical escalation request.'
+
+    $class = [string]$Plan.verificationClass
+    $expectedLevel = switch ($class) {
+        'BOUNDED_PHASE' {
+            Assert-GeoCeDGCloseoutWorkflow (-not $Plan.integratedCoverageAdditional -and
+                -not $Plan.globalInfrastructureChange -and
+                $Plan.focusedEvidenceRequired) `
+                'BOUNDED_PHASE has invalid impact flags.'
+            'PHASE'
+        }
+        'INTEGRATED_PHASE' {
+            Assert-GeoCeDGCloseoutWorkflow (-not $Plan.globalInfrastructureChange -and
+                $Plan.focusedEvidenceRequired) `
+                'INTEGRATED_PHASE has invalid impact flags.'
+            if ($Plan.integratedCoverageAdditional) { 'COMPOSED' } else { 'PHASE' }
+        }
+        'GLOBAL_IMPACT' {
+            Assert-GeoCeDGCloseoutWorkflow (-not $Plan.integratedCoverageAdditional -and
+                -not $Plan.globalInfrastructureChange -and
+                $Plan.focusedEvidenceRequired) `
+                'GLOBAL_IMPACT has invalid impact flags.'
+            'FULL'
+        }
+        'RELEASE_OR_MILESTONE' {
+            Assert-GeoCeDGCloseoutWorkflow (-not $Plan.integratedCoverageAdditional -and
+                -not $Plan.globalInfrastructureChange -and
+                $Plan.focusedEvidenceRequired) `
+                'RELEASE_OR_MILESTONE has invalid impact flags.'
+            'FULL'
+        }
+        'OPERATIONAL_VERIFICATION_INFRASTRUCTURE' {
+            Assert-GeoCeDGCloseoutWorkflow (-not $Plan.integratedCoverageAdditional -and
+                $Plan.focusedEvidenceRequired) `
+                'OPERATIONAL_VERIFICATION_INFRASTRUCTURE requires focused evidence.'
+            if ($Plan.globalInfrastructureChange) { 'FULL' } else { 'PHASE' }
+        }
+        'DOCUMENTATION_STATUS_ONLY' {
+            Assert-GeoCeDGCloseoutWorkflow (-not $Plan.integratedCoverageAdditional -and
+                -not $Plan.globalInfrastructureChange -and
+                -not $Plan.focusedEvidenceRequired) `
+                'DOCUMENTATION_STATUS_ONLY has invalid impact flags.'
+            'STATIC'
+        }
+        default { throw "Unsupported VERIFICATION_CLASS: $class" }
+    }
+    $planned = [string]$Plan.plannedAcceptanceLevel
+    $rank = @{ STATIC = 0; PHASE = 1; COMPOSED = 2; FULL = 3 }
+    Assert-GeoCeDGCloseoutWorkflow ($rank.ContainsKey($planned)) `
+        "Unsupported planned acceptance level: $planned"
+    if ([long]$rank[$planned] -gt [long]$rank[$expectedLevel]) {
+        throw "VERIFICATION_ESCALATION_REQUEST: $class authorizes $expectedLevel, not $planned; wait for explicit author authorization."
+    }
+    Assert-GeoCeDGCloseoutWorkflow ($planned -ceq $expectedLevel) `
+        "Verification plan reduced the required $class acceptance level $expectedLevel."
+    return [pscustomobject][ordered]@{
+        verificationClass = $class
+        plannedAcceptanceLevel = $planned
+        frozenAtPhaseStart = $true
+        escalationRequestKind = 'VERIFICATION_ESCALATION_REQUEST'
+    }
+}
+
 function Read-GeoCeDGCloseoutWorkflowPolicy {
     [CmdletBinding()]
     param(
@@ -478,12 +557,27 @@ function Read-GeoCeDGCloseoutWorkflowPolicy {
         'Frozen closeout policy contains an impossible self-reference to T.'
     $policy = ConvertFrom-GeoCeDGPhaseLifecycleJson $bytes 'schema-v2 closeout policy'
     Assert-GeoCeDGPhaseLifecycleProperties $policy @('schemaVersion', 'phase',
-        'technicalEvidence', 'promotion', 'closeout') 'Schema-v2 closeout policy'
+        'verificationPlan', 'singleIntegratorDefaults', 'technicalEvidence',
+        'promotion', 'closeout') 'Schema-v2 closeout policy'
     Assert-GeoCeDGCloseoutWorkflow ($policy.schemaVersion -is [long] -and
         $policy.schemaVersion -eq 2) 'Unsupported closeout-workflow policy schema.'
     Assert-GeoCeDGCloseoutWorkflow ($policy.phase -is [string] -and
         [string]$policy.phase -cmatch
         '^[A-Z0-9][A-Z0-9.-]+$') 'Invalid canonical PHASE identifier in policy.'
+    $impactPlan = Get-GeoCeDGVerificationImpactPlan $policy.verificationPlan
+    Assert-GeoCeDGPhaseLifecycleProperties $policy.singleIntegratorDefaults `
+        @('verificationClass', 'closeoutMode',
+            'closeoutModeRequiresExplicitSelection') 'Single-integrator defaults'
+    Assert-GeoCeDGCloseoutWorkflow (
+        $policy.singleIntegratorDefaults.verificationClass -is [string] -and
+        [string]$policy.singleIntegratorDefaults.verificationClass -ceq
+            'BOUNDED_PHASE' -and
+        $policy.singleIntegratorDefaults.closeoutMode -is [string] -and
+        [string]$policy.singleIntegratorDefaults.closeoutMode -ceq
+            'AUTHOR_OPERATED' -and
+        $policy.singleIntegratorDefaults.closeoutModeRequiresExplicitSelection -is [bool] -and
+        $policy.singleIntegratorDefaults.closeoutModeRequiresExplicitSelection) `
+        'Single-integrator defaults must be BOUNDED_PHASE/AUTHOR_OPERATED without inferred closeout selection.'
 
     Assert-GeoCeDGPhaseLifecycleProperties $policy.technicalEvidence `
         @('requiredLevels', 'campaignStrategy', 'physicalCampaignLevel',
@@ -509,6 +603,15 @@ function Read-GeoCeDGCloseoutWorkflowPolicy {
         'SINGLE_FULL_WITH_AUTHENTICATED_CLAIMS' -and
         [string]$policy.technicalEvidence.physicalCampaignLevel -ceq 'FULL') `
         'Schema-v2 acceptance requires one physical FULL campaign with authenticated coverage claims.'
+    $technicalLevel = [string]$policy.technicalEvidence.physicalCampaignLevel
+    if ($technicalLevel -cne [string]$impactPlan.plannedAcceptanceLevel) {
+        $rank = @{ STATIC = 0; PHASE = 1; COMPOSED = 2; FULL = 3 }
+        if ([long]$rank[$technicalLevel] -gt
+                [long]$rank[[string]$impactPlan.plannedAcceptanceLevel]) {
+            throw "VERIFICATION_ESCALATION_REQUEST: frozen phase plan authorizes $($impactPlan.plannedAcceptanceLevel), not $technicalLevel; wait for explicit author authorization."
+        }
+        throw 'Technical campaign level does not match the frozen phase verification plan.'
+    }
     $claims = @($policy.technicalEvidence.requiredClaims)
     Assert-GeoCeDGCloseoutWorkflow ($claims.Count -eq 3) `
         'Schema-v2 acceptance requires exactly PHASE, COMPOSED, and FULL claims.'
@@ -733,6 +836,9 @@ function Get-GeoCeDGCloseoutAcceptanceExecutionPlan {
         strategy = 'SINGLE_FULL_WITH_AUTHENTICATED_CLAIMS'
         reviewedTechnicalCommit = $technical
         phase = [string]$PolicyContext.policy.phase
+        verificationClass = [string]$PolicyContext.policy.verificationPlan.verificationClass
+        plannedAcceptanceLevel = `
+            [string]$PolicyContext.policy.verificationPlan.plannedAcceptanceLevel
         policyPath = [string]$PolicyContext.policyPath
         policyBlobSha256 = [string]$PolicyContext.policyBlobSha256
         requiredLevels = @('PHASE', 'COMPOSED', 'FULL')
@@ -981,6 +1087,9 @@ function New-GeoCeDGCloseoutReadinessReceipt {
         reviewedTechnicalCommit = $technical
         policyPath = [string]$policyContext.policyPath
         policyBlobSha256 = [string]$policyContext.policyBlobSha256
+        verificationClass = [string]$policyContext.policy.verificationPlan.verificationClass
+        plannedAcceptanceLevel = `
+            [string]$policyContext.policy.verificationPlan.plannedAcceptanceLevel
         requiredTechnicalLevels = @('PHASE', 'COMPOSED', 'FULL')
         technicalCampaignPlanSha256 = $technicalCampaignPlanSha256
         validatedCloseoutModes = $validatedModes
@@ -1000,6 +1109,9 @@ function New-GeoCeDGCloseoutReadinessReceipt {
         kind = 'GEOCEDG_CLOSEOUT_READINESS'
         state = 'CLOSEOUT_READINESS_PASSED'
         phase = [string]$policyContext.policy.phase
+        verificationClass = [string]$policyContext.policy.verificationPlan.verificationClass
+        plannedAcceptanceLevel = `
+            [string]$policyContext.policy.verificationPlan.plannedAcceptanceLevel
         closeoutMode = $null
         validatedCloseoutModes = $validatedModes
         acceptancePlanSha256 = $acceptancePlanSha256
@@ -1079,7 +1191,8 @@ function Assert-GeoCeDGCloseoutReadinessReceiptShape {
         [Parameter(Mandatory)] [string]$PolicyBlobSha256
     )
     Assert-GeoCeDGPhaseLifecycleProperties $Receipt @('schemaVersion', 'kind',
-        'state', 'phase', 'closeoutMode', 'validatedCloseoutModes',
+        'state', 'phase', 'verificationClass', 'plannedAcceptanceLevel',
+        'closeoutMode', 'validatedCloseoutModes',
         'acceptancePlanSha256', 'reviewedTechnicalCommit', 'policyPath',
         'policyBlobSha256', 'requiredTechnicalLevels', 'technicalCampaignPlan',
         'technicalCampaignPlanSha256', 'technicalCampaignExecuted',
@@ -1089,6 +1202,12 @@ function Assert-GeoCeDGCloseoutReadinessReceiptShape {
         $Receipt.schemaVersion -eq 1 -and
         [string]$Receipt.kind -ceq 'GEOCEDG_CLOSEOUT_READINESS' -and
         [string]$Receipt.state -ceq 'CLOSEOUT_READINESS_PASSED' -and
+        [string]$Receipt.verificationClass -cin @('BOUNDED_PHASE',
+            'INTEGRATED_PHASE', 'GLOBAL_IMPACT', 'RELEASE_OR_MILESTONE',
+            'OPERATIONAL_VERIFICATION_INFRASTRUCTURE',
+            'DOCUMENTATION_STATUS_ONLY') -and
+        [string]$Receipt.plannedAcceptanceLevel -cin @('STATIC', 'PHASE',
+            'COMPOSED', 'FULL') -and
         $null -eq $Receipt.closeoutMode -and
         [string]$Receipt.acceptancePlanSha256 -cmatch '^[0-9a-f]{64}$' -and
         [string]$Receipt.reviewedTechnicalCommit -ceq $TechnicalCommit -and
@@ -1213,6 +1332,9 @@ function Read-GeoCeDGCloseoutReadinessReceipt {
         reviewedTechnicalCommit = $technical
         policyPath = [string]$policyContext.policyPath
         policyBlobSha256 = [string]$policyContext.policyBlobSha256
+        verificationClass = [string]$policyContext.policy.verificationPlan.verificationClass
+        plannedAcceptanceLevel = `
+            [string]$policyContext.policy.verificationPlan.plannedAcceptanceLevel
         requiredTechnicalLevels = @('PHASE', 'COMPOSED', 'FULL')
         technicalCampaignPlanSha256 = $technicalCampaignPlanSha256
         validatedCloseoutModes = $validatedModes
@@ -1227,6 +1349,10 @@ function Read-GeoCeDGCloseoutReadinessReceipt {
         (ConvertTo-GeoCeDGCloseoutJsonBytes $acceptancePlan)
     Assert-GeoCeDGCloseoutWorkflow ([string]$receipt.phase -ceq
         [string]$policyContext.policy.phase -and
+        [string]$receipt.verificationClass -ceq
+            [string]$policyContext.policy.verificationPlan.verificationClass -and
+        [string]$receipt.plannedAcceptanceLevel -ceq
+            [string]$policyContext.policy.verificationPlan.plannedAcceptanceLevel -and
         [string]$receipt.expectedTag.name -ceq
             [string]$policyContext.policy.promotion.tagName -and
         [string]$receipt.expectedTag.message -ceq

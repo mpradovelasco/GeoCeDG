@@ -201,6 +201,18 @@ both `validatedCloseoutModes`, the mode-neutral `acceptancePlanSha256` and
 `READINESS_BOUND_TECHNICAL_GATES_PASSED`. `FULL=PASS` without this binding
 remains useful technical evidence but is not closeout-consumable.
 
+Freeze `VERIFICATION_CLASS` and its planned acceptance level at phase start.
+Use `BOUNDED_PHASE` for PHASE-only bounded work, `INTEGRATED_PHASE` when a
+declared integration obligation may require COMPOSED, `GLOBAL_IMPACT` or
+`RELEASE_OR_MILESTONE` for FULL, and
+`OPERATIONAL_VERIFICATION_INFRASTRUCTURE` for focused operational evidence plus
+FULL only when global verification infrastructure changes. Pure
+documentation/status-only work uses static validation without FULL. A level
+above the frozen plan must emit `VERIFICATION_ESCALATION_REQUEST` and wait for
+author authorization. For one developer/integrator, explicitly start from
+`VERIFICATION_CLASS=BOUNDED_PHASE` and `CLOSEOUT_MODE=AUTHOR_OPERATED`; neither
+default substitutes for the later explicit author mode decision.
+
 `AUTHOR REVIEW READY` means only that the product is prepared for author
 review. `AUTHOR CLOSEOUT READY` means exact `T` was acceptance-verified from a
 clean committed checkout, its one FULL root and authenticated

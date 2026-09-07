@@ -276,11 +276,13 @@ try {
 
 if ($Action -ceq 'READINESS') {
     Write-Host "CLOSEOUT_READINESS PASS: exact clean T = $TechnicalCommit"
+    Write-Host "Verification class: $($output.verificationClass)"
+    Write-Host "Frozen acceptance level: $($output.plannedAcceptanceLevel)"
     Write-Host 'Closeout mode: not selected (mode-neutral acceptance plan)'
     Write-Host "Validated closeout modes: $(@($output.validatedCloseoutModes) -join ', ')"
     Write-Host "Acceptance plan SHA-256: $($output.acceptancePlanSha256)"
     Write-Host "Readiness receipt: $readinessOutput"
-    Write-Host 'Run one clean-output FULL acceptance campaign; it must authenticate PHASE, COMPOSED, and FULL claims.'
+    Write-Host "Run only the frozen $($output.plannedAcceptanceLevel) acceptance plan; any higher level requires VERIFICATION_ESCALATION_REQUEST and author authorization."
 } elseif ($Action -ceq 'PREPARE') {
     Write-Host "CLOSEOUT PREPARED: exact approved T = $TechnicalCommit"
     Write-Host "Closeout mode: $CloseoutMode"

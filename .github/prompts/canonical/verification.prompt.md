@@ -5,6 +5,13 @@ Status: canonical operational prompt
 Use executable repository tools as the authority. Reports summarize their
 saved evidence; they do not replace a command result.
 
+Freeze an explicit `VERIFICATION_CLASS` and acceptance level at phase start.
+For one developer/integrator, explicitly default to `BOUNDED_PHASE` and propose
+`AUTHOR_OPERATED`; mode selection still occurs only after author review. Never
+escalate above the frozen plan by prudence: emit
+`VERIFICATION_ESCALATION_REQUEST` with the concrete uncovered obligation and
+wait for author authorization.
+
 ## Entry points
 
 - Default COMPOSED gate applicable to the current checkout: `tools/agent/verify.ps1`.

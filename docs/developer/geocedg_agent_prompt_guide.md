@@ -32,12 +32,19 @@ similarly named roadmap or generated report is not a substitute.
    documentation.
 5. Identify source authority, generated evidence, smallest edit set and focused
    verifier.
-6. If the task can close a phase, identify a declarative policy that supports
+6. If the task can close a phase, freeze its impact-based
+   `VERIFICATION_CLASS` and planned acceptance level, then identify a
+   declarative policy that supports
    both `VERIFIED` and `AUTHOR_OPERATED`. READINESS validates both without
    selecting either; select exactly one mode only in the post-review,
    post-approval PREPARE chain, never from branch, credentials or repository
    state.
-7. Stop when an entry gate, source, approval, closeout route or semantic policy
+7. Never escalate above the frozen plan by prudence. Emit
+   `VERIFICATION_ESCALATION_REQUEST` for a concrete uncovered obligation and
+   wait for author authorization. In a single-integrator context, explicitly
+   default to `BOUNDED_PHASE` and propose `AUTHOR_OPERATED` without inferring
+   approval.
+8. Stop when an entry gate, source, approval, closeout route or semantic policy
    is missing.
 
 Concise launch examples:

@@ -218,6 +218,11 @@ function New-Policy {
     $supportedModes = @('VERIFIED', 'AUTHOR_OPERATED')
     $repairRequired = $false
     $replacementPath = 'docs/status.md'
+    $verificationClass = 'OPERATIONAL_VERIFICATION_INFRASTRUCTURE'
+    $planFrozen = $true
+    $plannedAcceptanceLevel = 'FULL'
+    $globalInfrastructureChange = $true
+    $defaultCloseoutMode = 'AUTHOR_OPERATED'
     [object]$tagValue = $TagName
     [object]$replacementAfter = 'STATE = CLOSED'
     switch ($Variant) {
@@ -234,12 +239,33 @@ function New-Policy {
         'INVALID_TAG' { $tagValue = 'bad..tag' }
         'NUMERIC_TAG' { $tagValue = [long]123 }
         'NULL_REPLACEMENT_AFTER' { $replacementAfter = $null }
+        'UNFROZEN_VERIFICATION_PLAN' { $planFrozen = $false }
+        'UNAUTHORIZED_FULL_ESCALATION' {
+            $verificationClass = 'BOUNDED_PHASE'
+            $plannedAcceptanceLevel = 'PHASE'
+            $globalInfrastructureChange = $false
+        }
+        'INVALID_SINGLE_INTEGRATOR_DEFAULT' { $defaultCloseoutMode = 'VERIFIED' }
         'VALID' { }
         default { throw "Unknown fixture policy variant: $Variant" }
     }
     return [ordered]@{
         schemaVersion = 2
         phase = 'VERIFICATION-INFRASTRUCTURE'
+        verificationPlan = [ordered]@{
+            verificationClass = $verificationClass
+            frozenAtPhaseStart = $planFrozen
+            plannedAcceptanceLevel = $plannedAcceptanceLevel
+            integratedCoverageAdditional = $false
+            globalInfrastructureChange = $globalInfrastructureChange
+            focusedEvidenceRequired = $true
+            escalationRequestKind = 'VERIFICATION_ESCALATION_REQUEST'
+        }
+        singleIntegratorDefaults = [ordered]@{
+            verificationClass = 'BOUNDED_PHASE'
+            closeoutMode = $defaultCloseoutMode
+            closeoutModeRequiresExplicitSelection = $true
+        }
         technicalEvidence = [ordered]@{
             requiredLevels = @($requiredLevels)
             campaignStrategy = 'SINGLE_FULL_WITH_AUTHENTICATED_CLAIMS'
@@ -1520,6 +1546,9 @@ Invoke-CloseoutCase 'readiness is mode-neutral and validates both routes without
     $receipt = New-GeoCeDGCloseoutReadinessReceipt -RepositoryRoot $fixture.Root `
         -TechnicalCommit $fixture.TechnicalCommit -PolicyPath $fixture.PolicyPath
     Assert-Case ([string]$receipt.state -ceq 'CLOSEOUT_READINESS_PASSED' -and
+        [string]$receipt.verificationClass -ceq
+            'OPERATIONAL_VERIFICATION_INFRASTRUCTURE' -and
+        [string]$receipt.plannedAcceptanceLevel -ceq 'FULL' -and
         $null -eq $receipt.closeoutMode -and
         (@($receipt.validatedCloseoutModes) -join ',') -ceq
             'VERIFIED,AUTHOR_OPERATED' -and
@@ -1540,6 +1569,54 @@ Invoke-CloseoutCase 'readiness is mode-neutral and validates both routes without
         $receipt.route.recordCreation.pathTraversalReparseFree -eq $true -and
         $receipt.acceptanceEvidenceConsumable -eq $false -and
         $receipt.selfApproved -eq $false) 'Mode-neutral readiness contract changed'
+}
+
+Invoke-CloseoutCase 'impact classification freezes the minimum planned acceptance level' {
+    $cases = @(
+        @('BOUNDED_PHASE', $false, $false, $true, 'PHASE'),
+        @('INTEGRATED_PHASE', $false, $false, $true, 'PHASE'),
+        @('INTEGRATED_PHASE', $true, $false, $true, 'COMPOSED'),
+        @('GLOBAL_IMPACT', $false, $false, $true, 'FULL'),
+        @('RELEASE_OR_MILESTONE', $false, $false, $true, 'FULL'),
+        @('OPERATIONAL_VERIFICATION_INFRASTRUCTURE', $false, $false, $true, 'PHASE'),
+        @('OPERATIONAL_VERIFICATION_INFRASTRUCTURE', $false, $true, $true, 'FULL'),
+        @('DOCUMENTATION_STATUS_ONLY', $false, $false, $false, 'STATIC')
+    )
+    foreach ($case in $cases) {
+        $plan = [pscustomobject][ordered]@{
+            verificationClass = [string]$case[0]
+            frozenAtPhaseStart = $true
+            plannedAcceptanceLevel = [string]$case[4]
+            integratedCoverageAdditional = [bool]$case[1]
+            globalInfrastructureChange = [bool]$case[2]
+            focusedEvidenceRequired = [bool]$case[3]
+            escalationRequestKind = 'VERIFICATION_ESCALATION_REQUEST'
+        }
+        $validated = Get-GeoCeDGVerificationImpactPlan $plan
+        Assert-Case ([string]$validated.plannedAcceptanceLevel -ceq
+            [string]$case[4]) "Impact class $($case[0]) mapped to the wrong level"
+    }
+}
+
+Invoke-CloseoutCase 'frozen bounded plan emits escalation request instead of running FULL' {
+    $fixture = New-WorkflowFixture 'readiness-impact-escalation' `
+        'UNAUTHORIZED_FULL_ESCALATION'
+    [void](Assert-Throws {
+            New-GeoCeDGCloseoutReadinessReceipt -RepositoryRoot $fixture.Root `
+                -TechnicalCommit $fixture.TechnicalCommit -PolicyPath $fixture.PolicyPath
+        } 'VERIFICATION_ESCALATION_REQUEST|wait for explicit author authorization' `
+        'Unauthorized verification escalation')
+}
+
+Invoke-CloseoutCase 'readiness rejects an unfrozen plan or inferred single-integrator mode' {
+    foreach ($variant in @('UNFROZEN_VERIFICATION_PLAN',
+            'INVALID_SINGLE_INTEGRATOR_DEFAULT')) {
+        $fixture = New-WorkflowFixture "readiness-$($variant.ToLowerInvariant())" $variant
+        [void](Assert-Throws {
+                New-GeoCeDGCloseoutReadinessReceipt -RepositoryRoot $fixture.Root `
+                    -TechnicalCommit $fixture.TechnicalCommit -PolicyPath $fixture.PolicyPath
+            } 'frozen at phase start|BOUNDED_PHASE/AUTHOR_OPERATED' $variant)
+    }
 }
 
 Invoke-CloseoutCase 'fresh readiness object is shape-valid for pre-heavy comparison' {
@@ -1955,6 +2032,12 @@ Invoke-CloseoutCase 'repository reform policy has only projectable schema-v2 sta
     Assert-GeoCeDGPhaseLifecycleSet @($policy.technicalEvidence.PSObject.Properties.Name) `
         @($schema.properties.technicalEvidence.required | ForEach-Object { [string]$_ }) `
         'Repository technical-evidence policy/schema contract'
+    Assert-GeoCeDGPhaseLifecycleSet @($policy.verificationPlan.PSObject.Properties.Name) `
+        @($schema.properties.verificationPlan.required | ForEach-Object { [string]$_ }) `
+        'Repository verification-impact plan/schema contract'
+    Assert-GeoCeDGPhaseLifecycleSet @($policy.singleIntegratorDefaults.PSObject.Properties.Name) `
+        @($schema.properties.singleIntegratorDefaults.required | ForEach-Object { [string]$_ }) `
+        'Repository single-integrator defaults/schema contract'
     Assert-GeoCeDGPhaseLifecycleSet @($policy.promotion.PSObject.Properties.Name) `
         @($schema.properties.promotion.required | ForEach-Object { [string]$_ }) `
         'Repository promotion policy/schema contract'
@@ -1962,6 +2045,16 @@ Invoke-CloseoutCase 'repository reform policy has only projectable schema-v2 sta
         @($schema.properties.closeout.required | ForEach-Object { [string]$_ }) `
         'Repository closeout policy/schema contract'
     Assert-Case ($policy.schemaVersion -eq 2 -and
+        [string]$policy.verificationPlan.verificationClass -ceq
+            'OPERATIONAL_VERIFICATION_INFRASTRUCTURE' -and
+        $policy.verificationPlan.frozenAtPhaseStart -eq $true -and
+        [string]$policy.verificationPlan.plannedAcceptanceLevel -ceq 'FULL' -and
+        $policy.verificationPlan.globalInfrastructureChange -eq $true -and
+        [string]$policy.singleIntegratorDefaults.verificationClass -ceq
+            'BOUNDED_PHASE' -and
+        [string]$policy.singleIntegratorDefaults.closeoutMode -ceq
+            'AUTHOR_OPERATED' -and
+        $policy.singleIntegratorDefaults.closeoutModeRequiresExplicitSelection -eq $true -and
         (@($policy.technicalEvidence.requiredLevels) -join ',') -ceq
             'PHASE,COMPOSED,FULL' -and
         [string]$policy.technicalEvidence.campaignStrategy -ceq
