@@ -731,7 +731,8 @@ Invoke-RuntimeTest "central COMPOSED FULL plan has only four declared difference
     }
     $expectedDifferenceDimensions = @('canonicalBuild.level',
         'canonicalBuild.selection', 'baseline.fullTests', 'level')
-    $expectedGateIds = @('OPERATIONAL_CONTRACTS', 'WORKSTATION_CONTRACTS',
+    $expectedGateIds = @('GENERATED_STATE_CLEANABILITY_PREFLIGHT',
+        'OPERATIONAL_CONTRACTS', 'WORKSTATION_CONTRACTS',
         'CANONICAL_FULL_BUILD', 'LEGACY_INTEGRATION', 'DXF_AND_NATIVE_2D',
         'DECLARED_PHASE_ASSERTION_SUITE', 'PACKAGING_CONTRACTS',
         'BASELINE_FULL_CONFIRMATION', 'FRONTEND_PROFILE',

@@ -1016,6 +1016,7 @@ function Get-GeoCeDGVerificationExecutionPlan {
     # gate graph; their only permitted differences are the canonical Test
     # selection and the baseline FullTests confirmation below.
     $gateIds = [object[]]@(
+        'GENERATED_STATE_CLEANABILITY_PREFLIGHT',
         'OPERATIONAL_CONTRACTS',
         'WORKSTATION_CONTRACTS',
         'CANONICAL_FULL_BUILD',

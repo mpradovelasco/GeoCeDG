@@ -171,6 +171,14 @@ documents the version boundary.
   and `.kotlin` directories inside the outer restoration transaction, or with
   explicit `-KeepBuildOutputs`. Rebuild dependencies without task-output cache
   reuse; never empty the Gradle user home or downloaded dependency cache.
+- Before operational, workstation or other costly gates, every canonical
+  campaign that will replace or clean generated state must run
+  `GENERATED_STATE_CLEANABILITY_PREFLIGHT` under its own effective identity.
+  Inspect exactly the existing generated roots selected for later cleanup,
+  require their complete enumeration/access, and perform a real temporary
+  create/delete probe. Fail immediately with the effective user/SID, generated
+  root and first inaccessible path. Never take ownership, change ACLs, elevate
+  or repair permissions automatically.
 - Existing toolchain-download, packaging-artifact, interactive-launch,
   benchmark and historical-reproduction options keep their explicit meanings.
   Unsupported or contradictory combinations fail before work begins.

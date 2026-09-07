@@ -385,6 +385,17 @@ try {
     } else {
     # BEGIN COMPOSED_FULL_COMMON_BODY
 
+    if (-not $SkipBuild -and -not $IndependentBuilds) {
+        Write-Host "`n==> Generated-state cleanability preflight"
+        $cleanability = Assert-RepositoryGeneratedStateCleanability `
+            -RepositoryRoot $RepositoryRoot `
+            -DirectoryNames @("build", ".gradle", ".kotlin")
+        Write-Host ("Generated-state cleanability PASS: {0} ({1}); roots: {2}" -f `
+                $cleanability.effectiveUser, $cleanability.effectiveSid,
+                @($cleanability.generatedRoots).Count)
+        Add-AcceptanceCommonGate 'GENERATED_STATE_CLEANABILITY_PREFLIGHT'
+    }
+
     Write-Host "`n==> GeoCeDG operational contracts"
     $operationalLogDirectory = Join-Path $LogDirectory "operational"
     $phaseBefore = $null

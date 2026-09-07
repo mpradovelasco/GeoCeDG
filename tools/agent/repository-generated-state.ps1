@@ -146,6 +146,92 @@ function Assert-GeneratedDirectoryTarget {
     }
 }
 
+function Assert-RepositoryGeneratedStateCleanability {
+    param(
+        [Parameter(Mandatory)] [string]$RepositoryRoot,
+        [Parameter(Mandatory)] [string[]]$DirectoryNames
+    )
+
+    $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
+    $effectiveUser = $identity.Name
+    $effectiveSid = $identity.User.Value
+    $targets = @(Get-RepositoryGeneratedDirectories -RepositoryRoot $RepositoryRoot `
+        -DirectoryNames $DirectoryNames)
+    foreach ($target in $targets) {
+        Assert-GeneratedDirectoryTarget -RepositoryRoot $RepositoryRoot `
+            -Path $target -DirectoryNames $DirectoryNames
+    }
+
+    # Exercise the same identity that will own the campaign. Existing generated
+    # trees must be fully enumerable and readable; a real create/delete probe
+    # verifies mutation authority without deleting or rewriting prior outputs.
+    $probeLocations = $(if ($targets.Count -gt 0) { $targets } else {
+            @([IO.Path]::GetFullPath($RepositoryRoot))
+        })
+    foreach ($location in $probeLocations) {
+        $generatedRoot = $(if ($targets.Count -gt 0) { $location } else { '<none>' })
+        $firstPath = $location
+        $operation = 'enumerate'
+        $probePath = $null
+        try {
+            if ($targets.Count -gt 0) {
+                $pending = [Collections.Generic.Stack[string]]::new()
+                $pending.Push($location)
+                while ($pending.Count -gt 0) {
+                    $directory = $pending.Pop()
+                    $firstPath = $directory
+                    $operation = 'enumerate'
+                    $items = @(Get-ChildItem -LiteralPath $directory -Force `
+                        -ErrorAction Stop)
+                    foreach ($item in $items) {
+                        $firstPath = $item.FullName
+                        $operation = 'inspect'
+                        if ($item.Attributes -band [IO.FileAttributes]::ReparsePoint) {
+                            throw "linked generated-state path"
+                        }
+                        if ($item.PSIsContainer) {
+                            $pending.Push($item.FullName)
+                        } else {
+                            $operation = 'read'
+                            $stream = [IO.File]::Open($item.FullName,
+                                [IO.FileMode]::Open, [IO.FileAccess]::Read,
+                                [IO.FileShare]::ReadWrite -bor [IO.FileShare]::Delete)
+                            $stream.Dispose()
+                        }
+                    }
+                }
+            }
+
+            $probePath = Join-Path $location `
+                ('.geocedg-cleanability-' + [guid]::NewGuid().ToString('N') + '.tmp')
+            $firstPath = $probePath
+            $operation = 'create'
+            $probe = [IO.File]::Open($probePath, [IO.FileMode]::CreateNew,
+                [IO.FileAccess]::Write, [IO.FileShare]::None)
+            $probe.Dispose()
+            $operation = 'delete'
+            [IO.File]::Delete($probePath)
+            $probePath = $null
+        } catch {
+            if (-not [string]::IsNullOrWhiteSpace($probePath) -and
+                    (Test-Path -LiteralPath $probePath -PathType Leaf)) {
+                try { [IO.File]::Delete($probePath) } catch { }
+            }
+            throw ("GENERATED_STATE_CLEANABILITY_PREFLIGHT failed: " +
+                "user=$effectiveUser; sid=$effectiveSid; " +
+                "generatedRoot=$generatedRoot; firstInaccessiblePath=$firstPath; " +
+                "operation=$operation; detail=$($_.Exception.Message)")
+        }
+    }
+
+    return [pscustomobject][ordered]@{
+        effectiveUser = $effectiveUser
+        effectiveSid = $effectiveSid
+        generatedRoots = [object[]]$targets
+        state = 'PASS'
+    }
+}
+
 function New-RepositoryGeneratedStateSnapshot {
     param(
         [Parameter(Mandatory)] [string]$RepositoryRoot,

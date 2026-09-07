@@ -102,6 +102,7 @@ function New-FixtureCase {
         Label = "gs-fixture-" + $runToken + "-" + $script:caseNumber
         Targets = @(); EnumerationCalls = 0; FailEnumeration = $false; DenyMutation = $false
         FailCopyPath = $null; FailRemovePath = $null; MockReparsePaths = @()
+        InaccessiblePath = $null; GetChildItemCalls = [Collections.Generic.List[string]]::new()
         CopyCalls = [Collections.Generic.List[object]]::new()
         RemoveCalls = [Collections.Generic.List[string]]::new()
         NewItemCalls = [Collections.Generic.List[string]]::new()
@@ -181,6 +182,19 @@ function New-FixtureCase {
                 }
             }
             return $item
+        }
+        function Get-ChildItem {
+            [CmdletBinding()]
+            param([string]$LiteralPath, [switch]$Force)
+            $full = [IO.Path]::GetFullPath($LiteralPath).TrimEnd('\', '/')
+            $script:FixtureState.GetChildItemCalls.Add($full)
+            if (-not [string]::IsNullOrWhiteSpace($script:FixtureState.InaccessiblePath) -and
+                    $full.Equals([IO.Path]::GetFullPath(
+                            $script:FixtureState.InaccessiblePath).TrimEnd('\', '/'),
+                        [StringComparison]::OrdinalIgnoreCase)) {
+                throw [UnauthorizedAccessException]::new('ACCESS_DENIED_SENTINEL')
+            }
+            Microsoft.PowerShell.Management\Get-ChildItem @PSBoundParameters
         }
     }
     return [pscustomobject]@{ Name = $Name; Parent = $caseParent; Repository = $repository; State = $state; Module = $module }
@@ -488,6 +502,39 @@ try {
         Assert-Fixture (-not (Test-Path -LiteralPath $build) -and -not (Test-Path -LiteralPath $cache)) "Selected generated outputs survived CleanBuild."
         Assert-Fixture ([IO.File]::ReadAllText((Join-Path $trackedBuild "tracked.txt")) -ceq "TRACKED_BUILD_SENTINEL" -and [IO.File]::ReadAllText((Join-Path $case.Repository "src/tracked.txt")) -ceq "TRACKED_SENTINEL") "CleanBuild changed a mock-tracked/unselected file."
         Assert-Fixture ([IO.File]::ReadAllText((Join-Path $case.Repository "notes/keep.txt")) -ceq "UNENUMERATED" -and $case.State.CopyCalls.Count -eq 0) "CleanBuild touched unenumerated data or copied files."
+    }
+    Invoke-FixtureCase "cleanability rejects inaccessible generated state before costly gates" {
+        param($case)
+        $build = Join-Path $case.Repository "build"
+        $sentinel = Join-Path $build "reports/problems/problems-report.html"
+        Write-FixtureFile $sentinel "FOREIGN_IDENTITY_OUTPUT"
+        $case.State.Targets = @($build)
+        $case.State.InaccessiblePath = $build
+        $failure = Assert-Throws {
+            & $case.Module {
+                param($Root,$Names)
+                Assert-RepositoryGeneratedStateCleanability `
+                    -RepositoryRoot $Root -DirectoryNames $Names
+            } $case.Repository $allowedNames
+        } "GENERATED_STATE_CLEANABILITY_PREFLIGHT failed.*user=.*sid=.*generatedRoot=.*firstInaccessiblePath=.*ACCESS_DENIED_SENTINEL"
+        Assert-Fixture ($failure.Message.Contains($build,
+                [StringComparison]::OrdinalIgnoreCase)) `
+            "Cleanability failure omitted the selected generated root."
+        Assert-Fixture ((Test-Path -LiteralPath $sentinel -PathType Leaf) -and
+            $case.State.RemoveCalls.Count -eq 0) `
+            "Cleanability failure mutated inaccessible generated state."
+        $verifySource = [IO.File]::ReadAllText((Join-Path `
+                (Split-Path -Parent $resolvedHelper) 'verify.ps1'))
+        $preflight = $verifySource.IndexOf(
+            'Assert-RepositoryGeneratedStateCleanability',
+            [StringComparison]::Ordinal)
+        $operational = $verifySource.IndexOf('& $OperationalVerifier',
+            [StringComparison]::Ordinal)
+        $workstation = $verifySource.IndexOf('& $WorkstationVerifier',
+            [StringComparison]::Ordinal)
+        Assert-Fixture ($preflight -ge 0 -and $preflight -lt $operational -and
+            $preflight -lt $workstation) `
+            "Cleanability preflight is not ordered before costly gates."
     }
     Invoke-FixtureCase "CleanBuild validates the complete list before first deletion" {
         param($case)
