@@ -1542,17 +1542,33 @@ Invoke-CloseoutCase 'readiness is mode-neutral and validates both routes without
         $receipt.selfApproved -eq $false) 'Mode-neutral readiness contract changed'
 }
 
-Invoke-CloseoutCase 'pre-heavy comparison selects exactly one clean FULL without repository mutation' {
+Invoke-CloseoutCase 'fresh readiness object is shape-valid for pre-heavy comparison' {
+    $fixture = New-WorkflowFixture 'pre-heavy-fresh-readiness-shape'
+    $receipt = New-GeoCeDGCloseoutReadinessReceipt -RepositoryRoot $fixture.Root `
+        -TechnicalCommit $fixture.TechnicalCommit -PolicyPath $fixture.PolicyPath
+    $comparison = Compare-GeoCeDGCloseoutPreHeavyExecutionPlan `
+        -ReadinessReceipt $receipt -RequestedLevel FULL `
+        -CleanGeneratedOutputs $true -IndependentBuilds $false
+    Assert-Case ($receipt.schemaVersion -is [long] -and
+        $comparison.comparedBeforeHeavy -and $comparison.expectedEqualsSelected) `
+        'Fresh readiness constructor output is not accepted by the pre-heavy shape gate'
+}
+
+Invoke-CloseoutCase 'stored readiness preflight selects one clean FULL without repository mutation' {
     $fixture = New-WorkflowFixture 'pre-heavy-single-full'
     $readiness = Write-ReadinessReceipt $fixture
     $before = Get-RepositorySnapshot $fixture
     $beforeStatus = Get-GeoCeDGPhaseLifecycleStatusPaths $fixture.Root
+    $validatedReadiness = Test-GeoCeDGCloseoutAcceptancePreflight `
+        -RepositoryRoot $fixture.Root -TechnicalCommit $fixture.TechnicalCommit `
+        -PolicyPath $fixture.PolicyPath -ReadinessReceiptPath $readiness.Path
     $comparison = Compare-GeoCeDGCloseoutPreHeavyExecutionPlan `
-        -ReadinessReceipt $readiness.Receipt -RequestedLevel FULL `
+        -ReadinessReceipt $validatedReadiness -RequestedLevel FULL `
         -CleanGeneratedOutputs $true -IndependentBuilds $false
     $after = Get-RepositorySnapshot $fixture
     $afterStatus = Get-GeoCeDGPhaseLifecycleStatusPaths $fixture.Root
-    Assert-Case ($comparison.comparedBeforeHeavy -and
+    Assert-Case ($validatedReadiness.schemaVersion -is [long] -and
+        $comparison.comparedBeforeHeavy -and
         $comparison.expectedEqualsSelected -and
         [string]$comparison.expectedPlanSha256 -ceq
             [string]$readiness.Receipt.technicalCampaignPlanSha256 -and

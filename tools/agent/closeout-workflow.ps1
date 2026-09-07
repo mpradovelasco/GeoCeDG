@@ -995,8 +995,8 @@ function New-GeoCeDGCloseoutReadinessReceipt {
     $acceptancePlanSha256 = Get-GeoCeDGCloseoutRawSha256 `
         (ConvertTo-GeoCeDGCloseoutJsonBytes $acceptancePlan)
 
-    return [pscustomobject][ordered]@{
-        schemaVersion = 1
+    $receipt = [pscustomobject][ordered]@{
+        schemaVersion = [long]1
         kind = 'GEOCEDG_CLOSEOUT_READINESS'
         state = 'CLOSEOUT_READINESS_PASSED'
         phase = [string]$policyContext.policy.phase
@@ -1066,6 +1066,9 @@ function New-GeoCeDGCloseoutReadinessReceipt {
         }
         selfApproved = $false
     }
+    return ConvertFrom-GeoCeDGPhaseLifecycleJson `
+        (ConvertTo-GeoCeDGCloseoutJsonBytes $receipt) `
+        'fresh closeout-readiness receipt'
 }
 
 function Assert-GeoCeDGCloseoutReadinessReceiptShape {
