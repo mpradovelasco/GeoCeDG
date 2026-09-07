@@ -17,7 +17,7 @@ $ImplementationCommit = 'f761758bd664504057413539b9729ba444c904c1'
 # This allowlist admits only the reviewed operational orchestration. The AST
 # projection below independently seals the historical scientific authority.
 $ApprovedOperationalVerifierCanonicalLfSha256 = `
-    '0097de87d13aef3853436004a00d565575fed9c092c967877d56d16a71ed63de'
+    '2cffff70632c53b96983b23d0b66cbb450b1863319ef85ffec5f3cf881d42a82'
 $EntryCommit = '109f077fc5e2a40bcde45d3271eb928ee66fdfcc'
 $RealRepository = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../..'))
 $HelperPath = [IO.Path]::GetFullPath($HelperPath)
