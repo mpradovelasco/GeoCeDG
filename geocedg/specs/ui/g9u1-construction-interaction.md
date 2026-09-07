@@ -3,8 +3,8 @@
 - Status: **DESIGN PASS — AUTHOR APPROVED / POST-R1 RECONCILED**
 - Version: 1
 - Owners: GeoCeDG project owner
-- Roadmap gate: G9U1, post-G9S1, R6 and R1; implementation **IMPLEMENTATION
-  CANDIDATE — PENDING AUTHOR REVIEW**, explicitly authorized after reconciliation
+- Roadmap gate: G9U1, post-G9S1, R6 and R1; implementation
+  **PASS — AUTHOR APPROVED** by an explicit exact-SHA closeout decision
 - Mandatory kernel prerequisite: G9U0-R6 — Semantic Locus Point Interaction
   Support, **PASS — AUTHOR APPROVED** at
   `geocedg-g9u0-r6-pass` ->
@@ -818,12 +818,15 @@ G9U0-R6 = PASS — AUTHOR APPROVED
 G9U1 DESIGN = PASS — AUTHOR APPROVED
 POST-R6 RECONCILED = true
 POST-R1 RECONCILED = true
-G9U1 IMPLEMENTATION = IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW
+G9U1 IMPLEMENTATION = PASS — AUTHOR APPROVED
 implementationStarted = true
 implementationAuthorized = true
+implementationComplete = true
 selfApproved = false
 authorApprovedDesign = true
-passClaimedImplementation = false
+authorApprovedImplementation = true
+passClaimedImplementation = true
+manualAuthorSmoke = PASS
 ```
 
 

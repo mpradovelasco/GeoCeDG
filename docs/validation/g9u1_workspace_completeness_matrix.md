@@ -2,7 +2,7 @@
 
 - Status: **DESIGN PASS — AUTHOR APPROVED — POST-R1 RECONCILED**
 - Phase: G9U1 pre-execution scope reconciliation
-- Product implementation: **IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**
+- Product implementation: **PASS — AUTHOR APPROVED**
 - Runtime manifest: `apps/geocedg/application-profile.yml`, live schema v2
 - Historical design schema/instance:
   `geocedg/specs/ui/application-profile-v2.candidate.schema.json` and
@@ -478,13 +478,16 @@ POST-R6 RECONCILED = true
 POST-R1 RECONCILED = true
 
 G9U1 IMPLEMENTATION =
-IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW
+PASS — AUTHOR APPROVED
 
 implementationStarted = true
 implementationAuthorized = true
+implementationComplete = true
 selfApproved = false
 authorApprovedDesign = true
-passClaimedImplementation = false
+authorApprovedImplementation = true
+passClaimedImplementation = true
+manualAuthorSmoke = PASS
 
 G9B = NOT AUTHORIZED
 G9C = NOT AUTHORIZED

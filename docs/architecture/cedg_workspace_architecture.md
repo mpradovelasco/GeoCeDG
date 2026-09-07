@@ -611,12 +611,15 @@ G9U0-R6 = PASS — AUTHOR APPROVED
 G9U1 DESIGN = PASS — AUTHOR APPROVED
 POST-R6 RECONCILED = true
 POST-R1 RECONCILED = true
-G9U1 IMPLEMENTATION = IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW
+G9U1 IMPLEMENTATION = PASS — AUTHOR APPROVED
 implementationStarted = true
 implementationAuthorized = true
+implementationComplete = true
 selfApproved = false
 authorApprovedDesign = true
-passClaimedImplementation = false
+authorApprovedImplementation = true
+passClaimedImplementation = true
+manualAuthorSmoke = PASS
 ```
 
 
@@ -626,8 +629,9 @@ The approved post-R6 checkpoint `00982e7e148a634cd57ed928f322774df267d5e3`
 remains immutable. This successor consumes published G9S1-R1 without changing
 R6 Point semantics or adding an action/family. The current conditional author
 authorization is satisfied by the no-material-novelty audit. Implementation is
-now a review candidate pending author re-smoke/closeout and is never
-self-approved. See the
+`PASS — AUTHOR APPROVED` by an explicit exact-SHA author decision; the
+status-only closeout does not relabel technical execution as running on the
+closeout commit and remains never self-approved. See the
 [published R1 pair-consumer contract](../../geocedg/specs/ui/g9u1-construction-interaction.md#published-g9s1-r1-pair-consumer-contract)
 and the 20 additive `U1-PAIR` rows (138 total). The R4 periodic risk remains
 OPEN / TRACKED; an inconclusive native experiment without a real kernel or

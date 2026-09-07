@@ -4,7 +4,7 @@
   G9U0-R4 PASS — AUTHOR APPROVED; G9U0-R5 PASS — AUTHOR APPROVED; G9S1
   PASS — AUTHOR APPROVED; G9U0-R6 PASS — AUTHOR APPROVED; G9U1 DESIGN
   PASS — AUTHOR APPROVED; G9S1-R1 PASS — AUTHOR APPROVED;
-  G9U1 POST-R1 RECONCILED / IMPLEMENTATION CANDIDATE, PENDING AUTHOR REVIEW**
+  G9U1 IMPLEMENTATION PASS — AUTHOR APPROVED**
 - Date: 2026-08-31
 - Scope: author-approved/historical G9U0 public Locus V2 evidence;
   author-approved G9U0-R2 product/document-refinement design and implementation;
@@ -758,12 +758,11 @@ not affect metric/intersection results.
   `G9U0-R2 IMPLEMENTATION = PASS — AUTHOR APPROVED` with
   `selfApproved=false`, `authorApproved=true` and `passClaimed=true`.
 
-### G9U1 PASS candidate
+### G9U1 PASS authority
 
-- G9U0-R2, G9U0-R3, G9U0-R4, G9U0-R5 and G9S1 are `PASS — AUTHOR APPROVED`; a
-  separate author decision must authorize the definitive post-G9S1 successor
-  prompt. No
-  predecessor PASS alone is sufficient.
+- G9U0-R2, G9U0-R3, G9U0-R4, G9U0-R5, G9S1 and G9U1 are
+  `PASS — AUTHOR APPROVED`. G9U1 is closed only by its own exact-SHA author
+  decision; no predecessor PASS alone supplied that approval.
 - Schema v2 and deterministic v1 migration pass.
 - Construction workspace mapping, panel workflow, localization/icons,
   preferences, Document layout and Classic/Laboratory boundaries pass.

@@ -137,8 +137,8 @@ round trip or explicit author disposition closes it.
 
 ## G9U1 final presentation-polish successor
 
-The current bounded successor remains **implementation candidate pending author
-review**. It preserves the same 11 families, 18 operational clusters, 110 stable
+The bounded successor is **PASS — AUTHOR APPROVED** by an explicit exact-SHA
+author decision; its status-only closeout changes no workspace semantics. It preserves the same 11 families, 18 operational clusters, 110 stable
 actions, 28 presentation groups and seven menus, while selecting 11 toolbar
 groups. The apparent second Locus operation did not exist: the sole inherited
 Locus V2 mode had an asymmetric host label. GeoCeDG now presents the two creation
@@ -780,12 +780,15 @@ G9U0-R6 = PASS — AUTHOR APPROVED
 G9U1 DESIGN = PASS — AUTHOR APPROVED
 POST-R6 RECONCILED = true
 POST-R1 RECONCILED = true
-G9U1 IMPLEMENTATION = IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW
+G9U1 IMPLEMENTATION = PASS — AUTHOR APPROVED
 implementationStarted = true
 implementationAuthorized = true
+implementationComplete = true
 selfApproved = false
 authorApprovedDesign = true
-passClaimedImplementation = false
+authorApprovedImplementation = true
+passClaimedImplementation = true
+manualAuthorSmoke = PASS
 ```
 
 ## 13. Approved closeout decisions

@@ -6,10 +6,10 @@
 | Versión documental | 3.70 |
 | Fecha de revisión | 4 de septiembre de 2026 |
 | Baseline GeoGebra | 5.4.928.0, commit `9b93256b7df401ff056c37b502d82df4d72b1522`, tag `geogebra-baseline-5.4.928.0` |
-| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1, G9A2, G9A3, el track G9A, G9U0, G9U0-R1, G9X1, G9U0-R2, G9U0-R3, G9U0-R4, G9U0-R5, G9S1, G9U0-R6, G9S1-R1 y la planificación G10P `PASS — AUTHOR APPROVED`. R6 añade resolución inversa semántica y estado explícito de punto draggable en kernel, incluido cruce periódico bidireccional/path-independent, sin `Path`, render/pixel como autoridad ni frontend G9U1. Su aceptación GUI sigue diferida a G9U1 por diseño. R4 conserva determinismo actual > heurística de continuidad y el riesgo abierto `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP`. G9U1 DESIGN post-R6 está aprobado en checkpoint independiente `00982e7e...`; la reconciliación post-R1 no identifica novedad semántica y satisface la autorización condicional del autor para producir un candidato G9U1, nunca un PASS de implementación. El autor aprueba R1-D2, acepta DISPOSITION C para el alcance monodrómico demostrado y autoriza B — PARTIAL IMPLEMENTATION CONTRACT, incluida recurrencia del slot semántico. G9S1-R1 está `PASS — AUTHOR APPROVED`; los bloqueos históricos y sus correcciones permanecen documentados. G9B/G9C no están autorizadas, G9U2 sigue bloqueada y ninguna implementación productiva G10 está autorizada; Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
-| Última fase cerrada | G9S1-R1 — `PASS — AUTHOR APPROVED` |
-| Última fase ejecutada | G9S1-R1 — `PASS — AUTHOR APPROVED`; `implementationComplete=true`, `selfApproved=false`, `authorApprovedPhase=true`, `passClaimed=true`; `manualAuthorSmoke=PASS` |
-| Siguiente puerta | G9U1 en implementación autorizada tras planificación A/B PASS y auditoría post-R1 sin novedad material; detenerse en candidato pendiente de revisión/smoke autoral, sin promover G9U1 |
+| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1, G9A2, G9A3, el track G9A, G9U0, G9U0-R1, G9X1, G9U0-R2, G9U0-R3, G9U0-R4, G9U0-R5, G9S1, G9U0-R6, G9S1-R1 y la planificación G10P `PASS — AUTHOR APPROVED`. R6 añade resolución inversa semántica y estado explícito de punto draggable en kernel, incluido cruce periódico bidireccional/path-independent, sin `Path`, render/pixel como autoridad ni frontend G9U1. Su aceptación GUI sigue diferida a G9U1 por diseño. R4 conserva determinismo actual > heurística de continuidad y el riesgo abierto `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP`. G9U1 DESIGN post-R6 está aprobado en checkpoint independiente `00982e7e...`; la reconciliación post-R1 no identifica novedad semántica y G9U1 implementación cierra `PASS — AUTHOR APPROVED` por decisión explícita sobre el SHA técnico revisado, sin autoaprobación. El autor aprueba R1-D2, acepta DISPOSITION C para el alcance monodrómico demostrado y autoriza B — PARTIAL IMPLEMENTATION CONTRACT, incluida recurrencia del slot semántico. G9S1-R1 está `PASS — AUTHOR APPROVED`; los bloqueos históricos y sus correcciones permanecen documentados. G9B/G9C no están autorizadas, G9U2 sigue bloqueada y ninguna implementación productiva G10 está autorizada; Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
+| Última fase cerrada | G9U1 — `PASS — AUTHOR APPROVED` |
+| Última fase ejecutada | G9U1 — `PASS — AUTHOR APPROVED`; `implementationComplete=true`, `selfApproved=false`, `authorApprovedImplementation=true`, `passClaimedImplementation=true`; `manualAuthorSmoke=PASS` |
+| Siguiente puerta | Revisar el roadmap vivo y obtener autorización explícita antes de cualquier fase posterior; este cierre no autoriza G9U2, G9B, G9C ni G10 productivo |
 | Primer cliente | Aplicación de escritorio de la familia Classic 5 |
 | Núcleo | Java compartido de GeoGebra, extendido solo cuando la semántica lo requiere |
 
@@ -1301,7 +1301,7 @@ optimización de rendimiento del software.
 | G9U0-R5 | `PASS — AUTHOR APPROVED` | Siete formas ordinarias `Translate`/`Rotate`/`Reflect`/`Mirror`/`Dilate` crean un nuevo Locus V2 semántico con ID/DAG propios; Option A `k=0` conserva `FINITE`/`UNBOUNDED` y añade `COLLAPSED_IMAGE`; smoke dinámico aceptado con limitación de entrada libre G9A caracterizada; `selfApproved=false`, `authorApproved=true`, `passClaimed=true`; no autoriza G9U1 |
 | G9S1 | `PASS — AUTHOR APPROVED` | Option B: `SplineV2` crea un nuevo `GeoLocusV2` semántico con dominio, spans y knots explícitos; Classic `Spline` permanece intacto; total/parcial scalar `Length` y autoridad rica `LocusLength` validadas; `selfApproved=false`, `authorApproved=true`, `passClaimed=true` |
 | G9U0-R6 | `PASS — AUTHOR APPROVED` | Puerta kernel acotada entre G9S1 y G9U1: request geométrica transitoria -> resultado tipado con cero/uno/varios preimages -> selección explícita -> punto ordinario con address semántica editable en DAG. Incluye Locus V2, SplineV2 y transformadas R5, además del cruce periódico bidireccional/path-independent del mismo punto y el negativo unresolved sin mutación; no implementa `Path`, Point-tool/frontend ni comando paralelo. ADR 0019 está Accepted y la spec es normativa; `manualGuiSmoke=DEFERRED TO G9U1 BY DESIGN`, `kernelDiagnosticAcceptance=PASS`, `selfApproved=false`, `authorApproved=true`, `passClaimed=true` |
-| G9U1 | `DESIGN PASS — AUTHOR APPROVED / POST-R1 RECONCILED / IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW` | Checkpoint post-R6 `00982e7e148a634cd57ed928f322774df267d5e3` inmutable; R1 publicado satisface la capacidad de pares certificada. Auditoría sin novedad material; autorización condicional actual satisfecha. 11 familias, 18 clusters, 110 acciones y 163 escenarios; Point R6 distinto de materialización de tokens R1. La implementación round 2 está completa como candidato sucesor, pendiente de re-smoke y closeout explícitos del autor; nunca autoaprobada |
+| G9U1 | `PASS — AUTHOR APPROVED` | Checkpoint post-R6 `00982e7e148a634cd57ed928f322774df267d5e3` inmutable; R1 publicado satisface la capacidad de pares certificada. Auditoría sin novedad material; autorización condicional actual satisfecha. 11 familias, 18 clusters, 110 acciones y 163 escenarios; Point R6 distinto de materialización de tokens R1. La implementación round 2 está completa como candidato sucesor, pendiente de re-smoke y closeout explícitos del autor; nunca autoaprobada |
 | G9U1 Round 3 + presentación final | `FINAL TECHNICAL CANDIDATE PREPARATION — AUTHOR CLOSEOUT PENDING` | Round 3 está publicado en `56cf32c922baefeb30c7dff02dbdd5091107ea1a`; el checkpoint técnico funcionalmente aceptado `34ffdd9af5f94ded2765e7d495ee66543d4d751f` permanece inmutable. Su sucesor conserva 11 familias, 18 clusters y 110 acciones y aplica solo los microajustes autorizados de orden/membresía de toolbar, flyouts compactos con última acción, orden File/Help y monograma de user tools desde la única autoridad schema-v2. Requiere evidencia propia y aprobación explícita del nuevo SHA; no modifica main ni crea tag PASS |
 | G9B / G9C | `DESIGNED — NOT AUTHORIZED` | Track kernel tras cierre de G9A; no depende de completar el cliente G9U1 |
 | G9U2 | `BLOCKED ON THE APPROVED G9 GATE` | Workspace de procedimientos diédrico solo tras `G9 PASS — AUTHOR APPROVED` |
@@ -2630,7 +2630,7 @@ nativo pendiente del estado de cuarentena del ledger de intersección.
 **Estado del diseño:** `PASS — AUTHOR APPROVED`; checkpoint post-R6 inmutable;
 reconciliación post-R1 sin novedad material bajo autorización explícita actual.
 
-**Estado de implementación:** `IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW`
+**Estado de implementación:** `PASS — AUTHOR APPROVED`
 
 Revisión autoral 1: **COMPLETED WITH FINDINGS — NOT PASS**. El checkpoint
 `geocedg-g9u1-author-review-checkpoint-1` conserva `b492194082f1adc9f981d85d92a58ef57490196f`.
@@ -2704,10 +2704,10 @@ autoridad de reconstrucción documental mientras la entrada instalada conserva
 la presentación; diferencia o conjunto parcial falla cerrado. No se implementa
 otro motor Macro ni se hace depender `.cedg` de preferencias externas.
 
-El autor acepta que los bugs/carencias revisados en ese commit quedaron
-resueltos, pero esa aceptación técnica no es el `AUTHOR_CLOSEOUT` de fase. G9U1
-permanece **IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW** y no hay promoción
-a `main`, tag `geocedg-g9u1-pass` ni autoaprobación.
+La revisión funcional del autor sobre el checkpoint de producto permanece
+separada de la evidencia técnica histórica. Una decisión posterior sobre el SHA
+técnico exacto cierra G9U1 como **PASS — AUTHOR APPROVED** mediante un descendiente
+exclusivamente de estado; la fase permanece sin autoaprobación.
 
 La última iteración autorizada es exclusivamente de presentación. Conserva los
 110 IDs y la única autoridad schema-v2, reduce el splash mediante un nuevo
@@ -2723,9 +2723,12 @@ SHA exigida por ADR 0023.
 ```text
 implementationStarted = true
 implementationAuthorized = true
+implementationComplete = true
 selfApproved = false
 authorApprovedDesign = true
-passClaimedImplementation = false
+authorApprovedImplementation = true
+passClaimedImplementation = true
+manualAuthorSmoke = PASS
 ```
 
 **Entradas obligatorias satisfechas:** G9U0-R2 implementation, G9U0-R3,

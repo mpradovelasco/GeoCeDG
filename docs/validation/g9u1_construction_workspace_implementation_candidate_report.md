@@ -1,13 +1,14 @@
-# G9U1 CeDG Construction — implementation candidate
+# G9U1 CeDG Construction — author-approved implementation closeout
 
-- Status: **IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**
+- Status: **PASS — AUTHOR APPROVED**
 - Design baseline: **PASS — AUTHOR APPROVED**; **POST-R1 RECONCILED**
-- `implementationAuthorized = true`; `implementationStarted = true`
-- `implementationComplete = true` means the functional scope is implemented;
-  it is not a technical-gate PASS or author approval.
-- `selfApproved = false`; `authorApprovedImplementation = false`;
-  `passClaimedImplementation = false`
-- `manualAuthorSmoke = PENDING`
+- `implementationAuthorized = true`; `implementationStarted = true`;
+  `implementationComplete = true`
+- `selfApproved = false`; `authorApprovedImplementation = true`;
+  `passClaimedImplementation = true`
+- `manualAuthorSmoke = PASS`
+- Technical execution remains bound to its original sealed cohort; the
+  approval/status-only descendant is closeout evidence, not a relabelled run.
 
 ## Native-toolbar visual normalization — current successor
 
@@ -25,14 +26,15 @@ HiDPI the focused structural tests compare the live native and adapter
 components before and after last-used action changes. No screenshot baseline,
 fixed vertical offset, document state or geometric identity is introduced. The
 profile and its 11 groups, 52 projected toolbar actions and 110 stable IDs are
-unchanged. This successor requires its own focused A/B, PHASE, COMPOSED and
-clean FULL evidence and remains **IMPLEMENTATION CANDIDATE — PENDING AUTHOR
-REVIEW** with all approval/PASS flags false and `manualAuthorSmoke = PENDING`.
+unchanged. The sealed technical evidence remains attributed to its exact
+historical source/status cohort. The exact-SHA author decision closes G9U1
+without changing or reattributing those product executions.
 
 The bounded authority remains the
 [final micro-presentation disposition](g9u1_final_micro_presentation_adjustments.md).
-Main and `geocedg-g9u1-pass` remain untouched until the author explicitly
-approves the exact new technical SHA.
+The approval/status descendant records `selfApproved = false`,
+`authorApprovedImplementation = true`, `passClaimedImplementation = true` and
+`manualAuthorSmoke = PASS`.
 
 ## Final micro-presentation successor — historical technical checkpoint
 
@@ -917,7 +919,8 @@ automated tests supply that assertion. Its archive SHA-256 is
 The exact scoped record is `artifacts/g9u1-after-r1/gui-smoke/agent-smoke.md`.
 It explicitly excludes complete seam/chooser/pair/EN-ES/transform/navigation
 GUI acceptance, notes accessibility/third-party-overlay limits, and predates
-the three late corrections above. `manualAuthorSmoke = PENDING` is unchanged.
+the three late corrections above. The later explicit author decision records
+`manualAuthorSmoke = PASS`; the agent-operated GUI record is not its source.
 
 `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP = OPEN / TRACKED`.
 Native entry/save/reopen/unique-release has a positive DEV05 observation, but

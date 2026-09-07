@@ -956,13 +956,13 @@ application identity from icons alone.
 
 ## 7. Current GeoCeDG GUI
 
-### G9U1 implementation candidate
+### G9U1 author-approved implementation
 
-This branch contains the authorized post-R1 workspace implementation candidate,
-not an author-approved G9U1 release. Desktop DEV20 exercised 193 cases with
-exit 0, including the current workspace consumers and historical R3 menu /
-inspector cases. Final PHASE/FULL and author GUI smoke remain separate pending
-gates; see the [candidate report](../validation/g9u1_construction_workspace_implementation_candidate_report.md).
+G9U1 is `PASS — AUTHOR APPROVED` by an explicit decision naming the exact
+reviewed technical commit. The status-only closeout links, but does not
+reattribute, the sealed technical execution cohort. See the
+[implementation report](../validation/g9u1_construction_workspace_implementation_candidate_report.md)
+for provenance and retained limitations.
 
 The live schema-v2 profile has one catalog of 110 actions in 18 operational
 clusters and 11 professional families. Menus, family palette, toolbar, help and

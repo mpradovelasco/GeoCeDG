@@ -1,6 +1,6 @@
 # GeoCeDG Desktop application profile
 
-- Status: Stable G2 foundation; live schema-v2 G9U1 implementation candidate
+- Status: Stable G2 foundation; live schema-v2 G9U1 implementation `PASS — AUTHOR APPROVED`
 - Profile ID: `geocedg-desktop`
 - Authority: `docs/adr/0001-geocedg-product-profile.md`
 - Runtime manifest: `apps/geocedg/application-profile.yml`
@@ -80,7 +80,7 @@ the current filename when present. About consumes the same version authority,
 records the GeoGebra baseline and `Manuel Prado-Velasco, Universidad de Sevilla`,
 and retains required upstream credits/licenses.
 
-## Live schema-v2 G9U1 candidate
+## Live schema-v2 G9U1 author-approved profile
 
 The live `apps/geocedg/application-profile.yml` is now schema version 2. One
 110-action catalog feeds 11 professional families, 18 operational clusters, 28

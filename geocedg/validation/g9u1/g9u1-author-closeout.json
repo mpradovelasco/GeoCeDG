@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "phase": "G9U1",
+  "mode": "AUTHOR_CLOSEOUT",
+  "reviewedTechnicalCommit": "43926f87b30bd83c95603d065af79fb2789d4ba4",
+  "authorDecision": "PASS_AUTHOR_APPROVED",
+  "evidence": {
+    "bundleDirectory": "artifacts/g1/technical-evidence-bundle",
+    "bundleManifestPath": "technical-evidence-manifest.json",
+    "bundleManifestSha256": "658e3b7af992bc9e6e65283d9e6ef5140045fafea2668243e6873ff46b051a97"
+  },
+  "selfApproved": false
+}
