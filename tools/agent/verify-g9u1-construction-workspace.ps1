@@ -7,6 +7,14 @@ param(
     [string]$BuildEvidencePath,
     [switch]$IncrementalBuild,
     [switch]$HistoricalRegressionsAlreadyComposed,
+    [ValidateSet("AUTO", "PRECOMMIT_CANDIDATE", "COMMITTED_CANDIDATE", "AUTHOR_CLOSEOUT",
+        "PUBLISHED_REGRESSION")]
+    [string]$LifecycleMode = "AUTO",
+    [string]$ReviewedTechnicalCommit,
+    [string]$CloseoutRecordPath,
+    [string]$TechnicalEvidenceBundleDirectory,
+    [string]$TechnicalEvidenceBundleSha256,
+    [switch]$AuthorCloseoutOnly,
     [string]$CanonicalSummaryPath,
     [string]$CompareCanonicalSummaryPath,
     [string]$LogDirectory = (Join-Path ([IO.Path]::GetTempPath()) "geocedg-verify-g9u1")
@@ -34,6 +42,12 @@ $Round3CandidateBranch = "codex/g9u1-author-review-stabilization-3"
 $FinalPolishCandidateCommit = "34ffdd9af5f94ded2765e7d495ee66543d4d751f"
 $FinalMicroCandidateCommit = "e4ef3d48ea95a0c3243e57dfc703b539d455c33e"
 $FinalMicroCandidateTree = "6fbee30b71076cdb35d561e8f179a92c88a2be38"
+$ImplementationCommit = "28f7843184cfb202bbfcca1cbcc56a25a7a77bca"
+$ImplementationTree = "d08d7beb45d04d6e0f0a478f4c04eb0e97e7e667"
+$LifecyclePolicyPath = "geocedg/validation/operations/g9u1-lifecycle-policy.json"
+$DefaultCloseoutRecordPath = "geocedg/validation/g9u1/g9u1-author-closeout.json"
+$PassTagName = "geocedg-g9u1-pass"
+$PassTagMessage = "GeoCeDG G9U1 — PASS — AUTHOR APPROVED"
 $Round2AuthorityBlobs = [ordered]@{
     "docs/roadmap/geocedg_roadmap.md" = "7eb5f4dceb402e8188afffed83f6ce6d07bfe3a3"
     "docs/validation/g9u1_author_review_round2.md" = "7c9baa952abc87786d92bbb0b68fe0c7d35d0755"
@@ -216,6 +230,8 @@ $EvidencePath = "geocedg/validation/g9u1/g9u1-construction-workspace-evidence.js
 $ScenarioPath = "geocedg/validation/g9u1/g9u1-construction-workspace-scenarios.json"
 $HashPath = "geocedg/validation/g9u1/g9u1-construction-workspace-evidence.sha256"
 $ReportPath = "docs/validation/g9u1_construction_workspace_implementation_candidate_report.md"
+$LifecycleContext = $null
+$SelectedLifecycleMode = $LifecycleMode
 $LogDirectory = [IO.Path]::GetFullPath($LogDirectory)
 if ([string]::IsNullOrWhiteSpace($CanonicalSummaryPath)) {
     $CanonicalSummaryPath = Join-Path $LogDirectory "canonical-summary.json"
@@ -239,6 +255,44 @@ function Get-U1Hash {
 function Get-U1Git {
     param([string[]]$Arguments)
     return Invoke-GeoCeDGPhaseLifecycleGitText $RepositoryRoot $Arguments
+}
+function Get-U1CommitHash {
+    param([string]$Commit, [string]$Path)
+    $text = [Text.UTF8Encoding]::new($false, $true).GetString(
+        (Get-GeoCeDGPhaseLifecycleBlobBytes $RepositoryRoot $Commit $Path))
+    if ($text.Length -gt 0 -and $text[0] -eq [char]0xfeff) { $text = $text.Substring(1) }
+    return Get-GeoCeDGPhaseLifecycleHash ([Text.UTF8Encoding]::new($false).GetBytes(
+        $text.Replace("`r`n", "`n").Replace("`r", "`n")))
+}
+function Get-U1ManifestAuthorityHash {
+    param([string]$Path)
+    # The committed-candidate manifest is part of the author-reviewed product
+    # checkpoint. Later lifecycle plumbing is authenticated independently and
+    # must not make the historical candidate manifest self-referential.
+    if ($SelectedLifecycleMode -ceq "COMMITTED_CANDIDATE") {
+        return Get-U1CommitHash $ImplementationCommit $Path
+    }
+    if ($SelectedLifecycleMode -cin @("AUTHOR_CLOSEOUT", "PUBLISHED_REGRESSION")) {
+        $policy = if ($SelectedLifecycleMode -ceq "PUBLISHED_REGRESSION") {
+            Assert-U1 ($null -ne $LifecycleContext -and
+                -not [string]::IsNullOrWhiteSpace([string]$LifecycleContext.closeoutCommit)) `
+                "Published manifest authority requires an authenticated tagged closeout."
+            ConvertFrom-GeoCeDGPhaseLifecycleJson `
+                (Get-GeoCeDGPhaseLifecycleBlobBytes $RepositoryRoot `
+                    ([string]$LifecycleContext.closeoutCommit) $LifecyclePolicyPath) `
+                "published tagged G9U1 lifecycle policy"
+        } else {
+            Read-GeoCeDGPhaseLifecyclePolicy $RepositoryRoot `
+                (Join-Path $RepositoryRoot $LifecyclePolicyPath)
+        }
+        $statusPaths = @($policy.closeout.literalReplacements | ForEach-Object {
+                [string]$_.path
+            } | Sort-Object -Unique -CaseSensitive)
+        if ($Path -cnotin $statusPaths) {
+            return Get-U1CommitHash $ImplementationCommit $Path
+        }
+    }
+    return Get-U1Hash $Path
 }
 function Get-U1SourceAuthority {
     param([string]$Path)
@@ -264,6 +318,147 @@ function Assert-U1Set {
     $e = @($Expected | Sort-Object -Unique -CaseSensitive)
     Assert-U1 ($a.Count -eq $Actual.Count -and $e.Count -eq $Expected.Count -and
         @((Compare-Object $a $e -CaseSensitive)).Count -eq 0) "$Description differs or contains duplicates."
+}
+
+function Get-U1CandidatePaths {
+    if ($SelectedLifecycleMode -cne "PRECOMMIT_CANDIDATE") {
+        return @(Get-GeoCeDGPhaseLifecycleChangedPaths $RepositoryRoot $BaseCommit `
+            $ImplementationCommit)
+    }
+    $paths = @((Get-U1Git @("diff", "--name-only", "--no-renames", $BaseCommit)).Split("`n") +
+        (Get-U1Git @("ls-files", "--others", "--exclude-standard")).Split("`n") |
+        Where-Object { $_ } | Sort-Object -Unique -CaseSensitive)
+    return $paths
+}
+
+function Get-U1FinalMicroPresentationDeltaPaths {
+    if ($SelectedLifecycleMode -cne "PRECOMMIT_CANDIDATE") {
+        return @(Get-GeoCeDGPhaseLifecycleChangedPaths $RepositoryRoot `
+            $FinalPolishCandidateCommit $ImplementationCommit)
+    }
+    return @((Get-U1Git @("diff", "--name-only", "--no-renames",
+        $FinalPolishCandidateCommit)).Split("`n") +
+        (Get-U1Git @("ls-files", "--others", "--exclude-standard")).Split("`n") |
+        Where-Object { $_ } | Sort-Object -Unique -CaseSensitive)
+}
+
+function Get-U1FinalToolbarDeltaPaths {
+    if ($SelectedLifecycleMode -cne "PRECOMMIT_CANDIDATE") {
+        return @(Get-GeoCeDGPhaseLifecycleChangedPaths $RepositoryRoot `
+            $FinalMicroCandidateCommit $ImplementationCommit)
+    }
+    return @((Get-U1Git @("diff", "--name-only", "--no-renames",
+        $FinalMicroCandidateCommit)).Split("`n") +
+        (Get-U1Git @("ls-files", "--others", "--exclude-standard")).Split("`n") |
+        Where-Object { $_ } | Sort-Object -Unique -CaseSensitive)
+}
+
+function Initialize-U1Lifecycle {
+    if ($SelectedLifecycleMode -ceq "AUTO") {
+        $hasCloseoutInput = $AuthorCloseoutOnly -or
+            -not [string]::IsNullOrWhiteSpace($ReviewedTechnicalCommit) -or
+            -not [string]::IsNullOrWhiteSpace($CloseoutRecordPath) -or
+            -not [string]::IsNullOrWhiteSpace($TechnicalEvidenceBundleDirectory) -or
+            -not [string]::IsNullOrWhiteSpace($TechnicalEvidenceBundleSha256)
+        $hasPublishedTag = -not $AuthorCloseoutOnly -and
+            (Get-U1Git @("tag", "--list", $PassTagName)).Trim() -ceq $PassTagName
+        $script:SelectedLifecycleMode = if ($hasCloseoutInput) {
+            "AUTHOR_CLOSEOUT"
+        } elseif ($hasPublishedTag) {
+            "PUBLISHED_REGRESSION"
+        } elseif (Test-Path -LiteralPath (Join-Path $RepositoryRoot $LifecyclePolicyPath) `
+                -PathType Leaf) {
+            "COMMITTED_CANDIDATE"
+        } else {
+            "PRECOMMIT_CANDIDATE"
+        }
+    }
+    if ($SelectedLifecycleMode -ceq "PRECOMMIT_CANDIDATE") {
+        Assert-U1 (-not $AuthorCloseoutOnly -and
+            [string]::IsNullOrWhiteSpace($ReviewedTechnicalCommit) -and
+            [string]::IsNullOrWhiteSpace($CloseoutRecordPath) -and
+            [string]::IsNullOrWhiteSpace($TechnicalEvidenceBundleDirectory) -and
+            [string]::IsNullOrWhiteSpace($TechnicalEvidenceBundleSha256)) `
+            "Historical precommit mode cannot accept closeout evidence."
+        return
+    }
+    Assert-U1 (($SelectedLifecycleMode -ceq "AUTHOR_CLOSEOUT") -eq
+        [bool]$AuthorCloseoutOnly) `
+        "AUTHOR_CLOSEOUT is an explicit documentary check; committed mode runs live gates."
+    if ($SelectedLifecycleMode -ceq "PUBLISHED_REGRESSION") {
+        Assert-U1 ([string]::IsNullOrWhiteSpace($ReviewedTechnicalCommit) -and
+            [string]::IsNullOrWhiteSpace($CloseoutRecordPath) -and
+            [string]::IsNullOrWhiteSpace($TechnicalEvidenceBundleDirectory) -and
+            [string]::IsNullOrWhiteSpace($TechnicalEvidenceBundleSha256)) `
+            "Published regression cannot accept closeout overrides."
+        $script:LifecycleContext = Get-GeoCeDGPhasePublishedTagRegressionContext `
+            -RepositoryRoot $RepositoryRoot -PassTagName $PassTagName `
+            -ExpectedTagMessage $PassTagMessage -ExpectedPhase "G9U1" `
+            -ExpectedImplementationCommit $ImplementationCommit `
+            -ExpectedPolicyPath $LifecyclePolicyPath
+        return
+    }
+    if ($SelectedLifecycleMode -ceq "COMMITTED_CANDIDATE") {
+        Assert-U1 ([string]::IsNullOrWhiteSpace($ReviewedTechnicalCommit) -and
+            [string]::IsNullOrWhiteSpace($CloseoutRecordPath) -and
+            [string]::IsNullOrWhiteSpace($TechnicalEvidenceBundleDirectory) -and
+            [string]::IsNullOrWhiteSpace($TechnicalEvidenceBundleSha256)) `
+            "Committed-candidate mode cannot accept author-closeout authority."
+    } else {
+        Assert-U1 (-not [string]::IsNullOrWhiteSpace($ReviewedTechnicalCommit) -and
+            -not [string]::IsNullOrWhiteSpace($CloseoutRecordPath) -and
+            -not [string]::IsNullOrWhiteSpace($TechnicalEvidenceBundleDirectory) -and
+            -not [string]::IsNullOrWhiteSpace($TechnicalEvidenceBundleSha256)) `
+            "AUTHOR_CLOSEOUT requires an exact reviewed SHA, record and evidence bundle."
+    }
+    $parameters = @{
+        RepositoryRoot = $RepositoryRoot
+        PolicyPath = (Join-Path $RepositoryRoot $LifecyclePolicyPath)
+        ExpectedImplementationCommit = $ImplementationCommit
+        Mode = $SelectedLifecycleMode
+    }
+    if ($SelectedLifecycleMode -ceq "AUTHOR_CLOSEOUT") {
+        $resolvedCloseoutRecord = if ([IO.Path]::IsPathRooted($CloseoutRecordPath)) {
+            [IO.Path]::GetFullPath($CloseoutRecordPath)
+        } else {
+            [IO.Path]::GetFullPath((Join-Path $RepositoryRoot $CloseoutRecordPath))
+        }
+        $expectedCloseoutRecord = [IO.Path]::GetFullPath(
+            (Join-Path $RepositoryRoot $DefaultCloseoutRecordPath))
+        Assert-U1 ($resolvedCloseoutRecord.Equals($expectedCloseoutRecord,
+            [StringComparison]::OrdinalIgnoreCase)) `
+            "AUTHOR_CLOSEOUT record path differs from the frozen G9U1 authority."
+        $parameters.ReviewedTechnicalCommit = $ReviewedTechnicalCommit
+        $parameters.CloseoutRecordPath = $resolvedCloseoutRecord
+        $parameters.BundleDirectory = if (
+            [IO.Path]::IsPathRooted($TechnicalEvidenceBundleDirectory)) {
+            [IO.Path]::GetFullPath($TechnicalEvidenceBundleDirectory)
+        } else {
+            [IO.Path]::GetFullPath(
+                (Join-Path $RepositoryRoot $TechnicalEvidenceBundleDirectory))
+        }
+        $parameters.BundleSha256 = $TechnicalEvidenceBundleSha256
+        $parameters.PendingCloseout = (Get-U1Git @("rev-parse", "HEAD")).Trim() -ceq
+            $ReviewedTechnicalCommit
+    }
+    $script:LifecycleContext = Get-GeoCeDGPhaseLifecycleContext @parameters
+}
+
+function Assert-U1LifecycleEntry {
+    $head = (Get-U1Git @("rev-parse", "HEAD")).Trim()
+    Assert-U1 ((Get-U1Git @("rev-parse", "$ImplementationCommit^{tree}")).Trim() -ceq
+        $ImplementationTree) "The author-reviewed G9U1 implementation tree changed."
+    if ($SelectedLifecycleMode -ceq "PRECOMMIT_CANDIDATE") {
+        Assert-U1 ($head -ceq $FinalMicroCandidateCommit) `
+            "Historical G9U1 precommit mode requires the exact entry HEAD."
+        Assert-U1 ((Get-U1Git @("branch", "--show-current")).Trim() -ceq
+            $Round3CandidateBranch) "Unexpected historical G9U1 candidate branch."
+    } else {
+        Assert-U1 ($null -ne $LifecycleContext -and
+            $head -ceq $LifecycleContext.CurrentHead -and
+            $LifecycleContext.ImplementationCommit -ceq $ImplementationCommit) `
+            "Committed G9U1 lifecycle authority is not authenticated."
+    }
 }
 
 function Resolve-U1TestReference {
@@ -567,8 +762,9 @@ function Assert-U1Round2Contracts {
     Assert-U1 ($round2.workspace.families -eq 11 -and
         $round2.workspace.clusters -eq 18 -and $round2.workspace.actions -eq 110 -and
         $round2.workspace.normalMenus -eq 7) "Round-two workspace counts differ."
-    Assert-U1 ([string]::IsNullOrEmpty((Get-U1Git @("tag", "--list",
-        "geocedg-g9u1-pass")).Trim())) "A G9U1 PASS tag exists before author closeout."
+    Assert-U1 ($SelectedLifecycleMode -ceq "PUBLISHED_REGRESSION" -or
+        [string]::IsNullOrEmpty((Get-U1Git @("tag", "--list", $PassTagName)).Trim())) `
+        "A G9U1 PASS tag exists before author closeout."
     foreach ($path in @($round2.documentationPaths)) {
         $text = Read-U1 $path
         foreach ($link in [regex]::Matches($text, '(?<!!)\[[^\]]*\]\((?<target>[^)]+)\)')) {
@@ -850,8 +1046,9 @@ function Assert-U1Round3Contracts {
         "Round-three workspace counts differ."
     Assert-U1Set @($round3.supersededHistoricalScenarios) @("U1-R2-07", "U1-R2-08") `
         "Round-three superseded-but-preserved scenarios"
-    Assert-U1 ([string]::IsNullOrEmpty((Get-U1Git @("tag", "--list",
-        "geocedg-g9u1-pass")).Trim())) "A G9U1 PASS tag exists before author closeout."
+    Assert-U1 ($SelectedLifecycleMode -ceq "PUBLISHED_REGRESSION" -or
+        [string]::IsNullOrEmpty((Get-U1Git @("tag", "--list", $PassTagName)).Trim())) `
+        "A G9U1 PASS tag exists before author closeout."
     foreach ($path in @($round3.documentationPaths)) {
         $text = Read-U1 $path
         foreach ($link in [regex]::Matches($text, '(?<!!)\[[^\]]*\]\((?<target>[^)]+)\)')) {
@@ -984,8 +1181,9 @@ function Assert-U1FinalPresentationPolishContracts {
                 "Broken final-polish documentation link: $path -> $target"
         }
     }
-    Assert-U1 ([string]::IsNullOrEmpty((Get-U1Git @("tag", "--list",
-        "geocedg-g9u1-pass")).Trim())) "A G9U1 PASS tag exists before author closeout."
+    Assert-U1 ($SelectedLifecycleMode -ceq "PUBLISHED_REGRESSION" -or
+        [string]::IsNullOrEmpty((Get-U1Git @("tag", "--list", $PassTagName)).Trim())) `
+        "A G9U1 PASS tag exists before author closeout."
 }
 
 function Assert-U1FinalMicroPresentationContracts {
@@ -1012,10 +1210,7 @@ function Assert-U1FinalMicroPresentationContracts {
         ($historicalEvidence.finalPresentationPolish | ConvertTo-Json -Depth 100 -Compress)) `
         "The immutable final-presentation-polish authority was rewritten."
 
-    $microDelta = @((Get-U1Git @("diff", "--name-only",
-        $FinalPolishCandidateCommit)).Split("`n") +
-        (Get-U1Git @("ls-files", "--others", "--exclude-standard")).Split("`n") |
-        Where-Object { $_ } | Sort-Object -Unique -CaseSensitive)
+    $microDelta = @(Get-U1FinalMicroPresentationDeltaPaths)
     Assert-U1Set $microDelta @($micro.inventory.deltaPaths) `
         "Exact final-micro-presentation delta"
     Assert-U1 ($micro.inventory.baseCommit -ceq $FinalPolishCandidateCommit -and
@@ -1132,8 +1327,9 @@ function Assert-U1FinalMicroPresentationContracts {
                 "Broken final-micro documentation link: $path -> $target"
         }
     }
-    Assert-U1 ([string]::IsNullOrEmpty((Get-U1Git @("tag", "--list",
-        "geocedg-g9u1-pass")).Trim())) "A G9U1 PASS tag exists before author closeout."
+    Assert-U1 ($SelectedLifecycleMode -ceq "PUBLISHED_REGRESSION" -or
+        [string]::IsNullOrEmpty((Get-U1Git @("tag", "--list", $PassTagName)).Trim())) `
+        "A G9U1 PASS tag exists before author closeout."
 }
 
 function Assert-U1FinalToolbarVisualNormalizationContracts {
@@ -1172,10 +1368,7 @@ function Assert-U1FinalToolbarVisualNormalizationContracts {
             ConvertTo-Json -Depth 100 -Compress)) `
         "The immutable final-micro scenario authority was rewritten."
 
-    $visualDelta = @((Get-U1Git @("diff", "--name-only",
-        $FinalMicroCandidateCommit)).Split("`n") +
-        (Get-U1Git @("ls-files", "--others", "--exclude-standard")).Split("`n") |
-        Where-Object { $_ } | Sort-Object -Unique -CaseSensitive)
+    $visualDelta = @(Get-U1FinalToolbarDeltaPaths)
     Assert-U1Set $visualDelta @($visual.inventory.deltaPaths) `
         "Exact final toolbar visual-normalization delta"
     Assert-U1 ($visual.inventory.baseCommit -ceq $FinalMicroCandidateCommit -and
@@ -1294,8 +1487,9 @@ function Assert-U1FinalToolbarVisualNormalizationContracts {
                 "Broken final toolbar visual documentation link: $path -> $target"
         }
     }
-    Assert-U1 ([string]::IsNullOrEmpty((Get-U1Git @("tag", "--list",
-        "geocedg-g9u1-pass")).Trim())) "A G9U1 PASS tag exists before author closeout."
+    Assert-U1 ($SelectedLifecycleMode -ceq "PUBLISHED_REGRESSION" -or
+        [string]::IsNullOrEmpty((Get-U1Git @("tag", "--list", $PassTagName)).Trim())) `
+        "A G9U1 PASS tag exists before author closeout."
 }
 
 function Invoke-U1Gradle {
@@ -1335,6 +1529,7 @@ function Get-U1ClassResult {
 }
 function Assert-U1Contracts {
     param([object]$Evidence, [object]$Scenarios)
+    Assert-U1LifecycleEntry
     Assert-U1 ($Evidence.baseCommit -ceq $BaseCommit) "G9U1 explicit base differs."
     [void](Get-U1Git @("merge-base", "--is-ancestor", $BaseCommit, "HEAD"))
     foreach ($pin in @(
@@ -1351,15 +1546,32 @@ function Assert-U1Contracts {
         Assert-U1 ((Get-U1Git @("rev-parse", $protectedRef)).Trim() -ceq
             "00982e7e148a634cd57ed928f322774df267d5e3") "Protected approved design changed."
     }
-    Assert-U1 ($Evidence.status -ceq "IMPLEMENTATION_CANDIDATE_PENDING_AUTHOR_REVIEW" -and
-        $Evidence.implementationAuthorized -eq $true -and $Evidence.implementationStarted -eq $true -and
-        $Evidence.authorApprovedDesign -eq $true -and $Evidence.manualAuthorSmoke -ceq "PENDING" -and
-        $Evidence.selfApproved -eq $false -and $Evidence.authorApprovedImplementation -eq $false -and
-        $Evidence.passClaimedImplementation -eq $false) "G9U1 candidate authorization/approval flags are inconsistent."
+    $authorCloseout = $SelectedLifecycleMode -cin @("AUTHOR_CLOSEOUT", "PUBLISHED_REGRESSION")
+    if ($authorCloseout) {
+        Assert-U1 ($Evidence.status -ceq "PASS_AUTHOR_APPROVED" -and
+            $Evidence.implementationAuthorized -eq $true -and
+            $Evidence.implementationStarted -eq $true -and
+            $Evidence.implementationComplete -eq $true -and
+            $Evidence.authorApprovedDesign -eq $true -and
+            $Evidence.manualAuthorSmoke -ceq "PASS" -and
+            $Evidence.selfApproved -eq $false -and
+            $Evidence.authorApprovedImplementation -eq $true -and
+            $Evidence.passClaimedImplementation -eq $true) `
+            "G9U1 AUTHOR_CLOSEOUT approval/status flags are inconsistent."
+    } else {
+        Assert-U1 ($Evidence.status -ceq "IMPLEMENTATION_CANDIDATE_PENDING_AUTHOR_REVIEW" -and
+            $Evidence.implementationAuthorized -eq $true -and
+            $Evidence.implementationStarted -eq $true -and
+            $Evidence.implementationComplete -eq $true -and
+            $Evidence.authorApprovedDesign -eq $true -and
+            $Evidence.manualAuthorSmoke -ceq "PENDING" -and
+            $Evidence.selfApproved -eq $false -and
+            $Evidence.authorApprovedImplementation -eq $false -and
+            $Evidence.passClaimedImplementation -eq $false) `
+            "G9U1 candidate authorization/approval flags are inconsistent."
+    }
     Assert-U1 ($Evidence.canonicalPromptLfSha256 -ceq (Get-U1Hash $PromptPath)) "G9U1 canonical execution prompt changed."
-    $paths = @((Get-U1Git @("diff", "--name-only", $BaseCommit)).Split("`n") +
-        (Get-U1Git @("ls-files", "--others", "--exclude-standard")).Split("`n") |
-        Where-Object { $_ } | Sort-Object -Unique -CaseSensitive)
+    $paths = @(Get-U1CandidatePaths)
     Assert-U1Set $paths @($Evidence.inventory.paths) "G9U1 exact source candidate inventory"
     $materialization = Get-GeoCeDGMaterializationConfig $RepositoryRoot
     [void](Assert-GeoCeDGMaterializationAttributes -RepositoryRoot $RepositoryRoot `
@@ -1437,7 +1649,8 @@ function Assert-U1Contracts {
         $parts = $line -split '  ', 2
         Assert-U1 ($parts.Count -eq 2 -and $parts[0] -cmatch '^[0-9a-f]{64}$') "Invalid G9U1 hash record."
         Assert-U1 ($hashed.Add($parts[1]) -and $parts[1] -cne $HashPath) "Duplicate/self G9U1 hash record."
-        Assert-U1 ((Get-U1Hash $parts[1]) -ceq $parts[0]) "G9U1 authority hash mismatch: $($parts[1])"
+        Assert-U1 ((Get-U1ManifestAuthorityHash $parts[1]) -ceq $parts[0]) `
+            "G9U1 authority hash mismatch: $($parts[1])"
     }
     $expectedHashed = @($paths | Where-Object {
         $_ -cne $HashPath -and $_ -cnotin $CanonicalBinaryInventoryPaths
@@ -1464,9 +1677,37 @@ try {
     $initialHead = (Get-U1Git @("rev-parse", "HEAD")).Trim()
     $initialIndex = Get-U1Git @("ls-files", "--stage", "-z")
     $rawStart = Get-GeoCeDGPhaseRawInputSnapshot $RepositoryRoot
+    Initialize-U1Lifecycle
     $evidence = Read-U1 $EvidencePath | ConvertFrom-Json -Depth 100
     $scenarios = Read-U1 $ScenarioPath | ConvertFrom-Json -Depth 100
     Assert-U1Contracts $evidence $scenarios
+    if ($AuthorCloseoutOnly) {
+        Assert-U1 ($SelectedLifecycleMode -ceq "AUTHOR_CLOSEOUT" -and
+            -not $SkipBuild -and [string]::IsNullOrWhiteSpace($BuildEvidencePath) -and
+            -not $IncrementalBuild) `
+            "AUTHOR_CLOSEOUT is documentary consistency, not build evidence."
+        & git -c core.whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol `
+            -C $RepositoryRoot diff --check
+        Assert-U1 ($LASTEXITCODE -eq 0) "G9U1 AUTHOR_CLOSEOUT git diff --check failed."
+        & git -c core.whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol `
+            -C $RepositoryRoot diff --cached --check
+        Assert-U1 ($LASTEXITCODE -eq 0) `
+            "G9U1 AUTHOR_CLOSEOUT git diff --cached --check failed."
+        $closeout = [ordered]@{
+            schemaVersion = 1
+            phase = "G9U1"
+            state = "AUTHOR_CLOSEOUT_CONSISTENCY_LINKED_NOT_NEW_EXECUTION"
+            lifecycle = $LifecycleContext
+            productRuntimeExecuted = $false
+            currentRunReceiptProduced = $false
+            historicalExecutionRelabeled = $false
+            authorDecisionCreatedByVerifier = $false
+        }
+        [IO.File]::WriteAllText((Join-Path $LogDirectory "author-closeout-result.json"),
+            (($closeout | ConvertTo-Json -Depth 100).Replace("`r`n", "`n") + "`n"),
+            [Text.UTF8Encoding]::new($false))
+        Write-Host "G9U1 AUTHOR_CLOSEOUT consistency passed; linked technical evidence was not rerun."
+    } else {
     & (Join-Path $PSScriptRoot "tests/workspace-profile-validation.Tests.ps1") -LogDirectory (Join-Path $LogDirectory "profile-infrastructure")
     Assert-U1 ($?) "G9U1 profile-validation fixtures failed."
     if (-not $HistoricalRegressionsAlreadyComposed) {
@@ -1517,7 +1758,21 @@ try {
             sourceEvidence = @($evidence.inventory.paths | Sort-Object -CaseSensitive | ForEach-Object {
                 Get-U1SourceAuthority $_
             })
-            manualAuthorSmoke = "PENDING"; selfApproved = $false; authorApprovedImplementation = $false; passClaimedImplementation = $false
+            manualAuthorSmoke = $(if ($SelectedLifecycleMode -ceq "PUBLISHED_REGRESSION") {
+                    "PASS"
+                } else { "PENDING" })
+            selfApproved = $false
+            authorApprovedImplementation = [bool]($SelectedLifecycleMode -ceq "PUBLISHED_REGRESSION")
+            passClaimedImplementation = [bool]($SelectedLifecycleMode -ceq "PUBLISHED_REGRESSION")
+        }
+        if ($SelectedLifecycleMode -cne "PRECOMMIT_CANDIDATE") {
+            $summary["lifecycle"] = [ordered]@{
+                mode = $SelectedLifecycleMode
+                implementationCommit = $LifecycleContext.ImplementationCommit
+                currentHead = $LifecycleContext.CurrentHead
+                infrastructurePaths = @($LifecycleContext.InfrastructurePaths)
+                documentaryEvidenceLinked = [bool]$LifecycleContext.DocumentaryEvidenceLinked
+            }
         }
         $json = ($summary | ConvertTo-Json -Depth 100).Replace("`r`n", "`n") + "`n"
         [void][IO.Directory]::CreateDirectory((Split-Path -Parent ([IO.Path]::GetFullPath($CanonicalSummaryPath))))
@@ -1528,6 +1783,7 @@ try {
         }
         Write-Host "G9U1 focused cases: $(($results.tests | Measure-Object -Sum).Sum); canonical SHA-256: $hash"
         Write-Host "G9U1 technical focused gates passed; no author implementation approval is inferred."
+    }
     }
 } catch { $failure = $_.Exception.Message + "`n" + $_.ScriptStackTrace }
 finally {

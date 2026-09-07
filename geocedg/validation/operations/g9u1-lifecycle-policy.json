@@ -1,0 +1,405 @@
+{
+  "schemaVersion": 1,
+  "phase": "G9U1",
+  "entryCommit": "e4ef3d48ea95a0c3243e57dfc703b539d455c33e",
+  "implementationCommit": "28f7843184cfb202bbfcca1cbcc56a25a7a77bca",
+  "implementationTree": "d08d7beb45d04d6e0f0a478f4c04eb0e97e7e667",
+  "implementationPaths": [
+    {
+      "path": "docs/validation/g9u1_construction_workspace_implementation_candidate_report.md",
+      "sha256": "08c28eb4c8d5c73718383c29dc3727e47378bf62c2977ee80a2378162bfd7374"
+    },
+    {
+      "path": "docs/validation/g9u1_final_micro_presentation_adjustments.md",
+      "sha256": "e46014b5e43d8b96ec7e97aa4ebf791033b50f358498f1da67a7ca4f77d695cc"
+    },
+    {
+      "path": "geocedg/validation/g9u1/g9u1-construction-workspace-evidence.json",
+      "sha256": "bf78879bbbc31b2ffb3afe0d44c0f6438baf6efe40f3de18dcbca91467dc019a"
+    },
+    {
+      "path": "geocedg/validation/g9u1/g9u1-construction-workspace-evidence.sha256",
+      "sha256": "2bbba0493e5cb8776d6d67aef3ec91d5ab49afd506c01b5e5eb5811431ea6304"
+    },
+    {
+      "path": "geocedg/validation/g9u1/g9u1-construction-workspace-scenarios.json",
+      "sha256": "12f067390e9c901e175a239644a79c97e517737792cc30aa06ca3a373d320865"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGToolbarContainer.java",
+      "sha256": "099cd59442aa6c3af18d6c17f13656f80d11cc9c2c8d58bdc52e176e35e63d63"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGUserTools.java",
+      "sha256": "fdbd6b4e6bdb6ea19c8b6141cde034237ab224bd2b1e50d76bdc5f0b87bd7968"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGWorkspaceController.java",
+      "sha256": "032eddd74e7b112954b0c7d9b519375ca6e03cbc50540c29003a9d93b4a1161b"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1UserToolLibraryTest.java",
+      "sha256": "3f361dead846f15211e516274762a03f9acafd92bd165d3b19cc0ba33ffbca1b"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1WorkspaceSurfaceTest.java",
+      "sha256": "8345b571bbed513db891aaeab3c9b2f84313714a83c9495dad1c4c94ec3761d1"
+    },
+    {
+      "path": "tools/agent/verify-g9u1-construction-workspace.ps1",
+      "sha256": "f31532ba296b9189d14707f799b6ee1f9f294d8f4dfbf4fdbb7c89ed12fbe7dc"
+    }
+  ],
+  "infrastructureFollowupPaths": [
+    "docs/architecture/g9u1_verifier_lifecycle.md",
+    "docs/validation/g9u1_verifier_lifecycle_report.md",
+    "geocedg/validation/operations/g9u1-lifecycle-policy.json",
+    "geocedg/validation/operations/g9u1-lifecycle-repair-policy.json",
+    "tools/agent/phase-lifecycle.ps1",
+    "tools/agent/tests/g9u1-lifecycle.Tests.ps1",
+    "tools/agent/verification-repair-equivalence.ps1",
+    "tools/agent/verify-g9u1-construction-workspace.ps1",
+    "tools/agent/verify-g9u1-lifecycle-repair.ps1"
+  ],
+  "maximumInfrastructureCommits": 1,
+  "closeout": {
+    "recordPath": "geocedg/validation/g9u1/g9u1-author-closeout.json",
+    "literalReplacements": [
+      {
+        "path": "docs/architecture/cedg_workspace_architecture.md",
+        "before": "G9U1 IMPLEMENTATION = IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW\nimplementationStarted = true\nimplementationAuthorized = true\nselfApproved = false\nauthorApprovedDesign = true\npassClaimedImplementation = false",
+        "after": "G9U1 IMPLEMENTATION = PASS — AUTHOR APPROVED\nimplementationStarted = true\nimplementationAuthorized = true\nimplementationComplete = true\nselfApproved = false\nauthorApprovedDesign = true\nauthorApprovedImplementation = true\npassClaimedImplementation = true\nmanualAuthorSmoke = PASS",
+        "occurrences": 1
+      },
+      {
+        "path": "docs/architecture/cedg_workspace_architecture.md",
+        "before": "Implementation is\nnow a review candidate pending author re-smoke/closeout and is never\nself-approved.",
+        "after": "Implementation is\n`PASS — AUTHOR APPROVED` by an explicit exact-SHA author decision; the\nstatus-only closeout does not relabel technical execution as running on the\ncloseout commit and remains never self-approved.",
+        "occurrences": 1
+      },
+      {
+        "path": "docs/roadmap/geocedg_roadmap.md",
+        "before": "G9U1 DESIGN post-R6 está aprobado en checkpoint independiente `00982e7e...`; la reconciliación post-R1 no identifica novedad semántica y satisface la autorización condicional del autor para producir un candidato G9U1, nunca un PASS de implementación.",
+        "after": "G9U1 DESIGN post-R6 está aprobado en checkpoint independiente `00982e7e...`; la reconciliación post-R1 no identifica novedad semántica y G9U1 implementación cierra `PASS — AUTHOR APPROVED` por decisión explícita sobre el SHA técnico revisado, sin autoaprobación.",
+        "occurrences": 1
+      },
+      {
+        "path": "docs/roadmap/geocedg_roadmap.md",
+        "before": "| Última fase cerrada | G9S1-R1 — `PASS — AUTHOR APPROVED` |\n| Última fase ejecutada | G9S1-R1 — `PASS — AUTHOR APPROVED`; `implementationComplete=true`, `selfApproved=false`, `authorApprovedPhase=true`, `passClaimed=true`; `manualAuthorSmoke=PASS` |\n| Siguiente puerta | G9U1 en implementación autorizada tras planificación A/B PASS y auditoría post-R1 sin novedad material; detenerse en candidato pendiente de revisión/smoke autoral, sin promover G9U1 |",
+        "after": "| Última fase cerrada | G9U1 — `PASS — AUTHOR APPROVED` |\n| Última fase ejecutada | G9U1 — `PASS — AUTHOR APPROVED`; `implementationComplete=true`, `selfApproved=false`, `authorApprovedImplementation=true`, `passClaimedImplementation=true`; `manualAuthorSmoke=PASS` |\n| Siguiente puerta | Revisar el roadmap vivo y obtener autorización explícita antes de cualquier fase posterior; este cierre no autoriza G9U2, G9B, G9C ni G10 productivo |",
+        "occurrences": 1
+      },
+      {
+        "path": "docs/roadmap/geocedg_roadmap.md",
+        "before": "| G9U1 | `DESIGN PASS — AUTHOR APPROVED / POST-R1 RECONCILED / IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW` |",
+        "after": "| G9U1 | `PASS — AUTHOR APPROVED` |",
+        "occurrences": 1
+      },
+      {
+        "path": "docs/roadmap/geocedg_roadmap.md",
+        "before": "**Estado de implementación:** `IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW`",
+        "after": "**Estado de implementación:** `PASS — AUTHOR APPROVED`",
+        "occurrences": 1
+      },
+      {
+        "path": "docs/roadmap/geocedg_roadmap.md",
+        "before": "El autor acepta que los bugs/carencias revisados en ese commit quedaron\nresueltos, pero esa aceptación técnica no es el `AUTHOR_CLOSEOUT` de fase. G9U1\npermanece **IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW** y no hay promoción\na `main`, tag `geocedg-g9u1-pass` ni autoaprobación.",
+        "after": "La revisión funcional del autor sobre el checkpoint de producto permanece\nseparada de la evidencia técnica histórica. Una decisión posterior sobre el SHA\ntécnico exacto cierra G9U1 como **PASS — AUTHOR APPROVED** mediante un descendiente\nexclusivamente de estado; la fase permanece sin autoaprobación.",
+        "occurrences": 1
+      },
+      {
+        "path": "docs/roadmap/geocedg_roadmap.md",
+        "before": "implementationStarted = true\nimplementationAuthorized = true\nselfApproved = false\nauthorApprovedDesign = true\npassClaimedImplementation = false",
+        "after": "implementationStarted = true\nimplementationAuthorized = true\nimplementationComplete = true\nselfApproved = false\nauthorApprovedDesign = true\nauthorApprovedImplementation = true\npassClaimedImplementation = true\nmanualAuthorSmoke = PASS",
+        "occurrences": 1
+      },
+      {
+        "path": "docs/user/geocedg_user_guide.md",
+        "before": "### G9U1 implementation candidate\n\nThis branch contains the authorized post-R1 workspace implementation candidate,\nnot an author-approved G9U1 release. Desktop DEV20 exercised 193 cases with\nexit 0, including the current workspace consumers and historical R3 menu /\ninspector cases. Final PHASE/FULL and author GUI smoke remain separate pending\ngates; see the [candidate report](../validation/g9u1_construction_workspace_implementation_candidate_report.md).",
+        "after": "### G9U1 author-approved implementation\n\nG9U1 is `PASS — AUTHOR APPROVED` by an explicit decision naming the exact\nreviewed technical commit. The status-only closeout links, but does not\nreattribute, the sealed technical execution cohort. See the\n[implementation report](../validation/g9u1_construction_workspace_implementation_candidate_report.md)\nfor provenance and retained limitations.",
+        "occurrences": 1
+      },
+      {
+        "path": "docs/validation/g9_documentation_bundle_traceability.md",
+        "before": "Current conditional implementation authorization is satisfied;\nimplementation has started and remains a candidate pending author re-smoke/\ncloseout, without author implementation approval.",
+        "after": "Implementation completed and is `PASS — AUTHOR APPROVED` by an explicit\nexact-SHA decision. The approval/status closeout remains separate from the\ntechnical execution cohort and is not self-approval.",
+        "occurrences": 1
+      },
+      {
+        "path": "docs/validation/g9_documentation_bundle_traceability.md",
+        "before": "G9U1 design is author-approved and its implementation remains a candidate pending author re-smoke/closeout; G9B/G9C remain unauthorized and G9U2 blocked",
+        "after": "G9U1 design and implementation are `PASS — AUTHOR APPROVED`; G9B/G9C remain unauthorized and G9U2 blocked",
+        "occurrences": 1
+      },
+      {
+        "path": "docs/validation/g9_documentation_bundle_traceability.md",
+        "before": "the kernel prerequisites and implementation authorization are satisfied, while implementation PASS still requires author re-smoke and closeout",
+        "after": "the kernel prerequisites, implementation authorization and exact-SHA author closeout are satisfied",
+        "occurrences": 1
+      },
+      {
+        "path": "docs/validation/g9_public_workspace_validation_matrix.md",
+        "before": "G9U1 POST-R1 RECONCILED / IMPLEMENTATION CANDIDATE, PENDING AUTHOR REVIEW**",
+        "after": "G9U1 IMPLEMENTATION PASS — AUTHOR APPROVED**",
+        "occurrences": 1
+      },
+      {
+        "path": "docs/validation/g9_public_workspace_validation_matrix.md",
+        "before": "### G9U1 PASS candidate",
+        "after": "### G9U1 PASS authority",
+        "occurrences": 1
+      },
+      {
+        "path": "docs/validation/g9_public_workspace_validation_matrix.md",
+        "before": "- G9U0-R2, G9U0-R3, G9U0-R4, G9U0-R5 and G9S1 are `PASS — AUTHOR APPROVED`; a\n  separate author decision must authorize the definitive post-G9S1 successor\n  prompt. No\n  predecessor PASS alone is sufficient.",
+        "after": "- G9U0-R2, G9U0-R3, G9U0-R4, G9U0-R5, G9S1 and G9U1 are\n  `PASS — AUTHOR APPROVED`. G9U1 is closed only by its own exact-SHA author\n  decision; no predecessor PASS alone supplied that approval.",
+        "occurrences": 1
+      },
+      {
+        "path": "docs/validation/g9u1_command_tool_consistency_matrix.md",
+        "before": "- Status: **DESIGN PASS — AUTHOR APPROVED — G9U1 IMPLEMENTATION CANDIDATE / PENDING AUTHOR REVIEW**",
+        "after": "- Status: **G9U1 DESIGN AND IMPLEMENTATION PASS — AUTHOR APPROVED**",
+        "occurrences": 1
+      },
+      {
+        "path": "docs/validation/g9u1_construction_workspace_implementation_candidate_report.md",
+        "before": "# G9U1 CeDG Construction — implementation candidate\n\n- Status: **IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**\n- Design baseline: **PASS — AUTHOR APPROVED**; **POST-R1 RECONCILED**\n- `implementationAuthorized = true`; `implementationStarted = true`\n- `implementationComplete = true` means the functional scope is implemented;\n  it is not a technical-gate PASS or author approval.\n- `selfApproved = false`; `authorApprovedImplementation = false`;\n  `passClaimedImplementation = false`\n- `manualAuthorSmoke = PENDING`",
+        "after": "# G9U1 CeDG Construction — author-approved implementation closeout\n\n- Status: **PASS — AUTHOR APPROVED**\n- Design baseline: **PASS — AUTHOR APPROVED**; **POST-R1 RECONCILED**\n- `implementationAuthorized = true`; `implementationStarted = true`;\n  `implementationComplete = true`\n- `selfApproved = false`; `authorApprovedImplementation = true`;\n  `passClaimedImplementation = true`\n- `manualAuthorSmoke = PASS`\n- Technical execution remains bound to its original sealed cohort; the\n  approval/status-only descendant is closeout evidence, not a relabelled run.",
+        "occurrences": 1
+      },
+      {
+        "path": "docs/validation/g9u1_construction_workspace_implementation_candidate_report.md",
+        "before": "The\nprofile and its 11 groups, 52 projected toolbar actions and 110 stable IDs are\nunchanged. This successor requires its own focused A/B, PHASE, COMPOSED and\nclean FULL evidence and remains **IMPLEMENTATION CANDIDATE — PENDING AUTHOR\nREVIEW** with all approval/PASS flags false and `manualAuthorSmoke = PENDING`.\n\nThe bounded authority remains the\n[final micro-presentation disposition](g9u1_final_micro_presentation_adjustments.md).\nMain and `geocedg-g9u1-pass` remain untouched until the author explicitly\napproves the exact new technical SHA.",
+        "after": "The\nprofile and its 11 groups, 52 projected toolbar actions and 110 stable IDs are\nunchanged. The sealed technical evidence remains attributed to its exact\nhistorical source/status cohort. The exact-SHA author decision closes G9U1\nwithout changing or reattributing those product executions.\n\nThe bounded authority remains the\n[final micro-presentation disposition](g9u1_final_micro_presentation_adjustments.md).\nThe approval/status descendant records `selfApproved = false`,\n`authorApprovedImplementation = true`, `passClaimedImplementation = true` and\n`manualAuthorSmoke = PASS`.",
+        "occurrences": 1
+      },
+      {
+        "path": "docs/validation/g9u1_construction_workspace_implementation_candidate_report.md",
+        "before": "the three late corrections above. `manualAuthorSmoke = PENDING` is unchanged.",
+        "after": "the three late corrections above. The later explicit author decision records\n`manualAuthorSmoke = PASS`; the agent-operated GUI record is not its source.",
+        "occurrences": 1
+      },
+      {
+        "path": "docs/validation/g9u1_workspace_completeness_matrix.md",
+        "before": "- Product implementation: **IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**",
+        "after": "- Product implementation: **PASS — AUTHOR APPROVED**",
+        "occurrences": 1
+      },
+      {
+        "path": "docs/validation/g9u1_workspace_completeness_matrix.md",
+        "before": "G9U1 IMPLEMENTATION =\nIMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW\n\nimplementationStarted = true\nimplementationAuthorized = true\nselfApproved = false\nauthorApprovedDesign = true\npassClaimedImplementation = false",
+        "after": "G9U1 IMPLEMENTATION =\nPASS — AUTHOR APPROVED\n\nimplementationStarted = true\nimplementationAuthorized = true\nimplementationComplete = true\nselfApproved = false\nauthorApprovedDesign = true\nauthorApprovedImplementation = true\npassClaimedImplementation = true\nmanualAuthorSmoke = PASS",
+        "occurrences": 1
+      },
+      {
+        "path": "geocedg/specs/ui/application-profile.md",
+        "before": "- Status: Stable G2 foundation; live schema-v2 G9U1 implementation candidate",
+        "after": "- Status: Stable G2 foundation; live schema-v2 G9U1 implementation `PASS — AUTHOR APPROVED`",
+        "occurrences": 1
+      },
+      {
+        "path": "geocedg/specs/ui/application-profile.md",
+        "before": "## Live schema-v2 G9U1 candidate",
+        "after": "## Live schema-v2 G9U1 author-approved profile",
+        "occurrences": 1
+      },
+      {
+        "path": "geocedg/specs/ui/cedg-workspaces.md",
+        "before": "The current bounded successor remains **implementation candidate pending author\nreview**.",
+        "after": "The bounded successor is **PASS — AUTHOR APPROVED** by an explicit exact-SHA\nauthor decision; its status-only closeout changes no workspace semantics.",
+        "occurrences": 1
+      },
+      {
+        "path": "geocedg/specs/ui/cedg-workspaces.md",
+        "before": "G9U1 IMPLEMENTATION = IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW\nimplementationStarted = true\nimplementationAuthorized = true\nselfApproved = false\nauthorApprovedDesign = true\npassClaimedImplementation = false",
+        "after": "G9U1 IMPLEMENTATION = PASS — AUTHOR APPROVED\nimplementationStarted = true\nimplementationAuthorized = true\nimplementationComplete = true\nselfApproved = false\nauthorApprovedDesign = true\nauthorApprovedImplementation = true\npassClaimedImplementation = true\nmanualAuthorSmoke = PASS",
+        "occurrences": 1
+      },
+      {
+        "path": "geocedg/specs/ui/g9u1-construction-interaction.md",
+        "before": "- Roadmap gate: G9U1, post-G9S1, R6 and R1; implementation **IMPLEMENTATION\n  CANDIDATE — PENDING AUTHOR REVIEW**, explicitly authorized after reconciliation",
+        "after": "- Roadmap gate: G9U1, post-G9S1, R6 and R1; implementation\n  **PASS — AUTHOR APPROVED** by an explicit exact-SHA closeout decision",
+        "occurrences": 1
+      },
+      {
+        "path": "geocedg/specs/ui/g9u1-construction-interaction.md",
+        "before": "G9U1 IMPLEMENTATION = IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW\nimplementationStarted = true\nimplementationAuthorized = true\nselfApproved = false\nauthorApprovedDesign = true\npassClaimedImplementation = false",
+        "after": "G9U1 IMPLEMENTATION = PASS — AUTHOR APPROVED\nimplementationStarted = true\nimplementationAuthorized = true\nimplementationComplete = true\nselfApproved = false\nauthorApprovedDesign = true\nauthorApprovedImplementation = true\npassClaimedImplementation = true\nmanualAuthorSmoke = PASS",
+        "occurrences": 1
+      },
+      {
+        "path": "geocedg/validation/g9u1/g9u1-construction-workspace-evidence.json",
+        "before": "  \"status\": \"IMPLEMENTATION_CANDIDATE_PENDING_AUTHOR_REVIEW\",\n  \"baseCommit\": \"f8a21a087234b18fc13741a0ac2baf80608e9022\",\n  \"implementationAuthorized\": true,\n  \"implementationStarted\": true,\n  \"implementationComplete\": true,\n  \"completionMeaning\": \"FINAL_MICRO_PRESENTATION_SCOPE_IMPLEMENTED_ON_IMMUTABLE_FUNCTIONALLY_ACCEPTED_34FFDD9_CHECKPOINT; all earlier review authorities and evidence remain historical; fresh focused A/B, PHASE, COMPOSED and clean FULL gates belong only to this exact successor cohort; final author re-smoke and exact-SHA AUTHOR_CLOSEOUT remain pending.\",\n  \"selfApproved\": false,\n  \"authorApprovedDesign\": true,\n  \"authorApprovedImplementation\": false,\n  \"passClaimedImplementation\": false,\n  \"manualAuthorSmoke\": \"PENDING\",",
+        "after": "  \"status\": \"PASS_AUTHOR_APPROVED\",\n  \"baseCommit\": \"f8a21a087234b18fc13741a0ac2baf80608e9022\",\n  \"implementationAuthorized\": true,\n  \"implementationStarted\": true,\n  \"implementationComplete\": true,\n  \"completionMeaning\": \"PASS_AUTHOR_APPROVED_BY_EXPLICIT_EXACT_SHA_DECISION; historical technical executions retain their original repository HEAD, index and status provenance; the status-only closeout links evidence without reattributing it.\",\n  \"selfApproved\": false,\n  \"authorApprovedDesign\": true,\n  \"authorApprovedImplementation\": true,\n  \"passClaimedImplementation\": true,\n  \"manualAuthorSmoke\": \"PASS\",",
+        "occurrences": 1
+      }
+    ],
+    "canonicalLfHashManifests": [
+      {
+        "path": "geocedg/validation/g9u1/g9u1-construction-workspace-evidence.sha256",
+        "authorityCommit": "28f7843184cfb202bbfcca1cbcc56a25a7a77bca",
+        "authorityPaths": [
+          ".gitattributes",
+          ".github/prompts/tasks/g9u1-construction-workspace-after-g9s1-r1.prompt.md",
+          ".github/prompts/tasks/g9u1-construction-workspace-after-g9s1.prompt.md",
+          ".github/prompts/tasks/g9u1-construction-workspace-after-g9u0-r6.prompt.md",
+          "apps/geocedg/application-profile-v1.yml",
+          "apps/geocedg/application-profile.yml",
+          "docs/adr/0001-geocedg-product-profile.md",
+          "docs/adr/0004-standalone-windows-packaging.md",
+          "docs/architecture/cedg_workspace_architecture.md",
+          "docs/architecture/g9u1_post_u1_design_notes.md",
+          "docs/developer/geocedg_developer_guide.md",
+          "docs/licensing/component-matrix.md",
+          "docs/roadmap/geocedg_roadmap.md",
+          "docs/upstream/modified-files.yml",
+          "docs/user/geocedg_construction_quick_guide.md",
+          "docs/user/geocedg_user_guide.md",
+          "docs/validation/g9_documentation_bundle_traceability.md",
+          "docs/validation/g9_public_workspace_validation_matrix.md",
+          "docs/validation/g9u1_author_manual_review_round1.md",
+          "docs/validation/g9u1_author_resmoke_checklist.md",
+          "docs/validation/g9u1_author_review_round2.md",
+          "docs/validation/g9u1_author_review_round3.md",
+          "docs/validation/g9u1_command_tool_consistency_matrix.md",
+          "docs/validation/g9u1_construction_workspace_implementation_candidate_report.md",
+          "docs/validation/g9u1_final_micro_presentation_adjustments.md",
+          "docs/validation/g9u1_final_presentation_polish.md",
+          "docs/validation/g9u1_frontend_review_matrix.md",
+          "docs/validation/g9u1_icon_review.md",
+          "docs/validation/g9u1_native_lifecycle_review.md",
+          "docs/validation/g9u1_preexecution_design_candidate_report.md",
+          "docs/validation/g9u1_user_tools_review.md",
+          "docs/validation/g9u1_workspace_completeness_matrix.md",
+          "geocedg/resources/assets-manifest.yml",
+          "geocedg/specs/operations/package-profile.schema.json",
+          "geocedg/specs/packaging/windows-packaging.md",
+          "geocedg/specs/README.md",
+          "geocedg/specs/ui/application-profile-v1.schema.json",
+          "geocedg/specs/ui/application-profile-v2.candidate.schema.json",
+          "geocedg/specs/ui/application-profile-v2.candidate.yml",
+          "geocedg/specs/ui/application-profile.md",
+          "geocedg/specs/ui/application-profile.schema.json",
+          "geocedg/specs/ui/cedg-workspaces.md",
+          "geocedg/specs/ui/g9u1-construction-interaction.md",
+          "geocedg/validation/g9u1/g9u1-construction-workspace-evidence.json",
+          "geocedg/validation/g9u1/g9u1-construction-workspace-scenarios.json",
+          "geocedg/validation/g9u1/g9u1-preexecution-design-evidence.json",
+          "geocedg/validation/g9u1/g9u1-preexecution-design-evidence.sha256",
+          "geocedg/validation/g9u1/g9u1-preexecution-scenarios.json",
+          "packaging/windows/package.yml",
+          "packaging/windows/README.md",
+          "source/desktop/desktop/build.gradle.kts",
+          "source/desktop/desktop/src/main/java/org/geocedg/desktop/AppGeoCeDG.java",
+          "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/GeoCeDGBuildProvenance.java",
+          "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDG.java",
+          "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGActionRegistry.java",
+          "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGAlgebraInputSubmission.java",
+          "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGDefinitionInspector.java",
+          "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGEuclidianController.java",
+          "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGEuclidianView.java",
+          "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGFrame.java",
+          "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGHostMenuFactory.java",
+          "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGIntersectionSession.java",
+          "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGLocusV2Dialogs.java",
+          "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGMenuBar.java",
+          "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGPointInteraction.java",
+          "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGProductInfo.java",
+          "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGProfile.java",
+          "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGProfileSchema.java",
+          "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGSimilarityTools.java",
+          "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGToolbarContainer.java",
+          "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGUserToolLibrary.java",
+          "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGUserTools.java",
+          "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGWorkspaceController.java",
+          "source/desktop/desktop/src/main/java/org/geocedg/desktop/locus/LocusV2Laboratory.java",
+          "source/desktop/desktop/src/main/java/org/geocedg/desktop/GuiManagerGeoCeDG.java",
+          "source/desktop/desktop/src/main/java/org/geocedg/desktop/resources/GeoCeDGBrandingResource.java",
+          "source/desktop/desktop/src/main/java/org/geocedg/desktop/resources/GeoCeDGToolImageResource.java",
+          "source/desktop/desktop/src/main/java/org/geogebra/desktop/GeoGebra.java",
+          "source/desktop/desktop/src/main/java/org/geogebra/desktop/SplashWindow.java",
+          "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/dialog/NamePanelD.java",
+          "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/dialog/options/OptionsAdvancedD.java",
+          "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/dialog/PropertiesPanelD.java",
+          "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/GuiManagerD.java",
+          "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/inputbar/AlgebraInputD.java",
+          "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/menubar/OptionsMenuD.java",
+          "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/view/algebra/AlgebraControllerD.java",
+          "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/view/algebra/AlgebraHelperBar.java",
+          "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/view/properties/PropertiesViewD.java",
+          "source/desktop/desktop/src/main/java/org/geogebra/desktop/main/AppD.java",
+          "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U0R3InspectorWorkflowTest.java",
+          "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U0R3MenuLifecycleTest.java",
+          "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1ActionRegistryTest.java",
+          "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1AlgebraGestureEditingTest.java",
+          "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1AlgebraSubmissionTest.java",
+          "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1AuthorArchiveReviewTest.java",
+          "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1DefinitionAffordanceTest.java",
+          "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1IconReviewTest.java",
+          "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1IntersectionSessionTest.java",
+          "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1MacroNativeArchivePersistenceTest.java",
+          "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1MetricReviewTest.java",
+          "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1NativeLifecycleReviewTest.java",
+          "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1PeriodicQuarantineNativeTest.java",
+          "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1ProductPolicyTest.java",
+          "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1ProfileCompilerTest.java",
+          "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1Revision3AlgebraEditingDiagnostic.java",
+          "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1ScriptWorkflowTest.java",
+          "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1SemanticPointInteractionTest.java",
+          "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1SimilarityToolsTest.java",
+          "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1TestApp.java",
+          "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1UserToolLibraryTest.java",
+          "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1WorkspaceSurfaceTest.java",
+          "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGBrandingResourceTest.java",
+          "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGDocumentLifecycleTest.java",
+          "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGProfileTest.java",
+          "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGSplashWindowTest.java",
+          "source/desktop/desktop/src/test/java/org/geocedg/desktop/locus/LocusV2DesktopLifecycleRegressionTest.java",
+          "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoGebraStartupThreadTest.java",
+          "source/shared/common-jre/src/main/java/org/geogebra/common/jre/io/MyXMLioJre.java",
+          "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command_en.properties",
+          "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command_es.properties",
+          "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command.properties",
+          "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_en.properties",
+          "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_es.properties",
+          "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu.properties",
+          "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/G9U1ConstructionParticipationReviewTest.java",
+          "source/shared/common-jre/src/test/java/org/geocedg/common/workspace/G9U1InputPolicyTest.java",
+          "source/shared/common-jre/src/test/java/org/geogebra/common/kernel/LocusV2InputPreviewLifecycleTest.java",
+          "source/shared/common/src/main/java/org/geocedg/common/euclidian/draw/DrawLocusV2.java",
+          "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusMetricScalarAdapter.java",
+          "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialIdentityRegistry.java",
+          "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/AlgebraProcessor.java",
+          "source/shared/common/src/main/java/org/geogebra/common/kernel/Kernel.java",
+          "source/shared/common/src/main/java/org/geogebra/common/kernel/ScheduledPreviewFromInputBar.java",
+          "source/shared/common/src/main/java/org/geogebra/common/main/App.java",
+          "source/shared/common/src/main/resources/org/geogebra/common/icons/svg/web/toolIcons/mode_geocedg_materialize.svg",
+          "source/shared/common/src/main/resources/org/geogebra/common/icons/svg/web/toolIcons/mode_geocedg_richresult.svg",
+          "source/shared/common/src/main/resources/org/geogebra/common/icons/svg/web/toolIcons/mode_geocedg_semanticpoint.svg",
+          "source/shared/common/src/main/resources/org/geogebra/common/icons/svg/web/toolIcons/mode_geocedg_splinev2.svg",
+          "tools/agent/dxf-authority-validation.ps1",
+          "tools/agent/tests/dxf-authority-validation.Tests.ps1",
+          "tools/agent/tests/phase-lifecycle.Tests.ps1",
+          "tools/agent/tests/verification-runtime.Tests.ps1",
+          "tools/agent/tests/workspace-profile-validation.Tests.ps1",
+          "tools/agent/verification-runtime.psm1",
+          "tools/agent/verify-dxf.ps1",
+          "tools/agent/verify-frontend.ps1",
+          "tools/agent/verify-g9u1-construction-workspace.ps1",
+          "tools/agent/verify-g9u1-preexecution-design.ps1",
+          "tools/agent/verify-g9x1-extended-dxf.ps1",
+          "tools/agent/verify-legacy.ps1",
+          "tools/agent/verify-operational.ps1",
+          "tools/agent/verify-packaging.ps1",
+          "tools/agent/verify.ps1",
+          "tools/agent/workspace-profile-validation.ps1",
+          "tools/release/build-windows-package.ps1",
+          "tools/resources/generate-geocedg-branding.ps1"
+        ],
+        "authorityPathCount": 156,
+        "authorityPathListSha256": "a05faf95b4527c9e55077085971312945028edc3e70c7ca0de5478caa051f617",
+        "preserveLeadingComments": 5
+      }
+    ]
+  }
+}

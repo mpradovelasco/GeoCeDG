@@ -185,7 +185,7 @@ function Get-GeoCeDGVerificationRepairEquivalence {
         [Parameter(Mandatory)] [string]$CloseoutCommit,
         [Parameter(Mandatory, ParameterSetName = 'Commit')] [string]$CandidateCommit,
         [Parameter(Mandatory, ParameterSetName = 'WorkingTree')] [switch]$WorkingTree,
-        [Parameter(Mandatory)] [string[]]$CloseoutPaths,
+        [Parameter(Mandatory)] [AllowEmptyCollection()] [string[]]$CloseoutPaths,
         [Parameter(Mandatory)] [object[]]$RepairPaths
     )
     $root = [IO.Path]::GetFullPath($RepositoryRoot)
