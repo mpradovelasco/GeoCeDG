@@ -100,6 +100,19 @@ function Assert-GeoCeDGTaskPromptContracts {
     $materialization = Get-GeoCeDGMaterializationConfig $RepositoryRoot
     $prefix = '.github/prompts/tasks/'
     $successor = $prefix + 'g9u1-construction-workspace-after-g9s1-r1.prompt.md'
+    $historicalGrammarHeadings = @(
+        '# Objective',
+        '# Authority and evidence hierarchy',
+        '# Scope',
+        '# Explicitly forbidden scope',
+        '# Architectural placement',
+        '# Required design/specification',
+        '# Geometric invariants and degeneracies',
+        '# Compatibility and serialization',
+        '# Required tests and commands',
+        '# Required artifacts',
+        '# Stop conditions'
+    )
     $pins = @{
         'g9u1-construction-workspace-after-g9s1.prompt.md' = @{
             commit = '857de6628489bda0b65a5ba5145e62ca0795fc32'
@@ -145,7 +158,12 @@ function Assert-GeoCeDGTaskPromptContracts {
                 throw "Active successor must explicitly preserve/supersede the protected checkpoint: $relative"
             }
         }
-        foreach ($heading in $RequiredHeadings) {
+        $headings = if ($pins.ContainsKey($prompt.Name) -or $relative -ceq $successor) {
+            $historicalGrammarHeadings
+        } else {
+            $RequiredHeadings
+        }
+        foreach ($heading in $headings) {
             if (-not [regex]::IsMatch($content, "(?m)^$([regex]::Escape($heading))\r?$")) {
                 throw "$relative or its required active successor is missing heading '$heading'."
             }
