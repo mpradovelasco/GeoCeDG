@@ -32,23 +32,19 @@ jobs:
             17
             22
 
-      - name: Provision G7A Conda environment
+      - name: Provision GeoCeDG Python environment
         uses: conda-incubator/setup-miniconda@v4
         with:
-          activate-environment: om_env
-          python-version: "3.12.13"
+          activate-environment: cedg_env
+          environment-file: cedg_env.yml
           channels: conda-forge
           channel-priority: strict
           conda-remove-defaults: true
 
-      - name: Install and verify G7A numerical dependency
+      - name: Verify GeoCeDG Python environment
         shell: pwsh
         run: |
-          conda install -n om_env -c conda-forge "mpmath=1.4.1" -y
-
-          Write-Host "G7A Conda environment:"
-          conda run -n om_env python --version
-          conda run -n om_env python -c "import mpmath; print('mpmath', mpmath.__version__)"
+          conda run --no-capture-output -n cedg_env python -c "import json,platform,sys,mpmath; print(json.dumps({'implementation':platform.python_implementation(),'python':platform.python_version(),'executable':sys.executable,'prefix':sys.prefix,'mpmath':mpmath.__version__,'mpmath_file':mpmath.__file__}))"
 
       - name: Run GeoCeDG FULL authority
         shell: pwsh

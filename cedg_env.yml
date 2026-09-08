@@ -1,0 +1,7 @@
+name: cedg_env
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - python=3.12.13
+  - mpmath=1.4.1

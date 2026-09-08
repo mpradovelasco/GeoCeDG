@@ -584,7 +584,7 @@ try {
 
     Write-Host "`n==> Independent G8A numerical references"
     $referenceLog = Join-Path $LogDirectory "g8a-independent-references.log"
-    & conda run --no-capture-output -n om_env python `
+    & conda run --no-capture-output -n cedg_env python `
         $ReferenceGenerator --check 2>&1 | Tee-Object -FilePath $referenceLog
     if ($LASTEXITCODE -ne 0) {
         throw "Independent G8A references failed. See $referenceLog"

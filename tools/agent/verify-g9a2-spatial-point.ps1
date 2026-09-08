@@ -216,10 +216,10 @@ function Invoke-GeneratedEvidenceChecks {
     $logPath = Join-Path $LogDirectory "g9a2-generated-evidence.log"
     Push-Location -LiteralPath $RepositoryRoot
     try {
-        & conda run --no-capture-output -n om_env python `
+        & conda run --no-capture-output -n cedg_env python `
             $ReferenceGeneratorPath --check 2>&1 | Tee-Object -FilePath $logPath
         $referenceExit = $LASTEXITCODE
-        & conda run --no-capture-output -n om_env python `
+        & conda run --no-capture-output -n cedg_env python `
             $ModelGeneratorPath --check 2>&1 | Tee-Object -FilePath $logPath -Append
         $modelExit = $LASTEXITCODE
     } finally {

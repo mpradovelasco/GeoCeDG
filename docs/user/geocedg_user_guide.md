@@ -412,7 +412,7 @@ The validated workstation profile is:
 | Gradle launcher JVM | JDK 22 selected by the wrapper: `JAVA_HOME` takes precedence over `PATH`; the validated installation was Oracle JDK 22.0.2 |
 | Compiler/test toolchain | A full JDK 17 discoverable by Gradle, including `java` and `javac` |
 | Desktop toolchain | A full JDK 25 discoverable by Gradle; the validated runtime was Eclipse Temurin 25.0.4 |
-| Numerical references | Conda with the named environment `om_env`, CPython **3.12.13** and mpmath **1.4.1**, with interpreter and import origins inside that environment |
+| Numerical references | Conda with the named environment `cedg_env`, CPython **3.12.13** and mpmath **1.4.1**, with interpreter and import origins inside that environment |
 | Gradle | Use only `gradlew.bat` from the repository; do not install or invoke a system Gradle |
 | G4 packaging | JDK 25 `jpackage`; MSI/EXE additionally require .NET SDK 6+ and WiX 5.0.2 with Util/UI extensions 5.0.2 |
 | Network | Required by the normal first bootstrap to fetch `origin`, `upstream`, and tags |
@@ -427,9 +427,107 @@ The wrapper uses `JAVA_HOME` when it is nonempty and falls back to `PATH` only
 when it is empty or absent. An invalid `JAVA_HOME` is an error, even if a valid
 Java is available on `PATH`. Bootstrap also requires a `java` command on `PATH`
 for its separate baseline diagnostic; that diagnostic does not identify the
-wrapper-selected launcher. Numerical checks use `conda run -n om_env`, not an
+wrapper-selected launcher. Numerical checks use `conda run -n cedg_env`, not an
 activated or global Python interpreter; preflight checks the exact versions
 and executable/import origins.
+
+Conda is operational Python verification infrastructure, not a Java runtime
+dependency. Java compilation and product execution remain independent of Conda
+when Python verification is not requested. From the repository root, create the
+exact environment for the first time with:
+
+```powershell
+conda env create --file .\cedg_env.yml
+```
+
+Update an existing environment and prune packages outside the manifest with:
+
+```powershell
+conda env update --name cedg_env --file .\cedg_env.yml --prune
+```
+
+Verify the implementation, exact versions and import origins with:
+
+```powershell
+conda run --no-capture-output -n cedg_env python -c "import json,platform,sys,mpmath; print(json.dumps({'implementation':platform.python_implementation(),'python':platform.python_version(),'executable':sys.executable,'prefix':sys.prefix,'mpmath':mpmath.__version__,'mpmath_file':mpmath.__file__}))"
+```
+
+The result must report exactly CPython `3.12.13` and mpmath `1.4.1`.
+`executable`, `prefix` and `mpmath_file` must resolve inside the same
+`cedg_env` prefix. The mandatory focused post-installation check is:
+
+```powershell
+.\tools\agent\verify-workstation.ps1
+```
+
+Earlier instructions used the external `om_env`. Create and use `cedg_env`; do
+not rename, update, prune, or remove `om_env` as part of this migration.
+
+If `cedg_env` does not satisfy the contract, never remove it solely because its
+name matches. Resolve and validate its name, absolute prefix, Python prefix,
+executable origin, Conda inventory membership and separation from `base` first:
+
+```powershell
+$probeJson = conda run -n cedg_env python -c `
+  "import json,os,sys; print(json.dumps({'environment_name':os.environ.get('CONDA_DEFAULT_ENV',''),'environment_prefix':os.environ.get('CONDA_PREFIX',''),'python_prefix':sys.prefix,'python_executable':sys.executable}))"
+if ($LASTEXITCODE -ne 0) {
+    throw "Cannot resolve cedg_env safely; no environment will be removed."
+}
+
+$facts = $probeJson | ConvertFrom-Json
+$rawEnvironmentPrefix = [string]$facts.environment_prefix
+$rawPythonPrefix = [string]$facts.python_prefix
+$rawPythonExecutable = [string]$facts.python_executable
+if ([string]::IsNullOrWhiteSpace($rawEnvironmentPrefix) -or
+    [string]::IsNullOrWhiteSpace($rawPythonPrefix) -or
+    [string]::IsNullOrWhiteSpace($rawPythonExecutable) -or
+    -not [IO.Path]::IsPathFullyQualified($rawEnvironmentPrefix) -or
+    -not [IO.Path]::IsPathFullyQualified($rawPythonPrefix) -or
+    -not [IO.Path]::IsPathFullyQualified($rawPythonExecutable)) {
+    throw "Probe did not return absolute paths; no environment will be removed."
+}
+$resolvedPrefix = [IO.Path]::GetFullPath(
+    $rawEnvironmentPrefix).TrimEnd('\', '/')
+$pythonPrefix = [IO.Path]::GetFullPath(
+    $rawPythonPrefix).TrimEnd('\', '/')
+$pythonExecutable = [IO.Path]::GetFullPath(
+    $rawPythonExecutable)
+$basePrefix = [IO.Path]::GetFullPath(
+    ((conda info --base).Trim())).TrimEnd('\', '/')
+$condaInventory = conda env list --json | ConvertFrom-Json -AsHashtable
+$knownPrefixes = @(
+    $condaInventory['envs'] |
+        ForEach-Object {
+            [IO.Path]::GetFullPath([string]$_).TrimEnd('\', '/')
+        }
+)
+$prefixBoundary = $resolvedPrefix + [IO.Path]::DirectorySeparatorChar
+$listedExactlyOnce = @($knownPrefixes | Where-Object {
+    $_.Equals($resolvedPrefix, [StringComparison]::OrdinalIgnoreCase)
+}).Count -eq 1
+$validIdentity =
+    $facts.environment_name -ceq 'cedg_env' -and
+    $pythonPrefix.Equals($resolvedPrefix,
+        [StringComparison]::OrdinalIgnoreCase) -and
+    $pythonExecutable.StartsWith($prefixBoundary,
+        [StringComparison]::OrdinalIgnoreCase) -and
+    $listedExactlyOnce -and
+    -not $resolvedPrefix.Equals($basePrefix,
+        [StringComparison]::OrdinalIgnoreCase)
+if (-not $validIdentity) {
+    throw "Resolved cedg_env identity or origin is inconsistent; no environment will be removed."
+}
+
+Write-Host "Verified cedg_env prefix: $resolvedPrefix"
+conda env remove --prefix $resolvedPrefix --yes
+if ($LASTEXITCODE -ne 0) {
+    throw "Removal of the verified cedg_env prefix failed."
+}
+conda env create --file .\cedg_env.yml
+```
+
+If the identity probe cannot run, stop and inspect the Conda inventory manually;
+do not guess a prefix and do not remove another environment.
 
 The bootstrap never installs Git, PowerShell, Java, Gradle, Conda, or Python. By default it
 also only detects optional packaging prerequisites. The explicit
@@ -532,7 +630,7 @@ The bootstrap:
   baseline SHA;
 - before expensive product verification, checks the effective wrapper launcher,
   usable JDK 17/25 toolchains, and the exact Python/mpmath versions and origins
-  inside `om_env`;
+  inside `cedg_env`;
 - delegates repository validation to `tools/agent/verify.ps1` (default COMPOSED,
   not FULL);
 - preserves the initial worktree status and reports `PASS`,

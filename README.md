@@ -39,10 +39,112 @@ Se requiere Git, PowerShell 7.2 o posterior, un JDK 22 para ejecutar Gradle y JD
 selecciona Java desde `JAVA_HOME` cuando está definido; sólo usa `PATH` si está
 vacío o ausente. Un `JAVA_HOME` inválido no se sustituye silenciosamente por
 `PATH`; `java` debe estar disponible en `PATH` también para el diagnóstico de
-baseline. La verificación numérica requiere Conda y el entorno nombrado
-`om_env`, con CPython **3.12.13** y mpmath **1.4.1**; un Python global no lo
-sustituye. No es necesario instalar Gradle: se usa exclusivamente el wrapper
-del repositorio. Windows es la única plataforma validada actualmente.
+baseline. La verificación numérica requiere Conda y el entorno GeoCeDG
+`cedg_env`, con CPython **3.12.13** y mpmath **1.4.1**; un Python global no lo
+sustituye. Conda forma parte exclusivamente de la infraestructura operativa de
+verificación: la compilación Java y la ejecución del producto no dependen de
+Conda cuando no se solicitan comprobaciones Python. No es necesario instalar
+Gradle: se usa exclusivamente el wrapper del repositorio. Windows es la única
+plataforma validada actualmente.
+
+Desde la raíz del repositorio, cree el entorno por primera vez con:
+
+```powershell
+conda env create --file .\cedg_env.yml
+```
+
+Actualice una instalación existente, eliminando dependencias ajenas al contrato,
+con:
+
+```powershell
+conda env update --name cedg_env --file .\cedg_env.yml --prune
+```
+
+Compruebe la implementación, las versiones y los orígenes de importación:
+
+```powershell
+conda run --no-capture-output -n cedg_env python -c "import json,platform,sys,mpmath; print(json.dumps({'implementation':platform.python_implementation(),'python':platform.python_version(),'executable':sys.executable,'prefix':sys.prefix,'mpmath':mpmath.__version__,'mpmath_file':mpmath.__file__}))"
+```
+
+El resultado debe identificar exactamente CPython `3.12.13` y mpmath `1.4.1`;
+`executable`, `prefix` y `mpmath_file` deben pertenecer al mismo prefijo de
+`cedg_env`. La comprobación focalizada obligatoria tras la instalación es:
+
+```powershell
+.\tools\agent\verify-workstation.ps1
+```
+
+Las instrucciones anteriores usaban el entorno externo `om_env`. Cree y use
+`cedg_env`; no renombre, actualice, pode ni elimine `om_env` como parte de esta
+migración.
+
+Si `cedg_env` no satisface el contrato, no lo elimine sólo porque su nombre
+coincida. Resuelva y valide primero su nombre, prefijo absoluto, prefijo Python,
+origen del ejecutable, pertenencia al inventario Conda y separación de `base`:
+
+```powershell
+$probeJson = conda run -n cedg_env python -c `
+  "import json,os,sys; print(json.dumps({'environment_name':os.environ.get('CONDA_DEFAULT_ENV',''),'environment_prefix':os.environ.get('CONDA_PREFIX',''),'python_prefix':sys.prefix,'python_executable':sys.executable}))"
+if ($LASTEXITCODE -ne 0) {
+    throw "No se puede resolver cedg_env con seguridad; no se eliminará ningún entorno."
+}
+
+$facts = $probeJson | ConvertFrom-Json
+$rawEnvironmentPrefix = [string]$facts.environment_prefix
+$rawPythonPrefix = [string]$facts.python_prefix
+$rawPythonExecutable = [string]$facts.python_executable
+if ([string]::IsNullOrWhiteSpace($rawEnvironmentPrefix) -or
+    [string]::IsNullOrWhiteSpace($rawPythonPrefix) -or
+    [string]::IsNullOrWhiteSpace($rawPythonExecutable) -or
+    -not [IO.Path]::IsPathFullyQualified($rawEnvironmentPrefix) -or
+    -not [IO.Path]::IsPathFullyQualified($rawPythonPrefix) -or
+    -not [IO.Path]::IsPathFullyQualified($rawPythonExecutable)) {
+    throw "La sonda no devolvió rutas absolutas; no se eliminará ningún entorno."
+}
+$resolvedPrefix = [IO.Path]::GetFullPath(
+    $rawEnvironmentPrefix).TrimEnd('\', '/')
+$pythonPrefix = [IO.Path]::GetFullPath(
+    $rawPythonPrefix).TrimEnd('\', '/')
+$pythonExecutable = [IO.Path]::GetFullPath(
+    $rawPythonExecutable)
+$basePrefix = [IO.Path]::GetFullPath(
+    ((conda info --base).Trim())).TrimEnd('\', '/')
+$condaInventory = conda env list --json | ConvertFrom-Json -AsHashtable
+$knownPrefixes = @(
+    $condaInventory['envs'] |
+        ForEach-Object {
+            [IO.Path]::GetFullPath([string]$_).TrimEnd('\', '/')
+        }
+)
+$prefixBoundary = $resolvedPrefix + [IO.Path]::DirectorySeparatorChar
+$listedExactlyOnce = @($knownPrefixes | Where-Object {
+    $_.Equals($resolvedPrefix, [StringComparison]::OrdinalIgnoreCase)
+}).Count -eq 1
+$validIdentity =
+    $facts.environment_name -ceq 'cedg_env' -and
+    $pythonPrefix.Equals($resolvedPrefix,
+        [StringComparison]::OrdinalIgnoreCase) -and
+    $pythonExecutable.StartsWith($prefixBoundary,
+        [StringComparison]::OrdinalIgnoreCase) -and
+    $listedExactlyOnce -and
+    -not $resolvedPrefix.Equals($basePrefix,
+        [StringComparison]::OrdinalIgnoreCase)
+if (-not $validIdentity) {
+    throw "La identidad o el origen de cedg_env es incoherente; no se eliminará ningún entorno."
+}
+
+Write-Host "Prefijo cedg_env verificado: $resolvedPrefix"
+conda env remove --prefix $resolvedPrefix --yes
+if ($LASTEXITCODE -ne 0) {
+    throw "No se pudo eliminar el prefijo cedg_env verificado."
+}
+conda env create --file .\cedg_env.yml
+```
+
+Si la sonda de identidad no puede ejecutarse, deténgase e inspeccione
+manualmente el inventario Conda: no deduzca el prefijo ni elimine otro entorno.
+La guía de usuario contiene el procedimiento ampliado de instalación,
+recuperación y diagnóstico.
 
 ```powershell
 git clone https://github.com/mpradovelasco/GeoCeDG.git
@@ -52,7 +154,7 @@ cd GeoCeDG
 
 El bootstrap configura `upstream` sólo si falta, verifica el tag fijado y,
 antes de la verificación costosa del producto, comprueba el Java efectivo, los
-JDK 17/25 y las versiones y el origen de Python/mpmath dentro de `om_env`.
+JDK 17/25 y las versiones y el origen de Python/mpmath dentro de `cedg_env`.
 Delega después en `tools/agent/verify.ps1`, cuyo nivel predeterminado es
 COMPOSED, no FULL; véase el [contrato de niveles](geocedg/specs/operations/verification-levels.md).
 Por defecto es idempotente y no instala software. Consulte su ayuda con

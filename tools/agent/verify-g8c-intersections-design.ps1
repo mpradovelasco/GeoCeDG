@@ -175,7 +175,7 @@ function Invoke-ReferenceCheck {
     $logPath = Join-Path $LogDirectory "g8c-independent-references.log"
     Push-Location -LiteralPath $RepositoryRoot
     try {
-        & conda run -n om_env python $ReferenceGenerator --check 2>&1 |
+        & conda run -n cedg_env python $ReferenceGenerator --check 2>&1 |
             Tee-Object -FilePath $logPath
         $exitCode = $LASTEXITCODE
     } finally {

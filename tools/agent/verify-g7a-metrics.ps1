@@ -542,7 +542,7 @@ try {
     }
 
     Write-Host "`n==> Independent G7A numerical references"
-    & conda run --no-capture-output -n om_env python $ReferenceGenerator --check
+    & conda run --no-capture-output -n cedg_env python $ReferenceGenerator --check
     if ($LASTEXITCODE -ne 0) {
         throw "Independent G7A numerical references failed with exit code $LASTEXITCODE."
     }
