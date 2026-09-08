@@ -9,3 +9,4 @@ build/
 
 # Local link to the independent geocedg_book repository.
 /book
+/.claude/settings.local.json
