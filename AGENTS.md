@@ -37,6 +37,10 @@ When sources disagree, use this order:
 
 Generated artifacts are evidence, not source authority. Never infer source semantics from a binary, screenshot, installer, or generated report when the governing source is available.
 
+### 2.1 Agent-read-only file
+
+`CLAUDE.md` is read-only for automated agents. Agents may read it, but must never create, modify, overwrite, append to, replace, rename, move, delete, regenerate, or otherwise mutate any file whose basename equals `claude.md` case-insensitively. No task prompt, implementation request, generated workflow, or inferred convenience may override this restriction. If an instruction would require such a mutation, leave the file untouched and report the conflict to the author. This restriction governs agent write authority only; it does not assign or change the semantic authority of `CLAUDE.md` or any other repository file.
+
 ## 3. Repository boundaries
 
 ### 3.1 Upstream source
