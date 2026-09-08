@@ -1,19 +1,20 @@
 # Commit-first acceptance and dual closeout reform
 
-- Status: **IMPLEMENTATION CANDIDATE — AUTHOR REVIEW READY**
+- Status: **ACCEPTED — AUTHOR APPROVED AND PROMOTED TO `main`**
 - Date: 2026-09-07
 - Scope: operational/verification infrastructure and governance only
 - Product phase effect: `NONE`
 - Scientific or product runtime semantics changed: `false`
-- Author approval: `false`
+- Author approval: `true`
 - Self approval: `false`
+- Published reform tip: `259910d73196145e7b9880a200e3047d8f6c6875`
 - Decision: [ADR 0025](../adr/0025-commit-first-acceptance-and-dual-closeout.md)
 - Normative contract: [verification levels, section 12](../../geocedg/specs/operations/verification-levels.md#12-commit-first-acceptance-and-dual-closeout)
 
-## Outcome under review
+## Accepted outcome
 
-The candidate introduces one generic, declarative lifecycle for future closable
-phases. A clean technical commit is required before an acceptance-intended
+The accepted reform introduces one generic, declarative lifecycle for future
+closable phases. A clean technical commit is required before an acceptance-intended
 campaign; mode-neutral `CLOSEOUT_READINESS` binds the exact commit, phase
 policy, both constructible `VERIFIED` and `AUTHOR_OPERATED` routes, expected
 status-only projection, pre-promotion refs and the real PHASE/COMPOSED/FULL plan
@@ -176,7 +177,7 @@ The candidate fixtures cover at least:
 - rejection of substituted SHA, wrong/lightweight tag, merge or non-direct
   closeout, product/executable or extra delta, dirty state and divergent remote.
 
-Because verifier policy and orchestration change, acceptance requires focused
+Because verifier policy and orchestration changed, acceptance required focused
 fixtures followed by one readiness-bound clean-output FULL on the eventual
 clean technical commit. That physical root, its authenticated
 PHASE/COMPOSED/FULL claims and their hashes are recorded in the status-only
@@ -201,8 +202,9 @@ GUIDE_PATHS = docs/developer/geocedg_developer_guide.md;
   .github/prompts/reviews/change-review.prompt.md;
   .github/prompts/tasks/task-template.prompt.md
 selfApproved = false
-authorApproved = false
+authorApproved = true
+promotedToMain = true
 passClaimed = false
 ```
 
-The candidate authorizes no G9U2, G9B, G9C, G10 or other product phase.
+The accepted reform authorizes no G9U2, G9B, G9C, G10 or other product phase.

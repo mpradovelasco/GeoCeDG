@@ -1,12 +1,11 @@
 # GeoCeDG verification levels and bootstrap-impact contract
 
-- Status: **NORMATIVE / AUTHOR APPROVED through section 11**;
-  section 12 is an **IMPLEMENTATION CANDIDATE — AUTHOR REVIEW READY** amendment;
-  section 13 defines the conditional `AUTHOR_DIRECT` route
+- Status: **NORMATIVE / AUTHOR APPROVED through section 13**
 - Scope: operational/build/verification infrastructure; no product semantics
 - Decision: [accepted ADR 0020 and author closeout](../../../docs/adr/0020-verification-levels-and-current-run-evidence.md#author-approval-and-closeout)
 - Existing authority: [ADR 0002](../../../docs/adr/0002-g1-operational-authority.md)
-- Prospective amendment: [ADR 0025](../../../docs/adr/0025-commit-first-acceptance-and-dual-closeout.md)
+- Accepted amendment: [ADR 0025](../../../docs/adr/0025-commit-first-acceptance-and-dual-closeout.md)
+- Published section 12 reform tip: `259910d73196145e7b9880a200e3047d8f6c6875`
 - Accepted sections 1–11 evidence state: implementation and independent technical review complete;
   author approval applies to `2b82034dbedf6f26250ad4aefb9eead700e33e66` and its
   status-only closeout. The technical contract below is unchanged.
@@ -57,10 +56,9 @@ executable authority remains `tools/agent/verify.ps1` and the focused verifiers
 it composes. This contract does not replace their assertions or accepted feature
 specifications. It is not a GeoCeDG product phase and authorizes no future phase.
 
-The interface in sections 1–11 is the accepted implementation. Section 12 is a
-prospective implementation-candidate amendment. Commands are not evidence of
-execution; implementation and measured results must be reported separately.
-Existing accepted gates remain in force throughout adoption.
+The interface in sections 1–12 is the accepted implementation. Commands are not
+evidence of execution; implementation and measured results must be reported
+separately. Existing accepted gates remain in force.
 
 Section 13 is a separate author-controlled change route outside the verification
 levels. Its initial adoption is effective only from a published commit whose
@@ -87,8 +85,8 @@ or verifier/bootstrap changes, shared kernel infrastructure changes, and changes
 whose regression perimeter cannot be bounded reliably. The infrastructure-impact
 rule in section 8 also applies. Section 10 permits explicit linkage for a
 status-only closeout; section 11 defines the author-approved narrow
-evidence-preserving identity/provenance repair exception. The prospective
-section 12 amendment makes final acceptance commit-first and adds two explicit
+evidence-preserving identity/provenance repair exception. The accepted section
+12 amendment makes final acceptance commit-first and adds two explicit
 post-approval closeout modes. None permits a receipt from a previous process to
 become a current-run capability.
 
@@ -586,11 +584,11 @@ success never supplies a product-phase author decision.
 
 ## 12. Commit-first acceptance and dual closeout
 
-This section is the prospective implementation-candidate amendment governed by
+This section is the accepted amendment governed by
 [ADR 0025](../../../docs/adr/0025-commit-first-acceptance-and-dual-closeout.md).
-It changes operational lifecycle only. Until the author approves an exact
-implementation commit, it must be reported as `AUTHOR REVIEW READY`, not as an
-accepted replacement for sections 1–11.
+Its implementation was author-approved and promoted to `main` through published
+reform tip `259910d73196145e7b9880a200e3047d8f6c6875`. This status statement
+changes no technical claim and reinterprets no execution evidence.
 
 ### 12.1 Final-acceptance order
 
@@ -986,8 +984,8 @@ Existing ADR 0023/0024 closeouts and G9U1 artifacts retain their original
 meaning. In particular, the G9U1 heavy executions remain attributed to their
 recorded dirty precommit cohort, while the later lifecycle normalization and
 published closeout retain their existing distinct SHAs. Do not edit old
-receipts, change their classification, or claim that this prospective rule was
-in force for them.
+receipts, change their classification, or claim that section 12 was in force for
+them.
 
 The focused contract suite covers dirty final-acceptance rejection, clean exact
 `T` acceptance, missing/invalid route and self-reference readiness failures,

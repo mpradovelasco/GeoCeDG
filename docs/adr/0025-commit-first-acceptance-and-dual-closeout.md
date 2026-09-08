@@ -1,6 +1,6 @@
 # ADR 0025: Commit-first acceptance and dual closeout
 
-- Status: **IMPLEMENTATION CANDIDATE — AUTHOR REVIEW READY**
+- Status: **ACCEPTED — AUTHOR APPROVED AND PROMOTED TO `main`**
 - Date: 2026-09-07
 - Scope: operational/verification infrastructure and governance only
 - Product phase effect: `NONE`
@@ -11,6 +11,7 @@
   [ADR 0023](0023-phase-verifier-lifecycle-and-author-closeout.md) and
   [ADR 0024](0024-verification-input-identity.md)
 - Current record: [dual closeout reform report](../validation/dual_closeout_reform_report.md)
+- Published reform tip: `259910d73196145e7b9880a200e3047d8f6c6875`
 
 ## Context
 
@@ -395,9 +396,10 @@ change, so its frozen final plan remains focused evidence plus one FULL.
 
 ## Current decision boundary
 
-This ADR and its implementation are an operational candidate prepared for
-author review. No technical result may change this status without an explicit
-author decision naming the exact reviewed technical commit.
+This ADR and its implementation were explicitly approved by the author and
+promoted to `main` through published reform tip
+`259910d73196145e7b9880a200e3047d8f6c6875`. This status correction records that
+completed decision; it changes no technical claim and reinterprets no evidence.
 
 ```text
 PRODUCT_PHASE_EFFECT = NONE
@@ -414,8 +416,9 @@ GUIDE_PATHS = docs/developer/geocedg_developer_guide.md;
   .github/prompts/reviews/change-review.prompt.md;
   .github/prompts/tasks/task-template.prompt.md
 selfApproved = false
-authorApproved = false
+authorApproved = true
+promotedToMain = true
 passClaimed = false
 ```
 
-This work authorizes no G9U2, G9B, G9C, G10 or other productive phase.
+The accepted reform authorizes no G9U2, G9B, G9C, G10 or other productive phase.
