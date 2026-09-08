@@ -2,8 +2,12 @@
 
 State one concrete outcome.
 
-Declare and freeze `VERIFICATION_CLASS` and the planned acceptance level before
-implementation. For one developer/integrator, default explicitly to
+Declare `CHANGE_ROUTE = ORDINARY | AUTHOR_DIRECT` before implementation.
+`AUTHOR_DIRECT` is valid only when the author explicitly authorizes the exact
+scope and paths; it is outside `VERIFICATION_CLASS` and must use
+`author-direct-change.prompt.md`. Never infer it or select it to bypass a
+failure. For `ORDINARY`, declare and freeze `VERIFICATION_CLASS` and the planned
+acceptance level. For one developer/integrator, default explicitly to
 `BOUNDED_PHASE` and propose `AUTHOR_OPERATED`; later closeout selection remains
 an explicit author decision. A higher campaign requires a concrete
 `VERIFICATION_ESCALATION_REQUEST` and author authorization before execution.

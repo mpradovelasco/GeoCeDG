@@ -1,7 +1,8 @@
 # GeoCeDG verification levels and bootstrap-impact contract
 
 - Status: **NORMATIVE / AUTHOR APPROVED through section 11**;
-  section 12 is an **IMPLEMENTATION CANDIDATE — AUTHOR REVIEW READY** amendment
+  section 12 is an **IMPLEMENTATION CANDIDATE — AUTHOR REVIEW READY** amendment;
+  section 13 defines the conditional `AUTHOR_DIRECT` route
 - Scope: operational/build/verification infrastructure; no product semantics
 - Decision: [accepted ADR 0020 and author closeout](../../../docs/adr/0020-verification-levels-and-current-run-evidence.md#author-approval-and-closeout)
 - Existing authority: [ADR 0002](../../../docs/adr/0002-g1-operational-authority.md)
@@ -60,6 +61,10 @@ The interface in sections 1–11 is the accepted implementation. Section 12 is a
 prospective implementation-candidate amendment. Commands are not evidence of
 execution; implementation and measured results must be reported separately.
 Existing accepted gates remain in force throughout adoption.
+
+Section 13 is a separate author-controlled change route outside the verification
+levels. Its initial adoption is effective only from a published commit whose
+exact SHA the author explicitly approves under the recorded bootstrap exception.
 
 ## 2. Four verification levels
 
@@ -1052,3 +1057,63 @@ GUIDE_PATHS = docs/developer/geocedg_developer_guide.md;
   .github/prompts/tasks/task-template.prompt.md
 selfApproved = false
 ```
+
+## 13. Author-direct change route
+
+`CHANGE_ROUTE = AUTHOR_DIRECT` is a minimal author-controlled exception to the
+ordinary verification and closeout policy. It is outside `VERIFICATION_CLASS`:
+it is not a verification class, verification level, closeout mode, acceptance
+claim, evidence-preservation mechanism or substitute for a failed gate. An agent
+must never infer, recommend as an escape hatch or select this route autonomously.
+
+Each use requires an explicit author instruction recorded with all of:
+
+```text
+CHANGE_ROUTE = AUTHOR_DIRECT
+AUTHORIZED_SCOPE = <exact change scope>
+AUTHORIZED_PATHS = <exact repository paths>
+AUTHORIZED_REASON = <reason for the exception>
+PRODUCT_PHASE_EFFECT = NONE
+TECHNICAL_VERIFICATION_CLAIM = NONE
+PREVIOUS_EVIDENCE_REINTERPRETED = false
+```
+
+The authorization applies only to the named scope and paths. Any expansion,
+executable-code change, new validation machinery or product/scientific effect
+requires a new explicit author authorization before editing. `AUTHOR_DIRECT`
+does not permit product, kernel, productive UI, build, Gradle, toolchain,
+serialization, scientific-reference or productive-test changes unless a future
+author authorization specifically expands this policy first.
+
+The route creates no scripts, schemas, validators, receipts, gates or test
+families. Only trivial static checks needed to avoid syntactic or documentary
+errors may be run, and their results are not acceptance evidence or a technical
+verification claim. Existing evidence retains its original source cohort,
+meaning and consumability; it must not be relabelled, inherited or reinterpreted.
+
+Closure is exclusively:
+
+1. inspect the exact traceable diff;
+2. create one clean candidate commit and report its SHA, tree and changed paths;
+3. stop for explicit author approval naming that exact SHA; and
+4. leave Git promotion to the author.
+
+No PHASE/COMPOSED/FULL campaign, READINESS, PREPARE, FINALIZE, closeout receipt,
+status-only closeout commit, tag or automated promotion is part of this route.
+The agent must not push, merge, fast-forward a publication ref or otherwise
+perform promotion.
+
+The initial adoption is authorized only by this bootstrap record:
+
+```text
+BOOTSTRAP_EXCEPTION = AUTHOR_DIRECT_INITIAL_ADOPTION
+PRODUCT_PHASE_EFFECT = NONE
+TECHNICAL_VERIFICATION_CLAIM = NONE
+PREVIOUS_EVIDENCE_REINTERPRETED = false
+```
+
+That exception authorizes only the minimum documentary/prompt adoption of this
+section, the generic task-template recognition and
+`.github/prompts/tasks/author-direct-change.prompt.md`. It does not itself
+authorize later use. The route becomes available only after the author approves
+the exact adoption commit SHA and publishes it.
