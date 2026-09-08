@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "defaultMode": "plan",
+    "deny": [
+      "Bash(git push *)",
+      "Bash(git reset --hard *)",
+      "Bash(git clean *)",
+      "Bash(git rebase *)",
+      "PowerShell(git push *)",
+      "PowerShell(git reset --hard *)",
+      "PowerShell(git clean *)",
+      "PowerShell(git rebase *)",
+      "Edit(/AGENTS.md)",
+      "Edit(/FIRST_AGENT_TASK.md)",
+      "Edit(/CLAUDE.md)",
+      "Edit(/.claude/settings.json)",
+      "Edit(/.github/prompts/**)",
+      "Edit(/ai-shell/prompts/**)"
+    ]
+  }
+}
