@@ -1,0 +1,224 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://geocedg.local/schemas/verification-result-v1",
+  "title": "GeoCeDG typed verification result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema", "schema_version", "run_id", "profile", "run_state",
+    "base_commit", "base_tree", "candidate_commit", "candidate_tree",
+    "execution_plan_hash", "environment_fingerprint", "started_at", "finished_at",
+    "process_producers", "acceptance_results", "diagnostic_findings", "coverage",
+    "acceptance_verdict", "coverage_verdict", "diagnostic_summary", "summary", "result_hash"
+  ],
+  "properties": {
+    "$schema": { "const": "geocedg/specs/operations/verification-result.schema.json" },
+    "schema_version": { "const": 1 },
+    "run_id": { "type": "string", "pattern": "^[A-Za-z0-9._-]+$" },
+    "profile": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" },
+    "run_state": { "enum": ["COMPLETED", "RUN_INTERRUPTED"] },
+    "base_commit": { "type": ["string", "null"], "pattern": "^[0-9a-f]{40}$" },
+    "base_tree": { "type": ["string", "null"], "pattern": "^[0-9a-f]{40}$" },
+    "candidate_commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "candidate_tree": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "execution_plan_hash": { "$ref": "#/$defs/hash" },
+    "environment_fingerprint": { "$ref": "#/$defs/hash" },
+    "started_at": { "type": "string", "format": "date-time" },
+    "finished_at": { "type": ["string", "null"], "format": "date-time" },
+    "process_producers": { "type": "array", "items": { "$ref": "#/$defs/producer" } },
+    "acceptance_results": { "type": "array", "items": { "$ref": "#/$defs/acceptanceResult" } },
+    "diagnostic_findings": { "type": "array", "items": { "$ref": "#/$defs/diagnosticResult" } },
+    "coverage": { "$ref": "#/$defs/coverage" },
+    "acceptance_verdict": { "enum": ["ACCEPTED", "REJECTED_SEMANTIC", "REJECTED_SAFETY", "REJECTED_VERIFICATION_CORE", "NOT_PRODUCED"] },
+    "coverage_verdict": { "enum": ["COMPLETE", "INCOMPLETE", "UNTRUSTED"] },
+    "diagnostic_summary": { "$ref": "#/$defs/diagnosticSummary" },
+    "summary": { "$ref": "#/$defs/summary" },
+    "result_hash": { "$ref": "#/$defs/hash" }
+  },
+  "$defs": {
+    "hash": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "acceptanceClass": { "enum": ["PRODUCT_SEMANTIC", "SCIENTIFIC_SEMANTIC", "SAFETY", "VERIFICATION_CORE"] },
+    "diagnosticClass": { "enum": ["GOVERNANCE_DIAGNOSTIC", "DOCUMENTATION_DIAGNOSTIC", "HISTORICAL_CONSISTENCY_DIAGNOSTIC", "STYLE_DIAGNOSTIC", "PERFORMANCE_TELEMETRY"] },
+    "structuredOutput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "path", "sha256", "value", "cause"],
+      "properties": {
+        "state": { "enum": ["PRESENT", "ABSENT", "MALFORMED", "NOT_DECLARED"] },
+        "path": { "type": ["string", "null"] },
+        "sha256": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+        "value": {},
+        "cause": { "type": ["string", "null"] }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "state", "path", "sha256"],
+      "properties": {
+        "name": { "type": "string" },
+        "state": { "enum": ["PRESENT", "ABSENT"] },
+        "path": { "type": ["string", "null"] },
+        "sha256": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" }
+      }
+    },
+    "producer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["check_id", "node_kind", "command", "arguments", "working_directory", "environment", "command_identity", "completion_state", "exit_code", "completion_cause", "stdout_log", "stderr_log", "stdout_sha256", "stderr_sha256", "stdout_encoding", "stderr_encoding", "stdout_text", "stderr_text", "structured_output", "generated_evidence", "started_at", "finished_at", "duration_ms"],
+      "properties": {
+        "check_id": { "type": "string" },
+        "node_kind": { "const": "PROCESS_PRODUCER" },
+        "command": { "type": "string", "minLength": 1 },
+        "arguments": { "type": "array", "items": { "type": "string" } },
+        "working_directory": { "type": "string", "minLength": 1 },
+        "environment": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["inherit", "variables"],
+          "properties": {
+            "inherit": { "type": "boolean" },
+            "variables": { "type": "object", "additionalProperties": { "type": "string" } }
+          }
+        },
+        "command_identity": { "$ref": "#/$defs/hash" },
+        "completion_state": { "enum": ["COMPLETED", "LAUNCH_FAILED", "NOT_RUN_DEPENDENCY"] },
+        "exit_code": { "type": ["integer", "null"] },
+        "completion_cause": { "type": ["string", "null"] },
+        "stdout_log": { "type": ["string", "null"] },
+        "stderr_log": { "type": ["string", "null"] },
+        "stdout_sha256": { "oneOf": [{ "$ref": "#/$defs/hash" }, { "type": "null" }] },
+        "stderr_sha256": { "oneOf": [{ "$ref": "#/$defs/hash" }, { "type": "null" }] },
+        "stdout_encoding": { "enum": ["UTF8", "INVALID_UTF8", null] },
+        "stderr_encoding": { "enum": ["UTF8", "INVALID_UTF8", null] },
+        "stdout_text": { "type": ["string", "null"] },
+        "stderr_text": { "type": ["string", "null"] },
+        "structured_output": { "$ref": "#/$defs/structuredOutput" },
+        "generated_evidence": { "type": "array", "items": { "$ref": "#/$defs/evidence" } },
+        "started_at": { "type": ["string", "null"], "format": "date-time" },
+        "finished_at": { "type": ["string", "null"], "format": "date-time" },
+        "duration_ms": { "type": ["number", "null"], "minimum": 0 }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "completion_state": { "const": "COMPLETED" },
+            "exit_code": { "type": "integer" },
+            "completion_cause": { "type": "null" },
+            "stdout_log": { "type": "string" },
+            "stderr_log": { "type": "string" },
+            "stdout_sha256": { "$ref": "#/$defs/hash" },
+            "stderr_sha256": { "$ref": "#/$defs/hash" },
+            "stdout_encoding": { "enum": ["UTF8", "INVALID_UTF8"] },
+            "stderr_encoding": { "enum": ["UTF8", "INVALID_UTF8"] },
+            "started_at": { "type": "string", "format": "date-time" },
+            "finished_at": { "type": "string", "format": "date-time" },
+            "duration_ms": { "type": "number", "minimum": 0 }
+          }
+        },
+        {
+          "properties": {
+            "completion_state": { "const": "LAUNCH_FAILED" },
+            "exit_code": { "type": "null" },
+            "completion_cause": { "type": "string", "minLength": 1 },
+            "stdout_log": { "type": "string" },
+            "stderr_log": { "type": "string" },
+            "stdout_sha256": { "$ref": "#/$defs/hash" },
+            "stderr_sha256": { "$ref": "#/$defs/hash" },
+            "stdout_encoding": { "enum": ["UTF8", "INVALID_UTF8"] },
+            "stderr_encoding": { "enum": ["UTF8", "INVALID_UTF8"] },
+            "started_at": { "type": "string", "format": "date-time" },
+            "finished_at": { "type": "string", "format": "date-time" },
+            "duration_ms": { "type": "number", "minimum": 0 }
+          }
+        },
+        {
+          "properties": {
+            "completion_state": { "const": "NOT_RUN_DEPENDENCY" },
+            "exit_code": { "type": "null" },
+            "completion_cause": { "type": "string", "minLength": 1 },
+            "stdout_log": { "type": "null" },
+            "stderr_log": { "type": "null" },
+            "stdout_sha256": { "type": "null" },
+            "stderr_sha256": { "type": "null" },
+            "stdout_encoding": { "type": "null" },
+            "stderr_encoding": { "type": "null" },
+            "stdout_text": { "type": "null" },
+            "stderr_text": { "type": "null" },
+            "started_at": { "type": "null" },
+            "finished_at": { "type": "null" },
+            "duration_ms": { "type": "null" }
+          }
+        }
+      ]
+    },
+    "acceptanceResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["check_id", "node_kind", "contract_class", "status", "command_identity", "exit_code", "cause", "evidence", "dependencies", "duration_ms"],
+      "properties": {
+        "check_id": { "type": "string" },
+        "node_kind": { "enum": ["ACCEPTANCE_LEAF", "EVIDENCE_PROJECTION"] },
+        "contract_class": { "$ref": "#/$defs/acceptanceClass" },
+        "status": { "enum": ["CONTRACT_SATISFIED", "CONTRACT_VIOLATED", "EVIDENCE_UNTRUSTED", "NOT_RUN_DEPENDENCY"] },
+        "command_identity": { "$ref": "#/$defs/hash" },
+        "exit_code": { "type": ["integer", "null"] },
+        "cause": { "type": ["string", "null"] },
+        "evidence": { "type": "array", "items": { "$ref": "#/$defs/evidence" } },
+        "dependencies": { "type": "array", "items": { "type": "string" } },
+        "duration_ms": { "type": "number", "minimum": 0 }
+      }
+    },
+    "diagnosticResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["check_id", "node_kind", "contract_class", "outcome", "command_identity", "exit_code", "cause", "evidence", "dependencies", "duration_ms"],
+      "properties": {
+        "check_id": { "type": "string" },
+        "node_kind": { "enum": ["DIAGNOSTIC_LEAF", "EVIDENCE_PROJECTION"] },
+        "contract_class": { "$ref": "#/$defs/diagnosticClass" },
+        "outcome": { "enum": ["DIAGNOSTIC_CLEAR", "DIAGNOSTIC_FINDING", "DIAGNOSTIC_UNAVAILABLE"] },
+        "command_identity": { "$ref": "#/$defs/hash" },
+        "exit_code": { "type": ["integer", "null"] },
+        "cause": { "type": ["string", "null"] },
+        "evidence": { "type": "array", "items": { "$ref": "#/$defs/evidence" } },
+        "dependencies": { "type": "array", "items": { "type": "string" } },
+        "duration_ms": { "type": "number", "minimum": 0 }
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required_check_ids", "completed_check_ids", "untrusted_check_ids", "not_run_check_ids"],
+      "properties": {
+        "required_check_ids": { "type": "array", "items": { "type": "string" } },
+        "completed_check_ids": { "type": "array", "items": { "type": "string" } },
+        "untrusted_check_ids": { "type": "array", "items": { "type": "string" } },
+        "not_run_check_ids": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "diagnosticSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["clear", "findings", "unavailable"],
+      "properties": {
+        "clear": { "type": "integer", "minimum": 0 },
+        "findings": { "type": "integer", "minimum": 0 },
+        "unavailable": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["acceptance_satisfied", "acceptance_violated", "acceptance_untrusted", "acceptance_not_run", "producer_count", "diagnostic_count"],
+      "properties": {
+        "acceptance_satisfied": { "type": "integer", "minimum": 0 },
+        "acceptance_violated": { "type": "integer", "minimum": 0 },
+        "acceptance_untrusted": { "type": "integer", "minimum": 0 },
+        "acceptance_not_run": { "type": "integer", "minimum": 0 },
+        "producer_count": { "type": "integer", "minimum": 0 },
+        "diagnostic_count": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}
