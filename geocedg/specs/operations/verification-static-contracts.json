@@ -1,0 +1,24 @@
+{
+  "$schema":"geocedg/specs/operations/verification-static-contracts.schema.json",
+  "schema_version":1,
+  "catalog_id":"static_contracts",
+  "contracts":[
+    {"contract_id":"packaging.source-authority","semantic_domain":"PRODUCT","inputs":[
+      {"path":"packaging/windows/package.yml","sha256":"051aed3012d01ef100db4f664794765d9abc82846d6b08f7211e2d6d02372e0a"},
+      {"path":"geocedg/specs/operations/package-profile.schema.json","sha256":"fc41aca4024de35d37d50e53dfef427d86c9de864e57aecf87e7580957c3f849"},
+      {"path":"geocedg/resources/assets-manifest.yml","sha256":"047ff7a3bfde42d5ed0ab52283871c55e363ad9bf13545a4aac48ef0ab0f90e5"},
+      {"path":"tools/release/build-windows-package.ps1","sha256":"b67d404f0bdcc5315083a7f9e9f7a1045e5bb527f0b27c7ff446e53dafda159d"}
+    ]},
+    {"contract_id":"workspace.profile-authority","semantic_domain":"PRODUCT","inputs":[
+      {"path":"source/desktop/desktop/build.gradle.kts","sha256":"846763237ac35dec71f231e6f3de86de6f84b977309c131873abd151be5899e5"},
+      {"path":"tools/agent/workspace-profile-validation.ps1","sha256":"0b5a938044826e3291cdbdf6d9d74fce0c8438afacb06ea8f27d5e1754375c86"}
+    ]},
+    {"contract_id":"scientific.python-reference-inputs","semantic_domain":"SCIENTIFIC","inputs":[
+      {"path":"geocedg/validation/locus-v2/g7a/generate_metric_references.py","sha256":"614d9c44350c1a616095d070feb48e492e736913356c03613ad1581c6b2b0148"},
+      {"path":"geocedg/validation/locus-v2/g8a/generate_intersection_references.py","sha256":"7604676e15f111414b6ec40f352292187c1ec084751a2d588a7acb86b422ee77"},
+      {"path":"geocedg/validation/locus-v2/g8c/generate_extended_intersection_references.py","sha256":"ca64ddcd50a63cdb907965d4b89e927dd4da3d6443763f2549b2948de905e151"},
+      {"path":"geocedg/validation/spatial/g9a2/generate_point_references.py","sha256":"29fa2a4e466a82d5b18f536e95882f1fc5693dabd9d772223481a6071ae1fb13"},
+      {"path":"models/regression/g9a2-spatial-point-pilot/generate_model.py","sha256":"c9cd81b3730a3201de836b08d2cd1c5a00eb43a29075be7b00476a816da94785"}
+    ]}
+  ]
+}

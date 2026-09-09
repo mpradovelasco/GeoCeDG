@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://geocedg.local/schemas/verification-result-v1",
+  "$id": "https://geocedg.local/schemas/verification-result-v2",
   "title": "GeoCeDG typed verification result",
   "type": "object",
   "additionalProperties": false,
@@ -13,7 +13,7 @@
   ],
   "properties": {
     "$schema": { "const": "geocedg/specs/operations/verification-result.schema.json" },
-    "schema_version": { "const": 1 },
+    "schema_version": { "const": 2 },
     "run_id": { "type": "string", "pattern": "^[A-Za-z0-9._-]+$" },
     "profile": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" },
     "run_state": { "enum": ["COMPLETED", "RUN_INTERRUPTED"] },
@@ -37,7 +37,8 @@
   },
   "$defs": {
     "hash": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
-    "acceptanceClass": { "enum": ["PRODUCT_SEMANTIC", "SCIENTIFIC_SEMANTIC", "SAFETY", "VERIFICATION_CORE"] },
+    "acceptanceClass": { "enum": ["SEMANTIC", "SAFETY", "VERIFICATION_CORE"] },
+    "semanticDomain": { "enum": ["PRODUCT", "SCIENTIFIC", "MIXED"] },
     "diagnosticClass": { "enum": ["GOVERNANCE_DIAGNOSTIC", "DOCUMENTATION_DIAGNOSTIC", "HISTORICAL_CONSISTENCY_DIAGNOSTIC", "STYLE_DIAGNOSTIC", "PERFORMANCE_TELEMETRY"] },
     "structuredOutput": {
       "type": "object",
@@ -160,6 +161,7 @@
         "check_id": { "type": "string" },
         "node_kind": { "enum": ["ACCEPTANCE_LEAF", "EVIDENCE_PROJECTION"] },
         "contract_class": { "$ref": "#/$defs/acceptanceClass" },
+        "semantic_domain": { "$ref": "#/$defs/semanticDomain" },
         "status": { "enum": ["CONTRACT_SATISFIED", "CONTRACT_VIOLATED", "EVIDENCE_UNTRUSTED", "NOT_RUN_DEPENDENCY"] },
         "command_identity": { "$ref": "#/$defs/hash" },
         "exit_code": { "type": ["integer", "null"] },
@@ -167,7 +169,12 @@
         "evidence": { "type": "array", "items": { "$ref": "#/$defs/evidence" } },
         "dependencies": { "type": "array", "items": { "type": "string" } },
         "duration_ms": { "type": "number", "minimum": 0 }
-      }
+      },
+      "allOf": [{
+        "if": { "properties": { "contract_class": { "const": "SEMANTIC" } }, "required": ["contract_class"] },
+        "then": { "required": ["semantic_domain"] },
+        "else": { "not": { "required": ["semantic_domain"] } }
+      }]
     },
     "diagnosticResult": {
       "type": "object",

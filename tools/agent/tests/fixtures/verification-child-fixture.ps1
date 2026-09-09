@@ -14,7 +14,9 @@ param(
     [string]$Mode,
     [string]$ResultPath,
     [string]$EvidencePath,
-    [string]$ContractClass = 'SCIENTIFIC_SEMANTIC',
+    [string]$ContractClass = 'SEMANTIC',
+    [ValidateSet('PRODUCT', 'SCIENTIFIC', 'MIXED')]
+    [string]$SemanticDomain = 'SCIENTIFIC',
     [string]$Outcome = 'CONTRACT_SATISFIED',
     [string]$SemanticPath,
     [string]$Payload,
@@ -50,6 +52,7 @@ switch ($Mode) {
             contract_class = $ContractClass
             outcome = $Outcome
         }
+        if ($ContractClass -ceq 'SEMANTIC') { $result.semantic_domain = $SemanticDomain }
         if (-not [string]::IsNullOrWhiteSpace($SemanticPath)) {
             $result.path = $SemanticPath
         }
@@ -81,6 +84,7 @@ switch ($Mode) {
             Write-FixtureJson ([ordered]@{
                 contract_class = $ContractClass
                 outcome = $Outcome
+                semantic_domain = $(if ($ContractClass -ceq 'SEMANTIC') { $SemanticDomain } else { $null })
             })
         }
     }
@@ -88,6 +92,7 @@ switch ($Mode) {
         Write-FixtureJson ([ordered]@{
             contract_class = $ContractClass
             outcome = $Outcome
+            semantic_domain = $(if ($ContractClass -ceq 'SEMANTIC') { $SemanticDomain } else { $null })
             environment_value = [Environment]::GetEnvironmentVariable($EnvironmentName)
         })
     }
@@ -95,6 +100,7 @@ switch ($Mode) {
         Write-FixtureJson ([ordered]@{
             contract_class = $ContractClass
             outcome = $Outcome
+            semantic_domain = $(if ($ContractClass -ceq 'SEMANTIC') { $SemanticDomain } else { $null })
             payload = $Payload
         })
     }

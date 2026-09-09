@@ -40,7 +40,7 @@ function Invoke-FixtureHost {
     param(
         [string]$Name,
         [string]$Mode,
-        [string]$Contract = 'SCIENTIFIC_SEMANTIC',
+        [string]$Contract = 'SEMANTIC',
         [string]$Outcome = 'CONTRACT_SATISFIED',
         [int]$ExitCode = 0,
         [switch]$NoStructured,
@@ -58,6 +58,10 @@ function Invoke-FixtureHost {
     }
     foreach ($value in @('-ContractClass', $Contract, '-Outcome', $Outcome, '-ExitCode', [string]$ExitCode)) {
         $arguments.Add($value)
+    }
+    if ($Contract -ceq 'SEMANTIC') {
+        $arguments.Add('-SemanticDomain')
+        $arguments.Add('SCIENTIFIC')
     }
     foreach ($value in $AdditionalArguments) { $arguments.Add($value) }
     $nodeKind = if ($Contract.EndsWith('_DIAGNOSTIC', [StringComparison]::Ordinal)) {
@@ -77,7 +81,7 @@ try {
         Assert-Case ($result.structured_output.value.outcome -ceq 'CONTRACT_SATISFIED') 'Structured semantic outcome changed.'
     }
     Invoke-Case 'nonzero semantic child remains raw evidence' {
-        $result = Invoke-FixtureHost semantic-violation Structured SCIENTIFIC_SEMANTIC CONTRACT_VIOLATED 7
+        $result = Invoke-FixtureHost semantic-violation Structured SEMANTIC CONTRACT_VIOLATED 7
         Assert-Case ($result.completion_state -ceq 'COMPLETED') 'Nonzero child was not a normal completion.'
         Assert-Case ($result.exit_code -eq 7) 'Nonzero child exit changed.'
         Assert-Case ($result.structured_output.value.outcome -ceq 'CONTRACT_VIOLATED') 'Violation evidence changed.'

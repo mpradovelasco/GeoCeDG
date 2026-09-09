@@ -137,9 +137,10 @@ Invoke-Case 'incomplete profiles fail safely without executing mixed legacy wrap
     }
 }
 
-Invoke-Case 'FINAL has no mixed legacy leaf and remains explicitly incomplete' {
+Invoke-Case 'FINAL resolves complete without a mixed legacy leaf' {
     $plan = Resolve-VerificationRegistryPlan $registry FINAL
-    Assert-Case ($plan.coverage_state -ceq 'INCOMPLETE') 'Intermediate FINAL claimed complete coverage.'
+    Assert-Case ($plan.coverage_state -ceq 'COMPLETE') 'FINAL semantic coverage is incomplete.'
+    Assert-Case (@($plan.missing_check_ids).Count -eq 0) 'FINAL reports missing required contracts.'
     Assert-Case (@($plan.nodes | Where-Object {
         $_.command.identity -match 'legacy|verify-operational|verify-verification-infrastructure'
     }).Count -eq 0) 'A legacy mixed wrapper was registered in FINAL.'

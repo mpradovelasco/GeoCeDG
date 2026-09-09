@@ -36,7 +36,8 @@ function New-Observation {
     return [pscustomobject][ordered]@{
         check_id = $Id
         node_kind = 'ACCEPTANCE_LEAF'
-        contract_class = 'SCIENTIFIC_SEMANTIC'
+        contract_class = 'SEMANTIC'
+        semantic_domain = 'SCIENTIFIC'
         status = $Status
         command_identity = $CommandHash
         exit_code = $(if ($Status -ceq 'CONTRACT_SATISFIED') { 0 } else { 1 })

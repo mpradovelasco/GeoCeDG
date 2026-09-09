@@ -63,6 +63,7 @@ function New-ProcessNode {
         $node.produces_evidence = @('PROCESS_RESULT')
     } else {
         $node.contract_class = $Contract
+        if ($Contract -ceq 'SEMANTIC') { $node.semantic_domain = 'SCIENTIFIC' }
     }
     return [pscustomobject]$node
 }
@@ -83,7 +84,7 @@ function New-ProjectionNode {
     if (-not [string]::IsNullOrWhiteSpace($EvidenceName)) {
         $command.evidence_name = $EvidenceName
     }
-    return [pscustomobject][ordered]@{
+    $node = [ordered]@{
         check_id = $Id
         node_kind = 'EVIDENCE_PROJECTION'
         contract_class = $Contract
@@ -101,15 +102,18 @@ function New-ProjectionNode {
         required_for_profiles = @('FINAL')
         producer_dependency = $Producer
     }
+    if ($Contract -ceq 'SEMANTIC') { $node.semantic_domain = 'SCIENTIFIC' }
+    return [pscustomobject]$node
 }
 function New-Registry {
     $producer = New-ProcessNode 'gradle.producer' 'PROCESS_PRODUCER' ''
-    $scientific = New-ProjectionNode 'science.projection' 'gradle.producer' 'SCIENTIFIC_SEMANTIC'
+    $scientific = New-ProjectionNode 'science.projection' 'gradle.producer' 'SEMANTIC'
     $diagnostic = New-ProjectionNode 'style.projection' 'gradle.producer' 'STYLE_DIAGNOSTIC'
     return [pscustomobject][ordered]@{
         '$schema' = 'geocedg/specs/operations/verification-registry.schema.json'
-        schema_version = 1
+        schema_version = 2
         registry_id = 'fixture.registry'
+        catalogs = [object[]]@((ConvertFrom-Json ([IO.File]::ReadAllText((Join-Path $PSScriptRoot '../../../geocedg/specs/operations/verification-registry.json'))) -Depth 100).catalogs)
         profiles = @([ordered]@{
             profile_id = 'FINAL'; coverage_state = 'COMPLETE'; missing_check_ids = @()
         })
@@ -152,7 +156,7 @@ Invoke-Case 'invalid node kind is rejected' {
 }
 Invoke-Case 'mixed contract classes are rejected' {
     $registry = New-Registry
-    $registry.nodes[1].contract_class = @('SCIENTIFIC_SEMANTIC', 'STYLE_DIAGNOSTIC')
+    $registry.nodes[1].contract_class = @('SEMANTIC', 'STYLE_DIAGNOSTIC')
     Assert-CaseThrows { Assert-VerificationRegistry $registry } 'Mixed contract'
 }
 Invoke-Case 'producer contract class is prohibited' {
@@ -167,7 +171,7 @@ Invoke-Case 'schema independently enforces pure node-kind contracts' {
         Assert-VerificationRegistry $registry -SchemaPath $schemaPath
     } 'contract_class|schema'
 
-    $diagnostic = New-ProcessNode 'bad.diagnostic' 'DIAGNOSTIC_LEAF' 'PRODUCT_SEMANTIC'
+    $diagnostic = New-ProcessNode 'bad.diagnostic' 'DIAGNOSTIC_LEAF' 'SEMANTIC'
     $registry = New-Registry
     $registry.nodes = @($diagnostic)
     Assert-CaseThrows {
@@ -181,14 +185,14 @@ Invoke-Case 'projection requires its declared producer dependency' {
 }
 Invoke-Case 'projection producer dependency must name a producer' {
     $registry = New-Registry
-    $leaf = New-ProcessNode 'plain.leaf' 'ACCEPTANCE_LEAF' 'PRODUCT_SEMANTIC'
-    $registry.nodes = @($leaf, (New-ProjectionNode 'bad.projection' 'plain.leaf' 'PRODUCT_SEMANTIC'))
+    $leaf = New-ProcessNode 'plain.leaf' 'ACCEPTANCE_LEAF' 'SEMANTIC'
+    $registry.nodes = @($leaf, (New-ProjectionNode 'bad.projection' 'plain.leaf' 'SEMANTIC'))
     Assert-CaseThrows { Assert-VerificationRegistry $registry } 'PROCESS_PRODUCER'
 }
 Invoke-Case 'diagnostic-to-acceptance dependencies are prohibited' {
     $registry = New-Registry
     $diagnostic = New-ProcessNode 'diagnostic.leaf' 'DIAGNOSTIC_LEAF' 'GOVERNANCE_DIAGNOSTIC'
-    $acceptance = New-ProcessNode 'acceptance.leaf' 'ACCEPTANCE_LEAF' 'PRODUCT_SEMANTIC' @('diagnostic.leaf')
+    $acceptance = New-ProcessNode 'acceptance.leaf' 'ACCEPTANCE_LEAF' 'SEMANTIC' @('diagnostic.leaf')
     $registry.nodes = @($diagnostic, $acceptance)
     Assert-CaseThrows { Assert-VerificationRegistry $registry } 'cannot depend on diagnostic'
 }
@@ -211,7 +215,7 @@ Invoke-Case 'projection and adapter must agree' {
 Invoke-Case 'file projection names exactly one declared producer artifact' {
     $registry = New-Registry
     $registry.nodes[0].produces_evidence = @('PROCESS_RESULT', 'PAYLOAD')
-    $projection = New-ProjectionNode 'payload.projection' 'gradle.producer' 'SCIENTIFIC_SEMANTIC' 'EVIDENCE_PRESENT' 'PROJECTION_EVIDENCE_PRESENT_V1' 'PAYLOAD'
+    $projection = New-ProjectionNode 'payload.projection' 'gradle.producer' 'SEMANTIC' 'EVIDENCE_PRESENT' 'PROJECTION_EVIDENCE_PRESENT_V1' 'PAYLOAD'
     $registry.nodes = @($registry.nodes[0], $projection)
     Assert-Case (Assert-VerificationRegistry $registry -SchemaPath $schemaPath) 'Named file projection was rejected.'
 
@@ -277,7 +281,7 @@ Invoke-Case 'phase selection is exact and explicitly incomplete' {
     }
     $registry.phase_selections = @([ordered]@{
         phase_id = 'G9A2'; coverage_state = 'INCOMPLETE';
-        missing_check_ids = @('phase.g9a2')
+        missing_check_ids = @('phase.g9a2'); required_check_ids = @('science.projection')
     })
     $plan = Resolve-VerificationRegistryPlan $registry PHASE G9A2
     Assert-Case ($plan.profile -ceq 'PHASE' -and $plan.selection -ceq 'G9A2') 'Exact PHASE selection changed.'

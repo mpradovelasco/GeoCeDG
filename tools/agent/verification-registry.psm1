@@ -6,8 +6,7 @@ $ErrorActionPreference = 'Stop'
 Import-Module (Join-Path $PSScriptRoot 'verification-io.psm1')
 
 $script:AcceptanceClasses = @(
-    'PRODUCT_SEMANTIC',
-    'SCIENTIFIC_SEMANTIC',
+    'SEMANTIC',
     'SAFETY',
     'VERIFICATION_CORE'
 )
@@ -108,8 +107,34 @@ function Assert-VerificationRegistry {
     if (-not [string]::IsNullOrWhiteSpace($SchemaPath)) {
         [void](Assert-VerificationJsonSchema -Value $Registry -SchemaPath $SchemaPath)
     }
-    if ((Get-VerificationObjectProperty $Registry 'schema_version' -Required) -ne 1) {
-        throw 'Verification registry schema_version must be 1.'
+    $schemaVersion = [int](Get-VerificationObjectProperty $Registry 'schema_version' -Required)
+    $legacyInMemoryFixture = $schemaVersion -eq 1 -and [string]::IsNullOrWhiteSpace($SchemaPath)
+    if ($schemaVersion -ne 2 -and -not $legacyInMemoryFixture) {
+        throw 'Verification registry schema_version must be 2.'
+    }
+    $catalogIds = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+    $catalogValues = if ($legacyInMemoryFixture) { @() } else {
+        [object[]]@(Get-VerificationObjectProperty $Registry 'catalogs' -Required)
+    }
+    foreach ($catalog in $catalogValues) {
+        $catalogId = [string](Get-VerificationObjectProperty $catalog 'catalog_id' -Required)
+        if (-not $catalogIds.Add($catalogId)) { throw "Duplicate verification catalog: $catalogId" }
+        $catalogPath = [string](Get-VerificationObjectProperty $catalog 'path' -Required)
+        [void](ConvertTo-VerificationGitPath $catalogPath)
+        $expectedHash = [string](Get-VerificationObjectProperty $catalog 'sha256' -Required)
+        if ($expectedHash -cnotmatch '^[0-9a-f]{64}$') { throw "Invalid catalog hash: $catalogId" }
+        if (-not [string]::IsNullOrWhiteSpace($SchemaPath)) {
+            $root = [IO.Path]::GetFullPath((Join-Path (Split-Path -Parent $SchemaPath) '../../..'))
+            $fullCatalog = Resolve-VerificationContainedPath -Root $root -Path $catalogPath
+            if (-not (Test-Path -LiteralPath $fullCatalog -PathType Leaf) -or
+                    (Get-VerificationFileSha256 $fullCatalog) -cne $expectedHash) {
+                throw "Verification catalog identity mismatch: $catalogId"
+            }
+        }
+    }
+    if (-not $legacyInMemoryFixture -and
+            -not ($catalogIds.Contains('junit_inventory') -and $catalogIds.Contains('static_contracts'))) {
+        throw 'Verification registry requires the JUnit and static-contract catalogs.'
     }
     $profiles = [object[]]@(Get-VerificationObjectProperty $Registry 'profiles' -Required)
     if ($profiles.Count -eq 0) { throw 'Verification registry must define profiles.' }
@@ -154,11 +179,13 @@ function Assert-VerificationRegistry {
         if (-not $phaseIds.Add($phaseId)) {
             throw "Duplicate verification phase selection: $phaseId"
         }
-        $phaseMissing = [object[]]@(
-            Get-VerificationObjectProperty $phaseSelection 'missing_check_ids' -Required)
-        if ([string](Get-VerificationObjectProperty $phaseSelection 'coverage_state' -Required) -cne
-                'INCOMPLETE' -or $phaseMissing.Count -eq 0) {
-            throw "Phase selection $phaseId must declare incomplete pure-leaf coverage."
+        $phaseMissing = [object[]]@(Get-VerificationObjectProperty $phaseSelection 'missing_check_ids' -Required)
+        $phaseRequired = [object[]]@(Get-VerificationObjectProperty $phaseSelection 'required_check_ids' -Required)
+        $phaseState = [string](Get-VerificationObjectProperty $phaseSelection 'coverage_state' -Required)
+        if ($phaseState -cnotin @('COMPLETE','INCOMPLETE') -or
+                (($phaseState -ceq 'COMPLETE') -ne ($phaseMissing.Count -eq 0)) -or
+                $phaseRequired.Count -eq 0) {
+            throw "Phase selection $phaseId has inconsistent derived coverage."
         }
     }
     if ($phaseSelections.Count -gt 0 -and -not $profileMap.ContainsKey('PHASE')) {
@@ -193,13 +220,23 @@ function Assert-VerificationRegistry {
         $structuredOutput = [string](Get-VerificationObjectProperty $command 'structured_output')
         $hasContract = Test-VerificationObjectProperty $node 'contract_class'
         $contract = Get-VerificationObjectProperty $node 'contract_class'
+        $hasSemanticDomain = Test-VerificationObjectProperty $node 'semantic_domain'
+        $semanticDomain = [string](Get-VerificationObjectProperty $node 'semantic_domain')
 
         if ($hasContract -and $contract -is [Collections.IEnumerable] -and $contract -isnot [string]) {
             throw "Mixed contract classes are prohibited for $id."
         }
+        if ([string]$contract -ceq 'SEMANTIC') {
+            if (-not $hasSemanticDomain -or $semanticDomain -cnotin @('PRODUCT','SCIENTIFIC','MIXED')) {
+                throw "SEMANTIC node $id requires exactly one semantic_domain."
+            }
+        } elseif ($hasSemanticDomain) {
+            throw "semantic_domain is valid only for SEMANTIC node $id."
+        }
         switch ($kind) {
             'PROCESS_PRODUCER' {
                 if ($hasContract) { throw "PROCESS_PRODUCER $id must not declare contract_class." }
+                if ($hasSemanticDomain) { throw "PROCESS_PRODUCER $id must not declare semantic_domain." }
                 if ($commandKind -cne 'PROCESS' -or $adapter -cne 'RAW_PROCESS_V1') {
                     throw "PROCESS_PRODUCER $id requires PROCESS and RAW_PROCESS_V1."
                 }
@@ -255,7 +292,10 @@ function Assert-VerificationRegistry {
                         $adapter -cnotin @(
                             'PROJECTION_EXIT_CODE_V1',
                             'PROJECTION_STRUCTURED_CONTRACT_V1',
-                            'PROJECTION_EVIDENCE_PRESENT_V1')) {
+                            'PROJECTION_EVIDENCE_PRESENT_V1',
+                            'PROJECTION_JUNIT_SELECTION_V1',
+                            'PROJECTION_PROCESS_EXIT_V1',
+                            'PROJECTION_PYTHON_CHECK_V1')) {
                     throw "EVIDENCE_PROJECTION $id has an incompatible command or output adapter."
                 }
                 $projection = [string](Get-VerificationObjectProperty $command 'projection' -Required)
@@ -263,6 +303,9 @@ function Assert-VerificationRegistry {
                     EXIT_CODE_ZERO = 'PROJECTION_EXIT_CODE_V1'
                     STRUCTURED_CONTRACT = 'PROJECTION_STRUCTURED_CONTRACT_V1'
                     EVIDENCE_PRESENT = 'PROJECTION_EVIDENCE_PRESENT_V1'
+                    JUNIT_SELECTION = 'PROJECTION_JUNIT_SELECTION_V1'
+                    PROCESS_EXIT = 'PROJECTION_PROCESS_EXIT_V1'
+                    PYTHON_CHECK = 'PROJECTION_PYTHON_CHECK_V1'
                 }[$projection]
                 if ([string]::IsNullOrEmpty($expectedAdapter) -or $adapter -cne $expectedAdapter) {
                     throw "EVIDENCE_PROJECTION $id does not match its declared projection."
@@ -368,6 +411,14 @@ function Assert-VerificationRegistry {
         }
     }
 
+    foreach ($phaseSelection in $phaseSelections) {
+        foreach ($requiredId in [object[]]@(Get-VerificationObjectProperty $phaseSelection 'required_check_ids' -Required)) {
+            if (-not $nodeMap.ContainsKey([string]$requiredId)) {
+                throw "Phase selection $($phaseSelection.phase_id) references missing check $requiredId."
+            }
+        }
+    }
+
     $indegree = [Collections.Generic.Dictionary[string, int]]::new([StringComparer]::Ordinal)
     $children = [Collections.Generic.Dictionary[string, object]]::new([StringComparer]::Ordinal)
     foreach ($node in $nodes) {
@@ -435,6 +486,7 @@ function Resolve-VerificationRegistryPlan {
         [void]$missingCheckIds.Add([string]$missing)
     }
     $resolvedSelection = $null
+    $phaseRequiredIds = [string[]]@()
     if ($Profile -ceq 'PHASE') {
         if ([string]::IsNullOrWhiteSpace($Selection)) {
             throw 'PHASE requires an exact registered phase selection.'
@@ -445,6 +497,7 @@ function Resolve-VerificationRegistryPlan {
             Where-Object { [string]$_.phase_id -ceq $resolvedSelection })
         if ($phase.Count -ne 1) { throw "Unknown PHASE '$Selection'." }
         $coverageState = [string]$phase[0].coverage_state
+        $phaseRequiredIds = [string[]]@($phase[0].required_check_ids)
         foreach ($missing in [object[]]$phase[0].missing_check_ids) {
             [void]$missingCheckIds.Add([string]$missing)
         }
@@ -457,8 +510,12 @@ function Resolve-VerificationRegistryPlan {
     $pending = [Collections.Generic.Stack[string]]::new()
     $unsupported = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
     foreach ($node in $nodes) {
-        if ([object[]]@(Get-VerificationObjectProperty $node 'required_for_profiles' -Required) -ccontains
-                $Profile) {
+        $selectedForProfile = if ($Profile -ceq 'PHASE') {
+            $phaseRequiredIds -ccontains [string]$node.check_id
+        } else {
+            [object[]]@(Get-VerificationObjectProperty $node 'required_for_profiles' -Required) -ccontains $Profile
+        }
+        if ($selectedForProfile) {
             $id = [string](Get-VerificationObjectProperty $node 'check_id' -Required)
             if ([object[]]@(Get-VerificationObjectProperty $node 'platforms' -Required) -ccontains
                     $Platform) {
@@ -521,7 +578,7 @@ function Resolve-VerificationRegistryPlan {
         -InputObject (ConvertTo-Json -InputObject $orderedArray -Depth 100 -Compress))
     $planHash = Get-VerificationDeterministicHash -Value ([ordered]@{
         registry_id = [string](Get-VerificationObjectProperty $Registry 'registry_id' -Required)
-        schema_version = 1
+        schema_version = [int](Get-VerificationObjectProperty $Registry 'schema_version' -Required)
         profile = $Profile
         selection = $resolvedSelection
         platform = $Platform

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://geocedg.local/schemas/verification-receipt-v1",
+  "$id": "https://geocedg.local/schemas/verification-receipt-v2",
   "title": "GeoCeDG immutable acceptance receipt",
   "type": "object",
   "additionalProperties": false,
@@ -8,11 +8,11 @@
     "$schema", "schema_version", "receipt_kind", "receipt_id", "accepted_report_hash",
     "base_commit", "base_tree", "candidate_commit", "candidate_tree", "execution_plan_hash",
     "checker_identity_hash", "environment_fingerprint", "input_identity_hash",
-    "accepted_profiles", "diagnostic_hashes", "issued_at"
+    "accepted_profiles", "semantic_domains", "diagnostic_hashes", "issued_at"
   ],
   "properties": {
     "$schema": { "const": "geocedg/specs/operations/verification-receipt.schema.json" },
-    "schema_version": { "const": 1 },
+    "schema_version": { "const": 2 },
     "receipt_kind": { "const": "GEOCEDG_ACCEPTANCE_RECEIPT" },
     "receipt_id": { "$ref": "#/$defs/hash" },
     "accepted_report_hash": { "$ref": "#/$defs/hash" },
@@ -29,6 +29,11 @@
       "minItems": 1,
       "uniqueItems": true,
       "items": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" }
+    },
+    "semantic_domains": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "enum": ["PRODUCT", "SCIENTIFIC", "MIXED"] }
     },
     "diagnostic_hashes": {
       "type": "array",

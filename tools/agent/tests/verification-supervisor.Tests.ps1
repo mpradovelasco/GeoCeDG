@@ -58,11 +58,12 @@ function New-Leaf {
         '-ResultPath', '{structured_output}', '-ContractClass', $Contract,
         '-Outcome', $Outcome, '-ExitCode', [string]$ExitCode
     )
+    if ($Contract -ceq 'SEMANTIC') { $arguments += @('-SemanticDomain', 'SCIENTIFIC') }
     if ($Mode -cin @('Throw', 'Absent', 'InvalidUtf8')) {
         $command.Remove('structured_output')
         $arguments = @('-NoProfile', '-File', $fixture, '-Mode', $Mode, '-ExitCode', [string]$ExitCode)
     }
-    return [pscustomobject][ordered]@{
+    $node = [ordered]@{
         check_id = $Id
         node_kind = $Kind
         contract_class = $Contract
@@ -79,10 +80,12 @@ function New-Leaf {
         output_adapter = $Adapter
         required_for_profiles = @('FINAL')
     }
+    if ($Contract -ceq 'SEMANTIC') { $node.semantic_domain = 'SCIENTIFIC' }
+    return [pscustomobject]$node
 }
 function New-Producer {
     param([string]$Id, [int]$ExitCode, [string[]]$Dependencies = @())
-    return [pscustomobject][ordered]@{
+    $node = [ordered]@{
         check_id = $Id
         node_kind = 'PROCESS_PRODUCER'
         tier = 'INFRA_UNIT'
@@ -99,6 +102,7 @@ function New-Producer {
         required_for_profiles = @('FINAL')
         produces_evidence = @('PROCESS_RESULT')
     }
+    return [pscustomobject]$node
 }
 function New-Projection {
     param([string]$Id, [string]$Producer, [string]$Contract, [string]$EvidenceName)
@@ -110,7 +114,7 @@ function New-Projection {
     if (-not [string]::IsNullOrWhiteSpace($EvidenceName)) {
         $command.evidence_name = $EvidenceName
     }
-    return [pscustomobject][ordered]@{
+    $node = [ordered]@{
         check_id = $Id
         node_kind = 'EVIDENCE_PROJECTION'
         contract_class = $Contract
@@ -128,13 +132,16 @@ function New-Projection {
         required_for_profiles = @('FINAL')
         producer_dependency = $Producer
     }
+    if ($Contract -ceq 'SEMANTIC') { $node.semantic_domain = 'SCIENTIFIC' }
+    return [pscustomobject]$node
 }
 function New-Registry {
     param([object[]]$Nodes)
     return [pscustomobject][ordered]@{
         '$schema' = 'geocedg/specs/operations/verification-registry.schema.json'
-        schema_version = 1
+        schema_version = 2
         registry_id = 'supervisor.fixture'
+        catalogs = [object[]]@((ConvertFrom-Json ([IO.File]::ReadAllText((Join-Path $PSScriptRoot '../../../geocedg/specs/operations/verification-registry.json'))) -Depth 100).catalogs)
         profiles = @([ordered]@{
             profile_id = 'FINAL'; coverage_state = 'COMPLETE'; missing_check_ids = @()
         })
@@ -150,7 +157,7 @@ function Invoke-FixtureSupervisor {
 
 try {
     Invoke-Case 'diagnostic findings never alter accepted verdict or exit' {
-        $semantic = New-Leaf semantic.ok ACCEPTANCE_LEAF PRODUCT_SEMANTIC Structured CONTRACT_SATISFIED 0
+        $semantic = New-Leaf semantic.ok ACCEPTANCE_LEAF SEMANTIC Structured CONTRACT_SATISFIED 0
         $first = New-Leaf style.finding DIAGNOSTIC_LEAF STYLE_DIAGNOSTIC Structured DIAGNOSTIC_FINDING 7
         $second = New-Leaf governance.finding DIAGNOSTIC_LEAF GOVERNANCE_DIAGNOSTIC Structured DIAGNOSTIC_FINDING 8
         $run = Invoke-FixtureSupervisor diagnostics @($semantic, $first, $second)
@@ -162,7 +169,7 @@ try {
         Assert-Case ($evidenceNames -ccontains 'STDOUT' -and $evidenceNames -ccontains 'STDERR' -and $evidenceNames -ccontains 'STRUCTURED_RESULT') 'Direct child evidence was not retained in the report.'
     }
     Invoke-Case 'equivalent executions have stable command and result identities' {
-        $semantic = New-Leaf deterministic.ok ACCEPTANCE_LEAF PRODUCT_SEMANTIC Structured CONTRACT_SATISFIED 0
+        $semantic = New-Leaf deterministic.ok ACCEPTANCE_LEAF SEMANTIC Structured CONTRACT_SATISFIED 0
         $first = Invoke-FixtureSupervisor deterministic-first @($semantic)
         $second = Invoke-FixtureSupervisor deterministic-second @($semantic)
         Assert-Case ($first.report.acceptance_results[0].command_identity -ceq $second.report.acceptance_results[0].command_identity) 'Task-owned output paths changed command identity.'
@@ -170,8 +177,8 @@ try {
     }
     Invoke-Case 'verdict-neutral producer is interpreted only by pure projections' {
         $producer = New-Producer gradle.producer 11
-        $science = New-Projection science.projection gradle.producer SCIENTIFIC_SEMANTIC
-        $product = New-Projection product.projection gradle.producer PRODUCT_SEMANTIC
+        $science = New-Projection science.projection gradle.producer SEMANTIC
+        $product = New-Projection product.projection gradle.producer SEMANTIC
         $safety = New-Projection safety.projection gradle.producer SAFETY
         $style = New-Projection style.projection gradle.producer STYLE_DIAGNOSTIC
         $run = Invoke-FixtureSupervisor projections @($producer, $science, $product, $safety, $style)
@@ -191,10 +198,11 @@ try {
         $producer.produces_evidence = @('PROCESS_RESULT', 'STRUCTURED_RESULT')
         $producer.argv = @(
             '-NoProfile', '-File', $fixture, '-Mode', 'Structured',
-            '-ResultPath', '{structured_output}', '-ContractClass', 'SCIENTIFIC_SEMANTIC',
+            '-ResultPath', '{structured_output}', '-ContractClass', 'SEMANTIC',
+            '-SemanticDomain', 'SCIENTIFIC',
             '-Outcome', 'CONTRACT_SATISFIED', '-SemanticPath', 'models/reference-a', '-ExitCode', '0'
         )
-        $projection = New-Projection structured.science structured.producer SCIENTIFIC_SEMANTIC
+        $projection = New-Projection structured.science structured.producer SEMANTIC
         $projection.command.projection = 'STRUCTURED_CONTRACT'
         $projection.command.evidence_name = 'STRUCTURED_RESULT'
         $projection.output_adapter = 'PROJECTION_STRUCTURED_CONTRACT_V1'
@@ -210,14 +218,14 @@ try {
         Assert-Case ($emptyArrayHash -cne (Get-VerificationResultHash $run.report)) 'Empty-array semantic evidence collapsed into null.'
     }
     Invoke-Case 'malformed acceptance evidence makes required coverage untrusted' {
-        $leaf = New-Leaf malformed.acceptance ACCEPTANCE_LEAF SCIENTIFIC_SEMANTIC Malformed CONTRACT_SATISFIED 0
+        $leaf = New-Leaf malformed.acceptance ACCEPTANCE_LEAF SEMANTIC Malformed CONTRACT_SATISFIED 0
         $run = Invoke-FixtureSupervisor malformed-acceptance @($leaf)
         Assert-Case ($run.report.acceptance_results[0].status -ceq 'EVIDENCE_UNTRUSTED') 'Malformed acceptance evidence was misclassified.'
         Assert-Case ($run.report.coverage_verdict -ceq 'UNTRUSTED') 'Malformed acceptance evidence did not affect coverage.'
         Assert-Case ($run.exit_code -eq 3) 'Untrusted coverage exit is incorrect.'
     }
     Invoke-Case 'malformed diagnostic evidence is unavailable and nonblocking' {
-        $semantic = New-Leaf product.ok ACCEPTANCE_LEAF PRODUCT_SEMANTIC Structured CONTRACT_SATISFIED 0
+        $semantic = New-Leaf product.ok ACCEPTANCE_LEAF SEMANTIC Structured CONTRACT_SATISFIED 0
         $diagnostic = New-Leaf malformed.diagnostic DIAGNOSTIC_LEAF GOVERNANCE_DIAGNOSTIC Malformed DIAGNOSTIC_CLEAR 0
         $run = Invoke-FixtureSupervisor malformed-diagnostic @($semantic, $diagnostic)
         Assert-Case ($run.report.diagnostic_findings[0].outcome -ceq 'DIAGNOSTIC_UNAVAILABLE') 'Malformed diagnostic was misclassified.'
@@ -227,7 +235,7 @@ try {
     Invoke-Case 'missing producer files make projections unavailable, not violated' {
         $producer = New-Producer evidence.producer 0
         $producer.produces_evidence = @('PROCESS_RESULT', 'PAYLOAD')
-        $science = New-Projection science.evidence evidence.producer SCIENTIFIC_SEMANTIC PAYLOAD
+        $science = New-Projection science.evidence evidence.producer SEMANTIC PAYLOAD
         $science.command.projection = 'EVIDENCE_PRESENT'
         $science.output_adapter = 'PROJECTION_EVIDENCE_PRESENT_V1'
         $diagnostic = New-Projection style.evidence evidence.producer STYLE_DIAGNOSTIC PAYLOAD
@@ -241,7 +249,7 @@ try {
     Invoke-Case 'producer launch failure makes projected acceptance evidence untrusted' {
         $producer = New-Producer unavailable.producer 0
         $producer.command.executable = Join-Path $root 'missing-verifier.exe'
-        $science = New-Projection unavailable.science unavailable.producer SCIENTIFIC_SEMANTIC
+        $science = New-Projection unavailable.science unavailable.producer SEMANTIC
         $run = Invoke-FixtureSupervisor unavailable-producer @($producer, $science)
         Assert-Case ($run.report.process_producers[0].completion_state -ceq 'LAUNCH_FAILED') 'Producer launch failure was not preserved.'
         Assert-Case (-not [string]::IsNullOrWhiteSpace($run.report.process_producers[0].completion_cause)) 'Producer launch cause was omitted.'
@@ -250,7 +258,7 @@ try {
         Assert-Case ($run.exit_code -eq 3) 'Unavailable acceptance evidence returned the wrong exit.'
     }
     Invoke-Case 'unavailable diagnostic dependency skips its producer without blocking acceptance' {
-        $semantic = New-Leaf independent.product ACCEPTANCE_LEAF PRODUCT_SEMANTIC Structured CONTRACT_SATISFIED 0
+        $semantic = New-Leaf independent.product ACCEPTANCE_LEAF SEMANTIC Structured CONTRACT_SATISFIED 0
         $diagnostic = New-Leaf unavailable.governance DIAGNOSTIC_LEAF GOVERNANCE_DIAGNOSTIC Malformed DIAGNOSTIC_CLEAR 0
         $producer = New-Producer diagnostic.producer 0 @('unavailable.governance')
         $projection = New-Projection projected.governance diagnostic.producer GOVERNANCE_DIAGNOSTIC
@@ -272,8 +280,8 @@ try {
     Invoke-Case 'failed acceptance dependency propagates through a neutral producer as not run' {
         $prerequisite = New-Leaf producer.prerequisite ACCEPTANCE_LEAF VERIFICATION_CORE Structured CONTRACT_VIOLATED 1
         $producer = New-Producer skipped.producer 0 @('producer.prerequisite')
-        $projection = New-Projection skipped.science skipped.producer SCIENTIFIC_SEMANTIC
-        $independent = New-Leaf still.independent ACCEPTANCE_LEAF PRODUCT_SEMANTIC Structured CONTRACT_SATISFIED 0
+        $projection = New-Projection skipped.science skipped.producer SEMANTIC
+        $independent = New-Leaf still.independent ACCEPTANCE_LEAF SEMANTIC Structured CONTRACT_SATISFIED 0
         $run = Invoke-FixtureSupervisor skipped-acceptance-producer @(
             $prerequisite, $producer, $projection, $independent)
         $projected = @($run.report.acceptance_results | Where-Object {
@@ -287,8 +295,8 @@ try {
         Assert-Case ($run.report.coverage_verdict -ceq 'INCOMPLETE') 'Skipped projected acceptance did not mark coverage incomplete.'
     }
     Invoke-Case 'all independent violations are aggregated' {
-        $product = New-Leaf product.bad ACCEPTANCE_LEAF PRODUCT_SEMANTIC Structured CONTRACT_VIOLATED 1
-        $science = New-Leaf science.bad ACCEPTANCE_LEAF SCIENTIFIC_SEMANTIC Structured CONTRACT_VIOLATED 1
+        $product = New-Leaf product.bad ACCEPTANCE_LEAF SEMANTIC Structured CONTRACT_VIOLATED 1
+        $science = New-Leaf science.bad ACCEPTANCE_LEAF SEMANTIC Structured CONTRACT_VIOLATED 1
         $diagnostic = New-Leaf docs.finding DIAGNOSTIC_LEAF DOCUMENTATION_DIAGNOSTIC Structured DIAGNOSTIC_FINDING 1
         $run = Invoke-FixtureSupervisor aggregate @($product, $science, $diagnostic)
         Assert-Case ($run.report.acceptance_results.Count -eq 2) 'Independent acceptance results were lost.'
@@ -298,8 +306,8 @@ try {
     }
     Invoke-Case 'failed dependency is reported without hiding independent checks' {
         $prerequisite = New-Leaf prerequisite.bad ACCEPTANCE_LEAF VERIFICATION_CORE Structured CONTRACT_VIOLATED 1
-        $dependent = New-Leaf dependent.notrun ACCEPTANCE_LEAF PRODUCT_SEMANTIC Structured CONTRACT_SATISFIED 0 STRUCTURED_CONTRACT_V1 @('prerequisite.bad')
-        $independent = New-Leaf independent.ok ACCEPTANCE_LEAF SCIENTIFIC_SEMANTIC Structured CONTRACT_SATISFIED 0
+        $dependent = New-Leaf dependent.notrun ACCEPTANCE_LEAF SEMANTIC Structured CONTRACT_SATISFIED 0 STRUCTURED_CONTRACT_V1 @('prerequisite.bad')
+        $independent = New-Leaf independent.ok ACCEPTANCE_LEAF SEMANTIC Structured CONTRACT_SATISFIED 0
         $run = Invoke-FixtureSupervisor dependency @($prerequisite, $dependent, $independent)
         $notRun = @($run.report.acceptance_results | Where-Object { $_.check_id -ceq 'dependent.notrun' })[0]
         Assert-Case ($notRun.status -ceq 'NOT_RUN_DEPENDENCY') 'Dependent result was not explicit.'

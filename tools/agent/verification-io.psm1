@@ -295,6 +295,10 @@ function ConvertTo-VerificationObservationIdentity {
             Get-VerificationIdentityProperty $Observation 'evidence')
         dependencies = [string[]]@(Get-VerificationIdentityProperty $Observation 'dependencies')
     }
+    if ([string]$identity.contract_class -ceq 'SEMANTIC') {
+        $identity.semantic_domain = [string](
+            Get-VerificationIdentityProperty $Observation 'semantic_domain')
+    }
     if ($null -ne $Observation.PSObject.Properties['status']) {
         $identity.status = [string](Get-VerificationIdentityProperty $Observation 'status')
     } else {

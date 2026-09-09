@@ -40,7 +40,7 @@ function Invoke-Case {
 }
 function New-Acceptance {
     param([string]$Id, [string]$Contract, [string]$Status, [double]$Duration = 1)
-    return [pscustomobject][ordered]@{
+    $value = [ordered]@{
         check_id = $Id
         node_kind = 'ACCEPTANCE_LEAF'
         contract_class = $Contract
@@ -52,6 +52,8 @@ function New-Acceptance {
         dependencies = [string[]]@()
         duration_ms = $Duration
     }
+    if ($Contract -ceq 'SEMANTIC') { $value.semantic_domain = 'PRODUCT' }
+    return [pscustomobject]$value
 }
 function New-Diagnostic {
     param([string]$Id, [string]$Class, [string]$Outcome, [double]$Duration = 1)
@@ -70,7 +72,7 @@ function New-Diagnostic {
 }
 
 Invoke-Case 'diagnostic findings remain separate from accepted result' {
-    $acceptance = New-Acceptance product.ok PRODUCT_SEMANTIC CONTRACT_SATISFIED
+    $acceptance = New-Acceptance product.ok SEMANTIC CONTRACT_SATISFIED
     $diagnostics = [Collections.Generic.List[object]]::new()
     foreach ($index in 1..32) {
         $diagnostics.Add((New-Diagnostic ("style.$index") STYLE_DIAGNOSTIC DIAGNOSTIC_FINDING))
@@ -84,10 +86,10 @@ Invoke-Case 'diagnostic findings remain separate from accepted result' {
 }
 Invoke-Case 'result hash excludes duration and run timestamps' {
     $first = New-VerificationAggregatedReport -RunId first -Profile FINAL -Identity $identity -ExecutionPlanHash $planHash -AcceptanceResults @(
-        (New-Acceptance product.ok PRODUCT_SEMANTIC CONTRACT_SATISFIED 1)
+        (New-Acceptance product.ok SEMANTIC CONTRACT_SATISFIED 1)
     ) -RequiredAcceptanceIds @('product.ok') -StartedAt ([datetime]'2026-01-01T00:00:00Z') -FinishedAt ([datetime]'2026-01-01T00:00:01Z')
     $second = New-VerificationAggregatedReport -RunId second -Profile FINAL -Identity $identity -ExecutionPlanHash $planHash -AcceptanceResults @(
-        (New-Acceptance product.ok PRODUCT_SEMANTIC CONTRACT_SATISFIED 999999)
+        (New-Acceptance product.ok SEMANTIC CONTRACT_SATISFIED 999999)
     ) -RequiredAcceptanceIds @('product.ok') -StartedAt ([datetime]'2027-01-01T00:00:00Z') -FinishedAt ([datetime]'2027-02-01T00:00:00Z')
     Assert-Case ($first.result_hash -ceq $second.result_hash) 'Informational timing changed result identity.'
     $first.acceptance_results[0].evidence = @([pscustomobject]@{ name = 'PAYLOAD'; state = 'PRESENT'; path = 'C:\task-one\payload'; sha256 = ('2' * 64) })
@@ -100,7 +102,7 @@ Invoke-Case 'result hash excludes duration and run timestamps' {
 }
 Invoke-Case 'semantic safety and core rejections have stable exits' {
     $semantic = New-VerificationAggregatedReport -RunId semantic -Profile FINAL -Identity $identity -ExecutionPlanHash $planHash -AcceptanceResults @(
-        (New-Acceptance science.bad SCIENTIFIC_SEMANTIC CONTRACT_VIOLATED)
+        (New-Acceptance science.bad SEMANTIC CONTRACT_VIOLATED)
     ) -RequiredAcceptanceIds @('science.bad')
     $safety = New-VerificationAggregatedReport -RunId safety -Profile FINAL -Identity $identity -ExecutionPlanHash $planHash -AcceptanceResults @(
         (New-Acceptance safety.bad SAFETY CONTRACT_VIOLATED)
@@ -114,7 +116,7 @@ Invoke-Case 'semantic safety and core rejections have stable exits' {
 }
 Invoke-Case 'untrusted coverage is distinct from contract violation' {
     $report = New-VerificationAggregatedReport -RunId untrusted -Profile FINAL -Identity $identity -ExecutionPlanHash $planHash -AcceptanceResults @(
-        (New-Acceptance product.unknown PRODUCT_SEMANTIC EVIDENCE_UNTRUSTED)
+        (New-Acceptance product.unknown SEMANTIC EVIDENCE_UNTRUSTED)
     ) -RequiredAcceptanceIds @('product.unknown')
     Assert-Case ($report.coverage_verdict -ceq 'UNTRUSTED') 'Untrusted coverage was not explicit.'
     Assert-Case ($report.acceptance_verdict -ceq 'REJECTED_VERIFICATION_CORE') 'Required coverage gap was accepted.'
@@ -122,7 +124,7 @@ Invoke-Case 'untrusted coverage is distinct from contract violation' {
 }
 Invoke-Case 'schema prohibits mixed channel terminology' {
     $report = New-VerificationAggregatedReport -RunId schema-negative -Profile FINAL -Identity $identity -ExecutionPlanHash $planHash -AcceptanceResults @(
-        (New-Acceptance product.ok PRODUCT_SEMANTIC CONTRACT_SATISFIED)
+        (New-Acceptance product.ok SEMANTIC CONTRACT_SATISFIED)
     ) -DiagnosticResults @(
         (New-Diagnostic style.bad STYLE_DIAGNOSTIC DIAGNOSTIC_FINDING)
     ) -RequiredAcceptanceIds @('product.ok')
@@ -130,7 +132,7 @@ Invoke-Case 'schema prohibits mixed channel terminology' {
     Assert-CaseThrows { Assert-VerificationJsonSchema $report $schemaPath } 'schema'
 }
 Invoke-Case 'aggregation rejects duplicate or uncovered acceptance results' {
-    $result = New-Acceptance product.ok PRODUCT_SEMANTIC CONTRACT_SATISFIED
+    $result = New-Acceptance product.ok SEMANTIC CONTRACT_SATISFIED
     Assert-CaseThrows {
         New-VerificationAggregatedReport -RunId duplicate -Profile FINAL -Identity $identity -ExecutionPlanHash $planHash -AcceptanceResults @($result, $result) -RequiredAcceptanceIds @('product.ok')
     } 'unique, nonempty result identifiers'

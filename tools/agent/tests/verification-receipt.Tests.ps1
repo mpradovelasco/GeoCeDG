@@ -47,7 +47,8 @@ function New-Report {
     $acceptance = [pscustomobject][ordered]@{
         check_id = 'product.contract'
         node_kind = 'ACCEPTANCE_LEAF'
-        contract_class = 'PRODUCT_SEMANTIC'
+        contract_class = 'SEMANTIC'
+        semantic_domain = 'PRODUCT'
         status = $AcceptanceStatus
         command_identity = ('9' * 64)
         exit_code = $(if ($AcceptanceStatus -ceq 'CONTRACT_SATISFIED') { 0 } else { 1 })
@@ -75,6 +76,8 @@ Invoke-Case 'accepted report with diagnostics produces a valid receipt' {
     $report = New-Report
     $receipt = New-VerificationAcceptanceReceipt -Report $report -CheckerIdentityHash $checkerHash -InputIdentityHash $inputHash -AcceptedProfiles @('FINAL')
     Assert-Case ($receipt.diagnostic_hashes.Count -eq 1) 'Diagnostic trace hash was omitted.'
+    Assert-Case ($receipt.semantic_domains.Count -eq 1 -and
+        $receipt.semantic_domains[0] -ceq 'PRODUCT') 'Semantic domain identity was omitted.'
     Assert-Case (Assert-VerificationAcceptanceReceipt $receipt -SchemaPath $schemaPath) 'Receipt validation failed.'
     $expected = [pscustomobject]@{
         base_commit = $identity.base_commit
@@ -195,6 +198,11 @@ Invoke-Case 'receipt creation rejects forged or acceptance-free reports' {
 Invoke-Case 'diagnostic trace hashes are bound but never block acceptance' {
     $receipt = New-VerificationAcceptanceReceipt (New-Report) $checkerHash $inputHash @('FINAL')
     $receipt.diagnostic_hashes[0] = '0' * 64
+    Assert-CaseThrows { Assert-VerificationAcceptanceReceipt $receipt } 'identity hash'
+}
+Invoke-Case 'semantic domains are visible and bound to receipt identity' {
+    $receipt = New-VerificationAcceptanceReceipt (New-Report) $checkerHash $inputHash @('FINAL')
+    $receipt.semantic_domains[0] = 'SCIENTIFIC'
     Assert-CaseThrows { Assert-VerificationAcceptanceReceipt $receipt } 'identity hash'
 }
 Invoke-Case 'tampered receipt ID is rejected' {

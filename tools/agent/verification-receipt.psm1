@@ -41,6 +41,8 @@ function Get-VerificationReceiptIdentityPayload {
         environment_fingerprint = [string](Get-VerificationReceiptProperty $Receipt 'environment_fingerprint' -Required)
         input_identity_hash = [string](Get-VerificationReceiptProperty $Receipt 'input_identity_hash' -Required)
         accepted_profiles = [string[]]@(Get-VerificationReceiptProperty $Receipt 'accepted_profiles' -Required)
+        semantic_domains = [string[]]@(
+            Get-VerificationReceiptProperty $Receipt 'semantic_domains' -Required)
         diagnostic_hashes = [string[]]@(
             Get-VerificationReceiptProperty $Receipt 'diagnostic_hashes' -Required)
     }
@@ -153,6 +155,21 @@ function New-VerificationAcceptanceReceipt {
     if ($profiles -cnotcontains $reportProfile) {
         throw "Receipt profiles do not include the accepted report profile $reportProfile."
     }
+    $semanticDomainSet = [Collections.Generic.HashSet[string]]::new(
+        [StringComparer]::Ordinal)
+    foreach ($result in $acceptanceResults) {
+        if ([string](Get-VerificationReceiptProperty $result 'contract_class' -Required) -ceq
+                'SEMANTIC') {
+            $semanticDomain = [string](
+                Get-VerificationReceiptProperty $result 'semantic_domain' -Required)
+            if ($semanticDomain -cnotin @('PRODUCT', 'SCIENTIFIC', 'MIXED')) {
+                throw "Invalid semantic domain '$semanticDomain' in accepted result."
+            }
+            [void]$semanticDomainSet.Add($semanticDomain)
+        }
+    }
+    $semanticDomains = [string[]]@($semanticDomainSet)
+    [Array]::Sort($semanticDomains, [StringComparer]::Ordinal)
     $diagnosticHashes = [Collections.Generic.List[string]]::new()
     foreach ($diagnostic in [object[]]@(Get-VerificationReceiptProperty $Report 'diagnostic_findings' -Required)) {
         $diagnosticHashes.Add((Get-VerificationObservationIdentityHash -Observation $diagnostic))
@@ -161,7 +178,7 @@ function New-VerificationAcceptanceReceipt {
     [Array]::Sort($diagnosticHashValues, [StringComparer]::Ordinal)
     $receipt = [ordered]@{
         '$schema' = 'geocedg/specs/operations/verification-receipt.schema.json'
-        schema_version = 1
+        schema_version = 2
         receipt_kind = 'GEOCEDG_ACCEPTANCE_RECEIPT'
         receipt_id = ''
         accepted_report_hash = [string](Get-VerificationReceiptProperty $Report 'result_hash' -Required)
@@ -175,6 +192,7 @@ function New-VerificationAcceptanceReceipt {
             Get-VerificationReceiptProperty $Report 'environment_fingerprint' -Required)
         input_identity_hash = $InputIdentityHash
         accepted_profiles = $profiles
+        semantic_domains = $semanticDomains
         diagnostic_hashes = $diagnosticHashValues
         issued_at = $IssuedAt.ToUniversalTime().ToString('o')
     }

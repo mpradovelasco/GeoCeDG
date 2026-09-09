@@ -1,0 +1,150 @@
+{
+  "$schema": "geocedg/specs/operations/verification-junit-inventory.schema.json",
+  "schema_version": 1,
+  "catalog_id": "junit_inventory",
+  "base_commit": "4117bdfd5c987005ae723996f03e9c2d1eed5923",
+  "base_tree": "872d1c3506585fcded6c7a73563f9b865015b6aa",
+  "generated_at": null,
+  "modules": [
+    {
+      "module": "shared",
+      "gradle_task": ":shared:common-jre:test",
+      "discovery_evidence_sha256": "d2927a71ea58ea415fe194ba08b79387ee63f8fb8974104a349c680c44f91701",
+      "discovered_identity_count": 5696,
+      "discovered_identities_sha256": "611b0142770195e1acc12ac3db0a5b9c6640fe9ec6d402b69a09add8b3624b7e"
+    },
+    {
+      "module": "desktop",
+      "gradle_task": ":desktop:desktop:test",
+      "discovery_evidence_sha256": "3ff3d598534428976fabe800d732587ee20e3406cf051ced853fcbe5f1604887",
+      "discovered_identity_count": 1402,
+      "discovered_identities_sha256": "f458de0bb93d40c1a3d494dd4b759cd3070979f8225f1b681be5da37057c19df"
+    }
+  ],
+  "selections": [
+    {
+      "selection_id": "discovery.shared",
+      "module": "shared",
+      "gradle_task": ":shared:common-jre:test",
+      "test_filters": [],
+      "effective_arguments": [
+        ":shared:common-jre:test",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 5696,
+      "expected_identities_sha256": "611b0142770195e1acc12ac3db0a5b9c6640fe9ec6d402b69a09add8b3624b7e",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "4117bdfd5c987005ae723996f03e9c2d1eed5923",
+          "tree": "872d1c3506585fcded6c7a73563f9b865015b6aa"
+        }
+      ]
+    },
+    {
+      "selection_id": "discovery.desktop",
+      "module": "desktop",
+      "gradle_task": ":desktop:desktop:test",
+      "test_filters": [],
+      "effective_arguments": [
+        ":desktop:desktop:test",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 1402,
+      "expected_identities_sha256": "f458de0bb93d40c1a3d494dd4b759cd3070979f8225f1b681be5da37057c19df",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "4117bdfd5c987005ae723996f03e9c2d1eed5923",
+          "tree": "872d1c3506585fcded6c7a73563f9b865015b6aa"
+        }
+      ]
+    },
+    {
+      "selection_id": "final.shared",
+      "module": "shared",
+      "gradle_task": ":shared:common-jre:test",
+      "test_filters": [],
+      "effective_arguments": [
+        ":shared:common-jre:test",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 5696,
+      "expected_identities_sha256": "611b0142770195e1acc12ac3db0a5b9c6640fe9ec6d402b69a09add8b3624b7e",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "4117bdfd5c987005ae723996f03e9c2d1eed5923",
+          "tree": "872d1c3506585fcded6c7a73563f9b865015b6aa"
+        }
+      ]
+    },
+    {
+      "selection_id": "final.desktop",
+      "module": "desktop",
+      "gradle_task": ":desktop:desktop:test",
+      "test_filters": [],
+      "effective_arguments": [
+        ":desktop:desktop:test",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 1402,
+      "expected_identities_sha256": "f458de0bb93d40c1a3d494dd4b759cd3070979f8225f1b681be5da37057c19df",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "4117bdfd5c987005ae723996f03e9c2d1eed5923",
+          "tree": "872d1c3506585fcded6c7a73563f9b865015b6aa"
+        }
+      ]
+    },
+    {
+      "selection_id": "g8b.narrow",
+      "module": "shared",
+      "gradle_task": ":shared:common-jre:test",
+      "test_filters": [
+        "org.geocedg.common.locus.G8BIntersectionTopologyAndScientificTest"
+      ],
+      "effective_arguments": [
+        ":shared:common-jre:test",
+        "--tests",
+        "org.geocedg.common.locus.G8BIntersectionTopologyAndScientificTest",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 9,
+      "expected_identities_sha256": "787094cd0fb01196691387058d780261c6ecd72f060c6c42661b68e0e10f9188",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "4117bdfd5c987005ae723996f03e9c2d1eed5923",
+          "tree": "872d1c3506585fcded6c7a73563f9b865015b6aa"
+        }
+      ]
+    }
+  ]
+}

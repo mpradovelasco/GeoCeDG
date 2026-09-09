@@ -5,6 +5,8 @@ $ErrorActionPreference = 'Stop'
 
 Import-Module (Join-Path $PSScriptRoot 'verification-io.psm1')
 Import-Module (Join-Path $PSScriptRoot 'verification-registry.psm1')
+Import-Module (Join-Path $PSScriptRoot 'verification-junit.psm1')
+Import-Module (Join-Path $PSScriptRoot 'verification-process-projections.psm1')
 . (Join-Path $PSScriptRoot 'verification-check-host.ps1')
 
 function Get-VerificationSupervisorProperty {
@@ -208,6 +210,10 @@ function New-VerificationObservation {
         dependencies = [string[]]@(
             Get-VerificationSupervisorProperty $Node 'dependencies' -Required)
         duration_ms = [math]::Max(0.0, $Duration)
+    }
+    if ($contract -ceq 'SEMANTIC') {
+        $value.semantic_domain = [string](
+            Get-VerificationSupervisorProperty $Node 'semantic_domain' -Required)
     }
     if (Test-VerificationAcceptanceClass $contract) {
         $value.status = $Outcome
@@ -436,6 +442,11 @@ function ConvertFrom-VerificationProcessObservation {
         $reportedClass = [string](Get-VerificationSupervisorProperty $value 'contract_class' -Required)
         $reportedOutcome = [string](Get-VerificationSupervisorProperty $value 'outcome' -Required)
         if ($reportedClass -cne $contract) { throw 'Structured result contract_class mismatch.' }
+        if ($contract -ceq 'SEMANTIC' -and
+                [string](Get-VerificationSupervisorProperty $value 'semantic_domain' -Required) -cne
+                [string](Get-VerificationSupervisorProperty $Node 'semantic_domain' -Required)) {
+            throw 'Structured result semantic_domain mismatch.'
+        }
         if ($isAcceptance) {
             if ($reportedOutcome -cnotin @(
                     'CONTRACT_SATISFIED', 'CONTRACT_VIOLATED',
@@ -587,6 +598,49 @@ function ConvertFrom-VerificationProducerProjection {
                 $observation.Outcome = $unavailable
                 $observation.Cause = $_.Exception.Message
             }
+        }
+        'PROJECTION_JUNIT_SELECTION_V1' {
+            if ([string]$Producer.structured_output.state -cne 'PRESENT') {
+                $observation.Outcome = $unavailable
+                $observation.Cause = [string]$Producer.structured_output.cause
+                break
+            }
+            $projected = ConvertFrom-VerificationJUnitSelection `
+                -ProcessEvidence $Producer.structured_output.value `
+                -Selection $Producer.structured_output.value.selection `
+                -SemanticDomain ([string](Get-VerificationSupervisorProperty $Node 'semantic_domain' -Required))
+            $observation.Outcome = [string]$projected.outcome
+            $observation.Cause = [string]$projected.cause
+            $observation.Evidence = @([pscustomobject]@{
+                name='STRUCTURED_RESULT'; state='PRESENT'; path=$Producer.structured_output.path
+                sha256=$Producer.structured_output.sha256
+            })
+        }
+        'PROJECTION_PROCESS_EXIT_V1' {
+            if ([string]$Producer.structured_output.state -cne 'PRESENT') {
+                $observation.Outcome = $unavailable
+                $observation.Cause = [string]$Producer.structured_output.cause
+                break
+            }
+            $projected = ConvertFrom-VerificationProcessEvidence `
+                -Evidence $Producer.structured_output.value -ContractClass $contract `
+                -SemanticDomain $(if ($contract -ceq 'SEMANTIC') {
+                    [string](Get-VerificationSupervisorProperty $Node 'semantic_domain' -Required)
+                } else { $null })
+            $observation.Outcome = [string]$projected.outcome
+            $observation.Cause = [string]$projected.cause
+        }
+        'PROJECTION_PYTHON_CHECK_V1' {
+            if ([string]$Producer.structured_output.state -cne 'PRESENT') {
+                $observation.Outcome = $unavailable
+                $observation.Cause = [string]$Producer.structured_output.cause
+                break
+            }
+            $projected = ConvertFrom-VerificationPythonCheckEvidence `
+                -Evidence $Producer.structured_output.value `
+                -SemanticDomain ([string](Get-VerificationSupervisorProperty $Node 'semantic_domain' -Required))
+            $observation.Outcome = [string]$projected.outcome
+            $observation.Cause = [string]$projected.cause
         }
         default { throw "Unknown producer projection adapter: $adapter" }
     }
@@ -840,7 +894,7 @@ function New-VerificationAggregatedReport {
     $coreViolation = @($violated | Where-Object { $_.contract_class -ceq 'VERIFICATION_CORE' })
     $safetyViolation = @($violated | Where-Object { $_.contract_class -ceq 'SAFETY' })
     $semanticViolation = @($violated | Where-Object {
-        $_.contract_class -cin @('PRODUCT_SEMANTIC', 'SCIENTIFIC_SEMANTIC')
+        $_.contract_class -ceq 'SEMANTIC'
     })
     $acceptanceVerdict = if ($coverageVerdict -cne 'COMPLETE' -or $coreViolation.Count -gt 0) {
         'REJECTED_VERIFICATION_CORE'
@@ -858,7 +912,7 @@ function New-VerificationAggregatedReport {
     }
     $report = [ordered]@{
         '$schema' = 'geocedg/specs/operations/verification-result.schema.json'
-        schema_version = 1
+        schema_version = 2
         run_id = $RunId
         profile = $Profile
         run_state = 'COMPLETED'

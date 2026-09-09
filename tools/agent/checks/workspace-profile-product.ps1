@@ -44,7 +44,8 @@ $outcome = if (@($contracts | Where-Object { $_.status -ceq 'VIOLATED' }).Count 
     'CONTRACT_VIOLATED'
 } else { 'CONTRACT_SATISFIED' }
 $result = [ordered]@{
-    contract_class = 'PRODUCT_SEMANTIC'
+    contract_class = 'SEMANTIC'
+    semantic_domain = 'PRODUCT'
     outcome = $outcome
     subcontracts = [object[]]$contracts.ToArray()
 }
