@@ -3,7 +3,7 @@
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-Import-Module (Join-Path $PSScriptRoot 'verification-io.psm1') -Force
+Import-Module (Join-Path $PSScriptRoot 'verification-io.psm1')
 $script:VerificationResultSchemaPath = [IO.Path]::GetFullPath(
     (Join-Path $PSScriptRoot '../../geocedg/specs/operations/verification-result.schema.json'))
 $script:VerificationReceiptSchemaPath = [IO.Path]::GetFullPath(

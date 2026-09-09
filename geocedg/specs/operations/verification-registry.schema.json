@@ -4,14 +4,19 @@
   "title": "GeoCeDG typed verification registry",
   "type": "object",
   "additionalProperties": false,
-  "required": ["$schema", "schema_version", "registry_id", "nodes"],
+  "required": ["$schema", "schema_version", "registry_id", "profiles", "compatibility_mappings", "phase_selections", "nodes"],
   "properties": {
     "$schema": { "const": "geocedg/specs/operations/verification-registry.schema.json" },
     "schema_version": { "const": 1 },
     "registry_id": { "type": "string", "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$" },
+    "profiles": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/profile" } },
+    "compatibility_mappings": { "type": "array", "items": { "$ref": "#/$defs/compatibilityMapping" } },
+    "phase_selections": { "type": "array", "items": { "$ref": "#/$defs/phaseSelection" } },
     "nodes": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/node" } }
   },
   "$defs": {
+    "profileId": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" },
+    "checkId": { "type": "string", "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$" },
     "acceptanceClass": {
       "enum": ["PRODUCT_SEMANTIC", "SCIENTIFIC_SEMANTIC", "SAFETY", "VERIFICATION_CORE"]
     },
@@ -20,6 +25,42 @@
     },
     "contractClass": {
       "oneOf": [{ "$ref": "#/$defs/acceptanceClass" }, { "$ref": "#/$defs/diagnosticClass" }]
+    },
+    "profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["profile_id", "coverage_state", "missing_check_ids"],
+      "properties": {
+        "profile_id": { "$ref": "#/$defs/profileId" },
+        "coverage_state": { "enum": ["COMPLETE", "INCOMPLETE"] },
+        "missing_check_ids": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/checkId" } }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "coverage_state": { "const": "COMPLETE" } }, "required": ["coverage_state"] },
+          "then": { "properties": { "missing_check_ids": { "maxItems": 0 } } },
+          "else": { "properties": { "missing_check_ids": { "minItems": 1 } } }
+        }
+      ]
+    },
+    "compatibilityMapping": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["selector", "profile"],
+      "properties": {
+        "selector": { "enum": ["DEV", "PHASE", "COMPOSED", "FULL", "FullTests"] },
+        "profile": { "$ref": "#/$defs/profileId" }
+      }
+    },
+    "phaseSelection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["phase_id", "coverage_state", "missing_check_ids"],
+      "properties": {
+        "phase_id": { "type": "string", "pattern": "^[A-Z0-9]+(?:-[A-Z0-9]+)*$" },
+        "coverage_state": { "const": "INCOMPLETE" },
+        "missing_check_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/checkId" } }
+      }
     },
     "repositoryPath": {
       "type": "string",
@@ -66,7 +107,7 @@
       "allOf": [
         {
           "if": {
-            "properties": { "projection": { "const": "EVIDENCE_PRESENT" } },
+            "properties": { "projection": { "enum": ["STRUCTURED_CONTRACT", "EVIDENCE_PRESENT"] } },
             "required": ["projection"]
           },
           "then": { "required": ["evidence_name"] },
@@ -92,23 +133,23 @@
       "additionalProperties": false,
       "required": ["check_id", "node_kind", "tier", "command", "argv", "working_directory", "dependencies", "platforms", "impact_paths", "environment_contract", "resource_locks", "side_effects", "output_adapter", "required_for_profiles"],
       "properties": {
-        "check_id": { "type": "string", "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$" },
+        "check_id": { "$ref": "#/$defs/checkId" },
         "node_kind": { "enum": ["PROCESS_PRODUCER", "ACCEPTANCE_LEAF", "DIAGNOSTIC_LEAF", "EVIDENCE_PROJECTION"] },
         "contract_class": { "$ref": "#/$defs/contractClass" },
         "tier": { "enum": ["STATIC", "INFRA_UNIT", "FOCUSED", "INTEGRATION", "FINAL"] },
         "command": { "$ref": "#/$defs/command" },
         "argv": { "type": "array", "items": { "type": "string" } },
         "working_directory": { "$ref": "#/$defs/workingDirectory" },
-        "dependencies": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$" } },
+        "dependencies": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/checkId" } },
         "platforms": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "enum": ["WINDOWS", "LINUX", "MACOS"] } },
         "impact_paths": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/impactPath" } },
         "environment_contract": { "$ref": "#/$defs/environmentContract" },
         "resource_locks": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$" } },
         "side_effects": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "enum": ["NONE", "TASK_OWNED_OUTPUT", "BUILD_OUTPUT", "REPOSITORY_READ"] } },
         "output_adapter": { "enum": ["RAW_PROCESS_V1", "EXIT_CODE_V1", "STRUCTURED_CONTRACT_V1", "PROJECTION_EXIT_CODE_V1", "PROJECTION_STRUCTURED_CONTRACT_V1", "PROJECTION_EVIDENCE_PRESENT_V1"] },
-        "required_for_profiles": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" } },
+        "required_for_profiles": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/profileId" } },
         "produces_evidence": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" } },
-        "producer_dependency": { "type": "string", "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$" }
+        "producer_dependency": { "$ref": "#/$defs/checkId" }
       },
       "oneOf": [
         {

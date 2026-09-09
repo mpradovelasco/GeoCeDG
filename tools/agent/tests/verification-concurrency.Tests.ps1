@@ -47,6 +47,11 @@ function New-Registry {
         '$schema' = 'geocedg/specs/operations/verification-registry.schema.json'
         schema_version = 1
         registry_id = 'resource.fixture'
+        profiles = @([ordered]@{
+            profile_id = 'FINAL'; coverage_state = 'COMPLETE'; missing_check_ids = @()
+        })
+        compatibility_mappings = @()
+        phase_selections = @()
         nodes = $Nodes
     }
 }

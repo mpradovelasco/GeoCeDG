@@ -3,7 +3,7 @@
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-Import-Module (Join-Path $PSScriptRoot 'verification-io.psm1') -Force
+Import-Module (Join-Path $PSScriptRoot 'verification-io.psm1')
 
 $script:AcceptanceClasses = @(
     'PRODUCT_SEMANTIC',
@@ -63,6 +63,28 @@ function Test-VerificationDiagnosticClass {
     return $script:DiagnosticClasses -ccontains $ContractClass
 }
 
+function Get-VerificationCurrentPlatform {
+    [CmdletBinding()]
+    param()
+    if ($IsWindows) { return 'WINDOWS' }
+    if ($IsLinux) { return 'LINUX' }
+    if ($IsMacOS) { return 'MACOS' }
+    throw 'The current platform is not supported by the verification registry.'
+}
+
+function Get-VerificationProfileMap {
+    param([Parameter(Mandatory)] [object[]]$Profiles)
+    $map = [Collections.Generic.Dictionary[string, object]]::new(
+        [StringComparer]::Ordinal)
+    foreach ($profile in $Profiles) {
+        $id = [string](Get-VerificationObjectProperty $profile 'profile_id' -Required)
+        if (-not $map.TryAdd($id, $profile)) {
+            throw "Duplicate verification profile_id: $id"
+        }
+    }
+    return $map
+}
+
 function Get-VerificationRegistryNodeMap {
     param([Parameter(Mandatory)] [object[]]$Nodes)
 
@@ -89,6 +111,59 @@ function Assert-VerificationRegistry {
     if ((Get-VerificationObjectProperty $Registry 'schema_version' -Required) -ne 1) {
         throw 'Verification registry schema_version must be 1.'
     }
+    $profiles = [object[]]@(Get-VerificationObjectProperty $Registry 'profiles' -Required)
+    if ($profiles.Count -eq 0) { throw 'Verification registry must define profiles.' }
+    $profileMap = Get-VerificationProfileMap -Profiles $profiles
+    foreach ($profile in $profiles) {
+        $profileId = [string](Get-VerificationObjectProperty $profile 'profile_id' -Required)
+        if ($profileId -cnotmatch '^[A-Z][A-Z0-9_]*$') {
+            throw "Invalid verification profile_id: $profileId"
+        }
+        $coverageState = [string](
+            Get-VerificationObjectProperty $profile 'coverage_state' -Required)
+        $missing = [string[]]@(
+            Get-VerificationObjectProperty $profile 'missing_check_ids' -Required)
+        if ($coverageState -cnotin @('COMPLETE', 'INCOMPLETE')) {
+            throw "Invalid coverage_state for profile $($profileId): $coverageState"
+        }
+        if (($coverageState -ceq 'COMPLETE') -ne ($missing.Count -eq 0)) {
+            throw "Profile $profileId coverage_state disagrees with missing_check_ids."
+        }
+    }
+    $compatibility = [object[]]@(
+        Get-VerificationObjectProperty $Registry 'compatibility_mappings' -Required)
+    $compatibilityIds = [Collections.Generic.HashSet[string]]::new(
+        [StringComparer]::Ordinal)
+    foreach ($mapping in $compatibility) {
+        $selector = [string](
+            Get-VerificationObjectProperty $mapping 'selector' -Required)
+        $target = [string](Get-VerificationObjectProperty $mapping 'profile' -Required)
+        if (-not $compatibilityIds.Add($selector)) {
+            throw "Duplicate verification compatibility selector: $selector"
+        }
+        if (-not $profileMap.ContainsKey($target)) {
+            throw "Compatibility selector $selector targets missing profile $target."
+        }
+    }
+    $phaseSelections = [object[]]@(
+        Get-VerificationObjectProperty $Registry 'phase_selections' -Required)
+    $phaseIds = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+    foreach ($phaseSelection in $phaseSelections) {
+        $phaseId = [string](
+            Get-VerificationObjectProperty $phaseSelection 'phase_id' -Required)
+        if (-not $phaseIds.Add($phaseId)) {
+            throw "Duplicate verification phase selection: $phaseId"
+        }
+        $phaseMissing = [object[]]@(
+            Get-VerificationObjectProperty $phaseSelection 'missing_check_ids' -Required)
+        if ([string](Get-VerificationObjectProperty $phaseSelection 'coverage_state' -Required) -cne
+                'INCOMPLETE' -or $phaseMissing.Count -eq 0) {
+            throw "Phase selection $phaseId must declare incomplete pure-leaf coverage."
+        }
+    }
+    if ($phaseSelections.Count -gt 0 -and -not $profileMap.ContainsKey('PHASE')) {
+        throw 'Phase selections require a PHASE profile.'
+    }
     $nodes = [object[]]@(Get-VerificationObjectProperty $Registry 'nodes' -Required)
     if ($nodes.Count -eq 0) { throw 'Verification registry must contain at least one node.' }
     $nodeMap = Get-VerificationRegistryNodeMap -Nodes $nodes
@@ -97,6 +172,12 @@ function Assert-VerificationRegistry {
         $id = [string](Get-VerificationObjectProperty $node 'check_id' -Required)
         if ($id -cnotmatch '^[a-z0-9]+(?:[._-][a-z0-9]+)*$') {
             throw "Invalid verification check_id: $id"
+        }
+        foreach ($profileId in [object[]]@(
+                Get-VerificationObjectProperty $node 'required_for_profiles' -Required)) {
+            if (-not $profileMap.ContainsKey([string]$profileId)) {
+                throw "Verification node $id references missing profile $profileId."
+            }
         }
         $kind = [string](Get-VerificationObjectProperty $node 'node_kind' -Required)
         if ($kind -cnotin @('PROCESS_PRODUCER', 'ACCEPTANCE_LEAF', 'DIAGNOSTIC_LEAF', 'EVIDENCE_PROJECTION')) {
@@ -204,6 +285,8 @@ function Assert-VerificationRegistry {
                 [void](ConvertTo-VerificationGitPath ([string]$impactPath))
             }
         }
+        $nodePlatforms = [object[]]@(
+            Get-VerificationObjectProperty $node 'platforms' -Required)
         foreach ($dependency in [object[]]@(Get-VerificationObjectProperty $node 'dependencies' -Required)) {
             $dependencyId = [string]$dependency
             if (-not $nodeMap.ContainsKey($dependencyId)) {
@@ -213,6 +296,13 @@ function Assert-VerificationRegistry {
             $dependencyTier = [string](Get-VerificationObjectProperty $nodeMap[$dependencyId] 'tier' -Required)
             if ($script:TierRank[$dependencyTier] -gt $script:TierRank[$tier]) {
                 throw "Verification node $id depends on later tier $dependencyId."
+            }
+            $dependencyPlatforms = [object[]]@(
+                Get-VerificationObjectProperty $nodeMap[$dependencyId] 'platforms' -Required)
+            foreach ($platformName in $nodePlatforms) {
+                if ($dependencyPlatforms -cnotcontains [string]$platformName) {
+                    throw "Verification node $id depends on $dependencyId, which is unavailable on $platformName."
+                }
             }
         }
     }
@@ -237,11 +327,13 @@ function Assert-VerificationRegistry {
                 Get-VerificationObjectProperty $projectionCommand 'projection' -Required)
             $producerEvidence = [object[]]@(
                 Get-VerificationObjectProperty $nodeMap[$producerId] 'produces_evidence' -Required)
-            if ($projection -ceq 'STRUCTURED_CONTRACT' -and
-                    $producerEvidence -cnotcontains 'STRUCTURED_RESULT') {
-                throw "EVIDENCE_PROJECTION $id requires producer STRUCTURED_RESULT evidence."
-            }
-            if ($projection -ceq 'EVIDENCE_PRESENT') {
+            if ($projection -ceq 'STRUCTURED_CONTRACT') {
+                $evidenceName = [string](
+                    Get-VerificationObjectProperty $projectionCommand 'evidence_name' -Required)
+                if ($producerEvidence -cnotcontains $evidenceName) {
+                    throw "EVIDENCE_PROJECTION $id requires declared structured evidence $evidenceName."
+                }
+            } elseif ($projection -ceq 'EVIDENCE_PRESENT') {
                 $evidenceName = [string](
                     Get-VerificationObjectProperty $projectionCommand 'evidence_name' -Required)
                 if ($evidenceName -cin @('PROCESS_RESULT', 'STRUCTURED_RESULT') -or
@@ -314,18 +406,67 @@ function Resolve-VerificationRegistryPlan {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)] [object]$Registry,
-        [Parameter(Mandatory)] [string]$Profile
+        [Parameter(Mandatory)] [string]$Profile,
+        [string]$Selection,
+        [ValidateSet('WINDOWS', 'LINUX', 'MACOS')]
+        [string]$Platform = (Get-VerificationCurrentPlatform)
     )
 
     [void](Assert-VerificationRegistry -Registry $Registry)
+    $profiles = [object[]]@(Get-VerificationObjectProperty $Registry 'profiles' -Required)
+    $profileMap = Get-VerificationProfileMap -Profiles $profiles
+    $requestedProfile = $Profile
+    if (-not $profileMap.ContainsKey($Profile)) {
+        $mapping = @([object[]]@(
+            Get-VerificationObjectProperty $Registry 'compatibility_mappings' -Required) |
+            Where-Object { [string]$_.selector -ceq $Profile })
+        if ($mapping.Count -ne 1) {
+            throw "Unknown verification profile or compatibility selector: $Profile"
+        }
+        $Profile = [string]$mapping[0].profile
+    }
+    $profileDefinition = $profileMap[$Profile]
+    $coverageState = [string](
+        Get-VerificationObjectProperty $profileDefinition 'coverage_state' -Required)
+    $missingCheckIds = [Collections.Generic.HashSet[string]]::new(
+        [StringComparer]::Ordinal)
+    foreach ($missing in [object[]]@(
+            Get-VerificationObjectProperty $profileDefinition 'missing_check_ids' -Required)) {
+        [void]$missingCheckIds.Add([string]$missing)
+    }
+    $resolvedSelection = $null
+    if ($Profile -ceq 'PHASE') {
+        if ([string]::IsNullOrWhiteSpace($Selection)) {
+            throw 'PHASE requires an exact registered phase selection.'
+        }
+        $resolvedSelection = $Selection.ToUpperInvariant()
+        $phase = @([object[]]@(
+            Get-VerificationObjectProperty $Registry 'phase_selections' -Required) |
+            Where-Object { [string]$_.phase_id -ceq $resolvedSelection })
+        if ($phase.Count -ne 1) { throw "Unknown PHASE '$Selection'." }
+        $coverageState = [string]$phase[0].coverage_state
+        foreach ($missing in [object[]]$phase[0].missing_check_ids) {
+            [void]$missingCheckIds.Add([string]$missing)
+        }
+    } elseif (-not [string]::IsNullOrWhiteSpace($Selection)) {
+        throw "Profile $Profile does not accept a phase selection."
+    }
     $nodes = [object[]]@(Get-VerificationObjectProperty $Registry 'nodes' -Required)
     $map = Get-VerificationRegistryNodeMap -Nodes $nodes
     $selected = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
     $pending = [Collections.Generic.Stack[string]]::new()
+    $unsupported = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
     foreach ($node in $nodes) {
         if ([object[]]@(Get-VerificationObjectProperty $node 'required_for_profiles' -Required) -ccontains
                 $Profile) {
-            $pending.Push([string](Get-VerificationObjectProperty $node 'check_id' -Required))
+            $id = [string](Get-VerificationObjectProperty $node 'check_id' -Required)
+            if ([object[]]@(Get-VerificationObjectProperty $node 'platforms' -Required) -ccontains
+                    $Platform) {
+                $pending.Push($id)
+            } elseif ([string](Get-VerificationObjectProperty $node 'node_kind' -Required) -cne
+                    'DIAGNOSTIC_LEAF') {
+                [void]$unsupported.Add($id)
+            }
         }
     }
     while ($pending.Count -gt 0) {
@@ -335,10 +476,6 @@ function Resolve-VerificationRegistryPlan {
             $pending.Push([string]$dependency)
         }
     }
-    if ($selected.Count -eq 0) {
-        throw "Verification profile $Profile selects no nodes."
-    }
-
     $ordered = [Collections.Generic.List[object]]::new()
     $emitted = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
     while ($emitted.Count -lt $selected.Count) {
@@ -368,15 +505,38 @@ function Resolve-VerificationRegistryPlan {
         [void]$emitted.Add($nextId)
     }
     $orderedArray = [object[]]$ordered.ToArray()
+    if ($coverageState -ceq 'COMPLETE' -and $unsupported.Count -gt 0) {
+        $coverageState = 'INCOMPLETE'
+        foreach ($id in $unsupported) { [void]$missingCheckIds.Add($id) }
+    }
+    if ($coverageState -ceq 'COMPLETE' -and $orderedArray.Count -eq 0) {
+        throw "Complete verification profile $Profile selects no nodes."
+    }
+    $missingArray = [string[]]@($missingCheckIds)
+    [Array]::Sort($missingArray, [StringComparer]::Ordinal)
+    # Registry JSON is loaded as PSCustomObject. Convert the resolved boundary to
+    # dictionaries so an intentionally empty environment-variable map remains a
+    # first-class empty object in canonical plan identity.
+    $resolvedNodes = [object[]]@(ConvertFrom-Json -AsHashtable -Depth 100 `
+        -InputObject (ConvertTo-Json -InputObject $orderedArray -Depth 100 -Compress))
     $planHash = Get-VerificationDeterministicHash -Value ([ordered]@{
         registry_id = [string](Get-VerificationObjectProperty $Registry 'registry_id' -Required)
         schema_version = 1
         profile = $Profile
-        nodes = $orderedArray
+        selection = $resolvedSelection
+        platform = $Platform
+        coverage_state = $coverageState
+        missing_check_ids = $missingArray
+        nodes = $resolvedNodes
     })
     return [pscustomobject]@{
+        requested_profile = $requestedProfile
         profile = $Profile
-        nodes = $orderedArray
+        selection = $resolvedSelection
+        platform = $Platform
+        coverage_state = $coverageState
+        missing_check_ids = $missingArray
+        nodes = $resolvedNodes
         execution_plan_hash = $planHash
     }
 }
@@ -448,6 +608,7 @@ function Get-VerificationExecutionBatches {
 Export-ModuleMember -Function @(
     'Test-VerificationAcceptanceClass',
     'Test-VerificationDiagnosticClass',
+    'Get-VerificationCurrentPlatform',
     'Assert-VerificationRegistry',
     'Resolve-VerificationRegistryPlan',
     'Get-VerificationExecutionBatches'

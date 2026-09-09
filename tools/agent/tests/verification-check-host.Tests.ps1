@@ -199,6 +199,24 @@ try {
         Assert-Case ($hostExit -eq 0) 'Standalone host converted diagnostic child exit into host failure.'
         Assert-Case ($captured.exit_code -eq 12) 'Standalone host lost child exit.'
     }
+    Invoke-Case 'missing executable is distinguished as a preserved launch failure' {
+        $missing = Join-Path $root 'missing-child.exe'
+        $result = Invoke-VerificationChildProcess -CheckId missing-executable `
+            -NodeKind PROCESS_PRODUCER -Command $missing -Arguments @() `
+            -WorkingDirectory $root -EnvironmentContract $environment `
+            -OutputDirectory (Join-Path $root 'missing-executable-output')
+        Assert-Case ($result.completion_state -ceq 'LAUNCH_FAILED') 'Missing executable was not distinguished.'
+        Assert-Case ($null -eq $result.exit_code) 'Missing executable acquired a child exit code.'
+        Assert-Case (-not [string]::IsNullOrWhiteSpace($result.completion_cause)) 'Launch failure cause was not preserved.'
+    }
+    Invoke-Case 'relative executable is rejected before child launch' {
+        Assert-CaseThrows {
+            Invoke-VerificationChildProcess -CheckId relative-executable `
+                -NodeKind ACCEPTANCE_LEAF -Command 'pwsh' -Arguments @() `
+                -WorkingDirectory $root -EnvironmentContract $environment `
+                -OutputDirectory (Join-Path $root 'relative-executable-output')
+        } 'explicitly resolved absolute executable'
+    }
 } finally {
     $resolved = [IO.Path]::GetFullPath($root)
     $prefix = $tempBase + [IO.Path]::DirectorySeparatorChar

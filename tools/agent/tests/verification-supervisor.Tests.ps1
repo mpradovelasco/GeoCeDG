@@ -135,6 +135,11 @@ function New-Registry {
         '$schema' = 'geocedg/specs/operations/verification-registry.schema.json'
         schema_version = 1
         registry_id = 'supervisor.fixture'
+        profiles = @([ordered]@{
+            profile_id = 'FINAL'; coverage_state = 'COMPLETE'; missing_check_ids = @()
+        })
+        compatibility_mappings = @()
+        phase_selections = @()
         nodes = $Nodes
     }
 }
@@ -191,6 +196,7 @@ try {
         )
         $projection = New-Projection structured.science structured.producer SCIENTIFIC_SEMANTIC
         $projection.command.projection = 'STRUCTURED_CONTRACT'
+        $projection.command.evidence_name = 'STRUCTURED_RESULT'
         $projection.output_adapter = 'PROJECTION_STRUCTURED_CONTRACT_V1'
         $run = Invoke-FixtureSupervisor structured-projection @($producer, $projection)
         Assert-Case ($run.report.acceptance_verdict -ceq 'ACCEPTED') 'Valid structured projection was not accepted.'

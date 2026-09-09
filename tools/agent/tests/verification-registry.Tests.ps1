@@ -110,6 +110,11 @@ function New-Registry {
         '$schema' = 'geocedg/specs/operations/verification-registry.schema.json'
         schema_version = 1
         registry_id = 'fixture.registry'
+        profiles = @([ordered]@{
+            profile_id = 'FINAL'; coverage_state = 'COMPLETE'; missing_check_ids = @()
+        })
+        compatibility_mappings = @()
+        phase_selections = @()
         nodes = @($producer, $scientific, $diagnostic)
     }
 }
@@ -193,6 +198,11 @@ Invoke-Case 'later-tier dependencies are rejected' {
     $registry.nodes[1].tier = 'STATIC'
     Assert-CaseThrows { Assert-VerificationRegistry $registry } 'later tier'
 }
+Invoke-Case 'dependencies cover every declared caller platform' {
+    $registry = New-Registry
+    $registry.nodes[0].platforms = @('WINDOWS')
+    Assert-CaseThrows { Assert-VerificationRegistry $registry } 'unavailable on LINUX|unavailable on MACOS'
+}
 Invoke-Case 'projection and adapter must agree' {
     $registry = New-Registry
     $registry.nodes[1].output_adapter = 'PROJECTION_EVIDENCE_PRESENT_V1'
@@ -238,6 +248,42 @@ Invoke-Case 'empty registries and empty profile selections are rejected' {
     $registry = New-Registry
     foreach ($node in $registry.nodes) { $node.required_for_profiles = @() }
     Assert-CaseThrows { Resolve-VerificationRegistryPlan $registry FINAL } 'selects no nodes'
+}
+Invoke-Case 'profile identities and coverage declarations are consistent' {
+    $registry = New-Registry
+    $registry.profiles += Copy-Value $registry.profiles[0]
+    Assert-CaseThrows { Assert-VerificationRegistry $registry } 'Duplicate verification profile_id'
+
+    $registry = New-Registry
+    $registry.profiles[0].coverage_state = 'INCOMPLETE'
+    Assert-CaseThrows { Assert-VerificationRegistry $registry } 'disagrees with missing_check_ids'
+}
+Invoke-Case 'compatibility selectors name existing canonical profiles exactly once' {
+    $registry = New-Registry
+    $registry.compatibility_mappings = @(
+        [ordered]@{ selector = 'FULL'; profile = 'FINAL' },
+        [ordered]@{ selector = 'FULL'; profile = 'FINAL' })
+    Assert-CaseThrows { Assert-VerificationRegistry $registry } 'Duplicate verification compatibility selector'
+
+    $registry = New-Registry
+    $registry.compatibility_mappings = @([ordered]@{ selector = 'FULL'; profile = 'MISSING' })
+    Assert-CaseThrows { Assert-VerificationRegistry $registry } 'targets missing profile'
+}
+Invoke-Case 'phase selection is exact and explicitly incomplete' {
+    $registry = New-Registry
+    $registry.profiles += [ordered]@{
+        profile_id = 'PHASE'; coverage_state = 'INCOMPLETE';
+        missing_check_ids = @('phase.default')
+    }
+    $registry.phase_selections = @([ordered]@{
+        phase_id = 'G9A2'; coverage_state = 'INCOMPLETE';
+        missing_check_ids = @('phase.g9a2')
+    })
+    $plan = Resolve-VerificationRegistryPlan $registry PHASE G9A2
+    Assert-Case ($plan.profile -ceq 'PHASE' -and $plan.selection -ceq 'G9A2') 'Exact PHASE selection changed.'
+    Assert-Case ($plan.coverage_state -ceq 'INCOMPLETE') 'Incomplete phase claimed complete coverage.'
+    Assert-Case (@($plan.missing_check_ids) -ccontains 'phase.g9a2') 'Phase-specific coverage gap was omitted.'
+    Assert-CaseThrows { Resolve-VerificationRegistryPlan $registry PHASE missing } 'Unknown PHASE'
 }
 
 Write-Host "verification-registry.Tests: $script:Cases cases, $script:Assertions assertions, 0 failures"

@@ -3,8 +3,8 @@
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-Import-Module (Join-Path $PSScriptRoot 'verification-io.psm1') -Force
-Import-Module (Join-Path $PSScriptRoot 'verification-registry.psm1') -Force
+Import-Module (Join-Path $PSScriptRoot 'verification-io.psm1')
+Import-Module (Join-Path $PSScriptRoot 'verification-registry.psm1')
 . (Join-Path $PSScriptRoot 'verification-check-host.ps1')
 
 function Get-VerificationSupervisorProperty {
@@ -114,6 +114,38 @@ function Expand-VerificationArgument {
     return $expanded
 }
 
+function Resolve-VerificationSupervisorExecutable {
+    param(
+        [Parameter(Mandatory)] [string]$Executable,
+        [Parameter(Mandatory)] [string]$RepositoryRoot
+    )
+    $resolved = switch -CaseSensitive ($Executable) {
+        'PWSH' {
+            $current = (Get-Process -Id $PID).Path
+            if ($PSVersionTable.PSVersion -lt [version]'7.2') {
+                throw 'PWSH registry commands require PowerShell 7.2 or newer.'
+            }
+            $current
+            break
+        }
+        'GIT' {
+            $command = Get-Command git -CommandType Application -ErrorAction SilentlyContinue |
+                Select-Object -First 1
+            if ($null -eq $command) { throw 'The GIT registry executable is unavailable.' }
+            $command.Path
+            break
+        }
+        default {
+            if ([IO.Path]::IsPathRooted($Executable)) {
+                [IO.Path]::GetFullPath($Executable)
+            } else {
+                Resolve-VerificationContainedPath -Root $RepositoryRoot -Path $Executable
+            }
+        }
+    }
+    return [IO.Path]::GetFullPath([string]$resolved)
+}
+
 function Get-VerificationNodeCommandIdentity {
     param([Parameter(Mandatory)] [object]$Node)
 
@@ -195,12 +227,9 @@ function Invoke-VerificationRegistryProcess {
     $id = [string](Get-VerificationSupervisorProperty $Node 'check_id' -Required)
     $nodeOutput = Resolve-VerificationContainedPath -Root $OutputRoot -Path ('checks/' + $id)
     $command = Get-VerificationSupervisorProperty $Node 'command' -Required
-    $executable = [string](Get-VerificationSupervisorProperty $command 'executable' -Required)
-    if (-not [IO.Path]::IsPathRooted($executable)) {
-        $executable = Resolve-VerificationContainedPath -Root $RepositoryRoot -Path $executable
-    } else {
-        $executable = [IO.Path]::GetFullPath($executable)
-    }
+    $executable = Resolve-VerificationSupervisorExecutable -Executable ([string](
+        Get-VerificationSupervisorProperty $command 'executable' -Required)) `
+        -RepositoryRoot $RepositoryRoot
     $workingValue = [string](Get-VerificationSupervisorProperty $Node 'working_directory' -Required)
     $workingDirectory = if ($workingValue -ceq '.') {
         [IO.Path]::GetFullPath($RepositoryRoot)
@@ -252,7 +281,7 @@ function ConvertTo-VerificationProducerRecord {
     return [pscustomobject]@{
         check_id = [string]$Raw.check_id
         node_kind = 'PROCESS_PRODUCER'
-        command = [string](Get-VerificationSupervisorProperty $command 'executable' -Required)
+        command = [string]$Raw.command
         arguments = [string[]]@(Get-VerificationSupervisorProperty $Node 'argv' -Required)
         working_directory = [string](
             Get-VerificationSupervisorProperty $Node 'working_directory' -Required)
@@ -408,7 +437,9 @@ function ConvertFrom-VerificationProcessObservation {
         $reportedOutcome = [string](Get-VerificationSupervisorProperty $value 'outcome' -Required)
         if ($reportedClass -cne $contract) { throw 'Structured result contract_class mismatch.' }
         if ($isAcceptance) {
-            if ($reportedOutcome -cnotin @('CONTRACT_SATISFIED', 'CONTRACT_VIOLATED')) {
+            if ($reportedOutcome -cnotin @(
+                    'CONTRACT_SATISFIED', 'CONTRACT_VIOLATED',
+                    'EVIDENCE_UNTRUSTED', 'NOT_RUN_DEPENDENCY')) {
                 throw 'Structured acceptance outcome is invalid.'
             }
         } elseif ($reportedOutcome -cnotin @(
@@ -486,20 +517,64 @@ function ConvertFrom-VerificationProducerProjection {
             }
         }
         'PROJECTION_STRUCTURED_CONTRACT_V1' {
-            if ([string]$Producer.structured_output.state -cne 'PRESENT') {
+            $projectionCommand = Get-VerificationSupervisorProperty $Node 'command' -Required
+            $evidenceName = [string](
+                Get-VerificationSupervisorProperty $projectionCommand 'evidence_name' -Required)
+            $structuredEvidence = $null
+            if ($evidenceName -ceq 'STRUCTURED_RESULT') {
+                $structuredEvidence = $Producer.structured_output
+                $observation.Evidence = @([pscustomobject]@{
+                    name = 'STRUCTURED_RESULT'
+                    state = $(if ($null -ne $Producer.structured_output.sha256) {
+                        'PRESENT'
+                    } else { 'ABSENT' })
+                    path = $Producer.structured_output.path
+                    sha256 = $Producer.structured_output.sha256
+                })
+            } else {
+                $namedEvidence = @([object[]]$Producer.generated_evidence | Where-Object {
+                    [string]$_.name -ceq $evidenceName
+                })
+                $observation.Evidence = $namedEvidence
+                if ($namedEvidence.Count -eq 1 -and
+                        [string]$namedEvidence[0].state -ceq 'PRESENT') {
+                    try {
+                        $structuredEvidence = [pscustomobject]@{
+                            state = 'PRESENT'
+                            value = Read-VerificationJson -Path ([string]$namedEvidence[0].path)
+                            cause = $null
+                        }
+                    } catch {
+                        $structuredEvidence = [pscustomobject]@{
+                            state = 'MALFORMED'
+                            value = $null
+                            cause = $_.Exception.Message
+                        }
+                    }
+                } else {
+                    $structuredEvidence = [pscustomobject]@{
+                        state = 'ABSENT'
+                        value = $null
+                        cause = "Declared structured evidence '$evidenceName' is unavailable."
+                    }
+                }
+            }
+            if ([string]$structuredEvidence.state -cne 'PRESENT') {
                 $observation.Outcome = $unavailable
-                $observation.Cause = [string]$Producer.structured_output.cause
+                $observation.Cause = [string]$structuredEvidence.cause
                 return New-VerificationObservation @observation
             }
             try {
-                $value = $Producer.structured_output.value
+                $value = $structuredEvidence.value
                 $reportedClass = [string](Get-VerificationSupervisorProperty $value 'contract_class' -Required)
                 $reportedOutcome = [string](Get-VerificationSupervisorProperty $value 'outcome' -Required)
                 if ($reportedClass -cne $contract) {
                     throw 'Projected structured contract_class does not match the projection.'
                 }
                 if ($isAcceptance) {
-                    if ($reportedOutcome -cnotin @('CONTRACT_SATISFIED', 'CONTRACT_VIOLATED')) {
+                    if ($reportedOutcome -cnotin @(
+                            'CONTRACT_SATISFIED', 'CONTRACT_VIOLATED',
+                            'EVIDENCE_UNTRUSTED', 'NOT_RUN_DEPENDENCY')) {
                         throw 'Projected acceptance outcome is invalid.'
                     }
                 } elseif ($reportedOutcome -cnotin @(
@@ -583,6 +658,120 @@ function Test-VerificationMapContains {
         return $Map.ContainsKey($Key)
     }
     return $Map.Contains($Key)
+}
+
+function Compare-VerificationBaselineResults {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [object]$BaselineReport,
+        [Parameter(Mandatory)] [object]$CandidateReport
+    )
+    foreach ($entry in @(
+            @{ Name = 'baseline'; Report = $BaselineReport },
+            @{ Name = 'candidate'; Report = $CandidateReport })) {
+        $declaredHash = [string](
+            Get-VerificationSupervisorProperty $entry.Report 'result_hash' -Required)
+        if ($declaredHash -cne (Get-VerificationResultHash $entry.Report)) {
+            throw "$($entry.Name) report has an invalid deterministic result hash."
+        }
+    }
+    $identityFields = @('profile', 'execution_plan_hash', 'environment_fingerprint')
+    $identityMismatches = [Collections.Generic.List[string]]::new()
+    foreach ($field in $identityFields) {
+        if ([string](Get-VerificationSupervisorProperty $BaselineReport $field -Required) -cne
+                [string](Get-VerificationSupervisorProperty $CandidateReport $field -Required)) {
+            $identityMismatches.Add($field)
+        }
+    }
+    foreach ($field in @('commit', 'tree')) {
+        $baselineField = 'candidate_' + $field
+        $candidateField = 'base_' + $field
+        $baselineValue = [string](
+            Get-VerificationSupervisorProperty $BaselineReport $baselineField -Required)
+        $candidateValue = [string](
+            Get-VerificationSupervisorProperty $CandidateReport $candidateField)
+        if ([string]::IsNullOrWhiteSpace($candidateValue) -or
+                $candidateValue -cne $baselineValue) {
+            $identityMismatches.Add($candidateField)
+        }
+    }
+    if ($identityMismatches.Count -gt 0) {
+        return [pscustomobject][ordered]@{
+            state = 'NOT_COMPARABLE'
+            identity_mismatches = [string[]]$identityMismatches.ToArray()
+            candidate_regression = $null
+            final_acceptability = 'REQUIRES_CURRENT_RESULT'
+            comparisons = [object[]]@()
+        }
+    }
+    $baseResults = [object[]]@(
+        Get-VerificationSupervisorProperty $BaselineReport 'acceptance_results' -Required)
+    $candidateResults = [object[]]@(
+        Get-VerificationSupervisorProperty $CandidateReport 'acceptance_results' -Required)
+    $baseResults = [object[]]@($baseResults | Where-Object { $null -ne $_ })
+    $candidateResults = [object[]]@($candidateResults | Where-Object { $null -ne $_ })
+    $ids = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+    foreach ($result in [object[]]@($baseResults + $candidateResults)) {
+        [void]$ids.Add([string]$result.check_id)
+    }
+    $orderedIds = [string[]]@($ids)
+    [Array]::Sort($orderedIds, [StringComparer]::Ordinal)
+    $comparisons = [Collections.Generic.List[object]]::new()
+    foreach ($id in $orderedIds) {
+        $base = @($baseResults | Where-Object { [string]$_.check_id -ceq $id })
+        $candidate = @($candidateResults | Where-Object { [string]$_.check_id -ceq $id })
+        $baseStatus = if ($base.Count -eq 1) { [string]$base[0].status } else { 'NOT_RUN' }
+        $candidateStatus = if ($candidate.Count -eq 1) {
+            [string]$candidate[0].status
+        } else { 'NOT_RUN' }
+        $commandComparable = $base.Count -eq 1 -and $candidate.Count -eq 1 -and
+            [string]$base[0].command_identity -ceq [string]$candidate[0].command_identity
+        $classification = if (-not $commandComparable -and $base.Count -eq 1 -and
+                $candidate.Count -eq 1) {
+            'CHECK_IDENTITY_CHANGED'
+        } elseif ($baseStatus -ceq 'CONTRACT_SATISFIED' -and
+                $candidateStatus -cne 'CONTRACT_SATISFIED') {
+            'PASS_TO_FAIL'
+        } elseif ($baseStatus -ceq 'CONTRACT_VIOLATED' -and
+                $candidateStatus -ceq 'CONTRACT_SATISFIED') {
+            'FAIL_TO_PASS'
+        } elseif ($baseStatus -ceq 'CONTRACT_VIOLATED' -and
+                $candidateStatus -ceq 'CONTRACT_VIOLATED') {
+            if ((Get-VerificationObservationIdentityHash $base[0]) -ceq
+                    (Get-VerificationObservationIdentityHash $candidate[0])) {
+                'FAIL_TO_SAME_FAIL'
+            } else { 'FAIL_CHANGED' }
+        } elseif ($baseStatus -eq 'NOT_RUN' -and $candidateStatus -cne
+                'CONTRACT_SATISFIED') {
+            'NOT_RUN_TO_FAIL'
+        } elseif ($baseStatus -ceq $candidateStatus) {
+            'UNCHANGED'
+        } else {
+            'CHANGED_RESULT'
+        }
+        $comparisons.Add([pscustomobject][ordered]@{
+            check_id = $id
+            contract_class = $(if ($candidate.Count -eq 1) {
+                [string]$candidate[0].contract_class
+            } elseif ($base.Count -eq 1) { [string]$base[0].contract_class } else { $null })
+            base_status = $baseStatus
+            candidate_status = $candidateStatus
+            comparison = $classification
+            candidate_regression = $classification -cin @(
+                'PASS_TO_FAIL', 'FAIL_CHANGED', 'NOT_RUN_TO_FAIL')
+            final_acceptable = $candidateStatus -ceq 'CONTRACT_SATISFIED'
+        })
+    }
+    $values = [object[]]$comparisons.ToArray()
+    return [pscustomobject][ordered]@{
+        state = 'COMPARED'
+        identity_mismatches = [string[]]@()
+        candidate_regression = @($values | Where-Object { $_.candidate_regression }).Count -gt 0
+        final_acceptability = $(if (@($values | Where-Object {
+                    -not $_.final_acceptable
+                }).Count -eq 0) { 'ACCEPTABLE' } else { 'NOT_ACCEPTABLE' })
+        comparisons = $values
+    }
 }
 
 function New-VerificationAggregatedReport {
@@ -724,12 +913,14 @@ function Invoke-VerificationSupervisor {
         [Parameter(Mandatory)] [string]$RepositoryRoot,
         [Parameter(Mandatory)] [string]$OutputDirectory,
         [Parameter(Mandatory)] [object]$Identity,
+        [string]$Selection,
         [string]$RegistrySchemaPath,
         [string]$ResultSchemaPath
     )
 
     [void](Assert-VerificationRegistry -Registry $Registry -SchemaPath $RegistrySchemaPath)
-    $plan = Resolve-VerificationRegistryPlan -Registry $Registry -Profile $Profile
+    $plan = Resolve-VerificationRegistryPlan -Registry $Registry -Profile $Profile `
+        -Selection $Selection
     $outputRoot = [IO.Path]::GetFullPath($OutputDirectory)
     if (Test-Path -LiteralPath $outputRoot) {
         throw "Supervisor output directory must be unique and initially absent: $outputRoot"
@@ -744,7 +935,7 @@ function Invoke-VerificationSupervisor {
         journal_kind = 'GEOCEDG_VERIFICATION_RUN_JOURNAL'
         run_id = $runId
         state = 'RUNNING'
-        profile = $Profile
+        profile = [string]$plan.profile
         execution_plan_hash = [string]$plan.execution_plan_hash
         candidate_commit = [string](
             Get-VerificationSupervisorProperty $Identity 'candidate_commit' -Required)
@@ -762,7 +953,40 @@ function Invoke-VerificationSupervisor {
     $diagnostics = [Collections.Generic.List[object]]::new()
     $completed = [Collections.Generic.List[string]]::new()
 
-    foreach ($node in [object[]]$plan.nodes) {
+    $executionNodes = [Collections.Generic.List[object]]::new()
+    if ([string]$plan.coverage_state -ceq 'COMPLETE') {
+        $nodeMap = [Collections.Generic.Dictionary[string, object]]::new(
+            [StringComparer]::Ordinal)
+        foreach ($node in [object[]]$plan.nodes) {
+            if (-not $nodeMap.TryAdd([string]$node.check_id, $node)) {
+                throw "Resolved plan duplicates check $($node.check_id)."
+            }
+        }
+        $scheduledIds = [Collections.Generic.HashSet[string]]::new(
+            [StringComparer]::Ordinal)
+        foreach ($batch in [object[]](Get-VerificationExecutionBatches -Plan $plan)) {
+            $activeLocks = [Collections.Generic.HashSet[string]]::new(
+                [StringComparer]::Ordinal)
+            foreach ($idValue in [object[]]$batch.check_ids) {
+                $idValue = [string]$idValue
+                if (-not $scheduledIds.Add($idValue)) {
+                    throw "Resolved plan schedules check more than once: $idValue"
+                }
+                $scheduledNode = $nodeMap[$idValue]
+                foreach ($lock in [object[]]$scheduledNode.resource_locks) {
+                    if (-not $activeLocks.Add([string]$lock)) {
+                        throw "Execution batch reuses resource lock $lock."
+                    }
+                }
+                $executionNodes.Add($scheduledNode)
+            }
+        }
+        if ($scheduledIds.Count -ne $nodeMap.Count) {
+            throw 'Resolved execution batches omit one or more checks.'
+        }
+    }
+
+    foreach ($node in [object[]]$executionNodes.ToArray()) {
         $id = [string](Get-VerificationSupervisorProperty $node 'check_id' -Required)
         $kind = [string](Get-VerificationSupervisorProperty $node 'node_kind' -Required)
         $dependencies = [string[]]@(
@@ -839,9 +1063,19 @@ function Invoke-VerificationSupervisor {
     foreach ($result in [object[]]$acceptance.ToArray()) {
         [void]$requiredAcceptanceSet.Add([string]$result.check_id)
     }
+    foreach ($missingId in [string[]]$plan.missing_check_ids) {
+        [void]$requiredAcceptanceSet.Add($missingId)
+    }
     $requiredAcceptance = [string[]]@($requiredAcceptanceSet)
     [Array]::Sort($requiredAcceptance, [StringComparer]::Ordinal)
-    $report = New-VerificationAggregatedReport -RunId $runId -Profile $Profile -Identity $Identity -ExecutionPlanHash ([string]$plan.execution_plan_hash) -ProcessProducers ([object[]]$producers.ToArray()) -AcceptanceResults ([object[]]$acceptance.ToArray()) -DiagnosticResults ([object[]]$diagnostics.ToArray()) -RequiredAcceptanceIds $requiredAcceptance -StartedAt $started -FinishedAt ([datetime]::UtcNow)
+    $report = New-VerificationAggregatedReport -RunId $runId `
+        -Profile ([string]$plan.profile) -Identity $Identity `
+        -ExecutionPlanHash ([string]$plan.execution_plan_hash) `
+        -ProcessProducers ([object[]]$producers.ToArray()) `
+        -AcceptanceResults ([object[]]$acceptance.ToArray()) `
+        -DiagnosticResults ([object[]]$diagnostics.ToArray()) `
+        -RequiredAcceptanceIds $requiredAcceptance -StartedAt $started `
+        -FinishedAt ([datetime]::UtcNow)
     if (-not [string]::IsNullOrWhiteSpace($ResultSchemaPath)) {
         [void](Assert-VerificationJsonSchema -Value $report -SchemaPath $ResultSchemaPath)
     }
@@ -854,6 +1088,7 @@ function Invoke-VerificationSupervisor {
         report = $report
         report_path = $reportPath
         journal_path = $journalPath
+        plan = $plan
         exit_code = Get-VerificationSupervisorExitCode -Report $report
     }
 }
@@ -862,6 +1097,7 @@ Export-ModuleMember -Function @(
     'Get-VerificationResultHash',
     'Get-VerificationSupervisorExitCode',
     'Get-VerificationInterruptedRun',
+    'Compare-VerificationBaselineResults',
     'New-VerificationAggregatedReport',
     'Invoke-VerificationSupervisor'
 )

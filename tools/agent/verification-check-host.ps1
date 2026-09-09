@@ -8,7 +8,7 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-Import-Module (Join-Path $PSScriptRoot 'verification-io.psm1') -Force
+Import-Module (Join-Path $PSScriptRoot 'verification-io.psm1')
 
 function Get-VerificationHostProperty {
     param(
@@ -66,6 +66,10 @@ function Invoke-VerificationChildProcess {
     if (Test-Path -LiteralPath $outputFull) {
         throw "Child output directory must be unique and initially absent: $outputFull"
     }
+    if (-not [IO.Path]::IsPathRooted($Command)) {
+        throw "Child command must be an explicitly resolved absolute executable: $Command"
+    }
+    $commandFull = [IO.Path]::GetFullPath($Command)
     [void][IO.Directory]::CreateDirectory($outputFull)
     $structuredFull = $null
     if (-not [string]::IsNullOrWhiteSpace($StructuredOutputPath)) {
@@ -81,7 +85,7 @@ function Invoke-VerificationChildProcess {
     $variables = Get-VerificationHostProperty $EnvironmentContract 'variables' -Required
     $environmentRecord = [ordered]@{ inherit = $inherit; variables = [ordered]@{} }
     $startInfo = [Diagnostics.ProcessStartInfo]::new()
-    $startInfo.FileName = $Command
+    $startInfo.FileName = $commandFull
     $startInfo.WorkingDirectory = $workingFull
     $startInfo.UseShellExecute = $false
     $startInfo.CreateNoWindow = $true
@@ -109,7 +113,7 @@ function Invoke-VerificationChildProcess {
         $environmentRecord.variables[$variable.Name] = $variable.Value
     }
     $commandIdentity = Get-VerificationDeterministicHash -Value ([ordered]@{
-        command = [IO.Path]::GetFullPath($Command)
+        command = $commandFull
         arguments = [string[]]$Arguments
         working_directory = $workingFull
         environment = $environmentRecord
@@ -125,7 +129,7 @@ function Invoke-VerificationChildProcess {
     $completionCause = $null
     try {
         try {
-            if (-not $process.Start()) { throw "Child process did not start: $Command" }
+            if (-not $process.Start()) { throw "Child process did not start: $commandFull" }
             $stdoutCopy = $process.StandardOutput.BaseStream.CopyToAsync($stdoutMemory)
             $stderrCopy = $process.StandardError.BaseStream.CopyToAsync($stderrMemory)
             $process.WaitForExit()
@@ -191,7 +195,7 @@ function Invoke-VerificationChildProcess {
     return [pscustomobject]@{
         check_id = $CheckId
         node_kind = $NodeKind
-        command = [IO.Path]::GetFullPath($Command)
+        command = $commandFull
         arguments = [string[]]$Arguments
         working_directory = $workingFull
         environment = $environmentRecord
