@@ -156,12 +156,13 @@
     "acceptanceResult": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["check_id", "node_kind", "contract_class", "status", "command_identity", "exit_code", "cause", "evidence", "dependencies", "duration_ms"],
+      "required": ["check_id", "node_kind", "contract_class", "coverage_state", "status", "command_identity", "exit_code", "cause", "evidence", "dependencies", "duration_ms"],
       "properties": {
         "check_id": { "type": "string" },
         "node_kind": { "enum": ["ACCEPTANCE_LEAF", "EVIDENCE_PROJECTION"] },
         "contract_class": { "$ref": "#/$defs/acceptanceClass" },
         "semantic_domain": { "$ref": "#/$defs/semanticDomain" },
+        "coverage_state": { "enum": ["COMPLETE", "INCOMPLETE", "UNTRUSTED"] },
         "status": { "enum": ["CONTRACT_SATISFIED", "CONTRACT_VIOLATED", "EVIDENCE_UNTRUSTED", "NOT_RUN_DEPENDENCY"] },
         "command_identity": { "$ref": "#/$defs/hash" },
         "exit_code": { "type": ["integer", "null"] },

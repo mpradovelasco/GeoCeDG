@@ -24,6 +24,17 @@ function Assert-CaseThrows {
     Assert-Case ($null -ne $observed) "Expected exception matching $Pattern."
     Assert-Case ($observed.Message -match $Pattern) "Unexpected exception: $($observed.Message)"
 }
+function Assert-CaseSchemaRejected {
+    param([scriptblock]$Action)
+    $observed = $null
+    try { & $Action | Out-Null } catch { $observed = $_ }
+    Assert-Case ($null -ne $observed) 'Expected JSON schema rejection.'
+    Assert-Case ($observed.FullyQualifiedErrorId -ceq `
+            'InvalidJsonAgainstSchemaDetailed,Microsoft.PowerShell.Commands.TestJsonCommand') `
+        'Schema rejection did not retain the nominal Test-Json error identity.'
+    Assert-Case ($observed.CategoryInfo.Category -eq [Management.Automation.ErrorCategory]::InvalidData) `
+        'Schema rejection did not retain the InvalidData category.'
+}
 function Invoke-Case {
     param([string]$Name, [scriptblock]$Action)
     $script:Cases++
@@ -167,16 +178,16 @@ Invoke-Case 'producer contract class is prohibited' {
 Invoke-Case 'schema independently enforces pure node-kind contracts' {
     $registry = New-Registry
     $registry.nodes[0] | Add-Member -NotePropertyName contract_class -NotePropertyValue VERIFICATION_CORE
-    Assert-CaseThrows {
+    Assert-CaseSchemaRejected {
         Assert-VerificationRegistry $registry -SchemaPath $schemaPath
-    } 'contract_class|schema'
+    }
 
     $diagnostic = New-ProcessNode 'bad.diagnostic' 'DIAGNOSTIC_LEAF' 'SEMANTIC'
     $registry = New-Registry
     $registry.nodes = @($diagnostic)
-    Assert-CaseThrows {
+    Assert-CaseSchemaRejected {
         Assert-VerificationRegistry $registry -SchemaPath $schemaPath
-    } 'enum|schema|contract_class'
+    }
 }
 Invoke-Case 'projection requires its declared producer dependency' {
     $registry = New-Registry
@@ -225,9 +236,9 @@ Invoke-Case 'file projection names exactly one declared producer artifact' {
 Invoke-Case 'file evidence name is required only for file projections' {
     $registry = New-Registry
     $registry.nodes[1].command.evidence_name = 'PAYLOAD'
-    Assert-CaseThrows {
+    Assert-CaseSchemaRejected {
         Assert-VerificationRegistry $registry -SchemaPath $schemaPath
-    } 'evidence_name|schema'
+    }
 
     $registry = New-Registry
     $registry.nodes[0].impact_paths = @('.')

@@ -6,7 +6,11 @@ Import-Module (Join-Path $PSScriptRoot 'verification-io.psm1')
 
 function Read-VerificationJUnitFiles {
     [CmdletBinding()]
-    param([Parameter(Mandatory)] [string[]]$Path)
+    param(
+        [Parameter(Mandatory)] [string[]]$Path,
+        [Parameter(Mandatory)] [ValidateSet('shared', 'desktop')]
+        [string]$Module
+    )
 
     $cases = [Collections.Generic.List[object]]::new()
     $seen = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
@@ -35,14 +39,31 @@ function Read-VerificationJUnitFiles {
         } catch {
             throw [IO.InvalidDataException]::new("JUnit XML is not trusted UTF-8 XML: $full", $_.Exception)
         } finally { $stream.Dispose() }
-        foreach ($testcase in @($document.SelectNodes("//*[local-name()='testcase']"))) {
+        $testcases = [object[]]@($document.SelectNodes("//*[local-name()='testcase']"))
+        $occurrenceCounts = [Collections.Generic.Dictionary[string,int]]::new(
+            [StringComparer]::Ordinal)
+        foreach ($testcase in $testcases) {
             $className = [string]$testcase.GetAttribute('classname')
             $testName = [string]$testcase.GetAttribute('name')
             if ([string]::IsNullOrWhiteSpace($className) -or
                     [string]::IsNullOrWhiteSpace($testName)) {
                 throw [IO.InvalidDataException]::new("JUnit testcase lacks classname or name: $full")
             }
-            $identity = $className + '::' + $testName
+            $key = $className + [char]0 + $testName
+            if (-not $occurrenceCounts.ContainsKey($key)) { $occurrenceCounts[$key] = 0 }
+            $occurrenceCounts[$key]++
+        }
+        $occurrenceOrdinals = [Collections.Generic.Dictionary[string,int]]::new(
+            [StringComparer]::Ordinal)
+        foreach ($testcase in $testcases) {
+            $className = [string]$testcase.GetAttribute('classname')
+            $testName = [string]$testcase.GetAttribute('name')
+            $key = $className + [char]0 + $testName
+            if (-not $occurrenceOrdinals.ContainsKey($key)) { $occurrenceOrdinals[$key] = 0 }
+            $occurrenceOrdinals[$key]++
+            $identity = $Module + '::' + $className + '::' + $testName +
+                '::invocation[' + $occurrenceOrdinals[$key] + '/' +
+                $occurrenceCounts[$key] + ']'
             if (-not $seen.Add($identity)) {
                 throw [IO.InvalidDataException]::new("Duplicate JUnit identity: $identity")
             }
@@ -77,6 +98,23 @@ function Get-VerificationJUnitIdentityHash {
     return Get-VerificationDeterministicHash -Value ([string[]]$identities)
 }
 
+function Get-VerificationGitBlobIdentity {
+    param(
+        [Parameter(Mandatory)] [string]$RepositoryRoot,
+        [Parameter(Mandatory)] [string]$Path
+    )
+
+    $root = [IO.Path]::GetFullPath($RepositoryRoot)
+    $full = [IO.Path]::GetFullPath($Path)
+    $relative = [IO.Path]::GetRelativePath($root, $full).Replace('\', '/')
+    $output = [string[]]@(& git -C $root hash-object -- $relative)
+    if ($LASTEXITCODE -ne 0 -or $output.Count -ne 1 -or
+            $output[0] -cnotmatch '^[0-9a-f]{40}$') {
+        throw "Unable to calculate the filtered Git blob identity for: $relative"
+    }
+    return $output[0]
+}
+
 function ConvertFrom-VerificationJUnitSelection {
     [CmdletBinding()]
     param(
@@ -94,6 +132,7 @@ function ConvertFrom-VerificationJUnitSelection {
         expected_count = [int]$Selection.expected_identity_count
         observed_count = 0
         observed_identity_sha256 = $null
+        coverage_state = 'UNTRUSTED'
         cases = [object[]]@()
     }
     try {
@@ -103,7 +142,8 @@ function ConvertFrom-VerificationJUnitSelection {
         }
         $paths = [string[]]@($ProcessEvidence.junit_files | ForEach-Object { [string]$_.path })
         if ($paths.Count -eq 0) { throw 'Gradle producer emitted no JUnit XML.' }
-        $cases = [object[]]@(Read-VerificationJUnitFiles -Path $paths)
+        $cases = [object[]]@(Read-VerificationJUnitFiles -Path $paths `
+            -Module ([string]$Selection.module))
         if ($cases.Count -eq 0) {
             $result.outcome = 'EVIDENCE_UNTRUSTED'
             $result.cause = 'The declared Gradle selection matched zero tests.'
@@ -119,8 +159,24 @@ function ConvertFrom-VerificationJUnitSelection {
             return [pscustomobject]$result
         }
         $allow = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
-        foreach ($identity in [object[]]$Selection.not_applicable_allowlist) {
-            [void]$allow.Add([string]$identity)
+        $repositoryRoot = [IO.Path]::GetFullPath([string]$ProcessEvidence.working_directory)
+        foreach ($entry in [object[]]$Selection.not_applicable_allowlist) {
+            $identity = [string]$entry.identity
+            if (-not $allow.Add($identity)) {
+                throw "Duplicate not-applicable JUnit identity: $identity"
+            }
+            $sourcePath = Resolve-VerificationContainedPath -Root $repositoryRoot `
+                -Path ([string]$entry.source_path)
+            if (-not (Test-Path -LiteralPath $sourcePath -PathType Leaf)) {
+                throw "Not-applicable JUnit source is absent: $sourcePath"
+            }
+            if ((Get-VerificationFileSha256 -Path $sourcePath) -cne
+                    [string]$entry.source_sha256 -or
+                    (Get-VerificationGitBlobIdentity -RepositoryRoot $repositoryRoot `
+                        -Path $sourcePath) -cne
+                    [string]$entry.source_blob) {
+                throw "Not-applicable JUnit source identity changed: $identity"
+            }
         }
         $projectedCases = foreach ($case in $cases) {
             $caseOutcome = switch ([string]$case.state) {
@@ -146,19 +202,26 @@ function ConvertFrom-VerificationJUnitSelection {
         $requiredSkipped = @($cases | Where-Object {
             $_.state -ceq 'SKIPPED_LIKE' -and -not $allow.Contains([string]$_.identity)
         })
-        if ($requiredSkipped.Count -gt 0) {
-            $result.outcome = 'NOT_RUN_DEPENDENCY'
-            $result.cause = 'A required JUnit identity was skipped or aborted.'
-            return [pscustomobject]$result
-        }
         $violations = @($cases | Where-Object { $_.state -cin @('FAILED','ERRORED') })
+        $result.coverage_state = $(if ($requiredSkipped.Count -gt 0) {
+                'INCOMPLETE'
+            } else { 'COMPLETE' })
         if ($violations.Count -gt 0) {
             $result.outcome = 'CONTRACT_VIOLATED'
             $result.cause = "$($violations.Count) structured JUnit case(s) failed or errored."
+            if ($requiredSkipped.Count -gt 0) {
+                $result.cause += " $($requiredSkipped.Count) required JUnit identity or identities were skipped or aborted."
+            }
+            return [pscustomobject]$result
+        }
+        if ($requiredSkipped.Count -gt 0) {
+            $result.outcome = 'CONTRACT_SATISFIED'
+            $result.cause = 'A required JUnit identity was skipped or aborted.'
             return [pscustomobject]$result
         }
         if ([int]$ProcessEvidence.inner_exit_code -ne 0) {
             $result.outcome = 'EVIDENCE_UNTRUSTED'
+            $result.coverage_state = 'UNTRUSTED'
             $result.cause = 'Gradle exited nonzero although complete JUnit evidence contains no violation.'
             return [pscustomobject]$result
         }
@@ -171,8 +234,50 @@ function ConvertFrom-VerificationJUnitSelection {
     }
 }
 
+function ConvertFrom-VerificationJUnitDiagnosticSelection {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] [object]$ProcessEvidence,
+        [Parameter(Mandatory)] [object]$Selection,
+        [Parameter(Mandatory)]
+        [ValidateSet('GOVERNANCE_DIAGNOSTIC','DOCUMENTATION_DIAGNOSTIC',
+            'HISTORICAL_CONSISTENCY_DIAGNOSTIC','STYLE_DIAGNOSTIC',
+            'PERFORMANCE_TELEMETRY')]
+        [string]$DiagnosticClass
+    )
+
+    # Reuse the strict XML, inventory, and source-bound allowlist boundary. The
+    # intermediate semantic domain is intentionally discarded; this public
+    # result is diagnostic-only and cannot affect acceptance or coverage.
+    $projected = ConvertFrom-VerificationJUnitSelection `
+        -ProcessEvidence $ProcessEvidence -Selection $Selection `
+        -SemanticDomain PRODUCT
+    $findingCases = [object[]]@($projected.cases | Where-Object {
+        [string]$_.contract_outcome -ceq 'CONTRACT_VIOLATED'
+    })
+    $outcome = if ([string]$projected.outcome -ceq 'EVIDENCE_UNTRUSTED' -or
+            [string]$projected.coverage_state -cne 'COMPLETE') {
+        'DIAGNOSTIC_UNAVAILABLE'
+    } elseif ($findingCases.Count -gt 0) {
+        'DIAGNOSTIC_FINDING'
+    } else {
+        'DIAGNOSTIC_CLEAR'
+    }
+    return [pscustomobject][ordered]@{
+        contract_class = $DiagnosticClass
+        diagnostic_outcome = $outcome
+        cause = [string]$projected.cause
+        selection_id = [string]$projected.selection_id
+        observed_count = [int]$projected.observed_count
+        observed_identity_sha256 = [string]$projected.observed_identity_sha256
+        findings = [object[]]$findingCases
+        cases = [object[]]$projected.cases
+    }
+}
+
 Export-ModuleMember -Function @(
     'Read-VerificationJUnitFiles',
     'Get-VerificationJUnitIdentityHash',
-    'ConvertFrom-VerificationJUnitSelection'
+    'ConvertFrom-VerificationJUnitSelection',
+    'ConvertFrom-VerificationJUnitDiagnosticSelection'
 )

@@ -4,7 +4,8 @@ param(
     [Parameter(Mandatory)] [string]$RepositoryRoot,
     [Parameter(Mandatory)] [string]$SafetyResultPath,
     [string]$DiagnosticResultPath,
-    [ValidateSet('REPOSITORY', 'PACKAGING')]
+    [string]$BaselinePath,
+    [ValidateSet('REPOSITORY', 'PACKAGING_BASELINE', 'PACKAGING')]
     [string]$ContractMode = 'REPOSITORY'
 )
 
@@ -79,6 +80,57 @@ function Get-CanonicalStateHash {
             $utf8.GetBytes($json))).ToLowerInvariant()
 }
 
+function Get-PackagingRepositorySnapshot {
+    $top = Invoke-GitRead @('rev-parse', '--show-toplevel')
+    $head = Invoke-GitRead @('rev-parse', 'HEAD')
+    $tree = Invoke-GitRead @('rev-parse', 'HEAD^{tree}')
+    $status = Invoke-GitRead @('status', '--porcelain=v1', '--untracked-files=all')
+    foreach ($run in @($top, $head, $tree, $status)) {
+        if ($run.exit_code -ne 0) { throw 'Git repository-state inspection failed.' }
+    }
+    $reportedRoot = $top.stdout.TrimEnd("`r", "`n")
+    $expectedRoot = [IO.Path]::GetFullPath($RepositoryRoot).TrimEnd('\', '/')
+    $actualRoot = [IO.Path]::GetFullPath($reportedRoot).TrimEnd('\', '/')
+    if (-not $actualRoot.Equals($expectedRoot, [StringComparison]::OrdinalIgnoreCase)) {
+        throw 'Git resolved a different repository root.'
+    }
+    $generated = Get-PackagingGeneratedState -Root $actualRoot
+    return [ordered]@{
+        schema_version = 1
+        evidence_kind = 'PACKAGING_REPOSITORY_BASELINE'
+        evidence_state = 'PRESENT'
+        cause = $null
+        repository_root = $actualRoot
+        git_toplevel = $reportedRoot
+        head = $head.stdout.TrimEnd("`r", "`n")
+        tree = $tree.stdout.TrimEnd("`r", "`n")
+        status = $status.stdout.Replace("`r`n", "`n").TrimEnd("`n")
+        generated_state_sha256 = Get-CanonicalStateHash -Value $generated
+    }
+}
+
+if ($ContractMode -ceq 'PACKAGING_BASELINE') {
+    try {
+        $baseline = Get-PackagingRepositorySnapshot
+    } catch {
+        $baseline = [ordered]@{
+            schema_version = 1
+            evidence_kind = 'PACKAGING_REPOSITORY_BASELINE'
+            evidence_state = 'UNTRUSTED'
+            cause = $_.Exception.Message
+            repository_root = [IO.Path]::GetFullPath($RepositoryRoot)
+            git_toplevel = $null
+            head = $null
+            tree = $null
+            status = $null
+            generated_state_sha256 = $null
+        }
+    }
+    Write-Result $SafetyResultPath $baseline
+    if ($baseline.evidence_state -ceq 'PRESENT') { exit 0 }
+    exit 3
+}
+
 $safety = [ordered]@{
     contract_class = 'SAFETY'
     outcome = 'EVIDENCE_UNTRUSTED'
@@ -117,28 +169,40 @@ try {
 
     if ($ContractMode -ceq 'PACKAGING') {
         $subcontracts = [Collections.Generic.List[object]]::new()
-        $baselinePath = [Environment]::GetEnvironmentVariable(
-            'GEOCEDG_PACKAGING_BASELINE_PATH')
-        if ([string]::IsNullOrWhiteSpace($baselinePath) -or
-                -not (Test-Path -LiteralPath $baselinePath -PathType Leaf)) {
+        if ([string]::IsNullOrWhiteSpace($BaselinePath) -or
+                -not (Test-Path -LiteralPath $BaselinePath -PathType Leaf)) {
             $subcontracts.Add([ordered]@{
                 contract_id = 'packaging.repository-baseline'
                 status = 'EVIDENCE_UNTRUSTED'
                 expected = 'canonical pre-execution repository baseline'
-                observed = $baselinePath
+                observed = $BaselinePath
                 cause = 'The canonical runner did not provide packaging repository-state evidence.'
             })
         } else {
             try {
                 $baselineText = [IO.File]::ReadAllText(
-                    [IO.Path]::GetFullPath($baselinePath),
+                    [IO.Path]::GetFullPath($BaselinePath),
                     [Text.UTF8Encoding]::new($false, $true))
                 $baseline = $baselineText | ConvertFrom-Json -Depth 30
-                $statusRun = Invoke-GitRead @('status', '--porcelain=v1', '--untracked-files=all')
-                if ($statusRun.exit_code -ne 0) {
-                    throw "Git status inspection exited $($statusRun.exit_code)."
+                if ([string]$baseline.evidence_kind -cne 'PACKAGING_REPOSITORY_BASELINE' -or
+                        [string]$baseline.evidence_state -cne 'PRESENT') {
+                    throw 'Packaging baseline evidence is not complete and trusted.'
                 }
-                $currentStatus = $statusRun.stdout.Replace("`r`n", "`n").TrimEnd("`n")
+                $current = Get-PackagingRepositorySnapshot
+                $identityEqual = [string]$baseline.repository_root -ceq [string]$current.repository_root -and
+                    [string]$baseline.git_toplevel -ceq [string]$current.git_toplevel -and
+                    [string]$baseline.head -ceq [string]$current.head -and
+                    [string]$baseline.tree -ceq [string]$current.tree
+                $subcontracts.Add([ordered]@{
+                    contract_id = 'packaging.repository-identity-preserved'
+                    status = $(if ($identityEqual) { 'SATISFIED' } else { 'VIOLATED' })
+                    expected = [ordered]@{ repository_root=$baseline.repository_root; git_toplevel=$baseline.git_toplevel; head=$baseline.head; tree=$baseline.tree }
+                    observed = [ordered]@{ repository_root=$current.repository_root; git_toplevel=$current.git_toplevel; head=$current.head; tree=$current.tree }
+                    cause = $(if ($identityEqual) { $null } else {
+                        'Packaging verification changed or escaped the repository identity.'
+                    })
+                })
+                $currentStatus = [string]$current.status
                 $statusEqual = $currentStatus -ceq [string]$baseline.status
                 $subcontracts.Add([ordered]@{
                     contract_id = 'packaging.worktree-preserved'
@@ -149,8 +213,7 @@ try {
                         'Packaging verification changed the repository worktree or index.'
                     })
                 })
-                $generated = Get-PackagingGeneratedState -Root $safety.repository_root
-                $generatedHash = Get-CanonicalStateHash -Value $generated
+                $generatedHash = [string]$current.generated_state_sha256
                 $generatedEqual = $generatedHash -ceq [string]$baseline.generated_state_sha256
                 $subcontracts.Add([ordered]@{
                     contract_id = 'packaging.generated-state-preserved'
@@ -166,7 +229,7 @@ try {
                     contract_id = 'packaging.repository-baseline'
                     status = 'EVIDENCE_UNTRUSTED'
                     expected = 'valid UTF-8 JSON baseline'
-                    observed = $baselinePath
+                    observed = $BaselinePath
                     cause = $_.Exception.Message
                 })
             }

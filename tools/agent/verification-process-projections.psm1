@@ -85,6 +85,10 @@ function ConvertFrom-VerificationPythonCheckEvidence {
         if ([string]$Evidence.environment_name -cne 'cedg_env') {
             throw 'Python producer did not declare cedg_env.'
         }
+        if ($Evidence.conda_inventory_member -ne $true -or
+                [string]::IsNullOrWhiteSpace([string]$Evidence.conda_inventory_path)) {
+            throw 'Python producer did not prove read-only Conda inventory membership.'
+        }
         $identity = $Evidence.identity
         $result.identity = $identity
         if ([string]$identity.python_implementation -cne 'CPython' -or
@@ -95,7 +99,9 @@ function ConvertFrom-VerificationPythonCheckEvidence {
         }
         $prefix = [IO.Path]::GetFullPath([string]$identity.sys_prefix)
         $condaPrefix = [IO.Path]::GetFullPath([string]$identity.conda_prefix)
+        $producerPrefix = [IO.Path]::GetFullPath([string]$Evidence.environment_prefix)
         if (-not $prefix.Equals($condaPrefix, [StringComparison]::OrdinalIgnoreCase) -or
+                -not $prefix.Equals($producerPrefix, [StringComparison]::OrdinalIgnoreCase) -or
                 [IO.Path]::GetFileName($prefix) -cne 'cedg_env') {
             throw 'CONDA_PREFIX and sys.prefix do not identify cedg_env.'
         }
@@ -105,6 +111,11 @@ function ConvertFrom-VerificationPythonCheckEvidence {
             if (-not $resolved.StartsWith($prefixBoundary, [StringComparison]::OrdinalIgnoreCase)) {
                 throw 'Python executable or mpmath import is outside cedg_env.'
             }
+        }
+        if (-not ([IO.Path]::GetFullPath([string]$Evidence.command)).Equals(
+                [IO.Path]::GetFullPath([string]$identity.executable),
+                [StringComparison]::OrdinalIgnoreCase)) {
+            throw 'The executed Python does not match the identified cedg_env interpreter.'
         }
         if ([int]$Evidence.inner_exit_code -eq 0) {
             $result.outcome = 'CONTRACT_SATISFIED'

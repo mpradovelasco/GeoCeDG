@@ -12,7 +12,7 @@ function Assert-Case([bool]$Condition,[string]$Message){$script:Assertions++;if(
 function Invoke-Case([string]$Name,[scriptblock]$Action){$script:Cases++;&$Action;Write-Host "PASS: $Name"}
 
 $identity=[pscustomobject]@{base_commit=$null;base_tree=$null;candidate_commit=('1'*40);candidate_tree=('2'*40);environment_fingerprint=('3'*64)}
-$semantic=[pscustomobject][ordered]@{check_id='semantic.contract';node_kind='ACCEPTANCE_LEAF';contract_class='SEMANTIC';semantic_domain='MIXED';status='CONTRACT_SATISFIED';command_identity=('4'*64);exit_code=0;cause=$null;evidence=[object[]]@();dependencies=[string[]]@();duration_ms=1}
+$semantic=[pscustomobject][ordered]@{check_id='semantic.contract';node_kind='ACCEPTANCE_LEAF';contract_class='SEMANTIC';semantic_domain='MIXED';status='CONTRACT_SATISFIED';coverage_state='COMPLETE';command_identity=('4'*64);exit_code=0;cause=$null;evidence=[object[]]@();dependencies=[string[]]@();duration_ms=1}
 
 Invoke-Case 'arbitrarily many diagnostics do not alter acceptance coverage or exit' {
     $diagnostics=foreach($index in 1..64){[pscustomobject][ordered]@{check_id="style.$index";node_kind='DIAGNOSTIC_LEAF';contract_class='STYLE_DIAGNOSTIC';outcome='DIAGNOSTIC_FINDING';command_identity=('5'*64);exit_code=9;cause='fixture';evidence=[object[]]@();dependencies=[string[]]@();duration_ms=$index}}

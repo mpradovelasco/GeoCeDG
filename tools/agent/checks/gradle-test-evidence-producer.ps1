@@ -22,10 +22,22 @@ $junitRoot = Join-Path $output 'junit'
 [void][IO.Directory]::CreateDirectory($junitRoot)
 $initScript = Join-Path $output 'junit-output.init.gradle'
 $gradlePath = $junitRoot.Replace('\','/')
+$excludedTestFilters = [object[]]@()
+if ($selection.PSObject.Properties['excluded_test_filters']) {
+    $excludedTestFilters = [object[]]$selection.excluded_test_filters
+}
+$exclusionLines = [Collections.Generic.List[string]]::new()
+foreach ($filter in $excludedTestFilters) {
+    $escapedFilter = ([string]$filter).Replace('\', '\\').Replace("'", "\'")
+    $exclusionLines.Add("            excludeTestsMatching '$escapedFilter'")
+}
+$filterBlock = if ($exclusionLines.Count -eq 0) { '' } else {
+    "        filter {`n" + ($exclusionLines -join "`n") + "`n        }`n"
+}
 $init = @"
 allprojects {
     tasks.withType(org.gradle.api.tasks.testing.Test).configureEach {
-        reports.junitXml.required = true
+$filterBlock        reports.junitXml.required = true
         reports.junitXml.outputLocation = file('$gradlePath')
         reports.html.required = false
     }

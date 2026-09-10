@@ -32,6 +32,17 @@ function Assert-CaseThrows {
     Assert-Case ($null -ne $observed) "Expected exception matching $Pattern."
     Assert-Case ($observed.Message -match $Pattern) "Unexpected exception: $($observed.Message)"
 }
+function Assert-CaseSchemaRejected {
+    param([scriptblock]$Action)
+    $observed = $null
+    try { & $Action | Out-Null } catch { $observed = $_ }
+    Assert-Case ($null -ne $observed) 'Expected JSON schema rejection.'
+    Assert-Case ($observed.FullyQualifiedErrorId -ceq `
+            'InvalidJsonAgainstSchemaDetailed,Microsoft.PowerShell.Commands.TestJsonCommand') `
+        'Schema rejection did not retain the nominal Test-Json error identity.'
+    Assert-Case ($observed.CategoryInfo.Category -eq [Management.Automation.ErrorCategory]::InvalidData) `
+        'Schema rejection did not retain the InvalidData category.'
+}
 function Invoke-Case {
     param([string]$Name, [scriptblock]$Action)
     $script:Cases++
@@ -45,6 +56,11 @@ function New-Acceptance {
         node_kind = 'ACCEPTANCE_LEAF'
         contract_class = $Contract
         status = $Status
+        coverage_state = $(if ($Status -ceq 'EVIDENCE_UNTRUSTED') {
+                'UNTRUSTED'
+            } elseif ($Status -ceq 'NOT_RUN_DEPENDENCY') {
+                'INCOMPLETE'
+            } else { 'COMPLETE' })
         command_identity = $commandHash
         exit_code = $(if ($Status -ceq 'CONTRACT_SATISFIED') { 0 } else { 1 })
         cause = $null
@@ -122,6 +138,19 @@ Invoke-Case 'untrusted coverage is distinct from contract violation' {
     Assert-Case ($report.acceptance_verdict -ceq 'REJECTED_VERIFICATION_CORE') 'Required coverage gap was accepted.'
     Assert-Case ((Get-VerificationSupervisorExitCode $report) -eq 3) 'Coverage exit contract changed.'
 }
+Invoke-Case 'semantic violation and incomplete evidence remain simultaneously visible' {
+    $result = New-Acceptance science.partial SEMANTIC CONTRACT_VIOLATED
+    $result.coverage_state = 'INCOMPLETE'
+    $report = New-VerificationAggregatedReport -RunId partial -Profile FINAL `
+        -Identity $identity -ExecutionPlanHash $planHash `
+        -AcceptanceResults @($result) -RequiredAcceptanceIds @('science.partial')
+    Assert-Case ($report.acceptance_results[0].status -ceq 'CONTRACT_VIOLATED') `
+        'Semantic violation was masked by incomplete coverage.'
+    Assert-Case ($report.coverage_verdict -ceq 'INCOMPLETE') `
+        'Simultaneous coverage loss was not retained.'
+    Assert-Case ($report.acceptance_verdict -ceq 'REJECTED_VERIFICATION_CORE') `
+        'Incomplete required coverage did not retain precedence in the global verdict.'
+}
 Invoke-Case 'schema prohibits mixed channel terminology' {
     $report = New-VerificationAggregatedReport -RunId schema-negative -Profile FINAL -Identity $identity -ExecutionPlanHash $planHash -AcceptanceResults @(
         (New-Acceptance product.ok SEMANTIC CONTRACT_SATISFIED)
@@ -129,7 +158,7 @@ Invoke-Case 'schema prohibits mixed channel terminology' {
         (New-Diagnostic style.bad STYLE_DIAGNOSTIC DIAGNOSTIC_FINDING)
     ) -RequiredAcceptanceIds @('product.ok')
     $report.diagnostic_findings[0].outcome = 'PASS'
-    Assert-CaseThrows { Assert-VerificationJsonSchema $report $schemaPath } 'schema'
+    Assert-CaseSchemaRejected { Assert-VerificationJsonSchema $report $schemaPath }
 }
 Invoke-Case 'aggregation rejects duplicate or uncovered acceptance results' {
     $result = New-Acceptance product.ok SEMANTIC CONTRACT_SATISFIED

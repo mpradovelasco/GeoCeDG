@@ -50,6 +50,11 @@ function New-Report {
         contract_class = 'SEMANTIC'
         semantic_domain = 'PRODUCT'
         status = $AcceptanceStatus
+        coverage_state = $(if ($AcceptanceStatus -ceq 'EVIDENCE_UNTRUSTED') {
+                'UNTRUSTED'
+            } elseif ($AcceptanceStatus -ceq 'NOT_RUN_DEPENDENCY') {
+                'INCOMPLETE'
+            } else { 'COMPLETE' })
         command_identity = ('9' * 64)
         exit_code = $(if ($AcceptanceStatus -ceq 'CONTRACT_SATISFIED') { 0 } else { 1 })
         cause = $null

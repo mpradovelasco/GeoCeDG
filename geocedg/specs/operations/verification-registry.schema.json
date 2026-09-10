@@ -102,7 +102,7 @@
         "kind": { "enum": ["PROCESS", "BUILTIN_PROJECTION"] },
         "identity": { "type": "string", "minLength": 1 },
         "executable": { "type": "string", "minLength": 1 },
-        "projection": { "enum": ["EXIT_CODE_ZERO", "STRUCTURED_CONTRACT", "EVIDENCE_PRESENT", "JUNIT_SELECTION", "PROCESS_EXIT", "PYTHON_CHECK"] },
+        "projection": { "enum": ["EXIT_CODE_ZERO", "STRUCTURED_CONTRACT", "EVIDENCE_PRESENT", "JUNIT_SELECTION", "JUNIT_DIAGNOSTIC", "PROCESS_EXIT", "PYTHON_CHECK"] },
         "evidence_name": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" },
         "structured_output": { "type": "string", "pattern": "^[A-Za-z0-9._-]+\\.json$" },
         "selection_id": { "type": "string", "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$" }
@@ -162,7 +162,7 @@
         "environment_contract": { "$ref": "#/$defs/environmentContract" },
         "resource_locks": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$" } },
         "side_effects": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "enum": ["NONE", "TASK_OWNED_OUTPUT", "BUILD_OUTPUT", "REPOSITORY_READ"] } },
-        "output_adapter": { "enum": ["RAW_PROCESS_V1", "EXIT_CODE_V1", "STRUCTURED_CONTRACT_V1", "PROJECTION_EXIT_CODE_V1", "PROJECTION_STRUCTURED_CONTRACT_V1", "PROJECTION_EVIDENCE_PRESENT_V1", "PROJECTION_JUNIT_SELECTION_V1", "PROJECTION_PROCESS_EXIT_V1", "PROJECTION_PYTHON_CHECK_V1"] },
+        "output_adapter": { "enum": ["RAW_PROCESS_V1", "EXIT_CODE_V1", "STRUCTURED_CONTRACT_V1", "PROJECTION_EXIT_CODE_V1", "PROJECTION_STRUCTURED_CONTRACT_V1", "PROJECTION_EVIDENCE_PRESENT_V1", "PROJECTION_JUNIT_SELECTION_V1", "PROJECTION_JUNIT_DIAGNOSTIC_V1", "PROJECTION_PROCESS_EXIT_V1", "PROJECTION_PYTHON_CHECK_V1"] },
         "required_for_profiles": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/profileId" } },
         "produces_evidence": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" } },
         "producer_dependency": { "$ref": "#/$defs/checkId" }
@@ -202,7 +202,7 @@
           "properties": {
             "node_kind": { "const": "EVIDENCE_PROJECTION" },
             "command": { "properties": { "kind": { "const": "BUILTIN_PROJECTION" } } },
-            "output_adapter": { "enum": ["PROJECTION_EXIT_CODE_V1", "PROJECTION_STRUCTURED_CONTRACT_V1", "PROJECTION_EVIDENCE_PRESENT_V1", "PROJECTION_JUNIT_SELECTION_V1", "PROJECTION_PROCESS_EXIT_V1", "PROJECTION_PYTHON_CHECK_V1"] }
+            "output_adapter": { "enum": ["PROJECTION_EXIT_CODE_V1", "PROJECTION_STRUCTURED_CONTRACT_V1", "PROJECTION_EVIDENCE_PRESENT_V1", "PROJECTION_JUNIT_SELECTION_V1", "PROJECTION_JUNIT_DIAGNOSTIC_V1", "PROJECTION_PROCESS_EXIT_V1", "PROJECTION_PYTHON_CHECK_V1"] }
           },
           "required": ["node_kind", "contract_class", "producer_dependency"],
           "not": { "required": ["produces_evidence"] }

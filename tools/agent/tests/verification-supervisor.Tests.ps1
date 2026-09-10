@@ -187,6 +187,8 @@ try {
         Assert-Case ($run.report.process_producers[0].PSObject.Properties.Name -cnotcontains 'contract_class') 'Producer acquired a contract class.'
         Assert-Case (@($run.report.acceptance_results | Where-Object { $_.status -ceq 'CONTRACT_VIOLATED' }).Count -eq 3) 'Pure acceptance projections were not all evaluated.'
         Assert-Case ($run.report.diagnostic_summary.findings -eq 1) 'Pure diagnostic projection was not evaluated.'
+        Assert-Case ($run.report.diagnostic_findings[0].PSObject.Properties.Name -cnotcontains
+            'semantic_domain') 'Diagnostic projection acquired a semantic domain.'
         Assert-Case ($run.report.acceptance_verdict -ceq 'REJECTED_SAFETY') 'Safety projection did not determine rejection.'
         Assert-Case ($run.exit_code -eq 2) 'Safety rejection exit is incorrect.'
         $repeat = Invoke-FixtureSupervisor projections-repeat @($producer, $science, $product, $safety, $style)

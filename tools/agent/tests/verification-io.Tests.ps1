@@ -99,6 +99,33 @@ try {
         Assert-Case ($canonical.IndexOf('"I"', [StringComparison]::Ordinal) -lt
             $canonical.IndexOf('"a"', [StringComparison]::Ordinal)) 'Canonical keys are not in ordinal order.'
     }
+    Invoke-Case 'empty JSON objects retain object identity at every depth' {
+        $empty = '{}' | ConvertFrom-Json
+        $nested = '{"outer":{},"items":[{},{}]}' | ConvertFrom-Json -Depth 20
+        Assert-Case ((ConvertTo-VerificationCanonicalJson $empty) -ceq '{}') `
+            'A root empty PSCustomObject was not canonicalized as an object.'
+        Assert-Case ((ConvertTo-VerificationCanonicalJson $nested) -ceq `
+                '{"items":[{},{}],"outer":{}}') `
+            'Nested or array-contained empty objects changed shape.'
+        $roundTrip = (ConvertTo-VerificationCanonicalJson $nested) | ConvertFrom-Json -Depth 20
+        Assert-Case ((ConvertTo-VerificationCanonicalJson $roundTrip) -ceq `
+                '{"items":[{},{}],"outer":{}}') `
+            'JSON round-trip changed empty-object identity.'
+        $previousCulture = [Globalization.CultureInfo]::CurrentCulture
+        try {
+            [Globalization.CultureInfo]::CurrentCulture = [Globalization.CultureInfo]::GetCultureInfo('en-US')
+            $english = Get-VerificationDeterministicHash $nested
+            [Globalization.CultureInfo]::CurrentCulture = [Globalization.CultureInfo]::GetCultureInfo('tr-TR')
+            $turkish = Get-VerificationDeterministicHash $nested
+        } finally {
+            [Globalization.CultureInfo]::CurrentCulture = $previousCulture
+        }
+        Assert-Case ($english -ceq $turkish) 'Culture changed an empty-object hash.'
+        Assert-Case ($english -cne (Get-VerificationDeterministicHash @())) `
+            'An empty object collided with an empty array.'
+        Assert-Case ($english -cne (Get-VerificationDeterministicHash $null)) `
+            'An empty object collided with null.'
+    }
     Invoke-Case 'atomic JSON ignores an incomplete sibling and preserves its committed value' {
         $target = Join-Path $root 'report.json'
         [void](Write-VerificationAtomicJson -Path $target -Value ([ordered]@{ value = 'committed' }))

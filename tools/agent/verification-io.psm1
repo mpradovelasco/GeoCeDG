@@ -194,7 +194,8 @@ function ConvertTo-VerificationCanonicalValue {
     }
     if ($Value -is [Management.Automation.PSCustomObject]) {
         $ordered = [ordered]@{}
-        $propertyNames = [string[]]@($Value.PSObject.Properties.Name)
+        $propertyNames = [string[]]@($Value.PSObject.Properties |
+            ForEach-Object { [string]$_.Name })
         [Array]::Sort($propertyNames, [StringComparer]::Ordinal)
         foreach ($propertyName in $propertyNames) {
             if ($ExcludedNames.Contains($propertyName)) { continue }
@@ -301,6 +302,10 @@ function ConvertTo-VerificationObservationIdentity {
     }
     if ($null -ne $Observation.PSObject.Properties['status']) {
         $identity.status = [string](Get-VerificationIdentityProperty $Observation 'status')
+        if ($null -ne $Observation.PSObject.Properties['coverage_state']) {
+            $identity.coverage_state = [string](
+                Get-VerificationIdentityProperty $Observation 'coverage_state')
+        }
     } else {
         $identity.outcome = [string](Get-VerificationIdentityProperty $Observation 'outcome')
     }

@@ -417,27 +417,28 @@ Invoke-Case 'packaging repository safety detects worktree and generated-state ch
     $marker = Join-Path $root '.fixture-owner'
     [void][IO.Directory]::CreateDirectory($repo)
     Write-FixtureText $marker 'verification-contract-boundary'
-    $savedBaseline = $env:GEOCEDG_PACKAGING_BASELINE_PATH
     try {
         [void](Invoke-Git $repo @('init', '-q'))
         [void](Invoke-Git $repo @('config', 'user.name', 'Fixture'))
         [void](Invoke-Git $repo @('config', 'user.email', 'fixture@example.invalid'))
         Write-FixtureText (Join-Path $repo 'tracked.txt') "clean`n"
-        [void](Invoke-Git $repo @('add', 'tracked.txt'))
+        Write-FixtureText (Join-Path $repo '.gitignore') "build/`n.gradle/`n.kotlin/`n"
+        [void](Invoke-Git $repo @('add', 'tracked.txt', '.gitignore'))
         [void](Invoke-Git $repo @('commit', '-q', '-m', 'fixture'))
-        # The production baseline represents an empty emitted PowerShell pipeline
-        # as null; mirror that exact structured identity.
-        $emptyHash = Get-VerificationDeterministicHash -Value $null
         $baseline = Join-Path $root 'baseline.json'
-        Write-FixtureText $baseline ((ConvertTo-Json ([ordered]@{
-                    status = ''
-                    generated_state_sha256 = $emptyHash
-                }) -Compress) + "`n")
-        $env:GEOCEDG_PACKAGING_BASELINE_PATH = $baseline
         $checker = Join-Path $repositoryRoot 'tools/agent/checks/repository-safety.ps1'
+        $baselineRun = Invoke-PowerShellCapture $checker @('-RepositoryRoot', $repo,
+            '-SafetyResultPath', $baseline, '-ContractMode', 'PACKAGING_BASELINE')
+        $baselineJson = Read-VerificationJson $baseline
+        Assert-Case ($baselineRun.exit_code -eq 0 -and
+            $baselineJson.evidence_kind -ceq 'PACKAGING_REPOSITORY_BASELINE' -and
+            $baselineJson.evidence_state -ceq 'PRESENT') `
+            'Packaging baseline producer did not preserve a complete initial state.'
+
         $cleanPath = Join-Path $root 'clean.json'
         $clean = Invoke-PowerShellCapture $checker @('-RepositoryRoot', $repo,
-            '-SafetyResultPath', $cleanPath, '-ContractMode', 'PACKAGING')
+            '-SafetyResultPath', $cleanPath, '-BaselinePath', $baseline,
+            '-ContractMode', 'PACKAGING')
         $cleanJson = Read-VerificationJson $cleanPath
         Assert-Case ($clean.exit_code -eq 0 -and
             $cleanJson.outcome -ceq 'CONTRACT_SATISFIED') `
@@ -446,18 +447,41 @@ Invoke-Case 'packaging repository safety detects worktree and generated-state ch
                 ((@($cleanJson.subcontracts) | ConvertTo-Json -Depth 10 -Compress)),
                 $clean.stderr)
 
+        $missingBaselinePath = Join-Path $root 'missing-baseline-result.json'
+        $missingBaseline = Invoke-PowerShellCapture $checker @('-RepositoryRoot', $repo,
+            '-SafetyResultPath', $missingBaselinePath,
+            '-BaselinePath', (Join-Path $root 'absent.json'), '-ContractMode', 'PACKAGING')
+        $missingBaselineJson = Read-VerificationJson $missingBaselinePath
+        Assert-Case ($missingBaseline.exit_code -eq 3 -and
+            $missingBaselineJson.outcome -ceq 'EVIDENCE_UNTRUSTED' -and
+            @($missingBaselineJson.subcontracts | Where-Object {
+                    $_.contract_id -ceq 'packaging.repository-baseline' -and
+                    $_.status -ceq 'EVIDENCE_UNTRUSTED'
+                }).Count -eq 1) 'Missing packaging baseline was not rejected as untrusted evidence.'
+
         Write-FixtureText (Join-Path $repo 'tracked.txt') "changed`n"
         [void][IO.Directory]::CreateDirectory((Join-Path $repo 'build'))
         Write-FixtureText (Join-Path $repo 'build/generated.txt') 'generated'
         $changedPath = Join-Path $root 'changed.json'
         $changed = Invoke-PowerShellCapture $checker @('-RepositoryRoot', $repo,
-            '-SafetyResultPath', $changedPath, '-ContractMode', 'PACKAGING')
+            '-SafetyResultPath', $changedPath, '-BaselinePath', $baseline,
+            '-ContractMode', 'PACKAGING')
         $changedJson = Read-VerificationJson $changedPath
         Assert-Case ($changed.exit_code -eq 2 -and
             @($changedJson.subcontracts | Where-Object status -CEQ 'VIOLATED').Count -eq 2) `
             'Packaging worktree and generated-state changes were not both detected.'
+
+        Write-FixtureText (Join-Path $repo 'tracked.txt') "clean`n"
+        $partialPath = Join-Path $root 'partial-restoration.json'
+        $partial = Invoke-PowerShellCapture $checker @('-RepositoryRoot', $repo,
+            '-SafetyResultPath', $partialPath, '-BaselinePath', $baseline,
+            '-ContractMode', 'PACKAGING')
+        $partialJson = Read-VerificationJson $partialPath
+        $partialViolations = @($partialJson.subcontracts | Where-Object status -CEQ 'VIOLATED')
+        Assert-Case ($partial.exit_code -eq 2 -and $partialViolations.Count -eq 1 -and
+            $partialViolations[0].contract_id -ceq 'packaging.generated-state-preserved') `
+            'Partial restoration incorrectly substituted clean worktree state for generated-state preservation.'
     } finally {
-        $env:GEOCEDG_PACKAGING_BASELINE_PATH = $savedBaseline
         $resolved = [IO.Path]::GetFullPath($root)
         $prefix = $tempBase + [IO.Path]::DirectorySeparatorChar
         if ($resolved.StartsWith($prefix, [StringComparison]::OrdinalIgnoreCase) -and

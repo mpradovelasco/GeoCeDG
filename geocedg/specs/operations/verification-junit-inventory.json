@@ -2,6 +2,7 @@
   "$schema": "geocedg/specs/operations/verification-junit-inventory.schema.json",
   "schema_version": 1,
   "catalog_id": "junit_inventory",
+  "identity_scheme": "module-class-display-occurrence-v2",
   "base_commit": "4117bdfd5c987005ae723996f03e9c2d1eed5923",
   "base_tree": "872d1c3506585fcded6c7a73563f9b865015b6aa",
   "generated_at": null,
@@ -11,14 +12,14 @@
       "gradle_task": ":shared:common-jre:test",
       "discovery_evidence_sha256": "d2927a71ea58ea415fe194ba08b79387ee63f8fb8974104a349c680c44f91701",
       "discovered_identity_count": 5696,
-      "discovered_identities_sha256": "611b0142770195e1acc12ac3db0a5b9c6640fe9ec6d402b69a09add8b3624b7e"
+      "discovered_identities_sha256": "b5ab639ed46a5ce876e7e23a52fd529450d48a681baca38685a4616c5bb92ffb"
     },
     {
       "module": "desktop",
       "gradle_task": ":desktop:desktop:test",
       "discovery_evidence_sha256": "3ff3d598534428976fabe800d732587ee20e3406cf051ced853fcbe5f1604887",
       "discovered_identity_count": 1402,
-      "discovered_identities_sha256": "f458de0bb93d40c1a3d494dd4b759cd3070979f8225f1b681be5da37057c19df"
+      "discovered_identities_sha256": "7aa527c18c5d9e6751affb56fbdd5a86cab8e7d2600bba12cec998b14b16126c"
     }
   ],
   "selections": [
@@ -27,6 +28,7 @@
       "module": "shared",
       "gradle_task": ":shared:common-jre:test",
       "test_filters": [],
+      "excluded_test_filters": [],
       "effective_arguments": [
         ":shared:common-jre:test",
         "--rerun-tasks",
@@ -37,7 +39,7 @@
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
       "expected_identity_count": 5696,
-      "expected_identities_sha256": "611b0142770195e1acc12ac3db0a5b9c6640fe9ec6d402b69a09add8b3624b7e",
+      "expected_identities_sha256": "b5ab639ed46a5ce876e7e23a52fd529450d48a681baca38685a4616c5bb92ffb",
       "not_applicable_allowlist": [],
       "input_identities": [
         {
@@ -51,6 +53,7 @@
       "module": "desktop",
       "gradle_task": ":desktop:desktop:test",
       "test_filters": [],
+      "excluded_test_filters": [],
       "effective_arguments": [
         ":desktop:desktop:test",
         "--rerun-tasks",
@@ -61,7 +64,7 @@
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
       "expected_identity_count": 1402,
-      "expected_identities_sha256": "f458de0bb93d40c1a3d494dd4b759cd3070979f8225f1b681be5da37057c19df",
+      "expected_identities_sha256": "7aa527c18c5d9e6751affb56fbdd5a86cab8e7d2600bba12cec998b14b16126c",
       "not_applicable_allowlist": [],
       "input_identities": [
         {
@@ -75,6 +78,7 @@
       "module": "shared",
       "gradle_task": ":shared:common-jre:test",
       "test_filters": [],
+      "excluded_test_filters": [],
       "effective_arguments": [
         ":shared:common-jre:test",
         "--rerun-tasks",
@@ -84,9 +88,80 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 5696,
-      "expected_identities_sha256": "611b0142770195e1acc12ac3db0a5b9c6640fe9ec6d402b69a09add8b3624b7e",
-      "not_applicable_allowlist": [],
+      "expected_identity_count": 6613,
+      "expected_identities_sha256": "1a1e73fc5dd979bd2d25a8017d1f0474f5143c9ac7bb04595e5f4bbda3217485",
+      "not_applicable_allowlist": [
+        {
+          "identity": "shared::org.geogebra.common.euclidian.EuclidianConstantsTest::allModesShouldHaveHelpPage()::invocation[1/1]",
+          "source_path": "source/shared/common-jre/src/test/java/org/geogebra/common/euclidian/EuclidianConstantsTest.java",
+          "source_blob": "bd98d5148a09ef8d25a9c953d29206254df75b05",
+          "source_sha256": "c4ceccba187b016bc814783a99e3ffa0de03ce20aac2bfc8cf7e41ff6ea485f2",
+          "reason": "CONDITIONAL"
+        },
+        {
+          "identity": "shared::org.geogebra.common.euclidian.plot.implicit.BernsteinImplicitAlgoTest::name()::invocation[1/1]",
+          "source_path": "source/shared/common-jre/src/test/java/org/geogebra/common/euclidian/plot/implicit/BernsteinImplicitAlgoTest.java",
+          "source_blob": "4062ae422f68136ca2f9964ecf454290eae2e920",
+          "source_sha256": "2965bd9612bced879e1d776d101155fc6290d102955f38778c440f9ac8b0f985",
+          "reason": "DISABLED"
+        },
+        {
+          "identity": "shared::org.geogebra.common.kernel.arithmetic.bernstein.BernsteinPolynomial1DTest::testSpit()::invocation[1/1]",
+          "source_path": "source/shared/common-jre/src/test/java/org/geogebra/common/kernel/arithmetic/bernstein/BernsteinPolynomial1DTest.java",
+          "source_blob": "fcfebbd1ea35e50cbb8b1d3e4a842efb59b1b6fe",
+          "source_sha256": "faf12eb8185c0630750747c7321a0596bd8fe47a69bc79231a59609c1e273a90",
+          "reason": "DISABLED"
+        },
+        {
+          "identity": "shared::org.geogebra.common.kernel.interval.operators.IntervalAlgebraTest::testTwoOnXInverse()::invocation[1/1]",
+          "source_path": "source/shared/common-jre/src/test/java/org/geogebra/common/kernel/interval/operators/IntervalAlgebraTest.java",
+          "source_blob": "7d17f5752d3937e1d74cbc932b9e40ad600dd96c",
+          "source_sha256": "1c6e04ad0ebfb745483ab92d445f6caa3b1c73e824244af95aa89caf5106bec3",
+          "reason": "DISABLED"
+        },
+        {
+          "identity": "shared::org.geogebra.common.kernel.interval.operators.IntervalRootTest::testNthRootInNegativeInterval()::invocation[1/1]",
+          "source_path": "source/shared/common-jre/src/test/java/org/geogebra/common/kernel/interval/operators/IntervalRootTest.java",
+          "source_blob": "2dee297b747c865e11c5c740d27272e77f3aaf32",
+          "source_sha256": "7b3d58d9c27f4c8a5a7af7c565505158080f0ac984a596674211422922eb1d49",
+          "reason": "DISABLED"
+        },
+        {
+          "identity": "shared::org.geogebra.common.kernel.interval.operators.IntervalRootTest::testNthRoot()::invocation[1/1]",
+          "source_path": "source/shared/common-jre/src/test/java/org/geogebra/common/kernel/interval/operators/IntervalRootTest.java",
+          "source_blob": "2dee297b747c865e11c5c740d27272e77f3aaf32",
+          "source_sha256": "7b3d58d9c27f4c8a5a7af7c565505158080f0ac984a596674211422922eb1d49",
+          "reason": "DISABLED"
+        },
+        {
+          "identity": "shared::org.geogebra.common.kernel.interval.samplers.InverseSamplerTest::zeroDividedByTanSecXShouldBeZero()::invocation[1/1]",
+          "source_path": "source/shared/common-jre/src/test/java/org/geogebra/common/kernel/interval/samplers/InverseSamplerTest.java",
+          "source_blob": "348de1d06534c6417c065cf16eb114b3a5a9ea39",
+          "source_sha256": "2bf1e7472d883fba413a96b0510c6ea1352a387bbf7db707a801d5226c935a87",
+          "reason": "DISABLED"
+        },
+        {
+          "identity": "shared::org.geogebra.common.util.StringUtilTest::isLetterShouldComplyWithJava()::invocation[1/1]",
+          "source_path": "source/shared/common-jre/src/test/java/org/geogebra/common/util/StringUtilTest.java",
+          "source_blob": "62e002eca04ccab72ac74d1536512164e85969fe",
+          "source_sha256": "4128f46ec02a12732633a552d24d0860aafa6c967c5314d56597ac69849194de",
+          "reason": "CONDITIONAL"
+        },
+        {
+          "identity": "shared::org.geogebra.common.util.StringUtilTest::isDigitShouldComplyWithJava()::invocation[1/1]",
+          "source_path": "source/shared/common-jre/src/test/java/org/geogebra/common/util/StringUtilTest.java",
+          "source_blob": "62e002eca04ccab72ac74d1536512164e85969fe",
+          "source_sha256": "4128f46ec02a12732633a552d24d0860aafa6c967c5314d56597ac69849194de",
+          "reason": "CONDITIONAL"
+        },
+        {
+          "identity": "shared::org.geogebra.test.euclidian.plot.DrawImplicitCurveTest::testDrawDiff()::invocation[1/1]",
+          "source_path": "source/shared/common-jre/src/test/java/org/geogebra/test/euclidian/plot/DrawImplicitCurveTest.java",
+          "source_blob": "79e6b5032684f97b7b4b82f614bf78495dfe1a61",
+          "source_sha256": "c87e882b095a7ec5f0e63ca3a83029530a27b8debc6c9ee9e13fd0505ce698b5",
+          "reason": "DISABLED"
+        }
+      ],
       "input_identities": [
         {
           "commit": "4117bdfd5c987005ae723996f03e9c2d1eed5923",
@@ -99,6 +174,14 @@
       "module": "desktop",
       "gradle_task": ":desktop:desktop:test",
       "test_filters": [],
+      "excluded_test_filters": [
+        "org.geocedg.desktop.G9U1DefinitionAffordanceTest.inspectorDistinguishesCurrentAddressFromRetainedDormantAddressAndRecovery",
+        "org.geocedg.desktop.G9U1MetricReviewTest.originalSplineInputsRemainTruthfullyInvalidMetricEndpoints",
+        "org.geocedg.desktop.G9U1MetricReviewTest.exactSemanticEndpointsPublishAndRecomputeThroughTheRichParent",
+        "org.geocedg.desktop.G9U1MetricReviewTest.ordinaryLocusQuickGuideUsesTheSameSemanticMetricAuthority",
+        "org.geocedg.desktop.G9U1MetricReviewTest.partialScalarPreservesHiddenParentAndIdentityAcrossTwoNativeReopens",
+        "org.geocedg.desktop.G9U1Revision3AlgebraEditingDiagnostic.authorRevision3ExercisesEveryOrdinaryAlgebraEditRoute"
+      ],
       "effective_arguments": [
         ":desktop:desktop:test",
         "--rerun-tasks",
@@ -108,8 +191,86 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 1402,
-      "expected_identities_sha256": "f458de0bb93d40c1a3d494dd4b759cd3070979f8225f1b681be5da37057c19df",
+      "expected_identity_count": 1396,
+      "expected_identities_sha256": "ff1369a2e7345e316af0267ef9e2761c3b5ce4964b860afce0406f0d5d9dc16f",
+      "not_applicable_allowlist": [
+        {
+          "identity": "desktop::org.geogebra.CasValueExtractor::extractMockValues(String)::invocation[1/1]",
+          "source_path": "source/desktop/desktop/src/test/java/org/geogebra/CasValueExtractor.java",
+          "source_blob": "400103e973ec7c02d375f979b46fad044471c8dd",
+          "source_sha256": "816ba6884523dad0f5b65f6001b8759cfe1868ea8491134496686b023e59f393",
+          "reason": "DISABLED"
+        }
+      ],
+      "input_identities": [
+        {
+          "commit": "4117bdfd5c987005ae723996f03e9c2d1eed5923",
+          "tree": "872d1c3506585fcded6c7a73563f9b865015b6aa"
+        }
+      ]
+    },
+    {
+      "selection_id": "final.desktop.g9u1-isolated",
+      "module": "desktop",
+      "gradle_task": ":desktop:desktop:test",
+      "test_filters": [
+        "org.geocedg.desktop.G9U1DefinitionAffordanceTest.inspectorDistinguishesCurrentAddressFromRetainedDormantAddressAndRecovery",
+        "org.geocedg.desktop.G9U1MetricReviewTest.originalSplineInputsRemainTruthfullyInvalidMetricEndpoints",
+        "org.geocedg.desktop.G9U1MetricReviewTest.exactSemanticEndpointsPublishAndRecomputeThroughTheRichParent",
+        "org.geocedg.desktop.G9U1MetricReviewTest.ordinaryLocusQuickGuideUsesTheSameSemanticMetricAuthority",
+        "org.geocedg.desktop.G9U1MetricReviewTest.partialScalarPreservesHiddenParentAndIdentityAcrossTwoNativeReopens"
+      ],
+      "excluded_test_filters": [],
+      "effective_arguments": [
+        ":desktop:desktop:test",
+        "--tests",
+        "org.geocedg.desktop.G9U1DefinitionAffordanceTest.inspectorDistinguishesCurrentAddressFromRetainedDormantAddressAndRecovery",
+        "--tests",
+        "org.geocedg.desktop.G9U1MetricReviewTest.originalSplineInputsRemainTruthfullyInvalidMetricEndpoints",
+        "--tests",
+        "org.geocedg.desktop.G9U1MetricReviewTest.exactSemanticEndpointsPublishAndRecomputeThroughTheRichParent",
+        "--tests",
+        "org.geocedg.desktop.G9U1MetricReviewTest.ordinaryLocusQuickGuideUsesTheSameSemanticMetricAuthority",
+        "--tests",
+        "org.geocedg.desktop.G9U1MetricReviewTest.partialScalarPreservesHiddenParentAndIdentityAcrossTwoNativeReopens",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 5,
+      "expected_identities_sha256": "966e3a20b82fca3a2946303902467cccbf94f2066a4503eab3c74c156c63577b",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "4117bdfd5c987005ae723996f03e9c2d1eed5923",
+          "tree": "872d1c3506585fcded6c7a73563f9b865015b6aa"
+        }
+      ]
+    },
+    {
+      "selection_id": "final.desktop.revision3-diagnostic",
+      "module": "desktop",
+      "gradle_task": ":desktop:desktop:test",
+      "test_filters": [
+        "org.geocedg.desktop.G9U1Revision3AlgebraEditingDiagnostic.authorRevision3ExercisesEveryOrdinaryAlgebraEditRoute"
+      ],
+      "excluded_test_filters": [],
+      "effective_arguments": [
+        ":desktop:desktop:test",
+        "--tests",
+        "org.geocedg.desktop.G9U1Revision3AlgebraEditingDiagnostic.authorRevision3ExercisesEveryOrdinaryAlgebraEditRoute",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 1,
+      "expected_identities_sha256": "c4cc36ccefdc90dc98d8d7ee1491121e2f2f6d5733f018b2bfd328007681a265",
       "not_applicable_allowlist": [],
       "input_identities": [
         {
@@ -125,6 +286,7 @@
       "test_filters": [
         "org.geocedg.common.locus.G8BIntersectionTopologyAndScientificTest"
       ],
+      "excluded_test_filters": [],
       "effective_arguments": [
         ":shared:common-jre:test",
         "--tests",
@@ -137,7 +299,7 @@
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
       "expected_identity_count": 9,
-      "expected_identities_sha256": "787094cd0fb01196691387058d780261c6ecd72f060c6c42661b68e0e10f9188",
+      "expected_identities_sha256": "25b111877eb799cff89c79f43191d0bec6d79a3fc8b90af75147347318c76513",
       "not_applicable_allowlist": [],
       "input_identities": [
         {

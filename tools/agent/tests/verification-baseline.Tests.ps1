@@ -39,6 +39,11 @@ function New-Observation {
         contract_class = 'SEMANTIC'
         semantic_domain = 'SCIENTIFIC'
         status = $Status
+        coverage_state = $(if ($Status -ceq 'EVIDENCE_UNTRUSTED') {
+                'UNTRUSTED'
+            } elseif ($Status -ceq 'NOT_RUN_DEPENDENCY') {
+                'INCOMPLETE'
+            } else { 'COMPLETE' })
         command_identity = $CommandHash
         exit_code = $(if ($Status -ceq 'CONTRACT_SATISFIED') { 0 } else { 1 })
         cause = $null

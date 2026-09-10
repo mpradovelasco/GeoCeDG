@@ -101,12 +101,13 @@ function Expand-VerificationArgument {
     param(
         [Parameter(Mandatory)] [string]$Value,
         [Parameter(Mandatory)] [string]$RepositoryRoot,
+        [Parameter(Mandatory)] [string]$OutputRoot,
         [Parameter(Mandatory)] [string]$NodeOutput,
         [string]$StructuredOutput,
         [Parameter(Mandatory)] [Collections.IDictionary]$EvidencePaths
     )
     $expanded = $Value.Replace('{repository_root}', $RepositoryRoot).Replace(
-        '{node_output}', $NodeOutput)
+        '{output_root}', $OutputRoot).Replace('{node_output}', $NodeOutput)
     if (-not [string]::IsNullOrWhiteSpace($StructuredOutput)) {
         $expanded = $expanded.Replace('{structured_output}', $StructuredOutput)
     }
@@ -175,6 +176,7 @@ function New-VerificationSyntheticCoreResult {
         node_kind = 'ACCEPTANCE_LEAF'
         contract_class = 'VERIFICATION_CORE'
         status = 'CONTRACT_VIOLATED'
+        coverage_state = 'COMPLETE'
         command_identity = Get-VerificationDeterministicHash -Value ([ordered]@{
             check_id = $CheckId
             operation = 'supervisor_execution'
@@ -195,7 +197,9 @@ function New-VerificationObservation {
         [AllowNull()] [object]$ExitCode,
         [AllowNull()] [string]$Cause,
         [object[]]$Evidence = @(),
-        [double]$Duration = 0.0
+        [double]$Duration = 0.0,
+        [ValidateSet('COMPLETE', 'INCOMPLETE', 'UNTRUSTED')]
+        [string]$CoverageState
     )
     $kind = [string](Get-VerificationSupervisorProperty $Node 'node_kind' -Required)
     $contract = [string](Get-VerificationSupervisorProperty $Node 'contract_class' -Required)
@@ -217,6 +221,13 @@ function New-VerificationObservation {
     }
     if (Test-VerificationAcceptanceClass $contract) {
         $value.status = $Outcome
+        $value.coverage_state = $(if ($PSBoundParameters.ContainsKey('CoverageState')) {
+                $CoverageState
+            } elseif ($Outcome -ceq 'EVIDENCE_UNTRUSTED') {
+                'UNTRUSTED'
+            } elseif ($Outcome -ceq 'NOT_RUN_DEPENDENCY') {
+                'INCOMPLETE'
+            } else { 'COMPLETE' })
     } else {
         $value.outcome = $Outcome
     }
@@ -261,7 +272,10 @@ function Invoke-VerificationRegistryProcess {
     }
     $arguments = [Collections.Generic.List[string]]::new()
     foreach ($argument in [object[]](Get-VerificationSupervisorProperty $Node 'argv' -Required)) {
-        $expanded = Expand-VerificationArgument -Value ([string]$argument) -RepositoryRoot $RepositoryRoot -NodeOutput $nodeOutput -StructuredOutput $structuredOutput -EvidencePaths $evidencePaths
+        $expanded = Expand-VerificationArgument -Value ([string]$argument) `
+            -RepositoryRoot $RepositoryRoot -OutputRoot $OutputRoot `
+            -NodeOutput $nodeOutput -StructuredOutput $structuredOutput `
+            -EvidencePaths $evidencePaths
         $arguments.Add($expanded)
     }
     $hostArguments = @{
@@ -611,6 +625,24 @@ function ConvertFrom-VerificationProducerProjection {
                 -SemanticDomain ([string](Get-VerificationSupervisorProperty $Node 'semantic_domain' -Required))
             $observation.Outcome = [string]$projected.outcome
             $observation.Cause = [string]$projected.cause
+            $observation.CoverageState = [string]$projected.coverage_state
+            $observation.Evidence = @([pscustomobject]@{
+                name='STRUCTURED_RESULT'; state='PRESENT'; path=$Producer.structured_output.path
+                sha256=$Producer.structured_output.sha256
+            })
+        }
+        'PROJECTION_JUNIT_DIAGNOSTIC_V1' {
+            if ([string]$Producer.structured_output.state -cne 'PRESENT') {
+                $observation.Outcome = $unavailable
+                $observation.Cause = [string]$Producer.structured_output.cause
+                break
+            }
+            $projected = ConvertFrom-VerificationJUnitDiagnosticSelection `
+                -ProcessEvidence $Producer.structured_output.value `
+                -Selection $Producer.structured_output.value.selection `
+                -DiagnosticClass $contract
+            $observation.Outcome = [string]$projected.diagnostic_outcome
+            $observation.Cause = [string]$projected.cause
             $observation.Evidence = @([pscustomobject]@{
                 name='STRUCTURED_RESULT'; state='PRESENT'; path=$Producer.structured_output.path
                 sha256=$Producer.structured_output.sha256
@@ -622,11 +654,17 @@ function ConvertFrom-VerificationProducerProjection {
                 $observation.Cause = [string]$Producer.structured_output.cause
                 break
             }
-            $projected = ConvertFrom-VerificationProcessEvidence `
-                -Evidence $Producer.structured_output.value -ContractClass $contract `
-                -SemanticDomain $(if ($contract -ceq 'SEMANTIC') {
-                    [string](Get-VerificationSupervisorProperty $Node 'semantic_domain' -Required)
-                } else { $null })
+            $projected = if ($contract -ceq 'SEMANTIC') {
+                ConvertFrom-VerificationProcessEvidence `
+                    -Evidence $Producer.structured_output.value `
+                    -ContractClass $contract `
+                    -SemanticDomain ([string](Get-VerificationSupervisorProperty `
+                            $Node 'semantic_domain' -Required))
+            } else {
+                ConvertFrom-VerificationProcessEvidence `
+                    -Evidence $Producer.structured_output.value `
+                    -ContractClass $contract
+            }
             $observation.Outcome = [string]$projected.outcome
             $observation.Cause = [string]$projected.cause
         }
@@ -877,9 +915,9 @@ function New-VerificationAggregatedReport {
             $notRunIds.Add($id)
             continue
         }
-        switch ([string]$result[0].status) {
-            'EVIDENCE_UNTRUSTED' { $untrustedIds.Add($id) }
-            'NOT_RUN_DEPENDENCY' { $notRunIds.Add($id) }
+        switch ([string]$result[0].coverage_state) {
+            'UNTRUSTED' { $untrustedIds.Add($id) }
+            'INCOMPLETE' { $notRunIds.Add($id) }
             default { $completedIds.Add($id) }
         }
     }

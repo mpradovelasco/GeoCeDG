@@ -42,12 +42,21 @@ Invoke-Case 'tracked JUnit inventory is compact and selection based' {
     Assert-Case $inventoryRejected 'JUnit inventory accepted a missing selection fingerprint.'
     Assert-Case (@($inventory.modules).Count -eq 2) 'Module discovery count changed.'
     Assert-Case (@($inventory.modules|Where-Object{$_.PSObject.Properties.Name -ccontains 'identities'}).Count -eq 0) 'Per-method inventory was tracked.'
-    Assert-Case (@($inventory.selections).Count -eq 5) 'Selection inventory count changed.'
+    Assert-Case (@($inventory.selections).Count -eq 7) 'Selection inventory count changed.'
     foreach($selection in $inventory.selections){
         Assert-Case ($selection.expected_identity_count -gt 0) "Selection has zero inventory: $($selection.selection_id)"
         Assert-Case ([string]$selection.expected_identities_sha256 -cmatch '^[0-9a-f]{64}$') "Selection fingerprint is invalid: $($selection.selection_id)"
     }
     Assert-Case (@($inventory.selections|Where-Object selection_id -CEQ 'g8b.narrow')[0].expected_identity_count -eq 9) 'G8B inventory changed.'
+    $desktopBroad=@($inventory.selections|Where-Object selection_id -CEQ 'final.desktop')[0]
+    $desktopSemantic=@($inventory.selections|Where-Object selection_id -CEQ `
+        'final.desktop.g9u1-isolated')[0]
+    $desktopDiagnostic=@($inventory.selections|Where-Object selection_id -CEQ `
+        'final.desktop.revision3-diagnostic')[0]
+    $excluded=[string[]]@($desktopBroad.excluded_test_filters);[Array]::Sort($excluded,[StringComparer]::Ordinal)
+    $retained=[string[]]@($desktopSemantic.test_filters+$desktopDiagnostic.test_filters);[Array]::Sort($retained,[StringComparer]::Ordinal)
+    Assert-Case (($excluded -join "`n") -ceq ($retained -join "`n")) `
+        'Desktop partition suppresses or duplicates an excluded JUnit filter.'
 }
 Invoke-Case 'all 25 PHASE selections resolve as complete pure plans' {
     Assert-Case (@($registry.phase_selections).Count -eq 25) 'PHASE selection count changed.'
@@ -73,8 +82,14 @@ Invoke-Case 'INTEGRATION and FINAL are complete unions of pure nodes' {
 Invoke-Case 'FINAL JUnit compilation and Python evidence boundaries are explicit' {
     $plan=Resolve-VerificationRegistryPlan $registry FINAL -Platform WINDOWS
     $junit=@($plan.nodes|Where-Object output_adapter -CEQ 'PROJECTION_JUNIT_SELECTION_V1')
-    Assert-Case ($junit.Count -eq 2) 'FINAL does not have exactly two Gradle-selection JUnit contracts.'
+    Assert-Case ($junit.Count -eq 3) 'FINAL does not have exactly three pure semantic Gradle-selection JUnit contracts.'
     Assert-Case (@($junit|Where-Object contract_class -CNE 'SEMANTIC').Count -eq 0) 'JUnit projection is not semantic.'
+    Assert-Case (@($plan.nodes|Where-Object output_adapter -CEQ `
+            'PROJECTION_JUNIT_DIAGNOSTIC_V1').Count -eq 1) `
+        'The Revision3 historical JUnit diagnostic is not isolated from acceptance.'
+    Assert-Case (@($plan.nodes|Where-Object check_id -eq `
+            'junit.desktop.g9u1-isolated.semantic').Count -eq 1) `
+        'The isolated G9U1 semantic selection is absent from FINAL.'
     Assert-Case (@($plan.nodes|Where-Object{$_.check_id -like 'compile.*.semantic' -and $_.output_adapter -cne 'PROJECTION_PROCESS_EXIT_V1'}).Count -eq 0) 'Compilation is not projected separately.'
     Assert-Case (@($plan.nodes|Where-Object{$_.check_id -like 'python.*.producer'}).Count -eq 5) 'Five Python commands are not represented exactly once.'
     Assert-Case (@($plan.nodes|Where-Object{$_.check_id -like 'python.*.semantic' -and $_.output_adapter -cne 'PROJECTION_PYTHON_CHECK_V1'}).Count -eq 0) 'Python provenance projection is missing.'

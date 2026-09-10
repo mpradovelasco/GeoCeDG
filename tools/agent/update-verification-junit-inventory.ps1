@@ -17,7 +17,8 @@ foreach($evidencePath in $DiscoveryEvidencePath){
     if(-not [bool]$evidence.test_dry_run){throw 'Inventory discovery evidence must come from --test-dry-run.'}
     $selection=@($inventory.selections|Where-Object selection_id -CEQ $evidence.selection_id)
     if($selection.Count-ne1){throw "Unknown discovery selection: $($evidence.selection_id)"}
-    $cases=Read-VerificationJUnitFiles -Path ([string[]]@($evidence.junit_files.path))
+    $cases=Read-VerificationJUnitFiles -Path ([string[]]@($evidence.junit_files.path)) `
+        -Module ([string]$selection[0].module)
     if($cases.Count-eq0){throw "Discovery selection emitted zero tests: $($evidence.selection_id)"}
     $module=[string]$selection[0].module
     $moduleRecord=@($inventory.modules|Where-Object module -CEQ $module)
@@ -31,6 +32,9 @@ foreach($evidencePath in $DiscoveryEvidencePath){
     $discoveredByModule[$module]=[object[]]$identities
 }
 foreach($selection in $inventory.selections){
+    if(-not ([string]$selection.selection_id).StartsWith('discovery.',[StringComparison]::Ordinal)){
+        continue
+    }
     if(-not $discoveredByModule.ContainsKey([string]$selection.module)){throw "Missing discovery evidence for module: $($selection.module)"}
     $selected=@($discoveredByModule[[string]$selection.module])
     if(@($selection.test_filters).Count-gt0){
@@ -40,6 +44,15 @@ foreach($selection in $inventory.selections){
                 $pattern='^'+[regex]::Escape([string]$_).Replace('\*','.*')+'$'
                 $entry.class_name -cmatch $pattern -or ($entry.class_name+'.'+$entry.test_name) -cmatch $pattern
             }).Count-gt0
+        })
+    }
+    if(@($selection.excluded_test_filters).Count-gt0){
+        $selected=@($selected|Where-Object{
+            $entry=$_
+            @($selection.excluded_test_filters|Where-Object{
+                $pattern='^'+[regex]::Escape([string]$_).Replace('\*','.*')+'$'
+                $entry.class_name -cmatch $pattern -or ($entry.class_name+'.'+$entry.test_name) -cmatch $pattern
+            }).Count-eq0
         })
     }
     if($selected.Count-eq0){throw "Selection has zero discovered identities: $($selection.selection_id)"}

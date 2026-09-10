@@ -294,6 +294,7 @@ function Assert-VerificationRegistry {
                             'PROJECTION_STRUCTURED_CONTRACT_V1',
                             'PROJECTION_EVIDENCE_PRESENT_V1',
                             'PROJECTION_JUNIT_SELECTION_V1',
+                            'PROJECTION_JUNIT_DIAGNOSTIC_V1',
                             'PROJECTION_PROCESS_EXIT_V1',
                             'PROJECTION_PYTHON_CHECK_V1')) {
                     throw "EVIDENCE_PROJECTION $id has an incompatible command or output adapter."
@@ -304,6 +305,7 @@ function Assert-VerificationRegistry {
                     STRUCTURED_CONTRACT = 'PROJECTION_STRUCTURED_CONTRACT_V1'
                     EVIDENCE_PRESENT = 'PROJECTION_EVIDENCE_PRESENT_V1'
                     JUNIT_SELECTION = 'PROJECTION_JUNIT_SELECTION_V1'
+                    JUNIT_DIAGNOSTIC = 'PROJECTION_JUNIT_DIAGNOSTIC_V1'
                     PROCESS_EXIT = 'PROJECTION_PROCESS_EXIT_V1'
                     PYTHON_CHECK = 'PROJECTION_PYTHON_CHECK_V1'
                 }[$projection]
