@@ -102,6 +102,12 @@ Do not rename, update, prune or remove the unrelated external `om_env`.
 does not compile the product or run governance diagnostics. Bootstrap is a
 separate prerequisite-preparation command, not installation verification.
 
+The check discovers those capabilities afresh. User names, absolute JDK and
+Conda-prefix locations, `TEMP`, caches and a declared or default
+`GRADLE_USER_HOME` are traceability observations, not acceptance identities.
+Compatible machines therefore share the portable contract without pretending
+that their filesystem observations are identical.
+
 The second launch is GeoCeDG; the third is the unchanged Classic diagnostic.
 For the internal V2 laboratory use the existing script under `tools/locus-v2/`.
 See `README.md` and `packaging/windows/README.md` for setup and packaging

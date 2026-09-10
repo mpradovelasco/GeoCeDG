@@ -6,17 +6,15 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 Import-Module (Join-Path $PSScriptRoot '../verification-supervisor.psm1') -Force
 Import-Module (Join-Path $PSScriptRoot '../verification-receipt.psm1') -Force
+Import-Module (Join-Path $PSScriptRoot '../verification-io.psm1') -Force
+. (Join-Path $PSScriptRoot 'fixtures/verification-environment-fixture.ps1')
 
 $script:Cases = 0
 $script:Assertions = 0
 $schemaPath = Join-Path $PSScriptRoot '../../../geocedg/specs/operations/verification-receipt.schema.json'
-$identity = [pscustomobject]@{
-    base_commit = ('1' * 40)
-    base_tree = ('2' * 40)
-    candidate_commit = ('3' * 40)
-    candidate_tree = ('4' * 40)
-    environment_fingerprint = ('5' * 64)
-}
+$identity = New-VerificationTestEnvironmentIdentity -BaseCommit ('1' * 40) `
+    -BaseTree ('2' * 40) -CandidateCommit ('3' * 40) `
+    -CandidateTree ('4' * 40) -CompatibilitySignature ('5' * 64)
 $planHash = '6' * 64
 $checkerHash = '7' * 64
 $inputHash = '8' * 64
@@ -74,7 +72,12 @@ function New-Report {
         dependencies = [string[]]@()
         duration_ms = 2.0
     }
-    return New-VerificationAggregatedReport -RunId receipt -Profile FINAL -Identity $identity -ExecutionPlanHash $planHash -AcceptanceResults @($acceptance) -DiagnosticResults @($diagnostic) -RequiredAcceptanceIds @('product.contract')
+    $reportIdentity = ConvertFrom-Json -InputObject `
+        (ConvertTo-Json $identity -Depth 30) -Depth 30
+    return New-VerificationAggregatedReport -RunId receipt -Profile FINAL `
+        -Identity $reportIdentity -ExecutionPlanHash $planHash `
+        -AcceptanceResults @($acceptance) -DiagnosticResults @($diagnostic) `
+        -RequiredAcceptanceIds @('product.contract')
 }
 
 Invoke-Case 'accepted report with diagnostics produces a valid receipt' {
@@ -91,7 +94,7 @@ Invoke-Case 'accepted report with diagnostics produces a valid receipt' {
         candidate_tree = $identity.candidate_tree
         execution_plan_hash = $planHash
         checker_identity_hash = $checkerHash
-        environment_fingerprint = $identity.environment_fingerprint
+        environment_compatibility_signature = $identity.environment_compatibility_signature
         input_identity_hash = $inputHash
     }
     $match = Test-VerificationReceiptIdentity $receipt $expected
@@ -103,6 +106,24 @@ Invoke-Case 'receipt identity excludes informational dates' {
     $first = New-VerificationAcceptanceReceipt $report $checkerHash $inputHash @('FINAL') ([datetime]'2026-01-01T00:00:00Z')
     $second = New-VerificationAcceptanceReceipt $report $checkerHash $inputHash @('FINAL') ([datetime]'2027-01-01T00:00:00Z')
     Assert-Case ($first.receipt_id -ceq $second.receipt_id) 'Issue date changed receipt identity.'
+}
+Invoke-Case 'receipt identity excludes volatile environment observations' {
+    $firstReport = New-Report
+    $secondReport = New-Report
+    $secondReport.environment_observation.effective_user = 'portable-user'
+    $secondReport.environment_observation.gradle_user_home_declared = 'D:\gradle-cache'
+    $secondReport.environment_observation.resolved_cedg_env_prefix = 'D:\envs\cedg_env'
+    $secondReport.environment_observation_hash = Get-VerificationDeterministicHash `
+        -Value $secondReport.environment_observation
+    $secondReport.result_hash = Get-VerificationResultHash $secondReport
+    $first = New-VerificationAcceptanceReceipt $firstReport $checkerHash $inputHash @('FINAL')
+    $second = New-VerificationAcceptanceReceipt $secondReport $checkerHash $inputHash @('FINAL')
+    Assert-Case ($firstReport.result_hash -ceq $secondReport.result_hash) `
+        'Environment observation changed result identity.'
+    Assert-Case ($first.receipt_id -ceq $second.receipt_id) `
+        'Environment observation changed receipt identity.'
+    Assert-Case ($first.environment_observation_hash -cne $second.environment_observation_hash) `
+        'Distinct real environment observations were not retained.'
 }
 Invoke-Case 'diagnostic trace identity excludes task locations and host wording' {
     $firstReport = New-Report
@@ -148,11 +169,11 @@ Invoke-Case 'every acceptance identity field invalidates reuse' {
         candidate_tree = $identity.candidate_tree
         execution_plan_hash = $planHash
         checker_identity_hash = $checkerHash
-        environment_fingerprint = $identity.environment_fingerprint
+        environment_compatibility_signature = $identity.environment_compatibility_signature
         input_identity_hash = $inputHash
     }
     foreach ($field in @('base_commit', 'base_tree', 'candidate_commit', 'candidate_tree', 'execution_plan_hash',
-            'checker_identity_hash', 'environment_fingerprint', 'input_identity_hash')) {
+            'checker_identity_hash', 'environment_compatibility_signature', 'input_identity_hash')) {
         $changed = [ordered]@{}
         foreach ($name in $expected.Keys) { $changed[$name] = $expected[$name] }
         $length = ([string]$changed[$field]).Length

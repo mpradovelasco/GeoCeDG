@@ -472,6 +472,13 @@ checks Gradle Wrapper 9.4.1, launcher Java 22, complete JDKs 17 and 25,
 provenance. It does not compile GeoCeDG or run fixtures or governance
 diagnostics.
 
+WORKSTATION discovers those capabilities on the current machine. A different
+user, JDK location, valid `cedg_env` prefix, `TEMP` root, cache or
+`GRADLE_USER_HOME` does not change acceptance. These values remain visible as
+traceability observations, while only portable capabilities, exact versions
+and provenance participate in compatibility identity. When
+`GRADLE_USER_HOME` is unset, Gradle's normal user-home default is used.
+
 Earlier instructions used the external `om_env`. Create and use `cedg_env`; do
 not rename, update, prune, or remove `om_env` as part of this migration.
 

@@ -85,9 +85,9 @@ function ConvertFrom-VerificationPythonCheckEvidence {
         if ([string]$Evidence.environment_name -cne 'cedg_env') {
             throw 'Python producer did not declare cedg_env.'
         }
-        if ($Evidence.conda_inventory_member -ne $true -or
-                [string]::IsNullOrWhiteSpace([string]$Evidence.conda_inventory_path)) {
-            throw 'Python producer did not prove read-only Conda inventory membership.'
+        if ($Evidence.environment_resolved -ne $true -or
+                [string]::IsNullOrWhiteSpace([string]$Evidence.environment_resolution_source)) {
+            throw 'Python producer did not prove deterministic cedg_env resolution.'
         }
         $identity = $Evidence.identity
         $result.identity = $identity

@@ -1,18 +1,19 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://geocedg.local/schemas/verification-receipt-v2",
+  "$id": "https://geocedg.local/schemas/verification-receipt-v3",
   "title": "GeoCeDG immutable acceptance receipt",
   "type": "object",
   "additionalProperties": false,
   "required": [
     "$schema", "schema_version", "receipt_kind", "receipt_id", "accepted_report_hash",
     "base_commit", "base_tree", "candidate_commit", "candidate_tree", "execution_plan_hash",
-    "checker_identity_hash", "environment_fingerprint", "input_identity_hash",
+    "checker_identity_hash", "environment_contract", "environment_compatibility_signature",
+    "environment_observation", "environment_observation_hash", "input_identity_hash",
     "accepted_profiles", "semantic_domains", "diagnostic_hashes", "issued_at"
   ],
   "properties": {
     "$schema": { "const": "geocedg/specs/operations/verification-receipt.schema.json" },
-    "schema_version": { "const": 2 },
+    "schema_version": { "const": 3 },
     "receipt_kind": { "const": "GEOCEDG_ACCEPTANCE_RECEIPT" },
     "receipt_id": { "$ref": "#/$defs/hash" },
     "accepted_report_hash": { "$ref": "#/$defs/hash" },
@@ -22,7 +23,10 @@
     "candidate_tree": { "$ref": "#/$defs/gitObject" },
     "execution_plan_hash": { "$ref": "#/$defs/hash" },
     "checker_identity_hash": { "$ref": "#/$defs/hash" },
-    "environment_fingerprint": { "$ref": "#/$defs/hash" },
+    "environment_contract": { "$ref": "#/$defs/environmentContract" },
+    "environment_compatibility_signature": { "$ref": "#/$defs/hash" },
+    "environment_observation": { "$ref": "#/$defs/environmentObservation" },
+    "environment_observation_hash": { "$ref": "#/$defs/hash" },
     "input_identity_hash": { "$ref": "#/$defs/hash" },
     "accepted_profiles": {
       "type": "array",
@@ -44,6 +48,48 @@
   },
   "$defs": {
     "hash": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "environmentContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contract_version", "platform", "architecture", "powershell", "gradle_wrapper", "gradle_launcher_jvm_major", "required_jdk_majors", "conda_environment", "python_implementation", "python_version", "mpmath_version", "python_provenance"],
+      "properties": {
+        "contract_version": { "const": 1 },
+        "platform": { "enum": ["WINDOWS", "LINUX", "MACOS", "UNKNOWN"] },
+        "architecture": { "type": "string", "minLength": 1 },
+        "powershell": { "const": ">=7.2" },
+        "gradle_wrapper": { "const": "9.4.1" },
+        "gradle_launcher_jvm_major": { "const": 22 },
+        "required_jdk_majors": { "const": [17, 25] },
+        "conda_environment": { "const": "cedg_env" },
+        "python_implementation": { "const": "CPython" },
+        "python_version": { "const": "3.12.13" },
+        "mpmath_version": { "const": "1.4.1" },
+        "python_provenance": { "const": "EXECUTABLE_PREFIX_AND_IMPORT_SHARE_CEDG_ENV_PREFIX" }
+      }
+    },
+    "environmentObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["observation_version", "effective_user", "os_description", "powershell_version", "process_architecture", "repository_root", "user_profile", "temp_root", "gradle_user_home_declared", "gradle_user_home_effective", "java_home", "conda_default_env", "conda_prefix", "resolved_cedg_env_prefix", "resolved_cedg_env_source", "cedg_env_resolution_cause"],
+      "properties": {
+        "observation_version": { "const": 1 },
+        "effective_user": { "type": "string" },
+        "os_description": { "type": "string" },
+        "powershell_version": { "type": "string" },
+        "process_architecture": { "type": "string" },
+        "repository_root": { "type": "string" },
+        "user_profile": { "type": "string" },
+        "temp_root": { "type": "string" },
+        "gradle_user_home_declared": { "type": ["string", "null"] },
+        "gradle_user_home_effective": { "type": "string" },
+        "java_home": { "type": ["string", "null"] },
+        "conda_default_env": { "type": ["string", "null"] },
+        "conda_prefix": { "type": ["string", "null"] },
+        "resolved_cedg_env_prefix": { "type": ["string", "null"] },
+        "resolved_cedg_env_source": { "type": ["string", "null"] },
+        "cedg_env_resolution_cause": { "type": ["string", "null"] }
+      }
+    },
     "gitObject": { "type": "string", "pattern": "^[0-9a-f]{40}$" }
   }
 }

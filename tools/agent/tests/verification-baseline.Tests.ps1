@@ -6,6 +6,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 Import-Module (Join-Path $PSScriptRoot '../verification-io.psm1') -Force
 Import-Module (Join-Path $PSScriptRoot '../verification-supervisor.psm1') -Force
+. (Join-Path $PSScriptRoot 'fixtures/verification-environment-fixture.ps1')
 
 $script:Cases = 0
 $script:Assertions = 0
@@ -61,13 +62,11 @@ function New-Observation {
 function New-Report {
     param([string]$CommitDigit, [object[]]$Results, [string]$Plan = $planHash,
         [string]$Environment = $environmentHash, [string]$BaseDigit)
-    $identity = [pscustomobject]@{
-        base_commit = $(if ($BaseDigit) { $BaseDigit * 40 } else { $null })
-        base_tree = $(if ($BaseDigit) { $BaseDigit * 40 } else { $null })
-        candidate_commit = $CommitDigit * 40
-        candidate_tree = $CommitDigit * 40
-        environment_fingerprint = $Environment
-    }
+    $identity = New-VerificationTestEnvironmentIdentity `
+        -BaseCommit $(if ($BaseDigit) { $BaseDigit * 40 } else { $null }) `
+        -BaseTree $(if ($BaseDigit) { $BaseDigit * 40 } else { $null }) `
+        -CandidateCommit ($CommitDigit * 40) -CandidateTree ($CommitDigit * 40) `
+        -CompatibilitySignature $Environment
     return New-VerificationAggregatedReport -RunId ('baseline-' + $CommitDigit) `
         -Profile FINAL -Identity $identity -ExecutionPlanHash $Plan `
         -AcceptanceResults $Results `
@@ -123,6 +122,27 @@ Invoke-Case 'incomparable plan and environment identities are rejected' {
     Assert-Case ($comparison.state -ceq 'NOT_COMPARABLE') 'Identity mismatch was compared.'
     Assert-Case (@($comparison.identity_mismatches).Count -eq 2) 'Identity mismatch fields were not complete.'
     Assert-Case ($null -eq $comparison.candidate_regression) 'Incomparable evidence received a regression verdict.'
+}
+
+Invoke-Case 'portable compatibility ignores volatile user paths and Gradle home' {
+    $baseline = New-Report a @((New-Observation science.one CONTRACT_SATISFIED))
+    $candidate = New-Report b @((New-Observation science.one CONTRACT_SATISFIED)) `
+        -BaseDigit a
+    $candidate.environment_observation.effective_user = 'other-machine/user'
+    $candidate.environment_observation.repository_root = 'D:\other\checkout'
+    $candidate.environment_observation.gradle_user_home_declared = $null
+    $candidate.environment_observation.resolved_cedg_env_prefix = 'D:\envs\cedg_env'
+    $candidate.environment_observation_hash = Get-VerificationDeterministicHash `
+        -Value $candidate.environment_observation
+    $candidate.result_hash = Get-VerificationResultHash $candidate
+    $comparison = Compare-VerificationBaselineResults $baseline $candidate
+    Assert-Case ($comparison.state -ceq 'COMPARED') `
+        ("Volatile environment observations prevented compatible reuse: {0}; {1}" -f `
+            $comparison.state, (@($comparison.identity_mismatches) -join ','))
+    Assert-Case (-not $comparison.candidate_regression) `
+        'Volatile environment observations were attributed to the candidate.'
+    Assert-Case ($comparison.final_acceptability -ceq 'ACCEPTABLE') `
+        'Compatible portable environment was not acceptable.'
 }
 
 Invoke-Case 'checker identity change is explicit and uses the current result' {

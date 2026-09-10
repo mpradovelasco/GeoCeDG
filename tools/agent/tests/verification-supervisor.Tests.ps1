@@ -5,6 +5,8 @@ param()
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 Import-Module (Join-Path $PSScriptRoot '../verification-supervisor.psm1') -Force
+Import-Module (Join-Path $PSScriptRoot '../verification-io.psm1') -Force
+. (Join-Path $PSScriptRoot 'fixtures/verification-environment-fixture.ps1')
 
 $script:Cases = 0
 $script:Assertions = 0
@@ -17,13 +19,9 @@ $fixture = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot 'fixtures/verificatio
 $pwshPath = (Get-Process -Id $PID).Path
 $registrySchema = Join-Path $PSScriptRoot '../../../geocedg/specs/operations/verification-registry.schema.json'
 $resultSchema = Join-Path $PSScriptRoot '../../../geocedg/specs/operations/verification-result.schema.json'
-$identity = [pscustomobject]@{
-    base_commit = ('1' * 40)
-    base_tree = ('2' * 40)
-    candidate_commit = ('3' * 40)
-    candidate_tree = ('4' * 40)
-    environment_fingerprint = ('5' * 64)
-}
+$identity = New-VerificationTestEnvironmentIdentity -BaseCommit ('1' * 40) `
+    -BaseTree ('2' * 40) -CandidateCommit ('3' * 40) `
+    -CandidateTree ('4' * 40) -CompatibilitySignature ('5' * 64)
 
 function Assert-Case {
     param([bool]$Condition, [string]$Message)

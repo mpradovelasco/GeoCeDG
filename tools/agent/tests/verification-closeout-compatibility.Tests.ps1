@@ -8,6 +8,8 @@ $repository = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../..'))
 $closeout = Join-Path $repository 'tools/agent/phase-closeout.ps1'
 $authorCloseout = Join-Path $repository 'tools/agent/verify-phase-author-closeout.ps1'
 $receiptModule = Import-Module (Join-Path $repository 'tools/agent/verification-receipt.psm1') -Force -PassThru
+Import-Module (Join-Path $repository 'tools/agent/verification-io.psm1') -Force
+. (Join-Path $PSScriptRoot 'fixtures/verification-environment-fixture.ps1')
 $pwsh = (Get-Process -Id $PID).Path
 $tempBase = [IO.Path]::GetFullPath([IO.Path]::GetTempPath()).TrimEnd('\', '/')
 $root = Join-Path $tempBase ('geocedg-closeout-compat-' + [guid]::NewGuid().ToString('N'))
@@ -72,9 +74,12 @@ try {
     & git -C $fixture commit --quiet -m fixture
     if ($LASTEXITCODE -ne 0) { throw 'Could not create closeout fixture commit.' }
     $snapshot = Get-GitSnapshot
+    $environmentIdentity = New-VerificationTestEnvironmentIdentity `
+        -BaseCommit $null -BaseTree $null -CandidateCommit $snapshot.head `
+        -CandidateTree $snapshot.tree -CompatibilitySignature ('4' * 64)
     $receipt = [ordered]@{
         '$schema' = 'geocedg/specs/operations/verification-receipt.schema.json'
-        schema_version = 2
+        schema_version = 3
         receipt_kind = 'GEOCEDG_ACCEPTANCE_RECEIPT'
         receipt_id = ('0' * 64)
         accepted_report_hash = ('1' * 64)
@@ -84,7 +89,11 @@ try {
         candidate_tree = $snapshot.tree
         execution_plan_hash = ('2' * 64)
         checker_identity_hash = ('3' * 64)
-        environment_fingerprint = ('4' * 64)
+        environment_contract = $environmentIdentity.environment_contract
+        environment_compatibility_signature = `
+            $environmentIdentity.environment_compatibility_signature
+        environment_observation = $environmentIdentity.environment_observation
+        environment_observation_hash = $environmentIdentity.environment_observation_hash
         input_identity_hash = ('5' * 64)
         accepted_profiles = @('FINAL')
         semantic_domains = @('MIXED', 'PRODUCT', 'SCIENTIFIC')

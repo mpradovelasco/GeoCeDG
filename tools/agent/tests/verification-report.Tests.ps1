@@ -6,17 +6,14 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 Import-Module (Join-Path $PSScriptRoot '../verification-supervisor.psm1') -Force
 Import-Module (Join-Path $PSScriptRoot '../verification-io.psm1') -Force
+. (Join-Path $PSScriptRoot 'fixtures/verification-environment-fixture.ps1')
 
 $script:Cases = 0
 $script:Assertions = 0
 $schemaPath = Join-Path $PSScriptRoot '../../../geocedg/specs/operations/verification-result.schema.json'
-$identity = [pscustomobject]@{
-    base_commit = ('a' * 40)
-    base_tree = ('b' * 40)
-    candidate_commit = ('c' * 40)
-    candidate_tree = ('d' * 40)
-    environment_fingerprint = ('e' * 64)
-}
+$identity = New-VerificationTestEnvironmentIdentity -BaseCommit ('a' * 40) `
+    -BaseTree ('b' * 40) -CandidateCommit ('c' * 40) `
+    -CandidateTree ('d' * 40) -CompatibilitySignature ('e' * 64)
 $planHash = 'f' * 64
 $commandHash = '1' * 64
 
@@ -108,6 +105,13 @@ Invoke-Case 'result hash excludes duration and run timestamps' {
         (New-Acceptance product.ok SEMANTIC CONTRACT_SATISFIED 999999)
     ) -RequiredAcceptanceIds @('product.ok') -StartedAt ([datetime]'2027-01-01T00:00:00Z') -FinishedAt ([datetime]'2027-02-01T00:00:00Z')
     Assert-Case ($first.result_hash -ceq $second.result_hash) 'Informational timing changed result identity.'
+    $second.environment_observation.effective_user = 'another-user'
+    $second.environment_observation.repository_root = 'D:\another\checkout'
+    $second.environment_observation.resolved_cedg_env_prefix = 'D:\portable\cedg_env'
+    $second.environment_observation_hash = Get-VerificationDeterministicHash `
+        -Value $second.environment_observation
+    Assert-Case ($first.result_hash -ceq (Get-VerificationResultHash $second)) `
+        'Volatile environment observation changed result identity.'
     $first.acceptance_results[0].evidence = @([pscustomobject]@{ name = 'PAYLOAD'; state = 'PRESENT'; path = 'C:\task-one\payload'; sha256 = ('2' * 64) })
     $second.acceptance_results[0].evidence = @([pscustomobject]@{ name = 'PAYLOAD'; state = 'PRESENT'; path = 'D:\task-two\payload'; sha256 = ('2' * 64) })
     $first.acceptance_results[0].cause = 'host detail at C:\task-one'

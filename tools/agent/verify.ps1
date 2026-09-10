@@ -39,6 +39,7 @@ Import-Module (Join-Path $PSScriptRoot 'verification-io.psm1') -Force
 Import-Module (Join-Path $PSScriptRoot 'verification-registry.psm1') -Force
 Import-Module (Join-Path $PSScriptRoot 'verification-supervisor.psm1') -Force
 Import-Module (Join-Path $PSScriptRoot 'verification-packaging-state.psm1') -Force
+Import-Module (Join-Path $PSScriptRoot 'verification-environment.psm1') -Force
 
 function Get-CanonicalSelection {
     if (-not [string]::IsNullOrWhiteSpace($Profile)) {
@@ -122,20 +123,20 @@ try {
         exit 0
     }
 
+    $environmentContract = Get-VerificationEnvironmentContract
+    $environmentObservation = Get-VerificationEnvironmentObservation `
+        -RepositoryRoot $repositoryRoot
     $identity = [pscustomobject]@{
         base_commit = $null
         base_tree = $null
         candidate_commit = Get-GitObject 'HEAD'
         candidate_tree = Get-GitObject 'HEAD^{tree}'
-        environment_fingerprint = Get-VerificationDeterministicHash -Value ([ordered]@{
-            platform = [Environment]::OSVersion.Platform.ToString()
-            os_version = [Environment]::OSVersion.VersionString
-            process_architecture = [Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture.ToString()
-            powershell = $PSVersionTable.PSVersion.ToString()
-            conda_default_env = [Environment]::GetEnvironmentVariable('CONDA_DEFAULT_ENV')
-            conda_prefix = [Environment]::GetEnvironmentVariable('CONDA_PREFIX')
-            java_home = [Environment]::GetEnvironmentVariable('JAVA_HOME')
-        })
+        environment_contract = $environmentContract
+        environment_compatibility_signature = `
+            Get-VerificationEnvironmentCompatibilitySignature $environmentContract
+        environment_observation = $environmentObservation
+        environment_observation_hash = `
+            Get-VerificationEnvironmentObservationHash $environmentObservation
     }
     $runParameters = @{
         Registry = $registry

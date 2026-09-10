@@ -95,6 +95,13 @@ Java 22 para el launcher, JDK completos 17 y 25, `cedg_env`, CPython 3.12.13,
 mpmath 1.4.1 y la procedencia de ejecutable, prefijo e importación. WORKSTATION
 no compila el producto ni ejecuta fixtures o diagnósticos de gobernanza.
 
+WORKSTATION descubre esas capacidades en la máquina actual. No exige que el
+usuario, `GRADLE_USER_HOME`, las rutas de los JDK, el prefijo de `cedg_env`,
+`TEMP` o las cachés coincidan con otra ejecución. Esas rutas quedan registradas
+como observación de trazabilidad, pero sólo las capacidades, versiones y
+procedencias portátiles forman parte de la aceptación. Si
+`GRADLE_USER_HOME` no está definido, se usa el comportamiento normal de Gradle.
+
 Las instrucciones anteriores usaban el entorno externo `om_env`. Cree y use
 `cedg_env`; no renombre, actualice, pode ni elimine `om_env` como parte de esta
 migración.

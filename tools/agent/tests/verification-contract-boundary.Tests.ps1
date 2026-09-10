@@ -8,6 +8,7 @@ $repositoryRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../..'))
 Import-Module (Join-Path $PSScriptRoot '../verification-io.psm1') -Force
 Import-Module (Join-Path $PSScriptRoot '../verification-registry.psm1') -Force
 Import-Module (Join-Path $PSScriptRoot '../verification-supervisor.psm1') -Force
+. (Join-Path $PSScriptRoot 'fixtures/verification-environment-fixture.ps1')
 
 $script:Cases = 0
 $script:Assertions = 0
@@ -213,10 +214,9 @@ Invoke-Case 'real repository producer separates safety acceptance and style diag
         }
         $head = ([string](Invoke-Git $repo @('rev-parse', 'HEAD'))).Trim()
         $tree = ([string](Invoke-Git $repo @('rev-parse', 'HEAD^{tree}'))).Trim()
-        $identity = [pscustomobject]@{
-            base_commit = $null; base_tree = $null; candidate_commit = $head;
-            candidate_tree = $tree; environment_fingerprint = '9' * 64
-        }
+        $identity = New-VerificationTestEnvironmentIdentity -BaseCommit $null `
+            -BaseTree $null -CandidateCommit $head -CandidateTree $tree `
+            -CompatibilitySignature ('9' * 64)
         $run = Invoke-VerificationSupervisor -Registry $registry -Profile STATIC `
             -RepositoryRoot $repo -OutputDirectory $output -Identity $identity
         Assert-Case ($run.report.process_producers[0].exit_code -ne 0) 'Style producer did not exercise nonzero legacy exit.'

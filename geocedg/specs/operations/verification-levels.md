@@ -28,6 +28,15 @@ An incomplete profile fails safely without executing a mixed legacy wrapper.
 
 `WORKSTATION` is a live, non-mutating installation check. Bootstrap prepares
 or inspects prerequisites; it does not run product acceptance or governance.
+Environment acceptance uses a normalized portable capability contract:
+platform/architecture, required tool and runtime versions, and verified
+Python/import provenance. User identity, absolute installation paths,
+`GRADLE_USER_HOME`, caches, `TEMP` and session locations are retained only as
+an environment observation. They cannot change acceptance, coverage, exit
+status, deterministic result identity or receipt reuse. A compatible run is
+matched by its portable contract together with the exact Git objects, plan,
+checker, command and consumed-input identities; no historical path fingerprint
+is a prerequisite.
 `FINAL` executes each required pure leaf at most once, preserves all evidence,
 emits one typed report and may issue a receipt only for an immutable candidate
 with complete trusted coverage and accepted semantic/safety/core contracts.

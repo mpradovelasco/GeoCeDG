@@ -38,7 +38,11 @@ function Get-VerificationReceiptIdentityPayload {
         candidate_tree = [string](Get-VerificationReceiptProperty $Receipt 'candidate_tree' -Required)
         execution_plan_hash = [string](Get-VerificationReceiptProperty $Receipt 'execution_plan_hash' -Required)
         checker_identity_hash = [string](Get-VerificationReceiptProperty $Receipt 'checker_identity_hash' -Required)
-        environment_fingerprint = [string](Get-VerificationReceiptProperty $Receipt 'environment_fingerprint' -Required)
+        environment_contract = Get-VerificationReceiptProperty $Receipt `
+            'environment_contract' -Required
+        environment_compatibility_signature = [string](
+            Get-VerificationReceiptProperty $Receipt `
+                'environment_compatibility_signature' -Required)
         input_identity_hash = [string](Get-VerificationReceiptProperty $Receipt 'input_identity_hash' -Required)
         accepted_profiles = [string[]]@(Get-VerificationReceiptProperty $Receipt 'accepted_profiles' -Required)
         semantic_domains = [string[]]@(
@@ -178,7 +182,7 @@ function New-VerificationAcceptanceReceipt {
     [Array]::Sort($diagnosticHashValues, [StringComparer]::Ordinal)
     $receipt = [ordered]@{
         '$schema' = 'geocedg/specs/operations/verification-receipt.schema.json'
-        schema_version = 2
+        schema_version = 3
         receipt_kind = 'GEOCEDG_ACCEPTANCE_RECEIPT'
         receipt_id = ''
         accepted_report_hash = [string](Get-VerificationReceiptProperty $Report 'result_hash' -Required)
@@ -188,8 +192,16 @@ function New-VerificationAcceptanceReceipt {
         candidate_tree = [string](Get-VerificationReceiptProperty $Report 'candidate_tree' -Required)
         execution_plan_hash = [string](Get-VerificationReceiptProperty $Report 'execution_plan_hash' -Required)
         checker_identity_hash = $CheckerIdentityHash
-        environment_fingerprint = [string](
-            Get-VerificationReceiptProperty $Report 'environment_fingerprint' -Required)
+        environment_contract = Get-VerificationReceiptProperty $Report `
+            'environment_contract' -Required
+        environment_compatibility_signature = [string](
+            Get-VerificationReceiptProperty $Report `
+                'environment_compatibility_signature' -Required)
+        environment_observation = Get-VerificationReceiptProperty $Report `
+            'environment_observation' -Required
+        environment_observation_hash = [string](
+            Get-VerificationReceiptProperty $Report `
+                'environment_observation_hash' -Required)
         input_identity_hash = $InputIdentityHash
         accepted_profiles = $profiles
         semantic_domains = $semanticDomains
@@ -222,6 +234,12 @@ function Assert-VerificationAcceptanceReceipt {
         Get-VerificationReceiptIdentityPayload -Receipt $Receipt)
     $actualId = [string](Get-VerificationReceiptProperty $Receipt 'receipt_id' -Required)
     if ($actualId -cne $expectedId) { throw 'Verification receipt identity hash is invalid.' }
+    $observation = Get-VerificationReceiptProperty $Receipt 'environment_observation' -Required
+    $observationHash = [string](Get-VerificationReceiptProperty $Receipt `
+        'environment_observation_hash' -Required)
+    if ($observationHash -cne (Get-VerificationDeterministicHash -Value $observation)) {
+        throw 'Verification receipt environment observation hash is invalid.'
+    }
     return $true
 }
 
@@ -239,7 +257,7 @@ function Test-VerificationReceiptIdentity {
         'candidate_tree',
         'execution_plan_hash',
         'checker_identity_hash',
-        'environment_fingerprint',
+        'environment_compatibility_signature',
         'input_identity_hash'
     )
     $mismatches = [Collections.Generic.List[string]]::new()

@@ -774,7 +774,8 @@ function Compare-VerificationBaselineResults {
             throw "$($entry.Name) report has an invalid deterministic result hash."
         }
     }
-    $identityFields = @('profile', 'execution_plan_hash', 'environment_fingerprint')
+    $identityFields = @('profile', 'execution_plan_hash',
+        'environment_compatibility_signature')
     $identityMismatches = [Collections.Generic.List[string]]::new()
     foreach ($field in $identityFields) {
         if ([string](Get-VerificationSupervisorProperty $BaselineReport $field -Required) -cne
@@ -957,7 +958,7 @@ function New-VerificationAggregatedReport {
     }
     $report = [ordered]@{
         '$schema' = 'geocedg/specs/operations/verification-result.schema.json'
-        schema_version = 2
+        schema_version = 3
         run_id = $RunId
         profile = $Profile
         run_state = 'COMPLETED'
@@ -968,8 +969,16 @@ function New-VerificationAggregatedReport {
         candidate_tree = [string](
             Get-VerificationSupervisorProperty $Identity 'candidate_tree' -Required)
         execution_plan_hash = $ExecutionPlanHash
-        environment_fingerprint = [string](
-            Get-VerificationSupervisorProperty $Identity 'environment_fingerprint' -Required)
+        environment_contract = Get-VerificationSupervisorProperty $Identity `
+            'environment_contract' -Required
+        environment_compatibility_signature = [string](
+            Get-VerificationSupervisorProperty $Identity `
+                'environment_compatibility_signature' -Required)
+        environment_observation = Get-VerificationSupervisorProperty $Identity `
+            'environment_observation' -Required
+        environment_observation_hash = [string](
+            Get-VerificationSupervisorProperty $Identity `
+                'environment_observation_hash' -Required)
         started_at = $StartedAt.ToUniversalTime().ToString('o')
         finished_at = $FinishedAt.ToUniversalTime().ToString('o')
         process_producers = $producers

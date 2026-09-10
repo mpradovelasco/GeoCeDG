@@ -314,6 +314,23 @@
       "required_for_profiles": ["INFRA_UNIT", "FINAL"]
     },
     {
+      "check_id": "infra.environment-portability",
+      "node_kind": "ACCEPTANCE_LEAF",
+      "contract_class": "VERIFICATION_CORE",
+      "tier": "INFRA_UNIT",
+      "command": { "kind": "PROCESS", "identity": "verification-environment-tests-v1", "executable": "PWSH" },
+      "argv": ["-NoLogo", "-NoProfile", "-File", "{repository_root}/tools/agent/tests/verification-environment.Tests.ps1"],
+      "working_directory": ".",
+      "dependencies": [],
+      "platforms": ["WINDOWS", "LINUX", "MACOS"],
+      "impact_paths": ["tools/agent/verification-environment.psm1", "tools/agent/checks/workstation-safety.ps1", "tools/agent/checks/python-check-evidence-producer.ps1"],
+      "environment_contract": { "inherit": true, "variables": {} },
+      "resource_locks": [],
+      "side_effects": ["TASK_OWNED_OUTPUT"],
+      "output_adapter": "EXIT_CODE_V1",
+      "required_for_profiles": ["INFRA_UNIT", "FINAL"]
+    },
+    {
       "check_id": "infra.registry",
       "node_kind": "ACCEPTANCE_LEAF",
       "contract_class": "VERIFICATION_CORE",

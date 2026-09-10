@@ -5,13 +5,16 @@ param()
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 Import-Module (Join-Path $PSScriptRoot '../verification-supervisor.psm1') -Force
+Import-Module (Join-Path $PSScriptRoot '../verification-io.psm1') -Force
+. (Join-Path $PSScriptRoot 'fixtures/verification-environment-fixture.ps1')
 
 $script:Cases = 0
 $script:Assertions = 0
 function Assert-Case([bool]$Condition,[string]$Message){$script:Assertions++;if(-not $Condition){throw "TEST FAILURE: $Message"}}
 function Invoke-Case([string]$Name,[scriptblock]$Action){$script:Cases++;&$Action;Write-Host "PASS: $Name"}
 
-$identity=[pscustomobject]@{base_commit=$null;base_tree=$null;candidate_commit=('1'*40);candidate_tree=('2'*40);environment_fingerprint=('3'*64)}
+$identity=New-VerificationTestEnvironmentIdentity -BaseCommit $null -BaseTree $null `
+    -CandidateCommit ('1'*40) -CandidateTree ('2'*40) -CompatibilitySignature ('3'*64)
 $semantic=[pscustomobject][ordered]@{check_id='semantic.contract';node_kind='ACCEPTANCE_LEAF';contract_class='SEMANTIC';semantic_domain='MIXED';status='CONTRACT_SATISFIED';coverage_state='COMPLETE';command_identity=('4'*64);exit_code=0;cause=$null;evidence=[object[]]@();dependencies=[string[]]@();duration_ms=1}
 
 Invoke-Case 'arbitrarily many diagnostics do not alter acceptance coverage or exit' {

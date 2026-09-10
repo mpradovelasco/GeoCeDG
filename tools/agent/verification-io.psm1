@@ -373,7 +373,9 @@ function Get-VerificationResultIdentityHash {
         candidate_commit = [string](Get-VerificationIdentityProperty $Report 'candidate_commit')
         candidate_tree = [string](Get-VerificationIdentityProperty $Report 'candidate_tree')
         execution_plan_hash = [string](Get-VerificationIdentityProperty $Report 'execution_plan_hash')
-        environment_fingerprint = [string](Get-VerificationIdentityProperty $Report 'environment_fingerprint')
+        environment_contract = Get-VerificationIdentityProperty $Report 'environment_contract'
+        environment_compatibility_signature = [string](
+            Get-VerificationIdentityProperty $Report 'environment_compatibility_signature')
         process_producers = [object[]]@(Sort-VerificationIdentityObjects $producers check_id | ForEach-Object {
             ConvertTo-VerificationProducerIdentity $_
         })

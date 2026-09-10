@@ -13,6 +13,7 @@ $ErrorActionPreference = 'Stop'
 $utf8 = [Text.UTF8Encoding]::new($false)
 [Console]::OutputEncoding = $utf8
 $OutputEncoding = $utf8
+Import-Module (Join-Path $PSScriptRoot '../verification-environment.psm1') -Force
 $script:Contracts = [Collections.Generic.List[object]]::new()
 $script:NativeEvidence = [Collections.Generic.List[object]]::new()
 
@@ -73,7 +74,8 @@ function Invoke-NativeCapture {
         [string]$Id,
         [string]$Executable,
         [string[]]$Arguments,
-        [string]$WorkingDirectory
+        [string]$WorkingDirectory,
+        [hashtable]$Environment = @{}
     )
     if ([string]::IsNullOrWhiteSpace($Executable) -or
             -not (Test-Path -LiteralPath $Executable -PathType Leaf)) {
@@ -105,6 +107,11 @@ function Invoke-NativeCapture {
     $start.CreateNoWindow = $true
     $start.RedirectStandardOutput = $true
     $start.RedirectStandardError = $true
+    $start.StandardOutputEncoding = $utf8
+    $start.StandardErrorEncoding = $utf8
+    foreach ($name in $Environment.Keys) {
+        $start.Environment[[string]$name] = [string]$Environment[$name]
+    }
     $process = [Diagnostics.Process]::new()
     $process.StartInfo = $start
     try {
@@ -206,6 +213,16 @@ function Get-InstalledJdkCandidates {
     $gradleJdks = Join-Path $gradleHome 'jdks'
     if (Test-Path -LiteralPath $gradleJdks -PathType Container) {
         foreach ($directory in Get-ChildItem -LiteralPath $gradleJdks -Directory) {
+            Add-Candidate $directory.FullName
+        }
+    }
+
+    # IDE-managed JDKs are machine capabilities too. Their absolute location is
+    # observation data; discover the conventional per-user container without
+    # binding acceptance to a historical user or cache path.
+    $userJdks = Join-Path ([Environment]::GetFolderPath('UserProfile')) '.jdks'
+    if (Test-Path -LiteralPath $userJdks -PathType Container) {
+        foreach ($directory in Get-ChildItem -LiteralPath $userJdks -Directory) {
             Add-Candidate $directory.FullName
         }
     }
@@ -457,7 +474,7 @@ foreach ($version in @(17, 25)) {
     }
 }
 
-$conda = Resolve-Application 'conda'
+$conda = Resolve-VerificationEnvironmentApplication 'conda'
 $condaRun = Invoke-NativeCapture 'conda.version' $conda @('--version') $repository
 Add-Contract 'conda.available' $(if ($condaRun.state -ceq 'COMPLETED' -and
         $condaRun.exit_code -eq 0 -and $condaRun.stdout -match '(?m)^conda\s+\S+') {
@@ -466,17 +483,26 @@ Add-Contract 'conda.available' $(if ($condaRun.state -ceq 'COMPLETED' -and
     'EVIDENCE_UNTRUSTED'
 }) 'Conda executable' $(if ($null -ne $conda) { $conda } else { $condaRun.state }) $condaRun.cause
 
-$activeName = [Environment]::GetEnvironmentVariable('CONDA_DEFAULT_ENV')
-$activeNameSatisfied = $activeName -ceq 'cedg_env'
-Add-Contract 'conda.environment-name' $(if ($activeNameSatisfied) {
+$resolvedEnvironment = $null
+$environmentResolutionCause = $null
+try {
+    $resolvedEnvironment = Resolve-VerificationCedgEnvironment `
+        -CondaExecutable $conda -WorkingDirectory $repository
+} catch { $environmentResolutionCause = $_.Exception.Message }
+$resolvedName = if ($null -eq $resolvedEnvironment) { $null } else {
+    [string]$resolvedEnvironment.environment_name
+}
+Add-Contract 'conda.environment-name' $(if ($resolvedName -ceq 'cedg_env') {
     'SATISFIED'
-} else { 'VIOLATED' }) 'cedg_env' $activeName $(if ($activeNameSatisfied) {
+} else { 'VIOLATED' }) 'cedg_env' $resolvedName $(if ($resolvedName -ceq 'cedg_env') {
     $null
-} else { 'The active Conda environment must be cedg_env.' })
-$environmentPrefix = [Environment]::GetEnvironmentVariable('CONDA_PREFIX')
+} else { $environmentResolutionCause })
+$environmentPrefix = if ($null -eq $resolvedEnvironment) { $null } else {
+    [string]$resolvedEnvironment.prefix
+}
 $prefixState = 'VIOLATED'
 $prefixObserved = $environmentPrefix
-$prefixCause = 'CONDA_PREFIX must resolve to an existing absolute directory named cedg_env.'
+$prefixCause = $environmentResolutionCause
 try {
     $resolvedEnvironmentPrefix = [IO.Path]::GetFullPath($environmentPrefix).TrimEnd('\', '/')
     $prefixObserved = $resolvedEnvironmentPrefix
@@ -489,9 +515,19 @@ try {
 } catch { }
 Add-Contract 'conda.environment-prefix' $prefixState `
     'existing absolute prefix named cedg_env' $prefixObserved $prefixCause
-$python = Resolve-Application 'python'
+$python = if ($null -eq $resolvedEnvironment) { $null } else {
+    [string]$resolvedEnvironment.python
+}
 $probeSource = "import json,os,platform,sys,mpmath;print('GEOCEDG_WORKSTATION:'+json.dumps({'python':platform.python_version(),'implementation':platform.python_implementation(),'executable':sys.executable,'prefix':sys.prefix,'conda_prefix':os.environ.get('CONDA_PREFIX',''),'mpmath':mpmath.__version__,'mpmath_file':mpmath.__file__},sort_keys=True))"
-$pythonRun = Invoke-NativeCapture 'python.identity' $python @('-c', $probeSource) $repository
+$pythonEnvironment = @{}
+if ($null -ne $resolvedEnvironment) {
+    $pythonEnvironment['CONDA_PREFIX'] = [string]$resolvedEnvironment.prefix
+    $pythonEnvironment['CONDA_DEFAULT_ENV'] = 'cedg_env'
+    $pythonEnvironment['PATH'] = [string]$resolvedEnvironment.prefix +
+        [IO.Path]::PathSeparator + [Environment]::GetEnvironmentVariable('PATH')
+}
+$pythonRun = Invoke-NativeCapture 'python.identity' $python @('-c', $probeSource) `
+    $repository $pythonEnvironment
 if ($pythonRun.state -cne 'COMPLETED' -or $pythonRun.exit_code -ne 0) {
     foreach ($id in @('python.version', 'python.implementation', 'python.prefix',
             'conda.prefix-inheritance',

@@ -11,6 +11,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $utf8 = [Text.UTF8Encoding]::new($false)
 $utf8Strict = [Text.UTF8Encoding]::new($false, $true)
+Import-Module (Join-Path $PSScriptRoot '../verification-environment.psm1') -Force
 $repository = [IO.Path]::GetFullPath($RepositoryRoot)
 $scriptFull = [IO.Path]::GetFullPath((Join-Path $repository $ScriptPath))
 $output = [IO.Path]::GetFullPath($OutputDirectory)
@@ -20,7 +21,6 @@ $identityStdoutPath = Join-Path $output 'identity.stdout.log'
 $identityStderrPath = Join-Path $output 'identity.stderr.log'
 $stdoutPath = Join-Path $output 'check.stdout.log'
 $stderrPath = Join-Path $output 'check.stderr.log'
-$inventoryPath = Join-Path ([Environment]::GetFolderPath('UserProfile')) '.conda/environments.txt'
 $probe = @'
 import json, os, pathlib, platform, sys
 import mpmath
@@ -45,56 +45,6 @@ function Test-ContainedPath {
     return $candidateFull.StartsWith(
         $rootFull + [IO.Path]::DirectorySeparatorChar,
         [StringComparison]::OrdinalIgnoreCase)
-}
-
-function Get-CedgEnvironmentInventory {
-    if (-not (Test-Path -LiteralPath $inventoryPath -PathType Leaf)) {
-        throw 'The read-only Conda environment inventory is unavailable.'
-    }
-    $values = [Collections.Generic.List[string]]::new()
-    $seen = [Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
-    foreach ($line in [IO.File]::ReadAllLines($inventoryPath, $utf8Strict)) {
-        if ([string]::IsNullOrWhiteSpace($line)) { continue }
-        $candidate = [IO.Path]::GetFullPath($line.Trim())
-        if ([IO.Path]::GetFileName($candidate) -cne 'cedg_env') { continue }
-        if ($seen.Add($candidate)) { $values.Add($candidate) }
-    }
-    return [string[]]$values.ToArray()
-}
-
-function Resolve-CedgEnvironmentPrefix {
-    $registered = [string[]]@(Get-CedgEnvironmentInventory)
-    $requested = $null
-    if (-not [string]::IsNullOrWhiteSpace($EnvironmentPrefix)) {
-        $requested = [IO.Path]::GetFullPath($EnvironmentPrefix)
-    } elseif ([Environment]::GetEnvironmentVariable('CONDA_DEFAULT_ENV') -ceq 'cedg_env' -and
-            -not [string]::IsNullOrWhiteSpace([Environment]::GetEnvironmentVariable('CONDA_PREFIX'))) {
-        $requested = [IO.Path]::GetFullPath([Environment]::GetEnvironmentVariable('CONDA_PREFIX'))
-    }
-    if ($null -ne $requested) {
-        if (-not ($registered -contains $requested)) {
-            throw 'The requested cedg_env prefix is absent from the Conda inventory.'
-        }
-        $candidates = @($requested)
-    } else {
-        $candidates = @($registered)
-        [Array]::Reverse($candidates)
-    }
-    foreach ($candidate in $candidates) {
-        if ([IO.Path]::GetFileName($candidate) -cne 'cedg_env') { continue }
-        $python = Join-Path $candidate 'python.exe'
-        $history = Join-Path $candidate 'conda-meta/history'
-        if ((Test-Path -LiteralPath $python -PathType Leaf) -and
-                (Test-Path -LiteralPath $history -PathType Leaf) -and
-                (Test-ContainedPath $candidate $python)) {
-            return [pscustomobject]@{
-                prefix = $candidate
-                python = [IO.Path]::GetFullPath($python)
-                inventory_path = [IO.Path]::GetFullPath($inventoryPath)
-            }
-        }
-    }
-    throw 'No valid registered cedg_env prefix contains Python and Conda metadata.'
 }
 
 function Invoke-PythonEvidence {
@@ -138,7 +88,8 @@ $identityState = 'ABSENT'
 $started = [datetime]::UtcNow
 $stopwatch = [Diagnostics.Stopwatch]::StartNew()
 try {
-    $resolved = Resolve-CedgEnvironmentPrefix
+    $resolved = Resolve-VerificationCedgEnvironment `
+        -EnvironmentPrefix $EnvironmentPrefix -WorkingDirectory $repository
     $identityRun = Invoke-PythonEvidence $resolved.python $resolved.prefix `
         $identityArgs $identityStdoutPath $identityStderrPath
     $identityExitCode = $identityRun.exit_code
@@ -174,8 +125,10 @@ $e = [ordered]@{
     working_directory = $repository
     environment_name = 'cedg_env'
     environment_prefix = $(if ($null -eq $resolved) { $null } else { $resolved.prefix })
-    conda_inventory_path = [IO.Path]::GetFullPath($inventoryPath)
-    conda_inventory_member = $null -ne $resolved
+    environment_resolution_source = $(if ($null -eq $resolved) { $null } else {
+            [string]$resolved.resolution_source
+        })
+    environment_resolved = $null -ne $resolved
     script = $scriptFull
     identity_exit_code = $identityExitCode
     identity_state = $identityState
