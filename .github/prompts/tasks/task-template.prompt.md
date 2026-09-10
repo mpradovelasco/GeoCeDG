@@ -1,4 +1,7 @@
-# Objective
+# GeoCeDG task template
+
+<!-- geocedg-field: objective -->
+## Objective
 
 State one concrete outcome.
 
@@ -12,39 +15,48 @@ acceptance level. For one developer/integrator, default explicitly to
 an explicit author decision. A higher campaign requires a concrete
 `VERIFICATION_ESCALATION_REQUEST` and author authorization before execution.
 
-# Authority and evidence hierarchy
+<!-- geocedg-field: implementation_base -->
+## Implementation base
+
+Name the exact commit and tree to which the task applies. Moving branch names
+are context, not implementation identity.
+
+## Authority and evidence hierarchy
 
 Reference `AGENTS.md`, current code/build, accepted specifications/ADRs, and
 task-specific evidence in order.
 
-# Scope
+<!-- geocedg-field: allowed_scope -->
+## Allowed scope
 
 List exact files, modules, and observable behavior included.
 For an operational-only task, state `PRODUCT_PHASE_EFFECT = NONE` and name the
 productive phases that remain unauthorized.
 
-# Explicitly forbidden scope
+<!-- geocedg-field: forbidden_scope -->
+## Explicitly forbidden scope
 
 List adjacent layers and behavior that must remain unchanged.
 
-# Architectural placement
+## Architectural placement
 
 Name the owning layer and explain why it is authoritative.
 
-# Required design/specification
+## Required design/specification
 
 Name the approved specification/ADR or require one before implementation.
 
-# Geometric invariants and degeneracies
+## Geometric invariants and degeneracies
 
 Reference governing definitions. State `not applicable` only for a genuinely
 non-geometric task.
 
-# Compatibility and serialization
+## Compatibility and serialization
 
 State legacy, file-format, feature-flag, and migration constraints.
 
-# Required tests and commands
+<!-- geocedg-field: required_checks -->
+## Required tests and commands
 
 Name focused checks and the relevant `tools/agent/verify*.ps1` entry point.
 Distinguish DEV, PHASE, COMPOSED and FULL; name explicit DEV filters and the PHASE
@@ -68,7 +80,19 @@ AUTHOR_OPERATED` for PREPARE; never infer it. Otherwise label the run
 `DEVELOPMENT_DIAGNOSTIC`; a dirty/precommit PASS may not be reattributed after
 commit.
 
-# Acceptance and closeout
+<!-- geocedg-field: authorization_boundary -->
+## Authorization boundary
+
+State which planning, implementation, verification and author-decision actions
+are authorized. Silence or general agreement is not authorization.
+
+<!-- geocedg-field: publication_boundary -->
+## Publication boundary
+
+State whether commit, push, merge, tag and promotion are authorized. Final
+acceptance evidence never grants publication authority by itself.
+
+## Acceptance and closeout
 
 State whether the task stops at `AUTHOR REVIEW READY` or must reach `AUTHOR
 CLOSEOUT READY`. The first means prepared for review. The second additionally
@@ -85,7 +109,7 @@ only the expected delta and stop before commit/tag/promotion/push; list those
 human-owned operations and require `-Action AUDIT` after promotion. Do not
 require another PHASE/COMPOSED/FULL when executable inputs are proved unchanged.
 
-# Required artifacts
+## Required artifacts
 
 List durable sources, generated evidence, and the completion report.
 Include the bootstrap-impact outcome and rationale/affected paths required by
@@ -97,7 +121,7 @@ technical-result paths/hashes, evidence-use/consumability fields, chosen mode,
 expected delta/tag/promotion plan and post-promotion audit result. Historical
 receipts retain their original cohort and classification.
 
-# Stop conditions
+## Stop conditions
 
 List decisions or failures that require human review before continuing.
 Include dirty final-acceptance state, failed/missing readiness, absent explicit

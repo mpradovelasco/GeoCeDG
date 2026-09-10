@@ -1,7 +1,7 @@
 #requires -Version 7.2
 [CmdletBinding()]
 param(
-    [ValidateSet("STATIC", "INFRA_UNIT", "WORKSTATION", "OPERATIONAL", "DEV", "PHASE", "INTEGRATION", "FINAL")]
+    [ValidateSet("STATIC", "INFRA_UNIT", "WORKSTATION", "PACKAGING", "OPERATIONAL", "DEV", "PHASE", "INTEGRATION", "FINAL")]
     [string]$Profile,
     [ValidateSet("DEV", "PHASE", "COMPOSED", "FULL")]
     [string]$Level = "COMPOSED",
@@ -18,9 +18,9 @@ param(
     [switch]$KeepBuildOutputs,
     [switch]$RunBenchmarks,
     [switch]$VerifyPackagingArtifacts,
+    [switch]$CheckToolchain,
     [switch]$PlanOnly,
     [switch]$Quiet,
-    [string]$CloseoutReadinessPath,
     [string]$LogDirectory = (Join-Path ([IO.Path]::GetTempPath()) (
         "geocedg-verify-" + [guid]::NewGuid().ToString("N"))),
     [string]$BenchmarkOutputPath,
@@ -67,6 +67,41 @@ function Get-GitObject {
     return $value
 }
 
+function Get-PackagingGeneratedState {
+    $records = [Collections.Generic.List[object]]::new()
+    foreach ($name in @('build', '.gradle', '.kotlin')) {
+        $container = Join-Path $repositoryRoot $name
+        if (-not (Test-Path -LiteralPath $container -PathType Container)) { continue }
+        foreach ($file in Get-ChildItem -LiteralPath $container -File -Recurse -Force |
+                Sort-Object FullName) {
+            $records.Add([ordered]@{
+                path = [IO.Path]::GetRelativePath($repositoryRoot, $file.FullName).Replace('\', '/')
+                bytes = [long]$file.Length
+                sha256 = (Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+            })
+        }
+    }
+    return [object[]]$records.ToArray()
+}
+
+function New-PackagingRepositoryBaseline {
+    $git = Get-Command git -CommandType Application -ErrorAction Stop |
+        Select-Object -First 1
+    $status = (& $git.Path -C $repositoryRoot status --porcelain=v1 --untracked-files=all) -join "`n"
+    if ($LASTEXITCODE -ne 0) { throw 'Unable to capture packaging repository status.' }
+    $generated = Get-PackagingGeneratedState
+    $generatedJson = ConvertTo-VerificationCanonicalJson -Value $generated
+    $generatedHash = [Convert]::ToHexString([Security.Cryptography.SHA256]::HashData(
+            [Text.UTF8Encoding]::new($false).GetBytes($generatedJson))).ToLowerInvariant()
+    $path = Join-Path ([IO.Path]::GetTempPath()) (
+        'geocedg-packaging-baseline-' + [guid]::NewGuid().ToString('N') + '.json')
+    [void](Write-VerificationAtomicJson -Path $path -Value ([ordered]@{
+        status = $status
+        generated_state_sha256 = $generatedHash
+    }))
+    return $path
+}
+
 try {
     $requestedProfile = Get-CanonicalSelection
     $selection = if ($requestedProfile -ceq 'PHASE') { $Phase } else { $null }
@@ -75,6 +110,11 @@ try {
     }
     if ($requestedProfile -cne 'PHASE' -and $PSBoundParameters.ContainsKey('Phase')) {
         throw 'Phase is valid only for PHASE.'
+    }
+    if ($requestedProfile -cne 'PACKAGING' -and
+            ($CheckToolchain -or $VerifyPackagingArtifacts -or
+             $PSBoundParameters.ContainsKey('PackagingArtifactRoot'))) {
+        throw 'Packaging options are valid only for the PACKAGING profile.'
     }
 
     $registry = Read-VerificationJson -Path $registryPath
@@ -110,7 +150,38 @@ try {
         RegistrySchemaPath = $registrySchemaPath
         ResultSchemaPath = $resultSchemaPath
     }
-    $run = Invoke-VerificationSupervisor @runParameters
+    $packagingBaseline = $null
+    $packagingEnvironment = @{}
+    if ($requestedProfile -ceq 'PACKAGING') {
+        $packagingBaseline = New-PackagingRepositoryBaseline
+        foreach ($name in @('GEOCEDG_PACKAGING_BASELINE_PATH',
+                'GEOCEDG_PACKAGING_CHECK_TOOLCHAIN',
+                'GEOCEDG_PACKAGING_REQUIRE_ARTIFACTS',
+                'GEOCEDG_PACKAGING_ARTIFACT_ROOT')) {
+            $packagingEnvironment[$name] = [Environment]::GetEnvironmentVariable($name)
+        }
+        [Environment]::SetEnvironmentVariable('GEOCEDG_PACKAGING_BASELINE_PATH',
+            $packagingBaseline)
+        [Environment]::SetEnvironmentVariable('GEOCEDG_PACKAGING_CHECK_TOOLCHAIN',
+            $(if ($CheckToolchain -or $VerifyPackagingArtifacts) { 'true' } else { 'false' }))
+        [Environment]::SetEnvironmentVariable('GEOCEDG_PACKAGING_REQUIRE_ARTIFACTS',
+            $(if ($VerifyPackagingArtifacts) { 'true' } else { 'false' }))
+        [Environment]::SetEnvironmentVariable('GEOCEDG_PACKAGING_ARTIFACT_ROOT',
+            [string]$PackagingArtifactRoot)
+    }
+    try {
+        $run = Invoke-VerificationSupervisor @runParameters
+    } finally {
+        if ($requestedProfile -ceq 'PACKAGING') {
+            foreach ($name in $packagingEnvironment.Keys) {
+                [Environment]::SetEnvironmentVariable($name, $packagingEnvironment[$name])
+            }
+            if (-not [string]::IsNullOrWhiteSpace($packagingBaseline) -and
+                    (Test-Path -LiteralPath $packagingBaseline -PathType Leaf)) {
+                Remove-Item -LiteralPath $packagingBaseline -Force
+            }
+        }
+    }
     if (-not $Quiet) {
         Write-Host "Resolved profile: $($run.plan.profile)"
         if ($null -ne $run.plan.selection) {

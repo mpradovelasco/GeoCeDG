@@ -32,7 +32,17 @@ Su selector raíz `:desktop:run` está desactualizado para el composite build
 fijado; la discrepancia y las rutas correctas están documentadas en
 [el mapa de módulos](docs/architecture/upstream_module_map.md).
 
-## Primer arranque en Windows
+## Flujo normal para un clon existente en Windows
+
+Ejecute estos comandos desde la raíz del repositorio con PowerShell 7.2 o
+posterior. Antes de actualizar, inspeccione cualquier trabajo local; no lo
+descarte ni lo mezcle implícitamente con la actualización:
+
+```powershell
+git status --short
+git switch main
+git pull --ff-only
+```
 
 Se requiere Git, PowerShell 7.2 o posterior, un JDK 22 para ejecutar Gradle y JDK completos
 17 (compilación y tests) y 25 (Desktop), disponibles como toolchains. El wrapper
@@ -68,11 +78,22 @@ conda run --no-capture-output -n cedg_env python -c "import json,platform,sys,mp
 
 El resultado debe identificar exactamente CPython `3.12.13` y mpmath `1.4.1`;
 `executable`, `prefix` y `mpmath_file` deben pertenecer al mismo prefijo de
-`cedg_env`. La comprobación focalizada obligatoria tras la instalación es:
+`cedg_env`. La comprobación canónica, real y obligatoria tras la instalación es:
+
+```powershell
+.\tools\agent\verify.ps1 -Profile WORKSTATION
+```
+
+El comando público de compatibilidad es:
 
 ```powershell
 .\tools\agent\verify-workstation.ps1
 ```
+
+Ambos resuelven el mismo plan y el mismo contrato live. Validan Gradle 9.4.1,
+Java 22 para el launcher, JDK completos 17 y 25, `cedg_env`, CPython 3.12.13,
+mpmath 1.4.1 y la procedencia de ejecutable, prefijo e importación. WORKSTATION
+no compila el producto ni ejecuta fixtures o diagnósticos de gobernanza.
 
 Las instrucciones anteriores usaban el entorno externo `om_env`. Cree y use
 `cedg_env`; no renombre, actualice, pode ni elimine `om_env` como parte de esta
@@ -146,22 +167,14 @@ manualmente el inventario Conda: no deduzca el prefijo ni elimine otro entorno.
 La guía de usuario contiene el procedimiento ampliado de instalación,
 recuperación y diagnóstico.
 
-```powershell
-git clone https://github.com/mpradovelasco/GeoCeDG.git
-cd GeoCeDG
-.\tools\bootstrap\bootstrap-windows.ps1
-```
-
-El bootstrap configura `upstream` sólo si falta, verifica el tag fijado y,
-antes de la verificación costosa del producto, comprueba el Java efectivo, los
-JDK 17/25 y las versiones y el origen de Python/mpmath dentro de `cedg_env`.
-Delega después en `tools/agent/verify.ps1`, cuyo nivel predeterminado es
-COMPOSED, no FULL; véase el [contrato de niveles](geocedg/specs/operations/verification-levels.md).
-Por defecto es idempotente y no instala software. Consulte su ayuda con
-`Get-Help .\tools\bootstrap\bootstrap-windows.ps1 -Detailed`.
+El bootstrap es una operación avanzada y separada de preparación/preflight.
+Puede inspeccionar prerrequisitos, remotos y el tag fijado, pero no compila,
+lanza el producto ni ejecuta aceptación o gobernanza implícitamente. No es el
+verificador live de la instalación. Consulte
+`Get-Help .\tools\bootstrap\bootstrap-windows.ps1 -Detailed` sólo para ese flujo.
 
 Cada ejecución guarda `bootstrap-transcript.log`, `bootstrap-result.json` y
-los logs de `preflight/` y `verification/` en una carpeta única bajo
+los logs de preflight en una carpeta única bajo
 `%TEMP%\geocedg-bootstrap`. `-LogDirectory <directorio>` cambia sólo ese
 directorio padre común, no reutiliza una ejecución anterior. Antes de crear
 logs se rechazan rutas bajo `build`, `.gradle`, `.kotlin`, copias temporales de
@@ -172,17 +185,23 @@ clasificación y logs antes de atribuirlo al producto o cambiar el entorno.
 
 La instalación de requisitos de packaging es una acción separada y explícita
 con `-InstallPackagingPrerequisites`: ejecuta únicamente el instalador focalizado
-y termina, sin `fetch`, builds ni verificaciones G3/G5. La aceptación del
-repositorio se ejecuta después, de forma independiente, con
-`tools/agent/verify.ps1`; use `-Level FULL` cuando lo exija el contrato de niveles.
+y termina, sin `fetch`, builds ni verificaciones G3/G5. La verificación se
+ejecuta después, de forma independiente, mediante un perfil explícito de
+`tools/agent/verify.ps1`.
 
 ## Verificación, compilación y ejecución
 
-Autoridad compuesta local (COMPOSED por defecto):
+Compruebe la instalación, compile y ejecute por separado:
 
 ```powershell
-.\tools\agent\verify.ps1
+.\tools\agent\verify.ps1 -Profile WORKSTATION
+.\gradlew.bat :desktop:desktop:compileJava
+.\gradlew.bat :desktop:desktop:runGeoCeDG
 ```
+
+La compilación y la ejecución Java no necesitan Conda. La configuración actual
+no instala toolchains automáticamente: Java 22 y los JDK completos 17 y 25
+deben estar disponibles en la máquina.
 
 La autoridad informa rama (o `detached HEAD`), commit y última fase incluida
 según el roadmap versionado. Valida el checkout actual con los mismos gates en
@@ -191,11 +210,11 @@ Las precondiciones históricas de G7 sólo se aplican al solicitar explícitamen
 `verify-g7a-metrics.ps1 -ReproduceCharacterization` o
 `verify-g7b-metrics.ps1 -ReproduceImplementation`.
 
-Para la cobertura exhaustiva de tests compartidos y Desktop, además de las
-puertas compuestas, use `tools/agent/verify.ps1 -Level FULL` (`-FullTests` es un
-alias). DEV/PHASE tienen alcance acotado; `-SkipBuild` sólo aporta evidencia
-estática y de toolchains, nunca aceptación COMPOSED/FULL. Las condiciones que
-requieren FULL figuran en el [contrato de niveles](geocedg/specs/operations/verification-levels.md).
+Los perfiles canónicos son `STATIC`, `INFRA_UNIT`, `WORKSTATION`, `OPERATIONAL`,
+`DEV`, `PHASE`, `INTEGRATION` y `FINAL`. Los alias heredados se conservan como
+adaptadores; `COMPOSED` selecciona `INTEGRATION` y `FULL`/`FullTests` seleccionan
+`FINAL`. Un perfil con cobertura incompleta falla de forma explícita y nunca
+delega en un wrapper mixto heredado.
 
 Compilación y arranque GeoCeDG desde la raíz:
 
@@ -211,8 +230,8 @@ diagnóstico y regresión:
 .\gradlew.bat :desktop:desktop:run
 ```
 
-Ambos arranques son gráficos. El bootstrap conserva `-LaunchDesktop` para el
-baseline Classic; la verificación normal no abre ventanas. El contrato del
+Ambos arranques son gráficos. Bootstrap no lanza ninguno; la verificación
+normal tampoco abre ventanas. El contrato del
 perfil, su perspectiva y su toolbar se encuentran en
 [la especificación de aplicación](geocedg/specs/ui/application-profile.md).
 
@@ -263,8 +282,8 @@ wix --version
 wix extension list -g
 ```
 
-El bootstrap normal detecta estos componentes sin instalarlos. La instalación
-opt-in, idempotente y recomendada de .NET/WiX es:
+El perfil de packaging inspecciona estos componentes sin instalarlos. La
+preparación opt-in, idempotente y recomendada de .NET/WiX es:
 
 ```powershell
 .\tools\bootstrap\bootstrap-windows.ps1 -InstallPackagingPrerequisites

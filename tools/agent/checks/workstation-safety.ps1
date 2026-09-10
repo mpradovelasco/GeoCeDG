@@ -3,7 +3,9 @@
 param(
     [Parameter(Mandatory)] [string]$RepositoryRoot,
     [Parameter(Mandatory)] [string]$ResultPath,
-    [Parameter(Mandatory)] [string]$ScratchDirectory
+    [Parameter(Mandatory)] [string]$ScratchDirectory,
+    [ValidateSet('WORKSTATION', 'PACKAGING')]
+    [string]$ContractMode = 'WORKSTATION'
 )
 
 Set-StrictMode -Version Latest
@@ -242,7 +244,9 @@ function Write-FinalResult {
     $result = [ordered]@{
         contract_class = 'SAFETY'
         outcome = $outcome
-        check_kind = 'LIVE_WORKSTATION_INSTALLATION'
+        check_kind = $(if ($ContractMode -ceq 'PACKAGING') {
+            'LIVE_PACKAGING_TOOLCHAIN'
+        } else { 'LIVE_WORKSTATION_INSTALLATION' })
         mutation_performed = $false
         subcontracts = [object[]]$script:Contracts.ToArray()
         native_evidence = [object[]]$script:NativeEvidence.ToArray()
@@ -257,6 +261,86 @@ function Write-FinalResult {
 $repository = [IO.Path]::GetFullPath($RepositoryRoot)
 $scratch = [IO.Path]::GetFullPath($ScratchDirectory)
 [void][IO.Directory]::CreateDirectory($scratch)
+
+if ($ContractMode -ceq 'PACKAGING') {
+    $toolchainRequested = [Environment]::GetEnvironmentVariable(
+        'GEOCEDG_PACKAGING_CHECK_TOOLCHAIN') -ceq 'true'
+    if (-not $toolchainRequested) {
+        Add-Contract 'packaging.toolchain-request' SATISFIED 'not requested' 'not requested' $null
+        $outcome = Write-FinalResult
+        exit 0
+    }
+    $jdk25 = $null
+    foreach ($candidate in Get-InstalledJdkCandidates -RepositoryRoot $repository) {
+        $javaPath = Join-Path $candidate $(if ($IsWindows) { 'bin/java.exe' } else { 'bin/java' })
+        $javacPath = Join-Path $candidate $(if ($IsWindows) { 'bin/javac.exe' } else { 'bin/javac' })
+        $jpackagePath = Join-Path $candidate $(if ($IsWindows) { 'bin/jpackage.exe' } else { 'bin/jpackage' })
+        $javaRun = Invoke-NativeCapture 'packaging.java' $javaPath @('-version') $repository
+        $javacRun = Invoke-NativeCapture 'packaging.javac' $javacPath @('-version') $repository
+        if ((Get-JavaMajor ($javaRun.stdout + $javaRun.stderr)) -eq 25 -and
+                (Get-JavaMajor ($javacRun.stdout + $javacRun.stderr)) -eq 25 -and
+                (Test-Path -LiteralPath $jpackagePath -PathType Leaf)) {
+            $jdk25 = [pscustomobject]@{ root = $candidate; jpackage = $jpackagePath }
+            break
+        }
+    }
+    Add-Contract 'packaging.jdk25-jpackage' $(if ($null -ne $jdk25) {
+        'SATISFIED'
+    } else { 'VIOLATED' }) 'complete JDK 25 with jpackage' $jdk25 $(if ($null -eq $jdk25) {
+        'A complete JDK 25 containing jpackage is unavailable.'
+    } else { $null })
+    if ($null -ne $jdk25) {
+        $jpackageRun = Invoke-NativeCapture 'packaging.jpackage-version' $jdk25.jpackage @('--version') $repository
+        $jpackageVersion = ($jpackageRun.stdout + $jpackageRun.stderr).Trim()
+        Add-Contract 'packaging.jpackage-version' $(if ($jpackageRun.state -ceq 'COMPLETED' -and
+                $jpackageRun.exit_code -eq 0 -and $jpackageVersion -match '^25(?:\.|$)') {
+            'SATISFIED'
+        } elseif ($jpackageRun.state -ceq 'COMPLETED') { 'VIOLATED' } else {
+            'EVIDENCE_UNTRUSTED'
+        }) 'jpackage 25' $jpackageVersion $jpackageRun.cause
+    } else {
+        Add-Contract 'packaging.jpackage-version' VIOLATED 'jpackage 25' $null `
+            'jpackage cannot be inspected without the required JDK 25.'
+    }
+
+    $dotnet = Resolve-Application 'dotnet'
+    $dotnetRun = Invoke-NativeCapture 'packaging.dotnet-sdks' $dotnet @('--list-sdks') $repository
+    $hasDotnet6 = $dotnetRun.state -ceq 'COMPLETED' -and $dotnetRun.exit_code -eq 0 -and
+        [regex]::IsMatch($dotnetRun.stdout, '(?m)^(?:[6-9]|[1-9]\d+)\.')
+    Add-Contract 'packaging.dotnet-sdk' $(if ($hasDotnet6) { 'SATISFIED' } elseif (
+            $dotnetRun.state -ceq 'EXECUTABLE_MISSING') { 'VIOLATED' } else {
+            'EVIDENCE_UNTRUSTED'
+        }) '.NET SDK 6 or newer' $dotnetRun.stdout $dotnetRun.cause
+
+    $wix = Resolve-Application 'wix'
+    $wixVersionRun = Invoke-NativeCapture 'packaging.wix-version' $wix @('--version') $repository
+    $wixVersion = ($wixVersionRun.stdout + $wixVersionRun.stderr).Trim()
+    Add-Contract 'packaging.wix-version' $(if ($wixVersionRun.state -ceq 'COMPLETED' -and
+            $wixVersionRun.exit_code -eq 0 -and $wixVersion.StartsWith('5.0.2', [StringComparison]::Ordinal)) {
+        'SATISFIED'
+    } elseif ($wixVersionRun.state -ceq 'EXECUTABLE_MISSING' -or
+            $wixVersionRun.state -ceq 'COMPLETED') { 'VIOLATED' } else {
+        'EVIDENCE_UNTRUSTED'
+    }) 'WiX 5.0.2' $wixVersion $wixVersionRun.cause
+    $wixExtensionsRun = Invoke-NativeCapture 'packaging.wix-extensions' $wix @(
+        'extension', 'list', '-g') $repository
+    foreach ($extension in @('WixToolset.Util.wixext', 'WixToolset.UI.wixext')) {
+        $found = $wixExtensionsRun.state -ceq 'COMPLETED' -and
+            $wixExtensionsRun.exit_code -eq 0 -and
+            [regex]::IsMatch($wixExtensionsRun.stdout,
+                '(?m)^' + [regex]::Escape($extension) + '\s+5\.0\.2\s*$')
+        Add-Contract ('packaging.wix-extension.' + $extension.ToLowerInvariant()) $(if ($found) {
+            'SATISFIED'
+        } elseif ($wixExtensionsRun.state -ceq 'COMPLETED') { 'VIOLATED' } else {
+            'EVIDENCE_UNTRUSTED'
+        }) "$extension/5.0.2" $wixExtensionsRun.stdout $wixExtensionsRun.cause
+    }
+    $outcome = Write-FinalResult
+    if ($outcome -ceq 'CONTRACT_SATISFIED') { exit 0 }
+    if ($outcome -ceq 'CONTRACT_VIOLATED') { exit 2 }
+    exit 3
+}
+
 $wrapper = Join-Path $repository $(if ($IsWindows) { 'gradlew.bat' } else { 'gradlew' })
 $wrapperJar = Join-Path $repository 'gradle/wrapper/gradle-wrapper.jar'
 $wrapperProperties = Join-Path $repository 'gradle/wrapper/gradle-wrapper.properties'

@@ -1,11 +1,28 @@
 # Author-direct change
 
+<!-- geocedg-field: objective -->
 ## Objective
 
 Apply only an explicitly author-authorized repository change through
 `CHANGE_ROUTE = AUTHOR_DIRECT`. This route is outside `VERIFICATION_CLASS` and
 must never be inferred, selected autonomously or used to escape a failure.
 
+<!-- geocedg-field: implementation_base -->
+## Implementation base
+
+Record the exact base commit and tree named by the author. Stop if either moves.
+
+<!-- geocedg-field: allowed_scope -->
+## Allowed scope
+
+Only the exact author-authorized paths and transformations are in scope.
+
+<!-- geocedg-field: forbidden_scope -->
+## Forbidden scope
+
+No adjacent implementation, verification, publication or policy change is implied.
+
+<!-- geocedg-field: authorization_boundary -->
 ## Authority and authorization
 
 Read `AGENTS.md`, the current repository sources and
@@ -25,7 +42,7 @@ PREVIOUS_EVIDENCE_REINTERPRETED = false
 If any field is absent, contradictory or broader than the author's instruction,
 stop before editing. Authorization applies only to the named scope and paths.
 
-## Scope and forbidden scope
+## Scope detail
 
 Make the smallest coherent diff within `AUTHORIZED_PATHS`. Do not add scripts,
 schemas, validators, receipts, gates or test families. Do not change product,
@@ -36,6 +53,7 @@ first expands the governing policy and names those exact paths.
 Stop and request authorization before any scope expansion, executable-code
 change, new validation machinery or product/scientific effect.
 
+<!-- geocedg-field: required_checks -->
 ## Checks
 
 Perform only trivial static checks needed to avoid syntactic or documentary
@@ -44,7 +62,8 @@ ordinary acceptance/closeout workflow. Static checks are not acceptance evidence
 and support no technical verification claim. Do not reinterpret, relabel or
 inherit previous evidence.
 
-## Commit and stop condition
+<!-- geocedg-field: publication_boundary -->
+## Commit and publication boundary
 
 Inspect the exact diff, create one clean candidate commit, and confirm the
 worktree/index are clean. Report the candidate SHA, tree, exact changed paths,

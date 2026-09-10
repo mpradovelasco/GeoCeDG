@@ -1,85 +1,65 @@
 # GeoCeDG canonical governance prompt
 
-Status: canonical operational prompt
+Status: canonical operational prompt during verification-infrastructure recovery
 
 ## Governing authority
 
-Read `AGENTS.md` first. Then read the current code/build, accepted
-specifications and ADRs, approved validation sources, the pinned upstream
-record, and task-specific authorities in their declared order. A prompt never
-overrides those sources and must not restate geometric truth.
+Read `AGENTS.md` first, then current code, approved product/scientific
+specifications and task-specific author authority. The executable verification
+contract is the typed registry, its schemas and `tools/agent/verify.ps1`.
+Historical ADRs and reports remain evidence and history; they are not parsed as
+mutable execution policy.
 
-`CLAUDE.md` is read-only for automated agents as defined by `AGENTS.md`. Agents
-may read it, but no prompt, request or workflow may authorize creating or
-mutating a file whose basename equals `claude.md` case-insensitively. Leave the
-file untouched and report any conflicting instruction to the author.
+`CLAUDE.md` is read-only for automated agents. No task or workflow authorizes
+creating or mutating a file whose basename is `claude.md`, case-insensitively.
 
 ## Execution discipline
 
-1. Classify the task and affected architectural layer; for a phase, freeze its
-   explicit impact-based `VERIFICATION_CLASS` and acceptance level.
-2. Inspect repository state and the named source-of-truth files from disk.
-3. Record assumptions, contradictions, generated artifacts, and stop
-   conditions.
-4. Produce or identify the required design/specification before code.
-5. Change the smallest coherent GeoCeDG-owned file set; preserve upstream
-   layout and unrelated work.
-6. Do not increase a frozen verification level defensively. Emit
-   `VERIFICATION_ESCALATION_REQUEST` for a concrete uncovered obligation and
-   wait for author authorization.
-7. Add focused tests or deterministic structural checks with the change.
-8. Run `tools/agent/verify.ps1` or the narrow executable authority it composes.
-   If the run is intended for final acceptance, first create clean exact
-   technical commit `T`, pass mode-neutral
-   `tools/agent/phase-closeout.ps1 -Action READINESS` for both routes, and bind
-   the one frozen acceptance campaign to that receipt. When the frozen class
-   requires FULL, its authenticated envelope proves PHASE, COMPOSED and FULL
-   obligations without inventing lower-level physical runs. If readiness finds
-   an uncovered obligation, it blocks and emits the escalation request rather
-   than increasing coverage automatically. Only after
-   author review and exact-`T` approval, explicitly select one closeout mode for
-   PREPARE.
-9. Report files, layer, semantic and compatibility effects, exact commands,
-   exit codes, logs, skipped gates, and remaining risks.
+1. Classify the task, affected layer and semantic/safety domains.
+2. Inspect repository state and current source-of-truth files from disk.
+3. Define the smallest coherent path perimeter and focused checks.
+4. Preserve unrelated work, scientific payloads and historical evidence.
+5. Run the cheapest applicable independent profile first.
+6. Collect every result in that tier; a diagnostic finding never stops
+   independent acceptance checks.
+7. Freeze the complete candidate before its single final acceptance execution.
+8. Report exact commands, identities, results, evidence and coverage gaps.
+9. Stop for author review; verification never publishes or records approval.
 
-## Acceptance and closeout authority
+## Acceptance and diagnostics
 
-Never infer final-acceptance purpose or closeout mode from a branch, clean tree,
-credentials, tag or `latest`. Dirty/precommit verification is development or
-diagnostic evidence and remains `closeoutConsumable=false`; no later commit may
-inherit its execution identity. `FULL=PASS` and author approval are independent
-facts.
+Only pure `SEMANTIC`, `SAFETY` and `VERIFICATION_CORE` contracts affect
+acceptance. Every `SEMANTIC` contract declares `semantic_domain` as `PRODUCT`,
+`SCIENTIFIC` or `MIXED`. Governance, documentation,
+historical consistency, style and duration are diagnostics. Diagnostic findings
+are visible and traceable but do not change acceptance, coverage or exit code,
+and require no waiver.
 
-`AUTHOR REVIEW READY` means prepared for author review. `AUTHOR CLOSEOUT READY`
-requires clean `T`, closeout-consumable required technical evidence, one
-explicitly selected post-approval route and a PREPARE-valid binding to the
-mode-neutral readiness plan. Readiness itself is not approval and selects no
-mode. Only an explicit author decision naming exact `T` may authorize closeout.
+A process producer is verdict-neutral. Pure evidence projections interpret its
+declared outputs. A final leaf may not mix acceptance and diagnostic contracts.
+Missing or malformed required evidence makes the affected coverage incomplete
+or untrusted. Severity is never inferred from prose, a filename or an aggregate
+legacy exit code.
 
-`VERIFIED` retains ADR 0023/0024. `AUTHOR_OPERATED` preparation may construct
-and stage only the policy-bounded status delta, then must leave commit `C`, tag,
-fast-forward and push to the author. The mandatory post-promotion audit is
-read-only apart from its result and reports, rather than repairs, any ancestry,
-delta, tag, remote, cleanliness, approved-SHA or provenance mismatch. Reference
-[`verification-levels.md` section 12](../../../geocedg/specs/operations/verification-levels.md#12-commit-first-acceptance-and-dual-closeout)
-instead of reproducing its checks in each phase prompt.
+## Candidate and closeout
 
-## Source routing
+A final receipt binds the exact candidate commit/tree, execution plan, checker
+identities, environment and consumed inputs. It is produced only for complete,
+trusted, accepted execution. Diagnostic findings may be recorded without
+invalidating it. Duration is informational and excluded from receipt identity.
 
-- Geometric meaning and serialization: approved specifications plus shared
-  kernel contracts.
-- Operational manifests: `geocedg/specs/operations/manifest-contracts.md`.
-- Feature availability: `geocedg/features/` after the feature specification is
-  approved.
-- Regression authority: `geocedg/validation/` and referenced model manifests.
-- Generated evidence: `artifacts/`; never source authority.
+Closeout is identity inspection only. It does not run verification, modify Git,
+create commits or tags, push, or originate author approval. After the author
+approves an exact candidate and receipt, promotion moves that exact SHA without
+rerunning acceptance.
 
-## Mandatory stop conditions
+## Source routing and stop conditions
 
-Stop before editing when work would change the pinned baseline, require an
-unapproved geometric/serialization decision, infer a missing license, place
-geometric truth outside the kernel, or make a nondeterministic result
-authoritative. Stop before final acceptance when `T` is not clean, readiness
-cannot validate both declared routes, evidence would depend on a moving ref or
-self-reference, or a known lifecycle repair would be deferred until after FULL.
-After approval, stop when the explicitly selected route cannot pass PREPARE.
+Geometric meaning and serialization remain in approved specifications and
+kernel contracts. Regression authority remains in `geocedg/validation/`.
+Generated artifacts remain evidence, never source authority.
+
+Stop rather than guess when licensing is unclear, serialization would change
+without migration, geometric truth would move outside the kernel, evidence is
+lost, a required semantic domain is untrusted, or the requested path perimeter
+is insufficient.

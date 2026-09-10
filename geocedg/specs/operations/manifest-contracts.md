@@ -44,11 +44,12 @@ must add the governing geometric specification before adding a case.
 
 ## Benchmark suites and stress catalog
 
-Benchmark suites declare a repository-relative PowerShell command, warm-up and
-measurement iteration counts, a timeout, and informational budgets. Commands
-are executed as argument arrays, never evaluated as shell text. The stress
-catalog may contain disabled planned descriptors without model assets; this is
-planning metadata, not an imported model or a measured baseline.
+Benchmark suites declare a repository-relative PowerShell command plus warm-up
+and measurement iteration counts. Commands are executed as argument arrays,
+never evaluated as shell text. Duration is informational telemetry only: it has
+no acceptance, exit-code or blocking effect. The stress catalog may contain
+disabled planned descriptors without model assets; this is planning metadata,
+not an imported model or a measured baseline.
 
 ## Versioning
 

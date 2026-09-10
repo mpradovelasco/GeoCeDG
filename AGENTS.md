@@ -522,9 +522,24 @@ Do not embed new geometric solving logic in the exporter. Python may validate fi
 
 ## 14. Validation authority
 
-`tools/agent/verify.*` is the executable authority. Prompts and reports must call it rather than duplicating commands ad hoc.
+`tools/agent/verify.ps1`, the typed registry and their schemas are the executable
+verification authority. Prompts and reports must call the canonical profiles
+rather than duplicate commands ad hoc. Acceptance and diagnostics are separate:
+governance, documentation, historical-consistency, style and duration findings
+never change product acceptance or its exit status. Blocking acceptance classes
+are `SEMANTIC`, `SAFETY` and `VERIFICATION_CORE`; every semantic result
+also identifies its `PRODUCT`, `SCIENTIFIC` or `MIXED` domain.
 
-Use the DEV, PHASE, COMPOSED and FULL definitions in `geocedg/specs/operations/verification-levels.md`. Default `verify.ps1` is COMPOSED; DEV is never acceptance evidence. Every task identifies its required level and regression perimeter. Changes to test selection, caching, parallelization, verifier orchestration, bootstrap or numerical baselines are verification-infrastructure changes and require FULL evidence; narrower success does not waive a required FULL gate. The only evidence-preserving verifier-repair exception is the explicitly author-authorized, exhaustively proven identity/provenance correction in section 11 of that specification and ADR 0024; failure of any required equivalence proof restores the normal FULL requirement.
+Use the `STATIC`, `INFRA_UNIT`, `WORKSTATION`, `OPERATIONAL`, `DEV`,
+`PHASE`, `INTEGRATION` and `FINAL` profiles defined in
+`geocedg/specs/operations/verification-levels.md` and
+`geocedg/specs/operations/verification-registry.json`. An incomplete profile
+must fail safely; it must not fall back to a mixed legacy wrapper. `COMPOSED`
+is a compatibility alias for `INTEGRATION`; `FULL` and `FullTests` are
+aliases for `FINAL`. Closeout only inspects the immutable candidate and
+acceptance-receipt identities: it never reruns acceptance or mutates Git. A
+successful technical result never implies author approval or publication
+permission.
 
 Minimum gates:
 

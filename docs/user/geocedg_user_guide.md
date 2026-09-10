@@ -391,13 +391,13 @@ To run an app-image that has already been generated, without installing it:
 & .\artifacts\packaging\windows\app-image\GeoCeDG\GeoCeDG.exe
 ```
 
-For a new workstation, use:
+For an existing clone, start at the repository root in PowerShell 7.2 or later
+and inspect local work before updating:
 
 ```powershell
-git clone https://github.com/mpradovelasco/GeoCeDG.git
-cd GeoCeDG
-.\tools\bootstrap\bootstrap-windows.ps1
-.\gradlew.bat :desktop:desktop:runGeoCeDG
+git status --short
+git switch main
+git pull --ff-only
 ```
 
 ## 1. Workstation requirements
@@ -454,11 +454,23 @@ conda run --no-capture-output -n cedg_env python -c "import json,platform,sys,mp
 
 The result must report exactly CPython `3.12.13` and mpmath `1.4.1`.
 `executable`, `prefix` and `mpmath_file` must resolve inside the same
-`cedg_env` prefix. The mandatory focused post-installation check is:
+`cedg_env` prefix. The canonical live post-installation check is:
+
+```powershell
+.\tools\agent\verify.ps1 -Profile WORKSTATION
+```
+
+The retained compatibility command is:
 
 ```powershell
 .\tools\agent\verify-workstation.ps1
 ```
+
+Both commands resolve to the same live plan and contract result. WORKSTATION
+checks Gradle Wrapper 9.4.1, launcher Java 22, complete JDKs 17 and 25,
+`cedg_env`, CPython 3.12.13, mpmath 1.4.1 and executable/import-prefix
+provenance. It does not compile GeoCeDG or run fixtures or governance
+diagnostics.
 
 Earlier instructions used the external `om_env`. Create and use `cedg_env`; do
 not rename, update, prune, or remove `om_env` as part of this migration.
@@ -529,8 +541,9 @@ conda env create --file .\cedg_env.yml
 If the identity probe cannot run, stop and inspect the Conda inventory manually;
 do not guess a prefix and do not remove another environment.
 
-The bootstrap never installs Git, PowerShell, Java, Gradle, Conda, or Python. By default it
-also only detects optional packaging prerequisites. The explicit
+Bootstrap is a separate preparation/preflight operation, not the live
+installation verifier. It never installs Git, PowerShell, Java, Gradle, Conda,
+or Python. By default it only inspects prerequisites. The explicit
 `-InstallPackagingPrerequisites` option may install only a missing .NET 8 SDK
 and pinned WiX 5.0.2 plus required extensions. It does not
 modify global environment variables, global Git configuration, credentials,
@@ -539,14 +552,11 @@ modify global environment variables, global Git configuration, credentials,
 This option is an action mode, not an acceptance gate. It delegates immediately
 to `tools/bootstrap/install-packaging-prerequisites.ps1` and exits without
 fetching remotes, running Gradle, or executing G3/G5/frontend/repository
-verification. Run the normal bootstrap or `tools/agent/verify.ps1` separately
-when repository acceptance is required.
+verification. Run `tools/agent/verify.ps1` with an explicit profile separately
+when verification is required.
 
-The composed verifier reports the current branch (or `detached HEAD`), exact
-commit, and latest included phase from the versioned roadmap. It validates the
-same checkout with the same productive gates on `main`, a normal work branch,
-or detached HEAD. Historical G7 branch preconditions apply only to explicit
-focused reproduction modes and are not repository-acceptance conditions.
+The typed verifier reports exact commit/tree and profile results. Diagnostic
+findings remain separate from acceptance; incomplete profiles fail explicitly.
 
 ### Packaging prerequisite checks
 
@@ -608,151 +618,54 @@ repository acceptance authority. See the compact
 and the [packaging contract](../../geocedg/specs/packaging/windows-packaging.md)
 for the authoritative boundary.
 
-## 2. Clone and bootstrap
+## 2. Clone update and prerequisite preparation
 
-The normal onboarding sequence is:
+For a new checkout, clone the repository and enter it. For an existing clone,
+the normal path is the status/switch/fast-forward sequence shown above.
+Bootstrap is optional prerequisite preparation and remote inspection:
 
 ```powershell
-git clone https://github.com/mpradovelasco/GeoCeDG.git
-cd GeoCeDG
 .\tools\bootstrap\bootstrap-windows.ps1
 ```
 
-The bootstrap:
+It does not compile GeoCeDG and does not launch product acceptance, governance
+diagnostics or fixtures. `-SkipBuild` is retained only for command
+compatibility; it does not change that separation. `-SkipFetch` avoids remote
+fetching. The explicit `-InstallPackagingPrerequisites` action may prepare
+only its existing .NET/WiX packaging scope; bootstrap never mutates
+`cedg_env`, `om_env` or JDK installations.
 
-- verifies that the directory is a GeoCeDG Git clone;
-- inspects `origin` without changing it;
-- adds `upstream` only when absent, using exactly
-  `https://github.com/geogebra/geogebra.git`;
-- refuses to overwrite a different existing `upstream` URL;
-- fetches both remotes and tags;
-- checks the annotated tag `geogebra-baseline-5.4.928.0` against the pinned
-  baseline SHA;
-- before expensive product verification, checks the effective wrapper launcher,
-  usable JDK 17/25 toolchains, and the exact Python/mpmath versions and origins
-  inside `cedg_env`;
-- delegates repository validation to `tools/agent/verify.ps1` (default COMPOSED,
-  not FULL);
-- preserves the initial worktree status and reports `PASS`,
-  `PASS WITH WARNINGS`, or `FAIL`.
+Use `WORKSTATION`, not bootstrap, to verify the live installation.
 
-It is idempotent: a second normal execution should produce the same logical
-state without duplicating remotes or changing tracked files. Each invocation
-creates a new diagnostic run directory, so logs are not reused as evidence.
+## 3. Verify build and run
 
-The default log parent is `%TEMP%\geocedg-bootstrap`. A unique child contains
-`bootstrap-transcript.log`, the structured `bootstrap-result.json`, native
-prerequisite logs in `preflight/`, and delegated gate logs in `verification/`.
-The optional `-LogDirectory <directory>` selects a common parent; it does not
-select or overwrite an existing run. Before creating logs or launching probes,
-bootstrap rejects generated-output directories, generated-state backup trees,
-and linked ancestry. A rejected path is not used later for failure-summary output.
-On failure, inspect the recorded stage,
-classification and native exit/log before treating the result as a product
-regression or changing software. Workstation facts describe the current
-process, user profile and environment; a sandbox's missing tool or profile
-is not evidence that the host lacks it.
-
-Useful options are:
+Run independent operations explicitly from the repository root:
 
 ```powershell
-.\tools\bootstrap\bootstrap-windows.ps1 -SkipFetch
-.\tools\bootstrap\bootstrap-windows.ps1 -SkipBuild
-.\tools\bootstrap\bootstrap-windows.ps1 -RunBenchmarks
-.\tools\bootstrap\bootstrap-windows.ps1 -LaunchDesktop
-.\tools\bootstrap\bootstrap-windows.ps1 -LogDirectory .\artifacts\bootstrap-logs
-.\tools\bootstrap\bootstrap-windows.ps1 -InstallPackagingPrerequisites
-```
+# Live installation only
+.\tools\agent\verify.ps1 -Profile WORKSTATION
 
-`-SkipFetch` uses existing local refs; it does not establish current remote
-state or make dependency resolution offline. `-SkipBuild` provides only static
-and toolchain evidence, not repository acceptance, and cannot be combined with
-`-LaunchDesktop`. `-RunBenchmarks` adds the informational operational benchmark.
-`-LaunchDesktop` launches **GeoGebra Classic**, because that option belongs to
-the pinned-baseline gate; it does not launch GeoCeDG.
-`-InstallPackagingPrerequisites` is opt-in and idempotent; use it only on a
-packaging workstation. It cannot be combined with the other onboarding or
-verification switches; the common `-LogDirectory` diagnostic option remains
-available. It exits after focused prerequisite setup without onboarding or
-repository verification. Exact manual commands are in the
-[root README](../../README.md#requisitos-de-packaging-windows).
-
-Bootstrap success covers its requested scope, not an implicit FULL run. Run
-`tools/agent/verify.ps1 -Level FULL` separately when exhaustive test coverage
-or a required FULL gate is needed; see the
-[verification-level contract](../../geocedg/specs/operations/verification-levels.md).
-An incomplete `-SkipBuild` run cannot satisfy that gate.
-
-See the [root README](../../README.md) for the short repository overview and
-[UPSTREAM.md](../../UPSTREAM.md) for baseline provenance.
-
-## 3. Verify and build
-
-Run commands from the repository root unless stated otherwise.
-
-### Composed verification authority
-
-```powershell
-.\tools\agent\verify.ps1
-```
-
-This is the default COMPOSED local gate: the current applicable cross-phase
-scientific and governance checks, pinned baseline build, and focused
-GeoCeDG tests. It is not the unfiltered FULL test suite. The
-[verification-level contract](../../geocedg/specs/operations/verification-levels.md)
-defines DEV, PHASE, COMPOSED and FULL coverage and when FULL is required,
-including verification/bootstrap infrastructure changes and phase closeout.
-It writes logs below `%TEMP%\geocedg-verify` by default and restores the
-pre-existing generated-output state unless `-KeepBuildOutputs` is explicit.
-
-Include the current informational benchmark with:
-
-```powershell
-.\tools\agent\verify.ps1 -RunBenchmarks
-```
-
-FULL adds the unfiltered shared-JRE and Desktop test suites while retaining
-COMPOSED checks. The explicit interactive launch remains a separate option:
-
-```powershell
-.\tools\agent\verify.ps1 -Level FULL
-.\tools\agent\verify.ps1 -FullTests # Legacy alias for FULL.
-.\tools\agent\verify.ps1 -LaunchDesktop
-```
-
-As with the bootstrap option, `verify.ps1 -LaunchDesktop` exercises the
-baseline Classic launcher. Close its window normally to complete the gate.
-
-### Focused verifiers
-
-```powershell
-.\tools\agent\verify-operational.ps1
+# Compatibility spelling for the identical live plan
 .\tools\agent\verify-workstation.ps1
-.\tools\agent\verify-baseline.ps1
-.\tools\agent\verify-frontend.ps1
-.\tools\agent\verify-legacy.ps1
-.\tools\agent\verify-packaging.ps1
-.\tools\agent\verify-locus-v2.ps1
-.\tools\agent\verify-g7a-metrics.ps1
-.\tools\agent\verify-g7b-metrics.ps1
-.\tools\agent\verify-g8a-intersections.ps1 -RequireFinalEvidence
-.\tools\agent\verify-g8b-intersections.ps1
-.\tools\agent\verify-g8c-intersections-design.ps1
-```
 
-Use the canonical verifier at the level required by the
-[verification-level contract](../../geocedg/specs/operations/verification-levels.md):
-COMPOSED is the default technical candidate gate, while closeout and infrastructure
-changes require FULL. A technical PASS does not confer author approval. Use a
-focused verifier to diagnose its corresponding layer.
-
-### Desktop build
-
-The current verified minimum Desktop compilation is:
-
-```powershell
+# Product compilation
 .\gradlew.bat :desktop:desktop:compileJava
+
+# GeoCeDG execution
+.\gradlew.bat :desktop:desktop:runGeoCeDG
 ```
+
+Java compilation and execution do not require Conda. The canonical verifier also
+exposes `STATIC`, `INFRA_UNIT`, `OPERATIONAL`, `DEV`, `PHASE`,
+`INTEGRATION` and `FINAL` profiles. Legacy `COMPOSED` maps to
+`INTEGRATION`; `FULL` and `FullTests` map to `FINAL`. A profile whose
+pure semantic coverage is incomplete fails explicitly and never falls back to a
+mixed wrapper.
+
+Acceptance results are separate from governance, documentation, historical,
+style and duration diagnostics. Diagnostic findings remain visible but do not
+change product acceptance, coverage or exit code. A technical acceptance result
+does not confer author approval or publication permission.
 
 ## 4. Package and install for internal evaluation
 
@@ -779,9 +692,10 @@ binaries as a release.
 First check the optional package toolchain:
 
 ```powershell
-.\tools\bootstrap\bootstrap-windows.ps1 -SkipFetch -SkipBuild
 .\tools\agent\verify-packaging.ps1 -CheckToolchain
 ```
+
+Bootstrap is not a packaging or installation-verification gate.
 
 The release script exposes exactly these targets:
 

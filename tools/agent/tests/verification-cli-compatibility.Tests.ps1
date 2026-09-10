@@ -59,7 +59,7 @@ function Invoke-PowerShellCapture {
 }
 
 Invoke-Case 'all canonical profiles resolve explicitly' {
-    foreach ($profile in @('STATIC', 'INFRA_UNIT', 'WORKSTATION', 'OPERATIONAL', 'DEV', 'INTEGRATION', 'FINAL')) {
+    foreach ($profile in @('STATIC', 'INFRA_UNIT', 'WORKSTATION', 'PACKAGING', 'OPERATIONAL', 'DEV', 'INTEGRATION', 'FINAL')) {
         $plan = Resolve-VerificationRegistryPlan $registry $profile
         Assert-Case ($plan.profile -ceq $profile) "Profile $profile resolved incorrectly."
     }
@@ -95,6 +95,20 @@ Invoke-Case 'canonical and public WORKSTATION commands resolve byte-identical pl
     Assert-Case (@($plan.nodes).Count -eq 1 -and $plan.nodes[0].check_id -ceq 'workstation.live-safety') 'WORKSTATION contains non-installation checks.'
 }
 
+Invoke-Case 'canonical and public PACKAGING commands resolve the same pure plan' {
+    $canonical = Invoke-PowerShellCapture (Join-Path $repositoryRoot 'tools/agent/verify.ps1') `
+        @('-Profile', 'PACKAGING', '-PlanOnly', '-Quiet')
+    $adapter = Invoke-PowerShellCapture (Join-Path $repositoryRoot 'tools/agent/verify-packaging.ps1') `
+        @('-PlanOnly', '-Quiet')
+    Assert-Case ($canonical.exit_code -eq 0 -and $adapter.exit_code -eq 0) 'PACKAGING plan command failed.'
+    Assert-Case ($canonical.stdout -ceq $adapter.stdout) 'PACKAGING adapter changed the resolved plan.'
+    $plan = $canonical.stdout | ConvertFrom-Json -Depth 100
+    $acceptance = @($plan.nodes | Where-Object node_kind -CNE 'PROCESS_PRODUCER')
+    Assert-Case (@($acceptance).Count -eq 3) 'PACKAGING does not contain exactly three pure contracts.'
+    Assert-Case (@($acceptance | Where-Object contract_class -CEQ 'SEMANTIC').Count -eq 1) 'PACKAGING product contract is missing or duplicated.'
+    Assert-Case (@($acceptance | Where-Object contract_class -CEQ 'SAFETY').Count -eq 2) 'PACKAGING safety contracts are missing or duplicated.'
+}
+
 Invoke-Case 'public compatibility adapters are thin canonical forwarders' {
     $adapters = [ordered]@{
         'verify-workstation.ps1' = 'WORKSTATION'
@@ -106,6 +120,14 @@ Invoke-Case 'public compatibility adapters are thin canonical forwarders' {
         Assert-Case ($text.Contains("Profile = '$($adapters[$name])'")) "$name does not select its canonical profile."
         Assert-Case ($text.Contains("Join-Path `$PSScriptRoot 'verify.ps1'")) "$name does not forward to verify.ps1."
         Assert-Case (-not $text.Contains('Invoke-VerificationSupervisor')) "$name duplicates supervisor logic."
+    }
+    $packaging = [IO.File]::ReadAllText(
+        (Join-Path $repositoryRoot 'tools/agent/verify-packaging.ps1'))
+    Assert-Case ($packaging.Contains("Profile = 'PACKAGING'")) 'Packaging adapter does not select PACKAGING.'
+    Assert-Case (-not $packaging.Contains('Add-Contract') -and
+        -not $packaging.Contains('Invoke-VerificationSupervisor')) 'Packaging adapter duplicates contract logic.'
+    foreach ($parameter in @('CheckToolchain', 'RequireArtifacts', 'ArtifactRoot')) {
+        Assert-Case $packaging.Contains($parameter) "Packaging adapter does not forward $parameter."
     }
 }
 

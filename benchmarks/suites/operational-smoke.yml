@@ -3,19 +3,13 @@
   "schema_version": 1,
   "id": "cedg.operational.smoke",
   "maturity": "research",
-  "budget_mode": "informational",
   "cases": [
     {
       "id": "verify-operational",
       "script": "tools/agent/verify-operational.ps1",
       "arguments": ["-Quiet"],
       "warmup_iterations": 1,
-      "measurement_iterations": 3,
-      "timeout_seconds": 600,
-      "budget": {
-        "metric": "median_elapsed_ms",
-        "warning_threshold_ms": 5000
-      }
+      "measurement_iterations": 3
     }
   ]
 }

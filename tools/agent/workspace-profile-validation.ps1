@@ -93,9 +93,9 @@ function Assert-GeoCeDGProfileResourcePackaging {
 function Assert-GeoCeDGTaskPromptContracts {
     param([Parameter(Mandatory)] [string]$RepositoryRoot,
         [Parameter(Mandatory)] [string[]]$RequiredHeadings)
-    # Only these two protected planning snapshots use their original grammar.
-    # Every other prompt, including their active successor, retains all exact
-    # operational headings. History is authenticated, not grandfathered by name.
+    # Protected snapshots retain their immutable identity contract. Canonical
+    # executable templates use semantic field markers; other legacy prompts
+    # retain their existing heading contract until explicitly migrated.
     . (Join-Path $PSScriptRoot 'repository-input-identity.ps1')
     $materialization = Get-GeoCeDGMaterializationConfig $RepositoryRoot
     $prefix = '.github/prompts/tasks/'
@@ -124,6 +124,16 @@ function Assert-GeoCeDGTaskPromptContracts {
             blob = 'd6528bb1432b637eb64406dfda4aba395e86bfb8'
             lfHash = '561546019efc1e1d5e4367ddde73e9a2b0a0d767343eb9348b46d9e9c06f12df'
         }
+    }
+    Import-Module (Join-Path $PSScriptRoot 'prompt-contract-parser.psm1') -Force
+    $promptCatalog = Read-PromptContractCatalog (Join-Path $RepositoryRoot 'geocedg/specs/operations/prompt-contracts.json')
+    $promptProfiles = @{}
+    foreach ($profile in @($promptCatalog.profiles)) {
+        $promptProfiles[[string]$profile.profile_id] = $profile
+    }
+    $semanticDocuments = @{}
+    foreach ($document in @($promptCatalog.documents)) {
+        $semanticDocuments[[string]$document.path] = [string]$document.profile
     }
     $prompts = @(Get-ChildItem -LiteralPath (Join-Path $RepositoryRoot $prefix) -Filter '*.prompt.md' -File)
     foreach ($prompt in $prompts) {
@@ -157,6 +167,13 @@ function Assert-GeoCeDGTaskPromptContracts {
                 -not $content.Contains($prompt.Name) -or -not $content.Contains($pin.commit)) {
                 throw "Active successor must explicitly preserve/supersede the protected checkpoint: $relative"
             }
+        }
+        if ($semanticDocuments.ContainsKey($relative)) {
+            $semanticResult = Test-PromptContractDocument -Path $prompt.FullName -Profile $promptProfiles[$semanticDocuments[$relative]]
+            if (-not $semanticResult.execution_safe) {
+                throw "$relative is missing, duplicating or reordering an execution-safety field."
+            }
+            continue
         }
         $headings = if ($pins.ContainsKey($prompt.Name) -or $relative -ceq $successor) {
             $historicalGrammarHeadings

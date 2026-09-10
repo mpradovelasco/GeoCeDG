@@ -37,6 +37,10 @@ function Run-PromptCase {
         [void][IO.Directory]::CreateDirectory((Split-Path -Parent $target))
         Copy-Item -LiteralPath (Join-Path $repository ('.github/prompts/tasks/' + $promptFileName)) -Destination $target
     }
+    $catalogRelative = 'geocedg/specs/operations/prompt-contracts.json'
+    $catalogTarget = Join-Path $Fixture $catalogRelative
+    [void][IO.Directory]::CreateDirectory((Split-Path -Parent $catalogTarget))
+    Copy-Item -LiteralPath (Join-Path $repository $catalogRelative) -Destination $catalogTarget
     $unknown = Join-Path $Fixture '.github/prompts/tasks/unknown-historical.prompt.md'
     if (Test-Path -LiteralPath $unknown) { Remove-Item -LiteralPath $unknown -Force }
     if ($null -ne $Mutation) { & $Mutation $Fixture }

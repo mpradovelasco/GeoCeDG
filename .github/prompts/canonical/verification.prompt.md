@@ -2,95 +2,54 @@
 
 Status: canonical operational prompt
 
-Use executable repository tools as the authority. Reports summarize their
-saved evidence; they do not replace a command result.
+Use `tools/agent/verify.ps1`, the typed registry and schemas as executable
+authority. Reports summarize preserved evidence; they do not replace execution.
+Acceptance and diagnostics are structurally independent.
 
-Freeze an explicit `VERIFICATION_CLASS` and acceptance level at phase start.
-For one developer/integrator, explicitly default to `BOUNDED_PHASE` and propose
-`AUTHOR_OPERATED`; mode selection still occurs only after author review. Never
-escalate above the frozen plan by prudence: emit
-`VERIFICATION_ESCALATION_REQUEST` with the concrete uncovered obligation and
-wait for author authorization.
+## Canonical profiles
 
-## Entry points
+- `-Profile STATIC`: static safety contracts and separate diagnostics.
+- `-Profile INFRA_UNIT`: trusted verification-core tests.
+- `-Profile WORKSTATION`: live, read-only installation verification.
+- `-Profile OPERATIONAL`: registered pure operational contracts.
+- `-Profile DEV`: focused developer selection.
+- `-Profile PHASE -Phase <id>`: exact registered phase selection.
+- `-Profile INTEGRATION`: integrated pure acceptance coverage.
+- `-Profile FINAL`: one complete immutable-candidate campaign.
 
-- Default COMPOSED gate applicable to the current checkout: `tools/agent/verify.ps1`.
-- Exhaustive supported test gate: `tools/agent/verify.ps1 -Level FULL`
-  (`-FullTests` remains the legacy alias).
-- Explicit inner-loop/capability scope: `-Level DEV -Module <shared|desktop>
-  -TestFilter <filters>` or `-Level PHASE -Phase <supported-id>`.
-- Operational structure only: `tools/agent/verify-operational.ps1`.
-- Pinned upstream compile gate: `tools/agent/verify-baseline.ps1`.
-- Informational benchmark suite: `tools/benchmark/run.ps1`.
+`COMPOSED` maps to `INTEGRATION`; `FULL` and `FullTests` map to
+`FINAL`. An incomplete profile fails safely and never falls back to a mixed
+legacy wrapper.
 
-Use `geocedg/specs/operations/verification-levels.md` for level/perimeter,
-bootstrap-impact and infrastructure-review rules. Start with the narrowest
-relevant command, then complete the required COMPOSED/FULL gate. DEV is not an
-acceptance gate; static `-SkipBuild` evidence is incomplete. A required but
-unrun/failed FULL gate cannot be waived by narrower success. Record applicable
-interactive, packaging and external-runtime evidence separately.
+## Result contract
+
+Blocking acceptance classes are `SEMANTIC`, `SAFETY` and
+`VERIFICATION_CORE`. Every semantic result declares `semantic_domain` as
+`PRODUCT`, `SCIENTIFIC` or `MIXED`. Governance, documentation, historical
+consistency, style and performance telemetry are diagnostic classes.
+Diagnostics use `DIAGNOSTIC_CLEAR`, `DIAGNOSTIC_FINDING` or
+`DIAGNOSTIC_UNAVAILABLE`; they never alter acceptance, coverage or exit code.
+
+Process producers preserve raw execution evidence without assigning a verdict.
+Pure leaves and evidence projections assign meaning. Missing or malformed
+required evidence makes coverage incomplete or untrusted. The verifier has no
+timeout, watchdog, forced termination, duration gate or performance-derived
+verdict; duration is informational only.
 
 ## Final acceptance and closeout
 
-Ordinary verifier runs are `DEVELOPMENT_DIAGNOSTIC`. They may run dirty for
-development, but must report `repositoryCohort=DIRTY_PRECOMMIT` and
-`closeoutConsumable=false`; never reattribute them to a later commit.
+Freeze the exact candidate SHA before running `FINAL`. Execute each required
+producer at most once, preserve all raw evidence, emit one typed report and one
+immutable receipt, then make no further commit. Stop for explicit author review.
 
-For final acceptance, first create clean technical commit `T` and run the cheap,
-mode-neutral
-`tools/agent/phase-closeout.ps1 -Action READINESS` with exact `T`, the
-declarative phase policy and an ignored/external receipt path, without
-`-CloseoutMode`. It must validate both routes. If readiness fails, do not start
-acceptance FULL. Readiness compares the actual PHASE, COMPOSED and FULL plans.
-When FULL contains and authenticates the lower obligations, pass the valid
-receipt once to `verify.ps1 -Level FULL -CleanBuild -CloseoutReadinessPath
-<receipt>`; this is the only `FINAL_ACCEPTANCE` route and
-is incompatible with DEV/PHASE/COMPOSED, `-SkipBuild` and
-`-IndependentBuilds`. Require one physical FULL root with separable same-run
-claims: physically nested PHASE, plan-subsumed COMPOSED and physical FULL. Never
-describe the COMPOSED claim as an independent execution. Schema v2 blocks
-readiness if FULL cannot execute or evidence an obligation; extend the approved
-schema, producer and consumer before running the exact minimal complement.
+Closeout is read-only identity inspection. It validates the candidate commit,
+tree, receipt schema and bound plan/checker/environment/input identities. It
+never launches `FINAL`, edits the worktree or index, creates or amends a
+commit, changes refs or tags, pushes, or records author approval. Promotion
+requires a separate explicit author instruction naming the exact candidate SHA.
 
-Require the result to name exact `reviewedCandidate=T`, `CLEAN_COMMIT`,
-`closeoutMode=null`, both `validatedCloseoutModes`, the mode-neutral acceptance
-plan, readiness path/hash and `closeoutConsumable=true`. `FULL=PASS` alone is
-not closeout evidence. Keep `AUTHOR REVIEW READY` (product prepared for review)
-separate from `AUTHOR CLOSEOUT READY` (clean `T`, consumable required evidence,
-one explicitly selected post-approval route and a PREPARE-valid binding to
-readiness). Readiness is not approval and selects no mode.
-
-After explicit author approval of exact `T`, `VERIFIED` keeps the ADR 0023/0024
-verified AUTHOR_CLOSEOUT, status-only `C`, annotated tag and fast-forward path;
-its generic schema-v2 gate is `phase-closeout.ps1 -Action PREPARE
--CloseoutMode VERIFIED`, followed by verified-only `-Action FINALIZE` for exact commit/tag/
-fast-forward/non-force atomic push and automatic audit. For `AUTHOR_OPERATED`,
-use the same PREPARE interface with the explicit alternate mode, receipt, the
-single FULL campaign path and author-decision JSON. It may stage
-only the projected status delta and must stop before commit/tag/promotion/push.
-After the author performs those operations, run `-Action AUDIT` with exact `T`
-and `C`; report mismatches without moving refs or reinterpreting evidence.
-
-ADR 0024 section 11.2 remains an exceptional fifteen-condition repair, not the
-ordinary workflow. It cannot waive required FULL for deliberate verification
-policy, readiness, classification or closeout-methodology changes.
-
-COMPOSED/FULL use separate shared and Desktop test invocations. Current-run
-receipt consumption is valid only through the explicit executable protocol;
-every phase retains its own live assertions. `-IndependentBuilds` retains the
-original orchestration for equivalence/diagnosis. Explicit `-KeepBuildOutputs`
-retains generated outputs; it does not change test scope or freshness. Never
-install tools silently, suppress a failure, edit generated evidence, or
-translate an environment/permission failure into product code.
-
-`verify.ps1` reports the current branch or detached HEAD, exact commit, and
-latest included phase from the normative roadmap. The branch is diagnostic;
-the roadmap and versioned checkout determine the applicable productive gates.
-Historical G7 phase preconditions remain available only through the explicit
-`-ReproduceCharacterization` and `-ReproduceImplementation` modes of their
-focused verifiers.
-
-For every command record its working directory, arguments, exit code, log or
-artifact path, whether evidence is static, fake-first, skipped, or from a real
-runtime, and its machine-readable evidence-use/consumability classification.
-Run `git diff --check` and report final `git status --short`.
+Never install tools silently, suppress a semantic or safety failure, edit
+generated evidence, or translate an environment/permission failure into product
+code. For every run record the profile, exact command, exit code, report path,
+acceptance verdict, coverage verdict, diagnostic count and execution identity.
+Run `git diff --check` and report final repository status separately.

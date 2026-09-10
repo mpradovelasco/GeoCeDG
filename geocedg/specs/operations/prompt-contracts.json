@@ -1,0 +1,26 @@
+{
+  "$schema": "geocedg/specs/operations/prompt-contracts.schema.json",
+  "schema_version": 1,
+  "profiles": [
+    {
+      "profile_id": "task",
+      "ordered_fields": ["objective", "implementation_base", "allowed_scope", "forbidden_scope", "required_checks", "authorization_boundary", "publication_boundary"],
+      "execution_safety_fields": ["objective", "implementation_base", "allowed_scope", "forbidden_scope", "required_checks", "authorization_boundary", "publication_boundary"]
+    },
+    {
+      "profile_id": "review",
+      "ordered_fields": ["objective", "implementation_base", "allowed_scope", "forbidden_scope", "required_checks", "authorization_boundary", "publication_boundary"],
+      "execution_safety_fields": ["objective", "implementation_base", "allowed_scope", "forbidden_scope", "required_checks", "authorization_boundary", "publication_boundary"]
+    },
+    {
+      "profile_id": "author_direct",
+      "ordered_fields": ["objective", "implementation_base", "allowed_scope", "forbidden_scope", "authorization_boundary", "required_checks", "publication_boundary"],
+      "execution_safety_fields": ["objective", "implementation_base", "allowed_scope", "forbidden_scope", "required_checks", "authorization_boundary", "publication_boundary"]
+    }
+  ],
+  "documents": [
+    { "path": ".github/prompts/tasks/task-template.prompt.md", "profile": "task" },
+    { "path": ".github/prompts/reviews/change-review.prompt.md", "profile": "review" },
+    { "path": ".github/prompts/tasks/author-direct-change.prompt.md", "profile": "author_direct" }
+  ]
+}

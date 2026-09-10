@@ -401,12 +401,16 @@ try {
                 $_.Name -match '(?i)-natives-(linux|macosx)-'
             })
             Add-Contract 'packaging.portable-boundary' ($forbidden.Count -eq 0) `
-                'no forbidden files' @($forbidden.FullName) 'Forbidden app-image content exists.'
+                'no forbidden files' @($forbidden | ForEach-Object { $_.FullName }) 'Forbidden app-image content exists.'
             $config = @(Get-ChildItem (Join-Path $appImage 'app') -File -Filter '*.cfg') |
                 Select-Object -First 1
             Add-Contract 'packaging.launcher-config' ($null -ne $config -and
                 [IO.File]::ReadAllText($config.FullName).Contains('org.geocedg.desktop.GeoCeDG')) `
-                'GeoCeDG main class' $config 'Generated launcher configuration differs.'
+                'GeoCeDG main class' $(if ($null -eq $config) {
+                    $null
+                } else {
+                    [IO.Path]::GetFullPath($config.FullName)
+                }) 'Generated launcher configuration differs.'
             $sbom = Read-JsonDocument $evidence[2]
             Add-Contract 'packaging.sbom' ($sbom.bomFormat -eq 'CycloneDX' -and
                 $sbom.specVersion -eq '1.5' -and @($sbom.components).Count -gt 0) `

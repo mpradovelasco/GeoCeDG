@@ -3,7 +3,9 @@
 param(
     [Parameter(Mandatory)] [string]$RepositoryRoot,
     [Parameter(Mandatory)] [string]$SafetyResultPath,
-    [Parameter(Mandatory)] [string]$DiagnosticResultPath
+    [string]$DiagnosticResultPath,
+    [ValidateSet('REPOSITORY', 'PACKAGING')]
+    [string]$ContractMode = 'REPOSITORY'
 )
 
 Set-StrictMode -Version Latest
@@ -52,12 +54,41 @@ function Invoke-GitRead {
     }
 }
 
+function Get-PackagingGeneratedState {
+    param([string]$Root)
+    $records = [Collections.Generic.List[object]]::new()
+    foreach ($name in @('build', '.gradle', '.kotlin')) {
+        $container = Join-Path $Root $name
+        if (-not (Test-Path -LiteralPath $container -PathType Container)) { continue }
+        foreach ($file in Get-ChildItem -LiteralPath $container -File -Recurse -Force |
+                Sort-Object FullName) {
+            $records.Add([ordered]@{
+                bytes = [long]$file.Length
+                path = [IO.Path]::GetRelativePath($Root, $file.FullName).Replace('\', '/')
+                sha256 = (Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+            })
+        }
+    }
+    return [object[]]$records.ToArray()
+}
+
+function Get-CanonicalStateHash {
+    param([object]$Value)
+    $json = ConvertTo-Json -InputObject $Value -Depth 20 -Compress
+    return [Convert]::ToHexString([Security.Cryptography.SHA256]::HashData(
+            $utf8.GetBytes($json))).ToLowerInvariant()
+}
+
 $safety = [ordered]@{
     contract_class = 'SAFETY'
     outcome = 'EVIDENCE_UNTRUSTED'
     cause = $null
+    check_kind = $(if ($ContractMode -ceq 'PACKAGING') {
+        'PACKAGING_REPOSITORY_PRESERVATION'
+    } else { 'REPOSITORY_BOUNDARY' })
     repository_root = [IO.Path]::GetFullPath($RepositoryRoot)
     git_toplevel = $null
+    subcontracts = @()
 }
 $diagnostic = [ordered]@{
     contract_class = 'STYLE_DIAGNOSTIC'
@@ -84,15 +115,81 @@ try {
         }
     }
 
-    $working = Invoke-GitRead @('diff', '--check')
-    $index = Invoke-GitRead @('diff', '--cached', '--check')
-    $diagnostic.working_tree_output = $working.stdout + $working.stderr
-    $diagnostic.index_output = $index.stdout + $index.stderr
-    if ($working.exit_code -eq 0 -and $index.exit_code -eq 0) {
-        $diagnostic.outcome = 'DIAGNOSTIC_CLEAR'
+    if ($ContractMode -ceq 'PACKAGING') {
+        $subcontracts = [Collections.Generic.List[object]]::new()
+        $baselinePath = [Environment]::GetEnvironmentVariable(
+            'GEOCEDG_PACKAGING_BASELINE_PATH')
+        if ([string]::IsNullOrWhiteSpace($baselinePath) -or
+                -not (Test-Path -LiteralPath $baselinePath -PathType Leaf)) {
+            $subcontracts.Add([ordered]@{
+                contract_id = 'packaging.repository-baseline'
+                status = 'EVIDENCE_UNTRUSTED'
+                expected = 'canonical pre-execution repository baseline'
+                observed = $baselinePath
+                cause = 'The canonical runner did not provide packaging repository-state evidence.'
+            })
+        } else {
+            try {
+                $baselineText = [IO.File]::ReadAllText(
+                    [IO.Path]::GetFullPath($baselinePath),
+                    [Text.UTF8Encoding]::new($false, $true))
+                $baseline = $baselineText | ConvertFrom-Json -Depth 30
+                $statusRun = Invoke-GitRead @('status', '--porcelain=v1', '--untracked-files=all')
+                if ($statusRun.exit_code -ne 0) {
+                    throw "Git status inspection exited $($statusRun.exit_code)."
+                }
+                $currentStatus = $statusRun.stdout.Replace("`r`n", "`n").TrimEnd("`n")
+                $statusEqual = $currentStatus -ceq [string]$baseline.status
+                $subcontracts.Add([ordered]@{
+                    contract_id = 'packaging.worktree-preserved'
+                    status = $(if ($statusEqual) { 'SATISFIED' } else { 'VIOLATED' })
+                    expected = [string]$baseline.status
+                    observed = $currentStatus
+                    cause = $(if ($statusEqual) { $null } else {
+                        'Packaging verification changed the repository worktree or index.'
+                    })
+                })
+                $generated = Get-PackagingGeneratedState -Root $safety.repository_root
+                $generatedHash = Get-CanonicalStateHash -Value $generated
+                $generatedEqual = $generatedHash -ceq [string]$baseline.generated_state_sha256
+                $subcontracts.Add([ordered]@{
+                    contract_id = 'packaging.generated-state-preserved'
+                    status = $(if ($generatedEqual) { 'SATISFIED' } else { 'VIOLATED' })
+                    expected = [string]$baseline.generated_state_sha256
+                    observed = $generatedHash
+                    cause = $(if ($generatedEqual) { $null } else {
+                        'Packaging verification changed generated repository state.'
+                    })
+                })
+            } catch {
+                $subcontracts.Add([ordered]@{
+                    contract_id = 'packaging.repository-baseline'
+                    status = 'EVIDENCE_UNTRUSTED'
+                    expected = 'valid UTF-8 JSON baseline'
+                    observed = $baselinePath
+                    cause = $_.Exception.Message
+                })
+            }
+        }
+        $safety.subcontracts = [object[]]$subcontracts.ToArray()
+        if (@($safety.subcontracts | Where-Object status -CEQ 'EVIDENCE_UNTRUSTED').Count -gt 0) {
+            $safety.outcome = 'EVIDENCE_UNTRUSTED'
+            $safety.cause = 'Packaging repository-state evidence is incomplete or malformed.'
+        } elseif (@($safety.subcontracts | Where-Object status -CEQ 'VIOLATED').Count -gt 0) {
+            $safety.outcome = 'CONTRACT_VIOLATED'
+            $safety.cause = 'Packaging verification did not preserve repository state.'
+        }
     } else {
-        $diagnostic.outcome = 'DIAGNOSTIC_FINDING'
-        $diagnostic.cause = 'Git reported whitespace findings.'
+        $working = Invoke-GitRead @('diff', '--check')
+        $index = Invoke-GitRead @('diff', '--cached', '--check')
+        $diagnostic.working_tree_output = $working.stdout + $working.stderr
+        $diagnostic.index_output = $index.stdout + $index.stderr
+        if ($working.exit_code -eq 0 -and $index.exit_code -eq 0) {
+            $diagnostic.outcome = 'DIAGNOSTIC_CLEAR'
+        } else {
+            $diagnostic.outcome = 'DIAGNOSTIC_FINDING'
+            $diagnostic.cause = 'Git reported whitespace findings.'
+        }
     }
 } catch {
     if ([string]::IsNullOrWhiteSpace([string]$safety.cause)) {
@@ -102,8 +199,14 @@ try {
 }
 
 Write-Result $SafetyResultPath $safety
-Write-Result $DiagnosticResultPath $diagnostic
+if ($ContractMode -ceq 'REPOSITORY') {
+    if ([string]::IsNullOrWhiteSpace($DiagnosticResultPath)) {
+        throw 'DiagnosticResultPath is required in REPOSITORY mode.'
+    }
+    Write-Result $DiagnosticResultPath $diagnostic
+}
 if ($safety.outcome -ceq 'CONTRACT_VIOLATED') { exit 2 }
 if ($safety.outcome -ceq 'EVIDENCE_UNTRUSTED') { exit 3 }
-if ($diagnostic.outcome -ceq 'DIAGNOSTIC_FINDING') { exit 7 }
+if ($ContractMode -ceq 'REPOSITORY' -and
+        $diagnostic.outcome -ceq 'DIAGNOSTIC_FINDING') { exit 7 }
 exit 0

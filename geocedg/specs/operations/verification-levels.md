@@ -1,7 +1,59 @@
-# GeoCeDG verification levels and bootstrap-impact contract
+# GeoCeDG verification profiles
 
-- Status: **NORMATIVE / AUTHOR APPROVED through section 13**
+- Status: **ACTIVE RECOVERY CONTRACT**
 - Scope: operational/build/verification infrastructure; no product semantics
+- Executable authority: `tools/agent/verify.ps1`,
+  `verification-registry.json` and their schemas
+
+## Current contract
+
+The verifier reports acceptance and diagnostics independently. Only pure
+`SEMANTIC`, `SAFETY` and `VERIFICATION_CORE` results affect acceptance.
+Every `SEMANTIC` result declares `semantic_domain` as `PRODUCT`, `SCIENTIFIC`
+or `MIXED`. Governance, documentation, historical consistency,
+style and performance telemetry are diagnostics: findings remain visible but
+do not change acceptance, coverage or process exit status.
+
+Registry process producers are verdict-neutral. Pure evidence projections
+interpret their preserved stdout, stderr, exit status and declared artifacts.
+No final acceptance leaf may mix acceptance and diagnostic contracts. Missing
+or malformed required semantic evidence makes coverage incomplete or untrusted;
+it is never guessed from prose or a wrapper exit code.
+
+The canonical profiles are `STATIC`, `INFRA_UNIT`, `WORKSTATION`,
+`OPERATIONAL`, `DEV`, `PHASE`, `INTEGRATION` and `FINAL`. Compatibility maps
+legacy `COMPOSED` to `INTEGRATION`, legacy `FULL` and `FullTests` to `FINAL`,
+and keeps the public workstation, operational and infrastructure adapter paths.
+An incomplete profile fails safely without executing a mixed legacy wrapper.
+
+`WORKSTATION` is a live, non-mutating installation check. Bootstrap prepares
+or inspects prerequisites; it does not run product acceptance or governance.
+`FINAL` executes each required pure leaf at most once, preserves all evidence,
+emits one typed report and may issue a receipt only for an immutable candidate
+with complete trusted coverage and accepted semantic/safety/core contracts.
+Diagnostics may be present in such a receipt without weakening acceptance.
+
+There are no verifier-managed timeouts, watchdogs, forced termination or
+duration-based verdicts. Duration is informational telemetry excluded from
+deterministic identities. An externally interrupted run produces no acceptance
+verdict and no receipt.
+
+Closeout adapters inspect only candidate/receipt identity. They do not run
+verification, mutate Git, create commits or tags, push, or record author
+approval. Promotion is a separate explicit author operation and must not rerun
+an unchanged accepted candidate.
+
+The recovery protocol is temporary. It is removed when the complete registry,
+profiles, adapters and one-run receipt flow are author-accepted and published.
+
+## Archived pre-recovery contract
+
+The remainder of this document records the superseded executable-governance
+design for historical traceability. It is not parsed as live configuration and
+must not be used instead of the current registry and schemas.
+
+- Historical status: **SUPERSEDED DURING VERIFICATION-INFRASTRUCTURE RECOVERY**
+- Historical scope: operational/build/verification infrastructure
 - Decision: [accepted ADR 0020 and author closeout](../../../docs/adr/0020-verification-levels-and-current-run-evidence.md#author-approval-and-closeout)
 - Existing authority: [ADR 0002](../../../docs/adr/0002-g1-operational-authority.md)
 - Accepted amendment: [ADR 0025](../../../docs/adr/0025-commit-first-acceptance-and-dual-closeout.md)

@@ -1,31 +1,32 @@
 #requires -Version 7.2
 <#
 .SYNOPSIS
-Prepares and verifies a Windows workstation for GeoCeDG development.
+Prepares and inspects a Windows workstation for GeoCeDG development.
 
 .DESCRIPTION
 Inspects the clone, configures the official GeoGebra upstream remote only when
 it is absent, fetches provenance refs, checks the pinned baseline and local
-toolchains, then delegates repository gates to tools/agent/verify.ps1.
+toolchains. Product and governance verification are separate explicit operations.
 No software is installed and no interactive application is opened by default.
 
 .PARAMETER SkipFetch
 Uses existing local refs and tags without contacting origin or upstream.
 
 .PARAMETER SkipBuild
-Runs static and toolchain gates but skips compilation. It cannot be combined
-with LaunchDesktop.
+Retained for command-line compatibility. Bootstrap never compiles the product
+or launches verification.
 
 .PARAMETER RunBenchmarks
-Runs the informational G1 operational benchmark through verify.ps1.
+Retired bootstrap coupling. Supplying this switch fails with the standalone
+benchmark command to use instead.
 
 .PARAMETER LaunchDesktop
-Runs the explicit interactive Desktop launch gate. Close the application
-window to let the verification finish.
+Retired bootstrap coupling. Supplying this switch fails with the explicit
+Gradle product command to use instead.
 
 .PARAMETER LogDirectory
 Parent directory for a unique run folder containing transcript, preflight native
-logs, structured summary and delegated verification logs. Defaults to TEMP/geocedg-bootstrap.
+logs and a structured preparation summary. Defaults to TEMP/geocedg-bootstrap.
 
 .PARAMETER InstallPackagingPrerequisites
 Runs the focused prerequisite installer and exits without fetching remotes or
@@ -54,7 +55,6 @@ $ExpectedGradleJava = $null
 $ExpectedDesktopJava = $null
 $ExpectedWix = "5.0.2"
 $RepositoryRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\.."))
-$Verifier = Join-Path $RepositoryRoot "tools\agent\verify.ps1"
 $PackagingPrerequisiteInstaller = Join-Path $RepositoryRoot `
     "tools\bootstrap\install-packaging-prerequisites.ps1"
 $BaselineFile = Join-Path $RepositoryRoot "docs\upstream\BASELINE_COMMIT.txt"
@@ -321,8 +321,8 @@ try {
         $Outcome = "PASS"
     } else {
 
-    if ($SkipBuild -and $LaunchDesktop) {
-        throw "-SkipBuild cannot be combined with -LaunchDesktop."
+    if ($RunBenchmarks -or $LaunchDesktop) {
+        throw 'Bootstrap no longer runs benchmarks or the product. Use tools/benchmark/run.ps1 or the explicit Gradle launch command separately.'
     }
     if ($PSVersionTable.PSVersion -lt [version]"7.2") {
         throw "PowerShell 7.2 or newer is required for redirected native stderr handling. Install a supported PowerShell manually and rerun with pwsh."
@@ -360,7 +360,7 @@ try {
     }
     foreach ($requiredPath in @(
             "AGENTS.md", "UPSTREAM.md", "docs\upstream\BASELINE_COMMIT.txt",
-            "tools\agent\verify.ps1", "gradlew.bat")) {
+            "tools\agent\verify-workstation.ps1", "gradlew.bat")) {
         if (-not (Test-Path -LiteralPath (Join-Path $RepositoryRoot $requiredPath) `
                 -PathType Leaf)) {
             throw "Required GeoCeDG repository marker is missing: $requiredPath"
@@ -452,48 +452,14 @@ try {
     Write-Host "Conda Python: $($WorkstationFacts.Conda.python_executable); prefix=$($WorkstationFacts.Conda.python_prefix)"
     Write-Host "mpmath origin: $($WorkstationFacts.Conda.mpmath_file)"
 
-    Write-Step "GeoCeDG verification authority"
-    $verifyParameters = @{
-        LogDirectory = Join-Path $LogDirectory "verification"
-    }
     if ($SkipBuild) {
-        $verifyParameters.SkipBuild = $true
-        Add-Warning "Compilation was skipped; static, provenance and toolchain gates still run." -Classification "verification-scope"
+        Add-Warning '-SkipBuild is retained for compatibility; bootstrap never compiles or launches verification.' -Classification 'preparation-scope'
     }
-    if ($RunBenchmarks) {
-        $verifyParameters.RunBenchmarks = $true
-        $verifyParameters.BenchmarkOutputPath = Join-Path $LogDirectory `
-            "operational-benchmark.json"
-    }
-    if ($LaunchDesktop) {
-        $verifyParameters.LaunchDesktop = $true
-    }
-    & $Verifier @verifyParameters
-    $verificationExitCode = $LASTEXITCODE
-    if ($verificationExitCode -ne 0) {
-        $failure = [InvalidOperationException]::new("tools/agent/verify.ps1 failed with exit code $verificationExitCode. Review $($verifyParameters.LogDirectory); a delegated failure is not automatically a product regression.")
-        $failure.Data["NativeExitCode"] = $verificationExitCode
-        $failure.Data["FailureClassification"] = "delegated-verification-failure"
-        throw $failure
-    }
-
-    $gradleVersionPath = Join-Path $verifyParameters.LogDirectory "gradle-version.log"
-    $toolchainPath = Join-Path $verifyParameters.LogDirectory "java-toolchains.log"
-    if (-not (Test-Path -LiteralPath $gradleVersionPath -PathType Leaf) -or
-        -not (Test-Path -LiteralPath $toolchainPath -PathType Leaf)) {
-        throw "Verification did not produce the expected Gradle/toolchain evidence in $LogDirectory."
-    }
-    $gradleVersion = Get-Content -LiteralPath $gradleVersionPath
-    $launcherJvm = $gradleVersion | Where-Object { $_ -match "^Launcher JVM:" } |
-        Select-Object -First 1
-    $daemonJvm = $gradleVersion | Where-Object { $_ -match "^Daemon JVM:" } |
-        Select-Object -First 1
-    $confirmedToolchains = @(ConvertFrom-GradleToolchainOutput -Output (Get-Content -LiteralPath $toolchainPath))
-    foreach ($version in @($requirements.CompilerJava, $requirements.DesktopJava)) {
-        if (@($confirmedToolchains | Where-Object { $_.LanguageVersion -eq $version -and $_.IsJdk }).Count -eq 0) {
-            throw "Delegated verification did not confirm required JDK $version. Review $toolchainPath."
-        }
-    }
+    Write-Step 'Preparation boundary'
+    Write-Host 'Bootstrap prerequisite inspection completed.'
+    Write-Host 'Canonical live verification is separate: .\tools\agent\verify.ps1 -Profile WORKSTATION'
+    $launcherJvm = "Java $ExpectedGradleJava at $($WorkstationFacts.EffectiveJava.Path)"
+    $daemonJvm = 'not started by bootstrap'
     $desktopToolchain = $WorkstationFacts.DesktopToolchain
 
     Write-Step "Optional Windows packaging prerequisites"
@@ -575,14 +541,10 @@ try {
     Write-Host ".NET SDK: $PackagingDotNet"
     Write-Host "WiX: $PackagingWix"
     Write-Host "WiX extensions: $PackagingWixExtensions"
-    if ($LaunchDesktop) {
-        Write-Host "Desktop toolchain use: exercised by :desktop:desktop:run"
-    } else {
-        Write-Host "Desktop toolchain use: detected but not launched; use -LaunchDesktop for the interactive gate"
-    }
-    Write-Host "Repository status entries: $($finalStatus.Count) (preserved by verification)"
+    Write-Host "Desktop toolchain use: detected but not launched; use .\gradlew.bat :desktop:desktop:run separately"
+    Write-Host "Repository status entries: $($finalStatus.Count) (preserved by bootstrap)"
     Write-Host "Logs: $LogDirectory"
-    Write-Host "Evidence scope: existing delegated verification; optional packaging inventory is not native artifact acceptance."
+    Write-Host "Evidence scope: bootstrap preparation and prerequisite inspection only; no product or governance acceptance."
     Write-Host "Current process user profile: $([Environment]::GetFolderPath([Environment+SpecialFolder]::UserProfile))"
 
     $Outcome = if ($Warnings.Count -eq 0) { "PASS" } else { "PASS WITH WARNINGS" }

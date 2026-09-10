@@ -68,19 +68,39 @@ upstream edit and never treat generated reports or restricted assets as source.
 
 ## Toolchain, build and launch
 
-The current Windows contract requires Git, PowerShell 7.2 or later, JDK 17 for
-compilation/tests, JDK 22 for the Gradle launcher and JDK 25 for Desktop
-packaging/runtime composition. Use only `gradlew.bat`.
+The current Windows contract requires Git, PowerShell 7.2 or later, Java 22 to
+launch Gradle, and complete JDKs 17 and 25. All three JDK versions must already
+be available on the machine; the verification path does not auto-install them.
+Use only the repository Gradle Wrapper. Conda is needed only for Python
+operational verification, never for Java product execution.
 
 The PowerShell minimum follows the
 [verification-level contract](../../geocedg/specs/operations/verification-levels.md);
 it does not claim that every newer runtime version has been tested.
 
+For an existing clone, inspect local changes before updating and then create or
+update the dedicated Python environment:
+
 ```powershell
-.\tools\agent\verify.ps1
+git status --short
+git switch main
+git pull --ff-only
+conda env create --file .\cedg_env.yml
+# If cedg_env already exists, use this instead of create:
+conda env update --name cedg_env --file .\cedg_env.yml --prune
+.\tools\agent\verify.ps1 -Profile WORKSTATION
+# Compatibility command for the same live plan:
+.\tools\agent\verify-workstation.ps1
+.\gradlew.bat :desktop:desktop:compileJava
 .\gradlew.bat :desktop:desktop:runGeoCeDG
 .\gradlew.bat :desktop:desktop:run
 ```
+
+Do not rename, update, prune or remove the unrelated external `om_env`.
+`WORKSTATION` checks Gradle 9.4.1, launcher Java 22, complete JDKs 17 and 25,
+`cedg_env`, CPython 3.12.13, `mpmath` 1.4.1 and import-prefix provenance. It
+does not compile the product or run governance diagnostics. Bootstrap is a
+separate prerequisite-preparation command, not installation verification.
 
 The second launch is GeoCeDG; the third is the unchanged Classic diagnostic.
 For the internal V2 laboratory use the existing script under `tools/locus-v2/`.
@@ -92,6 +112,33 @@ success is technical evidence only; public redistribution remains blocked
 pending license and asset approval.
 
 ## Verification
+
+The typed registry separates product/scientific/safety/core acceptance from
+governance, documentation, historical, style and performance diagnostics.
+Diagnostic findings remain visible but never alter acceptance, coverage or the
+process exit status. Use the canonical profile syntax:
+
+```powershell
+.\tools\agent\verify.ps1 -Profile STATIC
+.\tools\agent\verify.ps1 -Profile INFRA_UNIT
+.\tools\agent\verify.ps1 -Profile WORKSTATION
+.\tools\agent\verify.ps1 -Profile OPERATIONAL
+.\tools\agent\verify.ps1 -Profile DEV
+.\tools\agent\verify.ps1 -Profile PHASE -Phase <registered-phase-id>
+.\tools\agent\verify.ps1 -Profile INTEGRATION
+.\tools\agent\verify.ps1 -Profile FINAL
+```
+
+Legacy `COMPOSED` maps to `INTEGRATION`; `FULL` and `FullTests` map to
+`FINAL`. Incomplete profiles fail safely and do not execute mixed legacy
+wrappers. Closeout adapters inspect an immutable candidate and its receipt; they
+do not run verification, modify Git, publish, or record author approval.
+
+<details>
+<summary>Archived pre-recovery verification and closeout instructions</summary>
+
+The material below is retained only to explain historical evidence. It is not
+the current executable contract.
 
 `tools/agent/verify.ps1` is executable authority; its default remains COMPOSED.
 The accepted operational implementation is governed by the
@@ -484,6 +531,8 @@ incompatible targets fail closed with normal undo/redo and persistence.
 Focused Java tests live primarily in `source/shared/common-jre`; frontend tests
 live with the Desktop module. A passing focused test is evidence for its stated
 scope, not automatic approval, packaging success or public feature maturity.
+
+</details>
 
 ## Kernel extension process
 

@@ -30,6 +30,7 @@ $RuntimeFixturePath = $PSCommandPath
 $ModuleSha256 = (Get-FileHash -LiteralPath $ModulePath -Algorithm SHA256).Hash.ToLowerInvariant()
 $EvidenceIntegritySha256 = (Get-FileHash -LiteralPath $EvidenceIntegrityPath `
     -Algorithm SHA256).Hash.ToLowerInvariant()
+$RepositoryRootPath = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../..'))
 $RunId = [guid]::NewGuid().ToString("N")
 $EvidenceRoot = Join-Path ([IO.Path]::GetFullPath($LogDirectory)) $RunId
 # Git-created fixture repositories must not inherit arbitrary report-path depth.
@@ -665,10 +666,25 @@ Invoke-RuntimeTest "root acceptance integration validates readiness before campa
     $parameterNames = @($rootAst.ParamBlock.Parameters | ForEach-Object {
         $_.Name.VariablePath.UserPath
     })
+    $source = [IO.File]::ReadAllText((Resolve-Path -LiteralPath $RootVerifierPath).Path)
+    if ($source.Contains('Resolve-VerificationRegistryPlan', [StringComparison]::Ordinal)) {
+        Assert-TestCondition ($parameterNames -cnotcontains 'CloseoutReadinessPath') `
+            'Typed ordinary verification still accepts a legacy closeout-readiness control.'
+        foreach ($literal in @('Invoke-VerificationSupervisor',
+                'verification-registry.json')) {
+            Assert-TestCondition $source.Contains($literal, [StringComparison]::Ordinal) `
+                "Typed verifier omits required registry/supervisor binding: $literal"
+        }
+        foreach ($legacy in @('Test-GeoCeDGCloseoutAcceptancePreflight',
+                '$HeavyCampaignStarted', 'closeoutConsumable')) {
+            Assert-TestCondition (-not $source.Contains($legacy, [StringComparison]::Ordinal)) `
+                "Ordinary verification retains legacy closeout coupling: $legacy"
+        }
+        return
+    }
     Assert-TestCondition ($parameterNames -ccontains "CloseoutReadinessPath") `
         "Root verifier does not expose the closeout-readiness receipt."
 
-    $source = [IO.File]::ReadAllText((Resolve-Path -LiteralPath $RootVerifierPath).Path)
     $preflightIndex = $source.IndexOf("Test-GeoCeDGCloseoutAcceptancePreflight",
         [StringComparison]::Ordinal)
     $finalPreflightIndex = $source.LastIndexOf("Test-GeoCeDGCloseoutAcceptancePreflight",
@@ -721,6 +737,24 @@ Invoke-RuntimeTest "root acceptance integration validates readiness before campa
 
 Invoke-RuntimeTest "central COMPOSED FULL plan has only four declared differences and binds root execution" -WithoutGit {
     param($fixture)
+    $rootSource = [IO.File]::ReadAllText(
+        (Resolve-Path -LiteralPath $RootVerifierPath).Path)
+    if ($rootSource.Contains('Resolve-VerificationRegistryPlan', [StringComparison]::Ordinal)) {
+        $registry = [IO.File]::ReadAllText((Join-Path $RepositoryRootPath 'geocedg/specs/operations/verification-registry.json')) |
+            ConvertFrom-Json -Depth 100
+        $mappings = @{}
+        foreach ($mapping in @($registry.compatibility_mappings)) {
+            Assert-TestCondition (-not $mappings.ContainsKey([string]$mapping.selector)) `
+                "Duplicate compatibility selector: $($mapping.selector)"
+            $mappings[[string]$mapping.selector] = [string]$mapping.profile
+        }
+        Assert-TestCondition ($mappings.COMPOSED -ceq 'INTEGRATION' -and
+            $mappings.FULL -ceq 'FINAL' -and $mappings.FullTests -ceq 'FINAL') `
+            'Legacy final selectors do not map through the typed registry.'
+        Assert-TestCondition (@($registry.profiles | Where-Object profile_id -CEQ 'FINAL').Count -eq 1) `
+            'FINAL profile identity is missing or duplicated.'
+        return
+    }
     $plans = & $fixture.Module {
         [pscustomobject]@{
             Composed = Get-GeoCeDGVerificationExecutionPlan -Level COMPOSED `
@@ -773,8 +807,6 @@ Invoke-RuntimeTest "central COMPOSED FULL plan has only four declared difference
             -ceq ($fullNeutral | ConvertTo-Json -Depth 100 -Compress)) `
         "COMPOSED and FULL differ outside the four declared dimensions."
 
-    $rootSource = [IO.File]::ReadAllText(
-        (Resolve-Path -LiteralPath $RootVerifierPath).Path)
     $planIndex = $rootSource.IndexOf(
         '$VerificationExecutionPlan = Get-GeoCeDGVerificationExecutionPlan',
         [StringComparison]::Ordinal)
@@ -2086,15 +2118,14 @@ Invoke-RuntimeTest "DEV rejects a mixed matching and missing filter without clai
     Assert-TestCondition (@(Get-ChildItem -LiteralPath $fixture.Logs -Filter "dev-summary.json" -Recurse -File).Count -eq 0) "Failed DEV selection emitted a PASS summary."
 }
 
-Invoke-RuntimeTest "default operational benchmark preserves full scope and informational budget" -WithoutGit {
+Invoke-RuntimeTest "default operational benchmark preserves scope and telemetry-only timing" -WithoutGit {
     param($fixture)
     $rootPath = (Resolve-Path -LiteralPath $RootVerifierPath).Path
     $repositoryRoot = [IO.Path]::GetFullPath((Join-Path (Split-Path -Parent $rootPath) "../.."))
     $suitePath = Join-Path $repositoryRoot "benchmarks/suites/operational-smoke.yml"
     $suite = ConvertFrom-Json -InputObject ([IO.File]::ReadAllText($suitePath)) -Depth 100 -NoEnumerate
     Assert-TestCondition ($suite.schema_version -eq 1 -and
-        $suite.id -ceq "cedg.operational.smoke" -and
-        $suite.budget_mode -ceq "informational") "Default benchmark identity/budget mode changed."
+        $suite.id -ceq "cedg.operational.smoke") "Default benchmark identity changed."
     $cases = @($suite.cases)
     Assert-TestCondition ($cases.Count -eq 1) "Default benchmark must retain exactly one complete operational case."
     $case = $cases[0]
@@ -2103,9 +2134,8 @@ Invoke-RuntimeTest "default operational benchmark preserves full scope and infor
     Assert-TestSequence @("-Quiet") @($case.arguments) "Default benchmark arguments changed"
     Assert-TestCondition ($case.warmup_iterations -eq 1 -and
         $case.measurement_iterations -eq 3) "Default benchmark repeat counts changed."
-    Assert-TestCondition ($case.timeout_seconds -eq 600) "Default benchmark must retain the reviewed finite 600-second child timeout."
-    Assert-TestCondition ($case.budget.metric -ceq "median_elapsed_ms" -and
-        $case.budget.warning_threshold_ms -eq 5000) "Default benchmark informational warning was weakened."
+    Assert-TestCondition ($case.PSObject.Properties.Name -cnotcontains 'budget') `
+        "Default benchmark must not derive acceptance or warnings from duration."
     Assert-TestCondition (@(& $fixture.Module { @($script:FixtureNativeCalls) }).Count -eq 0) "Default benchmark contract fixture requested native work."
 }
 
@@ -2132,7 +2162,7 @@ Invoke-RuntimeTest "operational defaults isolate five invocations and preserve e
     # Git, Gradle, infrastructure process, or benchmark process is executed.
     $capture = $Lf + '[pscustomobject]@{ LogDirectory = $LogDirectory; IsExplicit = $PSBoundParameters.ContainsKey("LogDirectory"); Quiet = [bool]$Quiet }'
     $bind = [scriptblock]::Create($parameterBlock.Extent.Text + $capture)
-    $defaultParent = [IO.Path]::GetFullPath((Join-Path ([IO.Path]::GetTempPath()) "geocedg-operational"))
+    $defaultParent = [IO.Path]::GetFullPath([IO.Path]::GetTempPath()).TrimEnd('\', '/')
     $assertDefaultBindings = {
         param([object[]]$Bindings)
         Assert-TestCondition ($Bindings.Count -eq 5) "Expected precheck, warmup and three measured default bindings."
@@ -2143,7 +2173,7 @@ Invoke-RuntimeTest "operational defaults isolate five invocations and preserve e
             $path = [IO.Path]::GetFullPath($binding.LogDirectory)
             Assert-TestCondition ($binding.Quiet -and -not $binding.IsExplicit -and
                 [IO.Path]::GetDirectoryName($path).Equals($defaultParent, [StringComparison]::OrdinalIgnoreCase) -and
-                [IO.Path]::GetFileName($path) -cmatch '^[0-9a-f]{32}$') "Default binding is not a fresh implicit GUID child."
+                [IO.Path]::GetFileName($path) -cmatch '^geocedg-operational-[0-9a-f]{32}$') "Default binding is not a fresh implicit task-owned path."
         }
     }
     $defaults = @(1..5 | ForEach-Object { & $bind -Quiet })
@@ -2216,6 +2246,22 @@ Invoke-RuntimeTest "operational CI guard binds literal FULL to one canonical com
     $errors = $null
     $operationalAst = [Management.Automation.Language.Parser]::ParseInput($operationalSource, [ref]$tokens, [ref]$errors)
     Assert-TestCondition ($errors.Count -eq 0) "Operational verifier source does not parse."
+    if ($operationalSource.Contains("Profile = 'OPERATIONAL'", [StringComparison]::Ordinal)) {
+        Assert-TestCondition ($operationalSource.Contains(
+                "Join-Path `$PSScriptRoot 'verify.ps1'", [StringComparison]::Ordinal) -and
+            -not $operationalSource.Contains('Invoke-VerificationSupervisor',
+                [StringComparison]::Ordinal)) `
+            'Operational compatibility adapter duplicates or bypasses the canonical runner.'
+        $workflow = [IO.File]::ReadAllText((Join-Path $RepositoryRootPath '.github/workflows/verify.yml'))
+        Assert-TestCondition ([regex]::Matches($workflow,
+                [regex]::Escape('.\tools\agent\verify.ps1 -Profile FINAL')).Count -eq 1) `
+            'CI does not invoke exactly one canonical FINAL profile.'
+        Assert-TestCondition (-not $workflow.Contains('timeout-minutes',
+                [StringComparison]::Ordinal) -and
+            -not $workflow.Contains('-Level FULL', [StringComparison]::Ordinal)) `
+            'CI retains timeout configuration or a legacy FULL selector.'
+        return
+    }
     $starts = @($operationalAst.FindAll({ param($node)
         $node -is [Management.Automation.Language.AssignmentStatementAst] -and
         $node.Left.Extent.Text -ceq '$ciTokens'
@@ -2284,6 +2330,18 @@ Invoke-RuntimeTest "operational CI guard binds literal FULL to one canonical com
 Invoke-RuntimeTest "root rejects invalid CleanBuild and execution-level combinations before work" -WithoutGit {
     param($fixture)
     $rootSource = (Resolve-Path -LiteralPath $RootVerifierPath).Path
+    $typedSource = [IO.File]::ReadAllText($rootSource)
+    if ($typedSource.Contains('Resolve-VerificationRegistryPlan', [StringComparison]::Ordinal)) {
+        foreach ($guard in @(
+                "throw 'Profile cannot be combined with legacy Level or FullTests selection.'",
+                "throw 'PHASE requires -Phase with an exact registered phase identifier.'",
+                "throw 'Phase is valid only for PHASE.'",
+                "throw 'Packaging options are valid only for the PACKAGING profile.'")) {
+            Assert-TestCondition $typedSource.Contains($guard, [StringComparison]::Ordinal) `
+                "Typed root omits early selection guard: $guard"
+        }
+        return
+    }
     $agentDirectory = Join-Path $fixture.RepositoryRoot "tools/agent"
     [void][IO.Directory]::CreateDirectory($agentDirectory)
     $rootCopy = Join-Path $agentDirectory "verify.ps1"
@@ -2374,6 +2432,28 @@ Invoke-RuntimeTest "root rejects invalid CleanBuild and execution-level combinat
 
 Invoke-RuntimeTest "dirty final acceptance is classified and rejected before heavy work" {
     param($fixture)
+    $typedSource = [IO.File]::ReadAllText(
+        (Resolve-Path -LiteralPath $RootVerifierPath).Path)
+    if ($typedSource.Contains('Resolve-VerificationRegistryPlan', [StringComparison]::Ordinal)) {
+        $registry = [IO.File]::ReadAllText((Join-Path $RepositoryRootPath 'geocedg/specs/operations/verification-registry.json')) |
+            ConvertFrom-Json -Depth 100
+        $final = @($registry.profiles | Where-Object profile_id -CEQ 'FINAL')
+        Assert-TestCondition ($final.Count -eq 1 -and
+            $final[0].coverage_state -ceq 'COMPLETE' -and
+            @($final[0].missing_check_ids).Count -eq 0) `
+            'Typed FINAL does not declare its closed pure coverage.'
+        $finalIds = @($registry.nodes | Where-Object {
+                @($_.required_for_profiles) -ccontains 'FINAL'
+            } | ForEach-Object { [string]$_.check_id })
+        Assert-TestCondition ($finalIds -ccontains 'repository.boundary-safety') `
+            'Typed FINAL omits the repository-boundary safety contract.'
+        Assert-TestCondition (@($registry.nodes | Where-Object {
+                    @($_.required_for_profiles) -ccontains 'FINAL' -and
+                    $_.command.identity -match 'verify-operational|verify-verification-infrastructure|legacy'
+                }).Count -eq 0) `
+            'Typed FINAL includes a mixed legacy wrapper.'
+        return
+    }
     $agentDirectory = Join-Path $fixture.RepositoryRoot "tools/agent"
     [void][IO.Directory]::CreateDirectory($agentDirectory)
     $rootCopy = Join-Path $agentDirectory "verify.ps1"

@@ -35,6 +35,113 @@ function Invoke-Git {
     return $output
 }
 
+function Write-FixtureText {
+    param([string]$Path, [string]$Text)
+    [void][IO.Directory]::CreateDirectory((Split-Path -Parent $Path))
+    [IO.File]::WriteAllText($Path, $Text.Replace("`r`n", "`n"),
+        [Text.UTF8Encoding]::new($false))
+}
+
+function Invoke-PowerShellCapture {
+    param([string]$ScriptPath, [string[]]$Arguments)
+    $start = [Diagnostics.ProcessStartInfo]::new()
+    $start.FileName = $pwsh
+    $start.WorkingDirectory = $repositoryRoot
+    $start.UseShellExecute = $false
+    $start.CreateNoWindow = $true
+    $start.RedirectStandardOutput = $true
+    $start.RedirectStandardError = $true
+    foreach ($argument in @('-NoLogo', '-NoProfile', '-File', $ScriptPath) + $Arguments) {
+        [void]$start.ArgumentList.Add($argument)
+    }
+    $process = [Diagnostics.Process]::new()
+    $process.StartInfo = $start
+    try {
+        if (-not $process.Start()) { throw "Unable to start $ScriptPath" }
+        $stdoutTask = $process.StandardOutput.ReadToEndAsync()
+        $stderrTask = $process.StandardError.ReadToEndAsync()
+        $process.WaitForExit()
+        return [pscustomobject]@{
+            exit_code = $process.ExitCode
+            stdout = $stdoutTask.GetAwaiter().GetResult()
+            stderr = $stderrTask.GetAwaiter().GetResult()
+        }
+    } finally { $process.Dispose() }
+}
+
+function New-PackagingArtifactFixture {
+    param([string]$Root)
+    $marker = 'INTERNAL EVALUATION — NOT FOR REDISTRIBUTION'
+    $app = Join-Path $Root 'app-image/GeoCeDG'
+    $packages = Join-Path $Root 'packages'
+    [void][IO.Directory]::CreateDirectory((Join-Path $app 'app'))
+    [void][IO.Directory]::CreateDirectory($packages)
+    foreach ($path in @(
+            (Join-Path $app 'GeoCeDG.exe'),
+            (Join-Path $Root 'GeoCeDG-fixture-internal.zip'),
+            (Join-Path $packages 'GeoCeDG-fixture-internal.msi'),
+            (Join-Path $packages 'GeoCeDG-fixture-internal.exe'))) {
+        Write-FixtureText $path 'fixture'
+    }
+    Write-FixtureText (Join-Path $app 'app/INTERNAL_EVALUATION_ONLY.txt') $marker
+    Write-FixtureText (Join-Path $app 'app/GeoCeDG.cfg') `
+        'app.mainclass=org.geocedg.desktop.GeoCeDG'
+    Write-FixtureText (Join-Path $Root 'geocedg-windows.cdx.json') `
+        '{"bomFormat":"CycloneDX","specVersion":"1.5","components":[{"name":"fixture"}]}'
+    $manifest = [ordered]@{
+        target = 'All'
+        distribution_marker = $marker
+        public_redistribution = 'BLOCKED PENDING LICENSE/ASSET APPROVAL'
+        application = [ordered]@{ icon = [ordered]@{
+                path = 'source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/derived/geocedg-application.ico'
+                sha256 = 'e5dac1dd3a556f4ce9747f00d272281e9a571ecc5e757180ba1c6750b664cd73'
+        } }
+        file_association = [ordered]@{
+            enabled_for_target = $true
+            registration_scope = 'msi-exe-installers-only'
+            extension = 'cedg'
+            mime_type = 'application/x-geocedg-cedg'
+            mime_basis = 'jdk25-jpackage-required-internal-unregistered'
+            progid_strategy = 'jdk25-jpackage-generated-geocedg-owned'
+            portable_outputs_association_free = $true
+            compatibility_extension_claimed = $false
+        }
+        runtime = [ordered]@{ excluded_non_windows_native_jars = @('fixture.jar') }
+    }
+    Write-FixtureText (Join-Path $Root 'build-manifest.json') `
+        ((ConvertTo-Json $manifest -Depth 10 -Compress) + "`n")
+    Write-FixtureText (Join-Path $Root 'app-image.SHA256SUMS.txt') ""
+    $zip = Join-Path $Root 'GeoCeDG-fixture-internal.zip'
+    $hash = (Get-FileHash -LiteralPath $zip -Algorithm SHA256).Hash.ToLowerInvariant()
+    Write-FixtureText (Join-Path $Root 'SHA256SUMS.txt') `
+        ($hash + '  GeoCeDG-fixture-internal.zip' + "`n")
+}
+
+function New-FakeWix {
+    param([string]$Root, [bool]$ExtensionsAvailable)
+    [void][IO.Directory]::CreateDirectory($Root)
+    $xml = Join-Path $Root 'fixture.wxs'
+    Write-FixtureText $xml @'
+<Wix><Fragment><ProgId Id="GeoCeDG.CeDG" Description="GeoCeDG document (internal evaluation)"><Extension Id="cedg" ContentType="application/x-geocedg-cedg"><MIME ContentType="application/x-geocedg-cedg"/><Verb Id="open" Argument="%1" TargetFile="launcher"/></Extension></ProgId><File Id="launcher" Name="GeoCeDG.exe" Source="GeoCeDG.exe"/></Fragment></Wix>
+'@
+    $extensionLines = if ($ExtensionsAvailable) {
+        "echo WixToolset.Util.wixext 5.0.2`necho WixToolset.UI.wixext 5.0.2"
+    } else { 'rem extensions deliberately unavailable' }
+    $batch = @'
+@echo off
+if /I "%~1"=="--version" (echo 5.0.2+fixture&amp; exit /b 0)
+if /I "%~1"=="extension" (
+{0}
+exit /b 0
+)
+if /I "%~1"=="msi" (copy /y "%GEOCEDG_WIX_FIXTURE_XML%" "%~5" &gt;nul&amp; exit /b 0)
+exit /b 1
+'@
+    $batch = ($batch -f $extensionLines).Replace('&amp;', '&').Replace('&gt;', '>')
+    Write-FixtureText (Join-Path $Root 'wix.cmd') $batch
+    return $xml
+}
+
 function New-NodeBase {
     param([string]$Id, [string]$Kind, [string]$Contract)
     $node = [ordered]@{
@@ -148,6 +255,216 @@ Invoke-Case 'WORKSTATION is a single live installation leaf with no unrelated ca
     foreach ($forbiddenCondaArgument in @("'env'", "'create'", "'update'", "'remove'", "'prune'", "'rename'")) {
         Assert-Case (-not $scriptText.Contains($forbiddenCondaArgument)) `
             "WORKSTATION contains forbidden Conda argument $forbiddenCondaArgument."
+    }
+}
+
+Invoke-Case 'packaging product projection accepts valid artifacts and detects missing or altered evidence' {
+    $tempBase = [IO.Path]::GetFullPath([IO.Path]::GetTempPath()).TrimEnd('\', '/')
+    $root = Join-Path $tempBase ('geocedg-packaging-product-' + [guid]::NewGuid().ToString('N'))
+    $artifactRoot = Join-Path $root 'artifacts'
+    $fakeBin = Join-Path $root 'bin'
+    $marker = Join-Path $root '.fixture-owner'
+    [void][IO.Directory]::CreateDirectory($root)
+    Write-FixtureText $marker 'verification-contract-boundary'
+    New-PackagingArtifactFixture $artifactRoot
+    $xml = New-FakeWix $fakeBin $true
+    $savedPath = $env:PATH
+    $savedXml = $env:GEOCEDG_WIX_FIXTURE_XML
+    try {
+        $env:PATH = $fakeBin + [IO.Path]::PathSeparator + $savedPath
+        $env:GEOCEDG_WIX_FIXTURE_XML = $xml
+        $checker = Join-Path $repositoryRoot 'tools/agent/checks/packaging-product.ps1'
+        $validResult = Join-Path $root 'valid.json'
+        $valid = Invoke-PowerShellCapture $checker @('-RepositoryRoot', $repositoryRoot,
+            '-ResultPath', $validResult, '-RequireArtifacts', '-ArtifactRoot', $artifactRoot)
+        $validJson = Read-VerificationJson $validResult
+        Assert-Case ($valid.exit_code -eq 0 -and
+            $validJson.outcome -ceq 'CONTRACT_SATISFIED') `
+            ("Valid packaging evidence was rejected: outcome={0}; cause={1}; stderr={2}; unsatisfied={3}" -f `
+                $validJson.outcome, $validJson.cause, $valid.stderr,
+                ((@($validJson.subcontracts | Where-Object status -CNE 'SATISFIED') |
+                    ConvertTo-Json -Depth 10 -Compress)))
+        Assert-Case (@($validJson.subcontracts | Where-Object status -CNE 'SATISFIED').Count -eq 0) `
+            'Valid packaging evidence contains an unsatisfied product subcontract.'
+
+        $appImage = Join-Path $artifactRoot 'app-image/GeoCeDG'
+        $firstForbidden = Join-Path $appImage 'forbidden.pdf'
+        Write-FixtureText $firstForbidden 'forbidden fixture'
+        $singleResult = Join-Path $root 'single-forbidden.json'
+        $single = Invoke-PowerShellCapture $checker @('-RepositoryRoot', $repositoryRoot,
+            '-ResultPath', $singleResult, '-RequireArtifacts', '-ArtifactRoot', $artifactRoot)
+        $singleJson = Read-VerificationJson $singleResult
+        $singleBoundary = @($singleJson.subcontracts | Where-Object {
+                $_.contract_id -ceq 'packaging.portable-boundary'
+            })
+        Assert-Case ($single.exit_code -eq 1 -and $singleBoundary.Count -eq 1 -and
+            $singleBoundary[0].status -ceq 'VIOLATED' -and
+            @($singleBoundary[0].observed).Count -eq 1 -and
+            [IO.Path]::GetFullPath([string]$singleBoundary[0].observed[0]) -ceq
+                [IO.Path]::GetFullPath($firstForbidden)) `
+            'One forbidden packaging file was not reported once with its full path.'
+
+        $secondForbidden = Join-Path $appImage 'second-forbidden.ggb'
+        Write-FixtureText $secondForbidden 'forbidden fixture'
+        $multipleResult = Join-Path $root 'multiple-forbidden.json'
+        $multiple = Invoke-PowerShellCapture $checker @('-RepositoryRoot', $repositoryRoot,
+            '-ResultPath', $multipleResult, '-RequireArtifacts', '-ArtifactRoot', $artifactRoot)
+        $multipleJson = Read-VerificationJson $multipleResult
+        $multipleBoundary = @($multipleJson.subcontracts | Where-Object {
+                $_.contract_id -ceq 'packaging.portable-boundary'
+            })
+        $observedForbidden = @($multipleBoundary[0].observed | ForEach-Object {
+                [IO.Path]::GetFullPath([string]$_)
+            })
+        Assert-Case ($multiple.exit_code -eq 1 -and $multipleBoundary.Count -eq 1 -and
+            $multipleBoundary[0].status -ceq 'VIOLATED' -and
+            $observedForbidden.Count -eq 2 -and
+            @($observedForbidden | Sort-Object -Unique).Count -eq 2 -and
+            $observedForbidden -ccontains [IO.Path]::GetFullPath($firstForbidden) -and
+            $observedForbidden -ccontains [IO.Path]::GetFullPath($secondForbidden)) `
+            'Multiple forbidden packaging files were not each reported exactly once.'
+        Remove-Item -LiteralPath $firstForbidden, $secondForbidden -Force
+
+        Write-FixtureText (Join-Path $artifactRoot 'SHA256SUMS.txt') `
+            (('0' * 64) + '  GeoCeDG-fixture-internal.zip' + "`n")
+        $alteredResult = Join-Path $root 'altered.json'
+        $altered = Invoke-PowerShellCapture $checker @('-RepositoryRoot', $repositoryRoot,
+            '-ResultPath', $alteredResult, '-RequireArtifacts', '-ArtifactRoot', $artifactRoot)
+        $alteredJson = Read-VerificationJson $alteredResult
+        Assert-Case ($altered.exit_code -eq 1 -and
+            @($alteredJson.subcontracts | Where-Object {
+                    $_.contract_id -ceq 'packaging.artifact-hashes' -and
+                    $_.status -ceq 'VIOLATED'
+                }).Count -eq 1) 'Altered artifact hash was not detected exactly once.'
+
+        $missingRoot = Join-Path $root 'missing'
+        [void][IO.Directory]::CreateDirectory($missingRoot)
+        $missingResult = Join-Path $root 'missing.json'
+        $missing = Invoke-PowerShellCapture $checker @('-RepositoryRoot', $repositoryRoot,
+            '-ResultPath', $missingResult, '-RequireArtifacts', '-ArtifactRoot', $missingRoot)
+        $missingJson = Read-VerificationJson $missingResult
+        Assert-Case ($missing.exit_code -eq 1 -and
+            @($missingJson.subcontracts | Where-Object {
+                    $_.contract_id -ceq 'packaging.artifacts-present' -and
+                    $_.status -ceq 'VIOLATED'
+                }).Count -eq 1) 'Missing packaging evidence was not detected exactly once.'
+    } finally {
+        $env:PATH = $savedPath
+        $env:GEOCEDG_WIX_FIXTURE_XML = $savedXml
+        $resolved = [IO.Path]::GetFullPath($root)
+        $prefix = $tempBase + [IO.Path]::DirectorySeparatorChar
+        if ($resolved.StartsWith($prefix, [StringComparison]::OrdinalIgnoreCase) -and
+                (Test-Path -LiteralPath $marker) -and
+                [IO.File]::ReadAllText($marker) -ceq 'verification-contract-boundary') {
+            Remove-Item -LiteralPath $resolved -Recurse -Force
+        } else { throw "Fixture cleanup refused unexpected path: $resolved" }
+    }
+}
+
+Invoke-Case 'packaging toolchain safety distinguishes available and missing requirements' {
+    $tempBase = [IO.Path]::GetFullPath([IO.Path]::GetTempPath()).TrimEnd('\', '/')
+    $root = Join-Path $tempBase ('geocedg-packaging-toolchain-' + [guid]::NewGuid().ToString('N'))
+    $fakeAvailable = Join-Path $root 'available'
+    $fakeMissing = Join-Path $root 'missing'
+    $marker = Join-Path $root '.fixture-owner'
+    [void][IO.Directory]::CreateDirectory($root)
+    Write-FixtureText $marker 'verification-contract-boundary'
+    [void](New-FakeWix $fakeAvailable $true)
+    [void](New-FakeWix $fakeMissing $false)
+    $savedPath = $env:PATH
+    $savedRequest = $env:GEOCEDG_PACKAGING_CHECK_TOOLCHAIN
+    try {
+        $env:GEOCEDG_PACKAGING_CHECK_TOOLCHAIN = 'true'
+        $checker = Join-Path $repositoryRoot 'tools/agent/checks/workstation-safety.ps1'
+        $env:PATH = $fakeAvailable + [IO.Path]::PathSeparator + $savedPath
+        $availablePath = Join-Path $root 'available.json'
+        $available = Invoke-PowerShellCapture $checker @('-RepositoryRoot', $repositoryRoot,
+            '-ResultPath', $availablePath, '-ScratchDirectory', (Join-Path $root 'scratch-a'),
+            '-ContractMode', 'PACKAGING')
+        $availableJson = Read-VerificationJson $availablePath
+        Assert-Case ($available.exit_code -eq 0 -and
+            $availableJson.outcome -ceq 'CONTRACT_SATISFIED') `
+            "Available packaging toolchain was rejected: $($available.stderr)"
+
+        $env:PATH = $fakeMissing + [IO.Path]::PathSeparator + $savedPath
+        $missingPath = Join-Path $root 'missing.json'
+        $missing = Invoke-PowerShellCapture $checker @('-RepositoryRoot', $repositoryRoot,
+            '-ResultPath', $missingPath, '-ScratchDirectory', (Join-Path $root 'scratch-m'),
+            '-ContractMode', 'PACKAGING')
+        $missingJson = Read-VerificationJson $missingPath
+        Assert-Case ($missing.exit_code -eq 2 -and
+            @($missingJson.subcontracts | Where-Object {
+                    $_.contract_id -like 'packaging.wix-extension.*' -and
+                    $_.status -ceq 'VIOLATED'
+                }).Count -eq 2) 'Missing packaging toolchain extensions were not isolated as safety violations.'
+    } finally {
+        $env:PATH = $savedPath
+        $env:GEOCEDG_PACKAGING_CHECK_TOOLCHAIN = $savedRequest
+        $resolved = [IO.Path]::GetFullPath($root)
+        $prefix = $tempBase + [IO.Path]::DirectorySeparatorChar
+        if ($resolved.StartsWith($prefix, [StringComparison]::OrdinalIgnoreCase) -and
+                (Test-Path -LiteralPath $marker) -and
+                [IO.File]::ReadAllText($marker) -ceq 'verification-contract-boundary') {
+            Remove-Item -LiteralPath $resolved -Recurse -Force
+        } else { throw "Fixture cleanup refused unexpected path: $resolved" }
+    }
+}
+
+Invoke-Case 'packaging repository safety detects worktree and generated-state changes' {
+    $tempBase = [IO.Path]::GetFullPath([IO.Path]::GetTempPath()).TrimEnd('\', '/')
+    $root = Join-Path $tempBase ('geocedg-packaging-repository-' + [guid]::NewGuid().ToString('N'))
+    $repo = Join-Path $root 'repo'
+    $marker = Join-Path $root '.fixture-owner'
+    [void][IO.Directory]::CreateDirectory($repo)
+    Write-FixtureText $marker 'verification-contract-boundary'
+    $savedBaseline = $env:GEOCEDG_PACKAGING_BASELINE_PATH
+    try {
+        [void](Invoke-Git $repo @('init', '-q'))
+        [void](Invoke-Git $repo @('config', 'user.name', 'Fixture'))
+        [void](Invoke-Git $repo @('config', 'user.email', 'fixture@example.invalid'))
+        Write-FixtureText (Join-Path $repo 'tracked.txt') "clean`n"
+        [void](Invoke-Git $repo @('add', 'tracked.txt'))
+        [void](Invoke-Git $repo @('commit', '-q', '-m', 'fixture'))
+        # The production baseline represents an empty emitted PowerShell pipeline
+        # as null; mirror that exact structured identity.
+        $emptyHash = Get-VerificationDeterministicHash -Value $null
+        $baseline = Join-Path $root 'baseline.json'
+        Write-FixtureText $baseline ((ConvertTo-Json ([ordered]@{
+                    status = ''
+                    generated_state_sha256 = $emptyHash
+                }) -Compress) + "`n")
+        $env:GEOCEDG_PACKAGING_BASELINE_PATH = $baseline
+        $checker = Join-Path $repositoryRoot 'tools/agent/checks/repository-safety.ps1'
+        $cleanPath = Join-Path $root 'clean.json'
+        $clean = Invoke-PowerShellCapture $checker @('-RepositoryRoot', $repo,
+            '-SafetyResultPath', $cleanPath, '-ContractMode', 'PACKAGING')
+        $cleanJson = Read-VerificationJson $cleanPath
+        Assert-Case ($clean.exit_code -eq 0 -and
+            $cleanJson.outcome -ceq 'CONTRACT_SATISFIED') `
+            ("Unchanged packaging repository state was rejected: exit={0}; cause={1}; subcontracts={2}; stderr={3}" -f `
+                $clean.exit_code, $cleanJson.cause,
+                ((@($cleanJson.subcontracts) | ConvertTo-Json -Depth 10 -Compress)),
+                $clean.stderr)
+
+        Write-FixtureText (Join-Path $repo 'tracked.txt') "changed`n"
+        [void][IO.Directory]::CreateDirectory((Join-Path $repo 'build'))
+        Write-FixtureText (Join-Path $repo 'build/generated.txt') 'generated'
+        $changedPath = Join-Path $root 'changed.json'
+        $changed = Invoke-PowerShellCapture $checker @('-RepositoryRoot', $repo,
+            '-SafetyResultPath', $changedPath, '-ContractMode', 'PACKAGING')
+        $changedJson = Read-VerificationJson $changedPath
+        Assert-Case ($changed.exit_code -eq 2 -and
+            @($changedJson.subcontracts | Where-Object status -CEQ 'VIOLATED').Count -eq 2) `
+            'Packaging worktree and generated-state changes were not both detected.'
+    } finally {
+        $env:GEOCEDG_PACKAGING_BASELINE_PATH = $savedBaseline
+        $resolved = [IO.Path]::GetFullPath($root)
+        $prefix = $tempBase + [IO.Path]::DirectorySeparatorChar
+        if ($resolved.StartsWith($prefix, [StringComparison]::OrdinalIgnoreCase) -and
+                (Test-Path -LiteralPath $marker) -and
+                [IO.File]::ReadAllText($marker) -ceq 'verification-contract-boundary') {
+            Remove-Item -LiteralPath $resolved -Recurse -Force
+        } else { throw "Fixture cleanup refused unexpected path: $resolved" }
     }
 }
 

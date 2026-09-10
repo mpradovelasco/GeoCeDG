@@ -42,8 +42,7 @@ function Get-Median {
 function Invoke-MeasuredScript {
     param(
         [Parameter(Mandatory)] [string]$ScriptPath,
-        [AllowEmptyCollection()] [string[]]$Arguments,
-        [Parameter(Mandatory)] [int]$TimeoutSeconds
+        [AllowEmptyCollection()] [string[]]$Arguments
     )
 
     $pwsh = (Get-Command pwsh -ErrorAction Stop).Source
@@ -68,10 +67,6 @@ function Invoke-MeasuredScript {
         }
         $stdoutTask = $process.StandardOutput.ReadToEndAsync()
         $stderrTask = $process.StandardError.ReadToEndAsync()
-        if (-not $process.WaitForExit($TimeoutSeconds * 1000)) {
-            $process.Kill($true)
-            throw "Benchmark command timed out after $TimeoutSeconds seconds."
-        }
         $process.WaitForExit()
         $stopwatch.Stop()
         $stdout = $stdoutTask.GetAwaiter().GetResult()
@@ -93,16 +88,6 @@ try {
     if ($suiteDefinition.schema_version -ne 1) {
         throw "Unsupported benchmark schema_version: $($suiteDefinition.schema_version)"
     }
-    if ($suiteDefinition.budget_mode -ne "informational") {
-        throw "G1 benchmark budgets must be informational."
-    }
-
-    $operationalVerifier = Join-Path $RepositoryRoot "tools\agent\verify-operational.ps1"
-    & $operationalVerifier -Quiet
-    if ($LASTEXITCODE -ne 0) {
-        throw "Operational verification failed before benchmark execution."
-    }
-
     $caseResults = [Collections.Generic.List[object]]::new()
     foreach ($case in @($suiteDefinition.cases)) {
         $scriptPath = Resolve-RepositoryFile -RelativePath ([string]$case.script)
@@ -116,13 +101,13 @@ try {
         Write-Host "==> Benchmark $($case.id)"
         for ($iteration = 0; $iteration -lt $case.warmup_iterations; $iteration++) {
             [void](Invoke-MeasuredScript -ScriptPath $scriptPath `
-                -Arguments @($case.arguments) -TimeoutSeconds $case.timeout_seconds)
+                -Arguments @($case.arguments))
         }
 
         $durations = [Collections.Generic.List[double]]::new()
         for ($iteration = 0; $iteration -lt $case.measurement_iterations; $iteration++) {
             $elapsed = Invoke-MeasuredScript -ScriptPath $scriptPath `
-                -Arguments @($case.arguments) -TimeoutSeconds $case.timeout_seconds
+                -Arguments @($case.arguments)
             $durations.Add($elapsed)
         }
 
@@ -131,13 +116,6 @@ try {
         $mean = [Math]::Round((($values | Measure-Object -Average).Average), 3)
         $minimum = [Math]::Round((($values | Measure-Object -Minimum).Minimum), 3)
         $maximum = [Math]::Round((($values | Measure-Object -Maximum).Maximum), 3)
-        $threshold = [double]$case.budget.warning_threshold_ms
-        $budgetStatus = if ($median -le $threshold) {
-            "within-informational-budget"
-        } else {
-            "informational-exceeded"
-        }
-
         $caseResults.Add([ordered]@{
                 id = [string]$case.id
                 script = [string]$case.script
@@ -150,10 +128,8 @@ try {
                 mean_elapsed_ms = $mean
                 minimum_elapsed_ms = $minimum
                 maximum_elapsed_ms = $maximum
-                warning_threshold_ms = $threshold
-                budget_status = $budgetStatus
             })
-        Write-Host "    median=${median}ms; budget=$budgetStatus"
+        Write-Host "    median=${median}ms (informational telemetry only)"
     }
 
     $head = (& git -C $RepositoryRoot rev-parse HEAD).Trim()
@@ -181,7 +157,6 @@ try {
             architecture = [Runtime.InteropServices.RuntimeInformation]::OSArchitecture.ToString()
             powershell = $PSVersionTable.PSVersion.ToString()
         }
-        budget_mode = "informational"
         cases = $caseResults
     }
     $json = $result | ConvertTo-Json -Depth 20

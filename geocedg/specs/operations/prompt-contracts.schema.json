@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://geocedg.local/schemas/prompt-contracts-v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_version", "profiles", "documents"],
+  "properties": {
+    "$schema": { "const": "geocedg/specs/operations/prompt-contracts.schema.json" },
+    "schema_version": { "const": 1 },
+    "profiles": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["profile_id", "ordered_fields", "execution_safety_fields"],
+        "properties": {
+          "profile_id": { "enum": ["task", "review", "author_direct"] },
+          "ordered_fields": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" }
+          },
+          "execution_safety_fields": {
+            "type": "array",
+            "minItems": 7,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" }
+          }
+        }
+      }
+    },
+    "documents": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "profile"],
+        "properties": {
+          "path": { "type": "string", "pattern": "^[^/\\\\:]+(?:/[^/\\\\:]+)*$" },
+          "profile": { "enum": ["task", "review", "author_direct"] }
+        }
+      }
+    }
+  }
+}

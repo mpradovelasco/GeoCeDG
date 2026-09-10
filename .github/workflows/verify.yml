@@ -15,7 +15,6 @@ permissions:
 jobs:
   verify:
     runs-on: windows-latest
-    timeout-minutes: 60
 
     steps:
       - name: Check out complete history and tags
@@ -31,6 +30,7 @@ jobs:
           java-version: |
             17
             22
+            25
 
       - name: Provision GeoCeDG Python environment
         uses: conda-incubator/setup-miniconda@v4
@@ -46,16 +46,11 @@ jobs:
         run: |
           conda run --no-capture-output -n cedg_env python -c "import json,platform,sys,mpmath; print(json.dumps({'implementation':platform.python_implementation(),'python':platform.python_version(),'executable':sys.executable,'prefix':sys.prefix,'mpmath':mpmath.__version__,'mpmath_file':mpmath.__file__}))"
 
-      - name: Run GeoCeDG FULL authority
+      - name: Run GeoCeDG FINAL profile
         shell: pwsh
         run: |
           $logRoot = Join-Path $env:RUNNER_TEMP "geocedg-verify"
-          $benchmarkPath = Join-Path $logRoot "operational-benchmark.json"
-          .\tools\agent\verify.ps1 `
-            -Level FULL `
-            -LogDirectory $logRoot `
-            -RunBenchmarks `
-            -BenchmarkOutputPath $benchmarkPath
+          .\tools\agent\verify.ps1 -Profile FINAL -LogDirectory $logRoot
 
       - name: Upload verification evidence
         if: always()

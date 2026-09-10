@@ -11,7 +11,7 @@
     ]},
     {"contract_id":"workspace.profile-authority","semantic_domain":"PRODUCT","inputs":[
       {"path":"source/desktop/desktop/build.gradle.kts","sha256":"846763237ac35dec71f231e6f3de86de6f84b977309c131873abd151be5899e5"},
-      {"path":"tools/agent/workspace-profile-validation.ps1","sha256":"0b5a938044826e3291cdbdf6d9d74fce0c8438afacb06ea8f27d5e1754375c86"}
+      {"path":"tools/agent/workspace-profile-validation.ps1","sha256":"e188405084ae9ba9719de9ffc03e6ed3f94276079e9a9290113567a56de2622b"}
     ]},
     {"contract_id":"scientific.python-reference-inputs","semantic_domain":"SCIENTIFIC","inputs":[
       {"path":"geocedg/validation/locus-v2/g7a/generate_metric_references.py","sha256":"614d9c44350c1a616095d070feb48e492e736913356c03613ad1581c6b2b0148"},
