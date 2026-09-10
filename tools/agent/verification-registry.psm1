@@ -210,6 +210,24 @@ function Assert-VerificationRegistry {
         if ($kind -cnotin @('PROCESS_PRODUCER', 'ACCEPTANCE_LEAF', 'DIAGNOSTIC_LEAF', 'EVIDENCE_PROJECTION')) {
             throw ("Invalid verification node_kind for {0}: {1}" -f $id, $kind)
         }
+        $hasDeclaredWriteRoots = Test-VerificationObjectProperty $node 'declared_write_roots'
+        if ($hasDeclaredWriteRoots) {
+            if ($kind -notin @('PROCESS_PRODUCER', 'ACCEPTANCE_LEAF')) {
+                throw "declared_write_roots is valid only for producer or acceptance nodes: $id"
+            }
+            $declaredWriteRoots = [object[]]@(Get-VerificationObjectProperty $node 'declared_write_roots' -Required)
+            if ($declaredWriteRoots.Count -eq 0) {
+                throw "Verification node $id must declare at least one write root."
+            }
+            foreach ($writeRoot in $declaredWriteRoots) {
+                $writeRootText = ([string]$writeRoot).Replace('\', '/').Trim()
+                if ($writeRootText -notmatch '^[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$' -or
+                        $writeRootText -eq '.git' -or $writeRootText.StartsWith('.git/', [StringComparison]::Ordinal) -or
+                        $writeRootText -match '(^|/)\.\.(?:/|$)') {
+                    throw "Verification node $id declares an unsafe write root: $writeRoot"
+                }
+            }
+        }
         $tier = [string](Get-VerificationObjectProperty $node 'tier' -Required)
         if (-not $script:TierRank.ContainsKey($tier)) {
             throw ("Invalid verification tier for {0}: {1}" -f $id, $tier)

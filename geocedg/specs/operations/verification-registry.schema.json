@@ -161,6 +161,7 @@
         "impact_paths": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/impactPath" } },
         "environment_contract": { "$ref": "#/$defs/environmentContract" },
         "resource_locks": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$" } },
+        "declared_write_roots": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "pattern": "^(?!\\.git(?:/|$))[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$" } },
         "side_effects": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "enum": ["NONE", "TASK_OWNED_OUTPUT", "BUILD_OUTPUT", "REPOSITORY_READ"] } },
         "output_adapter": { "enum": ["RAW_PROCESS_V1", "EXIT_CODE_V1", "STRUCTURED_CONTRACT_V1", "PROJECTION_EXIT_CODE_V1", "PROJECTION_STRUCTURED_CONTRACT_V1", "PROJECTION_EVIDENCE_PRESENT_V1", "PROJECTION_JUNIT_SELECTION_V1", "PROJECTION_JUNIT_DIAGNOSTIC_V1", "PROJECTION_PROCESS_EXIT_V1", "PROJECTION_PYTHON_CHECK_V1"] },
         "required_for_profiles": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/profileId" } },
@@ -195,8 +196,8 @@
             "command": { "properties": { "kind": { "const": "PROCESS" } } },
             "output_adapter": { "enum": ["EXIT_CODE_V1", "STRUCTURED_CONTRACT_V1"] }
           },
-          "required": ["node_kind", "contract_class"],
-          "not": { "anyOf": [{ "required": ["produces_evidence"] }, { "required": ["producer_dependency"] }] }
+            "required": ["node_kind", "contract_class"],
+            "not": { "anyOf": [{ "required": ["produces_evidence"] }, { "required": ["producer_dependency"] }, { "required": ["declared_write_roots"] }] }
         },
         {
           "properties": {
@@ -204,8 +205,8 @@
             "command": { "properties": { "kind": { "const": "BUILTIN_PROJECTION" } } },
             "output_adapter": { "enum": ["PROJECTION_EXIT_CODE_V1", "PROJECTION_STRUCTURED_CONTRACT_V1", "PROJECTION_EVIDENCE_PRESENT_V1", "PROJECTION_JUNIT_SELECTION_V1", "PROJECTION_JUNIT_DIAGNOSTIC_V1", "PROJECTION_PROCESS_EXIT_V1", "PROJECTION_PYTHON_CHECK_V1"] }
           },
-          "required": ["node_kind", "contract_class", "producer_dependency"],
-          "not": { "required": ["produces_evidence"] }
+            "required": ["node_kind", "contract_class", "producer_dependency"],
+          "not": { "anyOf": [{ "required": ["produces_evidence"] }, { "required": ["declared_write_roots"] }] }
         }
       ]
     }

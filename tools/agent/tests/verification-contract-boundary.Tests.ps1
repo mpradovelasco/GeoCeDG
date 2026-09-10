@@ -422,22 +422,37 @@ Invoke-Case 'packaging repository safety detects worktree and generated-state ch
         [void](Invoke-Git $repo @('config', 'user.name', 'Fixture'))
         [void](Invoke-Git $repo @('config', 'user.email', 'fixture@example.invalid'))
         Write-FixtureText (Join-Path $repo 'tracked.txt') "clean`n"
-        Write-FixtureText (Join-Path $repo '.gitignore') "build/`n.gradle/`n.kotlin/`n"
+        Write-FixtureText (Join-Path $repo '.gitignore') "build/`n.gradle/`n.kotlin/`nforeign/`n"
+        Write-FixtureText (Join-Path $repo 'build/tracked-output.txt') "tracked build output`n"
         [void](Invoke-Git $repo @('add', 'tracked.txt', '.gitignore'))
+        [void](Invoke-Git $repo @('add', '-f', 'build/tracked-output.txt'))
         [void](Invoke-Git $repo @('commit', '-q', '-m', 'fixture'))
         $baseline = Join-Path $root 'baseline.json'
         $checker = Join-Path $repositoryRoot 'tools/agent/checks/repository-safety.ps1'
+        $declaredWriteRoots = [string[]]@('.gradle', 'build', '.kotlin')
+        $declaredWriteRootsArgument = $declaredWriteRoots -join ','
         $baselineRun = Invoke-PowerShellCapture $checker @('-RepositoryRoot', $repo,
-            '-SafetyResultPath', $baseline, '-ContractMode', 'PACKAGING_BASELINE')
+            '-SafetyResultPath', $baseline, '-DeclaredWriteRoots', $declaredWriteRootsArgument,
+            '-ContractMode', 'PACKAGING_BASELINE')
         $baselineJson = Read-VerificationJson $baseline
         Assert-Case ($baselineRun.exit_code -eq 0 -and
             $baselineJson.evidence_kind -ceq 'PACKAGING_REPOSITORY_BASELINE' -and
-            $baselineJson.evidence_state -ceq 'PRESENT') `
-            'Packaging baseline producer did not preserve a complete initial state.'
+            $baselineJson.evidence_state -ceq 'PRESENT' -and
+            (ConvertTo-Json @($baselineJson.declared_write_roots) -Compress) -ceq
+                (ConvertTo-Json @('.gradle', '.kotlin', 'build') -Compress) -and
+            $baselineJson.protected_file_count -ge 2 -and
+            $baselineJson.protected_state_sha256 -match '^[0-9a-f]{64}$') `
+            ("Packaging baseline producer did not preserve a complete initial state: exit={0}; roots={1}; expected={2}; protected_count={3}; protected_hash={4}; stderr={5}" -f `
+                $baselineRun.exit_code,
+                (ConvertTo-Json @($baselineJson.declared_write_roots) -Compress),
+                (ConvertTo-Json @('.gradle', '.kotlin', 'build') -Compress),
+                $baselineJson.protected_file_count, $baselineJson.protected_state_sha256,
+                $baselineRun.stderr)
 
         $cleanPath = Join-Path $root 'clean.json'
         $clean = Invoke-PowerShellCapture $checker @('-RepositoryRoot', $repo,
             '-SafetyResultPath', $cleanPath, '-BaselinePath', $baseline,
+            '-DeclaredWriteRoots', $declaredWriteRootsArgument,
             '-ContractMode', 'PACKAGING')
         $cleanJson = Read-VerificationJson $cleanPath
         Assert-Case ($clean.exit_code -eq 0 -and
@@ -450,7 +465,8 @@ Invoke-Case 'packaging repository safety detects worktree and generated-state ch
         $missingBaselinePath = Join-Path $root 'missing-baseline-result.json'
         $missingBaseline = Invoke-PowerShellCapture $checker @('-RepositoryRoot', $repo,
             '-SafetyResultPath', $missingBaselinePath,
-            '-BaselinePath', (Join-Path $root 'absent.json'), '-ContractMode', 'PACKAGING')
+            '-BaselinePath', (Join-Path $root 'absent.json'),
+            '-DeclaredWriteRoots', $declaredWriteRootsArgument, '-ContractMode', 'PACKAGING')
         $missingBaselineJson = Read-VerificationJson $missingBaselinePath
         Assert-Case ($missingBaseline.exit_code -eq 3 -and
             $missingBaselineJson.outcome -ceq 'EVIDENCE_UNTRUSTED' -and
@@ -465,6 +481,7 @@ Invoke-Case 'packaging repository safety detects worktree and generated-state ch
         $changedPath = Join-Path $root 'changed.json'
         $changed = Invoke-PowerShellCapture $checker @('-RepositoryRoot', $repo,
             '-SafetyResultPath', $changedPath, '-BaselinePath', $baseline,
+            '-DeclaredWriteRoots', $declaredWriteRootsArgument,
             '-ContractMode', 'PACKAGING')
         $changedJson = Read-VerificationJson $changedPath
         Assert-Case ($changed.exit_code -eq 2 -and
@@ -475,12 +492,70 @@ Invoke-Case 'packaging repository safety detects worktree and generated-state ch
         $partialPath = Join-Path $root 'partial-restoration.json'
         $partial = Invoke-PowerShellCapture $checker @('-RepositoryRoot', $repo,
             '-SafetyResultPath', $partialPath, '-BaselinePath', $baseline,
+            '-DeclaredWriteRoots', $declaredWriteRootsArgument,
             '-ContractMode', 'PACKAGING')
         $partialJson = Read-VerificationJson $partialPath
         $partialViolations = @($partialJson.subcontracts | Where-Object status -CEQ 'VIOLATED')
-        Assert-Case ($partial.exit_code -eq 2 -and $partialViolations.Count -eq 1 -and
-            $partialViolations[0].contract_id -ceq 'packaging.generated-state-preserved') `
-            'Partial restoration incorrectly substituted clean worktree state for generated-state preservation.'
+        Assert-Case ($partial.exit_code -eq 0 -and $partialViolations.Count -eq 0 -and
+            @($partialJson.subcontracts | Where-Object {
+                    $_.contract_id -ceq 'packaging.declared-write-scope' -and
+                    $_.status -ceq 'SATISFIED'
+                }).Count -eq 1) `
+            'Declared Gradle output was incorrectly treated as a protected mutation.'
+
+        $trackedOutput = Join-Path $repo 'build/tracked-output.txt'
+        Write-FixtureText $trackedOutput "tracked build output changed`n"
+        $trackedProtectedPath = Join-Path $root 'tracked-protected.json'
+        $trackedProtected = Invoke-PowerShellCapture $checker @('-RepositoryRoot', $repo,
+            '-SafetyResultPath', $trackedProtectedPath, '-BaselinePath', $baseline,
+            '-DeclaredWriteRoots', $declaredWriteRootsArgument, '-ContractMode', 'PACKAGING')
+        $trackedProtectedJson = Read-VerificationJson $trackedProtectedPath
+        Assert-Case ($trackedProtected.exit_code -eq 2 -and
+            @($trackedProtectedJson.subcontracts | Where-Object {
+                    $_.contract_id -ceq 'packaging.generated-state-preserved' -and
+                    $_.status -ceq 'VIOLATED'
+                }).Count -eq 1 -and
+            @($trackedProtectedJson.subcontracts | Where-Object {
+                    $_.contract_id -ceq 'packaging.worktree-preserved' -and
+                    $_.status -ceq 'VIOLATED'
+                }).Count -eq 1) `
+            'A tracked file inside a declared Gradle root was not protected.'
+        Write-FixtureText $trackedOutput "tracked build output`n"
+
+        $preexistingOutput = Join-Path $repo 'build/preexisting.txt'
+        Write-FixtureText $preexistingOutput 'before'
+        $preexistingBaseline = Join-Path $root 'preexisting-baseline.json'
+        $preexistingBaselineRun = Invoke-PowerShellCapture $checker @('-RepositoryRoot', $repo,
+            '-SafetyResultPath', $preexistingBaseline, '-DeclaredWriteRoots', $declaredWriteRootsArgument,
+            '-ContractMode', 'PACKAGING_BASELINE')
+        Write-FixtureText $preexistingOutput 'after'
+        $preexistingResultPath = Join-Path $root 'preexisting-output.json'
+        $preexistingResult = Invoke-PowerShellCapture $checker @('-RepositoryRoot', $repo,
+            '-SafetyResultPath', $preexistingResultPath, '-BaselinePath', $preexistingBaseline,
+            '-DeclaredWriteRoots', $declaredWriteRootsArgument, '-ContractMode', 'PACKAGING')
+        $preexistingJson = Read-VerificationJson $preexistingResultPath
+        Assert-Case ($preexistingBaselineRun.exit_code -eq 0 -and
+            $preexistingResult.exit_code -eq 0 -and
+            $preexistingJson.outcome -ceq 'CONTRACT_SATISFIED') `
+            'A pre-existing declared Gradle output was incorrectly attributed to packaging.'
+
+        $foreignFile = Join-Path $repo 'foreign/not-a-gradle-output.txt'
+        Write-FixtureText $foreignFile 'unauthorized ignored output'
+        $foreignPath = Join-Path $root 'foreign-output.json'
+        $foreign = Invoke-PowerShellCapture $checker @('-RepositoryRoot', $repo,
+            '-SafetyResultPath', $foreignPath, '-BaselinePath', $preexistingBaseline,
+            '-DeclaredWriteRoots', $declaredWriteRootsArgument, '-ContractMode', 'PACKAGING')
+        $foreignJson = Read-VerificationJson $foreignPath
+        Assert-Case ($foreign.exit_code -eq 2 -and
+            @($foreignJson.subcontracts | Where-Object {
+                    $_.contract_id -ceq 'packaging.generated-state-preserved' -and
+                    $_.status -ceq 'VIOLATED'
+                }).Count -eq 1 -and
+            @($foreignJson.subcontracts | Where-Object {
+                    $_.contract_id -ceq 'packaging.worktree-preserved' -and
+                    $_.status -ceq 'SATISFIED'
+                }).Count -eq 1) `
+            'An ignored write outside declared Gradle roots was not rejected as a safety violation.'
     } finally {
         $resolved = [IO.Path]::GetFullPath($root)
         $prefix = $tempBase + [IO.Path]::DirectorySeparatorChar

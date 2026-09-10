@@ -5,6 +5,7 @@ param(
     [Parameter(Mandatory)] [string]$SafetyResultPath,
     [string]$DiagnosticResultPath,
     [string]$BaselinePath,
+    [string[]]$DeclaredWriteRoots = @(),
     [ValidateSet('REPOSITORY', 'PACKAGING_BASELINE', 'PACKAGING')]
     [string]$ContractMode = 'REPOSITORY'
 )
@@ -14,6 +15,8 @@ $ErrorActionPreference = 'Stop'
 $utf8 = [Text.UTF8Encoding]::new($false)
 [Console]::OutputEncoding = $utf8
 $OutputEncoding = $utf8
+Import-Module (Join-Path $PSScriptRoot '../verification-packaging-state.psm1')
+Import-Module (Join-Path $PSScriptRoot '../verification-io.psm1')
 
 function Write-Result {
     param([string]$Path, [object]$Value)
@@ -55,32 +58,8 @@ function Invoke-GitRead {
     }
 }
 
-function Get-PackagingGeneratedState {
-    param([string]$Root)
-    $records = [Collections.Generic.List[object]]::new()
-    foreach ($name in @('build', '.gradle', '.kotlin')) {
-        $container = Join-Path $Root $name
-        if (-not (Test-Path -LiteralPath $container -PathType Container)) { continue }
-        foreach ($file in Get-ChildItem -LiteralPath $container -File -Recurse -Force |
-                Sort-Object FullName) {
-            $records.Add([ordered]@{
-                bytes = [long]$file.Length
-                path = [IO.Path]::GetRelativePath($Root, $file.FullName).Replace('\', '/')
-                sha256 = (Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
-            })
-        }
-    }
-    return [object[]]$records.ToArray()
-}
-
-function Get-CanonicalStateHash {
-    param([object]$Value)
-    $json = ConvertTo-Json -InputObject $Value -Depth 20 -Compress
-    return [Convert]::ToHexString([Security.Cryptography.SHA256]::HashData(
-            $utf8.GetBytes($json))).ToLowerInvariant()
-}
-
 function Get-PackagingRepositorySnapshot {
+    param([string[]]$WriteRoots)
     $top = Invoke-GitRead @('rev-parse', '--show-toplevel')
     $head = Invoke-GitRead @('rev-parse', 'HEAD')
     $tree = Invoke-GitRead @('rev-parse', 'HEAD^{tree}')
@@ -94,7 +73,8 @@ function Get-PackagingRepositorySnapshot {
     if (-not $actualRoot.Equals($expectedRoot, [StringComparison]::OrdinalIgnoreCase)) {
         throw 'Git resolved a different repository root.'
     }
-    $generated = Get-PackagingGeneratedState -Root $actualRoot
+    $state = Get-VerificationPackagingStateSnapshot -RepositoryRoot $actualRoot `
+        -DeclaredWriteRoots $WriteRoots
     return [ordered]@{
         schema_version = 1
         evidence_kind = 'PACKAGING_REPOSITORY_BASELINE'
@@ -105,13 +85,17 @@ function Get-PackagingRepositorySnapshot {
         head = $head.stdout.TrimEnd("`r", "`n")
         tree = $tree.stdout.TrimEnd("`r", "`n")
         status = $status.stdout.Replace("`r`n", "`n").TrimEnd("`n")
-        generated_state_sha256 = Get-CanonicalStateHash -Value $generated
+        declared_write_roots = $state.declared_write_roots
+        declared_state_sha256 = $state.declared_state_sha256
+        declared_file_count = $state.declared_file_count
+        protected_state_sha256 = $state.protected_state_sha256
+        protected_file_count = $state.protected_file_count
     }
 }
 
 if ($ContractMode -ceq 'PACKAGING_BASELINE') {
     try {
-        $baseline = Get-PackagingRepositorySnapshot
+        $baseline = Get-PackagingRepositorySnapshot -WriteRoots $DeclaredWriteRoots
     } catch {
         $baseline = [ordered]@{
             schema_version = 1
@@ -123,7 +107,11 @@ if ($ContractMode -ceq 'PACKAGING_BASELINE') {
             head = $null
             tree = $null
             status = $null
-            generated_state_sha256 = $null
+            declared_write_roots = $null
+            declared_state_sha256 = $null
+            declared_file_count = $null
+            protected_state_sha256 = $null
+            protected_file_count = $null
         }
     }
     Write-Result $SafetyResultPath $baseline
@@ -188,7 +176,19 @@ try {
                         [string]$baseline.evidence_state -cne 'PRESENT') {
                     throw 'Packaging baseline evidence is not complete and trusted.'
                 }
-                $current = Get-PackagingRepositorySnapshot
+                $roots = Resolve-VerificationPackagingWriteRoots -RepositoryRoot $RepositoryRoot `
+                    -DeclaredWriteRoots $DeclaredWriteRoots
+                $baselineRoots = Resolve-VerificationPackagingWriteRoots -RepositoryRoot $RepositoryRoot `
+                    -DeclaredWriteRoots ([string[]]@($baseline.declared_write_roots))
+                if ((ConvertTo-VerificationCanonicalJson -Value $roots) -cne
+                        (ConvertTo-VerificationCanonicalJson -Value $baselineRoots)) {
+                    throw 'Packaging baseline declared write roots differ from the current contract.'
+                }
+                if ([string]::IsNullOrWhiteSpace([string]$baseline.protected_state_sha256) -or
+                        $null -eq $baseline.protected_file_count) {
+                    throw 'Packaging baseline lacks protected repository-state evidence.'
+                }
+                $current = Get-PackagingRepositorySnapshot -WriteRoots $roots
                 $identityEqual = [string]$baseline.repository_root -ceq [string]$current.repository_root -and
                     [string]$baseline.git_toplevel -ceq [string]$current.git_toplevel -and
                     [string]$baseline.head -ceq [string]$current.head -and
@@ -213,16 +213,23 @@ try {
                         'Packaging verification changed the repository worktree or index.'
                     })
                 })
-                $generatedHash = [string]$current.generated_state_sha256
-                $generatedEqual = $generatedHash -ceq [string]$baseline.generated_state_sha256
+                $protectedHash = [string]$current.protected_state_sha256
+                $protectedEqual = $protectedHash -ceq [string]$baseline.protected_state_sha256
                 $subcontracts.Add([ordered]@{
                     contract_id = 'packaging.generated-state-preserved'
-                    status = $(if ($generatedEqual) { 'SATISFIED' } else { 'VIOLATED' })
-                    expected = [string]$baseline.generated_state_sha256
-                    observed = $generatedHash
-                    cause = $(if ($generatedEqual) { $null } else {
-                        'Packaging verification changed generated repository state.'
+                    status = $(if ($protectedEqual) { 'SATISFIED' } else { 'VIOLATED' })
+                    expected = [string]$baseline.protected_state_sha256
+                    observed = $protectedHash
+                    cause = $(if ($protectedEqual) { $null } else {
+                        'Packaging verification changed repository state outside declared producer roots.'
                     })
+                })
+                $subcontracts.Add([ordered]@{
+                    contract_id = 'packaging.declared-write-scope'
+                    status = 'SATISFIED'
+                    expected = $roots
+                    observed = [string[]]$current.declared_write_roots
+                    cause = $null
                 })
             } catch {
                 $subcontracts.Add([ordered]@{

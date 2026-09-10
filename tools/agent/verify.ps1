@@ -38,6 +38,7 @@ $resultSchemaPath = Join-Path $repositoryRoot 'geocedg/specs/operations/verifica
 Import-Module (Join-Path $PSScriptRoot 'verification-io.psm1') -Force
 Import-Module (Join-Path $PSScriptRoot 'verification-registry.psm1') -Force
 Import-Module (Join-Path $PSScriptRoot 'verification-supervisor.psm1') -Force
+Import-Module (Join-Path $PSScriptRoot 'verification-packaging-state.psm1') -Force
 
 function Get-CanonicalSelection {
     if (-not [string]::IsNullOrWhiteSpace($Profile)) {
@@ -67,37 +68,33 @@ function Get-GitObject {
     return $value
 }
 
-function Get-PackagingGeneratedState {
-    $records = [Collections.Generic.List[object]]::new()
-    foreach ($name in @('build', '.gradle', '.kotlin')) {
-        $container = Join-Path $repositoryRoot $name
-        if (-not (Test-Path -LiteralPath $container -PathType Container)) { continue }
-        foreach ($file in Get-ChildItem -LiteralPath $container -File -Recurse -Force |
-                Sort-Object FullName) {
-            $records.Add([ordered]@{
-                path = [IO.Path]::GetRelativePath($repositoryRoot, $file.FullName).Replace('\', '/')
-                bytes = [long]$file.Length
-                sha256 = (Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
-            })
-        }
-    }
-    return [object[]]$records.ToArray()
-}
-
 function New-PackagingRepositoryBaseline {
     $git = Get-Command git -CommandType Application -ErrorAction Stop |
         Select-Object -First 1
     $status = (& $git.Path -C $repositoryRoot status --porcelain=v1 --untracked-files=all) -join "`n"
     if ($LASTEXITCODE -ne 0) { throw 'Unable to capture packaging repository status.' }
-    $generated = Get-PackagingGeneratedState
-    $generatedJson = ConvertTo-VerificationCanonicalJson -Value $generated
-    $generatedHash = [Convert]::ToHexString([Security.Cryptography.SHA256]::HashData(
-            [Text.UTF8Encoding]::new($false).GetBytes($generatedJson))).ToLowerInvariant()
+    $declaredWriteRoots = [string[]]@('.gradle', 'build', '.kotlin')
+    $top = (& $git.Path -C $repositoryRoot rev-parse --show-toplevel).Trim()
+    if ($LASTEXITCODE -ne 0) { throw 'Unable to capture packaging repository root.' }
+    $state = Get-VerificationPackagingStateSnapshot -RepositoryRoot $repositoryRoot `
+        -DeclaredWriteRoots $declaredWriteRoots
     $path = Join-Path ([IO.Path]::GetTempPath()) (
         'geocedg-packaging-baseline-' + [guid]::NewGuid().ToString('N') + '.json')
     [void](Write-VerificationAtomicJson -Path $path -Value ([ordered]@{
+        schema_version = 1
+        evidence_kind = 'PACKAGING_REPOSITORY_BASELINE'
+        evidence_state = 'PRESENT'
+        cause = $null
+        repository_root = [IO.Path]::GetFullPath($repositoryRoot)
+        git_toplevel = $top
+        head = Get-GitObject 'HEAD'
+        tree = Get-GitObject 'HEAD^{tree}'
         status = $status
-        generated_state_sha256 = $generatedHash
+        declared_write_roots = $state.declared_write_roots
+        declared_state_sha256 = $state.declared_state_sha256
+        declared_file_count = $state.declared_file_count
+        protected_state_sha256 = $state.protected_state_sha256
+        protected_file_count = $state.protected_file_count
     }))
     return $path
 }

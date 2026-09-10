@@ -160,6 +160,8 @@ function Get-VerificationNodeCommandIdentity {
         working_directory = [string](
             Get-VerificationSupervisorProperty $Node 'working_directory' -Required)
         environment_contract = Get-VerificationSupervisorProperty $Node 'environment_contract' -Required
+        declared_write_roots = [string[]]@(Get-VerificationSupervisorProperty $Node 'declared_write_roots')
+        resource_locks = [string[]]@(Get-VerificationSupervisorProperty $Node 'resource_locks' -Required)
         output_adapter = [string](
             Get-VerificationSupervisorProperty $Node 'output_adapter' -Required)
     })
@@ -272,6 +274,11 @@ function Invoke-VerificationRegistryProcess {
     }
     $arguments = [Collections.Generic.List[string]]::new()
     foreach ($argument in [object[]](Get-VerificationSupervisorProperty $Node 'argv' -Required)) {
+        if ([string]$argument -ceq '{declared_write_roots}') {
+            $roots = [string[]]@(Get-VerificationSupervisorProperty $Node 'declared_write_roots' -Required)
+            $arguments.Add(($roots -join ','))
+            continue
+        }
         $expanded = Expand-VerificationArgument -Value ([string]$argument) `
             -RepositoryRoot $RepositoryRoot -OutputRoot $OutputRoot `
             -NodeOutput $nodeOutput -StructuredOutput $structuredOutput `
