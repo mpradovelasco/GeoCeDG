@@ -2,23 +2,24 @@
   "$schema":"geocedg/specs/operations/verification-static-contracts.schema.json",
   "schema_version":1,
   "catalog_id":"static_contracts",
+  "identity_mode":"canonical_utf8_lf_v1",
   "contracts":[
     {"contract_id":"packaging.source-authority","semantic_domain":"PRODUCT","inputs":[
-      {"path":"packaging/windows/package.yml","sha256":"051aed3012d01ef100db4f664794765d9abc82846d6b08f7211e2d6d02372e0a"},
-      {"path":"geocedg/specs/operations/package-profile.schema.json","sha256":"fc41aca4024de35d37d50e53dfef427d86c9de864e57aecf87e7580957c3f849"},
-      {"path":"geocedg/resources/assets-manifest.yml","sha256":"047ff7a3bfde42d5ed0ab52283871c55e363ad9bf13545a4aac48ef0ab0f90e5"},
-      {"path":"tools/release/build-windows-package.ps1","sha256":"b67d404f0bdcc5315083a7f9e9f7a1045e5bb527f0b27c7ff446e53dafda159d"}
+      {"path":"packaging/windows/package.yml","sha256":"58d201b4441f041cd56b42a7776a81ddf811a92fb7e1148af7ae102b3db21f9f"},
+      {"path":"geocedg/specs/operations/package-profile.schema.json","sha256":"feece8e886a0f2ca29642db682412d3b2b0b8468728778d20c200466b014ca8f"},
+      {"path":"geocedg/resources/assets-manifest.yml","sha256":"ac5eef419c2c64a8fe2e0359045cd9fcd8b0df1f4434d3ea9c92088fe052fbfa"},
+      {"path":"tools/release/build-windows-package.ps1","sha256":"1a0f744a1eaebde6543339f132a10d97ccd8db3d5deec023e3df9a2a75f96945"}
     ]},
     {"contract_id":"workspace.profile-authority","semantic_domain":"PRODUCT","inputs":[
-      {"path":"source/desktop/desktop/build.gradle.kts","sha256":"846763237ac35dec71f231e6f3de86de6f84b977309c131873abd151be5899e5"},
+      {"path":"source/desktop/desktop/build.gradle.kts","sha256":"7061c67d7500b7df60a69931765bc6d94322d981b4092e0e1d7ffd618b27978a"},
       {"path":"tools/agent/workspace-profile-validation.ps1","sha256":"e188405084ae9ba9719de9ffc03e6ed3f94276079e9a9290113567a56de2622b"}
     ]},
     {"contract_id":"scientific.python-reference-inputs","semantic_domain":"SCIENTIFIC","inputs":[
-      {"path":"geocedg/validation/locus-v2/g7a/generate_metric_references.py","sha256":"614d9c44350c1a616095d070feb48e492e736913356c03613ad1581c6b2b0148"},
-      {"path":"geocedg/validation/locus-v2/g8a/generate_intersection_references.py","sha256":"7604676e15f111414b6ec40f352292187c1ec084751a2d588a7acb86b422ee77"},
-      {"path":"geocedg/validation/locus-v2/g8c/generate_extended_intersection_references.py","sha256":"ca64ddcd50a63cdb907965d4b89e927dd4da3d6443763f2549b2948de905e151"},
-      {"path":"geocedg/validation/spatial/g9a2/generate_point_references.py","sha256":"29fa2a4e466a82d5b18f536e95882f1fc5693dabd9d772223481a6071ae1fb13"},
-      {"path":"models/regression/g9a2-spatial-point-pilot/generate_model.py","sha256":"c9cd81b3730a3201de836b08d2cd1c5a00eb43a29075be7b00476a816da94785"}
+      {"path":"geocedg/validation/locus-v2/g7a/generate_metric_references.py","sha256":"b23a3e824cb4e70f83d499a0c7601950fb13458c9a77e7ba69d6ca886d7eb3a8"},
+      {"path":"geocedg/validation/locus-v2/g8a/generate_intersection_references.py","sha256":"5c9263d219bdcc4755d51eb2361f800d4c4e731b9d9fdb37f242e90d176d47aa"},
+      {"path":"geocedg/validation/locus-v2/g8c/generate_extended_intersection_references.py","sha256":"f00ffd1b33c558e0a936d766b5736b807b7fd80756ffa092bc0aee7764db3548"},
+      {"path":"geocedg/validation/spatial/g9a2/generate_point_references.py","sha256":"38ede6ce49aa8a5164c9416187d15c0eb584ce66787198bdc8faa46f08ae8d74"},
+      {"path":"models/regression/g9a2-spatial-point-pilot/generate_model.py","sha256":"c6dc85e010601d6890ae600ea2ce39f5e5e002db2fb36b2d2f3d0475b4f23819"}
     ]}
   ]
 }

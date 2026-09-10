@@ -28,7 +28,7 @@ Invoke-Case 'registry is the single executive authority and its catalogs are has
     Assert-Case (-not(Test-Path (Join-Path $repositoryRoot 'geocedg/specs/operations/verification-coverage.schema.json'))) 'Second coverage schema exists.'
     foreach($catalog in $registry.catalogs){
         $full=Join-Path $repositoryRoot $catalog.path
-        Assert-Case ((Get-VerificationFileSha256 $full) -ceq $catalog.sha256) "Catalog hash differs: $($catalog.catalog_id)"
+        Assert-Case ((Get-VerificationCanonicalTextSha256 $full) -ceq $catalog.sha256) "Catalog hash differs: $($catalog.catalog_id)"
     }
 }
 Invoke-Case 'tracked JUnit inventory is compact and selection based' {

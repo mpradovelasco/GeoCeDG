@@ -37,7 +37,7 @@ Invoke-Case 'bootstrap command graph has no acceptance or closeout edge' {
     $forbidden = @(
         'verify.ps1', 'verify-operational.ps1',
         'verify-verification-infrastructure.ps1', 'phase-closeout.ps1',
-        'closeout-workflow.ps1', '-Level COMPOSED', '-Level FULL',
+        '-Level COMPOSED', '-Level FULL',
         '-Profile FINAL', '-Profile PHASE', '-Profile OPERATIONAL'
     )
     $commands = @($ast.FindAll({

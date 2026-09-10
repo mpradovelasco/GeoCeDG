@@ -20,7 +20,8 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
-$repository = [IO.Path]::GetFullPath($RepositoryRoot)
+$repository = (Resolve-Path -LiteralPath ([IO.Path]::GetFullPath($RepositoryRoot)) `
+    -ErrorAction Stop).Path
 $git = (Get-Command git -CommandType Application -ErrorAction Stop |
     Select-Object -First 1).Path
 Import-Module (Join-Path $PSScriptRoot 'verification-io.psm1') -Force
@@ -63,6 +64,36 @@ function Invoke-GitRead {
     } finally { $process.Dispose() }
 }
 
+function Resolve-ExternalResultPath {
+    param([Parameter(Mandatory)] [string]$Path)
+
+    $full = [IO.Path]::GetFullPath($Path)
+    $cursor = $full
+    while (-not (Test-Path -LiteralPath $cursor)) {
+        $parent = [IO.Path]::GetDirectoryName($cursor)
+        if ([string]::IsNullOrWhiteSpace($parent) -or $parent -ceq $cursor) {
+            throw "Cannot resolve an existing ancestor for closeout result path: $full"
+        }
+        $cursor = $parent
+    }
+    $resolvedAncestor = (Resolve-Path -LiteralPath $cursor -ErrorAction Stop).Path
+    $relative = [IO.Path]::GetRelativePath($cursor, $full)
+    $resolved = [IO.Path]::GetFullPath((Join-Path $resolvedAncestor $relative))
+    $comparison = if ($IsWindows) {
+        [StringComparison]::OrdinalIgnoreCase
+    } else {
+        [StringComparison]::Ordinal
+    }
+    $root = $repository.TrimEnd([IO.Path]::DirectorySeparatorChar,
+        [IO.Path]::AltDirectorySeparatorChar)
+    $prefix = $root + [IO.Path]::DirectorySeparatorChar
+    if ($resolved.Equals($root, $comparison) -or
+            $resolved.StartsWith($prefix, $comparison)) {
+        throw 'Closeout result output must remain outside the inspected repository.'
+    }
+    return $full
+}
+
 $candidate = Invoke-GitRead @('rev-parse', '--verify', "$CandidateCommit^{commit}")
 $tree = Invoke-GitRead @('rev-parse', '--verify', "$candidate^{tree}")
 $receipt = Read-VerificationJson ([IO.Path]::GetFullPath($ReceiptPath))
@@ -92,7 +123,8 @@ $result = [ordered]@{
     publication_performed = $false
 }
 if (-not [string]::IsNullOrWhiteSpace($ResultPath)) {
-    [void](Write-VerificationAtomicJson -Path ([IO.Path]::GetFullPath($ResultPath)) -Value $result)
+    $externalResultPath = Resolve-ExternalResultPath -Path $ResultPath
+    [void](Write-VerificationAtomicJson -Path $externalResultPath -Value $result)
 }
 if (-not $result.identity_confirmed) {
     Write-Error ("Closeout identity mismatch: " + ($result.mismatches -join ', ')) -ErrorAction Continue

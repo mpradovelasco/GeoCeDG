@@ -67,6 +67,24 @@ try {
         Assert-Case (-not (Test-VerificationByteIdentity $lfPath $crlfPath)) 'Byte comparison ignored newline bytes.'
         Assert-Case ((ConvertTo-VerificationCanonicalLf $crlf) -ceq $lf) 'Canonical LF conversion was incorrect.'
     }
+    Invoke-Case 'canonical text identity ignores BOM and checkout line endings' {
+        $lfPath = Join-Path $root 'canonical-lf.json'
+        $crlfPath = Join-Path $root 'canonical-crlf.json'
+        $bomPath = Join-Path $root 'canonical-bom.json'
+        $lf = "{`n  `"value`": `"café`"`n}`n"
+        $crlf = $lf.Replace("`n", "`r`n")
+        [IO.File]::WriteAllText($lfPath, $lf, [Text.UTF8Encoding]::new($false))
+        [IO.File]::WriteAllText($crlfPath, $crlf, [Text.UTF8Encoding]::new($false))
+        [IO.File]::WriteAllText($bomPath, $crlf, [Text.UTF8Encoding]::new($true))
+        $expected = Get-VerificationCanonicalTextSha256 $lfPath
+        Assert-Case ((Get-VerificationCanonicalTextSha256 $crlfPath) -ceq $expected) `
+            'CRLF changed canonical text identity.'
+        Assert-Case ((Get-VerificationCanonicalTextSha256 $bomPath) -ceq $expected) `
+            'UTF-8 BOM changed canonical text identity.'
+        Assert-Case ((Get-VerificationFileSha256 $crlfPath) -cne
+            (Get-VerificationFileSha256 $lfPath)) `
+            'Raw byte identity did not preserve the line-ending distinction.'
+    }
     Invoke-Case 'Git and filesystem paths are normalized and contained' {
         Assert-Case ((ConvertTo-VerificationGitPath 'docs\café point.txt') -ceq 'docs/café point.txt') 'Unicode Git path changed.'
         Assert-CaseThrows { ConvertTo-VerificationGitPath '../escape.txt' } 'traversal'

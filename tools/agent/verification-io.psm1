@@ -73,6 +73,15 @@ function ConvertTo-VerificationCanonicalLf {
     return $Text.Replace($cr + $lf, $lf).Replace($cr, $lf)
 }
 
+function Get-VerificationCanonicalTextSha256 {
+    [CmdletBinding()]
+    param([Parameter(Mandatory)] [string]$Path)
+
+    $text = Read-VerificationUtf8Text -Path $Path
+    $canonical = ConvertTo-VerificationCanonicalLf -Text $text
+    return Get-VerificationSha256 -Bytes $script:Utf8NoBom.GetBytes($canonical)
+}
+
 function Test-VerificationSemanticTextEqual {
     [CmdletBinding()]
     param(
@@ -465,6 +474,7 @@ Export-ModuleMember -Function @(
     'Read-VerificationUtf8Text',
     'Write-VerificationUtf8Text',
     'ConvertTo-VerificationCanonicalLf',
+    'Get-VerificationCanonicalTextSha256',
     'Test-VerificationSemanticTextEqual',
     'Test-VerificationByteIdentity',
     'ConvertTo-VerificationGitPath',

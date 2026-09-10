@@ -112,10 +112,11 @@ try {
 
     Invoke-Case 'identity-only closeout accepts an exact receipt without Git mutation' {
         $before = Get-GitSnapshot
+        $externalResult = Join-Path $root 'identity-only-result.json'
         $result = Invoke-ScriptCapture $closeout @(
             '-Action', 'INSPECT', '-CandidateCommit', $snapshot.head,
             '-ReceiptPath', $receiptPath, '-RepositoryRoot', $fixture,
-            '-ApprovedCommit', $snapshot.head)
+            '-ApprovedCommit', $snapshot.head, '-ResultPath', $externalResult)
         $after = Get-GitSnapshot
         Assert-Case ($result.exit_code -eq 0) 'Exact identity inspection failed.'
         $payload = $result.stdout | ConvertFrom-Json -Depth 20
@@ -124,6 +125,11 @@ try {
             -not $payload.publication_performed) 'Closeout reported a mutating operation.'
         Assert-Case (($before | ConvertTo-Json -Compress) -ceq
             ($after | ConvertTo-Json -Compress)) 'Identity inspection changed Git state.'
+        $saved = Read-VerificationJson $externalResult
+        Assert-Case ($saved.identity_confirmed -and
+            [string]$saved.candidate_commit -ceq $snapshot.head -and
+            [string]$saved.candidate_tree -ceq $snapshot.tree) `
+            'External identity result did not preserve the inspected Git objects.'
     }
 
     Invoke-Case 'public author-closeout adapter delegates only identity inspection' {
@@ -152,6 +158,44 @@ try {
         }
     }
 
+    Invoke-Case 'legacy policy and mutation arguments fail before changing Git' {
+        foreach ($legacyArguments in @(
+                @('-PolicyPath', 'retired-policy.json'),
+                @('-CloseoutMode', 'VERIFIED'),
+                @('-TechnicalCampaignPath', 'retired-campaign.json'),
+                @('-AuthorApprovalPath', 'retired-approval.json'),
+                @('-PreparationResultPath', 'retired-preparation.json'),
+                @('-CloseoutCommit', $snapshot.head))) {
+            $before = Get-GitSnapshot
+            $result = Invoke-ScriptCapture $closeout (@(
+                '-CandidateCommit', $snapshot.head,
+                '-ReceiptPath', $receiptPath,
+                '-RepositoryRoot', $fixture) + $legacyArguments)
+            $after = Get-GitSnapshot
+            Assert-Case ($result.exit_code -ne 0) `
+                "Legacy argument unexpectedly succeeded: $($legacyArguments[0])"
+            Assert-Case (($before | ConvertTo-Json -Compress) -ceq
+                ($after | ConvertTo-Json -Compress)) `
+                "Legacy argument changed Git state: $($legacyArguments[0])"
+        }
+    }
+
+    Invoke-Case 'identity result output cannot target the inspected repository' {
+        $inside = Join-Path $fixture 'closeout-result.json'
+        $before = Get-GitSnapshot
+        $result = Invoke-ScriptCapture $closeout @(
+            '-CandidateCommit', $snapshot.head, '-ReceiptPath', $receiptPath,
+            '-RepositoryRoot', $fixture, '-ResultPath', $inside)
+        $after = Get-GitSnapshot
+        Assert-Case ($result.exit_code -ne 0) `
+            'Repository-contained identity output unexpectedly succeeded.'
+        Assert-Case (-not (Test-Path -LiteralPath $inside)) `
+            'Rejected identity output created a repository file.'
+        Assert-Case (($before | ConvertTo-Json -Compress) -ceq
+            ($after | ConvertTo-Json -Compress)) `
+            'Rejected identity output changed Git state.'
+    }
+
     Invoke-Case 'receipt identity mismatch is rejected without mutation' {
         $bad = [ordered]@{}
         foreach ($property in $receipt.GetEnumerator()) { $bad[$property.Key] = $property.Value }
@@ -173,6 +217,95 @@ try {
         Assert-Case ($result.exit_code -eq 3) 'Receipt mismatch did not fail safely.'
         Assert-Case (($before | ConvertTo-Json -Compress) -ceq
             ($after | ConvertTo-Json -Compress)) 'Rejected receipt changed Git state.'
+    }
+
+
+    Invoke-Case 'identity-only closeout contains no checker or Git-mutation command' {
+        $tokens = $null
+        $errors = $null
+        $ast = [Management.Automation.Language.Parser]::ParseFile(
+            $closeout, [ref]$tokens, [ref]$errors)
+        Assert-Case (@($errors).Count -eq 0) 'Identity-only closeout does not parse.'
+        $commandNames = @($ast.FindAll({
+            param($node)
+            $node -is [Management.Automation.Language.CommandAst]
+        }, $true) | ForEach-Object { $_.GetCommandName() } | Where-Object { $_ })
+        foreach ($forbiddenCommand in @('Invoke-VerificationSupervisor',
+                'Start-Process', 'git', 'Remove-Item', 'Move-Item')) {
+            Assert-Case ($commandNames -cnotcontains $forbiddenCommand) `
+                "Closeout contains forbidden command: $forbiddenCommand"
+        }
+        $stringValues = @($ast.FindAll({
+            param($node)
+            $node -is [Management.Automation.Language.StringConstantExpressionAst]
+        }, $true) | ForEach-Object { $_.Value })
+        foreach ($gitMutation in @('add', 'commit', 'tag', 'switch', 'checkout',
+                'merge', 'push', 'reset', 'restore', 'clean')) {
+            Assert-Case ($stringValues -cnotcontains $gitMutation) `
+                "Closeout retains Git mutation argv: $gitMutation"
+        }
+    }
+
+    Invoke-Case 'retired closeout artifacts have no executable consumer' {
+        $legacyNames = @(
+            ('closeout-' + 'workflow.ps1'),
+            ('phase-closeout.' + 'Tests.ps1'),
+            ('phase-closeout-policy.' + 'schema.json'),
+            ('dual-closeout-reform-' + 'policy.json'))
+        $legacyPaths = @(
+            ('tools/agent/' + $legacyNames[0]),
+            ('tools/agent/tests/' + $legacyNames[1]),
+            ('geocedg/specs/operations/' + $legacyNames[2]),
+            ('geocedg/validation/operations/' + $legacyNames[3]))
+        foreach ($legacyPath in $legacyPaths) {
+            Assert-Case (-not (Test-Path -LiteralPath (
+                        Join-Path $repository $legacyPath))) `
+                "Retired closeout artifact remains in the worktree: $legacyPath"
+        }
+        $trackedPowerShell = @(& git -C $repository ls-files '*.ps1' '*.psm1')
+        Assert-Case ($LASTEXITCODE -eq 0) `
+            'Could not enumerate tracked PowerShell consumers.'
+        foreach ($path in $trackedPowerShell) {
+            if (-not (Test-Path -LiteralPath (Join-Path $repository $path) `
+                    -PathType Leaf)) { continue }
+            $source = [IO.File]::ReadAllText((Join-Path $repository $path))
+            foreach ($legacyName in $legacyNames) {
+                Assert-Case (-not $source.Contains($legacyName,
+                        [StringComparison]::OrdinalIgnoreCase)) `
+                    "Executable PowerShell retains retired closeout reference: $path"
+            }
+        }
+    }
+
+    Invoke-Case 'retired closeout names remain only in the historical allowlist' {
+        $legacyNames = @(
+            ('closeout-' + 'workflow.ps1'),
+            ('phase-closeout.' + 'Tests.ps1'),
+            ('phase-closeout-policy.' + 'schema.json'),
+            ('dual-closeout-reform-' + 'policy.json'))
+        $allowed = [ordered]@{
+            ($legacyNames[0]) = @(
+                'docs/adr/0025-commit-first-acceptance-and-dual-closeout.md',
+                'docs/validation/dual_closeout_reform_report.md',
+                'geocedg/specs/operations/verification-levels.md')
+            ($legacyNames[1]) = @(
+                'docs/validation/dual_closeout_reform_report.md')
+            ($legacyNames[2]) = @()
+            ($legacyNames[3]) = @()
+        }
+        foreach ($legacyName in $legacyNames) {
+            $matches = @(& git -C $repository grep -l -I -F -- $legacyName -- .)
+            $code = $LASTEXITCODE
+            Assert-Case ($code -in @(0, 1)) `
+                "Could not audit historical references for $legacyName"
+            $actual = @($matches | ForEach-Object {
+                $_.Replace([IO.Path]::DirectorySeparatorChar, '/')
+            } | Sort-Object)
+            $expected = @($allowed[$legacyName] | Sort-Object)
+            Assert-Case (($actual -join [char]0) -ceq
+                ($expected -join [char]0)) `
+                "Unexpected live or missing historical reference for $legacyName"
+        }
     }
 } finally {
     Remove-Module $receiptModule -Force -ErrorAction SilentlyContinue

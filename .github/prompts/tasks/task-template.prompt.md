@@ -58,27 +58,19 @@ State legacy, file-format, feature-flag, and migration constraints.
 <!-- geocedg-field: required_checks -->
 ## Required tests and commands
 
-Name focused checks and the relevant `tools/agent/verify*.ps1` entry point.
-Distinguish DEV, PHASE, COMPOSED and FULL; name explicit DEV filters and the PHASE
-regression perimeter. Identify verification-infrastructure impact and required
-FULL validation under `geocedg/specs/operations/verification-levels.md`. A smaller
-development selection never changes the acceptance gate.
+Name focused checks and the relevant canonical `tools/agent/verify.ps1`
+profile. Distinguish development profiles from final acceptance, name explicit
+PHASE selections and record the required semantic and safety coverage. A
+smaller development selection never changes the final acceptance gate.
 
 If the commands are intended as final acceptance evidence, require this order:
-focused/DEV work, clean technical commit `T`,
-`tools/agent/phase-closeout.ps1 -Action READINESS`, comparison of the actual
-PHASE/COMPOSED/FULL plans, then one `verify.ps1 -Level FULL -CleanBuild
--CloseoutReadinessPath <receipt>` when it authenticates all three obligations.
-READINESS validates both routes and accepts no mode. Require the single final
-root to name exact `T`, `CLEAN_COMMIT`, `closeoutMode=null`, both validated
-modes and `closeoutConsumable=true`, with truthful nested-PHASE,
-subsumed-COMPOSED and physical-FULL claims. Schema v2 must block readiness if
-FULL cannot cover an obligation; require an approved generic extension before
-running the exact minimal complement. Only after author
-review and exact-`T` approval, select exactly one `CLOSEOUT_MODE = VERIFIED |
-AUTHOR_OPERATED` for PREPARE; never infer it. Otherwise label the run
-`DEVELOPMENT_DIAGNOSTIC`; a dirty/precommit PASS may not be reattributed after
-commit.
+focused work, clean immutable candidate commit, complete `FINAL -PlanOnly`
+resolution, then exactly one authorized `verify.ps1 -Profile FINAL
+-LogDirectory <new-external-root>` campaign. Require a complete trusted report
+and receipt bound to the exact commit/tree, plan, checker, portable environment,
+inputs and evidence. Diagnostics remain separate from acceptance. Do not rerun
+FINAL for an unchanged candidate and do not reattribute dirty or precommit
+evidence.
 
 <!-- geocedg-field: authorization_boundary -->
 ## Authorization boundary
@@ -94,20 +86,16 @@ acceptance evidence never grants publication authority by itself.
 
 ## Acceptance and closeout
 
-State whether the task stops at `AUTHOR REVIEW READY` or must reach `AUTHOR
-CLOSEOUT READY`. The first means prepared for review. The second additionally
-requires clean exact `T`, closeout-consumable required evidence, one explicitly
-selected post-approval route and a PREPARE-valid binding to mode-neutral
-readiness. Readiness itself means neither mode selection nor author approval;
-only an explicit author decision naming `T` does.
+State whether the task stops with a candidate pending author review or includes
+separately authorized promotion. Author approval is an explicit decision naming
+the exact accepted commit; neither a report nor a receipt creates it.
 
-For `VERIFIED`, reference the unchanged ADR 0023/0024 AUTHOR_CLOSEOUT,
-status-only `C`, annotated tag and fast-forward contract, with verified-only
-FINALIZE performing a non-force atomic push and automatic audit. For
-`AUTHOR_OPERATED`, require `phase-closeout.ps1 -Action PREPARE` to verify/stage
-only the expected delta and stop before commit/tag/promotion/push; list those
-human-owned operations and require `-Action AUDIT` after promotion. Do not
-require another PHASE/COMPOSED/FULL when executable inputs are proved unchanged.
+After approval, `phase-closeout.ps1 -Action INSPECT` may validate only the
+receipt and exact candidate/approved commit identities. It must not run checks,
+repeat FINAL, modify Git, create commits or tags, push, publish or record author
+approval. Promotion, when authorized, is a separate exact non-force
+fast-forward operation and does not require another FINAL for the unchanged
+accepted commit.
 
 ## Required artifacts
 
@@ -116,16 +104,16 @@ Include the bootstrap-impact outcome and rationale/affected paths required by
 the verification-level contract, infrastructure-impact assessment, exact
 required-level command/exit/log evidence, and existing `GUIDE_IMPACT`. Distinguish
 technical verification from author approval; explicitly report incomplete gates.
-For closeout work, also record exact `T`/`C` where applicable, readiness and
-technical-result paths/hashes, evidence-use/consumability fields, chosen mode,
-expected delta/tag/promotion plan and post-promotion audit result. Historical
-receipts retain their original cohort and classification.
+For closeout work, also record the exact candidate commit/tree, plan/result and
+receipt identities, durable evidence location, explicit author-approved SHA and
+remote identity before and after any separately authorized promotion.
+Historical receipts retain their original cohort and classification.
 
 ## Stop conditions
 
 List decisions or failures that require human review before continuing.
-Include dirty final-acceptance state, failed/missing readiness, absent explicit
-closeout mode, moving-ref or self-referential authority, known post-FULL
-lifecycle repair, missing exact-SHA author decision, unexpected closeout delta,
-and failed post-promotion audit. ADR 0024 section 11.2 remains exceptional and
-cannot waive FULL for a deliberate verification-methodology change.
+Include dirty final-candidate state, incomplete or untrusted coverage, a
+missing/invalid receipt, identity mismatch, missing exact-SHA author decision,
+remote divergence and any request to mutate Git through closeout. Historical
+exceptions cannot waive the current verification contract for a deliberate
+verification-methodology change.

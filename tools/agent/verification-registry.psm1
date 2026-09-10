@@ -127,7 +127,7 @@ function Assert-VerificationRegistry {
             $root = [IO.Path]::GetFullPath((Join-Path (Split-Path -Parent $SchemaPath) '../../..'))
             $fullCatalog = Resolve-VerificationContainedPath -Root $root -Path $catalogPath
             if (-not (Test-Path -LiteralPath $fullCatalog -PathType Leaf) -or
-                    (Get-VerificationFileSha256 $fullCatalog) -cne $expectedHash) {
+                    (Get-VerificationCanonicalTextSha256 $fullCatalog) -cne $expectedHash) {
                 throw "Verification catalog identity mismatch: $catalogId"
             }
         }

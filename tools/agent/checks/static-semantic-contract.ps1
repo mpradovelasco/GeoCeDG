@@ -8,9 +8,13 @@ param(
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference='Stop'
+Import-Module (Join-Path $PSScriptRoot '../verification-io.psm1') -Force
 $utf8=[Text.UTF8Encoding]::new($false)
 $repository=[IO.Path]::GetFullPath($RepositoryRoot)
 $catalog=[IO.File]::ReadAllText([IO.Path]::GetFullPath($CatalogPath),[Text.UTF8Encoding]::new($false,$true))|ConvertFrom-Json -Depth 100
+if ([string]$catalog.identity_mode -cne 'canonical_utf8_lf_v1') {
+    throw 'Static-contract catalog does not declare canonical UTF-8/LF identity.'
+}
 $matches=@($catalog.contracts|Where-Object contract_id -CEQ $ContractId)
 if($matches.Count -ne 1){throw "Static contract is not unique: $ContractId"}
 $contract=$matches[0];$observations=[Collections.Generic.List[object]]::new();$untrusted=$false
@@ -18,7 +22,7 @@ foreach($input in [object[]]$contract.inputs){
     $full=[IO.Path]::GetFullPath((Join-Path $repository ([string]$input.path)))
     if(-not $full.StartsWith($repository.TrimEnd('\')+'\',[StringComparison]::OrdinalIgnoreCase)){$untrusted=$true;$observations.Add([ordered]@{path=$input.path;state='OUTSIDE_REPOSITORY'});continue}
     if(-not(Test-Path -LiteralPath $full -PathType Leaf)){$observations.Add([ordered]@{path=$input.path;state='MISSING'});continue}
-    $actual=(Get-FileHash $full -Algorithm SHA256).Hash.ToLowerInvariant();$state=if([string]::IsNullOrWhiteSpace([string]$input.sha256)-or$actual-ceq[string]$input.sha256){'SATISFIED'}else{'VIOLATED'}
+    $actual=Get-VerificationCanonicalTextSha256 $full;$state=if([string]::IsNullOrWhiteSpace([string]$input.sha256)-or$actual-ceq[string]$input.sha256){'SATISFIED'}else{'VIOLATED'}
     $observations.Add([ordered]@{path=$input.path;state=$state;sha256=$actual})
 }
 $violations=@($observations|Where-Object state -in @('MISSING','VIOLATED')).Count

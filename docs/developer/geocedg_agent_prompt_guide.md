@@ -32,20 +32,14 @@ similarly named roadmap or generated report is not a substitute.
    documentation.
 5. Identify source authority, generated evidence, smallest edit set and focused
    verifier.
-6. If the task can close a phase, freeze its impact-based
-   `VERIFICATION_CLASS` and planned acceptance level, then identify a
-   declarative policy that supports
-   both `VERIFIED` and `AUTHOR_OPERATED`. READINESS validates both without
-   selecting either; select exactly one mode only in the post-review,
-   post-approval PREPARE chain, never from branch, credentials or repository
-   state.
-7. Never escalate above the frozen plan by prudence. Emit
-   `VERIFICATION_ESCALATION_REQUEST` for a concrete uncovered obligation and
-   wait for author authorization. In a single-integrator context, explicitly
-   default to `BOUNDED_PHASE` and propose `AUTHOR_OPERATED` without inferring
-   approval.
-8. Stop when an entry gate, source, approval, closeout route or semantic policy
-   is missing.
+6. If the task can reach final acceptance, identify the required pure profile
+   coverage, freeze the exact candidate commit and resolve `FINAL -PlanOnly`
+   before requesting one real FINAL authorization.
+7. Keep acceptance, author approval and publication as separate decisions.
+   A receipt records accepted evidence for one immutable Git identity; it does
+   not grant approval or permission to publish.
+8. Stop when an entry identity, source, required coverage, receipt, explicit
+   approval or publication boundary is missing.
 
 Concise launch examples:
 
@@ -71,22 +65,15 @@ files are assessed separately.
 - Characterization phases are read-only with respect to productive source.
 - Implementation phases require explicit authorization and an approved design.
 - Development and diagnostic review candidates may remain uncommitted. Final
-  acceptance may not: create a clean technical commit `T`, run
-  mode-neutral `CLOSEOUT_READINESS` for both routes, compare the real level
-  plans, and bind one canonical FULL campaign with authenticated
-  PHASE/COMPOSED/FULL claims to that receipt.
+  acceptance may not: create a clean immutable candidate, resolve a complete
+  FINAL plan and bind one authorized FINAL campaign and receipt to its exact
+  commit/tree, plan, checker, environment, inputs and evidence.
 - Author approval is a separate state from tests passing.
-- `AUTHOR REVIEW READY` means only prepared for author review. `AUTHOR CLOSEOUT
-  READY` additionally requires clean exact `T`, consumable acceptance evidence,
-  one explicitly selected post-approval route and a PREPARE-valid binding to
-  the mode-neutral readiness plan. Readiness never creates approval or chooses
-  a mode.
-- After explicit approval of exact `T`, `VERIFIED` retains the verified
-  status-only commit/tag/fast-forward path. `AUTHOR_OPERATED` preparation stages
-  only the projected closeout delta and stops; the author personally commits,
-  tags, fast-forwards and pushes, followed by automatic audit.
+- A candidate pending author review has no publication authority. After exact
+  SHA approval, closeout only validates receipt and Git identity; promotion is
+  a separate explicitly authorized operation.
 - Never force-push or rewrite shared history. Never let tooling silently perform
-  a Git operation reserved to the selected author-operated mode.
+  a Git operation during closeout identity inspection.
 - Create the next phase branch only from its approved entry gate.
 
 For every future phase, read three separate fields rather than interpreting a
@@ -118,24 +105,17 @@ Run repository wrappers under `tools/agent/`, retain command, exit code and log
 path, and distinguish static/fake-first/skipped/real-runtime evidence. Generated
 logs/build outputs remain evidence, not source.
 
-For final acceptance, first run
-`tools/agent/phase-closeout.ps1 -Action READINESS` with exact `T`, policy,
-and receipt path, without `-CloseoutMode`; then pass the resulting receipt to
-one `verify.ps1 -Level FULL -CleanBuild` invocation through
-`-CloseoutReadinessPath`. Its same-run envelope must truthfully distinguish
-physically nested PHASE, plan-subsumed COMPOSED and physical-root FULL claims.
-Run a lower standalone level only for a concrete uncovered obligation reported
-by readiness. Without the receipt the result is explicitly
-`DEVELOPMENT_DIAGNOSTIC`, even if clean. A dirty successful run remains
-`closeoutConsumable=false`; never reattribute it after commit.
+For final acceptance, freeze the clean candidate and run one authorized
+`tools/agent/verify.ps1 -Profile FINAL -LogDirectory <new-external-root>`.
+Require accepted semantics and safety, complete trusted coverage, a valid report
+and the canonical immutable receipt. Never reinterpret diagnostic findings as
+acceptance failures and never reattribute evidence to a different commit.
 
-After review/smoke and exact-SHA approval, select one mode explicitly and use
-`phase-closeout.ps1 -Action PREPARE -CloseoutMode <mode>`. In
-`AUTHOR_OPERATED`, stop for the author's commit/tag/fast-forward/push and run
-`-Action AUDIT` after publication. An audit failure is evidence of a failed
-promotion, not permission to move refs, reinterpret receipts or rerun fewer
-technical gates. Use the exact interface and evidence classification in
-[`verification-levels.md` section 12](../../geocedg/specs/operations/verification-levels.md#12-commit-first-acceptance-and-dual-closeout).
+After review and exact-SHA approval, use
+`phase-closeout.ps1 -Action INSPECT -CandidateCommit <sha> -ReceiptPath
+<receipt> -ApprovedCommit <sha>`. The adapter validates identity only. It never
+runs verification, repeats FINAL, modifies Git or publishes. Recheck the live
+remote separately before any explicitly authorized non-force fast-forward.
 
 ## Stop conditions
 
@@ -151,12 +131,11 @@ copy mathematical definitions. Guides explain how to operate prompts. Reports
 record what happened. When a living guide changes, do not rewrite historical
 evidence manifests.
 
-Closable phase prompts declare policy data consumed by the generic
-`tools/agent/closeout-workflow.ps1` helper; they do not clone readiness,
-preparation or audit logic into one verifier per phase. Preserve the G9U1
-precommit receipts, later lifecycle normalization and published closeout as
-separate historical cohorts. ADR 0024 section 11.2 remains exceptional and
-cannot waive FULL for a deliberate verification-methodology change.
+Current prompts name pure profiles, exact Git identities, evidence and
+authorization boundaries; they do not clone registry or receipt logic.
+Preserve G9U1 precommit receipts, later lifecycle normalization and published
+closeout as separate historical cohorts. Historical lifecycle mechanisms remain
+evidence, not executable authority for a new candidate.
 
 When maintaining the G9 prompts, reference the approved projection-system,
 redefine and one-dimensional-generator contracts instead of copying their

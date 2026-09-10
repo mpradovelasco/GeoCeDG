@@ -3,7 +3,7 @@
 param(
     [string]$ModulePath = (Join-Path $PSScriptRoot "../verification-runtime.psm1"),
     [string]$RootVerifierPath = (Join-Path $PSScriptRoot "../verify.ps1"),
-    [string]$CloseoutWorkflowPath = (Join-Path $PSScriptRoot "../closeout-workflow.ps1"),
+    [string]$CloseoutAdapterPath = (Join-Path $PSScriptRoot "../phase-closeout.ps1"),
     [string]$OperationalVerifierPath = (Join-Path $PSScriptRoot "../verify-operational.ps1"),
     [string]$BaselineVerifierPath = (Join-Path $PSScriptRoot "../verify-baseline.ps1"),
     [string]$InfrastructureVerifierPath = (Join-Path $PSScriptRoot "../verify-verification-infrastructure.ps1"),
@@ -23,7 +23,7 @@ $ErrorActionPreference = "Stop"
 # Exports, identity hashing, receipt ownership, XML parsing, and consumers remain
 # unchanged. Fixture repositories and logs are retained as explicit evidence.
 $ModulePath = (Resolve-Path -LiteralPath $ModulePath).Path
-$CloseoutWorkflowPath = (Resolve-Path -LiteralPath $CloseoutWorkflowPath).Path
+$CloseoutAdapterPath = (Resolve-Path -LiteralPath $CloseoutAdapterPath).Path
 $EvidenceIntegrityPath = (Resolve-Path -LiteralPath (Join-Path `
         (Split-Path -Parent $ModulePath) 'evidence-integrity.ps1')).Path
 $RuntimeFixturePath = $PSCommandPath
@@ -641,7 +641,7 @@ function Invoke-RuntimeTest {
 Invoke-RuntimeTest "operational entrypoints declare the PowerShell 7.2 native-stderr floor" -WithoutGit {
     param($fixture)
     $minimum = [version]"7.2"
-    foreach ($entryPath in @($RootVerifierPath, $CloseoutWorkflowPath, $ModulePath, $InfrastructureVerifierPath,
+    foreach ($entryPath in @($RootVerifierPath, $CloseoutAdapterPath, $ModulePath, $InfrastructureVerifierPath,
             $RuntimeFixturePath, $GeneratedStateTestsPath)) {
         $tokens = $null
         $errors = $null
