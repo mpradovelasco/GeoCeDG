@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter;
 import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
@@ -25,12 +26,18 @@ import org.geocedg.common.kernel.locus.metric.MetricComputationStatus;
 import org.geocedg.common.kernel.locus.metric.MetricValueKind;
 import org.geocedg.common.kernel.spatial.identity.GeoIdentityRecord;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityDiagnostic.Code;
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityException;
 import org.geocedg.common.kernel.spline.SplineConstructorOccurrenceResolver2D;
 import org.geocedg.common.kernel.spline.SplineConstructorOccurrenceResult2D;
 import org.geocedg.common.kernel.spline.SplineConstructorOccurrenceResult2D.Status;
+import org.geogebra.common.kernel.commands.AlgebraProcessor;
+import org.geogebra.common.kernel.commands.EvalInfo;
+import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.util.InternalClipboard;
+import org.geogebra.test.commands.ErrorAccumulator;
 import org.junit.jupiter.api.Test;
 
 /** Focused POST-G9U1-A1 constructor-occurrence and metric scenarios. */
@@ -152,8 +159,10 @@ class PostG9U1A1SplineConstructorProvenanceTest
 		add("A=(-2*h,0)");
 		add("B=(0,0)");
 		add("C=(2*h,0)");
-		GeoLocusV2 spline = add("S=SplineV2({A,B,C},3)");
+		add("points={A,B,C}");
+		GeoLocusV2 spline = add("S=SplineV2(points,3)");
 		GeoLocusMetricResult metric = add("R=LocusLength(S,A,C)");
+		final PersistentGeoId metricId = id(metric);
 		final String occurrenceKey = resolver.resolve(spline, point("A"))
 				.getUniqueMatch().getOccurrenceKey();
 		assertEquals(4, finite(metric), 1E-9);
@@ -173,6 +182,17 @@ class PostG9U1A1SplineConstructorProvenanceTest
 		assertEquals(4, finite(metric), 1E-9);
 		assertEquals(occurrenceKey, resolver.resolve(spline, point("A"))
 				.getUniqueMatch().getOccurrenceKey());
+
+		String beforeReplacement = getApp().getXML();
+		assertEquals(Code.REDEFINE_INCOMPATIBLE,
+				rejectedReplacementCode(requireLookup("points"), "{B,A,C}"));
+		assertEquals(beforeReplacement, getApp().getXML());
+		metric = assertInstanceOf(GeoLocusMetricResult.class, requireLookup("R"));
+		spline = assertInstanceOf(GeoLocusV2.class, requireLookup("S"));
+		assertEquals(metricId, id(metric));
+		assertEquals(occurrenceKey, resolver.resolve(spline, point("A"))
+				.getUniqueMatch().getOccurrenceKey());
+		assertEquals(4, finite(metric), 1E-9);
 	}
 
 	@Test
@@ -323,6 +343,25 @@ class PostG9U1A1SplineConstructorProvenanceTest
 	private PersistentGeoId id(org.geogebra.common.kernel.geos.GeoElement geo) {
 		return getConstruction().getSpatialIdentityRegistry()
 				.getPersistentGeoId(geo);
+	}
+
+	private Code rejectedReplacementCode(GeoElement target, String definition) {
+		AtomicReference<Throwable> failure = new AtomicReference<>();
+		ErrorAccumulator errors = new ErrorAccumulator() {
+			@Override
+			public void log(Throwable error) {
+				failure.set(error);
+			}
+		};
+		EvalInfo info = new EvalInfo(true, true).withSymbolicMode(
+				AlgebraProcessor.getRedefinitionMode(target, getKernel()))
+				.withLabelRedefinitionAllowedFor(target.getLabelSimple())
+				.withSymbolic(true).withSliders(true)
+				.withSpatialReplacementOperation();
+		getKernel().getAlgebraProcessor().changeGeoElementNoExceptionHandling(
+				target, definition, info, false, ignored -> { }, errors);
+		return assertInstanceOf(SpatialIdentityException.class, failure.get())
+				.getDiagnostic().getCode();
 	}
 
 	private static double finite(GeoLocusMetricResult result) {

@@ -1,6 +1,6 @@
 # Locus V2 metric contract
 
-- Status: **APPROVED AS NORMATIVE G7 METRIC CONTRACT**
+- Status: **G7 v1.0 NORMATIVE — PASS — AUTHOR APPROVED; POST-G9U1-A1 v1.1 AMENDMENT CANDIDATE — PENDING AUTHOR REVIEW**
 - Version: `1.1`
 - Approval date: 2026-08-13
 - Author-review disposition: **G7A-R1, G7A AND G7B PASS — AUTHOR APPROVED**
@@ -646,6 +646,16 @@ undo/redo reconstruct the relation from the command DAG and durable IDs; the
 key and polynomial cache are not serialized. Copy/remap creates source/list/
 point identities for the copied closure and therefore a new, internally
 consistent occurrence key.
+
+The current host lifecycle cannot produce `UNIQUE(K1) -> UNIQUE(K2)` while
+retaining the same metric object: explicit replacement of the participating
+ordered constructor list with a reordered list is rejected atomically as
+`REDEFINE_INCOMPATIBLE`, while replacement of the spline has replacement
+identity semantics for its dependent closure. Accordingly, direct K1/K2
+no-retarget execution is
+`NOT_APPLICABLE_UNDER_CURRENT_LIFECYCLE`. The retained-key guard remains the
+fail-closed authority if a future approved lifecycle makes such a transition
+representable; A1 does not authorize that lifecycle extension.
 
 R5 similarity covariance is admitted only through the explicit
 `AlgoLocusSimilarityTransform2D` source lineage, which preserves provider,
