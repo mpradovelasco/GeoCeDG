@@ -1,7 +1,7 @@
 # Locus V2 metric contract
 
 - Status: **APPROVED AS NORMATIVE G7 METRIC CONTRACT**
-- Version: `1.0`
+- Version: `1.1`
 - Approval date: 2026-08-13
 - Author-review disposition: **G7A-R1, G7A AND G7B PASS — AUTHOR APPROVED**
 - Roadmap gate: G7 `PASS`; G7A `PASS`; G7B `PASS`
@@ -600,3 +600,59 @@ only by the three closed variants, reusing the G6 `NumericGuarantee` directly.
 No command, XML registration, persistence contract, public `Path`, 3D, G5,
 G8 or G9 surface is added. The mathematical and public-boundary clauses above
 remain unchanged.
+
+## 21. POST-G9U1-A1 normative amendment: SplineV2 constructor endpoints
+
+The public between-position forms may also consume an ordinary `GeoPoint`
+when, and only when, the explicitly supplied source is a current `SplineV2` or
+a supported R5 similarity image of one and the point has exact constructor
+occurrence provenance on that spline. This amendment changes endpoint
+admissibility only; the rich result remains authoritative, the scalar remains
+guarded, and traversal direction, sign, wrap and same-position policy are
+unchanged.
+
+For the bounded native constructor, the ordered input array of its direct
+`AlgoDependentList` is the reconstructible occurrence definition. Each slot is
+distinct even when several slots refer to the same durable point. A current
+slot maps to its single normalized spline knot and then to one canonical
+branch/component address. An interior knot is owned once rather than once per
+adjacent polynomial span. A periodic endpoint retains explicit lift and seam
+side. Computed list families that do not expose this exact ordered definition
+are unresolved and are not searched by value.
+
+The resolver publishes one closed result:
+
+```text
+NO_ADDRESS
+UNIQUE(occurrence key, address)
+MULTIPLE(occurrence keys, addresses)
+UNRESOLVED_INVALID
+```
+
+The occurrence key is versioned and relative to the addressed source, root
+spline, constructor list, ordered slot and durable point identity. The slot is
+not a global point identity and has authority only inside that exact ordered
+constructor definition. Ordinary coordinate recomputation preserves the
+relation. Insertion, removal, reorder or replacement is a constructor-topology
+change governed by the existing lifecycle/redefine contract, not continuity
+inferred from the new array position.
+
+Exactly one current result is rebound through the existing
+`LocusMetricPositionBinder2D`. Zero, multiple, changed or unresolved
+occurrences yield an explicit absent/invalid rich result and an undefined
+scalar adapter. A metric algorithm retains an accepted occurrence key during
+its lifetime and never retargets to a different slot. Native save/reopen and
+undo/redo reconstruct the relation from the command DAG and durable IDs; the
+key and polynomial cache are not serialized. Copy/remap creates source/list/
+point identities for the copied closure and therefore a new, internally
+consistent occurrence key.
+
+R5 similarity covariance is admitted only through the explicit
+`AlgoLocusSimilarityTransform2D` source lineage, which preserves provider,
+branch, component and parameter and substitutes the transformed source ID.
+Other transformation/source families are unsupported for A1. Coordinates,
+Cartesian coincidence, proximity, labels, rendering, construction order, XML
+position and list-value searches never establish or repair provenance. The
+[A1 validation matrix](../../../docs/validation/post_g9u1_a1_spline_constructor_provenance_validation_matrix.md)
+is the candidate traceability authority. This amendment is normative candidate
+text pending author review and does not alter the author-approved G7 history.

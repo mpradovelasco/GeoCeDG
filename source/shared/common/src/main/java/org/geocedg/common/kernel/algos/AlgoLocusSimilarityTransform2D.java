@@ -116,6 +116,11 @@ public final class AlgoLocusSimilarityTransform2D extends AlgoLocusV2 {
 		return transformSnapshot;
 	}
 
+	/** @return exact semantic source whose address space this R5 image preserves */
+	public GeoLocusV2 getSource() {
+		return source;
+	}
+
 	private LocusSimilarityTransform2D captureTransform() {
 		switch (command) {
 		case Translate:

@@ -19,6 +19,7 @@ import org.geocedg.common.kernel.locus.metric.LocusMetricEngine2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricIndexMode;
 import org.geocedg.common.kernel.locus.metric.LocusMetricOwnerLease2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricPolicy2D;
+import org.geocedg.common.kernel.locus.metric.LocusMetricPositionBinder2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricResults2D;
 import org.geocedg.common.kernel.locus.metric.MetricComputationStatus;
 import org.geocedg.common.kernel.locus.metric.MetricDiagnostic2D;
@@ -29,6 +30,8 @@ import org.geocedg.common.kernel.locus.metric.SamePositionPolicy;
 import org.geocedg.common.kernel.locus.metric.TraversalDirection;
 import org.geocedg.common.kernel.locus.metric.TraversalOutcome;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
+import org.geocedg.common.kernel.spline.SplineConstructorOccurrenceResolver2D;
+import org.geocedg.common.kernel.spline.SplineConstructorOccurrenceResult2D;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.commands.Commands;
@@ -53,7 +56,13 @@ public final class AlgoLocusBetweenMetricV2 extends AlgoElement {
 					EvaluatorOnlyLocusMetricCapability2D
 							.withDirectRouteRefinement(CAPABILITY)));
 	private final LocusMetricEngine2D engine = new LocusMetricEngine2D();
+	private final LocusMetricPositionBinder2D positionBinder =
+			new LocusMetricPositionBinder2D();
+	private final SplineConstructorOccurrenceResolver2D occurrenceResolver =
+			new SplineConstructorOccurrenceResolver2D();
 	private LocusMetricOwnerLease2D ownerLease;
+	private String retainedStartOccurrenceKey;
+	private String retainedTargetOccurrenceKey;
 
 	/** Creates and publishes one public between-position rich query. */
 	public AlgoLocusBetweenMetricV2(Construction construction, String label,
@@ -103,24 +112,25 @@ public final class AlgoLocusBetweenMetricV2 extends AlgoElement {
 		}
 		if (!start.isDefined() || !target.isDefined()) {
 			publishFailure(revision, MetricComputationStatus.INVALID_QUERY,
-					"Both endpoints must be current defined semantic points");
+					"Both endpoints must have current semantic endpoint authority");
 			return;
 		}
 		try {
-			AlgoSemanticLocusPoint2D startParent =
-					AlgoSemanticLocusPoint2D.requireSemanticParent(start);
-			AlgoSemanticLocusPoint2D targetParent =
-					AlgoSemanticLocusPoint2D.requireSemanticParent(target);
-			if (startParent.getSource() != source
-					|| targetParent.getSource() != source) {
+			EndpointResolution startResolution = resolveEndpoint(start,
+					retainedStartOccurrenceKey);
+			EndpointResolution targetResolution = resolveEndpoint(target,
+					retainedTargetOccurrenceKey);
+			if (!startResolution.isValid() || !targetResolution.isValid()) {
 				publishFailure(revision, MetricComputationStatus.INVALID_QUERY,
-						"Both endpoints must be exact positions on this locus");
+						!startResolution.isValid()
+								? "Start endpoint: " + startResolution.diagnostic
+								: "Target endpoint: " + targetResolution.diagnostic);
 				return;
 			}
-			MetricPositionBinding2D startBinding =
-					startParent.bindCurrentPosition();
-			MetricPositionBinding2D targetBinding =
-					targetParent.bindCurrentPosition();
+			retainedStartOccurrenceKey = startResolution.occurrenceKey;
+			retainedTargetOccurrenceKey = targetResolution.occurrenceKey;
+			MetricPositionBinding2D startBinding = startResolution.binding;
+			MetricPositionBinding2D targetBinding = targetResolution.binding;
 			if (startBinding == null || targetBinding == null) {
 				publishFailure(revision, MetricComputationStatus.INVALID_QUERY,
 						"An endpoint has no current semantic address");
@@ -150,6 +160,42 @@ public final class AlgoLocusBetweenMetricV2 extends AlgoElement {
 					"Between-position metric failed: "
 							+ exception.getClass().getSimpleName());
 		}
+	}
+
+	private EndpointResolution resolveEndpoint(GeoPoint endpoint,
+			String retainedOccurrenceKey) {
+		if (endpoint.getParentAlgorithm() instanceof AlgoSemanticLocusPoint2D) {
+			AlgoSemanticLocusPoint2D semanticParent =
+					(AlgoSemanticLocusPoint2D) endpoint.getParentAlgorithm();
+			if (semanticParent.getSource() == source) {
+				MetricPositionBinding2D binding =
+						semanticParent.bindCurrentPosition();
+				return binding != null && binding.isValid()
+						? EndpointResolution.semantic(binding)
+						: EndpointResolution.invalid(
+								"Explicit semantic address is not current");
+			}
+		}
+		SplineConstructorOccurrenceResult2D provenance =
+				occurrenceResolver.resolve(source, endpoint);
+		if (provenance.getStatus()
+				!= SplineConstructorOccurrenceResult2D.Status.UNIQUE) {
+			return EndpointResolution.invalid(provenance.getStatus() + ": "
+					+ provenance.getDiagnostic());
+		}
+		SplineConstructorOccurrenceResult2D.Match match =
+				provenance.getUniqueMatch();
+		if (retainedOccurrenceKey != null
+				&& !retainedOccurrenceKey.equals(match.getOccurrenceKey())) {
+			return EndpointResolution.invalid(
+					"Constructor occurrence identity changed; retargeting is forbidden");
+		}
+		MetricPositionBinding2D binding = positionBinder.bind(
+				match.getAddress().toMetricPosition(), source.getSemanticDefinition());
+		return binding.isValid()
+				? EndpointResolution.occurrence(binding, match.getOccurrenceKey())
+				: EndpointResolution.invalid(
+						"Constructor occurrence address is not current");
 	}
 
 	public GeoLocusMetricResult getResult() {
@@ -210,5 +256,36 @@ public final class AlgoLocusBetweenMetricV2 extends AlgoElement {
 				.getPersistentLocusId();
 		return current == null ? "g9u0-pending-locus"
 				: current.toExternalForm();
+	}
+
+	private static final class EndpointResolution {
+		private final MetricPositionBinding2D binding;
+		private final String occurrenceKey;
+		private final String diagnostic;
+
+		private EndpointResolution(MetricPositionBinding2D binding,
+				String occurrenceKey, String diagnostic) {
+			this.binding = binding;
+			this.occurrenceKey = occurrenceKey;
+			this.diagnostic = diagnostic;
+		}
+
+		private static EndpointResolution semantic(
+				MetricPositionBinding2D binding) {
+			return new EndpointResolution(binding, null, null);
+		}
+
+		private static EndpointResolution occurrence(
+				MetricPositionBinding2D binding, String key) {
+			return new EndpointResolution(binding, key, null);
+		}
+
+		private static EndpointResolution invalid(String diagnostic) {
+			return new EndpointResolution(null, null, diagnostic);
+		}
+
+		private boolean isValid() {
+			return binding != null && binding.isValid();
+		}
 	}
 }

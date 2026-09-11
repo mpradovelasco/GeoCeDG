@@ -3,13 +3,13 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Roadmap vivo y normativo de fases; no sustituye las especificaciones ni los ADR aceptados |
-| Versión documental | 3.72 |
+| Versión documental | 3.73 |
 | Fecha de revisión | 11 de septiembre de 2026 |
 | Baseline GeoGebra | 5.4.928.0, commit `9b93256b7df401ff056c37b502d82df4d72b1522`, tag `geogebra-baseline-5.4.928.0` |
-| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1–G9A3, el track G9A, G9U0 y sus refinamientos R1–R6, G9X1, G9S1, G9S1-R1 y G9U1 `PASS — AUTHOR APPROVED`. G9U1 es autoridad histórica cerrada y no se reabre. POST-G9U1-A6 está en `IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW`; A1–A5 y A7 siguen no autorizados. El track continúa siendo orden de ejecución autoral, no dependencia dura de G9B. G9B/G9C permanecen diseñadas y no autorizadas; G9U2 sigue bloqueada por la aprobación global G9; G10P es solo planificación aprobada y ninguna implementación productiva G10 está autorizada. El riesgo `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` continúa abierto para disposición antes del cierre global G9. Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
-| Última fase cerrada | G9U1 — `PASS — AUTHOR APPROVED` |
-| Última fase ejecutada | G9U1 — `PASS — AUTHOR APPROVED`; `implementationComplete=true`, `selfApproved=false`, `authorApprovedImplementation=true`, `passClaimedImplementation=true`; `manualAuthorSmoke=PASS` |
-| Siguiente puerta | Revisión y aprobación autoral explícita del candidato POST-G9U1-A6; A1–A5, A7, G9B, G9C, G9U2 y G10 productivo permanecen no autorizados |
+| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1–G9A3, el track G9A, G9U0 y sus refinamientos R1–R6, G9X1, G9S1, G9S1-R1, G9U1 y POST-G9U1-A6 `PASS — AUTHOR APPROVED`. G9U1 es autoridad histórica cerrada y no se reabre. POST-G9U1-A1 está en `IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW`; A2–A5 y A7 siguen no autorizados. El track continúa siendo orden de ejecución autoral, no dependencia dura de G9B. G9B/G9C permanecen diseñadas y no autorizadas; G9U2 sigue bloqueada por la aprobación global G9; G10P es solo planificación aprobada y ninguna implementación productiva G10 está autorizada. El riesgo `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` continúa abierto para disposición antes del cierre global G9. Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
+| Última fase cerrada | POST-G9U1-A6 — `PASS — AUTHOR APPROVED` |
+| Última fase ejecutada | POST-G9U1-A6 — candidato publicado `8571a3db8680a99c5a46ab373a16cad46065c81b`, después aprobado expresamente por el autor; `selfApproved=false` |
+| Siguiente puerta | Revisión y aprobación autoral explícita del candidato POST-G9U1-A1; A2–A5, A7, G9B, G9C, G9U2 y G10 productivo permanecen no autorizados |
 | Primer cliente | Aplicación de escritorio de la familia Classic 5 |
 | Núcleo | Java compartido de GeoGebra, extendido solo cuando la semántica lo requiere |
 
@@ -2879,7 +2879,8 @@ la misma preservación semántica compartida.
 
 ```text
 TRACK_STATUS = IN PROGRESS / AUTHOR-SELECTED EXECUTION ORDER
-A6_PRODUCT_IMPLEMENTATION = IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW
+A6_PRODUCT_IMPLEMENTATION = PASS — AUTHOR APPROVED
+A1_PRODUCT_IMPLEMENTATION = IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW
 REMAINING_PRODUCT_IMPLEMENTATION_AUTHORIZED = false
 G9B_HARD_DEPENDENCY = false
 ```
@@ -2891,12 +2892,12 @@ G9U1, no necesariamente después de G9B, y ningún ítem reabre ni invalida
 
 | ID | Disposición viva | Acción futura | Alcance y capa esperada |
 |---|---|---|---|
-| A1 | `PENDING` | `DESIGN_THEN_IMPLEMENT` | Proveniencia de constructor de `SplineV2` para que cada ocurrencia fuente/interpolación pueda aportar cero, una o varias direcciones semánticas exactas a consumidores de punto/métrica. Sin inferencia por coordenadas o proximidad. Kernel compartido, specs spline/métrica y persistencia |
+| A1 | `IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW` | `PHASE CANDIDATE` | Proveniencia de constructor de `SplineV2`: cada ocurrencia fuente/interpolación aporta cero, una o varias addresses semánticas exactas a `Length`/`LocusLength`. La definición ordenada directa, el slot y los IDs durables forman la clave relativa; no hay inferencia por coordenadas o proximidad. Kernel compartido, specs spline/métrica y persistencia |
 | A2 | `PARTIALLY_ABSORBED` | `DESIGN_THEN_IMPLEMENT` | Política pública separada para selección de recorrido y signo algebraico, preservando el `Length` no negativo vigente. Debe definir abierto/cerrado, forward/reverse, wrap, mismo preimage, múltiples preimages, degeneraciones y validez. Kernel compartido y contrato métrico público |
 | A3 | `PARTIALLY_ABSORBED` | `DESIGN_THEN_IMPLEMENT` | G9A3 ya aporta lifecycle genérico y transacción atómica; falta un predicado/política V2 de redefinición compatible frente a reemplazo real. Kernel lifecycle, specs V2 y persistencia |
 | A4 | `PARTIALLY_ABSORBED / CONTRACT PARTIALLY UNRESOLVED` | `RESEARCH_THEN_DESIGN` | Caracterizar rollback y posición exacta separando identidad durable, orden topológico del DAG, orden de construcción y estado de presentación/navegación del Construction Protocol. Kernel/lifecycle e integración upstream mínima; debe preceder el diseño A3 |
 | A5 | `PARTIALLY_ABSORBED` | `DEFER PENDING DISPOSITION` | G9U1 Round 3 resolvió sustancialmente la colisión installed/embedded mediante digest crudo y digest de definición normalizada, manteniendo la macro embebida como autoridad documental. Una decisión futura debe elegir exactamente `CLOSE_AS_ABSORBED` o `DEFINE_NEW_FUTURE_CAPABILITY` para detach/expand lossless y/o equivalencia cross-version más amplia; no se fuerza implementación para cerrar el registro |
-| A6 | `IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW` | `PHASE CANDIDATE` | `Point(L,u)` omite solo `branchKey` cuando la definición válida/determinista contiene exactamente una rama y `u` pertenece a exactamente un componente. Cero, varias o elegibilidad cambiante fallan explícitamente; se persisten la rama, el linaje de componente y el contrato proveedor concretos, sin orden, coordenadas ni proximidad. Kernel compartido y superficie pública Locus V2 |
+| A6 | `PASS — AUTHOR APPROVED` | `CLOSED` | `Point(L,u)` omite solo `branchKey` cuando la definición válida/determinista contiene exactamente una rama y `u` pertenece a exactamente un componente. Cero, varias o elegibilidad cambiante fallan explícitamente; se persisten la rama, el linaje de componente y el contrato proveedor concretos, sin orden, coordenadas ni proximidad. Kernel compartido y superficie pública Locus V2 |
 | A7 | `PENDING — G12 CAPABILITY` | `DESIGN_THEN_IMPLEMENT AS BOUNDED G12 SLICE` | Zoom centrado en cursor y refinamiento acotado de teclas/configuración. Capa view/workspace; viewport, cámara, DPI y navegación nunca determinan coordenadas, métrica, identidad ni proveniencia geométrica |
 
 #### Orden seleccionado por el autor
@@ -2924,6 +2925,26 @@ no caracterizados de rollback/orden. A7 conserva ownership G12 aunque se adelant
 como slice de ejecución. Después del track, una decisión autoral separada deberá
 seleccionar y autorizar el primer slice productivo G9B; aquí no se selecciona
 ninguna familia ni se autoriza implementación.
+
+#### POST-G9U1-A1 — candidato de proveniencia de ocurrencias SplineV2
+
+El candidato A1 admite `Length(S,A,C)` y `LocusLength(S,A,C)` cuando `A` y
+`C` tienen exactamente una ocurrencia actual en la definición ordenada directa
+del constructor `SplineV2`. La clave versionada es relativa a source raíz e
+imagen R5, lista constructora, slot e identidad durable del punto. Cada slot se
+mapea al knot canónico, componente y seam/lift vigentes; un nudo compartido por
+spans no duplica la address. Repetir el mismo punto en varios slots produce
+ambigüedad explícita, mientras dos puntos distintos con coordenadas iguales
+siguen siendo ocurrencias distintas.
+
+La métrica rica conserva la autoridad G7 y el escalar sigue siendo un adaptador
+guardado. A1 no cambia signo, recorrido, wrap ni política de misma posición, no
+añade `Path` o un comando `Point`, y no proyecta puntos arbitrarios. Recompute
+ordinario conserva la relación; invalidez temporal falla cerrada; save/reopen,
+undo/redo y copy/remap reconstruyen la proveniencia desde DAG e IDs durables.
+Solo las imágenes de similitud R5 con linaje fuente explícito heredan la
+address; otras familias permanecen no admitidas. El registro `PHASE` acotado y
+la matriz A1 son autoridad prospectiva del candidato, no aprobación autoral.
 
 #### A6-OP1 — hardening de interpretación del exit code de `ripgrep`
 

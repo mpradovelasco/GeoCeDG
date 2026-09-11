@@ -1,7 +1,6 @@
 # Locus V2 semantic point interaction
 
-- Status: **R6 NORMATIVE — PASS — AUTHOR APPROVED; POST-G9U1-A6
-  IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**
+- Status: **R6 AND POST-G9U1-A6 NORMATIVE — PASS — AUTHOR APPROVED**
 - Version: 2
 - Phase: **G9U0-R6 + POST-G9U1-A6**
 - Architectural layer: shared Java kernel
@@ -388,5 +387,5 @@ The selector input is presentation-hidden and removable as owned state only
 when the output carries `LOCUS_PRINCIPAL_BRANCH_POINT` and structural ownership
 is exact. The numeric argument is borrowed user construction state and is
 never hidden or removed by that role. The [A6 validation matrix](../../../docs/validation/post_g9u1_a6_optional_branch_point_validation_matrix.md)
-is the candidate traceability authority. This amendment is normative candidate
-text and does not acquire author-approved status from the historical R6 result.
+is the retained candidate traceability record. The separately issued author
+approval closes POST-G9U1-A6 without reinterpreting the historical R6 result.

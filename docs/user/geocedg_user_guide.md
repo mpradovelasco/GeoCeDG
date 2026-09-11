@@ -110,10 +110,11 @@ G9U0 command forms:
 | `LocusV2[Q,s,D]` | Scalar-driven semantic locus with state/true parameter `s` |
 | `LocusV2[Q,t,s,D]` | Mapped scalar locus; `s` is the true parameter and `t` is its dependent state |
 | `Point[L,"generator.main",u]` | Ordinary point bound to the explicit branch and canonical parameter `u` |
-| `Point[L,u]` | A6 candidate convenience form; succeeds only when the semantic source has exactly one eligible branch and `u` lies in exactly one component, then persists that concrete selector |
+| `Point[L,u]` | Author-approved A6 convenience form; succeeds only when the semantic source has exactly one eligible branch and `u` lies in exactly one component, then persists that concrete selector |
 | `LocusLength[L]` | Authoritative rich total-metric result |
-| `LocusLength[L,A,B]` | Authoritative rich metric between two semantic-position points |
+| `LocusLength[L,A,B]` | Authoritative rich metric between two exact semantic endpoints; the A1 candidate also admits unique `SplineV2` constructor occurrences |
 | `Length[L]` | Guarded scalar child of the rich total-metric authority |
+| `Length[L,A,B]` | Guarded scalar child of the rich between-endpoint authority, with the same A1 occurrence restrictions |
 | `Intersect[L,T]` or `Intersect[L1,L2]` | Rich typed intersection result, not an automatically ordered point list |
 | `Intersect[R,"token"]` | Ordinary point selected only by an exact, currently admissible token from rich result `R` |
 
@@ -286,8 +287,13 @@ Ordinary numeric measurement uses
 `Length(S)` and `Length(S,P,Q)`. The corresponding `LocusLength(...)` forms
 remain rich semantic results carrying status, coverage, error/guarantee and
 diagnostics, so they are not displayed as ordinary numbers in Algebra. `P` and
-`Q` must be semantic points on the same source; a merely coincident Cartesian
-point is rejected. The author accepted the reduced controls `Length(S)=4`,
+`Q` normally are semantic points on the same source. The POST-G9U1-A1
+candidate additionally admits an ordinary `SplineV2` constructor input only
+when that exact point identity occurs once in the ordered constructor. Reusing
+the same point in several occurrences is ambiguous; distinct coincident inputs
+remain distinct; and an arbitrary Cartesian-coincident point is rejected.
+No coordinate or proximity search is performed. The author accepted the
+reduced controls `Length(S)=4`,
 `Length(S,P,Q)=2`, and ordinary Locus V2 `Length(L,LP,LQ)=2` using the actual
 public branch key `generator.main`. The earlier `scalar-locus/main` suggestion
 was an instruction error, not a product defect.
@@ -1758,7 +1764,7 @@ or, at the G7B gate, make the metric public.
 - `Point[L,branch,parameter]` creates an explicitly addressed ordinary point,
   but V2 itself remains deliberately outside generic `Path` and legacy
   incidence;
-- the POST-G9U1-A6 candidate also accepts `Point[L,parameter]` only under the
+- the author-approved POST-G9U1-A6 capability accepts `Point[L,parameter]` only under the
   normative unique-branch/unique-component predicate; ambiguity or loss of the
   retained selector makes the point undefined and never triggers proximity or
   branch-order fallback;

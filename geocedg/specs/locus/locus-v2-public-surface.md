@@ -667,7 +667,7 @@ listed in `docs/validation/g9_public_workspace_validation_matrix.md`.
 
 ## 18. POST-G9U1-A6 public-surface amendment
 
-The candidate A6 extension adds only `Point[L,u]`. It delegates to the exact
+The author-approved A6 extension adds only `Point[L,u]`. It delegates to the exact
 semantic-point algorithm after the source contract establishes one and only one
 eligible branch and one component at `u`. The existing
 `Point[L,"branch",u]` form remains the exact explicit form. The omission is
@@ -675,5 +675,5 @@ input convenience only: XML stores the selected branch/component/provider
 selector, copy remaps the durable source, and later ambiguity makes the point
 undefined rather than selecting another branch. No generic `Path`, arbitrary
 coincident-point or nearest-point behavior is introduced. This section is an
-implementation candidate pending author review, not a reinterpretation of the
-author-approved G9U0 evidence.
+accepted public-surface amendment, not a reinterpretation of the author-approved
+G9U0 evidence.

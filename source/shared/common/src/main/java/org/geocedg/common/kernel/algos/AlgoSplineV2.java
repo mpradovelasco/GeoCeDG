@@ -118,6 +118,14 @@ public final class AlgoSplineV2 extends AlgoLocusV2 {
 		return model;
 	}
 
+	/**
+	 * @return exact ordered constructor list; its parent input array is the
+	 *         occurrence authority, never the evaluated Cartesian list cache
+	 */
+	public GeoList getConstructorPointList() {
+		return points;
+	}
+
 	/** @return exact public command inputs */
 	public GeoElement[] getDurableDependencyGeos() {
 		return getInput().clone();
