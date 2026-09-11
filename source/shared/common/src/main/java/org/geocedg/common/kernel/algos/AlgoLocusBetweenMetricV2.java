@@ -25,9 +25,7 @@ import org.geocedg.common.kernel.locus.metric.MetricComputationStatus;
 import org.geocedg.common.kernel.locus.metric.MetricDiagnostic2D;
 import org.geocedg.common.kernel.locus.metric.MetricDiagnosticCode2D;
 import org.geocedg.common.kernel.locus.metric.MetricPositionBinding2D;
-import org.geocedg.common.kernel.locus.metric.OpenBoundaryPolicy;
-import org.geocedg.common.kernel.locus.metric.SamePositionPolicy;
-import org.geocedg.common.kernel.locus.metric.TraversalDirection;
+import org.geocedg.common.kernel.locus.metric.PublicLocusMetricTraversalPolicy2D;
 import org.geocedg.common.kernel.locus.metric.TraversalOutcome;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geocedg.common.kernel.spline.SplineConstructorOccurrenceResolver2D;
@@ -37,6 +35,7 @@ import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.commands.Commands;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoPoint;
+import org.geogebra.common.kernel.geos.GeoText;
 
 /** Reconstructible public rich metric between two exact semantic positions. */
 public final class AlgoLocusBetweenMetricV2 extends AlgoElement {
@@ -46,6 +45,9 @@ public final class AlgoLocusBetweenMetricV2 extends AlgoElement {
 	private final GeoLocusV2 source;
 	private final GeoPoint start;
 	private final GeoPoint target;
+	private final GeoText directionInput;
+	private final GeoText boundaryPolicyInput;
+	private final GeoText samePositionPolicyInput;
 	private final GeoLocusMetricResult result;
 	private final LocusMetricPolicy2D policy =
 			LocusMetricPolicy2D.publicExperimental();
@@ -68,10 +70,27 @@ public final class AlgoLocusBetweenMetricV2 extends AlgoElement {
 	public AlgoLocusBetweenMetricV2(Construction construction, String label,
 			GeoLocusV2 source, GeoPoint start, GeoPoint target,
 			PersistentGeoId resultId) {
+		this(construction, label, source, start, target, null, null, null,
+				resultId);
+	}
+
+	/** Creates a public rich query with an explicit traversal policy. */
+	public AlgoLocusBetweenMetricV2(Construction construction, String label,
+			GeoLocusV2 source, GeoPoint start, GeoPoint target,
+			GeoText directionInput, GeoText boundaryPolicyInput,
+			GeoText samePositionPolicyInput, PersistentGeoId resultId) {
 		super(construction);
 		this.source = java.util.Objects.requireNonNull(source);
 		this.start = java.util.Objects.requireNonNull(start);
 		this.target = java.util.Objects.requireNonNull(target);
+		this.directionInput = directionInput;
+		this.boundaryPolicyInput = boundaryPolicyInput;
+		this.samePositionPolicyInput = samePositionPolicyInput;
+		if ((directionInput == null) != (boundaryPolicyInput == null)
+				|| (directionInput == null) != (samePositionPolicyInput == null)) {
+			throw new IllegalArgumentException(
+					"The explicit traversal policy requires all three tokens");
+		}
 		this.result = new GeoLocusMetricResult(construction,
 				initialSourceIdentity(source));
 		if (resultId == null && !construction.isFileLoading()) {
@@ -87,7 +106,10 @@ public final class AlgoLocusBetweenMetricV2 extends AlgoElement {
 
 	@Override
 	protected void setInputOutput() {
-		input = new GeoElement[] {source, start, target};
+		input = directionInput == null
+				? new GeoElement[] {source, start, target}
+				: new GeoElement[] {source, start, target, directionInput,
+						boundaryPolicyInput, samePositionPolicyInput};
 		setOnlyOutput(result);
 		setDependencies();
 	}
@@ -116,6 +138,8 @@ public final class AlgoLocusBetweenMetricV2 extends AlgoElement {
 			return;
 		}
 		try {
+			PublicLocusMetricTraversalPolicy2D traversalPolicy =
+					currentTraversalPolicy();
 			EndpointResolution startResolution = resolveEndpoint(start,
 					retainedStartOccurrenceKey);
 			EndpointResolution targetResolution = resolveEndpoint(target,
@@ -137,9 +161,9 @@ public final class AlgoLocusBetweenMetricV2 extends AlgoElement {
 				return;
 			}
 			BetweenPositionsMetricQuery query = new BetweenPositionsMetricQuery(
-					startBinding, targetBinding, TraversalDirection.FORWARD,
-					OpenBoundaryPolicy.STRICT, SamePositionPolicy.ZERO_LENGTH,
-					policy);
+					startBinding, targetBinding, traversalPolicy.getDirection(),
+					traversalPolicy.getBoundaryPolicy(),
+					traversalPolicy.getSamePositionPolicy(), policy);
 			ownerLease.getOwner().invalidateObsoleteRevision(revision);
 			result.publishMetricResult(revision, engine.compute(query, definition,
 					capabilities, ownerLease.getOwner(),
@@ -154,12 +178,30 @@ public final class AlgoLocusBetweenMetricV2 extends AlgoElement {
 					exception.getDiagnostics()));
 		} catch (IllegalArgumentException exception) {
 			publishFailure(revision, MetricComputationStatus.INVALID_QUERY,
-					"Between-position metric requires exact semantic addresses");
+					"Invalid between-position metric request: "
+							+ exception.getMessage());
 		} catch (RuntimeException exception) {
 			publishFailure(revision, MetricComputationStatus.NUMERICAL_FAILURE,
 					"Between-position metric failed: "
 							+ exception.getClass().getSimpleName());
 		}
+	}
+
+	private PublicLocusMetricTraversalPolicy2D currentTraversalPolicy() {
+		if (directionInput == null) {
+			return PublicLocusMetricTraversalPolicy2D.parse(
+					PublicLocusMetricTraversalPolicy2D.FORWARD,
+					PublicLocusMetricTraversalPolicy2D.STRICT,
+					PublicLocusMetricTraversalPolicy2D.ZERO_LENGTH);
+		}
+		if (!directionInput.isDefined() || !boundaryPolicyInput.isDefined()
+				|| !samePositionPolicyInput.isDefined()) {
+			throw new IllegalArgumentException(
+					"Traversal policy tokens must be defined text values");
+		}
+		return PublicLocusMetricTraversalPolicy2D.parse(
+				directionInput.getTextString(), boundaryPolicyInput.getTextString(),
+				samePositionPolicyInput.getTextString());
 	}
 
 	private EndpointResolution resolveEndpoint(GeoPoint endpoint,

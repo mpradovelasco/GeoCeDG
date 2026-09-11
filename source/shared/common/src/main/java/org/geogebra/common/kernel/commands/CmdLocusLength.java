@@ -12,6 +12,7 @@ import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.arithmetic.Command;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoPoint;
+import org.geogebra.common.kernel.geos.GeoText;
 import org.geogebra.common.main.MyError;
 
 /** Public rich metric processor for Locus V2. */
@@ -45,6 +46,20 @@ public final class CmdLocusLength extends CommandProcessor {
 					return new GeoElement[] {LocusV2PublicOperations.betweenMetric(
 							cons, command.getLabel(), (GeoLocusV2) arguments[0],
 							(GeoPoint) arguments[1], (GeoPoint) arguments[2])};
+				}
+				break;
+			case 6:
+				if ((valid[0] = arguments[0] instanceof GeoLocusV2)
+						&& (valid[1] = arguments[1] instanceof GeoPoint)
+						&& (valid[2] = arguments[2] instanceof GeoPoint)
+						&& (valid[3] = arguments[3] instanceof GeoText)
+						&& (valid[4] = arguments[4] instanceof GeoText)
+						&& (valid[5] = arguments[5] instanceof GeoText)) {
+					return new GeoElement[] {LocusV2PublicOperations.betweenMetric(
+							cons, command.getLabel(), (GeoLocusV2) arguments[0],
+							(GeoPoint) arguments[1], (GeoPoint) arguments[2],
+							(GeoText) arguments[3], (GeoText) arguments[4],
+							(GeoText) arguments[5])};
 				}
 				break;
 			default:

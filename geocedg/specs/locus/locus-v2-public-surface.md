@@ -1,6 +1,6 @@
 # Public Locus V2 command, tool and persistence surface
 
-- Status: **NORMATIVE / AUTHOR APPROVED**
+- Status: **NORMATIVE / AUTHOR APPROVED; POST-G9U1-A2 AMENDMENT CANDIDATE — PENDING AUTHOR REVIEW**
 - Phase: G9P design approved; productive G9U0 implementation is not authorized
 - Internal prerequisites: G6, G7 and G8 are author-approved
 - Related Accepted ADR: `docs/adr/0013-public-locus-v2-surface-and-token-selection.md`
@@ -677,3 +677,21 @@ undefined rather than selecting another branch. No generic `Path`, arbitrary
 coincident-point or nearest-point behavior is introduced. This section is an
 accepted public-surface amendment, not a reinterpretation of the author-approved
 G9U0 evidence.
+
+## 19. POST-G9U1-A2 public-surface amendment candidate
+
+The rich metric authority adds only this compatible overload:
+
+```text
+LocusLength(L, A, B, "direction", "boundary", "same-position")
+```
+
+Its public vocabulary is `forward|reverse`,
+`strict|stop-at-end|wrap-to-start`, and `zero-length|full-cycle`. These tokens
+are stable command text, not serialized Java enum names. The six command
+arguments are normal DAG inputs and reconstruct the chosen policy. Existing
+one- and three-argument `LocusLength` forms retain their behavior, and all
+scalar `Length` forms remain non-negative and unchanged. Unknown tokens fail
+explicitly. This overload selects only a route between endpoints already
+accepted by the existing semantic endpoint authority; it adds no coordinate,
+proximity, generic `Path` or nearest-point behavior.

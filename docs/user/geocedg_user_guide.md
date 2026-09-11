@@ -112,7 +112,8 @@ G9U0 command forms:
 | `Point[L,"generator.main",u]` | Ordinary point bound to the explicit branch and canonical parameter `u` |
 | `Point[L,u]` | Author-approved A6 convenience form; succeeds only when the semantic source has exactly one eligible branch and `u` lies in exactly one component, then persists that concrete selector |
 | `LocusLength[L]` | Authoritative rich total-metric result |
-| `LocusLength[L,A,B]` | Authoritative rich metric between two exact semantic endpoints; the A1 candidate also admits unique `SplineV2` constructor occurrences |
+| `LocusLength[L,A,B]` | Authoritative rich metric between two exact semantic endpoints; author-approved A1 also admits unique `SplineV2` constructor occurrences |
+| `LocusLength[L,A,B,"direction","boundary","same-position"]` | A2 candidate: explicit rich route using `forward|reverse`, `strict|stop-at-end|wrap-to-start`, and `zero-length|full-cycle`; the metric magnitude remains non-negative |
 | `Length[L]` | Guarded scalar child of the rich total-metric authority |
 | `Length[L,A,B]` | Guarded scalar child of the rich between-endpoint authority, with the same A1 occurrence restrictions |
 | `Intersect[L,T]` or `Intersect[L1,L2]` | Rich typed intersection result, not an automatically ordered point list |
@@ -287,11 +288,21 @@ Ordinary numeric measurement uses
 `Length(S)` and `Length(S,P,Q)`. The corresponding `LocusLength(...)` forms
 remain rich semantic results carrying status, coverage, error/guarantee and
 diagnostics, so they are not displayed as ordinary numbers in Algebra. `P` and
-`Q` normally are semantic points on the same source. The POST-G9U1-A1
-candidate additionally admits an ordinary `SplineV2` constructor input only
+`Q` normally are semantic points on the same source. The author-approved
+POST-G9U1-A1 extension additionally admits an ordinary `SplineV2` constructor input only
 when that exact point identity occurs once in the ordered constructor. Reusing
 the same point in several occurrences is ambiguous; distinct coincident inputs
 remain distinct; and an arbitrary Cartesian-coincident point is rejected.
+
+The POST-G9U1-A2 candidate adds
+`LocusLength(L,A,B,"direction","boundary","same-position")`. Use `forward`
+or `reverse` to choose the semantic traversal, `strict`, `stop-at-end` or
+`wrap-to-start` for the open-boundary behavior, and `zero-length` or
+`full-cycle` for identical semantic endpoints. `full-cycle` requires one valid
+periodic component. `wrap-to-start` creates no connecting segment, never jumps
+an internal gap and reports its disconnected convention in the rich result.
+These choices never make `Length` negative; scalar and total-length forms keep
+their previous behavior.
 No coordinate or proximity search is performed. The author accepted the
 reduced controls `Length(S)=4`,
 `Length(S,P,Q)=2`, and ordinary Locus V2 `Length(L,LP,LQ)=2` using the actual

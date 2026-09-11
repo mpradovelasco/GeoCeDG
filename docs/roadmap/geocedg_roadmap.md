@@ -3,13 +3,13 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Roadmap vivo y normativo de fases; no sustituye las especificaciones ni los ADR aceptados |
-| Versión documental | 3.73 |
-| Fecha de revisión | 11 de septiembre de 2026 |
+| Versión documental | 3.74 |
+| Fecha de revisión | 12 de septiembre de 2026 |
 | Baseline GeoGebra | 5.4.928.0, commit `9b93256b7df401ff056c37b502d82df4d72b1522`, tag `geogebra-baseline-5.4.928.0` |
-| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1–G9A3, el track G9A, G9U0 y sus refinamientos R1–R6, G9X1, G9S1, G9S1-R1, G9U1 y POST-G9U1-A6 `PASS — AUTHOR APPROVED`. G9U1 es autoridad histórica cerrada y no se reabre. POST-G9U1-A1 está en `IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW`; A2–A5 y A7 siguen no autorizados. El track continúa siendo orden de ejecución autoral, no dependencia dura de G9B. G9B/G9C permanecen diseñadas y no autorizadas; G9U2 sigue bloqueada por la aprobación global G9; G10P es solo planificación aprobada y ninguna implementación productiva G10 está autorizada. El riesgo `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` continúa abierto para disposición antes del cierre global G9. Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
-| Última fase cerrada | POST-G9U1-A6 — `PASS — AUTHOR APPROVED` |
-| Última fase ejecutada | POST-G9U1-A6 — candidato publicado `8571a3db8680a99c5a46ab373a16cad46065c81b`, después aprobado expresamente por el autor; `selfApproved=false` |
-| Siguiente puerta | Revisión y aprobación autoral explícita del candidato POST-G9U1-A1; A2–A5, A7, G9B, G9C, G9U2 y G10 productivo permanecen no autorizados |
+| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1–G9A3, el track G9A, G9U0 y sus refinamientos R1–R6, G9X1, G9S1, G9S1-R1, G9U1, POST-G9U1-A6 y POST-G9U1-A1 `PASS — AUTHOR APPROVED`. G9U1 es autoridad histórica cerrada y no se reabre. POST-G9U1-A2 está en `IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW`; A3–A5 y A7 siguen no autorizados. El track continúa siendo orden de ejecución autoral, no dependencia dura de G9B. G9B/G9C permanecen diseñadas y no autorizadas; G9U2 sigue bloqueada por la aprobación global G9; G10P es solo planificación aprobada y ninguna implementación productiva G10 está autorizada. El riesgo `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` continúa abierto para disposición antes del cierre global G9. Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
+| Última fase cerrada | POST-G9U1-A1 — `PASS — AUTHOR APPROVED` |
+| Última fase ejecutada | POST-G9U1-A2 — candidato de implementación pendiente de revisión autoral; `selfApproved=false` |
+| Siguiente puerta | Revisión y aprobación autoral explícita del candidato POST-G9U1-A2; A3–A5, A7, G9B, G9C, G9U2 y G10 productivo permanecen no autorizados |
 | Primer cliente | Aplicación de escritorio de la familia Classic 5 |
 | Núcleo | Java compartido de GeoGebra, extendido solo cuando la semántica lo requiere |
 
@@ -2880,7 +2880,8 @@ la misma preservación semántica compartida.
 ```text
 TRACK_STATUS = IN PROGRESS / AUTHOR-SELECTED EXECUTION ORDER
 A6_PRODUCT_IMPLEMENTATION = PASS — AUTHOR APPROVED
-A1_PRODUCT_IMPLEMENTATION = IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW
+A1_PRODUCT_IMPLEMENTATION = PASS — AUTHOR APPROVED
+A2_PRODUCT_IMPLEMENTATION = IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW
 REMAINING_PRODUCT_IMPLEMENTATION_AUTHORIZED = false
 G9B_HARD_DEPENDENCY = false
 ```
@@ -2892,8 +2893,8 @@ G9U1, no necesariamente después de G9B, y ningún ítem reabre ni invalida
 
 | ID | Disposición viva | Acción futura | Alcance y capa esperada |
 |---|---|---|---|
-| A1 | `IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW` | `PHASE CANDIDATE` | Proveniencia de constructor de `SplineV2`: cada ocurrencia fuente/interpolación aporta cero, una o varias addresses semánticas exactas a `Length`/`LocusLength`. La definición ordenada directa, el slot y los IDs durables forman la clave relativa; no hay inferencia por coordenadas o proximidad. Kernel compartido, specs spline/métrica y persistencia |
-| A2 | `PARTIALLY_ABSORBED` | `DESIGN_THEN_IMPLEMENT` | Política pública separada para selección de recorrido y signo algebraico, preservando el `Length` no negativo vigente. Debe definir abierto/cerrado, forward/reverse, wrap, mismo preimage, múltiples preimages, degeneraciones y validez. Kernel compartido y contrato métrico público |
+| A1 | `PASS — AUTHOR APPROVED` | `CLOSED` | Proveniencia de constructor de `SplineV2`: cada ocurrencia fuente/interpolación aporta cero, una o varias addresses semánticas exactas a `Length`/`LocusLength`. La definición ordenada directa, el slot y los IDs durables forman la clave relativa; no hay inferencia por coordenadas o proximidad. Kernel compartido, specs spline/métrica y persistencia |
+| A2 | `IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW` | `PHASE CANDIDATE` | `LocusLength(L,A,B,"direction","boundary","same-position")` selecciona explícitamente dirección, borde abierto y política de misma address. Conserva magnitud no negativa, autoridad rica y defaults previos; no introduce signo algebraico, shortest ni nueva autoridad de endpoints. Kernel compartido y contrato métrico público |
 | A3 | `PARTIALLY_ABSORBED` | `DESIGN_THEN_IMPLEMENT` | G9A3 ya aporta lifecycle genérico y transacción atómica; falta un predicado/política V2 de redefinición compatible frente a reemplazo real. Kernel lifecycle, specs V2 y persistencia |
 | A4 | `PARTIALLY_ABSORBED / CONTRACT PARTIALLY UNRESOLVED` | `RESEARCH_THEN_DESIGN` | Caracterizar rollback y posición exacta separando identidad durable, orden topológico del DAG, orden de construcción y estado de presentación/navegación del Construction Protocol. Kernel/lifecycle e integración upstream mínima; debe preceder el diseño A3 |
 | A5 | `PARTIALLY_ABSORBED` | `DEFER PENDING DISPOSITION` | G9U1 Round 3 resolvió sustancialmente la colisión installed/embedded mediante digest crudo y digest de definición normalizada, manteniendo la macro embebida como autoridad documental. Una decisión futura debe elegir exactamente `CLOSE_AS_ABSORBED` o `DEFINE_NEW_FUTURE_CAPABILITY` para detach/expand lossless y/o equivalencia cross-version más amplia; no se fuerza implementación para cerrar el registro |
@@ -2926,7 +2927,7 @@ como slice de ejecución. Después del track, una decisión autoral separada deb
 seleccionar y autorizar el primer slice productivo G9B; aquí no se selecciona
 ninguna familia ni se autoriza implementación.
 
-#### POST-G9U1-A1 — candidato de proveniencia de ocurrencias SplineV2
+#### POST-G9U1-A1 — proveniencia de ocurrencias SplineV2 aprobada
 
 El candidato A1 admite `Length(S,A,C)` y `LocusLength(S,A,C)` cuando `A` y
 `C` tienen exactamente una ocurrencia actual en la definición ordenada directa
@@ -2943,8 +2944,31 @@ añade `Path` o un comando `Point`, y no proyecta puntos arbitrarios. Recompute
 ordinario conserva la relación; invalidez temporal falla cerrada; save/reopen,
 undo/redo y copy/remap reconstruyen la proveniencia desde DAG e IDs durables.
 Solo las imágenes de similitud R5 con linaje fuente explícito heredan la
-address; otras familias permanecen no admitidas. El registro `PHASE` acotado y
-la matriz A1 son autoridad prospectiva del candidato, no aprobación autoral.
+address; otras familias permanecen no admitidas. El candidato
+`1f862dccba6a1f685b718f8e43bf92153fc22f12` fue aprobado expresamente por el
+autor y publicado como fast-forward; `selfApproved=false`. La matriz y recibos
+del candidato se preservan como evidencia histórica de esa aceptación.
+
+#### POST-G9U1-A2 — candidato de política explícita de recorrido
+
+El candidato A2 añade solo la sobrecarga rica
+`LocusLength(L,A,B,"direction","boundary","same-position")`. Los vocabularios
+públicos estables son `forward|reverse`, `strict|stop-at-end|wrap-to-start` y
+`zero-length|full-cycle`; no serializan nombres u ordinales de enums internos.
+La forma rica previa conserva el default `forward/strict/zero-length` y ningún
+`Length` cambia: el escalar sigue siendo magnitud no negativa guardada.
+
+Dirección selecciona ruta, nunca signo. `strict` rechaza un destino
+inalcanzable; `stop-at-end` conserva valor parcial y cobertura incompleta;
+`wrap-to-start` suma solo ambos lados del borde global, sin chord conector y con
+conectividad geométrica falsa. Ninguna política atraviesa gaps internos. En
+periodicidad, el seam canónico y el dominio fundamental siguen siendo
+autoridad; `full-cycle` solo se admite para una componente periódica aprobada.
+El resultado rico retiene dirección, segmentos ordenados, borde, wrap,
+alcanzabilidad, conectividad, estado y outcome. Los textos de política son
+inputs DAG normales, reconstruibles por save/reopen, undo/redo y copy/remap.
+A2 reutiliza sin cambios los endpoints semánticos y la proveniencia A1; no
+añade coordenadas, proximidad, `Path`, shortest o una nueva familia de comandos.
 
 #### A6-OP1 — hardening de interpretación del exit code de `ripgrep`
 

@@ -350,6 +350,44 @@
       ]
     },
     {
+      "selection_id": "post-g9u1-a2.narrow",
+      "module": "shared",
+      "gradle_task": ":shared:common-jre:test",
+      "test_filters": [
+        "org.geocedg.common.locus.PostG9U1A2ExplicitTraversalPolicyTest",
+        "org.geocedg.common.locus.LocusMetricProductiveRouteTest",
+        "org.geocedg.common.locus.G9U0MetricPositionTest",
+        "org.geocedg.common.locus.PostG9U1A1SplineConstructorProvenanceTest"
+      ],
+      "excluded_test_filters": [],
+      "effective_arguments": [
+        ":shared:common-jre:test",
+        "--tests",
+        "org.geocedg.common.locus.PostG9U1A2ExplicitTraversalPolicyTest",
+        "--tests",
+        "org.geocedg.common.locus.LocusMetricProductiveRouteTest",
+        "--tests",
+        "org.geocedg.common.locus.G9U0MetricPositionTest",
+        "--tests",
+        "org.geocedg.common.locus.PostG9U1A1SplineConstructorProvenanceTest",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 39,
+      "expected_identities_sha256": "9ac3dfbcfb4977f3ad787e9bf6756c026a28cddb33e3b0e52e0adc1edc4aa3c4",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "1f862dccba6a1f685b718f8e43bf92153fc22f12",
+          "tree": "6f1d9734454b0632558af99bf876b04ad9367ddb"
+        }
+      ]
+    },
+    {
       "selection_id": "g8b.narrow",
       "module": "shared",
       "gradle_task": ":shared:common-jre:test",

@@ -1,7 +1,7 @@
 # Locus V2 metric contract
 
-- Status: **G7 v1.0 NORMATIVE — PASS — AUTHOR APPROVED; POST-G9U1-A1 v1.1 AMENDMENT CANDIDATE — PENDING AUTHOR REVIEW**
-- Version: `1.1`
+- Status: **G7 v1.0 NORMATIVE — PASS — AUTHOR APPROVED; POST-G9U1-A1 v1.1 AMENDMENT — PASS — AUTHOR APPROVED; POST-G9U1-A2 v1.2 AMENDMENT CANDIDATE — PENDING AUTHOR REVIEW**
+- Version: `1.2`
 - Approval date: 2026-08-13
 - Author-review disposition: **G7A-R1, G7A AND G7B PASS — AUTHOR APPROVED**
 - Roadmap gate: G7 `PASS`; G7A `PASS`; G7B `PASS`
@@ -664,5 +664,59 @@ Other transformation/source families are unsupported for A1. Coordinates,
 Cartesian coincidence, proximity, labels, rendering, construction order, XML
 position and list-value searches never establish or repair provenance. The
 [A1 validation matrix](../../../docs/validation/post_g9u1_a1_spline_constructor_provenance_validation_matrix.md)
-is the candidate traceability authority. This amendment is normative candidate
-text pending author review and does not alter the author-approved G7 history.
+is the preserved candidate traceability authority. The author subsequently
+approved POST-G9U1-A1 at candidate
+`1f862dccba6a1f685b718f8e43bf92153fc22f12`; this amendment is now normative
+and does not alter the author-approved G7 history.
+
+## 22. POST-G9U1-A2 normative amendment candidate: explicit traversal
+
+The rich between-position authority adds the compatible public form:
+
+```text
+LocusLength(L, A, B, "direction", "boundary", "same-position")
+```
+
+The stable public tokens are:
+
+```text
+direction     = "forward" | "reverse"
+boundary      = "strict" | "stop-at-end" | "wrap-to-start"
+same-position = "zero-length" | "full-cycle"
+```
+
+The existing `LocusLength(L,A,B)` form remains exactly the default
+`forward/strict/zero-length`. `Length(L,A,B)` remains a guarded, non-negative
+magnitude using that unchanged default. A2 does not add signed length,
+`shortest`, another endpoint authority or a policy argument to scalar
+`Length`. Total `LocusLength(L)` and `Length(L)` remain unchanged.
+
+Direction selects an ordered constructive route; it is never encoded as an
+algebraic sign. `strict` rejects an unreachable target. `stop-at-end` returns
+the existing incomplete rich result at the applicable global boundary with
+`targetReached=false`. `wrap-to-start` combines the two global-boundary-side
+contributions without an artificial connector and records
+`geometricallyConnected=false`. No boundary policy crosses an internal invalid
+domain gap or disconnected component.
+
+On a periodic branch, forward/reverse operate on the declared oriented
+fundamental domain and the existing canonical seam address. For the same
+semantic endpoint, `zero-length` has no route segment; `full-cycle` is valid
+only for one approved periodic component. Cartesian equality never establishes
+same-position or a cycle.
+
+The rich result retains the complete immutable `LocusMetricRoute2D` evidence:
+direction, ordered route segments, boundary policy, wrapped state,
+`targetReached`, geometric connectivity, route status and traversal outcome.
+This evidence is derived on recomputation and is not serialized as a cache.
+The three public policy texts are ordinary command/DAG inputs, so save/reopen,
+undo/redo, rename and copy/remap reconstruct the choice without enum ordinals,
+UI state, labels or render state as authority. Unknown or malformed tokens fail
+explicitly with an absent/invalid rich result.
+
+Endpoint resolution remains the existing exact semantic-point and A1
+constructor-occurrence authority. Coordinates, proximity, labels, branch
+order, render samples and solution indices never select an endpoint or route.
+The [A2 validation matrix](../../../docs/validation/post_g9u1_a2_explicit_traversal_policy_validation_matrix.md)
+is the candidate traceability authority. This v1.2 amendment remains pending
+author review and does not reinterpret G7 or A1 evidence.

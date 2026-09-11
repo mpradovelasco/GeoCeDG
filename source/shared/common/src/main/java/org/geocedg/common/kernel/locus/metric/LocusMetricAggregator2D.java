@@ -32,7 +32,7 @@ public final class LocusMetricAggregator2D {
 						LocusMetricContribution2D
 								::getResolvedValidComponentKey));
 		return aggregate(query, ordered, Optional.empty(), false,
-				Collections.emptyList());
+				Collections.emptyList(), Optional.empty());
 	}
 
 	/**
@@ -50,13 +50,14 @@ public final class LocusMetricAggregator2D {
 				route.getTraversalOutcome() == TraversalOutcome.STOPPED_AT_BOUNDARY;
 		return aggregate(query, new ArrayList<>(contributions),
 				Optional.of(route.getTraversalOutcome()), partial,
-				route.getDiagnostics());
+				route.getDiagnostics(), Optional.of(route));
 	}
 
 	private LocusMetricResult2D aggregate(LocusMetricQuery2D query,
 			List<LocusMetricContribution2D> ordered,
 			Optional<TraversalOutcome> traversalOutcome, boolean partial,
-			List<MetricDiagnostic2D> routeDiagnostics) {
+			List<MetricDiagnostic2D> routeDiagnostics,
+			Optional<LocusMetricRoute2D> routeEvidence) {
 		boolean hasInfinity = false;
 		boolean hasFinite = false;
 		boolean unresolved = partial;
@@ -132,8 +133,9 @@ public final class LocusMetricAggregator2D {
 				query.getPolicy().getMetricAlgorithmVersion(),
 				query.getPolicy().getMetricPolicyVersion());
 		return new LocusMetricResult2D(value, coverage, status, rectifiability,
-				traversalOutcome, fidelity, evaluatorMethod, metricMethod, role,
-				error, MetricUnit2D.CONSTRUCTION_LENGTH_UNIT, provenance, ordered,
+				traversalOutcome, routeEvidence, fidelity, evaluatorMethod,
+				metricMethod, role, error,
+				MetricUnit2D.CONSTRUCTION_LENGTH_UNIT, provenance, ordered,
 				diagnostics);
 	}
 
@@ -149,6 +151,7 @@ public final class LocusMetricAggregator2D {
 				MetricComputationStatus.INVALID_QUERY,
 				MetricRectifiability.UNDETERMINED,
 				Optional.of(route.getTraversalOutcome()),
+				Optional.of(route),
 				ConstructionFidelity.SEMANTICALLY_CONSTRUCTED,
 				MetricEvaluatorMethod2D.NONE, MetricMethod2D.NONE,
 				MetricRepresentationRole2D.DIAGNOSTIC_PARTIAL_VALUE,

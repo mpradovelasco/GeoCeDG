@@ -21,6 +21,7 @@ public final class LocusMetricResult2D {
 	private final MetricComputationStatus computationStatus;
 	private final MetricRectifiability rectifiability;
 	private final Optional<TraversalOutcome> traversalOutcome;
+	private final Optional<LocusMetricRoute2D> routeEvidence;
 	private final ConstructionFidelity constructionFidelity;
 	private final MetricEvaluatorMethod2D evaluatorMethod;
 	private final MetricMethod2D metricMethod;
@@ -44,11 +45,32 @@ public final class LocusMetricResult2D {
 			MetricProvenance2D provenance,
 			List<LocusMetricContribution2D> contributions,
 			List<MetricDiagnostic2D> diagnostics) {
+		this(metricValue, coverage, computationStatus, rectifiability,
+				traversalOutcome, Optional.empty(), constructionFidelity,
+				evaluatorMethod, metricMethod, representationRole, errorEvidence,
+				unit, provenance, contributions, diagnostics);
+	}
+
+	/** Creates a rich result retaining the complete resolved route evidence. */
+	public LocusMetricResult2D(MetricValue2D metricValue,
+			MetricCoverage coverage,
+			MetricComputationStatus computationStatus,
+			MetricRectifiability rectifiability,
+			Optional<TraversalOutcome> traversalOutcome,
+			Optional<LocusMetricRoute2D> routeEvidence,
+			ConstructionFidelity constructionFidelity,
+			MetricEvaluatorMethod2D evaluatorMethod, MetricMethod2D metricMethod,
+			MetricRepresentationRole2D representationRole,
+			MetricErrorEvidence2D errorEvidence, MetricUnit2D unit,
+			MetricProvenance2D provenance,
+			List<LocusMetricContribution2D> contributions,
+			List<MetricDiagnostic2D> diagnostics) {
 		this.metricValue = Objects.requireNonNull(metricValue);
 		this.coverage = Objects.requireNonNull(coverage);
 		this.computationStatus = Objects.requireNonNull(computationStatus);
 		this.rectifiability = Objects.requireNonNull(rectifiability);
 		this.traversalOutcome = Objects.requireNonNull(traversalOutcome);
+		this.routeEvidence = Objects.requireNonNull(routeEvidence);
 		this.constructionFidelity =
 				Objects.requireNonNull(constructionFidelity);
 		this.evaluatorMethod = Objects.requireNonNull(evaluatorMethod);
@@ -79,6 +101,15 @@ public final class LocusMetricResult2D {
 
 	public Optional<TraversalOutcome> getTraversalOutcome() {
 		return traversalOutcome;
+	}
+
+	/**
+	 * Returns the semantic route selected for a between-position query.
+	 *
+	 * @return route evidence, absent for total metrics or pre-route failures
+	 */
+	public Optional<LocusMetricRoute2D> getRouteEvidence() {
+		return routeEvidence;
 	}
 
 	public ConstructionFidelity getConstructionFidelity() {

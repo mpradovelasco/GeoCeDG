@@ -430,9 +430,23 @@ public final class LocusV2PublicOperations {
 	 */
 	public static GeoLocusMetricResult betweenMetric(Construction construction,
 			String label, GeoLocusV2 source, GeoPoint start, GeoPoint end) {
+		return betweenMetric(construction, label, source, start, end, null, null,
+				null);
+	}
+
+	/**
+	 * Creates one public rich between-position metric with explicit traversal.
+	 *
+	 * @return rich between-position metric result
+	 */
+	public static GeoLocusMetricResult betweenMetric(Construction construction,
+			String label, GeoLocusV2 source, GeoPoint start, GeoPoint end,
+			GeoText direction, GeoText boundaryPolicy,
+			GeoText samePositionPolicy) {
 		requireAccess(construction);
 		ParticipationBatch batch = new ParticipationBatch(construction);
-		List<GeoElement> dependencies = direct(source, start, end);
+		List<GeoElement> dependencies = direct(source, start, end, direction,
+				boundaryPolicy, samePositionPolicy);
 		if (!construction.isFileLoading()) {
 			batch.prepareAll(dependencies);
 		}
@@ -440,7 +454,8 @@ public final class LocusV2PublicOperations {
 		AlgoLocusBetweenMetricV2 algorithm = null;
 		try {
 			algorithm = new AlgoLocusBetweenMetricV2(construction, label, source,
-					start, end, outputId);
+					start, end, direction, boundaryPolicy, samePositionPolicy,
+					outputId);
 			GeoLocusMetricResult output = algorithm.getResult();
 			finishLabel(output, label, false);
 			if (!construction.isFileLoading()) {
