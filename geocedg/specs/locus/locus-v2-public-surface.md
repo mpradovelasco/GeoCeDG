@@ -664,3 +664,16 @@ listed in `docs/validation/g9_public_workspace_validation_matrix.md`.
 | Classic | GeoCeDG diagnostic path preserves/recomputes native V2/rich types and IDs with creation disabled; external upstream open is unsupported | reject or silently downgrade V2 files | G9A3/U0 compatibility corpus and explicit messaging required |
 | Identity order | shared identity/lifecycle before U0 | Locus-local IDs | local IDs create later migration/debt and block DXF provenance |
 | Feature maturity | experimental/default-off until complete lifecycle | enable by default | default-on requires stable promotion evidence |
+
+## 18. POST-G9U1-A6 public-surface amendment
+
+The candidate A6 extension adds only `Point[L,u]`. It delegates to the exact
+semantic-point algorithm after the source contract establishes one and only one
+eligible branch and one component at `u`. The existing
+`Point[L,"branch",u]` form remains the exact explicit form. The omission is
+input convenience only: XML stores the selected branch/component/provider
+selector, copy remaps the durable source, and later ambiguity makes the point
+undefined rather than selecting another branch. No generic `Path`, arbitrary
+coincident-point or nearest-point behavior is introduced. This section is an
+implementation candidate pending author review, not a reinterpretation of the
+author-approved G9U0 evidence.

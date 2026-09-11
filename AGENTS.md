@@ -642,6 +642,13 @@ A task prompt must state:
 
 Prompt files must reference durable specs. They must not become a second copy of geometric truth.
 
+### 15.1 Ripgrep process status
+
+Treat ripgrep's native exit status portably: `0` means a valid search with one
+or more matches, `1` means a valid search with no matches, and only `>= 2`
+means an execution error. On PowerShell, capture `$LASTEXITCODE` immediately
+after `rg`; apply the same three-way interpretation on other workstations.
+
 ## 16. Change execution rules
 
 For each task:

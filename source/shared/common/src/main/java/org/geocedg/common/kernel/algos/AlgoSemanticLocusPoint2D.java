@@ -13,6 +13,8 @@ import org.geocedg.common.kernel.locus.LocusComponentLineage2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusDriverDomainProvider2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
+import org.geocedg.common.kernel.locus.LocusPrincipalBranchSelector2D;
+import org.geocedg.common.kernel.locus.LocusPrincipalBranchState2D;
 import org.geocedg.common.kernel.locus.LocusSemanticAddress2D;
 import org.geocedg.common.kernel.locus.LocusSemanticAddress2D.SeamSide;
 import org.geocedg.common.kernel.locus.LocusSemanticAddressState2D;
@@ -76,14 +78,19 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 		}
 		String branchState = branchInput.getTextString();
 		LocusSemanticAddressState2D.Decoded persistedState;
+		LocusPrincipalBranchState2D.Decoded principalState;
 		try {
 			persistedState = LocusSemanticAddressState2D.decode(branchState);
+			principalState = persistedState == null
+					? LocusPrincipalBranchState2D.decode(branchState) : null;
 		} catch (IllegalArgumentException exception) {
 			point.setUndefined();
 			return;
 		}
 		if (persistedState != null && ownsDedicatedInteractionInputs()) {
 			enforceDedicatedStatePresentation();
+		} else if (principalState != null && ownsDedicatedPrincipalBranchInput()) {
+			enforceDedicatedPrincipalBranchPresentation();
 		}
 		if (!source.isDefined() || !parameterInput.toGeoElement().isDefined()) {
 			point.setUndefined();
@@ -91,9 +98,23 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 		}
 		PersistentGeoId sourceId = source.getPersistentLocusId();
 		LocusDefinition2D definition = source.getSemanticDefinition();
-		String branchKey = persistedState == null ? branchState
-				: persistedState.getBranchKey();
 		double rawParameter = parameterInput.getDouble();
+		LocusSemanticAddress2D principalAddress = null;
+		if (principalState != null) {
+			try {
+				principalAddress = LocusPrincipalBranchSelector2D.select(source,
+						rawParameter);
+			} catch (IllegalArgumentException exception) {
+				point.setUndefined();
+				return;
+			}
+			if (!principalState.matches(principalAddress)) {
+				point.setUndefined();
+				return;
+			}
+		}
+		String branchKey = persistedState != null ? persistedState.getBranchKey()
+				: principalState != null ? principalState.getBranchKey() : branchState;
 		if (sourceId == null || definition == null || branchKey == null
 				|| branchKey.trim().isEmpty() || !branchKey.equals(branchKey.trim())
 				|| !Double.isFinite(rawParameter)) {
@@ -108,12 +129,14 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 		LocusDriverDomainProvider2D provider = definition.getProvider();
 		LocusSemanticAddress2D persistedAddress = persistedState == null ? null
 				: persistedState.toSemanticAddress(sourceId);
-		double canonical = persistedAddress == null
-				? provider.canonicalize(rawParameter)
-				: persistedAddress.getCanonicalParameter();
-		Long liftValue = persistedAddress == null
-				? periodicLift(provider, rawParameter, canonical)
-				: persistedAddress.getPeriodicLift();
+		double canonical = persistedAddress != null
+				? persistedAddress.getCanonicalParameter()
+				: principalAddress != null ? principalAddress.getCanonicalParameter()
+						: provider.canonicalize(rawParameter);
+		Long liftValue = persistedAddress != null
+				? persistedAddress.getPeriodicLift()
+				: principalAddress != null ? principalAddress.getPeriodicLift()
+						: periodicLift(provider, rawParameter, canonical);
 		if (!Double.isFinite(canonical) || liftValue == null
 				|| persistedAddress != null
 				&& !persistedAddressMatchesInputs(provider, persistedAddress,
@@ -121,18 +144,21 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 			point.setUndefined();
 			return;
 		}
+		String retainedComponentLineage = persistedState != null
+				? persistedState.getComponentLineageKey()
+				: principalState != null ? principalState.getComponentLineageKey() : null;
 		LocusInterval2D component = containingComponent(branch, canonical, provider,
-				persistedState);
+				retainedComponentLineage);
 		if (component == null) {
 			point.setUndefined();
 			return;
 		}
 		long lift = liftValue;
-		LocusSemanticAddress2D candidate = persistedAddress == null
-				? new LocusSemanticAddress2D(sourceId, provider.getProviderId(),
+		LocusSemanticAddress2D candidate = persistedAddress != null
+				? persistedAddress : principalAddress != null ? principalAddress
+				: new LocusSemanticAddress2D(sourceId, provider.getProviderId(),
 						branchKey, componentLineage(branchKey, component), canonical,
-						lift, seamSide(provider, rawParameter, canonical, lift))
-				: persistedAddress;
+						lift, seamSide(provider, rawParameter, canonical, lift));
 		long rawBits = Double.doubleToLongBits(rawParameter == 0 ? 0 : rawParameter);
 		boolean sameAddressInputs = previousRawParameterBits == rawBits
 				&& branchKey.equals(previousBranchInput)
@@ -163,11 +189,15 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 	@Override
 	public void remove() {
 		boolean removeDedicatedInputs = ownsDedicatedInteractionInputs();
+		boolean removePrincipalInput = ownsDedicatedPrincipalBranchInput();
 		GeoElement parameterGeo = parameterInput.toGeoElement();
 		super.remove();
 		if (removeDedicatedInputs) {
 			removeOrphanedDedicatedInput(branchInput);
 			removeOrphanedDedicatedInput(parameterGeo);
+		}
+		if (removePrincipalInput) {
+			removeOrphanedDedicatedInput(branchInput);
 		}
 	}
 
@@ -196,6 +226,9 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 	public void restoreOwnedInputPresentation() {
 		if (ownsDedicatedInteractionInputs()) {
 			enforceDedicatedStatePresentation();
+			hydratePersistedSelectionAfterIdentityAttachment();
+		} else if (ownsDedicatedPrincipalBranchInput()) {
+			enforceDedicatedPrincipalBranchPresentation();
 			hydratePersistedSelectionAfterIdentityAttachment();
 		}
 	}
@@ -269,15 +302,15 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 
 	private static LocusInterval2D containingComponent(LocusBranch2D branch,
 			double parameter, LocusDriverDomainProvider2D provider,
-			LocusSemanticAddressState2D.Decoded persistedState) {
+			String retainedComponentLineage) {
 		LocusInterval2D unqualified = null;
 		LocusInterval2D qualified = null;
 		for (LocusInterval2D component : branch.getValidDomainComponents()) {
 			if (!component.contains(parameter, provider.getDomainEpsilon())) {
 				continue;
 			}
-			if (persistedState != null) {
-				if (persistedState.getComponentLineageKey().equals(componentLineage(
+			if (retainedComponentLineage != null) {
+				if (retainedComponentLineage.equals(componentLineage(
 						branch.getBranchKey(), component))) {
 					if (qualified != null) {
 						return null;
@@ -290,7 +323,7 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 				unqualified = component;
 			}
 		}
-		return persistedState == null ? unqualified : qualified;
+		return retainedComponentLineage == null ? unqualified : qualified;
 	}
 
 	private static String componentLineage(String branchKey,
@@ -364,14 +397,24 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 		parameterGeo.setRestrictedEuclidianVisibility(true);
 	}
 
+	private void enforceDedicatedPrincipalBranchPresentation() {
+		branchInput.setAuxiliaryObject(true);
+		branchInput.setEuclidianVisible(false);
+		branchInput.setRestrictedEuclidianVisibility(true);
+	}
+
 	private void hydratePersistedSelectionAfterIdentityAttachment() {
 		if (lastAcceptedAddress != null || !branchInput.isDefined()) {
 			return;
 		}
 		LocusSemanticAddressState2D.Decoded persistedState;
+		LocusPrincipalBranchState2D.Decoded principalState;
 		try {
 			persistedState = LocusSemanticAddressState2D.decode(
 					branchInput.getTextString());
+			principalState = persistedState == null
+					? LocusPrincipalBranchState2D.decode(branchInput.getTextString())
+					: null;
 		} catch (IllegalArgumentException exception) {
 			return;
 		}
@@ -381,6 +424,17 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 				&& persistedState.hasProviderVersion(
 						definition.getProvider().getProviderId())) {
 			lastAcceptedAddress = persistedState.toSemanticAddress(sourceId);
+		} else if (principalState != null) {
+			try {
+				LocusSemanticAddress2D current =
+						LocusPrincipalBranchSelector2D.select(source,
+								parameterInput.getDouble());
+				if (principalState.matches(current)) {
+					lastAcceptedAddress = current;
+				}
+			} catch (IllegalArgumentException exception) {
+				// Retain unresolved state until the exact selector becomes current again.
+			}
 		}
 	}
 
@@ -396,6 +450,21 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 				: cons.getSpatialIdentityRegistry().getGeoRecord(pointId);
 		return record != null && ConstructionGeoRedefineProvider
 				.INTERACTION_POINT_OUTPUT_ROLE.equals(record.getStableOutputRole());
+	}
+
+	private boolean ownsDedicatedPrincipalBranchInput() {
+		return hasPrincipalBranchPointRole() && ConstructionGeoRedefineProvider
+				.hasDedicatedPrincipalBranchState(point);
+	}
+
+	private boolean hasPrincipalBranchPointRole() {
+		PersistentGeoId pointId = cons.getSpatialIdentityRegistry()
+				.getPersistentGeoId(point);
+		GeoIdentityRecord record = pointId == null ? null
+				: cons.getSpatialIdentityRegistry().getGeoRecord(pointId);
+		return record != null && ConstructionGeoRedefineProvider
+				.PRINCIPAL_BRANCH_POINT_OUTPUT_ROLE.equals(
+						record.getStableOutputRole());
 	}
 
 	private static void removeOrphanedDedicatedInput(GeoElement input) {

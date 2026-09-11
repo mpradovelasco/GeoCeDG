@@ -79,7 +79,20 @@ public class CmdPoint extends CommandProcessor {
 
 		case 2:
 			arg = resArgs(c, info);
-			if ((ok[0] = arg[0].isPath())
+			if ((ok[0] = arg[0] instanceof GeoLocusV2)
+					&& (ok[1] = arg[1] instanceof GeoNumberValue)) {
+				RuntimeFeatureService.requireLocusV2Access(cons);
+				try {
+					return new GeoElement[] {
+							LocusV2PublicOperations.createPrincipalSemanticPoint(
+									cons, c.getLabel(), (GeoLocusV2) arg[0],
+									(GeoNumberValue) arg[1])};
+				} catch (IllegalArgumentException exception) {
+					throw MyError.forCommand(loc,
+							loc.getMenu("LocusV2.InvalidPosition"), c.getName(),
+							exception);
+				}
+			} else if ((ok[0] = arg[0].isPath())
 					&& (ok[1] = arg[1] instanceof GeoNumberValue)) {
 				GeoElement[] ret = { point(c.getLabel(), (Path) arg[0],
 						(GeoNumberValue) arg[1]) };

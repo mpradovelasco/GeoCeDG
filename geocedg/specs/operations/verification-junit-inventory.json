@@ -280,6 +280,35 @@
       ]
     },
     {
+      "selection_id": "post-g9u1-a6.narrow",
+      "module": "shared",
+      "gradle_task": ":shared:common-jre:test",
+      "test_filters": [
+        "org.geocedg.common.locus.PostG9U1A6OptionalBranchPointTest"
+      ],
+      "excluded_test_filters": [],
+      "effective_arguments": [
+        ":shared:common-jre:test",
+        "--tests",
+        "org.geocedg.common.locus.PostG9U1A6OptionalBranchPointTest",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 8,
+      "expected_identities_sha256": "03849a1682cdc6634861a039c3f34da31fd79a17d8013f1ca685bf19b4467bd8",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "db08876af80d96e93ccb4aac1522844345e9e921",
+          "tree": "12afd6b9a2eeb1d54bd9dad3b6981914e8eb29ec"
+        }
+      ]
+    },
+    {
       "selection_id": "g8b.narrow",
       "module": "shared",
       "gradle_task": ":shared:common-jre:test",

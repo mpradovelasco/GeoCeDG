@@ -110,6 +110,7 @@ G9U0 command forms:
 | `LocusV2[Q,s,D]` | Scalar-driven semantic locus with state/true parameter `s` |
 | `LocusV2[Q,t,s,D]` | Mapped scalar locus; `s` is the true parameter and `t` is its dependent state |
 | `Point[L,"generator.main",u]` | Ordinary point bound to the explicit branch and canonical parameter `u` |
+| `Point[L,u]` | A6 candidate convenience form; succeeds only when the semantic source has exactly one eligible branch and `u` lies in exactly one component, then persists that concrete selector |
 | `LocusLength[L]` | Authoritative rich total-metric result |
 | `LocusLength[L,A,B]` | Authoritative rich metric between two semantic-position points |
 | `Length[L]` | Guarded scalar child of the rich total-metric authority |
@@ -1757,6 +1758,10 @@ or, at the G7B gate, make the metric public.
 - `Point[L,branch,parameter]` creates an explicitly addressed ordinary point,
   but V2 itself remains deliberately outside generic `Path` and legacy
   incidence;
+- the POST-G9U1-A6 candidate also accepts `Point[L,parameter]` only under the
+  normative unique-branch/unique-component predicate; ambiguity or loss of the
+  retained selector makes the point undefined and never triggers proximity or
+  branch-order fallback;
 - `LocusLength` exposes rich total/partial metric authority and `Length[L]`
   exposes only its guarded scalar child; and
 - `Intersect` exposes rich supported-target/V2-pair results, while an ordinary

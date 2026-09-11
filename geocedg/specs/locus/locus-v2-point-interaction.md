@@ -1,8 +1,9 @@
 # Locus V2 semantic point interaction
 
-- Status: **NORMATIVE — PASS — AUTHOR APPROVED**
-- Version: 1
-- Phase: **G9U0-R6**
+- Status: **R6 NORMATIVE — PASS — AUTHOR APPROVED; POST-G9U1-A6
+  IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**
+- Version: 2
+- Phase: **G9U0-R6 + POST-G9U1-A6**
 - Architectural layer: shared Java kernel
 - Decision record:
   [ADR 0019 — Accepted](../../../docs/adr/0019-semantic-locus-point-interaction-support.md)
@@ -335,7 +336,57 @@ The retained risk
 R6 point persistence does not itself satisfy the missing quarantine-state
 round trip.
 
-This specification is **NORMATIVE — PASS — AUTHOR APPROVED**. R6 contains no
+The R6 contract through this section is **NORMATIVE — PASS — AUTHOR
+APPROVED**. R6 contains no
 productive Desktop Point-tool consumer, so its accepted validation surface is
 the kernel test-host/API and `manualGuiSmoke = DEFERRED TO G9U1 BY DESIGN`.
 This status does not authorize or execute G9U1.
+
+## 16. POST-G9U1-A6 normative amendment: optional branch key
+
+The additional public form is:
+
+```text
+Point(L,u)
+```
+
+It omits only the branch selector. The exact existing
+`Point(L,"branch",u)` form and `GeoLocusV2`'s non-`Path` status remain
+unchanged.
+
+The omitted form is admissible only when the current source is defined, its
+complete semantic definition is `VALID`, its evaluator has an approved
+determinism class, the complete branch set contains exactly one branch, and
+the canonicalized `u` belongs to exactly one valid component of that branch.
+This is a singleton-set predicate, not selection of the first enumerated
+branch. Zero branches/components, multiple branches/components, unsupported
+determinism, invalid source state and unestablished eligibility fail
+explicitly. Labels, coordinates, proximity, render order, construction order,
+XML order and branch indices have no authority.
+
+On creation, the hidden versioned selector persists the concrete branch key,
+component-lineage key and provider contract. The ordinary numeric argument
+remains a normal DAG input; each value supplies the canonical parameter,
+periodic lift and seam side under the retained selector. The point therefore
+continues to carry:
+
+```text
+durable source + concrete branch + concrete component/lineage
+               + canonical semantic address
+```
+
+Recomputation never substitutes a different branch or component. If the
+source becomes non-unique, incompatible or unavailable, or if `u` becomes
+ambiguous/outside the retained component, the point is undefined while its
+durable point/source identities and last accepted selector remain. Recovery
+may reactivate only that same selector. Native save/reopen, undo/redo,
+copy/remap, rename and compatible ordinary recomputation preserve this rule;
+malformed or incompatible selector state fails closed without coordinate
+repair.
+
+The selector input is presentation-hidden and removable as owned state only
+when the output carries `LOCUS_PRINCIPAL_BRANCH_POINT` and structural ownership
+is exact. The numeric argument is borrowed user construction state and is
+never hidden or removed by that role. The [A6 validation matrix](../../../docs/validation/post_g9u1_a6_optional_branch_point_validation_matrix.md)
+is the candidate traceability authority. This amendment is normative candidate
+text and does not acquire author-approved status from the historical R6 result.

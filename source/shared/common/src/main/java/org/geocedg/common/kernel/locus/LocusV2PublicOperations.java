@@ -73,6 +73,9 @@ public final class LocusV2PublicOperations {
 	/** Durable role authorizing mutation of dedicated semantic-address inputs. */
 	public static final String INTERACTION_POINT_OUTPUT_ROLE =
 			ConstructionGeoRedefineProvider.INTERACTION_POINT_OUTPUT_ROLE;
+	/** Durable role retaining an A6 concrete selector while the parameter varies. */
+	public static final String PRINCIPAL_BRANCH_POINT_OUTPUT_ROLE =
+			ConstructionGeoRedefineProvider.PRINCIPAL_BRANCH_POINT_OUTPUT_ROLE;
 
 	private LocusV2PublicOperations() {
 		// Static public construction boundary.
@@ -202,6 +205,32 @@ public final class LocusV2PublicOperations {
 			GeoNumberValue parameter) {
 		return createSemanticPoint(construction, label, source, branch, parameter,
 				ConstructionGeoRedefineProvider.STABLE_OUTPUT_ROLE);
+	}
+
+	/**
+	 * Creates {@code Point[L,parameter]} only for one exact eligible branch and
+	 * component, retaining that concrete selector for all later recomputation.
+	 *
+	 * @return exact semantic point on the uniquely eligible branch
+	 */
+	public static GeoPoint createPrincipalSemanticPoint(
+			Construction construction, String label, GeoLocusV2 source,
+			GeoNumberValue parameter) {
+		requireAccess(construction);
+		LocusSemanticAddress2D selected = LocusPrincipalBranchSelector2D.select(
+				source, parameter.getDouble());
+		GeoText branch = new GeoText(construction);
+		branch.setTextString(LocusPrincipalBranchState2D.encode(selected));
+		branch.setAuxiliaryObject(true);
+		branch.setEuclidianVisible(false);
+		branch.setRestrictedEuclidianVisibility(true);
+		try {
+			return createSemanticPoint(construction, label, source, branch, parameter,
+					PRINCIPAL_BRANCH_POINT_OUTPUT_ROLE, selected);
+		} catch (RuntimeException exception) {
+			removeFailedDedicatedInput(branch, exception);
+			throw exception;
+		}
 	}
 
 	/**

@@ -17,6 +17,7 @@ import org.geocedg.common.kernel.algos.AlgoSemanticLocusPoint2D;
 import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
 import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.kernel.locus.LocusPrincipalBranchState2D;
 import org.geocedg.common.kernel.locus.LocusSemanticAddressState2D;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.geos.GeoElement;
@@ -37,6 +38,9 @@ public final class ConstructionGeoRedefineProvider
 	/** Durable role reserved for an interaction-owned semantic Locus V2 point. */
 	public static final String INTERACTION_POINT_OUTPUT_ROLE =
 			"LOCUS_INTERACTION_POINT";
+	/** Durable role for a Point(L,u) output with one retained exact selector. */
+	public static final String PRINCIPAL_BRANCH_POINT_OUTPUT_ROLE =
+			"LOCUS_PRINCIPAL_BRANCH_POINT";
 
 	private final SpatialIdentityGraph graph;
 
@@ -242,8 +246,10 @@ public final class ConstructionGeoRedefineProvider
 		if (STABLE_OUTPUT_ROLE.equals(role)) {
 			return true;
 		}
-		return INTERACTION_POINT_OUTPUT_ROLE.equals(role)
-				&& hasDedicatedInteractionPointState(geo);
+		return (INTERACTION_POINT_OUTPUT_ROLE.equals(role)
+				&& hasDedicatedInteractionPointState(geo))
+				|| (PRINCIPAL_BRANCH_POINT_OUTPUT_ROLE.equals(role)
+				&& hasDedicatedPrincipalBranchState(geo));
 	}
 
 	/**
@@ -273,6 +279,27 @@ public final class ConstructionGeoRedefineProvider
 				&& branch.getAlgorithmList().contains(parent)
 				&& parameter.getAlgorithmList().size() == 1
 				&& parameter.getAlgorithmList().contains(parent);
+	}
+
+	/** @return whether only the hidden selector input is owned by Point(L,u) */
+	public static boolean hasDedicatedPrincipalBranchState(GeoElement geo) {
+		if (!(geo.getParentAlgorithm() instanceof AlgoSemanticLocusPoint2D)) {
+			return false;
+		}
+		AlgoSemanticLocusPoint2D parent =
+				(AlgoSemanticLocusPoint2D) geo.getParentAlgorithm();
+		GeoText branch = parent.getBranchInput();
+		try {
+			if (LocusPrincipalBranchState2D.decode(branch.getTextString()) == null) {
+				return false;
+			}
+		} catch (IllegalArgumentException exception) {
+			return false;
+		}
+		return branch.isIndependent()
+				&& branch.getConstruction() == geo.getConstruction()
+				&& branch.getAlgorithmList().size() == 1
+				&& branch.getAlgorithmList().contains(parent);
 	}
 
 	private static String candidateStableOutputRole(GeoElement candidate,
