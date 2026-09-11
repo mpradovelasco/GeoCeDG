@@ -153,6 +153,9 @@ try {
     $baseline = Invoke-TestGit -Root $testRoot -Arguments @(
         "rev-parse", "HEAD")
 
+    Write-TestText -Root $testRoot `
+        -Path "source/shared/common/src/main/java/org/example/Added.java" `
+        -Text "package org.example;`npublic class Added {}`n"
     $bomCrLf = [Collections.Generic.List[byte]]::new()
     $bomCrLf.AddRange([byte[]](0xEF, 0xBB, 0xBF))
     $bomCrLf.AddRange([Text.UTF8Encoding]::new($false).GetBytes(
@@ -180,6 +183,12 @@ try {
                 path = "source/shared/common/src/main/java/org/example/Upstream.java"
                 change = "modified"
                 purpose = "Fixture upstream modification."
+                authority = "geocedg/specs/operations/knowledge-bundles.md"
+            },
+            [ordered]@{
+                path = "source/shared/common/src/main/java/org/example/Added.java"
+                change = "added"
+                purpose = "Fixture addition in an upstream-owned namespace."
                 authority = "geocedg/specs/operations/knowledge-bundles.md"
             }
         )
@@ -251,6 +260,7 @@ try {
             "AGENTS.md",
             "geocedg/specs/operations/fixture-evidence.sha256",
             "geocedg/specs/operations/fixture-generator.py",
+            "source/shared/common/src/main/java/org/example/Added.java",
             "source/shared/common/src/main/java/org/example/Upstream.java",
             "source/shared/common/src/main/java/org/example/Reference.java",
             "source/shared/common/src/main/java/org/example/Unregistered.java",
@@ -290,12 +300,17 @@ try {
         $_.source_path -eq
             "source/shared/common/src/main/java/org/example/Upstream.java"
     }
+    $added = $manifest.entries | Where-Object {
+        $_.source_path -eq
+            "source/shared/common/src/main/java/org/example/Added.java"
+    }
     $unchanged = $manifest.entries | Where-Object {
         $_.source_path -eq
             "source/shared/common/src/main/java/org/example/Reference.java"
     }
     Assert-TestCondition -Condition (
         $native.ownership_class -eq "GEOCEDG_NATIVE" -and
+        $added.ownership_class -eq "UPSTREAM_MODIFIED" -and
         $modified.ownership_class -eq "UPSTREAM_MODIFIED" -and
         $unchanged.ownership_class -eq "UPSTREAM_UNCHANGED_REFERENCE") `
         -Message "Ownership precedence/classification is incorrect."
@@ -314,6 +329,12 @@ try {
             '^[0-9a-f]{40}$' -and
             -not [string]::IsNullOrWhiteSpace($modified.unified_diff_path)) `
         -Message "Upstream-modified complete-file provenance is incomplete."
+    Assert-TestCondition -Condition (
+        $added.change_type -eq "ADDED" -and
+        $null -eq $added.baseline_blob_sha -and
+        -not [string]::IsNullOrWhiteSpace($added.change_summary) -and
+        -not [string]::IsNullOrWhiteSpace($added.unified_diff_path)) `
+        -Message "Added upstream-path provenance is incomplete."
 
     Assert-ExpectedFailure -Name "file budget" -Pattern "file budget" -Action {
         New-GeoCeDGKnowledgeBundle -RepositoryRoot $testRoot `

@@ -366,9 +366,24 @@
         {
           "if": {
             "properties": {
-              "ownership_class": { "const": "UPSTREAM_MODIFIED" }
+              "change_type": { "const": "ADDED" }
             },
-            "required": ["ownership_class"]
+            "required": ["change_type"]
+          },
+          "then": {
+            "properties": {
+              "baseline_blob_sha": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "change_type": {
+                "enum": ["MODIFIED", "UNCHANGED_REFERENCE"]
+              }
+            },
+            "required": ["change_type"]
           },
           "then": {
             "properties": {

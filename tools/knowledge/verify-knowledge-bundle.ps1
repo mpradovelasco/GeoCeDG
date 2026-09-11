@@ -1440,11 +1440,16 @@ try {
             -Message "Entry change/baseline/relationship provenance mismatch."
 
         if ($entry.ownership_class -eq "UPSTREAM_MODIFIED") {
+            $baselineProvenanceMatches = if ($expectedChangeType -eq "ADDED") {
+                $null -eq $entry.baseline_blob_sha
+            } else {
+                $null -ne $entry.baseline_blob_sha -and
+                    $entry.baseline_blob_sha -eq
+                        $baselineEntries[$entry.source_path].ObjectId
+            }
             Assert-Condition -Condition ($inventoryMap.Contains(
                     $entry.source_path) -and
-                    $null -ne $entry.baseline_blob_sha -and
-                    $entry.baseline_blob_sha -eq
-                    $baselineEntries[$entry.source_path].ObjectId -and
+                    $baselineProvenanceMatches -and
                     -not [string]::IsNullOrWhiteSpace($entry.change_summary)) `
                 -Message "Upstream-modified provenance is incomplete."
         }

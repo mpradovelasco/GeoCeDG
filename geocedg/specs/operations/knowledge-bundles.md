@@ -60,9 +60,10 @@ configuration and a deterministic bundle ID. Every entry records source path,
 ownership, language, encoding, line range, raw and canonical SHA-256, baseline blob,
 change type, related spec/ADR/phase/tests, license/provenance and ordering.
 
-For `UPSTREAM_MODIFIED`, the complete current file is mandatory. Baseline blob
-identity and change summary are mandatory; a unified diff is optional and must
-be derived from the recorded baseline/current pair.
+For `UPSTREAM_MODIFIED`, the complete current file and change summary are
+mandatory. Modified entries record the baseline blob identity; added entries
+record an explicit null because no baseline blob exists. A unified diff is
+optional and must be derived from the recorded baseline commit and current file.
 
 ## 5. Determinism
 
