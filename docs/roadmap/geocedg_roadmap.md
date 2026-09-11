@@ -1286,7 +1286,7 @@ siendo la autoridad aplicable.
 | G4 | Packaging | `TECHNICAL PASS`; redistribución pública `BLOCKED` por licencia/assets |
 | G5 | Fundación DXF nativa/read-only | `PASS`; capacidad experimental |
 | G6 | Entidad semántica y kernel Locus V2 | `PASS`; capacidad experimental |
-| G7 | Métricas Locus V2 | `PASS — AUTHOR APPROVED` |
+| G7 | Métricas Locus V2 | `PASS` |
 | G8 | Intersecciones Locus V2 | `PASS — AUTHOR APPROVED` |
 | G9 | Semántica espacial/proyecciones e integración pública Locus/Spline/producto | `IN PROGRESS`; G9U1 cerrado, track post-U1 planificado, G9B/G9C no autorizadas y cierre global pendiente |
 | G10 | Estudios, optimización, DSL y workbench | G10P `PASS — AUTHOR APPROVED — PLANNING ONLY`; producto no autorizado hasta el cierre global G9 |
@@ -1875,13 +1875,12 @@ G9U0-R5 IMPLEMENTATION = PASS — AUTHOR APPROVED
 G9S1 = PASS — AUTHOR APPROVED
 G9U0-R6 = PASS — AUTHOR APPROVED
 G9U1 DESIGN = PASS — AUTHOR APPROVED — POST-R6 RECONCILED
-G9U1 IMPLEMENTATION = PASS — AUTHOR APPROVED
+G9U1 IMPLEMENTATION = IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW
 G9U1 implementationStarted = true
 G9U1 implementationAuthorized = true
 G9U1 selfApproved = false
 G9U1 authorApprovedDesign = true
-G9U1 authorApprovedImplementation = true
-G9U1 passClaimedImplementation = true
+G9U1 passClaimedImplementation = false
 G9U1 DETERMINISTIC_CONTINUITY_OFF_REQUIRED
 G9U1 INTRINSIC_PHASE_RANK_TOKEN_AUTHORITY_REQUIRED
 G9U1 MULTI_MATERIALIZATION_REQUIRED
@@ -1890,8 +1889,7 @@ G9U1 AUTO_REACTIVATION_EXISTING_POINTS_KERNEL
 G9U1 AUTO_MATERIALIZATION_FRONTEND_ONLY
 G9B = DESIGNED — NOT AUTHORIZED
 G9C = DESIGNED — NOT AUTHORIZED
-POST-G9U1 A1-A7 = PLANNED — AUTHOR-SELECTED EXECUTION ORDER — NOT AUTHORIZED
-G9U2 = BLOCKED ON GLOBAL G9 APPROVAL
+G9U2 = BLOCKED ON THE APPROVED G9 GATE
 G9 SPATIAL SOLVING = POINT PILOT — AUTHOR APPROVED; GENERAL PRIMITIVES NOT STARTED
 ```
 
@@ -2897,7 +2895,7 @@ G9U1, no necesariamente después de G9B, y ningún ítem reabre ni invalida
 | A3 | `PARTIALLY_ABSORBED` | `DESIGN_THEN_IMPLEMENT` | G9A3 ya aporta lifecycle genérico y transacción atómica; falta un predicado/política V2 de redefinición compatible frente a reemplazo real. Kernel lifecycle, specs V2 y persistencia |
 | A4 | `PARTIALLY_ABSORBED / CONTRACT PARTIALLY UNRESOLVED` | `RESEARCH_THEN_DESIGN` | Caracterizar rollback y posición exacta separando identidad durable, orden topológico del DAG, orden de construcción y estado de presentación/navegación del Construction Protocol. Kernel/lifecycle e integración upstream mínima; debe preceder el diseño A3 |
 | A5 | `PARTIALLY_ABSORBED` | `DEFER PENDING DISPOSITION` | G9U1 Round 3 resolvió sustancialmente la colisión installed/embedded mediante digest crudo y digest de definición normalizada, manteniendo la macro embebida como autoridad documental. Una decisión futura debe elegir exactamente `CLOSE_AS_ABSORBED` o `DEFINE_NEW_FUTURE_CAPABILITY` para detach/expand lossless y/o equivalencia cross-version más amplia; no se fuerza implementación para cerrar el registro |
-| A6 | `PENDING` | `DESIGN_THEN_IMPLEMENT` | Un overload futuro solo podrá omitir `branchKey` bajo un predicado normativo de rama principal única. Cero, varias o elegibilidad cambiante fallan explícitamente; rama/componente/dirección concretas siguen siendo semánticas y persistentes. Kernel compartido y superficie pública Locus V2 |
+| A6 | `PENDING` | `DESIGN_THEN_IMPLEMENT` | Un overload futuro solo podrá omitir `branchKey` bajo un predicado normativo de rama principal única. Cero, varias o elegibilidad cambiante fallan explícitamente; la rama, el componente y la address semántica seleccionados se preservan de forma exacta y persistente. Kernel compartido y superficie pública Locus V2 |
 | A7 | `PENDING — G12 CAPABILITY` | `DESIGN_THEN_IMPLEMENT AS BOUNDED G12 SLICE` | Zoom centrado en cursor y refinamiento acotado de teclas/configuración. Capa view/workspace; viewport, cámara, DPI y navegación nunca determinan coordenadas, métrica, identidad ni proveniencia geométrica |
 
 #### Orden seleccionado por el autor
