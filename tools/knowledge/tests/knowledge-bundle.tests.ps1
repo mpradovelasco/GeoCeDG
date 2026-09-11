@@ -138,6 +138,9 @@ try {
     Write-TestBytes -Root $testRoot `
         -Path "docs/references/cedg/restricted.pdf" `
         -Bytes ([byte[]](0x25, 0x50, 0x44, 0x46, 0x2d, 0x31, 0x2e, 0x34))
+    Write-TestBytes -Root $testRoot `
+        -Path "source/shared/common/src/test/resources/org/geocedg/native.cedg" `
+        -Bytes ([byte[]](0x50, 0x4B, 0x03, 0x04, 0x00, 0xFF))
     Write-TestText -Root $testRoot -Path "module/build/generated.txt" `
         -Text "generated`n"
     Write-TestText -Root $testRoot -Path "docs/excluded-by-profile.md" `
@@ -212,6 +215,11 @@ try {
 
     Import-Module (Join-Path $testRoot `
             "tools\knowledge\knowledge-bundle.psm1") -Force
+    Assert-ExpectedFailure -Name "strict UTF-8 decoding" `
+        -Pattern "UTF-8|Unicode|translate bytes" -Action {
+            ConvertFrom-KnowledgeBundleStrictUtf8 `
+                -Bytes ([byte[]](0xC3, 0x28)) | Out-Null
+        }
     Assert-TestCondition -Condition (-not (
             Test-KnowledgeBundleRepositoryPath -Path "files/name:stream")) `
         -Message "Windows alternate-data-stream path was not rejected."
@@ -252,6 +260,7 @@ try {
     }
     foreach ($forbiddenPath in @(
             "docs/references/cedg/restricted.pdf",
+            "source/shared/common/src/test/resources/org/geocedg/native.cedg",
             "docs/excluded-by-profile.md",
             "module/build/generated.txt")) {
         Assert-TestCondition -Condition ($forbiddenPath -notin $paths) `

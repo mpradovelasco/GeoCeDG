@@ -727,7 +727,7 @@ function Test-KnowledgeBundleRestrictedPath {
     }
     $extension = [IO.Path]::GetExtension($Path).ToLowerInvariant()
     return $extension -in @(
-        ".pdf", ".ggb", ".ggt", ".png", ".jpg", ".jpeg", ".gif",
+        ".pdf", ".ggb", ".ggt", ".cedg", ".png", ".jpg", ".jpeg", ".gif",
         ".svg", ".webp", ".ico", ".icns", ".ttf", ".otf", ".woff",
         ".woff2", ".jar", ".class", ".zip", ".7z", ".msi", ".exe",
         ".dll", ".so", ".dylib")

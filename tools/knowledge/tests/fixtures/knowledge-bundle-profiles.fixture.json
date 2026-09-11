@@ -21,6 +21,7 @@
         "docs/upstream/**",
         "tools/knowledge/**",
         "source/shared/common/src/main/java/org/example/**",
+        "source/shared/common/src/test/resources/org/geocedg/**",
         "docs/references/cedg/**",
         "module/build/**"
       ],
