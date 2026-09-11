@@ -3,13 +3,13 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Roadmap vivo y normativo de fases; no sustituye las especificaciones ni los ADR aceptados |
-| Versión documental | 3.70 |
-| Fecha de revisión | 4 de septiembre de 2026 |
+| Versión documental | 3.71 |
+| Fecha de revisión | 11 de septiembre de 2026 |
 | Baseline GeoGebra | 5.4.928.0, commit `9b93256b7df401ff056c37b502d82df4d72b1522`, tag `geogebra-baseline-5.4.928.0` |
-| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1, G9A2, G9A3, el track G9A, G9U0, G9U0-R1, G9X1, G9U0-R2, G9U0-R3, G9U0-R4, G9U0-R5, G9S1, G9U0-R6, G9S1-R1 y la planificación G10P `PASS — AUTHOR APPROVED`. R6 añade resolución inversa semántica y estado explícito de punto draggable en kernel, incluido cruce periódico bidireccional/path-independent, sin `Path`, render/pixel como autoridad ni frontend G9U1. Su aceptación GUI sigue diferida a G9U1 por diseño. R4 conserva determinismo actual > heurística de continuidad y el riesgo abierto `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP`. G9U1 DESIGN post-R6 está aprobado en checkpoint independiente `00982e7e...`; la reconciliación post-R1 no identifica novedad semántica y G9U1 implementación cierra `PASS — AUTHOR APPROVED` por decisión explícita sobre el SHA técnico revisado, sin autoaprobación. El autor aprueba R1-D2, acepta DISPOSITION C para el alcance monodrómico demostrado y autoriza B — PARTIAL IMPLEMENTATION CONTRACT, incluida recurrencia del slot semántico. G9S1-R1 está `PASS — AUTHOR APPROVED`; los bloqueos históricos y sus correcciones permanecen documentados. G9B/G9C no están autorizadas, G9U2 sigue bloqueada y ninguna implementación productiva G10 está autorizada; Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
+| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1–G9A3, el track G9A, G9U0 y sus refinamientos R1–R6, G9X1, G9S1, G9S1-R1 y G9U1 `PASS — AUTHOR APPROVED`. G9U1 es autoridad histórica cerrada y no se reabre. El track post-G9U1 A1–A7 queda planificado en orden de ejecución seleccionado por el autor, sin autorización productiva y sin convertirse en dependencia dura de G9B. G9B/G9C permanecen diseñadas y no autorizadas; G9U2 sigue bloqueada por la aprobación global G9; G10P es solo planificación aprobada y ninguna implementación productiva G10 está autorizada. El riesgo `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` continúa abierto para disposición antes del cierre global G9. Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
 | Última fase cerrada | G9U1 — `PASS — AUTHOR APPROVED` |
 | Última fase ejecutada | G9U1 — `PASS — AUTHOR APPROVED`; `implementationComplete=true`, `selfApproved=false`, `authorApprovedImplementation=true`, `passClaimedImplementation=true`; `manualAuthorSmoke=PASS` |
-| Siguiente puerta | Revisar el roadmap vivo y obtener autorización explícita antes de cualquier fase posterior; este cierre no autoriza G9U2, G9B, G9C ni G10 productivo |
+| Siguiente puerta | Autorizar por separado el primer trabajo productivo del track post-G9U1, cuyo orden seleccionado comienza por A6; esta reconciliación documental no autoriza A1–A7, A6-OP1, G9B, G9C, G9U2 ni G10 productivo |
 | Primer cliente | Aplicación de escritorio de la familia Classic 5 |
 | Núcleo | Java compartido de GeoGebra, extendido solo cuando la semántica lo requiere |
 
@@ -727,9 +727,17 @@ Los prompts no deben duplicar especificaciones. Deben referenciarlas.
 
 ### 10.3 Autoridad ejecutable adoptada
 
-`tools/agent/verify.ps1` es la única autoridad compuesta. Los verificadores de
-capacidad permanecen subordinados y se incorporan solo al existir una fase que
-los justifique. A cierre de G5, la estructura relevante es:
+La autoridad ejecutable viva es `tools/agent/verify.ps1` junto con el registro
+tipado y sus schemas. Sus perfiles canónicos son `STATIC`, `INFRA_UNIT`,
+`WORKSTATION`, `OPERATIONAL`, `DEV`, `PHASE`, `INTEGRATION` y `FINAL`.
+`COMPOSED` se conserva como alias histórico de `INTEGRATION`; `FULL` y
+`FullTests`, como aliases históricos de `FINAL`. La aceptación técnica, los
+diagnósticos y la aprobación autoral son estados distintos. Esta reconciliación
+`AUTHOR_DIRECT` no ejecuta ningún perfil ni crea selecciones futuras de fase.
+
+Los verificadores de capacidad permanecen subordinados y se incorporan solo al
+existir una fase que los justifique. A cierre de G5, la estructura histórica
+relevante era:
 
 ```text
 tools/agent/
@@ -1263,6 +1271,32 @@ optimización de rendimiento del software.
 
 ## 15. Roadmap por puertas
 
+### Panorama G0–G16
+
+Esta tabla es una síntesis de navegación. Los estados y condiciones detallados
+de las secciones siguientes, las especificaciones y los ADR aceptados siguen
+siendo la autoridad aplicable.
+
+| Programa | Alcance resumido | Estado de alto nivel |
+|---|---|---|
+| G0 | Línea base | `PASS` |
+| G1 | Autoridad operacional y onboarding | `PASS` |
+| G2 | Frontend y perfil GeoCeDG | `PASS` |
+| G3 | Integración legacy controlada | `PASS` |
+| G4 | Packaging | `TECHNICAL PASS`; redistribución pública `BLOCKED` por licencia/assets |
+| G5 | Fundación DXF nativa/read-only | `PASS`; capacidad experimental |
+| G6 | Entidad semántica y kernel Locus V2 | `PASS`; capacidad experimental |
+| G7 | Métricas Locus V2 | `PASS — AUTHOR APPROVED` |
+| G8 | Intersecciones Locus V2 | `PASS — AUTHOR APPROVED` |
+| G9 | Semántica espacial/proyecciones e integración pública Locus/Spline/producto | `IN PROGRESS`; G9U1 cerrado, track post-U1 planificado, G9B/G9C no autorizadas y cierre global pendiente |
+| G10 | Estudios, optimización, DSL y workbench | G10P `PASS — AUTHOR APPROVED — PLANNING ONLY`; producto no autorizado hasta el cierre global G9 |
+| G11 | Capas y estados de vista | `PENDING` |
+| G12 | Navegación, zoom y escalas extendidas | `PENDING`; solo A7 se programa anticipadamente como slice acotado no autorizado |
+| G13 | Visibilidad geométrica | `PENDING` |
+| G14 | Puente a vista 3D | `PENDING` |
+| G15 | Hojas de dibujo, PDF y gráficos | `PENDING` |
+| G16 | Rendimiento y escalabilidad global | `PENDING` |
+
 ### Estado consolidado
 
 | Puerta | Estado | Evidencia / condición |
@@ -1301,10 +1335,11 @@ optimización de rendimiento del software.
 | G9U0-R5 | `PASS — AUTHOR APPROVED` | Siete formas ordinarias `Translate`/`Rotate`/`Reflect`/`Mirror`/`Dilate` crean un nuevo Locus V2 semántico con ID/DAG propios; Option A `k=0` conserva `FINITE`/`UNBOUNDED` y añade `COLLAPSED_IMAGE`; smoke dinámico aceptado con limitación de entrada libre G9A caracterizada; `selfApproved=false`, `authorApproved=true`, `passClaimed=true`; no autoriza G9U1 |
 | G9S1 | `PASS — AUTHOR APPROVED` | Option B: `SplineV2` crea un nuevo `GeoLocusV2` semántico con dominio, spans y knots explícitos; Classic `Spline` permanece intacto; total/parcial scalar `Length` y autoridad rica `LocusLength` validadas; `selfApproved=false`, `authorApproved=true`, `passClaimed=true` |
 | G9U0-R6 | `PASS — AUTHOR APPROVED` | Puerta kernel acotada entre G9S1 y G9U1: request geométrica transitoria -> resultado tipado con cero/uno/varios preimages -> selección explícita -> punto ordinario con address semántica editable en DAG. Incluye Locus V2, SplineV2 y transformadas R5, además del cruce periódico bidireccional/path-independent del mismo punto y el negativo unresolved sin mutación; no implementa `Path`, Point-tool/frontend ni comando paralelo. ADR 0019 está Accepted y la spec es normativa; `manualGuiSmoke=DEFERRED TO G9U1 BY DESIGN`, `kernelDiagnosticAcceptance=PASS`, `selfApproved=false`, `authorApproved=true`, `passClaimed=true` |
-| G9U1 | `PASS — AUTHOR APPROVED` | Checkpoint post-R6 `00982e7e148a634cd57ed928f322774df267d5e3` inmutable; R1 publicado satisface la capacidad de pares certificada. Auditoría sin novedad material; autorización condicional actual satisfecha. 11 familias, 18 clusters, 110 acciones y 163 escenarios; Point R6 distinto de materialización de tokens R1. La implementación round 2 está completa como candidato sucesor, pendiente de re-smoke y closeout explícitos del autor; nunca autoaprobada |
-| G9U1 Round 3 + presentación final | `FINAL TECHNICAL CANDIDATE PREPARATION — AUTHOR CLOSEOUT PENDING` | Round 3 está publicado en `56cf32c922baefeb30c7dff02dbdd5091107ea1a`; el checkpoint técnico funcionalmente aceptado `34ffdd9af5f94ded2765e7d495ee66543d4d751f` permanece inmutable. Su sucesor conserva 11 familias, 18 clusters y 110 acciones y aplica solo los microajustes autorizados de orden/membresía de toolbar, flyouts compactos con última acción, orden File/Help y monograma de user tools desde la única autoridad schema-v2. Requiere evidencia propia y aprobación explícita del nuevo SHA; no modifica main ni crea tag PASS |
-| G9B / G9C | `DESIGNED — NOT AUTHORIZED` | Track kernel tras cierre de G9A; no depende de completar el cliente G9U1 |
-| G9U2 | `BLOCKED ON THE APPROVED G9 GATE` | Workspace de procedimientos diédrico solo tras `G9 PASS — AUTHOR APPROVED` |
+| G9U1 | `PASS — AUTHOR APPROVED` | Checkpoint post-R6 `00982e7e148a634cd57ed928f322774df267d5e3` inmutable; R1 publicado satisface la capacidad de pares certificada. El cierre autoral posterior sobre el SHA técnico revisado conserva 11 familias, 18 clusters, 110 acciones y 163 escenarios, sin autoaprobación. Los candidatos y smokes intermedios permanecen como historia, no como estado vigente |
+| G9U1 Round 3 + presentación final | `HISTORICAL CANDIDATE — SUPERSEDED BY G9U1 AUTHOR CLOSEOUT` | Round 3 fue publicado en `56cf32c922baefeb30c7dff02dbdd5091107ea1a`; el checkpoint técnico `34ffdd9af5f94ded2765e7d495ee66543d4d751f` permanece inmutable. Sus requisitos y evidencia describen el camino al cierre posterior, no una reapertura de G9U1 |
+| Post-G9U1 A1–A7 | `PLANNED — AUTHOR-SELECTED EXECUTION ORDER — NOT AUTHORIZED` | Refinamientos y disposiciones fuera del alcance cerrado G9U1; se programan antes de G9B por decisión de ejecución, no por dependencia semántica de G9B |
+| G9B / G9C | `DESIGNED — NOT AUTHORIZED` | Hard dependency `G9A3 -> G9B -> G9C`; el track post-U1 es un predecesor de ejecución seleccionado por el autor, no un gate semántico |
+| G9U2 | `BLOCKED ON GLOBAL G9 APPROVAL` | Workspace de procedimientos diédrico solo tras `G9 PASS — AUTHOR APPROVED` |
 | G9 spatial solving | `POINT PILOT — AUTHOR APPROVED` | G9A2 se limita a frames/sistemas/mapas/relaciones y reconstrucción projection-defined de punto; no hay primitivas generales, objetos compuestos ni autoridad 3D |
 | G10P | `PASS — AUTHOR APPROVED — PLANNING/CHARACTERIZATION ONLY` | Corpus y dirección de estudios/optimización aprobados como planificación; no autoriza producto ni altera G9 |
 | G10A/G10B/G10C1/G10C2/G10U/G10R | `PROPOSED — NOT AUTHORIZED — NOT STARTED` | Toda implementación espera `G9 PASS — AUTHOR APPROVED`, G10P aprobado y prompts separados |
@@ -1628,7 +1663,7 @@ G8 = PASS — AUTHOR APPROVED
 HISTORICAL G8 CLOSEOUT SNAPSHOT (NOT THE CURRENT G9 STATE):
 G9 DESIGN = AUTHORIZED — NOT STARTED
 G9 IMPLEMENTATION = NOT AUTHORIZED — NOT STARTED
-CURRENT G9 STATE:
+HISTORICAL G9 SNAPSHOT AT THIS CHECKPOINT (SUPERSEDED BY LATER CLOSEOUTS):
 G9P DESIGN = PASS — AUTHOR APPROVED
 G9A1 = PASS — AUTHOR APPROVED
 G9A2 = PASS — AUTHOR APPROVED
@@ -1840,12 +1875,13 @@ G9U0-R5 IMPLEMENTATION = PASS — AUTHOR APPROVED
 G9S1 = PASS — AUTHOR APPROVED
 G9U0-R6 = PASS — AUTHOR APPROVED
 G9U1 DESIGN = PASS — AUTHOR APPROVED — POST-R6 RECONCILED
-G9U1 IMPLEMENTATION = IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW
+G9U1 IMPLEMENTATION = PASS — AUTHOR APPROVED
 G9U1 implementationStarted = true
 G9U1 implementationAuthorized = true
 G9U1 selfApproved = false
 G9U1 authorApprovedDesign = true
-G9U1 passClaimedImplementation = false
+G9U1 authorApprovedImplementation = true
+G9U1 passClaimedImplementation = true
 G9U1 DETERMINISTIC_CONTINUITY_OFF_REQUIRED
 G9U1 INTRINSIC_PHASE_RANK_TOKEN_AUTHORITY_REQUIRED
 G9U1 MULTI_MATERIALIZATION_REQUIRED
@@ -1854,16 +1890,18 @@ G9U1 AUTO_REACTIVATION_EXISTING_POINTS_KERNEL
 G9U1 AUTO_MATERIALIZATION_FRONTEND_ONLY
 G9B = DESIGNED — NOT AUTHORIZED
 G9C = DESIGNED — NOT AUTHORIZED
-G9U2 = BLOCKED ON THE APPROVED G9 GATE
+POST-G9U1 A1-A7 = PLANNED — AUTHOR-SELECTED EXECUTION ORDER — NOT AUTHORIZED
+G9U2 = BLOCKED ON GLOBAL G9 APPROVAL
 G9 SPATIAL SOLVING = POINT PILOT — AUTHOR APPROVED; GENERAL PRIMITIVES NOT STARTED
 ```
 
 ## G9 - Semántica espacial y proyecciones canónicas
 
 **Estado:** G9P-R1, G9P, G9O1, G9A1, G9A2, G9A3, el track G9A, G9U0,
-G9U0-R1, G9X1, G9U0-R2, G9U0-R3, G9U0-R4, G9U0-R5 y G9S1 `PASS — AUTHOR
-APPROVED`. Option B publica `SplineV2` como nuevo Locus V2 semántico y conserva
-Classic `Spline`.
+G9U0-R1, G9X1, G9U0-R2, G9U0-R3, G9U0-R4, G9U0-R5, G9S1, G9U0-R6,
+G9S1-R1 y G9U1 `PASS — AUTHOR APPROVED`. Option B publica `SplineV2` como
+nuevo Locus V2 semántico y conserva Classic `Spline`. G9U1 es autoridad cerrada;
+los estados previos preservados en esta sección son cronología, no su estado vivo.
 G9A cierra identidad/persistencia durable, el piloto projection-defined de punto
 y su ciclo de vida/migración; G9U0 cierra la superficie pública Locus V2
 experimental. G9X1 está cerrado en `PASS — AUTHOR APPROVED`, con exportación
@@ -1881,9 +1919,8 @@ segundo encontró cuatro raíces que todavía no podían materializarse y el ter
 materializó cuatro pero perdió definedness durante movimiento regular. El
 correctivo adaptativo y ledger-v4 supera A/B 58/58 y la autoridad composed
 completa; los re-smokes finales de cuatro raíces y
-reactivación del mismo punto pasan y el autor cierra R4. G9U1, G9B y G9C siguen
-sin autorización; G9U2
-permanece bloqueada por la puerta G9 aprobada. El
+reactivación del mismo punto pasan y el autor cierra R4. G9B y G9C siguen sin
+autorización; G9U2 permanece bloqueada por la aprobación global G9. El
 [plan integrado G9P](../architecture/g9p_integrated_plan.md) y el
 [paquete de decisiones](../validation/g9p_author_decisions.md) gobiernan el
 contrato. A1 implementa identidad/persistencia durable y A2 activa únicamente
@@ -1891,7 +1928,7 @@ el piloto espacial projection-defined de punto. El
 [diseño aprobado G9U0-R2](../architecture/g9u0_r2_product_refinement_design.md)
 registra la inserción posterior sin reescribir el cierre histórico G9P.
 
-### Dependencias y orden recomendado posteriores a G9P
+### Dependencias, puertas y orden de ejecución posteriores a G9P
 
 ```text
 track kernel:   G9A1 --> G9A2 --> G9A3 --> G9B --> G9C
@@ -1903,18 +1940,18 @@ track producto: G9A3 --> G9U0 --> G9U0-R1 --+
 checkpoint editorial programado: G9U0-R4 --> BOOK-P1 --> G9U0-R5
                                 (track independiente; no arista semántica software)
 
-G9C + G9U1 + evidencia G9O1 --> cierre global G9 --> G9U2
+G9C + G9U1 + evidencia G9O1 + disposición G9-R4 --> cierre global G9 --> G9U2
 
 G9O1: primero por recomendación operacional; sin arista semántica hacia G9A1.
 ```
 
 El diagrama expresa dependencias semánticas/contractuales, no un calendario.
-Se distinguen: (1) dependencias duras, (2) predecesores de ejecución
-recomendados y (3) puertas de cierre global/release. El orden de bajo conflicto
-recomendado pasa a ser `G9O1; A1; A2; A3; U0; U0-R1; X1; U0-R2; U0-R3; U0-R4; BOOK-P1; U0-R5; S1; U0-R6; U1; B; C;
-cierre; U2`, pero
-los puntos y coma no son flechas semánticas. Tras A3, el track kernel B/C puede
-avanzar sin U1. U0 sí requiere A3 para publicar objetos persistentes. X1 puede
+La lectura vigente distingue `HARD_DEPENDENCY`,
+`AUTHOR_SELECTED_EXECUTION_PREDECESSOR`, `GLOBAL_CLOSEOUT_GATE` y
+`FUTURE/DEFERRED_TRACK`. La trayectoria kernel dura permanece
+`G9A3 -> G9B -> G9C`. El autor selecciona ahora el track post-G9U1 A1–A7 como
+predecesor de ejecución de G9B, sin añadir una arista semántica. U0 sí requiere
+A3 para publicar objetos persistentes. X1 puede
 consumir snapshots internos G6-G8 y declarar su `id_scope`; ejecutar U0 antes
 de X1 sigue recomendado para la integración pública. R2 requiere como puerta de
 entrada el cierre ya aprobado de U0-R1 y X1, pero X1 no se convierte en
@@ -1923,8 +1960,8 @@ frontend separado que ya cerró `PASS — AUTHOR APPROVED`. R4 ya cerró la
 admisibilidad/continuación pública. BOOK-P1 es una revisión editorial
 independiente intencionalmente programada antes de R5, no una dependencia del
 software. R5 ya cerró las transformaciones semánticas 2D como `PASS — AUTHOR
-APPROVED`; G9S1 también cerró `PASS — AUTHOR APPROVED`. U1 integra las acciones
-aprobadas solo después de una autorización autoral U1 todavía separada.
+APPROVED`; G9S1 también cerró `PASS — AUTHOR APPROVED`. U1 integró las acciones
+aprobadas y cerró posteriormente `PASS — AUTHOR APPROVED`.
 
 ### G9O1 - Bundles de conocimiento y guías operativas
 
@@ -2140,9 +2177,10 @@ checks Git y `R2-R07` composed pasan. El smoke autoral fallido se conserva y el
 re-smoke correctivo fue aceptado por el autor. El resultado es
 `PASS — AUTHOR APPROVED`; no se reclama smoke instalado MSI/registro.
 
-**Relación con G9U1 y fases retenidas:** G9U1 pasa a ser la siguiente puerta del
-roadmap, pero no una ejecución autorizada. El PASS de R2 satisface su prerequisito
-de orden; solo otra decisión explícita del autor podrá autorizar G9U1. G9B y G9C siguen
+**Relación histórica con G9U1 y fases retenidas en el checkpoint R2:** G9U1 pasó
+a ser la siguiente puerta del roadmap, pero no era entonces una ejecución
+autorizada. El PASS de R2 satisfizo su prerequisito de orden; otra decisión
+explícita del autor autorizó y cerró posteriormente G9U1. G9B y G9C permanecen
 independientes de este track de producto y no están autorizadas; G9U2 conserva
 su bloqueo global y G10 productivo sigue sin autorización.
 
@@ -2632,6 +2670,10 @@ reconciliación post-R1 sin novedad material bajo autorización explícita actua
 
 **Estado de implementación:** `PASS — AUTHOR APPROVED`
 
+Los candidatos, fallos, smokes y requisitos intermedios que siguen se conservan
+como cronología de cierre. No revocan el estado vigente ni convierten los
+refinamientos post-G9U1 en defectos de la fase aceptada.
+
 Revisión autoral 1: **COMPLETED WITH FINDINGS — NOT PASS**. El checkpoint
 `geocedg-g9u1-author-review-checkpoint-1` conserva `b492194082f1adc9f981d85d92a58ef57490196f`.
 La estabilización autorizada trabaja en `codex/g9u1-author-review-stabilization-1`,
@@ -2735,8 +2777,8 @@ manualAuthorSmoke = PASS
 G9U0-R4, G9U0-R5, G9S1 y G9U0-R6 cerraron `PASS — AUTHOR APPROVED`. Ninguno de
 esos cierres autoriza U1 automáticamente. El checkpoint pre-R6 permanece
 inmutable y esta rama sucesora reconcilia su contenido contra las APIs R6
-publicadas. El diseño sucesor está aprobado por el autor; la implementación
-queda autorizada condicionalmente por la instrucción actual tras esta auditoría.
+publicadas. El diseño sucesor fue aprobado por el autor y la implementación
+quedó después cerrada mediante aprobación autoral explícita del SHA técnico.
 
 La revisión post-G9S1 descubrió una dependencia kernel que no cabía en un gate
 frontend: la interacción gráfica ordinaria `Point` sobre un Locus V2 necesitaba
@@ -2835,6 +2877,76 @@ fabrica `helixTopBar.png` o `helixSnapshot.png`. GeoCeDG Classic sigue siendo
 un proceso/ruta diagnóstica visualmente distinto, con preferencias separadas y
 la misma preservación semántica compartida.
 
+### Track de refinamiento post-G9U1
+
+```text
+TRACK_STATUS = PLANNED / AUTHOR-SELECTED EXECUTION ORDER
+PRODUCT_IMPLEMENTATION_AUTHORIZED = false
+G9B_HARD_DEPENDENCY = false
+```
+
+Este track recoge trabajo deliberadamente excluido del alcance acotado de G9U1
+o identificado después de su cierre. `DEFERRED BEYOND G9U1` significa fuera de
+G9U1, no necesariamente después de G9B, y ningún ítem reabre ni invalida
+`G9U1 = PASS — AUTHOR APPROVED`.
+
+| ID | Disposición viva | Acción futura | Alcance y capa esperada |
+|---|---|---|---|
+| A1 | `PENDING` | `DESIGN_THEN_IMPLEMENT` | Proveniencia de constructor de `SplineV2` para que cada ocurrencia fuente/interpolación pueda aportar cero, una o varias direcciones semánticas exactas a consumidores de punto/métrica. Sin inferencia por coordenadas o proximidad. Kernel compartido, specs spline/métrica y persistencia |
+| A2 | `PARTIALLY_ABSORBED` | `DESIGN_THEN_IMPLEMENT` | Política pública separada para selección de recorrido y signo algebraico, preservando el `Length` no negativo vigente. Debe definir abierto/cerrado, forward/reverse, wrap, mismo preimage, múltiples preimages, degeneraciones y validez. Kernel compartido y contrato métrico público |
+| A3 | `PARTIALLY_ABSORBED` | `DESIGN_THEN_IMPLEMENT` | G9A3 ya aporta lifecycle genérico y transacción atómica; falta un predicado/política V2 de redefinición compatible frente a reemplazo real. Kernel lifecycle, specs V2 y persistencia |
+| A4 | `PARTIALLY_ABSORBED / CONTRACT PARTIALLY UNRESOLVED` | `RESEARCH_THEN_DESIGN` | Caracterizar rollback y posición exacta separando identidad durable, orden topológico del DAG, orden de construcción y estado de presentación/navegación del Construction Protocol. Kernel/lifecycle e integración upstream mínima; debe preceder el diseño A3 |
+| A5 | `PARTIALLY_ABSORBED` | `DEFER PENDING DISPOSITION` | G9U1 Round 3 resolvió sustancialmente la colisión installed/embedded mediante digest crudo y digest de definición normalizada, manteniendo la macro embebida como autoridad documental. Una decisión futura debe elegir exactamente `CLOSE_AS_ABSORBED` o `DEFINE_NEW_FUTURE_CAPABILITY` para detach/expand lossless y/o equivalencia cross-version más amplia; no se fuerza implementación para cerrar el registro |
+| A6 | `PENDING` | `DESIGN_THEN_IMPLEMENT` | Un overload futuro solo podrá omitir `branchKey` bajo un predicado normativo de rama principal única. Cero, varias o elegibilidad cambiante fallan explícitamente; rama/componente/dirección concretas siguen siendo semánticas y persistentes. Kernel compartido y superficie pública Locus V2 |
+| A7 | `PENDING — G12 CAPABILITY` | `DESIGN_THEN_IMPLEMENT AS BOUNDED G12 SLICE` | Zoom centrado en cursor y refinamiento acotado de teclas/configuración. Capa view/workspace; viewport, cámara, DPI y navegación nunca determinan coordenadas, métrica, identidad ni proveniencia geométrica |
+
+#### Orden seleccionado por el autor
+
+```text
+AUTHOR_SELECTED_EXECUTION_ORDER
+NOT_A_SEMANTIC_DEPENDENCY_CHAIN
+
+G9U1 PASS
+  -> A6
+  -> A1
+  -> A2
+  -> A4
+  -> A3
+  -> A5 disposition
+  -> A7 bounded G12 navigation slice
+  -> G9B
+  -> G9C
+  -> G9 global closeout
+  -> G9U2
+```
+
+El orden A4 antes de A3 evita diseñar compatibilidad V2 sobre supuestos todavía
+no caracterizados de rollback/orden. A7 conserva ownership G12 aunque se adelante
+como slice de ejecución. Después del track, una decisión autoral separada deberá
+seleccionar y autorizar el primer slice productivo G9B; aquí no se selecciona
+ninguna familia ni se autoriza implementación.
+
+#### A6-OP1 — hardening de interpretación del exit code de `ripgrep`
+
+Al inicio de la futura tarea A6 se inspeccionarán las instrucciones/prompts
+principales y solo los wrappers que ejecuten `rg` o interpreten su exit code. La
+regla a investigar y codificar en la mínima autoridad correcta es:
+
+```text
+rg exit 0 = búsqueda válida con una o más coincidencias
+rg exit 1 = búsqueda válida sin coincidencias
+rg exit >= 2 = error real de ejecución
+
+A6-OP1_PRODUCT_PHASE_EFFECT = NONE
+A6-OP1_IS_NOT_A6_GEOMETRIC_SEMANTICS = true
+A6-OP1_IS_NOT_A_G9B_DEPENDENCY = true
+```
+
+No se duplicará la regla entre capas ni se cambiarán scripts salvo que se
+demuestre que clasifican erróneamente el exit `1`; la disposición futura también
+documentará el comportamiento para otros workstations. Este roadmap solo registra
+el microtask y no autoriza su ejecución.
+
 ### G9B - Proyecciones canónicas de primitivas
 
 **Estado:** `DESIGNED — NOT AUTHORIZED`
@@ -2846,10 +2958,19 @@ correspondencia, ecuaciones, garantías, degeneraciones y certificado dinámico;
 el número de vistas nunca basta por sí solo.
 Su única dependencia semántica de fase es el cierre autor-aprobado de G9A3 y el
 contrato de primitivas. G9U1 es un cliente y no constituye gate de entrada.
+Tampoco A1–A7 son dependencias duras de G9B: su precedencia es exclusivamente el
+orden de ejecución seleccionado por el autor. Cada familia —recta, segmento,
+rayo, vector, plano, circunferencia, cónica o curva espacial soportada— requerirá
+su stage canónico individualmente aprobado. Tras el track post-U1, otra decisión
+autoral seleccionará el primer slice. Su perímetro de verificación se fijará
+entonces con los perfiles canónicos vigentes y el registro tipado; este roadmap
+no inventa ahora una selección `PHASE`.
 
 ### G9C - Objetos compuestos y frontera proyectiva
 
 **Estado:** `DESIGNED — NOT AUTHORIZED`
+
+**Hard dependency:** G9B cerrado con las familias y contratos que G9C consuma.
 
 Cubrirá solo colecciones de puntos, curvas/arcos espaciales, aristas, bucles
 orientados, caras, superficies soporte/regladas/desarrollables, objetos
@@ -2861,11 +2982,15 @@ genérica de B-Rep CAD.
 
 El cierre global exige round-trip proyección–objeto–proyección, serialización y
 migración estables, casos canónicos/dinámicos/degenerados, los tracks B/C y
-U0/U0-R1/X1/U0-R2/U1 aprobados, evidencia operacional G9O1, counters y composed verify,
-seguido de aprobación autoral explícita. Solo entonces G9U2 podrá
+U0/U0-R1/X1/U0-R2/U1 aprobados, evidencia operacional G9O1, counters y la
+aceptación exigida por la arquitectura de verificación vigente, seguido de
+aprobación autoral explícita. El riesgo
+`G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` requiere resolución o disposición
+autoral explícita antes de este cierre global, pero no es un ítem A1–A7 ni un
+gate de entrada G9B. Solo entonces G9U2 podrá
 implementar el workspace `CeDG Dihedral Procedures` y sus procedimientos
 constructivos consumiendo sistemas/mapas/charnelas tipados; hasta ese momento
-está `BLOCKED ON THE APPROVED G9 GATE`.
+está `BLOCKED ON GLOBAL G9 APPROVAL`.
 El cierre es una acción de revisión autor/verificador sin semántica nueva, no una
 fase productiva ni un prompt de implementación independiente.
 
@@ -2989,6 +3114,10 @@ semántica ni gate inverso para el runtime.
 ## G12 - Navegación, zoom y escalas extendidas
 
 **Estado:** `PENDING`
+
+El slice acotado A7 de zoom centrado en cursor y teclas/configuración se agenda
+antes de G9B por orden de ejecución autoral, sin mover su ownership fuera de G12,
+sin convertirlo en dependencia semántica G9 y sin autorizarlo en este documento.
 
 **Trabajo**
 
