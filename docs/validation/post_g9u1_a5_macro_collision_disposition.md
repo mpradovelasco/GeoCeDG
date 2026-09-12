@@ -1,27 +1,32 @@
 # POST-G9U1-A5 installed/document-local macro collision disposition
 
-- Status: **IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**
+- Status: **PASS — AUTHOR APPROVED**
 - Base commit: `a53c1c9923273cd2025338bd35784438d5fb6d75`
 - Base tree: `7f17eb4934d5626c3f0bba94e50d201a80fa00f6`
+- Initial implementation candidate: `8b4464feac5759fc6ca086adf79aadad0d968ef7`
+- Author-approved corrected implementation: `a3c8831b0569f72d1ccaf1d2eaf18e9417975377`
+- Author-approved corrected tree: `f6828ce18726710e8c2b6823d6fd638dc54106ba`
 - Product implementation: **bounded collision correction**
 - Self approval: **false**
 
 ## Disposition
 
 ```text
-A5_DISPOSITION = BOUNDED_PRODUCT_CORRECTION
-A5_PRODUCT_CHANGE_REQUIRED = true
-A5_TECHNICAL_DEBT_CLOSED = false
+A5_DISPOSITION = CLOSE_AS_ABSORBED
+A5_PRODUCT_CHANGE_REQUIRED = false
+A5_TECHNICAL_DEBT_CLOSED = true
 A3_FRONTEND_LIVING_STATUS_RECONCILED = true
 ```
 
-This is an implementation candidate, not author approval. Review of the initial
-disposition exposed one precision defect: fail-closed prevented activation of a
-different installed definition, but the binding authority remained implicit in
-the host's name map and installation itself could be rejected because of the
-active document. The correction makes the document binding explicit in the
-shared kernel and keeps the persistent package installed but contextually
-unavailable.
+Review of the initial disposition exposed one precision defect: fail-closed
+prevented activation of a different installed definition, but the binding
+authority remained implicit in the host's name map and installation itself could
+be rejected because of the active document. The initial implementation candidate
+corrected that semantic rule. Its final audit then found two lifecycle defects:
+Tool Manager reconstruction discarded explicit document authority, and a failed
+`.ggb` load could publish partial replacement state. The corrected implementation
+resolves both defects without erasing their historical finding, and the author
+explicitly approved that exact corrected commit.
 
 ## Normative collision rule
 
@@ -57,6 +62,32 @@ The bounded canonical acceptance selector is `PHASE -Phase POST-G9U1-A5`.
 It contains two shared-kernel authority tests and the three directly affected
 Desktop lifecycle classes; registration is additive and does not change profile
 or evidence semantics.
+
+## Final corrected-candidate evidence
+
+```text
+INFRA_UNIT_RUN = verification-f5f4730dfa4f4819b95ea874fc6038da
+INFRA_UNIT_PLAN = aafb62532459cf22662a072babf01054a1b8874b50600526f401529fb6ed2ab6
+INFRA_UNIT_RESULT = c8a1dcddf805227e08e96d64b1c8ae06481810a79ca5f7b42358610f78c91dd1
+INFRA_UNIT_ACCEPTANCE = ACCEPTED / COMPLETE
+INFRA_UNIT_DIAGNOSTICS = 0
+
+PHASE_RUN = verification-45904ab9782247b19f22c90b7d23b34c
+PHASE_PLAN = 87aa81894d7a72e0697b322f747e447a43932a617821656d7ea9bb8891af124a
+PHASE_RESULT = beb54ccd2fac9234f45453d07f327da68e135f2ca29cf6911d38b28b11703aec
+PHASE_ACCEPTANCE = ACCEPTED / COMPLETE
+PHASE_TESTS = 58
+PHASE_FAILURES = 0
+PHASE_ERRORS = 0
+PHASE_SKIPPED = 0
+PHASE_DIAGNOSTICS = 0
+```
+
+Focused shared A5 tests, the corrected failed-`.ggb` lifecycle regression,
+Desktop A5 plus G9U1 persistence/lifecycle regressions, shared/Desktop
+Checkstyle and `git diff --check` also passed on the corrected candidate. This
+evidence remains attributed to that implementation commit; the documentary
+author-approval closeout does not reinterpret it as execution on a later commit.
 
 ## Current evidence
 
@@ -94,6 +125,7 @@ PORTABLE_REOPEN_AUTHORITY = EMBEDDED_DOCUMENT_MACRO
 INSTALLED_PACKAGE_SEMANTIC_AUTHORITY = false
 UNEQUAL_DEFINITION_POLICY = FAIL_CLOSED
 EXISTING_PRODUCT_DEFECT_FOUND = true
+EXISTING_PRODUCT_DEFECTS_RESOLVED = true
 PRODUCT_CODE_CHANGED = true
 GUIDE_IMPACT = YES
 ADR_REQUIRED = false
@@ -132,8 +164,8 @@ CROSS_VERSION_EQUIVALENCE_CURRENTLY_REQUIRED = false
 
 ## Roadmap consequence
 
-The Round-3 digest and embedded-definition contract remain authoritative, while
-this candidate corrects contextual collision behavior and makes command binding
-explicit. Neither optional residual idea is a dependency of A7, G9B, G9C,
-global G9 closeout or G9U2. The candidate creates no ADR and authorizes none of
-those phases.
+The Round-3 digest and embedded-definition contract remain authoritative. The
+author-approved corrected implementation makes command binding explicit and
+closes A5, including the two final-audit lifecycle corrections. Neither optional
+residual idea is a dependency of A7, G9B, G9C, global G9 closeout or G9U2. This
+closeout creates no ADR and authorizes none of those phases.

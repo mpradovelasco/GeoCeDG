@@ -3,13 +3,13 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Roadmap vivo y normativo de fases; no sustituye las especificaciones ni los ADR aceptados |
-| Versión documental | 3.80 |
+| Versión documental | 3.81 |
 | Fecha de revisión | 12 de septiembre de 2026 |
 | Baseline GeoGebra | 5.4.928.0, commit `9b93256b7df401ff056c37b502d82df4d72b1522`, tag `geogebra-baseline-5.4.928.0` |
-| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1–G9A3, el track G9A, G9U0 y sus refinamientos R1–R6, G9X1, G9S1, G9S1-R1, G9U1 y POST-G9U1-A6, A1, A2, A3 y A3-FRONTEND `PASS — AUTHOR APPROVED`. G9U1 es autoridad histórica cerrada y no se reabre. POST-G9U1-A4 tiene investigación completa y diseño `AUTHOR APPROVED`; P3-R1 es su refinamiento autor-aprobado. POST-G9U1-A5 tiene un candidato de implementación acotado pendiente de revisión autoral: ante una definición instalada distinta con el mismo nombre, la macro embebida conserva autoridad y la instalada queda deshabilitada solo en ese contexto. A7 sigue no autorizado. El track continúa siendo orden de ejecución autoral, no dependencia dura de G9B. G9B/G9C permanecen diseñadas y no autorizadas; G9U2 sigue bloqueada por la aprobación global G9; G10P es solo planificación aprobada y ninguna implementación productiva G10 está autorizada. El riesgo `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` continúa abierto para disposición antes del cierre global G9. Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
-| Última fase cerrada | POST-G9U1-A3-FRONTEND — `PASS — AUTHOR APPROVED` |
-| Última fase ejecutada | POST-G9U1-A5 — candidato de implementación acotado pendiente de revisión autoral; `selfApproved=false` |
-| Siguiente puerta | Revisión autoral explícita del candidato POST-G9U1-A5; A7, G9B, G9C, G9U2 y G10 productivo permanecen no autorizados |
+| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1–G9A3, el track G9A, G9U0 y sus refinamientos R1–R6, G9X1, G9S1, G9S1-R1, G9U1 y POST-G9U1-A6, A1, A2, A3, A3-FRONTEND y A5 `PASS — AUTHOR APPROVED`. G9U1 es autoridad histórica cerrada y no se reabre. POST-G9U1-A4 tiene investigación completa y diseño `AUTHOR APPROVED`; P3-R1 es su refinamiento autor-aprobado. A5 cierra la colisión entre macro documental y herramienta persistente, incluidas las correcciones de lifecycle B/C halladas por la auditoría final. A7 es el siguiente ítem del orden de ejecución seleccionado por el autor, pero sigue no autorizado. El track continúa siendo orden de ejecución autoral, no dependencia dura de G9B. G9B/G9C permanecen diseñadas y no autorizadas; G9U2 sigue bloqueada por la aprobación global G9; G10P es solo planificación aprobada y ninguna implementación productiva G10 está autorizada. El riesgo `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` continúa abierto para disposición antes del cierre global G9. Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
+| Última fase cerrada | POST-G9U1-A5 — `PASS — AUTHOR APPROVED` |
+| Última fase ejecutada | POST-G9U1-A5 — implementación corregida y aprobada en `a3c8831b0569f72d1ccaf1d2eaf18e9417975377`; `selfApproved=false` |
+| Siguiente puerta | A7, slice acotado de navegación G12, es el siguiente ítem seleccionado por el autor y requiere autorización productiva separada; G9B, G9C, G9U2 y G10 productivo permanecen no autorizados |
 | Primer cliente | Aplicación de escritorio de la familia Classic 5 |
 | Núcleo | Java compartido de GeoGebra, extendido solo cuando la semántica lo requiere |
 
@@ -2885,7 +2885,7 @@ A2_PRODUCT_IMPLEMENTATION = PASS — AUTHOR APPROVED
 A4_RESEARCH_DESIGN = COMPLETE / AUTHOR APPROVED
 A3_PRODUCT_IMPLEMENTATION = PASS — AUTHOR APPROVED
 A3_CLASSIC_FRONTEND = PASS — AUTHOR APPROVED
-A5_IMPLEMENTATION = IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW
+A5_IMPLEMENTATION = PASS — AUTHOR APPROVED
 REMAINING_PRODUCT_IMPLEMENTATION_AUTHORIZED = false
 G9B_HARD_DEPENDENCY = false
 ```
@@ -2901,7 +2901,7 @@ G9U1, no necesariamente después de G9B, y ningún ítem reabre ni invalida
 | A2 | `PASS — AUTHOR APPROVED` | `CLOSED` | `LocusLength(L,A,B,"direction","boundary","same-position")` selecciona explícitamente dirección, borde abierto y política de misma address. Conserva magnitud no negativa, autoridad rica y defaults previos; no introduce signo algebraico, shortest ni nueva autoridad de endpoints. Kernel compartido y contrato métrico público |
 | A3 | `PASS — AUTHOR APPROVED`; frontend Classic `PASS — AUTHOR APPROVED` | `CLOSED` | Especializa la transacción G9A3 mediante contrato constructor V2 versionado, mapa completo de roles estables, evolución de dependencias/revisiones y P3-R1. `RETAIN` conserva identidad y permite solo recolocación mínima forzada por DAG; el fallback legacy exige selección explícita, IDs frescos e informe de impacto completo. El slice Classic 5 consume la evaluación tipada mediante confirmación localizada sin duplicar semántica; Web no cambia |
 | A4 | `RESEARCH COMPLETE / DESIGN AUTHOR APPROVED` | `CLOSED AS A3 INPUT` | La decisión autoral acepta P3 y su refinamiento/enmienda explícita P3-R1: se conserva el intervalo previo si sigue siendo legal; si nuevas dependencias lo impiden, solo se admite la recolocación mínima determinista forzada por el DAG. El rollback actual restaura identidad/DAG/orden XML; no conserva referencias Java ni convierte navegación del Construction Protocol en autoridad. A3 implementa en candidato el mecanismo kernel acotado para el éxito compatible, no un nuevo rollback |
-| A5 | `IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW` | `BOUNDED PRODUCT CORRECTION` | Conserva la identidad del paquete por digest crudo y la equivalencia exacta por digest versionado. Ante definiciones distintas con el mismo comando, el binding documental explícito gobierna comando y toolbar; la entrada persistente queda deshabilitada solo en ese documento, sin desinstalarse ni sustituir la macro embebida. Expand/detach y equivalencia cross-version siguen fuera de alcance |
+| A5 | `PASS — AUTHOR APPROVED` | `CLOSED` | Conserva la identidad del paquete por digest crudo y la equivalencia exacta por digest versionado. Ante definiciones distintas con el mismo comando, el binding documental explícito gobierna comando y toolbar; la entrada persistente queda deshabilitada solo en ese documento, sin desinstalarse ni sustituir la macro embebida. El cierre incluye las correcciones B/C de reconstrucción Tool Manager y rollback de carga `.ggb`; expand/detach y equivalencia cross-version quedan como capacidades opcionales futuras, no deuda A5 |
 | A6 | `PASS — AUTHOR APPROVED` | `CLOSED` | `Point(L,u)` omite solo `branchKey` cuando la definición válida/determinista contiene exactamente una rama y `u` pertenece a exactamente un componente. Cero, varias o elegibilidad cambiante fallan explícitamente; se persisten la rama, el linaje de componente y el contrato proveedor concretos, sin orden, coordenadas ni proximidad. Kernel compartido y superficie pública Locus V2 |
 | A7 | `PENDING — G12 CAPABILITY` | `DESIGN_THEN_IMPLEMENT AS BOUNDED G12 SLICE` | Zoom centrado en cursor y refinamiento acotado de teclas/configuración. Capa view/workspace; viewport, cámara, DPI y navegación nunca determinan coordenadas, métrica, identidad ni proveniencia geométrica |
 
@@ -2917,13 +2917,26 @@ G9U1 PASS
   -> A2
   -> A4
   -> A3
-  -> A5 disposition
+  -> A5 PASS
   -> A7 bounded G12 navigation slice
   -> G9B
   -> G9C
   -> G9 global closeout
   -> G9U2
 ```
+
+El candidato A5 inicial `8b4464feac5759fc6ca086adf79aadad0d968ef7`
+se conserva como evidencia histórica: la auditoría final confirmó dos defectos
+de lifecycle en la reconstrucción Tool Manager y en el rollback de carga
+`.ggb`. El candidato corregido
+`a3c8831b0569f72d1ccaf1d2eaf18e9417975377`, árbol
+`f6828ce18726710e8c2b6823d6fd638dc54106ba`, resolvió ambos y fue aprobado
+explícitamente por el autor. Su `INFRA_UNIT`
+`verification-f5f4730dfa4f4819b95ea874fc6038da` y su `PHASE`
+`verification-45904ab9782247b19f22c90b7d23b34c` resultaron `ACCEPTED / COMPLETE`;
+la selección A5 ejecutó 58 pruebas sin fallos, errores, omisiones ni
+diagnósticos. La aprobación cierra A5, no autoriza A7 ni altera las puertas de
+G9B, G9C, G9U2 o G10.
 
 El orden A4 antes de A3 evita diseñar compatibilidad V2 sobre supuestos todavía
 no caracterizados de rollback/orden. A7 conserva ownership G12 aunque se adelante

@@ -100,7 +100,7 @@ the host can convert macro results to ordinary construction steps without loss,
 and any broader cross-version semantic-equivalence policy beyond the exact
 versioned digest contract. Neither is implemented or implied by Round 3.
 
-### POST-G9U1-A5 implementation candidate
+### POST-G9U1-A5 — PASS — AUTHOR APPROVED
 
 The bounded A5 correction makes fail-closed contextual: when a persistent tool
 and an embedded macro have the same command name but distinct versioned
@@ -109,7 +109,12 @@ while the persistent entry is disabled in that document. The persistent package
 is neither removed nor globally changed. A shared kernel command-authority seam
 prevents later registration order from replacing the selected document binding;
 the current Macro reference is only a session handle reconstructed on reopen.
-This remains an implementation candidate pending explicit author review.
+The initial candidate `8b4464feac5759fc6ca086adf79aadad0d968ef7`
+remains historical audit evidence. The author-approved corrected implementation
+is `a3c8831b0569f72d1ccaf1d2eaf18e9417975377`, tree
+`f6828ce18726710e8c2b6823d6fd638dc54106ba`; it also preserves explicit
+document authority through Tool Manager reconstruction and restores the prior
+document atomically after a failed `.ggb` load. `selfApproved=false`.
 
 Expand/detach remains an optional new user capability, and broader cross-version
 equivalence remains optional future research; neither is implemented here.
