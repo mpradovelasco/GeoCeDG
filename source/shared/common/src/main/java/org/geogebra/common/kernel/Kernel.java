@@ -156,6 +156,7 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	private AlgebraStyle algebraStyleSpreadsheet = AlgebraStyle.VALUE;
 
 	private MacroManager macroManager;
+	private boolean documentMacroCommandAuthorityEnabled;
 
 	/**
 	 * Specifies whether possible line breaks are to be marked in the String
@@ -4605,6 +4606,44 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 
 		app.dispatchEvent(
 				new Event(EventType.ADD_MACRO, null, macro.getCommandName()));
+	}
+
+	/**
+	 * Enable explicit document-macro command authority for a product profile.
+	 * The default keeps inherited Classic behavior unchanged.
+	 *
+	 * @param enabled whether native document loads establish command authority
+	 */
+	public void setDocumentMacroCommandAuthorityEnabled(boolean enabled) {
+		documentMacroCommandAuthorityEnabled = enabled;
+	}
+
+	/** Bind all macros reconstructed by the current native document load. */
+	public void bindLoadedDocumentMacroCommands() {
+		if (documentMacroCommandAuthorityEnabled && macroManager != null) {
+			macroManager.bindAllCommandAuthorities();
+		}
+	}
+
+	/**
+	 * Bind a command to the exact current macro selected by an external semantic
+	 * authority such as a versioned definition-digest comparison.
+	 *
+	 * @param macro authoritative current-session macro
+	 */
+	public void bindMacroCommandAuthority(Macro macro) {
+		if (macroManager == null) {
+			throw new IllegalArgumentException("Macro authority must be registered");
+		}
+		macroManager.bindCommandAuthority(macro);
+	}
+
+	/**
+	 * @param macro macro to inspect
+	 * @return whether command dispatch is explicitly bound to this macro
+	 */
+	public boolean isMacroCommandAuthority(Macro macro) {
+		return macroManager != null && macroManager.isCommandAuthority(macro);
 	}
 
 	/**

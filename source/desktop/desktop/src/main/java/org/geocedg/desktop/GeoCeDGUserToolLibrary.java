@@ -331,9 +331,11 @@ final class GeoCeDGUserToolLibrary {
 				throw new IOException("UserTools.CommandConflict: " + command);
 			}
 		}
-		// An explicit install may adopt a complete equivalent document definition, but
-		// a partial or different same-name definition is never renamed or replaced.
-		registeredCount(proposed, false);
+		// Installation is application state and must not be rejected merely because
+		// the active document owns a different same-name definition. Bind every
+		// current document macro explicitly; activation remains unavailable while the
+		// conflict exists.
+		bindCurrentDocumentAuthorities(proposed);
 		Map<String, Package> next = new LinkedHashMap<>(packages);
 		next.put(proposed.id, proposed);
 		persist(next);
@@ -629,8 +631,11 @@ final class GeoCeDGUserToolLibrary {
 		for (String name : tool.commands) {
 			Macro current = app.getKernel().getMacro(name);
 			if (current != null) {
-				if (current.getKernel() != app.getKernel()
-						|| !tool.definitionDigest(name).equals(definitionDigest(current))) {
+				if (current.getKernel() != app.getKernel()) {
+					throw new IOException("UserTools.DocumentConflict: " + name);
+				}
+				app.getKernel().bindMacroCommandAuthority(current);
+				if (!tool.definitionDigest(name).equals(definitionDigest(current))) {
 					throw new IOException("UserTools.DefinitionMismatch: " + name);
 				}
 				String owner = activated.get(current);
@@ -651,6 +656,18 @@ final class GeoCeDGUserToolLibrary {
 			activated.putAll(equivalent);
 		}
 		return count;
+	}
+
+	private void bindCurrentDocumentAuthorities(Package tool) throws IOException {
+		for (String name : tool.commands) {
+			Macro current = app.getKernel().getMacro(name);
+			if (current != null) {
+				if (current.getKernel() != app.getKernel()) {
+					throw new IOException("UserTools.DocumentConflict: " + name);
+				}
+				app.getKernel().bindMacroCommandAuthority(current);
+			}
+		}
 	}
 
 	private void pruneActivated() {
@@ -686,6 +703,7 @@ final class GeoCeDGUserToolLibrary {
 			for (String name : tool.commands) {
 				Macro macro = app.getKernel().getMacro(name);
 				macro.setShowInToolBar(false);
+				app.getKernel().bindMacroCommandAuthority(macro);
 				activated.put(macro, tool.id);
 			}
 			app.updateCommandDictionary();

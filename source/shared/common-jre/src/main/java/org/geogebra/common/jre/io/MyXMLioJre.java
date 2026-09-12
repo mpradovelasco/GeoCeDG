@@ -201,6 +201,9 @@ public abstract class MyXMLioJre extends MyXMLio {
 			// don't clear kernel for macro files
 			kernel.getConstruction().setFileLoading(true);
 			processXMLBuffer(macroXmlFileBuffer, !isGGTFile, isGGTFile);
+			if (!isGGTFile) {
+				kernel.bindLoadedDocumentMacroCommands();
+			}
 			kernel.getConstruction().setFileLoading(false);
 		}
 

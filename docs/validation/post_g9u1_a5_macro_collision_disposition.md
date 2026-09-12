@@ -1,25 +1,60 @@
 # POST-G9U1-A5 installed/document-local macro collision disposition
 
-- Status: **RESEARCH/DISPOSITION CANDIDATE — PENDING AUTHOR REVIEW**
+- Status: **IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**
 - Base commit: `a53c1c9923273cd2025338bd35784438d5fb6d75`
 - Base tree: `7f17eb4934d5626c3f0bba94e50d201a80fa00f6`
-- Product implementation: **not authorized / not changed**
+- Product implementation: **bounded collision correction**
 - Self approval: **false**
 
 ## Disposition
 
 ```text
-A5_DISPOSITION = CLOSE_AS_ABSORBED
-A5_PRODUCT_CHANGE_REQUIRED = false
-A5_TECHNICAL_DEBT_CLOSED = true
+A5_DISPOSITION = BOUNDED_PRODUCT_CORRECTION
+A5_PRODUCT_CHANGE_REQUIRED = true
+A5_TECHNICAL_DEBT_CLOSED = false
 A3_FRONTEND_LIVING_STATUS_RECONCILED = true
 ```
 
-This is a disposition candidate, not author approval. It closes the original A5
-collision because the current G9U1 Round-3 contract already makes the embedded
-document macro the reconstruction authority and treats the installed package as
-application/presentation state. It does not implement or authorize another macro
-capability.
+This is an implementation candidate, not author approval. Review of the initial
+disposition exposed one precision defect: fail-closed prevented activation of a
+different installed definition, but the binding authority remained implicit in
+the host's name map and installation itself could be rejected because of the
+active document. The correction makes the document binding explicit in the
+shared kernel and keeps the persistent package installed but contextually
+unavailable.
+
+## Normative collision rule
+
+When an embedded document macro and an installed persistent tool expose the same
+command name but represent distinct definitions, the active document macro is
+authoritative for that document. The persistent tool is disabled in that
+conflicting document context and must not substitute for the embedded macro.
+Command invocation and any toolbar presentation of the document macro resolve to
+the embedded macro binding. The conflict does not uninstall or globally redefine
+the persistent tool.
+
+The versioned definition digest establishes whether definitions are equal or
+different. The explicit `MacroManager` command-authority binding retains the
+chosen current execution handle against later same-name registration; the handle
+is reconstructed from the embedded definition on reopen and is not durable
+identity by Java-reference equality. Native macro-mode indices remain transient
+presentation addresses only.
+
+## Candidate validation matrix
+
+| Contract | Evidence |
+|---|---|
+| explicit command authority survives a later same-name registration | `PostG9U1A5MacroCommandAuthorityTest` |
+| distinct installed definition is contextually unavailable while the embedded macro remains command authority | `G9U1UserToolLibraryTest.mismatchedOrPartialEmbeddedPackageFailsClosedWithoutRenameOrReplacement` |
+| command and native macro-mode invocation execute the same embedded definition | the same Desktop lifecycle test, asserted through `AlgoMacro.getMacro()` |
+| existing construction, save/reopen and reconstructed toolbar execution remain bound to the embedded definition | the same Desktop lifecycle test plus `G9U1MacroNativeArchivePersistenceTest` |
+| installed state survives the conflict and is usable in a clean application context | the same Desktop lifecycle test |
+| no-collision, exact-equivalence and partial-package behavior remain unchanged | complete `G9U1UserToolLibraryTest` and native-archive persistence selection |
+
+The bounded canonical acceptance selector is `PHASE -Phase POST-G9U1-A5`.
+It contains one shared-kernel authority test and the two directly affected
+Desktop lifecycle classes; registration is additive and does not change profile
+or evidence semantics.
 
 ## Current evidence
 
@@ -35,7 +70,7 @@ author-approved G9U1 authority.
 | Exact parsed-definition equivalence | Store version 3 records digest version 1 for every host-parsed macro definition | Established |
 | Bounded normalization | `definitionDigest(...)` replaces only the `showInToolBar` presentation attribute; command, metadata, inputs, outputs and construction XML remain definition-bearing | Established |
 | Complete equivalent adoption | `registeredCount(..., true)` adopts only when every command is present and digest-equal; `equivalentEmbeddedMacroIsAdoptedWithoutDuplicateOrReplacement` proves the same object is retained with no renamed duplicate | Established |
-| Partial/unequal fail closed | `mismatchedOrPartialEmbeddedPackageFailsClosedWithoutRenameOrReplacement` proves rejection, unchanged document XML/preferences and no host-renamed replacement | Established |
+| Partial/unequal fail closed | A different installed definition remains stored but is unavailable in the conflicting context; activation cannot replace the explicit embedded binding. Partial packages remain unavailable as one atomic package | Established by the A5 candidate |
 | Portable reopen without package | `ellipseAxisInvocationSurvivesNativeSaveUndoAndTwoReopens` removes the installed package, reopens the native document twice and retains a defined `AlgoMacro` result and its independent CeDG identity graph | Established |
 | Undo/redo and ordinary reconstruction | The same native-archive test covers save after invocation, undo, save/reopen after undo, redo and dynamic recomputation | Established |
 | No inferred equivalence authority | Code compares original-byte and parsed-definition digests; no label, coordinate, proximity, construction-index, XML-position or visual-equality fallback participates | Established |
@@ -54,9 +89,9 @@ ORIGINAL_COLLISION_RESOLVED = true
 PORTABLE_REOPEN_AUTHORITY = EMBEDDED_DOCUMENT_MACRO
 INSTALLED_PACKAGE_SEMANTIC_AUTHORITY = false
 UNEQUAL_DEFINITION_POLICY = FAIL_CLOSED
-EXISTING_PRODUCT_DEFECT_FOUND = false
-PRODUCT_CODE_CHANGED = false
-GUIDE_IMPACT = NO
+EXISTING_PRODUCT_DEFECT_FOUND = true
+PRODUCT_CODE_CHANGED = true
+GUIDE_IMPACT = YES
 ADR_REQUIRED = false
 ```
 
@@ -93,7 +128,8 @@ CROSS_VERSION_EQUIVALENCE_CURRENTLY_REQUIRED = false
 
 ## Roadmap consequence
 
-The original A5 defect is absorbed by the accepted G9U1 Round-3 implementation.
-Neither optional residual idea is a dependency of A7, G9B, G9C, global G9
-closeout or G9U2 in current authority. This candidate changes documentation
-only, creates no ADR, and claims no product or verification-phase effect.
+The Round-3 digest and embedded-definition contract remain authoritative, while
+this candidate corrects contextual collision behavior and makes command binding
+explicit. Neither optional residual idea is a dependency of A7, G9B, G9C,
+global G9 closeout or G9U2. The candidate creates no ADR and authorizes none of
+those phases.

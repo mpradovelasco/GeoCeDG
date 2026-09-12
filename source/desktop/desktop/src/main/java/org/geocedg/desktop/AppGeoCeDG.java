@@ -166,6 +166,7 @@ public final class AppGeoCeDG extends App3D {
 	private void bindFeatureService(AppConfigGeoCeDG config) {
 		config.getRuntimeFeatureService().bindPreservationContext(
 				() -> getKernel().getConstruction().isFileLoading());
+		getKernel().setDocumentMacroCommandAuthorityEnabled(true);
 		getKernel().getAlgebraProcessor().setSpatialRedefineAssessmentHandler(
 				new GeoCeDGSpatialRedefineFrontend(this));
 	}

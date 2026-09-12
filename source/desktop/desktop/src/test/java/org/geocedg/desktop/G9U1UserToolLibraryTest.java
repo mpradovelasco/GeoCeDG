@@ -8,6 +8,7 @@ package org.geocedg.desktop;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -38,9 +39,12 @@ import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.HexFormat;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.function.UnaryOperator;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -57,13 +61,19 @@ import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
 
 import org.geocedg.desktop.GeoCeDGUserToolLibrary.Package;
+import org.geogebra.common.euclidian.EuclidianConstants;
+import org.geogebra.common.euclidian.Hits;
+import org.geogebra.common.euclidian.modes.ModeMacro;
 import org.geogebra.common.io.XMLParseException;
 import org.geogebra.common.kernel.Macro;
+import org.geogebra.common.kernel.algos.AlgoMacro;
 import org.geogebra.common.kernel.geos.GeoElement;
+import org.geogebra.common.kernel.geos.GeoLine;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.move.ggtapi.models.json.JSONArray;
 import org.geogebra.common.move.ggtapi.models.json.JSONObject;
 import org.geogebra.desktop.CommandLineArguments;
+import org.geogebra.desktop.euclidian.EuclidianViewD;
 import org.geogebra.desktop.io.MyXMLioD;
 import org.geogebra.desktop.main.AppD;
 import org.junit.jupiter.api.BeforeEach;
@@ -771,23 +781,90 @@ class G9U1UserToolLibraryTest {
 			throws Exception {
 		byte[] installedBytes = midpointPackage("OwnedMidpoint");
 		Package tool = library.install("owned.ggt", installedBytes);
+		library.pin(tool.id(), "OwnedMidpoint", true);
 		app.loadMacroFileFromByteArray(linePackage("OwnedMidpoint"), false);
 		Macro document = app.getKernel().getMacro("OwnedMidpoint");
 		assertNotNull(document);
+		document.setShowInToolBar(true);
 		String before = app.getXML();
 		byte[] preferences = Files.readAllBytes(storage);
 		assertEquals("UserTools.DefinitionMismatch", library.unavailableReason(tool));
+		assertTrue(app.getKernel().isMacroCommandAuthority(document));
 		assertThrows(IOException.class, () -> library.activate(tool.id(), "OwnedMidpoint"));
 		assertSame(document, app.getKernel().getMacro("OwnedMidpoint"));
 		assertNull(app.getKernel().getMacro("OwnedMidpoint1"));
 		assertEquals(before, app.getXML());
 		assertArrayEquals(preferences, Files.readAllBytes(storage));
+
+		GeoPoint firstInput = (GeoPoint) G9U1TestApp.eval(app, "P=(1,1)");
+		GeoPoint secondInput = (GeoPoint) G9U1TestApp.eval(app, "Q=(3,2)");
+		GeoLine commandResult = assertInstanceOf(GeoLine.class,
+				G9U1TestApp.eval(app, "commandResult=OwnedMidpoint(P,Q)"));
+		assertSame(document, ((AlgoMacro) commandResult.getParentAlgorithm()).getMacro());
+		firstInput.setCoords(2, 1, 1);
+		firstInput.updateRepaint();
+		assertSame(document, ((AlgoMacro) commandResult.getParentAlgorithm()).getMacro());
+
+		GeoLine toolbarResult = assertInstanceOf(GeoLine.class,
+				invokeMacroMode(app, document, firstInput, secondInput));
+		assertSame(document, ((AlgoMacro) toolbarResult.getParentAlgorithm()).getMacro());
+		assertEquals(1, app.getKernel().getMacroNumber());
+		JPanel conflictingPins = new JPanel();
+		new GeoCeDGUserTools(app, library).populatePins(conflictingPins);
+		assertEquals(1, conflictingPins.getComponentCount());
+		assertFalse(conflictingPins.getComponent(0).isEnabled());
+
+		Path conflictingDocument = temporary.resolve("macro-conflict.cedg");
+		assertTrue(app.saveGeoGebraFile(conflictingDocument.toFile()));
+		AppGeoCeDG reopened = G9U1TestApp.create();
+		assertTrue(reopened.loadFile(conflictingDocument.toFile(), false));
+		GeoCeDGUserToolLibrary reopenedLibrary =
+				new GeoCeDGUserToolLibrary(reopened, storage);
+		Package reopenedTool = reopenedLibrary.packages().get(0);
+		Macro reopenedDocument = reopened.getKernel().getMacro("OwnedMidpoint");
+		assertNotNull(reopenedDocument);
+		assertTrue(reopened.getKernel().isMacroCommandAuthority(reopenedDocument));
+		assertEquals("UserTools.DefinitionMismatch",
+				reopenedLibrary.unavailableReason(reopenedTool));
+		assertSame(reopenedDocument, ((AlgoMacro) G9U1TestApp.lookup(reopened,
+				"commandResult").getParentAlgorithm()).getMacro());
+		GeoPoint reopenedFirst = (GeoPoint) G9U1TestApp.lookup(reopened, "P");
+		GeoPoint reopenedSecond = (GeoPoint) G9U1TestApp.lookup(reopened, "Q");
+		GeoLine reopenedCommand = assertInstanceOf(GeoLine.class,
+				G9U1TestApp.eval(reopened, "reopenedCommand=OwnedMidpoint(P,Q)"));
+		assertSame(reopenedDocument,
+				((AlgoMacro) reopenedCommand.getParentAlgorithm()).getMacro());
+		GeoLine reopenedToolbar = assertInstanceOf(GeoLine.class,
+				invokeMacroMode(reopened, reopenedDocument, reopenedFirst, reopenedSecond));
+		assertSame(reopenedDocument,
+				((AlgoMacro) reopenedToolbar.getParentAlgorithm()).getMacro());
+
+		GeoCeDGUserToolLibrary installedDuringConflict = new GeoCeDGUserToolLibrary(app,
+				temporary.resolve("installed-during-conflict.json"));
+		Package contextual = installedDuringConflict.install("owned.ggt", installedBytes);
+		assertEquals("UserTools.DefinitionMismatch",
+				installedDuringConflict.unavailableReason(contextual));
+		assertSame(document, app.getKernel().getMacro("OwnedMidpoint"));
+
+		AppGeoCeDG cleanContext = G9U1TestApp.create();
+		GeoCeDGUserToolLibrary restoredLibrary =
+				new GeoCeDGUserToolLibrary(cleanContext, storage);
+		Package restoredTool = restoredLibrary.packages().get(0);
+		assertNull(restoredLibrary.unavailableReason(restoredTool));
+		Macro restoredPersistent = restoredLibrary.activate(restoredTool.id(),
+				"OwnedMidpoint");
+		assertTrue(cleanContext.getKernel().isMacroCommandAuthority(restoredPersistent));
+		G9U1TestApp.eval(cleanContext, "A=(0,0)");
+		G9U1TestApp.eval(cleanContext, "B=(2,2)");
+		GeoPoint restoredResult = assertInstanceOf(GeoPoint.class,
+				G9U1TestApp.eval(cleanContext, "R=OwnedMidpoint(A,B)"));
+		assertSame(restoredPersistent,
+				((AlgoMacro) restoredResult.getParentAlgorithm()).getMacro());
 		GeoCeDGUserToolLibrary other = new GeoCeDGUserToolLibrary(app,
 				temporary.resolve("mismatch-install.json"));
-		IOException installMismatch = assertThrows(IOException.class,
-				() -> other.install("owned.ggt", installedBytes));
-		assertTrue(installMismatch.getMessage().startsWith("UserTools.DefinitionMismatch"));
-		assertTrue(other.packages().isEmpty());
+		Package retained = other.install("owned.ggt", installedBytes);
+		assertEquals("UserTools.DefinitionMismatch", other.unavailableReason(retained));
+		assertEquals(1, other.packages().size());
 
 		document.getKernel().removeMacro(document);
 		Package pair = library.install("pair.ggt",
@@ -920,6 +997,29 @@ class G9U1UserToolLibraryTest {
 		presentation.populatePins(pins);
 		assertEquals(0, pins.getComponentCount());
 		assertEquals(0, app.getKernel().getMacroNumber());
+	}
+
+	private static GeoElement invokeMacroMode(AppGeoCeDG host, Macro macro,
+			GeoElement... inputs) {
+		Set<GeoElement> previous = Collections.newSetFromMap(new IdentityHashMap<>());
+		previous.addAll(host.getKernel().getConstruction().getGeoSetConstructionOrder());
+		int mode = EuclidianConstants.MACRO_MODE_ID_OFFSET
+				+ host.getKernel().getMacroID(macro);
+		ModeMacro toolbarMode = new ModeMacro(((EuclidianViewD) host.getEuclidianView1())
+				.getEuclidianController());
+		toolbarMode.setMode(mode);
+		for (int i = 0; i < inputs.length; i++) {
+			Hits hits = new Hits();
+			hits.add(inputs[i]);
+			boolean completed = toolbarMode.macro(hits, null, false);
+			assertEquals(i + 1 == inputs.length, completed);
+		}
+		return host.getKernel().getConstruction().getGeoSetConstructionOrder().stream()
+				.filter(candidate -> !previous.contains(candidate))
+				.filter(candidate -> candidate.getParentAlgorithm() instanceof AlgoMacro)
+				.filter(candidate -> ((AlgoMacro) candidate.getParentAlgorithm()).getMacro()
+						== macro)
+				.findFirst().orElseThrow();
 	}
 
 	private void assertRejectedWithoutMutation(byte[] bytes) {

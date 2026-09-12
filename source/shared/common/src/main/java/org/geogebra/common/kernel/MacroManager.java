@@ -32,6 +32,7 @@ public class MacroManager {
 
 	private HashMap<String, Macro> macroMap; // maps macro name to macro object
 	private ArrayList<Macro> macroList; // lists all macros
+	private HashMap<String, Macro> commandAuthorities;
 
 	/**
 	 * Creates new macro manager
@@ -40,6 +41,7 @@ public class MacroManager {
 	public MacroManager() {
 		macroMap = new HashMap<>();
 		macroList = new ArrayList<>();
+		commandAuthorities = new HashMap<>();
 	}
 
 	/**
@@ -47,8 +49,44 @@ public class MacroManager {
 	 *            macro to be added
 	 */
 	public void addMacro(Macro macro) {
-		macroMap.put(StringUtil.toLowerCaseUS(macro.getCommandName()), macro);
+		String key = commandKey(macro);
+		Macro authority = commandAuthorities.get(key);
+		if (authority == null || !macroList.contains(authority)) {
+			commandAuthorities.remove(key);
+			macroMap.put(key, macro);
+		}
 		macroList.add(macro);
+	}
+
+	/**
+	 * Bind command resolution to a concrete macro selected by an external semantic
+	 * authority. The object reference is only the current-session execution handle;
+	 * callers remain responsible for establishing and reconstructing the binding.
+	 *
+	 * @param macro authoritative current-session macro
+	 */
+	public void bindCommandAuthority(Macro macro) {
+		if (!macroList.contains(macro)) {
+			throw new IllegalArgumentException("Macro authority must be registered");
+		}
+		String key = commandKey(macro);
+		commandAuthorities.put(key, macro);
+		macroMap.put(key, macro);
+	}
+
+	/** Bind every current macro as the authority for its current command name. */
+	public void bindAllCommandAuthorities() {
+		for (Macro macro : macroList) {
+			bindCommandAuthority(macro);
+		}
+	}
+
+	/**
+	 * @param macro macro to inspect
+	 * @return whether it owns the explicit command binding
+	 */
+	public boolean isCommandAuthority(Macro macro) {
+		return macro != null && commandAuthorities.get(commandKey(macro)) == macro;
 	}
 
 	/**
@@ -69,8 +107,20 @@ public class MacroManager {
 	 *            macro for removal
 	 */
 	public void removeMacro(Macro macro) {
-		macroMap.remove(StringUtil.toLowerCaseUS(macro.getCommandName()));
+		String key = commandKey(macro);
 		macroList.remove(macro);
+		commandAuthorities.remove(key, macro);
+		if (macroMap.get(key) == macro) {
+			Macro replacement = commandAuthorities.get(key);
+			if (replacement == null) {
+				replacement = lastMacro(key);
+			}
+			if (replacement == null) {
+				macroMap.remove(key);
+			} else {
+				macroMap.put(key, replacement);
+			}
+		}
 	}
 
 	/**
@@ -79,6 +129,7 @@ public class MacroManager {
 	public void removeAllMacros() {
 		macroMap.clear();
 		macroList.clear();
+		commandAuthorities.clear();
 	}
 
 	/**
@@ -90,9 +141,15 @@ public class MacroManager {
 	 *            command name
 	 */
 	public void setMacroCommandName(Macro macro, String cmdName) {
-		macroMap.remove(StringUtil.toLowerCaseUS(macro.getCommandName()));
+		String previousKey = commandKey(macro);
+		boolean authority = commandAuthorities.remove(previousKey, macro);
+		macroMap.remove(previousKey, macro);
 		macro.setCommandName(cmdName);
-		macroMap.put(StringUtil.toLowerCaseUS(macro.getCommandName()), macro);
+		String nextKey = commandKey(macro);
+		macroMap.put(nextKey, macro);
+		if (authority) {
+			commandAuthorities.put(nextKey, macro);
+		}
 	}
 
 	/**
@@ -143,6 +200,20 @@ public class MacroManager {
 	 */
 	public ArrayList<Macro> getAllMacros() {
 		return macroList;
+	}
+
+	private Macro lastMacro(String key) {
+		for (int i = macroList.size() - 1; i >= 0; i--) {
+			Macro candidate = macroList.get(i);
+			if (key.equals(commandKey(candidate))) {
+				return candidate;
+			}
+		}
+		return null;
+	}
+
+	private static String commandKey(Macro macro) {
+		return StringUtil.toLowerCaseUS(macro.getCommandName());
 	}
 
 	/**

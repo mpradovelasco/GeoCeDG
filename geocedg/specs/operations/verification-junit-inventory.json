@@ -514,6 +514,67 @@
       ]
     },
     {
+      "selection_id": "post-g9u1-a5.shared",
+      "module": "shared",
+      "gradle_task": ":shared:common-jre:test",
+      "test_filters": [
+        "org.geocedg.common.kernel.PostG9U1A5MacroCommandAuthorityTest"
+      ],
+      "excluded_test_filters": [],
+      "effective_arguments": [
+        ":shared:common-jre:test",
+        "--tests",
+        "org.geocedg.common.kernel.PostG9U1A5MacroCommandAuthorityTest",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 1,
+      "expected_identities_sha256": "408459324e50bc3a8e3578f6ef8dcb9525a3f49b48ce638b4163d92864cb1aab",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "42197f3393649fb444e004b36b93de78464e26ea",
+          "tree": "908e88ab44470a9c7e6e78caba1cc5caea2fa9bf"
+        }
+      ]
+    },
+    {
+      "selection_id": "post-g9u1-a5.desktop",
+      "module": "desktop",
+      "gradle_task": ":desktop:desktop:test",
+      "test_filters": [
+        "org.geocedg.desktop.G9U1UserToolLibraryTest",
+        "org.geocedg.desktop.G9U1MacroNativeArchivePersistenceTest"
+      ],
+      "excluded_test_filters": [],
+      "effective_arguments": [
+        ":desktop:desktop:test",
+        "--tests",
+        "org.geocedg.desktop.G9U1UserToolLibraryTest",
+        "--tests",
+        "org.geocedg.desktop.G9U1MacroNativeArchivePersistenceTest",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 39,
+      "expected_identities_sha256": "5b6bff1c60ecd8f8f9c6bff813ace3e10e5447901ca91e11b015dbcaedf362b2",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "42197f3393649fb444e004b36b93de78464e26ea",
+          "tree": "908e88ab44470a9c7e6e78caba1cc5caea2fa9bf"
+        }
+      ]
+    },
+    {
       "selection_id": "g8b.narrow",
       "module": "shared",
       "gradle_task": ":shared:common-jre:test",

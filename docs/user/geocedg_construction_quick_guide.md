@@ -250,10 +250,16 @@ Si un documento reabierto contiene la macro embebida equivalente a la instalada,
 GeoCeDG comprueba el conjunto completo de definiciones y sus digests: la entrada
 instalada sigue siendo la única elección visible y habilitada, pero la macro
 embebida continúa perteneciendo al documento y reconstruyendo sus resultados.
-No se elimina ni se sustituye. Si el paquete es parcial o su definición difiere,
-se muestra una colisión/desajuste y no se elige por nombre. Sin paquete instalado,
-**Herramientas del documento (solo locales)…** permite gestionar la definición
-portable. El gestor persistente importa paquetes; no es un nuevo editor de macros.
+No se elimina ni se sustituye. Si una herramienta instalada ofrece el mismo
+nombre con una definición distinta, su entrada instalada queda deshabilitada
+solo en ese documento. La macro embebida sigue disponible tanto por su comando
+como por una presentación de barra propia del documento, y ambas invocaciones
+usan la misma definición documental. Al cerrar ese contexto, la instalación
+persiste sin cambios. Ninguna asociación se decide por nombre, orden de carga o
+posición en la barra. Los paquetes parciales también fallan de forma cerrada.
+Sin paquete instalado, **Herramientas del documento (solo locales)…** permite
+gestionar la definición portable. El gestor persistente importa paquetes; no es
+un nuevo editor de macros.
 Con varias ventanas, el gestor vuelve a comprobar la biblioteca antes de cambiarla;
 si otra ventana está actualizándola, reintente después del aviso. Abrir el menú
 actualiza la lista de herramientas instaladas.

@@ -122,7 +122,8 @@ carry an optional bounded PNG icon in version-3 preferences. Their embedded
 document macro remains the portable reconstruction authority. A normalized
 definition digest may recognize a provably equivalent installed definition for
 presentation ownership without deleting or replacing the embedded macro;
-non-equivalence fails closed.
+non-equivalence fails closed against substitution of the installed definition,
+not against use of the authoritative document macro.
 
 The candidate also freezes these prospective product rules: the existing host
 `Continuity` setting is clamped OFF for GeoCeDG while Classic remains
@@ -458,7 +459,13 @@ may ignore only the non-semantic `showInToolBar` presentation flag; command name
 construction, inputs, outputs, coordinates, order and references remain part of
 the definition evidence. Missing installed packages preserve portable document
 reconstruction; mismatched or partial packages report a collision and fail
-closed.
+closed. For a different same-name definition, the installed binding is disabled
+only in that active-document context while the embedded macro remains usable.
+Command dispatch is explicitly bound to that embedded macro, and any native
+toolbar presentation resolves the same concrete document binding; neither map
+insertion order nor macro-mode index is semantic authority. The installed package
+is not removed or rewritten and becomes available again in a context without the
+conflicting document binding.
 No Templatev7 tool or asset is automatically imported, bundled or promoted.
 See the [user-tool review](../../../docs/validation/g9u1_user_tools_review.md).
 

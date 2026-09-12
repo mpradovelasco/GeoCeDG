@@ -91,25 +91,28 @@ inside G9U1: the raw `.ggt` digest remains package identity, while a versioned
 digest of every host-parsed macro definition proves equality after reopen. Only
 the non-semantic `showInToolBar` flag is normalized. Complete equality adopts
 the already embedded Macro objects for installed-tool presentation; partial or
-unequal definitions fail closed. The embedded definition is never removed or
-replaced, so portable reopen and `.ggb`/`.cedg` reconstruction do not depend on
-application preferences.
+unequal definitions fail closed against installed-definition substitution. The
+embedded definition is never removed or replaced, so portable reopen and
+`.ggb`/`.cedg` reconstruction do not depend on application preferences.
 
 What remains POST-U1 is only a distinct optional **expand/detach** operation, if
 the host can convert macro results to ordinary construction steps without loss,
 and any broader cross-version semantic-equivalence policy beyond the exact
 versioned digest contract. Neither is implemented or implied by Round 3.
 
-### POST-G9U1-A5 disposition candidate
+### POST-G9U1-A5 implementation candidate
 
-Current source and accepted G9U1 Round-3 evidence establish that the original
-installed/document-local collision is resolved without making application
-preferences reconstruction authority. No current roadmap capability requires
-macro expansion/detachment or equivalence beyond the exact versioned parsed-
-definition digest. POST-G9U1-A5 therefore selects `CLOSE_AS_ABSORBED`, pending
-explicit author review. Expand/detach remains an optional new user capability,
-and broader cross-version equivalence remains optional future research; neither
-remains unresolved A5 technical debt or receives implementation authority.
+The bounded A5 correction makes fail-closed contextual: when a persistent tool
+and an embedded macro have the same command name but distinct versioned
+definition digests, the document binding remains command and toolbar authority
+while the persistent entry is disabled in that document. The persistent package
+is neither removed nor globally changed. A shared kernel command-authority seam
+prevents later registration order from replacing the selected document binding;
+the current Macro reference is only a session handle reconstructed on reopen.
+This remains an implementation candidate pending explicit author review.
+
+Expand/detach remains an optional new user capability, and broader cross-version
+equivalence remains optional future research; neither is implemented here.
 
 ## POST-U1-7 — optional `branchKey`
 
