@@ -218,10 +218,13 @@ de un objeto sigue siendo una acción contextual sobre selección explícita.
 Para zoom con teclado, haga clic en un espacio vacío de la Vista Gráfica y use
 `Ctrl`+`+` / `Ctrl`+`-`; el teclado numérico también sirve. En configuración
 española el foco de la vista importa. Escape sale de herramientas; Zoom por
-ventana está tanto en Ver/navegación como en la barra. Su atajo directo opcional
-se configura desde Ver y está sin asignar por defecto; un conflicto conserva el
-atajo anterior. Sin un cursor vigente, ZoomWindow espera un arrastre real. El
-zoom no cambia métricas, coordenadas, identidad ni proveniencia.
+ventana está tanto en Ver/navegación como en la barra, conserva la relación de
+escala X/Y y Escape cancela su rectángulo. Sin un cursor vigente, espera un
+arrastre real. **Configurar zoom de navegación…** permite elegir un factor
+(10 por defecto) y atajos independientes para Acercar/Alejar por factor. Una
+entrada inválida se corrige en el mismo diálogo y no sustituye la configuración
+anterior. Los zooms por factor usan el cursor vigente o el centro real de la
+vista. Ningún zoom cambia métricas, coordenadas, identidad ni proveniencia.
 
 ## 8. Herramientas propias persistentes y Laboratory
 
@@ -268,7 +271,7 @@ si otra ventana está actualizándola, reintente después del aviso. Abrir el me
 actualiza la lista de herramientas instaladas.
 
 La biblioteca pertenece al perfil GeoCeDG, no al `.cedg` abierto ni al catálogo
-de 110 acciones. Las macros de un documento no se instalan automáticamente.
+actual de 112 acciones. Las macros de un documento no se instalan automáticamente.
 No pueden sobrescribir `Point`, `Length`, `LocusV2`, `SplineV2`, `Intersect` u otro
 comando nativo. Scripts/cuerpos semánticos o procedimientos no admitidos se rechazan
 con una explicación; no se eluden flags de producto.

@@ -7,6 +7,7 @@ package org.geocedg.desktop;
 
 import java.awt.Container;
 import java.awt.Image;
+import java.awt.event.KeyEvent;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -31,6 +32,7 @@ import org.geogebra.desktop.geogebra3D.App3D;
 import org.geogebra.desktop.gui.GuiManagerD;
 import org.geogebra.desktop.gui.app.GeoGebraFrame;
 import org.geogebra.desktop.main.AppD;
+import org.geogebra.desktop.main.GlobalKeyDispatcherD;
 
 /**
  * Desktop application instance bound to the GeoCeDG product profile.
@@ -138,6 +140,27 @@ public final class AppGeoCeDG extends App3D {
 	@Override
 	protected GuiManagerD newGuiManager() {
 		return new GuiManagerGeoCeDG(this);
+	}
+
+	@Override
+	protected GlobalKeyDispatcherD newGlobalKeyDispatcher() {
+		return new GlobalKeyDispatcherD(this) {
+			@Override
+			public boolean handleGeneralKeys(KeyEvent event) {
+				if (event.getKeyCode() == KeyEvent.VK_ESCAPE
+						&& getActiveEuclidianView() != null
+						&& getActiveEuclidianView().getEuclidianController()
+								instanceof GeoCeDGEuclidianController) {
+					GeoCeDGEuclidianController controller =
+							(GeoCeDGEuclidianController) getActiveEuclidianView()
+									.getEuclidianController();
+					if (controller.isZoomWindowActive()) {
+						controller.cancelZoomWindow();
+					}
+				}
+				return super.handleGeneralKeys(event);
+			}
+		};
 	}
 
 	@Override

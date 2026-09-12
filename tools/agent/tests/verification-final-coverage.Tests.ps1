@@ -76,7 +76,7 @@ Invoke-Case 'tracked JUnit inventory is compact and selection based' {
         'post-g9u1-a7.shared')[0].expected_identity_count -eq 2) `
         'POST-G9U1-A7 shared inventory changed.'
     Assert-Case (@($inventory.selections|Where-Object selection_id -CEQ `
-        'post-g9u1-a7.desktop')[0].expected_identity_count -eq 54) `
+        'post-g9u1-a7.desktop')[0].expected_identity_count -eq 89) `
         'POST-G9U1-A7 Desktop inventory changed.'
     $desktopBroad=@($inventory.selections|Where-Object selection_id -CEQ 'final.desktop')[0]
     $desktopSemantic=@($inventory.selections|Where-Object selection_id -CEQ `

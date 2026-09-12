@@ -138,23 +138,33 @@ round trip or explicit author disposition closes it.
 
 ## POST-G9U1-A7 navigation amendment candidate
 
-The author-approved A7 design is implemented as an **implementation candidate
-pending author review**. It remains a G12 view/workspace capability and is not a
+The author-approved A7 design is implemented as a **corrected implementation
+candidate pending author review**. The initial candidate `b249a62...` established
+cursor currentness and the non-square fallback; author smoke then authorized the
+bounded corrections recorded here. A7 remains a G12 view/workspace capability and is not a
 geometric or G9B dependency. Inherited wheel, pinch and Zoom In/Out keep using
 the existing cursor-anchored Euclidian transform. Keyboard zoom uses a current
 view-local cursor only while that transient context is valid; otherwise it uses
 the actual `(width / 2, height / 2)` centre of the active 2D view.
 
 The existing G9U1 `ZoomWindow` rectangle and
-`setAnimatedRealWorldCoordSystem` path remains the sole implementation. In the
+`setAnimatedRealWorldCoordSystem` path remains the sole implementation. Its
+explicit Navigation action fits the selected region while preserving the prior
+`xScale / yScale` relation; margin is permitted and independent axis stretching
+is not. Escape cancels either WAIT_FOR_DRAG or an active rectangle preview with
+no viewport change. In the
 primary GeoCeDG 2D view a current cursor may become its first corner; without a
 current cursor it waits for a real drag. Exit, focus loss, text-field focus,
 right-click or tool change invalidates/cancels transient cursor-derived state.
 
-Only the stable action `navigation.zoom-window` has an A7 configurable chord.
-It is unassigned by default and stored as a versioned key-code/modifier value in
-the isolated GeoCeDG application preference file. Conflicting or invalid input
-is rejected atomically and leaves the previous binding unchanged. The chord,
+Inherited `+/-` remains unchanged. The stable actions
+`navigation.zoom-factor-in` and `navigation.zoom-factor-out` have independent,
+initially unassigned chords and share one finite factor `F > 1`, default 10.
+They multiply/divide both view scales at the current cursor or true view centre,
+preserving the scale relation and affine anchor. Factor and chords are versioned
+values in the isolated GeoCeDG application preference file. The complete draft
+is accepted atomically; invalid factor or conflicting shortcuts keep the same
+dialog open and leave the prior configuration untouched. These preferences,
 cursor and viewport are presentation state: none enters `.ggb`/`.cedg`,
 Construction XML, identity, provenance, metrics or DAG semantics. Secondary
 views, 3D, Web, ZoomPrevious, FitSelection, FitLayer, named views and general or

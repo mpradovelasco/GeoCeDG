@@ -120,9 +120,11 @@ class G9U1WorkspaceSurfaceTest {
 		for (Component component : bar.getComponents()) {
 			collect(component, ids);
 		}
-		assertEquals(110, ids.size());
+		assertEquals(112, ids.size());
 		assertEquals(7, bar.getMenuCount());
 		assertTrue(ids.contains("navigation.zoom-window"));
+		assertTrue(ids.contains("navigation.zoom-factor-in"));
+		assertTrue(ids.contains("navigation.zoom-factor-out"));
 	}
 
 	@Test
@@ -675,7 +677,7 @@ class G9U1WorkspaceSurfaceTest {
 					.getJSONArray("toolbar_action_ids")));
 		}
 		assertEquals(52, toolbarIds.size());
-		assertEquals(110, menuIds.size());
+		assertEquals(112, menuIds.size());
 		assertTrue(menuIds.containsAll(toolbarIds));
 		GeoCeDGActionRegistry registry = ((GuiManagerGeoCeDG) app.getGuiManager())
 				.getActionRegistry();

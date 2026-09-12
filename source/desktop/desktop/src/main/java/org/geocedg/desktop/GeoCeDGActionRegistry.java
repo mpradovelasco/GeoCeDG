@@ -55,6 +55,8 @@ public final class GeoCeDGActionRegistry {
 			"geocedg.result.materialize-all", "geocedg.result.auto-materialize-initial.toggle",
 			"SplineV2", "cedg-dihedral-procedures", "host.view.axes-toggle",
 			"host.view.grid-toggle", "geocedg.navigation.zoom-window",
+			"geocedg.navigation.zoom-factor-in",
+			"geocedg.navigation.zoom-factor-out",
 			"host.view.standard-view", "host.view.show-all-objects", "host.document.new",
 			"host.document.open", "host.document.open-recent", "host.document.save",
 			"host.document.save-as", "host.document.print-preview", "host.document.close",
@@ -177,7 +179,7 @@ public final class GeoCeDGActionRegistry {
 			return text("Action.Unavailable.Feature");
 		}
 		String target = definition.target();
-		if ("geocedg.navigation.zoom-window".equals(target)
+		if (target.startsWith("geocedg.navigation.zoom-")
 				&& app.getActiveEuclidianView() != app.getEuclidianView1()) {
 			return text("Action.Unavailable.PrimaryView");
 		}
@@ -271,6 +273,12 @@ public final class GeoCeDGActionRegistry {
 			break;
 		case "geocedg.navigation.zoom-window":
 			controller().activateZoomWindow();
+			break;
+		case "geocedg.navigation.zoom-factor-in":
+			controller().zoomByFactor(navigationShortcuts.getFactor());
+			break;
+		case "geocedg.navigation.zoom-factor-out":
+			controller().zoomByFactor(1 / navigationShortcuts.getFactor());
 			break;
 		case "host.view.standard-view":
 			app.setStandardView();

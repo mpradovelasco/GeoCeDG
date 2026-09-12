@@ -18,11 +18,17 @@ import javax.swing.SwingUtilities;
 
 import org.geogebra.desktop.main.GeoGebraPreferencesD;
 
-/** One product-local application preference for the existing ZoomWindow action. */
+/** Bounded GeoCeDG application preferences for the two factor-zoom actions. */
 final class GeoCeDGNavigationShortcutPreferences {
 
-	static final String ACTION_ID = "navigation.zoom-window";
-	static final String PREFERENCE_KEY = "geocedg.navigation.zoom-window.shortcut.v1";
+	static final String ZOOM_IN_ACTION_ID = "navigation.zoom-factor-in";
+	static final String ZOOM_OUT_ACTION_ID = "navigation.zoom-factor-out";
+	static final String FACTOR_PREFERENCE_KEY = "geocedg.navigation.zoom-factor.v1";
+	static final String ZOOM_IN_PREFERENCE_KEY =
+			"geocedg.navigation.zoom-factor-in.shortcut.v1";
+	static final String ZOOM_OUT_PREFERENCE_KEY =
+			"geocedg.navigation.zoom-factor-out.shortcut.v1";
+	static final double DEFAULT_FACTOR = 10;
 	private static final String VERSION = "v1";
 	private static final int ALLOWED_MODIFIERS = InputEvent.CTRL_DOWN_MASK
 			| InputEvent.ALT_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK
@@ -36,55 +42,87 @@ final class GeoCeDGNavigationShortcutPreferences {
 			KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9, KeyEvent.VK_0);
 
 	enum Result {
-		ACCEPTED, RESET, INVALID, CONFLICT
+		ACCEPTED, INVALID_FACTOR, INVALID_SHORTCUT, CONFLICT
+	}
+
+	record Configuration(double factor, KeyStroke zoomIn, KeyStroke zoomOut) {
 	}
 
 	private final GeoCeDGActionRegistry registry;
-	private KeyStroke binding;
+	private double factor;
+	private KeyStroke zoomIn;
+	private KeyStroke zoomOut;
 
 	GeoCeDGNavigationShortcutPreferences(GeoCeDGActionRegistry registry) {
 		this.registry = registry;
-		KeyStroke stored = decode(GeoGebraPreferencesD.getPref().loadPreference(
-				PREFERENCE_KEY, ""));
-		if (stored != null && conflict(stored)) {
-			stored = null;
+		factor = decodeFactor(GeoGebraPreferencesD.getPref().loadPreference(
+				FACTOR_PREFERENCE_KEY, ""));
+		zoomIn = loadBinding(ZOOM_IN_PREFERENCE_KEY);
+		zoomOut = loadBinding(ZOOM_OUT_PREFERENCE_KEY);
+		if (sameBinding(zoomIn, zoomOut) || conflict(zoomIn) || conflict(zoomOut)) {
+			zoomIn = null;
+			zoomOut = null;
 		}
-		binding = stored;
-		apply();
+		applyAccelerators();
 	}
 
-	KeyStroke getBinding() {
-		return binding;
+	Configuration getConfiguration() {
+		return new Configuration(factor, zoomIn, zoomOut);
 	}
 
-	Result setBinding(KeyStroke proposed) {
-		KeyStroke normalized = normalize(proposed);
-		if (!valid(normalized)) {
-			return Result.INVALID;
+	double getFactor() {
+		return factor;
+	}
+
+	Result setConfiguration(double proposedFactor, KeyStroke proposedIn,
+			KeyStroke proposedOut) {
+		if (!validFactor(proposedFactor)) {
+			return Result.INVALID_FACTOR;
 		}
-		if (conflict(normalized)) {
+		KeyStroke normalizedIn = normalize(proposedIn);
+		KeyStroke normalizedOut = normalize(proposedOut);
+		if ((proposedIn != null && !valid(normalizedIn))
+				|| (proposedOut != null && !valid(normalizedOut))) {
+			return Result.INVALID_SHORTCUT;
+		}
+		if (sameBinding(normalizedIn, normalizedOut)
+				|| conflict(normalizedIn) || conflict(normalizedOut)) {
 			return Result.CONFLICT;
 		}
-		GeoGebraPreferencesD.getPref().savePreference(PREFERENCE_KEY, encode(normalized));
-		binding = normalized;
-		apply();
+
+		// Validate the complete proposal before publishing any preference.
+		GeoGebraPreferencesD preferences = GeoGebraPreferencesD.getPref();
+		preferences.savePreference(FACTOR_PREFERENCE_KEY,
+				Double.toString(proposedFactor));
+		preferences.savePreference(ZOOM_IN_PREFERENCE_KEY, encode(normalizedIn));
+		preferences.savePreference(ZOOM_OUT_PREFERENCE_KEY, encode(normalizedOut));
+		factor = proposedFactor;
+		zoomIn = normalizedIn;
+		zoomOut = normalizedOut;
+		applyAccelerators();
 		return Result.ACCEPTED;
 	}
 
 	Result reset() {
-		GeoGebraPreferencesD.getPref().savePreference(PREFERENCE_KEY, "");
-		binding = null;
-		apply();
-		return Result.RESET;
+		return setConfiguration(DEFAULT_FACTOR, null, null);
 	}
 
-	private void apply() {
-		registry.get(ACTION_ID).putValue(Action.ACCELERATOR_KEY, binding);
+	private KeyStroke loadBinding(String key) {
+		KeyStroke stored = decode(GeoGebraPreferencesD.getPref().loadPreference(key, ""));
+		return stored != null && !conflict(stored) ? stored : null;
+	}
+
+	private void applyAccelerators() {
+		registry.get(ZOOM_IN_ACTION_ID).putValue(Action.ACCELERATOR_KEY, zoomIn);
+		registry.get(ZOOM_OUT_ACTION_ID).putValue(Action.ACCELERATOR_KEY, zoomOut);
 	}
 
 	private boolean conflict(KeyStroke proposed) {
+		if (proposed == null) {
+			return false;
+		}
 		for (String id : registry.ids()) {
-			if (!ACTION_ID.equals(id)
+			if (!ZOOM_IN_ACTION_ID.equals(id) && !ZOOM_OUT_ACTION_ID.equals(id)
 					&& proposed.equals(registry.get(id).getValue(Action.ACCELERATOR_KEY))) {
 				return true;
 			}
@@ -106,6 +144,28 @@ final class GeoCeDGNavigationShortcutPreferences {
 			}
 		}
 		return false;
+	}
+
+	private static boolean sameBinding(KeyStroke first, KeyStroke second) {
+		return first != null && first.equals(second);
+	}
+
+	private static boolean validFactor(double proposed) {
+		return Double.isFinite(proposed) && proposed > 1;
+	}
+
+	private static double decodeFactor(String encoded) {
+		if (encoded != null && !encoded.isBlank()) {
+			try {
+				double decoded = Double.parseDouble(encoded);
+				if (validFactor(decoded)) {
+					return decoded;
+				}
+			} catch (NumberFormatException exception) {
+				// Invalid external preference input fails to the documented default.
+			}
+		}
+		return DEFAULT_FACTOR;
 	}
 
 	private static boolean valid(KeyStroke proposed) {
@@ -146,7 +206,7 @@ final class GeoCeDGNavigationShortcutPreferences {
 	}
 
 	private static String encode(KeyStroke stroke) {
-		return VERSION + ":" + stroke.getKeyCode() + ":"
+		return stroke == null ? "" : VERSION + ":" + stroke.getKeyCode() + ":"
 				+ (stroke.getModifiers() & ALLOWED_MODIFIERS);
 	}
 

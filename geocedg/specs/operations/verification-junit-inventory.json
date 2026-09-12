@@ -614,6 +614,7 @@
         "org.geocedg.desktop.PostG9U1A7NavigationTest",
         "org.geocedg.desktop.G9U1SemanticPointInteractionTest",
         "org.geocedg.desktop.GeoCeDGProfileTest",
+        "org.geocedg.desktop.G9U1ProfileCompilerTest",
         "org.geocedg.desktop.G9U1WorkspaceSurfaceTest"
       ],
       "excluded_test_filters": [],
@@ -626,6 +627,8 @@
         "--tests",
         "org.geocedg.desktop.GeoCeDGProfileTest",
         "--tests",
+        "org.geocedg.desktop.G9U1ProfileCompilerTest",
+        "--tests",
         "org.geocedg.desktop.G9U1WorkspaceSurfaceTest",
         "--rerun-tasks",
         "--no-build-cache",
@@ -634,8 +637,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 54,
-      "expected_identities_sha256": "de9c9807336e0cb72904476e840f32c1aaa2aa2764ae917fdce9969aafd51938",
+      "expected_identity_count": 89,
+      "expected_identities_sha256": "e0d4ee0d55d9b2d94b987008ae98d4dd893c29b9aff3ab147c395e601c0ecb64",
       "not_applicable_allowlist": [],
       "input_identities": [
         {

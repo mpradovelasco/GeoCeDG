@@ -1,7 +1,7 @@
 # POST-G9U1-A7 — cursor-centred navigation characterization and design
 
 - Design status: **AUTHOR APPROVED**
-- Implementation status: **IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**
+- Implementation status: **CORRECTED IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**
 - Published base commit: `71483011be9bb9fdfe896f00af0ba8323f9c0834`
 - Published base tree: `81e690b68ed7ec2caa3f59ba6d8c6abf90ab3f38`
 - Product implementation authorized: **true, bounded to this design**
@@ -10,10 +10,21 @@
 - G9B hard dependency: **false**
 - Self approval: **false**
 
-This document characterizes the pinned GeoGebra 5.4.928.0 host and proposes the
-smallest A7 implementation slice. It does not authorize that implementation.
+This document characterizes the pinned GeoGebra 5.4.928.0 host and governs the
+smallest A7 implementation slice. Design approval authorized the bounded
+implementation, but neither design nor automated verification approves its result.
 The accompanying [validation matrix](../validation/post_g9u1_a7_navigation_design_matrix.md)
 defines the future acceptance perimeter.
+
+The author approved the original design at
+`98280d81771758258f29bfb80c6d025a192b3dca`. The first implementation
+candidate `b249a62aa6e0e7e844ec350ccbfd600ae5553b2c` established the cursor
+currentness and non-square fallback foundations. Its interactive smoke exposed
+three bounded corrections: explicit ratio-preserving ZoomWindow behavior,
+Escape cancellation and in-dialog validation, plus replacement of the proposed
+ZoomWindow chord by two configurable factor-zoom actions. This successor keeps
+the original characterization as history and records the author-authorized
+correction below.
 
 ## 1. Characterized authority
 
@@ -89,10 +100,11 @@ The controller converts the two rectangle corners with
 screen units and tool-change cancellation do not change the view. The action is
 present in the single profile action catalog and projected into menu and toolbar.
 
-The current action always obtains the controller of Euclidian view 1 and has no
-direct configurable `Action.ACCELERATOR_KEY`. “Keyboard-accessible” in the G9U1
-surface is therefore the existing menu route plus inherited zoom shortcuts, not
-the direct configurable ZoomWindow chord planned by A7.
+The first A7 candidate kept this explicit action and proposed a direct
+configurable chord. The author smoke retained the distinct action but redirected
+the configurable keyboard scope to factor In/Out. ZoomWindow itself remains
+reachable through the Navigation menu and toolbar; it is not conflated with the
+inherited zoom tools.
 
 ## 2. Selected bounded contract
 
@@ -101,9 +113,12 @@ A7_INCLUDED = [
   inherited cursor-centred wheel/pinch/Zoom-In/Zoom-Out behavior made explicit
     and regression tested,
   correct center fallback for inherited keyboard zoom when no cursor is valid,
-  one configurable direct binding for the existing navigation.zoom-window action,
+  the distinct existing navigation.zoom-window action with Escape cancellation
+    and ratio-preserving rectangle fit,
   optional current-cursor first-corner capture for that action in the supported
-    primary 2D GeoCeDG view
+    primary 2D GeoCeDG view,
+  one application-preference factor (default 10) and independent configurable
+    bindings for navigation.zoom-factor-in and navigation.zoom-factor-out
 ]
 
 A7_DEFERRED_TO_BROADER_G12 = [
@@ -148,10 +163,11 @@ unsaved marker according to inherited behavior. They must not change:
 - Locus V2 branches, components or semantic addresses;
 - metric/intersection results or spatial/projection bindings.
 
-## 4. ZoomWindow keyboard gesture
+## 4. Explicit GeoCeDG ZoomWindow
 
-The stable action identity remains `navigation.zoom-window`. A keyboard chord is
-only a configurable presentation binding to that action.
+The stable action identity remains `navigation.zoom-window`, distinct from the
+inherited Zoom In/Out tools and `+/-` shortcuts. It remains an explicit GeoCeDG
+Navigation menu action and reuses the G9U1 rectangle interaction.
 
 When the action is invoked while the primary GeoCeDG 2D view has a non-null,
 in-bounds current `mouseLoc`, the future implementation may capture that point
@@ -160,6 +176,14 @@ Pointer movement previews the same inherited selection rectangle; the next
 primary click completes the second corner through the existing G9U1
 rectangle-to-view seam. Escape, right-click, focus/view loss or a tool change
 cancels without changing the view or Construction.
+
+Finalization expands the selected world-coordinate rectangle, when necessary,
+so that it fits the non-square viewport while preserving the pre-operation
+`xScale / yScale` ratio. The expanded bounds are passed to the same inherited
+`setAnimatedRealWorldCoordSystem` seam. Unused horizontal or vertical margin is
+valid; independent axis stretching is not. Escape reaches the normal Desktop
+key/mode cancellation path in both `WAIT_FOR_DRAG` and an active preview, clears
+the transient rectangle and leaves the view transform unchanged.
 
 Valid cursor context is controller-local presentation state: a real enter/move
 event in the active primary GeoCeDG view establishes it, while view exit (before
@@ -181,29 +205,29 @@ The bounded implementation supports the primary GeoCeDG Graphics view only.
 If another Euclidian view is active, the action is unavailable/no-op rather than
 silently changing view 1. Secondary 2D and 3D-camera integration remain G12.
 
-## 5. Keyboard/configuration contract
+## 5. Factor-zoom keyboard/configuration contract
 
 ### 5.1 Action, default and storage
 
-Only the direct binding for `navigation.zoom-window` is configurable in A7.
-Inherited `Ctrl`+`+` / `Ctrl`+`-`, menu mnemonics and other host shortcuts keep
-their meanings.
+Inherited `Ctrl`+`+` / `Ctrl`+`-`, wheel/pinch, Zoom In/Out tools and menu
+mnemonics keep their meanings. A7 adds two distinct product actions:
+`navigation.zoom-factor-in` and `navigation.zoom-factor-out`. Both use one
+finite factor `F > 1`, default **10**. In multiplies both view scales by `F`;
+Out divides them by `F`. They preserve the current `xScale / yScale` relation
+and use the current valid cursor as affine anchor, or the true active-view
+centre when no current cursor exists. Consecutive In/Out at the same anchor are
+reciprocal within view-transform floating-point precision.
 
-The factory default is **unbound**. The existing keyboard menu route remains
-available, while A7 does not invent an author-unselected global chord. A user may
-assign exactly one key-pressed chord with explicit modifiers through a bounded
-GeoCeDG setting. Reset removes the preference and returns to unbound.
-
-The binding is stored under the isolated GeoCeDG `GeoGebraPreferencesD` file as
-an application/profile preference, using a versioned canonical representation
-of key code plus normalized modifiers. It is not written to `.ggb`/`.cedg`,
-workspace layout XML or Construction XML. The runtime projects the accepted
-binding onto the existing Swing `Action.ACCELERATOR_KEY`; menu and any other
-projection continue to consume the same action object.
+Each factor action has an independent, initially unbound key-pressed chord with
+explicit modifiers. The factor and both chords are stored in the isolated
+GeoCeDG `GeoGebraPreferencesD` file as application/profile preferences. They are
+not written to `.ggb`/`.cedg`, workspace layout XML or Construction XML. Runtime
+projects accepted chords onto the two existing Swing actions.
 
 ### 5.2 Conflict and validity policy
 
-Configuration is accepted only when the normalized chord is not already owned
+The complete factor/two-chord proposal is validated before any value is
+persisted. Configuration is accepted only when each normalized chord is not already owned
 by:
 
 1. a GeoCeDG action accelerator;
@@ -211,11 +235,13 @@ by:
 3. an inherited non-enumerable `GlobalKeyDispatcher` shortcut in the pinned host
    baseline's audited reserved set.
 
-Conflict, invalid key code, modifier-only input, unsupported typed-character
+The proposed chords must also be distinct. Conflict, invalid factor, invalid key
+code, modifier-only input, unsupported typed-character
 binding, AltGraph/locale-ambiguous input, or an unavailable platform modifier is
-rejected atomically. The prior valid binding remains active; no command is
-overridden. The same policy is applied on preference load. An invalid/stale
-stored value yields the unbound default and a presentation diagnostic.
+rejected atomically. The same dialog stays open with an inline validation
+message so the draft can be corrected. The prior valid configuration remains
+active; Cancel writes nothing and no command is overridden. Invalid stored
+values fail to the documented factor/unbound defaults.
 
 The small audited reserved set is a compatibility boundary necessitated by the
 host's switch-based global dispatcher, not a new general shortcut registry. A
@@ -228,7 +254,7 @@ keyboard handling.
 |---|---|---|
 | zoom factor, origin, viewport | view/document presentation as inherited | may save/reopen as presentation; never geometric authority |
 | ZoomWindow armed/anchored preview | controller/session | transient; never serialized |
-| direct ZoomWindow chord | GeoCeDG application/profile preference | survives restart; absent in old files; resettable |
+| factor and two factor-zoom chords | GeoCeDG application/profile preference | survive restart; absent in old files; resettable to 10/unbound |
 | workspace layout | existing GeoCeDG workspace preference/document presentation | unchanged |
 | construction and CeDG identities | shared geometric/semantic kernel | untouched |
 
@@ -236,7 +262,7 @@ Classic continues to use inherited actions and preferences. The generic
 non-square-centre correction is safe for Classic because it fixes the stated
 centre fallback without adding GeoCeDG policy. Older `.ggb`/`.cedg` files need no
 migration and cannot acquire semantic associations. Files do not carry the A7
-shortcut. The G9U1 ZoomWindow action and rectangle path remain the only
+factor or shortcuts. The G9U1 ZoomWindow action and rectangle path remain the only
 ZoomWindow implementation.
 
 ## 7. Proposed implementation seams
@@ -247,13 +273,13 @@ The separately authorized implementation should be limited to:
    focused shared regression test;
 2. a small GeoCeDG Desktop navigation-preference/policy component using
    `GeoGebraPreferencesD`, not a new configuration subsystem;
-3. `GeoCeDGActionRegistry`: apply the accepted chord to the existing action and
-   dispatch only to the supported active primary view;
+3. `GeoCeDGActionRegistry`: dispatch the explicit ZoomWindow and two factor
+   actions only to the supported active primary view;
 4. `GeoCeDGEuclidianController`: add explicit cursor-context validity plus the
    bounded keyboard-anchored gesture state while retaining the existing
    rectangle finalization seam;
 5. the existing profile catalog/menu settings projection and localization for
-   one bounded shortcut setting;
+   one bounded factor/two-shortcut setting;
 6. focused shared/Desktop tests and an additive `POST-G9U1-A7` PHASE selection.
 
 No Java geometric-kernel change is required. One shared/common **view-input**
@@ -285,11 +311,10 @@ configuration and gesture work remains GeoCeDG Desktop. Web and 3D do not change
    `zoom` backed by `CoordSystemAnimation`; no new mathematics.
 3. **ZoomWindow seam:** the G9U1 `setAnimatedRealWorldCoordSystem` path listed in
    section 1.3.
-4. **Included actions:** existing ordinary anchored zoom plus configurable
-   activation of existing ZoomWindow. The broader G12 list in section 2 remains
-   deferred.
-5. **Keyboard scope:** one optional direct chord for the stable ZoomWindow action
-   and correction of the inherited no-cursor centre fallback.
+4. **Included actions:** inherited ordinary anchored zoom, explicit ZoomWindow,
+   and the two configured factor actions. The broader G12 list remains deferred.
+5. **Keyboard scope:** independent optional chords for factor In/Out plus the
+   inherited no-cursor centre correction; inherited `+/-` remains unchanged.
 6. **Persistence:** isolated GeoCeDG application/profile preferences.
 7. **Conflict:** reject atomically and retain the previous valid binding; never
    override silently.
@@ -301,8 +326,8 @@ configuration and gesture work remains GeoCeDG Desktop. Web and 3D do not change
 11. **No-side-effect evidence:** compare construction membership/DAG, object
     coordinates, durable IDs and representative Locus V2 addresses before/after
     every navigation path, independently of view XML.
-12. **Smallest future slice:** the six seams in section 7, one bounded PHASE,
-    Classic 5 Desktop only, pending separate author authorization.
+12. **Bounded implementation:** the six seams in section 7, one bounded PHASE,
+    Classic 5 Desktop only; the corrected candidate remains pending author review.
 
 ## 10. ADR and unresolved questions
 

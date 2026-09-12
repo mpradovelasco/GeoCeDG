@@ -36,12 +36,12 @@ class G9U1ProfileCompilerTest {
 	}
 
 	@Test
-	void liveProfileStrictlyCompilesOneHundredTenActions() throws Exception {
+	void liveProfileStrictlyCompilesCurrentActionCatalog() throws Exception {
 		JSONObject profile = GeoCeDGProfile.getCatalog();
 		assertEquals(2, profile.getInt("schema_version"));
 		assertEquals(11, profile.getJSONObject("taxonomy").getJSONArray("broad_families").length());
 		assertEquals(18, profile.getJSONArray("clusters").length());
-		assertEquals(110, GeoCeDGProfile.getActions().size());
+		assertEquals(112, GeoCeDGProfile.getActions().size());
 		assertEquals(GeoCeDGProfile.getToolbarDefinition(),
 				GeoCeDGProfile.compileProfile(profile.toString()));
 	}
@@ -206,7 +206,7 @@ class G9U1ProfileCompilerTest {
 				assertTrue(ids.add(id), id);
 			}
 		}
-		assertEquals(110, ids.size());
+		assertEquals(112, ids.size());
 		assertEquals(List.of("edit-selection", "construction-relations",
 				"construction-lines-vectors",
 				"construction-polygons",
@@ -373,7 +373,7 @@ class G9U1ProfileCompilerTest {
 	void validV2DoesNotUseFallback() {
 		var selected = GeoCeDGProfile.loadDefinition(GeoCeDGProfile.getCatalog().toString(), "");
 		assertFalse(selected.legacyFallback);
-		assertEquals(110, selected.actionCount());
+		assertEquals(112, selected.actionCount());
 	}
 
 	@Test

@@ -1869,7 +1869,43 @@
       "command_surface_profile_id": "action-only",
       "planning_disposition": "must",
       "implementation_state": "new-frontend",
-      "notes": "Menu, toolbar and keyboard interaction; viewport-only and never semantic authority."
+      "notes": "Explicit GeoCeDG window action; viewport-only and never semantic authority."
+    },
+    {
+      "id": "navigation.zoom-factor-in",
+      "kind": "navigation-action",
+      "target": {
+        "symbol": "geocedg.navigation.zoom-factor-in"
+      },
+      "maturity": "experimental",
+      "feature_requirements": [],
+      "selection_contract_ref": "geocedg.cursor-current-view-anchor",
+      "effect_profile_id": "read-only",
+      "localization_ref": "geocedg.action.ZoomFactorIn",
+      "icon_ref": "geocedg.action.ZoomFactorIn",
+      "availability_profile_id": "product-only",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "must",
+      "implementation_state": "new-frontend",
+      "notes": "Immediate configured factor zoom; distinct from inherited Zoom In."
+    },
+    {
+      "id": "navigation.zoom-factor-out",
+      "kind": "navigation-action",
+      "target": {
+        "symbol": "geocedg.navigation.zoom-factor-out"
+      },
+      "maturity": "experimental",
+      "feature_requirements": [],
+      "selection_contract_ref": "geocedg.cursor-current-view-anchor",
+      "effect_profile_id": "read-only",
+      "localization_ref": "geocedg.action.ZoomFactorOut",
+      "icon_ref": "geocedg.action.ZoomFactorOut",
+      "availability_profile_id": "product-only",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "must",
+      "implementation_state": "new-frontend",
+      "notes": "Immediate reciprocal configured factor zoom; distinct from inherited Zoom Out."
     },
     {
       "id": "navigation.standard-view",
@@ -2662,6 +2698,8 @@
         "navigation.zoom-in",
         "navigation.zoom-out",
         "navigation.zoom-window",
+        "navigation.zoom-factor-in",
+        "navigation.zoom-factor-out",
         "navigation.standard-view",
         "navigation.show-all-objects"
       ],
@@ -3098,7 +3136,7 @@
     {
       "id": "view-navigation",
       "name_key": "Group.View.Navigation",
-      "action_ids": ["navigation.pan-view", "navigation.zoom-window", "navigation.zoom-in", "navigation.zoom-out", "navigation.standard-view", "navigation.show-all-objects"],
+      "action_ids": ["navigation.pan-view", "navigation.zoom-window", "navigation.zoom-in", "navigation.zoom-out", "navigation.zoom-factor-in", "navigation.zoom-factor-out", "navigation.standard-view", "navigation.show-all-objects"],
       "toolbar_action_ids": ["navigation.pan-view", "navigation.zoom-window", "navigation.zoom-in", "navigation.zoom-out", "presentation.copy-style"],
       "toolbar_rendering": "profile-flyout"
     },
@@ -3349,14 +3387,17 @@
     }
   ],
   "localized_text": {
-    "Navigation.Shortcut.Configure": {"en": "Configure ZoomWindow shortcut...", "es": "Configurar atajo de ZoomWindow..."},
-    "Navigation.Shortcut.Unassigned": {"en": "Unassigned", "es": "Sin asignar"},
-    "Navigation.Shortcut.Assign": {"en": "Assign", "es": "Asignar"},
+    "Navigation.Configure": {"en": "Configure navigation zoom...", "es": "Configurar zoom de navegación..."},
+    "Navigation.ZoomFactor": {"en": "Zoom factor", "es": "Factor de zoom"},
+    "Navigation.ZoomFactorIn": {"en": "Zoom Factor In shortcut", "es": "Atajo Acercar por factor"},
+    "Navigation.ZoomFactorOut": {"en": "Zoom Factor Out shortcut", "es": "Atajo Alejar por factor"},
+    "Navigation.Apply": {"en": "Apply", "es": "Aplicar"},
     "Navigation.Shortcut.Reset": {"en": "Reset", "es": "Restablecer"},
     "Navigation.Shortcut.Cancel": {"en": "Cancel", "es": "Cancelar"},
     "Navigation.Shortcut.Conflict": {"en": "That shortcut is already reserved or active. The previous binding was retained.", "es": "Ese atajo ya está reservado o activo. Se conserva la asignación anterior."},
     "Navigation.Shortcut.Invalid": {"en": "Press a key with an explicit supported modifier.", "es": "Pulse una tecla con un modificador compatible explícito."},
-    "Action.Unavailable.PrimaryView": {"en": "ZoomWindow is available in the primary 2D Graphics view.", "es": "ZoomWindow está disponible en la Vista Gráfica 2D principal."},
+    "Navigation.ZoomFactor.Invalid": {"en": "The zoom factor must be finite and greater than 1.", "es": "El factor de zoom debe ser finito y mayor que 1."},
+    "Action.Unavailable.PrimaryView": {"en": "This navigation action is available in the primary 2D Graphics view.", "es": "Esta acción de navegación está disponible en la Vista Gráfica 2D principal."},
     "geocedg.action.LocusV2Create.name": {"en": "Locus V2", "es": "Locus V2"},
     "Group.File.Open": {"en": "Open", "es": "Abrir"},
     "Group.File.Save": {"en": "Save", "es": "Guardar"},
@@ -3669,6 +3710,46 @@
     "geocedg.action.ZoomWindow.error": {
       "en": "Cannot perform Zoom to rectangle in the current context.",
       "es": "No se puede ejecutar Zoom por rectángulo en el contexto actual."
+    },
+    "geocedg.action.ZoomFactorIn.name": {
+      "en": "Zoom Factor In",
+      "es": "Acercar por factor"
+    },
+    "geocedg.action.ZoomFactorIn.short_help": {
+      "en": "Zoom by the configured factor around the current cursor",
+      "es": "Acerca por el factor configurado alrededor del cursor actual"
+    },
+    "geocedg.action.ZoomFactorIn.long_help": {
+      "en": "Multiplies both view scales by the configured factor without changing geometry.",
+      "es": "Multiplica ambas escalas de vista por el factor configurado sin cambiar la geometría."
+    },
+    "geocedg.action.ZoomFactorIn.status": {
+      "en": "Ready: Zoom Factor In",
+      "es": "Disponible: Acercar por factor"
+    },
+    "geocedg.action.ZoomFactorIn.error": {
+      "en": "Cannot perform Zoom Factor In in the current context.",
+      "es": "No se puede acercar por factor en el contexto actual."
+    },
+    "geocedg.action.ZoomFactorOut.name": {
+      "en": "Zoom Factor Out",
+      "es": "Alejar por factor"
+    },
+    "geocedg.action.ZoomFactorOut.short_help": {
+      "en": "Zoom out by the configured factor around the current cursor",
+      "es": "Aleja por el factor configurado alrededor del cursor actual"
+    },
+    "geocedg.action.ZoomFactorOut.long_help": {
+      "en": "Divides both view scales by the configured factor without changing geometry.",
+      "es": "Divide ambas escalas de vista por el factor configurado sin cambiar la geometría."
+    },
+    "geocedg.action.ZoomFactorOut.status": {
+      "en": "Ready: Zoom Factor Out",
+      "es": "Disponible: Alejar por factor"
+    },
+    "geocedg.action.ZoomFactorOut.error": {
+      "en": "Cannot perform Zoom Factor Out in the current context.",
+      "es": "No se puede alejar por factor en el contexto actual."
     },
     "upstream.view.StandardView.name": {
       "en": "Standard view",

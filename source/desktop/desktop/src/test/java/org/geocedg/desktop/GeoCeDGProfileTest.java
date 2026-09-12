@@ -42,7 +42,7 @@ class GeoCeDGProfileTest {
 	void compilesManifestToolbarIntoExistingGrammar() {
 		String toolbar = GeoCeDGProfile.getToolbarDefinition();
 		assertThat(GeoCeDGProfile.getProfileId(), equalTo("geocedg-desktop"));
-		assertThat(GeoCeDGProfile.getActions(), hasSize(110));
+		assertThat(GeoCeDGProfile.getActions(), hasSize(112));
 		assertThat(ToolBar.parseToolbarString(toolbar), hasSize(9));
 		assertThat(Arrays.asList(toolbar.split("[ |]+")),
 				not(org.hamcrest.Matchers.hasItem("47")));

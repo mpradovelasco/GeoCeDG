@@ -17,6 +17,7 @@ import org.geocedg.common.kernel.locus.intersection.LocusIntersectionSolution2D;
 import org.geocedg.common.main.feature.RuntimeFeatureService;
 import org.geogebra.common.awt.AwtFactory;
 import org.geogebra.common.awt.GPoint;
+import org.geogebra.common.awt.GRectangle;
 import org.geogebra.common.euclidian.Drawable;
 import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.euclidian.EuclidianCursor;
@@ -225,12 +226,7 @@ public final class GeoCeDGEuclidianController
 			getView().setSelectionRectangle(null);
 			if (rectangle != null && rectangle.getWidth() >= 10
 					&& rectangle.getHeight() >= 10) {
-				// Explicit ZoomWindow is independent of the optional Shift-drag gesture.
-				getView().setAnimatedRealWorldCoordSystem(
-						getView().toRealWorldCoordX(rectangle.getMinX()),
-						getView().toRealWorldCoordX(rectangle.getMaxX()),
-						getView().toRealWorldCoordY(rectangle.getMaxY()),
-						getView().toRealWorldCoordY(rectangle.getMinY()), 15, true);
+				applyZoomWindow(rectangle);
 			}
 			getView().setCursor(EuclidianCursor.DEFAULT);
 			return;
@@ -267,6 +263,22 @@ public final class GeoCeDGEuclidianController
 			zoomStartY = current.y;
 		}
 		getView().setCursor(EuclidianCursor.ZOOM_IN);
+	}
+
+	/**
+	 * Applies one product-local factor zoom through the inherited coordinate-system
+	 * animation. A stale pointer never supplies the anchor.
+	 *
+	 * @param factor multiplicative view factor
+	 */
+	public void zoomByFactor(double factor) {
+		if (!Double.isFinite(factor) || factor <= 0) {
+			throw new IllegalArgumentException("Zoom factor must be finite and positive");
+		}
+		GPoint anchor = isMouseLocationValidForKeyboardNavigation()
+				? getMouseLoc()
+				: new GPoint(getView().getWidth() / 2, getView().getHeight() / 2);
+		zoomInOut(factor, 1, anchor.x, anchor.y);
 	}
 
 	/** @return whether the next drag defines a zoom rectangle */
@@ -336,7 +348,7 @@ public final class GeoCeDGEuclidianController
 		}
 	}
 
-	private void cancelZoomWindow() {
+	void cancelZoomWindow() {
 		zoomWindowKeyboardAnchored = false;
 		zoomWindowActive = false;
 		zoomWindowDragging = false;
@@ -360,6 +372,35 @@ public final class GeoCeDGEuclidianController
 		getView().repaintView();
 	}
 
+	private void applyZoomWindow(GRectangle rectangle) {
+		double selectedMinX = getView().toRealWorldCoordX(rectangle.getMinX());
+		double selectedMaxX = getView().toRealWorldCoordX(rectangle.getMaxX());
+		double selectedMinY = getView().toRealWorldCoordY(rectangle.getMaxY());
+		double selectedMaxY = getView().toRealWorldCoordY(rectangle.getMinY());
+		double selectedWidth = selectedMaxX - selectedMinX;
+		double selectedHeight = selectedMaxY - selectedMinY;
+		double scaleRatio = getView().getXscale() / getView().getYscale();
+		if (!(selectedWidth > 0) || !(selectedHeight > 0)
+				|| !Double.isFinite(scaleRatio) || !(scaleRatio > 0)) {
+			return;
+		}
+		double newXscale = Math.min(getView().getWidth() / selectedWidth,
+				scaleRatio * getView().getHeight() / selectedHeight);
+		double newYscale = newXscale / scaleRatio;
+		if (!Double.isFinite(newXscale) || !Double.isFinite(newYscale)
+				|| !(newXscale > 0) || !(newYscale > 0)) {
+			return;
+		}
+		double centerX = (selectedMinX + selectedMaxX) / 2;
+		double centerY = (selectedMinY + selectedMaxY) / 2;
+		double visibleWidth = getView().getWidth() / newXscale;
+		double visibleHeight = getView().getHeight() / newYscale;
+		// Reuse the G9U1 rectangle finalization seam with ratio-preserving bounds.
+		getView().setAnimatedRealWorldCoordSystem(
+				centerX - visibleWidth / 2, centerX + visibleWidth / 2,
+				centerY - visibleHeight / 2, centerY + visibleHeight / 2, 15, true);
+	}
+
 	@Override
 	public void setMode(int newMode, ModeSetter setter) {
 		if (interactionGesture) {
@@ -380,12 +421,9 @@ public final class GeoCeDGEuclidianController
 		if (similarityTools != null) {
 			similarityTools.reset();
 		}
-		if ((zoomWindowActive || zoomWindowDragging) && getView() != null) {
-			getView().setSelectionRectangle(null);
+		if (zoomWindowActive || zoomWindowDragging || zoomWindowKeyboardAnchored) {
+			cancelZoomWindow();
 		}
-		zoomWindowActive = false;
-		zoomWindowDragging = false;
-		zoomWindowKeyboardAnchored = false;
 		super.setMode(newMode, setter);
 	}
 

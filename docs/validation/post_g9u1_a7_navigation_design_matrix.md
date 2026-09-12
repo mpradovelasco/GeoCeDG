@@ -1,9 +1,9 @@
 # POST-G9U1-A7 navigation design and future validation matrix
 
 - Design status: **AUTHOR APPROVED**
-- Implementation status: **IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**
+- Implementation status: **CORRECTED IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**
 - Base commit: `71483011be9bb9fdfe896f00af0ba8323f9c0834`
-- Product phase effect: **NONE**
+- Product phase effect: **BOUNDED IMPLEMENTATION CANDIDATE**
 - Product implementation authorized: **true, bounded to the approved design**
 - Product code changed: **true, candidate pending author review**
 - Design authority candidate:
@@ -11,6 +11,10 @@
 
 This matrix preserves characterization and records the implemented candidate
 coverage. It does not itself claim author approval of the implementation.
+The author-approved design is `98280d81771758258f29bfb80c6d025a192b3dca`;
+interactive smoke of initial candidate
+`b249a62aa6e0e7e844ec350ccbfd600ae5553b2c` authorized the bounded corrected
+evidence below without reopening broader G12.
 
 ## 1. Characterization matrix
 
@@ -31,7 +35,7 @@ coverage. It does not itself claim author approval of the implementation.
 | A7-C13 | Host offers a general configurable shortcut registry | global shortcuts are switch-based in `GlobalKeyDispatcher`; menu/root input bindings are separate | NOT AVAILABLE; bounded A7 policy required |
 | A7-C14 | Classic is isolated from GeoCeDG action policy | `AppGeoCeDG`/`GuiManagerGeoCeDG` construct product actions; Classic uses inherited app/menu/controller | ESTABLISHED |
 
-## 2. Future behavioral tests
+## 2. Corrected behavioral tests
 
 | ID | Required scenario | Minimum assertion | Preferred layer |
 |---|---|---|---|
@@ -39,18 +43,19 @@ coverage. It does not itself claim author approval of the implementation.
 | A7-T02 | cursor-anchored zoom out | inverse-factor path preserves the same anchor | shared view/controller test |
 | A7-T03 | repeated zoom | no systematic anchor drift beyond transform/display precision | shared deterministic test |
 | A7-T04 | no geometric side effects | construction count/DAG, coordinates, durable IDs and representative Locus V2 address are unchanged | shared + GeoCeDG Desktop |
-| A7-T05 | existing ZoomWindow reuse | finalization calls the existing rectangle real-world seam; no second rectangle transform exists | Desktop controller test |
-| A7-T06 | configured action dispatch | accepted chord invokes the one `navigation.zoom-window` action and no other action | Desktop action/input test |
-| A7-T07 | application preference persistence | binding survives app restart/reload, is absent from document/construction XML and reset returns to unbound | Desktop preference test |
-| A7-T08 | conflict policy | GeoCeDG, menu/root and inherited-reserved conflicts are rejected without changing the prior binding | Desktop policy test |
+| A7-T05 | existing ZoomWindow reuse and fit | finalization calls the G9U1 rectangle real-world seam, contains wide/tall selections and preserves `xScale / yScale` | Desktop controller test |
+| A7-T06 | explicit and configured action dispatch | Navigation exposes distinct ZoomWindow plus `navigation.zoom-factor-in/out`; inherited `+/-` is unchanged | shared + Desktop action/input test |
+| A7-T07 | application preference persistence | factor 10 and two initially unbound chords survive preference reload, remain absent from document XML and reset to defaults | Desktop preference test |
+| A7-T08 | atomic conflict/validation UX | invalid factor, same-chord, GeoCeDG/root/inherited conflicts keep the same panel active and leave prior preferences unchanged | Desktop panel/policy test |
 | A7-T09 | no/stale cursor | keyboard zoom uses `(width/2,height/2)`; after exit (including text-field focus), re-entry without movement or workspace replacement, ZoomWindow enters `WAIT_FOR_DRAG` without fabricated extent | shared + Desktop test |
 | A7-T10 | Classic regression | ordinary Classic bindings and cursor zoom remain unchanged except corrected true-centre fallback | Desktop Classic regression |
 | A7-T11 | old-file save/reopen | no shortcut or semantic association is manufactured; view presentation remains host-compatible | Desktop round trip |
 | A7-T12 | extreme supported scales | finite deterministic transform at both supported sides; out-of-range proposal is rejected | shared view test |
 | A7-T13 | valid cursor ZoomWindow activation | current primary-view cursor becomes first corner; next click uses existing finalization | Desktop controller test |
-| A7-T14 | cancel paths | Escape/right-click/focus loss/tool change clear preview and change neither view nor Construction | Desktop controller test |
+| A7-T14 | cancel paths | Escape in WAIT_FOR_DRAG or preview, right-click, focus loss and tool change clear state and change neither view nor Construction | Desktop controller/key test |
 | A7-T15 | unsupported active view | action never silently operates on view 1 when secondary 2D/3D is active | Desktop action test |
 | A7-T16 | DPI/viewport independence | changing component size/DPI affects only view mapping, not geometry/metrics/identity | shared + semantic regression |
+| A7-T17 | configured factor reciprocity | factor In multiplies both scales, Out divides them, both preserve current cursor/true-centre anchor, and In+Out restores the transform | Desktop controller/action test |
 
 Tests must compare model state independently from serialized view presentation.
 Pixel screenshots and painting timing are not acceptance authority.
@@ -72,17 +77,17 @@ G9U1 ZoomWindow regression, the Classic keyboard regression and the minimum
 semantic-purity regression. Inventory/registry additions require `INFRA_UNIT`
 under current governance.
 
-`PostG9U1A7CursorZoomTest` proves the inherited affine anchor for zoom-in/out,
+`PostG9U1A7CursorZoomTest` proves the inherited wheel and keyboard affine anchor,
 repeated operations, finite supported extreme scales and the corrected
 non-square Classic fallback. `PostG9U1A7NavigationTest` proves fresh/stale and
-focus-loss cursor lifecycle, anchored and WAIT_FOR_DRAG ZoomWindow activation,
-unchanged construction/semantic identity, the unassigned default, preference
-reload, document-XML exclusion, atomic conflict rejection, primary-view
-containment and reuse of the G9U1 action. The Desktop selection also retains
-`G9U1SemanticPointInteractionTest`, `GeoCeDGProfileTest` and
-`G9U1WorkspaceSurfaceTest` as direct ZoomWindow, schema/catalog and
-menu/toolbar regressions. Final PHASE evidence remains candidate-bound and does
-not imply author approval.
+focus-loss cursor lifecycle, Escape cancellation, ratio-preserving wide/tall
+ZoomWindow fits, unchanged construction/semantic identity, factor-10 defaults,
+reciprocal factor actions, preference reload, document-XML exclusion, atomic
+in-panel validation, primary-view containment and G9U1 action reuse. The Desktop
+selection also retains `G9U1SemanticPointInteractionTest`, `GeoCeDGProfileTest`,
+`G9U1ProfileCompilerTest` and `G9U1WorkspaceSurfaceTest` as direct rectangle,
+schema/catalog and menu/toolbar regressions. Final PHASE evidence remains
+candidate-bound and does not imply author approval.
 
 ## 4. Scope and non-authorities
 
@@ -94,3 +99,18 @@ Screen position, shortcut token, viewport, zoom, camera, DPI, toolbar/menu
 placement and serialized presentation are never authority for coordinates,
 metric truth, incidence, semantic identity, provenance, projection identity,
 spatial reconstruction or DAG membership.
+
+## 5. Author repeat-smoke checklist
+
+1. Confirm inherited wheel and `Ctrl`+`+/-` retain their familiar behavior.
+2. Run **View → Navigation → Zoom to rectangle** with wide and tall rectangles
+   in a non-square view; confirm the region is contained without X/Y stretching.
+3. Press Escape before dragging and during a rectangle preview; confirm the view
+   does not move and the ordinary tool state returns.
+4. Configure factor 10 and two non-conflicting chords; confirm In then Out at
+   the same cursor restores the view.
+5. Enter factor 1 and then colliding chords; confirm the same dialog remains
+   open, identifies each problem and preserves the prior saved configuration.
+6. Cancel a valid unsaved draft; reopen configuration and confirm the prior
+   values. Open another construction and confirm the application preferences
+   remain while construction geometry/identity is unchanged.

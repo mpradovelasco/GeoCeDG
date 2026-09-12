@@ -337,8 +337,8 @@ public final class GeoCeDGProfile {
 					action.getString("localization_ref"), presentationNameKey,
 					action.getString("icon_ref")));
 		}
-		if (actions.size() != 110) {
-			throw new IllegalStateException("Approved G9U1 catalog requires 110 actions");
+		if (actions.size() != 112) {
+			throw new IllegalStateException("Approved A7 catalog requires 112 actions");
 		}
 		validatePlacements(root, ids);
 		return actions;

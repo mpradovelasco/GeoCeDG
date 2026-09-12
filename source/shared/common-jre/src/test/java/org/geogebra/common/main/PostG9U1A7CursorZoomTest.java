@@ -51,6 +51,11 @@ class PostG9U1A7CursorZoomTest extends BaseAppTestSetup {
 		double worldX = view.toRealWorldCoordX(x);
 		double worldY = view.toRealWorldCoordY(y);
 		double scale = view.getXscale();
+		controller.wrapMouseWheelMoved(x, y, -1, false, false);
+		awaitScaleChange(view, scale);
+		assertEquals(x, view.toScreenCoordXd(worldX), 1E-7);
+		assertEquals(y, view.toScreenCoordYd(worldY), 1E-7);
+		scale = view.getXscale();
 		dispatcher.handleCtrlKeys(KeyCodes.PLUS, false, false, true);
 		awaitScaleChange(view, scale);
 		assertEquals(x, view.toScreenCoordXd(worldX), 1E-7);
