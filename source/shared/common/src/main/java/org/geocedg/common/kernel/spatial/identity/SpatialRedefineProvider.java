@@ -116,4 +116,17 @@ public interface SpatialRedefineProvider {
 	/** @return the provider's pre-mutation identity decision */
 	SpatialRedefineDecision inspect(SpatialRedefineContext context,
 			SpatialRedefineProposal proposal);
+
+	/**
+	 * Declares whether a retained decision must also satisfy the A4/P3 procedural
+	 * position contract before identity publication. The default keeps historical
+	 * providers unchanged.
+	 *
+	 * @return true only for a provider-sealed retained family governed by P3
+	 */
+	default boolean requiresProceduralPositionPreservation(
+			SpatialRedefineContext context, SpatialRedefineProposal proposal,
+			SpatialRedefineDecision decision) {
+		return false;
+	}
 }

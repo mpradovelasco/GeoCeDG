@@ -113,6 +113,13 @@ public final class AlgoSplineV2 extends AlgoLocusV2 {
 		return Commands.SplineV2;
 	}
 
+	@Override
+	public String getV2RedefineContractId() {
+		return weight == null
+				? "spline-v2/piecewise-polynomial/unweighted/v1"
+				: "spline-v2/piecewise-polynomial/weighted/v1";
+	}
+
 	/** @return immutable current polynomial authority, or null while undefined */
 	public SplinePolynomialModel2D getPolynomialModel() {
 		return model;

@@ -117,6 +117,13 @@ public final class SpatialRedefineProposal {
 		return replacementOperationSelected;
 	}
 
+	/** @return the same frozen provider evidence with explicit execution intent */
+	SpatialRedefineProposal withReplacementOperationSelected(boolean selected) {
+		return new SpatialRedefineProposal(candidateOutputs,
+				targetedStableOutputRole, targetedOutputCount, effect, effectExplicit,
+				legacyTopologyPreserving, selected);
+	}
+
 	private SpatialRedefineCandidateOutput targetedOutput() {
 		return candidateOutputs.get(targetedStableOutputRole);
 	}

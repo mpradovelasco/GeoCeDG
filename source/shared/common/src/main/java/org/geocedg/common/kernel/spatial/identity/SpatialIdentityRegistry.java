@@ -2456,15 +2456,20 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 
 	private void validateSealedProviderRedefineShape(
 			SpatialLifecycleMutation mutation) {
+		boolean sealedTopologyDependencies = mutation.getOperationKind()
+				== SpatialLifecycleOperationKind.ADMITTED_TOPOLOGY_CHANGE
+				&& containsOnlyGeoRecords(mutation.getCreatedRecords().values());
 		if (!mutation.isProviderValidatedRedefine()
 				|| !mutation.getCreatedRecords().isEmpty()
+						&& !sealedTopologyDependencies
 				|| !mutation.getRetiredIds().isEmpty()
 				|| !containsOnlyGeoRecords(mutation.getExpectedRecords().values())
 				|| !containsOnlyGeoRecords(mutation.getReplacementRecords().values())) {
 			throw failure(SpatialIdentityDiagnostic.of(
 					SpatialIdentityDiagnostic.Code.LIFECYCLE_SCOPE_VIOLATION,
 					"Generic lifecycle effects are sealed to provider-validated "
-							+ "GeoIdentity redefine transactions"));
+							+ "GeoIdentity redefine transactions and their exact "
+							+ "admitted-topology dependency closure"));
 		}
 	}
 
@@ -2546,6 +2551,10 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 								second.getStableOutputRole())
 						&& first.getOutputCardinality()
 								== second.getOutputCardinality();
+			} else if (operation
+					== SpatialLifecycleOperationKind.ADMITTED_TOPOLOGY_CHANGE) {
+				compatible &= first.toRedefineSignature()
+						.hasSameDurableContract(second.toRedefineSignature());
 			} else {
 				compatible &= first.toRedefineSignature().isExactlyCompatibleWith(
 						second.toRedefineSignature());
@@ -3373,7 +3382,8 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 				explicitOldTarget.getConstruction().getCurrentUndoXML(false).toString(),
 				explicitOldTarget.getConstruction()
 						.captureSpatialRedefineHostOperationEpoch(),
-				graphPublicationEpoch, runtimePublicationEpoch());
+				graphPublicationEpoch, runtimePublicationEpoch(),
+				SpatialProceduralPositionSnapshot.capture(this, oldOutputs));
 	}
 
 	/**
@@ -4163,24 +4173,17 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 		}
 		validateCandidateParticipationForDecision(context, proposal, decision,
 				participation);
+		boolean proceduralPositionRequired = decision != SpatialRedefineDecision.REJECT
+				&& provider.requiresProceduralPositionPreservation(context, proposal,
+						decision);
 		Map<String, PersistentGeoId> decidedIds = allocateRedefineIds(context,
 				proposal, decision, participation);
 		Set<SpatialIdentityId> retiredIds = redefineRetiredClosure(context, decision);
 		instrumentation.recordRedefineDecision(decision);
 		SpatialRedefineTransaction transaction = new SpatialRedefineTransaction(this,
-				context, proposal, decision, decidedIds, retiredIds, participation);
-		if (participation != null) {
-			if (activeCandidateParticipation != participation
-					|| !claimedCandidateParticipations.add(participation)) {
-				throw failure(SpatialIdentityDiagnostic.forSubject(
-						SpatialIdentityDiagnostic.Code.TRANSACTION_STATE,
-						"Redefine candidate participation lost its lexical owner",
-						context.getOldId()));
-			}
-			activeCandidateParticipation = null;
-			participation.setState(
-					SpatialRedefineCandidateParticipation.State.CLAIMED);
-		}
+				context, proposal, decision, decidedIds, retiredIds, participation,
+				proceduralPositionRequired);
+		claimCandidateParticipation(participation, context);
 		return transaction;
 	}
 
@@ -4193,8 +4196,27 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 	public void validatePreparedRedefineTransaction(
 			SpatialRedefineTransaction transaction) {
 		requireOwnedPrepared(transaction);
+		if (transaction.isHostMutationAuthorized()) {
+			return;
+		}
 		requireCurrentContext(transaction.getContext());
 		validateRedefineHostRollback(transaction.getContext());
+		requireCurrentPreparedAssessmentHostState(transaction);
+	}
+
+	/**
+	 * Freezes the last currentness check immediately before the host enters its
+	 * mutating replace path. An assessed transaction cannot commit without it.
+	 *
+	 * @param transaction prepared assessed transaction
+	 */
+	public void authorizeRedefineHostMutation(
+			SpatialRedefineTransaction transaction) {
+		if (transaction != null && transaction.isHostMutationAuthorized()) {
+			return;
+		}
+		validatePreparedRedefineTransaction(transaction);
+		transaction.markHostMutationAuthorized();
 	}
 
 	/** @return a transaction built from provider-inspected candidate metadata */
@@ -4258,8 +4280,34 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 	public SpatialRedefineTransaction prepareRedefine(SpatialRedefineContext context,
 			GeoElement targetedCandidate, List<GeoElement> candidates,
 			boolean replacementOperationSelected) {
-		return prepareRedefine(context, targetedCandidate, candidates,
-				replacementOperationSelected, null);
+		if (context == null) {
+			instrumentation.recordRedefineMissingContext();
+			instrumentation.recordRedefineDecision(SpatialRedefineDecision.REJECT);
+			throw failure(SpatialIdentityDiagnostic.of(
+					SpatialIdentityDiagnostic.Code.REDEFINE_CONTEXT_MISSING,
+					"A participating redefine cannot retain identity without context"));
+		}
+		SpatialRedefineProvider provider = redefineProviders.get(
+				context.getOldSignature().getProvider());
+		if (provider == null) {
+			throw failure(SpatialIdentityDiagnostic.forSubject(
+					SpatialIdentityDiagnostic.Code.REDEFINE_PROVIDER_MISSING,
+					"No registered provider can describe the redefine group",
+					context.getOldId()));
+		}
+		SpatialRedefineProposal proposal;
+		try {
+			proposal = describeRedefineProposal(context, targetedCandidate, candidates,
+					provider, null)
+					.withReplacementOperationSelected(replacementOperationSelected);
+		} catch (IllegalArgumentException exception) {
+			instrumentation.recordRedefineDecision(SpatialRedefineDecision.REJECT);
+			throw failure(SpatialIdentityDiagnostic.forSubject(
+					SpatialIdentityDiagnostic.Code.REDEFINE_INCOMPATIBLE,
+					"Provider could not describe an unambiguous redefine group",
+					context.getOldId()), exception);
+		}
+		return prepareRedefine(context, proposal, null);
 	}
 
 	/**
@@ -4273,71 +4321,67 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 			GeoElement targetedCandidate, List<GeoElement> candidates,
 			boolean replacementOperationSelected,
 			SpatialRedefineCandidateParticipation participation) {
-		if (context == null) {
-			instrumentation.recordRedefineMissingContext();
-			instrumentation.recordRedefineDecision(SpatialRedefineDecision.REJECT);
-			throw failure(SpatialIdentityDiagnostic.of(
-					SpatialIdentityDiagnostic.Code.REDEFINE_CONTEXT_MISSING,
-					"A participating redefine cannot retain identity without context"));
-		}
-		requireCurrentContext(context);
-		if (participation != null) {
-			validateRedefineHostRollback(context);
-		}
-		SpatialRedefineProvider provider = redefineProviders.get(
-				context.getOldSignature().getProvider());
-		if (provider == null) {
-			instrumentation.recordRedefineDecision(SpatialRedefineDecision.REJECT);
-			throw failure(SpatialIdentityDiagnostic.forSubject(
-					SpatialIdentityDiagnostic.Code.REDEFINE_PROVIDER_MISSING,
-					"No registered provider can describe the redefine group",
-					context.getOldId()));
-		}
+		return prepareRedefine(context, targetedCandidate, candidates,
+				replacementOperationSelected
+						? SpatialRedefineExecutionMode.LEGACY_REPLACEMENT
+						: SpatialRedefineExecutionMode.ADVANCED_RETAIN,
+				participation);
+	}
+
+	/** @return a transaction prepared only for the explicit assessed mode */
+	public SpatialRedefineTransaction prepareRedefine(SpatialRedefineContext context,
+			GeoElement targetedCandidate, List<GeoElement> candidates,
+			SpatialRedefineExecutionMode mode,
+			SpatialRedefineCandidateParticipation participation) {
+		SpatialRedefineAssessment assessment = assessRedefine(context,
+				targetedCandidate, candidates, participation);
+		return prepareRedefine(assessment, mode);
+	}
+
+	private SpatialRedefineProposal describeRedefineProposal(
+			SpatialRedefineContext context, GeoElement targetedCandidate,
+			List<GeoElement> candidates, SpatialRedefineProvider provider,
+			SpatialRedefineCandidateParticipation participation) {
 		List<GeoElement> enumeration = Collections.unmodifiableList(
 				new ArrayList<>(Objects.requireNonNull(candidates)));
 		SpatialIdentityGraph candidateGraph = candidateGraph(context, participation);
-		SpatialRedefineOutputGroup<SpatialRedefineCandidateOutput> candidateGroup;
-		try {
-			candidateGroup = Objects.requireNonNull(provider.describeCandidateGroup(
-					context, enumeration, candidateGraph));
-		} catch (SpatialIdentityException exception) {
-			throw exception;
-		} catch (RuntimeException exception) {
-			instrumentation.recordRedefineDecision(SpatialRedefineDecision.REJECT);
-			throw failure(SpatialIdentityDiagnostic.forSubject(
-					SpatialIdentityDiagnostic.Code.REDEFINE_INCOMPATIBLE,
-					"Provider could not describe a compatible redefine group",
-					context.getOldId()), exception);
-		}
+		SpatialRedefineOutputGroup<SpatialRedefineCandidateOutput> candidateGroup =
+				Objects.requireNonNull(provider.describeCandidateGroup(context,
+						enumeration, candidateGraph));
 		if (!sameGeoEnumeration(enumeration, candidateGroup)) {
-			throw failure(SpatialIdentityDiagnostic.forSubject(
-					SpatialIdentityDiagnostic.Code.REDEFINE_INCOMPATIBLE,
-					"Provider candidate roles do not cover the host output group",
-					context.getOldId()));
+			throw new IllegalArgumentException(
+					"Provider candidate roles do not cover the host output group");
 		}
 		String targetedRole = roleForGeo(candidateGroup,
 				Objects.requireNonNull(targetedCandidate));
 		if (targetedRole == null) {
-			throw failure(SpatialIdentityDiagnostic.forSubject(
-					SpatialIdentityDiagnostic.Code.REDEFINE_INCOMPATIBLE,
-					"Provider did not map the explicit replacement candidate",
-					context.getOldId()));
+			throw new IllegalArgumentException(
+					"Provider did not map the explicit replacement candidate");
 		}
-		SpatialRedefineEffect effect;
-		try {
-			effect = Objects.requireNonNull(
-					provider.describeEffect(context, candidateGroup));
-		} catch (SpatialIdentityException exception) {
-			throw exception;
-		} catch (RuntimeException exception) {
-			instrumentation.recordRedefineDecision(SpatialRedefineDecision.REJECT);
-			throw failure(SpatialIdentityDiagnostic.forSubject(
-					SpatialIdentityDiagnostic.Code.REDEFINE_INCOMPATIBLE,
-					"Provider could not prove the redefine effect",
-					context.getOldId()), exception);
+		SpatialRedefineEffect effect = Objects.requireNonNull(
+				provider.describeEffect(context, candidateGroup));
+		return new SpatialRedefineProposal(candidateGroup, targetedRole, effect,
+				false);
+	}
+
+	private static boolean sameProposalEvidence(SpatialRedefineProposal first,
+			SpatialRedefineProposal second) {
+		if (!first.getTargetedStableOutputRole().equals(
+				second.getTargetedStableOutputRole())
+				|| first.getEffect() != second.getEffect()
+				|| !first.getCandidateOutputs().getRoles().equals(
+						second.getCandidateOutputs().getRoles())) {
+			return false;
 		}
-		return prepareRedefine(context, new SpatialRedefineProposal(candidateGroup,
-				targetedRole, effect, replacementOperationSelected), participation);
+		for (String role : first.getCandidateOutputs().getRoles()) {
+			SpatialRedefineCandidateOutput left = first.getCandidateOutputs().get(role);
+			SpatialRedefineCandidateOutput right = second.getCandidateOutputs().get(role);
+			if (left.getGeo() != right.getGeo()
+					|| !left.getSignature().equals(right.getSignature())) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private SpatialIdentityGraph candidateGraph(SpatialRedefineContext context,
@@ -4371,24 +4415,57 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 				: proposal.getCandidateOutputs().getOutputs()) {
 			outputs.add(output.getGeo());
 		}
+		IdentityHashMap<GeoElement, GeoIdentityRecord> stagedRecords =
+				participation.copyRecordsByGeo();
 		int stagedNonOutputs = 0;
-		for (GeoElement staged : participation.copyRecordsByGeo().keySet()) {
+		for (GeoElement staged : stagedRecords.keySet()) {
 			if (!outputs.contains(staged)) {
 				stagedNonOutputs++;
 			}
 		}
-		if (decision == SpatialRedefineDecision.RETAIN && stagedNonOutputs != 0) {
+		if (decision == SpatialRedefineDecision.RETAIN && stagedNonOutputs != 0
+				&& (proposal.getEffect()
+						!= SpatialRedefineEffect.ADMITTED_TOPOLOGY_CHANGE
+						|| !hasCompleteStagedDependencyClosure(proposal, outputs,
+								stagedRecords))) {
 			throw failure(SpatialIdentityDiagnostic.forSubject(
 					SpatialIdentityDiagnostic.Code.REDEFINE_INCOMPATIBLE,
-					"Retained redefine cannot publish an uninspected candidate "
-							+ "dependency identity",
+					"Retained redefine has an uninspected candidate dependency "
+							+ "identity outside its sealed topology closure",
 					context.getOldId()));
 		}
+	}
+
+	private static boolean hasCompleteStagedDependencyClosure(
+			SpatialRedefineProposal proposal, Set<GeoElement> outputs,
+			IdentityHashMap<GeoElement, GeoIdentityRecord> stagedRecords) {
+		Map<PersistentGeoId, GeoIdentityRecord> nonOutputs = new LinkedHashMap<>();
+		for (Map.Entry<GeoElement, GeoIdentityRecord> entry : stagedRecords.entrySet()) {
+			if (!outputs.contains(entry.getKey())) {
+				nonOutputs.put(entry.getValue().getId(), entry.getValue());
+			}
+		}
+		LinkedHashSet<SpatialIdentityId> pending = new LinkedHashSet<>();
+		for (SpatialRedefineCandidateOutput output
+				: proposal.getCandidateOutputs().getOutputs()) {
+			pending.addAll(output.getSignature().getDependencies());
+		}
+		LinkedHashSet<PersistentGeoId> reached = new LinkedHashSet<>();
+		while (!pending.isEmpty()) {
+			SpatialIdentityId next = pending.iterator().next();
+			pending.remove(next);
+			GeoIdentityRecord record = nonOutputs.get(next);
+			if (record != null && reached.add(record.getId())) {
+				pending.addAll(record.getReferences());
+			}
+		}
+		return reached.equals(nonOutputs.keySet());
 	}
 
 	void activateRedefineCandidateParticipation(
 			SpatialRedefineTransaction transaction) {
 		requireOwnedPrepared(transaction);
+		requireCurrentPreparedAssessmentHostState(transaction);
 		SpatialRedefineCandidateParticipation participation =
 				transaction.getCandidateParticipation();
 		if (participation == null || participation.areLabelsActivated()) {
@@ -4451,6 +4528,8 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 			validateAttachmentGeo(geo,
 					participation.getPersistentGeoId(geo));
 		}
+		transaction.refreshPreparedHostStateToken(
+				currentRedefineHostState(transaction.getContext()));
 	}
 
 	private static ArrayList<Map.Entry<GeoElement, GeoIdentityRecord>>
@@ -4592,12 +4671,6 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 					"Rejected redefine has no serialization view"));
 		}
 		if (transaction.getDecision() == SpatialRedefineDecision.RETAIN) {
-			if (!finalizedStagedNonOutputRecords(transaction).isEmpty()) {
-				throw failure(SpatialIdentityDiagnostic.forSubject(
-						SpatialIdentityDiagnostic.Code.TRANSACTION_STATE,
-						"Retained redefine cannot serialize new dependency identities",
-						transaction.getContext().getOldId()));
-			}
 			return writeSpatialSectionForRetainedRedefines(
 					Collections.singletonList(transaction));
 		}
@@ -4642,25 +4715,30 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 						"Collected redefine serialization admits retained decisions only",
 						transaction.getContext().getOldId()));
 			}
-			if (!finalizedStagedNonOutputRecords(transaction).isEmpty()) {
-				throw failure(SpatialIdentityDiagnostic.forSubject(
-						SpatialIdentityDiagnostic.Code.TRANSACTION_STATE,
-						"Collected retained redefine contains staged dependency "
-								+ "participation",
-						transaction.getContext().getOldId()));
-			}
 			for (SpatialRedefinePersistedOutput output
 					: transaction.getContext().getOldOutputs().getOutputs()) {
 				GeoIdentityRecord current = getGeoRecord(output.getId());
 				requireCurrentRetainedOutput(output, current,
 						geosById.get(output.getId()), output.getGeo());
 				GeoIdentityRecord replacement = redefineRevision(current,
+						transaction.getProposal().getCandidateOutputs()
+								.get(output.getStableOutputRole()).getSignature(),
 						transaction.getProposal().getEffect());
 				if (replacements.put(output.getId(), replacement) != null) {
 					throw failure(SpatialIdentityDiagnostic.forSubject(
 							SpatialIdentityDiagnostic.Code.TRANSACTION_STATE,
 							"Collected redefine targets one stable output more than once",
 							output.getId()));
+				}
+			}
+			for (GeoIdentityRecord staged
+					: finalizedStagedNonOutputRecords(transaction).values()) {
+				if (replacements.put(staged.getId(), staged) != null
+						|| records.containsKey(staged.getId())) {
+					throw failure(SpatialIdentityDiagnostic.forSubject(
+							SpatialIdentityDiagnostic.Code.TRANSACTION_STATE,
+							"Collected retained redefine repeats a staged dependency",
+							staged.getId()));
 				}
 			}
 			transaction.markRebuildViewWritten();
@@ -4675,6 +4753,14 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 
 	void commitRedefine(SpatialRedefineTransaction transaction, GeoElement actualResult) {
 		requireOwnedPrepared(transaction);
+		if (transaction.getAssessment() != null
+				&& !transaction.isHostMutationAuthorized()) {
+			throw failure(SpatialIdentityDiagnostic.forSubject(
+					SpatialIdentityDiagnostic.Code.REDEFINE_CONTEXT_MISSING,
+					"Assessed redefine did not pass its final pre-mutation "
+							+ "currentness check",
+					transaction.getContext().getOldId()));
+		}
 		Objects.requireNonNull(actualResult);
 		if (transaction.getDecision() == SpatialRedefineDecision.REJECT) {
 			throw failure(SpatialIdentityDiagnostic.forSubject(
@@ -4702,6 +4788,7 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 			}
 		} else if (isRedefinePublicationLeaseActiveFor(
 				transaction.getContext())) {
+			enforceProceduralPosition(transaction, actualOutputs);
 			try (RedefineGraphPublicationPermit ignored =
 					beginRedefineGraphPublicationPermit()) {
 				if (transaction.getDecision() == SpatialRedefineDecision.RETAIN) {
@@ -4711,6 +4798,7 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 				}
 			}
 		} else {
+			enforceProceduralPosition(transaction, actualOutputs);
 			try (RedefinePublicationLease ignored =
 					beginRedefinePublicationLease(Collections.singletonList(
 							transaction.getContext()));
@@ -4723,24 +4811,437 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 				}
 			}
 		}
+		if (rebuilt) {
+			enforceProceduralPosition(transaction, actualOutputs);
+		}
 		completeRedefineCandidateParticipation(transaction, actualOutputs);
 		transaction.markCommitted();
 		instrumentation.recordRedefineCommit();
 	}
 
-	private void commitRetainedRedefine(SpatialRedefineTransaction transaction,
-			Map<String, GeoElement> actualOutputs) {
-		if (!finalizedStagedNonOutputRecords(transaction).isEmpty()) {
+	/**
+	 * Performs a provider-owned redefine preflight without allocating identity or
+	 * mutating the construction.
+	 *
+	 * @return typed assessment bound to the current context and candidate
+	 */
+	public SpatialRedefineAssessment assessRedefine(SpatialRedefineContext context,
+			GeoElement targetedCandidate, List<GeoElement> candidates) {
+		return assessRedefine(context, targetedCandidate, candidates, null);
+	}
+
+	/**
+	 * Assesses a provider-owned candidate against its sealed parse-time identity
+	 * overlay without publishing or claiming that overlay. A future frontend may
+	 * retain the returned assessment and explicitly prepare its selected mode.
+	 *
+	 * @return typed current assessment, including complete impact when offerable
+	 */
+	public SpatialRedefineAssessment assessRedefine(
+			SpatialRedefineContext context, GeoElement targetedCandidate,
+			List<GeoElement> candidates,
+			SpatialRedefineCandidateParticipation participation) {
+		if (context == null || !isCurrentContext(context)
+				|| !isRedefineHostRollbackAvailable(context)) {
+			return assessment(context, null,
+					SpatialRedefineAssessmentStatus.STALE_ASSESSMENT, null, null,
+					participation, false,
+					"Redefine context or host rollback authority is stale");
+		}
+		SpatialRedefineProvider provider = redefineProviders.get(
+				context.getOldSignature().getProvider());
+		if (provider == null) {
+			return assessment(context, null,
+					SpatialRedefineAssessmentStatus.UNSUPPORTED, null, null,
+					participation, false,
+					"No registered provider can assess the redefine");
+		}
+		SpatialRedefineProposal proposal;
+		try {
+			proposal = describeRedefineProposal(context, targetedCandidate,
+					candidates, provider, participation);
+		} catch (IllegalArgumentException exception) {
+			return assessment(context, null,
+					SpatialRedefineAssessmentStatus.AMBIGUOUS, null, null,
+					participation, false, exception.getMessage());
+		} catch (RuntimeException exception) {
+			return assessment(context, null,
+					SpatialRedefineAssessmentStatus.UNSUPPORTED, null, null,
+					participation, false, exception.getMessage());
+		}
+		if (hasCandidateCycle(context, proposal)) {
+			return assessment(context, proposal,
+					SpatialRedefineAssessmentStatus.INVALID_DAG, null, null,
+					participation, false,
+					"Candidate depends on an output that it would replace");
+		}
+		if (!hasHostRedefineShape(context, proposal)) {
+			return assessment(context, proposal,
+					SpatialRedefineAssessmentStatus.INCOMPATIBLE_HOST_REDEFINE,
+					null, null, participation, false,
+					"Candidate is not a reconstructible host redefine group");
+		}
+		boolean completeGroups = completeRedefineGroups(context, proposal, provider);
+		SpatialRedefineDecision advanced = completeGroups
+				? Objects.requireNonNull(provider.inspect(context, proposal))
+				: SpatialRedefineDecision.REJECT;
+		if (advanced == SpatialRedefineDecision.RETAIN
+				&& proposal.getEffect()
+						== SpatialRedefineEffect.ADMITTED_TOPOLOGY_CHANGE
+				&& !proposal.isEffectExplicit()) {
+			advanced = SpatialRedefineDecision.REJECT;
+		}
+		if (advanced == SpatialRedefineDecision.RETAIN
+				&& !isRetainCompatible(context, proposal)) {
+			advanced = SpatialRedefineDecision.REJECT;
+		}
+		boolean positionRequired = advanced == SpatialRedefineDecision.RETAIN
+				&& provider.requiresProceduralPositionPreservation(context, proposal,
+						advanced);
+		SpatialProceduralPositionSnapshot.Plan plan = null;
+		if (positionRequired) {
+			SpatialProceduralPositionSnapshot position = context.getProceduralPosition();
+			if (position != null) {
+				ArrayList<GeoElement> outputs = new ArrayList<>();
+				for (SpatialRedefineCandidateOutput output
+						: proposal.getCandidateOutputs().getOutputs()) {
+					outputs.add(output.getGeo());
+				}
+				plan = position.assess(outputs);
+			}
+			if (plan == null || !plan.isAvailable()) {
+				advanced = SpatialRedefineDecision.REJECT;
+			}
+		}
+		if (advanced == SpatialRedefineDecision.RETAIN) {
+			SpatialRedefineAssessmentStatus status = plan != null
+					&& plan.isRelocationRequired()
+							? SpatialRedefineAssessmentStatus
+									.ADVANCED_RETAIN_AVAILABLE_WITH_RELOCATION
+							: SpatialRedefineAssessmentStatus.ADVANCED_RETAIN_AVAILABLE;
+			return assessment(context, proposal, status, null, plan, participation,
+					positionRequired, null);
+		}
+
+		SpatialRedefineProposal replacement = proposal
+				.withReplacementOperationSelected(true);
+		SpatialRedefineDecision legacy = completeGroups
+				? Objects.requireNonNull(provider.inspect(context, replacement))
+				: SpatialRedefineDecision.REJECT;
+		if (legacy == SpatialRedefineDecision.FRESH) {
+			SpatialRedefineImpactReport impact = buildLegacyImpactReport(context);
+			if (isLegacyReplacementOfferable(impact)) {
+				return assessment(context, replacement,
+						SpatialRedefineAssessmentStatus.LEGACY_REPLACEMENT_AVAILABLE,
+						impact, plan, participation, false, null);
+			}
+			return assessment(context, replacement,
+					SpatialRedefineAssessmentStatus.UNSUPPORTED, impact, plan,
+					participation, false,
+					"Complete semantic impact could not be established");
+		}
+		return assessment(context, proposal,
+				SpatialRedefineAssessmentStatus.UNSUPPORTED, null, plan,
+				participation, false,
+				plan == null ? "Provider established neither retain nor replacement"
+						: plan.getUnavailableReason());
+	}
+
+	static boolean isLegacyReplacementOfferable(
+			SpatialRedefineImpactReport impact) {
+		return impact != null && impact.getCompleteness()
+				== SpatialRedefineImpactReport.Completeness.IMPACT_COMPLETE;
+	}
+
+	private void requireCurrentPreparedAssessmentHostState(
+			SpatialRedefineTransaction transaction) {
+		if (transaction.getAssessment() != null
+				&& !Objects.equals(transaction.getPreparedHostStateToken(),
+						currentRedefineHostState(transaction.getContext()))) {
 			throw failure(SpatialIdentityDiagnostic.forSubject(
-					SpatialIdentityDiagnostic.Code.TRANSACTION_STATE,
-					"Retained redefine contains unpublished dependency identities",
+					SpatialIdentityDiagnostic.Code.REDEFINE_CONTEXT_MISSING,
+					"Prepared redefine assessment is stale; reassessment is required",
 					transaction.getContext().getOldId()));
 		}
+	}
+
+	/** @return whether the exact assessed construction and candidate remain current */
+	public boolean isRedefineAssessmentCurrent(SpatialRedefineAssessment assessment) {
+		if (assessment == null || assessment.getRegistry() != this
+				|| assessment.getContext() == null
+				|| assessment.getProposal() == null
+				|| !isCurrentContext(assessment.getContext())
+				|| !isRedefineHostRollbackAvailable(assessment.getContext())
+				|| !Objects.equals(assessment.getHostStateToken(),
+						currentRedefineHostState(assessment.getContext()))) {
+			return false;
+		}
+		SpatialRedefineProvider provider = redefineProviders.get(
+				assessment.getContext().getOldSignature().getProvider());
+		if (provider == null) {
+			return false;
+		}
+		ArrayList<GeoElement> enumeration = new ArrayList<>();
+		for (SpatialRedefineCandidateOutput output
+				: assessment.getProposal().getCandidateOutputs().getOutputs()) {
+			enumeration.add(output.getGeo());
+		}
+		try {
+			SpatialRedefineProposal current = describeRedefineProposal(
+					assessment.getContext(), assessment.getProposal().getCandidate(),
+					enumeration, provider, assessment.getCandidateParticipation());
+			return sameProposalEvidence(assessment.getProposal(), current);
+		} catch (RuntimeException exception) {
+			return false;
+		}
+	}
+
+	/**
+	 * Reacquires a transient current host handle for frontend navigation. The
+	 * durable impact ID remains authority and callers must reacquire after rebuild.
+	 *
+	 * @return current attached geo, or {@code null}
+	 */
+	public GeoElement resolveImpactParticipant(SpatialRedefineImpactEntry entry) {
+		Objects.requireNonNull(entry);
+		return entry.getParticipantId() instanceof PersistentGeoId
+				? geosById.get(entry.getParticipantId()) : null;
+	}
+
+	/**
+	 * Converts one current assessment into an allocating transaction only for the
+	 * explicitly selected mode.
+	 *
+	 * @return prepared transaction for exactly the selected assessed mode
+	 */
+	public SpatialRedefineTransaction prepareRedefine(
+			SpatialRedefineAssessment assessment, SpatialRedefineExecutionMode mode) {
+		Objects.requireNonNull(assessment);
+		Objects.requireNonNull(mode);
+		if (assessment.getProposal() == null
+				&& assessment.getStatus()
+						!= SpatialRedefineAssessmentStatus.STALE_ASSESSMENT) {
+			throw failure(SpatialIdentityDiagnostic.forSubject(
+					SpatialIdentityDiagnostic.Code.REDEFINE_INCOMPATIBLE,
+					assessment.getDetail() == null
+							? "Redefine candidate has no unambiguous semantic contract"
+							: assessment.getDetail(),
+					assessment.getContext() == null ? null
+							: assessment.getContext().getOldId()));
+		}
+		if (!isRedefineAssessmentCurrent(assessment)) {
+			throw failure(SpatialIdentityDiagnostic.forSubject(
+					SpatialIdentityDiagnostic.Code.REDEFINE_CONTEXT_MISSING,
+					"Redefine assessment is stale; reassessment is required",
+					assessment.getContext() == null ? null
+							: assessment.getContext().getOldId()));
+		}
+		boolean advancedAvailable = assessment.getStatus()
+				== SpatialRedefineAssessmentStatus.ADVANCED_RETAIN_AVAILABLE
+				|| assessment.getStatus() == SpatialRedefineAssessmentStatus
+						.ADVANCED_RETAIN_AVAILABLE_WITH_RELOCATION;
+		boolean legacyAvailable = assessment.getStatus()
+				== SpatialRedefineAssessmentStatus.LEGACY_REPLACEMENT_AVAILABLE;
+		if (mode == SpatialRedefineExecutionMode.ADVANCED_RETAIN
+				&& !advancedAvailable
+				|| mode == SpatialRedefineExecutionMode.LEGACY_REPLACEMENT
+						&& !legacyAvailable) {
+			throw failure(SpatialIdentityDiagnostic.forSubject(
+					SpatialIdentityDiagnostic.Code.REDEFINE_REJECTED,
+					"Requested redefine mode is not authorized by the assessment",
+					assessment.getContext().getOldId()));
+		}
+		SpatialRedefineDecision decision = mode
+				== SpatialRedefineExecutionMode.ADVANCED_RETAIN
+						? SpatialRedefineDecision.RETAIN
+						: SpatialRedefineDecision.FRESH;
+		SpatialRedefineProposal proposal = assessment.getProposal()
+				.withReplacementOperationSelected(
+						mode == SpatialRedefineExecutionMode.LEGACY_REPLACEMENT);
+		SpatialRedefineCandidateParticipation participation = assessment
+				.getCandidateParticipation();
+		validateCandidateParticipationForDecision(assessment.getContext(), proposal,
+				decision, participation);
+		Map<String, PersistentGeoId> decidedIds = allocateRedefineIds(
+				assessment.getContext(), proposal, decision, participation);
+		Set<SpatialIdentityId> retiredIds = redefineRetiredClosure(
+				assessment.getContext(), decision);
+		instrumentation.recordRedefineDecision(decision);
+		SpatialRedefineTransaction transaction = new SpatialRedefineTransaction(this,
+				assessment.getContext(), proposal, decision, decidedIds, retiredIds,
+				participation, assessment.isProceduralPositionRequired(), assessment,
+				mode);
+		claimCandidateParticipation(participation, assessment.getContext());
+		return transaction;
+	}
+
+	private SpatialRedefineAssessment assessment(SpatialRedefineContext context,
+			SpatialRedefineProposal proposal, SpatialRedefineAssessmentStatus status,
+			SpatialRedefineImpactReport impact,
+			SpatialProceduralPositionSnapshot.Plan plan,
+			SpatialRedefineCandidateParticipation participation,
+			boolean positionRequired, String detail) {
+		return new SpatialRedefineAssessment(this, context, proposal, status, impact,
+				plan, participation, positionRequired,
+				currentRedefineHostState(context), detail);
+	}
+
+	private String currentRedefineHostState(SpatialRedefineContext context) {
+		return context == null || context.getOldTarget() == null ? null
+				: context.getOldTarget().getConstruction().getCurrentUndoXML(false)
+						.toString();
+	}
+
+	private boolean completeRedefineGroups(SpatialRedefineContext context,
+			SpatialRedefineProposal proposal, SpatialRedefineProvider provider) {
+		return isCompleteOldGroup(context) && isCompleteCandidateGroup(proposal)
+				&& hasExactRedefineRoleShape(context, proposal)
+				&& groupProvidersMatch(context, proposal, provider.getProviderId());
+	}
+
+	private boolean hasHostRedefineShape(SpatialRedefineContext context,
+			SpatialRedefineProposal proposal) {
+		if (owner == null) {
+			return true;
+		}
+		for (SpatialRedefineCandidateOutput output
+				: proposal.getCandidateOutputs().getOutputs()) {
+			GeoElement geo = output.getGeo();
+			if (geo == null || geo.getConstruction() != owner
+					|| (geo.isIndependent() ? geo : geo.getParentAlgorithm()) == null) {
+				return false;
+			}
+		}
+		return context.getOldTarget().getConstruction() == owner;
+	}
+
+	private static boolean hasCandidateCycle(SpatialRedefineContext context,
+			SpatialRedefineProposal proposal) {
+		for (SpatialRedefineCandidateOutput candidate
+				: proposal.getCandidateOutputs().getOutputs()) {
+			for (SpatialRedefinePersistedOutput old
+					: context.getOldOutputs().getOutputs()) {
+				if (candidate.getGeo() != old.getGeo()
+						&& candidate.getGeo().isChildOf(old.getGeo())) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private SpatialRedefineImpactReport buildLegacyImpactReport(
+			SpatialRedefineContext context) {
+		LinkedHashMap<SpatialIdentityId, LinkedHashSet<PersistentGeoId>> affected =
+				new LinkedHashMap<>();
+		for (SpatialRedefinePersistedOutput output
+				: context.getOldOutputs().getOutputs()) {
+			for (SpatialIdentityId id : dependentClosure(output.getId())) {
+				affected.computeIfAbsent(id, ignored -> new LinkedHashSet<>())
+						.add(output.getId());
+			}
+		}
+		ArrayList<SpatialIdentityId> ordered = new ArrayList<>(affected.keySet());
+		Collections.sort(ordered);
+		ArrayList<SpatialRedefineImpactEntry> entries = new ArrayList<>();
+		for (SpatialIdentityId id : ordered) {
+			SpatialIdentityRecord record = records.get(id);
+			SpatialRecordResolution resolution = resolutions.get(id);
+			if (record == null || resolution == null
+					|| record instanceof GeoIdentityRecord
+							&& geosById.get(id) == null) {
+				return new SpatialRedefineImpactReport(
+						SpatialRedefineImpactReport.Completeness
+								.IMPACT_NOT_ESTABLISHED,
+						Collections.emptyList(),
+						"Affected durable closure has an unresolved record or geo");
+			}
+			LinkedHashSet<PersistentGeoId> sources = affected.get(id);
+			boolean sourceIdentity = sources.contains(id);
+			boolean direct = sources.stream()
+					.anyMatch(record.getReferences()::contains);
+			SpatialRedefineImpactEntry.PredictedStatus predicted = sourceIdentity
+					? SpatialRedefineImpactEntry.PredictedStatus.RETIRED
+					: resolution.getState() == SpatialResolutionState.BROKEN
+							? SpatialRedefineImpactEntry.PredictedStatus
+									.BECOMES_UNDEFINED
+							: SpatialRedefineImpactEntry.PredictedStatus
+									.BECOMES_NONCURRENT;
+			SpatialRedefineImpactEntry.RecoveryClass recovery = sourceIdentity
+					|| record instanceof GeoIdentityRecord
+						? SpatialRedefineImpactEntry.RecoveryClass
+								.REQUIRES_EXPLICIT_REDEFINE
+						: record instanceof ProjectionBindingRecord
+								? SpatialRedefineImpactEntry.RecoveryClass
+										.REQUIRES_EXPLICIT_REBIND
+								: SpatialRedefineImpactEntry.RecoveryClass.NONE;
+			SpatialRedefineImpactEntry.ReasonCode reason = sourceIdentity
+					? SpatialRedefineImpactEntry.ReasonCode
+							.REPLACED_SOURCE_IDENTITY_RETIRED
+					: record instanceof ProjectionBindingRecord
+							? SpatialRedefineImpactEntry.ReasonCode
+									.PROJECTION_RELATION_SOURCE_LOSS
+							: direct ? SpatialRedefineImpactEntry.ReasonCode
+									.DIRECT_SEMANTIC_SOURCE_LOSS
+									: SpatialRedefineImpactEntry.ReasonCode
+											.TRANSITIVE_SEMANTIC_SOURCE_LOSS;
+			entries.add(new SpatialRedefineImpactEntry(id,
+					record.getXmlElementName(), sources, predicted, reason, recovery));
+		}
+		return new SpatialRedefineImpactReport(
+				SpatialRedefineImpactReport.Completeness.IMPACT_COMPLETE,
+				entries, null);
+	}
+
+	private void claimCandidateParticipation(
+			SpatialRedefineCandidateParticipation participation,
+			SpatialRedefineContext context) {
+		if (participation == null) {
+			return;
+		}
+		if (activeCandidateParticipation != participation
+				|| !claimedCandidateParticipations.add(participation)) {
+			throw failure(SpatialIdentityDiagnostic.forSubject(
+					SpatialIdentityDiagnostic.Code.TRANSACTION_STATE,
+					"Redefine candidate participation lost its lexical owner",
+					context.getOldId()));
+		}
+		activeCandidateParticipation = null;
+		participation.setState(
+				SpatialRedefineCandidateParticipation.State.CLAIMED);
+	}
+
+	private void enforceProceduralPosition(
+			SpatialRedefineTransaction transaction,
+			Map<String, GeoElement> actualOutputs) {
+		if (!transaction.isProceduralPositionRequired()) {
+			return;
+		}
+		SpatialProceduralPositionSnapshot position = transaction.getContext()
+				.getProceduralPosition();
+		if (position == null) {
+			throw failure(SpatialIdentityDiagnostic.forSubject(
+					SpatialIdentityDiagnostic.Code.REDEFINE_INCOMPATIBLE,
+					"Retained V2 redefine has no operation-entry P3 evidence",
+					transaction.getContext().getOldId()));
+		}
+		position.enforce(this, actualOutputs,
+				transaction.getContext().getOldId());
+	}
+
+	private void commitRetainedRedefine(SpatialRedefineTransaction transaction,
+			Map<String, GeoElement> actualOutputs) {
 		SpatialRedefineEffect effect = transaction.getProposal().getEffect();
 		SpatialLifecycleMutation.Builder mutation = SpatialLifecycleMutation.builder(
 				lifecycleKind(effect), "explicit-spatial-redefine:" + effect.name())
 				.providerValidatedRedefine();
 		boolean graphChange = false;
+		for (Map.Entry<GeoElement, GeoIdentityRecord> staged
+				: finalizedStagedNonOutputRecords(transaction).entrySet()) {
+			mutation.create(staged.getValue());
+			mutation.attach(staged.getKey(), staged.getValue().getId());
+			graphChange = true;
+		}
 		for (SpatialRedefinePersistedOutput oldOutput
 				: transaction.getContext().getOldOutputs().getOutputs()) {
 			String role = oldOutput.getStableOutputRole();
@@ -4748,7 +5249,9 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 			GeoElement currentGeo = geosById.get(oldOutput.getId());
 			GeoElement actual = actualOutputs.get(role);
 			requireCurrentRetainedOutput(oldOutput, current, currentGeo, actual);
-			GeoIdentityRecord replacement = redefineRevision(current, effect);
+			GeoIdentityRecord replacement = redefineRevision(current,
+					transaction.getProposal().getCandidateOutputs().get(role)
+							.getSignature(), effect);
 			if (replacement == current) {
 				mutation.expect(current);
 			} else {
@@ -4975,9 +5478,12 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 				: transaction.getContext().getOldOutputs().getOutputs()) {
 			GeoElement actual = actualOutputs.get(old.getStableOutputRole());
 			GeoIdentityRecord current = getGeoRecord(old.getId());
+			SpatialRedefineSignature candidate = transaction.getProposal()
+					.getCandidateOutputs().get(old.getStableOutputRole())
+					.getSignature();
 			if (actual == null || geosById.get(old.getId()) != actual
 					|| !old.getId().equals(idsByGeo.get(actual)) || current == null
-					|| !old.getSignature().isExactlyCompatibleWith(
+					|| !candidate.isExactlyCompatibleWith(
 							current.toRedefineSignature())) {
 				throw failure(SpatialIdentityDiagnostic.forSubject(
 						SpatialIdentityDiagnostic.Code.TRANSACTION_STATE,
@@ -5007,6 +5513,18 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 						old.getId()));
 			}
 		}
+		for (GeoIdentityRecord expected
+				: finalizedStagedNonOutputRecords(transaction).values()) {
+			GeoIdentityRecord actual = getGeoRecord(expected.getId());
+			if (actual == null || geosById.get(expected.getId()) == null
+					|| !SpatialRecordXmlCodec.writeRecord(expected).equals(
+							SpatialRecordXmlCodec.writeRecord(actual))) {
+				throw failure(SpatialIdentityDiagnostic.forSubject(
+						SpatialIdentityDiagnostic.Code.TRANSACTION_STATE,
+						"Rebuilt retained redefine omitted a sealed dependency",
+						expected.getId()));
+			}
+		}
 	}
 
 	private void requireCurrentRetainedOutput(
@@ -5029,8 +5547,14 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 	}
 
 	private GeoIdentityRecord redefineRevision(GeoIdentityRecord current,
-			SpatialRedefineEffect effect) {
+			SpatialRedefineSignature candidate, SpatialRedefineEffect effect) {
 		if (effect == SpatialRedefineEffect.NO_OP) {
+			if (!current.toRedefineSignature().isExactlyCompatibleWith(candidate)) {
+				throw failure(SpatialIdentityDiagnostic.forSubject(
+						SpatialIdentityDiagnostic.Code.REDEFINE_INCOMPATIBLE,
+						"A semantic no-op cannot change dependency edges",
+						current.getId()));
+			}
 			return current;
 		}
 		try {
@@ -5039,7 +5563,10 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 					== SpatialRedefineEffect.ADMITTED_TOPOLOGY_CHANGE
 							? Math.addExact(current.getTopologyRevision(), 1)
 							: current.getTopologyRevision();
-			return current.withRevisions(definition, topology);
+			return effect == SpatialRedefineEffect.ADMITTED_TOPOLOGY_CHANGE
+					? current.withRedefineSignatureAndRevisions(candidate,
+							definition, topology)
+					: current.withRevisions(definition, topology);
 		} catch (ArithmeticException exception) {
 			throw failure(SpatialIdentityDiagnostic.forSubject(
 					SpatialIdentityDiagnostic.Code.TRANSACTION_STATE,
@@ -5243,6 +5770,7 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 			Set<GeoElement> installed = Collections.newSetFromMap(
 					new IdentityHashMap<GeoElement, Boolean>());
 			installed.addAll(actualOutputs.values());
+			installed.addAll(finalizedStagedNonOutputRecords(transaction).keySet());
 			participation.rollbackUninstalledRetainedPromotions(installed);
 		}
 		claimedCandidateParticipations.remove(participation);
@@ -5296,9 +5824,15 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 			return false;
 		}
 		for (String role : context.getOldOutputs().getRoles()) {
-			if (!context.getOldOutputs().get(role).getSignature()
-					.isExactlyCompatibleWith(
-							proposal.getCandidateOutputs().get(role).getSignature())) {
+			SpatialRedefineSignature old = context.getOldOutputs().get(role)
+					.getSignature();
+			SpatialRedefineSignature candidate = proposal.getCandidateOutputs()
+					.get(role).getSignature();
+			boolean compatible = proposal.getEffect()
+					== SpatialRedefineEffect.ADMITTED_TOPOLOGY_CHANGE
+							? old.hasSameDurableContract(candidate)
+							: old.isExactlyCompatibleWith(candidate);
+			if (!compatible) {
 				return false;
 			}
 		}
@@ -5401,6 +5935,20 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 	}
 
 	private void requireCurrentContext(SpatialRedefineContext context) {
+		if (!isCurrentContext(context)) {
+			instrumentation.recordRedefineMissingContext();
+			instrumentation.recordRedefineDecision(SpatialRedefineDecision.REJECT);
+			throw failure(SpatialIdentityDiagnostic.forSubject(
+					SpatialIdentityDiagnostic.Code.REDEFINE_CONTEXT_MISSING,
+					"Explicit redefine context is stale or no longer current",
+					context.getOldId()));
+		}
+	}
+
+	private boolean isCurrentContext(SpatialRedefineContext context) {
+		if (context == null || context.getOldTarget() == null) {
+			return false;
+		}
 		boolean current = hostOutputCount(context.getOldTarget())
 				== context.getOldHostOutputCount()
 				&& isCompleteOldGroup(context);
@@ -5417,14 +5965,7 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 					&& output.getTopologyRevision()
 							== record.getTopologyRevision();
 		}
-		if (!current) {
-			instrumentation.recordRedefineMissingContext();
-			instrumentation.recordRedefineDecision(SpatialRedefineDecision.REJECT);
-			throw failure(SpatialIdentityDiagnostic.forSubject(
-					SpatialIdentityDiagnostic.Code.REDEFINE_CONTEXT_MISSING,
-					"Explicit redefine context is stale or no longer current",
-					context.getOldId()));
-		}
+		return current;
 	}
 
 	private static int hostOutputCount(GeoElement geo) {

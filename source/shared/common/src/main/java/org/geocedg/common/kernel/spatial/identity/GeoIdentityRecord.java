@@ -196,6 +196,25 @@ public final class GeoIdentityRecord implements SpatialIdentityRecord {
 	}
 
 	/**
+	 * Publishes provider-approved dependency edges for an admitted topology change
+	 * while preserving the durable identity and copy lineage.
+	 *
+	 * @return record with the candidate signature and supplied revisions
+	 */
+	public GeoIdentityRecord withRedefineSignatureAndRevisions(
+			SpatialRedefineSignature signature, long newDefinitionRevision,
+			long newTopologyRevision) {
+		if (!toRedefineSignature().hasSameDurableContract(signature)) {
+			throw new IllegalArgumentException(
+					"Redefine signature changes the durable identity contract");
+		}
+		return new GeoIdentityRecord(id, provider, family, schemaId, schemaVersion,
+				authority, bindingRole, stableOutputRole, outputCardinality,
+				signature.getDependencies(), newDefinitionRevision,
+				newTopologyRevision, copySourceId);
+	}
+
+	/**
 	 * Creates the same durable geo identity with one explicitly changed projection
 	 * binding role and monotone lifecycle revisions.
 	 *

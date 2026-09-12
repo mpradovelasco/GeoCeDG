@@ -7,6 +7,7 @@ package org.geocedg.common.kernel.algos;
 
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
+import org.geocedg.common.kernel.locus.V2RedefineContractSource;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.algos.Algos;
@@ -14,7 +15,8 @@ import org.geogebra.common.kernel.algos.GetCommand;
 import org.geogebra.common.kernel.geos.GeoElement;
 
 /** Base for internal V2 algorithms publishing immutable semantic snapshots. */
-public abstract class AlgoLocusV2 extends AlgoElement {
+public abstract class AlgoLocusV2 extends AlgoElement
+		implements V2RedefineContractSource {
 	private final GeoLocusV2 locus;
 	private final GeoElement[] configuredInputs;
 

@@ -21,6 +21,7 @@ import java.util.function.Predicate;
 
 import org.geocedg.common.kernel.spatial.identity.SpatialRedefineCandidateParticipation;
 import org.geocedg.common.kernel.spatial.identity.SpatialRedefineContext;
+import org.geocedg.common.kernel.spatial.identity.SpatialRedefineExecutionMode;
 import org.geocedg.common.kernel.spatial.identity.SpatialRedefineTransaction;
 import org.geogebra.common.kernel.arithmetic.ArbitraryConstantRegistry;
 import org.geogebra.common.kernel.arithmetic.SymbolicMode;
@@ -59,7 +60,8 @@ public class EvalInfo {
 	private SpatialRedefineContext spatialRedefineContext;
 	private SpatialRedefineCandidateParticipation spatialCandidateParticipation;
 	private SpatialRedefineTransaction spatialRedefineTransaction;
-	private boolean spatialReplacementOperationSelected;
+	private SpatialRedefineExecutionMode spatialRedefineExecutionMode =
+			SpatialRedefineExecutionMode.ADVANCED_RETAIN;
 
 	/**
 	 * Creates a default evaluation info
@@ -197,8 +199,7 @@ public class EvalInfo {
 		ret.spatialRedefineContext = this.spatialRedefineContext;
 		ret.spatialCandidateParticipation = this.spatialCandidateParticipation;
 		ret.spatialRedefineTransaction = this.spatialRedefineTransaction;
-		ret.spatialReplacementOperationSelected =
-				this.spatialReplacementOperationSelected;
+		ret.spatialRedefineExecutionMode = this.spatialRedefineExecutionMode;
 		return ret;
 	}
 
@@ -655,13 +656,31 @@ public class EvalInfo {
 	 * @return a copy carrying explicit replacement intent
 	 */
 	public EvalInfo withSpatialReplacementOperation() {
-		EvalInfo info = copy();
-		info.spatialReplacementOperationSelected = true;
-		return info;
+		return withSpatialRedefineExecutionMode(
+				SpatialRedefineExecutionMode.LEGACY_REPLACEMENT);
 	}
 
 	/** @return whether true semantic replacement was explicitly selected */
 	public boolean isSpatialReplacementOperationSelected() {
-		return spatialReplacementOperationSelected;
+		return spatialRedefineExecutionMode
+				== SpatialRedefineExecutionMode.LEGACY_REPLACEMENT;
+	}
+
+	/**
+	 * Selects the exact kernel execution mode after a typed redefine assessment.
+	 *
+	 * @param mode explicit advanced or legacy execution authority
+	 * @return a copy carrying that mode
+	 */
+	public EvalInfo withSpatialRedefineExecutionMode(
+			SpatialRedefineExecutionMode mode) {
+		EvalInfo info = copy();
+		info.spatialRedefineExecutionMode = java.util.Objects.requireNonNull(mode);
+		return info;
+	}
+
+	/** @return explicit semantic redefine execution mode */
+	public SpatialRedefineExecutionMode getSpatialRedefineExecutionMode() {
+		return spatialRedefineExecutionMode;
 	}
 }

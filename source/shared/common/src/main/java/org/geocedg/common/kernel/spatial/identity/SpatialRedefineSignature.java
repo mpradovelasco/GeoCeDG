@@ -101,6 +101,23 @@ public final class SpatialRedefineSignature {
 		return equals(other);
 	}
 
+	/**
+	 * Compares the durable provider/schema/role contract while deliberately
+	 * excluding dependency edges. Only a provider-explicit admitted topology
+	 * change may use this weaker comparison.
+	 *
+	 * @return whether every non-dependency continuity field is equal
+	 */
+	public boolean hasSameDurableContract(SpatialRedefineSignature other) {
+		return other != null && provider.equals(other.provider)
+				&& family.equals(other.family) && schemaId.equals(other.schemaId)
+				&& schemaVersion == other.schemaVersion
+				&& authority == other.authority
+				&& bindingRole == other.bindingRole
+				&& stableOutputRole.equals(other.stableOutputRole)
+				&& outputCardinality == other.outputCardinality;
+	}
+
 	@Override
 	public boolean equals(Object other) {
 		if (!(other instanceof SpatialRedefineSignature)) {

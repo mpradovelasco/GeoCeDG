@@ -2269,6 +2269,15 @@ public class AlgebraProcessor {
 				rollbackSpatialRedefine(spatialTransaction);
 				throw failure;
 			}
+			try {
+				if (spatialTransaction != null) {
+					cons.getSpatialIdentityRegistry().authorizeRedefineHostMutation(
+							spatialTransaction);
+				}
+			} catch (RuntimeException | MyError failure) {
+				rollbackSpatialRedefine(spatialTransaction);
+				throw failure;
+			}
 			if (replaceable instanceof GeoNumeric) {
 				((GeoNumeric) replaceable).extendMinMax(ret[0]);
 			}
@@ -2473,7 +2482,7 @@ public class AlgebraProcessor {
 		SpatialRedefineTransaction transaction =
 				cons.getSpatialIdentityRegistry().prepareRedefine(context,
 						candidates[0], Arrays.asList(candidates),
-						info.isSpatialReplacementOperationSelected(),
+						info.getSpatialRedefineExecutionMode(),
 						info.getSpatialRedefineCandidateParticipation());
 		if (transaction.getDecision() == SpatialRedefineDecision.REJECT) {
 			transaction.rollback();

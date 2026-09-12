@@ -106,6 +106,28 @@ public final class AlgoLocusSimilarityTransform2D extends AlgoLocusV2 {
 		return command;
 	}
 
+	@Override
+	public String getV2RedefineContractId() {
+		switch (command) {
+		case Translate:
+			return "locus-v2/similarity/translate-vector/v1";
+		case Rotate:
+			return parameters.length == 1
+					? "locus-v2/similarity/rotate-origin/v1"
+					: "locus-v2/similarity/rotate-point/v1";
+		case Mirror:
+			return parameters[0] instanceof GeoPoint
+					? "locus-v2/similarity/reflect-point/v1"
+					: "locus-v2/similarity/reflect-line/v1";
+		case Dilate:
+			return parameters.length == 1
+					? "locus-v2/similarity/dilate-origin/v1"
+					: "locus-v2/similarity/dilate-point/v1";
+		default:
+			throw new IllegalStateException("Unsupported similarity command");
+		}
+	}
+
 	/** @return exact source and transform-input dependencies */
 	public GeoElement[] getDurableDependencyGeos() {
 		return getInput().clone();

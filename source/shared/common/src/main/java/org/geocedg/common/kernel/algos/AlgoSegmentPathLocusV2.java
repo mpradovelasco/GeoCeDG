@@ -29,6 +29,11 @@ import org.geogebra.common.kernel.geos.GeoSegment;
  * recompute and never uses public PathParameter as semantic identity.
  */
 public final class AlgoSegmentPathLocusV2 extends AlgoLocusV2 {
+	@Override
+	public String getV2RedefineContractId() {
+		return "locus-v2/internal/segment-path/v1";
+	}
+
 	private final String locusIdentity;
 	private final GeoSegment segment;
 	private final GeoPoint constrainedDriver;

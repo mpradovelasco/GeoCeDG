@@ -52,6 +52,7 @@ import org.geocedg.common.kernel.spatial.identity.SpatialPointPilotRedefineProvi
 import org.geocedg.common.kernel.spatial.identity.SpatialRedefineCandidateOutput;
 import org.geocedg.common.kernel.spatial.identity.SpatialRedefineContext;
 import org.geocedg.common.kernel.spatial.identity.SpatialRedefineDecision;
+import org.geocedg.common.kernel.spatial.identity.SpatialRedefineEffect;
 import org.geocedg.common.kernel.spatial.identity.SpatialRedefinePersistedOutput;
 import org.geocedg.common.kernel.spatial.identity.SpatialRedefineTransaction;
 import org.geocedg.common.kernel.spatial.runtime.SpatialSemanticRuntime;
@@ -1874,11 +1875,20 @@ public class Construction {
 						.withSpatialRedefineContext(operationContext);
 			}
 		}
-		SpatialRedefineTransaction spatialTransaction;
+		SpatialRedefineTransaction spatialTransaction = null;
 		try {
 			spatialTransaction = prepareSpatialRedefine(oldGeo, newGeo, operationInfo);
+			if (spatialTransaction != null) {
+				spatialIdentityRegistry.authorizeRedefineHostMutation(
+						spatialTransaction);
+			}
 		} catch (RuntimeException | MyError failure) {
-			if (suppliedTransaction != null
+			if (spatialTransaction != null
+					&& spatialTransaction.getState()
+							!= SpatialRedefineTransaction.State.ROLLED_BACK) {
+				rollbackSpatialRedefine(spatialTransaction,
+						candidateInstalledAtEntry ? null : entryRollbackXml);
+			} else if (suppliedTransaction != null
 					&& suppliedTransaction.getState()
 							!= SpatialRedefineTransaction.State.ROLLED_BACK) {
 				rollbackSpatialRedefine(suppliedTransaction,
@@ -1958,7 +1968,10 @@ public class Construction {
 			commitSpatialRedefine(spatialTransaction, oldGeo);
 			return;
 		}
-		if (softRedefine(oldGeo, newGeo)) {
+		if ((spatialTransaction == null
+				|| spatialTransaction.getProposal().getEffect()
+						!= SpatialRedefineEffect.ADMITTED_TOPOLOGY_CHANGE)
+				&& softRedefine(oldGeo, newGeo)) {
 			commitSpatialRedefine(spatialTransaction, oldGeo);
 			return;
 		}
@@ -2405,8 +2418,10 @@ public class Construction {
 						context.getOldId()));
 			}
 			transaction = spatialIdentityRegistry.prepareRedefine(context, newGeo,
-					java.util.Collections.singletonList(newGeo), info != null
-							&& info.isSpatialReplacementOperationSelected(), info == null
+					java.util.Collections.singletonList(newGeo), info == null
+							? org.geocedg.common.kernel.spatial.identity
+									.SpatialRedefineExecutionMode.ADVANCED_RETAIN
+							: info.getSpatialRedefineExecutionMode(), info == null
 									? null
 									: info.getSpatialRedefineCandidateParticipation());
 		}

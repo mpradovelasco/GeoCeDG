@@ -388,6 +388,65 @@
       ]
     },
     {
+      "selection_id": "post-g9u1-a3.narrow",
+      "module": "shared",
+      "gradle_task": ":shared:common-jre:test",
+      "test_filters": [
+        "org.geocedg.common.locus.PostG9U1A3CompatibleV2RedefineTest",
+        "org.geocedg.common.locus.PostG9U1A3R1RedefineAssessmentTest",
+        "org.geocedg.common.kernel.spatial.identity.PostG9U1A3ProceduralAnchorPolicyTest",
+        "org.geocedg.common.spatial.PostG9U1A3MultiOutputP3Test",
+        "org.geocedg.common.spatial.G9A3SpatialRedefineTransactionTest",
+        "org.geocedg.common.locus.G9U0PersistenceCompatibilityTest",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest",
+        "org.geocedg.common.locus.PostG9U1A1SplineConstructorProvenanceTest",
+        "org.geocedg.common.locus.PostG9U1A2ExplicitTraversalPolicyTest",
+        "org.geocedg.common.locus.PostG9U1A6OptionalBranchPointTest",
+        "org.geocedg.common.locus.G9U0R5SimilarityTransformationsTest"
+      ],
+      "excluded_test_filters": [],
+      "effective_arguments": [
+        ":shared:common-jre:test",
+        "--tests",
+        "org.geocedg.common.locus.PostG9U1A3CompatibleV2RedefineTest",
+        "--tests",
+        "org.geocedg.common.locus.PostG9U1A3R1RedefineAssessmentTest",
+        "--tests",
+        "org.geocedg.common.kernel.spatial.identity.PostG9U1A3ProceduralAnchorPolicyTest",
+        "--tests",
+        "org.geocedg.common.spatial.PostG9U1A3MultiOutputP3Test",
+        "--tests",
+        "org.geocedg.common.spatial.G9A3SpatialRedefineTransactionTest",
+        "--tests",
+        "org.geocedg.common.locus.G9U0PersistenceCompatibilityTest",
+        "--tests",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest",
+        "--tests",
+        "org.geocedg.common.locus.PostG9U1A1SplineConstructorProvenanceTest",
+        "--tests",
+        "org.geocedg.common.locus.PostG9U1A2ExplicitTraversalPolicyTest",
+        "--tests",
+        "org.geocedg.common.locus.PostG9U1A6OptionalBranchPointTest",
+        "--tests",
+        "org.geocedg.common.locus.G9U0R5SimilarityTransformationsTest",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 114,
+      "expected_identities_sha256": "9a45556ceade0331c9891b1e41cf32abb285d83699b4148cdb2028e222048024",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "b12d9ad04a766e893b120f3155250d5f1654c19b",
+          "tree": "930e58379dfe2e87e80d1ac81963636809274c41"
+        }
+      ]
+    },
+    {
       "selection_id": "g8b.narrow",
       "module": "shared",
       "gradle_task": ":shared:common-jre:test",

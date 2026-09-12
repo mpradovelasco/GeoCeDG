@@ -25,6 +25,11 @@ import org.geogebra.common.kernel.geos.GeoNumeric;
 
 /** Internal V2 algorithm whose provider publishes dynamic branch topology. */
 public final class AlgoDynamicBranchLocusV2 extends AlgoLocusV2 {
+	@Override
+	public String getV2RedefineContractId() {
+		return "locus-v2/internal/dynamic-branch/v1";
+	}
+
 	private final String locusIdentity;
 	private final List<GeoNumeric> sources;
 	private final LocusDriverDomainProvider2D provider;

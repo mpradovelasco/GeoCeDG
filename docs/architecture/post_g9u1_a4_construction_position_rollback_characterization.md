@@ -1,6 +1,9 @@
 # POST-G9U1-A4 — construction-position and rollback characterization
 
-- Status: **DESIGN CANDIDATE — PENDING AUTHOR REVIEW**
+- Current status: **RESEARCH COMPLETE / DESIGN AUTHOR APPROVED**
+- Approved commit: `b12d9ad04a766e893b120f3155250d5f1654c19b`
+- Approved tree: `930e58379dfe2e87e80d1ac81963636809274c41`
+- Historical candidate state recorded below: **DESIGN CANDIDATE — PENDING AUTHOR REVIEW**
 - Base commit: `c0a018ab01c0b44a7ed1fb33010bf2481e30ac2a`
 - Base tree: `4ab3a420c96a79ca0a88d16c597845293f453a00`
 - Task kind: `RESEARCH_THEN_DESIGN`
@@ -9,8 +12,8 @@
 - Guide impact: **NO**
 
 This document characterizes the current GeoCeDG/GeoGebra host so that a later
-POST-G9U1-A3 design can distinguish compatible V2 redefine from true
-replacement. It neither implements nor authorizes A3.
+POST-G9U1-A3 can distinguish compatible V2 redefine from true replacement. It
+did not implement or authorize A3; the later A3 task has separate authority.
 
 ## 1. Sources and evidence boundary
 
@@ -39,7 +42,8 @@ Evidence labels in this document mean:
   characterization test;
 - **NORMATIVE**: required by an accepted specification/ADR;
 - **INFERENCE**: a consequence of the observed and normative evidence; and
-- **RECOMMENDATION**: an A3 design input pending author review.
+- **RECOMMENDATION**: an A3 design input as originally proposed; P3 was later
+  accepted by the explicit author decision recorded in the header.
 
 ## 2. Independent state axes
 
@@ -107,7 +111,7 @@ manufacture state by reflection and changes no production behavior.
 |---|---|
 | P1 — exact list/index preservation | **REJECTED.** The numeric index is mutable and can legitimately change when unrelated elements are inserted or removed. Requiring the same integer would confuse an ephemeral coordinate of `ceList` with identity. |
 | P2 — topological-equivalence preservation | **INSUFFICIENT.** It protects dependency correctness but allows a compatible redefine to cross surviving independent neighbors, changing the explicit procedural narrative even when no semantic need requires it. |
-| P3 — stable procedural position stronger than topology | **SELECTED DESIGN CANDIDATE.** Preserve relative placement among surviving unaffected construction elements, subject to all predecessor/dependent constraints. |
+| P3 — stable procedural position stronger than topology | **SELECTED / AUTHOR APPROVED.** Preserve relative placement among surviving unaffected construction elements, subject to all predecessor/dependent constraints. |
 | P4 — current transaction already supplies the invariant | **REJECTED.** Focused evidence demonstrates an admitted `RETAIN` new-instance redefine that moves from before to after an independent neighbor. |
 
 ```text
@@ -234,5 +238,30 @@ The exact A3 compatibility predicate and anchor API remain future A3 work.
 - No current host defect is claimed. The observed successful-redefine movement
   is a gap relative to the proposed future P3 contract, not a violation of an
   already approved product requirement.
-- No ADR is created: this remains a design candidate pending author review and
-  no productive A3 mechanism is authorized by A4.
+- No ADR was created: the bounded P3 design was later accepted by explicit
+  author decision. A4 itself authorized no productive A3 mechanism.
+
+## 9. Subsequent author-approved P3-R1 refinement
+
+POST-G9U1-A3-R1 does not reopen A4 or reduce P3 to arbitrary topological
+equivalence. P3-R1 is an explicit author-approved refinement/amendment of P3:
+it keeps the old relative interval whenever it is legal and, when new semantic
+dependencies make that interval illegal, permits compatible identity to survive
+only through the minimum deterministic relocation of the participating
+producer/group required by the new predecessor/dependent bounds. All surviving
+unaffected elements retain their relative order. A cycle, empty legal interval
+or unestablished survival evidence rejects advanced continuity.
+
+```text
+P3-R1 != any valid topological order
+P3-R1 = minimum deterministic relocation forced by the new DAG
+destination = clamp(oldSlot, requiredPredecessorBound, requiredDependentBound)
+```
+
+Ordinary GeoGebra elements may be captured as transaction-local procedural
+witnesses without acquiring durable CeDG identity. This directly resolves the
+review finding that the first A3 candidate omitted such neighbours. The durable
+cross-provider policy, explicit legacy fallback and typed complete impact report
+are proposed in [ADR 0026](../adr/0026-advanced-redefine-and-explicit-legacy-fallback.md);
+the product implementation remains a candidate pending author review and does
+not retrospectively change the historical A4 research evidence.

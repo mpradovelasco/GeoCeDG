@@ -1,6 +1,6 @@
 # Public Locus V2 command, tool and persistence surface
 
-- Status: **NORMATIVE / AUTHOR APPROVED; POST-G9U1-A2 AMENDMENT — PASS — AUTHOR APPROVED**
+- Status: **NORMATIVE / AUTHOR APPROVED; POST-G9U1-A2 AMENDMENT — PASS — AUTHOR APPROVED; POST-G9U1-A3 AMENDMENT CANDIDATE — PENDING AUTHOR REVIEW**
 - Phase: G9P design approved; productive G9U0 implementation is not authorized
 - Internal prerequisites: G6, G7 and G8 are author-approved
 - Related Accepted ADR: `docs/adr/0013-public-locus-v2-surface-and-token-selection.md`
@@ -695,3 +695,69 @@ scalar `Length` forms remain non-negative and unchanged. Unknown tokens fail
 explicitly. This overload selects only a route between endpoints already
 accepted by the existing semantic endpoint authority; it adds no coordinate,
 proximity, generic `Path` or nearest-point behavior.
+
+## 20. POST-G9U1-A3-R1 V2 redefine amendment candidate
+
+This candidate specializes the accepted G9A3 lifecycle transaction for public
+`GeoLocusV2` source constructions. It does not broaden direct redefine of rich
+metric, semantic-point or intersection outputs. A source redefine may return
+`RETAIN` only when all of the following hold:
+
+- the provider, family, schema/version, authority and binding-role contract is
+  unchanged;
+- the complete stable output-role set and cardinality map exactly;
+- the old and candidate algorithms declare the same stable, versioned V2
+  semantic-constructor contract; and
+- candidate dependency edges admit a valid DAG and a legal A4/P3-R1 result.
+
+Changed dependency identities under that complete contract are an admitted
+topology change, not an automatic replacement. A retained record publishes the
+new dependency edge set, advances definition and topology revisions, and
+revalidates downstream semantic points, A1 occurrence endpoints, A2 traversal
+metrics and other V2 results. Retention never preserves a stale current result
+or certificate merely for continuity.
+
+A constructor-contract mismatch is `REJECT` unless the operation explicitly
+selects true replacement, in which case all replacement outputs receive fresh
+durable identities. No equality of Java class, label, command text,
+coordinates, proximity, construction/XML position or output ordinal may
+substitute for the semantic contract.
+
+For multi-output groups, both compatibility and procedural anchoring use the
+complete `stableOutputRole -> PersistentGeoId` relation associated with one
+producer. Canonical role sorting is only deterministic comparison/serialization,
+not an additional identity axis. Missing, duplicate, changed or partially
+covered roles fail closed.
+
+P3-R1 keeps the operation-entry interval whenever it remains legal. If changed
+predecessor/dependent bounds make that interval illegal, an otherwise compatible
+`RETAIN` may move only the participating producer/group to the closest legal
+boundary forced by the DAG, preserving the relative order of all unaffected
+elements. Ordinary nonparticipating construction elements may serve as
+transaction-local entry witnesses without receiving durable identity. A cycle,
+an empty legal interval or unprovable witness survival rejects advanced
+retention; no post-mutation nearest-neighbour search is permitted.
+
+Advanced-retain failure never selects `FRESH`. A non-mutating typed assessment
+may offer legacy replacement only when the host operation is independently
+valid, the provider explicitly classifies true replacement, and the registry
+establishes the complete durable CeDG downstream impact. Execution requires an
+explicit `LEGACY_REPLACEMENT` mode; the default mode remains advanced retain.
+The report identifies durable participant/source IDs, relation type, predicted
+post-operation status, reason and explicit recovery class. Incomplete impact is
+non-offerable and no report entry chooses a replacement source.
+
+All checks execute inside the existing G9A3 transaction and XML-snapshot
+rollback boundary. Save/reopen and undo/redo reconstruct committed IDs, roles,
+dependencies and revisions; copy/remap follows the existing fresh-closure rule;
+rename preserves identity; delete/recreate does not. Java instances, numeric
+construction indices and Construction Protocol presentation/navigation remain
+non-authoritative.
+
+An assessment is bound to the exact context, proposal, registry/runtime epochs
+and serializable host state. Any intervening material construction mutation
+makes it stale; commit rejects and requires reassessment. Explicit legacy
+replacement retires the old semantic closure and publishes fresh identities as
+one ordinary undoable host operation. Kernel result types contain no dialog,
+localization or presentation authority; a future frontend only asks, displays,
+navigates and invokes the already authorized execution mode.

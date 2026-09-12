@@ -17,6 +17,7 @@ public final class SpatialRedefineContext {
 	private final String rollbackXml;
 	private final long hostOperationEpoch;
 	private final RollbackAuthority rollbackAuthority;
+	private final SpatialProceduralPositionSnapshot proceduralPosition;
 
 	SpatialRedefineContext(GeoElement oldTarget, PersistentGeoId oldId,
 			SpatialRedefineSignature oldSignature, int oldHostOutputCount,
@@ -27,24 +28,28 @@ public final class SpatialRedefineContext {
 				new SpatialRedefinePersistedOutput(oldTarget, oldId, oldSignature,
 						oldDefinitionRevision, oldTopologyRevision)),
 				oldSignature.getStableOutputRole(), oldHostOutputCount, rollbackXml,
-				hostOperationEpoch, graphPublicationEpoch, runtimePublicationEpoch);
+				hostOperationEpoch, graphPublicationEpoch, runtimePublicationEpoch,
+				null);
 	}
 
 	SpatialRedefineContext(
 			SpatialRedefineOutputGroup<SpatialRedefinePersistedOutput> oldOutputs,
 			String targetedStableOutputRole, int oldHostOutputCount,
 			String rollbackXml, long hostOperationEpoch,
-			long graphPublicationEpoch, long runtimePublicationEpoch) {
+			long graphPublicationEpoch, long runtimePublicationEpoch,
+			SpatialProceduralPositionSnapshot proceduralPosition) {
 		this(oldOutputs, targetedStableOutputRole, oldHostOutputCount, rollbackXml,
 				hostOperationEpoch, new RollbackAuthority(hostOperationEpoch,
-						graphPublicationEpoch, runtimePublicationEpoch));
+						graphPublicationEpoch, runtimePublicationEpoch),
+				proceduralPosition);
 	}
 
 	private SpatialRedefineContext(
 			SpatialRedefineOutputGroup<SpatialRedefinePersistedOutput> oldOutputs,
 			String targetedStableOutputRole, int oldHostOutputCount,
 			String rollbackXml, long hostOperationEpoch,
-			RollbackAuthority rollbackAuthority) {
+			RollbackAuthority rollbackAuthority,
+			SpatialProceduralPositionSnapshot proceduralPosition) {
 		this.oldOutputs = Objects.requireNonNull(oldOutputs);
 		this.targetedStableOutputRole = SpatialRecordSupport.requireText(
 				targetedStableOutputRole, "targetedStableOutputRole");
@@ -61,6 +66,7 @@ public final class SpatialRedefineContext {
 		}
 		this.hostOperationEpoch = hostOperationEpoch;
 		this.rollbackAuthority = Objects.requireNonNull(rollbackAuthority);
+		this.proceduralPosition = proceduralPosition;
 	}
 
 	public GeoElement getOldTarget() {
@@ -117,7 +123,11 @@ public final class SpatialRedefineContext {
 	public SpatialRedefineContext withRollbackXml(String currentRollbackXml) {
 		return new SpatialRedefineContext(oldOutputs, targetedStableOutputRole,
 				oldHostOutputCount, currentRollbackXml, hostOperationEpoch,
-				rollbackAuthority);
+				rollbackAuthority, proceduralPosition);
+	}
+
+	SpatialProceduralPositionSnapshot getProceduralPosition() {
+		return proceduralPosition;
 	}
 
 	long getHostOperationEpoch() {

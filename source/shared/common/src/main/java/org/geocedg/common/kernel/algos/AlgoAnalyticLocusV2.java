@@ -21,6 +21,11 @@ import org.geogebra.common.kernel.geos.GeoNumeric;
 
 /** Internal pointwise analytic V2 definition driven by one normal GeoNumeric. */
 public final class AlgoAnalyticLocusV2 extends AlgoLocusV2 {
+	@Override
+	public String getV2RedefineContractId() {
+		return "locus-v2/internal/analytic/v1";
+	}
+
 	private final String locusIdentity;
 	private final GeoNumeric source;
 	private final LocusDriverDomainProvider2D provider;

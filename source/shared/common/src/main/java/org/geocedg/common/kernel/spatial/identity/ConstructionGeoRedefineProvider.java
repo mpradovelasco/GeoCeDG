@@ -19,6 +19,7 @@ import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusPrincipalBranchState2D;
 import org.geocedg.common.kernel.locus.LocusSemanticAddressState2D;
+import org.geocedg.common.kernel.locus.V2RedefineContractSource;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoNumeric;
@@ -153,11 +154,34 @@ public final class ConstructionGeoRedefineProvider
 				&& !isPublicTopologyCandidate(proposal.getCandidate())) {
 			return SpatialRedefineDecision.REJECT;
 		}
+		boolean oldV2 = isV2RedefineSource(context.getOldTarget());
+		boolean candidateV2 = isV2RedefineSource(proposal.getCandidate());
+		if (oldV2 || candidateV2) {
+			if (!oldV2 || !candidateV2
+					|| !sameV2RedefineContract(context.getOldTarget(),
+							proposal.getCandidate())) {
+				return proposal.isReplacementOperationSelected()
+						? SpatialRedefineDecision.FRESH
+						: SpatialRedefineDecision.REJECT;
+			}
+			return proposal.isReplacementOperationSelected()
+					? SpatialRedefineDecision.FRESH
+					: SpatialRedefineDecision.RETAIN;
+		}
 		if (proposal.isReplacementOperationSelected() || dependenciesChanged) {
 			return SpatialRedefineDecision.FRESH;
 		}
 		return proposal.getEffect() == SpatialRedefineEffect.ADMITTED_TOPOLOGY_CHANGE
 				? SpatialRedefineDecision.REJECT : SpatialRedefineDecision.RETAIN;
+	}
+
+	@Override
+	public boolean requiresProceduralPositionPreservation(
+			SpatialRedefineContext context, SpatialRedefineProposal proposal,
+			SpatialRedefineDecision decision) {
+		return decision == SpatialRedefineDecision.RETAIN
+				&& sameV2RedefineContract(context.getOldTarget(),
+						proposal.getCandidate());
 	}
 
 	private SpatialRedefineSignature requireNeutralContext(
@@ -279,6 +303,31 @@ public final class ConstructionGeoRedefineProvider
 				&& branch.getAlgorithmList().contains(parent)
 				&& parameter.getAlgorithmList().size() == 1
 				&& parameter.getAlgorithmList().contains(parent);
+	}
+
+	private static boolean sameV2RedefineContract(GeoElement first,
+			GeoElement second) {
+		String firstContract = v2RedefineContract(first);
+		String secondContract = v2RedefineContract(second);
+		return firstContract != null && firstContract.equals(secondContract);
+	}
+
+	private static boolean isV2RedefineSource(GeoElement geo) {
+		return geo instanceof GeoLocusV2;
+	}
+
+	private static String v2RedefineContract(GeoElement geo) {
+		AlgoElement parent = geo == null ? null : geo.getParentAlgorithm();
+		if (!(parent instanceof V2RedefineContractSource)) {
+			return null;
+		}
+		String contract = ((V2RedefineContractSource) parent)
+				.getV2RedefineContractId();
+		if (contract == null || contract.trim().isEmpty()
+				|| !contract.equals(contract.trim())) {
+			return null;
+		}
+		return contract;
 	}
 
 	/** @return whether only the hidden selector input is owned by Point(L,u) */

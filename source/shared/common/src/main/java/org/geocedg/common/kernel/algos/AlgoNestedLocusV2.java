@@ -25,6 +25,11 @@ import org.geogebra.common.kernel.geos.GeoElement;
  * immutable semantic evaluator through the same scoped session.
  */
 public final class AlgoNestedLocusV2 extends AlgoLocusV2 {
+	@Override
+	public String getV2RedefineContractId() {
+		return "locus-v2/internal/nested/v1";
+	}
+
 	private final String locusIdentity;
 	private final GeoLocusV2 upstream;
 	private final String upstreamBranchKey;

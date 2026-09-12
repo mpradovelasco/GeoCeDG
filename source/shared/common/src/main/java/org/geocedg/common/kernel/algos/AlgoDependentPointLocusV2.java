@@ -155,6 +155,11 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 		return Commands.LocusV2;
 	}
 
+	@Override
+	public String getV2RedefineContractId() {
+		return "locus-v2/dependent-generator/" + family.getProviderId();
+	}
+
 	/**
 	 * Returns the complete construction-order slice used only for isolated XML
 	 * reconstruction. Descriptor identity is independently sorted by durable ID.

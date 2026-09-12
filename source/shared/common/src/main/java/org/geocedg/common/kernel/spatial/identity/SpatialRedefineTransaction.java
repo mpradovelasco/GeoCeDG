@@ -30,6 +30,11 @@ public final class SpatialRedefineTransaction {
 	private final Map<String, PersistentGeoId> decidedIds;
 	private final Set<SpatialIdentityId> retiredIds;
 	private final SpatialRedefineCandidateParticipation candidateParticipation;
+	private final boolean proceduralPositionRequired;
+	private final SpatialRedefineAssessment assessment;
+	private final SpatialRedefineExecutionMode executionMode;
+	private String preparedHostStateToken;
+	private boolean hostMutationAuthorized;
 	private boolean rebuildViewWritten;
 	private State state = State.PREPARED;
 
@@ -37,14 +42,9 @@ public final class SpatialRedefineTransaction {
 			SpatialRedefineContext context, SpatialRedefineProposal proposal,
 			SpatialRedefineDecision decision, PersistentGeoId freshId,
 			Set<SpatialIdentityId> retiredIds) {
-		this.registry = registry;
-		this.context = context;
-		this.proposal = proposal;
-		this.decision = decision;
-		this.decidedIds = singletonDecidedIds(context, proposal, decision, freshId);
-		this.retiredIds = Collections.unmodifiableSet(
-				new LinkedHashSet<>(retiredIds));
-		this.candidateParticipation = null;
+		this(registry, context, proposal, decision,
+				singletonDecidedIds(context, proposal, decision, freshId), retiredIds,
+				null, false, null, null);
 	}
 
 	SpatialRedefineTransaction(SpatialIdentityRegistry registry,
@@ -61,6 +61,30 @@ public final class SpatialRedefineTransaction {
 			Map<String, PersistentGeoId> decidedIds,
 			Set<SpatialIdentityId> retiredIds,
 			SpatialRedefineCandidateParticipation candidateParticipation) {
+		this(registry, context, proposal, decision, decidedIds, retiredIds,
+				candidateParticipation, false, null, null);
+	}
+
+	SpatialRedefineTransaction(SpatialIdentityRegistry registry,
+			SpatialRedefineContext context, SpatialRedefineProposal proposal,
+			SpatialRedefineDecision decision,
+			Map<String, PersistentGeoId> decidedIds,
+			Set<SpatialIdentityId> retiredIds,
+			SpatialRedefineCandidateParticipation candidateParticipation,
+			boolean proceduralPositionRequired) {
+		this(registry, context, proposal, decision, decidedIds, retiredIds,
+				candidateParticipation, proceduralPositionRequired, null, null);
+	}
+
+	SpatialRedefineTransaction(SpatialIdentityRegistry registry,
+			SpatialRedefineContext context, SpatialRedefineProposal proposal,
+			SpatialRedefineDecision decision,
+			Map<String, PersistentGeoId> decidedIds,
+			Set<SpatialIdentityId> retiredIds,
+			SpatialRedefineCandidateParticipation candidateParticipation,
+			boolean proceduralPositionRequired,
+			SpatialRedefineAssessment assessment,
+			SpatialRedefineExecutionMode executionMode) {
 		this.registry = registry;
 		this.context = context;
 		this.proposal = proposal;
@@ -79,6 +103,11 @@ public final class SpatialRedefineTransaction {
 		this.retiredIds = Collections.unmodifiableSet(
 				new LinkedHashSet<>(retiredIds));
 		this.candidateParticipation = candidateParticipation;
+		this.proceduralPositionRequired = proceduralPositionRequired;
+		this.assessment = assessment;
+		this.executionMode = executionMode;
+		this.preparedHostStateToken = assessment == null ? null
+				: assessment.getHostStateToken();
 	}
 
 	public SpatialRedefineContext getContext() {
@@ -114,6 +143,16 @@ public final class SpatialRedefineTransaction {
 	/** @return the complete old closure retired by a committed FRESH decision */
 	public Set<SpatialIdentityId> getRetiredIds() {
 		return retiredIds;
+	}
+
+	/** @return preflight authority used to prepare this transaction, if supplied */
+	public SpatialRedefineAssessment getAssessment() {
+		return assessment;
+	}
+
+	/** @return explicit assessed execution mode, if supplied */
+	public SpatialRedefineExecutionMode getExecutionMode() {
+		return executionMode;
 	}
 
 	/**
@@ -156,6 +195,26 @@ public final class SpatialRedefineTransaction {
 
 	SpatialRedefineCandidateParticipation getCandidateParticipation() {
 		return candidateParticipation;
+	}
+
+	boolean isProceduralPositionRequired() {
+		return proceduralPositionRequired;
+	}
+
+	String getPreparedHostStateToken() {
+		return preparedHostStateToken;
+	}
+
+	void refreshPreparedHostStateToken(String hostStateToken) {
+		preparedHostStateToken = hostStateToken;
+	}
+
+	boolean isHostMutationAuthorized() {
+		return hostMutationAuthorized;
+	}
+
+	void markHostMutationAuthorized() {
+		hostMutationAuthorized = true;
 	}
 
 	private static Map<String, PersistentGeoId> singletonDecidedIds(
