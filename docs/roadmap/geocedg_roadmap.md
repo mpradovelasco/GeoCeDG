@@ -3,13 +3,13 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Roadmap vivo y normativo de fases; no sustituye las especificaciones ni los ADR aceptados |
-| Versión documental | 3.81 |
+| Versión documental | 3.82 |
 | Fecha de revisión | 12 de septiembre de 2026 |
 | Baseline GeoGebra | 5.4.928.0, commit `9b93256b7df401ff056c37b502d82df4d72b1522`, tag `geogebra-baseline-5.4.928.0` |
-| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1–G9A3, el track G9A, G9U0 y sus refinamientos R1–R6, G9X1, G9S1, G9S1-R1, G9U1 y POST-G9U1-A6, A1, A2, A3, A3-FRONTEND y A5 `PASS — AUTHOR APPROVED`. G9U1 es autoridad histórica cerrada y no se reabre. POST-G9U1-A4 tiene investigación completa y diseño `AUTHOR APPROVED`; P3-R1 es su refinamiento autor-aprobado. A5 cierra la colisión entre macro documental y herramienta persistente, incluidas las correcciones de lifecycle B/C halladas por la auditoría final. A7 es el siguiente ítem del orden de ejecución seleccionado por el autor, pero sigue no autorizado. El track continúa siendo orden de ejecución autoral, no dependencia dura de G9B. G9B/G9C permanecen diseñadas y no autorizadas; G9U2 sigue bloqueada por la aprobación global G9; G10P es solo planificación aprobada y ninguna implementación productiva G10 está autorizada. El riesgo `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` continúa abierto para disposición antes del cierre global G9. Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
+| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1–G9A3, el track G9A, G9U0 y sus refinamientos R1–R6, G9X1, G9S1, G9S1-R1, G9U1 y POST-G9U1-A6, A1, A2, A3, A3-FRONTEND y A5 `PASS — AUTHOR APPROVED`. G9U1 es autoridad histórica cerrada y no se reabre. POST-G9U1-A4 tiene investigación completa y diseño `AUTHOR APPROVED`; P3-R1 es su refinamiento autor-aprobado. A5 cierra la colisión entre macro documental y herramienta persistente, incluidas las correcciones de lifecycle B/C halladas por la auditoría final. A7, ownership G12, tiene caracterización/diseño candidato pendiente de revisión autoral y ninguna implementación autorizada. El track continúa siendo orden de ejecución autoral, no dependencia dura de G9B. G9B/G9C permanecen diseñadas y no autorizadas; G9U2 sigue bloqueada por la aprobación global G9; G10P es solo planificación aprobada y ninguna implementación productiva G10 está autorizada. El riesgo `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` continúa abierto para disposición antes del cierre global G9. Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
 | Última fase cerrada | POST-G9U1-A5 — `PASS — AUTHOR APPROVED` |
 | Última fase ejecutada | POST-G9U1-A5 — implementación corregida y aprobada en `a3c8831b0569f72d1ccaf1d2eaf18e9417975377`; `selfApproved=false` |
-| Siguiente puerta | A7, slice acotado de navegación G12, es el siguiente ítem seleccionado por el autor y requiere autorización productiva separada; G9B, G9C, G9U2 y G10 productivo permanecen no autorizados |
+| Siguiente puerta | Revisión/autorización autoral separada del diseño y posterior implementación A7; G9B, G9C, G9U2 y G10 productivo permanecen no autorizados |
 | Primer cliente | Aplicación de escritorio de la familia Classic 5 |
 | Núcleo | Java compartido de GeoGebra, extendido solo cuando la semántica lo requiere |
 
@@ -1291,7 +1291,7 @@ siendo la autoridad aplicable.
 | G9 | Semántica espacial/proyecciones e integración pública Locus/Spline/producto | `IN PROGRESS`; G9U1 cerrado, track post-U1 planificado, G9B/G9C no autorizadas y cierre global pendiente |
 | G10 | Estudios, optimización, DSL y workbench | G10P `PASS — AUTHOR APPROVED — PLANNING ONLY`; producto no autorizado hasta el cierre global G9 |
 | G11 | Capas y estados de vista | `PENDING` |
-| G12 | Navegación, zoom y escalas extendidas | `PENDING`; solo A7 se programa anticipadamente como slice acotado no autorizado |
+| G12 | Navegación, zoom y escalas extendidas | `PENDING`; A7 está en diseño candidato por orden de ejecución, con implementación aún no autorizada |
 | G13 | Visibilidad geométrica | `PENDING` |
 | G14 | Puente a vista 3D | `PENDING` |
 | G15 | Hojas de dibujo, PDF y gráficos | `PENDING` |
@@ -1337,7 +1337,7 @@ siendo la autoridad aplicable.
 | G9U0-R6 | `PASS — AUTHOR APPROVED` | Puerta kernel acotada entre G9S1 y G9U1: request geométrica transitoria -> resultado tipado con cero/uno/varios preimages -> selección explícita -> punto ordinario con address semántica editable en DAG. Incluye Locus V2, SplineV2 y transformadas R5, además del cruce periódico bidireccional/path-independent del mismo punto y el negativo unresolved sin mutación; no implementa `Path`, Point-tool/frontend ni comando paralelo. ADR 0019 está Accepted y la spec es normativa; `manualGuiSmoke=DEFERRED TO G9U1 BY DESIGN`, `kernelDiagnosticAcceptance=PASS`, `selfApproved=false`, `authorApproved=true`, `passClaimed=true` |
 | G9U1 | `PASS — AUTHOR APPROVED` | Checkpoint post-R6 `00982e7e148a634cd57ed928f322774df267d5e3` inmutable; R1 publicado satisface la capacidad de pares certificada. El cierre autoral posterior sobre el SHA técnico revisado conserva 11 familias, 18 clusters, 110 acciones y 163 escenarios, sin autoaprobación. Los candidatos y smokes intermedios permanecen como historia, no como estado vigente |
 | G9U1 Round 3 + presentación final | `HISTORICAL CANDIDATE — SUPERSEDED BY G9U1 AUTHOR CLOSEOUT` | Round 3 fue publicado en `56cf32c922baefeb30c7dff02dbdd5091107ea1a`; el checkpoint técnico `34ffdd9af5f94ded2765e7d495ee66543d4d751f` permanece inmutable. Sus requisitos y evidencia describen el camino al cierre posterior, no una reapertura de G9U1 |
-| Post-G9U1 A1–A7 | `PLANNED — AUTHOR-SELECTED EXECUTION ORDER — NOT AUTHORIZED` | Refinamientos y disposiciones fuera del alcance cerrado G9U1; se programan antes de G9B por decisión de ejecución, no por dependencia semántica de G9B |
+| Post-G9U1 A1–A7 | A1–A6 cerrados (A4 como investigación/diseño); A7 = `DESIGN CANDIDATE — PENDING AUTHOR REVIEW` | A7 conserva propiedad G12; su implementación no está autorizada y el track precede G9B por decisión de ejecución, no por dependencia semántica |
 | G9B / G9C | `DESIGNED — NOT AUTHORIZED` | Hard dependency `G9A3 -> G9B -> G9C`; el track post-U1 es un predecesor de ejecución seleccionado por el autor, no un gate semántico |
 | G9U2 | `BLOCKED ON GLOBAL G9 APPROVAL` | Workspace de procedimientos diédrico solo tras `G9 PASS — AUTHOR APPROVED` |
 | G9 spatial solving | `POINT PILOT — AUTHOR APPROVED` | G9A2 se limita a frames/sistemas/mapas/relaciones y reconstrucción projection-defined de punto; no hay primitivas generales, objetos compuestos ni autoridad 3D |
@@ -2886,6 +2886,7 @@ A4_RESEARCH_DESIGN = COMPLETE / AUTHOR APPROVED
 A3_PRODUCT_IMPLEMENTATION = PASS — AUTHOR APPROVED
 A3_CLASSIC_FRONTEND = PASS — AUTHOR APPROVED
 A5_IMPLEMENTATION = PASS — AUTHOR APPROVED
+A7_RESEARCH_DESIGN = DESIGN CANDIDATE — PENDING AUTHOR REVIEW
 REMAINING_PRODUCT_IMPLEMENTATION_AUTHORIZED = false
 G9B_HARD_DEPENDENCY = false
 ```
@@ -2903,7 +2904,7 @@ G9U1, no necesariamente después de G9B, y ningún ítem reabre ni invalida
 | A4 | `RESEARCH COMPLETE / DESIGN AUTHOR APPROVED` | `CLOSED AS A3 INPUT` | La decisión autoral acepta P3 y su refinamiento/enmienda explícita P3-R1: se conserva el intervalo previo si sigue siendo legal; si nuevas dependencias lo impiden, solo se admite la recolocación mínima determinista forzada por el DAG. El rollback actual restaura identidad/DAG/orden XML; no conserva referencias Java ni convierte navegación del Construction Protocol en autoridad. A3 implementa en candidato el mecanismo kernel acotado para el éxito compatible, no un nuevo rollback |
 | A5 | `PASS — AUTHOR APPROVED` | `CLOSED` | Conserva la identidad del paquete por digest crudo y la equivalencia exacta por digest versionado. Ante definiciones distintas con el mismo comando, el binding documental explícito gobierna comando y toolbar; la entrada persistente queda deshabilitada solo en ese documento, sin desinstalarse ni sustituir la macro embebida. El cierre incluye las correcciones B/C de reconstrucción Tool Manager y rollback de carga `.ggb`; expand/detach y equivalencia cross-version quedan como capacidades opcionales futuras, no deuda A5 |
 | A6 | `PASS — AUTHOR APPROVED` | `CLOSED` | `Point(L,u)` omite solo `branchKey` cuando la definición válida/determinista contiene exactamente una rama y `u` pertenece a exactamente un componente. Cero, varias o elegibilidad cambiante fallan explícitamente; se persisten la rama, el linaje de componente y el contrato proveedor concretos, sin orden, coordenadas ni proximidad. Kernel compartido y superficie pública Locus V2 |
-| A7 | `PENDING — G12 CAPABILITY` | `DESIGN_THEN_IMPLEMENT AS BOUNDED G12 SLICE` | Zoom centrado en cursor y refinamiento acotado de teclas/configuración. Capa view/workspace; viewport, cámara, DPI y navegación nunca determinan coordenadas, métrica, identidad ni proveniencia geométrica |
+| A7 | `DESIGN CANDIDATE — PENDING AUTHOR REVIEW`; ownership G12 | `IMPLEMENT ONLY AFTER SEPARATE AUTHOR AUTHORIZATION` | La [caracterización/diseño A7](../architecture/post_g9u1_a7_navigation_design.md) confirma que wheel, pinch y Zoom In/Out heredados ya conservan el ancla de cursor; acota la corrección del fallback de teclado sin cursor y un binding configurable para el `ZoomWindow` G9U1 existente. La [matriz futura](../validation/post_g9u1_a7_navigation_design_matrix.md) excluye ZoomPrevious, FitSelection/FitLayer, vistas nombradas, escalas generales/impresión, 3D, Web y rediseño global. Capa view/workspace; viewport, cámara, DPI y navegación nunca determinan coordenadas, métrica, identidad ni proveniencia geométrica |
 
 #### Orden seleccionado por el autor
 
@@ -3246,11 +3247,15 @@ semántica ni gate inverso para el runtime.
 
 ## G12 - Navegación, zoom y escalas extendidas
 
-**Estado:** `PENDING`
+**Estado:** `PENDING`; slice A7 `DESIGN CANDIDATE — PENDING AUTHOR REVIEW`
 
 El slice acotado A7 de zoom centrado en cursor y teclas/configuración se agenda
 antes de G9B por orden de ejecución autoral, sin mover su ownership fuera de G12,
-sin convertirlo en dependencia semántica G9 y sin autorizarlo en este documento.
+sin convertirlo en dependencia semántica G9 y sin autorizar implementación en
+este documento. Su [diseño candidato](../architecture/post_g9u1_a7_navigation_design.md)
+reutiliza el `ZoomWindow` G9U1 y el transform de vista heredado; la autorización
+productiva, el selector PHASE y cualquier cambio Java requieren una decisión
+autoral posterior.
 
 **Trabajo**
 
