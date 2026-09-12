@@ -100,6 +100,17 @@ the host can convert macro results to ordinary construction steps without loss,
 and any broader cross-version semantic-equivalence policy beyond the exact
 versioned digest contract. Neither is implemented or implied by Round 3.
 
+### POST-G9U1-A5 disposition candidate
+
+Current source and accepted G9U1 Round-3 evidence establish that the original
+installed/document-local collision is resolved without making application
+preferences reconstruction authority. No current roadmap capability requires
+macro expansion/detachment or equivalence beyond the exact versioned parsed-
+definition digest. POST-G9U1-A5 therefore selects `CLOSE_AS_ABSORBED`, pending
+explicit author review. Expand/detach remains an optional new user capability,
+and broader cross-version equivalence remains optional future research; neither
+remains unresolved A5 technical debt or receives implementation authority.
+
 ## POST-U1-7 — optional `branchKey`
 
 A future overload may omit the branch only when the source publishes exactly

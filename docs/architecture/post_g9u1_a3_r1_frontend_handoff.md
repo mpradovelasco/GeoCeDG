@@ -1,12 +1,12 @@
 # POST-G9U1-A3-R1 frontend handoff
 
-- Status: **CLASSIC 5 IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**
+- Status: **CLASSIC 5 IMPLEMENTATION — PASS — AUTHOR APPROVED**
 - Product phase: `POST-G9U1-A3-FRONTEND`
 - Kernel phase: `POST-G9U1-A3 = PASS — AUTHOR APPROVED`
 - Kernel design: [`post_g9u1_a3_v2_compatible_redefine.md`](post_g9u1_a3_v2_compatible_redefine.md)
 - Decision candidate: [ADR 0026](../adr/0026-advanced-redefine-and-explicit-legacy-fallback.md)
 
-This handoff now records the bounded Classic 5 implementation candidate. Web
+This handoff records the author-approved bounded Classic 5 implementation. Web
 remains unchanged. The shared callback is dormant unless a product frontend
 installs it; it exposes an already classified kernel fact and adds no frontend
 compatibility or impact logic.
