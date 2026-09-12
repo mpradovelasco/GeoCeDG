@@ -5,6 +5,9 @@
 
 package org.geocedg.desktop;
 
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+
 import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
 import org.geocedg.common.kernel.locus.LocusPoint2D;
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionSolution2D;
@@ -21,6 +24,15 @@ public final class GeoCeDGEuclidianView extends EuclidianViewFor3DD {
 	public GeoCeDGEuclidianView(EuclidianController controller, boolean[] axes,
 			boolean grid, int number, EuclidianSettings settings) {
 		super(controller, axes, grid, number, settings);
+		getJPanel().addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent event) {
+				if (controller instanceof GeoCeDGEuclidianController) {
+					((GeoCeDGEuclidianController) controller)
+							.invalidateNavigationCursorContext();
+				}
+			}
+		});
 	}
 
 	@Override

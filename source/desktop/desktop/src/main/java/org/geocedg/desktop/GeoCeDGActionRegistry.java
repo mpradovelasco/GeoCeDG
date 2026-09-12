@@ -71,6 +71,7 @@ public final class GeoCeDGActionRegistry {
 
 	private final AppD app;
 	private final Map<String, Action> actions = new LinkedHashMap<>();
+	private final GeoCeDGNavigationShortcutPreferences navigationShortcuts;
 
 	/** @param app GeoCeDG application, not Classic */
 	public GeoCeDGActionRegistry(AppD app) {
@@ -104,7 +105,16 @@ public final class GeoCeDGActionRegistry {
 			}
 			actions.put(definition.id(), action);
 		}
+		navigationShortcuts = new GeoCeDGNavigationShortcutPreferences(this);
 		refresh();
+	}
+
+	AppD getApp() {
+		return app;
+	}
+
+	GeoCeDGNavigationShortcutPreferences getNavigationShortcuts() {
+		return navigationShortcuts;
 	}
 
 	/**
@@ -167,6 +177,10 @@ public final class GeoCeDGActionRegistry {
 			return text("Action.Unavailable.Feature");
 		}
 		String target = definition.target();
+		if ("geocedg.navigation.zoom-window".equals(target)
+				&& app.getActiveEuclidianView() != app.getEuclidianView1()) {
+			return text("Action.Unavailable.PrimaryView");
+		}
 		if (target.startsWith("geocedg.result.materialize-")
 				&& !controller().hasEligibleIntersectionSolutions()) {
 			return text("Action.Unavailable.Result");

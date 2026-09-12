@@ -16,6 +16,7 @@ import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionStatus2D
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionSolution2D;
 import org.geocedg.common.main.feature.RuntimeFeatureService;
 import org.geogebra.common.awt.AwtFactory;
+import org.geogebra.common.awt.GPoint;
 import org.geogebra.common.euclidian.Drawable;
 import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.euclidian.EuclidianCursor;
@@ -47,6 +48,8 @@ public final class GeoCeDGEuclidianController
 	private boolean interactionTailCancelled;
 	private boolean zoomWindowActive;
 	private boolean zoomWindowDragging;
+	private boolean zoomWindowKeyboardAnchored;
+	private boolean navigationCursorCurrent;
 	private int zoomStartX;
 	private int zoomStartY;
 
@@ -66,13 +69,23 @@ public final class GeoCeDGEuclidianController
 	@Override
 	public void wrapMousePressed(AbstractEvent event) {
 		interactionTailCancelled = false;
-		if (zoomWindowActive && !event.isRightClick()) {
-			zoomWindowDragging = true;
-			zoomStartX = event.getX();
-			zoomStartY = event.getY();
-			getView().setSelectionRectangle(null);
+		if (zoomWindowActive && event.isRightClick()) {
+			cancelZoomWindow();
 			return;
 		}
+		if (zoomWindowActive && !event.isRightClick()) {
+			zoomWindowDragging = true;
+			if (zoomWindowKeyboardAnchored) {
+				updateZoomWindowRectangle(event);
+			} else {
+				zoomStartX = event.getX();
+				zoomStartY = event.getY();
+				getView().setSelectionRectangle(null);
+			}
+			zoomWindowKeyboardAnchored = false;
+			return;
+		}
+		markNavigationCursorCurrent(event);
 		interactionGesture = false;
 		interactionChanged = false;
 		interactionDragPoint = null;
@@ -168,14 +181,12 @@ public final class GeoCeDGEuclidianController
 
 	@Override
 	public void wrapMouseDragged(AbstractEvent event, boolean startCapture) {
+		markNavigationCursorCurrent(event);
 		if (interactionTailCancelled) {
 			return;
 		}
 		if (zoomWindowDragging) {
-			getView().setSelectionRectangle(AwtFactory.getPrototype().newRectangle(
-					Math.min(zoomStartX, event.getX()), Math.min(zoomStartY, event.getY()),
-					Math.abs(event.getX() - zoomStartX), Math.abs(event.getY() - zoomStartY)));
-			getView().repaintView();
+			updateZoomWindowRectangle(event);
 			return;
 		}
 		if (!interactionGesture) {
@@ -202,6 +213,7 @@ public final class GeoCeDGEuclidianController
 
 	@Override
 	public void wrapMouseReleased(AbstractEvent event) {
+		markNavigationCursorCurrent(event);
 		if (interactionTailCancelled) {
 			interactionTailCancelled = false;
 			return;
@@ -245,14 +257,107 @@ public final class GeoCeDGEuclidianController
 
 	/** Arms a frontend-only rectangle gesture using inherited view navigation. */
 	public void activateZoomWindow() {
+		GPoint current = isMouseLocationValidForKeyboardNavigation()
+				? new GPoint(getMouseLoc().x, getMouseLoc().y) : null;
 		app.setMode(EuclidianConstants.MODE_MOVE);
 		zoomWindowActive = true;
+		zoomWindowKeyboardAnchored = current != null;
+		if (current != null) {
+			zoomStartX = current.x;
+			zoomStartY = current.y;
+		}
 		getView().setCursor(EuclidianCursor.ZOOM_IN);
 	}
 
 	/** @return whether the next drag defines a zoom rectangle */
 	public boolean isZoomWindowActive() {
 		return zoomWindowActive;
+	}
+
+	/** @return whether ZoomWindow has a current cursor first corner */
+	public boolean isZoomWindowKeyboardAnchored() {
+		return zoomWindowKeyboardAnchored;
+	}
+
+	@Override
+	public boolean isMouseLocationValidForKeyboardNavigation() {
+		GPoint location = getMouseLoc();
+		return navigationCursorCurrent && location != null
+				&& location.x >= 0 && location.x <= getView().getWidth()
+				&& location.y >= 0 && location.y <= getView().getHeight();
+	}
+
+	@Override
+	public void wrapMouseMoved(AbstractEvent event) {
+		super.wrapMouseMoved(event);
+		if (!isTextfieldHasFocus()) {
+			markNavigationCursorCurrent(event);
+			if (zoomWindowActive && zoomWindowKeyboardAnchored) {
+				updateZoomWindowRectangle(event);
+			}
+		}
+	}
+
+	@Override
+	public void wrapMouseEntered() {
+		invalidateNavigationCursorContext();
+		super.wrapMouseEntered();
+	}
+
+	@Override
+	public void wrapMouseExited(AbstractEvent event) {
+		invalidateNavigationCursorContext();
+		super.wrapMouseExited(event);
+	}
+
+	@Override
+	public void textfieldHasFocus(boolean hasFocus) {
+		if (hasFocus) {
+			invalidateNavigationCursorContext();
+		}
+		super.textfieldHasFocus(hasFocus);
+	}
+
+	@Override
+	public boolean wrapMouseWheelMoved(int x, int y, double delta,
+			boolean shiftOrMeta, boolean alt) {
+		boolean handled = super.wrapMouseWheelMoved(x, y, delta, shiftOrMeta, alt);
+		if (handled) {
+			navigationCursorCurrent = true;
+		}
+		return handled;
+	}
+
+	/** Invalidates cursor-derived navigation presentation state. */
+	public void invalidateNavigationCursorContext() {
+		navigationCursorCurrent = false;
+		if (zoomWindowActive || zoomWindowDragging || zoomWindowKeyboardAnchored) {
+			cancelZoomWindow();
+		}
+	}
+
+	private void cancelZoomWindow() {
+		zoomWindowKeyboardAnchored = false;
+		zoomWindowActive = false;
+		zoomWindowDragging = false;
+		if (getView() != null) {
+			getView().setSelectionRectangle(null);
+			getView().setCursor(EuclidianCursor.DEFAULT);
+		}
+	}
+
+	private void markNavigationCursorCurrent(AbstractEvent event) {
+		if (event != null && event.getX() >= 0 && event.getX() <= getView().getWidth()
+				&& event.getY() >= 0 && event.getY() <= getView().getHeight()) {
+			navigationCursorCurrent = true;
+		}
+	}
+
+	private void updateZoomWindowRectangle(AbstractEvent event) {
+		getView().setSelectionRectangle(AwtFactory.getPrototype().newRectangle(
+				Math.min(zoomStartX, event.getX()), Math.min(zoomStartY, event.getY()),
+				Math.abs(event.getX() - zoomStartX), Math.abs(event.getY() - zoomStartY)));
+		getView().repaintView();
 	}
 
 	@Override
@@ -280,6 +385,7 @@ public final class GeoCeDGEuclidianController
 		}
 		zoomWindowActive = false;
 		zoomWindowDragging = false;
+		zoomWindowKeyboardAnchored = false;
 		super.setMode(newMode, setter);
 	}
 

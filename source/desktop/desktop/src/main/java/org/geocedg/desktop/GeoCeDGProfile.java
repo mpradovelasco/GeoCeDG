@@ -488,7 +488,7 @@ public final class GeoCeDGProfile {
 				} else {
 					if (!Set.of("workspace-switcher", "user-tools", "host-views",
 							"sort-by", "rounding", "labeling", "font-size",
-							"save-settings").contains(kind)) {
+							"save-settings", "navigation-shortcut").contains(kind)) {
 						throw new IllegalStateException("Unknown menu entry " + kind);
 					}
 					if ("workspace-switcher".equals(kind) && !specialEntries.add(kind)) {

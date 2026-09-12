@@ -971,7 +971,8 @@
             "rounding",
             "labeling",
             "font-size",
-            "save-settings"
+            "save-settings",
+            "navigation-shortcut"
           ]
         },
         "group_id": {

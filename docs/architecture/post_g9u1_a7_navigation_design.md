@@ -1,10 +1,11 @@
 # POST-G9U1-A7 — cursor-centred navigation characterization and design
 
-- Status: **DESIGN CANDIDATE — PENDING AUTHOR REVIEW**
+- Design status: **AUTHOR APPROVED**
+- Implementation status: **IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**
 - Published base commit: `71483011be9bb9fdfe896f00af0ba8323f9c0834`
 - Published base tree: `81e690b68ed7ec2caa3f59ba6d8c6abf90ab3f38`
-- Product implementation authorized: **false**
-- Product code changed: **false**
+- Product implementation authorized: **true, bounded to this design**
+- Product code changed: **true, implementation candidate**
 - Owning programme layer: **G12 view/workspace navigation**
 - G9B hard dependency: **false**
 - Self approval: **false**

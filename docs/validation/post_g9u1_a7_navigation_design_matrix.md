@@ -1,16 +1,16 @@
 # POST-G9U1-A7 navigation design and future validation matrix
 
-- Status: **DESIGN CANDIDATE — PENDING AUTHOR REVIEW**
+- Design status: **AUTHOR APPROVED**
+- Implementation status: **IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**
 - Base commit: `71483011be9bb9fdfe896f00af0ba8323f9c0834`
 - Product phase effect: **NONE**
-- Product implementation authorized: **false**
-- Product code changed: **false**
+- Product implementation authorized: **true, bounded to the approved design**
+- Product code changed: **true, candidate pending author review**
 - Design authority candidate:
   [A7 navigation design](../architecture/post_g9u1_a7_navigation_design.md)
 
-This matrix records characterization evidence and the minimum future test plan.
-It is not PHASE acceptance, does not register a verifier and does not authorize
-productive A7 work.
+This matrix preserves characterization and records the implemented candidate
+coverage. It does not itself claim author approval of the implementation.
 
 ## 1. Characterization matrix
 
@@ -57,7 +57,7 @@ Pixel screenshots and painting timing are not acceptance authority.
 
 ## 3. Planned implementation and verification perimeter
 
-The future implementation should introduce one additive phase selector:
+The implementation candidate introduces one additive phase selector:
 
 ```text
 PHASE_ID = POST-G9U1-A7
@@ -67,11 +67,22 @@ INTEGRATION = not required absent a concrete uncovered obligation
 FINAL = not required absent a concrete uncovered obligation
 ```
 
-The selection should contain the focused A7 shared and Desktop classes, the
-existing G9U1 ZoomWindow regression, one Classic keyboard regression and the
-minimum semantic-purity regression. Inventory/registry additions would require
-`INFRA_UNIT` under current governance. No verifier or test exists in this
-design-only candidate.
+The selection contains the focused A7 shared and Desktop classes, the existing
+G9U1 ZoomWindow regression, the Classic keyboard regression and the minimum
+semantic-purity regression. Inventory/registry additions require `INFRA_UNIT`
+under current governance.
+
+`PostG9U1A7CursorZoomTest` proves the inherited affine anchor for zoom-in/out,
+repeated operations, finite supported extreme scales and the corrected
+non-square Classic fallback. `PostG9U1A7NavigationTest` proves fresh/stale and
+focus-loss cursor lifecycle, anchored and WAIT_FOR_DRAG ZoomWindow activation,
+unchanged construction/semantic identity, the unassigned default, preference
+reload, document-XML exclusion, atomic conflict rejection, primary-view
+containment and reuse of the G9U1 action. The Desktop selection also retains
+`G9U1SemanticPointInteractionTest`, `GeoCeDGProfileTest` and
+`G9U1WorkspaceSurfaceTest` as direct ZoomWindow, schema/catalog and
+menu/toolbar regressions. Final PHASE evidence remains candidate-bound and does
+not imply author approval.
 
 ## 4. Scope and non-authorities
 

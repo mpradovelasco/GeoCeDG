@@ -125,6 +125,8 @@ final class GeoCeDGMenuBar extends GeoGebraMenuBar {
 						menu.add(GeoCeDGHostMenuFactory.fontSize(app));
 					} else if ("save-settings".equals(kind)) {
 						menu.add(GeoCeDGHostMenuFactory.saveSettings(app));
+					} else if ("navigation-shortcut".equals(kind)) {
+						menu.add(GeoCeDGHostMenuFactory.navigationShortcut(app, registry));
 					} else {
 						throw new IllegalStateException("Unknown validated menu entry " + kind);
 					}

@@ -3056,6 +3056,13 @@ public abstract class EuclidianController implements SpecialPointsListener {
 	}
 
 	/**
+	 * @return whether the stored pointer location is current for keyboard navigation
+	 */
+	public boolean isMouseLocationValidForKeyboardNavigation() {
+		return mouseLoc != null;
+	}
+
+	/**
 	 * @param hasFocus
 	 *            whether an input box has focus
 	 */

@@ -136,6 +136,30 @@ Spline V2 × Spline V2 singleton-germ slots; uncertified/ambiguous roots stay ri
 and `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` stays open until a real native
 round trip or explicit author disposition closes it.
 
+## POST-G9U1-A7 navigation amendment candidate
+
+The author-approved A7 design is implemented as an **implementation candidate
+pending author review**. It remains a G12 view/workspace capability and is not a
+geometric or G9B dependency. Inherited wheel, pinch and Zoom In/Out keep using
+the existing cursor-anchored Euclidian transform. Keyboard zoom uses a current
+view-local cursor only while that transient context is valid; otherwise it uses
+the actual `(width / 2, height / 2)` centre of the active 2D view.
+
+The existing G9U1 `ZoomWindow` rectangle and
+`setAnimatedRealWorldCoordSystem` path remains the sole implementation. In the
+primary GeoCeDG 2D view a current cursor may become its first corner; without a
+current cursor it waits for a real drag. Exit, focus loss, text-field focus,
+right-click or tool change invalidates/cancels transient cursor-derived state.
+
+Only the stable action `navigation.zoom-window` has an A7 configurable chord.
+It is unassigned by default and stored as a versioned key-code/modifier value in
+the isolated GeoCeDG application preference file. Conflicting or invalid input
+is rejected atomically and leaves the previous binding unchanged. The chord,
+cursor and viewport are presentation state: none enters `.ggb`/`.cedg`,
+Construction XML, identity, provenance, metrics or DAG semantics. Secondary
+views, 3D, Web, ZoomPrevious, FitSelection, FitLayer, named views and general or
+printing scales remain deferred to broader G12.
+
 ## G9U1 final presentation-polish successor
 
 The bounded successor is **PASS — AUTHOR APPROVED** by an explicit exact-SHA

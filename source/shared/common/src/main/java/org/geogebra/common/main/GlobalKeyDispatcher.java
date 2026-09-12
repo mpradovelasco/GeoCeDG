@@ -1000,10 +1000,10 @@ public abstract class GlobalKeyDispatcher {
 	}
 
 	private GPoint getZoomPoint(EuclidianController ec) {
-		if (ec.getMouseLoc() != null) {
+		if (ec.isMouseLocationValidForKeyboardNavigation()) {
 			return ec.getMouseLoc();
 		} else {
-			return new GPoint(ec.getView().getWidth() / 2, ec.getView().getWidth() / 2);
+			return new GPoint(ec.getView().getWidth() / 2, ec.getView().getHeight() / 2);
 		}
 	}
 

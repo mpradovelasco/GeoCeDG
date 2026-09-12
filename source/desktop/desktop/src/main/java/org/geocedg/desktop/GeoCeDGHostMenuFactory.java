@@ -5,6 +5,8 @@
 
 package org.geocedg.desktop;
 
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +15,11 @@ import javax.swing.ButtonGroup;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
@@ -149,6 +155,53 @@ final class GeoCeDGHostMenuFactory {
 		item.addActionListener(event -> GeoGebraPreferencesD.getPref()
 				.saveXMLPreferences(app));
 		return item;
+	}
+
+	static JMenuItem navigationShortcut(AppD app, GeoCeDGActionRegistry registry) {
+		JMenuItem item = item(app, registry.text("Navigation.Shortcut.Configure"),
+				"navigation-shortcut");
+		item.addActionListener(event -> showNavigationShortcut(app, registry));
+		return item;
+	}
+
+	private static void showNavigationShortcut(AppD app,
+			GeoCeDGActionRegistry registry) {
+		GeoCeDGNavigationShortcutPreferences preferences = registry.getNavigationShortcuts();
+		JTextField capture = new JTextField(24);
+		capture.setEditable(false);
+		KeyStroke[] proposed = new KeyStroke[1];
+		capture.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent event) {
+				proposed[0] = KeyStroke.getKeyStrokeForEvent(event);
+				capture.setText(proposed[0].toString());
+				event.consume();
+			}
+		});
+		KeyStroke current = preferences.getBinding();
+		capture.setText(current == null
+				? registry.text("Navigation.Shortcut.Unassigned") : current.toString());
+		JPanel panel = new JPanel();
+		panel.add(capture);
+		Object assign = registry.text("Navigation.Shortcut.Assign");
+		Object reset = registry.text("Navigation.Shortcut.Reset");
+		Object cancel = registry.text("Navigation.Shortcut.Cancel");
+		int choice = JOptionPane.showOptionDialog(app.getMainComponent(), panel,
+				registry.text("Navigation.Shortcut.Configure"), JOptionPane.DEFAULT_OPTION,
+				JOptionPane.PLAIN_MESSAGE, null, new Object[] {assign, reset, cancel}, assign);
+		GeoCeDGNavigationShortcutPreferences.Result result = null;
+		if (choice == 0) {
+			result = preferences.setBinding(proposed[0]);
+		} else if (choice == 1) {
+			result = preferences.reset();
+		}
+		if (result == GeoCeDGNavigationShortcutPreferences.Result.CONFLICT
+				|| result == GeoCeDGNavigationShortcutPreferences.Result.INVALID) {
+			JOptionPane.showMessageDialog(app.getMainComponent(), registry.text(
+					result == GeoCeDGNavigationShortcutPreferences.Result.CONFLICT
+							? "Navigation.Shortcut.Conflict"
+							: "Navigation.Shortcut.Invalid"));
+		}
 	}
 
 	private static JCheckBoxMenuItem addView(AppD app, JMenu menu, String key, int viewId) {

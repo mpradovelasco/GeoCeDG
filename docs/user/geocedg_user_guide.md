@@ -1056,7 +1056,13 @@ Definition inspection is read-only and does not change global Algebra style.
 Use ordinary similarity tools or commands on semantic curves; their results
 are semantic sources with new identity, not transformed render samples. For
 measurements use `Length(S)` or `Length(S,P,Q)`; `LocusLength(...)` remains the
-rich evidence surface. ZoomWindow changes only the view. English and Spanish
+rich evidence surface. ZoomWindow changes only the view. Its optional GeoCeDG
+Desktop shortcut is unassigned by default and can be configured from View;
+invalid or conflicting chords leave the previous setting unchanged. With a
+current cursor in the primary Graphics view, keyboard activation captures that
+point as the first window corner; otherwise the tool waits for an ordinary
+press-drag-release. The shortcut is an application preference and is never
+stored as construction or geometric authority. English and Spanish
 are the offered product languages, with English fallback. Save/reopen uses
 native `.cedg`; `.ggb` remains compatibility input under the existing document
 policy. Author branding bitmaps are absent, so existing text/default fallback

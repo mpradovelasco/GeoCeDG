@@ -218,7 +218,10 @@ de un objeto sigue siendo una acción contextual sobre selección explícita.
 Para zoom con teclado, haga clic en un espacio vacío de la Vista Gráfica y use
 `Ctrl`+`+` / `Ctrl`+`-`; el teclado numérico también sirve. En configuración
 española el foco de la vista importa. Escape sale de herramientas; Zoom por
-ventana está tanto en Ver/navegación como en la barra. El zoom no cambia métricas.
+ventana está tanto en Ver/navegación como en la barra. Su atajo directo opcional
+se configura desde Ver y está sin asignar por defecto; un conflicto conserva el
+atajo anterior. Sin un cursor vigente, ZoomWindow espera un arrastre real. El
+zoom no cambia métricas, coordenadas, identidad ni proveniencia.
 
 ## 8. Herramientas propias persistentes y Laboratory
 
