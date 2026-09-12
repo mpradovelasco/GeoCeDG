@@ -16,6 +16,8 @@ import org.geogebra.common.util.FileExtensions;
 import org.geogebra.desktop.geogebra3D.gui.GuiManager3D;
 import org.geogebra.desktop.gui.menubar.GeoGebraMenuBar;
 import org.geogebra.desktop.gui.toolbar.ToolbarContainer;
+import org.geogebra.desktop.gui.view.algebra.AlgebraControllerD;
+import org.geogebra.desktop.gui.view.algebra.AlgebraViewD;
 import org.geogebra.desktop.main.AppD;
 
 /** GeoCeDG GUI manager preserving all inherited 3D/Desktop behavior. */
@@ -70,6 +72,11 @@ final class GuiManagerGeoCeDG extends GuiManager3D {
 			return super.newToolbarContainer();
 		}
 		return new GeoCeDGToolbarContainer(getApp(), getWorkspaceController());
+	}
+
+	@Override
+	protected AlgebraViewD newAlgebraView(AlgebraControllerD controller) {
+		return new GeoCeDGAlgebraView(controller, (AppGeoCeDG) getApp());
 	}
 
 	@Override

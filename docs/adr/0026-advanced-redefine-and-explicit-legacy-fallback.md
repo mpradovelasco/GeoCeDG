@@ -1,6 +1,6 @@
 # ADR 0026: Advanced semantic redefine and explicit legacy fallback
 
-- Status: **Accepted for the POST-G9U1-A3-R1 architecture; product promotion pending author review**
+- Status: **Accepted — AUTHOR-APPROVED POST-G9U1-A3 authority**
 - Date: 2026-09-12
 - Phase: `POST-G9U1-A3`
 - Parent authority: [G9A3 lifecycle design](../architecture/g9a3_spatial_lifecycle_migration_design.md)

@@ -131,10 +131,11 @@ class G9U1AlgebraSubmissionTest {
 	void noneditableSemanticDefinitionCannotBeSilentlyReplaced() throws Exception {
 		AppGeoCeDG app = G9U1TestApp.create();
 		eval(app, "S=SplineV2({(0,0),(1,0),(2,0)},3)");
+		eval(app, "M=LocusLength(S)");
 		String xml = app.getXML();
 		ErrorAccumulator errors = new ErrorAccumulator();
 		AtomicReference<GeoElementND[]> result = new AtomicReference<>();
-		GeoCeDGAlgebraInputSubmission.submit(app, "S=5", new EvalInfo(true), errors,
+		GeoCeDGAlgebraInputSubmission.submit(app, "M=5", new EvalInfo(true), errors,
 				result::set);
 		assertNull(result.get());
 		assertFalse(errors.getErrors().isEmpty());

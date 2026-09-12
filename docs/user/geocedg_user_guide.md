@@ -1,5 +1,9 @@
 # Manual operativo vivo de GeoCeDG
 
+Estado vivo del track post-G9U1: A3 está **PASS — AUTHOR APPROVED**. El slice
+Classic 5 que presenta su decisión de redefinición es un candidato pendiente de
+revisión autoral; no cambia Web ni autoriza A5/A7/G9B.
+
 Estado publicado R1: **PASS — AUTHOR APPROVED**, smoke autoral **PASS**.
 Tag `geocedg-g9s1-r1-pass` ->
 `af459d856f1cdc384805f3035203acce8e6f6104`.
@@ -283,6 +287,17 @@ through its current exact R4 token. Rendering, sampled polylines, displayed
 root order and coordinates do not define the spline or intersection identity.
 Tangencies, shared knots, overlaps, repeated/degenerate data and work limits
 report truthful typed states.
+
+En el candidato POST-G9U1-A3-FRONTEND, la definición de un Locus V2/Spline V2
+se edita mediante la entrada o el diálogo de redefinición Classic existente.
+Una redefinición compatible conserva la identidad semántica y aplica sin diálogo
+la recolocación mínima P3-R1 que imponga el DAG. Si solo es válida la sustitución
+heredada, GeoCeDG muestra antes de mutar la lista completa de impactos semánticos
+establecida por el núcleo: **Cancelar** no cambia la construcción; **Aplicar
+redefinición heredada** crea identidad nueva y mantiene toda la operación como
+un único Deshacer. Propuestas cíclicas, ambiguas, no admitidas u obsoletas no
+ofrecen sustitución. Las etiquetas mostradas son solo presentación y nunca
+establecen continuidad o reasociación.
 
 Ordinary numeric measurement uses
 `Length(S)` and `Length(S,P,Q)`. The corresponding `LocusLength(...)` forms

@@ -32,9 +32,12 @@ import javax.annotation.Nonnull;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityDiagnostic;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityException;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry.RedefinePublicationLease;
+import org.geocedg.common.kernel.spatial.identity.SpatialRedefineAssessment;
+import org.geocedg.common.kernel.spatial.identity.SpatialRedefineAssessmentHandler;
 import org.geocedg.common.kernel.spatial.identity.SpatialRedefineCandidateParticipation;
 import org.geocedg.common.kernel.spatial.identity.SpatialRedefineContext;
 import org.geocedg.common.kernel.spatial.identity.SpatialRedefineDecision;
+import org.geocedg.common.kernel.spatial.identity.SpatialRedefineExecutionMode;
 import org.geocedg.common.kernel.spatial.identity.SpatialRedefineTransaction;
 import org.geogebra.common.gui.view.algebra.AlgebraOutputFormat;
 import org.geogebra.common.io.MathMLParser;
@@ -213,6 +216,7 @@ public class AlgebraProcessor {
 
 	private SymbolicProcessor symbolicProcessor;
 	private final SqrtMinusOneReplacer sqrtMinusOneReplacer;
+	private SpatialRedefineAssessmentHandler spatialRedefineAssessmentHandler;
 
 	// Somewhat duplicates EvalInfo.isRedefinition but propagating EvalInfo to constructors of
 	// all geos would be an overkill (needed for autocolor)
@@ -234,6 +238,17 @@ public class AlgebraProcessor {
 		parser = kernel.getParser();
 		setEnableStructures(app.getConfig().isEnableStructures());
 		sqrtMinusOneReplacer = new SqrtMinusOneReplacer(kernel);
+	}
+
+	/**
+	 * Installs an optional product-frontend decision seam. Without one, the
+	 * inherited explicit execution mode in {@link EvalInfo} remains authoritative.
+	 *
+	 * @param handler presentation handler, or {@code null} to restore host behavior
+	 */
+	public void setSpatialRedefineAssessmentHandler(
+			@CheckForNull SpatialRedefineAssessmentHandler handler) {
+		spatialRedefineAssessmentHandler = handler;
 	}
 
 	/**
@@ -1403,6 +1418,8 @@ public class AlgebraProcessor {
 			if (storeUndo && geoElements != null) {
 				app.storeUndoInfo();
 			}
+		} catch (SpatialRedefineCancelledException cancelled) {
+			removeSliders(sliders);
 		} catch (MyError e) {
 			removeSliders(sliders);
 			ErrorHelper.handleError(e,
@@ -2479,11 +2496,28 @@ public class AlgebraProcessor {
 					"Explicit redefine context does not match the replacement target",
 					context.getOldId()));
 		}
-		SpatialRedefineTransaction transaction =
-				cons.getSpatialIdentityRegistry().prepareRedefine(context,
-						candidates[0], Arrays.asList(candidates),
-						info.getSpatialRedefineExecutionMode(),
-						info.getSpatialRedefineCandidateParticipation());
+		SpatialRedefineTransaction transaction;
+		if (spatialRedefineAssessmentHandler == null) {
+			transaction = cons.getSpatialIdentityRegistry().prepareRedefine(context,
+					candidates[0], Arrays.asList(candidates),
+					info.getSpatialRedefineExecutionMode(),
+					info.getSpatialRedefineCandidateParticipation());
+		} else {
+			SpatialRedefineAssessment assessment = cons.getSpatialIdentityRegistry()
+					.assessRedefine(context, candidates[0], Arrays.asList(candidates),
+							info.getSpatialRedefineCandidateParticipation());
+			SpatialRedefineExecutionMode mode = spatialRedefineAssessmentHandler
+					.selectExecutionMode(assessment);
+			if (mode == null) {
+				throw new SpatialRedefineCancelledException();
+			}
+			if (!assessment.isCurrent()) {
+				spatialRedefineAssessmentHandler.assessmentBecameStale(assessment);
+				throw new SpatialRedefineCancelledException();
+			}
+			transaction = cons.getSpatialIdentityRegistry().prepareRedefine(
+					assessment, mode);
+		}
 		if (transaction.getDecision() == SpatialRedefineDecision.REJECT) {
 			transaction.rollback();
 			throw new SpatialIdentityException(SpatialIdentityDiagnostic.forSubject(
@@ -2498,6 +2532,12 @@ public class AlgebraProcessor {
 			throw failure;
 		}
 		return transaction;
+	}
+
+	/** Normal cancellation is not a semantic or parse error. */
+	private static final class SpatialRedefineCancelledException
+			extends RuntimeException {
+		private static final long serialVersionUID = 1L;
 	}
 
 	private static void commitSpatialRedefine(

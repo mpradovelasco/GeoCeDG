@@ -4592,6 +4592,68 @@
       "en": "The source or selected semantic position is no longer current.",
       "es": "La fuente o posición semántica seleccionada ya no es actual."
     },
+    "Redefine.Legacy.Title": {
+      "en": "Apply legacy redefine?",
+      "es": "¿Aplicar redefinición heredada?"
+    },
+    "Redefine.Legacy.Summary": {
+      "en": "Compatible CeDG semantic continuity is not available. Proceeding creates fresh semantic identity for the replacement and applies the complete kernel-established impact listed below.",
+      "es": "No está disponible la continuidad semántica CeDG compatible. Continuar crea una identidad semántica nueva para el reemplazo y aplica el impacto completo establecido por el núcleo que se muestra a continuación."
+    },
+    "Redefine.Legacy.Impact": {
+      "en": "Affected semantic objects and relations:",
+      "es": "Objetos y relaciones semánticos afectados:"
+    },
+    "Redefine.Legacy.Undo": {
+      "en": "The complete replacement remains one ordinary Undo operation.",
+      "es": "El reemplazo completo permanece como una única operación Deshacer ordinaria."
+    },
+    "Redefine.Legacy.Proceed": {
+      "en": "Apply legacy redefine",
+      "es": "Aplicar redefinición heredada"
+    },
+    "Redefine.Cancel": { "en": "Cancel", "es": "Cancelar" },
+    "Redefine.Unavailable.Title": {
+      "en": "Redefine not applied",
+      "es": "Redefinición no aplicada"
+    },
+    "Redefine.Status.INVALID_DAG": {
+      "en": "The proposed redefine has an invalid dependency graph. Legacy replacement is not available.",
+      "es": "La redefinición propuesta tiene un grafo de dependencias no válido. El reemplazo heredado no está disponible."
+    },
+    "Redefine.Status.INCOMPATIBLE_HOST_REDEFINE": {
+      "en": "The host cannot apply this redefine safely. Legacy replacement is not available.",
+      "es": "El sistema anfitrión no puede aplicar esta redefinición con seguridad. El reemplazo heredado no está disponible."
+    },
+    "Redefine.Status.UNSUPPORTED": {
+      "en": "This semantic redefine is not supported. The construction was not changed.",
+      "es": "Esta redefinición semántica no está admitida. La construcción no se modificó."
+    },
+    "Redefine.Status.AMBIGUOUS": {
+      "en": "The semantic redefine is ambiguous. The construction was not changed.",
+      "es": "La redefinición semántica es ambigua. La construcción no se modificó."
+    },
+    "Redefine.Status.STALE_ASSESSMENT": {
+      "en": "The construction changed before execution. Submit the redefine again for a fresh assessment.",
+      "es": "La construcción cambió antes de ejecutar. Envíe de nuevo la redefinición para obtener una evaluación actualizada."
+    },
+    "Redefine.Impact.Participant": { "en": "Participant identity", "es": "Identidad del participante" },
+    "Redefine.Impact.Relation": { "en": "Semantic relation", "es": "Relación semántica" },
+    "Redefine.Impact.Sources": { "en": "Affected source identities", "es": "Identidades fuente afectadas" },
+    "Redefine.Impact.Status": { "en": "Predicted status", "es": "Estado previsto" },
+    "Redefine.Impact.Reason": { "en": "Reason", "es": "Motivo" },
+    "Redefine.Impact.Recovery": { "en": "Recovery", "es": "Recuperación" },
+    "Redefine.Predicted.AUTO_REVALIDATES": { "en": "Revalidates automatically", "es": "Se revalida automáticamente" },
+    "Redefine.Predicted.BECOMES_NONCURRENT": { "en": "Becomes non-current", "es": "Deja de estar vigente" },
+    "Redefine.Predicted.BECOMES_UNDEFINED": { "en": "Becomes undefined", "es": "Pasa a no definido" },
+    "Redefine.Predicted.RETIRED": { "en": "Retired", "es": "Retirado" },
+    "Redefine.Recovery.NONE": { "en": "No explicit recovery required", "es": "No requiere recuperación explícita" },
+    "Redefine.Recovery.REQUIRES_EXPLICIT_REBIND": { "en": "Requires explicit rebind", "es": "Requiere revinculación explícita" },
+    "Redefine.Recovery.REQUIRES_EXPLICIT_REDEFINE": { "en": "Requires explicit redefine", "es": "Requiere redefinición explícita" },
+    "Redefine.Reason.REPLACED_SOURCE_IDENTITY_RETIRED": { "en": "The replaced source identity is retired", "es": "Se retira la identidad de la fuente reemplazada" },
+    "Redefine.Reason.DIRECT_SEMANTIC_SOURCE_LOSS": { "en": "Direct semantic source continuity is lost", "es": "Se pierde la continuidad semántica directa de la fuente" },
+    "Redefine.Reason.TRANSITIVE_SEMANTIC_SOURCE_LOSS": { "en": "Transitive semantic source continuity is lost", "es": "Se pierde la continuidad semántica transitiva de la fuente" },
+    "Redefine.Reason.PROJECTION_RELATION_SOURCE_LOSS": { "en": "A projection relation loses source continuity", "es": "Una relación de proyección pierde continuidad de fuente" },
     "intersection.one": {
       "en": "Create one",
       "es": "Crear uno"

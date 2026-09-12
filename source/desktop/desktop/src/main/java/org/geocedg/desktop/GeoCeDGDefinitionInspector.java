@@ -40,8 +40,16 @@ public final class GeoCeDGDefinitionInspector {
 	 * @return a noneditable semantic definition, not a new edit policy
 	 */
 	public static boolean isReadOnly(GeoElement geo) {
-		return (geo instanceof GeoLocusV2 || geo instanceof GeoLocusMetricResult
+		return (geo instanceof GeoLocusMetricResult
 				|| geo instanceof GeoLocusIntersectionResult) && !geo.isAlgebraViewEditable();
+	}
+
+	/**
+	 * @param geo candidate selected through a Classic edit surface
+	 * @return whether the approved A3 preflight governs its existing redefine path
+	 */
+	public static boolean isSemanticRedefineEnabled(GeoElement geo) {
+		return geo instanceof GeoLocusV2;
 	}
 
 	/**

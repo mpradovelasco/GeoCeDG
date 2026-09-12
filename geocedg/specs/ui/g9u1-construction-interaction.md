@@ -1,7 +1,7 @@
 # Specification: G9U1 CeDG Construction interaction — post-R1 candidate
 
 - Status: **DESIGN PASS — AUTHOR APPROVED / POST-R1 RECONCILED**
-- Version: 1
+- Version: 1.1
 - Owners: GeoCeDG project owner
 - Roadmap gate: G9U1, post-G9S1, R6 and R1; implementation
   **PASS — AUTHOR APPROVED** by an explicit exact-SHA closeout decision
@@ -194,6 +194,19 @@ must not create a GeoCeDG-only input widget or weaken the normal construction
 participation batch.
 
 ## 3. Read-only definition inspection
+
+### POST-G9U1-A3-FRONTEND amendment
+
+The G9U1 closeout below remains historical authority for its bounded scope.
+After author approval of POST-G9U1-A3 and ADR 0026, Classic 5 may expose an
+existing `GeoLocusV2` definition through the normal redefine entry point. The
+Desktop must consume the kernel `SpatialRedefineAssessment`: compatible retain
+executes without a legacy dialog; an offerable legacy replacement requires an
+explicit localized confirmation containing every entry of the complete typed
+impact report; cancel or any non-offerable/stale status publishes nothing.
+`GeoLocusMetricResult` and `GeoLocusIntersectionResult` remain read-only. This
+amendment does not change Web, create a generic editor, or move compatibility,
+impact, identity, currentness or P3-R1 authority into the frontend.
 
 Double-clicking or invoking Inspect definition on a non-editable semantic curve
 must expose its current reconstructible parent definition in a read-only,

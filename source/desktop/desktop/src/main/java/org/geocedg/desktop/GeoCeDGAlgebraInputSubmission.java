@@ -75,7 +75,8 @@ public final class GeoCeDGAlgebraInputSubmission {
 					});
 			return;
 		}
-		if (!target.isAlgebraViewEditable()) {
+		if (!target.isAlgebraViewEditable()
+				&& !GeoCeDGDefinitionInspector.isSemanticRedefineEnabled(target)) {
 			errors.showError(app.getLocalization().getInvalidInputError());
 			return;
 		}

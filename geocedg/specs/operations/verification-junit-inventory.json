@@ -447,6 +447,73 @@
       ]
     },
     {
+      "selection_id": "post-g9u1-a3-frontend.shared",
+      "module": "shared",
+      "gradle_task": ":shared:common-jre:test",
+      "test_filters": [
+        "org.geocedg.common.locus.PostG9U1A3R1RedefineAssessmentTest"
+      ],
+      "excluded_test_filters": [],
+      "effective_arguments": [
+        ":shared:common-jre:test",
+        "--tests",
+        "org.geocedg.common.locus.PostG9U1A3R1RedefineAssessmentTest",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 3,
+      "expected_identities_sha256": "2a59bb82caebf518b345d70a0d2f5671acf561b7f9ff4b03ed333249e7111997",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "5feb94089991fbebf7395d5ad21c8fd5c5df745c",
+          "tree": "49d9309d6477eadfd1a059453862d9ced39485b8"
+        }
+      ]
+    },
+    {
+      "selection_id": "post-g9u1-a3-frontend.desktop",
+      "module": "desktop",
+      "gradle_task": ":desktop:desktop:test",
+      "test_filters": [
+        "org.geocedg.desktop.PostG9U1A3FrontendRedefineTest",
+        "org.geocedg.desktop.G9U1DefinitionAffordanceTest",
+        "org.geocedg.desktop.G9U1AlgebraSubmissionTest",
+        "org.geocedg.desktop.GeoCeDGProfileTest"
+      ],
+      "excluded_test_filters": [],
+      "effective_arguments": [
+        ":desktop:desktop:test",
+        "--tests",
+        "org.geocedg.desktop.PostG9U1A3FrontendRedefineTest",
+        "--tests",
+        "org.geocedg.desktop.G9U1DefinitionAffordanceTest",
+        "--tests",
+        "org.geocedg.desktop.G9U1AlgebraSubmissionTest",
+        "--tests",
+        "org.geocedg.desktop.GeoCeDGProfileTest",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 28,
+      "expected_identities_sha256": "3a430739bc2ce8a461ad49dfb57be90cdd5ab05a64d8c8ce27ae72a889c6a3ea",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "5feb94089991fbebf7395d5ad21c8fd5c5df745c",
+          "tree": "49d9309d6477eadfd1a059453862d9ced39485b8"
+        }
+      ]
+    },
+    {
       "selection_id": "g8b.narrow",
       "module": "shared",
       "gradle_task": ":shared:common-jre:test",

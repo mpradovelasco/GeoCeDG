@@ -3,13 +3,13 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Roadmap vivo y normativo de fases; no sustituye las especificaciones ni los ADR aceptados |
-| Versión documental | 3.77 |
+| Versión documental | 3.78 |
 | Fecha de revisión | 12 de septiembre de 2026 |
 | Baseline GeoGebra | 5.4.928.0, commit `9b93256b7df401ff056c37b502d82df4d72b1522`, tag `geogebra-baseline-5.4.928.0` |
-| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1–G9A3, el track G9A, G9U0 y sus refinamientos R1–R6, G9X1, G9S1, G9S1-R1, G9U1 y POST-G9U1-A6, A1 y A2 `PASS — AUTHOR APPROVED`. G9U1 es autoridad histórica cerrada y no se reabre. POST-G9U1-A4 tiene investigación completa y diseño `AUTHOR APPROVED` sin efecto de fase productiva. POST-G9U1-A3 es candidato de diseño/implementación pendiente de revisión autoral; A5 y A7 siguen no autorizados. El track continúa siendo orden de ejecución autoral, no dependencia dura de G9B. G9B/G9C permanecen diseñadas y no autorizadas; G9U2 sigue bloqueada por la aprobación global G9; G10P es solo planificación aprobada y ninguna implementación productiva G10 está autorizada. El riesgo `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` continúa abierto para disposición antes del cierre global G9. Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
-| Última fase cerrada | POST-G9U1-A2 — `PASS — AUTHOR APPROVED` |
-| Última fase ejecutada | POST-G9U1-A3-R1 — candidato reemplazante de diseño/implementación pendiente de revisión autoral; `selfApproved=false` |
-| Siguiente puerta | Revisión autoral explícita del candidato reemplazante POST-G9U1-A3-R1; A5, A7, G9B, G9C, G9U2 y G10 productivo permanecen no autorizados |
+| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1–G9A3, el track G9A, G9U0 y sus refinamientos R1–R6, G9X1, G9S1, G9S1-R1, G9U1 y POST-G9U1-A6, A1, A2 y A3 `PASS — AUTHOR APPROVED`. G9U1 es autoridad histórica cerrada y no se reabre. POST-G9U1-A4 tiene investigación completa y diseño `AUTHOR APPROVED`; P3-R1 es su refinamiento autor-aprobado. POST-G9U1-A3-FRONTEND es candidato Classic 5 pendiente de revisión autoral; A5 y A7 siguen no autorizados. El track continúa siendo orden de ejecución autoral, no dependencia dura de G9B. G9B/G9C permanecen diseñadas y no autorizadas; G9U2 sigue bloqueada por la aprobación global G9; G10P es solo planificación aprobada y ninguna implementación productiva G10 está autorizada. El riesgo `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` continúa abierto para disposición antes del cierre global G9. Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
+| Última fase cerrada | POST-G9U1-A3 — `PASS — AUTHOR APPROVED` |
+| Última fase ejecutada | POST-G9U1-A3-FRONTEND — candidato Classic 5 pendiente de revisión autoral; `selfApproved=false` |
+| Siguiente puerta | Revisión autoral explícita del candidato POST-G9U1-A3-FRONTEND; A5, A7, G9B, G9C, G9U2 y G10 productivo permanecen no autorizados |
 | Primer cliente | Aplicación de escritorio de la familia Classic 5 |
 | Núcleo | Java compartido de GeoGebra, extendido solo cuando la semántica lo requiere |
 
@@ -2883,7 +2883,8 @@ A6_PRODUCT_IMPLEMENTATION = PASS — AUTHOR APPROVED
 A1_PRODUCT_IMPLEMENTATION = PASS — AUTHOR APPROVED
 A2_PRODUCT_IMPLEMENTATION = PASS — AUTHOR APPROVED
 A4_RESEARCH_DESIGN = COMPLETE / AUTHOR APPROVED
-A3_PRODUCT_IMPLEMENTATION = R1 REPLACEMENT CANDIDATE — PENDING AUTHOR REVIEW
+A3_PRODUCT_IMPLEMENTATION = PASS — AUTHOR APPROVED
+A3_CLASSIC_FRONTEND = IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW
 REMAINING_PRODUCT_IMPLEMENTATION_AUTHORIZED = false
 G9B_HARD_DEPENDENCY = false
 ```
@@ -2897,7 +2898,7 @@ G9U1, no necesariamente después de G9B, y ningún ítem reabre ni invalida
 |---|---|---|---|
 | A1 | `PASS — AUTHOR APPROVED` | `CLOSED` | Proveniencia de constructor de `SplineV2`: cada ocurrencia fuente/interpolación aporta cero, una o varias addresses semánticas exactas a `Length`/`LocusLength`. La definición ordenada directa, el slot y los IDs durables forman la clave relativa; no hay inferencia por coordenadas o proximidad. Kernel compartido, specs spline/métrica y persistencia |
 | A2 | `PASS — AUTHOR APPROVED` | `CLOSED` | `LocusLength(L,A,B,"direction","boundary","same-position")` selecciona explícitamente dirección, borde abierto y política de misma address. Conserva magnitud no negativa, autoridad rica y defaults previos; no introduce signo algebraico, shortest ni nueva autoridad de endpoints. Kernel compartido y contrato métrico público |
-| A3 | `R1 REPLACEMENT CANDIDATE — PENDING AUTHOR REVIEW` | `AUTHOR REVIEW` | Especializa la transacción G9A3 mediante contrato constructor V2 versionado, mapa completo de roles estables, evolución de dependencias/revisiones y P3-R1. `RETAIN` conserva identidad y permite solo recolocación mínima forzada por DAG; el fallback legacy exige selección explícita, IDs frescos e informe de impacto completo. Kernel lifecycle, specs V2 y persistencia; frontend posterior no autorizado |
+| A3 | `PASS — AUTHOR APPROVED`; frontend Classic candidato | `FRONTEND AUTHOR REVIEW` | Especializa la transacción G9A3 mediante contrato constructor V2 versionado, mapa completo de roles estables, evolución de dependencias/revisiones y P3-R1. `RETAIN` conserva identidad y permite solo recolocación mínima forzada por DAG; el fallback legacy exige selección explícita, IDs frescos e informe de impacto completo. El slice Classic 5 candidato consume la evaluación tipada mediante confirmación localizada sin duplicar semántica; Web no cambia |
 | A4 | `RESEARCH COMPLETE / DESIGN AUTHOR APPROVED` | `CLOSED AS A3 INPUT` | La decisión autoral acepta P3 y su refinamiento/enmienda explícita P3-R1: se conserva el intervalo previo si sigue siendo legal; si nuevas dependencias lo impiden, solo se admite la recolocación mínima determinista forzada por el DAG. El rollback actual restaura identidad/DAG/orden XML; no conserva referencias Java ni convierte navegación del Construction Protocol en autoridad. A3 implementa en candidato el mecanismo kernel acotado para el éxito compatible, no un nuevo rollback |
 | A5 | `PARTIALLY_ABSORBED` | `DEFER PENDING DISPOSITION` | G9U1 Round 3 resolvió sustancialmente la colisión installed/embedded mediante digest crudo y digest de definición normalizada, manteniendo la macro embebida como autoridad documental. Una decisión futura debe elegir exactamente `CLOSE_AS_ABSORBED` o `DEFINE_NEW_FUTURE_CAPABILITY` para detach/expand lossless y/o equivalencia cross-version más amplia; no se fuerza implementación para cerrar el registro |
 | A6 | `PASS — AUTHOR APPROVED` | `CLOSED` | `Point(L,u)` omite solo `branchKey` cuando la definición válida/determinista contiene exactamente una rama y `u` pertenece a exactamente un componente. Cero, varias o elegibilidad cambiante fallan explícitamente; se persisten la rama, el linaje de componente y el contrato proveedor concretos, sin orden, coordenadas ni proximidad. Kernel compartido y superficie pública Locus V2 |
@@ -3008,9 +3009,10 @@ rollback o identidad.
 
 El [diseño A3](../architecture/post_g9u1_a3_v2_compatible_redefine.md), la
 [enmienda V2](../../geocedg/specs/locus/locus-v2-public-surface.md) y la
-[matriz](../validation/post_g9u1_a3_v2_compatible_redefine_matrix.md) forman un
-candidato reemplazante pendiente de revisión autoral. Sustituye, sin apilarse,
-al candidato revisado `4373c81b4961d0ab802eff0d77e28fc577586d75`.
+[matriz](../validation/post_g9u1_a3_v2_compatible_redefine_matrix.md) forman la
+autoridad A3 `PASS — AUTHOR APPROVED`. El candidato aprobado sustituyó, sin
+apilarse, al candidato revisado
+`4373c81b4961d0ab802eff0d77e28fc577586d75`.
 La compatibilidad exige contrato
 provider/family/schema/role/cardinality completo y un identificador versionado
 de constructor semántico V2; el cambio admitido de dependencias publica el DAG
@@ -3033,10 +3035,16 @@ legacy cuando el redefine host es válido, el proveedor clasifica reemplazo real
 y el cierre downstream CeDG tiene impacto completo. Ejecutarlo exige modo legacy
 explícito, retira el cierre antiguo y usa identidades frescas en una sola
 operación undoable. Ciclo, plan stale, impacto incompleto o estructura host
-inválida no ofrecen fallback. El kernel nunca pregunta al usuario; el handoff
-frontend queda diseñado pero no implementado. El candidato reutiliza la
-transacción y rollback XML G9A3, no añade comandos ni cambia Construction
-Protocol. Su estado máximo es `IMPLEMENTATION CANDIDATE — PENDING AUTHOR
+inválida no ofrecen fallback. El kernel nunca pregunta al usuario y reutiliza la
+transacción y rollback XML G9A3; no cambia Construction Protocol.
+
+El [handoff frontend](../architecture/post_g9u1_a3_r1_frontend_handoff.md)
+registra ahora un slice Classic 5 candidato. La ruta compatible ejecuta solo
+`ADVANCED_RETAIN`; el fallback host-válido exige confirmación explícita y muestra
+todo el impacto tipado completo. Cancelar no muta; aceptar selecciona exactamente
+`LEGACY_REPLACEMENT` como una única operación Undo. Estados inválidos, ambiguos,
+no admitidos o stale no ofrecen fallback; Web permanece fuera de alcance. El
+estado máximo de este slice es `IMPLEMENTATION CANDIDATE — PENDING AUTHOR
 REVIEW`; `selfApproved=false`.
 
 #### A6-OP1 — hardening de interpretación del exit code de `ripgrep`

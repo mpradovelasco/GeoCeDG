@@ -46,7 +46,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 class G9U1DefinitionAffordanceTest {
 
 	@Test
-	void propertiesShowsReadOnlySemanticDefinitionsWithoutChangingConstruction() throws Exception {
+	void propertiesSeparatesEditableV2SourcesFromReadOnlySemanticResults()
+			throws Exception {
 		AppGeoCeDG app = G9U1TestApp.create();
 		for (String command : new String[] {"u=0", "Q=(u,0)",
 				"D={false,{-2,2,true,true}}", "L=LocusV2(Q,u,D)",
@@ -55,7 +56,16 @@ class G9U1DefinitionAffordanceTest {
 			eval(app, command);
 		}
 		JPanel panel = namePanel(app);
-		for (String label : new String[] {"L", "S", "T", "M", "R"}) {
+		for (String label : new String[] {"L", "S", "T"}) {
+			GeoElement geo = lookup(app, label);
+			String before = app.getXML();
+			assertTrue(GeoCeDGDefinitionInspector.isSemanticRedefineEnabled(geo), label);
+			assertFalse(GeoCeDGDefinitionInspector.isReadOnly(geo), label);
+			update(panel, geo);
+			assertTrue(definitionField(panel).isEditable(), label);
+			assertEquals(before, app.getXML(), label);
+		}
+		for (String label : new String[] {"M", "R"}) {
 			GeoElement geo = lookup(app, label);
 			String before = app.getXML();
 			assertTrue(GeoCeDGDefinitionInspector.isReadOnly(geo), label);
@@ -70,22 +80,24 @@ class G9U1DefinitionAffordanceTest {
 	}
 
 	@Test
-	void readOnlyPropertiesRejectsEnterAndFocusLossWithoutAnyRedefine() throws Exception {
+	void readOnlyResultPropertiesRejectsEnterAndFocusLossWithoutAnyRedefine()
+			throws Exception {
 		AppGeoCeDG app = G9U1TestApp.create();
-		GeoElement spline = eval(app, "S=SplineV2({(-2,0),(0,0),(2,0)},3)");
+		eval(app, "S=SplineV2({(-2,0),(0,0),(2,0)},3)");
+		GeoElement metric = eval(app, "M=LocusLength(S)");
 		JPanel panel = namePanel(app);
-		update(panel, spline);
+		update(panel, metric);
 		JTextField definition = definitionField(panel);
 		String xml = app.getXML();
 		Object id = app.getKernel().getConstruction().getSpatialIdentityRegistry()
-				.getPersistentGeoId(spline);
+				.getPersistentGeoId(metric);
 		definition.setText("5"); // A synthetic event must not bypass the disabled editor.
 		((ActionListener) panel).actionPerformed(new ActionEvent(definition, 0, "Enter"));
 		((FocusListener) panel).focusLost(new FocusEvent(definition, FocusEvent.FOCUS_LOST));
 		assertEquals(xml, app.getXML());
-		assertSame(spline, lookup(app, "S"));
+		assertSame(metric, lookup(app, "M"));
 		assertEquals(id, app.getKernel().getConstruction().getSpatialIdentityRegistry()
-				.getPersistentGeoId(spline));
+				.getPersistentGeoId(metric));
 	}
 
 	@Test
