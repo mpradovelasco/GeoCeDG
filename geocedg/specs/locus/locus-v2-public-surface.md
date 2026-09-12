@@ -1,6 +1,6 @@
 # Public Locus V2 command, tool and persistence surface
 
-- Status: **NORMATIVE / AUTHOR APPROVED; POST-G9U1-A2 AMENDMENT CANDIDATE — PENDING AUTHOR REVIEW**
+- Status: **NORMATIVE / AUTHOR APPROVED; POST-G9U1-A2 AMENDMENT — PASS — AUTHOR APPROVED**
 - Phase: G9P design approved; productive G9U0 implementation is not authorized
 - Internal prerequisites: G6, G7 and G8 are author-approved
 - Related Accepted ADR: `docs/adr/0013-public-locus-v2-surface-and-token-selection.md`
@@ -678,7 +678,7 @@ coincident-point or nearest-point behavior is introduced. This section is an
 accepted public-surface amendment, not a reinterpretation of the author-approved
 G9U0 evidence.
 
-## 19. POST-G9U1-A2 public-surface amendment candidate
+## 19. POST-G9U1-A2 public-surface amendment
 
 The rich metric authority adds only this compatible overload:
 

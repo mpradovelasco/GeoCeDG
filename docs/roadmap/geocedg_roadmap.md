@@ -3,13 +3,13 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Roadmap vivo y normativo de fases; no sustituye las especificaciones ni los ADR aceptados |
-| Versión documental | 3.74 |
+| Versión documental | 3.75 |
 | Fecha de revisión | 12 de septiembre de 2026 |
 | Baseline GeoGebra | 5.4.928.0, commit `9b93256b7df401ff056c37b502d82df4d72b1522`, tag `geogebra-baseline-5.4.928.0` |
-| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1–G9A3, el track G9A, G9U0 y sus refinamientos R1–R6, G9X1, G9S1, G9S1-R1, G9U1, POST-G9U1-A6 y POST-G9U1-A1 `PASS — AUTHOR APPROVED`. G9U1 es autoridad histórica cerrada y no se reabre. POST-G9U1-A2 está en `IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW`; A3–A5 y A7 siguen no autorizados. El track continúa siendo orden de ejecución autoral, no dependencia dura de G9B. G9B/G9C permanecen diseñadas y no autorizadas; G9U2 sigue bloqueada por la aprobación global G9; G10P es solo planificación aprobada y ninguna implementación productiva G10 está autorizada. El riesgo `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` continúa abierto para disposición antes del cierre global G9. Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
-| Última fase cerrada | POST-G9U1-A1 — `PASS — AUTHOR APPROVED` |
-| Última fase ejecutada | POST-G9U1-A2 — candidato de implementación pendiente de revisión autoral; `selfApproved=false` |
-| Siguiente puerta | Revisión y aprobación autoral explícita del candidato POST-G9U1-A2; A3–A5, A7, G9B, G9C, G9U2 y G10 productivo permanecen no autorizados |
+| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1–G9A3, el track G9A, G9U0 y sus refinamientos R1–R6, G9X1, G9S1, G9S1-R1, G9U1 y POST-G9U1-A6, A1 y A2 `PASS — AUTHOR APPROVED`. G9U1 es autoridad histórica cerrada y no se reabre. POST-G9U1-A4 es un candidato de investigación/diseño pendiente de revisión autoral, sin efecto de fase productiva; A3, A5 y A7 siguen no autorizados. El track continúa siendo orden de ejecución autoral, no dependencia dura de G9B. G9B/G9C permanecen diseñadas y no autorizadas; G9U2 sigue bloqueada por la aprobación global G9; G10P es solo planificación aprobada y ninguna implementación productiva G10 está autorizada. El riesgo `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` continúa abierto para disposición antes del cierre global G9. Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
+| Última fase cerrada | POST-G9U1-A2 — `PASS — AUTHOR APPROVED` |
+| Última fase ejecutada | POST-G9U1-A4 — investigación/caracterización y candidato de diseño, sin efecto de fase productiva; `selfApproved=false` |
+| Siguiente puerta | Revisión autoral explícita del candidato de diseño POST-G9U1-A4; A3, A5, A7, G9B, G9C, G9U2 y G10 productivo permanecen no autorizados |
 | Primer cliente | Aplicación de escritorio de la familia Classic 5 |
 | Núcleo | Java compartido de GeoGebra, extendido solo cuando la semántica lo requiere |
 
@@ -2881,7 +2881,8 @@ la misma preservación semántica compartida.
 TRACK_STATUS = IN PROGRESS / AUTHOR-SELECTED EXECUTION ORDER
 A6_PRODUCT_IMPLEMENTATION = PASS — AUTHOR APPROVED
 A1_PRODUCT_IMPLEMENTATION = PASS — AUTHOR APPROVED
-A2_PRODUCT_IMPLEMENTATION = IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW
+A2_PRODUCT_IMPLEMENTATION = PASS — AUTHOR APPROVED
+A4_RESEARCH_DESIGN = DESIGN CANDIDATE — PENDING AUTHOR REVIEW
 REMAINING_PRODUCT_IMPLEMENTATION_AUTHORIZED = false
 G9B_HARD_DEPENDENCY = false
 ```
@@ -2894,9 +2895,9 @@ G9U1, no necesariamente después de G9B, y ningún ítem reabre ni invalida
 | ID | Disposición viva | Acción futura | Alcance y capa esperada |
 |---|---|---|---|
 | A1 | `PASS — AUTHOR APPROVED` | `CLOSED` | Proveniencia de constructor de `SplineV2`: cada ocurrencia fuente/interpolación aporta cero, una o varias addresses semánticas exactas a `Length`/`LocusLength`. La definición ordenada directa, el slot y los IDs durables forman la clave relativa; no hay inferencia por coordenadas o proximidad. Kernel compartido, specs spline/métrica y persistencia |
-| A2 | `IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW` | `PHASE CANDIDATE` | `LocusLength(L,A,B,"direction","boundary","same-position")` selecciona explícitamente dirección, borde abierto y política de misma address. Conserva magnitud no negativa, autoridad rica y defaults previos; no introduce signo algebraico, shortest ni nueva autoridad de endpoints. Kernel compartido y contrato métrico público |
+| A2 | `PASS — AUTHOR APPROVED` | `CLOSED` | `LocusLength(L,A,B,"direction","boundary","same-position")` selecciona explícitamente dirección, borde abierto y política de misma address. Conserva magnitud no negativa, autoridad rica y defaults previos; no introduce signo algebraico, shortest ni nueva autoridad de endpoints. Kernel compartido y contrato métrico público |
 | A3 | `PARTIALLY_ABSORBED` | `DESIGN_THEN_IMPLEMENT` | G9A3 ya aporta lifecycle genérico y transacción atómica; falta un predicado/política V2 de redefinición compatible frente a reemplazo real. Kernel lifecycle, specs V2 y persistencia |
-| A4 | `PARTIALLY_ABSORBED / CONTRACT PARTIALLY UNRESOLVED` | `RESEARCH_THEN_DESIGN` | Caracterizar rollback y posición exacta separando identidad durable, orden topológico del DAG, orden de construcción y estado de presentación/navegación del Construction Protocol. Kernel/lifecycle e integración upstream mínima; debe preceder el diseño A3 |
+| A4 | `DESIGN CANDIDATE — PENDING AUTHOR REVIEW` | `RESEARCH_THEN_DESIGN COMPLETE; REVIEW REQUIRED` | La caracterización selecciona P3: posición procedimental por orden relativo/anchors supervivientes, más fuerte que mera topología pero subordinada al DAG. El rollback actual restaura identidad/DAG/orden XML; no conserva referencias Java ni convierte navegación del Construction Protocol en autoridad. A3 requeriría un mecanismo kernel acotado para el éxito compatible, no para rollback |
 | A5 | `PARTIALLY_ABSORBED` | `DEFER PENDING DISPOSITION` | G9U1 Round 3 resolvió sustancialmente la colisión installed/embedded mediante digest crudo y digest de definición normalizada, manteniendo la macro embebida como autoridad documental. Una decisión futura debe elegir exactamente `CLOSE_AS_ABSORBED` o `DEFINE_NEW_FUTURE_CAPABILITY` para detach/expand lossless y/o equivalencia cross-version más amplia; no se fuerza implementación para cerrar el registro |
 | A6 | `PASS — AUTHOR APPROVED` | `CLOSED` | `Point(L,u)` omite solo `branchKey` cuando la definición válida/determinista contiene exactamente una rama y `u` pertenece a exactamente un componente. Cero, varias o elegibilidad cambiante fallan explícitamente; se persisten la rama, el linaje de componente y el contrato proveedor concretos, sin orden, coordenadas ni proximidad. Kernel compartido y superficie pública Locus V2 |
 | A7 | `PENDING — G12 CAPABILITY` | `DESIGN_THEN_IMPLEMENT AS BOUNDED G12 SLICE` | Zoom centrado en cursor y refinamiento acotado de teclas/configuración. Capa view/workspace; viewport, cámara, DPI y navegación nunca determinan coordenadas, métrica, identidad ni proveniencia geométrica |
@@ -2949,7 +2950,7 @@ address; otras familias permanecen no admitidas. El candidato
 autor y publicado como fast-forward; `selfApproved=false`. La matriz y recibos
 del candidato se preservan como evidencia histórica de esa aceptación.
 
-#### POST-G9U1-A2 — candidato de política explícita de recorrido
+#### POST-G9U1-A2 — política explícita de recorrido aprobada
 
 El candidato A2 añade solo la sobrecarga rica
 `LocusLength(L,A,B,"direction","boundary","same-position")`. Los vocabularios
@@ -2969,6 +2970,34 @@ alcanzabilidad, conectividad, estado y outcome. Los textos de política son
 inputs DAG normales, reconstruibles por save/reopen, undo/redo y copy/remap.
 A2 reutiliza sin cambios los endpoints semánticos y la proveniencia A1; no
 añade coordenadas, proximidad, `Path`, shortest o una nueva familia de comandos.
+El candidato `c0a018ab01c0b44a7ed1fb33010bf2481e30ac2a` fue aprobado
+expresamente por el autor y publicado como fast-forward; `selfApproved=false`.
+La matriz y los recibos del candidato se preservan como evidencia histórica de
+esa aceptación.
+
+#### POST-G9U1-A4 — posición de construcción y rollback
+
+La [caracterización A4](../architecture/post_g9u1_a4_construction_position_rollback_characterization.md)
+y su [matriz reproducible](../validation/post_g9u1_a4_construction_position_characterization_matrix.md)
+separan identidad durable, DAG, orden de evaluación, `ceList`, índice mutable,
+orden XML, presentación/navegación del Construction Protocol, referencia Java y
+snapshots undo/redo. A4 no cambia producto ni autoriza A3.
+
+El candidato de diseño selecciona P3: una redefinición V2 compatible debe
+preservar el intervalo procedimental relativo entre anchors supervivientes no
+afectados, siempre dentro de los límites de predecesores/dependientes. El mismo
+índice numérico no es identidad y la sola equivalencia topológica es
+insuficiente: el host actual puede mover una salida compatible de nueva
+instancia a través de un vecino independiente. El rollback existente sí
+reconstruye el XML de entrada y con ello identidad durable, DAG y orden de
+construcción exactos; puede reemplazar instancias Java y no restaura el paso de
+navegación del Protocolo como estado semántico.
+
+A3 deberá decidir e implementar, solo bajo autorización futura, un mecanismo
+kernel acotado de captura/validación de anchors para la ruta compatible exitosa.
+No necesita rediseñar el rollback XML existente. El Construction Protocol
+seguirá siendo una consecuencia de la construcción kernel y nunca un mecanismo
+de redefinición, rollback o identidad.
 
 #### A6-OP1 — hardening de interpretación del exit code de `ripgrep`
 

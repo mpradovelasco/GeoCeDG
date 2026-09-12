@@ -1,6 +1,6 @@
 # Locus V2 metric contract
 
-- Status: **G7 v1.0 NORMATIVE — PASS — AUTHOR APPROVED; POST-G9U1-A1 v1.1 AMENDMENT — PASS — AUTHOR APPROVED; POST-G9U1-A2 v1.2 AMENDMENT CANDIDATE — PENDING AUTHOR REVIEW**
+- Status: **G7 v1.0 NORMATIVE — PASS — AUTHOR APPROVED; POST-G9U1-A1 v1.1 AMENDMENT — PASS — AUTHOR APPROVED; POST-G9U1-A2 v1.2 AMENDMENT — PASS — AUTHOR APPROVED**
 - Version: `1.2`
 - Approval date: 2026-08-13
 - Author-review disposition: **G7A-R1, G7A AND G7B PASS — AUTHOR APPROVED**
@@ -669,7 +669,7 @@ approved POST-G9U1-A1 at candidate
 `1f862dccba6a1f685b718f8e43bf92153fc22f12`; this amendment is now normative
 and does not alter the author-approved G7 history.
 
-## 22. POST-G9U1-A2 normative amendment candidate: explicit traversal
+## 22. POST-G9U1-A2 normative amendment: explicit traversal
 
 The rich between-position authority adds the compatible public form:
 
