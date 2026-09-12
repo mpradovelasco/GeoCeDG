@@ -25,6 +25,7 @@ import org.geogebra.common.io.layout.Perspective;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.main.AppConfig;
 import org.geogebra.common.main.MyError.Errors;
+import org.geogebra.common.util.FileExtensions;
 import org.geogebra.desktop.CommandLineArguments;
 import org.geogebra.desktop.geogebra3D.App3D;
 import org.geogebra.desktop.gui.GuiManagerD;
@@ -169,6 +170,11 @@ public final class AppGeoCeDG extends App3D {
 		getKernel().setDocumentMacroCommandAuthorityEnabled(true);
 		getKernel().getAlgebraProcessor().setSpatialRedefineAssessmentHandler(
 				new GeoCeDGSpatialRedefineFrontend(this));
+	}
+
+	@Override
+	protected boolean isAdditionalTransactionalDocument(FileExtensions extension) {
+		return FileExtensions.GEOGEBRA.equals(extension);
 	}
 
 	void setSpatialRedefinePresentation(

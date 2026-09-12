@@ -2961,7 +2961,7 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 	 */
 	public boolean loadExistingFile(File file, boolean isMacroFile) {
 		byte[] nativeArchive = readAndPreflightNativeArchive(file, isMacroFile);
-		if (!isMacroFile && isNativeDocument(file) && nativeArchive == null) {
+		if (!isMacroFile && isTransactionalDocument(file) && nativeArchive == null) {
 			return false;
 		}
 
@@ -2981,7 +2981,7 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 	 */
 	final public boolean loadXML(File file, boolean isMacroFile) {
 		byte[] nativeArchive = readAndPreflightNativeArchive(file, isMacroFile);
-		if (!isMacroFile && isNativeDocument(file) && nativeArchive == null) {
+		if (!isMacroFile && isTransactionalDocument(file) && nativeArchive == null) {
 			return false;
 		}
 		return loadXML(file, isMacroFile, nativeArchive);
@@ -3030,7 +3030,7 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 	}
 
 	private byte[] readAndPreflightNativeArchive(File file, boolean isMacroFile) {
-		if (isMacroFile || !isNativeDocument(file)) {
+		if (isMacroFile || !isTransactionalDocument(file)) {
 			return null;
 		}
 		try {
@@ -3053,6 +3053,24 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 				StringUtil.getFileExtension(file.getName()));
 	}
 
+	private boolean isTransactionalDocument(File file) {
+		FileExtensions extension = file == null ? FileExtensions.UNKNOWN
+				: StringUtil.getFileExtension(file.getName());
+		return FileExtensions.GEOCEDG.equals(extension)
+				|| isAdditionalTransactionalDocument(extension);
+	}
+
+	/**
+	 * Product hook for compatibility document formats that require the existing
+	 * atomic document-load transaction. Classic opts into no additional formats.
+	 *
+	 * @param extension source extension
+	 * @return whether the product opts this format into transactional loading
+	 */
+	protected boolean isAdditionalTransactionalDocument(FileExtensions extension) {
+		return false;
+	}
+
 	/** @return a fresh parser config for disposable native archive validation */
 	protected AppConfig createDocumentPreflightConfig() {
 		return new org.geogebra.common.main.settings.config.AppConfigDefault();
@@ -3064,13 +3082,13 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 	 * @return true if successful
 	 */
 	final public boolean loadXML(URL url, boolean isMacroFile) {
-		boolean nativeDocument = !isMacroFile && isNativeDocument(url);
+		boolean transactionalDocument = !isMacroFile && isTransactionalDocument(url);
 		try {
 			if ("file".equalsIgnoreCase(url.getProtocol())) {
 				return loadXML(new File(url.toURI()), isMacroFile);
 			}
 			byte[] nativeArchive = readAndPreflightNativeArchive(url, isMacroFile);
-			if (nativeDocument && nativeArchive == null) {
+			if (transactionalDocument && nativeArchive == null) {
 				return false;
 			}
 			if (nativeArchive != null) {
@@ -3091,7 +3109,7 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 			throw invariantFailure;
 		} catch (Exception e) {
 			showError(Errors.LoadFileFailed, e.getMessage());
-			if (!nativeDocument) {
+			if (!transactionalDocument) {
 				setCurrentFile(null);
 			}
 			return false;
@@ -3255,7 +3273,7 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 	}
 
 	private byte[] readAndPreflightNativeArchive(URL url, boolean isMacroFile) {
-		if (isMacroFile || !isNativeDocument(url)) {
+		if (isMacroFile || !isTransactionalDocument(url)) {
 			return null;
 		}
 		try (InputStream input = url.openStream()) {
@@ -3273,9 +3291,11 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 		}
 	}
 
-	private static boolean isNativeDocument(URL url) {
-		return url != null && FileExtensions.GEOCEDG.equals(
-				StringUtil.getFileExtension(url.getPath()));
+	private boolean isTransactionalDocument(URL url) {
+		FileExtensions extension = url == null ? FileExtensions.UNKNOWN
+				: StringUtil.getFileExtension(url.getPath());
+		return FileExtensions.GEOCEDG.equals(extension)
+				|| isAdditionalTransactionalDocument(extension);
 	}
 
 	private boolean doLoadXML(InputStream inputStream, boolean isMacroFile)

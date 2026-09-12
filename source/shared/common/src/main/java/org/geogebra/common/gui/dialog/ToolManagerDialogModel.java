@@ -17,9 +17,12 @@
 package org.geogebra.common.gui.dialog;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.kernel.Kernel;
@@ -79,11 +82,25 @@ public class ToolManagerDialogModel {
 		// update order of macros:
 		// remove all macros from kernel and add them again in new order
 		Kernel kernel = app.getKernel();
+		Set<Macro> commandAuthorities = Collections.newSetFromMap(
+				new IdentityHashMap<>());
+		for (int index = 0; index < kernel.getMacroNumber(); index++) {
+			Macro macro = kernel.getMacro(index);
+			if (kernel.isMacroCommandAuthority(macro)) {
+				commandAuthorities.add(macro);
+			}
+		}
 
 		kernel.removeAllMacros();
 
 		for (Object obj : macros) {
-			kernel.addMacro((Macro) obj);
+			Macro macro = (Macro) obj;
+			kernel.addMacro(macro);
+			if (commandAuthorities.contains(macro)) {
+				// Object identity is transaction-local survivor evidence only. The
+				// original semantic authority selected this concrete document macro.
+				kernel.bindMacroCommandAuthority(macro);
+			}
 		}
 	}
 

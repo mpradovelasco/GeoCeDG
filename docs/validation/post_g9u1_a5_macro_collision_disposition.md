@@ -50,9 +50,11 @@ presentation addresses only.
 | existing construction, save/reopen and reconstructed toolbar execution remain bound to the embedded definition | the same Desktop lifecycle test plus `G9U1MacroNativeArchivePersistenceTest` |
 | installed state survives the conflict and is usable in a clean application context | the same Desktop lifecycle test |
 | no-collision, exact-equivalence and partial-package behavior remain unchanged | complete `G9U1UserToolLibraryTest` and native-archive persistence selection |
+| Tool Manager rename/reorder preserves authority only for the same surviving macro and clears deleted/reused-name authority | `PostG9U1A5MacroCommandAuthorityTest.toolManagerRenameAndReorderPreserveExplicitDocumentAuthority` |
+| failed `.ggb` compatibility load cannot replace the prior document or publish partial macro authority | `G9U1UserToolLibraryTest.failedGgbConstructionLoadDoesNotPublishPartialDocumentMacroAuthority` |
 
 The bounded canonical acceptance selector is `PHASE -Phase POST-G9U1-A5`.
-It contains one shared-kernel authority test and the two directly affected
+It contains two shared-kernel authority tests and the three directly affected
 Desktop lifecycle classes; registration is additive and does not change profile
 or evidence semantics.
 
@@ -74,6 +76,8 @@ author-approved G9U1 authority.
 | Portable reopen without package | `ellipseAxisInvocationSurvivesNativeSaveUndoAndTwoReopens` removes the installed package, reopens the native document twice and retains a defined `AlgoMacro` result and its independent CeDG identity graph | Established |
 | Undo/redo and ordinary reconstruction | The same native-archive test covers save after invocation, undo, save/reopen after undo, redo and dynamic recomputation | Established |
 | No inferred equivalence authority | Code compares original-byte and parsed-definition digests; no label, coordinate, proximity, construction-index, XML-position or visual-equality fallback participates | Established |
+| Tool Manager lifecycle | Reorder captures authority by transaction-local object identity and restores it only for the same surviving macro; ordinary removal still clears authority | Established by the corrected A5 candidate |
+| Failed compatibility load | GeoCeDG opts `.ggb` into the existing preflight/snapshot/rollback document transaction; Classic keeps its inherited load path | Established by the corrected A5 candidate |
 
 The authoritative implementation and focused evidence are:
 

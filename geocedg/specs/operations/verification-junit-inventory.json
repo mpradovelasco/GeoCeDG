@@ -532,8 +532,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 1,
-      "expected_identities_sha256": "408459324e50bc3a8e3578f6ef8dcb9525a3f49b48ce638b4163d92864cb1aab",
+      "expected_identity_count": 2,
+      "expected_identities_sha256": "e0ffe734ae393996403b43798bfa0bc614f735d6b4b08e90f47c193171eb4baf",
       "not_applicable_allowlist": [],
       "input_identities": [
         {
@@ -548,7 +548,8 @@
       "gradle_task": ":desktop:desktop:test",
       "test_filters": [
         "org.geocedg.desktop.G9U1UserToolLibraryTest",
-        "org.geocedg.desktop.G9U1MacroNativeArchivePersistenceTest"
+        "org.geocedg.desktop.G9U1MacroNativeArchivePersistenceTest",
+        "org.geocedg.desktop.GeoCeDGDocumentLifecycleTest"
       ],
       "excluded_test_filters": [],
       "effective_arguments": [
@@ -557,6 +558,8 @@
         "org.geocedg.desktop.G9U1UserToolLibraryTest",
         "--tests",
         "org.geocedg.desktop.G9U1MacroNativeArchivePersistenceTest",
+        "--tests",
+        "org.geocedg.desktop.GeoCeDGDocumentLifecycleTest",
         "--rerun-tasks",
         "--no-build-cache",
         "--no-daemon",
@@ -564,8 +567,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 39,
-      "expected_identities_sha256": "5b6bff1c60ecd8f8f9c6bff813ace3e10e5447901ca91e11b015dbcaedf362b2",
+      "expected_identity_count": 56,
+      "expected_identities_sha256": "b4470e8002e153e64716352bafd0103ffe850e92ea4eac1b3e5a610ba9718111",
       "not_applicable_allowlist": [],
       "input_identities": [
         {

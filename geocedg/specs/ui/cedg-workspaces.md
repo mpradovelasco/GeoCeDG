@@ -465,7 +465,13 @@ Command dispatch is explicitly bound to that embedded macro, and any native
 toolbar presentation resolves the same concrete document binding; neither map
 insertion order nor macro-mode index is semantic authority. The installed package
 is not removed or rewritten and becomes available again in a context without the
-conflicting document binding.
+conflicting document binding. A Tool Manager rename/reorder preserves this
+authority only for the same surviving current-document macro participant; true
+removal clears it, and neither a reused command name nor a replacement macro
+inherits it. GeoCeDG compatibility loads of `.ggb` use the existing atomic
+document-load transaction: the complete archive must validate before live
+publication, and any later load failure restores the preceding document rather
+than retaining partially reconstructed macro authority.
 No Templatev7 tool or asset is automatically imported, bundled or promoted.
 See the [user-tool review](../../../docs/validation/g9u1_user_tools_review.md).
 
