@@ -1,6 +1,6 @@
 # PRE-G9B stabilization, deployability and public-promotion design
 
-- Status: **PRE-G9B ROADMAP EXTENSION — DESIGN CANDIDATE — PENDING AUTHOR REVIEW**
+- Status: **PRE-G9B ROADMAP EXTENSION — FINAL DESIGN CANDIDATE — PENDING AUTHOR APPROVAL**
 - Recorded: 2026-09-13
 - Published base commit: `5869f9b3b8acb6950d3317c9927693716fecf6f2`
 - Published base tree: `733ddaa2675e826cdfffdd24de1a1ca135784c19`
@@ -24,18 +24,20 @@ The canonical top-level identifiers are:
 | ID | Purpose | Current status |
 |---|---|---|
 | `PRE-G9B-S1` | DXF correctness and bounded product stabilization | `DESIGNED — PRODUCT IMPLEMENTATION NOT YET AUTHORIZED` |
+| `PRE-G9B-S2` | Construction Text/property and object-font correctness | `DESIGNED — REQUIRED PRE-D1 SLICE — IMPLEMENTATION NOT AUTHORIZED` |
+| `PRE-G9B-S3` | Construction Text view-zoom behavior | `DESIGNED — REQUIRED PRE-D1 SLICE — IMPLEMENTATION NOT AUTHORIZED` |
+| `PRE-G9B-S4` | Independent application presentation sizing | `DESIGNED — REQUIRED PRE-D1 SLICE — IMPLEMENTATION NOT AUTHORIZED` |
 | `PRE-G9B-D1` | Licensing, assets and deployability | `DESIGNED — RESEARCH/IMPLEMENTATION NOT YET AUTHORIZED` |
 | `PRE-G9B-P1` | Public surface and product-version 1.0 promotion | `DESIGNED — PROMOTION NOT YET AUTHORIZED` |
 
 The `S`, `D` and `P` families distinguish stabilization, deployability and
-promotion without occupying a G9 semantic identifier such as G9U2. Bounded S1
-implementation work may be authorized separately as `PRE-G9B-S1-DXF`,
-`PRE-G9B-S1-POLISH`, `PRE-G9B-S1-TEXT-DIALOG`,
-`PRE-G9B-S1-PRESENTATION-PREFERENCES` and `PRE-G9B-S1-TEXT-ZOOM`. A conditional
-`PRE-G9B-S1-SPLINE-DXF` exists only if artifact-backed characterization proves
-that SplineV2 needs a new export contract rather than a repair of the existing
-Locus V2 adapter. These are proposed bounded selectors/slices, not registered
-verification phases or implementation authorizations.
+promotion without occupying a G9 semantic identifier such as G9U2. S1 owns the
+DXF and genuinely minor stabilization batch. S2, S3 and S4 are mandatory
+bounded successors before D1, not an indefinite backlog. A conditional
+`PRE-G9B-S1-SPLINE-DXF` review gate exists only if artifact-backed
+characterization proves that SplineV2 needs a new export contract rather than a
+repair of the existing Locus V2 adapter. None of these identifiers is yet a
+registered verification phase or implementation authorization.
 
 ```text
 POST-G9U1 REFINEMENT TRACK — COMPLETE — AUTHOR APPROVED
@@ -43,6 +45,16 @@ POST-G9U1 REFINEMENT TRACK — COMPLETE — AUTHOR APPROVED
     | AUTHOR_SELECTED_EXECUTION_PREDECESSOR
     v
 PRE-G9B-S1  stabilization
+    |
+    | AUTHOR_SELECTED_EXECUTION_PREDECESSOR
+    v
+PRE-G9B-S2  construction Text/property correctness
+    |
+    v
+PRE-G9B-S3  construction Text view-zoom behavior
+    |
+    v
+PRE-G9B-S4  independent presentation sizing
     |
     | AUTHOR_SELECTED_EXECUTION_PREDECESSOR
     v
@@ -60,7 +72,7 @@ HARD_DEPENDENCY retained: G9A3 + approved primitive-projection contract -> G9B
 GLOBAL_CLOSEOUT_GATE retained: G9B -> G9C -> global G9 closeout -> G9U2
 ```
 
-This calendar order is author-selected. S1, D1 and P1 do not become semantic
+This calendar order is author-selected. S1–S4, D1 and P1 do not become semantic
 dependencies of G9B merely by preceding it. G9B remains designed but
 unauthorized, and its existing hard product dependency remains G9A3 plus the
 approved primitive-projection contract. The post-G9U1 track stays closed.
@@ -164,8 +176,8 @@ asset, trademark or redistribution rights. The current package profile remains
 
 ### 3.1 Artifact intake and provenance
 
-No named author artifact was present during this design task. The proposed intake
-location is a repository-adjacent, non-versioned directory:
+No named author artifact was present during this design task. The author has
+approved this repository-adjacent, non-versioned intake location:
 
 ```text
 ../GeoCeDG-author-inbox/PRE-G9B-S1-DXF/
@@ -219,44 +231,45 @@ repairs.
 
 ### 3.3 Stabilization triage
 
-| # | Request | Classification | Smallest reviewable slice / rationale |
+| # | Request | Classification | Durable disposition / rationale |
 |---|---|---|---|
-| 1 | SplineV2 described as “semantic LocusV2” | `BOUNDED_MINOR` | `PRE-G9B-S1-POLISH`: make presentation producer-aware while retaining `GeoLocusV2` as the real semantic class; no label/type spoofing |
-| 2 | Text Properties Apply/OK/Cancel | `BOUNDED_BUT_SEPARATE` | `PRE-G9B-S1-TEXT-DIALOG`: characterize one draft/commit/cancel transaction across embedded dialog, redefine, selection/tab changes and Undo before changing buttons |
-| 3 | construction-object font sizes including 10 pt, independent of menus/icons | `BOUNDED_BUT_SEPARATE` | `PRE-G9B-S1-PRESENTATION-PREFERENCES`: adding 10 to the global list would couple object and UI fonts, so the object/view preference must first be separated |
-| 4 | construction Text scales visually with zoom | `NONTRIVIAL_FOLLOWUP` | `PRE-G9B-S1-TEXT-ZOOM`: specify screen-font versus world-scaled modes, scale reference, bounds/hit/LaTeX, multiple views and persistence before implementation |
-| 5 | independent menu, toolbar-icon and Algebra/Protocol/Graphics UI sizes | `NONTRIVIAL_FOLLOWUP` | `PRE-G9B-S1-PRESENTATION-PREFERENCES`: reuse existing preference infrastructure, but add a bounded ownership/schema design; never construction semantics |
-| 6 | move Midpoint; add Text to parameter group | `BOUNDED_MINOR` | `PRE-G9B-S1-POLISH`: manifest-only taxonomy change plus compiler/menu/toolbar tests; one authoritative action placement |
-| 7 | persistent-tool buttons vertically displaced | `NOT_REPRODUCED` | capture real component bounds, insets, baseline and painted icon bounds in `PRE-G9B-S1-POLISH`; repair only if a bounded container/icon cause is reproduced |
-| 8 | author About text and baseline/author | `BOUNDED_MINOR` | `PRE-G9B-S1-POLISH`: localized/profile-backed text. Preserve the requested wording below; author must decide the likely `GeoGeobra` typo before implementation |
+| 1 | SplineV2 described as “semantic LocusV2” | `BOUNDED_MINOR` | `PRE-G9B-S1`: make presentation producer-aware while retaining `GeoLocusV2` as the real semantic class; no label/type spoofing |
+| 2 | Text Properties Apply/OK/Cancel | `BOUNDED_BUT_SEPARATE` | mandatory `PRE-G9B-S2`: one draft/commit/cancel transaction across embedded dialog, redefine, selection/tab changes and Undo |
+| 3 | construction-object font sizes including 10 pt, independent of menus/icons | `BOUNDED_BUT_SEPARATE` | mandatory `PRE-G9B-S2`: construction-object styling contract remains distinct from S2 dialog transaction and from S4 application UI preferences |
+| 4 | construction Text scales visually with zoom | `NONTRIVIAL_FOLLOWUP` | mandatory `PRE-G9B-S3`: specify screen-font versus world-scaled behavior, scale reference, bounds/hit/LaTeX, multiple views and persistence before implementation |
+| 5 | independent menu, toolbar-icon and Algebra/Protocol/Graphics UI sizes | `NONTRIVIAL_FOLLOWUP` | mandatory `PRE-G9B-S4`: reuse existing preference infrastructure with bounded ownership; never construction semantics or general theming redesign |
+| 6 | move Midpoint; add Text to parameter group | `BOUNDED_MINOR` | `PRE-G9B-S1`: manifest-only taxonomy change plus compiler/menu/toolbar tests; one authoritative action placement |
+| 7 | persistent-tool buttons vertically displaced | `NOT_REPRODUCED` | `PRE-G9B-S1`, conditional on reproduction from real component bounds, insets, baseline and painted icon bounds; stop if the cause is not bounded |
+| 8 | author About text and baseline/author | `BOUNDED_MINOR` | `PRE-G9B-S1`: localized/profile-backed corrected text below; no product-version promotion |
 | 9 | product version 1.0 | `BOUNDED_BUT_SEPARATE` | `PRE-G9B-P1`, after D1 disposition; update the single package-version authority and all derived surfaces atomically, preserving the upgrade identifier |
 
-The author-provided About text is preserved literally for review:
+The author-approved corrected About text is preserved literally:
 
 ```text
-GeoCeDG — Computational extended Descriptive Geometry based on GeoGeobra. Geometry and identity belong to the shared kernel. Upstream compatibility is preserved; this is an author-review implementation candidate.
+GeoCeDG — Computational extended Descriptive Geometry based on GeoGebra. Geometry and identity belong to the shared kernel. Upstream compatibility is preserved; this is an author-review implementation candidate.
 GeoGebra upstream baseline: 5.4.928.0
 Manuel Prado-Velasco, Universidad de Sevilla
 ```
 
-`GeoGeobra` appears likely to be an unintended spelling of `GeoGebra`; this
-design does not silently correct it. Exact final wording is an unresolved author
-decision.
+The author confirms that the earlier `GeoGeobra` spelling was a typo. This
+corrected text is the S1 design authority; S1 still does not change the package
+or public product version.
 
 ### 3.4 S1 implementation and verification slices
 
-Each slice requires separate productive authorization. `PRE-G9B-S1-DXF` owns
-artifact intake, reproducible diagnosis and only proven G5/G9X1 corrections.
-`PRE-G9B-S1-POLISH` owns only items 1, 6, 8 and item 7 if reproduced as bounded.
-The three cross-cutting UI requests retain their separate identifiers above.
+S1 and each subsequent slice require separate productive authorization. S1 owns
+artifact intake, reproducible DXF diagnosis and only proven G5/G9X1 corrections,
+plus items 1, 6 and 8 and item 7 only if it reproduces as bounded. If SplineV2
+requires new fidelity semantics, `PRE-G9B-S1-SPLINE-DXF` must be reviewed before
+S1 can close.
 
-A future additive `PHASE -Phase PRE-G9B-S1-<slice>` selection should include
+A future additive `PHASE -Phase PRE-G9B-S1` selection should include
 only focused tests, directly affected G5/G9X1 or Desktop regressions, and the
 versioned artifact-backed cases. The umbrella S1 closeout must show every
-required slice accepted or explicitly deferred by the author. It must also
-record an author smoke for actual external DXF usability and the bounded UI
-items; automated parsing is not a substitute for that smoke. Registry work is
-not authorized or needed in this design candidate.
+S1 item accepted or explicitly disposed by the author. It must also record an
+author smoke for actual external DXF usability and the bounded UI items;
+automated parsing is not a substitute for that smoke. Registry work is not
+authorized or needed in this design candidate.
 
 S1 stops before implementation when:
 
@@ -273,7 +286,51 @@ S1 stops before implementation when:
 PRE-G9B-S1 = DESIGNED — PRODUCT IMPLEMENTATION NOT YET AUTHORIZED
 ```
 
-## 4. PRE-G9B-D1 — licensing, assets and deployability
+## 4. Required stabilization successors before D1
+
+### 4.1 PRE-G9B-S2 — Construction Text/property correctness
+
+S2 is mandatory and keeps two contracts distinct:
+
+1. **Properties transaction:** Apply commits without closing; OK commits and
+   closes; Cancel closes without committing unapplied draft changes. Draft
+   ownership, tab/selection changes, redefine and Undo must be characterized
+   through the actual host dialog lifecycle before implementation.
+2. **Construction-object font:** offer at least 10 pt through the construction
+   object/style contract without controlling menu fonts or toolbar icons. This
+   is not the S4 application-presentation preference.
+
+S2 may share one bounded implementation phase because both surfaces are
+construction Text/property correctness, but their state, persistence and tests
+must remain separate. Product implementation is not authorized.
+
+### 4.2 PRE-G9B-S3 — Construction Text view-zoom behavior
+
+S3 is a separate mandatory phase. It must first characterize inherited
+GeoGebra Text anchoring, absolute-screen-position behavior, glyph layout,
+LaTeX, hit bounds and multi-view behavior. Any approved implementation may make
+the visual construction Text size respond to view zoom, but viewport state must
+not become construction geometry, semantic identity or DAG authority. The
+design must state the scale reference, degeneration/extreme-scale policy,
+save/reopen consequences and compatibility with existing files before code.
+
+### 4.3 PRE-G9B-S4 — Independent application presentation sizing
+
+S4 is a separate mandatory application/frontend phase for independently
+configurable menu font, toolbar icon, Algebra font, Construction Protocol font,
+Graphics UI font and Graphics2 UI font. It should reuse existing application
+preference and style infrastructure. Bindings are presentation preferences, not
+construction semantics; no general theming architecture is pre-authorized.
+Document presentation state may participate only where an existing upstream
+contract explicitly requires a bounded compatible behavior.
+
+Future PHASE selections use the exact S2/S3/S4 identifiers and include focused
+host-lifecycle, view/presentation, persistence/default-reset and Classic
+containment regressions. Each slice remains separately author-authorized and
+author-reviewed. D1 cannot begin in the selected calendar order until S1–S4 are
+closed.
+
+## 5. PRE-G9B-D1 — licensing, assets and deployability
 
 D1 is a separate major phase. Its gates are sequential and fail closed:
 
@@ -296,10 +353,10 @@ L5. A bounded PHASE selector may aggregate D1-specific assertions, but it must
 not redefine FINAL, package acceptance or legal approval. Any package build
 must bind its manifest/SBOM to the exact candidate and runtime hashes.
 
-## 5. PRE-G9B-P1 — public surface and version 1.0 promotion
+## 6. PRE-G9B-P1 — public surface and version 1.0 promotion
 
-P1 is a small, separately authorized gate after successful S1 and the explicit
-D1 disposition. It must evaluate, not assume:
+P1 is a small, separately authorized gate after successful S1–S4 and the
+explicit D1 disposition. It must evaluate, not assume:
 
 1. enabling the already approved Locus V2/SplineV2 public construction surface
    by default only in `AppConfigGeoCeDG`;
@@ -320,9 +377,13 @@ creation-filter, Classic-containment, historical-load, package and interactive
 smoke evidence. It does not enable every experimental feature and does not
 authorize G9B.
 
-## 6. Compatibility and authority matrix
+The current product/package version remains `0.9.0` throughout this design and
+all S1–S4 design authority. No version changes before a separately authorized
+P1 decision.
 
-| Concern | S1 | D1 | P1 |
+## 7. Compatibility and authority matrix
+
+| Concern | S1–S4 | D1 | P1 |
 |---|---|---|---|
 | geometric/source authority | unchanged; DXF reads immutable semantic snapshots | unchanged | unchanged |
 | render/view authority | forbidden for export semantics; UI polish only | none | startup/presentation only |
@@ -332,7 +393,7 @@ authorize G9B.
 | public redistribution | remains blocked | may become technically ready; human decision required | only within explicitly approved D1 scope |
 | G9B/G9C/G9U2/G10 | not authorized | not authorized | not authorized |
 
-## 7. Validation strategy and author evidence
+## 8. Validation strategy and author evidence
 
 Before productive work, each authorized slice must publish a validation matrix.
 The minimum combined plan is:
@@ -344,7 +405,12 @@ The minimum combined plan is:
 - Desktop selection/population/reporting and author external-application smoke;
 - focused UI state tests for each admitted polish slice, avoiding pixel timing
   except for the reproducible toolbar-layout measurement;
-- no geometric side effects from presentation preferences/text behavior;
+- S2 Apply/OK/Cancel draft ownership plus 10 pt construction-object font and
+  explicit non-coupling to menus/icons;
+- S3 zoom-responsive Text rendering, bounds/hit/LaTeX/multi-view compatibility
+  and absence of geometric/identity side effects;
+- S4 independent preference, persistence/reset and cross-view isolation for
+  menu, icon, Algebra, Construction Protocol, Graphics and Graphics2 sizing;
 - deterministic license/package inventory and primary-source evidence links;
 - L5 install/uninstall/association/composition/reproducibility smoke;
 - P1 GeoCeDG default-on, Classic default-preservation, old-file reconstruction,
@@ -354,30 +420,32 @@ Acceptance receipts are technical evidence and never author approval. Earlier
 G5, G9X1, G4 and post-G9U1 evidence is preserved; it is not mechanically
 reclassified by this design.
 
-## 8. Open author decisions
+## 9. Open author decisions
 
-1. Approve the proposed inbox, provide the four exact DXF artifacts there and confirm their
-   redistribution/fixture-review status.
-2. Confirm whether `GeoGeobra` in the supplied About sentence is intentional.
-3. After S1 characterization, decide whether a conditional SplineV2 export
-   capability subphase is needed and which nontrivial UI slices are mandatory
-   before D1.
-4. At L3, select the permitted deployment scope and every consequential
+1. After S1 characterization, decide whether a conditional SplineV2 export
+   capability subphase is required by genuinely new fidelity semantics.
+2. At L3, select the permitted deployment scope and every consequential
    replace/exclude/permission/branding disposition.
-5. At P1, decide feature-flag compatibility, independent extended-DXF default,
-   exact `1.0.0`/`1.0` presentation and whether public distribution is in scope.
-6. Only after this track, decide whether and when to authorize G9B.
+3. At P1, decide the default LocusV2/SplineV2 creation policy and compatibility
+   treatment of the existing diagnostic argument.
+4. At P1, decide the independent extended-DXF default policy.
+5. Define the exact public distribution scope after D1 human review.
+6. At P1, decide the final `1.0.0`/display `1.0` release disposition.
+7. Only after this track, decide whether and when to authorize G9B.
 
 No ADR is created by this candidate. Calendar sequencing and bounded phase
 boundaries fit the roadmap; future new DXF fidelity semantics, Text rendering
 semantics, or a durable cross-product licensing/package policy may independently
 warrant an ADR when their actual choices are known.
 
-## 9. Authorization state
+## 10. Authorization state
 
 ```text
-PRE_G9B_ROADMAP_EXTENSION = PRE-G9B ROADMAP EXTENSION — DESIGN CANDIDATE — PENDING AUTHOR REVIEW
+PRE_G9B_ROADMAP_EXTENSION = PRE-G9B ROADMAP EXTENSION — FINAL DESIGN CANDIDATE — PENDING AUTHOR APPROVAL
 PRE_G9B_S1_IMPLEMENTATION_AUTHORIZED = false
+PRE_G9B_S2_IMPLEMENTATION_AUTHORIZED = false
+PRE_G9B_S3_IMPLEMENTATION_AUTHORIZED = false
+PRE_G9B_S4_IMPLEMENTATION_AUTHORIZED = false
 PRE_G9B_D1_RESEARCH_OR_IMPLEMENTATION_AUTHORIZED = false
 PRE_G9B_P1_PROMOTION_AUTHORIZED = false
 G9B_AUTHORIZED = false
