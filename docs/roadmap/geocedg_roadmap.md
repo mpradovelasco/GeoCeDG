@@ -3,13 +3,13 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Roadmap vivo y normativo de fases; no sustituye las especificaciones ni los ADR aceptados |
-| Versión documental | 3.88 |
+| Versión documental | 3.89 |
 | Fecha de revisión | 13 de septiembre de 2026 |
 | Baseline GeoGebra | 5.4.928.0, commit `9b93256b7df401ff056c37b502d82df4d72b1522`, tag `geogebra-baseline-5.4.928.0` |
-| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1–G9A3, el track G9A, G9U0 y sus refinamientos R1–R6, G9X1, G9S1, G9S1-R1, G9U1 y POST-G9U1-A6, A1, A2, A3, A3-FRONTEND, A5 y A7 `PASS — AUTHOR APPROVED`. POST-G9U1-A4 tiene investigación/diseño completos y `AUTHOR APPROVED`; P3-R1 es su refinamiento autor-aprobado. El track post-G9U1 está `COMPLETE — AUTHOR APPROVED`: fue orden de ejecución autoral, no cadena de dependencias semánticas, y A7 conserva ownership G12 sin convertirse en dependencia de G9B. La extensión pre-G9B queda como candidato final de diseño: `PRE-G9B-S1` (estabilización/DXF), los slices obligatorios S2–S4, `PRE-G9B-D1` (licencias/assets/deployability) y `PRE-G9B-P1` (superficie pública/versión 1.0), todos pendientes de aprobación autoral y sin implementación autorizada. G9B/G9C permanecen diseñadas y no autorizadas; G9U2 sigue bloqueada por la aprobación global G9; G10P es solo planificación aprobada y ninguna implementación productiva G10 está autorizada. El riesgo `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` continúa abierto para disposición antes del cierre global G9. Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
+| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1–G9A3, el track G9A, G9U0 y sus refinamientos R1–R6, G9X1, G9S1, G9S1-R1, G9U1 y POST-G9U1-A6, A1, A2, A3, A3-FRONTEND, A5 y A7 `PASS — AUTHOR APPROVED`. POST-G9U1-A4 tiene investigación/diseño completos y `AUTHOR APPROVED`; P3-R1 es su refinamiento autor-aprobado. El track post-G9U1 está `COMPLETE — AUTHOR APPROVED`. La extensión pre-G9B está `DESIGN — AUTHOR APPROVED`: `PRE-G9B-S1`, los slices obligatorios S2–S4, `PRE-G9B-D1` y `PRE-G9B-P1` forman orden de calendario autoral sin autorizar implementación ni crear dependencias semánticas de G9B. G9B/G9C permanecen diseñadas y no autorizadas; G9U2 sigue bloqueada por la aprobación global G9; G10P es solo planificación aprobada y ninguna implementación productiva G10 está autorizada. El riesgo `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` continúa abierto para disposición antes del cierre global G9. Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
 | Última fase cerrada | POST-G9U1-A7 — `PASS — AUTHOR APPROVED`; track post-G9U1 completo y autor-aprobado |
 | Última fase ejecutada | POST-G9U1-A7 — implementación final aprobada en `ed3f19a095ce661307dbd6d9a24e70f6569cc4cf`, árbol `9b4385b7c7d7da4cf381068fd0c245d66be9a8c8`; `selfApproved=false` |
-| Siguiente puerta | Aprobación autoral del diseño final [PRE-G9B-S1–S4/D1/P1](../architecture/pre_g9b_stabilization_deployability_design.md); ninguna implementación, promoción 1.0, G9B, G9C, G9U2, más trabajo G12 ni G10 productivo está autorizada |
+| Siguiente puerta | `PRE-G9B-S1 — DXF CORRECTNESS AND BOUNDED STABILIZATION — DESIGNED / NOT YET IMPLEMENTATION-AUTHORIZED`; requiere autorización productiva separada y no autoriza S1-SPLINE-DXF, S2–S4, D1, P1, G9B, G9C, G9U2, más G12 ni G10 productivo |
 | Primer cliente | Aplicación de escritorio de la familia Classic 5 |
 | Núcleo | Java compartido de GeoGebra, extendido solo cuando la semántica lo requiere |
 
@@ -1338,8 +1338,8 @@ siendo la autoridad aplicable.
 | G9U0-R6 | `PASS — AUTHOR APPROVED` | Puerta kernel acotada entre G9S1 y G9U1: request geométrica transitoria -> resultado tipado con cero/uno/varios preimages -> selección explícita -> punto ordinario con address semántica editable en DAG. Incluye Locus V2, SplineV2 y transformadas R5, además del cruce periódico bidireccional/path-independent del mismo punto y el negativo unresolved sin mutación; no implementa `Path`, Point-tool/frontend ni comando paralelo. ADR 0019 está Accepted y la spec es normativa; `manualGuiSmoke=DEFERRED TO G9U1 BY DESIGN`, `kernelDiagnosticAcceptance=PASS`, `selfApproved=false`, `authorApproved=true`, `passClaimed=true` |
 | G9U1 | `PASS — AUTHOR APPROVED` | Checkpoint post-R6 `00982e7e148a634cd57ed928f322774df267d5e3` inmutable; R1 publicado satisface la capacidad de pares certificada. El cierre autoral posterior sobre el SHA técnico revisado conserva 11 familias, 18 clusters, 110 acciones y 163 escenarios, sin autoaprobación. Los candidatos y smokes intermedios permanecen como historia, no como estado vigente |
 | G9U1 Round 3 + presentación final | `HISTORICAL CANDIDATE — SUPERSEDED BY G9U1 AUTHOR CLOSEOUT` | Round 3 fue publicado en `56cf32c922baefeb30c7dff02dbdd5091107ea1a`; el checkpoint técnico `34ffdd9af5f94ded2765e7d495ee66543d4d751f` permanece inmutable. Sus requisitos y evidencia describen el camino al cierre posterior, no una reapertura de G9U1 |
-| Post-G9U1 A1–A7 | `COMPLETE — AUTHOR APPROVED`; A1, A2, A3, A3-FRONTEND, A5, A6 y A7 `PASS — AUTHOR APPROVED`; A4 investigación/diseño completos y autor-aprobados | A7 conserva propiedad G12 y el track precedió la futura continuación G9B por decisión de ejecución, no por dependencia semántica; la extensión separada S1–S4/D1/P1 está ahora en diseño final |
-| PRE-G9B-S1–S4 / D1 / P1 | `FINAL DESIGN CANDIDATE — PENDING AUTHOR APPROVAL`; producto, remediación de distribución y promoción no autorizados | [Diseño pre-G9B](../architecture/pre_g9b_stabilization_deployability_design.md): estabilización/DXF -> Text/property -> Text zoom -> tamaños de presentación -> licencias/assets/deployability -> promoción pública/1.0; orden autoral, no nueva dependencia semántica de G9B |
+| Post-G9U1 A1–A7 | `COMPLETE — AUTHOR APPROVED`; A1, A2, A3, A3-FRONTEND, A5, A6 y A7 `PASS — AUTHOR APPROVED`; A4 investigación/diseño completos y autor-aprobados | A7 conserva propiedad G12 y el track precedió la futura continuación G9B por decisión de ejecución, no por dependencia semántica; la extensión separada S1–S4/D1/P1 tiene diseño autor-aprobado |
+| PRE-G9B-S1–S4 / D1 / P1 | `DESIGN — AUTHOR APPROVED`; producto, remediación de distribución y promoción no autorizados | [Diseño pre-G9B](../architecture/pre_g9b_stabilization_deployability_design.md) aprobado en `1b7a7a43a3789d928f44d294364b159c14e6af59`, árbol `1700772eef774d79e6bd2c4d801476466ad996b6`: estabilización/DXF -> Text/property -> Text zoom -> tamaños de presentación -> licencias/assets/deployability -> promoción pública/1.0; orden autoral, no nueva dependencia semántica de G9B |
 | G9B / G9C | `DESIGNED — NOT AUTHORIZED` | Hard dependency `G9A3 -> G9B -> G9C`; el track post-U1 es un predecesor de ejecución seleccionado por el autor, no un gate semántico |
 | G9U2 | `BLOCKED ON GLOBAL G9 APPROVAL` | Workspace de procedimientos diédrico solo tras `G9 PASS — AUTHOR APPROVED` |
 | G9 spatial solving | `POINT PILOT — AUTHOR APPROVED` | G9A2 se limita a frames/sistemas/mapas/relaciones y reconstrucción projection-defined de punto; no hay primitivas generales, objetos compuestos ni autoridad 3D |
@@ -3093,8 +3093,8 @@ dependencia G9B.
 
 ### Track PRE-G9B — estabilización, deployability y promoción pública
 
-**Estado:** `FINAL DESIGN CANDIDATE — PENDING AUTHOR APPROVAL`; implementación,
-remediación de distribución y promoción no autorizadas.
+**Estado:** `DESIGN — AUTHOR APPROVED`; implementación, remediación de
+distribución y promoción no autorizadas.
 
 El [diseño de la extensión](../architecture/pre_g9b_stabilization_deployability_design.md)
 define esta secuencia de puertas autorales de calendario:

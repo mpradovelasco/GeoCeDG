@@ -1,9 +1,11 @@
 # PRE-G9B stabilization, deployability and public-promotion design
 
-- Status: **PRE-G9B ROADMAP EXTENSION — FINAL DESIGN CANDIDATE — PENDING AUTHOR APPROVAL**
+- Status: **PRE-G9B ROADMAP EXTENSION — DESIGN — AUTHOR APPROVED**
 - Recorded: 2026-09-13
 - Published base commit: `5869f9b3b8acb6950d3317c9927693716fecf6f2`
 - Published base tree: `733ddaa2675e826cdfffdd24de1a1ca135784c19`
+- Approved design commit: `1b7a7a43a3789d928f44d294364b159c14e6af59`
+- Approved design tree: `1700772eef774d79e6bd2c4d801476466ad996b6`
 - Product implementation: **NOT AUTHORIZED**
 - Release/license disposition: **NOT AUTHORIZED**
 - Feature-default or version promotion: **NOT AUTHORIZED**
@@ -441,7 +443,7 @@ warrant an ADR when their actual choices are known.
 ## 10. Authorization state
 
 ```text
-PRE_G9B_ROADMAP_EXTENSION = PRE-G9B ROADMAP EXTENSION — FINAL DESIGN CANDIDATE — PENDING AUTHOR APPROVAL
+PRE_G9B_ROADMAP_EXTENSION = PRE-G9B ROADMAP EXTENSION — DESIGN — AUTHOR APPROVED
 PRE_G9B_S1_IMPLEMENTATION_AUTHORIZED = false
 PRE_G9B_S2_IMPLEMENTATION_AUTHORIZED = false
 PRE_G9B_S3_IMPLEMENTATION_AUTHORIZED = false
