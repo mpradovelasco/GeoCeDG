@@ -2,13 +2,13 @@
 
 | Field | Value |
 |---|---|
-| Status | **NORMATIVE — DESIGN AUTHOR APPROVED / IMPLEMENTATION CANDIDATE** |
+| Status | **NORMATIVE — AUTHOR APPROVED** |
 | Version | `1.0` |
 | Phase | `PRE-G9B-S1-R2` |
 | Scope | Shared-kernel Locus V2 existence, continuity and completeness evidence |
 | Parent | [Locus V2 semantic contract](locus-v2-semantics.md) |
 | Decision | [Accepted ADR 0027](../../../docs/adr/0027-locus-v2-existence-and-continuous-valid-components.md) |
-| Product implementation | **I1--I3 CANDIDATE — PENDING AUTHOR REVIEW** |
+| Product implementation | **I1--I3 PASS — AUTHOR APPROVED** |
 
 ## 1. Purpose
 

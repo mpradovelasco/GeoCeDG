@@ -1,6 +1,6 @@
 # PRE-G9B-S1-R2 — existence/component implementation gate
 
-- Status: **IMPLEMENTATION VALIDATION CANDIDATE — PENDING AUTHOR REVIEW**
+- Status: **PASS — AUTHOR APPROVED**
 - Entry: `e5260fc7dd4924f0599ac3ac2700025bf5e48330`
 - Design: [R2 architecture](../architecture/pre_g9b_s1_r2_locus_existence_components_design.md)
 - Specification: [R2 normative candidate](../../geocedg/specs/locus/locus-v2-existence-components.md)
@@ -11,7 +11,10 @@ The author approved the R2 design and bounded I1--I3 implementation. Permanent
 evidence is provided by `PreG9BS1R2ExistenceStructureTest`, the author-backed
 `PreG9BS1AuthorDxfReproductionTest`, and the retained Locus V2, metric,
 intersection, render, G9X1 and S1 regressions in the R2/S1 phase selections.
-Technical PASS remains distinct from author approval.
+Technical PASS remains distinct from author approval. The author subsequently
+reported the functional S1/R1/R2 smoke successful and explicitly approved the
+scientific/product result. The final report-layout correction changes no
+semantic evidence or DXF content.
 
 ## Required semantic cases
 
@@ -101,17 +104,28 @@ Technical PASS remains distinct from author approval.
 
 The author-authorized I1--I3 implementation uses focused shared-kernel,
 consumer, persistence, G9X1 and author-fixture tests. The registered R2
-selection contains 241 shared and 35 Desktop identities; the combined S1
-selection contains 250 shared and 149 Desktop identities. The immutable
-implementation candidate runs:
+selection at the scientific candidate contained 241 shared and 35 Desktop
+identities; its accepted receipt executed 276 tests. The final combined S1
+selection contains 250 shared and 150 Desktop identities after adding one
+bounded report-layout regression. The immutable implementation candidate ran:
 
 1. `git diff --check` and applicable shared/Desktop checkstyle;
 2. registry/inventory consistency;
 3. `INFRA_UNIT` exactly once if adding the R2 phase selector changes executable
    verification inventory;
 4. exactly one `PHASE -Phase PRE-G9B-S1-R2`; and
-5. before S1 author smoke, exactly one combined
-   `PHASE -Phase PRE-G9B-S1` on the final combined candidate.
+5. before author closeout, exactly one combined
+   `PHASE -Phase PRE-G9B-S1` on the final UI-corrected candidate.
+
+Final combined evidence is bound to
+`1b7256d798182cbf76d28503da39d96582213071`, tree
+`33069ad1b7658fb2a7a81b14edcd0e00b4fbc22c`: run
+`verification-149aec6d4615461799ccf3ce406c72d1`, plan
+`ed93c886418ff8673f61c00dd52c2fd36b3bdd63b81241d05d4cb36f32e76d5b`
+and result
+`9287718a09912d7a86f5d43c6c50c72c7617875d4c57707c26dbd5aa1051ab30`.
+It executed 400 tests with zero failures, errors, skips or diagnostics and
+reported `ACCEPTED / COMPLETE`.
 
 `INTEGRATION` is not automatic. It becomes an escalation only if the actual
 implementation changes shared lifecycle/persistence beyond the bounded R2

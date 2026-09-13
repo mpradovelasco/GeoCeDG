@@ -2,12 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Status | **DESIGN — AUTHOR APPROVED / IMPLEMENTATION CANDIDATE** |
+| Status | **DESIGN AND IMPLEMENTATION — AUTHOR APPROVED** |
 | Entry | `e5260fc7dd4924f0599ac3ac2700025bf5e48330` (`PRE-G9B-S1-R1` partial candidate) |
 | Parent characterization | `48312ceb070b014b68218b3ca5f5c09249c62748` |
-| Product implementation | **I1--I3 IMPLEMENTED — PENDING AUTHOR REVIEW** |
-| R1 population work | **PRESERVED — INTEGRATED CORRECTIVE CANDIDATE** |
-| Parent S1 | **CORRECTED CANDIDATE — PENDING AUTHOR SMOKE** |
+| Product implementation | **I1--I3 PASS — AUTHOR APPROVED** |
+| R1 population work | **PASS — AUTHOR APPROVED** |
+| Parent S1 | **PASS — AUTHOR APPROVED** |
 | Self approval | `false` |
 
 This author-approved design responds to the semantic direction that a canonical
@@ -420,8 +420,8 @@ changes. `VERIFICATION_INFRASTRUCTURE_IMPACT=YES` only for the additive R2 PHASE
 selector and immutable JUnit inventory; methodology is unchanged.
 
 ```text
-PRE-G9B-S1-R2 = IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW
-PRE-G9B-S1-R1 = INTEGRATED CORRECTIVE CANDIDATE
-PRE-G9B-S1 = CORRECTED IMPLEMENTATION CANDIDATE — PENDING AUTHOR SMOKE
+PRE-G9B-S1-R2 = PASS — AUTHOR APPROVED
+PRE-G9B-S1-R1 = PASS — AUTHOR APPROVED
+PRE-G9B-S1 = PASS — AUTHOR APPROVED
 selfApproved = false
 ```

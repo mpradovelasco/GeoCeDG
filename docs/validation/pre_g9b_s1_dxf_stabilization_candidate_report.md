@@ -1,13 +1,12 @@
-# PRE-G9B-S1 DXF and bounded-stabilization candidate report
+# PRE-G9B-S1 DXF and bounded-stabilization closeout report
 
-- Status: **R1 PARTIAL IMPLEMENTATION — LOCUS SEMANTIC BLOCKER OPEN**
+- Status: **PASS — AUTHOR APPROVED**
 - Entry commit: `f79234c2c69fc9e30d5fc8e786909ada10909c6e`
 - Entry tree: `3440f45335bd7b95c5d0ecb75fe3fb27128e8067`
 - Verification class: bounded `PHASE`, selector `PRE-G9B-S1`
 - Product version: unchanged at `0.9.0`
 - Self approval: `false`
-- Successor semantic design: `PRE-G9B-S1-R2 — DESIGN CANDIDATE — PENDING
-  AUTHOR REVIEW`; no productive R2 implementation or acceptance rerun
+- Successor semantic authority: `PRE-G9B-S1-R2 — PASS — AUTHOR APPROVED`
 
 ## Author evidence intake
 
@@ -81,14 +80,13 @@ components and typed complete population. The architecture review established
 that `getValidDomainComponents()` is shared semantic authority, while the
 dependent producer supplies no global validity/boundary certificate for its
 durably selected intersection root. Pointwise sampling cannot prove a complete
-partition, so the Locus workstream remains stopped before kernel semantics are
-invented.
+partition, so at that R1 checkpoint the Locus workstream stopped before kernel
+semantics were invented.
 
-The later [R2 design candidate](../architecture/pre_g9b_s1_r2_locus_existence_components_design.md)
-records the proposed shared certificate and consumer migration. It preserves
-this implementation evidence and does not convert the observed probes into
-component boundaries. S1 remains blocked while that semantic design awaits
-author review.
+The subsequent [R2 authority](../architecture/pre_g9b_s1_r2_locus_existence_components_design.md)
+defines and implements the shared certificate and consumer migration. It
+preserves this historical evidence and does not convert the observed probes
+into component boundaries; its author-approved closeout is recorded below.
 
 The independent policy-B correction is implemented as
 `geocedg-dxf-geometric-2d/v1`. Complete construction excludes the fixture's two
@@ -141,5 +139,45 @@ Author smoke checklist:
    persists.
 8. Inspect the approved About statement, baseline and author line.
 
-Automated evidence and receipt identities are appended only after the clean
-candidate is created and verified. Interactive smoke remains author evidence.
+## Final author decision and bounded UI closeout
+
+The author completed the real extended-DXF smoke and reported the S1/R1/R2
+functional and scientific behavior resolved. That human observation remains
+author evidence and is not represented as an automated verifier result.
+
+The approved technical candidate
+`1b7256d798182cbf76d28503da39d96582213071`, tree
+`33069ad1b7658fb2a7a81b14edcd0e00b4fbc22c`, adds only a bounded Desktop
+presentation correction after the semantic candidate: all preflight,
+approximation, diagnostic and completion text is preserved verbatim in a
+read-only selectable report area with word wrapping, vertical scrolling, no
+horizontal scrollbar and bounded row/column-derived preferred dimensions.
+It changes no export model, fidelity, identity, geometry, manifest content or
+publication policy. `GUIDE_IMPACT=NO` for this final wrapping correction.
+
+Final verification evidence:
+
+- focused extended-DXF Desktop regressions: 25 tests, zero failures/errors/skips;
+- Desktop main/test checkstyle and `git diff --check`: pass;
+- `INFRA_UNIT` run `verification-696070fa34ed44db9b3dd15e01e857b5`,
+  result `1b511df0b3ac6cb9db995db437791861d9ecceb67f2812a4bc615af9bbd08033`,
+  `ACCEPTED / COMPLETE`, zero diagnostics;
+- final `PRE-G9B-S1` run
+  `verification-149aec6d4615461799ccf3ce406c72d1`, plan
+  `ed93c886418ff8673f61c00dd52c2fd36b3bdd63b81241d05d4cb36f32e76d5b`,
+  result
+  `9287718a09912d7a86f5d43c6c50c72c7617875d4c57707c26dbd5aa1051ab30`:
+  400 tests, zero failures/errors/skips, zero diagnostics,
+  `ACCEPTED / COMPLETE`.
+
+The approval basis is the prior automated scientific evidence, successful
+author smoke, final bounded UI regression and the author's explicit closeout
+authorization. It is not agent self-approval. S2 and every later gate remain
+unauthorized.
+
+```text
+PRE-G9B-S1-R2 = PASS — AUTHOR APPROVED
+PRE-G9B-S1-R1 = PASS — AUTHOR APPROVED
+PRE-G9B-S1 = PASS — AUTHOR APPROVED
+selfApproved = false
+```
