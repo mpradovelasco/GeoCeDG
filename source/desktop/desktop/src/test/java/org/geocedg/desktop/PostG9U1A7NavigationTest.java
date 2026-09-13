@@ -14,10 +14,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.GridBagLayout;
 import java.awt.event.FocusEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.util.Locale;
 
 import javax.swing.AbstractButton;
 import javax.swing.Action;
@@ -25,6 +27,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
@@ -87,11 +90,10 @@ class PostG9U1A7NavigationTest {
 
 		controller.wrapMouseMoved(event(MouseEvent.MOUSE_MOVED, 300, 200));
 		controller.activateZoomWindow();
-		for (var listener : app.getEuclidianView1().getJPanel().getFocusListeners()) {
-			listener.focusLost(new FocusEvent(app.getEuclidianView1().getJPanel(),
-					FocusEvent.FOCUS_LOST));
-		}
+		dispatchCanvasFocusLost();
 		assertFalse(controller.isMouseLocationValidForKeyboardNavigation());
+		assertTrue(controller.isZoomWindowActive());
+		dispatchEscape();
 		assertFalse(controller.isZoomWindowActive());
 	}
 
@@ -186,6 +188,7 @@ class PostG9U1A7NavigationTest {
 		assertFalse(panel.isDraftValid());
 		assertFalse(apply.isEnabled());
 		assertTrue(panel.hasValidationError());
+		assertEditorWidthsRemainUsable(panel);
 		assertEquals(8, preferences.getFactor());
 		panel.setDraft(9, zoomIn, zoomIn);
 		assertFalse(panel.isDraftValid());
@@ -196,6 +199,7 @@ class PostG9U1A7NavigationTest {
 		assertTrue(panel.zoomInValidationText().contains(String.valueOf(
 				registry.get(GeoCeDGNavigationShortcutPreferences.ZOOM_OUT_ACTION_ID)
 						.getValue(Action.NAME))));
+		assertEditorWidthsRemainUsable(panel);
 		assertEquals(new GeoCeDGNavigationShortcutPreferences.Configuration(
 				8, zoomIn, zoomOut), preferences.getConfiguration());
 		panel.setDraft(9, stroke(KeyEvent.VK_F9), stroke(KeyEvent.VK_F10));
@@ -203,10 +207,17 @@ class PostG9U1A7NavigationTest {
 		assertTrue(apply.isEnabled());
 		assertEquals(registry.text("Navigation.Shortcut.Available"),
 				panel.zoomInValidationText());
+		assertEditorWidthsRemainUsable(panel);
 		assertEquals(new GeoCeDGNavigationShortcutPreferences.Configuration(
 				8, zoomIn, zoomOut), preferences.getConfiguration());
 		assertTrue(panel.applyConfiguration());
 		assertEquals(9, preferences.getFactor());
+
+		app.setLocale(new Locale("es"));
+		GeoCeDGNavigationSettingsPanel spanishPanel =
+				new GeoCeDGNavigationSettingsPanel(registry);
+		spanishPanel.setDraft(9, zoomIn, zoomIn);
+		assertEditorWidthsRemainUsable(spanishPanel);
 	}
 
 	@Test
@@ -266,12 +277,15 @@ class PostG9U1A7NavigationTest {
 		JMenuItem menuItem = findMenuItem(menuBar, "navigation.zoom-window");
 		assertNotNull(menuItem);
 		assertSame(registry.get("navigation.zoom-window"), menuItem.getAction());
-		double[] beforeMenuCancel = transform(app.getEuclidianView1());
-		menuItem.doClick();
-		flushEdt();
+		final double[] beforeMenuCancel = transform(app.getEuclidianView1());
+		click(menuItem);
+		assertTrue(controller.isZoomWindowActive());
+		assertTrue(menuItem.isSelected());
+		dispatchCanvasFocusLost();
 		assertTrue(controller.isZoomWindowActive());
 		dispatchEscape();
 		assertFalse(controller.isZoomWindowActive());
+		assertFalse(menuItem.isSelected());
 		assertTransform(beforeMenuCancel, app.getEuclidianView1());
 		activateAndComplete(menuItem);
 
@@ -287,16 +301,25 @@ class PostG9U1A7NavigationTest {
 		JMenuItem toolbarItem = findPopupItem(popup, "navigation.zoom-window");
 		assertNotNull(toolbarItem);
 		assertSame(menuItem.getAction(), toolbarItem.getAction());
-		double[] beforeToolbarCancel = transform(app.getEuclidianView1());
-		toolbarItem.doClick();
-		flushEdt();
+		final double[] beforeToolbarCancel = transform(app.getEuclidianView1());
+		click(toolbarItem);
 		assertEquals("navigation.zoom-window",
 				button.getClientProperty("geocedg.toolbar.active.action.id"));
 		assertTrue(controller.isZoomWindowActive());
+		assertTrue(button.isSelected());
+		dispatchCanvasFocusLost();
+		assertTrue(controller.isZoomWindowActive());
 		dispatchEscape();
 		assertFalse(controller.isZoomWindowActive());
+		assertFalse(button.isSelected());
 		assertTransform(beforeToolbarCancel, app.getEuclidianView1());
 		activateAndComplete(button);
+
+		click(button);
+		assertTrue(controller.isZoomWindowActive());
+		app.setMode(org.geogebra.common.euclidian.EuclidianConstants.MODE_POINT);
+		assertFalse(controller.isZoomWindowActive());
+		assertFalse(button.isSelected());
 
 		controller.zoomByFactor(1.1);
 		assertTrue(source.isDefined());
@@ -314,12 +337,13 @@ class PostG9U1A7NavigationTest {
 
 	private void activateAndComplete(AbstractButton item) throws Exception {
 		final double oldScale = app.getEuclidianView1().getXscale();
-		item.doClick();
-		flushEdt();
+		click(item);
 		assertTrue(controller.isZoomWindowActive());
+		double[] beforeDrag = transform(app.getEuclidianView1());
 		controller.wrapMousePressed(event(MouseEvent.MOUSE_PRESSED, 120, 100));
 		controller.wrapMouseDragged(event(MouseEvent.MOUSE_DRAGGED, 560, 390), false);
 		assertNotNull(app.getEuclidianView1().getSelectionRectangle());
+		assertTransform(beforeDrag, app.getEuclidianView1());
 		controller.wrapMouseReleased(event(MouseEvent.MOUSE_RELEASED, 560, 390));
 		awaitScale(app.getEuclidianView1(), oldScale);
 		awaitTransformStable(app.getEuclidianView1());
@@ -356,10 +380,31 @@ class PostG9U1A7NavigationTest {
 		return null;
 	}
 
-	private static void flushEdt() throws Exception {
-		SwingUtilities.invokeAndWait(() -> {
-			// Drain the deferred menu/toolbar activation after Swing focus handling.
-		});
+	private static void click(AbstractButton button) throws Exception {
+		SwingUtilities.invokeAndWait(button::doClick);
+	}
+
+	private void dispatchCanvasFocusLost() {
+		for (var listener : app.getEuclidianView1().getJPanel().getFocusListeners()) {
+			listener.focusLost(new FocusEvent(app.getEuclidianView1().getJPanel(),
+					FocusEvent.FOCUS_LOST));
+		}
+	}
+
+	private static void assertEditorWidthsRemainUsable(
+			GeoCeDGNavigationSettingsPanel panel) {
+		assertTrue(panel.getLayout() instanceof GridBagLayout);
+		panel.setSize(new Dimension(640, panel.getPreferredSize().height));
+		panel.doLayout();
+		int editors = 0;
+		for (Component component : panel.getComponents()) {
+			if (component instanceof JTextField field) {
+				editors++;
+				assertTrue(field.getWidth() >= field.getMinimumSize().width);
+				assertTrue(field.getWidth() >= 80);
+			}
+		}
+		assertEquals(3, editors);
 	}
 
 	private void assertWindowFit(int startX, int startY, int endX, int endY)

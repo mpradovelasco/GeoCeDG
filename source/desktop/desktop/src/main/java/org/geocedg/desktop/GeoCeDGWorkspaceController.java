@@ -333,6 +333,17 @@ public final class GeoCeDGWorkspaceController {
 		ButtonGroup radios = new ButtonGroup();
 		for (String id : actionIds) {
 			Action action = registry.get(id);
+			action.addPropertyChangeListener(event -> {
+				if (Action.SELECTED_KEY.equals(event.getPropertyName())
+						&& id.equals(button.getClientProperty(
+								"geocedg.toolbar.active.action.id"))) {
+					if (Boolean.TRUE.equals(event.getNewValue())) {
+						button.setSelected(true);
+					} else if (button.isSelected()) {
+						selectionGroup.clearSelection();
+					}
+				}
+			});
 			JMenuItem item = GeoCeDGMenuBar.createItem(action, radios);
 			item.setFont(app.getPlainFont());
 			item.setIcon(actionIcon(id));
@@ -387,6 +398,10 @@ public final class GeoCeDGWorkspaceController {
 		button.getAccessibleContext().setAccessibleDescription(
 				(String) action.getValue(Action.SHORT_DESCRIPTION));
 		button.putClientProperty("geocedg.toolbar.active.action.id", id);
+		Object selected = action.getValue(Action.SELECTED_KEY);
+		if (selected instanceof Boolean) {
+			button.setSelected(Boolean.TRUE.equals(selected));
+		}
 		GeoCeDGToolbarContainer.applyNativeToolPresentation(button,
 				(JToggleButton) button.getClientProperty(
 						"geocedg.toolbar.nativeVisualReference"));

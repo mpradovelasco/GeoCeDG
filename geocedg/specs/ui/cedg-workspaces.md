@@ -154,15 +154,20 @@ explicit Navigation action fits the selected region while preserving the prior
 is not. Escape cancels either WAIT_FOR_DRAG or an active rectangle preview with
 no viewport change. The direct controller seam can use a currently valid canvas
 cursor as its first corner. Menu/toolbar activation deliberately invalidates the
-cursor context transferred away from the canvas and waits for a real drag. Exit,
-focus loss, text-field focus, right-click or tool change invalidates/cancels
-transient cursor-derived state.
+cursor context transferred away from the canvas and waits for a real drag. That
+focus transfer invalidates cursor currentness but does not cancel the explicitly
+active ZoomWindow tool. Completion, Escape, right-click or a subsequent external
+tool change cancels the interaction; no timing or load-order assumption governs it.
 
 The automated successor `ee0f6acd...` was followed by a second author smoke.
-The final bounded correction makes the actual menu and toolbar projections use
-one registry action which selects Move and arms the shared ZoomWindow controller
-after Swing focus/mode notifications settle. The next primary rectangle reaches
-the existing G9U1 finalization seam; no parallel rectangle algorithm exists.
+The next bounded candidate `ff45382...` made the actual menu and toolbar
+projections use one registry action, but repeated smoke proved that its deferred
+arm could still be cancelled by a later focus-loss event. The final bounded
+lifecycle contract prepares Move and arms synchronously, then represents
+ZoomWindow as one persistent action-backed controller interaction shared by menu
+and toolbar. Activating-control focus loss cannot self-cancel it; the next primary
+rectangle reaches the existing G9U1 finalization seam and Action/toolbar selection
+tracks activation and cancellation. No parallel rectangle algorithm or timer exists.
 
 Inherited `+/-` remains unchanged. The stable actions
 `navigation.zoom-factor-in` and `navigation.zoom-factor-out` have independent,
@@ -173,7 +178,9 @@ values in the isolated GeoCeDG application preference file. The complete draft
 is accepted atomically. One typed non-mutating validation result supplies live
 Available/Unassigned, Invalid or conflict-with-action feedback for each chord,
 controls Apply enablement and governs final persistence. Invalid drafts keep the
-same dialog open and leave the prior configuration untouched. These preferences,
+same dialog open and leave the prior configuration untouched. Validation feedback
+occupies its own layout row, while every editor retains an expanding useful-width
+column across English and Spanish text. These preferences,
 cursor and viewport are presentation state: none enters `.ggb`/`.cedg`,
 Construction XML, identity, provenance, metrics or DAG semantics. Secondary
 views, 3D, Web, ZoomPrevious, FitSelection, FitLayer, named views and general or

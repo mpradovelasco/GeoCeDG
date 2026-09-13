@@ -1059,17 +1059,19 @@ are semantic sources with new identity, not transformed render samples. For
 measurements use `Length(S)` or `Length(S,P,Q)`; `LocusLength(...)` remains the
 rich evidence surface. Inherited Zoom In/Out and `+/-` retain their host
 behavior. The distinct GeoCeDG **Zoom to rectangle** action is available under
-View → Navigation and the toolbar. Both projections use the same action, settle
-the host Move/focus lifecycle, and then arm the existing rectangle gesture. It
+View → Navigation and the toolbar. Both projections use the same persistent
+action-backed interaction: internal Move preparation occurs synchronously and
+the activating control's focus transfer cannot cancel the rectangle gesture. It
 preserves the current X/Y scale relation and can be cancelled with Escape. The
-menu/toolbar action waits for an ordinary press-drag-release in the canvas.
+checked/selected presentation follows the active tool, which waits for an ordinary
+press-drag-release in the canvas and then exits cleanly.
 
 View → **Configure navigation zoom...** sets one factor (default 10) and
 independent, initially unassigned shortcuts for **Zoom Factor In** and **Zoom
 Factor Out**. They multiply/divide both view scales around the current cursor,
 or the true view centre when no current cursor exists. Each shortcut reports
 Available/Unassigned, Invalid or its conflicting action immediately while it is
-edited, and Apply is disabled until the whole draft is valid. Nothing is
+edited, without compressing the editable fields, and Apply is disabled until the whole draft is valid. Nothing is
 persisted until that valid draft is applied, and Cancel keeps the previous
 configuration. Factor, shortcuts and cursor are application/view presentation
 state and are never stored as construction or geometric authority. English and Spanish

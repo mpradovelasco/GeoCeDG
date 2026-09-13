@@ -5,6 +5,8 @@
 
 package org.geocedg.desktop;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +41,9 @@ import org.geogebra.desktop.main.AppD;
 public final class GeoCeDGEuclidianController
 		extends EuclidianControllerFor3DD {
 
+	static final String ZOOM_WINDOW_ACTIVE_PROPERTY =
+			"geocedg.navigation.zoom-window.active";
+	private final PropertyChangeSupport navigationState = new PropertyChangeSupport(this);
 	private final GeoCeDGLocusV2Dialogs locusV2Dialogs;
 	private final GeoCeDGIntersectionSession intersectionSession;
 	private final GeoCeDGPointInteraction pointInteraction;
@@ -221,7 +226,7 @@ public final class GeoCeDGEuclidianController
 		}
 		if (zoomWindowDragging) {
 			zoomWindowDragging = false;
-			zoomWindowActive = false;
+			setZoomWindowActive(false);
 			var rectangle = getView().getSelectionRectangle();
 			getView().setSelectionRectangle(null);
 			if (rectangle != null && rectangle.getWidth() >= 10
@@ -265,13 +270,17 @@ public final class GeoCeDGEuclidianController
 	}
 
 	private void armZoomWindow(GPoint current) {
-		zoomWindowActive = true;
 		zoomWindowKeyboardAnchored = current != null;
 		if (current != null) {
 			zoomStartX = current.x;
 			zoomStartY = current.y;
 		}
 		getView().setCursor(EuclidianCursor.ZOOM_IN);
+		setZoomWindowActive(true);
+	}
+
+	void addZoomWindowStateListener(PropertyChangeListener listener) {
+		navigationState.addPropertyChangeListener(ZOOM_WINDOW_ACTIVE_PROPERTY, listener);
 	}
 
 	/**
@@ -352,19 +361,22 @@ public final class GeoCeDGEuclidianController
 	/** Invalidates cursor-derived navigation presentation state. */
 	public void invalidateNavigationCursorContext() {
 		navigationCursorCurrent = false;
-		if (zoomWindowActive || zoomWindowDragging || zoomWindowKeyboardAnchored) {
-			cancelZoomWindow();
-		}
 	}
 
 	void cancelZoomWindow() {
 		zoomWindowKeyboardAnchored = false;
-		zoomWindowActive = false;
 		zoomWindowDragging = false;
 		if (getView() != null) {
 			getView().setSelectionRectangle(null);
 			getView().setCursor(EuclidianCursor.DEFAULT);
 		}
+		setZoomWindowActive(false);
+	}
+
+	private void setZoomWindowActive(boolean active) {
+		boolean previous = zoomWindowActive;
+		zoomWindowActive = active;
+		navigationState.firePropertyChange(ZOOM_WINDOW_ACTIVE_PROPERTY, previous, active);
 	}
 
 	private void markNavigationCursorCurrent(AbstractEvent event) {

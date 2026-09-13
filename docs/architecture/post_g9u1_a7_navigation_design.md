@@ -32,7 +32,12 @@ bounded integration defects: shortcut validity was visible only after Apply,
 and the real menu/toolbar projections did not leave an operative ZoomWindow
 gesture armed. The successor correction keeps the approved behavior but uses
 one live typed draft-validation result for presentation and Apply, and arms the
-shared controller action after Swing focus/mode selection has settled.
+shared controller action after Swing focus/mode selection has settled. That
+successor, `ff45382d23d8e7b8d6f742a6d449d67c57daac43`, also passed automated
+verification, but repeated interactive smoke established that its deferred arm
+was still cancelled by a later canvas focus-loss transition and that a long
+conflict label could collapse the editors. The present bounded successor records
+the corrected persistent interaction and layout contracts without reopening G12.
 
 ## 1. Characterized authority
 
@@ -96,8 +101,9 @@ Classic as well as GeoCeDG. No GeoCeDG semantic conditional is justified.
 ```text
 navigation.zoom-window
   -> the shared GeoCeDG menu/toolbar Action
-  -> GeoCeDGActionRegistry (select Move, defer until focus settles)
-  -> GeoCeDGEuclidianController.armZoomWindow()
+  -> GeoCeDGActionRegistry (invalidate stale cursor, prepare Move synchronously)
+  -> GeoCeDGEuclidianController.activateZoomWindow()
+  -> persistent product-local interactive state
   -> inherited selection rectangle
   -> EuclidianView.setAnimatedRealWorldCoordSystem(...)
   -> CoordSystemAnimation.initRW(...)
@@ -116,10 +122,13 @@ reachable through the Navigation menu and toolbar; it is not conflated with the
 inherited zoom tools.
 
 Menu and toolbar are projections of the same registry `Action`. The UI path
-invalidates the canvas cursor context, selects the inherited Move mode, and arms
-ZoomWindow on the following Swing event turn. Thus the next primary-button
-rectangle is consumed by the product controller rather than Pan/selection,
-while the direct controller seam remains available to the G9U1 lifecycle.
+invalidates only the stale canvas cursor, synchronously selects the inherited
+Move mode as internal preparation, and then enters one persistent action-backed
+interaction state. Focus transfer caused by the activating menu/toolbar control
+does not cancel that state. The next primary-button rectangle is therefore
+consumed by the product controller rather than Pan/selection. Completion,
+Escape, or a later external tool change cancels the state and updates the shared
+Action/toolbar selection; no timing, retry, timer or second host mode is used.
 
 ## 2. Selected bounded contract
 

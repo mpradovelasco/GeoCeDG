@@ -26,7 +26,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.geocedg.common.main.feature.RuntimeFeatureService;
@@ -109,6 +108,8 @@ public final class GeoCeDGActionRegistry {
 			actions.put(definition.id(), action);
 		}
 		navigationShortcuts = new GeoCeDGNavigationShortcutPreferences(this);
+		controller().addZoomWindowStateListener(event ->
+				setZoomWindowSelected(Boolean.TRUE.equals(event.getNewValue())));
 		refresh();
 	}
 
@@ -381,16 +382,18 @@ public final class GeoCeDGActionRegistry {
 
 	private void activateZoomWindowFromPresentation() {
 		GeoCeDGEuclidianController activeController = controller();
-		// A menu or toolbar click makes the preceding canvas cursor context stale.
-		// Select the host move mode before the flyout finishes its own selection,
-		// then arm on the next EDT turn after focus/mode notifications have settled.
+		// Presentation focus makes the preceding canvas cursor context stale. The
+		// controller establishes Move first and then arms synchronously, so its own
+		// preparation cannot later cancel the interactive tool.
 		activeController.invalidateNavigationCursorContext();
-		app.setMode(org.geogebra.common.euclidian.EuclidianConstants.MODE_MOVE);
-		SwingUtilities.invokeLater(() -> {
-			if (app.getActiveEuclidianView() == app.getEuclidianView1()) {
-				activeController.armZoomWindow();
-			}
-		});
+		activeController.activateZoomWindow();
+	}
+
+	private void setZoomWindowSelected(boolean selected) {
+		Action action = actions.get("navigation.zoom-window");
+		if (action != null) {
+			action.putValue(Action.SELECTED_KEY, selected);
+		}
 	}
 
 	private Boolean checked(String target) {
@@ -409,6 +412,8 @@ public final class GeoCeDGActionRegistry {
 			return controller().isIntersectionMarkersVisible();
 		case "geocedg.result.auto-materialize-initial.toggle":
 			return controller().isAutoMaterializeIntersectionSolutions();
+		case "geocedg.navigation.zoom-window":
+			return controller().isZoomWindowActive();
 		case "host.preference.algebra-style.VALUE":
 			return app.getSettings().getAlgebra().getStyle() == AlgebraStyle.VALUE;
 		case "host.preference.algebra-style.DESCRIPTION":

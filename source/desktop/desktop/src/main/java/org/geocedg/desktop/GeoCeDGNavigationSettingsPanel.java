@@ -46,13 +46,9 @@ final class GeoCeDGNavigationSettingsPanel extends JPanel {
 		zoomIn = new ShortcutField(this::validateDraft);
 		zoomOut = new ShortcutField(this::validateDraft);
 		setLayout(new GridBagLayout());
-		GridBagConstraints constraints = new GridBagConstraints();
-		constraints.anchor = GridBagConstraints.WEST;
-		constraints.fill = GridBagConstraints.HORIZONTAL;
-		constraints.insets = new Insets(3, 4, 3, 4);
-		addRow(constraints, 0, "Navigation.ZoomFactor", factor, factorValidation);
-		addRow(constraints, 1, "Navigation.ZoomFactorIn", zoomIn, zoomInValidation);
-		addRow(constraints, 2, "Navigation.ZoomFactorOut", zoomOut, zoomOutValidation);
+		addRow(0, "Navigation.ZoomFactor", factor, factorValidation);
+		addRow(1, "Navigation.ZoomFactorIn", zoomIn, zoomInValidation);
+		addRow(2, "Navigation.ZoomFactorOut", zoomOut, zoomOutValidation);
 		factor.getDocument().addDocumentListener(new DocumentListener() {
 			@Override
 			public void insertUpdate(DocumentEvent event) {
@@ -72,16 +68,33 @@ final class GeoCeDGNavigationSettingsPanel extends JPanel {
 		load(preferences.getConfiguration());
 	}
 
-	private void addRow(GridBagConstraints constraints, int row, String key,
+	private void addRow(int row, String key,
 			JTextField field, JLabel status) {
-		constraints.gridx = 0;
+		int editorRow = row * 2;
+		GridBagConstraints labelConstraints = constraints(0, editorRow);
+		labelConstraints.fill = GridBagConstraints.NONE;
+		add(new JLabel(registry.text(key)), labelConstraints);
+
+		GridBagConstraints editorConstraints = constraints(1, editorRow);
+		editorConstraints.weightx = 1;
+		add(field, editorConstraints);
+		field.setMinimumSize(field.getPreferredSize());
+
+		GridBagConstraints statusConstraints = constraints(1, editorRow + 1);
+		statusConstraints.gridwidth = 2;
+		statusConstraints.weightx = 1;
+		statusConstraints.insets = new Insets(0, 4, 5, 4);
+		add(status, statusConstraints);
+	}
+
+	private static GridBagConstraints constraints(int column, int row) {
+		GridBagConstraints constraints = new GridBagConstraints();
+		constraints.gridx = column;
 		constraints.gridy = row;
-		constraints.gridwidth = 1;
-		add(new JLabel(registry.text(key)), constraints);
-		constraints.gridx = 1;
-		add(field, constraints);
-		constraints.gridx = 2;
-		add(status, constraints);
+		constraints.anchor = GridBagConstraints.WEST;
+		constraints.fill = GridBagConstraints.HORIZONTAL;
+		constraints.insets = new Insets(3, 4, 3, 4);
+		return constraints;
 	}
 
 	boolean applyConfiguration() {

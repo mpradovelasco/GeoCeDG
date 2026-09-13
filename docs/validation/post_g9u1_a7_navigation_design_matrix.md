@@ -18,7 +18,11 @@ evidence below without reopening broader G12.
 That candidate's successor `ee0f6acd9ea17541cfef2cb5d9984ab96029a741`
 passed automated verification; the second author smoke found missing immediate
 validation feedback and non-operative real menu/toolbar activation. The current
-successor adds only those two bounded integration regressions.
+successor `ff45382d23d8e7b8d6f742a6d449d67c57daac43` added those two bounded
+integration regressions and passed automated verification. Repeated author smoke
+then showed that a late focus-loss transition still cancelled the deferred tool
+arm and that long red validation feedback collapsed the editor widths. The
+present successor corrects those two real-UI lifecycle/layout defects only.
 
 ## 1. Characterization matrix
 
@@ -56,11 +60,13 @@ successor adds only those two bounded integration regressions.
 | A7-T11 | old-file save/reopen | no shortcut or semantic association is manufactured; view presentation remains host-compatible | Desktop round trip |
 | A7-T12 | extreme supported scales | finite deterministic transform at both supported sides; out-of-range proposal is rejected | shared view test |
 | A7-T13 | valid cursor ZoomWindow activation | current primary-view cursor becomes first corner; next click uses existing finalization | Desktop controller test |
-| A7-T14 | cancel paths | Escape in WAIT_FOR_DRAG or preview, right-click, focus loss and tool change clear state and change neither view nor Construction | Desktop controller/key test |
+| A7-T14 | cancel paths | Escape in WAIT_FOR_DRAG or preview, right-click and an external tool change clear state and change neither view nor Construction; activating-control focus loss invalidates only the cursor and cannot self-cancel the active tool | Desktop controller/key/focus test |
 | A7-T15 | unsupported active view | action never silently operates on view 1 when secondary 2D/3D is active | Desktop action test |
 | A7-T16 | DPI/viewport independence | changing component size/DPI affects only view mapping, not geometry/metrics/identity | shared + semantic regression |
 | A7-T17 | configured factor reciprocity | factor In multiplies both scales, Out divides them, both preserve current cursor/true-centre anchor, and In+Out restores the transform | Desktop controller/action test |
-| A7-T18 | real menu/toolbar ZoomWindow wiring | the actual menu item and profile-flyout item share one registry action, defer arming past focus/mode notifications, consume the next primary rectangle, reach G9U1 finalization and preserve Escape cancellation | Desktop menu/toolbar/controller integration test |
+| A7-T18 | real menu/toolbar ZoomWindow wiring | actual Swing menu item and toolbar button clicks share one registry action, synchronously establish a persistent action-backed interaction, survive activating-control focus transfer, consume the next primary rectangle, reach G9U1 finalization and preserve Escape/tool-change cancellation | Desktop menu/toolbar/controller integration test |
+| A7-T19 | active-tool presentation | registry `SELECTED_KEY`, menu check state and profile-toolbar selection track the controller interaction through activation, completion, Escape and external tool change | Desktop Swing integration test |
+| A7-T20 | stable settings layout | valid, conflict and invalid feedback occupy a separate layout row; all three editors retain a usable minimum width at representative EN/ES dialog sizes and remain immediately editable | Desktop Swing layout/state test |
 
 Tests must compare model state independently from serialized view presentation.
 Pixel screenshots and painting timing are not acceptance authority.
@@ -88,7 +94,11 @@ non-square Classic fallback. `PostG9U1A7NavigationTest` proves fresh/stale and
 focus-loss cursor lifecycle, Escape cancellation, ratio-preserving wide/tall
 ZoomWindow fits, unchanged construction/semantic identity, factor-10 defaults,
 reciprocal factor actions, preference reload, document-XML exclusion, atomic
-in-panel validation, primary-view containment and G9U1 action reuse. The Desktop
+in-panel validation, primary-view containment and G9U1 action reuse. Its real
+Swing projections exercise `doClick()` on the constructed Navigation menu item,
+popup item and toolbar button, reproduce focus transfer, and verify persistent
+selection plus the next controller mouse lifecycle. Layout assertions cover
+valid/conflict/invalid feedback and English/Spanish without pixel screenshots. The Desktop
 selection also retains `G9U1SemanticPointInteractionTest`, `GeoCeDGProfileTest`,
 `G9U1ProfileCompilerTest` and `G9U1WorkspaceSurfaceTest` as direct rectangle,
 schema/catalog and menu/toolbar regressions. Final PHASE evidence remains
@@ -107,11 +117,12 @@ spatial reconstruction or DAG membership.
 
 ## 5. Author repeat-smoke checklist
 
-1. Edit both factor shortcuts and confirm Available/conflict feedback changes
-   before pressing Apply; Apply remains disabled for an invalid whole draft.
-2. Choose **View → Navigation → Zoom to rectangle** and confirm the next normal
-   rectangle drag is consumed by ZoomWindow.
-3. Choose ZoomWindow from the toolbar flyout and confirm the same interaction.
+1. Edit both factor shortcuts through valid/conflict/invalid values; confirm the
+   feedback changes before Apply and every editor keeps a comfortable width.
+2. Choose **View → Navigation → Zoom to rectangle**; confirm its checked/active
+   presentation remains and the next normal rectangle drag is consumed.
+3. Choose ZoomWindow in the toolbar flyout, then click the toolbar button; confirm
+   the selected state and the same operative rectangle interaction.
 4. Complete a wide/tall rectangle and confirm containment without X/Y stretching.
 5. Activate from menu and toolbar, then press Escape before/during drag; confirm
-   no viewport change and restoration of ordinary interaction.
+   no viewport change, selection state clears and ordinary interaction returns.
