@@ -23,8 +23,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -44,6 +42,7 @@ import org.geocedg.desktop.export.DxfFidelityManifestWriter;
 import org.geocedg.desktop.export.DxfPairedOutputWriter;
 import org.geocedg.desktop.export.DxfPairedOutputWriter.CollisionPolicy;
 import org.geocedg.desktop.export.DxfPreparedOutput;
+import org.geocedg.desktop.export.DxfReportPane;
 import org.geocedg.desktop.export.DxfWriteException;
 import org.geocedg.desktop.export.DxfWriteResult;
 import org.geogebra.common.kernel.geos.GeoElement;
@@ -225,10 +224,8 @@ final class GeoCeDGDxfExportController {
 			lines.add(diagnostic.getSourceId() + " [" + diagnostic.getCode()
 					+ "]: " + diagnostic.getMessage());
 		}
-		JTextArea details = new JTextArea(String.join("\n", lines), 9, 72);
-		details.setEditable(false);
-		details.setCaretPosition(0);
-		Object[] content = {heading, new JScrollPane(details)};
+		Object[] content = {heading,
+				new DxfReportPane(String.join("\n", lines), 9, 72)};
 		if (messageType == JOptionPane.ERROR_MESSAGE) {
 			JOptionPane.showMessageDialog(app.getMainComponent(), content,
 					"GeoCeDG DXF export", messageType);
@@ -489,7 +486,8 @@ final class GeoCeDGDxfExportController {
 			message.append('\n').append(
 					presentation.getCompletionEvidenceText());
 		}
-		JOptionPane.showMessageDialog(app.getMainComponent(), message.toString(),
+		JOptionPane.showMessageDialog(app.getMainComponent(),
+				new DxfReportPane(message.toString(), 18, 72),
 				"GeoCeDG DXF export", JOptionPane.INFORMATION_MESSAGE);
 	}
 
@@ -512,12 +510,9 @@ final class GeoCeDGDxfExportController {
 			String details = presentation.getSummaryText() + "\n\n"
 					+ presentation.getApproximationEvidenceText() + "\n\n"
 					+ presentation.getWarningsText();
-			JTextArea report = new JTextArea(details, 22, 88);
-			report.setEditable(false);
-			report.setCaretPosition(0);
 			Object[] content = {
 					"Preflight completed before destination selection.",
-					new JScrollPane(report)
+					new DxfReportPane(details, 22, 88)
 			};
 			if (!presentation.isWritable()) {
 				JOptionPane.showMessageDialog(parent, content,
@@ -537,7 +532,8 @@ final class GeoCeDGDxfExportController {
 					"This DXF contains explicit approximate geometry.",
 					"The approximation is export-only and does not alter CeDG geometry.",
 					"A hash-bound fidelity sidecar is mandatory.",
-					presentation.getApproximationEvidenceText(),
+					new DxfReportPane(
+							presentation.getApproximationEvidenceText(), 12, 72),
 					"Continue to destination selection?"
 			};
 			return JOptionPane.showConfirmDialog(parent, content,

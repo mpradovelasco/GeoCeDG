@@ -17,6 +17,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+
 import org.geocedg.common.export.G9X1GeometryExportAdapter;
 import org.geocedg.common.export.GeometryExportModel.DiagnosticCode;
 import org.geocedg.common.export.GeometryExportModel.SelectionMode;
@@ -208,6 +211,31 @@ class G9X1DesktopPreflightContractTest extends BaseUnitTest {
 				.contains("Population rule: geocedg-dxf-geometric-2d/v1"));
 		assertTrue(completePresentation.getWarningsText()
 				.contains(DiagnosticCode.OUTSIDE_GEOMETRIC_POPULATION.name()));
+	}
+
+	@Test
+	void boundsAndWrapsLongDxfEvidenceWithoutChangingContent() {
+		String longEvidence = "source=" + "persistent-id/".repeat(30)
+				+ " branch=generator.main component="
+				+ "component/[-3.141592653589793,3.141592653589793)"
+				+ " method=ORIENTED_DYADIC_REFINEMENT requested=0.001"
+				+ " achieved=9.257379554185938E-4 evaluations=4096"
+				+ " subdivisions=2048 segments=2 vertices=4097";
+		DxfReportPane pane = new DxfReportPane(longEvidence, 12, 72);
+		JTextArea report = pane.getReportArea();
+
+		assertEquals(longEvidence, report.getText());
+		assertFalse(report.isEditable());
+		assertTrue(report.getLineWrap());
+		assertTrue(report.getWrapStyleWord());
+		assertEquals(0, report.getCaretPosition());
+		assertEquals(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER,
+				pane.getHorizontalScrollBarPolicy());
+		assertEquals(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+				pane.getVerticalScrollBarPolicy());
+
+		DxfReportPane shortPane = new DxfReportPane("short", 12, 72);
+		assertEquals(shortPane.getPreferredSize(), pane.getPreferredSize());
 	}
 
 	private DxfExportPreflightPresentation presentation(GeoElement source,
