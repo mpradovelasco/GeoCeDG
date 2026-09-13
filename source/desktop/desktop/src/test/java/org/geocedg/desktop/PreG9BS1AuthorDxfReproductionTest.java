@@ -27,10 +27,18 @@ import org.geocedg.common.export.GeometryExportModel.SelectionMode;
 import org.geocedg.common.export.GeometryExportPreflight;
 import org.geocedg.common.export.GeometryExportRequest;
 import org.geocedg.common.export.GeometryExportService;
+import org.geocedg.common.export.G9X1GeometryExportAdapter;
 import org.geocedg.common.export.SourceExportOutcome.Fidelity;
 import org.geocedg.common.export.SourceExportOutcome.Reason;
 import org.geocedg.common.kernel.algos.AlgoSplineV2;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.kernel.locus.LocusBranch2D;
+import org.geocedg.common.kernel.locus.LocusDefinition2D;
+import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
+import org.geocedg.common.kernel.locus.LocusInterval2D;
+import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.BranchProperty;
+import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.DefinitionStatus;
+import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.EvaluationStatus;
 import org.geocedg.desktop.export.DxfFidelityManifestWriter;
 import org.geocedg.desktop.export.DxfPreparedOutput;
 import org.geogebra.common.awt.AwtFactory;
@@ -136,6 +144,52 @@ class PreG9BS1AuthorDxfReproductionTest {
 				.findFirst()
 				.orElseThrow();
 		assertEquals("Semantic Locus V2", locus.translatedTypeString());
+		GeoLocusV2 locusV2 = (GeoLocusV2) locus;
+		LocusDefinition2D definition = locusV2.getSemanticDefinition();
+		assertEquals(DefinitionStatus.VALID, definition.getDefinitionStatus());
+		assertTrue(definition.getProvider().isPeriodic());
+		LocusBranch2D branch = definition.getBranches().get(0);
+		assertTrue(branch.getProperties().contains(BranchProperty.PERIODIC));
+		assertEquals(1, branch.getValidDomainComponents().size());
+		LocusInterval2D component = branch.getValidDomainComponents().get(0);
+		assertEquals(-Math.PI, component.getLower());
+		assertEquals(Math.PI, component.getUpper());
+		assertTrue(component.isLowerClosed());
+		assertFalse(component.isUpperClosed());
+		assertEquals(component, branch.getDeclaredDriverDomain());
+		assertEquals(component, definition.getProvider().getDeclaredDomain());
+		assertEquals(component.getLower(),
+				definition.getProvider().canonicalize(component.getUpper()));
+		try (LocusEvaluationSession2D session =
+				LocusEvaluationSession2D.memoizing(32)) {
+			assertEquals(List.of(EvaluationStatus.VALID, EvaluationStatus.VALID,
+					EvaluationStatus.VALID, EvaluationStatus.DEPENDENCY_UNDEFINED,
+					EvaluationStatus.VALID, EvaluationStatus.DEPENDENCY_UNDEFINED,
+					EvaluationStatus.DEPENDENCY_UNDEFINED,
+					EvaluationStatus.DEPENDENCY_UNDEFINED,
+					EvaluationStatus.DEPENDENCY_UNDEFINED,
+					EvaluationStatus.DEPENDENCY_UNDEFINED,
+					EvaluationStatus.DEPENDENCY_UNDEFINED,
+					EvaluationStatus.DEPENDENCY_UNDEFINED), List.of(
+					definition.evaluate(branch.getBranchKey(), component.getLower(),
+							session).getStatus(),
+					definition.evaluate(branch.getBranchKey(), component.getUpper(),
+							session).getStatus(),
+					definition.evaluate(branch.getBranchKey(), 0, session).getStatus(),
+					definition.evaluate(branch.getBranchKey(), -Math.PI / 2,
+							session).getStatus(),
+					definition.evaluate(branch.getBranchKey(), Math.PI / 2,
+							session).getStatus(),
+					definition.evaluate(branch.getBranchKey(), -Math.PI / 2 - 1e-6,
+							session).getStatus(),
+					definition.evaluate(branch.getBranchKey(), -Math.PI / 2 + 1e-6,
+							session).getStatus(),
+					definition.evaluate(branch.getBranchKey(), -2.5, session).getStatus(),
+					definition.evaluate(branch.getBranchKey(), -2, session).getStatus(),
+					definition.evaluate(branch.getBranchKey(), -1.8, session).getStatus(),
+					definition.evaluate(branch.getBranchKey(), -1.5, session).getStatus(),
+					definition.evaluate(branch.getBranchKey(), -1, session).getStatus()));
+		}
 		GeometryExportPreflight locusPreflight = service.preflight(List.of(locus),
 				SelectionMode.CURRENT_SELECTION,
 				GeometryExportRequest.builder(0.001).build());
@@ -154,6 +208,72 @@ class PreG9BS1AuthorDxfReproductionTest {
 		assertEquals(2, combined.getApproximateCount());
 		assertEquals(1, combined.getInvalidCount());
 		assertNotEquals(0, combined.getModel().getEntities().size());
+		List<GeoElement> sources = sources(app);
+		GeometryExportPreflight complete = service.preflight(sources,
+				SelectionMode.COMPLETE_CONSTRUCTION,
+				GeometryExportRequest.builder(0.001).build());
+		List<String> population = new ArrayList<>();
+		for (var outcome : complete.getModel().getOutcomes()) {
+			if (outcome.getFidelity() != Fidelity.UNSUPPORTED
+					&& outcome.getFidelity() != Fidelity.INVALID) {
+				continue;
+			}
+			GeoElement geo = null;
+			for (int index = 0; index < sources.size(); index++) {
+				if (outcome.getSourceId().equals(
+						G9X1GeometryExportAdapter.requestSourceId(
+								sources.get(index), index))) {
+					geo = sources.get(index);
+					break;
+				}
+			}
+			population.add(outcome.getLabel() + "|" + outcome.getSourceType()
+					+ "|" + outcome.getFidelity() + "|" + outcome.getReason()
+					+ "|visible=" + outcome.isVisible() + "|auxiliary="
+					+ (geo != null && geo.isAuxiliaryObject()) + "|parent="
+					+ (geo == null || geo.getParentAlgorithm() == null ? "none"
+							: geo.getParentAlgorithm().getClass().getSimpleName()));
+		}
+		assertEquals(26, complete.getExactCount());
+		assertEquals(2, complete.getApproximateCount());
+		assertEquals(15, complete.getUnsupportedCount());
+		assertEquals(1, complete.getInvalidCount());
+		assertEquals(14, complete.getHiddenCount());
+		assertFalse(complete.isWritable());
+		assertEquals(List.of(
+				"Iso1|LIST|UNSUPPORTED|UNSUPPORTED_FAMILY|visible=false|"
+						+ "auxiliary=false|parent=AlgoDependentList",
+				"Iso2|LIST|UNSUPPORTED|UNSUPPORTED_FAMILY|visible=true|"
+						+ "auxiliary=false|parent=AlgoDependentList",
+				"a|NUMERIC|UNSUPPORTED|UNSUPPORTED_FAMILY|visible=false|"
+						+ "auxiliary=false|parent=none",
+				"b|NUMERIC|UNSUPPORTED|UNSUPPORTED_FAMILY|visible=false|"
+						+ "auxiliary=false|parent=none",
+				"c|LOCUS_INTERSECTION_RESULT|UNSUPPORTED|UNSUPPORTED_FAMILY|"
+						+ "visible=false|auxiliary=false|parent=AlgoLocusIntersectionV2",
+				"text1|TEXT|UNSUPPORTED|UNSUPPORTED_FAMILY|visible=false|"
+						+ "auxiliary=true|parent=none",
+				"d|LOCUS_INTERSECTION_RESULT|UNSUPPORTED|UNSUPPORTED_FAMILY|"
+						+ "visible=false|auxiliary=false|parent=AlgoLocusIntersectionV2",
+				"text2|TEXT|UNSUPPORTED|UNSUPPORTED_FAMILY|visible=false|"
+						+ "auxiliary=true|parent=none",
+				"e|LOCUS_INTERSECTION_RESULT|UNSUPPORTED|UNSUPPORTED_FAMILY|"
+						+ "visible=false|auxiliary=false|parent=AlgoLocusIntersectionV2",
+				"text3|TEXT|UNSUPPORTED|UNSUPPORTED_FAMILY|visible=false|"
+						+ "auxiliary=true|parent=none",
+				"i|LOCUS_INTERSECTION_RESULT|UNSUPPORTED|UNSUPPORTED_FAMILY|"
+						+ "visible=false|auxiliary=false|parent=AlgoLocusIntersectionV2",
+				"text4|TEXT|UNSUPPORTED|UNSUPPORTED_FAMILY|visible=false|"
+						+ "auxiliary=true|parent=none",
+				"l|LOCUS_INTERSECTION_RESULT|UNSUPPORTED|UNSUPPORTED_FAMILY|"
+						+ "visible=false|auxiliary=false|parent=AlgoLocusIntersectionV2",
+				"text5|TEXT|UNSUPPORTED|UNSUPPORTED_FAMILY|visible=false|"
+						+ "auxiliary=true|parent=none",
+				"text6|TEXT|UNSUPPORTED|UNSUPPORTED_FAMILY|visible=false|"
+						+ "auxiliary=true|parent=none",
+				"m|LOCUS_V2|INVALID|DISCONTINUITY_UNRESOLVED|visible=true|"
+						+ "auxiliary=false|parent=AlgoDependentPointLocusV2"),
+				population);
 		assertEquals(constructionBefore, app.getXML());
 	}
 

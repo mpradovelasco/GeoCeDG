@@ -65,6 +65,15 @@ native `SPLINE`, tolerance, closure or topology claim is needed, so
 `PRE-G9B-S1-SPLINE-DXF` is **not required**. The invalid `m` is not converted
 from render samples and cannot be bridged merely to match what is visible.
 
+The requested corrective continuation disproved the suspected excluded-endpoint
+cause: `pi` canonicalizes to `-pi` and evaluates successfully, while the first
+dyadic quarter at `-pi/2` and a broad internal negative interval return
+`DEPENDENCY_UNDEFINED`. The DXF seam has no semantic point from which to build a
+closed full-period representation without bridging an invalid interval. No
+productive correction was made. Exact evidence, the 15-source unsupported
+complete-construction inventory, and the separate population-policy proposal
+are recorded in the [bounded characterization](../architecture/pre_g9b_s1_periodic_locus_and_complete_population_characterization.md).
+
 ## Bounded stabilization result
 
 - SplineV2 Algebra/type presentation now follows its `AlgoSplineV2` producer
