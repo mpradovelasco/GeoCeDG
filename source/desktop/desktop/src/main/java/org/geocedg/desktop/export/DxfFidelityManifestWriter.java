@@ -198,12 +198,16 @@ public final class DxfFidelityManifestWriter {
 		value.put("model_version", preflight.getModel().getModelVersion());
 		value.put("selection_mode",
 				lower(preflight.getModel().getSelectionMode()));
+		value.put("population_rule",
+				preflight.getModel().getPopulationRuleId());
 		value.put("exact_components", preflight.getExactCount());
 		value.put("approximate_components", preflight.getApproximateCount());
 		value.put("unsupported_components", preflight.getUnsupportedCount());
 		value.put("invalid_components", preflight.getInvalidCount());
 		value.put("omitted_components", preflight.getOmittedCount());
 		value.put("hidden_sources", preflight.getHiddenCount());
+		value.put("outside_geometric_population",
+				preflight.getExcludedPopulationCount());
 		value.put("sidecar_required", preflight.isSidecarRequired());
 		value.put("complete_request_writable", preflight.isWritable());
 		value.put("source_revision_current",

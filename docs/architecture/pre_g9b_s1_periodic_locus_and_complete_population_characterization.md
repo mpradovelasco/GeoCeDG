@@ -1,16 +1,46 @@
 # PRE-G9B-S1 periodic Locus and complete-population characterization
 
-Status: **CORRECTIVE CHARACTERIZATION — AUTHOR DISPOSITION REQUIRED**
+Status: **R1 PARTIAL IMPLEMENTATION — LOCUS SEMANTIC BLOCKER OPEN**
 
-Product implementation: **NOT STARTED FOR THIS CONTINUATION**
+Product implementation: **TYPED POPULATION IMPLEMENTED; LOCUS DECOMPOSITION
+NOT STARTED**
 
 Entry candidate: `1221e5c5b3bb20f9ad65e7f36ac58f624beef3c0`
 
 Self approval: `false`
 
-This note records the bounded investigation requested after the first S1
-candidate. It does not change G9X1 export semantics, Locus V2 semantics, the
-strict-output policy, or the complete-construction population.
+This note preserves the bounded investigation after the first S1 candidate and
+records the later author disposition. The author approved continuous semantic
+components as the Locus export authority and policy B as the complete DXF
+population. The population correction is implemented below. The Locus
+subproblem remains stopped at its explicit semantic boundary.
+
+## 0. Kernel versus export decision
+
+`LocusBranch2D.getValidDomainComponents()` is normative shared-kernel evidence,
+not an export hint. The approved G6 model defines each component as an oriented
+parameter interval on which semantic evaluation is currently valid. Metrics,
+semantic point operations, intersections, rendering and G9X1 all consume that
+same list. Consequently continuous validity decomposition belongs in the
+shared Locus kernel; G9X1 must consume it and must not discover a competing
+export-only partition.
+
+The current `circle-point/v1` producer contradicts that intended meaning for
+`m`: `AlgoDependentPointLocusV2.fixedDomain(...)` publishes the complete nominal
+`[-pi, pi)` interval as its sole valid component, while its reconstructible
+evaluator returns `DEPENDENCY_UNDEFINED` throughout an internal interval.
+Neither `LocusParameterPartition2D` nor the intersection result supplies a
+global driver-parameter validity partition. Intersection completeness is
+established separately at one construction state; it does not certify where a
+durably selected root exists over the whole circle parameter.
+
+No bounded existing API can establish all component boundaries or prove that
+no smaller invalid island was missed. Endpoint/midpoint/dyadic sampling can
+isolate observed transitions, but cannot turn the intervals between point
+evaluations into semantic validity authority. Making `m` exportable therefore
+requires a new shared interval/continuation certificate for the selected root
+and its dependent construction. The task's stop condition applies before such
+productive kernel semantics are invented.
 
 ## 1. Periodic `m` finding
 
@@ -94,13 +124,15 @@ objects, G9X1 includes hidden sources, and strict partial output is disabled.
 Consequently the 15 unsupported entries continue to block after any independent
 resolution of `m`.
 
-Construction `Text` needs a separate distinction. The six fixture texts are
-hidden root-token inputs. A visible, geometrically located construction
-annotation has potential CAD annotation meaning, but neither G5 nor G9X1
-currently approves a DXF `TEXT` mapping. This continuation neither adds one nor
-silently excludes all `GeoText` instances.
+At characterization time, construction `Text` still required an author
+disposition. The six fixture texts are hidden root-token inputs; a visible,
+geometrically located annotation has potential CAD annotation meaning, but
+neither G5 nor G9X1 currently approves a DXF `TEXT` mapping. The later R1
+decision resolved the current population rule: every `Text` remains outside
+the complete geometric DXF population until a separate exact export contract
+is approved. Explicit current selection continues to report it as unsupported.
 
-## 3. Policy alternatives
+## 3. Policy alternatives and author decision
 
 ### A — preserve the current strict population
 
@@ -113,19 +145,19 @@ silently excludes all `GeoText` instances.
 - **Disposition:** valid current behavior, but selection remains the only
   practical way to obtain an exportable subset.
 
-### B — geometric complete-construction population
+### B — geometric complete-construction population — author approved
 
 - **Correctness:** define a versioned, semantic/type-based population of
   authoritative 2D geometry and approved typed curve sources.
-- **Exclusions:** list containers, numeric parameters, rich analysis results,
-  and non-geometrically located auxiliary token texts can be outside the
-  population because of their roles, never merely because they are hidden.
-- **Text:** visible/located construction annotation requires an explicit later
-  inclusion/exclusion decision or a separately approved DXF `TEXT` mapping.
+- **Exclusions:** list containers, numeric parameters and rich analysis results
+  can be outside the population because of their types, never merely because
+  they are hidden.
+- **Text:** absent an approved DXF `TEXT` mapping, `Text` is outside the typed
+  complete population; adding annotation export remains separately reviewable.
 - **Traceability:** the sidecar/preflight must identify the population-rule
   version and distinguish “outside population” from “requested but omitted”.
-- **Compatibility:** changes the approved meaning of
-  `COMPLETE_CONSTRUCTION`; it cannot be implemented in this continuation.
+- **Compatibility:** refines `COMPLETE_CONSTRUCTION` before strict preflight;
+  `CURRENT_SELECTION` retains explicit-source semantics.
 - **Extensibility:** gives new semantic geometry types one explicit admission
   point without confusing metadata with failed geometry.
 
@@ -142,18 +174,50 @@ silently excludes all `GeoText` instances.
 - **Disposition:** separately authorizable and potentially complementary to B,
   but not a substitute for a coherent complete-geometry population.
 
-## 4. Recommendation and gate
+## 4. Implemented population rule
 
-Recommend **B**, with A retained until a separately reviewed contract exists.
-The bounded follow-up gate should be
-`PRE-G9B-S1-COMPLETE-POPULATION`. It must define the typed population predicate,
-the source/outside-population reporting distinction, treatment of visible
-construction annotations, deterministic compatibility behavior, and the
-sidecar schema consequences. Option C, if desired, needs an independent
-explicit-partial-output decision within or after that gate.
+The author selected B. `geocedg-dxf-geometric-2d/v1` now excludes these typed
+families before complete-construction preflight:
+
+| Family | Typed reason |
+|---|---|
+| `LIST` | `LIST_CONTAINER` |
+| `NUMERIC` | `NUMERIC_PARAMETER` |
+| `LOCUS_INTERSECTION_RESULT` | `RICH_ANALYSIS_RESULT` |
+| `TEXT` | `TEXT_WITHOUT_APPROVED_DXF_MAPPING` |
+
+The classifier is deliberately fail-closed for every unclassified family: it
+remains in the geometric candidate population, so an unsupported or invalid
+eligible source still blocks strict publication. Visibility is not a predicate.
+Current selection is not filtered; selecting an auxiliary alone still produces
+an explicit unsupported outcome. Population exclusions are diagnostics with
+their own code and count and, when a sidecar exists, appear as structured
+warnings. They are not omitted components and do not make a complete geometric
+request partial.
+
+For the author fixture the rule removes two lists, two numerics, five rich
+intersection results and six texts before preflight. The 26 exact and two
+SplineV2 approximate components remain eligible. `m` remains an invalid
+eligible geometric source until the kernel component contract is established,
+so the complete request remains correctly non-writable.
+
+## 5. Remaining gate
+
+Policy B no longer needs the proposed separate complete-population gate. Its
+bounded implementation is part of S1-R1. Option C remains outside scope because
+it would alter strict no-partial output.
+
+The remaining Locus gate must define reconstructible, revision-aware evidence
+that partitions a dependent construction's nominal driver domain into complete
+continuous valid components. For the author fixture, that evidence must account
+for the durable exact-root token without changing root identity by coordinates
+or query order. It must expose `COMPLETE` versus `NOT_ESTABLISHED`, preserve open
+boundaries, and prove that no invalid interval is silently bridged. This is a
+kernel semantic decision shared by export, metrics and intersections, not a DXF
+repair.
 
 ```text
-PERIODIC_M_CORRECTION = BLOCKED — KERNEL SEMANTIC AUTHORITY REQUIRED
-COMPLETE_CONSTRUCTION_POLICY = DESIGN / AUTHOR DISPOSITION REQUIRED
-PRE-G9B-S1-COMPLETE-POPULATION = PROPOSED / NOT AUTHORIZED
+LOCUS_CONTINUOUS_COMPONENTS = BLOCKED — NEW SHARED CERTIFICATE REQUIRED
+COMPLETE_CONSTRUCTION_POLICY = B — IMPLEMENTED AS TYPED GEOMETRIC POPULATION
+PRE-G9B-S1-COMPLETE-POPULATION = NOT REQUIRED / ABSORBED BY S1-R1
 ```

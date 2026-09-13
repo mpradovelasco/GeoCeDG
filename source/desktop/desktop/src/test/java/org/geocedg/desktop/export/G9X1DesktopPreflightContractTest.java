@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.geocedg.common.export.G9X1GeometryExportAdapter;
+import org.geocedg.common.export.GeometryExportModel.DiagnosticCode;
 import org.geocedg.common.export.GeometryExportModel.SelectionMode;
 import org.geocedg.common.export.GeometryExportPreflight;
 import org.geocedg.common.export.GeometryExportRequest;
@@ -191,6 +192,22 @@ class G9X1DesktopPreflightContractTest extends BaseUnitTest {
 				.get(0).getBranchKey());
 		DxfExportPreflightPresentation directed = presentation(function, parsed);
 		assertTrue(directed.getSummaryText().contains("[branch=function]"));
+
+		GeoElement text = add("T=\"auxiliary token\"");
+		GeometryExportPreflight complete = service.preflight(
+				List.of(add("A=(1,2)"), text),
+				SelectionMode.COMPLETE_CONSTRUCTION, strictRequest(false));
+		DxfExportPreflightPresentation completePresentation =
+				DxfExportPreflightPresentation.from(complete);
+		assertEquals(1, complete.getExactCount());
+		assertEquals(1, complete.getExcludedPopulationCount());
+		assertTrue(complete.isWritable());
+		assertTrue(completePresentation.getSummaryText()
+				.contains("outside geometric population=1"));
+		assertTrue(completePresentation.getSummaryText()
+				.contains("Population rule: geocedg-dxf-geometric-2d/v1"));
+		assertTrue(completePresentation.getWarningsText()
+				.contains(DiagnosticCode.OUTSIDE_GEOMETRIC_POPULATION.name()));
 	}
 
 	private DxfExportPreflightPresentation presentation(GeoElement source,

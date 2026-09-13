@@ -52,7 +52,7 @@ import org.geogebra.desktop.main.AppD;
 /** Desktop request, preflight, and safe-output boundary for DXF export. */
 final class GeoCeDGDxfExportController {
 
-	private static final String COMPLETE = "Complete labeled 2D construction";
+	private static final String COMPLETE = "Complete 2D geometric construction";
 	private static final String SELECTION = "Current selection";
 	private static final String DEFAULT_TOLERANCE = "0.001";
 	private final AppD app;
@@ -475,6 +475,8 @@ final class GeoCeDGDxfExportController {
 				.append("\nApproximate components: ")
 				.append(preflight.getApproximateCount())
 				.append("\nHidden sources: ").append(preflight.getHiddenCount())
+				.append("\nOutside geometric population: ")
+				.append(preflight.getExcludedPopulationCount())
 				.append("\nCoordinates: unitless Cartesian 2D world")
 				.append("\nDXF SHA-256: ").append(result.getDxfSha256());
 		if (result.getManifestPath() != null) {

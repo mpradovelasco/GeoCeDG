@@ -20,14 +20,15 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
+import org.geocedg.common.export.G9X1GeometryExportAdapter;
 import org.geocedg.common.export.GeometryExportModel;
+import org.geocedg.common.export.GeometryExportModel.DiagnosticCode;
 import org.geocedg.common.export.GeometryExportModel.EllipseGeometry;
 import org.geocedg.common.export.GeometryExportModel.GeometryType;
 import org.geocedg.common.export.GeometryExportModel.SelectionMode;
 import org.geocedg.common.export.GeometryExportPreflight;
 import org.geocedg.common.export.GeometryExportRequest;
 import org.geocedg.common.export.GeometryExportService;
-import org.geocedg.common.export.G9X1GeometryExportAdapter;
 import org.geocedg.common.export.SourceExportOutcome.Fidelity;
 import org.geocedg.common.export.SourceExportOutcome.Reason;
 import org.geocedg.common.kernel.algos.AlgoSplineV2;
@@ -234,46 +235,72 @@ class PreG9BS1AuthorDxfReproductionTest {
 					+ (geo == null || geo.getParentAlgorithm() == null ? "none"
 							: geo.getParentAlgorithm().getClass().getSimpleName()));
 		}
+		List<String> excluded = new ArrayList<>();
+		for (var diagnostic : complete.getModel().getDiagnostics()) {
+			if (diagnostic.getCode()
+					!= DiagnosticCode.OUTSIDE_GEOMETRIC_POPULATION) {
+				continue;
+			}
+			GeoElement geo = null;
+			for (int index = 0; index < sources.size(); index++) {
+				if (diagnostic.getSourceId().equals(
+						G9X1GeometryExportAdapter.requestSourceId(
+								sources.get(index), index))) {
+					geo = sources.get(index);
+					break;
+				}
+			}
+			excluded.add((geo == null ? "missing" : geo.getLabelSimple()) + "|"
+					+ diagnostic.getSourceType() + "|" + diagnostic.getCode() + "|"
+					+ diagnostic.getMessage());
+		}
 		assertEquals(26, complete.getExactCount());
 		assertEquals(2, complete.getApproximateCount());
-		assertEquals(15, complete.getUnsupportedCount());
+		assertEquals(0, complete.getUnsupportedCount());
 		assertEquals(1, complete.getInvalidCount());
-		assertEquals(14, complete.getHiddenCount());
+		assertEquals(15, complete.getExcludedPopulationCount());
 		assertFalse(complete.isWritable());
 		assertEquals(List.of(
-				"Iso1|LIST|UNSUPPORTED|UNSUPPORTED_FAMILY|visible=false|"
-						+ "auxiliary=false|parent=AlgoDependentList",
-				"Iso2|LIST|UNSUPPORTED|UNSUPPORTED_FAMILY|visible=true|"
-						+ "auxiliary=false|parent=AlgoDependentList",
-				"a|NUMERIC|UNSUPPORTED|UNSUPPORTED_FAMILY|visible=false|"
-						+ "auxiliary=false|parent=none",
-				"b|NUMERIC|UNSUPPORTED|UNSUPPORTED_FAMILY|visible=false|"
-						+ "auxiliary=false|parent=none",
-				"c|LOCUS_INTERSECTION_RESULT|UNSUPPORTED|UNSUPPORTED_FAMILY|"
-						+ "visible=false|auxiliary=false|parent=AlgoLocusIntersectionV2",
-				"text1|TEXT|UNSUPPORTED|UNSUPPORTED_FAMILY|visible=false|"
-						+ "auxiliary=true|parent=none",
-				"d|LOCUS_INTERSECTION_RESULT|UNSUPPORTED|UNSUPPORTED_FAMILY|"
-						+ "visible=false|auxiliary=false|parent=AlgoLocusIntersectionV2",
-				"text2|TEXT|UNSUPPORTED|UNSUPPORTED_FAMILY|visible=false|"
-						+ "auxiliary=true|parent=none",
-				"e|LOCUS_INTERSECTION_RESULT|UNSUPPORTED|UNSUPPORTED_FAMILY|"
-						+ "visible=false|auxiliary=false|parent=AlgoLocusIntersectionV2",
-				"text3|TEXT|UNSUPPORTED|UNSUPPORTED_FAMILY|visible=false|"
-						+ "auxiliary=true|parent=none",
-				"i|LOCUS_INTERSECTION_RESULT|UNSUPPORTED|UNSUPPORTED_FAMILY|"
-						+ "visible=false|auxiliary=false|parent=AlgoLocusIntersectionV2",
-				"text4|TEXT|UNSUPPORTED|UNSUPPORTED_FAMILY|visible=false|"
-						+ "auxiliary=true|parent=none",
-				"l|LOCUS_INTERSECTION_RESULT|UNSUPPORTED|UNSUPPORTED_FAMILY|"
-						+ "visible=false|auxiliary=false|parent=AlgoLocusIntersectionV2",
-				"text5|TEXT|UNSUPPORTED|UNSUPPORTED_FAMILY|visible=false|"
-						+ "auxiliary=true|parent=none",
-				"text6|TEXT|UNSUPPORTED|UNSUPPORTED_FAMILY|visible=false|"
-						+ "auxiliary=true|parent=none",
 				"m|LOCUS_V2|INVALID|DISCONTINUITY_UNRESOLVED|visible=true|"
 						+ "auxiliary=false|parent=AlgoDependentPointLocusV2"),
 				population);
+		assertEquals(List.of(
+				"Iso1|LIST|OUTSIDE_GEOMETRIC_POPULATION|Outside "
+						+ "geocedg-dxf-geometric-2d/v1: LIST_CONTAINER.",
+				"Iso2|LIST|OUTSIDE_GEOMETRIC_POPULATION|Outside "
+						+ "geocedg-dxf-geometric-2d/v1: LIST_CONTAINER.",
+				"a|NUMERIC|OUTSIDE_GEOMETRIC_POPULATION|Outside "
+						+ "geocedg-dxf-geometric-2d/v1: NUMERIC_PARAMETER.",
+				"b|NUMERIC|OUTSIDE_GEOMETRIC_POPULATION|Outside "
+						+ "geocedg-dxf-geometric-2d/v1: NUMERIC_PARAMETER.",
+				"c|LOCUS_INTERSECTION_RESULT|OUTSIDE_GEOMETRIC_POPULATION|Outside "
+						+ "geocedg-dxf-geometric-2d/v1: RICH_ANALYSIS_RESULT.",
+				"text1|TEXT|OUTSIDE_GEOMETRIC_POPULATION|Outside "
+						+ "geocedg-dxf-geometric-2d/v1: "
+						+ "TEXT_WITHOUT_APPROVED_DXF_MAPPING.",
+				"d|LOCUS_INTERSECTION_RESULT|OUTSIDE_GEOMETRIC_POPULATION|Outside "
+						+ "geocedg-dxf-geometric-2d/v1: RICH_ANALYSIS_RESULT.",
+				"text2|TEXT|OUTSIDE_GEOMETRIC_POPULATION|Outside "
+						+ "geocedg-dxf-geometric-2d/v1: "
+						+ "TEXT_WITHOUT_APPROVED_DXF_MAPPING.",
+				"e|LOCUS_INTERSECTION_RESULT|OUTSIDE_GEOMETRIC_POPULATION|Outside "
+						+ "geocedg-dxf-geometric-2d/v1: RICH_ANALYSIS_RESULT.",
+				"text3|TEXT|OUTSIDE_GEOMETRIC_POPULATION|Outside "
+						+ "geocedg-dxf-geometric-2d/v1: "
+						+ "TEXT_WITHOUT_APPROVED_DXF_MAPPING.",
+				"i|LOCUS_INTERSECTION_RESULT|OUTSIDE_GEOMETRIC_POPULATION|Outside "
+						+ "geocedg-dxf-geometric-2d/v1: RICH_ANALYSIS_RESULT.",
+				"text4|TEXT|OUTSIDE_GEOMETRIC_POPULATION|Outside "
+						+ "geocedg-dxf-geometric-2d/v1: "
+						+ "TEXT_WITHOUT_APPROVED_DXF_MAPPING.",
+				"l|LOCUS_INTERSECTION_RESULT|OUTSIDE_GEOMETRIC_POPULATION|Outside "
+						+ "geocedg-dxf-geometric-2d/v1: RICH_ANALYSIS_RESULT.",
+				"text5|TEXT|OUTSIDE_GEOMETRIC_POPULATION|Outside "
+						+ "geocedg-dxf-geometric-2d/v1: "
+						+ "TEXT_WITHOUT_APPROVED_DXF_MAPPING.",
+				"text6|TEXT|OUTSIDE_GEOMETRIC_POPULATION|Outside "
+						+ "geocedg-dxf-geometric-2d/v1: "
+						+ "TEXT_WITHOUT_APPROVED_DXF_MAPPING."), excluded);
 		assertEquals(constructionBefore, app.getXML());
 	}
 

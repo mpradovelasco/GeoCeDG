@@ -18,7 +18,7 @@ public final class GeometryExportModel {
 
 	/** Input population selected before geometry adaptation. */
 	public enum SelectionMode {
-		/** All labeled 2D construction objects. */
+		/** Typed complete 2D geometric construction population. */
 		COMPLETE_CONSTRUCTION,
 		/** The explicit current application selection. */
 		CURRENT_SELECTION
@@ -64,7 +64,9 @@ public final class GeometryExportModel {
 		TOLERANCE_NOT_ESTABLISHED,
 		WORK_LIMIT,
 		STALE_SOURCE_REVISION,
-		DUPLICATE_COMPONENT
+		DUPLICATE_COMPONENT,
+		/** Source is outside the typed complete-construction population. */
+		OUTSIDE_GEOMETRIC_POPULATION
 	}
 
 	/** Immutable 2D coordinate or vector. */
@@ -572,6 +574,13 @@ public final class GeometryExportModel {
 
 	public SelectionMode getSelectionMode() {
 		return selectionMode;
+	}
+
+	/** @return versioned source-population authority for this model */
+	public String getPopulationRuleId() {
+		return selectionMode == SelectionMode.COMPLETE_CONSTRUCTION
+				? GeometryExportPopulation2D.RULE_ID
+				: "explicit-current-selection/v1";
 	}
 
 	public String getCoordinateSystem() {

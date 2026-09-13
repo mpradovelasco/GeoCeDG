@@ -3022,6 +3022,12 @@
       "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
     },
     {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BS1AuthorDxfReproductionTest.java",
+      "change": "added",
+      "purpose": "Reproduce the immutable author DXF constructions and verify exact ellipse, semantic-curve, and typed complete-population behavior.",
+      "authority": "docs/validation/pre_g9b_s1_dxf_stabilization_candidate_report.md"
+    },
+    {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/export/G9X1DesktopPreflightContractTest.java",
       "change": "added",
       "purpose": "Verify Desktop preflight presentation order, feature gating, approximation acknowledgement, and destination suppression on invalid or stale input.",
@@ -3098,6 +3104,12 @@
       "change": "added",
       "purpose": "Represent one immutable complete-request classification before destination selection or serialization.",
       "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/export/GeometryExportPopulation2D.java",
+      "change": "added",
+      "purpose": "Define the deterministic typed geometric source population for complete 2D DXF requests while leaving explicit current selections unfiltered.",
+      "authority": "geocedg/specs/export/geometry-export-foundation.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/export/GeometryExportRequest.java",

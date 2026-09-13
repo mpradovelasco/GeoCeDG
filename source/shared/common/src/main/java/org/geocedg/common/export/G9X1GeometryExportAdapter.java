@@ -100,7 +100,9 @@ public final class G9X1GeometryExportAdapter {
 			throw new IllegalArgumentException(
 					"G9X1 does not authorize partial component output");
 		}
-		List<GeoElement> ordered = new ArrayList<>(geos);
+		GeometryExportPopulation2D.Result population =
+				GeometryExportPopulation2D.select(geos, selectionMode);
+		List<GeoElement> ordered = population.getSources();
 		Map<Construction, ConstructionSnapshot> constructionSnapshots =
 				captureConstructions(ordered);
 		GeometryExportModel exactModel = exactAdapter.adapt(ordered, selectionMode);
@@ -114,7 +116,9 @@ public final class G9X1GeometryExportAdapter {
 		}
 
 		List<Entity> entities = new ArrayList<>();
-		List<Diagnostic> diagnostics = new ArrayList<>(exactModel.getDiagnostics());
+		List<Diagnostic> diagnostics = new ArrayList<>(
+				population.getDiagnostics());
+		diagnostics.addAll(exactModel.getDiagnostics());
 		List<SourceExportOutcome> outcomes = new ArrayList<>();
 		List<GeometryExportPreflight.SourceRevisionGuard> guards =
 				new ArrayList<>();

@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.geocedg.common.export.GeometryExportModel.DiagnosticCode;
 import org.geocedg.common.export.GeometryExportModel.SelectionMode;
 import org.geocedg.common.export.GeometryExportRequest.SemanticDomain;
 import org.geocedg.common.export.SourceExportOutcome.Fidelity;
@@ -97,6 +98,17 @@ class G9X1PreflightFidelityTest extends BaseUnitTest {
 		assertEquals(Reason.UNSUPPORTED_FAMILY, outcome.getReason());
 		assertFalse(outcome.isEmitted());
 		assertNotNull(outcome.getMessage());
+
+		GeometryExportPreflight complete = service.preflight(
+				Collections.singletonList(text),
+				SelectionMode.COMPLETE_CONSTRUCTION, request());
+		assertEquals(0, complete.getUnsupportedCount());
+		assertEquals(1, complete.getExcludedPopulationCount());
+		assertEquals(DiagnosticCode.OUTSIDE_GEOMETRIC_POPULATION,
+				complete.getModel().getDiagnostics().get(0).getCode());
+		assertTrue(complete.getModel().getDiagnostics().get(0).getMessage()
+				.contains("TEXT_WITHOUT_APPROVED_DXF_MAPPING"));
+		assertFalse(complete.isWritable());
 	}
 
 	@Test
@@ -170,6 +182,14 @@ class G9X1PreflightFidelityTest extends BaseUnitTest {
 				.allowPartialOutput(true).build();
 		assertThrows(IllegalArgumentException.class,
 				() -> preflight(Collections.singletonList(exact), partial));
+
+		GeoElement unsupportedGeometry = add("v=Vector((0,0),(1,1))");
+		GeometryExportPreflight complete = service.preflight(
+				Collections.singletonList(unsupportedGeometry),
+				SelectionMode.COMPLETE_CONSTRUCTION, request());
+		assertEquals(0, complete.getExcludedPopulationCount());
+		assertEquals(1, complete.getUnsupportedCount());
+		assertFalse(complete.isWritable());
 	}
 
 	@Test

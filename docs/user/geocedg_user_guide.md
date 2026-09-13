@@ -1151,7 +1151,7 @@ The G5 action is available only in the window identified as `GeoCeDG`:
 3. Choose the DXF export action in the candidate File/import-export group or
    family palette. In the historical G5/R3 layout the same dialog was reached
    through `GeoCeDG > Export 2D geometry as DXF (experimental)...`.
-4. Choose `Complete labeled 2D construction` or `Current selection`.
+4. Choose `Complete 2D geometric construction` or `Current selection`.
 5. Review any unsupported/invalid-object diagnostics. `OK` explicitly accepts
    writing the supported subset; `Cancel` writes nothing.
 6. Choose the destination. GeoCeDG appends `.dxf` when omitted and asks before
@@ -1167,13 +1167,20 @@ GeoGebra Classic remains a comparison target and intentionally has no G5 menu.
 
 | Mode | Exact population rule | Use |
 |---|---|---|
-| `Complete labeled 2D construction` | Labeled objects in construction order; 3D, invalid and unsupported objects become diagnostics | Reproducible full-model export |
+| `Complete 2D geometric construction` | Typed 2D geometric candidates in construction order; list/numeric auxiliaries, rich Locus intersection results and Text without an approved DXF mapping are reported outside population before strict preflight | Reproducible complete-geometry export, not partial output |
 | `Current selection` | The explicit GUI selection captured before adaptation | Small subsets and controlled comparisons |
 
 Visibility is metadata, not a population filter: a hidden supported object in
 either population is exported with DXF visibility group `60 = 1`. G5 does not
 offer viewport, visible-only, named-view or layer-filtered population modes.
 Those absent modes must not be inferred from what is currently on screen.
+
+An object outside the complete geometric population is not a failed component.
+It is reported separately and does not relax strictness for eligible geometry.
+Selecting that same object explicitly under `Current selection` is different:
+GeoCeDG reports that it has no approved geometric DXF representation and does
+not claim a successful export. Construction Text remains outside the complete
+population until a separately approved DXF `TEXT` contract exists.
 
 ### Minimal reproducible example
 

@@ -58,10 +58,13 @@ public final class GeoElementGeometryExportAdapter {
 		if (geos == null) {
 			throw new IllegalArgumentException("Source geometry collection is required");
 		}
-		List<GeoElement> ordered = new ArrayList<>(geos);
+		GeometryExportPopulation2D.Result population =
+				GeometryExportPopulation2D.select(geos, selectionMode);
+		List<GeoElement> ordered = population.getSources();
 		Set<GeoElement> polygonSides = polygonSides(ordered);
 		List<Entity> entities = new ArrayList<>();
-		List<Diagnostic> diagnostics = new ArrayList<>();
+		List<Diagnostic> diagnostics = new ArrayList<>(
+				population.getDiagnostics());
 		for (int ordinal = 0; ordinal < ordered.size(); ordinal++) {
 			GeoElement geo = ordered.get(ordinal);
 			if (geo == null) {
@@ -282,7 +285,7 @@ public final class GeoElementGeometryExportAdapter {
 		return layer == 0 ? "0" : "GEOCEDG_L" + layer;
 	}
 
-	private static String sourceId(GeoElement geo, int ordinal) {
+	static String sourceId(GeoElement geo, int ordinal) {
 		String label = geo.getLabelSimple();
 		String suffix = label == null || label.isEmpty() ? "item-" + ordinal
 				: label.replaceAll("[^A-Za-z0-9_.-]", "_");

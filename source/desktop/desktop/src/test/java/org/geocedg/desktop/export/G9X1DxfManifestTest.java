@@ -236,6 +236,24 @@ class G9X1DxfManifestTest extends BaseUnitTest {
 		assertNotNull(rejected.getModel().getOutcomes().get(0).getReason());
 		assertThrows(IllegalStateException.class,
 				() -> writer.prepare(rejected, prepared.encoding));
+
+		GeometryExportPreflight complete = service.preflight(
+				List.of(add("A=(1,2)"), add("T=\"auxiliary\"")),
+				SelectionMode.COMPLETE_CONSTRUCTION,
+				GeometryExportRequest.builder(0.05).requestSidecar(true).build());
+		DxfEncodingResult completeEncoding = service.encode(complete);
+		String completeManifest = manifest(writer.prepare(complete,
+				completeEncoding));
+		assertTrue(complete.isWritable());
+		assertEquals(1, complete.getExcludedPopulationCount());
+		assertContains(completeManifest,
+				"\"outside_geometric_population\":1");
+		assertContains(completeManifest,
+				"\"population_rule\":\"geocedg-dxf-geometric-2d/v1\"");
+		assertContains(completeManifest,
+				"\"code\":\"outside_geometric_population\"");
+		assertContains(completeManifest,
+				"TEXT_WITHOUT_APPROVED_DXF_MAPPING");
 	}
 
 	@Test

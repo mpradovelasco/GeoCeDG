@@ -33,7 +33,9 @@ Every neutral entity records:
 - optional approximation tolerance.
 
 The model records selection mode, source coordinate system, source unit, target
-unit, and diagnostics for all skipped objects. G5 uses the coordinate system
+unit, and diagnostics for all skipped or typed-outside-population objects. A
+complete-construction request applies `geocedg-dxf-geometric-2d/v1` before
+adaptation; current selection remains unfiltered. G5 uses the coordinate system
 `GEOGEBRA_CARTESIAN_2D_WORLD`, identity transform, and `UNITLESS` units.
 
 ## G5 type policy
@@ -95,6 +97,12 @@ diagnostic tied to their source identifier. The writer rejects non-finite
 coordinates and approximate entities without a positive finite tolerance.
 The Desktop controller writes no file when the neutral model contains zero
 exportable entities.
+
+Lists, numeric parameters, rich Locus intersection results and Text have no
+approved geometric DXF source role in the version-one complete population.
+They are excluded before strict geometry preflight with a distinct typed
+diagnostic. Unknown or genuinely geometric unsupported families are not
+silently excluded and continue to block a strict complete request.
 
 ## Determinism and validation
 

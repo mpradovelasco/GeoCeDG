@@ -33,6 +33,7 @@ public final class GeometryExportPreflight {
 	private final int unsupportedCount;
 	private final int invalidCount;
 	private final int hiddenCount;
+	private final int excludedPopulationCount;
 	private final boolean sidecarRequired;
 	private final boolean writable;
 
@@ -78,6 +79,11 @@ public final class GeometryExportPreflight {
 		unsupportedCount = unsupported;
 		invalidCount = invalid;
 		hiddenCount = hiddenSources.size();
+		excludedPopulationCount = (int) model.getDiagnostics().stream()
+				.filter(item -> item.getCode()
+						== GeometryExportModel.DiagnosticCode
+								.OUTSIDE_GEOMETRIC_POPULATION)
+				.count();
 		sidecarRequired = request.isSidecarRequested()
 				|| model.hasFidelityReduction();
 		writable = !request.isPartialOutputAllowed()
@@ -116,6 +122,11 @@ public final class GeometryExportPreflight {
 
 	public int getHiddenCount() {
 		return hiddenCount;
+	}
+
+	/** @return sources excluded before strict geometric preflight */
+	public int getExcludedPopulationCount() {
+		return excludedPopulationCount;
 	}
 
 	public boolean isSidecarRequired() {

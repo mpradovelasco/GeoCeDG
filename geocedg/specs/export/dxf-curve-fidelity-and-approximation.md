@@ -10,6 +10,11 @@
 | Recommended predecessor | G9U0 for public/persistent Locus V2 integration; not a semantic dependency |
 | Decision | [Accepted ADR 0014](../../../docs/adr/0014-export-only-dxf-approximation-and-sidecar.md) |
 
+PRE-G9B-S1-R1 later refines complete-construction population and clarifies that
+Locus V2 component validity must come from shared semantic authority. The
+author approved this direction; the dependent-construction component
+certificate remains incomplete and cannot be replaced by export sampling.
+
 This normative contract extends the G5 export boundary without changing
 geometric truth. It does not authorize implementation. Existing exact G5 mappings remain the
 compatibility baseline.
@@ -162,6 +167,15 @@ unsupported, invalid, and omitted component counts. The approved defaults are:
 - any future partial-output option requires explicit user intent for that
   operation, a visible warning, and a mandatory sidecar; and
 - hidden sources remain included but visibly reported.
+
+For a complete-construction request, the input to strict preflight is the
+versioned typed population `geocedg-dxf-geometric-2d/v1`, not every labeled
+construction participant. Lists, numeric parameters, rich Locus intersection
+results and Text without an approved DXF mapping are outside that population
+and are reported as such before preflight. This is not partial output. Every
+eligible geometric source remains subject to strict exact/approximate,
+unsupported and invalid classification. Current selection is explicit and is
+never filtered by this population rule.
 
 The dialog must show unitless coordinates, tolerance/guarantee, work limits,
 explicit domains, sidecar creation, and every warning that can affect fidelity.

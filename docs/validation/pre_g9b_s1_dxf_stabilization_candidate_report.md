@@ -1,6 +1,6 @@
 # PRE-G9B-S1 DXF and bounded-stabilization candidate report
 
-- Status: **IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**
+- Status: **R1 PARTIAL IMPLEMENTATION — LOCUS SEMANTIC BLOCKER OPEN**
 - Entry commit: `f79234c2c69fc9e30d5fc8e786909ada10909c6e`
 - Entry tree: `3440f45335bd7b95c5d0ecb75fe3fb27128e8067`
 - Verification class: bounded `PHASE`, selector `PRE-G9B-S1`
@@ -73,6 +73,23 @@ closed full-period representation without bridging an invalid interval. No
 productive correction was made. Exact evidence, the 15-source unsupported
 complete-construction inventory, and the separate population-policy proposal
 are recorded in the [bounded characterization](../architecture/pre_g9b_s1_periodic_locus_and_complete_population_characterization.md).
+
+The subsequent S1-R1 author disposition approved continuous finite valid
+components and typed complete population. The architecture review established
+that `getValidDomainComponents()` is shared semantic authority, while the
+dependent producer supplies no global validity/boundary certificate for its
+durably selected intersection root. Pointwise sampling cannot prove a complete
+partition, so the Locus workstream remains stopped before kernel semantics are
+invented.
+
+The independent policy-B correction is implemented as
+`geocedg-dxf-geometric-2d/v1`. Complete construction excludes the fixture's two
+lists, two numeric parameters, five rich intersection results and six Text
+token inputs before strict preflight. These 15 sources receive
+`OUTSIDE_GEOMETRIC_POPULATION` diagnostics rather than unsupported outcomes;
+26 exact and two approximate components remain eligible. `m` remains an
+invalid eligible source, so publication remains blocked. Current selection is
+unchanged and an explicitly selected auxiliary remains unsupported.
 
 ## Bounded stabilization result
 

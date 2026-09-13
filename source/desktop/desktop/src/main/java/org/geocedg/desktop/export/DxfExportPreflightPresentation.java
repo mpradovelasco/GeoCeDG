@@ -203,13 +203,17 @@ public final class DxfExportPreflightPresentation {
 				.append(", unsupported=").append(preflight.getUnsupportedCount())
 				.append(", invalid=").append(preflight.getInvalidCount())
 				.append(", omitted=").append(preflight.getOmittedCount())
-				.append(", hidden=").append(preflight.getHiddenCount()).append('\n');
+				.append(", hidden=").append(preflight.getHiddenCount())
+				.append(", outside geometric population=")
+				.append(preflight.getExcludedPopulationCount()).append('\n');
 		text.append("Coordinates: ")
 				.append(preflight.getModel().getCoordinateSystem())
 				.append("; source unit=")
 				.append(preflight.getModel().getSourceUnit())
 				.append("; target unit=")
 				.append(preflight.getModel().getTargetUnit()).append('\n');
+		text.append("Population rule: ")
+				.append(preflight.getModel().getPopulationRuleId()).append('\n');
 		text.append("Approximation policy: allowed=")
 				.append(request.isApproximationAllowed())
 				.append("; requested tolerance=")
