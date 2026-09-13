@@ -1,20 +1,21 @@
 # POST-G9U1-A7 — cursor-centred navigation characterization and design
 
 - Design status: **AUTHOR APPROVED**
-- Implementation status: **CORRECTED IMPLEMENTATION CANDIDATE — PENDING AUTHOR SMOKE**
+- Implementation status: **PASS — AUTHOR APPROVED**
 - Published base commit: `71483011be9bb9fdfe896f00af0ba8323f9c0834`
 - Published base tree: `81e690b68ed7ec2caa3f59ba6d8c6abf90ab3f38`
-- Product implementation authorized: **true, bounded to this design**
-- Product code changed: **true, implementation candidate**
+- Product implementation completed: **true, bounded to this design**
+- Product code changed: **true, author-approved implementation**
 - Owning programme layer: **G12 view/workspace navigation**
 - G9B hard dependency: **false**
 - Self approval: **false**
 
 This document characterizes the pinned GeoGebra 5.4.928.0 host and governs the
 smallest A7 implementation slice. Design approval authorized the bounded
-implementation, but neither design nor automated verification approves its result.
+implementation; automated verification remained technical evidence, and the
+separate final interactive smoke and exact-candidate decision supply author approval.
 The accompanying [validation matrix](../validation/post_g9u1_a7_navigation_design_matrix.md)
-defines the future acceptance perimeter.
+defines the bounded acceptance perimeter and records its final evidence.
 
 The author approved the original design at
 `98280d81771758258f29bfb80c6d025a192b3dca`. The first implementation
@@ -38,6 +39,14 @@ verification, but repeated interactive smoke established that its deferred arm
 was still cancelled by a later canvas focus-loss transition and that a long
 conflict label could collapse the editors. The present bounded successor records
 the corrected persistent interaction and layout contracts without reopening G12.
+
+The final candidate `ed3f19a095ce661307dbd6d9a24e70f6569cc4cf`, tree
+`9b4385b7c7d7da4cf381068fd0c245d66be9a8c8`, passed the bounded PHASE as
+`ACCEPTED / COMPLETE` and the author then accepted the final interactive smoke.
+That smoke covered live shortcut feedback and stable layout, menu and toolbar
+activation, rectangle completion with preserved scale ratio, Escape cancellation,
+factor In/Out cursor anchoring and application-preference persistence. Earlier
+candidates and smoke findings remain historical evidence, not retroactive passes.
 
 ## 1. Characterized authority
 
@@ -352,7 +361,7 @@ configuration and gesture work remains GeoCeDG Desktop. Web and 3D do not change
     coordinates, durable IDs and representative Locus V2 addresses before/after
     every navigation path, independently of view XML.
 12. **Bounded implementation:** the six seams in section 7, one bounded PHASE,
-    Classic 5 Desktop only; the corrected candidate remains pending author smoke.
+    Classic 5 Desktop only; the author-approved result closes this bounded slice.
 
 ## 10. ADR and unresolved questions
 

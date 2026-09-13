@@ -1,16 +1,16 @@
-# POST-G9U1-A7 navigation design and future validation matrix
+# POST-G9U1-A7 navigation design and validation matrix
 
 - Design status: **AUTHOR APPROVED**
-- Implementation status: **CORRECTED IMPLEMENTATION CANDIDATE — PENDING AUTHOR SMOKE**
+- Implementation status: **PASS — AUTHOR APPROVED**
 - Base commit: `71483011be9bb9fdfe896f00af0ba8323f9c0834`
-- Product phase effect: **BOUNDED IMPLEMENTATION CANDIDATE**
+- Product phase effect: **BOUNDED IMPLEMENTATION — CLOSED**
 - Product implementation authorized: **true, bounded to the approved design**
-- Product code changed: **true, candidate pending author smoke**
+- Product code changed: **true, author-approved candidate**
 - Design authority candidate:
   [A7 navigation design](../architecture/post_g9u1_a7_navigation_design.md)
 
-This matrix preserves characterization and records the implemented candidate
-coverage. It does not itself claim author approval of the implementation.
+This matrix preserves characterization, candidate chronology and the separate
+technical and author evidence that closes the implementation.
 The author-approved design is `98280d81771758258f29bfb80c6d025a192b3dca`;
 interactive smoke of initial candidate
 `b249a62aa6e0e7e844ec350ccbfd600ae5553b2c` authorized the bounded corrected
@@ -23,6 +23,18 @@ integration regressions and passed automated verification. Repeated author smoke
 then showed that a late focus-loss transition still cancelled the deferred tool
 arm and that long red validation feedback collapsed the editor widths. The
 present successor corrects those two real-UI lifecycle/layout defects only.
+
+The final corrected candidate `ed3f19a095ce661307dbd6d9a24e70f6569cc4cf`,
+tree `9b4385b7c7d7da4cf381068fd0c245d66be9a8c8`, passed
+`POST-G9U1-A7` PHASE run `verification-041cd85926eb4ab1a68ec13c3bf6c1d1`
+with plan `d0bdd604ec9991f821c1e68f55f9438d54c34c7e57825b5090244df3ec125d8a`
+and result `b3783ebad7d23946aa0aad5f510bae4b422babc7f883e65c52f106a9033d5211`:
+91 tests, zero failures, errors, skipped cases or diagnostics, acceptance
+`ACCEPTED` and coverage `COMPLETE`. Focused A7, shared cursor/view and Desktop
+A7 plus G9U1 workspace/profile regressions passed, as did main/test Checkstyle
+and `git diff --check`; no inventory change required `INFRA_UNIT`. The subsequent
+interactive smoke was executed and accepted by the author; it is manual author
+evidence, not an automated-verifier result.
 
 ## 1. Characterization matrix
 
@@ -115,7 +127,10 @@ placement and serialized presentation are never authority for coordinates,
 metric truth, incidence, semantic identity, provenance, projection identity,
 spatial reconstruction or DAG membership.
 
-## 5. Author repeat-smoke checklist
+## 5. Accepted final author smoke
+
+The author executed and accepted the following final smoke against the exact
+candidate above:
 
 1. Edit both factor shortcuts through valid/conflict/invalid values; confirm the
    feedback changes before Apply and every editor keeps a comfortable width.

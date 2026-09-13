@@ -1,9 +1,10 @@
 # Manual operativo vivo de GeoCeDG
 
-Estado vivo del track post-G9U1: A3, su frontend Classic y A5 están
-**PASS — AUTHOR APPROVED**. El diseño A7 está autor-aprobado y su implementación
-corregida tras el segundo smoke es candidata pendiente de smoke/revisión autoral; no cambia Web
-ni autoriza G9B.
+Estado vivo del track post-G9U1: **COMPLETE — AUTHOR APPROVED**. A3, su
+frontend Classic, A5 y el slice A7 están **PASS — AUTHOR APPROVED**; A4 conserva
+investigación/diseño completos y autor-aprobados. A7 sigue perteneciendo a G12,
+no cambia Web ni autoriza G9B. La siguiente acción es una reconciliación separada
+del roadmap antes de cualquier futura autorización G9B.
 
 Estado publicado R1: **PASS — AUTHOR APPROVED**, smoke autoral **PASS**.
 Tag `geocedg-g9s1-r1-pass` ->
