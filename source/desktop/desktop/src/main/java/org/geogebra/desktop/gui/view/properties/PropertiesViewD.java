@@ -178,6 +178,18 @@ public class PropertiesViewD extends PropertiesView implements SetLabels {
 
 	}
 
+	/** Discard only an unapplied Text editor draft. */
+	public void discardTextModifications() {
+		if (getObjectPanel() != null) {
+			((OptionsObjectD) getObjectPanel()).discardTextModifications();
+		}
+	}
+
+	private boolean isTextEditorActive() {
+		return getObjectPanel() != null
+				&& ((OptionsObjectD) getObjectPanel()).isTextEditorActive();
+	}
+
 	/**
 	 * set the current panel selected/unselected
 	 * 
@@ -720,7 +732,11 @@ public class PropertiesViewD extends PropertiesView implements SetLabels {
 	 */
 	public void closeDialog() {
 		wrappedPanel.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-		app.storeUndoInfo();
+		if (isTextEditorActive()) {
+			discardTextModifications();
+		} else {
+			app.storeUndoInfo();
+		}
 		wrappedPanel.setCursor(Cursor.getDefaultCursor());
 		app.getGuiManager().setShowView(false, getViewID());
 	}

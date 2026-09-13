@@ -401,6 +401,19 @@ public class PropertiesPanelD extends JPanel implements SetLabels, UpdateFonts,
 		applyScriptModifications();
 	}
 
+	/** Discard only an unapplied Text editor draft. */
+	public void discardTextModifications() {
+		if (textEditPanel != null) {
+			textEditPanel.discardModifications();
+		}
+	}
+
+	/** @return whether the Text editor is the active Properties surface */
+	public boolean isTextEditorActive() {
+		return textEditPanel != null && tabs.getSelectedComponent() == textTab
+				&& textEditPanel.isVisible();
+	}
+
 	private void applyScriptModifications() {
 		if (scriptEditPanel != null) {
 			scriptEditPanel.applyModifications();
@@ -843,6 +856,7 @@ public class PropertiesPanelD extends JPanel implements SetLabels, UpdateFonts,
 	 */
 	public void updateSelection(Object[] geos) {
 		// only do this for scripts, text editor needs clicking [ok] explicitly
+		discardTextModifications();
 		applyScriptModifications();
 		updateTabs(geos);
 	}

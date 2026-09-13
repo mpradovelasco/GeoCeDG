@@ -28,6 +28,7 @@ import org.geogebra.common.gui.UpdateFonts;
 import org.geogebra.common.kernel.geos.GeoText;
 import org.geogebra.common.plugin.EventType;
 import org.geogebra.desktop.gui.properties.UpdateablePropertiesPanel;
+import org.geogebra.desktop.gui.view.properties.PropertiesViewD;
 
 /**
  * panel for text editingA
@@ -62,6 +63,8 @@ public class TextEditPanel extends JPanel implements
 		td = new TextInputDialogD(this.propertiesPanelD.app,
 				this.propertiesPanelD.loc.getMenu("Text"), null, null,
 				true, 30, 5, false);
+		td.configurePropertiesLifecycle(() -> ((PropertiesViewD) this.propertiesPanelD.app
+				.getGuiManager().getPropertiesView()).closeDialog());
 		setLayout(new BorderLayout());
 
 		editPanel = new JPanel(new BorderLayout(0, 0));
@@ -83,6 +86,11 @@ public class TextEditPanel extends JPanel implements
 	 */
 	public void applyModifications() {
 		td.applyModifications();
+	}
+
+	/** Discard an unapplied edit while retaining the last applied object state. */
+	public void discardModifications() {
+		td.discardModifications();
 	}
 
 	@Override

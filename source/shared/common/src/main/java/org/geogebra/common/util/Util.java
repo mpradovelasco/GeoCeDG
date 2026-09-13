@@ -24,9 +24,13 @@ import org.geogebra.common.util.debug.Log;
 
 public final class Util {
 
-	/** available font sizes (will be reused in OptionsAdvanced) */
+	/** available font sizes for application menus and general GUI text */
 	final private static int[] MENU_FONT_SIZES = { 12, 14, 16, 18, 20, 24, 28,
 			32, 48 };
+
+	/** available base font sizes for construction objects */
+	final private static int[] APP_FONT_SIZES = { 10, 12, 14, 16, 18, 20, 24,
+			28, 32, 48 };
 
 	/**
 	 * used when value is needed through a callback
@@ -124,12 +128,27 @@ public final class Util {
 	}
 
 	/**
+	 * @param i index
+	 * @return base font size for construction objects
+	 */
+	public static int appFontSizes(int i) {
+		return APP_FONT_SIZES[i];
+	}
+
+	/**
+	 * @return number of available construction-object base font sizes
+	 */
+	public static int appFontSizesLength() {
+		return APP_FONT_SIZES.length;
+	}
+
+	/**
 	 * @param fontSize
 	 *            desired size
 	 * @return valid, supported fontSize
 	 */
 	public static int getValidFontSize(int fontSize) {
-		return getNextHighestNumberInSortedList(fontSize, MENU_FONT_SIZES);
+		return getNextHighestNumberInSortedList(fontSize, APP_FONT_SIZES);
 	}
 
 	/**

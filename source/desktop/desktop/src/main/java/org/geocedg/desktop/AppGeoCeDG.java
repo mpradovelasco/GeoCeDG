@@ -26,6 +26,7 @@ import org.geogebra.common.io.layout.Perspective;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.main.AppConfig;
 import org.geogebra.common.main.MyError.Errors;
+import org.geogebra.common.main.settings.FontSettings;
 import org.geogebra.common.util.FileExtensions;
 import org.geogebra.desktop.CommandLineArguments;
 import org.geogebra.desktop.geogebra3D.App3D;
@@ -140,6 +141,13 @@ public final class AppGeoCeDG extends App3D {
 	@Override
 	protected GuiManagerD newGuiManager() {
 		return new GuiManagerGeoCeDG(this);
+	}
+
+	@Override
+	public int getGUIFontSize() {
+		FontSettings fonts = getSettings().getFontSettings();
+		return fonts.getGuiFontSize() == -1
+				? getDefaultSettings().getAppFontSize() : fonts.getGuiFontSize();
 	}
 
 	@Override

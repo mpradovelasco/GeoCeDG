@@ -102,8 +102,9 @@ public class PropertiesDockPanel extends DockPanelD
 
 	@Override
 	protected void closePanel(boolean isPermanent) {
-		super.closePanel(isPermanent);
 		getPropertiesView();
+		view.discardTextModifications();
+		super.closePanel(isPermanent);
 		view.applyModifications();
 	}
 
@@ -154,6 +155,7 @@ public class PropertiesDockPanel extends DockPanelD
 		if (!closed) {
 			closed = true;
 			getPropertiesView();
+			view.discardTextModifications();
 			view.applyModifications();
 			closeDialog();
 		}

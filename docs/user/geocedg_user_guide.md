@@ -1,5 +1,16 @@
 # Manual operativo vivo de GeoCeDG
 
+Estado candidato PRE-G9B-S2: **IMPLEMENTATION CANDIDATE — PENDING AUTHOR
+REVIEW**; `selfApproved=false`. En Propiedades de un objeto Texto, **Aplicar**
+confirma el borrador y mantiene Propiedades abierto, **Aceptar** confirma y
+cierra, y **Cancelar** descarta solo el borrador posterior al último estado
+aplicado. Cambiar de objeto o cerrar Propiedades descarta el borrador pendiente;
+cambiar de pestaña conserva la convención heredada y lo aplica al mismo objeto.
+La fuente de presentación de los objetos de construcción admite 10 pt. Ese
+ajuste no cambia la tipografía de los menús ni el tamaño de los iconos de la
+barra. La aprobación y el smoke autorales siguen pendientes; S3/S4 y las fases
+posteriores no están autorizadas por este candidato.
+
 Estado vivo del track post-G9U1: **COMPLETE — AUTHOR APPROVED**. A3, su
 frontend Classic, A5 y el slice A7 están **PASS — AUTHOR APPROVED**; A4 conserva
 investigación/diseño completos y autor-aprobados. A7 sigue perteneciendo a G12,

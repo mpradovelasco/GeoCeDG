@@ -10,16 +10,16 @@
     {
       "module": "shared",
       "gradle_task": ":shared:common-jre:test",
-      "discovery_evidence_sha256": "b33b71d6480a5eb7c5d53be301971261a788e335b5314b78fc8c16829c02866d",
-      "discovered_identity_count": 5748,
-      "discovered_identities_sha256": "f5403418715fb09da11f316422aa897f7e2ecbf63adf1a7aeb06f3f27b235b20"
+      "discovery_evidence_sha256": "5477c88639325d681d69c32ce30630de5ac60a4f6f56a2b26d04131171fcc239",
+      "discovered_identity_count": 5749,
+      "discovered_identities_sha256": "cf9c67c3c14884605b598f7cc48781f84a29a14ffd82ad2a90c58c8d5208c8f3"
     },
     {
       "module": "desktop",
       "gradle_task": ":desktop:desktop:test",
-      "discovery_evidence_sha256": "bbea185cec39824f302169c1c988c47969ad4044e97dc415deeaca48690b723b",
-      "discovered_identity_count": 1421,
-      "discovered_identities_sha256": "8471a9a174b6372b80e26e371c7728075ed1a45b2ce989bc2f4806d8071fa62b"
+      "discovery_evidence_sha256": "eb650f4629eb76beeb53218c1521483609bb1e33c15bad55453daebbcf477f65",
+      "discovered_identity_count": 1434,
+      "discovered_identities_sha256": "2c600d408b119e9b6e6de6644c810112bb7c9c90ef6f19ba6252a9af7a6bbf5b"
     }
   ],
   "selections": [
@@ -38,8 +38,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 5748,
-      "expected_identities_sha256": "f5403418715fb09da11f316422aa897f7e2ecbf63adf1a7aeb06f3f27b235b20",
+      "expected_identity_count": 5749,
+      "expected_identities_sha256": "cf9c67c3c14884605b598f7cc48781f84a29a14ffd82ad2a90c58c8d5208c8f3",
       "not_applicable_allowlist": [],
       "input_identities": [
         {
@@ -63,8 +63,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 1421,
-      "expected_identities_sha256": "8471a9a174b6372b80e26e371c7728075ed1a45b2ce989bc2f4806d8071fa62b",
+      "expected_identity_count": 1434,
+      "expected_identities_sha256": "2c600d408b119e9b6e6de6644c810112bb7c9c90ef6f19ba6252a9af7a6bbf5b",
       "not_applicable_allowlist": [],
       "input_identities": [
         {
@@ -895,6 +895,82 @@
         {
           "commit": "2f55c378dfb35b843531b8944f36a0f0ffc9067d",
           "tree": "f459fefd31865a0313d9f8e32674a81c94d9ddb3"
+        }
+      ]
+    },
+    {
+      "selection_id": "pre-g9b-s2.shared",
+      "module": "shared",
+      "gradle_task": ":shared:common-jre:test",
+      "test_filters": [
+        "org.geogebra.common.main.settings.PreG9BS2FontSizeOwnershipTest",
+        "org.geogebra.common.euclidian.draw.DrawTextTest",
+        "org.geogebra.common.kernel.geos.GeoTextTest",
+        "org.geogebra.common.gui.dialog.handler.TextBuilderTest"
+      ],
+      "excluded_test_filters": [],
+      "effective_arguments": [
+        ":shared:common-jre:test",
+        "--tests",
+        "org.geogebra.common.main.settings.PreG9BS2FontSizeOwnershipTest",
+        "--tests",
+        "org.geogebra.common.euclidian.draw.DrawTextTest",
+        "--tests",
+        "org.geogebra.common.kernel.geos.GeoTextTest",
+        "--tests",
+        "org.geogebra.common.gui.dialog.handler.TextBuilderTest",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 11,
+      "expected_identities_sha256": "d8425a6dda19c186050beea3e6057c5badc273bb4f2c1158ed738c157c172226",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "f502ac8ead5e1b2bf6e70a8583fedfc0a26d9c4a",
+          "tree": "a5bd55820e24a998e5cb4f9c4e39964202b7e0de"
+        }
+      ]
+    },
+    {
+      "selection_id": "pre-g9b-s2.desktop",
+      "module": "desktop",
+      "gradle_task": ":desktop:desktop:test",
+      "test_filters": [
+        "org.geogebra.desktop.gui.dialog.PreG9BS2TextPropertyLifecycleTest",
+        "org.geocedg.desktop.PreG9BS2ConstructionFontTest",
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest",
+        "org.geocedg.desktop.G9U1UserToolLibraryTest"
+      ],
+      "excluded_test_filters": [],
+      "effective_arguments": [
+        ":desktop:desktop:test",
+        "--tests",
+        "org.geogebra.desktop.gui.dialog.PreG9BS2TextPropertyLifecycleTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BS2ConstructionFontTest",
+        "--tests",
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest",
+        "--tests",
+        "org.geocedg.desktop.G9U1UserToolLibraryTest",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 76,
+      "expected_identities_sha256": "7642c8e34c537102ac52ec7946d539a8044f5ad27a507d44a1e2ad86e2a3c682",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "f502ac8ead5e1b2bf6e70a8583fedfc0a26d9c4a",
+          "tree": "a5bd55820e24a998e5cb4f9c4e39964202b7e0de"
         }
       ]
     },

@@ -36,7 +36,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/main/AppD.java",
       "change": "modified",
-      "purpose": "Preserve profile bootstrap hooks and add fail-closed one-read .cedg preflight, prepared and atomic undo-baseline commit with full rollback on live-parse or commit failure, product-window routing and current-document preservation without changing ZIP/XML internals. G9U1: capture native transaction UI state before hiding navigation, so rollback can restore the prior presentation; non-native ordering and formats are unchanged. G9U1 review round 1: preflight the temporary native save archive with the existing disposable reader before atomic replacement, preserving the previous target and unsaved state on failure; no schema or loader repair.",
+      "purpose": "Preserve profile bootstrap hooks and add fail-closed one-read .cedg preflight, prepared and atomic undo-baseline commit with full rollback on live-parse or commit failure, product-window routing and current-document preservation without changing ZIP/XML internals. G9U1: capture native transaction UI state before hiding navigation, so rollback can restore the prior presentation; non-native ordering and formats are unchanged. G9U1 review round 1: preflight the temporary native save archive with the existing disposable reader before atomic replacement, preserving the previous target and unsaved state on failure; no schema or loader repair. PRE-G9B-S2: make Desktop font listeners and toolbar icon scaling consume GUI font ownership rather than the construction-object base font; Classic fallback remains unchanged.",
       "authority": "geocedg/specs/ui/native-document-identity.md"
     },
     {
@@ -60,7 +60,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/AppGeoCeDG.java",
       "change": "added",
-      "purpose": "Instantiate the GeoCeDG profile and enforce the .cedg-only native save, product-window and parser-preflight policy while retaining the Classic internal app code and feature gates. G9U1: Apply approved Construction workspace, language and Continuity policy without changing Classic or geometry. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: suppress the inherited startup perspective popup and separate document-local macro preference snapshots from explicit application-library installation; Classic and document macro serialization remain unchanged. G9U1 review round 3: resolve the tracked GeoCeDG frame icon and startup resource without upstream branding fallback.",
+      "purpose": "Instantiate the GeoCeDG profile and enforce the .cedg-only native save, product-window and parser-preflight policy while retaining the Classic internal app code and feature gates. G9U1: Apply approved Construction workspace, language and Continuity policy without changing Classic or geometry. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: suppress the inherited startup perspective popup and separate document-local macro preference snapshots from explicit application-library installation; Classic and document macro serialization remain unchanged. G9U1 review round 3: resolve the tracked GeoCeDG frame icon and startup resource without upstream branding fallback. PRE-G9B-S2: keep default GUI typography anchored to the GeoCeDG platform default when construction-object font size changes, while honoring an explicit GUI font preference.",
       "authority": "geocedg/specs/ui/native-document-identity.md"
     },
     {
@@ -3792,7 +3792,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/dialog/PropertiesPanelD.java",
       "change": "modified",
-      "purpose": "Provide product semantic-definition inspection through the ordinary Properties panel.",
+      "purpose": "Provide product semantic-definition inspection through the ordinary Properties panel. PRE-G9B-S2: discard an unapplied Text draft on selection change while retaining ordinary tab auto-commit behavior.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -3822,7 +3822,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/view/properties/PropertiesViewD.java",
       "change": "modified",
-      "purpose": "Integrate the bounded read-only semantic-definition tab into the normal product Properties lifecycle.",
+      "purpose": "Integrate the bounded read-only semantic-definition tab into the normal product Properties lifecycle. PRE-G9B-S2: expose pending-Text discard and suppress the inherited unconditional close checkpoint while the Text editor owns commit/Undo.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -4038,7 +4038,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGHostMenuFactory.java",
       "change": "added",
-      "purpose": "G9U1 author-review round 3: Bridge profile-declared View and Options entries to existing checked/radio host view, Algebra sort/display, rounding, labeling, font, global preferences and save-settings state without a second preference store or Construction mutation.",
+      "purpose": "G9U1 author-review round 3: Bridge profile-declared View and Options entries to existing checked/radio host view, Algebra sort/display, rounding, labeling, font, global preferences and save-settings state without a second preference store or Construction mutation. PRE-G9B-S2: expose the construction-object size list including 10 pt and retain document-unsaved signaling without changing GUI font or icon ownership.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -4130,6 +4130,60 @@
       "change": "added",
       "purpose": "PRE-G9B-S1-R2: Verify existence-certificate states, compatibility migration, revision binding, local rendering and total-metric completeness rejection.",
       "authority": "docs/validation/pre_g9b_s1_r2_locus_existence_validation_matrix.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/dialog/TextInputDialogD.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-S2: Give the embedded Properties Text editor one draft/commit/cancel lifecycle, remove the duplicate failure callback after successful redefine, avoid preview-time target mutation and retain the ordinary Algebra Processor redefine/Undo path.",
+      "authority": "docs/architecture/pre_g9b_stabilization_deployability_design.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/dialog/TextEditPanel.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-S2: Bind the embedded Text editor's Apply/OK/Cancel lifecycle to the owning Properties view and expose draft discard without a parallel editor.",
+      "authority": "docs/architecture/pre_g9b_stabilization_deployability_design.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/dialog/PropertiesTextEditLifecycle.java",
+      "change": "added",
+      "purpose": "PRE-G9B-S2: Route Apply, OK and Cancel outcomes while leaving draft content and redefine authority in the inherited Text editor.",
+      "authority": "docs/architecture/pre_g9b_stabilization_deployability_design.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/dialog/options/OptionsObjectD.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-S2: Forward bounded pending-Text discard through the existing object Properties panel.",
+      "authority": "docs/architecture/pre_g9b_stabilization_deployability_design.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/layout/panels/PropertiesDockPanel.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-S2: Treat normal Properties window/panel close as Text draft cancellation while preserving inherited application of other property editors.",
+      "authority": "docs/architecture/pre_g9b_stabilization_deployability_design.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/util/Util.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-S2: Separate construction-object font choices, including 10 pt, from the existing application-menu font choices.",
+      "authority": "docs/architecture/pre_g9b_stabilization_deployability_design.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geogebra/common/main/settings/PreG9BS2FontSizeOwnershipTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-S2: Verify 10 pt construction acceptance remains separate from application-menu font choices.",
+      "authority": ".github/prompts/tasks/pre-g9b-s2-construction-text-property-font-correctness.prompt.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geogebra/desktop/gui/dialog/PreG9BS2TextPropertyLifecycleTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-S2: Verify the five required Text button sequences, draft disposition, redefine continuity and persistence.",
+      "authority": ".github/prompts/tasks/pre-g9b-s2-construction-text-property-font-correctness.prompt.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BS2ConstructionFontTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-S2: Verify Text Undo/Redo and construction font application/persistence with menu-font and toolbar-icon isolation.",
+      "authority": ".github/prompts/tasks/pre-g9b-s2-construction-text-property-font-correctness.prompt.md"
     },
     {
       "path": "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/derived/geocedg-startup-361x480.png",

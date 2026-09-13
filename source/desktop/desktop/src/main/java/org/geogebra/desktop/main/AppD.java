@@ -456,8 +456,7 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 		// init settings
 		initSettings();
 		getSettings().getFontSettings().addListener(settings ->
-				getFontManager().setFontSize(((FontSettings) settings)
-						.getGuiFontSizeSafe()));
+				getFontManager().setFontSize(getGUIFontSize()));
 
 		// init euclidian view
 		initEuclidianViews();
@@ -1641,7 +1640,7 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 	}
 
 	public int getScaledIconSize() {
-		return ptToPx(getFontSize());
+		return ptToPx(getGUIFontSize());
 	}
 
 	/**
@@ -5155,7 +5154,7 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 		getSettings().getFontSettings().addListener(settings -> {
 			FontSettings fontSettings = (FontSettings) settings;
 			if (fontSettings.getGuiFontSize() == -1) {
-				setMaxIconSize(fontSettings.getAppFontSize());
+				setMaxIconSize(getGUIFontSize());
 			}
 		});
 		return super.newSettingsUpdaterBuilder();

@@ -131,12 +131,15 @@ final class GeoCeDGHostMenuFactory {
 		JMenu menu = menu(app, "FontSize");
 		ButtonGroup group = new ButtonGroup();
 		Map<JRadioButtonMenuItem, Integer> items = new LinkedHashMap<>();
-		for (int i = 0; i < Util.menuFontSizesLength(); i++) {
-			int size = Util.menuFontSizes(i);
+		for (int i = 0; i < Util.appFontSizesLength(); i++) {
+			int size = Util.appFontSizes(i);
 			JRadioButtonMenuItem item = radio(app,
 					app.getLocalization().getPlain("Apt", Integer.toString(size)),
 					"font-size." + size, app.getFontSize() == size);
-			item.addActionListener(event -> app.setFontSize(size, true));
+			item.addActionListener(event -> {
+				app.setFontSize(size, true);
+				app.setUnsaved();
+			});
 			group.add(item);
 			menu.add(item);
 			items.put(item, size);

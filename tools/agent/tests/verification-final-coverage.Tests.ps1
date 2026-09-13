@@ -42,7 +42,7 @@ Invoke-Case 'tracked JUnit inventory is compact and selection based' {
     Assert-Case $inventoryRejected 'JUnit inventory accepted a missing selection fingerprint.'
     Assert-Case (@($inventory.modules).Count -eq 2) 'Module discovery count changed.'
     Assert-Case (@($inventory.modules|Where-Object{$_.PSObject.Properties.Name -ccontains 'identities'}).Count -eq 0) 'Per-method inventory was tracked.'
-    Assert-Case (@($inventory.selections).Count -eq 21) 'Selection inventory count changed.'
+    Assert-Case (@($inventory.selections).Count -eq 23) 'Selection inventory count changed.'
     foreach($selection in $inventory.selections){
         Assert-Case ($selection.expected_identity_count -gt 0) "Selection has zero inventory: $($selection.selection_id)"
         Assert-Case ([string]$selection.expected_identities_sha256 -cmatch '^[0-9a-f]{64}$') "Selection fingerprint is invalid: $($selection.selection_id)"
@@ -90,6 +90,12 @@ Invoke-Case 'tracked JUnit inventory is compact and selection based' {
     Assert-Case (@($inventory.selections|Where-Object selection_id -CEQ `
         'pre-g9b-s1-r2.desktop')[0].expected_identity_count -eq 36) `
         'PRE-G9B-S1-R2 Desktop inventory changed.'
+    Assert-Case (@($inventory.selections|Where-Object selection_id -CEQ `
+        'pre-g9b-s2.shared')[0].expected_identity_count -eq 11) `
+        'PRE-G9B-S2 shared inventory changed.'
+    Assert-Case (@($inventory.selections|Where-Object selection_id -CEQ `
+        'pre-g9b-s2.desktop')[0].expected_identity_count -eq 76) `
+        'PRE-G9B-S2 Desktop inventory changed.'
     $desktopBroad=@($inventory.selections|Where-Object selection_id -CEQ 'final.desktop')[0]
     $desktopSemantic=@($inventory.selections|Where-Object selection_id -CEQ `
         'final.desktop.g9u1-isolated')[0]
@@ -100,8 +106,8 @@ Invoke-Case 'tracked JUnit inventory is compact and selection based' {
     Assert-Case (($excluded -join "`n") -ceq ($retained -join "`n")) `
         'Desktop partition suppresses or duplicates an excluded JUnit filter.'
 }
-Invoke-Case 'all 34 PHASE selections resolve as complete pure plans' {
-    Assert-Case (@($registry.phase_selections).Count -eq 34) 'PHASE selection count changed.'
+Invoke-Case 'all 35 PHASE selections resolve as complete pure plans' {
+    Assert-Case (@($registry.phase_selections).Count -eq 35) 'PHASE selection count changed.'
     foreach($phase in $registry.phase_selections){
         $plan=Resolve-VerificationRegistryPlan $registry PHASE $phase.phase_id WINDOWS
         Assert-Case ($plan.coverage_state -ceq 'COMPLETE') "PHASE is incomplete: $($phase.phase_id)"

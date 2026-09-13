@@ -147,6 +147,7 @@ public class TextInputDialogD extends InputDialogD
 	 * false on init, become true when an edit occurs
 	 */
 	private boolean editOccurred = false;
+	private PropertiesTextEditLifecycle propertiesLifecycle;
 
 	/**
 	 * Input Dialog for a GeoText object
@@ -235,6 +236,28 @@ public class TextInputDialogD extends InputDialogD
 		editor.getInputMap().put(KeyStroke.getKeyStroke("control Y"), "Redo");
 
 		wrappedDialog.pack();
+	}
+
+	/**
+	 * Configure this dialog as the editor embedded in Desktop Properties.
+	 *
+	 * @param closeProperties closes the owning Properties view
+	 */
+	public void configurePropertiesLifecycle(Runnable closeProperties) {
+		propertiesLifecycle = new PropertiesTextEditLifecycle(
+				new PropertiesTextEditLifecycle.DraftEditor() {
+					@Override
+					public void commit(AsyncOperation<Boolean> callback) {
+						applyModifications(callback);
+					}
+
+					@Override
+					public void discard() {
+						discardModifications();
+					}
+				}, closeProperties);
+		btPanel.add(btApply);
+		btPanel.revalidate();
 	}
 
 	private void addHelpButton() {
@@ -768,6 +791,18 @@ public class TextInputDialogD extends InputDialogD
 		Object source = e.getSource();
 
 		try {
+			if (propertiesLifecycle != null) {
+				if (source == btOK || source == inputPanel.getTextComponent()) {
+					propertiesLifecycle.ok();
+					return;
+				} else if (source == btApply) {
+					propertiesLifecycle.apply();
+					return;
+				} else if (source == btCancel) {
+					propertiesLifecycle.cancel();
+					return;
+				}
+			}
 			if (source == btOK || source == inputPanel.getTextComponent()) {
 				isLaTeX = cbLaTeX.isSelected();
 				editOccurred = false;
@@ -995,10 +1030,29 @@ public class TextInputDialogD extends InputDialogD
 	 * apply edit modifications
 	 */
 	public void applyModifications() {
+		applyModifications(success -> {
+			// Host lifecycle does not need a completion action here.
+		});
+	}
+
+	private void applyModifications(AsyncOperation<Boolean> callback) {
+		if (!editOccurred) {
+			callback.callback(true);
+			return;
+		}
+		isLaTeX = cbLaTeX.isSelected();
+		editOccurred = false; // prevent selection refresh from submitting twice
+		getInputHandler().processInput(editor.buildGeoGebraString(isLaTeX), this,
+				success -> {
+					editOccurred = !success;
+					callback.callback(success);
+				});
+	}
+
+	/** Discard the editor draft and restore the latest committed object state. */
+	public void discardModifications() {
 		if (editOccurred) {
-			editOccurred = false; // do this first to ensure no circular call
-			getInputHandler().processInput(editor.buildGeoGebraString(isLaTeX), this,
-					obj -> editOccurred = false);
+			setGeoText(editGeo);
 		}
 	}
 
@@ -1018,9 +1072,6 @@ public class TextInputDialogD extends InputDialogD
 		isLaTeX = textPreviewer.updatePreviewText(editGeo,
 				editor.buildGeoGebraString(isLaTeX), isLaTeX, mayDetectLaTeX);
 		if (isLaTeX && !wasLaTeX) {
-			if (editGeo != null) {
-				editGeo.setLaTeX(true, false);
-			}
 			cbLaTeX.setSelected(true);
 		}
 
@@ -1124,44 +1175,54 @@ public class TextInputDialogD extends InputDialogD
 				return;
 			}
 
-			// change existing text
-			try {
-				kernel.getAlgebraProcessor().changeGeoElement(editGeo,
-						inputValue, true, true, TextInputDialogD.this,
-						obj -> {
-							if (obj instanceof GeoText) {
-								// update editGeo
-								GeoText newText = (GeoText) obj;
-								editGeo = newText;
+			GeoText targetGeo = editGeo;
+			redefineText(app, targetGeo, inputValue, isLaTeX, TextInputDialogD.this,
+					newText -> {
+						if (newText != null && editGeo == targetGeo) {
+							editGeo = newText;
+						}
+						callback.callback(newText != null);
+					});
+		}
+	}
 
-								// make sure newText is using correct LaTeX
-								// setting
-								newText.setLaTeX(isLaTeX, true);
-
-								if (newText.getParentAlgorithm() != null) {
-									newText.getParentAlgorithm().update();
-								} else {
-									newText.updateRepaint();
-								}
-
-								app.doAfterRedefine(newText);
-								// if the geo was replaced in construction, we have to select
-								// the new one to update references, in e.g. the properties view
-								app.getSelectionManager().addSelectedGeo(newText);
-								callback.callback(obj != null);
-							}
-						});
-
-				// make redefined text selected
-				// app.addSelectedGeo(newText);
-				callback.callback(false);
-			} catch (Exception e) {
-				app.showError(Errors.ReplaceFailed);
-				callback.callback(false);
-			} catch (MyError err) {
-				app.showError(err);
-				callback.callback(false);
-			}
+	/**
+	 * Redefine a Text through the normal Algebra Processor path.
+	 *
+	 * @param app application
+	 * @param targetGeo current Text
+	 * @param inputValue new definition
+	 * @param latex whether the result uses LaTeX
+	 * @param handler error handler
+	 * @param callback receives the committed Text, or {@code null} on failure
+	 */
+	public static void redefineText(App app, GeoText targetGeo, String inputValue,
+			boolean latex, ErrorHandler handler, AsyncOperation<GeoText> callback) {
+		try {
+			app.getKernel().getAlgebraProcessor().changeGeoElement(targetGeo,
+					inputValue, true, false, handler, obj -> {
+						if (!(obj instanceof GeoText)) {
+							callback.callback(null);
+							return;
+						}
+						GeoText newText = (GeoText) obj;
+						newText.setLaTeX(latex, true);
+						if (newText.getParentAlgorithm() != null) {
+							newText.getParentAlgorithm().update();
+						} else {
+							newText.updateRepaint();
+						}
+						app.doAfterRedefine(newText);
+						app.getSelectionManager().addSelectedGeo(newText);
+						app.storeUndoInfo();
+						callback.callback(newText);
+					});
+		} catch (Exception e) {
+			app.showError(Errors.ReplaceFailed);
+			callback.callback(null);
+		} catch (MyError err) {
+			app.showError(err);
+			callback.callback(null);
 		}
 	}
 

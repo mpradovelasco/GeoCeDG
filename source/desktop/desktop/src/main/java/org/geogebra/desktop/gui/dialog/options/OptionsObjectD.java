@@ -304,6 +304,16 @@ public class OptionsObjectD extends OptionsObject
 		propPanel.applyModifications();
 	}
 
+	/** Discard only an unapplied Text editor draft. */
+	public void discardTextModifications() {
+		propPanel.discardTextModifications();
+	}
+
+	/** @return whether the Text editor is the active Properties surface */
+	public boolean isTextEditorActive() {
+		return propPanel.isTextEditorActive();
+	}
+
 	@Override
 	public void updateFont() {
 
