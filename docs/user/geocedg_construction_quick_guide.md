@@ -38,15 +38,15 @@ Una misma acción referenciada desde varios grupos aparece una sola vez.
 Archivo y Editar muestran directamente sus acciones, separadas por función. En
 Construcción encontrará **Rectas y vectores**, **Polígonos**, **Construcciones
 derivadas**, **Círculos y cónicas**, **Curvas semánticas** y **Anotaciones y
-medios**; Texto e Imagen no son vistas. La barra proyecta 52 acciones habituales
+medios**; Texto e Imagen no son vistas. La barra proyecta 53 acciones habituales
 en este orden exacto de 11 grupos: Move; Punto/Intersección; Rectas y vectores;
 Polígonos; Construcciones derivadas; Círculos y cónicas; Curvas semánticas;
 Ángulos y longitudes; Transformaciones; Parámetros y controladores; Navegación.
 Move incluye Move/Rotate; Punto/Intersección reúne Punto, Punto sobre objeto,
-Limitar/Liberar e Intersección. El flyout Construcciones derivadas añade Ángulo
+Punto medio, Limitar/Liberar e Intersección. El flyout Construcciones derivadas añade Ángulo
 de amplitud dada y Tangentes solo como organización de toolbar; sus grupos del
-menú Construcción no cambian. Parámetros reúne Deslizador, Casilla, Botón y Campo
-de entrada.
+menú Construcción no cambian. Parámetros reúne Deslizador, Casilla, Botón, Campo
+de entrada y Texto de construcción.
 
 Los flyouts mixtos compactos **Curvas semánticas** y **Navegación** consumen las
 mismas acciones del catálogo y muestran como botón principal la última acción

@@ -22,6 +22,16 @@
         "validator": "tools/agent/verify-g9a2-spatial-point.ps1",
         "comparison": "semantic-point-certificate"
       }
+    },
+    {
+      "id": "cedg.regression.pre-g9b-s1-dxf",
+      "manifest": "models/regression/pre-g9b-s1-dxf/manifest.yml",
+      "specification": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md",
+      "expected": {
+        "evidence": "models/regression/pre-g9b-s1-dxf/expected-results.yml",
+        "validator": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BS1AuthorDxfReproductionTest.java",
+        "comparison": "artifact-backed-semantic-dxf-entities-and-strict-preflight"
+      }
     }
   ]
 }

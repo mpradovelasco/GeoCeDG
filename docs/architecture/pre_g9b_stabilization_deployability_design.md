@@ -6,7 +6,8 @@
 - Published base tree: `733ddaa2675e826cdfffdd24de1a1ca135784c19`
 - Approved design commit: `1b7a7a43a3789d928f44d294364b159c14e6af59`
 - Approved design tree: `1700772eef774d79e6bd2c4d801476466ad996b6`
-- Product implementation: **NOT AUTHORIZED**
+- S1 product implementation: **AUTHOR-AUTHORIZED; CANDIDATE PENDING REVIEW**
+- S2–S4/D1/P1 product implementation: **NOT AUTHORIZED**
 - Release/license disposition: **NOT AUTHORIZED**
 - Feature-default or version promotion: **NOT AUTHORIZED**
 - G9B/G9C/G9U2 and productive G10: **NOT AUTHORIZED**
@@ -25,7 +26,7 @@ The canonical top-level identifiers are:
 
 | ID | Purpose | Current status |
 |---|---|---|
-| `PRE-G9B-S1` | DXF correctness and bounded product stabilization | `DESIGNED — PRODUCT IMPLEMENTATION NOT YET AUTHORIZED` |
+| `PRE-G9B-S1` | DXF correctness and bounded product stabilization | `IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW` |
 | `PRE-G9B-S2` | Construction Text/property and object-font correctness | `DESIGNED — REQUIRED PRE-D1 SLICE — IMPLEMENTATION NOT AUTHORIZED` |
 | `PRE-G9B-S3` | Construction Text view-zoom behavior | `DESIGNED — REQUIRED PRE-D1 SLICE — IMPLEMENTATION NOT AUTHORIZED` |
 | `PRE-G9B-S4` | Independent application presentation sizing | `DESIGNED — REQUIRED PRE-D1 SLICE — IMPLEMENTATION NOT AUTHORIZED` |
@@ -178,11 +179,12 @@ asset, trademark or redistribution rights. The current package profile remains
 
 ### 3.1 Artifact intake and provenance
 
-No named author artifact was present during this design task. The author has
-approved this repository-adjacent, non-versioned intake location:
+No named author artifact was present during the design task. During authorized
+S1 execution the author supplied the originals at this ignored, non-versioned
+intake location inside the worktree:
 
 ```text
-../GeoCeDG-author-inbox/PRE-G9B-S1-DXF/
+artifacts/GeoCeDG-author-inbox/PRE-G9B-S1-DXF/
 ```
 
 Only these expected files are in scope:
@@ -284,8 +286,15 @@ S1 stops before implementation when:
 - a change would modify geometric identity, construction XML or unrelated
   Classic behavior.
 
+The artifact-backed reproduction and implementation disposition are recorded
+in the [S1 candidate report](../validation/pre_g9b_s1_dxf_stabilization_candidate_report.md).
+The approved G9X1 contract suffices for both SplineV2 sources, so the conditional
+`PRE-G9B-S1-SPLINE-DXF` gate is not required. The remaining LocusV2 source is
+rejected explicitly as `DISCONTINUITY_UNRESOLVED`; strict partial publication
+remains forbidden.
+
 ```text
-PRE-G9B-S1 = DESIGNED — PRODUCT IMPLEMENTATION NOT YET AUTHORIZED
+PRE-G9B-S1 = IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW
 ```
 
 ## 4. Required stabilization successors before D1

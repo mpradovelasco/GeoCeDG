@@ -2453,7 +2453,8 @@
       "broad_family_id": "inspect-construct",
       "toolbar_action_ids": [
         "construction.point",
-        "construction.point-on-object"
+        "construction.point-on-object",
+        "construction.midpoint"
       ],
       "overflow_action_ids": [],
       "menu_action_ids": [],
@@ -2473,7 +2474,6 @@
         "construction.vector-from-point",
         "construction.parallel-line",
         "construction.perpendicular-line",
-        "construction.midpoint",
         "construction.perpendicular-bisector",
         "construction.angle-bisector",
         "construction.polygon",
@@ -2496,7 +2496,8 @@
         "parameter.fixed-angle",
         "parameter.checkbox",
         "parameter.button",
-        "parameter.input-box"
+        "parameter.input-box",
+        "presentation.text"
       ],
       "overflow_action_ids": [],
       "menu_action_ids": [],
@@ -3149,7 +3150,7 @@
     {
       "id": "construction-points",
       "name_key": "Group.Construction.Points",
-      "action_ids": ["construction.point", "construction.point-on-object"],
+      "action_ids": ["construction.point", "construction.point-on-object", "construction.midpoint"],
       "toolbar_action_ids": []
     },
     {
@@ -3167,20 +3168,20 @@
     {
       "id": "construction-derived",
       "name_key": "Group.Construction.Derived",
-      "action_ids": ["construction.parallel-line", "construction.perpendicular-line", "construction.midpoint", "construction.perpendicular-bisector", "construction.angle-bisector"],
-      "toolbar_action_ids": ["construction.parallel-line", "construction.perpendicular-line", "construction.midpoint", "construction.perpendicular-bisector", "construction.angle-bisector", "parameter.fixed-angle", "relation.tangent"]
+      "action_ids": ["construction.parallel-line", "construction.perpendicular-line", "construction.perpendicular-bisector", "construction.angle-bisector"],
+      "toolbar_action_ids": ["construction.parallel-line", "construction.perpendicular-line", "construction.perpendicular-bisector", "construction.angle-bisector", "parameter.fixed-angle", "relation.tangent"]
     },
     {
       "id": "construction-parameters",
       "name_key": "Group.Construction.Parameters",
-      "action_ids": ["parameter.slider", "parameter.fixed-angle", "parameter.checkbox", "parameter.button", "parameter.input-box", "parameter.animation-toggle"],
-      "toolbar_action_ids": ["parameter.slider", "parameter.checkbox", "parameter.button", "parameter.input-box"]
+      "action_ids": ["parameter.slider", "parameter.fixed-angle", "parameter.checkbox", "parameter.button", "parameter.input-box", "parameter.animation-toggle", "presentation.text"],
+      "toolbar_action_ids": ["parameter.slider", "parameter.checkbox", "parameter.button", "parameter.input-box", "presentation.text"]
     },
     {
       "id": "construction-relations",
       "name_key": "Group.Construction.Relations",
       "action_ids": ["relation.intersect", "relation.tangent", "relation.compare", "relation.polar-diameter", "result.inspect-rich", "result.materialize-selected", "result.materialize-multiple", "result.materialize-all-eligible"],
-      "toolbar_action_ids": ["construction.point", "construction.point-on-object", "construction.attach-detach", "relation.intersect"]
+      "toolbar_action_ids": ["construction.point", "construction.point-on-object", "construction.midpoint", "construction.attach-detach", "relation.intersect"]
     },
     {
       "id": "construction-circles-conics",
@@ -3210,7 +3211,7 @@
     {
       "id": "construction-annotations-media",
       "name_key": "Group.Construction.AnnotationsMedia",
-      "action_ids": ["presentation.text", "presentation.image"],
+      "action_ids": ["presentation.image"],
       "toolbar_action_ids": []
     },
     {
@@ -4617,8 +4618,8 @@
       "es": "Introduce SplineV2({A,B,C},2), SplineV2({A,B,C,D},3) o sus formas cerradas/paramétricas en Entrada algebraica. No se crea ningún objeto hasta Intro."
     },
     "Workspace.About": {
-      "en": "GeoCeDG — explicit constructive descriptive geometry. Geometry and identity belong to the shared kernel. Upstream compatibility is preserved; this is an author-review implementation candidate.",
-      "es": "GeoCeDG — geometría descriptiva constructiva explícita. La geometría y la identidad pertenecen al núcleo compartido. Se conserva la compatibilidad heredada; este es un candidato de implementación para revisión del autor."
+      "en": "GeoCeDG — Computational extended Descriptive Geometry based on GeoGebra. Geometry and identity belong to the shared kernel. Upstream compatibility is preserved; this is an author-review implementation candidate.",
+      "es": "GeoCeDG — Geometría Descriptiva computacional extendida basada en GeoGebra. La geometría y la identidad pertenecen al núcleo compartido. Se conserva la compatibilidad heredada; este es un candidato de implementación para revisión del autor."
     },
     "About.UpstreamBaseline": {
       "en": "GeoGebra upstream baseline",

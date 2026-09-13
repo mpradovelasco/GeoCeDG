@@ -6,6 +6,7 @@
 package org.geocedg.common.kernel.geos;
 
 import org.geocedg.common.kernel.algos.AlgoDependentPointLocusV2;
+import org.geocedg.common.kernel.algos.AlgoSplineV2;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
@@ -219,7 +220,8 @@ public final class GeoLocusV2 extends GeoElement
 	/** @return localized experimental public type text */
 	@Override
 	public String translatedTypeString() {
-		return getLoc().getMenu("LocusV2");
+		return getLoc().getMenu(getParentAlgorithm() instanceof AlgoSplineV2
+				? "SplineV2" : "LocusV2");
 	}
 
 	/** @return localized Algebra View type text */

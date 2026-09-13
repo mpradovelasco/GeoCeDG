@@ -368,8 +368,8 @@ class G9U1WorkspaceSurfaceTest {
 		expected.put("edit-selection", List.of("construction.move",
 				"construction.move-rotate"));
 		expected.put("construction-relations", List.of("construction.point",
-				"construction.point-on-object", "construction.attach-detach",
-				"relation.intersect"));
+				"construction.point-on-object", "construction.midpoint",
+				"construction.attach-detach", "relation.intersect"));
 		expected.put("construction-lines-vectors", List.of("construction.line",
 				"construction.segment", "construction.ray", "construction.vector",
 				"construction.fixed-segment", "construction.vector-from-point"));
@@ -377,7 +377,7 @@ class G9U1WorkspaceSurfaceTest {
 				"construction.polyline", "construction.regular-polygon",
 				"construction.rigid-polygon", "construction.vector-polygon"));
 		expected.put("construction-derived", List.of("construction.parallel-line",
-				"construction.perpendicular-line", "construction.midpoint",
+				"construction.perpendicular-line",
 				"construction.perpendicular-bisector", "construction.angle-bisector",
 				"parameter.fixed-angle", "relation.tangent"));
 		expected.put("construction-circles-conics", List.of("curve.circle-two-points",
@@ -393,7 +393,8 @@ class G9U1WorkspaceSurfaceTest {
 				"transform.reflect-line", "transform.translate-vector",
 				"transform.rotate-angle", "transform.dilate-point"));
 		expected.put("construction-parameters", List.of("parameter.slider",
-				"parameter.checkbox", "parameter.button", "parameter.input-box"));
+				"parameter.checkbox", "parameter.button", "parameter.input-box",
+				"presentation.text"));
 		expected.put("view-navigation", List.of("navigation.pan-view",
 				"navigation.zoom-window", "navigation.zoom-in", "navigation.zoom-out",
 				"presentation.copy-style"));
@@ -676,7 +677,7 @@ class G9U1WorkspaceSurfaceTest {
 			toolbarIds.addAll(GeoCeDGProfile.strings(clusters.getJSONObject(i)
 					.getJSONArray("toolbar_action_ids")));
 		}
-		assertEquals(52, toolbarIds.size());
+		assertEquals(53, toolbarIds.size());
 		assertEquals(112, menuIds.size());
 		assertTrue(menuIds.containsAll(toolbarIds));
 		GeoCeDGActionRegistry registry = ((GuiManagerGeoCeDG) app.getGuiManager())

@@ -1,0 +1,66 @@
+{
+  "$schema": "../../../geocedg/specs/operations/model-manifest.schema.json",
+  "schema_version": 1,
+  "template": false,
+  "id": "cedg.regression.pre-g9b-s1-dxf",
+  "maturity": "experimental",
+  "source": {
+    "uri": "models/regression/pre-g9b-s1-dxf/original",
+    "author": "Manuel Prado-Velasco",
+    "date": "2026-09-13",
+    "provenance_notes": "Byte-exact copies of the two author constructions received through the local PRE-G9B-S1 DXF inbox after filename, size and SHA-256 capture. Author-observed DXFs remain unversioned evidence and are represented only by hashes in expected-results.yml."
+  },
+  "required_geogebra": {
+    "version": "5.4.928.0",
+    "baseline_sha": "9b93256b7df401ff056c37b502d82df4d72b1522"
+  },
+  "loaded_by_default": false,
+  "inputs": [
+    "models/regression/pre-g9b-s1-dxf/original/Elipse.cedg",
+    "models/regression/pre-g9b-s1-dxf/original/TestExport1.cedg"
+  ],
+  "outputs": [
+    "G5 exact DXF entity stream",
+    "G9X1 strict preflight and fidelity-bearing DXF/sidecar pair when writable"
+  ],
+  "validity_domain": {
+    "description": "Author constructions are loaded through the real GeoCeDG Desktop lifecycle; exact conics use G5 and semantic curves use strict G9X1 preflight with explicit domains and tolerance.",
+    "parameters": ["extended DXF tolerance = 0.001 model units"]
+  },
+  "known_degeneracies": [
+    "The LocusV2 source m in TestExport1.cedg contains an invalid/discontinuous evaluation that current strict G9X1 preflight cannot isolate; it is rejected as DISCONTINUITY_UNRESOLVED and must not be emitted partially.",
+    "The two SplineV2 outputs are valid under the existing G9X1 approximation contract; no native exact DXF SPLINE claim is made."
+  ],
+  "reference_models": [],
+  "expected_metrics": {
+    "Elipse.cedg": {
+      "bytes": 16379,
+      "sha256": "4ec66797984fe68cb6baf43fd141484ce45907f9a52e883ccfe0933dc411cea6",
+      "exact_ellipse_entities": 2
+    },
+    "TestExport1.cedg": {
+      "bytes": 25350,
+      "sha256": "3ad3900ccfd76ccb751f802f44764808ff26f6f4cdc58d26506f4e97c9b80612",
+      "spline_v2_approximate_components": 2,
+      "locus_v2_invalid_components": 1
+    }
+  },
+  "license": {
+    "spdx": null,
+    "evidence": "Author-supplied regression constructions; redistribution remains subject to repository license approval in PRE-G9B-D1.",
+    "review_status": "unreviewed"
+  },
+  "replacement_candidate": null,
+  "derived_artifacts": [
+    {
+      "path": "models/regression/pre-g9b-s1-dxf/expected-results.yml",
+      "role": "regression-evidence"
+    }
+  ],
+  "implementation": {
+    "mechanisms": ["native-cedg-archive", "semantic-dxf-parser", "strict-g9x1-preflight"],
+    "embedded_tools": 0,
+    "global_javascript": false
+  },
+  "publications": []
+}

@@ -62,7 +62,7 @@ class G9U1ActionRegistryTest {
 	@Test
 	void everyActionHasExactlyOneBoundTargetAndReadableName() {
 		GeoCeDGActionRegistry registry = new GeoCeDGActionRegistry(app(true));
-		assertEquals(110, registry.ids().size());
+		assertEquals(112, registry.ids().size());
 		for (String id : registry.ids()) {
 			assertEquals(id, registry.get(id).getValue(GeoCeDGActionRegistry.ACTION_ID));
 			assertFalse(((String) registry.get(id).getValue(Action.NAME)).isBlank(), id);
@@ -99,6 +99,9 @@ class G9U1ActionRegistryTest {
 		GeoCeDGActionRegistry registry = new GeoCeDGActionRegistry(app(true));
 		String about = registry.aboutText();
 		assertTrue(about.contains(GeoCeDGProductInfo.applicationTitle()));
+		assertTrue(about.contains("GeoCeDG — Computational extended Descriptive "
+				+ "Geometry based on GeoGebra."));
+		assertTrue(about.contains("GeoGebra upstream baseline: 5.4.928.0"));
 		assertTrue(about.contains(GeoGebraConstants.VERSION_STRING));
 		assertTrue(about.contains("Manuel Prado-Velasco, Universidad de Sevilla"));
 		assertTrue(about.contains("LICENSE"));

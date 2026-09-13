@@ -47,10 +47,10 @@ class G9U1ProfileCompilerTest {
 	}
 
 	@Test
-	void nativeToolbarContainsFortyFourCuratedModesWhileCatalogRetainsAllSixtySix() {
+	void nativeToolbarContainsFortyFiveCuratedModesWhileCatalogRetainsAllSixtySix() {
 		String[] modes = GeoCeDGProfile.getToolbarDefinition().split("[ |]+");
-		assertEquals(44, modes.length);
-		assertEquals(44, new HashSet<>(Arrays.asList(modes)).size());
+		assertEquals(45, modes.length);
+		assertEquals(45, new HashSet<>(Arrays.asList(modes)).size());
 		assertEquals(66, GeoCeDGProfile.getActions().stream()
 				.filter(action -> action.mode() != null).count());
 		assertFalse(Arrays.asList(modes).contains("47"));
@@ -224,7 +224,8 @@ class G9U1ProfileCompilerTest {
 		JSONObject relations = GeoCeDGMenuBar.find(
 				profile.getJSONArray("presentation_groups"), "construction-relations");
 		assertEquals(List.of("construction.point", "construction.point-on-object",
-				"construction.attach-detach", "relation.intersect"),
+				"construction.midpoint", "construction.attach-detach",
+				"relation.intersect"),
 				GeoCeDGProfile.strings(relations.getJSONArray("toolbar_action_ids")));
 
 		JSONObject semantic = GeoCeDGMenuBar.find(
@@ -257,12 +258,12 @@ class G9U1ProfileCompilerTest {
 				"construction.vector-polygon"),
 				toolbarIds(groups, "construction-polygons"));
 		assertEquals(List.of("construction.parallel-line", "construction.perpendicular-line",
-				"construction.midpoint", "construction.perpendicular-bisector",
-				"construction.angle-bisector", "parameter.fixed-angle",
+				"construction.perpendicular-bisector", "construction.angle-bisector",
+				"parameter.fixed-angle",
 				"relation.tangent"),
 				toolbarIds(groups, "construction-derived"));
 		assertEquals(List.of("parameter.slider", "parameter.checkbox",
-				"parameter.button", "parameter.input-box"),
+				"parameter.button", "parameter.input-box", "presentation.text"),
 				toolbarIds(groups, "construction-parameters"));
 		assertTrue(toolbarIds(groups, "construction-points").isEmpty());
 	}

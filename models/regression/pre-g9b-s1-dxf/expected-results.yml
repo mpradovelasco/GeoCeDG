@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "intake": {
+    "local_path": "C:\\DesarrolloyDatos\\Areas\\ProyectosNoFinanciados\\CeDG\\GeoCeDG\\artifacts\\GeoCeDG-author-inbox\\PRE-G9B-S1-DXF\\",
+    "policy": "immutable originals; generated output remains ignored; only byte-exact source fixtures are versioned"
+  },
+  "author_evidence": [
+    {
+      "filename": "Elipse.cedg",
+      "role": "source-construction",
+      "bytes": 16379,
+      "sha256": "4ec66797984fe68cb6baf43fd141484ce45907f9a52e883ccfe0933dc411cea6",
+      "versioned_copy": "models/regression/pre-g9b-s1-dxf/original/Elipse.cedg"
+    },
+    {
+      "filename": "Elipse.dxf",
+      "role": "author-observed-output",
+      "bytes": 1480,
+      "sha256": "2b2f402000ef95da0e8b0874452226a7f421d84b3b32661c2a57ba23112ef697",
+      "versioned_copy": null,
+      "semantic_parse": "valid AC1015; 4 POINT and 2 ELLIPSE entities; zero parser audit errors"
+    },
+    {
+      "filename": "TestExport1.cedg",
+      "role": "source-construction",
+      "bytes": 25350,
+      "sha256": "3ad3900ccfd76ccb751f802f44764808ff26f6f4cdc58d26506f4e97c9b80612",
+      "versioned_copy": "models/regression/pre-g9b-s1-dxf/original/TestExport1.cedg"
+    },
+    {
+      "filename": "geocedg-export.dxf",
+      "role": "author-observed-output",
+      "bytes": 4187,
+      "sha256": "09337cb17183e01b7b20116a1cf4e3b22eaadab2d1c184dd3981d7eece6555ed",
+      "versioned_copy": null,
+      "semantic_parse": "valid G5 AC1015 stream; 21 POINT, 4 XLINE and 1 CIRCLE entities; no semantic curves"
+    }
+  ],
+  "reproduction": {
+    "ellipse": "NOT_REPRODUCED_AS_EMPTY; the real host G5 export emits two exact ELLIPSE entities whose parameters match the construction and are view invariant",
+    "locus_v2": "AUTHOR_OUTPUT_REPRODUCED_AS_G5; extended DXF is opt-in; strict G9X1 rejects m as DISCONTINUITY_UNRESOLVED and does not permit silent partial publication",
+    "spline_v2": "CASE_A; IL1 and IL2 use the existing approved GeoLocusV2 semantic-domain approximation and require the G9X1 fidelity sidecar",
+    "conditional_gate": "PRE-G9B-S1-SPLINE-DXF NOT REQUIRED"
+  }
+}

@@ -1022,6 +1022,10 @@ The live schema-v2 profile has one catalog of 112 actions in 18 operational
 clusters and 11 professional families. Menus, family palette, toolbar, help and
 disabled-action reasons consume that catalog. File, Construction, View,
 Automation and Help are compact menu projections, not separate action sources.
+The current toolbar places Midpoint with the Point/Intersection tools and the
+construction Text tool with Parameters/Controllers; these placements do not
+change their inherited mode or command semantics. A `SplineV2` result is
+described as `Semantic Spline V2`, rather than as a generic semantic LocusV2.
 The experimental V2 opt-in remains `--enableLocusV2=true`; no additional Point,
 Spline, intersection or transformation launch argument is needed. The product
 locks Continuity OFF; Classic remains separately configurable.
@@ -1264,6 +1268,12 @@ render samples or mutates the source construction. Implicit contouring,
 partial-output UI remain unsupported/deferred. G9X1 is `PASS — AUTHOR APPROVED`
 but remains experimental and default-off; the closeout authorizes no later G9
 or productive G10 implementation.
+
+SplineV2 uses this same approved semantic branch/component approximation; it
+does not claim a native exact DXF `SPLINE`. A component that cannot establish a
+valid domain or isolate a discontinuity fails strict preflight explicitly. It
+is not replaced by its display polyline, and a mixed strict request does not
+silently publish only the other components.
 
 ### Coordinates, units, scale and views
 
