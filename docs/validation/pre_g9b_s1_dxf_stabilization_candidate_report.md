@@ -6,6 +6,8 @@
 - Verification class: bounded `PHASE`, selector `PRE-G9B-S1`
 - Product version: unchanged at `0.9.0`
 - Self approval: `false`
+- Successor semantic design: `PRE-G9B-S1-R2 — DESIGN CANDIDATE — PENDING
+  AUTHOR REVIEW`; no productive R2 implementation or acceptance rerun
 
 ## Author evidence intake
 
@@ -81,6 +83,12 @@ dependent producer supplies no global validity/boundary certificate for its
 durably selected intersection root. Pointwise sampling cannot prove a complete
 partition, so the Locus workstream remains stopped before kernel semantics are
 invented.
+
+The later [R2 design candidate](../architecture/pre_g9b_s1_r2_locus_existence_components_design.md)
+records the proposed shared certificate and consumer migration. It preserves
+this implementation evidence and does not convert the observed probes into
+component boundaries. S1 remains blocked while that semantic design awaits
+author review.
 
 The independent policy-B correction is implemented as
 `geocedg-dxf-geometric-2d/v1`. Complete construction excludes the fixture's two

@@ -5,6 +5,9 @@ Status: **R1 PARTIAL IMPLEMENTATION — LOCUS SEMANTIC BLOCKER OPEN**
 Product implementation: **TYPED POPULATION IMPLEMENTED; LOCUS DECOMPOSITION
 NOT STARTED**
 
+Successor semantic design: **PRE-G9B-S1-R2 DESIGN CANDIDATE — PENDING AUTHOR
+REVIEW**
+
 Entry candidate: `1221e5c5b3bb20f9ad65e7f36ac58f624beef3c0`
 
 Self approval: `false`
@@ -216,8 +219,17 @@ boundaries, and prove that no invalid interval is silently bridged. This is a
 kernel semantic decision shared by export, metrics and intersections, not a DXF
 repair.
 
+The author subsequently authorized that design work as `PRE-G9B-S1-R2`. Its
+[design candidate](pre_g9b_s1_r2_locus_existence_components_design.md)
+separates canonical driver domain, certified existence coverage, continuous-
+valid components and global completeness. It selects a hybrid producer/shared-
+certifier architecture and identifies the missing interval-level certificate
+for the exact selected root. This reference records a pending design, not
+productive R2 implementation or resolution of the blocker.
+
 ```text
 LOCUS_CONTINUOUS_COMPONENTS = BLOCKED — NEW SHARED CERTIFICATE REQUIRED
 COMPLETE_CONSTRUCTION_POLICY = B — IMPLEMENTED AS TYPED GEOMETRIC POPULATION
 PRE-G9B-S1-COMPLETE-POPULATION = NOT REQUIRED / ABSORBED BY S1-R1
+PRE-G9B-S1-R2 = DESIGN CANDIDATE — PENDING AUTHOR REVIEW
 ```

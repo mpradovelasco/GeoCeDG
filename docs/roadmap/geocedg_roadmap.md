@@ -3,13 +3,13 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Roadmap vivo y normativo de fases; no sustituye las especificaciones ni los ADR aceptados |
-| Versión documental | 3.90 |
+| Versión documental | 3.91 |
 | Fecha de revisión | 13 de septiembre de 2026 |
 | Baseline GeoGebra | 5.4.928.0, commit `9b93256b7df401ff056c37b502d82df4d72b1522`, tag `geogebra-baseline-5.4.928.0` |
-| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1–G9A3, el track G9A, G9U0 y sus refinamientos R1–R6, G9X1, G9S1, G9S1-R1, G9U1 y POST-G9U1-A6, A1, A2, A3, A3-FRONTEND, A5 y A7 `PASS — AUTHOR APPROVED`. POST-G9U1-A4 tiene investigación/diseño completos y `AUTHOR APPROVED`; P3-R1 es su refinamiento autor-aprobado. El track post-G9U1 está `COMPLETE — AUTHOR APPROVED`. La extensión pre-G9B está `DESIGN — AUTHOR APPROVED`; `PRE-G9B-S1-R1` tiene la población geométrica B implementada pero el certificado kernel de componentes continuos de `m` sigue bloqueado, mientras S2–S4, D1 y P1 conservan su orden de calendario autoral sin autorización productiva ni nueva dependencia semántica de G9B. G9B/G9C permanecen diseñadas y no autorizadas; G9U2 sigue bloqueada por la aprobación global G9; G10P es solo planificación aprobada y ninguna implementación productiva G10 está autorizada. El riesgo `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` continúa abierto para disposición antes del cierre global G9. Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
+| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1–G9A3, el track G9A, G9U0 y sus refinamientos R1–R6, G9X1, G9S1, G9S1-R1, G9U1 y POST-G9U1-A6, A1, A2, A3, A3-FRONTEND, A5 y A7 `PASS — AUTHOR APPROVED`. POST-G9U1-A4 tiene investigación/diseño completos y `AUTHOR APPROVED`; P3-R1 es su refinamiento autor-aprobado. El track post-G9U1 está `COMPLETE — AUTHOR APPROVED`. La extensión pre-G9B está `DESIGN — AUTHOR APPROVED`; `PRE-G9B-S1-R1` conserva su población geométrica B como candidato parcial y `PRE-G9B-S1-R2` abre un diseño kernel acotado para separar dominio canónico, existencia, componentes continuos certificados y completitud. S1 sigue bloqueado por diseño semántico; S2–S4, D1 y P1 conservan su orden de calendario autoral sin autorización productiva ni nueva dependencia semántica de G9B. G9B/G9C permanecen diseñadas y no autorizadas; G9U2 sigue bloqueada por la aprobación global G9; G10P es solo planificación aprobada y ninguna implementación productiva G10 está autorizada. El riesgo `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` continúa abierto para disposición antes del cierre global G9. Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
 | Última fase cerrada | POST-G9U1-A7 — `PASS — AUTHOR APPROVED`; track post-G9U1 completo y autor-aprobado |
 | Última fase ejecutada | POST-G9U1-A7 — implementación final aprobada en `ed3f19a095ce661307dbd6d9a24e70f6569cc4cf`, árbol `9b4385b7c7d7da4cf381068fd0c245d66be9a8c8`; `selfApproved=false` |
-| Siguiente puerta | S1-R1 implementó la población DXF geométrica tipada aprobada, pero el subproblema `m` queda detenido: falta un certificado kernel completo de intervalos continuos válidos para la raíz enlazada; no se registrará PHASE ni se iniciará smoke hasta resolver esa autoridad; S1-SPLINE-DXF no resulta necesario; S2–S4, D1, P1, G9B, G9C, G9U2, más G12 y G10 productivo permanecen no autorizados |
+| Siguiente puerta | Revisión autoral del diseño `PRE-G9B-S1-R2`: arquitectura híbrida y certificado revisionado de existencia/continuidad/completitud para la raíz enlazada de `m`. No hay implementación R2, PHASE ni smoke autorizados; S1-SPLINE-DXF no resulta necesario; S2–S4, D1, P1, G9B, G9C, G9U2, más G12 y G10 productivo permanecen no autorizados |
 | Primer cliente | Aplicación de escritorio de la familia Classic 5 |
 | Núcleo | Java compartido de GeoGebra, extendido solo cuando la semántica lo requiere |
 
@@ -2923,7 +2923,7 @@ G9U1 PASS
   -> A3
   -> A5 PASS
   -> A7 bounded G12 navigation slice PASS
-  -> PRE-G9B-S1 stabilization/DXF (DESIGN CANDIDATE; NOT AUTHORIZED)
+  -> PRE-G9B-S1 stabilization/DXF (R1 PARTIAL; R2 DESIGN CANDIDATE)
   -> PRE-G9B-S2 construction Text/property correctness (REQUIRED; NOT AUTHORIZED)
   -> PRE-G9B-S3 construction Text view-zoom behavior (REQUIRED; NOT AUTHORIZED)
   -> PRE-G9B-S4 independent presentation sizing (REQUIRED; NOT AUTHORIZED)
@@ -3093,15 +3093,19 @@ dependencia G9B.
 
 ### Track PRE-G9B — estabilización, deployability y promoción pública
 
-**Estado:** `DESIGN — AUTHOR APPROVED`; implementación, remediación de
-distribución y promoción no autorizadas.
+**Estado:** diseño de track `AUTHOR APPROVED`; S1 fue autorizado y conserva
+`R1 PARTIAL IMPLEMENTATION CANDIDATE`, mientras `S1-R2` está en diseño sin
+autorización productiva. S2–S4, remediación de distribución y promoción no
+están autorizadas.
 
 El [diseño de la extensión](../architecture/pre_g9b_stabilization_deployability_design.md)
 define esta secuencia de puertas autorales de calendario:
 
 | ID | Alcance | Estado vivo |
 |---|---|---|
-| `PRE-G9B-S1` | reproducir/corregir DXF contra G5/G9X1 y estabilización acotada, separando los contratos UI no triviales | `R1 PARTIAL IMPLEMENTATION — LOCUS SEMANTIC BLOCKER OPEN`; población geométrica B implementada, `m` pendiente de certificado kernel; evidencia en [informe S1](../validation/pre_g9b_s1_dxf_stabilization_candidate_report.md) y [caracterización R1](../architecture/pre_g9b_s1_periodic_locus_and_complete_population_characterization.md) |
+| `PRE-G9B-S1` | reproducir/corregir DXF contra G5/G9X1 y estabilización acotada, separando los contratos UI no triviales | `BLOCKED — SEMANTIC DESIGN IN PROGRESS`; R1 conserva la población geométrica B como candidato parcial y R2 diseña el certificado kernel requerido por `m` |
+| `PRE-G9B-S1-R1` | población DXF geométrica tipada y consumo futuro de componentes continuos | `PARTIAL IMPLEMENTATION CANDIDATE`; `geocedg-dxf-geometric-2d/v1` preservado; workstream Locus no implementado; evidencia en [informe S1](../validation/pre_g9b_s1_dxf_stabilization_candidate_report.md) y [caracterización R1](../architecture/pre_g9b_s1_periodic_locus_and_complete_population_characterization.md) |
+| `PRE-G9B-S1-R2` | existencia Locus V2 y certificación de componentes continuos válidos en kernel compartido | `DESIGN CANDIDATE — PENDING AUTHOR REVIEW`; [arquitectura](../architecture/pre_g9b_s1_r2_locus_existence_components_design.md), [spec candidata](../../geocedg/specs/locus/locus-v2-existence-components.md), [ADR 0027 propuesto](../adr/0027-locus-v2-existence-and-continuous-valid-components.md) y [matriz](../validation/pre_g9b_s1_r2_locus_existence_validation_matrix.md); implementación no autorizada |
 | `PRE-G9B-S2` | corrección de transacción Text Properties y fuente de objeto de construcción hasta al menos 10 pt, con contratos internos separados | `DESIGNED — REQUIRED PRE-D1 SLICE — IMPLEMENTATION NOT AUTHORIZED` |
 | `PRE-G9B-S3` | comportamiento visual de Text de construcción ante zoom, sin autoridad geométrica del viewport | `DESIGNED — REQUIRED PRE-D1 SLICE — IMPLEMENTATION NOT AUTHORIZED` |
 | `PRE-G9B-S4` | tamaños independientes de menú, iconos, Algebra, Construction Protocol, Graphics y Graphics2 | `DESIGNED — REQUIRED PRE-D1 SLICE — IMPLEMENTATION NOT AUTHORIZED` |
@@ -3124,6 +3128,17 @@ exigida por D1. Ninguna de estas relaciones
 añade una dependencia semántica a G9B, reabre G9U1/A1–A7, amplía G12 ni autoriza
 G10 productivo. Después de P1 seguirá siendo necesaria otra decisión explícita
 del autor para volver a G9B.
+
+El testigo `m = LocusV2(U,R)` demuestra una inconsistencia acotada del modelo
+actual: `[-pi,pi)` es dominio canónico periódico legítimo, pero el punto
+seleccionado `S` y el midpoint `U` son `DEPENDENCY_UNDEFINED` en un intervalo
+interno. R2 no adivina sus fronteras a partir de muestras. Propone que el
+generador publique dominio y hechos estructurales, que la capacidad de raíz
+aporte evidencia intervalar del selector exacto y que un certificador compartido
+ensamble existencia, componentes continuos y `COMPLETE | NOT_ESTABLISHED` por
+revisión. Rendering, métricas, intersecciones, Point/Path y DXF deberán declarar
+por separado cuándo un resultado local es admisible y cuándo pueden afirmar
+completitud global. El diseño no cambia producto ni registra un selector PHASE.
 
 ### G9B - Proyecciones canónicas de primitivas
 
