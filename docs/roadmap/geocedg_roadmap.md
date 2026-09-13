@@ -3,13 +3,13 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Roadmap vivo y normativo de fases; no sustituye las especificaciones ni los ADR aceptados |
-| Versión documental | 3.93 |
-| Fecha de revisión | 13 de septiembre de 2026 |
+| Versión documental | 3.94 |
+| Fecha de revisión | 14 de septiembre de 2026 |
 | Baseline GeoGebra | 5.4.928.0, commit `9b93256b7df401ff056c37b502d82df4d72b1522`, tag `geogebra-baseline-5.4.928.0` |
-| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1–G9A3, el track G9A, G9U0 y sus refinamientos R1–R6, G9X1, G9S1, G9S1-R1, G9U1 y POST-G9U1-A6, A1, A2, A3, A3-FRONTEND, A5 y A7 `PASS — AUTHOR APPROVED`. POST-G9U1-A4 tiene investigación/diseño completos y `AUTHOR APPROVED`; P3-R1 es su refinamiento autor-aprobado. El track post-G9U1 está `COMPLETE — AUTHOR APPROVED`. La extensión pre-G9B está `DESIGN — AUTHOR APPROVED`; `PRE-G9B-S1`, R1 y R2 están `PASS — AUTHOR APPROVED`, con población geométrica tipada y certificado compartido de existencia/continuidad. `PRE-G9B-S2` está `IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW`, limitado a la transacción de Text Properties y la fuente de objetos de construcción hasta 10 pt sin trasladar el tamaño a menús o iconos. S3–S4, D1 y P1 conservan su orden de calendario autoral sin autorización productiva ni nueva dependencia semántica de G9B. G9B/G9C permanecen diseñadas y no autorizadas; G9U2 sigue bloqueada por la aprobación global G9; G10P es solo planificación aprobada y ninguna implementación productiva G10 está autorizada. El riesgo `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` continúa abierto para disposición antes del cierre global G9. Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
-| Última fase cerrada | PRE-G9B-S1, incluido R1/R2 — `PASS — AUTHOR APPROVED`; candidato técnico `1b7256d798182cbf76d28503da39d96582213071`, árbol `33069ad1b7658fb2a7a81b14edcd0e00b4fbc22c`; `selfApproved=false` |
-| Última fase ejecutada | PRE-G9B-S1 — PHASE final `verification-149aec6d4615461799ccf3ce406c72d1`, 400 pruebas, `ACCEPTED / COMPLETE`, cero diagnósticos; smoke funcional autoral `PASS` |
-| Siguiente puerta | revisión/smoke autoral de `PRE-G9B-S2 — IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW`; S3, S4, D1, P1, G9B, G9C, G9U2, más G12 y G10 productivo permanecen no autorizados |
+| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1–G9A3, el track G9A, G9U0 y sus refinamientos R1–R6, G9X1, G9S1, G9S1-R1, G9U1 y POST-G9U1-A6, A1, A2, A3, A3-FRONTEND, A5 y A7 `PASS — AUTHOR APPROVED`. POST-G9U1-A4 tiene investigación/diseño completos y `AUTHOR APPROVED`; P3-R1 es su refinamiento autor-aprobado. El track post-G9U1 está `COMPLETE — AUTHOR APPROVED`. La extensión pre-G9B está `DESIGN — AUTHOR APPROVED`; `PRE-G9B-S1`, R1, R2 y `PRE-G9B-S2` están `PASS — AUTHOR APPROVED`. S2 cierra la transacción de Text Properties y la fuente de objetos de construcción hasta 10 pt sin trasladar el tamaño a menús o iconos. S3–S4, D1 y P1 conservan su orden de calendario autoral sin autorización productiva ni nueva dependencia semántica de G9B. G9B/G9C permanecen diseñadas y no autorizadas; G9U2 sigue bloqueada por la aprobación global G9; G10P es solo planificación aprobada y ninguna implementación productiva G10 está autorizada. El riesgo `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` continúa abierto para disposición antes del cierre global G9. Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
+| Última fase cerrada | PRE-G9B-S2 — `PASS — AUTHOR APPROVED`; implementación verificada `36b4ac68f868282c452e48d35b4972b2a71fba0a`, árbol `3f2397e468569ca716992e0500751ef3b1b1ea12`; smoke autoral `PASS`; `selfApproved=false` |
+| Última fase ejecutada | PRE-G9B-S2 — PHASE final `verification-61d364a0f05a442988912ec10b375704`, 87 pruebas, `ACCEPTED / COMPLETE`, cero fallos, errores, omisiones o diagnósticos |
+| Siguiente puerta | `PRE-G9B-S3 — DESIGNED / NOT YET IMPLEMENTATION-AUTHORIZED`; S4, D1, P1, G9B, G9C, G9U2, más G12 y G10 productivo permanecen no autorizados |
 | Primer cliente | Aplicación de escritorio de la familia Classic 5 |
 | Núcleo | Java compartido de GeoGebra, extendido solo cuando la semántica lo requiere |
 
@@ -2924,7 +2924,7 @@ G9U1 PASS
   -> A5 PASS
   -> A7 bounded G12 navigation slice PASS
   -> PRE-G9B-S1 stabilization/DXF (R1/R2 PASS — AUTHOR APPROVED)
-  -> PRE-G9B-S2 construction Text/property correctness (IMPLEMENTATION CANDIDATE; PENDING AUTHOR REVIEW)
+  -> PRE-G9B-S2 construction Text/property correctness (PASS — AUTHOR APPROVED)
   -> PRE-G9B-S3 construction Text view-zoom behavior (REQUIRED; NOT AUTHORIZED)
   -> PRE-G9B-S4 independent presentation sizing (REQUIRED; NOT AUTHORIZED)
   -> PRE-G9B-D1 licensing/assets/deployability (DESIGN CANDIDATE; NOT AUTHORIZED)
@@ -3093,9 +3093,9 @@ dependencia G9B.
 
 ### Track PRE-G9B — estabilización, deployability y promoción pública
 
-**Estado:** diseño de track `AUTHOR APPROVED`; S1, R1 y R2 están
-`PASS — AUTHOR APPROVED`. S2 está `IMPLEMENTATION CANDIDATE — PENDING AUTHOR
-REVIEW`; S3–S4, remediación de distribución y promoción no están autorizadas.
+**Estado:** diseño de track `AUTHOR APPROVED`; S1, R1, R2 y S2 están
+`PASS — AUTHOR APPROVED`. S3–S4, remediación de distribución y promoción no
+están autorizadas.
 
 El [diseño de la extensión](../architecture/pre_g9b_stabilization_deployability_design.md)
 define esta secuencia de puertas autorales de calendario:
@@ -3105,7 +3105,7 @@ define esta secuencia de puertas autorales de calendario:
 | `PRE-G9B-S1` | reproducir/corregir DXF contra G5/G9X1 y estabilización acotada, separando los contratos UI no triviales | `PASS — AUTHOR APPROVED`; integra R1/R2, evidencia automática final y smoke autoral sin autorizar S2+ |
 | `PRE-G9B-S1-R1` | población DXF geométrica tipada y consumo de componentes continuos certificados | `PASS — AUTHOR APPROVED`; `geocedg-dxf-geometric-2d/v1` preservado; evidencia en [informe S1](../validation/pre_g9b_s1_dxf_stabilization_candidate_report.md) y [caracterización R1](../architecture/pre_g9b_s1_periodic_locus_and_complete_population_characterization.md) |
 | `PRE-G9B-S1-R2` | existencia Locus V2 y certificación de componentes continuos válidos en kernel compartido | `PASS — AUTHOR APPROVED`; [arquitectura](../architecture/pre_g9b_s1_r2_locus_existence_components_design.md), [spec normativa](../../geocedg/specs/locus/locus-v2-existence-components.md), [ADR 0027 aceptado](../adr/0027-locus-v2-existence-and-continuous-valid-components.md) y [matriz](../validation/pre_g9b_s1_r2_locus_existence_validation_matrix.md) |
-| `PRE-G9B-S2` | corrección de transacción Text Properties y fuente de objeto de construcción hasta al menos 10 pt, con contratos internos separados | `IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW`; `selfApproved=false`, sin autorizar S3+ |
+| `PRE-G9B-S2` | corrección de transacción Text Properties y fuente de objeto de construcción hasta al menos 10 pt, con contratos internos separados | `PASS — AUTHOR APPROVED`; [informe de cierre](../validation/pre_g9b_s2_text_property_font_candidate_report.md); `selfApproved=false`, sin autorizar S3+ |
 | `PRE-G9B-S3` | comportamiento visual de Text de construcción ante zoom, sin autoridad geométrica del viewport | `DESIGNED — REQUIRED PRE-D1 SLICE — IMPLEMENTATION NOT AUTHORIZED` |
 | `PRE-G9B-S4` | tamaños independientes de menú, iconos, Algebra, Construction Protocol, Graphics y Graphics2 | `DESIGNED — REQUIRED PRE-D1 SLICE — IMPLEMENTATION NOT AUTHORIZED` |
 | `PRE-G9B-D1` | inventario, investigación primaria, disposición humana, remediación autorizada y verificación de deployability | `DESIGNED — RESEARCH/IMPLEMENTATION NOT YET AUTHORIZED`; G4 redistribución sigue `BLOCKED` |
