@@ -208,6 +208,10 @@ public final class DxfFidelityManifestWriter {
 		value.put("hidden_sources", preflight.getHiddenCount());
 		value.put("outside_geometric_population",
 				preflight.getExcludedPopulationCount());
+		value.put("incomplete_semantic_coverage_components",
+				preflight.getIncompleteSemanticCoverageCount());
+		value.put("semantic_coverage_complete",
+				!preflight.hasIncompleteSemanticCoverage());
 		value.put("sidecar_required", preflight.isSidecarRequired());
 		value.put("complete_request_writable", preflight.isWritable());
 		value.put("source_revision_current",
@@ -228,6 +232,8 @@ public final class DxfFidelityManifestWriter {
 			value.put("visible", outcome.isVisible());
 			value.put("component", component(outcome.getComponentAddress()));
 			value.put("fidelity", lower(outcome.getFidelity()));
+			value.put("semantic_coverage",
+					lower(outcome.getSemanticCoverage()));
 			value.put("reason", lower(outcome.getReason()));
 			value.put("message", outcome.getMessage());
 			value.put("emitted", outcome.isEmitted());
@@ -289,6 +295,16 @@ public final class DxfFidelityManifestWriter {
 						outcome.getComponentAddress().getBranchKey(),
 						outcome.getComponentAddress().getComponentKey(),
 						"DXF geometry is an explicit export-only approximation."));
+			}
+			if (outcome.getSemanticCoverage()
+					== SourceExportOutcome.SemanticCoverage
+							.LOCALLY_CERTIFIED_GLOBAL_NOT_ESTABLISHED) {
+				values.add(warning("incomplete_semantic_coverage",
+						outcome.getSourceId(),
+						outcome.getComponentAddress().getBranchKey(),
+						outcome.getComponentAddress().getComponentKey(),
+						"This component is certified locally; the DXF does not "
+								+ "claim complete locus coverage."));
 			}
 			if (!outcome.isVisible()) {
 				values.add(warning("hidden_source_included", outcome.getSourceId(),

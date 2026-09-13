@@ -305,7 +305,8 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 			String retainedComponentLineage) {
 		LocusInterval2D unqualified = null;
 		LocusInterval2D qualified = null;
-		for (LocusInterval2D component : branch.getValidDomainComponents()) {
+		for (LocusInterval2D component
+				: branch.getCertifiedContinuousValidComponents()) {
 			if (!component.contains(parameter, provider.getDomainEpsilon())) {
 				continue;
 			}

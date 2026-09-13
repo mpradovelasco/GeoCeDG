@@ -1,6 +1,6 @@
 # ADR 0027: Locus V2 existence and continuous-valid component certification
 
-- Status: **Proposed — PRE-G9B-S1-R2 DESIGN CANDIDATE — PENDING AUTHOR REVIEW**
+- Status: **Accepted — PRE-G9B-S1-R2 DESIGN — AUTHOR APPROVED**
 - Date: 2026-09-13
 - Phase: `PRE-G9B-S1-R2`
 - Parent authority: [Locus V2 semantic contract](../../geocedg/specs/locus/locus-v2-semantics.md)
@@ -34,7 +34,7 @@ continuation compares roots across construction revisions. None proves that one
 selected semantic root exists uniquely and continuously for every driver value
 in a parameter interval.
 
-## Decision candidate
+## Decision
 
 1. Locus V2 separates four axes per branch:
    - canonical/declared driver domain;
@@ -112,9 +112,10 @@ in a parameter interval.
 - Existing static/analytic producers can be lifted to a `COMPLETE` certificate
   when their present contract really proves interval-wide validity. Dependent
   producers fail closed as `NOT_ESTABLISHED` until suitable evidence exists.
-- The `m` witness remains `NOT_ESTABLISHED` until the selected root receives
-  interval-wide validity/continuation evidence. Its observed point evaluations
-  are evidence of the inconsistency, not guessed component boundaries.
+- The bounded selected SplineV2/parallel-line root capability used by `m`
+  publishes conservative interval-wide proofs and leaves adjacent transition
+  cells unresolved. Therefore `m` has useful revision-local components while
+  its global decomposition remains `NOT_ESTABLISHED`.
 
 ## Rejected alternatives
 
@@ -129,6 +130,6 @@ in a parameter interval.
 
 ## Approval boundary
 
-This ADR is a design candidate. It records no author approval and authorizes no
-productive implementation. `PRE-G9B-S1-R1` remains a partial implementation;
-the parent `PRE-G9B-S1` remains blocked while semantic design is in progress.
+The author approved this design and its bounded I1--I3 implementation route.
+Implementation evidence remains a candidate pending separate author review;
+this ADR does not claim implementation approval or parent-phase PASS.

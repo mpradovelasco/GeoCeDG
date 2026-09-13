@@ -2,25 +2,25 @@
 
 | Field | Value |
 |---|---|
-| Status | **NORMATIVE SPECIFICATION CANDIDATE — PENDING AUTHOR REVIEW** |
-| Version | `0.1-candidate` |
-| Phase | `PRE-G9B-S1-R2` design only |
+| Status | **NORMATIVE — DESIGN AUTHOR APPROVED / IMPLEMENTATION CANDIDATE** |
+| Version | `1.0` |
+| Phase | `PRE-G9B-S1-R2` |
 | Scope | Shared-kernel Locus V2 existence, continuity and completeness evidence |
 | Parent | [Locus V2 semantic contract](locus-v2-semantics.md) |
-| Decision | [Proposed ADR 0027](../../../docs/adr/0027-locus-v2-existence-and-continuous-valid-components.md) |
-| Product implementation | **NOT AUTHORIZED** |
+| Decision | [Accepted ADR 0027](../../../docs/adr/0027-locus-v2-existence-and-continuous-valid-components.md) |
+| Product implementation | **I1--I3 CANDIDATE — PENDING AUTHOR REVIEW** |
 
 ## 1. Purpose
 
-This candidate specializes the approved G6 statement
+This specification specializes the approved G6 statement
 
 ```text
 declared driver domain != necessarily valid locus domain
 ```
 
 for dependent constructions whose current evaluator can lose validity inside a
-nominal provider interval. It does not change legacy `Locus`, add a render-
-derived domain, or authorize `PRE-G9B-S1-R2` product code.
+nominal provider interval. It does not change legacy `Locus` or add a render-
+derived domain.
 
 For one locus identity `l`, semantic revision `r`, and stable branch key `b`,
 the kernel shall distinguish:
@@ -222,7 +222,8 @@ shared LocusContinuousDomainCertifier2D
   -> immutable LocusExistenceStructure2D for one semantic revision
 ```
 
-Names are conceptual until implementation review. Direct analytic/static
+The candidate implements these roles with `LocusExistenceStructure2D` and the
+bounded selected-root interval capability. Direct analytic/static
 producers may provide a complete certificate without numerical discovery.
 Dependent producers delegate the common coverage assembly and validation to the
 shared certifier. A producer unable to supply interval proof remains usable for
@@ -237,7 +238,7 @@ introduced.
 ## 10. Migration of `getValidDomainComponents()`
 
 The existing accessor is overloaded: producers often use it as nominal domain,
-while consumers treat it as complete continuous-valid coverage. R2 shall add
+while consumers treat it as complete continuous-valid coverage. R2 adds
 explicit accessors for the new existence structure and continuous components.
 
 Migration order:
@@ -269,7 +270,7 @@ legacy accessor to a global consumer.
 
 ## 12. DXF read-only contract
 
-After separately authorized implementation, G9X1 consumes each finite certified
+G9X1 consumes each finite certified
 continuous interval independently:
 
 ```text
@@ -301,12 +302,11 @@ through an internal negative interval. Existing evaluations establish counter-
 examples to whole-domain validity but not the final boundaries or number of
 components.
 
-The current missing evidence is an interval-level certificate that the exact
-selected root token for `S` exists uniquely and continuously as `R` traverses a
-driver interval, together with certified transition boundaries. Until that
-evidence exists, the effective decomposition is `NOT_ESTABLISHED`. The R2
-implementation must derive any final components from the certificate, never
-hard-code values inferred from the observed samples or drawing.
+The candidate supplies an interval-level certificate for the exact selected
+root token for `S` on conservative subintervals as `R` traverses its driver
+domain. It uses structural SplineV2 spans plus outward interval predicates;
+transition cells remain unresolved. Thus useful local components coexist with
+global `NOT_ESTABLISHED`, and no boundary is hard-coded from samples or drawing.
 
 ## 14. Non-goals and stop conditions
 

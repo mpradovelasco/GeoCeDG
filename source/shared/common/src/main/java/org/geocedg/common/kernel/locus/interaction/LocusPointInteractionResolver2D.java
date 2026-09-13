@@ -175,7 +175,7 @@ public final class LocusPointInteractionResolver2D {
 				throw new IllegalArgumentException(
 						"Certified affine source has a collapsed derivative");
 			}
-			for (LocusInterval2D component : branch.getValidDomainComponents()) {
+			for (LocusInterval2D component : componentsForQuery(query, branch)) {
 				if (!matchesCurrentComponent(query, branch, component)) {
 					continue;
 				}
@@ -291,7 +291,7 @@ public final class LocusPointInteractionResolver2D {
 				continue;
 			}
 			instrumentation.branch();
-			for (LocusInterval2D component : branch.getValidDomainComponents()) {
+			for (LocusInterval2D component : componentsForQuery(query, branch)) {
 				if (!matchesCurrentComponent(query, branch, component)) {
 					continue;
 				}
@@ -397,7 +397,7 @@ public final class LocusPointInteractionResolver2D {
 				continue;
 			}
 			instrumentation.branch();
-			for (LocusInterval2D component : branch.getValidDomainComponents()) {
+			for (LocusInterval2D component : componentsForQuery(query, branch)) {
 				if (!matchesCurrentComponent(query, branch, component)) {
 					continue;
 				}
@@ -1047,7 +1047,8 @@ public final class LocusPointInteractionResolver2D {
 			return false;
 		}
 		LocusInterval2D component = null;
-		for (LocusInterval2D candidate : branch.getValidDomainComponents()) {
+		for (LocusInterval2D candidate
+				: branch.getCertifiedContinuousValidComponents()) {
 			if (current.getComponentLineageKey().equals(
 					LocusComponentLineage2D.create(branch.getBranchKey(), candidate))) {
 				component = candidate;
@@ -1247,6 +1248,13 @@ public final class LocusPointInteractionResolver2D {
 			}
 		}
 		return false;
+	}
+
+	private static List<LocusInterval2D> componentsForQuery(
+			LocusPointInteractionQuery2D query, LocusBranch2D branch) {
+		return query.getCurrentAddress().isPresent()
+				? branch.getCertifiedContinuousValidComponents()
+				: branch.getValidDomainComponents();
 	}
 
 	private static double snapToSpanBoundary(double parameter, double lower,

@@ -8,7 +8,6 @@ package org.geocedg.desktop;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.charset.StandardCharsets;
@@ -30,16 +29,19 @@ import org.geocedg.common.export.GeometryExportPreflight;
 import org.geocedg.common.export.GeometryExportRequest;
 import org.geocedg.common.export.GeometryExportService;
 import org.geocedg.common.export.SourceExportOutcome.Fidelity;
-import org.geocedg.common.export.SourceExportOutcome.Reason;
+import org.geocedg.common.export.SourceExportOutcome.SemanticCoverage;
 import org.geocedg.common.kernel.algos.AlgoSplineV2;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.Completeness;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.CoverageState;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.BranchProperty;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.DefinitionStatus;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.EvaluationStatus;
+import org.geocedg.desktop.export.DxfExportPreflightPresentation;
 import org.geocedg.desktop.export.DxfFidelityManifestWriter;
 import org.geocedg.desktop.export.DxfPreparedOutput;
 import org.geogebra.common.awt.AwtFactory;
@@ -146,13 +148,40 @@ class PreG9BS1AuthorDxfReproductionTest {
 				.orElseThrow();
 		assertEquals("Semantic Locus V2", locus.translatedTypeString());
 		GeoLocusV2 locusV2 = (GeoLocusV2) locus;
+		final String persistentLocusId =
+				locusV2.getPersistentLocusId().toExternalForm();
 		LocusDefinition2D definition = locusV2.getSemanticDefinition();
 		assertEquals(DefinitionStatus.VALID, definition.getDefinitionStatus());
 		assertTrue(definition.getProvider().isPeriodic());
 		LocusBranch2D branch = definition.getBranches().get(0);
 		assertTrue(branch.getProperties().contains(BranchProperty.PERIODIC));
-		assertEquals(1, branch.getValidDomainComponents().size());
-		LocusInterval2D component = branch.getValidDomainComponents().get(0);
+		assertEquals(Completeness.NOT_ESTABLISHED,
+				branch.getExistenceStructure().getCompleteness());
+		assertEquals(definition.getSemanticRevision(),
+				branch.getExistenceStructure().getSemanticRevision());
+		assertTrue(branch.getValidDomainComponents().isEmpty());
+		assertEquals(2,
+				branch.getCertifiedContinuousValidComponents().size());
+		assertTrue(branch.getExistenceStructure().getCoverage().stream()
+				.anyMatch(item -> item.getState() == CoverageState.UNRESOLVED
+						&& item.getInterval().contains(-Math.PI / 2, 0)));
+		assertTrue(branch.getCertifiedContinuousValidComponents().stream()
+				.allMatch(item -> item.isLowerClosed() && item.isUpperClosed()));
+		var certificates = branch.getExistenceStructure()
+				.getContinuousValidComponents();
+		assertTrue(certificates.stream().allMatch(item -> item.getEvidenceKey()
+				.startsWith("selected-root-interval/v1|root-token=")));
+		assertEquals(certificates.get(0).getEvidenceKey().substring(0,
+				certificates.get(0).getEvidenceKey().indexOf("|driver=")),
+				certificates.get(1).getEvidenceKey().substring(0,
+						certificates.get(1).getEvidenceKey().indexOf("|driver=")));
+		assertTrue(certificates.stream().allMatch(item -> item.getBoundaryEvidence()
+				.contains("adjacent unresolved cells are not crossed")));
+		assertTrue(branch.getCertifiedContinuousValidComponents().get(0).getUpper()
+				< branch.getCertifiedContinuousValidComponents().get(1).getLower());
+		assertFalse(branch.getCertifiedContinuousValidComponents().stream()
+				.anyMatch(item -> item.contains(-Math.PI / 2, 0)));
+		LocusInterval2D component = branch.getDeclaredDriverDomain();
 		assertEquals(-Math.PI, component.getLower());
 		assertEquals(Math.PI, component.getUpper());
 		assertTrue(component.isLowerClosed());
@@ -194,21 +223,62 @@ class PreG9BS1AuthorDxfReproductionTest {
 		GeometryExportPreflight locusPreflight = service.preflight(List.of(locus),
 				SelectionMode.CURRENT_SELECTION,
 				GeometryExportRequest.builder(0.001).build());
-		assertFalse(locusPreflight.isWritable());
-		assertEquals(1, locusPreflight.getInvalidCount());
-		assertEquals(0, locusPreflight.getModel().getEntities().size());
-		assertEquals(Fidelity.INVALID,
-				locusPreflight.getModel().getOutcomes().get(0).getFidelity());
-		assertEquals(Reason.DISCONTINUITY_UNRESOLVED,
-				locusPreflight.getModel().getOutcomes().get(0).getReason());
+		assertTrue(locusPreflight.isWritable());
+		assertEquals(0, locusPreflight.getInvalidCount());
+		assertEquals(2, locusPreflight.getApproximateCount());
+		assertEquals(2, locusPreflight.getModel().getEntities().size());
+		assertEquals(2, locusPreflight.getIncompleteSemanticCoverageCount());
+		assertTrue(locusPreflight.hasIncompleteSemanticCoverage());
+		assertTrue(locusPreflight.isSidecarRequired());
+		assertTrue(locusPreflight.getModel().getOutcomes().stream()
+				.allMatch(outcome -> outcome.getFidelity() == Fidelity.APPROXIMATE
+						&& outcome.getSemanticCoverage()
+								== SemanticCoverage
+										.LOCALLY_CERTIFIED_GLOBAL_NOT_ESTABLISHED));
+		assertEquals(branch.getCertifiedContinuousValidComponents(),
+				locusPreflight.getModel().getOutcomes().stream()
+						.map(outcome -> new LocusInterval2D(
+								outcome.getComponentAddress().getParameterStart(),
+								outcome.getComponentAddress().getParameterEnd(),
+								outcome.getComponentAddress().isStartIncluded(),
+								outcome.getComponentAddress().isEndIncluded()))
+						.toList());
+		var locusEncoding = service.encode(locusPreflight);
+		assertEquals(2, entityCount(locusEncoding.getDxfText(), "LWPOLYLINE"));
+		DxfPreparedOutput locusPaired = new DxfFidelityManifestWriter().prepare(
+				locusPreflight, locusEncoding);
+		String locusManifest = new String(locusPaired.getManifest().getBytes(),
+				StandardCharsets.UTF_8);
+		assertTrue(locusManifest.contains(
+				"\"semantic_coverage_complete\":false"));
+		assertTrue(locusManifest.contains("\"semantic_coverage\":"
+				+ "\"locally_certified_global_not_established\""));
+		assertTrue(locusManifest.contains(
+				"\"incomplete_semantic_coverage\""));
+		DxfExportPreflightPresentation locusPresentation =
+				DxfExportPreflightPresentation.from(locusPreflight);
+		assertTrue(locusPresentation.getSummaryText().contains(
+				"global locus coverage not established"));
+		assertTrue(locusPresentation.getWarningsText().contains(
+				"INCOMPLETE_SEMANTIC_COVERAGE"));
+		assertTrue(locusPreflight.isSourceRevisionCurrent());
+		assertEquals(constructionBefore, app.getXML());
+		app.getEuclidianView1().setCoordSystem(611, 389, 157, 83);
+		GeometryExportPreflight movedView = service.preflight(List.of(locus),
+				SelectionMode.CURRENT_SELECTION,
+				GeometryExportRequest.builder(0.001).build());
+		assertEquals(locusEncoding.getDxfText(),
+				service.encode(movedView).getDxfText());
+		assertEquals(persistentLocusId,
+				locusV2.getPersistentLocusId().toExternalForm());
 
 		GeometryExportPreflight combined = service.preflight(semanticCurves,
 				SelectionMode.CURRENT_SELECTION,
 				GeometryExportRequest.builder(0.001).build());
-		assertFalse(combined.isWritable());
-		assertEquals(2, combined.getApproximateCount());
-		assertEquals(1, combined.getInvalidCount());
-		assertNotEquals(0, combined.getModel().getEntities().size());
+		assertTrue(combined.isWritable());
+		assertEquals(4, combined.getApproximateCount());
+		assertEquals(0, combined.getInvalidCount());
+		assertEquals(4, combined.getModel().getEntities().size());
 		List<GeoElement> sources = sources(app);
 		GeometryExportPreflight complete = service.preflight(sources,
 				SelectionMode.COMPLETE_CONSTRUCTION,
@@ -255,15 +325,12 @@ class PreG9BS1AuthorDxfReproductionTest {
 					+ diagnostic.getMessage());
 		}
 		assertEquals(26, complete.getExactCount());
-		assertEquals(2, complete.getApproximateCount());
+		assertEquals(4, complete.getApproximateCount());
 		assertEquals(0, complete.getUnsupportedCount());
-		assertEquals(1, complete.getInvalidCount());
+		assertEquals(0, complete.getInvalidCount());
 		assertEquals(15, complete.getExcludedPopulationCount());
-		assertFalse(complete.isWritable());
-		assertEquals(List.of(
-				"m|LOCUS_V2|INVALID|DISCONTINUITY_UNRESOLVED|visible=true|"
-						+ "auxiliary=false|parent=AlgoDependentPointLocusV2"),
-				population);
+		assertTrue(complete.isWritable());
+		assertTrue(population.isEmpty());
 		assertEquals(List.of(
 				"Iso1|LIST|OUTSIDE_GEOMETRIC_POPULATION|Outside "
 						+ "geocedg-dxf-geometric-2d/v1: LIST_CONTAINER.",
@@ -301,7 +368,6 @@ class PreG9BS1AuthorDxfReproductionTest {
 				"text6|TEXT|OUTSIDE_GEOMETRIC_POPULATION|Outside "
 						+ "geocedg-dxf-geometric-2d/v1: "
 						+ "TEXT_WITHOUT_APPROVED_DXF_MAPPING."), excluded);
-		assertEquals(constructionBefore, app.getXML());
 	}
 
 	private static Path fixture(String name, long size, String sha256)

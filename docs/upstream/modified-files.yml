@@ -180,8 +180,8 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusBranch2D.java",
       "change": "added",
-      "purpose": "Represent immutable branch identity, valid components, lineage, provenance and quality.",
-      "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+      "purpose": "Represent immutable branch identity, lineage, provenance and quality; PRE-G9B-S1-R2 adds the revision-bound existence/continuous-valid certificate while preserving the former valid-domain accessor as a complete-only compatibility view.",
+      "authority": "geocedg/specs/locus/locus-v2-existence-components.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusBranchSnapshot2D.java",
@@ -198,8 +198,8 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusDefinition2D.java",
       "change": "added",
-      "purpose": "Own one immutable revisioned semantic definition/evaluator and propagate the bounded R6 nested-evaluation work-limit signal without converting it into an ordinary evaluator failure.",
-      "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
+      "purpose": "Own one immutable revisioned semantic definition/evaluator, bind PRE-G9B-S1-R2 existence evidence to the published revision, and propagate the bounded R6 nested-evaluation work-limit signal without converting it into an ordinary evaluator failure.",
+      "authority": "geocedg/specs/locus/locus-v2-existence-components.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusDriverDomainProvider2D.java",
@@ -4106,6 +4106,30 @@
       "change": "added",
       "purpose": "G9U1 author-review round 3: Preserve the deterministic historical 542x720 aspect-preserving startup/splash derivative byte-exactly.",
       "authority": "geocedg/resources/assets-manifest.yml"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusExistenceStructure2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-S1-R2: Publish the revision-local distinction among canonical driver domain, typed existence coverage, certified continuous-valid components and global completeness.",
+      "authority": "geocedg/specs/locus/locus-v2-existence-components.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/SelectedRootIntervalCertificate2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-S1-R2: Carry bounded interval-wide selected-root continuity evidence without coordinate, proximity or result-order identity.",
+      "authority": "docs/adr/0027-locus-v2-existence-and-continuous-valid-components.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/SelectedRootContinuousDomainCertifier2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-S1-R2: Certify locally continuous existence intervals for the exact selected-root construction family witnessed by the author model using structural interval predicates and retained root-token authority.",
+      "authority": "docs/adr/0027-locus-v2-existence-and-continuous-valid-components.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/PreG9BS1R2ExistenceStructureTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-S1-R2: Verify existence-certificate states, compatibility migration, revision binding, local rendering and total-metric completeness rejection.",
+      "authority": "docs/validation/pre_g9b_s1_r2_locus_existence_validation_matrix.md"
     },
     {
       "path": "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/derived/geocedg-startup-361x480.png",

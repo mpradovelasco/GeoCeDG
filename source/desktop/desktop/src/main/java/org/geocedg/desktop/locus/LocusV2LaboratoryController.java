@@ -12,6 +12,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Collections;
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
@@ -142,9 +143,11 @@ final class LocusV2LaboratoryController {
 				currentMetrics(entry, definition);
 		LocusEvaluationSession2D session = LocusEvaluationSession2D.memoizing(128);
 		for (LocusBranch2D branch : definition.getBranches()) {
-			if (!branch.getValidDomainComponents().isEmpty()) {
-				double lower = branch.getValidDomainComponents().get(0).getLower();
-				double upper = branch.getValidDomainComponents().get(0).getUpper();
+			List<LocusInterval2D> components =
+					branch.getCertifiedContinuousValidComponents();
+			if (!components.isEmpty()) {
+				double lower = components.get(0).getLower();
+				double upper = components.get(0).getUpper();
 				double parameter = lower + (upper - lower) / 2;
 				locus.evaluate(branch.getBranchKey(), parameter, session);
 				locus.evaluate(branch.getBranchKey(), parameter, session);
@@ -170,7 +173,10 @@ final class LocusV2LaboratoryController {
 		for (LocusBranch2D branch : definition.getBranches()) {
 			text.append("  branchKey: ").append(branch.getBranchKey()).append('\n')
 					.append("    domain: ").append(branch.getDeclaredDriverDomain())
-					.append("; valid: ").append(branch.getValidDomainComponents())
+					.append("; certified local: ")
+					.append(branch.getCertifiedContinuousValidComponents())
+					.append("; completeness: ")
+					.append(branch.getExistenceStructure().getCompleteness())
 					.append('\n').append("    orientation/properties: ")
 					.append(branch.getOrientation()).append(" / ")
 					.append(branch.getProperties()).append('\n')
@@ -245,11 +251,11 @@ final class LocusV2LaboratoryController {
 			return null;
 		}
 		LocusBranch2D branch = definition.getBranches().get(0);
-		if (branch.getValidDomainComponents().isEmpty()) {
+		if (branch.getCertifiedContinuousValidComponents().isEmpty()) {
 			return null;
 		}
-		LocusInterval2D component =
-				branch.getValidDomainComponents().get(0);
+		LocusInterval2D component = branch
+				.getCertifiedContinuousValidComponents().get(0);
 		double start = component.getLower()
 				+ (component.getUpper() - component.getLower()) * 0.25;
 		double target = component.getLower()

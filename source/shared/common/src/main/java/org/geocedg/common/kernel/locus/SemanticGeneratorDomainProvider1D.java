@@ -66,15 +66,9 @@ public final class SemanticGeneratorDomainProvider1D
 
 	@Override
 	public boolean contains(double canonicalParameter) {
-		if (!Double.isFinite(canonicalParameter)) {
-			return false;
-		}
-		for (LocusInterval2D component : descriptor.getValidComponents()) {
-			if (component.contains(canonicalParameter, getDomainEpsilon())) {
-				return true;
-			}
-		}
-		return false;
+		return Double.isFinite(canonicalParameter)
+				&& getDeclaredDomain().contains(canonicalParameter,
+						getDomainEpsilon());
 	}
 
 	@Override

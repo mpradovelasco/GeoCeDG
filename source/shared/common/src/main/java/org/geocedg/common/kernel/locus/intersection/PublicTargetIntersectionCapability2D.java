@@ -43,6 +43,12 @@ import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata
  */
 public final class PublicTargetIntersectionCapability2D
 		implements LocusIntersectionCapability2D {
+	/** Oriented transverse contact encoded by an approved root germ. */
+	public enum TransverseOrientation {
+		POSITIVE,
+		NEGATIVE
+	}
+
 	private static final String CURRENT_TRANSVERSE_GERM_PREFIX =
 			"g9u0-r4/current-transverse-root-germ/v1/";
 	private final ExtendedTargetIntersectionCapability2D adaptiveProof =
@@ -181,6 +187,11 @@ public final class PublicTargetIntersectionCapability2D
 				.isPresent();
 	}
 
+	static Optional<TransverseOrientation> currentPublicRootOrientation(
+			String key) {
+		return parseCurrentPublicRootGerm(key).map(germ -> germ.orientation);
+	}
+
 	private static String framed(String value) {
 		return value.length() + ":" + value;
 	}
@@ -207,7 +218,10 @@ public final class PublicTargetIntersectionCapability2D
 					+ framed(component.value)
 					+ framed(framed(indicator.value) + orientation);
 			return canonical.equals(key)
-					? Optional.of(new CurrentRootGerm(component.value))
+					? Optional.of(new CurrentRootGerm(component.value,
+							"positive".equals(orientation)
+									? TransverseOrientation.POSITIVE
+									: TransverseOrientation.NEGATIVE))
 					: Optional.empty();
 		} catch (ArithmeticException | IllegalArgumentException exception) {
 			return Optional.empty();
@@ -244,9 +258,12 @@ public final class PublicTargetIntersectionCapability2D
 
 	private static final class CurrentRootGerm {
 		private final String componentLineage;
+		private final TransverseOrientation orientation;
 
-		private CurrentRootGerm(String componentLineage) {
+		private CurrentRootGerm(String componentLineage,
+				TransverseOrientation orientation) {
 			this.componentLineage = componentLineage;
+			this.orientation = orientation;
 		}
 	}
 
@@ -256,7 +273,8 @@ public final class PublicTargetIntersectionCapability2D
 		LocusBranch2D branch = context.getDefinition().getBranch(
 				candidate.getBranchKey());
 		if (branch != null) {
-			List<LocusInterval2D> components = branch.getValidDomainComponents();
+			List<LocusInterval2D> components =
+					branch.getCertifiedContinuousValidComponents();
 			for (int index = 0; index < components.size(); index++) {
 				if (candidate.getComponentKey().equals(
 						IntersectionCapabilityContext2D.componentKey(

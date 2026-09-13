@@ -23,7 +23,7 @@ public final class LocusMetricComponentKey2D {
 	public static String create(LocusDefinition2D definition,
 			LocusBranch2D branch, int componentIndex) {
 		LocusInterval2D interval =
-				branch.getValidDomainComponents().get(componentIndex);
+				branch.getCertifiedContinuousValidComponents().get(componentIndex);
 		return branch.getBranchKey() + "|r=" + definition.getSemanticRevision()
 				+ "|c=" + componentIndex + "|"
 				+ Double.toHexString(interval.getLower()) + ":"
@@ -38,10 +38,11 @@ public final class LocusMetricComponentKey2D {
 	 */
 	public static LocusInterval2D find(LocusDefinition2D definition,
 			LocusBranch2D branch, String componentKey) {
-		for (int index = 0; index < branch.getValidDomainComponents().size();
+		for (int index = 0;
+				index < branch.getCertifiedContinuousValidComponents().size();
 				index++) {
 			if (create(definition, branch, index).equals(componentKey)) {
-				return branch.getValidDomainComponents().get(index);
+				return branch.getCertifiedContinuousValidComponents().get(index);
 			}
 		}
 		return null;
@@ -54,7 +55,8 @@ public final class LocusMetricComponentKey2D {
 	 */
 	public static int indexOf(LocusDefinition2D definition,
 			LocusBranch2D branch, String componentKey) {
-		for (int index = 0; index < branch.getValidDomainComponents().size();
+		for (int index = 0;
+				index < branch.getCertifiedContinuousValidComponents().size();
 				index++) {
 			if (create(definition, branch, index).equals(componentKey)) {
 				return index;

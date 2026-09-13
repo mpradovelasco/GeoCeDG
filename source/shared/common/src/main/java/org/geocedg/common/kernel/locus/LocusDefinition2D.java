@@ -45,7 +45,7 @@ public final class LocusDefinition2D {
 		this.semanticRevision = semanticRevision;
 		this.definitionStatus = Objects.requireNonNull(definitionStatus);
 		this.provider = Objects.requireNonNull(provider);
-		this.branches = immutableBranches(branches);
+		this.branches = immutableBranches(branches, semanticRevision);
 		this.branchesByKey = indexBranches(this.branches);
 		this.evaluator = Objects.requireNonNull(evaluator);
 		this.determinism = Objects.requireNonNull(determinism);
@@ -130,9 +130,15 @@ public final class LocusDefinition2D {
 					"Unknown branch key: " + branchKey);
 		}
 		double canonical = provider.canonicalize(semanticParameter);
-		if (!branch.containsValidParameter(canonical, provider)) {
+		if (!provider.contains(canonical)) {
 			return LocusEvaluation2D.invalid(EvaluationStatus.OUT_OF_DOMAIN, quality,
-					"Parameter is outside the valid branch domain");
+					"Parameter is outside the canonical branch domain");
+		}
+		if (branch.getExistenceStructure().getCompleteness()
+				== LocusExistenceStructure2D.Completeness.COMPLETE
+				&& !branch.containsValidParameter(canonical, provider)) {
+			return LocusEvaluation2D.invalid(EvaluationStatus.OUT_OF_DOMAIN, quality,
+					"Parameter lies outside the complete existence domain");
 		}
 		return session.evaluate(this, branch, canonical);
 	}
@@ -201,11 +207,13 @@ public final class LocusDefinition2D {
 				instrumentation);
 	}
 
-	private static List<LocusBranch2D> immutableBranches(List<LocusBranch2D> input) {
+	private static List<LocusBranch2D> immutableBranches(List<LocusBranch2D> input,
+			long semanticRevision) {
 		Objects.requireNonNull(input);
 		ArrayList<LocusBranch2D> copy = new ArrayList<>();
 		for (LocusBranch2D branch : input) {
-			copy.add(Objects.requireNonNull(branch));
+			copy.add(Objects.requireNonNull(branch)
+					.bindExistenceToRevision(semanticRevision));
 		}
 		return Collections.unmodifiableList(copy);
 	}

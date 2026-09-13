@@ -2,15 +2,15 @@
 
 | Field | Value |
 |---|---|
-| Status | **DESIGN CANDIDATE — PENDING AUTHOR REVIEW** |
+| Status | **DESIGN — AUTHOR APPROVED / IMPLEMENTATION CANDIDATE** |
 | Entry | `e5260fc7dd4924f0599ac3ac2700025bf5e48330` (`PRE-G9B-S1-R1` partial candidate) |
 | Parent characterization | `48312ceb070b014b68218b3ca5f5c09249c62748` |
-| Product implementation | **NOT AUTHORIZED / NOT STARTED** |
-| R1 population work | **PRESERVED — PARTIAL IMPLEMENTATION CANDIDATE** |
-| Parent S1 | **BLOCKED — SEMANTIC DESIGN IN PROGRESS** |
+| Product implementation | **I1--I3 IMPLEMENTED — PENDING AUTHOR REVIEW** |
+| R1 population work | **PRESERVED — INTEGRATED CORRECTIVE CANDIDATE** |
+| Parent S1 | **CORRECTED CANDIDATE — PENDING AUTHOR SMOKE** |
 | Self approval | `false` |
 
-This design responds to the author-approved semantic direction that a canonical
+This author-approved design responds to the semantic direction that a canonical
 driver domain and a Locus V2 existence domain are different. It does not modify
 the R1 implementation of `geocedg-dxf-geometric-2d/v1` and does not begin S2,
 S3, S4, D1, P1, G9B, G9C or G9U2.
@@ -18,7 +18,7 @@ S3, S4, D1, P1, G9B, G9C or G9U2.
 The normative candidate is
 [Locus V2 existence and continuous-valid components](../../geocedg/specs/locus/locus-v2-existence-components.md),
 and the selected architectural alternative is recorded in
-[proposed ADR 0027](../adr/0027-locus-v2-existence-and-continuous-valid-components.md).
+[accepted ADR 0027](../adr/0027-locus-v2-existence-and-continuous-valid-components.md).
 
 ## 1. Repository characterization
 
@@ -342,9 +342,7 @@ work and global decomposition state.
 - Old files remain valid. They receive no fabricated dynamic component lineage;
   inability to establish current proof yields `NOT_ESTABLISHED`.
 
-## 10. Proposed implementation slices
-
-No slice is authorized by this design candidate.
+## 10. Implemented candidate slices
 
 ### R2-I1 — semantic values and complete-only migration seam
 
@@ -398,11 +396,10 @@ through the old complete-domain contract.
 | Old `.ggb`/`.cedg` | no inferred identity or persisted sampled partition |
 | R1 geometric population | unchanged (`geocedg-dxf-geometric-2d/v1`) |
 
-## 12. Decisions and limits at author review
+## 12. Implemented witness and remaining approval boundary
 
-The design is internally coherent and does not require coordinate or sampling
-authority. The following choices are presented for author approval as one R2
-contract:
+The author approved the coherent design without coordinate or sampling
+authority, including:
 
 1. hybrid producer/shared-certifier architecture;
 2. revision-local dynamic components with optional proved lineage;
@@ -410,21 +407,21 @@ contract:
 4. locally certified DXF output under an explicit globally-incomplete fidelity
    status and mandatory sidecar.
 
-No final numerical decomposition for `m` is asserted. Implementation remains
-conditional on an interval-aware selected-root capability. If that family
-cannot provide one within the bounded design, R2-I2 must return for a separate
-semantic decision rather than approximate or redesign root identity silently.
+The bounded interval-aware capability reuses the retained root token and
+deterministic selector. It proves two conservative local components for `m`
+using outward interval evaluation over a structural SplineV2 chart. Adjacent
+transition regions remain `UNRESOLVED`; the numerical endpoints are revision-
+local evidence, not identity or claims of maximal boundaries. No root-identity
+redesign was required.
 
-`GUIDE_IMPACT=NO` for this design-only candidate: it changes no observable
-product behavior. A later implementation is expected to update DXF guidance
-because local certified output and global completeness become visible.
-`BOOTSTRAP_IMPACT=NO` and `VERIFICATION_INFRASTRUCTURE_IMPACT=NO`: no runtime,
-workstation prerequisite, registry, schema or executable verifier changes here.
-The required validation level for this candidate is documentation/static only.
+`GUIDE_IMPACT=YES`: the DXF guide now distinguishes locally certified export
+from a complete-locus claim. `BOOTSTRAP_IMPACT=NO`: no workstation prerequisite
+changes. `VERIFICATION_INFRASTRUCTURE_IMPACT=YES` only for the additive R2 PHASE
+selector and immutable JUnit inventory; methodology is unchanged.
 
 ```text
-PRE-G9B-S1-R2 = DESIGN CANDIDATE — PENDING AUTHOR REVIEW
-PRE-G9B-S1-R1 = PARTIAL IMPLEMENTATION CANDIDATE
-PRE-G9B-S1 = BLOCKED — SEMANTIC DESIGN IN PROGRESS
+PRE-G9B-S1-R2 = IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW
+PRE-G9B-S1-R1 = INTEGRATED CORRECTIVE CANDIDATE
+PRE-G9B-S1 = CORRECTED IMPLEMENTATION CANDIDATE — PENDING AUTHOR SMOKE
 selfApproved = false
 ```

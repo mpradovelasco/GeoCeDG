@@ -32,11 +32,14 @@ import org.geocedg.common.export.GeometryExportRequest.SemanticDomain;
 import org.geocedg.common.export.SourceExportOutcome.Fidelity;
 import org.geocedg.common.export.SourceExportOutcome.IdentityScope;
 import org.geocedg.common.export.SourceExportOutcome.Reason;
+import org.geocedg.common.export.SourceExportOutcome.SemanticCoverage;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.Completeness;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.ContinuousComponent;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.BranchProperty;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.DefinitionStatus;
@@ -327,10 +330,12 @@ public final class G9X1GeometryExportAdapter {
 			}
 			int componentOrdinal = 0;
 			for (LocusBranch2D branch : definition.getBranches()) {
-				List<LocusInterval2D> components = branch.getValidDomainComponents();
+				List<ContinuousComponent> components = branch.getExistenceStructure()
+						.getContinuousValidComponents();
 				for (int branchComponent = 0;
 						branchComponent < components.size(); branchComponent++) {
-					LocusInterval2D component = components.get(branchComponent);
+					ContinuousComponent certificate = components.get(branchComponent);
+					LocusInterval2D component = certificate.getInterval();
 					boolean increasing = branch.getOrientation()
 							== Orientation.INCREASING;
 					double start = increasing ? component.getLower()
@@ -341,7 +346,10 @@ public final class G9X1GeometryExportAdapter {
 							: component.isUpperClosed();
 					boolean endClosed = increasing ? component.isUpperClosed()
 							: component.isLowerClosed();
-					String componentKey = "component-" + branchComponent;
+					boolean complete = branch.getExistenceStructure().getCompleteness()
+							== Completeness.COMPLETE;
+					String componentKey = complete ? "component-" + branchComponent
+							: certificate.getEvidenceKey();
 					ComponentAddress address = new ComponentAddress(
 							branch.getBranchKey(), componentKey, start, end,
 							startClosed, endClosed);
@@ -363,7 +371,10 @@ public final class G9X1GeometryExportAdapter {
 					approximateComponent(locus, sourceId, sourceOrdinal,
 							componentOrdinal++, revision, scope, address,
 							approximationDomain, semanticClosure, evaluator, request,
-							ledger, entities, diagnostics, outcomes);
+							ledger, entities, diagnostics, outcomes,
+							complete ? SemanticCoverage.COMPLETE
+									: SemanticCoverage
+											.LOCALLY_CERTIFIED_GLOBAL_NOT_ESTABLISHED);
 				}
 			}
 			if (componentOrdinal == 0) {
@@ -415,7 +426,11 @@ public final class G9X1GeometryExportAdapter {
 							decision.component);
 			approximateComponent(locus, sourceId, sourceOrdinal, ordinal, revision,
 					scope, address, domain, semanticClosure, evaluator, request, ledger,
-					entities, diagnostics, outcomes);
+					entities, diagnostics, outcomes,
+					decision.branch.getExistenceStructure().getCompleteness()
+							== Completeness.COMPLETE ? SemanticCoverage.COMPLETE
+									: SemanticCoverage
+											.LOCALLY_CERTIFIED_GLOBAL_NOT_ESTABLISHED);
 		}
 	}
 
@@ -425,6 +440,19 @@ public final class G9X1GeometryExportAdapter {
 			boolean semanticClosure, CurveEvaluator2D evaluator,
 			GeometryExportRequest request, WorkLedger ledger, List<Entity> entities,
 			List<Diagnostic> diagnostics, List<SourceExportOutcome> outcomes) {
+		approximateComponent(geo, sourceId, sourceOrdinal, componentOrdinal,
+				sourceRevision, scope, address, domain, semanticClosure, evaluator,
+				request, ledger, entities, diagnostics, outcomes,
+				SemanticCoverage.NOT_APPLICABLE);
+	}
+
+	private void approximateComponent(GeoElement geo, String sourceId,
+			int sourceOrdinal, int componentOrdinal, long sourceRevision,
+			IdentityScope scope, ComponentAddress address, SemanticDomain domain,
+			boolean semanticClosure, CurveEvaluator2D evaluator,
+			GeometryExportRequest request, WorkLedger ledger, List<Entity> entities,
+			List<Diagnostic> diagnostics, List<SourceExportOutcome> outcomes,
+			SemanticCoverage semanticCoverage) {
 		Result result = approximationBuilder.approximate(evaluator, domain,
 				semanticClosure, request, ledger);
 		if (!result.isSuccess()) {
@@ -443,7 +471,8 @@ public final class G9X1GeometryExportAdapter {
 		outcomes.add(new SourceExportOutcome(sourceId,
 				geo.getGeoClassType().name(), geo.getLabelSimple(), sourceRevision,
 				geo.isEuclidianVisible(), scope, address, Fidelity.APPROXIMATE,
-				Reason.NONE, neutralId, result.toApproximationEvidence(), null));
+				Reason.NONE, neutralId, result.toApproximationEvidence(), null,
+				semanticCoverage));
 	}
 
 	private static CurveEvaluation2D locusEvaluation(LocusDefinition2D definition,
@@ -476,7 +505,9 @@ public final class G9X1GeometryExportAdapter {
 			LocusBranch2D branch, LocusInterval2D component) {
 		return definition.getProvider().isPeriodic()
 				&& branch.getProperties().contains(BranchProperty.PERIODIC)
-				&& branch.getValidDomainComponents().size() == 1
+				&& branch.getExistenceStructure().getCompleteness()
+						== Completeness.COMPLETE
+				&& branch.getCertifiedContinuousValidComponents().size() == 1
 				&& component.equals(branch.getDeclaredDriverDomain())
 				&& component.equals(definition.getProvider().getDeclaredDomain());
 	}
@@ -636,7 +667,7 @@ public final class G9X1GeometryExportAdapter {
 		LocusInterval2D containing = null;
 		int containingOrdinal = -1;
 		List<LocusInterval2D> components =
-				matchingBranch.getValidDomainComponents();
+				matchingBranch.getCertifiedContinuousValidComponents();
 		for (int componentOrdinal = 0;
 				componentOrdinal < components.size(); componentOrdinal++) {
 			LocusInterval2D component = components.get(componentOrdinal);

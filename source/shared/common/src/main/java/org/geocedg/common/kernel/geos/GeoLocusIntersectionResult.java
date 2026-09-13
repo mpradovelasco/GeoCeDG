@@ -11,6 +11,7 @@ import java.util.function.Function;
 
 import org.geocedg.common.kernel.algos.AlgoLocusIntersectionV2;
 import org.geocedg.common.kernel.algos.AlgoLocusLocusIntersectionV2;
+import org.geocedg.common.kernel.locus.intersection.IntersectionRootDeterministicSelector2D;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSourceBinding2D;
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionResult2D;
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionSolution2D;
@@ -256,6 +257,12 @@ public final class GeoLocusIntersectionResult extends GeoElement
 	/** @return whether the current rich result admits this exact token */
 	public boolean isPointAdmissible(String rootToken) {
 		return findExactPointAdmissibleSolution(rootToken).isPresent();
+	}
+
+	/** @return existing exact selector evidence for a retained root token */
+	public Optional<IntersectionRootDeterministicSelector2D>
+			getRetainedRootSelector(String rootToken) {
+		return tokenLedger.getRetainedDeterministicSelector(rootToken);
 	}
 
 	@Override

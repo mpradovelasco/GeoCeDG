@@ -214,6 +214,13 @@ public final class DxfExportPreflightPresentation {
 				.append(preflight.getModel().getTargetUnit()).append('\n');
 		text.append("Population rule: ")
 				.append(preflight.getModel().getPopulationRuleId()).append('\n');
+		text.append("Semantic coverage: ")
+				.append(preflight.hasIncompleteSemanticCoverage()
+						? "locally certified components; global locus coverage "
+								+ "not established ("
+								+ preflight.getIncompleteSemanticCoverageCount() + ")"
+						: "complete or not applicable")
+				.append('\n');
 		text.append("Approximation policy: allowed=")
 				.append(request.isApproximationAllowed())
 				.append("; requested tolerance=")
@@ -321,6 +328,14 @@ public final class DxfExportPreflightPresentation {
 			if (outcome.getFidelity() == Fidelity.APPROXIMATE) {
 				lines.add("APPROXIMATE " + outcome.getSourceId() + "/" + component
 						+ ": export-only fidelity reduction; sidecar required.");
+			}
+			if (outcome.getSemanticCoverage()
+					== SourceExportOutcome.SemanticCoverage
+							.LOCALLY_CERTIFIED_GLOBAL_NOT_ESTABLISHED) {
+				lines.add("INCOMPLETE_SEMANTIC_COVERAGE "
+						+ outcome.getSourceId() + "/" + component
+						+ ": locally certified component; exported output is not "
+						+ "the complete locus; sidecar required.");
 			}
 			if (!outcome.isVisible()) {
 				lines.add("HIDDEN_SOURCE_INCLUDED " + outcome.getSourceId() + "/"

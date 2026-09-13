@@ -15,6 +15,7 @@ import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusPoint2D;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.DefinitionStatus;
@@ -65,8 +66,7 @@ public final class LocusIntersectionSolver2D {
 				throw new IllegalArgumentException(
 						"Published binding disagrees with captured query");
 			}
-			if (definition.getDefinitionStatus() == DefinitionStatus.EMPTY_DOMAIN
-					|| allComponents(definition).isEmpty()) {
+			if (definition.getDefinitionStatus() == DefinitionStatus.EMPTY_DOMAIN) {
 				return publish(binding, ComputationStatus.SUCCESS,
 						Completeness.COMPLETE,
 						CompletenessMethod.CERTIFIED_DOMAIN_EXCLUSION,
@@ -77,6 +77,28 @@ public final class LocusIntersectionSolver2D {
 						List.of(new IntersectionDiagnostic2D(
 								DiagnosticCode.DOMAIN_EXCLUSION_ESTABLISHED,
 								"Semantic definition has no valid components")));
+			}
+			if (allComponents(definition).isEmpty()) {
+				return publish(binding, ComputationStatus.SUCCESS,
+						domainComplete(definition) ? Completeness.COMPLETE
+								: Completeness.NOT_ESTABLISHED,
+						domainComplete(definition)
+								? CompletenessMethod.CERTIFIED_DOMAIN_EXCLUSION
+								: CompletenessMethod.NOT_ESTABLISHED,
+						domainComplete(definition) ? GeometryKind.EMPTY
+								: GeometryKind.UNRESOLVED,
+						SupportLevel.CERTIFIED,
+						NumericGuarantee.CERTIFIED_ERROR_BOUND,
+						Collections.emptyList(), Collections.emptyList(),
+						Collections.emptyList(), instrumentation,
+						List.of(new IntersectionDiagnostic2D(
+								domainComplete(definition)
+										? DiagnosticCode.DOMAIN_EXCLUSION_ESTABLISHED
+										: DiagnosticCode.COVERAGE_NOT_ESTABLISHED,
+								domainComplete(definition)
+										? "Semantic definition has no valid components"
+										: "No local component is certified and global "
+												+ "coverage is not established")));
 			}
 			int sessionCapacity = (int) Math.min(8_192,
 					query.getPolicy().getWorkBudget()
@@ -122,8 +144,9 @@ public final class LocusIntersectionSolver2D {
 				new ArrayList<>(candidateSet.getDiagnostics());
 		List<String> allComponents = context.getAllComponentKeys();
 		if (completeness == Completeness.COMPLETE
-				&& !sameCoverage(allComponents,
-						candidateSet.getCoveredComponentKeys())) {
+				&& (!domainComplete(context.getDefinition())
+						|| !sameCoverage(allComponents,
+								candidateSet.getCoveredComponentKeys()))) {
 			completeness = Completeness.INCOMPLETE;
 			completenessMethod =
 					CompletenessMethod.INCOMPLETE_CANDIDATE_COVERAGE;
@@ -135,7 +158,8 @@ public final class LocusIntersectionSolver2D {
 			}
 			diagnostics.add(new IntersectionDiagnostic2D(
 					DiagnosticCode.COVERAGE_NOT_ESTABLISHED,
-					"Capability did not cover every current semantic component"));
+					"Capability or source certificate does not establish "
+							+ "complete domain coverage"));
 		}
 		// Mixed results carry both roots that still require independent
 		// verification and typed overlap evidence that must survive publication.
@@ -457,8 +481,8 @@ public final class LocusIntersectionSolver2D {
 	private static List<String> allComponents(LocusDefinition2D definition) {
 		ArrayList<String> keys = new ArrayList<>();
 		for (LocusBranch2D branch : definition.getBranches()) {
-			for (int index = 0;
-					index < branch.getValidDomainComponents().size(); index++) {
+			for (int index = 0; index < branch
+					.getCertifiedContinuousValidComponents().size(); index++) {
 				keys.add(IntersectionCapabilityContext2D.componentKey(
 						branch.getBranchKey(), index));
 			}
@@ -472,15 +496,22 @@ public final class LocusIntersectionSolver2D {
 		if (branch == null) {
 			return null;
 		}
-		for (int index = 0; index < branch.getValidDomainComponents().size();
+		for (int index = 0;
+				index < branch.getCertifiedContinuousValidComponents().size();
 				index++) {
 			if (IntersectionCapabilityContext2D.componentKey(branchKey, index)
 					.equals(componentKey)) {
 				return new ComponentAddress(
-						branch.getValidDomainComponents().get(index));
+						branch.getCertifiedContinuousValidComponents().get(index));
 			}
 		}
 		return null;
+	}
+
+	private static boolean domainComplete(LocusDefinition2D definition) {
+		return definition.getBranches().stream().allMatch(branch ->
+				branch.getExistenceStructure().getCompleteness()
+						== LocusExistenceStructure2D.Completeness.COMPLETE);
 	}
 
 	private static DomainLocation domainLocation(

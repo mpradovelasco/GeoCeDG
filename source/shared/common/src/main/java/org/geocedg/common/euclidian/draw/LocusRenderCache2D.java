@@ -93,7 +93,7 @@ public final class LocusRenderCache2D {
 				new LocusEvaluationSession2D(true, 4096)) {
 			for (LocusBranch2D branch : definition.getBranches()) {
 				for (LocusInterval2D component
-						: branch.getValidDomainComponents()) {
+						: branch.getCertifiedContinuousValidComponents()) {
 					appendComponent(locus, definition, branch, component, policy,
 							session, vertices);
 				}
@@ -138,7 +138,10 @@ public final class LocusRenderCache2D {
 			LocusBranch2D branch, LocusInterval2D component) {
 		return definition.getProvider().isPeriodic()
 				&& branch.getProperties().contains(BranchProperty.PERIODIC)
-				&& branch.getValidDomainComponents().size() == 1
+				&& branch.getExistenceStructure().getCompleteness()
+						== org.geocedg.common.kernel.locus.LocusExistenceStructure2D
+								.Completeness.COMPLETE
+				&& branch.getCertifiedContinuousValidComponents().size() == 1
 				&& component.equals(branch.getDeclaredDriverDomain())
 				&& component.equals(definition.getProvider().getDeclaredDomain());
 	}

@@ -57,7 +57,8 @@ public final class EvaluatorOnlyIntersectionCapability2D
 		List<IntersectionCandidate2D> candidates = new ArrayList<>();
 		List<String> examinedComponents = new ArrayList<>();
 		for (LocusBranch2D branch : context.getDefinition().getBranches()) {
-			List<LocusInterval2D> components = branch.getValidDomainComponents();
+			List<LocusInterval2D> components =
+					branch.getCertifiedContinuousValidComponents();
 			for (int componentIndex = 0; componentIndex < components.size();
 					componentIndex++) {
 				String componentKey = IntersectionCapabilityContext2D.componentKey(

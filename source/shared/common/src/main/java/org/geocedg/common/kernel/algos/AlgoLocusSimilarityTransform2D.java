@@ -76,7 +76,7 @@ public final class AlgoLocusSimilarityTransform2D extends AlgoLocusV2 {
 					? EnumSet.noneOf(BranchProperty.class)
 					: EnumSet.copyOf(sourceBranch.getProperties());
 			if (transformSnapshot.isCollapsed()
-					&& !sourceBranch.getValidDomainComponents().isEmpty()) {
+					&& !sourceBranch.getCertifiedContinuousValidComponents().isEmpty()) {
 				properties.add(BranchProperty.COLLAPSED_IMAGE);
 			}
 			LocusQuality2D quality = new LocusQuality2D(
@@ -86,7 +86,7 @@ public final class AlgoLocusSimilarityTransform2D extends AlgoLocusV2 {
 					NumericGuarantee.FLOATING_POINT_UNCERTIFIED);
 			branches.add(new LocusBranch2D(sourceBranch.getBranchKey(),
 					sourceBranch.getDeclaredDriverDomain(),
-					sourceBranch.getValidDomainComponents(),
+					sourceBranch.getExistenceStructure(),
 					sourceBranch.getOrientation(),
 					PROVENANCE + "|source=" + sourceSnapshot.getLocusIdentity()
 							+ "|kind=" + transformSnapshot.getKind()

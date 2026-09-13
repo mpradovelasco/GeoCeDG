@@ -17,6 +17,7 @@ import java.util.Set;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusLineage2D;
 import org.geocedg.common.kernel.locus.LocusQuality2D;
@@ -33,6 +34,7 @@ import org.geocedg.common.kernel.locus.ReconstructibleLocusEvaluator2D;
 import org.geocedg.common.kernel.locus.SemanticGeneratorDescriptor1D;
 import org.geocedg.common.kernel.locus.SemanticGeneratorDomainProvider1D;
 import org.geocedg.common.kernel.locus.SemanticGeneratorFamily1D;
+import org.geocedg.common.kernel.locus.intersection.SelectedRootContinuousDomainCertifier2D;
 import org.geocedg.common.kernel.spatial.identity.GeoIdentityRecord;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
@@ -136,9 +138,13 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 				EvaluationMethod.DETERMINISTIC_NUMERIC_DEPENDENCY,
 				RepresentationRole.SEMANTIC_RESULT,
 				NumericGuarantee.FLOATING_POINT_UNCERTIFIED);
+		LocusExistenceStructure2D existence =
+				SelectedRootContinuousDomainCertifier2D.certify(descriptor,
+						dependentPoint, state, support).orElseGet(() ->
+						fallbackExistenceStructure());
 		LocusBranch2D branch = new LocusBranch2D(
 				SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY,
-				descriptor.getDeclaredDomain(), descriptor.getValidComponents(),
+				descriptor.getDeclaredDomain(), existence,
 				descriptor.getOrientation(), PROVENANCE,
 				LocusLineage2D.unchanged(), properties, quality);
 		return new LocusDefinition2D(getLocus().getLocusIdentity(),
@@ -153,6 +159,44 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 	@Override
 	public Commands getClassName() {
 		return Commands.LocusV2;
+	}
+
+	private LocusExistenceStructure2D fallbackExistenceStructure() {
+		if (dependsOnSelectedIntersectionRoot()) {
+			return LocusExistenceStructure2D.notEstablished(
+					SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY,
+					descriptor.getDeclaredDomain(),
+					"selected-root-continuity-not-established");
+		}
+		if (family == SemanticGeneratorFamily1D.LOCUS_BRANCH_POINT
+				&& support instanceof GeoLocusV2) {
+			LocusDefinition2D sourceDefinition =
+					((GeoLocusV2) support).getSemanticDefinition();
+			LocusBranch2D sourceBranch = sourceDefinition == null
+					|| descriptor.getSupportBranchKey() == null ? null
+							: sourceDefinition.getBranch(
+									descriptor.getSupportBranchKey());
+			if (sourceBranch == null || sourceBranch.getExistenceStructure()
+					.getCompleteness()
+							!= LocusExistenceStructure2D.Completeness.COMPLETE) {
+				return LocusExistenceStructure2D.notEstablished(
+						SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY,
+						descriptor.getDeclaredDomain(),
+						"upstream-locus-coverage-not-established");
+			}
+		}
+		return LocusExistenceStructure2D.completeCompatibility(
+				SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY,
+				descriptor.getDeclaredDomain(), descriptor.getValidComponents());
+	}
+
+	private boolean dependsOnSelectedIntersectionRoot() {
+		for (GeoElement geo : getReconstructionSliceGeos()) {
+			if (geo.getParentAlgorithm() instanceof AlgoLocusIntersectionPointV2) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override

@@ -90,6 +90,16 @@ public final class LocusMetricEngine2D {
 			LocusMetricSharedOwner2D owner, LocusMetricIndexMode indexMode,
 			LocusMetricInstrumentation2D instrumentation,
 			String consumerToken) {
+		for (LocusBranch2D branch : definition.getBranches()) {
+			if (branch.getExistenceStructure().getCompleteness()
+					!= org.geocedg.common.kernel.locus.LocusExistenceStructure2D
+							.Completeness.COMPLETE) {
+				return invalidQuery(query, definition,
+						MetricDiagnosticCode2D.INCOMPLETE_AGGREGATE,
+						"Total locus metric requires complete existence coverage",
+						Optional.empty());
+			}
+		}
 		List<LocusMetricContribution2D> contributions = new ArrayList<>();
 		for (LocusBranch2D branch : definition.getBranches()) {
 			for (int index = 0;

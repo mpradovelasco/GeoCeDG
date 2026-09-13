@@ -19,7 +19,7 @@ import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.Orientation;
 public final class LocusBranch2D {
 	private final String branchKey;
 	private final LocusInterval2D declaredDriverDomain;
-	private final List<LocusInterval2D> validDomainComponents;
+	private final LocusExistenceStructure2D existenceStructure;
 	private final Orientation orientation;
 	private final String provenance;
 	private final LocusLineage2D lineage;
@@ -31,13 +31,30 @@ public final class LocusBranch2D {
 			List<LocusInterval2D> validDomainComponents, Orientation orientation,
 			String provenance, LocusLineage2D lineage,
 			Set<BranchProperty> properties, LocusQuality2D quality) {
+		this(branchKey, declaredDriverDomain,
+				LocusExistenceStructure2D.completeCompatibility(branchKey,
+						declaredDriverDomain, validDomainComponents),
+				orientation, provenance, lineage, properties, quality);
+	}
+
+	/** Creates a branch with explicit existence/continuity evidence. */
+	public LocusBranch2D(String branchKey, LocusInterval2D declaredDriverDomain,
+			LocusExistenceStructure2D existenceStructure,
+			Orientation orientation, String provenance, LocusLineage2D lineage,
+			Set<BranchProperty> properties, LocusQuality2D quality) {
 		if (branchKey == null || branchKey.trim().isEmpty()
 				|| provenance == null || provenance.trim().isEmpty()) {
 			throw new IllegalArgumentException("Stable branch key and provenance are required");
 		}
 		this.branchKey = branchKey;
 		this.declaredDriverDomain = Objects.requireNonNull(declaredDriverDomain);
-		this.validDomainComponents = immutableComponents(validDomainComponents);
+		this.existenceStructure = Objects.requireNonNull(existenceStructure);
+		if (!branchKey.equals(existenceStructure.getBranchKey())
+				|| !declaredDriverDomain.equals(
+						existenceStructure.getCanonicalDomain())) {
+			throw new IllegalArgumentException(
+					"Existence evidence must belong to this branch and domain");
+		}
 		this.orientation = Objects.requireNonNull(orientation);
 		this.provenance = provenance;
 		this.lineage = Objects.requireNonNull(lineage);
@@ -53,8 +70,31 @@ public final class LocusBranch2D {
 		return declaredDriverDomain;
 	}
 
+	/**
+	 * Compatibility view of globally complete continuous-valid components.
+	 *
+	 * @return complete components, or an empty list when global completeness is
+	 *         not established
+	 */
 	public List<LocusInterval2D> getValidDomainComponents() {
-		return validDomainComponents;
+		if (existenceStructure.getCompleteness()
+				!= LocusExistenceStructure2D.Completeness.COMPLETE) {
+			return Collections.emptyList();
+		}
+		return componentIntervals();
+	}
+
+	/** @return explicit revision-bound existence and continuity evidence */
+	public LocusExistenceStructure2D getExistenceStructure() {
+		return existenceStructure;
+	}
+
+	/**
+	 * @return locally certified continuous-valid intervals, irrespective of global
+	 *         completeness
+	 */
+	public List<LocusInterval2D> getCertifiedContinuousValidComponents() {
+		return componentIntervals();
 	}
 
 	public Orientation getOrientation() {
@@ -87,7 +127,7 @@ public final class LocusBranch2D {
 		if (!provider.contains(canonicalParameter)) {
 			return false;
 		}
-		for (LocusInterval2D component : validDomainComponents) {
+		for (LocusInterval2D component : componentIntervals()) {
 			if (component.contains(canonicalParameter, provider.getDomainEpsilon())) {
 				return true;
 			}
@@ -102,7 +142,8 @@ public final class LocusBranch2D {
 	 */
 	public String getSemanticSignature() {
 		return branchKey + "|" + declaredDriverDomain + "|"
-				+ validDomainComponents + "|" + orientation + "|" + provenance
+				+ existenceStructure.getSemanticSignature() + "|" + orientation
+				+ "|" + provenance
 				+ "|" + lineage + "|" + properties + "|"
 				+ quality.getConstructionFidelity() + "|"
 				+ quality.getEvaluationMethod() + "|"
@@ -118,7 +159,8 @@ public final class LocusBranch2D {
 		LocusBranch2D branch = (LocusBranch2D) other;
 		return branchKey.equals(branch.branchKey)
 				&& declaredDriverDomain.equals(branch.declaredDriverDomain)
-				&& validDomainComponents.equals(branch.validDomainComponents)
+				&& existenceStructure.getSemanticSignature().equals(
+						branch.existenceStructure.getSemanticSignature())
 				&& orientation == branch.orientation
 				&& provenance.equals(branch.provenance)
 				&& lineage.equals(branch.lineage)
@@ -128,7 +170,8 @@ public final class LocusBranch2D {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(branchKey, declaredDriverDomain, validDomainComponents,
+		return Objects.hash(branchKey, declaredDriverDomain,
+				existenceStructure.getSemanticSignature(),
 				orientation, provenance, lineage, properties, quality);
 	}
 
@@ -137,14 +180,19 @@ public final class LocusBranch2D {
 		return getSemanticSignature();
 	}
 
-	private static List<LocusInterval2D> immutableComponents(
-			List<LocusInterval2D> components) {
-		Objects.requireNonNull(components);
-		ArrayList<LocusInterval2D> copy = new ArrayList<>();
-		for (LocusInterval2D component : components) {
-			copy.add(Objects.requireNonNull(component));
+	LocusBranch2D bindExistenceToRevision(long revision) {
+		return new LocusBranch2D(branchKey, declaredDriverDomain,
+				existenceStructure.bindToRevision(revision), orientation, provenance,
+				lineage, properties, quality);
+	}
+
+	private List<LocusInterval2D> componentIntervals() {
+		ArrayList<LocusInterval2D> intervals = new ArrayList<>();
+		for (LocusExistenceStructure2D.ContinuousComponent component
+				: existenceStructure.getContinuousValidComponents()) {
+			intervals.add(component.getInterval());
 		}
-		return Collections.unmodifiableList(copy);
+		return Collections.unmodifiableList(intervals);
 	}
 
 	private static Set<BranchProperty> immutableProperties(

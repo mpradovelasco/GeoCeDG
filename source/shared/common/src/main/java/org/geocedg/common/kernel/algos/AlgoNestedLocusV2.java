@@ -12,6 +12,7 @@ import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusDriverDomainProvider2D;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusParameterMap2D;
 import org.geocedg.common.kernel.locus.LocusPointTransform2D;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.DefinitionStatus;
@@ -67,7 +68,8 @@ public final class AlgoNestedLocusV2 extends AlgoLocusV2 {
 				: upstreamDefinition.getLocusIdentity() + "@"
 						+ upstreamDefinition.getSemanticRevision();
 		return new LocusDefinition2D(locusIdentity, candidateRevision, status,
-				provider, branches, (definition, branch, parameter, session) -> {
+				provider, propagatedBranches(upstreamDefinition),
+				(definition, branch, parameter, session) -> {
 					getLocus().getInstrumentation().recordRevisionConsumption();
 					double upstreamParameter = parameterMap.map(parameter);
 					LocusEvaluation2D upstreamResult = upstreamDefinition.evaluate(
@@ -83,5 +85,26 @@ public final class AlgoNestedLocusV2 extends AlgoLocusV2 {
 				}, Determinism.POINTWISE_DETERMINISTIC,
 				compositionSignature + "|upstream=" + upstreamSignature,
 				getLocus().getInstrumentation());
+	}
+
+	private List<LocusBranch2D> propagatedBranches(
+			LocusDefinition2D upstreamDefinition) {
+		if (upstreamDefinition == null || upstreamDefinition.getBranches().stream()
+				.allMatch(branch -> branch.getExistenceStructure().getCompleteness()
+						== LocusExistenceStructure2D.Completeness.COMPLETE)) {
+			return branches;
+		}
+		return branches.stream().map(branch -> branch.getExistenceStructure()
+				.getCompleteness() == LocusExistenceStructure2D.Completeness.COMPLETE
+						? new LocusBranch2D(branch.getBranchKey(),
+								branch.getDeclaredDriverDomain(),
+								LocusExistenceStructure2D.notEstablished(
+										branch.getBranchKey(),
+										branch.getDeclaredDriverDomain(),
+										"nested-upstream-coverage-not-established"),
+								branch.getOrientation(), branch.getProvenance(),
+								branch.getLineage(), branch.getProperties(),
+								branch.getQuality())
+						: branch).toList();
 	}
 }

@@ -41,6 +41,16 @@ public final class SourceExportOutcome {
 		CONSTRUCTION_REVISION
 	}
 
+	/** Completeness of the semantic source coverage represented by this output. */
+	public enum SemanticCoverage {
+		/** This component is not governed by a decomposed semantic locus domain. */
+		NOT_APPLICABLE,
+		/** The source branch has a complete certified component decomposition. */
+		COMPLETE,
+		/** The component is certified locally; global source coverage is unknown. */
+		LOCALLY_CERTIFIED_GLOBAL_NOT_ESTABLISHED
+	}
+
 	private final String sourceId;
 	private final String sourceType;
 	private final String label;
@@ -53,6 +63,7 @@ public final class SourceExportOutcome {
 	private final String neutralEntityId;
 	private final ApproximationEvidence approximationEvidence;
 	private final String message;
+	private final SemanticCoverage semanticCoverage;
 
 	/**
 	 * Creates a complete per-component outcome.
@@ -75,6 +86,18 @@ public final class SourceExportOutcome {
 			ComponentAddress componentAddress, Fidelity fidelity, Reason reason,
 			String neutralEntityId,
 			ApproximationEvidence approximationEvidence, String message) {
+		this(sourceId, sourceType, label, sourceRevision, visible, identityScope,
+				componentAddress, fidelity, reason, neutralEntityId,
+				approximationEvidence, message, SemanticCoverage.NOT_APPLICABLE);
+	}
+
+	/** Creates an outcome with an explicit semantic-domain coverage statement. */
+	public SourceExportOutcome(String sourceId, String sourceType, String label,
+			long sourceRevision, boolean visible, IdentityScope identityScope,
+			ComponentAddress componentAddress, Fidelity fidelity, Reason reason,
+			String neutralEntityId,
+			ApproximationEvidence approximationEvidence, String message,
+			SemanticCoverage semanticCoverage) {
 		this.sourceId = requireText(sourceId, "source id");
 		this.sourceType = requireText(sourceType, "source type");
 		this.label = optionalText(label, "label");
@@ -90,6 +113,7 @@ public final class SourceExportOutcome {
 		this.neutralEntityId = optionalText(neutralEntityId, "neutral entity id");
 		this.approximationEvidence = approximationEvidence;
 		this.message = optionalText(message, "message");
+		this.semanticCoverage = require(semanticCoverage, "semantic coverage");
 		validateState();
 	}
 
@@ -139,6 +163,10 @@ public final class SourceExportOutcome {
 
 	public String getMessage() {
 		return message;
+	}
+
+	public SemanticCoverage getSemanticCoverage() {
+		return semanticCoverage;
 	}
 
 	public boolean isEmitted() {

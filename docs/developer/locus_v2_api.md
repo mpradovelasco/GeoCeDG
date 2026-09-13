@@ -120,9 +120,13 @@ cross-revision caches.
 
 ### Branch and quality values
 
-`LocusBranch2D` has one `branchKey`, declared domain, zero or more valid domain
-components, orientation, provenance, typed lineage, branch properties and four
-quality axes. A validity gap does not create a branch. Lineage cardinalities are
+`LocusBranch2D` has one `branchKey`, canonical declared domain, a revision-bound
+`LocusExistenceStructure2D`, orientation, provenance, typed lineage, branch
+properties and four quality axes. The structure separates typed existence
+coverage, locally certified continuous-valid components and global
+`COMPLETE | NOT_ESTABLISHED`. `getValidDomainComponents()` is a complete-only
+compatibility view; local consumers must request the certified-component view
+explicitly. A validity gap does not create a branch. Lineage cardinalities are
 validated:
 
 - `UNCHANGED`: no edges;

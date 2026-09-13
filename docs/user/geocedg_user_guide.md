@@ -1282,6 +1282,16 @@ valid domain or isolate a discontinuity fails strict preflight explicitly. It
 is not replaced by its display polyline, and a mixed strict request does not
 silently publish only the other components.
 
+For Locus V2, the canonical driver interval is not automatically a claim that
+the dependent construction exists everywhere. GeoCeDG exports each finite,
+locally certified continuous-valid component as an independent polyline and
+never connects it across an invalid or unresolved parameter interval. If local
+components are certified while global coverage remains `NOT_ESTABLISHED`, the
+preflight says so, the fidelity sidecar is mandatory, and the output is not
+described as the complete locus. This bounded incomplete semantic coverage is
+not the general partial-export option: every component that is admitted still
+has to pass the strict export request.
+
 ### Coordinates, units, scale and views
 
 GeoCeDG distinguishes five concepts:

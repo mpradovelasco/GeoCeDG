@@ -15,6 +15,7 @@ import java.util.OptionalDouble;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusPoint2D;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.DefinitionStatus;
@@ -161,8 +162,10 @@ public final class LocusPairIntersectionSolver2D {
 				new ArrayList<>(candidateSet.getDiagnostics());
 		List<String> expectedCoverage = context.getAllComponentPairKeys();
 		if (completeness == Completeness.COMPLETE
-				&& !sameCoverage(expectedCoverage,
-						candidateSet.getCoveredComponentPairKeys())) {
+				&& (!domainComplete(context.getFirstDefinition())
+						|| !domainComplete(context.getSecondDefinition())
+						|| !sameCoverage(expectedCoverage,
+								candidateSet.getCoveredComponentPairKeys()))) {
 			completeness = Completeness.INCOMPLETE;
 			method = CompletenessMethod.INCOMPLETE_CANDIDATE_COVERAGE;
 			if (kind == GeometryKind.EMPTY) {
@@ -170,7 +173,8 @@ public final class LocusPairIntersectionSolver2D {
 			}
 			diagnostics.add(new IntersectionDiagnostic2D(
 					DiagnosticCode.PAIR_COVERAGE_NOT_ESTABLISHED,
-					"Capability omitted at least one current component product"));
+					"Capability or source certificates do not establish the "
+							+ "complete component product"));
 		}
 
 		List<LocusPairIntersectionCandidate2D> candidates = deduplicate(context,
@@ -520,8 +524,16 @@ public final class LocusPairIntersectionSolver2D {
 
 	private static boolean empty(LocusDefinition2D definition) {
 		return definition.getDefinitionStatus() == DefinitionStatus.EMPTY_DOMAIN
-				|| definition.getBranches().stream().allMatch(branch ->
-						branch.getValidDomainComponents().isEmpty());
+				|| domainComplete(definition)
+						&& definition.getBranches().stream().allMatch(branch ->
+								branch.getCertifiedContinuousValidComponents()
+										.isEmpty());
+	}
+
+	private static boolean domainComplete(LocusDefinition2D definition) {
+		return definition.getBranches().stream().allMatch(branch ->
+				branch.getExistenceStructure().getCompleteness()
+						== LocusExistenceStructure2D.Completeness.COMPLETE);
 	}
 
 	private static ComponentAddress resolve(List<ComponentAddress> components,

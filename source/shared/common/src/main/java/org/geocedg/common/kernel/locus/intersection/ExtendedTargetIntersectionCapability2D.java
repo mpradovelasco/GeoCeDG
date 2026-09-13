@@ -69,7 +69,7 @@ public final class ExtendedTargetIntersectionCapability2D
 		boolean[] nonIsolatedZeroRun = {false};
 		for (LocusBranch2D branch : context.getDefinition().getBranches()) {
 			List<LocusInterval2D> components =
-					branch.getValidDomainComponents();
+					branch.getCertifiedContinuousValidComponents();
 			for (int componentIndex = 0;
 					componentIndex < components.size(); componentIndex++) {
 				String componentKey = IntersectionCapabilityContext2D.componentKey(

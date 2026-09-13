@@ -114,12 +114,10 @@ public final class SemanticGeneratorDescriptor1D {
 			return;
 		}
 		if (declaredDomain.getUpper() <= declaredDomain.getLower()
-				|| validComponents.size() != 1
-				|| !validComponents.get(0).equals(declaredDomain)
 				|| declaredDomain.isLowerClosed()
 						== declaredDomain.isUpperClosed()) {
 			throw new IllegalArgumentException(
-					"A periodic generator requires one positive half-open component");
+					"A periodic generator requires a positive half-open canonical domain");
 		}
 	}
 

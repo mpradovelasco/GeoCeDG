@@ -392,7 +392,8 @@ public final class LocusV2PublicOperations {
 		if (branch == null) {
 			return false;
 		}
-		for (LocusInterval2D component : branch.getValidDomainComponents()) {
+		for (LocusInterval2D component
+				: branch.getCertifiedContinuousValidComponents()) {
 			if (address.getComponentLineageKey().equals(
 					LocusComponentLineage2D.create(branch.getBranchKey(), component))
 					&& component.contains(address.getCanonicalParameter(),

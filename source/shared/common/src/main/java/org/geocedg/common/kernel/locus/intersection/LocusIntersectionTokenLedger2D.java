@@ -539,6 +539,20 @@ public final class LocusIntersectionTokenLedger2D {
 		return current != null && current.validatedEntry(token).isPresent();
 	}
 
+	/**
+	 * Returns the exact deterministic selector bound to one retained token.
+	 * This exposes existing identity evidence; it never resolves by coordinate,
+	 * parameter, list order or presentation state.
+	 *
+	 * @return current-or-dormant selector, or empty for legacy/invalid material
+	 */
+	public Optional<IntersectionRootDeterministicSelector2D>
+			getRetainedDeterministicSelector(String token) {
+		return current == null ? Optional.empty() : current.validatedEntry(token)
+				.flatMap(LocusIntersectionTokenLedger2D::currentRootAllocation)
+				.map(binding -> binding.selector);
+	}
+
 	/** Current eligibility of a retained D2 pair slot, not token identity. */
 	public enum PairBindingState {
 		ACTIVE, DORMANT, QUARANTINED

@@ -115,12 +115,16 @@ public final class GeoCeDGDefinitionInspector {
 				semanticDefinition.getProvider().getProviderId(), "");
 		for (LocusBranch2D branch : semanticDefinition.getBranches()) {
 			appendField(app, details, "Definition.Branch", branch.getBranchKey(), "");
-			for (LocusInterval2D component : branch.getValidDomainComponents()) {
+			for (LocusInterval2D component
+					: branch.getCertifiedContinuousValidComponents()) {
 				String lineage = LocusComponentLineage2D.create(branch.getBranchKey(),
 						component);
 				appendField(app, details, "Definition.Component",
 						lineage + " " + component, "  ");
 			}
+			details.append("  existence completeness: ")
+					.append(branch.getExistenceStructure().getCompleteness())
+					.append('\n');
 		}
 	}
 

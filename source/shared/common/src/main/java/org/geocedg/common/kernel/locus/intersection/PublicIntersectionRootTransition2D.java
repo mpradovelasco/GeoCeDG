@@ -139,10 +139,11 @@ public final class PublicIntersectionRootTransition2D {
 		if (branch == null) {
 			return false;
 		}
-		for (int index = 0; index < branch.getValidDomainComponents().size();
+		for (int index = 0;
+				index < branch.getCertifiedContinuousValidComponents().size();
 				index++) {
-			LocusInterval2D component =
-					branch.getValidDomainComponents().get(index);
+			LocusInterval2D component = branch
+					.getCertifiedContinuousValidComponents().get(index);
 			if (!IntersectionCapabilityContext2D.componentKey(
 					branch.getBranchKey(), index).equals(
 							current.getResolvedValidComponentKey())) {

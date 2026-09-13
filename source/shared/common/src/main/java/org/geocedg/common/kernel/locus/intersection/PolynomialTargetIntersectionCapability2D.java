@@ -108,13 +108,14 @@ final class PolynomialTargetIntersectionCapability2D
 								"Spline structural capture unavailable; floating fallback "
 										+ "cannot certify roots")));
 			}
-			for (int componentIndex = 0; componentIndex < branch
-					.getValidDomainComponents().size(); componentIndex++) {
+			List<LocusInterval2D> components =
+					branch.getCertifiedContinuousValidComponents();
+			for (int componentIndex = 0; componentIndex < components.size();
+					componentIndex++) {
 				String componentKey = IntersectionCapabilityContext2D.componentKey(
 						branch.getBranchKey(), componentIndex);
 				examinedComponents.add(componentKey);
-				LocusInterval2D component = branch.getValidDomainComponents()
-						.get(componentIndex);
+				LocusInterval2D component = components.get(componentIndex);
 				boolean periodicCycle = isPeriodicFundamentalCycle(context,
 						branch, component);
 				int spanCount = source.getPolynomialSpanCount(

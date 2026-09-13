@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.geocedg.common.export.SourceExportOutcome.Fidelity;
+import org.geocedg.common.export.SourceExportOutcome.SemanticCoverage;
 
 /**
  * Immutable result of adapting and classifying one requested export before any
@@ -34,6 +35,7 @@ public final class GeometryExportPreflight {
 	private final int invalidCount;
 	private final int hiddenCount;
 	private final int excludedPopulationCount;
+	private final int incompleteSemanticCoverageCount;
 	private final boolean sidecarRequired;
 	private final boolean writable;
 
@@ -51,8 +53,13 @@ public final class GeometryExportPreflight {
 		int approximate = 0;
 		int unsupported = 0;
 		int invalid = 0;
+		int incompleteCoverage = 0;
 		Set<String> hiddenSources = new LinkedHashSet<>();
 		for (SourceExportOutcome outcome : model.getOutcomes()) {
+			if (outcome.getSemanticCoverage()
+					== SemanticCoverage.LOCALLY_CERTIFIED_GLOBAL_NOT_ESTABLISHED) {
+				incompleteCoverage++;
+			}
 			if (!outcome.isVisible()) {
 				hiddenSources.add(outcome.getIdentityScope() + ":"
 						+ outcome.getSourceId());
@@ -84,8 +91,9 @@ public final class GeometryExportPreflight {
 						== GeometryExportModel.DiagnosticCode
 								.OUTSIDE_GEOMETRIC_POPULATION)
 				.count();
+		incompleteSemanticCoverageCount = incompleteCoverage;
 		sidecarRequired = request.isSidecarRequested()
-				|| model.hasFidelityReduction();
+				|| model.hasFidelityReduction() || incompleteCoverage > 0;
 		writable = !request.isPartialOutputAllowed()
 				&& !model.getEntities().isEmpty() && unsupported == 0
 				&& invalid == 0;
@@ -127,6 +135,16 @@ public final class GeometryExportPreflight {
 	/** @return sources excluded before strict geometric preflight */
 	public int getExcludedPopulationCount() {
 		return excludedPopulationCount;
+	}
+
+	/** @return emitted components whose source decomposition is not globally known */
+	public int getIncompleteSemanticCoverageCount() {
+		return incompleteSemanticCoverageCount;
+	}
+
+	/** @return whether any output is only a locally certified part of its source */
+	public boolean hasIncompleteSemanticCoverage() {
+		return incompleteSemanticCoverageCount > 0;
 	}
 
 	public boolean isSidecarRequired() {

@@ -209,7 +209,8 @@ public final class IntersectionCapabilityContext2D {
 	public List<String> getAllComponentKeys() {
 		ArrayList<String> keys = new ArrayList<>();
 		for (LocusBranch2D branch : definition.getBranches()) {
-			List<LocusInterval2D> components = branch.getValidDomainComponents();
+			List<LocusInterval2D> components =
+					branch.getCertifiedContinuousValidComponents();
 			for (int index = 0; index < components.size(); index++) {
 				keys.add(componentKey(branch.getBranchKey(), index));
 			}

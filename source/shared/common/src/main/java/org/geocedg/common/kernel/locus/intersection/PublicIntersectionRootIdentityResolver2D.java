@@ -1071,13 +1071,14 @@ public final class PublicIntersectionRootIdentityResolver2D {
 		if (branch == null) {
 			return null;
 		}
-		for (int index = 0; index < branch.getValidDomainComponents().size();
+		for (int index = 0;
+				index < branch.getCertifiedContinuousValidComponents().size();
 				index++) {
 			if (IntersectionCapabilityContext2D.componentKey(
 					branch.getBranchKey(), index).equals(
 							evidence.getResolvedValidComponentKey())) {
-				LocusInterval2D interval =
-						branch.getValidDomainComponents().get(index);
+				LocusInterval2D interval = branch
+						.getCertifiedContinuousValidComponents().get(index);
 				return new ComponentAddress(
 						IntersectionTokenLineage2D.stableComponentLineage(
 								branch.getBranchKey(), interval),

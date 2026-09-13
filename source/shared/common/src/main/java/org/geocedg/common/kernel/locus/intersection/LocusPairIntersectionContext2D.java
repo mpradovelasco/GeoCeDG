@@ -194,12 +194,13 @@ public final class LocusPairIntersectionContext2D {
 			LocusDefinition2D definition) {
 		ArrayList<ComponentAddress> result = new ArrayList<>();
 		for (LocusBranch2D branch : definition.getBranches()) {
-			for (int index = 0;
-					index < branch.getValidDomainComponents().size(); index++) {
+			List<LocusInterval2D> components =
+					branch.getCertifiedContinuousValidComponents();
+			for (int index = 0; index < components.size(); index++) {
 				result.add(new ComponentAddress(branch.getBranchKey(),
 						IntersectionCapabilityContext2D.componentKey(
 								branch.getBranchKey(), index),
-						branch.getValidDomainComponents().get(index)));
+						components.get(index)));
 			}
 		}
 		return Collections.unmodifiableList(result);

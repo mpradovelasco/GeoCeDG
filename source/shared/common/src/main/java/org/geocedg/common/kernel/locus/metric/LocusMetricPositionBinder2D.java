@@ -46,10 +46,11 @@ public final class LocusMetricPositionBinder2D {
 					"Constructive branch is absent in this revision");
 		}
 		double parameter = position.getProviderCanonicalParameter();
-		for (int index = 0; index < branch.getValidDomainComponents().size();
+		for (int index = 0;
+				index < branch.getCertifiedContinuousValidComponents().size();
 				index++) {
 			LocusInterval2D component =
-					branch.getValidDomainComponents().get(index);
+					branch.getCertifiedContinuousValidComponents().get(index);
 			if (component.contains(parameter,
 					definition.getProvider().getDomainEpsilon())) {
 				if (position.getComponentLineageKey() != null

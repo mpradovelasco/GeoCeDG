@@ -1,14 +1,17 @@
 # PRE-G9B-S1-R2 — existence/component implementation gate
 
-- Status: **VALIDATION DESIGN CANDIDATE — PRODUCT IMPLEMENTATION NOT AUTHORIZED**
+- Status: **IMPLEMENTATION VALIDATION CANDIDATE — PENDING AUTHOR REVIEW**
 - Entry: `e5260fc7dd4924f0599ac3ac2700025bf5e48330`
 - Design: [R2 architecture](../architecture/pre_g9b_s1_r2_locus_existence_components_design.md)
 - Specification: [R2 normative candidate](../../geocedg/specs/locus/locus-v2-existence-components.md)
-- Decision: [proposed ADR 0027](../adr/0027-locus-v2-existence-and-continuous-valid-components.md)
+- Decision: [accepted ADR 0027](../adr/0027-locus-v2-existence-and-continuous-valid-components.md)
 - `selfApproved=false`
 
-No row is claimed as implemented or passing. The final test identities must be
-registered only after separate productive authorization and code review.
+The author approved the R2 design and bounded I1--I3 implementation. Permanent
+evidence is provided by `PreG9BS1R2ExistenceStructureTest`, the author-backed
+`PreG9BS1AuthorDxfReproductionTest`, and the retained Locus V2, metric,
+intersection, render, G9X1 and S1 regressions in the R2/S1 phase selections.
+Technical PASS remains distinct from author approval.
 
 ## Required semantic cases
 
@@ -94,11 +97,13 @@ registered only after separate productive authorization and code review.
 | R2-L07 | Temporary invalidity does not allocate a new Locus V2 or root persistent identity. | lifecycle |
 | R2-L08 | Dynamic component lineage is revision-local unless an explicit unique transition is proved. | lineage |
 
-## Planned verification gates
+## Candidate verification gates
 
-After separate author authorization, development uses focused shared-kernel,
-consumer, persistence, G9X1 and author-fixture tests. The immutable implementation
-candidate then runs:
+The author-authorized I1--I3 implementation uses focused shared-kernel,
+consumer, persistence, G9X1 and author-fixture tests. The registered R2
+selection contains 241 shared and 35 Desktop identities; the combined S1
+selection contains 250 shared and 149 Desktop identities. The immutable
+implementation candidate runs:
 
 1. `git diff --check` and applicable shared/Desktop checkstyle;
 2. registry/inventory consistency;
