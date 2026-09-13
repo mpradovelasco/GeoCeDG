@@ -45,7 +45,35 @@ final class GeoCeDGNavigationShortcutPreferences {
 		ACCEPTED, INVALID_FACTOR, INVALID_SHORTCUT, CONFLICT
 	}
 
+	enum ShortcutStatus {
+		AVAILABLE, UNASSIGNED, INVALID, CONFLICT
+	}
+
 	record Configuration(double factor, KeyStroke zoomIn, KeyStroke zoomOut) {
+	}
+
+	record ShortcutValidation(ShortcutStatus status, String conflictingActionId) {
+	}
+
+	record DraftValidation(boolean factorValid, ShortcutValidation zoomIn,
+			ShortcutValidation zoomOut, Configuration configuration) {
+		boolean isValid() {
+			return factorValid && zoomIn.status() != ShortcutStatus.INVALID
+					&& zoomIn.status() != ShortcutStatus.CONFLICT
+					&& zoomOut.status() != ShortcutStatus.INVALID
+					&& zoomOut.status() != ShortcutStatus.CONFLICT;
+		}
+
+		Result result() {
+			if (!factorValid) {
+				return Result.INVALID_FACTOR;
+			}
+			if (zoomIn.status() == ShortcutStatus.INVALID
+					|| zoomOut.status() == ShortcutStatus.INVALID) {
+				return Result.INVALID_SHORTCUT;
+			}
+			return isValid() ? Result.ACCEPTED : Result.CONFLICT;
+		}
 	}
 
 	private final GeoCeDGActionRegistry registry;
@@ -59,7 +87,8 @@ final class GeoCeDGNavigationShortcutPreferences {
 				FACTOR_PREFERENCE_KEY, ""));
 		zoomIn = loadBinding(ZOOM_IN_PREFERENCE_KEY);
 		zoomOut = loadBinding(ZOOM_OUT_PREFERENCE_KEY);
-		if (sameBinding(zoomIn, zoomOut) || conflict(zoomIn) || conflict(zoomOut)) {
+		if (sameBinding(zoomIn, zoomOut) || conflictingAction(zoomIn) != null
+				|| conflictingAction(zoomOut) != null) {
 			zoomIn = null;
 			zoomOut = null;
 		}
@@ -76,31 +105,50 @@ final class GeoCeDGNavigationShortcutPreferences {
 
 	Result setConfiguration(double proposedFactor, KeyStroke proposedIn,
 			KeyStroke proposedOut) {
-		if (!validFactor(proposedFactor)) {
-			return Result.INVALID_FACTOR;
+		return setConfiguration(Double.toString(proposedFactor), proposedIn, proposedOut);
+	}
+
+	Result setConfiguration(String proposedFactor, KeyStroke proposedIn,
+			KeyStroke proposedOut) {
+		DraftValidation validation = validateConfiguration(proposedFactor,
+				proposedIn, proposedOut);
+		if (!validation.isValid()) {
+			return validation.result();
 		}
-		KeyStroke normalizedIn = normalize(proposedIn);
-		KeyStroke normalizedOut = normalize(proposedOut);
-		if ((proposedIn != null && !valid(normalizedIn))
-				|| (proposedOut != null && !valid(normalizedOut))) {
-			return Result.INVALID_SHORTCUT;
-		}
-		if (sameBinding(normalizedIn, normalizedOut)
-				|| conflict(normalizedIn) || conflict(normalizedOut)) {
-			return Result.CONFLICT;
-		}
+		Configuration accepted = validation.configuration();
 
 		// Validate the complete proposal before publishing any preference.
 		GeoGebraPreferencesD preferences = GeoGebraPreferencesD.getPref();
 		preferences.savePreference(FACTOR_PREFERENCE_KEY,
-				Double.toString(proposedFactor));
-		preferences.savePreference(ZOOM_IN_PREFERENCE_KEY, encode(normalizedIn));
-		preferences.savePreference(ZOOM_OUT_PREFERENCE_KEY, encode(normalizedOut));
-		factor = proposedFactor;
-		zoomIn = normalizedIn;
-		zoomOut = normalizedOut;
+				Double.toString(accepted.factor()));
+		preferences.savePreference(ZOOM_IN_PREFERENCE_KEY, encode(accepted.zoomIn()));
+		preferences.savePreference(ZOOM_OUT_PREFERENCE_KEY, encode(accepted.zoomOut()));
+		factor = accepted.factor();
+		zoomIn = accepted.zoomIn();
+		zoomOut = accepted.zoomOut();
 		applyAccelerators();
 		return Result.ACCEPTED;
+	}
+
+	DraftValidation validateConfiguration(String proposedFactor, KeyStroke proposedIn,
+			KeyStroke proposedOut) {
+		double parsedFactor = Double.NaN;
+		try {
+			parsedFactor = Double.parseDouble(proposedFactor.trim());
+		} catch (RuntimeException exception) {
+			// The typed draft result is the single validation authority for the dialog.
+		}
+		boolean factorValid = validFactor(parsedFactor);
+		KeyStroke normalizedIn = normalize(proposedIn);
+		KeyStroke normalizedOut = normalize(proposedOut);
+		ShortcutValidation in = validateShortcut(proposedIn, normalizedIn);
+		ShortcutValidation out = validateShortcut(proposedOut, normalizedOut);
+		if (sameBinding(normalizedIn, normalizedOut)) {
+			in = new ShortcutValidation(ShortcutStatus.CONFLICT, ZOOM_OUT_ACTION_ID);
+			out = new ShortcutValidation(ShortcutStatus.CONFLICT, ZOOM_IN_ACTION_ID);
+		}
+		return new DraftValidation(factorValid, in, out,
+				new Configuration(parsedFactor, normalizedIn, normalizedOut));
 	}
 
 	Result reset() {
@@ -109,7 +157,7 @@ final class GeoCeDGNavigationShortcutPreferences {
 
 	private KeyStroke loadBinding(String key) {
 		KeyStroke stored = decode(GeoGebraPreferencesD.getPref().loadPreference(key, ""));
-		return stored != null && !conflict(stored) ? stored : null;
+		return stored != null && conflictingAction(stored) == null ? stored : null;
 	}
 
 	private void applyAccelerators() {
@@ -117,19 +165,32 @@ final class GeoCeDGNavigationShortcutPreferences {
 		registry.get(ZOOM_OUT_ACTION_ID).putValue(Action.ACCELERATOR_KEY, zoomOut);
 	}
 
-	private boolean conflict(KeyStroke proposed) {
+	private ShortcutValidation validateShortcut(KeyStroke proposed, KeyStroke normalized) {
 		if (proposed == null) {
-			return false;
+			return new ShortcutValidation(ShortcutStatus.UNASSIGNED, null);
+		}
+		if (!valid(normalized)) {
+			return new ShortcutValidation(ShortcutStatus.INVALID, null);
+		}
+		String conflict = conflictingAction(normalized);
+		return conflict == null
+				? new ShortcutValidation(ShortcutStatus.AVAILABLE, null)
+				: new ShortcutValidation(ShortcutStatus.CONFLICT, conflict);
+	}
+
+	private String conflictingAction(KeyStroke proposed) {
+		if (proposed == null) {
+			return null;
 		}
 		for (String id : registry.ids()) {
 			if (!ZOOM_IN_ACTION_ID.equals(id) && !ZOOM_OUT_ACTION_ID.equals(id)
 					&& proposed.equals(registry.get(id).getValue(Action.ACCELERATOR_KEY))) {
-				return true;
+				return id;
 			}
 		}
 		if ((proposed.getModifiers() & InputEvent.CTRL_DOWN_MASK) != 0
 				&& RESERVED_CTRL_KEYS.contains(proposed.getKeyCode())) {
-			return true;
+			return "GeoGebra";
 		}
 		Component main = registry.getApp().getMainComponent();
 		JComponent root = main == null ? null : SwingUtilities.getRootPane(main);
@@ -139,11 +200,11 @@ final class GeoCeDGNavigationShortcutPreferences {
 					JComponent.WHEN_IN_FOCUSED_WINDOW}) {
 				InputMap map = root.getInputMap(condition);
 				if (map != null && map.get(proposed) != null) {
-					return true;
+					return String.valueOf(map.get(proposed));
 				}
 			}
 		}
-		return false;
+		return null;
 	}
 
 	private static boolean sameBinding(KeyStroke first, KeyStroke second) {

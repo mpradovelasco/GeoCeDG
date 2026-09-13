@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.ButtonGroup;
+import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JDialog;
 import javax.swing.JMenu;
@@ -164,31 +165,30 @@ final class GeoCeDGHostMenuFactory {
 			GeoCeDGActionRegistry registry) {
 		GeoCeDGNavigationSettingsPanel panel =
 				new GeoCeDGNavigationSettingsPanel(registry);
-		Object assign = registry.text("Navigation.Apply");
-		Object reset = registry.text("Navigation.Shortcut.Reset");
-		Object cancel = registry.text("Navigation.Shortcut.Cancel");
+		JButton assign = new JButton(registry.text("Navigation.Apply"));
+		JButton reset = new JButton(registry.text("Navigation.Shortcut.Reset"));
+		JButton cancel = new JButton(registry.text("Navigation.Shortcut.Cancel"));
+		bindNavigationApplyState(panel, assign);
 		JOptionPane optionPane = new JOptionPane(panel, JOptionPane.PLAIN_MESSAGE,
 				JOptionPane.DEFAULT_OPTION, null, new Object[] {assign, reset, cancel}, assign);
 		JDialog dialog = optionPane.createDialog(app.getMainComponent(),
 				registry.text("Navigation.Configure"));
-		optionPane.addPropertyChangeListener(JOptionPane.VALUE_PROPERTY, event -> {
-			Object choice = optionPane.getValue();
-			if (choice == JOptionPane.UNINITIALIZED_VALUE) {
-				return;
+		assign.addActionListener(event -> {
+			if (panel.applyConfiguration()) {
+				dialog.dispose();
 			}
-			if (assign.equals(choice) && !panel.applyConfiguration()) {
-				// Keep this same dialog active so the invalid draft can be corrected.
-				optionPane.setValue(JOptionPane.UNINITIALIZED_VALUE);
-				return;
-			}
-			if (reset.equals(choice)) {
-				panel.showDefaults();
-				optionPane.setValue(JOptionPane.UNINITIALIZED_VALUE);
-				return;
-			}
-			dialog.dispose();
 		});
+		reset.addActionListener(event -> panel.showDefaults());
+		cancel.addActionListener(event -> dialog.dispose());
 		dialog.setVisible(true);
+	}
+
+	static void bindNavigationApplyState(GeoCeDGNavigationSettingsPanel panel,
+			JButton apply) {
+		apply.setEnabled(panel.isDraftValid());
+		panel.addPropertyChangeListener(
+				GeoCeDGNavigationSettingsPanel.DRAFT_VALID_PROPERTY,
+				event -> apply.setEnabled(Boolean.TRUE.equals(event.getNewValue())));
 	}
 
 	private static JCheckBoxMenuItem addView(AppD app, JMenu menu, String key, int viewId) {

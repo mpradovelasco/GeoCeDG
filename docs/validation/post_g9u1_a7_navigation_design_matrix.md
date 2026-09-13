@@ -1,11 +1,11 @@
 # POST-G9U1-A7 navigation design and future validation matrix
 
 - Design status: **AUTHOR APPROVED**
-- Implementation status: **CORRECTED IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**
+- Implementation status: **CORRECTED IMPLEMENTATION CANDIDATE — PENDING AUTHOR SMOKE**
 - Base commit: `71483011be9bb9fdfe896f00af0ba8323f9c0834`
 - Product phase effect: **BOUNDED IMPLEMENTATION CANDIDATE**
 - Product implementation authorized: **true, bounded to the approved design**
-- Product code changed: **true, candidate pending author review**
+- Product code changed: **true, candidate pending author smoke**
 - Design authority candidate:
   [A7 navigation design](../architecture/post_g9u1_a7_navigation_design.md)
 
@@ -15,6 +15,10 @@ The author-approved design is `98280d81771758258f29bfb80c6d025a192b3dca`;
 interactive smoke of initial candidate
 `b249a62aa6e0e7e844ec350ccbfd600ae5553b2c` authorized the bounded corrected
 evidence below without reopening broader G12.
+That candidate's successor `ee0f6acd9ea17541cfef2cb5d9984ab96029a741`
+passed automated verification; the second author smoke found missing immediate
+validation feedback and non-operative real menu/toolbar activation. The current
+successor adds only those two bounded integration regressions.
 
 ## 1. Characterization matrix
 
@@ -46,7 +50,7 @@ evidence below without reopening broader G12.
 | A7-T05 | existing ZoomWindow reuse and fit | finalization calls the G9U1 rectangle real-world seam, contains wide/tall selections and preserves `xScale / yScale` | Desktop controller test |
 | A7-T06 | explicit and configured action dispatch | Navigation exposes distinct ZoomWindow plus `navigation.zoom-factor-in/out`; inherited `+/-` is unchanged | shared + Desktop action/input test |
 | A7-T07 | application preference persistence | factor 10 and two initially unbound chords survive preference reload, remain absent from document XML and reset to defaults | Desktop preference test |
-| A7-T08 | atomic conflict/validation UX | invalid factor, same-chord, GeoCeDG/root/inherited conflicts keep the same panel active and leave prior preferences unchanged | Desktop panel/policy test |
+| A7-T08 | live atomic conflict/validation UX | every chord immediately reports Available/Unassigned, Invalid or its conflicting action; Apply follows that same typed result and remains disabled until the whole draft is valid; prior preferences remain unchanged | Desktop panel/policy/dialog-state test |
 | A7-T09 | no/stale cursor | keyboard zoom uses `(width/2,height/2)`; after exit (including text-field focus), re-entry without movement or workspace replacement, ZoomWindow enters `WAIT_FOR_DRAG` without fabricated extent | shared + Desktop test |
 | A7-T10 | Classic regression | ordinary Classic bindings and cursor zoom remain unchanged except corrected true-centre fallback | Desktop Classic regression |
 | A7-T11 | old-file save/reopen | no shortcut or semantic association is manufactured; view presentation remains host-compatible | Desktop round trip |
@@ -56,6 +60,7 @@ evidence below without reopening broader G12.
 | A7-T15 | unsupported active view | action never silently operates on view 1 when secondary 2D/3D is active | Desktop action test |
 | A7-T16 | DPI/viewport independence | changing component size/DPI affects only view mapping, not geometry/metrics/identity | shared + semantic regression |
 | A7-T17 | configured factor reciprocity | factor In multiplies both scales, Out divides them, both preserve current cursor/true-centre anchor, and In+Out restores the transform | Desktop controller/action test |
+| A7-T18 | real menu/toolbar ZoomWindow wiring | the actual menu item and profile-flyout item share one registry action, defer arming past focus/mode notifications, consume the next primary rectangle, reach G9U1 finalization and preserve Escape cancellation | Desktop menu/toolbar/controller integration test |
 
 Tests must compare model state independently from serialized view presentation.
 Pixel screenshots and painting timing are not acceptance authority.
@@ -102,15 +107,11 @@ spatial reconstruction or DAG membership.
 
 ## 5. Author repeat-smoke checklist
 
-1. Confirm inherited wheel and `Ctrl`+`+/-` retain their familiar behavior.
-2. Run **View → Navigation → Zoom to rectangle** with wide and tall rectangles
-   in a non-square view; confirm the region is contained without X/Y stretching.
-3. Press Escape before dragging and during a rectangle preview; confirm the view
-   does not move and the ordinary tool state returns.
-4. Configure factor 10 and two non-conflicting chords; confirm In then Out at
-   the same cursor restores the view.
-5. Enter factor 1 and then colliding chords; confirm the same dialog remains
-   open, identifies each problem and preserves the prior saved configuration.
-6. Cancel a valid unsaved draft; reopen configuration and confirm the prior
-   values. Open another construction and confirm the application preferences
-   remain while construction geometry/identity is unchanged.
+1. Edit both factor shortcuts and confirm Available/conflict feedback changes
+   before pressing Apply; Apply remains disabled for an invalid whole draft.
+2. Choose **View → Navigation → Zoom to rectangle** and confirm the next normal
+   rectangle drag is consumed by ZoomWindow.
+3. Choose ZoomWindow from the toolbar flyout and confirm the same interaction.
+4. Complete a wide/tall rectangle and confirm containment without X/Y stretching.
+5. Activate from menu and toolbar, then press Escape before/during drag; confirm
+   no viewport change and restoration of ordinary interaction.

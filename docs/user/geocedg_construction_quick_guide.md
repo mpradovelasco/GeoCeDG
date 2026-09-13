@@ -223,7 +223,9 @@ escala X/Y y Escape cancela su rectángulo. Sin un cursor vigente, espera un
 arrastre real. **Configurar zoom de navegación…** permite elegir un factor
 (10 por defecto) y atajos independientes para Acercar/Alejar por factor. Una
 entrada inválida se corrige en el mismo diálogo y no sustituye la configuración
-anterior. Los zooms por factor usan el cursor vigente o el centro real de la
+anterior: cada atajo indica de inmediato si está disponible o con qué acción
+colisiona, y Aplicar permanece desactivado mientras el borrador sea inválido.
+Los zooms por factor usan el cursor vigente o el centro real de la
 vista. Ningún zoom cambia métricas, coordenadas, identidad ni proveniencia.
 
 ## 8. Herramientas propias persistentes y Laboratory

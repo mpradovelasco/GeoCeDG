@@ -1,7 +1,7 @@
 # POST-G9U1-A7 — cursor-centred navigation characterization and design
 
 - Design status: **AUTHOR APPROVED**
-- Implementation status: **CORRECTED IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**
+- Implementation status: **CORRECTED IMPLEMENTATION CANDIDATE — PENDING AUTHOR SMOKE**
 - Published base commit: `71483011be9bb9fdfe896f00af0ba8323f9c0834`
 - Published base tree: `81e690b68ed7ec2caa3f59ba6d8c6abf90ab3f38`
 - Product implementation authorized: **true, bounded to this design**
@@ -25,6 +25,14 @@ Escape cancellation and in-dialog validation, plus replacement of the proposed
 ZoomWindow chord by two configurable factor-zoom actions. This successor keeps
 the original characterization as history and records the author-authorized
 correction below.
+
+The corrected candidate `ee0f6acd9ea17541cfef2cb5d9984ab96029a741`
+passed its automated A7 verification. A second author smoke then found two
+bounded integration defects: shortcut validity was visible only after Apply,
+and the real menu/toolbar projections did not leave an operative ZoomWindow
+gesture armed. The successor correction keeps the approved behavior but uses
+one live typed draft-validation result for presentation and Apply, and arms the
+shared controller action after Swing focus/mode selection has settled.
 
 ## 1. Characterized authority
 
@@ -87,8 +95,9 @@ Classic as well as GeoCeDG. No GeoCeDG semantic conditional is justified.
 
 ```text
 navigation.zoom-window
-  -> GeoCeDGActionRegistry
-  -> GeoCeDGEuclidianController.activateZoomWindow()
+  -> the shared GeoCeDG menu/toolbar Action
+  -> GeoCeDGActionRegistry (select Move, defer until focus settles)
+  -> GeoCeDGEuclidianController.armZoomWindow()
   -> inherited selection rectangle
   -> EuclidianView.setAnimatedRealWorldCoordSystem(...)
   -> CoordSystemAnimation.initRW(...)
@@ -105,6 +114,12 @@ configurable chord. The author smoke retained the distinct action but redirected
 the configurable keyboard scope to factor In/Out. ZoomWindow itself remains
 reachable through the Navigation menu and toolbar; it is not conflated with the
 inherited zoom tools.
+
+Menu and toolbar are projections of the same registry `Action`. The UI path
+invalidates the canvas cursor context, selects the inherited Move mode, and arms
+ZoomWindow on the following Swing event turn. Thus the next primary-button
+rectangle is consumed by the product controller rather than Pan/selection,
+while the direct controller seam remains available to the G9U1 lifecycle.
 
 ## 2. Selected bounded contract
 
@@ -238,10 +253,11 @@ by:
 The proposed chords must also be distinct. Conflict, invalid factor, invalid key
 code, modifier-only input, unsupported typed-character
 binding, AltGraph/locale-ambiguous input, or an unavailable platform modifier is
-rejected atomically. The same dialog stays open with an inline validation
-message so the draft can be corrected. The prior valid configuration remains
-active; Cancel writes nothing and no command is overridden. Invalid stored
-values fail to the documented factor/unbound defaults.
+rejected atomically. The same typed draft result drives immediate per-field
+Available/Unassigned, Invalid or conflict-with-action feedback, Apply enablement
+and final persistence. The dialog stays open so the draft can be corrected. The
+prior valid configuration remains active; Cancel writes nothing and no command
+is overridden. Invalid stored values fail to the documented factor/unbound defaults.
 
 The small audited reserved set is a compatibility boundary necessitated by the
 host's switch-based global dispatcher, not a new general shortcut registry. A
@@ -327,7 +343,7 @@ configuration and gesture work remains GeoCeDG Desktop. Web and 3D do not change
     coordinates, durable IDs and representative Locus V2 addresses before/after
     every navigation path, independently of view XML.
 12. **Bounded implementation:** the six seams in section 7, one bounded PHASE,
-    Classic 5 Desktop only; the corrected candidate remains pending author review.
+    Classic 5 Desktop only; the corrected candidate remains pending author smoke.
 
 ## 10. ADR and unresolved questions
 

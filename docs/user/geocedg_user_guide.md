@@ -2,7 +2,7 @@
 
 Estado vivo del track post-G9U1: A3, su frontend Classic y A5 están
 **PASS — AUTHOR APPROVED**. El diseño A7 está autor-aprobado y su implementación
-corregida tras smoke es candidata pendiente de revisión autoral; no cambia Web
+corregida tras el segundo smoke es candidata pendiente de smoke/revisión autoral; no cambia Web
 ni autoriza G9B.
 
 Estado publicado R1: **PASS — AUTHOR APPROVED**, smoke autoral **PASS**.
@@ -1059,17 +1059,18 @@ are semantic sources with new identity, not transformed render samples. For
 measurements use `Length(S)` or `Length(S,P,Q)`; `LocusLength(...)` remains the
 rich evidence surface. Inherited Zoom In/Out and `+/-` retain their host
 behavior. The distinct GeoCeDG **Zoom to rectangle** action is available under
-View → Navigation, reuses the existing rectangle gesture, preserves the current
-X/Y scale relation and can be cancelled with Escape. With a current cursor it
-may use that point as the first corner; otherwise it waits for an ordinary
-press-drag-release.
+View → Navigation and the toolbar. Both projections use the same action, settle
+the host Move/focus lifecycle, and then arm the existing rectangle gesture. It
+preserves the current X/Y scale relation and can be cancelled with Escape. The
+menu/toolbar action waits for an ordinary press-drag-release in the canvas.
 
 View → **Configure navigation zoom...** sets one factor (default 10) and
 independent, initially unassigned shortcuts for **Zoom Factor In** and **Zoom
 Factor Out**. They multiply/divide both view scales around the current cursor,
-or the true view centre when no current cursor exists. Invalid factors or
-conflicting shortcuts are identified inside the still-open dialog; nothing is
-persisted until the whole valid draft is applied, and Cancel keeps the previous
+or the true view centre when no current cursor exists. Each shortcut reports
+Available/Unassigned, Invalid or its conflicting action immediately while it is
+edited, and Apply is disabled until the whole draft is valid. Nothing is
+persisted until that valid draft is applied, and Cancel keeps the previous
 configuration. Factor, shortcuts and cursor are application/view presentation
 state and are never stored as construction or geometric authority. English and Spanish
 are the offered product languages, with English fallback. Save/reopen uses

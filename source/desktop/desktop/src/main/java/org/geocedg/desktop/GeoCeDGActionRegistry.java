@@ -26,6 +26,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.geocedg.common.main.feature.RuntimeFeatureService;
@@ -272,7 +273,7 @@ public final class GeoCeDGActionRegistry {
 			gui.getShowGridAction().actionPerformed(event);
 			break;
 		case "geocedg.navigation.zoom-window":
-			controller().activateZoomWindow();
+			activateZoomWindowFromPresentation();
 			break;
 		case "geocedg.navigation.zoom-factor-in":
 			controller().zoomByFactor(navigationShortcuts.getFactor());
@@ -376,6 +377,20 @@ public final class GeoCeDGActionRegistry {
 		default:
 			throw new IllegalStateException("Unbound action target " + target);
 		}
+	}
+
+	private void activateZoomWindowFromPresentation() {
+		GeoCeDGEuclidianController activeController = controller();
+		// A menu or toolbar click makes the preceding canvas cursor context stale.
+		// Select the host move mode before the flyout finishes its own selection,
+		// then arm on the next EDT turn after focus/mode notifications have settled.
+		activeController.invalidateNavigationCursorContext();
+		app.setMode(org.geogebra.common.euclidian.EuclidianConstants.MODE_MOVE);
+		SwingUtilities.invokeLater(() -> {
+			if (app.getActiveEuclidianView() == app.getEuclidianView1()) {
+				activeController.armZoomWindow();
+			}
+		});
 	}
 
 	private Boolean checked(String target) {

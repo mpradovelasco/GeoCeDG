@@ -256,6 +256,15 @@ public final class GeoCeDGEuclidianController
 		GPoint current = isMouseLocationValidForKeyboardNavigation()
 				? new GPoint(getMouseLoc().x, getMouseLoc().y) : null;
 		app.setMode(EuclidianConstants.MODE_MOVE);
+		armZoomWindow(current);
+	}
+
+	/** Arms the real menu/toolbar interaction after their focus lifecycle settles. */
+	void armZoomWindow() {
+		armZoomWindow(null);
+	}
+
+	private void armZoomWindow(GPoint current) {
 		zoomWindowActive = true;
 		zoomWindowKeyboardAnchored = current != null;
 		if (current != null) {
