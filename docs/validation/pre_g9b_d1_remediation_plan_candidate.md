@@ -1,11 +1,27 @@
 # PRE-G9B-D1 — remediation plan candidate
 
-Estado: **PROPOSED — NOT AUTHORIZED — NOT EXECUTED**
+Estado: **CANDIDATE — BOUNDED VERIFIER REMEDIATION EXECUTED; PRODUCT REMEDIATION PENDING**
 
 Este plan parte del
-[informe](pre_g9b_d1_licensing_assets_deployability_research_audit.md) y del
-[docket](pre_g9b_d1_human_decision_docket.md). No cambia producto, licencias,
-assets, runtime ni estado de fase.
+[informe original](pre_g9b_d1_licensing_assets_deployability_research_audit.md),
+el [informe de disposición](pre_g9b_d1_licensing_disposition_and_bounded_remediation_candidate.md)
+y el [docket reducido](pre_g9b_d1_human_decision_docket.md). La única
+remediación ejecutada fue corregir dos defectos del verificador MSI: lectura de
+la proyección `RegistryValue` de WiX 5 y confinamiento de su evidencia temporal.
+No cambió producto, licencia, assets, runtime, asociación instalada ni fase.
+
+## Checkpoint de continuación
+
+- `.cedg`: **RESUELTO TÉCNICAMENTE**. El MSI anterior ya registraba la
+  asociación; el audit conservado contenía un falso negativo. PACKAGING final
+  es `ACCEPTED / COMPLETE`.
+- Dependencies: 36/40 JAR externos pueden retenerse con los notices/textos
+  registrados. Giac, math-cross-platform, OpenGeoProver y jsobject siguen
+  bloqueados.
+- Fonts: 42/46 dispositionadas; cuatro requieren grant exacto o replacement.
+- Runtime/tooling: Temurin y el payload WiX quedan retenibles con sus textos y
+  source-access obligations.
+- Decisiones humanas: D1-HD-01 a D1-HD-04. El resto se retiró del docket.
 
 ## Principios de ejecución futura
 
@@ -23,7 +39,7 @@ assets, runtime ni estado de fase.
 
 ### R1. Fijar decisiones y scope
 
-Entradas: D1-HD-01 a D1-HD-08.
+Entradas: D1-HD-01 a D1-HD-04.
 
 Cambios mínimos futuros: un registro autoritativo de decisión por clase, scope
 binario/source y outputs permitidos. No incorporar todavía textos o assets.
@@ -93,7 +109,8 @@ Humano: alternativa JNA, términos no estándar, compatibility y permissions.
 - verificar que runtime/legal permanece íntegro;
 - analizar payload WiX byte-exacto y aplicar la decisión D1-HD-07;
 - reducir nativos cross-platform anidados solo si se autoriza y es seguro;
-- corregir la asociación .cedg o modificar el contrato según D1-HD-08.
+- conservar el checker de asociación `.cedg` contra el modelo MSI compilado;
+- añadir MS-RL/source access para el payload WiX incorporado.
 
 Validación mínima: app-image/ZIP launch, MSI/EXE install/uninstall, asociación,
 upgrade/cleanup si aplica, hash correspondence.

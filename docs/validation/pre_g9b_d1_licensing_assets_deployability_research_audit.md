@@ -350,6 +350,21 @@ toolchain, bootstrap scripts ni ninguna asunción consumida por workstation
 setup; solo registra las versiones observadas. El nivel requerido fue STATIC
 más el check canónico PACKAGING focalizado sobre outputs reales.
 
+### 10.1 Erratum de continuación — asociación `.cedg`
+
+La conclusión original de que el MSI no contenía la asociación queda
+preservada como resultado histórico del checker, pero fue refutada por
+evidencia posterior. El MSI auditado, SHA-256 `bbd69489b791ff307f904c6b625135db6a3e5753b30836b82159c3967a9cf948`,
+sí materializa `.cedg`, MIME, ProgId, open verb y target `GeoCeDG.exe` como
+filas de registro. WiX 5 proyecta esas tablas compiladas como `RegistryValue`
+al descompilar, mientras el checker original solo buscaba nodos de authoring
+`Extension/ProgId`.
+
+La continuación D1 corrigió únicamente el verificador y su write-root temporal;
+no cambió el generador ni el comportamiento del instalador. La disposición y
+receipts actualizados están en el
+[informe de continuación](pre_g9b_d1_licensing_disposition_and_bounded_remediation_candidate.md).
+
 ## 11. Autoridades y fuentes locales inspeccionadas
 
 - AGENTS.md;
