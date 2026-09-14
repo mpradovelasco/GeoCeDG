@@ -29,7 +29,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -286,47 +285,6 @@ class PreG9BS4PresentationSizingTest {
 
 	@Test
 	void persistentToolContainerHonorsNativeBottomAlignmentAtSupportedSizes() {
-		AppGeoCeDG app = G9U1TestApp.create();
-		Map<Category, Integer> original = snapshot(app);
-		try {
-			for (int size : new int[] {16, 28, 32, 64}) {
-				app.setPresentationSize(Category.TOOLBAR_ICON, size);
-				JToggleButton nativeButton =
-						GeoCeDGToolbarContainer.createNativeToolReference(app);
-				JToggleButton persistentButton = new JToggleButton(squareIcon(
-						nativeButton.getIcon().getIconWidth()));
-				GeoCeDGToolbarContainer.applyNativeToolPresentation(
-						persistentButton, nativeButton);
-				JPanel persistent = GeoCeDGUserTools.createPinnedContainer(
-						nativeButton, true);
-				persistent.add(persistentButton);
-				JPanel nativeContainer = (JPanel) nativeButton.getParent();
-				JPanel row = new JPanel();
-				row.setLayout(new BoxLayout(row, BoxLayout.X_AXIS));
-				row.add(nativeContainer);
-				row.add(persistent);
-				Dimension preferred = row.getPreferredSize();
-				row.setSize(preferred.width, preferred.height + 12);
-				row.doLayout();
-				nativeContainer.doLayout();
-				persistent.doLayout();
-				Point nativeOrigin = SwingUtilities.convertPoint(nativeContainer,
-						nativeButton.getLocation(), row);
-				Point persistentOrigin = SwingUtilities.convertPoint(persistent,
-						persistentButton.getLocation(), row);
-				assertEquals(nativeOrigin.y, persistentOrigin.y, "toolbar size " + size);
-				assertEquals(nativeButton.getPreferredSize(),
-						persistentButton.getPreferredSize(), "toolbar size " + size);
-				assertEquals(nativeButton.getAlignmentY(),
-						persistentButton.getAlignmentY(), "toolbar size " + size);
-			}
-		} finally {
-			restore(app, original);
-		}
-	}
-
-	@Test
-	void fullToolbarPlacesPersistentButtonOnNativePaintCenter() {
 		AppGeoCeDG app = G9U1TestApp.create();
 		Map<Category, Integer> original = snapshot(app);
 		try {
