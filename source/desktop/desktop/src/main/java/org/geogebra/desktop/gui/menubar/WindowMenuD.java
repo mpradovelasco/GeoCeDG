@@ -138,12 +138,12 @@ class WindowMenuD extends BaseMenu {
 
 	@Override
 	public void update() {
-		UIManager.put("MenuItem.acceleratorFont", app.getPlainFont());
+		UIManager.put("MenuItem.acceleratorFont", app.getMenuFont());
 		initItems();
 		if (newWindowAction != null) {
 			app.getMenuIcon(GuiResourcesD.DOCUMENT_NEW);
 		}
-		GeoGebraMenuBar.setMenuFontRecursive(this, app.getPlainFont());
+		GeoGebraMenuBar.setMenuFontRecursive(this, app.getMenuFont());
 	}
 
 }

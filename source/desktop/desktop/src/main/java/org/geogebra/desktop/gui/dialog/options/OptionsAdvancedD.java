@@ -91,6 +91,7 @@ public class OptionsAdvancedD implements OptionPanelD,
 	private JPanel usePathAndRegionParametersPanel;
 	private JPanel rightAnglePanel;
 	private JPanel coordinatesPanel;
+	private OptionPanelD productPresentationOptionsPanel;
 
 	private JLabel keyboardLanguageLabel;
 	private JLabel guiFontSizeLabel;
@@ -178,6 +179,7 @@ public class OptionsAdvancedD implements OptionPanelD,
 	private void initGUI() {
 		initVirtualKeyboardPanel();
 		initGUIFontSizePanel();
+		productPresentationOptionsPanel = app.newProductPresentationOptionsPanel();
 		initTooltipPanel();
 		initLanguagePanel();
 		// initPerspectivesPanel();
@@ -197,7 +199,8 @@ public class OptionsAdvancedD implements OptionPanelD,
 		panel.add(usePathAndRegionParametersPanel);
 
 		panel.add(virtualKeyboardPanel);
-		panel.add(guiFontsizePanel);
+		panel.add(productPresentationOptionsPanel == null ? guiFontsizePanel
+				: productPresentationOptionsPanel.getWrappedPanel());
 		panel.add(tooltipPanel);
 		panel.add(languagePanel);
 		// panel.add(perspectivesPanel);
@@ -518,6 +521,9 @@ public class OptionsAdvancedD implements OptionPanelD,
 		cbTooltipTimeout.addActionListener(this);
 
 		updateTooltipLanguages();
+		if (productPresentationOptionsPanel != null) {
+			productPresentationOptionsPanel.updateGUI();
+		}
 	}
 
 	private void updateGUIFont() {
@@ -798,6 +804,9 @@ public class OptionsAdvancedD implements OptionPanelD,
 		setLabelsGUIFontsize();
 		setLabelsTooltipLanguages();
 		setLabelsTooltipTimeouts();
+		if (productPresentationOptionsPanel instanceof SetLabels) {
+			((SetLabels) productPresentationOptionsPanel).setLabels();
+		}
 	}
 
 	/**
@@ -998,6 +1007,9 @@ public class OptionsAdvancedD implements OptionPanelD,
 		cbTooltipLanguage.setFont(font);
 		cbTooltipTimeout.setFont(font);
 		cbGUIFont.setFont(font);
+		if (productPresentationOptionsPanel != null) {
+			productPresentationOptionsPanel.updateFont();
+		}
 	}
 
 	@Override

@@ -190,7 +190,7 @@ public class AlgebraHelperBar extends JToolBar implements ActionListener {
 
 		for (int i = 0; i < sortModes.length; i++) {
 			JCheckBoxMenuItem mi = new JCheckBoxMenuItem();
-			mi.setFont(app.getPlainFont());
+			mi.setFont(app.getAlgebraFont());
 			mi.setBackground(Color.white);
 			final SortMode sort = sortModes[i];
 			mi.setText(loc.getMenu(sort.toString()));
@@ -228,7 +228,7 @@ public class AlgebraHelperBar extends JToolBar implements ActionListener {
 			if (product) {
 				descriptions.add(mi);
 			}
-			mi.setFont(app.getPlainFont());
+			mi.setFont(app.getAlgebraFont());
 			mi.setBackground(Color.white);
 			mi.setText(loc.getMenu(style.getTranslationKey()));
 			mi.addActionListener(e -> {

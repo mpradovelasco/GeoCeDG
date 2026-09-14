@@ -218,6 +218,9 @@ public class ConstructionProtocolNavigationD
 		implPanel.add(playPanel);
 		implPanel.add(btOpenWindow);
 		implPanel.add(Box.createRigidArea(new Dimension(20, 10)));
+		lbSteps.setFont(appD.getConstructionProtocolFont());
+		btPlay.setFont(appD.getConstructionProtocolFont());
+		spDelay.setFont(appD.getConstructionProtocolFont());
 
 		setLabels();
 		setPlayDelay(playDelay);
@@ -398,7 +401,9 @@ public class ConstructionProtocolNavigationD
 				((AppD) app).getScaledIcon(GuiResourcesD.NAV_FASTFORWARD64));
 		btOpenWindow.setIcon(((AppD) app)
 				.getScaledIcon(GuiResourcesD.MENU_VIEW_CONSTRUCTION_PROTOCOL));
-		lbSteps.setFont(((AppD) app).getPlainFont());
+		lbSteps.setFont(((AppD) app).getConstructionProtocolFont());
+		btPlay.setFont(((AppD) app).getConstructionProtocolFont());
+		spDelay.setFont(((AppD) app).getConstructionProtocolFont());
 		update();
 	}
 

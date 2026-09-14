@@ -137,7 +137,7 @@ public class OptionsMenuD extends BaseMenu
 			ButtonGroup languages = new ButtonGroup();
 			for (Language language : new Language[] {Language.English_US, Language.Spanish}) {
 				JRadioButtonMenuItem item = new LanguageRadioButtonMenuItem(language.name);
-				item.setFont(app.getPlainFont());
+				item.setFont(app.getMenuFont());
 				item.setSelected(language == Language.Spanish
 						? "es".equals(app.getLocale().getLanguage())
 						: !"es".equals(app.getLocale().getLanguage()));
@@ -192,7 +192,7 @@ public class OptionsMenuD extends BaseMenu
 			// make sure eg Malayalam, Georgian drawn OK (not in standard Java
 			// font)
 			mi.setFont(app.getFontCanDisplayAwt(text, false, Font.PLAIN,
-					app.getGUIFontSize()));
+					app.getMenuFont().getSize()));
 
 			if (loc.toLanguageTag().equals(currentLocale)) {
 				mi.setSelected(true);

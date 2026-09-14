@@ -1016,6 +1016,35 @@
       ]
     },
     {
+      "selection_id": "pre-g9b-s4.desktop",
+      "module": "desktop",
+      "gradle_task": ":desktop:desktop:test",
+      "test_filters": [
+        "org.geocedg.desktop.PreG9BS4PresentationSizingTest"
+      ],
+      "excluded_test_filters": [],
+      "effective_arguments": [
+        ":desktop:desktop:test",
+        "--tests",
+        "org.geocedg.desktop.PreG9BS4PresentationSizingTest",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 4,
+      "expected_identities_sha256": "c6ecb693e3e9dd4135ae8bbfe7e18bd078821ade51f4fb1cd643427a49218396",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "bd39099f668de81e9e65c415b28995de7b1c846b",
+          "tree": "f41cd5050ff013b1f073e5754fe1ccf3feb96a98"
+        }
+      ]
+    },
+    {
       "selection_id": "g8b.narrow",
       "module": "shared",
       "gradle_task": ":shared:common-jre:test",

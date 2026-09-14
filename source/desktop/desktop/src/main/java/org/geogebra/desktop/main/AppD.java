@@ -202,6 +202,7 @@ import org.geogebra.desktop.gui.dialog.AxesStyleListRenderer;
 import org.geogebra.desktop.gui.dialog.DashListRenderer;
 import org.geogebra.desktop.gui.dialog.DecorationListRenderer;
 import org.geogebra.desktop.gui.dialog.PointStyleListRenderer;
+import org.geogebra.desktop.gui.dialog.options.OptionPanelD;
 import org.geogebra.desktop.gui.dialog.options.OptionsAdvancedD;
 import org.geogebra.desktop.gui.inputbar.AlgebraInputD;
 import org.geogebra.desktop.gui.layout.DockBar;
@@ -2736,6 +2737,29 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 
 	final public Font getPlainFont() {
 		return ((GFontD) fontManager.getPlainFont()).getAwtFont();
+	}
+
+	/** @return font used by application menus */
+	public Font getMenuFont() {
+		return getPlainFont();
+	}
+
+	/** @return font used by the Algebra view */
+	public Font getAlgebraFont() {
+		return getPlainFont();
+	}
+
+	/** @return font used by the Construction Protocol */
+	public Font getConstructionProtocolFont() {
+		return getPlainFont();
+	}
+
+	/**
+	 * Product hook for replacing the inherited mixed GUI-font row.
+	 * @return product presentation options, or {@code null}
+	 */
+	public OptionPanelD newProductPresentationOptionsPanel() {
+		return null;
 	}
 
 	@Override

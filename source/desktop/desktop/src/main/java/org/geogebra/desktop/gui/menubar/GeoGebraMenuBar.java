@@ -210,7 +210,7 @@ public class GeoGebraMenuBar extends JMenuBar {
 				m.removeAll();
 
 				// update title (always visible)
-				m.setFont(app.getPlainFont());
+				m.setFont(app.getMenuFont());
 			}
 		}
 	}

@@ -233,7 +233,7 @@ public class ConstructionProtocolViewD extends ConstructionProtocolView
 	 * inits GUI with labels of current language
 	 */
 	public void initGUI() {
-		scrollPane.setFont(((AppD) app).getPlainFont());
+		scrollPane.setFont(((AppD) app).getConstructionProtocolFont());
 		getStyleBar().setLabels();
 		// set header values (language may have changed)
 		for (int k = 0; k < tableColumns.length; k++) {
@@ -241,7 +241,8 @@ public class ConstructionProtocolViewD extends ConstructionProtocolView
 					.setHeaderValue(data.columns[k].getTranslatedTitle());
 		}
 		table.updateUI();
-		table.setFont(((AppD) app).getPlainFont());
+		table.setFont(((AppD) app).getConstructionProtocolFont());
+		table.getTableHeader().setFont(((AppD) app).getConstructionProtocolFont());
 		data.updateAll();
 		getStyleBar().reinit();
 	}

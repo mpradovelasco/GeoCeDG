@@ -70,7 +70,7 @@ public class ConstructionProtocolContextMenu extends JPopupMenu {
 		// title for menu
 		JLabel title = new JLabel(loc.getMenu("ConstructionProtocol"));
 
-		title.setFont(app.getBoldFont());
+		title.setFont(app.getConstructionProtocolFont().deriveFont(java.awt.Font.BOLD));
 		title.setBackground(Color.white);
 		title.setForeground(Color.black);
 
@@ -90,9 +90,11 @@ public class ConstructionProtocolContextMenu extends JPopupMenu {
 
 		// "Columns" menu
 		JMenu colMenu = new JMenu(loc.getMenu("Columns"));
+		colMenu.setFont(app.getConstructionProtocolFont());
 		for (int k = 1; k < constprotView.getTableColumns().length; k++) {
 			JCheckBoxMenuItem item = new JCheckBoxMenuItem(
 					constprotView.getData().columns[k].getTranslatedTitle());
+			item.setFont(app.getConstructionProtocolFont());
 			TableColumn column = constprotView.getTableColumns()[k];
 			item.setSelected(constprotView.isColumnInModel(column));
 			ColumnKeeper colKeeper = constprotView.new ColumnKeeper(column,
@@ -106,14 +108,17 @@ public class ConstructionProtocolContextMenu extends JPopupMenu {
 		// "Options" menu
 		JCheckBoxMenuItem cbShowOnlyBreakpoints = new JCheckBoxMenuItem(
 				loc.getMenu("ShowOnlyBreakpoints"));
+		cbShowOnlyBreakpoints.setFont(app.getConstructionProtocolFont());
 		cbShowOnlyBreakpoints.setSelected(cons.showOnlyBreakpoints());
 
 		cbShowOnlyBreakpoints.addActionListener(e -> constprotView.showOnlyBreakpointsAction());
 		JMenu optionsMenu = new JMenu(loc.getMenu("Options"));
+		optionsMenu.setFont(app.getConstructionProtocolFont());
 		optionsMenu.add(cbShowOnlyBreakpoints);
 
 		JCheckBoxMenuItem cbUseColors = new JCheckBoxMenuItem(
 				loc.getMenu("ColorfulConstructionProtocol"));
+		cbUseColors.setFont(app.getConstructionProtocolFont());
 		cbUseColors.setSelected(constprotView.getUseColors());
 		cbUseColors.addActionListener(e -> {
 			constprotView.setUseColors(!constprotView.getUseColors());
@@ -122,12 +127,15 @@ public class ConstructionProtocolContextMenu extends JPopupMenu {
 		add(optionsMenu);
 
 		// Export and Print menu
-		add(constprotView.getExportHtmlAction());
-		add(constprotView.getPrintPreviewAction());
+		JMenuItem export = add(constprotView.getExportHtmlAction());
+		export.setFont(app.getConstructionProtocolFont());
+		JMenuItem print = add(constprotView.getPrintPreviewAction());
+		print.setFont(app.getConstructionProtocolFont());
 
 		// Help menu
 		JMenuItem mi = new JMenuItem(loc.getMenu("FastHelp"),
 				app.getScaledIcon(GuiResourcesD.HELP));
+		mi.setFont(app.getConstructionProtocolFont());
 		mi.addActionListener(e -> {
 			app.showHelp("ConstructionProtocolHelp");
 			requestFocus();

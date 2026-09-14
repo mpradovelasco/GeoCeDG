@@ -22,9 +22,21 @@ mantiene el tamaño heredado. El fixture manual está en
 El [informe de cierre S3](../validation/pre_g9b_s3_text_view_scaling_candidate_report.md)
 conserva la evidencia técnica y autoral; el
 [checklist de smoke autoral](../validation/pre_g9b_s3_author_smoke_checklist.md)
-registra la disposición del autor. `PRE-G9B-S4 — DESIGNED / NOT YET
-IMPLEMENTATION-AUTHORIZED`; S4 y las fases posteriores siguen sin autorización
-productiva.
+registra la disposición del autor.
+
+Estado PRE-G9B-S4: **IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**;
+`selfApproved=false`. En **Opciones > Avanzado > Tamaños de presentación**,
+GeoCeDG ofrece controles independientes para **Fuente de menús**, **Iconos de
+la barra**, **Fuente de Álgebra**, **Fuente del Protocolo de Construcción** y
+**Fuente de Gráficos**. Se aplican en vivo y se conservan como preferencias de
+usuario; no ensucian ni se serializan en la construcción. La fuente de Gráficos
+abarca la tipografía de interfaz/etiquetas ya gobernada por la vista, pero no el
+tamaño lógico de GeoText: el soporte S2 de 10 pt y el escalado con zoom S3
+permanecen separados. La falta de una clave S4 captura una vez el valor efectivo
+heredado, preservando la apariencia existente; una instalación nueva conserva
+los valores previos efectivos de 16 pt y 32 px. El resultado no está aprobado
+por el autor. D1, P1, G9B/G9C/G9U2, más G12 y G10 productivo permanecen fuera de
+alcance.
 
 Estado vivo del track post-G9U1: **COMPLETE — AUTHOR APPROVED**. A3, su
 frontend Classic, A5 y el slice A7 están **PASS — AUTHOR APPROVED**; A4 conserva

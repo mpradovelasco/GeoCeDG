@@ -148,7 +148,7 @@ final class GeoCeDGMenuBar extends GeoGebraMenuBar {
 					}
 				});
 				add(menu);
-				GeoGebraMenuBar.setMenuFontRecursive(menu, app.getPlainFont());
+				GeoGebraMenuBar.setMenuFontRecursive(menu, app.getMenuFont());
 			}
 			if (!projectedActions.equals(registry.ids())) {
 				throw new IllegalStateException("Menu projection does not match action catalog");

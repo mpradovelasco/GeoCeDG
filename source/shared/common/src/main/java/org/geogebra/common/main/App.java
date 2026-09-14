@@ -2401,6 +2401,13 @@ public abstract class App implements UpdateSelection, AppInterface, EuclidianHos
 		return settings.getFontSettings().getAppFontSize();
 	}
 
+	/**
+	 * @return font size owned by Euclidian view UI presentation
+	 */
+	public int getEuclidianViewFontSize() {
+		return getFontSize();
+	}
+
 	public double getFontSizeDouble() {
 		return settings.getFontSettings().getAppFontSize();
 	}

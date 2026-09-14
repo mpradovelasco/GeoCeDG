@@ -3500,7 +3500,7 @@ public abstract class EuclidianView implements EuclidianViewInterfaceCommon,
 	 * Update fonts
 	 */
 	public void updateFonts() {
-		setFontSize(getApplication().getFontSize());
+		setFontSize(getApplication().getEuclidianViewFontSize());
 
 		setFontPoint(getApplication().getPlainFontCommon().deriveFont(
 				GFont.PLAIN, getFontSize()));

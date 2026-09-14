@@ -3388,6 +3388,12 @@
     }
   ],
   "localized_text": {
+    "Presentation.Sizes": {"en": "Presentation sizes", "es": "Tamaños de presentación"},
+    "Presentation.MenuFont": {"en": "Menu font size", "es": "Tamaño de fuente de menús"},
+    "Presentation.ToolbarIcon": {"en": "Toolbar icon size", "es": "Tamaño de iconos de la barra"},
+    "Presentation.AlgebraFont": {"en": "Algebra font size", "es": "Tamaño de fuente de Álgebra"},
+    "Presentation.ConstructionProtocolFont": {"en": "Construction Protocol font size", "es": "Tamaño de fuente del Protocolo de Construcción"},
+    "Presentation.GraphicsFont": {"en": "Graphics font size", "es": "Tamaño de fuente de Gráficos"},
     "Navigation.Configure": {"en": "Configure navigation zoom...", "es": "Configurar zoom de navegación..."},
     "Navigation.ZoomFactor": {"en": "Zoom factor", "es": "Factor de zoom"},
     "Navigation.ZoomFactorIn": {"en": "Zoom Factor In shortcut", "es": "Atajo Acercar por factor"},

@@ -6,8 +6,10 @@
 package org.geocedg.desktop;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
@@ -28,6 +30,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
 
+import org.geocedg.desktop.resources.GeoCeDGToolImageResource;
 import org.geogebra.common.awt.AwtFactory;
 import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.io.layout.DockPanelData;
@@ -177,7 +180,7 @@ public final class GeoCeDGWorkspaceController {
 	/** @return workspace menu generated from the catalog, not a new action authority */
 	JMenu createWorkspaceMenu() {
 		JMenu menu = new JMenu(registry.text("Workspace.Restore"));
-		menu.setFont(app.getPlainFont());
+		menu.setFont(app.getMenuFont());
 		menu.putClientProperty("geocedg.document-layout", usesDocumentLayout());
 		menu.getAccessibleContext().setAccessibleDescription(usesDocumentLayout()
 				? registry.text("Workspace.DocumentLayout") : menu.getText());
@@ -345,7 +348,7 @@ public final class GeoCeDGWorkspaceController {
 				}
 			});
 			JMenuItem item = GeoCeDGMenuBar.createItem(action, radios);
-			item.setFont(app.getPlainFont());
+			item.setFont(app.getMenuFont());
 			item.setIcon(actionIcon(id));
 			item.addActionListener(event -> selectProfileFlyoutAction(button, id));
 			popup.add(item);
@@ -390,7 +393,7 @@ public final class GeoCeDGWorkspaceController {
 
 	void selectProfileFlyoutAction(JToggleButton button, String id) {
 		Action action = registry.get(id);
-		button.setIcon(actionIcon(id));
+		button.setIcon(flyoutIcon(button, id));
 		button.setText(null);
 		button.setEnabled(action.isEnabled());
 		button.setToolTipText((String) action.getValue(Action.SHORT_DESCRIPTION));
@@ -407,7 +410,27 @@ public final class GeoCeDGWorkspaceController {
 						"geocedg.toolbar.nativeVisualReference"));
 	}
 
+	private Icon flyoutIcon(JToggleButton button, String id) {
+		Object value = button.getClientProperty("geocedg.toolbar.popup");
+		if (value instanceof JPopupMenu popup) {
+			for (Component component : popup.getComponents()) {
+				if (component instanceof JMenuItem item && id.equals(item.getClientProperty(
+						GeoCeDGActionRegistry.ACTION_ID))) {
+					return item.getIcon();
+				}
+			}
+		}
+		return actionIcon(id);
+	}
+
 	private Icon actionIcon(String id) {
+		GeoCeDGToolImageResource artwork = GeoCeDGToolImageResource.forIconKey(
+				GeoCeDGProfile.getAction(id).iconKey());
+		Image image = artwork == null ? null : artwork.renderImage();
+		if (image != null) {
+			return app.getImageManager().getResponsiveScaledIcon(image,
+					app.getImageManager().getMaxIconSize());
+		}
 		Action action = registry.get(id);
 		Icon icon = (Icon) action.getValue(Action.LARGE_ICON_KEY);
 		if (icon == null) {
@@ -501,7 +524,7 @@ public final class GeoCeDGWorkspaceController {
 		ButtonGroup radios = new ButtonGroup();
 		for (String id : ids) {
 			JMenuItem item = GeoCeDGMenuBar.createItem(registry.get(id), radios);
-			item.setFont(app.getPlainFont());
+			item.setFont(app.getMenuFont());
 			popup.add(item);
 		}
 		return popup;

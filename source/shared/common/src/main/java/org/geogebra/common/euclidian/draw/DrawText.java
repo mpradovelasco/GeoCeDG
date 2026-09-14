@@ -326,7 +326,8 @@ public final class DrawText extends Drawable {
 	 * @return font size
 	 */
 	public double getFontSize() {
-		double logicalFontSize = text.getFontSize(view.getFontSize());
+		double logicalFontSize = text.getFontSize(
+				view.getApplication().getFontSize());
 		return isWorldScaledConstructionText()
 				? logicalFontSize * view.getXscale() / EuclidianView.SCALE_STANDARD
 				: logicalFontSize;

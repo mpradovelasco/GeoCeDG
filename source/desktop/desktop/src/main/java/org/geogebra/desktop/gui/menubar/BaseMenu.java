@@ -124,12 +124,12 @@ abstract class BaseMenu extends JMenu implements MenuListener {
 
 		if (getItemCount() == 0) {
 			// UIManager.put("Menu.acceleratorFont", app.getPlainFont());
-			UIManager.put("MenuItem.acceleratorFont", app.getPlainFont());
+			UIManager.put("MenuItem.acceleratorFont", app.getMenuFont());
 			initialized = true;
 			initActions();
 			initItems();
 			update();
-			GeoGebraMenuBar.setMenuFontRecursive(this, app.getPlainFont());
+			GeoGebraMenuBar.setMenuFontRecursive(this, app.getMenuFont());
 		}
 	}
 

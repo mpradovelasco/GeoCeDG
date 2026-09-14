@@ -225,7 +225,7 @@ final class GeoCeDGHostMenuFactory {
 
 	private static JMenu menu(AppD app, String key) {
 		JMenu menu = new JMenu(app.getLocalization().getMenu(key));
-		menu.setFont(app.getPlainFont());
+		menu.setFont(app.getMenuFont());
 		menu.getAccessibleContext().setAccessibleDescription(menu.getText());
 		return menu;
 	}
@@ -244,7 +244,7 @@ final class GeoCeDGHostMenuFactory {
 	}
 
 	private static void configure(AppD app, JMenuItem item, String id) {
-		item.setFont(app.getPlainFont());
+		item.setFont(app.getMenuFont());
 		item.putClientProperty(HOST_CONTROL_ID, id);
 		item.getAccessibleContext().setAccessibleDescription(item.getText());
 	}

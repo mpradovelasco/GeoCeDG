@@ -106,7 +106,8 @@ public class AlgebraTreeCellRenderer extends DefaultTreeCellRenderer {
 			String text = getDescription(geo, (GeoMutableTreeNode) value);
 
 			// make sure we use a font that can display the text
-			setFont(app.getFontCanDisplayAwt(text, Font.BOLD));
+			setFont(app.getFontCanDisplayAwt(text, false, Font.BOLD,
+					app.getAlgebraFont().getSize()));
 			setText(text);
 
 			if (geo.doHighlighting()) {
@@ -128,7 +129,7 @@ public class AlgebraTreeCellRenderer extends DefaultTreeCellRenderer {
 					&& geo.isDefined()
 					&& geo.isLaTeXDrawableGeo()) {
 				Font latexFont = new Font(app.getBoldFont().getName(),
-						app.getBoldFont().getStyle(), app.getFontSize() - 1);
+						app.getBoldFont().getStyle(), app.getAlgebraFont().getSize() - 1);
 				String latexStr = geo.getLaTeXAlgebraDescription(true,
 						StringTemplate.latexTemplate);
 				if (latexStr != null) {
@@ -179,7 +180,8 @@ public class AlgebraTreeCellRenderer extends DefaultTreeCellRenderer {
 			setText(str);
 
 			// make sure we use a font that can display the text
-			setFont(app.getFontCanDisplayAwt(str));
+			setFont(app.getFontCanDisplayAwt(str, false, Font.PLAIN,
+					app.getAlgebraFont().getSize()));
 		}
 		return this;
 	}

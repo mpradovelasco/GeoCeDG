@@ -36,7 +36,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/main/AppD.java",
       "change": "modified",
-      "purpose": "Preserve profile bootstrap hooks and add fail-closed one-read .cedg preflight, prepared and atomic undo-baseline commit with full rollback on live-parse or commit failure, product-window routing and current-document preservation without changing ZIP/XML internals. G9U1: capture native transaction UI state before hiding navigation, so rollback can restore the prior presentation; non-native ordering and formats are unchanged. G9U1 review round 1: preflight the temporary native save archive with the existing disposable reader before atomic replacement, preserving the previous target and unsaved state on failure; no schema or loader repair. PRE-G9B-S2: make Desktop font listeners and toolbar icon scaling consume GUI font ownership rather than the construction-object base font; Classic fallback remains unchanged.",
+      "purpose": "Preserve profile bootstrap hooks and add fail-closed one-read .cedg preflight, prepared and atomic undo-baseline commit with full rollback on live-parse or commit failure, product-window routing and current-document preservation without changing ZIP/XML internals. G9U1: capture native transaction UI state before hiding navigation, so rollback can restore the prior presentation; non-native ordering and formats are unchanged. G9U1 review round 1: preflight the temporary native save archive with the existing disposable reader before atomic replacement, preserving the previous target and unsaved state on failure; no schema or loader repair. PRE-G9B-S2: make Desktop font listeners and toolbar icon scaling consume GUI font ownership rather than the construction-object base font; Classic fallback remains unchanged. PRE-G9B-S4: expose behavior-neutral product hooks for menu, Algebra, Construction Protocol and product-specific presentation options.",
       "authority": "geocedg/specs/ui/native-document-identity.md"
     },
     {
@@ -60,7 +60,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/AppGeoCeDG.java",
       "change": "added",
-      "purpose": "Instantiate the GeoCeDG profile and enforce the .cedg-only native save, product-window and parser-preflight policy while retaining the Classic internal app code and feature gates. G9U1: Apply approved Construction workspace, language and Continuity policy without changing Classic or geometry. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: suppress the inherited startup perspective popup and separate document-local macro preference snapshots from explicit application-library installation; Classic and document macro serialization remain unchanged. G9U1 review round 3: resolve the tracked GeoCeDG frame icon and startup resource without upstream branding fallback. PRE-G9B-S2: keep default GUI typography anchored to the GeoCeDG platform default when construction-object font size changes, while honoring an explicit GUI font preference.",
+      "purpose": "Instantiate the GeoCeDG profile and enforce the .cedg-only native save, product-window and parser-preflight policy while retaining the Classic internal app code and feature gates. G9U1: Apply approved Construction workspace, language and Continuity policy without changing Classic or geometry. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: suppress the inherited startup perspective popup and separate document-local macro preference snapshots from explicit application-library installation; Classic and document macro serialization remain unchanged. G9U1 review round 3: resolve the tracked GeoCeDG frame icon and startup resource without upstream branding fallback. PRE-G9B-S2: keep default GUI typography anchored to the GeoCeDG platform default when construction-object font size changes, while honoring an explicit GUI font preference. PRE-G9B-S4: own five independent application presentation sizes, live refresh and toolbar/font decoupling without construction or document semantics.",
       "authority": "geocedg/specs/ui/native-document-identity.md"
     },
     {
@@ -126,7 +126,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGMenuBar.java",
       "change": "added",
-      "purpose": "Expose experimental DXF and default-off Locus V2 actions only in the GeoCeDG product profile; G9U0-R3 retains one population authority across inherited init/font/localization rebuilds so the public inspector and peer actions do not disappear. G9U1: Project declarative stable actions into accessible menus without a second action catalog. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: compile six normal top-level sections from the same profile and expose explicit installed user tools without duplicating catalog authority. G9U1 review round 3: render seven profile-declared menus, flattened File/Edit groups, separators, semantic Construction groups and bounded host View/Options controls from one action authority.",
+      "purpose": "Expose experimental DXF and default-off Locus V2 actions only in the GeoCeDG product profile; G9U0-R3 retains one population authority across inherited init/font/localization rebuilds so the public inspector and peer actions do not disappear. G9U1: Project declarative stable actions into accessible menus without a second action catalog. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: compile six normal top-level sections from the same profile and expose explicit installed user tools without duplicating catalog authority. G9U1 review round 3: render seven profile-declared menus, flattened File/Edit groups, separators, semantic Construction groups and bounded host View/Options controls from one action authority. PRE-G9B-S4: rebuild the profile menu projection live with its independently selected menu font.",
       "authority": "geocedg/specs/locus/locus-v2-public-ui-exposure.md"
     },
     {
@@ -3780,13 +3780,13 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGWorkspaceController.java",
       "change": "added",
-      "purpose": "Project family/context actions and isolate workspace/layout preferences from semantic construction state. G9U1 review round 1: project the compact non-mode toolbar, menu workspace selector and deduplicated object-context actions from the existing catalog. G9U1 review round 3: compile the primary toolbar from the same semantic presentation authority while preserving Input Help outside the tool container. Final presentation polish renders the two declared mixed-action profile flyouts through the existing registry, eliminating detached semantic-curve actions without creating a second action authority.",
+      "purpose": "Project family/context actions and isolate workspace/layout preferences from semantic construction state. G9U1 review round 1: project the compact non-mode toolbar, menu workspace selector and deduplicated object-context actions from the existing catalog. G9U1 review round 3: compile the primary toolbar from the same semantic presentation authority while preserving Input Help outside the tool container. Final presentation polish renders the two declared mixed-action profile flyouts through the existing registry, eliminating detached semantic-curve actions without creating a second action authority. PRE-G9B-S4: apply menu ownership to product popups and rerender scalable/native profile icons at the explicit toolbar size.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/dialog/options/OptionsAdvancedD.java",
       "change": "modified",
-      "purpose": "Expose locked GeoCeDG Continuity OFF while retaining Classic configuration.",
+      "purpose": "Expose locked GeoCeDG Continuity OFF while retaining Classic configuration. PRE-G9B-S4: replace only the GeoCeDG mixed GUI-font row with the compact five-control presentation panel while Classic keeps its existing row.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -3804,19 +3804,19 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/menubar/OptionsMenuD.java",
       "change": "modified",
-      "purpose": "Offer English and Spanish product languages without deleting or restricting Classic translations.",
+      "purpose": "Offer English and Spanish product languages without deleting or restricting Classic translations. PRE-G9B-S4: render language choices at the independent menu font size.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/view/algebra/AlgebraControllerD.java",
       "change": "modified",
-      "purpose": "Expose read-only semantic definitions in Algebra without granting incompatible redefine authority. G9U1 review round 1: apply the same product-gated read-only definition route to rich results.",
+      "purpose": "Expose read-only semantic definitions in Algebra without granting incompatible redefine authority. G9U1 review round 1: apply the same product-gated read-only definition route to rich results. PRE-G9B-S4: size Algebra drag presentation from the independent Algebra preference.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/view/algebra/AlgebraHelperBar.java",
       "change": "modified",
-      "purpose": "Reflect the actual description-style setting using exclusive menu state independently of tree sort.",
+      "purpose": "Reflect the actual description-style setting using exclusive menu state independently of tree sort. PRE-G9B-S4: size Algebra helper menus from the independent Algebra preference.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -3912,7 +3912,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/main/App.java",
       "change": "modified",
-      "purpose": "G9U1 application presentation correction: compare the existing stored construction-navigation flag in the setter shortcut so native rollback can restore its prior value; retain the special public visibility getter, serialized format, identities and kernel semantics.",
+      "purpose": "G9U1 application presentation correction: compare the existing stored construction-navigation flag in the setter shortcut so native rollback can restore its prior value; retain the special public visibility getter, serialized format, identities and kernel semantics. PRE-G9B-S4: add a behavior-neutral Euclidian UI-font ownership seam; Classic still returns the construction application font.",
       "authority": "geocedg/specs/ui/native-document-identity.md"
     },
     {
@@ -3930,7 +3930,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGUserTools.java",
       "change": "added",
-      "purpose": "G9U1 author-review round 1: Expose explicit persistent user-tool install/remove/pin/activate controls and distinguish installed tools from document-local host management through the existing action. Round 3: offer optional validated PNG selection at pin/presentation edit time, render normalized native-footprint icons or compact accessible initials, and preserve grouped dropdown/order semantics without registering a macro for display.",
+      "purpose": "G9U1 author-review round 1: Expose explicit persistent user-tool install/remove/pin/activate controls and distinguish installed tools from document-local host management through the existing action. Round 3: offer optional validated PNG selection at pin/presentation edit time, render normalized native-footprint icons or compact accessible initials, and preserve grouped dropdown/order semantics without registering a macro for display. PRE-G9B-S4: apply the independent menu font to user-tool menu and popup entries.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -4038,7 +4038,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGHostMenuFactory.java",
       "change": "added",
-      "purpose": "G9U1 author-review round 3: Bridge profile-declared View and Options entries to existing checked/radio host view, Algebra sort/display, rounding, labeling, font, global preferences and save-settings state without a second preference store or Construction mutation. PRE-G9B-S2: expose the construction-object size list including 10 pt and retain document-unsaved signaling without changing GUI font or icon ownership.",
+      "purpose": "G9U1 author-review round 3: Bridge profile-declared View and Options entries to existing checked/radio host view, Algebra sort/display, rounding, labeling, font, global preferences and save-settings state without a second preference store or Construction mutation. PRE-G9B-S2: expose the construction-object size list including 10 pt and retain document-unsaved signaling without changing GUI font or icon ownership. PRE-G9B-S4: apply the independent menu font to generated host-control menus without changing the construction-font action.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -4182,7 +4182,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/euclidian/draw/DrawText.java",
       "change": "modified",
-      "purpose": "PRE-G9B-S3: Derive world-anchored construction Text font and coherent drawable/hit bounds from each GeoCeDG Euclidian view's primary scalar scale without mutating GeoText.",
+      "purpose": "PRE-G9B-S3: Derive world-anchored construction Text font and coherent drawable/hit bounds from each GeoCeDG Euclidian view's primary scalar scale without mutating GeoText. PRE-G9B-S4: retain the construction logical font as the S3 scaling base when Graphics UI typography changes.",
       "authority": "geocedg/specs/ui/construction-text-view-scaling.md"
     },
     {
@@ -4202,6 +4202,90 @@
       "change": "added",
       "purpose": "PRE-G9B-S2: Verify Text Undo/Redo and construction font application/persistence with menu-font and toolbar-icon isolation.",
       "authority": ".github/prompts/tasks/pre-g9b-s2-construction-text-property-font-correctness.prompt.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/euclidian/EuclidianView.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-S4: obtain view-interface typography through an application ownership seam while preserving the Classic default.",
+      "authority": "geocedg/specs/ui/application-presentation-sizing.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/menubar/BaseMenu.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-S4: use the explicit menu-font owner for lazy menu content and accelerators.",
+      "authority": "geocedg/specs/ui/application-presentation-sizing.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/menubar/GeoGebraMenuBar.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-S4: refresh visible menu titles through the product-overridable menu-font seam with unchanged Classic fallback.",
+      "authority": "geocedg/specs/ui/application-presentation-sizing.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/menubar/WindowMenuD.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-S4: use the menu-font owner for Window menu entries and accelerators.",
+      "authority": "geocedg/specs/ui/application-presentation-sizing.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/view/algebra/AlgebraTree.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-S4: apply the independent Algebra font to the tree and renderer.",
+      "authority": "geocedg/specs/ui/application-presentation-sizing.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/view/algebra/AlgebraTreeCellRenderer.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-S4: preserve display-capable fonts and LaTeX rendering at the independent Algebra size.",
+      "authority": "geocedg/specs/ui/application-presentation-sizing.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/view/algebra/AlgebraViewD.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-S4: update Algebra editor typography from its independent preference.",
+      "authority": "geocedg/specs/ui/application-presentation-sizing.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/view/algebra/InputPanelD.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-S4: size Algebra input/editor presentation from the Algebra owner.",
+      "authority": "geocedg/specs/ui/application-presentation-sizing.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/view/consprotocol/ConstructionProtocolContextMenu.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-S4: apply Construction Protocol typography only to its context menu.",
+      "authority": "geocedg/specs/ui/application-presentation-sizing.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/view/consprotocol/ConstructionProtocolNavigationD.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-S4: apply Construction Protocol typography only to protocol navigation controls.",
+      "authority": "geocedg/specs/ui/application-presentation-sizing.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/view/consprotocol/ConstructionProtocolViewD.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-S4: apply the independent Construction Protocol font to its table, header and scroll presentation without protocol semantics changes.",
+      "authority": "geocedg/specs/ui/application-presentation-sizing.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGPresentationPreferences.java",
+      "change": "added",
+      "purpose": "PRE-G9B-S4: persist five explicit independent user-presentation sizes with conservative inherited-value fallback and no document state.",
+      "authority": "geocedg/specs/ui/application-presentation-sizing.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGPresentationOptionsPanel.java",
+      "change": "added",
+      "purpose": "PRE-G9B-S4: expose the five compact live controls through the inherited Advanced options surface.",
+      "authority": "geocedg/specs/ui/application-presentation-sizing.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BS4PresentationSizingTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-S4: verify independent ownership, live component application, fallback/reload, construction/GeoText isolation and Classic neutrality.",
+      "authority": ".github/prompts/tasks/pre-g9b-s4-independent-application-presentation-sizing.prompt.md"
     },
     {
       "path": "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/derived/geocedg-startup-361x480.png",

@@ -251,7 +251,7 @@ public class InputPanelD extends JPanel
 
 	public void updateFonts() {
 
-		Font font = app.getPlainFont();
+		Font font = app.getAlgebraFont();
 
 		if (textComponent instanceof GeoGebraEditorPane) {
 			((GeoGebraEditorPane) textComponent).updateFont(font);

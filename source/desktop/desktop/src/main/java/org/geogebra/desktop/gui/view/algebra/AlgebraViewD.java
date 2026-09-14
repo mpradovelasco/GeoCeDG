@@ -248,7 +248,7 @@ public class AlgebraViewD extends AlgebraTree
 	@Override
 	public void updateFonts() {
 		super.updateFonts();
-		Font font = app.getPlainFont();
+		Font font = app.getAlgebraFont();
 		editor.setFont(font);
 		editTF.setFont(font);
 		if (helperBar != null) {

@@ -167,7 +167,7 @@ public class AlgebraControllerD extends AlgebraTreeController
 		}
 
 		ScaledIcon ic = GeoGebraIconD.createScaledLatexIcon((AppD) app, latex,
-				((AppD) app).getPlainFont(), Color.DARK_GRAY);
+				((AppD) app).getAlgebraFont(), Color.DARK_GRAY);
 
 		// start drag
 		ds.startDrag(dge, DragSource.DefaultCopyDrop, ic.getImage(),

@@ -6,6 +6,7 @@
 package org.geocedg.desktop;
 
 import java.awt.Container;
+import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.io.ByteArrayOutputStream;
@@ -32,6 +33,10 @@ import org.geogebra.desktop.CommandLineArguments;
 import org.geogebra.desktop.geogebra3D.App3D;
 import org.geogebra.desktop.gui.GuiManagerD;
 import org.geogebra.desktop.gui.app.GeoGebraFrame;
+import org.geogebra.desktop.gui.dialog.options.OptionPanelD;
+import org.geogebra.desktop.gui.menubar.GeoGebraMenuBar;
+import org.geogebra.desktop.gui.view.consprotocol.ConstructionProtocolNavigationD;
+import org.geogebra.desktop.gui.view.consprotocol.ConstructionProtocolViewD;
 import org.geogebra.desktop.main.AppD;
 import org.geogebra.desktop.main.GlobalKeyDispatcherD;
 
@@ -39,6 +44,7 @@ import org.geogebra.desktop.main.GlobalKeyDispatcherD;
  * Desktop application instance bound to the GeoCeDG product profile.
  */
 public final class AppGeoCeDG extends App3D {
+	private GeoCeDGPresentationPreferences presentationPreferences;
 
 	/**
 	 * @param args command line arguments
@@ -52,6 +58,7 @@ public final class AppGeoCeDG extends App3D {
 			AppConfigGeoCeDG config) {
 		super(args, frame, config);
 		bindFeatureService(config);
+		initializePresentationPreferences();
 	}
 
 	/**
@@ -66,6 +73,7 @@ public final class AppGeoCeDG extends App3D {
 			AppConfigGeoCeDG config) {
 		super(args, component, config);
 		bindFeatureService(config);
+		initializePresentationPreferences();
 	}
 
 	@Override
@@ -148,6 +156,140 @@ public final class AppGeoCeDG extends App3D {
 		FontSettings fonts = getSettings().getFontSettings();
 		return fonts.getGuiFontSize() == -1
 				? getDefaultSettings().getAppFontSize() : fonts.getGuiFontSize();
+	}
+
+	@Override
+	public void setGUIFontSize(int size) {
+		if (presentationPreferences == null) {
+			super.setGUIFontSize(size);
+			return;
+		}
+		getFontSettingsUpdater().setGUIFontSizeAndUpdate(size);
+		reapplyToolbarIconSize();
+	}
+
+	@Override
+	public void setFontSize(int points, boolean update) {
+		super.setFontSize(points, update);
+		if (presentationPreferences != null) {
+			reapplyToolbarIconSize();
+		}
+	}
+
+	@Override
+	public Font getMenuFont() {
+		return presentationFont(GeoCeDGPresentationPreferences.Category.MENU_FONT,
+				super.getMenuFont());
+	}
+
+	@Override
+	public Font getAlgebraFont() {
+		return presentationFont(GeoCeDGPresentationPreferences.Category.ALGEBRA_FONT,
+				super.getAlgebraFont());
+	}
+
+	@Override
+	public Font getConstructionProtocolFont() {
+		return presentationFont(
+				GeoCeDGPresentationPreferences.Category.CONSTRUCTION_PROTOCOL_FONT,
+				super.getConstructionProtocolFont());
+	}
+
+	@Override
+	public int getEuclidianViewFontSize() {
+		return presentationPreferences == null ? super.getEuclidianViewFontSize()
+				: presentationPreferences.get(
+						GeoCeDGPresentationPreferences.Category.GRAPHICS_FONT);
+	}
+
+	@Override
+	public int getScaledIconSize() {
+		return presentationPreferences == null ? super.getScaledIconSize()
+				: presentationPreferences.get(
+						GeoCeDGPresentationPreferences.Category.TOOLBAR_ICON);
+	}
+
+	@Override
+	public OptionPanelD newProductPresentationOptionsPanel() {
+		return presentationPreferences == null ? null
+				: new GeoCeDGPresentationOptionsPanel(this);
+	}
+
+	int getPresentationSize(GeoCeDGPresentationPreferences.Category category) {
+		return presentationPreferences.get(category);
+	}
+
+	void setPresentationSize(GeoCeDGPresentationPreferences.Category category,
+			int size) {
+		presentationPreferences.set(category, size);
+		refreshPresentation(category);
+	}
+
+	private Font presentationFont(GeoCeDGPresentationPreferences.Category category,
+			Font inherited) {
+		return presentationPreferences == null ? inherited
+				: inherited.deriveFont((float) presentationPreferences.get(category));
+	}
+
+	private void initializePresentationPreferences() {
+		presentationPreferences = new GeoCeDGPresentationPreferences(
+				new GeoCeDGPresentationPreferences.InheritedValues(
+						getGUIFontSize(), super.getScaledIconSize(),
+						getPlainFont().getSize(), getPlainFont().getSize(), getFontSize()));
+		getImageManager().setMaxIconSize(getPresentationSize(
+				GeoCeDGPresentationPreferences.Category.TOOLBAR_ICON));
+		getEuclidianView1().updateFonts();
+		if (getGuiManager() != null) {
+			((GuiManagerD) getGuiManager()).updateFonts();
+		}
+	}
+
+	private void reapplyToolbarIconSize() {
+		getImageManager().setMaxIconSize(getPresentationSize(
+				GeoCeDGPresentationPreferences.Category.TOOLBAR_ICON));
+		if (getGuiManager() != null) {
+			((GuiManagerD) getGuiManager()).updateToolbar();
+		}
+	}
+
+	private void refreshPresentation(GeoCeDGPresentationPreferences.Category category) {
+		GuiManagerD manager = getGuiManager() == null ? null
+				: (GuiManagerD) getGuiManager();
+		switch (category) {
+		case MENU_FONT:
+			if (manager != null && manager.getMenuBar() instanceof GeoGebraMenuBar menuBar) {
+				menuBar.updateFonts();
+			}
+			break;
+		case TOOLBAR_ICON:
+			getImageManager().setMaxIconSize(getPresentationSize(category));
+			if (manager != null) {
+				manager.updateToolbar();
+			}
+			break;
+		case ALGEBRA_FONT:
+			if (manager != null) {
+				manager.getAlgebraView().updateFonts();
+			}
+			break;
+		case CONSTRUCTION_PROTOCOL_FONT:
+			if (manager != null && manager.isUsingConstructionProtocol()) {
+				((ConstructionProtocolViewD) manager.getConstructionProtocolView()).initGUI();
+				if (manager.getCPNavigationIfExists()
+						instanceof ConstructionProtocolNavigationD navigation) {
+					navigation.initGUI();
+				}
+			}
+			break;
+		case GRAPHICS_FONT:
+			getEuclidianView1().updateFonts();
+			if (hasEuclidianView2EitherShowingOrNot(1)) {
+				getEuclidianView2(1).updateFonts();
+			}
+			break;
+		default:
+			throw new IllegalStateException("Unhandled presentation category " + category);
+		}
 	}
 
 	@Override

@@ -701,7 +701,7 @@ public class AlgebraTree extends JTree {
 	 * Update fonts
 	 */
 	public void updateFonts() {
-		Font font = app.getPlainFont();
+		Font font = app.getAlgebraFont();
 		setFont(font);
 		renderer.setFont(font);
 	}

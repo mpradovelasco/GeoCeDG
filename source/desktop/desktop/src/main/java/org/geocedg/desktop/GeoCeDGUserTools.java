@@ -174,19 +174,19 @@ public final class GeoCeDGUserTools {
 		registry.refresh();
 		JMenuItem management = GeoCeDGMenuBar.createItem(
 				registry.get("automation.manage-user-tools"), new ButtonGroup());
-		management.setFont(app.getPlainFont());
+		management.setFont(app.getMenuFont());
 		menu.add(management);
 		menu.addSeparator();
 		if (!refreshLibrary()) {
 			JMenuItem failure = new JMenuItem(text("UserTools.LibraryError"));
-			failure.setFont(app.getPlainFont());
+			failure.setFont(app.getMenuFont());
 			failure.setEnabled(false);
 			menu.add(failure);
 			return;
 		}
 		if (library.packages().isEmpty()) {
 			JMenuItem empty = new JMenuItem(text("UserTools.Empty"));
-			empty.setFont(app.getPlainFont());
+			empty.setFont(app.getMenuFont());
 			empty.setEnabled(false);
 			menu.add(empty);
 		}
@@ -194,7 +194,7 @@ public final class GeoCeDGUserTools {
 			String reason = library.unavailableReason(tool);
 			for (String command : tool.commands()) {
 				JMenuItem item = new JMenuItem(command);
-				item.setFont(app.getPlainFont());
+				item.setFont(app.getMenuFont());
 				item.setToolTipText(reason == null ? tool.name() : explain(reason));
 				item.setEnabled(reason == null);
 				item.getAccessibleContext().setAccessibleDescription(item.getToolTipText());
@@ -268,7 +268,7 @@ public final class GeoCeDGUserTools {
 			String reason = library.unavailableReason(pin.tool());
 			JMenuItem item = new JMenuItem(pin.command());
 			item.setIcon(pinnedIcon(pin));
-			item.setFont(app.getPlainFont());
+			item.setFont(app.getMenuFont());
 			item.setEnabled(reason == null);
 			item.setToolTipText(reason == null ? pin.tool().name() : explain(reason));
 			item.getAccessibleContext().setAccessibleName(pin.command());
