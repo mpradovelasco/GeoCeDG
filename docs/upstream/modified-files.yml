@@ -2004,8 +2004,8 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/Construction.java",
       "change": "modified",
-      "purpose": "Own the identity registry and G9A2 semantic runtime and provide the R6 host-wide atomic mutation seam that snapshots/restores the complete Construction around address writes, cascade and postcondition without creating an undo record. Preserve ordinary collected redefinitions without fabricating an empty spatial completion operation; participating transaction and rollback contracts remain unchanged.",
-      "authority": "docs/architecture/verification-baseline-compatibility-repair.md"
+      "purpose": "Own the identity registry and G9A2 semantic runtime and provide the R6 host-wide atomic mutation seam that snapshots/restores the complete Construction around address writes, cascade and postcondition without creating an undo record. Preserve ordinary collected redefinitions without fabricating an empty spatial completion operation; participating transaction and rollback contracts remain unchanged. POST-G9U1-A3-R1 correction: defer collected participating authorization until the complete retained batch has passed serialization preflight, then perform the existing final currentness authorization immediately before the first host mutation.",
+      "authority": "docs/architecture/post_g9u1_a3_v2_compatible_redefine.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/geos/GeoElement.java",

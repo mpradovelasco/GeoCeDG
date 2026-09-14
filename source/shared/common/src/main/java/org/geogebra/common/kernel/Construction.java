@@ -1878,7 +1878,7 @@ public class Construction {
 		SpatialRedefineTransaction spatialTransaction = null;
 		try {
 			spatialTransaction = prepareSpatialRedefine(oldGeo, newGeo, operationInfo);
-			if (spatialTransaction != null) {
+			if (spatialTransaction != null && !collectRedefineCalls) {
 				spatialIdentityRegistry.authorizeRedefineHostMutation(
 						spatialTransaction);
 			}
@@ -2772,6 +2772,13 @@ public class Construction {
 				retainedSpatialSection = spatialIdentityRegistry
 						.writeSpatialSectionForRetainedRedefines(
 								spatialRedefineMap.values());
+				// Collection stages before Algebra's ordinary authorization seam.
+				// Authorize the complete prepared set immediately before host mutation.
+				for (SpatialRedefineTransaction transaction
+						: spatialRedefineMap.values()) {
+					spatialIdentityRegistry.authorizeRedefineHostMutation(
+							transaction);
+				}
 			}
 			hostMutationStarted = true;
 			ArrayList<SpatialIdentityRegistry.SerializationOverlay> snapshotOverlays =
