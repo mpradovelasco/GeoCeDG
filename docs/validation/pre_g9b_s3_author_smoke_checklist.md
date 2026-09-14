@@ -1,6 +1,7 @@
 # PRE-G9B-S3 author smoke checklist
 
-- Status: `PENDING AUTHOR REVIEW`
+- Status: `PASS — AUTHOR APPROVED`
+- Author smoke: `PASS`
 - Self approval: `false`
 - Fixture:
   [`pre-g9b-s3-text-view-scaling.ggb`](../../models/regression/pre-g9b-s3-text-view-scaling/pre-g9b-s3-text-view-scaling.ggb)
@@ -29,5 +30,9 @@
     equivalent visual size.
 13. Confirm that menu typography and toolbar icon sizes have not changed.
 
-Record author disposition separately. This checklist does not claim smoke
-PASS, approve S3, authorize publication, or authorize S4 and later phases.
+The author reports that the observable construction-Text zoom behavior was
+covered sufficiently for acceptance and works very well in practice. No
+additional manual observation is inferred from that decision.
+
+This author decision approves S3 and its ordinary fast-forward publication; it
+is not agent self-approval and does not authorize S4 or later phases.

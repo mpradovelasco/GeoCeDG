@@ -12,16 +12,19 @@ barra. El [informe de cierre S2](../validation/pre_g9b_s2_text_property_font_can
 conserva la evidencia técnica y autoral. S3/S4 y las fases posteriores no están
 autorizadas por este cierre.
 
-Estado PRE-G9B-S3: **IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**;
+Estado PRE-G9B-S3: **PASS — AUTHOR APPROVED**; smoke autoral **PASS**;
 `selfApproved=false`. En el perfil GeoCeDG, el Texto de construcción anclado a
 coordenadas reales crece o decrece visualmente con el zoom de cada vista
 Gráfica. Su contenido, punto de anclaje y tamaño lógico de fuente no cambian ni
 se almacena el zoom en el objeto. El Texto con posición absoluta en pantalla
 mantiene el tamaño heredado. El fixture manual está en
 [`pre-g9b-s3-text-view-scaling.ggb`](../../models/regression/pre-g9b-s3-text-view-scaling/pre-g9b-s3-text-view-scaling.ggb).
-El [checklist de smoke autoral](../validation/pre_g9b_s3_author_smoke_checklist.md)
-registra los pasos pendientes. S4 y las fases posteriores siguen sin
-autorización productiva.
+El [informe de cierre S3](../validation/pre_g9b_s3_text_view_scaling_candidate_report.md)
+conserva la evidencia técnica y autoral; el
+[checklist de smoke autoral](../validation/pre_g9b_s3_author_smoke_checklist.md)
+registra la disposición del autor. `PRE-G9B-S4 — DESIGNED / NOT YET
+IMPLEMENTATION-AUTHORIZED`; S4 y las fases posteriores siguen sin autorización
+productiva.
 
 Estado vivo del track post-G9U1: **COMPLETE — AUTHOR APPROVED**. A3, su
 frontend Classic, A5 y el slice A7 están **PASS — AUTHOR APPROVED**; A4 conserva
