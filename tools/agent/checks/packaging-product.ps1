@@ -136,9 +136,17 @@ function Test-MsiNativeAssociation {
     try { [xml]$source = [IO.File]::ReadAllText($decompiled) } catch {
         return [pscustomobject]@{ state = 'EVIDENCE_UNTRUSTED'; cause = 'WiX MSI evidence is not valid XML.'; observed = $_.Exception.Message }
     }
+    # WiX decompiles MSI Extension/ProgId authoring into the Registry table.
+    # Prefer the authoring projection when it is present, but inspect the
+    # materialized registry rows produced by WiX 5 when it is not.
     $extensionNodes = @($source.SelectNodes("//*[local-name()='Extension']"))
     $native = @($extensionNodes | Where-Object { $_.GetAttribute('Id') -ceq 'cedg' })
     $details = [ordered]@{
+        evidence_projection = $(if ($extensionNodes.Count -gt 0) {
+            'WIX_AUTHORING'
+        } else {
+            'MSI_REGISTRY_ROWS'
+        })
         native_extension_count = $native.Count
         upstream_extension_count = @($extensionNodes | Where-Object { $_.GetAttribute('Id') -ieq 'ggb' }).Count
         internal_mime_count = 0
@@ -178,8 +186,82 @@ function Test-MsiNativeAssociation {
         }
         $contentTypeCorrect = $extension.GetAttribute('ContentType') -ceq
             'application/x-geocedg-cedg'
+    } elseif ($extensionNodes.Count -eq 0) {
+        $registry = @($source.SelectNodes("//*[local-name()='RegistryValue']"))
+        $nativeDefaults = @($registry | Where-Object {
+            $_.GetAttribute('Root') -ceq 'HKCR' -and
+            $_.GetAttribute('Key') -ceq '.cedg' -and
+            [string]::IsNullOrEmpty($_.GetAttribute('Name'))
+        })
+        $upstreamDefaults = @($registry | Where-Object {
+            $_.GetAttribute('Root') -ceq 'HKCR' -and
+            $_.GetAttribute('Key') -ieq '.ggb' -and
+            [string]::IsNullOrEmpty($_.GetAttribute('Name'))
+        })
+        $nativeContentTypes = @($registry | Where-Object {
+            $_.GetAttribute('Root') -ceq 'HKCR' -and
+            $_.GetAttribute('Key') -ceq '.cedg' -and
+            $_.GetAttribute('Name') -ceq 'Content Type' -and
+            $_.GetAttribute('Value') -ceq 'application/x-geocedg-cedg'
+        })
+        $mimeDatabaseRows = @($registry | Where-Object {
+            $_.GetAttribute('Root') -ceq 'HKCR' -and
+            $_.GetAttribute('Key') -ceq
+                'MIME\Database\Content Type\application/x-geocedg-cedg' -and
+            $_.GetAttribute('Name') -ceq 'Extension' -and
+            $_.GetAttribute('Value') -ceq '.cedg'
+        })
+        $details.native_extension_count = $nativeDefaults.Count
+        $details.upstream_extension_count = $upstreamDefaults.Count
+        $details.internal_mime_count = $nativeContentTypes.Count
+        $details.total_mime_count = @($registry | Where-Object {
+            $_.GetAttribute('Root') -ceq 'HKCR' -and
+            $_.GetAttribute('Key') -ceq '.cedg' -and
+            $_.GetAttribute('Name') -ceq 'Content Type'
+        }).Count
+        $details.upstream_mime_count = @($registry | Where-Object {
+            $_.GetAttribute('Value') -ceq 'application/vnd.geogebra.file'
+        }).Count
+
+        $contentTypeCorrect = $nativeContentTypes.Count -eq 1 -and
+            $mimeDatabaseRows.Count -eq 1
+        if ($nativeDefaults.Count -eq 1) {
+            $progIdValue = $nativeDefaults[0].GetAttribute('Value')
+            $descriptions = @($registry | Where-Object {
+                $_.GetAttribute('Root') -ceq 'HKCR' -and
+                $_.GetAttribute('Key') -ceq $progIdValue -and
+                [string]::IsNullOrEmpty($_.GetAttribute('Name')) -and
+                $_.GetAttribute('Value') -ceq
+                    'GeoCeDG document (internal evaluation)'
+            })
+            $details.owned_progid =
+                -not [string]::IsNullOrWhiteSpace($progIdValue) -and
+                $progIdValue -notmatch '(?i)geogebra' -and
+                $descriptions.Count -eq 1
+
+            $openCommands = @($registry | Where-Object {
+                $_.GetAttribute('Root') -ceq 'HKCR' -and
+                $_.GetAttribute('Key') -ceq "$progIdValue\shell\open\command" -and
+                [string]::IsNullOrEmpty($_.GetAttribute('Name')) -and
+                $_.GetAttribute('Value').Contains('%1')
+            })
+            $details.open_verb_count = $openCommands.Count
+            if ($openCommands.Count -eq 1 -and
+                    $openCommands[0].GetAttribute('Value') -match '\[#([^\]]+)\]') {
+                $targetId = $Matches[1]
+                $targets = @($source.SelectNodes("//*[local-name()='File']") |
+                    Where-Object { $_.GetAttribute('Id') -ceq $targetId })
+                $details.launcher_target_count = $targets.Count
+                if ($targets.Count -eq 1) {
+                    $details.launcher_identity = @(
+                        $targets[0].GetAttribute('Name'),
+                        $targets[0].GetAttribute('Source')) -join '|'
+                }
+            }
+        }
     } else { $contentTypeCorrect = $false }
-    $valid = $native.Count -eq 1 -and $details.upstream_extension_count -eq 0 -and
+    $valid = $details.native_extension_count -eq 1 -and
+        $details.upstream_extension_count -eq 0 -and
         $contentTypeCorrect -and $details.total_mime_count -eq 1 -and
         $details.internal_mime_count -eq 1 -and
         $details.upstream_mime_count -eq 0 -and $details.owned_progid -and
