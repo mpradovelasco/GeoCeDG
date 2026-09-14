@@ -32,6 +32,30 @@ jobs:
             22
             25
 
+      - name: Prepare canonical Gradle launcher
+        shell: pwsh
+        run: |
+          $java22 = $env:JAVA_HOME_22_X64
+          if ([string]::IsNullOrWhiteSpace($java22) -or
+              -not (Test-Path -LiteralPath (Join-Path $java22 "bin/java.exe") -PathType Leaf)) {
+            throw "Temurin JDK 22 is unavailable after setup-java."
+          }
+
+          $env:JAVA_HOME = $java22
+          $env:PATH = (Join-Path $java22 "bin") + ";" + $env:PATH
+          [IO.File]::AppendAllText(
+            $env:GITHUB_ENV,
+            "JAVA_HOME=$java22`n",
+            [Text.UTF8Encoding]::new($false))
+
+          java -version
+          .\gradlew.bat `
+            -Dorg.gradle.java.installations.auto-download=false `
+            --version `
+            --no-daemon `
+            --no-problems-report `
+            --console=plain
+
       - name: Provision GeoCeDG Python environment
         uses: conda-incubator/setup-miniconda@v4
         with:

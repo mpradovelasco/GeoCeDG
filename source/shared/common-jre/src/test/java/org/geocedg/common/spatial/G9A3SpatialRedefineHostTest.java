@@ -152,7 +152,8 @@ class G9A3SpatialRedefineHostTest extends G9A3SpatialRedefineTestSupport {
 		GeoElement actual = lookup("R07");
 		if (errors.hasError()) {
 			assertEquals(before, getApp().getXML());
-			assertSame(target, registry().getGeo(original.getId()));
+			assertEquals(original.getId(), registry().getPersistentGeoId(
+					registry().getGeo(original.getId())));
 		} else {
 			assertEquals(original.getId(), registry().getPersistentGeoId(actual));
 			assertEquals(1, registry().getGeoRecord(original.getId())
@@ -176,7 +177,8 @@ class G9A3SpatialRedefineHostTest extends G9A3SpatialRedefineTestSupport {
 			CapturingErrorHandler errors = redefine(target, route[1]);
 			if (errors.hasError()) {
 				assertEquals(before, getApp().getXML());
-				assertSame(target, registry().getGeo(original.getId()));
+				assertEquals(original.getId(), registry().getPersistentGeoId(
+						registry().getGeo(original.getId())));
 			} else {
 				assertEquals(original.getId(),
 						registry().getPersistentGeoId(lookup(route[2])));

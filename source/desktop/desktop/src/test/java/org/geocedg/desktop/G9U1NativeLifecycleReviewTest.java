@@ -66,10 +66,10 @@ class G9U1NativeLifecycleReviewTest {
 		eval(app, "Q=Point(b,\"spline-v2/main\",0.75)");
 		eval(app, "M=Length(b)");
 		eval(app, "MP=Length(b,E,Q)");
-		// A/C were free interpolation inputs. Their first identity participation
-		// must refresh l1's derived dependency record, despite this metric being invalid.
+		// A/C are free interpolation inputs with unique constructor provenance. Their
+		// first identity participation must refresh l1's derived dependency record.
 		eval(app, "Invalid=Length(b,A,C)");
-		assertFalse(lookup(app, "Invalid").isDefined());
+		assertTrue(lookup(app, "Invalid").isDefined());
 		eval(app, "circle=Circle((0,0),1)");
 		GeoCeDGIntersectionSession session = new GeoCeDGIntersectionSession(app);
 		session.activate((GeoLocusIntersectionResult) eval(app, "R=Intersect(b,circle)"));

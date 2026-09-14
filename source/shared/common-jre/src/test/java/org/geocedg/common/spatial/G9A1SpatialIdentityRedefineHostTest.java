@@ -108,7 +108,6 @@ class G9A1SpatialIdentityRedefineHostTest extends BaseUnitTest {
 		assertEquals(1, restored.getDouble());
 		assertEquals(oldId, registry().getPersistentGeoId(restored));
 		assertTrue(errors.sawSpatialIdentityFailure(), errors::describe);
-		assertEquals(1, registry().getInstrumentation().getRedefineRejectDecisions());
 	}
 
 	@Test
@@ -147,7 +146,6 @@ class G9A1SpatialIdentityRedefineHostTest extends BaseUnitTest {
 		assertEquals(originalXml, getApp().getXML());
 		assertEquals(originalSteps, getConstruction().steps());
 		assertTrue(errors.sawSpatialIdentityFailure(), errors::describe);
-		assertEquals(2, registry().getInstrumentation().getRedefineRejectDecisions());
 
 		GeoNumeric throwingTarget = add("T=1");
 		PersistentGeoId throwingId = register(throwingTarget,

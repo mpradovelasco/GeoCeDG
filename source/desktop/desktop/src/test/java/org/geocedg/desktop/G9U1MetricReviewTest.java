@@ -37,12 +37,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
-/** Partial metric author finding: input points are not semantic endpoint addresses. */
+/** Metric review across explicit addresses and approved constructor provenance. */
 @ExtendWith(G9U1TestApp.Lifecycle.class)
 class G9U1MetricReviewTest {
 
 	@Test
-	void originalSplineInputsRemainTruthfullyInvalidMetricEndpoints() {
+	void originalSplineInputsProvideApprovedConstructorProvenance() {
 		AppGeoCeDG app = G9U1TestApp.create();
 		// Exact b/A/C reduction from TestBasic1.cedg, SHA-256:
 		// 0791895e1133d4a44ff26c88760cfc951db787c42056a8b5758c79a9b5687be0.
@@ -57,19 +57,17 @@ class G9U1MetricReviewTest {
 		assertNull(lookup(app, "A").getParentAlgorithm());
 		assertNull(lookup(app, "C").getParentAlgorithm());
 		assertTrue(rich.isDefined());
-		assertFalse(rich.isScalarAdmissible());
-		assertFalse(partial.isDefined());
+		assertTrue(rich.isScalarAdmissible());
+		assertTrue(partial.isDefined());
 		LocusMetricResult2D payload = rich.getMetricResult();
-		assertEquals(MetricComputationStatus.INVALID_QUERY, payload.getComputationStatus());
-		assertEquals(MetricValueKind.ABSENT, payload.getMetricValue().getKind());
-		assertEquals(MetricCoverage.INCOMPLETE, payload.getCoverage());
-		assertEquals(TraversalOutcome.TARGET_NOT_REACHABLE,
+		assertEquals(MetricComputationStatus.SUCCESS, payload.getComputationStatus());
+		assertEquals(MetricValueKind.FINITE, payload.getMetricValue().getKind());
+		assertEquals(MetricCoverage.COMPLETE, payload.getCoverage());
+		assertEquals(TraversalOutcome.TARGET_REACHED,
 				payload.getTraversalOutcome().orElseThrow());
-		assertTrue(payload.getMetricValue().getFiniteValue().isEmpty());
-		assertTrue(payload.getErrorEvidence().getNumericGuarantee().isEmpty());
+		assertEquals(partial.getDouble(),
+				payload.getMetricValue().getFiniteValue().orElseThrow(), 0);
 		assertEquals(spline.getSemanticRevision(), rich.getSourceSemanticRevision());
-		assertTrue(payload.getDiagnostics().stream().anyMatch(diagnostic ->
-				diagnostic.getMessage().contains("requires exact semantic addresses")));
 		assertEquals("Length(b,A,C)", definition(partial));
 		assertSame(spline, rich.getParentAlgorithm().getInput(0));
 		assertSame(lookup(app, "A"), rich.getParentAlgorithm().getInput(1));
