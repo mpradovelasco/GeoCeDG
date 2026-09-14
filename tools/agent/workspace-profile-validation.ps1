@@ -26,17 +26,25 @@ function Assert-GeoCeDGLiveWorkspaceProfile {
     $actionIds = @($profile.actions.id)
     $clusterIds = @($profile.clusters.id)
     $familyIds = @($profile.taxonomy.broad_families.id)
-    if ($actionIds.Count -ne 110 -or @($actionIds | Sort-Object -Unique -CaseSensitive).Count -ne 110 -or
+    if (@($actionIds | Sort-Object -Unique -CaseSensitive).Count -ne $actionIds.Count -or
         $clusterIds.Count -ne 18 -or @($clusterIds | Sort-Object -Unique -CaseSensitive).Count -ne 18 -or
         $familyIds.Count -ne 11 -or @($familyIds | Sort-Object -Unique -CaseSensitive).Count -ne 11) {
-        throw "GeoCeDG workspace requires 11 unique families, 18 clusters and 110 actions."
+        throw "GeoCeDG workspace requires unique live action IDs, 11 families and 18 clusters."
     }
     $candidate = Get-Content -Raw (Join-Path $RepositoryRoot "geocedg/specs/ui/application-profile-v2.candidate.yml") |
         ConvertFrom-Json -Depth 100
-    $approvedIds = @($candidate.actions.id | Sort-Object -CaseSensitive)
+    # The planning catalog is the historical 110-action G9U1 baseline. The two
+    # later actions are the bounded, author-approved POST-G9U1-A7 amendment;
+    # their complete runtime records remain owned by the single live profile.
+    $postG9U1A7ActionIds = @(
+        "navigation.zoom-factor-in",
+        "navigation.zoom-factor-out"
+    )
+    $approvedIds = @($candidate.actions.id + $postG9U1A7ActionIds |
+        Sort-Object -CaseSensitive)
     $liveIds = @($actionIds | Sort-Object -CaseSensitive)
     if (@(Compare-Object $approvedIds $liveIds -CaseSensitive).Count -ne 0) {
-        throw "Live action IDs differ from the reconciled approved planning catalog."
+        throw "Live action IDs differ from the G9U1 catalog plus its approved A7 amendment."
     }
     $featureIds = @($profile.features.id)
     if ($featureIds.Count -ne @($candidate.features).Count -or

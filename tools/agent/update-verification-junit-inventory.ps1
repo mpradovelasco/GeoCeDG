@@ -2,7 +2,8 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory)] [string]$InventoryPath,
-    [Parameter(Mandatory)] [string[]]$DiscoveryEvidencePath
+    [Parameter(Mandatory)] [string[]]$DiscoveryEvidencePath,
+    [string[]]$SelectionEvidencePath = @()
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference='Stop'
@@ -59,6 +60,32 @@ foreach($selection in $inventory.selections){
     $identityValues=[string[]]@($selected.identity);[Array]::Sort($identityValues,[StringComparer]::Ordinal)
     $selection.expected_identity_count=$identityValues.Count
     $selection.expected_identities_sha256=Get-VerificationDeterministicHash -Value $identityValues
+}
+foreach($evidencePath in $SelectionEvidencePath){
+    $evidence=[IO.File]::ReadAllText([IO.Path]::GetFullPath($evidencePath),[Text.UTF8Encoding]::new($false,$true))|ConvertFrom-Json -Depth 100
+    if([bool]$evidence.test_dry_run){throw 'Selection inventory evidence must come from an executed test run.'}
+    if([string]$evidence.completion_state -cne 'COMPLETED' -or
+            $null -eq $evidence.inner_exit_code -or [int]$evidence.inner_exit_code -ne 0){
+        throw "Selection inventory evidence is not a completed passing run: $($evidence.selection_id)"
+    }
+    $selection=@($inventory.selections|Where-Object selection_id -CEQ $evidence.selection_id)
+    if($selection.Count-ne1){throw "Unknown executed selection: $($evidence.selection_id)"}
+    if([string]$selection[0].module -cne [string]$evidence.selection.module -or
+            [string]$selection[0].gradle_task -cne [string]$evidence.selection.gradle_task -or
+            (@($selection[0].test_filters) -join "`n") -cne (@($evidence.selection.test_filters) -join "`n") -or
+            (@($selection[0].excluded_test_filters) -join "`n") -cne
+                (@($evidence.selection.excluded_test_filters) -join "`n")){
+        throw "Executed selection contract differs from the tracked inventory: $($evidence.selection_id)"
+    }
+    $cases=Read-VerificationJUnitFiles -Path ([string[]]@($evidence.junit_files.path)) `
+        -Module ([string]$selection[0].module)
+    if($cases.Count-eq0){throw "Executed selection emitted zero tests: $($evidence.selection_id)"}
+    if(@($cases|Where-Object state -cin @('FAILED','ERRORED')).Count-gt0){
+        throw "Executed selection contains failed or errored tests: $($evidence.selection_id)"
+    }
+    $identityValues=[string[]]@($cases.identity);[Array]::Sort($identityValues,[StringComparer]::Ordinal)
+    $selection[0].expected_identity_count=$identityValues.Count
+    $selection[0].expected_identities_sha256=Get-VerificationDeterministicHash -Value $identityValues
 }
 $inventory.generated_at=$null
 [IO.File]::WriteAllText($full,((ConvertTo-Json $inventory -Depth 100).Replace("`r`n","`n")+"`n"),$utf8)

@@ -23,8 +23,9 @@ import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.util.Enumeration;
 import java.util.HexFormat;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BooleanSupplier;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -110,7 +111,7 @@ class G9U1AlgebraGestureEditingTest {
 		AlgebraViewD algebra = scenario.algebra;
 		UndoManagerD undo = scenario.undo;
 		flushEventQueue();
-		await(() -> undo.getHistorySize() == 0);
+		assertEquals(0, undo.getHistorySize());
 
 		EditRoute[] routes = {EditRoute.DOUBLE_CLICK, EditRoute.F2,
 				EditRoute.ROW, EditRoute.FREE_INPUT};
@@ -121,9 +122,11 @@ class G9U1AlgebraGestureEditingTest {
 			EditRoute route = routes[index];
 			String input = inputs[index];
 			double value = values[index];
-			onEventThread(() -> editThroughRoute(app, algebra, factor, route, input));
+			awaitUndoStore(undo,
+					() -> onEventThread(() -> editThroughRoute(app, algebra, factor,
+							route, input)));
 			flushEventQueue();
-			await(() -> undo.getHistorySize() == expectedHistorySize);
+			assertEquals(expectedHistorySize, undo.getHistorySize());
 			onEventThread(() -> assertRevision3State(app, factor, factorId, image,
 					imageId, transform, constructionSize, value));
 		}
@@ -148,7 +151,7 @@ class G9U1AlgebraGestureEditingTest {
 		assertEquals(REVISION3_SHA256, sha256(Files.readAllBytes(archive)));
 	}
 
-	private static Revision3Scenario createRevision3Scenario(Path archive) {
+	private static Revision3Scenario createRevision3Scenario(Path archive) throws Exception {
 		AppGeoCeDG app = G9U1TestApp.create();
 		assertTrue(app.loadFile(archive.toFile(), false));
 		GeoNumeric factor = (GeoNumeric) lookup(app, "kesc");
@@ -166,7 +169,7 @@ class G9U1AlgebraGestureEditingTest {
 		assertEquals(26, constructionSize);
 		UndoManagerD undo = (UndoManagerD) app.getKernel().getConstruction()
 				.getUndoManager();
-		app.getKernel().initUndoInfo();
+		initializeUndoBaseline(undo);
 		return new Revision3Scenario(app, factor, image, transform, factorId,
 				imageId, constructionSize, attachedAlgebra(app), undo);
 	}
@@ -177,7 +180,6 @@ class G9U1AlgebraGestureEditingTest {
 		onEventThread(() -> scenarioReference.set(createScenario()));
 		Scenario scenario = scenarioReference.get();
 		flushEventQueue();
-		await(() -> scenario.undo.getHistorySize() == 0);
 		onEventThread(() -> assertEquals(0, scenario.undo.getHistorySize()));
 
 		String[] inputs = {"0", ".25", "-1", "1"};
@@ -187,10 +189,12 @@ class G9U1AlgebraGestureEditingTest {
 			int expectedHistorySize = index + 1;
 			double value = values[index];
 			double length = lengths[index];
-			onEventThread(() -> editThroughRoute(scenario.app, scenario.algebra,
-					scenario.factor, gesture, inputs[expectedHistorySize - 1]));
+			awaitUndoStore(scenario.undo,
+					() -> onEventThread(() -> editThroughRoute(scenario.app,
+							scenario.algebra, scenario.factor, gesture,
+							inputs[expectedHistorySize - 1])));
 			flushEventQueue();
-			await(() -> scenario.undo.getHistorySize() == expectedHistorySize);
+			assertEquals(expectedHistorySize, scenario.undo.getHistorySize());
 			onEventThread(() -> assertEditedState(scenario, value, length,
 					expectedHistorySize));
 		}
@@ -216,7 +220,7 @@ class G9U1AlgebraGestureEditingTest {
 		});
 	}
 
-	private static Scenario createScenario() {
+	private static Scenario createScenario() throws Exception {
 		AppGeoCeDG app = G9U1TestApp.create();
 		for (String command : new String[] {"kesc=1",
 				"b=SplineV2({(-2,0),(-2/3,0),(2/3,0),(2,0)},3)",
@@ -236,8 +240,14 @@ class G9U1AlgebraGestureEditingTest {
 		assertEquals(4, value(app, "m"), 1E-8);
 		UndoManagerD undo = (UndoManagerD) app.getKernel().getConstruction()
 				.getUndoManager();
-		app.getKernel().initUndoInfo();
+		initializeUndoBaseline(undo);
 		return new Scenario(app, factor, factorId, attachedAlgebra(app), undo);
+	}
+
+	private static void initializeUndoBaseline(UndoManagerD undo) throws Exception {
+		try (var baseline = undo.prepareUndoBaseline()) {
+			undo.commitUndoBaseline(baseline);
+		}
 	}
 
 	private static void assertEditedState(Scenario scenario, double value,
@@ -423,12 +433,13 @@ class G9U1AlgebraGestureEditingTest {
 		});
 	}
 
-	private static void await(BooleanSupplier condition) throws InterruptedException {
-		long deadline = System.nanoTime() + 5_000_000_000L;
-		while (!condition.getAsBoolean() && System.nanoTime() < deadline) {
-			Thread.sleep(10);
-		}
-		assertTrue(condition.getAsBoolean(), "Desktop background work did not complete");
+	private static void awaitUndoStore(UndoManagerD undo, ThrowingRunnable action)
+			throws Exception {
+		CountDownLatch stored = new CountDownLatch(1);
+		undo.addUndoInfoStoredListener(stored::countDown);
+		action.run();
+		assertTrue(stored.await(5, TimeUnit.SECONDS),
+				"Desktop undo transaction did not complete");
 	}
 
 	private static void onEventThread(ThrowingRunnable action) throws Exception {
