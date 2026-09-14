@@ -422,7 +422,7 @@ Invoke-Case 'packaging repository safety detects worktree and generated-state ch
         [void](Invoke-Git $repo @('config', 'user.name', 'Fixture'))
         [void](Invoke-Git $repo @('config', 'user.email', 'fixture@example.invalid'))
         Write-FixtureText (Join-Path $repo 'tracked.txt') "clean`n"
-        Write-FixtureText (Join-Path $repo '.gitignore') "build/`n.gradle/`n.kotlin/`nforeign/`n"
+        Write-FixtureText (Join-Path $repo '.gitignore') "build/`n.gradle/`n.kotlin/`nartifacts/`nforeign/`n"
         Write-FixtureText (Join-Path $repo 'build/tracked-output.txt') "tracked build output`n"
         [void](Invoke-Git $repo @('add', 'tracked.txt', '.gitignore'))
         [void](Invoke-Git $repo @('add', '-f', 'build/tracked-output.txt'))
@@ -461,6 +461,23 @@ Invoke-Case 'packaging repository safety detects worktree and generated-state ch
                 $clean.exit_code, $cleanJson.cause,
                 ((@($cleanJson.subcontracts) | ConvertTo-Json -Depth 10 -Compress)),
                 $clean.stderr)
+
+        $taskOutput = Join-Path $repo 'artifacts/verification-run'
+        $taskBaseline = Join-Path $taskOutput 'checks/baseline/baseline.json'
+        $taskBaselineRun = Invoke-PowerShellCapture $checker @('-RepositoryRoot', $repo,
+            '-SafetyResultPath', $taskBaseline, '-DeclaredWriteRoots', $declaredWriteRootsArgument,
+            '-TaskOutputRoot', $taskOutput, '-ContractMode', 'PACKAGING_BASELINE')
+        Write-FixtureText (Join-Path $taskOutput 'checks/product/product.json') 'task-owned evidence'
+        $taskSafetyPath = Join-Path $taskOutput 'checks/safety/safety.json'
+        $taskSafety = Invoke-PowerShellCapture $checker @('-RepositoryRoot', $repo,
+            '-SafetyResultPath', $taskSafetyPath, '-BaselinePath', $taskBaseline,
+            '-DeclaredWriteRoots', $declaredWriteRootsArgument,
+            '-TaskOutputRoot', $taskOutput, '-ContractMode', 'PACKAGING')
+        $taskSafetyJson = Read-VerificationJson $taskSafetyPath
+        Assert-Case ($taskBaselineRun.exit_code -eq 0 -and $taskSafety.exit_code -eq 0 -and
+            $taskSafetyJson.outcome -ceq 'CONTRACT_SATISFIED') `
+            'Packaging safety did not exclude its explicit contained task output root.'
+        Remove-Item -LiteralPath $taskOutput -Recurse -Force
 
         $missingBaselinePath = Join-Path $root 'missing-baseline-result.json'
         $missingBaseline = Invoke-PowerShellCapture $checker @('-RepositoryRoot', $repo,

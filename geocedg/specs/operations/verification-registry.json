@@ -3,7 +3,7 @@
   "schema_version": 2,
   "registry_id": "geocedg.verification.v2",
   "catalogs": [
-    { "catalog_id": "junit_inventory", "path": "geocedg/specs/operations/verification-junit-inventory.json", "sha256": "9534635f4ea0ba3d0c88793650ed18f44d735b6c105a9a142c843479141729f6" },
+    { "catalog_id": "junit_inventory", "path": "geocedg/specs/operations/verification-junit-inventory.json", "sha256": "59780c2f2f1255b29f1ce2f2dedf525c3cef0a32152fab1f0e3315f2406ea1d4" },
     { "catalog_id": "static_contracts", "path": "geocedg/specs/operations/verification-static-contracts.json", "sha256": "911d8fcf866adc1593a9cf4b604e6870c3e5b01b3349e9830492334f5e3f2f14" }
   ],
   "profiles": [
@@ -157,7 +157,7 @@
       "node_kind": "PROCESS_PRODUCER",
       "tier": "INTEGRATION",
       "command": { "kind": "PROCESS", "identity": "packaging-repository-baseline-v1", "executable": "PWSH", "structured_output": "packaging-repository-baseline.json" },
-      "argv": ["-NoLogo", "-NoProfile", "-File", "{repository_root}/tools/agent/checks/repository-safety.ps1", "-RepositoryRoot", "{repository_root}", "-SafetyResultPath", "{structured_output}", "-DeclaredWriteRoots", "{declared_write_roots}", "-ContractMode", "PACKAGING_BASELINE"],
+      "argv": ["-NoLogo", "-NoProfile", "-File", "{repository_root}/tools/agent/checks/repository-safety.ps1", "-RepositoryRoot", "{repository_root}", "-SafetyResultPath", "{structured_output}", "-DeclaredWriteRoots", "{declared_write_roots}", "-TaskOutputRoot", "{output_root}", "-ContractMode", "PACKAGING_BASELINE"],
       "working_directory": ".",
       "dependencies": [],
       "platforms": ["WINDOWS"],
@@ -211,7 +211,7 @@
       "contract_class": "SAFETY",
       "tier": "INTEGRATION",
       "command": { "kind": "PROCESS", "identity": "packaging-repository-safety-v1", "executable": "PWSH", "structured_output": "packaging-repository-result.json" },
-      "argv": ["-NoLogo", "-NoProfile", "-File", "{repository_root}/tools/agent/checks/repository-safety.ps1", "-RepositoryRoot", "{repository_root}", "-SafetyResultPath", "{structured_output}", "-BaselinePath", "{output_root}/checks/packaging.repository-baseline.producer/packaging-repository-baseline.json", "-DeclaredWriteRoots", "{declared_write_roots}", "-ContractMode", "PACKAGING"],
+      "argv": ["-NoLogo", "-NoProfile", "-File", "{repository_root}/tools/agent/checks/repository-safety.ps1", "-RepositoryRoot", "{repository_root}", "-SafetyResultPath", "{structured_output}", "-BaselinePath", "{output_root}/checks/packaging.repository-baseline.producer/packaging-repository-baseline.json", "-DeclaredWriteRoots", "{declared_write_roots}", "-TaskOutputRoot", "{output_root}", "-ContractMode", "PACKAGING"],
       "working_directory": ".",
       "dependencies": ["packaging.repository-baseline.producer", "packaging.product"],
       "platforms": ["WINDOWS"],

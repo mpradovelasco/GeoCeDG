@@ -6,6 +6,7 @@ param(
     [string]$DiagnosticResultPath,
     [string]$BaselinePath,
     [string[]]$DeclaredWriteRoots = @(),
+    [string]$TaskOutputRoot,
     [ValidateSet('REPOSITORY', 'PACKAGING_BASELINE', 'PACKAGING')]
     [string]$ContractMode = 'REPOSITORY'
 )
@@ -58,6 +59,27 @@ function Invoke-GitRead {
     }
 }
 
+function Resolve-PackagingSnapshotWriteRoots {
+    param([string[]]$WriteRoots)
+
+    $values = [Collections.Generic.List[string]]::new()
+    foreach ($value in $WriteRoots) { $values.Add($value) }
+    if (-not [string]::IsNullOrWhiteSpace($TaskOutputRoot)) {
+        $repository = [IO.Path]::GetFullPath($RepositoryRoot).TrimEnd('\', '/')
+        $output = [IO.Path]::GetFullPath($TaskOutputRoot).TrimEnd('\', '/')
+        $relative = [IO.Path]::GetRelativePath($repository, $output).Replace('\', '/')
+        if ($relative -eq '.' -or $relative -eq '..' -or
+                $relative.StartsWith('../', [StringComparison]::Ordinal) -or
+                $relative -eq '.git' -or
+                $relative.StartsWith('.git/', [StringComparison]::Ordinal)) {
+            throw 'Packaging task output root must be a contained non-Git repository path.'
+        }
+        $values.Add($relative)
+    }
+    return Resolve-VerificationPackagingWriteRoots -RepositoryRoot $RepositoryRoot `
+        -DeclaredWriteRoots ([string[]]$values.ToArray())
+}
+
 function Get-PackagingRepositorySnapshot {
     param([string[]]$WriteRoots)
     $top = Invoke-GitRead @('rev-parse', '--show-toplevel')
@@ -95,7 +117,8 @@ function Get-PackagingRepositorySnapshot {
 
 if ($ContractMode -ceq 'PACKAGING_BASELINE') {
     try {
-        $baseline = Get-PackagingRepositorySnapshot -WriteRoots $DeclaredWriteRoots
+        $roots = Resolve-PackagingSnapshotWriteRoots -WriteRoots $DeclaredWriteRoots
+        $baseline = Get-PackagingRepositorySnapshot -WriteRoots $roots
     } catch {
         $baseline = [ordered]@{
             schema_version = 1
@@ -176,8 +199,7 @@ try {
                         [string]$baseline.evidence_state -cne 'PRESENT') {
                     throw 'Packaging baseline evidence is not complete and trusted.'
                 }
-                $roots = Resolve-VerificationPackagingWriteRoots -RepositoryRoot $RepositoryRoot `
-                    -DeclaredWriteRoots $DeclaredWriteRoots
+                $roots = Resolve-PackagingSnapshotWriteRoots -WriteRoots $DeclaredWriteRoots
                 $baselineRoots = Resolve-VerificationPackagingWriteRoots -RepositoryRoot $RepositoryRoot `
                     -DeclaredWriteRoots ([string[]]@($baseline.declared_write_roots))
                 if ((ConvertTo-VerificationCanonicalJson -Value $roots) -cne

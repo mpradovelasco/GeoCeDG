@@ -176,7 +176,7 @@
       "test_filters": [],
       "excluded_test_filters": [
         "org.geocedg.desktop.G9U1DefinitionAffordanceTest.inspectorDistinguishesCurrentAddressFromRetainedDormantAddressAndRecovery",
-        "org.geocedg.desktop.G9U1MetricReviewTest.originalSplineInputsRemainTruthfullyInvalidMetricEndpoints",
+        "org.geocedg.desktop.G9U1MetricReviewTest.originalSplineInputsProvideApprovedConstructorProvenance",
         "org.geocedg.desktop.G9U1MetricReviewTest.exactSemanticEndpointsPublishAndRecomputeThroughTheRichParent",
         "org.geocedg.desktop.G9U1MetricReviewTest.ordinaryLocusQuickGuideUsesTheSameSemanticMetricAuthority",
         "org.geocedg.desktop.G9U1MetricReviewTest.partialScalarPreservesHiddenParentAndIdentityAcrossTwoNativeReopens",
@@ -191,8 +191,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 1441,
-      "expected_identities_sha256": "0f02986eae9de461757c6eb9cf446bee3f923b922739ffb75372f064c884d3a1",
+      "expected_identity_count": 1440,
+      "expected_identities_sha256": "26d7217a204966628986ef03ff534b2940b07bdb6ba6ff676e2d9f48a8344876",
       "not_applicable_allowlist": [
         {
           "identity": "desktop::org.geogebra.CasValueExtractor::extractMockValues(String)::invocation[1/1]",
@@ -215,7 +215,7 @@
       "gradle_task": ":desktop:desktop:test",
       "test_filters": [
         "org.geocedg.desktop.G9U1DefinitionAffordanceTest.inspectorDistinguishesCurrentAddressFromRetainedDormantAddressAndRecovery",
-        "org.geocedg.desktop.G9U1MetricReviewTest.originalSplineInputsRemainTruthfullyInvalidMetricEndpoints",
+        "org.geocedg.desktop.G9U1MetricReviewTest.originalSplineInputsProvideApprovedConstructorProvenance",
         "org.geocedg.desktop.G9U1MetricReviewTest.exactSemanticEndpointsPublishAndRecomputeThroughTheRichParent",
         "org.geocedg.desktop.G9U1MetricReviewTest.ordinaryLocusQuickGuideUsesTheSameSemanticMetricAuthority",
         "org.geocedg.desktop.G9U1MetricReviewTest.partialScalarPreservesHiddenParentAndIdentityAcrossTwoNativeReopens"
@@ -226,7 +226,7 @@
         "--tests",
         "org.geocedg.desktop.G9U1DefinitionAffordanceTest.inspectorDistinguishesCurrentAddressFromRetainedDormantAddressAndRecovery",
         "--tests",
-        "org.geocedg.desktop.G9U1MetricReviewTest.originalSplineInputsRemainTruthfullyInvalidMetricEndpoints",
+        "org.geocedg.desktop.G9U1MetricReviewTest.originalSplineInputsProvideApprovedConstructorProvenance",
         "--tests",
         "org.geocedg.desktop.G9U1MetricReviewTest.exactSemanticEndpointsPublishAndRecomputeThroughTheRichParent",
         "--tests",
@@ -241,7 +241,7 @@
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
       "expected_identity_count": 5,
-      "expected_identities_sha256": "966e3a20b82fca3a2946303902467cccbf94f2066a4503eab3c74c156c63577b",
+      "expected_identities_sha256": "b96008840c0199c4f010402558d6e64cc1380f3cdd4dd66ea6c8816bfd5c32d7",
       "not_applicable_allowlist": [],
       "input_identities": [
         {
