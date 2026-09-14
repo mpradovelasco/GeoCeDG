@@ -1,0 +1,67 @@
+{
+  "$schema": "../../../geocedg/specs/operations/model-manifest.schema.json",
+  "schema_version": 1,
+  "template": false,
+  "id": "cedg.regression.pre-g9b-s3-text-view-scaling",
+  "maturity": "experimental",
+  "source": {
+    "uri": "models/regression/pre-g9b-s3-text-view-scaling/geogebra.xml",
+    "author": "GeoCeDG contributors",
+    "date": "2026-09-14",
+    "provenance_notes": "Project-authored deterministic PRE-G9B-S3 manual smoke construction; no viewport-derived state is stored in its Text objects."
+  },
+  "required_geogebra": {
+    "version": "5.4.928.0",
+    "baseline_sha": "9b93256b7df401ff056c37b502d82df4d72b1522"
+  },
+  "loaded_by_default": false,
+  "inputs": [
+    "ordinary world-anchored Text",
+    "multiline world-anchored Text",
+    "LaTeX world-anchored Text",
+    "absolute-screen Text control",
+    "nearby geometric reference segment"
+  ],
+  "outputs": [
+    "manual per-view Text zoom observation",
+    "manual scaled selection and hit-area observation"
+  ],
+  "validity_domain": {
+    "description": "GeoCeDG Euclidian views with finite positive x/y scales; world Text uses the view's primary scalar x scale and absolute-screen Text remains unscaled.",
+    "parameters": []
+  },
+  "known_degeneracies": [
+    "This fixture is observational and screenshots are non-normative.",
+    "A non-GeoCeDG Classic profile intentionally retains inherited screen-sized Text behavior."
+  ],
+  "reference_models": [],
+  "expected_metrics": {
+    "world_text_count": 3,
+    "absolute_screen_control_count": 1,
+    "reference_xscale": 50,
+    "viewport_state_persisted_in_text": false
+  },
+  "license": {
+    "spdx": null,
+    "evidence": "Project-authored validation construction; public redistribution remains subject to repository license approval.",
+    "review_status": "unreviewed"
+  },
+  "replacement_candidate": null,
+  "artifact": {
+    "path": "models/regression/pre-g9b-s3-text-view-scaling/pre-g9b-s3-text-view-scaling.ggb",
+    "format": "ggb",
+    "sha256": "3b141c90ec61027b4ff81d6b07dfd4d7edfe26d9b98e892e4889c9c7e8f82545",
+    "immutable": true
+  },
+  "derived_artifacts": [],
+  "implementation": {
+    "mechanisms": [
+      "world-anchored-geotext",
+      "absolute-screen-control",
+      "per-view-presentation-scaling"
+    ],
+    "embedded_tools": 0,
+    "global_javascript": false
+  },
+  "publications": []
+}

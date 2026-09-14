@@ -113,12 +113,15 @@ public final class DrawText extends Drawable {
 		oldYpos = yLabel;
 		alignment.update();
 		boolean fontChanged = doUpdateFontSize();
+		boolean presentationBoundsChanged = fontChanged && isWorldScaledConstructionText();
 
 		// some commented code for LaTeX speedup removed in r22321
 
 		// We need check for null bounding box because of
 		// SetValue[text,Text["a",(1,1)]] makes it null
-		if (needsBoundingBoxUpdate(textChanged || positionChanged || fontChanged)) {
+		boolean semanticBoundingBoxUpdate = needsBoundingBoxUpdate(
+				textChanged || positionChanged || fontChanged);
+		if (semanticBoundingBoxUpdate || presentationBoundsChanged) {
 			// ensure that bounding box gets updated by drawing text once
 			updateLabelRectangle();
 			if (text.hasAlignment() && text.isDefined()) {
@@ -127,11 +130,14 @@ public final class DrawText extends Drawable {
 					updateLabelRectangle(); // recompute again to make Corner correct
 				}
 			}
-			// update corners for Corner[] command
-			double xRW = view.toRealWorldCoordX(labelRectangle.getX());
-			double yRW = view.toRealWorldCoordY(labelRectangle.getY());
-			text.setBoundingBox(xRW, yRW, labelRectangle.getWidth() * view.getInvXscale(),
-					- labelRectangle.getHeight() * view.getInvYscale());
+			if (semanticBoundingBoxUpdate) {
+				// update corners for Corner[] command
+				double xRW = view.toRealWorldCoordX(labelRectangle.getX());
+				double yRW = view.toRealWorldCoordY(labelRectangle.getY());
+				text.setBoundingBox(xRW, yRW,
+						labelRectangle.getWidth() * view.getInvXscale(),
+						-labelRectangle.getHeight() * view.getInvYscale());
+			}
 		} else if (text.hasAlignment()) {
 			align();
 		}
@@ -320,7 +326,16 @@ public final class DrawText extends Drawable {
 	 * @return font size
 	 */
 	public double getFontSize() {
-		return text.getFontSize(view.getFontSize());
+		double logicalFontSize = text.getFontSize(view.getFontSize());
+		return isWorldScaledConstructionText()
+				? logicalFontSize * view.getXscale() / EuclidianView.SCALE_STANDARD
+				: logicalFontSize;
+	}
+
+	private boolean isWorldScaledConstructionText() {
+		return !text.isAbsoluteScreenLocActive()
+				&& view.getApplication().getConfig()
+						.scalesConstructionTextWithEuclidianView();
 	}
 
 	/**

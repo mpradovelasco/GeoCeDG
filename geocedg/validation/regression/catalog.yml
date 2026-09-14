@@ -32,6 +32,16 @@
         "validator": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BS1AuthorDxfReproductionTest.java",
         "comparison": "artifact-backed-semantic-dxf-entities-and-strict-preflight"
       }
+    },
+    {
+      "id": "cedg.regression.pre-g9b-s3-text-view-scaling",
+      "manifest": "models/regression/pre-g9b-s3-text-view-scaling/manifest.yml",
+      "specification": "geocedg/specs/ui/construction-text-view-scaling.md",
+      "expected": {
+        "evidence": "models/regression/pre-g9b-s3-text-view-scaling/geogebra.xml",
+        "validator": "models/regression/pre-g9b-s3-text-view-scaling/generate_model.py",
+        "comparison": "deterministic-source-package-and-manual-author-smoke"
+      }
     }
   ]
 }

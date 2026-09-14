@@ -48,8 +48,8 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/main/settings/config/AppConfigGeoCeDG.java",
       "change": "added",
-      "purpose": "Define isolated GeoCeDG product identity, default-off Locus V2 and extended-DXF feature gates, and Classic-compatible serialization semantics.",
-      "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
+      "purpose": "Define isolated GeoCeDG product identity, default-off Locus V2 and extended-DXF feature gates, Classic-compatible serialization semantics, and the PRE-G9B-S3 construction-Text view-scaling presentation gate.",
+      "authority": "geocedg/specs/ui/construction-text-view-scaling.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/main/settings/config/AppConfigGeoCeDGTest.java",
@@ -4172,6 +4172,24 @@
       "change": "added",
       "purpose": "PRE-G9B-S2: Verify 10 pt construction acceptance remains separate from application-menu font choices.",
       "authority": ".github/prompts/tasks/pre-g9b-s2-construction-text-property-font-correctness.prompt.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/main/AppConfig.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-S3: Add a behavior-neutral default application-profile seam for construction Text view scaling so Classic retains inherited presentation.",
+      "authority": "geocedg/specs/ui/construction-text-view-scaling.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/euclidian/draw/DrawText.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-S3: Derive world-anchored construction Text font and coherent drawable/hit bounds from each GeoCeDG Euclidian view's primary scalar scale without mutating GeoText.",
+      "authority": "geocedg/specs/ui/construction-text-view-scaling.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geogebra/common/euclidian/draw/PreG9BS3ConstructionTextScalingTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-S3: Verify ordinary, multiline and LaTeX scaling, bounds/hit coherence, independent views, nonuniform scales, persistence containment, screen-fixed containment, Classic containment and deterministic fixture loading.",
+      "authority": ".github/prompts/tasks/pre-g9b-s3-construction-text-view-zoom-behavior.prompt.md"
     },
     {
       "path": "source/desktop/desktop/src/test/java/org/geogebra/desktop/gui/dialog/PreG9BS2TextPropertyLifecycleTest.java",

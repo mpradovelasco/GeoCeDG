@@ -13,6 +13,10 @@ geocedg/validation/spatial/g9a2/point-reference-values.json text eol=lf
 models/regression/g9a2-spatial-point-pilot/geogebra.xml text eol=lf
 models/regression/g9a2-spatial-point-pilot/g9a2-spatial-point-pilot.ggb binary
 
+# PRE-G9B-S3 deterministic author-smoke construction.
+models/regression/pre-g9b-s3-text-view-scaling/geogebra.xml text eol=lf
+models/regression/pre-g9b-s3-text-view-scaling/pre-g9b-s3-text-view-scaling.ggb binary
+
 # G9U1 Round-3 author branding sources and deterministic binary derivatives.
 source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/**/*.png binary
 source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/**/*.ico binary

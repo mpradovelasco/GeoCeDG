@@ -379,6 +379,17 @@ public interface AppConfig extends Restrictable, Serializable {
 	boolean hasEuclidianView();
 
 	/**
+	 * Whether world-relative construction Text derives its rendered size from the
+	 * current Euclidian view scale. The default preserves inherited screen-font
+	 * behavior.
+	 *
+	 * @return whether construction Text scales with its Euclidian view
+	 */
+	default boolean scalesConstructionTextWithEuclidianView() {
+		return false;
+	}
+
+	/**
 	 * @return true if the app has distribution view
 	 */
 	boolean hasDistributionView();

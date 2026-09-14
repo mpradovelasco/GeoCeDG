@@ -83,6 +83,11 @@ public final class AppConfigGeoCeDG extends AppConfigDefault {
 	}
 
 	@Override
+	public boolean scalesConstructionTextWithEuclidianView() {
+		return true;
+	}
+
+	@Override
 	public CommandFilter createCommandFilter() {
 		return runtimeFeatureService::isCommandVisible;
 	}
