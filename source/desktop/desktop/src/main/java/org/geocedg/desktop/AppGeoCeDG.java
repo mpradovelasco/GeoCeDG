@@ -164,8 +164,9 @@ public final class AppGeoCeDG extends App3D {
 			super.setGUIFontSize(size);
 			return;
 		}
-		getFontSettingsUpdater().setGUIFontSizeAndUpdate(size);
-		reapplyToolbarIconSize();
+		setPresentationSize(GeoCeDGPresentationPreferences.Category.GENERAL_UI_FONT,
+				size == -1 ? GeoCeDGPresentationPreferences.freshDefault(
+						GeoCeDGPresentationPreferences.Category.GENERAL_UI_FONT) : size);
 	}
 
 	@Override
@@ -203,8 +204,8 @@ public final class AppGeoCeDG extends App3D {
 	}
 
 	@Override
-	public int getScaledIconSize() {
-		return presentationPreferences == null ? super.getScaledIconSize()
+	public int getToolbarIconSize() {
+		return presentationPreferences == null ? super.getToolbarIconSize()
 				: presentationPreferences.get(
 						GeoCeDGPresentationPreferences.Category.TOOLBAR_ICON);
 	}
@@ -234,10 +235,10 @@ public final class AppGeoCeDG extends App3D {
 	private void initializePresentationPreferences() {
 		presentationPreferences = new GeoCeDGPresentationPreferences(
 				new GeoCeDGPresentationPreferences.InheritedValues(
-						getGUIFontSize(), super.getScaledIconSize(),
+						getGUIFontSize(), getGUIFontSize(), super.getToolbarIconSize(),
 						getPlainFont().getSize(), getPlainFont().getSize(), getFontSize()));
-		getImageManager().setMaxIconSize(getPresentationSize(
-				GeoCeDGPresentationPreferences.Category.TOOLBAR_ICON));
+		applyGeneralUIFontSize();
+		reapplyToolbarIconSize();
 		getEuclidianView1().updateFonts();
 		if (getGuiManager() != null) {
 			((GuiManagerD) getGuiManager()).updateFonts();
@@ -245,8 +246,7 @@ public final class AppGeoCeDG extends App3D {
 	}
 
 	private void reapplyToolbarIconSize() {
-		getImageManager().setMaxIconSize(getPresentationSize(
-				GeoCeDGPresentationPreferences.Category.TOOLBAR_ICON));
+		getImageManager().setMaxIconSize(getToolbarIconSize());
 		if (getGuiManager() != null) {
 			((GuiManagerD) getGuiManager()).updateToolbar();
 		}
@@ -256,6 +256,12 @@ public final class AppGeoCeDG extends App3D {
 		GuiManagerD manager = getGuiManager() == null ? null
 				: (GuiManagerD) getGuiManager();
 		switch (category) {
+		case GENERAL_UI_FONT:
+			applyGeneralUIFontSize();
+			if (manager != null) {
+				manager.updateFonts();
+			}
+			break;
 		case MENU_FONT:
 			if (manager != null && manager.getMenuBar() instanceof GeoGebraMenuBar menuBar) {
 				menuBar.updateFonts();
@@ -290,6 +296,14 @@ public final class AppGeoCeDG extends App3D {
 		default:
 			throw new IllegalStateException("Unhandled presentation category " + category);
 		}
+	}
+
+	private void applyGeneralUIFontSize() {
+		int size = getPresentationSize(
+				GeoCeDGPresentationPreferences.Category.GENERAL_UI_FONT);
+		getFontSettingsUpdater().setGUIFontSizeAndUpdate(size);
+		getFontManager().setFontSize(size);
+		getImageManager().setMaxIconSize(getToolbarIconSize());
 	}
 
 	@Override

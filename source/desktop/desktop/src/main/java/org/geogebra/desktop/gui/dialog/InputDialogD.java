@@ -18,6 +18,7 @@ package org.geogebra.desktop.gui.dialog;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -313,7 +314,25 @@ public class InputDialogD extends InputDialog
 	}
 
 	public JPanel getButtonPanel() {
-		return btPanel;
+		return buttonsPanel;
+	}
+
+	/** Make action-button heights content-derived and consistent without fixed widths. */
+	protected void normalizeActionButtonHeights() {
+		JButton[] buttons = {btOK, btCancel, btApply, btHelp};
+		int height = 0;
+		for (JButton button : buttons) {
+			if (button != null) {
+				button.setPreferredSize(null);
+				height = Math.max(height, button.getPreferredSize().height);
+			}
+		}
+		for (JButton button : buttons) {
+			if (button != null) {
+				Dimension preferred = button.getPreferredSize();
+				button.setPreferredSize(new Dimension(preferred.width, height));
+			}
+		}
 	}
 
 	/**
@@ -486,6 +505,9 @@ public class InputDialogD extends InputDialog
 		btOK.setFont(font);
 		btCancel.setFont(font);
 		btApply.setFont(font);
+		if (btHelp != null) {
+			btHelp.setFont(font);
+		}
 		btProperties.setFont(font);
 
 	}

@@ -174,7 +174,7 @@ public class TextInputDialogD extends InputDialogD
 		isIniting = true;
 
 		// build input dialog GUI
-		createGUI(title, "", false, cols, rows, false, false, false, false,
+		createGUI(title, "", false, cols, rows, false, false, false, true,
 				DialogType.DynamicText);
 		addHelpButton();
 		editor = (DynamicTextInputPane) inputPanel.getTextComponent();
@@ -256,7 +256,10 @@ public class TextInputDialogD extends InputDialogD
 						discardModifications();
 					}
 				}, closeProperties);
-		btPanel.add(btApply);
+		if (btApply.getParent() != btPanel) {
+			btPanel.add(btApply);
+		}
+		normalizeActionButtonHeights();
 		btPanel.revalidate();
 	}
 
@@ -267,6 +270,7 @@ public class TextInputDialogD extends InputDialogD
 				ManualPage.TEXT_TOOL);
 		btHelp.setAction(helpAction);
 		btPanel2.add(btHelp);
+		normalizeActionButtonHeights();
 	}
 
 	@Override
@@ -991,6 +995,7 @@ public class TextInputDialogD extends InputDialogD
 
 		previewHeader.setFont(font);
 		textPreviewer.updateFonts();
+		normalizeActionButtonHeights();
 
 	}
 

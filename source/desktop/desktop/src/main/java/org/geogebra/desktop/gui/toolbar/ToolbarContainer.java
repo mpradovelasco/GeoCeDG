@@ -215,6 +215,7 @@ public class ToolbarContainer extends JPanel implements ComponentListener {
 		// mode label
 		modeNameLabel = new JLabel();
 		modeNameLabel.setAlignmentX(LEFT_ALIGNMENT);
+		modeNameLabel.setFont(app.getPlainFont());
 
 		// put into panel to
 		if (toolbarHelpPanel == null) {
@@ -245,6 +246,14 @@ public class ToolbarContainer extends JPanel implements ComponentListener {
 				.createCompoundBorder(outsideBorder, insideBorder));
 
 		return toolbarHelpPanel;
+	}
+
+	/** Refresh toolbar-owned command help from the general UI font. */
+	public void updateFonts() {
+		if (modeNameLabel != null) {
+			modeNameLabel.setFont(app.getPlainFont());
+			updateHelpText();
+		}
 	}
 
 	private JPanel getGridButtonPanel() {

@@ -251,7 +251,9 @@ public class InputPanelD extends JPanel
 
 	public void updateFonts() {
 
-		Font font = app.getAlgebraFont();
+		// This reusable editor also serves ordinary/redefine/Text dialogs and the
+		// Input Bar; Algebra view renderers apply their explicit owner separately.
+		Font font = app.getPlainFont();
 
 		if (textComponent instanceof GeoGebraEditorPane) {
 			((GeoGebraEditorPane) textComponent).updateFont(font);

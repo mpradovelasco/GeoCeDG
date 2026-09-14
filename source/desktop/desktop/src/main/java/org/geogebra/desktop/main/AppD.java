@@ -1644,6 +1644,11 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 		return ptToPx(getGUIFontSize());
 	}
 
+	/** @return main-toolbar icon size; products may own this independently */
+	public int getToolbarIconSize() {
+		return getScaledIconSize();
+	}
+
 	/**
 	 * @param res resource
 	 * @param borderColor border color

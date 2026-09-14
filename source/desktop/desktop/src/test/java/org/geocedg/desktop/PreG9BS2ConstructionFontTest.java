@@ -32,7 +32,7 @@ class PreG9BS2ConstructionFontTest {
 		AppGeoCeDG app = G9U1TestApp.create();
 		int guiFontSize = app.getGUIFontSize();
 		int menuFontSize = app.getPlainFont().getSize();
-		int toolbarIconSize = app.getScaledIconSize();
+		int toolbarIconSize = app.getToolbarIconSize();
 		int maximumIconSize = app.getImageManager().getMaxIconSize();
 
 		JMenu fontMenu = GeoCeDGHostMenuFactory.fontSize(app);
@@ -43,7 +43,7 @@ class PreG9BS2ConstructionFontTest {
 		assertEquals(10, app.getFontSize());
 		assertEquals(guiFontSize, app.getGUIFontSize());
 		assertEquals(menuFontSize, app.getPlainFont().getSize());
-		assertEquals(toolbarIconSize, app.getScaledIconSize());
+		assertEquals(toolbarIconSize, app.getToolbarIconSize());
 		assertEquals(maximumIconSize, app.getImageManager().getMaxIconSize());
 	}
 

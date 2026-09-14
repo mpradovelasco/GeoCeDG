@@ -128,7 +128,10 @@ final class GeoCeDGHostMenuFactory {
 	}
 
 	static JMenu fontSize(AppD app) {
-		JMenu menu = menu(app, "FontSize");
+		JMenu menu = new JMenu(GeoCeDGProfile.getText("Presentation.TextFont",
+				app.getLocale().getLanguage()));
+		menu.setFont(app.getMenuFont());
+		menu.getAccessibleContext().setAccessibleDescription(menu.getText());
 		ButtonGroup group = new ButtonGroup();
 		Map<JRadioButtonMenuItem, Integer> items = new LinkedHashMap<>();
 		for (int i = 0; i < Util.appFontSizesLength(); i++) {

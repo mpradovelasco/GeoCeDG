@@ -29,6 +29,8 @@ import java.util.Set;
 import java.util.WeakHashMap;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -145,10 +147,10 @@ public final class GeoCeDGUserTools {
 	 * @return independent pinned user-tool group, empty when unpinned
 	 */
 	public static JComponent createPinnedToolbar(AppD app,
-			JToggleButton nativeVisualReference) {
+			JToggleButton nativeVisualReference, boolean horizontal) {
 		GeoCeDGUserTools tools = get(app);
 		tools.nativeVisualReference = nativeVisualReference;
-		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEADING, 2, 0));
+		JPanel panel = createPinnedContainer(nativeVisualReference, horizontal);
 		panel.getAccessibleContext().setAccessibleName(tools.text("UserTools.Title"));
 		Runnable refresh = () -> tools.populatePins(panel);
 		if (tools.library != null) {
@@ -161,6 +163,17 @@ public final class GeoCeDGUserTools {
 			});
 		}
 		refresh.run();
+		return panel;
+	}
+
+	static JPanel createPinnedContainer(JToggleButton nativeVisualReference,
+			boolean horizontal) {
+		JPanel panel = new JPanel();
+		panel.setLayout(new BoxLayout(panel,
+				horizontal ? BoxLayout.X_AXIS : BoxLayout.Y_AXIS));
+		panel.setAlignmentX(nativeVisualReference.getParent().getAlignmentX());
+		panel.setAlignmentY(nativeVisualReference.getParent().getAlignmentY());
+		panel.putClientProperty("geocedg.userTool.horizontal", horizontal);
 		return panel;
 	}
 
@@ -217,13 +230,13 @@ public final class GeoCeDGUserTools {
 			Set<String> renderedGroups = new LinkedHashSet<>();
 			for (PinnedCommand pin : ordered) {
 				if (pin.group().isEmpty()) {
-					panel.add(createPinnedButton(pin));
+					addPinnedComponent(panel, createPinnedButton(pin));
 				} else if (renderedGroups.add(pin.group())) {
 					List<PinnedCommand> group = grouped.get(pin.group());
 					if (group.size() == 1) {
-						panel.add(createPinnedButton(group.get(0)));
+						addPinnedComponent(panel, createPinnedButton(group.get(0)));
 					} else {
-						panel.add(createPinnedGroup(pin.group(), group));
+						addPinnedComponent(panel, createPinnedGroup(pin.group(), group));
 					}
 				} else {
 					// The first command already rendered the shared dropdown.
@@ -233,6 +246,16 @@ public final class GeoCeDGUserTools {
 		panel.setVisible(panel.getComponentCount() > 0);
 		panel.revalidate();
 		panel.repaint();
+	}
+
+	private static void addPinnedComponent(JPanel panel, JToggleButton button) {
+		Object orientation = panel.getClientProperty("geocedg.userTool.horizontal");
+		if (panel.getComponentCount() > 0 && orientation instanceof Boolean) {
+			boolean horizontal = Boolean.TRUE.equals(orientation);
+			panel.add(horizontal ? Box.createHorizontalStrut(2)
+					: Box.createVerticalStrut(2));
+		}
+		panel.add(button);
 	}
 
 	private JToggleButton createPinnedButton(PinnedCommand pin) {
@@ -310,8 +333,14 @@ public final class GeoCeDGUserTools {
 
 	private Icon pinnedIcon(PinnedCommand pin) {
 		return pin.icon() == null
-				? new MonogramIcon(monogram(pin.command()), app.getScaledIconSize())
+				? new MonogramIcon(monogram(pin.command()), renderedToolbarIconSize())
 				: toolbarIcon(pin.icon());
+	}
+
+	private int renderedToolbarIconSize() {
+		Icon nativeIcon = nativeVisualReference == null ? null
+				: nativeVisualReference.getIcon();
+		return nativeIcon == null ? app.getToolbarIconSize() : nativeIcon.getIconWidth();
 	}
 
 	static String monogram(String fullName) {
@@ -323,7 +352,7 @@ public final class GeoCeDGUserTools {
 
 	private ImageIcon toolbarIcon(GeoCeDGUserToolLibrary.PinIcon icon) {
 		ImageIcon source = new ImageIcon(icon.toolbarBytes());
-		int size = app.getScaledIconSize();
+		int size = renderedToolbarIconSize();
 		return new ImageIcon(source.getImage().getScaledInstance(size, size, Image.SCALE_SMOOTH));
 	}
 

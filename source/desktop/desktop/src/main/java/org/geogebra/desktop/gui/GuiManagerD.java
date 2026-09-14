@@ -839,6 +839,7 @@ public class GuiManagerD extends GuiManager implements GuiManagerInterfaceD {
 
 		if (toolbarPanel != null) {
 			toolbarPanel.buildGui();
+			toolbarPanel.updateFonts();
 		}
 
 		if (menuBar != null) {

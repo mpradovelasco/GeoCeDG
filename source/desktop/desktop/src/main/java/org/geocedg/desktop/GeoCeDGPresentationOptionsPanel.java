@@ -5,13 +5,14 @@
 
 package org.geocedg.desktop;
 
-import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.util.EnumMap;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -20,7 +21,7 @@ import org.geocedg.desktop.GeoCeDGPresentationPreferences.Category;
 import org.geogebra.common.gui.SetLabels;
 import org.geogebra.desktop.gui.dialog.options.OptionPanelD;
 
-/** Compact Advanced-options panel for the five independent S4 preferences. */
+/** Compact Advanced-options panel for the six independent S4 preferences. */
 final class GeoCeDGPresentationOptionsPanel extends JPanel
 		implements OptionPanelD, SetLabels {
 	private static final long serialVersionUID = 1L;
@@ -31,7 +32,8 @@ final class GeoCeDGPresentationOptionsPanel extends JPanel
 
 	GeoCeDGPresentationOptionsPanel(AppGeoCeDG app) {
 		this.app = app;
-		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		setLayout(new GridBagLayout());
+		int row = 0;
 		for (Category category : Category.values()) {
 			JLabel label = new JLabel();
 			JComboBox<Integer> control = new JComboBox<>();
@@ -39,15 +41,26 @@ final class GeoCeDGPresentationOptionsPanel extends JPanel
 				control.addItem(size);
 			}
 			control.addActionListener(event -> apply(category, control));
-			JPanel row = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
-			row.add(label);
-			row.add(control);
-			add(row);
+			GridBagConstraints labelConstraints = constraints(0, row);
+			labelConstraints.anchor = GridBagConstraints.LINE_START;
+			add(label, labelConstraints);
+			GridBagConstraints controlConstraints = constraints(1, row++);
+			controlConstraints.anchor = GridBagConstraints.LINE_START;
+			controlConstraints.weightx = 1;
+			add(control, controlConstraints);
 			labels.put(category, label);
 			controls.put(category, control);
 		}
 		setLabels();
 		updateGUI();
+	}
+
+	private static GridBagConstraints constraints(int column, int row) {
+		GridBagConstraints constraints = new GridBagConstraints();
+		constraints.gridx = column;
+		constraints.gridy = row;
+		constraints.insets = new Insets(2, column == 0 ? 4 : 8, 2, 4);
+		return constraints;
 	}
 
 	private void apply(Category category, JComboBox<Integer> control) {
@@ -58,6 +71,8 @@ final class GeoCeDGPresentationOptionsPanel extends JPanel
 
 	@Override
 	public void setLabels() {
+		labels.get(Category.GENERAL_UI_FONT)
+				.setText(text("Presentation.GeneralUIFont") + ":");
 		labels.get(Category.MENU_FONT).setText(text("Presentation.MenuFont") + ":");
 		labels.get(Category.TOOLBAR_ICON).setText(text("Presentation.ToolbarIcon") + ":");
 		labels.get(Category.ALGEBRA_FONT).setText(text("Presentation.AlgebraFont") + ":");

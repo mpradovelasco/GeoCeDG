@@ -1,109 +1,145 @@
-# PRE-G9B-S4 independent application presentation sizing candidate report
+# PRE-G9B-S4-R1 presentation sizing corrective candidate report
 
 ## Candidate identity and authority
 
-- Entry commit: `bd39099f668de81e9e65c415b28995de7b1c846b`
-- Entry tree: `f41cd5050ff013b1f073e5754fe1ccf3feb96a98`
-- Entry source: fetched `origin/main`; local `main` was byte-identical and clean.
-- Required predecessor: `PRE-G9B-S3 — PASS — AUTHOR APPROVED`, confirmed in
-  the published S3 closeout.
-- Authorization: productive `PRE-G9B-S4` only.
-- Candidate commit/tree: the immutable commit carrying this report, identified
-  by the final PHASE receipt and the author handoff; the report does not embed
-  its own Git object and thereby avoids a self-referential commit.
-- `selfApproved=false`; author smoke remains `PENDING`.
+- Published entry before S4: `bd39099f668de81e9e65c415b28995de7b1c846b`,
+  tree `f41cd5050ff013b1f073e5754fe1ccf3feb96a98`.
+- Previous unpublished S4 candidate:
+  `8ec5d3eaf17a18f08e9484a37790d54791ef255b`, tree
+  `fb955194107594bcb3e632ab909af35d60e6a4e2`.
+- Required predecessor: `PRE-G9B-S3 — PASS — AUTHOR APPROVED`.
+- Authorization: bounded corrective `PRE-G9B-S4-R1` only.
+- Corrected candidate: the immutable commit carrying this report, identified by
+  the final S4 PHASE receipt and author handoff; the report avoids a
+  self-referential Git identity.
+- `selfApproved=false`; second author smoke remains `PENDING`.
 
-## Architecture and ownership
+## Inherited architecture and corrected ownership
 
-S4 changes the Desktop/application frontend only. It adds no construction
-geometry, dependency, serialization or document semantics.
+The existing `FontSettings`/`FontManagerD`, `GeoGebraPreferencesD`, Desktop
+`updateFonts()` graph, view-specific font hooks and `ImageManagerD` resource
+selection remain the architecture. R1 adds no preferences framework, theme
+system, construction semantics or document fields.
 
-Before S4, `FontSettings` separated construction `appFont` from `guiFont`, but
-menu/component typography, Algebra, Construction Protocol and Euclidian UI text
-consumed broad plain/application fonts, while toolbar rendering and resource
-selection were implicitly derived from GUI/font values. S2 already owned the
-construction-object font list including 10 pt; S3 already owned GeoText
-world-zoom scaling.
+S4 originally separated menu, toolbar-icon, Algebra, Construction Protocol and
+Graphics sizing. R1 retains those five owners and adds one residual General UI
+owner. Specific category hooks take precedence over the General UI fallback:
 
-After S4, the GeoCeDG application has five explicit user-preference owners:
+```text
+construction Text font
+    != general UI font
+    != menu font
+    != toolbar icon size
+    != Algebra font
+    != Construction Protocol font
+    != Graphics font
+```
 
-| Preference | Key | Supported values | Missing/invalid fallback | Live target |
-|---|---|---|---|---|
-| Menu font | `geocedg.presentation.menu-font-size.v1` | `Util.MENU_FONT_SIZES` | inherited effective GUI/menu size | product and inherited menus |
-| Toolbar icon | `geocedg.presentation.toolbar-icon-size.v1` | 16, 20, 24, 28, 32, 40, 48, 56, 64 px | inherited rendered icon size | native/profile toolbar rebuild |
-| Algebra font | `geocedg.presentation.algebra-font-size.v1` | `Util.MENU_FONT_SIZES` | inherited Algebra/plain size | tree, renderer, editor and helper presentation |
-| Construction Protocol font | `geocedg.presentation.construction-protocol-font-size.v1` | `Util.MENU_FONT_SIZES` | inherited protocol/plain size | table, header, navigation and context menu |
-| Graphics font | `geocedg.presentation.graphics-font-size.v1` | `Util.APP_FONT_SIZES` | inherited construction/view UI size | Graphics and Graphics2 UI/label typography |
+General UI owns `FontManagerD` typography for Input Bar entry and typed command
+text, Input Help, toolbar-right command help, ordinary Desktop controls,
+redefine/input editors and Text/general dialogs reached by the existing dialog
+font-update lifecycle. Menu, Algebra, Protocol and Graphics immediately reapply
+their explicit hooks during a general refresh. Toolbar size is obtained through
+a toolbar-specific application hook; application-wide dialog/style-bar icons
+continue to use normal GUI-icon scaling.
 
-The five values may share supported-size helpers but are stored and selected
-independently. They use the existing installed `GeoGebraPreferencesD` store,
-not a second framework and not `.cedg`/`.ggb` XML. The GeoCeDG Advanced options
-surface replaces the inherited mixed GUI-font row with one compact localized
-panel; Classic retains the original row and default ownership.
+S2 continues to own ordinary and LaTeX construction Text logical font and the
+10 pt choice. S3 continues to own world-anchored construction Text scaling.
 
-## Defaults, migration and live behavior
+## Preferences, defaults and migration
 
-On first S4 startup, every absent or invalid versioned key is normalized to the
-nearest supported *currently effective inherited value* and materialized once.
-This preserves an existing installation's observable appearance rather than
-reinterpreting one old general-font preference as five linked settings. Fresh
-defaults remain the inherited 16 pt fonts and 32 px toolbar rendering.
+| Preference | Versioned key | Fresh default | Existing-profile fallback |
+|---|---|---:|---|
+| General UI font | `geocedg.presentation.general-ui-font-size.v1` | 12 pt | effective inherited GUI font |
+| Menu font | `geocedg.presentation.menu-font-size.v1` | 14 pt | effective inherited menu font |
+| Toolbar icon | `geocedg.presentation.toolbar-icon-size.v1` | 28 px | effective inherited toolbar size |
+| Algebra font | `geocedg.presentation.algebra-font-size.v1` | 12 pt | effective inherited Algebra font |
+| Construction Protocol font | `geocedg.presentation.construction-protocol-font-size.v1` | 12 pt | effective inherited protocol font |
+| Graphics font | `geocedg.presentation.graphics-font-size.v1` | 12 pt | effective inherited view font |
 
-Selections persist immediately and refresh only their target category. They do
-not call `setUnsaved()` and do not alter document state. Graphics and Graphics2
-share one value. Graphics ownership includes only typography already governed
-by the Euclidian view. `DrawText` deliberately retains the construction
-application font as GeoText's logical S3 base, so the Graphics preference does
-not mutate or rescale GeoText.
+A profile is fresh only when it has neither an S4 key nor legacy saved
+user-preferences XML. Fresh values are materialized independently. A valid
+category key is preserved as an explicit value. A missing or invalid category
+in an existing profile captures and normalizes only that category's inherited
+effective value. No key is derived from another, and an explicit value is never
+overwritten by a fresh default.
 
-The toolbar value now owns both displayed size and maximum/native resource
-selection. Existing 32/64-pixel and scalable resources remain the source;
-profile SVG actions rerender from their native scalable source before downscale.
-Menu or construction-font changes no longer select toolbar size implicitly.
+All setters persist before live refresh and do not call `setUnsaved()`. Graphics
+and Graphics2 share one Graphics preference. Classic retains inherited defaults
+and behavior.
 
-## Preserved contracts
+## Corrective findings and dispositions
 
-- S2 construction-object font meaning and 10 pt support are unchanged.
-- GeoText logical font properties remain construction-owned.
-- S3 world-anchored Text scaling remains
-  `logical construction font × view x-scale / standard scale`.
-- Screen-fixed Text behavior and construction XML remain unchanged.
-- Classic hooks return the exact inherited fonts/view size and no product panel.
-- No document format, geometry, toolbar taxonomy, action or protocol semantics
-  changed.
+### Presentation panel and construction label
 
-## Focused evidence before the immutable PHASE
+The six controls now use a compact two-column `GridBagLayout`: descriptors are
+left aligned, controls share one horizontal origin, row insets are consistent
+and the value column absorbs resize space. Descriptor padding was not used.
 
-| Command / authority | Result |
-|---|---|
-| shared + Desktop compile | exit 0 |
-| `PreG9BS4PresentationSizingTest` (4 methods) | exit 0 |
-| retained S2 Desktop + shared and retained S3 shared selections | final focused run exit 0; an initial 1/80 high-DPI flyout identity regression was corrected by reusing the popup icon instance |
-| Desktop main/test and shared main checkstyle | exit 0; initial three warnings corrected |
-| `INFRA_UNIT` | first run rejected only stale inventory-count assertion; corrected second run exit 0, `ACCEPTED`, coverage `COMPLETE`, 0 diagnostics |
-| `git diff --check` | exit 0 before candidate formation; repeated at closeout |
+The construction-owned host control is localized as `Text font size` / `Tamaño
+de fuente de Texto`; its ordinary and LaTeX construction behavior is unchanged.
 
-The final, exactly-once `PHASE -Phase PRE-G9B-S4` receipt is generated against
-the committed clean candidate under `artifacts/verification/PRE-G9B-S4/phase/`
-and is reported without mutating that candidate.
+### Text dialog regression
 
-## Operational impact
+The missing Apply button was caused by `TextInputDialogD` constructing its base
+button row with `showApply=false`; only the embedded Properties lifecycle later
+added Apply. The Text dialog now constructs Apply as part of its normal action
+row, while the Properties binder reuses it without duplication. Existing S2
+Apply/OK/Cancel semantics are unchanged.
 
-- `GUIDE_IMPACT = UPDATED`: the living user guide documents the five controls,
-  ownership boundary and pending-review state.
-- `BOOTSTRAP IMPACT = NO_CHANGE_REQUIRED`: S4 adds no JDK, Gradle, Conda,
-  environment, native runtime, platform permission or workstation prerequisite.
-- Verification infrastructure impact: additive S4 JUnit selection, PHASE plan
-  and pure-plan inventory assertions; therefore `INFRA_UNIT` was required.
-- Required final level: bounded `PHASE -Phase PRE-G9B-S4`; no COMPOSED/FULL
-  escalation is justified by the frontend-only scope.
+The Help height anomaly was caused by the first S4 candidate overriding the
+application-wide scaled-icon size with the toolbar preference. R1 confines that
+preference to the main-toolbar seam. Apply, OK, Cancel and Help heights are
+normalized from their normal Swing preferred content heights, without fixed
+widths or arbitrary pixel translations; Help also receives the dialog font.
+
+### General UI live surfaces
+
+The Desktop font manager is updated together with `FontSettings`. Existing
+`GuiManagerD.updateFonts()` then refreshes Input Bar/Input Help, tracked dialogs,
+Properties and ordinary Desktop controls. `InputPanelD`, which is reused by
+redefine and general input dialogs, again consumes the plain General UI font,
+not Algebra font. `ToolbarContainer` now explicitly fonts its command-help label
+and refreshes it after rebuilds.
+
+### Persistent user-tool alignment
+
+Persistent tools were placed in a `FlowLayout` strip while native toolbar tools
+use a `BoxLayout` container with bottom alignment. FlowLayout ignored the copied
+native alignment and displaced persistent buttons when extra toolbar height was
+available. The persistent strip now mirrors the toolbar axis and native parent
+alignment with BoxLayout. Button margins, insets and preferred/minimum/maximum
+geometry still come from a live native reference. Monogram/raster presentation
+uses the native icon's rendered logical size, including scaled/high-DPI icons.
+No tool identity, persistence, grouping or command semantics changed.
+
+## Validation and operational impact
+
+Focused acceptance covers 12 S4/R1 methods, the 76-method retained S2 Desktop
+selection and the 20-method retained S2/S3 shared selection. It checks fresh and
+migrated values, the aligned grid, all six live owners, Text controls and button
+height, toolbar 16/28/32/64 px, scaled native geometry, persistent-tool alignment,
+the full independence matrix, construction/GeoText containment and Classic
+neutrality. The final exact results and exactly-once S4 PHASE receipt are bound
+to the immutable corrected candidate.
+
+- `GUIDE_IMPACT = UPDATED`: user guide and second smoke checklist describe R1.
+- `BOOTSTRAP IMPACT = NO_CHANGE_REQUIRED`: no toolchain, runtime, permission or
+  workstation prerequisite changed.
+- Verification impact: S4 identity inventory grows from 4 to 12 methods and its
+  impact paths now cover the corrected Desktop seams; `INFRA_UNIT` is required.
+- `INFRA_UNIT`: an initial pre-execution catalog-hash rejection and a subsequent
+  stale 4-method inventory assertion were corrected; the final infrastructure
+  run is `ACCEPTED / COMPLETE` with zero diagnostics.
+- No INTEGRATION/FINAL escalation is justified by this bounded frontend scope.
 
 ## Governance disposition
 
 No push or tag is authorized. D1, P1, G9B, G9C, G9U2, further G12 and productive
-G10 are untouched and remain unauthorized by this task. Technical acceptance
-cannot approve the result or the author smoke.
+G10 remain untouched and unauthorized. Technical acceptance does not approve
+the result or second author smoke.
 
 ```text
-PRE-G9B-S4 — IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW
+PRE-G9B-S4-R1 — CORRECTIVE IMPLEMENTATION CANDIDATE
+PRE-G9B-S4 — CORRECTED IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW
 ```

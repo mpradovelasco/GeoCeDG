@@ -1034,8 +1034,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 4,
-      "expected_identities_sha256": "c6ecb693e3e9dd4135ae8bbfe7e18bd078821ade51f4fb1cd643427a49218396",
+      "expected_identity_count": 12,
+      "expected_identities_sha256": "a045eb5f7b299d0151773922b8ae9b5d6df2eddedd832b92933ba16c92409434",
       "not_applicable_allowlist": [],
       "input_identities": [
         {

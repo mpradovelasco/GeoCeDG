@@ -62,7 +62,7 @@ final class GeoCeDGToolbarContainer extends ToolbarContainer {
 				tools.add(nativeTools);
 			}
 			tools.add(GeoCeDGUserTools.createPinnedToolbar(app,
-					profileToolbar.getNativeVisualReference()));
+					profileToolbar.getNativeVisualReference(), horizontal));
 			add(tools, placement);
 			revalidate();
 		}

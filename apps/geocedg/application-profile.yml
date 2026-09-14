@@ -3389,6 +3389,8 @@
   ],
   "localized_text": {
     "Presentation.Sizes": {"en": "Presentation sizes", "es": "Tamaños de presentación"},
+    "Presentation.GeneralUIFont": {"en": "General UI font size", "es": "Tamaño de fuente de la interfaz general"},
+    "Presentation.TextFont": {"en": "Text font size", "es": "Tamaño de fuente de Texto"},
     "Presentation.MenuFont": {"en": "Menu font size", "es": "Tamaño de fuente de menús"},
     "Presentation.ToolbarIcon": {"en": "Toolbar icon size", "es": "Tamaño de iconos de la barra"},
     "Presentation.AlgebraFont": {"en": "Algebra font size", "es": "Tamaño de fuente de Álgebra"},
