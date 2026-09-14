@@ -518,7 +518,8 @@ try {
                 $manifest 'Generated build manifest differs.'
             if ($msi.Count -eq 1) {
                 $msiAssociation = Test-MsiNativeAssociation -MsiPath $msi[0].FullName `
-                    -InspectionRoot (Join-Path $ArtifactRoot 'verification')
+                    -InspectionRoot (Join-Path (Split-Path -Parent `
+                        ([IO.Path]::GetFullPath($ResultPath))) 'msi-inspection')
                 if ($msiAssociation.state -ceq 'EVIDENCE_UNTRUSTED') {
                     throw $msiAssociation.cause
                 }
