@@ -7,6 +7,7 @@ package org.geocedg.desktop;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -399,12 +400,23 @@ class G9U1WorkspaceSurfaceTest {
 				"navigation.zoom-window", "navigation.zoom-in", "navigation.zoom-out",
 				"presentation.copy-style"));
 		List<Component> rendered = new ArrayList<>();
+		int persistentAdjuncts = 0;
 		for (Component component : toolbar.getComponents()) {
 			if (component instanceof JToolBar.Separator) {
 				continue;
 			}
+			JComponent renderedComponent = assertInstanceOf(JComponent.class, component);
+			if (renderedComponent.getClientProperty(
+					"geocedg.presentation.group.id") == null) {
+				assertInstanceOf(JPanel.class, renderedComponent);
+				assertInstanceOf(Boolean.class, renderedComponent.getClientProperty(
+						"geocedg.userTool.horizontal"));
+				persistentAdjuncts++;
+				continue;
+			}
 			rendered.add(component);
 		}
+		assertEquals(1, persistentAdjuncts);
 		assertEquals(new ArrayList<>(expected.keySet()), rendered.stream()
 				.map(component -> (String) ((JComponent) component)
 						.getClientProperty("geocedg.presentation.group.id")).toList());

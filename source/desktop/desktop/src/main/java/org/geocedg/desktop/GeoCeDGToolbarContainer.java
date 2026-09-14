@@ -5,8 +5,6 @@
 
 package org.geocedg.desktop;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Insets;
 import java.util.ArrayList;
@@ -53,17 +51,9 @@ final class GeoCeDGToolbarContainer extends ToolbarContainer {
 		if (workspace != null) {
 			boolean horizontal = orientation == SwingConstants.NORTH
 					|| orientation == SwingConstants.SOUTH;
-			String placement = horizontal ? BorderLayout.WEST : BorderLayout.NORTH;
-			Component nativeTools = ((BorderLayout) getLayout()).getLayoutComponent(placement);
-			JPanel tools = new JPanel();
-			tools.setLayout(new BoxLayout(tools, horizontal ? BoxLayout.X_AXIS : BoxLayout.Y_AXIS));
-			if (nativeTools != null) {
-				remove(nativeTools);
-				tools.add(nativeTools);
-			}
-			tools.add(GeoCeDGUserTools.createPinnedToolbar(app,
+			profileToolbar.add(GeoCeDGUserTools.createPinnedToolbar(app,
 					profileToolbar.getNativeVisualReference(), horizontal));
-			add(tools, placement);
+			profileToolbar.revalidate();
 			revalidate();
 		}
 	}

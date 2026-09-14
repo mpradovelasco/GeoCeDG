@@ -3774,7 +3774,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGToolbarContainer.java",
       "change": "added",
-      "purpose": "Attach the declarative family palette to the normal Desktop toolbar without invented mode IDs. G9U1 review round 1: replace the permanent family-selector row with the reduced manifest-owned product toolbar. PRE-G9B-S4-R1: pass the live toolbar axis to persistent user tools and retain native button geometry.",
+      "purpose": "Attach the declarative family palette to the normal Desktop toolbar without invented mode IDs. G9U1 review round 1: replace the permanent family-selector row with the reduced manifest-owned product toolbar. PRE-G9B-S4-R1: pass the live toolbar axis to persistent user tools and retain native button geometry. PRE-G9B-S4-R2: place the persistent lifecycle panel directly in the native toolbar row so it shares native insets, centering and scaled presentation without pixel compensation.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -3882,7 +3882,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1WorkspaceSurfaceTest.java",
       "change": "added",
-      "purpose": "Exercise G9U1WorkspaceSurface workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority. G9U1 review round 3 verifies flattened File/Edit separators, Construction semantic grouping, Text/Image placement, host View/Options state and one stable menu occurrence. Final presentation polish verifies the two registry-backed mixed flyouts, their exact shared action identity, 52-action toolbar projection and absence of a detached Spline V2 button. Review fixture isolation preserves preexisting Swing roots and native runtime behavior.",
+      "purpose": "Exercise G9U1WorkspaceSurface workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority. G9U1 review round 3 verifies flattened File/Edit separators, Construction semantic grouping, Text/Image placement, host View/Options state and one stable menu occurrence. Final presentation polish verifies the two registry-backed mixed flyouts, their exact shared action identity, 52-action toolbar projection and absence of a detached Spline V2 button. Review fixture isolation preserves preexisting Swing roots and native runtime behavior. PRE-G9B-S4-R2 verifies the persistent adjunct has native toolbar membership without becoming a profile group or changing group order.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -4296,7 +4296,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BS4PresentationSizingTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-S4: verify independent ownership, live component application, fallback/reload, construction/GeoText isolation and Classic neutrality. PRE-G9B-S4-R1: verify revised defaults/migration, aligned layout, General UI consumers, Text-dialog controls, toolbar/persistent-tool alignment at 16/28/32/64 and scaled display, and the complete independence matrix.",
+      "purpose": "PRE-G9B-S4: verify independent ownership, live component application, fallback/reload, construction/GeoText isolation and Classic neutrality. PRE-G9B-S4-R1: verify revised defaults/migration, aligned layout, General UI consumers, Text-dialog controls, toolbar/persistent-tool alignment at 16/28/32/64 and scaled display, and the complete independence matrix. PRE-G9B-S4-R2 records actual painted icon centers through the complete toolbar layout and requires zero native-versus-persistent offset at 16/28/32/64.",
       "authority": ".github/prompts/tasks/pre-g9b-s4-independent-application-presentation-sizing.prompt.md"
     },
     {

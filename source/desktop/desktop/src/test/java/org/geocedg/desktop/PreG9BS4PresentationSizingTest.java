@@ -15,6 +15,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Point;
@@ -23,10 +25,12 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.swing.BoxLayout;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -322,6 +326,22 @@ class PreG9BS4PresentationSizingTest {
 	}
 
 	@Test
+	void fullToolbarPlacesPersistentButtonOnNativePaintCenter() {
+		AppGeoCeDG app = G9U1TestApp.create();
+		Map<Category, Integer> original = snapshot(app);
+		try {
+			Map<Integer, Integer> offsets = new LinkedHashMap<>();
+			for (int size : new int[] {16, 28, 32, 64}) {
+				app.setPresentationSize(Category.TOOLBAR_ICON, size);
+				offsets.put(size, fullToolbarPaintCenterOffset(app, size));
+			}
+			assertEquals(Map.of(16, 0, 28, 0, 32, 0, 64, 0), offsets);
+		} finally {
+			restore(app, original);
+		}
+	}
+
+	@Test
 	void scaledToolbarIconRetainsLogicalNativeGeometry() {
 		ScaledIcon scaled = new ScaledIcon(new BufferedImage(56, 56,
 				BufferedImage.TYPE_INT_ARGB), 2);
@@ -469,6 +489,84 @@ class PreG9BS4PresentationSizingTest {
 			}
 		}
 		return matches;
+	}
+
+	private static void layoutTree(Container root) {
+		root.doLayout();
+		for (Component child : root.getComponents()) {
+			if (child instanceof Container nested) {
+				layoutTree(nested);
+			}
+		}
+	}
+
+	private static int fullToolbarPaintCenterOffset(AppGeoCeDG app, int size) {
+		GeoCeDGWorkspaceController workspace = new GeoCeDGWorkspaceController(app,
+				new GeoCeDGActionRegistry(app));
+		GeoCeDGToolbarContainer container = new GeoCeDGToolbarContainer(app, workspace);
+		container.buildGui();
+		Container nativeTools = container.getToolbar(-1);
+		JPanel persistentTools = descendants(nativeTools, JPanel.class).stream()
+				.filter(panel -> panel.getClientProperty(
+						"geocedg.userTool.horizontal") instanceof Boolean)
+				.findFirst().orElseThrow();
+		List<JToggleButton> nativeButtons = descendants(nativeTools, JToggleButton.class)
+				.stream().filter(button -> !SwingUtilities.isDescendingFrom(button,
+						persistentTools)).toList();
+		JToggleButton nativeButton = nativeButtons.get(nativeButtons.size() - 1);
+		RecordingIcon nativeIcon = new RecordingIcon(nativeButton.getIcon());
+		nativeButton.setIcon(nativeIcon);
+		JToggleButton persistentButton = new JToggleButton();
+		GeoCeDGToolbarContainer.applyNativeToolPresentation(persistentButton, nativeButton);
+		RecordingIcon persistentIcon = new RecordingIcon(squareIcon(size));
+		persistentButton.setIcon(persistentIcon);
+		persistentTools.add(persistentButton);
+		persistentTools.setVisible(true);
+
+		Dimension preferred = container.getPreferredSize();
+		container.setSize(preferred.width, preferred.height);
+		layoutTree(container);
+		BufferedImage painting = new BufferedImage(Math.max(1, preferred.width),
+				Math.max(1, preferred.height), BufferedImage.TYPE_INT_ARGB);
+		Graphics2D graphics = painting.createGraphics();
+		try {
+			container.paint(graphics);
+		} finally {
+			graphics.dispose();
+		}
+		Point nativeOrigin = SwingUtilities.convertPoint(nativeButton, 0, 0, container);
+		Point persistentOrigin = SwingUtilities.convertPoint(persistentButton, 0, 0,
+				container);
+		int nativeCenter = nativeOrigin.y + nativeIcon.paintedAt.y
+				+ nativeIcon.getIconHeight() / 2;
+		int persistentCenter = persistentOrigin.y + persistentIcon.paintedAt.y
+				+ persistentIcon.getIconHeight() / 2;
+		return persistentCenter - nativeCenter;
+	}
+
+	private static final class RecordingIcon implements Icon {
+		private final Icon delegate;
+		private Point paintedAt;
+
+		private RecordingIcon(Icon delegate) {
+			this.delegate = delegate;
+		}
+
+		@Override
+		public void paintIcon(Component component, Graphics graphics, int x, int y) {
+			paintedAt = new Point(x, y);
+			delegate.paintIcon(component, graphics, x, y);
+		}
+
+		@Override
+		public int getIconWidth() {
+			return delegate.getIconWidth();
+		}
+
+		@Override
+		public int getIconHeight() {
+			return delegate.getIconHeight();
+		}
 	}
 
 	private static void disposeTestDialog(InputDialogD dialog) {
