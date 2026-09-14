@@ -3,13 +3,13 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Roadmap vivo y normativo de fases; no sustituye las especificaciones ni los ADR aceptados |
-| Versión documental | 3.97 |
+| Versión documental | 3.98 |
 | Fecha de revisión | 14 de septiembre de 2026 |
 | Baseline GeoGebra | 5.4.928.0, commit `9b93256b7df401ff056c37b502d82df4d72b1522`, tag `geogebra-baseline-5.4.928.0` |
-| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1–G9A3, el track G9A, G9U0 y sus refinamientos R1–R6, G9X1, G9S1, G9S1-R1, G9U1 y POST-G9U1-A6, A1, A2, A3, A3-FRONTEND, A5 y A7 `PASS — AUTHOR APPROVED`. POST-G9U1-A4 tiene investigación/diseño completos y `AUTHOR APPROVED`; P3-R1 es su refinamiento autor-aprobado. El track post-G9U1 está `COMPLETE — AUTHOR APPROVED`. La extensión pre-G9B está `DESIGN — AUTHOR APPROVED`; `PRE-G9B-S1`, R1, R2, `PRE-G9B-S2` y `PRE-G9B-S3` están `PASS — AUTHOR APPROVED`. S2 cierra la transacción de Text Properties y separa la fuente de objetos de construcción de menús e iconos. S3 escala únicamente el Text de construcción anclado al mundo según cada vista, conserva fijo el Text absoluto de pantalla y no persiste estado de viewport. `PRE-G9B-S4-R1` está en candidato correctivo y `PRE-G9B-S4` en `CORRECTED IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW`; D1 y P1 conservan su orden de calendario autoral sin autorización productiva ni nueva dependencia semántica de G9B. G9B/G9C permanecen diseñadas y no autorizadas; G9U2 sigue bloqueada por la aprobación global G9; G10P es solo planificación aprobada y ninguna implementación productiva G10 está autorizada. El riesgo `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` continúa abierto para disposición antes del cierre global G9. Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
-| Última fase cerrada | PRE-G9B-S3 — `PASS — AUTHOR APPROVED`; implementación verificada `543c77295fdc56ade60656a8d52829c7d6254cc7`, árbol `2758ad39a7e79004d710c958e7a013e65b5b6b0f`; smoke autoral `PASS`; `selfApproved=false` |
-| Última fase ejecutada | PRE-G9B-S4 — PHASE del candidato previo `verification-5d3f97b3e3f54e17b7126f017bf18b8b`, candidato `8ec5d3eaf17a18f08e9484a37790d54791ef255b`, `ACCEPTED / COMPLETE`; R1 requiere una única PHASE final nueva sobre su candidato corregido |
-| Siguiente puerta | Revisión y segundo smoke autoral de `PRE-G9B-S4-R1`/S4 corregida; D1, P1, G9B, G9C, G9U2, más G12 y G10 productivo permanecen no autorizados |
+| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1–G9A3, el track G9A, G9U0 y sus refinamientos R1–R6, G9X1, G9S1, G9S1-R1, G9U1 y POST-G9U1-A6, A1, A2, A3, A3-FRONTEND, A5 y A7 `PASS — AUTHOR APPROVED`. POST-G9U1-A4 tiene investigación/diseño completos y `AUTHOR APPROVED`; P3-R1 es su refinamiento autor-aprobado. El track post-G9U1 está `COMPLETE — AUTHOR APPROVED`. La extensión pre-G9B está `DESIGN — AUTHOR APPROVED`; `PRE-G9B-S1`, R1, R2, `PRE-G9B-S2`, `PRE-G9B-S3`, `PRE-G9B-S4`, S4-R1 y S4-R2 están `PASS — AUTHOR APPROVED`. S2 conserva la fuente de construcción, S3 el escalado de Text con zoom y S4 los seis propietarios independientes de presentación; R2 integra la herramienta persistente en la fila nativa sin compensación de píxeles. D1 y P1 conservan su orden autoral sin autorización productiva ni nueva dependencia semántica de G9B. G9B/G9C permanecen diseñadas y no autorizadas; G9U2 sigue bloqueada por la aprobación global G9; G10P es solo planificación aprobada y ninguna implementación productiva G10 está autorizada. El riesgo `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` continúa abierto para disposición antes del cierre global G9. Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
+| Última fase cerrada | PRE-G9B-S4, R1 y R2 — `PASS — AUTHOR APPROVED`; candidato técnico `eb6af9799eec70459485b13fe1c9cadd394e8dca`, árbol `f71c34fff34fcff169a1302eb08e879bb247802d`; smoke autoral `PASS`; `selfApproved=false` |
+| Última fase ejecutada | PRE-G9B-S4 — reemplazo autor-autorizado `verification-6672b2c96f9145f388148105c543239c`, candidato exacto `eb6af9799eec70459485b13fe1c9cadd394e8dca`, `ACCEPTED / COMPLETE`, 108 pruebas, cero fallos/errores/omisiones/diagnósticos. El rechazo histórico `verification-8e5b5cb792d24e469e84548307862984` permanece `REJECTED_VERIFICATION_CORE` por desajuste temporal 13/12 de identidades y no se reinterpreta como PASS |
+| Siguiente puerta | `PRE-G9B-D1 — DESIGNED — RESEARCH/IMPLEMENTATION NOT YET AUTHORIZED`; P1, G9B, G9C, G9U2, más G12 y G10 productivo permanecen no autorizados |
 | Primer cliente | Aplicación de escritorio de la familia Classic 5 |
 | Núcleo | Java compartido de GeoGebra, extendido solo cuando la semántica lo requiere |
 
@@ -2926,7 +2926,7 @@ G9U1 PASS
   -> PRE-G9B-S1 stabilization/DXF (R1/R2 PASS — AUTHOR APPROVED)
   -> PRE-G9B-S2 construction Text/property correctness (PASS — AUTHOR APPROVED)
   -> PRE-G9B-S3 construction Text view-zoom behavior (PASS — AUTHOR APPROVED)
-  -> PRE-G9B-S4-R1 corrected independent presentation sizing (PENDING AUTHOR REVIEW)
+  -> PRE-G9B-S4/R1/R2 independent presentation sizing (PASS — AUTHOR APPROVED)
   -> PRE-G9B-D1 licensing/assets/deployability (DESIGN CANDIDATE; NOT AUTHORIZED)
   -> PRE-G9B-P1 public surface/version 1.0 (DESIGN CANDIDATE; NOT AUTHORIZED)
   -> separate later author decision on G9B
@@ -3093,9 +3093,9 @@ dependencia G9B.
 
 ### Track PRE-G9B — estabilización, deployability y promoción pública
 
-**Estado:** diseño de track `AUTHOR APPROVED`; S1, R1, R2 y S2 están
-`PASS — AUTHOR APPROVED`. S3 está `IMPLEMENTATION CANDIDATE — PENDING AUTHOR
-REVIEW`; S4, remediación de distribución y promoción no están autorizadas.
+**Estado:** diseño de track `AUTHOR APPROVED`; S1, R1, R2, S2, S3, S4,
+S4-R1 y S4-R2 están `PASS — AUTHOR APPROVED`. D1, P1, remediación de
+distribución y promoción no están autorizadas.
 
 El [diseño de la extensión](../architecture/pre_g9b_stabilization_deployability_design.md)
 define esta secuencia de puertas autorales de calendario:
@@ -3107,7 +3107,7 @@ define esta secuencia de puertas autorales de calendario:
 | `PRE-G9B-S1-R2` | existencia Locus V2 y certificación de componentes continuos válidos en kernel compartido | `PASS — AUTHOR APPROVED`; [arquitectura](../architecture/pre_g9b_s1_r2_locus_existence_components_design.md), [spec normativa](../../geocedg/specs/locus/locus-v2-existence-components.md), [ADR 0027 aceptado](../adr/0027-locus-v2-existence-and-continuous-valid-components.md) y [matriz](../validation/pre_g9b_s1_r2_locus_existence_validation_matrix.md) |
 | `PRE-G9B-S2` | corrección de transacción Text Properties y fuente de objeto de construcción hasta al menos 10 pt, con contratos internos separados | `PASS — AUTHOR APPROVED`; [informe de cierre](../validation/pre_g9b_s2_text_property_font_candidate_report.md); `selfApproved=false`, sin autorizar S3+ |
 | `PRE-G9B-S3` | comportamiento visual de Text de construcción ante zoom, sin autoridad geométrica del viewport | `PASS — AUTHOR APPROVED`; [informe de cierre](../validation/pre_g9b_s3_text_view_scaling_candidate_report.md) y contrato normativo en [construction-text-view-scaling.md](../../geocedg/specs/ui/construction-text-view-scaling.md); `selfApproved=false`, sin autorizar S4+ |
-| `PRE-G9B-S4` | tamaños independientes de UI general, menú, iconos, Algebra, Construction Protocol, Graphics y Graphics2 | `CORRECTED IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW`; R1 restaura el diálogo Text y completa propiedad/alineación UI; `selfApproved=false` |
+| `PRE-G9B-S4` | tamaños independientes de UI general, menú, iconos, Algebra, Construction Protocol, Graphics y Graphics2 | `PASS — AUTHOR APPROVED`; integra R1/R2, PHASE de reemplazo aceptada y smoke autoral final; [informe de cierre](../validation/pre_g9b_s4_application_presentation_sizing_candidate_report.md); `selfApproved=false` |
 | `PRE-G9B-D1` | inventario, investigación primaria, disposición humana, remediación autorizada y verificación de deployability | `DESIGNED — RESEARCH/IMPLEMENTATION NOT YET AUTHORIZED`; G4 redistribución sigue `BLOCKED` |
 | `PRE-G9B-P1` | decidir defaults públicos LocusV2/SplineV2, flag DXF independiente, compatibilidad y promoción de versión 1.0 | `DESIGNED — PROMOTION NOT YET AUTHORIZED` |
 

@@ -24,9 +24,8 @@ conserva la evidencia técnica y autoral; el
 [checklist de smoke autoral](../validation/pre_g9b_s3_author_smoke_checklist.md)
 registra la disposición del autor.
 
-Estado PRE-G9B-S4-R1: **CORRECTIVE IMPLEMENTATION CANDIDATE**; estado S4:
-**CORRECTED IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**;
-`selfApproved=false`. En **Opciones > Avanzado > Tamaños de presentación**,
+Estado PRE-G9B-S4, R1 y R2: **PASS — AUTHOR APPROVED**; smoke autoral
+**PASS**; `selfApproved=false`. En **Opciones > Avanzado > Tamaños de presentación**,
 GeoCeDG ofrece controles independientes para **Fuente de la interfaz general**,
 **Fuente de menús**, **Iconos de la barra**, **Fuente de Álgebra**, **Fuente del
 Protocolo de Construcción** y **Fuente de Gráficos**. Los valores nuevos por
@@ -38,8 +37,10 @@ construcción. La interfaz general es el fallback de Input Bar, ayuda de comando
 y diálogos ordinarios; los cinco propietarios específicos tienen precedencia.
 El control de construcción se denomina **Tamaño de fuente de Texto** y conserva
 el soporte S2 de 10 pt. El escalado con zoom S3 y el tamaño lógico de GeoText
-permanecen separados. El resultado corregido no está aprobado por el autor. D1,
-P1, G9B/G9C/G9U2, más G12 y G10 productivo permanecen fuera de alcance.
+permanecen separados. Las herramientas propias persistentes comparten ahora la
+misma fila, centrado, insets y escalado de la barra nativa, sin compensación de
+píxeles. D1, P1, G9B/G9C/G9U2, más G12 y G10 productivo permanecen fuera de
+alcance y no autorizados.
 
 Estado vivo del track post-G9U1: **COMPLETE — AUTHOR APPROVED**. A3, su
 frontend Classic, A5 y el slice A7 están **PASS — AUTHOR APPROVED**; A4 conserva

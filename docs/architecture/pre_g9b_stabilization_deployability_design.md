@@ -6,8 +6,8 @@
 - Published base tree: `733ddaa2675e826cdfffdd24de1a1ca135784c19`
 - Approved design commit: `1b7a7a43a3789d928f44d294364b159c14e6af59`
 - Approved design tree: `1700772eef774d79e6bd2c4d801476466ad996b6`
-- S1 product implementation: **AUTHOR-AUTHORIZED; CANDIDATE PENDING REVIEW**
-- S2–S4/D1/P1 product implementation: **NOT AUTHORIZED**
+- S1–S4 product implementation: **PASS — AUTHOR APPROVED**
+- D1/P1 research, implementation and promotion: **NOT AUTHORIZED**
 - Release/license disposition: **NOT AUTHORIZED**
 - Feature-default or version promotion: **NOT AUTHORIZED**
 - G9B/G9C/G9U2 and productive G10: **NOT AUTHORIZED**
@@ -26,10 +26,10 @@ The canonical top-level identifiers are:
 
 | ID | Purpose | Current status |
 |---|---|---|
-| `PRE-G9B-S1` | DXF correctness and bounded product stabilization | `IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW` |
-| `PRE-G9B-S2` | Construction Text/property and object-font correctness | `DESIGNED — REQUIRED PRE-D1 SLICE — IMPLEMENTATION NOT AUTHORIZED` |
-| `PRE-G9B-S3` | Construction Text view-zoom behavior | `DESIGNED — REQUIRED PRE-D1 SLICE — IMPLEMENTATION NOT AUTHORIZED` |
-| `PRE-G9B-S4` | Independent application presentation sizing | `DESIGNED — REQUIRED PRE-D1 SLICE — IMPLEMENTATION NOT AUTHORIZED` |
+| `PRE-G9B-S1` | DXF correctness and bounded product stabilization | `PASS — AUTHOR APPROVED` |
+| `PRE-G9B-S2` | Construction Text/property and object-font correctness | `PASS — AUTHOR APPROVED` |
+| `PRE-G9B-S3` | Construction Text view-zoom behavior | `PASS — AUTHOR APPROVED` |
+| `PRE-G9B-S4` | Independent application presentation sizing | `PASS — AUTHOR APPROVED`; integrates R1/R2; `selfApproved=false` |
 | `PRE-G9B-D1` | Licensing, assets and deployability | `DESIGNED — RESEARCH/IMPLEMENTATION NOT YET AUTHORIZED` |
 | `PRE-G9B-P1` | Public surface and product-version 1.0 promotion | `DESIGNED — PROMOTION NOT YET AUTHORIZED` |
 

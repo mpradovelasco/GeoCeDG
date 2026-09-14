@@ -1,14 +1,16 @@
 # Independent application presentation sizing
 
-- Phase: `PRE-G9B-S4` with corrective continuation `PRE-G9B-S4-R1`
-- Status: **NORMATIVE IMPLEMENTATION CONTRACT — AUTHOR AUTHORIZED**
+- Phase: `PRE-G9B-S4` with corrective continuations `PRE-G9B-S4-R1` and
+  `PRE-G9B-S4-R2`
+- Status: **NORMATIVE IMPLEMENTED CONTRACT — PASS — AUTHOR APPROVED**
 - Layer: Desktop application/frontend presentation
 - Persistence: GeoCeDG user preferences; never construction XML
 - Classic effect: behavior-neutral
 
 ## 1. Ownership
 
-S4/R1 owns six independent effective sizes:
+S4/R1 owns six independent effective sizes; R2 completes only native-toolbar
+presentation membership for persistent user tools:
 
 | Preference | Presentation owner | Fresh default |
 |---|---|---|

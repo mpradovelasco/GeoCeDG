@@ -1,4 +1,4 @@
-# PRE-G9B-S4-R1 presentation sizing corrective candidate report
+# PRE-G9B-S4 presentation sizing closeout report
 
 ## Candidate identity and authority
 
@@ -8,11 +8,12 @@
   `8ec5d3eaf17a18f08e9484a37790d54791ef255b`, tree
   `fb955194107594bcb3e632ab909af35d60e6a4e2`.
 - Required predecessor: `PRE-G9B-S3 — PASS — AUTHOR APPROVED`.
-- Authorization: bounded corrective `PRE-G9B-S4-R1` only.
-- Corrected candidate: the immutable commit carrying this report, identified by
-  the final S4 PHASE receipt and author handoff; the report avoids a
-  self-referential Git identity.
-- `selfApproved=false`; second author smoke remains `PENDING`.
+- Final verified technical candidate:
+  `eb6af9799eec70459485b13fe1c9cadd394e8dca`, tree
+  `f71c34fff34fcff169a1302eb08e879bb247802d`.
+- Status: `PRE-G9B-S4`, R1 and R2 **PASS — AUTHOR APPROVED**.
+- Author smoke: **PASS**.
+- `selfApproved=false`.
 
 ## Inherited architecture and corrected ownership
 
@@ -104,42 +105,76 @@ and refreshes it after rebuilds.
 
 ### Persistent user-tool alignment
 
-Persistent tools were placed in a `FlowLayout` strip while native toolbar tools
-use a `BoxLayout` container with bottom alignment. FlowLayout ignored the copied
-native alignment and displaced persistent buttons when extra toolbar height was
-available. The persistent strip now mirrors the toolbar axis and native parent
-alignment with BoxLayout. Button margins, insets and preferred/minimum/maximum
-geometry still come from a live native reference. Monogram/raster presentation
-uses the native icon's rendered logical size, including scaled/high-DPI icons.
-No tool identity, persistence, grouping or command semantics changed.
+R1 matched the logical icon and button geometry but left the persistent panel as
+a sibling of the upstream vertically centered toolbar wrapper. Full-toolbar
+painted-geometry reproduction measured native-minus-persistent center offsets of
+0, 6, 7 and 14 logical pixels at 16, 28, 32 and 64 px respectively. At the
+approved 28 px default both buttons were 38 by 38, while the native wrapper was
+62 px high and the persistent wrapper 38 px high. The size-dependent offset
+disproved a fixed artwork or raster translation cause.
+
+R2 places the persistent lifecycle panel as a direct adjunct in the native
+`ProfileToolbar`. It now shares the native toolbar insets, centering, layout and
+scaled presentation. Painted-center delta is zero at 16/28/32/64; the 56-device-
+pixel, scale-2 path retains 28 logical pixels. No pixel compensation, DPI hack,
+tool identity, persistence, profile grouping or command semantic changed.
 
 ## Validation and operational impact
 
-Focused acceptance covers 12 S4/R1 methods, the 76-method retained S2 Desktop
+Focused acceptance covers 12 S4/R1/R2 methods, the 76-method retained S2 Desktop
 selection and the 20-method retained S2/S3 shared selection. It checks fresh and
 migrated values, the aligned grid, all six live owners, Text controls and button
 height, toolbar 16/28/32/64 px, scaled native geometry, persistent-tool alignment,
 the full independence matrix, construction/GeoText containment and Classic
-neutrality. The final exact results and exactly-once S4 PHASE receipt are bound
-to the immutable corrected candidate.
+neutrality.
+
+The first R2 PHASE receipt is preserved as rejected historical evidence:
+`verification-8e5b5cb792d24e469e84548307862984`, candidate
+`2c76ba9b4a0e01a7089831fd40aefdc11a710b7c`, tree
+`8d4e7efcb15c906457ccf86c80df6b642e8617d8`,
+`REJECTED_VERIFICATION_CORE / UNTRUSTED`. All product checks passed; the sole
+cause was `Executed JUnit identities differ from the tracked selection
+inventory` after the temporary S4 count became 13 while the inventory still
+declared 12. This receipt is not a PASS and is not superseded for that tested
+candidate.
+
+The bookkeeping was corrected without changing production code by retaining
+the full painted-geometry coverage under the existing tracked alignment-test
+identity. The author-authorized replacement PHASE
+`verification-6672b2c96f9145f388148105c543239c` tested the exact final candidate
+and ran 108 tests: S2 Desktop 76, S4 Desktop 12 and S3 shared 20, with zero
+failures, errors or skips. It returned `ACCEPTED / COMPLETE` with zero
+diagnostic findings. Execution-plan hash:
+`9a876ad59c098d3e75920e1e316ce20ed5474edec0fea5b62ab96f45638a26d1`;
+result hash:
+`a222fa916fb5481ce8fb46410ecbfcfe1df272610723fcc47ba45f9eaabe7785`.
 
 - `GUIDE_IMPACT = UPDATED`: user guide and second smoke checklist describe R1.
 - `BOOTSTRAP IMPACT = NO_CHANGE_REQUIRED`: no toolchain, runtime, permission or
   workstation prerequisite changed.
-- Verification impact: S4 identity inventory grows from 4 to 12 methods and its
-  impact paths now cover the corrected Desktop seams; `INFRA_UNIT` is required.
+- Verification impact: the accepted inventory remains 12 methods. R2 changes no
+  verification authority or inventory, so no new `INFRA_UNIT` is required.
 - `INFRA_UNIT`: an initial pre-execution catalog-hash rejection and a subsequent
   stale 4-method inventory assertion were corrected; the final infrastructure
   run is `ACCEPTED / COMPLETE` with zero diagnostics.
 - No INTEGRATION/FINAL escalation is justified by this bounded frontend scope.
 
-## Governance disposition
+## Author evidence and governance disposition
 
-No push or tag is authorized. D1, P1, G9B, G9C, G9U2, further G12 and productive
-G10 remain untouched and unauthorized. Technical acceptance does not approve
-the result or second author smoke.
+The author reports the final interactive smoke as **PASS**, specifically
+confirming the default 28 px toolbar, persistent/native vertical alignment and
+no visible regression in the previously accepted S4/R1 presentation behavior.
+This is author evidence, not an automated result. The author explicitly approves
+R2, R1 and S4 and authorizes documentary closeout and ordinary fast-forward
+publication. This is not agent self-approval.
+
+D1, P1, G9B, G9C, G9U2, further G12 and productive G10 remain untouched and
+unauthorized. The next gate remains designed but not authorized.
 
 ```text
-PRE-G9B-S4-R1 — CORRECTIVE IMPLEMENTATION CANDIDATE
-PRE-G9B-S4 — CORRECTED IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW
+PRE-G9B-S4-R2 — PASS — AUTHOR APPROVED
+PRE-G9B-S4-R1 — PASS — AUTHOR APPROVED
+PRE-G9B-S4 — PASS — AUTHOR APPROVED
+selfApproved=false
+NEXT: PRE-G9B-D1 — DESIGNED — RESEARCH/IMPLEMENTATION NOT YET AUTHORIZED
 ```
