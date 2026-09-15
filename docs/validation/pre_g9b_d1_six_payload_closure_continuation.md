@@ -1,8 +1,11 @@
 # PRE-G9B-D1 six-payload evidence/grant closure continuation
 
-Status: **CANDIDATE — PENDING AUTHOR/PROFESSIONAL REVIEW**  
-Evidence date: 2026-09-15  
-Entry candidate: `d5b0eddc39921efd468b1cf74d66409296f0b994`  
+Status: **CANDIDATE — PENDING AUTHOR/PROFESSIONAL REVIEW**
+
+Evidence date: 2026-09-15
+
+Entry candidate: `d5b0eddc39921efd468b1cf74d66409296f0b994`
+
 Distribution marker: **INTERNAL EVALUATION — NOT FOR REDISTRIBUTION**
 
 This continuation is factual provenance/compliance preparation, not legal
