@@ -734,8 +734,9 @@ try {
                     } else { [string]$fontDisposition.disposition }) }
             )
         }
-        if (-not [string]::IsNullOrWhiteSpace(
-                [string]$fontDisposition.upstream_version)) {
+        if ($fontDisposition.PSObject.Properties.Name -contains
+                "upstream_version" -and -not [string]::IsNullOrWhiteSpace(
+                    [string]$fontDisposition.upstream_version)) {
             $fontComponent.version = [string]$fontDisposition.upstream_version
         }
         $fontComponent
