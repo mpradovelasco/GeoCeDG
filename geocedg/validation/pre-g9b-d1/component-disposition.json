@@ -1,9 +1,10 @@
 {
   "schema_version": 2,
   "evidence_kind": "PRE_G9B_D1_LICENSING_FRAMEWORK_PAYLOAD_CLOSURE_OVERLAY",
-  "status": "PRE-G9B-D1 LICENSING FRAMEWORK / PAYLOAD CLOSURE = CANDIDATE — PENDING AUTHOR REVIEW",
+  "status": "PRE-G9B-D1 LICENSING FRAMEWORK / PAYLOAD CLOSURE CHECKPOINT = COMPLETE — AUTHOR APPROVED; PRE-G9B-D1 PHASE = OPEN — PASS NOT CLAIMED",
   "authorizations": {
     "selfApproved": false,
+    "checkpointAuthorApproved": true,
     "authorApproved": false,
     "passClaimed": false,
     "publicRedistributionAllowed": false
@@ -14,8 +15,8 @@
     "D1-HD-03": "TRADEMARK REGISTRATION — DEFERRED / NOT AUTHORIZED",
     "D1-HD-04": "GEOGEBRA COMMERCIAL CONTACT — DEFERRED / NOT AUTHORIZED",
     "D1-HD-05": "SIX PAYLOAD EVIDENCE/GRANT CLOSURE — AUTHOR AUTHORIZED",
-    "D1-HD-05-result": "COMPLETED CANDIDATE FOR PROFILE NC — FINAL AUTHOR/PROFESSIONAL REVIEW REQUIRED",
-    "scope_note": "authorApproved=false above continues to mean that the PRE-G9B-D1 phase itself is not author-approved and no release is authorized"
+    "D1-HD-05-result": "CHECKPOINT COMPLETE — AUTHOR APPROVED FOR PROFILE NC EVIDENCE; FINAL AUTHOR/PROFESSIONAL RELEASE REVIEW REQUIRED",
+    "scope_note": "checkpointAuthorApproved=true records publication acceptance of this evidence checkpoint; authorApproved=false continues to mean that PRE-G9B-D1 phase PASS is not approved and no public release is authorized"
   },
   "base_evidence": {
     "path": "geocedg/validation/pre-g9b-d1/component-audit.json",

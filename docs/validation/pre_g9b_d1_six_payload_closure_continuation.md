@@ -1,10 +1,13 @@
 # PRE-G9B-D1 six-payload evidence/grant closure continuation
 
-Status: **CANDIDATE — PENDING AUTHOR/PROFESSIONAL REVIEW**
+Status: **CHECKPOINT COMPLETE — AUTHOR APPROVED; D1 PHASE REMAINS OPEN**
 
 Evidence date: 2026-09-15
 
 Entry candidate: `d5b0eddc39921efd468b1cf74d66409296f0b994`
+
+Accepted technical candidate: `bd378db3279051410208c084ae51eac09244ced6`
+(tree `fe28dd24d1fd7d98fa89257233d3d9aa41d283aa`)
 
 Distribution marker: **INTERNAL EVALUATION — NOT FOR REDISTRIBUTION**
 
@@ -22,10 +25,56 @@ semantics changed.
   of any fixed logo pixels.
 - D1-HD-03 trademark registration: **DEFERRED / NOT AUTHORIZED**.
 - D1-HD-04 GeoGebra commercial contact: **DEFERRED / NOT AUTHORIZED**.
-- D1-HD-05 six-payload research: completed as a PROFILE NC closure candidate.
+- D1-HD-05 six-payload research: **CHECKPOINT COMPLETE — AUTHOR APPROVED** for
+  publication as the current D1 evidence state.
 
-`selfApproved=false`; `authorApproved=false` for D1 as a phase;
-`passClaimed=false`; `publicRedistributionAllowed=false`.
+`selfApproved=false`; `checkpointAuthorApproved=true`;
+`authorApproved=false` for D1 as a phase; `passClaimed=false`;
+`publicRedistributionAllowed=false`.
+
+## Published-checkpoint evidence
+
+The author accepted the complete descendant history from public main
+`c2e15b3d09a921442108ecb6b5891b4d6211a3ae` through technical candidate
+`bd378db3279051410208c084ae51eac09244ced6`. Earlier states, including audit
+checkpoint `3267436dcc7dcf0d7c7bc30b63cb2159f2992f85` and intermediate
+disposition checkpoint `ea0c1221d2c298f49538a8b2340b5e170eff5a09`, remain immutable historical
+evidence; their open-item counts do not control the living status.
+
+Accepted evidence for `bd378db3279051410208c084ae51eac09244ced6` / tree
+`fe28dd24d1fd7d98fa89257233d3d9aa41d283aa`:
+
+| Profile | Run | Result | Result hash |
+|---|---|---|---|
+| PACKAGING | `verification-368265e284424ff788917717f271c28d` | `ACCEPTED / COMPLETE`, zero diagnostics | `4411ce21921193183ec70b39acd991fd9a43a6081d0c80c7f4b975d1167308e2` |
+| STATIC | `verification-ef12293ff46d48cba5d7ea3c280fecd5` | `ACCEPTED / COMPLETE`; one non-blocking recovery-governance finding, documentation clear | `e7b08d57aeb99b06ef3c1d8415f2caa40bee293b0b2ea38542421910275dfc30` |
+| INFRA_UNIT | `verification-790c31225685414089a96631df7bf351` | `ACCEPTED / COMPLETE`, zero diagnostics | `d2a303ea6ca168ed9e7745d20b2c066f6082d35136f453ca3f1272a45c5c415e` |
+
+The `.cedg` incident is closed as a verifier defect, not an installer-generation
+defect. The MSI already materialized the GeoCeDG-owned extension, MIME, ProgId,
+open verb and `GeoCeDG.exe` target. The former checker produced a false negative
+because it did not inspect the WiX 5 model correctly. The corrected verifier
+decompiles the generated MSI and validates those registry rows deterministically;
+the accepted PACKAGING run above observed one `.cedg` association and no `.ggb`
+claim.
+
+## Durable D1 document map
+
+- [Factual research/audit](pre_g9b_d1_licensing_assets_deployability_research_audit.md)
+- [Immutable machine-readable byte audit](../../geocedg/validation/pre-g9b-d1/component-audit.json)
+- [Resolved dependency/font disposition matrix](../../geocedg/validation/pre-g9b-d1/component-disposition.json)
+- [Human-decision docket](pre_g9b_d1_human_decision_docket.md)
+- [Original remediation plan](pre_g9b_d1_remediation_plan_candidate.md) and
+  [payload follow-up plan](pre_g9b_d1_next_payload_remediation_plan_candidate.md)
+- [Licensing disposition and bounded-remediation report](pre_g9b_d1_licensing_disposition_and_bounded_remediation_candidate.md)
+- [Licensing framework/payload candidate report](pre_g9b_d1_licensing_framework_payload_closure_candidate.md)
+- [Living component matrix](../licensing/component-matrix.md),
+  [asset manifest](../../geocedg/resources/assets-manifest.yml),
+  [source-access manifest](../../geocedg/resources/source-access-manifest.json)
+  and [legal-text manifest](../../LICENSES/manifest.json)
+- Current packaging authority: [package contract](../../packaging/windows/package.yml),
+  [builder](../../tools/release/build-windows-package.ps1) and
+  [deterministic product checker](../../tools/agent/checks/packaging-product.ps1)
 
 ## Exact closure results
 
@@ -116,7 +165,8 @@ historical result.
 ## Readiness and residual human/legal boundary
 
 **PROFILE NC = TECHNICALLY/LICENSING-DOCKET READY — FINAL AUTHOR/LEGAL REVIEW
-REQUIRED.** This is not permission to publish. The professional review should
+REQUIRED.** The evidence checkpoint is author-approved for repository
+publication; the product is not approved for public distribution. Professional review should
 confirm the Giac/LGPL/GPL corresponding-source delivery form, the EUPL scope
 used for `Cloner.java`, and the OpenGeoProver GPL/non-commercial-banner
 interpretation. The author must separately authorize final release.
@@ -127,11 +177,13 @@ also needs independent clarification/permission. COMMERCIAL-B is unchanged as
 a long-term resource-replacement strategy; these six payloads do not require a
 new mathematical or renderer replacement project.
 
-Maximum status remains:
+Living status after checkpoint publication:
 
 ~~~text
-PRE-G9B-D1 LICENSING FRAMEWORK / PAYLOAD CLOSURE
-= CANDIDATE — PENDING AUTHOR REVIEW
+PRE-G9B-D1 LICENSING FRAMEWORK / PAYLOAD CLOSURE CHECKPOINT
+= COMPLETE — AUTHOR APPROVED
+
+PRE-G9B-D1 PHASE = OPEN — PASS NOT CLAIMED
 
 selfApproved=false
 publicRedistributionAllowed=false

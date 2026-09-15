@@ -1,10 +1,11 @@
 # PRE-G9B-D1 — human decision docket
 
-Status: **LICENSING FRAMEWORK / PAYLOAD CLOSURE CANDIDATE — PENDING AUTHOR
-REVIEW**
+Status: **LICENSING FRAMEWORK / PAYLOAD CLOSURE CHECKPOINT — COMPLETE — AUTHOR
+APPROVED; D1 PHASE REMAINS OPEN**
 
 ~~~text
 selfApproved=false
+checkpointAuthorApproved=true
 authorApproved=false
 passClaimed=false
 publicRedistributionAllowed=false
@@ -45,7 +46,7 @@ activity warrants it.
 The COMMERCIAL-A dossier and draft email remain prepared but unsent. Contact,
 disclosure and negotiation need a later author instruction.
 
-### D1-HD-05 — SIX PAYLOAD EVIDENCE/GRANT CLOSURE — COMPLETED CANDIDATE
+### D1-HD-05 — SIX PAYLOAD EVIDENCE/GRANT CLOSURE — AUTHOR APPROVED CHECKPOINT
 
 The authorized primary-source/provenance research closed Giac 70501,
 math-cross-platform 3.6.3, OpenGeoProver 20120725, `jlm_cmmib10.ttf`,
@@ -54,6 +55,12 @@ OpenGeoProver remains a commercial-only clarification/permission item; Giac's
 final source-delivery mechanism remains suitable for professional review.
 Direct contact, mathematical/runtime replacement and metrics-affecting font
 substitution remain unauthorized.
+
+The author accepted technical candidate
+`bd378db3279051410208c084ae51eac09244ced6` for publication as the living D1
+checkpoint. The earlier `ea0c1221d2c298f49538a8b2340b5e170eff5a09`
+four-JAR/four-font state remains immutable historical evidence and does not
+reopen the current 39/39 JAR or 46/46 font PROFILE NC dispositions.
 
 ## Remaining decisions
 
