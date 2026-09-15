@@ -1,7 +1,7 @@
 {
-  "schema_version": 1,
-  "evidence_kind": "PRE_G9B_D1_COMPONENT_DISPOSITION_OVERLAY",
-  "status": "CANDIDATE — PENDING AUTHOR REVIEW",
+  "schema_version": 2,
+  "evidence_kind": "PRE_G9B_D1_LICENSING_FRAMEWORK_PAYLOAD_CLOSURE_OVERLAY",
+  "status": "PRE-G9B-D1 LICENSING FRAMEWORK / PAYLOAD CLOSURE = CANDIDATE — PENDING AUTHOR REVIEW",
   "authorizations": {
     "selfApproved": false,
     "authorApproved": false,
@@ -17,8 +17,9 @@
   },
   "consulted_on": "2026-09-15",
   "profile_meaning": {
-    "NC": "public non-commercial product retaining GeoGebra Materials/Language Files",
-    "COMMERCIAL": "commercial-capable product after either a GeoGebra agreement or removal/replacement of GeoGebra Materials/Language Files"
+    "NC": "public non-commercial product retaining GeoGebra Materials/Language Files; currently blocked by six exact payload items and final author/legal approval",
+    "COMMERCIAL_A": "preferred short-term commercial route retaining GeoGebra Materials/Language Files under a negotiated GeoGebra License and Collaboration Agreement",
+    "COMMERCIAL_B": "long-term independent-material route retaining eligible EUPL code while replacing GeoGebra Materials/Language Files and marks"
   },
   "dependency_dispositions": [
     {
@@ -109,16 +110,16 @@
     {
       "component_ids": ["jar:javagiac-70501-natives-windows-amd64"],
       "component": "Giac Java/native Windows payload",
-      "artifact_version": "repository coordinate 70501; DLL SHA-256 3209b44e153ff26593024249ee3b6687d54b5e371e974076245ebdd2bb43b41c",
+      "artifact_version": "repository coordinate 70501; JAR SHA-256 7dff713215cc645e8a843c11cc56bf9eadea1c15bf0cc59b99eec29ee154d33d; DLL SHA-256 3209b44e153ff26593024249ee3b6687d54b5e371e974076245ebdd2bb43b41c",
       "distributed_path": "app/javagiac-70501-natives-windows-amd64.jar!/javagiac64.dll",
       "primary_upstream": "https://github.com/GeoGebra/giac and https://www-fourier.ujf-grenoble.fr/~parisse/giac.html",
-      "license": "Giac upstream uses GPL terms; the opaque 70501 binary has no embedded license, version resource or source-commit identity",
-      "license_text_source": "upstream project only; exact artifact POM and JAR contain no terms",
+      "license": "public Giac source uses GPL-3.0-or-later; GMP 6.3.0 is LGPL-3.0-or-later/GPL-2.0-or-later and MPFR 4.2.1 is LGPL-3.0-or-later, but those grants are not yet tied to the exact DLL",
+      "license_text_source": "exact artifact POM/JAR contain no terms; GeoGebra/giac commit 81d221d00bff4fff0f5f6d2298aa83042bf11559 is the build-time source candidate",
       "notice_or_attribution": "GPL text, copyright, bundled GMP/MPFR notices and corresponding source would be required if exact provenance is established",
       "source_code_obligation": "corresponding source/build scripts for the exact native binary",
       "nc_compatible": false,
       "commercial_compatible": false,
-      "remaining_uncertainty": "exact source and complete native composition cannot be tied to artifact 70501",
+      "remaining_uncertainty": "PE timestamp and official commit chronology strongly identify candidate source, and only Windows system DLLs are dynamically imported, but no authoritative artifact-to-source/build attestation proves the static Giac/GMP/MPFR composition",
       "disposition": "UNKNOWN / BLOCKED",
       "resolution_class": "UNRESOLVED — PRIMARY EVIDENCE INSUFFICIENT",
       "required_packaging_action": "obtain exact build/source archive and notices, or seek author approval to rebuild/upgrade; do not replace automatically"
@@ -129,13 +130,13 @@
       "artifact_version": "3.6.3",
       "distributed_path": "app/math-cross-platform-3.6.3.jar",
       "primary_upstream": "https://repo.geogebra.net/releases/org/apache/math-cross-platform/3.6.3/",
-      "license": "not granted by exact POM/JAR; description only says GWT-compatible fork of Apache Commons Math",
-      "license_text_source": "exact repository POM (no license element) and exact JAR (no legal metadata)",
-      "notice_or_attribution": "unknown until source/provenance is established",
-      "source_code_obligation": "unknown for the fork; Apache Commons Math terms cannot be projected onto unidentified changes",
+      "license": "mixed/incomplete exact source record: 659 of 662 Java sources carry Apache-2.0 headers; DoubleConsts.java and GWTMath.java carry Oracle GPL-2.0-only with Classpath Exception notices; Cloner.java has no grant/provenance",
+      "license_text_source": "exact Gradle module metadata identifies source JAR SHA-256 dc2871a35bb31fcada9ca45a671618120db3c6486b5daef145ffe5a50f9c2bf5; POM/JAR omit complete legal metadata",
+      "notice_or_attribution": "Apache NOTICE/license plus Oracle copyright/GPL-Classpath text if a complete artifact grant is established",
+      "source_code_obligation": "exact source is recoverable; complete fork grant and referenced GPL-Classpath text remain required",
       "nc_compatible": false,
       "commercial_compatible": false,
-      "remaining_uncertainty": "no authoritative source repository/tag or license for the fork was found",
+      "remaining_uncertainty": "exact source bytes are established, but the artifact-level grant is incomplete for three source files and no authoritative public fork repository was found",
       "disposition": "UNKNOWN / BLOCKED",
       "resolution_class": "UNRESOLVED — PRIMARY EVIDENCE INSUFFICIENT",
       "required_packaging_action": "obtain fork source/license or authorize a pinned, tested rebuild/replacement; numerical behavior review required"
@@ -147,12 +148,12 @@
       "distributed_path": "app/OpenGeoProver-20120725.jar",
       "primary_upstream": "https://github.com/ivan-z-petrovic/open-geo-prover",
       "license": "no repository-wide grant found; source displays 'Copyright (c) 2005-2011. Not for commercial use.'",
-      "license_text_source": "exact POM/JAR contain no terms; primary source mirror commit f25161189dd48e2f4c469b73c4e932492d905a45",
+      "license_text_source": "exact POM/JAR contain no terms; public source candidate commit 8d1bb73c499dbfed325bec42ee150cc77557b1a2 immediately precedes the build and contains exactly 249 Java files matching the JAR's 249 classes",
       "notice_or_attribution": "not determinable without a grant",
       "source_code_obligation": "not determinable without a grant",
       "nc_compatible": false,
       "commercial_compatible": false,
-      "remaining_uncertainty": "the displayed non-commercial notice is not a redistribution license and exact source-to-JAR identity is absent",
+      "remaining_uncertainty": "source/JAR correspondence is strongly established by chronology and exact class/source count, but the source's non-commercial-use notice is not an explicit redistribution grant",
       "disposition": "UNKNOWN / BLOCKED",
       "resolution_class": "UNRESOLVED — PRIMARY EVIDENCE INSUFFICIENT",
       "required_packaging_action": "obtain licensor grant/source identity or authorize exclusion/replacement with proving regression coverage"
@@ -163,16 +164,50 @@
       "artifact_version": "1",
       "distributed_path": "app/jsobject-1.jar",
       "primary_upstream": "exact GeoGebra repository coordinate; modern JDK API: https://docs.oracle.com/en/java/javase/25/docs/api/jdk.jsobject/netscape/javascript/package-summary.html",
-      "license": "not established for the exact three-class JAR",
+      "license": "excluded from the dependency graph and package; no redistribution grant is needed for absent bytes",
       "license_text_source": "exact POM/JAR contain no legal metadata",
-      "notice_or_attribution": "unknown",
-      "source_code_obligation": "unknown",
-      "nc_compatible": false,
-      "commercial_compatible": false,
-      "remaining_uncertainty": "origin and grant for the exact binary are absent; the packaged Java runtime already declares module jdk.jsobject",
+      "notice_or_attribution": "none for the excluded JAR",
+      "source_code_obligation": "none for the excluded JAR",
+      "nc_compatible": true,
+      "commercial_compatible": true,
+      "remaining_uncertainty": "none affecting exclusion: no repository source use was found; public JSObject/JSException APIs match JDK 25 jdk.jsobject; JSUtil is unused",
       "disposition": "EXCLUDE",
-      "resolution_class": "EXCLUDE CANDIDATE",
-      "required_packaging_action": "after author approval, remove dependency and run focused Desktop JS/plugin/linkage tests; no automatic exclusion"
+      "resolution_class": "RESOLVED — EXCLUDED",
+      "required_packaging_action": "keep the dependency absent; enforce zero resolved/staged jsobject components and JDK linkage checks"
+    },
+    {
+      "component_ids": ["jar:jsr305-3.0.2"],
+      "component": "JSR305 annotations",
+      "artifact_version": "com.google.code.findbugs:jsr305:3.0.2",
+      "distributed_path": "app/jsr305-3.0.2.jar",
+      "primary_upstream": "exact JAR embedded META-INF/maven/com.google.code.findbugs/jsr305/pom.xml",
+      "license": "Apache-2.0",
+      "license_text_source": "exact embedded POM declares The Apache Software License, Version 2.0; LICENSES/Apache-2.0.txt",
+      "notice_or_attribution": "ship Apache-2.0",
+      "source_code_obligation": "none beyond Apache-2.0 source-form notice preservation",
+      "nc_compatible": true,
+      "commercial_compatible": true,
+      "remaining_uncertainty": "none; this corrects the base audit's preliminary BSD-style label using artifact-embedded primary evidence",
+      "disposition": "ALLOW_WITH_NOTICE",
+      "resolution_class": "RESOLVED — RETAIN",
+      "required_packaging_action": "retain Apache-2.0 text"
+    },
+    {
+      "component_ids": ["jar:rhino-1.8.1", "jar:rhino-engine-1.8.1"],
+      "component": "Mozilla Rhino",
+      "artifact_version": "1.8.1",
+      "distributed_path": "app/rhino-1.8.1.jar; app/rhino-engine-1.8.1.jar",
+      "primary_upstream": "https://github.com/mozilla/rhino/tree/Rhino1_8_1_Release",
+      "license": "MPL-2.0 for the majority plus the exact tag license's listed component exceptions",
+      "license_text_source": "LICENSES/components/Rhino-1.8.1-LICENSE.txt",
+      "notice_or_attribution": "ship the complete exact tag license, not only a generic MPL text",
+      "source_code_obligation": "make MPL-covered Source Code Form available as stated in the exact license",
+      "nc_compatible": true,
+      "commercial_compatible": true,
+      "remaining_uncertainty": "none affecting retention",
+      "disposition": "ALLOW_WITH_NOTICE",
+      "resolution_class": "RESOLVED — NOTICE/TEXT REQUIRED",
+      "required_packaging_action": "ship exact Rhino 1.8.1 LICENSE and source-access identity"
     },
     {
       "component_ids": ["runtime:temurin-25.0.4+7"],
@@ -281,29 +316,43 @@
     },
     {
       "license": "not established for exact font binary",
-      "component_ids": ["font:jlm_cmmib10.ttf", "font:jlm_cmssi10.ttf", "font:jlm_cmti10.ttf", "font:jlm_special.ttf"],
+      "component_ids": ["font:jlm_cmmib10.ttf", "font:jlm_cmssi10.ttf", "font:jlm_cmti10.ttf"],
       "exact_sha256": {
         "font:jlm_cmmib10.ttf": "5f160003632ae19f17d1fede8b86b67b258904e5d0a6907002dd2ef2d54f5a8a",
         "font:jlm_cmssi10.ttf": "1b7514b42f320f1b0821d78c9973d0bb115ff714830d5c88d368c962f6bf3e57",
-        "font:jlm_cmti10.ttf": "59a8696017d3624ddd0e05397cf71c9855672b4466620ac550fcb9fe803e80cf",
-        "font:jlm_special.ttf": "de5424f7e4b8eac1b8b58b4518a6622cf479d01f98f3b27b3012ba8c1514d97c"
+        "font:jlm_cmti10.ttf": "59a8696017d3624ddd0e05397cf71c9855672b4466620ac550fcb9fe803e80cf"
       },
       "primary_source": "embedded name tables identify AMS/BaKoMa/Calixte origins, but the exact bytes do not match current upstream and are not named by the font carve-outs",
       "requirements": "obtain exact grant/provenance or replace with metrics-tested fonts under recorded terms",
       "nc_compatible": false,
       "commercial_compatible": false,
-      "disposition": "UNKNOWN / BLOCKED"
+      "disposition": "UNKNOWN / BLOCKED",
+      "resolution_class": "UNRESOLVED — PRIMARY EVIDENCE INSUFFICIENT"
+    },
+    {
+      "license": "JLaTeXMath GPL-2.0-or-later with linking exception",
+      "component_ids": ["font:jlm_special.ttf"],
+      "exact_sha256": {
+        "font:jlm_special.ttf": "de5424f7e4b8eac1b8b58b4518a6622cf479d01f98f3b27b3012ba8c1514d97c"
+      },
+      "primary_source": "exact bytes match official opencollab/jlatexmath Git blob 1454e6f at commit 0571d848a54f54386bab4eeaeb3e02f6a88f388e",
+      "requirements": "ship the JLaTeXMath license, GPL-2.0 text, linking exception and exact source-access identity",
+      "nc_compatible": true,
+      "commercial_compatible": true,
+      "disposition": "ALLOW_WITH_NOTICE",
+      "resolution_class": "RESOLVED — NOTICE/TEXT REQUIRED"
     }
   ],
   "summary": {
-    "runtime_jars": 52,
-    "external_jars": 40,
+    "runtime_jars": 51,
+    "external_jars": 39,
     "external_jars_resolved_for_retention_with_required_notices": 36,
-    "external_jars_still_blocked": 4,
+    "external_jars_still_blocked": 3,
     "fonts": 46,
-    "fonts_resolved_with_required_texts": 42,
-    "fonts_still_blocked": 4,
-    "sbom_unknown_versions": 52,
-    "sbom_version_disposition": "not changed: the staging set retains filenames and hashes but discards authoritative Gradle component identity for project JARs and some transitives; filename parsing would be heuristic. Capture resolved metadata in the existing builder in a separately authorized remediation."
+    "fonts_resolved_with_required_texts": 43,
+    "fonts_still_blocked": 3,
+    "sbom_unknown_versions_before": 52,
+    "sbom_unknown_versions_candidate": 0,
+    "sbom_version_disposition": "resolved Gradle metadata is exported deterministically and joined to staged JAR bytes by SHA-256; project components use the exact source revision instead of a fabricated module version"
   }
 }

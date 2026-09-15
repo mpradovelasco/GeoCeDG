@@ -159,7 +159,6 @@ dependencies {
     implementation(project(":jogl2"))
     implementation("org.geogebra:giac-jni")
     implementation("com.formdev:flatlaf:3.7")
-    implementation(libs.jsObject)
     implementation(libs.openGeoProver)
     implementation(libs.jna)
     implementation(libs.echosvg)

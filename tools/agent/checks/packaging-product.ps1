@@ -286,8 +286,13 @@ try {
         'packaging/windows/package.yml', 'packaging/windows/NuGet.Config',
         'packaging/windows/file-associations.properties',
         'packaging/windows/INTERNAL_EVALUATION_ONLY.txt',
-        'tools/release/build-windows-package.ps1', 'LICENSE', 'LICENSES/README.md',
+        'tools/release/build-windows-package.ps1',
+        'tools/release/export-runtime-components.init.gradle',
+        'LICENSE', 'LICENSES/README.md', 'LICENSES/manifest.json',
         'NOTICE.md', 'THIRD_PARTY.md', 'geocedg/resources/assets-manifest.yml',
+        'geocedg/resources/source-access-manifest.json',
+        'geocedg/validation/pre-g9b-d1/component-audit.json',
+        'geocedg/validation/pre-g9b-d1/component-disposition.json',
         'tools/resources/generate-geocedg-branding.ps1', $iconPath)
     $missing = @($required | Where-Object {
         -not (Test-Path -LiteralPath (Join-Path $repository $_) -PathType Leaf)
@@ -299,6 +304,7 @@ try {
     $profile = Read-JsonDocument (Join-Path $repository 'packaging/windows/package.yml')
     $schema = Read-JsonDocument (Join-Path $repository 'geocedg/specs/operations/package-profile.schema.json')
     $assets = Read-JsonDocument (Join-Path $repository 'geocedg/resources/assets-manifest.yml')
+    $licenseManifest = Read-JsonDocument (Join-Path $repository 'LICENSES/manifest.json')
     $association = [IO.File]::ReadAllText(
         (Join-Path $repository 'packaging/windows/file-associations.properties'),
         [Text.UTF8Encoding]::new($false, $true)) | ConvertFrom-StringData
@@ -370,12 +376,19 @@ try {
 
     $top = @($assets.branding_assets | Where-Object id -CEQ 'geocedg.brand.topbar')
     $startup = @($assets.branding_assets | Where-Object id -CEQ 'geocedg.brand.startup')
-    $assetAuthority = $assets.distribution_marker -ceq $marker -and
+    $assetAuthority = $assets.schema_version -eq 2 -and
+        $assets.distribution_marker -ceq $marker -and
+        $assets.status -ceq 'licensing-framework-candidate-pending-author-review' -and
         @($assets.deliberate_exclusions).Count -ge 5 -and $top.Count -eq 1 -and
         $startup.Count -eq 1 -and $assets.package_icon.asset_id -ceq
             'geocedg.brand.topbar.windows-ico-v1' -and
         $assets.package_icon.path -ceq $iconPath -and
-        $assets.package_icon.raw_sha256 -ceq $iconHash
+        $assets.package_icon.raw_sha256 -ceq $iconHash -and
+        $top[0].trademark_role -ceq 'official-product-mark' -and
+        $startup[0].trademark_role -ceq 'official-product-branding' -and
+        $assets.licensing_classes.'geocedg-software'.license -ceq 'EUPL-1.2' -and
+        $assets.licensing_classes.'geocedg-documentation-or-ordinary-art'.license -ceq
+            'CC-BY-4.0'
     Add-Contract 'packaging.asset-authority' $assetAuthority 'approved asset manifest' `
         $assets.package_icon 'Asset authority differs.'
     if ($top.Count -eq 1 -and $startup.Count -eq 1) {
@@ -433,12 +446,33 @@ try {
             ([IO.File]::ReadAllText((Join-Path $repository $legal)).Contains($marker)) `
             $marker $legal "$legal lacks the internal-evaluation marker."
     }
+    $manifestPaths = @($licenseManifest.entries | ForEach-Object { [string]$_.path } |
+        Sort-Object)
+    $actualLicensePaths = @(Get-ChildItem (Join-Path $repository 'LICENSES') -Recurse -File |
+        Where-Object Name -CNE 'manifest.json' | ForEach-Object {
+            [IO.Path]::GetRelativePath($repository, $_.FullName).Replace('\', '/')
+        } | Sort-Object)
+    $licenseHashErrors = [Collections.Generic.List[string]]::new()
+    foreach ($entry in @($licenseManifest.entries)) {
+        $legalPath = Join-Path $repository ([string]$entry.path)
+        if (-not (Test-Path -LiteralPath $legalPath -PathType Leaf) -or
+                (Get-FileHash $legalPath -Algorithm SHA256).Hash.ToLowerInvariant() -cne
+                    [string]$entry.sha256) {
+            $licenseHashErrors.Add([string]$entry.path)
+        }
+    }
+    Add-Contract 'packaging.legal-bundle-manifest' (
+        $licenseManifest.schema_version -eq 1 -and
+        ($manifestPaths -join "`n") -ceq ($actualLicensePaths -join "`n") -and
+        $licenseHashErrors.Count -eq 0) 'complete exact LICENSES inventory' `
+        @($licenseHashErrors) 'Legal bundle paths or hashes differ.'
     $builder = [IO.File]::ReadAllText(
         (Join-Path $repository 'tools/release/build-windows-package.ps1'))
     $tokens = @('org.geocedg.desktop.GeoCeDG', '--type', 'app-image', 'msi', 'exe',
         '--icon', '--file-associations', 'cedg', 'application/x-geocedg-cedg',
         'jdk25-jpackage-required-internal-unregistered', 'geocedg-windows.cdx.json',
-        'SHA256SUMS.txt', $marker)
+        'resolved-runtime-components.json', 'source-access-manifest.json',
+        'LICENSES\manifest.json', 'SHA256SUMS.txt', $marker)
     $missingTokens = @($tokens | Where-Object { -not $builder.Contains($_) })
     $iconSwitch = '"--icon"'
     $associationSwitch = '"--file-associations"'
@@ -459,6 +493,7 @@ try {
             (Join-Path $appImage 'app/INTERNAL_EVALUATION_ONLY.txt'),
             (Join-Path $ArtifactRoot 'geocedg-windows.cdx.json'),
             (Join-Path $ArtifactRoot 'build-manifest.json'),
+            (Join-Path $ArtifactRoot 'resolved-runtime-components.json'),
             (Join-Path $ArtifactRoot 'app-image.SHA256SUMS.txt'),
             (Join-Path $ArtifactRoot 'SHA256SUMS.txt'))
         $missingEvidence = @($evidence | Where-Object {
@@ -484,6 +519,21 @@ try {
             })
             Add-Contract 'packaging.portable-boundary' ($forbidden.Count -eq 0) `
                 'no forbidden files' @($forbidden | ForEach-Object { $_.FullName }) 'Forbidden app-image content exists.'
+            $packagedLegal = @(
+                'app/legal/LICENSE', 'app/legal/NOTICE.md',
+                'app/legal/THIRD_PARTY.md',
+                'app/legal/LICENSES/manifest.json',
+                'app/legal/LICENSES/UNRESOLVED.md',
+                'app/legal/source-access-manifest.json',
+                'app/legal/component-audit.json',
+                'app/legal/component-disposition.json',
+                'app/legal/resolved-runtime-components.json')
+            $missingPackagedLegal = @($packagedLegal | Where-Object {
+                -not (Test-Path -LiteralPath (Join-Path $appImage $_) -PathType Leaf)
+            })
+            Add-Contract 'packaging.legal-bundle-payload' (
+                $missingPackagedLegal.Count -eq 0) $packagedLegal `
+                $missingPackagedLegal 'Package legal evidence is incomplete.'
             $config = @(Get-ChildItem (Join-Path $appImage 'app') -File -Filter '*.cfg') |
                 Select-Object -First 1
             Add-Contract 'packaging.launcher-config' ($null -ne $config -and
@@ -494,11 +544,59 @@ try {
                     [IO.Path]::GetFullPath($config.FullName)
                 }) 'Generated launcher configuration differs.'
             $sbom = Read-JsonDocument $evidence[2]
-            Add-Contract 'packaging.sbom' ($sbom.bomFormat -eq 'CycloneDX' -and
-                $sbom.specVersion -eq '1.5' -and @($sbom.components).Count -gt 0) `
-                'non-empty CycloneDX 1.5' $sbom 'Generated SBOM differs.'
+            $jarSbom = @($sbom.components | Where-Object {
+                @($_.properties | Where-Object {
+                    $_.name -ceq 'geocedg.packaging.path' -and
+                    $_.value -match '^app/[^!]+\.jar$'
+                }).Count -eq 1
+            })
+            $fontSbom = @($sbom.components | Where-Object {
+                [string]$_."bom-ref" -like 'font:*'
+            })
+            $runtimeSbom = @($sbom.components | Where-Object {
+                $_.name -ceq 'Eclipse Temurin OpenJDK runtime' -and
+                $_.version -ceq '25.0.4+7-LTS'
+            })
+            $unknownVersions = @($jarSbom | Where-Object {
+                [string]::IsNullOrWhiteSpace([string]$_.version) -or
+                $_.version -ceq 'unknown'
+            })
+            $appJars = @(Get-ChildItem (Join-Path $appImage 'app') -File -Filter '*.jar')
+            $sbomJarHashes = @($jarSbom | ForEach-Object {
+                @($_.hashes | Where-Object alg -CEQ 'SHA-256')[0].content
+            } | Sort-Object)
+            $appJarHashes = @($appJars | ForEach-Object {
+                (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+            } | Sort-Object)
+            $sbomValid = $sbom.bomFormat -eq 'CycloneDX' -and
+                $sbom.specVersion -eq '1.5' -and
+                $jarSbom.Count -eq 51 -and $fontSbom.Count -eq 46 -and
+                $runtimeSbom.Count -eq 1 -and $unknownVersions.Count -eq 0 -and
+                ($sbomJarHashes -join "`n") -ceq ($appJarHashes -join "`n") -and
+                @($jarSbom | Where-Object name -CEQ 'jsobject').Count -eq 0
+            Add-Contract 'packaging.sbom' $sbomValid `
+                '51 hash-joined JARs, 46 fonts, one exact Temurin runtime, zero unknown JAR versions' `
+                ([ordered]@{
+                    jars = $jarSbom.Count; app_jars = $appJars.Count
+                    fonts = $fontSbom.Count; runtimes = $runtimeSbom.Count
+                    unknown_jar_versions = $unknownVersions.Count
+                }) 'Generated SBOM identity/closure differs.'
             $manifest = Read-JsonDocument $evidence[3]
-            $manifestValid = $manifest.target -eq 'All' -and
+            $resolved = Read-JsonDocument $evidence[4]
+            $resolvedModules = @($resolved.components | Where-Object component_type -CEQ 'module')
+            $resolvedProjects = @($resolved.components | Where-Object component_type -CEQ 'project')
+            Add-Contract 'packaging.resolved-gradle-identity' (
+                $resolved.evidence_kind -ceq 'GEOCEDG_RESOLVED_GRADLE_RUNTIME_COMPONENTS' -and
+                @($resolved.components).Count -eq 56 -and
+                $resolvedModules.Count -eq 45 -and $resolvedProjects.Count -eq 11 -and
+                @($resolvedModules | Where-Object {
+                    $_.group -ceq 'netscape.javascript' -and $_.module -ceq 'jsobject'
+                }).Count -eq 0) '56 resolved Gradle artifacts; 45 module + 11 project; no jsobject' `
+                ([ordered]@{ total = @($resolved.components).Count
+                    modules = $resolvedModules.Count; projects = $resolvedProjects.Count }) `
+                'Resolved Gradle identity evidence differs.'
+            $manifestValid = $manifest.schema_version -eq 2 -and
+                $manifest.target -eq 'All' -and
                 $manifest.distribution_marker -ceq $marker -and
                 $manifest.public_redistribution -eq 'BLOCKED PENDING LICENSE/ASSET APPROVAL' -and
                 $manifest.application.icon.path -ceq $iconPath -and
@@ -513,7 +611,14 @@ try {
                     'jdk25-jpackage-generated-geocedg-owned' -and
                 $manifest.file_association.portable_outputs_association_free -eq $true -and
                 $manifest.file_association.compatibility_extension_claimed -eq $false -and
-                @($manifest.runtime.excluded_non_windows_native_jars).Count -gt 0
+                $manifest.runtime.included_jar_count -eq 51 -and
+                $manifest.runtime.resolved_gradle_component_count -eq 56 -and
+                $manifest.runtime.staged_external_jar_count -eq 39 -and
+                $manifest.runtime.sbom_font_count -eq 46 -and
+                $manifest.runtime.sbom_unknown_version_count -eq 0 -and
+                @($manifest.runtime.excluded_non_windows_native_jars).Count -eq 6 -and
+                $manifest.legal_bundle.unresolved_payload_count -eq 6 -and
+                $manifest.component_identity.versions_inferred_from_filenames -eq $false
             Add-Contract 'packaging.build-manifest' $manifestValid 'approved build manifest' `
                 $manifest 'Generated build manifest differs.'
             if ($msi.Count -eq 1) {
@@ -533,7 +638,7 @@ try {
                     $msi.Count 'MSI product evidence is unavailable.'
             }
             $hashErrors = [Collections.Generic.List[string]]::new()
-            foreach ($line in [IO.File]::ReadAllLines($evidence[5])) {
+            foreach ($line in [IO.File]::ReadAllLines($evidence[6])) {
                 if ($line -cnotmatch '^([0-9a-f]{64})  (.+)$') {
                     $hashErrors.Add("malformed:$line")
                     continue

@@ -1,6 +1,7 @@
 # PRE-G9B-D1 — human decision docket
 
-Estado: **CANDIDATE — PENDING AUTHOR REVIEW**
+Status: **LICENSING FRAMEWORK / PAYLOAD CLOSURE CANDIDATE — PENDING AUTHOR
+REVIEW**
 
 ~~~text
 selfApproved=false
@@ -9,144 +10,97 @@ passClaimed=false
 publicRedistributionAllowed=false
 ~~~
 
-La investigación de continuación reduce las ocho decisiones iniciales a cuatro
-elecciones genuinamente humanas. La evidencia está en el
-[informe de disposición](pre_g9b_d1_licensing_disposition_and_bounded_remediation_candidate.md)
-y el [overlay machine-readable](../../geocedg/validation/pre-g9b-d1/component-disposition.json).
-Responder este docket no declara D1 PASS ni autoriza publicación.
+Factual research has removed all decisions that can be made from primary
+evidence alone. The remaining items are author/business choices, permissions
+from a rights holder, or authorization for changes that may affect product
+behavior. Answering them does not itself declare D1 PASS or publish a package.
 
-## D1-HD-01 — grants del material GeoCeDG
+## D1-HD-01 — adopt the prepared licensing framework
 
-**Cuestión.** Elegir licencias separadas para código/scripts, documentación y
-artwork propio.
+**Issue.** Confirm the materialized candidate as project policy: GeoCeDG code
+and software scripts EUPL-1.2; own documentation CC BY 4.0 with recorded
+exceptions; ordinary artwork CC BY 4.0; official-mark artwork under the
+candidate copyright/brand separation; complete binaries under their composite
+terms.
 
-**Evidencia factual.** El autor confirmó titularidad de branding. El root
-LICENSE actual sigue siendo no-grant. EUPL-1.2 es la licencia de la base de
-código upstream; docs y artwork no necesitan heredar una licencia de software.
+**Evidence.** The root `LICENSE`, `docs/LICENSE.md`, exact `LICENSES/` bundle,
+`NOTICE.md`, `THIRD_PARTY.md` and asset manifest now implement the author's
+stated defaults without relicensing third-party material.
 
-**Alternativas.**
+**Technical recommendation.** Adopt after professional review of final notice
+wording and source-delivery mechanism. This keeps both NC and future commercial
+paths open.
 
-1. Recomendación: código/scripts **EUPL-1.2**, docs **CC BY 4.0**, artwork no
-   marcario **CC BY 4.0**.
-2. Código **EUPL-1.2-or-later** y docs/artwork CC BY 4.0.
-3. Usar CC BY-SA 4.0 para docs y/o artwork si se desea reciprocidad.
-4. Aplicar NC o dual licensing a artwork, sabiendo que añade permiso separado
-   a una distribución comercial futura.
+**Human part.** Final adoption/effective owner attribution and permission to
+use this framework in a public release.
 
-**Consecuencia técnica.** Determina headers/SPDX, índices de LICENSES, notices,
-source distribution y qué assets pueden viajar en perfiles NC/comerciales.
+## D1-HD-02 — adopt the GeoCeDG trademark/brand policy
 
-**Recomendación técnica.** Alternativa 1: minimiza divergencia de la base,
-permite uso comercial futuro y conserva attribution. “or-later”, share-alike o
-NC son preferencias normativas del autor, no necesidades del package.
+**Issue.** Approve the policy that permits truthful nominative use,
+compatibility references, screenshots and unmodified official redistribution,
+while requiring permission/rebranding for confusing fork names, official-logo
+use, endorsement, modified official logos and merchandising.
 
-**Decisión humana.** Licencia, titulares, fecha efectiva y alcance por paths.
+**Evidence.** Author ownership is established. The asset manifest now separates
+copyright class from role-based official-product-mark identity and remains
+valid when pixels/files evolve.
 
-## D1-HD-02 — nombre y logo GeoCeDG
+**Technical recommendation.** Adopt the candidate policy subject to trademark
+clearance review. It preserves EUPL fork rights while protecting product origin.
 
-**Cuestión.** Definir el uso del nombre/logo separado del copyright de los
-ficheros de artwork.
+**Human part.** Final brand-control rules and designated permission contact.
 
-**Evidencia factual.** Titularidad/provenance/hashes ya están resueltos. Una
-licencia copyright permisiva no debe interpretarse como endorsement ni grant
-de marca.
+## D1-HD-03 — decide whether and when to file the mark
 
-**Alternativas.**
+**Issue.** Authorize an OEPM filing—not authorized now—after clearance.
 
-1. Recomendación: permitir uso nominativo y redistribución inalterada del logo
-   con GeoCeDG; reservar uso en forks, logos modificados y endorsement salvo
-   permiso.
-2. Política de marca más permisiva para forks con reglas de diferenciación.
-3. No adoptar política de marca por ahora y no conceder derechos marcarios
-   implícitos.
+**Prepared choice.** File Spanish word mark `GeoCeDG` first in Nice class 9;
+add 41 only for actual education/training services and 42 only for actual
+software/SaaS services. Defer a figurative mark until the logo is stable;
+consider EUIPO later when multi-EU activity justifies unitary coverage.
 
-**Consecuencia técnica.** Afecta nombres de instalador, iconos, about/NOTICE,
-fork branding y documentación de redistribuidores; no cambia hashes actuales.
+**Human part.** Owner identity, selected services, search/professional advice,
+budget, filing date and whether/when to add figurative/EU coverage.
 
-**Decisión humana.** Nivel de control de marca/nombre y permiso para terceros.
+## D1-HD-04 — authorize contact with GeoGebra for COMMERCIAL-A
 
-## D1-HD-03 — perfil objetivo GeoGebra
+**Issue.** Decide when GeoCeDG may send the prepared dossier/email and disclose
+technical/business facts to seek a License and Collaboration Agreement.
 
-**Cuestión.** Elegir la ruta de distribución que debe guiar la siguiente
-remediación.
+**Evidence.** EUPL code remains independent; retained Language Files/UI
+Materials and commercial product use are the agreement boundary. Fees,
+royalties, duration, territory, support, sublicensing and other terms are not
+published and remain negotiation points.
 
-**Evidencia factual.** Retener Language Files/UI images/styles mantiene el
-producto completo bajo restricciones NC de GeoGebra. El código EUPL es
-independiente. COMMERCIAL-A requiere acuerdo; COMMERCIAL-B exige sustituir o
-excluir cientos de recursos y verificar su ausencia.
+**Human part.** Contact authorization, business scenarios/territories/channels,
+acceptable negotiation parameters and external evidence attachments.
 
-**Alternativas.**
+## D1-HD-05 — resolve the six exact payload blockers
 
-1. Preparar primero PROFILE NC, con atribución y términos GeoGebra aplicables.
-2. Preparar dossier y negociar COMMERCIAL-A, sin contacto automático.
-3. Autorizar diseño/proyecto mayor COMMERCIAL-B de recursos independientes.
-4. Mantener solo evaluación interna.
+Primary research has been exhausted without a sufficient grant/source link.
+No choice below is silently authorized.
 
-**Consecuencia técnica.** NC/A preserva UI/localization con baja ingeniería;
-B cambia recursos, fallback, accesibilidad y mantenimiento. Ninguna ruta evita
-obligaciones de terceros.
+| Item | Preferred next action | Alternative requiring author authorization |
+|---|---|---|
+| Giac 70501 Windows native | obtain GeoGebra/Giac artifact-to-source/build attestation including GMP/MPFR | pinned public-source rebuild/upgrade plus CAS/algebra regression |
+| math-cross-platform 3.6.3 | obtain the fork's complete legal/provenance record for the exact source JAR | rebuild/replace from a documented base plus numerical regression |
+| OpenGeoProver 20120725 | obtain explicit redistribution permission/license from copyright holders | exclude/replace only after theorem-prover/fallback impact approval and regression |
+| three unmapped TTFs | obtain exact derivation/grant for each hash | authorize role- and metrics-tested substitutions with renderer/visual regression |
 
-**Recomendación técnica.** Completar NC primero si la prioridad es una entrega
-pública docente; mantener el inventario COMMERCIAL-B como workstream separado.
-Si la prioridad es comercial cercana, valorar A antes de financiar el reemplazo
-masivo B.
+**Human part.** Authorization to approach relevant licensors and, if evidence
+cannot be obtained, component-by-component authorization for behavior-sensitive
+rebuild/exclusion/replacement. Professional review should evaluate any received
+grant or corresponding-source plan.
 
-**Decisión humana/negocio.** Perfil prioritario, tolerancia a NC, presupuesto de
-reemplazo o decisión de negociación.
+## No longer decisions
 
-## D1-HD-04 — ocho payloads sin evidencia suficiente
-
-**Cuestión.** Autorizar cómo resolver cuatro JAR y cuatro fonts que no tienen
-grant/provenance exactos suficientes.
-
-**Evidencia factual.**
-
-- JAR: Giac `70501`, math-cross-platform `3.6.3`, OpenGeoProver `20120725`,
-  jsobject `1`.
-- Fonts: `jlm_cmmib10.ttf`, `jlm_cmssi10.ttf`, `jlm_cmti10.ttf`,
-  `jlm_special.ttf` (hashes en la matriz).
-- Cambiar Giac/math/prover puede alterar CAS, resultados numéricos o proving.
-- `jsobject-1.jar` duplica una API presente en el módulo `jdk.jsobject`, pero su
-  exclusión requiere pruebas de linkage/plugins.
-
-**Alternativas técnicamente razonables.**
-
-1. Obtener del titular/upstream exacto source, licencia y correspondencia a
-   cada hash; retener con bundle completo.
-2. Autorizar rebuild/upgrade pinneado de Giac/math con regresión funcional.
-3. Autorizar exclusión/reemplazo de OpenGeoProver con pruebas de fallback.
-4. Autorizar exclusión focal de jsobject tras tests Desktop/plugin.
-5. Autorizar sustitución de cuatro fonts por alternativas métricamente
-   verificadas; mantenerlas internas hasta entonces.
-
-**Consecuencia técnica.** 2–5 son cambios de composición/runtime y no están
-autorizados por este checkpoint. Una sustitución de library no puede
-presentarse como simple metadata legal.
-
-**Recomendación técnica.** Intentar 1 para Giac/math/OGP; usar 4 para jsobject
-si las pruebas confirman redundancia; sustituir solo los cuatro fonts, no el set
-completo, si no aparece evidencia exacta.
-
-**Decisión humana.** Autorizar por componente retain/rebuild/exclude/replace y
-el nivel de validación productiva correspondiente.
-
-## Disposiciones retiradas del docket
-
-- Branding provenance/ownership: resuelto por disposición expresa del autor.
-- `.cedg`: el MSI ya era correcto; se corrigió el falso negativo del checker.
-- JNA: propuesta Apache-2.0 registrada; no exige cambiar el artefacto.
-- JOGL/GlueGen: retener con LICENSE/notices 2.6.0.
-- Cyrillic/fonts restantes: 42 de 46 dispositionados con textos.
-- Temurin: retener 25.0.4+7 con pin, legal tree y source access.
-- WiX: retener build 5.0.2 y cubrir payload MSI bajo MS-RL/source access.
-
-## Forma de respuesta
-
-~~~text
-D1-HD-01 = alternativa <n> [con ajustes exactos]
-D1-HD-02 = alternativa <n>
-D1-HD-03 = alternativa <n>
-D1-HD-04 = <disposición por cada componente/grupo>
-public redistribution = todavía no autorizada
-D1 PASS = no reclamado
-~~~
+- source/docs default licenses and PROFILE NC/COMMERCIAL strategy: disposed by
+  the author and materialized as a candidate;
+- branding ownership/provenance: established;
+- `.cedg`: technically correct and verified in the prior checkpoint;
+- `jsobject:1`: removed after source/use/Gradle/compile/installDist/JDK linkage
+  proof; zero bytes remain in the distribution;
+- `jlm_special.ttf`: exact official JLaTeXMath correspondence established;
+- JOGL, GlueGen, JNA, FlatLaf, ReTeX, Temurin and WiX: retain with recorded
+  texts/notices/source access;
+- COMMERCIAL-B: retained as long-term policy, not productive authorization.

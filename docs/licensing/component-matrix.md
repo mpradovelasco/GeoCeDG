@@ -1,8 +1,42 @@
-# Baseline licensing and asset component matrix
+# Licensing and asset component matrix
 
-Status: factual inventory for human legal review; **not legal advice**
+Status: PRE-G9B-D1 payload-closure candidate; **not legal advice**
 Baseline: `9b93256b7df401ff056c37b502d82df4d72b1522`
-Inventory date: 2026-08-09
+Current disposition date: 2026-09-15
+
+## Current PRE-G9B-D1 disposition
+
+The immutable byte-level audit is
+`geocedg/validation/pre-g9b-d1/component-audit.json`; current dispositions are
+the overlay `component-disposition.json`. Package construction exports the
+authoritative Gradle runtime graph and joins it to staged JARs by SHA-256.
+
+| Material class | Current candidate treatment | NC | Commercial |
+|---|---|---|---|
+| GeoCeDG-authored software/scripts | EUPL-1.2, except valid file-level third-party terms | compatible | compatible |
+| GeoCeDG-authored documentation | CC BY 4.0, with `docs/LICENSE.md` exceptions | compatible | compatible |
+| GeoCeDG ordinary artwork | CC BY 4.0 by manifest licensing class | compatible | compatible |
+| official GeoCeDG product artwork | CC BY 4.0 copyright candidate plus separate brand policy | pending author adoption | pending author adoption/permission policy |
+| GeoGebra-authored code | EUPL-1.2, preserved notices/modifications | compatible | independently compatible under EUPL |
+| GeoGebra Language Files/UI images/styles/Materials | applicable official CC BY-NC-SA 4.0-or-later and GeoGebra terms | compatible only within compliant NC product | GeoGebra agreement or independent replacement |
+| independent runtime dependencies | 36/39 staged external JARs resolved for retention with texts/notices | compatible after obligations | compatible after obligations |
+| exact unresolved JARs | Giac 70501, math-cross-platform 3.6.3, OpenGeoProver 20120725 | blocked | blocked |
+| renderer fonts | 43/46 connected to primary evidence | compatible after texts/source access | compatible after texts/source access |
+| exact unresolved fonts | `jlm_cmmib10.ttf`, `jlm_cmssi10.ttf`, `jlm_cmti10.ttf` | blocked | blocked |
+| Temurin 25.0.4+7 runtime | GPL-2.0-only with Classpath Exception and module terms; retain runtime legal tree/source access | compatible | compatible |
+| WiX 5.0.2 | CLI/build tool excluded; MSI embeds MS-RL custom-action/UI payload | compatible with text/source handling | compatible with text/source handling |
+
+The complete binary is composite and cannot be labelled solely EUPL or
+globally Open Source/Free Software while GeoGebra NC Materials remain. PROFILE
+NC is still blocked by the six exact payload items and final author/legal
+approval. The exact remediation is in `LICENSES/UNRESOLVED.md`.
+
+## Historical baseline snapshot (2026-08-09)
+
+The sections below preserve the first-pass G4/source triage. Where its
+“future” statements differ from the current disposition table above, the
+current D1 overlay controls; the historical text is not rewritten as if the
+later evidence had existed then.
 
 ## Authorities inspected
 

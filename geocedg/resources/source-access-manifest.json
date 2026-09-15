@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "evidence_date": "2026-09-15",
+  "distribution_marker": "INTERNAL EVALUATION — NOT FOR REDISTRIBUTION",
+  "status": "candidate-with-explicit-blockers",
+  "records": [
+    {
+      "component_id": "geocedg-source",
+      "binary_scope": "GeoCeDG-authored and modified/inherited application JARs",
+      "source_identity": "the exact Git revision recorded by build-manifest.json",
+      "access": "publish the corresponding repository revision and preserve docs/upstream/modified-files.yml",
+      "license": "EUPL-1.2 with file-level exceptions",
+      "state": "READY_WHEN_CANDIDATE_REVISION_IS_PUBLISHED"
+    },
+    {
+      "component_id": "geogebra-upstream-source",
+      "binary_scope": "inherited GeoGebra Java code",
+      "source_identity": "https://github.com/geogebra/geogebra/commit/9b93256b7df401ff056c37b502d82df4d72b1522",
+      "access": "upstream commit plus exact GeoCeDG modified-source revision",
+      "license": "EUPL-1.2",
+      "state": "RESOLVED"
+    },
+    {
+      "component_id": "retex-jlatexmath-source",
+      "binary_scope": "renderer-base and renderer-desktop plus mapped renderer fonts",
+      "source_identity": "repository source plus https://github.com/opencollab/jlatexmath and exact upstream font commits in component-disposition.json",
+      "access": "publish the exact GeoCeDG repository source revision and preserve the component license/linking exception",
+      "license": "GPL-2.0-or-later with linking exception; font-specific grants",
+      "state": "RESOLVED_EXCEPT_THREE_FONT_BYTES"
+    },
+    {
+      "component_id": "rhino-1.8.1-source",
+      "binary_scope": "org.mozilla:rhino:1.8.1 and org.mozilla:rhino-engine:1.8.1",
+      "source_identity": "https://github.com/mozilla/rhino/tree/Rhino1_8_1_Release",
+      "access": "exact release-tag source plus LICENSES/components/Rhino-1.8.1-LICENSE.txt",
+      "license": "MPL-2.0 for the majority plus listed component exceptions",
+      "state": "RESOLVED"
+    },
+    {
+      "component_id": "spotbugs-annotations-4.10.2-source",
+      "binary_scope": "com.github.spotbugs:spotbugs-annotations:4.10.2",
+      "source_identity": "https://github.com/spotbugs/spotbugs/tree/4.10.2; official source artifact SHA-256 87974d23caffbc8c6e66c567747627267b5ed06573cee966d7af6d236b8d65bd",
+      "access": "official release source artifact and LGPL-2.1 text",
+      "license": "LGPL-2.1",
+      "state": "RESOLVED"
+    },
+    {
+      "component_id": "temurin-25.0.4+7",
+      "binary_scope": "jpackage-generated runtime/**",
+      "source_identity": "OpenJDK jdk-25.0.4+7 source a2ce02c38bc9; Adoptium build source e6ba7dec3d07654074559310376a3ae89da5f4ac; release asset OpenJDK25U-jdk_x64_windows_hotspot_25.0.4_7.zip SHA-256 7caab7db43bf4b94a2e6252c699e70d90084f9aa7c943cd3414761fd540937ae",
+      "access": "https://github.com/adoptium/temurin25-binaries/releases/tag/jdk-25.0.4%2B7 and runtime/legal/** in every package",
+      "license": "GPL-2.0-only with Classpath Exception and module-specific third-party terms",
+      "state": "RESOLVED"
+    },
+    {
+      "component_id": "wix-5.0.2-embedded-payload",
+      "binary_scope": "Wix4UtilCA_X64, WixUiCa_X64 and related WiX UI/custom-action payload in MSI/EXE; WiX CLI itself excluded",
+      "source_identity": "https://github.com/wixtoolset/wix/tree/v5.0.2; build 5.0.2+aa65968c",
+      "access": "version-pinned upstream source and LICENSES/components/WiX-5.0.2-MS-RL.txt",
+      "license": "Microsoft Reciprocal License (MS-RL)",
+      "state": "RESOLVED_PENDING_REVIEW_OF_DELIVERY_MECHANISM"
+    },
+    {
+      "component_id": "giac-70501-windows-native",
+      "binary_scope": "javagiac-70501-natives-windows-amd64.jar SHA-256 7dff713215cc645e8a843c11cc56bf9eadea1c15bf0cc59b99eec29ee154d33d; embedded DLL SHA-256 3209b44e153ff26593024249ee3b6687d54b5e371e974076245ebdd2bb43b41c",
+      "source_identity": "candidate GeoGebra/giac commit 81d221d00bff4fff0f5f6d2298aa83042bf11559 plus GMP 6.3.0 and MPFR 4.2.1, but no artifact-to-source attestation",
+      "access": "obtain upstream source/build attestation or authorize a pinned public-source rebuild",
+      "license": "not established for the exact distributed native bytes",
+      "state": "BLOCKED"
+    },
+    {
+      "component_id": "math-cross-platform-3.6.3",
+      "binary_scope": "JAR SHA-256 f89cd36004b85e11d0c09118630106f87ddf0b9e3bfaef753b8c464a2fa8e933",
+      "source_identity": "exact repository source JAR SHA-256 dc2871a35bb31fcada9ca45a671618120db3c6486b5daef145ffe5a50f9c2bf5 linked by Gradle module metadata",
+      "access": "exact source is recoverable, but complete legal provenance/grant must be obtained for DoubleConsts.java, GWTMath.java and Cloner.java",
+      "license": "mixed/incomplete; not established for the complete exact artifact",
+      "state": "BLOCKED"
+    },
+    {
+      "component_id": "opengeoprover-20120725",
+      "binary_scope": "JAR SHA-256 3a75cb7ebf9abc6eff84cb85ae84d1d0fa9300da7d83ec6ae6983ddfd822faee",
+      "source_identity": "public source candidate commit 8d1bb73c499dbfed325bec42ee150cc77557b1a2 with matching 249 Java-source/class count and pre-build chronology",
+      "access": "obtain an explicit redistribution grant from the copyright holders",
+      "license": "no redistribution grant established; recovered source states non-commercial use",
+      "state": "BLOCKED"
+    }
+  ]
+}

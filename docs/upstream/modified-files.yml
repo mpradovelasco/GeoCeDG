@@ -4,6 +4,12 @@
   "baseline_sha": "9b93256b7df401ff056c37b502d82df4d72b1522",
   "modifications": [
     {
+      "path": "gradle/libs.versions.toml",
+      "change": "modified",
+      "purpose": "PRE-G9B-D1: remove the redundant staged jsobject artifact after exact-byte, dependency-use and JDK 25 jdk.jsobject correspondence checks; no runtime or mathematical behavior is changed.",
+      "authority": "docs/validation/pre_g9b_d1_licensing_framework_payload_closure_candidate.md"
+    },
+    {
       "path": "source/build-logic/convention/src/main/resources/checkstyle/checkstyle.xml",
       "change": "modified",
       "purpose": "Recognize GeoCeDG-owned Java headers while preserving all remaining upstream checks.",
@@ -12,7 +18,7 @@
     {
       "path": "source/desktop/desktop/build.gradle.kts",
       "change": "modified",
-      "purpose": "Package the profile manifest, expose runGeoCeDG, register the isolated opt-in Locus V2 developer-laboratory task, and generate auditable build-time repository provenance for G9X1 sidecars. G9U1: Package the sole schema-v2 workspace catalog, historical v1 fallback/schema and owned guide through existing Desktop resources. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: package the owned Construction quick guide using the existing processResources seam.",
+      "purpose": "Package the profile manifest, expose runGeoCeDG, register the isolated opt-in Locus V2 developer-laboratory task, and generate auditable build-time repository provenance for G9X1 sidecars. G9U1: Package the sole schema-v2 workspace catalog, historical v1 fallback/schema and owned guide through existing Desktop resources. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: package the owned Construction quick guide using the existing processResources seam. PRE-G9B-D1: remove the redundant jsobject runtime dependency after exact-byte, dependency-use and JDK 25 jdk.jsobject correspondence checks.",
       "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
     },
     {

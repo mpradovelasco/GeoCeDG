@@ -7,11 +7,17 @@
     {"contract_id":"packaging.source-authority","semantic_domain":"PRODUCT","inputs":[
       {"path":"packaging/windows/package.yml","sha256":"58d201b4441f041cd56b42a7776a81ddf811a92fb7e1148af7ae102b3db21f9f"},
       {"path":"geocedg/specs/operations/package-profile.schema.json","sha256":"feece8e886a0f2ca29642db682412d3b2b0b8468728778d20c200466b014ca8f"},
-      {"path":"geocedg/resources/assets-manifest.yml","sha256":"ac5eef419c2c64a8fe2e0359045cd9fcd8b0df1f4434d3ea9c92088fe052fbfa"},
-      {"path":"tools/release/build-windows-package.ps1","sha256":"1a0f744a1eaebde6543339f132a10d97ccd8db3d5deec023e3df9a2a75f96945"}
+      {"path":"geocedg/resources/assets-manifest.yml","sha256":"c825df1e10b05b0a51afbe36ba55139d8a7f4807ccefd672f2950fb1a0428479"},
+      {"path":"geocedg/resources/source-access-manifest.json","sha256":"05d1c3913e012fde73054df54e50ee5bf23b6f926e5d356e4f5170c121bda46b"},
+      {"path":"geocedg/validation/pre-g9b-d1/component-audit.json","sha256":"aaf35691de27cab94c6b413bfce8221426eca7ddc49a01f9ecc3b9a94bc2edb9"},
+      {"path":"geocedg/validation/pre-g9b-d1/component-disposition.json","sha256":"0cb99a33788e200983060b8ff7b161499d67eb73388d39e9b00dc28d55cc40d6"},
+      {"path":"LICENSES/manifest.json","sha256":"bac3ffce1e87a3838cbfc24ba4494b07fc304a7a2f80799876587807ed9b3dbb"},
+      {"path":"tools/release/build-windows-package.ps1","sha256":"a5ebda66c2f8d8ad02119482c9b46ae67a8ad3db6ed6df5d1c29071b2969830c"},
+      {"path":"tools/release/export-runtime-components.init.gradle","sha256":"0bd0e7136357afd89289b9444c790d0e0b168c009e92b1ee8800095010b491e9"}
     ]},
     {"contract_id":"workspace.profile-authority","semantic_domain":"PRODUCT","inputs":[
-      {"path":"source/desktop/desktop/build.gradle.kts","sha256":"7061c67d7500b7df60a69931765bc6d94322d981b4092e0e1d7ffd618b27978a"},
+      {"path":"source/desktop/desktop/build.gradle.kts","sha256":"42a8e8147058ed70a63a0e2fd05a86dcd41c1766794a9caefdcb4acad3017213"},
+      {"path":"gradle/libs.versions.toml","sha256":"6c4bdfa7611575b35e6d346112b064e40860f2f8fcdd3e5ea9252cad8d0bc2a4"},
       {"path":"tools/agent/workspace-profile-validation.ps1","sha256":"7dfe8f45931f7256e62ebfa9e487e8548b8a297e7a83358c2428341b80e9533b"}
     ]},
     {"contract_id":"scientific.python-reference-inputs","semantic_domain":"SCIENTIFIC","inputs":[

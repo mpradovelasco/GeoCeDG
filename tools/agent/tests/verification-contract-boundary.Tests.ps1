@@ -87,9 +87,81 @@ function New-PackagingArtifactFixture {
     Write-FixtureText (Join-Path $app 'app/INTERNAL_EVALUATION_ONLY.txt') $marker
     Write-FixtureText (Join-Path $app 'app/GeoCeDG.cfg') `
         'app.mainclass=org.geocedg.desktop.GeoCeDG'
+    $jarComponents = [Collections.Generic.List[object]]::new()
+    foreach ($index in 1..51) {
+        $jarName = ('fixture-{0:D2}.jar' -f $index)
+        $jarPath = Join-Path $app "app/$jarName"
+        Write-FixtureText $jarPath "fixture-$index"
+        $jarHash = (Get-FileHash -LiteralPath $jarPath -Algorithm SHA256).Hash.ToLowerInvariant()
+        $jarComponents.Add([ordered]@{
+            type = 'library'
+            name = "fixture-$index"
+            version = '1.0'
+            "bom-ref" = "fixture-jar-$index"
+            hashes = @([ordered]@{ alg = 'SHA-256'; content = $jarHash })
+            properties = @([ordered]@{
+                name = 'geocedg.packaging.path'
+                value = "app/$jarName"
+            })
+        })
+    }
+    $fontComponents = @(foreach ($index in 1..46) {
+        [ordered]@{
+            type = 'file'
+            name = "fixture-font-$index"
+            "bom-ref" = "font:fixture-$index"
+            properties = @()
+        }
+    })
+    $runtimeComponent = [ordered]@{
+        type = 'framework'
+        name = 'Eclipse Temurin OpenJDK runtime'
+        version = '25.0.4+7-LTS'
+        "bom-ref" = 'fixture-temurin-runtime'
+        properties = @()
+    }
+    $sbom = [ordered]@{
+        bomFormat = 'CycloneDX'
+        specVersion = '1.5'
+        components = @($jarComponents) + $fontComponents + @($runtimeComponent)
+    }
     Write-FixtureText (Join-Path $Root 'geocedg-windows.cdx.json') `
-        '{"bomFormat":"CycloneDX","specVersion":"1.5","components":[{"name":"fixture"}]}'
+        ((ConvertTo-Json $sbom -Depth 10 -Compress) + "`n")
+    $resolvedComponents = @(
+        foreach ($index in 1..45) {
+            [ordered]@{
+                component_type = 'module'
+                group = 'fixture.group'
+                module = "module-$index"
+                version = '1.0'
+            }
+        }
+        foreach ($index in 1..11) {
+            [ordered]@{
+                component_type = 'project'
+                project_name = "project-$index"
+            }
+        }
+    )
+    $resolved = [ordered]@{
+        evidence_kind = 'GEOCEDG_RESOLVED_GRADLE_RUNTIME_COMPONENTS'
+        components = $resolvedComponents
+    }
+    Write-FixtureText (Join-Path $Root 'resolved-runtime-components.json') `
+        ((ConvertTo-Json $resolved -Depth 10 -Compress) + "`n")
+    foreach ($legalPath in @(
+            'app/legal/LICENSE', 'app/legal/NOTICE.md',
+            'app/legal/THIRD_PARTY.md',
+            'app/legal/LICENSES/manifest.json',
+            'app/legal/LICENSES/UNRESOLVED.md',
+            'app/legal/source-access-manifest.json',
+            'app/legal/component-audit.json',
+            'app/legal/component-disposition.json',
+            'app/legal/resolved-runtime-components.json')) {
+        Write-FixtureText (Join-Path $app $legalPath) 'fixture legal evidence'
+    }
     $manifest = [ordered]@{
+        schema_version = 2
         target = 'All'
         distribution_marker = $marker
         public_redistribution = 'BLOCKED PENDING LICENSE/ASSET APPROVAL'
@@ -107,7 +179,16 @@ function New-PackagingArtifactFixture {
             portable_outputs_association_free = $true
             compatibility_extension_claimed = $false
         }
-        runtime = [ordered]@{ excluded_non_windows_native_jars = @('fixture.jar') }
+        runtime = [ordered]@{
+            included_jar_count = 51
+            resolved_gradle_component_count = 56
+            staged_external_jar_count = 39
+            sbom_font_count = 46
+            sbom_unknown_version_count = 0
+            excluded_non_windows_native_jars = @(1..6 | ForEach-Object { "excluded-$_.jar" })
+        }
+        legal_bundle = [ordered]@{ unresolved_payload_count = 6 }
+        component_identity = [ordered]@{ versions_inferred_from_filenames = $false }
     }
     Write-FixtureText (Join-Path $Root 'build-manifest.json') `
         ((ConvertTo-Json $manifest -Depth 10 -Compress) + "`n")

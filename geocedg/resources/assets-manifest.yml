@@ -1,20 +1,52 @@
 {
-  "schema_version": 1,
-  "status": "blocked-pending-license-and-asset-approval",
+  "schema_version": 2,
+  "status": "licensing-framework-candidate-pending-author-review",
   "distribution_marker": "INTERNAL EVALUATION — NOT FOR REDISTRIBUTION",
+  "licensing_classes": {
+    "geocedg-software": {
+      "license": "EUPL-1.2",
+      "text": "LICENSES/EUPL-1.2.txt"
+    },
+    "geocedg-documentation-or-ordinary-art": {
+      "license": "CC-BY-4.0",
+      "text": "LICENSES/CC-BY-4.0.txt"
+    },
+    "geocedg-official-mark-artwork": {
+      "copyright_license_candidate": "CC-BY-4.0",
+      "text": "LICENSES/CC-BY-4.0.txt",
+      "trademark_policy": "docs/licensing/trademark-policy-candidate.md",
+      "adoption_state": "pending-author-review"
+    },
+    "mixed-upstream-language-bundle": {
+      "license": "CC-BY-NC-SA-4.0-or-later plus applicable GeoGebra terms",
+      "texts": [
+        "LICENSES/CC-BY-NC-SA-4.0.txt",
+        "LICENSES/GeoGebra-License-2025-11.md"
+      ]
+    }
+  },
+  "versioning_policy": "Semantic asset identity and role are stable. Every changed source or derivative receives a new asset version, exact hash and provenance record. Copyright/trademark classification is role-based and does not depend on permanent pixels, filenames or hashes.",
   "owned_packaging_assets": [
     {
       "id": "geocedg.internal-evaluation-notice",
       "path": "packaging/windows/INTERNAL_EVALUATION_ONLY.txt",
       "kind": "text",
+      "asset_version": 1,
+      "semantic_role": "internal package status notice",
       "provenance": "GeoCeDG-authored G4 packaging notice",
+      "copyright_license_class": "geocedg-software",
+      "trademark_role": "none",
       "redistribution_status": "internal-evaluation-only"
     },
     {
       "id": "geocedg.file-association-metadata",
       "path": "packaging/windows/file-associations.properties",
       "kind": "installer-metadata",
+      "asset_version": 1,
+      "semantic_role": "native .cedg installer association metadata",
       "provenance": "GeoCeDG-authored G4 package metadata",
+      "copyright_license_class": "geocedg-software",
+      "trademark_role": "none",
       "redistribution_status": "internal-evaluation-only"
     }
   ],
@@ -23,83 +55,127 @@
       "id": "geocedg.locus-v2-tool-icon",
       "path": "source/shared/common/src/main/resources/org/geogebra/common/icons/svg/web/toolIcons/mode_locusv2.svg",
       "kind": "svg-tool-icon",
+      "asset_version": 1,
+      "semantic_role": "Locus V2 tool icon",
       "canonical_lf_sha256": "7c4d664846312adb726a68824316580102217c30b8b40abe76a2bf007fdf5b5a",
       "provenance": "GeoCeDG-authored G9U0 semantic locus icon; accessible text fallback is localized by LocusV2.Tool",
-      "redistribution_status": "GeoCeDG-owned EUPL-1.2 source asset"
+      "copyright_license_class": "geocedg-documentation-or-ordinary-art",
+      "trademark_role": "none",
+      "redistribution_status": "author-approved CC-BY-4.0 ordinary artwork"
     },
     {
       "id": "geocedg.spline-v2-tool-icon",
       "path": "source/shared/common/src/main/resources/org/geogebra/common/icons/svg/web/toolIcons/mode_geocedg_splinev2.svg",
       "kind": "svg-tool-icon",
+      "asset_version": 1,
+      "semantic_role": "Spline V2 tool icon",
       "canonical_lf_sha256": "2e2f3a331b135a8d1e1618b5cb144a98dc26b99244f4e0593e54ef2468926da0",
       "provenance": "GeoCeDG-authored G9U1 review; editable vector source, no inherited icon pixels",
-      "redistribution_status": "GeoCeDG-owned EUPL-1.2 source asset"
+      "copyright_license_class": "geocedg-documentation-or-ordinary-art",
+      "trademark_role": "none",
+      "redistribution_status": "author-approved CC-BY-4.0 ordinary artwork"
     },
     {
       "id": "geocedg.semantic-point-tool-icon",
       "path": "source/shared/common/src/main/resources/org/geogebra/common/icons/svg/web/toolIcons/mode_geocedg_semanticpoint.svg",
       "kind": "svg-tool-icon",
+      "asset_version": 1,
+      "semantic_role": "semantic point tool icon",
       "canonical_lf_sha256": "04d08d7d0929795b4a67dcb22acca20b5c8caa0fe56581e6a9c8c9fc5d74b93c",
       "provenance": "GeoCeDG-authored G9U1 review; semantic parameter arrow, not screen matching",
-      "redistribution_status": "GeoCeDG-owned EUPL-1.2 source asset"
+      "copyright_license_class": "geocedg-documentation-or-ordinary-art",
+      "trademark_role": "none",
+      "redistribution_status": "author-approved CC-BY-4.0 ordinary artwork"
     },
     {
       "id": "geocedg.rich-result-tool-icon",
       "path": "source/shared/common/src/main/resources/org/geogebra/common/icons/svg/web/toolIcons/mode_geocedg_richresult.svg",
       "kind": "svg-tool-icon",
+      "asset_version": 1,
+      "semantic_role": "rich-result tool icon",
       "canonical_lf_sha256": "e0fffc73a397b525227eb974e0bdce2dc52547338e166e185fb16b2b0d029c26",
       "provenance": "GeoCeDG-authored G9U1 review; result card with hollow candidate marker",
-      "redistribution_status": "GeoCeDG-owned EUPL-1.2 source asset"
+      "copyright_license_class": "geocedg-documentation-or-ordinary-art",
+      "trademark_role": "none",
+      "redistribution_status": "author-approved CC-BY-4.0 ordinary artwork"
     },
     {
       "id": "geocedg.materialize-tool-icon",
       "path": "source/shared/common/src/main/resources/org/geogebra/common/icons/svg/web/toolIcons/mode_geocedg_materialize.svg",
       "kind": "svg-tool-icon",
+      "asset_version": 1,
+      "semantic_role": "materialize tool icon",
       "canonical_lf_sha256": "8cb42414f546080d048f2bcea4e8f7b8484df0e9efb66e39177c80c8820b0c45",
       "provenance": "GeoCeDG-authored G9U1 review; hollow candidate to solid point and eligibility check",
-      "redistribution_status": "GeoCeDG-owned EUPL-1.2 source asset"
+      "copyright_license_class": "geocedg-documentation-or-ordinary-art",
+      "trademark_role": "none",
+      "redistribution_status": "author-approved CC-BY-4.0 ordinary artwork"
     },
     {
       "id": "geocedg.locus-v2-command-localization-default",
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command.properties",
       "kind": "localization-key-additions",
+      "asset_version": 1,
+      "semantic_role": "Locus V2 default command labels within upstream Language File",
       "provenance": "G9U0 Locus V2 keys are GeoCeDG-authored; the containing upstream bundle retains its recorded provenance",
-      "redistribution_status": "pending containing-bundle license audit"
+      "copyright_license_class": "mixed-upstream-language-bundle",
+      "trademark_role": "none",
+      "redistribution_status": "PROFILE-NC with containing GeoGebra Language File terms"
     },
     {
       "id": "geocedg.locus-v2-command-localization-en",
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command_en.properties",
       "kind": "localization-key-additions",
+      "asset_version": 1,
+      "semantic_role": "Locus V2 English command labels within upstream Language File",
       "provenance": "G9U0 English Locus V2 keys are GeoCeDG-authored; the containing upstream bundle retains its recorded provenance",
-      "redistribution_status": "pending containing-bundle license audit"
+      "copyright_license_class": "mixed-upstream-language-bundle",
+      "trademark_role": "none",
+      "redistribution_status": "PROFILE-NC with containing GeoGebra Language File terms"
     },
     {
       "id": "geocedg.locus-v2-command-localization-es",
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command_es.properties",
       "kind": "localization-key-additions",
+      "asset_version": 1,
+      "semantic_role": "Locus V2 Spanish command labels within upstream Language File",
       "provenance": "G9U0 Spanish Locus V2 keys are GeoCeDG-authored; the containing upstream bundle retains its recorded provenance",
-      "redistribution_status": "pending containing-bundle license audit"
+      "copyright_license_class": "mixed-upstream-language-bundle",
+      "trademark_role": "none",
+      "redistribution_status": "PROFILE-NC with containing GeoGebra Language File terms"
     },
     {
       "id": "geocedg.locus-v2-menu-localization-default",
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu.properties",
       "kind": "localization-key-additions",
+      "asset_version": 1,
+      "semantic_role": "Locus V2 and user-tool default menu labels within upstream Language File",
       "provenance": "G9U0 Locus V2 and G9U1 persistent-user-tool menu keys are GeoCeDG-authored; the containing upstream bundle retains its recorded provenance",
-      "redistribution_status": "pending containing-bundle license audit"
+      "copyright_license_class": "mixed-upstream-language-bundle",
+      "trademark_role": "none",
+      "redistribution_status": "PROFILE-NC with containing GeoGebra Language File terms"
     },
     {
       "id": "geocedg.locus-v2-menu-localization-en",
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_en.properties",
       "kind": "localization-key-additions",
+      "asset_version": 1,
+      "semantic_role": "Locus V2 and user-tool English menu labels within upstream Language File",
       "provenance": "G9U0 English Locus V2 and G9U1 persistent-user-tool menu keys are GeoCeDG-authored; the containing upstream bundle retains its recorded provenance",
-      "redistribution_status": "pending containing-bundle license audit"
+      "copyright_license_class": "mixed-upstream-language-bundle",
+      "trademark_role": "none",
+      "redistribution_status": "PROFILE-NC with containing GeoGebra Language File terms"
     },
     {
       "id": "geocedg.locus-v2-menu-localization-es",
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_es.properties",
       "kind": "localization-key-additions",
+      "asset_version": 1,
+      "semantic_role": "Locus V2 and user-tool Spanish menu labels within upstream Language File",
       "provenance": "G9U0 Spanish Locus V2 and G9U1 persistent-user-tool menu keys are GeoCeDG-authored; the containing upstream bundle retains its recorded provenance",
-      "redistribution_status": "pending containing-bundle license audit"
+      "copyright_license_class": "mixed-upstream-language-bundle",
+      "trademark_role": "none",
+      "redistribution_status": "PROFILE-NC with containing GeoGebra Language File terms"
     }
   ],
   "branding_assets": [
@@ -107,6 +183,9 @@
       "id": "geocedg.brand.topbar",
       "resource_version": 1,
       "role": "GeoCeDG application/window and packaged Windows icon",
+      "semantic_role": "official GeoCeDG application/product mark",
+      "copyright_license_class": "geocedg-official-mark-artwork",
+      "trademark_role": "official-product-mark",
       "author_input": {
         "original_filename": "helixTopBar.png",
         "ingestion_path": "artifacts/author-input/g9u1-branding/helixTopBar.png",
@@ -153,13 +232,16 @@
         "options": "sRGB source decoded without embedded colour management; contain and centre; no crop; no distortion; transparent square padding; HighQualityBicubic interpolation; 3780 pixels/metre output (approximately 95.9866 dpi); ascending ICO directory with exact PNG payloads"
       },
       "provenance": "Author-supplied Round-3 asset; the author identified this exact filename as the GeoCeDG application/window icon and authorized product integration",
-      "license_review_state": "authorized for this internal technical candidate; public redistribution rights remain subject to human review",
-      "redistribution_status": "internal-evaluation-only"
+      "license_review_state": "author ownership and release authority established; CC-BY-4.0 copyright grant plus separate brand policy proposed, pending final author adoption",
+      "redistribution_status": "candidate-public-copyright-license; trademark-policy-pending-author-review"
     },
     {
       "id": "geocedg.brand.startup",
       "resource_version": 1,
       "role": "GeoCeDG startup splash",
+      "semantic_role": "official GeoCeDG startup/product branding",
+      "copyright_license_class": "geocedg-official-mark-artwork",
+      "trademark_role": "official-product-branding",
       "author_input": {
         "original_filename": "helixSnapshot.png",
         "ingestion_path": "artifacts/author-input/g9u1-branding/helixSnapshot.png",
@@ -197,8 +279,8 @@
         "options": "sRGB source decoded without embedded colour management; contain within 361x480 and centre; no crop; no distortion; HighQualityBicubic interpolation; 3780 pixels/metre output (approximately 95.9866 dpi)"
       },
       "provenance": "Author-supplied Round-3 asset; the author identified this exact filename as the GeoCeDG startup/splash image and authorized product integration",
-      "license_review_state": "authorized for this internal technical candidate; public redistribution rights remain subject to human review",
-      "redistribution_status": "internal-evaluation-only"
+      "license_review_state": "author ownership and release authority established; CC-BY-4.0 copyright grant plus separate brand policy proposed, pending final author adoption",
+      "redistribution_status": "candidate-public-copyright-license; trademark-policy-pending-author-review"
     }
   ],
   "package_icon": {
@@ -213,10 +295,25 @@
     "Templatev7.ggb and all models/legacy resources",
     "repository knowledge and development documentation"
   ],
+  "retained_upstream_material_classes": [
+    {
+      "semantic_role": "GeoGebra Language Files embedded in runtime JARs",
+      "copyright_license_class": "mixed-upstream-language-bundle",
+      "trademark_role": "nominative-upstream-attribution-only",
+      "profile": "PROFILE-NC",
+      "commercial_action": "GeoGebra agreement or independent replacement"
+    },
+    {
+      "semantic_role": "GeoGebra UI images and styles embedded in runtime JARs",
+      "copyright_license_class": "mixed-upstream-language-bundle",
+      "trademark_role": "exclude upstream logos; nominative attribution only",
+      "profile": "PROFILE-NC",
+      "commercial_action": "GeoGebra agreement or independent replacement"
+    }
+  ],
   "unresolved_runtime_assets": [
-    "translations embedded in runtime JARs",
-    "UI images and styles embedded in runtime JARs",
-    "renderer fonts and component-local resources",
-    "third-party native libraries and transitive resources"
+    "font:jlm_cmmib10.ttf@5f160003632ae19f17d1fede8b86b67b258904e5d0a6907002dd2ef2d54f5a8a",
+    "font:jlm_cmssi10.ttf@1b7514b42f320f1b0821d78c9973d0bb115ff714830d5c88d368c962f6bf3e57",
+    "font:jlm_cmti10.ttf@59a8696017d3624ddd0e05397cf71c9855672b4466620ac550fcb9fe803e80cf"
   ]
 }

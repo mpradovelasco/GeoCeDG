@@ -20,3 +20,12 @@ models/regression/pre-g9b-s3-text-view-scaling/pre-g9b-s3-text-view-scaling.ggb 
 # G9U1 Round-3 author branding sources and deterministic binary derivatives.
 source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/**/*.png binary
 source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/**/*.ico binary
+
+# PRE-G9B-D1 exact legal-text evidence. Preserve imported upstream/JAR bytes;
+# repository-authored bundle metadata remains canonical UTF-8/LF text.
+LICENSES/*.txt -text -whitespace conflict-marker-size=123
+LICENSES/components/** -text -whitespace conflict-marker-size=123
+LICENSES/GeoGebra-License-2025-11.md -text -whitespace conflict-marker-size=123
+LICENSES/README.md text eol=lf
+LICENSES/UNRESOLVED.md text eol=lf
+LICENSES/manifest.json text eol=lf

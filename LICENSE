@@ -1,19 +1,63 @@
-GeoCeDG project licensing status
+GeoCeDG licensing scope
 
-NO PROJECT-WIDE LICENSE HAS YET BEEN APPROVED FOR GEOCEDG.
+GeoCeDG is a composite source distribution and application. No single license
+applies to every file or to the complete packaged product.
 
-This file is not a license grant. It records an unresolved release gate so that
-internal evaluation packages cannot be mistaken for authorized public
-distributions.
+1. GeoCeDG-authored software
 
-Inherited source files and third-party components retain their original
-copyright notices and applicable terms. GeoGebra-authored source is recorded
-as EUPL-1.2 in the repository component matrix, while translations, UI assets,
-fonts, native libraries, trademarks, and other components may have different
-terms. GeoCeDG-authored material has no approved project-wide license yet.
+Unless a file carries a valid different notice, software source and
+software-oriented scripts authored for GeoCeDG are made available under the
+European Union Public Licence, version 1.2 (EUPL-1.2). The exact text is in
+LICENSES/EUPL-1.2.txt. This grant does not replace or alter notices attached to
+inherited GeoGebra source or independent third-party files.
+
+2. GeoCeDG-authored documentation
+
+Unless a document states an exception, GeoCeDG-authored documentation is made
+available under Creative Commons Attribution 4.0 International (CC BY 4.0).
+The exact text is in LICENSES/CC-BY-4.0.txt and the scope and exceptions are
+recorded in docs/LICENSE.md.
+
+3. GeoCeDG-authored artwork and official marks
+
+Ordinary GeoCeDG-authored artwork is made available under CC BY 4.0 when its
+asset record selects that licensing class. The current official application
+icon and splash artwork are author-owned; their versioned provenance and
+copyright class are recorded in geocedg/resources/assets-manifest.yml.
+
+Copyright permission for artwork is distinct from permission to use the
+GeoCeDG name or official product marks. The candidate brand-use rules are in
+docs/licensing/trademark-policy-candidate.md. They remain pending author
+adoption and possible professional trademark review.
+
+4. Inherited GeoGebra material
+
+GeoGebra-authored software source is governed by EUPL-1.2. GeoGebra Language
+Files, documentation, user-interface images and style files, and other
+GeoGebra Materials are separately governed by GeoGebra's applicable terms,
+including CC BY-NC-SA 4.0-or-later and non-commercial product conditions. See
+LICENSES/GeoGebra-License-2025-11.md and LICENSES/CC-BY-NC-SA-4.0.txt.
+GeoGebra names and marks remain separate rights. GeoCeDG is an independent
+fork and is not endorsed by GeoGebra GmbH.
+
+5. Independent third-party components
+
+Third-party libraries, native binaries, fonts and resources retain their own
+terms. LICENSES/manifest.json identifies the exact legal texts in the bundle;
+THIRD_PARTY.md and geocedg/validation/pre-g9b-d1/component-disposition.json
+record component-specific evidence and unresolved cases.
+
+6. Complete binary/package
+
+The complete package combines the classes above. It is not licensed solely
+under EUPL-1.2 and must not be described globally as Open Source or Free
+Software while non-commercial GeoGebra Materials/Language Files remain in the
+payload. The intended first public profile is non-commercial only and still
+requires closure of every recorded blocker plus explicit author and legal
+release approval.
 
 INTERNAL EVALUATION — NOT FOR REDISTRIBUTION
 
-See LICENSES/README.md, NOTICE.md, THIRD_PARTY.md, and
-docs/licensing/component-matrix.md. Human legal and asset approval is required
-before any public redistribution.
+This candidate licensing architecture does not authorize publication,
+commercial distribution, D1 PASS, or use of any trademark beyond applicable
+law and an adopted brand policy.

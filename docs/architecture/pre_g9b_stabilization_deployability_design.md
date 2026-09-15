@@ -13,6 +13,14 @@
 - G9B/G9C/G9U2 and productive G10: **NOT AUTHORIZED**
 - Self approval: **false**
 
+> Subsequent execution note (2026-09-15): the statements below preserve the
+> authorization boundary when this design was approved. Later author
+> dispositions authorized D1 research and bounded remediation. Current D1
+> state is `LICENSING FRAMEWORK / PAYLOAD CLOSURE = CANDIDATE — PENDING AUTHOR
+> REVIEW`; three JARs and three fonts remain blocked, redistribution is not
+> authorized, and P1 remains out of scope. See the living roadmap and
+> `docs/validation/pre_g9b_d1_licensing_framework_payload_closure_candidate.md`.
+
 This note designs the author-requested roadmap extension between the closed
 post-G9U1 refinement track and any later return to G9B. It records
 characterization from current repository authority; it does not classify

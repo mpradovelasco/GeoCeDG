@@ -41,6 +41,17 @@ $AssociationPath = Join-Path $RepositoryRoot `
 $NoticePath = Join-Path $RepositoryRoot `
     "packaging\windows\INTERNAL_EVALUATION_ONLY.txt"
 $GradleWrapper = Join-Path $RepositoryRoot "gradlew.bat"
+$ResolvedComponentsExporter = Join-Path $RepositoryRoot `
+    "tools\release\export-runtime-components.init.gradle"
+$ResolvedComponentsBuildPath = Join-Path $RepositoryRoot `
+    "source\desktop\desktop\build\reports\geocedg\resolved-runtime-components.json"
+$LicenseManifestPath = Join-Path $RepositoryRoot "LICENSES\manifest.json"
+$ComponentAuditPath = Join-Path $RepositoryRoot `
+    "geocedg\validation\pre-g9b-d1\component-audit.json"
+$ComponentDispositionPath = Join-Path $RepositoryRoot `
+    "geocedg\validation\pre-g9b-d1\component-disposition.json"
+$SourceAccessPath = Join-Path $RepositoryRoot `
+    "geocedg\resources\source-access-manifest.json"
 $ExpectedMarker = "INTERNAL EVALUATION — NOT FOR REDISTRIBUTION"
 $ExpectedNativeExtension = "cedg"
 $ExpectedInternalMimeType = "application/x-geocedg-cedg"
@@ -218,6 +229,8 @@ try {
             (Join-Path $RepositoryRoot "NOTICE.md"),
             (Join-Path $RepositoryRoot "THIRD_PARTY.md"),
             (Join-Path $RepositoryRoot "LICENSES\README.md"),
+            $LicenseManifestPath, $ResolvedComponentsExporter,
+            $ComponentAuditPath, $ComponentDispositionPath, $SourceAccessPath,
             $AssetsManifestPath)) {
         Assert-Condition -Condition (Test-Path -LiteralPath $required -PathType Leaf) `
             -Message "Required package input is missing: $required"
@@ -227,6 +240,38 @@ try {
         ConvertFrom-Json -Depth 50 -NoEnumerate
     $assets = Get-Content -Raw -LiteralPath $AssetsManifestPath |
         ConvertFrom-Json -Depth 50 -NoEnumerate
+    $licenseManifest = Get-Content -Raw -LiteralPath $LicenseManifestPath |
+        ConvertFrom-Json -Depth 50 -NoEnumerate
+    $componentAudit = Get-Content -Raw -LiteralPath $ComponentAuditPath |
+        ConvertFrom-Json -Depth 100 -NoEnumerate
+    $componentDisposition = Get-Content -Raw -LiteralPath $ComponentDispositionPath |
+        ConvertFrom-Json -Depth 100 -NoEnumerate
+    $sourceAccess = Get-Content -Raw -LiteralPath $SourceAccessPath |
+        ConvertFrom-Json -Depth 50 -NoEnumerate
+    Assert-Condition -Condition (
+        $licenseManifest.schema_version -eq 1 -and
+        $assets.schema_version -eq 2 -and
+        $componentDisposition.schema_version -eq 2 -and
+        $sourceAccess.schema_version -eq 1) `
+        -Message "D1 legal/provenance evidence schema differs from the package contract."
+    $declaredLegalPaths = @($licenseManifest.entries | ForEach-Object {
+        [string]$_.path
+    } | Sort-Object)
+    $actualLegalPaths = @(Get-ChildItem -LiteralPath (
+            Join-Path $RepositoryRoot "LICENSES") -Recurse -File |
+        Where-Object Name -cne "manifest.json" |
+        ForEach-Object {
+            [IO.Path]::GetRelativePath($RepositoryRoot, $_.FullName).Replace("\", "/")
+        } | Sort-Object)
+    Assert-Condition -Condition (
+        ($declaredLegalPaths -join "`n") -ceq ($actualLegalPaths -join "`n")) `
+        -Message "LICENSES/manifest.json does not enumerate every bundled legal file exactly once."
+    foreach ($entry in @($licenseManifest.entries)) {
+        $entryPath = Join-Path $RepositoryRoot ([string]$entry.path).Replace("/", "\")
+        $entryHash = (Get-FileHash -LiteralPath $entryPath -Algorithm SHA256).Hash.ToLowerInvariant()
+        Assert-Condition -Condition ($entryHash -ceq [string]$entry.sha256) `
+            -Message "Legal bundle hash mismatch: $($entry.path)"
+    }
     $packageIconPath = [IO.Path]::GetFullPath((Join-Path $RepositoryRoot `
         ([string]$profile.application.icon).Replace("/", "\")))
     Assert-Condition -Condition (Test-Path -LiteralPath $packageIconPath -PathType Leaf) `
@@ -288,15 +333,34 @@ try {
     if (-not $SkipInstallDist) {
         Invoke-Native -FilePath $GradleWrapper -ArgumentList @(
             [string]$profile.input.gradle_task,
+            ":desktop:desktop:exportGeoCeDGRuntimeComponents",
+            "-I", $ResolvedComponentsExporter,
+            "-PgeocedgRuntimeComponentsOutput=$ResolvedComponentsBuildPath",
             "--rerun-tasks",
             "--no-build-cache",
             "--no-daemon",
             "--no-problems-report",
             "--console=plain"
         ) -Description "GeoCeDG Desktop installDist"
+    } else {
+        Invoke-Native -FilePath $GradleWrapper -ArgumentList @(
+            ":desktop:desktop:exportGeoCeDGRuntimeComponents",
+            "-I", $ResolvedComponentsExporter,
+            "-PgeocedgRuntimeComponentsOutput=$ResolvedComponentsBuildPath",
+            "--no-daemon", "--no-problems-report", "--console=plain"
+        ) -Description "GeoCeDG resolved runtime component export"
     }
     Assert-Condition -Condition (Test-Path -LiteralPath $installDist -PathType Container) `
         -Message "installDist lib directory is missing: $installDist"
+    Assert-Condition -Condition (Test-Path -LiteralPath $ResolvedComponentsBuildPath -PathType Leaf) `
+        -Message "Resolved Gradle component evidence is missing: $ResolvedComponentsBuildPath"
+    $resolvedComponents = Get-Content -Raw -LiteralPath $ResolvedComponentsBuildPath |
+        ConvertFrom-Json -Depth 100 -NoEnumerate
+    Assert-Condition -Condition (
+        $resolvedComponents.evidence_kind -ceq
+        "GEOCEDG_RESOLVED_GRADLE_RUNTIME_COMPONENTS" -and
+        @($resolvedComponents.components).Count -gt 0) `
+        -Message "Resolved Gradle component evidence is invalid or empty."
 
     Write-Step "Java packaging toolchain"
     if ([string]::IsNullOrWhiteSpace($JdkHome)) {
@@ -406,6 +470,11 @@ try {
     Copy-Item -LiteralPath (
         Join-Path $RepositoryRoot "geocedg\resources\assets-manifest.yml") `
         -Destination $legalRoot
+    Copy-Item -LiteralPath $SourceAccessPath -Destination $legalRoot
+    Copy-Item -LiteralPath $ComponentAuditPath -Destination $legalRoot
+    Copy-Item -LiteralPath $ComponentDispositionPath -Destination $legalRoot
+    Copy-Item -LiteralPath $ResolvedComponentsBuildPath `
+        -Destination (Join-Path $legalRoot "resolved-runtime-components.json")
     Write-Host "Included runtime JARs: $($included.Count)"
     Write-Host "Excluded non-Windows native JARs: $($excluded.Count)"
 
@@ -492,20 +561,232 @@ try {
     $sourceTimestamp = @(Invoke-Native -FilePath "git" -ArgumentList @(
         "-C", $RepositoryRoot, "show", "-s", "--format=%cI", "HEAD"
     ) -Description "source timestamp" -Capture)[-1].Trim()
-    $components = @($included | Sort-Object Name | ForEach-Object {
-        $hash = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
-        [ordered]@{
-            type = "library"
-            name = $_.Name
-            version = "unknown"
-            "bom-ref" = "jar:$($_.Name):$hash"
-            hashes = @([ordered]@{ alg = "SHA-256"; content = $hash })
-            properties = @([ordered]@{
-                name = "geocedg.packaging.path"
-                value = "app/$($_.Name)"
+    $auditJarByHash = @{}
+    foreach ($row in @($componentAudit.runtime_jars)) {
+        $auditJarByHash[[string]$row.actual_distribution_evidence.sha256] = $row
+    }
+    $dependencyDispositionById = @{}
+    foreach ($row in @($componentDisposition.dependency_dispositions)) {
+        foreach ($componentId in @($row.component_ids)) {
+            $dependencyDispositionById[[string]$componentId] = $row
+        }
+    }
+    $fontDispositionById = @{}
+    foreach ($row in @($componentDisposition.font_disposition_groups)) {
+        foreach ($componentId in @($row.component_ids)) {
+            $fontDispositionById[[string]$componentId] = $row
+        }
+    }
+
+    $jarComponents = @($included | Sort-Object Name | ForEach-Object {
+        $staged = $_
+        $hash = (Get-FileHash -LiteralPath $staged.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+        $resolvedMatches = @($resolvedComponents.components | Where-Object {
+            [string]$_.sha256 -ceq $hash
+        })
+        $isMainJar = $staged.Name -ceq [string]$profile.application.main_jar
+        Assert-Condition -Condition (
+            ($isMainJar -and $resolvedMatches.Count -eq 0) -or
+            (-not $isMainJar -and $resolvedMatches.Count -eq 1)) `
+            -Message "Staged JAR does not join uniquely to resolved Gradle evidence: $($staged.Name) / $hash"
+
+        $auditRow = $auditJarByHash[$hash]
+        if (-not $isMainJar -and $resolvedMatches[0].component_type -ceq "module") {
+            Assert-Condition -Condition ($null -ne $auditRow) `
+                -Message "External resolved artifact is absent from immutable D1 audit: $($staged.Name) / $hash"
+        }
+        $resolved = if ($isMainJar) { $null } else { $resolvedMatches[0] }
+        $componentId = if ($null -eq $auditRow) { $null } else {
+            [string]$auditRow.component_id
+        }
+        $disposition = if ([string]::IsNullOrWhiteSpace($componentId)) {
+            $null
+        } else { $dependencyDispositionById[$componentId] }
+        $componentName = if ($isMainJar) {
+            "GeoCeDG Desktop"
+        } elseif ($resolved.component_type -ceq "module") {
+            [string]$resolved.module
+        } else { [string]$resolved.project_name }
+        $componentVersion = if ($isMainJar -or
+                $resolved.component_type -ceq "project") {
+            $sourceRevision
+        } else { [string]$resolved.version }
+        $resolvedPurl = if ($null -ne $resolved -and
+                $resolved.PSObject.Properties.Name -contains "purl") {
+            [string]$resolved.purl
+        } else { $null }
+        $bomRef = if ($isMainJar) {
+            "pkg:generic/geocedg/desktop@${sourceRevision}?sha256=$hash"
+        } elseif (-not [string]::IsNullOrWhiteSpace($resolvedPurl)) {
+            "$resolvedPurl`?sha256=$hash"
+        } else {
+            "pkg:generic/geocedg/$componentName@${sourceRevision}?sha256=$hash"
+        }
+        $properties = [Collections.Generic.List[object]]::new()
+        $properties.Add([ordered]@{
+            name = "geocedg.packaging.path"; value = "app/$($staged.Name)"
+        })
+        $properties.Add([ordered]@{
+            name = "geocedg.gradle.component.type"
+            value = $(if ($isMainJar) { "project-main" } else {
+                [string]$resolved.component_type
+            })
+        })
+        if (-not $isMainJar) {
+            $properties.Add([ordered]@{
+                name = "geocedg.gradle.artifact"; value = [string]$resolved.artifact_name
+            })
+            $properties.Add([ordered]@{
+                name = "geocedg.gradle.variant"; value = [string]$resolved.variant
+            })
+            if ($resolved.component_type -ceq "project") {
+                $properties.Add([ordered]@{
+                    name = "geocedg.gradle.project.path"
+                    value = [string]$resolved.component_display_name
+                })
+            }
+        }
+        if ($null -ne $auditRow) {
+            $properties.Add([ordered]@{
+                name = "geocedg.audit.component-id"; value = $componentId
+            })
+            $properties.Add([ordered]@{
+                name = "geocedg.license.terms"; value = [string]$auditRow.identified_terms
+            })
+            $properties.Add([ordered]@{
+                name = "geocedg.license.disposition"
+                value = $(if ($null -eq $disposition) {
+                    [string]$auditRow.disposition_candidate
+                } else { [string]$disposition.resolution_class })
             })
         }
+        if ($componentName -in @("flatlaf", "jna")) {
+            $properties.Add([ordered]@{
+                name = "geocedg.nested-native.relationship"
+                value = "native payloads embedded in this exact JAR; see component disposition"
+            })
+        }
+        $component = [ordered]@{
+            type = "library"
+            name = $componentName
+            version = $componentVersion
+            "bom-ref" = $bomRef
+            hashes = @([ordered]@{ alg = "SHA-256"; content = $hash })
+            properties = @($properties)
+        }
+        if (-not $isMainJar -and
+                -not [string]::IsNullOrWhiteSpace($resolvedPurl)) {
+            $component.purl = $resolvedPurl
+        }
+        if ($null -ne $auditRow -and
+                -not [string]::IsNullOrWhiteSpace([string]$auditRow.identified_terms)) {
+            $component.licenses = @([ordered]@{
+                license = [ordered]@{ name = [string]$auditRow.identified_terms }
+            })
+        }
+        $component
     })
+    Assert-Condition -Condition (
+        $jarComponents.Count -eq 51 -and
+        @($resolvedComponents.components | Where-Object {
+            $_.component_type -ceq "module" -and
+            $_.group -ceq "netscape.javascript" -and $_.module -ceq "jsobject"
+        }).Count -eq 0 -and
+        @($included | Where-Object Name -ceq "jsobject-1.jar").Count -eq 0) `
+        -Message "The D1 staged JAR closure must contain 51 JARs and exclude jsobject."
+
+    $fontComponents = @($componentAudit.fonts | Sort-Object name | ForEach-Object {
+        $font = $_
+        $fontDisposition = $fontDispositionById[[string]$font.component_id]
+        Assert-Condition -Condition ($null -ne $fontDisposition) `
+            -Message "Font has no D1 disposition: $($font.component_id)"
+        [ordered]@{
+            type = "file"
+            name = [string]$font.name
+            "bom-ref" = "font:$($font.name):$($font.sha256)"
+            hashes = @([ordered]@{
+                alg = "SHA-256"; content = [string]$font.sha256
+            })
+            licenses = @([ordered]@{
+                license = [ordered]@{ name = [string]$fontDisposition.license }
+            })
+            properties = @(
+                [ordered]@{ name = "geocedg.packaging.path"; value = [string]$font.package_path },
+                [ordered]@{ name = "geocedg.audit.component-id"; value = [string]$font.component_id },
+                [ordered]@{ name = "geocedg.license.disposition"; value = $(
+                    if ($fontDisposition.PSObject.Properties.Name -contains "resolution_class") {
+                        [string]$fontDisposition.resolution_class
+                    } else { [string]$fontDisposition.disposition }) }
+            )
+        }
+    })
+
+    $assetComponents = [Collections.Generic.List[object]]::new()
+    foreach ($brand in @($assets.branding_assets)) {
+        foreach ($asset in @($brand.promoted_source) + @($brand.derivatives)) {
+            $assetVersion = "v$($brand.resource_version)"
+            $assetId = if ($asset.PSObject.Properties.Name -contains "id") {
+                [string]$asset.id
+            } else { "$($brand.id).source-$assetVersion" }
+            $resourcePath = [string]$asset.path
+            $embeddedPath = $resourcePath -replace
+                '^source/desktop/desktop/src/main/resources/',
+                'app/desktop.jar!/'
+            $assetComponents.Add([ordered]@{
+                type = "file"
+                name = $assetId
+                version = $assetVersion
+                "bom-ref" = "asset:$assetId`:$($asset.raw_sha256)"
+                hashes = @([ordered]@{
+                    alg = "SHA-256"; content = [string]$asset.raw_sha256
+                })
+                licenses = @([ordered]@{
+                    license = [ordered]@{ name = "CC-BY-4.0 candidate plus separate GeoCeDG brand policy" }
+                })
+                properties = @(
+                    [ordered]@{ name = "geocedg.packaging.path"; value = $embeddedPath },
+                    [ordered]@{ name = "geocedg.asset.semantic-role"; value = [string]$brand.semantic_role },
+                    [ordered]@{ name = "geocedg.asset.trademark-role"; value = [string]$brand.trademark_role }
+                )
+            })
+        }
+    }
+
+    $runtimeComponent = [ordered]@{
+        type = "framework"
+        name = "Eclipse Temurin OpenJDK runtime"
+        version = "25.0.4+7-LTS"
+        "bom-ref" = "pkg:generic/eclipse-temurin@25.0.4%2B7?arch=x86_64&os=windows"
+        licenses = @([ordered]@{
+            license = [ordered]@{ name = "GPL-2.0-only with Classpath Exception and module-specific terms" }
+        })
+        properties = @(
+            [ordered]@{ name = "geocedg.packaging.path"; value = "runtime/**" },
+            [ordered]@{ name = "geocedg.runtime.vendor"; value = "Eclipse Adoptium" },
+            [ordered]@{ name = "geocedg.runtime.release-asset.sha256"; value = "7caab7db43bf4b94a2e6252c699e70d90084f9aa7c943cd3414761fd540937ae" },
+            [ordered]@{ name = "geocedg.runtime.legal"; value = "runtime/legal/** (195 files / 52 module directories in audited runtime)" }
+        )
+    }
+    $components = [Collections.Generic.List[object]]::new()
+    foreach ($component in $jarComponents) { $components.Add($component) }
+    foreach ($component in $fontComponents) { $components.Add($component) }
+    foreach ($component in $assetComponents) { $components.Add($component) }
+    $components.Add($runtimeComponent)
+    if ($Target -in @("Msi", "Exe", "All")) {
+        $components.Add([ordered]@{
+            type = "library"
+            name = "WiX embedded MSI custom-action/UI payload"
+            version = "5.0.2+aa65968c"
+            "bom-ref" = "pkg:github/wixtoolset/wix@v5.0.2#embedded-msi-payload"
+            licenses = @([ordered]@{
+                license = [ordered]@{ name = "Microsoft Reciprocal License (MS-RL)" }
+            })
+            properties = @(
+                [ordered]@{ name = "geocedg.packaging.path"; value = "MSI/EXE embedded Wix4UtilCA_X64 and WixUiCa_X64/UI resources" },
+                [ordered]@{ name = "geocedg.tool.boundary"; value = "WiX CLI/build tools not shipped wholesale" }
+            )
+        })
+    }
     $sbom = [ordered]@{
         bomFormat = "CycloneDX"
         specVersion = "1.5"
@@ -529,10 +810,13 @@ try {
                 })
             }
         }
-        components = $components
+        components = @($components)
     }
     $sbomPath = Join-Path $ArtifactRoot "geocedg-windows.cdx.json"
     Write-JsonFile -Value $sbom -Path $sbomPath
+    $resolvedEvidencePath = Join-Path $ArtifactRoot "resolved-runtime-components.json"
+    Copy-Item -LiteralPath $ResolvedComponentsBuildPath `
+        -Destination $resolvedEvidencePath
 
     $appFileHashPath = Join-Path $ArtifactRoot "app-image.SHA256SUMS.txt"
     $appHashLines = @(Get-ChildItem -LiteralPath $appImage -Recurse -File |
@@ -550,7 +834,7 @@ try {
         Get-FileEvidence -Path $_ -RelativeTo $ArtifactRoot
     })
     $manifest = [ordered]@{
-        schema_version = 1
+        schema_version = 2
         profile = "packaging/windows/package.yml"
         source_revision = $sourceRevision
         source_timestamp = $sourceTimestamp
@@ -585,7 +869,36 @@ try {
         }
         runtime = [ordered]@{
             included_jar_count = $included.Count
+            resolved_gradle_component_count = @($resolvedComponents.components).Count
+            staged_external_jar_count = @($jarComponents | Where-Object {
+                @($_.properties | Where-Object {
+                    $_.name -ceq "geocedg.gradle.component.type" -and
+                    $_.value -ceq "module"
+                }).Count -eq 1
+            }).Count
+            sbom_font_count = $fontComponents.Count
+            sbom_unknown_version_count = @($jarComponents | Where-Object {
+                [string]::IsNullOrWhiteSpace([string]$_.version) -or
+                $_.version -ceq "unknown"
+            }).Count
             excluded_non_windows_native_jars = @($excluded)
+        }
+        legal_bundle = [ordered]@{
+            manifest = Get-FileEvidence -Path $LicenseManifestPath `
+                -RelativeTo $RepositoryRoot
+            source_access = Get-FileEvidence -Path $SourceAccessPath `
+                -RelativeTo $RepositoryRoot
+            component_disposition = Get-FileEvidence `
+                -Path $ComponentDispositionPath -RelativeTo $RepositoryRoot
+            unresolved_payload_count = 6
+            public_profile = "PROFILE NC"
+            readiness = "BLOCKED PENDING EXACT PAYLOAD EVIDENCE AND AUTHOR/LEGAL APPROVAL"
+        }
+        component_identity = [ordered]@{
+            evidence = Get-FileEvidence -Path $resolvedEvidencePath `
+                -RelativeTo $ArtifactRoot
+            join = "Gradle resolved artifact SHA-256 -> staged app JAR SHA-256"
+            versions_inferred_from_filenames = $false
         }
         deliberate_exclusions = @(
             "scientific PDFs",
@@ -599,7 +912,8 @@ try {
     $manifestPath = Join-Path $ArtifactRoot "build-manifest.json"
     Write-JsonFile -Value $manifest -Path $manifestPath
 
-    $hashTargets = @($artifactFiles) + @($sbomPath, $manifestPath, $appFileHashPath)
+    $hashTargets = @($artifactFiles) + @(
+        $sbomPath, $manifestPath, $appFileHashPath, $resolvedEvidencePath)
     $hashLines = @($hashTargets | Sort-Object | ForEach-Object {
         $hash = (Get-FileHash -LiteralPath $_ -Algorithm SHA256).Hash.ToLowerInvariant()
         "$hash  $([IO.Path]::GetRelativePath($ArtifactRoot, $_).Replace('\', '/'))"

@@ -1,15 +1,18 @@
-# License bundle status
+# GeoCeDG legal-text bundle
 
-This directory is the durable destination for exact license texts approved for
-a GeoCeDG distribution. It is intentionally incomplete at G4.
+This directory contains exact, source-identified license and notice texts for
+the candidate Windows legal bundle. `manifest.json` pins each bundled file by
+SHA-256 and records its primary source. Component-specific texts live under
+`components/`; generic license texts live at this directory root.
 
-No file in this directory grants a project-wide GeoCeDG license. The current
-source and runtime contain components governed by different terms; the factual
-inventory and unresolved work are recorded in
-`docs/licensing/component-matrix.md` and `THIRD_PARTY.md`.
+The bundle must be read with the root `LICENSE`, `NOTICE.md`,
+`THIRD_PARTY.md`, the component disposition evidence, and the source-access
+manifest. Inclusion of a text is factual compliance preparation; it neither
+changes a component's license nor resolves a component whose exact artifact
+has not been connected to that grant.
 
-Before public redistribution, maintainers must add and verify the exact
-license texts required by the final runtime composition, approve a license for
-GeoCeDG-authored material, and record attribution and asset provenance.
+`UNRESOLVED.md` names the six exact payload items for which primary evidence
+is still insufficient. Those items block PROFILE NC until resolved or removed
+through a separately authorized, behavior-preserving remediation.
 
 INTERNAL EVALUATION — NOT FOR REDISTRIBUTION

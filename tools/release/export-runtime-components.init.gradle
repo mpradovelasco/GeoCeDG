@@ -1,0 +1,109 @@
+/*
+ * Read-only Gradle init script used by the Windows packaging pipeline.
+ *
+ * It exports the resolved :desktop runtimeClasspath identity and hashes the
+ * exact artifact bytes.  Packaging joins this evidence to staged files by
+ * SHA-256; filenames are never treated as version authority.
+ */
+
+import groovy.json.JsonOutput
+import java.security.MessageDigest
+import org.gradle.api.artifacts.component.ModuleComponentIdentifier
+import org.gradle.api.artifacts.component.ProjectComponentIdentifier
+
+String sha256(File file) {
+    MessageDigest digest = MessageDigest.getInstance("SHA-256")
+    file.withInputStream { stream ->
+        byte[] buffer = new byte[1024 * 1024]
+        int count
+        while ((count = stream.read(buffer)) >= 0) {
+            if (count > 0) {
+                digest.update(buffer, 0, count)
+            }
+        }
+    }
+    return digest.digest().collect { String.format("%02x", it) }.join()
+}
+
+gradle.beforeProject { project ->
+    project.afterEvaluate {
+        if (project.path != ":desktop" ||
+                project.findProject(":renderer-desktop") == null) {
+            return
+        }
+
+        project.tasks.register("exportGeoCeDGRuntimeComponents") {
+            group = "distribution"
+            description = "Exports resolved Desktop runtime component identity for GeoCeDG packaging."
+            mustRunAfter(project.tasks.named("installDist"))
+
+            doLast {
+                String outputValue = project.findProperty(
+                        "geocedgRuntimeComponentsOutput") as String
+                if (outputValue == null || outputValue.trim().isEmpty()) {
+                    throw new GradleException(
+                            "Set -PgeocedgRuntimeComponentsOutput=<absolute JSON path>.")
+                }
+
+                File outputFile = new File(outputValue).absoluteFile
+                def configuration = project.configurations.getByName(
+                        "runtimeClasspath")
+                def artifacts = configuration.incoming.artifactView {
+                    lenient(true)
+                }.artifacts.artifacts.collect { artifact ->
+                    def identifier = artifact.id.componentIdentifier
+                    def row = new LinkedHashMap<String, Object>()
+                    row.component_type = identifier instanceof ModuleComponentIdentifier ?
+                            "module" : identifier instanceof ProjectComponentIdentifier ?
+                            "project" : "other"
+                    if (identifier instanceof ModuleComponentIdentifier) {
+                        row.group = identifier.group
+                        row.module = identifier.module
+                        row.version = identifier.version
+                        row.purl = "pkg:maven/${identifier.group}/${identifier.module}@${identifier.version}"
+                    } else if (identifier instanceof ProjectComponentIdentifier) {
+                        row.project_path = identifier.projectPath
+                        row.project_name = identifier.projectName
+                        row.component_display_name = identifier.displayName
+                    } else {
+                        row.component_display_name = identifier.displayName
+                    }
+                    row.artifact_name = artifact.id.displayName
+                    row.file_name = artifact.file.name
+                    row.size = artifact.file.length()
+                    row.sha256 = sha256(artifact.file)
+                    row.variant = artifact.variant.displayName
+                    row.variant_attributes = artifact.variant.attributes.keySet()
+                            .sort { it.name }
+                            .collectEntries { attribute ->
+                                [(attribute.name): String.valueOf(
+                                        artifact.variant.attributes.getAttribute(attribute))]
+                            }
+                    return row
+                }.sort { left, right ->
+                    [left.file_name, left.component_type, left.group ?: "",
+                     left.module ?: "", left.version ?: "",
+                     left.project_path ?: ""].join("\u0000") <=>
+                    [right.file_name, right.component_type, right.group ?: "",
+                     right.module ?: "", right.version ?: "",
+                     right.project_path ?: ""].join("\u0000")
+                }
+
+                def evidence = [
+                    schema_version: 1,
+                    evidence_kind: "GEOCEDG_RESOLVED_GRADLE_RUNTIME_COMPONENTS",
+                    build_path: project.gradle.parent == null ? ":" : ":desktop",
+                    project_path: project.path,
+                    configuration: configuration.name,
+                    gradle_version: project.gradle.gradleVersion,
+                    components: artifacts
+                ]
+                outputFile.parentFile.mkdirs()
+                outputFile.setText(
+                        JsonOutput.prettyPrint(JsonOutput.toJson(evidence)) + "\n",
+                        "UTF-8")
+                logger.lifecycle("GeoCeDG runtime component evidence: ${outputFile}")
+            }
+        }
+    }
+}
