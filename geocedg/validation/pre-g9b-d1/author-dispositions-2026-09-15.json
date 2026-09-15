@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "evidence_kind": "PRE_G9B_D1_AUTHOR_DISPOSITIONS",
+  "recorded_on": "2026-09-15",
+  "entry_candidate": "d5b0eddc39921efd468b1cf74d66409296f0b994",
+  "entry_tree": "c8a8c3bda7f847f17e0331670ff1996d783f2fb8",
+  "dispositions": {
+    "D1-HD-01": "LICENSE FRAMEWORK — AUTHOR APPROVED",
+    "D1-HD-02": "TRADEMARK POLICY — AUTHOR APPROVED",
+    "D1-HD-03": "TRADEMARK REGISTRATION — DEFERRED / NOT AUTHORIZED",
+    "D1-HD-04": "GEOGEBRA COMMERCIAL CONTACT — DEFERRED / NOT AUTHORIZED",
+    "D1-HD-05": "SIX PAYLOAD EVIDENCE/GRANT CLOSURE — AUTHOR AUTHORIZED"
+  },
+  "phase_state": {
+    "status": "PRE-G9B-D1 LICENSING FRAMEWORK / PAYLOAD CLOSURE = CANDIDATE — PENDING AUTHOR REVIEW",
+    "selfApproved": false,
+    "authorApproved": false,
+    "passClaimed": false,
+    "publicRedistributionAllowed": false
+  },
+  "forbidden_inferences": [
+    "D1 PASS",
+    "PROFILE NC release allowed",
+    "commercial distribution allowed",
+    "P1 started",
+    "GeoGebra contact authorized",
+    "trademark filing authorized"
+  ]
+}

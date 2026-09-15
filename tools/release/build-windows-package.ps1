@@ -647,11 +647,15 @@ try {
             }
         }
         if ($null -ne $auditRow) {
+            $licenseTerms = if ($null -ne $disposition -and
+                    -not [string]::IsNullOrWhiteSpace([string]$disposition.license)) {
+                [string]$disposition.license
+            } else { [string]$auditRow.identified_terms }
             $properties.Add([ordered]@{
                 name = "geocedg.audit.component-id"; value = $componentId
             })
             $properties.Add([ordered]@{
-                name = "geocedg.license.terms"; value = [string]$auditRow.identified_terms
+                name = "geocedg.license.terms"; value = $licenseTerms
             })
             $properties.Add([ordered]@{
                 name = "geocedg.license.disposition"
@@ -659,8 +663,18 @@ try {
                     [string]$auditRow.disposition_candidate
                 } else { [string]$disposition.resolution_class })
             })
+            if ($null -ne $disposition) {
+                $properties.Add([ordered]@{
+                    name = "geocedg.source.upstream"
+                    value = [string]$disposition.primary_upstream
+                })
+                $properties.Add([ordered]@{
+                    name = "geocedg.source.access"
+                    value = [string]$disposition.source_code_obligation
+                })
+            }
         }
-        if ($componentName -in @("flatlaf", "jna")) {
+        if ($componentName -in @("flatlaf", "jna", "javagiac")) {
             $properties.Add([ordered]@{
                 name = "geocedg.nested-native.relationship"
                 value = "native payloads embedded in this exact JAR; see component disposition"
@@ -679,9 +693,9 @@ try {
             $component.purl = $resolvedPurl
         }
         if ($null -ne $auditRow -and
-                -not [string]::IsNullOrWhiteSpace([string]$auditRow.identified_terms)) {
+                -not [string]::IsNullOrWhiteSpace($licenseTerms)) {
             $component.licenses = @([ordered]@{
-                license = [ordered]@{ name = [string]$auditRow.identified_terms }
+                license = [ordered]@{ name = $licenseTerms }
             })
         }
         $component
@@ -700,7 +714,7 @@ try {
         $fontDisposition = $fontDispositionById[[string]$font.component_id]
         Assert-Condition -Condition ($null -ne $fontDisposition) `
             -Message "Font has no D1 disposition: $($font.component_id)"
-        [ordered]@{
+        $fontComponent = [ordered]@{
             type = "file"
             name = [string]$font.name
             "bom-ref" = "font:$($font.name):$($font.sha256)"
@@ -713,12 +727,18 @@ try {
             properties = @(
                 [ordered]@{ name = "geocedg.packaging.path"; value = [string]$font.package_path },
                 [ordered]@{ name = "geocedg.audit.component-id"; value = [string]$font.component_id },
+                [ordered]@{ name = "geocedg.source.upstream"; value = [string]$fontDisposition.primary_source },
                 [ordered]@{ name = "geocedg.license.disposition"; value = $(
                     if ($fontDisposition.PSObject.Properties.Name -contains "resolution_class") {
                         [string]$fontDisposition.resolution_class
                     } else { [string]$fontDisposition.disposition }) }
             )
         }
+        if (-not [string]::IsNullOrWhiteSpace(
+                [string]$fontDisposition.upstream_version)) {
+            $fontComponent.version = [string]$fontDisposition.upstream_version
+        }
+        $fontComponent
     })
 
     $assetComponents = [Collections.Generic.List[object]]::new()
@@ -741,7 +761,7 @@ try {
                     alg = "SHA-256"; content = [string]$asset.raw_sha256
                 })
                 licenses = @([ordered]@{
-                    license = [ordered]@{ name = "CC-BY-4.0 candidate plus separate GeoCeDG brand policy" }
+                    license = [ordered]@{ name = "CC-BY-4.0 plus adopted separate GeoCeDG brand policy" }
                 })
                 properties = @(
                     [ordered]@{ name = "geocedg.packaging.path"; value = $embeddedPath },
@@ -890,9 +910,9 @@ try {
                 -RelativeTo $RepositoryRoot
             component_disposition = Get-FileEvidence `
                 -Path $ComponentDispositionPath -RelativeTo $RepositoryRoot
-            unresolved_payload_count = 6
+            unresolved_payload_count = 0
             public_profile = "PROFILE NC"
-            readiness = "BLOCKED PENDING EXACT PAYLOAD EVIDENCE AND AUTHOR/LEGAL APPROVAL"
+            readiness = "TECHNICALLY/LICENSING-DOCKET READY — FINAL AUTHOR/LEGAL REVIEW REQUIRED"
         }
         component_identity = [ordered]@{
             evidence = Get-FileEvidence -Path $resolvedEvidencePath `

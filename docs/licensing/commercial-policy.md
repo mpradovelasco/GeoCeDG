@@ -1,7 +1,7 @@
-# GeoCeDG distribution and commercial policy candidate
+# GeoCeDG distribution and commercial policy
 
-Status: author-directed policy candidate; not legal advice, release clearance,
-or an offer of commercial terms. Consulted: 2026-09-15.
+Status: author-approved project/business policy; not legal advice, release
+clearance, or an offer of commercial terms. Adopted: 2026-09-15.
 
 ## Current public/research policy — PROFILE NC
 
@@ -19,8 +19,9 @@ carry attribution, exact third-party texts, source-access information, and the
 adopted GeoCeDG brand policy. No support, warranty, maintenance SLA, or fitness
 commitment is implied; any support offered later must be stated separately.
 
-PROFILE NC remains blocked until the exact unresolved payload docket is closed
-and the author gives final release approval after appropriate legal review.
+The exact payload docket is technically closed for PROFILE NC. Public release
+remains blocked until professional review and an explicit final author release
+decision.
 
 ## Short-term commercial policy — COMMERCIAL-A
 
@@ -33,10 +34,12 @@ and any agreed use of GeoGebra identifiers—not from EUPL code merely because i
 originated upstream.
 
 An agreement would not replace independent obligations for third-party JARs,
-natives, fonts, OpenJDK or WiX payload. The project must first close the six
-exact-byte blockers and then negotiate scope, territory, fields of use,
-branding, distribution channels, updates, support, sublicensing and commercial
-terms. None of those terms is presumed here.
+natives, fonts, OpenJDK or WiX payload. The six-item PROFILE NC docket is
+closed; commercial retention of OpenGeoProver additionally requires licensor
+clarification/permission because its archived GPLv3 metadata and source-level
+non-commercial banner conflict for that use. GeoGebra negotiation points remain
+scope, territory, fields of use, branding, distribution channels, updates,
+support, sublicensing and commercial terms. None is presumed here.
 
 See `geogebra-commercial-agreement-dossier.md` for the prepared factual dossier.
 

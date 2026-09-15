@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "status": "licensing-framework-candidate-pending-author-review",
+  "status": "licensing-framework-and-trademark-policy-author-approved-payload-closure-active",
   "distribution_marker": "INTERNAL EVALUATION — NOT FOR REDISTRIBUTION",
   "licensing_classes": {
     "geocedg-software": {
@@ -12,10 +12,10 @@
       "text": "LICENSES/CC-BY-4.0.txt"
     },
     "geocedg-official-mark-artwork": {
-      "copyright_license_candidate": "CC-BY-4.0",
+      "copyright_license": "CC-BY-4.0",
       "text": "LICENSES/CC-BY-4.0.txt",
-      "trademark_policy": "docs/licensing/trademark-policy-candidate.md",
-      "adoption_state": "pending-author-review"
+      "trademark_policy": "docs/licensing/trademark-policy.md",
+      "adoption_state": "author-approved-2026-09-15"
     },
     "mixed-upstream-language-bundle": {
       "license": "CC-BY-NC-SA-4.0-or-later plus applicable GeoGebra terms",
@@ -232,8 +232,8 @@
         "options": "sRGB source decoded without embedded colour management; contain and centre; no crop; no distortion; transparent square padding; HighQualityBicubic interpolation; 3780 pixels/metre output (approximately 95.9866 dpi); ascending ICO directory with exact PNG payloads"
       },
       "provenance": "Author-supplied Round-3 asset; the author identified this exact filename as the GeoCeDG application/window icon and authorized product integration",
-      "license_review_state": "author ownership and release authority established; CC-BY-4.0 copyright grant plus separate brand policy proposed, pending final author adoption",
-      "redistribution_status": "candidate-public-copyright-license; trademark-policy-pending-author-review"
+      "license_review_state": "author ownership and release authority established; CC-BY-4.0 copyright grant and separate trademark policy author-approved on 2026-09-15",
+      "redistribution_status": "author-approved-public-copyright-license; trademark-policy-author-approved; binary-release-gate-still-blocked"
     },
     {
       "id": "geocedg.brand.startup",
@@ -279,8 +279,8 @@
         "options": "sRGB source decoded without embedded colour management; contain within 361x480 and centre; no crop; no distortion; HighQualityBicubic interpolation; 3780 pixels/metre output (approximately 95.9866 dpi)"
       },
       "provenance": "Author-supplied Round-3 asset; the author identified this exact filename as the GeoCeDG startup/splash image and authorized product integration",
-      "license_review_state": "author ownership and release authority established; CC-BY-4.0 copyright grant plus separate brand policy proposed, pending final author adoption",
-      "redistribution_status": "candidate-public-copyright-license; trademark-policy-pending-author-review"
+      "license_review_state": "author ownership and release authority established; CC-BY-4.0 copyright grant and separate trademark policy author-approved on 2026-09-15",
+      "redistribution_status": "author-approved-public-copyright-license; trademark-policy-author-approved; binary-release-gate-still-blocked"
     }
   ],
   "package_icon": {
@@ -311,9 +311,35 @@
       "commercial_action": "GeoGebra agreement or independent replacement"
     }
   ],
+  "resolved_runtime_asset_evidence": [
+    {
+      "semantic_role": "renderer Computer Modern math italic bold font",
+      "asset_version": "JLaTeXMath-derived/AMSFonts-3.04",
+      "path": "source/desktop/renderer-desktop/src/main/resources/com/himamis/retex/renderer/desktop/fonts/base/jlm_cmmib10.ttf",
+      "sha256": "5f160003632ae19f17d1fede8b86b67b258904e5d0a6907002dd2ef2d54f5a8a",
+      "provenance": "official JLaTeXMath glyph lineage; AMS copyright and OFL-1.1 Reserved Font Name authority; exact derivation evidence in component-disposition.json",
+      "copyright_license_class": "SIL-OFL-1.1-AMS-RFN",
+      "trademark_role": "none"
+    },
+    {
+      "semantic_role": "renderer Computer Modern sans-serif italic font",
+      "asset_version": "JLaTeXMath-derived/AMSFonts-3.04",
+      "path": "source/desktop/renderer-desktop/src/main/resources/com/himamis/retex/renderer/desktop/fonts/latin/optional/jlm_cmssi10.ttf",
+      "sha256": "1b7514b42f320f1b0821d78c9973d0bb115ff714830d5c88d368c962f6bf3e57",
+      "provenance": "official JLaTeXMath glyph lineage; AMS copyright and OFL-1.1 Reserved Font Name authority; exact derivation evidence in component-disposition.json",
+      "copyright_license_class": "SIL-OFL-1.1-AMS-RFN",
+      "trademark_role": "none"
+    },
+    {
+      "semantic_role": "renderer Computer Modern text italic font",
+      "asset_version": "JLaTeXMath-derived/BaKoMa-CM-1.1",
+      "path": "source/desktop/renderer-desktop/src/main/resources/com/himamis/retex/renderer/desktop/fonts/latin/optional/jlm_cmti10.ttf",
+      "sha256": "59a8696017d3624ddd0e05397cf71c9855672b4466620ac550fcb9fe803e80cf",
+      "provenance": "official JLaTeXMath glyph lineage; Basil K. Malyshev/BaKoMa source; exact derivation evidence in component-disposition.json",
+      "copyright_license_class": "BaKoMa-Fonts-Licence",
+      "trademark_role": "none"
+    }
+  ],
   "unresolved_runtime_assets": [
-    "font:jlm_cmmib10.ttf@5f160003632ae19f17d1fede8b86b67b258904e5d0a6907002dd2ef2d54f5a8a",
-    "font:jlm_cmssi10.ttf@1b7514b42f320f1b0821d78c9973d0bb115ff714830d5c88d368c962f6bf3e57",
-    "font:jlm_cmti10.ttf@59a8696017d3624ddd0e05397cf71c9855672b4466620ac550fcb9fe803e80cf"
   ]
 }

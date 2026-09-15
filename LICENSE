@@ -26,9 +26,9 @@ icon and splash artwork are author-owned; their versioned provenance and
 copyright class are recorded in geocedg/resources/assets-manifest.yml.
 
 Copyright permission for artwork is distinct from permission to use the
-GeoCeDG name or official product marks. The candidate brand-use rules are in
-docs/licensing/trademark-policy-candidate.md. They remain pending author
-adoption and possible professional trademark review.
+GeoCeDG name or official product marks. The author-approved brand-use rules
+are in docs/licensing/trademark-policy.md. Registration, clearance and
+enforcement remain subject to professional trademark review.
 
 4. Inherited GeoGebra material
 
@@ -52,12 +52,12 @@ record component-specific evidence and unresolved cases.
 The complete package combines the classes above. It is not licensed solely
 under EUPL-1.2 and must not be described globally as Open Source or Free
 Software while non-commercial GeoGebra Materials/Language Files remain in the
-payload. The intended first public profile is non-commercial only and still
-requires closure of every recorded blocker plus explicit author and legal
-release approval.
+payload. The intended first public profile is non-commercial only. Its exact
+payload docket is technically closed, but public distribution still requires
+explicit author release approval after appropriate professional legal review.
 
 INTERNAL EVALUATION — NOT FOR REDISTRIBUTION
 
-This candidate licensing architecture does not authorize publication,
-commercial distribution, D1 PASS, or use of any trademark beyond applicable
-law and an adopted brand policy.
+This author-approved licensing architecture does not authorize publication,
+commercial distribution or D1 PASS. The current binary remains blocked by the
+final release-review gate recorded in the repository.

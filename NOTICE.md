@@ -27,8 +27,19 @@ No upstream installer, scientific PDF under `docs/references/cedg/`,
 `Templatev7.ggb`, author inbox, knowledge bundle, or legacy/research model is an
 intentional package input.
 
-Six exact runtime items remain blocked by insufficient primary evidence; see
-`LICENSES/UNRESOLVED.md`. Accordingly:
+The former six-item exact-payload docket is closed for PROFILE NC by versioned
+primary evidence. Giac `70501` is retained under GPL-3.0-or-later with recorded
+GMP, MPFR, LLVM and MinGW runtime composition and source access.
+math-cross-platform `3.6.3` is retained under its Apache-2.0, GPL-2.0-only with
+Classpath Exception, and GeoGebra EUPL-1.2 source-file grants. OpenGeoProver
+`20120725` is retained for PROFILE NC under the archived GPLv3 project grant
+and source correspondence; its contradictory non-commercial source banner is
+reserved for professional review and requires clarification before commercial
+retention. The renderer-font bundle includes the AMSFonts OFL 1.1 and BaKoMa
+notices for the three newly traced `jlm_*` derivatives.
+
+Technical/licensing-docket closure is not release approval. Final author and
+professional legal review remain required. Accordingly:
 
 INTERNAL EVALUATION — NOT FOR REDISTRIBUTION
 

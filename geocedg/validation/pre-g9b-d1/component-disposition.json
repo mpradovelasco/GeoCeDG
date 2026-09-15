@@ -8,6 +8,15 @@
     "passClaimed": false,
     "publicRedistributionAllowed": false
   },
+  "author_dispositions_2026_09_15": {
+    "D1-HD-01": "LICENSE FRAMEWORK — AUTHOR APPROVED",
+    "D1-HD-02": "TRADEMARK POLICY — AUTHOR APPROVED",
+    "D1-HD-03": "TRADEMARK REGISTRATION — DEFERRED / NOT AUTHORIZED",
+    "D1-HD-04": "GEOGEBRA COMMERCIAL CONTACT — DEFERRED / NOT AUTHORIZED",
+    "D1-HD-05": "SIX PAYLOAD EVIDENCE/GRANT CLOSURE — AUTHOR AUTHORIZED",
+    "D1-HD-05-result": "COMPLETED CANDIDATE FOR PROFILE NC — FINAL AUTHOR/PROFESSIONAL REVIEW REQUIRED",
+    "scope_note": "authorApproved=false above continues to mean that the PRE-G9B-D1 phase itself is not author-approved and no release is authorized"
+  },
   "base_evidence": {
     "path": "geocedg/validation/pre-g9b-d1/component-audit.json",
     "commit": "3267436dcc7dcf0d7c7bc30b63cb2159f2992f85",
@@ -17,7 +26,7 @@
   },
   "consulted_on": "2026-09-15",
   "profile_meaning": {
-    "NC": "public non-commercial product retaining GeoGebra Materials/Language Files; currently blocked by six exact payload items and final author/legal approval",
+    "NC": "public non-commercial product retaining GeoGebra Materials/Language Files; payload docket technically closed, but final author/professional legal approval and release authorization remain required",
     "COMMERCIAL_A": "preferred short-term commercial route retaining GeoGebra Materials/Language Files under a negotiated GeoGebra License and Collaboration Agreement",
     "COMMERCIAL_B": "long-term independent-material route retaining eligible EUPL code while replacing GeoGebra Materials/Language Files and marks"
   },
@@ -112,34 +121,57 @@
       "component": "Giac Java/native Windows payload",
       "artifact_version": "repository coordinate 70501; JAR SHA-256 7dff713215cc645e8a843c11cc56bf9eadea1c15bf0cc59b99eec29ee154d33d; DLL SHA-256 3209b44e153ff26593024249ee3b6687d54b5e371e974076245ebdd2bb43b41c",
       "distributed_path": "app/javagiac-70501-natives-windows-amd64.jar!/javagiac64.dll",
-      "primary_upstream": "https://github.com/GeoGebra/giac and https://www-fourier.ujf-grenoble.fr/~parisse/giac.html",
-      "license": "public Giac source uses GPL-3.0-or-later; GMP 6.3.0 is LGPL-3.0-or-later/GPL-2.0-or-later and MPFR 4.2.1 is LGPL-3.0-or-later, but those grants are not yet tied to the exact DLL",
-      "license_text_source": "exact artifact POM/JAR contain no terms; GeoGebra/giac commit 81d221d00bff4fff0f5f6d2298aa83042bf11559 is the build-time source candidate",
-      "notice_or_attribution": "GPL text, copyright, bundled GMP/MPFR notices and corresponding source would be required if exact provenance is established",
-      "source_code_obligation": "corresponding source/build scripts for the exact native binary",
-      "nc_compatible": false,
-      "commercial_compatible": false,
-      "remaining_uncertainty": "PE timestamp and official commit chronology strongly identify candidate source, and only Windows system DLLs are dynamically imported, but no authoritative artifact-to-source/build attestation proves the static Giac/GMP/MPFR composition",
-      "disposition": "UNKNOWN / BLOCKED",
-      "resolution_class": "UNRESOLVED — PRIMARY EVIDENCE INSUFFICIENT",
-      "required_packaging_action": "obtain exact build/source archive and notices, or seek author approval to rebuild/upgrade; do not replace automatically"
+      "primary_upstream": "https://github.com/GeoGebra/giac/tree/81d221d00bff4fff0f5f6d2298aa83042bf11559 and https://www-fourier.ujf-grenoble.fr/~parisse/giac.html",
+      "license": "Giac GPL-3.0-or-later; bundled GMP 6.3.0 under its GPL-2.0-or-later option and MPFR 4.2.1 converted to GPL-3.0-or-later under LGPL-3.0 section 2 for this GPL combination; LLVM libc++/libc++abi/libunwind under Apache-2.0 with LLVM exception; MinGW-w64 runtime notices",
+      "license_text_source": "142 Giac source files at exact commit carry GPL-3.0-or-later notices; official GMP 6.3.0 and MPFR 4.2.1 copying authorities; LICENSES/GPL-3.0-only.txt, LICENSES/components/LLVM-exception.txt and LICENSES/components/MinGW-w64-runtime-NOTICE.txt",
+      "notice_or_attribution": "ship GPL-3.0, Giac/Parisse copyright, GMP/MPFR identity, LLVM exception and complete MinGW-w64 runtime notices",
+      "source_code_obligation": "provide exact Giac commit and build scripts plus GMP 6.3.0 and MPFR 4.2.1 source access; preserve the exact prebuilt archive Git blobs and the official Jenkins/Gradle publication chain",
+      "nc_compatible": true,
+      "commercial_compatible": true,
+      "remaining_uncertainty": "the official Jenkins job does not pin the rolling MSYS2 CLANG64 package revisions; the exact DLL nevertheless joins to the official Maven artifact, SVN revision 70501 commit, publisher task, PE build time, embedded GMP/MPFR versions, exact prebuilt Git blobs and LLVM/MinGW runtime strings. Professional review should confirm the final corresponding-source delivery form; an upstream build attestation would strengthen but is not required for technical docket closure",
+      "disposition": "ALLOW_WITH_NOTICE",
+      "resolution_class": "RESOLVED — RETAIN WITH GPL/SOURCE ACCESS",
+      "required_packaging_action": "ship GPL/component/runtime notices and source-access record; retain JAR/DLL unchanged",
+      "provenance_evidence": {
+        "official_maven_artifact_matches_staged_sha256": true,
+        "source_commit": "81d221d00bff4fff0f5f6d2298aa83042bf11559",
+        "source_tree": "a102b2083e58667d4d704ba95613431735793a40",
+        "svn_revision_from_commit": "70501",
+        "pe_timestamp_utc": "2026-07-13T10:35:51Z",
+        "gmp_prebuilt_git_blob": "2cd10a4386b3f2570c0194fd961ec2773077b8bc",
+        "gmp_embedded_version": "6.3.0",
+        "mpfr_prebuilt_git_blob": "762fd93b9e9fd71d256969fff14cb8c975864f9d",
+        "mpfr_embedded_version": "4.2.1",
+        "build_pipeline": "Jenkinsfile MSYSTEM=CLANG64 -> recompile-msys.sh -> deploy.gradle javagiacWin64JarClang -> fr.ujf-grenoble:javagiac:70501:natives-windows-amd64"
+      }
     },
     {
       "component_ids": ["jar:math-cross-platform-3.6.3"],
       "component": "math-cross-platform",
       "artifact_version": "3.6.3",
       "distributed_path": "app/math-cross-platform-3.6.3.jar",
-      "primary_upstream": "https://repo.geogebra.net/releases/org/apache/math-cross-platform/3.6.3/",
-      "license": "mixed/incomplete exact source record: 659 of 662 Java sources carry Apache-2.0 headers; DoubleConsts.java and GWTMath.java carry Oracle GPL-2.0-only with Classpath Exception notices; Cloner.java has no grant/provenance",
-      "license_text_source": "exact Gradle module metadata identifies source JAR SHA-256 dc2871a35bb31fcada9ca45a671618120db3c6486b5daef145ffe5a50f9c2bf5; POM/JAR omit complete legal metadata",
-      "notice_or_attribution": "Apache NOTICE/license plus Oracle copyright/GPL-Classpath text if a complete artifact grant is established",
-      "source_code_obligation": "exact source is recoverable; complete fork grant and referenced GPL-Classpath text remain required",
-      "nc_compatible": false,
-      "commercial_compatible": false,
-      "remaining_uncertainty": "exact source bytes are established, but the artifact-level grant is incomplete for three source files and no authoritative public fork repository was found",
-      "disposition": "UNKNOWN / BLOCKED",
-      "resolution_class": "UNRESOLVED — PRIMARY EVIDENCE INSUFFICIENT",
-      "required_packaging_action": "obtain fork source/license or authorize a pinned, tested rebuild/replacement; numerical behavior review required"
+      "primary_upstream": "https://github.com/geogebra/apache-math-cross-platform/tree/c4c145ac3d1076507e28efd28bb37363dfa78591",
+      "license": "composite: 659 Apache Commons Math files under Apache-2.0; Oracle DoubleConsts.java and GWTMath.java under GPL-2.0-only with Classpath Exception; GeoGebra-authored Cloner.java under the GeoGebra source-code EUPL-1.2 grant",
+      "license_text_source": "the official source JAR SHA-256 dc2871a35bb31fcada9ca45a671618120db3c6486b5daef145ffe5a50f9c2bf5 normalizes exactly to all 662 Java files at official GeoGebra commit c4c145ac3d1076507e28efd28bb37363dfa78591; exact file headers; official GeoGebra source-code license; LICENSES/Apache-2.0.txt, LICENSES/GPL-2.0-only.txt, LICENSES/components/Classpath-Exception-2.0.txt and LICENSES/EUPL-1.2.txt",
+      "notice_or_attribution": "ship Apache-2.0, Oracle copyright and GPL-2.0+Classpath text, GeoGebra attribution and EUPL-1.2",
+      "source_code_obligation": "make the exact official source JAR/commit available; preserve Oracle headers and identify Cloner.java as GeoGebra-authored EUPL source",
+      "nc_compatible": true,
+      "commercial_compatible": true,
+      "remaining_uncertainty": "Cloner.java has no file header; its EUPL treatment is a documented licensing interpretation of GeoGebra's official statement that its source code and individual software libraries may be redistributed under EUPL-1.2. Professional review may confirm that scope, but no binary/source identity remains unresolved",
+      "disposition": "ALLOW_WITH_NOTICE",
+      "resolution_class": "RESOLVED — RETAIN WITH COMPOSITE NOTICE",
+      "required_packaging_action": "ship the four exact grants/notices and source-access identity; retain JAR unchanged",
+      "provenance_evidence": {
+        "binary_sha256": "f89cd36004b85e11d0c09118630106f87ddf0b9e3bfaef753b8c464a2fa8e933",
+        "source_jar_sha256": "dc2871a35bb31fcada9ca45a671618120db3c6486b5daef145ffe5a50f9c2bf5",
+        "source_commit": "c4c145ac3d1076507e28efd28bb37363dfa78591",
+        "source_tree": "88551d4729ae9b69da11af0dee2d6eb645a4c3b8",
+        "normalized_java_matches": "662/662",
+        "apache_2_0_files": 659,
+        "oracle_gpl2_classpath_files": ["src/main/java/org/apache/commons/math3/util/DoubleConsts.java", "src/main/java/org/apache/commons/math3/util/GWTMath.java"],
+        "geogebra_eupl_file": "src/main/java/org/apache/commons/math3/util/Cloner.java",
+        "all_three_anomalous_classes_present_in_binary": true
+      }
     },
     {
       "component_ids": ["jar:OpenGeoProver-20120725"],
@@ -147,16 +179,28 @@
       "artifact_version": "20120725",
       "distributed_path": "app/OpenGeoProver-20120725.jar",
       "primary_upstream": "https://github.com/ivan-z-petrovic/open-geo-prover",
-      "license": "no repository-wide grant found; source displays 'Copyright (c) 2005-2011. Not for commercial use.'",
-      "license_text_source": "exact POM/JAR contain no terms; public source candidate commit 8d1bb73c499dbfed325bec42ee150cc77557b1a2 immediately precedes the build and contains exactly 249 Java files matching the JAR's 249 classes",
-      "notice_or_attribution": "not determinable without a grant",
-      "source_code_obligation": "not determinable without a grant",
-      "nc_compatible": false,
+      "license": "archived official Google Code project metadata declares GPL v3; source also displays 'Copyright (c) 2005-2011. Not for commercial use.'",
+      "license_text_source": "Google Code Archive project.json declares license=gpl3 and movedTo the current official repository; source commit 8d1bb73c499dbfed325bec42ee150cc77557b1a2 plus its build.xml/JavaCC grammar explains every production class in the official Maven JAR; LICENSES/GPL-3.0-only.txt",
+      "notice_or_attribution": "ship GPL-3.0, authors Ivan Petrovic, Predrag Janicic, Goran Predovic and Damien Desfontaines as applicable, project disclaimer and source-access identity",
+      "source_code_obligation": "provide exact source commit, build.xml and JavaCC grammar/generated-source path under GPL-3.0",
+      "nc_compatible": true,
       "commercial_compatible": false,
-      "remaining_uncertainty": "source/JAR correspondence is strongly established by chronology and exact class/source count, but the source's non-commercial-use notice is not an explicit redistribution grant",
-      "disposition": "UNKNOWN / BLOCKED",
-      "resolution_class": "UNRESOLVED — PRIMARY EVIDENCE INSUFFICIENT",
-      "required_packaging_action": "obtain licensor grant/source identity or authorize exclusion/replacement with proving regression coverage"
+      "remaining_uncertainty": "the project-level GPL-3.0 grant and source-level non-commercial banner are inconsistent for commercial use. They both permit the intended non-commercial profile when the GPL source/text duties are met, but commercial use requires licensor clarification or permission; this interpretation warrants professional review",
+      "disposition": "ALLOW_WITH_NOTICE_FOR_NC / HUMAN_PERMISSION_FOR_COMMERCIAL",
+      "resolution_class": "RESOLVED FOR PROFILE NC — RETAIN WITH GPL/SOURCE ACCESS; HUMAN PERMISSION REQUIRED FOR COMMERCIAL",
+      "required_packaging_action": "ship GPL/project notice and exact source access; retain JAR unchanged for PROFILE NC; do not claim commercial compatibility",
+      "provenance_evidence": {
+        "binary_sha256": "3a75cb7ebf9abc6eff84cb85ae84d1d0fa9300da7d83ec6ae6983ddfd822faee",
+        "source_commit": "8d1bb73c499dbfed325bec42ee150cc77557b1a2",
+        "source_tree": "4ccf75ab1a91e4ef6a0a06da0147fa403673029d",
+        "commit_time_utc": "2012-07-24T10:03:25Z",
+        "top_level_binary_classes": 244,
+        "production_java_sources": 237,
+        "javacc_generated_classes": 7,
+        "test_only_sources_excluded": 10,
+        "archive_metadata": "https://storage.googleapis.com/google-code-archive/v2/code.google.com/open-geo-prover/project.json",
+        "archive_license_token": "gpl3"
+      }
     },
     {
       "component_ids": ["jar:jsobject-1"],
@@ -315,19 +359,38 @@
       "note": "This two-layer disposition resolves the earlier apparent contradiction conservatively."
     },
     {
-      "license": "not established for exact font binary",
-      "component_ids": ["font:jlm_cmmib10.ttf", "font:jlm_cmssi10.ttf", "font:jlm_cmti10.ttf"],
+      "license": "SIL-OFL-1.1 with American Mathematical Society Reserved Font Names cmmib10 and cmssi10",
+      "component_ids": ["font:jlm_cmmib10.ttf", "font:jlm_cmssi10.ttf"],
       "exact_sha256": {
         "font:jlm_cmmib10.ttf": "5f160003632ae19f17d1fede8b86b67b258904e5d0a6907002dd2ef2d54f5a8a",
-        "font:jlm_cmssi10.ttf": "1b7514b42f320f1b0821d78c9973d0bb115ff714830d5c88d368c962f6bf3e57",
+        "font:jlm_cmssi10.ttf": "1b7514b42f320f1b0821d78c9973d0bb115ff714830d5c88d368c962f6bf3e57"
+      },
+      "upstream_version": "AMSFonts 3.04; JLaTeXMath asset lineage at af77a8e80d41ff67dfe2f42f14b41f6860dfeeec",
+      "primary_source": "official CTAN AMSFonts 3.04 OFL.txt plus official opencollab/JLaTeXMath fonts; exact internal names/copyright and glyph-outline comparison establish the derivative chain",
+      "requirements": "ship exact AMS OFL text; retain the modified jlm_ primary names and do not restore Reserved Font Names; do not imply AMS endorsement",
+      "nc_compatible": true,
+      "commercial_compatible": true,
+      "disposition": "ALLOW_WITH_NOTICE",
+      "resolution_class": "RESOLVED — RETAIN WITH OFL TEXT",
+      "derivation_evidence": {
+        "font:jlm_cmmib10.ttf": "134 glyphs; cmap identical to official JLaTeXMath; 133/134 common outlines exact; target repairs logicalnot; internal copyright AMS 1997; primary name jlm_cmmib10",
+        "font:jlm_cmssi10.ttf": "135 glyphs; cmap identical to official JLaTeXMath; 134/135 common outlines exact; target repairs logicalnot; internal copyright AMS 1997; primary name jlm_cmssi10"
+      }
+    },
+    {
+      "license": "BaKoMa Fonts Licence (permission to copy, modify and distribute for any purpose)",
+      "component_ids": ["font:jlm_cmti10.ttf"],
+      "exact_sha256": {
         "font:jlm_cmti10.ttf": "59a8696017d3624ddd0e05397cf71c9855672b4466620ac550fcb9fe803e80cf"
       },
-      "primary_source": "embedded name tables identify AMS/BaKoMa/Calixte origins, but the exact bytes do not match current upstream and are not named by the font carve-outs",
-      "requirements": "obtain exact grant/provenance or replace with metrics-tested fonts under recorded terms",
-      "nc_compatible": false,
-      "commercial_compatible": false,
-      "disposition": "UNKNOWN / BLOCKED",
-      "resolution_class": "UNRESOLVED — PRIMARY EVIDENCE INSUFFICIENT"
+      "upstream_version": "BaKoMa-CM 1.1 / 12-Nov-1994; JLaTeXMath asset lineage at af77a8e80d41ff67dfe2f42f14b41f6860dfeeec",
+      "primary_source": "official CTAN BaKoMa LICENCE plus official opencollab/JLaTeXMath font; exact internal names/copyright and glyph-outline comparison establish the derivative chain",
+      "requirements": "ship copyright, author statement, permission notice and original CTAN location for the modified font",
+      "nc_compatible": true,
+      "commercial_compatible": true,
+      "disposition": "ALLOW_WITH_NOTICE",
+      "resolution_class": "RESOLVED — RETAIN WITH BAKOMA NOTICE",
+      "derivation_evidence": "all 135 official JLaTeXMath glyph outlines are exact; target adds logicalnot and changes one advance unit; internal copyright Basil K. Malyshev 1994; primary name jlm_cmti10"
     },
     {
       "license": "JLaTeXMath GPL-2.0-or-later with linking exception",
@@ -346,11 +409,13 @@
   "summary": {
     "runtime_jars": 51,
     "external_jars": 39,
-    "external_jars_resolved_for_retention_with_required_notices": 36,
-    "external_jars_still_blocked": 3,
+    "external_jars_resolved_for_profile_nc_with_required_notices": 39,
+    "external_jars_still_blocked_for_profile_nc": 0,
+    "external_jars_requiring_human_permission_for_commercial": 1,
     "fonts": 46,
-    "fonts_resolved_with_required_texts": 43,
-    "fonts_still_blocked": 3,
+    "fonts_resolved_with_required_texts": 46,
+    "fonts_still_blocked": 0,
+    "profile_nc_payload_blockers": 0,
     "sbom_unknown_versions_before": 52,
     "sbom_unknown_versions_candidate": 0,
     "sbom_version_disposition": "resolved Gradle metadata is exported deterministically and joined to staged JAR bytes by SHA-256; project components use the exact source revision instead of a fabricated module version"

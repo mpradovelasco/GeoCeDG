@@ -39,31 +39,38 @@ official GeoGebra legal repository on 2026-09-15.
 | remaining hash-matched Maven modules | licenses recorded by exact resolved coordinate in the disposition evidence | retain applicable exact generic/component text | RESOLVED — NOTICE/TEXT REQUIRED |
 | Temurin/OpenJDK 25.0.4+7-LTS runtime | GPL-2.0-only with Classpath Exception plus module-specific third-party terms | preserve `runtime/legal/**`; publish pinned source/access identity | RESOLVED — NOTICE/TEXT REQUIRED |
 | WiX Toolset 5.0.2 embedded MSI custom-action/UI payload | MS-RL; WiX executable/toolchain itself is build-only | ship MS-RL and exact source-access identity for embedded files | RESOLVED — NOTICE/TEXT REQUIRED |
+| Giac `70501` Windows native | GPL-3.0-or-later combination; GMP 6.3.0 GPL-2.0-or-later option, MPFR 4.2.1 LGPL-3.0-or-later converted under LGPL section 2, LLVM exception and MinGW runtime notices | ship GPL/LGPL texts and compiler-runtime notices; provide pinned corresponding-source access | RESOLVED — RETAIN WITH GPL/SOURCE ACCESS |
+| math-cross-platform 3.6.3 | Apache-2.0 majority; two Oracle files GPL-2.0-only with Classpath Exception; GeoGebra-authored `Cloner.java` under the official EUPL-1.2 software-library grant | ship Apache-2.0, GPL-2.0, Classpath Exception and EUPL-1.2; preserve source-file notices/source access | RESOLVED — RETAIN WITH COMPOSITE NOTICE |
+| OpenGeoProver 20120725 | archived official project metadata records GPLv3; exact binary maps to official source commit; source banners also say “Not for commercial use” | PROFILE NC: ship GPL-3.0 and source access; commercial retention requires clarification/permission | RESOLVED FOR PROFILE NC — COMMERCIAL HUMAN PERMISSION REQUIRED |
 
 The full JAR-by-JAR mapping is intentionally machine-readable rather than
 duplicated here. It is joined to actual staged bytes by the package builder.
 
 ## Renderer fonts
 
-The Windows runtime distributes 46 exact TTF files. Forty-three are connected
-to primary license evidence: Knuth terms, SIL OFL 1.1 (including reserved font
+The Windows runtime distributes 46 exact TTF files. All 46 are connected to
+primary license evidence: Knuth terms, SIL OFL 1.1 (including reserved font
 names where recorded), JLaTeXMath GPL-2.0-or-later with linking exception,
 font-module GPL-2.0 terms, a component-specific free permission, or an upstream
 public-domain statement. The package must retain the exact font texts and
 corresponding-source records. It must not treat the renderer code license as a
 blanket font license.
 
-Three exact font binaries remain blocked: `jlm_cmmib10.ttf`,
-`jlm_cmssi10.ttf`, and `jlm_cmti10.ttf`. `jlm_special.ttf` is resolved by an
-exact match to official JLaTeXMath history.
+`jlm_cmmib10.ttf` and `jlm_cmssi10.ttf` are documented JLaTeXMath derivatives
+of AMSFonts 3.04 sources under OFL-1.1, with the Reserved Font Names avoided by
+their `jlm_` names. `jlm_cmti10.ttf` is a documented JLaTeXMath derivative of
+the BaKoMa Computer Modern source, whose exact notice permits copying,
+modification and distribution with notice preservation. `jlm_special.ttf` is
+resolved by an exact match to official JLaTeXMath history.
 
-## Exact unresolved payload
+## Exact payload closure
 
-The three blocked JARs are Giac `70501` Windows native, math-cross-platform
-`3.6.3`, and OpenGeoProver `20120725`. Together with the three fonts above,
-they are the complete unresolved exact-byte docket. Their hashes, missing
-grants/source correspondence, and bounded remediation choices are in
-`LICENSES/UNRESOLVED.md`.
+Giac `70501`, math-cross-platform `3.6.3`, OpenGeoProver `20120725`, and the
+three fonts above form the complete former six-item docket. Their exact hashes,
+source correspondence, licensing interpretation and remaining review boundary
+are in the machine-readable disposition/source-access records and
+`LICENSES/UNRESOLVED.md`. No PROFILE NC technical provenance blocker remains;
+this does not authorize public redistribution.
 
 The legacy `netscape.javascript:jsobject:1` JAR is deliberately absent: source
 use analysis, Gradle resolution, compilation, install distribution and JDK 25

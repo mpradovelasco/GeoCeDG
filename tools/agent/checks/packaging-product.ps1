@@ -378,7 +378,7 @@ try {
     $startup = @($assets.branding_assets | Where-Object id -CEQ 'geocedg.brand.startup')
     $assetAuthority = $assets.schema_version -eq 2 -and
         $assets.distribution_marker -ceq $marker -and
-        $assets.status -ceq 'licensing-framework-candidate-pending-author-review' -and
+        $assets.status -ceq 'licensing-framework-and-trademark-policy-author-approved-payload-closure-active' -and
         @($assets.deliberate_exclusions).Count -ge 5 -and $top.Count -eq 1 -and
         $startup.Count -eq 1 -and $assets.package_icon.asset_id -ceq
             'geocedg.brand.topbar.windows-ico-v1' -and
@@ -617,7 +617,9 @@ try {
                 $manifest.runtime.sbom_font_count -eq 46 -and
                 $manifest.runtime.sbom_unknown_version_count -eq 0 -and
                 @($manifest.runtime.excluded_non_windows_native_jars).Count -eq 6 -and
-                $manifest.legal_bundle.unresolved_payload_count -eq 6 -and
+                $manifest.legal_bundle.unresolved_payload_count -eq 0 -and
+                $manifest.legal_bundle.readiness -ceq
+                    'TECHNICALLY/LICENSING-DOCKET READY — FINAL AUTHOR/LEGAL REVIEW REQUIRED' -and
                 $manifest.component_identity.versions_inferred_from_filenames -eq $false
             Add-Contract 'packaging.build-manifest' $manifestValid 'approved build manifest' `
                 $manifest 'Generated build manifest differs.'

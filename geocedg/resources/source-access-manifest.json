@@ -2,7 +2,7 @@
   "schema_version": 1,
   "evidence_date": "2026-09-15",
   "distribution_marker": "INTERNAL EVALUATION — NOT FOR REDISTRIBUTION",
-  "status": "candidate-with-explicit-blockers",
+  "status": "profile-nc-payload-closure-candidate-pending-author-professional-review",
   "records": [
     {
       "component_id": "geocedg-source",
@@ -26,7 +26,7 @@
       "source_identity": "repository source plus https://github.com/opencollab/jlatexmath and exact upstream font commits in component-disposition.json",
       "access": "publish the exact GeoCeDG repository source revision and preserve the component license/linking exception",
       "license": "GPL-2.0-or-later with linking exception; font-specific grants",
-      "state": "RESOLVED_EXCEPT_THREE_FONT_BYTES"
+      "state": "RESOLVED_INCLUDING_ALL_46_FONT_BYTES"
     },
     {
       "component_id": "rhino-1.8.1-source",
@@ -63,26 +63,42 @@
     {
       "component_id": "giac-70501-windows-native",
       "binary_scope": "javagiac-70501-natives-windows-amd64.jar SHA-256 7dff713215cc645e8a843c11cc56bf9eadea1c15bf0cc59b99eec29ee154d33d; embedded DLL SHA-256 3209b44e153ff26593024249ee3b6687d54b5e371e974076245ebdd2bb43b41c",
-      "source_identity": "candidate GeoGebra/giac commit 81d221d00bff4fff0f5f6d2298aa83042bf11559 plus GMP 6.3.0 and MPFR 4.2.1, but no artifact-to-source attestation",
-      "access": "obtain upstream source/build attestation or authorize a pinned public-source rebuild",
-      "license": "not established for the exact distributed native bytes",
-      "state": "BLOCKED"
+      "source_identity": "GeoGebra/giac commit 81d221d00bff4fff0f5f6d2298aa83042bf11559 (tree a102b2083e58667d4d704ba95613431735793a40, git-svn revision 70501); bundled GMP 6.3.0 Git blob 2cd10a4386b3f2570c0194fd961ec2773077b8bc; MPFR 4.2.1 Git blob 762fd93b9e9fd71d256969fff14cb8c975864f9d",
+      "access": "https://github.com/GeoGebra/giac/tree/81d221d00bff4fff0f5f6d2298aa83042bf11559 plus https://gmplib.org/download/gmp/gmp-6.3.0.tar.xz and https://www.mpfr.org/mpfr-4.2.1/mpfr-4.2.1.tar.xz; preserve Jenkinsfile, recompile-msys.sh, CMakeLists.txt, deploy.gradle and exact prebuilt archive blobs",
+      "license": "GPL-3.0-or-later combination; GMP GPL-2.0-or-later option; MPFR LGPL-3.0-or-later converted under LGPL-3.0 section 2; LLVM/MinGW runtime exceptions/notices",
+      "state": "RESOLVED_FOR_RETENTION_WITH_GPL_SOURCE_ACCESS"
     },
     {
       "component_id": "math-cross-platform-3.6.3",
       "binary_scope": "JAR SHA-256 f89cd36004b85e11d0c09118630106f87ddf0b9e3bfaef753b8c464a2fa8e933",
-      "source_identity": "exact repository source JAR SHA-256 dc2871a35bb31fcada9ca45a671618120db3c6486b5daef145ffe5a50f9c2bf5 linked by Gradle module metadata",
-      "access": "exact source is recoverable, but complete legal provenance/grant must be obtained for DoubleConsts.java, GWTMath.java and Cloner.java",
-      "license": "mixed/incomplete; not established for the complete exact artifact",
-      "state": "BLOCKED"
+      "source_identity": "official source JAR SHA-256 dc2871a35bb31fcada9ca45a671618120db3c6486b5daef145ffe5a50f9c2bf5; all 662 normalized Java sources equal GeoGebra commit c4c145ac3d1076507e28efd28bb37363dfa78591 (tree 88551d4729ae9b69da11af0dee2d6eb645a4c3b8)",
+      "access": "https://github.com/geogebra/apache-math-cross-platform/tree/c4c145ac3d1076507e28efd28bb37363dfa78591 and exact official source JAR",
+      "license": "659 Apache-2.0 files; DoubleConsts.java and GWTMath.java GPL-2.0-only with Classpath Exception; Cloner.java GeoGebra-authored EUPL-1.2 source",
+      "state": "RESOLVED_FOR_RETENTION_WITH_COMPOSITE_NOTICE"
     },
     {
       "component_id": "opengeoprover-20120725",
       "binary_scope": "JAR SHA-256 3a75cb7ebf9abc6eff84cb85ae84d1d0fa9300da7d83ec6ae6983ddfd822faee",
-      "source_identity": "public source candidate commit 8d1bb73c499dbfed325bec42ee150cc77557b1a2 with matching 249 Java-source/class count and pre-build chronology",
-      "access": "obtain an explicit redistribution grant from the copyright holders",
-      "license": "no redistribution grant established; recovered source states non-commercial use",
-      "state": "BLOCKED"
+      "source_identity": "official moved repository commit 8d1bb73c499dbfed325bec42ee150cc77557b1a2 (tree 4ccf75ab1a91e4ef6a0a06da0147fa403673029d); 237 production sources plus seven JavaCC outputs account for all 244 top-level JAR classes; ten test sources are absent",
+      "access": "https://github.com/ivan-z-petrovic/open-geo-prover/tree/8d1bb73c499dbfed325bec42ee150cc77557b1a2 plus archived Google Code project metadata declaring gpl3",
+      "license": "GPL-3.0 project grant with a conflicting source-level non-commercial-use banner; retained for PROFILE NC only pending professional review, not treated as commercial-compatible",
+      "state": "RESOLVED_FOR_PROFILE_NC_HUMAN_PERMISSION_REQUIRED_FOR_COMMERCIAL"
+    },
+    {
+      "component_id": "jlatexmath-ams-derived-fonts",
+      "binary_scope": "jlm_cmmib10.ttf SHA-256 5f160003632ae19f17d1fede8b86b67b258904e5d0a6907002dd2ef2d54f5a8a; jlm_cmssi10.ttf SHA-256 1b7514b42f320f1b0821d78c9973d0bb115ff714830d5c88d368c962f6bf3e57",
+      "source_identity": "AMSFonts 3.04 plus official JLaTeXMath asset lineage at commit af77a8e80d41ff67dfe2f42f14b41f6860dfeeec; exact target transformations are recorded in component-disposition.json",
+      "access": "https://ctan.org/pkg/amsfonts and https://github.com/opencollab/jlatexmath/tree/af77a8e80d41ff67dfe2f42f14b41f6860dfeeec",
+      "license": "SIL-OFL-1.1 with AMS Reserved Font Names; target jlm_ primary names remain distinct",
+      "state": "RESOLVED"
+    },
+    {
+      "component_id": "jlatexmath-bakoma-derived-font",
+      "binary_scope": "jlm_cmti10.ttf SHA-256 59a8696017d3624ddd0e05397cf71c9855672b4466620ac550fcb9fe803e80cf",
+      "source_identity": "BaKoMa-CM 1.1 plus official JLaTeXMath asset lineage at commit af77a8e80d41ff67dfe2f42f14b41f6860dfeeec; exact target transformation is recorded in component-disposition.json",
+      "access": "https://ctan.org/tex-archive/fonts/cm/ps-type1/bakoma and https://github.com/opencollab/jlatexmath/tree/af77a8e80d41ff67dfe2f42f14b41f6860dfeeec",
+      "license": "BaKoMa Fonts Licence",
+      "state": "RESOLVED"
     }
   ]
 }

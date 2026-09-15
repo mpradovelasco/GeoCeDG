@@ -187,7 +187,10 @@ function New-PackagingArtifactFixture {
             sbom_unknown_version_count = 0
             excluded_non_windows_native_jars = @(1..6 | ForEach-Object { "excluded-$_.jar" })
         }
-        legal_bundle = [ordered]@{ unresolved_payload_count = 6 }
+        legal_bundle = [ordered]@{
+            unresolved_payload_count = 0
+            readiness = 'TECHNICALLY/LICENSING-DOCKET READY — FINAL AUTHOR/LEGAL REVIEW REQUIRED'
+        }
         component_identity = [ordered]@{ versions_inferred_from_filenames = $false }
     }
     Write-FixtureText (Join-Path $Root 'build-manifest.json') `

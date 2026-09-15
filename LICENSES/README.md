@@ -11,8 +11,10 @@ manifest. Inclusion of a text is factual compliance preparation; it neither
 changes a component's license nor resolves a component whose exact artifact
 has not been connected to that grant.
 
-`UNRESOLVED.md` names the six exact payload items for which primary evidence
-is still insufficient. Those items block PROFILE NC until resolved or removed
-through a separately authorized, behavior-preserving remediation.
+`UNRESOLVED.md` records the residual review questions after exact-byte closure.
+The six-item technical provenance docket is closed for PROFILE NC; this does
+not authorize release. Final author and professional legal review remain
+required, and OpenGeoProver still needs express clarification or permission
+before a commercial profile can retain it.
 
 INTERNAL EVALUATION — NOT FOR REDISTRIBUTION

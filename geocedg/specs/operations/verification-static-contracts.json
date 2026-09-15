@@ -7,12 +7,12 @@
     {"contract_id":"packaging.source-authority","semantic_domain":"PRODUCT","inputs":[
       {"path":"packaging/windows/package.yml","sha256":"58d201b4441f041cd56b42a7776a81ddf811a92fb7e1148af7ae102b3db21f9f"},
       {"path":"geocedg/specs/operations/package-profile.schema.json","sha256":"feece8e886a0f2ca29642db682412d3b2b0b8468728778d20c200466b014ca8f"},
-      {"path":"geocedg/resources/assets-manifest.yml","sha256":"c825df1e10b05b0a51afbe36ba55139d8a7f4807ccefd672f2950fb1a0428479"},
-      {"path":"geocedg/resources/source-access-manifest.json","sha256":"05d1c3913e012fde73054df54e50ee5bf23b6f926e5d356e4f5170c121bda46b"},
+      {"path":"geocedg/resources/assets-manifest.yml","sha256":"d5b0e753982d04574cfa8312890166d4c3b7136b229ffffc56ae9c1b8208c114"},
+      {"path":"geocedg/resources/source-access-manifest.json","sha256":"b5b2bb592cb5e5e6a78431c7d784b96ffa338a1094473bb54c958b1239df949e"},
       {"path":"geocedg/validation/pre-g9b-d1/component-audit.json","sha256":"aaf35691de27cab94c6b413bfce8221426eca7ddc49a01f9ecc3b9a94bc2edb9"},
-      {"path":"geocedg/validation/pre-g9b-d1/component-disposition.json","sha256":"0cb99a33788e200983060b8ff7b161499d67eb73388d39e9b00dc28d55cc40d6"},
-      {"path":"LICENSES/manifest.json","sha256":"bac3ffce1e87a3838cbfc24ba4494b07fc304a7a2f80799876587807ed9b3dbb"},
-      {"path":"tools/release/build-windows-package.ps1","sha256":"a5ebda66c2f8d8ad02119482c9b46ae67a8ad3db6ed6df5d1c29071b2969830c"},
+      {"path":"geocedg/validation/pre-g9b-d1/component-disposition.json","sha256":"4f0d601733551a8f4bec4f2e30df39b37aabd359256ad2c61ac3203459a6a75f"},
+      {"path":"LICENSES/manifest.json","sha256":"20ac0a0fbe5cce33263a4dfa843a4e1c7cc9f467da041b28849fbb20f3a3aca0"},
+      {"path":"tools/release/build-windows-package.ps1","sha256":"29c97a12cfb01d81597800e8226320af0c06d761b3118817bcdc664e3a8e34d5"},
       {"path":"tools/release/export-runtime-components.init.gradle","sha256":"0bd0e7136357afd89289b9444c790d0e0b168c009e92b1ee8800095010b491e9"}
     ]},
     {"contract_id":"workspace.profile-authority","semantic_domain":"PRODUCT","inputs":[

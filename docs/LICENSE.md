@@ -15,5 +15,5 @@ This default does not relicense:
 - a file that carries a more specific valid license or provenance record.
 
 The official GeoCeDG name and product marks are governed separately from the
-copyright license for prose or artwork. See
-`docs/licensing/trademark-policy-candidate.md`.
+copyright license for prose or artwork. See the author-approved policy in
+`docs/licensing/trademark-policy.md`. Registration remains deferred.

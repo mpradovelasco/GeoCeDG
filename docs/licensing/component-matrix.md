@@ -16,20 +16,21 @@ authoritative Gradle runtime graph and joins it to staged JARs by SHA-256.
 | GeoCeDG-authored software/scripts | EUPL-1.2, except valid file-level third-party terms | compatible | compatible |
 | GeoCeDG-authored documentation | CC BY 4.0, with `docs/LICENSE.md` exceptions | compatible | compatible |
 | GeoCeDG ordinary artwork | CC BY 4.0 by manifest licensing class | compatible | compatible |
-| official GeoCeDG product artwork | CC BY 4.0 copyright candidate plus separate brand policy | pending author adoption | pending author adoption/permission policy |
+| official GeoCeDG product artwork | CC BY 4.0 copyright treatment plus adopted separate brand policy | compatible subject to brand policy | compatible subject to brand policy |
 | GeoGebra-authored code | EUPL-1.2, preserved notices/modifications | compatible | independently compatible under EUPL |
 | GeoGebra Language Files/UI images/styles/Materials | applicable official CC BY-NC-SA 4.0-or-later and GeoGebra terms | compatible only within compliant NC product | GeoGebra agreement or independent replacement |
-| independent runtime dependencies | 36/39 staged external JARs resolved for retention with texts/notices | compatible after obligations | compatible after obligations |
-| exact unresolved JARs | Giac 70501, math-cross-platform 3.6.3, OpenGeoProver 20120725 | blocked | blocked |
-| renderer fonts | 43/46 connected to primary evidence | compatible after texts/source access | compatible after texts/source access |
-| exact unresolved fonts | `jlm_cmmib10.ttf`, `jlm_cmssi10.ttf`, `jlm_cmti10.ttf` | blocked | blocked |
+| independent runtime dependencies | 39/39 staged external JARs resolved for PROFILE NC with texts/notices/source access | compatible after obligations | compatible except OpenGeoProver needs clarification/permission |
+| former exact unresolved JARs | Giac 70501, math-cross-platform 3.6.3, OpenGeoProver 20120725 | closed for NC | OGP permission/clarification remains |
+| renderer fonts | 46/46 connected to primary evidence | compatible after texts/source access | compatible after texts/source access |
+| former exact unresolved fonts | `jlm_cmmib10.ttf`, `jlm_cmssi10.ttf`, `jlm_cmti10.ttf` | closed | closed |
 | Temurin 25.0.4+7 runtime | GPL-2.0-only with Classpath Exception and module terms; retain runtime legal tree/source access | compatible | compatible |
 | WiX 5.0.2 | CLI/build tool excluded; MSI embeds MS-RL custom-action/UI payload | compatible with text/source handling | compatible with text/source handling |
 
 The complete binary is composite and cannot be labelled solely EUPL or
 globally Open Source/Free Software while GeoGebra NC Materials remain. PROFILE
-NC is still blocked by the six exact payload items and final author/legal
-approval. The exact remediation is in `LICENSES/UNRESOLVED.md`.
+NC has no remaining exact-payload technical provenance blocker. It remains
+blocked from release pending final author/professional legal review. The
+residual review boundary is in `LICENSES/UNRESOLVED.md`.
 
 ## Historical baseline snapshot (2026-08-09)
 
