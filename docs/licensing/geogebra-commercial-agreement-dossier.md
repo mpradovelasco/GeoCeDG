@@ -1,7 +1,7 @@
 # GeoCeDG — future GeoGebra commercial-agreement dossier
 
 Status: prepared for a possible first contact; no contact is authorized or has
-been made. Facts are current to 2026-09-15. This is not legal advice and does
+been made. Facts are current to 2026-09-16. This is not legal advice and does
 not presume contractual terms.
 
 ## Project and provenance
@@ -44,9 +44,9 @@ License and Collaboration Agreement. Snapshot:
 
 The exact retained resource/JAR closure, hashes and package locations can be
 supplied from `component-audit.json`, `component-disposition.json`, the
-resolved Gradle component export, SBOM and app-image hash inventory. This
-dossier should attach those generated receipts only after the six independent
-payload blockers are closed.
+resolved Gradle component export, SBOM and app-image hash inventory. The D1
+payload docket is closed for PROFILE NC; attach only the reviewed receipts and
+only after author authorization to contact GeoGebra.
 
 ## Intended uses and markets
 
@@ -106,40 +106,9 @@ Questions for GeoGebra:
 7. Is a maintained inventory/SBOM sufficient to define the licensed payload,
    or must exact versions be enumerated contractually?
 
-## Draft first-contact email — do not send
+## First-contact template — do not send
 
-Subject: GeoCeDG source fork — enquiry about License and Collaboration Agreement
-
-> Dear GeoGebra licensing team,
->
-> I am the author/maintainer of GeoCeDG, an independent source-based fork of
-> GeoGebra for Computer-Extended Descriptive Geometry. It is based on the
-> pinned GeoGebra 5.4.928.0 source revision
-> `9b93256b7df401ff056c37b502d82df4d72b1522`. GeoCeDG preserves upstream
-> notices, uses independent product branding and packaging, and records all
-> modified upstream files.
->
-> Our immediate objective is a public non-commercial Windows distribution for
-> teaching, academic study and research. We also want to understand a possible
-> future commercial route. The product retains GeoGebra Language Files and UI
-> Materials that your current licensing guidance distinguishes from EUPL-1.2
-> source code and says may require a License and Collaboration Agreement for
-> commercial use.
->
-> Could you advise whom we should work with and what technical/business
-> information you require to discuss such an agreement? We can provide the
-> exact source baseline, modification register, retained-material inventory,
-> SBOM, package formats, intended users/markets and proposed attribution. We
-> would particularly like to clarify the licensed material boundary, allowed
-> modification/distribution formats, attribution/branding, territories,
-> commercial scenarios and any collaboration or support options.
->
-> This enquiry would not assume any fee, royalty, exclusivity, sublicensing,
-> duration or support term. We would appreciate your proposed process and terms.
->
-> Kind regards,
-> [AUTHOR NAME]
-> [ROLE / CONTACT]
-
-Author authorization is required before using this draft or sending any
-project evidence externally.
+The normalized versioned draft is
+[`templates/geogebra_commercial_contact.md`](templates/geogebra_commercial_contact.md).
+Author authorization is required before using it or sending project evidence
+externally.

@@ -26,6 +26,28 @@
     }
   },
   "versioning_policy": "Semantic asset identity and role are stable. Every changed source or derivative receives a new asset version, exact hash and provenance record. Copyright/trademark classification is role-based and does not depend on permanent pixels, filenames or hashes.",
+  "trademark_status": {
+    "evidence_authority": "docs/licensing/trademark-registration/README.md",
+    "word_mark": {
+      "mark_name": "GeoCeDG",
+      "mark_type": "word-denominative",
+      "application_status": "filed",
+      "jurisdiction": "Spain",
+      "office": "OEPM",
+      "application_identifier": "M4403138",
+      "application_timestamp": "2026-09-16 12:09:08",
+      "application_timestamp_basis": "local timestamp displayed by the OEPM filing receipt; no timezone is encoded",
+      "nice_classes": ["09"],
+      "registration_status": "pending"
+    },
+    "figurative_mark": {
+      "mark_type": "figurative",
+      "application_status": "not-filed",
+      "registration_status": "no-grant-evidence",
+      "evidence_note": "No versioned filing evidence exists for a figurative GeoCeDG mark; word-mark application data must not be reused."
+    },
+    "copyright_separation": "Artwork copyright licensing and trademark application/registration status are independent."
+  },
   "owned_packaging_assets": [
     {
       "id": "geocedg.internal-evaluation-notice",
@@ -233,7 +255,7 @@
       },
       "provenance": "Author-supplied Round-3 asset; the author identified this exact filename as the GeoCeDG application/window icon and authorized product integration",
       "license_review_state": "author ownership and release authority established; CC-BY-4.0 copyright grant and separate trademark policy author-approved on 2026-09-15",
-      "redistribution_status": "author-approved-public-copyright-license; trademark-policy-author-approved; binary-release-gate-still-blocked"
+      "redistribution_status": "author-approved-public-copyright-license; trademark-policy-author-approved; profile-nc-deployability-approved; current-package-remains-internal-evaluation"
     },
     {
       "id": "geocedg.brand.startup",
@@ -294,7 +316,7 @@
       },
       "provenance": "Author-supplied replacement selected from tracked GeoCeDG splash alternatives and author-approved on 2026-09-16 as the authoritative GeoCeDG startup image",
       "license_review_state": "startup artwork selection author-approved on 2026-09-16; author ownership and release authority established; CC-BY-4.0 copyright grant and separate trademark policy author-approved on 2026-09-15",
-      "redistribution_status": "author-approved-public-copyright-license; trademark-policy-author-approved; binary-release-gate-still-blocked"
+      "redistribution_status": "author-approved-public-copyright-license; trademark-policy-author-approved; profile-nc-deployability-approved; current-package-remains-internal-evaluation"
     }
   ],
   "package_icon": {

@@ -1,8 +1,9 @@
 # GeoCeDG trademark and brand-use policy
 
-Status: **AUTHOR APPROVED** as project policy on 2026-09-15, subject to normal
-professional review before registration or enforcement. No registration is
-claimed and this policy does not change copyright licenses.
+Status: **AUTHOR APPROVED** as project policy on 2026-09-15. The `GeoCeDG`
+word-mark application was filed with the OEPM on 2026-09-16; registration is
+pending. No grant or completed registration is claimed, and this policy does
+not change copyright licenses.
 
 ## Covered marks and version-independent identity
 
@@ -67,7 +68,16 @@ by itself authorize trademark use that suggests official origin. Conversely,
 trademark permission does not grant source files or copyright adaptation
 rights. The manifest records both dimensions.
 
-Registration and enforcement are separate decisions. `D1-HD-03` remains
-deferred: do not file, pay fees, claim registration, or use `®`. Clearance,
-final Nice wording, owner identity and enforcement should receive professional
-review when the author later authorizes them.
+Application, registration and enforcement are separate states. The historical
+`D1-HD-03` disposition correctly deferred filing on 2026-09-15; a later author
+action superseded that operational state by filing the Spanish denominative
+mark `GeoCeDG`, application `M4403138`, on `2026-09-16 12:09:08`, Nice class
+`09`. The authoritative filing evidence is indexed in
+[`trademark-registration/README.md`](trademark-registration/README.md).
+
+That application remains pending. It is not a registration identifier or
+evidence of grant, and no registered-trademark symbol may be used. No
+versioned evidence establishes an application for a figurative mark. Current
+logo/icon/splash assets remain independently tracked copyright works and
+official-product branding; any later figurative filing must identify its own
+application, representation and evidence.

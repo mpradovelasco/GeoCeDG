@@ -16,4 +16,7 @@ This default does not relicense:
 
 The official GeoCeDG name and product marks are governed separately from the
 copyright license for prose or artwork. See the author-approved policy in
-`docs/licensing/trademark-policy.md`. Registration remains deferred.
+`docs/licensing/trademark-policy.md`. The `GeoCeDG` denominative-mark
+application has been filed with the OEPM and remains pending; filing evidence
+is indexed in `docs/licensing/trademark-registration/README.md`. This does not
+establish registration and does not alter artwork copyright licensing.

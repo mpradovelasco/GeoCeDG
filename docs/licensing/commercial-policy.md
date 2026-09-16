@@ -19,9 +19,10 @@ carry attribution, exact third-party texts, source-access information, and the
 adopted GeoCeDG brand policy. No support, warranty, maintenance SLA, or fitness
 commitment is implied; any support offered later must be stated separately.
 
-The exact payload docket is technically closed for PROFILE NC. Public release
-remains blocked until professional review and an explicit final author release
-decision.
+The exact payload docket is closed for PROFILE NC. Professional review is
+complete and PRE-G9B-D1 deployability is author-approved. The current `0.9.0`
+package remains an internal-evaluation artifact; public package-state/version
+materialization is a later, separately authorized step.
 
 ## Short-term commercial policy — COMMERCIAL-A
 
@@ -73,9 +74,18 @@ Reconsider COMMERCIAL-B when one or more triggers occurs:
 
 Productive implementation is not authorized by this document.
 
+## Current GeoCeDG mark status
+
+The Spanish `GeoCeDG` word-mark application was filed with the OEPM as
+`M4403138` on `2026-09-16 12:09:08`, Nice class `09`; registration is pending.
+No versioned evidence establishes a figurative-mark application. The filing
+does not supply GeoGebra or OpenGeoProver commercial permissions and does not
+authorize a registered-trademark symbol. See
+`trademark-registration/README.md` for the filing evidence.
+
 ## Policy boundaries
 
 Copyright licenses, trademark permissions, package composition and commercial
 contracts are distinct. This policy records the intended route; professional
-review remains appropriate for final public notices, the GeoGebra agreement,
-trademark clearance/filing, and any source-offer mechanism.
+review remains appropriate for external agreements, later trademark
+prosecution/enforcement and any changed package composition.

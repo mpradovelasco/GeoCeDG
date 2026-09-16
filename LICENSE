@@ -27,8 +27,9 @@ copyright class are recorded in geocedg/resources/assets-manifest.yml.
 
 Copyright permission for artwork is distinct from permission to use the
 GeoCeDG name or official product marks. The author-approved brand-use rules
-are in docs/licensing/trademark-policy.md. Registration, clearance and
-enforcement remain subject to professional trademark review.
+are in docs/licensing/trademark-policy.md. The Spanish denominative-mark
+application `M4403138` has been filed and remains pending; that filing is not a
+registration grant and is independent from artwork copyright licensing.
 
 4. Inherited GeoGebra material
 
@@ -52,12 +53,13 @@ record component-specific evidence and unresolved cases.
 The complete package combines the classes above. It is not licensed solely
 under EUPL-1.2 and must not be described globally as Open Source or Free
 Software while non-commercial GeoGebra Materials/Language Files remain in the
-payload. The intended first public profile is non-commercial only. Its exact
-payload docket is technically closed, but public distribution still requires
-explicit author release approval after appropriate professional legal review.
+payload. PROFILE NC is the approved deployability profile for the exact audited
+composition and remains non-commercial only.
 
 INTERNAL EVALUATION — NOT FOR REDISTRIBUTION
 
-This author-approved licensing architecture does not authorize publication,
-commercial distribution or D1 PASS. The current binary remains blocked by the
-final release-review gate recorded in the repository.
+PRE-G9B-D1 is PASS — AUTHOR APPROVED, but this does not retitle or publish the
+current `0.9.0` internal-evaluation package. Public package-state/version
+materialization belongs to a later explicit step. Commercial distribution is
+not authorized and remains dependent on external terms recorded in
+docs/licensing/geocedg_profile_commercial.md.

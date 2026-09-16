@@ -1,22 +1,33 @@
 {
   "schema_version": 2,
   "evidence_kind": "PRE_G9B_D1_LICENSING_FRAMEWORK_PAYLOAD_CLOSURE_OVERLAY",
-  "status": "PRE-G9B-D1 LICENSING FRAMEWORK / PAYLOAD CLOSURE CHECKPOINT = COMPLETE — AUTHOR APPROVED; PRE-G9B-D1 PHASE = OPEN — PASS NOT CLAIMED",
+  "status": "PRE-G9B-D1 = PASS — AUTHOR APPROVED; PROFILE NC = APPROVED; PROFILE COMMERCIAL = PENDING EXTERNAL TERMS / NOT AUTHORIZED",
   "authorizations": {
     "selfApproved": false,
     "checkpointAuthorApproved": true,
-    "authorApproved": false,
-    "passClaimed": false,
+    "authorApproved": true,
+    "passClaimed": true,
+    "profileNCApproved": true,
+    "commercialProfileAuthorized": false,
     "publicRedistributionAllowed": false
   },
   "author_dispositions_2026_09_15": {
+    "record_status": "HISTORICAL — accurate at 2026-09-15; phase/release and filing state superseded by the 2026-09-16 author dispositions below",
     "D1-HD-01": "LICENSE FRAMEWORK — AUTHOR APPROVED",
     "D1-HD-02": "TRADEMARK POLICY — AUTHOR APPROVED",
     "D1-HD-03": "TRADEMARK REGISTRATION — DEFERRED / NOT AUTHORIZED",
     "D1-HD-04": "GEOGEBRA COMMERCIAL CONTACT — DEFERRED / NOT AUTHORIZED",
     "D1-HD-05": "SIX PAYLOAD EVIDENCE/GRANT CLOSURE — AUTHOR AUTHORIZED",
     "D1-HD-05-result": "CHECKPOINT COMPLETE — AUTHOR APPROVED FOR PROFILE NC EVIDENCE; FINAL AUTHOR/PROFESSIONAL RELEASE REVIEW REQUIRED",
-    "scope_note": "checkpointAuthorApproved=true records publication acceptance of this evidence checkpoint; authorApproved=false continues to mean that PRE-G9B-D1 phase PASS is not approved and no public release is authorized"
+    "scope_note": "historical checkpoint semantics at 2026-09-15; superseded for current D1 phase status by author_dispositions_2026_09_16"
+  },
+  "author_dispositions_2026_09_16": {
+    "D1-final": "PRE-G9B-D1 = PASS — AUTHOR APPROVED; DEPLOYABILITY APPROVED FOR PROFILE NC",
+    "professional_review": "accepted the recorded interpretations, obligations and dispositions for Giac/GMP/MPFR, math-cross-platform, OpenGeoProver for PROFILE NC, GeoGebra Materials/Language Files/UI assets, WiX, Temurin, legal bundle and corresponding-source/source-access",
+    "D1-HD-03-evolution": "the 2026-09-15 deferred/not-authorized disposition remains historical; a later author action filed the GeoCeDG OEPM word-mark application M4403138 on 2026-09-16; registration remains pending; no figurative filing is evidenced",
+    "D1-HD-04": "GEOGEBRA COMMERCIAL CONTACT — DEFERRED / NOT AUTHORIZED",
+    "commercial": "PROFILE COMMERCIAL — PENDING EXTERNAL TERMS / NOT AUTHORIZED; GeoGebra COMMERCIAL-A and independent OpenGeoProver permission remain future contacts",
+    "package_boundary": "publicRedistributionAllowed=false continues for the current 0.9.0 internal-evaluation package; D1 approval does not execute P1, publish binaries or change the package profile"
   },
   "base_evidence": {
     "path": "geocedg/validation/pre-g9b-d1/component-audit.json",
@@ -25,9 +36,9 @@
     "join_key": "component_id",
     "rule": "Join this overlay to the immutable audit for name, exact package path, size and SHA-256. Absence from this overlay preserves the audit disposition."
   },
-  "consulted_on": "2026-09-15",
+  "consulted_on": "2026-09-16",
   "profile_meaning": {
-    "NC": "public non-commercial product retaining GeoGebra Materials/Language Files; payload docket technically closed, but final author/professional legal approval and release authorization remain required",
+    "NC": "author-approved deployability profile retaining GeoGebra Materials/Language Files under applicable non-commercial terms; the exact audited composition is closed by D1",
     "COMMERCIAL_A": "preferred short-term commercial route retaining GeoGebra Materials/Language Files under a negotiated GeoGebra License and Collaboration Agreement",
     "COMMERCIAL_B": "long-term independent-material route retaining eligible EUPL code while replacing GeoGebra Materials/Language Files and marks"
   },
@@ -129,7 +140,7 @@
       "source_code_obligation": "provide exact Giac commit and build scripts plus GMP 6.3.0 and MPFR 4.2.1 source access; preserve the exact prebuilt archive Git blobs and the official Jenkins/Gradle publication chain",
       "nc_compatible": true,
       "commercial_compatible": true,
-      "remaining_uncertainty": "the official Jenkins job does not pin the rolling MSYS2 CLANG64 package revisions; the exact DLL nevertheless joins to the official Maven artifact, SVN revision 70501 commit, publisher task, PE build time, embedded GMP/MPFR versions, exact prebuilt Git blobs and LLVM/MinGW runtime strings. Professional review should confirm the final corresponding-source delivery form; an upstream build attestation would strengthen but is not required for technical docket closure",
+      "remaining_uncertainty": "the official Jenkins job does not pin the rolling MSYS2 CLANG64 package revisions; the exact DLL nevertheless joins to the official Maven artifact, SVN revision 70501 commit, publisher task, PE build time, embedded GMP/MPFR versions, exact prebuilt Git blobs and LLVM/MinGW runtime strings. Professional review accepted the recorded corresponding-source delivery treatment for PROFILE NC; an upstream build attestation would only strengthen provenance",
       "disposition": "ALLOW_WITH_NOTICE",
       "resolution_class": "RESOLVED — RETAIN WITH GPL/SOURCE ACCESS",
       "required_packaging_action": "ship GPL/component/runtime notices and source-access record; retain JAR/DLL unchanged",
@@ -158,7 +169,7 @@
       "source_code_obligation": "make the exact official source JAR/commit available; preserve Oracle headers and identify Cloner.java as GeoGebra-authored EUPL source",
       "nc_compatible": true,
       "commercial_compatible": true,
-      "remaining_uncertainty": "Cloner.java has no file header; its EUPL treatment is a documented licensing interpretation of GeoGebra's official statement that its source code and individual software libraries may be redistributed under EUPL-1.2. Professional review may confirm that scope, but no binary/source identity remains unresolved",
+      "remaining_uncertainty": "Cloner.java has no file header; its EUPL treatment follows GeoGebra's official statement that its source code and individual software libraries may be redistributed under EUPL-1.2. Professional review accepted that treatment for D1; no binary/source identity remains unresolved",
       "disposition": "ALLOW_WITH_NOTICE",
       "resolution_class": "RESOLVED — RETAIN WITH COMPOSITE NOTICE",
       "required_packaging_action": "ship the four exact grants/notices and source-access identity; retain JAR unchanged",
@@ -186,7 +197,7 @@
       "source_code_obligation": "provide exact source commit, build.xml and JavaCC grammar/generated-source path under GPL-3.0",
       "nc_compatible": true,
       "commercial_compatible": false,
-      "remaining_uncertainty": "the project-level GPL-3.0 grant and source-level non-commercial banner are inconsistent for commercial use. They both permit the intended non-commercial profile when the GPL source/text duties are met, but commercial use requires licensor clarification or permission; this interpretation warrants professional review",
+      "remaining_uncertainty": "professional review accepted PROFILE NC. The project-level GPL-3.0 grant and source-level non-commercial banner remain inconsistent only for commercial use, which requires licensor clarification or permission",
       "disposition": "ALLOW_WITH_NOTICE_FOR_NC / HUMAN_PERMISSION_FOR_COMMERCIAL",
       "resolution_class": "RESOLVED FOR PROFILE NC — RETAIN WITH GPL/SOURCE ACCESS; HUMAN PERMISSION REQUIRED FOR COMMERCIAL",
       "required_packaging_action": "ship GPL/project notice and exact source access; retain JAR unchanged for PROFILE NC; do not claim commercial compatibility",
@@ -283,7 +294,7 @@
       "source_code_obligation": "MS-RL requires source for each distributed file containing WiX code; publish/link exact v5.0.2 source for embedded custom-action files",
       "nc_compatible": true,
       "commercial_compatible": true,
-      "remaining_uncertainty": "professional review should confirm the most practical source-delivery mechanism",
+      "remaining_uncertainty": "professional review accepted the recorded source-delivery treatment for PROFILE NC; retain the exact WiX source link/material with the package legal bundle",
       "disposition": "ALLOW_WITH_NOTICE",
       "resolution_class": "RESOLVED — NOTICE/TEXT REQUIRED",
       "required_packaging_action": "document build-only versus embedded boundary and add MS-RL/source access for MSI/EXE"
@@ -419,6 +430,11 @@
     "profile_nc_payload_blockers": 0,
     "sbom_unknown_versions_before": 52,
     "sbom_unknown_versions_candidate": 0,
-    "sbom_version_disposition": "resolved Gradle metadata is exported deterministically and joined to staged JAR bytes by SHA-256; project components use the exact source revision instead of a fabricated module version"
+    "sbom_version_disposition": "resolved Gradle metadata is exported deterministically and joined to staged JAR bytes by SHA-256; project components use the exact source revision instead of a fabricated module version",
+    "pre_g9b_d1_status": "PASS — AUTHOR APPROVED",
+    "profile_nc_status": "APPROVED",
+    "profile_commercial_status": "PENDING EXTERNAL TERMS / NOT AUTHORIZED",
+    "word_mark_status": "APPLICATION FILED / REGISTRATION PENDING",
+    "word_mark_evidence": "docs/licensing/trademark-registration/README.md"
   }
 }

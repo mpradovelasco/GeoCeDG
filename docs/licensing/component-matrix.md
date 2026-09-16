@@ -1,8 +1,8 @@
 # Licensing and asset component matrix
 
-Status: PRE-G9B-D1 payload-closure candidate; **not legal advice**
+Status: PRE-G9B-D1 **PASS — AUTHOR APPROVED**; **not legal advice**
 Baseline: `9b93256b7df401ff056c37b502d82df4d72b1522`
-Current disposition date: 2026-09-15
+Current disposition date: 2026-09-16
 
 ## Current PRE-G9B-D1 disposition
 
@@ -29,8 +29,11 @@ authoritative Gradle runtime graph and joins it to staged JARs by SHA-256.
 The complete binary is composite and cannot be labelled solely EUPL or
 globally Open Source/Free Software while GeoGebra NC Materials remain. PROFILE
 NC has no remaining exact-payload technical provenance blocker. It remains
-blocked from release pending final author/professional legal review. The
-residual review boundary is in `LICENSES/UNRESOLVED.md`.
+approved for the exact audited composition after professional review. The
+current `0.9.0` package remains an internal-evaluation artifact pending the
+separate P1/release materialization decision. Commercial OpenGeoProver and
+GeoGebra-Materials questions are indexed in `LICENSES/UNRESOLVED.md` and
+`geocedg_profile_commercial.md`.
 
 ## Historical baseline snapshot (2026-08-09)
 

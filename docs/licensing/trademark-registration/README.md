@@ -2,6 +2,12 @@
 
 This directory contains public repository evidence related to the Spanish trademark filing for **GeoCeDG**.
 
+Current legal-status description for repository use:
+
+`APPLICATION FILED — REGISTRATION PENDING`
+
+This status applies only to the denominative mark identified below.
+
 ## Filing evidence
 
 - **Authority:** Oficina Española de Patentes y Marcas (OEPM)
@@ -47,6 +53,6 @@ Do not replace the private original with this redacted copy: the redacted PDF is
 This evidence complements the existing GeoCeDG trademark documentation, in particular:
 
 - [`../trademark-policy.md`](../trademark-policy.md)
-- [`../trademark-registration-dossier-candidate.md`](../trademark-registration-dossier-candidate.md)
+- [`../trademark-registration-dossier-candidate.md`](../trademark-registration-dossier-candidate.md), preserved as the historical pre-filing planning dossier rather than current filing status
 
 If the registration is later granted, refused, opposed, withdrawn, renewed, or otherwise materially changes status, add dated evidence and update this README without rewriting the historical filing record.
