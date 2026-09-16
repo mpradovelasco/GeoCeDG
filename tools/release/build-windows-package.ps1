@@ -23,6 +23,8 @@ toolchain reported by the repository Gradle wrapper.
 param(
     [ValidateSet("AppImage", "Zip", "Msi", "Exe", "All")]
     [string]$Target = "AppImage",
+    [ValidateSet("INTERNAL", "NC", "COMMERCIAL")]
+    [string]$DistributionProfile,
     [switch]$SkipInstallDist,
     [string]$JdkHome
 )
@@ -52,7 +54,9 @@ $ComponentDispositionPath = Join-Path $RepositoryRoot `
     "geocedg\validation\pre-g9b-d1\component-disposition.json"
 $SourceAccessPath = Join-Path $RepositoryRoot `
     "geocedg\resources\source-access-manifest.json"
-$ExpectedMarker = "INTERNAL EVALUATION — NOT FOR REDISTRIBUTION"
+$InternalMarker = "INTERNAL EVALUATION — NOT FOR REDISTRIBUTION"
+# Resolved from the selected distribution profile once package.yml is parsed.
+$ExpectedMarker = $InternalMarker
 $ExpectedNativeExtension = "cedg"
 $ExpectedInternalMimeType = "application/x-geocedg-cedg"
 $ExpectedMimeBasis = "jdk25-jpackage-required-internal-unregistered"
@@ -284,17 +288,88 @@ try {
     # Packaging consumes the tracked, hash-pinned derivative. Regeneration is a
     # separate provenance operation bound to the exact runtime recorded in the
     # asset manifest; it is not a workstation packaging prerequisite.
+    Assert-Condition -Condition ($profile.schema_version -eq 1) `
+        -Message "Unsupported package profile schema version."
+    Assert-Condition -Condition ($profile.profile_id -eq "geocedg-windows-internal") `
+        -Message "Unexpected package profile identity."
+
+    # PRE-G9B-P1 distribution profile selection. The repository default stays
+    # INTERNAL; a profile is never inferred from the environment.
+    $requestedProfileId = if ([string]::IsNullOrWhiteSpace($DistributionProfile)) {
+        [string]$profile.distribution.default_profile
+    } else {
+        $DistributionProfile
+    }
+    Assert-Condition -Condition (
+        [string]$profile.distribution.default_profile -ceq "INTERNAL") `
+        -Message "The package profile default distribution must remain INTERNAL."
+    $selectedProfiles = @($profile.distribution.profiles |
+        Where-Object { [string]$_.id -ceq $requestedProfileId })
+    Assert-Condition -Condition ($selectedProfiles.Count -eq 1) `
+        -Message "Unknown distribution profile: $requestedProfileId"
+    $selected = $selectedProfiles[0]
+
+    # Fail closed on any profile that is not an approved redistributable or the
+    # internal-evaluation default. COMMERCIAL must name its pending terms.
+    if (-not [bool]$selected.redistributable -and
+            [string]$selected.id -cne "INTERNAL") {
+        $blocking = @($selected.blocking_terms) -join "; "
+        throw ("Distribution profile $($selected.id) is not authorized. " +
+            "Status: $($selected.status). Pending external terms: $blocking")
+    }
+    if ([bool]$selected.redistributable) {
+        Assert-Condition -Condition (
+            -not [string]::IsNullOrWhiteSpace([string]$selected.licensing_profile) -and
+            -not [string]::IsNullOrWhiteSpace([string]$selected.licensing_authority) -and
+            -not [string]::IsNullOrWhiteSpace([string]$selected.notice_file) -and
+            -not [string]::IsNullOrWhiteSpace(
+                [string]$selected.association_properties)) `
+            -Message "A redistributable profile must declare its legal authority and assets."
+    }
+
+    $ArtifactTag = [string]$selected.artifact_tag
+    Assert-Condition -Condition ($ArtifactTag -cmatch '^[a-z0-9]+$') `
+        -Message "The distribution profile must declare a simple artifact tag."
+    $ExpectedMarker = [string]$selected.marker
+    Assert-Condition -Condition (-not [string]::IsNullOrWhiteSpace($ExpectedMarker)) `
+        -Message "The distribution profile must declare a distribution marker."
+    if (-not [string]::IsNullOrWhiteSpace([string]$selected.notice_file)) {
+        $NoticePath = [IO.Path]::GetFullPath(
+            (Join-Path $RepositoryRoot ([string]$selected.notice_file)))
+    }
+    if (-not [string]::IsNullOrWhiteSpace(
+            [string]$selected.association_properties)) {
+        $AssociationPath = [IO.Path]::GetFullPath(
+            (Join-Path $RepositoryRoot ([string]$selected.association_properties)))
+    }
+    $SelectedAssociationDescription = if (
+            [string]::IsNullOrWhiteSpace([string]$selected.association_description)) {
+        $ExpectedAssociationDescription
+    } else {
+        [string]$selected.association_description
+    }
+    Assert-Condition -Condition (Test-Path -LiteralPath $NoticePath -PathType Leaf) `
+        -Message "The distribution notice for $($selected.id) is missing."
+    Assert-Condition -Condition (
+        Test-Path -LiteralPath $AssociationPath -PathType Leaf) `
+        -Message "The association properties for $($selected.id) are missing."
+    # A redistributable profile must not ship the internal-evaluation marker.
+    $noticeText = Get-Content -Raw -LiteralPath $NoticePath
+    if ([bool]$selected.redistributable) {
+        Assert-Condition -Condition (-not $noticeText.Contains($InternalMarker)) `
+            -Message "A redistributable notice must not carry the internal-evaluation marker."
+    } else {
+        Assert-Condition -Condition ($noticeText.Contains($ExpectedMarker)) `
+            -Message "The non-redistributable notice must carry its distribution marker."
+    }
+
     try {
         $association = Get-Content -Raw -LiteralPath $AssociationPath |
             ConvertFrom-StringData
     } catch {
         throw "File-association properties are invalid: $($_.Exception.Message)"
     }
-    Assert-Condition -Condition ($profile.schema_version -eq 1) `
-        -Message "Unsupported package profile schema version."
-    Assert-Condition -Condition ($profile.profile_id -eq "geocedg-windows-internal") `
-        -Message "Unexpected package profile identity."
-    Assert-Condition -Condition ($profile.distribution.marker -ceq $ExpectedMarker) `
+    Assert-Condition -Condition ($profile.distribution.marker -ceq $InternalMarker) `
         -Message "Package profile does not contain the required distribution marker."
     Assert-Condition -Condition (
         $profile.distribution.public_redistribution -eq
@@ -317,14 +392,15 @@ try {
         $association.Count -eq 3 -and
         $association["extension"] -ceq $ExpectedNativeExtension -and
         $association["mime-type"] -ceq $ExpectedInternalMimeType -and
-        $association["description"] -ceq $ExpectedAssociationDescription) `
-        -Message "jpackage association properties do not match the native profile."
+        $association["description"] -ceq $SelectedAssociationDescription) `
+        -Message "jpackage association properties do not match the selected profile."
     Assert-Condition -Condition (
         $association["extension"] -cne "ggb" -and
         $association["mime-type"] -cne $UpstreamGeoGebraMimeType) `
         -Message "GeoCeDG installers must not claim the .ggb extension or upstream MIME identity."
 
     Write-Host $ExpectedMarker
+    Write-Host "Distribution profile: $($selected.id) ($($selected.status))"
     Write-Host "Target: $Target"
 
     Write-Step "Desktop distribution input"
@@ -504,14 +580,15 @@ try {
     $appLauncher = Join-Path $appImage "$($profile.application.name).exe"
     Assert-Condition -Condition (Test-Path -LiteralPath $appLauncher -PathType Leaf) `
         -Message "jpackage did not create the GeoCeDG launcher."
+    $stagedNoticeName = [IO.Path]::GetFileName($NoticePath)
     Assert-Condition -Condition (Test-Path -LiteralPath (
-        Join-Path $appImage "app\INTERNAL_EVALUATION_ONLY.txt") -PathType Leaf) `
-        -Message "The app-image does not contain the internal-evaluation notice."
+        Join-Path $appImage "app\$stagedNoticeName") -PathType Leaf) `
+        -Message "The app-image does not contain the $($selected.id) distribution notice."
 
     $artifactFiles = [Collections.Generic.List[string]]::new()
     if ($Target -in @("Zip", "All")) {
         Write-Step "Normalized portable ZIP"
-        $zipName = "GeoCeDG-$($profile.application.version)-windows-x64-internal.zip"
+        $zipName = "GeoCeDG-$($profile.application.version)-windows-x64-$ArtifactTag.zip"
         $zipPath = Join-Path $ArtifactRoot $zipName
         New-NormalizedZip -SourceDirectory $appImage -DestinationPath $zipPath
         $artifactFiles.Add($zipPath)
@@ -547,7 +624,7 @@ try {
             $created = $after | Select-Object -First 1
             Assert-Condition -Condition ($null -ne $created) `
                 -Message "jpackage did not create a .$type installer."
-            $internalName = "GeoCeDG-$($profile.application.version)-windows-x64-internal.$type"
+            $internalName = "GeoCeDG-$($profile.application.version)-windows-x64-$ArtifactTag.$type"
             $internalPath = Join-Path $packageRoot $internalName
             Move-Item -LiteralPath $created.FullName -Destination $internalPath
             $artifactFiles.Add($internalPath)
@@ -863,7 +940,18 @@ try {
         target = $Target
         platform = "windows-x64"
         distribution_marker = $ExpectedMarker
-        public_redistribution = "BLOCKED PENDING LICENSE/ASSET APPROVAL"
+        distribution_profile = [ordered]@{
+            id = [string]$selected.id
+            status = [string]$selected.status
+            redistributable = [bool]$selected.redistributable
+            artifact_tag = $ArtifactTag
+            repository_default = [string]$profile.distribution.default_profile
+        }
+        public_redistribution = if ([bool]$selected.redistributable) {
+            [string]$selected.public_redistribution
+        } else {
+            "BLOCKED PENDING LICENSE/ASSET APPROVAL"
+        }
         application = [ordered]@{
             name = [string]$profile.application.name
             version = [string]$profile.application.version
@@ -912,7 +1000,13 @@ try {
             component_disposition = Get-FileEvidence `
                 -Path $ComponentDispositionPath -RelativeTo $RepositoryRoot
             unresolved_payload_count = 0
-            public_profile = "PROFILE NC"
+            public_profile = if ([string]::IsNullOrWhiteSpace(
+                    [string]$selected.licensing_profile)) {
+                "PROFILE NC"
+            } else {
+                [string]$selected.licensing_profile
+            }
+            licensing_authority = [string]$selected.licensing_authority
             readiness = "TECHNICALLY/LICENSING-DOCKET READY — FINAL AUTHOR/LEGAL REVIEW REQUIRED"
         }
         component_identity = [ordered]@{

@@ -12,7 +12,7 @@
       {"path":"geocedg/validation/pre-g9b-d1/component-audit.json","sha256":"aaf35691de27cab94c6b413bfce8221426eca7ddc49a01f9ecc3b9a94bc2edb9"},
       {"path":"geocedg/validation/pre-g9b-d1/component-disposition.json","sha256":"794923825afa1e5f3f1cbaa0d3ccd8a0d819ab948368adc6154d191069ef2355"},
       {"path":"LICENSES/manifest.json","sha256":"8c115369321fbb5d1a7e087899ac77266b38b949e1ffe0672b7d4011f63c5614"},
-      {"path":"tools/release/build-windows-package.ps1","sha256":"95695c090461c22f5e1efc7171df13aea61bfb863a9cdc13d14096dcff3bdecf"},
+      {"path":"tools/release/build-windows-package.ps1","sha256":"029c81f4dfb63998493a83b7019da3c57edead9810ea68383495c62b70997dbe"},
       {"path":"tools/release/export-runtime-components.init.gradle","sha256":"0bd0e7136357afd89289b9444c790d0e0b168c009e92b1ee8800095010b491e9"}
     ]},
     {"contract_id":"workspace.profile-authority","semantic_domain":"PRODUCT","inputs":[

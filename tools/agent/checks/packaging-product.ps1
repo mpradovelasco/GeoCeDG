@@ -115,7 +115,8 @@ function Invoke-NativeCapture {
     } finally { $process.Dispose() }
 }
 function Test-MsiNativeAssociation {
-    param([string]$MsiPath, [string]$InspectionRoot)
+    param([string]$MsiPath, [string]$InspectionRoot,
+        [string]$ExpectedDescription = 'GeoCeDG document (internal evaluation)')
     $wix = Get-Command wix -CommandType Application -ErrorAction SilentlyContinue |
         Select-Object -First 1
     if ($null -eq $wix) {
@@ -169,7 +170,7 @@ function Test-MsiNativeAssociation {
         $progId = $extension.ParentNode
         $details.owned_progid = $progId.LocalName -ceq 'ProgId' -and
             -not [string]::IsNullOrWhiteSpace($progId.GetAttribute('Id')) -and
-            $progId.GetAttribute('Description') -ceq 'GeoCeDG document (internal evaluation)' -and
+            $progId.GetAttribute('Description') -ceq $ExpectedDescription -and
             $progId.GetAttribute('Id') -notmatch '(?i)geogebra'
         $verbs = @($extension.SelectNodes("./*[local-name()='Verb' and @Id='open']"))
         $details.open_verb_count = $verbs.Count
@@ -231,8 +232,7 @@ function Test-MsiNativeAssociation {
                 $_.GetAttribute('Root') -ceq 'HKCR' -and
                 $_.GetAttribute('Key') -ceq $progIdValue -and
                 [string]::IsNullOrEmpty($_.GetAttribute('Name')) -and
-                $_.GetAttribute('Value') -ceq
-                    'GeoCeDG document (internal evaluation)'
+                $_.GetAttribute('Value') -ceq $ExpectedDescription
             })
             $details.owned_progid =
                 -not [string]::IsNullOrWhiteSpace($progIdValue) -and
@@ -488,9 +488,31 @@ try {
 
     if ($RequireArtifacts) {
         $appImage = Join-Path $ArtifactRoot 'app-image/GeoCeDG'
+        # PRE-G9B-P1: the built distribution profile decides the artifact tag, the
+        # shipped notice and the expected marker. It is read from the generated
+        # manifest rather than assumed, and INTERNAL remains the default.
+        $builtManifestPath = Join-Path $ArtifactRoot 'build-manifest.json'
+        $builtTag = 'internal'
+        $builtNotice = 'INTERNAL_EVALUATION_ONLY.txt'
+        $builtMarker = $marker
+        $builtAssociationDescription = 'GeoCeDG document (internal evaluation)'
+        $expectedRedistribution = 'BLOCKED PENDING LICENSE/ASSET APPROVAL'
+        if (Test-Path -LiteralPath $builtManifestPath -PathType Leaf) {
+            $builtManifest = Read-JsonDocument $builtManifestPath
+            if ($builtManifest.PSObject.Properties.Name -contains 'distribution_profile') {
+                $builtTag = [string]$builtManifest.distribution_profile.artifact_tag
+                $builtMarker = [string]$builtManifest.distribution_marker
+                if ([string]$builtManifest.distribution_profile.id -cne 'INTERNAL') {
+                    $builtNotice = 'NC_DISTRIBUTION_NOTICE.txt'
+                    $builtAssociationDescription = 'GeoCeDG document'
+                    $expectedRedistribution =
+                        [string]$builtManifest.public_redistribution
+                }
+            }
+        }
         $evidence = @(
             (Join-Path $appImage 'GeoCeDG.exe'),
-            (Join-Path $appImage 'app/INTERNAL_EVALUATION_ONLY.txt'),
+            (Join-Path $appImage "app/$builtNotice"),
             (Join-Path $ArtifactRoot 'geocedg-windows.cdx.json'),
             (Join-Path $ArtifactRoot 'build-manifest.json'),
             (Join-Path $ArtifactRoot 'resolved-runtime-components.json'),
@@ -502,17 +524,17 @@ try {
         Add-Contract 'packaging.artifacts-present' ($missingEvidence.Count -eq 0) `
             $evidence $missingEvidence 'Required package evidence is missing.'
         if ($missingEvidence.Count -eq 0) {
-            $zip = @(Get-ChildItem $ArtifactRoot -File -Filter 'GeoCeDG-*-internal.zip' -ErrorAction SilentlyContinue)
+            $zip = @(Get-ChildItem $ArtifactRoot -File -Filter "GeoCeDG-*-$builtTag.zip" -ErrorAction SilentlyContinue)
             $packages = Join-Path $ArtifactRoot 'packages'
-            $msi = @(Get-ChildItem $packages -File -Filter 'GeoCeDG-*-internal.msi' -ErrorAction SilentlyContinue)
-            $exe = @(Get-ChildItem $packages -File -Filter 'GeoCeDG-*-internal.exe' -ErrorAction SilentlyContinue)
+            $msi = @(Get-ChildItem $packages -File -Filter "GeoCeDG-*-$builtTag.msi" -ErrorAction SilentlyContinue)
+            $exe = @(Get-ChildItem $packages -File -Filter "GeoCeDG-*-$builtTag.exe" -ErrorAction SilentlyContinue)
             Add-Contract 'packaging.artifact-set' ($zip.Count -eq 1 -and $msi.Count -eq 1 -and
                 $exe.Count -eq 1) 'one ZIP, MSI and EXE' `
                 ([ordered]@{ zip = $zip.Count; msi = $msi.Count; exe = $exe.Count }) `
                 'Generated package set differs.'
             Add-Contract 'packaging.artifact-marker' `
-                ([IO.File]::ReadAllText($evidence[1]).Contains($marker)) $marker $evidence[1] `
-                'Generated app-image marker differs.'
+                ([IO.File]::ReadAllText($evidence[1]).Contains($builtMarker)) `
+                $builtMarker $evidence[1] 'Generated app-image marker differs.'
             $forbidden = @(Get-ChildItem $appImage -Recurse -File | Where-Object {
                 $_.Extension -in @('.pdf', '.ggb', '.ggt') -or $_.Name -eq 'Templatev7.ggb' -or
                 $_.Name -match '(?i)-natives-(linux|macosx)-'
@@ -597,8 +619,8 @@ try {
                 'Resolved Gradle identity evidence differs.'
             $manifestValid = $manifest.schema_version -eq 2 -and
                 $manifest.target -eq 'All' -and
-                $manifest.distribution_marker -ceq $marker -and
-                $manifest.public_redistribution -eq 'BLOCKED PENDING LICENSE/ASSET APPROVAL' -and
+                $manifest.distribution_marker -ceq $builtMarker -and
+                $manifest.public_redistribution -eq $expectedRedistribution -and
                 $manifest.application.icon.path -ceq $iconPath -and
                 $manifest.application.icon.sha256 -ceq $iconHash -and
                 $manifest.file_association.enabled_for_target -eq $true -and
@@ -626,7 +648,8 @@ try {
             if ($msi.Count -eq 1) {
                 $msiAssociation = Test-MsiNativeAssociation -MsiPath $msi[0].FullName `
                     -InspectionRoot (Join-Path (Split-Path -Parent `
-                        ([IO.Path]::GetFullPath($ResultPath))) 'msi-inspection')
+                        ([IO.Path]::GetFullPath($ResultPath))) 'msi-inspection') `
+                    -ExpectedDescription $builtAssociationDescription
                 if ($msiAssociation.state -ceq 'EVIDENCE_UNTRUSTED') {
                     throw $msiAssociation.cause
                 }
