@@ -39,8 +39,16 @@ retention. The renderer-font bundle includes the AMSFonts OFL 1.1 and BaKoMa
 notices for the three newly traced `jlm_*` derivatives.
 
 Technical/licensing-docket closure is not release approval. Final author and
-professional legal review remain required. Accordingly:
+professional legal review remain required.
 
-INTERNAL EVALUATION — NOT FOR REDISTRIBUTION
+## Distribution condition
+
+This notice is profile-neutral.The distribution condition of a
+particular build is profile-specific and is stated by the distribution notice
+packaged with it: INTERNAL_EVALUATION_ONLY.txt for PROFILE INTERNAL, which is
+an internal evaluation artifact and must not be redistributed, and
+NC_DISTRIBUTION_NOTICE.txt for PROFILE NC, which may be redistributed only
+under its approved non-commercial terms. Commercial distribution is not
+authorized.
 
 This notice is not legal advice and is not a public-release authorization.

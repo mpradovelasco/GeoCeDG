@@ -17,4 +17,10 @@ not authorize release. Final author and professional legal review remain
 required, and OpenGeoProver still needs express clarification or permission
 before a commercial profile can retain it.
 
-INTERNAL EVALUATION — NOT FOR REDISTRIBUTION
+This bundle is profile-neutral.The distribution condition of a
+particular build is profile-specific and is stated by the distribution notice
+packaged with it: INTERNAL_EVALUATION_ONLY.txt for PROFILE INTERNAL, which is
+an internal evaluation artifact and must not be redistributed, and
+NC_DISTRIBUTION_NOTICE.txt for PROFILE NC, which may be redistributed only
+under its approved non-commercial terms. Commercial distribution is not
+authorized.

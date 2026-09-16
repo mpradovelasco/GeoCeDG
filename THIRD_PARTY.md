@@ -77,4 +77,12 @@ use analysis, Gradle resolution, compilation, install distribution and JDK 25
 linkage evidence showed that the platform `jdk.jsobject` module supplies the
 API and the staged JAR was redundant.
 
-INTERNAL EVALUATION — NOT FOR REDISTRIBUTION
+## Distribution condition
+
+This component record is profile-neutral.The distribution condition of a
+particular build is profile-specific and is stated by the distribution notice
+packaged with it: INTERNAL_EVALUATION_ONLY.txt for PROFILE INTERNAL, which is
+an internal evaluation artifact and must not be redistributed, and
+NC_DISTRIBUTION_NOTICE.txt for PROFILE NC, which may be redistributed only
+under its approved non-commercial terms. Commercial distribution is not
+authorized.

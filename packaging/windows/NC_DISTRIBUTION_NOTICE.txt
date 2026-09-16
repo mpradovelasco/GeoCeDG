@@ -25,3 +25,11 @@ clarification or permission from the OpenGeoProver rightsholders.
 Individual component licenses, notices, corresponding-source and source-access
 records, and the component SBOM are included under app/legal. Read them before
 copying, redistributing or building upon this artifact.
+
+This notice states the distribution condition of this copy. The general legal
+documents under app/legal are profile-neutral and defer to it. The dated
+PRE-G9B-D1 evidence records under app/legal (component-audit.json,
+source-access-manifest.json and assets-manifest.yml) carry the distribution
+marker of their own evidence date, which was before PROFILE NC was
+materialized as a package; that historical marker is preserved deliberately as
+evidence and does not restrict this copy.

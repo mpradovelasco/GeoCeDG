@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "generated_from": "tracked exact texts; hashes verified 2026-09-15",
-  "distribution_marker": "INTERNAL EVALUATION — NOT FOR REDISTRIBUTION",
+  "generated_from": "tracked exact texts; hashes verified 2026-09-15; LICENSES/README.md re-verified 2026-09-17",
+  "distribution_marker": "PROFILE-SPECIFIC — SEE THE DISTRIBUTION NOTICE PACKAGED WITH THE BUILD",
   "hash_algorithm": "SHA-256",
   "entries": [
     {"path":"LICENSES/Apache-2.0.txt","sha256":"cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30","primary_source":"https://www.apache.org/licenses/LICENSE-2.0.txt"},
@@ -42,7 +42,7 @@
     {"path":"LICENSES/components/tokenproducer-3.3-LICENSE.txt","sha256":"b66d0a175db08b501c828f071d8d65839f94ee928aee9b0b1b97e368dcc5b124","primary_source":"exact tokenproducer-3.3.jar license"},
     {"path":"LICENSES/components/xml-dtd-4.3-LICENSE.txt","sha256":"3ef2b2d9bd59a1b73f074a7351216130ce75cb3c5c2ac8fd6e5e10623081a72d","primary_source":"exact xml-dtd-4.3.jar!/META-INF/LICENSE.txt"},
     {"path":"LICENSES/components/xml-dtd-4.3-NOTICE.txt","sha256":"85db425fcead36bab66f301b45f0cad9789b54af0dfe0c733e0fad2924b87d3f","primary_source":"exact xml-dtd-4.3.jar!/META-INF/NOTICE.txt"},
-    {"path":"LICENSES/README.md","sha256":"2d3a1f15ebb5d09d485f4db0efc85acb53098e6ba3260bffdf7115b672d6e11b","primary_source":"repository-authored bundle guide"},
+    {"path":"LICENSES/README.md","sha256":"87831bb2e59225df4615e306307ac00a9728801aa3fb3ba20128563b484fbae3","primary_source":"repository-authored bundle guide"},
     {"path":"LICENSES/UNRESOLVED.md","sha256":"ab05b05d126047ab2333be91f3b28f56c6bb1a09c25d88a9600449e38f2d141f","primary_source":"PRE-G9B-D1 exact-byte evidence register"}
   ]
 }

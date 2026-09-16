@@ -56,11 +56,20 @@ Software while non-commercial GeoGebra Materials/Language Files remain in the
 payload. PROFILE NC is the approved deployability profile for the exact audited
 composition and remains non-commercial only.
 
-INTERNAL EVALUATION — NOT FOR REDISTRIBUTION
+7. Distribution condition of this copy
 
-PRE-G9B-D1 is PASS — AUTHOR APPROVED, but this does not retitle or publish the
-current `1.0.0` internal-evaluation package. PRE-G9B-P0 fixed the canonical
-product version at `1.0.0` without changing the package or distribution state;
-public package-state materialization belongs to a later explicit step. Commercial distribution is
-not authorized and remains dependent on external terms recorded in
+This document states the licensing scope of the composition. It is
+profile-neutral and does not state the distribution condition of any particular
+build. The distribution condition of a particular build is profile-specific
+and is stated by the distribution notice packaged with it:
+INTERNAL_EVALUATION_ONLY.txt for PROFILE INTERNAL, which is an internal
+evaluation artifact and must not be redistributed, and
+NC_DISTRIBUTION_NOTICE.txt for PROFILE NC, which may be redistributed only
+under its approved non-commercial terms. Commercial distribution is not
+authorized and remains dependent on external terms recorded in
 docs/licensing/geocedg_profile_commercial.md.
+
+PRE-G9B-D1 is PASS — AUTHOR APPROVED and approved PROFILE NC as the
+deployability profile of the exact audited composition. PRE-G9B-P0 fixed the
+canonical product version at `1.0.0`. Generating a package does not itself
+publish or release it.
