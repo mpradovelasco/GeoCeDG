@@ -479,9 +479,9 @@
     {"id": "cedg.frontend.profile", "source": "geocedg/features/stable.yml", "enabled_by_default": true},
     {"id": "cedg.frontend.classic-diagnostic", "source": "geocedg/features/stable.yml", "enabled_by_default": true},
     {"id": "cedg.export.dxf.2d", "source": "geocedg/features/experimental.yml", "enabled_by_default": true},
-    {"id": "cedg.export.dxf.extended", "source": "geocedg/features/experimental.yml", "enabled_by_default": false},
+    {"id": "cedg.export.dxf.extended", "source": "geocedg/features/experimental.yml", "enabled_by_default": true},
     {"id": "cedg.laboratory.legacy", "source": "geocedg/features/experimental.yml", "enabled_by_default": false},
-    {"id": "cedg.locus.v2", "source": "geocedg/features/experimental.yml", "enabled_by_default": false}
+    {"id": "cedg.locus.v2", "source": "geocedg/features/experimental.yml", "enabled_by_default": true}
   ],
   "deferred_inventory": [
     {

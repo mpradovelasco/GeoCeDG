@@ -430,11 +430,23 @@ public final class AppGeoCeDG extends App3D {
 						.isExtendedDxfEnabled());
 	}
 
+	/**
+	 * Resolves the runtime feature policy for one GeoCeDG launch.
+	 *
+	 * <p>PRE-G9B-P1 promoted both surfaces to product defaults. The historical
+	 * arguments remain accepted compatibility syntax and keep working as explicit
+	 * diagnostic overrides in both directions, so {@code --enableLocusV2=false}
+	 * still starts GeoCeDG without the Locus V2 creation surface. Neither argument
+	 * changes durable identity, serialization or geometric meaning.
+	 */
 	private static AppConfigGeoCeDG createConfig(CommandLineArguments args) {
-		return new AppConfigGeoCeDG(args != null && args.getBooleanValue(
-				RuntimeFeatureService.LOCUS_V2_ARGUMENT, false),
-				args != null && args.getBooleanValue(
-						RuntimeFeatureService.EXTENDED_DXF_ARGUMENT, false));
+		return new AppConfigGeoCeDG(
+				args == null ? AppConfigGeoCeDG.DEFAULT_LOCUS_V2_CREATION_ENABLED
+						: args.getBooleanValue(RuntimeFeatureService.LOCUS_V2_ARGUMENT,
+								AppConfigGeoCeDG.DEFAULT_LOCUS_V2_CREATION_ENABLED),
+				args == null ? AppConfigGeoCeDG.DEFAULT_EXTENDED_DXF_ENABLED
+						: args.getBooleanValue(RuntimeFeatureService.EXTENDED_DXF_ARGUMENT,
+								AppConfigGeoCeDG.DEFAULT_EXTENDED_DXF_ENABLED));
 	}
 
 	private void bindFeatureService(AppConfigGeoCeDG config) {

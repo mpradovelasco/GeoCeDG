@@ -390,7 +390,7 @@ class G9U0R5NativeArchivePersistenceTest {
 		assertTrue(gui(source).saveAsTo(nativeDocument.toFile()));
 
 		assertPreservesWithoutCreation(nativeDocument, temporaryDirectory,
-				"feature-off", AppConfigGeoCeDG::new);
+				"feature-off", () -> new AppConfigGeoCeDG(false));
 		assertPreservesWithoutCreation(nativeDocument, temporaryDirectory,
 				"classic", AppConfigDefault::new);
 	}

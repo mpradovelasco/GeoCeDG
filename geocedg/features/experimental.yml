@@ -16,7 +16,7 @@
       "id": "cedg.export.dxf.extended",
       "maturity": "experimental",
       "specification": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md",
-      "enabled_by_default": false,
+      "enabled_by_default": true,
       "depends_on": [
         "cedg.export.dxf.2d"
       ]
@@ -35,7 +35,7 @@
       "id": "cedg.locus.v2",
       "maturity": "experimental",
       "specification": "geocedg/specs/locus/locus-v2-public-surface.md",
-      "enabled_by_default": false,
+      "enabled_by_default": true,
       "depends_on": [
         "cedg.frontend.profile"
       ]

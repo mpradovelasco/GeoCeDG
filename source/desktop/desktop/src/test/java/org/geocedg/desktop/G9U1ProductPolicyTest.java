@@ -131,12 +131,28 @@ class G9U1ProductPolicyTest {
 	@Test
 	void featureDisabledHelpCannotAdvertiseBlockedSemanticCommands() {
 		G9U1TestApp.create();
+		// PRE-G9B-P1: the surface is a product default, so "disabled" must be explicit.
 		AppGeoCeDG disabled = new AppGeoCeDG(new CommandLineArguments(
-				new String[] {"--silent"}), new javax.swing.JPanel());
+				new String[] {"--silent", "--enableLocusV2=false"}),
+				new javax.swing.JPanel());
 		G9U1TestApp.withoutWindowDispatcher(disabled);
 		assertNull(disabled.getKernel().getAlgebraProcessor().getSyntax(
 				disabled.getLocalization().getCommandSyntax(), "SplineV2", disabled.getSettings()));
 		assertNotNull(disabled.getKernel().getAlgebraProcessor().getSyntax(
 				disabled.getLocalization().getCommandSyntax(), "Line", disabled.getSettings()));
+	}
+
+	@Test
+	void promotedDefaultHelpAdvertisesSemanticCommandsWithoutAnyArgument() {
+		G9U1TestApp.create();
+		AppGeoCeDG promoted = new AppGeoCeDG(new CommandLineArguments(
+				new String[] {"--silent"}), new javax.swing.JPanel());
+		G9U1TestApp.withoutWindowDispatcher(promoted);
+		assertNotNull(promoted.getKernel().getAlgebraProcessor().getSyntax(
+				promoted.getLocalization().getCommandSyntax(), "SplineV2",
+				promoted.getSettings()));
+		assertNotNull(promoted.getKernel().getAlgebraProcessor().getSyntax(
+				promoted.getLocalization().getCommandSyntax(), "Line",
+				promoted.getSettings()));
 	}
 }

@@ -21,18 +21,34 @@ public final class AppConfigGeoCeDG extends AppConfigDefault {
 	public static final String APPLICATION_NAME = "GeoCeDG";
 	/** Preferences key used by the profile contract. */
 	public static final String PREFERENCES_KEY = "geocedg";
+
+	/**
+	 * PRE-G9B-P1 product default: the author-approved Locus V2/SplineV2 public
+	 * construction surface is normal GeoCeDG behavior. Promotion changes default
+	 * exposure only; kernel semantics, identity and persistence are unchanged, and
+	 * Classic never reaches this profile.
+	 */
+	public static final boolean DEFAULT_LOCUS_V2_CREATION_ENABLED = true;
+	/**
+	 * PRE-G9B-P1 product default: the author-approved G9X1 extended DXF export is
+	 * normal GeoCeDG behavior. This decision is deliberately independent of
+	 * {@link #DEFAULT_LOCUS_V2_CREATION_ENABLED}; neither implies the other.
+	 */
+	public static final boolean DEFAULT_EXTENDED_DXF_ENABLED = true;
+
 	private final RuntimeFeatureService runtimeFeatureService;
 
-	/** Creates the default-off GeoCeDG profile. */
+	/** Creates the GeoCeDG profile with both promoted product defaults. */
 	public AppConfigGeoCeDG() {
-		this(false);
+		this(DEFAULT_LOCUS_V2_CREATION_ENABLED, DEFAULT_EXTENDED_DXF_ENABLED);
 	}
 
 	/**
-	 * @param locusV2CreationEnabled explicit experimental-surface opt-in
+	 * @param locusV2CreationEnabled explicit Locus V2 creation policy; the extended
+	 *        DXF policy keeps its independent product default
 	 */
 	public AppConfigGeoCeDG(boolean locusV2CreationEnabled) {
-		this(locusV2CreationEnabled, false);
+		this(locusV2CreationEnabled, DEFAULT_EXTENDED_DXF_ENABLED);
 	}
 
 	/**

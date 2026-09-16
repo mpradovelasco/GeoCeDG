@@ -30,22 +30,48 @@ class AppConfigGeoCeDGTest {
 	}
 
 	@Test
-	void gatesOnlyDedicatedLocusV2CommandsByDefault() {
+	void promotesDedicatedLocusV2CommandsByDefault() {
 		CommandFilter defaultFilter = config.createCommandFilter();
 		assertThat(defaultFilter.isCommandAllowed(Commands.Point), equalTo(true));
 		assertThat(defaultFilter.isCommandAllowed(Commands.Locus), equalTo(true));
 		assertThat(defaultFilter.isCommandAllowed(Commands.Length), equalTo(true));
 		assertThat(defaultFilter.isCommandAllowed(Commands.Intersect), equalTo(true));
-		assertThat(defaultFilter.isCommandAllowed(Commands.LocusV2),
-				equalTo(false));
+		// PRE-G9B-P1 promoted the approved public surface to a product default.
+		assertThat(defaultFilter.isCommandAllowed(Commands.LocusV2), equalTo(true));
 		assertThat(defaultFilter.isCommandAllowed(Commands.LocusLength),
-				equalTo(false));
+				equalTo(true));
+		assertThat(defaultFilter.isCommandAllowed(Commands.SplineV2), equalTo(true));
+	}
 
-		CommandFilter enabledFilter = new AppConfigGeoCeDG(true)
+	@Test
+	void retainsExplicitDiagnosticOverrideThatDisablesCreation() {
+		CommandFilter disabledFilter = new AppConfigGeoCeDG(false)
 				.createCommandFilter();
-		assertThat(enabledFilter.isCommandAllowed(Commands.LocusV2),
+		assertThat(disabledFilter.isCommandAllowed(Commands.LocusV2), equalTo(false));
+		assertThat(disabledFilter.isCommandAllowed(Commands.LocusLength),
+				equalTo(false));
+		assertThat(disabledFilter.isCommandAllowed(Commands.SplineV2), equalTo(false));
+		// Ordinary upstream commands are never gated by the product default.
+		assertThat(disabledFilter.isCommandAllowed(Commands.Point), equalTo(true));
+		assertThat(disabledFilter.isCommandAllowed(Commands.Locus), equalTo(true));
+	}
+
+	@Test
+	void promotesLocusV2AndExtendedDxfIndependently() {
+		assertThat(AppConfigGeoCeDG.DEFAULT_LOCUS_V2_CREATION_ENABLED, equalTo(true));
+		assertThat(AppConfigGeoCeDG.DEFAULT_EXTENDED_DXF_ENABLED, equalTo(true));
+		assertThat(config.getRuntimeFeatureService().isLocusV2CreationEnabled(),
 				equalTo(true));
-		assertThat(enabledFilter.isCommandAllowed(Commands.LocusLength),
+		assertThat(config.getRuntimeFeatureService().isExtendedDxfEnabled(),
 				equalTo(true));
+		// Neither default implies the other: all four combinations stay expressible.
+		assertThat(new AppConfigGeoCeDG(false, true).getRuntimeFeatureService()
+				.isLocusV2CreationEnabled(), equalTo(false));
+		assertThat(new AppConfigGeoCeDG(false, true).getRuntimeFeatureService()
+				.isExtendedDxfEnabled(), equalTo(true));
+		assertThat(new AppConfigGeoCeDG(true, false).getRuntimeFeatureService()
+				.isLocusV2CreationEnabled(), equalTo(true));
+		assertThat(new AppConfigGeoCeDG(true, false).getRuntimeFeatureService()
+				.isExtendedDxfEnabled(), equalTo(false));
 	}
 }

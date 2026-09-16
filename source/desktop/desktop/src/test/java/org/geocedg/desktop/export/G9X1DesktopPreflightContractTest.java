@@ -52,12 +52,16 @@ class G9X1DesktopPreflightContractTest extends BaseUnitTest {
 		assertEquals(List.of("preflight", "destination"), events);
 		assertEquals(path, destination.getDxfPath());
 		assertFalse(destination.isReplaceExisting());
-		assertFalse(DxfExportPreflightPresentation.isExtendedDxfEnabled(
+		// PRE-G9B-P1 promoted G9X1 extended DXF to a GeoCeDG product default, kept
+		// independent of the Locus V2 decision and still explicitly overridable.
+		assertTrue(DxfExportPreflightPresentation.isExtendedDxfEnabled(
 				new AppConfigGeoCeDG()));
-		assertFalse(DxfExportPreflightPresentation.isExtendedDxfEnabled(
+		assertTrue(DxfExportPreflightPresentation.isExtendedDxfEnabled(
 				new AppConfigGeoCeDG(true)));
 		assertTrue(DxfExportPreflightPresentation.isExtendedDxfEnabled(
 				new AppConfigGeoCeDG(false, true)));
+		assertFalse(DxfExportPreflightPresentation.isExtendedDxfEnabled(
+				new AppConfigGeoCeDG(true, false)));
 	}
 
 	// X1-S02

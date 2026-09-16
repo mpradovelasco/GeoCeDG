@@ -39,10 +39,20 @@ class G9U0RuntimeFeatureTest {
 	}
 
 	@Test
-	void f02DefaultProfileKeepsExperimentalCreationOff() {
+	void f02DefaultProfileEnablesPromotedCreation() {
+		// PRE-G9B-P1 promoted the approved public surface to a GeoCeDG product default.
 		AppConfigGeoCeDG config = new AppConfigGeoCeDG();
-		assertFalse(config.getRuntimeFeatureService()
-				.isLocusV2CreationEnabled());
+		assertTrue(config.getRuntimeFeatureService().isLocusV2CreationEnabled());
+		assertTrue(config.createCommandFilter().isCommandAllowed(Commands.LocusV2));
+		assertTrue(config.createCommandFilter()
+				.isCommandAllowed(Commands.LocusLength));
+		assertTrue(config.createCommandFilter().isCommandAllowed(Commands.Locus));
+	}
+
+	@Test
+	void f02bExplicitOverrideStillDisablesCreation() {
+		AppConfigGeoCeDG config = new AppConfigGeoCeDG(false);
+		assertFalse(config.getRuntimeFeatureService().isLocusV2CreationEnabled());
 		assertFalse(config.createCommandFilter().isCommandAllowed(Commands.LocusV2));
 		assertFalse(config.createCommandFilter()
 				.isCommandAllowed(Commands.LocusLength));

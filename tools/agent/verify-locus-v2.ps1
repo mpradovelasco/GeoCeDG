@@ -477,12 +477,16 @@ try {
     } else {
         "geocedg/specs/locus/locus-v2-semantics.md"
     }
+    # PRE-G9B-P1 promoted the author-approved public surface to a GeoCeDG product
+    # default. The feature keeps its experimental maturity classification and its
+    # specification; only default exposure changed. The frozen G6R evidence contract
+    # asserted above still records the historical default-off state and is untouched.
     Assert-Condition -Condition ($locusFeature.Count -eq 1 -and
             $locusFeature[0].maturity -eq "experimental" -and
-            -not $locusFeature[0].enabled_by_default -and
+            $locusFeature[0].enabled_by_default -and
             $locusFeature[0].specification -eq
                 $expectedLocusSpecification) `
-        -Message "cedg.locus.v2 must remain experimental and disabled by default."
+        -Message "cedg.locus.v2 must stay experimental-maturity and default-enabled."
 
     $report = Get-Content -Raw -LiteralPath (Join-Path $RepositoryRoot `
         "docs\validation\g6a_locus_v2_characterization_report.md")

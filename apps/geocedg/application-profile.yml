@@ -2923,7 +2923,7 @@
     {
       "id": "cedg.export.dxf.extended",
       "source": "geocedg/features/experimental.yml",
-      "enabled_by_default": false
+      "enabled_by_default": true
     },
     {
       "id": "cedg.laboratory.legacy",
@@ -2933,7 +2933,7 @@
     {
       "id": "cedg.locus.v2",
       "source": "geocedg/features/experimental.yml",
-      "enabled_by_default": false
+      "enabled_by_default": true
     }
   ],
   "deferred_inventory": [

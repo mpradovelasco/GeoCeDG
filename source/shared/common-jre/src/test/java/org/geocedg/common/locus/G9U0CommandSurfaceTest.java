@@ -44,9 +44,18 @@ class G9U0CommandSurfaceTest extends G9U0PublicSurfaceTestBase {
 
 	@Test
 	void c03FeatureOffAlgebraCommandIsFiltered() {
-		CommandFilter filter = new AppConfigGeoCeDG().createCommandFilter();
+		// PRE-G9B-P1: the product default is now on, so feature-off must be explicit.
+		CommandFilter filter = new AppConfigGeoCeDG(false).createCommandFilter();
 		assertFalse(filter.isCommandAllowed(Commands.LocusV2));
 		assertFalse(filter.isCommandAllowed(Commands.LocusLength));
+		assertTrue(filter.isCommandAllowed(Commands.Intersect));
+	}
+
+	@Test
+	void c03bPromotedDefaultExposesAlgebraCommand() {
+		CommandFilter filter = new AppConfigGeoCeDG().createCommandFilter();
+		assertTrue(filter.isCommandAllowed(Commands.LocusV2));
+		assertTrue(filter.isCommandAllowed(Commands.LocusLength));
 		assertTrue(filter.isCommandAllowed(Commands.Intersect));
 	}
 
