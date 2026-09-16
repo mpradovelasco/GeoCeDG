@@ -43,6 +43,37 @@ misma fila, centrado, insets y escalado de la barra nativa, sin compensación de
 píxeles. D1, P1, G9B/G9C/G9U2, más G12 y G10 productivo permanecen fuera de
 alcance y no autorizados.
 
+Estado PRE-G9B-P1: **IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**;
+`selfApproved=false`. La superficie pública **Locus V2 / SplineV2** y la
+**exportación DXF extendida (G9X1)** pasan a ser comportamiento normal de
+GeoCeDG: ya no hace falta ningún argumento para crear objetos Locus V2 o
+SplineV2, ni para usar el flujo de exportación extendida. Las dos decisiones son
+independientes entre sí.
+
+Los argumentos históricos `--enableLocusV2` y `--enableExtendedDxf` se conservan
+y ahora funcionan en ambos sentidos: si no se indican se aplica el valor por
+defecto del producto, y `--enableLocusV2=false` sigue arrancando GeoCeDG sin la
+superficie de creación Locus V2. Ningún argumento cambia la identidad durable, la
+serialización ni el significado geométrico.
+
+La promoción cambia solo la exposición por defecto. El kernel, el DAG, la
+identidad, la persistencia, las métricas, las intersecciones y el contrato G9X1
+no cambian. Los documentos históricos siguen reconstruyéndose igual que antes:
+la política de creación y la reconstrucción son contratos distintos. `.cedg`
+sigue siendo el documento nativo y `.ggb` sigue siendo formato de entrada por
+compatibilidad. Classic conserva sus valores upstream y no recibe esta política.
+
+El resto de capacidades experimentales siguen cerradas: `cedg.laboratory.legacy`,
+`cedg.spatial.semantics` y el workspace `gated-g9u2` mantienen su gate. Esta fase
+no habilita «todo lo experimental».
+
+La versión sigue siendo exactamente `1.0.0` y el paquete por defecto del
+repositorio sigue marcado `internal-evaluation`. Existe además un perfil de
+distribución `NC` (no comercial, aprobado por PRE-G9B-D1) que permite generar un
+paquete redistribuible con su propio aviso; la distribución comercial sigue
+bloqueada. Generar un candidato NC no equivale a publicarlo: la publicación, el
+tag y cualquier release requieren una decisión autoral posterior.
+
 Estado PRE-G9B-P0: **IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**;
 `selfApproved=false`. La pestaña de preferencias antes llamada **Disposición**
 se llama ahora **Disposición y presentación** y agrupa, en este orden, los

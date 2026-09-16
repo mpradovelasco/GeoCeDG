@@ -327,6 +327,14 @@ try {
             -Message "A redistributable profile must declare its legal authority and assets."
     }
 
+    $selectedProperties = @($selected.PSObject.Properties.Name)
+    $selectedLicensingProfile = if ($selectedProperties -contains 'licensing_profile') {
+        [string]$selected.licensing_profile
+    } else { '' }
+    $selectedLicensingAuthority = if (
+            $selectedProperties -contains 'licensing_authority') {
+        [string]$selected.licensing_authority
+    } else { '' }
     $ArtifactTag = [string]$selected.artifact_tag
     Assert-Condition -Condition ($ArtifactTag -cmatch '^[a-z0-9]+$') `
         -Message "The distribution profile must declare a simple artifact tag."
@@ -1000,13 +1008,12 @@ try {
             component_disposition = Get-FileEvidence `
                 -Path $ComponentDispositionPath -RelativeTo $RepositoryRoot
             unresolved_payload_count = 0
-            public_profile = if ([string]::IsNullOrWhiteSpace(
-                    [string]$selected.licensing_profile)) {
+            public_profile = if ([string]::IsNullOrWhiteSpace($selectedLicensingProfile)) {
                 "PROFILE NC"
             } else {
-                [string]$selected.licensing_profile
+                $selectedLicensingProfile
             }
-            licensing_authority = [string]$selected.licensing_authority
+            licensing_authority = $selectedLicensingAuthority
             readiness = "TECHNICALLY/LICENSING-DOCKET READY — FINAL AUTHOR/LEGAL REVIEW REQUIRED"
         }
         component_identity = [ordered]@{

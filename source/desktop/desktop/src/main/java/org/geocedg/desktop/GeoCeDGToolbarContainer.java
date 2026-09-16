@@ -95,9 +95,12 @@ final class GeoCeDGToolbarContainer extends ToolbarContainer {
 
 	private static void setDimensions(JToggleButton target, Dimension preferred,
 			Dimension minimum, Dimension maximum) {
-		target.setPreferredSize(new Dimension(preferred));
-		target.setMinimumSize(new Dimension(minimum));
-		target.setMaximumSize(new Dimension(maximum));
+		// A reference button may legitimately have no explicit size, in which case
+		// Swing reports null. Copy that "unset" state instead of constructing a
+		// Dimension from null, which threw while building the profile flyout.
+		target.setPreferredSize(preferred == null ? null : new Dimension(preferred));
+		target.setMinimumSize(minimum == null ? null : new Dimension(minimum));
+		target.setMaximumSize(maximum == null ? null : new Dimension(maximum));
 	}
 
 	private static JPanel nativeFlyoutContainer(JToggleButton button,

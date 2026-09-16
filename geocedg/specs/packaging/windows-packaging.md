@@ -109,10 +109,44 @@ JDK. Setup success is not repository acceptance; `tools/agent/verify.ps1`
 remains the composed authority, while `verify-packaging.ps1 -CheckToolchain`
 is the focused toolchain diagnosis.
 
+## Distribution profiles
+
+`PRE-G9B-P1` separates product metadata from distribution policy inside the same
+profile document and the same builder. `distribution.default_profile` pins
+`INTERNAL`, and `distribution.profiles` declares exactly three profiles:
+
+| Profile | Status | Redistributable | Artifact tag | Notice |
+|---|---|---|---|---|
+| `INTERNAL` | `internal-evaluation` | no | `internal` | `INTERNAL_EVALUATION_ONLY.txt` |
+| `NC` | `public-non-commercial` | yes | `nc` | `NC_DISTRIBUTION_NOTICE.txt` |
+| `COMMERCIAL` | `not-authorized` | no | `commercial` | none; blocked |
+
+Distribution profiles carry no version. `application.version` remains the single
+product-version authority, and the Gradle guard requiring exactly one semantic
+version in this file is what keeps that invariant enforceable.
+
+`build-windows-package.ps1 -DistributionProfile <ID>` selects the profile; the
+repository default is `INTERNAL`, so nothing is promoted by omission. The
+selected profile supplies the notice, the association properties and
+description, the distribution marker and the artifact tag. `COMMERCIAL` fails
+closed before any build work and names its pending external terms. The schema
+rejects a forged commercial promotion, a redistributable profile without its
+licensing authority and notice, a repository default that is not
+internal-evaluation, and any fourth profile.
+
+Artifact verification follows the built profile: `packaging-product.ps1` reads
+the generated `build-manifest.json` and derives the expected artifact tag,
+notice, marker, MSI association description and redistribution string from it.
+
 ## Release gate
 
-Successful execution proves packaging capability only. Until the component
-matrix, third-party notices, upstream runtime assets, branding, and project
-license are approved, every artifact remains:
+Successful execution proves packaging capability only. The repository default
+artifact remains:
 
 `INTERNAL EVALUATION — NOT FOR REDISTRIBUTION`
+
+`PRE-G9B-D1` approved PROFILE NC for the exact audited composition, so an `NC`
+build is technically and contractually producible. Producing an NC candidate is
+still not publication: a GitHub release, a tag, binary distribution or any
+third-party contact remains a separate explicit author decision. PROFILE
+COMMERCIAL remains `PENDING EXTERNAL TERMS / NOT AUTHORIZED`.
