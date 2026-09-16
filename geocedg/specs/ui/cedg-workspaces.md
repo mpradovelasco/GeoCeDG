@@ -737,9 +737,10 @@ require accessible names.
 GeoCeDG branding has two distinct tracked roles: the byte-exact promoted
 `helixTopBar.png` source supplies the frame/application role and deterministic
 64-pixel and Windows-package derivatives; the byte-exact promoted
-`helixSnapshot.png` source supplies the startup role and its current deterministic
-361×480 splash derivative; the prior 542×720 derivative remains tracked as the
-published Round-3 artifact. The asset manifest records ingestion filenames,
+`helixSnapshot.png` source supplies the startup role and its deterministic
+361×480 runtime splash derivative; the versioned 542×720 historical-size
+derivative is regenerated from the same current source but is not selected at
+runtime. The asset manifest records ingestion filenames,
 SHA-256 values, promoted paths, transformation parameters and redistribution
 status. Runtime and packaging consumers resolve these tracked resources; the
 ignored `artifacts/author-input/` ingestion area is never a build dependency.

@@ -394,7 +394,7 @@ try {
     if ($top.Count -eq 1 -and $startup.Count -eq 1) {
         $frame = @($top[0].derivatives | Where-Object id -CEQ 'geocedg.brand.topbar.frame-64-v1')
         $icon = @($top[0].derivatives | Where-Object id -CEQ 'geocedg.brand.topbar.windows-ico-v1')
-        $splash = @($startup[0].derivatives | Where-Object id -CEQ 'geocedg.brand.startup.splash-361x480-v2')
+        $splash = @($startup[0].derivatives | Where-Object id -CEQ 'geocedg.brand.startup.splash-361x480-v3')
         $authorInputs = $top[0].author_input.original_filename -ceq 'helixTopBar.png' -and
             $top[0].author_input.width -eq 969 -and $top[0].author_input.height -eq 815 -and
             $top[0].author_input.raw_sha256 -ceq
@@ -403,7 +403,7 @@ try {
             $startup[0].author_input.width -eq 1197 -and
             $startup[0].author_input.height -eq 1591 -and
             $startup[0].author_input.raw_sha256 -ceq
-            'abcf272553c1b42d5eb016cdf564023439e901ed7d7e943212c220431ecf5637'
+            '19ff4bf40b62022a5292761f535695a7774f58604da9e7823a368951cdcb394c'
         Add-Contract 'packaging.author-inputs' $authorInputs 'approved input hashes' $null `
             'Author branding input provenance differs.'
         $derived = $frame.Count -eq 1 -and $frame[0].width -eq 64 -and
@@ -413,7 +413,7 @@ try {
             (@($icon[0].png_embedded_sizes) -join ',') -ceq '16,24,32,48,64,128,256' -and
             $splash.Count -eq 1 -and $splash[0].width -eq 361 -and
             $splash[0].height -eq 480 -and $splash[0].raw_sha256 -ceq
-            '664ece93d38a6fc57ae3b29ede79161f928265b4fb069b5e72519b9aab494195'
+            '74d463ec88ef23efbc4c94d0930ff365977e0e5d25bd826bf387a763dfe9961e'
         Add-Contract 'packaging.derived-assets' $derived 'approved derivative hashes' $null `
             'Derived branding provenance differs.'
         $tracked = (Test-Asset $top[0].promoted_source) -and

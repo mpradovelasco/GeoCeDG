@@ -147,9 +147,9 @@ $FinalToolbarVisualMethods = @(
 )
 $FinalPolishBrandingPins = [ordered]@{
     "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/source/helixSnapshot.png" =
-        @(251689, "abcf272553c1b42d5eb016cdf564023439e901ed7d7e943212c220431ecf5637")
+        @(1184851, "19ff4bf40b62022a5292761f535695a7774f58604da9e7823a368951cdcb394c")
     "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/derived/geocedg-startup-361x480.png" =
-        @(94272, "664ece93d38a6fc57ae3b29ede79161f928265b4fb069b5e72519b9aab494195")
+        @(311770, "74d463ec88ef23efbc4c94d0930ff365977e0e5d25bd826bf387a763dfe9961e")
 }
 $Round3SharedInstrumentationPaths = @()
 $Round3SharedLocalizationPaths = @(
@@ -171,13 +171,13 @@ $Round3BrandingResourcePins = [ordered]@{
     "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/source/helixTopBar.png" =
         @(113783, "08ef4481b51e801bdf0842635d645bd09042b0a4473b24faca555048e3bd52c1")
     "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/source/helixSnapshot.png" =
-        @(251689, "abcf272553c1b42d5eb016cdf564023439e901ed7d7e943212c220431ecf5637")
+        @(1184851, "19ff4bf40b62022a5292761f535695a7774f58604da9e7823a368951cdcb394c")
     "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/derived/geocedg-application-icon-64.png" =
         @(5676, "448ea5b510f952d27ddddec3005911b4e1f1203ee35f55fcca857098e53fed97")
     "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/derived/geocedg-application.ico" =
         @(65873, "e5dac1dd3a556f4ce9747f00d272281e9a571ecc5e757180ba1c6750b664cd73")
     "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/derived/geocedg-startup-542x720.png" =
-        @(155029, "04d5e79b99b0f25536690b8af9d71ba034fbaf2b0d401ae40b5822942b917a78")
+        @(636733, "8add7345db5a3a9241148ea179b78ad8e2430e658863c662e47fdd7260d97e87")
 }
 $Round3LocalAuthorInputPins = [ordered]@{
     "artifacts/smoke-test-g9u1/Revision2.cedg" =

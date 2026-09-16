@@ -1,15 +1,13 @@
 <#
 .SYNOPSIS
-Promotes the approved G9U1 Round-3 author artwork and derives runtime assets.
+Validates the tracked GeoCeDG artwork and derives bounded branding assets.
 
 .DESCRIPTION
-The two ignored author inputs remain immutable ingestion evidence. Generation
-checks their exact SHA-256 and dimensions, copies their bytes into the tracked
-versioned resource tree, and creates only the bounded Desktop/Windows assets.
-Verification starts from those tracked promoted sources, so a clean checkout
-does not depend on ignored ingestion files. All resizing uses contain
-semantics: aspect ratio is preserved, no source pixel is cropped, and any
-added square-icon padding is transparent.
+The tracked versioned sources are the generation authority. Generation checks
+their exact SHA-256 and dimensions and creates only the bounded Desktop/Windows
+assets. An explicit author-input directory may still be used to promote checked
+source bytes. All resizing uses contain semantics: aspect ratio is preserved,
+no source pixel is cropped, and any added padding is transparent.
 
 .PARAMETER VerifyOnly
 Validate the tracked promoted sources, generate every derivative in memory,
@@ -57,7 +55,7 @@ $Inputs = @(
     },
     [ordered]@{
         Name = "helixSnapshot.png"
-        Sha256 = "abcf272553c1b42d5eb016cdf564023439e901ed7d7e943212c220431ecf5637"
+        Sha256 = "19ff4bf40b62022a5292761f535695a7774f58604da9e7823a368951cdcb394c"
         Width = 1197
         Height = 1591
     }
@@ -242,7 +240,8 @@ function Publish-OrVerify {
     Write-Host "$hash  $RelativePath"
 }
 
-$sourceAuthorityDirectory = if ($VerifyOnly) {
+$sourceAuthorityDirectory = if ($VerifyOnly -or
+        -not $PSBoundParameters.ContainsKey("AuthorInputDirectory")) {
     Join-Path $DestinationDirectory "source"
 } else {
     $AuthorInputDirectory
@@ -265,9 +264,14 @@ Publish-OrVerify -RelativePath "derived\geocedg-application-icon-64.png" `
 Publish-OrVerify -RelativePath "derived\geocedg-application.ico" `
     -Bytes (New-PngEmbeddedIcoBytes -PngBySize $iconPngs)
 
-$splash = New-ContainedPngBytes -SourceBytes $snapshot `
+$splash361 = New-ContainedPngBytes -SourceBytes $snapshot `
     -CanvasWidth 361 -CanvasHeight 480
 Publish-OrVerify -RelativePath "derived\geocedg-startup-361x480.png" `
-    -Bytes $splash
+    -Bytes $splash361
+
+$splash542 = New-ContainedPngBytes -SourceBytes $snapshot `
+    -CanvasWidth 542 -CanvasHeight 720
+Publish-OrVerify -RelativePath "derived\geocedg-startup-542x720.png" `
+    -Bytes $splash542
 
 Write-Host "Branding resources $($(if ($VerifyOnly) { 'verified' } else { 'generated' }))."

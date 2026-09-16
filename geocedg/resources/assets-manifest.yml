@@ -237,49 +237,63 @@
     },
     {
       "id": "geocedg.brand.startup",
-      "resource_version": 1,
+      "resource_version": 2,
       "role": "GeoCeDG startup splash",
       "semantic_role": "official GeoCeDG startup/product branding",
       "copyright_license_class": "geocedg-official-mark-artwork",
       "trademark_role": "official-product-branding",
       "author_input": {
         "original_filename": "helixSnapshot.png",
-        "ingestion_path": "artifacts/author-input/g9u1-branding/helixSnapshot.png",
-        "raw_sha256": "abcf272553c1b42d5eb016cdf564023439e901ed7d7e943212c220431ecf5637",
-        "bytes": 251689,
+        "ingestion_path": "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/source/alternatives/GeoCeDG_splash_06_1197x1591.png",
+        "raw_sha256": "19ff4bf40b62022a5292761f535695a7774f58604da9e7823a368951cdcb394c",
+        "bytes": 1184851,
         "width": 1197,
         "height": 1591,
         "media_type": "image/png",
         "png_bit_depth": 8,
-        "png_color_type": 6,
-        "alpha": "RGBA channel present; all 1904427 source pixels are opaque",
-        "pixel_density": "9448 pixels/metre in both axes (approximately 239.9792 dpi)"
+        "png_color_type": 2,
+        "alpha": "RGB source without alpha channel; all 1904427 source pixels are opaque",
+        "pixel_density": "3780 pixels/metre in both axes (approximately 96.012 dpi)"
       },
       "promoted_source": {
         "path": "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/source/helixSnapshot.png",
-        "raw_sha256": "abcf272553c1b42d5eb016cdf564023439e901ed7d7e943212c220431ecf5637",
-        "transformation": "byte-exact copy of the checked author input"
+        "raw_sha256": "19ff4bf40b62022a5292761f535695a7774f58604da9e7823a368951cdcb394c",
+        "transformation": "byte-exact promoted copy of GeoCeDG_splash_06_1197x1591.png"
       },
       "derivatives": [
         {
-          "id": "geocedg.brand.startup.splash-361x480-v2",
+          "id": "geocedg.brand.startup.splash-361x480-v3",
           "path": "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/derived/geocedg-startup-361x480.png",
-          "raw_sha256": "664ece93d38a6fc57ae3b29ede79161f928265b4fb069b5e72519b9aab494195",
-          "bytes": 94272,
+          "raw_sha256": "74d463ec88ef23efbc4c94d0930ff365977e0e5d25bd826bf387a763dfe9961e",
+          "bytes": 311770,
           "width": 361,
           "height": 480,
           "media_type": "image/png",
+          "png_bit_depth": 8,
+          "png_color_type": 6,
           "alpha": "RGBA channel present; all 173280 pixels are opaque"
+        },
+        {
+          "id": "geocedg.brand.startup.splash-542x720-v2",
+          "path": "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/derived/geocedg-startup-542x720.png",
+          "raw_sha256": "8add7345db5a3a9241148ea179b78ad8e2430e658863c662e47fdd7260d97e87",
+          "bytes": 636733,
+          "width": 542,
+          "height": 720,
+          "media_type": "image/png",
+          "png_bit_depth": 8,
+          "png_color_type": 6,
+          "alpha": "RGBA channel present; all 390240 pixels are opaque"
         }
       ],
       "derivation": {
         "tool": "tools/resources/generate-geocedg-branding.ps1",
-        "tool_contract_version": 2,
+        "tool_contract_version": 3,
         "accepted_generation_runtime": "PowerShell 7.6.5; .NET 10.0.11; System.Drawing.Common 10.0.0.0; Windows 10.0.26200",
-        "options": "sRGB source decoded without embedded colour management; contain within 361x480 and centre; no crop; no distortion; HighQualityBicubic interpolation; 3780 pixels/metre output (approximately 95.9866 dpi)"
+        "options": "sRGB source decoded without embedded colour management; contain within 361x480 and 542x720 and centre; no crop; no distortion; HighQualityBicubic interpolation; 3780 pixels/metre output (approximately 95.9866 dpi)"
       },
-      "provenance": "Author-supplied Round-3 asset; the author identified this exact filename as the GeoCeDG startup/splash image and authorized product integration",
-      "license_review_state": "author ownership and release authority established; CC-BY-4.0 copyright grant and separate trademark policy author-approved on 2026-09-15",
+      "provenance": "Author-supplied replacement selected from tracked GeoCeDG splash alternatives and author-approved on 2026-09-16 as the authoritative GeoCeDG startup image",
+      "license_review_state": "startup artwork selection author-approved on 2026-09-16; author ownership and release authority established; CC-BY-4.0 copyright grant and separate trademark policy author-approved on 2026-09-15",
       "redistribution_status": "author-approved-public-copyright-license; trademark-policy-author-approved; binary-release-gate-still-blocked"
     }
   ],

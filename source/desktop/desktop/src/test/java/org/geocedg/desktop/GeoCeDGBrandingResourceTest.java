@@ -30,11 +30,11 @@ class GeoCeDGBrandingResourceTest {
 			"/org/geocedg/desktop/branding/v1/";
 
 	@Test
-	void promotedAuthorSourcesRemainByteExact() throws IOException {
-		assertSource("source/helixTopBar.png", 969, 815,
+	void trackedBrandingSourcesRemainExact() throws IOException {
+		assertSource("source/helixTopBar.png", 969, 815, true,
 				"08ef4481b51e801bdf0842635d645bd09042b0a4473b24faca555048e3bd52c1");
-		assertSource("source/helixSnapshot.png", 1197, 1591,
-				"abcf272553c1b42d5eb016cdf564023439e901ed7d7e943212c220431ecf5637");
+		assertSource("source/helixSnapshot.png", 1197, 1591, false,
+				"19ff4bf40b62022a5292761f535695a7774f58604da9e7823a368951cdcb394c");
 	}
 
 	@Test
@@ -65,6 +65,7 @@ class GeoCeDGBrandingResourceTest {
 	}
 
 	private static void assertSource(String relativePath, int width, int height,
+			boolean expectedAlpha,
 			String expectedSha256) throws IOException {
 		URL resource = GeoCeDGBrandingResourceTest.class.getResource(
 				RESOURCE_ROOT + relativePath);
@@ -73,7 +74,7 @@ class GeoCeDGBrandingResourceTest {
 		assertNotNull(image);
 		assertEquals(width, image.getWidth());
 		assertEquals(height, image.getHeight());
-		assertTrue(image.getColorModel().hasAlpha());
+		assertEquals(expectedAlpha, image.getColorModel().hasAlpha());
 		assertEquals(expectedSha256, sha256(resource));
 	}
 
