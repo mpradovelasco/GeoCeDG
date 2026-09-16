@@ -6,11 +6,16 @@
   tree `f1ff998bc027072cee817891c5baba7464fd58ed`.
 - Required predecessor: `PRE-G9B-D1 — PASS — AUTHOR APPROVED` (PROFILE NC).
 - Branch: `feature/pre-g9b-p0-presentation-themes`.
-- Status: **IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**.
-- Author smoke: **PENDING** —
+- Implementation candidate (pre-correction): `f00e4cc45fc95408ff0d18198d95140bf097b7ea`,
+  tree `35cc8ada36c2a27d4b6d1513d80a4762e50d69ab`.
+- Final verified candidate (author-approved, `1.0` -> `1.0.0` display
+  correction applied): `14b4eb135b090a412154a9b2fbfbef85f6705bc5`, tree
+  `7eef19e2251361637b64377e72993311fd31301a`.
+- Status: **PASS — AUTHOR APPROVED**.
+- Author smoke: **PASS** —
   [checklist](pre_g9b_p0_author_smoke_checklist.md).
-- `selfApproved=false`. This gate authorizes neither `PRE-G9B-P1` nor any public
-  release.
+- `selfApproved=false`; `authorApproved=true`; `passClaimed=true`. This gate does
+  not authorize `PRE-G9B-P1`, `G9B`, `G9C`, `G9U2` or any public release.
 
 ## Scope
 
@@ -198,14 +203,45 @@ introduced by P0, no exception was logged, and the tab's composition is asserted
 by the focused suite against the real `OptionsLayoutD` and `OptionsAdvancedD`
 component trees.
 
+## Author-approved correction: visible version `1.0` -> `1.0.0`
+
+After executing the smoke checklist, the author reported **PASS** with one
+required correction: the visible product version must always read `1.0.0`, never
+the abbreviated `1.0` form. `GeoCeDGBuildProvenance.getDisplayApplicationVersion()`
+no longer truncates a trailing `.0` from the package-version authority, so the
+display form is always the exact value of `packaging/windows/package.yml`
+`application.version`. No second version authority was introduced,
+`application.upgrade_uuid` and `distribution.status` are unchanged, and no
+packaging identity was regenerated. The live window title was reconfirmed as
+`GeoCeDG 1.0.0`, and the focused suites (`PreG9BP0PresentationThemeTest` 18/18,
+`PreG9BS4PresentationSizingTest` 12/12, `GeoCeDGProfileTest` 5/5,
+`PreG9BS2ConstructionFontTest` 4/4) were rerun clean. `PHASE PRE-G9B-P0` was
+re-verified against the final candidate:
+`verification-d919002ce43b413e9172751205af4ac4`, `ACCEPTED / COMPLETE`, 0
+diagnostics, plan hash `3e8cd2051b6e6d0c5689337da01b2d264e93b218b79df32c485008b144e85597`,
+result hash `cfada470f99f9242fedaeb6f5341422a1b44f543734d3682b6c0dc792242240e`.
+
 ## Governance disposition
 
+The author executed the [smoke checklist](pre_g9b_p0_author_smoke_checklist.md)
+and declared the result **PASS**. The three available presentation themes remain
+`Original` (historical default), `Scientific Paper` and `Cool Geometry`; a theme
+is a presentation preference, never geometric authority. The `PRE-G9B-S4`
+presentation sizes remain consolidated in `Layout & Presentation`, moved out of
+`Advanced`, with a single active preference authority for those six values (no
+duplicate owner). The canonical visible version adopted at this gate is `1.0.0`.
+
 ```text
-PRE-G9B-P0 — IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW
+PRE-G9B-P0 — PASS — AUTHOR APPROVED
 selfApproved=false
-AUTHOR SMOKE — PENDING
-NEXT: author review; PRE-G9B-P1 remains DESIGNED — PROMOTION NOT YET AUTHORIZED
+authorApproved=true
+passClaimed=true
+candidate = 14b4eb135b090a412154a9b2fbfbef85f6705bc5
+tree = 7eef19e2251361637b64377e72993311fd31301a
+AUTHOR SMOKE — PASS
+NEXT: PRE-G9B-P1 remains DESIGNED — PROMOTION NOT YET AUTHORIZED; this closeout
+does not start or authorize it
 ```
 
-D1 remains closed for PROFILE NC, P1 is not started, and G9B, G9C, G9U2, further
-G12 and productive G10 remain untouched and unauthorized.
+D1 remains closed for PROFILE NC, P1 is not started or authorized, and G9B, G9C,
+G9U2, further G12 and productive G10 remain untouched and unauthorized.

@@ -1,7 +1,7 @@
 # Application presentation theme and Preferences consolidation
 
 - Phase: `PRE-G9B-P0`
-- Status: **IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**
+- Status: **NORMATIVE — PASS — AUTHOR APPROVED**
 - Layer: Desktop application/frontend presentation
 - Persistence: GeoCeDG user preferences; never construction, document or
   preferences XML

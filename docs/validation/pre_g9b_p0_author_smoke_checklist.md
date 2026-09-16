@@ -1,7 +1,10 @@
 # PRE-G9B-P0 author smoke checklist
 
-Status: **PENDING AUTHOR EXECUTION**. This checklist collects author evidence.
-It is not an automated result and it never records author approval by itself.
+Status: **EXECUTED — AUTHOR SMOKE PASS**. The author executed this checklist and
+reported the result as PASS, with one correction (visible version `1.0` -> `1.0.0`)
+applied and re-verified before closeout. This checklist is author evidence; the
+closeout disposition below records it, and closure itself remains a separate
+author act, not an automated one.
 
 Launch with:
 
@@ -83,7 +86,11 @@ The presentation theme lives in
 ## Disposition
 
 ```text
-AUTHOR SMOKE RESULT = <PASS | FINDINGS>
-PRE-G9B-P0 = IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW
+AUTHOR SMOKE RESULT = PASS
+PRE-G9B-P0 = PASS — AUTHOR APPROVED
 selfApproved=false
+authorApproved=true
+passClaimed=true
+candidate = 14b4eb135b090a412154a9b2fbfbef85f6705bc5
+tree = 7eef19e2251361637b64377e72993311fd31301a
 ```
