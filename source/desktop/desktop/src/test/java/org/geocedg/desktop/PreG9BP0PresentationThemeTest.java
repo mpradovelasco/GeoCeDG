@@ -435,9 +435,9 @@ class PreG9BP0PresentationThemeTest {
 	@Test
 	void derivedVersionSurfacesConsumeTheSingleAuthority() {
 		assertEquals("1.0.0", GeoCeDGProductInfo.semanticVersion());
-		assertEquals("1.0", GeoCeDGProductInfo.displayVersion());
-		assertEquals("GeoCeDG 1.0", GeoCeDGProductInfo.applicationTitle());
-		assertEquals("GeoCeDG 1.0 — Revision1.cedg",
+		assertEquals("1.0.0", GeoCeDGProductInfo.displayVersion());
+		assertEquals("GeoCeDG 1.0.0", GeoCeDGProductInfo.applicationTitle());
+		assertEquals("GeoCeDG 1.0.0 — Revision1.cedg",
 				GeoCeDGProductInfo.windowTitle("Revision1.cedg"));
 	}
 

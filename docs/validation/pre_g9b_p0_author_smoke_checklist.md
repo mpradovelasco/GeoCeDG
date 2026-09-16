@@ -15,8 +15,8 @@ The presentation theme lives in
 
 ## 1. Version surfaces
 
-- [ ] The window title reads `GeoCeDG 1.0`.
-- [ ] **Help > About GeoCeDG** reports `GeoCeDG 1.0` and the unchanged GeoGebra
+- [ ] The window title reads `GeoCeDG 1.0.0`.
+- [ ] **Help > About GeoCeDG** reports `GeoCeDG 1.0.0` and the unchanged GeoGebra
       baseline `5.4.928.0`.
 - [ ] Nothing in the product claims a public release; the package remains
       `internal-evaluation`.

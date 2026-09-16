@@ -123,12 +123,12 @@ public final class GeoCeDGBuildProvenance {
 	}
 
 	/**
-	 * @return concise product version for visible Desktop surfaces
+	 * @return full semantic product version for visible Desktop surfaces; the
+	 *         display form is always the exact package-version authority, never
+	 *         a truncated major.minor abbreviation
 	 */
 	public String getDisplayApplicationVersion() {
-		return applicationVersion.endsWith(".0")
-				? applicationVersion.substring(0, applicationVersion.length() - 2)
-				: applicationVersion;
+		return applicationVersion;
 	}
 
 	public String getRepositoryCommit() {

@@ -110,8 +110,11 @@ line changed, `application.version` `0.9.0` -> `1.0.0`. `application.upgrade_uui
 is unchanged at `b52d8e6d-3996-4bc5-b9ba-4f51f73c6e44`, and
 `distribution.status` remains `internal-evaluation` with
 `public_redistribution` still blocked. Derived surfaces recompute from the
-generated build provenance: the observed window title is `GeoCeDG 1.0`, from the
-existing trailing-`.0` display rule, with no second literal introduced.
+generated build provenance: the observed window title is `GeoCeDG 1.0.0`. The
+author's smoke correction removed the inherited trailing-`.0` truncation from
+`GeoCeDGBuildProvenance.getDisplayApplicationVersion()`, so the display form is
+now always the exact package-version authority; no second literal was
+introduced.
 
 Hand-maintained consumers updated in the same change: `GeoCeDGProfileTest`, the
 two normative UI specs, the workspace architecture note, the packaged
@@ -182,7 +185,7 @@ sampled.
 
 Every themed value equals the authored palette exactly. The `Original` capture
 after the change is identical to the capture taken before it: 0 differing pixels
-out of 1 360 900. The window title read `GeoCeDG 1.0` in every run, and
+out of 1 360 900. The window title read `GeoCeDG 1.0.0` in every run, and
 `geocedg.presentation.theme.v1` round-tripped through the real profile file
 across restarts.
 

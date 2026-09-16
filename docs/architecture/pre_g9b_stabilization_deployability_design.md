@@ -489,7 +489,7 @@ reclassified by this design.
    treatment of the existing diagnostic argument.
 4. At P1, decide the independent extended-DXF default policy.
 5. Define the exact public distribution scope after D1 human review.
-6. At P1, decide the final public release/distribution disposition; the `1.0.0`/display `1.0` version baseline is already materialized by P0.
+6. At P1, decide the final public release/distribution disposition; the `1.0.0` version baseline, displayed unabbreviated as `GeoCeDG 1.0.0`, is already materialized by P0.
 7. Only after this track, decide whether and when to authorize G9B.
 
 No ADR is created by this candidate. Calendar sequencing and bounded phase

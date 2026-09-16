@@ -75,7 +75,8 @@ internal authorization does not itself clear public redistribution. Inherited
 Classic UI strings/resources remain a separate release-audit limitation.
 
 The central build/package provenance declares semantic version `1.0.0`; product
-surfaces render its concise display form `GeoCeDG 1.0`. The frame title appends
+surfaces render that exact version as `GeoCeDG 1.0.0`, with no truncated
+major.minor abbreviation. The frame title appends
 the current filename when present. About consumes the same version authority,
 records the GeoGebra baseline and `Manuel Prado-Velasco, Universidad de Sevilla`,
 and retains required upstream credits/licenses.

@@ -552,7 +552,8 @@ runtime or packaging inputs. Classic retains a visibly distinct diagnostic
 identity.
 
 One build/package provenance authority supplies semantic version `1.0.0` and
-the visible `GeoCeDG 1.0` form to both window title and About. About also records
+the same full `GeoCeDG 1.0.0` form to both window title and About, with no
+truncated major.minor abbreviation. About also records
 the current GeoGebra baseline and `Manuel Prado-Velasco, Universidad de Sevilla`
 without removing mandatory upstream credits or license information.
 

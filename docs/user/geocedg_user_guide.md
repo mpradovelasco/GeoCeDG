@@ -69,7 +69,7 @@ explícito es indistinguible del valor por defecto y se pinta con el fondo del
 tema; **Original** restituye exactamente el fondo del documento.
 
 En esta fase la versión canónica de GeoCeDG pasa a `1.0.0`, de modo que el
-título de ventana y **Ayuda → Acerca de GeoCeDG** muestran `GeoCeDG 1.0`. El
+título de ventana y **Ayuda → Acerca de GeoCeDG** muestran `GeoCeDG 1.0.0`. El
 identificador de actualización del instalador no cambia y el paquete sigue
 marcado `internal-evaluation`: `1.0.0` no significa publicación ni release
 pública. P1, G9B/G9C/G9U2, más G12 y G10 productivo permanecen fuera de alcance

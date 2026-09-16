@@ -767,8 +767,8 @@ splash has been prepared. Public redistribution remains independently blocked
 by the asset/licensing authority.
 
 `GeoCeDGProductInfo` consumes the same build/package provenance rather than a
-second version constant: semantic package version `1.0.0` is presented as
-`GeoCeDG 1.0` in the frame title and About surface. About also identifies the
+second version constant: semantic package version `1.0.0` is presented
+unabbreviated as `GeoCeDG 1.0.0` in the frame title and About surface. About also identifies the
 recorded GeoGebra baseline and `Manuel Prado-Velasco, Universidad de Sevilla`,
 while retaining mandatory upstream credits and license notice.
 
