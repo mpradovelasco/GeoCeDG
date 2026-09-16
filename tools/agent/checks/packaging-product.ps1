@@ -26,6 +26,7 @@ if ([string]::IsNullOrWhiteSpace($ArtifactRoot)) {
 $ArtifactRoot = [IO.Path]::GetFullPath($ArtifactRoot)
 
 $marker = 'INTERNAL EVALUATION — NOT FOR REDISTRIBUTION'
+$ncMarker = 'NON-COMMERCIAL DISTRIBUTION — PROFILE NC'
 $iconPath = 'source/desktop/desktop/src/main/resources/' +
     'org/geocedg/desktop/branding/v1/derived/geocedg-application.ico'
 $iconHash = 'e5dac1dd3a556f4ce9747f00d272281e9a571ecc5e757180ba1c6750b664cd73'
@@ -286,6 +287,8 @@ try {
         'packaging/windows/package.yml', 'packaging/windows/NuGet.Config',
         'packaging/windows/file-associations.properties',
         'packaging/windows/INTERNAL_EVALUATION_ONLY.txt',
+        'packaging/windows/NC_DISTRIBUTION_NOTICE.txt',
+        'packaging/windows/file-associations-nc.properties',
         'tools/release/build-windows-package.ps1',
         'tools/release/export-runtime-components.init.gradle',
         'LICENSE', 'LICENSES/README.md', 'LICENSES/manifest.json',
@@ -441,10 +444,31 @@ try {
         (Test-PngEmbeddedIcon (Join-Path $repository $iconPath)) `
         'PNG icon entries at 16,24,32,48,64,128,256' $iconPath `
         'GeoCeDG package icon structure differs.'
-    foreach ($legal in @('LICENSE', 'LICENSES/README.md', 'NOTICE.md', 'THIRD_PARTY.md')) {
+    # PRE-G9B-P1 continuation: the general legal documents ship with every
+    # distribution profile, so they must not assert a profile-specific
+    # distribution condition. The condition is carried by the profile notice.
+    foreach ($legal in @('LICENSE', 'LICENSES/README.md', 'NOTICE.md',
+            'THIRD_PARTY.md', 'LICENSES/manifest.json')) {
+        $legalText = [IO.File]::ReadAllText((Join-Path $repository $legal))
         Add-Contract ('packaging.marker.' + $legal.Replace('/', '-').ToLowerInvariant()) `
-            ([IO.File]::ReadAllText((Join-Path $repository $legal)).Contains($marker)) `
-            $marker $legal "$legal lacks the internal-evaluation marker."
+            (-not $legalText.Contains($marker) -and
+                $legalText.Contains('INTERNAL_EVALUATION_ONLY.txt') -eq
+                $legalText.Contains('NC_DISTRIBUTION_NOTICE.txt')) `
+            'profile-neutral legal text' $legal `
+            "$legal asserts a distribution condition that belongs to the profile notice."
+    }
+    foreach ($notice in @(
+            @{ Path = 'packaging/windows/INTERNAL_EVALUATION_ONLY.txt'
+               Marker = $marker; Forbidden = $ncMarker },
+            @{ Path = 'packaging/windows/NC_DISTRIBUTION_NOTICE.txt'
+               Marker = $ncMarker; Forbidden = $marker })) {
+        $noticeText = [IO.File]::ReadAllText((Join-Path $repository $notice.Path))
+        Add-Contract ('packaging.notice.' +
+            [IO.Path]::GetFileNameWithoutExtension($notice.Path).ToLowerInvariant()) `
+            ($noticeText.Contains($notice.Marker) -and
+                -not $noticeText.Contains($notice.Forbidden)) `
+            $notice.Marker $notice.Path `
+            "$($notice.Path) does not carry exactly its own distribution marker."
     }
     $manifestPaths = @($licenseManifest.entries | ForEach-Object { [string]$_.path } |
         Sort-Object)
@@ -556,6 +580,19 @@ try {
             Add-Contract 'packaging.legal-bundle-payload' (
                 $missingPackagedLegal.Count -eq 0) $packagedLegal `
                 $missingPackagedLegal 'Package legal evidence is incomplete.'
+            # A redistributable build must not ship a general legal document that
+            # denies its own redistribution.
+            $contradicting = @(@('app/legal/LICENSE', 'app/legal/NOTICE.md',
+                'app/legal/THIRD_PARTY.md', 'app/legal/LICENSES/README.md',
+                'app/legal/LICENSES/manifest.json') | Where-Object {
+                    $staged = Join-Path $appImage $_
+                    (Test-Path -LiteralPath $staged -PathType Leaf) -and
+                    [IO.File]::ReadAllText($staged).Contains($marker)
+                })
+            Add-Contract 'packaging.legal-bundle-profile' ($contradicting.Count -eq 0) `
+                'staged general legal documents free of a contradictory marker' `
+                @($contradicting) `
+                'The staged legal bundle contradicts the built distribution profile.'
             $config = @(Get-ChildItem (Join-Path $appImage 'app') -File -Filter '*.cfg') |
                 Select-Object -First 1
             Add-Contract 'packaging.launcher-config' ($null -ne $config -and

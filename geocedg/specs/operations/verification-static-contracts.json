@@ -11,8 +11,8 @@
       {"path":"geocedg/resources/source-access-manifest.json","sha256":"b5b2bb592cb5e5e6a78431c7d784b96ffa338a1094473bb54c958b1239df949e"},
       {"path":"geocedg/validation/pre-g9b-d1/component-audit.json","sha256":"aaf35691de27cab94c6b413bfce8221426eca7ddc49a01f9ecc3b9a94bc2edb9"},
       {"path":"geocedg/validation/pre-g9b-d1/component-disposition.json","sha256":"794923825afa1e5f3f1cbaa0d3ccd8a0d819ab948368adc6154d191069ef2355"},
-      {"path":"LICENSES/manifest.json","sha256":"8c115369321fbb5d1a7e087899ac77266b38b949e1ffe0672b7d4011f63c5614"},
-      {"path":"tools/release/build-windows-package.ps1","sha256":"a9f1b3aecccf8d30af7285e3190ac3cf77fe733ba77c63042b0bd316ed034c11"},
+      {"path":"LICENSES/manifest.json","sha256":"405c8eddd9f2e4714d3f32c6f2837fcbbf271740213962c392cf34ac44fa12be"},
+      {"path":"tools/release/build-windows-package.ps1","sha256":"13f0962b7915097a9c68a73fa9be575005ceda6f524877f4c1ce99364e10a494"},
       {"path":"tools/release/export-runtime-components.init.gradle","sha256":"0bd0e7136357afd89289b9444c790d0e0b168c009e92b1ee8800095010b491e9"}
     ]},
     {"contract_id":"workspace.profile-authority","semantic_domain":"PRODUCT","inputs":[

@@ -1,11 +1,12 @@
 <#
 .SYNOPSIS
-Builds internal-evaluation Windows packages for GeoCeDG.
+Builds Windows packages for a declared GeoCeDG distribution profile.
 
 .DESCRIPTION
 Uses the repository Gradle wrapper to produce the Desktop installDist layout,
-filters it to Windows runtime JARs, and invokes JDK 25 jpackage. Generated
-outputs are always marked INTERNAL EVALUATION — NOT FOR REDISTRIBUTION and are
+filters it to Windows runtime JARs, and invokes JDK 25 jpackage. The selected
+distribution profile supplies the marker, notice and association identity;
+INTERNAL remains the repository default and COMMERCIAL fails closed. Outputs are
 written below the ignored artifacts/packaging/windows boundary.
 
 .PARAMETER Target
@@ -366,6 +367,16 @@ try {
     if ([bool]$selected.redistributable) {
         Assert-Condition -Condition (-not $noticeText.Contains($InternalMarker)) `
             -Message "A redistributable notice must not carry the internal-evaluation marker."
+        # The general legal documents ship with every profile, so they must stay
+        # profile-neutral. The distribution condition belongs to the notice above.
+        foreach ($general in @("LICENSE", "NOTICE.md", "THIRD_PARTY.md",
+                "LICENSES\README.md", "LICENSES\manifest.json")) {
+            $generalText = Get-Content -Raw -LiteralPath (
+                Join-Path $RepositoryRoot $general)
+            Assert-Condition -Condition (
+                -not $generalText.Contains($InternalMarker)) `
+                -Message "A redistributable bundle must not ship $general with the internal-evaluation marker."
+        }
     } else {
         Assert-Condition -Condition ($noticeText.Contains($ExpectedMarker)) `
             -Message "The non-redistributable notice must carry its distribution marker."
@@ -1009,10 +1020,11 @@ try {
                 -Path $ComponentDispositionPath -RelativeTo $RepositoryRoot
             unresolved_payload_count = 0
             public_profile = if ([string]::IsNullOrWhiteSpace($selectedLicensingProfile)) {
-                "PROFILE NC"
+                "NOT APPLICABLE — INTERNAL EVALUATION BUILD"
             } else {
                 $selectedLicensingProfile
             }
+            approved_composition_profile = "PROFILE NC"
             licensing_authority = $selectedLicensingAuthority
             readiness = "TECHNICALLY/LICENSING-DOCKET READY — FINAL AUTHOR/LEGAL REVIEW REQUIRED"
         }

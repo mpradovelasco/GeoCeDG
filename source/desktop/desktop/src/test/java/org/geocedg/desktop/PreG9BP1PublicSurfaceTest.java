@@ -5,6 +5,7 @@
 
 package org.geocedg.desktop;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -14,6 +15,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -41,6 +44,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
  */
 @ExtendWith(G9U1TestApp.Lifecycle.class)
 class PreG9BP1PublicSurfaceTest {
+
+	private static final String INTERNAL_MARKER =
+			"INTERNAL EVALUATION — NOT FOR REDISTRIBUTION";
 
 	// ------------------------------------------------------------- public surface
 
@@ -193,13 +199,82 @@ class PreG9BP1PublicSurfaceTest {
 		// The composite non-commercial nature required by PROFILE NC is stated.
 		assertTrue(notice.contains("composite non-commercial"));
 		assertTrue(notice.contains("Commercial distribution is NOT authorized"));
+		// The notice, not a dated evidence record, states the condition of the copy.
+		assertTrue(notice.contains("states the distribution condition of this copy"));
+		assertTrue(notice.contains("does not restrict this copy"));
 		assertNotNull(read("packaging/windows/file-associations-nc.properties"));
 	}
 
 	@Test
 	void repositoryDefaultNoticeStillCarriesTheInternalMarker() throws IOException {
 		String notice = read("packaging/windows/INTERNAL_EVALUATION_ONLY.txt");
-		assertTrue(notice.contains("INTERNAL EVALUATION — NOT FOR REDISTRIBUTION"));
+		assertTrue(notice.contains(INTERNAL_MARKER));
+		// INTERNAL must not be promoted by the PROFILE NC reconciliation.
+		assertFalse(notice.contains("PROFILE NC"));
+	}
+
+	// ------------------------------------------------- reconciled legal bundle
+
+	@Test
+	void generalLegalDocumentsAreProfileNeutral() throws IOException {
+		// These documents ship with every profile, so a profile-specific
+		// distribution condition must come from the packaged notice instead.
+		for (String path : List.of("LICENSE", "NOTICE.md", "THIRD_PARTY.md",
+				"LICENSES/README.md")) {
+			String document = read(path);
+			assertFalse(document.contains(INTERNAL_MARKER), path);
+			assertTrue(document.contains("INTERNAL_EVALUATION_ONLY.txt"), path);
+			assertTrue(document.contains("NC_DISTRIBUTION_NOTICE.txt"), path);
+			assertTrue(document.contains("Commercial distribution is not"), path);
+		}
+		assertFalse(read("LICENSES/manifest.json").contains(INTERNAL_MARKER));
+	}
+
+	@Test
+	void datedD1EvidenceKeepsItsHistoricalDistributionMarker() throws IOException {
+		// The immutable D1 factual closure records the package state of its own
+		// evidence date. Reconciling PROFILE NC must not rewrite that history.
+		assertTrue(read("geocedg/validation/pre-g9b-d1/component-audit.json")
+				.contains(INTERNAL_MARKER));
+	}
+
+	@Test
+	void legalBundleManifestPinsTheReconciledBundleText() throws IOException {
+		String manifest = read("LICENSES/manifest.json");
+		String expected = sha256("LICENSES/README.md");
+		assertTrue(manifest.contains(
+				"\"path\":\"LICENSES/README.md\",\"sha256\":\"" + expected + "\""),
+				expected);
+	}
+
+	// ------------------------------------------------------------- user guide
+
+	@Test
+	void packagedGuideIsAByteCopyOfTheTrackedSourceGuide() throws IOException {
+		byte[] source = Files.readAllBytes(
+				repositoryRoot().resolve("docs/user/geocedg_user_guide.md"));
+		try (var stream = getClass().getResourceAsStream("geocedg_user_guide.md")) {
+			assertNotNull(stream, "the guide is not packaged");
+			assertArrayEquals(source, stream.readAllBytes(),
+					"the packaged guide diverged from its single tracked source");
+		}
+	}
+
+	@Test
+	void userGuideDescribesThePromotedDefaultsAndTheDxfBoundary() throws IOException {
+		String guide = read("docs/user/geocedg_user_guide.md");
+		// Both overrides are documented in their retained disabling direction.
+		assertTrue(guide.contains("--enableLocusV2=false"));
+		assertTrue(guide.contains("--enableExtendedDxf=false"));
+		// Neither promoted capability may still be advertised as opt-in.
+		assertFalse(guide.contains("--enableLocusV2=true"));
+		assertFalse(guide.contains("--enableExtendedDxf=true"));
+		// The DXF representation of SplineV2 must not be overstated.
+		assertTrue(guide.contains("exact DXF `SPLINE` is **NOT IMPLEMENTED**"));
+		assertTrue(guide.contains("**approximate"));
+		assertTrue(guide.contains("`LWPOLYLINE`** produced export-only under G9X1"));
+		assertTrue(guide.contains("not a certified global error bound"));
+		assertTrue(guide.contains("1.0.0"));
 	}
 
 	// -------------------------------------------------------------------- helpers
@@ -245,6 +320,20 @@ class PreG9BP1PublicSurfaceTest {
 			index = text.indexOf(token, index + token.length());
 		}
 		return found;
+	}
+
+	private static String sha256(String relativePath) throws IOException {
+		try {
+			byte[] digest = MessageDigest.getInstance("SHA-256").digest(
+					Files.readAllBytes(repositoryRoot().resolve(relativePath)));
+			StringBuilder text = new StringBuilder(digest.length * 2);
+			for (byte value : digest) {
+				text.append(String.format("%02x", value));
+			}
+			return text.toString();
+		} catch (NoSuchAlgorithmException impossible) {
+			throw new IllegalStateException(impossible);
+		}
 	}
 
 	private static String read(String relativePath) throws IOException {
