@@ -153,6 +153,7 @@ import org.geogebra.common.main.AppConfig;
 import org.geogebra.common.main.DialogManager;
 import org.geogebra.common.main.MyError;
 import org.geogebra.common.main.MyError.Errors;
+import org.geogebra.common.main.OptionType;
 import org.geogebra.common.main.ProverSettings;
 import org.geogebra.common.main.SpreadsheetTableModel;
 import org.geogebra.common.main.error.ErrorHandler;
@@ -2764,6 +2765,31 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 	 * @return product presentation options, or {@code null}
 	 */
 	public OptionPanelD newProductPresentationOptionsPanel() {
+		return null;
+	}
+
+	/**
+	 * Product hook for the closed application presentation-theme selector.
+	 * @return product theme options, or {@code null}
+	 */
+	public OptionPanelD newProductPresentationThemePanel() {
+		return null;
+	}
+
+	/**
+	 * @return whether the product profile owns application presentation sizing, so the
+	 *         inherited mixed GUI-font row must not be offered a second time
+	 */
+	public boolean productOwnsPresentationSizing() {
+		return false;
+	}
+
+	/**
+	 * Product hook for the localized title of one preferences tab.
+	 * @param type preferences tab
+	 * @return product title, or {@code null} to keep the inherited title
+	 */
+	public String getProductOptionTypeTitle(OptionType type) {
 		return null;
 	}
 

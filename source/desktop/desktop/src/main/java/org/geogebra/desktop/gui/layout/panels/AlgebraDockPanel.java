@@ -23,6 +23,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
+import javax.swing.UIManager;
 
 import org.geogebra.common.main.App;
 import org.geogebra.desktop.gui.GuiManagerD;
@@ -63,7 +64,8 @@ public class AlgebraDockPanel extends NavigableDockPanel {
 		JScrollPane scrollPane = new JScrollPane(
 				(Component) app.getGuiManager().getAlgebraView());
 		scrollPane.setBorder(BorderFactory.createEmptyBorder());
-		scrollPane.setBackground(Color.white);
+		Color themed = UIManager.getColor("GeoCeDG.presentation.panelBackground");
+		scrollPane.setBackground(themed == null ? Color.white : themed);
 
 		return scrollPane;
 	}

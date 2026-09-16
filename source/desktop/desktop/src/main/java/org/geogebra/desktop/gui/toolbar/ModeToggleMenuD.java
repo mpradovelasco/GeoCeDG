@@ -31,6 +31,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
 import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.kernel.ModeSetter;
@@ -54,7 +55,17 @@ public class ModeToggleMenuD extends JPanel {
 
 	private final ToolbarD toolbar;
 
-	final static Color bgColor = Color.white;
+	/**
+	 * Presentation role of the tool popup surface. A product preset may define
+	 * {@code GeoCeDG.presentation.surfaceBackground}; otherwise the inherited white
+	 * surface is kept, so upstream Classic is unaffected.
+	 *
+	 * @return effective popup background
+	 */
+	static Color popupBackground() {
+		Color themed = UIManager.getColor("GeoCeDG.presentation.surfaceBackground");
+		return themed == null ? Color.white : themed;
+	}
 
 	/**
 	 * @param app application
@@ -73,7 +84,7 @@ public class ModeToggleMenuD extends JPanel {
 		add(tbutton);
 
 		popMenu = new JPopupMenu();
-		popMenu.setBackground(bgColor);
+		popMenu.setBackground(popupBackground());
 		menuItemList = new ArrayList<>();
 		popupMenuItemListener = new MenuItemListener();
 		size = 0;
@@ -144,7 +155,7 @@ public class ModeToggleMenuD extends JPanel {
 		// add menu item to popup menu
 		JMenuItem mi = new JMenuItem();
 		mi.setFont(app.getPlainFont());
-		mi.setBackground(bgColor);
+		mi.setBackground(popupBackground());
 
 		// tool name as text
 		mi.setText(app.getToolName(mode));

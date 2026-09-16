@@ -27,7 +27,7 @@
     "D1-HD-03-evolution": "the 2026-09-15 deferred/not-authorized disposition remains historical; a later author action filed the GeoCeDG OEPM word-mark application M4403138 on 2026-09-16; registration remains pending; no figurative filing is evidenced",
     "D1-HD-04": "GEOGEBRA COMMERCIAL CONTACT — DEFERRED / NOT AUTHORIZED",
     "commercial": "PROFILE COMMERCIAL — PENDING EXTERNAL TERMS / NOT AUTHORIZED; GeoGebra COMMERCIAL-A and independent OpenGeoProver permission remain future contacts",
-    "package_boundary": "publicRedistributionAllowed=false continues for the current 0.9.0 internal-evaluation package; D1 approval does not execute P1, publish binaries or change the package profile"
+    "package_boundary": "publicRedistributionAllowed=false continues for the current 1.0.0 internal-evaluation package; PRE-G9B-P0 changed only the canonical version baseline; D1 approval does not execute P1, publish binaries or change the package profile"
   },
   "base_evidence": {
     "path": "geocedg/validation/pre-g9b-d1/component-audit.json",

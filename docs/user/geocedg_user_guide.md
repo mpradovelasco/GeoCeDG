@@ -25,8 +25,9 @@ conserva la evidencia técnica y autoral; el
 registra la disposición del autor.
 
 Estado PRE-G9B-S4, R1 y R2: **PASS — AUTHOR APPROVED**; smoke autoral
-**PASS**; `selfApproved=false`. En **Opciones > Avanzado > Tamaños de presentación**,
-GeoCeDG ofrece controles independientes para **Fuente de la interfaz general**,
+**PASS**; `selfApproved=false`. En **Opciones > Disposición y presentación >
+Tamaños de presentación** (en **Avanzado** hasta PRE-G9B-P0, que solo cambió esa
+ubicación), GeoCeDG ofrece controles independientes para **Fuente de la interfaz general**,
 **Fuente de menús**, **Iconos de la barra**, **Fuente de Álgebra**, **Fuente del
 Protocolo de Construcción** y **Fuente de Gráficos**. Los valores nuevos por
 defecto son 12, 14, 28, 12, 12 y 12 respectivamente. Las preferencias explícitas
@@ -41,6 +42,38 @@ permanecen separados. Las herramientas propias persistentes comparten ahora la
 misma fila, centrado, insets y escalado de la barra nativa, sin compensación de
 píxeles. D1, P1, G9B/G9C/G9U2, más G12 y G10 productivo permanecen fuera de
 alcance y no autorizados.
+
+Estado PRE-G9B-P0: **IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**;
+`selfApproved=false`. La pestaña de preferencias antes llamada **Disposición**
+se llama ahora **Disposición y presentación** y agrupa, en este orden, los
+controles de disposición heredados, el grupo **Tamaños de presentación**
+—trasladado desde **Avanzado** sin cambiar claves, valores por defecto,
+persistencia ni comportamiento— y el nuevo grupo **Tema**. Los controles de
+tamaño ya no aparecen en **Avanzado** y existen una sola vez.
+
+El selector **Tema de presentación** ofrece exactamente tres presets:
+**Original** (aspecto histórico y valor por defecto, también para perfiles
+antiguos sin preferencia guardada), **Papel científico** (claro y cálido) y
+**Geometría fría** (claro y azulado). La selección se aplica y se guarda al
+instante, como los tamaños de presentación, y sobrevive al cierre de la
+aplicación y al cambio de documento.
+
+Un tema es una preferencia de presentación de la aplicación. No cambia la
+geometría, la identidad, el grafo de dependencias, el color de los objetos, los
+ejes, la rejilla ni la exportación, y **no** añade metadatos a `.cedg` ni a
+`.ggb`: guardar y reabrir con un tema activo no altera el documento. El fondo de
+la vista Gráfica del preset solo se pinta cuando el documento conserva el fondo
+por defecto de la aplicación; un fondo elegido explícitamente por el usuario se
+respeta siempre. Limitación conocida: un documento cuyo fondo sea blanco puro
+explícito es indistinguible del valor por defecto y se pinta con el fondo del
+tema; **Original** restituye exactamente el fondo del documento.
+
+En esta fase la versión canónica de GeoCeDG pasa a `1.0.0`, de modo que el
+título de ventana y **Ayuda → Acerca de GeoCeDG** muestran `GeoCeDG 1.0`. El
+identificador de actualización del instalador no cambia y el paquete sigue
+marcado `internal-evaluation`: `1.0.0` no significa publicación ni release
+pública. P1, G9B/G9C/G9U2, más G12 y G10 productivo permanecen fuera de alcance
+y no autorizados.
 
 Estado vivo del track post-G9U1: **COMPLETE — AUTHOR APPROVED**. A3, su
 frontend Classic, A5 y el slice A7 están **PASS — AUTHOR APPROVED**; A4 conserva

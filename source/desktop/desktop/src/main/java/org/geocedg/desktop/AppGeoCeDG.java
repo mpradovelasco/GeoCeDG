@@ -21,12 +21,14 @@ import javax.swing.JPanel;
 import org.geocedg.common.main.feature.RuntimeFeatureService;
 import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
 import org.geocedg.desktop.resources.GeoCeDGBrandingResource;
+import org.geogebra.common.awt.GColor;
 import org.geogebra.common.euclidian.EuclidianController;
 import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.io.layout.Perspective;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.main.AppConfig;
 import org.geogebra.common.main.MyError.Errors;
+import org.geogebra.common.main.OptionType;
 import org.geogebra.common.main.settings.FontSettings;
 import org.geogebra.common.util.FileExtensions;
 import org.geogebra.desktop.CommandLineArguments;
@@ -45,6 +47,7 @@ import org.geogebra.desktop.main.GlobalKeyDispatcherD;
  */
 public final class AppGeoCeDG extends App3D {
 	private GeoCeDGPresentationPreferences presentationPreferences;
+	private GeoCeDGThemePreference themePreference;
 
 	/**
 	 * @param args command line arguments
@@ -58,6 +61,7 @@ public final class AppGeoCeDG extends App3D {
 			AppConfigGeoCeDG config) {
 		super(args, frame, config);
 		bindFeatureService(config);
+		initializePresentationTheme();
 		initializePresentationPreferences();
 	}
 
@@ -73,6 +77,7 @@ public final class AppGeoCeDG extends App3D {
 			AppConfigGeoCeDG config) {
 		super(args, component, config);
 		bindFeatureService(config);
+		initializePresentationTheme();
 		initializePresentationPreferences();
 	}
 
@@ -216,6 +221,52 @@ public final class AppGeoCeDG extends App3D {
 				: new GeoCeDGPresentationOptionsPanel(this);
 	}
 
+	@Override
+	public boolean productOwnsPresentationSizing() {
+		return presentationPreferences != null;
+	}
+
+	@Override
+	public OptionPanelD newProductPresentationThemePanel() {
+		return themePreference == null ? null : new GeoCeDGThemeOptionsPanel(this);
+	}
+
+	@Override
+	public String getProductOptionTypeTitle(OptionType type) {
+		if (type != OptionType.LAYOUT || themePreference == null) {
+			return null;
+		}
+		return GeoCeDGProfile.getText("Presentation.LayoutTab", getLocale().getLanguage());
+	}
+
+	/**
+	 * Supplies the application presentation background of a Graphics view.
+	 *
+	 * <p>The returned color is painted only. It never reaches
+	 * {@code EuclidianSettings}, the document XML or the preferences XML, so selecting a
+	 * theme cannot rewrite {@code bgColor} in a {@code .cedg} or {@code .ggb} file. A
+	 * document whose background differs from the application default background role keeps
+	 * its own explicitly chosen color.
+	 */
+	@Override
+	public GColor getPresentationBackground(GColor documentBackground) {
+		GeoCeDGPresentationTheme theme = getPresentationTheme();
+		if (theme == null || theme.palette() == null) {
+			return null;
+		}
+		return GColor.WHITE.equals(documentBackground) ? theme.palette().canvasColor() : null;
+	}
+
+	GeoCeDGPresentationTheme getPresentationTheme() {
+		return themePreference == null ? GeoCeDGPresentationTheme.DEFAULT_THEME
+				: themePreference.get();
+	}
+
+	void setPresentationTheme(GeoCeDGPresentationTheme theme) {
+		themePreference.set(theme);
+		refreshPresentationTheme();
+	}
+
 	int getPresentationSize(GeoCeDGPresentationPreferences.Category category) {
 		return presentationPreferences.get(category);
 	}
@@ -242,6 +293,41 @@ public final class AppGeoCeDG extends App3D {
 		getEuclidianView1().updateFonts();
 		if (getGuiManager() != null) {
 			((GuiManagerD) getGuiManager()).updateFonts();
+		}
+	}
+
+	private void initializePresentationTheme() {
+		themePreference = new GeoCeDGThemePreference();
+		GeoCeDGThemeInstaller.applyRoles(themePreference.get());
+	}
+
+	@Override
+	protected void updateComponentTreeUI() {
+		// The inherited startup path builds menus and toolbars before this instance exists,
+		// so reassert the roles before the ordinary Desktop component-tree refresh.
+		GeoCeDGThemeInstaller.applyRoles(getPresentationTheme());
+		super.updateComponentTreeUI();
+	}
+
+	private void refreshPresentationTheme() {
+		GeoCeDGThemeInstaller.install(getPresentationTheme());
+		GuiManagerD manager = getGuiManager() == null ? null : (GuiManagerD) getGuiManager();
+		if (manager != null) {
+			// Rebuild the seams that explicitly paint a presentation role on creation.
+			manager.updateToolbar();
+			if (manager.isUsingConstructionProtocol()) {
+				((ConstructionProtocolViewD) manager.getConstructionProtocolView()).initGUI();
+			}
+		}
+		repaintPresentationViews();
+	}
+
+	private void repaintPresentationViews() {
+		if (getEuclidianView1() != null) {
+			getEuclidianView1().updateBackground();
+		}
+		if (hasEuclidianView2EitherShowingOrNot(1)) {
+			getEuclidianView2(1).updateBackground();
 		}
 	}
 

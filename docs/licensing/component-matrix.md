@@ -30,7 +30,7 @@ The complete binary is composite and cannot be labelled solely EUPL or
 globally Open Source/Free Software while GeoGebra NC Materials remain. PROFILE
 NC has no remaining exact-payload technical provenance blocker. It remains
 approved for the exact audited composition after professional review. The
-current `0.9.0` package remains an internal-evaluation artifact pending the
+current `1.0.0` package remains an internal-evaluation artifact pending the
 separate P1/release materialization decision. Commercial OpenGeoProver and
 GeoGebra-Materials questions are indexed in `LICENSES/UNRESOLVED.md` and
 `geocedg_profile_commercial.md`.

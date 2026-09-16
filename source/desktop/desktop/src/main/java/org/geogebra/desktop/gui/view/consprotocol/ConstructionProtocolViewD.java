@@ -50,6 +50,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTable.PrintMode;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.TableColumnModelEvent;
@@ -98,6 +99,18 @@ public class ConstructionProtocolViewD extends ConstructionProtocolView
 	static Color COLOR_STEP_HIGHLIGHT = AppD.COLOR_SELECTION;
 	private static final Color COLOR_DRAG_HIGHLIGHT = new Color(250, 250, 200);
 	private static final Color COLOR_DROP_HIGHLIGHT = Color.lightGray;
+
+	/**
+	 * Presentation role of the protocol content surface. A product preset may define
+	 * {@code GeoCeDG.presentation.panelBackground}; otherwise the inherited white surface
+	 * is kept, so upstream Classic is unaffected.
+	 *
+	 * @return effective protocol content background
+	 */
+	public static Color panelBackground() {
+		Color themed = UIManager.getColor("GeoCeDG.presentation.panelBackground");
+		return themed == null ? Color.white : themed;
+	}
 
 	protected JTable table;
 	// public JPanel cpPanel;
@@ -169,7 +182,7 @@ public class ConstructionProtocolViewD extends ConstructionProtocolView
 				((ConstructionTableDataD) data).new ColumnMovementListener());
 
 		scrollPane = new JScrollPane(table);
-		scrollPane.getViewport().setBackground(Color.white);
+		scrollPane.getViewport().setBackground(panelBackground());
 		// cpPanel.add(scrollPane, BorderLayout.CENTER);
 
 		// clicking
@@ -777,10 +790,10 @@ public class ConstructionProtocolViewD extends ConstructionProtocolView
 			if (index == step) { // current construction step background color
 				comp.setBackground(COLOR_STEP_HIGHLIGHT);
 			} else if (index < step) {
-				comp.setBackground(Color.white);
+				comp.setBackground(panelBackground());
 			} else {
 				comp.setForeground(Color.gray);
-				comp.setBackground(Color.white);
+				comp.setBackground(panelBackground());
 			}
 
 			// set background color

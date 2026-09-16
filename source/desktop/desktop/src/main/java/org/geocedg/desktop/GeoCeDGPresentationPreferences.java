@@ -178,7 +178,7 @@ final class GeoCeDGPresentationPreferences {
 		return closest;
 	}
 
-	private static Store systemStore() {
+	static Store systemStore() {
 		return new Store() {
 			@Override
 			public String load(String key) {

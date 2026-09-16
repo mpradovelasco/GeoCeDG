@@ -21,6 +21,16 @@
 > authorized, and P1 remains out of scope. See the living roadmap and
 > `docs/validation/pre_g9b_d1_licensing_framework_payload_closure_candidate.md`.
 
+> Subsequent execution note (2026-09-16): `PRE-G9B-D1` is now
+> `PASS — AUTHOR APPROVED` for PROFILE NC, and the author separately authorized
+> `PRE-G9B-P0` between D1 and P1. P0 fixed the canonical version at `1.0.0`
+> without promoting the package/distribution state, so the
+> "Feature-default or version promotion: NOT AUTHORIZED" line above records the
+> boundary at design-approval time, not the current one. Feature defaults and
+> public release remain unauthorized and still belong to P1. See the living
+> roadmap and
+> `docs/validation/pre_g9b_p0_presentation_theme_candidate_report.md`.
+
 This note designs the author-requested roadmap extension between the closed
 post-G9U1 refinement track and any later return to G9B. It records
 characterization from current repository authority; it does not classify
@@ -39,7 +49,8 @@ The canonical top-level identifiers are:
 | `PRE-G9B-S3` | Construction Text view-zoom behavior | `PASS — AUTHOR APPROVED` |
 | `PRE-G9B-S4` | Independent application presentation sizing | `PASS — AUTHOR APPROVED`; integrates R1/R2; `selfApproved=false` |
 | `PRE-G9B-D1` | Licensing, assets and deployability | `DESIGNED — RESEARCH/IMPLEMENTATION NOT YET AUTHORIZED` |
-| `PRE-G9B-P1` | Public surface and product-version 1.0 promotion | `DESIGNED — PROMOTION NOT YET AUTHORIZED` |
+| `PRE-G9B-P0` | Presentation themes, Preferences consolidation and the `1.0.0` version baseline | `IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW` |
+| `PRE-G9B-P1` | Public surface and public-release readiness | `DESIGNED — PROMOTION NOT YET AUTHORIZED` |
 
 The `S`, `D` and `P` families distinguish stabilization, deployability and
 promotion without occupying a G9 semantic identifier such as G9U2. S1 owns the
@@ -73,7 +84,8 @@ PRE-G9B-D1  licensing/assets/deployability
     |
     | GLOBAL_PRE-PROMOTION_GATE internal to this track
     v
-PRE-G9B-P1  public surface / version 1.0 promotion
+PRE-G9B-P0  presentation themes / Preferences consolidation / 1.0.0 baseline
+PRE-G9B-P1  public surface / public-release readiness
     |
     | later explicit author decision; no authorization here
     v
@@ -157,14 +169,15 @@ Current code establishes these boundaries:
   not established without a real component/icon-layout capture.
 - About content is composed by `GeoCeDGActionRegistry` from localized product
   text, package metadata, the pinned upstream baseline and author/license data.
-- `packaging/windows/package.yml` is the current version authority (`0.9.0`);
-  package names, generated provenance and About/title surfaces derive from it.
+- `packaging/windows/package.yml` is the current version authority (`1.0.0` since
+  `PRE-G9B-P0`; `0.9.0` before it); package names, generated provenance and
+  About/title surfaces derive from it.
 
 The current version surfaces are deliberately distinguished:
 
 | Surface | Current authority/effect |
 |---|---|
-| product/package version | [`packaging/windows/package.yml`](../../packaging/windows/package.yml) `application.version = 0.9.0` |
+| product/package version | [`packaging/windows/package.yml`](../../packaging/windows/package.yml) `application.version = 1.0.0`, fixed by `PRE-G9B-P0`; the package/distribution state was deliberately not promoted |
 | ZIP/MSI/EXE names and installer version | `tools/release/build-windows-package.ps1` consumes the package profile; it must not gain a second hand-maintained version |
 | runtime/About/title and DXF provenance | `GeoCeDGProductInfo` / generated build provenance consume the same package version |
 | upgrade identity | `application.upgrade_uuid` is a separate stable installer identity and must not be regenerated for the 1.0 promotion |
@@ -253,7 +266,7 @@ repairs.
 | 6 | move Midpoint; add Text to parameter group | `BOUNDED_MINOR` | `PRE-G9B-S1`: manifest-only taxonomy change plus compiler/menu/toolbar tests; one authoritative action placement |
 | 7 | persistent-tool buttons vertically displaced | `NOT_REPRODUCED` | `PRE-G9B-S1`, conditional on reproduction from real component bounds, insets, baseline and painted icon bounds; stop if the cause is not bounded |
 | 8 | author About text and baseline/author | `BOUNDED_MINOR` | `PRE-G9B-S1`: localized/profile-backed corrected text below; no product-version promotion |
-| 9 | product version 1.0 | `BOUNDED_BUT_SEPARATE` | `PRE-G9B-P1`, after D1 disposition; update the single package-version authority and all derived surfaces atomically, preserving the upgrade identifier |
+| 9 | product version 1.0 | `BOUNDED_BUT_SEPARATE` | materialized by `PRE-G9B-P0` after the D1 disposition: the single package-version authority and every derived surface were updated atomically, the upgrade identifier was preserved and the distribution state was left unpromoted. `PRE-G9B-P1` no longer owns this row |
 
 The author-approved corrected About text is preserved literally:
 
@@ -372,10 +385,34 @@ L5. A bounded PHASE selector may aggregate D1-specific assertions, but it must
 not redefine FINAL, package acceptance or legal approval. Any package build
 must bind its manifest/SBOM to the exact candidate and runtime hashes.
 
-## 6. PRE-G9B-P1 — public surface and version 1.0 promotion
+## 6. PRE-G9B-P0 — presentation themes, Preferences consolidation and the 1.0.0 baseline
 
-P1 is a small, separately authorized gate after successful S1–S4 and the
-explicit D1 disposition. It must evaluate, not assume:
+P0 is a bounded, separately authorized gate between D1 and P1. It owns:
+
+1. a closed selector of exactly three application presentation themes
+   (`Original`, `Scientific Paper`, `Cool Geometry`), with a stable semantic
+   persisted identity and a single palette authority;
+2. the consolidated `Layout & Presentation` preferences tab, which hosts the
+   inherited layout controls, the `PRE-G9B-S4` presentation sizes moved out of
+   Advanced without semantic, key, default or persistence change, and the theme
+   selector;
+3. a paint-time application presentation background for the Graphics canvas that
+   never reaches `EuclidianSettings`, `getXML` or any `.cedg`/`.ggb` field, and
+   that yields to any explicitly chosen document background; and
+4. fixing the canonical product version at `1.0.0` in the single package-version
+   authority, with every derived surface recomputed from it.
+
+P0 explicitly does not authorize a theme engine, a dark theme, arbitrary color
+customization, any change of geometric or document semantics, or any public
+release. `1.0.0` is a version baseline, not a distribution decision: the package
+remains `internal-evaluation` with public redistribution blocked. The normative
+contract is
+[application-presentation-theme.md](../../geocedg/specs/ui/application-presentation-theme.md).
+
+## 7. PRE-G9B-P1 — public surface and public-release readiness
+
+P1 is a small, separately authorized gate after successful S1–S4, the explicit
+D1 disposition and the P0 version baseline. It must evaluate, not assume:
 
 1. enabling the already approved Locus V2/SplineV2 public construction surface
    by default only in `AppConfigGeoCeDG`;
@@ -386,33 +423,36 @@ explicit D1 disposition. It must evaluate, not assume:
 4. keeping experimental/internal-only capabilities gated;
 5. deciding the independent `cedg.export.dxf.extended` default from S1 evidence,
    rather than enabling it transitively with Locus V2;
-6. aligning package/profile/About/version documentation from the single version
-   authority; and
-7. promoting package/product version `1.0.0` and public display `1.0` only at this
-   release/readiness boundary, if the author approves that convention.
+6. confirming that package/profile/About/version documentation still derives from
+   the single version authority fixed by P0; and
+7. deciding the public distribution disposition — package/distribution state,
+   release readiness and publication — within the explicitly approved D1 scope.
+   The `0.9.0` to `1.0.0` transition is no longer a P1 responsibility: P0
+   materialized it, and `1.0.0` never implied public release.
 
 Licensing status is not a geometric feature flag. P1 requires focused startup,
 creation-filter, Classic-containment, historical-load, package and interactive
 smoke evidence. It does not enable every experimental feature and does not
 authorize G9B.
 
-The current product/package version remains `0.9.0` throughout this design and
-all S1–S4 design authority. No version changes before a separately authorized
-P1 decision.
+The product/package version was `0.9.0` throughout the S1–S4 and D1 design
+authority. `PRE-G9B-P0` fixed it at `1.0.0` under its own explicit authorization,
+atomically across the single authority and its derived surfaces, preserving
+`application.upgrade_uuid` and leaving `distribution.status` unchanged.
 
-## 7. Compatibility and authority matrix
+## 8. Compatibility and authority matrix
 
-| Concern | S1–S4 | D1 | P1 |
-|---|---|---|---|
-| geometric/source authority | unchanged; DXF reads immutable semantic snapshots | unchanged | unchanged |
-| render/view authority | forbidden for export semantics; UI polish only | none | startup/presentation only |
-| old `.ggb`/`.cedg` | preserve; no inferred associations | package must include required loaders/notices | reconstruction preserved even if creation default changes |
-| Classic profile | regressions only, no GeoCeDG policy leakage | package composition explicitly inventoried | V2 default remains unchanged in Classic |
-| feature flags | diagnose Locus/DXF flags independently | not a rights mechanism | decide each public default independently |
-| public redistribution | remains blocked | may become technically ready; human decision required | only within explicitly approved D1 scope |
-| G9B/G9C/G9U2/G10 | not authorized | not authorized | not authorized |
+| Concern | S1–S4 | D1 | P0 | P1 |
+|---|---|---|---|---|
+| geometric/source authority | unchanged; DXF reads immutable semantic snapshots | unchanged | unchanged | unchanged |
+| render/view authority | forbidden for export semantics; UI polish only | none | paint-time presentation background only, never settings or XML | startup/presentation only |
+| old `.ggb`/`.cedg` | preserve; no inferred associations | package must include required loaders/notices | no new metadata; save/reopen unchanged by theme | reconstruction preserved even if creation default changes |
+| Classic profile | regressions only, no GeoCeDG policy leakage | package composition explicitly inventoried | no preset, no consolidation, inherited tab title | V2 default remains unchanged in Classic |
+| feature flags | diagnose Locus/DXF flags independently | not a rights mechanism | none introduced; the theme is a preference, not a flag | decide each public default independently |
+| public redistribution | remains blocked | may become technically ready; human decision required | remains blocked; `1.0.0` is not a release | only within explicitly approved D1 scope |
+| G9B/G9C/G9U2/G10 | not authorized | not authorized | not authorized | not authorized |
 
-## 8. Validation strategy and author evidence
+## 9. Validation strategy and author evidence
 
 Before productive work, each authorized slice must publish a validation matrix.
 The minimum combined plan is:
@@ -439,7 +479,7 @@ Acceptance receipts are technical evidence and never author approval. Earlier
 G5, G9X1, G4 and post-G9U1 evidence is preserved; it is not mechanically
 reclassified by this design.
 
-## 9. Open author decisions
+## 10. Open author decisions
 
 1. After S1 characterization, decide whether a conditional SplineV2 export
    capability subphase is required by genuinely new fidelity semantics.
@@ -449,7 +489,7 @@ reclassified by this design.
    treatment of the existing diagnostic argument.
 4. At P1, decide the independent extended-DXF default policy.
 5. Define the exact public distribution scope after D1 human review.
-6. At P1, decide the final `1.0.0`/display `1.0` release disposition.
+6. At P1, decide the final public release/distribution disposition; the `1.0.0`/display `1.0` version baseline is already materialized by P0.
 7. Only after this track, decide whether and when to authorize G9B.
 
 No ADR is created by this candidate. Calendar sequencing and bounded phase
@@ -457,7 +497,7 @@ boundaries fit the roadmap; future new DXF fidelity semantics, Text rendering
 semantics, or a durable cross-product licensing/package policy may independently
 warrant an ADR when their actual choices are known.
 
-## 10. Authorization state
+## 11. Authorization state
 
 ```text
 PRE_G9B_ROADMAP_EXTENSION = PRE-G9B ROADMAP EXTENSION — DESIGN — AUTHOR APPROVED
@@ -466,6 +506,8 @@ PRE_G9B_S2_IMPLEMENTATION_AUTHORIZED = false
 PRE_G9B_S3_IMPLEMENTATION_AUTHORIZED = false
 PRE_G9B_S4_IMPLEMENTATION_AUTHORIZED = false
 PRE_G9B_D1_RESEARCH_OR_IMPLEMENTATION_AUTHORIZED = false
+PRE_G9B_P0_IMPLEMENTATION_AUTHORIZED = true
+PRE_G9B_P0_AUTHOR_APPROVED = false
 PRE_G9B_P1_PROMOTION_AUTHORIZED = false
 G9B_AUTHORIZED = false
 G9C_AUTHORIZED = false

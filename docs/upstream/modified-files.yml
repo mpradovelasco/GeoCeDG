@@ -42,7 +42,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/main/AppD.java",
       "change": "modified",
-      "purpose": "Preserve profile bootstrap hooks and add fail-closed one-read .cedg preflight, prepared and atomic undo-baseline commit with full rollback on live-parse or commit failure, product-window routing and current-document preservation without changing ZIP/XML internals. G9U1: capture native transaction UI state before hiding navigation, so rollback can restore the prior presentation; non-native ordering and formats are unchanged. G9U1 review round 1: preflight the temporary native save archive with the existing disposable reader before atomic replacement, preserving the previous target and unsaved state on failure; no schema or loader repair. PRE-G9B-S2: make Desktop font listeners and toolbar icon scaling consume GUI font ownership rather than the construction-object base font; Classic fallback remains unchanged. PRE-G9B-S4: expose behavior-neutral product hooks for menu, Algebra, Construction Protocol and product-specific presentation options. PRE-G9B-S4-R1: expose a toolbar-specific icon-size hook so main-toolbar sizing no longer controls general dialog icons; Classic delegates to the former scaled-icon value.",
+      "purpose": "Preserve profile bootstrap hooks and add fail-closed one-read .cedg preflight, prepared and atomic undo-baseline commit with full rollback on live-parse or commit failure, product-window routing and current-document preservation without changing ZIP/XML internals. G9U1: capture native transaction UI state before hiding navigation, so rollback can restore the prior presentation; non-native ordering and formats are unchanged. G9U1 review round 1: preflight the temporary native save archive with the existing disposable reader before atomic replacement, preserving the previous target and unsaved state on failure; no schema or loader repair. PRE-G9B-S2: make Desktop font listeners and toolbar icon scaling consume GUI font ownership rather than the construction-object base font; Classic fallback remains unchanged. PRE-G9B-S4: expose behavior-neutral product hooks for menu, Algebra, Construction Protocol and product-specific presentation options. PRE-G9B-S4-R1: expose a toolbar-specific icon-size hook so main-toolbar sizing no longer controls general dialog icons; Classic delegates to the former scaled-icon value. PRE-G9B-P0: add null-returning product hooks for the presentation-theme panel, presentation-sizing ownership and a localized preferences-tab title.",
       "authority": "geocedg/specs/ui/native-document-identity.md"
     },
     {
@@ -3790,9 +3790,27 @@
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/dialog/options/OptionsLayoutD.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-P0: host the product presentation-size and presentation-theme groups in the consolidated Layout & Presentation tab through null-returning product hooks; Classic keeps the inherited layout tab unchanged.",
+      "authority": "geocedg/specs/ui/application-presentation-theme.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/toolbar/ModeToggleMenuD.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-P0: resolve the tool popup surface from the GeoCeDG presentation role instead of a hard-coded white literal, keeping that literal when the role is undefined.",
+      "authority": "geocedg/specs/ui/application-presentation-theme.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/layout/panels/AlgebraDockPanel.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-P0: resolve the Algebra content surface from the GeoCeDG presentation role instead of a hard-coded white literal, keeping that literal when the role is undefined.",
+      "authority": "geocedg/specs/ui/application-presentation-theme.md"
+    },
+    {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/dialog/options/OptionsAdvancedD.java",
       "change": "modified",
-      "purpose": "Expose locked GeoCeDG Continuity OFF while retaining Classic configuration. PRE-G9B-S4: replace only the GeoCeDG mixed GUI-font row with the compact product presentation panel while Classic keeps its existing row. PRE-G9B-S4-R1: retain that seam for the aligned six-control panel.",
+      "purpose": "Expose locked GeoCeDG Continuity OFF while retaining Classic configuration. PRE-G9B-S4: replace only the GeoCeDG mixed GUI-font row with the compact product presentation panel while Classic keeps its existing row. PRE-G9B-S4-R1: retain that seam for the aligned six-control panel. PRE-G9B-P0: suppress both that row and the product panel in Advanced once the product owns presentation sizing, which now lives in Layout & Presentation.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -3828,7 +3846,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/view/properties/PropertiesViewD.java",
       "change": "modified",
-      "purpose": "Integrate the bounded read-only semantic-definition tab into the normal product Properties lifecycle. PRE-G9B-S2: expose pending-Text discard and suppress the inherited unconditional close checkpoint while the Text editor owns commit/Undo.",
+      "purpose": "Integrate the bounded read-only semantic-definition tab into the normal product Properties lifecycle. PRE-G9B-S2: expose pending-Text discard and suppress the inherited unconditional close checkpoint while the Text editor owns commit/Undo. PRE-G9B-P0: prefer the product preferences-tab title when the product supplies one.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -3918,7 +3936,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/main/App.java",
       "change": "modified",
-      "purpose": "G9U1 application presentation correction: compare the existing stored construction-navigation flag in the setter shortcut so native rollback can restore its prior value; retain the special public visibility getter, serialized format, identities and kernel semantics. PRE-G9B-S4: add a behavior-neutral Euclidian UI-font ownership seam; Classic still returns the construction application font.",
+      "purpose": "G9U1 application presentation correction: compare the existing stored construction-navigation flag in the setter shortcut so native rollback can restore its prior value; retain the special public visibility getter, serialized format, identities and kernel semantics. PRE-G9B-S4: add a behavior-neutral Euclidian UI-font ownership seam; Classic still returns the construction application font. PRE-G9B-P0: add a null-returning application presentation-background hook that never participates in serialization.",
       "authority": "geocedg/specs/ui/native-document-identity.md"
     },
     {
@@ -4218,7 +4236,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/euclidian/EuclidianView.java",
       "change": "modified",
-      "purpose": "PRE-G9B-S4: obtain view-interface typography through an application ownership seam while preserving the Classic default.",
+      "purpose": "PRE-G9B-S4: obtain view-interface typography through an application ownership seam while preserving the Classic default. PRE-G9B-P0: consult the application presentation background when clearing the painted canvas only; getXML keeps writing the document background unchanged.",
       "authority": "geocedg/specs/ui/application-presentation-sizing.md"
     },
     {
@@ -4266,7 +4284,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/toolbar/ToolbarContainer.java",
       "change": "modified",
-      "purpose": "PRE-G9B-S4-R1: bind toolbar-right command-help typography to General UI and refresh it after toolbar rebuilds without coupling text to toolbar icon size.",
+      "purpose": "PRE-G9B-S4-R1: bind toolbar-right command-help typography to General UI and refresh it after toolbar rebuilds without coupling text to toolbar icon size. PRE-G9B-P0: use the same product preferences-tab title in the properties menu.",
       "authority": "geocedg/specs/ui/application-presentation-sizing.md"
     },
     {
@@ -4284,7 +4302,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/view/consprotocol/ConstructionProtocolViewD.java",
       "change": "modified",
-      "purpose": "PRE-G9B-S4: apply the independent Construction Protocol font to its table, header and scroll presentation without protocol semantics changes.",
+      "purpose": "PRE-G9B-S4: apply the independent Construction Protocol font to its table, header and scroll presentation without protocol semantics changes. PRE-G9B-P0: resolve the protocol content surface from the GeoCeDG presentation role instead of a hard-coded white literal, keeping that literal when the role is undefined.",
       "authority": "geocedg/specs/ui/application-presentation-sizing.md"
     },
     {

@@ -74,8 +74,8 @@ resources fail validation and never fall back to upstream branding. This
 internal authorization does not itself clear public redistribution. Inherited
 Classic UI strings/resources remain a separate release-audit limitation.
 
-The central build/package provenance declares semantic version `0.9.0`; product
-surfaces render its concise display form `GeoCeDG 0.9`. The frame title appends
+The central build/package provenance declares semantic version `1.0.0`; product
+surfaces render its concise display form `GeoCeDG 1.0`. The frame title appends
 the current filename when present. About consumes the same version authority,
 records the GeoGebra baseline and `Manuel Prado-Velasco, Universidad de Sevilla`,
 and retains required upstream credits/licenses.

@@ -2,7 +2,7 @@
 
 Status: **APPROVED** on 2026-09-16 as the PRE-G9B-D1 deployability profile.
 This is a compact navigation summary, not a second licensing authority and not
-a release artifact. The current `0.9.0` package profile remains marked
+a release artifact. The current `1.0.0` package profile remains marked
 `internal-evaluation`; changing that package state belongs to a separately
 authorized release/promotion step.
 
@@ -54,7 +54,7 @@ does not duplicate or supersede that evidence.
 
 D1 approves the audited composition as deployable for PROFILE NC. The current
 [Windows package profile](../../packaging/windows/package.yml) still emits an
-internal-evaluation `0.9.0` package, and the
+internal-evaluation `1.0.0` package, and the
 [Windows builder](../../tools/release/build-windows-package.ps1) continues to
 enforce that marker. D1 approval does not itself create, publish or retitle a
 public binary and does not authorize P1 or version 1.0.

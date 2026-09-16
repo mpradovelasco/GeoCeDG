@@ -58,6 +58,10 @@ public class OptionsLayoutD
 	private JPanel inputBarPanel;
 	private JPanel toolbarPanel;
 	private JPanel perspectivesPanel;
+	/** PRE-G9B-P0 product presentation sizes, hosted by this tab. */
+	private OptionPanelD productPresentationPanel;
+	/** PRE-G9B-P0 product presentation theme, hosted by this tab. */
+	private OptionPanelD productThemePanel;
 
 	private JCheckBox ckShowInputHelp;
 	private JCheckBox ckShowTitleBar;
@@ -121,6 +125,8 @@ public class OptionsLayoutD
 		initPerspectivesPanel();
 		initToolBarPanel();
 		initSideBarPanel();
+		productPresentationPanel = app.newProductPresentationOptionsPanel();
+		productThemePanel = app.newProductPresentationThemePanel();
 
 		JPanel panel = new JPanel();
 		panel.setLayout(new FullWidthLayout());
@@ -128,6 +134,12 @@ public class OptionsLayoutD
 		panel.add(toolbarPanel);
 		panel.add(perspectivesPanel);
 		panel.add(sideBarPanel);
+		if (productPresentationPanel != null) {
+			panel.add(productPresentationPanel.getWrappedPanel());
+		}
+		if (productThemePanel != null) {
+			panel.add(productThemePanel.getWrappedPanel());
+		}
 
 		panel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
 
@@ -335,6 +347,12 @@ public class OptionsLayoutD
 		rbSidebarWest.addActionListener(this);
 		rbButtonSidebar.addActionListener(this);
 		rbPespectiveSidebar.addActionListener(this);
+		if (productPresentationPanel != null) {
+			productPresentationPanel.updateGUI();
+		}
+		if (productThemePanel != null) {
+			productThemePanel.updateGUI();
+		}
 		revalidate();
 
 	}
@@ -443,6 +461,16 @@ public class OptionsLayoutD
 		ckShowSideBar.setText(loc.getMenu("ShowSidebar"));
 		rbPespectiveSidebar.setText(loc.getMenu("PerspectivePanel"));
 		rbButtonSidebar.setText(loc.getMenu("ViewPanel"));
+		setProductLabels();
+	}
+
+	private void setProductLabels() {
+		if (productPresentationPanel instanceof SetLabels) {
+			((SetLabels) productPresentationPanel).setLabels();
+		}
+		if (productThemePanel instanceof SetLabels) {
+			((SetLabels) productThemePanel).setLabels();
+		}
 	}
 
 	@Override
@@ -493,10 +521,22 @@ public class OptionsLayoutD
 		ckShowSideBar.setFont(font);
 
 		reinit();
+		if (productPresentationPanel != null) {
+			productPresentationPanel.updateFont();
+		}
+		if (productThemePanel != null) {
+			productThemePanel.updateFont();
+		}
 	}
 
 	@Override
 	public void setSelected(boolean flag) {
 		// see OptionsEuclidianD for possible implementation
+		if (productPresentationPanel != null) {
+			productPresentationPanel.setSelected(flag);
+		}
+		if (productThemePanel != null) {
+			productThemePanel.setSelected(flag);
+		}
 	}
 }

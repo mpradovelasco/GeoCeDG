@@ -891,6 +891,10 @@ public class PropertiesViewD extends PropertiesView implements SetLabels {
 	 * @return tab name
 	 */
 	public String getTypeString(OptionType type) {
+		String productTitle = ((AppD) app).getProductOptionTypeTitle(type);
+		if (productTitle != null) {
+			return loc.getPlain("PreferencesOfA", productTitle);
+		}
 		switch (type) {
 		case DEFAULTS:
 			return app.isUnbundledOrWhiteboard()

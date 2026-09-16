@@ -23,7 +23,7 @@ Classic diagnóstico conserva sus herramientas y configuración upstream.
 GeoCeDG mantiene **Continuidad desactivada**: las selecciones semánticas son
 deterministas, no una búsqueda del punto más cercano a su posición anterior.
 El título y **Ayuda → Acerca de GeoCeDG** identifican la autoridad central
-`GeoCeDG 0.9`, el baseline GeoGebra y la autoría; el icono de ventana y la
+`GeoCeDG 1.0`, el baseline GeoGebra y la autoría; el icono de ventana y la
 pantalla de inicio usan los recursos GeoCeDG versionados aprobados. El splash
 actual es más compacto y el arranque GeoCeDG solicita traerlo al primer plano;
 esta política no se aplica al lanzador Classic.

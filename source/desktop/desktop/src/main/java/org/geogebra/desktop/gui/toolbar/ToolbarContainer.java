@@ -17,6 +17,7 @@
 package org.geogebra.desktop.gui.toolbar;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.FlowLayout;
@@ -42,6 +43,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.border.Border;
 
 import org.geogebra.common.euclidian.EuclidianConstants;
@@ -150,6 +152,10 @@ public class ToolbarContainer extends JPanel implements ComponentListener {
 	 */
 	public void buildGui() {
 		removeAll();
+		Color themedSurface = UIManager.getColor("GeoCeDG.presentation.surfaceBackground");
+		if (themedSurface != null) {
+			setBackground(themedSurface);
+		}
 
 		// add visible top border in main toolbar container
 		if (isMain) {
@@ -831,7 +837,9 @@ public class ToolbarContainer extends JPanel implements ComponentListener {
 		private void initMenu() {
 
 			for (final OptionType type : OptionType.values()) {
-				String menuText = PropertiesView.getTypeStringSimple(loc, type);
+				String productTitle = app.getProductOptionTypeTitle(type);
+				String menuText = productTitle == null
+						? PropertiesView.getTypeStringSimple(loc, type) : productTitle;
 				Icon ic = PropertiesViewD.getTypeIcon(app, type);
 				JMenuItem item = new JMenuItem(menuText, ic);
 

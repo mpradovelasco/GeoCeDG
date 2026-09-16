@@ -3,15 +3,15 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Roadmap vivo y normativo de fases; no sustituye las especificaciones ni los ADR aceptados |
-| Versión documental | 4.01 |
+| Versión documental | 4.02 |
 | Fecha de revisión | 16 de septiembre de 2026 |
 | Baseline GeoGebra | 5.4.928.0, commit `9b93256b7df401ff056c37b502d82df4d72b1522`, tag `geogebra-baseline-5.4.928.0` |
-| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1–G9A3, el track G9A, G9U0 y sus refinamientos R1–R6, G9X1, G9S1, G9S1-R1, G9U1 y POST-G9U1-A6, A1, A2, A3, A3-FRONTEND, A5 y A7 `PASS — AUTHOR APPROVED`. POST-G9U1-A4 tiene investigación/diseño completos y `AUTHOR APPROVED`; P3-R1 es su refinamiento autor-aprobado. El track post-G9U1 está `COMPLETE — AUTHOR APPROVED`. La extensión pre-G9B está `DESIGN — AUTHOR APPROVED`; `PRE-G9B-S1`, R1, R2, `PRE-G9B-S2`, `PRE-G9B-S3`, `PRE-G9B-S4`, S4-R1, S4-R2 y `PRE-G9B-D1` están `PASS — AUTHOR APPROVED`. D1 aprueba deployability para la composición exacta PROFILE NC: 39/39 JAR externos aplicables y 46/46 fonts trazados, con PACKAGING/STATIC aceptados y revisión profesional completada. PROFILE COMMERCIAL permanece `PENDING EXTERNAL TERMS / NOT AUTHORIZED`. La solicitud OEPM denominativa `GeoCeDG` M4403138 está presentada y pendiente de registro; no existe evidencia de solicitud figurativa. `selfApproved=false`; el package `0.9.0` sigue `internal-evaluation` hasta una actuación posterior. P1 conserva su orden autoral y no se inicia aquí. G9B/G9C permanecen diseñadas y no autorizadas; G9U2 sigue bloqueada por la aprobación global G9; G10P es solo planificación aprobada y ninguna implementación productiva G10 está autorizada. El riesgo `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` continúa abierto para disposición antes del cierre global G9. Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
+| Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1–G9A3, el track G9A, G9U0 y sus refinamientos R1–R6, G9X1, G9S1, G9S1-R1, G9U1 y POST-G9U1-A6, A1, A2, A3, A3-FRONTEND, A5 y A7 `PASS — AUTHOR APPROVED`. POST-G9U1-A4 tiene investigación/diseño completos y `AUTHOR APPROVED`; P3-R1 es su refinamiento autor-aprobado. El track post-G9U1 está `COMPLETE — AUTHOR APPROVED`. La extensión pre-G9B está `DESIGN — AUTHOR APPROVED`; `PRE-G9B-S1`, R1, R2, `PRE-G9B-S2`, `PRE-G9B-S3`, `PRE-G9B-S4`, S4-R1, S4-R2 y `PRE-G9B-D1` están `PASS — AUTHOR APPROVED`. D1 aprueba deployability para la composición exacta PROFILE NC: 39/39 JAR externos aplicables y 46/46 fonts trazados, con PACKAGING/STATIC aceptados y revisión profesional completada. PROFILE COMMERCIAL permanece `PENDING EXTERNAL TERMS / NOT AUTHORIZED`. La solicitud OEPM denominativa `GeoCeDG` M4403138 está presentada y pendiente de registro; no existe evidencia de solicitud figurativa. `selfApproved=false`. `PRE-G9B-P0` está `IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW`: añade los tres temas de presentación cerrados, consolida Preferences en `Layout & Presentation` y fija la versión canónica `1.0.0`. El package `1.0.0` sigue `internal-evaluation` y `1.0.0` no equivale a release pública. P1 conserva su orden autoral, ya sin el cambio de versión, y no se inicia aquí. G9B/G9C permanecen diseñadas y no autorizadas; G9U2 sigue bloqueada por la aprobación global G9; G10P es solo planificación aprobada y ninguna implementación productiva G10 está autorizada. El riesgo `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` continúa abierto para disposición antes del cierre global G9. Locus V2 y la semántica espacial siguen experimentales y desactivadas por defecto |
 | Última fase cerrada | PRE-G9B-D1 — `PASS — AUTHOR APPROVED`; PROFILE NC `APPROVED`; 39/39 JAR externos y 46/46 fonts cerrados; [informe final](../validation/pre_g9b_d1_closeout_report.md); `selfApproved=false` |
 | Última fase ejecutada | PRE-G9B-S4 — reemplazo autor-autorizado `verification-6672b2c96f9145f388148105c543239c`, candidato exacto `eb6af9799eec70459485b13fe1c9cadd394e8dca`, `ACCEPTED / COMPLETE`, 108 pruebas, cero fallos/errores/omisiones/diagnósticos. El rechazo histórico `verification-8e5b5cb792d24e469e84548307862984` permanece `REJECTED_VERIFICATION_CORE` por desajuste temporal 13/12 de identidades y no se reinterpreta como PASS |
 | Mantenimiento de verificación | `VERIFICATION RECONCILIATION — PASS — AUTHOR APPROVED`; corrección redefine/currentness `3654b7bd2bb82bee0257cbf7105445fd8130ae53` también `PASS — AUTHOR APPROVED`; candidato técnico `5531239d25844a74da6545026e8f399e86630062`, tree `3302ec16414d62f26183f3a97a4e31560344fb53`; [informe de cierre](../validation/verification_reconciliation_closeout_report.md); `selfApproved=false` |
 | Evidencia FINAL de reconciliación | Reemplazo autor-autorizado `verification-403d5931a36d488aa8df153b2a255da2`, `ACCEPTED / COMPLETE`, 40/40 checks; los rechazos anteriores permanecen evidencia histórica. El resultado válido no emitió un receipt separado y esa deuda operativa no bloquea este cierre |
-| Siguiente puerta | P1 puede comenzar solo mediante su autorización separada para superficie pública/versión/package state. D1 no lo inicia. Contactos COMMERCIAL-A/OpenGeoProver, distribución comercial, marca figurativa, G9B, G9C, G9U2, G12 y G10 productivo permanecen no autorizados |
+| Siguiente puerta | revisión autoral de `PRE-G9B-P0` (temas, consolidación de Preferences y baseline `1.0.0`). P1 puede comenzar solo mediante su autorización separada para superficie pública y package/distribution state; ni D1 ni P0 lo inician. Contactos COMMERCIAL-A/OpenGeoProver, distribución comercial, marca figurativa, G9B, G9C, G9U2, G12 y G10 productivo permanecen no autorizados |
 | Primer cliente | Aplicación de escritorio de la familia Classic 5 |
 | Núcleo | Java compartido de GeoGebra, extendido solo cuando la semántica lo requiere |
 
@@ -2930,7 +2930,9 @@ G9U1 PASS
   -> PRE-G9B-S3 construction Text view-zoom behavior (PASS — AUTHOR APPROVED)
   -> PRE-G9B-S4/R1/R2 independent presentation sizing (PASS — AUTHOR APPROVED)
   -> PRE-G9B-D1 licensing/assets/deployability (PASS — AUTHOR APPROVED; PROFILE NC APPROVED)
-  -> PRE-G9B-P1 public surface/version 1.0 (DESIGN CANDIDATE; NOT AUTHORIZED)
+  -> PRE-G9B-P0 presentation themes / Preferences consolidation / 1.0.0 baseline
+     (IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW)
+  -> PRE-G9B-P1 public surface and public-release readiness (DESIGN CANDIDATE; NOT AUTHORIZED)
   -> separate later author decision on G9B
   -> G9C
   -> G9 global closeout
@@ -3096,10 +3098,11 @@ dependencia G9B.
 ### Track PRE-G9B — estabilización, deployability y promoción pública
 
 **Estado:** diseño de track `AUTHOR APPROVED`; S1, R1, R2, S2, S3, S4,
-S4-R1 y S4-R2 están `PASS — AUTHOR APPROVED`. D1 conserva audit/disposition
-históricos; su checkpoint de licensing framework/payload closure está
-`COMPLETE — AUTHOR APPROVED`, mientras la fase D1 permanece abierta, sin PASS,
-y la redistribución sigue bloqueada. P1 y promoción no están autorizadas.
+S4-R1, S4-R2 y D1 están `PASS — AUTHOR APPROVED`. D1 conserva como historia su
+audit/disposition y su checkpoint de licensing framework/payload closure; la fase
+está cerrada para PROFILE NC y la redistribución pública sigue bloqueada.
+P0 está `IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW`; `selfApproved=false`.
+P1 y la promoción pública no están autorizadas.
 
 El [diseño de la extensión](../architecture/pre_g9b_stabilization_deployability_design.md)
 define esta secuencia de puertas autorales de calendario:
@@ -3113,7 +3116,8 @@ define esta secuencia de puertas autorales de calendario:
 | `PRE-G9B-S3` | comportamiento visual de Text de construcción ante zoom, sin autoridad geométrica del viewport | `PASS — AUTHOR APPROVED`; [informe de cierre](../validation/pre_g9b_s3_text_view_scaling_candidate_report.md) y contrato normativo en [construction-text-view-scaling.md](../../geocedg/specs/ui/construction-text-view-scaling.md); `selfApproved=false`, sin autorizar S4+ |
 | `PRE-G9B-S4` | tamaños independientes de UI general, menú, iconos, Algebra, Construction Protocol, Graphics y Graphics2 | `PASS — AUTHOR APPROVED`; integra R1/R2, PHASE de reemplazo aceptada y smoke autoral final; [informe de cierre](../validation/pre_g9b_s4_application_presentation_sizing_candidate_report.md); `selfApproved=false` |
 | `PRE-G9B-D1` | inventario, investigación primaria, disposición humana, remediación autorizada y verificación de deployability | `PASS — AUTHOR APPROVED`; PROFILE NC `APPROVED`; 39/39 JAR externos y 46/46 fonts trazados; revisión profesional aceptada; word mark OEPM `M4403138` presentada/pendiente; PROFILE COMMERCIAL no autorizado; [informe final](../validation/pre_g9b_d1_closeout_report.md); `selfApproved=false` |
-| `PRE-G9B-P1` | decidir defaults públicos LocusV2/SplineV2, flag DXF independiente, compatibilidad y promoción de versión 1.0 | `DESIGNED — PROMOTION NOT YET AUTHORIZED` |
+| `PRE-G9B-P0` | temas de presentación cerrados, consolidación de Preferences en `Layout & Presentation` y fijación de la versión canónica `1.0.0` | `IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW`; [informe de candidato](../validation/pre_g9b_p0_presentation_theme_candidate_report.md) y [contrato normativo](../../geocedg/specs/ui/application-presentation-theme.md); `selfApproved=false`; no promociona package/distribution state ni autoriza P1 |
+| `PRE-G9B-P1` | decidir defaults públicos LocusV2/SplineV2, flag DXF independiente, compatibilidad, startup/public-readiness y la disposición de release/distribución pública dentro del alcance legal aprobado | `DESIGNED — PROMOTION NOT YET AUTHORIZED`; la transición `0.9.0` -> `1.0.0` ya no le pertenece: quedó materializada en P0 |
 
 El cierre D1 vigente está documentado en el [informe final](../validation/pre_g9b_d1_closeout_report.md), con índices compactos para [PROFILE NC](../licensing/geocedg_profile_nc.md) y [PROFILE COMMERCIAL](../licensing/geocedg_profile_commercial.md). Conserva como historia el [informe de cierre de payload](../validation/pre_g9b_d1_six_payload_closure_continuation.md), el [audit factual](../validation/pre_g9b_d1_licensing_assets_deployability_research_audit.md), el [informe de licensing/disposition y remediación acotada](../validation/pre_g9b_d1_licensing_disposition_and_bounded_remediation_candidate.md) y el [plan de remediación](../validation/pre_g9b_d1_remediation_plan_candidate.md). Las autoridades vivas son la [matriz machine-readable](../../geocedg/validation/pre-g9b-d1/component-disposition.json), el [docket humano](../validation/pre_g9b_d1_human_decision_docket.md), la [matriz de componentes](../licensing/component-matrix.md), el [asset manifest](../../geocedg/resources/assets-manifest.yml), el [source-access manifest](../../geocedg/resources/source-access-manifest.json) y la [evidencia de solicitud de marca](../licensing/trademark-registration/README.md).
 
@@ -3134,9 +3138,10 @@ preflight G9X1 semántico. SplineV2 consume ese mismo contrato mientras resulte
 suficiente; un nuevo contrato de fidelidad o entidad DXF `SPLINE` requeriría una
 subfase separada, no una ampliación silenciosa del bugfix.
 
-S1 precede los slices obligatorios S2, S3 y S4; solo entonces siguen D1 y P1 por
-decisión autoral. P1 solo puede promocionar `1.0` tras la disposición humana
-exigida por D1. Ninguna de estas relaciones
+S1 precede los slices obligatorios S2, S3 y S4; solo entonces siguen D1, P0 y P1
+por decisión autoral. La disposición humana exigida por D1 precede a P0, que fija
+la versión canónica `1.0.0` sin promocionar el package/distribution state. P1
+conserva la decisión de superficie pública y de release, ya sin cambio de versión. Ninguna de estas relaciones
 añade una dependencia semántica a G9B, reabre G9U1/A1–A7, amplía G12 ni autoriza
 G10 productivo. Después de P1 seguirá siendo necesaria otra decisión explícita
 del autor para volver a G9B.

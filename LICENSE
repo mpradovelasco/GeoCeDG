@@ -59,7 +59,8 @@ composition and remains non-commercial only.
 INTERNAL EVALUATION — NOT FOR REDISTRIBUTION
 
 PRE-G9B-D1 is PASS — AUTHOR APPROVED, but this does not retitle or publish the
-current `0.9.0` internal-evaluation package. Public package-state/version
-materialization belongs to a later explicit step. Commercial distribution is
+current `1.0.0` internal-evaluation package. PRE-G9B-P0 fixed the canonical
+product version at `1.0.0` without changing the package or distribution state;
+public package-state materialization belongs to a later explicit step. Commercial distribution is
 not authorized and remains dependent on external terms recorded in
 docs/licensing/geocedg_profile_commercial.md.

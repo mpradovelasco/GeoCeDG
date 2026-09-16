@@ -96,13 +96,20 @@ alters an object's mathematical properties or changes another S4 value.
 
 ## 5. UI and compatibility
 
-GeoCeDG replaces the inherited single mixed GUI-font row in Advanced options
-with one compact six-row presentation-size panel whose descriptors are left
-aligned and whose controls share one value column. Labels are explicitly:
+GeoCeDG suppresses the inherited single mixed GUI-font row and offers one
+compact six-row presentation-size panel whose descriptors are left aligned and
+whose controls share one value column. Labels are explicitly:
 `General UI font size`, `Menu font size`, `Toolbar icon size`, `Algebra font size`,
 `Construction Protocol font size`, and `Graphics font size` (with equivalent
-Spanish product text). The inherited Advanced options surface and dialog
-lifecycle remain authoritative.
+Spanish product text).
+
+`PRE-G9B-P0` moved that panel from the Advanced tab to the consolidated
+`Layout & Presentation` tab. The move changed the UI organization only: keys,
+fresh defaults, supported values, migration, live application, ownership and
+Classic neutrality are unchanged, and the controls exist exactly once. The
+inherited Properties surface and its dialog lifecycle remain authoritative; see
+[application-presentation-theme.md](application-presentation-theme.md) for the
+consolidated tab and the presentation-theme preference that shares it.
 
 The construction-owned host control is labelled `Text font size`. It continues
 to set the ordinary and LaTeX construction-Text base font only. The Text dialog

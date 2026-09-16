@@ -3635,7 +3635,11 @@ public abstract class EuclidianView implements EuclidianViewInterfaceCommon,
 					getMaxXScreen() - getMinXScreen(),
 					getMaxYScreen() - getMinYScreen());
 		} else {
-			g.setColor(getBackgroundCommon());
+			GColor documentBackground = getBackgroundCommon();
+			GColor presentationBackground =
+					app.getPresentationBackground(documentBackground);
+			g.setColor(presentationBackground == null
+					? documentBackground : presentationBackground);
 			g.updateCanvasColor();
 			g.fillRect(getMinXScreen(), getMinYScreen(),
 					getMaxXScreen() - getMinXScreen(),

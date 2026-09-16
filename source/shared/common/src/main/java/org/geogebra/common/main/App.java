@@ -3613,6 +3613,21 @@ public abstract class App implements UpdateSelection, AppInterface, EuclidianHos
 	}
 
 	/**
+	 * Application presentation background of a Euclidian view.
+	 *
+	 * <p>This is a paint-time presentation role only. It is never stored in
+	 * {@code EuclidianSettings} and never participates in document or preferences
+	 * serialization, so a product presentation preset cannot rewrite {@code bgColor}.
+	 *
+	 * @param documentBackground background currently owned by the document
+	 * @return presentation background to paint, or {@code null} to paint the document
+	 *         background unchanged
+	 */
+	public GColor getPresentationBackground(GColor documentBackground) {
+		return null;
+	}
+
+	/**
 	 * @return whether we are running suite
 	 */
 	public boolean isSuite() {
