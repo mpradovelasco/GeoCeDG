@@ -170,17 +170,21 @@ se conservan como cronología en el
   para implementar el diseño post-R1 como candidato, no para autoaprobarlo. G9B, G9C,
   G9U2, G10 y las
   fases posteriores no están autorizadas.
-- Locus V2: superficie pública `experimental` aprobada para G9U0, exclusiva de
-  GeoCeDG y desactivada por defecto
+- Locus V2: superficie pública aprobada en G9U0 y promovida por PRE-G9B-P1 a
+  comportamiento por defecto de GeoCeDG; su madurez sigue siendo `experimental`
+  y Classic no la recibe
+- DXF extendido G9X1: aprobado en G9X1 y promovido por PRE-G9B-P1 a
+  comportamiento por defecto de GeoCeDG, con gate propio e independiente del de
+  Locus V2
 - `PACKAGING TECHNICAL STATUS = PASS`
 - `PUBLIC REDISTRIBUTION STATUS = BLOCKED PENDING LICENSE/ASSET APPROVAL`
 
 This guide is the practical entry point for the GeoCeDG author/developer. It
 describes observable product behavior, G7 characterization, the
-author-approved internal G7B/G8 kernels, the author-approved default-off G9U0
-surface, the author-approved default-off G9X1 export service and the promoted
-G9U0-R2 `.cedg`/ordinary-presentation behavior. It does not replace the
-[repository README](../../README.md),
+author-approved internal G7B/G8 kernels, the G9U0 public surface and the G9X1
+export service (both author-approved and promoted by PRE-G9B-P1 to default
+GeoCeDG behavior) and the promoted G9U0-R2 `.cedg`/ordinary-presentation
+behavior. It does not replace the [repository README](../../README.md),
 [living technical roadmap](../roadmap/geocedg_roadmap.md), ADRs, specifications, or
 architecture documentation. Mathematical definitions are collected in the
 [mathematical reference](geocedg_mathematical_reference.md); implementation and
@@ -201,20 +205,23 @@ run:
 
 | Reader | What is available now | What is not available |
 |---|---|---|
-| Normal GeoCeDG user | Public `Locus[...]` continues to use the unchanged legacy `GeoLocus`; native V2 files can be preserved | New V2 creation remains off by default |
-| Authorized G9U0 evaluator | Explicit opt-in to the approved experimental commands, tools and rich-result inspector described below | The surface remains experimental, not stable or default-on |
+| Normal GeoCeDG user | The `LocusV2`/`SplineV2` commands, tools and rich-result inspector described below are available without any argument; public `Locus[...]` continues to use the unchanged legacy `GeoLocus` | V2 is still not a generic `Path`, and its maturity is `experimental`, not `stable` |
+| Diagnostic or compatibility run | `--enableLocusV2=false` starts GeoCeDG without the V2 creation surface | The argument changes creation policy only; durable identity, serialization and geometric meaning are unaffected |
 | GeoCeDG Classic diagnostic user | Native V2 objects can be loaded, recomputed and saved without changing their type | No V2 creation command or tool |
 | External upstream GeoGebra user | Legacy constructions remain compatible | Native GeoCeDG V2 objects are outside the compatibility guarantee and are never silently converted to a polyline or legacy locus |
 
-To evaluate the author-approved experimental G9U0 surface in the GeoCeDG
-profile, opt in for that process only:
+PRE-G9B-P1 promoted this surface to normal GeoCeDG behavior, so the ordinary
+launch already exposes it. The historical argument is retained as a
+compatibility and diagnostic override and works in both directions:
 
 ```powershell
-.\gradlew.bat :desktop:desktop:runGeoCeDG --args="--enableLocusV2=true"
+.\gradlew.bat :desktop:desktop:runGeoCeDG --args="--enableLocusV2=false"
 ```
 
-Omitting the argument leaves the feature off. The opt-in exposes these exact
-G9U0 command forms:
+Omitting the argument applies the product default, which is on in GeoCeDG and
+unchanged (off) in the Classic diagnostic application. Disabling creation never
+deletes or degrades a persisted V2 object: reconstruction of historical
+documents is a separate contract. These are the exact G9U0 command forms:
 
 | Command | Observable result |
 |---|---|
@@ -432,9 +439,9 @@ reduced controls `Length(S)=4`,
 public branch key `generator.main`. The earlier `scalar-locus/main` suggestion
 was an instruction error, not a product defect.
 
-The approved boundary remains experimental/default-off and preserves the
-documented target-family and floating numerical guarantees. G9U1 presentation
-work is still unexecuted and unauthorized.
+The approved boundary keeps its `experimental` maturity, is GeoCeDG-only, and
+preserves the documented target-family and floating numerical guarantees.
+G9U1 presentation work is still unexecuted and unauthorized.
 
 Global completeness and individual admissibility are deliberately independent
 (Option B): a rigorously isolated solution may provide a point even when the
@@ -522,9 +529,10 @@ normal GeoCeDG and Classic.
 
 Close the application window normally to let Gradle finish successfully.
 
-The experimental 2D DXF workflow is available inside GeoCeDG at
-`GeoCeDG > Export 2D geometry as DXF (experimental)...`. It is not present in
-the Classic diagnostic application.
+The 2D DXF workflow is available inside GeoCeDG at
+`GeoCeDG > Export 2D geometry as DXF (experimental)...`; the menu label keeps
+its historical wording. It is not present in the Classic diagnostic
+application.
 
 To run an app-image that has already been generated, without installing it:
 
@@ -828,12 +836,13 @@ PACKAGING TECHNICAL STATUS = PASS
 PUBLIC REDISTRIBUTION STATUS = BLOCKED PENDING LICENSE/ASSET APPROVAL
 ```
 
-Every current app-image, ZIP, MSI, and EXE is
-`INTERNAL EVALUATION — NOT FOR REDISTRIBUTION`. Technical generation and
-installation are validated capabilities; public redistribution is not
-authorized until the project license, dependencies, inherited assets,
-branding, and trademarks receive human approval. Do not publish or share these
-binaries as a release.
+An app-image, ZIP, MSI or EXE built with the repository default profile is
+`INTERNAL EVALUATION — NOT FOR REDISTRIBUTION`. A build requested with
+`-DistributionProfile NC` is instead `NON-COMMERCIAL DISTRIBUTION — PROFILE NC`
+and carries its own notice. Technical generation and installation are
+validated capabilities; producing either package is not a release. Do not
+publish or share these binaries as a release without a separate author
+decision.
 
 ### Generate app-image, ZIP, MSI, and EXE
 
@@ -1132,8 +1141,9 @@ The current toolbar places Midpoint with the Point/Intersection tools and the
 construction Text tool with Parameters/Controllers; these placements do not
 change their inherited mode or command semantics. A `SplineV2` result is
 described as `Semantic Spline V2`, rather than as a generic semantic LocusV2.
-The experimental V2 opt-in remains `--enableLocusV2=true`; no additional Point,
-Spline, intersection or transformation launch argument is needed. The product
+The V2 surface is on by default in GeoCeDG and `--enableLocusV2=false` is the
+retained override; no additional Point, Spline, intersection or transformation
+launch argument is needed. The product
 locks Continuity OFF; Classic remains separately configurable.
 
 With V2 enabled, select the ordinary Point tool and click the curve stroke of a
@@ -1356,8 +1366,12 @@ before any destination is selected or written. Strict no-partial output
 result identify the output as approximate and disclose its tolerance, guarantee
 and work counts.
 
-The extended export is opt-in with `--enableExtendedDxf=true`; without that
-argument the existing G5 export path remains active. In the extended dialog,
+PRE-G9B-P1 promoted the extended export to default GeoCeDG behavior; it is not
+default-off any more. Its gate `cedg.export.dxf.extended` stays independent of
+the Locus V2 gate, and the retained override `--enableExtendedDxf=false`
+returns that process to the exact G5 export path without affecting Locus V2.
+
+In the extended dialog,
 closed finite driver partitions use semicolon-separated `start:end` entries.
 A source- and branch-specific partition uses
 `source@branch:start:end`, where `source` is the selected object's canonical
@@ -1378,9 +1392,24 @@ The coordinate system remains unitless (`$INSUNITS=0`). Locus V2 branches,
 valid components, orientation and gaps are preserved, and export never reads
 render samples or mutates the source construction. Implicit contouring,
 `SPLINE`, legacy `Locus` sampling, physical units, DXF import, 3D export and
-partial-output UI remain unsupported/deferred. G9X1 is `PASS — AUTHOR APPROVED`
-but remains experimental and default-off; the closeout authorizes no later G9
-or productive G10 implementation.
+partial-output UI remain unsupported/deferred. G9X1 is `PASS — AUTHOR APPROVED`;
+its maturity is still `experimental`, and PRE-G9B-P1 changed only its default
+exposure in GeoCeDG, not its contract. The closeout authorizes no later G9 or
+productive G10 implementation.
+
+Two facts are easy to misread, so they are stated explicitly:
+
+- exact DXF `SPLINE` is **NOT IMPLEMENTED**; and
+- the current DXF representation of `SplineV2` is an **approximate
+  `LWPOLYLINE`** produced export-only under G9X1.
+
+A source family with an approved native DXF mapping stays `EXACT`; only the
+bounded approximate families are converted. Every approximation follows from
+the geometric semantics of the source and its declared domain. It never follows
+from render samples, the viewport, the zoom level or the screen DPI, and the
+exported file is identical before and after a view change. The recorded
+`ESTIMATED_ERROR` is evidence for the exported components under the declared
+tolerance; it is not a certified global error bound for the drawing.
 
 SplineV2 uses this same approved semantic branch/component approximation; it
 does not claim a native exact DXF `SPLINE`. A component that cannot establish a
@@ -1535,14 +1564,13 @@ Before G5, GeoCeDG had a product profile, legacy laboratory and standalone
 packaging but no native geometry-format boundary. G5 adds the neutral model,
 exact supported adapters, AC1015 writer, GeoCeDG-only GUI action and semantic
 regression gate. Packaging automatically includes these classes through the
-existing Desktop distribution; its internal-only redistribution status is
-unchanged.
+existing Desktop distribution; PRE-G9B-P1 later generalized that packaging
+into distribution profiles without changing these classes.
 
 At the G5 closeout, public Locus V2 access and its controlled export
-representation were still pending. G9U0 now provides the author-approved,
-default-off experimental surface documented at the start of this guide;
-controlled Locus export, 3D
-objects/projection bindings, Python DSL access, hierarchical layers, drawing
+representation were still pending. G9U0 provides the author-approved surface
+documented at the start of this guide, promoted by PRE-G9B-P1 to a GeoCeDG
+default; controlled Locus export, 3D objects/projection bindings, Python DSL access, hierarchical layers, drawing
 sheets and advanced PDF/SVG formats remain pending. These future capabilities must extend
 approved boundaries and are not present merely because DXF export exists or
 G9U0 is author-approved.
@@ -1603,7 +1631,7 @@ Locus V2 feature.
 |---|---|
 | `legacy` | Preserved historical resource awaiting sufficient characterization; not stable product behavior |
 | `research` | Scientific or exploratory behavior without an approved stable public contract |
-| `experimental` | Integrated behind explicit opt-in or a feature flag, with a specification and tests, but not enabled as stable default behavior |
+| `experimental` | Integrated behind a feature flag, with a specification and tests. The flag may be enabled by default for a GeoCeDG profile once that promotion is separately approved; the capability is still not declared `stable` |
 | `stable` | Documented, tested, backward-compatible repository/product contract approved for normal use |
 | `deprecated` | Retained only for compatibility, with a documented replacement or migration path |
 
@@ -1650,8 +1678,8 @@ Promotion follows `legacy -> research -> experimental -> stable`, or
 | G9P | Spatial/public/workspace/DXF/operations design | G9P-R1 and G9P `PASS — AUTHOR APPROVED`; six normative specifications and ADR 0010–0015 Accepted | Design authority is closed |
 | G9O1 | Deterministic source/knowledge bundles and operational guides | `PASS — AUTHOR APPROVED` | Checked-in operational tooling can generate ignored, independently verified bundles; this adds no product or geometric behavior |
 | G9A1/A2/A3 and grouped G9A | Durable identity, persistence and lifecycle/migration foundation | `PASS — AUTHOR APPROVED` | Native G9U0 objects can rely on the approved durable construction identity graph |
-| G9U0 | Experimental public Locus V2 surface | `PASS — AUTHOR APPROVED` | GeoCeDG-only, default-off commands/tools, rich results, native persistence and compatibility boundary documented above |
-| G9X1 | Extended exact/approximate DXF export | `PASS — AUTHOR APPROVED`; experimental and default-off | External read-only export, strict preflight, conditional mandatory sidecar and bounded estimated-error approximation; no geometric authority |
+| G9U0 | Public Locus V2 surface | `PASS — AUTHOR APPROVED`; promoted to a GeoCeDG default by PRE-G9B-P1 | GeoCeDG-only commands/tools, rich results, native persistence and compatibility boundary documented above; `--enableLocusV2=false` still disables creation |
+| G9X1 | Extended exact/approximate DXF export | `PASS — AUTHOR APPROVED`; promoted to a GeoCeDG default by PRE-G9B-P1 under its own independent gate | External read-only export, strict preflight, conditional mandatory sidecar and bounded estimated-error approximation; no exact DXF `SPLINE` and no geometric authority |
 | G9U0-R2 planning/design | Locus V2 presentation/continuity and native `.cedg` identity | `PASS — AUTHOR APPROVED` | Normative contract implemented by the separately approved R2 execution |
 | G9U0-R2 implementation | Ordinary presentation/render continuity and native document lifecycle | `PASS — AUTHOR APPROVED`; original R2-L11 failure preserved and correction/re-smoke accepted | `.cedg` is native, `.ggb` is compatibility input; installed MSI/registry smoke remains `NOT_REQUESTED` |
 | G9U0-R3 | Public menu/inspector exposure, bounded token chooser and hidden token helper | `PASS — AUTHOR APPROVED` | Frontend-only closeout after smoke/re-smoke; no marker overlay, kernel/XML change or G9U1 authorization |
@@ -1673,8 +1701,8 @@ guarantee; no silent downgrade is allowed.
 G6A is `PASS — AUTHOR APPROVED`; ADR 0006 is Accepted and the semantic
 specification is normative. G6B and G6R are `PASS`. The repository contains a
 productive, parallel `GeoLocusV2` implementation in the shared Java kernel,
-but its maturity is **experimental** and it is disabled by default in the
-feature manifest.
+its maturity is still **experimental** in the feature manifest, and PRE-G9B-P1
+enabled its flag by default for the GeoCeDG profile only.
 
 At the G6 closeout there was deliberately no public user command, normal menu,
 toolbar button, preference or `.ggb` representation for V2. The separate
@@ -1934,9 +1962,9 @@ or, at the G7B gate, make the metric public.
 
 #### Current author-approved G9U0 public Locus V2 boundary
 
-- a GeoCeDG-only public command/tool surface exists only after explicit
-  per-process opt-in; G9U0 is author-approved while the surface remains
-  experimental and default-off;
+- a GeoCeDG-only public command/tool surface is available without any argument
+  since PRE-G9B-P1; G9U0 is author-approved, its maturity is still
+  `experimental`, and `--enableLocusV2=false` remains the retained override;
 - native `.cedg` ZIP/XML, copy, undo and reopen preserve the durable semantic
   graph; `.ggb` is a non-destructive compatibility input;
 - `Point[L,branch,parameter]` creates an explicitly addressed ordinary point,
@@ -1988,7 +2016,7 @@ polyline is a disposable view representation.
 | G8C design/G8C1/G8C2 | Extended 2D Locus V2 incidence/intersection design and internal one-/two-parameter kernels | `PASS — AUTHOR APPROVED`; global G8 closed; no user-observable surface |
 | G9P-R1/G9P design | Spatial identity plus projection-system/dihedral-diagram semantics, general one-dimensional Locus generators, documentation and interoperability foundations | `PASS — AUTHOR APPROVED`; six normative specifications and ADR 0010–0015 Accepted; G9O1 `PASS — AUTHOR APPROVED` |
 | G9A1/G9A2/G9A3 and grouped G9A | Durable identity, persistence and lifecycle/migration | `PASS — AUTHOR APPROVED` |
-| G9U0 | Experimental public Locus V2 surface | `PASS — AUTHOR APPROVED`; default-off and GeoCeDG-only |
+| G9U0 | Public Locus V2 surface | `PASS — AUTHOR APPROVED`; GeoCeDG-only and default-on since PRE-G9B-P1 |
 | G9U0-R2 planning/design | Pre-G9U1 presentation/document contract | `PASS — AUTHOR APPROVED` |
 | G9U0-R2 implementation | Ordinary Locus style/render continuity plus `.cedg` lifecycle | `PASS — AUTHOR APPROVED`; correction and author re-smoke accepted |
 | G9U0-R3 | Public Locus V2 UI exposure hardening | `PASS — AUTHOR APPROVED`; menu lifecycle, hidden exact-token helper and bounded chooser accepted |
@@ -2162,7 +2190,8 @@ ADR 0009 is Accepted, and its internal implementation is
 `PASS — AUTHOR APPROVED`; its six specifications are normative, but it implies
 no productive spatial G9 implementation. G9O1 is `PASS — AUTHOR APPROVED`;
 G9A1/G9A2/G9A3 and grouped G9A are `PASS — AUTHOR APPROVED`. G9U0 is
-also `PASS — AUTHOR APPROVED`; its surface remains experimental and default-off.
+also `PASS — AUTHOR APPROVED`; its surface keeps `experimental` maturity and is
+enabled by default in GeoCeDG since PRE-G9B-P1.
 
 At the G8 closeout there was no native Locus V2 intersection command, public
 point output, persistence, UI or end-user workflow. The G9U0 surface now
@@ -2188,8 +2217,11 @@ workflow or G9 implementation.
 
 ## 13. Current limitations
 
-- G4 packages are technical internal-evaluation artifacts, not authorized
-  public releases.
+- The repository default package profile is `INTERNAL`, whose artifacts are
+  technical internal-evaluation material. PRE-G9B-P1 added the `NC` profile,
+  which produces a redistributable non-commercial package under PROFILE NC.
+  Generating either one is not a release: publication, tagging and any release
+  remain a separate author decision. `COMMERCIAL` fails before the build.
 - Windows is the only validated workstation platform.
 - Branding is textual and provisional. There is no final GeoCeDG logo, icon,
   translation set, style, or installer resource.
@@ -2198,11 +2230,13 @@ workflow or G9 implementation.
 - `.cedg` and compatible `.ggb` archives still use the upstream `classic` app
   code internally; GeoCeDG has no new persisted app code or archive format.
 - G5 remains the exact 2D compatibility baseline. G9X1 adds only
-  the documented bounded approximate families; there is still no DXF import,
+  the documented bounded approximate families and is on by default in GeoCeDG
+  since PRE-G9B-P1; there is still no DXF import,
   viewport export, physical-unit contract, text export, legacy Locus export,
   implicit contouring, `SPLINE` or 3D export.
 - The G9U0 Locus V2 command/tool/metric/intersection surface is author-approved
-  for G9U0 but remains experimental, GeoCeDG-only and disabled by default. It supports
+  and enabled by default in GeoCeDG since PRE-G9B-P1; its maturity is still
+  `experimental` and it stays GeoCeDG-only. It supports
   only the documented generators, explicit domains and targets; V2 is not a
   generic `Path`. Native persistence is GeoCeDG-specific, external upstream
   consumers are outside the compatibility guarantee, and no spatial

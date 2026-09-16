@@ -318,8 +318,10 @@ Generación técnica:
 .\tools\agent\verify-packaging.ps1 -CheckToolchain -RequireArtifacts
 ```
 
-Todos los binarios G4 son `INTERNAL EVALUATION — NOT FOR REDISTRIBUTION`.
-La capacidad técnica está validada, pero la redistribución pública continúa
+El perfil por defecto del repositorio es `INTERNAL` y sus binarios son
+`INTERNAL EVALUATION — NOT FOR REDISTRIBUTION`. Con `-DistributionProfile NC` se
+genera el paquete aprobado PROFILE NC. La capacidad técnica está validada, pero
+generar un paquete no es publicarlo y la distribución comercial sigue
 bloqueada. Véanse [ADR 0004](docs/adr/0004-standalone-windows-packaging.md) y
 [el contrato de packaging](geocedg/specs/packaging/windows-packaging.md).
 

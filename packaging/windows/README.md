@@ -13,8 +13,10 @@ From the repository root:
 The first command builds a self-contained application image. The second also
 creates a normalized portable ZIP plus MSI and EXE installers. WiX 5.0.2 is
 required only for MSI/EXE. Per-build hashes are authoritative; `jlink` output
-is not guaranteed to be byte-identical between equivalent runs. Every output
-is marked `INTERNAL EVALUATION — NOT FOR REDISTRIBUTION`.
+is not guaranteed to be byte-identical between equivalent runs. Output is
+marked by the selected distribution profile: the repository default `INTERNAL`
+marks `INTERNAL EVALUATION — NOT FOR REDISTRIBUTION`, and `-DistributionProfile NC`
+marks `NON-COMMERCIAL DISTRIBUTION — PROFILE NC`.
 
 The application image, launcher and installer shortcuts use the single
 versioned GeoCeDG-owned ICO declared by `package.yml`. Its PNG-embedded sizes

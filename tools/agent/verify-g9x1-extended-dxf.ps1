@@ -711,12 +711,16 @@ try {
         Assert-Condition -Condition ($report.Contains($fragment)) `
             -Message "G9X1 author-closeout report is missing: $fragment"
     }
+    # The living guide tracks the current product default. PRE-G9B-P1 promoted
+    # extended DXF to a GeoCeDG default, so the guide must state the boundary
+    # that still holds instead of the retired default-off state. The frozen
+    # G9X1 architecture record below keeps its historical wording.
     $guide = Get-Content -Raw -LiteralPath (Resolve-RequiredFile `
         -RelativePath "docs/user/geocedg_user_guide.md")
     foreach ($fragment in @(
             "G9X1 = PASS — AUTHOR APPROVED", "partialOutput=false",
             "ESTIMATED_ERROR", "`$INSUNITS=0", "experimental",
-            "default-off")) {
+            "exact DXF ``SPLINE`` is **NOT IMPLEMENTED**")) {
         Assert-Condition -Condition ($guide.Contains($fragment)) `
             -Message "The living guide is missing the G9X1 boundary: $fragment"
     }
