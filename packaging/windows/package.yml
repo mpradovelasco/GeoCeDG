@@ -49,8 +49,49 @@
     "progid_strategy": "jdk25-jpackage-generated-geocedg-owned"
   },
   "distribution": {
+    "default_profile": "INTERNAL",
     "status": "internal-evaluation",
     "marker": "INTERNAL EVALUATION — NOT FOR REDISTRIBUTION",
-    "public_redistribution": "blocked-pending-license-and-asset-approval"
+    "public_redistribution": "blocked-pending-license-and-asset-approval",
+    "profiles": [
+      {
+        "id": "INTERNAL",
+        "status": "internal-evaluation",
+        "marker": "INTERNAL EVALUATION — NOT FOR REDISTRIBUTION",
+        "public_redistribution": "blocked-pending-license-and-asset-approval",
+        "artifact_tag": "internal",
+        "redistributable": false,
+        "notice_file": "packaging/windows/INTERNAL_EVALUATION_ONLY.txt",
+        "association_properties": "packaging/windows/file-associations.properties",
+        "association_description": "GeoCeDG document (internal evaluation)"
+      },
+      {
+        "id": "NC",
+        "status": "public-non-commercial",
+        "marker": "NON-COMMERCIAL DISTRIBUTION — PROFILE NC",
+        "public_redistribution": "approved-profile-nc-non-commercial",
+        "artifact_tag": "nc",
+        "redistributable": true,
+        "licensing_profile": "PROFILE NC",
+        "licensing_authority": "docs/licensing/geocedg_profile_nc.md",
+        "notice_file": "packaging/windows/NC_DISTRIBUTION_NOTICE.txt",
+        "association_properties": "packaging/windows/file-associations-nc.properties",
+        "association_description": "GeoCeDG document"
+      },
+      {
+        "id": "COMMERCIAL",
+        "status": "not-authorized",
+        "marker": "COMMERCIAL DISTRIBUTION — NOT AUTHORIZED",
+        "public_redistribution": "blocked-pending-external-commercial-terms",
+        "artifact_tag": "commercial",
+        "redistributable": false,
+        "licensing_profile": "PROFILE COMMERCIAL",
+        "licensing_authority": "docs/licensing/geocedg_profile_commercial.md",
+        "blocking_terms": [
+          "GeoGebra License and Collaboration Agreement for the retained GeoGebra Materials",
+          "OpenGeoProver rightsholder clarification or commercial permission"
+        ]
+      }
+    ]
   }
 }

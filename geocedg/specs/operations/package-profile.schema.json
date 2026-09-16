@@ -93,12 +93,58 @@
     "distribution": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["status", "marker", "public_redistribution"],
+      "required": ["default_profile", "status", "marker", "public_redistribution", "profiles"],
       "properties": {
+        "default_profile": { "const": "INTERNAL" },
         "status": { "const": "internal-evaluation" },
         "marker": { "const": "INTERNAL EVALUATION — NOT FOR REDISTRIBUTION" },
-        "public_redistribution": { "const": "blocked-pending-license-and-asset-approval" }
+        "public_redistribution": { "const": "blocked-pending-license-and-asset-approval" },
+        "profiles": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": { "$ref": "#/$defs/distributionProfile" }
+        }
       }
+    }
+  },
+  "$defs": {
+    "distributionProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "status", "marker", "public_redistribution", "artifact_tag", "redistributable"],
+      "properties": {
+        "id": { "enum": ["INTERNAL", "NC", "COMMERCIAL"] },
+        "status": { "enum": ["internal-evaluation", "public-non-commercial", "not-authorized"] },
+        "marker": { "type": "string", "minLength": 1 },
+        "public_redistribution": { "type": "string", "minLength": 1 },
+        "artifact_tag": { "pattern": "^[a-z0-9]+$" },
+        "redistributable": { "type": "boolean" },
+        "licensing_profile": { "type": "string", "minLength": 1 },
+        "licensing_authority": { "type": "string", "minLength": 1 },
+        "notice_file": { "type": "string", "minLength": 1 },
+        "association_properties": { "type": "string", "minLength": 1 },
+        "association_description": { "type": "string", "minLength": 1 },
+        "blocking_terms": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "redistributable": { "const": true } }, "required": ["redistributable"] },
+          "then": { "required": ["licensing_profile", "licensing_authority", "notice_file", "association_properties", "association_description"] }
+        },
+        {
+          "if": { "properties": { "id": { "const": "COMMERCIAL" } }, "required": ["id"] },
+          "then": {
+            "required": ["blocking_terms"],
+            "properties": { "redistributable": { "const": false }, "status": { "const": "not-authorized" } }
+          }
+        }
+      ]
     }
   }
 }

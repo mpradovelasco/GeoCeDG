@@ -1,0 +1,27 @@
+GeoCeDG
+
+NON-COMMERCIAL DISTRIBUTION — PROFILE NC
+
+This package is the PROFILE NC composition approved by PRE-G9B-D1 for public
+non-commercial use, teaching, academic study and research, subject to every
+applicable component term and to the complete legal bundle shipped in
+app/legal.
+
+This product is a composite non-commercial work. It must not be described
+globally as licensed solely under EUPL, as Open Source, or as Free Software
+while it retains GeoGebra Materials governed by non-commercial terms.
+
+GeoCeDG is not an official GeoGebra product and is not endorsed by
+GeoGebra GmbH. Inherited GeoGebra source code remains under its applicable
+EUPL-1.2 grant; retained GeoGebra Language Files, UI images, styles and other
+Materials remain under their own non-commercial terms, including the
+attribution those terms require.
+
+Commercial distribution is NOT authorized by this package. It requires
+separate external terms that are not granted here: a GeoGebra License and
+Collaboration Agreement for the retained Materials, and an independent
+clarification or permission from the OpenGeoProver rightsholders.
+
+Individual component licenses, notices, corresponding-source and source-access
+records, and the component SBOM are included under app/legal. Read them before
+copying, redistributing or building upon this artifact.

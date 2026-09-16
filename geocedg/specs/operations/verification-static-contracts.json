@@ -5,8 +5,8 @@
   "identity_mode":"canonical_utf8_lf_v1",
   "contracts":[
     {"contract_id":"packaging.source-authority","semantic_domain":"PRODUCT","inputs":[
-      {"path":"packaging/windows/package.yml","sha256":"0a88badd6e8c212c088cc8613277b27124e002c572be14ac1ad694196bf92c7d"},
-      {"path":"geocedg/specs/operations/package-profile.schema.json","sha256":"feece8e886a0f2ca29642db682412d3b2b0b8468728778d20c200466b014ca8f"},
+      {"path":"packaging/windows/package.yml","sha256":"e791e951188d36d44bae3c20a7b9b4dd1b3e49c4a6aa9a2f9bca7fc7b5ee6888"},
+      {"path":"geocedg/specs/operations/package-profile.schema.json","sha256":"804c599c54fcf0525f07eaf25ac3f5a4e5cb90da3b45ace6574b0ff61ebef444"},
       {"path":"geocedg/resources/assets-manifest.yml","sha256":"4d6f2851cc6e89a99ecd00ab8504648c85f791115f2a94a0dbfb5ce74e7c2865"},
       {"path":"geocedg/resources/source-access-manifest.json","sha256":"b5b2bb592cb5e5e6a78431c7d784b96ffa338a1094473bb54c958b1239df949e"},
       {"path":"geocedg/validation/pre-g9b-d1/component-audit.json","sha256":"aaf35691de27cab94c6b413bfce8221426eca7ddc49a01f9ecc3b9a94bc2edb9"},
