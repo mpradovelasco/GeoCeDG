@@ -107,7 +107,10 @@ manifest must do so file by file for anything shipped.
 
 G4 creates `LICENSE`, `LICENSES/README.md`, `NOTICE.md`, `THIRD_PARTY.md`, and
 `geocedg/resources/assets-manifest.yml` as explicit status/inventory records.
-They all identify packages as `INTERNAL EVALUATION — NOT FOR REDISTRIBUTION`.
+They are profile-neutral status/inventory records. Since the PRE-G9B-P1
+continuation they no longer assert a distribution condition themselves: the
+condition is stated by the notice packaged with the selected distribution
+profile.
 The root `LICENSE` is deliberately a no-grant status notice because no
 project-wide license has been approved; `LICENSES/` remains incomplete.
 

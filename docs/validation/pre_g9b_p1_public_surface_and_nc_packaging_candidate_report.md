@@ -225,7 +225,7 @@ provenance only.
 |---|---|
 | Full desktop suite | 1466 tests, 0 failures, 0 errors |
 | Full shared suite | 6678 tests, 0 failures, 0 errors |
-| `PreG9BP1PublicSurfaceTest` | 13 tests, 0 failures |
+| `PreG9BP1PublicSurfaceTest` | 18 tests, 0 failures (13 original plus 5 added by the continuation) |
 | `PACKAGING -CheckToolchain` | `ACCEPTED / COMPLETE`, 0 diagnostics |
 | `PACKAGING -VerifyPackagingArtifacts` (NC set) | `ACCEPTED / COMPLETE`, 0 diagnostics |
 | `PACKAGING -VerifyPackagingArtifacts` (INTERNAL set) | `ACCEPTED / COMPLETE`, 0 diagnostics |
@@ -246,21 +246,83 @@ evidence** assertion was deliberately left untouched.
 - Verification impact: the registry, inventory and static catalog changed, so
   `INFRA_UNIT` was required and rerun, and the catalog hashes were repinned.
 
+## Continuation: legal-bundle reconciliation and user-guide audit
+
+Authorized after this candidate obtained `PHASE PRE-G9B-P1` and `FINAL`, as a
+strictly bounded correction. It reopens no D1 investigation and redesigns no
+packaging, Locus V2, SplineV2 or DXF behavior. The two items previously left
+open here are resolved by it.
+
+### What was reconciled
+
+`LICENSE`, `NOTICE.md`, `THIRD_PARTY.md` and `LICENSES/README.md` no longer
+assert `INTERNAL EVALUATION — NOT FOR REDISTRIBUTION`. Each now states that it
+is profile-neutral and delegates the distribution condition to the notice
+packaged with the build — `INTERNAL_EVALUATION_ONLY.txt` for PROFILE INTERNAL,
+`NC_DISTRIBUTION_NOTICE.txt` for PROFILE NC — while keeping every professional
+caveat D1 recorded: final author and legal review remain required, the payload
+docket closure is not release approval, OpenGeoProver still needs clarification
+before a commercial profile, and commercial distribution is not authorized.
+`LICENSES/manifest.json` carries the same neutral marker and re-pins the
+reconciled `LICENSES/README.md` by hash.
+
+`build-manifest.legal_bundle.public_profile` now reports the licensing profile
+of the build (`PROFILE NC` for NC, `NOT APPLICABLE — INTERNAL EVALUATION BUILD`
+for INTERNAL). The D1 fact it used to overload is preserved as a separate
+`approved_composition_profile` field.
+
+### What was deliberately preserved
+
+- `geocedg/validation/pre-g9b-d1/component-audit.json` — immutable D1 factual
+  closure.
+- `geocedg/resources/source-access-manifest.json` and
+  `geocedg/resources/assets-manifest.yml` — dated D1 evidence whose
+  `distribution_marker` records the package state at its own evidence date.
+- Historical D1, G4 and P0 reports, which correctly record that the package was
+  `internal-evaluation` at the time they were written.
+
+Because the three evidence records ship inside the bundle,
+`NC_DISTRIBUTION_NOTICE.txt` now states the precedence explicitly: the notice
+states the condition of the copy, the general documents defer to it, and the
+dated evidence marker is historical and does not restrict the copy. Re-dating
+those evidence records instead would be a D1-evidence decision and was not
+taken.
+
+### Fail-closed in both directions
+
+The builder refuses a redistributable build whose staged general legal
+documents still carry the internal marker. `packaging-product.ps1` replaced its
+four "document must contain the internal marker" contracts with the profile
+invariant: no general document asserts a distribution condition, each notice
+carries exactly its own marker and not the other's, and the staged bundle never
+contradicts the built profile.
+
+### User-guide audit
+
+`docs/user/geocedg_user_guide.md` is the single tracked authority; Gradle
+`processResources` copies it verbatim into
+`org/geocedg/desktop/geocedg_user_guide.md`, and a test now asserts byte
+identity, so no second manual copy can appear. Stale default-off and
+`--enableLocusV2=true` / `--enableExtendedDxf=true` opt-in wording was replaced
+by the promoted defaults, the retained bidirectional overrides, their
+independence and the Classic boundary. The maturity vocabulary row was aligned
+with `AGENTS.md`, which defines `experimental` as "integrated behind a feature
+flag" without requiring default-off. The G9X1 section now states explicitly
+that exact DXF `SPLINE` is **NOT IMPLEMENTED**, that the current `SplineV2`
+representation is an approximate export-only `LWPOLYLINE`, that approximation
+follows from geometric semantics and never from render, viewport, zoom or DPI,
+and that `ESTIMATED_ERROR` is not a certified global error bound. The remaining
+"disabled by default" statements in the guide belong to `cedg.laboratory.legacy`
+and the nonpublic G8C1 kernel and are still correct.
+
 ## Known limitations
 
-- The repository-level legal documents (`LICENSE`, `NOTICE.md`,
-  `THIRD_PARTY.md`, `LICENSES/README.md`) still carry the internal-evaluation
-  marker and are shipped inside the NC legal bundle. They describe the
-  **repository default**, not the built profile, and the NC package carries its
-  own `NC_DISTRIBUTION_NOTICE.txt`. Reconciling that wording is a licensing-text
-  decision for the author rather than an agent edit, and it is recorded here
-  instead of being silently changed.
-- `build-manifest.legal_bundle.public_profile` still reports `PROFILE NC` for an
-  INTERNAL build. That is the pre-existing behavior, preserved deliberately: the
-  legal bundle is the PROFILE NC docket regardless of which distribution profile
-  is built.
 - `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` remains open and separate. No P1
   test reproduced it within P1 scope.
+- MSI/EXE byte reproducibility is not claimed. Only the app-image and the
+  normalized ZIP are timestamp-normalized.
+- No interactive GUI smoke was run for P1 or for this continuation; the author's
+  manual smoke remains pending.
 
 ## Governance disposition
 

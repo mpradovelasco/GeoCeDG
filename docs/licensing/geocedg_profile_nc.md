@@ -2,9 +2,9 @@
 
 Status: **APPROVED** on 2026-09-16 as the PRE-G9B-D1 deployability profile.
 This is a compact navigation summary, not a second licensing authority and not
-a release artifact. The current `1.0.0` package profile remains marked
-`internal-evaluation`; changing that package state belongs to a separately
-authorized release/promotion step.
+a release artifact. The repository default `1.0.0` package profile remains
+marked `internal-evaluation`; publishing any package remains a separately
+authorized release step.
 
 ## Approved scope
 
@@ -52,12 +52,21 @@ does not duplicate or supersede that evidence.
 
 ## Packaging boundary
 
-D1 approves the audited composition as deployable for PROFILE NC. The current
-[Windows package profile](../../packaging/windows/package.yml) still emits an
-internal-evaluation `1.0.0` package, and the
-[Windows builder](../../tools/release/build-windows-package.ps1) continues to
-enforce that marker. D1 approval does not itself create, publish or retitle a
-public binary and does not authorize P1 or version 1.0.
+D1 approves the audited composition as deployable for PROFILE NC. The
+[Windows package profile](../../packaging/windows/package.yml) keeps
+`INTERNAL` as its default, so an ordinary build is still an
+internal-evaluation `1.0.0` package. PRE-G9B-P1 later added the explicit `NC`
+profile, so the
+[Windows builder](../../tools/release/build-windows-package.ps1) can now
+produce that package on request; `COMMERCIAL` fails closed before any build
+work. This paragraph records packaging capability only. D1 approval does not
+itself create, publish or retitle a public binary, and generating an NC
+candidate is not a release.
+
+The general legal documents in the bundle are profile-neutral; the distribution
+condition of a copy is stated by the notice packaged with it. The dated D1
+evidence records keep the distribution marker of their evidence date and are
+preserved verbatim.
 
 ## Authority map
 

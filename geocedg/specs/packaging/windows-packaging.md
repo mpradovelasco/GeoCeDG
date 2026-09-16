@@ -138,6 +138,23 @@ Artifact verification follows the built profile: `packaging-product.ps1` reads
 the generated `build-manifest.json` and derives the expected artifact tag,
 notice, marker, MSI association description and redistribution string from it.
 
+### Profile-neutral legal documents
+
+The general legal documents shipped by every profile (`LICENSE`, `NOTICE.md`,
+`THIRD_PARTY.md`, `LICENSES/README.md`, `LICENSES/manifest.json`) state the
+licensing scope of the composition and must stay profile-neutral. The
+distribution condition belongs to the selected profile's notice, which is the
+only document that asserts it. The builder refuses a redistributable build
+whose staged general documents still carry the internal-evaluation marker, and
+`packaging-product.ps1` asserts the same invariant in both directions: each
+notice carries exactly its own marker, and the staged bundle never contradicts
+the built profile.
+
+The dated PRE-G9B-D1 evidence records (`component-audit.json`,
+`source-access-manifest.json`, `assets-manifest.yml`) keep the distribution
+marker of their own evidence date. They are versioned evidence, not conditions
+of a later build, and the NC notice states that precedence explicitly.
+
 ## Release gate
 
 Successful execution proves packaging capability only. The repository default

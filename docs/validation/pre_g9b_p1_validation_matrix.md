@@ -117,6 +117,38 @@ semantics, no serialization, no version, and nothing closed by P0.
 - The single machine-readable NC↔COMMERCIAL discriminator in the payload layer
   is one `commercial_compatible: false` (OpenGeoProver).
 
+## G. Continuation: legal-bundle reconciliation and guide audit
+
+Added after the first P1 candidate obtained PHASE and FINAL. The continuation
+is corrective and bounded; it reopens no D1 investigation and redesigns no
+packaging, Locus V2, SplineV2 or DXF behavior.
+
+| # | Assertion | Method |
+|---|---|---|
+| G1 | No general legal document shipped by every profile asserts `INTERNAL EVALUATION — NOT FOR REDISTRIBUTION` | `PreG9BP1PublicSurfaceTest.generalLegalDocumentsAreProfileNeutral`; `packaging.marker.*` |
+| G2 | Each profile notice carries exactly its own marker and not the other's | `packaging.notice.internal_evaluation_only`, `packaging.notice.nc_distribution_notice` |
+| G3 | PROFILE INTERNAL keeps its internal identity through its notice and manifest | `repositoryDefaultNoticeStillCarriesTheInternalMarker`; INTERNAL regression build |
+| G4 | A redistributable build fails closed if a general legal document still denies redistribution | builder assert; `packaging.legal-bundle-profile` |
+| G5 | Dated D1 evidence that records a past internal-evaluation state is preserved verbatim | `datedD1EvidenceKeepsItsHistoricalDistributionMarker` |
+| G6 | `LICENSES/manifest.json` still pins every bundled legal text exactly once, with the reconciled hash | `legalBundleManifestPinsTheReconciledBundleText`; `packaging.legal-bundle-manifest` |
+| G7 | `build-manifest.legal_bundle.public_profile` reports the built profile, not a hardcoded `PROFILE NC` | NC and INTERNAL manifests |
+| G8 | The user guide states both promotions, both retained overrides and their independence | `userGuideDescribesThePromotedDefaultsAndTheDxfBoundary` |
+| G9 | The guide states `G9X1 exact DXF SPLINE = NOT IMPLEMENTED` and the approximate `LWPOLYLINE` representation of SplineV2 | same test |
+| G10 | The guide attributes approximation to geometric semantics, never to render, viewport, zoom or DPI, and does not claim a certified global error | same test |
+| G11 | Exactly one tracked guide authority exists; the packaged copy is a byte copy of it | `packagedGuideIsAByteCopyOfTheTrackedSourceGuide` |
+| G12 | Version authority stays `1.0.0` and `upgrade_uuid` is unchanged | `packageProfileKeepsOneVersionAuthorityAndUpgradeIdentity` |
+| G13 | The two promoted defaults remain independent in all four combinations | `promotedSurfacesAreOnByDefaultAndIndependent` |
+
+### Deliberately preserved
+
+`geocedg/validation/pre-g9b-d1/component-audit.json` (immutable D1 factual
+closure), `geocedg/resources/assets-manifest.yml` and
+`geocedg/resources/source-access-manifest.json` are dated D1 evidence
+snapshots. Their `distribution_marker` records the package state at their
+evidence date and is not a statement of the conditions of a later build, so it
+is preserved. Historical D1/G4/P0 reports keep their original wording for the
+same reason.
+
 ## Verification plan
 
 Focal suites first, then canonical gates. P1 classifies as
