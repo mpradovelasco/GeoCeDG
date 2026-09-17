@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "track": "POST-P1-DOC-HELP",
+  "trackKind": "DOCUMENTATION_FRONTEND_RESOURCES",
+  "roadmapPhase": false,
+  "mode": "AUTHOR_CLOSEOUT",
+  "authorDecision": "PASS_AUTHOR_APPROVED",
+  "authorDecisionBasis": "MANUAL_AUTHOR_SMOKE",
+  "authorDecisionDate": "2026-09-17",
+  "reviewedTechnicalCommit": "60c4781a7c43e50e4436ad5f45c879452b0450d9",
+  "reviewedTechnicalTree": "04fbb96e4b4997da961b8a1128539f026c1ab10f",
+  "evidence": {
+    "finalRunId": "verification-27df890fab914ec1873fe55ae91b13eb",
+    "finalResultPath": "artifacts/agent/post-p1-doc-help-final/verification-result.json",
+    "executionPlanHash": "defe8ab4692af05430464974c3d5e8e029ff7d64ecbc1822c07ff91593c744e0",
+    "resultHash": "ffda01011f56e5d01741161d1552b3ffa0ccf0c964733c2fe35bee3de5c4bf6f",
+    "acceptanceVerdict": "ACCEPTED",
+    "coverageVerdict": "COMPLETE",
+    "requiredCheckCount": 40,
+    "completedCheckCount": 40,
+    "acceptanceSatisfied": 40,
+    "acceptanceViolated": 0,
+    "acceptanceUntrusted": 0,
+    "acceptanceNotRun": 0,
+    "artifactRootIsGitIgnored": true
+  },
+  "acceptanceReceipt": {
+    "state": "ABSENT",
+    "cause": "The verification run pipeline does not write an acceptance receipt; Write-VerificationAcceptanceReceipt is invoked only by phase-closeout.ps1 and its tests.",
+    "trackedDebt": "TD-VERIFY-RECEIPT-RECOVERY",
+    "fabricated": false,
+    "canonicalCloseoutExecuted": false,
+    "canonicalCloseoutBlocker": "tools/agent/phase-closeout.ps1 requires a mandatory -ReceiptPath; no receipt exists and the roadmap forbids fabricating one."
+  },
+  "identityInspection": {
+    "mode": "DIRECT_RESULT_TO_GIT_COMPARISON",
+    "candidateCommitMatchesHead": true,
+    "candidateTreeMatchesHead": true,
+    "resultValidatesAgainstSchema": true,
+    "resultSchema": "geocedg/specs/operations/verification-result.schema.json",
+    "resultHashIndependentlyRecomputed": false,
+    "resultHashRecomputationNote": "Get-VerificationReceiptReportHash is internal to verification-receipt.psm1 and is not exported, so the recorded result_hash was not independently recomputed."
+  },
+  "promotion": {
+    "state": "NOT_PERFORMED",
+    "branchPublished": false,
+    "mainAdvanced": false,
+    "tagCreated": false,
+    "releasePublished": false,
+    "pendingAuthorDisposition": "Disposition of the acceptance-receipt gap before promoting the approved candidate to main."
+  },
+  "unchanged": {
+    "roadmapPhaseStatus": true,
+    "geocedgVersion": "1.0.0",
+    "profileNc": true,
+    "profileCommercial": true,
+    "bookRepository": true
+  },
+  "selfApproved": false
+}

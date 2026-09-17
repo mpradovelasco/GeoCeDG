@@ -1,22 +1,34 @@
 # POST-P1-DOC-HELP — bilingual user guide and in-app help integration
 
 ```text
-POST-P1-DOC-HELP          = IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW
+POST-P1-DOC-HELP          = PASS — AUTHOR APPROVED (author decision, 2026-09-17)
+REVIEWED CANDIDATE        = 60c4781a7c43e50e4436ad5f45c879452b0450d9
+REVIEWED TREE             = 04fbb96e4b4997da961b8a1128539f026c1ab10f
+FINAL                     = verification-27df890fab914ec1873fe55ae91b13eb
+                            ACCEPTED / COMPLETE, 40/40
 VERIFICATION INVENTORY    = CURRENT / DERIVED CANONICALLY
 BILINGUAL GUIDE RESOURCES = PASS
 HELP MARKDOWN RENDERING   = IMPLEMENTED
 HELP WINDOW RESIZABILITY  = IMPLEMENTED
 INTERACTIVE HELP SMOKE    = PASS
+ACCEPTANCE RECEIPT        = ABSENT — TD-VERIFY-RECEIPT-RECOVERY
+PROMOTION TO MAIN         = NOT PERFORMED — PENDING AUTHOR DISPOSITION
 selfApproved   = false
-authorApproved = false
+authorApproved = true
 passClaimed    = false
 ```
 
-This report has two parts. Sections 1 to 20 record the original track. The
-`Corrective continuation` part at the end records the author-review corrections
-to the help rendering and the guide window, and the canonical re-derivation of
-the JUnit inventory. Where the two disagree on an operational fact, the
-continuation is later and prevails.
+`POST-P1-DOC-HELP` is a documentation, frontend and packaged-resource track. It
+is not a phase of the GeoCeDG roadmap, and this approval marks no roadmap phase,
+gate, specification or ADR. The roadmap phase status is unchanged.
+
+This report has three parts. Sections 1 to 20 record the original track. The
+`Corrective continuation` part records the author-review corrections to the help
+rendering and the guide window, and the canonical re-derivation of the JUnit
+inventory. The `Author closeout` part at the end records the author's decision,
+the identity inspection performed in the absence of an acceptance receipt, and
+why promotion is held. Where the parts disagree on an operational fact, the
+later one prevails.
 
 This is a documentation, frontend/help and packaged-resource track. It is not a
 GeoCeDG geometric phase, not `G9B` and not a BOOK phase. It changes no kernel,
@@ -1044,3 +1056,103 @@ passClaimed    = false
 
 The branch is not published and nothing is promoted to `main`. Promotion, any
 tag and any release remain separate explicit author decisions.
+
+---
+
+# Author closeout — decision recorded, promotion held
+
+```text
+AUTHOR DECISION          = PASS — AUTHOR APPROVED (2026-09-17, manual author smoke)
+REVIEWED CANDIDATE       = 60c4781a7c43e50e4436ad5f45c879452b0450d9
+REVIEWED TREE            = 04fbb96e4b4997da961b8a1128539f026c1ab10f
+ACCEPTANCE RECEIPT       = ABSENT — TD-VERIFY-RECEIPT-RECOVERY
+CANONICAL CLOSEOUT       = NOT EXECUTED (receipt is a mandatory input)
+PROMOTION TO MAIN        = NOT PERFORMED — PENDING AUTHOR DISPOSITION
+BRANCH PUBLISHED         = NO
+selfApproved             = false
+```
+
+This section records the author's own decision, taken after their manual smoke
+test. It is not an agent assertion of approval, and it marks no roadmap phase,
+gate, specification or ADR. `POST-P1-DOC-HELP` is a documentation, frontend and
+packaged-resource track; it is not a phase of the GeoCeDG roadmap, and the
+roadmap phase status is untouched.
+
+The machine-readable record is
+[`post-p1-doc-help-author-closeout.json`](../../geocedg/validation/post-p1-doc-help/post-p1-doc-help-author-closeout.json).
+
+## A1. Why promotion is held
+
+The canonical closeout could not be executed, and the reason is a pre-existing
+verification-infrastructure gap rather than anything about this candidate:
+
+- `tools/agent/phase-closeout.ps1` performs identity inspection only — `PREPARE`
+  and `FINALIZE` are retired — and it takes `-ReceiptPath` as a **mandatory**
+  parameter;
+- no acceptance receipt exists. `Write-VerificationAcceptanceReceipt` is invoked
+  only by `phase-closeout.ps1` itself and by its own tests; neither
+  `tools/agent/verify.ps1` nor the supervisor ever writes one, so the FINAL run
+  produced `verification-result.json` and `run-journal.json` only;
+- this is the tracked debt `TD-VERIFY-RECEIPT-RECOVERY`, whose roadmap entry
+  states plainly that receipts and hashes must not be fabricated.
+
+No receipt was therefore manufactured, and the author elected to dispose of the
+receipt gap separately before the approved candidate is promoted.
+
+The roadmap already carries a precedent for a valid FINAL without a separate
+receipt — the reconciliation row records that the result emitted no separate
+receipt and that the operational debt did not block that closeout. That
+precedent is available but has not been applied here; the disposition is the
+author's.
+
+## A2. Identity inspection actually performed
+
+In the absence of a receipt, the candidate binding was inspected by direct
+comparison of the FINAL result against the live Git objects.
+
+| Check | Result |
+|---|---|
+| `candidate_commit` equals repository `HEAD` | match, `60c4781a7c43e50e4436ad5f45c879452b0450d9` |
+| `candidate_tree` equals repository `HEAD^{tree}` | match, `04fbb96e4b4997da961b8a1128539f026c1ab10f` |
+| `run_state` | `COMPLETED` |
+| `profile` | `FINAL` |
+| `acceptance_verdict` | `ACCEPTED` |
+| `coverage_verdict` | `COMPLETE` |
+| required / completed / missing checks | 40 / 40 / none |
+| satisfied / violated / untrusted / not run | 40 / 0 / 0 / 0 |
+| result validates against `verification-result.schema.json` | yes |
+| `run_id` | `verification-27df890fab914ec1873fe55ae91b13eb` |
+| `execution_plan_hash` | `defe8ab4692af05430464974c3d5e8e029ff7d64ecbc1822c07ff91593c744e0` |
+| `result_hash` (recorded) | `ffda01011f56e5d01741161d1552b3ffa0ccf0c964733c2fe35bee3de5c4bf6f` |
+
+One limitation is stated rather than glossed: the recorded `result_hash` was
+**not** independently recomputed, because `Get-VerificationReceiptReportHash` is
+internal to `verification-receipt.psm1` and is not exported. The schema
+validation and the commit/tree identity matches are the checks that were
+actually executed.
+
+The FINAL evidence lives under `artifacts/agent/post-p1-doc-help-final/`, which
+is git-ignored, so producing it did not alter the reviewed tree.
+
+## A3. Remaining steps, when the author disposes of the receipt gap
+
+The approved candidate is `60c4781a7c43e50e4436ad5f45c879452b0450d9`, and `main`
+is one of its ancestors, so promotion can still move that exact SHA:
+
+```text
+git push -u origin feature/post-p1-bilingual-user-guide-help
+git checkout main
+git merge --ff-only 60c4781a7c43e50e4436ad5f45c879452b0450d9
+git push origin main
+```
+
+A fast-forward is what preserves the binding: a pull-request merge, squash or
+rebase would each mint a new commit whose tree was never the one FINAL accepted.
+
+This closeout record is a documentation-only commit placed **after** the
+reviewed candidate, so `60c4781a7` remains intact in history and can still be
+promoted exactly. Promoting the branch tip instead would additionally carry this
+record, which FINAL did not cover.
+
+Publication, tagging and any release remain separate author decisions, and none
+of them is implied by promotion to `main`.
