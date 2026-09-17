@@ -1,0 +1,283 @@
+{
+  "schemaVersion": 1,
+  "phase": "PRE-G9B-R0",
+  "phaseKind": "CHARACTERIZATION_DEBT_DISPOSITION_STAGED_DESIGN",
+  "roadmapGateExecuted": "POST-P1 ROADMAP / TECHNICAL-DEBT DISPOSITION",
+  "productPhaseEffect": "NONE",
+  "changeRoute": "ORDINARY",
+  "verificationClass": "DOCUMENTATION_STATUS_ONLY",
+  "verificationClassFrozenAtPhaseStart": true,
+  "selfApproved": false,
+  "authorApproved": false,
+  "passClaimed": false,
+  "state": "CANDIDATE — PENDING AUTHOR REVIEW",
+  "base": {
+    "commit": "0d13434cf1ab4d31f4bb4d50e7aea6cb3e69e35d",
+    "tree": "922034fd46411530bd02ae15fcc832e3fc541dc7",
+    "branch": "planning/pre-g9b-r0-characterization-and-debt-disposition",
+    "originMainAtEntry": "0d13434cf1ab4d31f4bb4d50e7aea6cb3e69e35d",
+    "worktreeAtEntry": "clean"
+  },
+  "authorWitness": {
+    "path": "artifacts/author-input/post-p1-defects/SeveralDefects.cedg",
+    "sha256": "c0cbdb8ea218e4a07b7cd4d7bcfb4ba2b74da373bbd49711aa4657349619dff8",
+    "sizeBytes": 24844,
+    "versioned": false,
+    "versionedReason": "artifacts/ is git-ignored except its README; author-input material is not promoted into versioned authority by this phase",
+    "modifiedByThisPhase": false,
+    "derivedFixturesCreated": false,
+    "derivedFixturesReason": "R0 is documentation-only; reproduction procedures are specified for the owning phases to implement"
+  },
+  "witnessLedgerEvidence": {
+    "note": "Decoded read-only from the persisted geogebra.xml inside the author witness. Format is version|nextIncarnation|encode(current)|encode(copySource); a snapshot encodes as hex(owner)~hex(sourcePair)~hex(constructive)~hex(topology)~entryCount[~entries]. The exporter selects the pair format version if and only if a pair binding exists.",
+    "results": [
+      {
+        "label": "e",
+        "definition": "Intersect(d, a)",
+        "operandFamilies": "SplineV2 x generic LocusV2",
+        "geocedgId": "geo:023cf87a1b102bbb529452ba53eb533c",
+        "ledgerFormatVersion": "4",
+        "ledgerFormatVersionIsPairFormat": false,
+        "nextIncarnation": 1,
+        "sourcePairDecoded": "36:geo:75930c9f360aea5f9544518579b34705 36:geo:af7727d47fbd9456fe580de49d3bd231",
+        "constructiveLineage": "g9u0-public-locus-pair-intersection/v1",
+        "topologyContract": "g9u0-public-topology/v1",
+        "durableEntryCount": 0,
+        "copySourceSnapshot": "absent",
+        "materializedPoints": []
+      },
+      {
+        "label": "g",
+        "definition": "Intersect(a, c)",
+        "operandFamilies": "generic LocusV2 x conic",
+        "geocedgId": "geo:c8fddcdb1612ae92d7c78a7a466b8841",
+        "ledgerFormatVersion": "4",
+        "ledgerFormatVersionIsPairFormat": false,
+        "nextIncarnation": 5,
+        "sourcePairDecoded": "36:geo:75930c9f360aea5f9544518579b34705 36:geo:d5d14e14b01f806756df070298fe4d1e",
+        "constructiveLineage": "g9u0-public-intersection/v1",
+        "topologyContract": "g9u0-public-topology/v1",
+        "durableEntryCount": 4,
+        "copySourceSnapshot": "present",
+        "materializedPoints": ["I", "J", "K", "L"]
+      }
+    ],
+    "persistedRedefineSignature": {
+      "geo": "geo:116a0f9adabcd515e0ef728b9ac5fe81",
+      "label": "E",
+      "family": "POINT",
+      "provider": "geocedg-construction-provider/v1",
+      "recordedDependencies": ["geo:0ec40b8a27f0fcbfc125079d03bd8e6d"],
+      "directAlgorithmInputs": ["D", "C"],
+      "note": "D carries no persistent identity and was dropped at publication; this is the direct proof of the publication/assessment null-handling asymmetry"
+    }
+  },
+  "observations": [
+    {
+      "id": "D1",
+      "statement": "No intersection points are materializable between LocusV2 a and SplineV2 d.",
+      "classification": "INTENTIONALLY_UNSUPPORTED_CURRENT_CAPABILITY",
+      "isDefect": false,
+      "layer": "KERNEL_ONLY_IF_EXTENSION_AUTHORIZED",
+      "governingContracts": [
+        "geocedg/specs/curves/spline-v2-pair-materialization.md#1",
+        "geocedg/specs/curves/semantic-spline-2d.md#5.2",
+        "docs/adr/0018-semantic-spline-2d-capability.md",
+        "docs/adr/0021-spline-pair-singleton-germ-materialization.md"
+      ],
+      "owningPhase": null,
+      "extensionRequires": ["AD-R0-1", "new ADR amending ADR 0021 Decision 1", "normative spec amendment"],
+      "unresolvedHypotheses": [
+        "Whether e is a SUCCESS result with not-established pair isolation or an UNSUPPORTED computation status (finite-components precondition) is not settled by the persisted ledger and must be established by the first scenario of any future phase.",
+        "On the generic path the public spline-pair resolver returns before its diagnostics loop, so no pair-selector class evidence is emitted at all; the honest label may be unsupported and additionally undiagnosed."
+      ]
+    },
+    {
+      "id": "D2",
+      "statement": "SplineV2 gives no contextual help, opens the generic input-help window, receives only a bare command prefix, and is awkward to construct from a point list.",
+      "classification": "MISSING_FRONTEND_EXPOSURE_AND_INCORRECT_CONTEXTUAL_HELP",
+      "isDefect": true,
+      "layer": "DESKTOP_FRONTEND_AND_LOCALIZATION",
+      "kernelExtensionRequired": false,
+      "kernelExtensionQualification": "No kernel extension is required for the open forms. Closed-form authoring is an unresolved authority question (AD-R0-8): closedness is kernel state declared solely by a repeated first/last list member, and the public creation entry carries no closed parameter.",
+      "owningPhase": "PRE-G9B-R4",
+      "separableDefects": [
+        "contextual help is mode-keyed and SplineV2 has no mode",
+        "the action opens the generic input-help panel without a selection, prefilling the command prefix only when the input field is blank",
+        "the profile tooltip advertises an invalid degree-2 example (TD-R0-SPLINEV2-TOOLTIP-INVALID-SYNTAX)"
+      ],
+      "notDefects": [
+        "the tool icon already exists as an owned SVG and is already bound to the action key",
+        "the action is already rendered in the construction-semantic-curves profile flyout; only mode semantics are missing"
+      ]
+    },
+    {
+      "id": "D3-a",
+      "statement": "Redefining E as Midpoint(D, C + (1, 0)) is rejected as ambiguous although the expression is semantically unambiguous.",
+      "classification": "INCORRECTLY_REJECTED",
+      "isDefect": true,
+      "layer": "SHARED_JAVA_KERNEL",
+      "originatingSeam": "durable dependency projection during redefine assessment",
+      "rootCause": "Publication and redefine assessment use the same direct projection over the parent algorithm's inputs with opposite null handling: publication drops inputs without a persistent identity, assessment throws. The thrown IllegalArgumentException is caught and reported as the AMBIGUOUS assessment status before cycle analysis, host-shape checking, compatible-redefine inspection, impact analysis and any legacy offer.",
+      "notOriginatingIn": ["parsing", "overload/command resolution", "evaluation of C + (1,0)", "dependency/cycle analysis", "G9A compatible-redefine assessment", "impact/currentness analysis", "frontend confirmation logic"],
+      "corollary": "Because D is unregistered independently of the edit, any redefine of E - including re-entering the identical Midpoint(D, C) - takes the same throw.",
+      "redefineVerdictShouldBe": "COMPATIBLE_RETAIN",
+      "naiveFixInsufficient": "Dropping nulls on both sides leaves E's candidate dependency set empty, unequal to the stored {C}, so the non-public dependency-set gate rejects on both the retain and the replacement inspection, yielding UNSUPPORTED. Only a transitive closure through the unregistered helper restores {C}; that is a genuinely new third rule and must be adopted on both sides together.",
+      "owningPhase": "PRE-G9B-R3"
+    },
+    {
+      "id": "D3-b",
+      "statement": "Nine distinct IllegalArgumentException causes collapse onto the single AMBIGUOUS assessment status, so a correct rejection such as a geo-family change is reported as ambiguity.",
+      "classification": "INCORRECTLY_REPORTED",
+      "isDefect": true,
+      "layer": "KERNEL_STATUS_TYPING_AND_DESKTOP_PRESENTATION",
+      "owningPhase": "PRE-G9B-R3",
+      "debtId": "TD-R0-REDEFINE-AMBIGUOUS-VOCABULARY"
+    }
+  ],
+  "technicalDebt": [
+    {
+      "id": "TD-P1-SEMANTIC-LENGTH-INTERSECTION",
+      "disposition": "RETAIN_RESCOPED",
+      "layer": "KERNEL_SEMANTIC_METRIC_ENDPOINT_PROVENANCE",
+      "owningPhase": "PRE-G9B-R2",
+      "relationToD1": "PARTIALLY_COUPLED",
+      "dependencyDirection": "NONE",
+      "rescopeNote": "Not an intersection-materialization problem. Materialized spline-pair points already exist; the metric cannot address them because the endpoint resolver admits only two provenance shapes and an intersection-materialized point is a bare GeoPoint carrying only coordinates.",
+      "prerequisites": ["normative amendment to geocedg/specs/locus/locus-v2-metrics.md defining the third endpoint family"],
+      "coverageGap": "No existing test combines an intersection-materialized point with Length or LocusLength."
+    },
+    {
+      "id": "TD-P1-PACKAGING-SUMMARY",
+      "disposition": "RETAIN",
+      "layer": "EXTERNAL_TOOLING_REPORTING",
+      "owningPhase": "PRE-G9B-R1",
+      "stillOpen": true,
+      "couplings": [
+        "the static-contract catalog pins the packaging script sha256",
+        "the verification registry pins the static-contract catalog and fails closed for every profile on drift",
+        "two desktop tests assert the current wording in living documents"
+      ]
+    },
+    {
+      "id": "TD-VERIFY-RECEIPT-RECOVERY",
+      "disposition": "RETAIN_RESCOPED",
+      "layer": "VERIFICATION_INFRASTRUCTURE",
+      "owningPhase": "PRE-G9B-R1",
+      "rescopeNote": "The roadmap says the flow does not always emit a receipt; the source shows it never does. The verifier does not import the receipt module, the supervisor writes only the run-level result and journal, and the only receipt-writer invocations in the repository are in its own test module.",
+      "acceptanceGatingAlreadyComplete": true,
+      "missingProducers": ["checker_identity_hash", "input_identity_hash", "accepted_profiles"],
+      "blocksLaterPhases": false,
+      "blocksCanonicalMachineCloseout": true,
+      "requiresFull": true,
+      "blockedOn": ["AD-R0-2"],
+      "fabricationProhibited": true
+    },
+    {
+      "id": "TD-G9X1-HISTORICAL-PIN",
+      "disposition": "RETAIN",
+      "layer": "VERIFICATION_HISTORICAL_AUTHORITY_RECONCILIATION",
+      "owningPhase": "PRE-G9B-R1",
+      "stalePin": {
+        "verifier": "tools/agent/verify-g9x1-extended-dxf.ps1",
+        "input": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md",
+        "pinnedHistoricalSha256": "e5de67f5cc2108cb1f4f85954b3538a8971805ec976ce23a51604574454e147d",
+        "liveCanonicalLfSha256": "f2a0cacc88b13dfac927c8ad59b25cf55fe702d12620e8ba5e91e43b49b676ef",
+        "historicalAuthorityCommits": ["f528b2dcbe4a802d3dfdb334f842e39ec7f33015", "22bcc888ebb2ecb102fbeb5b07c87778fddeb3a0"],
+        "supersedingCommit": "e5260fc7d",
+        "supersedingPhase": "PRE-G9B-S1-R1"
+      },
+      "currentPins": [
+        { "input": ".github/prompts/tasks/g9x1-extended-dxf-curves.prompt.md", "state": "MATCHES" },
+        { "input": "docs/adr/0014-export-only-dxf-approximation-and-sidecar.md", "state": "MATCHES" }
+      ],
+      "hashSubstitutionProhibited": true,
+      "reopensG9X1": false
+    },
+    {
+      "id": "G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP",
+      "disposition": "RETAIN_CLOSURE_PROPOSED",
+      "layer": "KERNEL_RISK_CLOSABLE_ONLY_BY_NATIVE_LIFECYCLE_EVIDENCE",
+      "owningPhase": "PRE-G9B-R1-R1",
+      "recommendation": "CLOSE_IN_PRE_G9B_R",
+      "blockedOn": ["AD-R0-3"],
+      "residual": [
+        { "scenario": "U1-Q04", "kind": "DECLARED_GAP", "state": "RETAINED_RISK", "boundTests": [] },
+        { "scenario": "U1-Q05", "kind": "DECLARED_GAP", "state": "RETAINED_RISK", "boundTests": [] },
+        { "scenario": "U1-Q02", "kind": "OVERCLAIMED_BINDING", "state": "BOUND_TEST_DOES_NOT_PERFORM_DECLARED_PROCEDURE", "debtId": "TD-R0-G9U1-Q02-BINDING" }
+      ],
+      "substitutionDetected": false,
+      "closedByThisPhase": false,
+      "designDecisionExposed": "No quarantine-observation surface is reachable from the Desktop module; a closure test must either repeat the existing hand parse of the serialized ledger or widen a deliberately resolver-scoped kernel API."
+    },
+    {
+      "id": "TD-R0-SPLINEV2-TOOLTIP-INVALID-SYNTAX",
+      "disposition": "NEW",
+      "layer": "DESKTOP_PROFILE_TEXT",
+      "owningPhase": "PRE-G9B-R4",
+      "blockedOn": ["AD-R0-5"]
+    },
+    {
+      "id": "TD-R0-REDEFINE-AMBIGUOUS-VOCABULARY",
+      "disposition": "NEW",
+      "layer": "KERNEL_STATUS_TYPING_AND_DESKTOP_PRESENTATION",
+      "owningPhase": "PRE-G9B-R3",
+      "separableFrom": "D3-a"
+    },
+    {
+      "id": "TD-R0-GGBSCRIPT-STRATEGY-RESTORE",
+      "disposition": "NEW",
+      "layer": "SHARED_KERNEL_SCRIPT_RUNNER",
+      "owningPhase": "PRE-G9B-R6"
+    },
+    {
+      "id": "TD-R0-G9U1-Q02-BINDING",
+      "disposition": "NEW",
+      "layer": "OPERATIONAL_MANIFEST_AND_DESKTOP_TEST",
+      "owningPhase": "PRE-G9B-R1-R1"
+    }
+  ],
+  "proposedSequence": [
+    { "id": "PRE-G9B-R0", "title": "characterization, debt disposition, staged design", "state": "EXECUTED_CANDIDATE_PENDING_AUTHOR_REVIEW", "authorized": true, "verificationClass": "DOCUMENTATION_STATUS_ONLY" },
+    { "id": "PRE-G9B-R1", "title": "verification and bounded operational debt", "state": "DESIGNED_NOT_AUTHORIZED", "authorized": false, "proposedVerificationClass": "OPERATIONAL_VERIFICATION_INFRASTRUCTURE", "proposedAcceptance": "focused operational plus FULL" },
+    { "id": "PRE-G9B-R1-R1", "title": "native periodic-quarantine round-trip closure", "state": "PROPOSED_NOT_AUTHORIZED", "authorized": false, "proposedVerificationClass": "BOUNDED_PHASE", "proposedAcceptance": "PHASE -Phase G9U1" },
+    { "id": "PRE-G9B-R2", "title": "semantic metric endpoint provenance", "state": "DESIGNED_NOT_AUTHORIZED", "authorized": false, "proposedVerificationClass": "INTEGRATED_PHASE", "proposedAcceptance": "PHASE G9S1-R1 and G9U0-R6 plus INTEGRATION" },
+    { "id": "PRE-G9B-R3", "title": "redefine correctness", "state": "DESIGNED_NOT_AUTHORIZED", "authorized": false, "proposedVerificationClass": "INTEGRATED_PHASE", "proposedAcceptance": "PHASE POST-G9U1-A3 plus INTEGRATION" },
+    { "id": "PRE-G9B-R4", "title": "SplineV2 and list authoring UX", "state": "DESIGNED_NOT_AUTHORIZED", "authorized": false, "proposedVerificationClass": "BOUNDED_PHASE", "proposedAcceptance": "a new registered PHASE selection" },
+    { "id": "PRE-G9B-R5-A", "title": "user-guide index, outline and navigation", "state": "DESIGNED_NOT_AUTHORIZED", "authorized": false, "proposedVerificationClass": "BOUNDED_PHASE", "proposedAcceptance": "a new registered PHASE selection plus STATIC" },
+    { "id": "PRE-G9B-R5-B", "title": "canonical English command surface", "state": "DESIGNED_NOT_AUTHORIZED", "authorized": false, "proposedVerificationClass": "INTEGRATED_PHASE", "proposedAcceptance": "INTEGRATION", "blockedOn": ["AD-R0-4"] },
+    { "id": "PRE-G9B-R6", "title": "GGBScript compatibility gate", "state": "DESIGNED_NOT_AUTHORIZED", "authorized": false, "proposedVerificationClass": "OPERATIONAL_VERIFICATION_INFRASTRUCTURE", "proposedAcceptance": "focused operational plus a registered PHASE selection" },
+    { "id": "PRE-G9B-R7", "title": "integrated PRE-G9B readiness and closeout", "state": "DESIGNED_NOT_AUTHORIZED", "authorized": false, "proposedVerificationClass": "FROZEN_AT_PHASE_START", "proposedAcceptance": "INTEGRATION at minimum" }
+  ],
+  "openAuthorDecisions": [
+    { "id": "AD-R0-1", "decision": "Whether a mixed LocusV2 x SplineV2 materialization extension is wanted at all", "blocks": ["any D1 change"] },
+    { "id": "AD-R0-2", "decision": "Semantics and producers for checker_identity_hash, input_identity_hash and accepted_profiles", "blocks": ["PRE-G9B-R1 receipt slice"] },
+    { "id": "AD-R0-3", "decision": "Close G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP in this track or retain for global G9 closeout; and whether to widen the resolver-scoped quarantine observation surface", "blocks": ["PRE-G9B-R1-R1"] },
+    { "id": "AD-R0-4", "decision": "Adoption of the canonical English command-name policy plus the compatibility decision", "blocks": ["PRE-G9B-R5-B", "PRE-G9B-R6 locale dimension"] },
+    { "id": "AD-R0-5", "decision": "Whether the invalid SplineV2 tooltip is corrected immediately as a bounded change", "blocks": ["PRE-G9B-R4 scope"] },
+    { "id": "AD-R0-6", "decision": "PRE-G9B-R3 frozen verification class and whether a persisted-signature migration is acceptable", "blocks": ["PRE-G9B-R3"] },
+    { "id": "AD-R0-7", "decision": "Whether a durable machine-readable technical-debt ledger is created, and where", "blocks": [] },
+    { "id": "AD-R0-8", "decision": "Whether the desktop may synthesize the repeated closing member that declares a closed periodic SplineV2", "blocks": ["PRE-G9B-R4"] },
+    { "id": "AD-R0-9", "decision": "Whether to authorize a separate governance-layer task that adds PROPOSED / UNEXECUTED / NOT AUTHORIZED prompt stubs for R1-R7", "blocks": [] }
+  ],
+  "promptStubs": {
+    "created": false,
+    "reason": "CLAUDE.md prohibits editing .github/prompts/** as a side effect of another task; changing the governance layer is its own author-authorized task. The permission layer enforces the same boundary.",
+    "authorityLost": false,
+    "authorityLocation": "docs/architecture/pre_g9b_r_final_stabilization_and_authoring_readiness_design.md section 4 carries every per-phase contract field a stub would have declared.",
+    "decision": "AD-R0-9"
+  },
+  "preservedStates": {
+    "note": "No approved phase is reopened and no state is changed by PRE-G9B-R0.",
+    "unchanged": [
+      "G9X1 = PASS — AUTHOR APPROVED",
+      "G9S1-R1 = PASS — AUTHOR APPROVED",
+      "PRE-G9B-P1 = PASS — AUTHOR APPROVED",
+      "POST-P1-DOC-HELP = PASS — AUTHOR APPROVED",
+      "G9B = DESIGNED — NOT AUTHORIZED",
+      "G9C = DESIGNED — NOT AUTHORIZED",
+      "G9U2 = BLOCKED ON GLOBAL G9 APPROVAL",
+      "PROFILE COMMERCIAL = PENDING EXTERNAL TERMS / NOT AUTHORIZED"
+    ]
+  }
+}
