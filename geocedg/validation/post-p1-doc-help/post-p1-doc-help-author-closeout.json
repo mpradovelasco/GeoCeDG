@@ -28,9 +28,12 @@
     "state": "ABSENT",
     "cause": "The verification run pipeline does not write an acceptance receipt; Write-VerificationAcceptanceReceipt is invoked only by phase-closeout.ps1 and its tests.",
     "trackedDebt": "TD-VERIFY-RECEIPT-RECOVERY",
+    "trackedDebtState": "OPEN — PRE-EXISTING, NON-BLOCKING",
     "fabricated": false,
     "canonicalCloseoutExecuted": false,
-    "canonicalCloseoutBlocker": "tools/agent/phase-closeout.ps1 requires a mandatory -ReceiptPath; no receipt exists and the roadmap forbids fabricating one."
+    "canonicalCloseoutBlocker": "tools/agent/phase-closeout.ps1 requires a mandatory -ReceiptPath; no receipt exists and the roadmap forbids fabricating one.",
+    "authorDisposition": "The author accepted the receipt gap as a known operational debt of the verification infrastructure, not blocking this closeout, following the normative precedent of the P1 closeout and reconciliation recorded in the living roadmap.",
+    "correctedInThisTrack": false
   },
   "identityInspection": {
     "mode": "DIRECT_RESULT_TO_GIT_COMPARISON",
@@ -42,18 +45,35 @@
     "resultHashRecomputationNote": "Get-VerificationReceiptReportHash is internal to verification-receipt.psm1 and is not exported, so the recorded result_hash was not independently recomputed."
   },
   "promotion": {
-    "state": "NOT_PERFORMED",
-    "branchPublished": false,
-    "mainAdvanced": false,
+    "state": "PERFORMED",
+    "branchPublished": true,
+    "publishedBranch": "feature/post-p1-bilingual-user-guide-help",
+    "mainAdvanced": true,
+    "promotedCommit": "60c4781a7c43e50e4436ad5f45c879452b0450d9",
+    "promotedTree": "04fbb96e4b4997da961b8a1128539f026c1ab10f",
+    "promotionMethod": "FAST_FORWARD",
+    "promotionBaseCommit": "0f578fd9b58db14fcecf457ed01fa7a8f1b8c785",
+    "candidateIdentityPreserved": true,
     "tagCreated": false,
     "releasePublished": false,
-    "pendingAuthorDisposition": "Disposition of the acceptance-receipt gap before promoting the approved candidate to main."
+    "binariesPublished": false,
+    "authorDisposition": "TD-VERIFY-RECEIPT-RECOVERY accepted as a known, open, non-blocking verification-infrastructure debt; not corrected inside POST-P1-DOC-HELP and no receipt or hash fabricated."
+  },
+  "governanceCommits": {
+    "note": "These commits are governance and evidence recorded after the technical candidate. They are not FINAL-verified candidates and must not be presented as such.",
+    "preliminaryAuthorCloseout": "05ec86f3b5c85cbf1ffe37e08e31f279b2fc5b43"
   },
   "unchanged": {
     "roadmapPhaseStatus": true,
+    "phaseGateSpecAdrStatus": true,
     "geocedgVersion": "1.0.0",
     "profileNc": true,
     "profileCommercial": true,
+    "g9b": true,
+    "g9c": true,
+    "g9u2": true,
+    "g10": true,
+    "g12": true,
     "bookRepository": true
   },
   "selfApproved": false

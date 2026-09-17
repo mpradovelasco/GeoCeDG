@@ -11,8 +11,8 @@ BILINGUAL GUIDE RESOURCES = PASS
 HELP MARKDOWN RENDERING   = IMPLEMENTED
 HELP WINDOW RESIZABILITY  = IMPLEMENTED
 INTERACTIVE HELP SMOKE    = PASS
-ACCEPTANCE RECEIPT        = ABSENT — TD-VERIFY-RECEIPT-RECOVERY
-PROMOTION TO MAIN         = NOT PERFORMED — PENDING AUTHOR DISPOSITION
+ACCEPTANCE RECEIPT        = ABSENT — TD-VERIFY-RECEIPT-RECOVERY (open, non-blocking)
+PROMOTION TO MAIN         = PERFORMED — FAST-FORWARD, exact candidate preserved
 selfApproved   = false
 authorApproved = true
 passClaimed    = false
@@ -1065,10 +1065,10 @@ tag and any release remain separate explicit author decisions.
 AUTHOR DECISION          = PASS — AUTHOR APPROVED (2026-09-17, manual author smoke)
 REVIEWED CANDIDATE       = 60c4781a7c43e50e4436ad5f45c879452b0450d9
 REVIEWED TREE            = 04fbb96e4b4997da961b8a1128539f026c1ab10f
-ACCEPTANCE RECEIPT       = ABSENT — TD-VERIFY-RECEIPT-RECOVERY
+ACCEPTANCE RECEIPT       = ABSENT — TD-VERIFY-RECEIPT-RECOVERY (open, non-blocking)
 CANONICAL CLOSEOUT       = NOT EXECUTED (receipt is a mandatory input)
-PROMOTION TO MAIN        = NOT PERFORMED — PENDING AUTHOR DISPOSITION
-BRANCH PUBLISHED         = NO
+PROMOTION TO MAIN        = PERFORMED — FAST-FORWARD, exact candidate preserved
+BRANCH PUBLISHED         = YES
 selfApproved             = false
 ```
 
@@ -1081,7 +1081,33 @@ roadmap phase status is untouched.
 The machine-readable record is
 [`post-p1-doc-help-author-closeout.json`](../../geocedg/validation/post-p1-doc-help/post-p1-doc-help-author-closeout.json).
 
-## A1. Why promotion is held
+## A0. Author disposition of the receipt gap, and the promotion performed
+
+The author disposed of the blocker on 2026-09-17:
+`TD-VERIFY-RECEIPT-RECOVERY` is a known, open, **non-blocking** operational debt
+of the verification infrastructure. It is not corrected inside
+`POST-P1-DOC-HELP`, no receipt or hash was fabricated, and the technical
+candidate was not modified to obtain one. The governing precedent is the P1
+closeout and reconciliation recorded in the living roadmap, where a valid FINAL
+without a separate receipt does not block closeout. The debt stays open.
+
+On that disposition the promotion was executed, preserving the separation
+between the verified technical candidate and the later governance commits:
+
+| Step | Result |
+|---|---|
+| Branch published | `feature/post-p1-bilingual-user-guide-help`, no force, rebase or rewrite |
+| `main` before | `0f578fd9b58db14fcecf457ed01fa7a8f1b8c785` |
+| Promotion method | `git merge --ff-only` — no squash, rebase or merge commit |
+| `main` after, confirmed from `origin` | `60c4781a7c43e50e4436ad5f45c879452b0450d9` |
+| Candidate identity | preserved exactly; `main` is the FINAL-verified SHA itself |
+| Tag / release / binaries | none |
+
+Section A1 below records why the canonical receipt-based closeout remained
+unexecutable; it is retained as the standing account of the debt, not as a
+pending blocker.
+
+## A1. Why canonical closeout was not executable
 
 The canonical closeout could not be executed, and the reason is a pre-existing
 verification-infrastructure gap rather than anything about this candidate:
@@ -1096,14 +1122,14 @@ verification-infrastructure gap rather than anything about this candidate:
 - this is the tracked debt `TD-VERIFY-RECEIPT-RECOVERY`, whose roadmap entry
   states plainly that receipts and hashes must not be fabricated.
 
-No receipt was therefore manufactured, and the author elected to dispose of the
-receipt gap separately before the approved candidate is promoted.
+No receipt was therefore manufactured, and none has been fabricated since.
+`phase-closeout.ps1` was never invoked with a fictitious receipt.
 
-The roadmap already carries a precedent for a valid FINAL without a separate
-receipt — the reconciliation row records that the result emitted no separate
-receipt and that the operational debt did not block that closeout. That
-precedent is available but has not been applied here; the disposition is the
-author's.
+The roadmap carries the precedent for a valid FINAL without a separate receipt:
+the reconciliation row records that the result emitted no separate receipt and
+that the operational debt did not block that closeout. The author applied that
+precedent here on 2026-09-17, as recorded in section A0. The debt itself stays
+open and is unchanged by this track.
 
 ## A2. Identity inspection actually performed
 
@@ -1134,10 +1160,10 @@ actually executed.
 The FINAL evidence lives under `artifacts/agent/post-p1-doc-help-final/`, which
 is git-ignored, so producing it did not alter the reviewed tree.
 
-## A3. Remaining steps, when the author disposes of the receipt gap
+## A3. Promotion as executed
 
-The approved candidate is `60c4781a7c43e50e4436ad5f45c879452b0450d9`, and `main`
-is one of its ancestors, so promotion can still move that exact SHA:
+`main` was an ancestor of the approved candidate, so the promotion moved that
+exact SHA:
 
 ```text
 git push -u origin feature/post-p1-bilingual-user-guide-help
@@ -1148,11 +1174,29 @@ git push origin main
 
 A fast-forward is what preserves the binding: a pull-request merge, squash or
 rebase would each mint a new commit whose tree was never the one FINAL accepted.
+None of those was used.
 
-This closeout record is a documentation-only commit placed **after** the
-reviewed candidate, so `60c4781a7` remains intact in history and can still be
-promoted exactly. Promoting the branch tip instead would additionally carry this
-record, which FINAL did not cover.
+## A4. Technical candidate versus governance commits
 
-Publication, tagging and any release remain separate author decisions, and none
-of them is implied by promotion to `main`.
+The distinction is load-bearing and is preserved in the history:
+
+| Commit | Kind | FINAL-verified |
+|---|---|---|
+| `60c4781a7c43e50e4436ad5f45c879452b0450d9` | technical candidate, tree `04fbb96e4b4997da961b8a1128539f026c1ab10f` | yes — `verification-27df890fab914ec1873fe55ae91b13eb`, `ACCEPTED / COMPLETE`, 40/40 |
+| `05ec86f3b5c85cbf1ffe37e08e31f279b2fc5b43` | preliminary author closeout | no — governance and evidence only |
+| this closeout commit | record of the completed promotion | no — governance and evidence only |
+
+The two governance commits are documentation and evidence recorded after the
+candidate. Neither is a FINAL-verified candidate and neither may be presented as
+technically accepted by the earlier FINAL. They were validated with the
+canonical `STATIC` profile, which is the appropriate gate for a documentary and
+evidential change; no new `FINAL` was run and none was required.
+
+## A5. What this closeout did not do
+
+No tag, no release and no binary publication. No change to `PROFILE NC`,
+`PROFILE COMMERCIAL`, version `1.0.0`, G9B, G9C, G9U2, G10, G12 or
+`geocedg_book`. No phase, gate, specification, ADR or roadmap item had its
+status modified as an effect of this task: `POST-P1-DOC-HELP` is a
+documentation, frontend and packaged-resource track, not a roadmap phase. The
+`TD-VERIFY-RECEIPT-RECOVERY` debt remains open and unmodified.
