@@ -1,30 +1,34 @@
 # PRE-G9B-R0 — characterization, technical-debt disposition and staged design
 
 ```text
-PRE-G9B-R0                = CANDIDATE — PENDING AUTHOR REVIEW
+PRE-G9B-R0                = PASS — AUTHOR APPROVED (author decision, 2026-09-17)
+REVIEW DISPOSITION        = AUTHOR APPROVED WITH REQUIRED PLANNING CHANGE, applied
 PHASE KIND                = CHARACTERIZATION / DEBT DISPOSITION / STAGED DESIGN
 ROADMAP GATE EXECUTED     = POST-P1 ROADMAP / TECHNICAL-DEBT DISPOSITION
 CHANGE_ROUTE              = ORDINARY
 VERIFICATION_CLASS        = DOCUMENTATION_STATUS_ONLY (frozenAtPhaseStart = true)
 PRODUCT_PHASE_EFFECT      = NONE
-D1                        = INTENTIONALLY UNSUPPORTED CURRENT CAPABILITY (not a defect)
+D1                        = INTENTIONALLY UNSUPPORTED CURRENT CAPABILITY (not a defect,
+                            and not technical debt) — classification UNCHANGED by review
 D2                        = MISSING FRONTEND EXPOSURE AND INCORRECT CONTEXTUAL HELP
 D3-a                      = INCORRECTLY REJECTED (kernel)
 D3-b                      = INCORRECTLY REPORTED (status vocabulary)
 DEBT RETAINED             = 4 pre-existing + 1 open risk
 DEBT OPENED BY R0         = 4
-PROPOSED SEQUENCE         = R1, R1-R1, R2, R3, R4, R5-A, R5-B, R6, R7 — all DESIGNED / NOT AUTHORIZED
-OPEN AUTHOR DECISIONS     = AD-R0-1 … AD-R0-9
+SEQUENCE                  = R1, R1-R1, R2, R2-E0, R2-E1, R3, R4, R5-A, R5-B, R6, R7
+                            — every phase after R0 DESIGNED / NOT AUTHORIZED
+AUTHOR DECISIONS          = AD-R0-1 … AD-R0-9 all decided
 selfApproved              = false
-authorApproved            = false
-passClaimed               = false
+authorApproved            = true
+passClaimed               = true   (author decision; not an agent claim)
 ```
 
 `PRE-G9B-R0` is a planning, characterization and documentation phase. It changes
 no kernel, geometry, dependency graph, serialization, semantic identity, metric,
 intersection, redefine, command, script, DXF, packaging or version behaviour. It
-marks no roadmap phase, gate, specification or ADR as approved, and it
-authorizes no later phase.
+marks no specification or ADR as approved, and it authorizes no later phase —
+including `R2-E0` and `R2-E1`, which the author's review added to the track but
+did **not** authorize for execution.
 
 Governing artifacts produced by this phase:
 
@@ -275,17 +279,21 @@ Stated as unresolved rather than asserted:
    which would make a bounded diagnostics improvement worth considering
    independently of any capability extension.
 
-### 3.8 Smallest defensible extension family, if ever authorized
+### 3.8 What today's capabilities can prove — and the author's extension decision
 
-Not a blanket admission of arbitrary `LocusV2` pairs, which is explicitly
-rejected. The only defensible widening is a pair in which **both** sides can
-supply an exact, outward-roundable local germ of the rigour the approved contract
-already requires — concretely, an evaluator exposing a certifiable
-piecewise-polynomial model with exact rational coefficients equivalent to what
-interval-model capture extracts today. The reconstructible evaluator carried by
-a generic dependent-point locus has no exact coefficient authority, so no
-outward enclosure of the true function and Jacobian is obtainable from it, and
-substituting rounded or sampled data is forbidden by the same contract.
+This subsection states what is provable with the kernel exactly as it stands. It
+is an R0 finding about the **current** proof capability, not a ceiling on the
+achievable family set.
+
+With today's machinery, the only widening the existing proof apparatus could
+certify is a pair in which **both** sides can already supply an exact,
+outward-roundable local germ of the rigour the approved contract requires —
+concretely, an evaluator exposing a certifiable piecewise-polynomial model with
+exact rational coefficients equivalent to what interval-model capture extracts
+today. The reconstructible evaluator carried by a generic dependent-point locus
+has no exact coefficient authority, so no outward enclosure of the true function
+and Jacobian is obtainable *from it as it exists now*, and substituting rounded
+or sampled data is forbidden by the same contract.
 
 The chain `rich semantic intersection -> current admissible exact token ->
 explicit materialization` would be preserved unchanged. The selector would be
@@ -295,9 +303,35 @@ transverse germ sign. No coordinate or proximity matching participates at any
 step; the existing replacement test is a component-key plus semantic-parameter
 chart containment, never a nearest-root match.
 
-**Such an extension requires a new ADR amending ADR 0021 Decision 1 and a
-normative specification amendment. It is not authorized by anything on disk and
-is not part of `PRE-G9B-R`** (`AD-R0-1`).
+**Author decision (`AD-R0-1`), superseding R0's original planning conclusion.**
+R0 originally concluded that this extension lay outside `PRE-G9B-R`. The author
+has decided instead that broader exact-token point materialization between
+semantic curves is an important GeoCeDG capability and must be incorporated
+explicitly into the track before it closes, as `R2-E0` (design) and `R2-E1`
+(implementation).
+
+The decision supersedes **only** that planning statement. It does not invalidate
+the factual D1 characterization above, the historical contracts, the existing
+`G9S1`/`G9S1-R1` approval, or any existing evidence. D1 remains
+`INTENTIONALLY_UNSUPPORTED_CURRENT_CAPABILITY` and must not be rewritten as
+technical debt.
+
+The objective is also **broader than the originally observed mixed pair**: `E0`
+must investigate, and where semantically defensible enable, materialization
+across certified `SplineV2 × SplineV2` (the approved reference baseline),
+`SplineV2 × generic LocusV2`, `generic LocusV2 × SplineV2`,
+`generic LocusV2 × generic LocusV2`, and supported semantic images and
+compositions of those families where provenance remains certifiable. `E0` is
+charged with determining the *minimum additional kernel capability* that would
+let further families be certified, and must presuppose neither that every
+generic pair can be materialized nor that only polynomial or spline-based pairs
+ever can. Eligibility must be defined by **semantic capability and provenance**,
+never by Java class name alone.
+
+The extension still requires a new ADR amending ADR 0021 Decision 1 and normative
+specification amendments. Those belong to `R2-E0` after separate authorization;
+none is created by `PRE-G9B-R0`, and neither `E0` nor `E1` is authorized by this
+closeout.
 
 ### 3.9 Documentation obligation
 
@@ -601,10 +635,12 @@ non-authorizations, is in
 
 | ID | Scope | State |
 |---|---|---|
-| `PRE-G9B-R0` | characterization, debt disposition, staged design | `CANDIDATE — PENDING AUTHOR REVIEW` |
+| `PRE-G9B-R0` | characterization, debt disposition, staged design | `PASS — AUTHOR APPROVED` |
 | `PRE-G9B-R1` | verification and bounded operational debt | `DESIGNED — NOT AUTHORIZED` |
-| `PRE-G9B-R1-R1` | native periodic-quarantine round-trip closure | `PROPOSED — NOT AUTHORIZED` |
+| `PRE-G9B-R1-R1` | native periodic-quarantine round-trip closure | `DESIGNED — NOT AUTHORIZED` |
 | `PRE-G9B-R2` | semantic metric endpoint provenance | `DESIGNED — NOT AUTHORIZED` |
+| `PRE-G9B-R2-E0` | Locus V2 pair exact-token materialization extension design | `DESIGNED — NOT AUTHORIZED FOR EXECUTION` |
+| `PRE-G9B-R2-E1` | Locus V2 pair exact-token materialization implementation | `DESIGNED — NOT AUTHORIZED` |
 | `PRE-G9B-R3` | redefine correctness | `DESIGNED — NOT AUTHORIZED` |
 | `PRE-G9B-R4` | `SplineV2` and list authoring UX | `DESIGNED — NOT AUTHORIZED` |
 | `PRE-G9B-R5-A` | user-guide index, outline and navigation | `DESIGNED — NOT AUTHORIZED` |
@@ -612,14 +648,22 @@ non-authorizations, is in
 | `PRE-G9B-R6` | GGBScript compatibility gate | `DESIGNED — NOT AUTHORIZED` |
 | `PRE-G9B-R7` | integrated PRE-G9B readiness and closeout | `DESIGNED — NOT AUTHORIZED` |
 
-Three deviations from the author's proposed boundaries, each evidence-driven:
-`R2` is re-scoped to metric endpoint provenance only, because D1 is conformance
-and any intersection extension is a new capability with its own ADR; `R1-R1` is
-added because the R4 risk closure is a Desktop product test under the `G9U1`
-perimeter and cannot share `R1`'s frozen class; and `R5` is split because the
-canonical command surface needs its own compatibility ADR, reaches shared-kernel
-localization seams, and carries a semantic-identity hazard the guide work does
-not.
+Four deviations from the author's originally proposed boundaries. Three are
+evidence-driven decisions taken by R0: `R2` is re-scoped to metric endpoint
+provenance only; `R1-R1` is added because the R4 risk closure is a Desktop
+product test under the `G9U1` perimeter and cannot share `R1`'s frozen class; and
+`R5` is split because the canonical command surface needs its own compatibility
+ADR, reaches shared-kernel localization seams, and carries a semantic-identity
+hazard the guide work does not.
+
+The fourth is the author's review decision: **`R2-E0` and `R2-E1` are inserted
+between `R2` and `R3`** to carry generalized exact-token point materialization
+between semantic curves (`AD-R0-1`). `R2` and `R2-E0`/`E1` remain conceptually
+distinct and neither substitutes for the other — `R2` asks whether an already
+materialized point can serve as a semantic endpoint, while `E0`/`E1` ask which
+pair roots may be materialized at all — but `E0` must ensure any new materialized
+pair point exposes provenance `R2` can consume without coordinate matching, so
+that two incompatible provenance mechanisms are not built.
 
 ### 7.1 I1, I2, I3 design input
 
@@ -856,7 +900,11 @@ tools; did not change command-language behaviour; did not add GGBScript
 functionality; did not redesign `G9B`; did not implement `G9B`, `G9C`, `G9U2`,
 `G10` or `G12`; did not publish binaries; did not create a release or tag; did
 not contact GeoGebra or OpenGeoProver or alter the `COMMERCIAL` disposition; and
-did not promote any candidate to `PASS` or `AUTHOR APPROVED`.
+did not itself promote any candidate to `PASS` or `AUTHOR APPROVED` — the `PASS`
+recorded in §12 is the author's explicit decision of 2026-09-17, not an agent
+claim. The author's required planning amendment added `R2-E0` and `R2-E1` to the
+track; **neither was executed, and no ADR, normative specification, selector
+schema or capability matrix for them was created.**
 
 No test code, probe or diagnostic harness was added. All characterization was
 performed by reading source, specifications, ADRs, manifests and the persisted
@@ -873,8 +921,11 @@ contract field such a stub would have carried — objective, implementation base
 allowed and forbidden scope, required checks, authorization boundary,
 publication boundary, acceptance criteria, focal tests, verification profile,
 author smoke and stop conditions — is recorded in the staged design §4 instead,
-so no authority is missing. Whether to authorize a separate governance-layer
-task that adds the stubs is `AD-R0-9`.
+so no authority is missing. `AD-R0-9` authorizes a separate governance-layer task
+**after R0 closeout** to add the stubs; they must remain
+`PROPOSED / UNEXECUTED / NOT AUTHORIZED` until separately authorized, and the
+inventory must include `R2-E0` and `R2-E1`. `.github/prompts/**` was not edited
+by this amendment either.
 
 Two supporting facts for that decision, established during R0:
 `prompt-contracts.json` is an enumerated registry of exactly three documents and
@@ -884,69 +935,94 @@ the safety checker iterates only that list, so unregistered stubs could not fail
 PRE-G9B house style additionally places the seven `geocedg-field` markers in
 task-profile order.
 
-## 10. Open author decisions
+## 10. Author decisions
 
-| ID | Decision required | Blocks |
+All nine were decided by the author on 2026-09-17. None of them authorizes a
+phase for execution.
+
+| ID | Author decision | Owner |
 |---|---|---|
-| `AD-R0-1` | Whether a mixed `LocusV2 × SplineV2` materialization extension is wanted at all; if yes it is a new capability needing a new ADR amending ADR 0021 Decision 1 plus a normative spec amendment, outside `PRE-G9B-R` | any D1 change |
-| `AD-R0-2` | Semantics and producers for the three receipt inputs that have none today | `R1` receipt slice |
-| `AD-R0-3` | Close `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` in this track or retain for global `G9` closeout; and if closing, whether to widen the resolver-scoped quarantine observation surface | `R1-R1` |
-| `AD-R0-4` | Adoption of the canonical English command-name policy plus its compatibility decision, including the name-clash hazard and amendment of the existing Spanish-display regression | `R5-B`, `R6` locale dimension |
-| `AD-R0-5` | Whether the invalid `SplineV2` tooltip is corrected immediately as a bounded change | `R4` scope |
-| `AD-R0-6` | `R3`'s frozen verification class, and whether a persisted-signature migration is acceptable | `R3` |
-| `AD-R0-7` | Whether a durable machine-readable technical-debt ledger is created, and where | roadmap hygiene |
-| `AD-R0-8` | Whether the desktop may synthesize the repeated closing member that declares a closed periodic `SplineV2` | `R4` |
-| `AD-R0-9` | Whether to authorize a separate governance-layer task adding `PROPOSED / UNEXECUTED / NOT AUTHORIZED` prompt stubs for `R1`–`R7` | prompt-layer hygiene only |
+| `AD-R0-1` | **AUTHOR DECIDED — INCLUDE LOCUS V2 PAIR MATERIALIZATION AS A `PRE-G9B-R` CAPABILITY EXTENSION.** Broader than the originally observed mixed pair: `E0` investigates and, where semantically defensible, enables exact-token materialization across certified `SplineV2 × SplineV2` (the approved reference baseline), `SplineV2 × generic LocusV2`, `generic LocusV2 × SplineV2`, `generic LocusV2 × generic LocusV2`, and supported certifiable semantic images and compositions. Supersedes only R0's planning statement that the extension lay outside the track; D1's factual characterization, the historical contracts, the `G9S1`/`G9S1-R1` approval and all existing evidence stand | `R2-E0`, then `R2-E1` |
+| `AD-R0-2` | Resolve the semantics and production of the checker identity hash, the input identity hash and the accepted-profiles set **inside `R1`**, reusing existing acceptance semantics. No second acceptance system; no fabricated hashes | `R1` |
+| `AD-R0-3` | Plan closure of `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` in `R1-R1` using genuine native `.cedg` lifecycle evidence. Avoid widening the kernel API solely to enable a test where durable lifecycle evidence can establish the property | `R1-R1` |
+| `AD-R0-4` | Adopt: GeoCeDG displays, suggests, inserts and documents command names canonically in English; localized names remain accepted compatibility aliases in ordinary user input where current compatibility permits; XML and serialization semantics unchanged; GGBScript remains canonical English/internal. Formalize in the `R5-B` compatibility ADR | `R5-B` |
+| `AD-R0-5` | Fix the invalid `SplineV2` tooltip as part of `R4`, not as an independent microphase | `R4` |
+| `AD-R0-6` | `R3` is planned as an integrated phase. No silent eager migration of historical persisted signatures. If the canonical durable-dependency projection requires a persisted-signature migration, design it explicitly and **stop for author review before implementing it** | `R3` |
+| `AD-R0-7` | Do not create a second global technical-debt ledger now. The roadmap plus phase-specific machine-readable disposition remains sufficient authority unless a concrete consumer later justifies one | — |
+| `AD-R0-8` | Desktop may construct the existing canonical closed form **only through an explicit closed-form user action**, and may synthesize the repeated first/last member the kernel representation requires. Never infer closedness from coordinate proximity, visual coincidence or an ambiguous repeated click | `R4` |
+| `AD-R0-9` | Authorize a separate governance-layer task **after R0 closeout** to add proposed future prompt stubs, which remain `PROPOSED / UNEXECUTED / NOT AUTHORIZED` until separately authorized. The inventory must include `R2-E0` and `R2-E1`. `.github/prompts/**` is untouched by this amendment | separate task |
 
 ## 11. Unresolved scientific and architectural questions
 
+These remain open after the author review. Questions 1–3 are now explicitly
+owned by `R2-E0`, which is designed and not authorized.
+
 1. Whether the witness's `e` is a `SUCCESS` result with not-established pair
-   isolation or an `UNSUPPORTED` computation status (§3.7).
+   isolation or an `UNSUPPORTED` computation status (§3.7). `R2-E0` must settle
+   this in its first scenario rather than assume it.
 2. Whether the generic pair path should emit pair-selector diagnostics at all,
    independently of any capability extension (§3.7).
-3. Whether an evaluator family other than the spline semantic evaluator could
-   ever supply an exact outward-roundable germ, and which family discriminator
-   would then be authoritative given that two kernel sites already discriminate
-   by parent algorithm (§3.8).
+3. Which family discriminator is authoritative — evaluator capability or parent
+   algorithm — given that two kernel sites already discriminate by parent
+   algorithm (§3.8), and what *minimum additional kernel capability* would let a
+   reconstructible evaluator support rigorous local root certification. `R2-E0`
+   must answer this per family, presupposing neither universal admissibility nor
+   a polynomial-only restriction.
 4. Which durable dependency projection becomes canonical, and whether persisted
-   signatures must migrate (§5.4).
+   signatures must migrate (§5.4). Under `AD-R0-6` a migration must be designed
+   explicitly and stop for author review before implementation.
 5. How the `S × S` self-intersection side selection is disambiguated for a
-   future metric endpoint family without a coordinate comparison (§6.1).
+   future metric endpoint family without a coordinate comparison (§6.1). The
+   parallel question for pair materialization is owned by `R2-E0`.
 6. Whether declaring a closed periodic spline from the frontend is admissible at
-   all, given that closedness is kernel state with no public parameter (§4.4).
+   all (§4.4). `AD-R0-8` resolves the product policy — explicit user action only,
+   never inferred — leaving the kernel-representation question to `R4`'s design.
 7. What `checker_identity_hash` means, since nothing in the repository defines or
-   produces it (§6.2).
+   produces it (§6.2). `AD-R0-2` assigns this to `R1`.
 
-## 12. Candidate state
+## 12. Closeout state
 
 ```text
-PRE-G9B-R0 = CANDIDATE PENDING AUTHOR REVIEW
+PRE-G9B-R0 = PASS — AUTHOR APPROVED
 
-PRE_G9B_R0_AUTHOR_APPROVED            = false
+PRE_G9B_R0_AUTHOR_APPROVED            = true
 PRE_G9B_R1_AUTHORIZED                 = false
 PRE_G9B_R1_R1_AUTHORIZED              = false
 PRE_G9B_R2_AUTHORIZED                 = false
+PRE_G9B_R2_E0_AUTHORIZED              = false
+PRE_G9B_R2_E1_AUTHORIZED              = false
 PRE_G9B_R3_AUTHORIZED                 = false
 PRE_G9B_R4_AUTHORIZED                 = false
 PRE_G9B_R5A_AUTHORIZED                = false
 PRE_G9B_R5B_AUTHORIZED                = false
 PRE_G9B_R6_AUTHORIZED                 = false
 PRE_G9B_R7_AUTHORIZED                 = false
+D1_CLASSIFICATION                     = INTENTIONALLY_UNSUPPORTED_CURRENT_CAPABILITY
+D1_EXTENSION_SCHEDULED                = true  (as R2-E0 / R2-E1)
 D1_EXTENSION_AUTHORIZED               = false
 G9B_AUTHORIZED                        = false
 G9C_AUTHORIZED                        = false
 G9U2_AUTHORIZED                       = false
 G10_PRODUCT_IMPLEMENTATION_AUTHORIZED = false
 FURTHER_G12_AUTHORIZED                = false
-PUBLICATION_AUTHORIZED                = false
+COMMERCIAL_DISTRIBUTION_AUTHORIZED    = false
+PUBLIC_RELEASE_AUTHORIZED             = false
 selfApproved                          = false
-authorApproved                        = false
-passClaimed                           = false
+authorApproved                        = true
+passClaimed                           = true   (author decision; not an agent claim)
 ```
+
+The approval covers the R0 characterization, the technical-debt disposition,
+`AD-R0-1` through `AD-R0-9` as decided, and the revised `PRE-G9B-R` staged design
+including `R2-E0` and `R2-E1`. It does **not** authorize execution of `R1`,
+`R1-R1`, `R2`, `R2-E0`, `R2-E1`, `R3`–`R7`, `G9B`, `G9C`, `G9U2`, productive
+`G10`, further `G12`, commercial distribution or public release. Recording
+`R2-E0`/`R2-E1` in the roadmap does not start either phase.
 
 Preserved states, unchanged by this phase: `G9X1`, `G9S1`, `G9S1-R1`, `G9U0` and
 its refinements, `G9U1`, the POST-G9U1 track, `PRE-G9B-S1`–`S4`, `D1`, `P0`,
 `P1` and `POST-P1-DOC-HELP` all retain their recorded `PASS — AUTHOR APPROVED`
 status. `G9B` and `G9C` remain `DESIGNED — NOT AUTHORIZED`; `G9U2` remains
 `BLOCKED ON GLOBAL G9 APPROVAL`; `PROFILE COMMERCIAL` remains
-`PENDING EXTERNAL TERMS / NOT AUTHORIZED`.
+`PENDING EXTERNAL TERMS / NOT AUTHORIZED`. No approved specification or ADR was
+rewritten by this phase.

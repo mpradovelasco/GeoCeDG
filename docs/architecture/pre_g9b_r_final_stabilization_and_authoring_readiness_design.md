@@ -1,19 +1,22 @@
 # PRE-G9B-R — final stabilization, semantic debt and authoring readiness
 
-- Status: **DESIGN CANDIDATE — PENDING AUTHOR REVIEW**
+- Status: **AUTHOR APPROVED PLANNING DESIGN — NO PHASE AUTHORIZED FOR EXECUTION**
 - Recorded: 2026-09-17
+- Author review disposition: `PRE-G9B-R0 = AUTHOR APPROVED WITH REQUIRED PLANNING CHANGE`, applied here
 - Implementation base commit: `0d13434cf1ab4d31f4bb4d50e7aea6cb3e69e35d`
 - Implementation base tree: `922034fd46411530bd02ae15fcc832e3fc541dc7`
 - Producing phase: `PRE-G9B-R0` (characterization, technical-debt disposition, staged design)
 - Change route: `ORDINARY`
-- `PRE-G9B-R0` frozen verification class: `DOCUMENTATION_STATUS_ONLY` (declared at phase start; ratification is an author decision)
-- Claim vocabulary: **proposed / not normative**
+- `PRE-G9B-R0` frozen verification class: `DOCUMENTATION_STATUS_ONLY`
+- Claim vocabulary: **accepted planning direction**; no normative geometric contract is created here
 - Self approval: **false**
 
-This note is the staged design produced by `PRE-G9B-R0`. It is planning
-documentation. It authorizes no implementation, creates no normative geometric
-contract, and does not promote any phase, specification, ADR or roadmap item to
-`PASS` or `AUTHOR APPROVED`. `R1`–`R7` below are **designed and not
+This note is the staged design produced by `PRE-G9B-R0`, as amended by the
+author's review decision of 2026-09-17. It is planning documentation. It
+authorizes no implementation and creates no normative geometric contract. The
+author has approved the planning direction recorded here; that approval does
+**not** promote any specification or ADR, and it authorizes **no** phase for
+execution. `R1`–`R7`, including `R2-E0` and `R2-E1`, are **designed and not
 authorized**; each requires a separate explicit author authorization naming its
 exact scope before any product change is made.
 
@@ -134,16 +137,26 @@ generic path the spline resolver returns before its diagnostics loop, so no
 pair-selector class evidence is emitted at all; the honest label may be
 "unsupported *and additionally undiagnosed*".
 
-**Smallest defensible extension family, if ever wanted.** Not a blanket
-admission of arbitrary `LocusV2` pairs. The only defensible widening is a pair
-in which *both* sides can supply an exact, outward-roundable local germ of the
-rigour the approved `pair-singleton-transverse-germ/v1` contract already
-requires — concretely, an evaluator exposing a certifiable piecewise-polynomial
-model with exact rational coefficients equivalent to what the interval-model
-capture extracts today. A reconstructible-locus evaluator is a deterministic
-numeric dependency evaluator with no exact coefficient authority, so no outward
-enclosure of the true function and Jacobian is obtainable from it, and
-substituting rounded or sampled data is forbidden by the same contract.
+**What is provable with today's capabilities — an R0 finding, not a ceiling on
+`R2-E0`.** With the kernel exactly as it stands, the only widening that the
+existing proof machinery could certify is a pair in which *both* sides can
+already supply an exact, outward-roundable local germ of the rigour the approved
+`pair-singleton-transverse-germ/v1` contract requires — concretely, an evaluator
+exposing a certifiable piecewise-polynomial model with exact rational
+coefficients equivalent to what the interval-model capture extracts today. A
+reconstructible-locus evaluator is a deterministic numeric dependency evaluator
+with no exact coefficient authority, so no outward enclosure of the true function
+and Jacobian is obtainable *from it as it exists now*, and substituting rounded
+or sampled data is forbidden by the same contract.
+
+This is a statement about the **current** proof capability, not a verdict on the
+achievable family set. `R2-E0` is explicitly charged with determining the
+*minimum additional kernel capability* that would let further families be
+certified — for example bounded interval evaluation over authoritative semantic
+evaluators, derivative or Jacobian authority, or provider-issued local germ
+certificates — and with deciding, per family, how far the rich-only restriction
+can safely be relaxed. `R2-E0` must not presuppose either that every generic
+pair can be materialized or that only polynomial/spline-based pairs ever can.
 
 Note for any such design: evaluator-class identity is *not* the only family
 discriminator already present in the kernel. Two non-presentational kernel sites
@@ -160,11 +173,33 @@ germ sign. No coordinate or proximity matching participates at any step: the
 existing replacement test is a component-key plus semantic-parameter chart
 containment, never a nearest-root match.
 
-**This extension is not part of `PRE-G9B-R`.** It would amend ADR 0021 Decision 1
-and the `spline-v2-pair-materialization.md` scope, so it requires a new ADR and
-a normative specification amendment, and therefore a separate author decision
-(`AD-R0-1`). Scheduling it inside a stabilization track would misclassify a new
-capability as a defect fix.
+#### Author decision superseding the original planning conclusion
+
+The original R0 planning conclusion was that this extension lay outside
+`PRE-G9B-R`. **The author has superseded that conclusion.** The factual
+characterization above is unchanged and remains correct: the observed rich-only
+behaviour of unsupported generic semantic-curve pairs conforms to the currently
+approved contracts, and D1 is **not** a defect and must not be rewritten as
+technical debt.
+
+What changes is the roadmap disposition. The author decides that broader
+exact-token point materialization between semantic curves is an important
+GeoCeDG capability and must be incorporated explicitly into `PRE-G9B-R` as an
+extension of stabilization and readiness before the track closes. It is
+scheduled as `R2-E0` (design) and `R2-E1` (implementation) in §4.
+
+Two statements must be kept distinct throughout this track:
+
+| | Statement |
+|---|---|
+| **Current product fact** | generic unsupported semantic pairs remain rich-only, conforming to ADR 0021 Decision 1, `spline-v2-pair-materialization.md` §1, `semantic-spline-2d.md` §5.2 and ADR 0018 |
+| **Author roadmap decision** | `PRE-G9B-R` will include a separately designed extension intended to expand exact-token pair materialization as far as semantic proof permits |
+
+The extension still requires a new ADR and normative specification amendments,
+and it still amends ADR 0021 Decision 1. Those artifacts belong to `R2-E0` after
+separate authorization; none is created by `PRE-G9B-R0`. The objective is also
+**broader than the originally observed mixed pair** — see `R2-E0`'s family set in
+§4.
 
 ### 2.2 D2 — `SplineV2` authoring and help interaction
 
@@ -495,15 +530,23 @@ Ambiguity and staleness fail closed to `INVALID_QUERY`, never to a nearest
 match. No current code path resolves a metric endpoint from Cartesian
 coincidence, and two existing negative tests pin that.
 
-## 4. Proposed phase sequence
+## 4. Phase sequence
 
-The author's proposed sequence is adopted with three evidence-driven changes,
-each explained:
+The author's proposed sequence is adopted with four changes. The first three are
+evidence-driven decisions taken by `R0`; the fourth is the author's review
+decision of 2026-09-17.
 
+0. **`R2-E0` and `R2-E1` are inserted** between `R2` and `R3` by author decision
+   (`AD-R0-1`), carrying generalized exact-token point materialization between
+   semantic curves. This supersedes `R0`'s original planning conclusion that the
+   extension lay outside `PRE-G9B-R`. It does **not** change D1's factual
+   classification, which remains `INTENTIONALLY_UNSUPPORTED_CURRENT_CAPABILITY`
+   and not technical debt.
 1. **`R2` is re-scoped** from "semantic intersection/metric provenance
-   stabilization" to metric endpoint provenance only. D1 is conformance, not a
-   defect; any intersection extension is a new capability requiring its own ADR,
-   and folding it into a stabilization phase would misclassify it.
+   stabilization" to metric endpoint provenance only. `R2` and `R2-E0`/`E1`
+   answer different questions and neither substitutes for the other; keeping
+   them separate is what allows the extension to be designed as a capability
+   rather than misclassified as a defect fix.
 2. **`R1-R1` is added** as a refinement of `R1`, carrying the
    `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` closure. It is a product test in
    the Desktop module under the `G9U1` regression perimeter, so it cannot share
@@ -600,7 +643,7 @@ drifts; two existing desktop tests assert the current wording in living
 documents. The receipt slice additionally touches verification-core nodes, which
 is the reason FULL is required.
 
-### `PRE-G9B-R1-R1` — native periodic-quarantine round-trip closure *(proposed; requires `AD-R0-3`)*
+### `PRE-G9B-R1-R1` — native periodic-quarantine round-trip closure
 
 | Field | Value |
 |---|---|
@@ -682,6 +725,336 @@ source, constructor, slot and point durable identities under an explicit version
 tag. An intersection-endpoint key should mirror that shape rather than invent
 one.
 
+### `PRE-G9B-R2-E0` — Locus V2 pair exact-token materialization extension design
+
+**State: `DESIGNED — NOT AUTHORIZED FOR EXECUTION`. Phase kind: semantic
+capability extension design. Layer: shared Java kernel / normative geometric
+contract. No productive implementation is authorized in `E0`.**
+
+Inserted by the author's review decision of 2026-09-17 (`AD-R0-1`). `E0` designs
+the **maximum scientifically defensible** extension of point materialization for
+semantic-curve pair intersections. The goal is the largest rigorously supportable
+semantic family — not merely making one witness file work.
+
+| Field | Value |
+|---|---|
+| Objective | Design generalized exact-token point materialization for intersections between first-class semantic 2D curves, and state per family exactly how far it is defensible |
+| Layer | shared Java kernel and normative geometric contract |
+| Prerequisites | separate explicit author authorization of `E0` |
+| Normative work | the `E0` deliverables listed below; **none of them may be created by `PRE-G9B-R0`** |
+| Productive scope | **none.** `E0` produces design and contract candidates only |
+| Forbidden scope | any product or kernel implementation; weakening the `G9S1-R1` baseline; introducing a generic interface merely so that types pass certification; treating sampling, render geometry, tessellation or a floating root plus an arbitrary epsilon as proof; making Python or any external analysis the runtime semantic authority; creating the ADR or specification before `E0` is authorized |
+| Acceptance criteria | every family in the matrix below has an explicit, justified admissibility level; every rejection is justified by a missing semantic or proof capability, never merely by "it is not `SplineV2`" |
+| Focal tests | none — `E0` is design. The adversarial case list below becomes `E1`'s obligation |
+| Verification profile | frozen at `E0` start from its actual footprint; design work carries no product acceptance |
+| Author smoke | not applicable |
+| Stop conditions | any family whose admission would require coordinate, proximity or order matching; any proposed capability whose mathematical or lifecycle guarantees are not actually established |
+| Does not authorize | `E1`; any implementation; any change to ADR 0021 or to the approved `G9S1-R1` contract |
+
+#### Architectural rule — capability, not class name
+
+Eligibility must **not** be defined by Java class name alone. Several semantic
+families already share `GeoLocusV2` as runtime representation while carrying
+different evaluators, provenance, domains, parameterizations and proof
+capabilities. The governing question is not
+
+> "is this object a `GeoLocusV2`?"
+
+but
+
+> "can both semantic operands provide enough authoritative information to define,
+> certify, persist and re-identify this intersection root without coordinate
+> matching?"
+
+The contract prefers capability-based admission while retaining explicit family
+boundaries wherever they are required for correctness. A capability is admissible
+only when its mathematical **and** lifecycle guarantees are actually established.
+A generic interface must never be introduced merely to make types pass
+certification.
+
+#### Families in scope
+
+1. existing certified `SplineV2 × SplineV2` — the approved reference baseline,
+   not to be redesigned gratuitously;
+2. `SplineV2 × generic LocusV2`;
+3. `generic LocusV2 × SplineV2`;
+4. `generic LocusV2 × generic LocusV2`;
+5. supported semantic images and compositions of those families where provenance
+   remains certifiable.
+
+**Family A — existing certified `SplineV2 × SplineV2`.** Treat the current
+`G9S1-R1` contract as the normative baseline. Do not weaken authenticated spline
+provenance, the exact structural selector, current semantic revisions, branch and
+component identity, local existence and isolation, ambiguity exclusion, the
+exact-token lifecycle, persistence and currentness rules, fail-closed behaviour,
+or explicit point materialization. Identify which parts of that contract are
+genuinely spline-specific and which are reusable semantic-pair principles.
+
+**Family B — `SplineV2 × generic LocusV2`.** A mandatory design target. The
+author witness `artifacts/author-input/post-p1-defects/SeveralDefects.cedg`
+contains the required scenario: `d = SplineV2(…)`, `a = LocusV2(E, C)`,
+`e = Intersect(d, a)`. `E0` must establish what additional semantic and
+certification capability is necessary for `e` to expose exact admissible root
+tokens when its roots are locally certifiable. Do **not** solve only the operand
+order shown in the witness: caller reversal must preserve the same semantic root
+identity after canonical normalization.
+
+**Family C — `generic LocusV2 × generic LocusV2`.** Explicitly in scope. `E0`
+must determine how far the current rich-only restriction can safely be relaxed,
+assuming in advance neither that every generic pair can be materialized nor that
+only polynomial or spline-based pairs ever can.
+
+#### Admissibility levels
+
+`E0` must produce an explicit level hierarchy rather than one boolean, for
+example:
+
+```text
+rich intersection supported
+  -> root discovered
+  -> root locally verified
+  -> root locally isolated
+  -> semantic identity unambiguous
+  -> exact durable token admissible
+  -> ordinary point materializable
+```
+
+Different source families may stop at different levels, and the contract must
+state those levels explicitly.
+
+#### CeDG requirement — local admissibility is not global completeness
+
+`local admissibility != global completeness` must be preserved. A root may feed a
+downstream CeDG construction when it is semantically sourced, current, locally
+verified, locally isolated, structurally identifiable, non-ambiguous and
+associated with authoritative parameter evidence on **both** operands — even when
+the complete rich intersection result remains `INCOMPLETE` or `NOT_ESTABLISHED`,
+provided no unresolved global condition can invalidate that local root's
+identity.
+
+Global completeness must not be upgraded merely because one local root is
+admissible. Conversely, a globally `COMPLETE` result must not make an ambiguous
+local root materializable.
+
+#### Mandatory identity model
+
+The public constructive chain remains:
+
+```text
+semantic curve A + semantic curve B
+  -> rich semantic intersection
+  -> current locally admissible semantic root
+  -> exact durable token
+  -> explicit ordinary-point materialization
+  -> normal DAG propagation
+```
+
+The ordinary point is a derived child of the semantic intersection claim and must
+never become an anonymous coordinate detached from its constructive provenance.
+
+Root identity must not depend on Cartesian coordinates, coordinate tolerances,
+nearest-root searches, render geometry, screen position, discovery order, output
+index, construction order, labels, XML position, transient numerical boxes, the
+current Newton seed, sampled rank, incidental subdivision structure, or Java
+object identity. Parameter values may constitute current proof or address
+evidence where the semantic contract allows, but must not silently become the
+durable identity if they can drift or be reparameterized.
+
+#### Required characterization, per candidate family
+
+Each of the following must be defined or explicitly rejected.
+
+- **Operand provenance**, per side: durable source identity; semantic
+  provider/family; branch lineage; component lineage; semantic-domain kind;
+  orientation; parameterization contract and version; current semantic revision;
+  transformations and compositions; whether the evaluator is authoritative or
+  merely numerical.
+- **Root identity**: a durable selector defined independently of coordinates.
+  Investigate whether `pair-singleton-transverse-germ/v1` can be generalized or
+  whether a new selector is required. An existing selector's meaning must never
+  be mutated silently; a new selector is versioned explicitly.
+- **Local certification**: what constitutes sufficient proof of existence, local
+  uniqueness, isolation, regularity or transversality where applicable, and
+  correct association with both semantic source addresses. The spline
+  interval-polynomial mechanism must not be assumed to be the only possible proof
+  method, but any alternative must carry equivalent mathematical authority for its
+  family. Candidates to investigate, where mathematically justified: interval
+  evaluation over authoritative semantic evaluators; interval Newton or Krawczyk
+  style certification; certified implicit or parametric residuals;
+  monotonic/regular semantic segments; provider-issued local uniqueness
+  certificates; exact or outward-enclosed derivatives and Jacobians. **Sampling
+  alone is insufficient proof. A floating root plus an arbitrary epsilon
+  neighbourhood is insufficient proof.**
+- **Ambiguity**: fail closed when the semantic data cannot distinguish multiple
+  roots sharing the proposed durable class, branch or component ambiguity,
+  overlapping parameterizations, singular intersections, tangency or multiplicity
+  where identity is insufficiently established, unresolved topology,
+  self-intersection side ambiguity, or source-side ambiguity. Never resolve these
+  from coordinate proximity.
+- **Generic Locus V2 proof capability**: the reconstructible evaluator used by
+  `a = LocusV2(E, C)` is a mandatory study case. Determine whether it can support
+  rigorous local root certification and, if not, the *minimum additional kernel
+  capability* required. Possible but not predetermined outcomes: bounded interval
+  evaluation; derivative or Jacobian authority; provider-issued local germ
+  certificates; exposing exact reproducible parameter-domain structure; another
+  bounded proof capability compatible with the Locus V2 contract. Render samples
+  and tessellation must never become authority. Python or external analysis may
+  validate designs but must not become the runtime semantic authority.
+
+#### Required capability matrix
+
+`E0` must produce an explicit matrix, not a single boolean, using the **actual**
+provider inventory from the live repository. Families must not be invented.
+
+| Pair family | Rich intersection | Local root verification | Structural identity | Exact token | Point materialization |
+|---|---|---|---|---|---|
+| `SplineV2 × SplineV2` | current | current | current | current | current |
+| `SplineV2 × reconstructible LocusV2` | determine | determine | determine | determine | design target |
+| `reconstructible LocusV2 × SplineV2` | symmetric / canonical equivalent | determine | determine | determine | design target |
+| `reconstructible LocusV2 × reconstructible LocusV2` | determine | determine | determine | determine | design target |
+| other supported LocusV2 provider families | characterize individually | | | | |
+| unsupported / uncertifiable family | truthful rich or unsupported state | fail closed | none | none | none |
+
+#### Symmetry and caller order
+
+Pair materialization must be semantically symmetric wherever the underlying
+relation is symmetric: `Intersect(A,B)` and `Intersect(B,A)` must yield the same
+durable semantic root whenever both denote the same constructive claim under the
+approved ownership model. Parameter evidence may transpose between sides; root
+identity must not depend on caller order. Characterize canonical source ordering,
+orientation effects, determinant and germ-sign normalization, source-A/source-B
+address storage, copy and remap where source order changes, and
+persistence/reopen.
+
+#### Self-intersections
+
+`S × S` and other equal-source pairs must be addressed explicitly. The two
+semantic preimages must never be inferred from the single Cartesian intersection
+coordinate: a self-intersection is potentially two distinct semantic addresses on
+one curve. Materialization is permitted only when the preimage pair and its
+structural class are unambiguous under the semantic contract. Characterize at
+least `u != v` ordinary self-crossing, periodic equivalents, seam aliases,
+tangencies, repeated traversal, overlapping branches and components, and the
+`u = v` trivial diagonal — which must not become an ordinary self-intersection
+root unless the mathematical contract explicitly intends it. **Coordinate equality
+alone must never merge semantic preimages.**
+
+#### Lifecycle
+
+For any newly materializable pair root, define: active/current; temporary proof
+loss; temporary root disappearance; ambiguity; unsupported temporary source
+state; semantic-revision changes; dormant or undefined child; reactivation of the
+same semantic slot; incompatible source replacement; permanent disposal.
+
+A temporary loss of numerical or certification evidence must not automatically
+allocate a new point identity. Where the same durable semantic selector later
+becomes valid again, prefer reactivating the same materialized child when that is
+consistent with the approved lifecycle model. Slot recurrence must never be read
+as physical trajectory continuity through a singularity.
+
+#### Persistence and migration
+
+Specify native `.cedg` behaviour: token and selector persistence; both source
+identities; semantic source-address ownership; currentness revalidated on load;
+saved coordinates never sufficient evidence; saved proof boxes not automatically
+current proof; old documents remain loadable; no old rich-only pair silently
+materialized after reopening unless explicitly requested and currently
+admissible; unknown selector versions fail closed; malformed or contradictory
+pair records fail closed; copy, duplicate and macro remap to new durable
+identities with appropriate lineage; rename preserves identity; compatible
+redefine follows the approved identity rules; incompatible replacement cannot
+match by label or coordinate. Any required ledger-format migration is defined
+explicitly rather than by overloading an existing version.
+
+#### Relationship to `R2`
+
+`R2` and `R2-E0`/`R2-E1` stay conceptually distinct and neither substitutes for
+the other:
+
+- **`R2`** answers: *given an already materialized semantic-intersection point,
+  can it be used as a semantic endpoint on a specified `LocusV2`/`SplineV2`?*
+- **`R2-E0`/`E1`** answer: *which semantic pair roots may be materialized as
+  ordinary points in the first place?*
+
+`E0` must nevertheless ensure that any new materialized pair point exposes
+provenance in a form `R2` can consume **without coordinate matching**. Two
+incompatible provenance mechanisms must be avoided; if necessary, define a shared
+kernel provenance abstraction whose semantics are specified before either
+implementation depends on it.
+
+#### Dynamic behaviour and DAG
+
+Materialized points remain normal dynamic GeoCeDG construction objects. The
+intended DAG is source semantic curves → rich pair-intersection result →
+token-selected materialized point → downstream construction. Recomputing the
+sources must re-evaluate the same selector and must create **zero** new points
+unless the user performs a new explicit creation action. A root solver must not
+run independently per materialized child when the rich parent already owns the
+intersection evaluation.
+
+#### Work bounds and determinism
+
+`E0` must specify bounded work. An unrestricted global topology solver must not be
+authorized merely to materialize every possible generic locus pair. Characterize
+bounded discovery; bounded proof and certification; budgets; failure status on
+exhausted budget; deterministic partitioning; lookup complexity for existing
+materialized children; retained ledger size; and the absence of unbounded
+trajectory or root history. **Budget exhaustion means lack of current proof, not
+permission to approximate.**
+
+#### Required adversarial cases
+
+To be carried into `E1`'s test obligation: no intersection; one transverse
+isolated root; multiple roots; two roots in the same candidate class; tangency;
+multiplicity; overlap or coincident segment; singular Jacobian; disconnected
+components; periodic seam; repeated traversal; self-intersection; source-order
+reversal; parameterization or orientation reversal; source motion through
+`1 -> 0 -> 1`; source motion through `1 -> many -> 1`; temporary evaluator
+invalidity; compatible redefine; incompatible redefine; copy; undo/redo; native
+save and reopen; dormant save, reopen and reactivation; corrupted or old ledger;
+incomplete global search with a locally certified admissible root; globally
+complete result with a locally ambiguous root; budget exhaustion.
+
+**The `SeveralDefects.cedg` mixed pair is a mandatory positive-target fixture
+once `E1` is authorized.**
+
+#### Required `E0` outputs, subject to its own authorization
+
+1. a dedicated ADR for generalized semantic-pair exact-token materialization;
+2. normative amendments to the Locus V2 intersection specification;
+3. amendments and an explicit supersession relation to ADR 0021 where required;
+4. any selector or token schema required;
+5. the explicit capability and admissibility matrix;
+6. the lifecycle and persistence contract;
+7. the implementation architecture decision;
+8. the focal and adversarial verification matrix;
+9. the migration and backward-compatibility design;
+10. an explicit statement of unsupported residual families.
+
+`E0` may conclude that some `LocusV2` families remain rich-only. That is
+acceptable **only** when justified by a missing semantic or proof capability, not
+because a family merely is not `SplineV2`.
+
+### `PRE-G9B-R2-E1` — Locus V2 pair exact-token materialization implementation
+
+**State: `DESIGNED — NOT AUTHORIZED`.** `E1` may be executed only after separate
+author review and approval of the exact `E0` ADR and specification candidate.
+
+| Field | Value |
+|---|---|
+| Objective | Implement the author-approved `E0` contract, and nothing beyond it |
+| Layer | shared Java kernel |
+| Prerequisites | author-approved `E0` ADR and normative specification, named exactly |
+| Normative work | none new; `E1` implements `E0`'s approved contract |
+| Productive scope | the approved family set, selectors, certification, lifecycle, persistence and materialization only |
+| Forbidden scope | broadening the approved family set opportunistically during coding; weakening any `G9S1-R1` guarantee; any coordinate, proximity or order matching; any capability whose guarantees `E0` did not establish |
+| Acceptance criteria | every family behaves at exactly the admissibility level `E0` approved; every excluded case fails closed and truthfully |
+| Focal tests | kernel focal tests; semantic identity; pair symmetry; lifecycle; persistence; copy and redefine; native `.cedg` round trips; the adversarial degeneracy list above; existing `SplineV2 × SplineV2` regressions; ordinary `LocusV2` intersection regressions; `R2` provenance integration where applicable; the `SeveralDefects.cedg` mixed pair as a positive target |
+| Verification profile | `PHASE` / `INTEGRATION` / `FINAL` evidence according to the actual implementation footprint, frozen at `E1` start and finalized by `E0` |
+| Author smoke | required, including the author witness construction |
+| Stop conditions | **if implementation demonstrates that an `E0` assumption is mathematically or architecturally invalid, stop and return to design and author review** — do not repair the contract inside the implementation |
+| Does not authorize | `R3`–`R7`; any family `E0` did not approve; any normative change of its own |
+
 ### `PRE-G9B-R3` — redefine correctness
 
 | Field | Value |
@@ -754,7 +1127,7 @@ marker left visible. Both guides contain zero nested lists, so this is latent
 rather than live — but it is another reason an in-document TOC written as an
 indented list is out of contract.
 
-### `PRE-G9B-R5-B` — canonical English command surface *(requires `AD-R0-4`)*
+### `PRE-G9B-R5-B` — canonical English command surface
 
 | Field | Value |
 |---|---|
@@ -902,13 +1275,16 @@ recorded separately and must not be conflated.
 **Hard semantic or contract dependencies**
 
 - `R2` depends on a normative metric endpoint amendment existing first.
+- `R2-E1` depends on an author-approved `R2-E0` ADR and normative specification,
+  named exactly. `R2-E0` has no hard dependency on `R2`, but both must agree on a
+  single provenance abstraction before either implementation depends on it.
 - `R3` depends on a decision about which durable dependency projection is
-  canonical, and on whether persisted signatures change.
-- `R5-B` depends on an accepted compatibility ADR.
+  canonical. A persisted-signature migration, if required, is designed
+  explicitly and stops for author review before implementation (`AD-R0-6`).
+- `R5-B` depends on an accepted compatibility ADR carrying the `AD-R0-4` policy.
 - `R6`'s locale dimension depends on `R5-B`'s outcome.
-- `R1`'s receipt slice depends on author definitions for the receipt inputs that
-  have no producer.
-- `R4`'s closed-form scope depends on `AD-R0-8`.
+- `R1`'s receipt slice depends on resolving the three receipt inputs inside `R1`
+  itself (`AD-R0-2`), reusing existing acceptance semantics.
 - Nothing in this track is a hard dependency of `G9B`. `G9B`'s only phase
   dependency remains the author-approved closure of `G9A3` and the primitive
   contract.
@@ -918,6 +1294,9 @@ recorded separately and must not be conflated.
 - `R1` first, so later phases can produce canonical closeout evidence.
 - `R1-R1` early, because it is cheap and because the risk otherwise propagates
   into every `G9B` family stage.
+- `R2` before `R2-E0`, so that the metric endpoint contract and the pair
+  materialization contract can share one provenance abstraction rather than
+  inventing two.
 - `R3` before `R4`, so the authoring work lands on a correct redefine path.
 - `R5-B` before `R6`.
 
@@ -928,41 +1307,48 @@ recorded separately and must not be conflated.
 - Publication, tag, release and `PROFILE COMMERCIAL` remain separate author
   dispositions, untouched by this track.
 
-## 6. Open author decisions
+## 6. Author decisions
 
-| ID | Decision required | Blocks |
+All nine decisions were taken by the author on 2026-09-17. They are recorded
+here as decided; none of them authorizes a phase for execution.
+
+| ID | Author decision | Owner |
 |---|---|---|
-| `AD-R0-1` | Whether a mixed `LocusV2 × SplineV2` materialization extension is wanted at all. If yes, it is a new capability requiring a new ADR amending ADR 0021 Decision 1 and a normative spec amendment — not part of `PRE-G9B-R` | any D1 change |
-| `AD-R0-2` | Semantics and producers for the receipt inputs that have none today — the checker identity hash, the input identity hash and the accepted-profiles set | `R1` receipt slice |
-| `AD-R0-3` | Close `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` in this track (`R1-R1`) or retain it for global `G9` closeout; and, if closing, whether to widen the resolver-scoped quarantine observation surface | `R1-R1` |
-| `AD-R0-4` | Adoption of the canonical English command-name policy, plus the compatibility decision covering localized aliases, the name-clash hazard, and amendment of the existing Spanish-display regression | `R5-B`, `R6` locale dimension |
-| `AD-R0-5` | Whether the invalid `SplineV2` tooltip is corrected immediately as a bounded change or waits for `R4` | `R4` scope |
-| `AD-R0-6` | `R3`'s frozen verification class, and whether a persisted-signature migration is acceptable | `R3` |
-| `AD-R0-7` | Whether a durable machine-readable technical-debt ledger is created, and where | roadmap hygiene |
-| `AD-R0-8` | Whether the desktop may synthesize the repeated closing member that declares a closed periodic `SplineV2`, given that closedness is kernel state with no public parameter | `R4` |
-| `AD-R0-9` | Whether to authorize a separate governance-layer task that adds `PROPOSED / UNEXECUTED / NOT AUTHORIZED` prompt stubs for `R1`–`R7`. `PRE-G9B-R0` did **not** create them: `CLAUDE.md` prohibits editing `.github/prompts/**` as a side effect of another task. Every per-phase contract field such a stub would carry is recorded in section 4 above, so no authority is missing — only the prompt files | prompt-layer hygiene only |
+| `AD-R0-1` | **AUTHOR DECIDED — INCLUDE LOCUS V2 PAIR MATERIALIZATION AS A `PRE-G9B-R` CAPABILITY EXTENSION.** The objective is broader than the originally observed mixed pair: `E0` must investigate and, wherever semantically defensible, enable exact-token materialization across the five families in §4, using the existing `SplineV2 × SplineV2` implementation as the approved reference baseline rather than redesigning it. This supersedes only R0's planning statement that the extension lay outside `PRE-G9B-R`; it does not invalidate D1's factual characterization, the historical contracts, the existing `G9S1`/`G9S1-R1` approval, or any existing evidence | `R2-E0`, then `R2-E1` |
+| `AD-R0-2` | Resolve the semantics and production of the checker identity hash, the input identity hash and the accepted-profiles set **inside `R1`**, reusing existing acceptance semantics. Do not create a second acceptance system and do not fabricate hashes | `R1` |
+| `AD-R0-3` | Plan closure of `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` in `R1-R1` using genuine native `.cedg` lifecycle evidence. Avoid widening the kernel API solely to enable a test when durable lifecycle evidence can establish the property | `R1-R1` |
+| `AD-R0-4` | Adopt the policy: GeoCeDG displays, suggests, inserts and documents command names canonically in English; localized command names remain accepted compatibility aliases in ordinary user input where current compatibility permits; XML and serialization semantics are unchanged; GGBScript remains canonical English/internal. Formalize it in the `R5-B` compatibility ADR | `R5-B` |
+| `AD-R0-5` | Fix the invalid `SplineV2` tooltip as part of `R4` rather than creating an independent microphase | `R4` |
+| `AD-R0-6` | `R3` is planned as an integrated phase. Do not authorize silent eager migration of historical persisted signatures. If the correct canonical durable-dependency projection requires a persisted-signature migration, design it explicitly and **stop for author review before implementing that migration** | `R3` |
+| `AD-R0-7` | Do not create a second global technical-debt ledger at this time. The roadmap plus phase-specific machine-readable disposition remains sufficient authority unless a concrete consumer later justifies a global ledger | — |
+| `AD-R0-8` | Desktop may construct the existing canonical closed form **only through an explicit closed-form user action**, and may synthesize the repeated first/last point member the existing kernel representation requires. Closedness must never be inferred from coordinate proximity, visual coincidence or an ambiguous repeated click | `R4` |
+| `AD-R0-9` | Authorize a separate governance-layer task **after R0 closeout** to add proposed future prompt stubs, which must remain `PROPOSED / UNEXECUTED / NOT AUTHORIZED` until separately authorized. That inventory must include `R2-E0` and `R2-E1`. `.github/prompts/**` is not edited by the R0 amendment | separate task |
 
 ## 7. Authorization state
 
 ```text
-PRE_G9B_R_TRACK              = DESIGN CANDIDATE — PENDING AUTHOR REVIEW
-PRE_G9B_R0_EXECUTED          = true (characterization/planning only)
-PRE_G9B_R0_AUTHOR_APPROVED   = false
-PRE_G9B_R1_AUTHORIZED        = false
-PRE_G9B_R1_R1_AUTHORIZED     = false
-PRE_G9B_R2_AUTHORIZED        = false
-PRE_G9B_R3_AUTHORIZED        = false
-PRE_G9B_R4_AUTHORIZED        = false
-PRE_G9B_R5A_AUTHORIZED       = false
-PRE_G9B_R5B_AUTHORIZED       = false
-PRE_G9B_R6_AUTHORIZED        = false
-PRE_G9B_R7_AUTHORIZED        = false
-D1_EXTENSION_AUTHORIZED      = false
-G9B_AUTHORIZED               = false
-G9C_AUTHORIZED               = false
-G9U2_AUTHORIZED              = false
+PRE_G9B_R_TRACK                       = AUTHOR APPROVED PLANNING DESIGN
+PRE_G9B_R0_EXECUTED                   = true (characterization/planning only)
+PRE_G9B_R0_AUTHOR_APPROVED            = true
+PRE_G9B_R1_AUTHORIZED                 = false
+PRE_G9B_R1_R1_AUTHORIZED              = false
+PRE_G9B_R2_AUTHORIZED                 = false
+PRE_G9B_R2_E0_AUTHORIZED              = false
+PRE_G9B_R2_E1_AUTHORIZED              = false
+PRE_G9B_R3_AUTHORIZED                 = false
+PRE_G9B_R4_AUTHORIZED                 = false
+PRE_G9B_R5A_AUTHORIZED                = false
+PRE_G9B_R5B_AUTHORIZED                = false
+PRE_G9B_R6_AUTHORIZED                 = false
+PRE_G9B_R7_AUTHORIZED                 = false
+D1_EXTENSION_SCHEDULED                = true  (as R2-E0 / R2-E1)
+D1_EXTENSION_AUTHORIZED               = false
+D1_CLASSIFICATION                     = INTENTIONALLY_UNSUPPORTED_CURRENT_CAPABILITY (unchanged)
+G9B_AUTHORIZED                        = false
+G9C_AUTHORIZED                        = false
+G9U2_AUTHORIZED                       = false
 G10_PRODUCT_IMPLEMENTATION_AUTHORIZED = false
-FURTHER_G12_AUTHORIZED       = false
-PUBLICATION_AUTHORIZED       = false
-selfApproved                 = false
+FURTHER_G12_AUTHORIZED                = false
+PUBLICATION_AUTHORIZED                = false
+selfApproved                          = false
 ```

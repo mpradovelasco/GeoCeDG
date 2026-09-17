@@ -3,7 +3,7 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Roadmap vivo y normativo de fases; no sustituye las especificaciones ni los ADR aceptados |
-| Versión documental | 4.07 |
+| Versión documental | 4.08 |
 | Fecha de revisión | 17 de septiembre de 2026 |
 | Baseline GeoGebra | 5.4.928.0, commit `9b93256b7df401ff056c37b502d82df4d72b1522`, tag `geogebra-baseline-5.4.928.0` |
 | Estado actual | G7 y G8 `PASS`; G9P-R1, G9P, G9O1, G9A1–G9A3, el track G9A, G9U0 y sus refinamientos R1–R6, G9X1, G9S1, G9S1-R1, G9U1 y POST-G9U1-A6, A1, A2, A3, A3-FRONTEND, A5 y A7 `PASS — AUTHOR APPROVED`. POST-G9U1-A4 tiene investigación/diseño completos y `AUTHOR APPROVED`; P3-R1 es su refinamiento autor-aprobado. El track post-G9U1 está `COMPLETE — AUTHOR APPROVED`. La extensión pre-G9B está `DESIGN — AUTHOR APPROVED`; `PRE-G9B-S1`, R1, R2, `PRE-G9B-S2`, `PRE-G9B-S3`, `PRE-G9B-S4`, S4-R1, S4-R2 y `PRE-G9B-D1` están `PASS — AUTHOR APPROVED`. D1 aprueba deployability para la composición exacta PROFILE NC: 39/39 JAR externos aplicables y 46/46 fonts trazados, con PACKAGING/STATIC aceptados y revisión profesional completada. PROFILE COMMERCIAL permanece `PENDING EXTERNAL TERMS / NOT AUTHORIZED`. La solicitud OEPM denominativa `GeoCeDG` M4403138 está presentada y pendiente de registro; no existe evidencia de solicitud figurativa. `selfApproved=false`. `PRE-G9B-P0` está `PASS — AUTHOR APPROVED`: añade los tres temas de presentación cerrados (`Original` histórico y por defecto, `Scientific Paper` y `Cool Geometry`), consolida Preferences en `Layout & Presentation` con los `presentation sizes` trasladados desde `Advanced`, y fija la versión canónica visible en `1.0.0`. El package sigue `internal-evaluation` y `1.0.0` no equivale a release pública. `PRE-G9B-P1` está `PASS — AUTHOR APPROVED` con smoke autoral **PASS** sobre el candidato `cac345ae2ba29bb983613f7fb66461b4d063c87b`, tree `71153c3b95b974225c16e52fd177501ec7537663`: promueve LocusV2/SplineV2 y el DXF extendido G9X1 a comportamiento normal GeoCeDG de forma independiente, conserva `--enableLocusV2` como override, generaliza el packaging en perfiles `INTERNAL`/`NC`/`COMMERCIAL` con COMMERCIAL fail-closed, y deja PROFILE NC técnicamente empaquetable. No cambia la versión `1.0.0`, no publica binarios, no crea tag ni release y no autoriza distribución comercial. Una continuación correctiva acotada de P1 reconcilió después el wording de distribución: `LICENSE`, `NOTICE.md`, `THIRD_PARTY.md`, `LICENSES/README.md` y `LICENSES/manifest.json` pasan a ser profile-neutrales y delegan la condición de distribución en el notice del perfil, la evidencia D1 fechada se conserva verbatim, `legal_bundle.public_profile` deja de declarar `PROFILE NC` en builds INTERNAL, y la guía de usuario se auditó contra los defaults promovidos (incluyendo `G9X1 exact DXF SPLINE = NOT IMPLEMENTED` y la representación `LWPOLYLINE` aproximada de SplineV2). El cierre registra cuatro deudas abiertas no bloqueantes —`TD-P1-SEMANTIC-LENGTH-INTERSECTION`, `TD-P1-PACKAGING-SUMMARY`, `TD-VERIFY-RECEIPT-RECOVERY` y `TD-G9X1-HISTORICAL-PIN`— y no autoriza ninguna implementación productiva nueva. G9B/G9C permanecen diseñadas y no autorizadas; G9U2 sigue bloqueada por la aprobación global G9; G10P es solo planificación aprobada y ninguna implementación productiva G10 está autorizada. El riesgo `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` continúa abierto para disposición antes del cierre global G9. Locus V2 conserva madurez `experimental` y está activada por defecto solo en GeoCeDG desde P1; la semántica espacial sigue experimental y desactivada por defecto |
@@ -11,7 +11,7 @@
 | Última fase ejecutada | PRE-G9B-S4 — reemplazo autor-autorizado `verification-6672b2c96f9145f388148105c543239c`, candidato exacto `eb6af9799eec70459485b13fe1c9cadd394e8dca`, `ACCEPTED / COMPLETE`, 108 pruebas, cero fallos/errores/omisiones/diagnósticos. El rechazo histórico `verification-8e5b5cb792d24e469e84548307862984` permanece `REJECTED_VERIFICATION_CORE` por desajuste temporal 13/12 de identidades y no se reinterpreta como PASS |
 | Mantenimiento de verificación | `VERIFICATION RECONCILIATION — PASS — AUTHOR APPROVED`; corrección redefine/currentness `3654b7bd2bb82bee0257cbf7105445fd8130ae53` también `PASS — AUTHOR APPROVED`; candidato técnico `5531239d25844a74da6545026e8f399e86630062`, tree `3302ec16414d62f26183f3a97a4e31560344fb53`; [informe de cierre](../validation/verification_reconciliation_closeout_report.md); `selfApproved=false` |
 | Evidencia FINAL de reconciliación | Reemplazo autor-autorizado `verification-403d5931a36d488aa8df153b2a255da2`, `ACCEPTED / COMPLETE`, 40/40 checks; los rechazos anteriores permanecen evidencia histórica. El resultado válido no emitió un receipt separado y esa deuda operativa no bloquea este cierre |
-| Siguiente puerta | Revisión autoral de `PRE-G9B-R0`, que ejecuta como candidato la acción de planificación `POST-P1 ROADMAP / TECHNICAL-DEBT DISPOSITION`. `PRE-G9B-R0` está `CANDIDATE — PENDING AUTHOR REVIEW` con clase `DOCUMENTATION_STATUS_ONLY`: clasifica D1 como capacidad intencionadamente no soportada (no defecto), D2 como exposición de frontend y ayuda contextual incorrecta sin extensión de kernel en las formas abiertas, y D3 como rechazo incorrecto por una asimetría de manejo de nulos entre publicación y evaluación de redefine; retiene las cuatro deudas con alcance corregido, abre cuatro nuevas y propone la secuencia `R1`–`R7`, toda `DESIGNED — NOT AUTHORIZED`. Quedan nueve decisiones autorales abiertas (`AD-R0-1`…`AD-R0-9`). No se presupone que la siguiente implementación sea G9B. La publicación efectiva, el tag y cualquier release siguen requiriendo una disposición autoral separada. Contactos COMMERCIAL-A/OpenGeoProver, distribución comercial, marca figurativa, G9B, G9C, G9U2, G12 y G10 productivo permanecen no autorizados |
+| Siguiente puerta | `PRE-G9B-R0` está `PASS — AUTHOR APPROVED` (decisión autoral de 2026-09-17). La aprobación cubre la caracterización, la disposición de deuda, `AD-R0-1`…`AD-R0-9` y el diseño escalonado revisado, e incorpora la extensión `R2-E0`/`R2-E1` de materialización por token exacto entre curvas semánticas decidida por el autor; `D1` se mantiene como capacidad intencionadamente no soportada y no se reescribe como deuda. La siguiente acción es una autorización autoral explícita de una fase concreta del track: `R1`, `R1-R1`, `R2`, `R2-E0`, `R2-E1`, `R3`, `R4`, `R5-A`, `R5-B`, `R6` y `R7` siguen `DESIGNED — NOT AUTHORIZED`. No se presupone que la siguiente implementación sea G9B. La publicación efectiva, el tag y cualquier release siguen requiriendo una disposición autoral separada. Contactos COMMERCIAL-A/OpenGeoProver, distribución comercial, marca figurativa, G9B, G9C, G9U2, G12 y G10 productivo permanecen no autorizados |
 | Primer cliente | Aplicación de escritorio de la familia Classic 5 |
 | Núcleo | Java compartido de GeoGebra, extendido solo cuando la semántica lo requiere |
 
@@ -3236,8 +3236,10 @@ GeoGebra/OpenGeoProver.
 
 ### Track PRE-G9B-R — estabilización final, deuda semántica y preparación de autoría
 
-**Estado:** `PRE-G9B-R0` está `CANDIDATE — PENDING AUTHOR REVIEW`; `R1`–`R7`
-están `DESIGNED — NOT AUTHORIZED`. `selfApproved=false`.
+**Estado:** `PRE-G9B-R0` está `PASS — AUTHOR APPROVED` (decisión autoral de
+2026-09-17, con un cambio de planificación requerido ya aplicado); `R1`, `R1-R1`,
+`R2`, `R2-E0`, `R2-E1`, `R3`, `R4`, `R5-A`, `R5-B`, `R6` y `R7` están
+`DESIGNED — NOT AUTHORIZED`. `selfApproved=false`.
 
 `PRE-G9B-R0` ejecuta la acción de planificación declarada arriba como
 `POST-P1 ROADMAP / TECHNICAL-DEBT DISPOSITION`. No es una puerta productiva
@@ -3293,6 +3295,44 @@ registrado restituye `{C}`, y esa clausura es una tercera regla nueva que debe
 adoptarse en ambos lados a la vez. Ningún documento en disco enuncia hoy la
 regla normativa de proyección de dependencias durables: `R3` debe escribirla.
 
+#### Decisión autoral sobre D1 y extensión del track
+
+La revisión autoral confirma la caracterización de R0 y, en particular, mantiene
+`D1` como `INTENTIONALLY UNSUPPORTED CURRENT CAPABILITY`. **`D1` no es un defecto
+y no se reescribe como deuda técnica.** El comportamiento rich-only actual de los
+pares semánticos genéricos no soportados sigue siendo conforme a los contratos
+aprobados vigentes.
+
+El autor decide además que la materialización de puntos por token exacto entre
+curvas semánticas es una capacidad importante de GeoCeDG y debe incorporarse
+explícitamente al track `PRE-G9B-R` antes de su cierre. Esta decisión sustituye
+**únicamente** la conclusión de planificación de R0 según la cual la extensión
+quedaba fuera de `PRE-G9B-R`. No invalida la caracterización factual de `D1`, ni
+los contratos históricos, ni la aprobación vigente de `G9S1`/`G9S1-R1`, ni
+ninguna evidencia existente.
+
+Deben mantenerse separadas dos afirmaciones:
+
+| | Afirmación |
+|---|---|
+| **Hecho de producto vigente** | los pares semánticos genéricos no soportados siguen siendo rich-only |
+| **Decisión autoral de roadmap** | `PRE-G9B-R` incluirá una extensión diseñada por separado para ampliar la materialización por token exacto hasta donde la prueba semántica lo permita |
+
+`AD-R0-1 = AUTHOR DECIDED — INCLUDE LOCUS V2 PAIR MATERIALIZATION AS A
+PRE-G9B-R CAPABILITY EXTENSION`. El objetivo es más amplio que el par mixto
+observado: `R2-E0` debe investigar y, donde sea semánticamente defendible,
+habilitar la materialización para `SplineV2 × SplineV2` certificado (línea base
+de referencia aprobada), `SplineV2 × LocusV2` genérico, `LocusV2` genérico
+`× SplineV2`, `LocusV2` genérico `× LocusV2` genérico, e imágenes y
+composiciones semánticas soportadas de esas familias cuya provenance siga siendo
+certificable. La elegibilidad debe basarse en capacidad y provenance semánticas
+explícitas, nunca en el nombre de clase Java. `SeveralDefects.cedg` es fixture
+objetivo obligatorio cuando `R2-E1` llegue a autorizarse.
+
+Ni el ADR ni la especificación normativa de la extensión se crean aquí: son
+salidas de `R2-E0` tras autorización separada. Este cierre **no autoriza** `E0`
+ni `E1`.
+
 #### Disposición de deuda
 
 | ID | Disposición R0 | Fase propietaria |
@@ -3314,10 +3354,12 @@ y su estado registrado.
 
 | ID | Alcance | Estado |
 |---|---|---|
-| `PRE-G9B-R0` | caracterización, disposición de deuda y diseño escalonado | `CANDIDATE — PENDING AUTHOR REVIEW`; `DOCUMENTATION_STATUS_ONLY` |
+| `PRE-G9B-R0` | caracterización, disposición de deuda y diseño escalonado | `PASS — AUTHOR APPROVED`; `DOCUMENTATION_STATUS_ONLY`; `selfApproved=false` |
 | `PRE-G9B-R1` | deuda de verificación y operacional acotada (receipt, resumen de packaging, pin G9X1) | `DESIGNED — NOT AUTHORIZED`; clase propuesta `OPERATIONAL_VERIFICATION_INFRASTRUCTURE` con FULL |
 | `PRE-G9B-R1-R1` | cierre del round trip nativo de cuarentena periódica | `PROPOSED — NOT AUTHORIZED`; clase propuesta `BOUNDED_PHASE`, `PHASE G9U1` |
 | `PRE-G9B-R2` | provenance semántica del extremo métrico (`Length`/`LocusLength`) | `DESIGNED — NOT AUTHORIZED`; clase propuesta `INTEGRATED_PHASE` |
+| `PRE-G9B-R2-E0` | diseño de la extensión de materialización por token exacto para pares Locus V2 | `DESIGNED — NOT AUTHORIZED FOR EXECUTION`; tipo `SEMANTIC CAPABILITY EXTENSION DESIGN`; capa kernel compartido / contrato geométrico normativo; sin implementación productiva |
+| `PRE-G9B-R2-E1` | implementación de la materialización por token exacto para pares Locus V2 | `DESIGNED — NOT AUTHORIZED`; ejecutable solo tras revisión y aprobación autoral del candidato exacto de ADR/especificación de `E0` |
 | `PRE-G9B-R3` | corrección de redefine (`D3-a` y `D3-b`) | `DESIGNED — NOT AUTHORIZED`; clase propuesta `INTEGRATED_PHASE`, `AD-R0-6` |
 | `PRE-G9B-R4` | herramienta `SplineV2` y herramienta de lista ordenada | `DESIGNED — NOT AUTHORIZED`; clase propuesta `BOUNDED_PHASE` |
 | `PRE-G9B-R5-A` | índice, esquema y navegación de la guía bilingüe | `DESIGNED — NOT AUTHORIZED`; clase propuesta `BOUNDED_PHASE` |
@@ -3325,8 +3367,10 @@ y su estado registrado.
 | `PRE-G9B-R6` | puerta de compatibilidad GGBScript con matriz machine-readable | `DESIGNED — NOT AUTHORIZED`; clase propuesta `OPERATIONAL_VERIFICATION_INFRASTRUCTURE` |
 | `PRE-G9B-R7` | preparación integrada y cierre PRE-G9B | `DESIGNED — NOT AUTHORIZED`; clase congelada al iniciar la fase |
 
-Se adoptó la secuencia propuesta por el autor con tres cambios justificados por
-evidencia: `R2` se reduce a provenance del extremo métrico, porque `D1` es
+Se adoptó la secuencia propuesta por el autor con cuatro cambios. El primero es
+la decisión autoral de revisión: se insertan `R2-E0` y `R2-E1` entre `R2` y `R3`
+para llevar la materialización generalizada por token exacto entre curvas
+semánticas (`AD-R0-1`). Los otros tres están justificados por evidencia: `R2` se reduce a provenance del extremo métrico, porque `D1` es
 conformidad y cualquier extensión es una capacidad nueva con su propio ADR; se
 añade `R1-R1` porque el cierre del riesgo R4 es un test de producto Desktop bajo
 el perímetro `G9U1` y no puede compartir la clase congelada de `R1`; y `R5` se
@@ -3356,25 +3400,44 @@ requiere resolución o disposición autoral explícita antes del cierre global G
 no es puerta de entrada de G9B. Publicación, tag, release y PROFILE COMMERCIAL
 siguen siendo disposiciones autorales separadas.
 
-#### Decisiones autorales abiertas
+#### Decisiones autorales (todas decididas el 2026-09-17)
 
-`AD-R0-1` extensión de materialización `LocusV2 × SplineV2`; `AD-R0-2`
-semántica y productores de las entradas de receipt sin productor; `AD-R0-3`
-cierre o retención del riesgo R4 y, si se cierra, si se amplía la superficie de
-observación de cuarentena hoy limitada al resolver; `AD-R0-4` política canónica
-de nombres de comando en inglés y su decisión de compatibilidad; `AD-R0-5`
-corrección inmediata acotada del tooltip de `SplineV2`; `AD-R0-6` clase de
-verificación de `R3` y aceptabilidad de una migración de firmas persistidas;
-`AD-R0-7` creación de un ledger de deuda machine-readable duradero; `AD-R0-8`
-si el Desktop puede sintetizar el miembro repetido que declara una `SplineV2`
-periódica cerrada; `AD-R0-9` si se autoriza una tarea separada de capa de
-gobierno que añada stubs de prompt `PROPOSED / UNEXECUTED / NOT AUTHORIZED` para
-`R1`–`R7` — `PRE-G9B-R0` no los creó porque `CLAUDE.md` prohíbe editar
-`.github/prompts/**` como efecto colateral de otra tarea.
+`AD-R0-1` incluir la materialización de pares Locus V2 como extensión de
+capacidad de `PRE-G9B-R` (`R2-E0` diseño, `R2-E1` implementación), con alcance
+más amplio que el par mixto observado. `AD-R0-2` resolver `checker_identity_hash`,
+`input_identity_hash` y `accepted_profiles` **dentro de `R1`**, reutilizando la
+semántica de aceptación existente, sin crear un segundo sistema de aceptación y
+sin fabricar hashes. `AD-R0-3` planificar el cierre del riesgo R4 en `R1-R1` con
+evidencia real de ciclo de vida nativo `.cedg`, evitando ampliar la API del
+kernel solo para habilitar un test cuando la evidencia durable basta. `AD-R0-4`
+adoptar la presentación canónica en inglés de los nombres de comando,
+conservando los nombres localizados como alias de compatibilidad en la entrada
+ordinaria donde la compatibilidad vigente lo permita, sin cambiar XML ni
+serialización y manteniendo GGBScript canónico inglés/interno; se formaliza en el
+ADR de compatibilidad de `R5-B`. `AD-R0-5` corregir el tooltip inválido de
+`SplineV2` dentro de `R4`, no como microfase independiente. `AD-R0-6` `R3` se
+planifica como fase integrada, sin migración silenciosa y anticipada de firmas
+persistidas históricas: si la proyección canónica exige migración, se diseña
+explícitamente y se detiene para revisión autoral antes de implementarla.
+`AD-R0-7` no crear por ahora un segundo ledger global de deuda técnica.
+`AD-R0-8` el Desktop puede construir la forma cerrada canónica solo mediante una
+acción de usuario explícita de forma cerrada, y puede sintetizar el miembro
+primero/último repetido que exige la representación del kernel; nunca inferir el
+cierre por proximidad de coordenadas, coincidencia visual o un clic repetido
+ambiguo. `AD-R0-9` autorizar, **después del cierre de R0**, una tarea separada de
+capa de gobierno que añada stubs de prompt, que deben permanecer
+`PROPOSED / UNEXECUTED / NOT AUTHORIZED` hasta su autorización separada y cuyo
+inventario debe incluir `R2-E0` y `R2-E1`; `PRE-G9B-R0` no los creó porque
+`CLAUDE.md` prohíbe editar `.github/prompts/**` como efecto colateral de otra
+tarea.
 
-Ninguna entrada de este track autoriza G9B, G9C, G9U2, G10 productivo, G12
-adicional, DXF `SPLINE` exacto, PROFILE COMMERCIAL, publicación de binarios,
-tag, release ni contactos con GeoGebra/OpenGeoProver.
+La aprobación autoral de `PRE-G9B-R0` cubre la caracterización, la disposición
+de deuda, `AD-R0-1`…`AD-R0-9` y el diseño escalonado revisado incluidos `R2-E0`
+y `R2-E1`. **No autoriza la ejecución** de `R1`, `R1-R1`, `R2`, `R2-E0`, `R2-E1`,
+`R3`–`R7`, G9B, G9C, G9U2, G10 productivo, G12 adicional, DXF `SPLINE` exacto,
+PROFILE COMMERCIAL, distribución comercial, publicación de binarios, tag, release
+ni contactos con GeoGebra/OpenGeoProver. Registrar `R2-E0`/`R2-E1` en el roadmap
+no inicia ninguna de las dos fases.
 
 ### G9B - Proyecciones canónicas de primitivas
 

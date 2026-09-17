@@ -1,17 +1,19 @@
 # PRE-G9B-R0 — technical-debt disposition and observation matrix
 
-- Status: **CANDIDATE — PENDING AUTHOR REVIEW**
+- Status: **PASS — AUTHOR APPROVED** (author decision, 2026-09-17), amended by the
+  author's required planning change
 - Recorded: 2026-09-17
 - Base commit: `0d13434cf1ab4d31f4bb4d50e7aea6cb3e69e35d`
 - Base tree: `922034fd46411530bd02ae15fcc832e3fc541dc7`
 - Producing phase: `PRE-G9B-R0`
-- Claim vocabulary: **proposed / not normative**
+- Claim vocabulary: **accepted disposition**; no normative geometric contract is created here
 - Self approval: **false**
 
 This matrix records the disposition of every open technical-debt item and of
 every observation characterized by `PRE-G9B-R0`. It deletes nothing: every
-pre-existing identifier is retained with its recorded origin. It approves
-nothing and authorizes nothing.
+pre-existing identifier is retained with its recorded origin. The author has
+approved these dispositions; that approval **authorizes no phase for execution**
+and promotes no specification or ADR.
 
 Governing design:
 [PRE-G9B-R staged design](../architecture/pre_g9b_r_final_stabilization_and_authoring_readiness_design.md).
@@ -39,9 +41,9 @@ disposition.
 |---|---|---|---|---|---|---|
 | `TD-P1-SEMANTIC-LENGTH-INTERSECTION` | P1-D1, P1 author smoke | kernel semantic / provenance / metric endpoint | `OBSERVED — REQUIRES CHARACTERIZATION/DESIGN` | `RETAIN — RESCOPED` | `R2` | requires a normative metric-endpoint amendment first; independent of D1 |
 | `TD-P1-PACKAGING-SUMMARY` | P1-D2, P1 author smoke | external tooling / reporting | `OBSERVED — SMALL BOUNDED MAINTENANCE` | `RETAIN` | `R1` | static-contract repin + registry catalog pin + two desktop tests must move together |
-| `TD-VERIFY-RECEIPT-RECOVERY` | pre-P1 | verification infrastructure | `PRE-EXISTING — NON-BLOCKING` | `RETAIN — RESCOPED` | `R1` | blocked on `AD-R0-2`; requires FULL |
+| `TD-VERIFY-RECEIPT-RECOVERY` | pre-P1 | verification infrastructure | `PRE-EXISTING — NON-BLOCKING` | `RETAIN — RESCOPED` | `R1` | `AD-R0-2` decides the three receipt inputs **inside `R1`**; requires FULL |
 | `TD-G9X1-HISTORICAL-PIN` | pre-P1 | verification / historical authority reconciliation | `PRE-EXISTING — NON-BLOCKING` | `RETAIN` | `R1` | none |
-| `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` | G9U0-R4 | kernel risk, closable only by real native lifecycle evidence | `OPEN / TRACKED` | `RETAIN`; closure **proposed** in `R1-R1` | `R1-R1` (proposed) | blocked on `AD-R0-3`; may need a kernel-surface decision |
+| `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` | G9U0-R4 | kernel risk, closable only by real native lifecycle evidence | `OPEN / TRACKED` | `RETAIN`; closure **planned** in `R1-R1` per `AD-R0-3` | `R1-R1` | `AD-R0-3` directs genuine native `.cedg` lifecycle evidence and avoiding a kernel-API widening made solely to enable a test |
 
 ### 2.1 `TD-P1-SEMANTIC-LENGTH-INTERSECTION` — rescoped statement
 
@@ -103,8 +105,11 @@ What is missing is producers for the caller-supplied receipt inputs — the
 checker identity hash, the input identity hash and the accepted-profiles set —
 and a single emission branch on the accepted-FINAL path. A tracked-inventory
 hash already exists and is the natural source for the input identity. The
-checker identity has no defined semantics anywhere in the repository and is an
-author decision (`AD-R0-2`).
+checker identity has no defined semantics anywhere in the repository.
+
+`AD-R0-2` directs that all three be resolved **inside `R1`**, reusing existing
+acceptance semantics, without creating a second acceptance system and without
+fabricating any hash.
 
 **Blocking assessment.** Not blocking for later `PRE-G9B-R` phases. Each such
 phase can produce *acceptable* closeout evidence without it, but not *canonical
@@ -191,7 +196,8 @@ XML in the test trees is confined to malformed-input rejection fixtures.
 | `U1-Q05` quarantine preservation boundary (feature-off host and Classic route) | honestly declared gap | `RETAINED_RISK`, no bound test |
 | `U1-Q02` second unresolved quarantined round trip | **overclaimed binding** | bound to a test that does not perform its declared procedure — see `TD-R0-G9U1-Q02-BINDING` |
 
-**Recommendation: close in this track (`R1-R1`), subject to `AD-R0-3`.** The
+**Author decision (`AD-R0-3`): close in this track, in `R1-R1`, using genuine
+native `.cedg` lifecycle evidence.** The
 benefit is that the risk is cross-cutting and otherwise propagates into every
 `G9B` family stage; the declared next gate already asks where it is resolved.
 The cost is two additional test methods plus one manifest reconciliation, reusing
@@ -200,9 +206,10 @@ quarantine-observation surface is reachable from the Desktop module — the stat
 enum, the rebase entry and the typed accessor are private or package-private and
 documented as exposed only to the resolver — so a closure test must either
 repeat the existing hand parse of the serialized ledger or widen a deliberately
-resolver-scoped kernel API. That widening is an author decision, not a refactor.
-A cleaner, layout-independent style already exists elsewhere: asserting
-ledger-state equality across a real save/reopen.
+resolver-scoped kernel API. `AD-R0-3` directs avoiding a kernel-API widening
+made solely to enable a test where durable lifecycle evidence can establish the
+property. A cleaner, layout-independent style already exists elsewhere:
+asserting ledger-state equality across a real save/reopen.
 
 `PRE-G9B-R0` does not close this risk and does not move its canonical record.
 
@@ -210,7 +217,7 @@ ledger-state equality across a real save/reopen.
 
 | ID | Observation | Classification | Layer | Owning phase |
 |---|---|---|---|---|
-| `D1` | no intersection points materializable between `LocusV2 a` and `SplineV2 d` | `INTENTIONALLY_UNSUPPORTED_CURRENT_CAPABILITY` — **not a defect** | kernel (only if an extension is ever authorized); documentation has one bounded obligation | none; extension requires `AD-R0-1` |
+| `D1` | no intersection points materializable between `LocusV2 a` and `SplineV2 d` | `INTENTIONALLY_UNSUPPORTED_CURRENT_CAPABILITY` — **not a defect, and not technical debt** | kernel, for the scheduled capability extension; documentation has one bounded obligation | `R2-E0` (design), then `R2-E1` (implementation) — scheduled by `AD-R0-1`, neither authorized |
 | `D2` | `SplineV2` gives no contextual help, opens the generic input-help panel, and is awkward to construct | `MISSING_FRONTEND_EXPOSURE_AND_INCORRECT_CONTEXTUAL_HELP` | Desktop/frontend + localization; one qualified kernel question | `R4` |
 | `D3-a` | `Midpoint(D, C + (1, 0))` rejected as ambiguous on redefine | `INCORRECTLY_REJECTED` | shared kernel | `R3` |
 | `D3-b` | nine distinct failure causes collapse onto one `AMBIGUOUS` status | `INCORRECTLY_REPORTED` | kernel status typing + Desktop presentation | `R3` |
@@ -293,7 +300,7 @@ states the normative durable dependency projection rule; `R3` must write it.
 
 | Observation | Why it is not debt |
 |---|---|
-| no materialized points for `LocusV2 × SplineV2` | conformance with `spline-v2-pair-materialization.md` §1, `semantic-spline-2d.md` §5.2, ADR 0018 and ADR 0021 Decision 1. Any change is a new capability requiring a new ADR (`AD-R0-1`) |
+| no materialized points for `LocusV2 × SplineV2` | conformance with `spline-v2-pair-materialization.md` §1, `semantic-spline-2d.md` §5.2, ADR 0018 and ADR 0021 Decision 1. The author has scheduled a **capability extension** (`R2-E0`/`R2-E1`, `AD-R0-1`) rather than reclassifying this as a defect. A scheduled capability is not debt: the current behaviour is conforming, and the extension still requires its own ADR and normative specification, produced by `R2-E0` after separate authorization |
 | `SplineV2` has no tool icon | the owned SVG exists and is already bound to the action key by the desktop tool-image resource |
 | `SplineV2` is absent from the toolbar | the action is already rendered in the construction-semantic-curves profile flyout; what is missing is mode semantics, not rendering |
 | the desktop auto-materialize session behaviour | it is off by default and exists only on the explicit human Algebra path; it is a declared frontend asymmetry for `R6`'s matrix to record, and it does **not** explain the D1 witness |
@@ -306,11 +313,23 @@ states the normative durable dependency projection rule; `R3` must write it.
 | candidate report | [`docs/validation/pre_g9b_r0_characterization_candidate_report.md`](pre_g9b_r0_characterization_candidate_report.md) |
 | machine-readable disposition | [`geocedg/validation/pre-g9b-r0/pre-g9b-r0-disposition.json`](../../geocedg/validation/pre-g9b-r0/pre-g9b-r0-disposition.json) |
 | roadmap entry | [`docs/roadmap/geocedg_roadmap.md`](../roadmap/geocedg_roadmap.md) |
-| proposed future prompts | **not created.** `CLAUDE.md` prohibits editing `.github/prompts/**` as a side effect of another task; changing the governance layer is its own author-authorized task. The per-phase contract fields that such stubs would carry are recorded in the staged design instead, so no authority is lost. See `AD-R0-9` |
+| proposed future prompts | **not created by R0.** `CLAUDE.md` prohibits editing `.github/prompts/**` as a side effect of another task. `AD-R0-9` authorizes a separate governance-layer task **after R0 closeout**; its inventory must include `R2-E0` and `R2-E1`, and every stub must remain `PROPOSED / UNEXECUTED / NOT AUTHORIZED` until separately authorized |
+
+## 7. Author disposition
+
+The author approved the substantive findings and dispositions on 2026-09-17,
+with one required planning change applied throughout: `AD-R0-1` is decided as
+**include Locus V2 pair materialization as a `PRE-G9B-R` capability extension**,
+scheduled as `R2-E0` and `R2-E1`. D1's factual classification is unchanged and is
+**not** rewritten as technical debt. `AD-R0-2` through `AD-R0-9` are recorded as
+decided in the staged design §6.
 
 ```text
-PRE-G9B-R0 = CANDIDATE PENDING AUTHOR REVIEW
+PRE-G9B-R0 = PASS — AUTHOR APPROVED
 selfApproved   = false
-authorApproved = false
-passClaimed    = false
+authorApproved = true
+passClaimed    = true   (author decision of 2026-09-17; not an agent claim)
+
+R1 / R1-R1 / R2 / R2-E0 / R2-E1 / R3 / R4 / R5-A / R5-B / R6 / R7
+               = DESIGNED — NOT AUTHORIZED
 ```
