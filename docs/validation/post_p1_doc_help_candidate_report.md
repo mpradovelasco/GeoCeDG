@@ -47,8 +47,18 @@ created from the clean published `main`. No work was done on `main`.
 
 ## 3. Candidate identity
 
-Recorded at commit time; see the branch tip. The candidate is not promoted, not
-tagged and not merged.
+| Field | Value |
+|---|---|
+| Branch | `feature/post-p1-bilingual-user-guide-help` |
+| Candidate commit | `8c54fbfbc5f11aa1c3b5f41bf60f7d5163fd73b9` |
+| Candidate tree | `c2276578daa9dcb7c26430c7fec77c9347a38512` |
+| Parent | `0f578fd9b58db14fcecf457ed01fa7a8f1b8c785` |
+
+A follow-up commit adds this identity block and the post-commit re-verification
+of section 12 to the present report; that commit is the effective candidate tip
+and is named in section 12.
+
+The candidate is not promoted, not tagged, not pushed and not merged.
 
 ## 4. The two official guides
 
@@ -352,6 +362,13 @@ carry closeout semantics.
 | INFRA_UNIT (after repin) | `.\tools\agent\verify.ps1 -Profile INFRA_UNIT` | 0 | `ACCEPTED / COMPLETE`, 0 diagnostics | `geocedg-infra2-710352fa…` |
 | STATIC (final) | `.\tools\agent\verify.ps1 -Profile STATIC` | 0 | `ACCEPTED / COMPLETE`, 1 diagnostic finding | `geocedg-static3-734c7b06…` |
 | `git diff --check` | — | 0 | no whitespace findings | — |
+| STATIC (post-commit, on the frozen candidate) | `.	oolsgenterify.ps1 -Profile STATIC` | 0 | `ACCEPTED / COMPLETE`, 1 diagnostic finding | `geocedg-static5-8c138aff…` |
+| INFRA_UNIT (post-commit, on the frozen candidate) | `.	oolsgenterify.ps1 -Profile INFRA_UNIT` | 0 | `ACCEPTED / COMPLETE`, 0 diagnostics | `geocedg-infra3-d7bbae40…` |
+
+The last two rows were executed on the committed candidate
+`8c54fbfbc5f11aa1c3b5f41bf60f7d5163fd73b9` / tree
+`c2276578daa9dcb7c26430c7fec77c9347a38512`; the follow-up commit that records
+this identity and these rows changes only the present report.
 
 Verification log roots are session-temporary and are not versioned.
 
