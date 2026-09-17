@@ -12,7 +12,6 @@
       "Edit(/FIRST_AGENT_TASK.md)",
       "Edit(/CLAUDE.md)",
       "Edit(/.claude/settings.json)",
-      "Edit(/.github/prompts/**)",
       "Edit(/ai-shell/prompts/**)"
     ]
   }
