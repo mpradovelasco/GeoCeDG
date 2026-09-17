@@ -16,7 +16,7 @@ G9P-R1, G9P y G9O1 son `PASS — AUTHOR APPROVED`; sus seis especificaciones son
 normativas y ADR 0010–0015 están Accepted. El estado vigente de G9 y sus
 autorizaciones se consulta en la [hoja de ruta](docs/roadmap/geocedg_roadmap.md);
 el alcance y la activación de Locus V2 se describen en el
-[manual operativo](docs/user/geocedg_user_guide.md#can-i-use-locus-v2-now).
+[guía de usuario](docs/user/geocedg_user_guide_es.md#6-locus-v2).
 Ningún recurso legacy se carga por defecto.
 
 ## Baseline
@@ -257,11 +257,11 @@ ingest y promoción se documenta en
 La exportación experimental de geometría 2D se invoca desde
 `GeoCeDG > Export 2D geometry as DXF (experimental)...`. Su alcance exacto,
 unidades, entidades soportadas y warnings se documentan en
-[el manual operativo](docs/user/geocedg_user_guide.md#8-export-2d-geometry-to-dxf).
+[la guía de usuario](docs/user/geocedg_user_guide_es.md#11-exportación-dxf).
 
 El alcance vigente de comandos, persistencia, interacción y limitaciones de
 Locus V2 se documenta en el
-[manual operativo](docs/user/geocedg_user_guide.md#can-i-use-locus-v2-now).
+[guía de usuario](docs/user/geocedg_user_guide_es.md#6-locus-v2).
 El laboratorio G6R conserva una ruta de desarrollo aislada:
 
 ```powershell
@@ -271,7 +271,7 @@ El laboratorio G6R conserva una ruta de desarrollo aislada:
 
 El laboratorio usa preferencias temporales, no aparece en el arranque normal
 ni en Classic y no puede guardar su construcción como `.ggb`. Consulte el
-[manual operativo](docs/user/geocedg_user_guide.md#can-i-use-locus-v2-now) y la
+[guía de usuario](docs/user/geocedg_user_guide_es.md#6-locus-v2) y la
 [arquitectura G6R](docs/architecture/locus_v2_implementation.md).
 
 ## Requisitos de packaging Windows

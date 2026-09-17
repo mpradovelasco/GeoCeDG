@@ -28,7 +28,7 @@ class G9U1IconReviewTest {
 	@Test
 	void manifestIconsResolveWithoutChangingActionIdentityOrText() {
 		assertNotNull(getClass().getResource(
-				"/org/geocedg/desktop/geocedg_construction_quick_guide.md"));
+				"/org/geocedg/desktop/geocedg_user_guide_en.md"));
 		AppGeoCeDG app = G9U1TestApp.create();
 		GeoCeDGActionRegistry registry = new GeoCeDGActionRegistry(app);
 		for (String id : new String[] {"semantic.spline-v2.create",

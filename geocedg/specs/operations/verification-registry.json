@@ -4,7 +4,7 @@
   "registry_id": "geocedg.verification.v2",
   "catalogs": [
     { "catalog_id": "junit_inventory", "path": "geocedg/specs/operations/verification-junit-inventory.json", "sha256": "550d0e22100505947c7708d033bd99b7f3e9b52b9c6a6fc07f0cffe77113c28b" },
-    { "catalog_id": "static_contracts", "path": "geocedg/specs/operations/verification-static-contracts.json", "sha256": "d34d0c443fa1164f26637cdc917d31c661886cb14b372c5da69c96b153af57f1" }
+    { "catalog_id": "static_contracts", "path": "geocedg/specs/operations/verification-static-contracts.json", "sha256": "25bcb50821c3e4a051274070084a87b796ee30f41cd4c0d6a3bc95dc2a7fd613" }
   ],
   "profiles": [
     { "profile_id": "STATIC", "coverage_state": "COMPLETE", "missing_check_ids": [] },
@@ -269,7 +269,7 @@
       "working_directory": ".",
       "dependencies": [],
       "platforms": ["WINDOWS", "LINUX", "MACOS"],
-      "impact_paths": ["README.md", "docs/user/geocedg_user_guide.md", "docs/developer/geocedg_developer_guide.md"],
+      "impact_paths": ["README.md", "docs/developer/geocedg_operations_manual.md", "docs/developer/geocedg_developer_guide.md"],
       "environment_contract": { "inherit": true, "variables": {} },
       "resource_locks": [],
       "side_effects": ["REPOSITORY_READ", "TASK_OWNED_OUTPUT"],

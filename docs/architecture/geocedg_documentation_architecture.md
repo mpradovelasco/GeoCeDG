@@ -28,7 +28,9 @@ contracts remain above prose when they disagree.
 
 ## Audience entry points
 
-- Users start with `docs/user/geocedg_user_guide.md` and follow the linked
+- Users start with the official bilingual guides
+  `docs/user/geocedg_user_guide_en.md` or `docs/user/geocedg_user_guide_es.md`,
+  indexed from `docs/user/geocedg_user_guide.md`, and follow the linked
   mathematical reference for deeper derivations.
 - Developers start with `docs/developer/geocedg_developer_guide.md`, then the
   repository map and relevant API guide.

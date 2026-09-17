@@ -25,7 +25,8 @@ specifications and ADRs remain authoritative for geometric meaning.
 | ADR | `docs/adr/` | decision, alternatives and consequences; status is explicit |
 | architecture | `docs/architecture/` | current implementation map or clearly marked proposal |
 | developer/API guide | `docs/developer/` | current source-facing usage; never a second semantic specification |
-| user guide | `docs/user/geocedg_user_guide.md` | primary current-state entry point |
+| user guide | `docs/user/geocedg_user_guide_en.md` and `docs/user/geocedg_user_guide_es.md` | official bilingual current-state entry points with shared stable section identifiers; `docs/user/geocedg_user_guide.md` remains their index |
+| operations manual | `docs/developer/geocedg_operations_manual.md` | workstation, build, packaging and installation procedure |
 | mathematical reference | `docs/user/geocedg_mathematical_reference.md` | explanatory mathematics linked to normative specs |
 | roadmap | `docs/roadmap/` | phase sequencing and gates, not proof of implementation |
 | canonical prompt | `.github/prompts/` | executable task/review scope; references durable contracts |

@@ -670,7 +670,7 @@ historical-file repair or migration is introduced. See the
 [native lifecycle review](../validation/g9u1_native_lifecycle_review.md),
 [frontend review matrix](../validation/g9u1_frontend_review_matrix.md),
 [user-tool review](../validation/g9u1_user_tools_review.md),
-[quick guide](../user/geocedg_construction_quick_guide.md) and
+[superseded quick guide](../user/geocedg_construction_quick_guide.md) and
 [author re-smoke checklist](../validation/g9u1_author_resmoke_checklist.md).
 
 ## Author-review stabilization, round 2

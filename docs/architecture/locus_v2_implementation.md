@@ -13,8 +13,8 @@
 This document describes the implementation that exists after G6R. It does not
 extend the normative semantics and does not make Locus V2 public. The
 [developer API reference](../developer/locus_v2_api.md) gives method-level
-contracts; the [user guide](../user/geocedg_user_guide.md) is the operational
-entry point.
+contracts; the [user guide](../user/geocedg_user_guide_en.md) is the
+operational entry point.
 
 Sections 1–11 intentionally preserve the G6R baseline. G7B subsequently added
 the separate internal metric layer documented by the

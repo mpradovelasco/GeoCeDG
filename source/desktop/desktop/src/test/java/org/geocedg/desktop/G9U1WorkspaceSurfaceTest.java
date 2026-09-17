@@ -575,9 +575,12 @@ class G9U1WorkspaceSurfaceTest {
 
 	@Test
 	void guideIsPackagedWithDeclaredSourceContent() throws Exception {
-		try (var stream = getClass().getResourceAsStream("geocedg_user_guide.md")) {
-			assertNotNull(stream);
-			assertTrue(stream.readAllBytes().length > 1000);
+		for (String guide : new String[] {"geocedg_user_guide_en.md",
+				"geocedg_user_guide_es.md"}) {
+			try (var stream = getClass().getResourceAsStream(guide)) {
+				assertNotNull(stream, guide);
+				assertTrue(stream.readAllBytes().length > 1000, guide);
+			}
 		}
 	}
 

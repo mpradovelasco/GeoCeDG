@@ -518,7 +518,7 @@ templates. Keep the adapter's single rich-result input and XML/internal command
 expression intact (`Length(o)` when o is that rich parent). No new integration,
 numeric tolerance or endpoint lookup is permitted. P/Q require existing exact
 semantic addresses on the same source; free interpolation inputs A/C must remain
-invalid endpoints. The [quick guide](../user/geocedg_construction_quick_guide.md)
+invalid endpoints. The [user guide](../user/geocedg_user_guide_en.md)
 uses explicit semantic points and distinguishes ordinary `Length` from rich
 `LocusLength`. The [re-smoke checklist](../validation/g9u1_author_resmoke_checklist.md)
 is the current author-review procedure, not an assertion of author acceptance.

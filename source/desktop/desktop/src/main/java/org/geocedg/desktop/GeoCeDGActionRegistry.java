@@ -527,13 +527,28 @@ public final class GeoCeDGActionRegistry {
 		return List.copyOf(arguments);
 	}
 
+	/**
+	 * Presentation-only selection of the packaged user-guide edition. English is
+	 * the declared product fallback, so any language other than Spanish reads the
+	 * English edition. This chooses a document; it never touches the kernel,
+	 * geometry, dependency graph, serialization or semantic identity.
+	 *
+	 * @param language active product language
+	 * @return packaged resource path of the matching guide edition
+	 */
+	static String userGuideResource(String language) {
+		return "/org/geocedg/desktop/geocedg_user_guide_"
+				+ ("es".equals(language) ? "es" : "en") + ".md";
+	}
+
 	private void showUserGuide() {
-		try (InputStream stream = GeoCeDGActionRegistry.class.getResourceAsStream(
-				"/org/geocedg/desktop/geocedg_construction_quick_guide.md")) {
+		String resource = userGuideResource(app.getLocale().getLanguage());
+		try (InputStream stream =
+				GeoCeDGActionRegistry.class.getResourceAsStream(resource)) {
 			if (stream == null) {
-				throw new IOException("Packaged GeoCeDG guide is missing");
+				throw new IOException("Packaged GeoCeDG guide is missing: " + resource);
 			}
-			message(text("Workspace.Guide") + "\n\n"
+			document(text("Workspace.Guide") + "\n\n"
 					+ new String(stream.readAllBytes(), StandardCharsets.UTF_8));
 		} catch (IOException exception) {
 			message(text("Action.Unavailable.Failed") + "\n" + exception.getMessage());
@@ -558,12 +573,25 @@ public final class GeoCeDGActionRegistry {
 	}
 
 	private void message(String text) {
-		JTextArea area = new JTextArea(text, 8, 54);
+		showReadOnlyText(text, 8, 54);
+	}
+
+	/** Same read-only seam as {@link #message}, sized for a long document. */
+	private void document(String text) {
+		showReadOnlyText(text, 30, 100);
+	}
+
+	private void showReadOnlyText(String text, int rows, int columns) {
+		JTextArea area = new JTextArea(text, rows, columns);
 		area.setEditable(false);
 		area.setLineWrap(true);
 		area.setWrapStyleWord(true);
 		area.setFont(app.getPlainFont());
-		JOptionPane.showMessageDialog(app.getMainComponent(), new JScrollPane(area),
+		area.setCaretPosition(0);
+		JScrollPane scroll = new JScrollPane(area);
+		scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		JOptionPane.showMessageDialog(app.getMainComponent(), scroll,
 				GeoCeDGProductInfo.applicationTitle(), JOptionPane.INFORMATION_MESSAGE);
 	}
 }

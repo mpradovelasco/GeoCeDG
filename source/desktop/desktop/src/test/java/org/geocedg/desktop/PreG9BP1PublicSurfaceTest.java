@@ -249,32 +249,44 @@ class PreG9BP1PublicSurfaceTest {
 
 	// ------------------------------------------------------------- user guide
 
+	// POST-P1-DOC-HELP moved the user-facing product documentation to the two
+	// official bilingual editions. The P1 contract below is unchanged; only the
+	// documents that must satisfy it were relocated.
+	private static final List<String> GUIDES = List.of(
+			"geocedg_user_guide_en.md", "geocedg_user_guide_es.md");
+
 	@Test
 	void packagedGuideIsAByteCopyOfTheTrackedSourceGuide() throws IOException {
-		byte[] source = Files.readAllBytes(
-				repositoryRoot().resolve("docs/user/geocedg_user_guide.md"));
-		try (var stream = getClass().getResourceAsStream("geocedg_user_guide.md")) {
-			assertNotNull(stream, "the guide is not packaged");
-			assertArrayEquals(source, stream.readAllBytes(),
-					"the packaged guide diverged from its single tracked source");
+		for (String guide : GUIDES) {
+			byte[] source = Files.readAllBytes(
+					repositoryRoot().resolve("docs/user/" + guide));
+			try (var stream = getClass().getResourceAsStream(guide)) {
+				assertNotNull(stream, guide + " is not packaged");
+				assertArrayEquals(source, stream.readAllBytes(),
+						"the packaged " + guide + " diverged from its tracked source");
+			}
 		}
 	}
 
 	@Test
 	void userGuideDescribesThePromotedDefaultsAndTheDxfBoundary() throws IOException {
-		String guide = read("docs/user/geocedg_user_guide.md");
-		// Both overrides are documented in their retained disabling direction.
-		assertTrue(guide.contains("--enableLocusV2=false"));
-		assertTrue(guide.contains("--enableExtendedDxf=false"));
-		// Neither promoted capability may still be advertised as opt-in.
-		assertFalse(guide.contains("--enableLocusV2=true"));
-		assertFalse(guide.contains("--enableExtendedDxf=true"));
-		// The DXF representation of SplineV2 must not be overstated.
-		assertTrue(guide.contains("exact DXF `SPLINE` is **NOT IMPLEMENTED**"));
-		assertTrue(guide.contains("**approximate"));
-		assertTrue(guide.contains("`LWPOLYLINE`** produced export-only under G9X1"));
-		assertTrue(guide.contains("not a certified global error bound"));
-		assertTrue(guide.contains("1.0.0"));
+		for (String path : GUIDES) {
+			String guide = read("docs/user/" + path);
+			// Both overrides are documented in their retained disabling direction.
+			assertTrue(guide.contains("--enableLocusV2=false"), path);
+			assertTrue(guide.contains("--enableExtendedDxf=false"), path);
+			// Neither promoted capability may still be advertised as opt-in.
+			assertFalse(guide.contains("--enableLocusV2=true"), path);
+			assertFalse(guide.contains("--enableExtendedDxf=true"), path);
+			// The DXF representation of SplineV2 must not be overstated.
+			assertTrue(guide.contains("DXF SPLINE exact entity      = NOT IMPLEMENTED"),
+					path);
+			assertTrue(guide.contains(
+					"SplineV2 DXF representation  = APPROXIMATE LWPOLYLINE"
+							+ " under current G9X1"), path);
+			assertTrue(guide.contains("ESTIMATED_ERROR"), path);
+			assertTrue(guide.contains("1.0.0"), path);
+		}
 	}
 
 	// -------------------------------------------------------------------- helpers

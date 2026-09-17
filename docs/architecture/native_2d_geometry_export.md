@@ -5,7 +5,7 @@
 - Governing decision: [ADR 0005](../adr/0005-neutral-2d-geometry-export.md)
 - Normative contract:
   [geometry export foundation](../../geocedg/specs/export/geometry-export-foundation.md)
-- User workflow: [GeoCeDG user guide](../user/geocedg_user_guide.md)
+- User workflow: [GeoCeDG user guide](../user/geocedg_user_guide_en.md)
 
 ## Purpose and boundary
 

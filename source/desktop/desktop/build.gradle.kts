@@ -212,10 +212,12 @@ tasks.processResources {
         include("application-profile.schema.json", "application-profile-v1.schema.json")
         into("org/geocedg/desktop")
     }
-    from(rootProject.file("../../docs/user/geocedg_user_guide.md")) {
+    // The two official bilingual user guides are packaged as reproducible byte
+    // copies of their single tracked sources under docs/user/.
+    from(rootProject.file("../../docs/user/geocedg_user_guide_en.md")) {
         into("org/geocedg/desktop")
     }
-    from(rootProject.file("../../docs/user/geocedg_construction_quick_guide.md")) {
+    from(rootProject.file("../../docs/user/geocedg_user_guide_es.md")) {
         into("org/geocedg/desktop")
     }
 }

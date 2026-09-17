@@ -30,7 +30,9 @@ insufficient.
 | `docs/architecture` | System maps, implementation boundaries and impact analysis | Durable design/implementation documentation |
 | `docs/developer` | Internal API, repository and agent operating references | Durable developer documentation |
 | `docs/developer/book_repository_workflow.md` | Two-repository boundary and opt-in book-worktree commands | GeoCeDG operational documentation; never editorial authority |
-| `docs/user/geocedg_user_guide.md` | Current observable/manual workflow and conceptual entry point | Living user/developer guide |
+| `docs/user/geocedg_user_guide_en.md`, `docs/user/geocedg_user_guide_es.md` | Official bilingual user guides for current observable behaviour | Living product documentation; packaged as in-application help |
+| `docs/user/geocedg_user_guide.md` | Index over the two official editions and the operational documentation | Index only; carries no product statement |
+| `docs/developer/geocedg_operations_manual.md` | Workstation, clone, build, packaging, installation and technical references | Living operational documentation relocated from the former user guide |
 | `docs/user/geocedg_mathematical_reference.md` | Mathematical definitions and authority links | Living explanatory reference; specifications remain authoritative |
 | `docs/validation` | Phase reports and traceability | Historical evidence is immutable; current traceability is maintained separately; neither is normative semantics |
 | `docs/references/cedg` | Scientific knowledge corpus | Local reference only; often redistribution-blocked |
@@ -63,7 +65,7 @@ tools/agent/verify-locus-v2.ps1                  focused gate
 tools/locus-v2/open-locus-v2-laboratory.ps1      opt-in visual inspection
 docs/architecture/locus_v2_implementation.md     implementation map
 docs/developer/locus_v2_api.md                    internal API reference
-docs/user/geocedg_user_guide.md                   current operational entry
+docs/user/geocedg_user_guide_en.md                current user entry point
 ```
 
 Generated test XML, Gradle reports, raw benchmark logs and app/package binaries

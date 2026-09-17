@@ -21,8 +21,10 @@ capacidad; los ADR aceptados registran decisiones y alternativas; y los informes
 de `docs/validation/` conservan evidencia histórica de ejecución. Cuando una
 especificación o un ADR posterior aceptado contradice una propuesta anterior de
 este documento, prevalece la autoridad posterior y el roadmap debe registrar la
-supersesión. La [guía de usuario](../user/geocedg_user_guide.md) describe las
-capacidades observables vigentes.
+supersesión. Las guías de usuario oficiales
+([inglés](../user/geocedg_user_guide_en.md),
+[español](../user/geocedg_user_guide_es.md)) describen las capacidades
+observables vigentes.
 
 ### G9S1-R1 — cronología técnica preservada
 

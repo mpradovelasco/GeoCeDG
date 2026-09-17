@@ -4,7 +4,9 @@ param([Parameter(Mandatory)] [string]$RepositoryRoot,
     [Parameter(Mandatory)] [string]$ResultPath)
 Set-StrictMode -Version Latest
 $root = [IO.Path]::GetFullPath($RepositoryRoot)
-$documents = @('README.md', 'docs/user/geocedg_user_guide.md',
+# POST-P1-DOC-HELP relocated the workstation/build material out of the user
+# guide, which is now a bilingual product guide plus an index at the old path.
+$documents = @('README.md', 'docs/developer/geocedg_operations_manual.md',
     'docs/developer/geocedg_developer_guide.md')
 $missing = @($documents | Where-Object {
     -not [IO.File]::ReadAllText((Join-Path $root $_)).Contains(

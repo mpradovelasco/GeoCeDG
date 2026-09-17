@@ -16,7 +16,7 @@
       {"path":"tools/release/export-runtime-components.init.gradle","sha256":"0bd0e7136357afd89289b9444c790d0e0b168c009e92b1ee8800095010b491e9"}
     ]},
     {"contract_id":"workspace.profile-authority","semantic_domain":"PRODUCT","inputs":[
-      {"path":"source/desktop/desktop/build.gradle.kts","sha256":"42a8e8147058ed70a63a0e2fd05a86dcd41c1766794a9caefdcb4acad3017213"},
+      {"path":"source/desktop/desktop/build.gradle.kts","sha256":"73f098959bbb9d6a3490573423da0e7cc9f5d068233fa3d875441a613df769a1"},
       {"path":"gradle/libs.versions.toml","sha256":"6c4bdfa7611575b35e6d346112b064e40860f2f8fcdd3e5ea9252cad8d0bc2a4"},
       {"path":"tools/agent/workspace-profile-validation.ps1","sha256":"7dfe8f45931f7256e62ebfa9e487e8548b8a297e7a83358c2428341b80e9533b"}
     ]},
