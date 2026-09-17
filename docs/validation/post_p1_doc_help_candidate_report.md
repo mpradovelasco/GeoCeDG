@@ -1,11 +1,22 @@
 # POST-P1-DOC-HELP — bilingual user guide and in-app help integration
 
 ```text
-POST-P1-DOC-HELP = IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW
+POST-P1-DOC-HELP          = IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW
+VERIFICATION INVENTORY    = CURRENT / DERIVED CANONICALLY
+BILINGUAL GUIDE RESOURCES = PASS
+HELP MARKDOWN RENDERING   = IMPLEMENTED
+HELP WINDOW RESIZABILITY  = IMPLEMENTED
+INTERACTIVE HELP SMOKE    = PASS
 selfApproved   = false
 authorApproved = false
 passClaimed    = false
 ```
+
+This report has two parts. Sections 1 to 20 record the original track. The
+`Corrective continuation` part at the end records the author-review corrections
+to the help rendering and the guide window, and the canonical re-derivation of
+the JUnit inventory. Where the two disagree on an operational fact, the
+continuation is later and prevails.
 
 This is a documentation, frontend/help and packaged-resource track. It is not a
 GeoCeDG geometric phase, not `G9B` and not a BOOK phase. It changes no kernel,
@@ -646,3 +657,390 @@ passClaimed    = false
 
 Promotion to `main`, any tag and any release remain separate explicit author
 decisions.
+
+---
+
+# Corrective continuation — help rendering, viewer and verification re-derivation
+
+```text
+POST-P1-DOC-HELP          = IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW
+VERIFICATION INVENTORY    = CURRENT / DERIVED CANONICALLY
+BILINGUAL GUIDE RESOURCES = PASS
+HELP MARKDOWN RENDERING   = IMPLEMENTED
+HELP WINDOW RESIZABILITY  = IMPLEMENTED
+INTERACTIVE HELP SMOKE    = PASS
+selfApproved   = false
+authorApproved = false
+passClaimed    = false
+```
+
+## C1. Entry baseline of the continuation
+
+| Fact | Value |
+|---|---|
+| Active branch | `feature/post-p1-bilingual-user-guide-help` |
+| `HEAD` at entry | `aa3aa19f4dde68d61245f08ef52de68e86a1db66` |
+| Tree at entry | `903685e99c48766044909ae3896a8e06c3cfdd33` |
+| `main` / `origin/main` | `0f578fd9b58db14fcecf457ed01fa7a8f1b8c785` |
+| Divergence | 0 behind, 2 ahead of `origin/main` |
+| Branch on `origin` | not published |
+| Worktree / index at entry | clean |
+
+The previously reported candidate was therefore still `HEAD`. GitHub was the
+authority for `origin/main` and for the tracked JUnit inventory, both read
+before any change.
+
+## C2. Why the continuation was needed
+
+The author review of the integrated help found two real usability defects:
+
+1. the Markdown was displayed essentially as source markup, because the viewer
+   was a plain-text area; and
+2. the window was excessively wide and could not be resized.
+
+The bilingual documentation itself was accepted as conceptually valid and is
+kept as the base. Its content was not rewritten.
+
+## C3. Inventory drift: exact cause
+
+The previous candidate added `PostP1BilingualUserGuideTest`, so the tracked
+desktop discovery identity stopped matching the source tree. The drift is purely
+additive and fully attributable to tests added by this track; no behaviour,
+filter or exclusion changed.
+
+## C4. Stage A — re-derivation preflight
+
+Run before touching the viewer, exactly as required, so that a FINAL campaign
+would not be spent twice.
+
+| Step | Result |
+|---|---|
+| Outbound reachability of `repo.geogebra.net`, `www.geogebra.org`, `repo.maven.apache.org` | reachable |
+| `:desktop:desktop:dependencies --configuration runtimeClasspath` (online) | `BUILD SUCCESSFUL`, exit 0 |
+| `tools/agent/checks/gradle-test-evidence-producer.ps1 -SelectionId discovery.desktop -TestDryRun` | exit 0; `completion_state=COMPLETED`, `inner_exit_code=0`, `test_dry_run=true`, 97 JUnit files |
+| Would-be desktop identity from that evidence | count 1499, sha256 `d5067e44…`, versus tracked 1484 / `c60d8562…` |
+
+```text
+VERIFICATION RE-DERIVATION = AVAILABLE
+```
+
+The +15 observed at preflight was exactly the fifteen cases of
+`PostP1BilingualUserGuideTest`, so the drift was explained before any further
+work. The earlier `ENVIRONMENT BLOCKED` condition was an outbound-network
+unavailability only, and it no longer applies. No hash was fabricated at any
+point.
+
+## C5. Renderer architecture decision
+
+Inspected before writing any code:
+
+| Option | Finding | Outcome |
+|---|---|---|
+| A — reuse an existing Markdown capability | `gradle/libs.versions.toml` and the desktop dependency block declare none; the resolved `runtimeClasspath` (83 artifacts) matches nothing for `markdown`, `commonmark`, `flexmark`, `pegdown`, `txtmark`, `jsoup` or `asciidoc` | not available |
+| B — reuse upstream help infrastructure | `org.geogebra.desktop.gui.util.HelpAction` delegates to `GuiManager.openHelp(...)`, which opens the GeoGebra wiki in an external browser | rejected: an external browser is explicitly out of scope for the main guide |
+| B-prime — reuse the Swing HTML infrastructure already used in the module | `StatisticsCalculatorD` already renders with `JEditorPane` plus `HTMLEditorKit` plus `StyleSheet.addRule` | reused for the viewer |
+| C — bounded GeoCeDG renderer | needed, because the sources stay Markdown and no renderer exists | implemented, limited to the audited subset |
+
+```text
+THIRD-PARTY DEPENDENCY ADDED = NONE
+```
+
+`javax.swing.text.html` is JDK infrastructure. `gradle/libs.versions.toml` and
+`source/desktop/desktop/build.gradle.kts` are untouched by this continuation, so
+the redistributed composition, the SBOM, the licensing impact and the D1
+packaging assumptions are unchanged, and D1 is not reopened.
+
+## C6. What was implemented
+
+### `GeoCeDGGuideRenderer` — bounded Markdown to HTML
+
+A pure, stateless converter whose contract is documented in its Javadoc and
+audited in section 5 of the
+[audit matrix](post_p1_doc_help_audit_matrix.md). It covers exactly the subset
+the two guides use: ATX headings, paragraphs, fenced code, unordered and ordered
+lists, pipe tables, horizontal rules, removed HTML comments, inline code,
+strong, emphasis and non-navigable links. Everything else degrades to escaped
+literal text. Code spans are extracted before emphasis so that a marker inside a
+code span never becomes formatting, and every fragment is HTML-escaped, which is
+what keeps the command syntax summary intact instead of being consumed as
+markup.
+
+The tracked Markdown remains the single source. No HTML edition is generated at
+build time, versioned or hand-maintained; the document is converted in memory
+each time the guide is opened.
+
+### `GeoCeDGGuideWindow` — dedicated read-only viewer
+
+A non-modal, freely resizable `JDialog` containing a read-only `JEditorPane`
+(`text/html`, `HTMLEditorKit`) inside a `JScrollPane` with vertical scrolling,
+horizontal scrolling only where a wide code block needs it, and a 16 px unit
+increment. Text stays selectable and copyable.
+
+The default size is computed from the available screen area only:
+
+```text
+width  = clamp(820, 480, screen.width  - 80)
+height = clamp(720, 320, screen.height - 80)
+```
+
+so a wide reference table or a long line can never stretch the window; the
+preferred size is applied to the scroll pane rather than derived from the view.
+The window has a minimum size, is centred on the application, is disposed to
+`HIDE_ON_CLOSE`, and one instance is reused, so changing the product language
+and reopening Help reloads the other edition in the same window instead of
+opening a second one.
+
+Styling follows the presentation font through `StyleSheet.addRule` in the
+pattern already used by `StatisticsCalculatorD`: heading scale relative to the
+base size, monospaced `code` and `pre` with a light block background, bordered
+table cells, and paragraph and list spacing. No CSS or Web dependency was added.
+
+### Seam
+
+`Help → GeoCeDG user guide` keeps its action id, catalog binding and labels.
+`userGuideResource(language)` is unchanged (`es` to the Spanish edition, `en` to
+the English one, anything else to English), a new `readUserGuide(language)`
+isolates the read, and the former oversized `JOptionPane` text seam for the guide
+is gone. The `message(...)` seam used by other actions is untouched.
+
+## C7. Defect found while integrating, and corrected
+
+Rendering the real sources exposed a renderer defect: a strong span wrapped
+across two source lines inside a list item left its markers visible, because list
+items were converted one line at a time. The Spanish section 3.1 item is such a
+case. The fix buffers a list item's lines and converts the joined text once,
+exactly as paragraphs were already handled.
+
+The guides were not reflowed to suit the renderer. The defect was in the renderer
+and the renderer was corrected. This is the only defect found.
+
+No substantive guide content was changed in this continuation: no chapter was
+extended, no example rewritten, no terminology altered, no figure added, and the
+BOOK mapping is unchanged.
+
+## C8. Operations manual review
+
+Focal scan of `docs/developer/geocedg_operations_manual.md` for live stale
+wording. One statement was found and minimally corrected: a global
+`PUBLIC REDISTRIBUTION STATUS = BLOCKED PENDING LICENSE/ASSET APPROVAL` block
+presented as the current status, directly above a paragraph that already
+described the correct per-profile behaviour. It now names `INTERNAL`,
+`NC = APPROVED / PACKAGE-READY` and `COMMERCIAL = NOT AUTHORIZED`, and records
+that the build console summary still prints the historical global phrase as the
+separately tracked `TD-P1-PACKAGING-SUMMARY` reporting defect, which this track
+does not resolve. The expressions `--enableLocusV2=true`,
+`--enableExtendedDxf=true`, `P1 pending`, `P0 pending` and any `default OFF`
+claim are absent. No historical section was rewritten.
+
+## C9. Tests
+
+New `PostP1GuideRenderingTest` (17 cases): source lookup per language and
+fallback; renderer independence from language; headings; fenced code; removed
+section comments; structured tables; distinguished and escaped inline code;
+emphasis, strong and lists; the wrapped-span regression; degradation of
+unaudited markup; structural parity between the two rendered editions; the
+intact command syntax block; the read-only `text/html` view; the screen-derived
+default size at large, small and tiny screens; the resizable, non-modal,
+scrollable window with single-window reuse across languages; and the absence of
+any external-browser route.
+
+`PostP1BilingualUserGuideTest` gained one case pinning the profile-aware
+distribution block, and its stale-wording sweep now also covers the operations
+manual (16 cases).
+
+GUI assertions are limited to factory, configuration, size contract and document
+conversion; appearance is left to the author smoke.
+
+## C10. Final JUnit inventory derivation
+
+Performed only after every test of this continuation was stable, using the
+official entry points exclusively.
+
+| Selection | Evidence | Kind |
+|---|---|---|
+| `discovery.shared` | `gradle-test-evidence-producer.ps1 -TestDryRun` | discovery |
+| `discovery.desktop` | `gradle-test-evidence-producer.ps1 -TestDryRun` | discovery |
+| `final.desktop` | `gradle-test-evidence-producer.ps1` executed, `inner_exit_code=0`, zero failures | executed selection |
+
+then `tools/agent/update-verification-junit-inventory.ps1` with those evidence
+files. No count, identity or hash was edited by hand, copied from a previous run,
+or worked around by changing filters or deleting tests.
+
+| Field | Old | New | Delta |
+|---|---|---|---|
+| `modules[desktop].discovered_identity_count` | 1484 | 1517 | +33 |
+| `modules[desktop].discovered_identities_sha256` | `c60d85627fde7707d1de2e8bab1e4ba2afe61d5e7c723c6b6fa337b09e8bba3d` | `7fe1711abf9839237f73d219627d3273ef611788040246c2cef0f683a954f681` | derived |
+| `discovery.desktop.expected_identity_count` | 1484 | 1517 | +33 |
+| `discovery.desktop.expected_identities_sha256` | `c60d8562…` | `7fe1711a…` | derived |
+| `final.desktop.expected_identity_count` | 1478 | 1511 | +33 |
+| `final.desktop.expected_identities_sha256` | `34ed7cbbfcb5c7c02881ef1b59c1d5759d7b3d181cdd58e11ec225581484ecf7` | `db140be1d697ee6bfb49de2795c2afe4e638790d2f0fb8e20c97aaea72ae321e` | derived |
+| `modules[shared]` count and identity | 5761 / `44798ee5…` | unchanged | shared is untouched |
+
+Reason for the delta: 33 = 16 + 17, the sixteen cases of
+`PostP1BilingualUserGuideTest` and the seventeen of `PostP1GuideRenderingTest`.
+Nothing else in the desktop module changed its test identity.
+
+The registry catalog identity was then re-pinned through the official hash
+routine:
+
+```text
+junit_inventory sha256 550d0e22100505947c7708d033bd99b7f3e9b52b9c6a6fc07f0cffe77113c28b
+                    -> 190f2d463a57b7e267328c03f99fd7ce95845047c0d13531249a55d55779cccd
+```
+
+`verification-static-contracts.json` needed no further change: the only pinned
+input this track ever touched, `source/desktop/desktop/build.gradle.kts`, was
+already re-pinned in the previous commit and is untouched here.
+
+### Deterministic re-derivation
+
+A second, fully independent evidence set was produced and the update tool was run
+again. The two inventories are byte-identical except two
+`discovery_evidence_sha256` fields, which by construction hash the run-specific
+evidence JSON, since that file embeds the absolute temporary paths of its own
+execution. Every derived identity — `discovered_identity_count`,
+`discovered_identities_sha256`, `expected_identity_count` and
+`expected_identities_sha256` — is identical across both derivations.
+
+A third discovery run, taken after the temporary diagnostics used during
+development had been removed, reproduced 1517 and
+`7fe1711abf9839237f73d219627d3273ef611788040246c2cef0f683a954f681`, matching the
+tracked inventory exactly.
+
+## C11. `XmlTest.emptyAppTest`
+
+Re-executed with outbound access available: `org.geogebra.io.XmlTest` is 9 tests,
+0 failures, 0 errors, `emptyAppTest` included. The previous failure was external
+only, because the test validates XML against the remote schema
+`https://www.geogebra.org/apps/xsd/ggb.xsd`. The test was not disabled, the XSD
+was not vendored, and no product code was changed for it.
+
+## C12. Verification executed in the continuation
+
+| Run | Command | Exit | Verdict |
+|---|---|---|---|
+| Discovery preflight | `gradle-test-evidence-producer.ps1 -SelectionId discovery.desktop -TestDryRun` | 0 | `COMPLETED` |
+| Focused rendering tests | `:desktop:desktop:test --tests …PostP1GuideRenderingTest` | 0 | 17/17 |
+| Focused guide tests | `:desktop:desktop:test --tests …PostP1BilingualUserGuideTest` | 0 | 16/16 |
+| Whole desktop module | `:desktop:desktop:test` | 0 | 1517 tests, 0 failures, 0 errors, 1 skipped |
+| `org.geogebra.io.XmlTest` | `:desktop:desktop:test --tests org.geogebra.io.XmlTest` | 0 | 9/9 |
+| Checkstyle | `:desktop:desktop:checkstyleMain :desktop:desktop:checkstyleTest` | 0 | clean |
+| STATIC | `.\tools\agent\verify.ps1 -Profile STATIC` | 0 | `ACCEPTED / COMPLETE`, 1 diagnostic |
+| INFRA_UNIT | `.\tools\agent\verify.ps1 -Profile INFRA_UNIT` | 0 | `ACCEPTED / COMPLETE`, 0 diagnostics |
+| `git diff --check` | — | 0 | clean |
+
+The single STATIC diagnostic remains the standing
+`VERIFICATION_INFRASTRUCTURE_RECOVERY_PROTOCOL_V1` governance note, unrelated to
+this track and diagnostic-class.
+
+`FINAL` is executed on the frozen candidate after this report, because the
+canonical inventory identity changed. Its typed report and execution identity are
+preserved with the run and reported to the author separately, so that no commit
+is made after the freeze and every final evidence item binds the same commit and
+tree.
+
+### Pre-existing and unrelated: `spotbugsMain`
+
+`:desktop:desktop:spotbugsMain` fails with SpotBugs exit code 3. It fails
+identically on a clean worktree of `origin/main` at `0f578fd9b`, it lists the new
+classes only among analysed files and not among warnings, and SpotBugs is not
+referenced by the verification registry or by `tools/agent/verify.ps1`. It is
+pre-existing, outside this track's scope, and not caused by it.
+
+## C13. Interactive help smoke
+
+Performed headed, driving the real `help.user-guide` action through a real
+`AppGeoCeDG` for each product language, with screen captures.
+
+| Check | English | Spanish |
+|---|---|---|
+| Window title | `GeoCeDG user guide` | `Guía de usuario de GeoCeDG` |
+| Correct edition shown | yes | yes |
+| Default size | 820 x 720 | 820 x 720 |
+| Resizable | true | true |
+| Modal | false | false |
+| Vertical scrolling | yes, range 19442, viewport 678 | yes, range 20200, viewport 678 |
+| Headings rendered | yes | yes |
+| Fenced code legible and intact | yes, monospaced shaded blocks with angle brackets preserved | yes |
+| Tables legible | yes, bordered cells with wrapping | yes |
+| Bold, emphasis and inline code | yes | yes |
+| Resize narrower to 560 px then wider to 1100 px | text re-wraps; only a wide code block scrolls horizontally | same |
+| Heading hashes, fences, pipe tables or section comments shown as source | no | no |
+
+Text selection and copying follow from the read-only `JEditorPane`, which is also
+pinned by test. The screen captures were kept outside the repository; no figure
+or binary was added to the tree.
+
+```text
+INTERACTIVE HELP SMOKE = PASS
+```
+
+This is a technical smoke by the agent. It does not substitute for, and does not
+pre-empt, the author's own review.
+
+## C14. Files changed in the continuation
+
+Added:
+
+```text
+source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGGuideRenderer.java
+source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGGuideWindow.java
+source/desktop/desktop/src/test/java/org/geocedg/desktop/PostP1GuideRenderingTest.java
+```
+
+Modified:
+
+```text
+docs/developer/geocedg_operations_manual.md
+docs/validation/post_p1_doc_help_audit_matrix.md
+docs/validation/post_p1_doc_help_candidate_report.md
+geocedg/specs/operations/verification-junit-inventory.json
+geocedg/specs/operations/verification-registry.json
+source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGActionRegistry.java
+source/desktop/desktop/src/test/java/org/geocedg/desktop/PostP1BilingualUserGuideTest.java
+```
+
+Deleted: none. The two guide sources, `build.gradle.kts`,
+`gradle/libs.versions.toml`, `verification-static-contracts.json`, the
+application profile, the packaging inputs and every kernel path are untouched.
+
+Temporary diagnostics used during development, an HTML dump and the headed smoke
+harness, were removed before the freeze and are not part of the candidate.
+
+## C15. Out of scope, confirmed untouched
+
+Kernel, Locus V2 and Spline V2 semantics, `Length` semantics, intersections,
+persistence, identity, DXF algorithms, packaging and distribution policy,
+`PROFILE NC`, `PROFILE COMMERCIAL`, version `1.0.0`, G9B, G9C, G9U2, G10, G12 and
+the book manuscript. `TD-P1-SEMANTIC-LENGTH-INTERSECTION`,
+`TD-P1-PACKAGING-SUMMARY`, `TD-VERIFY-RECEIPT-RECOVERY` and
+`TD-G9X1-HISTORICAL-PIN` are not resolved here; the packaging-summary defect is
+named in the operations manual as an open item, which records it without fixing
+it.
+
+`mpradovelasco/geocedg_book` was not modified. It was read only in the previous
+round for the informative mapping. The `Suggested BOOK-P1 source mapping` is
+unchanged, because no factual guide correction required it, and both invariants
+stand:
+
+```text
+user-guide statement != book claim authority
+BOOK-P1 = NOT AUTHORIZED
+```
+
+## C16. Final state of the continuation
+
+```text
+POST-P1-DOC-HELP          = IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW
+VERIFICATION INVENTORY    = CURRENT / DERIVED CANONICALLY
+BILINGUAL GUIDE RESOURCES = PASS
+HELP MARKDOWN RENDERING   = IMPLEMENTED
+HELP WINDOW RESIZABILITY  = IMPLEMENTED
+INTERACTIVE HELP SMOKE    = PASS
+selfApproved   = false
+authorApproved = false
+passClaimed    = false
+```
+
+The branch is not published and nothing is promoted to `main`. Promotion, any
+tag and any release remain separate explicit author decisions.

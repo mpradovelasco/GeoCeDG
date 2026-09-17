@@ -109,3 +109,82 @@ was carried into the new editions.
 
 Command identifiers, object IDs, file extensions and code literals are never
 translated.
+
+## 5. Corrective continuation — audited Markdown subset
+
+The author review of the integrated help found two usability defects: the
+Markdown was shown essentially as source, and the window was too wide and could
+not be resized. The corrective continuation keeps the tracked Markdown as the
+single source and renders it, so the subset the two guides actually use had to
+be audited before any renderer was written.
+
+Counts below are the measured occurrences in the two tracked sources at the
+candidate. They are the contract boundary of `GeoCeDGGuideRenderer`: constructs
+outside this table are deliberately unimplemented.
+
+| Construct | EN | ES | Rendered as | Note |
+|---|---|---|---|---|
+| ATX heading level 1 | 1 | 1 | `<h1>` | the document title, reused as the window title |
+| ATX heading level 2 | 16 | 16 | `<h2>` | the sixteen guide sections |
+| ATX heading level 3 | 80 | 80 | `<h3>` | subsections |
+| paragraph | 573 lines | 622 lines | `<p>` | consecutive lines join into one logical text |
+| fenced code block | 20 | 20 | `<pre>` | fences ` ``` ` and ` ```text `; content escaped |
+| unordered list item | 60 | 60 | `<ul><li>` | `- ` only; no nesting in either source |
+| ordered list item | 4 | 4 | `<ol><li>` | `1. ` only; no nesting in either source |
+| pipe table row | 100 | 100 | `<table>`/`<th>`/`<td>` | delimiter row is structure, never a visible row |
+| horizontal rule | 17 | 17 | `<hr>` | `---` on its own line |
+| HTML comment | 17 | 17 | *removed* | the stable `geocedg-guide-section` identifiers |
+| inline code | 187 | 189 | `<code>` | extracted before emphasis so markers inside code stay literal |
+| strong | 153 | 147 | `<b>` | must close on the same logical block |
+| emphasis | 14 | 14 | `<i>` | single `*`, applied after strong |
+| link | 0 | 0 | `<a>` | none in either source; rendered non-navigable if one appears |
+| image | 0 | 0 | — | out of contract |
+| block quote | 0 | 0 | — | out of contract |
+| setext heading | 0 | 0 | — | out of contract |
+| nested list | 0 | 0 | — | out of contract |
+
+Deliberate degradation: unrecognized markup and unbalanced inline markers stay
+escaped literal text rather than producing broken layout.
+
+### 5.1 Defect found and fixed during integration
+
+Rendering the real sources exposed one renderer defect. A list item whose
+`**strong**` span is wrapped across two source lines left its markers visible,
+because list items were converted one source line at a time. The Spanish §3.1
+item is such a case:
+
+```text
+- **Protocolo de construcción** (**Vista → Protocolo de construcción**) muestra
+  la construcción como una secuencia ordenada, que es la lectura directa de su
+  estructura de dependencias. **Vista → Mostrar barra de navegación de la
+  construcción** activa o desactiva el control por pasos asociado a la vista
+  Gráfica; no crea objetos ni genera un paso de deshacer.
+```
+
+The fix buffers a list item's lines and converts the joined text once, the same
+way paragraphs were already handled. **The guide sources were not reflowed:**
+the defect was in the renderer, so the renderer was corrected. A regression case
+pins this, and a structural-parity case asserts that both editions render the
+same number of `<h1>`, `<h2>`, `<h3>`, `<table>`, `<pre>`, `<li>` and `<hr>`
+elements.
+
+### 5.2 Renderer and viewer contract rows
+
+| Guide section | claim / workflow | source authority | current status | EN wording | ES wording | test or code evidence | known limitation | book relevance |
+|---|---|---|---|---|---|---|---|---|
+| *(all)* | the tracked `.md` stays the single authored source; the application renders it | this track; `GeoCeDGGuideRenderer` | implemented | — | — | `PostP1GuideRenderingTest` | the renderer implements only the audited subset above | AP-H |
+| *(all)* | section identifiers are structure and never reach the reader | this track | implemented | — | — | `sectionIdentifierCommentsAreNeverVisible` | — | AP-H |
+| `getting-started` | the guide opens in a non-modal, freely resizable reading window | this track; `GeoCeDGGuideWindow` | implemented | Help → GeoCeDG user guide | Ayuda → Guía de usuario de GeoCeDG | `theWindowIsResizableNonModalAndScrollable` | the default size follows the screen, never the content | II-03 |
+
+### 5.3 Operations manual correction
+
+The focal stale-wording review of `docs/developer/geocedg_operations_manual.md`
+found exactly one live statement contradicting the P1 authorities: a global
+`PUBLIC REDISTRIBUTION STATUS = BLOCKED PENDING LICENSE/ASSET APPROVAL` block
+presented as the current distribution status, immediately above a paragraph that
+already described the correct per-profile behaviour. It is now a profile-aware
+block naming `INTERNAL`, `NC` (`APPROVED / PACKAGE-READY`) and `COMMERCIAL`
+(`NOT AUTHORIZED`), and it states that the build console summary still prints the
+historical global phrase as the separately tracked `TD-P1-PACKAGING-SUMMARY`
+reporting defect. No other live stale wording was found; historical sections
+were not rewritten.

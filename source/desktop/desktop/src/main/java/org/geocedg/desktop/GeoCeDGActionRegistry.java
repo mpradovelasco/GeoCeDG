@@ -74,6 +74,8 @@ public final class GeoCeDGActionRegistry {
 	private final AppD app;
 	private final Map<String, Action> actions = new LinkedHashMap<>();
 	private final GeoCeDGNavigationShortcutPreferences navigationShortcuts;
+	/** One reusable guide window; reopening after a language change reloads it. */
+	private GeoCeDGGuideWindow guideWindow;
 
 	/** @param app GeoCeDG application, not Classic */
 	public GeoCeDGActionRegistry(AppD app) {
@@ -541,15 +543,34 @@ public final class GeoCeDGActionRegistry {
 				+ ("es".equals(language) ? "es" : "en") + ".md";
 	}
 
-	private void showUserGuide() {
-		String resource = userGuideResource(app.getLocale().getLanguage());
+	/**
+	 * Reads the packaged edition selected by the active product language.
+	 *
+	 * @param language active product language
+	 * @return the tracked Markdown source of that edition
+	 * @throws IOException if the guide is not packaged or cannot be read
+	 */
+	static String readUserGuide(String language) throws IOException {
+		String resource = userGuideResource(language);
 		try (InputStream stream =
 				GeoCeDGActionRegistry.class.getResourceAsStream(resource)) {
 			if (stream == null) {
 				throw new IOException("Packaged GeoCeDG guide is missing: " + resource);
 			}
-			document(text("Workspace.Guide") + "\n\n"
-					+ new String(stream.readAllBytes(), StandardCharsets.UTF_8));
+			return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+		}
+	}
+
+	private void showUserGuide() {
+		try {
+			String markdown = readUserGuide(app.getLocale().getLanguage());
+			if (guideWindow == null) {
+				guideWindow = new GeoCeDGGuideWindow(app.getMainComponent(),
+						app.getPlainFont());
+			}
+			String title = GeoCeDGGuideRenderer.title(markdown);
+			guideWindow.show(GeoCeDGGuideRenderer.toHtml(markdown),
+					title.isEmpty() ? text("geocedg.help.UserGuide.name") : title);
 		} catch (IOException exception) {
 			message(text("Action.Unavailable.Failed") + "\n" + exception.getMessage());
 		}
@@ -574,11 +595,6 @@ public final class GeoCeDGActionRegistry {
 
 	private void message(String text) {
 		showReadOnlyText(text, 8, 54);
-	}
-
-	/** Same read-only seam as {@link #message}, sized for a long document. */
-	private void document(String text) {
-		showReadOnlyText(text, 30, 100);
 	}
 
 	private void showReadOnlyText(String text, int rows, int columns) {

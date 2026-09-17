@@ -125,12 +125,26 @@ class PostP1BilingualUserGuideTest {
 	void noKnownStaleWordingSurvivesInAnyLiveUserDocument() throws IOException {
 		for (String path : List.of("docs/user/" + EN, "docs/user/" + ES,
 				"docs/user/geocedg_user_guide.md",
-				"docs/user/geocedg_construction_quick_guide.md")) {
+				"docs/user/geocedg_construction_quick_guide.md",
+				"docs/developer/geocedg_operations_manual.md")) {
 			String document = read(path);
 			for (String stale : STALE) {
 				assertFalse(document.contains(stale), path + " still contains " + stale);
 			}
 		}
+	}
+
+	@Test
+	void theOperationsManualStatesTheProfileAwareDistributionCondition()
+			throws IOException {
+		String manual = read("docs/developer/geocedg_operations_manual.md");
+		// A single global "blocked" sentence is no longer the current condition.
+		assertFalse(manual.contains("PUBLIC REDISTRIBUTION STATUS = BLOCKED"));
+		assertTrue(manual.contains("PROFILE NC                   = APPROVED"
+				+ " / PACKAGE-READY"));
+		assertTrue(manual.contains("PROFILE COMMERCIAL           = NOT AUTHORIZED"));
+		// The remaining console-summary defect is named, not silently fixed here.
+		assertTrue(manual.contains("TD-P1-PACKAGING-SUMMARY"));
 	}
 
 	@Test

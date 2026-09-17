@@ -313,9 +313,18 @@ self-contained application with its own Java 25 runtime.
 ### Distribution status
 
 ```text
-PACKAGING TECHNICAL STATUS = PASS
-PUBLIC REDISTRIBUTION STATUS = BLOCKED PENDING LICENSE/ASSET APPROVAL
+PACKAGING TECHNICAL STATUS   = PASS
+PROFILE INTERNAL             = INTERNAL EVALUATION — NOT FOR REDISTRIBUTION
+PROFILE NC                   = APPROVED / PACKAGE-READY
+PROFILE COMMERCIAL           = NOT AUTHORIZED
 ```
+
+The distribution condition belongs to the requested profile and to the notice
+packaged with the copy, not to a single global sentence. The build console
+summary still prints one historical global phrase for every profile; that
+reporting defect is tracked as `TD-P1-PACKAGING-SUMMARY` and does not change
+the composition, legal bundle, manifest, installers or PROFILE NC identity of a
+correct NC package.
 
 An app-image, ZIP, MSI or EXE built with the repository default profile is
 `INTERNAL EVALUATION — NOT FOR REDISTRIBUTION`. A build requested with
