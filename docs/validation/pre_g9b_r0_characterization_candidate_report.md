@@ -768,7 +768,9 @@ change as a verification-infrastructure change requiring FULL.
 | # | Purpose | Bound identity | Result |
 |---|---|---|---|
 | 1 | pre-candidate smoke, **not acceptance evidence** | `candidate_commit 0d13434cf…`, tree `922034fd…` — the *entry* commit, because the verifier binds `HEAD` and the worktree was still dirty | run `verification-f764b18d94174b32a8cc445ba6cb122c`; exit 0; `ACCEPTED / COMPLETE`; 3/3 required acceptance checks completed; 3 diagnostics clear, 1 finding, 1 unavailable |
-| 2 | **acceptance evidence for this candidate** | `candidate_commit a13fdd69069fa525eb09f19886231024710a5f13`, tree `cd69789c28f27505cb6fd28114f82c987a910f84`, clean worktree and index | run `verification-00d1902e02f94e18a1784814dbdfed55`; exit 0; `ACCEPTED / COMPLETE`; identities in §8.4 |
+| 2 | acceptance evidence for the **original** candidate | `candidate_commit a13fdd69069fa525eb09f19886231024710a5f13`, tree `cd69789c28f27505cb6fd28114f82c987a910f84`, clean worktree and index | run `verification-00d1902e02f94e18a1784814dbdfed55`; exit 0; `ACCEPTED / COMPLETE` |
+| 3 | evidence-record commit, published candidate | `candidate_commit 32c591a92bd6ec13df3d45c3e1dbd8a67cb9f873`, tree `62b858fae70752c537f5d866040935dcb540b66d` | run `verification-c8c8b8ac47c54d0888998e198607f346`; exit 0; `ACCEPTED / COMPLETE` |
+| 4 | **acceptance evidence for the author-amended candidate** | `candidate_commit 4161df2d4172175a7d51c12d799dff05fb443073`, tree `10c4b98d6253c8344ebef686e2435c2f097c36fe`, clean worktree and index | run `verification-8098bf52b4eb44a1abf488f5e85c3d48`; exit 0; `ACCEPTED / COMPLETE`; identities in §8.4 |
 
 Both runs used
 `tools/agent/verify.ps1 -Profile STATIC -LogDirectory <new external root>` under
@@ -813,16 +815,18 @@ resolved by hand against the working tree.
 
 ### 8.4 Candidate acceptance run
 
+The closeout acceptance evidence is bound to the **author-amended** candidate.
+
 ```text
-CANDIDATE COMMIT   = a13fdd69069fa525eb09f19886231024710a5f13
-CANDIDATE TREE     = cd69789c28f27505cb6fd28114f82c987a910f84
+CANDIDATE COMMIT   = 4161df2d4172175a7d51c12d799dff05fb443073
+CANDIDATE TREE     = 10c4b98d6253c8344ebef686e2435c2f097c36fe
 PROFILE            = STATIC
 COMMAND            = tools/agent/verify.ps1 -Profile STATIC -LogDirectory <new external root>
-RUN                = verification-00d1902e02f94e18a1784814dbdfed55
+RUN                = verification-8098bf52b4eb44a1abf488f5e85c3d48
 RUN STATE          = COMPLETED
 EXIT CODE          = 0
 EXECUTION PLAN HASH= 7d52b28a732b35635009a4e515095232f569d308ce34964db4597454bfa8d5f0
-RESULT HASH        = d68b830e8983f8ebe50fb1d2a33184f25fb79b1648cd903019ebc76749309b9b
+RESULT HASH        = 5a11d7e0d3687940af83178b6ee884975b787108a90eeab2caa95cd1fc749b4a
 ACCEPTANCE VERDICT = ACCEPTED
 COVERAGE VERDICT   = COMPLETE
 ACCEPTANCE CHECKS  = 3 required, 3 completed, 0 untrusted, 0 not run
@@ -830,15 +834,35 @@ DIAGNOSTICS        = 3 clear, 1 finding, 1 unavailable
 RECEIPT            = NOT APPLICABLE — STATIC is not FINAL, so no receipt is
                      contractually expected; none was fabricated
                      (TD-VERIFY-RECEIPT-RECOVERY)
+ESCALATION         = none requested; the amended changed-file set stayed inside
+                     DOCUMENTATION_STATUS_ONLY
 ```
 
-The worktree and index were clean when this run executed, and the verifier bound
-the exact candidate commit and tree above. The only change made after it is this
-subsection and the run-identity lines in §8.1, recorded in a separate
-evidence commit — the ordinary pattern for a status-only evidence record. The
-acceptance evidence therefore belongs to `a13fdd69…` / `cd69789c…`, and that
-identity is the one the author reviews; no evidence is reattributed to the later
-commit.
+Earlier candidate, retained for traceability:
+
+```text
+ORIGINAL CANDIDATE = a13fdd69069fa525eb09f19886231024710a5f13
+                     tree cd69789c28f27505cb6fd28114f82c987a910f84
+                     run verification-00d1902e02f94e18a1784814dbdfed55
+                     ACCEPTED / COMPLETE
+PUBLISHED CANDIDATE= 32c591a92bd6ec13df3d45c3e1dbd8a67cb9f873
+                     tree 62b858fae70752c537f5d866040935dcb540b66d
+                     run verification-c8c8b8ac47c54d0888998e198607f346
+                     ACCEPTED / COMPLETE
+```
+
+The author's amendment changed exactly five artifacts — the staged design, this
+report, the disposition matrix, the machine-readable disposition and the living
+roadmap. No product source, normative specification, ADR or prompt file was
+touched, so the frozen `DOCUMENTATION_STATUS_ONLY` class held and no
+`VERIFICATION_ESCALATION_REQUEST` was required.
+
+The worktree and index were clean when each run executed, and the verifier bound
+the exact candidate commit and tree in every case. The only change made after the
+amended run is this subsection and the run-identity lines in §8.1, recorded in a
+separate evidence commit — the ordinary pattern for a status-only evidence
+record. No evidence is reattributed between commits; each run keeps the identity
+it was bound to.
 
 Log root and preserved raw evidence live outside the repository, under the
 session's external log directory, consistent with `artifacts/` not being

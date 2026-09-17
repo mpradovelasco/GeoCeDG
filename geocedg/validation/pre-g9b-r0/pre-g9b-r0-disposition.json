@@ -22,13 +22,13 @@
     "profile": "STATIC",
     "command": "tools/agent/verify.ps1 -Profile STATIC -LogDirectory <new external root>",
     "candidateRun": {
-      "runId": "verification-00d1902e02f94e18a1784814dbdfed55",
+      "runId": "verification-8098bf52b4eb44a1abf488f5e85c3d48",
       "runState": "COMPLETED",
       "exitCode": 0,
-      "candidateCommit": "a13fdd69069fa525eb09f19886231024710a5f13",
-      "candidateTree": "cd69789c28f27505cb6fd28114f82c987a910f84",
+      "candidateCommit": "4161df2d4172175a7d51c12d799dff05fb443073",
+      "candidateTree": "10c4b98d6253c8344ebef686e2435c2f097c36fe",
       "executionPlanHash": "7d52b28a732b35635009a4e515095232f569d308ce34964db4597454bfa8d5f0",
-      "resultHash": "d68b830e8983f8ebe50fb1d2a33184f25fb79b1648cd903019ebc76749309b9b",
+      "resultHash": "5a11d7e0d3687940af83178b6ee884975b787108a90eeab2caa95cd1fc749b4a",
       "acceptanceVerdict": "ACCEPTED",
       "coverageVerdict": "COMPLETE",
       "requiredCheckIds": [
@@ -44,7 +44,8 @@
         "findings": 1,
         "unavailable": 1
       },
-      "diagnosticFindingNote": "The single finding is diagnostic.governance, which emits DIAGNOSTIC_FINDING unconditionally with a constant cause; diagnostic.historical-consistency emits DIAGNOSTIC_UNAVAILABLE unconditionally. Neither says anything about this candidate."
+      "diagnosticFindingNote": "The single finding is diagnostic.governance, which emits DIAGNOSTIC_FINDING unconditionally with a constant cause; diagnostic.historical-consistency emits DIAGNOSTIC_UNAVAILABLE unconditionally. Neither says anything about this candidate.",
+      "role": "acceptance evidence for the author-amended closeout candidate"
     },
     "preCandidateSmokeRun": {
       "runId": "verification-f764b18d94174b32a8cc445ba6cb122c",
@@ -60,7 +61,37 @@
       "relatedDebt": "TD-VERIFY-RECEIPT-RECOVERY"
     },
     "gitDiffCheck": "clean",
-    "escalationRequested": false
+    "escalationRequested": false,
+    "priorRuns": [
+      {
+        "runId": "verification-00d1902e02f94e18a1784814dbdfed55",
+        "candidateCommit": "a13fdd69069fa525eb09f19886231024710a5f13",
+        "candidateTree": "cd69789c28f27505cb6fd28114f82c987a910f84",
+        "acceptanceVerdict": "ACCEPTED",
+        "coverageVerdict": "COMPLETE",
+        "role": "original R0 candidate, superseded by the author amendment"
+      },
+      {
+        "runId": "verification-c8c8b8ac47c54d0888998e198607f346",
+        "candidateCommit": "32c591a92bd6ec13df3d45c3e1dbd8a67cb9f873",
+        "candidateTree": "62b858fae70752c537f5d866040935dcb540b66d",
+        "acceptanceVerdict": "ACCEPTED",
+        "coverageVerdict": "COMPLETE",
+        "role": "evidence-record commit; the published candidate before the amendment"
+      }
+    ],
+    "amendedChangedFileSet": [
+      "docs/architecture/pre_g9b_r_final_stabilization_and_authoring_readiness_design.md",
+      "docs/roadmap/geocedg_roadmap.md",
+      "docs/validation/pre_g9b_r0_characterization_candidate_report.md",
+      "docs/validation/pre_g9b_r0_technical_debt_disposition_matrix.md",
+      "geocedg/validation/pre-g9b-r0/pre-g9b-r0-disposition.json"
+    ],
+    "verificationClassBoundaryHeld": true,
+    "roadmapLineEndingsPreserved": {
+      "crlfLinesBefore": 2912,
+      "crlfLinesAfter": 2912
+    }
   },
   "impactDeclarations": {
     "productPhaseEffect": "NONE",
