@@ -2,11 +2,9 @@
   "permissions": {
     "defaultMode": "plan",
     "deny": [
-      "Bash(git push *)",
       "Bash(git reset --hard *)",
       "Bash(git clean *)",
       "Bash(git rebase *)",
-      "PowerShell(git push *)",
       "PowerShell(git reset --hard *)",
       "PowerShell(git clean *)",
       "PowerShell(git rebase *)",
