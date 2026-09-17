@@ -1,11 +1,14 @@
 # PRE-G9B-P1 validation matrix
 
 - Phase: `PRE-G9B-P1` — public surface promotion, NC packaging readiness
-- Status: **MATRIX — PRE-IMPLEMENTATION**
+- Status: **MATRIX — SATISFIED BY THE AUTHOR-APPROVED CANDIDATE**
+  `cac345ae2ba29bb983613f7fb66461b4d063c87b`, tree
+  `71153c3b95b974225c16e52fd177501ec7537663`; `PRE-G9B-P1 = PASS — AUTHOR
+  APPROVED`, `AUTHOR SMOKE = PASS`
 - Entry gates: `PRE-G9B-D1 = PASS — AUTHOR APPROVED`, `PROFILE NC = APPROVED`,
   `PRE-G9B-P0 = PASS — AUTHOR APPROVED`, canonical version `1.0.0`,
   package still `internal-evaluation`
-- `selfApproved=false`, `authorApproved=false`, `passClaimed=false`
+- `selfApproved=false`, `authorApproved=true`, `passClaimed=true`
 
 P1 changes **policy and distribution packaging only**. It changes no geometric
 semantics, no serialization, no version, and nothing closed by P0.

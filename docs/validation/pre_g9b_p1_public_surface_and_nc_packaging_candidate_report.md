@@ -7,9 +7,113 @@
 - Required predecessors: `PRE-G9B-D1 = PASS — AUTHOR APPROVED`,
   `PROFILE NC = APPROVED`, `PRE-G9B-P0 = PASS — AUTHOR APPROVED`.
 - Branch: `feature/pre-g9b-p1-public-surface-and-nc-packaging`.
-- Status: **IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW**.
-- `selfApproved=false`, `authorApproved=false`, `passClaimed=false`.
+- Status: **PASS — AUTHOR APPROVED**.
+- `selfApproved=false`, `authorApproved=true`, `passClaimed=true`.
 - Validation matrix: [pre_g9b_p1_validation_matrix.md](pre_g9b_p1_validation_matrix.md).
+
+## Author closeout
+
+The author executed the PRE-G9B-P1 manual smoke on the exact technical candidate
+below and reported **PASS**. The candidate was not modified to record this
+closeout: the approved object is the tree that passed FINAL and the smoke, and
+the closeout is a separate later governance-only commit.
+
+```text
+validated candidate = cac345ae2ba29bb983613f7fb66461b4d063c87b
+validated tree      = 71153c3b95b974225c16e52fd177501ec7537663
+AUTHOR SMOKE        = PASS
+PRE-G9B-P1          = PASS — AUTHOR APPROVED
+selfApproved        = false
+```
+
+Automated evidence bound to that exact candidate and tree:
+
+| Gate | Receipt | Result |
+|---|---|---|
+| `PACKAGING` (NC artifacts) | `verification-938fbfcbbd514c58b12caca2653d10ac` | `ACCEPTED / COMPLETE`, 3/3, 38/38 product subcontracts |
+| `PACKAGING` (INTERNAL artifacts) | `verification-9e2f073dcb8847729255c5dc634ae553` | `ACCEPTED / COMPLETE`, 3/3, 38/38 product subcontracts |
+| `PHASE PRE-G9B-P1` | `verification-1f875e6221f34f0f8b6026ae5c093359` | `ACCEPTED / COMPLETE`, 5/5, 0 diagnostics |
+| `FINAL` | `verification-13530e3b53634771b0796cabb9910c07` | `ACCEPTED / COMPLETE`, 40/40 |
+
+What the closeout records as approved: version `1.0.0`; LocusV2/SplineV2 default
+**ON** in GeoCeDG only; G9X1 extended DXF default **ON** under its own
+independent gate; both overrides retained bidirectionally; Classic containment
+unchanged; `.cedg` native and `.ggb` compatibility input; the reconciled
+profile-neutral NC legal bundle; the audited user guide; `PROFILE NC = APPROVED /
+PACKAGE-READY`; `PROFILE COMMERCIAL = NOT AUTHORIZED`; and no exact DXF `SPLINE`.
+
+### Observations recorded during the smoke
+
+Two findings were observed during the author smoke. Neither blocks the P1
+approval, and neither is resolved by this closeout.
+
+#### P1-D1 — semantic metric endpoint provenance from materialized intersections
+
+`Length(S,P,Q)` can be undefined (`?`) when `S` is a `SplineV2` and one of the
+endpoints `P`/`Q` is a point materialized from an intersection between that
+`SplineV2` and another `SplineV2`. The characterization to date indicates this is
+**not** a numerical error of the spline. The current endpoint-resolution contract
+admits semantic points whose source is `S`, and unique occurrences of `SplineV2`
+constructor points; a point materialized through `Intersect[R,"token"]` carries
+intersection provenance and is not consumed by that metric resolution.
+
+The spline-pair intersection evidence already retains, per side, locus identity,
+semantic revision, branch, component, semantic parameter and token/currentness
+evidence. Any future solution must consume explicit semantic provenance and never
+coordinates or proximity. A later study must at least cover unambiguous selection
+of the side corresponding to `S`, currentness, token retention/reactivation,
+copy/reopen, self-intersections, source A/B, ambiguity, redefine, persistence,
+and focal tests plus regressions.
+
+Disposition: **kernel semantic debt**, `OBSERVED — REQUIRES
+CHARACTERIZATION/DESIGN`. Deliberately not turned into a quick fix inside P1.
+
+#### P1-D2 — stale public-redistribution console summary
+
+A correctly generated NC package still ends its console summary with:
+
+```text
+NON-COMMERCIAL DISTRIBUTION — PROFILE NC
+PACKAGING TECHNICAL BUILD = PASS
+PUBLIC REDISTRIBUTION = BLOCKED PENDING LICENSE/ASSET APPROVAL
+```
+
+The third line is residual pre-D1/P1 wording and contradicts the current PROFILE
+NC state. The composition, legal bundle, manifest, installers and PROFILE NC
+identity are all correct; the defect is confined to console reporting. A future
+correction should derive the summary from the distribution profile instead of
+keeping a global historical sentence, for example:
+
+```text
+DISTRIBUTION PROFILE = NC
+REDISTRIBUTABLE = true
+COMMERCIAL DISTRIBUTION = NOT AUTHORIZED
+PACKAGING TECHNICAL BUILD = PASS
+```
+
+and, for INTERNAL, `DISTRIBUTION PROFILE = INTERNAL` with
+`REDISTRIBUTABLE = false`. The builder was deliberately **not** changed now:
+editing it would invalidate the candidate that already passed FINAL and the
+author smoke.
+
+Disposition: **external tooling/reporting debt**, `OBSERVED — SMALL BOUNDED
+MAINTENANCE`.
+
+### Pre-existing operational debts, not attributable to P1
+
+- **Verification receipt/recovery protocol.** `diagnostic.governance` reflects the
+  already-documented operational debt around the recovery/closeout protocol. The
+  valid FINAL produces reproducible evidence, but the current flow does not
+  always emit a separate artifact conforming to `verification-receipt.schema.json`.
+  No receipt or hash may be fabricated. This does not block P1, is not a
+  geometric or product defect, and needs a later bounded verification-infrastructure
+  task.
+- **Historical G9X1 hash pin.** `tools/agent/verify-g9x1-extended-dxf.ps1` retains a
+  historical hash whose authority later evolved legitimately in `PRE-G9B-S1-R1`.
+  The historical hash must not simply be replaced by the current one: a future
+  reconciliation has to distinguish the historical snapshot, the living successor
+  authority, and their supersession or frozen commit/blob relationship. This
+  reopens nothing: `G9X1 = PASS — AUTHOR APPROVED` stands.
 
 P1 changes **policy and distribution packaging only**. No geometric semantics,
 no serialization, no identity, no version, and nothing closed by P0.
@@ -321,21 +425,25 @@ and the nonpublic G8C1 kernel and are still correct.
   test reproduced it within P1 scope.
 - MSI/EXE byte reproducibility is not claimed. Only the app-image and the
   normalized ZIP are timestamp-normalized.
-- No interactive GUI smoke was run for P1 or for this continuation; the author's
-  manual smoke remains pending.
+- The author's manual smoke is **PASS**; no agent-run interactive GUI smoke was
+  performed, and none is claimed.
+- P1-D1, P1-D2 and the two pre-existing verification debts above remain open.
 
 ## Governance disposition
 
 ```text
-PRE-G9B-P1 = IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW
+PRE-G9B-P1 = PASS — AUTHOR APPROVED
+AUTHOR SMOKE = PASS
 GeoCeDG version = 1.0.0
 PROFILE NC = APPROVED / PACKAGE-READY
 PROFILE COMMERCIAL = NOT AUTHORIZED
 selfApproved=false
-authorApproved=false
-passClaimed=false
+authorApproved=true
+passClaimed=true
 ```
 
 No GitHub release, tag, binary publication or third-party contact was made. D1
 remains closed for PROFILE NC; G9B, G9C, G9U2, further G12 and productive G10
-remain untouched and unauthorized.
+remain untouched and unauthorized. Approving P1 authorizes no new productive
+implementation: the next action is the post-P1 roadmap/technical-debt
+disposition recorded in the [roadmap](../roadmap/geocedg_roadmap.md).

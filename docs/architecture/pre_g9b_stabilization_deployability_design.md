@@ -50,7 +50,7 @@ The canonical top-level identifiers are:
 | `PRE-G9B-S4` | Independent application presentation sizing | `PASS — AUTHOR APPROVED`; integrates R1/R2; `selfApproved=false` |
 | `PRE-G9B-D1` | Licensing, assets and deployability | `DESIGNED — RESEARCH/IMPLEMENTATION NOT YET AUTHORIZED` |
 | `PRE-G9B-P0` | Presentation themes, Preferences consolidation and the `1.0.0` version baseline | `PASS — AUTHOR APPROVED` |
-| `PRE-G9B-P1` | Public surface, G9X1 default and PROFILE NC packaging readiness | `IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW` |
+| `PRE-G9B-P1` | Public surface, G9X1 default and PROFILE NC packaging readiness | `PASS — AUTHOR APPROVED`; author smoke PASS on `cac345ae2`, tree `71153c3b9`; publication still unauthorized |
 
 The `S`, `D` and `P` families distinguish stabilization, deployability and
 promotion without occupying a G9 semantic identifier such as G9U2. S1 owns the
@@ -509,7 +509,7 @@ PRE_G9B_D1_RESEARCH_OR_IMPLEMENTATION_AUTHORIZED = false
 PRE_G9B_P0_IMPLEMENTATION_AUTHORIZED = true
 PRE_G9B_P0_AUTHOR_APPROVED = true
 PRE_G9B_P1_IMPLEMENTATION_AUTHORIZED = true
-PRE_G9B_P1_AUTHOR_APPROVED = false
+PRE_G9B_P1_AUTHOR_APPROVED = true
 PRE_G9B_P1_PUBLICATION_AUTHORIZED = false
 G9B_AUTHORIZED = false
 G9C_AUTHORIZED = false
