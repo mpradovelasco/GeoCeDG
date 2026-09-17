@@ -18,6 +18,48 @@
     "originMainAtEntry": "0d13434cf1ab4d31f4bb4d50e7aea6cb3e69e35d",
     "worktreeAtEntry": "clean"
   },
+  "verification": {
+    "profile": "STATIC",
+    "command": "tools/agent/verify.ps1 -Profile STATIC -LogDirectory <new external root>",
+    "candidateRun": {
+      "runId": "verification-00d1902e02f94e18a1784814dbdfed55",
+      "runState": "COMPLETED",
+      "exitCode": 0,
+      "candidateCommit": "a13fdd69069fa525eb09f19886231024710a5f13",
+      "candidateTree": "cd69789c28f27505cb6fd28114f82c987a910f84",
+      "executionPlanHash": "7d52b28a732b35635009a4e515095232f569d308ce34964db4597454bfa8d5f0",
+      "resultHash": "d68b830e8983f8ebe50fb1d2a33184f25fb79b1648cd903019ebc76749309b9b",
+      "acceptanceVerdict": "ACCEPTED",
+      "coverageVerdict": "COMPLETE",
+      "requiredCheckIds": ["prompt.execution-safety", "repository.boundary-safety", "static.scientific-inputs.semantic"],
+      "completedCheckCount": 3,
+      "untrustedCheckCount": 0,
+      "notRunCheckCount": 0,
+      "diagnosticSummary": { "clear": 3, "findings": 1, "unavailable": 1 },
+      "diagnosticFindingNote": "The single finding is diagnostic.governance, which emits DIAGNOSTIC_FINDING unconditionally with a constant cause; diagnostic.historical-consistency emits DIAGNOSTIC_UNAVAILABLE unconditionally. Neither says anything about this candidate."
+    },
+    "preCandidateSmokeRun": {
+      "runId": "verification-f764b18d94174b32a8cc445ba6cb122c",
+      "boundCommit": "0d13434cf1ab4d31f4bb4d50e7aea6cb3e69e35d",
+      "boundTree": "922034fd46411530bd02ae15fcc832e3fc541dc7",
+      "claimedAsAcceptanceEvidence": false,
+      "reason": "Executed while the worktree was dirty; the verifier binds HEAD, so its identity is the pre-change commit. Dirty or pre-commit evidence is never reattributed."
+    },
+    "receipt": {
+      "state": "NOT_APPLICABLE",
+      "reason": "STATIC is not FINAL, so no acceptance receipt is contractually expected.",
+      "fabricated": false,
+      "relatedDebt": "TD-VERIFY-RECEIPT-RECOVERY"
+    },
+    "gitDiffCheck": "clean",
+    "escalationRequested": false
+  },
+  "impactDeclarations": {
+    "productPhaseEffect": "NONE",
+    "verificationInfrastructureImpact": "NONE",
+    "bootstrapImpact": "NO_CHANGE_REQUIRED",
+    "guideImpact": "NONE"
+  },
   "authorWitness": {
     "path": "artifacts/author-input/post-p1-defects/SeveralDefects.cedg",
     "sha256": "c0cbdb8ea218e4a07b7cd4d7bcfb4ba2b74da373bbd49711aa4657349619dff8",

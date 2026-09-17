@@ -721,17 +721,22 @@ change as a verification-infrastructure change requiring FULL.
 
 ### 8.1 Executed runs
 
-| # | Purpose | Command | Bound identity | Result |
-|---|---|---|---|---|
-| 1 | pre-candidate smoke, **not acceptance evidence** | `tools/agent/verify.ps1 -Profile STATIC -LogDirectory <external root>` | `candidate_commit 0d13434cf…`, tree `922034fd…` — the *entry* commit, because the verifier binds `HEAD` and the worktree was still dirty | run `verification-f764b18d94174b32a8cc445ba6cb122c`; exit 0; `ACCEPTED / COMPLETE`; 3/3 required acceptance checks completed; 3 diagnostics clear, 1 finding, 1 unavailable |
+| # | Purpose | Bound identity | Result |
+|---|---|---|---|
+| 1 | pre-candidate smoke, **not acceptance evidence** | `candidate_commit 0d13434cf…`, tree `922034fd…` — the *entry* commit, because the verifier binds `HEAD` and the worktree was still dirty | run `verification-f764b18d94174b32a8cc445ba6cb122c`; exit 0; `ACCEPTED / COMPLETE`; 3/3 required acceptance checks completed; 3 diagnostics clear, 1 finding, 1 unavailable |
+| 2 | **acceptance evidence for this candidate** | `candidate_commit a13fdd69069fa525eb09f19886231024710a5f13`, tree `cd69789c28f27505cb6fd28114f82c987a910f84`, clean worktree and index | run `verification-00d1902e02f94e18a1784814dbdfed55`; exit 0; `ACCEPTED / COMPLETE`; identities in §8.4 |
+
+Both runs used
+`tools/agent/verify.ps1 -Profile STATIC -LogDirectory <new external root>` under
+PowerShell 7.2 or later, with a fresh, initially absent log directory outside
+the repository.
 
 Run 1 is explicitly **not** claimed as acceptance evidence for this candidate:
 its bound identity is the pre-change commit, and the canonical contract forbids
 reattributing dirty or pre-commit evidence. It is reported because it was
-executed, and because it establishes that the profile resolves and completes.
-
-The acceptance run bound to the exact immutable candidate is recorded in §8.4
-below.
+executed, and because it established that the profile resolves and completes.
+Both runs share the same execution plan hash, which is expected: `STATIC`'s plan
+does not depend on the documents this phase changed.
 
 ### 8.2 Required acceptance coverage under `STATIC`
 
@@ -764,24 +769,58 @@ resolved by hand against the working tree.
 
 ### 8.4 Candidate acceptance run
 
-This section is filled only after the immutable candidate commit exists. No
-identity, run id, hash or verdict is written here before it has actually been
-produced.
-
 ```text
-CANDIDATE COMMIT   = NOT YET CREATED
-CANDIDATE TREE     = NOT YET CREATED
+CANDIDATE COMMIT   = a13fdd69069fa525eb09f19886231024710a5f13
+CANDIDATE TREE     = cd69789c28f27505cb6fd28114f82c987a910f84
 PROFILE            = STATIC
-RUN                = NOT YET EXECUTED
-EXIT CODE          = NOT YET EXECUTED
-ACCEPTANCE VERDICT = NOT YET EXECUTED
-COVERAGE VERDICT   = NOT YET EXECUTED
+COMMAND            = tools/agent/verify.ps1 -Profile STATIC -LogDirectory <new external root>
+RUN                = verification-00d1902e02f94e18a1784814dbdfed55
+RUN STATE          = COMPLETED
+EXIT CODE          = 0
+EXECUTION PLAN HASH= 7d52b28a732b35635009a4e515095232f569d308ce34964db4597454bfa8d5f0
+RESULT HASH        = d68b830e8983f8ebe50fb1d2a33184f25fb79b1648cd903019ebc76749309b9b
+ACCEPTANCE VERDICT = ACCEPTED
+COVERAGE VERDICT   = COMPLETE
+ACCEPTANCE CHECKS  = 3 required, 3 completed, 0 untrusted, 0 not run
+DIAGNOSTICS        = 3 clear, 1 finding, 1 unavailable
 RECEIPT            = NOT APPLICABLE — STATIC is not FINAL, so no receipt is
                      contractually expected; none was fabricated
                      (TD-VERIFY-RECEIPT-RECOVERY)
 ```
 
-### 8.5 Mandatory impact declarations
+The worktree and index were clean when this run executed, and the verifier bound
+the exact candidate commit and tree above. The only change made after it is this
+subsection and the run-identity lines in §8.1, recorded in a separate
+evidence commit — the ordinary pattern for a status-only evidence record. The
+acceptance evidence therefore belongs to `a13fdd69…` / `cd69789c…`, and that
+identity is the one the author reviews; no evidence is reattributed to the later
+commit.
+
+Log root and preserved raw evidence live outside the repository, under the
+session's external log directory, consistent with `artifacts/` not being
+authority.
+
+### 8.5 Byte-exactness discipline
+
+The living roadmap has genuinely mixed line endings in its committed blob: 2 912
+`CRLF` lines from older content and 893 bare `LF` lines in regions edited more
+recently. An editing pass normalized the whole file to `LF`, which would have
+rewritten 2 912 lines that this phase does not touch. That was detected before
+committing — the diff showed roughly 2 900 spurious deletions — and repaired by
+restoring the committed bytes and re-applying only the four intended edits at
+their original sites, each of which already sat in an `LF` region.
+
+The committed diff is consequently four hunks, 150 insertions and 4 deletions,
+and `git diff --check` is clean. This is recorded because `.gitattributes` pins
+byte-exact author evidence and generated references elsewhere in the tree, so a
+silent end-of-line normalization is a real hazard for any documentation task,
+not a cosmetic one.
+
+The four new files are pure `LF`, matching the convention of comparable recent
+documents under `docs/validation/`, `docs/architecture/` and
+`geocedg/validation/`.
+
+### 8.6 Mandatory impact declarations
 
 ```text
 PRODUCT_PHASE_EFFECT = NONE
