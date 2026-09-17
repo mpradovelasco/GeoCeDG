@@ -4328,6 +4328,330 @@
       "change": "added",
       "purpose": "G9U1 final presentation polish: Provide the deterministic 361x480 aspect-preserving startup/splash derivative, approximately two thirds of the prior visual size, without altering the promoted author source.",
       "authority": "geocedg/resources/assets-manifest.yml"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/DxfReportPane.java",
+      "change": "added",
+      "purpose": "PRE-G9B-S1: Present the bounded extended-DXF export report and diagnostics without adding export or geometric semantics.",
+      "authority": "docs/validation/pre_g9b_s1_dxf_stabilization_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGAlgebraView.java",
+      "change": "added",
+      "purpose": "POST-G9U1-A3 frontend: Route eligible Algebra-view redefinition through the explicit semantic assessment while preserving ordinary Classic behavior.",
+      "authority": "docs/validation/post_g9u1_a3_frontend_matrix.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGGuideRenderer.java",
+      "change": "added",
+      "purpose": "POST-P1-DOC-HELP: Render the packaged bilingual user guide as escaped Swing HTML with repository-relative help semantics preserved.",
+      "authority": "docs/validation/post_p1_doc_help_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGGuideWindow.java",
+      "change": "added",
+      "purpose": "POST-P1-DOC-HELP: Host the packaged bilingual guide in the bounded resizable in-application help window.",
+      "authority": "docs/validation/post_p1_doc_help_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGNavigationSettingsPanel.java",
+      "change": "added",
+      "purpose": "POST-G9U1-A7: Expose the approved application-local navigation and shortcut preferences without changing construction semantics.",
+      "authority": "docs/validation/post_g9u1_a7_navigation_design_matrix.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGNavigationShortcutPreferences.java",
+      "change": "added",
+      "purpose": "POST-G9U1-A7: Persist and validate the bounded navigation shortcut policy as application preference state only.",
+      "authority": "docs/validation/post_g9u1_a7_navigation_design_matrix.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGPresentationTheme.java",
+      "change": "added",
+      "purpose": "PRE-G9B-P0: Define the closed Original, Scientific Paper and Cool Geometry presentation-theme identities independently of geometry and document state.",
+      "authority": "geocedg/specs/ui/application-presentation-theme.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGSpatialRedefineFrontend.java",
+      "change": "added",
+      "purpose": "POST-G9U1-A3 frontend: Present the explicit semantic redefine assessment and dispatch the selected compatible or replacement operation.",
+      "authority": "docs/validation/post_g9u1_a3_frontend_matrix.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGThemeInstaller.java",
+      "change": "added",
+      "purpose": "PRE-G9B-P0: Apply the selected presentation palette through Desktop UI defaults while keeping it outside geometric authority.",
+      "authority": "geocedg/specs/ui/application-presentation-theme.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGThemeOptionsPanel.java",
+      "change": "added",
+      "purpose": "PRE-G9B-P0: Expose the closed presentation-theme selection in Layout and Presentation preferences.",
+      "authority": "geocedg/specs/ui/application-presentation-theme.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGThemePreference.java",
+      "change": "added",
+      "purpose": "PRE-G9B-P0: Persist the application-local presentation-theme selection with the approved Original default.",
+      "authority": "geocedg/specs/ui/application-presentation-theme.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/source/alternatives/ChatGPT_Image_Sep_16_2026.png",
+      "change": "added",
+      "purpose": "Branding provenance: Retain an author-added splash alternative as source evidence; creation method and authorship are not inferred from its filename.",
+      "authority": "geocedg/resources/assets-manifest.yml"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/source/alternatives/GeoCeDG_splash_01_1197x1591.png",
+      "change": "added",
+      "purpose": "Branding provenance: Retain the 1197x1591 splash-01 source alternative without assigning it an active runtime or figurative-mark role.",
+      "authority": "geocedg/resources/assets-manifest.yml"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/source/alternatives/GeoCeDG_splash_01_361x480.png",
+      "change": "added",
+      "purpose": "Branding provenance: Retain the supplied 361x480 splash-01 size alternative; its exact transformation method is not inferred.",
+      "authority": "geocedg/resources/assets-manifest.yml"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/source/alternatives/GeoCeDG_splash_01_542x720.png",
+      "change": "added",
+      "purpose": "Branding provenance: Retain the supplied 542x720 splash-01 size alternative; its exact transformation method is not inferred.",
+      "authority": "geocedg/resources/assets-manifest.yml"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/source/alternatives/GeoCeDG_splash_02_1197x1591.png",
+      "change": "added",
+      "purpose": "Branding provenance: Retain the 1197x1591 splash-02 source alternative without assigning it an active runtime or figurative-mark role.",
+      "authority": "geocedg/resources/assets-manifest.yml"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/source/alternatives/GeoCeDG_splash_02_361x480.png",
+      "change": "added",
+      "purpose": "Branding provenance: Retain the supplied 361x480 splash-02 size alternative; its exact transformation method is not inferred.",
+      "authority": "geocedg/resources/assets-manifest.yml"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/source/alternatives/GeoCeDG_splash_02_542x720.png",
+      "change": "added",
+      "purpose": "Branding provenance: Retain the supplied 542x720 splash-02 size alternative; its exact transformation method is not inferred.",
+      "authority": "geocedg/resources/assets-manifest.yml"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/source/alternatives/GeoCeDG_splash_06_1197x1591.png",
+      "change": "added",
+      "purpose": "Branding provenance: Preserve the author-selected 1197x1591 splash-06 source that was promoted byte-exactly to the active startup asset.",
+      "authority": "geocedg/resources/assets-manifest.yml"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/source/alternatives/GeoCeDG_splash_06_361x480.png",
+      "change": "added",
+      "purpose": "Branding provenance: Retain the supplied 361x480 splash-06 alternative separately from the canonical generated runtime derivative.",
+      "authority": "geocedg/resources/assets-manifest.yml"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/source/alternatives/GeoCeDG_splash_06_542x720.png",
+      "change": "added",
+      "purpose": "Branding provenance: Retain the supplied 542x720 splash-06 alternative separately from the canonical generated runtime derivative.",
+      "authority": "geocedg/resources/assets-manifest.yml"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PostG9U1A3FrontendRedefineTest.java",
+      "change": "added",
+      "purpose": "POST-G9U1-A3 frontend: Verify semantic assessment presentation, user choice, rollback and unchanged ordinary GeoGebra redefine behavior.",
+      "authority": "docs/validation/post_g9u1_a3_frontend_matrix.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PostG9U1A7NavigationTest.java",
+      "change": "added",
+      "purpose": "POST-G9U1-A7: Verify navigation actions, preference-backed shortcuts, menu state and viewport-only behavior.",
+      "authority": "docs/validation/post_g9u1_a7_navigation_design_matrix.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PostP1BilingualUserGuideTest.java",
+      "change": "added",
+      "purpose": "POST-P1-DOC-HELP: Verify the packaged English and Spanish guide selection, content authority and Help-menu routing.",
+      "authority": "docs/validation/post_p1_doc_help_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PostP1GuideRenderingTest.java",
+      "change": "added",
+      "purpose": "POST-P1-DOC-HELP: Verify safe guide rendering and bounded resizable window behavior.",
+      "authority": "docs/validation/post_p1_doc_help_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BP0PresentationThemeTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-P0: Verify closed presentation themes, preference placement, live application, Classic neutrality and the canonical 1.0.0 identity.",
+      "authority": "geocedg/specs/ui/application-presentation-theme.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BP1PublicSurfaceTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-P1: Verify the approved default public surfaces, independent feature overrides and package-profile/version contracts.",
+      "authority": "docs/validation/pre_g9b_p1_public_surface_and_nc_packaging_candidate_report.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/PostG9U1A5MacroCommandAuthorityTest.java",
+      "change": "added",
+      "purpose": "POST-G9U1-A5: Verify explicit document-macro command authority through registration, rename, reorder, deletion and name reuse.",
+      "authority": "docs/validation/post_g9u1_a5_macro_collision_disposition.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/spatial/identity/PostG9U1A3ProceduralAnchorPolicyTest.java",
+      "change": "added",
+      "purpose": "POST-G9U1-A3-R1: Verify procedural placement snapshots and conservative redefine assessment bounds.",
+      "authority": "docs/validation/post_g9u1_a3_v2_compatible_redefine_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/PostG9U1A1SplineConstructorProvenanceTest.java",
+      "change": "added",
+      "purpose": "POST-G9U1-A1: Verify stable spline constructor-occurrence provenance and endpoint resolution.",
+      "authority": "docs/validation/post_g9u1_a1_spline_constructor_provenance_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/PostG9U1A2ExplicitTraversalPolicyTest.java",
+      "change": "added",
+      "purpose": "POST-G9U1-A2: Verify explicit branch, orientation and traversal selection for public Locus V2 metrics.",
+      "authority": "docs/validation/post_g9u1_a2_explicit_traversal_policy_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/PostG9U1A3CompatibleV2RedefineTest.java",
+      "change": "added",
+      "purpose": "POST-G9U1-A3-R1: Verify compatible V2 redefine identity, revision, dependency and undo/redo behavior.",
+      "authority": "docs/validation/post_g9u1_a3_v2_compatible_redefine_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/PostG9U1A3R1RedefineAssessmentTest.java",
+      "change": "added",
+      "purpose": "POST-G9U1-A3-R1: Verify deterministic redefine assessment statuses, impacts and execution policy.",
+      "authority": "docs/validation/post_g9u1_a3_v2_compatible_redefine_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/PostG9U1A6OptionalBranchPointTest.java",
+      "change": "added",
+      "purpose": "POST-G9U1-A6: Verify optional principal-branch point selection and explicit ambiguous or absent outcomes.",
+      "authority": "docs/validation/post_g9u1_a6_optional_branch_point_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/PostG9U1A3MultiOutputP3Test.java",
+      "change": "added",
+      "purpose": "POST-G9U1-A3-R1: Verify conservative multi-output procedural placement and compatible redefine bounds.",
+      "authority": "docs/validation/post_g9u1_a3_v2_compatible_redefine_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/PostG9U1A4ConstructionPositionCharacterizationTest.java",
+      "change": "added",
+      "purpose": "POST-G9U1-A4: Characterize construction position, rollback identity and navigation-step limitations without changing the host contract.",
+      "authority": "docs/validation/post_g9u1_a4_construction_position_characterization_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geogebra/common/main/PostG9U1A7CursorZoomTest.java",
+      "change": "added",
+      "purpose": "POST-G9U1-A7: Verify cursor-anchored wheel and keyboard zoom invariants and unchanged Classic fallback.",
+      "authority": "docs/validation/post_g9u1_a7_navigation_design_matrix.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusPrincipalBranchSelector2D.java",
+      "change": "added",
+      "purpose": "POST-G9U1-A6: Select a unique eligible principal locus branch or report explicit ambiguity/absence for optional point construction.",
+      "authority": "docs/validation/post_g9u1_a6_optional_branch_point_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusPrincipalBranchState2D.java",
+      "change": "added",
+      "purpose": "POST-G9U1-A6: Represent the explicit unique, ambiguous or absent principal-branch selection state.",
+      "authority": "docs/validation/post_g9u1_a6_optional_branch_point_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/PublicLocusMetricTraversalPolicy2D.java",
+      "change": "added",
+      "purpose": "POST-G9U1-A2: Carry explicit public Locus V2 traversal, branch and orientation policy independently of render sampling.",
+      "authority": "docs/validation/post_g9u1_a2_explicit_traversal_policy_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/V2RedefineContractSource.java",
+      "change": "added",
+      "purpose": "POST-G9U1-A3-R1: Identify the explicit V2 contract source used to assess compatible redefine operations.",
+      "authority": "docs/validation/post_g9u1_a3_v2_compatible_redefine_matrix.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialProceduralPositionSnapshot.java",
+      "change": "added",
+      "purpose": "POST-G9U1-A3-R1: Capture construction-position bounds used by the semantic redefine assessment without creating separate geometry authority.",
+      "authority": "docs/validation/post_g9u1_a3_v2_compatible_redefine_matrix.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRedefineAssessment.java",
+      "change": "added",
+      "purpose": "POST-G9U1-A3-R1: Represent the deterministic semantic compatibility assessment and bounded impacts for a redefine request.",
+      "authority": "docs/validation/post_g9u1_a3_v2_compatible_redefine_matrix.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRedefineAssessmentHandler.java",
+      "change": "added",
+      "purpose": "POST-G9U1-A3 frontend: Provide the product-facing assessment callback seam while leaving ordinary host redefine behavior unchanged.",
+      "authority": "docs/validation/post_g9u1_a3_frontend_matrix.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRedefineAssessmentStatus.java",
+      "change": "added",
+      "purpose": "POST-G9U1-A3-R1: Enumerate explicit compatible, replacement, rejected and unavailable semantic redefine outcomes.",
+      "authority": "docs/validation/post_g9u1_a3_v2_compatible_redefine_matrix.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRedefineExecutionMode.java",
+      "change": "added",
+      "purpose": "POST-G9U1-A3-R1: Distinguish the explicitly selected compatible transfer from true replacement execution.",
+      "authority": "docs/validation/post_g9u1_a3_v2_compatible_redefine_matrix.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRedefineImpactEntry.java",
+      "change": "added",
+      "purpose": "POST-G9U1-A3-R1: Describe one stable affected semantic object in a redefine impact report.",
+      "authority": "docs/validation/post_g9u1_a3_v2_compatible_redefine_matrix.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRedefineImpactReport.java",
+      "change": "added",
+      "purpose": "POST-G9U1-A3-R1: Collect deterministic semantic impact entries for explicit frontend review before redefine execution.",
+      "authority": "docs/validation/post_g9u1_a3_v2_compatible_redefine_matrix.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spline/SplineConstructorOccurrenceResolver2D.java",
+      "change": "added",
+      "purpose": "POST-G9U1-A1: Resolve explicit spline constructor occurrences to stable endpoint provenance without coordinate matching.",
+      "authority": "docs/validation/post_g9u1_a1_spline_constructor_provenance_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spline/SplineConstructorOccurrenceResult2D.java",
+      "change": "added",
+      "purpose": "POST-G9U1-A1: Represent resolved, absent or ambiguous spline constructor-occurrence results explicitly.",
+      "authority": "docs/validation/post_g9u1_a1_spline_constructor_provenance_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/euclidian/EuclidianController.java",
+      "change": "modified",
+      "purpose": "POST-G9U1-A7: Add the bounded cursor/rectangle navigation hooks while preserving Classic controller and geometry behavior.",
+      "authority": "docs/validation/post_g9u1_a7_navigation_design_matrix.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/gui/dialog/ToolManagerDialogModel.java",
+      "change": "modified",
+      "purpose": "POST-G9U1-A5: Preserve or clear explicit document-macro command authority correctly across Tool Manager rename, reorder and deletion lifecycle operations.",
+      "authority": "docs/validation/post_g9u1_a5_macro_collision_disposition.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/MacroManager.java",
+      "change": "modified",
+      "purpose": "POST-G9U1-A5: Bind explicit document-macro command authority to macro identity so later same-name registration cannot silently retarget it.",
+      "authority": "docs/validation/post_g9u1_a5_macro_collision_disposition.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/main/GlobalKeyDispatcher.java",
+      "change": "modified",
+      "purpose": "POST-G9U1-A7: Dispatch the bounded configured navigation shortcuts and use the valid cursor zoom anchor while retaining inherited fallback behavior.",
+      "authority": "docs/validation/post_g9u1_a7_navigation_design_matrix.md"
     }
   ]
 }
