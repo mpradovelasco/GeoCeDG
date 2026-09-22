@@ -72,6 +72,23 @@ inputs and evidence. Diagnostics remain separate from acceptance. Do not rerun
 FINAL for an unchanged candidate and do not reattribute dirty or precommit
 evidence.
 
+A global verification failure discovered during a phase does not automatically
+become phase scope. After one complete heavy campaign (`FINAL`, `INTEGRATION` or
+a registered `PHASE`) runs to complete coverage on an immutable candidate:
+
+- a failure causally attributable to the candidate remains a phase blocker;
+- a failure proven to predate the candidate and lie causally outside its delta
+  is retained baseline debt, not phase scope;
+- retained baseline debt does not trigger a repeated heavy campaign within the
+  same phase, unless it invalidates confidence in the verifier itself or
+  prevents establishing that causality.
+
+Causality must be established before disposition, not assumed. Retained
+baseline debt is recorded with its owning phase and correction deadline; it is
+never repaired by silently weakening the failing check, and it never grants a
+waiver mechanism in the verifier. Execute heavy verification on frozen
+meaningful cohorts, not repeatedly after incidental unrelated repairs.
+
 <!-- geocedg-field: authorization_boundary -->
 ## Authorization boundary
 

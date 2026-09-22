@@ -304,6 +304,16 @@ style and duration diagnostics. Diagnostic findings remain visible but do not
 change product acceptance, coverage or exit code. A technical acceptance result
 does not confer author approval or publication permission.
 
+A global verification failure discovered during a phase does not automatically
+become phase scope. After one complete heavy campaign runs to complete
+coverage on an immutable candidate, a failure proven to predate the candidate
+and lie causally outside its delta is retained baseline debt, not phase scope,
+and does not trigger a repeated heavy campaign within the same phase unless it
+invalidates confidence in the verifier itself or prevents establishing that
+causality. See
+[`task-template.prompt.md`](../../.github/prompts/tasks/task-template.prompt.md)
+for the full rule.
+
 A frozen technical-candidate artifact (a candidate report or its
 machine-readable evidence, committed inside the candidate) records only
 invariant facts fixed when it was written; it never encodes mutable future
