@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "phase": "PRE-G9B-R1",
+  "recordKind": "AUTHOR_CLOSEOUT_DISPOSITION",
+  "status": "PRE-G9B-R1 — AUTHOR APPROVED FOR PROMOTION — RETAINED PRE-EXISTING BASELINE DEFECT",
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": false,
+  "finalAcceptanceClaimed": false,
+  "finalCoverageComplete": true,
+  "candidateRegressionEstablished": false,
+  "authorBaselineException": true,
+  "supersedes": {
+    "note": "the frozen candidate's own report and evidence file necessarily recorded state CANDIDATE — PENDING AUTHOR REVIEW and authorApproved false, because they were written before author review; only those fields are superseded",
+    "paths": [
+      "docs/validation/pre_g9b_r1_verification_and_operational_debt_candidate_report.md",
+      "geocedg/validation/pre-g9b-r1/pre-g9b-r1-verification-evidence.json"
+    ]
+  },
+  "frozenCandidate": {
+    "commit": "36c8d754a05b8394428ffb9505ec4e541fdf93eb",
+    "tree": "7cab60ab1c76578fba6ec2ecbac193905a19eae3",
+    "base": "78983cab36ca0cafbb63b3b1bec7392bce5c0424",
+    "branch": "feature/pre-g9b-r1-verification-and-operational-debt",
+    "modifiedByCloseout": false
+  },
+  "finalEvidence": {
+    "run": "verification-8763e250d1be413f83e54429b5923ca3",
+    "planHash": "defe8ab4692af05430464974c3d5e8e029ff7d64ecbc1822c07ff91593c744e0",
+    "resultHash": "c7e507897530acc9a83cb41535ca161db62bf43483d1a6181ec015dad7d352ca",
+    "coverage": "COMPLETE",
+    "required": 40,
+    "completed": 40,
+    "untrusted": 0,
+    "notRun": 0,
+    "acceptance": "REJECTED_SEMANTIC",
+    "receipt": "none",
+    "reinterpreted": false,
+    "receiptFabricated": false,
+    "receiptAbsenceIsCorrect": "the emitter is gated on an accepted report; a rejected campaign correctly produces no receipt"
+  },
+  "supportingEvidence": {
+    "receiptFocalTests": { "cases": 14, "assertions": 69, "failures": 0 },
+    "static": { "acceptance": "ACCEPTED", "coverage": "COMPLETE" },
+    "infraUnit": { "acceptance": "ACCEPTED", "coverage": "COMPLETE" },
+    "standaloneG9x1": { "result": "PASS", "dxfAuthorityCases": 61, "dxfAuthorityFailures": 0 }
+  },
+  "retainedBaselineDefect": {
+    "id": "BASELINE-GUIDE-RESOURCE-LF-MATERIALIZATION",
+    "class": "RETAINED_PRE_EXISTING_BASELINE_DEFECT",
+    "scope": "deterministic LF materialization of the bilingual guide resources",
+    "state": "OPEN — NOT REPAIRED IN PRE-G9B-R1",
+    "violation": "PostP1BilingualUserGuideTest.everySelectedResourceResolvesToTheDocumentOfThatLanguage",
+    "causedByR1": false,
+    "causalityProof": {
+      "method": "every input responsible for the failure is byte-identical between the authorized base and the candidate",
+      "unchangedInputs": [
+        "docs/user/ (both user-guide sources)",
+        "the Desktop Gradle resource-copy rule",
+        "the failing test",
+        "the relevant action-registry input",
+        ".gitattributes"
+      ],
+      "exposure": "first FINAL campaign to execute that test after POST-P1-DOC-HELP",
+      "bilingualEditionLanded": "2026-09-17",
+      "assertionLanded": "2026-09-17",
+      "lastPrecedingAcceptedFinalStartedAt": "2026-09-16T21:08:30Z"
+    },
+    "preferredFutureDisposition": "establish canonical LF materialization at repository authority level rather than weaken the test",
+    "implementationAuthorized": false,
+    "correctionDeadline": "before a future gate whose acceptance genuinely depends on that resource invariant, preferably as a bounded maintenance item absorbed before the next already-required heavy verification campaign"
+  },
+  "authorDisposition": {
+    "acceptedForPromotion": true,
+    "basis": [
+      "all R1-focused receipt tests pass",
+      "STATIC is ACCEPTED / COMPLETE",
+      "INFRA_UNIT is ACCEPTED / COMPLETE",
+      "the standalone G9X1 verifier passes",
+      "the FINAL execution reached COMPLETE coverage",
+      "its sole rejection is causally established as a pre-existing baseline defect outside the R1 delta",
+      "no known R1-introduced regression remains"
+    ],
+    "exceptionKind": "explicit author exception to the normal green-FINAL closeout requirement",
+    "changesRecordedFinalVerdict": false,
+    "fabricatesAcceptanceReceipt": false
+  },
+  "operationalRuleRecorded": {
+    "rule": "A global verification failure discovered during a phase must not automatically become phase scope.",
+    "afterCompleteHeavyCampaignOnImmutableCandidate": [
+      "failures causally attributable to the candidate remain phase blockers",
+      "failures proven to predate and lie outside the candidate delta are retained baseline debt",
+      "retained baseline debt does not trigger repeated heavy campaigns during the same phase unless it invalidates confidence in the verifier itself or prevents establishing causality"
+    ],
+    "cadence": "heavy verification should be executed on frozen meaningful cohorts, not repeatedly after incidental unrelated repairs",
+    "recordedAs": "author disposition in this closeout record only",
+    "promotedToDurableOperationalAuthority": false,
+    "promotionRequiresSeparateAuthorizedTask": true
+  },
+  "prohibitedInThisCloseout": [
+    "rerunning FINAL or any other verification campaign for PRE-G9B-R1",
+    "repairing the bilingual-guide EOL defect",
+    "modifying verification policy to make the run pass",
+    "adding a waiver mechanism to the verifier",
+    "generating a synthetic receipt",
+    "editing the R1 implementation candidate",
+    "absorbing any further unrelated technical debt"
+  ],
+  "closeoutRecordTouchesExecutableOrPolicyFiles": false,
+  "successorPhaseAuthorized": false,
+  "publicationState": "REPORTED FOR AUTHOR REVIEW — NOT PUSHED, NOT PROMOTED"
+}
