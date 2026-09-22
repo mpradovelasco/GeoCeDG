@@ -1,0 +1,156 @@
+{
+  "schemaVersion": 1,
+  "phase": "PRE-G9B-R1-R1",
+  "phaseKind": "NATIVE_PERIODIC_QUARANTINE_ROUND_TRIP_CLOSURE",
+  "technicalCandidateState": "FROZEN",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "authorDecisionAuthority": "the separate closeout/author-decision record is the sole authority for current author approval status",
+  "selfApproved": false,
+  "passClaimed": false,
+  "productPhaseEffect": "NONE",
+  "changeRoute": "ORDINARY",
+  "verificationClass": "BOUNDED_PHASE",
+  "verificationClassFrozenAtPhaseStart": true,
+  "frozenAcceptance": "tools/agent/verify.ps1 -Profile PHASE -Phase G9U1",
+  "implementationBase": {
+    "commit": "d0c4bef1e9bd4677c90659598d60443a298caf2d",
+    "tree": "341f31915ff675f7235cda0afcbf0d9c7b2e811f",
+    "branch": "feature/pre-g9b-r1-r1-periodic-quarantine-native-roundtrip",
+    "worktreeAtEntry": "clean"
+  },
+  "authorDecisionsHonoured": {
+    "AD-R0-3": {
+      "requirement": "close using genuine native .cedg lifecycle evidence, and avoid widening the kernel API solely to enable a test where durable lifecycle evidence can establish the property",
+      "kernelApiWidened": false,
+      "xmlFabricated": false,
+      "ledgerOnlySubstituteUsed": false,
+      "everyAssertionThroughRealSaveAndReopen": true
+    }
+  },
+  "scenarios": [
+    {
+      "id": "U1-Q02",
+      "disposition": "BINDING_RECONCILED",
+      "debtId": "TD-R0-G9U1-Q02-BINDING",
+      "declaredProcedure": "reopen the native quarantined document twice while periodic offset evidence remains insufficient/nonunique",
+      "previousState": "BOUND_TEST_DOES_NOT_PERFORM_DECLARED_PROCEDURE",
+      "boundTest": "org.geocedg.desktop.G9U1PeriodicQuarantineNativeTest#actualPeriodicQuarantineRoundTripsAndReactivatesOriginalPoints",
+      "nowPerforms": "the bound method saves the already-reopened quarantined document and reopens it a second time before any release, asserting an unchanged serialized ledger, four claimed periodic-quarantine entries, no marker solution, no eligible token, an empty materializeAll, unchanged point count, unchanged persistent identities and unchanged selected root tokens"
+    },
+    {
+      "id": "U1-Q04",
+      "disposition": "EVIDENCE_SUPPLIED",
+      "previousState": "RETAINED_RISK, boundTests = []",
+      "boundTest": "org.geocedg.desktop.G9U1PeriodicQuarantineNativeTest#provedNonzeroOffsetRetiresOnlyItsGroupAcrossTheNativeArchive",
+      "procedure": "fork the byte-identical quarantined seed, then drive the periodic parameter to a phase that establishes a nonzero cyclic offset",
+      "observedContract": {
+        "retirementIsPartial": "only the affected allocations retire; the surviving consumers stay defined, which is the 'retires only its affected group' clause",
+        "retirementIsPermanent": "returning the parameter to the exact original phase that releases the whole group in the unique-zero path U1-Q03 does not revive a retired consumer",
+        "noRetargeting": "every consumer keeps its exact selected root token across the move, the archive round trip and the return to the original phase",
+        "noNewMaterialization": "the GeoPoint count is unchanged at every step",
+        "identitiesPreserved": "every persistent GeoId is unchanged",
+        "durableAcrossArchive": "the retired outcome is re-established after save and reopen, and again after a second save and reopen at the original phase"
+      },
+      "serializedLedgerNote": "the serialized ledger is deliberately not asserted byte-equal across the retirement round trip: reopening legitimately re-derives fresh unclaimed ACTIVE allocations for the current roots the retired consumers no longer own, while no retired token is reused by any surviving consumer. Claimed periodic-quarantine count is asserted instead."
+    },
+    {
+      "id": "U1-Q05",
+      "disposition": "EVIDENCE_SUPPLIED",
+      "previousState": "RETAINED_RISK, boundTests = []",
+      "boundTest": "org.geocedg.desktop.G9U1PeriodicQuarantineNativeTest#featureOffAndClassicPreserveNativeQuarantineWithoutCreation",
+      "procedure": "reopen the byte-identical quarantined seed headlessly on the feature-off GeoCeDG route and on the separate Classic diagnostic route, then save and reopen again on each route",
+      "observedContract": {
+        "ledgerPreserved": "the serialized token ledger is byte-equal to the seed on both routes, before and after the re-save",
+        "creationAuthorityAbsent": "RuntimeFeatureService.mayCreateLocusV2 is false on both routes",
+        "classicDocumentIdentity": "the app code stays CLASSIC on both routes",
+        "xmlPreserved": "the serialized XML is byte-equal across the re-save and reopen on each route",
+        "dormantConsumersPreserved": "every consumer stays undefined with its exact selected root token and unchanged persistent GeoId",
+        "noCreation": "geo count and spatial identity record count are unchanged"
+      }
+    }
+  ],
+  "coupledReconciliations": [
+    {
+      "path": "geocedg/specs/operations/verification-junit-inventory.json",
+      "reason": "adding two desktop test methods necessarily changes the pinned test-identity sets",
+      "producedBy": "tools/agent/update-verification-junit-inventory.ps1",
+      "changes": [
+        { "selection": "discovery.desktop", "countBefore": 1517, "countAfter": 1519 },
+        { "selection": "final.desktop", "countBefore": 1511, "countAfter": 1513 },
+        { "module": "desktop", "discoveredBefore": 1517, "discoveredAfter": 1519 }
+      ],
+      "sharedModuleUnchanged": true,
+      "evidenceKind": "discovery from --test-dry-run plus one completed passing final.desktop run (inner_exit_code 0)"
+    },
+    {
+      "path": "geocedg/specs/operations/verification-registry.json",
+      "reason": "the typed registry pins the JUnit inventory catalog by canonical-LF SHA-256, so regenerating the inventory requires repinning its catalog entry",
+      "catalogId": "junit_inventory",
+      "sha256Before": "190f2d463a57b7e267328c03f99fd7ce95845047c0d13531249a55d55779cccd",
+      "sha256After": "553cc04e184715ceefab75bea40fcc14234c27e90e4fd79495affda3d6c88ceb",
+      "hashMethodValidated": "the same canonical-LF computation reproduces the previous pin exactly from the base blob",
+      "detectedBy": "PHASE G9U1 refused to run with 'Verification catalog identity mismatch: junit_inventory'",
+      "registrySemanticsChanged": false
+    },
+    {
+      "path": "tools/agent/verify-g9u1-construction-workspace.ps1",
+      "reason": "the script hard-coded a RETAINED_RISK exception for U1-Q04 and U1-Q05; once those scenarios carry executable evidence the exception contradicts the reconciled manifest",
+      "change": "removed exactly one line, the U1-Q04/U1-Q05 RETAINED_RISK exception, so both scenarios fall under the ordinary executable-support rule",
+      "otherExceptionsUnchanged": true,
+      "quarantineSemanticsChanged": false
+    }
+  ],
+  "retainedBaselineDebt": [
+    {
+      "id": "BASELINE-G9U1-BRANDING-EVIDENCE-PIN",
+      "class": "RETAINED_PRE_EXISTING_BASELINE_DEFECT",
+      "causedByR1R1": false,
+      "provenAtBaseBeforeAnyChange": true,
+      "effect": "the standalone tools/agent/verify-g9u1-construction-workspace.ps1 fails during Assert-U1Contracts; it is not part of the frozen PHASE G9U1 acceptance",
+      "failure": "Branding evidence pin differs: source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/source/helixSnapshot.png",
+      "cause": "the script constants Round3BrandingResourcePins were moved forward to the current author branding assets, while the immutable G9U1 Round-3 evidence JSON still records the superseded values; the script asserts the two agree",
+      "drifted": [
+        { "asset": "helixSnapshot.png", "historicalEvidence": "251689 / abcf272553", "scriptConstantAndLiveFile": "1184851 / 19ff4bf40b" },
+        { "asset": "geocedg-startup-542x720.png", "historicalEvidence": "155029 / 04d5e79b99", "scriptConstantAndLiveFile": "636733 / 8add7345db" }
+      ],
+      "origin": "author commit ed7558ea1, which replaced the branding sources without reconciling the historical evidence record",
+      "notRepairedHere": "repair would mean either mutating immutable historical G9U1 author evidence or reverting verification constants; both are separate author decisions outside this phase",
+      "ruleApplied": "a complete heavy-verification failure proven to predate the candidate and lie causally outside its delta is retained baseline debt, not phase scope"
+    }
+  ],
+  "riskRecord": {
+    "id": "G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP",
+    "state": "OPEN / TRACKED",
+    "movedToResolvedByThisPhase": false,
+    "dispositionProposal": "the three declared native-lifecycle experiments U1-Q02, U1-Q04 and U1-Q05 now have executable evidence through real .cedg save/reopen cycles, with no XML fabrication, no ledger-only substitute and no kernel API widening. The author may consider the evidence obligation met and move the record to resolved; only the author may do so.",
+    "residualForAuthor": "the corresponding author GUI smoke, and any scenario variants not exercised by the named methods"
+  },
+  "impactDeclarations": {
+    "productPhaseEffect": "NONE",
+    "kernelSemanticsImpact": "NONE",
+    "quarantineSemanticsImpact": "NONE",
+    "resolverImpact": "NONE",
+    "ledgerFormatImpact": "NONE",
+    "serializationImpact": "NONE",
+    "verificationInfrastructureImpact": "MODIFIED",
+    "verificationInfrastructureImpactDetail": "JUnit inventory test-identity pins updated for two new desktop methods; one obsolete scenario-disposition exception removed from the standalone G9U1 verifier",
+    "bootstrapImpact": "NO_CHANGE_REQUIRED",
+    "guideImpact": "NONE",
+    "guideImpactDetail": "test and operational manifest work only; no user-visible behaviour and no public tool changed"
+  },
+  "notAuthorized": [
+    "PRE-G9B-R2",
+    "PRE-G9B-R2-E0",
+    "PRE-G9B-R2-E1",
+    "PRE-G9B-R3 through R7",
+    "G9B",
+    "G9C",
+    "G9U2",
+    "productive G10",
+    "further G12",
+    "moving G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP to resolved",
+    "global G9 closeout",
+    "push, branch publication, merge, promotion, tag, release, binary publication"
+  ],
+  "successorPhaseAuthorized": false
+}

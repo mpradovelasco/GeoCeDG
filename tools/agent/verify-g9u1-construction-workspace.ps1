@@ -1625,7 +1625,6 @@ function Assert-U1Contracts {
         $exception = switch -CaseSensitive ($scenario.id) {
             "U1-V02" { "AUTHOR_REVIEW_PENDING" }
             { $_ -cin @("U1-A01", "U1-A02", "U1-A03") } { "CONDITIONAL_NOT_APPLICABLE" }
-            { $_ -cin @("U1-Q04", "U1-Q05") } { "RETAINED_RISK" }
             default { "" }
         }
         if ([string]::IsNullOrEmpty($exception)) {

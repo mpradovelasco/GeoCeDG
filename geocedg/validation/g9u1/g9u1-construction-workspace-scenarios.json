@@ -78,7 +78,9 @@
         "source": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1PeriodicQuarantineNativeTest.java",
         "module": "desktop",
         "methods": [
-          "actualPeriodicQuarantineRoundTripsAndReactivatesOriginalPoints"
+          "actualPeriodicQuarantineRoundTripsAndReactivatesOriginalPoints",
+          "featureOffAndClassicPreserveNativeQuarantineWithoutCreation",
+          "provedNonzeroOffsetRetiresOnlyItsGroupAcrossTheNativeArchive"
         ]
       },
       {
@@ -1948,7 +1950,7 @@
       "procedure": "reopen the native quarantined document twice while periodic offset evidence remains insufficient/nonunique",
       "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
       "automatedScope": "Only the explicitly named test methods are executable evidence; their saved JUnit results are required. Manual interaction, full variant coverage and author acceptance are not inferred.",
-      "remaining": "Complete the corresponding author GUI smoke and any scenario variants not exercised by the named methods."
+      "remaining": "TD-R0-G9U1-Q02-BINDING is reconciled: the bound method now performs the declared second native reopen while the offset evidence is still insufficient, asserting an unchanged durable ledger, no marker, no materialization and no new point before any release. Complete the corresponding author GUI smoke and any scenario variants not exercised by the named methods."
     },
     {
       "id": "U1-Q03",
@@ -1967,23 +1969,27 @@
       "id": "U1-Q04",
       "group": "Q",
       "assertion": "the old allocation retires/fails closed and cannot retarget another root; proximity, solver order and movement history remain unused",
-      "tests": [],
+      "tests": [
+        "org.geocedg.desktop.G9U1PeriodicQuarantineNativeTest#provedNonzeroOffsetRetiresOnlyItsGroupAcrossTheNativeArchive"
+      ],
       "topic": "proved-nonzero quarantine retirement",
       "procedure": "from another byte-identical reopened quarantined seed, establish one proved unique nonzero offset",
-      "coverage": "RETAINED_RISK",
-      "automatedScope": "No passing result is inferred for this distinct retained-risk experiment.",
-      "remaining": "Distinct native quarantine experiment not established by Q01–Q03 or ordinary spline preservation. G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP remains OPEN / TRACKED under explicit nonblocking candidate disposition."
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "Only the explicitly named test methods are executable evidence; their saved JUnit results are required. Manual interaction, full variant coverage and author acceptance are not inferred.",
+      "remaining": "Evidence now exists through a real native .cedg lifecycle, but G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP stays OPEN / TRACKED: only the author may move the canonical risk record to resolved. Complete the corresponding author GUI smoke and any scenario variants not exercised by the named methods."
     },
     {
       "id": "U1-Q05",
       "group": "Q",
       "assertion": "exact quarantine/token/point authority is preserved without interactive creation, markers, downgrade or change to Classic default document identity",
-      "tests": [],
+      "tests": [
+        "org.geocedg.desktop.G9U1PeriodicQuarantineNativeTest#featureOffAndClassicPreserveNativeQuarantineWithoutCreation"
+      ],
       "topic": "quarantine preservation boundary",
       "procedure": "open/save/reopen the native quarantined document with feature-off GeoCeDG and the separate Classic diagnostic route",
-      "coverage": "RETAINED_RISK",
-      "automatedScope": "No passing result is inferred for this distinct retained-risk experiment.",
-      "remaining": "Distinct native quarantine experiment not established by Q01–Q03 or ordinary spline preservation. G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP remains OPEN / TRACKED under explicit nonblocking candidate disposition."
+      "coverage": "PARTIAL_AUTOMATED_MANUAL_PENDING",
+      "automatedScope": "Only the explicitly named test methods are executable evidence; their saved JUnit results are required. Manual interaction, full variant coverage and author acceptance are not inferred.",
+      "remaining": "Evidence now exists through a real native .cedg lifecycle, but G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP stays OPEN / TRACKED: only the author may move the canonical risk record to resolved. Complete the corresponding author GUI smoke and any scenario variants not exercised by the named methods."
     },
     {
       "id": "U1-P01",
