@@ -97,6 +97,23 @@ approval. Promotion, when authorized, is a separate exact non-force
 fast-forward operation and does not require another FINAL for the unchanged
 accepted commit.
 
+A frozen technical-candidate artifact (a candidate report or its
+machine-readable evidence, committed inside the candidate) must never encode
+mutable future author-decision state as current truth. It may record only
+invariant facts fixed at the moment it was written, for example:
+
+```text
+TECHNICAL_CANDIDATE_STATE = FROZEN
+AUTHOR_DECISION           = NOT_RECORDED_IN_THIS_ARTIFACT
+```
+
+It must not require later mutation merely because the author subsequently
+approves the candidate: the artifact cannot be amended once its exact
+commit/tree identity has been reviewed and accepted. The author's later
+closeout/author-decision record is the sole authority for current author
+approval status, and readers must consult it rather than trust a status field
+frozen inside the technical candidate.
+
 ## Required artifacts
 
 List durable sources, generated evidence, and the completion report.

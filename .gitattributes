@@ -29,3 +29,10 @@ LICENSES/GeoGebra-License-2025-11.md -text -whitespace conflict-marker-size=123
 LICENSES/README.md text eol=lf
 LICENSES/UNRESOLVED.md text eol=lf
 LICENSES/manifest.json text eol=lf
+
+# PRE-G9B-R1-R1 bilingual guide reproducible packaging: the Desktop Gradle
+# resource-copy task takes these as verbatim byte copies, so their checkout
+# must be LF regardless of platform or core.autocrlf, matching the tracked
+# blob PostP1BilingualUserGuideTest actually asserts against.
+docs/user/geocedg_user_guide_en.md text eol=lf
+docs/user/geocedg_user_guide_es.md text eol=lf

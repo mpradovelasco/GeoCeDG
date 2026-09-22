@@ -304,6 +304,16 @@ style and duration diagnostics. Diagnostic findings remain visible but do not
 change product acceptance, coverage or exit code. A technical acceptance result
 does not confer author approval or publication permission.
 
+A frozen technical-candidate artifact (a candidate report or its
+machine-readable evidence, committed inside the candidate) records only
+invariant facts fixed when it was written; it never encodes mutable future
+author-decision state as current truth, and it is never mutated merely because
+the author subsequently approves that exact commit. The author's later
+closeout/author-decision record is the sole authority for current author
+approval status. See
+[`task-template.prompt.md`](../../.github/prompts/tasks/task-template.prompt.md)
+for the full rule.
+
 ## 4. Package and install for internal evaluation
 
 Development execution remains `runGeoCeDG`; it recompiles/runs from the
