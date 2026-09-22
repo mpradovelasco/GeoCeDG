@@ -8,6 +8,7 @@ Import-Module (Join-Path $PSScriptRoot '../verification-supervisor.psm1') -Force
 Import-Module (Join-Path $PSScriptRoot '../verification-receipt.psm1') -Force
 Import-Module (Join-Path $PSScriptRoot '../verification-io.psm1') -Force
 . (Join-Path $PSScriptRoot 'fixtures/verification-environment-fixture.ps1')
+. (Join-Path $PSScriptRoot '../repository-input-identity.ps1')
 
 $script:Cases = 0
 $script:Assertions = 0
@@ -261,6 +262,55 @@ Invoke-Case 'receipt writing is atomic and refuses replacement' {
             throw "Fixture cleanup refused unexpected path: $resolved"
         }
     }
+}
+
+# PRE-G9B-R1 (AD-R0-2): the three previously producer-less receipt inputs.
+$identityRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../..'))
+$identityCommit = (& git -C $identityRoot rev-parse HEAD).Trim()
+
+Invoke-Case 'checker and input identities are deterministic and distinct' {
+    $checkerA = Get-GeoCeDGVerificationAuthorityIdentity -RepositoryRoot $identityRoot `
+        -Commit $identityCommit
+    $checkerB = Get-GeoCeDGVerificationAuthorityIdentity -RepositoryRoot $identityRoot `
+        -Commit $identityCommit
+    $inputIdentity = Get-GeoCeDGRepositoryTrackedIdentity $identityRoot $identityCommit
+    Assert-Case ($checkerA.sha256 -cmatch '^[0-9a-f]{64}$') 'Checker identity is not a SHA-256.'
+    Assert-Case ($checkerA.sha256 -ceq $checkerB.sha256) 'Checker identity is not deterministic.'
+    Assert-Case ($inputIdentity.sha256 -cmatch '^[0-9a-f]{64}$') 'Input identity is not a SHA-256.'
+    Assert-Case ($checkerA.sha256 -cne $inputIdentity.sha256) `
+        'Checker and input identity must remain separate authorities.'
+    Assert-Case ($checkerA.count -gt 0 -and $checkerA.count -lt $inputIdentity.count) `
+        'Checker cohort must be a bounded nonempty subset of tracked inputs.'
+}
+
+Invoke-Case 'checker cohort is exactly the declared verification authority' {
+    $checker = Get-GeoCeDGVerificationAuthorityIdentity -RepositoryRoot $identityRoot `
+        -Commit $identityCommit
+    $tracked = Get-GeoCeDGRepositoryTrackedIdentity $identityRoot $identityCommit
+    $expected = @($tracked.entries | Where-Object {
+        $_.path.StartsWith('tools/agent/', [StringComparison]::Ordinal) -or
+        $_.path -cin $checker.governingPaths })
+    Assert-Case ($checker.count -eq $expected.Count) `
+        "Checker cohort membership drifted: $($checker.count) vs $($expected.Count)."
+    foreach ($governing in $checker.governingPaths) {
+        Assert-Case (@($tracked.entries | Where-Object { $_.path -ceq $governing }).Count -eq 1) `
+            "Governing verification-authority path is absent: $governing"
+    }
+    Assert-Case ($checker.cohort -ceq 'EXECUTABLE_VERIFICATION_AUTHORITY_V1') `
+        'Checker cohort identity label is not versioned.'
+}
+
+Invoke-Case 'a receipt claims only the profile the accepted report established' {
+    $report = New-Report
+    $receipt = New-VerificationAcceptanceReceipt -Report $report `
+        -CheckerIdentityHash $checkerHash -InputIdentityHash $inputHash `
+        -AcceptedProfiles @([string]$report.profile)
+    Assert-Case ($receipt.accepted_profiles.Count -eq 1 -and
+        $receipt.accepted_profiles[0] -ceq [string]$report.profile) `
+        'Receipt claimed a profile the accepted execution did not establish.'
+    Assert-CaseThrows { New-VerificationAcceptanceReceipt -Report $report `
+        -CheckerIdentityHash $checkerHash -InputIdentityHash $inputHash `
+        -AcceptedProfiles @('INTEGRATION') } 'do not include the accepted report profile'
 }
 
 Write-Host "verification-receipt.Tests: $script:Cases cases, $script:Assertions assertions, 0 failures"

@@ -1,0 +1,299 @@
+{
+  "schemaVersion": 1,
+  "phase": "PRE-G9B-R1",
+  "phaseKind": "VERIFICATION_AND_BOUNDED_OPERATIONAL_DEBT",
+  "roadmapGateExecuted": "PRE-G9B-R1 VERIFICATION AND BOUNDED OPERATIONAL DEBT",
+  "productPhaseEffect": "NONE",
+  "changeRoute": "ORDINARY",
+  "verificationClass": "OPERATIONAL_VERIFICATION_INFRASTRUCTURE",
+  "verificationClassFrozenAtPhaseStart": true,
+  "selfApproved": false,
+  "authorApproved": false,
+  "passClaimed": false,
+  "state": "CANDIDATE — PENDING AUTHOR REVIEW",
+  "base": {
+    "commit": "78983cab36ca0cafbb63b3b1bec7392bce5c0424",
+    "tree": "373db9bcafec6b569395a3e368f88a813e4790d9",
+    "branch": "feature/pre-g9b-r1-verification-and-operational-debt",
+    "originMainAtEntry": "78983cab36ca0cafbb63b3b1bec7392bce5c0424",
+    "worktreeAtEntry": "clean"
+  },
+  "slices": [
+    {
+      "id": "TD-VERIFY-RECEIPT-RECOVERY",
+      "disposition": "CLOSED",
+      "summary": "verify.ps1 now emits the canonical acceptance receipt when, and only when, a FINAL run reports COMPLETED / ACCEPTED / COMPLETE. The receipt binds the four distinct identities the architecture already distinguishes.",
+      "paths": [
+        "tools/agent/verify.ps1",
+        "tools/agent/repository-input-identity.ps1",
+        "tools/agent/tests/verification-receipt.Tests.ps1"
+      ],
+      "secondAcceptanceSystemIntroduced": false,
+      "note": "No new gating was written. New-VerificationAcceptanceReceipt already refused every non-accepting report, invalid result hash, untrusted or not-run check, coverage-set mismatch and profile mismatch; Write-VerificationAcceptanceReceipt already refused overwrite. R1 supplies the two identity arguments that had no producer and calls the existing emitter."
+    },
+    {
+      "id": "TD-P1-PACKAGING-SUMMARY",
+      "disposition": "CLOSED",
+      "summary": "build-windows-package.ps1 no longer prints an unconditional public-redistribution line. The summary is now derived from the selected profile's own redistributable flag.",
+      "paths": [
+        "tools/release/build-windows-package.ps1",
+        "geocedg/specs/operations/verification-static-contracts.json",
+        "geocedg/specs/operations/verification-registry.json",
+        "docs/developer/geocedg_operations_manual.md"
+      ],
+      "observedBehaviour": {
+        "NC": "ALLOWED UNDER PROFILE NC",
+        "INTERNAL": "BLOCKED PENDING LICENSE/ASSET APPROVAL"
+      },
+      "licensingSemanticsChanged": false,
+      "coupledRepin": {
+        "path": "tools/release/build-windows-package.ps1",
+        "contract": "packaging.source-authority",
+        "newCanonicalLfSha256": "2b158b0fe433ff8b27fce4f711435256e430ad4021ecb9bdf2f285e087ac0281",
+        "reason": "the pinned file is the file this slice legitimately changes"
+      }
+    },
+    {
+      "id": "TD-G9X1-HISTORICAL-PIN",
+      "disposition": "CLOSED",
+      "summary": "The G9X1 verifier no longer asserts a retired document path, and it now states its specification supersession explicitly instead of carrying a bare historical hash.",
+      "paths": [
+        "tools/agent/verify-g9x1-extended-dxf.ps1",
+        "tools/agent/dxf-authority-validation.ps1",
+        "tools/agent/tests/dxf-authority-validation.Tests.ps1"
+      ],
+      "specificationAuthority": {
+        "historicalSha256": "e5de67f5cc2108cb1f4f85954b3538a8971805ec976ce23a51604574454e147d",
+        "historicalProvenance": "proved at run time from the frozen blob at f528b2dcbe4a802d3dfdb334f842e39ec7f33015, not asserted as a literal",
+        "successorSha256": "f2a0cacc88b13dfac927c8ad59b25cf55fe702d12620e8ba5e91e43b49b676ef",
+        "supersededByCommit": "e5260fc7dd4924f0599ac3ac2700025bf5e48330",
+        "supersedingPhase": "PRE-G9B-S1-R1",
+        "historicalHashReplaced": false
+      }
+    }
+  ],
+  "receiptIdentitySemantics": {
+    "authorDisposition": "Option D",
+    "checkerIdentityHash": {
+      "cohort": "EXECUTABLE_VERIFICATION_AUTHORITY_V1",
+      "definition": "tracked blobs under tools/agent/ plus the typed registry and the governing verification schemas",
+      "governingPaths": [
+        "geocedg/specs/operations/verification-receipt.schema.json",
+        "geocedg/specs/operations/verification-registry.json",
+        "geocedg/specs/operations/verification-registry.schema.json",
+        "geocedg/specs/operations/verification-result.schema.json"
+      ],
+      "canonicalForm": "path NUL mode NUL blobOid LF per entry, ordinal ordering, SHA-256 over the concatenation",
+      "failsClosed": "a missing governing path or an empty cohort is an error, never a silent pass",
+      "overcoverageAccepted": true,
+      "overcoverageRationale": "author-dispositioned: false invalidation is preferable to silently retaining the same checker identity after verification authority has changed"
+    },
+    "inputIdentityHash": {
+      "definition": "the existing complete tracked-repository identity, unchanged by R1",
+      "producer": "Get-GeoCeDGRepositoryTrackedIdentity",
+      "adr": "ADR 0024"
+    },
+    "acceptedProfiles": {
+      "rule": "only the profile the accepted report actually established",
+      "pinnedBy": "verification-receipt.Tests.ps1 case 'a receipt claims only the profile the accepted report established'"
+    },
+    "identitiesAtBase": {
+      "commit": "78983cab36ca0cafbb63b3b1bec7392bce5c0424",
+      "checkerIdentityHash": "2967272ba6f1f5928430658f05d401d8068e7665b9ccdb0a2b4889e65f459752",
+      "checkerCohortBlobCount": 110,
+      "inputIdentityHash": "056d81e6a537293c10efdd00a4ec90feabcec4037023afb19250594e523c220e",
+      "inputBlobCount": 11575,
+      "note": "recorded as base evidence only; the candidate commit necessarily changes both, and the FINAL receipt binds the candidate's own values"
+    }
+  },
+  "preExistingConditions": [
+    {
+      "id": "DRIFT-ASSETS-MANIFEST-PIN",
+      "class": "PRE_EXISTING",
+      "causedByR1": false,
+      "detectedDuring": "PRE-G9B-R1 INFRA_UNIT",
+      "effect": "BLOCKED FINAL — INFRA_UNIT returned REJECTED_VERIFICATION_CORE at the base commit",
+      "path": "packaging/assets-manifest.yml",
+      "contract": "packaging.source-authority",
+      "pinnedSha256": "4d6f2851",
+      "actualCanonicalLfSha256": "c3c80f30943b3179e76ee2a417cfa0f739d18099ec46a649f38160b447202ee8",
+      "origin": "commit 0d13434cf 'docs: reconcile controlled source provenance' added a 162-line retained_branding_source_alternatives section to assets-manifest.yml without repinning the coupled verification contract",
+      "provenanceProof": "all 17 static-contract pins were evaluated against their HEAD blobs; exactly one drifted",
+      "disposition": "AUTHOR AUTHORIZED bounded repin as verification-authority reconciliation",
+      "manifestModified": false,
+      "licensingOrProfileSemanticsChanged": false
+    },
+    {
+      "id": "DRIFT-G9X1-GUIDE-ASSERTIONS",
+      "class": "PRE_EXISTING",
+      "causedByR1": false,
+      "detectedDuring": "PRE-G9B-R1 standalone G9X1 verifier",
+      "effect": "standalone G9X1 verifier only; not a FINAL blocker",
+      "origin": "POST-P1-DOC-HELP converted docs/user/geocedg_user_guide.md into a 2015-character index and split the living guide into _en and _es editions; all six asserted fragments were absent at HEAD",
+      "disposition": "AUTHOR AUTHORIZED retarget to both official editions",
+      "guideContentModified": false
+    },
+    {
+      "id": "DEFECT-DXF-AUTHORITY-SUBSTRING",
+      "class": "PRE_EXISTING",
+      "causedByR1": false,
+      "detectedDuring": "PRE-G9B-R1 standalone G9X1 verifier",
+      "effect": "standalone G9X1 verifier only; not a FINAL blocker",
+      "finalReachability": {
+        "registryNodesReferencingTheRule": 0,
+        "finalRequiredNodeCount": 67,
+        "acceptanceCampaignIntegratedPhaseVerifiers": [
+          "tools/agent/verify-verification-infrastructure.ps1"
+        ],
+        "proof": "Get-GeoCeDGAcceptancePhaseIntegration declares an integration for VERIFICATION-INFRASTRUCTURE only and throws for every other phase, G9X1 included; the registry's G9U0-R2 phase selection requires only ordinary compile/junit/python/static nodes, and verify-g9u0-r2-product-refinement.ps1, which lists the G9X1 verifier among its historical verifiers, is itself outside the registry"
+      },
+      "origin": "dxf-authority-validation.ps1 tested the view prohibition with a naive substring Contains(). After the two approved presentation-only fragments were correctly stripped, zero EuclidianView type references remained, but 13 substring matches survived inside ordinary method identifiers introduced by PRE-G9B-P0/P1 presentation work in commit e1672b22e",
+      "falsePositiveIdentifiers": {
+        "getEuclidianView1()": 4,
+        "getActiveEuclidianView()": 3,
+        "getEuclidianViewFontSize": 2,
+        "hasEuclidianView2EitherShowingOrNot": 2,
+        "getEuclidianView2(1)": 2
+      },
+      "disposition": "AUTHOR AUTHORIZED bounded verifier-maintenance correction to a token-aware match",
+      "normativeReading": "the G9X1 prohibition concerns use of EuclidianView / viewport or presentation state as DXF geometric authority; it does not prohibit ordinary Java method identifiers whose names merely contain the substring",
+      "correction": {
+        "path": "tools/agent/dxf-authority-validation.ps1",
+        "rule": "case-sensitive whole-token match \\bEuclidianView\\b, applied to the view prohibition only",
+        "otherProhibitionsUnchanged": true,
+        "approvedFragmentStrippingUnchanged": true,
+        "guardUnchanged": true,
+        "productSemanticsChanged": false,
+        "dxfBehaviourChanged": false,
+        "historicalEvidenceChanged": false
+      }
+    }
+  ],
+  "verification": {
+    "role": "pre-candidate focused evidence; the FINAL campaign is the candidate-bound acceptance evidence",
+    "note": "these four gates were executed against the working tree while HEAD was still the base commit, so each binds candidate_commit 78983cab36ca0cafbb63b3b1bec7392bce5c0424",
+    "focusedGates": [
+      {
+        "order": 1,
+        "name": "receipt focal tests",
+        "command": "tools/agent/tests/verification-receipt.Tests.ps1",
+        "exitCode": 0,
+        "cases": 14,
+        "assertions": 69,
+        "failures": 0
+      },
+      {
+        "order": 2,
+        "name": "STATIC",
+        "command": "tools/agent/verify.ps1 -Profile STATIC -LogDirectory <external root>",
+        "exitCode": 0,
+        "runId": "verification-b50f57dd59f54368aac69f9b96d57a57",
+        "runState": "COMPLETED",
+        "candidateCommit": "78983cab36ca0cafbb63b3b1bec7392bce5c0424",
+        "candidateTree": "373db9bcafec6b569395a3e368f88a813e4790d9",
+        "executionPlanHash": "7d52b28a732b35635009a4e515095232f569d308ce34964db4597454bfa8d5f0",
+        "resultHash": "375b342ae4ef7a79969b13525f44c3c87362471174194367686f6c3644b78be0",
+        "acceptanceVerdict": "ACCEPTED",
+        "coverageVerdict": "COMPLETE",
+        "requiredCheckCount": 3,
+        "completedCheckCount": 3,
+        "untrustedCheckCount": 0,
+        "notRunCheckCount": 0,
+        "diagnosticSummary": { "clear": 3, "findings": 1, "unavailable": 1 },
+        "diagnosticFindingNote": "the single finding is diagnostic.governance, which emits DIAGNOSTIC_FINDING unconditionally with a constant cause; diagnostic.historical-consistency emits DIAGNOSTIC_UNAVAILABLE unconditionally. Neither says anything about this candidate."
+      },
+      {
+        "order": 3,
+        "name": "INFRA_UNIT",
+        "command": "tools/agent/verify.ps1 -Profile INFRA_UNIT -LogDirectory <external root>",
+        "exitCode": 0,
+        "runId": "verification-fd077491803d45849f5390aba32d026b",
+        "runState": "COMPLETED",
+        "candidateCommit": "78983cab36ca0cafbb63b3b1bec7392bce5c0424",
+        "candidateTree": "373db9bcafec6b569395a3e368f88a813e4790d9",
+        "executionPlanHash": "aafb62532459cf22662a072babf01054a1b8874b50600526f401529fb6ed2ab6",
+        "resultHash": "bae3a77fd23f020d2e9b1394c514bab7ea48291fd39f130694ad68f4f8f1bddd",
+        "acceptanceVerdict": "ACCEPTED",
+        "coverageVerdict": "COMPLETE",
+        "requiredCheckCount": 21,
+        "completedCheckCount": 21,
+        "untrustedCheckCount": 0,
+        "notRunCheckCount": 0,
+        "diagnosticSummary": { "clear": 0, "findings": 0, "unavailable": 0 }
+      },
+      {
+        "order": 4,
+        "name": "standalone G9X1 extended DXF verifier",
+        "command": "tools/agent/verify-g9x1-extended-dxf.ps1 -SkipBuild -LogDirectory <external root>",
+        "exitCode": 0,
+        "boundaryMode": "TAGGED_DESCENDANT",
+        "dxfAuthorityCases": 61,
+        "dxfAuthorityFailures": 0,
+        "dxfAuthorityResultSha256": "6892afe36bcab30866036633942275dd947904f8b5bd68a3b065a42ac697738c",
+        "note": "the script's own 'G9X1 = PASS — AUTHOR APPROVED' line reports the historical G9X1 gate status it was written to assert; it is not a PRE-G9B-R1 approval claim"
+      }
+    ],
+    "dxfAuthorityPinnedProperties": [
+      {
+        "property": "genuine EuclidianView type/authority references are still rejected",
+        "cases": [
+          "DXF forbids EuclidianView",
+          "application export seam forbids EuclidianView",
+          "a declared view type reference is still forbidden",
+          "a qualified view type reference is still forbidden",
+          "a view type cast is still forbidden",
+          "view factory cannot change its approved constructor"
+        ]
+      },
+      {
+        "property": "the existing render/view authority violations are still rejected",
+        "cases": [
+          "DXF forbids evaluateForRender",
+          "DXF forbids LocusRenderCache",
+          "DXF forbids myPointList",
+          "view factory body cannot acquire viewport authority",
+          "view import cannot be omitted",
+          "view import cannot be duplicated",
+          "view factory cannot be duplicated",
+          "application factory exception never applies to an exporter"
+        ]
+      },
+      {
+        "property": "ordinary method identifiers are no longer rejected",
+        "cases": [
+          "presentation method identifiers are not view authority",
+          "actual application factory LF",
+          "actual application factory CRLF"
+        ]
+      }
+    ]
+  },
+  "impactDeclarations": {
+    "productPhaseEffect": "NONE",
+    "verificationInfrastructureImpact": "MODIFIED",
+    "verificationInfrastructureImpactDetail": "receipt emission added to the FINAL path; a checker-authority identity producer added; three operational contract pins reconciled; the G9X1 living-guide assertions retargeted; the G9X1 view prohibition made token-aware",
+    "bootstrapImpact": "NO_CHANGE_REQUIRED",
+    "guideImpact": "NONE",
+    "guideImpactDetail": "no user-facing behaviour changed; the G9X1 verifier was retargeted to the existing _en and _es editions and asserts their existing content",
+    "kernelOrGeometryImpact": "NONE",
+    "serializationImpact": "NONE",
+    "licensingOrTrademarkSemanticsImpact": "NONE"
+  },
+  "notAuthorized": [
+    "PRE-G9B-R1-R1 through R7",
+    "R2-E0",
+    "R2-E1",
+    "G9B",
+    "G9C",
+    "G9U2",
+    "productive G10",
+    "further G12",
+    "branch publication",
+    "merge or promotion to main",
+    "tag",
+    "release",
+    "binary publication",
+    "commercial distribution"
+  ],
+  "successorPhaseAuthorized": false
+}

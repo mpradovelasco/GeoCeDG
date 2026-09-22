@@ -321,10 +321,11 @@ PROFILE COMMERCIAL           = NOT AUTHORIZED
 
 The distribution condition belongs to the requested profile and to the notice
 packaged with the copy, not to a single global sentence. The build console
-summary still prints one historical global phrase for every profile; that
-reporting defect is tracked as `TD-P1-PACKAGING-SUMMARY` and does not change
-the composition, legal bundle, manifest, installers or PROFILE NC identity of a
-correct NC package.
+summary now derives that condition from the selected distribution profile,
+exactly as the build manifest already did; `TD-P1-PACKAGING-SUMMARY` is closed
+by `PRE-G9B-R1`. The correction is reporting only: it changes no composition,
+legal bundle, manifest, installer or PROFILE NC identity, and PROFILE COMMERCIAL
+remains fail-closed.
 
 An app-image, ZIP, MSI or EXE built with the repository default profile is
 `INTERNAL EVALUATION — NOT FOR REDISTRIBUTION`. A build requested with

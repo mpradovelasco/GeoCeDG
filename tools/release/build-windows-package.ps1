@@ -1068,7 +1068,15 @@ try {
     Write-Host "Hashes: $hashPath"
     Write-Host $ExpectedMarker
     Write-Host "PACKAGING TECHNICAL BUILD = PASS"
-    Write-Host "PUBLIC REDISTRIBUTION = BLOCKED PENDING LICENSE/ASSET APPROVAL"
+    # TD-P1-PACKAGING-SUMMARY (PRE-G9B-R1): derive the redistribution line from
+    # the selected distribution profile, exactly as the build manifest already
+    # does. Reporting correctness only: composition, legal bundle, profile
+    # semantics and the COMMERCIAL fail-closed state are unchanged.
+    Write-Host "PUBLIC REDISTRIBUTION = $(if ([bool]$selected.redistributable) {
+        [string]$selected.public_redistribution
+    } else {
+        "BLOCKED PENDING LICENSE/ASSET APPROVAL"
+    })"
 } catch {
     Write-Error $_.Exception.Message
     exit 1

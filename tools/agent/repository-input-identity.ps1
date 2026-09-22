@@ -146,6 +146,55 @@ function Get-GeoCeDGRepositoryTrackedIdentity {
         sha256 = Get-GeoCeDGRepositoryIdentityHash $canonical; count = $ordered.Count; entries = $ordered }
 }
 
+# PRE-G9B-R1 (AD-R0-2, author disposition): the versioned executable
+# verification-authority cohort. Bounded and deterministic by construction:
+# every tracked blob under tools/agent plus the typed registry consumed by the
+# canonical verifier and the schemas governing registry, result and receipt
+# authority. Overcoverage inside this bounded cohort is accepted deliberately:
+# a false invalidation is preferable to silently retaining the same checker
+# identity after verification authority changed. This is not the plan identity
+# (execution_plan_hash), not the per-check command identity, not the complete
+# tracked input identity and not environment identity.
+$script:GeoCeDGVerificationAuthorityPrefix = 'tools/agent/'
+$script:GeoCeDGVerificationAuthorityPaths = @(
+    'geocedg/specs/operations/verification-receipt.schema.json',
+    'geocedg/specs/operations/verification-registry.json',
+    'geocedg/specs/operations/verification-registry.schema.json',
+    'geocedg/specs/operations/verification-result.schema.json')
+
+function Get-GeoCeDGVerificationAuthorityIdentity {
+    param([Parameter(Mandatory)] [string]$RepositoryRoot,
+        [Parameter(Mandatory)] [string]$Commit)
+    $identity = Get-GeoCeDGRepositoryTrackedIdentity $RepositoryRoot $Commit
+    $named = [Collections.Generic.HashSet[string]]::new(
+        [string[]]$script:GeoCeDGVerificationAuthorityPaths, [StringComparer]::Ordinal)
+    $seenNamed = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+    $cohort = [Collections.Generic.List[object]]::new()
+    # Entries are already ordinal-sorted by tracked identity; filtering preserves
+    # that canonical order and reuses its exact path/mode/blob representation.
+    foreach ($entry in $identity.entries) {
+        $isPrefixed = $entry.path.StartsWith(
+            $script:GeoCeDGVerificationAuthorityPrefix, [StringComparison]::Ordinal)
+        if ($named.Contains($entry.path)) { [void]$seenNamed.Add($entry.path) }
+        if ($isPrefixed -or $named.Contains($entry.path)) { $cohort.Add($entry) }
+    }
+    # Fail closed: a missing governing registry or schema is never a smaller
+    # cohort, it is an unusable verification authority.
+    foreach ($required in $script:GeoCeDGVerificationAuthorityPaths) {
+        Assert-GeoCeDGRepositoryIdentity ($seenNamed.Contains($required)) `
+            "Verification authority cohort is missing a governing path: $required"
+    }
+    Assert-GeoCeDGRepositoryIdentity ($cohort.Count -gt 0) `
+        'Verification authority cohort resolved to no tracked blob.'
+    $canonical = ($cohort | ForEach-Object {
+        "$($_.path)`0$($_.mode)`0$($_.blobOid)`n" }) -join ''
+    return [pscustomobject][ordered]@{ schemaVersion = 1; commit = $identity.commit
+        treeOid = $identity.treeOid; cohort = 'EXECUTABLE_VERIFICATION_AUTHORITY_V1'
+        prefix = $script:GeoCeDGVerificationAuthorityPrefix
+        governingPaths = [string[]]$script:GeoCeDGVerificationAuthorityPaths
+        sha256 = Get-GeoCeDGRepositoryIdentityHash $canonical; count = $cohort.Count }
+}
+
 function Assert-GeoCeDGRepositoryTreeDelta {
     param(
         [Parameter(Mandatory)] [string]$RepositoryRoot,

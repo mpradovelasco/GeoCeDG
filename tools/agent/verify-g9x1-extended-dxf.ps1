@@ -38,8 +38,20 @@ $PromptRelativePath = ".github/prompts/tasks/g9x1-extended-dxf-curves.prompt.md"
 $PromptSha = "fab1dd78c85b337a4f5ac29b8b56ca5565761a2b7cc199312634f42cbe975b94"
 $SpecificationRelativePath = `
     "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
-$SpecificationSha = `
+# TD-G9X1-HISTORICAL-PIN (PRE-G9B-R1). Three distinct facts are recorded
+# instead of substituting one hash for another. The historical value is the
+# G9X1 authority frozen at the entry commit and reachable from the pass tag;
+# it stays the authority for the frozen evidence record and is verified from
+# that blob, never from the worktree. The successor value is the live
+# specification, which PRE-G9B-S1-R1 legitimately evolved. G9X1 itself is not
+# reopened and its PASS - AUTHOR APPROVED disposition is unchanged.
+$SpecificationHistoricalSha = `
     "e5de67f5cc2108cb1f4f85954b3538a8971805ec976ce23a51604574454e147d"
+$SpecificationSuccessorSha = `
+    "f2a0cacc88b13dfac927c8ad59b25cf55fe702d12620e8ba5e91e43b49b676ef"
+$SpecificationSupersededByCommit = `
+    "e5260fc7dd4924f0599ac3ac2700025bf5e48330"
+$SpecificationSupersedingPhase = "PRE-G9B-S1-R1"
 $AdrRelativePath = `
     "docs/adr/0014-export-only-dxf-approximation-and-sidecar.md"
 $AdrSha = "2bc0a4f7eed551778f1e4b50b6704214ca3dab96a2c69d0514bdc24a9c715eb3"
@@ -90,6 +102,35 @@ function Get-CanonicalLfSha256 {
     $bytes = [Text.UTF8Encoding]::new($false).GetBytes($canonical)
     return [Convert]::ToHexString(
         [Security.Cryptography.SHA256]::HashData($bytes)).ToLowerInvariant()
+}
+
+function Assert-SpecificationSupersession {
+    # Retain the historical authority by proving it from the frozen G9X1 entry
+    # blob, and record the exact commit and phase that superseded it. This adds
+    # evidence; it rewrites none and reopens no approved phase.
+    $historical = (& git -C $RepositoryRoot show `
+        "${EntrySha}:${SpecificationRelativePath}") -join "`n"
+    Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
+        -Message "Frozen G9X1 specification blob is unreadable at $EntrySha."
+    $historicalSha = [Convert]::ToHexString(
+        [Security.Cryptography.SHA256]::HashData(
+            [Text.UTF8Encoding]::new($false).GetBytes(
+                ($historical -replace "`r`n", "`n") + "`n"))).ToLowerInvariant()
+    Assert-Condition -Condition ($historicalSha -ceq $SpecificationHistoricalSha) `
+        -Message ("Frozen G9X1 specification authority does not match its " +
+            "historical pin: $historicalSha")
+    Assert-Condition -Condition ($SpecificationSuccessorSha -cne `
+            $SpecificationHistoricalSha) `
+        -Message "A superseding specification must differ from the frozen one."
+    $supersedes = (& git -C $RepositoryRoot rev-parse --verify `
+        "${SpecificationSupersededByCommit}^{commit}").Trim()
+    Assert-Condition -Condition ($LASTEXITCODE -eq 0 -and
+            $supersedes -ceq $SpecificationSupersededByCommit) `
+        -Message "Superseding G9X1 specification commit is unresolvable."
+    Write-Host ("G9X1 specification authority: historical " +
+        "$SpecificationHistoricalSha frozen at $EntrySha; successor " +
+        "$SpecificationSuccessorSha superseded by " +
+        "$SpecificationSupersededByCommit ($SpecificationSupersedingPhase).")
 }
 
 function Assert-CanonicalHash {
@@ -328,7 +369,7 @@ function Assert-EvidenceContract {
             $Evidence.provenance.canonicalPromptCanonicalLfSha256 -eq
                 $PromptSha -and
             $Evidence.provenance.specificationCanonicalLfSha256 -eq
-                $SpecificationSha -and
+                $SpecificationHistoricalSha -and
             $Evidence.provenance.adr0014CanonicalLfSha256 -eq $AdrSha -and
             $Evidence.provenance.preAuthorReviewEvidenceCanonicalLfSha256 -eq
                 "1b3f017bd9d3dd53037a0edf6de40866de1f9143ba386101878f6d2dbec0cea9") `
@@ -687,7 +728,8 @@ try {
 
     Assert-CanonicalHash -RelativePath $PromptRelativePath -Expected $PromptSha
     Assert-CanonicalHash -RelativePath $SpecificationRelativePath `
-        -Expected $SpecificationSha
+        -Expected $SpecificationSuccessorSha
+    Assert-SpecificationSupersession
     Assert-CanonicalHash -RelativePath $AdrRelativePath -Expected $AdrSha
 
     $evidence = Read-JsonDocument -RelativePath $EvidenceRelativePath
@@ -711,18 +753,47 @@ try {
         Assert-Condition -Condition ($report.Contains($fragment)) `
             -Message "G9X1 author-closeout report is missing: $fragment"
     }
-    # The living guide tracks the current product default. PRE-G9B-P1 promoted
-    # extended DXF to a GeoCeDG default, so the guide must state the boundary
-    # that still holds instead of the retired default-off state. The frozen
-    # G9X1 architecture record below keeps its historical wording.
-    $guide = Get-Content -Raw -LiteralPath (Resolve-RequiredFile `
-        -RelativePath "docs/user/geocedg_user_guide.md")
-    foreach ($fragment in @(
-            "G9X1 = PASS — AUTHOR APPROVED", "partialOutput=false",
-            "ESTIMATED_ERROR", "`$INSUNITS=0", "experimental",
-            "exact DXF ``SPLINE`` is **NOT IMPLEMENTED**")) {
-        Assert-Condition -Condition ($guide.Contains($fragment)) `
-            -Message "The living guide is missing the G9X1 boundary: $fragment"
+    # PRE-G9B-R1 slice 3 (verifier maintenance only). POST-P1-DOC-HELP turned
+    # docs/user/geocedg_user_guide.md into a stable index that intentionally
+    # carries no product assertion, so the current-product G9X1 boundary is
+    # validated against the two official living editions instead. Assertions
+    # use stable technical literals and shared section markers rather than
+    # translated prose; only the default-enabled sentence is language-specific.
+    # No guide byte, DXF behaviour, G9X1 product semantic or historical
+    # approval state is changed by this retarget.
+    $guideEditions = [ordered]@{
+        "docs/user/geocedg_user_guide_en.md" = "is enabled by default in GeoCeDG"
+        "docs/user/geocedg_user_guide_es.md" =
+            "está activada por defecto en GeoCeDG"
+    }
+    # Identical structured literals in both editions: exact SPLINE remains
+    # unimplemented, SplineV2 exports as approximate LWPOLYLINE, the guarantee
+    # stays ESTIMATED_ERROR, coordinates stay Cartesian model UNITLESS, and
+    # partial output stays disabled under a strict-complete request.
+    $sharedContract = @(
+        "<!-- geocedg-guide-section: dxf-export -->",
+        "DXF SPLINE exact entity      = NOT IMPLEMENTED",
+        "SplineV2 DXF representation  = APPROXIMATE LWPOLYLINE under current G9X1",
+        "| Allowed evidence | ``ESTIMATED_ERROR`` |",
+        "| Coordinates / units | ``Cartesian 2D world / UNITLESS`` |",
+        "| Partial output | ``Disabled (strict complete request)`` |",
+        "``--enableExtendedDxf=false``")
+    foreach ($edition in $guideEditions.Keys) {
+        $guide = Get-Content -Raw -LiteralPath (Resolve-RequiredFile `
+            -RelativePath $edition)
+        foreach ($fragment in $sharedContract) {
+            Assert-Condition -Condition ($guide.Contains($fragment)) `
+                -Message ("The living guide $edition is missing the G9X1 " +
+                    "boundary: $fragment")
+        }
+        # The editions wrap prose differently, so the one language-specific
+        # sentence is matched on whitespace-normalized text. Structured
+        # literals above still match exactly.
+        $flattened = ($guide -replace "\s+", " ")
+        $defaultSentence = [string]$guideEditions[$edition]
+        Assert-Condition -Condition ($flattened.Contains($defaultSentence)) `
+            -Message ("The living guide $edition does not state that extended " +
+                "DXF is enabled by default: $defaultSentence")
     }
     $architecture = Get-Content -Raw -LiteralPath (Resolve-RequiredFile `
         -RelativePath "docs/architecture/g9_extended_dxf_architecture.md")

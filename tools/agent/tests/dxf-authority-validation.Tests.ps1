@@ -51,6 +51,19 @@ Test-DxfAuthorityCase 'application factory exception never applies to an exporte
 $factory = [regex]::Match($appSource, '(?ms)^\t@Override\n\tprotected EuclidianView newEuclidianView\([^\n]*\) \{.*?^\t\}').Value
 if ([string]::IsNullOrWhiteSpace($factory)) { throw 'Missing actual view factory fixture.' }
 Test-DxfAuthorityCase 'view factory cannot be duplicated' $appPath ($appSource + "`n$factory") $false
+$identifierProbe = @(
+    'int f = getEuclidianViewFontSize() + getEuclidianView1().hashCode()',
+        '+ getActiveEuclidianView().hashCode()',
+        '+ (hasEuclidianView2EitherShowingOrNot(1) ? 1 : 0)',
+        '+ getEuclidianView2(1).hashCode();') -join "`n"
+Test-DxfAuthorityCase 'presentation method identifiers are not view authority' $appPath `
+    ($appSource + "`n" + $identifierProbe) $true
+Test-DxfAuthorityCase 'a declared view type reference is still forbidden' $appPath `
+    ($appSource + "`nEuclidianView view = null;") $false
+Test-DxfAuthorityCase 'a qualified view type reference is still forbidden' $appPath `
+    ($appSource + "`nObject v = org.geogebra.common.euclidian.EuclidianView.class;") $false
+Test-DxfAuthorityCase 'a view type cast is still forbidden' $exportPath `
+    'class DxfExporter { Object v = (EuclidianView) source; }' $false
 
 if (@($rows.name | Sort-Object -Unique -CaseSensitive).Count -ne $rows.Count) { throw 'Duplicate DXF fixture identity.' }
 $json = ([ordered]@{ schemaVersion = 1; cases = @($rows); tests = $rows.Count; failures = 0 } |

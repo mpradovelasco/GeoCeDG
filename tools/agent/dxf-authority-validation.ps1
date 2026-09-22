@@ -30,11 +30,20 @@ function Assert-GeoCeDGDxfSourceAuthority {
 
     # These are the original G9X1 prohibitions, unchanged. The remaining App
     # source, all export seams and every other productive Java path are scanned.
+    # The view prohibition targets EuclidianView as DXF geometric authority, so
+    # it is matched as a whole token. An ordinary method identifier that merely
+    # contains the substring, such as getEuclidianView1 or getActiveEuclidianView,
+    # is not a view/type reference and never was the prohibited authority.
     foreach ($forbidden in @(
             'evaluateForRender', 'LocusRenderCache', 'myPointList',
             'EuclidianView', 'System.nanoTime', 'System.currentTimeMillis',
             'ThreadLocalRandom', 'Math.random', 'parallelStream')) {
-        if ($scan.Contains($forbidden)) {
+        $used = if ($forbidden -ceq 'EuclidianView') {
+            $scan -cmatch '\bEuclidianView\b'
+        } else {
+            $scan.Contains($forbidden)
+        }
+        if ($used) {
             throw "$RelativePath uses forbidden G9X1 authority: $forbidden"
         }
     }

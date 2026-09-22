@@ -40,6 +40,8 @@ Import-Module (Join-Path $PSScriptRoot 'verification-registry.psm1') -Force
 Import-Module (Join-Path $PSScriptRoot 'verification-supervisor.psm1') -Force
 Import-Module (Join-Path $PSScriptRoot 'verification-packaging-state.psm1') -Force
 Import-Module (Join-Path $PSScriptRoot 'verification-environment.psm1') -Force
+Import-Module (Join-Path $PSScriptRoot 'verification-receipt.psm1') -Force
+. (Join-Path $PSScriptRoot 'repository-input-identity.ps1')
 
 function Get-CanonicalSelection {
     if (-not [string]::IsNullOrWhiteSpace($Profile)) {
@@ -180,6 +182,29 @@ try {
             }
         }
     }
+    # PRE-G9B-R1: canonical acceptance receipt. Emission is gated on the
+    # resolved FINAL profile; every other eligibility rule stays owned by the
+    # existing receipt factory, which fails closed. No acceptance logic is
+    # duplicated here and no receipt is written for any other path.
+    $receiptPath = $null
+    if ([string]$run.report.profile -ceq 'FINAL' -and
+            [string]$run.report.run_state -ceq 'COMPLETED' -and
+            [string]$run.report.acceptance_verdict -ceq 'ACCEPTED' -and
+            [string]$run.report.coverage_verdict -ceq 'COMPLETE') {
+        $candidateCommit = [string]$run.report.candidate_commit
+        $checkerIdentity = Get-GeoCeDGVerificationAuthorityIdentity `
+            -RepositoryRoot $repositoryRoot -Commit $candidateCommit
+        $inputIdentity = Get-GeoCeDGRepositoryTrackedIdentity `
+            $repositoryRoot $candidateCommit
+        # Only the profile the accepted report actually established is claimed.
+        $receipt = New-VerificationAcceptanceReceipt -Report $run.report `
+            -CheckerIdentityHash ([string]$checkerIdentity.sha256) `
+            -InputIdentityHash ([string]$inputIdentity.sha256) `
+            -AcceptedProfiles @([string]$run.report.profile)
+        $receiptPath = Write-VerificationAcceptanceReceipt `
+            -Path (Join-Path $LogDirectory 'verification-receipt.json') `
+            -Receipt $receipt
+    }
     if (-not $Quiet) {
         Write-Host "Resolved profile: $($run.plan.profile)"
         if ($null -ne $run.plan.selection) {
@@ -189,6 +214,7 @@ try {
         Write-Host "Coverage verdict: $($run.report.coverage_verdict)"
         Write-Host "Diagnostic findings: $($run.report.diagnostic_summary.findings)"
         Write-Host "Result: $($run.report_path)"
+        if ($null -ne $receiptPath) { Write-Host "Receipt: $receiptPath" }
     }
     exit ([int]$run.exit_code)
 } catch {
