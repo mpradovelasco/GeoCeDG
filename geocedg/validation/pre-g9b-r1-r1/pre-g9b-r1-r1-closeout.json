@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "phase": "PRE-G9B-R1-R1",
+  "recordKind": "AUTHOR_CLOSEOUT_DISPOSITION",
+  "status": "PRE-G9B-R1-R1 — PASS — AUTHOR APPROVED",
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "technicalCandidateFrozen": true,
+  "candidateMutated": false,
+  "supersedes": {
+    "note": "the frozen candidate's own report and evidence file necessarily carried no author-approval field, per the frozen-candidate rule; only the current-approval status is superseded here",
+    "paths": [
+      "docs/validation/pre_g9b_r1_r1_periodic_quarantine_native_roundtrip_candidate_report.md",
+      "geocedg/validation/pre-g9b-r1-r1/pre-g9b-r1-r1-quarantine-evidence.json"
+    ]
+  },
+  "frozenCandidate": {
+    "commit": "183fe18d14b4cbf3ae84a485f7feeabd63304f1c",
+    "tree": "af00ab4caf0a71c6edcb6706def3f836d9b94ebf",
+    "base": "d0c4bef1e9bd4677c90659598d60443a298caf2d",
+    "branch": "feature/pre-g9b-r1-r1-periodic-quarantine-native-roundtrip",
+    "modifiedByCloseout": false
+  },
+  "acceptedEvidence": {
+    "profile": "PHASE",
+    "selection": "G9U1",
+    "run": "verification-0908f63196844d359bd212e997450ee9",
+    "planHash": "2f3bdb6fad58457bf5f516d94bd4a5eb0abb8729c00aba46e0ee7a299472d500",
+    "resultHash": "5e23b8c96a73e325ebfe82003a63e6d6d5aa36188b5b94013d5b50b72cebc417",
+    "coverage": "COMPLETE",
+    "required": 13,
+    "completed": 13,
+    "untrusted": 0,
+    "notRun": 0,
+    "acceptance": "ACCEPTED",
+    "authorDeterminedSufficient": true,
+    "furtherVerificationRun": false
+  },
+  "debtDisposition": {
+    "TD-R0-G9U1-Q02-BINDING": "CLOSED",
+    "G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP": "RESOLVED"
+  },
+  "retainedBaselineDebt": [
+    {
+      "id": "BASELINE-G9U1-BRANDING-EVIDENCE-PIN",
+      "class": "RETAINED_PRE_EXISTING_BASELINE_DEFECT",
+      "state": "OPEN",
+      "ownedByThisPhase": false,
+      "repairedHere": false
+    }
+  ],
+  "prohibitedInThisCloseout": [
+    "modifying the frozen technical candidate",
+    "running further verification for this phase",
+    "tagging or releasing",
+    "authorizing or implementing a successor phase"
+  ],
+  "successorPhaseAuthorized": false,
+  "publicationState": "AUTHORIZED FOR PROMOTION BY CLEAN FAST-FORWARD"
+}
