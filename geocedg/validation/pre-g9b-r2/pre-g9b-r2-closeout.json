@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "phase": "PRE-G9B-R2",
+  "recordKind": "AUTHOR_CLOSEOUT_DISPOSITION",
+  "status": "PRE-G9B-R2 — PASS — AUTHOR APPROVED",
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "technicalCandidateFrozen": true,
+  "candidateMutated": false,
+  "frozenCandidate": {
+    "commit": "f451f603cb4c9e7f887cbfef3ad6cf90800f98a5",
+    "tree": "c82d0e4a869b3c094b2cf802216573257e0db240",
+    "base": "51a6b096335938bb2580eb3b8e1101db0f2f1575",
+    "branch": "feature/pre-g9b-r2-semantic-metric-endpoint-provenance",
+    "modifiedByCloseout": false
+  },
+  "acceptedEvidence": [
+    {
+      "command": "tools/agent/verify.ps1 -Profile PHASE -Phase G9S1-R1",
+      "run": "verification-9b8743ca78714821ac4eb9810cc76139",
+      "planHash": "4cb0ecf5caa86cc1d26d65a0673c352d83b83ed20de706ee23166e942e0ad430",
+      "resultHash": "3c688f23ce117d123f5630668db8d2809353bceb7d1e9d070ffbe2980b92aa57",
+      "acceptance": "ACCEPTED", "coverage": "COMPLETE", "required": 13, "completed": 13, "untrusted": 0, "notRun": 0
+    },
+    {
+      "command": "tools/agent/verify.ps1 -Profile PHASE -Phase G9U0-R6",
+      "run": "verification-eed461f5907c4bedb055b6ce6887ec5b",
+      "planHash": "db8be1b098fcbda0ad294de2158e3a298c913f43212849cd4fc8cf11f8aa48c2",
+      "resultHash": "89d55c2b7b74accde44823a55dfda710c0b5a1d0f04a6198278dbe261d06cee2",
+      "acceptance": "ACCEPTED", "coverage": "COMPLETE", "required": 13, "completed": 13, "untrusted": 0, "notRun": 0
+    },
+    {
+      "command": "tools/agent/verify.ps1 -Profile INTEGRATION",
+      "run": "verification-df533754a9c94fe6b51e0f52e7ef0f1c",
+      "planHash": "4502c4bd1bbe1a123089e9e524fd0afb354932afbcb410f93052555a16c77aea",
+      "resultHash": "71a7853a2416277eec97c45466f08617f50c359437b19a47749b00646ae88b26",
+      "acceptance": "ACCEPTED", "coverage": "COMPLETE", "required": 19, "completed": 19, "untrusted": 0, "notRun": 0
+    }
+  ],
+  "authorDeterminedEvidenceSufficient": true,
+  "furtherVerificationRun": false,
+  "debtDisposition": {
+    "TD-P1-SEMANTIC-LENGTH-INTERSECTION": "CLOSED"
+  },
+  "retainedSeparately": [
+    {
+      "id": "GUIDE-A1-SECTION-9.3-STALE",
+      "class": "PRE_EXISTING_DOCUMENTATION_DRIFT",
+      "owner": "POST-G9U1-A1",
+      "statement": "both guide editions' section 9.3 state Length(S,A,C) is undefined for constructor points; false since A1",
+      "contradictedBy": "org.geocedg.common.locus.PostG9U1A1SplineConstructorProvenanceTest#uniqueOccurrencesFeedRichAndScalarMetricsAndAgreeWithAddresses",
+      "resolvedHere": false
+    },
+    {
+      "id": "BASELINE-G9U1-BRANDING-EVIDENCE-PIN",
+      "class": "RETAINED_PRE_EXISTING_BASELINE_DEFECT",
+      "resolvedHere": false
+    },
+    {
+      "id": "OBS-R2-PHASE-SELECTION-COHORT",
+      "class": "VERIFICATION_OBSERVATION",
+      "statement": "PHASE G9S1-R1 and PHASE G9U0-R6 resolve to the same thirteen required checks; INTEGRATION is a superset",
+      "resolvedHere": false
+    }
+  ],
+  "prohibitedInThisCloseout": [
+    "modifying the frozen technical candidate",
+    "running further verification",
+    "tagging or releasing",
+    "authorizing or executing PRE-G9B-R2-E0 or any later phase"
+  ],
+  "successorPhaseAuthorized": false,
+  "publicationState": "AUTHORIZED FOR PROMOTION BY CLEAN FAST-FORWARD"
+}
