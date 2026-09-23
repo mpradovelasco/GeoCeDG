@@ -37,6 +37,12 @@ import org.geogebra.common.kernel.kernelND.GeoPointND;
  * ({@code locus-v2-metrics.md} section 24). Direct families are consulted
  * before derived ones and every result other than {@code NO_ADDRESS} is final.
  * Coordinates, proximity, labels, order and render state are never consulted.
+ *
+ * <p>A derived step is addressed structurally inside its derivation chain: the
+ * addressed source, the endpoint's durable identity (or the versioned
+ * intermediate-step marker below the endpoint), the operation contract, the
+ * durable identities of its authoritative parameter objects, and the key of its
+ * origin, which ends at the explicitly identified derivation root.</p>
  */
 public final class SemanticMetricEndpointResolver2D {
 	private static final String SEMANTIC_POINT_VERSION =
@@ -47,6 +53,8 @@ public final class SemanticMetricEndpointResolver2D {
 			"metric-endpoint/similarity-image-occurrence/v1";
 	private static final String COPY_VERSION =
 			"metric-endpoint/dependent-copy-occurrence/v1";
+	private static final String INTERMEDIATE_STEP = "derivation-step/v1";
+	private static final String COPY_OPERATION = "dependent-copy/v1";
 
 	/** Admitted endpoint families in dispatch order. */
 	public enum Family {
@@ -317,7 +325,13 @@ public final class SemanticMetricEndpointResolver2D {
 		}
 	}
 
-	/** Section 24.6: the same similarity, with the same parameter objects. */
+	/**
+	 * Section 24.6: transformation covariance. {@code T(P)} is an endpoint on
+	 * {@code T(L)} exactly when both derivations prove the same similarity: the
+	 * same versioned transformation contract, the same parameter objects by
+	 * durable identity, and a pre-image that is a membership endpoint on the
+	 * image's own source. Equal values never establish sameness.
+	 */
 	private Resolution image(GeoLocusV2 source, GeoPoint endpoint, int depth) {
 		AlgoElement pointParent = endpoint.getParentAlgorithm();
 		AlgoElement sourceParent = source.getParentAlgorithm();
@@ -327,22 +341,35 @@ public final class SemanticMetricEndpointResolver2D {
 				|| pointParent.getInputLength() != sourceParent.getInputLength()) {
 			return Resolution.noAddress("The endpoint is not an image under the source map");
 		}
+		StringBuilder parameters = new StringBuilder();
 		for (int index = 1; index < pointParent.getInputLength(); index++) {
-			if (pointParent.getInput(index).toGeoElement()
-					!= sourceParent.getInput(index).toGeoElement()) {
+			PersistentGeoId transformParameter =
+					identity(sourceParent.getInput(index).toGeoElement());
+			if (transformParameter == null) {
+				return Resolution.failed(Status.UNRESOLVED_INVALID,
+						Family.SIMILARITY_IMAGE_OCCURRENCE,
+						"Transform parameters of the image source lack durable identities");
+			}
+			if (!transformParameter.equals(
+					identity(pointParent.getInput(index).toGeoElement()))) {
 				return Resolution.noAddress(
 						"Transform parameters are not the same construction objects");
 			}
+			parameters.append(index == 1 ? "" : ",")
+					.append(transformParameter.toExternalForm());
 		}
 		GeoElement preImage = pointParent.getInput(0).toGeoElement();
 		if (!(preImage instanceof GeoPoint) || preImage.isGeoElement3D()) {
 			return Resolution.noAddress("The transformed object is not a 2D point");
 		}
-		Resolution inner = resolve(
-				((AlgoLocusSimilarityTransform2D) sourceParent).getSource(),
-				(GeoPoint) preImage, depth + 1, false);
+		AlgoLocusSimilarityTransform2D transform =
+				(AlgoLocusSimilarityTransform2D) sourceParent;
+		Resolution inner = resolve(transform.getSource(), (GeoPoint) preImage,
+				depth + 1, false);
 		return derive(Family.SIMILARITY_IMAGE_OCCURRENCE, IMAGE_VERSION, source,
-				endpoint, inner, depth);
+				endpoint, inner, depth, "|transform="
+						+ transform.getV2RedefineContractId() + "|parameters="
+						+ parameters);
 	}
 
 	/** Section 24.7: a dependent copy whose definition is exactly one point. */
@@ -359,11 +386,21 @@ public final class SemanticMetricEndpointResolver2D {
 		}
 		Resolution inner = resolve(source, (GeoPoint) copied, depth + 1, false);
 		return derive(Family.DEPENDENT_COPY_OCCURRENCE, COPY_VERSION, source,
-				endpoint, inner, depth);
+				endpoint, inner, depth, "|operation=" + COPY_OPERATION);
 	}
 
+	/**
+	 * Builds one derived step's structural address (section 24.3): addressed
+	 * source, the endpoint's durable identity or, below the endpoint, the
+	 * versioned intermediate-step marker, the operation segment, and the origin
+	 * key that ends at the derivation root. The endpoint's own identity, every
+	 * addressed source and the origin keep durable identities; an intermediate
+	 * step never needs one, and no index, label, order, reference or value
+	 * enters the address.
+	 */
 	private static Resolution derive(Family family, String version,
-			GeoLocusV2 source, GeoPoint endpoint, Resolution inner, int depth) {
+			GeoLocusV2 source, GeoPoint endpoint, Resolution inner, int depth,
+			String operation) {
 		if (inner.status == Status.NO_ADDRESS) {
 			return Resolution.noAddress("The derived point's origin is not an endpoint");
 		}
@@ -376,8 +413,6 @@ public final class SemanticMetricEndpointResolver2D {
 		}
 		PersistentGeoId sourceId = source.getPersistentLocusId();
 		PersistentGeoId pointId = identity(endpoint);
-		// Only the endpoint itself needs durable identity: the DAG fixes every
-		// intermediate derivation step below it.
 		if (sourceId == null || pointId == null && depth == 0
 				|| inner.occurrenceKey == null) {
 			return Resolution.failed(Status.UNRESOLVED_INVALID, family,
@@ -388,9 +423,10 @@ public final class SemanticMetricEndpointResolver2D {
 				origin.getProviderVersion(), origin.getBranchKey(),
 				origin.getComponentLineageKey(), origin.getCanonicalParameter(),
 				origin.getPeriodicLift(), origin.getSeamSide());
+		String step = depth == 0 ? "|point=" + pointId.toExternalForm()
+				: "|step=" + INTERMEDIATE_STEP;
 		return Resolution.unique(family, version + "|addressed-source="
-				+ sourceId.toExternalForm() + "|point="
-				+ (pointId == null ? "derived" : pointId.toExternalForm())
+				+ sourceId.toExternalForm() + step + operation
 				+ "|inner=" + inner.occurrenceKey, address, true);
 	}
 
@@ -404,8 +440,8 @@ public final class SemanticMetricEndpointResolver2D {
 				|| type == AlgoDilate.class;
 	}
 
-	private static PersistentGeoId identity(GeoPoint point) {
-		return Objects.requireNonNull(point).getConstruction()
-				.getSpatialIdentityRegistry().getPersistentGeoId(point);
+	private static PersistentGeoId identity(GeoElement geo) {
+		return Objects.requireNonNull(geo).getConstruction()
+				.getSpatialIdentityRegistry().getPersistentGeoId(geo);
 	}
 }

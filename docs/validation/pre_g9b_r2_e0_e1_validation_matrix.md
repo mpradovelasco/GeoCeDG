@@ -17,6 +17,7 @@ PAIR  = org.geocedg.common.locus.PreG9bR2E1SemanticPairMaterializationTest
 MODEL = org.geocedg.common.kernel.locus.intersection.PreG9bR2E1CertifiedConstructionModelTest
 END   = org.geocedg.common.locus.PreG9bR2E0SemanticEndpointAdmissibilityTest
 EVID  = org.geocedg.common.kernel.locus.intersection.PreG9bR2E0SingleSourceEndpointEvidenceTest
+PCP   = org.geocedg.common.kernel.locus.intersection.PreG9bR2E1PairCopyParticipantTest
 NAT   = org.geocedg.desktop.PreG9bR2E1SemanticPairNativeArchiveTest
 ```
 
@@ -41,7 +42,7 @@ Clause abbreviations: `M24.x` = `locus-v2-metrics.md` §24.x; `CM x` =
 | B11 | source motion `1 -> 0 -> 1`: dormancy then reactivation of the same point and token | PM6 | `PAIR#rootLossAndReturnReactivatesTheSameSlot` |
 | B12 | temporary invalidity of the construction locus and reactivation | PM6, CM 8 | `PAIR#temporaryConstructionInvalidityIsDormantAndRecovers` |
 | B13 | `S × S` self-pair publishes no admissible root | PM2 | `PAIR#selfPairOfAConstructionLocusPublishesNoAdmissibleRoot` |
-| B14 | XML reopen and undo/redo preserve the slot; a closure copy re-certifies, and for a generator-driven side its copied point stays dormant (PM10 limitation) | PM7, PM10 | `PAIR#reopenAndUndoRedoPreserveTheCertifiedSlot`, `PAIR#closureCopyOfAConstructionPairReCertifiesAndLeavesTheCopiedPointDormant` |
+| B14 | XML reopen and undo/redo preserve the slot; a closure copy remaps both sources and the generator driver, and its copied point is current | PM7, PM10 | `PAIR#reopenAndUndoRedoPreserveTheCertifiedSlot`, `PAIR#closureCopyRemapsSourcesAndDriverAndKeepsTheCopiedPointCurrent` |
 | B15 | compatible redefine keeps the slot; incompatible replacement is a barrier | PM7 | `PAIR#compatibleAndIncompatibleRedefineFollowTheLifecycle` |
 | B16 | corrupted / old pair ledger fails closed | PM7 | `PAIR#corruptedOrUnknownPairLedgerFailsClosed` |
 | B17 | globally complete result whose local identity is ambiguous stays unmaterializable | PM1, PM3 | structural: `MODEL#globalCompletenessNeverMakesAnAmbiguousRootAdmissible` |
@@ -56,6 +57,10 @@ Clause abbreviations: `M24.x` = `locus-v2-metrics.md` §24.x; `CM x` =
 | B26 | superseded pin: the G9S1-R1 generic-pair regression now uses an uncertifiable generic locus | ADR 0028 | `G9S1R1SplinePairMaterializationTest#genericLocusPairStaysRichOnlyDespiteSharedInfrastructure` |
 | B27 | superseded pin: the roots of the G9U0 affine × affine lineage pair are admissible, invariantly under source order | ADR 0028, PM2 | `G9U0IntersectionTokenTest#i17CanonicalLocusPairLineageIsSourceOrderInvariant` |
 | B28 | superseded pin: the affine Locus V2 target of the G9U0-R4 supported-target regression receives exact evidence | ADR 0028, PM10 | `G9U0R4IntersectionAdmissibilityContinuationTest#stableSupportedTargetFamiliesReceiveExactOrFailClosedEvidence` |
+| B29 | only the generator grammar names a participant; a copy remaps it with its source; a missing, reused or reshaped participant fails closed | PM10 | `PCP#onlyTheGeneratorGrammarDeclaresAParticipant`, `PCP#aCopyRemapsTheParticipantWithItsSourceAndFailsClosedOtherwise`, `PCP#participantCorrespondenceIsDerivedOnlyThroughSourceAssociation`, `PCP#theLedgerRejectsParticipantMapsThatCouldLinkToTheOriginal` |
+| B30 | a copied ledger whose binding still names the original driver fails closed on import | PM7, PM10 | `PAIR#aCopiedLedgerThatNamesTheOriginalDriverFailsClosedOnImport` |
+| B31 | the copied relation survives native `.cedg` save/reopen; the copied selector names only copied identities; deleting the original leaves the copy current | PM7, PM10 | `NAT#copiedPointDrivenPairKeepsItsRelationAcrossNativeReopen` |
+| B32 | the retained evaluator defect shapes stay refused rather than certified | CM 2, CM 3 | `MODEL#theInlineLiteralDefectShapeIsRefusedRatherThanCertified`, `MODEL#aSingleInlineLiteralSliceIsReplayedAndCertified`, `PAIR#segmentDriverInhomogeneousReadIsRefusedByTheCoherenceGate` |
 
 ## Objective A — endpoint admissibility
 
@@ -86,6 +91,9 @@ Clause abbreviations: `M24.x` = `locus-v2-metrics.md` §24.x; `CM x` =
 | A23 | superseded §23.8 bullet 1 in the R2 exclusion test | M24.8 | `PreG9bR2SemanticIntersectionEndpointTest#unadmittedShapesStayInvalidAndA1FallThroughIsPreserved` |
 | A24 | a missing durable source, rich-result or endpoint identity is `UNRESOLVED_INVALID` | M24.3, M24.4 | `EVID#missingDurableIdentitiesAreUnresolved` |
 | A25 | the user guide's worked endpoint example (§7.5, §9.3) holds as documented in both editions | M24.2, §21 | `END#userGuideWorkedExampleEndpointsHoldAsDocumented`; desktop `PostP1BilingualUserGuideTest` |
+| A26 | transformation covariance: for all seven similarity contracts, `T(E)` is an endpoint on `T(L)`, `E` is not, and `T(E)` is not an endpoint on `L` | M24.6, M24.8 | `END#transformationCovarianceCarriesTheGeneratorForEverySimilarityContract` |
+| A27 | "the same `T`" needs the same contract and parameter identities; equal values or another contract are not the same | M24.6 | `END#sameTransformationNeedsTheSameContractAndParameterIdentities` |
+| A28 | an intermediate derivation step has a stable structural address: derivation root, contract, step path and parameter identities; later participation or a rename does not move it | M24.3 | `END#intermediateDerivationStepsHaveAStableStructuralAddress` |
 
 ## Retained negative regressions
 
@@ -101,7 +109,7 @@ records a correction. Evidence differs from the frozen plan as follows.
 | Row | Frozen plan | Implemented evidence | Reason |
 |---|---|---|---|
 | B6 | one test | adds `segmentDriverInhomogeneousReadIsRefusedByTheCoherenceGate` | retained debt `RECONSTRUCTIBLE-SEGMENT-DRIVER-INHOMOGENEOUS-LAG` (construction-model spec §2), pinned fail-closed |
-| B14 | one test; the copy preserves the slot | two tests; the copied point stays dormant | limitation `PAIR-COPY-GENERATOR-PARAMETERIZATION-CONTRACT` (pair spec §10, design §14) |
+| B14 | one test; the copy preserves the slot | two tests; the copied point stayed dormant in the frozen candidate | limitation `PAIR-COPY-GENERATOR-PARAMETERIZATION-CONTRACT`, resolved by the corrective continuation below |
 | B17 | end-to-end pair test | structural `MODEL` test | D-C4: no capability publishes `COMPLETE` with finite roots |
 | B18, A22 | `severalDefectsPairAndEndpointsSurviveNativeReopen` | `nativeArchiveReconstructsCertifiedPairSlotsAndEndpointFamilies` | one native lifecycle test covers both rows |
 | A14–A16 | planned names | implemented names | same obligations |
@@ -117,3 +125,17 @@ The `SeveralDefects` witness itself is an untracked author input
 tracked tests rebuild its construction by commands. A temporary desktop probe,
 not a tracked test, also replayed the file once on the candidate implementation;
 the candidate report records that replay.
+
+## Corrective continuation
+
+Candidate `3d13ea72f64c241d11759617dbdff70e373e6a50` is preserved unchanged.
+Its descendant applies the author's bounded dispositions: the D-C2
+clarification, transformation covariance, the copy/remap correction and the
+retained evaluator debts. Evidence changes are as follows.
+
+| Row | Change | Reason |
+|---|---|---|
+| B14 | `closureCopyOfAConstructionPairReCertifiesAndLeavesTheCopiedPointDormant` replaced by `closureCopyRemapsSourcesAndDriverAndKeepsTheCopiedPointCurrent` | the copy map remaps the driver participant; the copied point is current (pair spec §10) |
+| B29–B31 | new | participant remap rules, cross-link tamper on import, native round trip of the copied relation |
+| B32 | new | the retained evaluator debts stay refused; the literal-defect description is corrected to the verified two-literal shape |
+| A26–A28 | new | covariance per similarity contract, the "same `T`" identity rule, and the D-C2 structural address |

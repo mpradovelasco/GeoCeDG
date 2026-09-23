@@ -1392,7 +1392,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/geos/GeoLocusIntersectionResult.java",
       "change": "added",
-      "purpose": "Publish rich intersection authority as a nonnumeric, nondrawable DAG node with reconstructible persistence and an exact token ledger; R1 adds strict two-source pair attachment/copy provenance and retained singleton-slot claims without changing R4 one-source lifecycle or allowing label/coordinate inference.",
+      "purpose": "Publish rich intersection authority as a nonnumeric, nondrawable DAG node with reconstructible persistence and an exact token ledger; R1 adds strict two-source pair attachment/copy provenance and retained singleton-slot claims without changing R4 one-source lifecycle or allowing label/coordinate inference. PRE-G9B-R2-E0/E1 proves the copy association of every participant a pair parameterization contract names from exact identity-record copy provenance and exposes retained pair selectors.",
       "authority": "geocedg/specs/locus/locus-v2-intersections.md"
     },
     {
@@ -2826,7 +2826,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusBetweenMetricV2.java",
       "change": "added",
-      "purpose": "Publish a reconstructible rich metric query between two current defined exact semantic positions through normal kernel dependencies and fail closed without stale values during invalid source or endpoint state.",
+      "purpose": "Publish a reconstructible rich metric query between two current defined exact semantic positions through normal kernel dependencies and fail closed without stale values during invalid source or endpoint state. PRE-G9B-R2-E0/E1 delegates endpoint admission to the ordered section 24 family resolver and retains both family and occurrence key.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -2868,7 +2868,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/ReconstructibleLocusEvaluator2D.java",
       "change": "added",
-      "purpose": "Evaluate a reconstructible isolated construction slice by durable identities and capture only a directly proven structural affine F(u)=a u+b certificate for complete R6 inverse coverage, never by labels, samples, fitting, coordinates or XML order.",
+      "purpose": "Evaluate a reconstructible isolated construction slice by durable identities and capture only a directly proven structural affine F(u)=a u+b certificate for complete R6 inverse coverage, never by labels, samples, fitting, coordinates or XML order. PRE-G9B-R2-E0/E1 exposes an immutable certified construction program captured from its own isolated slice.",
       "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
     },
     {
@@ -2880,7 +2880,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/SemanticGeneratorDomainProvider1D.java",
       "change": "added",
-      "purpose": "Expose the explicit evaluator domain and parameter mapping from one reconstructible semantic generator descriptor.",
+      "purpose": "Expose the explicit evaluator domain and parameter mapping from one reconstructible semantic generator descriptor. PRE-G9B-R2-E0/E1 names its true-coordinate parameter grammar as a constant.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -2904,7 +2904,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionTokenLedger2D.java",
       "change": "added",
-      "purpose": "Persist and atomically manage exact token ownership, claims and copy rebasing; retain R4 v4 and v1-v4 import behavior while R1 adds strictly discriminated pair-bearing v5 state, two-source selector/proof attachment, recoverable pair dormancy/quarantine and exact closure-copy remapping without trajectory history.",
+      "purpose": "Persist and atomically manage exact token ownership, claims and copy rebasing; retain R4 v4 and v1-v4 import behavior while R1 adds strictly discriminated pair-bearing v5 state, two-source selector/proof attachment, recoverable pair dormancy/quarantine and exact closure-copy remapping without trajectory history. PRE-G9B-R2-E0/E1 remaps named parameterization participants with the two sources on an immediate copy and re-derives their association on import without a ledger format change.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -3606,7 +3606,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PairSemanticSlotSelector2D.java",
       "change": "added",
-      "purpose": "Define strict canonical source-associated singleton transverse-germ pair selectors without coordinates, current parameters, knots, proof boxes, enumeration ranks or movement history.",
+      "purpose": "Define strict canonical source-associated singleton transverse-germ pair selectors without coordinates, current parameters, knots, proof boxes, enumeration ranks or movement history. PRE-G9B-R2-E0/E1 reads the one durable participant a generator parameterization contract names and remaps it with its source under an exact copy map.",
       "authority": "geocedg/specs/curves/spline-v2-pair-materialization.md"
     },
     {
@@ -3618,13 +3618,13 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PublicSplinePairRootIdentityResolver2D.java",
       "change": "added",
-      "purpose": "Resolve authenticated current spline singleton-germ certificates into exact ledger tokens, retaining fail-closed generic/repeated-class behavior and no frontend or historical root-matching authority.",
+      "purpose": "Resolve authenticated current spline singleton-germ certificates into exact ledger tokens, retaining fail-closed generic/repeated-class behavior and no frontend or historical root-matching authority. PRE-G9B-R2-E0/E1 admits any pair whose both sides expose a certified interval curve model and diagnoses every rich-only pair explicitly.",
       "authority": "geocedg/specs/curves/spline-v2-pair-materialization.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/SplineIntervalModel2D.java",
       "change": "added",
-      "purpose": "Capture authenticated native spline structural numerator/denominator polynomials and actual similarity chains for outward interval evaluation; require exact legacy diagnostic gluing and reject unsupported or collapsed proof contexts.",
+      "purpose": "Capture authenticated native spline structural numerator/denominator polynomials and actual similarity chains for outward interval evaluation; require exact legacy diagnostic gluing and reject unsupported or collapsed proof contexts. PRE-G9B-R2-E0/E1 implements the certified interval curve model capability and shares its similarity-chain composition.",
       "authority": "docs/adr/0022-structural-spline-continuity.md"
     },
     {
@@ -3636,7 +3636,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/SplinePairIntervalCertification2D.java",
       "change": "added",
-      "purpose": "Establish bounded current pair-root interval existence/uniqueness and selected-germ component-product coverage; unresolved cells or competing same-germ roots cannot be silently certified.",
+      "purpose": "Establish bounded current pair-root interval existence/uniqueness and selected-germ component-product coverage; unresolved cells or competing same-germ roots cannot be silently certified. PRE-G9B-R2-E0/E1 certifies through the per-side certified interval curve model capability and names an unsupported side.",
       "authority": "geocedg/specs/curves/spline-v2-pair-materialization.md"
     },
     {
@@ -4741,6 +4741,12 @@
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9bR2E1SemanticPairNativeArchiveTest.java",
       "change": "added",
       "purpose": "PRE-G9B-R2-E0/E1: verify certified pair slots and section 24 endpoint families across a native .cedg lifecycle, including dormancy.",
+      "authority": "geocedg/specs/curves/spline-v2-pair-materialization.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/PreG9bR2E1PairCopyParticipantTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R2-E0/E1 corrective continuation: verify that a closure copy remaps every participant a pair parameterization contract names together with its source, and that a missing, reused or reshaped participant fails closed.",
       "authority": "geocedg/specs/curves/spline-v2-pair-materialization.md"
     }
   ]

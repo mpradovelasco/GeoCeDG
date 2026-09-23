@@ -12,6 +12,9 @@ import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.Orientation;
 /** Domain provider backed by one reconstructible public generator descriptor. */
 public final class SemanticGeneratorDomainProvider1D
 		implements LocusDriverDomainProvider2D {
+	/** Parameter grammar naming the durable true driving coordinate. */
+	public static final String TRUE_COORDINATE_PREFIX = "true-coordinate/";
+
 	private final SemanticGeneratorDescriptor1D descriptor;
 
 	public SemanticGeneratorDomainProvider1D(
@@ -26,7 +29,7 @@ public final class SemanticGeneratorDomainProvider1D
 
 	@Override
 	public String getParameterDescriptor() {
-		return "true-coordinate/" + descriptor.getCoordinateId().toExternalForm();
+		return TRUE_COORDINATE_PREFIX + descriptor.getCoordinateId().toExternalForm();
 	}
 
 	@Override

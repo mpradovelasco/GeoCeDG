@@ -279,15 +279,32 @@ rather than identified across the seam. Every certified root must also pass the
 unchanged floating verification (validity, residual, regular differentials,
 transverse contact) before it is bound; otherwise its class is refused.
 
-One copy limitation is retained, fail-closed. A generator-driven source's
-parameterization contract names the durable identity of its driver coordinate,
-while the §7 closure-copy map rebases only the two source identities. A closure
-copy of a pair with such a side therefore certifies its own current classes
-under fresh tokens, but the copied materialized point's rebased selector matches
-none of them, so the copied point stays dormant and never retargets. The copied
-pair's own roots can be materialized explicitly. Removing the limitation needs
-an author decision: either a generator parameterization contract that carries no
-identity, or a copy map that also rebases the driver identity.
+**Copy and remap of structural participants.** A parameterization contract may
+name one durable structural participant: exactly
+`<generator family provider id>/true-coordinate/<durable geo id>` for a
+generator-driven source; the structural spline contract names none. The
+participant is meaningful identity and stays in the contract. An immediate
+closure copy remaps it together with the sources:
+
+```text
+sourceId(original)    -> sourceId(copy)      for both sources
+participant(original) -> participant(copy)   for every named participant
+```
+
+Each participant association is proved by the copied participant's identity
+record, whose copy source is the original participant; it is never inferred from
+coordinates or searched by label, order or proximity. The remapped selector
+refers only to copied identities and equals the copy's own current selector, so
+the copied materialized point is current whenever the copied construction is. A
+missing or inconsistent association fails closed and never links back to the
+original graph.
+
+The persisted v5 copy evidence is unchanged: the original selector, its address
+proof and the two-source map. On import the participant association is
+re-derived exactly by source association between the recorded original selector
+and the copied binding. A copied binding that still names an original
+participant, or that changes a participant's shape, is a malformed ledger. No
+selector, token, ledger or document format changes.
 
 When either side has no model, the pair remains rich-only exactly as before, and
 the published result carries an explicit diagnostic naming the side that lacks a

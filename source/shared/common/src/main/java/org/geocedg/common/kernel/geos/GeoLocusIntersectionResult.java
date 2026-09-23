@@ -7,16 +7,19 @@ package org.geocedg.common.kernel.geos;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
 import java.util.function.Function;
 
 import org.geocedg.common.kernel.algos.AlgoLocusIntersectionV2;
 import org.geocedg.common.kernel.algos.AlgoLocusLocusIntersectionV2;
+import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.intersection.IntersectionRootDeterministicSelector2D;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSourceBinding2D;
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionResult2D;
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionSolution2D;
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionTokenLedger2D;
 import org.geocedg.common.kernel.locus.intersection.LocusPairIdentity2D;
+import org.geocedg.common.kernel.locus.intersection.PairSemanticSlotSelector2D;
 import org.geocedg.common.kernel.spatial.identity.GeoIdentityRecord;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoIdentityListener;
@@ -265,6 +268,12 @@ public final class GeoLocusIntersectionResult extends GeoElement
 		return tokenLedger.getRetainedDeterministicSelector(rootToken);
 	}
 
+	/** @return existing exact pair-slot selector evidence for a retained token */
+	public Optional<PairSemanticSlotSelector2D> getRetainedPairSelector(
+			String rootToken) {
+		return tokenLedger.getRetainedPairSelector(rootToken);
+	}
+
 	@Override
 	public GeoClass getGeoClassType() {
 		return GeoClass.LOCUS_INTERSECTION_RESULT;
@@ -423,7 +432,8 @@ public final class GeoLocusIntersectionResult extends GeoElement
 				GeoIdentityRecord second = registry.getGeoRecord(
 						registry.getPersistentGeoId(pair.getCallerSecond()));
 				if (pair.getCallerFirst() != pair.getCallerSecond()) {
-					tokenLedger.preparePairSourceCopy(pairSourceCopyMap(first, second));
+					tokenLedger.preparePairSourceCopy(pairSourceCopyMap(first, second),
+							pairParticipantCopyMap(pair));
 				}
 			}
 			if (getParentAlgorithm() != null) {
@@ -543,6 +553,45 @@ public final class GeoLocusIntersectionResult extends GeoElement
 				copyOwner, expectedCopyPair, immediateCopy);
 		tokenLedger.validatePairSourceAttachments(first.getId().toExternalForm(),
 				second.getId().toExternalForm(), mapping);
+	}
+
+	/**
+	 * Proves, for every participant the copied sources' parameterization
+	 * contracts name, its original identity from exact immediate copy
+	 * provenance. Nothing is searched by label, order or coordinates.
+	 *
+	 * @return original participant to copied participant
+	 */
+	private Map<String, String> pairParticipantCopyMap(
+			AlgoLocusLocusIntersectionV2 pair) {
+		SpatialIdentityRegistry registry = cons.getSpatialIdentityRegistry();
+		TreeMap<String, String> participants = new TreeMap<>();
+		for (GeoLocusV2 source : new GeoLocusV2[] {pair.getCallerFirst(),
+				pair.getCallerSecond()}) {
+			LocusDefinition2D definition = source.getSemanticDefinition();
+			if (definition == null) {
+				throw new IllegalArgumentException(
+						"Pair copy source has no current semantic definition");
+			}
+			Optional<String> copied = PairSemanticSlotSelector2D
+					.declaredParticipant(definition.getProvider());
+			if (!copied.isPresent()) {
+				continue;
+			}
+			GeoIdentityRecord record = registry.getGeoRecord(
+					PersistentGeoId.parse(copied.get()));
+			if (record == null || record.getCopySourceId() == null) {
+				throw new IllegalArgumentException(
+						"Pair copy participant lacks exact copy provenance");
+			}
+			String previous = participants.putIfAbsent(
+					record.getCopySourceId().toExternalForm(), copied.get());
+			if (previous != null && !previous.equals(copied.get())) {
+				throw new IllegalArgumentException(
+						"Pair copy participants disagree");
+			}
+		}
+		return participants;
 	}
 
 	private static Map<String, String> pairSourceCopyMap(GeoIdentityRecord first,

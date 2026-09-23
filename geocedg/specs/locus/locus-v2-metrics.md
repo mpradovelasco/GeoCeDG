@@ -958,19 +958,40 @@ metric-endpoint/single-source-intersection-occurrence/v1
 metric-endpoint/generator-occurrence/v1
   | addressed-source=<S> | point=<P>
 metric-endpoint/similarity-image-occurrence/v1
-  | addressed-source=<S'> | point=<P'> | inner=<pre-image key>
+  | addressed-source=<S'> | point=<P'> | transform=<R5 similarity contract>
+  | parameters=<durable IDs of the transform parameters, in input order>
+  | inner=<pre-image key>
 metric-endpoint/dependent-copy-occurrence/v1
-  | addressed-source=<S> | point=<Q> | inner=<copied key>
+  | addressed-source=<S> | point=<Q> | operation=dependent-copy/v1
+  | inner=<copied key>
 ```
 
-Identities are durable. A missing durable identity yields `UNRESOLVED_INVALID`,
-with one exception. A similarity image or dependent copy that is only an
-intermediate step of a derived endpoint, never the endpoint itself, needs no
-identity of its own, because the explicit input chain of the endpoint's parent
-algorithms determines it. Its key segment is `point=derived`. A durable point
-identity begins only when a point first participates, and such an intermediate
-never participates. The endpoint, every addressed source and the direct-family
-origin keep their durable identities.
+Identities are durable, and a missing durable identity yields
+`UNRESOLVED_INVALID`. The one exception is an intermediate derivation step.
+
+**Structural address of a derivation step.** A similarity image or dependent
+copy that lies between the endpoint and its origin is addressed by its place in
+the semantic derivation chain, relative to an explicitly identified derivation
+root and construction lineage:
+
+```text
+derivation root     the innermost key: a direct-family occurrence with durable identities
++ operation kind    transform=<versioned R5 similarity contract>, for example
+                    locus-v2/similarity/rotate-point/v1, or operation=dependent-copy/v1
++ step path         the nesting of inner keys; every step below the endpoint carries
+                    step=derivation-step/v1 in place of point=<identity>
++ parameters        parameters=<durable IDs of the authoritative parameter objects>
++ lineage           addressed-source=<durable ID> at every step
+```
+
+Such a step needs no identity of its own, because the explicit input chain of
+the endpoint's parent algorithms determines it. A durable point identity begins
+only when a point first participates. If an intermediate step later gains one by
+participating elsewhere, or is renamed, its address does not change. A step is
+never identified by a global construction index, XML position, list or output
+order, label, Java reference, Cartesian coordinate or proximity. The endpoint
+itself, every addressed source, every transform parameter and the derivation
+root keep durable identities.
 The §21 and §23 keys are unchanged. A pre-image or copied `SEMANTIC_POINT` is
 represented inside an `inner` key as
 `metric-endpoint/semantic-point/v1|addressed-source=<S>|point=<P>`.
@@ -1013,13 +1034,35 @@ the key does not.
 
 ### 24.6 Similarity-image occurrence
 
+This family applies transformation covariance of semantic membership:
+
+```text
+P is a membership endpoint of L
+and P2 = T(P)
+and L2 = T(L)
+and both derivations prove the same semantic transformation T
+-------------------------------------------------------------
+P2 is a membership endpoint of L2
+```
+
+It is provenance covariance, not coordinate inference. "The same `T`" means the
+same authoritative transformation relation: the same versioned R5 similarity
+contract, the same parameter objects by durable identity, and the same lineage.
+Equal numerical values alone never establish sameness. `T(P)` and `T(L)` keep
+their own durable identities; only membership is carried. `P` itself is not an
+endpoint on `T(L)`, and `T(P)` is not an endpoint on `L`.
+
 An endpoint `P'` belongs to this family only when all of the following hold:
 
 - `P'`'s parent is `AlgoTranslate`, `AlgoRotate`, `AlgoRotatePoint`,
   `AlgoMirror` or `AlgoDilate` (exact classes) whose first input is a point `P`;
-- `S'`'s parent is the R5 similarity algorithm with source `S`;
+- `S'`'s parent is the R5 similarity algorithm with source `S`, and its
+  versioned contract (`translate-vector`, `rotate-origin`, `rotate-point`,
+  `reflect-point`, `reflect-line`, `dilate-origin` or `dilate-point`) names the
+  transformation kind;
 - both algorithms have the same command and the same number of inputs, and each
-  transform parameter is the **same object** in both;
+  transform parameter has the **same durable identity** in both; a source-side
+  parameter without a durable identity is `UNRESOLVED_INVALID`;
 - `P` is a membership endpoint of `S`: a direct family 1–4 of §24.2, a §21
   constructor of `S` when `S` is itself the root spline, or recursively a
   derived family 6–7. A §21 transport through R5 lineage is not membership and
@@ -1049,9 +1092,9 @@ now admitted by §24.4) and retains the others:
   intersection root, a semantic point, a generator or a copy on `S` is
   `NO_ADDRESS` on `T(S)`; `T(P)` built with the same parameter objects is admitted
   by §24.6 instead;
-- whether a generator should follow §21-style structural transport to `T(S)` is
-  not decided by this contract; it is `NO_ADDRESS` until an explicit author
-  decision;
+- the generator `E` of `S` does not address `T(S)` either; by the covariance
+  rule of §24.6, `T(E)` built with the same transformation and parameter objects
+  is the endpoint on `T(S)`;
 - `S × S` pair roots remain `MULTIPLE` (§23.2);
 - free, Cartesian-coincident, ordinary derived, list, expression, macro-output and
   free-copy points are `NO_ADDRESS`;
@@ -1064,7 +1107,11 @@ durable identities, the rich results' persisted token ledgers and the live
 generator state, then revalidate currentness; saved coordinates are never
 sufficient evidence. Copy/remap creates new identities and therefore new,
 internally consistent keys; the single authorized closure-copy token rebase
-remains the only copy provenance path for intersection points. Redefine follows
+remains the only copy provenance path for intersection points. For a pair root,
+that rebase also remaps every structural participant a source's
+parameterization contract names, such as a generator's true-coordinate driver
+(pair materialization spec §10), so the copied relation refers only to copied
+identities. Redefine follows
 the existing lifecycle and redefine contract; a resulting change of family, key,
 side, token or identity is resolved afresh under §24.3 and never repaired by
 proximity.

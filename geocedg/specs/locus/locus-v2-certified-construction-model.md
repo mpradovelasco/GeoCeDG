@@ -58,12 +58,15 @@ homogeneous coordinates are unaffected. The defect belongs to the evaluator,
 not to this contract, and is retained debt
 `RECONSTRUCTIBLE-SEGMENT-DRIVER-INHOMOGENEOUS-LAG`.
 
-A second pre-existing evaluator defect is outside this contract. When a slice
-passes an inline literal to a command, for example `Line(Cj,(0,3))`, the
-isolated copy of the slice no longer depends on the driver, and the evaluator
-returns one constant point for every parameter. The capture refuses such a slice
-by rule 5 of §3, so no certified root is built on it. The wrong floating value is
-recorded as `RECONSTRUCTIBLE-INLINE-LITERAL-SLICE-DISCONNECTED` in the
+A second pre-existing evaluator defect is outside this contract. When two
+commands of the slice each take an inline literal argument, for example
+`Line(Cj,(0,3))` followed by `PerpendicularLine((0,0),gj)`, the isolated copy of
+the slice no longer depends on the driver, and the evaluator returns one
+constant point for every parameter. A single inline literal, observed in a
+construction built for it alone, is replayed correctly. The capture refuses the
+affected slice by rule 5 of §3, so no certified root is built on it. The wrong
+floating value is retained product debt
+`RECONSTRUCTIBLE-INLINE-LITERAL-SLICE-DISCONNECTED`, recorded in the
 `PRE-G9B-R2-E0/E1` design record.
 
 A parameter box on which any predicate of §4 or §5 is not uniformly decided, on

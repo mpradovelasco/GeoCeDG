@@ -66,8 +66,8 @@ class PreG9bR2E1CertifiedConstructionModelTest extends BaseUnitTest {
 		add("P7=Dilate(P6,k2,K)");
 		add("chain=LocusV2(P7,C)");
 		// Arc driver with join, perpendicular and meet. Labeled inputs: a slice with
-		// inline literal command arguments is not replayed by the evaluator (retained
-		// debt RECONSTRUCTIBLE-INLINE-LITERAL-SLICE-DISCONNECTED) and has no program.
+		// inline literals in two of its commands is not replayed by the evaluator
+		// (retained debt RECONSTRUCTIBLE-INLINE-LITERAL-SLICE-DISCONNECTED).
 		add("Mj=(0,-1)");
 		add("Aj=(-1.5,-1)");
 		add("Bj=(1.5,-1)");
@@ -171,6 +171,48 @@ class PreG9bR2E1CertifiedConstructionModelTest extends BaseUnitTest {
 					definition.getEvaluatorCapability()).captureCertifiedProgram().isEmpty(),
 					label);
 		}
+	}
+
+	@Test
+	void theInlineLiteralDefectShapeIsRefusedRatherThanCertified() {
+		// Retained product debt RECONSTRUCTIBLE-INLINE-LITERAL-SLICE-DISCONNECTED:
+		// with inline literals in two commands of the driver-to-traced-point slice,
+		// the evaluator loses the driver dependence. The certified model must keep
+		// refusing that shape and never certify its curve. The next test shows one
+		// inline literal in its own construction is replayed and certified.
+		// PAIR#segmentDriverInhomogeneousReadIsRefusedByTheCoherenceGate pins the
+		// segment-driver lag debt.
+		getKernel().setContinuous(false);
+		add("Mj=(0,-1)");
+		add("Aj=(-1.5,-1)");
+		add("Bj=(1.5,-1)");
+		add("lower=CircularArc(Mj,Aj,Bj)");
+		add("Cj=Point(lower)");
+		add("gj=Line(Cj,(0,3))");
+		add("gp=PerpendicularLine((0,0),gj)");
+		add("Ej=Intersect(gj,gp)");
+		add("literal=LocusV2(Ej,Cj)");
+		LocusDefinition2D definition = locus("literal").getSemanticDefinition();
+		assertTrue(assertInstanceOf(ReconstructibleLocusEvaluator2D.class,
+				definition.getEvaluatorCapability()).captureCertifiedProgram().isEmpty());
+		assertNull(CertifiedIntervalCurveModel2D.capture(definition, BRANCH));
+	}
+
+	@Test
+	void aSingleInlineLiteralSliceIsReplayedAndCertified() {
+		getKernel().setContinuous(false);
+		add("Mj=(0,-1)");
+		add("Aj=(-1.5,-1)");
+		add("Bj=(1.5,-1)");
+		add("lower=CircularArc(Mj,Aj,Bj)");
+		add("Cj=Point(lower)");
+		add("Oj=(0,0)");
+		add("gj=Line(Cj,(0,3))");
+		add("gp=PerpendicularLine(Oj,gj)");
+		add("Ej=Intersect(gj,gp)");
+		add("single=LocusV2(Ej,Cj)");
+		assertNotNull(CertifiedIntervalCurveModel2D.capture(
+				locus("single").getSemanticDefinition(), BRANCH));
 	}
 
 	@Test

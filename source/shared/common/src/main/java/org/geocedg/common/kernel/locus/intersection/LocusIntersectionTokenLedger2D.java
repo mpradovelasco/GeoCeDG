@@ -48,6 +48,7 @@ public final class LocusIntersectionTokenLedger2D {
 	private Snapshot copySource;
 	private String authorizedCopySourceOwner;
 	private Map<String, String> authorizedPairSourceCopy = Map.of();
+	private Map<String, String> authorizedPairParticipantCopy = Map.of();
 	private final Map<String, Integer> materializedClaimCounts =
 			new LinkedHashMap<>();
 
@@ -76,10 +77,26 @@ public final class LocusIntersectionTokenLedger2D {
 
 	/**
 	 * Supplies the exact source association proved by an immediate G9A closure
-	 * copy. This does not authorize an owner transition by itself.
+	 * copy of sources whose parameterization names no participant. This does not
+	 * authorize an owner transition by itself.
 	 */
 	public void preparePairSourceCopy(Map<String, String> sourceMapping) {
-		authorizedPairSourceCopy = checkedPairSourceMap(sourceMapping);
+		preparePairSourceCopy(sourceMapping, Map.of());
+	}
+
+	/**
+	 * Supplies the exact source and parameterization-participant association
+	 * proved by an immediate G9A closure copy. A participant is a durable
+	 * structural identity a pair selector's parameterization contract names,
+	 * such as a generator-driven source's true coordinate. This does not
+	 * authorize an owner transition by itself.
+	 */
+	public void preparePairSourceCopy(Map<String, String> sourceMapping,
+			Map<String, String> participantMapping) {
+		Map<String, String> sources = checkedPairSourceMap(sourceMapping);
+		authorizedPairParticipantCopy = checkedParticipantMap(participantMapping,
+				sources);
+		authorizedPairSourceCopy = sources;
 	}
 
 	/**
@@ -104,7 +121,7 @@ public final class LocusIntersectionTokenLedger2D {
 			boolean currentSources = binding.selector.getSourcePairIdentity()
 					.equals(expectedPair);
 			if (!currentSources && (checked.isEmpty()
-					|| !binding.selector.remapSources(checked).getSourcePairIdentity()
+					|| !binding.selector.remappedSourcePairIdentity(checked)
 							.equals(expectedPair))) {
 				throw new IllegalArgumentException(
 						"Pair ledger descriptors disagree with source dependencies");
@@ -128,6 +145,25 @@ public final class LocusIntersectionTokenLedger2D {
 			requireText(entry.getValue(), "Copied source identity");
 			if (entry.getKey().equals(entry.getValue())) {
 				throw new IllegalArgumentException("Closure copy needs new source IDs");
+			}
+		}
+		return Map.copyOf(mapping);
+	}
+
+	private static Map<String, String> checkedParticipantMap(
+			Map<String, String> mapping, Map<String, String> sources) {
+		java.util.Objects.requireNonNull(mapping);
+		if (new HashSet<>(mapping.values()).size() != mapping.size()) {
+			throw new IllegalArgumentException("Copied participants must be distinct");
+		}
+		for (Map.Entry<String, String> entry : mapping.entrySet()) {
+			requireText(entry.getKey(), "Copy-source participant identity");
+			requireText(entry.getValue(), "Copied participant identity");
+			if (entry.getKey().equals(entry.getValue())
+					|| sources.containsKey(entry.getKey())
+					|| sources.containsValue(entry.getValue())) {
+				throw new IllegalArgumentException(
+						"Closure copy needs new participant IDs distinct from sources");
 			}
 		}
 		return Map.copyOf(mapping);
@@ -235,6 +271,7 @@ public final class LocusIntersectionTokenLedger2D {
 		}
 		authorizedCopySourceOwner = null;
 		authorizedPairSourceCopy = Map.of();
+		authorizedPairParticipantCopy = Map.of();
 		current = next;
 		nextIncarnation = committedNextIncarnation;
 	}
@@ -287,6 +324,7 @@ public final class LocusIntersectionTokenLedger2D {
 	public void observeUnavailable() {
 		authorizedCopySourceOwner = null;
 		authorizedPairSourceCopy = Map.of();
+		authorizedPairParticipantCopy = Map.of();
 		if (current == null) {
 			return;
 		}
@@ -553,6 +591,20 @@ public final class LocusIntersectionTokenLedger2D {
 				.map(binding -> binding.selector);
 	}
 
+	/**
+	 * Returns the exact pair selector bound to one retained token. This exposes
+	 * existing identity evidence; it never resolves by coordinate, parameter,
+	 * list order or presentation state.
+	 *
+	 * @return current-or-dormant pair selector, or empty for other material
+	 */
+	public Optional<PairSemanticSlotSelector2D> getRetainedPairSelector(
+			String token) {
+		return current == null ? Optional.empty() : current.validatedEntry(token)
+				.flatMap(entry -> entry.pairRootBinding)
+				.map(binding -> binding.selector);
+	}
+
 	/** Current eligibility of a retained D2 pair slot, not token identity. */
 	public enum PairBindingState {
 		ACTIVE, DORMANT, QUARANTINED
@@ -714,6 +766,7 @@ public final class LocusIntersectionTokenLedger2D {
 		copySource = parsedCopySource;
 		authorizedCopySourceOwner = null;
 		authorizedPairSourceCopy = Map.of();
+		authorizedPairParticipantCopy = Map.of();
 		materializedClaimCounts.clear();
 	}
 
@@ -778,7 +831,8 @@ public final class LocusIntersectionTokenLedger2D {
 				if (authorizedCopySourceOwner != null) {
 					Map<String, String> mapping = checkedPairSourceMap(
 							authorizedPairSourceCopy);
-					currentEntry = copiedPairEntry(entry, mapping);
+					currentEntry = copiedPairEntry(entry, mapping,
+							authorizedPairParticipantCopy);
 					if (!currentEntry.pairRootBinding.get().selector
 							.getSourcePairIdentity().equals(material.sourcePair)) {
 						throw new IllegalArgumentException(
@@ -1480,10 +1534,12 @@ public final class LocusIntersectionTokenLedger2D {
 	}
 
 	private static Entry copiedPairEntry(Entry source,
-			Map<String, String> mapping) {
+			Map<String, String> mapping, Map<String, String> participants) {
 		PairRootAllocationKey old = source.pairRootBinding.orElseThrow();
+		// Every participant the old contracts name is remapped with its source;
+		// a missing association fails closed instead of linking to the original.
 		PairRootAllocationKey next = new PairRootAllocationKey(old.contract,
-				old.selector.remapSources(mapping));
+				old.selector.remap(mapping, participants));
 		return allocatedPairEntry(source.branchLineage, next,
 				source.pairAddressProof.remapSources(mapping), source.incarnation,
 				source.status, Optional.of(new PairCopyEvidence(old.selector,
@@ -1774,7 +1830,23 @@ public final class LocusIntersectionTokenLedger2D {
 			if (!sourceProof.matchesSources(sourceSelector)) {
 				throw new IllegalArgumentException("Pair copy proof has wrong sources");
 			}
-			sourceSelector.remapSources(this.mapping);
+			sourceSelector.remappedSourcePairIdentity(this.mapping);
+		}
+
+		/**
+		 * The persisted evidence keeps the two-source map. Participant
+		 * association is re-derived exactly by source association between the
+		 * recorded original selector and the copied binding.
+		 *
+		 * @return whether the copied binding is this original under the copy map
+		 */
+		private boolean corresponds(PairSemanticSlotSelector2D copied) {
+			try {
+				return sourceSelector.remap(mapping, sourceSelector
+						.participantCorrespondence(mapping, copied)).equals(copied);
+			} catch (IllegalArgumentException exception) {
+				return false;
+			}
 		}
 
 		private String external() {
@@ -1947,9 +2019,8 @@ public final class LocusIntersectionTokenLedger2D {
 				if (addressProof != null || currentRootBinding.isPresent()
 						|| pairAddressProof == null || status.isPeriodicallyQuarantined()
 						|| !pairAddressProof.matchesSources(pairRootBinding.get().selector)
-						|| pairCopyEvidence.filter(copy -> !copy.sourceSelector
-								.remapSources(copy.mapping)
-								.equals(pairRootBinding.get().selector)).isPresent()) {
+						|| pairCopyEvidence.filter(copy -> !copy.corresponds(
+								pairRootBinding.get().selector)).isPresent()) {
 					throw new IllegalArgumentException("Inconsistent pair entry variant");
 				}
 			} else if (addressProof == null || pairAddressProof != null

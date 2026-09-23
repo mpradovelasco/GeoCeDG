@@ -80,10 +80,15 @@ and materialization, eligibility by capability rather than Java class name, and
 7. **No retargeting across families.** A metric retains both the accepted
    family and, where the family defines one, its versioned occurrence key; a
    later change of either is retargeting and fails closed.
-8. **Membership points are not transported through R5 images.** An intersection
-   root, a semantic point, a copy or a generator of `S` does not address `T(S)`.
-   Whether the generator should follow A1-style structural transport is left
-   open for an explicit author decision; until then it is not admitted.
+8. **Transformation covariance carries membership; nothing is transported.** An
+   intersection root, a semantic point, a copy or a generator of `S` does not
+   address `T(S)`. If `P` is a membership endpoint of `L`, `P2 = T(P)` and
+   `L2 = T(L)`, and both derivations prove the same semantic transformation `T`
+   (the same versioned similarity contract, the same parameter objects by durable
+   identity and the same lineage), then `P2` is a membership endpoint of `L2`.
+   Equal numerical values never establish sameness, and `T(P)` and `T(L)` keep
+   their own durable identities. In particular the generator `E` is not an
+   endpoint on `T(S)`, and `T(E)` is.
 
 ## Consequences
 
@@ -108,19 +113,22 @@ and materialization, eligibility by capability rather than Java class name, and
   `INVALID_QUERY` with a typed diagnostic.
 - Direct families are consulted before derived ones, including the §21
   constructor occurrence, so no approved A1 address can change. An intermediate
-  step of a nested derivation is keyed by the endpoint's DAG input chain rather
-  than by an identity of its own. A family change cannot reach a retained metric
+  step of a nested derivation has a structural address: its derivation root,
+  operation contract, versioned step path and parameter identities. It is never
+  an identity, index, label, order, reference or value of its own. A family
+  change cannot reach a retained metric
   object under the current lifecycle (`NOT_APPLICABLE_UNDER_CURRENT_LIFECYCLE`).
   These Stage-2 corrections are recorded in the design record §14.
-- A closure copy of a pair with a generator-driven side certifies its own roots,
-  but the copied point stays dormant: the generator's parameterization contract
-  names a durable driver identity that the copy map does not rebase. Lifting the
-  limitation is an author decision.
+- A closure copy remaps every structural participant a parameterization
+  contract names, such as a generator's driver, together with the sources. The
+  copied relation refers only to copied identities, the copied point stays
+  current, and the persisted ledger format is unchanged.
 - Implementation surfaced retained, fail-closed limitations of the existing host
-  and evaluator, and one pre-existing wrong-value defect of the reconstructible
-  evaluator (inline literal slices), all listed in the design record §14. None
-  produces a certified root, a materialized point or a length from this
-  decision.
+  and evaluator. It also surfaced two pre-existing wrong-value defects of the
+  reconstructible evaluator, retained as product debt: the segment-driver lag,
+  and slices with inline literals in two commands. All are listed in the design
+  record §14. The certified model refuses both defect shapes, so this decision
+  produces no certified root, materialized point or length from them.
 
 ## Rejected alternatives
 

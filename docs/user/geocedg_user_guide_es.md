@@ -1338,21 +1338,19 @@ Estas son las limitaciones que afectan a lo que hoy puede hacer en la aplicació
   solo como resultado rico y sus diagnósticos lo indican.
 - Una raíz de intersección tangente, ambigua, caduca o insuficientemente
   certificada permanece solo como resultado rico y no puede materializarse.
-- Tras copiar y pegar, un punto copiado que se materializó desde un par cuyo
-  Locus V2 está trazado por un punto conducido queda indefinido; cree los puntos
-  de la copia desde su propio resultado de intersección copiado.
 - Los ejes predefinidos no pueden ser el objetivo de una intersección semántica
   ni el espejo de una reflexión semántica; construya la recta explícitamente
   (sección 10.4).
 - Se conocen dos defectos de evaluación de los Locus V2 trazados por un punto. Un
   lugar conducido sobre un segmento se evalúa con un paso de retraso cuando su
   construcción usa el punto conductor en una recta por dos puntos o en un punto
-  medio. Un lugar cuya construcción pasa un punto literal sin nombre a un comando,
-  como `Line(C,(0,3))`, se evalúa como un único punto fijo. Las posiciones,
-  longitudes e intersecciones de esos lugares pueden ser erróneas. Siempre que sea
-  posible, conduzca el punto sobre una circunferencia o un arco en lugar de un
-  segmento, y dé nombre antes a los puntos literales (`T=(0,3)` y después
-  `Line(C,T)`).
+  medio. Un lugar cuya construcción pasa puntos o vectores literales sin nombre a
+  dos de los comandos entre el punto conductor y el punto trazado, como
+  `Line(C,(0,3))` seguido de `PerpendicularLine((0,0),g)`, se evalúa como un único
+  punto fijo. Las posiciones, longitudes e intersecciones de esos lugares pueden
+  ser erróneas. Siempre que sea posible, conduzca el punto sobre una
+  circunferencia o un arco en lugar de un segmento, y dé nombre antes a los
+  puntos literales (`T=(0,3)` y después `Line(C,T)`).
 
 **Exportación**
 

@@ -434,6 +434,130 @@ final class PreG9bR2E0SemanticEndpointAdmissibilityTest extends G9U0PublicSurfac
 		assertEquals(base, finite(add("LRR=LocusLength(aRR,IRR,JRR)")), 1E-9);
 	}
 
+	@Test
+	void transformationCovarianceCarriesTheGeneratorForEverySimilarityContract() {
+		witness();
+		List<GeoPoint> roots = sortedPoints(add("g=Intersect(a,c)"), "W");
+		String target = roots.get(1).getLabelSimple();
+		double base = finite(add("L0=LocusLength(a,E," + target + ")"));
+		add("vt=Vector((0.4,-0.2))");
+		add("alpha=30deg");
+		add("P0=(0.5,0.5)");
+		add("my:x=0");
+		add("k=2");
+		// Each supported R5 contract, with its parameter labels and length scale.
+		String[][] cases = {
+			{"translate-vector", "Translate", "vt", "1"},
+			{"rotate-origin", "Rotate", "alpha", "1"},
+			{"rotate-point", "Rotate", "alpha,A", "1"},
+			{"reflect-point", "Mirror", "P0", "1"},
+			{"reflect-line", "Mirror", "my", "1"},
+			{"dilate-origin", "Dilate", "k", "2"},
+			{"dilate-point", "Dilate", "k,A", "2"}};
+		for (int index = 0; index < cases.length; index++) {
+			String[] item = cases[index];
+			String suffix = Integer.toString(index);
+			String image = "aT" + suffix;
+			add(image + "=" + item[1] + "(a," + item[2] + ")");
+			add("ET" + suffix + "=" + item[1] + "(E," + item[2] + ")");
+			add("JT" + suffix + "=" + item[1] + "(" + target + "," + item[2] + ")");
+			GeoLocusMetricResult metric = add("LT" + suffix + "=LocusLength(" + image
+					+ ",ET" + suffix + ",JT" + suffix + ")");
+			assertEquals(Double.parseDouble(item[3]) * base, finite(metric),
+					1E-7 * base, item[0]);
+			SemanticMetricEndpointResolver2D.Resolution resolution = resolver.resolve(
+					(GeoLocusV2) requireLookup(image), (GeoPoint) requireLookup("ET" + suffix));
+			assertEquals(Status.UNIQUE, resolution.getStatus(), resolution.getDiagnostic());
+			assertEquals(Family.SIMILARITY_IMAGE_OCCURRENCE, resolution.getFamily());
+			StringBuilder parameters = new StringBuilder();
+			for (String parameter : item[2].split(",")) {
+				parameters.append(parameters.length() == 0 ? "" : ",")
+						.append(id(requireLookup(parameter)).toExternalForm());
+			}
+			// T(P) and T(L) keep their own identities; only membership is carried.
+			assertTrue(resolution.getOccurrenceKey().startsWith(
+					"metric-endpoint/similarity-image-occurrence/v1|addressed-source="
+							+ id(requireLookup(image)).toExternalForm() + "|point="
+							+ id(requireLookup("ET" + suffix)).toExternalForm()
+							+ "|transform=locus-v2/similarity/" + item[0] + "/v1|parameters="
+							+ parameters + "|inner=metric-endpoint/generator-occurrence/v1"),
+					resolution.getOccurrenceKey());
+			// The untransformed generator is not an endpoint on the image, and the
+			// transformed point is not an endpoint on the untransformed locus.
+			assertEquals(Status.NO_ADDRESS, resolver.resolve(
+					(GeoLocusV2) requireLookup(image), (GeoPoint) requireLookup("E"))
+					.getStatus());
+			assertEquals(Status.NO_ADDRESS, resolver.resolve(
+					(GeoLocusV2) requireLookup("a"), (GeoPoint) requireLookup("ET" + suffix))
+					.getStatus());
+		}
+	}
+
+	@Test
+	void sameTransformationNeedsTheSameContractAndParameterIdentities() {
+		witness();
+		add("alpha=30deg");
+		add("aR=Rotate(a,alpha,A)");
+		add("ER=Rotate(E,alpha,A)");
+		add("MR=LocusLength(aR,ER,ER)");
+		assertUnique(Family.SIMILARITY_IMAGE_OCCURRENCE, "aR", "ER");
+		// An equal-valued but separate parameter object is not the same T.
+		add("gam=30deg");
+		add("EB=Rotate(E,gam,A)");
+		assertEquals(Status.NO_ADDRESS, resolver.resolve((GeoLocusV2) requireLookup("aR"),
+				(GeoPoint) requireLookup("EB")).getStatus());
+		// The same parameter objects under another contract are not the same T.
+		add("EO=Rotate(E,alpha)");
+		assertEquals(Status.NO_ADDRESS, resolver.resolve((GeoLocusV2) requireLookup("aR"),
+				(GeoPoint) requireLookup("EO")).getStatus());
+		add("k=2");
+		add("aD=Dilate(a,k,A)");
+		add("EK=Rotate(E,alpha,A)");
+		assertEquals(Status.NO_ADDRESS, resolver.resolve((GeoLocusV2) requireLookup("aD"),
+				(GeoPoint) requireLookup("EK")).getStatus());
+		assertInvalid(add("LB=LocusLength(aR,EB,EK)"));
+	}
+
+	@Test
+	void intermediateDerivationStepsHaveAStableStructuralAddress() {
+		witness();
+		List<GeoPoint> roots = sortedPoints(add("g=Intersect(a,c)"), "W");
+		String first = roots.get(0).getLabelSimple();
+		String second = roots.get(1).getLabelSimple();
+		final double base = finite(add("L0=LocusLength(a," + first + "," + second + ")"));
+		add("alpha=30deg");
+		add("aR=Rotate(a,alpha,A)");
+		add("aRR=Rotate(aR,alpha,A)");
+		add("IR=Rotate(" + first + ",alpha,A)");
+		add("JR=Rotate(" + second + ",alpha,A)");
+		add("IRR=Rotate(IR,alpha,A)");
+		add("JRR=Rotate(JR,alpha,A)");
+		GeoLocusMetricResult nested = add("LRR=LocusLength(aRR,IRR,JRR)");
+		assertEquals(base, finite(nested), 1E-9);
+		GeoLocusV2 outer = (GeoLocusV2) requireLookup("aRR");
+		GeoPoint endpoint = (GeoPoint) requireLookup("IRR");
+		final String key = resolver.resolve(outer, endpoint).getOccurrenceKey();
+		String parameters = id(requireLookup("alpha")).toExternalForm() + ","
+				+ id(requireLookup("A")).toExternalForm();
+		// derivation root + contract + versioned step path + parameter identities
+		assertTrue(key.contains("|point=" + id(endpoint).toExternalForm()
+				+ "|transform=locus-v2/similarity/rotate-point/v1|parameters=" + parameters
+				+ "|inner=metric-endpoint/similarity-image-occurrence/v1|addressed-source="
+				+ id(requireLookup("aR")).toExternalForm() + "|step=derivation-step/v1"
+				+ "|transform=locus-v2/similarity/rotate-point/v1|parameters=" + parameters
+				+ "|inner=metric-endpoint/single-source-intersection-occurrence/v1"), key);
+		assertTrue(key.contains("|point=" + id(roots.get(0)).toExternalForm()), key);
+		// The intermediate later gains a durable identity by participating, and is
+		// renamed: its structural address, and so the retained key, do not move.
+		assertEquals(base, finite(add("LR=LocusLength(aR,IR,JR)")), 1E-9);
+		assertNotNull(id(requireLookup("IR")));
+		assertTrue(requireLookup("IR").rename("IRX"));
+		assertEquals(key, resolver.resolve(outer, endpoint).getOccurrenceKey());
+		assertFalse(key.contains(id(requireLookup("IRX")).toExternalForm()));
+		endpoint.updateCascade();
+		assertEquals(base, finite(nested), 1E-9);
+	}
+
 	private void witness() {
 		getKernel().setContinuous(false);
 		add("A=(0.78,2.24)");

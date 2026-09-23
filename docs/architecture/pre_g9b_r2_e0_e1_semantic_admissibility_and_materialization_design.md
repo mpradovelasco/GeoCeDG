@@ -116,7 +116,7 @@ Rotate(E,alpha,A)     AlgoRotatePoint, 3 inputs; Rotate(a,alpha,A) shares alpha
 | P7 `DEPENDENT_COPY_OCCURRENCE` | admissible after bounded provenance extension | yes iff the copied point is a membership endpoint | §24.7 |
 | P3 with both sides on `S` (`S × S`) | semantically ambiguous — `MULTIPLE` | two preimages | §23.2, unchanged |
 | membership points on an R5 image of their curve (P1, P3, P4, P5, P7 transported) | not semantically addressable on the image — `NO_ADDRESS` | no | §23.8 rationale, §24.8 |
-| P5 on an R5 image of its locus | **not admitted** — two defensible conventions; see §10 | no | §24.8 |
+| P5 itself on an R5 image of its locus | not an endpoint; `T(E)` is admitted by transformation covariance (§10) | no | §24.6, §24.8 |
 | P6 with distinct (for example literal) parameter objects | not established — `NO_ADDRESS` | not proved | §24.6 |
 | P8, P9, P10, P11 | not semantically addressable — `NO_ADDRESS` | no | §24.8 |
 | P12 | cannot exist | — | — |
@@ -235,7 +235,7 @@ The normative detail lives in the
 | return of the same unique class | same token, same point reactivated | same key, metric defined again |
 | `1 -> 0 -> 1`, `1 -> many -> 1` | dormant / quarantined, then reactivated by the selector | follows the point |
 | save / reopen (native `.cedg`), undo / redo | ledger v5 and the command DAG reconstruct; certificates recomputed on load; saved state is never proof | keys never serialized; reconstructed from the DAG and durable identities |
-| copy / remap | exact two-source closure-copy provenance and the single authorized token rebase; with a generator-driven side the copied point stays dormant while the copy's own roots remain explicitly materializable (§14, pair spec §10) | new identities, new internally consistent keys |
+| copy / remap | exact closure-copy provenance: both sources and every participant a parameterization names (a generator's driver) are remapped, and the single authorized token rebase keeps the copied point current (pair spec §10) | new identities, new internally consistent keys |
 | compatible redefine | follows G9A / A3; the selector is resolved afresh | family and key re-derived; a change of family or key is retargeting and fails closed; a cross-family change cannot reach a retained metric today (§14, D-C3) |
 | incompatible redefine / replacement | structural barrier; no label or coordinate matching | `NO_ADDRESS` or `UNRESOLVED_INVALID`; never repaired |
 | old documents | no ledger migration; old rich-only generic results gain admissible tokens only by current certification; no point is created without an explicit action | unchanged |
@@ -268,17 +268,23 @@ No ledger or document format changes. The ledger binding key remains
 | tangency / even multiplicity | germ `0` | no admissible root in that component product |
 | roots in the circle-point seam band | domain not exactly closed at the seam | unresolved for that sign |
 
-## 10. Non-blocking open question for the author
+## 10. Generator points under R5 images — resolved
 
-Whether the generator point `E` of `S` should address an R5 image `T(S)` has two
-defensible answers: A1-style structural transport (the generator, like a
-constructor, is part of the constructive definition of `S`), or R2-style
-membership semantics (`E` is not on `T(S)`). The repository authority does not
-decide it. This design **admits neither**: `E` is `NO_ADDRESS` on `T(S)`, while
-`T(E)` built with the same transform parameter objects is admitted on `T(S)` by
-membership. Fail-closed non-admission cannot produce a wrong length, so the
-question does not block implementation; it is recorded for an explicit author
-decision.
+The frozen design left open whether the generator point `E` of `S` should
+address an R5 image `T(S)`, and admitted neither convention. The corrective
+continuation resolves it by transformation covariance (metrics §24.6):
+
+```text
+P is a membership endpoint of L, P2 = T(P), L2 = T(L), and both derivations
+prove the same T (same versioned R5 contract, same parameter objects by durable
+identity, same lineage)  =>  P2 is a membership endpoint of L2
+```
+
+`E` itself is therefore not an endpoint on `T(S)`, while `T(E)` is, for every
+supported similarity contract. The implementation already behaved this way. The
+continuation makes "the same `T`" explicit in the resolver, through durable
+parameter identities and the contract in the key, and pins all seven contracts
+(`END#transformationCovarianceCarriesTheGeneratorForEverySimilarityContract`).
 
 ## 11. Validation obligations
 
@@ -368,6 +374,29 @@ source and the direct-family origin still require durable identities. Metrics
 §24.3 records the rule; `END#ineligibleTransformsFailClosedAndNestedImagesCompose`
 pins it.
 
+**Clarification in the corrective continuation.** The structural address of an
+intermediate step is relative to an explicitly identified derivation root and
+construction lineage. It is the derivation root, then the operation kind, then
+the versioned structural step path, then the authoritative parameter identities.
+It is never a global construction index, XML position, list or output order,
+label, Java reference, Cartesian coordinate or proximity. The resolver now
+follows that meaning exactly:
+
+- every derived step names its operation (`transform=<versioned R5 contract>` or
+  `operation=dependent-copy/v1`) and the durable identities of its transform
+  parameters;
+- the "same parameter objects" test compares durable identities, not object
+  references;
+- every step below the endpoint carries `step=derivation-step/v1` in place of a
+  point identity.
+
+The frozen candidate wrote `point=derived` only while the intermediate had no
+identity and the identity otherwise. That made the key change as soon as the
+intermediate gained an identity by participating elsewhere, and a valid nested
+metric would then have failed as a retarget. The structural marker removes that
+dependence. `END#intermediateDerivationStepsHaveAStableStructuralAddress` pins it,
+including a later participation and a rename.
+
 ### D-C3 — family change is not reachable in one metric object
 
 Frozen matrix row A18 planned a direct family-change execution that fails
@@ -412,16 +441,21 @@ still pin the capability boundary itself (matrix B27, B28).
 
 | Identifier | Finding | Truthful state |
 |---|---|---|
-| `PAIR-COPY-GENERATOR-PARAMETERIZATION-CONTRACT` | a generator side's parameterization contract names its driver's durable identity; the closure-copy map rebases only the two sources | the copied point stays dormant; the copy's own roots remain explicitly materializable (pair spec §10) |
 | `CLIPBOARD-COPY-POINT-DRIVEN-LOCUS-SLICE` (pre-existing) | host closure copy of a point-driven locus whose slice has intermediate objects fails with `MALFORMED_RECORD` | copy refused; nothing is created |
 | `A3-PAIR-SOURCE-COMPATIBLE-STRUCTURAL-REDEFINE` (pre-existing) | A3 rejects a compatible structural redefinition of a pair source that has materialized points, also for spline × spline | `REDEFINE_REJECTED`; the construction is unchanged |
 | `LOCUS-PARTICIPANT-AXIS-NOT-SERIALIZABLE` (pre-existing) | `xAxis`/`yAxis` used directly as an intersection target or a mirror line of a semantic curve are participating geos without a stable ordinary-element attachment; the user guide §10.4 already states it for reflection | creation fails with `GEO_NOT_SERIALIZABLE`; a user-defined line works |
-| generator transport under R5 images (§10) | open author question | not admitted |
 
-### Pre-existing wrong-value defects found (outside this task's scope)
+### Resolved in the corrective continuation
+
+| Identifier | Resolution |
+|---|---|
+| `PAIR-COPY-GENERATOR-PARAMETERIZATION-CONTRACT` | the closure-copy map remaps every participant a parameterization contract names together with the sources, proved by identity-record copy provenance; the driver identity stays in the contract; the copied point is current, the copied selector names only copied identities, and the persisted ledger format is unchanged (pair spec §10) |
+| generator transport under R5 images | resolved by transformation covariance (§10): `T(E)` is admitted on `T(S)`, `E` is not |
+
+### Pre-existing wrong-value defects, retained as product debt
 
 Both defects lie in the existing reconstructible evaluator, which this task does
-not change. Each was reproduced by the same probe on the implementation base
+not change and the corrective continuation does not repair. Each was reproduced by the same probe on the implementation base
 `a222b82aa`, in a temporary scratch worktree, with identical results. The
 certified construction model refuses both shapes, so no certified pair root is
 ever built on a wrong curve. Existing floating features that consume the
@@ -433,7 +467,15 @@ a separately authorized correction.
 | Identifier | Defect | Base reproduction |
 |---|---|---|
 | `RECONSTRUCTIBLE-SEGMENT-DRIVER-INHOMOGENEOUS-LAG` | after `GeoSegment.pathChanged` the evaluator does not refresh a `SEGMENT_POINT` driver's inhomogeneous coordinates, so a slice that reads them (a join or midpoint through the driver) evaluates the previous parameter; the certification's floating verification refuses every such root (construction-model spec §2) | `ls=LocusV2(Midpoint(Cs,K),Cs)` with `Cs` on the segment `(0,0)–(4,0)` and `K=(0,2)`: `t=0.1 -> (1.996,1)` instead of `(0.2,1)`; `Length(ls,Pa,Pb)` between the semantic points at `0.25` and `0.75` is `2.25` instead of `1`; `Length(ls)` is undefined instead of `2` |
-| `RECONSTRUCTIBLE-INLINE-LITERAL-SLICE-DISCONNECTED` | a slice that passes an inline literal to a command, for example `Line(Cj,(0,3))`, is isolated without its dependence on the driver and evaluates one constant point for every parameter; capture refuses it by rule 5 of the construction-model spec §3 | a pedal locus on a circular arc: every parameter gives `(0.986,0.370)`; `Length` is `0`, while the same construction with `T3=(0,3)` has length `2.15` |
+| `RECONSTRUCTIBLE-INLINE-LITERAL-SLICE-DISCONNECTED` | when two commands of the slice each take an inline literal argument, for example `Line(Cj,(0,3))` followed by `PerpendicularLine((0,0),gj)`, the slice is isolated without its dependence on the driver and evaluates one constant point for every parameter; capture refuses it by rule 5 of the construction-model spec §3 (`MODEL#theInlineLiteralDefectShapeIsRefusedRatherThanCertified`) | a pedal locus on a circular arc with both literals inline: every parameter gives `(0.986,0.370)` and `Length` is `0`, while the same construction with named points has length `2.15` |
+
+The frozen candidate described the second defect as any inline literal passed
+to a command. That was too broad. Separate probes in the corrective continuation
+show that one inline literal (in the join, the perpendicular or the arc) is
+replayed correctly (`MODEL#aSingleInlineLiteralSliceIsReplayedAndCertified`). Two
+inline literals in chained slice commands, points or vectors, lose the driver
+dependence. The exact mechanism is not characterized here, since it belongs to
+the evaluator repair.
 
 The user guides' known limitations name both defects with a workaround. That
 text does not fix either defect.

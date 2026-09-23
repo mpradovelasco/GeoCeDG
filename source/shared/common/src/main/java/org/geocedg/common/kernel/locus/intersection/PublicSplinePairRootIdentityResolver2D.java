@@ -157,8 +157,8 @@ final class PublicSplinePairRootIdentityResolver2D {
 						componentKey, branch.getOrientation(),
 						definition.getProvider().isPeriodic() ? DomainKind.PERIODIC
 								: DomainKind.NON_PERIODIC,
-						definition.getProvider().getProviderId() + "/"
-								+ definition.getProvider().getParameterDescriptor());
+						PairSemanticSlotSelector2D.parameterizationContract(
+								definition.getProvider()));
 			}
 		}
 		throw new IllegalArgumentException("Certified branch no longer current");

@@ -13,9 +13,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.ToDoubleFunction;
 
@@ -27,8 +29,12 @@ import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionSolution2D;
 import org.geocedg.common.kernel.locus.intersection.LocusPairIntersectionEvidence2D;
 import org.geocedg.common.kernel.locus.intersection.LocusPairSourceRevisionEvidence2D;
+import org.geocedg.common.kernel.locus.intersection.PairSemanticSlotSelector2D;
 import org.geocedg.common.kernel.locus.metric.MetricComputationStatus;
+import org.geocedg.common.kernel.spatial.identity.GeoIdentityRecord;
+import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoPoint;
+import org.geogebra.common.util.InternalClipboard;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
@@ -86,6 +92,88 @@ class PreG9bR2E1SemanticPairNativeArchiveTest {
 		assertEquals(tokens, tokens(again));
 		assertEquals(keys, keys(again));
 		assertValues(values, again);
+	}
+
+	@Test
+	void copiedPointDrivenPairKeepsItsRelationAcrossNativeReopen(@TempDir Path directory)
+			throws Exception {
+		AppGeoCeDG app = G9U1TestApp.create();
+		app.getKernel().setContinuous(false);
+		for (String command : new String[] {"A=(0.78,2.24)", "B=(2.56,4.78)",
+				"c=Circle(A,B)", "C=Point(c)", "K=(1,1)", "M=Midpoint(C,K)",
+				"ring=LocusV2(M,C)", "HA=(-3,1)", "HB=(1,2)", "HC=(5,1)",
+				"H=SplineV2({HA,HB,HC},3)"}) {
+			eval(app, command);
+		}
+		GeoLocusV2 spline = (GeoLocusV2) lookup(app, "H");
+		materialize(app, "R=Intersect(H,ring)", "R", "X",
+				root -> side(root, spline).getSemanticParameter(), 2);
+		GeoPoint original = (GeoPoint) lookup(app, "X0");
+		final String originalToken = effectiveToken(original);
+		String clipboard = InternalClipboard.getTextToSave(app, List.of(original),
+				text -> text);
+		int separator = clipboard.indexOf('\n');
+		InternalClipboard.pasteGeoGebraXMLInternal(app, new ArrayList<>(Arrays.asList(
+				clipboard.substring(0, separator).split(" "))), clipboard.substring(separator));
+		GeoPoint copied = (GeoPoint) copyOf(app, original);
+		GeoLocusV2 copiedRing = (GeoLocusV2) copyOf(app, lookup(app, "ring"));
+		GeoElement copiedDriver = copyOf(app, lookup(app, "C"));
+		String label = copied.getLabelSimple();
+		final String copiedToken = effectiveToken(copied);
+		assertTrue(copied.isDefined());
+		eval(app, "LX=LocusLength(ring,M,X0)");
+		eval(app, "LC=LocusLength(" + copiedRing.getLabelSimple() + ","
+				+ copyOf(app, lookup(app, "M")).getLabelSimple() + "," + label + ")");
+		double length = finite((GeoLocusMetricResult) lookup(app, "LX"));
+		assertEquals(length, finite((GeoLocusMetricResult) lookup(app, "LC")), 1E-9);
+		final Set<String> copiedGraph = Set.of(id(app, copiedRing), id(app, copiedDriver),
+				id(app, copyOf(app, spline)));
+
+		Path file = directory.resolve("r2-e1-copied-pair.cedg");
+		assertTrue(((GuiManagerGeoCeDG) app.getGuiManager()).saveAsTo(file.toFile()));
+		AppGeoCeDG reopened = G9U1TestApp.create();
+		assertTrue(reopened.loadFile(file.toFile(), false));
+		GeoPoint restored = (GeoPoint) lookup(reopened, label);
+		assertTrue(restored.isDefined());
+		assertEquals(copiedToken, effectiveToken(restored));
+		assertEquals(originalToken, effectiveToken((GeoPoint) lookup(reopened, "X0")));
+		GeoLocusIntersectionResult rich =
+				((AlgoLocusIntersectionPointV2) restored.getParentAlgorithm()).getRichInput();
+		PairSemanticSlotSelector2D selector = rich.getRetainedPairSelector(copiedToken)
+				.orElseThrow();
+		// The reopened copied selector names exactly the copied sources and driver.
+		Set<String> named = new java.util.TreeSet<>(selector.getDeclaredParticipants());
+		named.add(selector.getFirst().getSourceId());
+		named.add(selector.getSecond().getSourceId());
+		assertEquals(copiedGraph, named);
+		assertEquals(length, finite((GeoLocusMetricResult) lookup(reopened, "LC")), 1E-9);
+		// Deleting the original graph leaves the reopened copy current.
+		lookup(reopened, "A").remove();
+		assertTrue(restored.isDefined());
+		assertEquals(length, finite((GeoLocusMetricResult) lookup(reopened, "LC")), 1E-9);
+	}
+
+	private static String effectiveToken(GeoPoint point) {
+		return ((AlgoLocusIntersectionPointV2) point.getParentAlgorithm())
+				.getEffectiveRootToken();
+	}
+
+	private static GeoElement copyOf(AppGeoCeDG app, GeoElement original) {
+		var registry = app.getKernel().getConstruction().getSpatialIdentityRegistry();
+		var source = registry.getPersistentGeoId(original);
+		return registry.getGeo(registry.getRecords().stream()
+				.filter(GeoIdentityRecord.class::isInstance).map(GeoIdentityRecord.class::cast)
+				.filter(record -> source.equals(record.getCopySourceId()))
+				.findFirst().orElseThrow().getId());
+	}
+
+	private static String id(AppGeoCeDG app, GeoElement geo) {
+		return app.getKernel().getConstruction().getSpatialIdentityRegistry()
+				.getPersistentGeoId(geo).toExternalForm();
+	}
+
+	private static double finite(GeoLocusMetricResult result) {
+		return result.getMetricResult().getMetricValue().getFiniteValue().orElseThrow();
 	}
 
 	private static void build(AppGeoCeDG app) {

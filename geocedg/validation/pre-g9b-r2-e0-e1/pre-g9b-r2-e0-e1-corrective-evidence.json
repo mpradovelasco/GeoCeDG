@@ -1,0 +1,266 @@
+{
+  "schemaVersion": 1,
+  "phase": "PRE-G9B-R2-E0/E1",
+  "phaseKind": "BOUNDED_CORRECTIVE_CONTINUATION",
+  "technicalCandidateState": "FROZEN",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "authorDecisionAuthority": "the separate closeout/author-decision record is the sole authority for current author approval status",
+  "selfApproved": false,
+  "passClaimed": false,
+  "changeRoute": "ORDINARY",
+  "verificationClass": "INTEGRATED_PHASE",
+  "verificationClassUnchangedByContinuation": true,
+  "frozenAcceptance": [
+    "tools/agent/verify.ps1 -Profile PHASE -Phase G9S1-R1",
+    "tools/agent/verify.ps1 -Profile INTEGRATION"
+  ],
+  "cohortEquivalence": {
+    "profile": "tools/agent/verify.ps1 -Profile PHASE -Phase G9U0-R6",
+    "equivalentTo": "tools/agent/verify.ps1 -Profile PHASE -Phase G9S1-R1",
+    "planOnlyNodeSetsIdentical": true,
+    "nodeContentAndOrderIdentical": true,
+    "nodes": 23,
+    "planHashDiffersOnlyBySelectionLabel": true,
+    "rerun": false,
+    "observation": "OBS-R2-PHASE-SELECTION-COHORT"
+  },
+  "finalRequired": false,
+  "finalRequiredRationale": "the continuation changes shared-kernel code, tests, documentation, the JUnit inventory and its registry pin only; no build, packaging, bootstrap, verifier, registry schema or serialization format changes",
+  "verificationEscalationRequested": false,
+  "predecessorCandidate": {
+    "commit": "3d13ea72f64c241d11759617dbdff70e373e6a50",
+    "tree": "22bd3794c91b4432771e34ff143879b211fad006",
+    "preservedUnchanged": true,
+    "report": "docs/validation/pre_g9b_r2_e0_e1_candidate_report.md",
+    "evidence": "geocedg/validation/pre-g9b-r2-e0-e1/pre-g9b-r2-e0-e1-evidence.json"
+  },
+  "continuationInstruction": {
+    "acceptedAsRecorded": ["D-C1", "D-C3", "D-C4", "D-C5"],
+    "acceptedWithClarification": "D-C2: a versioned structural address inside the semantic derivation chain, relative to an explicitly identified derivation root and construction lineage; never a global construction index, XML position, list or output order, label, Java reference, Cartesian coordinate or proximity",
+    "adopted": "transformation covariance of semantic points under the same authoritative similarity",
+    "authorizedCorrection": "remap the driver identity as copy/remap provenance for copied point-driven pairs",
+    "retainedNotRepaired": ["RECONSTRUCTIBLE-SEGMENT-DRIVER-INHOMOGENEOUS-LAG", "RECONSTRUCTIBLE-INLINE-LITERAL-SLICE-DISCONNECTED"]
+  },
+  "corrections": [
+    {
+      "id": "D-C2-STRUCTURAL-ADDRESS",
+      "normative": "geocedg/specs/locus/locus-v2-metrics.md section 24.3",
+      "address": "derivation root + operation kind (transform=<versioned R5 similarity contract> or operation=dependent-copy/v1) + versioned step path (step=derivation-step/v1 below the endpoint) + durable parameter identities",
+      "implementation": "SemanticMetricEndpointResolver2D keys every derived step structurally and compares transform parameters by durable identity",
+      "latentDefectRemoved": "the predecessor key used point=derived only while an intermediate lacked an identity, so it moved when the intermediate later participated and a valid nested metric would have failed as a retarget",
+      "pinnedBy": "org.geocedg.common.locus.PreG9bR2E0SemanticEndpointAdmissibilityTest#intermediateDerivationStepsHaveAStableStructuralAddress"
+    },
+    {
+      "id": "TRANSFORMATION-COVARIANCE",
+      "normative": ["geocedg/specs/locus/locus-v2-metrics.md sections 24.6 and 24.8", "docs/adr/0028 decision 8", "design record section 10"],
+      "rule": "P in L, P2 = T(P), L2 = T(L), both derivations prove the same T (same versioned similarity contract, same parameter objects by durable identity, same lineage) implies P2 in L2",
+      "implementationAlreadySatisfied": true,
+      "contractsPinned": ["translate-vector", "rotate-origin", "rotate-point", "reflect-point", "reflect-line", "dilate-origin", "dilate-point"],
+      "pinnedBy": [
+        "org.geocedg.common.locus.PreG9bR2E0SemanticEndpointAdmissibilityTest#transformationCovarianceCarriesTheGeneratorForEverySimilarityContract",
+        "org.geocedg.common.locus.PreG9bR2E0SemanticEndpointAdmissibilityTest#sameTransformationNeedsTheSameContractAndParameterIdentities"
+      ]
+    },
+    {
+      "id": "PAIR-COPY-PARTICIPANT-REMAP",
+      "resolves": "PAIR-COPY-GENERATOR-PARAMETERIZATION-CONTRACT",
+      "normative": "geocedg/specs/curves/spline-v2-pair-materialization.md section 10",
+      "participantGrammar": "<generator family provider id>/true-coordinate/<durable geo id>",
+      "copyMap": ["sourceId(original) -> sourceId(copy) for both sources", "participant(original) -> participant(copy) for every named participant"],
+      "participantProof": "the copied participant's identity record names the original participant as its copy source",
+      "persistedFormatChanged": false,
+      "importCheck": "participant association re-derived by source association between the recorded original selector and the copied binding; a binding that still names an original participant is malformed",
+      "changedSourcePaths": [
+        "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PairSemanticSlotSelector2D.java",
+        "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionTokenLedger2D.java",
+        "source/shared/common/src/main/java/org/geocedg/common/kernel/geos/GeoLocusIntersectionResult.java",
+        "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PublicSplinePairRootIdentityResolver2D.java",
+        "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/SemanticGeneratorDomainProvider1D.java"
+      ],
+      "pinnedBy": [
+        "org.geocedg.common.locus.PreG9bR2E1SemanticPairMaterializationTest#closureCopyRemapsSourcesAndDriverAndKeepsTheCopiedPointCurrent",
+        "org.geocedg.common.locus.PreG9bR2E1SemanticPairMaterializationTest#aCopiedLedgerThatNamesTheOriginalDriverFailsClosedOnImport",
+        "org.geocedg.common.kernel.locus.intersection.PreG9bR2E1PairCopyParticipantTest",
+        "org.geocedg.desktop.PreG9bR2E1SemanticPairNativeArchiveTest#copiedPointDrivenPairKeepsItsRelationAcrossNativeReopen"
+      ]
+    },
+    {
+      "id": "INLINE-LITERAL-DESCRIPTION",
+      "predecessorStatement": "a slice passing an inline literal to a command, for example Line(Cj,(0,3)), loses its driver dependence",
+      "verifiedStatement": "inline literal points or vectors in two chained commands of the slice lose the driver dependence; one inline literal, in the join, the perpendicular or the arc definition, is replayed correctly",
+      "pinnedBy": [
+        "org.geocedg.common.kernel.locus.intersection.PreG9bR2E1CertifiedConstructionModelTest#theInlineLiteralDefectShapeIsRefusedRatherThanCertified",
+        "org.geocedg.common.kernel.locus.intersection.PreG9bR2E1CertifiedConstructionModelTest#aSingleInlineLiteralSliceIsReplayedAndCertified"
+      ]
+    }
+  ],
+  "retainedProductDebts": [
+    {
+      "id": "RECONSTRUCTIBLE-SEGMENT-DRIVER-INHOMOGENEOUS-LAG",
+      "reproducedOnBase": "a222b82aad821e3e0c0aa93145a57b7050f024c8",
+      "certifiedPathConsequence": "FAIL_CLOSED: the certification's floating verification refuses every affected root",
+      "floatingConsequence": "WRONG_VALUE: positions and lengths lag one parameter; Length(ls,Pa,Pb) is 2.25 instead of 1",
+      "pinnedBy": "org.geocedg.common.locus.PreG9bR2E1SemanticPairMaterializationTest#segmentDriverInhomogeneousReadIsRefusedByTheCoherenceGate"
+    },
+    {
+      "id": "RECONSTRUCTIBLE-INLINE-LITERAL-SLICE-DISCONNECTED",
+      "reproducedOnBase": "a222b82aad821e3e0c0aa93145a57b7050f024c8",
+      "certifiedPathConsequence": "FAIL_CLOSED: capture refuses the slice",
+      "floatingConsequence": "WRONG_VALUE: the locus evaluates to one constant point; Length is 0 instead of 2.15",
+      "pinnedBy": "org.geocedg.common.kernel.locus.intersection.PreG9bR2E1CertifiedConstructionModelTest#theInlineLiteralDefectShapeIsRefusedRatherThanCertified"
+    }
+  ],
+  "newTestClasses": [
+    { "class": "org.geocedg.common.kernel.locus.intersection.PreG9bR2E1PairCopyParticipantTest", "module": "shared", "methods": 4, "failures": 0 }
+  ],
+  "changedTestClasses": [
+    { "class": "org.geocedg.common.locus.PreG9bR2E1SemanticPairMaterializationTest", "methods": 19, "failures": 0, "change": "closureCopyOfAConstructionPairReCertifiesAndLeavesTheCopiedPointDormant replaced by closureCopyRemapsSourcesAndDriverAndKeepsTheCopiedPointCurrent; ledger tamper test added" },
+    { "class": "org.geocedg.common.locus.PreG9bR2E0SemanticEndpointAdmissibilityTest", "methods": 17, "failures": 0, "change": "covariance, same-T and structural-address tests added" },
+    { "class": "org.geocedg.common.kernel.locus.intersection.PreG9bR2E1CertifiedConstructionModelTest", "methods": 9, "failures": 0, "change": "inline-literal refusal and single-literal control added; one explanatory comment corrected, no assertion changed" },
+    { "class": "org.geocedg.desktop.PreG9bR2E1SemanticPairNativeArchiveTest", "methods": 2, "failures": 0, "change": "copied relation native round trip added" }
+  ],
+  "affectedSharedSuitesFocalRun": { "classes": 25, "tests": 351, "failures": 0 },
+  "checkstyle": { "sourceSets": ["shared/common main", "shared/common-jre test", "desktop test"], "findings": 0 },
+  "authorWitnessReplay": {
+    "requiredBy": "continuation item 5",
+    "path": "artifacts/author-input/post-p1-defects/SeveralDefects.cedg",
+    "tracked": false,
+    "sha256": "c0cbdb8ea218e4a07b7cd4d7bcfb4ba2b74da373bbd49711aa4657349619dff8",
+    "method": "the predecessor's desktop probe replayed unchanged from the session scratchpad, joined to the desktop test source set for one invocation by a Gradle init script; nothing written to the source tree; not a tracked test",
+    "results": {
+      "pairE": "2 admissible germ slots, ledger 5|, completeness NOT_ESTABLISHED",
+      "fileRootsIJKL": "UNIQUE SINGLE_SOURCE_INTERSECTION_OCCURRENCE on a",
+      "generatorE": "UNIQUE GENERATOR_OCCURRENCE on a",
+      "midpointM": "NO_ADDRESS",
+      "LocusLength(a,I,J)": 0.5370792510382241,
+      "LocusLength(a,X0,X1)": 9.83875545905577,
+      "LocusLength(d,F,X0)": 2.731015283621896,
+      "LocusLength(a,E,I)": 9.824132286144744,
+      "LocusLength(a,E,M)": "INVALID_QUERY",
+      "nativeSaveReopen": "identical families and values"
+    },
+    "identicalToPredecessorReplay": true
+  },
+  "fullSuiteEvidence": {
+    "producedBy": "tools/agent/checks/gradle-test-evidence-producer.ps1",
+    "workingTree": "corrective working tree on top of 3d13ea72f64c241d11759617dbdff70e373e6a50",
+    "discovery.shared": {
+      "testDryRun": true,
+      "junitFiles": 672,
+      "innerExitCode": 0
+    },
+    "discovery.desktop": {
+      "testDryRun": true,
+      "junitFiles": 100,
+      "innerExitCode": 0
+    },
+    "final.shared": {
+      "junitFiles": 672,
+      "tests": 6744,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 10,
+      "innerExitCode": 0,
+      "usedForInventory": true
+    },
+    "final.desktop": {
+      "junitFiles": 99,
+      "tests": 1516,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 1,
+      "innerExitCode": 0,
+      "usedForInventory": true
+    },
+    "skippedIdentities": "exactly the allowlisted DISABLED and CONDITIONAL cases of the inventory"
+  },
+  "coupledReconciliations": [
+    {
+      "path": "geocedg/specs/operations/verification-junit-inventory.json",
+      "producedBy": "tools/agent/update-verification-junit-inventory.ps1",
+      "changes": [
+        {
+          "selection": "discovery.shared",
+          "countBefore": 5817,
+          "countAfter": 5827
+        },
+        {
+          "selection": "final.shared",
+          "countBefore": 6734,
+          "countAfter": 6744
+        },
+        {
+          "selection": "discovery.desktop",
+          "countBefore": 1521,
+          "countAfter": 1522
+        },
+        {
+          "selection": "final.desktop",
+          "countBefore": 1515,
+          "countAfter": 1516
+        }
+      ],
+      "narrowSelectionsAffected": 0,
+      "evidenceKind": "dry-run discovery plus completed passing final.shared and final.desktop runs (inner_exit_code 0)"
+    },
+    {
+      "path": "geocedg/specs/operations/verification-registry.json",
+      "catalogId": "junit_inventory",
+      "sha256Before": "ac33ddbc2fbdb44bed8ee57dab233c668e03cf29727849d1dde1ae1ea5ddaa69",
+      "sha256After": "88b5abe8ba3e1c7c33639d7bd4f7aaa3cfd6d40009fd57c83bf16e0518f3c89e",
+      "hashMethodValidated": "the canonical-LF computation reproduces the predecessor pin exactly from its committed inventory blob"
+    },
+    {
+      "path": "docs/upstream/modified-files.yml",
+      "change": "one new test file registered; PRE-G9B-R2-E0/E1 purposes appended to the modified kernel files",
+      "boundaryCheck": "passes with 791 registered files"
+    }
+  ],
+  "guideImpact": {
+    "state": "REQUIRED — APPLIED",
+    "editions": ["docs/user/geocedg_user_guide_en.md", "docs/user/geocedg_user_guide_es.md"],
+    "changes": ["copied-point known limitation removed", "inline-literal known limitation corrected to the verified two-literal shape"],
+    "sectionIdentifiers": 17,
+    "bilingualGuideTest": { "cases": 16, "failures": 0 }
+  },
+  "preCandidatePlanChecks": [
+    {
+      "command": "tools/agent/verify.ps1 -Profile PHASE -Phase G9S1-R1 -PlanOnly",
+      "exitCode": 0,
+      "coverage": "COMPLETE",
+      "missingChecks": 0,
+      "nodes": 23,
+      "executionPlanHash": "4cb0ecf5caa86cc1d26d65a0673c352d83b83ed20de706ee23166e942e0ad430",
+      "equalsPredecessorAcceptedPlan": true
+    },
+    {
+      "command": "tools/agent/verify.ps1 -Profile PHASE -Phase G9U0-R6 -PlanOnly",
+      "exitCode": 0,
+      "coverage": "COMPLETE",
+      "missingChecks": 0,
+      "nodes": 23,
+      "executionPlanHash": "db8be1b098fcbda0ad294de2158e3a298c913f43212849cd4fc8cf11f8aa48c2"
+    },
+    {
+      "command": "tools/agent/verify.ps1 -Profile INTEGRATION -PlanOnly",
+      "exitCode": 0,
+      "coverage": "COMPLETE",
+      "missingChecks": 0,
+      "nodes": 46,
+      "executionPlanHash": "4502c4bd1bbe1a123089e9e524fd0afb354932afbcb410f93052555a16c77aea",
+      "equalsPredecessorAcceptedPlan": true,
+      "supersetOfPhaseCohort": true
+    }
+  ],
+  "notAuthorized": [
+    "repair of the two retained evaluator defects",
+    "PRE-G9B-R3 or later",
+    "G9B",
+    "G9C",
+    "G9U2",
+    "productive G10",
+    "release or publication",
+    "push, branch publication, merge, promotion, tag"
+  ],
+  "successorPhaseAuthorized": false
+}

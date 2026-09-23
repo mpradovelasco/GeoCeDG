@@ -1290,20 +1290,18 @@ These are the limitations that affect what you can do in the application today.
   its diagnostics say so.
 - A tangent, ambiguous, stale or insufficiently certified intersection root
   stays rich-only and cannot be materialized.
-- After copy and paste, a copied point materialized from a pair whose Locus V2
-  is traced by a driven point stays undefined; create the points of the copy
-  from its own copied intersection result.
 - The built-in axes cannot be the target of a semantic intersection or the
   mirror of a semantic reflection; construct the line explicitly
   (section 10.4).
 - Two evaluation defects of Locus V2 curves traced by a point are known. A locus
   driven along a segment is evaluated one step late when its construction uses
   the driving point in a line through two points or in a midpoint. A locus whose
-  construction passes an unnamed literal point to a command, such as
-  `Line(C,(0,3))`, is evaluated as a single fixed point. The positions, lengths
-  and intersections of such loci can be wrong. Where possible, drive the point
-  along a circle or an arc instead of a segment, and name literal points first
-  (`T=(0,3)`, then `Line(C,T)`).
+  construction passes unnamed literal points or vectors to two of the commands
+  between the driving point and the traced point, such as `Line(C,(0,3))`
+  followed by `PerpendicularLine((0,0),g)`, is evaluated as a single fixed point.
+  The positions, lengths and intersections of such loci can be wrong. Where
+  possible, drive the point along a circle or an arc instead of a segment, and
+  name literal points first (`T=(0,3)`, then `Line(C,T)`).
 
 **Export**
 

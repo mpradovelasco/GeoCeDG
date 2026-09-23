@@ -24,7 +24,9 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import org.geocedg.common.kernel.algos.AlgoLocusIntersectionPointV2;
+import org.geocedg.common.kernel.algos.SemanticMetricEndpointResolver2D;
 import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
+import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusV2PublicOperations;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.Completeness;
@@ -33,6 +35,7 @@ import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionSolution2D;
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionTokenLedger2D;
 import org.geocedg.common.kernel.locus.intersection.LocusPairIntersectionEvidence2D;
+import org.geocedg.common.kernel.locus.intersection.PairSemanticSlotSelector2D;
 import org.geocedg.common.kernel.spatial.identity.GeoIdentityRecord;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geogebra.common.kernel.commands.AlgebraProcessor;
@@ -393,7 +396,7 @@ final class PreG9bR2E1SemanticPairMaterializationTest extends G9U0PublicSurfaceT
 	}
 
 	@Test
-	void closureCopyOfAConstructionPairReCertifiesAndLeavesTheCopiedPointDormant() {
+	void closureCopyRemapsSourcesAndDriverAndKeepsTheCopiedPointCurrent() {
 		getKernel().setContinuous(false);
 		// A point-driven locus whose slice has intermediate construction objects
 		// cannot be closure-copied by the host today (retained debt
@@ -401,47 +404,109 @@ final class PreG9bR2E1SemanticPairMaterializationTest extends G9U0PublicSurfaceT
 		add("A=(0.78,2.24)");
 		add("B=(2.56,4.78)");
 		add("c=Circle(A,B)");
-		add("C=Point(c)");
+		GeoPoint driver = add("C=Point(c)");
+		add("K=(1,1)");
+		GeoPoint generator = add("M=Midpoint(C,K)");
+		GeoLocusV2 ring = add("ring=LocusV2(M,C)");
+		add("H=SplineV2({(-3,1),(1,2),(5,1)},3)");
+		GeoLocusIntersectionResult rich = add("R=Intersect(H,ring)");
+		assertEquals(2, eligible(rich).size(), diagnostic(rich));
+		GeoPoint point = materialize(rich, "X", eligible(rich).get(0));
+		final String token = selectedToken(point);
+		PairSemanticSlotSelector2D original = rich.getRetainedPairSelector(token)
+				.orElseThrow();
+		assertEquals(Set.of(id(driver).toExternalForm()),
+				original.getDeclaredParticipants());
+		final String originalLedger = rich.getTokenLedgerState();
+		final double length = finite(add("LX=LocusLength(ring,M,X)"));
+		Set<String> originalGraph = identityRecords();
+
+		paste(point);
+		GeoPoint copied = (GeoPoint) copyOf(point);
+		GeoLocusV2 copiedRing = (GeoLocusV2) copyOf(ring);
+		GeoLocusIntersectionResult copiedRich = (GeoLocusIntersectionResult) copyOf(rich);
+		// The copied graph receives new durable identities throughout.
+		for (GeoElement copy : List.of(copied, copiedRing, copyOf(driver), copiedRich,
+				copyOf(generator))) {
+			assertFalse(originalGraph.contains(id(copy).toExternalForm()),
+					copy.getLabelSimple());
+		}
+		// The copied point is current and admissible under its own copied token.
+		assertTrue(copied.isDefined(), diagnostic(copiedRich));
+		String copiedToken = effectiveToken(copied);
+		assertNotEquals(token, copiedToken);
+		assertTrue(copiedRich.isPointAdmissible(copiedToken));
+		// Its selector names only copied identities: both sources and the driver.
+		PairSemanticSlotSelector2D selector = copiedRich.getRetainedPairSelector(
+				copiedToken).orElseThrow();
+		assertEquals(Set.of(id(copyOf(driver)).toExternalForm()),
+				selector.getDeclaredParticipants());
+		for (String identity : List.of(selector.getFirst().getSourceId(),
+				selector.getSecond().getSourceId())) {
+			assertFalse(originalGraph.contains(identity), identity);
+		}
+		assertEquals(original.remap(Map.of(id(ring).toExternalForm(),
+				id(copiedRing).toExternalForm(), id(requireLookup("H")).toExternalForm(),
+				id(copyOf(requireLookup("H"))).toExternalForm()),
+				Map.of(id(driver).toExternalForm(), id(copyOf(driver)).toExternalForm())),
+				selector);
+		// The original pair and its ledger are unchanged.
+		assertTrue(point.isDefined());
+		assertEquals(token, selectedToken(point));
+		assertEquals(original, rich.getRetainedPairSelector(token).orElseThrow());
+		assertEquals(originalLedger, rich.getTokenLedgerState());
+		// Metric endpoints resolve on the copied curve through copied provenance.
+		SemanticMetricEndpointResolver2D.Resolution resolution =
+				new SemanticMetricEndpointResolver2D().resolve(copiedRing, copied);
+		assertEquals(SemanticMetricEndpointResolver2D.Status.UNIQUE,
+				resolution.getStatus(), resolution.getDiagnostic());
+		assertEquals(SemanticMetricEndpointResolver2D.Family.PAIR_INTERSECTION_OCCURRENCE,
+				resolution.getFamily());
+		String metric = "LC=LocusLength(" + copiedRing.getLabelSimple() + ","
+				+ copyOf(generator).getLabelSimple() + "," + copied.getLabelSimple() + ")";
+		assertEquals(length, finite(add(metric)), 1E-9);
+		// No cross-link: moving and then deleting the original leaves the copy current.
+		moveTo("A", 40.78, 2.24);
+		moveTo("B", 42.56, 4.78);
+		assertFalse(point.isDefined());
+		assertTrue(copied.isDefined());
+		assertEquals(length, finite((GeoLocusMetricResult) requireLookup("LC")), 1E-9);
+		requireLookup("A").remove();
+		assertNull(lookup("X"));
+		assertTrue(copied.isDefined());
+		// XML reopen reconstructs the copied relation from the DAG and the ledger.
+		String copiedLabel = copied.getLabelSimple();
+		getApp().setXML(getApp().getXML(), true);
+		GeoPoint reopened = (GeoPoint) requireLookup(copiedLabel);
+		assertTrue(reopened.isDefined());
+		assertEquals(copiedToken, effectiveToken(reopened));
+		assertEquals(length, finite((GeoLocusMetricResult) requireLookup("LC")), 1E-9);
+	}
+
+	@Test
+	void aCopiedLedgerThatNamesTheOriginalDriverFailsClosedOnImport() {
+		getKernel().setContinuous(false);
+		add("A=(0.78,2.24)");
+		add("B=(2.56,4.78)");
+		add("c=Circle(A,B)");
+		GeoPoint driver = add("C=Point(c)");
 		add("K=(1,1)");
 		add("M=Midpoint(C,K)");
 		add("ring=LocusV2(M,C)");
 		add("H=SplineV2({(-3,1),(1,2),(5,1)},3)");
 		GeoLocusIntersectionResult rich = add("R=Intersect(H,ring)");
-		assertEquals(2, eligible(rich).size(), diagnostic(rich));
 		GeoPoint point = materialize(rich, "X", eligible(rich).get(0));
-		PersistentGeoId pointId = id(point);
-		String token = selectedToken(point);
-		String clipboard = InternalClipboard.getTextToSave(getApp(), List.of(point),
-				text -> text);
-		int separator = clipboard.indexOf('\n');
-		InternalClipboard.pasteGeoGebraXMLInternal(getApp(),
-				new ArrayList<>(Arrays.asList(clipboard.substring(0, separator).split(" "))),
-				clipboard.substring(separator));
-		var registry = getConstruction().getSpatialIdentityRegistry();
-		GeoIdentityRecord copiedRecord = registry.getRecords().stream()
-				.filter(GeoIdentityRecord.class::isInstance).map(GeoIdentityRecord.class::cast)
-				.filter(record -> pointId.equals(record.getCopySourceId()))
-				.findFirst().orElseThrow();
-		GeoPoint copied = (GeoPoint) registry.getGeo(copiedRecord.getId());
-		assertNotEquals(pointId, id(copied));
-		assertNotEquals(token, selectedToken(copied));
-		// The pair copy map carries the two source identities only, while the
-		// generator's parameterization contract names its driver's durable identity.
-		// The copy re-certifies under fresh tokens; the copied child never retargets
-		// onto them and stays dormant (fail closed).
-		GeoLocusIntersectionResult copiedRich =
-				((AlgoLocusIntersectionPointV2) copied.getParentAlgorithm()).getRichInput();
-		assertEquals(2, eligible(copiedRich).size(), diagnostic(copiedRich));
-		assertFalse(tokens(copiedRich).contains(selectedToken(copied)));
-		assertFalse(copied.isDefined());
-		assertTrue(point.isDefined());
-		// The copied pair's own certified roots remain explicitly materializable.
-		assertTrue(materialize(copiedRich, "XC", eligible(copiedRich).get(0)).isDefined());
-		getApp().setXML(getApp().getXML(), true);
-		assertFalse(getConstruction().getSpatialIdentityRegistry()
-				.getGeo(copiedRecord.getId()).isDefined());
-		assertTrue(requireLookup("X").isDefined());
-		assertTrue(requireLookup("XC").isDefined());
+		paste(point);
+		GeoLocusIntersectionResult copiedRich = (GeoLocusIntersectionResult) copyOf(rich);
+		String state = copiedRich.getTokenLedgerState();
+		new LocusIntersectionTokenLedger2D().importState(state);
+		// Rewrite every field of the copied pair entries to name the original driver:
+		// the only remaining inconsistency is the cross-link to the original graph.
+		String tampered = replaceInCurrentPairEntries(state,
+				id(copyOf(driver)).toExternalForm(), id(driver).toExternalForm());
+		assertNotEquals(state, tampered);
+		assertThrows(IllegalArgumentException.class,
+				() -> new LocusIntersectionTokenLedger2D().importState(tampered));
 	}
 
 	@Test
@@ -552,6 +617,64 @@ final class PreG9bR2E1SemanticPairMaterializationTest extends G9U0PublicSurfaceT
 
 	private static String selectedToken(GeoPoint point) {
 		return ((AlgoLocusIntersectionPointV2) point.getParentAlgorithm()).getSelectedRootToken();
+	}
+
+	private static String effectiveToken(GeoPoint point) {
+		return ((AlgoLocusIntersectionPointV2) point.getParentAlgorithm())
+				.getEffectiveRootToken();
+	}
+
+	private void paste(GeoElement geo) {
+		String clipboard = InternalClipboard.getTextToSave(getApp(), List.of(geo),
+				text -> text);
+		int separator = clipboard.indexOf('\n');
+		InternalClipboard.pasteGeoGebraXMLInternal(getApp(),
+				new ArrayList<>(Arrays.asList(clipboard.substring(0, separator).split(" "))),
+				clipboard.substring(separator));
+	}
+
+	/** @return the geo whose identity record names {@code original} as copy source */
+	private GeoElement copyOf(GeoElement original) {
+		PersistentGeoId source = id(original);
+		var registry = getConstruction().getSpatialIdentityRegistry();
+		return registry.getGeo(registry.getRecords().stream()
+				.filter(GeoIdentityRecord.class::isInstance).map(GeoIdentityRecord.class::cast)
+				.filter(record -> source.equals(record.getCopySourceId()))
+				.findFirst().orElseThrow().getId());
+	}
+
+	private static String replaceInCurrentPairEntries(String state, String from,
+			String to) {
+		java.util.HexFormat hex = java.util.HexFormat.of();
+		String[] fields = state.split("\\|", -1);
+		String[] snapshot = fields[2].split("~", -1);
+		for (int index = 5; index < snapshot.length; index++) {
+			String[] entry = snapshot[index].split(",", -1);
+			if (!"P".equals(entry[0])) {
+				continue;
+			}
+			for (int field : new int[] {3, 5, 7}) {
+				String decoded = new String(hex.parseHex(entry[field]),
+						java.nio.charset.StandardCharsets.UTF_8);
+				entry[field] = hex.formatHex(decoded.replace(from, to)
+						.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+			}
+			snapshot[index] = String.join(",", entry);
+		}
+		fields[2] = String.join("~", snapshot);
+		return String.join("|", fields);
+	}
+
+	private Set<String> identityRecords() {
+		return getConstruction().getSpatialIdentityRegistry().getRecords().stream()
+				.filter(GeoIdentityRecord.class::isInstance).map(GeoIdentityRecord.class::cast)
+				.map(record -> record.getId().toExternalForm()).collect(Collectors.toSet());
+	}
+
+	private static double finite(GeoLocusMetricResult result) {
+		return result.getMetricResult().getMetricValue().getFiniteValue()
+				.orElseThrow(() -> new AssertionError(result.getMetricResult()
+						.getComputationStatus() + " " + result.getMetricResult().getDiagnostics()));
 	}
 
 	private void move(String label, double value) {
