@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -200,6 +201,25 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 				+ Double.toHexString(certifiedAffineCoefficients[0][1]) + "|y="
 				+ Double.toHexString(certifiedAffineCoefficients[1][0]) + ","
 				+ Double.toHexString(certifiedAffineCoefficients[1][1]);
+	}
+
+	/**
+	 * Captures the class-v1 certified construction program of this evaluator's
+	 * own isolated slice ({@code locus-v2-certified-construction-model.md} section 3).
+	 * Capture never mutates the live construction and never throws.
+	 *
+	 * @return current program, or empty when the slice is outside the class
+	 */
+	public synchronized Optional<CertifiedConstructionProgram2D>
+			captureCertifiedProgram() {
+		try {
+			resetExternalState();
+		} catch (RuntimeException exception) {
+			return Optional.empty();
+		}
+		return CertifiedConstructionCapture2D.capture(descriptor,
+				isolatedDependentPoint.toGeoElement(), isolatedState, isolatedSupport,
+				certifiedAffineCoefficients);
 	}
 
 	private double[][] directScalarAffineCertificate() {

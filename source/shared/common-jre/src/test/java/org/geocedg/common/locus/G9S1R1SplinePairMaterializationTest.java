@@ -339,15 +339,20 @@ final class G9S1R1SplinePairMaterializationTest extends G9U0PublicSurfaceTestBas
 
 	@Test
 	void genericLocusPairStaysRichOnlyDespiteSharedInfrastructure() {
+		// ADR 0028: a generic locus without a certified interval curve model stays
+		// rich-only and says why. The former direct scalar affine fixture (0,t) is
+		// now certified and is covered by PreG9bR2E1SemanticPairMaterializationTest.
 		createLine();
 		add("t=0");
-		add("V=(0,t)");
+		add("V=(t^3/8,t)");
 		add("E={false,{-2,2,true,true}}");
 		add("T=LocusV2(V,t,E)");
 		GeoLocusIntersectionResult rich = add("R=Intersect(L,T)");
 		assertFalse(rich.getIntersectionResult().getFiniteSolutions().isEmpty());
 		assertTrue(eligible(rich).isEmpty());
 		assertFalse(rich.getTokenLedgerState().startsWith("5|"));
+		assertTrue(diagnostic(rich).contains("no certified interval curve model"),
+				diagnostic(rich));
 	}
 
 	@Test

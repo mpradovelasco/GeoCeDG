@@ -68,8 +68,9 @@ public final class LocusPairIntersectionSolver2D {
 	}
 
 	/**
-	 * Public D2 publication, restricted by the authenticated spline capability.
-	 * Internal/generic pair callers retain the original rich-only route.
+	 * Public D2 publication, restricted to pairs whose both sources expose a
+	 * certified interval curve model (ADR 0028). Internal callers without a
+	 * ledger evaluation retain the original rich-only route.
 	 *
 	 * @return current rich result with independently certified eligible pair slots
 	 */

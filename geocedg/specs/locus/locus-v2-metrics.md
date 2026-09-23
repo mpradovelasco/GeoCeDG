@@ -1,7 +1,7 @@
 # Locus V2 metric contract
 
 - Status: **G7 v1.0 NORMATIVE — PASS — AUTHOR APPROVED; POST-G9U1-A1 v1.1 AMENDMENT — PASS — AUTHOR APPROVED; POST-G9U1-A2 v1.2 AMENDMENT — PASS — AUTHOR APPROVED**
-- Version: `1.3`
+- Version: `1.4`
 - Approval date: 2026-08-13
 - Author-review disposition: **G7A-R1, G7A AND G7B PASS — AUTHOR APPROVED**
 - Roadmap gate: G7 `PASS`; G7A `PASS`; G7B `PASS`
@@ -875,3 +875,196 @@ side, token or identity is resolved afresh and never repaired by proximity.
 - Coordinates, Cartesian coincidence, proximity, tolerance, labels, branch order,
   solution index, render samples, construction order and XML position never
   establish, disambiguate or repair an intersection endpoint.
+
+## 24. PRE-G9B-R2-E0/E1 normative amendment: semantic endpoint admissibility
+
+This v1.4 amendment was introduced by the `PRE-G9B-R2-E0/E1` technical
+candidate under [ADR 0028](../../../docs/adr/0028-semantic-endpoint-admissibility-and-certified-semantic-pair-materialization.md).
+Its author-approval status is recorded only in that phase's author-decision
+record, never in this section. §21, §22 and §23 remain in force; this section
+widens the admitted endpoint families and states one uniform dispatch, retention
+and exclusion rule. It changes endpoint admissibility only: the rich result
+remains authoritative, the scalar remains guarded, and direction, sign, wrap,
+boundary and same-position policy are unchanged.
+
+### 24.1 Three distinct questions
+
+Point existence or materialization, semantic membership of a point on a curve,
+and metric endpoint admissibility are separate questions:
+
+- a point is a **membership endpoint** of `S` when its explicit DAG provenance
+  proves that it lies on `S` at one exact semantic address;
+- a point is **admissible** for `Length(S,P,Q)` / `LocusLength(S,P,Q)` when it is
+  a membership endpoint of `S`, or an approved §21 constructor occurrence
+  transported through R5 lineage (the only admitted non-membership case).
+
+A materialized point is not thereby on any given curve, and a point on a curve is
+not thereby an endpoint on another one. Coordinates, Cartesian coincidence,
+proximity, tolerance, output order, labels, construction index, rendering and XML
+position never establish, disambiguate or repair any of the three.
+
+### 24.2 Admitted families and dispatch
+
+| Order | Family | Kind | Membership | Clause |
+|---|---|---|---|---|
+| 1 | `SEMANTIC_POINT` — explicit semantic point whose source is `S` by reference | direct | yes | G9U0, retained |
+| 2 | `PAIR_INTERSECTION_OCCURRENCE` — exact token of a Locus V2 pair root | direct | yes | §23 (`INTERSECTION_OCCURRENCE`) |
+| 3 | `SINGLE_SOURCE_INTERSECTION_OCCURRENCE` — exact token of a Locus V2 root against an ordinary target | direct | yes | §24.4 |
+| 4 | `GENERATOR_OCCURRENCE` — the dependent generator point of `S` | direct | yes | §24.5 |
+| 5 | `CONSTRUCTOR_OCCURRENCE` — SplineV2 constructor slot | direct | on its own root spline; transport on R5 images | §21 |
+| 6 | `SIMILARITY_IMAGE_OCCURRENCE` — point image under the same similarity that produced `S` | derived | iff its pre-image is | §24.6 |
+| 7 | `DEPENDENT_COPY_OCCURRENCE` — dependent copy `Q=P` | derived | iff `P` is | §24.7 |
+
+Dispatch is by the endpoint's explicit parent algorithm and the addressed
+source's explicit parent algorithm, never by value search. Each family returns
+the closed result `NO_ADDRESS`, `UNIQUE(key, address)`, `MULTIPLE` or
+`UNRESOLVED_INVALID`. `NO_ADDRESS` falls through to the next family; every other
+result is final.
+
+For a fixed addressed source the **direct** families are structurally disjoint:
+a membership endpoint of `S` depends on `S`, while a generator or constructor of
+`S` is depended upon by `S`, so no point can hold two of them without a DAG
+cycle, and the remaining pairs differ by parent algorithm. A **derived** family
+is consulted only after every direct family returned `NO_ADDRESS`. A derived
+point can coincide with a constructor occurrence only when a spline's
+constructor list contains the derived point itself, for example both `P` and
+`T(P)`, or both `P` and a copy `Q=P`; the endpoint's own §21 occurrence then
+prevails. That priority is forced: letting the derived family win, or reporting
+`MULTIPLE`, would change an approved §21 result, so every §21 result is
+preserved unchanged.
+
+### 24.3 Family retention and no retargeting
+
+A metric algorithm retains the family it accepted and, for every family except
+`SEMANTIC_POINT`, the family's versioned occurrence key. A later resolution to a
+different family, or within the same family to a different key, is retargeting
+and yields `INVALID_QUERY`. This makes §23.5's "including a change of endpoint
+family" apply to every family. Ordinary recomputation, dormancy and reactivation
+of the same occurrence keep the same family and key; the address may follow
+ordinary geometric motion.
+
+The current host lifecycle cannot bring a family change to a retained metric
+object. A compatible redefinition of a participating endpoint into another
+family is rejected atomically, and a replacement redefinition has replacement
+identity semantics for its dependent closure. As in §21, direct family-change
+execution is therefore `NOT_APPLICABLE_UNDER_CURRENT_LIFECYCLE`, and the
+retained family and key guard remains the fail-closed authority.
+
+Occurrence keys are in-memory, versioned and never serialized:
+
+```text
+metric-endpoint/single-source-intersection-occurrence/v1
+  | addressed-source=<S> | rich-result=<R> | token=<exact effective token> | point=<P>
+metric-endpoint/generator-occurrence/v1
+  | addressed-source=<S> | point=<P>
+metric-endpoint/similarity-image-occurrence/v1
+  | addressed-source=<S'> | point=<P'> | inner=<pre-image key>
+metric-endpoint/dependent-copy-occurrence/v1
+  | addressed-source=<S> | point=<Q> | inner=<copied key>
+```
+
+Identities are durable. A missing durable identity yields `UNRESOLVED_INVALID`,
+with one exception. A similarity image or dependent copy that is only an
+intermediate step of a derived endpoint, never the endpoint itself, needs no
+identity of its own, because the explicit input chain of the endpoint's parent
+algorithms determines it. Its key segment is `point=derived`. A durable point
+identity begins only when a point first participates, and such an intermediate
+never participates. The endpoint, every addressed source and the direct-family
+origin keep their durable identities.
+The §21 and §23 keys are unchanged. A pre-image or copied `SEMANTIC_POINT` is
+represented inside an `inner` key as
+`metric-endpoint/semantic-point/v1|addressed-source=<S>|point=<P>`.
+
+### 24.4 Single-source intersection occurrence
+
+An endpoint belongs to this family only when all of the following hold:
+
+```text
+endpoint point
+  -> parent is the exact-token intersection-point consumer
+  -> its rich input is a single-source Locus V2 intersection result
+  -> that result's semantic source has S's current locus identity
+  -> the current effective root token
+  -> the current point-admissible solution for that exact token
+  -> its revision evidence: semantic revision, branch, component, canonical parameter
+  -> one canonical branch/component address on S
+  -> the existing LocusMetricPositionBinder2D
+```
+
+A result whose source is not `S` is `NO_ADDRESS`. A source match with a stale
+revision, a non-current token, a missing branch, zero or several containing valid
+components, or a containing component that differs from the evidence component,
+is `UNRESOLVED_INVALID`. There is exactly one side, so this family never yields
+`MULTIPLE`; two roots with coincident coordinates are two tokens with two
+distinct parameters and are never merged. The address is built as in §23.4.
+
+### 24.5 Generator occurrence
+
+An endpoint belongs to this family only when `S`'s parent is the public
+dependent-point Locus V2 algorithm and the endpoint is, by durable identity, the
+generator descriptor's dependent point. Its raw parameter is the live value the
+evaluator itself would apply: the driver point's path parameter for
+`CIRCLE_POINT`, `SEGMENT_POINT` and `CIRCULAR_ARC_POINT`, or the true-coordinate
+number for `SCALAR_STATE` and `LOCUS_BRANCH_POINT`. The provider canonicalizes it;
+exactly one valid component of `generator.main` must contain it. A missing
+descriptor, an undefined or non-finite driver value, or zero or several
+containing components is `UNRESOLVED_INVALID`. The address follows driver motion;
+the key does not.
+
+### 24.6 Similarity-image occurrence
+
+An endpoint `P'` belongs to this family only when all of the following hold:
+
+- `P'`'s parent is `AlgoTranslate`, `AlgoRotate`, `AlgoRotatePoint`,
+  `AlgoMirror` or `AlgoDilate` (exact classes) whose first input is a point `P`;
+- `S'`'s parent is the R5 similarity algorithm with source `S`;
+- both algorithms have the same command and the same number of inputs, and each
+  transform parameter is the **same object** in both;
+- `P` is a membership endpoint of `S`: a direct family 1–4 of §24.2, a §21
+  constructor of `S` when `S` is itself the root spline, or recursively a
+  derived family 6–7. A §21 transport through R5 lineage is not membership and
+  never composes.
+
+The address is `P`'s address on `S` with `S'`'s identity substituted; R5 preserves
+provider, branch, component and parameter. Distinct parameter objects of equal
+value, including literals written separately in each command, are `NO_ADDRESS`.
+`MULTIPLE` and `UNRESOLVED_INVALID` of the pre-image are inherited. A composition
+depth above `LocusEvaluationSession2D.MAXIMUM_SAFE_ACTIVE_DEPTH` is
+`UNRESOLVED_INVALID`.
+
+### 24.7 Dependent-copy occurrence
+
+An endpoint `Q` belongs to this family only when its parent is `AlgoDependentPoint`
+(exact class) and its definition unwraps to exactly one point `P` other than
+`Q`. The result is `P`'s membership resolution on `S`, with the copy key.
+`CopyFreeObject` creates an independent point and is `NO_ADDRESS`. A copy of a
+transported, non-membership occurrence is `NO_ADDRESS`.
+
+### 24.8 Membership, transport and exclusions
+
+This section supersedes the first exclusion of §23.8 (single-source points are
+now admitted by §24.4) and retains the others:
+
+- a membership endpoint of `S` does not address an R5 image `T(S)`: an
+  intersection root, a semantic point, a generator or a copy on `S` is
+  `NO_ADDRESS` on `T(S)`; `T(P)` built with the same parameter objects is admitted
+  by §24.6 instead;
+- whether a generator should follow §21-style structural transport to `T(S)` is
+  not decided by this contract; it is `NO_ADDRESS` until an explicit author
+  decision;
+- `S × S` pair roots remain `MULTIPLE` (§23.2);
+- free, Cartesian-coincident, ordinary derived, list, expression, macro-output and
+  free-copy points are `NO_ADDRESS`;
+- a `GeoLocusV2` is not a `Path`, so no classic point-on-path endpoint exists.
+
+### 24.9 Persistence, reopen, copy and redefine
+
+Native save/reopen and undo/redo reconstruct every family from the command DAG,
+durable identities, the rich results' persisted token ledgers and the live
+generator state, then revalidate currentness; saved coordinates are never
+sufficient evidence. Copy/remap creates new identities and therefore new,
+internally consistent keys; the single authorized closure-copy token rebase
+remains the only copy provenance path for intersection points. Redefine follows
+the existing lifecycle and redefine contract; a resulting change of family, key,
+side, token or identity is resolved afresh under §24.3 and never repaired by
+proximity.

@@ -33,10 +33,12 @@ import org.geocedg.common.kernel.locus.intersection.SplinePairIntervalCertificat
 import org.geocedg.common.kernel.locus.intersection.SplinePairIntervalCertification2D.RootCertificate;
 
 /**
- * D2 current-state publication for authenticated spline pairs only. Numerical
- * neighborhoods certify the current slot; no neighborhood, parameter or previous
- * snapshot participates in the durable selector. Slot reactivation is not a
- * claim of physical-root continuation through intervening topology events.
+ * D2 current-state publication for pairs whose both sources expose a certified
+ * interval curve model (ADR 0028): authenticated splines and class-v1
+ * construction loci. Numerical neighborhoods certify the current slot; no
+ * neighborhood, parameter, model or previous snapshot participates in the
+ * durable selector. Slot reactivation is not a claim of physical-root
+ * continuation through intervening topology events.
  */
 final class PublicSplinePairRootIdentityResolver2D {
 
@@ -51,7 +53,7 @@ final class PublicSplinePairRootIdentityResolver2D {
 		SplinePairIntervalCertification2D.Result certificate =
 				SplinePairIntervalCertification2D.certify(context);
 		if (!certificate.isSupported()) {
-			return discovered;
+			return richOnly(context, discovered, certificate);
 		}
 		ArrayList<LocusIntersectionSolution2D> solutions =
 				new ArrayList<>(discovered.getFiniteSolutions());
@@ -116,6 +118,25 @@ final class PublicSplinePairRootIdentityResolver2D {
 				discovered.getCurrentness(), discovered.getSupportLevel(),
 				discovered.getNumericGuarantee(), solutions,
 				discovered.getOverlapEvidence(),
+				discovered.getUnresolvedCandidateComponentKeys(),
+				context.getInstrumentation().snapshot(), diagnostics);
+	}
+
+	/** A pair without two certified models stays rich-only, and says why. */
+	private static LocusIntersectionResult2D richOnly(
+			LocusPairIntersectionContext2D context, LocusIntersectionResult2D discovered,
+			SplinePairIntervalCertification2D.Result certificate) {
+		ArrayList<IntersectionDiagnostic2D> diagnostics =
+				new ArrayList<>(discovered.getDiagnostics());
+		diagnostics.add(new IntersectionDiagnostic2D(
+				DiagnosticCode.CAPABILITY_NOT_AVAILABLE,
+				"D2 materialization unavailable: " + certificate.getDiagnostic()
+						+ "; pair roots remain rich-only"));
+		return new LocusIntersectionResult2D(discovered.getSourceBinding(),
+				discovered.getComputationStatus(), discovered.getCompletenessEvidence(),
+				discovered.getGeometryKind(), discovered.getCurrentness(),
+				discovered.getSupportLevel(), discovered.getNumericGuarantee(),
+				discovered.getFiniteSolutions(), discovered.getOverlapEvidence(),
 				discovered.getUnresolvedCandidateComponentKeys(),
 				context.getInstrumentation().snapshot(), diagnostics);
 	}

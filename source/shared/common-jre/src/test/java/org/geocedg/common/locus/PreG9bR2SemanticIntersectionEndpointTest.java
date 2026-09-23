@@ -277,14 +277,16 @@ class PreG9bR2SemanticIntersectionEndpointTest extends G9U0PublicSurfaceTestBase
 		assertEquals(Status.NO_ADDRESS, resolver.resolve(image, x).getStatus());
 		assertInvalid(add("MI=LocusLength(SI,X,Y)"));
 
-		// A single-source intersection has no per-side locus evidence.
+		// A single-source intersection has no per-side pair evidence, so the
+		// section 23 pair walk stays NO_ADDRESS. Section 24.4 (PRE-G9B-R2-E0/E1)
+		// supersedes the former exclusion: the single-source family admits it.
 		add("vl:x=0.2");
 		GeoLocusIntersectionResult single = add("RS=Intersect(S,vl)");
 		List<LocusIntersectionSolution2D> singleRoots = eligible(single);
 		assertEquals(1, singleRoots.size(), "S x line must materialize one root");
 		GeoPoint z = materialize(single, "Q", singleRoots.get(0));
 		assertEquals(Status.NO_ADDRESS, resolver.resolve(spline, z).getStatus());
-		assertInvalid(add("MS=LocusLength(S,Q,Y)"));
+		assertEquals(0.3, finite(add("MS=LocusLength(S,Q,Y)")), 1E-9);
 
 		// An intersection point used as a constructor of another spline still
 		// resolves there through A1: NO_ADDRESS falls through unchanged.

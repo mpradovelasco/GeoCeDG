@@ -535,14 +535,16 @@ The default branch key of a Spline V2 is `spline-v2/main`.
 ### 7.3 Constructor points are not semantic points
 
 The points you pass to `SplineV2` are **constructor points**. They define the
-curve. They are ordinary free or dependent points, and they do **not** by
-themselves carry a semantic position on the resulting curve — even when their
-coordinates lie exactly on it.
+curve. They are ordinary free or dependent points, not semantic points: they
+carry no semantic address of their own, even when their coordinates lie exactly
+on the curve.
 
 This is a deliberate contract, and it is the most common source of surprise.
 A metric or an incidence query needs a point with admissible semantic
-provenance on that curve; cartesian coincidence is not semantic position. See
-section 9.
+provenance on that curve; cartesian coincidence is not semantic position. A
+constructor point is nevertheless an admissible length endpoint on its own
+spline, through its explicit place in the constructor list — structural
+provenance, never its coordinates. See section 9.3.
 
 ### 7.4 Points on a Spline V2
 
@@ -715,11 +717,38 @@ options**) is an explicit, visible opt-in that applies only to a newly submitted
 query. The query and the points it creates form one compound undo step. It does
 not run when you merely select, reopen or recompute a result.
 
-### 8.7 Spline V2 × Spline V2
+### 8.7 Intersections of two semantic curves
 
-A pair of semantic splines consumes the same rich-result machinery. Several
+A pair of semantic curves consumes the same rich-result machinery. Several
 distinct roots may each be individually admissible. A root whose multiplicity or
 identity is unresolved — a tangency, for instance — stays rich-only.
+
+A root of two semantic curves can be materialized when **both** curves have a
+**certified model**: an exact description of the curve that lets GeoCeDG prove
+that the root exists, that it is the only root of its kind in its region, and
+that the two curves cross there. These curves have a certified model:
+
+- a Spline V2, as before, so **Spline V2 × Spline V2** pairs keep their
+  behaviour;
+- a Locus V2 traced by a point driven along a circle, a circular arc or a
+  segment, when the traced point is obtained from the driver only through lines
+  through two points, parallel and perpendicular lines, intersections of two
+  lines, midpoints, and translations, rotations, reflections and dilations with
+  fixed parameters;
+- a Locus V2 of a number whose traced point moves along a straight line at a
+  constant rate as the number changes;
+- similarity images of any of these.
+
+Spline V2 × Locus V2, Locus V2 × Spline V2 and Locus V2 × Locus V2 pairs
+therefore materialize exactly like spline pairs when both sides qualify. When a
+side has no certified model — for example a locus traced through a line–circle
+intersection, through an expression or along another locus — the pair stays
+rich-only, and the result's diagnostics say that a side lacks the model. A root
+at the seam where a driving circle closes on itself stays unresolved.
+
+Certification is local: each admissible root is proved on its own, while the
+global completeness of the result normally stays `NOT_ESTABLISHED`
+(section 8.3).
 
 This section describes the workflow and the concepts you need. The full
 mathematical treatment of intersection identity is not in scope for a user
@@ -767,29 +796,46 @@ curve of the same family.
 
 ### 9.3 Endpoints need semantic provenance
 
-The partial form requires the two endpoints to be **semantic points admissible
-on that curve**. This is the practical face of the rule stated in section 8.1.
+The partial form requires the two endpoints to be **admissible positions on
+that curve**. Admissibility comes from explicit provenance, never from
+coordinates. This is the practical face of the rule stated in section 8.1.
 
-In the section 7.5 example, `A` and `C` are constructor points: ordinary points
-that define the spline. `P` and `Q` are semantic points created with an explicit
-address. Therefore:
+A point is an admissible endpoint on the measured curve `S` when it is:
+
+- a **semantic point** of `S`, created interactively or with an explicit
+  address such as `Point(S,"spline-v2/main",0.25)`;
+- a **constructor point** of the Spline V2 `S` — or of the Spline V2 whose
+  similarity image `S` is — through its place in the constructor list;
+- a point materialized from an **intersection** in which `S` takes part
+  (section 9.4);
+- the **generator point** that traces the Locus V2 `S`, at the current value of
+  its driver;
+- if `S` is the image `T(U)` of another curve `U`, the image `T(P)` of an
+  admissible point `P` of `U`, made with the same transformation and the same
+  parameter objects;
+- a **dependent copy** `Q=P` of an admissible point `P` of `S`.
+
+In the section 7.5 example, with `K=(-2,0)` added:
 
 ```text
 Length(S,P,Q)   defined
-Length(S,A,C)   undefined
+Length(S,A,C)   defined: A and C are constructor points of S
+Length(S,K,Q)   undefined, although K coincides with A
 ```
 
-even though `A` and `C` lie exactly on the curve. There is no proximity
-selection and no implicit choice of preimage — which matters as soon as a curve
-self-intersects and a position has more than one preimage.
+There is no proximity selection and no implicit choice of preimage — which
+matters as soon as a curve self-intersects and a position has more than one
+preimage. Where a position has several preimages, no endpoint is chosen and the
+length is undefined.
 
-Similarly, a semantic point belonging to a *different* curve is not a valid
-endpoint for this one.
+A semantic point belonging to a *different* curve is not a valid endpoint for
+this one. Nor are free points, `CopyFreeObject` copies, other derived points
+such as midpoints or expressions, and outputs of user tools.
 
-### 9.4 Endpoints from a Spline V2 × Spline V2 intersection
+### 9.4 Endpoints from intersections
 
-A point materialized from a **Spline V2 × Spline V2** intersection is a valid
-metric endpoint on either of the two intersected curves:
+A point materialized from an intersection is a valid metric endpoint on each
+semantic curve that takes part in that intersection:
 
 ```text
 R=Intersect(S,T)
@@ -798,23 +844,35 @@ Length(S,X,Q)   defined on S
 Length(T,X,E)   defined on T
 ```
 
-The point is admitted through its explicit semantic provenance — the exact root
-token and the evidence the intersection keeps for each of its two curves — and
-never through its coordinates. In practice:
+The same holds for a point materialized from the intersection of a semantic
+curve with an ordinary object: a line, segment or ray, a conic, a bounded
+function graph or a polynomial implicit curve.
+
+```text
+c=Circle((0,0),1)
+RC=Intersect(S,c)
+Y=Intersect(RC,"<token>")
+Length(S,Y,Q)   defined on S
+```
+
+This covers every **Spline V2 × Spline V2** intersection and every other pair of
+semantic curves whose roots can be materialized (section 8.7). The point is
+admitted through its explicit semantic provenance — the exact root token and the
+evidence the intersection keeps for its semantic curves — and never through its
+coordinates. In practice:
 
 - the side of the intersection that belongs to the measured curve is found by
   that curve's identity, so `Intersect(S,T)` and `Intersect(T,S)` give the same
   length;
 - if the intersection point becomes dormant, the length is undefined until the
   same root is current again; it never jumps to a nearby root;
+- an intersection point is an endpoint only on the curves of its own
+  intersection, not on a transformed copy of them; on the image curve, use the
+  image of the point made with the same transformation (section 9.3);
 - a nearby or coincident point of any other kind is still **not** an endpoint.
 
-Two cases stay outside this rule:
-
-- a point from an intersection of a semantic curve with an ordinary object, such
-  as a line or a circle, is not a metric endpoint on that curve;
-- a self-intersection `Intersect(S,S)` produces no materializable point, so it
-  cannot supply an endpoint.
+A self-intersection `Intersect(S,S)` produces no materializable point, so it
+cannot supply an endpoint.
 
 ---
 
@@ -875,6 +933,11 @@ kernel.
 
 Intersections of transformed curves derive their own selectors and tokens; they
 are not inherited from the source intersection.
+
+To measure between points of `T`, transform admissible points of `S` with the
+same objects, for example `Dilate(P,k,O)`. A semantic or intersection point of
+`S` is not itself an endpoint on `T`; constructor points of a Spline V2 remain
+endpoints on its images (section 9.3).
 
 ### 10.4 Reflection about an axis
 
@@ -1217,11 +1280,30 @@ These are the limitations that affect what you can do in the application today.
   explicit domains and targets.
 - Semantic curves are GeoCeDG-only. They are saved in the native document, and
   an external upstream application is outside the compatibility guarantee.
-- `Length(S,P,Q)` accepts a point materialized from a Spline V2 × Spline V2
-  intersection, but not one from an intersection with an ordinary object such as
-  a line or a circle. See section 9.4.
+- `Length(S,P,Q)` accepts only endpoints with explicit provenance on `S`
+  (section 9.3). A point that merely lies on the curve — a free point, a
+  midpoint, an expression, a `CopyFreeObject` copy — is not an endpoint, and a
+  semantic or intersection point of `S` is not an endpoint on a transformed copy
+  of `S`.
+- The roots of two semantic curves can be materialized only when both curves
+  have a certified model (section 8.7). Otherwise the pair stays rich-only and
+  its diagnostics say so.
 - A tangent, ambiguous, stale or insufficiently certified intersection root
   stays rich-only and cannot be materialized.
+- After copy and paste, a copied point materialized from a pair whose Locus V2
+  is traced by a driven point stays undefined; create the points of the copy
+  from its own copied intersection result.
+- The built-in axes cannot be the target of a semantic intersection or the
+  mirror of a semantic reflection; construct the line explicitly
+  (section 10.4).
+- Two evaluation defects of Locus V2 curves traced by a point are known. A locus
+  driven along a segment is evaluated one step late when its construction uses
+  the driving point in a line through two points or in a midpoint. A locus whose
+  construction passes an unnamed literal point to a command, such as
+  `Line(C,(0,3))`, is evaluated as a single fixed point. The positions, lengths
+  and intersections of such loci can be wrong. Where possible, drive the point
+  along a circle or an arc instead of a segment, and name literal points first
+  (`T=(0,3)`, then `Line(C,T)`).
 
 **Export**
 

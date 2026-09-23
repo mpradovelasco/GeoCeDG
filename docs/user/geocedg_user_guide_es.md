@@ -557,14 +557,16 @@ La clave de rama por defecto de una Spline V2 es `spline-v2/main`.
 ### 7.3 Los puntos constructores no son puntos semánticos
 
 Los puntos que pasa a `SplineV2` son **puntos constructores**. Definen la curva.
-Son puntos ordinarios, libres o dependientes, y **no** portan por sí mismos una
-posición semántica sobre la curva resultante, aunque sus coordenadas estén
-exactamente sobre ella.
+Son puntos ordinarios, libres o dependientes, no puntos semánticos: no portan una
+dirección semántica propia, aunque sus coordenadas estén exactamente sobre la
+curva.
 
 Es un contrato deliberado, y la fuente más habitual de sorpresa. Una consulta
 métrica o de incidencia necesita un punto con proveniencia semántica admisible
-sobre esa curva; la coincidencia cartesiana no equivale a posición semántica.
-Véase la sección 9.
+sobre esa curva; la coincidencia cartesiana no equivale a posición semántica. Aun
+así, un punto constructor es un extremo de longitud admisible sobre su propia
+spline, gracias a su lugar explícito en la lista de constructores: una
+proveniencia estructural, nunca sus coordenadas. Véase la sección 9.3.
 
 ### 7.4 Puntos sobre una Spline V2
 
@@ -742,12 +744,41 @@ aplica solo a una consulta recién enviada. La consulta y los puntos que crea
 forman un único paso compuesto de deshacer. No se ejecuta al seleccionar, reabrir
 o recalcular un resultado.
 
-### 8.7 Spline V2 × Spline V2
+### 8.7 Intersecciones de dos curvas semánticas
 
-Un par de splines semánticas consume la misma maquinaria de resultado rico. Varias
+Un par de curvas semánticas consume la misma maquinaria de resultado rico. Varias
 raíces distintas pueden ser individualmente admisibles. Una raíz cuya
 multiplicidad o identidad no esté resuelta —una tangencia, por ejemplo— permanece
 solo como resultado rico.
+
+Una raíz de dos curvas semánticas puede materializarse cuando **ambas** curvas
+tienen un **modelo certificado**: una descripción exacta de la curva que permite a
+GeoCeDG demostrar que la raíz existe, que es la única de su clase en su región y
+que las dos curvas se cruzan en ella. Tienen modelo certificado:
+
+- una Spline V2, como hasta ahora, de modo que los pares **Spline V2 × Spline V2**
+  conservan su comportamiento;
+- un Locus V2 trazado por un punto conducido sobre una circunferencia, un arco de
+  circunferencia o un segmento, cuando el punto trazado se obtiene del punto
+  conductor solo mediante rectas por dos puntos, rectas paralelas y
+  perpendiculares, intersecciones de dos rectas, puntos medios, y traslaciones,
+  rotaciones, reflexiones y homotecias de parámetros fijos;
+- un Locus V2 de un número cuyo punto trazado recorre una recta a ritmo constante
+  cuando el número cambia;
+- las imágenes por semejanza de cualquiera de ellos.
+
+Por tanto, los pares Spline V2 × Locus V2, Locus V2 × Spline V2 y
+Locus V2 × Locus V2 se materializan exactamente igual que los pares de splines
+cuando ambos lados cumplen la condición. Cuando un lado carece de modelo
+certificado —por ejemplo, un lugar trazado a través de una intersección de recta
+y circunferencia, de una expresión o sobre otro lugar— el par permanece solo como
+resultado rico, y los diagnósticos del resultado indican que un lado carece del
+modelo. Una raíz situada en la costura donde se cierra la circunferencia
+conductora permanece sin resolver.
+
+La certificación es local: cada raíz admisible se demuestra por sí misma, mientras
+que la completitud global del resultado sigue normalmente en `NOT_ESTABLISHED`
+(sección 8.3).
 
 Esta sección describe el flujo de trabajo y los conceptos necesarios. El
 tratamiento matemático completo de la identidad de las intersecciones queda fuera
@@ -796,29 +827,47 @@ una curva semántica de la misma familia.
 
 ### 9.3 Los extremos necesitan proveniencia semántica
 
-La forma parcial exige que los dos extremos sean **puntos semánticos admisibles
-sobre esa curva**. Es la cara práctica de la regla enunciada en la sección 8.1.
+La forma parcial exige que los dos extremos sean **posiciones admisibles sobre
+esa curva**. La admisibilidad procede de una proveniencia explícita, nunca de las
+coordenadas. Es la cara práctica de la regla enunciada en la sección 8.1.
 
-En el ejemplo de la sección 7.5, `A` y `C` son puntos constructores: puntos
-ordinarios que definen la spline. `P` y `Q` son puntos semánticos creados con una
-dirección explícita. Por tanto:
+Un punto es un extremo admisible sobre la curva medida `S` cuando es:
+
+- un **punto semántico** de `S`, creado de forma interactiva o con una dirección
+  explícita como `Point(S,"spline-v2/main",0.25)`;
+- un **punto constructor** de la Spline V2 `S` —o de la Spline V2 de la que `S`
+  es imagen por semejanza—, gracias a su lugar en la lista de constructores;
+- un punto materializado desde una **intersección** en la que participa `S`
+  (sección 9.4);
+- el **punto generador** que traza el Locus V2 `S`, en el valor actual de su
+  conductor;
+- si `S` es la imagen `T(U)` de otra curva `U`, la imagen `T(P)` de un punto
+  admisible `P` de `U`, construida con la misma transformación y los mismos
+  objetos parámetro;
+- una **copia dependiente** `Q=P` de un punto admisible `P` de `S`.
+
+En el ejemplo de la sección 7.5, añadiendo `K=(-2,0)`:
 
 ```text
 Length(S,P,Q)   definido
-Length(S,A,C)   indefinido
+Length(S,A,C)   definido: A y C son puntos constructores de S
+Length(S,K,Q)   indefinido, aunque K coincide con A
 ```
 
-aunque `A` y `C` estén exactamente sobre la curva. No hay selección por
-proximidad ni elección implícita de preimagen, lo que resulta decisivo en cuanto
-una curva se autointersecta y una posición tiene más de una preimagen.
+No hay selección por proximidad ni elección implícita de preimagen, lo que
+resulta decisivo en cuanto una curva se autointersecta y una posición tiene más de
+una preimagen. Cuando una posición tiene varias preimágenes, no se elige ningún
+extremo y la longitud queda indefinida.
 
-Del mismo modo, un punto semántico perteneciente a una curva *distinta* no es un
-extremo válido para esta.
+Un punto semántico perteneciente a una curva *distinta* no es un extremo válido
+para esta. Tampoco lo son los puntos libres, las copias `CopyFreeObject`, otros
+puntos derivados como puntos medios o expresiones, ni las salidas de
+herramientas de usuario.
 
-### 9.4 Extremos procedentes de una intersección Spline V2 × Spline V2
+### 9.4 Extremos procedentes de intersecciones
 
-Un punto materializado desde una intersección **Spline V2 × Spline V2** es un
-extremo métrico válido sobre cualquiera de las dos curvas intersecadas:
+Un punto materializado desde una intersección es un extremo métrico válido sobre
+cada curva semántica que participa en esa intersección:
 
 ```text
 R=Intersect(S,T)
@@ -827,24 +876,36 @@ Length(S,X,Q)   definido sobre S
 Length(T,X,E)   definido sobre T
 ```
 
-El punto se admite por su proveniencia semántica explícita —el token exacto de
-la raíz y la evidencia que la intersección conserva para cada una de sus dos
-curvas— y nunca por sus coordenadas. En la práctica:
+Lo mismo vale para un punto materializado desde la intersección de una curva
+semántica con un objeto ordinario: una recta, un segmento o una semirrecta, una
+cónica, la gráfica acotada de una función o una curva implícita polinómica.
+
+```text
+c=Circle((0,0),1)
+RC=Intersect(S,c)
+Y=Intersect(RC,"<token>")
+Length(S,Y,Q)   definido sobre S
+```
+
+Esto abarca toda intersección **Spline V2 × Spline V2** y cualquier otro par de
+curvas semánticas cuyas raíces puedan materializarse (sección 8.7). El punto se
+admite por su proveniencia semántica explícita —el token exacto de la raíz y la
+evidencia que la intersección conserva para sus curvas semánticas— y nunca por
+sus coordenadas. En la práctica:
 
 - el lado de la intersección que pertenece a la curva medida se identifica por
   la identidad de esa curva, de modo que `Intersect(S,T)` e `Intersect(T,S)` dan
   la misma longitud;
 - si el punto de intersección queda latente, la longitud queda indefinida hasta
   que la misma raíz vuelva a estar vigente; nunca salta a una raíz cercana;
+- un punto de intersección es extremo solo sobre las curvas de su propia
+  intersección, no sobre una copia transformada de ellas; sobre la curva imagen,
+  use la imagen del punto construida con la misma transformación (sección 9.3);
 - un punto cercano o coincidente de cualquier otro tipo sigue **sin** ser un
   extremo.
 
-Quedan fuera de esta regla dos casos:
-
-- un punto de la intersección de una curva semántica con un objeto ordinario,
-  como una recta o una circunferencia, no es extremo métrico sobre esa curva;
-- una autointersección `Intersect(S,S)` no produce puntos materializables, por lo
-  que no puede aportar un extremo.
+Una autointersección `Intersect(S,S)` no produce puntos materializables, por lo
+que no puede aportar un extremo.
 
 ---
 
@@ -905,6 +966,11 @@ sobre ella. Al restaurar `k`, el núcleo recupera los puntos semánticos existen
 
 Las intersecciones de curvas transformadas derivan sus propios selectores y
 tokens; no se heredan de la intersección de origen.
+
+Para medir entre puntos de `T`, transforme puntos admisibles de `S` con los mismos
+objetos, por ejemplo `Dilate(P,k,O)`. Un punto semántico o de intersección de `S`
+no es por sí mismo un extremo sobre `T`; los puntos constructores de una Spline V2
+siguen siendo extremos sobre sus imágenes (sección 9.3).
 
 ### 10.4 Reflexión respecto a un eje
 
@@ -1262,11 +1328,31 @@ Estas son las limitaciones que afectan a lo que hoy puede hacer en la aplicació
 - Las curvas semánticas son exclusivas de GeoCeDG. Se guardan en el documento
   nativo, y una aplicación upstream externa queda fuera de la garantía de
   compatibilidad.
-- `Length(S,P,Q)` admite un punto materializado desde una intersección
-  Spline V2 × Spline V2, pero no uno procedente de la intersección con un objeto
-  ordinario, como una recta o una circunferencia. Véase la sección 9.4.
+- `Length(S,P,Q)` solo admite extremos con proveniencia explícita sobre `S`
+  (sección 9.3). Un punto que simplemente está sobre la curva —un punto libre, un
+  punto medio, una expresión, una copia `CopyFreeObject`— no es un extremo, y un
+  punto semántico o de intersección de `S` no es un extremo sobre una copia
+  transformada de `S`.
+- Las raíces de dos curvas semánticas solo pueden materializarse cuando ambas
+  curvas tienen un modelo certificado (sección 8.7). En otro caso el par permanece
+  solo como resultado rico y sus diagnósticos lo indican.
 - Una raíz de intersección tangente, ambigua, caduca o insuficientemente
   certificada permanece solo como resultado rico y no puede materializarse.
+- Tras copiar y pegar, un punto copiado que se materializó desde un par cuyo
+  Locus V2 está trazado por un punto conducido queda indefinido; cree los puntos
+  de la copia desde su propio resultado de intersección copiado.
+- Los ejes predefinidos no pueden ser el objetivo de una intersección semántica
+  ni el espejo de una reflexión semántica; construya la recta explícitamente
+  (sección 10.4).
+- Se conocen dos defectos de evaluación de los Locus V2 trazados por un punto. Un
+  lugar conducido sobre un segmento se evalúa con un paso de retraso cuando su
+  construcción usa el punto conductor en una recta por dos puntos o en un punto
+  medio. Un lugar cuya construcción pasa un punto literal sin nombre a un comando,
+  como `Line(C,(0,3))`, se evalúa como un único punto fijo. Las posiciones,
+  longitudes e intersecciones de esos lugares pueden ser erróneas. Siempre que sea
+  posible, conduzca el punto sobre una circunferencia o un arco en lugar de un
+  segmento, y dé nombre antes a los puntos literales (`T=(0,3)` y después
+  `Line(C,T)`).
 
 **Exportación**
 

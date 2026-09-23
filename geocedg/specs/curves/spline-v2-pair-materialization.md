@@ -242,3 +242,56 @@ living roadmap/traceability updates, and its historical claims remain scoped.
 `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` remains OPEN / TRACKED in the
 [canonical roadmap](../../../docs/roadmap/geocedg_roadmap.md). Pair lifecycle
 evidence neither supplies nor closes that distinct missing R4 native round trip.
+
+## 10. PRE-G9B-R2-E0/E1 amendment: certified semantic-pair scope
+
+This amendment was introduced by the `PRE-G9B-R2-E0/E1` technical candidate under
+[ADR 0028](../../../docs/adr/0028-semantic-endpoint-admissibility-and-certified-semantic-pair-materialization.md),
+which amends ADR 0021 Decision 1. Its author-approval status is recorded only in
+that phase's author-decision record, never in this section.
+
+The family restriction of §1 is replaced by a per-side capability. Exact-token
+point materialization is permitted for a Locus V2 × Locus V2 component pair
+exactly when **both** canonical sources expose a *certified interval curve
+model*: an enclosure of the source's semantic curve and first derivative over
+any parameter box, with smoothness, period and canonicalization, coherent with
+the source's own evaluator. The admitted models are:
+
+- the structural spline model of §4 and ADR 0022, including its supported
+  similarity compositions (unchanged); and
+- the [certified construction model](../locus/locus-v2-certified-construction-model.md)
+  of a reconstructible dependent-point locus whose generator slice lies in
+  class v1, including the direct scalar affine case and supported similarity
+  compositions, composed through the same captured similarity maps.
+
+§2–§9 apply unchanged to every admitted pair: the `pair-singleton-transverse-germ/v1`
+selector and its canonical source ordering, the contract identifier, singleton
+class certification and coverage, outward Krawczyk proof, the lifecycle table,
+ledger v5, persistence, copy, efficiency and the G9U1 boundary. The certifying
+model is certificate material: it never enters a selector, so no selector value
+changes meaning and no ledger format changes. Equal-source self-pairs remain
+outside the scheme (§2).
+
+A model states its own period. A period of zero certifies the component as a
+finite interval; for a circle-point locus, whose canonical domain is not
+exactly closed under real `cos`/`sin`, roots in the seam band remain unresolved
+rather than identified across the seam. Every certified root must also pass the
+unchanged floating verification (validity, residual, regular differentials,
+transverse contact) before it is bound; otherwise its class is refused.
+
+One copy limitation is retained, fail-closed. A generator-driven source's
+parameterization contract names the durable identity of its driver coordinate,
+while the §7 closure-copy map rebases only the two source identities. A closure
+copy of a pair with such a side therefore certifies its own current classes
+under fresh tokens, but the copied materialized point's rebased selector matches
+none of them, so the copied point stays dormant and never retargets. The copied
+pair's own roots can be materialized explicitly. Removing the limitation needs
+an author decision: either a generator parameterization contract that carries no
+identity, or a copy map that also rebases the driver identity.
+
+When either side has no model, the pair remains rich-only exactly as before, and
+the published result carries an explicit diagnostic naming the side that lacks a
+certified model; a rich-only pair is never undiagnosed. No weaker
+`DETERMINISTIC_LOCAL` policy is introduced. The
+[E0/E1 validation matrix](../../../docs/validation/pre_g9b_r2_e0_e1_validation_matrix.md)
+is the candidate traceability authority for this amendment.

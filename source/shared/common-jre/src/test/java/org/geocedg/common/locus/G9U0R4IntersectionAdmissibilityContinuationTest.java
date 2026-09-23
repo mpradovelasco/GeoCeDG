@@ -1372,10 +1372,12 @@ final class G9U0R4IntersectionAdmissibilityContinuationTest
 			for (LocusIntersectionSolution2D solution
 					: result.getFiniteSolutions()) {
 				if (target.getValue() == TargetFamily.LOCUS_V2) {
-					assertEquals(LocalIsolationStatus.NOT_ESTABLISHED,
+					// ADR 0028 supersedes the former rich-only pin: both affine scalar
+					// sources expose a certified model, so the pair root is exact.
+					assertEquals(LocalIsolationStatus.ESTABLISHED,
 							solution.getPairEvidence().orElseThrow()
 									.getLocalIsolation().getStatus(), target.getKey());
-					assertFalse(rich.isPointAdmissible(
+					assertTrue(rich.isPointAdmissible(
 							solution.getIdentity().getRootToken()), target.getKey());
 					continue;
 				} else {

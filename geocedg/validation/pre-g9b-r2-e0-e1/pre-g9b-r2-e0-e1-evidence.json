@@ -1,0 +1,310 @@
+{
+  "schemaVersion": 1,
+  "phase": "PRE-G9B-R2-E0/E1",
+  "phaseKind": "SEMANTIC_ENDPOINT_ADMISSIBILITY_AND_CERTIFIED_SEMANTIC_PAIR_MATERIALIZATION",
+  "technicalCandidateState": "FROZEN",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "authorDecisionAuthority": "the separate closeout/author-decision record is the sole authority for current author approval status",
+  "selfApproved": false,
+  "passClaimed": false,
+  "changeRoute": "ORDINARY",
+  "verificationClass": "INTEGRATED_PHASE",
+  "verificationClassFrozenAtPhaseStart": true,
+  "frozenAcceptance": [
+    "tools/agent/verify.ps1 -Profile PHASE -Phase G9S1-R1",
+    "tools/agent/verify.ps1 -Profile INTEGRATION"
+  ],
+  "cohortEquivalence": {
+    "profile": "tools/agent/verify.ps1 -Profile PHASE -Phase G9U0-R6",
+    "equivalentTo": "tools/agent/verify.ps1 -Profile PHASE -Phase G9S1-R1",
+    "planOnlyNodeSetsIdentical": true,
+    "nodes": 23,
+    "planHashDiffersOnlyBySelectionLabel": true,
+    "rerun": false,
+    "observation": "OBS-R2-PHASE-SELECTION-COHORT"
+  },
+  "finalRequired": false,
+  "verificationEscalationRequested": false,
+  "implementationBase": {
+    "commit": "a222b82aad821e3e0c0aa93145a57b7050f024c8",
+    "tree": "0768848e89961f0f372f514530f9e9e0b81cc872",
+    "branch": "feature/pre-g9b-r2-e0-e1-semantic-admissibility-and-materialization"
+  },
+  "authorization": {
+    "combinedSequentialTask": true,
+    "supersedesDesignOnlyAndIntermediateApprovalSplit": true
+  },
+  "normativeOutputs": [
+    { "path": "docs/architecture/pre_g9b_r2_e0_e1_semantic_admissibility_and_materialization_design.md", "role": "Stage-1 design record with the section 14 Stage-2 corrections" },
+    { "path": "docs/adr/0028-semantic-endpoint-admissibility-and-certified-semantic-pair-materialization.md", "role": "decision, Proposed; amends ADR 0021 Decision 1 only" },
+    { "path": "geocedg/specs/locus/locus-v2-certified-construction-model.md", "role": "new contract", "version": "1.0", "programVersion": "certified-construction-program/v1" },
+    { "path": "geocedg/specs/locus/locus-v2-metrics.md", "role": "endpoint admissibility amendment", "section": "24", "versionBefore": "1.3", "versionAfter": "1.4" },
+    { "path": "geocedg/specs/curves/spline-v2-pair-materialization.md", "role": "capability-based pair scope amendment", "section": "10" },
+    { "path": "docs/validation/pre_g9b_r2_e0_e1_validation_matrix.md", "role": "focal and adversarial traceability, rows B1-B28 and A1-A25" }
+  ],
+  "stage2Corrections": [
+    { "id": "D-C1", "frozenStatement": "all seven endpoint families are structurally disjoint; derived families before the section 21 constructor", "finding": "false when a constructor list holds both P and T(P) or Q=P", "correction": "every direct family, the constructor included, is consulted before any derived family", "recordedIn": ["metrics section 24.2", "design section 14"] },
+    { "id": "D-C2", "frozenStatement": "a missing durable identity yields UNRESOLVED_INVALID; nested derivations compose", "finding": "durable point identity begins only at first participation and an intermediate derivation step never participates", "correction": "an intermediate image or copy step is keyed point=derived from the endpoint's DAG input chain; the endpoint, every addressed source and the direct-family origin keep durable identities", "recordedIn": ["metrics section 24.3", "design section 14"], "pinnedBy": "org.geocedg.common.locus.PreG9bR2E0SemanticEndpointAdmissibilityTest#ineligibleTransformsFailClosedAndNestedImagesCompose" },
+    { "id": "D-C3", "frozenStatement": "a family change inside one metric object is executed and fails closed", "finding": "a cross-family compatible redefine is rejected atomically and a replacement removes the dependent metric", "correction": "NOT_APPLICABLE_UNDER_CURRENT_LIFECYCLE; the retained family and key guard remains the fail-closed authority", "recordedIn": ["metrics section 24.3", "design section 14"], "pinnedBy": "org.geocedg.common.locus.PreG9bR2E0SemanticEndpointAdmissibilityTest#familyChangeByRedefinitionIsAFreshResolutionNeverARetarget" },
+    { "id": "D-C4", "frozenStatement": "a globally complete result with an ambiguous root is exercised end to end", "finding": "no capability publishes COMPLETE completeness with finite roots", "correction": "pinned structurally on a real MULTIPLE result republished as COMPLETE", "recordedIn": ["design section 14", "validation matrix B17"], "pinnedBy": "org.geocedg.common.kernel.locus.intersection.PreG9bR2E1CertifiedConstructionModelTest#globalCompletenessNeverMakesAnAmbiguousRootAdmissible" },
+    { "id": "D-C5", "frozenStatement": "one approved regression (G9S1-R1, matrix B26) pins certifiable generic pairs as rich-only", "finding": "the first complete final.shared run failed exactly two further pins of the same pre-ADR-0028 state, both on affine scalar pairs certified by the frozen positive B5", "correction": "both tests keep their purpose and now assert the certified behaviour", "recordedIn": ["design section 14", "validation matrix B27 and B28"] }
+  ],
+  "retainedLimitations": [
+    { "id": "PAIR-COPY-GENERATOR-PARAMETERIZATION-CONTRACT", "preExisting": false, "state": "FAIL_CLOSED", "statement": "after a closure copy of a pair with a generator-driven side the copied point stays dormant; the copy's own roots certify and remain explicitly materializable", "authorDecisionNeeded": "identity-free generator parameterization contract, or a copy map that also rebases the driver identity" },
+    { "id": "CLIPBOARD-COPY-POINT-DRIVEN-LOCUS-SLICE", "preExisting": true, "state": "FAIL_CLOSED", "statement": "the host clipboard refuses a closure copy of a point-driven locus whose slice has intermediate objects (MALFORMED_RECORD)" },
+    { "id": "A3-PAIR-SOURCE-COMPATIBLE-STRUCTURAL-REDEFINE", "preExisting": true, "state": "FAIL_CLOSED", "statement": "A3 rejects a compatible structural redefine of a pair source with materialized points, also for spline x spline" },
+    { "id": "LOCUS-PARTICIPANT-AXIS-NOT-SERIALIZABLE", "preExisting": true, "confirmedOnBase": true, "state": "FAIL_CLOSED", "statement": "xAxis or yAxis used directly as an intersection target or mirror of a semantic curve fails with GEO_NOT_SERIALIZABLE; a user-defined line works" },
+    { "id": "GENERATOR-TRANSPORT-UNDER-R5", "preExisting": false, "state": "NOT_ADMITTED", "statement": "open author question (design section 10); T(E) with the same transform objects is admitted by membership" }
+  ],
+  "preExistingWrongValueDefects": [
+    {
+      "id": "RECONSTRUCTIBLE-SEGMENT-DRIVER-INHOMOGENEOUS-LAG",
+      "outsideScope": true,
+      "reproducedOnBase": "a222b82aad821e3e0c0aa93145a57b7050f024c8",
+      "statement": "after GeoSegment.pathChanged the reconstructible evaluator does not refresh a SEGMENT_POINT driver's inhomogeneous coordinates, so a slice reading them evaluates the previous parameter",
+      "reproduction": "ls=LocusV2(Midpoint(Cs,K),Cs), Cs on Segment((0,0),(4,0)), K=(0,2): Length(ls,Pa,Pb) between semantic points at 0.25 and 0.75 is 2.25 instead of 1; Length(ls) is undefined instead of 2",
+      "certifiedModelBehaviour": "the certification's floating verification refuses every such root"
+    },
+    {
+      "id": "RECONSTRUCTIBLE-INLINE-LITERAL-SLICE-DISCONNECTED",
+      "outsideScope": true,
+      "reproducedOnBase": "a222b82aad821e3e0c0aa93145a57b7050f024c8",
+      "statement": "a slice passing an inline literal to a command, for example Line(Cj,(0,3)), is isolated without its driver dependence and evaluates one constant point for every parameter",
+      "reproduction": "pedal locus on a circular arc: Length is 0, while the same construction with T3=(0,3) has length 2.15",
+      "certifiedModelBehaviour": "capture refuses the slice (construction-model spec section 3, rule 5)"
+    }
+  ],
+  "endpointFamilies": {
+    "dispatchOrder": [
+      "SEMANTIC_POINT",
+      "PAIR_INTERSECTION_OCCURRENCE",
+      "SINGLE_SOURCE_INTERSECTION_OCCURRENCE",
+      "GENERATOR_OCCURRENCE",
+      "CONSTRUCTOR_OCCURRENCE",
+      "SIMILARITY_IMAGE_OCCURRENCE",
+      "DEPENDENT_COPY_OCCURRENCE"
+    ],
+    "new": ["SINGLE_SOURCE_INTERSECTION_OCCURRENCE", "GENERATOR_OCCURRENCE", "SIMILARITY_IMAGE_OCCURRENCE", "DEPENDENT_COPY_OCCURRENCE"],
+    "resolver": "org.geocedg.common.kernel.algos.SemanticMetricEndpointResolver2D",
+    "statuses": ["NO_ADDRESS", "UNIQUE", "MULTIPLE", "UNRESOLVED_INVALID"],
+    "fallThroughOnlyOn": "NO_ADDRESS",
+    "occurrenceKeyVersions": [
+      "metric-endpoint/single-source-intersection-occurrence/v1",
+      "metric-endpoint/generator-occurrence/v1",
+      "metric-endpoint/similarity-image-occurrence/v1",
+      "metric-endpoint/dependent-copy-occurrence/v1",
+      "metric-endpoint/semantic-point/v1 (inner keys only)"
+    ],
+    "occurrenceKeySerialized": false,
+    "retention": "family and versioned key; a change of either is retargeting"
+  },
+  "pairMaterialization": {
+    "admissionUnit": "per-side certified interval curve model (CertifiedIntervalCurveModel2D)",
+    "models": ["structural spline model (ADR 0022), unchanged", "certified-construction-program/v1 construction model, new"],
+    "selector": "pair-singleton-transverse-germ/v1",
+    "contract": "d2-spline-pair-singleton-germ/v1",
+    "ledgerFormat": "UNCHANGED (v5, binding key contract and selector)",
+    "richOnlyDiagnosed": true,
+    "globalCompletenessOfWitness": "NOT_ESTABLISHED"
+  },
+  "changedSourcePaths": {
+    "new": [
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/SemanticMetricEndpointResolver2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/CertifiedConstructionCapture2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/CertifiedConstructionProgram2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/CertifiedIntervalCurveModel2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/ConstructionIntervalModel2D.java"
+    ],
+    "modified": [
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusBetweenMetricV2.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/ReconstructibleLocusEvaluator2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionEndpointProvenanceResolver2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionEndpointProvenanceResult2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusPairIntersectionSolver2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PublicSplinePairRootIdentityResolver2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/SplineIntervalModel2D.java",
+      "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/SplinePairIntervalCertification2D.java"
+    ]
+  },
+  "focalTests": [
+    { "class": "org.geocedg.common.locus.PreG9bR2E1SemanticPairMaterializationTest", "module": "shared", "methods": 18, "failures": 0 },
+    { "class": "org.geocedg.common.kernel.locus.intersection.PreG9bR2E1CertifiedConstructionModelTest", "module": "shared", "methods": 7, "failures": 0 },
+    { "class": "org.geocedg.common.locus.PreG9bR2E0SemanticEndpointAdmissibilityTest", "module": "shared", "methods": 14, "failures": 0 },
+    { "class": "org.geocedg.common.kernel.locus.intersection.PreG9bR2E0SingleSourceEndpointEvidenceTest", "module": "shared", "methods": 5, "failures": 0 },
+    { "class": "org.geocedg.desktop.PreG9bR2E1SemanticPairNativeArchiveTest", "module": "desktop", "methods": 1, "failures": 0 }
+  ],
+  "changedExistingTests": [
+    { "test": "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest#genericLocusPairStaysRichOnlyDespiteSharedInfrastructure", "matrixRow": "B26", "reason": "the affine generic pair is now certifiable; the boundary is expressed with an uncertifiable generic locus and the new diagnostic" },
+    { "test": "org.geocedg.common.locus.G9U0IntersectionTokenTest#i17CanonicalLocusPairLineageIsSourceOrderInvariant", "matrixRow": "B27", "reason": "D-C5: the affine x affine pair's roots are now admissible; the test asserts source-order invariant admissibility" },
+    { "test": "org.geocedg.common.locus.G9U0R4IntersectionAdmissibilityContinuationTest#stableSupportedTargetFamiliesReceiveExactOrFailClosedEvidence", "matrixRow": "B28", "reason": "D-C5: the affine Locus V2 target now receives exact evidence like every other target family" },
+    { "test": "org.geocedg.common.locus.PreG9bR2SemanticIntersectionEndpointTest#unadmittedShapesStayInvalidAndA1FallThroughIsPreserved", "matrixRow": "A23", "reason": "metrics section 24.8 supersedes section 23.8 bullet 1 for single-source roots" }
+  ],
+  "nearestRegressionsInFocalRun": [
+    { "class": "org.geocedg.common.locus.G9S1R1SplinePairMaterializationTest", "methods": 13, "failures": 0 },
+    { "class": "org.geocedg.common.locus.PreG9bR2SemanticIntersectionEndpointTest", "methods": 8, "failures": 0 },
+    { "class": "org.geocedg.common.kernel.locus.intersection.PreG9bR2IntersectionEndpointSideSelectionTest", "methods": 4, "failures": 0 },
+    { "class": "org.geocedg.desktop.PreG9bR2IntersectionEndpointNativeArchiveTest", "methods": 1, "failures": 0 },
+    { "class": "org.geocedg.desktop.G9U1MetricReviewTest", "methods": 6, "failures": 0 },
+    { "class": "org.geocedg.desktop.G9S1R1NativeArchivePersistenceTest", "methods": 3, "failures": 0 },
+    { "class": "org.geocedg.desktop.PostP1BilingualUserGuideTest", "methods": 16, "failures": 0 },
+    { "class": "org.geocedg.common.locus.G9U0IntersectionTokenTest", "methods": 18, "failures": 0, "afterD-C5Update": true },
+    { "class": "org.geocedg.common.locus.G9U0R4IntersectionAdmissibilityContinuationTest", "methods": 27, "failures": 0, "afterD-C5Update": true }
+  ],
+  "fullSuiteEvidence": {
+    "final.shared": [
+      {
+        "attempt": 1,
+        "tests": 6734,
+        "failures": 2,
+        "skipped": 10,
+        "innerExitCode": 1,
+        "failed": [
+          "org.geocedg.common.locus.G9U0IntersectionTokenTest#i17CanonicalLocusPairLineageIsSourceOrderInvariant",
+          "org.geocedg.common.locus.G9U0R4IntersectionAdmissibilityContinuationTest#stableSupportedTargetFamiliesReceiveExactOrFailClosedEvidence"
+        ],
+        "disposition": "D-C5 superseded pins; not used for the inventory"
+      },
+      {
+        "attempt": 2,
+        "tests": 6734,
+        "failures": 0,
+        "skipped": 10,
+        "innerExitCode": 0,
+        "usedForInventory": true
+      }
+    ],
+    "final.desktop": {
+      "tests": 1515,
+      "failures": 0,
+      "skipped": 1,
+      "innerExitCode": 0,
+      "usedForInventory": true
+    }
+  },
+  "checkstyle": { "sourceSets": ["shared/common main", "shared/common-jre test", "desktop test"], "findings": 0 },
+  "authorWitnessReplay": {
+    "path": "artifacts/author-input/post-p1-defects/SeveralDefects.cedg",
+    "tracked": false,
+    "sha256": "c0cbdb8ea218e4a07b7cd4d7bcfb4ba2b74da373bbd49711aa4657349619dff8",
+    "method": "temporary desktop probe, deleted before the candidate; not a tracked test",
+    "results": {
+      "pairE": "2 admissible germ slots, ledger 5|, completeness NOT_ESTABLISHED",
+      "fileRootsIJKL": "UNIQUE SINGLE_SOURCE_INTERSECTION_OCCURRENCE on a",
+      "generatorE": "UNIQUE GENERATOR_OCCURRENCE on a",
+      "midpointM": "NO_ADDRESS",
+      "LocusLength(a,I,J)": 0.5370792510382241,
+      "LocusLength(a,X0,X1)": 9.83875545905577,
+      "LocusLength(d,F,X0)": 2.731015283621896,
+      "LocusLength(a,E,I)": 9.824132286144744,
+      "LocusLength(a,E,M)": "INVALID_QUERY",
+      "nativeSaveReopen": "identical families and values"
+    }
+  },
+  "coupledReconciliations": [
+    {
+      "path": "geocedg/specs/operations/verification-junit-inventory.json",
+      "producedBy": "tools/agent/update-verification-junit-inventory.ps1",
+      "changes": [
+        {
+          "selection": "discovery.shared",
+          "countBefore": 5773,
+          "countAfter": 5817
+        },
+        {
+          "selection": "final.shared",
+          "countBefore": 6690,
+          "countAfter": 6734
+        },
+        {
+          "selection": "discovery.desktop",
+          "countBefore": 1520,
+          "countAfter": 1521
+        },
+        {
+          "selection": "final.desktop",
+          "countBefore": 1514,
+          "countAfter": 1515
+        }
+      ],
+      "narrowSelectionsAffected": 0,
+      "evidenceKind": "dry-run discovery plus completed passing final.shared and final.desktop runs (inner_exit_code 0)"
+    },
+    {
+      "path": "geocedg/specs/operations/verification-registry.json",
+      "catalogId": "junit_inventory",
+      "sha256Before": "be44c9075932b5ada1a02795e25a69c352fc46c44f2bed2dbcab853022e316f6",
+      "sha256After": "ac33ddbc2fbdb44bed8ee57dab233c668e03cf29727849d1dde1ae1ea5ddaa69",
+      "hashMethodValidated": "the canonical-LF computation reproduces the previous pin exactly from the base blob"
+    }
+  ],
+  "guideImpact": {
+    "state": "REQUIRED — APPLIED",
+    "editions": ["docs/user/geocedg_user_guide_en.md", "docs/user/geocedg_user_guide_es.md"],
+    "sections": ["7.3", "8.7", "9.3", "9.4", "10.3", "known limitations"],
+    "sectionIdentifiers": 17,
+    "requiredLiteralKept": "Spline V2 × Spline V2",
+    "bilingualGuideTest": { "cases": 16, "failures": 0 },
+    "preExistingDriftCorrected": {
+      "section": "9.3",
+      "claim": "Length(S,A,C) is undefined for the constructor points of the 7.5 example",
+      "falseSince": "POST-G9U1-A1",
+      "reportedBy": "PRE-G9B-R2 candidate report",
+      "pinnedBy": "org.geocedg.common.locus.PreG9bR2E0SemanticEndpointAdmissibilityTest#userGuideWorkedExampleEndpointsHoldAsDocumented"
+    }
+  },
+  "developerDocumentation": ["docs/developer/geocedg_developer_guide.md", "docs/developer/semantic_spline_2d_api.md"],
+  "upstreamModificationRecord": {
+    "path": "docs/upstream/modified-files.yml",
+    "registeredNewFiles": 10,
+    "registeredPreExistingGapFromPreG9bR2": 5,
+    "boundaryCheck": "tools/agent/upstream-boundary.ps1 (standalone, in no registry profile)",
+    "boundaryBefore": "15 unregistered paths: these ten plus five PRE-G9B-R2 files",
+    "boundaryAfter": "passes with 790 registered files"
+  },
+  "preCandidatePlanChecks": [
+    {
+      "command": "tools/agent/verify.ps1 -Profile PHASE -Phase G9S1-R1 -PlanOnly",
+      "exitCode": 0,
+      "coverage": "COMPLETE",
+      "missingChecks": 0,
+      "nodes": 23
+    },
+    {
+      "command": "tools/agent/verify.ps1 -Profile PHASE -Phase G9U0-R6 -PlanOnly",
+      "exitCode": 0,
+      "coverage": "COMPLETE",
+      "missingChecks": 0,
+      "nodes": 23
+    },
+    {
+      "command": "tools/agent/verify.ps1 -Profile INTEGRATION -PlanOnly",
+      "exitCode": 0,
+      "coverage": "COMPLETE",
+      "missingChecks": 0,
+      "nodes": 46,
+      "supersetOfPhaseCohort": true
+    }
+  ],
+  "retainedBaselineDebtCarried": ["BASELINE-G9U1-BRANDING-EVIDENCE-PIN"],
+  "impactDeclarations": {
+    "productPhaseEffect": "BOUNDED — four endpoint families; capability-based pair materialization",
+    "selectorContractLedger": "UNCHANGED",
+    "serialization": "UNCHANGED",
+    "lengthSemantics": "UNCHANGED beyond the new endpoint families",
+    "frontend": "UNCHANGED",
+    "verificationInfrastructureImpact": "MODIFIED",
+    "bootstrapImpact": "NO_CHANGE_REQUIRED",
+    "guideImpact": "REQUIRED — APPLIED"
+  },
+  "notAuthorized": [
+    "PRE-G9B-R3 through R7",
+    "G9B",
+    "G9C",
+    "G9U2",
+    "productive G10",
+    "further G12",
+    "correction of the two pre-existing evaluator defects",
+    "push, branch publication, merge, promotion, tag, release, binary publication"
+  ],
+  "successorPhaseAuthorized": false
+}

@@ -792,6 +792,18 @@ retains old one-source compatibility and supports exact claimed-slot dormancy/
 reactivation without another global solve per child. Repeated same-germ sheets,
 generic providers and unresolved proof remain rich-only. No frontend is added.
 
+The `PRE-G9B-R2-E0/E1` technical candidate
+([ADR 0028](../adr/0028-semantic-endpoint-admissibility-and-certified-semantic-pair-materialization.md))
+replaces that family restriction with a per-side capability. A pair is
+certified exactly when both canonical sources expose a
+`CertifiedIntervalCurveModel2D`: the spline model, or the
+[certified construction model](../../geocedg/specs/locus/locus-v2-certified-construction-model.md)
+of a reconstructible dependent-point locus. Selector, contract, ledger and
+lifecycle are unchanged, and a pair without both models stays rich-only with an
+explicit diagnostic. The same candidate resolves between-position metric
+endpoints through `SemanticMetricEndpointResolver2D`, in the family order of
+`locus-v2-metrics.md` section 24.
+
 The native knot failure remains preserved as historical evidence. Its authorized
 prerequisite [ADR 0022](../adr/0022-structural-spline-continuity.md) makes native
 continuity structural in the same bounded spline space and preserves the actual

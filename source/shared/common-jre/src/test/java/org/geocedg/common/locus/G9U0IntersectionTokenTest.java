@@ -456,14 +456,17 @@ class G9U0IntersectionTokenTest extends G9U0PublicSurfaceTestBase {
 				value(reverseResult).getFiniteSolutions().get(0)
 						.getPairEvidence().orElseThrow()
 						.getEstablishedBranchPairLineage());
-		assertTrue(value(forwardResult).getFiniteSolutions().stream()
-				.allMatch(solution -> value(forwardResult)
-						.findPointAdmissibleSolution(
-								solution.getIdentity().getRootToken()).isEmpty()));
-		assertTrue(value(reverseResult).getFiniteSolutions().stream()
-				.allMatch(solution -> value(reverseResult)
-						.findPointAdmissibleSolution(
-								solution.getIdentity().getRootToken()).isEmpty()));
+		// ADR 0028 supersedes the former rich-only pin: both affine scalar sources
+		// expose a certified model, and admissibility is source-order invariant.
+		long forwardAdmissible = value(forwardResult).getFiniteSolutions().stream()
+				.filter(solution -> value(forwardResult).findPointAdmissibleSolution(
+						solution.getIdentity().getRootToken()).isPresent())
+				.count();
+		assertTrue(forwardAdmissible > 0);
+		assertEquals(forwardAdmissible, value(reverseResult).getFiniteSolutions().stream()
+				.filter(solution -> value(reverseResult).findPointAdmissibleSolution(
+						solution.getIdentity().getRootToken()).isPresent())
+				.count());
 
 		LocusInterval2D first = new LocusInterval2D(-2, -1, true, false);
 		LocusInterval2D second = new LocusInterval2D(1, 2, false, true);

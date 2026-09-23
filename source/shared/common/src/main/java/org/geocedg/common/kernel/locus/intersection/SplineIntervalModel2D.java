@@ -20,7 +20,7 @@ import org.geocedg.common.kernel.spline.SplinePolynomialModel2D;
 import org.geocedg.common.kernel.spline.SplineSemanticEvaluator2D;
 
 /** Original captured spline polynomial followed by its captured similarity maps. */
-final class SplineIntervalModel2D {
+final class SplineIntervalModel2D implements CertifiedIntervalCurveModel2D {
 	private final LocusDefinition2D definition;
 	private final SplinePolynomialModel2D model;
 	private final double[] knots;
@@ -63,6 +63,25 @@ final class SplineIntervalModel2D {
 
 	static SplineIntervalModel2D capture(LocusDefinition2D definition,
 			String branch) {
+		SimilarityChain chain = similarityChain(definition);
+		if (chain == null
+				|| !(chain.root.getEvaluatorCapability() instanceof SplineSemanticEvaluator2D)) {
+			return null;
+		}
+		SplineSemanticEvaluator2D evaluator =
+				(SplineSemanticEvaluator2D) chain.root.getEvaluatorCapability();
+		evaluator.getPolynomialSpanCount(branch);
+		return new SplineIntervalModel2D(definition, evaluator.getModel(),
+				chain.transforms);
+	}
+
+	/**
+	 * Walks the captured similarity lineage of one definition to its root source.
+	 *
+	 * @return root definition and maps, outermost first; {@code null} when the
+	 *         lineage is too deep or collapsed
+	 */
+	static SimilarityChain similarityChain(LocusDefinition2D definition) {
 		LocusDefinition2D current = definition;
 		ArrayList<LocusSimilarityTransform2D> transforms = new ArrayList<>();
 		while (current.getEvaluatorCapability()
@@ -79,16 +98,26 @@ final class SplineIntervalModel2D {
 			transforms.add(similarity.getCapturedTransform());
 			current = similarity.getCapturedSourceDefinition();
 		}
-		if (!(current.getEvaluatorCapability() instanceof SplineSemanticEvaluator2D)) {
-			return null;
-		}
-		SplineSemanticEvaluator2D evaluator =
-				(SplineSemanticEvaluator2D) current.getEvaluatorCapability();
-		evaluator.getPolynomialSpanCount(branch);
-		return new SplineIntervalModel2D(definition, evaluator.getModel(), transforms);
+		return new SimilarityChain(current, transforms);
 	}
 
-	double[] getKnots() {
+	/**
+	 * Applies captured similarity maps, innermost first, to a root enclosure.
+	 *
+	 * @return transformed value or derivative enclosure
+	 */
+	static SplineOutwardInterval2D[] applySimilarities(
+			List<LocusSimilarityTransform2D> transforms,
+			SplineOutwardInterval2D[] source, boolean derivative) {
+		SplineOutwardInterval2D[] result = source;
+		for (int map = transforms.size() - 1; map >= 0; map--) {
+			result = transform(transforms.get(map), result, derivative);
+		}
+		return result;
+	}
+
+	@Override
+	public double[] getKnots() {
 		return knots.clone();
 	}
 
@@ -135,23 +164,23 @@ final class SplineIntervalModel2D {
 		SplineOutwardInterval2D[] result = pair(
 				polynomial(coefficientEnclosures[span][0], point, derivative),
 				polynomial(coefficientEnclosures[span][1], point, derivative));
-		for (int map = transforms.size() - 1; map >= 0; map--) {
-			result = transform(transforms.get(map), result, derivative);
-		}
-		return result;
+		return applySimilarities(transforms, result, derivative);
 	}
 
-	double period(LocusInterval2D component) {
+	@Override
+	public double period(LocusInterval2D component) {
 		return smoothPeriodicSeam && component.getLower() == knots[0]
 				&& component.getUpper() == knots[knots.length - 1]
 				? component.getUpper() - component.getLower() : 0;
 	}
 
-	double canonical(double parameter) {
+	@Override
+	public double canonical(double parameter) {
 		return definition.getProvider().canonicalize(parameter);
 	}
 
-	boolean isSmooth(SplineOutwardInterval2D parameter) {
+	@Override
+	public boolean isSmooth(SplineOutwardInterval2D parameter) {
 		if (parameter.lower < knots[0]
 				|| parameter.upper > knots[knots.length - 1]) {
 			if (!smoothPeriodicSeam) {
@@ -182,7 +211,8 @@ final class SplineIntervalModel2D {
 		return true;
 	}
 
-	SplineOutwardInterval2D[] evaluate(SplineOutwardInterval2D parameter,
+	@Override
+	public SplineOutwardInterval2D[] evaluate(SplineOutwardInterval2D parameter,
 			boolean derivative) {
 		SplineOutwardInterval2D[] result = null;
 		double period = knots[knots.length - 1] - knots[0];
@@ -207,10 +237,7 @@ final class SplineIntervalModel2D {
 		if (result == null || !covered(parameter)) {
 			throw new ArithmeticException("Parameter proof is outside spline charts");
 		}
-		for (int map = transforms.size() - 1; map >= 0; map--) {
-			result = transform(transforms.get(map), result, derivative);
-		}
-		return result;
+		return applySimilarities(transforms, result, derivative);
 	}
 
 	private boolean covered(SplineOutwardInterval2D parameter) {
@@ -372,5 +399,26 @@ final class SplineIntervalModel2D {
 	private static SplineOutwardInterval2D[] pair(SplineOutwardInterval2D x,
 			SplineOutwardInterval2D y) {
 		return new SplineOutwardInterval2D[] {x, y};
+	}
+
+	/** Root definition and its captured similarity maps, outermost first. */
+	static final class SimilarityChain {
+		private final LocusDefinition2D root;
+		private final List<LocusSimilarityTransform2D> transforms;
+
+		private SimilarityChain(LocusDefinition2D root,
+				List<LocusSimilarityTransform2D> transforms) {
+			this.root = root;
+			this.transforms = java.util.Collections.unmodifiableList(
+					new ArrayList<>(transforms));
+		}
+
+		LocusDefinition2D getRoot() {
+			return root;
+		}
+
+		List<LocusSimilarityTransform2D> getTransforms() {
+			return transforms;
+		}
 	}
 }

@@ -4652,6 +4652,96 @@
       "change": "modified",
       "purpose": "POST-G9U1-A7: Dispatch the bounded configured navigation shortcuts and use the valid cursor zoom anchor while retaining inherited fallback behavior.",
       "authority": "docs/validation/post_g9u1_a7_navigation_design_matrix.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionEndpointProvenanceResolver2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R2: resolve metric endpoints from exact-token pair intersection provenance (section 23). PRE-G9B-R2-E0/E1 adds the section 24.4 single-source walk and shared address construction. Registered by PRE-G9B-R2-E0/E1: the PRE-G9B-R2 candidate added this file without a manifest entry.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionEndpointProvenanceResult2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R2: closed NO_ADDRESS / UNIQUE / MULTIPLE / UNRESOLVED_INVALID result of intersection endpoint provenance. PRE-G9B-R2-E0/E1 adds the single-source unique result. Registered by PRE-G9B-R2-E0/E1: the PRE-G9B-R2 candidate added this file without a manifest entry.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/PreG9bR2SemanticIntersectionEndpointTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R2: verify pair-intersection metric endpoints and their fail-closed exclusions; PRE-G9B-R2-E0/E1 follows the superseded section 23.8 bullet 1. Registered by PRE-G9B-R2-E0/E1: the PRE-G9B-R2 candidate added this file without a manifest entry.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/PreG9bR2IntersectionEndpointSideSelectionTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R2: verify side selection, staleness and duplicate-token rules on real kernel pair evidence. Registered by PRE-G9B-R2-E0/E1: the PRE-G9B-R2 candidate added this file without a manifest entry.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9bR2IntersectionEndpointNativeArchiveTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R2: verify intersection metric endpoints across a native .cedg save, reopen and dormancy lifecycle. Registered by PRE-G9B-R2-E0/E1: the PRE-G9B-R2 candidate added this file without a manifest entry.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/SemanticMetricEndpointResolver2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R2-E0/E1: ordered admission of Length/LocusLength endpoint families by explicit DAG provenance only (section 24).",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/CertifiedConstructionProgram2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R2-E0/E1: immutable certified-construction-program/v1 representation of a reconstructible generator slice.",
+      "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/CertifiedConstructionCapture2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R2-E0/E1: capture a certified construction program from the evaluator's isolated slice, refusing every shape outside class v1.",
+      "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/CertifiedIntervalCurveModel2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R2-E0/E1: per-side certified interval curve model capability consumed by pair certification.",
+      "authority": "geocedg/specs/curves/spline-v2-pair-materialization.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/ConstructionIntervalModel2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R2-E0/E1: outward-rounded value and derivative replay of a captured construction program for pair certification.",
+      "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/PreG9bR2E1SemanticPairMaterializationTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R2-E0/E1: verify capability-based certified semantic-pair materialization, its lifecycle and its fail-closed boundaries.",
+      "authority": "geocedg/specs/curves/spline-v2-pair-materialization.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/PreG9bR2E1CertifiedConstructionModelTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R2-E0/E1: verify the certified construction model's enclosure, refusals, obligations, trigonometric rigor, budget and completeness rules.",
+      "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/PreG9bR2E0SemanticEndpointAdmissibilityTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R2-E0/E1: verify every section 24 endpoint family and its fail-closed exclusions.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/PreG9bR2E0SingleSourceEndpointEvidenceTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R2-E0/E1: verify single-source currentness, component, identity and duplicate-token rules on real kernel evidence.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9bR2E1SemanticPairNativeArchiveTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R2-E0/E1: verify certified pair slots and section 24 endpoint families across a native .cedg lifecycle, including dormancy.",
+      "authority": "geocedg/specs/curves/spline-v2-pair-materialization.md"
     }
   ]
 }

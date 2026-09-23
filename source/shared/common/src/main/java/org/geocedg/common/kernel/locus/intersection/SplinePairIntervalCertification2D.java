@@ -17,11 +17,13 @@ import org.geocedg.common.kernel.locus.intersection.LocusPairIntersectionContext
 		.ComponentAddress;
 
 /**
- * Bounded current-state spline-pair proof, separate from discovery and identity.
- * A strict real Krawczyk inclusion proves one root in a C1 neighborhood
- * (Rump, Acta Numerica 19 (2010), Theorem 13.3). A second, class-specific
- * covering argument is required before that root's transverse-germ class is
- * UNIQUE. Neither numerical enumeration nor proximity supplies that proof.
+ * Bounded current-state semantic-pair proof, separate from discovery and
+ * identity. A strict real Krawczyk inclusion proves one root in a C1
+ * neighborhood (Rump, Acta Numerica 19 (2010), Theorem 13.3). A second,
+ * class-specific covering argument is required before that root's
+ * transverse-germ class is UNIQUE. Neither numerical enumeration nor proximity
+ * supplies that proof. Each side contributes its certified interval curve model
+ * (ADR 0028): the structural spline model or the class-v1 construction model.
  */
 public final class SplinePairIntervalCertification2D {
 	private static final int REFINEMENT_STEPS = 8;
@@ -42,8 +44,8 @@ public final class SplinePairIntervalCertification2D {
 	}
 
 	/**
-	 * Resolves the represented spline coefficients once for one coherent query.
-	 * Unsupported generic polynomial evaluators never gain spline certificates.
+	 * Resolves the represented models once for one coherent query. A side without
+	 * a certified interval curve model never gains a certificate.
 	 *
 	 * @param context current canonical-source pair context
 	 * @return current proofs and bounded work; no durable identity allocation
@@ -58,15 +60,16 @@ public final class SplinePairIntervalCertification2D {
 		ArrayList<RootCertificate> roots = new ArrayList<>();
 		int componentPairs = 0;
 		boolean supported = true;
+		String unsupported = "";
 		for (ComponentAddress first : context.getFirstComponents()) {
 			for (ComponentAddress second : context.getSecondComponents()) {
 				componentPairs++;
-				SplineIntervalModel2D firstModel;
-				SplineIntervalModel2D secondModel;
+				CertifiedIntervalCurveModel2D firstModel;
+				CertifiedIntervalCurveModel2D secondModel;
 				try {
-					firstModel = SplineIntervalModel2D.capture(
+					firstModel = CertifiedIntervalCurveModel2D.capture(
 							context.getFirstDefinition(), first.getBranchKey());
-					secondModel = SplineIntervalModel2D.capture(
+					secondModel = CertifiedIntervalCurveModel2D.capture(
 							context.getSecondDefinition(), second.getBranchKey());
 				} catch (IllegalArgumentException | ArithmeticException exception) {
 					firstModel = null;
@@ -74,6 +77,10 @@ public final class SplinePairIntervalCertification2D {
 				}
 				if (firstModel == null || secondModel == null) {
 					supported = false;
+					if (unsupported.isEmpty()) {
+						unsupported = (firstModel == null ? "first" : "second")
+								+ " canonical source has no certified interval curve model";
+					}
 					unresolvedClasses(classes, first, second);
 					continue;
 				}
@@ -90,8 +97,9 @@ public final class SplinePairIntervalCertification2D {
 			}
 		}
 		return new Result(supported, classes, roots, boxesVisited, krawczykAttempts,
-				"Outward real Krawczyk plus component-product germ coverage; "
-						+ "captured represented spline authority, not exact interpolation");
+				supported ? "Outward real Krawczyk plus component-product germ coverage; "
+						+ "captured represented model authority, not exact interpolation"
+						: unsupported);
 	}
 
 	private static void unresolvedClasses(List<ClassCertificate> classes,
@@ -103,8 +111,8 @@ public final class SplinePairIntervalCertification2D {
 	private final class ComponentProof {
 		private final ComponentAddress first;
 		private final ComponentAddress second;
-		private final SplineIntervalModel2D firstModel;
-		private final SplineIntervalModel2D secondModel;
+		private final CertifiedIntervalCurveModel2D firstModel;
+		private final CertifiedIntervalCurveModel2D secondModel;
 		private final double firstPeriod;
 		private final double secondPeriod;
 		private final int orientation;
@@ -112,7 +120,8 @@ public final class SplinePairIntervalCertification2D {
 		private final List<Leaf> unresolved = new ArrayList<>();
 
 		ComponentProof(ComponentAddress first, ComponentAddress second,
-				SplineIntervalModel2D firstModel, SplineIntervalModel2D secondModel) {
+				CertifiedIntervalCurveModel2D firstModel,
+				CertifiedIntervalCurveModel2D secondModel) {
 			this.first = first;
 			this.second = second;
 			this.firstModel = firstModel;
@@ -388,8 +397,8 @@ public final class SplinePairIntervalCertification2D {
 		}
 	}
 
-	private static List<SplineOutwardInterval2D> spans(SplineIntervalModel2D model,
-			LocusInterval2D component) {
+	private static List<SplineOutwardInterval2D> spans(
+			CertifiedIntervalCurveModel2D model, LocusInterval2D component) {
 		ArrayList<SplineOutwardInterval2D> spans = new ArrayList<>();
 		double[] knots = model.getKnots();
 		for (int span = 0; span + 1 < knots.length; span++) {
@@ -434,7 +443,7 @@ public final class SplinePairIntervalCertification2D {
 	}
 
 	private static ChartCoordinate canonicalChart(SplineOutwardInterval2D image,
-			SplineOutwardInterval2D proof, SplineIntervalModel2D model,
+			SplineOutwardInterval2D proof, CertifiedIntervalCurveModel2D model,
 			LocusInterval2D component, double period) {
 		double parameter = model.canonical(image.midpoint());
 		if (period != 0

@@ -7,11 +7,10 @@ package org.geocedg.common.kernel.algos;
 
 import java.util.List;
 
+import org.geocedg.common.kernel.algos.SemanticMetricEndpointResolver2D.Family;
 import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
-import org.geocedg.common.kernel.locus.intersection.IntersectionEndpointProvenanceResolver2D;
-import org.geocedg.common.kernel.locus.intersection.IntersectionEndpointProvenanceResult2D;
 import org.geocedg.common.kernel.locus.metric.BetweenPositionsMetricQuery;
 import org.geocedg.common.kernel.locus.metric.DifferentialLocusMetricCapability2D;
 import org.geocedg.common.kernel.locus.metric.EvaluatorOnlyLocusMetricCapability2D;
@@ -30,8 +29,6 @@ import org.geocedg.common.kernel.locus.metric.MetricPositionBinding2D;
 import org.geocedg.common.kernel.locus.metric.PublicLocusMetricTraversalPolicy2D;
 import org.geocedg.common.kernel.locus.metric.TraversalOutcome;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
-import org.geocedg.common.kernel.spline.SplineConstructorOccurrenceResolver2D;
-import org.geocedg.common.kernel.spline.SplineConstructorOccurrenceResult2D;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.commands.Commands;
@@ -62,11 +59,11 @@ public final class AlgoLocusBetweenMetricV2 extends AlgoElement {
 	private final LocusMetricEngine2D engine = new LocusMetricEngine2D();
 	private final LocusMetricPositionBinder2D positionBinder =
 			new LocusMetricPositionBinder2D();
-	private final IntersectionEndpointProvenanceResolver2D intersectionResolver =
-			new IntersectionEndpointProvenanceResolver2D();
-	private final SplineConstructorOccurrenceResolver2D occurrenceResolver =
-			new SplineConstructorOccurrenceResolver2D();
+	private final SemanticMetricEndpointResolver2D endpointResolver =
+			new SemanticMetricEndpointResolver2D();
 	private LocusMetricOwnerLease2D ownerLease;
+	private Family retainedStartFamily;
+	private Family retainedTargetFamily;
 	private String retainedStartOccurrenceKey;
 	private String retainedTargetOccurrenceKey;
 
@@ -145,9 +142,9 @@ public final class AlgoLocusBetweenMetricV2 extends AlgoElement {
 			PublicLocusMetricTraversalPolicy2D traversalPolicy =
 					currentTraversalPolicy();
 			EndpointResolution startResolution = resolveEndpoint(start,
-					retainedStartOccurrenceKey);
+					retainedStartFamily, retainedStartOccurrenceKey);
 			EndpointResolution targetResolution = resolveEndpoint(target,
-					retainedTargetOccurrenceKey);
+					retainedTargetFamily, retainedTargetOccurrenceKey);
 			if (!startResolution.isValid() || !targetResolution.isValid()) {
 				publishFailure(revision, MetricComputationStatus.INVALID_QUERY,
 						!startResolution.isValid()
@@ -155,6 +152,8 @@ public final class AlgoLocusBetweenMetricV2 extends AlgoElement {
 								: "Target endpoint: " + targetResolution.diagnostic);
 				return;
 			}
+			retainedStartFamily = startResolution.family;
+			retainedTargetFamily = targetResolution.family;
 			retainedStartOccurrenceKey = startResolution.occurrenceKey;
 			retainedTargetOccurrenceKey = targetResolution.occurrenceKey;
 			MetricPositionBinding2D startBinding = startResolution.binding;
@@ -209,69 +208,30 @@ public final class AlgoLocusBetweenMetricV2 extends AlgoElement {
 	}
 
 	private EndpointResolution resolveEndpoint(GeoPoint endpoint,
-			String retainedOccurrenceKey) {
-		if (endpoint.getParentAlgorithm() instanceof AlgoSemanticLocusPoint2D) {
-			AlgoSemanticLocusPoint2D semanticParent =
-					(AlgoSemanticLocusPoint2D) endpoint.getParentAlgorithm();
-			if (semanticParent.getSource() == source) {
-				MetricPositionBinding2D binding =
-						semanticParent.bindCurrentPosition();
-				return binding != null && binding.isValid()
-						? EndpointResolution.semantic(binding)
-						: EndpointResolution.invalid(
-								"Explicit semantic address is not current");
-			}
+			Family retainedFamily, String retainedOccurrenceKey) {
+		// Ordered family admission of metrics section 24.2; non-NO_ADDRESS is final.
+		SemanticMetricEndpointResolver2D.Resolution resolution =
+				endpointResolver.resolve(source, endpoint);
+		if (resolution.getStatus() != SemanticMetricEndpointResolver2D.Status.UNIQUE) {
+			return EndpointResolution.invalid(resolution.getStatus() + ": "
+					+ resolution.getDiagnostic());
 		}
-		IntersectionEndpointProvenanceResult2D intersection =
-				intersectionResolver.resolve(source, endpoint);
-		if (intersection.getStatus()
-				!= IntersectionEndpointProvenanceResult2D.Status.NO_ADDRESS) {
-			// UNIQUE, MULTIPLE and UNRESOLVED_INVALID are final (metrics section 23.6).
-			return resolveIntersection(intersection, retainedOccurrenceKey);
+		if (retainedFamily != null && (retainedFamily != resolution.getFamily()
+				|| !java.util.Objects.equals(retainedOccurrenceKey,
+						resolution.getOccurrenceKey()))) {
+			// Section 24.3: a change of family or key is retargeting.
+			return EndpointResolution.invalid(resolution.getFamily()
+					+ " endpoint identity changed; retargeting is forbidden");
 		}
-		SplineConstructorOccurrenceResult2D provenance =
-				occurrenceResolver.resolve(source, endpoint);
-		if (provenance.getStatus()
-				!= SplineConstructorOccurrenceResult2D.Status.UNIQUE) {
-			return EndpointResolution.invalid(provenance.getStatus() + ": "
-					+ provenance.getDiagnostic());
-		}
-		SplineConstructorOccurrenceResult2D.Match match =
-				provenance.getUniqueMatch();
-		if (retainedOccurrenceKey != null
-				&& !retainedOccurrenceKey.equals(match.getOccurrenceKey())) {
-			return EndpointResolution.invalid(
-					"Constructor occurrence identity changed; retargeting is forbidden");
-		}
-		MetricPositionBinding2D binding = positionBinder.bind(
-				match.getAddress().toMetricPosition(), source.getSemanticDefinition());
+		MetricPositionBinding2D binding = resolution.getBinding() != null
+				? resolution.getBinding()
+				: positionBinder.bind(resolution.getAddress().toMetricPosition(),
+						source.getSemanticDefinition());
 		return binding.isValid()
-				? EndpointResolution.occurrence(binding, match.getOccurrenceKey())
-				: EndpointResolution.invalid(
-						"Constructor occurrence address is not current");
-	}
-
-	private EndpointResolution resolveIntersection(
-			IntersectionEndpointProvenanceResult2D intersection,
-			String retainedOccurrenceKey) {
-		if (intersection.getStatus()
-				!= IntersectionEndpointProvenanceResult2D.Status.UNIQUE) {
-			return EndpointResolution.invalid(intersection.getStatus() + ": "
-					+ intersection.getDiagnostic());
-		}
-		IntersectionEndpointProvenanceResult2D.Match match =
-				intersection.getUniqueMatch();
-		if (retainedOccurrenceKey != null
-				&& !retainedOccurrenceKey.equals(match.getOccurrenceKey())) {
-			return EndpointResolution.invalid(
-					"Intersection endpoint identity changed; retargeting is forbidden");
-		}
-		MetricPositionBinding2D binding = positionBinder.bind(
-				match.getAddress().toMetricPosition(), source.getSemanticDefinition());
-		return binding.isValid()
-				? EndpointResolution.occurrence(binding, match.getOccurrenceKey())
-				: EndpointResolution.invalid(
-						"Intersection endpoint address is not current");
+				? EndpointResolution.accepted(binding, resolution.getFamily(),
+						resolution.getOccurrenceKey())
+				: EndpointResolution.invalid(resolution.getFamily()
+						+ " endpoint address is not current");
 	}
 
 	public GeoLocusMetricResult getResult() {
@@ -336,28 +296,25 @@ public final class AlgoLocusBetweenMetricV2 extends AlgoElement {
 
 	private static final class EndpointResolution {
 		private final MetricPositionBinding2D binding;
+		private final Family family;
 		private final String occurrenceKey;
 		private final String diagnostic;
 
-		private EndpointResolution(MetricPositionBinding2D binding,
+		private EndpointResolution(MetricPositionBinding2D binding, Family family,
 				String occurrenceKey, String diagnostic) {
 			this.binding = binding;
+			this.family = family;
 			this.occurrenceKey = occurrenceKey;
 			this.diagnostic = diagnostic;
 		}
 
-		private static EndpointResolution semantic(
-				MetricPositionBinding2D binding) {
-			return new EndpointResolution(binding, null, null);
-		}
-
-		private static EndpointResolution occurrence(
-				MetricPositionBinding2D binding, String key) {
-			return new EndpointResolution(binding, key, null);
+		private static EndpointResolution accepted(MetricPositionBinding2D binding,
+				Family family, String key) {
+			return new EndpointResolution(binding, family, key, null);
 		}
 
 		private static EndpointResolution invalid(String diagnostic) {
-			return new EndpointResolution(null, null, diagnostic);
+			return new EndpointResolution(null, null, null, diagnostic);
 		}
 
 		private boolean isValid() {

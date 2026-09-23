@@ -138,6 +138,15 @@ opposite signs may qualify; repeated same-germ sheets, unresolved coverage,
 tangency/overlap, generic polynomial providers and uncertifiable composition
 remain rich-only. This is not an uncertified materialization option.
 
+The `PRE-G9B-R2-E0/E1` technical candidate
+([ADR 0028](../adr/0028-semantic-endpoint-admissibility-and-certified-semantic-pair-materialization.md))
+generalizes that path by capability. A generic Locus V2 pair whose two sides
+both expose a certified interval curve model uses the same selector, contract
+and ledger. Every other generic pair stays rich-only with an explicit
+diagnostic; see the
+[pair materialization amendment](../../geocedg/specs/curves/spline-v2-pair-materialization.md)
+section 10.
+
 `PairSemanticSlotSelector2D` associates both durable source descriptors with
 their branch/component/orientation/domain and normalized germ. Current u/v,
 proof rectangles, spans, knots, coefficients and revisions stay outside that

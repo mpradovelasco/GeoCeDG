@@ -12,7 +12,7 @@ import java.util.Objects;
 
 import org.geocedg.common.kernel.locus.LocusSemanticAddress2D;
 
-/** Typed, revision-bound metric endpoint provenance from a Locus V2 pair root. */
+/** Typed, revision-bound metric endpoint provenance from one exact Locus V2 root. */
 public final class IntersectionEndpointProvenanceResult2D {
 	/** Closed result states; no state authorizes coordinate-based repair. */
 	public enum Status {
@@ -76,6 +76,13 @@ public final class IntersectionEndpointProvenanceResult2D {
 				revision, matches, matches.size() == 1
 						? "Exactly one current pair-root side on the addressed source"
 						: "Both pair-root sides lie on the addressed source");
+	}
+
+	static IntersectionEndpointProvenanceResult2D resolvedSingle(long revision,
+			Match match) {
+		return new IntersectionEndpointProvenanceResult2D(Status.UNIQUE, revision,
+				List.of(match),
+				"Exactly one current single-source root on the addressed source");
 	}
 
 	static IntersectionEndpointProvenanceResult2D noAddress(long revision,
