@@ -1,0 +1,175 @@
+{
+  "schemaVersion": 1,
+  "phase": "PRE-G9B-R2-E0/E1",
+  "recordKind": "AUTHOR_CLOSEOUT_DISPOSITION",
+  "status": "PRE-G9B-R2-E0/E1 — PASS — AUTHOR APPROVED",
+  "authorDecisionDate": "2026-09-23",
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "technicalCandidateFrozen": true,
+  "candidateMutated": false,
+  "frozenCandidate": {
+    "commit": "60cb1a2aa14cec3b700b492f94ba01ad449ba962",
+    "tree": "a3f4778df434e61f4238727c1f1cc49461d28852",
+    "parent": "3d13ea72f64c241d11759617dbdff70e373e6a50",
+    "base": "a222b82aad821e3e0c0aa93145a57b7050f024c8",
+    "branch": "feature/pre-g9b-r2-e0-e1-semantic-admissibility-and-materialization",
+    "modifiedByCloseout": false
+  },
+  "frozenPredecessorCandidate": {
+    "commit": "3d13ea72f64c241d11759617dbdff70e373e6a50",
+    "tree": "22bd3794c91b4432771e34ff143879b211fad006",
+    "modifiedByCloseout": false
+  },
+  "acceptedContent": [
+    "generalized semantic metric-endpoint admissibility",
+    "capability-based exact-token pair materialization",
+    "D-C1…D-C5 as finally reconciled, including the D-C2 clarification",
+    "versioned structural derivation addresses",
+    "transformation covariance under a proven common semantic transformation",
+    "copy/remap of the driver identity and other structural participants, resolving PAIR-COPY-GENERATOR-PARAMETERIZATION-CONTRACT",
+    "the preserved rule: local admissibility != global completeness",
+    "fail-closed treatment of unsupported or ambiguous cases"
+  ],
+  "acceptedEvidence": [
+    {
+      "command": "tools/agent/verify.ps1 -Profile PHASE -Phase G9S1-R1",
+      "run": "verification-faad72ceb5bc4c22aadf4268b5ddc373",
+      "planHash": "4cb0ecf5caa86cc1d26d65a0673c352d83b83ed20de706ee23166e942e0ad430",
+      "resultHash": "0244c60c0a46b2850edd3b35eeec3d1b25e05dc10383c323e805bb41f277cc25",
+      "acceptance": "ACCEPTED", "coverage": "COMPLETE", "required": 13, "completed": 13, "untrusted": 0, "notRun": 0
+    },
+    {
+      "command": "tools/agent/verify.ps1 -Profile INTEGRATION",
+      "run": "verification-0370524a1e244559818a964777485f77",
+      "planHash": "4502c4bd1bbe1a123089e9e524fd0afb354932afbcb410f93052555a16c77aea",
+      "resultHash": "e8421a691d9509fe0a03c3e2ac13e05af5d0d24a273af8210a65b1deb574e4c8",
+      "acceptance": "ACCEPTED", "coverage": "COMPLETE", "required": 19, "completed": 19, "untrusted": 0, "notRun": 0
+    }
+  ],
+  "cohortEquivalence": {
+    "profile": "tools/agent/verify.ps1 -Profile PHASE -Phase G9U0-R6",
+    "equivalentTo": "tools/agent/verify.ps1 -Profile PHASE -Phase G9S1-R1",
+    "rerun": false,
+    "observation": "OBS-R2-PHASE-SELECTION-COHORT"
+  },
+  "finalRun": false,
+  "authorDeterminedEvidenceSufficient": true,
+  "furtherVerificationRun": false,
+  "historicalPredecessorEvidence": [
+    {
+      "command": "tools/agent/verify.ps1 -Profile PHASE -Phase G9S1-R1",
+      "run": "verification-da004dcac4a0432aaadfc13d1bfa3973",
+      "resultHash": "fa967cdad72399f4bfdb03d1dd09bb3cdf6f118b1abc2e1a2bd84da04dc3e786",
+      "classification": "ACCEPTED / COMPLETE"
+    },
+    {
+      "command": "tools/agent/verify.ps1 -Profile INTEGRATION",
+      "attempt": 1,
+      "run": "verification-d38c2e6a822c4ed5baeeb41b47c0aa5b",
+      "resultHash": "a046f43ae24b44e15054bb527ff0ff0d5c7212b749febf3c82b4e7f6d845d2ac",
+      "classification": "REJECTED_VERIFICATION_CORE / UNTRUSTED",
+      "untrustedCheck": "packaging.repository-safety",
+      "cause": "operator error: a console log held under artifacts/"
+    },
+    {
+      "command": "tools/agent/verify.ps1 -Profile INTEGRATION",
+      "attempt": 2,
+      "run": "verification-9be6d50510f24bdcbcd438bc793acdc2",
+      "resultHash": "d61a14830dac217e7530526f50abe16e560f5f6f3284bfd5c4642e53b123a5d9",
+      "classification": "ACCEPTED / COMPLETE"
+    }
+  ],
+  "debtDisposition": {
+    "PAIR-COPY-GENERATOR-PARAMETERIZATION-CONTRACT": "RESOLVED_BY_APPROVED_CANDIDATE"
+  },
+  "retainedQualityDebt": [
+    {
+      "id": "TD-LOCUS-EVALUATOR-SEGMENT-DRIVER-UPDATE",
+      "class": "PRE_EXISTING_PRODUCT_DEFECT",
+      "statement": "segment-driven reconstructible loci may evaluate one driver step late and therefore produce incorrect metric values",
+      "candidateIdentifier": "RECONSTRUCTIBLE-SEGMENT-DRIVER-INHOMOGENEOUS-LAG",
+      "reproducedOnBase": "a222b82aad821e3e0c0aa93145a57b7050f024c8",
+      "e0e1Regression": false,
+      "requiredConsequence": "the certified model continues to fail closed for affected shapes until repaired",
+      "pinnedBy": "org.geocedg.common.locus.PreG9bR2E1SemanticPairMaterializationTest#segmentDriverInhomogeneousReadIsRefusedByTheCoherenceGate",
+      "resolvedHere": false
+    },
+    {
+      "id": "TD-LOCUS-EVALUATOR-INLINE-LITERAL-DEPENDENCY",
+      "class": "PRE_EXISTING_PRODUCT_DEFECT",
+      "statement": "some chained constructions containing unnamed inline literal geometry lose the required dependency in the reconstructible evaluator and may evaluate as a wrong fixed locus",
+      "candidateIdentifier": "RECONSTRUCTIBLE-INLINE-LITERAL-SLICE-DISCONNECTED",
+      "reproducedOnBase": "a222b82aad821e3e0c0aa93145a57b7050f024c8",
+      "e0e1Regression": false,
+      "requiredConsequence": "the certified model continues to fail closed for affected shapes until repaired",
+      "pinnedBy": "org.geocedg.common.kernel.locus.intersection.PreG9bR2E1CertifiedConstructionModelTest#theInlineLiteralDefectShapeIsRefusedRatherThanCertified",
+      "resolvedHere": false
+    },
+    {
+      "id": "TD-UPSTREAM-RECORD-E0-E1-PURPOSE",
+      "class": "BOUNDED_DOCUMENTATION_PROVENANCE_DEBT",
+      "statement": "four existing docs/upstream/modified-files.yml entries do not yet describe their E0/E1 purpose completely",
+      "entries": [
+        "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusPairIntersectionSolver2D.java",
+        "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1SplinePairMaterializationTest.java",
+        "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9U0IntersectionTokenTest.java",
+        "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9U0R4IntersectionAdmissibilityContinuationTest.java"
+      ],
+      "boundaryCheckPasses": true,
+      "frozenCandidateMutatedToRepair": false,
+      "resolvedHere": false
+    }
+  ],
+  "riQualityDebtPolicy": {
+    "appliesTo": "every subsequent PRE-G9B-R phase",
+    "atPhaseEntry": "inspect whether the authorized footprint materially overlaps one or more retained quality debts",
+    "synergisticRefinementOnlyWhenAll": [
+      "touches the same subsystem already being modified",
+      "can be resolved without widening the phase's scientific purpose",
+      "can share the phase's already-required verification campaign",
+      "does not introduce a new architectural decision"
+    ],
+    "recording": "propose or execute as a bounded synergistic quality refinement, recorded explicitly, never as silent scope expansion",
+    "noSeparateHeavyCampaign": true,
+    "otherwise": "retain the debt unchanged",
+    "deadline": "every retained debt has a terminal disposition or an explicit owner by the PRE-G9B-R7 closeout"
+  },
+  "retainedSeparately": [
+    {
+      "id": "BASELINE-G9U1-BRANDING-EVIDENCE-PIN",
+      "class": "RETAINED_PRE_EXISTING_BASELINE_DEFECT",
+      "resolvedHere": false
+    },
+    {
+      "id": "OBS-R2-PHASE-SELECTION-COHORT",
+      "class": "VERIFICATION_OBSERVATION",
+      "statement": "PHASE G9S1-R1 and PHASE G9U0-R6 resolve to the same required checks; INTEGRATION is a superset; it recurred in E0/E1",
+      "resolvedHere": false
+    },
+    {
+      "id": "GUIDE-A1-SECTION-9.3-STALE",
+      "class": "PRE_EXISTING_DOCUMENTATION_DRIFT",
+      "owner": "POST-G9U1-A1",
+      "statement": "the approved candidate rewrote section 9.3 of both guide editions to the A1 behaviour",
+      "pinnedBy": "org.geocedg.common.locus.PreG9bR2E0SemanticEndpointAdmissibilityTest#userGuideWorkedExampleEndpointsHoldAsDocumented",
+      "separateAuthorDispositionRecorded": false
+    }
+  ],
+  "remoteIdentityBeforePromotion": {
+    "localMain": "a222b82aad821e3e0c0aa93145a57b7050f024c8",
+    "originMain": "a222b82aad821e3e0c0aa93145a57b7050f024c8",
+    "liveRemoteMain": "a222b82aad821e3e0c0aa93145a57b7050f024c8",
+    "tree": "0768848e89961f0f372f514530f9e9e0b81cc872"
+  },
+  "prohibitedInThisCloseout": [
+    "modifying the frozen technical candidate",
+    "running further verification",
+    "rebase, amend, merge commit or force push",
+    "tagging or releasing",
+    "authorizing R4 or any later phase"
+  ],
+  "successorPhaseAuthorized": "PRE-G9B-R3 only, after promotion with all main refs agreeing",
+  "publicationState": "AUTHORIZED FOR PROMOTION BY CLEAN FAST-FORWARD"
+}
