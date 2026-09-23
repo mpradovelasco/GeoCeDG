@@ -786,31 +786,35 @@ self-intersects and a position has more than one preimage.
 Similarly, a semantic point belonging to a *different* curve is not a valid
 endpoint for this one.
 
-### 9.4 Current limitation: endpoints from a spline-pair intersection
+### 9.4 Endpoints from a Spline V2 × Spline V2 intersection
 
-`Length(S,P,Q)` may be **undefined** when `S` is a Spline V2 and one endpoint is
-a point that was materialized from a **Spline V2 × Spline V2** intersection.
+A point materialized from a **Spline V2 × Spline V2** intersection is a valid
+metric endpoint on either of the two intersected curves:
 
-What this is:
+```text
+R=Intersect(S,T)
+X=Intersect(R,"<token>")
+Length(S,X,Q)   defined on S
+Length(T,X,E)   defined on T
+```
 
-- it is **not** a numerical failure of the spline or of the intersection;
-- the intersection point is a valid, certified point, and the intersection
-  evidence does carry, per side, the locus identity, the semantic revision, the
-  branch, the component, the semantic parameter and the token/currentness
-  evidence;
-- the metric resolution currently accepts semantic points whose source is `S`
-  and unique constructor-point occurrences, and does not yet consume the
-  intersection provenance that such a point carries.
+The point is admitted through its explicit semantic provenance — the exact root
+token and the evidence the intersection keeps for each of its two curves — and
+never through its coordinates. In practice:
 
-What to do:
+- the side of the intersection that belongs to the measured curve is found by
+  that curve's identity, so `Intersect(S,T)` and `Intersect(T,S)` give the same
+  length;
+- if the intersection point becomes dormant, the length is undefined until the
+  same root is current again; it never jumps to a nearby root;
+- a nearby or coincident point of any other kind is still **not** an endpoint.
 
-- use a point with an explicit address on `S` (the `Point(S, branch, parameter)`
-  form) as the metric endpoint;
-- do **not** substitute a nearby point of any kind: proximity is not semantic
-  position, and doing so would produce an answer with no provenance.
+Two cases stay outside this rule:
 
-No implementation date is promised for this. It is recorded as an open item
-requiring characterization and a semantic contract before any change.
+- a point from an intersection of a semantic curve with an ordinary object, such
+  as a line or a circle, is not a metric endpoint on that curve;
+- a self-intersection `Intersect(S,S)` produces no materializable point, so it
+  cannot supply an endpoint.
 
 ---
 
@@ -1213,8 +1217,9 @@ These are the limitations that affect what you can do in the application today.
   explicit domains and targets.
 - Semantic curves are GeoCeDG-only. They are saved in the native document, and
   an external upstream application is outside the compatibility guarantee.
-- `Length(S,P,Q)` may be undefined when an endpoint is a point materialized from
-  a Spline V2 × Spline V2 intersection. See section 9.4.
+- `Length(S,P,Q)` accepts a point materialized from a Spline V2 × Spline V2
+  intersection, but not one from an intersection with an ordinary object such as
+  a line or a circle. See section 9.4.
 - A tangent, ambiguous, stale or insufficiently certified intersection root
   stays rich-only and cannot be materialized.
 

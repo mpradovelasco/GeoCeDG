@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 1,
+  "phase": "PRE-G9B-R2",
+  "phaseKind": "SEMANTIC_METRIC_ENDPOINT_PROVENANCE",
+  "technicalCandidateState": "FROZEN",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "authorDecisionAuthority": "the separate closeout/author-decision record is the sole authority for current author approval status",
+  "selfApproved": false,
+  "passClaimed": false,
+  "changeRoute": "ORDINARY",
+  "verificationClass": "INTEGRATED_PHASE",
+  "verificationClassFrozenAtPhaseStart": true,
+  "frozenAcceptance": [
+    "tools/agent/verify.ps1 -Profile PHASE -Phase G9S1-R1",
+    "tools/agent/verify.ps1 -Profile PHASE -Phase G9U0-R6",
+    "tools/agent/verify.ps1 -Profile INTEGRATION"
+  ],
+  "implementationBase": {
+    "commit": "51a6b096335938bb2580eb3b8e1101db0f2f1575",
+    "tree": "1a432a59cde9b6421a3c1089751c26469574d00a",
+    "branch": "feature/pre-g9b-r2-semantic-metric-endpoint-provenance",
+    "worktreeAtEntry": "clean"
+  },
+  "closesDebt": "TD-P1-SEMANTIC-LENGTH-INTERSECTION",
+  "normativeAmendment": {
+    "path": "geocedg/specs/locus/locus-v2-metrics.md",
+    "section": "23",
+    "versionBefore": "1.2",
+    "versionAfter": "1.3",
+    "writtenBeforeImplementation": true,
+    "changedHunks": 2,
+    "reinterpretsSections21Or22": false,
+    "carriesOwnApprovalStatus": false,
+    "adrCreated": false,
+    "adrJudgement": "extension of the accepted A1 contract (section 21): same resolver shape, closed result, versioned key, retained-key guard and position binder; ADR 0007 places no constraint on endpoint families. The author may overturn this judgement."
+  },
+  "endpointFamilies": [
+    "SEMANTIC_POINT",
+    "INTERSECTION_OCCURRENCE",
+    "CONSTRUCTOR_OCCURRENCE"
+  ],
+  "resolver": {
+    "class": "org.geocedg.common.kernel.locus.intersection.IntersectionEndpointProvenanceResolver2D",
+    "result": "org.geocedg.common.kernel.locus.intersection.IntersectionEndpointProvenanceResult2D",
+    "statuses": ["NO_ADDRESS", "UNIQUE", "MULTIPLE", "UNRESOLVED_INVALID"],
+    "occurrenceKeyVersion": "metric-endpoint/intersection-occurrence/v1",
+    "occurrenceKeyFields": ["addressed-source", "rich-result", "token", "side", "point"],
+    "occurrenceKeySerialized": false,
+    "patternFollowed": "the selected-root continuous-domain certifier walk, with every non-matching shape returning early",
+    "dispatchOrder": ["SEMANTIC_POINT", "INTERSECTION_OCCURRENCE", "CONSTRUCTOR_OCCURRENCE"],
+    "fallThroughOnlyOn": "NO_ADDRESS"
+  },
+  "designChoices": [
+    { "id": "PAIR_ONLY", "statement": "only Locus V2 x Locus V2 roots carry per-side locus evidence; single-source intersection points return NO_ADDRESS and behave as before" },
+    { "id": "NO_R5_LINEAGE", "statement": "an intersection root is a root of the intersected source, not of its image; similarity images return NO_ADDRESS" },
+    { "id": "LIFTED_PARAMETER_NOT_AUTHORITY", "statement": "the pair solver's lifted periodic coordinate records its search cover, not the root's position; the semantic parameter is used" },
+    { "id": "SELF_PAIR_NOT_REPRESENTABLE", "statement": "Intersect(S,S) on a genuinely self-crossing spline publishes no point-admissible root (NUMERICAL_FAILURE / UNRESOLVED); the MULTIPLE rule is the fail-closed authority for when R2-E0/R2-E1 makes it representable" }
+  ],
+  "changedSourcePaths": [
+    "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusBetweenMetricV2.java",
+    "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionEndpointProvenanceResolver2D.java",
+    "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionEndpointProvenanceResult2D.java"
+  ],
+  "focalTests": [
+    { "class": "org.geocedg.common.locus.PreG9bR2SemanticIntersectionEndpointTest", "module": "shared", "methods": 8, "failures": 0 },
+    { "class": "org.geocedg.common.kernel.locus.intersection.PreG9bR2IntersectionEndpointSideSelectionTest", "module": "shared", "methods": 4, "failures": 0 },
+    { "class": "org.geocedg.desktop.PreG9bR2IntersectionEndpointNativeArchiveTest", "module": "desktop", "methods": 1, "failures": 0 }
+  ],
+  "firstTestsCombiningIntersectionPointsWithLength": true,
+  "existingNegativeRegressions": [
+    "org.geocedg.common.locus.PostG9U1A1SplineConstructorProvenanceTest#coincidenceAndSelfIntersectionNeverCreateExtraProvenance",
+    "org.geocedg.desktop.G9U1MetricReviewTest#foreignOrCoincidentPointsNeverReceiveInferredMetricPreimages"
+  ],
+  "existingNegativeRegressionsUnchanged": true,
+  "coupledReconciliations": [
+    {
+      "path": "geocedg/specs/operations/verification-junit-inventory.json",
+      "producedBy": "tools/agent/update-verification-junit-inventory.ps1",
+      "changes": [
+        { "selection": "discovery.shared", "countBefore": 5761, "countAfter": 5773 },
+        { "selection": "final.shared", "countBefore": 6678, "countAfter": 6690 },
+        { "selection": "discovery.desktop", "countBefore": 1519, "countAfter": 1520 },
+        { "selection": "final.desktop", "countBefore": 1513, "countAfter": 1514 }
+      ],
+      "evidenceKind": "dry-run discovery plus completed passing final.shared and final.desktop runs (inner_exit_code 0)"
+    },
+    {
+      "path": "geocedg/specs/operations/verification-registry.json",
+      "catalogId": "junit_inventory",
+      "sha256Before": "553cc04e184715ceefab75bea40fcc14234c27e90e4fd79495affda3d6c88ceb",
+      "sha256After": "be44c9075932b5ada1a02795e25a69c352fc46c44f2bed2dbcab853022e316f6",
+      "hashMethodValidated": "the canonical-LF computation reproduces the previous pin exactly from the base blob"
+    }
+  ],
+  "guideImpact": {
+    "state": "REQUIRED — APPLIED",
+    "editions": ["docs/user/geocedg_user_guide_en.md", "docs/user/geocedg_user_guide_es.md"],
+    "sections": ["9.4", "known limitations"],
+    "reason": "both editions documented this exact capability as a limitation that would otherwise become false",
+    "coupledTestComment": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PostP1BilingualUserGuideTest.java",
+    "bilingualGuideTest": { "cases": 16, "failures": 0 },
+    "preExistingDriftObservedNotFixed": {
+      "section": "9.3",
+      "claim": "Length(S,A,C) is undefined for the constructor points of the 7.5 example",
+      "contradictedBy": "org.geocedg.common.locus.PostG9U1A1SplineConstructorProvenanceTest#uniqueOccurrencesFeedRichAndScalarMetricsAndAgreeWithAddresses",
+      "owner": "POST-G9U1-A1 guide impact, outside this phase's delta"
+    }
+  },
+  "preCandidatePlanCheck": {
+    "command": "tools/agent/verify.ps1 -Profile PHASE -Phase G9S1-R1 -PlanOnly",
+    "exitCode": 0,
+    "coverage": "COMPLETE",
+    "missingChecks": 0,
+    "nodes": 23
+  },
+  "observations": [
+    "PHASE G9S1-R1 and PHASE G9U0-R6 resolve to the same thirteen required checks, and INTEGRATION is a 46-node superset; the prescribed triple largely re-runs one cohort and is executed as prescribed"
+  ],
+  "retainedBaselineDebtCarried": ["BASELINE-G9U1-BRANDING-EVIDENCE-PIN"],
+  "impactDeclarations": {
+    "productPhaseEffect": "BOUNDED — one admitted metric endpoint family",
+    "intersectionMaterialization": "UNCHANGED",
+    "lengthSemantics": "UNCHANGED beyond the new endpoint family",
+    "ledgerFormat": "UNCHANGED",
+    "serialization": "UNCHANGED",
+    "verificationInfrastructureImpact": "MODIFIED",
+    "bootstrapImpact": "NO_CHANGE_REQUIRED",
+    "guideImpact": "REQUIRED — APPLIED"
+  },
+  "notAuthorized": [
+    "PRE-G9B-R2-E0",
+    "PRE-G9B-R2-E1",
+    "PRE-G9B-R3 through R7",
+    "G9B",
+    "G9C",
+    "G9U2",
+    "productive G10",
+    "further G12",
+    "push, branch publication, merge, promotion, tag, release, binary publication"
+  ],
+  "successorPhaseAuthorized": false
+}

@@ -104,7 +104,7 @@ class PostP1BilingualUserGuideTest {
 	void bothEditionsStateTheSameCurrentLimitations() throws IOException {
 		String english = read("docs/user/" + EN);
 		String spanish = read("docs/user/" + ES);
-		// The metric/spline-pair endpoint debt must appear in both editions.
+		// The spline-pair intersection endpoint rule must appear in both editions.
 		assertTrue(english.contains("Spline V2 × Spline V2"));
 		assertTrue(spanish.contains("Spline V2 × Spline V2"));
 		// The DXF boundary is stated identically, as a verbatim contract block.

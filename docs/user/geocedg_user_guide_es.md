@@ -815,33 +815,36 @@ una curva se autointersecta y una posición tiene más de una preimagen.
 Del mismo modo, un punto semántico perteneciente a una curva *distinta* no es un
 extremo válido para esta.
 
-### 9.4 Limitación actual: extremos procedentes de una intersección entre splines
+### 9.4 Extremos procedentes de una intersección Spline V2 × Spline V2
 
-`Length(S,P,Q)` puede quedar **indefinido** cuando `S` es una Spline V2 y uno de
-los extremos es un punto materializado desde una intersección **Spline V2 ×
-Spline V2**.
+Un punto materializado desde una intersección **Spline V2 × Spline V2** es un
+extremo métrico válido sobre cualquiera de las dos curvas intersecadas:
 
-Qué es esto:
+```text
+R=Intersect(S,T)
+X=Intersect(R,"<token>")
+Length(S,X,Q)   definido sobre S
+Length(T,X,E)   definido sobre T
+```
 
-- **no** es un fallo numérico de la spline ni de la intersección;
-- el punto de intersección es un punto válido y certificado, y la evidencia de la
-  intersección sí conserva, por cada lado, la identidad del lugar geométrico, la
-  revisión semántica, la rama, el componente, el parámetro semántico y la
-  evidencia de token y vigencia;
-- la resolución métrica admite hoy puntos semánticos cuya fuente es `S` y
-  ocurrencias únicas de puntos constructores, y todavía no consume la proveniencia
-  de intersección que porta ese punto.
+El punto se admite por su proveniencia semántica explícita —el token exacto de
+la raíz y la evidencia que la intersección conserva para cada una de sus dos
+curvas— y nunca por sus coordenadas. En la práctica:
 
-Qué hacer:
+- el lado de la intersección que pertenece a la curva medida se identifica por
+  la identidad de esa curva, de modo que `Intersect(S,T)` e `Intersect(T,S)` dan
+  la misma longitud;
+- si el punto de intersección queda latente, la longitud queda indefinida hasta
+  que la misma raíz vuelva a estar vigente; nunca salta a una raíz cercana;
+- un punto cercano o coincidente de cualquier otro tipo sigue **sin** ser un
+  extremo.
 
-- utilice como extremo métrico un punto con dirección explícita sobre `S` (la
-  forma `Point(S, rama, parámetro)`);
-- **no** sustituya por un punto cercano de ningún tipo: la proximidad no es
-  posición semántica, y hacerlo produciría una respuesta sin proveniencia.
+Quedan fuera de esta regla dos casos:
 
-No se promete ninguna fecha de implementación. Queda registrado como asunto
-abierto que requiere caracterización y contrato semántico antes de cualquier
-cambio.
+- un punto de la intersección de una curva semántica con un objeto ordinario,
+  como una recta o una circunferencia, no es extremo métrico sobre esa curva;
+- una autointersección `Intersect(S,S)` no produce puntos materializables, por lo
+  que no puede aportar un extremo.
 
 ---
 
@@ -1259,9 +1262,9 @@ Estas son las limitaciones que afectan a lo que hoy puede hacer en la aplicació
 - Las curvas semánticas son exclusivas de GeoCeDG. Se guardan en el documento
   nativo, y una aplicación upstream externa queda fuera de la garantía de
   compatibilidad.
-- `Length(S,P,Q)` puede quedar indefinido cuando un extremo es un punto
-  materializado desde una intersección Spline V2 × Spline V2. Véase la sección
-  9.4.
+- `Length(S,P,Q)` admite un punto materializado desde una intersección
+  Spline V2 × Spline V2, pero no uno procedente de la intersección con un objeto
+  ordinario, como una recta o una circunferencia. Véase la sección 9.4.
 - Una raíz de intersección tangente, ambigua, caduca o insuficientemente
   certificada permanece solo como resultado rico y no puede materializarse.
 

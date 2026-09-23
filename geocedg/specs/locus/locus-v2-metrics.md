@@ -1,7 +1,7 @@
 # Locus V2 metric contract
 
 - Status: **G7 v1.0 NORMATIVE — PASS — AUTHOR APPROVED; POST-G9U1-A1 v1.1 AMENDMENT — PASS — AUTHOR APPROVED; POST-G9U1-A2 v1.2 AMENDMENT — PASS — AUTHOR APPROVED**
-- Version: `1.2`
+- Version: `1.3`
 - Approval date: 2026-08-13
 - Author-review disposition: **G7A-R1, G7A AND G7B PASS — AUTHOR APPROVED**
 - Roadmap gate: G7 `PASS`; G7A `PASS`; G7B `PASS`
@@ -720,3 +720,158 @@ order, render samples and solution indices never select an endpoint or route.
 The [A2 validation matrix](../../../docs/validation/post_g9u1_a2_explicit_traversal_policy_validation_matrix.md)
 is the candidate traceability authority. This v1.2 amendment remains pending
 author review and does not reinterpret G7 or A1 evidence.
+
+## 23. PRE-G9B-R2 normative amendment: semantic-intersection endpoints
+
+This v1.3 amendment was introduced by the `PRE-G9B-R2` technical candidate. Its
+author-approval status is recorded only in that phase's author-decision record,
+never in this section.
+
+The between-position forms `LocusLength(S, P, Q)` and `Length(S, P, Q)`, with or
+without the §22 traversal policy, admit a third, explicitly typed endpoint
+provenance family: an ordinary `GeoPoint` materialized from one exact token of a
+Locus V2 pair intersection. §21 and §22 are not reinterpreted; they now read
+together with this section, so the admitted endpoint families are exactly three:
+
+```text
+SEMANTIC_POINT            explicit semantic locus point whose source is S
+INTERSECTION_OCCURRENCE   this section
+CONSTRUCTOR_OCCURRENCE    §21
+```
+
+This amendment changes endpoint admissibility only. The rich result remains
+authoritative, the scalar remains guarded, and direction, sign, wrap, boundary and
+same-position policy are unchanged. It does **not** change which pair roots may be
+materialized as points: that is the separate `R2-E0`/`R2-E1` contract and is not
+widened here.
+
+### 23.1 Admission walk
+
+An endpoint belongs to this family only when all of the following hold, each read
+from explicit provenance carried by the construction DAG:
+
+```text
+endpoint point
+  -> parent algorithm is the exact-token intersection-point consumer
+  -> its rich input is a Locus V2 x Locus V2 pair intersection result
+  -> its current effective root token
+  -> the current point-admissible solution for that exact token
+  -> the solution's ordered per-side pair evidence
+  -> the side whose locus identity is S's current semantic identity
+  -> that side's branch and semantic parameter
+  -> one canonical branch/component address on S
+  -> the existing LocusMetricPositionBinder2D
+```
+
+The resolver publishes one closed result, mirroring §21:
+
+```text
+NO_ADDRESS
+UNIQUE(occurrence key, address)
+MULTIPLE(occurrence keys, addresses)
+UNRESOLVED_INVALID
+```
+
+### 23.2 Side selection and ambiguity
+
+Per-side locus identity and semantic revision are copied from the intersection
+query binding, so side order is fixed by the evidence and never by caller order,
+labels or solution index. The side corresponding to `S` is selected by **exact
+locus-identity equality only**:
+
+| Matching sides | Result |
+|---|---|
+| none | `NO_ADDRESS` — `S` is not a side of this intersection |
+| exactly one | candidate `UNIQUE`, subject to §23.3 |
+| two (`S × S` self-intersection) | `MULTIPLE` — the root has two distinct semantic positions on `S`; choosing one would need a rule this contract does not grant |
+
+`MULTIPLE` publishes `INVALID_QUERY`. Caller order `Intersect(S, T)` versus
+`Intersect(T, S)` does not change the selected side, because selection is by
+identity, not by position in the evidence.
+
+A token that appears on more than one admissible solution is already excluded by
+the rich result's own admissible-solution index, so such a point is undefined and
+is rejected before this family is consulted. No duplicate token is ever
+disambiguated here.
+
+### 23.3 Currentness
+
+A selected side is current only when both hold:
+
+- the effective root token is currently validated by the rich result's token
+  ledger, so the solution is present in the current revision; and
+- the side's semantic revision equals the semantic revision of `S`'s current
+  definition.
+
+A side whose identity matches `S` but whose revision does not is **stale** and
+yields `UNRESOLVED_INVALID`, never `NO_ADDRESS`: a stale match must not fall
+through to another family. An undefined endpoint is already rejected by the
+metric before any provenance work, so a dormant materialized point fails closed
+one step earlier.
+
+### 23.4 Address construction
+
+The address is built from the selected side exactly as §21 builds a constructor
+address: the side's branch key selects the branch; the raw parameter is the
+side's semantic parameter; the provider canonicalizes it; exactly one valid
+component of that branch must contain the canonical parameter; periodic lift
+and seam side are derived from the raw parameter under the provider's declared
+domain. Zero or several containing components yield `UNRESOLVED_INVALID`.
+
+The side's lifted periodic parameter is **not** endpoint authority. It records
+which cover of a periodic domain the pair solver searched, which is evidence of
+the solver path rather than of the root's position on `S`, so it never selects
+a lift or seam side.
+
+### 23.5 No-retarget occurrence key
+
+The occurrence key is versioned and relative to the addressed source, the rich
+intersection result, the exact root token and the durable endpoint point:
+
+```text
+metric-endpoint/intersection-occurrence/v1
+  | addressed-source = <durable S identity>
+  | rich-result      = <durable intersection result identity>
+  | token            = <exact effective root token>
+  | side             = first | second, in evidence order
+  | point            = <durable endpoint identity>
+```
+
+A metric algorithm retains an accepted key during its lifetime and never
+retargets: a later resolution to a different key, including a change of endpoint
+family, yields `INVALID_QUERY`. Dormancy and reactivation under the same exact
+token retain the same key.
+
+### 23.6 Family dispatch
+
+Dispatch is by the endpoint's explicit parent algorithm, never by value search.
+The families are consulted in the order of §23 above and are structurally
+disjoint: an intersection-point consumer whose rich input intersects `S` depends
+on `S`, so it cannot also be a constructor slot of `S` without a cycle.
+`NO_ADDRESS` from this family falls through to §21 unchanged, which preserves an
+intersection point used as a constructor slot of an unrelated spline. `UNIQUE`,
+`MULTIPLE` and `UNRESOLVED_INVALID` are final.
+
+### 23.7 Persistence, reopen, copy and redefine
+
+Native save/reopen and undo/redo reconstruct the relation from the command DAG,
+the durable identities and the rich result's persisted token ledger, then
+revalidate currentness; the occurrence key is not serialized and saved
+coordinates are never sufficient evidence. Copy/remap creates source, result,
+point and metric identities for the copied closure, and the single authorized
+closure-copy token rebase remains the only permitted copy provenance path;
+the copied metric therefore acquires a new, internally consistent key. Redefine
+follows the existing lifecycle and redefine contract; a resulting change of
+side, token or identity is resolved afresh and never repaired by proximity.
+
+### 23.8 Explicit exclusions
+
+- A point materialized from a single-source intersection — `LocusV2` against an
+  ordinary geometric target — carries no per-side locus evidence and is **not**
+  admitted by this family; it returns `NO_ADDRESS` and behaves exactly as before.
+- R5 similarity lineage is **not** followed. An intersection root is a root of
+  the intersected source, not of its image; an image of `S` is a different source
+  identity and returns `NO_ADDRESS`.
+- Coordinates, Cartesian coincidence, proximity, tolerance, labels, branch order,
+  solution index, render samples, construction order and XML position never
+  establish, disambiguate or repair an intersection endpoint.

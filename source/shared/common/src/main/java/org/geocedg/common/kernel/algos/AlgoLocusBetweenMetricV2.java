@@ -10,6 +10,8 @@ import java.util.List;
 import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
+import org.geocedg.common.kernel.locus.intersection.IntersectionEndpointProvenanceResolver2D;
+import org.geocedg.common.kernel.locus.intersection.IntersectionEndpointProvenanceResult2D;
 import org.geocedg.common.kernel.locus.metric.BetweenPositionsMetricQuery;
 import org.geocedg.common.kernel.locus.metric.DifferentialLocusMetricCapability2D;
 import org.geocedg.common.kernel.locus.metric.EvaluatorOnlyLocusMetricCapability2D;
@@ -60,6 +62,8 @@ public final class AlgoLocusBetweenMetricV2 extends AlgoElement {
 	private final LocusMetricEngine2D engine = new LocusMetricEngine2D();
 	private final LocusMetricPositionBinder2D positionBinder =
 			new LocusMetricPositionBinder2D();
+	private final IntersectionEndpointProvenanceResolver2D intersectionResolver =
+			new IntersectionEndpointProvenanceResolver2D();
 	private final SplineConstructorOccurrenceResolver2D occurrenceResolver =
 			new SplineConstructorOccurrenceResolver2D();
 	private LocusMetricOwnerLease2D ownerLease;
@@ -218,6 +222,13 @@ public final class AlgoLocusBetweenMetricV2 extends AlgoElement {
 								"Explicit semantic address is not current");
 			}
 		}
+		IntersectionEndpointProvenanceResult2D intersection =
+				intersectionResolver.resolve(source, endpoint);
+		if (intersection.getStatus()
+				!= IntersectionEndpointProvenanceResult2D.Status.NO_ADDRESS) {
+			// UNIQUE, MULTIPLE and UNRESOLVED_INVALID are final (metrics section 23.6).
+			return resolveIntersection(intersection, retainedOccurrenceKey);
+		}
 		SplineConstructorOccurrenceResult2D provenance =
 				occurrenceResolver.resolve(source, endpoint);
 		if (provenance.getStatus()
@@ -238,6 +249,29 @@ public final class AlgoLocusBetweenMetricV2 extends AlgoElement {
 				? EndpointResolution.occurrence(binding, match.getOccurrenceKey())
 				: EndpointResolution.invalid(
 						"Constructor occurrence address is not current");
+	}
+
+	private EndpointResolution resolveIntersection(
+			IntersectionEndpointProvenanceResult2D intersection,
+			String retainedOccurrenceKey) {
+		if (intersection.getStatus()
+				!= IntersectionEndpointProvenanceResult2D.Status.UNIQUE) {
+			return EndpointResolution.invalid(intersection.getStatus() + ": "
+					+ intersection.getDiagnostic());
+		}
+		IntersectionEndpointProvenanceResult2D.Match match =
+				intersection.getUniqueMatch();
+		if (retainedOccurrenceKey != null
+				&& !retainedOccurrenceKey.equals(match.getOccurrenceKey())) {
+			return EndpointResolution.invalid(
+					"Intersection endpoint identity changed; retargeting is forbidden");
+		}
+		MetricPositionBinding2D binding = positionBinder.bind(
+				match.getAddress().toMetricPosition(), source.getSemanticDefinition());
+		return binding.isValid()
+				? EndpointResolution.occurrence(binding, match.getOccurrenceKey())
+				: EndpointResolution.invalid(
+						"Intersection endpoint address is not current");
 	}
 
 	public GeoLocusMetricResult getResult() {
