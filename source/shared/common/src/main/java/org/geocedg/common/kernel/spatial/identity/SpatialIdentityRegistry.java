@@ -25,6 +25,7 @@ import org.geogebra.common.io.DocHandler;
 import org.geogebra.common.io.QDParser;
 import org.geogebra.common.io.XMLParseException;
 import org.geogebra.common.kernel.Construction;
+import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.algos.ConstructionElement;
 import org.geogebra.common.kernel.geos.GeoElement;
 
@@ -60,10 +61,18 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 		CLIPBOARD_IMPORT,
 		REDEFINE_REBUILD,
 		ROLLBACK_RESTORE,
-		GENERIC_MERGE
+		GENERIC_MERGE,
+		/**
+		 * Rebuild after an ordinary edit of a non-participating geo. It restores
+		 * exactly like {@link #NATIVE_OR_UNDO_RESTORE}, except that a version-2
+		 * durable frontier changed by the edit may be refreshed through the
+		 * certified transition (PRE-G9B-R3, ADR 0029).
+		 */
+		ORDINARY_EDIT_REBUILD
 	}
 
 	private final SpatialTokenSource tokenSource;
+	private Map<PersistentGeoId, String> pendingOrdinaryEditSteps;
 	private final int maximumAllocationAttempts;
 	private final Construction owner;
 	private final IdentityHashMap<GeoElement, PersistentGeoId> idsByGeo =
@@ -1467,11 +1476,25 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 			validateReplacementRevision(operation, current, replacement);
 		}
 		if (operation == SpatialLifecycleOperationKind.SEMANTIC_NO_OP
-				&& !changedRecordIds(records, prospectiveRecords).isEmpty()) {
+				&& !onlyRevisionNeutralLazySchemaUpgrades(
+						changedRecordIds(records, prospectiveRecords),
+						prospectiveRecords)) {
 			throw failure(SpatialIdentityDiagnostic.of(
 					SpatialIdentityDiagnostic.Code.LIFECYCLE_REVISION_MISMATCH,
 					"A semantic no-op cannot change the canonical identity graph"));
 		}
+	}
+
+	private boolean onlyRevisionNeutralLazySchemaUpgrades(
+			Set<SpatialIdentityId> changed,
+			Map<SpatialIdentityId, SpatialIdentityRecord> prospectiveRecords) {
+		for (SpatialIdentityId id : changed) {
+			if (!isRevisionNeutralLazySchemaUpgrade(records.get(id),
+					prospectiveRecords.get(id))) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private void validatePointLifecycleBoundary(SpatialLifecycleMutation mutation,
@@ -2554,10 +2577,15 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 			} else if (operation
 					== SpatialLifecycleOperationKind.ADMITTED_TOPOLOGY_CHANGE) {
 				compatible &= first.toRedefineSignature()
-						.hasSameDurableContract(second.toRedefineSignature());
+						.hasSameDurableContract(second.toRedefineSignature())
+						|| isLazyConstructionRecordUpgrade(first, second);
 			} else {
 				compatible &= first.toRedefineSignature().isExactlyCompatibleWith(
-						second.toRedefineSignature());
+						second.toRedefineSignature())
+						|| (operation == SpatialLifecycleOperationKind.SEMANTIC_NO_OP
+								|| operation == SpatialLifecycleOperationKind
+										.COMPATIBLE_DEFINITION_CHANGE)
+								&& isLazyConstructionRecordUpgrade(first, second);
 			}
 		} else if (current instanceof SpatialObjectRecord) {
 			SpatialObjectRecord first = (SpatialObjectRecord) current;
@@ -2643,7 +2671,8 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 			SpatialIdentityRecord current, SpatialIdentityRecord replacement) {
 		if (operation == SpatialLifecycleOperationKind.SEMANTIC_NO_OP) {
 			if (!SpatialRecordXmlCodec.writeRecord(current).equals(
-					SpatialRecordXmlCodec.writeRecord(replacement))) {
+					SpatialRecordXmlCodec.writeRecord(replacement))
+					&& !isRevisionNeutralLazySchemaUpgrade(current, replacement)) {
 				throw revisionFailure(replacement.getId(),
 						"Provider-declared no-op changed its record");
 			}
@@ -3340,6 +3369,97 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 		redefineProviders.put(providerId, provider);
 	}
 
+	/**
+	 * Returns the signature under which an old output is compared with a candidate
+	 * (PRE-G9B-R3 lazy migration, ADR 0029). A construction identity is lifted to
+	 * the current transitive-frontier rule computed from the live DAG. Its persisted
+	 * signature stays authoritative for currentness and is never rewritten by the
+	 * lift. A version-2 record whose persisted frontier no longer matches the live
+	 * DAG fails closed.
+	 */
+	private SpatialRedefineSignature currentAssessmentSignature(GeoElement geo,
+			GeoIdentityRecord record) {
+		SpatialRedefineSignature persisted = record.toRedefineSignature();
+		if (!isConstructionIdentityContract(record)
+				|| !DurableDependencyProjection.isSupportedSchemaVersion(
+						record.getSchemaVersion())) {
+			return persisted;
+		}
+		List<PersistentGeoId> frontier = DurableDependencyProjection
+				.TRANSITIVE_DURABLE_FRONTIER.project(geo, idsByGeo::get);
+		if (record.getSchemaVersion()
+				== ConstructionGeoRedefineProvider.SCHEMA_VERSION_TRANSITIVE_FRONTIER
+				&& !frontier.equals(record.getDependencies())) {
+			throw failure(SpatialIdentityDiagnostic.forSubject(
+					SpatialIdentityDiagnostic.Code.REDEFINE_INCOMPATIBLE,
+					"Participating geo's durable frontier no longer matches its record",
+					record.getId()));
+		}
+		return new SpatialRedefineSignature(record.getProvider(), record.getFamily(),
+				record.getSchemaId(),
+				ConstructionGeoRedefineProvider.SCHEMA_VERSION_TRANSITIVE_FRONTIER,
+				record.getAuthority(), record.getBindingRole(),
+				record.getStableOutputRole(), record.getOutputCardinality(), frontier);
+	}
+
+	private static boolean isConstructionIdentityContract(GeoIdentityRecord record) {
+		return ConstructionGeoRedefineProvider.PROVIDER_ID.equals(record.getProvider())
+				&& ConstructionGeoRedefineProvider.SCHEMA_ID.equals(record.getSchemaId())
+				&& hasDirectedConstructionDependencies(record);
+	}
+
+	/**
+	 * @return whether the candidate describes the explicit lazy upgrade of a
+	 *         historical direct construction record to the transitive-frontier rule
+	 *         with every other durable-contract field unchanged
+	 */
+	private static boolean isLazyConstructionSchemaUpgrade(GeoIdentityRecord current,
+			SpatialRedefineSignature candidate) {
+		return isConstructionIdentityContract(current)
+				&& current.getSchemaVersion()
+						== ConstructionGeoRedefineProvider.SCHEMA_VERSION_DIRECT
+				&& candidate.getSchemaVersion()
+						== ConstructionGeoRedefineProvider.SCHEMA_VERSION_TRANSITIVE_FRONTIER
+				&& current.getProvider().equals(candidate.getProvider())
+				&& current.getFamily().equals(candidate.getFamily())
+				&& current.getSchemaId().equals(candidate.getSchemaId())
+				&& current.getAuthority() == candidate.getAuthority()
+				&& current.getBindingRole() == candidate.getBindingRole()
+				&& current.getStableOutputRole().equals(
+						candidate.getStableOutputRole())
+				&& current.getOutputCardinality() == candidate.getOutputCardinality();
+	}
+
+	private static boolean isLazyConstructionRecordUpgrade(
+			SpatialIdentityRecord current, SpatialIdentityRecord replacement) {
+		return current instanceof GeoIdentityRecord
+				&& replacement instanceof GeoIdentityRecord
+				&& Objects.equals(current.getCopySourceId(),
+						replacement.getCopySourceId())
+				&& isLazyConstructionSchemaUpgrade((GeoIdentityRecord) current,
+						((GeoIdentityRecord) replacement).toRedefineSignature());
+	}
+
+	private static boolean isRevisionNeutralLazySchemaUpgrade(
+			SpatialIdentityRecord current, SpatialIdentityRecord replacement) {
+		return isLazyConstructionRecordUpgrade(current, replacement)
+				&& ((GeoIdentityRecord) current).getDefinitionRevision()
+						== ((GeoIdentityRecord) replacement).getDefinitionRevision()
+				&& ((GeoIdentityRecord) current).getTopologyRevision()
+						== ((GeoIdentityRecord) replacement).getTopologyRevision();
+	}
+
+	private static GeoIdentityRecord lazySchemaUpgrade(GeoIdentityRecord current,
+			SpatialRedefineSignature candidate, long definitionRevision,
+			long topologyRevision) {
+		return new GeoIdentityRecord(current.getId(), current.getProvider(),
+				current.getFamily(), current.getSchemaId(), candidate.getSchemaVersion(),
+				current.getAuthority(), current.getBindingRole(),
+				current.getStableOutputRole(), current.getOutputCardinality(),
+				candidate.getDependencies(), definitionRevision, topologyRevision,
+				current.getCopySourceId());
+	}
+
 	/** @return context from the explicit old target, or {@code null} if unassociated */
 	public SpatialRedefineContext captureRedefineContext(GeoElement explicitOldTarget) {
 		PersistentGeoId id = idsByGeo.get(explicitOldTarget);
@@ -3364,6 +3484,7 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 				}
 				participating.add(new SpatialRedefinePersistedOutput(output, outputId,
 						outputRecord.toRedefineSignature(),
+						currentAssessmentSignature(output, outputRecord),
 						outputRecord.getDefinitionRevision(),
 						outputRecord.getTopologyRevision()));
 			}
@@ -4349,13 +4470,13 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 				Objects.requireNonNull(provider.describeCandidateGroup(context,
 						enumeration, candidateGraph));
 		if (!sameGeoEnumeration(enumeration, candidateGroup)) {
-			throw new IllegalArgumentException(
+			throw SpatialRedefineDescriptionException.undescribable(
 					"Provider candidate roles do not cover the host output group");
 		}
 		String targetedRole = roleForGeo(candidateGroup,
 				Objects.requireNonNull(targetedCandidate));
 		if (targetedRole == null) {
-			throw new IllegalArgumentException(
+			throw SpatialRedefineDescriptionException.undescribable(
 					"Provider did not map the explicit replacement candidate");
 		}
 		SpatialRedefineEffect effect = Objects.requireNonNull(
@@ -4861,9 +4982,8 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 			proposal = describeRedefineProposal(context, targetedCandidate,
 					candidates, provider, participation);
 		} catch (IllegalArgumentException exception) {
-			return assessment(context, null,
-					SpatialRedefineAssessmentStatus.AMBIGUOUS, null, null,
-					participation, false, exception.getMessage());
+			return assessment(context, null, descriptionFailureStatus(exception),
+					null, null, participation, false, exception.getMessage());
 		} catch (RuntimeException exception) {
 			return assessment(context, null,
 					SpatialRedefineAssessmentStatus.UNSUPPORTED, null, null,
@@ -4882,6 +5002,10 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 					"Candidate is not a reconstructible host redefine group");
 		}
 		boolean completeGroups = completeRedefineGroups(context, proposal, provider);
+		if (completeGroups && provider.isDurableContractChange(context, proposal)) {
+			return assessDurableContractChange(context, proposal, provider,
+					participation);
+		}
 		SpatialRedefineDecision advanced = completeGroups
 				? Objects.requireNonNull(provider.inspect(context, proposal))
 				: SpatialRedefineDecision.REJECT;
@@ -4951,6 +5075,54 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 			SpatialRedefineImpactReport impact) {
 		return impact != null && impact.getCompleteness()
 				== SpatialRedefineImpactReport.Completeness.IMPACT_COMPLETE;
+	}
+
+	/**
+	 * Maps a failed proposal description onto the closed status vocabulary
+	 * (PRE-G9B-R3, D3-b). Only a provider-typed ambiguity is {@code AMBIGUOUS}; an
+	 * untyped description failure asserts no ambiguity and is undescribable.
+	 */
+	private static SpatialRedefineAssessmentStatus descriptionFailureStatus(
+			IllegalArgumentException exception) {
+		if (!(exception instanceof SpatialRedefineDescriptionException)) {
+			return SpatialRedefineAssessmentStatus.UNDESCRIBABLE_PROPOSAL;
+		}
+		switch (((SpatialRedefineDescriptionException) exception).getKind()) {
+		case DURABLE_CONTRACT_CHANGE:
+			return SpatialRedefineAssessmentStatus.DURABLE_CONTRACT_CHANGE;
+		case AMBIGUOUS:
+			return SpatialRedefineAssessmentStatus.AMBIGUOUS;
+		default:
+			return SpatialRedefineAssessmentStatus.UNDESCRIBABLE_PROPOSAL;
+		}
+	}
+
+	/**
+	 * Assesses an explicit durable-contract change (PRE-G9B-R3 decisions 4 to 6).
+	 * Identity retention and replacement are evaluated independently, each under
+	 * its own explicit intent. Failure of one never implies the other.
+	 */
+	private SpatialRedefineAssessment assessDurableContractChange(
+			SpatialRedefineContext context, SpatialRedefineProposal proposal,
+			SpatialRedefineProvider provider,
+			SpatialRedefineCandidateParticipation participation) {
+		SpatialRedefineProposal update = proposal.withContractUpdateSelected(true);
+		boolean identityPreserving = Objects.requireNonNull(
+				provider.inspect(context, update)) == SpatialRedefineDecision.RETAIN
+				&& isRetainCompatible(context, update);
+		SpatialRedefineImpactReport impact = null;
+		boolean replacement = false;
+		if (Objects.requireNonNull(provider.inspect(context,
+				proposal.withReplacementOperationSelected(true)))
+				== SpatialRedefineDecision.FRESH) {
+			impact = buildLegacyImpactReport(context);
+			replacement = isLegacyReplacementOfferable(impact);
+		}
+		return assessment(context, proposal,
+				SpatialRedefineAssessmentStatus.DURABLE_CONTRACT_CHANGE, impact, null,
+				participation, false,
+				"Candidate changes the durable dependency frontier of the participant",
+				identityPreserving, replacement);
 	}
 
 	private void requireCurrentPreparedAssessmentHostState(
@@ -5041,23 +5213,38 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 				|| assessment.getStatus() == SpatialRedefineAssessmentStatus
 						.ADVANCED_RETAIN_AVAILABLE_WITH_RELOCATION;
 		boolean legacyAvailable = assessment.getStatus()
-				== SpatialRedefineAssessmentStatus.LEGACY_REPLACEMENT_AVAILABLE;
+				== SpatialRedefineAssessmentStatus.LEGACY_REPLACEMENT_AVAILABLE
+				|| assessment.getStatus()
+						== SpatialRedefineAssessmentStatus.DURABLE_CONTRACT_CHANGE
+						&& assessment.isExplicitReplacementAvailable();
+		boolean contractUpdateAvailable = assessment.getStatus()
+				== SpatialRedefineAssessmentStatus.DURABLE_CONTRACT_CHANGE
+				&& assessment.isIdentityPreservingUpdateAvailable();
 		if (mode == SpatialRedefineExecutionMode.ADVANCED_RETAIN
 				&& !advancedAvailable
 				|| mode == SpatialRedefineExecutionMode.LEGACY_REPLACEMENT
-						&& !legacyAvailable) {
+						&& !legacyAvailable
+				|| mode == SpatialRedefineExecutionMode
+						.IDENTITY_PRESERVING_CONTRACT_UPDATE
+						&& !contractUpdateAvailable) {
 			throw failure(SpatialIdentityDiagnostic.forSubject(
 					SpatialIdentityDiagnostic.Code.REDEFINE_REJECTED,
-					"Requested redefine mode is not authorized by the assessment",
+					"Requested redefine mode " + mode
+							+ " is not authorized by the assessment "
+							+ assessment.getStatus()
+							+ (assessment.getDetail() == null ? ""
+									: ": " + assessment.getDetail()),
 					assessment.getContext().getOldId()));
 		}
 		SpatialRedefineDecision decision = mode
-				== SpatialRedefineExecutionMode.ADVANCED_RETAIN
-						? SpatialRedefineDecision.RETAIN
-						: SpatialRedefineDecision.FRESH;
-		SpatialRedefineProposal proposal = assessment.getProposal()
-				.withReplacementOperationSelected(
-						mode == SpatialRedefineExecutionMode.LEGACY_REPLACEMENT);
+				== SpatialRedefineExecutionMode.LEGACY_REPLACEMENT
+						? SpatialRedefineDecision.FRESH
+						: SpatialRedefineDecision.RETAIN;
+		SpatialRedefineProposal proposal = mode
+				== SpatialRedefineExecutionMode.IDENTITY_PRESERVING_CONTRACT_UPDATE
+						? assessment.getProposal().withContractUpdateSelected(true)
+						: assessment.getProposal().withReplacementOperationSelected(
+								mode == SpatialRedefineExecutionMode.LEGACY_REPLACEMENT);
 		SpatialRedefineCandidateParticipation participation = assessment
 				.getCandidateParticipation();
 		validateCandidateParticipationForDecision(assessment.getContext(), proposal,
@@ -5081,9 +5268,23 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 			SpatialProceduralPositionSnapshot.Plan plan,
 			SpatialRedefineCandidateParticipation participation,
 			boolean positionRequired, String detail) {
+		return assessment(context, proposal, status, impact, plan, participation,
+				positionRequired, detail, false,
+				status == SpatialRedefineAssessmentStatus.LEGACY_REPLACEMENT_AVAILABLE);
+	}
+
+	private SpatialRedefineAssessment assessment(SpatialRedefineContext context,
+			SpatialRedefineProposal proposal, SpatialRedefineAssessmentStatus status,
+			SpatialRedefineImpactReport impact,
+			SpatialProceduralPositionSnapshot.Plan plan,
+			SpatialRedefineCandidateParticipation participation,
+			boolean positionRequired, String detail,
+			boolean identityPreservingUpdateAvailable,
+			boolean explicitReplacementAvailable) {
 		return new SpatialRedefineAssessment(this, context, proposal, status, impact,
 				plan, participation, positionRequired,
-				currentRedefineHostState(context), detail);
+				currentRedefineHostState(context), detail,
+				identityPreservingUpdateAvailable, explicitReplacementAvailable);
 	}
 
 	private String currentRedefineHostState(SpatialRedefineContext context) {
@@ -5548,7 +5749,14 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 
 	private GeoIdentityRecord redefineRevision(GeoIdentityRecord current,
 			SpatialRedefineSignature candidate, SpatialRedefineEffect effect) {
+		boolean upgrade = isLazyConstructionSchemaUpgrade(current, candidate);
 		if (effect == SpatialRedefineEffect.NO_OP) {
+			if (upgrade) {
+				// PRE-G9B-R3: the explicit semantic event upgrades a historical
+				// direct record; a no-op keeps both revisions.
+				return lazySchemaUpgrade(current, candidate,
+						current.getDefinitionRevision(), current.getTopologyRevision());
+			}
 			if (!current.toRedefineSignature().isExactlyCompatibleWith(candidate)) {
 				throw failure(SpatialIdentityDiagnostic.forSubject(
 						SpatialIdentityDiagnostic.Code.REDEFINE_INCOMPATIBLE,
@@ -5563,6 +5771,9 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 					== SpatialRedefineEffect.ADMITTED_TOPOLOGY_CHANGE
 							? Math.addExact(current.getTopologyRevision(), 1)
 							: current.getTopologyRevision();
+			if (upgrade) {
+				return lazySchemaUpgrade(current, candidate, definition, topology);
+			}
 			return effect == SpatialRedefineEffect.ADMITTED_TOPOLOGY_CHANGE
 					? current.withRedefineSignatureAndRevisions(candidate,
 							definition, topology)
@@ -5825,7 +6036,7 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 		}
 		for (String role : context.getOldOutputs().getRoles()) {
 			SpatialRedefineSignature old = context.getOldOutputs().get(role)
-					.getSignature();
+					.getAssessmentSignature();
 			SpatialRedefineSignature candidate = proposal.getCandidateOutputs()
 					.get(role).getSignature();
 			boolean compatible = proposal.getEffect()
@@ -6061,8 +6272,7 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 			if (record == null || !hasDirectedConstructionDependencies(record)) {
 				continue;
 			}
-			for (GeoElement input : ConstructionGeoRedefineProvider
-					.durableDependencyGeos(current.getKey())) {
+			for (GeoElement input : refreshCandidates(current.getKey(), record)) {
 				if (attachments.containsKey(input)) {
 					affected.put(current.getKey(), record);
 					break;
@@ -6080,16 +6290,10 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 		IdentityHashMap<GeoElement, GeoIdentityRecord> replacements =
 				new IdentityHashMap<>();
 		for (Map.Entry<GeoElement, GeoIdentityRecord> current : affected.entrySet()) {
-			ArrayList<PersistentGeoId> dependencies = new ArrayList<>();
-			for (GeoElement input : ConstructionGeoRedefineProvider
-					.durableDependencyGeos(current.getKey())) {
-				PersistentGeoId id = prospectiveIdsByGeo.get(input);
-				if (id != null && !dependencies.contains(id)) {
-					dependencies.add(id);
-				}
-			}
-			Collections.sort(dependencies);
 			GeoIdentityRecord old = current.getValue();
+			List<PersistentGeoId> dependencies = DurableDependencyProjection
+					.forSchemaVersion(old.getSchemaVersion())
+					.project(current.getKey(), prospectiveIdsByGeo::get);
 			GeoIdentityRecord replacement = new GeoIdentityRecord(old.getId(),
 					old.getProvider(), old.getFamily(), old.getSchemaId(),
 					old.getSchemaVersion(), old.getAuthority(), old.getBindingRole(),
@@ -6105,6 +6309,21 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 			return record instanceof GeoIdentityRecord ? (GeoIdentityRecord) record
 					: null;
 		});
+	}
+
+	/**
+	 * @return geos whose first participation changes this record's projection: the
+	 *         direct inputs for version 1, and every identity-free geo crossed by the
+	 *         version-2 frontier walk
+	 */
+	private List<GeoElement> refreshCandidates(GeoElement geo,
+			GeoIdentityRecord record) {
+		if (record.getSchemaVersion()
+				== ConstructionGeoRedefineProvider.SCHEMA_VERSION_TRANSITIVE_FRONTIER) {
+			return DurableDependencyProjection.TRANSITIVE_DURABLE_FRONTIER
+					.traversedHelpers(geo, idsByGeo::get);
+		}
+		return ConstructionGeoRedefineProvider.durableDependencyGeos(geo);
 	}
 
 	private boolean validateSealedProviderPublication(
@@ -6324,34 +6543,48 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 				continue;
 			}
 			GeoElement attachedGeo = attachment.getKey();
+			requireSupportedConstructionSchema(attachedRecord);
 			if (!hasExpectedConstructionIdentityContract(attachedGeo,
 					attachedRecord)) {
 				throw malformedConstructionIdentity(attachedRecord,
 						"base contract disagrees with the attached geo");
 			}
-			boolean requireCompleteDependencies =
-					ConstructionGeoRedefineProvider.isPublicLocusV2Output(
-							attachedGeo);
-			ArrayList<PersistentGeoId> expected = new ArrayList<>();
-			for (GeoElement dependencyGeo
-					: ConstructionGeoRedefineProvider.durableDependencyGeos(
-							attachedGeo)) {
-				GeoIdentityRecord dependencyRecord =
-						prospectiveRecord.apply(dependencyGeo);
-				if (dependencyRecord == null && requireCompleteDependencies) {
-					throw malformedConstructionIdentity(attachedRecord,
-							"required public dependency has no prospective identity");
-				}
-				if (dependencyRecord != null && !expected.contains(
-						dependencyRecord.getId())) {
-					expected.add(dependencyRecord.getId());
+			if (ConstructionGeoRedefineProvider.isPublicLocusV2Output(attachedGeo)) {
+				for (GeoElement dependencyGeo
+						: ConstructionGeoRedefineProvider.durableDependencyGeos(
+								attachedGeo)) {
+					if (prospectiveRecord.apply(dependencyGeo) == null) {
+						throw malformedConstructionIdentity(attachedRecord,
+								"required public dependency has no prospective identity");
+					}
 				}
 			}
-			Collections.sort(expected);
+			// PRE-G9B-R3: each record is validated only under the rule named by its
+			// own schema version; v1 is never read as v2, nor v2 as v1.
+			List<PersistentGeoId> expected = DurableDependencyProjection
+					.forSchemaVersion(attachedRecord.getSchemaVersion())
+					.project(attachedGeo, dependencyGeo -> {
+						GeoIdentityRecord dependency =
+								prospectiveRecord.apply(dependencyGeo);
+						return dependency == null ? null : dependency.getId();
+					});
 			if (!expected.equals(attachedRecord.getDependencies())) {
 				throw malformedConstructionIdentity(attachedRecord,
 						"dependencies disagree with the prospective algorithm DAG");
 			}
+		}
+	}
+
+	private void requireSupportedConstructionSchema(GeoIdentityRecord record) {
+		if (ConstructionGeoRedefineProvider.PROVIDER_ID.equals(record.getProvider())
+				&& ConstructionGeoRedefineProvider.SCHEMA_ID.equals(record.getSchemaId())
+				&& !DurableDependencyProjection.isSupportedSchemaVersion(
+						record.getSchemaVersion())) {
+			throw failure(SpatialIdentityDiagnostic.forSubject(
+					SpatialIdentityDiagnostic.Code.UNSUPPORTED_VERSION,
+					"Construction identity schema version " + record.getSchemaVersion()
+							+ " is newer than this GeoCeDG supports",
+					record.getId()));
 		}
 	}
 
@@ -6363,8 +6596,8 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 						record.getFamily())
 				&& ConstructionGeoRedefineProvider.SCHEMA_ID.equals(
 						record.getSchemaId())
-				&& record.getSchemaVersion()
-						== ConstructionGeoRedefineProvider.SCHEMA_VERSION
+				&& DurableDependencyProjection.isSupportedSchemaVersion(
+						record.getSchemaVersion())
 				&& record.getAuthority() == EditAuthorityMode.CONSTRUCTION_DEFINED
 				&& record.getBindingRole() == ProjectionBindingRole.NOT_APPLICABLE
 				&& ConstructionGeoRedefineProvider.supportsStableOutputRole(
@@ -6923,6 +7156,179 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 		}
 	}
 
+	/**
+	 * Captures, before an ordinary edit rebuilds the construction, the own
+	 * construction step of every version-2 ordinary participant (PRE-G9B-R3
+	 * certified refresh). The capture is label-free: it records the parent
+	 * algorithm and, per input, a durable identity or an identity-free helper kind.
+	 */
+	public void prepareOrdinaryEditFrontierCertification() {
+		LinkedHashMap<PersistentGeoId, String> steps = new LinkedHashMap<>();
+		for (Map.Entry<GeoElement, PersistentGeoId> entry : idsByGeo.entrySet()) {
+			GeoIdentityRecord record = getGeoRecord(entry.getValue());
+			if (record != null && isRefreshableFrontierRecord(entry.getKey(), record)) {
+				steps.put(entry.getValue(), constructionStep(entry.getKey(),
+						idsByGeo::get));
+			}
+		}
+		pendingOrdinaryEditSteps = Collections.unmodifiableMap(steps);
+	}
+
+	/** Discards an ordinary-edit certification that no rebuild consumed. */
+	public void clearOrdinaryEditFrontierCertification() {
+		pendingOrdinaryEditSteps = null;
+	}
+
+	/**
+	 * @param geo a non-participating geo about to be edited
+	 * @return whether the geo lies on the durable frontier walk of a version-2
+	 *         ordinary participant, so that the edit needs a certified refresh
+	 */
+	public boolean hasTransitiveFrontierThrough(GeoElement geo) {
+		if (geo == null || idsByGeo.containsKey(geo)) {
+			return false;
+		}
+		for (Map.Entry<GeoElement, PersistentGeoId> entry : idsByGeo.entrySet()) {
+			GeoIdentityRecord record = getGeoRecord(entry.getValue());
+			if (record != null && isRefreshableFrontierRecord(entry.getKey(), record)
+					&& DurableDependencyProjection.TRANSITIVE_DURABLE_FRONTIER
+							.traversedHelpers(entry.getKey(), idsByGeo::get)
+							.contains(geo)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static boolean isRefreshableFrontierRecord(GeoElement geo,
+			GeoIdentityRecord record) {
+		return isConstructionIdentityContract(record)
+				&& record.getSchemaVersion()
+						== ConstructionGeoRedefineProvider.SCHEMA_VERSION_TRANSITIVE_FRONTIER
+				&& !ConstructionGeoRedefineProvider.isPublicLocusV2Output(geo);
+	}
+
+	private static String constructionStep(GeoElement geo,
+			java.util.function.Function<GeoElement, PersistentGeoId> identity) {
+		StringBuilder step = new StringBuilder(geo.getGeoClassType().name());
+		AlgoElement parent = geo.getParentAlgorithm();
+		if (parent == null) {
+			return step.append("|independent").toString();
+		}
+		step.append('|').append(parent.getClass().getName());
+		for (GeoElement input : ConstructionGeoRedefineProvider
+				.durableDependencyGeos(geo)) {
+			PersistentGeoId id = input == null ? null : identity.apply(input);
+			step.append('|').append(id != null ? id.toExternalForm()
+					: input == null ? "none" : "helper:" + input.getGeoClassType().name());
+		}
+		return step.toString();
+	}
+
+	/**
+	 * Certified auto-refresh of the version-2 frontiers changed by an ordinary edit
+	 * (PRE-G9B-R3 decision 3). A participant keeps its identity with a new
+	 * definition and topology revision only when its own construction step, its
+	 * contract, its non-public role and its complete one-output group are
+	 * unchanged; any other frontier change of a version-2 participant fails
+	 * closed, so the host restores the whole edit.
+	 */
+	private List<SpatialIdentityRecord> certifyOrdinaryEditFrontiers(
+			List<SpatialIdentityRecord> staged,
+			IdentityHashMap<GeoElement, PersistentGeoId> attachments,
+			Map<PersistentGeoId, String> steps) {
+		Map<PersistentGeoId, GeoElement> attachedById = new LinkedHashMap<>();
+		for (Map.Entry<GeoElement, PersistentGeoId> entry : attachments.entrySet()) {
+			attachedById.put(entry.getValue(), entry.getKey());
+		}
+		ArrayList<SpatialIdentityRecord> certified = new ArrayList<>();
+		for (SpatialIdentityRecord record : staged) {
+			GeoIdentityRecord geoRecord = record instanceof GeoIdentityRecord
+					? (GeoIdentityRecord) record : null;
+			GeoElement geo = geoRecord == null ? null : attachedById.get(record.getId());
+			if (geo == null || !isConstructionIdentityContract(geoRecord)
+					|| geoRecord.getSchemaVersion() != ConstructionGeoRedefineProvider
+							.SCHEMA_VERSION_TRANSITIVE_FRONTIER) {
+				certified.add(record);
+				continue;
+			}
+			List<PersistentGeoId> frontier = DurableDependencyProjection
+					.TRANSITIVE_DURABLE_FRONTIER.project(geo, attachments::get);
+			if (frontier.equals(geoRecord.getDependencies())) {
+				certified.add(record);
+				continue;
+			}
+			String before = steps == null ? null : steps.get(geoRecord.getId());
+			if (before == null || !isRefreshableFrontierRecord(geo, geoRecord)
+					|| hostOutputCount(geo) != 1
+					|| !hasExpectedConstructionIdentityContract(geo, geoRecord)
+					|| !before.equals(constructionStep(geo, attachments::get))) {
+				throw failure(SpatialIdentityDiagnostic.forSubject(
+						SpatialIdentityDiagnostic.Code.REDEFINE_INCOMPATIBLE,
+						"An ordinary edit changes the durable frontier of a participant "
+								+ "outside the certified transition", geoRecord.getId()));
+			}
+			try {
+				certified.add(new GeoIdentityRecord(geoRecord.getId(),
+						geoRecord.getProvider(), geoRecord.getFamily(),
+						geoRecord.getSchemaId(), geoRecord.getSchemaVersion(),
+						geoRecord.getAuthority(), geoRecord.getBindingRole(),
+						geoRecord.getStableOutputRole(), geoRecord.getOutputCardinality(),
+						frontier, Math.addExact(geoRecord.getDefinitionRevision(), 1),
+						Math.addExact(geoRecord.getTopologyRevision(), 1),
+						geoRecord.getCopySourceId()));
+			} catch (ArithmeticException exception) {
+				throw failure(SpatialIdentityDiagnostic.forSubject(
+						SpatialIdentityDiagnostic.Code.TRANSACTION_STATE,
+						"Definition revision cannot advance", geoRecord.getId()),
+						exception);
+			}
+		}
+		return certified;
+	}
+
+	/**
+	 * Publishes every copied construction record under the current rule
+	 * (PRE-G9B-R3): a copy creates new identities, so its dependencies are the
+	 * transitive durable frontier of the attached copy.
+	 */
+	private List<SpatialIdentityRecord> withCopiedFrontiers(
+			List<SpatialIdentityRecord> remapped,
+			IdentityHashMap<GeoElement, PersistentGeoId> remappedAttachments) {
+		Map<PersistentGeoId, GeoElement> attachedById = new LinkedHashMap<>();
+		for (Map.Entry<GeoElement, PersistentGeoId> entry
+				: remappedAttachments.entrySet()) {
+			attachedById.put(entry.getValue(), entry.getKey());
+		}
+		java.util.function.Function<GeoElement, PersistentGeoId> identity = geo -> {
+			PersistentGeoId copied = remappedAttachments.get(geo);
+			return copied != null ? copied : idsByGeo.get(geo);
+		};
+		ArrayList<SpatialIdentityRecord> published = new ArrayList<>();
+		for (SpatialIdentityRecord record : remapped) {
+			GeoIdentityRecord geoRecord = record instanceof GeoIdentityRecord
+					? (GeoIdentityRecord) record : null;
+			GeoElement geo = geoRecord == null ? null : attachedById.get(record.getId());
+			if (geo == null || !isConstructionIdentityContract(geoRecord)
+					|| !DurableDependencyProjection.isSupportedSchemaVersion(
+							geoRecord.getSchemaVersion())) {
+				published.add(record);
+				continue;
+			}
+			published.add(new GeoIdentityRecord(geoRecord.getId(),
+					geoRecord.getProvider(), geoRecord.getFamily(),
+					geoRecord.getSchemaId(),
+					ConstructionGeoRedefineProvider.SCHEMA_VERSION_TRANSITIVE_FRONTIER,
+					geoRecord.getAuthority(), geoRecord.getBindingRole(),
+					geoRecord.getStableOutputRole(), geoRecord.getOutputCardinality(),
+					DurableDependencyProjection.TRANSITIVE_DURABLE_FRONTIER.project(geo,
+							identity),
+					geoRecord.getDefinitionRevision(), geoRecord.getTopologyRevision(),
+					geoRecord.getCopySourceId()));
+		}
+		return published;
+	}
+
 	/** Disposable two-stage XML load transaction. */
 	public final class LoadSession {
 		private final LoadPurpose purpose;
@@ -6933,12 +7339,18 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 				new IdentityHashMap<>();
 		private SpatialIdentityException stagingFailure;
 		private boolean finished;
+		private final Map<PersistentGeoId, String> ordinaryEditSteps;
 
 		private LoadSession(LoadPurpose purpose, int sectionVersion,
 				RedefineRebuildToken redefineRebuildToken) {
 			this.purpose = Objects.requireNonNull(purpose);
 			this.sectionVersion = sectionVersion;
 			this.redefineRebuildToken = redefineRebuildToken;
+			ordinaryEditSteps = purpose == LoadPurpose.ORDINARY_EDIT_REBUILD
+					? pendingOrdinaryEditSteps : null;
+			if (purpose == LoadPurpose.ORDINARY_EDIT_REBUILD) {
+				pendingOrdinaryEditSteps = null;
+			}
 		}
 
 		/** @return the explicit lifecycle interpretation for this parse */
@@ -7052,7 +7464,8 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 						remappedAttachments.put(entry.getKey(),
 								(PersistentGeoId) remap.get(entry.getValue()));
 					}
-					publishBatch(remappedRecords, remappedAttachments, true, true);
+					publishBatch(withCopiedFrontiers(remappedRecords, remappedAttachments),
+							remappedAttachments, true, true);
 					for (SpatialIdentityRecord record : remappedRecords) {
 						instrumentation.recordRemap(record.getId().getKind());
 					}
@@ -7067,6 +7480,9 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 			}
 			if (redefineRebuildToken != null) {
 				commitRedefineRebuildLoad();
+			} else if (purpose == LoadPurpose.ORDINARY_EDIT_REBUILD) {
+				publishBatch(certifyOrdinaryEditFrontiers(stagedRecords, attachments,
+						ordinaryEditSteps), attachments, false, false, true);
 			} else {
 				publishBatch(stagedRecords, attachments, false, false, true);
 			}
@@ -7251,7 +7667,8 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 				}
 			}
 			try {
-				publishBatch(remappedRecords, remappedAttachments, true, true);
+				publishBatch(withCopiedFrontiers(remappedRecords, remappedAttachments),
+						remappedAttachments, true, true);
 			} catch (RuntimeException exception) {
 				for (SpatialIdentityId allocated : remap.values()) {
 					releaseReservation(allocated);

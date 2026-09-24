@@ -19,6 +19,7 @@ public final class SpatialRedefineProposal {
 	private final boolean effectExplicit;
 	private final boolean legacyTopologyPreserving;
 	private final boolean replacementOperationSelected;
+	private final boolean contractUpdateSelected;
 
 	/** Creates provider-described evidence for an actual parsed candidate. */
 	public SpatialRedefineProposal(GeoElement candidate,
@@ -36,7 +37,7 @@ public final class SpatialRedefineProposal {
 				signature.getStableOutputRole(), targetedOutputCount,
 				topologyPreserving ? SpatialRedefineEffect.DEFINITION_CHANGE
 						: SpatialRedefineEffect.ADMITTED_TOPOLOGY_CHANGE,
-				false, topologyPreserving, replacementOperationSelected);
+				false, topologyPreserving, replacementOperationSelected, false);
 	}
 
 	/** Creates provider-owned evidence for a complete stable-role group. */
@@ -48,7 +49,7 @@ public final class SpatialRedefineProposal {
 		this(candidateOutputs, targetedStableOutputRole, candidateOutputs.size(),
 				effect, true,
 				effect != SpatialRedefineEffect.ADMITTED_TOPOLOGY_CHANGE,
-				replacementOperationSelected);
+				replacementOperationSelected, false);
 	}
 
 	private SpatialRedefineProposal(
@@ -57,7 +58,11 @@ public final class SpatialRedefineProposal {
 			String targetedStableOutputRole, int targetedOutputCount,
 			SpatialRedefineEffect effect, boolean effectExplicit,
 			boolean legacyTopologyPreserving,
-			boolean replacementOperationSelected) {
+			boolean replacementOperationSelected, boolean contractUpdateSelected) {
+		if (replacementOperationSelected && contractUpdateSelected) {
+			throw new IllegalArgumentException(
+					"Replacement and identity-preserving contract update are exclusive");
+		}
 		this.candidateOutputs = Objects.requireNonNull(candidateOutputs);
 		this.targetedStableOutputRole = SpatialRecordSupport.requireText(
 				targetedStableOutputRole, "targetedStableOutputRole");
@@ -71,6 +76,7 @@ public final class SpatialRedefineProposal {
 		this.effectExplicit = effectExplicit;
 		this.legacyTopologyPreserving = legacyTopologyPreserving;
 		this.replacementOperationSelected = replacementOperationSelected;
+		this.contractUpdateSelected = contractUpdateSelected;
 	}
 
 	public GeoElement getCandidate() {
@@ -117,11 +123,29 @@ public final class SpatialRedefineProposal {
 		return replacementOperationSelected;
 	}
 
+	/**
+	 * @return whether the caller explicitly accepted an identity-preserving
+	 *         durable-contract update
+	 */
+	public boolean isContractUpdateSelected() {
+		return contractUpdateSelected;
+	}
+
 	/** @return the same frozen provider evidence with explicit execution intent */
 	SpatialRedefineProposal withReplacementOperationSelected(boolean selected) {
 		return new SpatialRedefineProposal(candidateOutputs,
 				targetedStableOutputRole, targetedOutputCount, effect, effectExplicit,
-				legacyTopologyPreserving, selected);
+				legacyTopologyPreserving, selected, false);
+	}
+
+	/**
+	 * @return the same frozen provider evidence with explicit identity-preserving
+	 *         contract-update intent
+	 */
+	SpatialRedefineProposal withContractUpdateSelected(boolean selected) {
+		return new SpatialRedefineProposal(candidateOutputs,
+				targetedStableOutputRole, targetedOutputCount, effect, effectExplicit,
+				legacyTopologyPreserving, false, selected);
 	}
 
 	private SpatialRedefineCandidateOutput targetedOutput() {

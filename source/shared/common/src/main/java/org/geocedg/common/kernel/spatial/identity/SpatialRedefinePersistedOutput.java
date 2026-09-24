@@ -14,6 +14,7 @@ public final class SpatialRedefinePersistedOutput implements SpatialRedefineOutp
 	private final GeoElement geo;
 	private final PersistentGeoId id;
 	private final SpatialRedefineSignature signature;
+	private final SpatialRedefineSignature assessmentSignature;
 	private final long definitionRevision;
 	private final long topologyRevision;
 	private final SpatialRedefineHostState hostState;
@@ -22,9 +23,23 @@ public final class SpatialRedefinePersistedOutput implements SpatialRedefineOutp
 	public SpatialRedefinePersistedOutput(GeoElement geo, PersistentGeoId id,
 			SpatialRedefineSignature signature, long definitionRevision,
 			long topologyRevision) {
+		this(geo, id, signature, signature, definitionRevision, topologyRevision);
+	}
+
+	/**
+	 * Creates one old-output authority value whose persisted signature differs from
+	 * the signature it is compared under. A historical construction record keeps
+	 * its persisted version-1 signature for currentness, while assessment compares
+	 * its lifted current-rule signature (PRE-G9B-R3 lazy migration).
+	 */
+	SpatialRedefinePersistedOutput(GeoElement geo, PersistentGeoId id,
+			SpatialRedefineSignature signature,
+			SpatialRedefineSignature assessmentSignature, long definitionRevision,
+			long topologyRevision) {
 		this.geo = Objects.requireNonNull(geo);
 		this.id = Objects.requireNonNull(id);
 		this.signature = Objects.requireNonNull(signature);
+		this.assessmentSignature = Objects.requireNonNull(assessmentSignature);
 		this.definitionRevision = SpatialRecordSupport.requireRevision(
 				definitionRevision, "definitionRevision");
 		this.topologyRevision = SpatialRecordSupport.requireRevision(
@@ -44,6 +59,14 @@ public final class SpatialRedefinePersistedOutput implements SpatialRedefineOutp
 	@Override
 	public SpatialRedefineSignature getSignature() {
 		return signature;
+	}
+
+	/**
+	 * @return the signature under the current durable-dependency rule, used only to
+	 *         compare this old output with a candidate
+	 */
+	public SpatialRedefineSignature getAssessmentSignature() {
+		return assessmentSignature;
 	}
 
 	public long getDefinitionRevision() {

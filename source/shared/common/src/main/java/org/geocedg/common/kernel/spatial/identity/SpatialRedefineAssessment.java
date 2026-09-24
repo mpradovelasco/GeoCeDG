@@ -19,6 +19,8 @@ public final class SpatialRedefineAssessment {
 	private final boolean proceduralPositionRequired;
 	private final String hostStateToken;
 	private final String detail;
+	private final boolean identityPreservingUpdateAvailable;
+	private final boolean explicitReplacementAvailable;
 
 	SpatialRedefineAssessment(SpatialIdentityRegistry registry,
 			SpatialRedefineContext context, SpatialRedefineProposal proposal,
@@ -27,7 +29,8 @@ public final class SpatialRedefineAssessment {
 			SpatialProceduralPositionSnapshot.Plan positionPlan,
 			SpatialRedefineCandidateParticipation candidateParticipation,
 			boolean proceduralPositionRequired, String hostStateToken,
-			String detail) {
+			String detail, boolean identityPreservingUpdateAvailable,
+			boolean explicitReplacementAvailable) {
 		this.registry = Objects.requireNonNull(registry);
 		this.context = context;
 		this.proposal = proposal;
@@ -38,6 +41,8 @@ public final class SpatialRedefineAssessment {
 		this.proceduralPositionRequired = proceduralPositionRequired;
 		this.hostStateToken = hostStateToken;
 		this.detail = detail;
+		this.identityPreservingUpdateAvailable = identityPreservingUpdateAvailable;
+		this.explicitReplacementAvailable = explicitReplacementAvailable;
 	}
 
 	public SpatialRedefineContext getContext() {
@@ -59,6 +64,24 @@ public final class SpatialRedefineAssessment {
 	/** @return diagnostic detail; never localized frontend text */
 	public String getDetail() {
 		return detail;
+	}
+
+	/**
+	 * @return whether the kernel certified an identity-preserving durable-contract
+	 *         update, executable only through
+	 *         {@link SpatialRedefineExecutionMode#IDENTITY_PRESERVING_CONTRACT_UPDATE}
+	 */
+	public boolean isIdentityPreservingUpdateAvailable() {
+		return identityPreservingUpdateAvailable;
+	}
+
+	/**
+	 * @return whether an explicit replacement with a complete impact report is
+	 *         available, executable only through
+	 *         {@link SpatialRedefineExecutionMode#LEGACY_REPLACEMENT}
+	 */
+	public boolean isExplicitReplacementAvailable() {
+		return explicitReplacementAvailable;
 	}
 
 	/** @return whether this exact assessment remains current without mutation */

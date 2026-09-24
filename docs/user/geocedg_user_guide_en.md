@@ -246,6 +246,46 @@ Some objects show a **read-only definition**. That is not a defect: it means
 that arbitrary direct redefinition of that object is not an approved operation.
 Edit its defining inputs instead. Properties explains this when it applies.
 
+### 3.6 Redefining an object
+
+GeoCeDG gives a durable identity to the objects that semantic curves and their
+results depend on, such as the point traced by a Locus V2. Such an object keeps
+its identity when you redefine it, as long as the new definition depends on the
+same durable objects. Ordinary intermediate objects do not count. In
+
+```text
+f=Line(C,xAxis)
+D=Intersect(f,yAxis)
+E=Midpoint(D,C)
+a=LocusV2(E,C)
+```
+
+`E` depends on the durable point `C`, directly and through `D`. Redefining it as
+`E=Midpoint(D,C+(1,0))` still depends only on `C`: `E` keeps its identity, and
+the locus `a`, its intersections and the points materialized from them are
+recomputed. The redefinition is one undo step and survives save and reopen.
+
+If the new definition depends on different durable objects, GeoCeDG does not
+guess. A dialog states the reason and offers only the choices it can guarantee:
+
+- **Keep identity**: the object keeps its identity with its new dependencies,
+  and everything that depends on it is recomputed.
+- **Replace**: the object receives a new identity. The dialog first lists every
+  affected object, because relations built on the old identity are not carried
+  over.
+- **Cancel**: the default; nothing changes.
+
+Coinciding coordinates never make two objects the same. When a redefinition
+cannot be accepted at all, for example because it would turn a point into a
+circle or create a cycle, the message states the reason and the construction is
+not changed.
+
+Editing an ordinary intermediate object, such as `f` above, recomputes
+everything that depends on it. When the edit changes which durable objects a
+durable object depends on, GeoCeDG updates that record only if the durable
+object itself is unchanged; otherwise it refuses the whole edit and nothing
+changes.
+
 ---
 
 <!-- geocedg-guide-section: documents -->
@@ -296,6 +336,13 @@ A saved `.cedg` preserves the construction and its dependency structure,
 including semantic curves, their explicit domains and parameters, semantic
 points with their branch and canonical parameter, materialized intersection
 points with their durable selectors, and the visual layout of the document.
+
+For each object with a durable identity it also records the durable objects that
+object depends on. A document saved by an earlier build keeps those records
+exactly: opening and saving it never rewrites them. A record is updated to the
+current format only when you redefine that object (section 3.6). A GeoCeDG build
+that predates this format refuses a document containing an updated record
+instead of misreading it.
 
 It does not preserve application preferences. Language, theme, presentation
 sizes and the installed user-tool library belong to the GeoCeDG profile, not to
@@ -1298,8 +1345,10 @@ These are the limitations that affect what you can do in the application today.
   the driving point in a line through two points or in a midpoint. A locus whose
   construction passes unnamed literal points or vectors to two of the commands
   between the driving point and the traced point, such as `Line(C,(0,3))`
-  followed by `PerpendicularLine((0,0),g)`, is evaluated as a single fixed point.
-  The positions, lengths and intersections of such loci can be wrong. Where
+  followed by `PerpendicularLine((0,0),g)`, cannot be evaluated: in a new
+  construction it is created undefined, and a document saved by an earlier build
+  can still show it as a single fixed point. The positions, lengths and
+  intersections of such loci can be wrong. Where
   possible, drive the point along a circle or an arc instead of a segment, and
   name literal points first (`T=(0,3)`, then `Line(C,T)`).
 

@@ -60,3 +60,21 @@ atomic commit/rollback. The frontend owns confirmation, localization, list
 presentation, navigation and the Undo affordance. No frontend visibility or
 choice upgrades semantic evidence, and no Swing/Web type enters the kernel
 contract.
+
+## PRE-G9B-R3 amendment
+
+Added by the `PRE-G9B-R3` technical candidate; the approved Classic 5 flow above
+is otherwise unchanged. See
+[ADR 0029](../adr/0029-versioned-durable-dependency-projection-and-lazy-migration.md).
+
+- Every unavailable status, including the new `UNDESCRIBABLE_PROPOSAL`, is shown
+  with its localized text followed by the kernel's own reason, which the dialog
+  formerly discarded.
+- For `DURABLE_CONTRACT_CHANGE` the frontend offers only the operations the
+  kernel declared available: keep identity (`IDENTITY_PRESERVING_CONTRACT_UPDATE`)
+  when `identityPreservingUpdateAvailable`, and replace (`LEGACY_REPLACEMENT`)
+  when `explicitReplacementAvailable` and the impact report is complete, plus
+  Cancel as the default. The replacement explanation lists the complete impact
+  report. With no available operation the change is shown as unavailable.
+- The frontend never derives compatibility, never upgrades a status and never
+  maps a choice that the kernel did not offer.

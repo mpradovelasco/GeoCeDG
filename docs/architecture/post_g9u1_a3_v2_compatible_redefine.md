@@ -207,3 +207,48 @@ Compatibility boundaries remain:
 No public command syntax changes. `GUIDE_IMPACT = NO` because A3 supplies a
 kernel lifecycle guarantee and does not add a documented user command or UI
 workflow.
+
+## 7. PRE-G9B-R3 amendment — versioned dependency projection
+
+This section was added by the `PRE-G9B-R3` technical candidate
+(`TECHNICAL_CANDIDATE_STATE = FROZEN`, `AUTHOR_DECISION =
+NOT_RECORDED_IN_THIS_ARTIFACT`). Sections 1–6 remain the historical A3-R1
+record: they describe the behaviour approved at that closeout, when every
+construction identity record used the direct dependency projection. They are
+not rewritten.
+
+The normative rule is now the
+[durable dependency projection contract](../../geocedg/specs/spatial/durable-dependency-projection.md),
+decided by [ADR 0029](../adr/0029-versioned-durable-dependency-projection-and-lazy-migration.md).
+Its effect on this design:
+
+- **Compatibility predicate.** The dependency signature compared by the
+  predicate of §1 is the version-2 transitive durable frontier for both the
+  lifted old target and the candidate. The persisted signature remains the
+  currentness authority. An identity-free input no longer makes a proposal
+  undescribable, so the author witness `E := Midpoint(D, C+(1,0))` is a
+  compatible retain.
+- **Ordinary participants.** A changed frontier of an ordinary participant, not
+  a public V2 output, is now assessed as `DURABLE_CONTRACT_CHANGE` with two
+  independent flags instead of falling through to `UNSUPPORTED`. The V2 paths of
+  §2–§4, including P3-R1 for retained V2 targets, are unchanged.
+- **Status vocabulary.** The closed result of §4 gains
+  `DURABLE_CONTRACT_CHANGE` and `UNDESCRIBABLE_PROPOSAL`; `AMBIGUOUS` now means
+  only a genuinely multiple interpretation.
+- **Execution modes.** `IDENTITY_PRESERVING_CONTRACT_UPDATE` joins
+  `ADVANCED_RETAIN` and `LEGACY_REPLACEMENT`; each mode runs only when the
+  assessment declared it available. §4's rule that retention failure never
+  authorizes replacement applies unchanged.
+- **Revisions and persistence.** The revision effects of §1 are unchanged. A
+  historical version-1 record retained by any of these operations is published
+  as version 2 in the same transaction (lazy migration); all other records keep
+  their version.
+- **Ordinary edits.** An ordinary edit that moves the frontier of a version-2
+  participant is refreshed only through the certified predicate of the contract
+  (§10); otherwise the operation-entry snapshot of §5 restores the whole edit.
+  That snapshot is now also captured for such an edit.
+- **Construction order.** Unchanged. The minimal reorder refinement requested
+  for `PRE-G9B-R3` is deferred as `TD-R3-CONSTRUCTION-PROTOCOL-MINIMAL-REORDER`.
+
+`GUIDE_IMPACT = YES` for this amendment: the user guide describes the redefine
+outcomes and the durable-contract choice.

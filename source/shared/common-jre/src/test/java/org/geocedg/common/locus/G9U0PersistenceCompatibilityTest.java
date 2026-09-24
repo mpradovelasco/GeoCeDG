@@ -410,20 +410,13 @@ class G9U0PersistenceCompatibilityTest extends G9U0PublicSurfaceTestBase {
 		int dependencyBeforeSteps = getConstruction().steps();
 		int dependencyBeforeRecords = registry.getRecords().size();
 		int dependencyBeforeReservations = registry.getReservedIdentityCount();
-		ErrorAccumulator dependencyErrors = new ErrorAccumulator();
-		GeoElement state = requireLookup("s");
-		getKernel().getAlgebraProcessor().changeGeoElementNoExceptionHandling(
-				state, "a+1", redefineInfo(state), false, ignored -> { },
-				dependencyErrors);
-		assertFalse(dependencyErrors.getErrors().isBlank());
-		assertEquals(dependencyBeforeXml, getApp().getXML());
-		assertEquals(dependencyBeforeSteps, getConstruction().steps());
-		assertEquals(dependencyBeforeRecords, registry.getRecords().size());
-		assertEquals(dependencyBeforeReservations,
-				registry.getReservedIdentityCount());
-
+		// PRE-G9B-R3: the identity-free `a` leaves the durable frontier of `s`
+		// unchanged, so explicit replacement intent is not authorized and is refused
+		// before any mutation. This formerly failed as a false AMBIGUOUS through the
+		// unregistered dependency.
 		ErrorAccumulator explicitDependencyErrors = new ErrorAccumulator();
-		state = requireLookup("s");
+		GeoElement state = requireLookup("s");
+		final PersistentGeoId stateId = registry.getPersistentGeoId(state);
 		getKernel().getAlgebraProcessor().changeGeoElementNoExceptionHandling(
 				state, "a+1",
 				redefineInfo(state).withSpatialReplacementOperation(), false,
@@ -435,6 +428,23 @@ class G9U0PersistenceCompatibilityTest extends G9U0PublicSurfaceTestBase {
 		assertEquals(dependencyBeforeReservations,
 				registry.getReservedIdentityCount());
 
+		// The ordinary assignment is a compatible definition change of the same
+		// identity, and so is restoring the free state.
+		for (String definition : List.of("a+1", "0")) {
+			ErrorAccumulator dependencyErrors = new ErrorAccumulator();
+			state = requireLookup("s");
+			getKernel().getAlgebraProcessor().changeGeoElementNoExceptionHandling(
+					state, definition, redefineInfo(state), false, ignored -> { },
+					dependencyErrors);
+			assertTrue(dependencyErrors.getErrors().isBlank(),
+					dependencyErrors.getErrors());
+			state = requireLookup("s");
+			assertEquals(stateId, registry.getPersistentGeoId(state));
+			assertEquals("0".equals(definition), state.isIndependent());
+			assertTrue(registry.getGeoRecord(stateId).getDependencies().isEmpty());
+			assertTrue(requireLookup("L").isDefined());
+		}
+
 		add("Qa=(a,a^2)");
 		add("Da={false,{-2,2,true,true}}");
 		add("La=LocusV2(Qa,a,Da)");
@@ -443,23 +453,20 @@ class G9U0PersistenceCompatibilityTest extends G9U0PublicSurfaceTestBase {
 		int registeredBeforeSteps = getConstruction().steps();
 		int registeredBeforeRecords = registry.getRecords().size();
 		int registeredBeforeReservations = registry.getReservedIdentityCount();
-		for (boolean replacementIntent : List.of(false, true)) {
-			ErrorAccumulator registeredDependencyErrors = new ErrorAccumulator();
-			state = requireLookup("s");
-			EvalInfo info = redefineInfo(state);
-			if (replacementIntent) {
-				info = info.withSpatialReplacementOperation();
-			}
-			getKernel().getAlgebraProcessor().changeGeoElementNoExceptionHandling(
-					state, "a+1", info, false, ignored -> { },
-					registeredDependencyErrors);
-			assertFalse(registeredDependencyErrors.getErrors().isBlank());
-			assertEquals(registeredBeforeXml, getApp().getXML());
-			assertEquals(registeredBeforeSteps, getConstruction().steps());
-			assertEquals(registeredBeforeRecords, registry.getRecords().size());
-			assertEquals(registeredBeforeReservations,
-					registry.getReservedIdentityCount());
-		}
+		// With a durable `a` the assignment changes the durable contract of `s`: it
+		// is never executed without an explicitly selected operation. The explicit
+		// operations are pinned by PreG9bR3DurableContractRedefineTest.
+		ErrorAccumulator registeredDependencyErrors = new ErrorAccumulator();
+		state = requireLookup("s");
+		getKernel().getAlgebraProcessor().changeGeoElementNoExceptionHandling(
+				state, "a+1", redefineInfo(state), false, ignored -> { },
+				registeredDependencyErrors);
+		assertFalse(registeredDependencyErrors.getErrors().isBlank());
+		assertEquals(registeredBeforeXml, getApp().getXML());
+		assertEquals(registeredBeforeSteps, getConstruction().steps());
+		assertEquals(registeredBeforeRecords, registry.getRecords().size());
+		assertEquals(registeredBeforeReservations,
+				registry.getReservedIdentityCount());
 
 		GeoLocusV2 source = (GeoLocusV2) requireLookup("L");
 		GeoLocusV2 shell = (GeoLocusV2) source.copyInternal(getConstruction());

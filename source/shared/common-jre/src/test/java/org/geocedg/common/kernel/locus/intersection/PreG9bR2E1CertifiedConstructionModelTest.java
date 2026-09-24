@@ -192,10 +192,15 @@ class PreG9bR2E1CertifiedConstructionModelTest extends BaseUnitTest {
 		add("gp=PerpendicularLine((0,0),gj)");
 		add("Ej=Intersect(gj,gp)");
 		add("literal=LocusV2(Ej,Cj)");
-		LocusDefinition2D definition = locus("literal").getSemanticDefinition();
-		assertTrue(assertInstanceOf(ReconstructibleLocusEvaluator2D.class,
-				definition.getEvaluatorCapability()).captureCertifiedProgram().isEmpty());
-		assertNull(CertifiedIntervalCurveModel2D.capture(definition, BRANCH));
+		// PRE-G9B-R3: the traced point's version-2 record carries its transitive
+		// durable frontier. The evaluator's defective isolated replay binds the
+		// traced point to a duplicate driver that this frontier does not match, so
+		// the replay is rejected and the locus fails closed at construction instead
+		// of evaluating a wrong fixed locus. The debt is not repaired, and no curve is
+		// certified in either manifestation.
+		GeoLocusV2 literal = locus("literal");
+		assertFalse(literal.isDefined());
+		assertNull(literal.getSemanticDefinition());
 	}
 
 	@Test

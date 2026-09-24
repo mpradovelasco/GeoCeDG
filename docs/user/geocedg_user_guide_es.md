@@ -257,6 +257,46 @@ significa que la redefinición directa arbitraria de ese objeto no es una
 operación aprobada. Edite en su lugar los datos que lo definen. Propiedades lo
 explica cuando corresponde.
 
+### 3.6 Redefinir un objeto
+
+GeoCeDG asigna una identidad durable a los objetos de los que dependen las curvas
+semánticas y sus resultados, como el punto que traza un Locus V2. Ese objeto
+conserva su identidad al redefinirlo, siempre que la nueva definición dependa de
+los mismos objetos durables. Los objetos intermedios ordinarios no cuentan. En
+
+```text
+f=Line(C,xAxis)
+D=Intersect(f,yAxis)
+E=Midpoint(D,C)
+a=LocusV2(E,C)
+```
+
+`E` depende del punto durable `C`, directamente y a través de `D`. Redefinirlo
+como `E=Midpoint(D,C+(1,0))` sigue dependiendo solo de `C`: `E` conserva su
+identidad, y el lugar `a`, sus intersecciones y los puntos materializados a
+partir de ellas se recalculan. La redefinición es un único paso de deshacer y se
+conserva al guardar y reabrir.
+
+Si la nueva definición depende de otros objetos durables, GeoCeDG no adivina. Un
+diálogo indica el motivo y ofrece solo las opciones que puede garantizar:
+
+- **Conservar la identidad**: el objeto conserva su identidad con sus nuevas
+  dependencias, y todo lo que depende de él se recalcula.
+- **Reemplazar**: el objeto recibe una identidad nueva. El diálogo enumera antes
+  cada objeto afectado, porque las relaciones construidas sobre la identidad
+  anterior no se trasladan.
+- **Cancelar**: la opción predeterminada; no cambia nada.
+
+Que dos objetos coincidan en coordenadas nunca los convierte en el mismo objeto.
+Cuando una redefinición no puede aceptarse en absoluto, por ejemplo porque
+convertiría un punto en una circunferencia o crearía un ciclo, el mensaje indica
+el motivo y la construcción no se modifica.
+
+Editar un objeto intermedio ordinario, como `f` arriba, recalcula todo lo que
+depende de él. Cuando la edición cambia de qué objetos durables depende un
+objeto durable, GeoCeDG actualiza ese registro solo si el propio objeto durable
+no cambia; en caso contrario rechaza toda la edición y no cambia nada.
+
 ---
 
 <!-- geocedg-guide-section: documents -->
@@ -309,6 +349,13 @@ Un `.cedg` guardado conserva la construcción y su estructura de dependencias:
 curvas semánticas, sus dominios y parámetros explícitos, puntos semánticos con su
 rama y su parámetro canónico, puntos de intersección materializados con sus
 selectores durables y la disposición visual del documento.
+
+Para cada objeto con identidad durable registra además los objetos durables de
+los que depende. Un documento guardado por una versión anterior conserva esos
+registros exactamente: abrirlo y guardarlo nunca los reescribe. Un registro se
+actualiza al formato actual solo cuando se redefine ese objeto (sección 3.6).
+Una versión de GeoCeDG anterior a este formato rechaza un documento que contiene
+un registro actualizado en lugar de leerlo mal.
 
 No conserva las preferencias de la aplicación. Idioma, tema, tamaños de
 presentación y biblioteca de herramientas propias instaladas pertenecen al perfil
@@ -1346,9 +1393,10 @@ Estas son las limitaciones que afectan a lo que hoy puede hacer en la aplicació
   construcción usa el punto conductor en una recta por dos puntos o en un punto
   medio. Un lugar cuya construcción pasa puntos o vectores literales sin nombre a
   dos de los comandos entre el punto conductor y el punto trazado, como
-  `Line(C,(0,3))` seguido de `PerpendicularLine((0,0),g)`, se evalúa como un único
-  punto fijo. Las posiciones, longitudes e intersecciones de esos lugares pueden
-  ser erróneas. Siempre que sea posible, conduzca el punto sobre una
+  `Line(C,(0,3))` seguido de `PerpendicularLine((0,0),g)`, no puede evaluarse: en
+  una construcción nueva se crea indefinido, y un documento guardado por una
+  versión anterior puede seguir mostrándolo como un único punto fijo. Las
+  posiciones, longitudes e intersecciones de esos lugares pueden ser erróneas. Siempre que sea posible, conduzca el punto sobre una
   circunferencia o un arco en lugar de un segmento, y dé nombre antes a los
   puntos literales (`T=(0,3)` y después `Line(C,T)`).
 

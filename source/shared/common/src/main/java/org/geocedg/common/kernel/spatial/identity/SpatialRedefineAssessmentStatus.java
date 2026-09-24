@@ -14,5 +14,13 @@ public enum SpatialRedefineAssessmentStatus {
 	INCOMPATIBLE_HOST_REDEFINE,
 	UNSUPPORTED,
 	AMBIGUOUS,
-	STALE_ASSESSMENT
+	STALE_ASSESSMENT,
+	/**
+	 * A describable proposal that changes the durable contract of the target.
+	 * The assessment states whether an identity-preserving contract update and an
+	 * explicit replacement are available; neither is ever implied.
+	 */
+	DURABLE_CONTRACT_CHANGE,
+	/** The semantic relation of the proposal cannot be represented to assess it. */
+	UNDESCRIBABLE_PROPOSAL
 }

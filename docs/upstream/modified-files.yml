@@ -1590,7 +1590,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusPairIntersectionSolver2D.java",
       "change": "added",
-      "purpose": "Coordinate pair candidate isolation, dual refinement, independent two-source residual verification, completeness and overlap; R1 publishes authenticated spline singleton-class certificate metadata without promoting generic pairs or using one-sided R4 identity as pair authority.",
+      "purpose": "Coordinate pair candidate isolation, dual refinement, independent two-source residual verification, completeness and overlap; R1 publishes authenticated spline singleton-class certificate metadata without promoting generic pairs or using one-sided R4 identity as pair authority. PRE-G9B-R2-E0/E1: admit public D2 publication for any pair whose two sources expose a certified interval curve model, replacing the spline-only restriction; internal callers without a ledger evaluation keep the rich-only route. Authority: docs/adr/0028-semantic-endpoint-admissibility-and-certified-semantic-pair-materialization.md.",
       "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
     },
     {
@@ -1878,7 +1878,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialIdentityRegistry.java",
       "change": "added",
-      "purpose": "Preserve G9A1 atomic identity lifecycle while validating, remapping and publishing exact records, including the R6 interaction-owned semantic-point role only for structurally dedicated inputs and restoring their auxiliary/restricted presentation after identity attachment on reopen. G9U1 review round 1: update affected existing construction dependency records during ordinary late-input participation in the same atomic registry/runtime publication, preserving IDs/schema/revisions and G9A guards; strict native load/copy never repairs stale records.",
+      "purpose": "Preserve G9A1 atomic identity lifecycle while validating, remapping and publishing exact records, including the R6 interaction-owned semantic-point role only for structurally dedicated inputs and restoring their auxiliary/restricted presentation after identity attachment on reopen. G9U1 review round 1: update affected existing construction dependency records during ordinary late-input participation in the same atomic registry/runtime publication, preserving IDs/schema/revisions and G9A guards; strict native load/copy never repairs stale records. PRE-G9B-R3: validate every construction record under the dependency rule named by its schemaVersion (1 direct, 2 transitive durable frontier) and reject unknown versions; lift the old target to the frontier for assessment; assess typed DURABLE_CONTRACT_CHANGE and UNDESCRIBABLE_PROPOSAL outcomes with the two explicit operation flags and authorize the identity-preserving contract update; upgrade a retained version-1 record inside its own redefine transaction; certify a version-2 frontier refresh after an ordinary-edit rebuild; publish copied construction records as version 2. Authority: geocedg/specs/spatial/durable-dependency-projection.md.",
       "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
     },
     {
@@ -1914,7 +1914,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRedefineContext.java",
       "change": "added",
-      "purpose": "Implement the explicit old-target, provider-gated G9A1 redefine decision and transaction substrate without spatial evaluation.",
+      "purpose": "Implement the explicit old-target, provider-gated G9A1 redefine decision and transaction substrate without spatial evaluation. PRE-G9B-R3: expose the old target assessment signature lifted to the current dependency rule. Authority: geocedg/specs/spatial/durable-dependency-projection.md.",
       "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
     },
     {
@@ -1926,13 +1926,13 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRedefineProposal.java",
       "change": "added",
-      "purpose": "Implement the explicit old-target, provider-gated G9A1 redefine decision and transaction substrate without spatial evaluation.",
+      "purpose": "Implement the explicit old-target, provider-gated G9A1 redefine decision and transaction substrate without spatial evaluation. PRE-G9B-R3: carry the explicit contract-update selection, exclusive with replacement intent. Authority: geocedg/specs/spatial/durable-dependency-projection.md.",
       "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRedefineProvider.java",
       "change": "added",
-      "purpose": "Implement the explicit old-target, provider-gated G9A1 redefine decision and transaction substrate without spatial evaluation.",
+      "purpose": "Implement the explicit old-target, provider-gated G9A1 redefine decision and transaction substrate without spatial evaluation. PRE-G9B-R3: add the default-false isDurableContractChange provider declaration. Authority: geocedg/specs/spatial/durable-dependency-projection.md.",
       "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
     },
     {
@@ -1992,7 +1992,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/AlgebraProcessor.java",
       "change": "modified",
-      "purpose": "Capture the explicit old-target identity context and enforce provider-gated RETAIN, explicit FRESH, or atomic REJECT across host redefine routes. G9U1: Make product help availability follow existing semantic feature policy without changing numerical command behavior. Authority: geocedg/specs/ui/g9u1-construction-interaction.md.",
+      "purpose": "Capture the explicit old-target identity context and enforce provider-gated RETAIN, explicit FRESH, or atomic REJECT across host redefine routes. G9U1: Make product help availability follow existing semantic feature policy without changing numerical command behavior. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. PRE-G9B-R3: keep a sealed semantic redefine from mutating the old numeric through extendMinMax after its final currentness authorization, except in the independent value-assignment branches. Authority: geocedg/specs/spatial/durable-dependency-projection.md.",
       "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
     },
     {
@@ -2010,7 +2010,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/Construction.java",
       "change": "modified",
-      "purpose": "Own the identity registry and G9A2 semantic runtime and provide the R6 host-wide atomic mutation seam that snapshots/restores the complete Construction around address writes, cascade and postcondition without creating an undo record. Preserve ordinary collected redefinitions without fabricating an empty spatial completion operation; participating transaction and rollback contracts remain unchanged. POST-G9U1-A3-R1 correction: defer collected participating authorization until the complete retained batch has passed serialization preflight, then perform the existing final currentness authorization immediately before the first host mutation.",
+      "purpose": "Own the identity registry and G9A2 semantic runtime and provide the R6 host-wide atomic mutation seam that snapshots/restores the complete Construction around address writes, cascade and postcondition without creating an undo record. Preserve ordinary collected redefinitions without fabricating an empty spatial completion operation; participating transaction and rollback contracts remain unchanged. POST-G9U1-A3-R1 correction: defer collected participating authorization until the complete retained batch has passed serialization preflight, then perform the existing final currentness authorization immediately before the first host mutation. PRE-G9B-R3: rebuild an ordinary edit with the certified version-2 frontier refresh, and capture the existing operation-entry snapshot for an ordinary edit that crosses a version-2 frontier so that a failed certification restores the whole edit; host ordering is unchanged. Authority: geocedg/specs/spatial/durable-dependency-projection.md.",
       "authority": "docs/architecture/post_g9u1_a3_v2_compatible_redefine.md"
     },
     {
@@ -2460,7 +2460,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRedefinePersistedOutput.java",
       "change": "added",
-      "purpose": "Persist the stable provider-owned role used to restore G9A3 output continuity across XML rebuild and reopen.",
+      "purpose": "Persist the stable provider-owned role used to restore G9A3 output continuity across XML rebuild and reopen. PRE-G9B-R3: carry the assessment signature lifted to the version-2 frontier beside the persisted currentness signature. Authority: geocedg/specs/spatial/durable-dependency-projection.md.",
       "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
     },
     {
@@ -2754,7 +2754,7 @@
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9U0IntersectionTokenTest.java",
       "change": "added",
-      "purpose": "Verify the exact I18 rich-intersection, Option B completeness, supported-target, exact-token, overlap and no-inference contracts; R4 updates stable public recompute to exercise deterministic current-selector resolution under parameter motion.",
+      "purpose": "Verify the exact I18 rich-intersection, Option B completeness, supported-target, exact-token, overlap and no-inference contracts; R4 updates stable public recompute to exercise deterministic current-selector resolution under parameter motion. PRE-G9B-R2-E0/E1: supersede the former rich-only pin of the affine scalar pair; both sources now expose a certified model and point admissibility is source-order invariant. Authority: docs/adr/0028-semantic-endpoint-admissibility-and-certified-semantic-pair-materialization.md.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -2766,7 +2766,7 @@
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9U0PersistenceCompatibilityTest.java",
       "change": "added",
-      "purpose": "Verify the exact P16 native XML, byte-stable reopen, closure copy, undo/redo, Classic preservation, no-downgrade and corrupt-state rejection scenarios; R4 emits ledger v4, imports canonical phase-v3 plus compatible pre-phase v2/v1 token-point evidence, and preserves exact opaque token material under the unique compatible binding.",
+      "purpose": "Verify the exact P16 native XML, byte-stable reopen, closure copy, undo/redo, Classic preservation, no-downgrade and corrupt-state rejection scenarios; R4 emits ledger v4, imports canonical phase-v3 plus compatible pre-phase v2/v1 token-point evidence, and preserves exact opaque token material under the unique compatible binding. PRE-G9B-R3: p08 pins the compatible retain of an assignment over an identity-free input and the refusal without an explicit operation over a durable one; the explicit operations moved to PreG9bR3DurableContractRedefineTest. Authority: geocedg/specs/spatial/durable-dependency-projection.md.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -2862,7 +2862,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusV2PublicOperations.java",
       "change": "added",
-      "purpose": "Retain centralized feature-gated public operations and add R6 interaction-owned point creation/move with exact address-state encoding, stable role checks and host Construction snapshot atomicity around mutation/publication, without changing the explicit Point command.",
+      "purpose": "Retain centralized feature-gated public operations and add R6 interaction-owned point creation/move with exact address-state encoding, stable role checks and host Construction snapshot atomicity around mutation/publication, without changing the explicit Point command. PRE-G9B-R3: publish construction participation records under the version-2 transitive durable frontier and require every declared Locus V2 dependency to lie in that frontier. Authority: geocedg/specs/spatial/durable-dependency-projection.md.",
       "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
     },
     {
@@ -2922,7 +2922,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/ConstructionGeoRedefineProvider.java",
       "change": "added",
-      "purpose": "Provide structural-family and durable-dependency redefine authority, validating the R6 LOCUS_INTERACTION_POINT role only when its codec state and independent inputs are exclusive to the semantic-point parent, without label, presentation or ordinal inference.",
+      "purpose": "Provide structural-family and durable-dependency redefine authority, validating the R6 LOCUS_INTERACTION_POINT role only when its codec state and independent inputs are exclusive to the semantic-point parent, without label, presentation or ordinal inference. PRE-G9B-R3: describe candidates with the shared version-2 frontier projection instead of rejecting identity-free inputs, type every description failure, classify a changed frontier of an ordinary participant as a durable-contract change and gate the identity-preserving update by its closed predicate. Authority: geocedg/specs/spatial/durable-dependency-projection.md.",
       "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
     },
     {
@@ -3270,7 +3270,7 @@
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9U0R4IntersectionAdmissibilityContinuationTest.java",
       "change": "added",
-      "purpose": "Verify 27 public R4 cases: byte-exact midpoint/circle admission; four unique intrinsic selectors/tokens from the byte-exact four-solution fixture; all 24 solver permutations; path-independent broad and UI-sized direct regular motion; v1 migration; Option B; Cartesian-order reversal; orientation/cardinality barriers; adaptive periodic phase tubes with selective two-token seam retirement and two independently current tokens; 2-to-4-to-2 recurrence across multiple paths/reopen with the same existing GeoPoints and no automatic point creation; topology guards and target families.",
+      "purpose": "Verify 27 public R4 cases: byte-exact midpoint/circle admission; four unique intrinsic selectors/tokens from the byte-exact four-solution fixture; all 24 solver permutations; path-independent broad and UI-sized direct regular motion; v1 migration; Option B; Cartesian-order reversal; orientation/cardinality barriers; adaptive periodic phase tubes with selective two-token seam retirement and two independently current tokens; 2-to-4-to-2 recurrence across multiple paths/reopen with the same existing GeoPoints and no automatic point creation; topology guards and target families. PRE-G9B-R2-E0/E1: supersede the former rich-only pin of the Locus V2 target; the affine scalar pair root is now locally isolated and point-admissible. Authority: docs/adr/0028-semantic-endpoint-admissibility-and-certified-semantic-pair-materialization.md.",
       "authority": ".github/prompts/tasks/g9u0-r4-intersection-admissibility-continuation.prompt.md"
     },
     {
@@ -3678,7 +3678,7 @@
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9S1R1SplinePairMaterializationTest.java",
       "change": "added",
-      "purpose": "Exercise native public pair materialization, deterministic regular motion, exact token/ID lifecycle, copy/undo/XML, mixed ambiguity and the preserved native-knot predecessor plus corrected structural source.",
+      "purpose": "Exercise native public pair materialization, deterministic regular motion, exact token/ID lifecycle, copy/undo/XML, mixed ambiguity and the preserved native-knot predecessor plus corrected structural source. PRE-G9B-R2-E0/E1: replace the generic-pair fixture that ADR 0028 now certifies by a nonaffine generic locus that stays rich-only, and pin its missing-model diagnostic. Authority: docs/adr/0028-semantic-endpoint-admissibility-and-certified-semantic-pair-materialization.md.",
       "authority": "geocedg/specs/curves/spline-v2-pair-materialization.md"
     },
     {
@@ -4374,7 +4374,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGSpatialRedefineFrontend.java",
       "change": "added",
-      "purpose": "POST-G9U1-A3 frontend: Present the explicit semantic redefine assessment and dispatch the selected compatible or replacement operation.",
+      "purpose": "POST-G9U1-A3 frontend: Present the explicit semantic redefine assessment and dispatch the selected compatible or replacement operation. PRE-G9B-R3: surface the kernel reason of every unavailable status and offer only the kernel-authorized durable-contract operations (keep identity, replace, cancel). Authority: geocedg/specs/spatial/durable-dependency-projection.md.",
       "authority": "docs/validation/post_g9u1_a3_frontend_matrix.md"
     },
     {
@@ -4506,7 +4506,7 @@
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/PostG9U1A1SplineConstructorProvenanceTest.java",
       "change": "added",
-      "purpose": "POST-G9U1-A1: Verify stable spline constructor-occurrence provenance and endpoint resolution.",
+      "purpose": "POST-G9U1-A1: Verify stable spline constructor-occurrence provenance and endpoint resolution. PRE-G9B-R3: replacement intent over an unchanged frontier is now refused as REDEFINE_REJECTED because a compatible retain is available. Authority: geocedg/specs/spatial/durable-dependency-projection.md.",
       "authority": "docs/validation/post_g9u1_a1_spline_constructor_provenance_validation_matrix.md"
     },
     {
@@ -4584,7 +4584,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRedefineAssessment.java",
       "change": "added",
-      "purpose": "POST-G9U1-A3-R1: Represent the deterministic semantic compatibility assessment and bounded impacts for a redefine request.",
+      "purpose": "POST-G9U1-A3-R1: Represent the deterministic semantic compatibility assessment and bounded impacts for a redefine request. PRE-G9B-R3: expose the kernel decisions identityPreservingUpdateAvailable and explicitReplacementAvailable. Authority: geocedg/specs/spatial/durable-dependency-projection.md.",
       "authority": "docs/validation/post_g9u1_a3_v2_compatible_redefine_matrix.md"
     },
     {
@@ -4596,13 +4596,13 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRedefineAssessmentStatus.java",
       "change": "added",
-      "purpose": "POST-G9U1-A3-R1: Enumerate explicit compatible, replacement, rejected and unavailable semantic redefine outcomes.",
+      "purpose": "POST-G9U1-A3-R1: Enumerate explicit compatible, replacement, rejected and unavailable semantic redefine outcomes. PRE-G9B-R3: add DURABLE_CONTRACT_CHANGE and UNDESCRIBABLE_PROPOSAL; AMBIGUOUS is reserved for genuinely multiple interpretations. Authority: geocedg/specs/spatial/durable-dependency-projection.md.",
       "authority": "docs/validation/post_g9u1_a3_v2_compatible_redefine_matrix.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRedefineExecutionMode.java",
       "change": "added",
-      "purpose": "POST-G9U1-A3-R1: Distinguish the explicitly selected compatible transfer from true replacement execution.",
+      "purpose": "POST-G9U1-A3-R1: Distinguish the explicitly selected compatible transfer from true replacement execution. PRE-G9B-R3: add the explicit IDENTITY_PRESERVING_CONTRACT_UPDATE mode. Authority: geocedg/specs/spatial/durable-dependency-projection.md.",
       "authority": "docs/validation/post_g9u1_a3_v2_compatible_redefine_matrix.md"
     },
     {
@@ -4722,7 +4722,7 @@
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/PreG9bR2E1CertifiedConstructionModelTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-R2-E0/E1: verify the certified construction model's enclosure, refusals, obligations, trigonometric rigor, budget and completeness rules.",
+      "purpose": "PRE-G9B-R2-E0/E1: verify the certified construction model's enclosure, refusals, obligations, trigonometric rigor, budget and completeness rules. PRE-G9B-R3: pin the fail-closed manifestation of the retained inline-literal evaluator defect under version-2 frontier validation. Authority: geocedg/specs/spatial/durable-dependency-projection.md.",
       "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
     },
     {
@@ -4748,6 +4748,60 @@
       "change": "added",
       "purpose": "PRE-G9B-R2-E0/E1 corrective continuation: verify that a closure copy remaps every participant a pair parameterization contract names together with its source, and that a missing, reused or reshaped participant fails closed.",
       "authority": "geocedg/specs/curves/spline-v2-pair-materialization.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/DurableDependencyProjection.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R3: implement the single versioned durable dependency projection (DIRECT for version 1, TRANSITIVE_DURABLE_FRONTIER for version 2) shared by publication, assessment, validation, refresh and copy.",
+      "authority": "geocedg/specs/spatial/durable-dependency-projection.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRedefineDescriptionException.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R3: type a failed redefine description as a durable-contract change, an undescribable proposal or a genuine ambiguity.",
+      "authority": "geocedg/specs/spatial/durable-dependency-projection.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/PreG9bR3RedefineTestBase.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R3: share the real-path redefine, fixture and persistence helpers of the focused R3 tests.",
+      "authority": "geocedg/specs/spatial/durable-dependency-projection.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/PreG9bR3DurableDependencyProjectionTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R3: verify the structural projection, unchanged version-1 history, per-version validation, unknown-version rejection, lazy atomic migration, mixed documents, copy and recreation.",
+      "authority": "geocedg/specs/spatial/durable-dependency-projection.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/PreG9bR3RedefineWitnessTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R3: verify the author witness compatible retain with recomputed dependents, undo/redo and reopen, the no-op, the cycle, the family change and the incomplete role group.",
+      "authority": "geocedg/specs/spatial/durable-dependency-projection.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/PreG9bR3DurableContractRedefineTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R3: verify the typed durable-contract change, its explicit identity-preserving update and replacement, unauthorized and stale refusals, coordinate coincidence and the moved p08 replacement case.",
+      "authority": "geocedg/specs/spatial/durable-dependency-projection.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/PreG9bR3CertifiedFrontierRefreshTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R3: verify frontier-neutral recomputation, soft-redefine neutrality, certified refresh with undo/redo and reopen, and whole-edit rollback of uncertified or role-incomplete transitions.",
+      "authority": "geocedg/specs/spatial/durable-dependency-projection.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/spatial/identity/PreG9bR3RedefineVocabularyTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R3: verify one typed outcome per former AMBIGUOUS cause, the operation gating of a durable-contract change and the legacy preparation failure.",
+      "authority": "geocedg/specs/spatial/durable-dependency-projection.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9bR3RedefineFrontendTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R3: verify the Classic 5 reason surfacing, the kernel-authorized durable-contract choices and native .cedg round trips of version-1, version-2 and mixed records.",
+      "authority": "geocedg/specs/spatial/durable-dependency-projection.md"
     }
   ]
 }

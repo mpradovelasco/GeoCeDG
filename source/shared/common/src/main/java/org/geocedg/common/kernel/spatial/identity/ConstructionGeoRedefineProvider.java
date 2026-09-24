@@ -34,7 +34,12 @@ public final class ConstructionGeoRedefineProvider
 	public static final String PROVIDER_ID =
 			"geocedg-construction-provider/v1";
 	public static final String SCHEMA_ID = "geocedg-construction-geo";
-	public static final int SCHEMA_VERSION = 1;
+	/** Historical direct durable-dependency projection (PRE-G9B-R3, ADR 0029). */
+	public static final int SCHEMA_VERSION_DIRECT = 1;
+	/** Transitive durable-frontier projection (PRE-G9B-R3, ADR 0029). */
+	public static final int SCHEMA_VERSION_TRANSITIVE_FRONTIER = 2;
+	/** Version of every new publication, replacement, copy or explicit upgrade. */
+	public static final int SCHEMA_VERSION = SCHEMA_VERSION_TRANSITIVE_FRONTIER;
 	public static final String STABLE_OUTPUT_ROLE = "VALUE";
 	/** Durable role reserved for an interaction-owned semantic Locus V2 point. */
 	public static final String INTERACTION_POINT_OUTPUT_ROLE =
@@ -72,7 +77,7 @@ public final class ConstructionGeoRedefineProvider
 			SpatialIdentityGraph candidateGraph) {
 		SpatialRedefineSignature old = requireNeutralContext(context);
 		if (!old.getFamily().equals(familyFor(candidate))) {
-			throw new IllegalArgumentException(
+			throw SpatialRedefineDescriptionException.durableContractChange(
 					"Candidate changes the construction-defined geo family");
 		}
 		return new SpatialRedefineSignature(old.getProvider(), old.getFamily(),
@@ -87,7 +92,7 @@ public final class ConstructionGeoRedefineProvider
 	public boolean isTopologyPreserving(SpatialRedefineContext context,
 			GeoElement candidate) {
 		try {
-			return context.getOldSignature().equals(
+			return context.getOldAssessmentSignature().equals(
 					describeCandidate(context, candidate));
 		} catch (RuntimeException exception) {
 			return false;
@@ -99,9 +104,13 @@ public final class ConstructionGeoRedefineProvider
 			describeCandidateGroup(SpatialRedefineContext context,
 					List<GeoElement> candidates,
 					SpatialIdentityGraph candidateGraph) {
-		if (context.getOldOutputs().size() != 1 || candidates.size() != 1) {
-			throw new IllegalArgumentException(
+		if (context.getOldOutputs().size() != 1) {
+			throw SpatialRedefineDescriptionException.ambiguous(
 					"Construction-defined redefine requires one output");
+		}
+		if (candidates.size() != 1) {
+			throw SpatialRedefineDescriptionException.durableContractChange(
+					"Candidate changes the construction-defined output cardinality");
 		}
 		GeoElement candidate = Objects.requireNonNull(candidates.get(0));
 		return SpatialRedefineOutputGroup.singleton(
@@ -114,17 +123,17 @@ public final class ConstructionGeoRedefineProvider
 			SpatialRedefineOutputGroup<SpatialRedefineCandidateOutput>
 					candidateOutputs) {
 		if (context.getOldOutputs().size() != 1 || candidateOutputs.size() != 1) {
-			throw new IllegalArgumentException(
+			throw SpatialRedefineDescriptionException.ambiguous(
 					"Construction-defined redefine requires one unambiguous output");
 		}
 		SpatialRedefineCandidateOutput candidate = candidateOutputs.get(
 				context.getTargetedStableOutputRole());
-		if (candidate == null || !sameBase(context.getOldSignature(),
+		if (candidate == null || !sameBase(context.getOldAssessmentSignature(),
 				candidate.getSignature())) {
-			throw new IllegalArgumentException(
+			throw SpatialRedefineDescriptionException.durableContractChange(
 					"Construction-defined candidate changes its durable role contract");
 		}
-		if (!context.getOldSignature().getDependencies().equals(
+		if (!context.getOldAssessmentSignature().getDependencies().equals(
 				candidate.getSignature().getDependencies())) {
 			return SpatialRedefineEffect.ADMITTED_TOPOLOGY_CHANGE;
 		}
@@ -143,16 +152,26 @@ public final class ConstructionGeoRedefineProvider
 				|| proposal.getCandidateOutputs().size() != 1
 				|| !context.getOldOutputs().getRoles().equals(
 						proposal.getCandidateOutputs().getRoles())
-				|| !sameBase(context.getOldSignature(), proposal.getSignature())
-				|| !context.getOldSignature().getFamily().equals(
+				|| !sameBase(context.getOldAssessmentSignature(),
+						proposal.getSignature())
+				|| !context.getOldAssessmentSignature().getFamily().equals(
 						familyFor(proposal.getCandidate()))) {
 			return SpatialRedefineDecision.REJECT;
 		}
-		boolean dependenciesChanged = !context.getOldSignature().getDependencies()
-				.equals(proposal.getSignature().getDependencies());
+		boolean dependenciesChanged = !context.getOldAssessmentSignature()
+				.getDependencies().equals(proposal.getSignature().getDependencies());
 		if (dependenciesChanged
 				&& !isPublicTopologyCandidate(proposal.getCandidate())) {
-			return SpatialRedefineDecision.REJECT;
+			// PRE-G9B-R3: a durable-contract change of an ordinary participant is
+			// never retained or replaced implicitly. Each path needs its own explicit
+			// intent, and retention also needs the certified predicate.
+			if (proposal.isReplacementOperationSelected()) {
+				return SpatialRedefineDecision.FRESH;
+			}
+			return proposal.isContractUpdateSelected()
+					&& isIdentityPreservingContractUpdate(context, proposal)
+							? SpatialRedefineDecision.RETAIN
+							: SpatialRedefineDecision.REJECT;
 		}
 		boolean oldV2 = isV2RedefineSource(context.getOldTarget());
 		boolean candidateV2 = isV2RedefineSource(proposal.getCandidate());
@@ -184,42 +203,69 @@ public final class ConstructionGeoRedefineProvider
 						proposal.getCandidate());
 	}
 
+	/**
+	 * A durable-contract change of an ordinary participant is a changed durable
+	 * dependency frontier of a non-public candidate whose contract is otherwise
+	 * identical. It is assessed as {@code DURABLE_CONTRACT_CHANGE} and never
+	 * executed without an explicitly selected operation.
+	 */
+	@Override
+	public boolean isDurableContractChange(SpatialRedefineContext context,
+			SpatialRedefineProposal proposal) {
+		return proposal.getEffect() == SpatialRedefineEffect.ADMITTED_TOPOLOGY_CHANGE
+				&& !isPublicTopologyCandidate(proposal.getCandidate())
+				&& !isV2RedefineSource(context.getOldTarget());
+	}
+
+	/**
+	 * Closed identity-preserving contract-update predicate (PRE-G9B-R3 decision
+	 * 5): the same provider, family, schema family, authority, binding role, stable
+	 * role and cardinality; a stable role the candidate supports; and no V2 source
+	 * on either side. The registry has already excluded cycles, stale state and
+	 * incomplete groups. The frontier itself may change.
+	 */
+	private static boolean isIdentityPreservingContractUpdate(
+			SpatialRedefineContext context, SpatialRedefineProposal proposal) {
+		SpatialRedefineSignature old = context.getOldAssessmentSignature();
+		SpatialRedefineSignature candidate = proposal.getSignature();
+		return sameBase(old, candidate)
+				&& old.getFamily().equals(familyFor(proposal.getCandidate()))
+				&& supportsStableOutputRole(proposal.getCandidate(),
+						candidate.getStableOutputRole())
+				&& !isV2RedefineSource(context.getOldTarget())
+				&& !isV2RedefineSource(proposal.getCandidate());
+	}
+
 	private SpatialRedefineSignature requireNeutralContext(
 			SpatialRedefineContext context) {
 		if (context == null || context.getOldOutputs().size() != 1) {
-			throw new IllegalArgumentException(
+			throw SpatialRedefineDescriptionException.ambiguous(
 					"Construction-defined redefine context is ambiguous");
 		}
 		SpatialRedefineSignature signature = context.getOldSignature();
+		SpatialRedefineSignature current = context.getOldAssessmentSignature();
 		if (!PROVIDER_ID.equals(signature.getProvider())
 				|| !SCHEMA_ID.equals(signature.getSchemaId())
-				|| signature.getSchemaVersion() != SCHEMA_VERSION
+				|| !DurableDependencyProjection.isSupportedSchemaVersion(
+						signature.getSchemaVersion())
+				|| current.getSchemaVersion() != SCHEMA_VERSION
 				|| signature.getAuthority()
 						!= EditAuthorityMode.CONSTRUCTION_DEFINED
 				|| signature.getBindingRole()
 						!= ProjectionBindingRole.NOT_APPLICABLE
 				|| signature.getOutputCardinality() != 1) {
-			throw new IllegalArgumentException(
+			throw SpatialRedefineDescriptionException.undescribable(
 					"Context is not a neutral construction-defined geo");
 		}
-		return signature;
+		return current;
 	}
 
-	private List<PersistentGeoId> dependencyIds(GeoElement geo,
+	private static List<PersistentGeoId> dependencyIds(GeoElement geo,
 			SpatialIdentityGraph identityGraph) {
-		ArrayList<PersistentGeoId> dependencies = new ArrayList<>();
-		for (GeoElement input : durableDependencyGeos(geo)) {
-			PersistentGeoId id = identityGraph.getPersistentGeoId(input);
-			if (id == null) {
-				throw new IllegalArgumentException(
-						"Construction-defined candidate has an unregistered dependency");
-			}
-			if (!dependencies.contains(id)) {
-				dependencies.add(id);
-			}
-		}
-		Collections.sort(dependencies);
-		return Collections.unmodifiableList(dependencies);
+		// PRE-G9B-R3 D3-a: the canonical projection reaches the nearest durable
+		// ancestors through identity-free helpers instead of rejecting them.
+		return DurableDependencyProjection.TRANSITIVE_DURABLE_FRONTIER.project(geo,
+				identityGraph::getPersistentGeoId);
 	}
 
 	/**

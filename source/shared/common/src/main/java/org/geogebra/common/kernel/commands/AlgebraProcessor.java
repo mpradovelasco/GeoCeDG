@@ -2295,7 +2295,13 @@ public class AlgebraProcessor {
 				rollbackSpatialRedefine(spatialTransaction);
 				throw failure;
 			}
-			if (replaceable instanceof GeoNumeric) {
+			// GeoCeDG PRE-G9B-R3: a sealed semantic redefine that replaces the old
+			// numeric must not mutate it after its final currentness authorization.
+			// Only the value-assignment branches below, where the old numeric and
+			// the candidate are both independent, keep the old numeric and extend it.
+			if (replaceable instanceof GeoNumeric
+					&& (spatialTransaction == null || replaceable.isIndependent()
+							&& ret[0].isIndependent())) {
 				((GeoNumeric) replaceable).extendMinMax(ret[0]);
 			}
 			// a changeable replaceable is not redefined:

@@ -129,4 +129,17 @@ public interface SpatialRedefineProvider {
 			SpatialRedefineDecision decision) {
 		return false;
 	}
+
+	/**
+	 * Declares whether the proposal changes the target's durable contract so that
+	 * it must be assessed as {@code DURABLE_CONTRACT_CHANGE} and executed only
+	 * through an explicitly selected operation (PRE-G9B-R3). The default keeps
+	 * historical providers unchanged.
+	 *
+	 * @return true only for a provider-certified durable-contract change
+	 */
+	default boolean isDurableContractChange(SpatialRedefineContext context,
+			SpatialRedefineProposal proposal) {
+		return false;
+	}
 }

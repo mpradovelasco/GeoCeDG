@@ -1,0 +1,536 @@
+{
+  "schemaVersion": 1,
+  "phase": "PRE-G9B-R3",
+  "phaseKind": "REDEFINE_CORRECTNESS_WITH_AUTHOR_DECIDED_MIGRATION",
+  "technicalCandidateState": "FROZEN",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "authorDecisionAuthority": "a separate closeout/author-decision record is the sole authority for current author approval status",
+  "selfApproved": false,
+  "passClaimed": false,
+  "changeRoute": "ORDINARY",
+  "verificationClass": "GLOBAL_IMPACT",
+  "verificationClassAtPhaseStart": {
+    "class": "INTEGRATED_PHASE",
+    "frozenAtPhaseStart": true
+  },
+  "verificationEscalation": {
+    "request": "VERIFICATION_ESCALATION_REQUEST",
+    "state": "AUTHOR APPROVED",
+    "authority": "author AD-R0-6 resume disposition, item 14",
+    "reason": "durable dependency semantics, persisted schema version, serialization validation, save/reopen, undo/redo and copy/import/redefine lifecycle change"
+  },
+  "implementationBase": {
+    "commit": "ef120a54f035b85df014e89c3916cb3a26f5f933",
+    "tree": "98bdd7220223bedefee0eddbb2c9ef5e6572b133",
+    "branch": "feature/pre-g9b-r3-redefine-correctness",
+    "productCommitsBeforeResume": 0
+  },
+  "canonicalPrompt": ".github/prompts/tasks/pre-g9b-r3-redefine-correctness.prompt.md",
+  "stopAndResume": {
+    "stop": "AD-R0-6: the canonical transitive projection changes persisted signatures; the phase stopped before implementing any migration and before any commit",
+    "resume": "author disposition 'PRE-G9B-R3 - resume after AD-R0-6 migration stop', items 1-15"
+  },
+  "normativeArtifacts": [
+    {
+      "path": "geocedg/specs/spatial/durable-dependency-projection.md",
+      "kind": "NORMATIVE_CONTRACT",
+      "state": "introduced by this candidate"
+    },
+    {
+      "path": "docs/adr/0029-versioned-durable-dependency-projection-and-lazy-migration.md",
+      "kind": "ADR",
+      "state": "Proposed"
+    },
+    {
+      "path": "docs/architecture/post_g9u1_a3_v2_compatible_redefine.md",
+      "kind": "DESIGN_AMENDMENT",
+      "section": "7",
+      "historicalSectionsRewritten": false
+    },
+    {
+      "path": "docs/architecture/post_g9u1_a3_r1_frontend_handoff.md",
+      "kind": "DESIGN_AMENDMENT",
+      "section": "PRE-G9B-R3 amendment",
+      "historicalSectionsRewritten": false
+    },
+    {
+      "path": "docs/validation/pre_g9b_r3_validation_matrix.md",
+      "kind": "VALIDATION_MATRIX"
+    },
+    {
+      "path": "docs/validation/pre_g9b_r3_candidate_report.md",
+      "kind": "CANDIDATE_REPORT"
+    }
+  ],
+  "decisions": {
+    "projection": {
+      "implementation": "org.geocedg.common.kernel.spatial.identity.DurableDependencyProjection",
+      "schemaVersion1": "DIRECT",
+      "schemaVersion2": "TRANSITIVE_DURABLE_FRONTIER",
+      "newRecordsVersion": 2,
+      "evidence": "construction DAG and durable identities only; never coordinates, proximity, labels, construction order or index, XML position or render state",
+      "sharedBy": [
+        "publication",
+        "candidate description",
+        "old-target assessment",
+        "load validation",
+        "late participation",
+        "certified refresh",
+        "copy and macro instantiation"
+      ]
+    },
+    "validation": {
+      "rule": "each record under the rule named by its own schemaVersion",
+      "mismatch": "MALFORMED_RECORD",
+      "unknownVersion": "UNSUPPORTED_VERSION",
+      "xmlSectionVersionChanged": false,
+      "attributeSetChanged": false
+    },
+    "lazyMigration": {
+      "eagerMigration": false,
+      "events": [
+        "successful compatible redefine of the record's own participant",
+        "accepted identity-preserving durable-contract update"
+      ],
+      "upgradesWhenSetsAreEqual": true,
+      "atomicWithTransaction": true,
+      "mixedDocumentsValid": true,
+      "newIdentityEventsPublishVersion2": [
+        "participation",
+        "explicit replacement",
+        "copy/paste",
+        "macro instantiation",
+        "delete/recreate"
+      ]
+    },
+    "certifiedAutoRefresh": {
+      "appliesTo": "version-2 ordinary (non-public) construction participants whose frontier an ordinary edit changes",
+      "predicate": [
+        "own construction step unchanged",
+        "contract matches the rebuilt geo (provider, family, schema, authority, binding role, supported stable role, cardinality one)",
+        "one-output role group",
+        "valid DAG, cycles and currentness"
+      ],
+      "onSuccess": "same identity, new frontier, definition and topology revisions advanced",
+      "onFailure": "REDEFINE_INCOMPATIBLE; the exact operation-entry snapshot restores the whole edit",
+      "versionOneRecords": "never auto-refreshed"
+    },
+    "durableContractChange": {
+      "status": "DURABLE_CONTRACT_CHANGE",
+      "flags": [
+        "identityPreservingUpdateAvailable",
+        "explicitReplacementAvailable"
+      ],
+      "modes": {
+        "identityPreservingUpdate": "IDENTITY_PRESERVING_CONTRACT_UPDATE",
+        "replacement": "LEGACY_REPLACEMENT"
+      },
+      "replacementInferredFromRetainFailure": false
+    },
+    "vocabulary": [
+      "DURABLE_CONTRACT_CHANGE",
+      "UNDESCRIBABLE_PROPOSAL",
+      "AMBIGUOUS (provider-typed only)",
+      "INVALID_DAG"
+    ],
+    "desktop": "kernel reason surfaced for every unavailable status; only kernel-authorized keep identity / replace / cancel offered",
+    "constructionProtocolMinimalReorder": {
+      "state": "DEFERRED",
+      "debt": "TD-R3-CONSTRUCTION-PROTOCOL-MINIMAL-REORDER",
+      "observedLegacy": {
+        "withDependent": "O,A,X,B,Y,Z (Z depends on A) -> A:=Midpoint(B,O) -> O,X,B,A,Y,Z",
+        "childless": "O,A,X,B,Y -> A:=Midpoint(B,O) -> O,X,B,Y,A",
+        "withUnlabeledHelper": "same as withDependent"
+      },
+      "capability": "Construction.moveInConstructionList bounded by getMinConstructionIndex/getMaxConstructionIndex; legacy order from Construction.prepareReplace -> updateConstructionOrder",
+      "reason": "two host placement strategies (in-place rebuild vs delete-and-rename for childless objects), a failure snapshot captured after the legacy reorder on the ordinary path, and P3-R1 placement of retained V2 targets exceed one bounded refinement"
+    }
+  },
+  "newTestClasses": [
+    {
+      "class": "org.geocedg.common.locus.PreG9bR3DurableDependencyProjectionTest",
+      "module": "shared",
+      "methods": 8,
+      "failures": 0
+    },
+    {
+      "class": "org.geocedg.common.locus.PreG9bR3RedefineWitnessTest",
+      "module": "shared",
+      "methods": 5,
+      "failures": 0
+    },
+    {
+      "class": "org.geocedg.common.locus.PreG9bR3DurableContractRedefineTest",
+      "module": "shared",
+      "methods": 9,
+      "failures": 0
+    },
+    {
+      "class": "org.geocedg.common.locus.PreG9bR3CertifiedFrontierRefreshTest",
+      "module": "shared",
+      "methods": 5,
+      "failures": 0
+    },
+    {
+      "class": "org.geocedg.common.kernel.spatial.identity.PreG9bR3RedefineVocabularyTest",
+      "module": "shared",
+      "methods": 13,
+      "failures": 0
+    },
+    {
+      "class": "org.geocedg.desktop.PreG9bR3RedefineFrontendTest",
+      "module": "desktop",
+      "methods": 7,
+      "failures": 0
+    }
+  ],
+  "newTestSupport": [
+    "org.geocedg.common.locus.PreG9bR3RedefineTestBase"
+  ],
+  "supersededPins": [
+    {
+      "test": "org.geocedg.common.locus.G9U0PersistenceCompatibilityTest#p08AssignmentRequiresExplicitReplacementIntentAndPublishesFresh",
+      "change": "compatible retain over an identity-free input; refusal without an explicit operation over a durable input; explicit operations moved to PreG9bR3DurableContractRedefineTest"
+    },
+    {
+      "test": "org.geocedg.common.locus.PostG9U1A1SplineConstructorProvenanceTest",
+      "change": "replacement intent over an unchanged frontier refused as REDEFINE_REJECTED instead of REDEFINE_INCOMPATIBLE"
+    },
+    {
+      "test": "org.geocedg.common.kernel.locus.intersection.PreG9bR2E1CertifiedConstructionModelTest#theInlineLiteralDefectShapeIsRefusedRatherThanCertified",
+      "change": "the defect shape now fails closed as an undefined locus"
+    }
+  ],
+  "fullSuiteEvidence": {
+    "producedBy": "tools/agent/checks/gradle-test-evidence-producer.ps1",
+    "workingTree": "candidate working tree on top of ef120a54f035b85df014e89c3916cb3a26f5f933",
+    "discovery.shared": {
+      "testDryRun": true,
+      "junitFiles": 677,
+      "discoveredIdentities": 5867,
+      "innerExitCode": 0
+    },
+    "discovery.desktop": {
+      "testDryRun": true,
+      "junitFiles": 101,
+      "discoveredIdentities": 1529,
+      "innerExitCode": 0
+    },
+    "final.shared": {
+      "junitFiles": 677,
+      "tests": 6784,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 10,
+      "innerExitCode": 0,
+      "usedForInventory": true
+    },
+    "final.desktop": {
+      "junitFiles": 100,
+      "tests": 1523,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 1,
+      "innerExitCode": 0,
+      "usedForInventory": true
+    },
+    "skippedIdentities": "exactly the allowlisted DISABLED and CONDITIONAL cases of the inventory"
+  },
+  "coupledReconciliations": [
+    {
+      "path": "geocedg/specs/operations/verification-junit-inventory.json",
+      "producedBy": "tools/agent/update-verification-junit-inventory.ps1",
+      "changes": [
+        {
+          "selection": "discovery.shared",
+          "countBefore": 5827,
+          "countAfter": 5867
+        },
+        {
+          "selection": "final.shared",
+          "countBefore": 6744,
+          "countAfter": 6784
+        },
+        {
+          "selection": "discovery.desktop",
+          "countBefore": 1522,
+          "countAfter": 1529
+        },
+        {
+          "selection": "final.desktop",
+          "countBefore": 1516,
+          "countAfter": 1523
+        }
+      ],
+      "narrowSelectionsAffected": 0
+    },
+    {
+      "path": "geocedg/specs/operations/verification-registry.json",
+      "catalog": "junit_inventory",
+      "pinBefore": "88b5abe8ba3e1c7c33639d7bd4f7aaa3cfd6d40009fd57c83bf16e0518f3c89e",
+      "pinAfter": "bb91d7cb701d7b769cf6b25b9d72c95460608488bc7706b23fa34836d7dbfec6",
+      "method": "canonical-LF SHA-256; reproduced the base pin exactly first",
+      "finalCoverageInfraTest": {
+        "cases": 8,
+        "assertions": 308,
+        "failures": 0
+      }
+    },
+    {
+      "path": "docs/upstream/modified-files.yml",
+      "newEntries": 9,
+      "r3PurposesAppended": 16,
+      "e0E1PurposesCompleted": 4,
+      "upstreamBoundaryCheck": {
+        "baseline": "9b93256b7df401ff056c37b502d82df4d72b1522",
+        "registeredFiles": 800,
+        "passed": true
+      }
+    },
+    {
+      "path": "apps/geocedg/application-profile.yml",
+      "change": "English and Spanish keys for the two new statuses, the kernel reason and the durable-contract dialog"
+    }
+  ],
+  "checkstyle": {
+    "sourceSets": [
+      ":shared:common:checkstyleMain",
+      ":shared:common-jre:checkstyleTest",
+      ":desktop:desktop:checkstyleMain",
+      ":desktop:desktop:checkstyleTest"
+    ],
+    "findings": 0
+  },
+  "guideImpact": {
+    "state": "REQUIRED — APPLIED",
+    "editions": [
+      "docs/user/geocedg_user_guide_en.md",
+      "docs/user/geocedg_user_guide_es.md"
+    ],
+    "developerGuide": "docs/developer/geocedg_developer_guide.md (versioned projection note)",
+    "changes": [
+      "new section 3.6 Redefining an object",
+      "section 4.3 durable dependency records and compatibility",
+      "known limitation: inline-literal locus manifestation"
+    ],
+    "sectionIdentifiers": 17
+  },
+  "authorWitnessReplay": {
+    "path": "artifacts/author-input/post-p1-defects/SeveralDefects.cedg",
+    "tracked": false,
+    "sha256": "c0cbdb8ea218e4a07b7cd4d7bcfb4ba2b74da373bbd49711aa4657349619dff8",
+    "method": "scratch Desktop probe joined to the test source set for one invocation by a Gradle init script; product submission path GeoCeDGAlgebraInputSubmission; never committed",
+    "submission": "E=Midpoint(D,C+(1,0))",
+    "results": {
+      "dialogs": 0,
+      "identitiesRetained": [
+        "C",
+        "E",
+        "a",
+        "d",
+        "e",
+        "g",
+        "I",
+        "J",
+        "K",
+        "L"
+      ],
+      "identityFree": [
+        "D",
+        "M"
+      ],
+      "E": "version 2, dependencies [C], definitionRevision 1, topologyRevision 0; coordinates coincide with M",
+      "otherRecords": "version 1 (mixed document)",
+      "g": "four roots recomputed and point-admissible; I-L defined on the four new roots",
+      "e": "two roots recomputed, rich-only after the redefine: the slice now contains the expression point C+(1,0), outside certified-construction-program/v1 (PRE-G9B-R2-E0/E1 B7)",
+      "undo": "version 1, former coordinates and both admissible e roots restored",
+      "redo": "XML byte-identical to the redefined state",
+      "nativeSaveReopen": "identical identities, records, roots and coordinates"
+    }
+  },
+  "baseBuildCompatibilityProbe": {
+    "baseCommit": "ef120a54f035b85df014e89c3916cb3a26f5f933",
+    "method": "git archive of the base into the session scratchpad, scratch probe run there with a Gradle init script; documents written by this candidate",
+    "results": [
+      {
+        "document": "historical fixture reopened and saved (all version 1)",
+        "result": "opened, 4 records"
+      },
+      {
+        "document": "fixture after one compatible redefine (mixed)",
+        "result": "rejected MALFORMED_RECORD 'base contract disagrees with the attached geo'; empty registry; not file-loading"
+      },
+      {
+        "document": "new construction (all version 2)",
+        "result": "rejected identically"
+      }
+    ],
+    "codeReference": "SpatialIdentityRegistry.hasExpectedConstructionIdentityContract at the base requires schemaVersion == ConstructionGeoRedefineProvider.SCHEMA_VERSION (1)"
+  },
+  "findings": [
+    {
+      "id": "R3-SEAL-EXTENDMINMAX",
+      "kind": "LATENT_DEFECT_FIXED",
+      "statement": "AlgebraProcessor extended the replaced old numeric's range after the final currentness authorization; now only in the independent value-assignment branches under a semantic transaction"
+    },
+    {
+      "id": "R3-SOFT-REDEFINE-NEUTRAL",
+      "kind": "DESIGN_VERIFICATION",
+      "statement": "in-place soft redefinition copies values into unlabeled independent constant inputs only; frontier-neutral; no guard added"
+    },
+    {
+      "id": "R3-REFRESH-EXACT-ROLLBACK",
+      "kind": "ATOMICITY",
+      "statement": "an ordinary edit crossing a version-2 frontier captures the existing operation-entry snapshot"
+    },
+    {
+      "id": "R3-REFRESH-ROLE-COMPLETENESS",
+      "kind": "PREDICATE",
+      "statement": "a participant sharing its parent algorithm with an output without a stable role is never auto-refreshed"
+    },
+    {
+      "id": "R3-INLINE-LITERAL-MANIFESTATION",
+      "kind": "RETAINED_DEBT_MANIFESTATION",
+      "statement": "new constructions of the inline-literal shape fail closed as an undefined locus; historical version-1 documents may still show the old manifestation"
+    },
+    {
+      "id": "R3-NO-PROPOSAL-STALE-CANCEL",
+      "kind": "PRE_EXISTING_BEHAVIOUR",
+      "statement": "an assessment without a proposal is never current; a forced mode is cancelled as stale without mutation"
+    },
+    {
+      "id": "R3-OBS-CLIPBOARD-PARTIAL-CLOSURE-PASTE",
+      "kind": "PRE_EXISTING_DEFECT",
+      "reproducedOnBase": "ef120a54f035b85df014e89c3916cb3a26f5f933",
+      "statement": "copying a participating object without its construction closure fails on paste and the clipboard rollback throws 'Spatial rollback restore is not active', leaving the construction changed; outside R3 scope"
+    }
+  ],
+  "riQualityDebtLedger": [
+    {
+      "id": "TD-LOCUS-EVALUATOR-SEGMENT-DRIVER-UPDATE",
+      "disposition": "RETAINED"
+    },
+    {
+      "id": "TD-LOCUS-EVALUATOR-INLINE-LITERAL-DEPENDENCY",
+      "disposition": "RETAINED",
+      "note": "manifestation for new constructions changed to fail-closed"
+    },
+    {
+      "id": "TD-UPSTREAM-RECORD-E0-E1-PURPOSE",
+      "disposition": "RESOLVED_IN_R3"
+    },
+    {
+      "id": "TD-R3-CONSTRUCTION-PROTOCOL-MINIMAL-REORDER",
+      "disposition": "NEW_RETAINED",
+      "dueBy": "PRE-G9B-R7 closeout"
+    },
+    {
+      "id": "TD-DOC-PRE-G9B-R-ROADMAP-STATUS-RECONCILIATION",
+      "disposition": "NEW_RETAINED",
+      "dueBy": "PRE-G9B-R7 closeout",
+      "note": "requires an author-directed reconciliation; an agent may not mark roadmap items approved"
+    },
+    {
+      "id": "TD-R3-OBS-CLIPBOARD-PARTIAL-CLOSURE-PASTE",
+      "disposition": "NEW_PROPOSED",
+      "dueBy": "PRE-G9B-R7 closeout"
+    },
+    {
+      "id": "BASELINE-G9U1-BRANDING-EVIDENCE-PIN",
+      "disposition": "CARRIED_FORWARD"
+    },
+    {
+      "id": "OBS-R2-PHASE-SELECTION-COHORT",
+      "disposition": "CARRIED_FORWARD"
+    },
+    {
+      "id": "GUIDE-A1-SECTION-9.3-STALE",
+      "disposition": "CARRIED_FORWARD"
+    }
+  ],
+  "preCandidatePlanChecks": [
+    {
+      "command": "tools/agent/verify.ps1 -Profile FINAL -PlanOnly",
+      "exitCode": 0,
+      "coverage": "COMPLETE",
+      "missingChecks": 0,
+      "nodes": 67,
+      "executionPlanHash": "defe8ab4692af05430464974c3d5e8e029ff7d64ecbc1822c07ff91593c744e0"
+    },
+    {
+      "command": "tools/agent/verify.ps1 -Profile PHASE -Phase POST-G9U1-A3 -PlanOnly",
+      "exitCode": 0,
+      "coverage": "COMPLETE",
+      "missingChecks": 0,
+      "nodes": 4,
+      "executionPlanHash": "c2e25e0b5d28523023f88dc139f015cda004ce28cc94d1ff546a65c4c222876f"
+    },
+    {
+      "command": "tools/agent/verify.ps1 -Profile INTEGRATION -PlanOnly",
+      "exitCode": 0,
+      "coverage": "COMPLETE",
+      "missingChecks": 0,
+      "nodes": 46,
+      "executionPlanHash": "4502c4bd1bbe1a123089e9e524fd0afb354932afbcb410f93052555a16c77aea"
+    }
+  ],
+  "finalContainment": {
+    "integrationNodesInFinal": 46,
+    "finalOnlyNodes": 21,
+    "phaseNodesInFinal": [
+      "compile.shared.producer",
+      "compile.shared.semantic"
+    ],
+    "phaseNodesNotInFinal": [
+      "junit.shared.post-g9u1-a3.producer",
+      "junit.shared.post-g9u1-a3.semantic"
+    ],
+    "coverageArgument": "final.shared is unfiltered and authenticates every pinned identity, including the 114 post-g9u1-a3.narrow identities",
+    "offlineCrossCheck": {
+      "tool": "verifier Read-VerificationJUnitFiles and Get-VerificationDeterministicHash over the final.shared evidence",
+      "post-g9u1-a3.narrow": {
+        "identities": 114,
+        "failedOrErrored": 0,
+        "sha256": "9a45556ceade0331c9891b1e41cf32abb285d83699b4148cdb2028e222048024",
+        "equalsPin": true
+      },
+      "post-g9u1-a3-frontend.shared": {
+        "identities": 3,
+        "failedOrErrored": 0,
+        "sha256": "2a59bb82caebf518b345d70a0d2f5671acf561b7f9ff4b03ed333249e7111997",
+        "equalsPin": true
+      },
+      "repeatedOnFinalCampaignEvidence": "after the campaign"
+    },
+    "decision": "FINAL only; no PHASE or INTEGRATION campaign repeated"
+  },
+  "frozenAcceptance": [
+    {
+      "profile": "FINAL",
+      "command": "tools/agent/verify.ps1 -Profile FINAL -LogDirectory artifacts/agent/pre-g9b-r3-final",
+      "bindsCommit": "the committed candidate; reported separately"
+    }
+  ],
+  "impact": {
+    "productPhaseEffect": "BOUNDED",
+    "serialization": "CHANGED: record value schemaVersion=2; section and attribute set unchanged; version-1 records unchanged",
+    "frontend": "CHANGED (Desktop)",
+    "evaluator": "UNCHANGED",
+    "constructionOrder": "UNCHANGED",
+    "verificationInfrastructureImpact": "MODIFIED (JUnit inventory, registry catalog pin); no verifier code change",
+    "bootstrapImpact": "NO_CHANGE_REQUIRED",
+    "guideImpact": "REQUIRED — APPLIED"
+  },
+  "notAuthorized": [
+    "repair of the retained evaluator debts",
+    "the deferred construction-order refinement",
+    "repair of the clipboard defect",
+    "PRE-G9B-R4 and later phases",
+    "G9B",
+    "G9C",
+    "G9U2",
+    "productive G10",
+    "push, promotion, tag, release or publication"
+  ],
+  "successorPhaseAuthorized": false
+}

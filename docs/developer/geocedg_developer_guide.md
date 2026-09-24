@@ -591,6 +591,19 @@ The malformed historical author archive remains immutable and rejected. See
 exact failure and the bounded publication cost, including non-linear existing
 dependency validation. This is not a schema migration or relaxed loader.
 
+`PRE-G9B-R3` versions that dependency projection. `DurableDependencyProjection`
+is its only implementation: a construction identity record names its rule by
+`schemaVersion` (1 direct, 2 transitive durable frontier), each record is
+validated under its own version, new records are version 2 and a version-1
+record upgrades only inside its own compatible redefine or accepted
+identity-preserving contract update. Late participation keeps each record's
+version. A provider types a failed description with
+`SpatialRedefineDescriptionException` and declares an explicit durable-contract
+change through `SpatialRedefineProvider.isDurableContractChange`. The rule is
+normative in the
+[durable dependency projection contract](../../geocedg/specs/spatial/durable-dependency-projection.md)
+and decided by [ADR 0029](../adr/0029-versioned-durable-dependency-projection-and-lazy-migration.md).
+
 Legacy `.ggb` compatibility behavior must remain non-destructive unless a
 versioned migration is approved. New semantic objects require stable IDs,
 semantic version, reconstructible inputs, copy/undo/delete behavior and XML

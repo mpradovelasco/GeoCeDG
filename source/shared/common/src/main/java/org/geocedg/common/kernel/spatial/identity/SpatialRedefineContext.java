@@ -81,6 +81,14 @@ public final class SpatialRedefineContext {
 		return targetedOutput().getSignature();
 	}
 
+	/**
+	 * @return the old target's signature under the current durable-dependency rule;
+	 *         the persisted signature stays authoritative for currentness
+	 */
+	public SpatialRedefineSignature getOldAssessmentSignature() {
+		return targetedOutput().getAssessmentSignature();
+	}
+
 	/** @return complete participating sibling authority keyed by stable role */
 	public SpatialRedefineOutputGroup<SpatialRedefinePersistedOutput>
 			getOldOutputs() {

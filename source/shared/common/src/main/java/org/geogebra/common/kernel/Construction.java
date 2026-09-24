@@ -1832,7 +1832,13 @@ public class Construction {
 			throws CircularDefinitionException, XMLParseException {
 		boolean participating = oldGeo != null
 				&& spatialIdentityRegistry.isParticipating(oldGeo);
-		String entryRollbackXml = participating || preOperationContext != null
+		// GeoCeDG PRE-G9B-R3: an ordinary edit on the durable frontier of a version-2
+		// participant keeps the exact entry snapshot, so that a failed certified
+		// refresh rolls back the whole operation, host reordering included.
+		boolean certifiedFrontierEdit = !participating
+				&& spatialIdentityRegistry.hasTransitiveFrontierThrough(oldGeo);
+		String entryRollbackXml = participating || certifiedFrontierEdit
+				|| preOperationContext != null
 				? getCurrentUndoXML(false).toString() : null;
 		boolean candidateInstalledAtEntry = newGeo != null
 				&& isInConstructionList(newGeo);
@@ -2130,9 +2136,18 @@ public class Construction {
 			if (spatialTransaction != null) {
 				setNextSpatialIdentityRedefineRebuild(Collections.singletonList(
 						spatialTransaction.getContext()));
+			} else {
+				// GeoCeDG PRE-G9B-R3: an ordinary edit may change a version-2
+				// durable frontier only through the certified refresh of this rebuild.
+				spatialIdentityRegistry.prepareOrdinaryEditFrontierCertification();
+				setNextSpatialIdentityLoadPurpose(LoadPurpose.ORDINARY_EDIT_REBUILD);
 			}
-			buildConstructionWithGlobalListeners(new XMLStringBuilder(consXML),
-					oldXML, info);
+			try {
+				buildConstructionWithGlobalListeners(new XMLStringBuilder(consXML),
+						oldXML, info);
+			} finally {
+				spatialIdentityRegistry.clearOrdinaryEditFrontierCertification();
+			}
 		} else {
 			throw new MyError(getApplication().getLocalization(),
 					Errors.ReplaceFailed);

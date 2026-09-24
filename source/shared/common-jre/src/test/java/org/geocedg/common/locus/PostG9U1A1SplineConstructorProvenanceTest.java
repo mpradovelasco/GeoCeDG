@@ -184,7 +184,10 @@ class PostG9U1A1SplineConstructorProvenanceTest
 				.getUniqueMatch().getOccurrenceKey());
 
 		String beforeReplacement = getApp().getXML();
-		assertEquals(Code.REDEFINE_INCOMPATIBLE,
+		// PRE-G9B-R3: the identity-free list members no longer make the proposal
+		// undescribable. The frontier is unchanged, so a compatible retain is
+		// available and explicit replacement intent is refused before mutation.
+		assertEquals(Code.REDEFINE_REJECTED,
 				rejectedReplacementCode(requireLookup("points"), "{B,A,C}"));
 		assertEquals(beforeReplacement, getApp().getXML());
 		metric = assertInstanceOf(GeoLocusMetricResult.class, requireLookup("R"));

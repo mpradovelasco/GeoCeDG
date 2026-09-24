@@ -4746,6 +4746,33 @@
       "en": "The construction changed before execution. Submit the redefine again for a fresh assessment.",
       "es": "La construcción cambió antes de ejecutar. Envíe de nuevo la redefinición para obtener una evaluación actualizada."
     },
+    "Redefine.Status.DURABLE_CONTRACT_CHANGE": {
+      "en": "The redefinition changes the durable contract of this object, and neither keeping its identity nor an explicit replacement is available. The construction was not changed.",
+      "es": "La redefinición cambia el contrato durable de este objeto y no está disponible conservar su identidad ni un reemplazo explícito. La construcción no se modificó."
+    },
+    "Redefine.Status.UNDESCRIBABLE_PROPOSAL": {
+      "en": "The semantic redefine cannot be described precisely enough to be assessed. The construction was not changed.",
+      "es": "La redefinición semántica no se puede describir con precisión suficiente para evaluarla. La construcción no se modificó."
+    },
+    "Redefine.Detail": { "en": "Kernel reason", "es": "Motivo del núcleo" },
+    "Redefine.Contract.Title": {
+      "en": "Durable dependency change",
+      "es": "Cambio de dependencias durables"
+    },
+    "Redefine.Contract.Summary": {
+      "en": "This redefinition changes the durable dependencies of the object. Choose how to continue.",
+      "es": "Esta redefinición cambia las dependencias durables del objeto. Elija cómo continuar."
+    },
+    "Redefine.Contract.RetainExplanation": {
+      "en": "Keep identity: the object keeps its identity and receives the kernel-certified new durable dependencies. Dependent results are recomputed and revalidated.",
+      "es": "Conservar la identidad: el objeto conserva su identidad y recibe las nuevas dependencias durables certificadas por el núcleo. Los resultados dependientes se recalculan y se revalidan."
+    },
+    "Redefine.Contract.ReplaceExplanation": {
+      "en": "Replace: the object receives a new identity and CeDG continuity is not carried over. Affected semantic objects and relations:",
+      "es": "Reemplazar: el objeto recibe una identidad nueva y no se conserva la continuidad CeDG. Objetos y relaciones semánticos afectados:"
+    },
+    "Redefine.Contract.Retain": { "en": "Keep identity", "es": "Conservar la identidad" },
+    "Redefine.Contract.Replace": { "en": "Replace", "es": "Reemplazar" },
     "Redefine.Impact.Participant": { "en": "Participant identity", "es": "Identidad del participante" },
     "Redefine.Impact.Relation": { "en": "Semantic relation", "es": "Relación semántica" },
     "Redefine.Impact.Sources": { "en": "Affected source identities", "es": "Identidades fuente afectadas" },

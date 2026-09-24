@@ -33,6 +33,7 @@ import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionQuery2D;
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionResolver2D;
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionResult2D;
 import org.geocedg.common.kernel.spatial.identity.ConstructionGeoRedefineProvider;
+import org.geocedg.common.kernel.spatial.identity.DurableDependencyProjection;
 import org.geocedg.common.kernel.spatial.identity.EditAuthorityMode;
 import org.geocedg.common.kernel.spatial.identity.GeoIdentityRecord;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
@@ -1071,15 +1072,12 @@ public final class LocusV2PublicOperations {
 			for (Map.Entry<GeoElement, PersistentGeoId> staged
 					: stagedIds.entrySet()) {
 				GeoElement geo = staged.getKey();
-				ArrayList<PersistentGeoId> dependencyIds = new ArrayList<>();
-				for (GeoElement dependency : explicitDependencies.get(geo)) {
-					PersistentGeoId dependencyId = currentId(dependency);
-					if (dependencyId != null && !dependencyId.equals(staged.getValue())
-							&& !dependencyIds.contains(dependencyId)) {
-						dependencyIds.add(dependencyId);
-					}
-				}
-				Collections.sort(dependencyIds);
+				// PRE-G9B-R3: every new record is published under the canonical
+				// transitive durable frontier, the same implementation that validates
+				// and assesses it.
+				List<PersistentGeoId> dependencyIds = DurableDependencyProjection
+						.TRANSITIVE_DURABLE_FRONTIER.project(geo, this::currentId);
+				requireDeclaredDependenciesInFrontier(geo, dependencyIds);
 				participations.put(geo, record(staged.getValue(), geo,
 						dependencyIds, stableOutputRoles.getOrDefault(geo,
 								ConstructionGeoRedefineProvider.STABLE_OUTPUT_ROLE)));
@@ -1096,6 +1094,17 @@ public final class LocusV2PublicOperations {
 					// The ordinary registration path owns rollback of every supplied
 					// reservation when its atomic publication rejects.
 					reservations.clear();
+				}
+			}
+		}
+
+		private void requireDeclaredDependenciesInFrontier(GeoElement geo,
+				List<PersistentGeoId> frontier) {
+			for (GeoElement dependency : explicitDependencies.get(geo)) {
+				PersistentGeoId dependencyId = currentId(dependency);
+				if (dependencyId != null && !frontier.contains(dependencyId)) {
+					throw new IllegalStateException(
+							"A declared durable dependency is outside the published frontier");
 				}
 			}
 		}

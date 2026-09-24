@@ -6,6 +6,9 @@
 package org.geocedg.desktop;
 
 import java.awt.Component;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.StringJoiner;
 
 import javax.swing.JOptionPane;
@@ -14,6 +17,7 @@ import javax.swing.JTextArea;
 
 import org.geocedg.common.kernel.spatial.identity.SpatialRedefineAssessment;
 import org.geocedg.common.kernel.spatial.identity.SpatialRedefineAssessmentHandler;
+import org.geocedg.common.kernel.spatial.identity.SpatialRedefineAssessmentStatus;
 import org.geocedg.common.kernel.spatial.identity.SpatialRedefineExecutionMode;
 import org.geocedg.common.kernel.spatial.identity.SpatialRedefineImpactEntry;
 import org.geocedg.common.kernel.spatial.identity.SpatialRedefineImpactReport;
@@ -28,6 +32,24 @@ final class GeoCeDGSpatialRedefineFrontend
 		void showUnavailable(SpatialRedefineAssessment assessment);
 
 		void showStaleAssessment();
+
+		/**
+		 * Presents only the kernel-authorized operations of a durable-contract
+		 * change (PRE-G9B-R3). The default cancels.
+		 *
+		 * @return the explicitly selected operation, or {@link ContractChoice#CANCEL}
+		 */
+		default ContractChoice chooseContractChange(
+				SpatialRedefineAssessment assessment) {
+			return ContractChoice.CANCEL;
+		}
+	}
+
+	/** Explicit user operation for a durable-contract change. */
+	enum ContractChoice {
+		RETAIN_IDENTITY,
+		EXPLICIT_REPLACEMENT,
+		CANCEL
 	}
 
 	private final Presentation presentation;
@@ -50,11 +72,19 @@ final class GeoCeDGSpatialRedefineFrontend
 		case LEGACY_REPLACEMENT_AVAILABLE:
 			return presentation.confirmLegacy(assessment)
 					? SpatialRedefineExecutionMode.LEGACY_REPLACEMENT : null;
+		case DURABLE_CONTRACT_CHANGE:
+			if (availableContractChoices(assessment).isEmpty()) {
+				presentation.showUnavailable(assessment);
+				return null;
+			}
+			return contractMode(assessment,
+					presentation.chooseContractChange(assessment));
 		case INVALID_DAG:
 		case INCOMPATIBLE_HOST_REDEFINE:
 		case UNSUPPORTED:
 		case AMBIGUOUS:
 		case STALE_ASSESSMENT:
+		case UNDESCRIBABLE_PROPOSAL:
 		default:
 			presentation.showUnavailable(assessment);
 			return null;
@@ -100,9 +130,34 @@ final class GeoCeDGSpatialRedefineFrontend
 
 		@Override
 		public void showUnavailable(SpatialRedefineAssessment assessment) {
-			String key = "Redefine.Status." + assessment.getStatus().name();
-			JOptionPane.showMessageDialog(parent(), text(key),
+			JOptionPane.showMessageDialog(parent(),
+					buildUnavailableMessage(assessment, language()),
 					text("Redefine.Unavailable.Title"), JOptionPane.ERROR_MESSAGE);
+		}
+
+		@Override
+		public ContractChoice chooseContractChange(
+				SpatialRedefineAssessment assessment) {
+			List<ContractChoice> choices = availableContractChoices(assessment);
+			JTextArea message = new JTextArea(buildContractChangeMessage(assessment,
+					language()), MESSAGE_ROWS, MESSAGE_COLUMNS);
+			message.setEditable(false);
+			message.setLineWrap(true);
+			message.setWrapStyleWord(true);
+			message.setCaretPosition(0);
+			ArrayList<Object> options = new ArrayList<>();
+			for (ContractChoice choice : choices) {
+				options.add(text(choice == ContractChoice.RETAIN_IDENTITY
+						? "Redefine.Contract.Retain" : "Redefine.Contract.Replace"));
+			}
+			options.add(text("Redefine.Cancel"));
+			Object[] labels = options.toArray();
+			int selected = JOptionPane.showOptionDialog(parent(),
+					new JScrollPane(message), text("Redefine.Contract.Title"),
+					JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null,
+					labels, labels[labels.length - 1]);
+			return selected >= 0 && selected < choices.size() ? choices.get(selected)
+					: ContractChoice.CANCEL;
 		}
 
 		@Override
@@ -135,6 +190,94 @@ final class GeoCeDGSpatialRedefineFrontend
 		StringBuilder message = new StringBuilder();
 		message.append(text("Redefine.Legacy.Summary", language)).append("\n\n")
 				.append(text("Redefine.Legacy.Impact", language)).append('\n');
+		appendImpactEntries(message, report, language);
+		message.append('\n').append(text("Redefine.Legacy.Undo", language));
+		return message.toString();
+	}
+
+	/**
+	 * @return the kernel-authorized operations of a durable-contract change, in
+	 *         presentation order; the frontend never derives compatibility itself
+	 */
+	static List<ContractChoice> availableContractChoices(
+			SpatialRedefineAssessment assessment) {
+		ArrayList<ContractChoice> choices = new ArrayList<>();
+		if (assessment.getStatus()
+				== SpatialRedefineAssessmentStatus.DURABLE_CONTRACT_CHANGE) {
+			if (assessment.isIdentityPreservingUpdateAvailable()) {
+				choices.add(ContractChoice.RETAIN_IDENTITY);
+			}
+			if (assessment.isExplicitReplacementAvailable()
+					&& hasCompleteImpact(assessment)) {
+				choices.add(ContractChoice.EXPLICIT_REPLACEMENT);
+			}
+		}
+		return Collections.unmodifiableList(choices);
+	}
+
+	private static SpatialRedefineExecutionMode contractMode(
+			SpatialRedefineAssessment assessment, ContractChoice choice) {
+		if (choice == null || !availableContractChoices(assessment).contains(choice)) {
+			return null;
+		}
+		if (choice == ContractChoice.RETAIN_IDENTITY) {
+			return SpatialRedefineExecutionMode.IDENTITY_PRESERVING_CONTRACT_UPDATE;
+		}
+		return choice == ContractChoice.EXPLICIT_REPLACEMENT
+				? SpatialRedefineExecutionMode.LEGACY_REPLACEMENT : null;
+	}
+
+	/** @return the localized status text followed by the kernel's own reason */
+	static String buildUnavailableMessage(SpatialRedefineAssessment assessment,
+			String language) {
+		StringBuilder message = new StringBuilder(text("Redefine.Status."
+				+ assessment.getStatus().name(), language));
+		appendKernelReason(message, assessment, language);
+		return message.toString();
+	}
+
+	/**
+	 * @return the durable-contract change explanation, the kernel reason and the
+	 *         consequences of every authorized operation, including the complete
+	 *         impact report before an explicit replacement can be chosen
+	 */
+	static String buildContractChangeMessage(SpatialRedefineAssessment assessment,
+			String language) {
+		List<ContractChoice> choices = availableContractChoices(assessment);
+		StringBuilder message = new StringBuilder(
+				text("Redefine.Contract.Summary", language));
+		appendKernelReason(message, assessment, language);
+		if (choices.contains(ContractChoice.RETAIN_IDENTITY)) {
+			message.append("\n\n")
+					.append(text("Redefine.Contract.RetainExplanation", language));
+		}
+		if (choices.contains(ContractChoice.EXPLICIT_REPLACEMENT)) {
+			message.append("\n\n")
+					.append(text("Redefine.Contract.ReplaceExplanation", language))
+					.append('\n');
+			appendImpactEntries(message, assessment.getImpactReport(), language);
+			message.append('\n').append(text("Redefine.Legacy.Undo", language));
+		}
+		return message.toString();
+	}
+
+	private static boolean hasCompleteImpact(SpatialRedefineAssessment assessment) {
+		SpatialRedefineImpactReport report = assessment.getImpactReport();
+		return report != null && report.getCompleteness()
+				== SpatialRedefineImpactReport.Completeness.IMPACT_COMPLETE;
+	}
+
+	private static void appendKernelReason(StringBuilder message,
+			SpatialRedefineAssessment assessment, String language) {
+		String detail = assessment.getDetail();
+		if (detail != null && !detail.trim().isEmpty()) {
+			message.append("\n\n").append(text("Redefine.Detail", language))
+					.append(": ").append(detail.trim());
+		}
+	}
+
+	private static void appendImpactEntries(StringBuilder message,
+			SpatialRedefineImpactReport report, String language) {
 		for (SpatialRedefineImpactEntry entry : report.getEntries()) {
 			StringJoiner sources = new StringJoiner(", ");
 			entry.getAffectedSourceIds().forEach(id -> sources.add(id.toString()));
@@ -155,8 +298,6 @@ final class GeoCeDGSpatialRedefineFrontend
 					.append(": ").append(text("Redefine.Recovery."
 							+ entry.getRecoveryClass().name(), language)).append('\n');
 		}
-		message.append('\n').append(text("Redefine.Legacy.Undo", language));
-		return message.toString();
 	}
 
 	private static String text(String key, String language) {
