@@ -273,9 +273,19 @@ a=LocusV2(E,C)
 
 `E` depende del punto durable `C`, directamente y a través de `D`. Redefinirlo
 como `E=Midpoint(D,C+(1,0))` sigue dependiendo solo de `C`: `E` conserva su
-identidad, y el lugar `a`, sus intersecciones y los puntos materializados a
-partir de ellas se recalculan. La redefinición es un único paso de deshacer y se
-conserva al guardar y reabrir.
+identidad, y el lugar `a` y sus intersecciones se recalculan. La redefinición es
+un único paso de deshacer y se conserva al guardar y reabrir.
+
+Un punto ya materializado a partir de la intersección de dos curvas semánticas
+sigue ese recálculo solo mientras su raíz siga siendo admisible con un modelo
+certificado. Si el par puede seguir calculándose pero una de las curvas ya no
+tiene modelo certificado, el par permanece solo como resultado rico: sus raíces
+pueden seguir apareciendo, ya no pueden materializarse y un punto ya
+materializado a partir de ellas puede quedar indefinido. Nunca se traslada a
+otra raíz. Deshacer puede restaurar el estado admisible anterior. En el ejemplo
+anterior, la nueva definición traza `a` a través de una expresión, que no tiene
+modelo certificado (sección 8.7), de modo que las raíces de pares de `a` se
+comportan así.
 
 Si la nueva definición depende de otros objetos durables, GeoCeDG no adivina. Un
 diálogo indica el motivo y ofrece solo las opciones que puede garantizar:

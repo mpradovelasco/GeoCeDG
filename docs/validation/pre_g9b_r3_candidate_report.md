@@ -163,14 +163,24 @@ TD-R3-CONSTRUCTION-PROTOCOL-MINIMAL-REORDER
    instead of receiving an error. Nothing is mutated; the Desktop frontend never
    selects a mode for an unavailable status. Pre-existing behaviour, recorded
    only.
-7. **Pre-existing clipboard defect (observation).** Copying a participating
-   object without the objects it is built from (for example only `a` or only `E`
-   of the witness) produces a fragment whose paste fails, and the clipboard
-   rollback then throws ("Spatial rollback restore is not active"), leaving the
-   construction changed. Reproduced identically by a scratch probe on the
-   extracted base tree `ef120a54`; copying the whole construction works and is
-   covered (P8). Not caused by `R3`; XML rollback is outside the phase's
-   permitted scope. Proposed as a new retained debt (§8).
+7. **Pre-existing clipboard defect (observation; characterization corrected by
+   the `PRE-G9B-R3-R1` corrective descendant).** Copying only `a` or only `E` of
+   the witness yields a payload whose closure is incomplete: an unselected
+   predecessor whose command has a constant axis input (`f = Line(C, xAxis)`,
+   `D = Intersect(f, yAxis)`) is renamed for the clipboard but not serialized.
+   The paste then fails identity validation (`MALFORMED_RECORD`). The inner XML
+   restore returns the construction objects, durable identities, identity
+   records, DAG, spatial section, rich-result ledgers and undo history exactly
+   to their pre-paste state. The outer clipboard rollback then fails, because it
+   enters rollback mode without the runtime restore protocol ("Spatial rollback
+   restore is not active"). `blockUpdateScripts=true` leaks, is saved as
+   `<scripting blocked="true">` and survives reopening, so the reopened document
+   keeps its scripts disabled. Related clipboard cases degrade copied helpers
+   silently instead of rejecting them; they need separate repair analysis.
+   Reproduced identically by scratch probes on the extracted base tree
+   `ef120a54`; copying the whole construction works and is covered (P8). Not
+   caused by `R3` and outside the phase's permitted scope. Recorded as two
+   retained debts owned by `PRE-G9B-R3-C1` (§8).
 
 ## 6. Evidence
 
@@ -325,10 +335,13 @@ At phase entry the retained debts were inspected against the phase footprint
 | `TD-UPSTREAM-RECORD-E0-E1-PURPOSE` | **resolved** synergistically: the four entries now state their E0/E1 purpose; R3 already updates the record and shares its campaign |
 | `TD-R3-CONSTRUCTION-PROTOCOL-MINIMAL-REORDER` | **new, retained** (§4); owner and disposition due by the `PRE-G9B-R7` closeout |
 | `TD-DOC-PRE-G9B-R-ROADMAP-STATUS-RECONCILIATION` | **new, retained**: the roadmap still lists `R1-R1`, `R2`, `R2-E0` and `R2-E1` as `DESIGNED`/`PROPOSED — NOT AUTHORIZED` (the "Siguiente puerta" row and the track table), although their author closeouts are recorded in `docs/validation/pre_g9b_r1_r1_closeout_record.md`, `pre_g9b_r2_closeout_record.md` and `pre_g9b_r2_e0_e1_closeout_record.md`, and `R3` is now a technical candidate. Correcting it would mark roadmap items as approved, which an agent may not do; it needs an author-directed documentation reconciliation before the `PRE-G9B-R7` closeout |
-| `TD-R3-OBS-CLIPBOARD-PARTIAL-CLOSURE-PASTE` | **new, proposed** (§5.7): pre-existing, reproduced on the base; paste failure with a failing clipboard rollback; not repaired, since XML rollback is outside this phase |
+| `TD-R3-OBS-CLIPBOARD-PARTIAL-CLOSURE-PASTE` | **new, proposed** (§5.7); superseded in `PRE-G9B-R3-R1` by `TD-CLIPBOARD-ATOMIC-ROLLBACK-PROTOCOL` and `TD-CLIPBOARD-CONSTANT-INPUT-PREDECESSOR-CLOSURE`, both owned by `PRE-G9B-R3-C1`; not repaired in `R3` |
 | `BASELINE-G9U1-BRANDING-EVIDENCE-PIN` | carried forward unchanged |
 | `OBS-R2-PHASE-SELECTION-COHORT` | carried forward unchanged; not recurring, since `R3` runs no PHASE campaign |
 | `GUIDE-A1-SECTION-9.3-STALE` | carried forward unchanged |
+
+The current state of this ledger is recorded by the
+[`PRE-G9B-R3-R1` corrective report](pre_g9b_r3_r1_corrective_candidate_report.md).
 
 ## 9. Impact
 

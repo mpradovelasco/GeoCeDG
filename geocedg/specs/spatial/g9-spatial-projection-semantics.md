@@ -558,6 +558,29 @@ unsupported/undefined records; they do not guess by label or visible placement.
 | Legacy unassociated file load | No spatial IDs synthesized merely from labels | Geo IDs assigned only on explicit participation | Legacy geometry remains usable and unassociated; association/migration requires a user-visible operation. |
 | ID collision on load/import | Never accepted silently | Never accepted silently | Native reopen fails with a structured diagnostic; import/paste may use an explicit whole-closure remap transaction. |
 
+### 8.2 PRE-G9B-R3 amendment candidate: construction identity records
+
+Added by the `PRE-G9B-R3-R1` corrective descendant of the `PRE-G9B-R3`
+technical candidate and pending author approval of `PRE-G9B-R3`. The §8.1 table
+is unchanged. For construction identity records the
+[durable dependency projection contract](durable-dependency-projection.md)
+refines three of its rows:
+
+- **Ordinary recomputation.** An ordinary edit that changes the transitive
+  durable frontier of a version-2 participant is not a value-only
+  recomputation. It is a certified durable-frontier refresh that keeps the
+  identity and advances the definition and topology revisions, or the whole edit
+  is refused (contract §10). A geo that only later acquires a durable identity
+  re-projects the records whose projection path it lies on, keeping identity,
+  roles and revisions (contract §14).
+- **Undo/redo** and **save then reopen** restore every record exactly, its
+  schema version included; neither performs a migration (contract §7.1).
+
+The lazy upgrade of a historical record happens only inside its own explicit
+redefine (contract §7.2). It is not the association or migration of a legacy
+unassociated file, which the "Legacy unassociated file load" row still governs.
+Contract §15 gives the complete mapping to the ADR 0011 classes.
+
 ## 9. Compatibility and serialization boundary
 
 - Existing GeoGebra XML remains readable; absence of GeoCeDG spatial records

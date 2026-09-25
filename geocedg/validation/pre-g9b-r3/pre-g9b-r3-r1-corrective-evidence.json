@@ -1,0 +1,409 @@
+{
+  "schemaVersion": 1,
+  "phase": "PRE-G9B-R3-R1",
+  "phaseKind": "CORRECTIVE_DESCENDANT_NORMATIVE_TEST_DOCUMENTATION_ROADMAP_ONLY",
+  "technicalCandidateState": "FROZEN",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "authorDecisionAuthority": "a separate closeout/author-decision record is the sole authority for current author approval status",
+  "selfApproved": false,
+  "passClaimed": false,
+  "changeRoute": "ORDINARY",
+  "baseTechnicalCandidate": {
+    "commit": "c1f3ed61691eb351c06caf2283e90bcc28152d76",
+    "tree": "ca913cb23f5303c8b802fbfd5eea9b9d403358e9",
+    "parent": "ef120a54f035b85df014e89c3916cb3a26f5f933",
+    "preservedUnchanged": true
+  },
+  "correctiveCommit": "the commit that contains this file; not nameable inside it, reported separately",
+  "verificationClass": {
+    "class": "INTEGRATED_PHASE",
+    "frozenAtPhaseStart": true,
+    "frozenAcceptance": [
+      "PHASE -Phase POST-G9U1-A3",
+      "INTEGRATION"
+    ],
+    "finalRequired": false,
+    "authority": "accepted ADR 0025; geocedg/specs/operations/verification-levels.md section 12.8",
+    "reason": "bytecode-identical product implementation, so the R3 GLOBAL_IMPACT trigger is absent; the Javadoc lies inside the POST-G9U1-A3 perimeter; the new focal test is registered only in final.shared, which INTEGRATION executes and projects",
+    "evidenceReuse": "none; the verifier implements no cross-run reuse and evidence bound to c1f3ed61 is not reused",
+    "precedent": "PRE-G9B-R2-E0/E1 corrective descendant, approved on PHASE and INTEGRATION evidence bound to its own commit",
+    "campaignsBindCommit": "run on the committed descendant with a clean worktree and reported separately"
+  },
+  "authorDecisions": [
+    {
+      "id": "A",
+      "event": "CERTIFIED_DURABLE_FRONTIER_REFRESH",
+      "rule": "a frontier change of a version-2 ordinary participant caused by an ordinary upstream semantic edit is authorized only under the R3 certified predicate; certified: identity kept, frontier published atomically, definition and topology revisions advance as a certified semantic change of the durable dependency contract; otherwise REDEFINE_INCOMPATIBLE and atomic rollback to the operation-entry snapshot",
+      "normative": [
+        "durable-dependency-projection.md section 10",
+        "ADR 0029 Decision 4"
+      ]
+    },
+    {
+      "id": "B",
+      "option": "Option 1 with the author's refinement",
+      "event": "LATE_PARTICIPATION_REPROJECTION",
+      "rule": "when a geo on the projection path of an already-participating record with unchanged construction definition first acquires a durable identity, the record is re-projected under its own version (1 DIRECT, 2 TRANSITIVE_DURABLE_FRONTIER); a valid prospective publication publishes the refreshed set atomically keeping identity, roles, definitionRevision and topologyRevision; no v1-to-v2 migration; no R3 redefine compatibility predicate; failed DAG, cycle, currentness or other ordinary publication validation rejects the whole publication atomically",
+      "positiveNormativeFixture": "single-output participant E of the author witness core",
+      "roleIncompleteShape": "characterization evidence only, no normative guarantee",
+      "normative": [
+        "durable-dependency-projection.md section 14",
+        "ADR 0029 Decision 11",
+        "g9u1-construction-interaction.md section 10 amendment candidate"
+      ]
+    },
+    {
+      "id": "C",
+      "rule": "undo and redo restore the committed serialized snapshot including every record's version and never migrate by themselves",
+      "normative": [
+        "durable-dependency-projection.md section 7.1",
+        "ADR 0029 Decision 3"
+      ]
+    },
+    {
+      "id": "TAXONOMY",
+      "rule": "ADR 0011 classes A-G and the G9 section 8.1 table are unchanged; the two events are added beside class A; the lazy upgrade belongs to class B or its explicit contract update; class G restores records exactly",
+      "normative": [
+        "durable-dependency-projection.md section 15",
+        "ADR 0029 Decision 12",
+        "ADR 0011 extension note",
+        "g9-spatial-projection-semantics.md section 8.2 amendment candidate"
+      ]
+    }
+  ],
+  "stopBeforeEdit": {
+    "reason": "decision B as first written (revisions advancing and the certified predicate applied on late participation) contradicted the frozen implementation",
+    "evidence": "scratch probes on c1f3ed61: E [C] to [C, f] with revisions kept; role-incomplete P [C, c] to [c, f] with revisions kept and the event accepted",
+    "resolution": "author selected Option 1 with refinement; no productive change"
+  },
+  "productImplementation": {
+    "changed": false,
+    "productiveSourceFilesTouched": [
+      {
+        "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialIdentityRegistry.java",
+        "change": "Javadoc of refreshNewlyParticipatingDependencies, three comment lines replaced one for one; line numbers unchanged"
+      }
+    ],
+    "bytecodeIdentity": {
+      "module": ":shared:common main",
+      "classFiles": 5432,
+      "identical": true,
+      "hashListSha256Before": "d637d0869929af8fbff734eb83235598506551100a2d2344b472022c2a4c4b5f",
+      "hashListSha256After": "d637d0869929af8fbff734eb83235598506551100a2d2344b472022c2a4c4b5f",
+      "method": "SHA-256 of every class file before the edit and after recompilation"
+    }
+  },
+  "normativeArtifacts": [
+    {
+      "path": "geocedg/specs/spatial/durable-dependency-projection.md",
+      "change": "version 1.0 to 1.1: sections 5, 7.1, 10, 12, 13 amended; sections 14 and 15 added; sections 1-13 keep their numbering"
+    },
+    {
+      "path": "docs/adr/0029-versioned-durable-dependency-projection-and-lazy-migration.md",
+      "change": "Decisions 3 and 4 clarified; Decisions 11 and 12 added; consequences and rejected alternatives extended"
+    },
+    {
+      "path": "docs/adr/0011-g9-spatial-persistence-and-phase-gates.md",
+      "change": "additive extension note after the lifecycle table; classes A-G unchanged"
+    },
+    {
+      "path": "geocedg/specs/spatial/g9-spatial-projection-semantics.md",
+      "change": "additive section 8.2 amendment candidate; section 8.1 table unchanged"
+    },
+    {
+      "path": "geocedg/specs/ui/g9u1-construction-interaction.md",
+      "change": "additive section 10 amendment candidate qualifying the historical direct-input rule"
+    },
+    {
+      "path": "docs/architecture/post_g9u1_a3_v2_compatible_redefine.md",
+      "change": "section 7 bullets: certified refresh named, late participation added"
+    }
+  ],
+  "tests": [
+    {
+      "class": "org.geocedg.common.locus.PreG9bR3R1LateParticipationTest",
+      "methods": [
+        "aTraversedHelperThatBecomesDurableJoinsTheFrontierUnderTheSameIdentity",
+        "aLatePublicationKeepsBothRevisionsAndARejectedOneRefreshesNothing",
+        "aVersionOneRecordReprojectsOnlyItsDirectInputsAndIsNeverMigrated"
+      ],
+      "result": "3 pass on the descendant working tree"
+    }
+  ],
+  "referencedExistingNegativeGuarantee": [
+    "org.geocedg.common.spatial.G9U1ConstructionParticipationReviewTest#failedRuntimeSwitchRollsBackNewInputAndExistingDerivedRecordTogether",
+    "org.geocedg.common.spatial.G9U1ConstructionParticipationReviewTest#malformedNewBatchCannotRefreshOrPartiallyPublishAnything",
+    "org.geocedg.common.spatial.G9U1ConstructionParticipationReviewTest#lateParticipationPreservesExistingListIdentityAndRevisions"
+  ],
+  "characterizationEvidence": [
+    {
+      "id": "R3R1-ROLE-INCOMPLETE-LATE-PARTICIPATION",
+      "kind": "CHARACTERIZATION_ONLY",
+      "statement": "for the role-incomplete participant P (first output of the two-output Intersect(c,f)), f becoming durable re-projected P from [C, c] to [c, f] with revisions kept and the event accepted; no normative guarantee",
+      "source": "scratch probe on c1f3ed61; not a committed test"
+    }
+  ],
+  "documentationCorrections": [
+    {
+      "path": "docs/validation/pre_g9b_r3_candidate_report.md",
+      "change": "section 5.7 clipboard characterization corrected; section 8 clipboard row superseded; pointer to the current ledger"
+    },
+    {
+      "path": "geocedg/validation/pre-g9b-r3/pre-g9b-r3-evidence.json",
+      "change": "clipboard observation statement corrected with its former statement kept; ledger entry superseded; correctedBy marker"
+    },
+    {
+      "path": "docs/user/geocedg_user_guide_en.md",
+      "change": "section 3.6 materialized-point wording"
+    },
+    {
+      "path": "docs/user/geocedg_user_guide_es.md",
+      "change": "section 3.6 materialized-point wording"
+    },
+    {
+      "path": "docs/developer/geocedg_developer_guide.md",
+      "change": "late participation and certified refresh sentence"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialIdentityRegistry.java",
+      "change": "Javadoc only"
+    }
+  ],
+  "recordedNotChanged": [
+    "ConstructionGeoRedefineProvider.durableDependencyGeos Javadoc describes the direct geos' identities as the durable dependency edge set, exact only for version 1; outside the authorized item"
+  ],
+  "authorSmoke": {
+    "PRE_G9B_R3_AUTHOR_SMOKE": "PASS",
+    "source": "author-provided; no automated run was created for it",
+    "scope": [
+      "canonical R3 witness",
+      "compatible retain",
+      "identity preservation",
+      "dependent locus and intersection behaviour",
+      "undo",
+      "redo",
+      "native save and reopen"
+    ],
+    "knownLimitationNotAFailure": "TD-LOCUS-CERTIFIED-CONSTRUCTION-EXPRESSION-POINT",
+    "isAuthorApproval": false
+  },
+  "roadmap": {
+    "path": "docs/roadmap/geocedg_roadmap.md",
+    "version": "4.08 to 4.09",
+    "reconciledFromCloseoutRecords": {
+      "PRE-G9B-R1-R1": "PASS — AUTHOR APPROVED (docs/validation/pre_g9b_r1_r1_closeout_record.md)",
+      "PRE-G9B-R2": "PASS — AUTHOR APPROVED (docs/validation/pre_g9b_r2_closeout_record.md)",
+      "PRE-G9B-R2-E0/E1": "PASS — AUTHOR APPROVED (docs/validation/pre_g9b_r2_e0_e1_closeout_record.md)"
+    },
+    "PRE-G9B-R3": "TECHNICAL CANDIDATE FROZEN; automated verification ACCEPTED / COMPLETE; AUTHOR SMOKE PASS; PRE-G9B-R3-R1 corrective descendant in progress; AUTHOR APPROVAL PENDING",
+    "executionOrder": [
+      "PRE-G9B-R3 closeout",
+      "PRE-G9B-R3-C1",
+      "PRE-G9B-R3-X1",
+      "PRE-G9B-R4"
+    ],
+    "executionOrderIsSemanticDependency": false,
+    "resolvesDebt": "TD-DOC-PRE-G9B-R-ROADMAP-STATUS-RECONCILIATION"
+  },
+  "newPhases": [
+    {
+      "id": "PRE-G9B-R3-C1",
+      "title": "Clipboard atomic rollback and predecessor-closure correction",
+      "state": "DESIGNED / PLANNED — NOT AUTHORIZED FOR IMPLEMENTATION",
+      "debts": [
+        "TD-CLIPBOARD-ATOMIC-ROLLBACK-PROTOCOL",
+        "TD-CLIPBOARD-CONSTANT-INPUT-PREDECESSOR-CLOSURE"
+      ],
+      "severity": "HIGH",
+      "timing": "after the PRE-G9B-R3 closeout, before PRE-G9B-R3-X1 and PRE-G9B-R4 (author-selected execution order)"
+    },
+    {
+      "id": "PRE-G9B-R3-X1",
+      "title": "Certified construction expression-point extension",
+      "state": "DESIGNED / PLANNED — NOT AUTHORIZED FOR IMPLEMENTATION",
+      "capability": "TD-LOCUS-CERTIFIED-CONSTRUCTION-EXPRESSION-POINT",
+      "classification": "CAPABILITY_EXTENSION, not a regression repair",
+      "timing": "after PRE-G9B-R3-C1, before PRE-G9B-R4 (author-selected execution order)"
+    }
+  ],
+  "riQualityDebtLedger": [
+    {
+      "id": "TD-CLIPBOARD-ATOMIC-ROLLBACK-PROTOCOL",
+      "disposition": "NEW_RETAINED",
+      "owner": "PRE-G9B-R3-C1",
+      "severity": "HIGH"
+    },
+    {
+      "id": "TD-CLIPBOARD-CONSTANT-INPUT-PREDECESSOR-CLOSURE",
+      "disposition": "NEW_RETAINED",
+      "owner": "PRE-G9B-R3-C1"
+    },
+    {
+      "id": "TD-LOCUS-CERTIFIED-CONSTRUCTION-EXPRESSION-POINT",
+      "disposition": "NEW_RETAINED_CAPABILITY",
+      "owner": "PRE-G9B-R3-X1"
+    },
+    {
+      "id": "TD-R3-OBS-CLIPBOARD-PARTIAL-CLOSURE-PASTE",
+      "disposition": "SUPERSEDED",
+      "supersededBy": [
+        "TD-CLIPBOARD-ATOMIC-ROLLBACK-PROTOCOL",
+        "TD-CLIPBOARD-CONSTANT-INPUT-PREDECESSOR-CLOSURE"
+      ]
+    },
+    {
+      "id": "TD-LOCUS-EVALUATOR-SEGMENT-DRIVER-UPDATE",
+      "disposition": "RETAINED"
+    },
+    {
+      "id": "TD-LOCUS-EVALUATOR-INLINE-LITERAL-DEPENDENCY",
+      "disposition": "RETAINED"
+    },
+    {
+      "id": "TD-R3-CONSTRUCTION-PROTOCOL-MINIMAL-REORDER",
+      "disposition": "RETAINED",
+      "dueBy": "PRE-G9B-R7 closeout"
+    },
+    {
+      "id": "TD-DOC-PRE-G9B-R-ROADMAP-STATUS-RECONCILIATION",
+      "disposition": "RESOLVED_IN_PRE-G9B-R3-R1",
+      "authority": "author-directed reconciliation"
+    },
+    {
+      "id": "BASELINE-G9U1-BRANDING-EVIDENCE-PIN",
+      "disposition": "CARRIED_FORWARD"
+    },
+    {
+      "id": "OBS-R2-PHASE-SELECTION-COHORT",
+      "disposition": "CARRIED_FORWARD"
+    },
+    {
+      "id": "GUIDE-A1-SECTION-9.3-STALE",
+      "disposition": "CARRIED_FORWARD"
+    }
+  ],
+  "localEvidence": [
+    {
+      "check": "focal test",
+      "command": "gradlew :shared:common-jre:test --tests org.geocedg.common.locus.PreG9bR3R1LateParticipationTest",
+      "result": "3 of 3 pass"
+    },
+    {
+      "check": "full shared suite",
+      "command": "tools/agent/checks/gradle-test-evidence-producer.ps1 -SelectionId final.shared",
+      "result": "678 JUnit files, 6787 identities, 6777 passed, 10 allowlisted skips, 0 failed or errored"
+    },
+    {
+      "check": "discovery",
+      "command": "gradle-test-evidence-producer.ps1 -SelectionId discovery.shared|discovery.desktop -TestDryRun",
+      "result": "5870 and 1529 identities"
+    },
+    {
+      "check": "targeted Desktop",
+      "command": "gradlew :desktop:desktop:test (PostP1BilingualUserGuideTest, PreG9bR3RedefineFrontendTest, PreG9BP1PublicSurfaceTest, G9U1WorkspaceSurfaceTest, G9U1IconReviewTest)",
+      "result": "68 tests, 0 failures"
+    },
+    {
+      "check": "verification-core live-data tests",
+      "command": "pwsh -NoProfile -File tools/agent/tests/<name>.Tests.ps1",
+      "result": "final-coverage 8/308, registry 22/62, contract-boundary 5/38, cli-compatibility 7/45, gradle-producer 7/21, supervisor 12/51, runtime 119/119; all exit 0"
+    },
+    {
+      "check": "checkstyle",
+      "command": "gradlew :shared:common:checkstyleMain :shared:common-jre:checkstyleTest",
+      "result": "0 findings"
+    },
+    {
+      "check": "bytecode identity",
+      "command": "SHA-256 of every :shared:common main class file before and after",
+      "result": "5432 byte-identical"
+    },
+    {
+      "check": "upstream boundary",
+      "command": "Assert-GeoCeDGUpstreamBoundary baseline 9b93256b7df401ff056c37b502d82df4d72b1522",
+      "result": "pass, 801 registered files"
+    },
+    {
+      "check": "documentation links",
+      "command": "relative Markdown links of the changed documents",
+      "result": "0 unresolved"
+    },
+    {
+      "check": "whitespace",
+      "command": "git diff --check",
+      "result": "clean"
+    },
+    {
+      "check": "PlanOnly PHASE POST-G9U1-A3",
+      "exit": 0,
+      "coverage": "COMPLETE",
+      "nodes": 4,
+      "planHash": "c2e25e0b5d28523023f88dc139f015cda004ce28cc94d1ff546a65c4c222876f"
+    },
+    {
+      "check": "PlanOnly INTEGRATION",
+      "exit": 0,
+      "coverage": "COMPLETE",
+      "nodes": 46,
+      "planHash": "4502c4bd1bbe1a123089e9e524fd0afb354932afbcb410f93052555a16c77aea"
+    },
+    {
+      "check": "PlanOnly FINAL (reference only, not run)",
+      "exit": 0,
+      "coverage": "COMPLETE",
+      "nodes": 67,
+      "planHash": "defe8ab4692af05430464974c3d5e8e029ff7d64ecbc1822c07ff91593c744e0"
+    }
+  ],
+  "coupledReconciliations": {
+    "junitInventory": {
+      "discovery.shared": [
+        5867,
+        5870
+      ],
+      "final.shared": [
+        6784,
+        6787
+      ],
+      "discovery.desktop": [
+        1529,
+        1529
+      ],
+      "final.desktop": [
+        1523,
+        1523
+      ],
+      "narrowSelectionsChanged": false
+    },
+    "registryCatalogPin": {
+      "from": "bb91d7cb701d7b769cf6b25b9d72c95460608488bc7706b23fa34836d7dbfec6",
+      "to": "9a7300fd8566247e03393dc74cd997b946cd7a64007a7ba1403917d2e14d21a6",
+      "method": "canonical-text SHA-256, first reproducing the former pin"
+    },
+    "upstreamRecord": "one new test file registered; one purpose appended; 801 registered files"
+  },
+  "impact": {
+    "productPhaseEffect": "NONE",
+    "normative": "CLARIFIED",
+    "serialization": "UNCHANGED",
+    "frontend": "UNCHANGED",
+    "verificationInfrastructureImpact": "CATALOG DATA ONLY (JUnit inventory regenerated, registry catalog pin); no verifier code or policy change",
+    "upstreamModificationRecord": "UPDATED (one new test file; one purpose appended)",
+    "bootstrapImpact": "NO_CHANGE_REQUIRED",
+    "guideImpact": "REQUIRED — APPLIED"
+  },
+  "notAuthorized": [
+    "PRE-G9B-R3 author approval",
+    "implementation of PRE-G9B-R3-C1 or PRE-G9B-R3-X1",
+    "clipboard repair",
+    "expression-point certification or certified-construction-program/v2",
+    "Construction Protocol reorder",
+    "PRE-G9B-R4 and later phases",
+    "G9B",
+    "G9C",
+    "G9U2",
+    "productive G10",
+    "push, promotion, merge, tag, release or publication"
+  ],
+  "successorPhaseAuthorized": false
+}

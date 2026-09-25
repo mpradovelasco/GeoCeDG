@@ -262,8 +262,18 @@ a=LocusV2(E,C)
 
 `E` depends on the durable point `C`, directly and through `D`. Redefining it as
 `E=Midpoint(D,C+(1,0))` still depends only on `C`: `E` keeps its identity, and
-the locus `a`, its intersections and the points materialized from them are
-recomputed. The redefinition is one undo step and survives save and reopen.
+the locus `a` and its intersections are recomputed. The redefinition is one undo
+step and survives save and reopen.
+
+A point already materialized from the intersection of two semantic curves
+follows such a recomputation only while its root remains admissible under a
+certified model. If the pair can still be computed but a curve no longer has a
+certified model, the pair becomes rich-only: its roots may still be listed, they
+can no longer be materialized, and a point already materialized from them may
+become undefined. It is never moved to another root. Undo can restore the
+earlier admissible state. In the example above, the new definition traces `a`
+through an expression, which has no certified model (section 8.7), so the pair
+roots of `a` behave this way.
 
 If the new definition depends on different durable objects, GeoCeDG does not
 guess. A dialog states the reason and offers only the choices it can guarantee:

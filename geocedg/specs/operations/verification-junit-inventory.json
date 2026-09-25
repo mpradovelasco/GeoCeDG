@@ -10,14 +10,14 @@
     {
       "module": "shared",
       "gradle_task": ":shared:common-jre:test",
-      "discovery_evidence_sha256": "f0dbc249be4b2a8ec8dd92f25e9e6e6b24da3502b2025047d939d8e6755f071c",
-      "discovered_identity_count": 5867,
-      "discovered_identities_sha256": "334f3b5a28fc9ea069ce96710f569e029dbf0333b791f813086d2c9e089e0827"
+      "discovery_evidence_sha256": "565950426f94c72223cba6854985d2ae2afb9a43d9a5aeb8e5a62b215238f06b",
+      "discovered_identity_count": 5870,
+      "discovered_identities_sha256": "83fb0f219ce1810950d103de7459e50aabd17fba357f014a5bb74190a36bb2f4"
     },
     {
       "module": "desktop",
       "gradle_task": ":desktop:desktop:test",
-      "discovery_evidence_sha256": "04def91dd84e1f55b5fb0a01d5faef857fc93462de1ac906679117d16ffd27f9",
+      "discovery_evidence_sha256": "986a218226dcf1b78e783bc505299af67c54668db491109d428219cbb4038466",
       "discovered_identity_count": 1529,
       "discovered_identities_sha256": "0140179aeadc0dcccd6dfd394e9430834820d4933f60376b91c522859693fa88"
     }
@@ -38,8 +38,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 5867,
-      "expected_identities_sha256": "334f3b5a28fc9ea069ce96710f569e029dbf0333b791f813086d2c9e089e0827",
+      "expected_identity_count": 5870,
+      "expected_identities_sha256": "83fb0f219ce1810950d103de7459e50aabd17fba357f014a5bb74190a36bb2f4",
       "not_applicable_allowlist": [],
       "input_identities": [
         {
@@ -88,8 +88,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 6784,
-      "expected_identities_sha256": "559f628f094c856d11068d879df5ac88e2c16a6886f2cd6d82da4c151ff7a92c",
+      "expected_identity_count": 6787,
+      "expected_identities_sha256": "6d90a00f602386d06687dac65ab8ed7d2e56cd58cdea0939df6e7cfcc598ffbb",
       "not_applicable_allowlist": [
         {
           "identity": "shared::org.geogebra.common.euclidian.EuclidianConstantsTest::allModesShouldHaveHelpPage()::invocation[1/1]",

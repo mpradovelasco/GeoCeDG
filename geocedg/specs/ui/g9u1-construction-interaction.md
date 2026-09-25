@@ -498,6 +498,18 @@ validates the old and prospective DAGs and preserves IDs, roles and revisions;
 G9A staging and captured-context guards are not bypassed. Native load/copy do not
 repair supplied records. A stale historical dependency record still fails closed.
 
+### PRE-G9B-R3 amendment candidate
+
+Added by the `PRE-G9B-R3-R1` corrective descendant and pending author approval
+of `PRE-G9B-R3`. The refresh rule above is the historical direct-input rule. It
+stays unchanged for the construction records to which it originally applied,
+the version-1 records of the `DIRECT` projection. Version-2 records are governed
+by the `TRANSITIVE_DURABLE_FRONTIER`: the identity-free geos crossed by their
+frontier walk take the place of the direct inputs, with the same preservation of
+IDs, roles and revisions within the same atomic publication
+([durable dependency projection](../spatial/durable-dependency-projection.md)
+§14). No historical record is reinterpreted.
+
 Before atomic replacement, explicit native Save validates the temporary archive
 with the existing disposable-kernel reader. Failure preserves the previous file
 and unsaved state. This adds one reconstruction to explicit Save, not ordinary

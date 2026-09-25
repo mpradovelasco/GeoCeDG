@@ -7,6 +7,11 @@
   "authorDecisionAuthority": "a separate closeout/author-decision record is the sole authority for current author approval status",
   "selfApproved": false,
   "passClaimed": false,
+  "correctedBy": {
+    "descendant": "PRE-G9B-R3-R1",
+    "scope": "characterization of R3-OBS-CLIPBOARD-PARTIAL-CLOSURE-PASTE and its ledger entry; every other field stands",
+    "evidence": "geocedg/validation/pre-g9b-r3/pre-g9b-r3-r1-corrective-evidence.json"
+  },
   "changeRoute": "ORDINARY",
   "verificationClass": "GLOBAL_IMPACT",
   "verificationClassAtPhaseStart": {
@@ -402,7 +407,9 @@
       "id": "R3-OBS-CLIPBOARD-PARTIAL-CLOSURE-PASTE",
       "kind": "PRE_EXISTING_DEFECT",
       "reproducedOnBase": "ef120a54f035b85df014e89c3916cb3a26f5f933",
-      "statement": "copying a participating object without its construction closure fails on paste and the clipboard rollback throws 'Spatial rollback restore is not active', leaving the construction changed; outside R3 scope"
+      "statement": "copying only a or only E of the witness yields a payload whose closure omits an unselected predecessor with a constant axis input (renamed but not serialized); the paste fails identity validation (MALFORMED_RECORD); the inner XML restore returns construction objects, durable identities, identity records, DAG, spatial section, rich-result ledgers and undo history exactly to their pre-paste state; the outer clipboard rollback then fails because it enters rollback mode without the runtime restore protocol ('Spatial rollback restore is not active'); blockUpdateScripts=true leaks, is saved as <scripting blocked=\"true\"> and survives reopening; related clipboard cases degrade copied helpers silently and need separate repair analysis; outside R3 scope",
+      "formerStatement": "copying a participating object without its construction closure fails on paste and the clipboard rollback throws 'Spatial rollback restore is not active', leaving the construction changed; outside R3 scope",
+      "characterizationCorrectedIn": "PRE-G9B-R3-R1"
     }
   ],
   "riQualityDebtLedger": [
@@ -432,8 +439,9 @@
     },
     {
       "id": "TD-R3-OBS-CLIPBOARD-PARTIAL-CLOSURE-PASTE",
-      "disposition": "NEW_PROPOSED",
-      "dueBy": "PRE-G9B-R7 closeout"
+      "disposition": "SUPERSEDED_IN_PRE-G9B-R3-R1",
+      "supersededBy": ["TD-CLIPBOARD-ATOMIC-ROLLBACK-PROTOCOL", "TD-CLIPBOARD-CONSTANT-INPUT-PREDECESSOR-CLOSURE"],
+      "owner": "PRE-G9B-R3-C1"
     },
     {
       "id": "BASELINE-G9U1-BRANDING-EVIDENCE-PIN",

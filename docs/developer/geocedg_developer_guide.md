@@ -596,8 +596,11 @@ is its only implementation: a construction identity record names its rule by
 `schemaVersion` (1 direct, 2 transitive durable frontier), each record is
 validated under its own version, new records are version 2 and a version-1
 record upgrades only inside its own compatible redefine or accepted
-identity-preserving contract update. Late participation keeps each record's
-version. A provider types a failed description with
+identity-preserving contract update. Late participation re-projects a record
+under its own version and keeps its identity, roles, revisions and version; an
+ordinary edit that moves a version-2 frontier is a certified refresh that
+advances both revisions or is refused as a whole. A provider types a failed
+description with
 `SpatialRedefineDescriptionException` and declares an explicit durable-contract
 change through `SpatialRedefineProvider.isDurableContractChange`. The rule is
 normative in the

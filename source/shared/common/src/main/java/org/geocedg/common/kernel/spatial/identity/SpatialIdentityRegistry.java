@@ -6254,9 +6254,9 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 	}
 
 	/**
-	 * Keeps the persisted projection of existing direct algorithm inputs coherent
-	 * when one of those inputs first acquires an explicit durable identity. This
-	 * is part of ordinary publication, never a load/copy repair or a redefine.
+	 * Late participation: when a geo on a record's projection path (v1: direct inputs;
+	 * v2: frontier walk) first acquires a durable identity, re-projects the record under
+	 * its own version, keeping id, roles, revisions. Never a load/copy repair or redefine.
 	 */
 	private void refreshNewlyParticipatingDependencies(
 			IdentityHashMap<GeoElement, PersistentGeoId> attachments,

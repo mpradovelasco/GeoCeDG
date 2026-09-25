@@ -192,6 +192,29 @@ replacement, or XML rebuild happens do not decide it.
 | Legacy unassociated load | Do not synthesize spatial identity from existing labels or diagram layout. | Preserve ordinary construction; association is explicit and versioned. |
 | Native-file ID collision | Reject with structured diagnostic. | Do not silently remap; an import/paste transaction may remap the whole closure explicitly. |
 
+### PRE-G9B-R3 extension for construction identity records
+
+Added by the `PRE-G9B-R3-R1` corrective descendant of the `PRE-G9B-R3`
+technical candidate. It takes effect only with the author approval of
+`PRE-G9B-R3` and of
+[ADR 0029](0029-versioned-durable-dependency-projection-and-lazy-migration.md).
+Classes A–G above are unchanged. For construction identity records (provider
+`geocedg-construction-provider/v1`), ADR 0029 adds two events beside class A:
+
+- **Certified durable-frontier refresh.** An ordinary edit that changes the
+  transitive durable frontier of a version-2 participant keeps its identity and
+  advances its definition and topology revisions only under a certified
+  predicate; otherwise the whole edit is refused and rolled back.
+- **Late-participation re-projection.** A geo on a record's projection path that
+  first acquires a durable identity re-projects the record under its own schema
+  version, keeping identity, roles and both revisions; a publication that fails
+  validation is rejected as a whole.
+
+The lazy schema upgrade of such a record happens only inside a class B event or
+its explicitly selected contract update. Class G restores every record exactly,
+its schema version included. The complete mapping is §15 of the
+[durable dependency projection contract](../../geocedg/specs/spatial/durable-dependency-projection.md).
+
 ## Host boundary established by R1 source characterization
 
 The current host offers no persistent per-geo identity and no semantic

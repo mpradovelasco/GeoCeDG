@@ -1,11 +1,17 @@
 # ADR 0029: Versioned durable dependency projection, lazy migration and typed redefine outcomes
 
-- Status: **Proposed — `PRE-G9B-R3` technical candidate**
+- Status: **Proposed — `PRE-G9B-R3` technical candidate, amended by the
+  `PRE-G9B-R3-R1` corrective descendant**
 - Date: 2026-09-24
 - Phase: `PRE-G9B-R3` (redefine correctness), resumed under the author's
   `AD-R0-6` migration disposition
 - Extends: [ADR 0026](0026-advanced-redefine-and-explicit-legacy-fallback.md)
   (Decisions 4 and 5 apply unchanged to the replacement path)
+- Extends: [ADR 0011](0011-g9-spatial-persistence-and-phase-gates.md), whose
+  lifecycle classes A–G stay unchanged, with two events for construction identity
+  records (Decision 12)
+- Amended: 2026-09-25 by `PRE-G9B-R3-R1` (Decisions 3 and 4 clarified,
+  Decisions 11 and 12 added); no implemented behaviour changes
 - Normative contract: [durable dependency projection](../../geocedg/specs/spatial/durable-dependency-projection.md)
 - Design record: [compatible-redefine design §7](../architecture/post_g9u1_a3_v2_compatible_redefine.md)
 
@@ -49,23 +55,29 @@ migration remains forbidden.
    record under the rule of its own version. A version-1 record is never read as
    version 2, nor the reverse. A record of an unknown version fails with
    `UNSUPPORTED_VERSION`.
-3. **Lazy migration.** Opening, saving, undo/redo and ordinary edits never change
-   a version. A version-1 record becomes version 2 only inside an explicit
+3. **Lazy migration.** Opening, saving, ordinary edits and late participation
+   never change a version. Undo and redo restore the committed serialized
+   snapshot, the version of every record included, and never migrate by
+   themselves. A version-1 record becomes version 2 only inside an explicit
    semantic event of its own participant: a successful compatible redefine or an
    accepted identity-preserving contract update. It upgrades even when both
    rules give the same set at that instant, because the version names the rule,
    not the current difference. Records created by publication, replacement,
    copy, macro instantiation or recreation are version 2. Mixed documents are
    valid.
-4. **Certified auto-refresh.** When an ordinary edit of an identity-free geo
-   changes the frontier of a version-2 ordinary participant, the kernel keeps the
-   identity only under a closed predicate: unchanged contract (provider, family,
-   schema, authority, binding and stable role, cardinality), unchanged own
-   construction step, a complete one-output role group, a non-public
-   participant, and a valid DAG. The record then receives the new frontier and
-   advanced definition and topology revisions; dependents recompute and follow
-   their normal currentness rules. Otherwise the rebuild fails closed and the
-   whole edit is rolled back. A computable new set is never sufficient.
+4. **Certified durable-frontier refresh.** When an ordinary edit of an
+   identity-free geo changes the frontier of a version-2 ordinary participant,
+   the change is the lifecycle event `CERTIFIED_DURABLE_FRONTIER_REFRESH`,
+   distinct from value-only recomputation, explicit redefine, replacement and
+   late participation. The kernel keeps the identity only under a closed
+   predicate: unchanged contract (provider, family, schema, authority, binding
+   and stable role, cardinality), unchanged own construction step, a complete
+   one-output role group, a non-public participant, and a valid DAG. The record
+   then receives the new frontier and advanced definition and topology
+   revisions, which record a certified semantic change of its durable
+   dependency contract, not an accident of recomputation; dependents recompute
+   and follow their normal currentness rules. Otherwise the rebuild fails closed
+   and the whole edit is rolled back. A computable new set is never sufficient.
 5. **Explicit durable-contract change.** An explicit redefine that changes the
    frontier of an ordinary participant is typed `DURABLE_CONTRACT_CHANGE`.
    Construction order and coinciding coordinates are never evidence that a new
@@ -94,6 +106,26 @@ migration remains forbidden.
     as `TD-R3-CONSTRUCTION-PROTOCOL-MINIMAL-REORDER`. The host's existing
     GeoGebra ordering is unchanged and, as before, never identity or provenance
     evidence.
+11. **Late participation.** When a geo on the projection path of an
+    already-participating record, whose own construction definition is
+    unchanged, first acquires a durable identity, the record's dependencies are
+    re-projected under its own version (version 1 `DIRECT`, version 2
+    `TRANSITIVE_DURABLE_FRONTIER`) inside the publication that attaches the
+    identity: `LATE_PARTICIPATION_REPROJECTION`. A valid prospective publication
+    publishes the refreshed set atomically and keeps the durable identity, the
+    roles and both revisions. The event performs no version-1 to version-2
+    migration and invokes neither the redefine compatibility predicate nor the
+    certified-refresh predicate. If DAG, cycle, currentness or any other
+    ordinary publication validation fails, the whole publication is rejected
+    atomically. For version-1 records this is the unchanged direct-input refresh
+    of the G9U1 construction-interaction contract §10.
+12. **Lifecycle taxonomy.** ADR 0011 classes A–G stay as approved. For
+    construction identity records the events of Decisions 4 and 11 are added
+    beside class A. The lazy upgrade of Decision 3 belongs to a class B event or
+    to its explicitly selected contract update: it is the deterministic
+    compatibility handling inside an explicit user-directed operation that ADR
+    0011 admits as migration, not an automatic migration. Class G restores every
+    record exactly, its version included. Contract §15 is the complete mapping.
 
 ## Consequences
 
@@ -108,6 +140,11 @@ migration remains forbidden.
   as a whole instead of leaving a stale record.
 - The assessment carries two new closed flags and two new statuses; the Desktop
   frontend offers at most keep identity, replace and cancel.
+- An ordinary edit that moves a version-2 frontier either advances both
+  revisions under the certified predicate or is refused as a whole. A helper that
+  only later becomes durable moves no revision and triggers no predicate.
+- Undo of a migrating redefine restores the exact version-1 record; redo
+  restores its version-2 successor. Neither migrates anything.
 
 ## Rejected alternatives
 
@@ -122,3 +159,8 @@ migration remains forbidden.
 - Inferring equivalence from construction order, labels or coordinates.
 - Inferring replacement from a retention failure.
 - Treating every durable-contract change as retention-compatible.
+- Treating late participation as a certified refresh: advancing revisions or
+  applying a redefine predicate when only a helper became durable and neither
+  the DAG nor the geometry changed.
+- Migrating a version-1 record, or re-projecting it under the frontier rule, on
+  late participation.

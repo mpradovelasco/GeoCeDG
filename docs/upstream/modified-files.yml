@@ -1878,7 +1878,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialIdentityRegistry.java",
       "change": "added",
-      "purpose": "Preserve G9A1 atomic identity lifecycle while validating, remapping and publishing exact records, including the R6 interaction-owned semantic-point role only for structurally dedicated inputs and restoring their auxiliary/restricted presentation after identity attachment on reopen. G9U1 review round 1: update affected existing construction dependency records during ordinary late-input participation in the same atomic registry/runtime publication, preserving IDs/schema/revisions and G9A guards; strict native load/copy never repairs stale records. PRE-G9B-R3: validate every construction record under the dependency rule named by its schemaVersion (1 direct, 2 transitive durable frontier) and reject unknown versions; lift the old target to the frontier for assessment; assess typed DURABLE_CONTRACT_CHANGE and UNDESCRIBABLE_PROPOSAL outcomes with the two explicit operation flags and authorize the identity-preserving contract update; upgrade a retained version-1 record inside its own redefine transaction; certify a version-2 frontier refresh after an ordinary-edit rebuild; publish copied construction records as version 2. Authority: geocedg/specs/spatial/durable-dependency-projection.md.",
+      "purpose": "Preserve G9A1 atomic identity lifecycle while validating, remapping and publishing exact records, including the R6 interaction-owned semantic-point role only for structurally dedicated inputs and restoring their auxiliary/restricted presentation after identity attachment on reopen. G9U1 review round 1: update affected existing construction dependency records during ordinary late-input participation in the same atomic registry/runtime publication, preserving IDs/schema/revisions and G9A guards; strict native load/copy never repairs stale records. PRE-G9B-R3: validate every construction record under the dependency rule named by its schemaVersion (1 direct, 2 transitive durable frontier) and reject unknown versions; lift the old target to the frontier for assessment; assess typed DURABLE_CONTRACT_CHANGE and UNDESCRIBABLE_PROPOSAL outcomes with the two explicit operation flags and authorize the identity-preserving contract update; upgrade a retained version-1 record inside its own redefine transaction; certify a version-2 frontier refresh after an ordinary-edit rebuild; publish copied construction records as version 2. Authority: geocedg/specs/spatial/durable-dependency-projection.md. PRE-G9B-R3-R1: the late-participation Javadoc distinguishes the version-1 direct inputs from the version-2 frontier walk; no code change.",
       "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
     },
     {
@@ -4801,6 +4801,12 @@
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9bR3RedefineFrontendTest.java",
       "change": "added",
       "purpose": "PRE-G9B-R3: verify the Classic 5 reason surfacing, the kernel-authorized durable-contract choices and native .cedg round trips of version-1, version-2 and mixed records.",
+      "authority": "geocedg/specs/spatial/durable-dependency-projection.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/PreG9bR3R1LateParticipationTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R3-R1: verify the late-participation re-projection of a version-2 record through a traversed helper under the same identity, roles and revisions with undo/redo and reopen, the whole-publication rejection of an invalid late publication, and the unchanged direct-only version-1 rule without migration.",
       "authority": "geocedg/specs/spatial/durable-dependency-projection.md"
     }
   ]

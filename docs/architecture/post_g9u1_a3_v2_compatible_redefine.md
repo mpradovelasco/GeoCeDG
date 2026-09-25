@@ -244,9 +244,15 @@ Its effect on this design:
   as version 2 in the same transaction (lazy migration); all other records keep
   their version.
 - **Ordinary edits.** An ordinary edit that moves the frontier of a version-2
-  participant is refreshed only through the certified predicate of the contract
-  (§10); otherwise the operation-entry snapshot of §5 restores the whole edit.
-  That snapshot is now also captured for such an edit.
+  participant is the certified durable-frontier refresh of the contract (§10):
+  it keeps the identity and advances both revisions only through the certified
+  predicate; otherwise the operation-entry snapshot of §5 restores the whole
+  edit. That snapshot is now also captured for such an edit.
+- **Late participation.** A helper that first acquires a durable identity
+  re-projects the records whose projection path it lies on under their own
+  versions, keeping identities, roles and revisions (contract §14). It is
+  neither a redefine nor a refresh. Added by the `PRE-G9B-R3-R1` corrective
+  descendant, with the lifecycle mapping of contract §15.
 - **Construction order.** Unchanged. The minimal reorder refinement requested
   for `PRE-G9B-R3` is deferred as `TD-R3-CONSTRUCTION-PROTOCOL-MINIMAL-REORDER`.
 
