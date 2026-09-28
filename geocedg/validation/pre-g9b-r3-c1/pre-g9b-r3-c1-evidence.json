@@ -1,0 +1,174 @@
+{
+  "schemaVersion": 1,
+  "phase": "PRE-G9B-R3-C1",
+  "recordKind": "TECHNICAL_CANDIDATE_EVIDENCE",
+  "technicalCandidateState": "FROZEN",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "selfApproved": false,
+  "passClaimed": false,
+  "changeRoute": "ORDINARY",
+  "verificationClass": "GLOBAL_IMPACT",
+  "frozenAtPhaseStart": true,
+  "plannedAcceptanceLevel": "FINAL",
+  "implementationBase": {
+    "commit": "89d481b1b3eef36c429f920178d5e5de6c0149e3",
+    "tree": "56a9823c602710805dfc18bd703f6a0d0b6ed5fb",
+    "authority": "PRE-G9B-R3 = PASS — AUTHOR APPROVED (published closeout)"
+  },
+  "branch": "feature/pre-g9b-r3-c1-clipboard-correctness",
+  "candidateCommit": "the commit that contains this artifact; reported separately",
+  "entryIdentity": {
+    "head": "89d481b1b3eef36c429f920178d5e5de6c0149e3",
+    "localMain": "89d481b1b3eef36c429f920178d5e5de6c0149e3",
+    "originMain": "89d481b1b3eef36c429f920178d5e5de6c0149e3",
+    "liveRemoteMain": "89d481b1b3eef36c429f920178d5e5de6c0149e3",
+    "worktreeClean": true,
+    "indexClean": true
+  },
+  "localBranchCleanup": {
+    "mergedInspected": 54,
+    "deletedWithSafeDelete": 51,
+    "retained": [
+      { "branch": "codex/g9u1-construction-workspace-after-r1", "reason": "protected ref pinned by tools/agent/verify-g9u1-construction-workspace.ps1" },
+      { "branch": "codex/g9u1-author-review-stabilization-1", "reason": "protected ref pinned by tools/agent/verify-g9u1-construction-workspace.ps1" },
+      { "branch": "codex/g9u1-author-review-stabilization-2", "reason": "protected ref pinned by tools/agent/verify-g9u1-construction-workspace.ps1" }
+    ],
+    "unmergedUntouched": ["feature/g9u1-construction-workspace-planning", "feature/g9u1-construction-workspace-planning-after-r6"],
+    "remoteRefsOrTagsChanged": false,
+    "commitCreated": false
+  },
+  "canonicalPromptCreated": false,
+  "canonicalPromptRationale": "governance requires no durable task prompt per closable phase; PRE-G9B-R2-E0/E1 and PRE-G9B-R3-R1 closed without one; the author instruction is the execution authority",
+  "closeoutReadinessRun": false,
+  "closeoutReadinessRationale": "phase-closeout.ps1 READINESS is identity-only and needs an existing receipt; verify.ps1 takes no readiness input",
+  "debtsAddressed": ["TD-CLIPBOARD-ATOMIC-ROLLBACK-PROTOCOL", "TD-CLIPBOARD-CONSTANT-INPUT-PREDECESSOR-CLOSURE"],
+  "baseCharacterization": {
+    "axisWitness": ["A=(0,0)", "c=Circle(A,1)", "C=Point(c)", "f=Line(C,xAxis)", "D=Intersect(f,yAxis)", "a=LocusV2(D,C)"],
+    "copyOnlyA": {
+      "renamedButNotSerialized": ["f"],
+      "missingParent": "AlgoLinePointLine[C (copied), xAxis (constant)]",
+      "pasteOutcome": "IllegalStateException: Clipboard identity rollback could not restore the construction <- IllegalStateException: Spatial rollback restore is not active",
+      "originalFailure": "MALFORMED_RECORD: Construction identity base contract disagrees with the attached geo (absent from the thrown chain)",
+      "authoritativeStateAfterThrow": "exact (inner MyXMLio restore)",
+      "leakedHostState": {
+        "blockUpdateScripts": true,
+        "serializedScripting": "<scripting blocked=\"true\" disabled=\"false\"/>",
+        "persistsAfterReopen": true,
+        "kernelLoadingMode": true,
+        "notifyViewsActive": false,
+        "commandLookupStrategy": "XML"
+      },
+      "undoHistoryChanged": false
+    },
+    "freeLineControl": "complete copy; pastes correctly",
+    "identityBearingSilentDegradation": "copy of a whose closure depends on axis-derived helper M=Midpoint(D,P): paste reports success and M_{1} is free geometry",
+    "plainDocumentDegradation": "without identity, upstream copy degrades M_{1} to free geometry (unchanged by C1)",
+    "desktopCtrlCCtrlV": "same throw and host-state leaks through GlobalKeyDispatcherD",
+    "insertFileOverwrite": "shares evalClipboardXMLAtomically with its caller snapshot and overwrite mutation"
+  },
+  "productiveChanges": [
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/util/InternalClipboard.java",
+      "upstreamOwned": true,
+      "changes": [
+        "addSpatialClosureParentAlgorithms completes identity-bearing payloads with the parent algorithm of every copied labeled geo and hides its missing outputs",
+        "restoreClipboardSnapshot follows the runtime rollback protocol and keeps the import failure as a suppressed exception when the restore fails",
+        "an identity-bearing import whose parse reported host rebuild errors is rejected as INCOMPLETE_CLOSURE",
+        "pasteGeoGebraXMLInternal restores the previous script policy on every non-success import exit"
+      ]
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/util/CopyPasteD.java",
+      "upstreamOwned": true,
+      "changes": [
+        "copyToXML calls the same completion for identity-bearing payloads",
+        "evalClipboardXML restores the previous script policy on every non-success import exit (fast and ordinary paste)"
+      ]
+    }
+  ],
+  "tests": {
+    "shared": {
+      "class": "org.geocedg.common.locus.PreG9bR3C1ClipboardCorrectnessTest",
+      "methods": 9,
+      "candidate": { "passed": 9, "failed": 0 },
+      "extractedBase": { "failed": 8, "passedControl": "aFreeLineControlStillCopiesTheSameConstruction" }
+    },
+    "desktop": {
+      "class": "org.geocedg.desktop.PreG9bR3C1DesktopClipboardTest",
+      "methods": 2,
+      "candidate": { "passed": 2, "failed": 0 },
+      "extractedBase": { "failed": 2 }
+    }
+  },
+  "localEvidenceBeforeCommit": {
+    "affectedSharedRegressions": { "classes": 30, "tests": 379, "failures": 0 },
+    "affectedDesktopRegressions": { "classes": 7, "tests": 111, "failures": 0 },
+    "finalShared": { "junitFiles": 679, "tests": 6796, "failedOrErrored": 0, "skipped": 10 },
+    "finalDesktop": { "junitFiles": 101, "tests": 1525, "failedOrErrored": 0, "skipped": 1 },
+    "discovery": { "shared": 5879, "desktop": 1531 },
+    "checkstyleFindings": 0,
+    "verificationCoreTests": {
+      "verification-final-coverage": "8 cases / 308 assertions",
+      "verification-registry": "22 / 62",
+      "verification-contract-boundary": "5 / 38",
+      "verification-cli-compatibility": "7 / 45",
+      "verification-gradle-producer": "7 / 21",
+      "verification-supervisor": "12 / 51",
+      "verification-runtime": "119 / 119 fake-first tests"
+    },
+    "upstreamBoundaryRegisteredFiles": 803,
+    "unresolvedRelativeLinks": 0,
+    "diffCheckClean": true,
+    "planOnly": {
+      "PHASE POST-G9U1-A3": "c2e25e0b5d28523023f88dc139f015cda004ce28cc94d1ff546a65c4c222876f",
+      "INTEGRATION": "4502c4bd1bbe1a123089e9e524fd0afb354932afbcb410f93052555a16c77aea",
+      "FINAL": "defe8ab4692af05430464974c3d5e8e029ff7d64ecbc1822c07ff91593c744e0",
+      "plansEqualBase": true
+    }
+  },
+  "coupledReconciliations": {
+    "junitInventory": {
+      "discovery.shared": [5870, 5879],
+      "final.shared": [6787, 6796],
+      "discovery.desktop": [1529, 1531],
+      "final.desktop": [1523, 1525],
+      "postG9u1A3NarrowUnchanged": { "identities": 114, "sha256Prefix": "9a45556c" }
+    },
+    "registryCatalogPin": {
+      "from": "9a7300fd8566247e03393dc74cd997b946cd7a64007a7ba1403917d2e14d21a6",
+      "to": "9fea75de591dde7566f4af4661e0ec49f2253acd80f4bab213bd1233d9a005b2"
+    },
+    "upstreamRecord": "purposes appended for InternalClipboard.java and CopyPasteD.java; two test files registered"
+  },
+  "compatibility": {
+    "identityImpact": "none; the copied closure is now complete",
+    "serializationFormatImpact": "NONE",
+    "schemaVersions": "unchanged",
+    "migration": "unchanged",
+    "copyLineageRemap": "unchanged semantics",
+    "documentsWithoutIdentity": "unchanged"
+  },
+  "impact": {
+    "BOOTSTRAP_IMPACT": "NO_CHANGE_REQUIRED",
+    "VERIFICATION_INFRASTRUCTURE_IMPACT": "CATALOG DATA ONLY",
+    "GUIDE_IMPACT": "REVIEWED — NO CHANGE REQUIRED",
+    "UPSTREAM_BOUNDARY_IMPACT": "two registered upstream files modified; two test files added",
+    "SERIALIZATION_FORMAT_IMPACT": "NONE"
+  },
+  "debtLedger": {
+    "TD-CLIPBOARD-ATOMIC-ROLLBACK-PROTOCOL": "RESOLVED_BY_CANDIDATE_PENDING_AUTHOR_APPROVAL",
+    "TD-CLIPBOARD-CONSTANT-INPUT-PREDECESSOR-CLOSURE": "RESOLVED_BY_CANDIDATE_PENDING_AUTHOR_APPROVAL",
+    "TD-CLIPBOARD-UPSTREAM-CONSTANT-INPUT-DEGRADATION": "NEW_RETAINED_AUTHOR_DISPOSITION_REQUIRED",
+    "TD-LOCUS-CERTIFIED-CONSTRUCTION-EXPRESSION-POINT": "RETAINED_OWNER_PRE-G9B-R3-X1",
+    "TD-LOCUS-EVALUATOR-SEGMENT-DRIVER-UPDATE": "RETAINED_R3-X1_INSPECTION_OR_CONDITIONAL_R3-X2",
+    "TD-LOCUS-EVALUATOR-INLINE-LITERAL-DEPENDENCY": "RETAINED_R3-X1_INSPECTION_OR_CONDITIONAL_R3-X2",
+    "TD-R3-CONSTRUCTION-PROTOCOL-MINIMAL-REORDER": "RETAINED",
+    "BASELINE-G9U1-BRANDING-EVIDENCE-PIN": "CARRIED_FORWARD",
+    "OBS-R2-PHASE-SELECTION-COHORT": "CARRIED_FORWARD",
+    "GUIDE-A1-SECTION-9.3-STALE": "CARRIED_FORWARD"
+  },
+  "observations": ["OBS-C1-COMMAND-NOT-LOADED-OUTER-RESTORE", "OBS-C1-DOPARSEXML-CLEAR-BEFORE-TRY"],
+  "x1EvaluatorDebtPolicy": "at R3-X1 entry inspect both evaluator debts for synergistic repair under all Ri conditions; otherwise register PRE-G9B-R3-X2 — evaluator correctness after X1 and before R4; neither X1 nor X2 is implemented in C1",
+  "acceptanceCommand": "pwsh -NoProfile -File tools/agent/verify.ps1 -Profile FINAL -LogDirectory artifacts\\agent\\pre-g9b-r3-c1-final",
+  "notAuthorized": ["PRE-G9B-R3-X1", "PRE-G9B-R3-X2", "PRE-G9B-R4 and later", "generic GeoGebra copy semantics change", "push", "promotion", "tag", "release"]
+}

@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityDiagnostic;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityException;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRecord;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
@@ -106,6 +107,10 @@ public class InternalClipboard {
 		geosToHide.addAll(addAlgosDependentFromInside(geosLocal, null));
 		final Set<GeoElement> spatialClosure =
 				addSpatialIdentityClosure(geosLocal, true);
+		if (!app.getKernel().getConstruction().getSpatialIdentityRegistry()
+				.getClosureRecords(spatialClosure).isEmpty()) {
+			geosToHide.addAll(addSpatialClosureParentAlgorithms(geosLocal));
+		}
 		// topological order to make sure client listener can process predecessor objects
 		// before child objects (e.g. for multiuser)
 		Collections.sort(geosLocal);
@@ -316,6 +321,40 @@ public class InternalClipboard {
 	}
 
 	/**
+	 * Completes an identity-bearing clipboard payload with the parent algorithm of
+	 * every copied labeled geo. Upstream collection adds a predecessor's algorithm
+	 * only when all of its inputs are copied, so an algorithm with a construction
+	 * constant input, such as {@code Line(C, xAxis)}, would leave its output renamed
+	 * but not serialized. Constants are never copied; they resolve by name on paste.
+	 *
+	 * @param consElements identity-bearing clipboard elements; input and output
+	 * @return outputs of the added algorithms that were not yet copied
+	 */
+	public static ArrayList<ConstructionElement> addSpatialClosureParentAlgorithms(
+			ArrayList<ConstructionElement> consElements) {
+		ArrayList<ConstructionElement> addedOutputs = new ArrayList<>();
+		for (ConstructionElement element : new ArrayList<>(consElements)) {
+			if (!(element instanceof GeoElement)
+					|| !((GeoElement) element).isLabelSet()) {
+				continue;
+			}
+			AlgoElement parent = ((GeoElement) element).getParentAlgorithm();
+			if (parent == null || parent instanceof AlgoTableToChart
+					|| consElements.contains(parent)) {
+				continue;
+			}
+			consElements.add(parent);
+			for (GeoElement output : parent.getOutput()) {
+				if (!consElements.contains(output)) {
+					consElements.add(output);
+					addedOutputs.add(output);
+				}
+			}
+		}
+		return addedOutputs;
+	}
+
+	/**
 	 * copyToXML - Before saving the consElements to xml, we have to rename its
 	 * labels with labelPrefix and memorize those renamed labels and also hide
 	 * the GeoElements in geosToHide, and keep in geosToHide only those which
@@ -460,8 +499,16 @@ public class InternalClipboard {
 
 		// don't update properties view
 		app.updateSelection(false);
-		if (!evalClipboardXMLAtomically(app, copiedXml)) {
-			app.setBlockUpdateScripts(scriptsBlocked);
+		boolean imported = false;
+		try {
+			imported = evalClipboardXMLAtomically(app, copiedXml);
+		} finally {
+			// a rejected or failed import returns the previous script policy
+			if (!imported) {
+				app.setBlockUpdateScripts(scriptsBlocked);
+			}
+		}
+		if (!imported) {
 			return;
 		}
 		app.getKernel().getConstruction().updateConstruction(false);
@@ -557,6 +604,8 @@ public class InternalClipboard {
 			String rollbackXml, Runnable beforeImport) {
 		app.getActiveEuclidianView().saveInlines();
 		String effectiveRollbackXml = rollbackXml == null ? app.getXML() : rollbackXml;
+		boolean identityBearing =
+				SpatialIdentityRegistry.preflightClipboardFragment(clipboardXml);
 		XMLStringBuilder wrapped = new XMLStringBuilder();
 		MyXMLio.addXMLHeader(wrapped);
 		MyXMLio.addGeoGebraHeader(wrapped, false, null, app);
@@ -572,24 +621,49 @@ public class InternalClipboard {
 			}
 			construction.setNextSpatialIdentityLoadPurpose(LoadPurpose.CLIPBOARD_IMPORT);
 			app.getXMLio().processXMLString(wrapped.toString(), false, false);
+			if (identityBearing && app.getXMLio().hasErrors()) {
+				// a copied element the host could not rebuild would survive degraded
+				throw new SpatialIdentityException(SpatialIdentityDiagnostic.of(
+						SpatialIdentityDiagnostic.Code.INCOMPLETE_CLOSURE,
+						"Identity-bearing clipboard import could not rebuild every "
+								+ "copied element"));
+			}
 			app.getActiveEuclidianView().updateInlines();
 			return true;
 		} catch (Exception | MyError failure) {
-			try {
-				construction.setNextSpatialIdentityLoadPurpose(
-						LoadPurpose.ROLLBACK_RESTORE);
-				app.getXMLio().processXMLString(effectiveRollbackXml, true, false);
-				app.getActiveEuclidianView().updateInlines();
-			} catch (Exception | MyError rollbackFailure) {
-				throw new IllegalStateException(
-						"Clipboard identity rollback could not restore the construction",
-						rollbackFailure);
-			} finally {
-				construction.clearNextSpatialIdentityLoadPurpose();
-			}
+			Log.debug("Clipboard import rolled back: " + failure);
+			restoreClipboardSnapshot(app, construction, effectiveRollbackXml, failure);
 			return false;
 		} finally {
 			construction.clearNextSpatialIdentityLoadPurpose();
+		}
+	}
+
+	/**
+	 * Restores the pre-paste snapshot through the runtime rollback protocol. A
+	 * restore failure keeps the import failure as a suppressed exception.
+	 */
+	private static void restoreClipboardSnapshot(App app, Construction construction,
+			String rollbackXml, Throwable failure) {
+		construction.getSpatialSemanticRuntime().beginRollbackRestore();
+		boolean restored = false;
+		try {
+			construction.setNextSpatialIdentityLoadPurpose(LoadPurpose.ROLLBACK_RESTORE);
+			app.getXMLio().processXMLString(rollbackXml, true, false);
+			app.getActiveEuclidianView().updateInlines();
+			restored = true;
+		} catch (Exception | MyError rollbackFailure) {
+			IllegalStateException catastrophic = new IllegalStateException(
+					"Clipboard identity rollback could not restore the construction",
+					rollbackFailure);
+			catastrophic.addSuppressed(failure);
+			throw catastrophic;
+		} finally {
+			try {
+				construction.clearNextSpatialIdentityLoadPurpose();
+			} finally {
+				construction.getSpatialSemanticRuntime().finishRollbackRestore(restored);
+			}
 		}
 	}
 

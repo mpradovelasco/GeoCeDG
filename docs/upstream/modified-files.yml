@@ -1650,7 +1650,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/util/CopyPasteD.java",
       "change": "modified",
-      "purpose": "Route participating Desktop clipboard operations through the shared complete-closure export/import transaction and stop rejected pastes atomically.",
+      "purpose": "Route participating Desktop clipboard operations through the shared complete-closure export/import transaction and stop rejected pastes atomically. PRE-G9B-R3-C1: complete identity-bearing copy payloads with the parent algorithms of copied geos, including commands with a construction-constant input, and restore the previous script policy on every failed import exit. Authority: docs/architecture/pre_g9b_r3_c1_clipboard_atomicity_and_closure_design.md.",
       "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
     },
     {
@@ -2052,7 +2052,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/util/InternalClipboard.java",
       "change": "modified",
-      "purpose": "Export and atomically import complete participating identity closures with one fresh typed-ID remap per paste.",
+      "purpose": "Export and atomically import complete participating identity closures with one fresh typed-ID remap per paste. PRE-G9B-R3-C1: complete identity-bearing payloads with the parent algorithm of every copied geo, restore a failed import through the runtime rollback protocol while keeping the import failure, reject an identity-bearing import with host rebuild errors as INCOMPLETE_CLOSURE, and restore the previous script policy on every failed import exit. Authority: docs/architecture/pre_g9b_r3_c1_clipboard_atomicity_and_closure_design.md.",
       "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
     },
     {
@@ -4808,6 +4808,18 @@
       "change": "added",
       "purpose": "PRE-G9B-R3-R1: verify the late-participation re-projection of a version-2 record through a traversed helper under the same identity, roles and revisions with undo/redo and reopen, the whole-publication rejection of an invalid late publication, and the unchanged direct-only version-1 rule without migration.",
       "authority": "geocedg/specs/spatial/durable-dependency-projection.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/PreG9bR3C1ClipboardCorrectnessTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R3-C1: verify the complete identity-bearing copy closure with construction-constant command inputs, fresh remapped identities with copy lineage, no free-geometry degradation, exact rollback of rejected and failed imports including script policy, kernel flags and undo, the kept import failure on a rollback failure, and undo/redo and reopen after a successful paste.",
+      "authority": "docs/architecture/pre_g9b_r3_c1_clipboard_atomicity_and_closure_design.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9bR3C1DesktopClipboardTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R3-C1: verify Desktop Ctrl+C and Ctrl+V through the key dispatcher with the complete constant-input closure and one undo step, and the exact rollback of a failed Insert File after its overwrite mutation.",
+      "authority": "docs/architecture/pre_g9b_r3_c1_clipboard_atomicity_and_closure_design.md"
     }
   ]
 }

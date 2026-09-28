@@ -342,6 +342,10 @@ public class CopyPasteD extends CopyPaste {
 		SpatialIdentityRegistry spatialRegistry = cons.getSpatialIdentityRegistry();
 		copiedSpatialIdentity = !spatialRegistry.getClosureRecords(
 				spatialClosure).isEmpty();
+		if (copiedSpatialIdentity) {
+			geostohide.addAll(
+					InternalClipboard.addSpatialClosureParentAlgorithms(geoslocal));
+		}
 
 		ArrayList<ConstructionElement> geoslocalsw = removeFreeNonselectedGeoNumerics(
 				geoslocal, geos);
@@ -490,8 +494,7 @@ public class CopyPasteD extends CopyPaste {
 		ArrayList<GeoElement> createdGeos;
 		if (fastPaste) {
 			EuclidianViewInterfaceCommon ev = app.getActiveEuclidianView();
-			if (!evalClipboardXML(app, pasteXml)) {
-				app.setBlockUpdateScripts(scriptsBlocked);
+			if (!evalClipboardXML(app, pasteXml, scriptsBlocked)) {
 				return;
 			}
 			app.getKernel().getConstruction().updateConstruction(false);
@@ -531,8 +534,7 @@ public class CopyPasteD extends CopyPaste {
 			}
 
 			EuclidianViewInterfaceCommon ev = app.getActiveEuclidianView();
-			if (!evalClipboardXML(app, pasteXml)) {
-				app.setBlockUpdateScripts(scriptsBlocked);
+			if (!evalClipboardXML(app, pasteXml, scriptsBlocked)) {
 				return;
 			}
 			app.getKernel().getConstruction().updateConstruction(false);
@@ -558,9 +560,18 @@ public class CopyPasteD extends CopyPaste {
 		}
 	}
 
-	private boolean evalClipboardXML(App app, String xml) {
-		return InternalClipboard.evalClipboardXMLAtomically(app, xml,
-				spatialInsertRollbackXml, spatialInsertMutation);
+	private boolean evalClipboardXML(App app, String xml, boolean scriptsBlocked) {
+		boolean imported = false;
+		try {
+			imported = InternalClipboard.evalClipboardXMLAtomically(app, xml,
+					spatialInsertRollbackXml, spatialInsertMutation);
+			return imported;
+		} finally {
+			// a rejected or failed import returns the previous script policy
+			if (!imported) {
+				app.setBlockUpdateScripts(scriptsBlocked);
+			}
+		}
 	}
 
 	private Boolean preflightClipboardXML(String xml) {
