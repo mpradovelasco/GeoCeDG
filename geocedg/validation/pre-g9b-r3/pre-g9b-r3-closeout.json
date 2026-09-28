@@ -1,0 +1,167 @@
+{
+  "schemaVersion": 1,
+  "phase": "PRE-G9B-R3",
+  "recordKind": "AUTHOR_CLOSEOUT_DISPOSITION",
+  "status": "PRE-G9B-R3 — PASS — AUTHOR APPROVED",
+  "authorDecisionDate": "2026-09-28",
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "technicalCandidateFrozen": true,
+  "candidateMutated": false,
+  "approvedTechnicalCandidate": {
+    "commit": "89fab9d1ee09f95f5c21f61bced46a102366b2ef",
+    "tree": "e3ff7c34a6cf3ad40cdd737e463ced5a9f3066e5",
+    "parent": "c1f3ed61691eb351c06caf2283e90bcc28152d76",
+    "base": "ef120a54f035b85df014e89c3916cb3a26f5f933",
+    "branch": "feature/pre-g9b-r3-redefine-correctness",
+    "kind": "PRE-G9B-R3-R1 bounded corrective descendant: normative, test, documentation and roadmap only; bytecode-identical product implementation",
+    "modifiedByCloseout": false
+  },
+  "frozenParentCandidate": {
+    "commit": "c1f3ed61691eb351c06caf2283e90bcc28152d76",
+    "tree": "ca913cb23f5303c8b802fbfd5eea9b9d403358e9",
+    "modifiedByCloseout": false
+  },
+  "authorSmoke": {
+    "PRE_G9B_R3_AUTHOR_SMOKE": "PASS",
+    "source": "author-provided",
+    "recordedIn": "docs/validation/pre_g9b_r3_r1_corrective_candidate_report.md#6-author-smoke-record"
+  },
+  "acceptedContent": [
+    "one versioned durable-dependency projection: version 1 DIRECT, version 2 TRANSITIVE_DURABLE_FRONTIER, lazy migration only through an ordinary semantic event (D3-a and D3-b resolved)",
+    "typed redefine outcomes, the compatible-retain predicate and the Desktop surfacing of reasons and durable-contract choices",
+    "CERTIFIED_DURABLE_FRONTIER_REFRESH: identity kept only under the certified predicate, both revisions advance; otherwise the whole edit is restored",
+    "LATE_PARTICIPATION_REPROJECTION: re-projection under the record's own version, keeping identity, roles and both revisions; no migration, no redefine predicate; a failed publication is rejected as a whole",
+    "undo and redo restore the committed snapshot, record versions included, and never migrate",
+    "durable-dependency-projection 1.1, ADR 0029 as amended, the additive notes in ADR 0011, G9 spatial projection semantics 8.2, G9U1 construction interaction 10 and the compatible-redefine design 7",
+    "fail-closed treatment of every unsupported or ambiguous case"
+  ],
+  "verificationEscalationRequest": "APPROVED",
+  "acceptedEvidence": {
+    "command": "tools/agent/verify.ps1 -Profile FINAL -LogDirectory artifacts\\agent\\pre-g9b-r3-r1-final",
+    "run": "verification-f363f882a106457e839d05e0ac40becb",
+    "acceptance": "ACCEPTED",
+    "coverage": "COMPLETE",
+    "exitCode": 0,
+    "required": 40,
+    "completed": 40,
+    "violated": 0,
+    "untrusted": 0,
+    "notRun": 0,
+    "planHash": "defe8ab4692af05430464974c3d5e8e029ff7d64ecbc1822c07ff91593c744e0",
+    "resultHash": "3e539dff79a2556b9e105b0bc9b760e2c3a00796da5544cb2e068b79d8c11fe0",
+    "resultFileSha256": "7657d5874cb3038298e8b9e1a86f27291329e3487e125f8fab70c53e52217771",
+    "receipt": {
+      "receiptId": "c4d9a8bf0a8ab86df40faf0971ef1fa0d625684ba8dc92a78275be06eab3e0fa",
+      "fileSha256": "af584144bd4b0b4a016c9d12ebd2bd0bf60c0b5a94b157c46572b12be3dd3d37",
+      "candidateCommit": "89fab9d1ee09f95f5c21f61bced46a102366b2ef",
+      "candidateTree": "e3ff7c34a6cf3ad40cdd737e463ced5a9f3066e5",
+      "baseCommit": null,
+      "checkerIdentityHash": "9a78d5726556692959d68fab22bd8e1d756033a590e5a1ccd2ad95c8214f919e",
+      "inputIdentityHash": "d9eae17232276bc010a3e0bd0548df892322c6d63c1e858c143e277fb58d764b",
+      "environmentCompatibilitySignature": "de567676a3168eb19a13b0b8764c15e6fdca0d97baec6925aac5b72f6c7dc4c0",
+      "environmentObservationHash": "a329dd0ec835b3c3d7cc0ec5561cb636ebe9552c9e2288b82b75c2fce4d1c4ba",
+      "issuedAt": "2026-09-28T18:03:23.0307207Z"
+    },
+    "junit": {
+      "finalShared": { "tests": 6787, "failures": 0, "errors": 0, "skipped": 10 },
+      "finalDesktop": { "tests": 1523, "failures": 0, "errors": 0, "skipped": 1 },
+      "g9u1Isolated": { "tests": 5, "failures": 0 },
+      "revision3Diagnostic": { "tests": 1, "failures": 0 },
+      "lateParticipationFocal": { "class": "org.geocedg.common.locus.PreG9bR3R1LateParticipationTest", "tests": 3, "failures": 0 },
+      "postG9u1A3Narrow": { "classes": 11, "tests": 114, "failures": 0, "inventoryIdentitiesSha256": "9a45556ceade0331c9891b1e41cf32abb285d83699b4148cdb2028e222048024" }
+    },
+    "diagnostics": {
+      "clear": 8,
+      "diagnostic.governance": "DIAGNOSTIC_FINDING",
+      "diagnostic.historical-consistency": "DIAGNOSTIC_UNAVAILABLE",
+      "identicalToParentFinal": true
+    },
+    "planEqualsParentFinal": true,
+    "closeoutInspection": {
+      "command": "tools/agent/phase-closeout.ps1 -Action INSPECT",
+      "identityConfirmed": true,
+      "mismatches": []
+    }
+  },
+  "otherEvidenceOnApprovedCandidate": [
+    {
+      "command": "tools/agent/verify.ps1 -Profile PHASE -Phase POST-G9U1-A3",
+      "run": "verification-386a7dbd87de457691038eb600e40640",
+      "planHash": "c2e25e0b5d28523023f88dc139f015cda004ce28cc94d1ff546a65c4c222876f",
+      "resultHash": "093b62be67669bf7c79271f0bd9fc5987fcc1ef9a5d5b96459f218f64e545e6e",
+      "classification": "ACCEPTED / COMPLETE", "required": 2, "completed": 2
+    },
+    {
+      "command": "tools/agent/verify.ps1 -Profile INTEGRATION",
+      "run": "verification-54122ec82e484235a06386ed7ef9bcb2",
+      "planHash": "4502c4bd1bbe1a123089e9e524fd0afb354932afbcb410f93052555a16c77aea",
+      "resultHash": "467999c015d35a4f7b5f5d7618314ed04720fdda8d8fba7c13a9322081c0e665",
+      "classification": "ACCEPTED / COMPLETE", "required": 19, "completed": 19
+    }
+  ],
+  "historicalParentEvidence": [
+    {
+      "command": "tools/agent/verify.ps1 -Profile FINAL",
+      "run": "verification-deda408e65c24e5091e6a54fe9c99922",
+      "candidateCommit": "c1f3ed61691eb351c06caf2283e90bcc28152d76",
+      "resultHash": "8ad0adb7d21bb8956593ecff6aebe3bbdf665868d10e6a696828e1a9f8d66e68",
+      "receiptId": "ab8ba93a42775e7f8096877deb79d389a36a138ba6547717e6590e207434c9c5",
+      "classification": "ACCEPTED / COMPLETE",
+      "evidenceForApprovedCandidate": false
+    },
+    {
+      "command": "tools/agent/verify.ps1 -Profile PHASE -Phase POST-G9U1-A3",
+      "run": "verification-daed7b6949f2494687263f3fa40afca4",
+      "candidateCommit": "c1f3ed61691eb351c06caf2283e90bcc28152d76",
+      "resultHash": "92eb89d0f7446b2607ac6b6f8edb1cde75e8db92895a4b3fde7232d79381f2bb",
+      "classification": "ACCEPTED / COMPLETE",
+      "evidenceForApprovedCandidate": false
+    }
+  ],
+  "furtherVerificationRun": false,
+  "retainedQualityDebt": [
+    { "id": "TD-CLIPBOARD-ATOMIC-ROLLBACK-PROTOCOL", "class": "PRE_EXISTING_PRODUCT_DEFECT", "severity": "HIGH", "owner": "PRE-G9B-R3-C1", "resolvedHere": false },
+    { "id": "TD-CLIPBOARD-CONSTANT-INPUT-PREDECESSOR-CLOSURE", "class": "PRE_EXISTING_PRODUCT_DEFECT", "owner": "PRE-G9B-R3-C1", "resolvedHere": false },
+    { "id": "TD-LOCUS-CERTIFIED-CONSTRUCTION-EXPRESSION-POINT", "class": "CAPABILITY_EXTENSION", "defect": false, "owner": "PRE-G9B-R3-X1", "resolvedHere": false },
+    { "id": "TD-LOCUS-EVALUATOR-SEGMENT-DRIVER-UPDATE", "class": "PRE_EXISTING_PRODUCT_DEFECT", "due": "PRE-G9B-R7 closeout", "resolvedHere": false },
+    { "id": "TD-LOCUS-EVALUATOR-INLINE-LITERAL-DEPENDENCY", "class": "PRE_EXISTING_PRODUCT_DEFECT", "due": "PRE-G9B-R7 closeout", "resolvedHere": false },
+    { "id": "TD-R3-CONSTRUCTION-PROTOCOL-MINIMAL-REORDER", "class": "DEFERRED_REFINEMENT", "due": "owner and disposition by the PRE-G9B-R7 closeout", "resolvedHere": false }
+  ],
+  "dispositionsRecordedByApprovedCandidate": {
+    "TD-UPSTREAM-RECORD-E0-E1-PURPOSE": "RESOLVED_IN_PRE-G9B-R3",
+    "TD-DOC-PRE-G9B-R-ROADMAP-STATUS-RECONCILIATION": "RESOLVED_IN_PRE-G9B-R3-R1",
+    "TD-R3-OBS-CLIPBOARD-PARTIAL-CLOSURE-PASTE": "SUPERSEDED_IN_PRE-G9B-R3-R1"
+  },
+  "riQualityDebtPolicy": "unchanged; recorded in geocedg/validation/pre-g9b-r2-e0-e1/pre-g9b-r2-e0-e1-closeout.json",
+  "retainedSeparately": [
+    { "id": "BASELINE-G9U1-BRANDING-EVIDENCE-PIN", "class": "RETAINED_PRE_EXISTING_BASELINE_DEFECT", "resolvedHere": false },
+    { "id": "OBS-R2-PHASE-SELECTION-COHORT", "class": "VERIFICATION_OBSERVATION", "resolvedHere": false },
+    { "id": "GUIDE-A1-SECTION-9.3-STALE", "class": "PRE_EXISTING_DOCUMENTATION_DRIFT", "resolvedHere": false }
+  ],
+  "roadmapOrder": ["PRE-G9B-R3-C1", "PRE-G9B-R3-X1", "PRE-G9B-R4"],
+  "roadmapOrderKind": "EXECUTION_ORDER_ONLY",
+  "phaseStates": {
+    "PRE-G9B-R3-C1": "DESIGNED / PLANNED — NOT AUTHORIZED FOR IMPLEMENTATION",
+    "PRE-G9B-R3-X1": "DESIGNED / PLANNED — NOT AUTHORIZED FOR IMPLEMENTATION",
+    "PRE-G9B-R4": "DESIGNED — NOT AUTHORIZED"
+  },
+  "nextPlannedPhase": "PRE-G9B-R3-C1",
+  "remoteIdentityBeforePromotion": {
+    "localMain": "ef120a54f035b85df014e89c3916cb3a26f5f933",
+    "originMain": "ef120a54f035b85df014e89c3916cb3a26f5f933",
+    "liveRemoteMain": "ef120a54f035b85df014e89c3916cb3a26f5f933",
+    "tree": "98bdd7220223bedefee0eddbb2c9ef5e6572b133"
+  },
+  "prohibitedInThisCloseout": [
+    "modifying the approved technical candidate",
+    "changing product, test, build, verifier, schema, serialization or scientific-contract files",
+    "running further verification",
+    "rebase, amend, merge commit, squash or force push",
+    "tagging or releasing",
+    "starting PRE-G9B-R3-C1, PRE-G9B-R3-X1 or R4"
+  ],
+  "successorPhaseAuthorized": null,
+  "publicationState": "AUTHORIZED FOR PROMOTION BY CLEAN FAST-FORWARD"
+}
