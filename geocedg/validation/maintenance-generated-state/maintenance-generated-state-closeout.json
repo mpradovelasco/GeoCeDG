@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "track": "maintenance/final-generated-state-historical-retirement",
+  "recordKind": "AUTHOR_CLOSEOUT_DISPOSITION",
+  "status": "GENERATED-STATE MAINTENANCE — PASS — AUTHOR APPROVED",
+  "authorDecisionDate": "2026-09-30",
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "technicalCandidateFrozen": true,
+  "candidateMutated": false,
+  "newHeavyFinal": "NONE",
+  "approvedTechnicalCandidate": {
+    "commit": "d8a63d49cbe1cf47071639eac2e8abffd44d9537",
+    "tree": "ed0be0e7fc1d73ddc32fefa635841fa99537eb54",
+    "parent": "387084422106e66540a3e3400b8b65677087ecc2",
+    "base": "387084422106e66540a3e3400b8b65677087ecc2",
+    "branch": "maintenance/final-generated-state-historical-retirement",
+    "modifiedByCloseout": false
+  },
+  "dispositions": {
+    "tools/agent/tests/phase-lifecycle.Tests.ps1": "RETIRED AS HISTORICAL (earlier approved maintenance)",
+    "tools/agent/tests/generated-state.tests.ps1": "RETIRED AS HISTORICAL (M_GSTATE)",
+    "tools/agent/repository-generated-state.ps1": "LIVE; active coverage via infra.repository-generated-state",
+    "tools/agent/tests/verification-runtime.Tests.ps1": "unregistered/historical; no dependency on generated-state.tests.ps1"
+  },
+  "historicalFacts": {
+    "generatedStateTestsPassedAt": "c976deca6 (19/19)",
+    "staleFrom": "4117bdfd5 (obsolete verify.ps1 structural assertion)",
+    "rewritten": false
+  },
+  "acceptedEvidence": {
+    "verificationClass": "OPERATIONAL_VERIFICATION_INFRASTRUCTURE",
+    "globalInfrastructureChange": "active registry leaf infra.repository-generated-state added",
+    "static": { "run": "verification-93d7185b5ff14fc89da8eb00f39bddb9", "verdict": "ACCEPTED / COMPLETE" },
+    "infraUnit": { "run": "verification-9091b429183d4057a3a83882b89c9d54", "verdict": "ACCEPTED / COMPLETE", "satisfied": 22, "total": 22 },
+    "final": {
+      "run": "verification-8fc55499eb4d4d50b06e57c43275077c",
+      "acceptanceVerdict": "ACCEPTED",
+      "coverageVerdict": "COMPLETE",
+      "acceptanceSatisfied": 41,
+      "acceptanceTotal": 41,
+      "producersCompletedExitZero": 17,
+      "resultHash": "7d67ef90076ad052389fbb7858e1881898a8eae18041a3b95041b205987bde8f",
+      "resultFileSha256": "6a339f81c6e0e3dc9922e632ff27b560871f0009bf345a7f00e38c8cac07f2b3",
+      "planHash": "3d8752b91eb96bffa3cfae1d6f54378ccfa34451642d0172f1cdb73f01743517",
+      "planNodes": 68,
+      "junit": {
+        "finalShared": { "tests": 6842, "failures": 0, "errors": 0 },
+        "finalDesktop": { "tests": 1530, "failures": 0, "errors": 0 }
+      },
+      "diagnostics": {
+        "clear": 8,
+        "diagnostic.governance": "DIAGNOSTIC_FINDING",
+        "diagnostic.historical-consistency": "DIAGNOSTIC_UNAVAILABLE"
+      }
+    },
+    "receipt": {
+      "receiptKind": "GEOCEDG_ACCEPTANCE_RECEIPT",
+      "receiptId": "69feae5c4e0d07c3e2b24c4735183b83ec3e03e5441dba36cef7d53ed87893fb",
+      "path": "artifacts/agent/maintenance-gstate-final/verification-receipt.json",
+      "fileSha256": "7bc504f27f35f8fb7147624dca218a0d93c1662c86979f220aeda740ad46f489",
+      "candidateCommit": "d8a63d49cbe1cf47071639eac2e8abffd44d9537",
+      "candidateTree": "ed0be0e7fc1d73ddc32fefa635841fa99537eb54",
+      "checkerIdentityHash": "2285db30a0b3802f7b8c0711e05b67e4c09129b9c800d08522d0804afe810ab5",
+      "inputIdentityHash": "e80f747b0b18f40bf9011ee741c364d2056b3b38aa8d9581def06d5f5e32dcde",
+      "environmentCompatibilitySignature": "de567676a3168eb19a13b0b8764c15e6fdca0d97baec6925aac5b72f6c7dc4c0"
+    },
+    "closeoutInspection": {
+      "command": "tools/agent/phase-closeout.ps1 -Action INSPECT -CandidateCommit <M_GSTATE> -ReceiptPath <receipt> -ApprovedCommit <M_GSTATE>",
+      "exitCode": 0,
+      "operation": "IDENTITY_ONLY_CLOSEOUT",
+      "identityConfirmed": true,
+      "mismatches": [],
+      "verificationExecuted": false,
+      "repositoryMutated": false
+    },
+    "reusedEarlierEvidence": false
+  },
+  "furtherVerificationRun": false,
+  "debtDisposition": {
+    "OBS-ORPHANED-HISTORICAL-VERIFICATION-SUITES": "RESOLVED — AUTHOR APPROVED"
+  },
+  "retainedDebtAndObservations": {
+    "TD-R3-CONSTRUCTION-PROTOCOL-MINIMAL-REORDER": "RETAINED; due by PRE-G9B-R7 closeout",
+    "BASELINE-G9U1-BRANDING-EVIDENCE-PIN": "CARRIED_FORWARD",
+    "OBS-R2-PHASE-SELECTION-COHORT": "CARRIED_FORWARD",
+    "GUIDE-A1-SECTION-9.3-STALE": "CARRIED_FORWARD",
+    "OBS-C1-COMMAND-NOT-LOADED-OUTER-RESTORE": "OBSERVATION_RETAINED",
+    "OBS-C1-DOPARSEXML-CLEAR-BEFORE-TRY": "OBSERVATION_RETAINED",
+    "OBS-U1-PLAIN-XML-PASTE-TOLERATES-COMMAND-ERRORS": "OBSERVATION_RETAINED",
+    "OBS-X1-MACRO-BUILDXML-REQUIRES-CONSISTENT-SET-ORDER": "OBSERVATION_RETAINED"
+  },
+  "promotion": {
+    "authorized": true,
+    "method": "clean non-force fast-forward of the linear history ending at this closeout commit",
+    "remoteBefore": {
+      "localMain": "387084422106e66540a3e3400b8b65677087ecc2",
+      "originMain": "387084422106e66540a3e3400b8b65677087ecc2",
+      "liveRemoteMain": "387084422106e66540a3e3400b8b65677087ecc2",
+      "tree": "0fed799f4f704387dcfe96f8fcf3eb5d94d33991"
+    },
+    "tag": "NONE",
+    "release": "NONE",
+    "workingBranch": "RETAINED"
+  },
+  "notAuthorized": ["PRE-G9B-R4", "audit or retirement of other unregistered suites", "verification-runtime.Tests.ps1 redesign", "product or scientific changes", "tag", "release"]
+}
