@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "track": "maintenance/final-generated-state-historical-retirement",
+  "recordKind": "MAINTENANCE_CANDIDATE_EVIDENCE",
+  "observation": "OBS-ORPHANED-HISTORICAL-VERIFICATION-SUITES (remainder)",
+  "changeRoute": "ORDINARY",
+  "verificationClass": "OPERATIONAL_VERIFICATION_INFRASTRUCTURE",
+  "frozenBeforeImplementation": true,
+  "globalInfrastructureChange": true,
+  "plannedAcceptance": "focused operational evidence + one normal FINAL",
+  "productPhaseEffect": "NONE",
+  "scientificContractChanged": false,
+  "productSemanticsChanged": false,
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "selfApproved": false,
+  "base": {
+    "commit": "387084422106e66540a3e3400b8b65677087ecc2",
+    "tree": "0fed799f4f704387dcfe96f8fcf3eb5d94d33991"
+  },
+  "historicalDiagnosis": {
+    "helperBlob": "508e775d574a06407ac2cd81ef77c8a12bbc5b9f",
+    "suiteBlob": "9929e2b06fd6e01d6d79683308ad2d6105a9122e",
+    "blobsUnchangedAt": ["c976deca6", "4117bdfd5", "387084422106e66540a3e3400b8b65677087ecc2"],
+    "c976deca6": "19/19 cases, 148 assertions, exit 0",
+    "4117bdfd5": "18/19; only the verify.ps1 cleanability-ordering assertion fails",
+    "base": "18/19; identical to 4117bdfd5"
+  },
+  "authorArchitectureDecision": "repository-generated-state.ps1 is live and keeps active coverage; migrate its still-valid safety contracts to a new focused registered INFRA_UNIT suite; retire generated-state.tests.ps1; remove its coupling from verification-runtime.Tests.ps1, which stays unregistered",
+  "coupling": {
+    "registryOrVerifierUse": "NONE",
+    "bootstrap": "tools/bootstrap/bootstrap-windows.ps1 uses Assert-VerificationLogDirectoryOutsideGeneratedState",
+    "phaseVerifiers": "25 tools/agent/verify-*.ps1 scripts use snapshot/restore; not registry-invoked",
+    "noCaller": ["Clear-RepositoryGeneratedOutputs", "Assert-RepositoryGeneratedStateCleanability"],
+    "verificationRuntimeTests": { "registered": false, "floorEntry": "E_NO_LONGER_MEANINGFUL", "publicationRefusal": "C_HISTORICAL_FIXTURE_ONLY" }
+  },
+  "caseClassification": {
+    "migratedUnchanged": 16,
+    "migratedRenamed": 2,
+    "migratedWithStructuralAssertionDropped": 1,
+    "obsoleteStructuralAssertionDropped": "verify.ps1 search for Assert-RepositoryGeneratedStateCleanability before & $OperationalVerifier and & $WorkstationVerifier",
+    "historicalFixtureOnlyRetired": "LogDirectory summary generated-state-tests.json and its refusal guard",
+    "newCases": ["real Git enumeration selects only untracked or ignored allowed generated roots"],
+    "duplicatedInActiveAuthority": 0
+  },
+  "changes": {
+    "added": [
+      "tools/agent/tests/repository-generated-state.Tests.ps1",
+      "docs/validation/maintenance_final_generated_state_historical_retirement_candidate_report.md",
+      "geocedg/validation/maintenance-generated-state/maintenance-generated-state-candidate-evidence.json"
+    ],
+    "deleted": ["tools/agent/tests/generated-state.tests.ps1"],
+    "modified": [
+      "geocedg/specs/operations/verification-registry.json (node infra.repository-generated-state added)",
+      "tools/agent/tests/verification-runtime.Tests.ps1 (generated-state.tests.ps1 coupling removed)"
+    ],
+    "helperChanged": false
+  },
+  "registryNode": {
+    "checkId": "infra.repository-generated-state",
+    "nodeKind": "ACCEPTANCE_LEAF",
+    "contractClass": "VERIFICATION_CORE",
+    "tier": "INFRA_UNIT",
+    "requiredForProfiles": ["INFRA_UNIT", "FINAL"],
+    "platforms": ["WINDOWS"],
+    "impactPaths": ["tools/agent/repository-generated-state.ps1"]
+  },
+  "focusedVerification": {
+    "repositoryGeneratedStateTests": "exit 0; 20 cases, 150 assertions; no TEMP residue",
+    "mutationProbes": { "clearingPreflightRemoved": "detected", "buildLogComponentRemoved": "detected", "ignoredEnumerationRemoved": "detected" },
+    "verificationRuntimeTests": "119/119",
+    "otherSuites": ["verification-registry", "verification-final-coverage", "verification-closeout-compatibility", "verification-cli-compatibility", "verification-contract-boundary"],
+    "planOnly": {
+      "before": { "nodes": 67, "planHash": "defe8ab4692af05430464974c3d5e8e029ff7d64ecbc1822c07ff91593c744e0" },
+      "after": { "nodes": 68, "planHash": "3d8752b91eb96bffa3cfae1d6f54378ccfa34451642d0172f1cdb73f01743517", "coverage": "COMPLETE" },
+      "added": ["infra.repository-generated-state"],
+      "removed": [],
+      "changed": []
+    }
+  },
+  "impact": {
+    "verificationInfrastructure": "UPDATE_REQUIRED",
+    "bootstrap": "NO_CHANGE_REQUIRED",
+    "guide": "NONE",
+    "upstreamBoundary": "NONE"
+  },
+  "proposedDebtDisposition": {
+    "OBS-ORPHANED-HISTORICAL-VERIFICATION-SUITES": "RESOLVED (candidate)",
+    "tools/agent/tests/generated-state.tests.ps1": "RETIRED AS HISTORICAL (candidate)",
+    "tools/agent/repository-generated-state.ps1": "LIVE, covered by active INFRA_UNIT leaf",
+    "tools/agent/tests/verification-runtime.Tests.ps1": "no dependency on the retired file; remains unregistered"
+  },
+  "notAuthorized": ["PRE-G9B-R4", "registration or retirement of other unregistered suites", "tag", "release", "promotion"]
+}

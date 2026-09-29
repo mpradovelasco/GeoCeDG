@@ -7,7 +7,6 @@ param(
     [string]$OperationalVerifierPath = (Join-Path $PSScriptRoot "../verify-operational.ps1"),
     [string]$BaselineVerifierPath = (Join-Path $PSScriptRoot "../verify-baseline.ps1"),
     [string]$InfrastructureVerifierPath = (Join-Path $PSScriptRoot "../verify-verification-infrastructure.ps1"),
-    [string]$GeneratedStateTestsPath = (Join-Path $PSScriptRoot "generated-state.tests.ps1"),
     [string]$LogDirectory = (Join-Path ([IO.Path]::GetTempPath()) "geocedg-verification-runtime-tests")
 )
 
@@ -642,7 +641,7 @@ Invoke-RuntimeTest "operational entrypoints declare the PowerShell 7.2 native-st
     param($fixture)
     $minimum = [version]"7.2"
     foreach ($entryPath in @($RootVerifierPath, $CloseoutAdapterPath, $ModulePath, $InfrastructureVerifierPath,
-            $RuntimeFixturePath, $GeneratedStateTestsPath)) {
+            $RuntimeFixturePath)) {
         $tokens = $null
         $errors = $null
         $resolvedPath = (Resolve-Path -LiteralPath $entryPath).Path
@@ -2142,9 +2141,7 @@ Invoke-RuntimeTest "default operational benchmark preserves scope and telemetry-
 Invoke-RuntimeTest "operational defaults isolate five invocations and preserve explicit evidence" -WithoutGit {
     param($fixture)
     $operationalPath = (Resolve-Path -LiteralPath $OperationalVerifierPath).Path
-    $generatedTestsPath = (Resolve-Path -LiteralPath $GeneratedStateTestsPath).Path
     $operationalHash = (Get-FileHash -LiteralPath $operationalPath -Algorithm SHA256).Hash
-    $generatedTestsHash = (Get-FileHash -LiteralPath $generatedTestsPath -Algorithm SHA256).Hash
     $tokens = $null
     $errors = $null
     $operationalAst = [Management.Automation.Language.Parser]::ParseInput(
@@ -2189,30 +2186,6 @@ Invoke-RuntimeTest "operational defaults isolate five invocations and preserve e
     $legacyDefaults = @(1..5 | ForEach-Object { & $legacyBind -Quiet })
     Assert-TestThrows { & $assertDefaultBindings -Bindings $legacyDefaults } "Default operational evidence paths are not distinct" "Prior fixed-default regression"
 
-    # Exercise the generated-state fixture's exact publication refusal, not a
-    # synthetic CreateNew surrogate or the fixture/helper execution body.
-    $generatedAst = [Management.Automation.Language.Parser]::ParseInput(
-        [IO.File]::ReadAllText($generatedTestsPath), [ref]$tokens, [ref]$errors)
-    Assert-TestCondition ($errors.Count -eq 0) "Generated-state fixture source does not parse."
-    $publicationGuards = @($generatedAst.FindAll({ param($node)
-        $node -is [Management.Automation.Language.IfStatementAst] -and
-        $node.Extent.Text.Contains('throw "Refusing to overwrite existing fixture summary: $summaryPath"')
-    }, $true))
-    Assert-TestCondition ($publicationGuards.Count -eq 1) "Cannot isolate the exact generated-state publication refusal."
-    $guardCommands = @($publicationGuards[0].FindAll({ param($node)
-        $node -is [Management.Automation.Language.CommandAst]
-    }, $true))
-    $guardMethods = @($publicationGuards[0].FindAll({ param($node)
-        $node -is [Management.Automation.Language.InvokeMemberExpressionAst]
-    }, $true))
-    Assert-TestCondition ($guardCommands.Count -eq 1 -and
-        $guardCommands[0].GetCommandName() -ceq "Test-Path" -and $guardMethods.Count -eq 0) "Publication guard fixture would execute unexpected work."
-    $publicationGuard = [scriptblock]::Create($publicationGuards[0].Extent.Text)
-    $ownedPrefix = [IO.Path]::GetFullPath($fixture.Root).TrimEnd('/', '\') + [IO.Path]::DirectorySeparatorChar
-    $ownedDirectories = [Collections.Generic.List[string]]::new()
-    foreach ($binding in $defaults) {
-        $ownedDirectories.Add((Join-Path (Join-Path $fixture.Root "default-evidence") ([IO.Path]::GetFileName($binding.LogDirectory))))
-    }
     foreach ($explicitDirectory in @((Join-Path $fixture.Root "explicit-evidence"),
             (Join-Path $fixture.Root "explicit evidence with spaces"))) {
         foreach ($attempt in 1..2) {
@@ -2220,22 +2193,11 @@ Invoke-RuntimeTest "operational defaults isolate five invocations and preserve e
             Assert-TestCondition ($binding.Quiet -and $binding.IsExplicit -and
                 $binding.LogDirectory -ceq $explicitDirectory) "Explicit operational LogDirectory was not preserved exactly."
         }
-        $ownedDirectories.Add($explicitDirectory)
     }
-    foreach ($directory in $ownedDirectories) {
-        $summaryPath = [IO.Path]::GetFullPath((Join-Path $directory "generated-state-tests.json"))
-        Assert-TestCondition ($summaryPath.StartsWith($ownedPrefix, [StringComparison]::OrdinalIgnoreCase)) "Sentinel evidence escaped the owned fixture root."
-        & $publicationGuard
-        Write-FixtureText $summaryPath "Owned sentinel: prior evidence must remain unchanged."
-        $sentinelHash = (Get-FileHash -LiteralPath $summaryPath -Algorithm SHA256).Hash
-        Assert-TestThrows { & $publicationGuard } "Refusing to overwrite existing fixture summary" "Exact generated-state publication refusal"
-        Assert-TestCondition ((Get-FileHash -LiteralPath $summaryPath -Algorithm SHA256).Hash -ceq $sentinelHash) "Publication refusal changed preserved sentinel bytes."
-    }
-    Assert-TestCondition ((Get-FileHash -LiteralPath $operationalPath -Algorithm SHA256).Hash -ceq $operationalHash -and
-        (Get-FileHash -LiteralPath $generatedTestsPath -Algorithm SHA256).Hash -ceq $generatedTestsHash) "Parameter/publication fixture changed source authority."
+    Assert-TestCondition ((Get-FileHash -LiteralPath $operationalPath -Algorithm SHA256).Hash -ceq $operationalHash) "Parameter fixture changed source authority."
     Assert-TestCondition (-not $fixture.GitInitialized -and
         (& $fixture.Module { $script:FixtureNoGitRequests }) -eq 0 -and
-        @(& $fixture.Module { @($script:FixtureNativeCalls) }).Count -eq 0) "Parameter/publication fixture requested Git or native work."
+        @(& $fixture.Module { @($script:FixtureNativeCalls) }).Count -eq 0) "Parameter fixture requested Git or native work."
 }
 
 Invoke-RuntimeTest "operational CI guard binds literal FULL to one canonical command AST" -WithoutGit {
