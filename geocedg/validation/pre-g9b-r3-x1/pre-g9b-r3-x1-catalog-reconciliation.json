@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "phase": "PRE-G9B-R3-X1",
+  "recordKind": "POST_RUN_CATALOG_RECONCILIATION_RECORD",
+  "technicalCandidateState": "RECONCILED / FROZEN",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "selfApproved": false,
+  "passClaimed": false,
+  "mechanism": {
+    "name": "POST_RUN_DETERMINISTIC_CATALOG_RECONCILIATION",
+    "version": "post-run-catalog-reconciliation/v1",
+    "contract": "geocedg/specs/operations/verification-levels.md#11.3",
+    "adr": "docs/adr/0030-post-run-deterministic-verification-catalog-reconciliation.md",
+    "bootstrapException": "POST_RUN_CATALOG_RECONCILIATION_INITIAL_ADOPTION",
+    "bootstrapAdoption": true
+  },
+  "identities": {
+    "publishedBase": { "commit": "78134aa8bc6ac30b65ffd916713fd3ca0502e6c6", "tree": "f23218cc0b7c7189aae69489a1ce7a5ac5ee9fba" },
+    "reviewedTechnicalCandidate": { "commit": "8ab7dddc726c044b6e019e007bca5af938e834d1", "tree": "7f75e3c669609be6369ddc0651e082370c96760f" },
+    "mechanismAdoption": { "commit": "8e4218dbfac89e9aca0e1f45c5635cb159b0ee1b", "tree": "ae197c6f52d9e56fc55bd25110e461a89ef9ba96", "parent": "8ab7dddc726c044b6e019e007bca5af938e834d1" },
+    "reconciliationDescendant": "THE_COMMIT_CONTAINING_THIS_RECORD; identity reported outside this artifact"
+  },
+  "sourceRun": {
+    "runId": "verification-ecdb8e4845064b46af2ec1df49963418",
+    "profile": "FINAL",
+    "status": "REJECTED_VERIFICATION_CORE / UNTRUSTED",
+    "statusChanged": false,
+    "resultPath": "artifacts/agent/pre-g9b-r3-x1-final/verification-result.json",
+    "resultFileSha256": "4e3fbc1d7f9a098f90068a96216d8c304d81bd4257890a4229b6c7249c086734",
+    "resultHash": "7827ace82d27dd648db1a1817528e743315a56d750510ad7d1ca264aba0d4712",
+    "executionPlanHash": "defe8ab4692af05430464974c3d5e8e029ff7d64ecbc1822c07ff91593c744e0",
+    "untrustedChecks": ["junit.shared.final.semantic"],
+    "untrustedCause": "Executed JUnit identities differ from the tracked selection inventory.",
+    "producers": { "planned": 17, "completedExitZero": 17 },
+    "coverage": { "required": 40, "complete": 39, "untrusted": 1, "notRun": 0, "violated": 0 },
+    "acceptanceByClass": {
+      "SEMANTIC": { "satisfied": 14, "untrusted": 1 },
+      "SAFETY": { "satisfied": 4 },
+      "VERIFICATION_CORE": { "satisfied": 21 }
+    },
+    "executedSelections": {
+      "final.shared": { "junitFiles": 686, "identities": 6842, "failedOrErrored": 0, "skipped": 10, "identitiesSha256": "558688f1f679ab6cf48d19c0e8e56d072fdc3423530e66633e8f662d72f44822", "newX1TestsPassed": 28 },
+      "final.desktop": { "junitFiles": 102, "identities": 1527, "failedOrErrored": 0, "identitiesSha256": "cc9429362a34fa2fa4bcef034502498aa1c46560ae0460fd17db174fcbd9e02b" },
+      "final.desktop.g9u1-isolated": { "junitFiles": 2, "identities": 5, "failedOrErrored": 0, "identitiesSha256": "b96008840c0199c4f010402558d6e64cc1380f3cdd4dd66ea6c8816bfd5c32d7" },
+      "final.desktop.revision3-diagnostic": { "junitFiles": 1, "identities": 1, "failedOrErrored": 0, "diagnostic": "DIAGNOSTIC_CLEAR" }
+    },
+    "rerunByThisRecord": false
+  },
+  "eligibility": {
+    "action": "ANALYZE",
+    "checkout": "8e4218dbfac89e9aca0e1f45c5635cb159b0ee1b",
+    "result": "ELIGIBLE",
+    "reason": "STALE_DERIVED_JUNIT_SELECTION_INVENTORY",
+    "repositoryChanged": false
+  },
+  "catalogDerivation": {
+    "tool": "tools/agent/update-verification-junit-inventory.ps1",
+    "discoveryEvidenceSha256": {
+      "shared": "4536e3bb79dbcaab2f4b4a461ed96deac5b4335554adca4feea23cc0ef52e8ed",
+      "desktop": "f100278e5d6a1ce0cfe790990e2cb4f5d677d520816b87e9d6d159c3874290eb"
+    },
+    "selectionEvidence": [
+      "checks/junit.shared.final.producer/junit-shared-final-producer.json",
+      "checks/junit.desktop.final.producer/junit-desktop-final-producer.json",
+      "checks/junit.desktop.g9u1-isolated.producer/junit-desktop-g9u1-isolated-producer.json"
+    ],
+    "handEntered": false,
+    "changedFields": {
+      "final.shared.expected_identity_count": { "before": 6814, "after": 6842 },
+      "final.shared.expected_identities_sha256": {
+        "before": "605658b0d154fb33b9744aea1b1beacd9dc1e69cb1b59b570fd9e218b8dbfa43",
+        "after": "558688f1f679ab6cf48d19c0e8e56d072fdc3423530e66633e8f662d72f44822"
+      }
+    },
+    "inventoryCanonicalSha256": {
+      "before": "9fa207f0011e079cadf8bc5e4df9a3c4e4a5a378b8c18a8ca955b8d3b804b74e",
+      "after": "b5488fcd46c6ef4385949b1f6151354c5db6bc7ec61d190a6bb3bafa130b9ea7"
+    },
+    "registryJunitInventoryPin": {
+      "before": "9fa207f0011e079cadf8bc5e4df9a3c4e4a5a378b8c18a8ca955b8d3b804b74e",
+      "after": "b5488fcd46c6ef4385949b1f6151354c5db6bc7ec61d190a6bb3bafa130b9ea7"
+    },
+    "sourceArchiveUnchanged": true
+  },
+  "executionAuthorities": {
+    "productPayloadUnchanged": true,
+    "scientificTestsUnchanged": true,
+    "buildAuthorityUnchanged": true,
+    "tasksFiltersAndModulesUnchanged": true,
+    "tolerancesAndNumericalReferencesUnchanged": true,
+    "toolchainUnchanged": true,
+    "registryNodesUnchanged": true,
+    "acceptanceSemanticsUnchanged": true,
+    "finalExecutionPlanHash": "defe8ab4692af05430464974c3d5e8e029ff7d64ecbc1822c07ff91593c744e0"
+  },
+  "reconciliationReceipt": "generated after this commit on a clean checkout, outside tracked Git; identity reported outside this artifact",
+  "heavyCampaignRerun": false,
+  "newFinalRun": "NONE",
+  "x1Disposition": {
+    "TD-LOCUS-CERTIFIED-CONSTRUCTION-EXPRESSION-POINT": "CANDIDATE_RESOLUTION_IN_X1",
+    "TD-LOCUS-EVALUATOR-SEGMENT-DRIVER-UPDATE": "RESOLVED_IN_X1_CANDIDATE",
+    "TD-LOCUS-EVALUATOR-INLINE-LITERAL-DEPENDENCY": "RESOLVED_IN_X1_CANDIDATE",
+    "PRE-G9B-R3-X2": "NOT_NEEDED_CONDITIONAL_ON_X1_APPROVAL",
+    "PRE-G9B-R4": "NOT_AUTHORIZED"
+  },
+  "debtLedger": "carried forward unchanged from docs/validation/pre_g9b_r3_x1_candidate_report.md section 11",
+  "notAuthorized": ["push", "main fast-forward", "merge", "rebase", "tag", "release", "new FINAL"]
+}

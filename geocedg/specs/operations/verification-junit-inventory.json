@@ -88,8 +88,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 6814,
-      "expected_identities_sha256": "605658b0d154fb33b9744aea1b1beacd9dc1e69cb1b59b570fd9e218b8dbfa43",
+      "expected_identity_count": 6842,
+      "expected_identities_sha256": "558688f1f679ab6cf48d19c0e8e56d072fdc3423530e66633e8f662d72f44822",
       "not_applicable_allowlist": [
         {
           "identity": "shared::org.geogebra.common.euclidian.EuclidianConstantsTest::allModesShouldHaveHelpPage()::invocation[1/1]",
