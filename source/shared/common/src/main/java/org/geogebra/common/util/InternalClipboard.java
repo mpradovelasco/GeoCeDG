@@ -107,10 +107,7 @@ public class InternalClipboard {
 		geosToHide.addAll(addAlgosDependentFromInside(geosLocal, null));
 		final Set<GeoElement> spatialClosure =
 				addSpatialIdentityClosure(geosLocal, true);
-		if (!app.getKernel().getConstruction().getSpatialIdentityRegistry()
-				.getClosureRecords(spatialClosure).isEmpty()) {
-			geosToHide.addAll(addSpatialClosureParentAlgorithms(geosLocal));
-		}
+		geosToHide.addAll(addParentAlgorithmsOfCopiedGeos(geosLocal, null));
 		// topological order to make sure client listener can process predecessor objects
 		// before child objects (e.g. for multiuser)
 		Collections.sort(geosLocal);
@@ -321,17 +318,22 @@ public class InternalClipboard {
 	}
 
 	/**
-	 * Completes an identity-bearing clipboard payload with the parent algorithm of
-	 * every copied labeled geo. Upstream collection adds a predecessor's algorithm
-	 * only when all of its inputs are copied, so an algorithm with a construction
-	 * constant input, such as {@code Line(C, xAxis)}, would leave its output renamed
-	 * but not serialized. Constants are never copied; they resolve by name on paste.
+	 * Completes a clipboard payload with the parent algorithm of every copied
+	 * labeled geo. Upstream collection adds a predecessor's algorithm only when all
+	 * of its inputs are copied, so an algorithm with a construction constant input,
+	 * such as {@code Line(C, xAxis)}, would leave its output renamed but not
+	 * serialized and a dependent geo would be pasted as free geometry. Constants are
+	 * never copied; they resolve by name on paste. An algorithm is added only when
+	 * every other input is already copied, so the payload never references an object
+	 * that it does not contain. Only parents of copied geos are added, never
+	 * dependents of the copied set.
 	 *
-	 * @param consElements identity-bearing clipboard elements; input and output
+	 * @param consElements clipboard elements; input and output
+	 * @param copiedMacros output set for collecting macros or null if not needed
 	 * @return outputs of the added algorithms that were not yet copied
 	 */
-	public static ArrayList<ConstructionElement> addSpatialClosureParentAlgorithms(
-			ArrayList<ConstructionElement> consElements) {
+	public static ArrayList<ConstructionElement> addParentAlgorithmsOfCopiedGeos(
+			ArrayList<ConstructionElement> consElements, Set<Macro> copiedMacros) {
 		ArrayList<ConstructionElement> addedOutputs = new ArrayList<>();
 		for (ConstructionElement element : new ArrayList<>(consElements)) {
 			if (!(element instanceof GeoElement)
@@ -340,8 +342,12 @@ public class InternalClipboard {
 			}
 			AlgoElement parent = ((GeoElement) element).getParentAlgorithm();
 			if (parent == null || parent instanceof AlgoTableToChart
-					|| consElements.contains(parent)) {
+					|| consElements.contains(parent)
+					|| !inputsAreCopiedOrConstant(parent, consElements)) {
 				continue;
+			}
+			if (parent instanceof AlgoMacro && copiedMacros != null) {
+				copiedMacros.add(((AlgoMacro) parent).getMacro());
 			}
 			consElements.add(parent);
 			for (GeoElement output : parent.getOutput()) {
@@ -352,6 +358,17 @@ public class InternalClipboard {
 			}
 		}
 		return addedOutputs;
+	}
+
+	private static boolean inputsAreCopiedOrConstant(AlgoElement parent,
+			List<ConstructionElement> consElements) {
+		for (GeoElement input : parent.getInput()) {
+			if (!consElements.contains(input)
+					&& !input.getConstruction().isConstantElement(input)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**

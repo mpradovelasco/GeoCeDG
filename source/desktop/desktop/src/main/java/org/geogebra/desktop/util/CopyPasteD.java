@@ -342,10 +342,8 @@ public class CopyPasteD extends CopyPaste {
 		SpatialIdentityRegistry spatialRegistry = cons.getSpatialIdentityRegistry();
 		copiedSpatialIdentity = !spatialRegistry.getClosureRecords(
 				spatialClosure).isEmpty();
-		if (copiedSpatialIdentity) {
-			geostohide.addAll(
-					InternalClipboard.addSpatialClosureParentAlgorithms(geoslocal));
-		}
+		geostohide.addAll(
+				InternalClipboard.addParentAlgorithmsOfCopiedGeos(geoslocal, copiedMacros));
 
 		ArrayList<ConstructionElement> geoslocalsw = removeFreeNonselectedGeoNumerics(
 				geoslocal, geos);

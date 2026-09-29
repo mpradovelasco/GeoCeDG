@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 1,
+  "phase": "PRE-G9B-R3-C1-U1",
+  "recordKind": "TECHNICAL_CANDIDATE_EVIDENCE",
+  "technicalCandidateState": "FROZEN",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "selfApproved": false,
+  "passClaimed": false,
+  "changeRoute": "ORDINARY",
+  "verificationClass": "GLOBAL_IMPACT",
+  "frozenAtPhaseStart": true,
+  "plannedAcceptanceLevel": "FINAL",
+  "implementationBase": {
+    "commit": "68169dc0f026eb43b3bdae41fb69c3796cc41ad0",
+    "tree": "46988e065de7d62aa37d1e29a9f1940dcf5c8f6f",
+    "authority": "PRE-G9B-R3-C1 = PASS — AUTHOR APPROVED (published closeout)"
+  },
+  "branch": "feature/pre-g9b-r3-c1-u1-ordinary-clipboard-closure",
+  "candidateCommit": "the commit that contains this artifact; reported separately",
+  "entryIdentity": {
+    "head": "68169dc0f026eb43b3bdae41fb69c3796cc41ad0",
+    "localMain": "68169dc0f026eb43b3bdae41fb69c3796cc41ad0",
+    "originMain": "68169dc0f026eb43b3bdae41fb69c3796cc41ad0",
+    "liveRemoteMain": "68169dc0f026eb43b3bdae41fb69c3796cc41ad0",
+    "worktreeClean": true,
+    "indexClean": true
+  },
+  "canonicalPromptCreated": false,
+  "closeoutReadinessRun": false,
+  "debtAddressed": "TD-CLIPBOARD-UPSTREAM-CONSTANT-INPUT-DEGRADATION",
+  "upstreamComparison": {
+    "UPSTREAM_REPRODUCES": true,
+    "baseline": "9b93256b7df401ff056c37b502d82df4d72b1522",
+    "method": "git archive of the pinned baseline plus the plain probe",
+    "functionsByteIdenticalToBaseline": [
+      "org.geogebra.common.util.CopyPaste.addPredecessorGeos",
+      "org.geogebra.common.util.InternalClipboard.addAlgosDependentFromInside"
+    ],
+    "classification": "inherited upstream behaviour; not introduced by GeoCeDG"
+  },
+  "rootCause": {
+    "trigger": "a construction constant (xAxis, yAxis, 3D companion constants) as an input of an unselected predecessor's command",
+    "chain": [
+      "addPredecessorGeos adds non-constant predecessors and only the algorithm of selected geos",
+      "addAlgosDependentFromInside adds an algorithm only when containsAll(inputs); a constant is never in the list",
+      "the predecessor is renamed but not serialized",
+      "the command using it fails to resolve; the host XML handler records the error",
+      "the next element of the same label creates the geo as free geometry and the paste reports success"
+    ]
+  },
+  "baseCharacterization": {
+    "P1": "copy [M] with f=Line(C,xAxis), D=Intersect(f,yAxis): f and D renamed but not serialized; pasted M FREE",
+    "P3": "minimal variant: pasted M FREE",
+    "P5": "two-output Intersect(c,xAxis): X_1 and X_2 not serialized; pasted M FREE",
+    "P4": "copy [f] (selected geo has the axis input): correct",
+    "P2": "control on free lines: correct",
+    "identityParticipants": 0,
+    "sameResultOnPlainAndGeoCeDGApp": true
+  },
+  "model": {
+    "ordinaryConstructiveClosure": "InternalClipboard.addParentAlgorithmsOfCopiedGeos, generic, runs for every payload",
+    "ceDGIdentityClosure": "addSpatialIdentityClosure and SpatialIdentityRegistry, only for participating geos",
+    "inputClasses": {
+      "A": "ordinary copied inputs, copied as before",
+      "B": "global host references (constants), referenced by name, never copied, no identity",
+      "C": "non-reconstructible input: the algorithm is not added, so the payload never references an absent object; unreachable through product copy paths"
+    }
+  },
+  "productiveChanges": [
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/util/InternalClipboard.java",
+      "upstreamOwned": true,
+      "changes": [
+        "addSpatialClosureParentAlgorithms renamed and generalized to addParentAlgorithmsOfCopiedGeos with the copied-or-constant input guard and the macro set",
+        "the completion is called for every payload instead of only identity-bearing ones"
+      ]
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/util/CopyPasteD.java",
+      "upstreamOwned": true,
+      "changes": ["the Desktop pipeline calls the completion for every payload, ordinary and same-window"]
+    }
+  ],
+  "tests": {
+    "shared": [
+      { "class": "org.geocedg.common.spatial.PreG9bR3C1U1PlainClipboardClosureTest", "methods": 9, "candidate": { "passed": 9, "failed": 0 }, "extractedBase": { "run": 8, "failed": 6, "passedControls": 2, "omittedNotCompilable": 1 } },
+      { "class": "org.geocedg.common.spatial.PreG9bR3C1U1CedgClipboardClosureTest", "methods": 9, "candidate": { "passed": 9, "failed": 0 }, "extractedBase": { "run": 8, "failed": 6, "passedControls": 2, "omittedNotCompilable": 1 } }
+    ],
+    "desktop": [
+      { "class": "org.geocedg.desktop.PreG9bR3C1U1DesktopClipboardTest", "methods": 2, "routes": ["same-window fast paste", "full payload paste"], "candidate": { "passed": 2, "failed": 0 }, "extractedBase": { "run": 2, "failed": 2 } }
+    ],
+    "abstractBase": "org.geocedg.common.spatial.PreG9bR3C1U1OrdinaryClosureTestBase"
+  },
+  "localEvidenceBeforeCommit": {
+    "affectedSharedRegressions": { "classes": 31, "tests": 388, "failures": 0 },
+    "affectedDesktopRegressions": { "classes": 8, "tests": 113, "failures": 0 },
+    "c1FocalTestsIncluded": true,
+    "finalShared": { "junitFiles": 681, "tests": 6814, "failedOrErrored": 0, "skipped": 10 },
+    "finalDesktop": { "junitFiles": 102, "tests": 1527, "failedOrErrored": 0, "skipped": 1 },
+    "discovery": { "shared": 5897, "desktop": 1533 },
+    "checkstyleFindings": 0,
+    "verificationCoreTestsExitZero": ["verification-final-coverage", "verification-registry", "verification-contract-boundary", "verification-cli-compatibility", "verification-gradle-producer", "verification-supervisor", "verification-runtime"],
+    "upstreamBoundaryRegisteredFiles": 807,
+    "planOnly": {
+      "PHASE POST-G9U1-A3": "c2e25e0b5d28523023f88dc139f015cda004ce28cc94d1ff546a65c4c222876f",
+      "INTEGRATION": "4502c4bd1bbe1a123089e9e524fd0afb354932afbcb410f93052555a16c77aea",
+      "FINAL": "defe8ab4692af05430464974c3d5e8e029ff7d64ecbc1822c07ff91593c744e0",
+      "plansEqualBase": true
+    }
+  },
+  "coupledReconciliations": {
+    "junitInventory": {
+      "discovery.shared": [5879, 5897],
+      "final.shared": [6796, 6814],
+      "discovery.desktop": [1531, 1533],
+      "final.desktop": [1525, 1527],
+      "postG9u1A3NarrowUnchanged": { "identities": 114, "sha256Prefix": "9a45556c" }
+    },
+    "registryCatalogPin": {
+      "from": "9fea75de591dde7566f4af4661e0ec49f2253acd80f4bab213bd1233d9a005b2",
+      "to": "acca0eef7a02c8a75eee569f2ebd5222ac58d46dac51c83d1061db04cb48a4b8"
+    },
+    "upstreamRecord": "purposes extended for InternalClipboard.java and CopyPasteD.java; four test files registered"
+  },
+  "compatibility": {
+    "serializationFormatImpact": "NONE",
+    "identitySchemaImpact": "NONE",
+    "migrationImpact": "NONE",
+    "web": "same shared path; GWT module not built by unit tests",
+    "macros": "Macro.buildMacroXML does not call the helper",
+    "groupsAndDuplicate": "unchanged",
+    "c1IdentityBearingBehaviour": "unchanged and re-verified"
+  },
+  "impact": {
+    "BOOTSTRAP_IMPACT": "NO_CHANGE_REQUIRED",
+    "VERIFICATION_INFRASTRUCTURE_IMPACT": "CATALOG DATA ONLY",
+    "GUIDE_IMPACT": "REVIEWED — NO CHANGE REQUIRED",
+    "UPSTREAM_BOUNDARY_IMPACT": "two registered upstream files modified; four test files added",
+    "SERIALIZATION_FORMAT_IMPACT": "NONE"
+  },
+  "debtLedger": {
+    "TD-CLIPBOARD-UPSTREAM-CONSTANT-INPUT-DEGRADATION": "RESOLVED_BY_CANDIDATE_PENDING_AUTHOR_APPROVAL",
+    "TD-LOCUS-CERTIFIED-CONSTRUCTION-EXPRESSION-POINT": "RETAINED_OWNER_PRE-G9B-R3-X1",
+    "TD-LOCUS-EVALUATOR-SEGMENT-DRIVER-UPDATE": "RETAINED_R3-X1_INSPECTION_OR_CONDITIONAL_R3-X2",
+    "TD-LOCUS-EVALUATOR-INLINE-LITERAL-DEPENDENCY": "RETAINED_R3-X1_INSPECTION_OR_CONDITIONAL_R3-X2",
+    "TD-R3-CONSTRUCTION-PROTOCOL-MINIMAL-REORDER": "RETAINED",
+    "BASELINE-G9U1-BRANDING-EVIDENCE-PIN": "CARRIED_FORWARD",
+    "OBS-R2-PHASE-SELECTION-COHORT": "CARRIED_FORWARD",
+    "GUIDE-A1-SECTION-9.3-STALE": "CARRIED_FORWARD"
+  },
+  "observations": ["OBS-C1-COMMAND-NOT-LOADED-OUTER-RESTORE", "OBS-C1-DOPARSEXML-CLEAR-BEFORE-TRY", "OBS-U1-PLAIN-XML-PASTE-TOLERATES-COMMAND-ERRORS"],
+  "acceptanceCommand": "pwsh -NoProfile -File tools/agent/verify.ps1 -Profile FINAL -LogDirectory artifacts\\agent\\pre-g9b-r3-c1-u1-final",
+  "notAuthorized": ["PRE-G9B-R3-X1", "PRE-G9B-R3-X2", "PRE-G9B-R4 and later", "push", "promotion", "tag", "release"]
+}

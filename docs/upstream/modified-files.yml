@@ -1650,7 +1650,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/util/CopyPasteD.java",
       "change": "modified",
-      "purpose": "Route participating Desktop clipboard operations through the shared complete-closure export/import transaction and stop rejected pastes atomically. PRE-G9B-R3-C1: complete identity-bearing copy payloads with the parent algorithms of copied geos, including commands with a construction-constant input, and restore the previous script policy on every failed import exit. Authority: docs/architecture/pre_g9b_r3_c1_clipboard_atomicity_and_closure_design.md.",
+      "purpose": "Route participating Desktop clipboard operations through the shared complete-closure export/import transaction and stop rejected pastes atomically. PRE-G9B-R3-C1: complete identity-bearing copy payloads with the parent algorithms of copied geos, including commands with a construction-constant input, and restore the previous script policy on every failed import exit. PRE-G9B-R3-C1-U1: apply the same completion to every Desktop payload, ordinary and same-window, so a dependent geo whose predecessor command has a construction-constant input is not pasted as free geometry. Authority: docs/architecture/pre_g9b_r3_c1_u1_ordinary_clipboard_closure_design.md.",
       "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
     },
     {
@@ -2052,7 +2052,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/util/InternalClipboard.java",
       "change": "modified",
-      "purpose": "Export and atomically import complete participating identity closures with one fresh typed-ID remap per paste. PRE-G9B-R3-C1: complete identity-bearing payloads with the parent algorithm of every copied geo, restore a failed import through the runtime rollback protocol while keeping the import failure, reject an identity-bearing import with host rebuild errors as INCOMPLETE_CLOSURE, and restore the previous script policy on every failed import exit. Authority: docs/architecture/pre_g9b_r3_c1_clipboard_atomicity_and_closure_design.md.",
+      "purpose": "Export and atomically import complete participating identity closures with one fresh typed-ID remap per paste. PRE-G9B-R3-C1: complete identity-bearing payloads with the parent algorithm of every copied geo, restore a failed import through the runtime rollback protocol while keeping the import failure, reject an identity-bearing import with host rebuild errors as INCOMPLETE_CLOSURE, and restore the previous script policy on every failed import exit. PRE-G9B-R3-C1-U1: generalize the parent-algorithm completion to every payload (addParentAlgorithmsOfCopiedGeos), guarded so that an algorithm is added only when each non-constant input is copied, so a dependent geo whose predecessor command has a construction-constant input is not pasted as free geometry. Authority: docs/architecture/pre_g9b_r3_c1_u1_ordinary_clipboard_closure_design.md.",
       "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
     },
     {
@@ -4820,6 +4820,30 @@
       "change": "added",
       "purpose": "PRE-G9B-R3-C1: verify Desktop Ctrl+C and Ctrl+V through the key dispatcher with the complete constant-input closure and one undo step, and the exact rollback of a failed Insert File after its overwrite mutation.",
       "authority": "docs/architecture/pre_g9b_r3_c1_clipboard_atomicity_and_closure_design.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/PreG9bR3C1U1OrdinaryClosureTestBase.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R3-C1-U1: shared scenarios verifying that the ordinary host clipboard keeps a dependent geo dependent when a predecessor command has an axis input, without durable identity, with dynamics, undo/redo, reopen, no over-expansion and the completion guard.",
+      "authority": "docs/architecture/pre_g9b_r3_c1_u1_ordinary_clipboard_closure_design.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/PreG9bR3C1U1PlainClipboardClosureTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R3-C1-U1: run the ordinary clipboard closure scenarios on a default upstream-style application.",
+      "authority": "docs/architecture/pre_g9b_r3_c1_u1_ordinary_clipboard_closure_design.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/spatial/PreG9bR3C1U1CedgClipboardClosureTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R3-C1-U1: run the ordinary clipboard closure scenarios on a GeoCeDG application whose geos are all non-participating.",
+      "authority": "docs/architecture/pre_g9b_r3_c1_u1_ordinary_clipboard_closure_design.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9bR3C1U1DesktopClipboardTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R3-C1-U1: verify Desktop Ctrl+C and Ctrl+V of an ordinary axis-input construction through the same-window fast paste and the full-payload paste, with no identity participant.",
+      "authority": "docs/architecture/pre_g9b_r3_c1_u1_ordinary_clipboard_closure_design.md"
     }
   ]
 }
