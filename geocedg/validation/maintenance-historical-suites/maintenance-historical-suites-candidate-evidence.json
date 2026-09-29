@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "track": "maintenance/retire-orphaned-historical-verification-suites",
+  "recordKind": "TECHNICAL_CANDIDATE_EVIDENCE",
+  "technicalCandidateState": "FROZEN",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "selfApproved": false,
+  "passClaimed": false,
+  "changeRoute": "ORDINARY",
+  "verificationClass": "OPERATIONAL_VERIFICATION_INFRASTRUCTURE",
+  "frozenAtTrackStart": true,
+  "plannedAcceptanceLevel": "focused operational evidence: INFRA_UNIT, STATIC, FINAL -PlanOnly equivalence",
+  "fullRequired": false,
+  "fullNotRequiredReason": "no registry node, execution plan, verifier module, schema or check changes; the deleted file is no registered leaf",
+  "base": {
+    "commit": "f96373aca68e3d8efa5316355f75eb1709ddceda",
+    "tree": "24f8fb1d492c92c1518234da6a995839683c9fc3",
+    "identity": "published PRE-G9B-R3-X1 closeout"
+  },
+  "observation": "OBS-ORPHANED-HISTORICAL-VERIFICATION-SUITES",
+  "staleAt": "4117bdfd5c987005ae723996f03e9c2d1eed5923",
+  "diagnosis": {
+    "phaseLifecycle": {
+      "lastChanged": "c976deca6",
+      "atC976deca6LfCheckout": "61/61",
+      "at4117bdfd5": "56/61 (failures 1, 3, 4, 5, 6)",
+      "atBase": "56/61 (failures 1, 3, 4, 5, 6)",
+      "lineEndingSensitiveCase": 6
+    },
+    "generatedState": {
+      "lastChanged": "9063937a4",
+      "atC976deca6": "19 cases pass",
+      "at4117bdfd5": "fails: cleanability preflight ordering",
+      "atBase": "fails: cleanability preflight ordering"
+    },
+    "verificationRuntimeAtBase": "119/119",
+    "unhookedBy": "4117bdfd5 replaced the verify-verification-infrastructure.ps1 fixture loop with INFRA_UNIT, which registers neither suite",
+    "siblingRetired": "the sibling phase-closeout test suite at 596af89a8"
+  },
+  "activeAuthority": {
+    "registryNodes": 0,
+    "staticContracts": 0,
+    "phaseSelections": 0,
+    "liveGuidesOrPrompts": 0
+  },
+  "referenceClassification": {
+    "tools/agent/verify-input-identity-repair.ps1": "HISTORICAL_PHASE_VERIFIER (already fails on the base)",
+    "tools/agent/verify-g9s1-r1-spline-pair-materialization.ps1": "HISTORICAL_PHASE_VERIFIER",
+    "tools/agent/phase-lifecycle.ps1": "VALIDATES_HISTORICAL_EVIDENCE_DOCUMENTS (retained unchanged)",
+    "geocedg/validation/** and docs/validation/**": "IMMUTABLE_HISTORICAL_EVIDENCE",
+    "tools/agent/tests/verification-runtime.Tests.ps1": "CURRENT_PASSING_SUITE depending on generated-state.tests.ps1"
+  },
+  "disposition": {
+    "tools/agent/tests/phase-lifecycle.Tests.ps1": "RETIRED_AS_HISTORICAL (deleted)",
+    "tools/agent/tests/generated-state.tests.ps1": "RETAINED_NOT_ELIGIBLE (verification-runtime.Tests.ps1 depends on it; separate author decision needed)",
+    "tools/agent/tests/verification-runtime.Tests.ps1": "UNCHANGED"
+  },
+  "historicalEvidenceModified": false,
+  "supersededFirstCommit": {
+    "commit": "3c39255c6ac35df5fc2fcc3593536dfe88b4b473",
+    "infraUnitRun": "verification-994888e59f0b470cb805f87794ff55f7",
+    "verdict": "REJECTED_VERIFICATION_CORE",
+    "cause": "infra.closeout-compatibility: this record named a retired closeout file outside the historical allowlist",
+    "correction": "wording only in this record and its markdown source"
+  },
+  "reproducibleAt": "c976deca6a6967682c37edeeef005b108bc11247",
+  "notAuthorized": ["author approval", "closeout", "promotion", "tag", "release"]
+}
