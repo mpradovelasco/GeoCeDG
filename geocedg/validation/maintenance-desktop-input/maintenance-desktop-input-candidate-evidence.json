@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "track": "maintenance/desktop-input-redefine-cancel-recovery",
+  "recordKind": "TECHNICAL_CANDIDATE_EVIDENCE",
+  "technicalCandidateState": "FROZEN",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "selfApproved": false,
+  "passClaimed": false,
+  "changeRoute": "ORDINARY",
+  "verificationClass": "GLOBAL_IMPACT",
+  "frozenAtTrackStart": true,
+  "plannedAcceptanceLevel": "FINAL",
+  "base": {
+    "commit": "f96373aca68e3d8efa5316355f75eb1709ddceda",
+    "tree": "24f8fb1d492c92c1518234da6a995839683c9fc3",
+    "identity": "published PRE-G9B-R3-X1 closeout"
+  },
+  "debt": "TD-DESKTOP-INPUT-REDEFINE-CANCEL-STRANDS-SUBMISSION",
+  "causality": "PRE_EXISTING before PRE-G9B-R3-X1 (b49219408 submission guard; a53c1c992 silent redefine cancellation)",
+  "rootCause": [
+    "AlgebraInputD ignores explicit Enter while productSubmissionPending is set; it was cleared only by the result callback, a non-null error message or an exception",
+    "a cancelled or unavailable spatial redefine ends with SpatialRedefineCancelledException consumed as normal cancellation: no result and no error"
+  ],
+  "invariant": "every accepted explicit Enter reaches exactly one terminal state (success, error, cancelled, unavailable/no result) and every terminal state releases the Input submission guard",
+  "layer": "Desktop frontend Input controller",
+  "changes": {
+    "product": ["source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/inputbar/AlgebraInputD.java"],
+    "tests": ["source/desktop/desktop/src/test/java/org/geocedg/desktop/DesktopInputRedefineCancelRecoveryTest.java"],
+    "upstreamRecord": ["docs/upstream/modified-files.yml (AlgebraInputD purpose extended; new test registered; 813 files; Assert-GeoCeDGUpstreamBoundary passes)"],
+    "derivedCatalog": [
+      "geocedg/specs/operations/verification-junit-inventory.json",
+      "geocedg/specs/operations/verification-registry.json"
+    ],
+    "records": [
+      "docs/validation/maintenance_desktop_input_redefine_cancel_recovery_candidate_report.md",
+      "geocedg/validation/maintenance-desktop-input/maintenance-desktop-input-candidate-evidence.json"
+    ]
+  },
+  "unchanged": ["shared kernel", "AlgebraProcessor", "redefine assessment and identity semantics", "serialization", "scientific tests and references", "build", "verifier code", "FINAL execution plan"],
+  "tests": {
+    "DesktopInputRedefineCancelRecoveryTest": {
+      "tests": 3,
+      "beforeFix": "the cancelled and unavailable cases fail at the next-Enter assertion",
+      "afterFix": "3 pass"
+    },
+    "adjacent": {
+      "G9U1AlgebraSubmissionTest": 7,
+      "PreG9bR3RedefineFrontendTest": 7,
+      "PostG9U1A3FrontendRedefineTest": 8,
+      "G9U1DefinitionAffordanceTest": 8,
+      "failures": 0
+    },
+    "checkstyleDesktopMainAndTest": "no finding"
+  },
+  "catalogDerivation": {
+    "tool": "tools/agent/update-verification-junit-inventory.ps1",
+    "sharedDiscoveryEvidenceSha256": "4536e3bb79dbcaab2f4b4a461ed96deac5b4335554adca4feea23cc0ef52e8ed",
+    "desktopDiscoveryEvidenceSha256": "d252ade17f157ba04a93f4681ba1b2f9b787599dcf786b82421db8a42000316b",
+    "executedSelectionEvidence": "final.desktop (103 JUnit files, 0 failures)",
+    "discoveryDesktop": { "before": 1533, "after": 1536, "afterSha256": "f76a5fb484a5982224f46d2563e61c9f3a35e782883d0835a79116ea1b810d14" },
+    "finalDesktop": { "before": 1527, "after": 1530, "afterSha256": "fcc501dedf627d046ccb18baa95311a1fa48524a358737fddea8dd63a6aeaf5b" },
+    "registryPin": { "before": "b5488fcd46c6ef4385949b1f6151354c5db6bc7ec61d190a6bb3bafa130b9ea7", "after": "8b9d2719c0d9844351b1b3e546b185a9efa5e9d2b3a68f6b1409dea30049ab04" },
+    "finalExecutionPlanHash": "defe8ab4692af05430464974c3d5e8e029ff7d64ecbc1822c07ff91593c744e0",
+    "handEntered": false
+  },
+  "reusedEvidence": "NONE (no X1 receipt, no GOV-R reconciliation, no historical FINAL)",
+  "acceptance": "one normal FINAL on the committed candidate, reported outside this artifact",
+  "notAuthorized": ["author approval", "closeout", "promotion", "tag", "release"]
+}

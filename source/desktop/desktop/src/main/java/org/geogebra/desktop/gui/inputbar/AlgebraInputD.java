@@ -414,6 +414,11 @@ public class AlgebraInputD extends JPanel implements ActionListener,
 							productSubmissionPending = false;
 							callback.callback(result);
 						});
+				// Desktop product submissions complete synchronously; the guard only
+				// covers their nested dialogs. A cancelled or unavailable spatial
+				// redefine ends without a result or an error: its dialog already
+				// explained it and the text stays editable, so release the guard.
+				productSubmissionPending = false;
 			} else {
 				app.getKernel().getAlgebraProcessor()
 						.processAlgebraCommandNoExceptionHandling(input, true,

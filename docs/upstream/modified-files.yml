@@ -3822,7 +3822,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/inputbar/AlgebraInputD.java",
       "change": "modified",
-      "purpose": "Make explicit product submission atomic while focus loss, preview and Escape create no objects.",
+      "purpose": "Make explicit product submission atomic while focus loss, preview and Escape create no objects. Maintenance TD-DESKTOP-INPUT-REDEFINE-CANCEL-STRANDS-SUBMISSION: release the product submission guard when a synchronous submission ends without a result, such as a cancelled or unavailable spatial redefine.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -4802,6 +4802,12 @@
       "change": "added",
       "purpose": "PRE-G9B-R3: verify the Classic 5 reason surfacing, the kernel-authorized durable-contract choices and native .cedg round trips of version-1, version-2 and mixed records.",
       "authority": "geocedg/specs/spatial/durable-dependency-projection.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/DesktopInputRedefineCancelRecoveryTest.java",
+      "change": "added",
+      "purpose": "Maintenance TD-DESKTOP-INPUT-REDEFINE-CANCEL-STRANDS-SUBMISSION: verify through the real Input bar that a cancelled or unavailable spatial redefine leaves the construction unchanged and the Input usable, with accepted redefines and ordinary input errors unchanged.",
+      "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/PreG9bR3R1LateParticipationTest.java",
