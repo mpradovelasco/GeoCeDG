@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "track": "maintenance/retire-orphaned-historical-verification-suites",
+  "recordKind": "AUTHOR_CLOSEOUT_DISPOSITION",
+  "status": "HISTORICAL-SUITE MAINTENANCE — PASS — AUTHOR APPROVED",
+  "authorDecisionDate": "2026-09-29",
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "technicalCandidateFrozen": true,
+  "candidateMutated": false,
+  "newHeavyFinal": "NONE",
+  "approvedReplayCandidate": {
+    "commit": "2035131604bcad88207947070afae3815b1339b0",
+    "tree": "d37a11ccb697676bac1efa03a0156ff345107699",
+    "parent": "107a98474fcf1ccc98aef282938c6b7fb70460c7",
+    "branch": "maintenance/retire-orphaned-historical-verification-suites-replay",
+    "modifiedByCloseout": false
+  },
+  "sourceApprovedCandidate": {
+    "commit": "2f1b091e1427e99c777288015cef43bcfc7face7",
+    "tree": "6f0ae84194b6e8601ddcb7b7972083df9236221e",
+    "base": "f96373aca68e3d8efa5316355f75eb1709ddceda",
+    "branch": "maintenance/retire-orphaned-historical-verification-suites",
+    "modified": false,
+    "published": false
+  },
+  "supersededIntermediate": {
+    "commit": "3c39255c6ac35df5fc2fcc3593536dfe88b4b473",
+    "infraUnit": "verification-994888e59f0b470cb805f87794ff55f7",
+    "status": "REJECTED_VERIFICATION_CORE",
+    "statusChanged": false,
+    "replayed": false
+  },
+  "semanticDisposition": {
+    "tools/agent/tests/phase-lifecycle.Tests.ps1": "RETIRED AS HISTORICAL",
+    "tools/agent/tests/generated-state.tests.ps1": "RETAINED PENDING SEPARATE MAINTENANCE DESIGN",
+    "tools/agent/tests/verification-runtime.Tests.ps1": "UNCHANGED"
+  },
+  "acceptedContent": {
+    "deleted": ["tools/agent/tests/phase-lifecycle.Tests.ps1"],
+    "added": [
+      "docs/validation/maintenance_retire_orphaned_historical_verification_suites_record.md",
+      "geocedg/validation/maintenance-historical-suites/maintenance-historical-suites-candidate-evidence.json"
+    ]
+  },
+  "acceptedEvidence": {
+    "verificationClass": "OPERATIONAL_VERIFICATION_INFRASTRUCTURE",
+    "sourceCandidate": {
+      "infraUnit": { "run": "verification-515d3d40a03040b6ac39b307cbf048ae", "verdict": "ACCEPTED / COMPLETE", "satisfied": 21 },
+      "static": { "run": "verification-65267b0b4a6741ccb325aa8ee65dae89", "verdict": "ACCEPTED / COMPLETE" },
+      "planOnly": "byte-identical to P_X1, 67 nodes"
+    },
+    "replayEquivalence": {
+      "status": "PROVEN",
+      "pathSetEqual": true,
+      "disjointFromInputDelta": true,
+      "addedBlobsIdentical": true,
+      "deletionIdentical": true,
+      "otherPathsInheritedFromPInput": 11674,
+      "mergeTreeReproducesReplayTree": true,
+      "containsIntermediate": false,
+      "proof": "artifacts/agent/maintenance-hist-replay/replay-equivalence-proof.json"
+    },
+    "replay": {
+      "infraUnit": { "run": "verification-777ed3c141b44c2985d38bda10ca46e1", "verdict": "ACCEPTED / COMPLETE", "satisfied": 21, "resultHash": "45890814dbf126310af009625253e16aa09836756789eca7811035585a66ea24" },
+      "static": { "run": "verification-1b0571a755d24eb283a653d052040cb0", "verdict": "ACCEPTED / COMPLETE", "resultHash": "63847e9d10b2bfb204422b62c42b48562676cb47c9f40308243c8c95496d2bac" },
+      "planOnly": { "nodes": 67, "planHash": "defe8ab4692af05430464974c3d5e8e029ff7d64ecbc1822c07ff91593c744e0", "byteIdenticalToPInput": true },
+      "gitDiffCheck": "PASS",
+      "escalationRequest": false,
+      "full": "NOT_RUN (frozen class)"
+    },
+    "finalReceipt": "NONE (class issues no FINAL receipt)"
+  },
+  "furtherVerificationRun": false,
+  "debtDisposition": {
+    "OBS-ORPHANED-HISTORICAL-VERIFICATION-SUITES": "PARTIALLY RESOLVED — AUTHOR APPROVED; phase-lifecycle.Tests.ps1 RETIRED AS HISTORICAL; generated-state.tests.ps1 RETAINED PENDING SEPARATE MAINTENANCE DESIGN"
+  },
+  "retainedDebtAndObservations": {
+    "OBS-ORPHANED-HISTORICAL-VERIFICATION-SUITES (remainder)": "generated-state.tests.ps1 stale since 4117bdfd5; verification-runtime.Tests.ps1 depends on it; RETAINED PENDING SEPARATE MAINTENANCE DESIGN; no implementation authorized",
+    "TD-R3-CONSTRUCTION-PROTOCOL-MINIMAL-REORDER": "RETAINED; due by PRE-G9B-R7 closeout",
+    "BASELINE-G9U1-BRANDING-EVIDENCE-PIN": "CARRIED_FORWARD",
+    "OBS-R2-PHASE-SELECTION-COHORT": "CARRIED_FORWARD",
+    "GUIDE-A1-SECTION-9.3-STALE": "CARRIED_FORWARD",
+    "OBS-C1-COMMAND-NOT-LOADED-OUTER-RESTORE": "OBSERVATION_RETAINED",
+    "OBS-C1-DOPARSEXML-CLEAR-BEFORE-TRY": "OBSERVATION_RETAINED",
+    "OBS-U1-PLAIN-XML-PASTE-TOLERATES-COMMAND-ERRORS": "OBSERVATION_RETAINED",
+    "OBS-X1-MACRO-BUILDXML-REQUIRES-CONSISTENT-SET-ORDER": "OBSERVATION_RETAINED"
+  },
+  "promotion": {
+    "authorized": true,
+    "method": "clean non-force fast-forward of the linear history ending at this closeout commit",
+    "remoteBefore": {
+      "localMain": "107a98474fcf1ccc98aef282938c6b7fb70460c7",
+      "originMain": "107a98474fcf1ccc98aef282938c6b7fb70460c7",
+      "liveRemoteMain": "107a98474fcf1ccc98aef282938c6b7fb70460c7",
+      "tree": "3afde754b19a96b15fb32ed456ba6f8279af765f"
+    },
+    "tag": "NONE",
+    "release": "NONE",
+    "workingBranches": "RETAINED"
+  },
+  "notAuthorized": ["generated-state.tests.ps1 / verification-runtime.Tests.ps1 maintenance", "PRE-G9B-R4", "later PRE-G9B-R phases", "G9B", "G9C", "G9U2", "productive G10", "tag", "release"]
+}
