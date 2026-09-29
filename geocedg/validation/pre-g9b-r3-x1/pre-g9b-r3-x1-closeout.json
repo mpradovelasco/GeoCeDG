@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "phase": "PRE-G9B-R3-X1",
+  "recordKind": "AUTHOR_CLOSEOUT_DISPOSITION",
+  "status": "PRE-G9B-R3-X1 — PASS — AUTHOR APPROVED",
+  "governanceStatus": "GOV-R — PASS — AUTHOR APPROVED",
+  "authorDecisionDate": "2026-09-29",
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "technicalCandidateFrozen": true,
+  "candidateMutated": false,
+  "newHeavyFinal": "NONE",
+  "sourceRunReinterpreted": false,
+  "approvedGovernanceCommit": {
+    "mechanism": "POST_RUN_DETERMINISTIC_CATALOG_RECONCILIATION",
+    "commit": "8e4218dbfac89e9aca0e1f45c5635cb159b0ee1b",
+    "tree": "ae197c6f52d9e56fc55bd25110e461a89ef9ba96",
+    "parent": "8ab7dddc726c044b6e019e007bca5af938e834d1",
+    "adr": "docs/adr/0030-post-run-deterministic-verification-catalog-reconciliation.md",
+    "modifiedByCloseout": false
+  },
+  "approvedTechnicalCandidate": {
+    "commit": "8ab7dddc726c044b6e019e007bca5af938e834d1",
+    "tree": "7f75e3c669609be6369ddc0651e082370c96760f",
+    "parent": "78134aa8bc6ac30b65ffd916713fd3ca0502e6c6",
+    "base": "78134aa8bc6ac30b65ffd916713fd3ca0502e6c6",
+    "branch": "feature/pre-g9b-r3-x1-certified-expression-points",
+    "modifiedByCloseout": false
+  },
+  "acceptedReconciliation": {
+    "commit": "a624e4ad21d1b073c1153c55ae01c46cb491728a",
+    "tree": "b951548c1b2eef00202ef9d8d4707efa09e4cbb8",
+    "parent": "8e4218dbfac89e9aca0e1f45c5635cb159b0ee1b",
+    "modifiedByCloseout": false
+  },
+  "authorSmoke": "PASS",
+  "acceptedEvidence": {
+    "sourceHeavyExecution": {
+      "run": "verification-ecdb8e4845064b46af2ec1df49963418",
+      "status": "REJECTED_VERIFICATION_CORE / UNTRUSTED",
+      "statusChanged": false,
+      "resultHash": "7827ace82d27dd648db1a1817528e743315a56d750510ad7d1ca264aba0d4712",
+      "resultFileSha256": "4e3fbc1d7f9a098f90068a96216d8c304d81bd4257890a4229b6c7249c086734",
+      "planHash": "defe8ab4692af05430464974c3d5e8e029ff7d64ecbc1822c07ff91593c744e0",
+      "untrustedChecks": ["junit.shared.final.semantic"],
+      "producersCompletedExitZero": 17,
+      "junit": {
+        "finalShared": { "tests": 6842, "failures": 0, "errors": 0, "skipped": 10, "newX1TestsPassed": 28 },
+        "finalDesktop": { "tests": 1527, "failures": 0, "errors": 0, "skipped": 1 },
+        "g9u1Isolated": { "tests": 5, "failures": 0 },
+        "revision3Diagnostic": { "tests": 1, "failures": 0 }
+      },
+      "diagnostics": {
+        "clear": 8,
+        "diagnostic.governance": "DIAGNOSTIC_FINDING",
+        "diagnostic.historical-consistency": "DIAGNOSTIC_UNAVAILABLE"
+      }
+    },
+    "reconciliationReceipt": {
+      "receiptKind": "GEOCEDG_POST_RUN_CATALOG_RECONCILIATION",
+      "receiptId": "7a4c4825447a9966e82268ecd09e4f9aba4f293f36493705d2310b57c5454400",
+      "path": "artifacts/agent/pre-g9b-r3-x1-reconciliation/validation-3-durable/catalog-reconciliation-receipt.json",
+      "fileSha256": "180070262178e2846ed6c04a5165c976102dfbc281d5453846eeba8efba6fb8d",
+      "reconciliationStatus": "ACCEPTED",
+      "technicalAcceptanceEligible": true,
+      "heavyCampaignRerun": false,
+      "sourceRunReinterpreted": false,
+      "reason": "STALE_DERIVED_JUNIT_SELECTION_INVENTORY",
+      "preservedDiscoveryEvidence": "artifacts/agent/pre-g9b-r3-x1-reconciliation/discovery-evidence/MANIFEST.json"
+    },
+    "closeoutInspection": {
+      "command": "tools/agent/phase-closeout.ps1 -Action INSPECT -CandidateCommit <T> -ReceiptPath <receipt> -ReconciliationCommit <R> -ApprovedCommit <T>",
+      "exitCode": 0,
+      "identityConfirmed": true,
+      "mismatches": [],
+      "closeoutRoute": "POST_RUN_CATALOG_RECONCILIATION",
+      "reconciliationRevalidated": true,
+      "sourceRunReinterpreted": false,
+      "verificationExecuted": false,
+      "repositoryMutated": false
+    }
+  },
+  "furtherVerificationRun": false,
+  "debtDisposition": {
+    "TD-LOCUS-CERTIFIED-CONSTRUCTION-EXPRESSION-POINT": "RESOLVED",
+    "TD-LOCUS-EVALUATOR-SEGMENT-DRIVER-UPDATE": "RESOLVED_IN_X1",
+    "TD-LOCUS-EVALUATOR-INLINE-LITERAL-DEPENDENCY": "RESOLVED_IN_X1"
+  },
+  "phaseDisposition": {
+    "PRE-G9B-R3-X2": "NOT_NEEDED",
+    "PRE-G9B-R4": "NOT_AUTHORIZED"
+  },
+  "retainedDebtAndObservations": {
+    "TD-DESKTOP-INPUT-REDEFINE-CANCEL-STRANDS-SUBMISSION": "NEW_PROVISIONAL; PRE_EXISTING before X1; Desktop Input / redefine-cancellation lifecycle; owner maintenance/desktop-input-redefine-cancel-recovery (implementation and technical verification only)",
+    "OBS-ORPHANED-HISTORICAL-VERIFICATION-SUITES": "OBSERVATION; phase-lifecycle.Tests.ps1 and generated-state.tests.ps1 stale since 4117bdfd5; owner maintenance/retire-orphaned-historical-verification-suites",
+    "TD-R3-CONSTRUCTION-PROTOCOL-MINIMAL-REORDER": "RETAINED; due by PRE-G9B-R7 closeout",
+    "BASELINE-G9U1-BRANDING-EVIDENCE-PIN": "CARRIED_FORWARD",
+    "OBS-R2-PHASE-SELECTION-COHORT": "CARRIED_FORWARD",
+    "GUIDE-A1-SECTION-9.3-STALE": "CARRIED_FORWARD",
+    "OBS-C1-COMMAND-NOT-LOADED-OUTER-RESTORE": "OBSERVATION_RETAINED",
+    "OBS-C1-DOPARSEXML-CLEAR-BEFORE-TRY": "OBSERVATION_RETAINED",
+    "OBS-U1-PLAIN-XML-PASTE-TOLERATES-COMMAND-ERRORS": "OBSERVATION_RETAINED",
+    "OBS-X1-MACRO-BUILDXML-REQUIRES-CONSISTENT-SET-ORDER": "OBSERVATION_RETAINED"
+  },
+  "promotion": {
+    "authorized": true,
+    "method": "clean non-force fast-forward of the linear history ending at this closeout commit",
+    "remoteBefore": {
+      "localMain": "78134aa8bc6ac30b65ffd916713fd3ca0502e6c6",
+      "originMain": "78134aa8bc6ac30b65ffd916713fd3ca0502e6c6",
+      "liveRemoteMain": "78134aa8bc6ac30b65ffd916713fd3ca0502e6c6",
+      "tree": "f23218cc0b7c7189aae69489a1ce7a5ac5ee9fba"
+    },
+    "tag": "NONE",
+    "release": "NONE",
+    "workingBranch": "RETAINED"
+  },
+  "notAuthorized": ["PRE-G9B-R3-X2", "PRE-G9B-R4", "later PRE-G9B-R phases", "G9B", "G9C", "G9U2", "productive G10", "tag", "release"]
+}

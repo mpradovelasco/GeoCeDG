@@ -1,6 +1,8 @@
 # ADR 0030: Post-run deterministic verification-catalog reconciliation
 
-- Status: **Proposed — GOV-R technical bootstrap**
+- Status: **ACCEPTED — AUTHOR APPROVED** (decision of 2026-09-29 on the exact
+  adoption commit `8e4218dbfac89e9aca0e1f45c5635cb159b0ee1b`; recorded in the
+  [PRE-G9B-R3-X1 closeout record](../validation/pre_g9b_r3_x1_closeout_record.md))
 - Date: 2026-09-29
 - Scope: operational/verification governance; `PRODUCT_PHASE_EFFECT = NONE`
 - Normative contract: [verification levels §11.3](../../geocedg/specs/operations/verification-levels.md#113-post-run-deterministic-catalog-reconciliation)
@@ -9,13 +11,13 @@
   [ADR 0025](0025-commit-first-acceptance-and-dual-closeout.md) (commit-first acceptance)
 
 ```text
-TECHNICAL_CANDIDATE_STATE = FROZEN
-AUTHOR_DECISION           = NOT_RECORDED_IN_THIS_ARTIFACT
-selfApproved              = false
+AUTHOR_DECISION = APPROVED (exact adoption commit 8e4218db…)
+selfApproved    = false
 ```
 
-This record carries no approval of its own. Acceptance is recorded only by a
-separate author-decision record naming the exact adoption commit.
+This ADR carries no approval of its own. Acceptance is recorded by the separate
+author-decision record named in the status line; the decision text below is
+unchanged from the approved adoption commit.
 
 ## Context
 
@@ -119,6 +121,7 @@ tracked expected set stayed at the base cohort.
 
 ## Approval boundary
 
-This ADR is a technical bootstrap candidate. It authorizes no product phase, no
-push, promotion, tag or release, and no use of the mechanism beyond its immediate
-application to `PRE-G9B-R3-X1` authorized by the same author instruction.
+The author approved the exact adoption commit. The approval authorizes no product
+phase, no tag or release, and no further use of the mechanism: every later use
+requires an explicit author authorization naming the source run, as section 11.3
+states.
