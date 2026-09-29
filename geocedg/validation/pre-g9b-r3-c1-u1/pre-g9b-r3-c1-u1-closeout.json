@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "phase": "PRE-G9B-R3-C1-U1",
+  "recordKind": "AUTHOR_CLOSEOUT_DISPOSITION",
+  "status": "PRE-G9B-R3-C1-U1 — PASS — AUTHOR APPROVED",
+  "authorDecisionDate": "2026-09-29",
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "technicalCandidateFrozen": true,
+  "candidateMutated": false,
+  "approvedTechnicalCandidate": {
+    "commit": "c595adc5ff5a8cc1b1df0b77850b633fad942926",
+    "tree": "270d1cfb0ad4076b119040a87e5cb7db14fef2c9",
+    "parent": "68169dc0f026eb43b3bdae41fb69c3796cc41ad0",
+    "base": "68169dc0f026eb43b3bdae41fb69c3796cc41ad0",
+    "branch": "feature/pre-g9b-r3-c1-u1-ordinary-clipboard-closure",
+    "modifiedByCloseout": false
+  },
+  "acceptedContent": [
+    "ordinary constructive closure is not CeDG durable identity closure",
+    "the parent algorithm of every copied labeled geo is added when each of its other inputs is already copied; global constants and axes are referenced by name; only parents of copied geos are added, never dependents of the copied set",
+    "no durable CeDG identity for ordinary geometry, no spatial records, no copied axes, no change of identity schema, serialization format or migration, no change of the C1 identity-bearing clipboard semantics"
+  ],
+  "upstreamReproduction": {
+    "UPSTREAM_REPRODUCES": true,
+    "baseline": "9b93256b7df401ff056c37b502d82df4d72b1522",
+    "functionsByteIdenticalToBaselineAndUnmodified": [
+      "org.geogebra.common.util.CopyPaste.addPredecessorGeos",
+      "org.geogebra.common.util.InternalClipboard.addAlgosDependentFromInside"
+    ],
+    "classification": "inherited upstream behaviour; not introduced by GeoCeDG"
+  },
+  "hostVersusIdentitySeparation": "the defect occurs with no identity participant on plain and GeoCeDG applications; the completion needs no identity; identity-bearing payloads receive the same completion as at C1 and the C1 focal tests pass unchanged in the accepted FINAL evidence",
+  "acceptedEvidence": {
+    "command": "tools/agent/verify.ps1 -Profile FINAL -LogDirectory artifacts\\agent\\pre-g9b-r3-c1-u1-final",
+    "run": "verification-bff478802c8d464095428ac5f8768988",
+    "acceptance": "ACCEPTED",
+    "coverage": "COMPLETE",
+    "exitCode": 0,
+    "required": 40,
+    "completed": 40,
+    "violated": 0,
+    "untrusted": 0,
+    "notRun": 0,
+    "planHash": "defe8ab4692af05430464974c3d5e8e029ff7d64ecbc1822c07ff91593c744e0",
+    "resultHash": "9c1d01467942563c19b285ce449b55d0ba59a5489edd93a5967d4ffd2ebd7c36",
+    "resultFileSha256": "75748cccb282a80a21cea043298df094d5dc5157daec74b2cd9d9b83a121f05e",
+    "receipt": {
+      "receiptId": "e48ca6971b777750df6f32dd36b87137b5394b4205e7fc7ee61c0d4ff9d2326e",
+      "fileSha256": "a10471075affcabebc8288c4c69b216f9ef532adb9b9f8a7f2be14934d498d24",
+      "candidateCommit": "c595adc5ff5a8cc1b1df0b77850b633fad942926",
+      "candidateTree": "270d1cfb0ad4076b119040a87e5cb7db14fef2c9",
+      "baseCommit": null,
+      "checkerIdentityHash": "18492342b4e45957200bccb5eb89c1d0e115b8bef7cec47db718d10f69a992ba",
+      "inputIdentityHash": "4aed0e08c1873b5f4a2c67b846d7ad007f8a7a50565d7b794cf34f754eee272f",
+      "environmentCompatibilitySignature": "de567676a3168eb19a13b0b8764c15e6fdca0d97baec6925aac5b72f6c7dc4c0"
+    },
+    "junit": {
+      "finalShared": { "tests": 6814, "failures": 0, "errors": 0, "skipped": 10 },
+      "finalDesktop": { "tests": 1527, "failures": 0, "errors": 0, "skipped": 1 },
+      "g9u1Isolated": { "tests": 5, "failures": 0 },
+      "revision3Diagnostic": { "tests": 1, "failures": 0 },
+      "c1U1Focal": { "shared": 18, "desktop": 2, "failures": 0 },
+      "c1Focal": { "shared": 9, "desktop": 2, "failures": 0 },
+      "postG9u1A3Narrow": { "classes": 11, "tests": 114, "failures": 0, "inventoryIdentitiesSha256Prefix": "9a45556c" }
+    },
+    "diagnostics": {
+      "clear": 8,
+      "diagnostic.governance": "DIAGNOSTIC_FINDING",
+      "diagnostic.historical-consistency": "DIAGNOSTIC_UNAVAILABLE",
+      "identicalToPreviousAcceptedFinal": true
+    },
+    "closeoutInspection": {
+      "command": "tools/agent/phase-closeout.ps1 -Action INSPECT",
+      "identityConfirmed": true,
+      "mismatches": []
+    }
+  },
+  "furtherVerificationRun": false,
+  "debtDisposition": {
+    "TD-CLIPBOARD-UPSTREAM-CONSTANT-INPUT-DEGRADATION": "RESOLVED"
+  },
+  "retainedObservation": {
+    "id": "OBS-U1-PLAIN-XML-PASTE-TOLERATES-COMMAND-ERRORS",
+    "class": "OBSERVATION_NOT_PRODUCT_DEBT",
+    "statement": "a generic non-identity XML paste may still tolerate unrelated command errors according to existing host behaviour; C1-U1 establishes no new generic XML-error policy; not promoted to a defect unless future evidence shows a product-integrity failure needing a separate decision"
+  },
+  "retainedDebt": [
+    { "id": "TD-LOCUS-CERTIFIED-CONSTRUCTION-EXPRESSION-POINT", "owner": "PRE-G9B-R3-X1" },
+    { "id": "TD-LOCUS-EVALUATOR-SEGMENT-DRIVER-UPDATE", "state": "retained; inspected at PRE-G9B-R3-X1 entry" },
+    { "id": "TD-LOCUS-EVALUATOR-INLINE-LITERAL-DEPENDENCY", "state": "retained; inspected at PRE-G9B-R3-X1 entry" },
+    { "id": "TD-R3-CONSTRUCTION-PROTOCOL-MINIMAL-REORDER", "state": "retained; due by the PRE-G9B-R7 closeout" }
+  ],
+  "retainedSeparately": [
+    { "id": "BASELINE-G9U1-BRANDING-EVIDENCE-PIN", "resolvedHere": false },
+    { "id": "OBS-R2-PHASE-SELECTION-COHORT", "resolvedHere": false },
+    { "id": "GUIDE-A1-SECTION-9.3-STALE", "resolvedHere": false },
+    { "id": "OBS-C1-COMMAND-NOT-LOADED-OUTER-RESTORE", "resolvedHere": false },
+    { "id": "OBS-C1-DOPARSEXML-CLEAR-BEFORE-TRY", "resolvedHere": false }
+  ],
+  "x1EvaluatorDebtPolicy": "at X1 entry inspect both evaluator debts for synergistic repair under the Ri policy; if either cannot be resolved cleanly inside X1 without widening its scientific or architectural scope, retain/activate PRE-G9B-R3-X2 — evaluator correctness after X1 and before R4; neither implemented here",
+  "roadmapOrder": ["PRE-G9B-R3-C1", "PRE-G9B-R3-C1-U1", "PRE-G9B-R3-X1", "PRE-G9B-R3-X2 (only if required)", "PRE-G9B-R4"],
+  "roadmapOrderKind": "EXECUTION_ORDER_ONLY",
+  "phaseStates": {
+    "PRE-G9B-R3-C1": "PASS — AUTHOR APPROVED",
+    "PRE-G9B-R3-C1-U1": "PASS — AUTHOR APPROVED",
+    "PRE-G9B-R3-X1": "NEXT PLANNED PHASE — NOT STARTED — NOT AUTHORIZED",
+    "PRE-G9B-R3-X2": "CONDITIONAL PLANNING ONLY",
+    "PRE-G9B-R4": "DESIGNED — NOT AUTHORIZED"
+  },
+  "remoteIdentityBeforePromotion": {
+    "localMain": "68169dc0f026eb43b3bdae41fb69c3796cc41ad0",
+    "originMain": "68169dc0f026eb43b3bdae41fb69c3796cc41ad0",
+    "liveRemoteMain": "68169dc0f026eb43b3bdae41fb69c3796cc41ad0",
+    "tree": "46988e065de7d62aa37d1e29a9f1940dcf5c8f6f"
+  },
+  "prohibitedInThisCloseout": [
+    "modifying the approved technical candidate",
+    "changing product, test, build, verifier, inventory, registry pin, schema, serialization or scientific-contract files",
+    "running further verification",
+    "merge, rebase, amend, squash or force push",
+    "tagging or releasing",
+    "starting PRE-G9B-R3-X1, PRE-G9B-R3-X2 or R4"
+  ],
+  "successorPhaseAuthorized": null,
+  "publicationState": "AUTHORIZED FOR PROMOTION BY CLEAN FAST-FORWARD"
+}
