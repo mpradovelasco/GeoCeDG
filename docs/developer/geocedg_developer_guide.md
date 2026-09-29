@@ -252,6 +252,47 @@ bounded input-identity/provenance defect. Do not use it as normal closeout, to
 justify a known post-FULL lifecycle repair or to waive FULL for a deliberate
 verification-methodology change.
 
+**Post-run deterministic catalog reconciliation.** A rejected `FINAL` is never
+relabelled or given a receipt. When the author explicitly authorizes it and the
+only rejection cause is a stale derived JUnit selection inventory, the post-run
+catalog reconciliation of
+[verification levels section 11.3](../../geocedg/specs/operations/verification-levels.md#113-post-run-deterministic-catalog-reconciliation)
+and [ADR 0030](../adr/0030-post-run-deterministic-verification-catalog-reconciliation.md)
+composes the unchanged source run with a separate reconciliation receipt instead
+of a second heavy campaign. Establish eligibility read-only before any change,
+commit the reconciliation descendant `R`, validate it on a clean checkout of
+`R`, and inspect both commits at closeout:
+
+```powershell
+.\tools\agent\reconcile-verification-catalog.ps1 -Action ANALYZE `
+  -ReviewedTechnicalCommit <T> -SourceResultPath <source-run>\verification-result.json `
+  -SourceRunId <run-id> -ExpectedSourceResultSha256 <result-file-sha256> `
+  -DiscoveryEvidencePath '<shared-discovery.json>;<desktop-discovery.json>'
+.\tools\agent\reconcile-verification-catalog.ps1 -Action VALIDATE `
+  -ReviewedTechnicalCommit <T> -ReconciliationCommit <R> <same source arguments> `
+  -ReceiptPath <outside-git-or-ignored>\catalog-reconciliation-receipt.json
+.\tools\agent\phase-closeout.ps1 -Action INSPECT -CandidateCommit <T> `
+  -ReceiptPath <catalog-reconciliation-receipt.json> -ReconciliationCommit <R> `
+  -ApprovedCommit <T>
+```
+
+`R` may change only the derived inventory, its registry pin, documentation and
+added status records. Produce the inventory with
+`update-verification-junit-inventory.ps1` and `-SelectionEvidencePath` from the
+source run's executed selection evidence; never hand-enter a count or hash. Any
+other rejection cause, failing or missing execution, or change to executed code,
+tests, build, tasks, filters, references, toolchain, verifier execution modules or
+the heavy plan makes reconciliation ineligible and a new `FINAL` necessary. The
+approved commit remains `T`. The one-time initial adoption also passes
+`-MechanismCommit <G>`. The focused suite
+`tools/agent/tests/verification-catalog-reconciliation.Tests.ps1` is not a
+registered `FINAL` leaf.
+
+To avoid the defect, refresh the expected identities of every executed selection
+that a candidate's new or removed tests enter with `-SelectionEvidencePath`
+evidence from an executed run; discovery evidence alone refreshes only the
+`discovery.*` selections.
+
 ```text
 PRODUCT_PHASE_EFFECT = NONE
 BOOTSTRAP IMPACT — NO CHANGE REQUIRED

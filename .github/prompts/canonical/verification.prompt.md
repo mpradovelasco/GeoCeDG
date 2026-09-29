@@ -48,6 +48,14 @@ never launches `FINAL`, edits the worktree or index, creates or amends a
 commit, changes refs or tags, pushes, or records author approval. Promotion
 requires a separate explicit author instruction naming the exact candidate SHA.
 
+A rejected `FINAL` is never relabelled, re-hashed or given a receipt. Only under
+explicit author authorization, when the sole defect is stale deterministic
+derived catalog metadata, the post-run catalog reconciliation of
+`verification-levels.md` section 11.3 may compose that unchanged source run with a
+separate reconciliation receipt for the exact reviewed commit and its
+reconciliation descendant; closeout then requires both commits. It never launches
+`FINAL` and is not a `FINAL` receipt.
+
 Never install tools silently, suppress a semantic or safety failure, edit
 generated evidence, or translate an environment/permission failure into product
 code. For every run record the profile, exact command, exit code, report path,

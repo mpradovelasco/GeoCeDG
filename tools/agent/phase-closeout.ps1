@@ -15,7 +15,10 @@ param(
     [string]$TechnicalCampaignPath,
     [string]$AuthorApprovalPath,
     [string]$PreparationResultPath,
-    [string]$CloseoutCommit
+    [string]$CloseoutCommit,
+    # Route B only: the reconciliation descendant bound by a
+    # GEOCEDG_POST_RUN_CATALOG_RECONCILIATION receipt (verification levels 11.3).
+    [string]$ReconciliationCommit
 )
 
 Set-StrictMode -Version Latest
@@ -97,10 +100,43 @@ function Resolve-ExternalResultPath {
 $candidate = Invoke-GitRead @('rev-parse', '--verify', "$CandidateCommit^{commit}")
 $tree = Invoke-GitRead @('rev-parse', '--verify', "$candidate^{tree}")
 $receipt = Read-VerificationJson ([IO.Path]::GetFullPath($ReceiptPath))
-[void](Assert-VerificationAcceptanceReceipt $receipt)
+$reconciliationRoute = $null -ne $receipt.PSObject.Properties['receipt_kind'] -and
+    [string]$receipt.receipt_kind -ceq 'GEOCEDG_POST_RUN_CATALOG_RECONCILIATION'
 $mismatches = [Collections.Generic.List[string]]::new()
-if ([string]$receipt.candidate_commit -cne $candidate) { $mismatches.Add('candidate_commit') }
-if ([string]$receipt.candidate_tree -cne $tree) { $mismatches.Add('candidate_tree') }
+$reconciliation = $null
+if ($reconciliationRoute) {
+    # Route B: an accepted reconciliation receipt with the exact reviewed
+    # technical commit T and reconciliation commit R, revalidated read-only.
+    if ([string]::IsNullOrWhiteSpace($ReconciliationCommit)) {
+        throw 'A catalog reconciliation receipt requires -ReconciliationCommit.'
+    }
+    Import-Module (Join-Path $PSScriptRoot 'verification-catalog-reconciliation.psm1') -Force
+    $reconciled = Invoke-GitRead @('rev-parse', '--verify', "$ReconciliationCommit^{commit}")
+    $reconciledTree = Invoke-GitRead @('rev-parse', '--verify', "$reconciled^{tree}")
+    $revalidation = Test-VerificationCatalogReconciliationReceipt -Receipt $receipt `
+        -RepositoryRoot $repository -ReviewedTechnicalCommit $candidate -ReconciliationCommit $reconciled
+    foreach ($mismatch in $revalidation.mismatches) { $mismatches.Add([string]$mismatch) }
+    if ([string]$receipt.reviewedTechnicalTree -cne $tree) { $mismatches.Add('candidate_tree') }
+    if ([string]$receipt.reconciliationTree -cne $reconciledTree) { $mismatches.Add('reconciliation_tree') }
+    $reconciliation = [ordered]@{
+        closeout_route = 'POST_RUN_CATALOG_RECONCILIATION'
+        receipt_kind = [string]$receipt.receipt_kind
+        reconciliation_commit = $reconciled
+        reconciliation_tree = $reconciledTree
+        source_verification_run = [string]$receipt.sourceVerificationRun
+        source_verification_status = [string]$receipt.sourceVerificationStatus
+        source_run_reinterpreted = $false
+        reconciliation_revalidated = $revalidation.valid
+        reconciliation_rejection_code = $revalidation.rejectionCode
+    }
+} else {
+    if (-not [string]::IsNullOrWhiteSpace($ReconciliationCommit)) {
+        throw 'A FINAL acceptance receipt does not take a reconciliation commit.'
+    }
+    [void](Assert-VerificationAcceptanceReceipt $receipt)
+    if ([string]$receipt.candidate_commit -cne $candidate) { $mismatches.Add('candidate_commit') }
+    if ([string]$receipt.candidate_tree -cne $tree) { $mismatches.Add('candidate_tree') }
+}
 if (-not [string]::IsNullOrWhiteSpace($ApprovedCommit) -and
         $candidate -cne (Invoke-GitRead @('rev-parse', '--verify', "$ApprovedCommit^{commit}"))) {
     $mismatches.Add('approved_commit')
@@ -121,6 +157,9 @@ $result = [ordered]@{
     repository_mutated = $false
     author_approval_recorded = $false
     publication_performed = $false
+}
+if ($null -ne $reconciliation) {
+    foreach ($field in $reconciliation.GetEnumerator()) { $result[$field.Key] = $field.Value }
 }
 if (-not [string]::IsNullOrWhiteSpace($ResultPath)) {
     $externalResultPath = Resolve-ExternalResultPath -Path $ResultPath

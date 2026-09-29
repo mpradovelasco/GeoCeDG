@@ -52,6 +52,13 @@ verification, mutate Git, create commits or tags, push, or record author
 approval. Promotion is a separate explicit author operation and must not rerun
 an unchanged accepted candidate.
 
+A rejected `FINAL` is never relabelled. When its only defect is stale
+deterministic derived catalog metadata, the post-run deterministic catalog
+reconciliation of section 11.3 may, under explicit author authorization, compose
+the unchanged source run with a separate reconciliation receipt; that receipt is
+not a `FINAL` receipt, and the second closeout route consumes it only with the
+exact technical and reconciliation commits.
+
 The recovery protocol is temporary. It is removed when the complete registry,
 profiles, adapters and one-run receipt flow are author-accepted and published.
 
@@ -642,6 +649,148 @@ This exception changes neither coverage nor scientific success criteria and
 does not authorize generic evidence reuse across product/test/build changes.
 Bootstrap impact and GUIDE_IMPACT still require substantive review. Technical
 success never supplies a product-phase author decision.
+
+### 11.3 Post-run deterministic catalog reconciliation
+
+`POST_RUN_DETERMINISTIC_CATALOG_RECONCILIATION` (short form
+`POST_RUN_CATALOG_RECONCILIATION`) is a separate, exceptional and fail-closed
+evidence composition, decided in
+[ADR 0030](../../../docs/adr/0030-post-run-deterministic-verification-catalog-reconciliation.md).
+It is not a verification level, profile, closeout mode or waiver, and it does not
+modify §11.2.
+
+It distinguishes two facts:
+
+```text
+scientific/product execution result  !=  derived acceptance-metadata consistency
+```
+
+A new heavy campaign is mandatory whenever a change affects the code or tests
+that are executed, which tests are selected, how scientific results are judged,
+tolerances or numerical references, build or toolchain execution, acceptance
+semantics, or product or scientific behaviour. A new heavy campaign is not
+intrinsically necessary when every heavy scientific/product execution already
+completed successfully and the only defect is that deterministic derived metadata
+describing that same execution was stale. Only that case may be reconciled, and
+only under this complete contract.
+
+The source run keeps its historical classification forever. The mechanism never
+edits, relabels or re-hashes it, never manufactures a receipt for it and never
+makes it closeout consumable. It emits a separate
+`GEOCEDG_POST_RUN_CATALOG_RECONCILIATION` receipt whose claim is:
+
+```text
+historical source run remains historically untrusted
++ its physical scientific/product execution is authenticated
++ the only failing acceptance condition is proven to be stale deterministic derived catalog metadata
++ that metadata is recomputed from the exact archived execution evidence
++ no scientific/product/build execution authority changed
+= reconciled technical-acceptance evidence
+```
+
+**Eligibility.** Reconciliation of a heavy campaign on candidate `T` by a
+descendant `R` is permitted only when every condition is mechanically
+established by `tools/agent/reconcile-verification-catalog.ps1`:
+
+1. **R1 — exact source candidate.** The source result binds exactly `T` and its
+   tree, its schema and `result_hash` are valid under the schemas of `T`, its run
+   identity and file SHA-256 equal the declared ones, and its execution-plan hash
+   equals the `FINAL` plan resolved from `T`'s registry.
+2. **R2 — completed campaign.** `run_state = COMPLETED`, profile `FINAL`, every
+   planned process producer present, `COMPLETED` and exit `0`, required coverage
+   equal to the plan, nothing not run.
+3. **R3 — executions passed.** Every executed JUnit case of every JUnit acceptance
+   selection is present and none is `FAILED` or `ERRORED`; each producer's inner
+   exit code is `0`.
+4. **R4 — no semantic or safety failure.** No acceptance result is
+   `CONTRACT_VIOLATED`.
+5. **R5 — narrow rejection.** The verdict is `REJECTED_VERIFICATION_CORE /
+   UNTRUSTED` and every non-satisfied result is an `EVIDENCE_UNTRUSTED` JUnit
+   selection projection whose cause is exactly the stale-inventory cause.
+   Version 1 supports only `STALE_DERIVED_JUNIT_SELECTION_INVENTORY` and exactly
+   one such selection.
+6. **R6 — unchanged selection contract.** The selection embedded in the executed
+   evidence equals `T`'s tracked selection, and `R`'s selection equals it in every
+   field except `expected_identity_count` and `expected_identities_sha256`.
+7. **R7 — evidence exists.** Every archived log, structured output and JUnit XML
+   referenced by the source result exists and matches its recorded SHA-256.
+8. **R8 — independent re-read.** The archived JUnit cases are re-read and
+   re-projected with the verifier's own projection; counters alone are never
+   trusted.
+9. **R9 — official derivation.** The corrected catalog is produced only by the
+   repository's official inventory updater, from `T`'s tracked inventory, `T`'s
+   authenticated discovery evidence and the executed selection evidence through
+   `-SelectionEvidencePath`.
+10. **R10 — exact derivability.** Re-running that derivation reproduces `R`'s
+    inventory byte for byte (canonical text); replaying the projection with `T`'s
+    selection reproduces the historical untrusted outcome and cause, and with
+    `R`'s selection yields `CONTRACT_SATISFIED / COMPLETE`.
+11. **R11 — no scientific/product delta.** Product source, Desktop/UI, tests,
+    numerical references, tolerances, build declarations, resources,
+    serialization and product schemas are Git-identical between `T` and `R`.
+12. **R12 — no heavy execution change.** The `FINAL` plan resolved from `R` equals
+    the source plan; the registry equals `T`'s except the inventory pin; producer
+    commands, verifier execution modules, projection code, toolchain and
+    environment policy are Git-identical.
+13. **R13 — bounded delta.** Between `T` and `R` only the derived inventory, the
+    derived registry pin, documentation and added status records may change. An
+    initial adoption may additionally introduce the reconciliation mechanism
+    itself (below).
+14. **R14 — no evidence mutation.** The source run directory is byte-identical
+    before and after reconciliation, and the receipt is written outside it and
+    outside tracked Git.
+15. **R15 — no hidden gate.** No other acceptance result is untrusted, not run,
+    incomplete or violated, and every other JUnit acceptance selection re-projects
+    as satisfied with `R`'s catalog.
+16. **R16 — historical run preserved.** The source result is never written and no
+    `FINAL` receipt is created.
+17. **R17 — ancestry.** `T` is an ancestor of `R`; it is never rebased or
+    substituted.
+18. **R18 — determinism.** Two validations of identical inputs yield the same
+    canonical receipt identity.
+
+**Rejection.** Reconciliation fails closed, with a typed reason, at least for:
+changed product Java, scientific JUnit source, Gradle/build, test filters or
+selection task, tolerance, numerical reference or toolchain requirement; a failing
+source case; an incomplete or interrupted campaign; missing or modified source
+evidence or JUnit XML; an executed identity set that cannot reproduce the
+proposed inventory; a catalog that adds an unexecuted identity or omits an
+executed one; another independently untrusted gate; a semantic or safety
+violation; `T` not an ancestor of `R`; the wrong source run or candidate; a
+manually substituted count or hash; and any attempt to relabel the historical
+result.
+
+**Receipt.** The receipt binds `T`, `R` and their trees, the source run identity,
+result hash and result file SHA-256, the source status
+`REJECTED_VERIFICATION_CORE / UNTRUSTED` with `sourceRunReinterpreted = false`,
+the reason, the untrusted checks, the selection's source, executed and reconciled
+counts and hashes, the executed evidence hashes, the inventory hash and registry
+pin before and after, the authority comparisons, `heavyCampaignRerun = false`,
+`reconciliationStatus`, `technicalAcceptanceEligible` and the reconciler and source
+checker/input identities. Its identity is a deterministic hash of its normative
+content; issue time and file locators are excluded.
+
+**Closeout.** An author closeout consumes exactly one of an accepted `FINAL`
+receipt or an accepted reconciliation receipt. The second route requires the
+exact `T` and `R`, revalidates the complete reconciliation read-only, requires the
+identical receipt identity and accepts an approved commit only when it is `T`.
+
+**Initial adoption.** The mechanism was introduced under the one-time author
+authorization `BOOTSTRAP_EXCEPTION =
+POST_RUN_CATALOG_RECONCILIATION_INITIAL_ADOPTION` (`PRODUCT_PHASE_EFFECT = NONE`,
+`SCIENTIFIC_CONTRACT_CHANGED = false`, `PRODUCT_SEMANTICS_CHANGED = false`,
+`PREVIOUS_EVIDENCE_REINTERPRETED = false`,
+`HEAVY_CAMPAIGN_RERUN_REQUIRED_FOR_BOOTSTRAP = false`). For that adoption only it
+narrowly supersedes the §11.2 requirement of a fresh `FULL` for a deliberate
+verification-policy or closeout change. The adoption commit `G` must be the
+direct child of the executed candidate `T`, may introduce only the mechanism, its
+closeout consumer and its governance documentation, and the application `R` must
+be the direct child of `G`; the receipt records `bootstrapAdoption = true`. Every
+later use requires the mechanism to be present in `T` and unchanged in `R`, and
+each use still requires an explicit author authorization naming the source run.
+The mechanism's focused suite is not a registered `FINAL` leaf, because
+registering it would change the `FINAL` execution plan; its registration is
+deferred to the next separately authorized verification-infrastructure change.
 
 ## 12. Commit-first acceptance and dual closeout
 

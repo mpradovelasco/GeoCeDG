@@ -117,6 +117,15 @@ After review and exact-SHA approval, use
 runs verification, repeats FINAL, modifies Git or publishes. Recheck the live
 remote separately before any explicitly authorized non-force fast-forward.
 
+A rejected FINAL is never relabelled. Only under an explicit author
+authorization naming the source run may `reconcile-verification-catalog.ps1`
+(verification levels section 11.3, ADR 0030) reconcile a campaign whose sole
+defect is a stale derived JUnit selection inventory: run `ANALYZE` before any
+change, derive the catalog only with the official updater and
+`-SelectionEvidencePath`, commit `R`, run `VALIDATE` on a clean checkout of `R`,
+then inspect with `phase-closeout.ps1 -CandidateCommit <T> -ReconciliationCommit
+<R>`. Any other cause requires a new FINAL; the approved commit remains `T`.
+
 ## Stop conditions
 
 Stop rather than guess for unclear licensing, missing cited sources,
