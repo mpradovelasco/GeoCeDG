@@ -283,9 +283,12 @@ tiene modelo certificado, el par permanece solo como resultado rico: sus raíces
 pueden seguir apareciendo, ya no pueden materializarse y un punto ya
 materializado a partir de ellas puede quedar indefinido. Nunca se traslada a
 otra raíz. Deshacer puede restaurar el estado admisible anterior. En el ejemplo
-anterior, la nueva definición traza `a` a través de una expresión, que no tiene
-modelo certificado (sección 8.7), de modo que las raíces de pares de `a` se
-comportan así.
+anterior, la nueva definición traza `a` a través de `C+(1,0)`, una traslación del
+punto conductor por un vector fijo, que tiene modelo certificado (sección 8.7):
+las raíces de pares de `a` siguen siendo admisibles, y un punto ya materializado
+a partir de ellas conserva su raíz y sigue el recálculo. Una definición a través
+de otro tipo de expresión, como `(x(C)/2+1,y(C))`, no tiene modelo certificado, y
+entonces las raíces de pares de `a` se comportan como se acaba de describir.
 
 Si la nueva definición depende de otros objetos durables, GeoCeDG no adivina. Un
 diálogo indica el motivo y ofrece solo las opciones que puede garantizar:
@@ -819,7 +822,10 @@ que las dos curvas se cruzan en ella. Tienen modelo certificado:
   circunferencia o un segmento, cuando el punto trazado se obtiene del punto
   conductor solo mediante rectas por dos puntos, rectas paralelas y
   perpendiculares, intersecciones de dos rectas, puntos medios, y traslaciones,
-  rotaciones, reflexiones y homotecias de parámetros fijos;
+  rotaciones, reflexiones y homotecias de parámetros fijos —incluida una
+  traslación escrita como expresión de un punto y un vector fijo, `P+v`, `v+P` o
+  `P-v`, donde `v` es un objeto vector como `u=(1,0)` o un literal de dos números
+  como `(1,0)`—;
 - un Locus V2 de un número cuyo punto trazado recorre una recta a ritmo constante
   cuando el número cambia;
 - las imágenes por semejanza de cualquiera de ellos.
@@ -828,8 +834,9 @@ Por tanto, los pares Spline V2 × Locus V2, Locus V2 × Spline V2 y
 Locus V2 × Locus V2 se materializan exactamente igual que los pares de splines
 cuando ambos lados cumplen la condición. Cuando un lado carece de modelo
 certificado —por ejemplo, un lugar trazado a través de una intersección de recta
-y circunferencia, de una expresión o sobre otro lugar— el par permanece solo como
-resultado rico, y los diagnósticos del resultado indican que un lado carece del
+y circunferencia, sobre otro lugar o a través de cualquier otra expresión, como
+`(x(C)/2,y(C))`, `C+2u`, `C+u+u` o `C+A` con un punto `A`— el par permanece solo
+como resultado rico, y los diagnósticos del resultado indican que un lado carece del
 modelo. Una raíz situada en la costura donde se cierra la circunferencia
 conductora permanece sin resolver.
 
@@ -1398,17 +1405,9 @@ Estas son las limitaciones que afectan a lo que hoy puede hacer en la aplicació
 - Los ejes predefinidos no pueden ser el objetivo de una intersección semántica
   ni el espejo de una reflexión semántica; construya la recta explícitamente
   (sección 10.4).
-- Se conocen dos defectos de evaluación de los Locus V2 trazados por un punto. Un
-  lugar conducido sobre un segmento se evalúa con un paso de retraso cuando su
-  construcción usa el punto conductor en una recta por dos puntos o en un punto
-  medio. Un lugar cuya construcción pasa puntos o vectores literales sin nombre a
-  dos de los comandos entre el punto conductor y el punto trazado, como
-  `Line(C,(0,3))` seguido de `PerpendicularLine((0,0),g)`, no puede evaluarse: en
-  una construcción nueva se crea indefinido, y un documento guardado por una
-  versión anterior puede seguir mostrándolo como un único punto fijo. Las
-  posiciones, longitudes e intersecciones de esos lugares pueden ser erróneas. Siempre que sea posible, conduzca el punto sobre una
-  circunferencia o un arco en lugar de un segmento, y dé nombre antes a los
-  puntos literales (`T=(0,3)` y después `Line(C,T)`).
+- De los puntos definidos por expresiones, solo las traslaciones de la
+  sección 8.7 tienen modelo certificado; un lugar trazado a través de cualquier
+  otra expresión permanece solo como resultado rico en las intersecciones de pares.
 
 **Exportación**
 

@@ -2,15 +2,17 @@
 
 | Field | Value |
 |---|---|
-| Version | `1.0` (`certified-construction-program/v1`) |
-| Phase | `PRE-G9B-R2-E0/E1` |
-| Decision | [ADR 0028](../../../docs/adr/0028-semantic-endpoint-admissibility-and-certified-semantic-pair-materialization.md) |
+| Version | `1.1` (`certified-construction-program/v1` and `certified-construction-program/v2`) |
+| Phase | `PRE-G9B-R2-E0/E1`; amended by `PRE-G9B-R3-X1` (§2, §3, §5.1, §5.2, §8, §9) |
+| Decision | [ADR 0028](../../../docs/adr/0028-semantic-endpoint-admissibility-and-certified-semantic-pair-materialization.md), including its `PRE-G9B-R3-X1` amendment |
 | Consumer | [pair materialization](../curves/spline-v2-pair-materialization.md) §10 |
 | Parents | [Locus V2 semantics](locus-v2-semantics.md), [existence and components](locus-v2-existence-components.md), [public surface](locus-v2-public-surface.md) |
 
-This contract was introduced by the `PRE-G9B-R2-E0/E1` technical candidate. Its
-author-approval status is recorded only in that phase's author-decision record,
-never here.
+This contract was introduced by the `PRE-G9B-R2-E0/E1` technical candidate and
+amended by the `PRE-G9B-R3-X1` technical candidate. Its author-approval status
+is recorded only in those phases' author-decision records, never here. The X1
+design record is
+[`pre_g9b_r3_x1_certified_expression_point_design.md`](../../../docs/architecture/pre_g9b_r3_x1_certified_expression_point_design.md).
 
 ## 1. Purpose
 
@@ -47,27 +49,26 @@ parameters: both sides valid, residual within the pair residual tolerance,
 regular differentials and a transverse contact. A disagreement refuses that
 class; it never alters the certificate.
 
-One disagreement is known and pre-existing. After `GeoSegment.pathChanged` the
-reconstructible evaluator does not refresh the inhomogeneous coordinates of a
-`SEGMENT_POINT` driver, as `AlgoPointOnPath` does, so a segment-driven slice
-that reads them (a join or midpoint through the driver, for example) evaluates
-the previous parameter, so its floating positions and lengths are wrong as
-well. The verification refuses every such certified root, and those classes stay
-unmaterialized. Slices that read only the driver's
-homogeneous coordinates are unaffected. The defect belongs to the evaluator,
-not to this contract, and is retained debt
-`RECONSTRUCTIBLE-SEGMENT-DRIVER-INHOMOGENEOUS-LAG`.
+The floating evaluator this verification relies on meets two obligations:
 
-A second pre-existing evaluator defect is outside this contract. When two
-commands of the slice each take an inline literal argument, for example
-`Line(Cj,(0,3))` followed by `PerpendicularLine((0,0),gj)`, the isolated copy of
-the slice no longer depends on the driver, and the evaluator returns one
-constant point for every parameter. A single inline literal, observed in a
-construction built for it alone, is replayed correctly. The capture refuses the
-affected slice by rule 5 of §3, so no certified root is built on it. The wrong
-floating value is retained product debt
-`RECONSTRUCTIBLE-INLINE-LITERAL-SLICE-DISCONNECTED`, recorded in the
-`PRE-G9B-R2-E0/E1` design record.
+- it applies a path driver's parameter exactly as the normal `AlgoPointOnPath`
+  update does, `pathChanged` followed by `updateCoords`, so the driver's
+  homogeneous and inhomogeneous coordinates both belong to the requested
+  parameter;
+- it reconstructs its isolated slice from an element set ordered by construction
+  index, then creation id, a strict total order, so every construction element of
+  the slice is written and replayed exactly once and the isolated dependent point
+  depends on the isolated driver.
+
+Two pre-existing evaluator defects violated these obligations until
+`PRE-G9B-R3-X1` corrected the evaluator: segment drivers evaluated the previous
+parameter when the slice read their inhomogeneous coordinates
+(`TD-LOCUS-EVALUATOR-SEGMENT-DRIVER-UPDATE`), and slices with inline literal
+arguments in two commands lost their driver
+(`TD-LOCUS-EVALUATOR-INLINE-LITERAL-DEPENDENCY`). The certification rules were
+not changed to accommodate either defect; while they existed the verification
+refused the first and rule 5 of §3 refused the second. The X1 design record gives
+their mechanisms.
 
 A parameter box on which any predicate of §4 or §5 is not uniformly decided, on
 which a divisor may vanish, or on which an enclosure is not finite, is
@@ -90,7 +91,8 @@ descendant of it. The walk starts at the isolated dependent point:
    `(a,b,c)`; a vector by `(x,y)`; a number by its value. Constant-only
    algorithms are never re-evaluated;
 3. a driver-dependent geo must be the single output of an algorithm of §5 whose
-   exact class is listed there; its inputs are captured recursively;
+   exact class is listed there, or an expression-point translation of §5.2; its
+   inputs are captured recursively;
 4. every constant must be defined and finite; a constant point must be finite
    (not infinite); a constant line must be defined (§5.1); a constant meet
    operand must be an unbounded line (`GeoLine` or `GeoAxis`);
@@ -154,7 +156,42 @@ replayed exactly:
 Every line node must certify GeoGebra definedness, `|a| >= ε` or `|b| >= ε`, on
 the whole box; this also decides the full-line incidence check of
 `AlgoIntersectLines`. Every midpoint input is finite by the rule above. The
-dependent point must be finite; the model's value is its `(X,Y)`.
+dependent point must be finite; the model's value is its `(X,Y)`. A midpoint and
+an expression-point translation (§5.2) produce a unit point, `z` exactly `1`,
+which is always finite.
+
+### 5.2 Operation of class v2: expression-point translation
+
+Class v2 is class v1 plus exactly one operation. A driver-dependent geo is an
+**expression-point translation** when, in the isolated slice:
+
+1. its parent algorithm has the exact class `AlgoDependentPoint`;
+2. its definition, after removing `NO_OPERATION` leaf wrappers, is one binary node
+   `PLUS(P, V)`, `PLUS(V, P)` or `MINUS(P, V)`;
+3. the point operand `P`, after the same unwrapping, is a geo of exact class
+   `GeoPoint` that is driver-dependent; it is captured as a node;
+4. the vector operand `V`, after the same unwrapping, is either a
+   driver-independent, defined geo of exact class `GeoVector`, captured by its
+   stored `(x, y)` at the maximal driver-independent boundary, or an inline
+   `MyVecNode` literal in Cartesian mode whose two components each unwrap to a
+   numeric literal of exact class `MyDouble` or `MySpecialDouble`, captured by
+   their values;
+5. both components of `V` are finite.
+
+Any other expression shape has no program (§9). The operation is:
+
+| Algorithm | Output | Formula |
+|---|---|---|
+| `AlgoDependentPoint`, `P + V`, `V + P` or `P - V` | point | `TRANSLATE(VEC(P), u)` with `VEC(P) = (PX, PY, 1)`, `u = V` for a sum and `u = -V` for the difference; that is `(PX + ux, PY + uy, 1)` |
+
+This is the exact GeoGebra formula: `GeoPoint.getVector()` reads `(PX, PY)`,
+`GeoVec2D.add` and `GeoVec2D.sub` combine componentwise (real and binary64
+addition are commutative, and `x - y` is `x + (-y)` exactly), and
+`AlgoDependentPoint` sets the result with `z = 1`. The step reuses the v1
+`TRANSLATE` formula on the unit reading `VEC(P)`; it is not a relabeling of
+`TRANSLATE(P, u)`, which keeps `P`'s homogeneous triple and differs from the
+expression point whenever `Pz ≠ 1`. The step has no divisor and no branch
+predicate.
 
 ## 6. Interval semantics
 
@@ -195,12 +232,31 @@ and a failed capture never invalidates an existing claim: the claim stays
 dormant until the same selector is certified again. A later version of the class
 must use a new program version identifier.
 
-## 9. Outside class v1
+The version of a captured program is derived from its steps:
+
+| Steps | Version |
+|---|---|
+| every step is an operation of §5 | `certified-construction-program/v1`; the signature is unchanged |
+| at least one step is the operation of §5.2 | `certified-construction-program/v2` |
+
+No program is relabeled merely because the implementation evolves, and no
+document changes: a newer build may certify more current constructions at run
+time, which is a capability of the build, not a migration of the file.
+
+## 9. Outside the class
 
 Locus-support generators, scalar states without the direct affine certificate,
-expression-defined points (`AlgoDependentPoint`), GeoGebra line–conic and
+expression-defined points (`AlgoDependentPoint`) other than the expression-point
+translation of §5.2, GeoGebra line–conic and
 conic–conic intersections (their two outputs are ordered by a distance-table
 continuity heuristic, which is proximity), selected Locus V2 roots
 (`AlgoLocusIntersectionPointV2`), segment- or ray-bounded meets, lists, macros,
 functions and every other algorithm have no program. They are not defects of the
 class; each needs its own certified semantics before it can be admitted.
+
+Outside §5.2 in particular: arbitrary coordinate expressions such as
+`(x(C)/2, y(C))`, nested or repeated sums, `V - P`, a point used as the vector
+(`P + A`), scaled or driver-dependent vectors, literal components that are
+expressions or reference a geo, polar, complex-number and 3D literals, and
+`GeoVector3D`. The scalar family keeps its v1 rule: its program is only the
+direct affine certificate, and §5.2 applies to point-driven slices.

@@ -6,6 +6,7 @@
 package org.geocedg.common.kernel.locus;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -52,6 +53,16 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 			EvaluationMethod.DETERMINISTIC_NUMERIC_DEPENDENCY,
 			RepresentationRole.SEMANTIC_RESULT,
 			NumericGuarantee.FLOATING_POINT_UNCERTIFIED);
+	/**
+	 * Strict total order of the slice: construction index, then creation id. The
+	 * natural order is not total (geos compare creation ids, algorithms
+	 * construction indices, and an inline literal outside the construction list
+	 * disagrees with both), and Macro.buildMacroXML re-adds its closure to the set,
+	 * which would otherwise write an algorithm twice and duplicate the driver.
+	 */
+	private static final Comparator<ConstructionElement> RECONSTRUCTION_ORDER =
+			Comparator.comparingInt(ConstructionElement::getConstructionIndex)
+					.thenComparingLong(ConstructionElement::getID);
 
 	private final SemanticGeneratorDescriptor1D descriptor;
 	private final Construction isolatedConstruction;
@@ -71,7 +82,7 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 		this.descriptor = Objects.requireNonNull(descriptor);
 		SpatialIdentityRegistry sourceRegistry = construction
 				.getSpatialIdentityRegistry();
-		Set<ConstructionElement> elements = new TreeSet<>();
+		Set<ConstructionElement> elements = new TreeSet<>(RECONSTRUCTION_ORDER);
 		Set<Long> usedAlgorithmIds = new TreeSet<>();
 		for (GeoElement sliceGeo : Objects.requireNonNull(reconstructionSlice)) {
 			GeoElement current = Objects.requireNonNull(sliceGeo);
@@ -204,9 +215,9 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 	}
 
 	/**
-	 * Captures the class-v1 certified construction program of this evaluator's
-	 * own isolated slice ({@code locus-v2-certified-construction-model.md} section 3).
-	 * Capture never mutates the live construction and never throws.
+	 * Captures the certified construction program (class v1 or v2) of this
+	 * evaluator's own isolated slice ({@code locus-v2-certified-construction-model.md}
+	 * section 3). Capture never mutates the live construction and never throws.
 	 *
 	 * @return current program, or empty when the slice is outside the class
 	 */
@@ -278,7 +289,11 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 		case CIRCULAR_ARC_POINT:
 			GeoPointND point = (GeoPointND) isolatedState;
 			point.getPathParameter().setT(parameter);
+			// The update path of AlgoPointOnPath: GeoSegment.pathChanged leaves the
+			// inhomogeneous coordinates to updateCoords, which conic paths refresh
+			// themselves; without it a segment driver lags one parameter behind.
 			((Path) isolatedSupport).pathChanged(point);
+			point.updateCoords();
 			point.toGeoElement().updateCascade();
 			break;
 		default:

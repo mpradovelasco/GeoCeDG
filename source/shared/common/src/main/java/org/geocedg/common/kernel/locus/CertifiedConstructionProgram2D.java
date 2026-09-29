@@ -11,16 +11,19 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Immutable construction program of the certified construction class v1
+ * Immutable construction program of the certified construction class
  * ({@code locus-v2-certified-construction-model.md}). It holds only typed steps
  * and binary64 constants captured from one reconstructible evaluator slice; no
  * GeoElement, label, coordinate sample or construction order survives capture.
  * Node {@code 0} is the driver point and step {@code i} produces node
- * {@code i + 1}. The program is certificate material, never identity.
+ * {@code i + 1}. The program is certificate material, never identity. Its version
+ * is derived from its steps (contract section 8).
  */
 public final class CertifiedConstructionProgram2D {
-	/** Contract version of the captured class. */
+	/** Version of a program made only of class-v1 operations. */
 	public static final String VERSION = "certified-construction-program/v1";
+	/** Version of a program with an expression-point translation (section 5.2). */
+	public static final String VERSION_V2 = "certified-construction-program/v2";
 	/** Upper bound on captured steps. */
 	public static final int MAXIMUM_STEPS = 64;
 
@@ -42,24 +45,40 @@ public final class CertifiedConstructionProgram2D {
 		}
 	}
 
-	/** Operations of class v1 with their output kind and parameter count. */
+	/** Operations with their output kind, parameter count and class version. */
 	public enum Operation {
 		JOIN(false, 0), PARALLEL(false, 0), PERPENDICULAR(false, 0),
 		MEET(true, 0), MIDPOINT(true, 0), TRANSLATE(true, 2), ROTATE(true, 2),
 		ROTATE_ABOUT(true, 4), MIRROR_POINT(true, 2), MIRROR_LINE(true, 6),
-		DILATE(true, 3);
+		DILATE(true, 3),
+		/**
+		 * Class v2 (section 5.2): {@code P + V}, {@code V + P} or {@code P - V} of an
+		 * expression point; parameters ux,uy, with {@code u = -V} for a difference.
+		 */
+		EXPRESSION_TRANSLATE(true, 2, true);
 
 		private final boolean pointOutput;
 		private final int parameterCount;
+		private final boolean classV2;
 
 		Operation(boolean pointOutput, int parameterCount) {
+			this(pointOutput, parameterCount, false);
+		}
+
+		Operation(boolean pointOutput, int parameterCount, boolean classV2) {
 			this.pointOutput = pointOutput;
 			this.parameterCount = parameterCount;
+			this.classV2 = classV2;
 		}
 
 		/** @return whether the operation's output node is a point */
 		public boolean producesPoint() {
 			return pointOutput;
+		}
+
+		/** @return whether the operation belongs to class v2 only */
+		public boolean isClassV2() {
+			return classV2;
 		}
 	}
 
@@ -154,6 +173,7 @@ public final class CertifiedConstructionProgram2D {
 	private final LocusInterval2D domain;
 	private final List<Step> steps;
 	private final boolean[] pointNodes;
+	private final String version;
 
 	/** Creates one validated program; the last node is the dependent point. */
 	public CertifiedConstructionProgram2D(Driver driver, double[] driverConstants,
@@ -169,18 +189,29 @@ public final class CertifiedConstructionProgram2D {
 		}
 		pointNodes = new boolean[this.steps.size() + 1];
 		pointNodes[0] = true;
+		boolean classV2 = false;
 		for (int index = 0; index < this.steps.size(); index++) {
 			Step step = this.steps.get(index);
 			validate(step, index + 1);
 			pointNodes[index + 1] = step.operation.producesPoint();
+			classV2 |= step.operation.isClassV2();
 		}
 		if (!pointNodes[pointNodes.length - 1]) {
 			throw new IllegalArgumentException("The program output is not a point");
 		}
+		version = classV2 ? VERSION_V2 : VERSION;
 	}
 
 	public Driver getDriver() {
 		return driver;
+	}
+
+	/**
+	 * @return {@link #VERSION_V2} when a step needs class v2, otherwise
+	 *         {@link #VERSION}
+	 */
+	public String getVersion() {
+		return version;
 	}
 
 	/** @return captured driver constant */
@@ -204,7 +235,7 @@ public final class CertifiedConstructionProgram2D {
 
 	/** @return deterministic certificate-material signature */
 	public String getSignature() {
-		StringBuilder signature = new StringBuilder(VERSION).append("|driver=")
+		StringBuilder signature = new StringBuilder(version).append("|driver=")
 				.append(driver.name()).append(hex(driverConstants));
 		for (Step step : steps) {
 			signature.append('|').append(step.operation.name()).append('(');

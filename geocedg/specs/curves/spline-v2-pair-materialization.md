@@ -261,8 +261,10 @@ the source's own evaluator. The admitted models are:
   similarity compositions (unchanged); and
 - the [certified construction model](../locus/locus-v2-certified-construction-model.md)
   of a reconstructible dependent-point locus whose generator slice lies in
-  class v1, including the direct scalar affine case and supported similarity
-  compositions, composed through the same captured similarity maps.
+  class v1, or in class v2 (class v1 plus the bounded expression-point
+  translation added by `PRE-G9B-R3-X1`, that contract's §5.2), including the
+  direct scalar affine case and supported similarity compositions, composed
+  through the same captured similarity maps.
 
 §2–§9 apply unchanged to every admitted pair: the `pair-singleton-transverse-germ/v1`
 selector and its canonical source ordering, the contract identifier, singleton

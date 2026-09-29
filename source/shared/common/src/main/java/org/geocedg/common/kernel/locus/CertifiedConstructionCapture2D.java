@@ -15,7 +15,9 @@ import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D.Driver;
 import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D.Operand;
 import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D.Operation;
 import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D.Step;
+import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.PathParameter;
+import org.geogebra.common.kernel.algos.AlgoDependentPoint;
 import org.geogebra.common.kernel.algos.AlgoDilate;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.algos.AlgoIntersectLines;
@@ -27,6 +29,11 @@ import org.geogebra.common.kernel.algos.AlgoOrthoLinePointLine;
 import org.geogebra.common.kernel.algos.AlgoRotate;
 import org.geogebra.common.kernel.algos.AlgoRotatePoint;
 import org.geogebra.common.kernel.algos.AlgoTranslate;
+import org.geogebra.common.kernel.arithmetic.ExpressionNode;
+import org.geogebra.common.kernel.arithmetic.ExpressionValue;
+import org.geogebra.common.kernel.arithmetic.MyDouble;
+import org.geogebra.common.kernel.arithmetic.MySpecialDouble;
+import org.geogebra.common.kernel.arithmetic.MyVecNode;
 import org.geogebra.common.kernel.arithmetic.NumberValue;
 import org.geogebra.common.kernel.geos.GeoAxis;
 import org.geogebra.common.kernel.geos.GeoConic;
@@ -36,14 +43,16 @@ import org.geogebra.common.kernel.geos.GeoLine;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.kernel.geos.GeoSegment;
 import org.geogebra.common.kernel.geos.GeoVec3D;
+import org.geogebra.common.kernel.geos.GeoVector;
 import org.geogebra.common.kernel.kernelND.GeoConicNDConstants;
 import org.geogebra.common.kernel.kernelND.GeoPointND;
 import org.geogebra.common.util.MyMath;
 
 /**
- * Captures the class-v1 construction program of one reconstructible evaluator
- * slice. It reads only the evaluator's isolated objects, never live
- * construction state, and refuses every shape outside the class.
+ * Captures the construction program of one reconstructible evaluator slice:
+ * class v1, plus the class-v2 expression-point translation. It reads only the
+ * evaluator's isolated objects, never live construction state, and refuses
+ * every shape outside the class.
  */
 final class CertifiedConstructionCapture2D {
 	private final GeoElement state;
@@ -56,8 +65,8 @@ final class CertifiedConstructionCapture2D {
 	}
 
 	/**
-	 * @return class-v1 program of the isolated slice, or empty when the slice is
-	 *         outside the class
+	 * @return program of the isolated slice, or empty when the slice is outside
+	 *         the class
 	 */
 	static Optional<CertifiedConstructionProgram2D> capture(
 			SemanticGeneratorDescriptor1D descriptor, GeoElement dependentPoint,
@@ -216,7 +225,87 @@ final class CertifiedConstructionCapture2D {
 			return new Step(Operation.MIDPOINT, List.of(point(midpoint.getP()),
 					point(midpoint.getQ())));
 		}
+		if (type == AlgoDependentPoint.class) {
+			return expressionTranslation((AlgoDependentPoint) parent);
+		}
 		return transform(parent, type);
+	}
+
+	/**
+	 * Contract section 5.2: exactly one {@code P + V}, {@code V + P} or
+	 * {@code P - V} of a driver-dependent point and a finite constant vector.
+	 */
+	private Step expressionTranslation(AlgoDependentPoint expression) {
+		ExpressionValue definition = unwrap(expression.getExpression());
+		if (!(definition instanceof ExpressionNode)) {
+			throw new Refusal();
+		}
+		ExpressionNode node = (ExpressionNode) definition;
+		org.geogebra.common.plugin.Operation operation = node.getOperation();
+		boolean sum = operation == org.geogebra.common.plugin.Operation.PLUS;
+		if (!sum && operation != org.geogebra.common.plugin.Operation.MINUS) {
+			throw new Refusal();
+		}
+		ExpressionValue left = unwrap(node.getLeft());
+		ExpressionValue right = unwrap(node.getRight());
+		boolean pointOnLeft = isPoint(left);
+		if (!pointOnLeft && !(sum && isPoint(right))) {
+			throw new Refusal();
+		}
+		double[] vector = constantVector(pointOnLeft ? right : left);
+		// x - y is x + (-y) exactly, so a difference translates by the negated vector.
+		double ux = sum ? vector[0] : -vector[0];
+		double uy = sum ? vector[1] : -vector[1];
+		return new Step(Operation.EXPRESSION_TRANSLATE,
+				List.of(pointNode((GeoElement) (pointOnLeft ? left : right))), ux, uy);
+	}
+
+	private static boolean isPoint(ExpressionValue value) {
+		return value != null && value.getClass() == GeoPoint.class;
+	}
+
+	/** A driver-independent GeoVector, or an inline Cartesian literal of two numbers. */
+	private double[] constantVector(ExpressionValue value) {
+		if (value instanceof GeoElement) {
+			if (value.getClass() != GeoVector.class) {
+				throw new Refusal();
+			}
+			GeoVector vector = (GeoVector) constant((GeoElement) value);
+			return new double[] {vector.getX(), vector.getY()};
+		}
+		if (!(value instanceof MyVecNode)) {
+			throw new Refusal();
+		}
+		MyVecNode literal = (MyVecNode) value;
+		if (literal.hasPolarCoords()
+				|| literal.getToStringMode() != Kernel.COORD_CARTESIAN) {
+			throw new Refusal();
+		}
+		return new double[] {literalNumber(literal.getX()),
+				literalNumber(literal.getY())};
+	}
+
+	private static double literalNumber(ExpressionValue component) {
+		ExpressionValue value = unwrap(component);
+		if (value == null || value.getClass() != MyDouble.class
+				&& value.getClass() != MySpecialDouble.class) {
+			throw new Refusal();
+		}
+		return value.evaluateDouble();
+	}
+
+	/** Removes the wrappers whose evaluation returns their left value unchanged. */
+	private static ExpressionValue unwrap(ExpressionValue value) {
+		ExpressionValue current = value;
+		while (current instanceof ExpressionNode) {
+			ExpressionNode node = (ExpressionNode) current;
+			if (!node.isLeaf() && node.getOperation()
+					!= org.geogebra.common.plugin.Operation.NO_OPERATION) {
+				return node;
+			}
+			current = node.getLeft();
+		}
+		return current;
 	}
 
 	private Step transform(AlgoElement parent, Class<?> type) {

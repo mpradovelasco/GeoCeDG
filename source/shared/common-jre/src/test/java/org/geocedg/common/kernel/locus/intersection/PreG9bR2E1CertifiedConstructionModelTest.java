@@ -174,14 +174,15 @@ class PreG9bR2E1CertifiedConstructionModelTest extends BaseUnitTest {
 	}
 
 	@Test
-	void theInlineLiteralDefectShapeIsRefusedRatherThanCertified() {
-		// Retained product debt RECONSTRUCTIBLE-INLINE-LITERAL-SLICE-DISCONNECTED:
-		// with inline literals in two commands of the driver-to-traced-point slice,
-		// the evaluator loses the driver dependence. The certified model must keep
-		// refusing that shape and never certify its curve. The next test shows one
-		// inline literal in its own construction is replayed and certified.
-		// PAIR#segmentDriverInhomogeneousReadIsRefusedByTheCoherenceGate pins the
-		// segment-driver lag debt.
+	void theInlineLiteralShapeIsReplayedWithItsDriverAndCertified() {
+		// Retained debt TD-LOCUS-EVALUATOR-INLINE-LITERAL-DEPENDENCY on its retained
+		// fixture: with inline literals in two commands of the slice the evaluator
+		// wrote the driver's command twice and lost the driver, and while that held
+		// the capture refused the shape (rule 5) and, since PRE-G9B-R3, the locus
+		// failed closed at construction. PRE-G9B-R3-X1 corrects the evaluator's slice
+		// order; only then is the curve certified. The next test keeps the single
+		// literal positive. PAIR#segmentDriverInhomogeneousReadIsCurrentAndCertified
+		// pins the other repaired evaluator debt.
 		getKernel().setContinuous(false);
 		add("Mj=(0,-1)");
 		add("Aj=(-1.5,-1)");
@@ -192,15 +193,10 @@ class PreG9bR2E1CertifiedConstructionModelTest extends BaseUnitTest {
 		add("gp=PerpendicularLine((0,0),gj)");
 		add("Ej=Intersect(gj,gp)");
 		add("literal=LocusV2(Ej,Cj)");
-		// PRE-G9B-R3: the traced point's version-2 record carries its transitive
-		// durable frontier. The evaluator's defective isolated replay binds the
-		// traced point to a duplicate driver that this frontier does not match, so
-		// the replay is rejected and the locus fails closed at construction instead
-		// of evaluating a wrong fixed locus. The debt is not repaired, and no curve is
-		// certified in either manifestation.
 		GeoLocusV2 literal = locus("literal");
-		assertFalse(literal.isDefined());
-		assertNull(literal.getSemanticDefinition());
+		assertTrue(literal.isDefined());
+		assertNotNull(CertifiedIntervalCurveModel2D.capture(
+				literal.getSemanticDefinition(), BRANCH));
 	}
 
 	@Test

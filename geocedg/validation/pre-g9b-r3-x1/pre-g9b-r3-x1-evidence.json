@@ -1,0 +1,145 @@
+{
+  "schemaVersion": 1,
+  "phase": "PRE-G9B-R3-X1",
+  "recordKind": "TECHNICAL_CANDIDATE_EVIDENCE",
+  "technicalCandidateState": "FROZEN",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "selfApproved": false,
+  "passClaimed": false,
+  "changeRoute": "ORDINARY",
+  "verificationClass": "GLOBAL_IMPACT",
+  "frozenAtPhaseStart": true,
+  "plannedAcceptanceLevel": "FINAL",
+  "implementationBase": {
+    "commit": "78134aa8bc6ac30b65ffd916713fd3ca0502e6c6",
+    "tree": "f23218cc0b7c7189aae69489a1ce7a5ac5ee9fba",
+    "authority": "PRE-G9B-R3-C1-U1 = PASS — AUTHOR APPROVED (published closeout); PRE-G9B-R3-X1 explicitly authorized by the author instruction of 2026-09-29"
+  },
+  "branch": "feature/pre-g9b-r3-x1-certified-expression-points",
+  "candidateCommit": "the commit that contains this artifact; reported separately",
+  "entryIdentity": {
+    "head": "78134aa8bc6ac30b65ffd916713fd3ca0502e6c6",
+    "localMain": "78134aa8bc6ac30b65ffd916713fd3ca0502e6c6",
+    "originMain": "78134aa8bc6ac30b65ffd916713fd3ca0502e6c6",
+    "liveRemoteMain": "78134aa8bc6ac30b65ffd916713fd3ca0502e6c6",
+    "tree": "f23218cc0b7c7189aae69489a1ce7a5ac5ee9fba",
+    "worktreeClean": true,
+    "indexClean": true,
+    "unpublishedCommitsOnMain": 0
+  },
+  "canonicalPromptCreated": false,
+  "capabilityAddressed": "TD-LOCUS-CERTIFIED-CONSTRUCTION-EXPRESSION-POINT",
+  "normativeArtifacts": [
+    { "path": "geocedg/specs/locus/locus-v2-certified-construction-model.md", "version": "1.0 -> 1.1", "sections": ["2", "3", "5.1", "5.2", "8", "9"] },
+    { "path": "docs/adr/0028-semantic-endpoint-admissibility-and-certified-semantic-pair-materialization.md", "change": "PRE-G9B-R3-X1 amendment of Decision 3" },
+    { "path": "geocedg/specs/curves/spline-v2-pair-materialization.md", "change": "section 10 clause: class v1 or v2" },
+    { "path": "docs/architecture/pre_g9b_r3_x1_certified_expression_point_design.md", "role": "design record" }
+  ],
+  "baseCharacterization": {
+    "X1-P1": { "definition": "C+(1,0)", "parent": "AlgoDependentPoint", "isolatedTree": "PLUS[GeoPoint C, MyVecNode(cartesian; MySpecialDouble 1; MySpecialDouble 0)]", "program": null, "pair": { "roots": 2, "admissible": 0, "completeness": "NOT_ESTABLISHED", "ledgerVersion": 4, "diagnostic": "CAPABILITY_NOT_AVAILABLE: no certified interval curve model" } },
+    "X1-P2": { "definition": "u=(1,0); C+u", "parent": "AlgoDependentPoint", "isolatedTree": "PLUS[GeoPoint C, GeoVector u]", "program": null, "pair": { "roots": 2, "admissible": 0, "ledgerVersion": 4 } },
+    "X1-CONTROL": { "definition": "Translate(C,u)", "program": "certified-construction-program/v1 ... TRANSLATE(n0)[0x1.0p0,0x0.0p0]", "pair": { "roots": 2, "admissible": 2, "ledgerVersion": 5 } },
+    "floatingAgreementValidationOnly": "P1, P2 and the control give identical binary64 values at every probed parameter; not used for certification or identity"
+  },
+  "design": {
+    "grammar": "exactly one PLUS(P,V), PLUS(V,P) or MINUS(P,V) of an AlgoDependentPoint; P a driver-dependent GeoPoint node; V a finite driver-independent GeoVector or an inline Cartesian MyVecNode of two MyDouble/MySpecialDouble literals",
+    "operation": "EXPRESSION_TRANSLATE(ux,uy), u = V for a sum and -V for the difference",
+    "normalization": "TRANSLATE applied to VEC(P) = (PX, PY, 1); exactly GeoPoint.getVector, GeoVec2D.add/sub and AlgoDependentPoint.setCoords(x,y,1)",
+    "symmetricForms": { "V+P": "real and binary64 addition are commutative", "P-V": "x - y is exactly x + (-y); negation is exact" },
+    "versioning": { "v1": "every step is a class-v1 operation; signature unchanged", "v2": "at least one EXPRESSION_TRANSLATE step" },
+    "rejectedAlternatives": ["admission by class", "relabel as TRANSLATE(P,V) (not exact when Pz != 1)", "MIDPOINT(P,P) then TRANSLATE", "general expression interval evaluator", "point + point", "relabel all programs v2", "hide evaluator defects in the certifier", "fix debt B in Macro.buildMacroXML", "drop inline literals from the slice"]
+  },
+  "productiveChanges": [
+    { "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/CertifiedConstructionProgram2D.java", "upstreamOwned": false, "changes": ["EXPRESSION_TRANSLATE operation (class v2)", "VERSION_V2 and getVersion() derived from the steps", "signature prefix is the derived version"] },
+    { "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/CertifiedConstructionCapture2D.java", "upstreamOwned": false, "changes": ["bounded section 5.2 recognizer"] },
+    { "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/ConstructionIntervalModel2D.java", "upstreamOwned": false, "changes": ["EXPRESSION_TRANSLATE evaluated by the extracted TRANSLATE formula on VEC(P)"] },
+    { "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/ReconstructibleLocusEvaluator2D.java", "upstreamOwned": false, "changes": ["updateCoords after pathChanged (segment-driver debt)", "strict total order of the slice set (inline-literal debt)"] }
+  ],
+  "unchangedSubsystems": ["pair certifier", "root identity resolver", "selector", "token", "ledger v5", "materialization gate", "serialization", "identity schema", "Macro", "verifier"],
+  "evaluatorDebts": {
+    "TD-LOCUS-EVALUATOR-SEGMENT-DRIVER-UPDATE": {
+      "disposition": "RESOLVED_IN_X1",
+      "reproduction": { "fixture": "LocusV2(Midpoint(Cs,K),Cs), Cs on Segment((0,0),(4,0)), K=(0,2)", "t=0.1": "(1.99609375, 1) instead of (0.2, 1)", "LocusLength(ls,Pa,Pb)": "2.25 instead of 1", "Length(ls,Pa,Pb)": "1.5 instead of 1", "LocusLength(ls)": "3.5 instead of 2", "historyDependent": true },
+      "mechanism": "GeoSegment.pathChanged writes through setCoords2D and relies on the updateCoords that AlgoPointOnPath.compute performs; the evaluator omitted it and the next reset refreshed the inhomogeneous coordinates to the previous parameter",
+      "repair": "ReconstructibleLocusEvaluator2D.applyCoordinate: pathChanged, updateCoords, updateCascade",
+      "circleAndArcDriversUnchanged": "bit-identical to the live construction"
+    },
+    "TD-LOCUS-EVALUATOR-INLINE-LITERAL-DEPENDENCY": {
+      "disposition": "RESOLVED_IN_X1",
+      "reproduction": { "fixture": "Cj on CircularArc((0,-1),(-1.5,-1),(1.5,-1)); gj=Line(Cj,(0,3)); gp=PerpendicularLine((0,0),gj); Ej=Intersect(gj,gp); LocusV2(Ej,Cj)", "base": "created undefined: MALFORMED_RECORD, identity dependencies disagree with the prospective algorithm DAG" },
+      "mechanism": "the slice TreeSet used the non-total natural order (geos: creation id; algorithms: construction index; the literal is outside the construction list); Macro.buildMacroXML re-adds its closure (a G9 addition absent from upstream 9b93256b) and re-inserted the driver's AlgoPointOnPath, writing Point(lower) twice and duplicating the driver",
+      "repair": "the evaluator's slice set is ordered by construction index, then creation id",
+      "macroUnchanged": true,
+      "classicLocusProbe": "Locus(Ej,Cj) with the same literals spans x in [-0.986, 0.986], equal to its named-point variant"
+    },
+    "riConditions": ["same evaluator subsystem X1 captures", "no widening of the scientific purpose", "no new architectural decision", "shares the X1 FINAL", "evaluator corrected, not the certifier"],
+    "compatibilityDecision": "floating values of the affected constructions change from wrong to correct; nothing is persisted, no migration",
+    "PRE-G9B-R3-X2": "NOT_NEEDED"
+  },
+  "tests": {
+    "new": [
+      { "class": "org.geocedg.common.kernel.locus.intersection.PreG9bR3X1CertifiedExpressionPointModelTest", "methods": 9, "candidate": { "passed": 9, "failed": 0 }, "extractedBase": { "run": 9, "failed": 7, "passedControls": 2 } },
+      { "class": "org.geocedg.common.kernel.locus.PreG9bR3X1CaptureBoundaryTest", "methods": 3, "candidate": { "passed": 3, "failed": 0 }, "extractedBase": { "run": 2, "failed": 2, "omittedNotCompilable": 1 } },
+      { "class": "org.geocedg.common.locus.PreG9bR3X1ExpressionPointPairMaterializationTest", "methods": 9, "candidate": { "passed": 9, "failed": 0 }, "extractedBase": { "run": 9, "failed": 7, "passedControls": 2 } },
+      { "class": "org.geocedg.common.locus.PreG9bR3X1RedefineWitnessTest", "methods": 4, "candidate": { "passed": 4, "failed": 0 }, "extractedBase": { "run": 4, "failed": 3, "passedControls": 1 } },
+      { "class": "org.geocedg.common.locus.PreG9bR3X1EvaluatorCorrectnessTest", "methods": 3, "candidate": { "passed": 3, "failed": 0 }, "extractedBase": { "run": 3, "failed": 3 } }
+    ],
+    "converted": [
+      { "from": "org.geocedg.common.kernel.locus.intersection.PreG9bR2E1CertifiedConstructionModelTest#theInlineLiteralDefectShapeIsRefusedRatherThanCertified", "to": "org.geocedg.common.kernel.locus.intersection.PreG9bR2E1CertifiedConstructionModelTest#theInlineLiteralShapeIsReplayedWithItsDriverAndCertified", "extractedBase": "fails" },
+      { "from": "org.geocedg.common.locus.PreG9bR2E1SemanticPairMaterializationTest#segmentDriverInhomogeneousReadIsRefusedByTheCoherenceGate", "to": "org.geocedg.common.locus.PreG9bR2E1SemanticPairMaterializationTest#segmentDriverInhomogeneousReadIsCurrentAndCertified", "extractedBase": "fails" }
+    ],
+    "gateRefusalBranchRepinnedBy": "org.geocedg.common.kernel.locus.intersection.PreG9bR3X1CertifiedExpressionPointModelTest#theFloatingVerificationStillRefusesACertifiedSlotItRejects",
+    "baseCausalityRun": { "method": "git archive 78134aa8 into the scratchpad; new-API references mapped to equivalent base expressions", "run": 55, "failed": 24, "unchangedE0E1MethodsPassOnBoth": 26 }
+  },
+  "localEvidenceBeforeCommit": {
+    "fullShared": { "task": ":shared:common-jre:test", "junitFiles": 686, "tests": 6842, "failedOrErrored": 0, "skipped": 10 },
+    "fullDesktop": { "task": ":desktop:desktop:test", "junitFiles": 103, "tests": 1533, "failedOrErrored": 0, "skipped": 1 },
+    "discovery": { "shared": 5925, "desktop": 1533, "method": "official producer with -TestDryRun" },
+    "checkstyleFindings": 0,
+    "verificationCoreTestsExitZero": ["verification-final-coverage", "verification-registry", "verification-contract-boundary", "verification-cli-compatibility", "verification-gradle-producer", "verification-supervisor", "verification-runtime"],
+    "upstreamBoundaryRegisteredFiles": 812,
+    "gitDiffCheck": "clean",
+    "finalPlanOnlyBeforeCommit": { "exit": 0, "coverage": "COMPLETE", "missing": 0, "nodes": 67, "planHash": "defe8ab4692af05430464974c3d5e8e029ff7d64ecbc1822c07ff91593c744e0", "equalsBase": true }
+  },
+  "coupledReconciliations": {
+    "junitInventory": { "discovery.shared": [5897, 5925], "discovery.desktop": [1533, 1533] },
+    "registryCatalogPin": {
+      "from": "acca0eef7a02c8a75eee569f2ebd5222ac58d46dac51c83d1061db04cb48a4b8",
+      "to": "9fa207f0011e079cadf8bc5e4df9a3c4e4a5a378b8c18a8ca955b8d3b804b74e",
+      "method": "Get-VerificationCanonicalTextSha256; reproduced the old pin from the unchanged inventory first"
+    },
+    "upstreamRecord": "six purposes extended; five test files registered; 812 files"
+  },
+  "compatibility": {
+    "serializationFormatImpact": "NONE",
+    "identitySchemaImpact": "NONE",
+    "migrationImpact": "NONE",
+    "certificatePersistence": "NONE",
+    "v1Programs": "version and signature unchanged",
+    "historicalDocuments": "open with their serialized semantics; a newer build may certify more current constructions at run time"
+  },
+  "impact": {
+    "PRODUCT_PHASE_EFFECT": "BOUNDED CAPABILITY EXTENSION plus two evaluator correctness repairs",
+    "SERIALIZATION_FORMAT_IMPACT": "NONE",
+    "IDENTITY_SCHEMA_IMPACT": "NONE",
+    "MIGRATION_IMPACT": "NONE",
+    "VERIFICATION_INFRASTRUCTURE_IMPACT": "CATALOG DATA ONLY",
+    "BOOTSTRAP_IMPACT": "NO_CHANGE_REQUIRED",
+    "GUIDE_IMPACT": "UPDATED",
+    "GUIDE_PATHS": ["docs/user/geocedg_user_guide_en.md", "docs/user/geocedg_user_guide_es.md", "docs/developer/geocedg_developer_guide.md"],
+    "UPSTREAM_BOUNDARY_IMPACT": "no upstream-owned file modified; six GeoCeDG entries extended; five test files added"
+  },
+  "debtLedger": {
+    "TD-LOCUS-CERTIFIED-CONSTRUCTION-EXPRESSION-POINT": "RESOLVED_BY_CANDIDATE_PENDING_AUTHOR_APPROVAL",
+    "TD-LOCUS-EVALUATOR-SEGMENT-DRIVER-UPDATE": "RESOLVED_IN_X1_PENDING_AUTHOR_APPROVAL",
+    "TD-LOCUS-EVALUATOR-INLINE-LITERAL-DEPENDENCY": "RESOLVED_IN_X1_PENDING_AUTHOR_APPROVAL",
+    "TD-R3-CONSTRUCTION-PROTOCOL-MINIMAL-REORDER": "RETAINED",
+    "BASELINE-G9U1-BRANDING-EVIDENCE-PIN": "CARRIED_FORWARD",
+    "OBS-R2-PHASE-SELECTION-COHORT": "CARRIED_FORWARD",
+    "GUIDE-A1-SECTION-9.3-STALE": "CARRIED_FORWARD",
+    "TD-UPSTREAM-RECORD-E0-E1-PURPOSE": "ALREADY_RESOLVED_IN_PRE-G9B-R3"
+  },
+  "observations": ["OBS-C1-COMMAND-NOT-LOADED-OUTER-RESTORE", "OBS-C1-DOPARSEXML-CLEAR-BEFORE-TRY", "OBS-U1-PLAIN-XML-PASTE-TOLERATES-COMMAND-ERRORS", "OBS-X1-MACRO-BUILDXML-REQUIRES-CONSISTENT-SET-ORDER"],
+  "acceptanceCommand": "pwsh -NoProfile -File tools/agent/verify.ps1 -Profile FINAL -LogDirectory artifacts\\agent\\pre-g9b-r3-x1-final",
+  "notAuthorized": ["PRE-G9B-R3-X2", "PRE-G9B-R4 and later", "arbitrary expression-point certification", "push", "promotion", "tag", "release"]
+}

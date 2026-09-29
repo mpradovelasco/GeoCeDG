@@ -18,7 +18,7 @@ import org.geocedg.common.kernel.locus.ReconstructibleLocusEvaluator2D;
 import org.geocedg.common.kernel.locus.SemanticGeneratorDescriptor1D;
 
 /**
- * Certified construction interval model of class v1
+ * Certified construction interval model of classes v1 and v2
  * ({@code locus-v2-certified-construction-model.md}). It replays the exact-real
  * GeoGebra formula sequence of one captured program with outward intervals and
  * first derivatives. Every GeoGebra branch predicate is decided uniformly on the
@@ -61,7 +61,7 @@ final class ConstructionIntervalModel2D implements CertifiedIntervalCurveModel2D
 
 	/**
 	 * @return model of the reconstructible root of the chain, or {@code null}
-	 *         when its slice is outside class v1
+	 *         when its slice is outside the certified construction class
 	 */
 	static ConstructionIntervalModel2D capture(LocusDefinition2D definition,
 			SplineIntervalModel2D.SimilarityChain chain, String branch) {
@@ -234,9 +234,11 @@ final class ConstructionIntervalModel2D implements CertifiedIntervalCurveModel2D
 	private static PointJet transform(Step step, PointJet p) {
 		switch (step.getOperation()) {
 		case TRANSLATE:
-			return PointJet.normalized(
-					p.x.add(Jet.constant(step.getParameter(0)).multiply(p.z)),
-					p.y.add(Jet.constant(step.getParameter(1)).multiply(p.z)), p.z);
+			return translate(step, p);
+		case EXPRESSION_TRANSLATE:
+			// Contract section 5.2: TRANSLATE of VEC(P) = (PX, PY, 1), the vector value
+			// GeoPoint.getVector() gives the expression; never TRANSLATE of P itself.
+			return translate(step, PointJet.unit(p.inhomX, p.inhomY));
 		case ROTATE:
 			Jet cosine = Jet.constant(step.getParameter(0));
 			Jet sine = Jet.constant(step.getParameter(1));
@@ -265,6 +267,13 @@ final class ConstructionIntervalModel2D implements CertifiedIntervalCurveModel2D
 		default:
 			throw new ArithmeticException("Unsupported operation");
 		}
+	}
+
+	/** AlgoTranslate: (x + vx z, y + vy z, z), then GeoPoint.updateCoords. */
+	private static PointJet translate(Step step, PointJet p) {
+		return PointJet.normalized(
+				p.x.add(Jet.constant(step.getParameter(0)).multiply(p.z)),
+				p.y.add(Jet.constant(step.getParameter(1)).multiply(p.z)), p.z);
 	}
 
 	/** GeoPoint.rotate(phi, Q) with the evaluator's own cosine and sine. */

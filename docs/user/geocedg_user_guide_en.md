@@ -272,8 +272,11 @@ certified model, the pair becomes rich-only: its roots may still be listed, they
 can no longer be materialized, and a point already materialized from them may
 become undefined. It is never moved to another root. Undo can restore the
 earlier admissible state. In the example above, the new definition traces `a`
-through an expression, which has no certified model (section 8.7), so the pair
-roots of `a` behave this way.
+through `C+(1,0)`, a translation of the driver by a fixed vector, which has a
+certified model (section 8.7): the pair roots of `a` stay admissible, and a point
+already materialized from them keeps its root and follows the recalculation. A
+definition through another kind of expression, such as `(x(C)/2+1,y(C))`, has no
+certified model, and the pair roots of `a` then behave as just described.
 
 If the new definition depends on different durable objects, GeoCeDG does not
 guess. A dialog states the reason and offers only the choices it can guarantee:
@@ -791,7 +794,9 @@ that the two curves cross there. These curves have a certified model:
   segment, when the traced point is obtained from the driver only through lines
   through two points, parallel and perpendicular lines, intersections of two
   lines, midpoints, and translations, rotations, reflections and dilations with
-  fixed parameters;
+  fixed parameters — including a translation written as an expression of one
+  point and one fixed vector, `P+v`, `v+P` or `P-v`, where `v` is a vector object
+  such as `u=(1,0)` or a literal of two numbers such as `(1,0)`;
 - a Locus V2 of a number whose traced point moves along a straight line at a
   constant rate as the number changes;
 - similarity images of any of these.
@@ -799,7 +804,8 @@ that the two curves cross there. These curves have a certified model:
 Spline V2 × Locus V2, Locus V2 × Spline V2 and Locus V2 × Locus V2 pairs
 therefore materialize exactly like spline pairs when both sides qualify. When a
 side has no certified model — for example a locus traced through a line–circle
-intersection, through an expression or along another locus — the pair stays
+intersection, along another locus, or through any other expression, such as
+`(x(C)/2,y(C))`, `C+2u`, `C+u+u` or `C+A` with a point `A` — the pair stays
 rich-only, and the result's diagnostics say that a side lacks the model. A root
 at the seam where a driving circle closes on itself stays unresolved.
 
@@ -1350,17 +1356,9 @@ These are the limitations that affect what you can do in the application today.
 - The built-in axes cannot be the target of a semantic intersection or the
   mirror of a semantic reflection; construct the line explicitly
   (section 10.4).
-- Two evaluation defects of Locus V2 curves traced by a point are known. A locus
-  driven along a segment is evaluated one step late when its construction uses
-  the driving point in a line through two points or in a midpoint. A locus whose
-  construction passes unnamed literal points or vectors to two of the commands
-  between the driving point and the traced point, such as `Line(C,(0,3))`
-  followed by `PerpendicularLine((0,0),g)`, cannot be evaluated: in a new
-  construction it is created undefined, and a document saved by an earlier build
-  can still show it as a single fixed point. The positions, lengths and
-  intersections of such loci can be wrong. Where
-  possible, drive the point along a circle or an arc instead of a segment, and
-  name literal points first (`T=(0,3)`, then `Line(C,T)`).
+- Only the translations of section 8.7 among expression-defined points have a
+  certified model; a locus traced through any other expression stays rich-only
+  for pair intersections.
 
 **Export**
 

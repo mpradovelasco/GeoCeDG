@@ -232,12 +232,15 @@ final class PreG9bR2E1SemanticPairMaterializationTest extends G9U0PublicSurfaceT
 	}
 
 	@Test
-	void segmentDriverInhomogeneousReadIsRefusedByTheCoherenceGate() {
+	void segmentDriverInhomogeneousReadIsCurrentAndCertified() {
 		getKernel().setContinuous(false);
-		// Retained debt RECONSTRUCTIBLE-SEGMENT-DRIVER-INHOMOGENEOUS-LAG: the
-		// evaluator does not refresh a segment driver's inhomogeneous coordinates, so
-		// a midpoint through it evaluates the previous parameter. The certificate is
-		// correct; the floating verification refuses it and nothing is materialized.
+		// Retained debt TD-LOCUS-EVALUATOR-SEGMENT-DRIVER-UPDATE on its retained
+		// fixture: the evaluator did not refresh a segment driver's inhomogeneous
+		// coordinates, a midpoint through it evaluated the previous parameter, and the
+		// floating verification refused the correct certificate. PRE-G9B-R3-X1
+		// corrects the evaluator, so the certified slots now pass the unchanged
+		// verification. MODEL_X1#theFloatingVerificationStillRefusesACertifiedSlotItRejects
+		// keeps the refusal branch of the coherence gate pinned.
 		add("sm=Segment((-2,-2),(2,2))");
 		add("Cm=Point(sm)");
 		add("Km=(1,-1)");
@@ -245,11 +248,18 @@ final class PreG9bR2E1SemanticPairMaterializationTest extends G9U0PublicSurfaceT
 		add("lag=LocusV2(Mm,Cm)");
 		add("Hm=SplineV2({(-1,0.2),(0,-0.3),(1.5,0.1)},3)");
 		GeoLocusIntersectionResult rich = add("R=Intersect(Hm,lag)");
-		assertTrue(eligible(rich).isEmpty(), diagnostic(rich));
+		List<LocusIntersectionSolution2D> roots = eligible(rich);
+		assertFalse(roots.isEmpty(), diagnostic(rich));
 		assertTrue(diagnostic(rich).contains("status=UNIQUE"), diagnostic(rich));
-		assertTrue(diagnostic(rich).contains(
+		assertFalse(diagnostic(rich).contains(
 				"Certified slot refused by current evaluator/contact validation"),
 				diagnostic(rich));
+		for (int index = 0; index < roots.size(); index++) {
+			GeoPoint point = materialize(rich, "Z" + index, roots.get(index));
+			assertTrue(point.isDefined());
+			// Validation only: the midpoints of (s,s) and (1,-1) lie on y = x - 1.
+			assertEquals(point.getInhomX() - 1, point.getInhomY(), 1E-9);
+		}
 	}
 
 	@Test

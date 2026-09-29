@@ -4,6 +4,8 @@
 - Date: 2026-09-23
 - Phase: `PRE-G9B-R2-E0/E1` (one combined sequential task authorized by the author)
 - Amends: [ADR 0021](0021-spline-pair-singleton-germ-materialization.md) Decision 1 only
+- Amended by: `PRE-G9B-R3-X1` (Decision 3 only; see the amendment section at the
+  end, which carries its own technical-candidate state)
 - Extends: [locus-v2-metrics.md](../../geocedg/specs/locus/locus-v2-metrics.md) §21 and §23
 - Normative contracts: [certified construction model](../../geocedg/specs/locus/locus-v2-certified-construction-model.md),
   [metrics §24](../../geocedg/specs/locus/locus-v2-metrics.md),
@@ -149,3 +151,70 @@ This ADR is a technical candidate. It authorizes nothing beyond the combined
 `PRE-G9B-R2-E0/E1` task that produced it, and it does not authorize `R3` or any
 later phase, `G9B`, `G9C`, `G9U2`, productive `G10`, release, tag or
 publication.
+
+## Amendment — PRE-G9B-R3-X1: certified expression-point translation
+
+```text
+PHASE                     = PRE-G9B-R3-X1
+TECHNICAL_CANDIDATE_STATE = FROZEN
+AUTHOR_DECISION           = NOT_RECORDED_IN_THIS_ARTIFACT
+selfApproved              = false
+```
+
+This amendment is a technical candidate. It carries no approval of its own and
+changes nothing above it except where it says so; acceptance is recorded only by
+a separate author-decision record. The design record is
+[`pre_g9b_r3_x1_certified_expression_point_design.md`](../architecture/pre_g9b_r3_x1_certified_expression_point_design.md).
+
+### Context
+
+The rejected alternative "model expressions … now" left every expression-defined
+point outside the class, so `C + (1,0)` and `C + u` stayed rich-only
+(`TD-LOCUS-CERTIFIED-CONSTRUCTION-EXPRESSION-POINT`), and a compatible redefine
+such as `E := Midpoint(D, C + (1,0))` made a certified pair rich-only.
+
+### Decision
+
+1. **Decision 3 is extended by one bounded operation.** The certified
+   construction class gains the *expression-point translation*: an
+   `AlgoDependentPoint` whose definition is exactly one `P + V`, `V + P` or `P - V`,
+   with `P` a driver-dependent `GeoPoint` node and `V` a finite
+   driver-independent `GeoVector` or an inline Cartesian literal of two numeric
+   literals. Its authority is GeoGebra's own formula, `(PX + ux, PY + uy, 1)`,
+   which equals the existing `TRANSLATE` formula applied to the unit reading
+   `(PX, PY, 1)` of `P`; the model reuses that formula and adds no interval logic.
+2. **Versioning.** Programs made only of class-v1 operations keep
+   `certified-construction-program/v1` and their signatures; a program with an
+   expression-point step is `certified-construction-program/v2`. Programs stay
+   ephemeral certificate material.
+3. **Nothing else changes.** Admission remains by capability; every other
+   expression, including arbitrary coordinate expressions such as
+   `(x(C)/2, y(C))`, stays outside the class and rich-only with its diagnostic.
+   Decisions 1, 2 and 4–8, the selector, the token, the ledger, completeness and
+   the metric endpoint families are unchanged.
+4. **Evaluator coherence.** The floating evaluator must apply a path driver as
+   `AlgoPointOnPath` does and replay each slice element once. The two retained
+   evaluator defects that violated this are corrected in the evaluator under the
+   Ri policy; the certifier is not changed to hide them.
+
+### Consequences
+
+- Pairs whose construction locus is traced through a supported expression point
+  certify and materialize their transverse singleton roots with the unchanged
+  token; global completeness stays `NOT_ESTABLISHED` where it was.
+- The R3 witness redefine keeps a certified pair certified, so a point
+  materialized from it keeps its token and follows the recomputation.
+- Segment-driven loci that read the driver's inhomogeneous coordinates, and
+  slices with inline literals in two commands, now evaluate correctly; their
+  floating values change from wrong to correct, with no persisted state and no
+  migration. The fail-closed pins of both defects become positive pins.
+- No serialization, identity schema or migration changes.
+
+### Rejected alternatives
+
+| Alternative | Reason |
+|---|---|
+| admit `AlgoDependentPoint` by class | contradicts the capability rule |
+| relabel `P + V` as `TRANSLATE(P, V)` | not exact when `P`'s homogeneous `z ≠ 1`; hides the v2 grammar |
+| a general interval evaluator for expression trees | arbitrary expression certification is outside the authorized envelope |
+| relabel all programs as v2 | changes every existing signature without cause |

@@ -2868,7 +2868,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/ReconstructibleLocusEvaluator2D.java",
       "change": "added",
-      "purpose": "Evaluate a reconstructible isolated construction slice by durable identities and capture only a directly proven structural affine F(u)=a u+b certificate for complete R6 inverse coverage, never by labels, samples, fitting, coordinates or XML order. PRE-G9B-R2-E0/E1 exposes an immutable certified construction program captured from its own isolated slice.",
+      "purpose": "Evaluate a reconstructible isolated construction slice by durable identities and capture only a directly proven structural affine F(u)=a u+b certificate for complete R6 inverse coverage, never by labels, samples, fitting, coordinates or XML order. PRE-G9B-R2-E0/E1 exposes an immutable certified construction program captured from its own isolated slice. PRE-G9B-R3-X1: apply a path driver as AlgoPointOnPath does (pathChanged, then updateCoords), resolving TD-LOCUS-EVALUATOR-SEGMENT-DRIVER-UPDATE, and gather the slice in a strict total order (construction index, then creation id) so that Macro.buildMacroXML re-adding its closure never duplicates the driver, resolving TD-LOCUS-EVALUATOR-INLINE-LITERAL-DEPENDENCY. Authority: docs/architecture/pre_g9b_r3_x1_certified_expression_point_design.md.",
       "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
     },
     {
@@ -4692,13 +4692,13 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/CertifiedConstructionProgram2D.java",
       "change": "added",
-      "purpose": "PRE-G9B-R2-E0/E1: immutable certified-construction-program/v1 representation of a reconstructible generator slice.",
+      "purpose": "PRE-G9B-R2-E0/E1: immutable certified-construction-program/v1 representation of a reconstructible generator slice. PRE-G9B-R3-X1: add the class-v2 EXPRESSION_TRANSLATE operation and derive the program version from its steps, keeping every class-v1 program and signature unchanged. Authority: docs/architecture/pre_g9b_r3_x1_certified_expression_point_design.md.",
       "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/CertifiedConstructionCapture2D.java",
       "change": "added",
-      "purpose": "PRE-G9B-R2-E0/E1: capture a certified construction program from the evaluator's isolated slice, refusing every shape outside class v1.",
+      "purpose": "PRE-G9B-R2-E0/E1: capture a certified construction program from the evaluator's isolated slice, refusing every shape outside class v1. PRE-G9B-R3-X1: recognize exactly one P+V, V+P or P-V expression point of a driver-dependent GeoPoint and a finite constant GeoVector or Cartesian two-number literal; every other expression stays refused. Authority: docs/architecture/pre_g9b_r3_x1_certified_expression_point_design.md.",
       "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
     },
     {
@@ -4710,19 +4710,19 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/ConstructionIntervalModel2D.java",
       "change": "added",
-      "purpose": "PRE-G9B-R2-E0/E1: outward-rounded value and derivative replay of a captured construction program for pair certification.",
+      "purpose": "PRE-G9B-R2-E0/E1: outward-rounded value and derivative replay of a captured construction program for pair certification. PRE-G9B-R3-X1: evaluate the expression-point translation with the existing TRANSLATE formula on the unit reading (PX, PY, 1) of its point, adding no interval logic. Authority: docs/architecture/pre_g9b_r3_x1_certified_expression_point_design.md.",
       "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/PreG9bR2E1SemanticPairMaterializationTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-R2-E0/E1: verify capability-based certified semantic-pair materialization, its lifecycle and its fail-closed boundaries.",
+      "purpose": "PRE-G9B-R2-E0/E1: verify capability-based certified semantic-pair materialization, its lifecycle and its fail-closed boundaries. PRE-G9B-R3-X1: the segment-driver fixture becomes the positive pin of the repaired evaluator: its certified slots pass the unchanged floating verification and materialize. Authority: docs/architecture/pre_g9b_r3_x1_certified_expression_point_design.md.",
       "authority": "geocedg/specs/curves/spline-v2-pair-materialization.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/PreG9bR2E1CertifiedConstructionModelTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-R2-E0/E1: verify the certified construction model's enclosure, refusals, obligations, trigonometric rigor, budget and completeness rules. PRE-G9B-R3: pin the fail-closed manifestation of the retained inline-literal evaluator defect under version-2 frontier validation. Authority: geocedg/specs/spatial/durable-dependency-projection.md.",
+      "purpose": "PRE-G9B-R2-E0/E1: verify the certified construction model's enclosure, refusals, obligations, trigonometric rigor, budget and completeness rules. PRE-G9B-R3: pin the fail-closed manifestation of the retained inline-literal evaluator defect under version-2 frontier validation. Authority: geocedg/specs/spatial/durable-dependency-projection.md. PRE-G9B-R3-X1: the inline-literal fixture becomes the positive pin of the repaired evaluator: replayed with its driver and certified. Authority: docs/architecture/pre_g9b_r3_x1_certified_expression_point_design.md.",
       "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
     },
     {
@@ -4844,6 +4844,36 @@
       "change": "added",
       "purpose": "PRE-G9B-R3-C1-U1: verify Desktop Ctrl+C and Ctrl+V of an ordinary axis-input construction through the same-window fast paste and the full-payload paste, with no identity participant.",
       "authority": "docs/architecture/pre_g9b_r3_c1_u1_ordinary_clipboard_closure_design.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/PreG9bR3X1CertifiedExpressionPointModelTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R3-X1: verify class-v2 capture of the bounded expression-point grammar, v1/v2 versioning, the unchanged capability boundary, enclosure and derivative correctness, fail-closed boxes and the unchanged coherence-gate refusal.",
+      "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/PreG9bR3X1CaptureBoundaryTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R3-X1: verify the capture rules for disconnected slices and undefined or nonfinite vector objects on live geos, and the version rule.",
+      "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/PreG9bR3X1ExpressionPointPairMaterializationTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R3-X1: verify certified pair roots, exact tokens, materialization, lifecycle, metrics, persistence and copy/remap for supported expression-point loci, and the rich-only boundary for unsupported ones.",
+      "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/PreG9bR3X1RedefineWitnessTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R3-X1: verify the R3 author witness redefine into supported expression-point syntax, its undo, redo and reopen, and the fail-closed unsupported redefine.",
+      "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/PreG9bR3X1EvaluatorCorrectnessTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R3-X1: verify the repaired reconstructible evaluator against canonical values and the live construction for segment, circle and arc drivers and for the retained inline-literal fixture.",
+      "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
     }
   ]
 }

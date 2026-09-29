@@ -820,6 +820,20 @@ explicit diagnostic. The same candidate resolves between-position metric
 endpoints through `SemanticMetricEndpointResolver2D`, in the family order of
 `locus-v2-metrics.md` section 24.
 
+The `PRE-G9B-R3-X1` technical candidate
+([design record](../architecture/pre_g9b_r3_x1_certified_expression_point_design.md))
+adds class v2 to that model: `CertifiedConstructionCapture2D` recognizes exactly
+one `P+V`, `V+P` or `P-V` of an `AlgoDependentPoint` (a driver-dependent point
+and a finite constant `GeoVector` or Cartesian two-number literal) and records it
+as `EXPRESSION_TRANSLATE`, which `ConstructionIntervalModel2D` evaluates as the
+existing `TRANSLATE` formula on the unit reading `(PX, PY, 1)` of the point. A
+program keeps `certified-construction-program/v1` unless it has such a step. Any
+other expression still has no program. The same candidate corrects
+`ReconstructibleLocusEvaluator2D`: a path driver is applied as `AlgoPointOnPath`
+does (`pathChanged`, then `updateCoords`), and the slice is gathered in a strict
+total order (construction index, then creation id) because
+`Macro.buildMacroXML` re-adds its closure to the caller's set.
+
 The native knot failure remains preserved as historical evidence. Its authorized
 prerequisite [ADR 0022](../adr/0022-structural-spline-continuity.md) makes native
 continuity structural in the same bounded spline space and preserves the actual
