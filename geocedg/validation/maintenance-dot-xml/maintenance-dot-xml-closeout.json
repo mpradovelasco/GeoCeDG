@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "track": "maintenance/dot-xml-locale-independent-serialization",
+  "recordKind": "AUTHOR_CLOSEOUT_DISPOSITION",
+  "status": "DOT/XML MAINTENANCE — PASS — AUTHOR APPROVED",
+  "authorDecisionDate": "2026-09-30",
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "technicalCandidateFrozen": true,
+  "candidateMutated": false,
+  "newHeavyFinal": "NONE",
+  "authorSmoke": {
+    "result": "PASS",
+    "source": "author statement after reviewing the recommended EN/ES lifecycle smoke",
+    "individualObservationsRecorded": false,
+    "ggbCompatibilityRoute": "not recorded as a separate author observation; automated evidence DotXmlLocaleIndependentPersistenceTest.spanishCompatibilityDocumentReopensAsTheSameDependency inside the accepted FINAL"
+  },
+  "acceptedAs": "shared kernel serialization repair of a pre-existing upstream-inherited defect",
+  "acceptedDecisions": {
+    "placement": "shared Java kernel serialization path (ExpressionSerializer case DOT, non-GIAC branch)",
+    "gating": "tpl.isPrintLocalizedCommandNames() ? loc.getCommand(\"Dot\") : \"Dot\"",
+    "gatingScope": "every template that declares command names non-localized, not only xmlTemplate; must not be narrowed to an XML-specific special case",
+    "interpretation": {
+      "localizedCommandTemplate": "localized Dot presentation where applicable",
+      "nonLocalizedCommandTemplate": "stable canonical/internal-compatible Dot head"
+    },
+    "presentation": "Spanish user-facing presentation stays localized where the template requests localization",
+    "persistence": "new saves are locale-independent for Dot",
+    "dependencyIdentity": "DAG identity survives save/reopen, XML reload and undo, and recomputes",
+    "historicalFiles": "not migrated; no locale-aware XML migration, translation guessing, textual replacement heuristic or generalized localized XML parser authorized",
+    "upstreamProvenance": "unchanged from the candidate: ExpressionSerializer.java baseline blob 1fd72720d688b10999df9041a9bdbe49ee6a7e6f at 9b93256b7df401ff056c37b502d82df4d72b1522, now a registered minimal upstream modification; 824 registered files"
+  },
+  "approvedTechnicalCandidate": {
+    "commit": "4f9bc94440c772388381bd6970ed689a7502564b",
+    "tree": "71bf61504719c034a940a8e81fd90a8454d17ce4",
+    "parent": "e16697d96858639becf2dc72f7c7beaca8fcbd24",
+    "base": "e16697d96858639becf2dc72f7c7beaca8fcbd24",
+    "branch": "maintenance/dot-xml-locale-independent-serialization",
+    "modifiedByCloseout": false
+  },
+  "acceptedEvidence": {
+    "verificationClass": "GLOBAL_IMPACT",
+    "final": {
+      "run": "verification-7e9764bceb534e569510f324d0896ffb",
+      "acceptanceVerdict": "ACCEPTED",
+      "coverageVerdict": "COMPLETE",
+      "acceptanceSatisfied": 41,
+      "acceptanceTotal": 41,
+      "producersCompletedExitZero": 17,
+      "resultHash": "b530e266e2d7333432e59e6b068373679c39f06ea8b15fa7c40ecb79ecf4ad0e",
+      "resultFileSha256": "4fa9c8414208f8108bd97ee749b01d1a552dfde5d479b4fad535ac65c204e470",
+      "planHash": "3d8752b91eb96bffa3cfae1d6f54378ccfa34451642d0172f1cdb73f01743517",
+      "junit": {
+        "finalShared": { "tests": 6850, "failures": 0, "errors": 0, "skipped": 10, "skipsEqualAllowlist": true, "newTestsPassed": 8 },
+        "finalDesktop": { "tests": 1595, "failures": 0, "errors": 0, "skipped": 1, "skipsEqualAllowlist": true, "newTestsPassed": 3 }
+      },
+      "diagnostics": {
+        "clear": 8,
+        "diagnostic.governance": "DIAGNOSTIC_FINDING",
+        "diagnostic.historical-consistency": "DIAGNOSTIC_UNAVAILABLE"
+      }
+    },
+    "receipt": {
+      "receiptKind": "GEOCEDG_ACCEPTANCE_RECEIPT",
+      "receiptId": "d1de410ffd53e4eb3bac86b201d2f68bf024cd3f8effe5ba16679ca3d0ccef63",
+      "path": "artifacts/agent/maintenance-dotxml-final-4f9bc944/verification-receipt.json",
+      "fileSha256": "a08c0447a4fc380b99e66347e7313022e98217dbc00565ebc24995c3be27f450",
+      "candidateCommit": "4f9bc94440c772388381bd6970ed689a7502564b",
+      "candidateTree": "71bf61504719c034a940a8e81fd90a8454d17ce4",
+      "checkerIdentityHash": "e316a6d306e18d2346fbc38949fe77500ff1ce120b721934cfdf13fba21e071b",
+      "inputIdentityHash": "45686308052f515dc2a06b59d59f8bc209e522997a80c686741fa5dec8ad8cc8",
+      "environmentCompatibilitySignature": "de567676a3168eb19a13b0b8764c15e6fdca0d97baec6925aac5b72f6c7dc4c0"
+    },
+    "closeoutInspection": {
+      "command": "tools/agent/phase-closeout.ps1 -Action INSPECT -CandidateCommit <M_DOTXML> -ReceiptPath <receipt> -ApprovedCommit <M_DOTXML>",
+      "exitCode": 0,
+      "operation": "IDENTITY_ONLY_CLOSEOUT",
+      "identityConfirmed": true,
+      "mismatches": [],
+      "verificationExecuted": false,
+      "repositoryMutated": false
+    }
+  },
+  "closeoutVerification": {
+    "changeRoute": "ORDINARY",
+    "verificationClass": "DOCUMENTATION_STATUS_ONLY",
+    "acceptance": "STATIC",
+    "finalRerun": false,
+    "staticRun": "reported with the promotion; this record cannot name its own commit"
+  },
+  "impact": {
+    "GUIDE_IMPACT": "NONE",
+    "BOOTSTRAP_IMPACT": "NO_CHANGE_REQUIRED",
+    "VERIFICATION_INFRASTRUCTURE_IMPACT": "NONE"
+  },
+  "debtDisposition": {
+    "HZ-R5B-DOT-LOCALIZED-XML": "RESOLVED — AUTHOR APPROVED for new saves; R5-B prerequisite satisfied on publication of this closeout",
+    "TD-DOT-XML-HISTORICAL-LOCALIZED-HEAD": "RETAINED HISTORICAL COMPATIBILITY DEBT; no migration authorized"
+  },
+  "carriedForwardLedger": [
+    "docs/validation/pre_g9b_r5_b_compatibility_adr_closeout_record.md",
+    "docs/validation/pre_g9b_r5_a_closeout_record.md"
+  ],
+  "promotion": {
+    "authorized": true,
+    "method": "clean non-force fast-forward of the linear history e16697d9 -> 4f9bc944 -> this closeout commit",
+    "remoteBefore": {
+      "localMain": "e16697d96858639becf2dc72f7c7beaca8fcbd24",
+      "originMain": "e16697d96858639becf2dc72f7c7beaca8fcbd24",
+      "liveRemoteMain": "e16697d96858639becf2dc72f7c7beaca8fcbd24",
+      "tree": "3269ce7e29c14e72ec2c52011a350387f276e36a"
+    },
+    "tag": "NONE",
+    "release": "NONE",
+    "workingBranch": "RETAINED"
+  },
+  "stateAfterPublication": {
+    "DOT/XML MAINTENANCE": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "DOT/XML R5-B PREREQUISITE": "SATISFIED",
+    "PRE-G9B-R5-B": "DESIGNED — NOT AUTHORIZED",
+    "PRE-G9B-R6": "NOT AUTHORIZED",
+    "PRE-G9B-R7": "NOT AUTHORIZED",
+    "G9B": "NOT AUTHORIZED",
+    "futureR5BImplementationBase": "this closeout commit once published, named by a new explicit author instruction with the governance-layer amendment of the canonical R5-B prompt"
+  },
+  "notAuthorized": ["PRE-G9B-R5-B implementation", "R5-B prompt amendment", "PRE-G9B-R6", "PRE-G9B-R7", "G9B", "G9C", "G9U2", "productive G10", "further G12", "historical Dot migration", "tag", "release"]
+}
