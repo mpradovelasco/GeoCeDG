@@ -4928,6 +4928,24 @@
       "change": "added",
       "purpose": "PRE-G9B-R5-A: verify tree population, tree-driven navigation, scroll synchronization boundaries and the absence of feedback loops.",
       "authority": "geocedg/specs/operations/documentation-maintenance.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/arithmetic/ExpressionSerializer.java",
+      "change": "modified",
+      "purpose": "Maintenance DOT/XML (pre-existing upstream defect): print the Operation.DOT head localized only for templates that localize command names, as Command and the If/DataFunction heads already do, so XML and other non-localizing serialization write the internal Dot head in every UI language; localized presentation, GIAC, MathML and the XML reader are unchanged.",
+      "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/DotXmlLocaleIndependentSerializationTest.java",
+      "change": "added",
+      "purpose": "Maintenance DOT/XML: verify EN/ES persisted Dot identity, localized presentation non-regression, the If neighbour convention, XML reload and undo dependency recomputation, and the unchanged reader disposition of historical localized heads.",
+      "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/DotXmlLocaleIndependentPersistenceTest.java",
+      "change": "added",
+      "purpose": "Maintenance DOT/XML: verify EN/ES native .cedg Save As and reopen, and Classic-written .ggb compatibility input, preserve the Dot dependency and its recomputation.",
+      "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
     }
   ]
 }

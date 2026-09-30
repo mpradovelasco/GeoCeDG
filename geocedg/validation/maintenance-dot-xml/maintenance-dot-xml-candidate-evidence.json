@@ -1,0 +1,165 @@
+{
+  "schemaVersion": 1,
+  "track": "maintenance/dot-xml-locale-independent-serialization",
+  "task": "DOT/XML SERIALIZATION MAINTENANCE",
+  "recordKind": "TECHNICAL_CANDIDATE_EVIDENCE",
+  "technicalCandidateState": "FROZEN",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "implementationAuthorized": true,
+  "selfApproved": false,
+  "authorApproved": false,
+  "passClaimed": false,
+  "changeRoute": "ORDINARY",
+  "verificationClass": "GLOBAL_IMPACT",
+  "frozenAtTrackStart": true,
+  "plannedAcceptanceLevel": "FINAL",
+  "base": {
+    "commit": "e16697d96858639becf2dc72f7c7beaca8fcbd24",
+    "tree": "3269ce7e29c14e72ec2c52011a350387f276e36a",
+    "identity": "P_R5B_ADR, published ADR 0031 acceptance record"
+  },
+  "defect": "pre-existing upstream-inherited Dot XML localization leak",
+  "layer": "shared kernel serialization",
+  "productPhaseEffect": "NONE",
+  "r5bEffect": "removes the last prerequisite blocker only after author approval and publication",
+  "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md (Decisions 11 and 17)",
+  "provenance": {
+    "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/arithmetic/ExpressionSerializer.java",
+    "upstreamBaseline": "9b93256b7df401ff056c37b502d82df4d72b1522",
+    "baselineBlob": "1fd72720d688b10999df9041a9bdbe49ee6a7e6f",
+    "baseBlob": "1fd72720d688b10999df9041a9bdbe49ee6a7e6f",
+    "upstreamModifiedBeforeThisTrack": false
+  },
+  "rootCause": [
+    "ExpressionSerializer case DOT (non-GIAC) passed loc.getCommand(\"Dot\") to twoVar for every string template, GEOGEBRA_XML included, ignoring StringTemplate.isPrintLocalizedCommandNames()",
+    "xmlTemplate sets localizeCmds=false; Command.toString, appendIfCommand and the DataFunction head already honour that flag",
+    "the XML strategy keeps command heads verbatim (Command constructor), so a localized head is an unknown command on load and the later numeric element creates an independent number"
+  ],
+  "baseReproduction": {
+    "DotXmlLocaleIndependentSerializationTest": {
+      "tests": 8,
+      "failed": 5,
+      "passedControls": ["localizedPresentationTemplatesKeepTheCurrentHead", "ifNeighbourAlreadyFollowsTheSameTemplateConvention", "historicalLocalizedHeadIsNotReinterpretedByTheXmlReader"],
+      "observed": [
+        "ES xmlTemplate head ProductoEscalar(u, v)",
+        "ES expression elements ProductoEscalar(u, v) and (2 * ProductoEscalar(u, v)); EN Dot(u, v) and (2 * Dot(u, v))",
+        "ES noLocalDefault head ProductoEscalar(u, v)",
+        "after XML reload in EN or ES, d independent",
+        "after ES undo restore, d independent"
+      ]
+    },
+    "DotXmlLocaleIndependentPersistenceTest": {
+      "tests": 3,
+      "failed": 3,
+      "observed": "ES native .cedg (Save As) and ES Classic-written .ggb archives contain ProductoEscalar heads"
+    },
+    "scratchProbe": {
+      "committed": false,
+      "observed": [
+        "ES native Save As returns true; save preflight logs error in <expression> through ErrorHelper$SilentErrorHandler and accepts",
+        "reopen in EN or ES: loadFile true; d and e independent GeoNumeric, no parent, values 11 and 22; u=(3,4) leaves 11 and 22",
+        "EN-authored document round-trips: Dot(u, v), recomputes to 25 and 50"
+      ]
+    }
+  },
+  "fix": {
+    "site": "ExpressionSerializer case DOT, non-GIAC branch",
+    "change": "head = tpl.isPrintLocalizedCommandNames() ? loc.getCommand(\"Dot\") : \"Dot\"",
+    "convention": "Command.toString, appendIfCommand (Operation.IF), DataFunction head",
+    "unchangedCode": ["twoVar", "GIAC branch", "every other operation", "StringTemplate", "MyXMLHandler", "Command", "CommandLookupStrategy"]
+  },
+  "templateRoles": {
+    "localizingUnchanged": ["defaultTemplate", "editTemplate", "editorTemplate", "inputBoxTemplate", "algebraTemplate", "latexTemplate and variants", "screen reader", "libreofficeTemplate"],
+    "unaffectedBranches": ["mathmlTemplate (<scalarproduct/>)", "GIAC templates (Dot.2 CAS signature)"],
+    "nonLocalizingNowInternal": ["xmlTemplate", "casCopyTemplate", "noLocalDefault", "prefixedDefault*", "maxPrecision*", "maxDecimals", "numericNoLocal", "casCompare", "ogpTemplate", "GgbAPI non-localized", "scientific templates"],
+    "englishOutput": "byte-identical before and after (loc.getCommand(\"Dot\") is Dot under EN)",
+    "executed": ["default ES/EN", "edit ES/EN", "LaTeX ES/EN", "MathML ES", "xml ES/EN", "noLocalDefault ES", "maxPrecision ES", "casCopyTemplate ES"],
+    "notExecuted": ["GIAC (branch unchanged by construction)"]
+  },
+  "persistedForm": {
+    "es": ["<expression label=\"d\" exp=\"Dot(u, v)\"/>", "<expression label=\"e\" exp=\"(2 * Dot(u, v))\"/>"],
+    "en": ["<expression label=\"d\" exp=\"Dot(u, v)\"/>", "<expression label=\"e\" exp=\"(2 * Dot(u, v))\"/>"],
+    "equal": true
+  },
+  "lifecycle": {
+    "sharedXmlReload": "ES document reloaded under EN and ES keeps AlgoDependentNumber, top operation DOT, inputs {u, v}",
+    "sharedUndo": "ES undo restore keeps the dependency",
+    "nativeCedg": "ES and EN via GuiManagerGeoCeDG.saveAsTo, reopened via AppD.loadFile after AppD.setLanguage in EN and ES",
+    "ggb": "ES .ggb written by the Classic headless writer, opened through the GeoCeDG .ggb compatibility-input route in EN and ES; GeoCeDG does not write .ggb (AppGeoCeDG.saveGeoGebraFile rejects non-native targets)",
+    "recomputation": "u=(1,2), v=(3,4): d=11, e=22; shared v=(2,-1): 0, 0; u=(3,4), v=(-3,-4): -25, -50; Desktop u=(3,4): 25, 50; v=(-4,3): 0; v=(-1,-2): -11, -22"
+  },
+  "historicalDocuments": {
+    "disposition": "B",
+    "summary": "not safely recoverable without locale-dependent XML parsing or migration semantics",
+    "facts": [
+      "the XML strategy accepts internal command names only; ADR 0031 keeps XML-strategy strings to exact-case enum constants",
+      "50 distinct non-English Dot names in 98 command bundles",
+      "the token is not reserved in XML; scratch probe (EN UI): user function ProductoEscalar(a, b) = a + 10 b and d = ProductoEscalar(1, 2) persist exp=\"ProductoEscalar(1, 2)\" and reload as a dependent function application (21)",
+      "the existing PolyLine to PenStroke seam rewrites an internal legacy name and does not generalize to localized names"
+    ],
+    "migrationImplemented": false,
+    "readerChanged": false,
+    "pinnedBy": "DotXmlLocaleIndependentSerializationTest.historicalLocalizedHeadIsNotReinterpretedByTheXmlReader",
+    "retainedDebt": "TD-DOT-XML-HISTORICAL-LOCALIZED-HEAD"
+  },
+  "unchanged": ["XML command lookup strategy", "document schema and version", "durable object identity", "GeoCeDG identity records", "construction ordering", "undo/redo mechanism", "GGBScript", "ADR 0031 naming policy", "localized USER aliases", "reverse command tables", "parser lookup precedence", "user guides", "ADR 0031", "verifier code"],
+  "changes": {
+    "product": ["source/shared/common/src/main/java/org/geogebra/common/kernel/arithmetic/ExpressionSerializer.java"],
+    "tests": [
+      "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/DotXmlLocaleIndependentSerializationTest.java",
+      "source/desktop/desktop/src/test/java/org/geocedg/desktop/DotXmlLocaleIndependentPersistenceTest.java"
+    ],
+    "upstreamRecord": ["docs/upstream/modified-files.yml (serializer modified; two tests added; 824 files; Assert-GeoCeDGUpstreamBoundary passes)"],
+    "derivedCatalog": [
+      "geocedg/specs/operations/verification-junit-inventory.json",
+      "geocedg/specs/operations/verification-registry.json"
+    ],
+    "status": ["docs/roadmap/geocedg_roadmap.md"],
+    "records": [
+      "docs/validation/maintenance_dot_xml_locale_independent_serialization_candidate_report.md",
+      "geocedg/validation/maintenance-dot-xml/maintenance-dot-xml-candidate-evidence.json"
+    ]
+  },
+  "tests": {
+    "DotXmlLocaleIndependentSerializationTest": { "tests": 8, "afterFix": "8 pass, 0 skipped" },
+    "DotXmlLocaleIndependentPersistenceTest": { "tests": 3, "afterFix": "3 pass, 0 skipped" },
+    "adjacentShared": { "classes": 70, "tests": 1605, "failures": 0, "errors": 0, "skipped": 1, "skippedCause": "upstream @Disabled BernsteinPolynomial1DTest.testSpit" },
+    "adjacentDesktop": { "classes": 10, "tests": 74, "failures": 0, "errors": 0, "skipped": 0 },
+    "checkstyle": ":shared:common:checkstyleMain, :shared:common-jre:checkstyleTest, :desktop:desktop:checkstyleTest: no finding",
+    "upstreamBoundary": "Assert-GeoCeDGUpstreamBoundary -ExpectedBaseline 9b93256b7df401ff056c37b502d82df4d72b1522: pass, 824 files"
+  },
+  "catalogDerivation": {
+    "tool": "tools/agent/update-verification-junit-inventory.ps1",
+    "previousPinReproduced": "5da8c284055d01832461372e7cfb62c4d07632bc278fac451192964d46bd00f4",
+    "evidence": {
+      "discovery.shared": { "sha256": "6ae4da9f722a35d43da8b86520aeff667381b0676237a85b90d3e36b6c65a7e4", "dryRun": true, "junitFiles": 687 },
+      "discovery.desktop": { "sha256": "258f6f208a9a2afbc6600e468f4e7de9c68a0d6f47d8d853df858b7fae5d263c", "dryRun": true, "junitFiles": 109 },
+      "final.shared": { "sha256": "6739d0370d07598cd02e8fa14efa2a65a5787f0b206f0b44632eeb2f5916ba75", "dryRun": false, "junitFiles": 687, "tests": 6850, "failures": 0, "errors": 0, "skipped": 10, "skipsEqualAllowlist": true },
+      "final.desktop": { "sha256": "9f7026361b25d6b3e9e7c333d4a22db8bba4f168d8974f481b8e011a81157c9a", "dryRun": false, "junitFiles": 108, "tests": 1595, "failures": 0, "errors": 0, "skipped": 1, "skipsEqualAllowlist": true }
+    },
+    "discoveryShared": { "before": 5925, "after": 5933, "afterSha256": "7ef39da530934b47b1b25056cbdde02f3a2e2daad60e9b046fae55c948198422" },
+    "discoveryDesktop": { "before": 1598, "after": 1601, "afterSha256": "cbaaa22d509bfecaed62770070f283b4841ae0ed7de05fe6ecf81cc5153b65da" },
+    "finalShared": { "before": 6842, "after": 6850, "afterSha256": "6b1c2e97bfa2c81e355dcc3b2c32504d49d51c35a4200ddaafa905695b3d7b07" },
+    "finalDesktop": { "before": 1592, "after": 1595, "afterSha256": "58ad9f992d4c1c73ff8698ed3b6e1b65066dd24e20cc0e8dbf41e2e214beab3d" },
+    "narrowSelectionsChanged": false,
+    "registryPin": { "before": "5da8c284055d01832461372e7cfb62c4d07632bc278fac451192964d46bd00f4", "after": "02c9aa369a1e5b53e6d44e918732c373c37331af39b50af25d7ff0e2687c5381" },
+    "finalExecutionPlanHash": { "before": "3d8752b91eb96bffa3cfae1d6f54378ccfa34451642d0172f1cdb73f01743517", "after": "3d8752b91eb96bffa3cfae1d6f54378ccfa34451642d0172f1cdb73f01743517", "nodes": 68, "coverage": "COMPLETE" },
+    "evidenceLocation": "artifacts/agent/maintenance-dotxml-inventory/ (ignored)",
+    "handEntered": false
+  },
+  "impact": {
+    "GUIDE_IMPACT": "NONE",
+    "GUIDE_JUSTIFICATION": "The maintenance restores locale-independent persistence for an existing expression operation and does not introduce a new user-facing feature, command, workflow or file-format contract.",
+    "BOOTSTRAP_IMPACT": "NO_CHANGE_REQUIRED",
+    "VERIFICATION_INFRASTRUCTURE_IMPACT": "METADATA_ONLY",
+    "SERIALIZATION_FORMAT_IMPACT": "NONE",
+    "MIGRATION_IMPACT": "NONE"
+  },
+  "debt": {
+    "HZ-R5B-DOT-LOCALIZED-XML": "resolved for new saves by this candidate, pending author approval",
+    "TD-DOT-XML-HISTORICAL-LOCALIZED-HEAD": "new, retained"
+  },
+  "reusedEvidence": "NONE",
+  "acceptance": "one normal FINAL on the committed candidate, reported outside this artifact",
+  "notAuthorized": ["author approval", "closeout", "push", "promotion", "tag", "release", "substantive ADR 0031 update", "PRE-G9B-R5-B implementation", "PRE-G9B-R6"]
+}

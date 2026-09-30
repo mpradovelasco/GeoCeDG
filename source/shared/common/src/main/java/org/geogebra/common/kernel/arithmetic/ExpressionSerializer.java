@@ -496,8 +496,11 @@ public class ExpressionSerializer implements ExpressionNodeConstants {
 				sb.append(kernel.getGeoGebraCAS().translateCommandSignature("Dot.2")
 						.replace("%0", leftStr).replace("%1", rightStr));
 			} else {
-				twoVar(sb, leftStr, rightStr, loc.getCommand("Dot"), "<scalarproduct/>", "Dot",
-						"?", tpl, kernel, false, loc);
+				// GeoCeDG maintenance DOT/XML: localize the head only for localizing
+				// templates, like every command head; XML must not depend on the UI locale.
+				twoVar(sb, leftStr, rightStr,
+						tpl.isPrintLocalizedCommandNames() ? loc.getCommand("Dot") : "Dot",
+						"<scalarproduct/>", "Dot", "?", tpl, kernel, false, loc);
 			}
 			break;
 		case COSH:
