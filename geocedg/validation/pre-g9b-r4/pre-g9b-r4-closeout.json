@@ -1,0 +1,195 @@
+{
+  "schemaVersion": 1,
+  "phase": "PRE-G9B-R4",
+  "recordKind": "AUTHOR_CLOSEOUT_DISPOSITION",
+  "status": "PRE-G9B-R4 — PASS — AUTHOR APPROVED",
+  "authorDecisionDate": "2026-09-30",
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "technicalCandidateFrozen": true,
+  "candidateMutated": false,
+  "newHeavyFinal": "NONE",
+  "authorSmoke": "PASS",
+  "supersedes": {
+    "note": "the frozen candidates' own reports and evidence files necessarily carried no author-approval field, per the frozen-candidate rule; only the current-approval status is superseded here",
+    "paths": [
+      "docs/validation/pre_g9b_r4_candidate_report.md",
+      "geocedg/validation/pre-g9b-r4/pre-g9b-r4-candidate-evidence.json",
+      "docs/validation/pre_g9b_r4_corrective_candidate_report.md",
+      "geocedg/validation/pre-g9b-r4/pre-g9b-r4-corrective-evidence.json"
+    ]
+  },
+  "publishedBase": {
+    "name": "P_GSTATE",
+    "commit": "62b1281b5006272d4f9b1a0ae9d413e1f7b94320",
+    "tree": "8ce2f6719f1094e300beeaafbadab4cd5135a8d5"
+  },
+  "initialCandidate": {
+    "name": "T_R4",
+    "commit": "558c15c9537fdde8c1915fd34e810d7ade969f93",
+    "tree": "43f6946113beb8436d73321071958686cbc39323",
+    "parent": "62b1281b5006272d4f9b1a0ae9d413e1f7b94320",
+    "state": "TECHNICALLY ACCEPTED; SUPERSEDED BY AUTHOR-SMOKE CORRECTIVE DESCENDANT; NOT THE FINAL AUTHOR-APPROVED CANDIDATE",
+    "authorSmoke": "CORRECTIVE FINDINGS",
+    "authorApproval": "NOT GRANTED TO THIS CANDIDATE",
+    "modifiedByCloseout": false
+  },
+  "approvedTechnicalCandidate": {
+    "name": "T_R4C",
+    "commit": "13d1192b573656ab032df5d54f4372c3f32a2849",
+    "tree": "3bda0491c9990c418d232a6ac963597ac2b1ad26",
+    "parent": "558c15c9537fdde8c1915fd34e810d7ade969f93",
+    "branch": "feature/pre-g9b-r4-spline-v2-list-authoring-ux",
+    "authorSmoke": "PASS",
+    "authorApproval": "APPROVED",
+    "modifiedByCloseout": false
+  },
+  "canonicalPrompt": {
+    "path": ".github/prompts/tasks/pre-g9b-r4-spline-v2-list-authoring-ux.prompt.md",
+    "blob": "51abda02734bb7884c8b811b26ba10a14a56119f",
+    "edited": false
+  },
+  "acceptedEvidence": {
+    "changeRoute": "ORDINARY",
+    "verificationClass": "BOUNDED_PHASE",
+    "frozenAtPhaseStart": true,
+    "escalated": false,
+    "acceptanceLevel": "PHASE PRE-G9B-R4",
+    "authority": "geocedg/specs/operations/verification-levels.md section 12.8: BOUNDED_PHASE requires PHASE only",
+    "planHash": "f6ae0452b1a6dcb3cba29668aca1669ce5de784a262f102b2b873747d90adc44",
+    "planNodes": 9,
+    "requiredAcceptanceChecks": 5,
+    "initialPhase": {
+      "candidate": "558c15c9537fdde8c1915fd34e810d7ade969f93",
+      "run": "verification-133e6b111d9d48a29ced957f81069e4c",
+      "acceptanceVerdict": "ACCEPTED",
+      "coverageVerdict": "COMPLETE",
+      "resultHash": "6136bc520f2c03bb8369c460f1db197ffc92a0e50dbd4e86183ef247f822a933",
+      "resultFileSha256": "71a753572443d0af42abcde32cf5f9ce747dcd2686153ef5883b3d9f1a0bc559",
+      "acceptanceSatisfied": 5,
+      "acceptanceViolated": 0,
+      "diagnostics": 0,
+      "junit": { "desktop": { "tests": 155, "failures": 0 }, "shared": { "tests": 5, "failures": 0 } },
+      "preservedAsEvidenceOfSupersededCandidate": true
+    },
+    "correctivePhase": {
+      "candidate": "13d1192b573656ab032df5d54f4372c3f32a2849",
+      "tree": "3bda0491c9990c418d232a6ac963597ac2b1ad26",
+      "run": "verification-ffc495c4fcbf467082bbaf75d8e54a06",
+      "acceptanceVerdict": "ACCEPTED",
+      "coverageVerdict": "COMPLETE",
+      "resultHash": "6027887e5a9c458682fa9b3aa61aad5e8edac15ac05564bc58a4e3c0c0930ebd",
+      "resultFileSha256": "d9d2fbefc3d432d41c941470dad715ffdee5488cbece9106a72279dbe7e20d23",
+      "acceptanceSatisfied": 5,
+      "acceptanceViolated": 0,
+      "acceptanceUntrusted": 0,
+      "acceptanceNotRun": 0,
+      "diagnostics": 0,
+      "junit": { "desktop": { "tests": 158, "failures": 0 }, "shared": { "tests": 5, "failures": 0 } }
+    },
+    "crossCandidateEvidenceReuse": false,
+    "finalReceipt": "NONE; PHASE emits no FINAL acceptance receipt and none is claimed, fabricated or fed to the FINAL-receipt identity-only closeout adapter",
+    "statusOnlyPrecedent": ["PRE-G9B-R1-R1", "PRE-G9B-R2"],
+    "localEvidence": ["artifacts/agent/pre-g9b-r4-phase-558c15c9/", "artifacts/agent/pre-g9b-r4c-phase-13d1192b/"],
+    "furtherVerificationForCloseout": "static checks only; no PHASE, FULL or GOV-R"
+  },
+  "acceptedAuthorSmoke": [
+    "the dedicated List tools group is second from the left, immediately right of Move",
+    "Create List from Selection is present there and no longer belongs to Polygons",
+    "all three Spline V2 variants visibly reflect their active toolbar/flyout state",
+    "activating a Spline V2 tool does not open Input Help automatically",
+    "explicit Input Help and contextual-help requests select and display SplineV2 correctly",
+    "default-degree, explicit-degree and Closed Spline V2 authoring behave correctly",
+    "cancel and undo/redo behave correctly",
+    "ordered list creation behaves correctly"
+  ],
+  "acceptedCapability": [
+    "Spline V2 authoring tools",
+    "ordered list authoring tool",
+    "mode semantics",
+    "toolbar/flyout integration",
+    "explicit-degree gesture",
+    "explicit closed-form gesture",
+    "contextual help",
+    "Input Help integration",
+    "localization",
+    "tooltip correction",
+    "user-guide update"
+  ],
+  "finalUxDecisions": [
+    "Input Help visibility is user-controlled.",
+    "Mode activation alone never opens Input Help.",
+    "Toolbar selected state follows host mode authority.",
+    "List authoring owns a dedicated toolbar presentation group."
+  ],
+  "boundaries": {
+    "splineMathematicsInFrontend": false,
+    "cmdSplineV2SemanticsChanged": false,
+    "serializationChanged": false,
+    "durableIdentityChanged": false
+  },
+  "debtDisposition": {
+    "TD-R0-SPLINEV2-TOOLTIP-INVALID-SYNTAX": "RESOLVED"
+  },
+  "observationDisposition": {
+    "OBS-R4-SPLINEV2-DURABLE-ARGUMENT-PROMOTION": "RETAINED OBSERVATION; NOT AN R4 DEFECT",
+    "OBS-R4-KERNEL-CLOSURE-BY-ENDPOINT-VALUE-EQUALITY": "RETAINED OBSERVATION; PRE-EXISTING KERNEL BEHAVIOR",
+    "OBS-R4-TOOLS-SELECT-EXISTING-POINTS-ONLY": "RETAINED USABILITY OBSERVATION",
+    "OBS-R4C-LOCUS-V2-FAMILY-LAYER-BELOW-CONTAINING-LIST": "PRE-EXISTING; RETAINED OUTSIDE R4",
+    "OBS-R4C-PROFILE-TOOLBAR-MENU-ONLY-MODE-KEEPS-SELECTION": "PRE-EXISTING; RETAINED OUTSIDE R4",
+    "blocksR4": false,
+    "repairedHere": false
+  },
+  "fixtureProvenance": {
+    "path": "artifacts/preg-g9b-r4/TestNewTools.cedg",
+    "sha256": "fbff3f70c7a9cf5f11baa3d5e39f763b9274b1278c1f2efa1aa15a345f3a2dad",
+    "tracked": false,
+    "ignored": true,
+    "modified": false
+  },
+  "retainedLedger": [
+    "TD-R3-CONSTRUCTION-PROTOCOL-MINIMAL-REORDER",
+    "BASELINE-G9U1-BRANDING-EVIDENCE-PIN",
+    "OBS-R2-PHASE-SELECTION-COHORT",
+    "GUIDE-A1-SECTION-9.3-STALE",
+    "OBS-C1-COMMAND-NOT-LOADED-OUTER-RESTORE",
+    "OBS-C1-DOPARSEXML-CLEAR-BEFORE-TRY",
+    "OBS-U1-PLAIN-XML-PASTE-TOLERATES-COMMAND-ERRORS",
+    "OBS-X1-MACRO-BUILDXML-REQUIRES-CONSISTENT-SET-ORDER"
+  ],
+  "ledgerOverlapAbsorbed": [],
+  "promotion": {
+    "authorized": true,
+    "method": "ordinary clean non-force fast-forward of main",
+    "linearHistory": [
+      "62b1281b5006272d4f9b1a0ae9d413e1f7b94320",
+      "558c15c9537fdde8c1915fd34e810d7ade969f93",
+      "13d1192b573656ab032df5d54f4372c3f32a2849",
+      "this closeout commit"
+    ],
+    "remoteAtEntry": {
+      "localMain": "62b1281b5006272d4f9b1a0ae9d413e1f7b94320",
+      "originMain": "62b1281b5006272d4f9b1a0ae9d413e1f7b94320",
+      "liveRemoteMain": "62b1281b5006272d4f9b1a0ae9d413e1f7b94320"
+    },
+    "tag": "NONE",
+    "release": "NONE",
+    "featureBranchPushed": false
+  },
+  "successorState": {
+    "PRE-G9B-R5-A": "DESIGNED — NOT AUTHORIZED",
+    "PRE-G9B-R5-B": "DESIGNED — NOT AUTHORIZED; separate phase; requires its own compatibility ADR / AD-R0-4 execution authority",
+    "PRE-G9B-R6": "NOT AUTHORIZED",
+    "PRE-G9B-R7": "NOT AUTHORIZED",
+    "G9B": "NOT AUTHORIZED"
+  },
+  "prohibitedInThisCloseout": [
+    "modifying the frozen technical candidates",
+    "rerunning PHASE, running FULL or using GOV-R",
+    "fabricating or claiming a FINAL receipt",
+    "repairing the retained observations",
+    "tagging or releasing",
+    "authorizing or implementing a successor phase"
+  ]
+}
