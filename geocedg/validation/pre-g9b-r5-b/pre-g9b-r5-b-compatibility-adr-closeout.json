@@ -1,0 +1,176 @@
+{
+  "schemaVersion": 1,
+  "phase": "PRE-G9B-R5-B",
+  "recordKind": "AUTHOR_ADR_ACCEPTANCE_CLOSEOUT",
+  "status": "ADR 0031 — ACCEPTED — AUTHOR APPROVED",
+  "authorDecisionDate": "2026-09-30",
+  "selfApproved": false,
+  "authorApproved": true,
+  "technicalCandidateFrozen": true,
+  "candidateMutated": false,
+  "implementationAuthorized": false,
+  "newHeavyFinal": "NONE",
+  "adr": {
+    "path": "docs/adr/0031-canonical-english-command-surface-compatibility.md",
+    "status": "ACCEPTED — AUTHOR APPROVED",
+    "closeoutEdit": "status header only; decision text unchanged from the approved candidate"
+  },
+  "supersedes": {
+    "note": "the frozen candidate report and evidence carried AUTHOR_DECISION = PENDING APPROVAL OF THE EXACT AMENDED CANDIDATE, per the frozen-candidate rule; only the current-approval status is superseded here",
+    "paths": [
+      "docs/validation/pre_g9b_r5_b_compatibility_adr_candidate_report.md",
+      "geocedg/validation/pre-g9b-r5-b/pre-g9b-r5-b-command-name-compatibility-evidence.json"
+    ]
+  },
+  "publishedBase": {
+    "name": "P_R5A",
+    "commit": "4389b30b5478ac35c78a15255021e3c4f1e10ea3",
+    "tree": "1a4506b830a846efd5032fde5e8386ca8872dc89"
+  },
+  "initialCandidate": {
+    "name": "D_R5B_ADR",
+    "commit": "3b65af5303aac316a8b2747739aeb43e2921bac4",
+    "tree": "c6a81b27ba0c805dfbab969cf52727b27e53c564",
+    "parent": "4389b30b5478ac35c78a15255021e3c4f1e10ea3",
+    "authorApproval": "SUPERSEDED BY THE AMENDED CANDIDATE"
+  },
+  "approvedCandidate": {
+    "name": "D_R5B_ADR_R1",
+    "commit": "c459de9ab66d61fe849abbf9b9b8097c56605c48",
+    "tree": "3c8d0943f2be7b990e0e4cc97cd114203dd47a49",
+    "parent": "3b65af5303aac316a8b2747739aeb43e2921bac4",
+    "branch": "design/pre-g9b-r5-b-command-surface-compatibility-adr",
+    "authorApproval": "APPROVED",
+    "modifiedByCloseout": false
+  },
+  "canonicalPrompt": {
+    "path": ".github/prompts/tasks/pre-g9b-r5-b-canonical-english-command-surface.prompt.md",
+    "blob": "34e1796d5628108498a7c612c155d5c8d72a4c16",
+    "edited": false,
+    "pendingAmendment": "separate governance-layer task after the Dot/XML maintenance; fields ACCEPTED_COMPATIBILITY_ADR and IMPLEMENTATION_BASE stay UNRESOLVED"
+  },
+  "acceptedEvidence": {
+    "changeRoute": "ORDINARY",
+    "verificationClass": "DOCUMENTATION_STATUS_ONLY",
+    "frozenAtPhaseStart": true,
+    "escalated": false,
+    "acceptance": "STATIC",
+    "authority": "geocedg/specs/operations/verification-levels.md section 12.8: DOCUMENTATION_STATUS_ONLY requires static validation only",
+    "staticRuns": [
+      {
+        "candidate": "3b65af5303aac316a8b2747739aeb43e2921bac4",
+        "tree": "c6a81b27ba0c805dfbab969cf52727b27e53c564",
+        "run": "verification-781b5534a0d24c448297b7ea02336637",
+        "planHash": "25dfacc8b0c53df285a3ac19bbc438c5868d0c94dad7d1021727287ee892cc52",
+        "resultHash": "4969b6bed35d080f713d63848d5d44eff6a3027158677858f8b975d69c6c38cc",
+        "resultFileSha256": "e3f7bb856aa4eaf09aaa3d4e2f9f0c54c48dd49115be659433a2cfcbe4da2374",
+        "acceptanceVerdict": "ACCEPTED",
+        "coverageVerdict": "COMPLETE",
+        "acceptanceSatisfied": 3
+      },
+      {
+        "candidate": "c459de9ab66d61fe849abbf9b9b8097c56605c48",
+        "tree": "3c8d0943f2be7b990e0e4cc97cd114203dd47a49",
+        "run": "verification-45a9a4d0fc014c4192ed9dddbc562c30",
+        "planHash": "25dfacc8b0c53df285a3ac19bbc438c5868d0c94dad7d1021727287ee892cc52",
+        "resultHash": "bfa56ef13ac121c200dd59a2225e6c9ad0a5506cd4ba8553621f25877d49e107",
+        "resultFileSha256": "dae3f5e49a6bd7dab9502a88674304ea15ecd8a65cc322886fcb7eb16e9925c3",
+        "acceptanceVerdict": "ACCEPTED",
+        "coverageVerdict": "COMPLETE",
+        "acceptanceSatisfied": 3,
+        "approvedCandidateRun": true
+      }
+    ],
+    "requiredCheckIds": [
+      "prompt.execution-safety",
+      "repository.boundary-safety",
+      "static.scientific-inputs.semantic"
+    ],
+    "standingDiagnostics": {
+      "diagnostic.governance": "DIAGNOSTIC_FINDING",
+      "diagnostic.historical-consistency": "DIAGNOSTIC_UNAVAILABLE"
+    },
+    "finalReceipt": "NONE; STATIC emits no FINAL acceptance receipt and none is claimed, fabricated or fed to the identity-only closeout adapter",
+    "localEvidence": [
+      "artifacts/agent/pre-g9b-r5-b-adr-static-3b65af53/",
+      "artifacts/agent/pre-g9b-r5-b-adr-r1-static-c459de9a/"
+    ],
+    "furtherVerificationForCloseout": "static checks only; no PHASE, INTEGRATION, FINAL or GOV-R"
+  },
+  "acceptedPolicy": {
+    "internalCommandIdentity": "UNCHANGED_INTERNAL_SEMANTIC_AUTHORITY",
+    "canonicalPublicCommandName": "CANONICAL_ENGLISH_PUBLIC_NAME",
+    "canonicalPublicNameAuthority": "ENGLISH_COMMAND_BUNDLE",
+    "internalIdentifierIsPublicName": false,
+    "localizedCommandNames": "COMPATIBILITY_ALIASES_ONLY_WHERE_CURRENTLY_SUPPORTED",
+    "alternative": "D",
+    "syntaxPlaceholders": "UI_LANGUAGE",
+    "mathematicalFunctionNames": "CURRENT_UI_LOCALE_BEHAVIOUR",
+    "captionsAndAutomaticLabels": "UI_LANGUAGE",
+    "ggbscript": "CANONICAL_ENGLISH_INTERNAL_SEMANTICS",
+    "xmlAndSerialization": "UNCHANGED_BY_R5B",
+    "collisionGuard": "COMPLETE_INVENTORY_VALIDATION_FAIL_CLOSED",
+    "invariant": "canonical English display -> edit / redefine -> same internal command semantic identity; ambiguity fails closed; silent retargeting forbidden",
+    "perimetro": "RETAINED_COMPATIBILITY_OBSERVATION_NOT_A_BLOCKER"
+  },
+  "dotXmlDefect": {
+    "classification": "REAL / PRE-EXISTING / UPSTREAM-INHERITED",
+    "disposition": "SEPARATE BOUNDED MAINTENANCE",
+    "order": "MUST BE FIXED AND PUBLISHED BEFORE PRODUCTIVE R5-B",
+    "repairedHere": false,
+    "absorbedIntoR5B": false,
+    "adrWeakenedToTolerate": false
+  },
+  "impact": {
+    "GUIDE_IMPACT": "NONE",
+    "GUIDE_JUSTIFICATION": "ADR acceptance and status only; productive R5-B will require GUIDE_IMPACT = UPDATED (user guides section 16.3)",
+    "BOOTSTRAP_IMPACT": "NO_CHANGE_REQUIRED",
+    "VERIFICATION_INFRASTRUCTURE_IMPACT": "NONE"
+  },
+  "observationDisposition": {
+    "HZ-R5B-DOT-LOCALIZED-XML": "SEPARATE BOUNDED MAINTENANCE; BLOCKS PRODUCTIVE R5-B UNTIL PUBLISHED",
+    "HZ-R5B-ALIAS-CAS-STATE": "RETAINED COMPATIBILITY OBSERVATION",
+    "otherR5BHazards": "FUTURE R5-B OBLIGATIONS PER ADR 0031",
+    "blocksAdrAcceptance": false,
+    "repairedHere": false
+  },
+  "retainedLedger": "the PRE-G9B-R5-A closeout ledger carries forward unchanged",
+  "promotion": {
+    "authorized": true,
+    "method": "ordinary clean non-force fast-forward of main",
+    "linearHistory": [
+      "4389b30b5478ac35c78a15255021e3c4f1e10ea3",
+      "3b65af5303aac316a8b2747739aeb43e2921bac4",
+      "c459de9ab66d61fe849abbf9b9b8097c56605c48",
+      "this closeout commit"
+    ],
+    "remoteAtEntry": {
+      "localMain": "4389b30b5478ac35c78a15255021e3c4f1e10ea3",
+      "originMain": "4389b30b5478ac35c78a15255021e3c4f1e10ea3",
+      "liveRemoteMain": "4389b30b5478ac35c78a15255021e3c4f1e10ea3"
+    },
+    "tag": "NONE",
+    "release": "NONE",
+    "designBranchPushed": false
+  },
+  "successorState": {
+    "ADR_0031": "ACCEPTED — AUTHOR APPROVED",
+    "PRE-G9B-R5-B": "DESIGNED — NOT AUTHORIZED",
+    "PRE-G9B-R5-B_BLOCKED_ON": "published Dot/XML serialization maintenance",
+    "futureImplementationBase": "exact published commit after the Dot/XML maintenance, named by a new explicit author instruction",
+    "nextPermissibleTask": "separately authorized bounded Dot/XML serialization maintenance",
+    "PRE-G9B-R6": "NOT AUTHORIZED",
+    "PRE-G9B-R7": "NOT AUTHORIZED",
+    "G9B": "NOT AUTHORIZED"
+  },
+  "prohibitedInThisCloseout": [
+    "modifying the frozen candidates",
+    "changing ADR 0031 decision text",
+    "running PHASE, INTEGRATION, FINAL or GOV-R",
+    "fabricating or claiming a FINAL receipt",
+    "repairing the Dot/XML defect",
+    "editing the canonical R5-B prompt",
+    "tagging or releasing",
+    "authorizing or implementing R5-B or any successor phase"
+  ]
+}

@@ -1,7 +1,9 @@
 # ADR 0031: Canonical English command surface and localized-alias compatibility
 
-- Status: **PROPOSED — PRE-G9B-R5-B COMPATIBILITY CANDIDATE; AUTHOR DECISIONS
-  INCORPORATED — PENDING EXACT-COMMIT APPROVAL**
+- Status: **ACCEPTED — AUTHOR APPROVED** (decision of 2026-09-30 on the exact
+  amended candidate `c459de9ab66d61fe849abbf9b9b8097c56605c48`, tree
+  `3c8d0943f2be7b990e0e4cc97cd114203dd47a49`; recorded in the
+  [compatibility ADR closeout record](../validation/pre_g9b_r5_b_compatibility_adr_closeout_record.md))
 - Date: 2026-09-30
 - Amended: 2026-09-30 by the author-decision amendment `R1`, a corrective
   descendant of the initial candidate `3b65af5303aac316a8b2747739aeb43e2921bac4`.
@@ -18,19 +20,23 @@
   `1a4506b830a846efd5032fde5e8386ca8872dc89`
 
 ```text
-TECHNICAL_CANDIDATE_STATE      = PROPOSED — AUTHOR DECISIONS INCORPORATED
-AUTHOR_DECISION                = PENDING APPROVAL OF THIS EXACT AMENDED CANDIDATE
+AUTHOR_DECISION                = APPROVED (exact amended candidate c459de9a…)
 selfApproved                   = false
 implementationAuthorized       = false
 R5_B_IMPLEMENTATION_AUTHORIZED = false
 PRODUCT_PHASE_EFFECT           = NONE
 ```
 
-This record carries no approval of its own. `AD-R0-4` fixes the direction of the
-policy, and the author-decision amendment `R1` settles the choices the initial
-candidate left open. Neither makes this ADR accepted, and neither authorizes
-implementation. Acceptance can only come from a separate author decision naming
-the exact commit that contains this file.
+This ADR carries no approval of its own. Acceptance is recorded by the separate
+author-decision record named in the status line. The decision text below is
+unchanged from the approved candidate `c459de9a…`. Its candidate-state wording,
+such as "the only remaining decision is the author's approval", describes that
+candidate as it was frozen.
+
+Acceptance does not authorize productive `R5-B` implementation. Decision 17
+still applies: the separate `Dot`/XML serialization maintenance must be
+published first, and a new explicit author instruction must name the exact
+implementation base.
 
 ## Author decisions incorporated (amendment R1)
 
