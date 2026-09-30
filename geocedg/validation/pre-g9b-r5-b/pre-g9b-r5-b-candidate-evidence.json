@@ -1,0 +1,200 @@
+{
+  "schemaVersion": 1,
+  "phase": "PRE-G9B-R5-B",
+  "task": "canonical English command surface",
+  "recordKind": "TECHNICAL_CANDIDATE_EVIDENCE",
+  "runtimeAuthority": false,
+  "technicalCandidateState": "PREPARED_FOR_ONE_CLEAN_IMMUTABLE_COMMIT",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "implementationAuthorized": true,
+  "selfApproved": false,
+  "authorApproved": false,
+  "passClaimed": false,
+  "changeRoute": "ORDINARY",
+  "verificationClass": "INTEGRATED_PHASE",
+  "frozenAtPhaseStart": true,
+  "plannedAcceptance": {
+    "profile": "INTEGRATION",
+    "additional": "STATIC, for the diagnostic.guide-structure leaf",
+    "planOnlyBeforeInventoryUpdate": {
+      "INTEGRATION": {"coverage": "COMPLETE", "nodes": 46, "missing": 0},
+      "STATIC": {"coverage": "COMPLETE", "nodes": 10, "missing": 0, "planHash": "25dfacc8b0c53df285a3ac19bbc438c5868d0c94dad7d1021727287ee892cc52"}
+    },
+    "resultsReportedOutsideTheCandidate": true
+  },
+  "report": "docs/validation/pre_g9b_r5_b_candidate_report.md",
+  "base": {
+    "identity": "P_DOTXML",
+    "commit": "504a19f7e655ef50c4bfa8095a07f94c11b27a01",
+    "tree": "63e7f0cd79aa9e1cf1259b6466e8ac16dc261704",
+    "history": ["e16697d96858639becf2dc72f7c7beaca8fcbd24", "4f9bc94440c772388381bd6970ed689a7502564b", "504a19f7e655ef50c4bfa8095a07f94c11b27a01"],
+    "remoteAtEntry": {"localMain": "504a19f7e655ef50c4bfa8095a07f94c11b27a01", "originMain": "504a19f7e655ef50c4bfa8095a07f94c11b27a01", "liveRemoteMain": "504a19f7e655ef50c4bfa8095a07f94c11b27a01"},
+    "branch": "phase/pre-g9b-r5-b-canonical-english-command-surface",
+    "branchPublished": false
+  },
+  "authority": {
+    "adr": "docs/adr/0031-canonical-english-command-surface-compatibility.md",
+    "acceptedCompatibilityAdr": "e16697d96858639becf2dc72f7c7beaca8fcbd24",
+    "adrDecisionContent": "c459de9ab66d61fe849abbf9b9b8097c56605c48",
+    "adrDecisionTree": "3c8d0943f2be7b990e0e4cc97cd114203dd47a49",
+    "dotXmlPrerequisite": "SATISFIED / PUBLISHED",
+    "alternative": "D"
+  },
+  "promptAmendment": {
+    "path": ".github/prompts/tasks/pre-g9b-r5-b-canonical-english-command-surface.prompt.md",
+    "blobBefore": "34e1796d5628108498a7c612c155d5c8d72a4c16",
+    "blobAfter": "43901e3b8fe47f770d791097c5d5ecc6678b36aa",
+    "amendedBeforeAnySourceChange": true,
+    "validation": {
+      "contractProfile": "task",
+      "executionSafe": true,
+      "missingFields": [],
+      "duplicateFields": [],
+      "promptExecutionSafety": "CONTRACT_SATISFIED",
+      "linksResolved": true,
+      "lineEndings": "LF"
+    }
+  },
+  "sourceCharacterization": {
+    "productiveSourceChangeSinceAdrBase": ["source/shared/common/src/main/java/org/geogebra/common/kernel/arithmetic/ExpressionSerializer.java (M_DOTXML Dot head)"],
+    "inventory": {"enumConstants": 564, "withEnglishPublicName": 513, "displayedInputBarDictionary": 486, "englishDiffersFromInternal": 37, "englishDiffersFromInternalDisplayed": 37},
+    "identityRule": "Commands.englishToInternal; the processor factories send each merged group to one processor",
+    "findings": [
+      "after the CAS fill the reverse table resolves SD, SampleSD and BinomialCoefficient to stdevp, stdev and nCr, other constants of the same identities",
+      "Mean/mean and MAD/mad are both offered; the inherited case-insensitive dictionary keeps the later name, and presentation entries follow it",
+      "the CAS pass offers BinomialCoefficient and nCr without English entries; both are the identity nCr, already offered through Binomial",
+      "some English base syntax values hard-code their head (Point.SyntaxCAS); none hard-codes a Spanish head",
+      "CSolve and CSolutions are offered with CAS syntax only",
+      "a tool whose name equals a command key was printed through getCommand at the base; the GeoCeDG profile now prints tool names verbatim"
+    ]
+  },
+  "mechanism": {
+    "profileAttribute": "AppConfig.presentsCanonicalEnglishCommandHeads (default false; AppConfigGeoCeDG true)",
+    "englishAuthority": "Localization.getCanonicalEnglishCommand; JRE: Locale.ENGLISH command bundle, command_en over the base; null for a syntax key or a missing key",
+    "headAuthority": "Localization.getCommandHead: E(k) under the canonical profile, verbatim when none; otherwise getCommand (upstream)",
+    "headRecorder": "Localization.recordCommandHeads, head to printed command key",
+    "offeredIdentities": "App.getOfferedCommands, App.getCasTableCommands, recorded by the existing dictionary passes",
+    "geocedgPackage": "org.geocedg.common.main.command",
+    "orthogonalToLocalizeCmds": true,
+    "unchanged": ["USER lookup", "SCRIPT lookup", "XML lookup", "reverse command table", "parser", "Command strategies", "XML reading and writing", "serialization templates", "localized aliases", "internal identifiers", "getEnglishCommand"]
+  },
+  "gate": {
+    "class": "org.geocedg.common.main.command.CanonicalCommandHeadGate",
+    "failures": ["NO_ENGLISH_PUBLIC_NAME", "HEAD_NOT_SELF_RESOLVING", "HEAD_STATE_DEPENDENT", "HEAD_NOT_SCRIPT_RESOLVABLE", "HEAD_NOT_XML_EXACT", "SCRIPT_SAVE_NOT_IDENTITY_PRESERVING", "HEAD_PREEMPTED_BY_PARSER_FUNCTION", "HEAD_NOT_INJECTIVE"],
+    "equivalences": ["nCr/2", "nPr/2"],
+    "runs": [
+      {"language": "en", "states": ["fresh", "casFilled"], "heads": 513, "displayed": 486, "findings": 0},
+      {"language": "es", "states": ["fresh", "casFilled"], "heads": 513, "displayed": 486, "findings": 0}
+    ],
+    "negativeControl": {"application": "Classic, French UI", "detected": "HEAD_NOT_SELF_RESOLVING Intersection -> Intersect", "widensSupportedLocales": false}
+  },
+  "reentry": {
+    "class": "org.geocedg.common.main.command.CanonicalCommandReentry",
+    "chokepoint": "AlgebraProcessor.changeGeoElementNoExceptionHandling(GeoElementND, String, ...)",
+    "active": "GeoCeDG profile and USER lookup strategy",
+    "outcome": "CANONICAL_HEAD_SHADOWED",
+    "beforeParse": ["label (parenthesis form)", "CAS-cell label (parenthesis form)", "USER resolution to another identity", "tool on the resolved name"],
+    "afterParse": ["function variable"],
+    "mutation": "none: raised through the ordinary MyError path before evaluation",
+    "provenance": "bound to the element being redefined"
+  },
+  "scripts": {
+    "scriptRuntime": "unchanged",
+    "display": "command-head authority",
+    "saveRule": "SCRIPT-resolvable token keeps identity, stored as written except a displayed E(k) (any case) stored as the internal name; only SCRIPT-unresolvable tokens use UI-language aliases; conflict SCRIPT_TOKEN_AMBIGUOUS",
+    "untouchedSave": "byte-identical in EN and ES (ScriptInputModel)",
+    "baseBehaviourEnded": ["ES untouched save retargeted Perimeter to Circumference", "EN untouched save rewrote a stored PerpendicularLine to OrthogonalLine"]
+  },
+  "persistence": {
+    "serializationChanged": false,
+    "freshConstructionCore": "command, input, output and expression lines equal P_DOTXML for EN- and ES-authored 42-object witnesses",
+    "historicalDocument": "Spanish-UI native document saved at P_DOTXML reopens under EN and ES with construction XML byte-identical to its P_DOTXML reopening; values, click script and re-save identical",
+    "retainedDebt": "TD-DOT-XML-HISTORICAL-LOCALIZED-HEAD"
+  },
+  "baseFixture": {
+    "path": "source/desktop/desktop/src/test/resources/org/geocedg/desktop/pre-g9b-r5-b/pre-g9b-r5-b-base-fingerprints.json",
+    "sha256": "55ccae1e9a3e50e65cb08afb2972ed948b99d87726d768c091240f14267931f7",
+    "historicalDocument": "source/desktop/desktop/src/test/resources/org/geocedg/desktop/pre-g9b-r5-b/pre-g9b-r5-b-historical-es.cedg",
+    "historicalDocumentSha256": "94173d7c0035ff97d2e336158536a639d82621806e5753ac8ef9eb8af951b9af",
+    "producer": "scratch probe on the unchanged source tree, reproduced on a git archive extraction of P_DOTXML; the probe is not committed",
+    "reverseTableEntries": {"en.fresh": 532, "en.casFilled": 557, "es.fresh": 983, "es.casFilled": 1029},
+    "tokenUniverse": 1041
+  },
+  "obligations": {
+    "T-DISPLAY": "PASS", "T-INPUT": "PASS", "T-GATE": "PASS", "T-COLLISION": "PASS",
+    "T-REDEFINE": "PASS", "T-SHADOW": "PASS", "T-AUTOCOMPLETE": "PASS", "T-SYNTAX": "PASS",
+    "T-XML": "PASS", "T-SCRIPT": "PASS", "T-GEOCEDG": "PASS", "T-ERROR": "PASS",
+    "T-DYNTEXT": "PASS", "T-L01": "PASS unchanged", "T-SMOKE": "PENDING author"
+  },
+  "tests": {
+    "new": {
+      "PreG9BR5BCanonicalCommandGateTest": 6,
+      "PreG9BR5BCanonicalDisplayTest": 10,
+      "PreG9BR5BCanonicalReentryTest": 5,
+      "PreG9BR5BCanonicalHelpTest": 4,
+      "PreG9BR5BCanonicalScriptTest": 4
+    },
+    "updatedNarrowly": [
+      {"class": "DotXmlLocaleIndependentPersistenceTest", "reason": "ES display of Dot is the canonical head Dot(u, v)"},
+      {"class": "PreG9BR4SplineV2AuthoringTest", "reason": "Input Help leaves are identity-carrying canonical entries"},
+      {"class": "G9U1MetricReviewTest", "reason": "the Length head comes from the command-head authority, Length in both languages"}
+    ],
+    "unchangedUpstreamMockTest": "CommandErrorMessageBuilderTest (builder keeps getCommand outside the canonical profile)",
+    "preCommitFullRuns": {
+      "shared": {"tests": 6850, "failures": 0, "errors": 0, "skipped": 10},
+      "desktop": {"tests": 1630, "failures": 0, "errors": 0, "skipped": 1}
+    },
+    "checkstyle": {"sharedMain": 0, "sharedTest": 0, "desktopMain": 0, "desktopTest": 0}
+  },
+  "upstreamBoundary": {
+    "baseline": "9b93256b7df401ff056c37b502d82df4d72b1522",
+    "registeredFiles": 856,
+    "newEntries": {"modified": 19, "added": 13},
+    "existingEntriesAppended": 15,
+    "newlyModifiedWereBaselineIdenticalAtBase": true,
+    "assertion": "Controlled upstream boundary: 856 registered file(s)."
+  },
+  "junitInventory": {
+    "updater": "tools/agent/update-verification-junit-inventory.ps1 (in-session)",
+    "discoveryEvidence": ["discovery.shared (--test-dry-run)", "discovery.desktop (--test-dry-run)"],
+    "executedSelectionEvidence": {"selection": "final.desktop", "completion": "COMPLETED", "innerExitCode": 0, "tests": 1624, "failures": 0, "errors": 0, "skipped": 1},
+    "changedSelections": {
+      "discovery.desktop": {"before": {"count": 1601, "sha256": "cbaaa22d509bfecaed62770070f283b4841ae0ed7de05fe6ecf81cc5153b65da"}, "after": {"count": 1630, "sha256": "2ff7a5beb7982a1fd52f8d600a9b0c44895eb49ff00ae2fafb3a457c8f991202"}},
+      "final.desktop": {"before": {"count": 1595, "sha256": "58ad9f992d4c1c73ff8698ed3b6e1b65066dd24e20cc0e8dbf41e2e214beab3d"}, "after": {"count": 1624, "sha256": "2f7fab36c91e1c60b5d01530256134564ad1f3e0a5c56769aa9b874603324432"}}
+    },
+    "unchangedSelections": "every other selection, final.shared (6850) and discovery.shared (5933) included",
+    "registryPin": {"before": "02c9aa369a1e5b53e6d44e918732c373c37331af39b50af25d7ff0e2687c5381", "beforeReproduced": true, "after": "cc5ab6c77de6486c64e099b6d50c4b48bde9f7b2a986a83548e4105025fa909a", "function": "Get-VerificationCanonicalTextSha256"},
+    "planHashesAfter": {"INTEGRATION": "4502c4bd1bbe1a123089e9e524fd0afb354932afbcb410f93052555a16c77aea", "STATIC": "25dfacc8b0c53df285a3ac19bbc438c5868d0c94dad7d1021727287ee892cc52", "FINAL": "3d8752b91eb96bffa3cfae1d6f54378ccfa34451642d0172f1cdb73f01743517"},
+    "handEditedHashes": false
+  },
+  "guides": {
+    "guideImpact": "UPDATED",
+    "paths": ["docs/user/geocedg_user_guide_en.md", "docs/user/geocedg_user_guide_es.md", "docs/developer/geocedg_developer_guide.md"],
+    "section": "16.3 (heading and anchor unchanged)",
+    "structureDiagnostic": {"outcome": "DIAGNOSTIC_CLEAR", "markers": 17, "headings": {"h1": 1, "h2": 16, "h3": 82}, "alignedEntries": 99}
+  },
+  "observations": [
+    "TD-DOT-XML-HISTORICAL-LOCALIZED-HEAD retained",
+    "HZ-R5B-ALIAS-CAS-STATE (Perimetro) retained, not worsened",
+    "OBS-R5B-CAS-TABLE-VERBATIM-HEADS",
+    "OBS-R5B-HARDCODED-SYNTAX-HEADS",
+    "CSolve/CSolutions Algebra syntax: typed no-syntax result",
+    "OBS-R5B-PROVER-DETAILS-CAPTIONS",
+    "OBS-R5B-INPUT-BAR-INSERTED-TEXT",
+    "HZ-R5B-HARNESS-TABLE-FRESHNESS"
+  ],
+  "impact": {
+    "bootstrap": "NO CHANGE REQUIRED",
+    "verificationInfrastructure": "CATALOG DATA ONLY",
+    "productPhaseEffect": "BOUNDED"
+  },
+  "state": {
+    "PRE-G9B-R5-B": "TECHNICAL CANDIDATE PENDING AUTHOR REVIEW",
+    "authorSmoke": "PENDING",
+    "authorApproval": "PENDING",
+    "promotion": "NONE",
+    "PRE-G9B-R6": "NOT AUTHORIZED",
+    "PRE-G9B-R7": "NOT AUTHORIZED",
+    "G9B": "NOT AUTHORIZED"
+  }
+}

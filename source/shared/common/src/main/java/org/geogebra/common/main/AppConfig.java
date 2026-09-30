@@ -390,6 +390,18 @@ public interface AppConfig extends Restrictable, Serializable {
 	}
 
 	/**
+	 * GeoCeDG (2026-09-30): PRE-G9B-R5-B, ADR 0031. Whether command heads are
+	 * presented with their canonical English public name in every UI language. It is
+	 * orthogonal to {@code StringTemplate.localizeCmds}. The default preserves the
+	 * inherited UI-language command presentation.
+	 *
+	 * @return whether command heads are presented in canonical English
+	 */
+	default boolean presentsCanonicalEnglishCommandHeads() {
+		return false;
+	}
+
+	/**
 	 * @return true if the app has distribution view
 	 */
 	boolean hasDistributionView();

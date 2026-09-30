@@ -1558,15 +1558,49 @@ formas escritas arriba para `<Locus V2>` la aceptan.
 
 ### 16.3 Nombres de comando e idioma
 
-Los identificadores de comando no se traducen en esta guía, y las formas inglesas
-mostradas arriba funcionan en ambos idiomas de producto. Con el español
-seleccionado, la ayuda de entrada ofrece además nombres localizados:
-`LugarGeométricoV2` para `LocusV2`, `LongitudLugarGeométrico` para `LocusLength`,
-`Longitud` para `Length`, `Interseca` para `Intersect`, `Punto` para `Point`,
-`Refleja` para `Reflect`/`Mirror`; `SplineV2` conserva su nombre. Las claves de
-rama como `"generator.main"` y `"spline-v2/main"`, los tokens exactos, las
-extensiones de archivo y los literales de código son identificadores y no se
-traducen nunca.
+GeoCeDG muestra los nombres de comando en inglés en los dos idiomas de producto:
+las definiciones en la vista Álgebra y en el Protocolo de construcción, el
+texto que se edita al redefinir un objeto, las sugerencias de autocompletado y
+el texto que insertan, la Ayuda de entrada, la sintaxis de los comandos, los
+mensajes de error de comando y los comandos que muestra el editor de guiones.
+Esta guía tampoco traduce los identificadores de comando.
+
+Con el español seleccionado, los nombres de comando localizados se siguen
+aceptando al escribirlos; por ejemplo, `LugarGeométricoV2` para `LocusV2`,
+`LongitudLugarGeométrico` para `LocusLength`, `Longitud` para `Length`,
+`Interseca` para `Intersect`, `Punto` para `Point` y `Refleja` para
+`Reflect`/`Mirror`; `SplineV2` tiene el mismo nombre en ambos idiomas. El
+autocompletado también encuentra un comando por su nombre localizado, pero
+sugiere e inserta el nombre inglés. Lo que se escribe se conserva solo como
+entrada: después, el objeto se muestra con el nombre de comando inglés.
+
+Algunos textos siguen en el idioma del producto:
+
+- las descripciones de los argumentos de una sintaxis: con el español
+  seleccionado, la Ayuda de entrada muestra
+  `Circle( <Punto>, <Número o valor numérico (radio)> )`;
+- los nombres de las funciones matemáticas: con el español seleccionado,
+  `Circle((0, 0), sen(1))` se muestra con el seno español `sen`;
+- las descripciones, los rótulos y los nombres automáticos de los objetos nuevos.
+
+GeoGebraScript usa los nombres de comando ingleses (internos) en todos los
+idiomas. El editor de guiones muestra los nombres de comando en inglés. Un guion
+que no se modifica se guarda exactamente como estaba; un nombre de comando
+localizado escrito en un guion se convierte a su comando inglés al guardarlo.
+
+El idioma del producto no cambia cómo se guardan los documentos: los archivos
+`.cedg` y `.ggb` almacenan los nombres internos de los comandos, y un documento
+se abre con los mismos comandos y valores en cualquiera de los dos idiomas.
+
+Si un objeto, una variable de función o una herramienta de usuario tiene el
+mismo nombre que un comando mostrado en una definición que se edita, por ejemplo
+un número llamado `Circle`, GeoCeDG rechaza la edición con el mensaje
+`CANONICAL_HEAD_SHADOWED` y no cambia nada; cambie el nombre de ese objeto o
+edite el comando.
+
+Las claves de rama como `"generator.main"` y `"spline-v2/main"`, los tokens
+exactos, las extensiones de archivo y los literales de código son identificadores
+y no se traducen nunca.
 
 ### 16.4 Teclado
 

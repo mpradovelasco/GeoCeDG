@@ -67,7 +67,9 @@ class DotXmlLocaleIndependentPersistenceTest {
 			throws Exception {
 		AppGeoCeDG author = application(SPANISH);
 		buildDotConstruction(author, "ProductoEscalar(u, v)");
-		assertEquals("ProductoEscalar(u, v)", find(author, "d")
+		// PRE-G9B-R5-B (ADR 0031): GeoCeDG presents the canonical English head; the
+		// Spanish alias above still creates the same Dot dependency.
+		assertEquals("Dot(u, v)", find(author, "d")
 				.getDefinition(StringTemplate.defaultTemplate));
 		Path target = temporaryDirectory.resolve("dot-es.cedg");
 

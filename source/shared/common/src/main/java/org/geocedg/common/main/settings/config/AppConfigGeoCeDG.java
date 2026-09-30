@@ -98,6 +98,15 @@ public final class AppConfigGeoCeDG extends AppConfigDefault {
 		return GeoGebraConstants.CLASSIC_APPCODE;
 	}
 
+	/**
+	 * PRE-G9B-R5-B (ADR 0031): GeoCeDG displays, suggests, inserts and documents
+	 * command heads in canonical English; localized names stay input aliases.
+	 */
+	@Override
+	public boolean presentsCanonicalEnglishCommandHeads() {
+		return true;
+	}
+
 	@Override
 	public boolean scalesConstructionTextWithEuclidianView() {
 		return true;

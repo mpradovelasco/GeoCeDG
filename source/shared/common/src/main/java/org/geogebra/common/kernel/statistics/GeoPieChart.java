@@ -92,7 +92,9 @@ public class GeoPieChart extends GeoElement implements ChartStyleGeo {
 
 	@Override
 	public String toValueString(StringTemplate tpl) {
-		return tpl.isPrintLocalizedCommandNames() ? getLoc().getCommand("PieChart") : "PieChart";
+		// GeoCeDG PRE-G9B-R5-B: display head by the command-head authority.
+		return tpl.isPrintLocalizedCommandNames() ? getLoc().getCommandHead("PieChart")
+				: "PieChart";
 	}
 
 	@Override

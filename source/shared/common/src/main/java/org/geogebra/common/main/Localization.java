@@ -18,8 +18,10 @@ package org.geogebra.common.main;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.annotation.Nonnull;
 
@@ -64,6 +66,8 @@ public abstract class Localization extends LocalizationI {
 	 */
 	private boolean useLocalizedDigits = false;
 	private HashMap<String, String> translateCommandTable;
+	/** GeoCeDG PRE-G9B-R5-B: canonical heads printed during a recorded presentation */
+	private Map<String, String> commandHeadRecord;
 	private boolean reverseNameDescription = false;
 	public boolean rightToLeftReadingOrder = false;
 	private boolean areEnglishCommandsForced;
@@ -1055,6 +1059,73 @@ public abstract class Localization extends LocalizationI {
 
 		// nothing found, English name must be internalCommandName
 		return internalCommandName;
+	}
+
+	/**
+	 * GeoCeDG (2026-09-30): PRE-G9B-R5-B, ADR 0031. Whether the product profile
+	 * presents command heads with their canonical English public name. The upstream
+	 * default keeps the UI-language command name.
+	 *
+	 * @return whether command heads are presented in canonical English
+	 */
+	public boolean isCanonicalEnglishCommandHeads() {
+		return false;
+	}
+
+	/**
+	 * GeoCeDG (2026-09-30): PRE-G9B-R5-B, ADR 0031. The canonical English public
+	 * name E(k): the English command-bundle value of a command key. It is not the
+	 * internal identifier, not the enum mapper {@link #getEnglishCommand(String)}
+	 * and never a syntax-bundle key.
+	 *
+	 * @param internalCommandName command key, i.e. an internal command name
+	 * @return English command-bundle value, or null when there is none
+	 */
+	public String getCanonicalEnglishCommand(String internalCommandName) {
+		return null;
+	}
+
+	/**
+	 * GeoCeDG (2026-09-30): PRE-G9B-R5-B, ADR 0031. Command head for user-visible
+	 * display, editable text and script display. Serialization never uses it.
+	 *
+	 * @param internalCommandName command key, i.e. an internal command name
+	 * @return E(k) when the profile presents canonical English heads, otherwise the
+	 *         UI-language command name; a name without an English command entry,
+	 *         such as a macro name, is returned verbatim
+	 */
+	public String getCommandHead(String internalCommandName) {
+		if (!isCanonicalEnglishCommandHeads()) {
+			return getCommand(internalCommandName);
+		}
+		String english = getCanonicalEnglishCommand(internalCommandName);
+		if (english == null) {
+			return internalCommandName;
+		}
+		if (commandHeadRecord != null) {
+			commandHeadRecord.putIfAbsent(english, internalCommandName);
+		}
+		return english;
+	}
+
+	/**
+	 * GeoCeDG (2026-09-30): PRE-G9B-R5-B, ADR 0031 decision 6. Runs a presentation
+	 * and records every canonical head it printed together with the command key the
+	 * printer passed, so that identity comes from that key and never from text.
+	 *
+	 * @param presentation code producing presented text
+	 * @return canonical head to command key, in printing order
+	 */
+	public Map<String, String> recordCommandHeads(Runnable presentation) {
+		Map<String, String> previous = commandHeadRecord;
+		Map<String, String> record = new LinkedHashMap<>();
+		commandHeadRecord = record;
+		try {
+			presentation.run();
+		} finally {
+			commandHeadRecord = previous;
+		}
+		return record;
 	}
 
 	static private String getMainCommandName(Commands command) {

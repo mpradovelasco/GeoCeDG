@@ -489,6 +489,20 @@ a periodic branch/provider. This full-period predicate must not close an
 ordinary half-open interval or bridge disconnected components. The exact
 author fixture and fixed/adaptive negative controls are operational authority.
 
+Command heads follow
+[ADR 0031](../adr/0031-canonical-english-command-surface-compatibility.md)
+(`PRE-G9B-R5-B`). A display, editable or script-display head comes from
+`Localization.getCommandHead(internal)`: under the GeoCeDG profile
+(`AppConfig.presentsCanonicalEnglishCommandHeads()`) it is `E(k)`, the English
+command-bundle value from `getCanonicalEnglishCommand`, and otherwise the
+UI-language name. It never replaces the internal name in a template that does
+not localize command names, so XML is unchanged. Presentation consumers take
+identity-carrying entries from `org.geocedg.common.main.command.CanonicalCommandSurface`
+and never re-derive identity from displayed text; `CanonicalCommandReentry`
+rejects a shadowed presented head with `CANONICAL_HEAD_SHADOWED` before any
+mutation; `CanonicalCommandHeadGate` is the complete-inventory admissibility gate.
+The USER, SCRIPT and XML lookups and the reverse command table are unchanged.
+
 ## Frontend/profile
 
 `apps/geocedg/application-profile.yml` is the single live schema-v2 G9U1

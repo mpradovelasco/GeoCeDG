@@ -107,7 +107,9 @@ class G9U1MetricReviewTest {
 		GeoNumeric total = (GeoNumeric) eval(app, "M=Length(S)");
 		for (Locale locale : new Locale[] {Locale.ENGLISH, Locale.forLanguageTag("es")}) {
 			app.setLocale(locale);
-			String command = app.getLocalization().getCommand("Length");
+			// PRE-G9B-R5-B (ADR 0031): the public head is the canonical English name.
+			String command = app.getLocalization().getCommandHead("Length");
+			assertEquals("Length", command);
 			String xml = app.getXML();
 			assertEquals(command + "(S,P,Q)", definition(partial));
 			assertEquals(command + "(S)", definition(total));

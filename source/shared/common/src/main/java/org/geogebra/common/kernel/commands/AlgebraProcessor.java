@@ -39,6 +39,7 @@ import org.geocedg.common.kernel.spatial.identity.SpatialRedefineContext;
 import org.geocedg.common.kernel.spatial.identity.SpatialRedefineDecision;
 import org.geocedg.common.kernel.spatial.identity.SpatialRedefineExecutionMode;
 import org.geocedg.common.kernel.spatial.identity.SpatialRedefineTransaction;
+import org.geocedg.common.main.command.CanonicalCommandReentry;
 import org.geogebra.common.gui.view.algebra.AlgebraOutputFormat;
 import org.geogebra.common.io.MathMLParser;
 import org.geogebra.common.kernel.CircularDefinitionException;
@@ -528,6 +529,10 @@ public class AlgebraProcessor {
 
 		try {
 			info = withExplicitSpatialRedefineTarget(geo, info);
+			// GeoCeDG PRE-G9B-R5-B (ADR 0031 decision 6): a presented canonical head
+			// that would not re-enter as its identity fails closed before any mutation.
+			CanonicalCommandReentry reentry = CanonicalCommandReentry.beforeParse(kernel,
+					geo, newValue);
 			ValidExpression ve;
 
 			if (info.isMultipleUnassignedAllowed()) {
@@ -539,6 +544,7 @@ public class AlgebraProcessor {
 			} else {
 				ve = parser.parseGeoGebraExpression(newValue);
 			}
+			reentry.afterParse(ve);
 
 			if (ve.isOperation(Operation.MULTIPLY)
 					&& ve.wrap().getLeft() == geo && ve.wrap().getRight() instanceof MyVecNDNode) {

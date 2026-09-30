@@ -131,7 +131,8 @@ public class AlgoLocusStroke extends AlgoElement {
 		}
 		sbAE.setLength(0);
 		if (tpl.isPrintLocalizedCommandNames()) {
-			sbAE.append(getLoc().getCommand(def));
+			// GeoCeDG PRE-G9B-R5-B: display head by the command-head authority.
+			sbAE.append(getLoc().getCommandHead(def));
 		} else {
 			sbAE.append(def);
 		}

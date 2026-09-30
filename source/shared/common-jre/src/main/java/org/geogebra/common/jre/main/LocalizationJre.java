@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Set;
 
@@ -45,6 +46,8 @@ public abstract class LocalizationJre extends Localization {
 	private ResourceBundle rbmenuTT;
 	private ResourceBundle rbcommand;
 	private ResourceBundle rbcommandOld;
+	/** GeoCeDG PRE-G9B-R5-B: English command bundle, the E(k) authority */
+	private ResourceBundle rbcommandEnglish;
 	private ResourceBundle rbsymbol;
 
 	private Language tooltipLanguage = null;
@@ -112,6 +115,36 @@ public abstract class LocalizationJre extends Localization {
 			return rbcommand.getString(key);
 		} catch (Exception e) {
 			return key;
+		}
+	}
+
+	/**
+	 * GeoCeDG (2026-09-30): PRE-G9B-R5-B, ADR 0031. The product profile of the
+	 * bound application is the only authority for the command-head policy.
+	 */
+	@Override
+	public boolean isCanonicalEnglishCommandHeads() {
+		return app != null && app.getConfig() != null
+				&& app.getConfig().presentsCanonicalEnglishCommandHeads();
+	}
+
+	/**
+	 * GeoCeDG (2026-09-30): PRE-G9B-R5-B, ADR 0031. E(k) from the English command
+	 * bundle ({@code Locale.ENGLISH}: {@code command_en}, then the base bundle),
+	 * independently of the UI language.
+	 */
+	@Override
+	public String getCanonicalEnglishCommand(String internalCommandName) {
+		if (internalCommandName == null || internalCommandName.indexOf('.') >= 0) {
+			return null;
+		}
+		if (rbcommandEnglish == null) {
+			rbcommandEnglish = createBundle(getCommandResourcePath(), Locale.ENGLISH);
+		}
+		try {
+			return rbcommandEnglish.getString(internalCommandName);
+		} catch (MissingResourceException e) {
+			return null;
 		}
 	}
 

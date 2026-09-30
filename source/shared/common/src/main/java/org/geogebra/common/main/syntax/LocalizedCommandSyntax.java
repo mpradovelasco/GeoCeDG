@@ -51,7 +51,7 @@ public class LocalizedCommandSyntax implements CommandSyntax {
 	 */
 	@Override
 	public String getCommandSyntax(String internalCommandName, int dim) {
-		String localizedCommandName = getLocalizedCommand(internalCommandName);
+		String localizedCommandName = getCommandHead(internalCommandName);
 		if (dim == 3) {
 			String keySyntax3D = internalCommandName + Localization.syntax3D;
 			String syntax3D = loc.getCommand(keySyntax3D);
@@ -73,6 +73,20 @@ public class LocalizedCommandSyntax implements CommandSyntax {
 	 */
 	protected String getLocalizedCommand(String internalCommandName) {
 		return loc.getCommand(internalCommandName);
+	}
+
+	/**
+	 * GeoCeDG (2026-09-30): PRE-G9B-R5-B, ADR 0031 decision 8. The syntax head comes
+	 * from the command-head authority, separately from the syntax-bundle key, whose
+	 * body stays in the UI language.
+	 *
+	 * @param internalCommandName internal command name
+	 * @return syntax head
+	 */
+	private String getCommandHead(String internalCommandName) {
+		return loc.isCanonicalEnglishCommandHeads()
+				? loc.getCommandHead(internalCommandName)
+				: getLocalizedCommand(internalCommandName);
 	}
 
 	private String getLocalizedSyntax(String internalCommandName) {
@@ -97,7 +111,7 @@ public class LocalizedCommandSyntax implements CommandSyntax {
 
 	@Override
 	public String getCommandSyntaxCAS(String internalCommandName) {
-		String command = getLocalizedCommand(internalCommandName);
+		String command = getCommandHead(internalCommandName);
 		String syntax = getLocalizedSyntaxCAS(internalCommandName);
 
 		String keyCAS = internalCommandName + Localization.syntaxCAS;

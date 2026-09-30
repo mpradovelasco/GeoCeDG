@@ -586,8 +586,9 @@ public class AlgebraInputD extends JPanel implements ActionListener,
 							.hasInputHelpPanel()) {
 				InputBarHelpPanelD helpPanel = (InputBarHelpPanelD) app
 						.getGuiManager().getInputHelpPanel();
-				helpPanel.focusCommand(app.getLocalization()
-						.getCommand(command));
+				// GeoCeDG PRE-G9B-R5-B: canonical Input Help is focused by identity.
+				helpPanel.focusCommand(loc.isCanonicalEnglishCommandHeads() ? command
+						: app.getLocalization().getCommand(command));
 				btnHelpToggle.setToolTipText(
 						loc.getInvalidInputError());
 			}

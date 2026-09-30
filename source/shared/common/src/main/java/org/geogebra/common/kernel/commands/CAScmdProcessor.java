@@ -41,8 +41,9 @@ public class CAScmdProcessor extends CommandProcessor {
 	@Override
 	public GeoElement[] process(Command c, EvalInfo info)
 			throws MyError, CircularDefinitionException {
+		// GeoCeDG PRE-G9B-R5-B: command head by the command-head authority.
 		throw new MyError(loc,
-				loc.getPlain("CASViewOnly", loc.getCommand(c.getName())));
+				loc.getPlain("CASViewOnly", loc.getCommandHead(c.getName())));
 	}
 
 }

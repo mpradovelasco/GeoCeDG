@@ -3347,8 +3347,10 @@ public class GeoCasCell extends GeoElement
 			return "";
 		}
 		StringBuilder evalCmdLocal = new StringBuilder();
+		// GeoCeDG PRE-G9B-R5-B: displayed eval heads use the command-head authority,
+		// the same authority that renders the localized input they are matched against.
 		if (pointList) {
-			evalCmdLocal.append(getLoc().getCommand("PointList"));
+			evalCmdLocal.append(getLoc().getCommandHead("PointList"));
 		} else if ("".equals(evalCmd)) {
 			return getOutputPrefix();
 		} else if ("Numeric".equals(evalCmd)) {
@@ -3356,7 +3358,7 @@ public class GeoCasCell extends GeoElement
 		} else if ("KeepInput".equals(evalCmd)) {
 			return Unicode.CAS_OUTPUT_KEEPINPUT + "";
 		} else {
-			evalCmdLocal.append(getLoc().getCommand(evalCmd));
+			evalCmdLocal.append(getLoc().getCommandHead(evalCmd));
 		}
 
 		if (input.startsWith(evalCmdLocal.toString()) || (localizedInput != null

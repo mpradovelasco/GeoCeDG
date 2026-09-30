@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -423,6 +424,10 @@ public abstract class App implements UpdateSelection, AppInterface, EuclidianHos
 	private LowerCaseDictionary commandDictCAS;
 	// array of dictionaries corresponding to the sub command tables
 	private LowerCaseDictionary[] subCommandDict;
+	// GeoCeDG PRE-G9B-R5-B: identities offered by the input-bar dictionary and by the
+	// CAS pass (null until that pass ran)
+	private List<Commands> offeredCommands = new ArrayList<>();
+	private List<Commands> casTableCommands;
 	private final Object commandDictLock = new Object();
 	/**
 	 * flag for current state
@@ -676,6 +681,7 @@ public abstract class App implements UpdateSelection, AppInterface, EuclidianHos
 
 		commandDictCAS = new LowerCaseDictionary();
 		subCommandDict[CommandsConstants.TABLE_CAS].clear();
+		List<Commands> casTable = new ArrayList<>();
 
 		// get all commands from the commandDict and write them to the
 		// commandDictCAS
@@ -701,7 +707,9 @@ public abstract class App implements UpdateSelection, AppInterface, EuclidianHos
 			putInTranslateCommandTable(Commands.valueOf(cmd), local);
 			commandDictCAS.addEntry(local);
 			subCommandDict[CommandsConstants.TABLE_CAS].addEntry(local);
+			casTable.add(Commands.valueOf(cmd));
 		}
+		casTableCommands = casTable;
 	}
 
 	/**
@@ -767,6 +775,49 @@ public abstract class App implements UpdateSelection, AppInterface, EuclidianHos
 	}
 
 	/**
+	 * GeoCeDG (2026-09-30): PRE-G9B-R5-B, ADR 0031 decision 9. The command
+	 * identities the input-bar or CAS dictionary offers, recorded by the same pass
+	 * and filters that fill it, so that presentation consumers carry identity and
+	 * never re-derive it from displayed text.
+	 *
+	 * @param cas whether to use the CAS dictionary, which fills it like
+	 *            {@link #getCommandDictionaryCAS()}
+	 * @return offered command identities in dictionary-filling order
+	 */
+	public final List<Commands> getOfferedCommands(boolean cas) {
+		if (cas) {
+			getCommandDictionaryCAS();
+		} else {
+			getCommandDictionary();
+		}
+		synchronized (commandDictLock) {
+			List<Commands> offered = new ArrayList<>(offeredCommands);
+			if (cas && casTableCommands != null) {
+				for (Commands command : casTableCommands) {
+					if (!offered.contains(command)) {
+						offered.add(command);
+					}
+				}
+			}
+			return offered;
+		}
+	}
+
+	/**
+	 * GeoCeDG (2026-09-30): PRE-G9B-R5-B. The identities of the CAS table of the
+	 * sub-command dictionaries; like that table, empty until the CAS pass ran. It
+	 * never triggers that pass.
+	 *
+	 * @return CAS table command identities in dictionary-filling order
+	 */
+	public final List<Commands> getCasTableCommands() {
+		synchronized (commandDictLock) {
+			return casTableCommands == null ? new ArrayList<>()
+					: new ArrayList<>(casTableCommands);
+		}
+	}
+
+	/**
 	 * @return command dictionary
 	 */
 	public final LowerCaseDictionary getEnglishCommandDictionary() {
@@ -804,6 +855,7 @@ public abstract class App implements UpdateSelection, AppInterface, EuclidianHos
 
 		HashMap<String, String> translateCommandTable = getLocalization()
 				.getTranslateCommandTable();
+		List<Commands> offered = new ArrayList<>();
 
 		for (Commands comm : Commands.values()) {
 			if (!cf.isAllowedByCommandFilters(comm)) {
@@ -821,7 +873,10 @@ public abstract class App implements UpdateSelection, AppInterface, EuclidianHos
 			String local = getLocalization().getCommand(internal);
 			englishCommandDict.addEntry(getLocalization().getEnglishCommand(internal));
 			addCommandEntry(comm, local, translateCommandTable);
+			offered.add(comm);
 		}
+		offeredCommands = offered;
+		casTableCommands = null;
 
 		getParserFunctions().updateLocale(getLocalization());
 		getParserFunctions(true).updateLocale(getLocalization());

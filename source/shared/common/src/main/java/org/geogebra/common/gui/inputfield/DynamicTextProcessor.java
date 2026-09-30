@@ -191,9 +191,10 @@ public class DynamicTextProcessor {
 		DynamicTextType type = DynamicTextType.VALUE;
 		String prefix;
 
+		// GeoCeDG PRE-G9B-R5-B: match display output by the authority that printed it.
 		if (contentString.endsWith(")")) {
 			if (contentString.startsWith(
-					prefix = app.getLocalization().getCommand("LaTeX") + "(")) {
+					prefix = app.getLocalization().getCommandHead("LaTeX") + "(")) {
 
 				// strip off outer command
 				contentString = contentString.substring(prefix.length(),
@@ -215,7 +216,7 @@ public class DynamicTextProcessor {
 				}
 
 			} else if (contentString.startsWith(
-					prefix = app.getLocalization().getCommand("Name") + "(")) {
+					prefix = app.getLocalization().getCommandHead("Name") + "(")) {
 
 				// strip off outer command
 				contentString = contentString.substring(prefix.length(),

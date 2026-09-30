@@ -141,8 +141,9 @@ public final class AppGeoCeDG extends App3D {
 
 	/**
 	 * Input Help visibility stays user-controlled: choosing a tool never calls this. When
-	 * the user shows Input Help while a SplineV2 tool is active, it selects the existing
-	 * localized SplineV2 syntax, whichever menu, contextual help or input-bar button asked.
+	 * the user shows Input Help while a SplineV2 tool is active, it selects the SplineV2
+	 * syntax, whichever menu, contextual help or input-bar button asked. PRE-G9B-R5-B:
+	 * the entry is selected by its command identity, the authority of the canonical tree.
 	 */
 	@Override
 	public void setShowInputHelpPanel(boolean isVisible) {
@@ -150,7 +151,7 @@ public final class AppGeoCeDG extends App3D {
 		if (isVisible && GeoCeDGSplineV2Authoring.handles(getMode())) {
 			GuiManagerD gui = (GuiManagerD) getGuiManager();
 			((InputBarHelpPanelD) gui.getInputHelpPanel()).focusCommand(
-					getLocalization().getCommand(Commands.SplineV2.name()));
+					Commands.SplineV2.name());
 			((AlgebraInputD) gui.getAlgebraInput()).getTextField().setToolTipText(
 					GeoCeDGProfile.getText("Workspace.SplineHelp", getLocale().getLanguage()));
 		}

@@ -1186,7 +1186,11 @@ public abstract class AlgoElement extends ConstructionElement
 		}
 		sbAE.setLength(0);
 		if (tpl.isPrintLocalizedCommandNames()) {
-			sbAE.append(getLoc().getCommand(def));
+			// GeoCeDG PRE-G9B-R5-B: display head by the command-head authority; a tool
+			// (macro) name is a user identifier, printed verbatim by a canonical profile.
+			sbAE.append(getClassName() == Algos.AlgoMacro
+					&& getLoc().isCanonicalEnglishCommandHeads() ? def
+					: getLoc().getCommandHead(def));
 		} else {
 			sbAE.append(def);
 		}
@@ -1242,7 +1246,7 @@ public abstract class AlgoElement extends ConstructionElement
 
 			if (needsWrapping) {
 				sb.append(tpl.isPrintLocalizedCommandNames()
-						? getLoc().getCommand("Vector") : "Vector");
+						? getLoc().getCommandHead("Vector") : "Vector");
 				sb.append(tpl.leftCommandBracket(kernel.getLocalization()));
 			}
 

@@ -54,7 +54,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/main/settings/config/AppConfigGeoCeDG.java",
       "change": "added",
-      "purpose": "Define isolated GeoCeDG product identity, default-off Locus V2 and extended-DXF feature gates, Classic-compatible serialization semantics, and the PRE-G9B-S3 construction-Text view-scaling presentation gate.",
+      "purpose": "Define isolated GeoCeDG product identity, default-off Locus V2 and extended-DXF feature gates, Classic-compatible serialization semantics, and the PRE-G9B-S3 construction-Text view-scaling presentation gate. PRE-G9B-R5-B (ADR 0031): select canonical English command heads for the GeoCeDG product profile.",
       "authority": "geocedg/specs/ui/construction-text-view-scaling.md"
     },
     {
@@ -66,7 +66,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/AppGeoCeDG.java",
       "change": "added",
-      "purpose": "Instantiate the GeoCeDG profile and enforce the .cedg-only native save, product-window and parser-preflight policy while retaining the Classic internal app code and feature gates. G9U1: Apply approved Construction workspace, language and Continuity policy without changing Classic or geometry. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: suppress the inherited startup perspective popup and separate document-local macro preference snapshots from explicit application-library installation; Classic and document macro serialization remain unchanged. G9U1 review round 3: resolve the tracked GeoCeDG frame icon and startup resource without upstream branding fallback. PRE-G9B-S2: keep default GUI typography anchored to the GeoCeDG platform default when construction-object font size changes, while honoring an explicit GUI font preference. PRE-G9B-S4: own five independent application presentation sizes, live refresh and toolbar/font decoupling without construction or document semantics. PRE-G9B-S4-R1: add the independent General UI owner, revised fresh defaults and toolbar-specific resource refresh while preserving all specific owners. PRE-G9B-R4 corrective: when the user shows Input Help while a SplineV2 tool is active, select the existing localized SplineV2 syntax and the corrected Algebra Input tooltip; tool activation never shows Input Help. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md.",
+      "purpose": "Instantiate the GeoCeDG profile and enforce the .cedg-only native save, product-window and parser-preflight policy while retaining the Classic internal app code and feature gates. G9U1: Apply approved Construction workspace, language and Continuity policy without changing Classic or geometry. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: suppress the inherited startup perspective popup and separate document-local macro preference snapshots from explicit application-library installation; Classic and document macro serialization remain unchanged. G9U1 review round 3: resolve the tracked GeoCeDG frame icon and startup resource without upstream branding fallback. PRE-G9B-S2: keep default GUI typography anchored to the GeoCeDG platform default when construction-object font size changes, while honoring an explicit GUI font preference. PRE-G9B-S4: own five independent application presentation sizes, live refresh and toolbar/font decoupling without construction or document semantics. PRE-G9B-S4-R1: add the independent General UI owner, revised fresh defaults and toolbar-specific resource refresh while preserving all specific owners. PRE-G9B-R4 corrective: when the user shows Input Help while a SplineV2 tool is active, select the existing localized SplineV2 syntax and the corrected Algebra Input tooltip; tool activation never shows Input Help. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: focus the SplineV2 Input Help entry by command identity, the authority of the canonical tree.",
       "authority": "geocedg/specs/ui/native-document-identity.md"
     },
     {
@@ -1056,7 +1056,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusMetricScalarAdapter.java",
       "change": "added",
-      "purpose": "Phase G7B semantic adapter: expose only admissible finite rich results through a derived GeoNumeric without making the rich Geo numeric authority. G9U1 review round 1: human-facing definitions expose the exact rich-parent Length intent while XML, internal expressions, metric admission and the rich-to-scalar DAG stay unchanged. G9U1 review round 2: declare the existing rich parent as update-before authority so a native reconstructed update set cannot publish a stale scalar after compatible editing; value/endpoint semantics remain unchanged.",
+      "purpose": "Phase G7B semantic adapter: expose only admissible finite rich results through a derived GeoNumeric without making the rich Geo numeric authority. G9U1 review round 1: human-facing definitions expose the exact rich-parent Length intent while XML, internal expressions, metric admission and the rich-to-scalar DAG stay unchanged. G9U1 review round 2: declare the existing rich parent as update-before authority so a native reconstructed update set cannot publish a stale scalar after compatible editing; value/endpoint semantics remain unchanged. PRE-G9B-R5-B (ADR 0031 decision 12): take the public Length head from the command-head authority.",
       "authority": "geocedg/specs/locus/locus-v2-metrics.md"
     },
     {
@@ -1992,7 +1992,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/AlgebraProcessor.java",
       "change": "modified",
-      "purpose": "Capture the explicit old-target identity context and enforce provider-gated RETAIN, explicit FRESH, or atomic REJECT across host redefine routes. G9U1: Make product help availability follow existing semantic feature policy without changing numerical command behavior. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. PRE-G9B-R3: keep a sealed semantic redefine from mutating the old numeric through extendMinMax after its final currentness authorization, except in the independent value-assignment branches. Authority: geocedg/specs/spatial/durable-dependency-projection.md.",
+      "purpose": "Capture the explicit old-target identity context and enforce provider-gated RETAIN, explicit FRESH, or atomic REJECT across host redefine routes. G9U1: Make product help availability follow existing semantic feature policy without changing numerical command behavior. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. PRE-G9B-R3: keep a sealed semantic redefine from mutating the old numeric through extendMinMax after its final currentness authorization, except in the independent value-assignment branches. Authority: geocedg/specs/spatial/durable-dependency-projection.md. PRE-G9B-R5-B (ADR 0031 decision 6): before a string redefinition is evaluated, reject a presented canonical command head that would not re-enter as its presented identity with CANONICAL_HEAD_SHADOWED, leaving construction, XML and undo unchanged; parser and lookups are only consulted.",
       "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
     },
     {
@@ -2700,19 +2700,19 @@
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored default type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds the deterministic-selection status diagnostic; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Point on semantic curve and adds the default user-tool definition/icon and menu-presentation text. PRE-G9B-R4 adds the default SplineV2 and ordered-list tool names, help and degree prompt. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md.",
+      "purpose": "Add GeoCeDG-authored default type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds the deterministic-selection status diagnostic; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Point on semantic curve and adds the default user-tool definition/icon and menu-presentation text. PRE-G9B-R4 adds the default SplineV2 and ordered-list tool names, help and degree prompt. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: add the CANONICAL_HEAD_SHADOWED and SCRIPT_TOKEN_AMBIGUOUS messages.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_en.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored English type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds deterministic-selection diagnostics; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Point on semantic curve and adds complete English user-tool definition/icon and menu-presentation text. PRE-G9B-R4 adds the English SplineV2 and ordered-list tool names, help and degree prompt. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md.",
+      "purpose": "Add GeoCeDG-authored English type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds deterministic-selection diagnostics; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Point on semantic curve and adds complete English user-tool definition/icon and menu-presentation text. PRE-G9B-R4 adds the English SplineV2 and ordered-list tool names, help and degree prompt. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: add the CANONICAL_HEAD_SHADOWED and SCRIPT_TOKEN_AMBIGUOUS messages.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_es.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored Spanish type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds deterministic-selection diagnostics; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Punto sobre curva semántica and adds complete Spanish user-tool definition/icon and menu-presentation text. PRE-G9B-R4 adds the Spanish SplineV2 and ordered-list tool names, help and degree prompt. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md.",
+      "purpose": "Add GeoCeDG-authored Spanish type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds deterministic-selection diagnostics; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Punto sobre curva semántica and adds complete Spanish user-tool definition/icon and menu-presentation text. PRE-G9B-R4 adds the Spanish SplineV2 and ordered-list tool names, help and degree prompt. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: add the Spanish CANONICAL_HEAD_SHADOWED and SCRIPT_TOKEN_AMBIGUOUS messages.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -3822,7 +3822,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/inputbar/AlgebraInputD.java",
       "change": "modified",
-      "purpose": "Make explicit product submission atomic while focus loss, preview and Escape create no objects. Maintenance TD-DESKTOP-INPUT-REDEFINE-CANCEL-STRANDS-SUBMISSION: release the product submission guard when a synchronous submission ends without a result, such as a cancelled or unavailable spatial redefine.",
+      "purpose": "Make explicit product submission atomic while focus loss, preview and Escape create no objects. Maintenance TD-DESKTOP-INPUT-REDEFINE-CANCEL-STRANDS-SUBMISSION: release the product submission guard when a synchronous submission ends without a result, such as a cancelled or unavailable spatial redefine. PRE-G9B-R5-B: under a canonical profile focus Input Help by the command identity of a command error.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -3936,7 +3936,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/main/App.java",
       "change": "modified",
-      "purpose": "G9U1 application presentation correction: compare the existing stored construction-navigation flag in the setter shortcut so native rollback can restore its prior value; retain the special public visibility getter, serialized format, identities and kernel semantics. PRE-G9B-S4: add a behavior-neutral Euclidian UI-font ownership seam; Classic still returns the construction application font. PRE-G9B-P0: add a null-returning application presentation-background hook that never participates in serialization.",
+      "purpose": "G9U1 application presentation correction: compare the existing stored construction-navigation flag in the setter shortcut so native rollback can restore its prior value; retain the special public visibility getter, serialized format, identities and kernel semantics. PRE-G9B-S4: add a behavior-neutral Euclidian UI-font ownership seam; Classic still returns the construction application font. PRE-G9B-P0: add a null-returning application presentation-background hook that never participates in serialization. PRE-G9B-R5-B (ADR 0031 decision 9): record the command identities offered by the existing input-bar and CAS dictionary passes (getOfferedCommands, getCasTableCommands) so presentation consumers carry identity; the reverse command table and the dictionaries are unchanged.",
       "authority": "geocedg/specs/ui/native-document-identity.md"
     },
     {
@@ -3978,7 +3978,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1MetricReviewTest.java",
       "change": "added",
-      "purpose": "G9U1 author-review round 1: Characterize invalid free endpoints, valid exact semantic endpoints, dynamic metrics, public-intent definition and unchanged rich-to-scalar XML/native identity. Review fixture isolation: per-test Swing-root snapshots release only newly registered embedded-host dock listeners and nonvisible/non-displayable lazy frames, preserving preexisting roots and native runtime behavior.",
+      "purpose": "G9U1 author-review round 1: Characterize invalid free endpoints, valid exact semantic endpoints, dynamic metrics, public-intent definition and unchanged rich-to-scalar XML/native identity. Review fixture isolation: per-test Swing-root snapshots release only newly registered embedded-host dock listeners and nonvisible/non-displayable lazy frames, preserving preexisting roots and native runtime behavior. PRE-G9B-R5-B: the public Length head is expected from the command-head authority, canonical English in both languages (ADR 0031); XML assertions are unchanged.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -4206,7 +4206,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/main/AppConfig.java",
       "change": "modified",
-      "purpose": "PRE-G9B-S3: Add a behavior-neutral default application-profile seam for construction Text view scaling so Classic retains inherited presentation.",
+      "purpose": "PRE-G9B-S3: Add a behavior-neutral default application-profile seam for construction Text view scaling so Classic retains inherited presentation. PRE-G9B-R5-B (ADR 0031): add the presentsCanonicalEnglishCommandHeads product-profile attribute, false by default, orthogonal to StringTemplate.localizeCmds.",
       "authority": "geocedg/specs/ui/construction-text-view-scaling.md"
     },
     {
@@ -4884,7 +4884,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/inputbar/InputBarHelpPanelD.java",
       "change": "modified",
-      "purpose": "PRE-G9B-R4: scroll the command focused in Input Help into view so the selected SplineV2 syntax is visible; selection and syntax rendering are unchanged.",
+      "purpose": "PRE-G9B-R4: scroll the command focused in Input Help into view so the selected SplineV2 syntax is visible; selection and syntax rendering are unchanged. PRE-G9B-R5-B (ADR 0031 decisions 8 and 9): under a canonical profile build identity-carrying leaves with canonical English heads and select, show syntax, open help and focus by carried identity; the localized upstream tree is unchanged.",
       "authority": "geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md"
     },
     {
@@ -4896,7 +4896,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR4SplineV2AuthoringTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-R4: verify the SplineV2 tool modes, ordered collection, one commit and undo point, explicit degree and closed-form gestures, cancel, preview authority, parity with the typed command, native reopen, contextual help, Input Help selection and the corrected tooltip. PRE-G9B-R4 corrective: verify unchanged Input Help visibility on activation, the explicit-help Input Help selection in en and es, and the host-mode toolbar selected state of the three tools.",
+      "purpose": "PRE-G9B-R4: verify the SplineV2 tool modes, ordered collection, one commit and undo point, explicit degree and closed-form gestures, cancel, preview authority, parity with the typed command, native reopen, contextual help, Input Help selection and the corrected tooltip. PRE-G9B-R4 corrective: verify unchanged Input Help visibility on activation, the explicit-help Input Help selection in en and es, and the host-mode toolbar selected state of the three tools. PRE-G9B-R5-B: Input Help leaves are identity-carrying canonical entries; the SplineV2 selection is asserted by identity and by shown head.",
       "authority": "geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md"
     },
     {
@@ -4932,7 +4932,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/arithmetic/ExpressionSerializer.java",
       "change": "modified",
-      "purpose": "Maintenance DOT/XML (pre-existing upstream defect): print the Operation.DOT head localized only for templates that localize command names, as Command and the If/DataFunction heads already do, so XML and other non-localizing serialization write the internal Dot head in every UI language; localized presentation, GIAC, MathML and the XML reader are unchanged.",
+      "purpose": "Maintenance DOT/XML (pre-existing upstream defect): print the Operation.DOT head localized only for templates that localize command names, as Command and the If/DataFunction heads already do, so XML and other non-localizing serialization write the internal Dot head in every UI language; localized presentation, GIAC, MathML and the XML reader are unchanged. PRE-G9B-R5-B (ADR 0031): the localized-template display heads of Dot, If and DataFunction come from the command-head authority; the non-localizing internal Dot head of the maintenance and every serialization role are unchanged.",
       "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
     },
     {
@@ -4944,7 +4944,199 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/DotXmlLocaleIndependentPersistenceTest.java",
       "change": "added",
-      "purpose": "Maintenance DOT/XML: verify EN/ES native .cedg Save As and reopen, and Classic-written .ggb compatibility input, preserve the Dot dependency and its recomputation.",
+      "purpose": "Maintenance DOT/XML: verify EN/ES native .cedg Save As and reopen, and Classic-written .ggb compatibility input, preserve the Dot dependency and its recomputation. PRE-G9B-R5-B: the Spanish-UI display assertion expects the canonical English Dot head that ADR 0031 prescribes; persistence assertions are unchanged.",
+      "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/main/Localization.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-R5-B (ADR 0031): add the command-head presentation authority: getCanonicalEnglishCommand (E(k), the English command-bundle value, null when there is none), getCommandHead (E(k) under a canonical product profile, otherwise the unchanged UI-language name, verbatim for names without an English entry) and a structural head recorder for the typed re-entry check; lookups, the reverse table and getEnglishCommand are unchanged.",
+      "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/main/java/org/geogebra/common/jre/main/LocalizationJre.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-R5-B (ADR 0031): read the command-head policy from the bound application configuration and resolve E(k) from the Locale.ENGLISH command bundle (command_en, then the base bundle), never from a syntax-bundle key; UI-language bundles and lookups are unchanged.",
+      "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/main/syntax/LocalizedCommandSyntax.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-R5-B (ADR 0031 decision 8): resolve the syntax head through the command-head authority separately from the UI-language syntax-bundle key; the localized upstream head and EnglishCommandSyntax are unchanged.",
+      "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/algos/AlgoElement.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-R5-B (ADR 0031): take the localized-template definition head and the Vector wrapper head from the command-head authority; non-localizing templates keep the internal name.",
+      "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/algos/AlgoLocusStroke.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-R5-B (ADR 0031): take the localized-template definition head from the command-head authority; non-localizing templates keep the internal name.",
+      "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/arithmetic/Command.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-R5-B (ADR 0031): take the localized-template command head from the command-head authority; non-localizing templates keep the internal name and name resolution is unchanged.",
+      "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/statistics/GeoPieChart.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-R5-B (ADR 0031): take the localized-template value-string head from the command-head authority.",
+      "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/main/localization/CommandErrorMessageBuilder.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-R5-B (ADR 0031): name the command of an argument error by the command-head authority; the prose, including the word Command, stays in the UI language.",
+      "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/main/error/ErrorHelper.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-R5-B (ADR 0031): under a canonical profile name the command of a command error by its canonical head instead of echoing the typed alias.",
+      "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CommandNotFoundError.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-R5-B (ADR 0031): name the command by the command-head authority.",
+      "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CAScmdProcessor.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-R5-B (ADR 0031): name the CAS-only command by the command-head authority.",
+      "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/plugin/script/GgbScript.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-R5-B (ADR 0031 decision 10): display script command heads by the command-head authority and, under a canonical profile, save canonical-first: a SCRIPT-resolvable token keeps its identity, only an unresolvable token uses UI-language aliases, and a conflict is SCRIPT_TOKEN_AMBIGUOUS; the SCRIPT runtime is unchanged.",
+      "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/geos/GeoCasCell.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-R5-B (ADR 0031): display the CAS eval-command head by the command-head authority that also renders the localized input it is matched against.",
+      "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/gui/inputfield/DynamicTextProcessor.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-R5-B (ADR 0031 decision 1): match the FormulaText and Name display prefixes by the authority that printed them.",
+      "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/gui/dialog/options/model/ScriptInputModel.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-R5-B (ADR 0031 decision 10): under a canonical profile keep an untouched displayed script unchanged, and reject SCRIPT_TOKEN_AMBIGUOUS before the stored script changes.",
+      "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/inputfield/AutoCompleteTextFieldD.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-R5-B (ADR 0031 decision 9): under a canonical profile complete from identity-carrying canonical entries: English heads shown and inserted, UI-language aliases searchable, UI-language syntax bodies, and F1 help by carried identity; the localized upstream path is unchanged.",
+      "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/editor/HelpOnKeywordPanel.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-R5-B (ADR 0031 decision 8): under a canonical profile show the canonical syntax (English head, UI-language body, typed no-syntax result) instead of the raw syntax-key value.",
+      "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/editor/GeoGebraLexer.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-R5-B (ADR 0031 decision 9): add the canonical heads the script editor displays to its highlighting set, keeping the UI-language names.",
+      "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/DynamicTextInputPane.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-R5-B (ADR 0031 decision 1): match the FormulaText and Name display prefixes by the authority that printed them.",
+      "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/main/command/CanonicalCommandEntry.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R5-B (ADR 0031 decisions 3 and 9): value of one offered command for presentation consumers, carrying its identity separately from its head and UI-language alias.",
+      "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/main/command/CanonicalCommandSurface.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R5-B (ADR 0031): shared canonical command surface: E(k), canonical syntax lines with a typed no-syntax result, identity-carrying completion entries and canonical-first script-token save; no lookup regime is added.",
+      "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/main/command/CanonicalCommandSurfaceError.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R5-B (ADR 0031 decisions 6 and 10): typed fail-closed outcomes CANONICAL_HEAD_SHADOWED and SCRIPT_TOKEN_AMBIGUOUS, raised before any mutation.",
+      "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/main/command/CanonicalCommandReentry.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R5-B (ADR 0031 decision 6): typed fail-closed re-entry of presented canonical heads against label, CAS-label, function-variable, macro and command-table shadowing, consulting the unchanged parser rules and lookups.",
+      "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/main/command/CanonicalCommandHeadGate.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R5-B (ADR 0031 decision 5): complete-inventory canonical-head admissibility gate with typed failures over USER in every reverse-table state, SCRIPT, exact XML, script save, parser functions and injectivity.",
+      "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR5BFingerprints.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R5-B: deterministic canonical serializations of the command-name surface, also computed at P_DOTXML and committed as test data.",
+      "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR5BCanonicalCommandGateTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R5-B T-GATE, T-INPUT, T-COLLISION: the complete-inventory gate with the French negative control, the English-bundle authority and lookups and reverse tables identical to P_DOTXML.",
+      "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR5BCanonicalDisplayTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R5-B T-DISPLAY, T-ERROR, T-GEOCEDG, T-DYNTEXT, T-XML: canonical heads at every display, editable and error site, unchanged English output, dynamic-text classification and persistence identical to P_DOTXML.",
+      "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR5BCanonicalReentryTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R5-B T-REDEFINE, T-SHADOW: presented editable text keeps its identity; label, function-variable and macro shadowing fail closed without mutation.",
+      "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR5BCanonicalHelpTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R5-B T-AUTOCOMPLETE, T-SYNTAX: identity-carrying completion, canonical syntax at every help surface and never a literal syntax key.",
+      "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR5BCanonicalScriptTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R5-B T-SCRIPT: canonical script display, untouched byte-identical save, canonical-first edited save and the typed SCRIPT_TOKEN_AMBIGUOUS outcome.",
+      "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/resources/org/geocedg/desktop/pre-g9b-r5-b/pre-g9b-r5-b-base-fingerprints.json",
+      "change": "added",
+      "purpose": "PRE-G9B-R5-B test data: command-name surface fingerprints computed on the unchanged P_DOTXML tree by a scratch probe; not runtime authority.",
+      "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/resources/org/geocedg/desktop/pre-g9b-r5-b/pre-g9b-r5-b-historical-es.cedg",
+      "change": "added",
+      "purpose": "PRE-G9B-R5-B test data: native document saved with the Spanish UI at P_DOTXML, reopened under EN and ES by T-XML.",
       "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
     }
   ]

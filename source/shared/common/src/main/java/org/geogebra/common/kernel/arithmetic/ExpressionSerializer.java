@@ -498,8 +498,9 @@ public class ExpressionSerializer implements ExpressionNodeConstants {
 			} else {
 				// GeoCeDG maintenance DOT/XML: localize the head only for localizing
 				// templates, like every command head; XML must not depend on the UI locale.
+				// PRE-G9B-R5-B: that display head comes from the command-head authority.
 				twoVar(sb, leftStr, rightStr,
-						tpl.isPrintLocalizedCommandNames() ? loc.getCommand("Dot") : "Dot",
+						tpl.isPrintLocalizedCommandNames() ? loc.getCommandHead("Dot") : "Dot",
 						"<scalarproduct/>", "Dot", "?", tpl, kernel, false, loc);
 			}
 			break;
@@ -1860,7 +1861,8 @@ public class ExpressionSerializer implements ExpressionNodeConstants {
 			// need to output eg freehand(ggbtmpvarx) so that Derivative fails
 			// rather than giving zero
 			if (tpl.isPrintLocalizedCommandNames()) {
-				sb.append(loc.getCommand("DataFunction"));
+				// GeoCeDG PRE-G9B-R5-B: display head by the command-head authority.
+				sb.append(loc.getCommandHead("DataFunction"));
 			} else {
 				sb.append("DataFunction");
 			}
@@ -2279,7 +2281,8 @@ public class ExpressionSerializer implements ExpressionNodeConstants {
 
 	private static void appendIfCommand(StringBuilder sb, StringTemplate tpl, Localization loc) {
 		if (tpl.isPrintLocalizedCommandNames()) {
-			sb.append(loc.getCommand("If"));
+			// GeoCeDG PRE-G9B-R5-B: display head by the command-head authority.
+			sb.append(loc.getCommandHead("If"));
 			sb.append(tpl.leftBracket(loc));
 		} else {
 			sb.append("If");

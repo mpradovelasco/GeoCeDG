@@ -16,6 +16,7 @@
 
 package org.geogebra.common.gui.dialog.options.model;
 
+import org.geocedg.common.main.command.CanonicalCommandSurfaceError;
 import org.geogebra.common.annotation.MissingDoc;
 import org.geogebra.common.euclidian.EuclidianViewInterfaceCommon;
 import org.geogebra.common.kernel.geos.GeoElement;
@@ -107,8 +108,22 @@ public class ScriptInputModel extends OptionsModel {
 			return;
 		}
 
+		// GeoCeDG PRE-G9B-R5-B (ADR 0031 decision 10): an untouched displayed script
+		// keeps its stored text; the canonical display must not rewrite it on save.
+		Script existing = getGeo().getScript(type);
+		if (app.getLocalization().isCanonicalEnglishCommandHeads() && existing != null
+				&& existing.getType() == scriptType && inputText.equals(existing.getText())) {
+			return;
+		}
 		// change existing script
-		Script script = app.createScript(scriptType, inputText, true);
+		Script script;
+		try {
+			script = app.createScript(scriptType, inputText, true);
+		} catch (CanonicalCommandSurfaceError ambiguous) {
+			// SCRIPT_TOKEN_AMBIGUOUS: rejected before the stored script changes
+			app.showError(ambiguous);
+			return;
+		}
 		getGeo().setScript(script, type);
 		if (type != EventType.CLICK) {
 			// let's suppose fixing this script removed the reason why

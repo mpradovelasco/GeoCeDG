@@ -27,8 +27,9 @@ public class CommandNotFoundError extends MyError {
 	 * @param command command
 	 */
 	public CommandNotFoundError(Localization loc, Command command) {
+		// GeoCeDG PRE-G9B-R5-B: command head by the command-head authority.
 		super(loc, loc.getError("UnknownCommand") + " : "
-						+ loc.getCommand(command.getName()), Errors.UnknownCommand);
+						+ loc.getCommandHead(command.getName()), Errors.UnknownCommand);
 		commandName = command.getName();
 	}
 }

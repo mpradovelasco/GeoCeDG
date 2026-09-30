@@ -308,7 +308,12 @@ public class Command extends ValidExpression
 
 			// GeoGebra command syntax
 			if (tpl.isPrintLocalizedCommandNames()) {
-				sbToString.append(app.getLocalization().getCommand(name));
+				// GeoCeDG PRE-G9B-R5-B: display head by the command-head authority; a tool
+				// (macro) name is a user identifier, printed verbatim by a canonical profile.
+				Localization loc = app.getLocalization();
+				sbToString.append(loc.isCanonicalEnglishCommandHeads()
+						&& (macro != null || kernel.getMacro(name) != null) ? name
+						: loc.getCommandHead(name));
 			} else {
 				sbToString.append(name);
 			}

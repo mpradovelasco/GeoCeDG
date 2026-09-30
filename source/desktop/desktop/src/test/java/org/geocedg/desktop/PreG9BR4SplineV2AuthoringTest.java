@@ -50,6 +50,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.geocedg.common.kernel.algos.AlgoSplineV2;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.main.command.CanonicalCommandEntry;
 import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.euclidian.Hits;
 import org.geogebra.common.euclidian.draw.DrawPolyLine;
@@ -217,7 +218,10 @@ class PreG9BR4SplineV2AuthoringTest {
 					DefaultMutableTreeNode selected = (DefaultMutableTreeNode)
 							find(panel, JTree.class).getLastSelectedPathComponent();
 					assertNotNull(selected, scenario);
-					assertEquals("SplineV2", selected.getUserObject(), scenario);
+					// PRE-G9B-R5-B: canonical Input Help leaves carry identity and show the head.
+					assertEquals("SplineV2", ((CanonicalCommandEntry) selected.getUserObject())
+							.getInternalName(), scenario);
+					assertEquals("SplineV2", selected.getUserObject().toString(), scenario);
 					String syntax = find(panel, JTextPane.class).getText();
 					assertTrue(syntax.contains("es".equals(locale.getLanguage())
 							? "<Lista de puntos>, <Grado>" : "<List of Points>, <Degree>"),
@@ -239,7 +243,8 @@ class PreG9BR4SplineV2AuthoringTest {
 		Object selected = find((Container) ((GuiManagerD) app.getGuiManager())
 				.getInputHelpPanel(), JTree.class).getLastSelectedPathComponent();
 		assertFalse(selected instanceof DefaultMutableTreeNode node
-				&& "SplineV2".equals(node.getUserObject()), "other tools keep the host help");
+				&& "SplineV2".equals(String.valueOf(node.getUserObject())),
+				"other tools keep the host help");
 	}
 
 	@Test
@@ -309,7 +314,9 @@ class PreG9BR4SplineV2AuthoringTest {
 		DefaultMutableTreeNode selected = (DefaultMutableTreeNode) find(
 				(Container) ((GuiManagerD) app.getGuiManager()).getInputHelpPanel(),
 				JTree.class).getLastSelectedPathComponent();
-		assertEquals("SplineV2", selected.getUserObject());
+		assertEquals("SplineV2", ((CanonicalCommandEntry) selected.getUserObject())
+				.getInternalName());
+		assertEquals("SplineV2", selected.getUserObject().toString());
 	}
 
 	@Test

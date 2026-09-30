@@ -18,6 +18,7 @@ package org.geogebra.common.plugin.script;
 
 import java.util.ArrayList;
 
+import org.geocedg.common.main.command.CanonicalCommandSurface;
 import org.geogebra.common.euclidian.SymbolicEditor;
 import org.geogebra.common.kernel.CommandLookupStrategy;
 import org.geogebra.common.kernel.arithmetic.MyDouble;
@@ -149,7 +150,8 @@ public class GgbScript extends Script {
 				if (i == 1 && isAssignment) {
 					retone.append(starr[i]);
 				} else {
-					retone.append(app.getLocalization().getCommand(starr[i]));
+					// GeoCeDG PRE-G9B-R5-B: script display heads by the head authority.
+					retone.append(app.getLocalization().getCommandHead(starr[i]));
 				}
 			}
 		}
@@ -195,12 +197,12 @@ public class GgbScript extends Script {
 				// do not translate Gerade to Line
 				// needed for #4391
 				// make sure reserved functions are added without alteration
-				else if (app.getInternalCommand(starr[i]) != null
+				else if (commandToken(app, starr[i]) != null
 						&& !app.getParserFunctions().isReserved(starr[i])) {
 					if (i == 1 && isAssignment) {
 						retone.append(starr[i]);
 					} else {
-						retone.append(app.getInternalCommand(starr[i]));
+						retone.append(commandToken(app, starr[i]));
 					}
 				} else if (app.getParserFunctions()
 						.getInternal(app.getLocalization(), starr[i]) != null) {
@@ -215,6 +217,16 @@ public class GgbScript extends Script {
 			}
 		}
 		return retone.toString();
+	}
+
+	/**
+	 * GeoCeDG (2026-09-30): PRE-G9B-R5-B, ADR 0031 decision 10. A canonical
+	 * profile saves canonical-first; otherwise the inherited localized conversion.
+	 */
+	private static String commandToken(App app, String token) {
+		return app.getLocalization().isCanonicalEnglishCommandHeads()
+				? CanonicalCommandSurface.delocalizeScriptCommandToken(app, token)
+				: app.getInternalCommand(token);
 	}
 
 	/**

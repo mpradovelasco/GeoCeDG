@@ -31,6 +31,8 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
+import org.geocedg.common.main.command.CanonicalCommandEntry;
+import org.geocedg.common.main.command.CanonicalCommandSurface;
 import org.geogebra.common.GeoGebraConstants;
 import org.geogebra.common.awt.GBasicStroke;
 import org.geogebra.common.awt.GColor;
@@ -464,12 +466,21 @@ public class AutoCompleteTextFieldD extends MathTextField
 					}
 					String word = TextFieldUtil.getWordAtPos(getText(), pos);
 					String lowerCurWord = word.toLowerCase();
-					String closest = getDictionary().lookup(lowerCurWord);
+					if (loc.isCanonicalEnglishCommandHeads()) {
+						// GeoCeDG PRE-G9B-R5-B: help by the entry's carried identity
+						String command = canonicalCommandAt(word);
+						if (command != null) {
+							showCommandHelp(command, isCASInput);
+							commandFound = true;
+						}
+					} else {
+						String closest = getDictionary().lookup(lowerCurWord);
 
-					if (closest != null) {
-						showCommandHelp(app.getInternalCommand(closest),
-								isCASInput);
-						commandFound = true;
+						if (closest != null) {
+							showCommandHelp(app.getInternalCommand(closest),
+									isCASInput);
+							commandFound = true;
+						}
 					}
 				}
 				if (!commandFound) {
@@ -737,14 +748,20 @@ public class AutoCompleteTextFieldD extends MathTextField
 		}
 
 		cmdPrefix = curWord.toString();
-		List<MatchedString> completionMatches;
-		if (korean) {
-			completionMatches = getDictionary().getCompletionsKorean(cmdPrefix);
+		List<String> commandCompletions;
+		if (loc.isCanonicalEnglishCommandHeads()) {
+			// GeoCeDG PRE-G9B-R5-B: entries carry identity; heads are canonical English
+			commandCompletions = getCanonicalSyntaxes(
+					CanonicalCommandSurface.completions(app, cmdPrefix, forCAS));
 		} else {
-			completionMatches = getDictionary().getCompletions(cmdPrefix);
+			List<MatchedString> completionMatches;
+			if (korean) {
+				completionMatches = getDictionary().getCompletionsKorean(cmdPrefix);
+			} else {
+				completionMatches = getDictionary().getCompletions(cmdPrefix);
+			}
+			commandCompletions = getSyntaxes(completionMatches);
 		}
-
-		List<String> commandCompletions = getSyntaxes(completionMatches);
 
 		// Start with the built-in function completions
 		completions = app.getParserFunctions().getCompletions(cmdPrefix);
@@ -802,6 +819,42 @@ public class AutoCompleteTextFieldD extends MathTextField
 			}
 		}
 		return syntaxes;
+	}
+
+	/*
+	 * GeoCeDG PRE-G9B-R5-B (ADR 0031 decisions 8 and 9): syntax lines of the
+	 * canonical entries, by their carried identity; heads are canonical English and
+	 * bodies stay in the UI language.
+	 */
+	private List<String> getCanonicalSyntaxes(List<CanonicalCommandEntry> entries) {
+		ArrayList<String> syntaxes = new ArrayList<>();
+		for (CanonicalCommandEntry entry : entries) {
+			syntaxes.addAll(CanonicalCommandSurface.syntaxLines(loc,
+					entry.getInternalName(), isCASInput));
+		}
+		return syntaxes;
+	}
+
+	/*
+	 * GeoCeDG PRE-G9B-R5-B: like the inherited dictionary lookup, the offered command
+	 * whose head or alias is the first name starting with the word; its carried
+	 * identity, or null.
+	 */
+	private String canonicalCommandAt(String word) {
+		String prefix = StringUtil.removeAccents(word);
+		String first = null;
+		String command = null;
+		for (CanonicalCommandEntry entry : CanonicalCommandSurface.completions(app, word,
+				forCAS)) {
+			for (String name : new String[] {entry.getHead(), entry.getAlias()}) {
+				String key = StringUtil.removeAccents(name);
+				if (key.startsWith(prefix) && (first == null || key.compareTo(first) < 0)) {
+					first = key;
+					command = entry.getInternalName();
+				}
+			}
+		}
+		return command;
 	}
 
 	/**

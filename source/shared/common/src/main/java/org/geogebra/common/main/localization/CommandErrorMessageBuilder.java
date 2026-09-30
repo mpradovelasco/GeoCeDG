@@ -106,7 +106,10 @@ public class CommandErrorMessageBuilder implements Restrictable {
 	private void buildPrefix(String command) {
 		boolean reverseOrder = localization.isReverseNameDescriptionLanguage();
 		String commandLocalized = localization.getCommand("Command");
-		String commandNameLocalized = localization.getCommand(command);
+		// GeoCeDG PRE-G9B-R5-B: a canonical profile names the command by its head;
+		// the word "Command" stays UI-language prose.
+		String commandNameLocalized = localization.isCanonicalEnglishCommandHeads()
+				? localization.getCommandHead(command) : localization.getCommand(command);
 
 		if (!reverseOrder) {
 			// standard order: "Command ..."

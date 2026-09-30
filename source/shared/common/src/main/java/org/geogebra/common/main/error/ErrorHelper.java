@@ -85,9 +85,12 @@ public class ErrorHelper {
 	public static void handleCommandError(Localization loc, String localCommand,
 			ErrorHandler handler) {
 		String cmd = loc.getReverseCommand(localCommand);
+		// GeoCeDG PRE-G9B-R5-B: a canonical profile names the command by its head.
+		String shownCommand = loc.isCanonicalEnglishCommandHeads() && cmd != null
+				? loc.getCommandHead(cmd) : localCommand;
 		handler.showCommandError(cmd, loc.getInvalidInputError()
 						+ ":\n"
-						+ localCommand + "\n\n"
+						+ shownCommand + "\n\n"
 						+ loc.getMenu("Syntax") + ":\n"
 						+ loc.getCommandSyntax(cmd));
 

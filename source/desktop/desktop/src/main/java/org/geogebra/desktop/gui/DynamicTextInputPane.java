@@ -144,9 +144,10 @@ public class DynamicTextInputPane extends JTextPane implements FocusListener {
 		DynamicTextElement.DynamicTextType mode = DynamicTextElement.DynamicTextType.VALUE;
 		String s;
 
+		// GeoCeDG PRE-G9B-R5-B: match display output by the authority that printed it.
 		if (text.endsWith(")")) {
 			if (text.startsWith(
-					s = app.getLocalization().getCommand("LaTeX") + "(")) {
+					s = app.getLocalization().getCommandHead("LaTeX") + "(")) {
 
 				// strip off outer command
 				String temp = text.substring(s.length(), text.length() - 1);
@@ -168,7 +169,7 @@ public class DynamicTextInputPane extends JTextPane implements FocusListener {
 				}
 
 			} else if (text.startsWith(
-					s = app.getLocalization().getCommand("Name") + "(")) {
+					s = app.getLocalization().getCommandHead("Name") + "(")) {
 
 				// strip off outer command
 				text = text.substring(s.length(), text.length() - 1);

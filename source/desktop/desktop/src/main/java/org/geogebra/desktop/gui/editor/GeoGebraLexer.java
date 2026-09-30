@@ -34,6 +34,8 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.Element;
 
+import org.geocedg.common.main.command.CanonicalCommandEntry;
+import org.geocedg.common.main.command.CanonicalCommandSurface;
 import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.desktop.main.AppD;
@@ -194,6 +196,13 @@ public final class GeoGebraLexer extends Lexer
 		}
 		commands = new HashSet<>();
 		commands.addAll(app.getCommandDictionary().values());
+		// GeoCeDG PRE-G9B-R5-B: the editor displays canonical heads; highlight them too
+		if (app.getLocalization().isCanonicalEnglishCommandHeads()) {
+			for (CanonicalCommandEntry entry : CanonicalCommandSurface.offeredEntries(app,
+					false)) {
+				commands.add(entry.getHead());
+			}
+		}
 	}
 
 	public GeoGebraLexer(Document doc, AppD app) {

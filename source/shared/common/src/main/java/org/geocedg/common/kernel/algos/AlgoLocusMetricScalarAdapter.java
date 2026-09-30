@@ -92,7 +92,7 @@ public final class AlgoLocusMetricScalarAdapter extends AlgoElement {
 		}
 		StringBuilder description = new StringBuilder(
 				template.isPrintLocalizedCommandNames()
-						? getLoc().getCommand(Commands.Length.name())
+						? getLoc().getCommandHead(Commands.Length.name())
 						: Commands.Length.name());
 		description.append(template.leftCommandBracket(getLoc()));
 		for (int index = 0; index < richParent.getInputLength(); index++) {

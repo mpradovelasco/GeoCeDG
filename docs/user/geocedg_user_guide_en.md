@@ -1506,15 +1506,45 @@ above for `<Locus V2>` accept it.
 
 ### 16.3 Command names and language
 
-Command identifiers are not translated in this guide, and the English forms
-shown above work in both product languages. With Spanish selected, the input
-help also offers localized names — `LugarGeométricoV2` for `LocusV2`,
+GeoCeDG shows command names in English in both product languages: definitions
+in the Algebra view and the Construction Protocol, the text you edit when you
+redefine an object, autocomplete suggestions and the text they insert, Input
+Help, command syntax, command error messages, and the commands shown in the
+script editor. Command identifiers are not translated in this guide either.
+
+With Spanish selected, the localized command names are still accepted when you
+type them, for example `LugarGeométricoV2` for `LocusV2`,
 `LongitudLugarGeométrico` for `LocusLength`, `Longitud` for `Length`,
-`Interseca` for `Intersect`, `Punto` for `Point`, `Refleja` for
-`Reflect`/`Mirror` — while `SplineV2` keeps its
-name. Branch keys such as `"generator.main"` and `"spline-v2/main"`, exact
-tokens, file extensions and code literals are identifiers and are never
-translated.
+`Interseca` for `Intersect`, `Punto` for `Point` and `Refleja` for
+`Reflect`/`Mirror`; `SplineV2` has the same name in both languages.
+Autocomplete also finds a command by its localized name, but it suggests and
+inserts the English name. What you type is kept only as input: the object is
+then shown with the English command name.
+
+Some text stays in the product language:
+
+- the argument descriptions of a syntax: with Spanish selected, Input Help shows
+  `Circle( <Punto>, <Número o valor numérico (radio)> )`;
+- the names of mathematical functions: with Spanish selected,
+  `Circle((0, 0), sen(1))` is shown with the Spanish sine `sen`;
+- descriptions, captions and the automatic names of new objects.
+
+GeoGebraScript uses the English (internal) command names in every language. The
+script editor shows English command names. A script you do not change is saved
+exactly as it was; a localized command name you type into a script is converted
+to its English command when you save.
+
+The product language does not change how documents are saved: `.cedg` and
+`.ggb` files store the internal command names, and a document opens with the
+same commands and values in either language.
+
+If an object, a function variable or a user tool has the same name as a command
+shown in a definition you edit, for example a number called `Circle`, GeoCeDG
+refuses the edit with the message `CANONICAL_HEAD_SHADOWED` and changes
+nothing; rename that object or edit the command.
+
+Branch keys such as `"generator.main"` and `"spline-v2/main"`, exact tokens,
+file extensions and code literals are identifiers and are never translated.
 
 ### 16.4 Keyboard
 

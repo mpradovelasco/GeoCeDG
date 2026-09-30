@@ -24,6 +24,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.LookAndFeel;
 
+import org.geocedg.common.main.command.CanonicalCommandSurface;
 import org.geogebra.common.main.Localization;
 import org.geogebra.desktop.main.AppD;
 
@@ -76,8 +77,16 @@ public class HelpOnKeywordPanel extends JPanel {
 	}
 
 	private void init(AppD app, String command) {
-		String help = app.getLocalization().getCommand(
-				app.getReverseCommand(command) + Localization.syntaxStr);
+		String help;
+		if (app.getLocalization().isCanonicalEnglishCommandHeads()) {
+			// GeoCeDG PRE-G9B-R5-B: canonical head with UI-language syntax body
+			String internal = app.getReverseCommand(command);
+			help = internal == null ? "" : String.join("\n",
+					CanonicalCommandSurface.syntaxLines(app.getLocalization(), internal, false));
+		} else {
+			help = app.getLocalization().getCommand(
+					app.getReverseCommand(command) + Localization.syntaxStr);
+		}
 		String[] lines = help.split("\n");
 		int cols = 1;
 		for (int i = 0; i < lines.length; i++) {

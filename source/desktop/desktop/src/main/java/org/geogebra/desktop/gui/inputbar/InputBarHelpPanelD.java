@@ -29,6 +29,8 @@ import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.Collator;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -61,9 +63,14 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import org.geocedg.common.main.command.CanonicalCommandEntry;
+import org.geocedg.common.main.command.CanonicalCommandSurface;
 import org.geogebra.common.gui.SetLabels;
 import org.geogebra.common.gui.util.SelectionTable;
 import org.geogebra.common.gui.util.TableSymbols;
+import org.geogebra.common.kernel.Macro;
+import org.geogebra.common.kernel.commands.CommandDispatcher;
+import org.geogebra.common.kernel.commands.CommandsConstants;
 import org.geogebra.common.main.GeoGebraColorConstants;
 import org.geogebra.common.main.Localization;
 import org.geogebra.common.util.LowerCaseDictionary;
@@ -93,6 +100,8 @@ public class InputBarHelpPanelD extends JPanel implements TreeSelectionListener,
 	private DefaultTreeModel cmdTreeModel;
 
 	private String selectedCommand;
+	// GeoCeDG PRE-G9B-R5-B: identity of the selected canonical entry, or null
+	private CanonicalCommandEntry selectedEntry;
 	String rollOverCommand;
 
 	private String selectedFunction;
@@ -304,6 +313,7 @@ public class InputBarHelpPanelD extends JPanel implements TreeSelectionListener,
 				}
 				selectedFunction = (String) functionTable.getSelectedValue();
 				selectedCommand = null;
+				selectedEntry = null;
 				helpTextPane.setText("");
 				if (e.getClickCount() == 2) {
 					doPaste();
@@ -430,6 +440,11 @@ public class InputBarHelpPanelD extends JPanel implements TreeSelectionListener,
 		rootSubCommands.removeAllChildren();
 		rootAllCommands.removeAllChildren();
 
+		if (loc.isCanonicalEnglishCommandHeads()) {
+			setCanonicalCommands();
+			return;
+		}
+
 		DefaultMutableTreeNode child;
 		LowerCaseDictionary[] subDict = app.getSubCommandDictionary();
 
@@ -467,6 +482,50 @@ public class InputBarHelpPanelD extends JPanel implements TreeSelectionListener,
 		// ignore sort and put this one first
 		rootSubCommands.insert(rootAllCommands, 0);
 
+		functionTitleNode = new DefaultMutableTreeNode(
+				loc.getMenu("MathematicalFunctions"));
+		rootSubCommands.insert(functionTitleNode, 0);
+	}
+
+	/*
+	 * GeoCeDG PRE-G9B-R5-B (ADR 0031 decisions 8 and 9): the same tables as the
+	 * sub-command dictionaries, but every leaf carries its command identity and
+	 * shows its canonical English head. Tool (macro) names stay verbatim strings.
+	 */
+	private void setCanonicalCommands() {
+		app.getSubCommandDictionary();
+		List<List<CanonicalCommandEntry>> grouped = new ArrayList<>();
+		for (int i = 0; i < CommandDispatcher.tableCount; i++) {
+			grouped.add(new ArrayList<>());
+		}
+		List<CanonicalCommandEntry> offered =
+				CanonicalCommandSurface.offeredEntries(app, false);
+		for (CanonicalCommandEntry entry : offered) {
+			grouped.get(entry.getIdentity().getTable()).add(entry);
+		}
+		grouped.get(CommandsConstants.TABLE_CAS).addAll(CanonicalCommandSurface
+				.entries(app, app.getCasTableCommands()));
+		for (int i = 0; i < grouped.size(); i++) {
+			if (grouped.get(i).isEmpty()) {
+				continue;
+			}
+			DefaultMutableTreeNode group = new DefaultMutableTreeNode(app.getKernel()
+					.getAlgebraProcessor().getSubCommandSetName(i));
+			addNodeInSortedOrder(rootSubCommands, group);
+			for (CanonicalCommandEntry entry : grouped.get(i)) {
+				addNodeInSortedOrder(group, new DefaultMutableTreeNode(entry));
+			}
+		}
+		for (CanonicalCommandEntry entry : offered) {
+			addNodeInSortedOrder(rootAllCommands, new DefaultMutableTreeNode(entry));
+		}
+		if (app.getKernel().hasMacros()) {
+			for (Macro macro : app.getKernel().getAllMacros()) {
+				addNodeInSortedOrder(rootAllCommands,
+						new DefaultMutableTreeNode(macro.getCommandName()));
+			}
+		}
+		rootSubCommands.insert(rootAllCommands, 0);
 		functionTitleNode = new DefaultMutableTreeNode(
 				loc.getMenu("MathematicalFunctions"));
 		rootSubCommands.insert(functionTitleNode, 0);
@@ -513,7 +572,10 @@ public class InputBarHelpPanelD extends JPanel implements TreeSelectionListener,
 
 		if (node.isLeaf()) {
 			Object nodeInfo = node.getUserObject();
-			selectedCommand = (String) nodeInfo;
+			// GeoCeDG PRE-G9B-R5-B: a canonical leaf carries its command identity
+			selectedEntry = nodeInfo instanceof CanonicalCommandEntry
+					? (CanonicalCommandEntry) nodeInfo : null;
+			selectedCommand = String.valueOf(nodeInfo);
 			selectedFunction = null;
 			// insertInputBarCommand(selectedCommand);
 			showSelectedSyntax();
@@ -573,7 +635,7 @@ public class InputBarHelpPanelD extends JPanel implements TreeSelectionListener,
 							.getLastPathComponent();
 					if (node.isLeaf()) {
 						Object nodeInfo = node.getUserObject();
-						rollOverCommand = (String) nodeInfo;
+						rollOverCommand = String.valueOf(nodeInfo);
 					}
 				}
 
@@ -582,9 +644,18 @@ public class InputBarHelpPanelD extends JPanel implements TreeSelectionListener,
 		}
 	}
 
+	/*
+	 * GeoCeDG PRE-G9B-R5-B: internal name of the selection, by its carried identity
+	 * for a canonical leaf.
+	 */
+	private String selectedInternalCommand() {
+		return selectedEntry != null ? selectedEntry.getInternalName()
+				: app.getReverseCommand(selectedCommand);
+	}
+
 	private void showSelectedSyntax() {
 
-		String cmd = app.getReverseCommand(selectedCommand); // internal name
+		String cmd = selectedInternalCommand(); // internal name
 
 		if (cmd == null) {
 			syntaxHelpPanel.remove(syntaxScroller);
@@ -751,13 +822,14 @@ public class InputBarHelpPanelD extends JPanel implements TreeSelectionListener,
 			btnRefresh.setEnabled(false);
 			helpTextPane.setText("");
 			selectedCommand = null;
+			selectedEntry = null;
 			selectedFunction = null;
 		}
 
 		else if (e.getSource() == btnOnlineHelp) {
 			if (selectedCommand != null) {
 				app.getGuiManager().openHelp(ManualPage.COMMAND,
-						app.getReverseCommand(selectedCommand));
+						selectedInternalCommand());
 			} else if (selectedFunction != null) {
 				app.getGuiManager().openHelp(ManualPage.OPERATORS, null);
 			} else {
@@ -824,7 +896,8 @@ public class InputBarHelpPanelD extends JPanel implements TreeSelectionListener,
 	}
 
 	/**
-	 * @param command command name to focus
+	 * @param command command name to focus; for canonical leaves the internal
+	 *            command name, matched by carried identity (GeoCeDG PRE-G9B-R5-B)
 	 */
 	public void focusCommand(String command) {
 		for (int i = 0; i < rootSubCommands.getChildCount(); i++) {
@@ -835,7 +908,10 @@ public class InputBarHelpPanelD extends JPanel implements TreeSelectionListener,
 					DefaultMutableTreeNode cmdNode = (DefaultMutableTreeNode) group
 							.getChildAt(j);
 					Log.debug(cmdNode.getUserObject());
-					if (command.equals(cmdNode.getUserObject())) {
+					Object leaf = cmdNode.getUserObject();
+					if (leaf instanceof CanonicalCommandEntry
+							? ((CanonicalCommandEntry) leaf).getInternalName().equals(command)
+							: command.equals(leaf)) {
 						TreePath path = new TreePath(
 								((DefaultTreeModel) cmdTree.getModel())
 										.getPathToRoot(group.getChildAt(j)));
