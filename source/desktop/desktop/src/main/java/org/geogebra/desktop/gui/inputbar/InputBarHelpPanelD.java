@@ -840,6 +840,8 @@ public class InputBarHelpPanelD extends JPanel implements TreeSelectionListener,
 								((DefaultTreeModel) cmdTree.getModel())
 										.getPathToRoot(group.getChildAt(j)));
 						cmdTree.setSelectionPath(path);
+						// GeoCeDG (2026-09-30): PRE-G9B-R4 shows the focused command.
+						cmdTree.scrollPathToVisible(path);
 						return;
 					}
 				}

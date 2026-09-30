@@ -8,6 +8,7 @@ package org.geocedg.desktop;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
@@ -24,11 +25,13 @@ import org.geogebra.common.euclidian.Drawable;
 import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.euclidian.EuclidianCursor;
 import org.geogebra.common.euclidian.Hits;
+import org.geogebra.common.euclidian.Previewable;
 import org.geogebra.common.euclidian.event.AbstractEvent;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.ModeSetter;
 import org.geogebra.common.kernel.geos.GeoElement;
+import org.geogebra.common.kernel.geos.GeoList;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.kernel.kernelND.GeoElementND;
 import org.geogebra.common.kernel.kernelND.GeoPointND;
@@ -48,6 +51,7 @@ public final class GeoCeDGEuclidianController
 	private final GeoCeDGIntersectionSession intersectionSession;
 	private final GeoCeDGPointInteraction pointInteraction;
 	private final GeoCeDGSimilarityTools similarityTools;
+	private final GeoCeDGSplineV2Authoring splineAuthoring;
 	private GeoPoint interactionDragPoint;
 	private boolean interactionGesture;
 	private boolean interactionChanged;
@@ -68,6 +72,7 @@ public final class GeoCeDGEuclidianController
 				(AppD) kernel.getApplication());
 		pointInteraction = new GeoCeDGPointInteraction((AppD) kernel.getApplication());
 		similarityTools = new GeoCeDGSimilarityTools((AppD) kernel.getApplication());
+		splineAuthoring = new GeoCeDGSplineV2Authoring((AppD) kernel.getApplication());
 		locusV2Dialogs = new GeoCeDGLocusV2Dialogs(
 				(AppD) kernel.getApplication(), intersectionSession);
 	}
@@ -487,7 +492,12 @@ public final class GeoCeDGEuclidianController
 			return endOfSwitchModeForProcessMode(image == null ? null
 					: new GeoElementND[] {image}, false, callback, selectionPreview);
 		}
-		if (!isLocusV2Mode(mode)) {
+		if (mode == EuclidianConstants.MODE_ORDERED_LIST) {
+			return endOfSwitchModeForProcessMode(
+					createOrderedList(hits, selectionPreview), false, callback,
+					selectionPreview);
+		}
+		if (!isLocusV2Mode(mode) && !GeoCeDGSplineV2Authoring.handles(mode)) {
 			if (mode == EuclidianConstants.MODE_INTERSECT && !selectionPreview
 					&& callback != null && intersectionSession.isAutoMaterialize()) {
 				GeoLocusIntersectionResult previous = intersectionSession.getActive();
@@ -524,6 +534,11 @@ public final class GeoCeDGEuclidianController
 				break;
 			case EuclidianConstants.MODE_LOCUS_V2_LENGTH_BETWEEN:
 				output = createBetweenMetric(hits, selectionPreview);
+				break;
+			case EuclidianConstants.MODE_SPLINE_V2:
+			case EuclidianConstants.MODE_SPLINE_V2_DEGREE:
+			case EuclidianConstants.MODE_SPLINE_V2_CLOSED:
+				output = createSplineV2(hits, selectionPreview);
 				break;
 			default:
 				break;
@@ -666,6 +681,58 @@ public final class GeoCeDGEuclidianController
 			showFeatureError("LocusV2.InvalidPosition", false);
 			return null;
 		}
+	}
+
+	/**
+	 * Collects existing points in click order; selecting the first point again
+	 * finishes, as in the host Polyline tool. The finish never means closure.
+	 */
+	private GeoElementND[] createSplineV2(Hits hits, boolean selectionPreview) {
+		if (hits.isEmpty()) {
+			return null;
+		}
+		List<GeoPointND> collected = getSelectedPointList();
+		if (!selectionPreview
+				&& collected.size() >= GeoCeDGSplineV2Authoring.MINIMUM_POINTS
+				&& hits.contains(collected.get(0))) {
+			return splineAuthoring.commit(mode, getSelectedPointsND());
+		}
+		addSelectedPoint(hits, Integer.MAX_VALUE, false, selectionPreview);
+		return null;
+	}
+
+	/**
+	 * Collects objects in click order into one ordinary dependent host list;
+	 * selecting the first object again finishes. Re-selection of any other
+	 * member is the host deselection, so no member is repeated implicitly.
+	 */
+	private GeoElementND[] createOrderedList(Hits hits, boolean selectionPreview) {
+		if (hits.isEmpty()) {
+			return null;
+		}
+		List<GeoElement> collected = getSelectedGeoList();
+		if (!selectionPreview && collected.size() >= 2
+				&& hits.contains(collected.get(0))) {
+			GeoList list = kernel.getAlgoDispatcher().list(
+					new ArrayList<>(Arrays.asList(getSelectedGeos())), false);
+			list.setLabel(null);
+			return list.asArray();
+		}
+		addSelectedGeo(hits, Integer.MAX_VALUE, false, selectionPreview);
+		return null;
+	}
+
+	@Override
+	protected Previewable switchPreviewableForInitNewMode(int newMode) {
+		if (GeoCeDGSplineV2Authoring.handles(newMode)) {
+			// Presentation only: the control polygon is never spline geometry.
+			return getView().createPreviewPolyLine(getSelectedPointList());
+		}
+		return super.switchPreviewableForInitNewMode(newMode);
+	}
+
+	GeoCeDGSplineV2Authoring getSplineAuthoring() {
+		return splineAuthoring;
 	}
 
 	private GeoLocusV2 selectSingleLocus(Hits hits,

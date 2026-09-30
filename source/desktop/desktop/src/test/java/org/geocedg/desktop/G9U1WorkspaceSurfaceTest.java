@@ -121,7 +121,7 @@ class G9U1WorkspaceSurfaceTest {
 		for (Component component : bar.getComponents()) {
 			collect(component, ids);
 		}
-		assertEquals(112, ids.size());
+		assertEquals(115, ids.size());
 		assertEquals(7, bar.getMenuCount());
 		assertTrue(ids.contains("navigation.zoom-window"));
 		assertTrue(ids.contains("navigation.zoom-factor-in"));
@@ -375,7 +375,8 @@ class G9U1WorkspaceSurfaceTest {
 				"construction.segment", "construction.ray", "construction.vector",
 				"construction.fixed-segment", "construction.vector-from-point"));
 		expected.put("construction-polygons", List.of("construction.polygon",
-				"construction.polyline", "construction.regular-polygon",
+				"construction.polyline", "construction.list-from-selection",
+				"construction.regular-polygon",
 				"construction.rigid-polygon", "construction.vector-polygon"));
 		expected.put("construction-derived", List.of("construction.parallel-line",
 				"construction.perpendicular-line",
@@ -386,7 +387,8 @@ class G9U1WorkspaceSurfaceTest {
 				"curve.arc-center", "curve.conic-five-points", "curve.ellipse",
 				"curve.parabola"));
 		expected.put("construction-semantic-curves", List.of("semantic.locus-v2.create",
-				"semantic.spline-v2.create", "semantic.locus-v2.point-explicit"));
+				"semantic.spline-v2.create", "semantic.spline-v2.create-degree",
+				"semantic.spline-v2.create-closed", "semantic.locus-v2.point-explicit"));
 		expected.put("construction-metrics", List.of("measure.angle",
 				"measure.distance-length", "measure.locus-v2-total-length",
 				"measure.locus-v2-partial-length"));
@@ -692,8 +694,8 @@ class G9U1WorkspaceSurfaceTest {
 			toolbarIds.addAll(GeoCeDGProfile.strings(clusters.getJSONObject(i)
 					.getJSONArray("toolbar_action_ids")));
 		}
-		assertEquals(53, toolbarIds.size());
-		assertEquals(112, menuIds.size());
+		assertEquals(56, toolbarIds.size());
+		assertEquals(115, menuIds.size());
 		assertTrue(menuIds.containsAll(toolbarIds));
 		GeoCeDGActionRegistry registry = ((GuiManagerGeoCeDG) app.getGuiManager())
 				.getActionRegistry();

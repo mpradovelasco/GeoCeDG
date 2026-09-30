@@ -456,6 +456,14 @@ public final class EuclidianConstants {
 	public static final int MODE_LOCUS_V2_LENGTH = 135;
 	/** GeoCeDG between-position rich semantic metric action. */
 	public static final int MODE_LOCUS_V2_LENGTH_BETWEEN = 136;
+	/** GeoCeDG ordered-point SplineV2 creator, open form with the command default degree. */
+	public static final int MODE_SPLINE_V2 = 137;
+	/** GeoCeDG ordered-point SplineV2 creator with an explicitly entered degree. */
+	public static final int MODE_SPLINE_V2_DEGREE = 138;
+	/** GeoCeDG ordered-point SplineV2 creator for the explicit closed form. */
+	public static final int MODE_SPLINE_V2_CLOSED = 139;
+	/** GeoCeDG ordinary dependent list built in click order. */
+	public static final int MODE_ORDERED_LIST = 140;
 
 	/** macro tools ID offset */
 	public static final int MACRO_MODE_ID_OFFSET = 100001;
@@ -785,6 +793,18 @@ public final class EuclidianConstants {
 
 		case EuclidianConstants.MODE_LOCUS_V2_LENGTH_BETWEEN:
 			return "LocusLength.Partial.Tool";
+
+		case EuclidianConstants.MODE_SPLINE_V2:
+			return "SplineV2.Tool";
+
+		case EuclidianConstants.MODE_SPLINE_V2_DEGREE:
+			return "SplineV2.Degree.Tool";
+
+		case EuclidianConstants.MODE_SPLINE_V2_CLOSED:
+			return "SplineV2.Closed.Tool";
+
+		case EuclidianConstants.MODE_ORDERED_LIST:
+			return "OrderedList.Tool";
 
 		case EuclidianConstants.MODE_AREA:
 			return "Area";

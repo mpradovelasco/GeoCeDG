@@ -41,7 +41,7 @@ class G9U1ProfileCompilerTest {
 		assertEquals(2, profile.getInt("schema_version"));
 		assertEquals(11, profile.getJSONObject("taxonomy").getJSONArray("broad_families").length());
 		assertEquals(18, profile.getJSONArray("clusters").length());
-		assertEquals(112, GeoCeDGProfile.getActions().size());
+		assertEquals(115, GeoCeDGProfile.getActions().size());
 		assertEquals(GeoCeDGProfile.getToolbarDefinition(),
 				GeoCeDGProfile.compileProfile(profile.toString()));
 	}
@@ -49,9 +49,10 @@ class G9U1ProfileCompilerTest {
 	@Test
 	void nativeToolbarContainsFortyFiveCuratedModesWhileCatalogRetainsAllSixtySix() {
 		String[] modes = GeoCeDGProfile.getToolbarDefinition().split("[ |]+");
-		assertEquals(45, modes.length);
-		assertEquals(45, new HashSet<>(Arrays.asList(modes)).size());
-		assertEquals(66, GeoCeDGProfile.getActions().stream()
+		// Identity-stable name; PRE-G9B-R4 adds the ordered list mode and three SplineV2 modes.
+		assertEquals(46, modes.length);
+		assertEquals(46, new HashSet<>(Arrays.asList(modes)).size());
+		assertEquals(70, GeoCeDGProfile.getActions().stream()
 				.filter(action -> action.mode() != null).count());
 		assertFalse(Arrays.asList(modes).contains("47"));
 		assertFalse(Arrays.asList(modes).contains("54"));
@@ -206,7 +207,7 @@ class G9U1ProfileCompilerTest {
 				assertTrue(ids.add(id), id);
 			}
 		}
-		assertEquals(112, ids.size());
+		assertEquals(115, ids.size());
 		assertEquals(List.of("edit-selection", "construction-relations",
 				"construction-lines-vectors",
 				"construction-polygons",
@@ -232,6 +233,7 @@ class G9U1ProfileCompilerTest {
 				profile.getJSONArray("presentation_groups"), "construction-semantic-curves");
 		assertEquals("profile-flyout", semantic.getString("toolbar_rendering"));
 		assertEquals(List.of("semantic.locus-v2.create", "semantic.spline-v2.create",
+				"semantic.spline-v2.create-degree", "semantic.spline-v2.create-closed",
 				"semantic.locus-v2.point-explicit"),
 				GeoCeDGProfile.strings(semantic.getJSONArray("toolbar_action_ids")));
 
@@ -254,6 +256,7 @@ class G9U1ProfileCompilerTest {
 				"construction.vector-from-point"),
 				toolbarIds(groups, "construction-lines-vectors"));
 		assertEquals(List.of("construction.polygon", "construction.polyline",
+				"construction.list-from-selection",
 				"construction.regular-polygon", "construction.rigid-polygon",
 				"construction.vector-polygon"),
 				toolbarIds(groups, "construction-polygons"));
@@ -374,7 +377,7 @@ class G9U1ProfileCompilerTest {
 	void validV2DoesNotUseFallback() {
 		var selected = GeoCeDGProfile.loadDefinition(GeoCeDGProfile.getCatalog().toString(), "");
 		assertFalse(selected.legacyFallback);
-		assertEquals(112, selected.actionCount());
+		assertEquals(115, selected.actionCount());
 	}
 
 	@Test

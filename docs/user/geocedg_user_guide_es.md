@@ -467,6 +467,22 @@ respecto a un punto o a una recta, la traslación por vector, la rotación por
 como en el núcleo compartido; aplicadas a curvas semánticas tienen la semántica
 adicional descrita en la sección 10.
 
+### 5.8 Listas desde una selección
+
+**Crear lista desde la selección** (**Construcción → Polígonos**, junto a
+Poligonal) construye una lista ordinaria con los objetos en el orden exacto en
+que los selecciona. Seleccione los objetos uno a uno (puntos, segmentos,
+números o cualquier mezcla) y después seleccione de nuevo el **primer objeto**
+para terminar. Seleccionar de nuevo cualquier otro objeto lo quita de la
+selección, de modo que ningún objeto se añade dos veces; una lista que repite un
+elemento se escribe en la Entrada algebraica, por ejemplo `{A,B,A}`. **Escape** u
+otra herramienta cancela y no crea nada.
+
+La lista terminada es un paso de deshacer y una lista dependiente ordinaria: se
+actualiza cuando cambian sus elementos y sigue las reglas habituales cuando un
+elemento se redefine o se borra. Una lista de puntos puede darse a Spline V2,
+por ejemplo `SplineV2(l1)` o `SplineV2(l1,4)`.
+
 ---
 
 <!-- geocedg-guide-section: locus-v2 -->
@@ -603,7 +619,34 @@ sin cambios.
 
 ### 7.2 Crear una Spline V2
 
-**Construcción → Curvas semánticas → Spline V2**, o la Entrada algebraica:
+**Construcción → Curvas semánticas** ofrece tres herramientas. Todas trabajan
+sobre puntos que ya existen:
+
+| Herramienta | Resultado |
+|---|---|
+| **Spline V2** | una Spline V2 abierta de grado 3 |
+| **Spline V2 con grado** | una Spline V2 abierta del grado que introduzca |
+| **Spline V2 cerrada** | la Spline V2 cerrada (periódica) por los puntos |
+
+Seleccione al menos tres puntos en el orden que debe seguir la curva y después
+seleccione de nuevo el **primer punto** para terminar. Mientras selecciona, un
+polígono de control fino muestra el orden; es solo una guía, nunca la curva.
+Seleccionar de nuevo cualquier otro punto lo deselecciona, y no se crea nada
+hasta terminar. **Escape** o elegir otra herramienta cancela y no crea nada.
+Cada herramienta terminada crea una Spline V2 y un paso de deshacer.
+
+- **Grado.** **Spline V2** usa siempre grado 3 y no pregunta nada. Para elegir
+  el grado, use **Spline V2 con grado**: al terminar pide el grado, un entero de
+  3 al número de puntos, como máximo 12. Cancelar esa pregunta no crea nada.
+- **Forma cerrada.** Solo **Spline V2 cerrada** crea una curva cerrada; repite
+  por usted el primer punto al final. Seleccionar de nuevo el primer punto solo
+  termina: nunca cierra una curva, y los puntos cercanos o superpuestos nunca se
+  toman como cierre.
+- **Puntos.** Las herramientas no crean puntos; créelos antes, por ejemplo con
+  la herramienta **Punto**.
+
+Elegir una herramienta Spline V2 abre además la **Ayuda de entrada** sobre el
+comando `SplineV2`. Sus formas pueden escribirse en la Entrada algebraica:
 
 ```text
 SplineV2( <List of Points> )
@@ -611,6 +654,17 @@ SplineV2( <List of Points>, <Degree> )
 SplineV2( <List of Points>, <Degree>, <Weight Function> )
 SplineV2( <Point>, <Point>, <Point>, ... )
 ```
+
+`SplineV2({A,B,C,D},4)` fija un grado explícito, y `SplineV2(A,B,C,D,A)` repite
+el primer punto para la forma cerrada. Las formas fallan de manera distinta: un
+grado explícito fuera de 3 al número de puntos se rechaza con un error al pulsar
+Intro, mientras que una forma sin grado acepta más puntos de los que permite la
+política acotada (más de 32) y da una spline indefinida.
+
+Tanto si procede de una herramienta como de la Entrada algebraica, el comando
+conserva su lista de puntos y su grado como objetos con nombre de la
+construcción (por ejemplo `l1` y `a`), para que el documento los conserve con sus
+identidades.
 
 La clave de rama por defecto de una Spline V2 es `spline-v2/main`.
 
@@ -1448,7 +1502,8 @@ Estas son las limitaciones que afectan a lo que hoy puede hacer en la aplicació
 | Tarea | Ruta GUI | Comando | Tipo de resultado | Notas importantes |
 |---|---|---|---|---|
 | Crear un lugar geométrico semántico | Construcción → Curvas semánticas → Locus V2 | `LocusV2(G,u,dom)` | curva semántica | el dominio es explícito; no procede del rango de un deslizador |
-| Crear una spline semántica | Construcción → Curvas semánticas → Spline V2 | `SplineV2({A,B,C,D},3)` | curva semántica | los puntos constructores no son puntos semánticos |
+| Crear una spline semántica | Construcción → Curvas semánticas → Spline V2, Spline V2 con grado o Spline V2 cerrada | `SplineV2({A,B,C,D},3)` | curva semántica | seleccione los puntos en orden y después de nuevo el primero; los puntos constructores no son puntos semánticos |
+| Crear una lista en el orden de selección | Construcción → Polígonos → Crear lista desde la selección | `{A,B,C}` | lista | orden exacto de clic; seleccione de nuevo el primer objeto para terminar |
 | Punto sobre curva semántica, interactivo | Herramienta Punto, clic en el trazo | — | punto semántico | preimagen única, o elección explícita; nunca por proximidad |
 | Punto sobre curva semántica, por parámetro | Construcción → Curvas semánticas → Punto sobre curva semántica | `Point(S,"spline-v2/main",0.25)` | punto semántico | clave de rama y parámetro canónico; el parámetro puede ser un número con nombre |
 | Punto sobre un Locus V2, por parámetro | ídem | `Point(L,"generator.main",1)` | punto semántico | clave de rama por defecto del generador |

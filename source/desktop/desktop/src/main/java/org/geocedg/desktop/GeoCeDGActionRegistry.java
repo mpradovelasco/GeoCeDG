@@ -32,12 +32,14 @@ import org.geocedg.common.main.feature.RuntimeFeatureService;
 import org.geocedg.desktop.GeoCeDGProfile.ActionDefinition;
 import org.geocedg.desktop.resources.GeoCeDGToolImageResource;
 import org.geogebra.common.GeoGebraConstants;
+import org.geogebra.common.kernel.commands.Commands;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.main.App;
 import org.geogebra.common.main.OptionType;
 import org.geogebra.common.main.settings.AlgebraStyle;
 import org.geogebra.desktop.gui.GuiManagerD;
 import org.geogebra.desktop.gui.inputbar.AlgebraInputD;
+import org.geogebra.desktop.gui.inputbar.InputBarHelpPanelD;
 import org.geogebra.desktop.gui.menubar.GeoGebraMenuBar;
 import org.geogebra.desktop.gui.menubar.LoadFileListener;
 import org.geogebra.desktop.gui.view.properties.PropertiesViewD;
@@ -53,7 +55,7 @@ public final class GeoCeDGActionRegistry {
 			"geocedg.result.inspect", "geocedg.result.markers.toggle",
 			"geocedg.result.materialize-selected", "geocedg.result.materialize-multiple",
 			"geocedg.result.materialize-all", "geocedg.result.auto-materialize-initial.toggle",
-			"SplineV2", "cedg-dihedral-procedures", "host.view.axes-toggle",
+			"cedg-dihedral-procedures", "host.view.axes-toggle",
 			"host.view.grid-toggle", "geocedg.navigation.zoom-window",
 			"geocedg.navigation.zoom-factor-in",
 			"geocedg.navigation.zoom-factor-out",
@@ -225,6 +227,9 @@ public final class GeoCeDGActionRegistry {
 		if (definition.mode() != null) {
 			app.setActiveView(App.VIEW_EUCLIDIAN);
 			app.setMode(definition.mode());
+			if (GeoCeDGSplineV2Authoring.handles(definition.mode())) {
+				showSplineV2InputHelp();
+			}
 			return;
 		}
 		execute(definition.target(), event);
@@ -262,9 +267,6 @@ public final class GeoCeDGActionRegistry {
 		case "geocedg.result.auto-materialize-initial.toggle":
 			controller().setAutoMaterializeIntersectionSolutions(
 					!controller().isAutoMaterializeIntersectionSolutions());
-			break;
-		case "SplineV2":
-			focusSplineInput();
 			break;
 		case "cedg-dihedral-procedures":
 			message(text("GeoCeDG.Workspace.Unavailable.G9U2"));
@@ -337,6 +339,9 @@ public final class GeoCeDGActionRegistry {
 			app.setShowInputHelpPanel(true);
 			break;
 		case "geocedg.help.contextual-action":
+			if (GeoCeDGSplineV2Authoring.handles(app.getMode())) {
+				showSplineV2InputHelp();
+			}
 			message(app.getToolName(app.getMode()) + "\n" + app.getToolHelp(app.getMode()));
 			break;
 		case "geocedg.help.user-guide":
@@ -445,16 +450,18 @@ public final class GeoCeDGActionRegistry {
 		app.storeUndoInfo();
 	}
 
-	private void focusSplineInput() {
+	/**
+	 * Opens Input Help on the existing localized SplineV2 syntax. It neither types
+	 * into nor focuses Algebra Input, so tool clicks keep reaching the Graphics.
+	 */
+	private void showSplineV2InputHelp() {
+		GuiManagerD gui = (GuiManagerD) app.getGuiManager();
 		app.setShowAlgebraInput(true, true);
-		AlgebraInputD input = (AlgebraInputD) ((GuiManagerD) app.getGuiManager())
-				.getAlgebraInput();
-		if (input.getTextField().getText().isBlank()) {
-			input.getTextField().setText("SplineV2(");
-		}
-		input.getTextField().setToolTipText(text("Workspace.SplineHelp"));
-		input.requestFocus();
+		InputBarHelpPanelD help = (InputBarHelpPanelD) gui.getInputHelpPanel();
 		app.setShowInputHelpPanel(true);
+		help.focusCommand(app.getLocalization().getCommand(Commands.SplineV2.name()));
+		((AlgebraInputD) gui.getAlgebraInput()).getTextField()
+				.setToolTipText(text("Workspace.SplineHelp"));
 	}
 
 	private void chooseLanguage() {

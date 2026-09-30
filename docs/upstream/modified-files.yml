@@ -84,7 +84,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGProfile.java",
       "change": "added",
-      "purpose": "Load the maintainable profile manifest and compile its toolbar and perspective contracts. G9U1: Strictly compile live schema v2 and preserve explicit historical v1 fallback compatibility. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: validate and compile reduced primary toolbar placements and six ordinary menu sections while retaining 110 action IDs. G9U1 review round 3: distinguish the 11-family/18-cluster taxonomy from the sole profile-owned presentation projection and validate 28 presentation groups. Final presentation polish: compile 11 toolbar groups, permit two explicitly typed profile flyouts for mixed registered actions, and support a product-only presentation-name override without changing inherited command semantics.",
+      "purpose": "Load the maintainable profile manifest and compile its toolbar and perspective contracts. G9U1: Strictly compile live schema v2 and preserve explicit historical v1 fallback compatibility. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: validate and compile reduced primary toolbar placements and six ordinary menu sections while retaining 110 action IDs. G9U1 review round 3: distinguish the 11-family/18-cluster taxonomy from the sole profile-owned presentation projection and validate 28 presentation groups. Final presentation polish: compile 11 toolbar groups, permit two explicitly typed profile flyouts for mixed registered actions, and support a product-only presentation-name override without changing inherited command semantics. PRE-G9B-R4: require the 115-action catalog with the three authorized authoring tools. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md.",
       "authority": "apps/geocedg/application-profile.yml"
     },
     {
@@ -2658,13 +2658,13 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/euclidian/EuclidianConstants.java",
       "change": "modified",
-      "purpose": "Allocate GeoCeDG experimental Locus V2 creation, semantic-point and rich-metric modes without changing legacy Locus mode 47.",
+      "purpose": "Allocate GeoCeDG experimental Locus V2 creation, semantic-point and rich-metric modes without changing legacy Locus mode 47. PRE-G9B-R4: allocate the SplineV2 authoring modes 137-139 and the ordered-list mode 140 with their mode-text keys. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGEuclidianController.java",
       "change": "added",
-      "purpose": "Provide GeoCeDG-only creation, semantic-position, rich metric, rich inspector/token and general-intersection actions for enabled Locus V2 sessions. G9U1: Orchestrate exact R6 Point creation/drag, transient token markers and view-only ZoomWindow. Authority: geocedg/specs/ui/g9u1-construction-interaction.md.",
+      "purpose": "Provide GeoCeDG-only creation, semantic-position, rich metric, rich inspector/token and general-intersection actions for enabled Locus V2 sessions. G9U1: Orchestrate exact R6 Point creation/drag, transient token markers and view-only ZoomWindow. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. PRE-G9B-R4: collect ordered points for the three SplineV2 tools with the host polyline preview and finish gesture, and build ordinary dependent lists in click order. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -2700,19 +2700,19 @@
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored default type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds the deterministic-selection status diagnostic; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Point on semantic curve and adds the default user-tool definition/icon and menu-presentation text.",
+      "purpose": "Add GeoCeDG-authored default type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds the deterministic-selection status diagnostic; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Point on semantic curve and adds the default user-tool definition/icon and menu-presentation text. PRE-G9B-R4 adds the default SplineV2 and ordered-list tool names, help and degree prompt. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_en.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored English type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds deterministic-selection diagnostics; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Point on semantic curve and adds complete English user-tool definition/icon and menu-presentation text.",
+      "purpose": "Add GeoCeDG-authored English type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds deterministic-selection diagnostics; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Point on semantic curve and adds complete English user-tool definition/icon and menu-presentation text. PRE-G9B-R4 adds the English SplineV2 and ordered-list tool names, help and degree prompt. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_es.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored Spanish type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds deterministic-selection diagnostics; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Punto sobre curva semántica and adds complete Spanish user-tool definition/icon and menu-presentation text.",
+      "purpose": "Add GeoCeDG-authored Spanish type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds deterministic-selection diagnostics; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Punto sobre curva semántica and adds complete Spanish user-tool definition/icon and menu-presentation text. PRE-G9B-R4 adds the Spanish SplineV2 and ordered-list tool names, help and degree prompt. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -3588,7 +3588,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/resources/GeoCeDGToolImageResource.java",
       "change": "added",
-      "purpose": "Decode the existing registered owned Locus V2 SVG into a fresh loaded 64-pixel Toolkit image using the existing Desktop SVG decoder, without new assets or shared mutable raster state. G9U1 review round 1: map four newly registered owned semantic-point, spline, rich-result and materialization SVGs through the existing decoder; no upstream asset copying.",
+      "purpose": "Decode the existing registered owned Locus V2 SVG into a fresh loaded 64-pixel Toolkit image using the existing Desktop SVG decoder, without new assets or shared mutable raster state. G9U1 review round 1: map four newly registered owned semantic-point, spline, rich-result and materialization SVGs through the existing decoder; no upstream asset copying. PRE-G9B-R4: reuse the owned SplineV2 artwork for the SplineV2 tool variants and the inherited host list artwork for the ordered list tool. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md.",
       "authority": "docs/architecture/verification-baseline-compatibility-repair.md"
     },
     {
@@ -3738,7 +3738,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGActionRegistry.java",
       "change": "added",
-      "purpose": "Bind every declared stable action to one frontend target with localized availability and shared state. G9U1 review round 1: route the existing user-tools action, quick-guide help and differentiated registered product icons without additional stable action IDs. G9U1 review round 3: use the view-specific construction-navigation seam and expose global preferences without implicit object selection. Final presentation polish resolves the optional profile-owned Locus V2 display name while retaining the inherited host action and all 110 stable IDs.",
+      "purpose": "Bind every declared stable action to one frontend target with localized availability and shared state. G9U1 review round 1: route the existing user-tools action, quick-guide help and differentiated registered product icons without additional stable action IDs. G9U1 review round 3: use the view-specific construction-navigation seam and expose global preferences without implicit object selection. Final presentation polish resolves the optional profile-owned Locus V2 display name while retaining the inherited host action and all 110 stable IDs. PRE-G9B-R4: SplineV2 tools take the set-mode branch and open Input Help with the existing SplineV2 syntax selected, replacing the Algebra Input prefill. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -4880,6 +4880,30 @@
       "change": "added",
       "purpose": "PRE-G9B-R3-X1: verify the repaired reconstructible evaluator against canonical values and the live construction for segment, circle and arc drivers and for the retained inline-literal fixture.",
       "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/inputbar/InputBarHelpPanelD.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-R4: scroll the command focused in Input Help into view so the selected SplineV2 syntax is visible; selection and syntax rendering are unchanged.",
+      "authority": "geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGSplineV2Authoring.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R4: turn one explicit ordered point selection into one ordinary SplineV2 command by reference, with the explicit degree entry and the AD-R0-8 closing member; no spline, degree or closedness rule of its own.",
+      "authority": "geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR4SplineV2AuthoringTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R4: verify the SplineV2 tool modes, ordered collection, one commit and undo point, explicit degree and closed-form gestures, cancel, preview authority, parity with the typed command, native reopen, contextual help, Input Help selection and the corrected tooltip.",
+      "authority": "geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR4OrderedListToolTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R4: verify Create List from Selection click order, host toggle deduplication, mixed members, one undo point, cancel, downstream SplineV2 use and inherited member redefinition and deletion.",
+      "authority": "geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md"
     }
   ]
 }

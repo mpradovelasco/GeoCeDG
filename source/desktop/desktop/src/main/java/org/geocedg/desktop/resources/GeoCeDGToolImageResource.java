@@ -28,7 +28,9 @@ public enum GeoCeDGToolImageResource implements ImageResourceD {
 	SEMANTIC_POINT("mode_geocedg_semanticpoint"),
 	RICH_RESULT("mode_geocedg_richresult"),
 	MATERIALIZE("mode_geocedg_materialize"),
-	ZOOM_WINDOW("/org/geogebra/common/icons_toolbar/p64/", "mode_zoom", ".png");
+	ZOOM_WINDOW("/org/geogebra/common/icons_toolbar/p64/", "mode_zoom", ".png"),
+	/** Inherited host list artwork, reused explicitly for the ordered list tool. */
+	ORDERED_LIST("mode_list");
 
 	private static final int RASTER_SIZE = 64;
 	private final String filename;
@@ -49,7 +51,11 @@ public enum GeoCeDGToolImageResource implements ImageResourceD {
 	public static @CheckForNull GeoCeDGToolImageResource forIconKey(String iconKey) {
 		switch (iconKey) {
 		case "geocedg.action.SplineV2Create":
+		case "geocedg.action.SplineV2CreateDegree":
+		case "geocedg.action.SplineV2CreateClosed":
 			return SPLINE_V2;
+		case "geocedg.action.OrderedListCreate":
+			return ORDERED_LIST;
 		case "geocedg.action.LocusV2Point":
 			return SEMANTIC_POINT;
 		case "geocedg.action.LocusV2Create":
@@ -74,7 +80,8 @@ public enum GeoCeDGToolImageResource implements ImageResourceD {
 
 	/**
 	 * @param modeName mode name after the existing lowercase normalization
-	 * @return owned resource for the four declared modes, otherwise null
+	 * @return owned or explicitly reused resource for the declared GeoCeDG modes,
+	 *         otherwise null
 	 */
 	public static @CheckForNull GeoCeDGToolImageResource forMode(String modeName) {
 		switch (modeName) {
@@ -83,6 +90,12 @@ public enum GeoCeDGToolImageResource implements ImageResourceD {
 		case "locuslength.total":
 		case "locuslength.partial":
 			return LOCUS_V2;
+		case "splinev2":
+		case "splinev2.degree":
+		case "splinev2.closed":
+			return SPLINE_V2;
+		case "orderedlist":
+			return ORDERED_LIST;
 		default:
 			return null;
 		}

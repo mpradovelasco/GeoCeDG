@@ -40,11 +40,18 @@ function Assert-GeoCeDGLiveWorkspaceProfile {
         "navigation.zoom-factor-in",
         "navigation.zoom-factor-out"
     )
-    $approvedIds = @($candidate.actions.id + $postG9U1A7ActionIds |
+    # PRE-G9B-R4 authoring tools, authorized for implementation on 2026-09-30;
+    # geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md owns their contract.
+    $preG9BR4ActionIds = @(
+        "semantic.spline-v2.create-degree",
+        "semantic.spline-v2.create-closed",
+        "construction.list-from-selection"
+    )
+    $approvedIds = @($candidate.actions.id + $postG9U1A7ActionIds + $preG9BR4ActionIds |
         Sort-Object -CaseSensitive)
     $liveIds = @($actionIds | Sort-Object -CaseSensitive)
     if (@(Compare-Object $approvedIds $liveIds -CaseSensitive).Count -ne 0) {
-        throw "Live action IDs differ from the G9U1 catalog plus its approved A7 amendment."
+        throw "Live action IDs differ from the G9U1 catalog plus its approved A7 and R4 amendments."
     }
     $featureIds = @($profile.features.id)
     if ($featureIds.Count -ne @($candidate.features).Count -or

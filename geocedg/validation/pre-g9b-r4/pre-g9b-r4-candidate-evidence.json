@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "phase": "PRE-G9B-R4",
+  "phaseKind": "SPLINE_V2_AND_ORDERED_LIST_AUTHORING_UX",
+  "technicalCandidateState": "PREPARED_FOR_ONE_CLEAN_IMMUTABLE_COMMIT",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "authorDecisionAuthority": "a later explicit author decision naming the exact technical commit is the sole authority for approval",
+  "selfApproved": false,
+  "authorApproved": false,
+  "implementationAuthorized": true,
+  "passClaimed": false,
+  "changeRoute": "ORDINARY",
+  "verificationClass": "BOUNDED_PHASE",
+  "verificationClassFrozenAtPhaseStart": true,
+  "frozenAcceptance": "tools/agent/verify.ps1 -Profile PHASE -Phase PRE-G9B-R4",
+  "implementationBase": {
+    "commit": "62b1281b5006272d4f9b1a0ae9d413e1f7b94320",
+    "tree": "8ce2f6719f1094e300beeaafbadab4cd5135a8d5",
+    "localMainOriginMainLiveRemoteMainAtEntry": "62b1281b5006272d4f9b1a0ae9d413e1f7b94320",
+    "worktreeAtEntry": "clean"
+  },
+  "canonicalPrompt": {
+    "path": ".github/prompts/tasks/pre-g9b-r4-spline-v2-list-authoring-ux.prompt.md",
+    "blob": "51abda02734bb7884c8b811b26ba10a14a56119f",
+    "edited": false
+  },
+  "specification": "geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md",
+  "r0AssumptionsReconfirmed": {
+    "splineV2IconExistsAndIsBound": true,
+    "splineV2ActionRenderedInSemanticCurvesFlyout": true,
+    "duplicateIconAdded": false,
+    "duplicateToolbarActionAdded": false
+  },
+  "planningStatementsCorrected": [
+    {
+      "id": "OBS-R4-SPLINEV2-DURABLE-ARGUMENT-PROMOTION",
+      "planningStatement": "the bare-point form's wrapped list is unlabelled and suppressed",
+      "observedSourceBehaviour": "LocusV2PublicOperations durable participation promotes every unlabelled direct SplineV2 argument to a labelled, non-auxiliary construction object, for typed and tool input alike",
+      "r4Disposition": "tools issue the existing bare-point command and add no list of their own; kernel behaviour unchanged"
+    },
+    {
+      "id": "R0-D2-DEFAULT-DEGREE-FAILURE-PATH",
+      "planningStatement": "an over-large default-degree point set surfaces as the localized invalid-definition message",
+      "observedSourceBehaviour": "the default-degree forms create the spline, which the polynomial model guard leaves undefined, without a command error; explicit-degree forms are rejected before creation",
+      "r4Disposition": "help text and user guide state the difference"
+    },
+    {
+      "id": "R0-CATALOG-COUNT",
+      "planningStatement": "110 stable action ids",
+      "observedSourceBehaviour": "112 live actions (110 plus the approved A7 amendment)",
+      "r4Disposition": "115 after the three R4 actions"
+    }
+  ],
+  "modes": [
+    {"constant": "MODE_SPLINE_V2", "id": 137, "modeText": "SplineV2.Tool", "action": "semantic.spline-v2.create", "commandForm": "SplineV2(P1,...,Pn)", "prompt": false},
+    {"constant": "MODE_SPLINE_V2_DEGREE", "id": 138, "modeText": "SplineV2.Degree.Tool", "action": "semantic.spline-v2.create-degree", "commandForm": "SplineV2({P1,...,Pn}, d)", "prompt": "host number dialog after finish, initial text 3"},
+    {"constant": "MODE_SPLINE_V2_CLOSED", "id": 139, "modeText": "SplineV2.Closed.Tool", "action": "semantic.spline-v2.create-closed", "commandForm": "SplineV2(P1,...,Pn,P1)", "prompt": false},
+    {"constant": "MODE_ORDERED_LIST", "id": 140, "modeText": "OrderedList.Tool", "action": "construction.list-from-selection", "output": "ordinary dependent host GeoList", "prompt": false}
+  ],
+  "modeIdAudit": "137-140 are the next free ids after the GeoCeDG block 133-136; no other EuclidianConstants use",
+  "authorDecisionsHonoured": {
+    "AD-R0-5": {"tooltipCorrected": true, "debtId": "TD-R0-SPLINEV2-TOOLTIP-INVALID-SYNTAX", "examplesEvaluatedInEnAndEs": 4},
+    "AD-R0-8": {
+      "closedFormOnlyThroughExplicitAction": "semantic.spline-v2.create-closed",
+      "synthesizedMember": "the same point object as the first collected point",
+      "openToolsSynthesizeMember": false,
+      "desktopComparesCoordinates": false,
+      "finishGestureMeansClosure": false,
+      "kernelClosureRuleChanged": false
+    }
+  },
+  "boundaries": {
+    "kernelChanged": false,
+    "cmdSplineV2ArgumentSemanticsChanged": false,
+    "serializationChanged": false,
+    "durableIdentityChanged": false,
+    "classicSplineChanged": false,
+    "newListSemanticType": false,
+    "splineMathematicsInFrontend": false,
+    "labelsUsedAsIdentity": false,
+    "upstreamDesktopLinesChanged": "InputBarHelpPanelD.focusCommand: one scrollPathToVisible call"
+  },
+  "verificationRegistration": {
+    "phaseSelection": "PRE-G9B-R4",
+    "requiredCheckIds": ["compile.shared.semantic", "compile.desktop.semantic", "workspace-profile.product", "junit.shared.pre-g9b-r4.semantic", "junit.desktop.pre-g9b-r4.semantic"],
+    "selections": {
+      "pre-g9b-r4.shared": 5,
+      "pre-g9b-r4.desktop": 155
+    },
+    "inventoryRegeneration": {
+      "discovery.shared": {"before": 5925, "after": 5925, "hashChanged": false},
+      "discovery.desktop": {"before": 1536, "after": 1563},
+      "final.shared": {"before": 6842, "after": 6842, "rerun": false},
+      "final.desktop": {"before": 1530, "after": 1557},
+      "evidence": "official updater from --test-dry-run discovery and completed passing executed runs; no hand edit"
+    },
+    "pins": {
+      "junit_inventory": {"before": "8b9d2719c0d9844351b1b3e546b185a9efa5e9d2b3a68f6b1409dea30049ab04", "after": "19a8c1cd9c457a79c5be5a6ac09746d24e582687c694323f60c48a7129f9d05a"},
+      "static_contracts": {"before": "d4fec7c60060c9d2a3bda5d75b15cd2d5234c5d5a608c64570ccbc067cb296fa", "after": "f32de70b01b1315a65ed9ebed8623ae85e36cc6def873385bb8a18561a1f481f"},
+      "workspace-profile-validation.ps1": {"before": "7dfe8f45931f7256e62ebfa9e487e8548b8a297e7a83358c2428341b80e9533b", "after": "44d9c8d708143fa16cf6f0e839936a3e54e26e3436c334a5363c5627f87ff23a"},
+      "method": "Get-VerificationCanonicalTextSha256; every previous pin reproduced exactly from the base blob first"
+    }
+  },
+  "impact": {
+    "PRODUCT_PHASE_EFFECT": "DESKTOP_AUTHORING_UX",
+    "VERIFICATION_INFRASTRUCTURE_IMPACT": "MODIFIED",
+    "BOOTSTRAP_IMPACT": "NO_CHANGE_REQUIRED",
+    "GUIDE_IMPACT": "UPDATED",
+    "GUIDE_PATHS": ["docs/user/geocedg_user_guide_en.md", "docs/user/geocedg_user_guide_es.md"]
+  },
+  "retainedObservations": [
+    "OBS-R4-SPLINEV2-DURABLE-ARGUMENT-PROMOTION",
+    "OBS-R4-KERNEL-CLOSURE-BY-ENDPOINT-VALUE-EQUALITY",
+    "OBS-R4-TOOLS-SELECT-EXISTING-POINTS-ONLY"
+  ],
+  "ledgerOverlapAbsorbed": [],
+  "authorSmokeRequired": true,
+  "authorSmoke": "PENDING",
+  "promotion": "NONE"
+}

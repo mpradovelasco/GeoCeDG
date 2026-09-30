@@ -449,6 +449,21 @@ or a line, translation by a vector, rotation by an angle and dilation from a
 point. Applied to ordinary objects they behave as in the shared kernel; applied
 to semantic curves they have the additional semantics described in section 10.
 
+### 5.8 Lists from a selection
+
+**Create List from Selection** (**Construction → Polygons**, next to Polyline)
+builds an ordinary list from objects in the exact order you select them. Select
+the objects one by one (points, segments, numbers or any mix), then select the
+**first object again** to finish. Selecting any other object again removes it
+from the selection, so no object is added twice; a list that repeats an element
+is typed in Algebra Input, for example `{A,B,A}`. **Escape** or another tool
+cancels and creates nothing.
+
+The finished list is one undo step and an ordinary dependent list: it updates
+when its elements change and follows the usual rules when an element is
+redefined or deleted. A list of points can be given to Spline V2, for example
+`SplineV2(l1)` or `SplineV2(l1,4)`.
+
 ---
 
 <!-- geocedg-guide-section: locus-v2 -->
@@ -581,7 +596,35 @@ unchanged and remains available.
 
 ### 7.2 Creating a Spline V2
 
-**Construction → Semantic curves → Spline V2**, or Algebra Input:
+**Construction → Semantic curves** offers three tools. All of them work on
+points that already exist:
+
+| Tool | Result |
+|---|---|
+| **Spline V2** | an open Spline V2 of degree 3 |
+| **Spline V2 with degree** | an open Spline V2 of the degree you enter |
+| **Closed Spline V2** | the closed (periodic) Spline V2 through the points |
+
+Select at least three points in the order the curve must follow, then select
+the **first point again** to finish. While you select, a thin control polygon
+shows the order; it is only a guide, never the curve. Selecting any other point
+again deselects it, and nothing is created until you finish. **Escape** or
+choosing another tool cancels and creates nothing. Each finished tool creates
+one Spline V2 and one undo step.
+
+- **Degree.** **Spline V2** always uses degree 3 and asks nothing. To choose
+  the degree, use **Spline V2 with degree**: when you finish, it asks for the
+  degree, an integer from 3 to the number of points, at most 12. Cancelling
+  that question creates nothing.
+- **Closed form.** Only **Closed Spline V2** creates a closed curve; it repeats
+  the first point at the end for you. Selecting the first point again only
+  finishes: it never closes a curve, and nearby or overlapping points are never
+  taken as a closure.
+- **Points.** The tools do not create points; create them first, for example
+  with the **Point** tool.
+
+Choosing a Spline V2 tool also opens **Input Help** on the `SplineV2` command.
+Its forms can be typed in Algebra Input:
 
 ```text
 SplineV2( <List of Points> )
@@ -589,6 +632,16 @@ SplineV2( <List of Points>, <Degree> )
 SplineV2( <List of Points>, <Degree>, <Weight Function> )
 SplineV2( <Point>, <Point>, <Point>, ... )
 ```
+
+`SplineV2({A,B,C,D},4)` sets an explicit degree, and `SplineV2(A,B,C,D,A)`
+repeats the first point for the closed form. The forms fail differently: an
+explicit degree outside 3 to the number of points is rejected with an error when
+you press Enter, whereas a form without a degree accepts more points than the
+bounded policy allows (more than 32) and gives an undefined spline.
+
+Whether it comes from a tool or from Algebra Input, the command keeps its point
+list and its degree as named objects of the construction (for example `l1` and
+`a`), so that the document preserves them with their identities.
 
 The default branch key of a Spline V2 is `spline-v2/main`.
 
@@ -1397,7 +1450,8 @@ These are the limitations that affect what you can do in the application today.
 | Task | GUI route | Command | Result type | Important notes |
 |---|---|---|---|---|
 | Create a semantic locus | Construction → Semantic curves → Locus V2 | `LocusV2(G,u,dom)` | semantic curve | the domain is explicit; it does not come from a slider range |
-| Create a semantic spline | Construction → Semantic curves → Spline V2 | `SplineV2({A,B,C,D},3)` | semantic curve | constructor points are not semantic points |
+| Create a semantic spline | Construction → Semantic curves → Spline V2, Spline V2 with degree or Closed Spline V2 | `SplineV2({A,B,C,D},3)` | semantic curve | select the points in order, then the first point again; constructor points are not semantic points |
+| Create a list in selection order | Construction → Polygons → Create List from Selection | `{A,B,C}` | list | exact click order; select the first object again to finish |
 | Point on a semantic curve, interactively | Point tool, click the curve stroke | — | semantic point | unique preimage, or choose explicitly; never by proximity |
 | Point on a semantic curve, by parameter | Construction → Semantic curves → Point on semantic curve | `Point(S,"spline-v2/main",0.25)` | semantic point | branch key and canonical parameter; the parameter may be a named number |
 | Point on a Locus V2, by parameter | same | `Point(L,"generator.main",1)` | semantic point | default generator branch key |

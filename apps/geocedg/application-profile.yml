@@ -794,6 +794,25 @@
       "implementation_state": "existing"
     },
     {
+      "id": "construction.list-from-selection",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_ORDERED_LIST",
+        "audited_numeric_id": 140
+      },
+      "maturity": "experimental",
+      "feature_requirements": [],
+      "selection_contract_ref": "geocedg.ordered-list-click-order",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "geocedg.action.OrderedListCreate",
+      "icon_ref": "geocedg.action.OrderedListCreate",
+      "availability_profile_id": "product-only",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing",
+      "notes": "PRE-G9B-R4: an ordinary dependent host GeoList in exact click order, finished by selecting the first object again; no CeDG-specific list type."
+    },
+    {
       "id": "construction.polygon",
       "kind": "upstream-mode",
       "target": {
@@ -1437,23 +1456,69 @@
     },
     {
       "id": "semantic.spline-v2.create",
-      "kind": "command",
+      "kind": "upstream-mode",
       "target": {
-        "symbol": "SplineV2"
+        "symbol": "MODE_SPLINE_V2",
+        "audited_numeric_id": 137
       },
       "maturity": "experimental",
       "feature_requirements": [
         "cedg.locus.v2"
       ],
-      "selection_contract_ref": "geocedg.spline-v2-approved-four-forms",
+      "selection_contract_ref": "geocedg.spline-v2-ordered-points-open",
       "effect_profile_id": "mode-create",
-      "localization_ref": "geocedg.command.SplineV2",
+      "localization_ref": "geocedg.action.SplineV2Create",
+      "presentation_name_key": "geocedg.action.SplineV2Create.name",
       "icon_ref": "geocedg.action.SplineV2Create",
       "availability_profile_id": "locus-v2-product",
       "command_surface_profile_id": "semantic-command",
       "planning_disposition": "must",
-      "implementation_state": "new-frontend",
-      "notes": "The frontend task must expose all approved forms and state the minimum of three control points."
+      "implementation_state": "existing",
+      "notes": "PRE-G9B-R4: ordered existing points, finished by selecting the first point again, issue the bare-point SplineV2 form with the command default degree; invoking the tool opens Input Help on the existing SplineV2 syntax for the typed forms."
+    },
+    {
+      "id": "semantic.spline-v2.create-degree",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_SPLINE_V2_DEGREE",
+        "audited_numeric_id": 138
+      },
+      "maturity": "experimental",
+      "feature_requirements": [
+        "cedg.locus.v2"
+      ],
+      "selection_contract_ref": "geocedg.spline-v2-ordered-points-explicit-degree",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "geocedg.action.SplineV2CreateDegree",
+      "presentation_name_key": "geocedg.action.SplineV2CreateDegree.name",
+      "icon_ref": "geocedg.action.SplineV2CreateDegree",
+      "availability_profile_id": "locus-v2-product",
+      "command_surface_profile_id": "semantic-command",
+      "planning_disposition": "must",
+      "implementation_state": "existing",
+      "notes": "PRE-G9B-R4: the explicit degree is the second gesture, typed in the host number dialog after finishing; the command validates it."
+    },
+    {
+      "id": "semantic.spline-v2.create-closed",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_SPLINE_V2_CLOSED",
+        "audited_numeric_id": 139
+      },
+      "maturity": "experimental",
+      "feature_requirements": [
+        "cedg.locus.v2"
+      ],
+      "selection_contract_ref": "geocedg.spline-v2-ordered-points-explicit-closed",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "geocedg.action.SplineV2CreateClosed",
+      "presentation_name_key": "geocedg.action.SplineV2CreateClosed.name",
+      "icon_ref": "geocedg.action.SplineV2CreateClosed",
+      "availability_profile_id": "locus-v2-product",
+      "command_surface_profile_id": "semantic-command",
+      "planning_disposition": "must",
+      "implementation_state": "existing",
+      "notes": "PRE-G9B-R4 AD-R0-8: the only closed-form authoring action; it appends the first point object as the repeated closing member and never infers closure."
     },
     {
       "id": "measure.angle",
@@ -2478,6 +2543,7 @@
         "construction.angle-bisector",
         "construction.polygon",
         "construction.polyline",
+        "construction.list-from-selection",
         "construction.regular-polygon",
         "construction.rigid-polygon",
         "construction.vector-polygon"
@@ -2584,11 +2650,15 @@
       "id": "spline-v2-tools",
       "broad_family_id": "semantic-curves",
       "toolbar_action_ids": [
-        "semantic.spline-v2.create"
+        "semantic.spline-v2.create",
+        "semantic.spline-v2.create-degree",
+        "semantic.spline-v2.create-closed"
       ],
       "overflow_action_ids": [],
       "menu_action_ids": [
         "semantic.spline-v2.create",
+        "semantic.spline-v2.create-degree",
+        "semantic.spline-v2.create-closed",
         "semantic.curve.inspect-definition"
       ],
       "context_action_ids": [
@@ -3010,7 +3080,7 @@
         "semantic.spline-v2.create"
       ],
       "question": "Which existing task/dialog or Algebra-input focus seam can expose all four approved SplineV2 forms without duplicating command parsing?",
-      "fail_closed_disposition": "Use a manifest action that focuses the canonical Algebra Input with localized syntax help; do not implement another parser."
+      "fail_closed_disposition": "PRE-G9B-R4: the tool is a mode that issues the existing command, and invoking it opens Input Help with the existing SplineV2 syntax selected for the typed forms; do not implement another parser."
     },
     {
       "id": "image-action-assets",
@@ -3162,8 +3232,8 @@
     {
       "id": "construction-polygons",
       "name_key": "Group.Construction.Polygons",
-      "action_ids": ["construction.polygon", "construction.polyline", "construction.regular-polygon", "construction.rigid-polygon", "construction.vector-polygon"],
-      "toolbar_action_ids": ["construction.polygon", "construction.polyline", "construction.regular-polygon", "construction.rigid-polygon", "construction.vector-polygon"]
+      "action_ids": ["construction.polygon", "construction.polyline", "construction.list-from-selection", "construction.regular-polygon", "construction.rigid-polygon", "construction.vector-polygon"],
+      "toolbar_action_ids": ["construction.polygon", "construction.polyline", "construction.list-from-selection", "construction.regular-polygon", "construction.rigid-polygon", "construction.vector-polygon"]
     },
     {
       "id": "construction-derived",
@@ -3192,8 +3262,8 @@
     {
       "id": "construction-semantic-curves",
       "name_key": "Group.Construction.SemanticCurves",
-      "action_ids": ["semantic.locus-v2.create", "semantic.locus-v2.point-explicit", "semantic.spline-v2.create", "semantic.curve.inspect-definition"],
-      "toolbar_action_ids": ["semantic.locus-v2.create", "semantic.spline-v2.create", "semantic.locus-v2.point-explicit"],
+      "action_ids": ["semantic.locus-v2.create", "semantic.locus-v2.point-explicit", "semantic.spline-v2.create", "semantic.spline-v2.create-degree", "semantic.spline-v2.create-closed", "semantic.curve.inspect-definition"],
+      "toolbar_action_ids": ["semantic.locus-v2.create", "semantic.spline-v2.create", "semantic.spline-v2.create-degree", "semantic.spline-v2.create-closed", "semantic.locus-v2.point-explicit"],
       "toolbar_rendering": "profile-flyout"
     },
     {
@@ -3630,25 +3700,17 @@
       "en": "Cannot perform Auto-create eligible points for new explicit queries in the current context.",
       "es": "No se puede ejecutar Crear automáticamente puntos admisibles de nuevas consultas explícitas en el contexto actual."
     },
-    "geocedg.command.SplineV2.name": {
+    "geocedg.action.SplineV2Create.name": {
       "en": "Spline V2",
       "es": "Spline V2"
     },
-    "geocedg.command.SplineV2.short_help": {
-      "en": "Prepare a SplineV2 command from selected interpolation points and a degree.",
-      "es": "Prepara un comando SplineV2 a partir de puntos de interpolación seleccionados y un grado."
+    "geocedg.action.SplineV2CreateDegree.name": {
+      "en": "Spline V2 with degree",
+      "es": "Spline V2 con grado"
     },
-    "geocedg.command.SplineV2.long_help": {
-      "en": "Select at least three interpolation points and provide an integral degree; the action focuses Algebra Input with the explicit SplineV2 command form.",
-      "es": "Seleccione al menos tres puntos de interpolación e indique un grado entero; la acción enfoca la Entrada Algebraica con la forma explícita del comando SplineV2."
-    },
-    "geocedg.command.SplineV2.status": {
-      "en": "Ready: Spline V2",
-      "es": "Disponible: Spline V2"
-    },
-    "geocedg.command.SplineV2.error": {
-      "en": "Cannot perform Spline V2 in the current context.",
-      "es": "No se puede ejecutar Spline V2 en el contexto actual."
+    "geocedg.action.SplineV2CreateClosed.name": {
+      "en": "Closed Spline V2",
+      "es": "Spline V2 cerrada"
     },
     "geocedg.workspace.DihedralProcedures.name": {
       "en": "CeDG dihedral procedures (not authorized)",
@@ -4628,8 +4690,8 @@
       "es": "Usa la pestaña Guiones del diálogo de Propiedades."
     },
     "Workspace.SplineHelp": {
-      "en": "Enter SplineV2({A,B,C},2), SplineV2({A,B,C,D},3), or its closed/parameter forms in Algebra Input. No object is created until Enter.",
-      "es": "Introduce SplineV2({A,B,C},2), SplineV2({A,B,C,D},3) o sus formas cerradas/paramétricas en Entrada algebraica. No se crea ningún objeto hasta Intro."
+      "en": "Examples: SplineV2(A,B,C) or SplineV2({A,B,C,D}) use degree 3; SplineV2({A,B,C,D},4) sets an explicit degree, from 3 to the number of points; SplineV2(A,B,C,D,A) repeats the first point for the closed form. No object is created until Enter.",
+      "es": "Ejemplos: SplineV2(A,B,C) o SplineV2({A,B,C,D}) usan grado 3; SplineV2({A,B,C,D},4) fija un grado explícito, de 3 al número de puntos; SplineV2(A,B,C,D,A) repite el primer punto para la forma cerrada. No se crea ningún objeto hasta Intro."
     },
     "Workspace.About": {
       "en": "GeoCeDG — Computational extended Descriptive Geometry based on GeoGebra. Geometry and identity belong to the shared kernel. Upstream compatibility is preserved; this is an author-review implementation candidate.",
