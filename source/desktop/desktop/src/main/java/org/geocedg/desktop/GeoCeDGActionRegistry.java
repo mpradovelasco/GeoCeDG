@@ -559,7 +559,8 @@ public final class GeoCeDGActionRegistry {
 						app.getPlainFont());
 			}
 			String title = GeoCeDGGuideRenderer.title(markdown);
-			guideWindow.show(GeoCeDGGuideRenderer.toHtml(markdown),
+			// One parse yields the document and the navigation outline it derives.
+			guideWindow.show(GeoCeDGGuideRenderer.render(markdown),
 					title.isEmpty() ? text("geocedg.help.UserGuide.name") : title);
 		} catch (IOException exception) {
 			message(text("Action.Unavailable.Failed") + "\n" + exception.getMessage());

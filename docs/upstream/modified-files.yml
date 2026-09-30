@@ -3738,7 +3738,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGActionRegistry.java",
       "change": "added",
-      "purpose": "Bind every declared stable action to one frontend target with localized availability and shared state. G9U1 review round 1: route the existing user-tools action, quick-guide help and differentiated registered product icons without additional stable action IDs. G9U1 review round 3: use the view-specific construction-navigation seam and expose global preferences without implicit object selection. Final presentation polish resolves the optional profile-owned Locus V2 display name while retaining the inherited host action and all 110 stable IDs. PRE-G9B-R4: SplineV2 tools take the set-mode branch; the Algebra Input prefill is removed. PRE-G9B-R4 corrective: tool activation never opens Input Help; the Input Help, command-list and contextual help actions show it only on request, and AppGeoCeDG then selects the SplineV2 syntax while a SplineV2 tool is active. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md.",
+      "purpose": "Bind every declared stable action to one frontend target with localized availability and shared state. G9U1 review round 1: route the existing user-tools action, quick-guide help and differentiated registered product icons without additional stable action IDs. G9U1 review round 3: use the view-specific construction-navigation seam and expose global preferences without implicit object selection. Final presentation polish resolves the optional profile-owned Locus V2 display name while retaining the inherited host action and all 110 stable IDs. PRE-G9B-R4: SplineV2 tools take the set-mode branch; the Algebra Input prefill is removed. PRE-G9B-R4 corrective: tool activation never opens Input Help; the Input Help, command-list and contextual help actions show it only on request, and AppGeoCeDG then selects the SplineV2 syntax while a SplineV2 tool is active. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-A: the user-guide action shows the single render of the edition with its derived outline. Authority: geocedg/specs/operations/documentation-maintenance.md.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -4344,13 +4344,13 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGGuideRenderer.java",
       "change": "added",
-      "purpose": "POST-P1-DOC-HELP: Render the packaged bilingual user guide as escaped Swing HTML with repository-relative help semantics preserved.",
+      "purpose": "POST-P1-DOC-HELP: Render the packaged bilingual user guide as escaped Swing HTML with repository-relative help semantics preserved. PRE-G9B-R5-A: derive the navigation outline in the same parse and wrap each navigable heading text in a named anchor, keeping heading tags, counts and reader text unchanged. Authority: geocedg/specs/operations/documentation-maintenance.md.",
       "authority": "docs/validation/post_p1_doc_help_candidate_report.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGGuideWindow.java",
       "change": "added",
-      "purpose": "POST-P1-DOC-HELP: Host the packaged bilingual guide in the bounded resizable in-application help window.",
+      "purpose": "POST-P1-DOC-HELP: Host the packaged bilingual guide in the bounded resizable in-application help window. PRE-G9B-R5-A: show the derived navigation tree beside the guide in a split pane. Authority: geocedg/specs/operations/documentation-maintenance.md.",
       "authority": "docs/validation/post_p1_doc_help_candidate_report.md"
     },
     {
@@ -4904,6 +4904,30 @@
       "change": "added",
       "purpose": "PRE-G9B-R4: verify Create List from Selection click order, host toggle deduplication, mixed members, one undo point, cancel, downstream SplineV2 use and inherited member redefinition and deletion. PRE-G9B-R4 corrective: verify its dedicated List tools toolbar group right of Move.",
       "authority": "geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGGuideOutline.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R5-A: derive user-guide navigation identities from the stable section markers and the decimal numbering, never from translated heading text; presentation only.",
+      "authority": "geocedg/specs/operations/documentation-maintenance.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGGuideNavigator.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R5-A: couple the guide navigation tree with the document by programmatic scrolling to named anchors and guarded scroll synchronization, without a hyperlink listener.",
+      "authority": "geocedg/specs/operations/documentation-maintenance.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR5AGuideOutlineTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R5-A: verify the bilingual anchor vectors, outline hierarchy, additive anchor emission and negative marker fixtures.",
+      "authority": "geocedg/specs/operations/documentation-maintenance.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR5AGuideNavigationTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R5-A: verify tree population, tree-driven navigation, scroll synchronization boundaries and the absence of feedback loops.",
+      "authority": "geocedg/specs/operations/documentation-maintenance.md"
     }
   ]
 }

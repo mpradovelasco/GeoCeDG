@@ -34,6 +34,16 @@ import java.util.regex.Pattern;
  * {@code geocedg-guide-section} identifiers stay invisible to the reader.</li>
  * </ul>
  *
+ * <h2>Derived navigation</h2>
+ *
+ * <p>The same parse derives the {@link GeoCeDGGuideOutline}. The text of every
+ * heading that is a navigation entry is wrapped in a named anchor,
+ * {@code <h2><a name="spline-v2">7. Spline V2</a></h2>}. A named anchor without
+ * {@code href} is no link: Swing renders it exactly like the plain heading and
+ * adds no character, so the heading tags, their counts and the reader text are
+ * unchanged. An anchor before the heading block would add an implied paragraph,
+ * and an empty anchor inside it adds a line break character, so neither is used.
+ *
  * <h2>Supported inline constructs</h2>
  *
  * <ul>
@@ -80,12 +90,33 @@ final class GeoCeDGGuideRenderer {
 	}
 
 	/**
+	 * Result of one render: the document and the outline derived from the same
+	 * parse. Neither is persisted.
+	 *
+	 * @param html self-contained HTML for a read-only Swing editor pane
+	 * @param outline navigation entries in document order
+	 */
+	record Rendering(String html, List<GeoCeDGGuideOutline.Entry> outline) {
+	}
+
+	/**
 	 * Converts one tracked guide source into a complete HTML document.
 	 *
 	 * @param markdown packaged guide source, never {@code null}
 	 * @return self-contained HTML for a read-only Swing editor pane
 	 */
 	static String toHtml(String markdown) {
+		return render(markdown).html();
+	}
+
+	/**
+	 * Converts one tracked guide source into HTML and derives its navigation
+	 * outline in the same pass.
+	 *
+	 * @param markdown packaged guide source, never {@code null}
+	 * @return the document and its outline
+	 */
+	static Rendering render(String markdown) {
 		List<String> lines = List.of(markdown.replace("\r\n", "\n")
 				.replace("\r", "\n").split("\n", -1));
 		StringBuilder html = new StringBuilder(markdown.length() * 2);
@@ -96,9 +127,14 @@ final class GeoCeDGGuideRenderer {
 		String list = null;
 		boolean fenced = false;
 		StringBuilder code = new StringBuilder();
+		GeoCeDGGuideOutline outline = new GeoCeDGGuideOutline();
+		String pendingMarker = null;
 
 		for (String raw : lines) {
 			String line = trimTrailing(raw);
+			// A marker belongs only to the line immediately after it.
+			final String marker = pendingMarker;
+			pendingMarker = null;
 			if (fenced) {
 				if (FENCE.matcher(line).matches()) {
 					html.append("<pre>").append(escape(code.toString()))
@@ -121,6 +157,7 @@ final class GeoCeDGGuideRenderer {
 			if (HTML_COMMENT.matcher(line).matches()) {
 				// Stable section identifiers are structure, never reader text.
 				paragraph = flushParagraph(html, paragraph);
+				pendingMarker = GeoCeDGGuideOutline.sectionMarker(line);
 				continue;
 			}
 			if (line.startsWith("|")) {
@@ -142,9 +179,19 @@ final class GeoCeDGGuideRenderer {
 				paragraph = flushParagraph(html, paragraph);
 				item = flushItem(html, item);
 				list = flushList(html, list);
-				String tag = "h" + heading.group(1).length();
-				html.append('<').append(tag).append('>').append(inline(heading.group(2)))
-						.append("</").append(tag).append(">\n");
+				int level = heading.group(1).length();
+				String tag = "h" + level;
+				String text = inline(heading.group(2));
+				String anchor = outline.heading(level, marker, heading.group(2),
+						plainText(text));
+				html.append('<').append(tag).append('>');
+				if (anchor == null) {
+					html.append(text);
+				} else {
+					html.append("<a name=\"").append(escape(anchor)).append("\">")
+							.append(text).append("</a>");
+				}
+				html.append("</").append(tag).append(">\n");
 				continue;
 			}
 			if (RULE.matcher(line).matches()) {
@@ -189,7 +236,16 @@ final class GeoCeDGGuideRenderer {
 		flushList(html, list);
 		flushTable(html, table);
 		html.append("</body></html>");
-		return html.toString();
+		return new Rendering(html.toString(), outline.entries());
+	}
+
+	/**
+	 * @param html one rendered inline fragment
+	 * @return the text a reader sees for it
+	 */
+	private static String plainText(String html) {
+		return html.replaceAll("<[^>]*>", "").replace("&lt;", "<").replace("&gt;", ">")
+				.replace("&amp;", "&");
 	}
 
 	private static List<String> flushItem(StringBuilder html, List<String> lines) {

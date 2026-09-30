@@ -1,0 +1,225 @@
+{
+  "schemaVersion": 1,
+  "phase": "PRE-G9B-R5-A",
+  "phaseKind": "USER_GUIDE_DERIVED_OUTLINE_ANCHORS_AND_NAVIGATION",
+  "technicalCandidateState": "PREPARED_FOR_ONE_CLEAN_IMMUTABLE_COMMIT",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "authorDecisionAuthority": "a later explicit author decision naming the exact technical commit is the sole authority for approval",
+  "selfApproved": false,
+  "authorApproved": false,
+  "implementationAuthorized": true,
+  "passClaimed": false,
+  "changeRoute": "ORDINARY",
+  "verificationClass": "BOUNDED_PHASE",
+  "verificationClassFrozenAtPhaseStart": true,
+  "frozenAcceptance": "tools/agent/verify.ps1 -Profile PHASE -Phase PRE-G9B-R5-A",
+  "additionalRequired": "tools/agent/verify.ps1 -Profile STATIC",
+  "implementationBase": {
+    "commit": "cfed55fad3f8b3fb5b55954f72fe43fe9ec2ab4e",
+    "tree": "f34d350aa28e5324f184a4d1fb65ac55e0334c4b",
+    "localMainOriginMainLiveRemoteMainAtEntry": "cfed55fad3f8b3fb5b55954f72fe43fe9ec2ab4e",
+    "worktreeAtEntry": "clean"
+  },
+  "canonicalPrompt": {
+    "path": ".github/prompts/tasks/pre-g9b-r5-a-guide-navigation.prompt.md",
+    "blob": "fd68945b6b95ddd5b9ce3201c29d1fbb06668854",
+    "edited": false,
+    "implementationBaseResolvedBy": "explicit author instruction of 2026-09-30, recorded in this evidence and the candidate report"
+  },
+  "specificationAmendment": {
+    "path": "geocedg/specs/operations/documentation-maintenance.md",
+    "section": "10. User-guide structure and derived navigation",
+    "normativeOnlyWithAuthorDecision": true
+  },
+  "structuralFactsRevalidatedAtBase": {
+    "editions": [
+      "docs/user/geocedg_user_guide_en.md",
+      "docs/user/geocedg_user_guide_es.md"
+    ],
+    "markersPerEdition": 17,
+    "headingsPerEdition": {
+      "h1": 1,
+      "h2": 16,
+      "h3": 82
+    },
+    "firstMarkerOnLevelOneTitle": true,
+    "everyMarkerImmediatelyFollowedByH1OrH2": true,
+    "everyH1OrH2ImmediatelyPrecededByMarker": true,
+    "everyH3HasNumericPrefix": true,
+    "markdownLinks": 0,
+    "nestedListLines": 0,
+    "latentNestedListContinuationUnchanged": true
+  },
+  "anchorDerivation": {
+    "h1AndH2": "identifier of the marker on the immediately preceding line",
+    "h3": "enclosing marker identifier + '/' + leading decimal numbering token",
+    "deeperHeadings": "no anchor and no entry",
+    "translatedTextContributesToIdentity": false,
+    "syntheticRootIdentifier": false,
+    "representation": "<hN><a name=\"anchor\">heading text</a></hN>",
+    "representationProbe": {
+      "jdk": "25.0.4",
+      "anchorBeforeHeadingBlock": "implied paragraph, +19 px per heading",
+      "emptyAnchorInsideHeading": "extra line-break character in the heading text",
+      "idAttributeOnHeading": "breaks existing literal heading-tag assertions",
+      "namedAnchorWrappingHeadingText": "pixel-identical to the plain heading; no added character"
+    },
+    "entriesPerEdition": 99,
+    "uniqueWithinEachEdition": true,
+    "enEsAnchorVectorsEqual": true
+  },
+  "navigation": {
+    "window": "JSplitPane: navigation tree left (240 px default, 120 px minimum), unchanged document right",
+    "treeSource": "renderer-derived outline only",
+    "selectionNavigation": "programmatic JViewport positioning of the named anchor at the top, clamped to the document end",
+    "hyperlinkListener": false,
+    "inBodyTableOfContents": false,
+    "scrollSynchronizationRule": "last entry whose anchor y <= viewport top + 8 px; first entry above the first anchor",
+    "feedbackGuards": [
+      "synchronization selections never navigate",
+      "tree-driven position kept until the viewport moves"
+    ],
+    "presentationOnly": true
+  },
+  "structuralDiagnostic": {
+    "checkId": "diagnostic.guide-structure",
+    "nodeKind": "DIAGNOSTIC_LEAF",
+    "contractClass": "DOCUMENTATION_DIAGNOSTIC",
+    "tier": "STATIC",
+    "requiredForProfiles": [
+      "STATIC"
+    ],
+    "script": "tools/agent/diagnostics/guide-structure-diagnostic.ps1",
+    "extractor": "tools/agent/diagnostics/guide-structure.psm1",
+    "rules": [
+      "MARKER_NOT_FOLLOWED_BY_H1_OR_H2",
+      "H1_OR_H2_WITHOUT_MARKER",
+      "MALFORMED_MARKER",
+      "H3_WITHOUT_NUMERIC_PREFIX",
+      "H3_WITHOUT_ENCLOSING_SECTION",
+      "DUPLICATE_DERIVED_ANCHOR",
+      "EN_ES_STRUCTURE_MISMATCH",
+      "EN_ES_ENTRY_COUNT_MISMATCH"
+    ],
+    "fixtureSuite": {
+      "checkId": "infra.guide-structure-diagnostic",
+      "contractClass": "VERIFICATION_CORE",
+      "path": "tools/agent/tests/guide-structure-diagnostic.Tests.ps1",
+      "reachableThrough": "PHASE PRE-G9B-R5-A only",
+      "readsLiveGuides": false
+    },
+    "liveResult": "DIAGNOSTIC_CLEAR"
+  },
+  "boundaries": {
+    "authoredGuideBytesChanged": false,
+    "packagedGuideBytesChanged": false,
+    "buildScriptChanged": false,
+    "kernelChanged": false,
+    "commandSurfaceChanged": false,
+    "serializationChanged": false,
+    "r5bWork": false,
+    "existingTestFilesEdited": false,
+    "canonicalPromptsEdited": false
+  },
+  "verificationRegistration": {
+    "phaseSelection": "PRE-G9B-R5-A",
+    "requiredCheckIds": [
+      "compile.shared.semantic",
+      "compile.desktop.semantic",
+      "junit.desktop.pre-g9b-r5-a.semantic",
+      "infra.guide-structure-diagnostic"
+    ],
+    "selections": {
+      "pre-g9b-r5-a.desktop": 79
+    },
+    "inventoryRegeneration": {
+      "discovery.shared": {
+        "before": 5925,
+        "after": 5925,
+        "hashChanged": false
+      },
+      "discovery.desktop": {
+        "before": 1566,
+        "after": 1598
+      },
+      "final.shared": {
+        "before": 6842,
+        "after": 6842,
+        "rerun": false
+      },
+      "final.desktop": {
+        "before": 1560,
+        "after": 1592,
+        "executed": {
+          "passed": 1591,
+          "allowlistedSkipped": 1,
+          "failed": 0
+        }
+      },
+      "pre-g9b-r5-a.desktop": {
+        "before": null,
+        "after": 79,
+        "executed": {
+          "passed": 79,
+          "failed": 0
+        }
+      },
+      "evidence": "official updater from --test-dry-run discovery and completed passing executed runs; only the new selection's contract fields were inserted by hand, with the updater serializer round-tripping the tracked file byte for byte"
+    },
+    "pins": {
+      "junit_inventory": {
+        "before": "5980e9850220ac9b791583b2422c70ac2f5e59f0264e9cf124a744ed2cf6d707",
+        "after": "5da8c284055d01832461372e7cfb62c4d07632bc278fac451192964d46bd00f4"
+      },
+      "static_contracts": {
+        "unchanged": "f32de70b01b1315a65ed9ebed8623ae85e36cc6def873385bb8a18561a1f481f"
+      },
+      "method": "Get-VerificationCanonicalTextSha256; the previous pin reproduced exactly from the base blob first"
+    },
+    "finalPlanUnchanged": true,
+    "planComparisonAgainstBase": {
+      "STATIC": {
+        "base": "7d52b28a732b35635009a4e515095232f569d308ce34964db4597454bfa8d5f0",
+        "candidate": "25dfacc8b0c53df285a3ac19bbc438c5868d0c94dad7d1021727287ee892cc52",
+        "nodes": {
+          "base": 9,
+          "candidate": 10
+        }
+      },
+      "INFRA_UNIT": {
+        "base": "830887b17bb7030cdacda0da6999ad5fde64c86e52e96361a34d5f4cc2ffce1d",
+        "candidate": "830887b17bb7030cdacda0da6999ad5fde64c86e52e96361a34d5f4cc2ffce1d",
+        "nodes": 22
+      },
+      "INTEGRATION": {
+        "base": "4502c4bd1bbe1a123089e9e524fd0afb354932afbcb410f93052555a16c77aea",
+        "candidate": "4502c4bd1bbe1a123089e9e524fd0afb354932afbcb410f93052555a16c77aea",
+        "nodes": 46
+      },
+      "FINAL": {
+        "base": "3d8752b91eb96bffa3cfae1d6f54378ccfa34451642d0172f1cdb73f01743517",
+        "candidate": "3d8752b91eb96bffa3cfae1d6f54378ccfa34451642d0172f1cdb73f01743517",
+        "nodes": 68
+      },
+      "PHASE PRE-G9B-R5-A": {
+        "candidate": "31a5d90f3f251a4abcc1f74fd03c637d9860970ef0494edca7030708da3f0b04",
+        "nodes": 7
+      }
+    }
+  },
+  "impact": {
+    "PRODUCT_PHASE_EFFECT": "DESKTOP_HELP_PRESENTATION",
+    "VERIFICATION_INFRASTRUCTURE_IMPACT": "MODIFIED",
+    "BOOTSTRAP_IMPACT": "NO_CHANGE_REQUIRED",
+    "GUIDE_IMPACT": "NONE",
+    "GUIDE_JUSTIFICATION": "R5-A changes the navigation presentation around the existing guide; the authored guide content is itself the navigated authority and is explicitly frozen by the phase contract"
+  },
+  "retainedObservations": [
+    "OBS-R5A-GUIDE-STRUCTURE-CHECKS-OUTSIDE-FINAL",
+    "OBS-R5A-LATENT-NESTED-LIST-CONTINUATION"
+  ],
+  "ledgerOverlapAbsorbed": [],
+  "authorSmokeRequired": true,
+  "authorSmoke": "PENDING",
+  "promotion": "NONE"
+}

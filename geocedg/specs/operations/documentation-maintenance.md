@@ -147,3 +147,42 @@ The author accepted the claim vocabulary, historical-evidence boundary and
 by itself authorize productive geometric work. The G9O1 operational
 implementation is **PASS — AUTHOR APPROVED**. G9A1 is separately authorized and
 not started; every later productive G9 phase remains unauthorized.
+
+## 10. User-guide structure and derived navigation
+
+Added by `PRE-G9B-R5-A`. This section is part of that phase's technical
+candidate and becomes normative only through the author's decision on the exact
+candidate commit; until then the sections above keep their approved status
+unchanged.
+
+The two user-guide editions carry their own navigation structure. The Markdown
+source of each edition is the single authored source of both its content and its
+structure; the packaged copies stay byte copies of those sources. Every outline,
+anchor and navigation tree is derived from that source at presentation time.
+
+1. **Stable section markers.** A section marker is a line
+   `<!-- geocedg-guide-section: <id> -->` with `<id>` matching `[a-z0-9-]+`.
+   Every marker is immediately followed by a level-1 or level-2 heading, and
+   every level-1 or level-2 heading is immediately preceded by a marker. The
+   first marker belongs to the level-1 title; no synthetic root identifier
+   exists.
+2. **Navigation identity.** The navigation identity of a level-1 or level-2
+   heading is the identifier of its marker. The identity of a level-3 heading is
+   the identifier of its enclosing marker, a `/`, and the heading's decimal
+   numbering token, for example `spline-v2/7.2`. Every level-3 heading begins
+   with such a token. Headings of level 4 or deeper are not navigation entries.
+3. **Translated text is presentation only.** Heading text is the localized
+   display label of a navigation entry. It is never an identity, is never
+   compared across editions and is never slugified.
+4. **No manual navigation authority.** No manual table of contents, anchor
+   markup, navigation-only list, separate outline resource or catalog of
+   translated headings or slugs is authored or maintained.
+5. **Machine-checked alignment.** Navigation identities are unique within each
+   edition, and the ordered vectors of `(heading level, numbering token,
+   enclosing section id)` of the English and Spanish editions are equal element
+   for element. The check extracts structure only and never interprets prose.
+   A guide edit that breaks these rules is corrected in the guide sources of both
+   editions, never by an index or a special case.
+
+Navigation is presentation. It is never geometric, identity, dependency-graph or
+serialization authority, and kernel code never consults it.

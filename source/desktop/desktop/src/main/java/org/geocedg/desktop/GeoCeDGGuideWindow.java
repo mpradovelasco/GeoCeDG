@@ -11,10 +11,13 @@ import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.Window;
+import java.util.List;
 
 import javax.swing.JDialog;
 import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
@@ -26,6 +29,9 @@ import javax.swing.text.html.StyleSheet;
  * consulted while a construction is being built. It reuses the Swing HTML
  * infrastructure already present in the Desktop module rather than adding any
  * dependency, and it never navigates a link or opens an external browser.
+ *
+ * <p>A navigation tree built from the renderer-derived outline sits to the left
+ * of the document; {@link GeoCeDGGuideNavigator} couples the two.
  *
  * <p>This is presentation only: showing, resizing or closing the guide creates
  * no object, no undo step and no preference, and changes no geometry,
@@ -41,11 +47,16 @@ final class GeoCeDGGuideWindow {
 	static final int MINIMUM_WIDTH = 480;
 	/** Smallest usable reading area. */
 	static final int MINIMUM_HEIGHT = 320;
+	/** Default navigation-tree width in pixels; not content derived. */
+	static final int TREE_WIDTH = 240;
+	/** Smallest navigation-tree width in pixels. */
+	static final int MINIMUM_TREE_WIDTH = 120;
 
 	private final Component owner;
 	private final Font font;
 	private JDialog dialog;
 	private JEditorPane view;
+	private GeoCeDGGuideNavigator navigator;
 
 	/**
 	 * @param owner component the guide is shown relative to
@@ -130,12 +141,25 @@ final class GeoCeDGGuideWindow {
 	 * @param title window title
 	 */
 	void show(String html, String title) {
+		show(new GeoCeDGGuideRenderer.Rendering(html, List.of()), title);
+	}
+
+	/**
+	 * Shows a rendered guide with the navigation tree of its derived outline,
+	 * replacing any guide shown earlier, so that the tree always follows the
+	 * edition in the document view.
+	 *
+	 * @param rendering rendered guide document and its outline
+	 * @param title window title
+	 */
+	void show(GeoCeDGGuideRenderer.Rendering rendering, String title) {
 		if (dialog == null) {
 			build();
 		}
 		dialog.setTitle(title);
-		view.setText(html);
+		view.setText(rendering.html());
 		view.setCaretPosition(0);
+		navigator.load(rendering.outline());
 		if (!dialog.isVisible()) {
 			dialog.setLocationRelativeTo(owner);
 			dialog.setVisible(true);
@@ -152,19 +176,36 @@ final class GeoCeDGGuideWindow {
 		scroll.setHorizontalScrollBarPolicy(
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scroll.getVerticalScrollBar().setUnitIncrement(16);
+		scroll.setMinimumSize(new Dimension(MINIMUM_WIDTH - MINIMUM_TREE_WIDTH, 0));
+
+		navigator = new GeoCeDGGuideNavigator(view, scroll);
+		JTree tree = navigator.getTree();
+		if (font != null) {
+			tree.setFont(font);
+		}
+		JScrollPane treeScroll = new JScrollPane(tree);
+		// The tree width is fixed, never derived from its longest label.
+		treeScroll.setPreferredSize(new Dimension(TREE_WIDTH, 0));
+		treeScroll.setMinimumSize(new Dimension(MINIMUM_TREE_WIDTH, 0));
+		JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treeScroll,
+				scroll);
+		split.setContinuousLayout(true);
+		// Resizing the window widens the document, not the tree.
+		split.setResizeWeight(0);
 
 		Window ancestor = owner == null ? null : SwingUtilities.getWindowAncestor(owner);
 		dialog = new JDialog(ancestor, GeoCeDGProductInfo.applicationTitle(),
 				JDialog.ModalityType.MODELESS);
 		dialog.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
 		dialog.setResizable(true);
-		dialog.setContentPane(scroll);
+		dialog.setContentPane(split);
 		Dimension size = defaultSize(screenBounds());
 		// The size contract is applied to the window, not derived from the view.
-		scroll.setPreferredSize(size);
+		split.setPreferredSize(size);
 		dialog.setMinimumSize(new Dimension(MINIMUM_WIDTH, MINIMUM_HEIGHT));
 		dialog.pack();
 		dialog.setSize(size);
+		split.setDividerLocation(TREE_WIDTH);
 	}
 
 	private static Rectangle screenBounds() {
@@ -183,5 +224,13 @@ final class GeoCeDGGuideWindow {
 	/** @return the live view, or {@code null} before the guide is first shown */
 	JEditorPane getView() {
 		return view;
+	}
+
+	/**
+	 * @return the live navigation controller, or {@code null} before the guide is
+	 *         first shown
+	 */
+	GeoCeDGGuideNavigator getNavigator() {
+		return navigator;
 	}
 }
