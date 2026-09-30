@@ -1,0 +1,1555 @@
+{
+  "schemaVersion": 1,
+  "artifactKind": "DESIGN_EVIDENCE_ONLY",
+  "runtimeAuthority": false,
+  "phase": "PRE-G9B-R5-B",
+  "task": "PRE-G9B-R5-B COMPATIBILITY ADR PREREQUISITE",
+  "productPhaseEffect": "NONE",
+  "changeRoute": "ORDINARY",
+  "verificationClass": "DOCUMENTATION_STATUS_ONLY",
+  "verificationClassFrozenAtPhaseStart": true,
+  "productSemanticsChanged": false,
+  "productCodeChanged": false,
+  "r5bImplementationStarted": false,
+  "r5bImplementationAuthorized": false,
+  "selfApproved": false,
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "adrCandidate": {
+    "path": "docs/adr/0031-canonical-english-command-surface-compatibility.md",
+    "status": "PROPOSED — PRE-G9B-R5-B COMPATIBILITY CANDIDATE",
+    "accepted": false
+  },
+  "candidateReport": "docs/validation/pre_g9b_r5_b_compatibility_adr_candidate_report.md",
+  "sourceIdentity": {
+    "commit": "4389b30b5478ac35c78a15255021e3c4f1e10ea3",
+    "tree": "1a4506b830a846efd5032fde5e8386ca8872dc89",
+    "canonicalR5BPrompt": {
+      "path": ".github/prompts/tasks/pre-g9b-r5-b-canonical-english-command-surface.prompt.md",
+      "blob": "34e1796d5628108498a7c612c155d5c8d72a4c16",
+      "edited": false
+    },
+    "characterizedBlobs": [
+      {
+        "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/CommandLookupStrategy.java",
+        "blob": "02db17ddab6a6f20e7c8941d2ea4357bef97d54f"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/arithmetic/Command.java",
+        "blob": "9c8db9b2fe988258989bc76f2f7a73c798950328"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geogebra/common/main/App.java",
+        "blob": "5b9c09a452441702381954add4deaec77b3e6df0"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geogebra/common/main/Localization.java",
+        "blob": "417e656df9ac2128ca092d6fc314b51d032e8f29"
+      },
+      {
+        "path": "source/shared/common-jre/src/main/java/org/geogebra/common/jre/main/LocalizationJre.java",
+        "blob": "cf0ff9bd2a073cf46b96e64ab15dd39780574547"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/Commands.java",
+        "blob": "224fe3792445c48f6a56d82994bfeef4dda9ad2c"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CommandDispatcher.java",
+        "blob": "ecb421d6e564f03ee3ce4f6c9001ba07abf5ba2c"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geogebra/common/main/syntax/LocalizedCommandSyntax.java",
+        "blob": "3f354e2a352f65bb2514758c39a60526e287ef1a"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geogebra/common/main/syntax/EnglishCommandSyntax.java",
+        "blob": "30d63568fe0219c376aa961eb4081727c912f80e"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geogebra/common/plugin/script/GgbScript.java",
+        "blob": "aa36f1ca888a7d053d9abeceed07d1c8e20dfc5a"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/scripting/CmdExecute.java",
+        "blob": "60e87874f336aa77efc581a1d1771a346a126e0b"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/arithmetic/ExpressionSerializer.java",
+        "blob": "1fd72720d688b10999df9041a9bdbe49ee6a7e6f"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/parser/FunctionParser.java",
+        "blob": "563799414b6f52567be75b6c53d3f97e9532d111"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/algos/AlgoElement.java",
+        "blob": "e0c63e2068c1ec7b729f96b79bbfc46f229e9f1a"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/StringTemplate.java",
+        "blob": "cf3cfaf7794d897baf224a76eca15bdd7fa7f70e"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CmdCircumference.java",
+        "blob": "7b18ce0f04a4f3e21afdc4178d69289fad6743e8"
+      },
+      {
+        "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/AppGeoCeDG.java",
+        "blob": "e63f3aef4e4bc41b19f26a9e61debff74e1779ea"
+      },
+      {
+        "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/inputfield/AutoCompleteTextFieldD.java",
+        "blob": "eb2baf7a8a0262a3edc53a9c60b3d0529203b9a4"
+      },
+      {
+        "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/inputbar/InputBarHelpPanelD.java",
+        "blob": "0e4e48ae3bf26a0bc02d0d24faa570bc01456f44"
+      },
+      {
+        "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command.properties",
+        "blob": "59f98f1cb84cae78c01e2cfcc8f4fbcb7df246fc"
+      },
+      {
+        "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command_en.properties",
+        "blob": "f97a24425bdc11ee6aab009046a44a87752221aa"
+      },
+      {
+        "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command_es.properties",
+        "blob": "9676eefe100de722dc30719c283882f115df35ec"
+      },
+      {
+        "path": "source/shared/common/src/main/java/org/geogebra/common/cas/giac/Ggb2giac.java",
+        "blob": "edf4d98c3056139d0327ee546ed9e223993ddda4"
+      },
+      {
+        "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/locus/G9U0LocalizationHelpTest.java",
+        "blob": "1c493c83459aebcededbf334dad054cf55b5e4fc"
+      }
+    ]
+  },
+  "supportedUiLocales": [
+    {
+      "id": "en",
+      "selectedBy": "AppGeoCeDG.setLocale: any non-es locale -> Locale.ENGLISH",
+      "commandBundleChain": [
+        "command_en.properties",
+        "command.properties"
+      ]
+    },
+    {
+      "id": "es",
+      "selectedBy": "AppGeoCeDG.setLocale: language es -> Locale.forLanguageTag(\"es\")",
+      "commandBundleChain": [
+        "command_es.properties",
+        "command.properties"
+      ]
+    }
+  ],
+  "upstreamCorpusPolicy": "the retained upstream bundles were scanned as diagnostic evidence only; GeoCeDG's supported UI locales stay EN and ES",
+  "lookupStrategies": [
+    {
+      "id": "USER",
+      "accepts": "localized alias, English/alias enum constant, internal; case-insensitive",
+      "mechanism": "Command(kernel,name,true) -> App.getReverseCommand -> Localization.getReverseCommand: reverse table by lower-case key, else Commands.lookupInternal",
+      "setBy": [
+        "Kernel default",
+        "RelativeCopy (restores USER)"
+      ],
+      "surfaces": [
+        "Algebra Input",
+        "redefine / inline edit",
+        "Properties definition field",
+        "pasted text"
+      ]
+    },
+    {
+      "id": "SCRIPT",
+      "accepts": "any Commands enum constant name (internal or English alias), case-insensitive; never localized aliases",
+      "mechanism": "Commands.lookupInternal(name) -> englishToInternal; unknown name kept verbatim",
+      "setBy": [
+        "GgbScript.run"
+      ],
+      "restoreDefect": "TD-R0-GGBSCRIPT-STRATEGY-RESTORE (owned by R6)"
+    },
+    {
+      "id": "XML",
+      "accepts": "exact-case Commands enum constant names only (internal or English alias constant)",
+      "mechanism": "name kept verbatim; dispatcher Commands.valueOf",
+      "setBy": [
+        "MyXMLio (file/XML load)",
+        "CmdExecute (nested Execute strings)",
+        "GgbAPI.evalCommandGetLabels",
+        "PolygonFactory",
+        "RelativeCopy"
+      ]
+    },
+    {
+      "id": "SCRIPT_EDITOR_SAVE",
+      "isLookupStrategy": false,
+      "accepts": "RENAMED set, then the first enum-order command whose UI-locale localized name matches case-insensitively; otherwise the token is kept verbatim",
+      "mechanism": "GgbScript.localizedScript2Script -> App.getInternalCommand",
+      "note": "precedence differs from the reverse table: first match wins here, last writer wins there"
+    }
+  ],
+  "reverseTableRules": [
+    "built by App.fillCommandDict iterating Commands in declaration order, skipping constants rejected by the command filters (GeoCeDG: dedicated LocusV2 commands when creation is disabled)",
+    "hidden tables: TABLE_CAS and TABLE_ENGLISH always, TABLE_3D unless 3D commands are enabled (AppGeoCeDG: enabled); a hidden TABLE_ENGLISH constant inserts only its own lower-case name, if absent",
+    "visible constant: lower-case internal name inserted only if absent; lower-case localized name inserted with overwrite (putInTranslateCommandTable -> englishToInternal, then addCommandEntry -> comm.name())",
+    "App.fillCasCommandDict (only once the CAS object exists) re-inserts CAS command localized names with overwrite",
+    "consequence: a localized alias always wins over an internal/English name with the same lower-case key; among colliding localized aliases the last writer wins",
+    "table freshness: AppD.setLanguage -> setLabels -> updateCommandDictionary rebuilds it; a bare setLocale does not (test-harness caveat)"
+  ],
+  "commandInventory": {
+    "enumConstants": 564,
+    "englishToInternalIdentities": 521,
+    "processorEquivalenceClasses": 489,
+    "processorEquivalenceMethod": "englishToInternal plus shared-processor case groups of the command-processor factories",
+    "tableCounts": {
+      "TABLE_3D": 24,
+      "TABLE_ALGEBRA": 33,
+      "TABLE_CAS": 26,
+      "TABLE_CHARTS": 15,
+      "TABLE_CONIC": 20,
+      "TABLE_DISCRETE": 6,
+      "TABLE_ENGLISH": 52,
+      "TABLE_FINANCIAL": 5,
+      "TABLE_FUNCTION": 54,
+      "TABLE_GEOGEBRA": 14,
+      "TABLE_GEOMETRY": 60,
+      "TABLE_LIST": 27,
+      "TABLE_LOGICAL": 7,
+      "TABLE_OPTIMIZATION": 2,
+      "TABLE_PROBABILITY": 46,
+      "TABLE_SCRIPTING": 67,
+      "TABLE_SPREADSHEET": 8,
+      "TABLE_STATISTICS": 64,
+      "TABLE_TEXT": 16,
+      "TABLE_TRANSFORMATION": 6,
+      "TABLE_VECTOR": 12
+    },
+    "displayableCommandsGeoCeDG": 486,
+    "displayableWithoutEnglishBundleEntry": 0,
+    "displayableWithoutSpanishBundleEntry": 30,
+    "displayableWhoseSpanishValueEqualsCanonicalEnglish": 31,
+    "reverseTableSizes": {
+      "en.casUnfilled": 532,
+      "en.casFilled": 557,
+      "es.casUnfilled": 1029,
+      "es.casFilled": 1029,
+      "es.fresh": 983
+    },
+    "reverseTableStateNote": "es.casUnfilled was observed in the same application after the CAS object had been created during en.casFilled, so it equals es.casFilled; es.fresh is the genuine CAS-absent Spanish state",
+    "casReadyObservations": {
+      "casReadyAtStart": "false",
+      "en.casUnfilled.casReady": "false",
+      "en.casFilled.casReady": "true",
+      "es.casUnfilled.casReady": "true",
+      "es.casFilled.casReady": "true",
+      "esFresh.casReady": "false",
+      "esFresh.casReadyAfterResolve": "false",
+      "esFresh.casReadyAfterWitness": "false"
+    }
+  },
+  "englishInternalMismatches": {
+    "count": 37,
+    "displayableCount": 37,
+    "records": [
+      {
+        "storedName": "AngularBisector",
+        "table": 0,
+        "canonicalEnglishE1": "AngleBisector",
+        "jreGetEnglishCommandE2": "AngleBisector",
+        "spanishAlias": "Bisectriz",
+        "displayable": true
+      },
+      {
+        "storedName": "OrthogonalLine",
+        "table": 0,
+        "canonicalEnglishE1": "PerpendicularLine",
+        "jreGetEnglishCommandE2": "PerpendicularLine",
+        "spanishAlias": "Perpendicular",
+        "displayable": true
+      },
+      {
+        "storedName": "LineBisector",
+        "table": 0,
+        "canonicalEnglishE1": "PerpendicularBisector",
+        "jreGetEnglishCommandE2": "PerpendicularBisector",
+        "spanishAlias": "Mediatriz",
+        "displayable": true
+      },
+      {
+        "storedName": "CircleArc",
+        "table": 0,
+        "canonicalEnglishE1": "CircularArc",
+        "jreGetEnglishCommandE2": "CircularArc",
+        "spanishAlias": "ArcoCircunferencia",
+        "displayable": true
+      },
+      {
+        "storedName": "CircleSector",
+        "table": 0,
+        "canonicalEnglishE1": "CircularSector",
+        "jreGetEnglishCommandE2": "CircularSector",
+        "spanishAlias": "SectorCircular",
+        "displayable": true
+      },
+      {
+        "storedName": "CircumcircleSector",
+        "table": 0,
+        "canonicalEnglishE1": "CircumcircularSector",
+        "jreGetEnglishCommandE2": "CircumcircularSector",
+        "spanishAlias": "SectorTresPuntos",
+        "displayable": true
+      },
+      {
+        "storedName": "CircumcircleArc",
+        "table": 0,
+        "canonicalEnglishE1": "CircumcircularArc",
+        "jreGetEnglishCommandE2": "CircumcircularArc",
+        "spanishAlias": "ArcoTresPuntos",
+        "displayable": true
+      },
+      {
+        "storedName": "PolyLine",
+        "table": 0,
+        "canonicalEnglishE1": "Polyline",
+        "jreGetEnglishCommandE2": "Polyline",
+        "spanishAlias": "Poligonal",
+        "displayable": true
+      },
+      {
+        "storedName": "LaTeX",
+        "table": 2,
+        "canonicalEnglishE1": "FormulaText",
+        "jreGetEnglishCommandE2": "FormulaText",
+        "spanishAlias": "FórmulaTexto",
+        "displayable": true
+      },
+      {
+        "storedName": "Defined",
+        "table": 3,
+        "canonicalEnglishE1": "IsDefined",
+        "jreGetEnglishCommandE2": "IsDefined",
+        "spanishAlias": "EstáDefinido",
+        "displayable": true
+      },
+      {
+        "storedName": "TurningPoint",
+        "table": 4,
+        "canonicalEnglishE1": "InflectionPoint",
+        "jreGetEnglishCommandE2": "InflectionPoint",
+        "spanishAlias": "PuntoInflexión",
+        "displayable": true
+      },
+      {
+        "storedName": "CurveCartesian",
+        "table": 4,
+        "canonicalEnglishE1": "Curve",
+        "jreGetEnglishCommandE2": "Curve",
+        "spanishAlias": "Curva",
+        "displayable": true
+      },
+      {
+        "storedName": "TaylorSeries",
+        "table": 4,
+        "canonicalEnglishE1": "TaylorPolynomial",
+        "jreGetEnglishCommandE2": "TaylorPolynomial",
+        "spanishAlias": "PolinomioTaylor",
+        "displayable": true
+      },
+      {
+        "storedName": "SecondAxisLength",
+        "table": 5,
+        "canonicalEnglishE1": "SemiMinorAxisLength",
+        "jreGetEnglishCommandE2": "SemiMinorAxisLength",
+        "spanishAlias": "LongitudSemiejeMenor",
+        "displayable": true
+      },
+      {
+        "storedName": "SecondAxis",
+        "table": 5,
+        "canonicalEnglishE1": "MinorAxis",
+        "jreGetEnglishCommandE2": "MinorAxis",
+        "spanishAlias": "EjeMenor",
+        "displayable": true
+      },
+      {
+        "storedName": "Diameter",
+        "table": 5,
+        "canonicalEnglishE1": "ConjugateDiameter",
+        "jreGetEnglishCommandE2": "ConjugateDiameter",
+        "spanishAlias": "DiámetroConjugado",
+        "displayable": true
+      },
+      {
+        "storedName": "FirstAxis",
+        "table": 5,
+        "canonicalEnglishE1": "MajorAxis",
+        "jreGetEnglishCommandE2": "MajorAxis",
+        "spanishAlias": "EjeMayor",
+        "displayable": true
+      },
+      {
+        "storedName": "FirstAxisLength",
+        "table": 5,
+        "canonicalEnglishE1": "SemiMajorAxisLength",
+        "jreGetEnglishCommandE2": "SemiMajorAxisLength",
+        "spanishAlias": "LongitudSemiejeMayor",
+        "displayable": true
+      },
+      {
+        "storedName": "Excentricity",
+        "table": 5,
+        "canonicalEnglishE1": "LinearEccentricity",
+        "jreGetEnglishCommandE2": "LinearEccentricity",
+        "spanishAlias": "SemiFocal",
+        "displayable": true
+      },
+      {
+        "storedName": "Q1",
+        "table": 10,
+        "canonicalEnglishE1": "Quartile1",
+        "jreGetEnglishCommandE2": "Quartile1",
+        "spanishAlias": "Cuartil1",
+        "displayable": true
+      },
+      {
+        "storedName": "Q3",
+        "table": 10,
+        "canonicalEnglishE1": "Quartile3",
+        "jreGetEnglishCommandE2": "Quartile3",
+        "spanishAlias": "Cuartil3",
+        "displayable": true
+      },
+      {
+        "storedName": "SXY",
+        "table": 10,
+        "canonicalEnglishE1": "Sxy",
+        "jreGetEnglishCommandE2": "Sxy",
+        "spanishAlias": "Sxy",
+        "displayable": true
+      },
+      {
+        "storedName": "SXX",
+        "table": 10,
+        "canonicalEnglishE1": "Sxx",
+        "jreGetEnglishCommandE2": "Sxx",
+        "spanishAlias": "Sxx",
+        "displayable": true
+      },
+      {
+        "storedName": "SYY",
+        "table": 10,
+        "canonicalEnglishE1": "Syy",
+        "jreGetEnglishCommandE2": "Syy",
+        "spanishAlias": "Syy",
+        "displayable": true
+      },
+      {
+        "storedName": "PMCC",
+        "table": 10,
+        "canonicalEnglishE1": "CorrelationCoefficient",
+        "jreGetEnglishCommandE2": "CorrelationCoefficient",
+        "spanishAlias": "CoeficienteCorrelación",
+        "displayable": true
+      },
+      {
+        "storedName": "FitLineY",
+        "table": 10,
+        "canonicalEnglishE1": "FitLine",
+        "jreGetEnglishCommandE2": "FitLine",
+        "spanishAlias": "AjusteLineal",
+        "displayable": true
+      },
+      {
+        "storedName": "Random",
+        "table": 11,
+        "canonicalEnglishE1": "RandomBetween",
+        "jreGetEnglishCommandE2": "RandomBetween",
+        "spanishAlias": "AleatorioEntre",
+        "displayable": true
+      },
+      {
+        "storedName": "Binomial",
+        "table": 11,
+        "canonicalEnglishE1": "BinomialCoefficient",
+        "jreGetEnglishCommandE2": "nCr",
+        "spanishAlias": "NúmeroCombinatorio",
+        "displayable": true
+      },
+      {
+        "storedName": "UnitOrthogonalVector",
+        "table": 7,
+        "canonicalEnglishE1": "UnitPerpendicularVector",
+        "jreGetEnglishCommandE2": "UnitPerpendicularVector",
+        "spanishAlias": "VectorNormalUnitario",
+        "displayable": true
+      },
+      {
+        "storedName": "OrthogonalVector",
+        "table": 7,
+        "canonicalEnglishE1": "PerpendicularVector",
+        "jreGetEnglishCommandE2": "PerpendicularVector",
+        "spanishAlias": "VectorNormal",
+        "displayable": true
+      },
+      {
+        "storedName": "Mirror",
+        "table": 8,
+        "canonicalEnglishE1": "Reflect",
+        "jreGetEnglishCommandE2": "Reflect",
+        "spanishAlias": "Refleja",
+        "displayable": true
+      },
+      {
+        "storedName": "Textfield",
+        "table": 13,
+        "canonicalEnglishE1": "InputBox",
+        "jreGetEnglishCommandE2": "InputBox",
+        "spanishAlias": "CasillaEntrada",
+        "displayable": true
+      },
+      {
+        "storedName": "DelauneyTriangulation",
+        "table": 14,
+        "canonicalEnglishE1": "DelaunayTriangulation",
+        "jreGetEnglishCommandE2": "DelaunayTriangulation",
+        "spanishAlias": "Delaunay",
+        "displayable": true
+      },
+      {
+        "storedName": "QuadricSide",
+        "table": 17,
+        "canonicalEnglishE1": "Side",
+        "jreGetEnglishCommandE2": "Side",
+        "spanishAlias": "Lateral",
+        "displayable": true
+      },
+      {
+        "storedName": "OrthogonalPlane",
+        "table": 17,
+        "canonicalEnglishE1": "PerpendicularPlane",
+        "jreGetEnglishCommandE2": "PerpendicularPlane",
+        "spanishAlias": "PlanoPerpendicular",
+        "displayable": true
+      },
+      {
+        "storedName": "ConeInfinite",
+        "table": 17,
+        "canonicalEnglishE1": "InfiniteCone",
+        "jreGetEnglishCommandE2": "InfiniteCone",
+        "spanishAlias": "ConoInfinito",
+        "displayable": true
+      },
+      {
+        "storedName": "CylinderInfinite",
+        "table": 17,
+        "canonicalEnglishE1": "InfiniteCylinder",
+        "jreGetEnglishCommandE2": "InfiniteCylinder",
+        "spanishAlias": "CilindroInfinito",
+        "displayable": true
+      }
+    ]
+  },
+  "englishAuthorityDivergence": {
+    "E1": "English command bundle value of the stored name (current EN-UI display; web getEnglishCommand semantics)",
+    "E2": "JRE Localization.getEnglishCommand enum-alias mapper",
+    "records": [
+      {
+        "storedName": "mean",
+        "E1": "mean",
+        "E2": "Mean"
+      },
+      {
+        "storedName": "stdev",
+        "E1": "stdev",
+        "E2": "SampleSD"
+      },
+      {
+        "storedName": "mad",
+        "E1": "mad",
+        "E2": "MAD"
+      },
+      {
+        "storedName": "stdevp",
+        "E1": "stdevp",
+        "E2": "SD"
+      },
+      {
+        "storedName": "Binomial",
+        "E1": "BinomialCoefficient",
+        "E2": "nCr"
+      },
+      {
+        "storedName": "IntersectConic",
+        "E1": "IntersectConic",
+        "E2": "IntersectCircle"
+      }
+    ],
+    "E2ReturnsKeyVerbatimForNonCommandKeys": true
+  },
+  "collisionInventory": {
+    "method": "complete enumeration over every Commands constant and every localized alias of every visible constant, per supported locale, grouped by processor-equivalence identity; resolutions taken from the live AppGeoCeDG reverse table",
+    "classes": [
+      {
+        "id": "LOCALIZED_ALIAS_EQUALS_OTHER_ENGLISH_NAME",
+        "en": 0,
+        "es": 0
+      },
+      {
+        "id": "LOCALIZED_ALIAS_EQUALS_OTHER_INTERNAL_OR_ALIAS_CONSTANT",
+        "en": 0,
+        "es": 0
+      },
+      {
+        "id": "LOCALIZED_ALIAS_EQUALS_OTHER_LOCALIZED_ALIAS",
+        "en": 0,
+        "es": 1
+      },
+      {
+        "id": "CANONICAL_ENGLISH_HEAD_ROUND_TRIP_FAILURE",
+        "en": 0,
+        "es": 0,
+        "pathsChecked": [
+          "USER casUnfilled",
+          "USER casFilled",
+          "SCRIPT",
+          "XML exact",
+          "script-editor save"
+        ]
+      },
+      {
+        "id": "PARSER_FUNCTION_PREEMPTION_OF_CANONICAL_HEAD",
+        "en": 2,
+        "es": 2,
+        "members": [
+          "nCr/2 -> Operation.NCR",
+          "nPr/2 -> Operation.NPR"
+        ],
+        "disposition": "equivalent: the nCr/nPr command processors themselves produce these operations (CmdCAStoOperation); no identity change"
+      },
+      {
+        "id": "REVERSE_TABLE_STATE_DEPENDENT_RESOLUTION",
+        "en": 0,
+        "es": 1
+      }
+    ],
+    "members": [
+      {
+        "key": "perímetro",
+        "locale": "es",
+        "claimedBy": [
+          "Circumference",
+          "Perimeter"
+        ],
+        "resolution": {
+          "USER fresh (CAS object absent)": "Perimeter",
+          "USER after CAS dictionary fill": "Circumference",
+          "script-editor save": "Circumference",
+          "SCRIPT": "not a command",
+          "XML": "not a command"
+        },
+        "behaviouralEquivalence": "CmdCircumference extends CmdPerimeter without overriding; the constructed algorithm depends on the argument type only (polygon -> Perimeter, conic -> Circumference) for all three spellings",
+        "onCanonicalPath": false,
+        "disposition": "pre-existing localized-alias ambiguity; benign; outside the canonical English path; R5-B leaves alias resolution unchanged"
+      }
+    ],
+    "canonicalHeadRoundTrip": {
+      "E1failures": [
+        [
+          "nCr",
+          "nCr",
+          "parser-function",
+          [
+            [
+              "nCr",
+              2,
+              "NCR"
+            ]
+          ]
+        ],
+        [
+          "nPr",
+          "nPr",
+          "parser-function",
+          [
+            [
+              "nPr",
+              2,
+              "NPR"
+            ]
+          ]
+        ]
+      ],
+      "E2failures": [
+        [
+          "Binomial",
+          "nCr",
+          "parser-function",
+          [
+            [
+              "nCr",
+              2,
+              "NCR"
+            ]
+          ]
+        ],
+        [
+          "nCr",
+          "nCr",
+          "parser-function",
+          [
+            [
+              "nCr",
+              2,
+              "NCR"
+            ]
+          ]
+        ],
+        [
+          "nPr",
+          "nPr",
+          "parser-function",
+          [
+            [
+              "nPr",
+              2,
+              "NPR"
+            ]
+          ]
+        ]
+      ],
+      "E1HeadsThatAreNotExactProcessorEquivalentEnumConstants": [],
+      "result": "every E1 head resolves to its own processor identity under USER (EN/ES, both reverse-table states), SCRIPT, XML exact case and ES script-editor save; the only non-command parses are nCr/nPr, which are equivalent"
+    }
+  },
+  "upstreamCorpusDiagnostic": {
+    "diagnosticOnly": true,
+    "localesScanned": 97,
+    "localesWithCanonicalHeadRetarget": {
+      "bs": 1,
+      "da": 1,
+      "fr": 1,
+      "ms": 2,
+      "tr": 1,
+      "uk": 1
+    },
+    "records": [
+      {
+        "bundleLocale": "bs",
+        "storedName": "Mod",
+        "canonicalEnglishHead": "Mod",
+        "resolvesTo": "Mode",
+        "reverseTableState": "casUnfilled"
+      },
+      {
+        "bundleLocale": "bs",
+        "storedName": "Mod",
+        "canonicalEnglishHead": "Mod",
+        "resolvesTo": "Mode",
+        "reverseTableState": "casFilled"
+      },
+      {
+        "bundleLocale": "da",
+        "storedName": "Histogram",
+        "canonicalEnglishHead": "Histogram",
+        "resolvesTo": "HistogramRight",
+        "reverseTableState": "casUnfilled"
+      },
+      {
+        "bundleLocale": "da",
+        "storedName": "Histogram",
+        "canonicalEnglishHead": "Histogram",
+        "resolvesTo": "HistogramRight",
+        "reverseTableState": "casFilled"
+      },
+      {
+        "bundleLocale": "fr",
+        "storedName": "Intersection",
+        "canonicalEnglishHead": "Intersection",
+        "resolvesTo": "Intersect",
+        "reverseTableState": "casUnfilled"
+      },
+      {
+        "bundleLocale": "fr",
+        "storedName": "Intersection",
+        "canonicalEnglishHead": "Intersection",
+        "resolvesTo": "Intersect",
+        "reverseTableState": "casFilled"
+      },
+      {
+        "bundleLocale": "ms",
+        "storedName": "Mod",
+        "canonicalEnglishHead": "Mod",
+        "resolvesTo": "Mode",
+        "reverseTableState": "casUnfilled"
+      },
+      {
+        "bundleLocale": "ms",
+        "storedName": "Mod",
+        "canonicalEnglishHead": "Mod",
+        "resolvesTo": "Mode",
+        "reverseTableState": "casFilled"
+      },
+      {
+        "bundleLocale": "ms",
+        "storedName": "Min",
+        "canonicalEnglishHead": "Min",
+        "resolvesTo": "Mean",
+        "reverseTableState": "casUnfilled"
+      },
+      {
+        "bundleLocale": "ms",
+        "storedName": "Min",
+        "canonicalEnglishHead": "Min",
+        "resolvesTo": "mean",
+        "reverseTableState": "casFilled"
+      },
+      {
+        "bundleLocale": "tr",
+        "storedName": "Mod",
+        "canonicalEnglishHead": "Mod",
+        "resolvesTo": "Mode",
+        "reverseTableState": "casUnfilled"
+      },
+      {
+        "bundleLocale": "tr",
+        "storedName": "Mod",
+        "canonicalEnglishHead": "Mod",
+        "resolvesTo": "Mode",
+        "reverseTableState": "casFilled"
+      },
+      {
+        "bundleLocale": "uk",
+        "storedName": "ZMeanTest",
+        "canonicalEnglishHead": "ZMeanTest",
+        "resolvesTo": "ZMean2Test",
+        "reverseTableState": "casUnfilled"
+      },
+      {
+        "bundleLocale": "uk",
+        "storedName": "ZMeanTest",
+        "canonicalEnglishHead": "ZMeanTest",
+        "resolvesTo": "ZMean2Test",
+        "reverseTableState": "casFilled"
+      }
+    ],
+    "meaning": "the hazard class is empty on EN and ES at this commit but is real in the retained corpus; a bundle change can make it live, so the ADR requires a mechanized gate rather than relying on today's empty set"
+  },
+  "geocedgCommands": {
+    "LocusV2": {
+      "internal": "LocusV2",
+      "canonicalEnglishE1": "LocusV2",
+      "spanishBundleValue": "LugarGeométricoV2",
+      "spanishAliasDistinctFromEnglish": true,
+      "commandFilterAllowed": true,
+      "englishHeadResolution": {
+        "en.casUnfilled": {
+          "USER": "LocusV2",
+          "SCRIPT": "LocusV2",
+          "XML": "LocusV2",
+          "scriptEditorSave": "LocusV2",
+          "reverseCommand": "LocusV2"
+        },
+        "en.casFilled": {
+          "USER": "LocusV2",
+          "SCRIPT": "LocusV2",
+          "XML": "LocusV2",
+          "scriptEditorSave": "LocusV2",
+          "reverseCommand": "LocusV2"
+        },
+        "es.fresh": {
+          "USER": "LocusV2",
+          "SCRIPT": "LocusV2",
+          "XML": "LocusV2",
+          "scriptEditorSave": "<null>",
+          "reverseCommand": "LocusV2"
+        },
+        "es.casFilled": {
+          "USER": "LocusV2",
+          "SCRIPT": "LocusV2",
+          "XML": "LocusV2",
+          "scriptEditorSave": "<null>",
+          "reverseCommand": "LocusV2"
+        }
+      },
+      "spanishAliasResolution": {
+        "en.casUnfilled": {
+          "USER": "LugarGeométricoV2",
+          "SCRIPT": "LugarGeométricoV2",
+          "XML": "LugarGeométricoV2",
+          "scriptEditorSave": "<null>",
+          "reverseCommand": "<null>"
+        },
+        "es.fresh": {
+          "USER": "LocusV2",
+          "SCRIPT": "LugarGeométricoV2",
+          "XML": "LugarGeométricoV2",
+          "scriptEditorSave": "LocusV2",
+          "reverseCommand": "LocusV2"
+        },
+        "es.casFilled": {
+          "USER": "LocusV2",
+          "SCRIPT": "LugarGeométricoV2",
+          "XML": "LugarGeométricoV2",
+          "scriptEditorSave": "LocusV2",
+          "reverseCommand": "LocusV2"
+        }
+      }
+    },
+    "LocusLength": {
+      "internal": "LocusLength",
+      "canonicalEnglishE1": "LocusLength",
+      "spanishBundleValue": "LongitudLugarGeométrico",
+      "spanishAliasDistinctFromEnglish": true,
+      "commandFilterAllowed": true,
+      "englishHeadResolution": {
+        "en.casUnfilled": {
+          "USER": "LocusLength",
+          "SCRIPT": "LocusLength",
+          "XML": "LocusLength",
+          "scriptEditorSave": "LocusLength",
+          "reverseCommand": "LocusLength"
+        },
+        "en.casFilled": {
+          "USER": "LocusLength",
+          "SCRIPT": "LocusLength",
+          "XML": "LocusLength",
+          "scriptEditorSave": "LocusLength",
+          "reverseCommand": "LocusLength"
+        },
+        "es.fresh": {
+          "USER": "LocusLength",
+          "SCRIPT": "LocusLength",
+          "XML": "LocusLength",
+          "scriptEditorSave": "<null>",
+          "reverseCommand": "LocusLength"
+        },
+        "es.casFilled": {
+          "USER": "LocusLength",
+          "SCRIPT": "LocusLength",
+          "XML": "LocusLength",
+          "scriptEditorSave": "<null>",
+          "reverseCommand": "LocusLength"
+        }
+      },
+      "spanishAliasResolution": {
+        "en.casUnfilled": {
+          "USER": "LongitudLugarGeométrico",
+          "SCRIPT": "LongitudLugarGeométrico",
+          "XML": "LongitudLugarGeométrico",
+          "scriptEditorSave": "<null>",
+          "reverseCommand": "<null>"
+        },
+        "es.fresh": {
+          "USER": "LocusLength",
+          "SCRIPT": "LongitudLugarGeométrico",
+          "XML": "LongitudLugarGeométrico",
+          "scriptEditorSave": "LocusLength",
+          "reverseCommand": "LocusLength"
+        },
+        "es.casFilled": {
+          "USER": "LocusLength",
+          "SCRIPT": "LongitudLugarGeométrico",
+          "XML": "LongitudLugarGeométrico",
+          "scriptEditorSave": "LocusLength",
+          "reverseCommand": "LocusLength"
+        }
+      }
+    },
+    "SplineV2": {
+      "internal": "SplineV2",
+      "canonicalEnglishE1": "SplineV2",
+      "spanishBundleValue": "SplineV2",
+      "spanishAliasDistinctFromEnglish": false,
+      "commandFilterAllowed": true,
+      "englishHeadResolution": {
+        "en.casUnfilled": {
+          "USER": "SplineV2",
+          "SCRIPT": "SplineV2",
+          "XML": "SplineV2",
+          "scriptEditorSave": "SplineV2",
+          "reverseCommand": "SplineV2"
+        },
+        "en.casFilled": {
+          "USER": "SplineV2",
+          "SCRIPT": "SplineV2",
+          "XML": "SplineV2",
+          "scriptEditorSave": "SplineV2",
+          "reverseCommand": "SplineV2"
+        },
+        "es.fresh": {
+          "USER": "SplineV2",
+          "SCRIPT": "SplineV2",
+          "XML": "SplineV2",
+          "scriptEditorSave": "SplineV2",
+          "reverseCommand": "SplineV2"
+        },
+        "es.casFilled": {
+          "USER": "SplineV2",
+          "SCRIPT": "SplineV2",
+          "XML": "SplineV2",
+          "scriptEditorSave": "SplineV2",
+          "reverseCommand": "SplineV2"
+        }
+      },
+      "spanishAliasResolution": {
+        "en.casUnfilled": {
+          "USER": "SplineV2",
+          "SCRIPT": "SplineV2",
+          "XML": "SplineV2",
+          "scriptEditorSave": "SplineV2",
+          "reverseCommand": "SplineV2"
+        },
+        "es.fresh": {
+          "USER": "SplineV2",
+          "SCRIPT": "SplineV2",
+          "XML": "SplineV2",
+          "scriptEditorSave": "SplineV2",
+          "reverseCommand": "SplineV2"
+        },
+        "es.casFilled": {
+          "USER": "SplineV2",
+          "SCRIPT": "SplineV2",
+          "XML": "SplineV2",
+          "scriptEditorSave": "SplineV2",
+          "reverseCommand": "SplineV2"
+        }
+      }
+    }
+  },
+  "witnesses": {
+    "perimetro": {
+      "esFresh.Perímetro(polygon)": "Perimeter",
+      "esFresh.Circumference(polygon)": "Perimeter",
+      "esFresh.Perimeter(polygon)": "Perimeter",
+      "es.fresh.casReady": "false",
+      "es.Perímetro.beforeCasFill [conic argument; both processors build the Circumference algorithm, so this row does not discriminate]": "Circumference",
+      "es.afterCasFill.casReady": "true",
+      "es.Perímetro.afterCasFill [conic argument; both processors build the Circumference algorithm, so this row does not discriminate]": "Circumference",
+      "es.Perimeter [conic argument; both processors build the Circumference algorithm, so this row does not discriminate]": "Circumference",
+      "es.Circumference [conic argument; both processors build the Circumference algorithm, so this row does not discriminate]": "Circumference"
+    },
+    "definitionPresentationEs": [
+      {
+        "uiLocale": "es",
+        "input": "lw=PerpendicularLine(A,fw)",
+        "algorithmClass": "OrthogonalLine",
+        "defaultTemplate": "Perpendicular(A, fw)",
+        "redefineString": "Perpendicular(A, fw)",
+        "definitionForInputBar": "lw: Perpendicular(A, fw)",
+        "xmlTemplate": "OrthogonalLine[A, fw]"
+      },
+      {
+        "uiLocale": "es",
+        "input": "mw=Reflect(C,fw)",
+        "algorithmClass": "Mirror",
+        "defaultTemplate": "Refleja(C, fw)",
+        "redefineString": "Refleja(C, fw)",
+        "definitionForInputBar": "mw = Refleja(C, fw)",
+        "xmlTemplate": "Mirror[C, fw]"
+      },
+      {
+        "uiLocale": "es",
+        "input": "bw=AngleBisector(A,B,C)",
+        "algorithmClass": "AngularBisector",
+        "defaultTemplate": "Bisectriz(A, B, C)",
+        "redefineString": "Bisectriz(A, B, C)",
+        "definitionForInputBar": "bw: Bisectriz(A, B, C)",
+        "xmlTemplate": "AngularBisector[A, B, C]"
+      },
+      {
+        "uiLocale": "es",
+        "input": "tw=FormulaText(fw)",
+        "algorithmClass": "LaTeX",
+        "defaultTemplate": "FórmulaTexto(fw)",
+        "redefineString": "FórmulaTexto(fw)",
+        "definitionForInputBar": "tw = FórmulaTexto(fw)",
+        "xmlTemplate": "LaTeX[fw]"
+      },
+      {
+        "uiLocale": "es",
+        "input": "sw=SplineV2({A,B,C,D})",
+        "algorithmClass": "SplineV2",
+        "defaultTemplate": "SplineV2(l1, a)",
+        "redefineString": "SplineV2(l1, a)",
+        "definitionForInputBar": "sw = SplineV2(l1, a)",
+        "xmlTemplate": "SplineV2[l1, a]"
+      },
+      {
+        "uiLocale": "es",
+        "input": "qw=Polyline(A,B,C)",
+        "algorithmClass": "PolyLine",
+        "defaultTemplate": "Poligonal(A, B, C)",
+        "redefineString": "Poligonal(A, B, C)",
+        "definitionForInputBar": "qw = Poligonal(A, B, C)",
+        "xmlTemplate": "PolyLine[A, B, C]"
+      },
+      {
+        "uiLocale": "es",
+        "input": "iw=IsDefined(fw)",
+        "algorithmClass": "Defined",
+        "defaultTemplate": "EstáDefinido(fw)",
+        "redefineString": "EstáDefinido(fw)",
+        "definitionForInputBar": "iw = EstáDefinido(fw)",
+        "xmlTemplate": "Defined[fw]"
+      },
+      {
+        "uiLocale": "es",
+        "input": "kw=BinomialCoefficient(5,2)",
+        "algorithmClass": "<independent>",
+        "defaultTemplate": "nCr(5, 2)",
+        "redefineString": "nCr(5, 2)",
+        "definitionForInputBar": "kw = nCr(5, 2)",
+        "xmlTemplate": "nCr(5, 2)"
+      },
+      {
+        "uiLocale": "es",
+        "input": "uw=Mean({1,2,3})",
+        "algorithmClass": "mean",
+        "defaultTemplate": "media({1, 2, 3})",
+        "redefineString": "media({1, 2, 3})",
+        "definitionForInputBar": "uw = media({1, 2, 3})",
+        "xmlTemplate": "mean[{1, 2, 3}]"
+      }
+    ],
+    "xmlCommandElementsAfterEsSession": [
+      "<command name=\"AngularBisector\">",
+      "<command name=\"Circle\">",
+      "<command name=\"Circumference\">",
+      "<command name=\"Defined\">",
+      "<command name=\"LaTeX\">",
+      "<command name=\"Line\">",
+      "<command name=\"Mirror\">",
+      "<command name=\"OrthogonalLine\">",
+      "<command name=\"PolyLine\">",
+      "<command name=\"SplineV2\">",
+      "<command name=\"mean\">"
+    ],
+    "englishHeadReentryEs": [
+      {
+        "uiLocale": "es",
+        "englishText": "PerpendicularLine(A,fw)",
+        "expectedIdentity": "OrthogonalLine",
+        "constructedAlgorithmClass": "OrthogonalLine"
+      },
+      {
+        "uiLocale": "es",
+        "englishText": "Reflect(C,fw)",
+        "expectedIdentity": "Mirror",
+        "constructedAlgorithmClass": "Mirror"
+      },
+      {
+        "uiLocale": "es",
+        "englishText": "AngleBisector(A,B,C)",
+        "expectedIdentity": "AngularBisector",
+        "constructedAlgorithmClass": "AngularBisector"
+      },
+      {
+        "uiLocale": "es",
+        "englishText": "SplineV2({A,B,C,D})",
+        "expectedIdentity": "SplineV2",
+        "constructedAlgorithmClass": "SplineV2"
+      },
+      {
+        "uiLocale": "es",
+        "englishText": "Polyline(A,B,C)",
+        "expectedIdentity": "PolyLine",
+        "constructedAlgorithmClass": "PolyLine"
+      },
+      {
+        "uiLocale": "es",
+        "englishText": "LocusLength(sw)",
+        "expectedIdentity": "LocusLength",
+        "constructedAlgorithmClass": "LocusLength"
+      }
+    ],
+    "scriptEditor": {
+      "es.display": "PerpendicularLine(A,fw)\\nPerpendicular(A,fw)\\nFórmulaTexto(fw)\\nSplineV2({A,B,C,D})\\nLugarGeométricoV2(A,B)\\nPerímetro(cw)\\nPerímetro(cw)",
+      "es.saveOfDisplay": "PerpendicularLine(A,fw)\\nOrthogonalLine(A,fw)\\nLaTeX(fw)\\nSplineV2({A,B,C,D})\\nLocusV2(A,B)\\nCircumference(cw)\\nCircumference(cw)",
+      "es.saveOfEnglish": "Perimeter(cw)\\nCircumference(cw)\\nFormulaText(fw)\\nLocusV2(A,B)\\nCircumference(cw)\\nLocusV2(A,B)",
+      "en.display": "PerpendicularLine(A,fw)\\nPerpendicularLine(A,fw)\\nFormulaText(fw)\\nSplineV2({A,B,C,D})\\nLocusV2(A,B)\\nCircumference(cw)\\nPerimeter(cw)"
+    },
+    "scriptEditorRetargetToday": "stored Perimeter(cw) is displayed in ES as Perímetro(cw) and saved back as Circumference(cw): a pre-existing identity change of the stored token, behaviourally benign only because the two processors are equivalent",
+    "dictionaries": {
+      "es.commandDict.containsLugarGeometricoV2": "true",
+      "es.commandDict.containsLocusV2": "false",
+      "es.englishDict.containsLocusV2": "true",
+      "es.englishDict.containsPerpendicularLine": "true",
+      "es.englishDict.containsIntersectCircle": "true",
+      "es.englishDict.containsIntersectConic": "false",
+      "es.commandDict.size": "482",
+      "es.englishDict.size": "482"
+    },
+    "serialization": {
+      "xmlExpressionLines": [
+        {
+          "uiLocale": "es",
+          "line": "<command name=\"Vector\">"
+        },
+        {
+          "uiLocale": "es",
+          "line": "<command name=\"Vector\">"
+        },
+        {
+          "uiLocale": "es",
+          "line": "<expression label=\"d1\" exp=\"ProductoEscalar(u, v)\"/>"
+        },
+        {
+          "uiLocale": "es",
+          "line": "<expression label=\"d4\" exp=\"ProductoEscalar(u, v)\"/>"
+        },
+        {
+          "uiLocale": "es",
+          "line": "<expression label=\"d5\" exp=\"ProductoEscalar(u, v)\"/>"
+        },
+        {
+          "uiLocale": "es",
+          "line": "<expression label=\"d2\" exp=\"ProductoEscalar(u, v)\"/>"
+        },
+        {
+          "uiLocale": "es",
+          "line": "<expression label=\"d3\" exp=\"(2 * ProductoEscalar(u, v))\"/>"
+        },
+        {
+          "uiLocale": "es",
+          "line": "<command name=\"If\">"
+        },
+        {
+          "uiLocale": "es",
+          "line": "<command name=\"Integral\">"
+        },
+        {
+          "uiLocale": "es",
+          "line": "<command name=\"Circle\">"
+        },
+        {
+          "uiLocale": "en",
+          "line": "<expression label=\"d1\" exp=\"Dot(u, v)\"/>"
+        }
+      ],
+      "reloadObservations": [
+        {
+          "phase": "es.created",
+          "label": "g1",
+          "defined": "true",
+          "value": "0.46",
+          "definitionDefault": "Integral(sen(x), 0, 1)",
+          "definitionXml": "Integral[sin(x), 0, 1]",
+          "parentAlgorithm": "Integral"
+        },
+        {
+          "phase": "es.created",
+          "label": "g2",
+          "defined": "true",
+          "value": "x² + y² = 0.71",
+          "definitionDefault": "Circunferencia((0, 0), sen(1))",
+          "definitionXml": "Circle[(0, 0), sin(1)]",
+          "parentAlgorithm": "Circle"
+        },
+        {
+          "phase": "es.created",
+          "label": "d1",
+          "defined": "true",
+          "value": "11",
+          "definitionDefault": "ProductoEscalar(u, v)",
+          "definitionXml": "ProductoEscalar(u, v)",
+          "parentAlgorithm": "Expression"
+        },
+        {
+          "phase": "es.created",
+          "label": "d2",
+          "defined": "true",
+          "value": "11",
+          "definitionDefault": "ProductoEscalar(u, v)",
+          "definitionXml": "ProductoEscalar(u, v)",
+          "parentAlgorithm": "Expression"
+        },
+        {
+          "phase": "es.created",
+          "label": "d3",
+          "defined": "true",
+          "value": "22",
+          "definitionDefault": "2ProductoEscalar(u, v)",
+          "definitionXml": "(2 * ProductoEscalar(u, v))",
+          "parentAlgorithm": "Expression"
+        },
+        {
+          "phase": "es.created",
+          "label": "d4",
+          "defined": "true",
+          "value": "11",
+          "definitionDefault": "ProductoEscalar(u, v)",
+          "definitionXml": "ProductoEscalar(u, v)",
+          "parentAlgorithm": "Expression"
+        },
+        {
+          "phase": "es.created",
+          "label": "d5",
+          "defined": "true",
+          "value": "11",
+          "definitionDefault": "ProductoEscalar(u, v)",
+          "definitionXml": "ProductoEscalar(u, v)",
+          "parentAlgorithm": "Expression"
+        },
+        {
+          "phase": "es.created",
+          "label": "e1",
+          "defined": "true",
+          "value": "1",
+          "definitionDefault": "Si(d1 > 3, 1, 2)",
+          "definitionXml": "If[d1 > 3, 1, 2]",
+          "parentAlgorithm": "If"
+        },
+        {
+          "phase": "es.reloaded",
+          "label": "d1",
+          "defined": "true",
+          "value": "11",
+          "definitionDefault": "",
+          "definitionXml": "",
+          "parentAlgorithm": "<independent>"
+        },
+        {
+          "phase": "es.reloaded",
+          "label": "d2",
+          "defined": "true",
+          "value": "11",
+          "definitionDefault": "",
+          "definitionXml": "",
+          "parentAlgorithm": "<independent>"
+        },
+        {
+          "phase": "es.reloaded",
+          "label": "d3",
+          "defined": "true",
+          "value": "22",
+          "definitionDefault": "",
+          "definitionXml": "",
+          "parentAlgorithm": "<independent>"
+        },
+        {
+          "phase": "es.reloaded",
+          "label": "e1",
+          "defined": "true",
+          "value": "1",
+          "definitionDefault": "Si(d1 > 3, 1, 2)",
+          "definitionXml": "If[d1 > 3, 1, 2]",
+          "parentAlgorithm": "If"
+        },
+        {
+          "phase": "en.reloaded",
+          "label": "d1",
+          "defined": "true",
+          "value": "11",
+          "definitionDefault": "",
+          "definitionXml": "",
+          "parentAlgorithm": "<independent>"
+        },
+        {
+          "phase": "en.reloaded",
+          "label": "d2",
+          "defined": "true",
+          "value": "11",
+          "definitionDefault": "",
+          "definitionXml": "",
+          "parentAlgorithm": "<independent>"
+        },
+        {
+          "phase": "en.reloaded",
+          "label": "d3",
+          "defined": "true",
+          "value": "22",
+          "definitionDefault": "",
+          "definitionXml": "",
+          "parentAlgorithm": "<independent>"
+        },
+        {
+          "phase": "en.reloaded",
+          "label": "e1",
+          "defined": "true",
+          "value": "1",
+          "definitionDefault": "If(d1 > 3, 1, 2)",
+          "definitionXml": "If[d1 > 3, 1, 2]",
+          "parentAlgorithm": "If"
+        }
+      ]
+    }
+  },
+  "printSiteCategories": [
+    {
+      "role": "USER-VISIBLE DISPLAY",
+      "rule": "canonical English head in every UI locale",
+      "sites": [
+        "AlgoElement.getDefinition / appendCheckVector (localized templates)",
+        "Command.toString (localized templates)",
+        "ExpressionSerializer display roles: DOT head, If head, DataFunction head",
+        "GeoPieChart.toValueString",
+        "AlgoLocusStroke.getDefinition",
+        "AlgoLocusMetricScalarAdapter.getDefinition (GeoCeDG, Length head)",
+        "Construction Protocol definition column",
+        "Algebra view description/definition modes, tooltips, screen-reader text",
+        "CommandErrorMessageBuilder / ErrorHelper / CommandNotFoundError / CAScmdProcessor heads",
+        "Input Help tree and syntax panel (InputBarHelpPanelD)",
+        "HelpOnKeywordPanel raw .Syntax text",
+        "AppGeoCeDG.setShowInputHelpPanel focusCommand",
+        "GeoCeDGDefinitionInspector (edit-form text shown read-only)",
+        "GeoLocusV2 / GeoLocusMetricResult / GeoLocusIntersectionResult value strings (already English literals)"
+      ]
+    },
+    {
+      "role": "EDITABLE USER TEXT",
+      "rule": "canonical English head; must round-trip to the same identity",
+      "sites": [
+        "GeoElement.getRedefineString (editTemplate) via DialogManagerD / RedefineInputHandler",
+        "GeoElement.getDefinitionForInputBar (MyCellEditorD, ObjectNameModel, drag and drop, GlobalKeyDispatcher)",
+        "getDefinitionForEditor (editorTemplate)",
+        "AutoCompleteTextFieldD inserted syntax line",
+        "AlgebraInputD.insertCommand",
+        "FormulaBar / spreadsheet editors",
+        "TextInputDialogD initial text"
+      ]
+    },
+    {
+      "role": "SCRIPT REPRESENTATION",
+      "rule": "display canonical English; storage internal/English unchanged; save canonical-first",
+      "sites": [
+        "GgbScript.getText / script2LocalizedScript",
+        "GgbScript.localizedScript2Script via App.createScript",
+        "GeoCasCell localized input conversion",
+        "GeoGebraLexer command highlighting set"
+      ]
+    },
+    {
+      "role": "SERIALIZATION",
+      "rule": "unchanged; internal names; outside the display policy",
+      "sites": [
+        "AlgoElement.getXML / getCmdXML",
+        "MyXMLHandler command creation (translateName=false)",
+        "xmlTemplate, giacTemplate, noLocalDefault, prefixed*, maxPrecision*, GgbAPI non-localized template",
+        "GeoElement script XML (getInternalText)",
+        "ExpressionSerializer DOT under GEOGEBRA_XML (pre-existing UI-localized defect, left unchanged)"
+      ]
+    },
+    {
+      "role": "INTERNAL ONLY",
+      "rule": "unchanged, except consumers that parse display output must use the same authority as that output",
+      "sites": [
+        "FunctionParser.isCommand / If check",
+        "InputHelper.needsAutocomplete",
+        "Traversing.CommandReplacer",
+        "CommandSyntaxLookupImpl",
+        "GeoCeDGUserToolLibrary.nativeCommand",
+        "DynamicTextProcessor / DynamicTextInputPane display-prefix matchers (couple to display output)",
+        "CASCellProcessor Delete input",
+        "GuiManager.getHelpURL (E2)"
+      ]
+    },
+    {
+      "role": "OUTSIDE COMMAND-HEAD POLICY",
+      "rule": "UI-language prose; unchanged by R5-B unless the author decides otherwise",
+      "sites": [
+        "TextDispatcher auto-label stems (distanciaAB)",
+        "FunctionInspectorModel row captions",
+        "CellRangeUtil / Relation / AlgoProveDetails captions",
+        "parser function names (sen, tg, raízn, boceto)",
+        "tool and menu names"
+      ]
+    }
+  ],
+  "serializationAndScriptInvariants": [
+    "XML <command name> stores internal names under every UI locale (witnessed: OrthogonalLine, Mirror, AngularBisector, LaTeX, PolyLine, Defined, mean, SplineV2, If, Integral, Circle)",
+    "XML expression strings print command heads non-localized (xmlTemplate localizeCmds=false) and function names internal (sin)",
+    "exception: the DOT operation head is written UI-localized (ES: ProductoEscalar); reopening such a file in ES or EN loses the dependency silently (value kept, definition gone); pre-existing upstream behaviour",
+    "GGBScript storage is internal/English; runtime SCRIPT lookup never accepts localized aliases; XML-loaded scripts are not translated",
+    "nested Execute strings and other XML-strategy text accept exact-case enum constants only; every canonical English head is one"
+  ],
+  "candidatePolicyIds": [
+    "R5B-P1 canonical English public name = English command bundle value of the definition name (E1)",
+    "R5B-P2 presentation by semantic role, orthogonal to StringTemplate.localizeCmds, selected by the GeoCeDG product profile",
+    "R5B-P3 lookup, reverse table, XML and SCRIPT resolution unchanged",
+    "R5B-P4 head resolution separated from syntax-bundle key resolution",
+    "R5B-P5 autocomplete entries carry command identity; search keys = canonical English plus UI-locale aliases",
+    "R5B-P6 script-editor display canonical English; save canonical-first",
+    "R5B-P7 mechanized canonical-head admissibility gate per supported locale and reverse-table state",
+    "R5B-P8 typed fail-closed re-entry for construction-dependent shadowing",
+    "R5B-P9 serialization roles unchanged, including the DOT defect, pending separate authorization"
+  ],
+  "unresolvedHazards": [
+    {
+      "id": "HZ-R5B-DOT-LOCALIZED-XML",
+      "preExisting": true,
+      "inR5BScope": false,
+      "summary": "DOT expression head serialized UI-localized; ES files lose Dot dependencies on reopen"
+    },
+    {
+      "id": "HZ-R5B-LABEL-SHADOWING",
+      "preExisting": true,
+      "changedByPolicy": true,
+      "summary": "a GeoElement or function variable labelled like a canonical English head turns f(...) re-entry into function application or multiplication; English display changes which labels shadow in ES documents"
+    },
+    {
+      "id": "HZ-R5B-MACRO-PRECEDENCE",
+      "preExisting": true,
+      "changedByPolicy": false,
+      "summary": "a user tool whose command name equals a resolved command name wins dispatch, also for XML-loaded commands"
+    },
+    {
+      "id": "HZ-R5B-ALIAS-CAS-STATE",
+      "preExisting": true,
+      "benign": true,
+      "summary": "ES Perímetro resolves to Perimeter or Circumference depending on CAS dictionary state; behaviourally identical"
+    },
+    {
+      "id": "HZ-R5B-IDENTITY-FROM-DISPLAY-TEXT",
+      "preExisting": true,
+      "changedByPolicy": true,
+      "summary": "AutoCompleteTextFieldD.getSyntaxes and F1 help re-derive the command from the displayed name via App.getInternalCommand, which only matches UI-locale localized names; English entries would lose their syntax in ES"
+    },
+    {
+      "id": "HZ-R5B-DISPLAY-TEXT-MATCHERS",
+      "preExisting": true,
+      "changedByPolicy": true,
+      "summary": "DynamicTextProcessor / DynamicTextInputPane classify dynamic text by matching localized display prefixes (LaTeX, Name)"
+    },
+    {
+      "id": "HZ-R5B-FUNCTION-NAME-MIXING",
+      "preExisting": false,
+      "changedByPolicy": true,
+      "summary": "with English command heads, ES display mixes them with localized function names (Circle((0,0), sen(1)))"
+    },
+    {
+      "id": "HZ-R5B-SCRIPT-EDITOR-RETARGET",
+      "preExisting": true,
+      "changedByPolicy": true,
+      "summary": "ES script editor rewrites a stored Perimeter token to Circumference on save today; removed by English display plus canonical-first save"
+    },
+    {
+      "id": "HZ-R5B-HARNESS-TABLE-FRESHNESS",
+      "preExisting": true,
+      "testOnly": true,
+      "summary": "bare setLocale leaves the reverse table of the previous locale; future tests must use the product locale path or refresh explicitly"
+    }
+  ],
+  "scratchCharacterization": {
+    "committed": false,
+    "acceptanceEvidence": false,
+    "location": "session scratchpad outside the repository",
+    "staticModel": "Python replay of App.fillCommandDict, putInTranslateCommandTable, fillCasCommandDict, Localization.getReverseCommand/getEnglishCommand, Commands.lookupInternal/englishToInternal, App.getInternalCommand over the exact blobs above",
+    "runtimeProbe": "throwaway JUnit probes compiled into the desktop test source set through a Gradle --init-script srcDir; real AppGeoCeDG via G9U1TestApp.create(true); no tracked file written",
+    "commands": [
+      "gradlew.bat :desktop:desktop:test --tests org.geocedg.desktop.PreG9BR5BCommandNameProbe --init-script <scratch>/probe-init.gradle (exit 0)",
+      "gradlew.bat :desktop:desktop:test --tests org.geocedg.desktop.PreG9BR5BSerializationProbe --init-script <scratch>/probe-init.gradle (exit 0)"
+    ],
+    "staticVersusRuntimeAgreement": {
+      "reverseTableEqual": [
+        "en.casUnfilled (532 keys)",
+        "es.fresh (983 keys)"
+      ],
+      "reverseTableCasFilled": "live 557 (en) / 1029 (es); the static model adds one key in en (solvequartic) and two in es (solvequartic, resuelvecuártica) from a commented-out Ggb2giac signature; no value differs",
+      "tokenResolutionAgreement": "1041/1041 tokens in en.casUnfilled, en.casFilled and es.fresh; 1040/1041 in es.casFilled (only ResuelveCuártica, the same commented-out CAS entry)",
+      "authority": "the live probe table is authoritative; the static model is a cross-check"
+    }
+  }
+}
