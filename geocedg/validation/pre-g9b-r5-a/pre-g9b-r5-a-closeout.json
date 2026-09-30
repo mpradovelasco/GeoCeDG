@@ -1,0 +1,190 @@
+{
+  "schemaVersion": 1,
+  "phase": "PRE-G9B-R5-A",
+  "recordKind": "AUTHOR_CLOSEOUT_DISPOSITION",
+  "status": "PRE-G9B-R5-A — PASS — AUTHOR APPROVED",
+  "authorDecisionDate": "2026-09-30",
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "technicalCandidateFrozen": true,
+  "candidateMutated": false,
+  "newHeavyFinal": "NONE",
+  "authorSmoke": "PASS",
+  "supersedes": {
+    "note": "the frozen candidate's own report and evidence file necessarily carried no author-approval field, per the frozen-candidate rule; only the current-approval status is superseded here",
+    "paths": [
+      "docs/validation/pre_g9b_r5_a_candidate_report.md",
+      "geocedg/validation/pre-g9b-r5-a/pre-g9b-r5-a-candidate-evidence.json"
+    ]
+  },
+  "publishedBase": {
+    "name": "P_R4",
+    "commit": "cfed55fad3f8b3fb5b55954f72fe43fe9ec2ab4e",
+    "tree": "f34d350aa28e5324f184a4d1fb65ac55e0334c4b"
+  },
+  "approvedTechnicalCandidate": {
+    "name": "T_R5A",
+    "commit": "4804f5057082f6eb233263bf8635e2754875f3cc",
+    "tree": "52b24a3d3d433d44f8cd186f925e2b443b12b277",
+    "parent": "cfed55fad3f8b3fb5b55954f72fe43fe9ec2ab4e",
+    "branch": "feature/pre-g9b-r5-a-guide-navigation",
+    "authorSmoke": "PASS",
+    "authorApproval": "APPROVED",
+    "modifiedByCloseout": false
+  },
+  "canonicalPrompt": {
+    "path": ".github/prompts/tasks/pre-g9b-r5-a-guide-navigation.prompt.md",
+    "blob": "fd68945b6b95ddd5b9ce3201c29d1fbb06668854",
+    "edited": false
+  },
+  "acceptedEvidence": {
+    "changeRoute": "ORDINARY",
+    "verificationClass": "BOUNDED_PHASE",
+    "frozenAtPhaseStart": true,
+    "escalated": false,
+    "acceptance": "PHASE PRE-G9B-R5-A + STATIC",
+    "authority": "geocedg/specs/operations/verification-levels.md section 12.8: BOUNDED_PHASE requires PHASE; the canonical prompt adds STATIC for the structural diagnostic",
+    "phase": {
+      "candidate": "4804f5057082f6eb233263bf8635e2754875f3cc",
+      "tree": "52b24a3d3d433d44f8cd186f925e2b443b12b277",
+      "run": "verification-a9ffbed6632a47538c601149f4bd0483",
+      "planHash": "31a5d90f3f251a4abcc1f74fd03c637d9860970ef0494edca7030708da3f0b04",
+      "planNodes": 7,
+      "acceptanceVerdict": "ACCEPTED",
+      "coverageVerdict": "COMPLETE",
+      "resultHash": "93bc88e0ad9340b2c43e073451aec90138a8ab84b272aaefcd89d658d91266cb",
+      "resultFileSha256": "48ef79d619a1afaa6e1965b1c0b3d0f00c4f48dc3ef271e861a2d77128a8fb61",
+      "acceptanceSatisfied": 4,
+      "acceptanceViolated": 0,
+      "acceptanceUntrusted": 0,
+      "acceptanceNotRun": 0,
+      "diagnostics": 0,
+      "junit": { "desktop": { "selection": "pre-g9b-r5-a.desktop", "tests": 79, "failures": 0 } }
+    },
+    "static": {
+      "candidate": "4804f5057082f6eb233263bf8635e2754875f3cc",
+      "tree": "52b24a3d3d433d44f8cd186f925e2b443b12b277",
+      "run": "verification-407c9036a9db4e0282866c13038d63c3",
+      "planHash": "25dfacc8b0c53df285a3ac19bbc438c5868d0c94dad7d1021727287ee892cc52",
+      "planNodes": 10,
+      "acceptanceVerdict": "ACCEPTED",
+      "coverageVerdict": "COMPLETE",
+      "resultHash": "d4242b3e54891189586d1e0eb6692d9d44a242d9dfc32dbe078f946d0f4dd7a0",
+      "resultFileSha256": "4b08763f4c929fca63f3e7a5d9656fb3aedfd31e0bc5c9023eeb23d1ee2c7427",
+      "acceptanceSatisfied": 3,
+      "guideStructureDiagnostic": { "outcome": "DIAGNOSTIC_CLEAR", "markersPerEdition": 17, "alignedEntries": 99, "enEsMismatches": 0 },
+      "standingDiagnostics": { "diagnostic.governance": "DIAGNOSTIC_FINDING", "diagnostic.historical-consistency": "DIAGNOSTIC_UNAVAILABLE" }
+    },
+    "finalReceipt": "NONE; PHASE and STATIC emit no FINAL acceptance receipt and none is claimed, fabricated or fed to the FINAL-receipt identity-only closeout adapter",
+    "statusOnlyPrecedent": ["PRE-G9B-R1-R1", "PRE-G9B-R2", "PRE-G9B-R4"],
+    "localEvidence": ["artifacts/agent/pre-g9b-r5-a-phase-4804f505/", "artifacts/agent/pre-g9b-r5-a-static-4804f505/"],
+    "furtherVerificationForCloseout": "static checks only; no PHASE, FINAL or GOV-R"
+  },
+  "acceptedAuthorSmoke": [
+    "English guide navigation tree renders correctly",
+    "Spanish guide navigation tree renders correctly",
+    "EN/ES navigation structures correspond",
+    "tree selection scrolls to the expected section",
+    "manual scrolling updates tree selection coherently",
+    "boundary/end-of-document behavior is usable",
+    "no visible synthetic anchors or TOC appear",
+    "existing guide rendering remains correct",
+    "existing help/input-help behavior is unaffected"
+  ],
+  "acceptedCapability": [
+    "derived stable anchors",
+    "derived structural outline",
+    "left navigation tree",
+    "tree to document navigation",
+    "document to tree scroll synchronization",
+    "bilingual structural diagnostic",
+    "documentation-maintenance anchor rule"
+  ],
+  "preservedArchitecture": {
+    "authoredSources": ["docs/user/geocedg_user_guide_en.md", "docs/user/geocedg_user_guide_es.md"],
+    "outline": "derived presentation data",
+    "anchorIdentityFromTranslatedProse": false,
+    "packagedMarkdownByteIdentical": true,
+    "hyperlinkListener": false,
+    "manualTocOrIndexAuthority": false,
+    "r5bCommandSurfaceWork": false
+  },
+  "documentationContract": {
+    "path": "geocedg/specs/operations/documentation-maintenance.md",
+    "section": "10. User-guide structure and derived navigation",
+    "disposition": "ACCEPTED BY THIS AUTHOR DECISION ON EXACT T_R5A",
+    "editedInCloseout": false,
+    "acceptedRule": [
+      "navigation identity derives from stable section markers and numeric subsection structure",
+      "translated heading text is display only",
+      "manual navigation indexes are forbidden",
+      "EN/ES structural alignment is machine-checked"
+    ]
+  },
+  "impact": {
+    "GUIDE_IMPACT": "NONE",
+    "GUIDE_JUSTIFICATION": "R5-A changes navigation presentation around the existing authoritative bilingual guides; their authored contents remain byte-identical and are explicitly frozen by the phase contract.",
+    "BOOTSTRAP_IMPACT": "NO_CHANGE_REQUIRED",
+    "VERIFICATION_INFRASTRUCTURE_IMPACT": "MODIFIED",
+    "VERIFICATION_INFRASTRUCTURE_SCOPE": "registry, JUnit inventory and static-diagnostic registration only; no verifier semantics changed"
+  },
+  "observationDisposition": {
+    "OBS-R5A-GUIDE-STRUCTURE-CHECKS-OUTSIDE-FINAL": "RETAINED OBSERVATION; NOT ADDED TO FINAL IN CLOSEOUT",
+    "OBS-R5A-LATENT-NESTED-LIST-CONTINUATION": "RETAINED / NON-LIVE",
+    "blocksR5A": false,
+    "repairedHere": false
+  },
+  "retainedLedger": [
+    "TD-R3-CONSTRUCTION-PROTOCOL-MINIMAL-REORDER",
+    "BASELINE-G9U1-BRANDING-EVIDENCE-PIN",
+    "OBS-R2-PHASE-SELECTION-COHORT",
+    "GUIDE-A1-SECTION-9.3-STALE",
+    "OBS-C1-COMMAND-NOT-LOADED-OUTER-RESTORE",
+    "OBS-C1-DOPARSEXML-CLEAR-BEFORE-TRY",
+    "OBS-U1-PLAIN-XML-PASTE-TOLERATES-COMMAND-ERRORS",
+    "OBS-X1-MACRO-BUILDXML-REQUIRES-CONSISTENT-SET-ORDER",
+    "OBS-R4-SPLINEV2-DURABLE-ARGUMENT-PROMOTION",
+    "OBS-R4-KERNEL-CLOSURE-BY-ENDPOINT-VALUE-EQUALITY",
+    "OBS-R4-TOOLS-SELECT-EXISTING-POINTS-ONLY",
+    "OBS-R4C-LOCUS-V2-FAMILY-LAYER-BELOW-CONTAINING-LIST",
+    "OBS-R4C-PROFILE-TOOLBAR-MENU-ONLY-MODE-KEEPS-SELECTION",
+    "OBS-R5A-GUIDE-STRUCTURE-CHECKS-OUTSIDE-FINAL",
+    "OBS-R5A-LATENT-NESTED-LIST-CONTINUATION"
+  ],
+  "ledgerOverlapAbsorbed": [],
+  "promotion": {
+    "authorized": true,
+    "method": "ordinary clean non-force fast-forward of main",
+    "linearHistory": [
+      "cfed55fad3f8b3fb5b55954f72fe43fe9ec2ab4e",
+      "4804f5057082f6eb233263bf8635e2754875f3cc",
+      "this closeout commit"
+    ],
+    "remoteAtEntry": {
+      "localMain": "cfed55fad3f8b3fb5b55954f72fe43fe9ec2ab4e",
+      "originMain": "cfed55fad3f8b3fb5b55954f72fe43fe9ec2ab4e",
+      "liveRemoteMain": "cfed55fad3f8b3fb5b55954f72fe43fe9ec2ab4e"
+    },
+    "tag": "NONE",
+    "release": "NONE",
+    "featureBranchPushed": false
+  },
+  "successorState": {
+    "PRE-G9B-R5-B": "DESIGNED — NOT AUTHORIZED",
+    "PRE-G9B-R5-B_BLOCKED_ON": "accepted compatibility ADR implementing/formalizing AD-R0-4; AD-R0-4 is an author-decided policy direction, not an accepted ADR",
+    "nextPermissibleTask": "separately authorized design, review and author acceptance of the PRE-G9B-R5-B compatibility ADR",
+    "PRE-G9B-R6": "NOT AUTHORIZED",
+    "PRE-G9B-R7": "NOT AUTHORIZED",
+    "G9B": "NOT AUTHORIZED"
+  },
+  "prohibitedInThisCloseout": [
+    "modifying the frozen technical candidate",
+    "rerunning PHASE, running FINAL or using GOV-R",
+    "fabricating or claiming a FINAL receipt",
+    "adding the R5-A checks to FINAL",
+    "repairing the retained observations or guide content",
+    "tagging or releasing",
+    "authorizing or implementing R5-B or any successor phase"
+  ]
+}
