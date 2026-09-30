@@ -1,0 +1,166 @@
+{
+  "schemaVersion": 1,
+  "phase": "PRE-G9B-R4",
+  "phaseKind": "AUTHOR_SMOKE_CORRECTIVE_DESCENDANT",
+  "technicalCandidateState": "PREPARED_FOR_ONE_CLEAN_IMMUTABLE_CORRECTIVE_COMMIT",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "authorDecisionAuthority": "a later explicit author decision naming the exact technical commit is the sole authority for approval",
+  "selfApproved": false,
+  "authorApproved": false,
+  "passClaimed": false,
+  "changeRoute": "ORDINARY",
+  "verificationClass": "BOUNDED_PHASE",
+  "verificationClassEscalated": false,
+  "frozenAcceptance": "tools/agent/verify.ps1 -Profile PHASE -Phase PRE-G9B-R4",
+  "initialCandidate": {
+    "commit": "558c15c9537fdde8c1915fd34e810d7ade969f93",
+    "tree": "43f6946113beb8436d73321071958686cbc39323",
+    "state": "initial technically accepted candidate, preserved unchanged",
+    "phaseRun": "verification-133e6b111d9d48a29ced957f81069e4c",
+    "phaseVerdict": "ACCEPTED / COMPLETE",
+    "report": "docs/validation/pre_g9b_r4_candidate_report.md"
+  },
+  "correctiveCommit": "the commit that contains this file; its parent is the initial candidate; not nameable inside it, reported separately",
+  "entry": {
+    "localMainOriginMainLiveRemoteMain": "62b1281b5006272d4f9b1a0ae9d413e1f7b94320",
+    "worktree": "clean at the initial candidate"
+  },
+  "authorSmoke": "CORRECTIVE FINDINGS",
+  "findings": [
+    {
+      "id": "A",
+      "subject": "the three SplineV2 tools were not shown as selected in the toolbar",
+      "cause": "the registry refresh triggered by the initial candidate's Input Help opening wrote a null toggle state for mode actions, and the mixed-flyout listener cleared the host-mode selection on that null-to-null event",
+      "causeIntroducedBy": "latent G9U1 flyout listener; made to fire on every SplineV2 activation by the initial candidate",
+      "fix": "mode entries of a mixed flyout take their selected state only from the host mode; the toggle state keeps its authority for non-mode toggle actions",
+      "paths": ["source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGWorkspaceController.java"],
+      "parallelSelectionState": false,
+      "duplicateActionOrIcon": false,
+      "tests": ["PreG9BR4SplineV2AuthoringTest.theToolbarShowsEachSplineVariantSelectedThroughTheHostMode"]
+    },
+    {
+      "id": "B",
+      "subject": "activating a SplineV2 tool opened Input Help",
+      "fix": "tool activation only sets the mode; AppGeoCeDG.setShowInputHelpPanel selects the existing localized SplineV2 syntax whenever the user shows Input Help while a SplineV2 tool is active",
+      "explicitRoutes": ["help.input-panel", "help.command-list", "help.contextual-action", "Algebra Input Input Help button"],
+      "focusCommandScrollRetained": true,
+      "paths": [
+        "source/desktop/desktop/src/main/java/org/geocedg/desktop/AppGeoCeDG.java",
+        "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGActionRegistry.java"
+      ],
+      "tests": [
+        "PreG9BR4SplineV2AuthoringTest.invokingTheToolSetsItsModeWithoutChangingInputHelpVisibility",
+        "PreG9BR4SplineV2AuthoringTest.explicitInputHelpDuringASplineModeShowsTheExistingLocalizedSyntax",
+        "PreG9BR4SplineV2AuthoringTest.contextualHelpDescribesTheActiveSplineToolNotThePreviousTool"
+      ],
+      "replacedTest": "PreG9BR4SplineV2AuthoringTest.invokingTheToolSetsItsModeAndOpensInputHelpOnTheExistingSyntax"
+    },
+    {
+      "id": "C",
+      "subject": "a dedicated List tools toolbar presentation group",
+      "presentationGroup": "construction-lists",
+      "nameKey": "Group.Construction.Lists",
+      "localizedName": {"en": "List tools", "es": "Herramientas de listas"},
+      "actionIds": ["construction.list-from-selection"],
+      "toolbarPosition": 2,
+      "rightOf": "edit-selection",
+      "rendering": "native",
+      "constructionMenuEntry": "after construction-polygons",
+      "removedFrom": "construction-polygons",
+      "actionIdChanged": false,
+      "clusterMembershipChanged": false,
+      "nativeToolbarGroups": {"before": 9, "after": 10},
+      "paths": ["apps/geocedg/application-profile.yml"],
+      "tests": ["PreG9BR4OrderedListToolTest.theToolOwnsTheListToolbarGroupRightOfSelectionAndLeavesPolygons"]
+    },
+    {
+      "id": "D",
+      "subject": "clicking a Spline V2 that belongs to a visible list selects the list",
+      "fixture": {
+        "path": "artifacts/preg-g9b-r4/TestNewTools.cedg",
+        "sha256": "fbff3f70c7a9cf5f11baa3d5e39f763b9274b1278c1f2efa1aa15a345f3a2dad",
+        "edited": false
+      },
+      "baseAndInitialCandidateIdentical": true,
+      "typedListAndToolListIdentical": true,
+      "mechanism": "the application's maximum used layer reaches 5 while the host loads its factory settings, new ordinary objects and lists take it, a GeoLocusV2 output has no default geo type and stays on layer 0, and the host hit filter keeps only top-layer hits",
+      "classification": "PRE_EXISTING_HOST_BEHAVIOUR with a pre-existing Locus V2-family default-layer gap",
+      "r4Regression": false,
+      "fixed": false,
+      "recordedAs": "OBS-R4C-LOCUS-V2-FAMILY-LAYER-BELOW-CONTAINING-LIST"
+    }
+  ],
+  "preservedUnchanged": [
+    "modes 137-140",
+    "default degree 3",
+    "explicit-degree second gesture",
+    "Closed Spline V2 as the only closed-form action",
+    "ordinary dependent GeoList",
+    "cancel",
+    "one undo point",
+    "contextual help text",
+    "corrected tooltip text",
+    "localization bundles",
+    "native reopen"
+  ],
+  "byteUnchangedFromInitialCandidate": [
+    "source/shared/common/src/main/java/org/geogebra/common/euclidian/EuclidianConstants.java",
+    "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu.properties",
+    "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_en.properties",
+    "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_es.properties",
+    "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGEuclidianController.java",
+    "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGSplineV2Authoring.java",
+    "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGProfile.java",
+    "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/inputbar/InputBarHelpPanelD.java",
+    "tools/agent/workspace-profile-validation.ps1",
+    "geocedg/specs/operations/verification-static-contracts.json"
+  ],
+  "boundaries": {
+    "kernelChanged": false,
+    "commandChanged": false,
+    "serializationChanged": false,
+    "durableIdentityChanged": false,
+    "newStableActionIds": 0
+  },
+  "verificationRegistration": {
+    "phaseSelection": "PRE-G9B-R4",
+    "phaseSelectionChanged": false,
+    "focalTestMethods": {
+      "PreG9BR4SplineV2AuthoringTest": {"before": 19, "after": 21},
+      "PreG9BR4OrderedListToolTest": {"before": 8, "after": 9}
+    },
+    "inventoryRegeneration": {
+      "discovery.shared": {"before": 5925, "after": 5925},
+      "discovery.desktop": {"before": 1563, "after": 1566},
+      "pre-g9b-r4.shared": {"before": 5, "after": 5, "rerun": false},
+      "pre-g9b-r4.desktop": {"before": 155, "after": 158},
+      "final.shared": {"before": 6842, "after": 6842, "rerun": false},
+      "final.desktop": {"before": 1557, "after": 1560},
+      "evidence": "official updater from --test-dry-run discovery and completed passing executed runs; no hand edit; no historical selection touched"
+    },
+    "pins": {
+      "junit_inventory": {"before": "19a8c1cd9c457a79c5be5a6ac09746d24e582687c694323f60c48a7129f9d05a", "after": "5980e9850220ac9b791583b2422c70ac2f5e59f0264e9cf124a744ed2cf6d707"},
+      "static_contracts": {"before": "f32de70b01b1315a65ed9ebed8623ae85e36cc6def873385bb8a18561a1f481f", "after": "f32de70b01b1315a65ed9ebed8623ae85e36cc6def873385bb8a18561a1f481f"},
+      "method": "Get-VerificationCanonicalTextSha256; the previous pin reproduced exactly first"
+    }
+  },
+  "impact": {
+    "PRODUCT_PHASE_EFFECT": "DESKTOP_AUTHORING_UX_CORRECTION",
+    "VERIFICATION_INFRASTRUCTURE_IMPACT": "MODIFIED",
+    "BOOTSTRAP_IMPACT": "NO_CHANGE_REQUIRED",
+    "GUIDE_IMPACT": "UPDATED",
+    "GUIDE_PATHS": ["docs/user/geocedg_user_guide_en.md", "docs/user/geocedg_user_guide_es.md"]
+  },
+  "retainedObservations": [
+    "OBS-R4-SPLINEV2-DURABLE-ARGUMENT-PROMOTION",
+    "OBS-R4-KERNEL-CLOSURE-BY-ENDPOINT-VALUE-EQUALITY",
+    "OBS-R4-TOOLS-SELECT-EXISTING-POINTS-ONLY"
+  ],
+  "newObservations": [
+    "OBS-R4C-LOCUS-V2-FAMILY-LAYER-BELOW-CONTAINING-LIST",
+    "OBS-R4C-PROFILE-TOOLBAR-MENU-ONLY-MODE-KEEPS-SELECTION"
+  ],
+  "authorSmokeRequired": true,
+  "authorSmokeOfCorrectiveCandidate": "PENDING",
+  "promotion": "NONE"
+}

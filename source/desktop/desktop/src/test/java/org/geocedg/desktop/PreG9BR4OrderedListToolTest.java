@@ -17,7 +17,10 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
@@ -25,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.Action;
+import javax.swing.JComponent;
 
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geogebra.common.euclidian.EuclidianConstants;
@@ -32,17 +36,25 @@ import org.geogebra.common.kernel.algos.AlgoDependentList;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoList;
 import org.geogebra.common.kernel.geos.GeoPoint;
+import org.geogebra.desktop.gui.GuiManagerD;
+import org.geogebra.desktop.gui.toolbar.ModeToggleMenuD;
+import org.geogebra.desktop.gui.toolbar.ToolbarContainer;
 import org.geogebra.desktop.main.undo.UndoManagerD;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
- * PRE-G9B-R4 focal contract for Create List from Selection: an ordinary host
- * GeoList in exact click order, host toggle deduplication, mixed members, one
- * undo point, cancel, and inherited downstream, deletion and redefinition.
+ * PRE-G9B-R4 focal contract for Create List from Selection: its own List tools
+ * toolbar group, an ordinary host GeoList in exact click order, host toggle
+ * deduplication, mixed members, one undo point, cancel, and inherited
+ * downstream, deletion and redefinition.
  */
 @ExtendWith(G9U1TestApp.Lifecycle.class)
 class PreG9BR4OrderedListToolTest {
+
+	private static final String LIST_ACTION = "construction.list-from-selection";
+	private static final String GROUP_ID = "geocedg.presentation.group.id";
+	private static final String TOOLBAR_IDS = "geocedg.toolbar.action.ids";
 
 	@Test
 	void theToolIsAGeoCeDGModeWithItsOwnLocalizedText() {
@@ -64,6 +76,35 @@ class PreG9BR4OrderedListToolTest {
 				app.getToolName(EuclidianConstants.MODE_ORDERED_LIST));
 		registry.invoke("construction.list-from-selection", new ActionEvent(this, 1, "t"));
 		assertEquals(EuclidianConstants.MODE_ORDERED_LIST, app.getMode());
+	}
+
+	@Test
+	void theToolOwnsTheListToolbarGroupRightOfSelectionAndLeavesPolygons() {
+		AppGeoCeDG app = G9U1ActionRegistryTest.app(true);
+		app.buildApplicationPanel();
+		GuiManagerGeoCeDG gui = (GuiManagerGeoCeDG) app.getGuiManager();
+		ToolbarContainer container = ((GuiManagerD) gui).getToolbarPanel();
+		container.buildGui();
+		List<JComponent> groups = toolbarGroups(container);
+		assertEquals("edit-selection", groups.get(0).getClientProperty(GROUP_ID));
+		assertEquals("construction-lists", groups.get(1).getClientProperty(GROUP_ID));
+		assertInstanceOf(ModeToggleMenuD.class, groups.get(1));
+		assertEquals(List.of(LIST_ACTION), groups.get(1).getClientProperty(TOOLBAR_IDS));
+		int occurrences = 0;
+		for (JComponent group : groups) {
+			occurrences += Collections.frequency(
+					(List<?>) group.getClientProperty(TOOLBAR_IDS), LIST_ACTION);
+		}
+		assertEquals(1, occurrences, "one toolbar placement of the one stable action");
+		assertEquals("List tools", GeoCeDGProfile.getText("Group.Construction.Lists", "en"));
+		assertEquals("Herramientas de listas",
+				GeoCeDGProfile.getText("Group.Construction.Lists", "es"));
+
+		gui.getActionRegistry().invoke(LIST_ACTION, new ActionEvent(this, 1, "tool"));
+
+		assertEquals(EuclidianConstants.MODE_ORDERED_LIST, app.getMode());
+		ModeToggleMenuD lists = (ModeToggleMenuD) toolbarGroups(container).get(1);
+		assertTrue(lists.getJToggleButton().isSelected());
 	}
 
 	@Test
@@ -230,6 +271,17 @@ class PreG9BR4OrderedListToolTest {
 	}
 
 	// ------------------------------------------------------------------------ helpers
+
+	private static List<JComponent> toolbarGroups(ToolbarContainer container) {
+		List<JComponent> groups = new ArrayList<>();
+		for (Component component : container.getToolbar(-1).getComponents()) {
+			if (component instanceof JComponent group
+					&& group.getClientProperty(GROUP_ID) != null) {
+				groups.add(group);
+			}
+		}
+		return groups;
+	}
 
 	private static GeoCeDGEuclidianController listMode(AppGeoCeDG app) {
 		return PreG9BR4SplineV2AuthoringTest.splineMode(app,

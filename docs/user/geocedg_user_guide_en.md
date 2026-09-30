@@ -187,6 +187,7 @@ appears once.
 | Points | Point, Point on object, Midpoint |
 | Lines and vectors | Line, Segment, Ray, Vector, Segment with given length, Vector from point |
 | Polygons | Polygon, Polyline, Regular polygon, Rigid polygon, Vector polygon |
+| List tools | Create List from Selection |
 | Derived constructions | Parallel line, Perpendicular line, Perpendicular bisector, Angle bisector |
 | Parameters and drivers | Slider, Angle with given size, Check box, Button, Input box, Animate selected object, Text |
 | Relations and intersections | Intersect, Tangents, Relation, Polar/diameter line, Inspect rich result, and the three materialization actions |
@@ -203,8 +204,8 @@ not an authorized capability and reports that when selected.
 ### 3.3 Toolbar and flyouts
 
 The toolbar projects the frequently used actions of that same catalog, grouped
-as Move; Point and Intersection; Lines and vectors; Polygons; Derived
-constructions; Circles and conics; Semantic curves; Angles and lengths;
+as Move; List tools; Point and Intersection; Lines and vectors; Polygons;
+Derived constructions; Circles and conics; Semantic curves; Angles and lengths;
 Transformations; Parameters and drivers; Navigation.
 
 **Semantic curves** and **Navigation** are compact mixed flyouts: they show the
@@ -451,13 +452,13 @@ to semantic curves they have the additional semantics described in section 10.
 
 ### 5.8 Lists from a selection
 
-**Create List from Selection** (**Construction → Polygons**, next to Polyline)
-builds an ordinary list from objects in the exact order you select them. Select
-the objects one by one (points, segments, numbers or any mix), then select the
-**first object again** to finish. Selecting any other object again removes it
-from the selection, so no object is added twice; a list that repeats an element
-is typed in Algebra Input, for example `{A,B,A}`. **Escape** or another tool
-cancels and creates nothing.
+**Create List from Selection** (**Construction → List tools**, and its own
+toolbar group just right of Move) builds an ordinary list from objects in the
+exact order you select them. Select the objects one by one (points, segments,
+numbers or any mix), then select the **first object again** to finish.
+Selecting any other object again removes it from the selection, so no object is
+added twice; a list that repeats an element is typed in Algebra Input, for
+example `{A,B,A}`. **Escape** or another tool cancels and creates nothing.
 
 The finished list is one undo step and an ordinary dependent list: it updates
 when its elements change and follows the usual rules when an element is
@@ -623,8 +624,10 @@ one Spline V2 and one undo step.
 - **Points.** The tools do not create points; create them first, for example
   with the **Point** tool.
 
-Choosing a Spline V2 tool also opens **Input Help** on the `SplineV2` command.
-Its forms can be typed in Algebra Input:
+Choosing a Spline V2 tool never opens or closes **Input Help**. When you open
+Input Help yourself, or choose **Help → Current tool help**, while a Spline V2
+tool is active, it shows the `SplineV2` command. Its forms can be typed in
+Algebra Input:
 
 ```text
 SplineV2( <List of Points> )
@@ -1451,7 +1454,7 @@ These are the limitations that affect what you can do in the application today.
 |---|---|---|---|---|
 | Create a semantic locus | Construction → Semantic curves → Locus V2 | `LocusV2(G,u,dom)` | semantic curve | the domain is explicit; it does not come from a slider range |
 | Create a semantic spline | Construction → Semantic curves → Spline V2, Spline V2 with degree or Closed Spline V2 | `SplineV2({A,B,C,D},3)` | semantic curve | select the points in order, then the first point again; constructor points are not semantic points |
-| Create a list in selection order | Construction → Polygons → Create List from Selection | `{A,B,C}` | list | exact click order; select the first object again to finish |
+| Create a list in selection order | Construction → List tools → Create List from Selection | `{A,B,C}` | list | exact click order; select the first object again to finish |
 | Point on a semantic curve, interactively | Point tool, click the curve stroke | — | semantic point | unique preimage, or choose explicitly; never by proximity |
 | Point on a semantic curve, by parameter | Construction → Semantic curves → Point on semantic curve | `Point(S,"spline-v2/main",0.25)` | semantic point | branch key and canonical parameter; the parameter may be a named number |
 | Point on a Locus V2, by parameter | same | `Point(L,"generator.main",1)` | semantic point | default generator branch key |

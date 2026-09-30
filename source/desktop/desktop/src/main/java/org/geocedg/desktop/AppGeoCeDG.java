@@ -26,6 +26,7 @@ import org.geogebra.common.euclidian.EuclidianController;
 import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.io.layout.Perspective;
 import org.geogebra.common.kernel.Kernel;
+import org.geogebra.common.kernel.commands.Commands;
 import org.geogebra.common.main.AppConfig;
 import org.geogebra.common.main.MyError.Errors;
 import org.geogebra.common.main.OptionType;
@@ -36,6 +37,8 @@ import org.geogebra.desktop.geogebra3D.App3D;
 import org.geogebra.desktop.gui.GuiManagerD;
 import org.geogebra.desktop.gui.app.GeoGebraFrame;
 import org.geogebra.desktop.gui.dialog.options.OptionPanelD;
+import org.geogebra.desktop.gui.inputbar.AlgebraInputD;
+import org.geogebra.desktop.gui.inputbar.InputBarHelpPanelD;
 import org.geogebra.desktop.gui.menubar.GeoGebraMenuBar;
 import org.geogebra.desktop.gui.view.consprotocol.ConstructionProtocolNavigationD;
 import org.geogebra.desktop.gui.view.consprotocol.ConstructionProtocolViewD;
@@ -134,6 +137,23 @@ public final class AppGeoCeDG extends App3D {
 		// Product language policy only; never remove the upstream locale corpus.
 		super.setLocale(locale != null && "es".equals(locale.getLanguage())
 				? Locale.forLanguageTag("es") : Locale.ENGLISH);
+	}
+
+	/**
+	 * Input Help visibility stays user-controlled: choosing a tool never calls this. When
+	 * the user shows Input Help while a SplineV2 tool is active, it selects the existing
+	 * localized SplineV2 syntax, whichever menu, contextual help or input-bar button asked.
+	 */
+	@Override
+	public void setShowInputHelpPanel(boolean isVisible) {
+		super.setShowInputHelpPanel(isVisible);
+		if (isVisible && GeoCeDGSplineV2Authoring.handles(getMode())) {
+			GuiManagerD gui = (GuiManagerD) getGuiManager();
+			((InputBarHelpPanelD) gui.getInputHelpPanel()).focusCommand(
+					getLocalization().getCommand(Commands.SplineV2.name()));
+			((AlgebraInputD) gui.getAlgebraInput()).getTextField().setToolTipText(
+					GeoCeDGProfile.getText("Workspace.SplineHelp", getLocale().getLanguage()));
+		}
 	}
 
 	@Override

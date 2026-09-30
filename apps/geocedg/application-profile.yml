@@ -3232,8 +3232,14 @@
     {
       "id": "construction-polygons",
       "name_key": "Group.Construction.Polygons",
-      "action_ids": ["construction.polygon", "construction.polyline", "construction.list-from-selection", "construction.regular-polygon", "construction.rigid-polygon", "construction.vector-polygon"],
-      "toolbar_action_ids": ["construction.polygon", "construction.polyline", "construction.list-from-selection", "construction.regular-polygon", "construction.rigid-polygon", "construction.vector-polygon"]
+      "action_ids": ["construction.polygon", "construction.polyline", "construction.regular-polygon", "construction.rigid-polygon", "construction.vector-polygon"],
+      "toolbar_action_ids": ["construction.polygon", "construction.polyline", "construction.regular-polygon", "construction.rigid-polygon", "construction.vector-polygon"]
+    },
+    {
+      "id": "construction-lists",
+      "name_key": "Group.Construction.Lists",
+      "action_ids": ["construction.list-from-selection"],
+      "toolbar_action_ids": ["construction.list-from-selection"]
     },
     {
       "id": "construction-derived",
@@ -3323,6 +3329,7 @@
   ],
   "toolbar_group_ids": [
     "edit-selection",
+    "construction-lists",
     "construction-relations",
     "construction-lines-vectors",
     "construction-polygons",
@@ -3406,6 +3413,7 @@
         {"kind": "group", "group_id": "construction-points"},
         {"kind": "group", "group_id": "construction-lines-vectors"},
         {"kind": "group", "group_id": "construction-polygons"},
+        {"kind": "group", "group_id": "construction-lists"},
         {"kind": "group", "group_id": "construction-derived"},
         {"kind": "group", "group_id": "construction-parameters"},
         {"kind": "group", "group_id": "construction-relations"},
@@ -3502,6 +3510,7 @@
     "Group.Construction.Points": {"en": "Points", "es": "Puntos"},
     "Group.Construction.LinesVectors": {"en": "Lines and vectors", "es": "Rectas y vectores"},
     "Group.Construction.Polygons": {"en": "Polygons", "es": "Polígonos"},
+    "Group.Construction.Lists": {"en": "List tools", "es": "Herramientas de listas"},
     "Group.Construction.Derived": {"en": "Derived constructions", "es": "Construcciones derivadas"},
     "Group.Construction.Parameters": {"en": "Parameters and drivers", "es": "Parámetros y controladores"},
     "Group.Construction.Relations": {"en": "Relations and intersections", "es": "Relaciones e intersecciones"},

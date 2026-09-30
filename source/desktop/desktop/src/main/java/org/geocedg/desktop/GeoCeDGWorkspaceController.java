@@ -336,8 +336,11 @@ public final class GeoCeDGWorkspaceController {
 		ButtonGroup radios = new ButtonGroup();
 		for (String id : actionIds) {
 			Action action = registry.get(id);
+			// Host modes own their selected state through ProfileToolbar.setMode; the
+			// registry's null SELECTED_KEY refresh of a mode action must not clear it.
+			final boolean hostMode = GeoCeDGProfile.getAction(id).mode() != null;
 			action.addPropertyChangeListener(event -> {
-				if (Action.SELECTED_KEY.equals(event.getPropertyName())
+				if (!hostMode && Action.SELECTED_KEY.equals(event.getPropertyName())
 						&& id.equals(button.getClientProperty(
 								"geocedg.toolbar.active.action.id"))) {
 					if (Boolean.TRUE.equals(event.getNewValue())) {
@@ -402,7 +405,7 @@ public final class GeoCeDGWorkspaceController {
 				(String) action.getValue(Action.SHORT_DESCRIPTION));
 		button.putClientProperty("geocedg.toolbar.active.action.id", id);
 		Object selected = action.getValue(Action.SELECTED_KEY);
-		if (selected instanceof Boolean) {
+		if (GeoCeDGProfile.getAction(id).mode() == null && selected instanceof Boolean) {
 			button.setSelected(Boolean.TRUE.equals(selected));
 		}
 		GeoCeDGToolbarContainer.applyNativeToolPresentation(button,

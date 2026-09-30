@@ -32,14 +32,11 @@ import org.geocedg.common.main.feature.RuntimeFeatureService;
 import org.geocedg.desktop.GeoCeDGProfile.ActionDefinition;
 import org.geocedg.desktop.resources.GeoCeDGToolImageResource;
 import org.geogebra.common.GeoGebraConstants;
-import org.geogebra.common.kernel.commands.Commands;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.main.App;
 import org.geogebra.common.main.OptionType;
 import org.geogebra.common.main.settings.AlgebraStyle;
 import org.geogebra.desktop.gui.GuiManagerD;
-import org.geogebra.desktop.gui.inputbar.AlgebraInputD;
-import org.geogebra.desktop.gui.inputbar.InputBarHelpPanelD;
 import org.geogebra.desktop.gui.menubar.GeoGebraMenuBar;
 import org.geogebra.desktop.gui.menubar.LoadFileListener;
 import org.geogebra.desktop.gui.view.properties.PropertiesViewD;
@@ -227,9 +224,6 @@ public final class GeoCeDGActionRegistry {
 		if (definition.mode() != null) {
 			app.setActiveView(App.VIEW_EUCLIDIAN);
 			app.setMode(definition.mode());
-			if (GeoCeDGSplineV2Authoring.handles(definition.mode())) {
-				showSplineV2InputHelp();
-			}
 			return;
 		}
 		execute(definition.target(), event);
@@ -340,7 +334,10 @@ public final class GeoCeDGActionRegistry {
 			break;
 		case "geocedg.help.contextual-action":
 			if (GeoCeDGSplineV2Authoring.handles(app.getMode())) {
-				showSplineV2InputHelp();
+				// AppGeoCeDG selects the existing SplineV2 syntax in this Input Help.
+				app.setShowAlgebraInput(true, true);
+				gui.getInputHelpPanel();
+				app.setShowInputHelpPanel(true);
 			}
 			message(app.getToolName(app.getMode()) + "\n" + app.getToolHelp(app.getMode()));
 			break;
@@ -448,20 +445,6 @@ public final class GeoCeDGActionRegistry {
 		}
 		app.getKernel().getAnimationManager().startAnimation();
 		app.storeUndoInfo();
-	}
-
-	/**
-	 * Opens Input Help on the existing localized SplineV2 syntax. It neither types
-	 * into nor focuses Algebra Input, so tool clicks keep reaching the Graphics.
-	 */
-	private void showSplineV2InputHelp() {
-		GuiManagerD gui = (GuiManagerD) app.getGuiManager();
-		app.setShowAlgebraInput(true, true);
-		InputBarHelpPanelD help = (InputBarHelpPanelD) gui.getInputHelpPanel();
-		app.setShowInputHelpPanel(true);
-		help.focusCommand(app.getLocalization().getCommand(Commands.SplineV2.name()));
-		((AlgebraInputD) gui.getAlgebraInput()).getTextField()
-				.setToolTipText(text("Workspace.SplineHelp"));
 	}
 
 	private void chooseLanguage() {

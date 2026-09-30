@@ -208,8 +208,8 @@ class G9U1ProfileCompilerTest {
 			}
 		}
 		assertEquals(115, ids.size());
-		assertEquals(List.of("edit-selection", "construction-relations",
-				"construction-lines-vectors",
+		assertEquals(List.of("edit-selection", "construction-lists",
+				"construction-relations", "construction-lines-vectors",
 				"construction-polygons",
 				"construction-derived", "construction-circles-conics",
 				"construction-semantic-curves", "construction-metrics",
@@ -255,8 +255,9 @@ class G9U1ProfileCompilerTest {
 				"construction.vector", "construction.fixed-segment",
 				"construction.vector-from-point"),
 				toolbarIds(groups, "construction-lines-vectors"));
+		assertEquals(List.of("construction.list-from-selection"),
+				toolbarIds(groups, "construction-lists"));
 		assertEquals(List.of("construction.polygon", "construction.polyline",
-				"construction.list-from-selection",
 				"construction.regular-polygon", "construction.rigid-polygon",
 				"construction.vector-polygon"),
 				toolbarIds(groups, "construction-polygons"));

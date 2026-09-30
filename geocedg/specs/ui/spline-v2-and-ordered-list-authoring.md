@@ -1,7 +1,8 @@
 # Spline V2 and ordered-list authoring interaction
 
 - Phase: `PRE-G9B-R4`
-- Status: **CANDIDATE — PENDING AUTHOR REVIEW** (`selfApproved=false`)
+- Status: **CANDIDATE — PENDING AUTHOR REVIEW** (`selfApproved=false`);
+  corrective candidate after the author smoke of the initial candidate
 - Layer: Desktop/frontend interaction, application-profile action configuration
   and localization/help
 - Geometric authority:
@@ -70,6 +71,40 @@ ZoomWindow action reuses the host zoom artwork.
 The `SplineV2` tools keep the `cedg.locus.v2` feature requirement and the
 `locus-v2-product` availability of the original action. The list tool has no
 feature requirement and is GeoCeDG-only (`product-only`).
+
+### 3.1 Toolbar presentation
+
+List authoring owns a dedicated toolbar presentation group. The presentation
+group `construction-lists` (name key `Group.Construction.Lists`, "List tools" /
+"Herramientas de listas") contains only `construction.list-from-selection`. It
+is the second toolbar group, immediately right of the Move/selection group, and
+is rendered as an ordinary native mode group. The same group is the tool's one
+Construction menu entry. The tool is no longer part of the Polygons group; its
+action id, mode, icon and catalog cluster membership are unchanged, and no
+second action, icon or toolbar entry exists.
+
+### 3.2 Toolbar selected state
+
+Toolbar selected state follows host mode authority. The selected presentation of
+every mode action — the native mode groups and the mode entries of the mixed
+semantic-curves flyout alike — is set from the host mode when the mode changes.
+There is no parallel selection state:
+
+- choosing any of the three `SplineV2` tools, from the toolbar, the flyout or a
+  menu, shows the semantic-curves flyout selected with that tool as its active
+  entry;
+- switching between the variants updates the active entry and keeps the flyout
+  selected;
+- a refresh of action names, availability or toggle states (for example when
+  the menu bar or the Algebra Input visibility is updated) never clears it,
+  because a mode action has no toggle state of its own;
+- leaving the mode clears the flyout selection normally, as the newly selected
+  mode's group becomes selected. A mode without a toolbar button keeps the
+  inherited profile-toolbar behaviour of every tool: the previous group stays
+  shown (observation `OBS-R4C-PROFILE-TOOLBAR-MENU-ONLY-MODE-KEEPS-SELECTION`).
+
+Toggle state (`SELECTED_KEY`) remains the authority only for the flyout's
+non-mode toggle actions.
 
 ## 4. `SplineV2` tool lifecycle
 
@@ -196,11 +231,18 @@ The tool is general-purpose and is not used internally by the `SplineV2` tools.
 - Profile action names are `Spline V2`, `Spline V2 with degree`,
   `Closed Spline V2` and `Create List from Selection` (and their Spanish
   equivalents), through presentation keys where the host mode text differs.
-- Invoking a `SplineV2` tool action, or contextual help while a `SplineV2` tool
-  is active, shows Algebra Input and opens the Input Help panel **with the
-  `SplineV2` command selected**, which renders the existing localized command
-  syntax. No second syntax authority is created and nothing is typed into or
-  focused in the input field.
+- Input Help visibility is user-controlled. Mode activation alone never opens
+  it. Choosing a `SplineV2` tool neither opens nor closes Input Help and does not
+  change Algebra Input visibility.
+- An explicit help request while a `SplineV2` tool is active — the Input Help or
+  command-list help action, contextual help, or the Input Help button of Algebra
+  Input — shows the Input Help panel **with the `SplineV2` command selected** and
+  scrolled into view, which renders the existing localized command syntax, and
+  applies the corrected Algebra Input tooltip. The help actions also show Algebra
+  Input, as they always have. The selection is made in one place, where the
+  application shows the panel, so every request route behaves alike. No second
+  syntax authority is created and nothing is typed into or focused in the input
+  field. Outside a `SplineV2` tool, Input Help keeps its inherited behaviour.
 - The Algebra Input tooltip lists only accepted forms: bare points or a point
   list for degree `3`, a point list with an explicit degree, and the repeated
   first point for the closed form.
@@ -222,6 +264,9 @@ bundles: ordered collection, the three-point minimum, the finish gesture,
 default degree `3`, the explicit degree gesture, one commit and one undo point,
 cancel, undo/redo, preview authority, parity with the typed command, the closed
 form's synthesized member, the open forms' absence of it, the oversized
-default-degree outcome, mode text and help keys in `en` and `es`, the Input Help
-selection, the tooltip examples, and every list-tool row of section 7.
-Acceptance is the registered `PHASE` selection for `PRE-G9B-R4`.
+default-degree outcome, mode text and help keys in `en` and `es`, unchanged Input
+Help visibility on tool activation, the Input Help selection on an explicit help
+request in `en` and `es`, the tooltip examples, the toolbar selected state of the
+three `SplineV2` tools through variant switching, a menu-bar refresh and leaving
+the mode, the dedicated List tools toolbar group, and every list-tool row of
+section 7. Acceptance is the registered `PHASE` selection for `PRE-G9B-R4`.

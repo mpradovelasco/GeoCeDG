@@ -38,10 +38,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.Action;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
+import javax.swing.JToggleButton;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -57,6 +60,8 @@ import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.desktop.gui.GuiManagerD;
 import org.geogebra.desktop.gui.inputbar.AlgebraInputD;
+import org.geogebra.desktop.gui.toolbar.ModeToggleMenuD;
+import org.geogebra.desktop.gui.toolbar.ToolbarContainer;
 import org.geogebra.desktop.main.undo.UndoManagerD;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -67,8 +72,9 @@ import org.mockito.MockedStatic;
 /**
  * PRE-G9B-R4 focal contract for the three SplineV2 authoring tools: real mode
  * semantics, ordered collection, one commit and one undo point, the explicit
- * degree and closed-form gestures, cancel, preview authority, help and Input
- * Help. The kernel command remains the only spline authority throughout.
+ * degree and closed-form gestures, cancel, preview authority, help, Input Help
+ * and the toolbar selected state. The kernel command remains the only spline
+ * authority throughout.
  */
 @ExtendWith(G9U1TestApp.Lifecycle.class)
 class PreG9BR4SplineV2AuthoringTest {
@@ -154,34 +160,128 @@ class PreG9BR4SplineV2AuthoringTest {
 	}
 
 	@Test
-	void invokingTheToolSetsItsModeAndOpensInputHelpOnTheExistingSyntax() {
-		for (Locale locale : new Locale[] {Locale.ENGLISH, new Locale("es")}) {
+	void invokingTheToolSetsItsModeWithoutChangingInputHelpVisibility() {
+		for (boolean helpShown : new boolean[] {false, true}) {
 			AppGeoCeDG app = G9U1TestApp.create();
 			app.buildApplicationPanel();
-			app.setLocale(locale);
+			app.setLocale(Locale.ENGLISH);
 			app.setMode(EuclidianConstants.MODE_POINT);
+			if (helpShown) {
+				app.setShowAlgebraInput(true, true);
+				((GuiManagerD) app.getGuiManager()).getInputHelpPanel();
+				app.setShowInputHelpPanel(true);
+			}
+			final boolean algebraInput = app.showAlgebraInput();
 			GeoCeDGActionRegistry registry = new GeoCeDGActionRegistry(app);
 			final int steps = app.getKernel().getConstruction().steps();
 
-			registry.invoke("semantic.spline-v2.create", new ActionEvent(this, 1, "test"));
+			for (int i = 0; i < OPEN_TOOL_ACTIONS.length; i++) {
+				registry.invoke(OPEN_TOOL_ACTIONS[i], new ActionEvent(this, 1, "test"));
 
-			assertEquals(EuclidianConstants.MODE_SPLINE_V2, app.getMode());
-			GuiManagerD gui = (GuiManagerD) app.getGuiManager();
-			assertTrue(gui.hasInputHelpPanel());
-			Container panel = (Container) gui.getInputHelpPanel();
-			DefaultMutableTreeNode selected = (DefaultMutableTreeNode)
-					find(panel, JTree.class).getLastSelectedPathComponent();
-			assertNotNull(selected, locale.toString());
-			assertEquals("SplineV2", selected.getUserObject());
-			String syntax = find(panel, JTextPane.class).getText();
-			assertTrue(syntax.contains("es".equals(locale.getLanguage())
-					? "<Lista de puntos>, <Grado>" : "<List of Points>, <Degree>"), syntax);
-			AlgebraInputD input = (AlgebraInputD) gui.getAlgebraInput();
-			assertEquals("", input.getTextField().getText(), "no command is typed in");
-			assertEquals(GeoCeDGProfile.getText("Workspace.SplineHelp",
-					locale.getLanguage()), input.getTextField().getToolTipText());
+				assertEquals(SPLINE_MODES[i], app.getMode());
+				assertEquals(helpShown, inputHelpShown(app), OPEN_TOOL_ACTIONS[i]);
+				assertEquals(algebraInput, app.showAlgebraInput(), OPEN_TOOL_ACTIONS[i]);
+			}
 			assertEquals(steps, app.getKernel().getConstruction().steps());
 		}
+	}
+
+	@Test
+	void explicitInputHelpDuringASplineModeShowsTheExistingLocalizedSyntax() {
+		for (Locale locale : new Locale[] {Locale.ENGLISH, new Locale("es")}) {
+			for (String request : new String[] {"help.input-panel", "help.command-list",
+					"input-bar-button"}) {
+				for (int i = 0; i < OPEN_TOOL_ACTIONS.length; i++) {
+					String scenario = locale + " " + request + " " + OPEN_TOOL_ACTIONS[i];
+					AppGeoCeDG app = G9U1TestApp.create();
+					app.buildApplicationPanel();
+					app.setLocale(locale);
+					app.setMode(EuclidianConstants.MODE_POINT);
+					GeoCeDGActionRegistry registry = new GeoCeDGActionRegistry(app);
+					registry.invoke(OPEN_TOOL_ACTIONS[i], new ActionEvent(this, 1, "tool"));
+					assertFalse(inputHelpShown(app), scenario);
+					final int steps = app.getKernel().getConstruction().steps();
+
+					if ("input-bar-button".equals(request)) {
+						app.setShowAlgebraInput(true, true);
+						find((Container) ((GuiManagerD) app.getGuiManager()).getAlgebraInput(),
+								JToggleButton.class).doClick();
+					} else {
+						registry.invoke(request, new ActionEvent(this, 1, "help"));
+					}
+
+					assertEquals(SPLINE_MODES[i], app.getMode(), scenario);
+					assertTrue(inputHelpShown(app), scenario);
+					GuiManagerD gui = (GuiManagerD) app.getGuiManager();
+					Container panel = (Container) gui.getInputHelpPanel();
+					DefaultMutableTreeNode selected = (DefaultMutableTreeNode)
+							find(panel, JTree.class).getLastSelectedPathComponent();
+					assertNotNull(selected, scenario);
+					assertEquals("SplineV2", selected.getUserObject(), scenario);
+					String syntax = find(panel, JTextPane.class).getText();
+					assertTrue(syntax.contains("es".equals(locale.getLanguage())
+							? "<Lista de puntos>, <Grado>" : "<List of Points>, <Degree>"),
+							scenario + " " + syntax);
+					AlgebraInputD input = (AlgebraInputD) gui.getAlgebraInput();
+					assertEquals("", input.getTextField().getText(), "no command is typed in");
+					assertEquals(GeoCeDGProfile.getText("Workspace.SplineHelp",
+							locale.getLanguage()), input.getTextField().getToolTipText());
+					assertEquals(steps, app.getKernel().getConstruction().steps(), scenario);
+				}
+			}
+		}
+		AppGeoCeDG app = G9U1TestApp.create();
+		app.buildApplicationPanel();
+		app.setLocale(Locale.ENGLISH);
+		app.setMode(EuclidianConstants.MODE_POINT);
+		new GeoCeDGActionRegistry(app).invoke("help.input-panel", new ActionEvent(this, 1, "h"));
+		assertTrue(inputHelpShown(app));
+		Object selected = find((Container) ((GuiManagerD) app.getGuiManager())
+				.getInputHelpPanel(), JTree.class).getLastSelectedPathComponent();
+		assertFalse(selected instanceof DefaultMutableTreeNode node
+				&& "SplineV2".equals(node.getUserObject()), "other tools keep the host help");
+	}
+
+	@Test
+	void theToolbarShowsEachSplineVariantSelectedThroughTheHostMode() {
+		AppGeoCeDG app = G9U1ActionRegistryTest.app(true);
+		app.buildApplicationPanel();
+		GuiManagerGeoCeDG gui = (GuiManagerGeoCeDG) app.getGuiManager();
+		ToolbarContainer container = ((GuiManagerD) gui).getToolbarPanel();
+		container.buildGui();
+		GeoCeDGActionRegistry registry = gui.getActionRegistry();
+		JToggleButton flyout = profileFlyout(container, "construction-semantic-curves");
+		JPopupMenu popup = (JPopupMenu) flyout.getClientProperty("geocedg.toolbar.popup");
+		List<String> items = new ArrayList<>();
+		for (Component item : popup.getComponents()) {
+			String id = (String) ((JMenuItem) item).getClientProperty(
+					GeoCeDGActionRegistry.ACTION_ID);
+			assertSame(registry.get(id), ((JMenuItem) item).getAction(), id);
+			items.add(id);
+		}
+		assertEquals(List.of("semantic.locus-v2.create", "semantic.spline-v2.create",
+				"semantic.spline-v2.create-degree", "semantic.spline-v2.create-closed",
+				"semantic.locus-v2.point-explicit"), items, "one action per variant, no copy");
+
+		for (int round = 0; round < 2; round++) {
+			for (int i = 0; i < OPEN_TOOL_ACTIONS.length; i++) {
+				if (round == 0) {
+					registry.invoke(OPEN_TOOL_ACTIONS[i], new ActionEvent(this, 1, "tool"));
+				} else {
+					((JMenuItem) popup.getComponent(items.indexOf(OPEN_TOOL_ACTIONS[i])))
+							.doClick();
+				}
+				assertEquals(SPLINE_MODES[i], app.getMode());
+				assertSplineVariantSelected(container, OPEN_TOOL_ACTIONS[i]);
+				app.updateMenubar();
+				assertSplineVariantSelected(container, OPEN_TOOL_ACTIONS[i]);
+			}
+		}
+
+		registry.invoke("construction.move", new ActionEvent(this, 1, "leave"));
+		assertEquals(EuclidianConstants.MODE_MOVE, app.getMode());
+		assertFalse(profileFlyout(container, "construction-semantic-curves").isSelected());
+		assertTrue(nativeGroup(container, "edit-selection").getJToggleButton().isSelected());
 	}
 
 	@Test
@@ -193,6 +293,7 @@ class PreG9BR4SplineV2AuthoringTest {
 		String previousHelp = app.getToolHelp(EuclidianConstants.MODE_POINT);
 		GeoCeDGActionRegistry registry = new GeoCeDGActionRegistry(app);
 		registry.invoke("semantic.spline-v2.create-closed", new ActionEvent(this, 1, "t"));
+		assertFalse(inputHelpShown(app), "activation alone never opens Input Help");
 		try (MockedStatic<JOptionPane> dialog = mockStatic(JOptionPane.class)) {
 			registry.invoke("help.contextual-action", new ActionEvent(this, 1, "help"));
 			ArgumentCaptor<Object> message = ArgumentCaptor.forClass(Object.class);
@@ -697,6 +798,55 @@ class PreG9BR4SplineV2AuthoringTest {
 			undo.commitUndoBaseline(baseline);
 		}
 		return undo;
+	}
+
+	/** Input Help is shown when the host has placed its panel beside the views. */
+	private static boolean inputHelpShown(AppGeoCeDG app) {
+		GuiManagerD gui = (GuiManagerD) app.getGuiManager();
+		return gui.hasInputHelpPanel()
+				&& ((Component) gui.getInputHelpPanel()).getParent() != null;
+	}
+
+	private static void assertSplineVariantSelected(Container toolbar, String actionId) {
+		JToggleButton flyout = profileFlyout(toolbar, "construction-semantic-curves");
+		assertTrue(flyout.isSelected(), actionId);
+		assertEquals(actionId, flyout.getClientProperty("geocedg.toolbar.active.action.id"));
+		assertFalse(nativeGroup(toolbar, "edit-selection").getJToggleButton().isSelected(),
+				actionId);
+	}
+
+	private static JToggleButton profileFlyout(Container root, String groupId) {
+		for (Component child : root.getComponents()) {
+			if (child instanceof JToggleButton button
+					&& button.getClientProperty("geocedg.toolbar.popup") != null
+					&& groupId.equals(button.getClientProperty(
+							"geocedg.presentation.group.id"))) {
+				return button;
+			}
+			if (child instanceof Container nested) {
+				JToggleButton found = profileFlyout(nested, groupId);
+				if (found != null) {
+					return found;
+				}
+			}
+		}
+		return null;
+	}
+
+	private static ModeToggleMenuD nativeGroup(Container root, String groupId) {
+		for (Component child : root.getComponents()) {
+			if (child instanceof ModeToggleMenuD menu && groupId.equals(
+					menu.getClientProperty("geocedg.presentation.group.id"))) {
+				return menu;
+			}
+			if (child instanceof Container nested) {
+				ModeToggleMenuD found = nativeGroup(nested, groupId);
+				if (found != null) {
+					return found;
+				}
+			}
+		}
+		return null;
 	}
 
 	static <T extends Component> T find(Container root, Class<T> type) {

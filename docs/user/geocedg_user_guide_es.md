@@ -195,6 +195,7 @@ grupos aparece una sola vez.
 | Puntos | Punto, Punto en objeto, Punto medio |
 | Rectas y vectores | Recta, Segmento, Semirrecta, Vector, Segmento de longitud dada, Vector desde un punto |
 | Polígonos | Polígono, Poligonal, Polígono regular, Polígono rígido, Polígono vectorial |
+| Herramientas de listas | Crear lista desde la selección |
 | Construcciones derivadas | Recta paralela, Recta perpendicular, Mediatriz, Bisectriz |
 | Parámetros y controladores | Deslizador, Ángulo de amplitud dada, Casilla, Botón, Campo de entrada, Animar objeto seleccionado, Texto |
 | Relaciones e intersecciones | Intersección, Tangentes, Relación, Polar o diámetro, Inspeccionar resultado rico y las tres acciones de materialización |
@@ -211,9 +212,9 @@ diédricos no es una capacidad autorizada y así lo indica al seleccionarlo.
 ### 3.3 Barra de herramientas y desplegables
 
 La barra proyecta las acciones de uso frecuente de ese mismo catálogo, agrupadas
-en Mover; Punto e Intersección; Rectas y vectores; Polígonos; Construcciones
-derivadas; Círculos y cónicas; Curvas semánticas; Ángulos y longitudes;
-Transformaciones; Parámetros y controladores; Navegación.
+en Mover; Herramientas de listas; Punto e Intersección; Rectas y vectores;
+Polígonos; Construcciones derivadas; Círculos y cónicas; Curvas semánticas;
+Ángulos y longitudes; Transformaciones; Parámetros y controladores; Navegación.
 
 **Curvas semánticas** y **Navegación** son desplegables mixtos compactos:
 muestran como botón principal la última acción elegida. Esa memoria es solo
@@ -469,11 +470,11 @@ adicional descrita en la sección 10.
 
 ### 5.8 Listas desde una selección
 
-**Crear lista desde la selección** (**Construcción → Polígonos**, junto a
-Poligonal) construye una lista ordinaria con los objetos en el orden exacto en
-que los selecciona. Seleccione los objetos uno a uno (puntos, segmentos,
-números o cualquier mezcla) y después seleccione de nuevo el **primer objeto**
-para terminar. Seleccionar de nuevo cualquier otro objeto lo quita de la
+**Crear lista desde la selección** (**Construcción → Herramientas de listas**,
+y su propio grupo de la barra, justo a la derecha de Mover) construye una lista
+ordinaria con los objetos en el orden exacto en que los selecciona. Seleccione
+los objetos uno a uno (puntos, segmentos, números o cualquier mezcla) y después
+seleccione de nuevo el **primer objeto** para terminar. Seleccionar de nuevo cualquier otro objeto lo quita de la
 selección, de modo que ningún objeto se añade dos veces; una lista que repite un
 elemento se escribe en la Entrada algebraica, por ejemplo `{A,B,A}`. **Escape** u
 otra herramienta cancela y no crea nada.
@@ -645,8 +646,10 @@ Cada herramienta terminada crea una Spline V2 y un paso de deshacer.
 - **Puntos.** Las herramientas no crean puntos; créelos antes, por ejemplo con
   la herramienta **Punto**.
 
-Elegir una herramienta Spline V2 abre además la **Ayuda de entrada** sobre el
-comando `SplineV2`. Sus formas pueden escribirse en la Entrada algebraica:
+Elegir una herramienta Spline V2 nunca abre ni cierra la **Ayuda de entrada**.
+Si usted la abre, o elige **Ayuda → Ayuda de herramienta actual**, con una
+herramienta Spline V2 activa, muestra el comando `SplineV2`. Sus formas pueden
+escribirse en la Entrada algebraica:
 
 ```text
 SplineV2( <List of Points> )
@@ -1503,7 +1506,7 @@ Estas son las limitaciones que afectan a lo que hoy puede hacer en la aplicació
 |---|---|---|---|---|
 | Crear un lugar geométrico semántico | Construcción → Curvas semánticas → Locus V2 | `LocusV2(G,u,dom)` | curva semántica | el dominio es explícito; no procede del rango de un deslizador |
 | Crear una spline semántica | Construcción → Curvas semánticas → Spline V2, Spline V2 con grado o Spline V2 cerrada | `SplineV2({A,B,C,D},3)` | curva semántica | seleccione los puntos en orden y después de nuevo el primero; los puntos constructores no son puntos semánticos |
-| Crear una lista en el orden de selección | Construcción → Polígonos → Crear lista desde la selección | `{A,B,C}` | lista | orden exacto de clic; seleccione de nuevo el primer objeto para terminar |
+| Crear una lista en el orden de selección | Construcción → Herramientas de listas → Crear lista desde la selección | `{A,B,C}` | lista | orden exacto de clic; seleccione de nuevo el primer objeto para terminar |
 | Punto sobre curva semántica, interactivo | Herramienta Punto, clic en el trazo | — | punto semántico | preimagen única, o elección explícita; nunca por proximidad |
 | Punto sobre curva semántica, por parámetro | Construcción → Curvas semánticas → Punto sobre curva semántica | `Point(S,"spline-v2/main",0.25)` | punto semántico | clave de rama y parámetro canónico; el parámetro puede ser un número con nombre |
 | Punto sobre un Locus V2, por parámetro | ídem | `Point(L,"generator.main",1)` | punto semántico | clave de rama por defecto del generador |

@@ -190,6 +190,7 @@ class G9U1WorkspaceSurfaceTest {
 		assertNotNull(findPresentationGroup(bar.getMenu(3),
 				"construction-lines-vectors"));
 		assertNotNull(findPresentationGroup(bar.getMenu(3), "construction-polygons"));
+		assertNotNull(findPresentationGroup(bar.getMenu(3), "construction-lists"));
 		assertNotNull(findPresentationGroup(bar.getMenu(3), "construction-derived"));
 		assertNotNull(findItem(bar.getMenu(3), "presentation.text"));
 		assertNotNull(findItem(bar.getMenu(3), "presentation.image"));
@@ -368,6 +369,7 @@ class G9U1WorkspaceSurfaceTest {
 		Map<String, List<String>> expected = new LinkedHashMap<>();
 		expected.put("edit-selection", List.of("construction.move",
 				"construction.move-rotate"));
+		expected.put("construction-lists", List.of("construction.list-from-selection"));
 		expected.put("construction-relations", List.of("construction.point",
 				"construction.point-on-object", "construction.midpoint",
 				"construction.attach-detach", "relation.intersect"));
@@ -375,8 +377,7 @@ class G9U1WorkspaceSurfaceTest {
 				"construction.segment", "construction.ray", "construction.vector",
 				"construction.fixed-segment", "construction.vector-from-point"));
 		expected.put("construction-polygons", List.of("construction.polygon",
-				"construction.polyline", "construction.list-from-selection",
-				"construction.regular-polygon",
+				"construction.polyline", "construction.regular-polygon",
 				"construction.rigid-polygon", "construction.vector-polygon"));
 		expected.put("construction-derived", List.of("construction.parallel-line",
 				"construction.perpendicular-line",
