@@ -12,10 +12,18 @@ PRODUCT_CODE_CHANGED           = false
 R5_B_IMPLEMENTATION_STARTED    = false
 R5_B_IMPLEMENTATION_AUTHORIZED = false
 ADR                            = docs/adr/0031-canonical-english-command-surface-compatibility.md
-ADR STATUS                     = PROPOSED — PRE-G9B-R5-B COMPATIBILITY CANDIDATE
-AUTHOR_DECISION                = NOT_RECORDED_IN_THIS_ARTIFACT
+ADR STATUS                     = PROPOSED — PRE-G9B-R5-B COMPATIBILITY CANDIDATE;
+                                 AUTHOR DECISIONS INCORPORATED — PENDING EXACT-COMMIT APPROVAL
+AUTHOR_DECISION                = PENDING APPROVAL OF THE EXACT AMENDED CANDIDATE
+INITIAL CANDIDATE D_R5B_ADR    = 3b65af5303aac316a8b2747739aeb43e2921bac4
+AMENDMENT                      = R1, author-decision corrective descendant of D_R5B_ADR
 selfApproved                   = false
+implementationAuthorized       = false
 ```
+
+Sections 1–13 record the characterization and the initial candidate. Their
+measured facts are unchanged. Section 16 records the author-decision amendment
+`R1`.
 
 This report is historical evidence of a design task. It is not an approval and
 not an implementation record. The decision it supports is
@@ -547,30 +555,121 @@ VERIFICATION_INFRASTRUCTURE_IMPACT = NONE
 PRODUCT_PHASE_EFFECT = NONE
 ```
 
-## 14. Author decisions required
+## 14. Author decisions
 
-These are the same five as ADR 0031:
-
-1. Acceptance of the ADR on an exact commit.
-2. Syntax placeholder language: UI locale (recommended) or English.
-3. `DOT` localized XML: a separate serialization-compatibility task
-   (recommended), or an explicit exception inside R5-B.
-4. ES parser function names: keep localized (recommended) or apply a separate
-   policy.
-5. Captions and label stems reusing command translations: keep in the UI
-   language (recommended) or switch to English.
-
-The canonical R5-B prompt amendments that acceptance would need are listed at
-the end of the ADR. They are not applied.
+The initial candidate listed five open choices. The author resolved all of them
+in amendment `R1` (§16). The only open decision is approval of the exact amended
+commit.
 
 ## 15. State
 
 ```text
-R5-B COMPATIBILITY ADR      = DESIGN CANDIDATE — PENDING AUTHOR REVIEW
+R5-B COMPATIBILITY ADR      = AUTHOR DECISIONS INCORPORATED — PENDING EXACT-COMMIT APPROVAL
 ADR STATUS                  = PROPOSED
 PRE-G9B-R5-B IMPLEMENTATION = NOT AUTHORIZED
+BLOCKED_ON                  = 1. accepted compatibility ADR (0031, exact identity)
+                              2. published Dot/XML serialization maintenance
 PRE-G9B-R6                  = NOT AUTHORIZED
 PRE-G9B-R7                  = NOT AUTHORIZED
 G9B                         = NOT AUTHORIZED
 promotion                   = NONE
 ```
+
+## 16. Author-decision amendment R1
+
+### 16.1 Identity
+
+| Item | Value |
+|---|---|
+| published base | `P_R5A = 4389b30b5478ac35c78a15255021e3c4f1e10ea3`, tree `1a4506b830a846efd5032fde5e8386ca8872dc89`; local = `origin/main` = live remote after `git fetch` |
+| parent candidate | `D_R5B_ADR = 3b65af5303aac316a8b2747739aeb43e2921bac4`, tree `c6a81b27ba0c805dfbab969cf52727b27e53c564`; not amended, rewritten or squashed |
+| initial candidate `STATIC` | `verification-781b5534a0d24c448297b7ea02336637`, `ACCEPTED / COMPLETE`, 3/3; evidence for the parent only, not reattributed to `R1` |
+| branch | `design/pre-g9b-r5-b-command-surface-compatibility-adr`, not pushed |
+| class | `CHANGE_ROUTE = ORDINARY`, `VERIFICATION_CLASS = DOCUMENTATION_STATUS_ONLY` |
+
+### 16.2 Measured source facts (unchanged)
+
+No investigation was redone and no measured fact was reinterpreted. That covers
+§4 and §5, the evidence file, and every item below:
+
+- the lookup regimes and the two JRE English sources with their six
+  divergences;
+- the 37 English≠internal names;
+- the complete EN/ES collision inventory and the six corpus locales;
+- the syntax, autocomplete, script-editor and print-site characterization;
+- the GeoCeDG command inventory;
+- `Perímetro`;
+- the shadowing observations;
+- the `Dot` serialization defect.
+
+One fact was re-checked because an author example touches it.
+`command_es.properties` maps `OrthogonalLine=Perpendicular`. The ES alias for
+the displayed `PerpendicularLine` is `Perpendicular`; `RectaPerpendicular`,
+used in the author's conceptual illustration, is not a bundle value. No alias
+is added.
+
+### 16.3 Author policy decisions
+
+| Topic | Decision |
+|---|---|
+| alternative | **D** adopted |
+| internal command identity | unchanged; no internal identifier or enum constant renamed |
+| canonical public command name | canonical English; authority = the English command bundle |
+| localized command names | compatibility input where current `USER` rules accept them; no removal; no extension; reverse table unchanged |
+| scope | commands only, `LocusV2`, `LocusLength` and `SplineV2` included; no GeoCeDG-only naming subsystem |
+| syntax placeholders | current UI language |
+| mathematical and function names | current UI-locale behaviour retained |
+| captions and auto-generated labels | current UI language when they are presentation text |
+| scripts | GGBScript canonical English/internal; editor shows English; valid script tokens preserved on save unless the rewrite is proven semantics-preserving |
+| XML / serialization | `R5-B` changes neither; no migration; no format version change |
+| `Dot` XML defect | real, pre-existing, upstream-inherited; separate bounded maintenance task, fixed and published **before** productive `R5-B` |
+| collision guard | adopted; a catalog change that would retarget canonical English text must fail validation |
+| `Perímetro` | retained compatibility observation; not an `R5-B` blocker |
+
+### 16.4 Design consequences
+
+- ADR 0031 decisions 1, 2, 4, 5, 7, 8, 10, 11 and 13 now state these choices,
+  the new decision 17 states the implementation prerequisites, and Alternative
+  D is marked adopted.
+- The candidate is no longer conditional on open choices; `l01` needs no
+  amendment.
+- `R5-B`'s implementation base can no longer be `P_R5A` by default. It is the
+  published commit after the `Dot` maintenance.
+- `T-XML` now compares saved XML against that repaired base, not against
+  today's defective `Dot` bytes.
+
+### 16.5 Future implementation obligations
+
+- Productive `R5-B` requires both an accepted, published ADR 0031 and the
+  published `Dot`/XML maintenance, then a new explicit author authorization
+  naming the exact base.
+- Every obligation of ADR §16 stands, including the complete-inventory gate with
+  its negative control, the typed shadowing outcome, and EN/ES author smoke.
+- The `Dot` maintenance is a separate task. It is not started by this
+  amendment and is not part of `R5-B`.
+- Canonical `R5-B` prompt amendments required after ADR acceptance, none of them
+  applied here:
+  - the exact accepted ADR identity;
+  - the new implementation base after the `Dot` maintenance;
+  - a statement that `Dot`/XML was already repaired externally;
+  - the English command bundle as the authoritative English-name resolver;
+  - `Execute` and `XML`-strategy strings accept exact-case enum constants, not
+    localized aliases;
+  - removal of the obsolete Algebra-prefix scope;
+  - correction of the stale R0 statements of §10;
+  - the placeholder, function-name and caption decisions.
+
+### 16.6 Changed paths and verification of R1
+
+The amendment touches four paths:
+
+- the ADR;
+- this report;
+- the evidence file (a new `authorDecisionAmendmentR1` block; measured blocks
+  untouched);
+- the roadmap (status only).
+
+All are design and status only. The checks are `git diff --check` on the staged
+amendment, JSON parse validation and manual link resolution. `STATIC` runs once
+on the frozen amended commit. As in §12, its run identity is reported with the
+task result, outside this file.
