@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-A",
+  "recordKind": "AUTHOR_DECISIONS",
+  "record": "docs/validation/pre_g9b_r6_plus_a_author_decisions_record.md",
+  "authorDecisionDate": "2026-10-02",
+  "decidedOnBase": {
+    "name": "P_R6PLUS_P0",
+    "commit": "562e2bb1e77b249b9c97c2e6e06e8b123d6de900",
+    "tree": "9f578093f2f3cba481f5630fe827fd3ef08cff61"
+  },
+  "selfApproved": false,
+  "implementationAuthorized": false,
+  "passClaimed": false,
+  "productPhaseEffect": "NONE",
+  "decisions": [
+    {"id": "AQ-L1a", "subphases": ["A-2"], "decision": "GeoCeDG layer domain is the bounded non-negative range 0..99 for the first extension; L_MAX = 99 is a product/configuration limit, not a permanent CeDG restriction; Classic keeps 0..9"},
+    {"id": "AQ-L1b", "subphases": ["A-1", "A-2"], "decision": "A is split into A-1 and A-2"},
+    {"id": "AQ-L1c", "subphases": ["A-2"], "decision": "forward-compatibility loss with older Classic and GeoCeDG readers is accepted and documented explicitly: layers above 9 may be clamped to 9 and lost when saved by those readers"},
+    {"id": "AQ-L2", "subphases": ["A-1"], "decision": "workingLayer is SESSION; New starts at layer 0; initialization after Open preserves the document and does not silently modify persisted visibility state"},
+    {"id": "AQ-L3", "subphases": ["A-1", "A-2", "C"], "decision": "hidden layers are conceptually DOCUMENT_PRESENTATION, document-wide, persistent and not undoable; A-1 implements the mechanism with SESSION state; A-2 adds persistence; objects on hidden layers are excluded from LaTeX; DXF policy is resolved in C"},
+    {"id": "AQ-L4", "subphases": ["A-1"], "decision": "the working-layer mode is one-shot and returns to Move after a valid selection"},
+    {"id": "AQ-L5", "subphases": ["A-1"], "decision": "upstream ShowLayer and HideLayer stay unchanged and keep acting on individual object visibility"},
+    {"id": "AQ-L7", "subphases": ["A-1", "A-2"], "decision": "(1) the working layer cannot be hidden through normal interaction; (2) selecting a currently hidden layer as working layer shows it and makes it the working layer; (3) the interaction between Open and persistent hidden layers is deferred to A-2 and resolved explicitly before A-2, without silently altering presentation on load"},
+    {"id": "AQ-L8", "subphases": ["A-1"], "decision": "paste keeps the copied objects' layers and does not move them to the working layer"}
+  ],
+  "decomposition": {
+    "PRE-G9B-R6-plus-A-1": {
+      "scope": "operational workspace, working layer, Move-group mode, status bar, numeric Algebra View order, effective hiding in the normal views (painting and hit testing), SESSION hidden-layer state; no domain widening, no new serialization, no exporter change",
+      "verificationClass": "INTEGRATED_PHASE",
+      "plannedAcceptance": ["PHASE -Phase PRE-G9B-R6-plus-A-1", "INTEGRATION"],
+      "state": "NOT AUTHORIZED",
+      "canonicalPrompt": ".github/prompts/tasks/pre-g9b-r6-plus-a1-layer-workspace-session.prompt.md"
+    },
+    "PRE-G9B-R6-plus-A-2": {
+      "scope": "layer-domain widening to 0..99 and hidden-layer persistence, with their serialization and compatibility impact",
+      "verificationClass": "GLOBAL_IMPACT",
+      "plannedAcceptance": ["FINAL"],
+      "state": "NOT AUTHORIZED",
+      "entryCondition": "AQ-L7 (3) resolved explicitly by the author"
+    }
+  },
+  "classesFrozenAtSubphaseAuthorization": true,
+  "acceptedOrder": ["A-1", "B", "D0", "D1", "A-2", "C", "E1", "E2", "E3", "F1", "F2", "G"],
+  "exportOwnership": {
+    "A-1": "effectiveVisible in the normal views through painting and hit testing; no exporter change",
+    "SVG": "B",
+    "LaTeX": "C (hidden-layer exclusion decided by AQ-L3)",
+    "DXF": "C (hidden-layer policy open)",
+    "temporaryInconsistency": "after A-1, exports reusing the shared view painting (PNG, PDF, EMF, print, graphics image copy) omit objects on hidden layers, while SVG until B and LaTeX and DXF until C still write them"
+  },
+  "stillOpen": ["AQ-L7 (3) before A-2", "DXF hidden-layer policy in C", "every other open decision of the P0 candidate report section 15"],
+  "authorizationState": {
+    "PRE-G9B-R6-plus-P0": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-A-1": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-A-2": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-B": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-D0": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-D1": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-C": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-E1": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-E2": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-E3": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-F1": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-F2": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-G": "NOT AUTHORIZED",
+    "PRE-G9B-R7": "DESIGNED — NOT AUTHORIZED; BLOCKED UNTIL PRE-G9B-R6-plus IS PASS — AUTHOR APPROVED",
+    "G9B": "NOT AUTHORIZED"
+  }
+}

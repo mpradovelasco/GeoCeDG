@@ -11,6 +11,7 @@
   promote any specification or ADR
 - Evidence record: [planning candidate report](../validation/pre_g9b_r6_plus_planning_candidate_report.md) and its machine-readable mirror `geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-planning.json`
 - First executable task: [`PRE-G9B-R6-plus-P0`](../../.github/prompts/tasks/pre-g9b-r6-plus-p0-integrated-characterization-and-design.prompt.md), `PASS — AUTHOR APPROVED` (2026-10-02) on `T_R6PLUS_P0` `6b7fd5de343b6556b384e71a9345907e7944d1e5` ([closeout record](../validation/pre_g9b_r6_plus_p0_closeout_record.md)); its design candidates stay candidates and its open author decisions stay open
+- Author decisions for `A` (2026-10-02): [A author-decision record](../validation/pre_g9b_r6_plus_a_author_decisions_record.md). `A` is split into `A-1` (`INTEGRATED_PHASE`) and `A-2` (`GLOBAL_IMPACT`); the next subphase is `A-1`, whose [canonical prompt](../../.github/prompts/tasks/pre-g9b-r6-plus-a1-layer-workspace-session.prompt.md) is prepared on `562e2bb1e77b249b9c97c2e6e06e8b123d6de900`, tree `9f578093f2f3cba481f5630fe827fd3ef08cff61` and is `NOT AUTHORIZED`
 - Self approval: **false**
 
 This note records the mini-track the author defined on 2026-10-01 as the final
@@ -197,10 +198,15 @@ every boundary and found no reason to merge or split a subphase. It refines
 the dependencies: two links are added, one is downgraded and three are scoped
 to the frontend part of a subphase, each justified in §3.1.
 
+On 2026-10-02 the author split `A` into `A-1` and `A-2` (`AQ-L1b`, as `P0`
+recommended; [A author-decision record](../validation/pre_g9b_r6_plus_a_author_decisions_record.md)). No other
+boundary changed.
+
 | ID | Scope | Owning layers (§10) | Proposed class (§12) | State |
 |---|---|---|---|---|
 | `P0` | integrated characterization and normative design candidates | documentation | `DOCUMENTATION_STATUS_ONLY` | `PASS — AUTHOR APPROVED` |
-| `A` | layer workspace and status-bar foundation | application/document model, view, Desktop | `INTEGRATED_PHASE` | `NOT AUTHORIZED` |
+| `A-1` | layer workspace with session-only layer state: working layer, Move-group mode, status bar, numeric Algebra View order, effective hiding in the normal views; no domain widening, no new serialization, no exporter change | application session, view, Desktop | `INTEGRATED_PHASE` (author-accepted) | `NOT AUTHORIZED` — next subphase; canonical prompt prepared |
+| `A-2` | layer-domain widening to `0..99` and hidden-layer persistence | shared kernel/document serialization, Desktop | `GLOBAL_IMPACT` (author-accepted) | `NOT AUTHORIZED` |
 | `B` | export surface and `ExportArea` authority | profile, Desktop, shared view export path | `INTEGRATED_PHASE` | `NOT AUTHORIZED` |
 | `D0` | unit-system normative design | documentation (ADR + specification) | `DOCUMENTATION_STATUS_ONLY` | `NOT AUTHORIZED` |
 | `D1` | unit-system implementation and status integration | shared kernel/document serialization, Desktop | `GLOBAL_IMPACT` | `NOT AUTHORIZED` |
@@ -214,7 +220,8 @@ to the frontend part of a subphase, each justified in §3.1.
 
 The `State` column is the only current status. Every proposed class is a
 proposal for the author to freeze at that subphase's start; none is a
-derivation.
+derivation. The `A-1` and `A-2` classes were accepted by the author on
+2026-10-02; each is frozen when its subphase is authorized.
 
 ### 3.1 Dependency classes
 
@@ -228,15 +235,16 @@ P0 ─────────────► every later subphase      (exact c
 P0 ──► D0 ──► D1                             D1 needs the author-accepted unit ADR and specification
 D1 ──► C                                     physical scale and the DXF unit header need the unit contract
 B  ──► C                                     C's exporters consume the single ExportArea authority
-A  ──► C                                     [added] C's LaTeX and DXF exporters consume A's effective-visibility rule
+A-1 ──► A-2                                  A-2 widens the domain and persists the hidden-layer state A-1 introduces
+A-1 ──► C                                    [added] C's LaTeX and DXF exporters consume A-1's effective-visibility rule
 D1 ──► E2                                    dimension values need the presentation-unit conversion
 D1 ──► E3                                    ISO physical size, drawing scale and unit contract
 P0 ──► F1, F2
-A, B, C, D1, E1, E2, E3, F1, F2 ──► G
+A-1, A-2, B, C, D1, E1, E2, E3, F1, F2 ──► G
 G = PASS — AUTHOR APPROVED ──► unblocks PRE-G9B-R7
 
 Scoped to the frontend part of a subphase only:
-A  ──► D1 (status-bar segment)               [added] D1's unit segments extend A's status bar
+A-1 ──► D1 (status-bar segment)              [added] D1's unit segments extend A-1's status bar
 E1 ──► E2 (Desktop tool icons)               E2's tool icons use E1's owned-icon pipeline
 B  ──► E3 (ExportArea linkage)               the yes/no linkage is a producer of B's ExportArea
 ```
@@ -261,10 +269,14 @@ linkage and `E1` becomes recommended.
 **Recommended execution predecessors**
 
 ```text
-P0 → A → B → D0 → D1 → C → E1 → E2 → E3 → F1 → F2 → G
+P0 → A-1 → B → D0 → D1 → A-2 → C → E1 → E2 → E3 → F1 → F2 → G
 ```
 
-This is the author's order. `D0` is documentation and may run beside `A` or
+This is the author's order, as accepted on 2026-10-02 with the split of `A`.
+`A-2` follows `D1`, so the two subphases that add shared serialization and
+need `FINAL` run adjacently. Since the split, `A` in the prose of this
+subsection means `A-1`, the subphase that introduces the effective-visibility
+rule and the status bar. `D0` is documentation and may run beside `A` or
 `B`. `F1` and `F2` are independent and may be scheduled anywhere after `P0`.
 None of these orderings is a kernel dependency.
 
@@ -291,6 +303,17 @@ each into an exact design candidate.
   numeric group order, that never writes an object's own visibility. The
   `effectiveVisible` rule at the view. An extensible, complementary status bar
   showing the working layer.
+  Split by the author on 2026-10-02 ([A author-decision record](../validation/pre_g9b_r6_plus_a_author_decisions_record.md)):
+  - **`A-1`** — working layer (`SESSION`), one-shot Move-group mode, status
+    bar, numeric Algebra View order and effective hiding in the normal views
+    through painting and hit testing, with `SESSION` hidden-layer state; no
+    domain widening, no new serialization and no exporter change. Exports
+    that reuse the view painting inherit the hiding; SVG (`B`), LaTeX and DXF
+    (`C`) do not until those subphases close.
+  - **`A-2`** — domain widening to `0..99` and hidden-layer persistence, with
+    their serialization and compatibility impact; it starts only after the
+    author resolves the interaction between Open and persistent hidden layers
+    (`AQ-L7`).
 - **`B` — export surface and `ExportArea`.** Expose PNG, PDF, SVG, EMF/EMF+,
   DXF, PSTricks, PGF/TikZ and Asymptote; never STL, Collada, HTML Collada or
   the worksheet upload, including through shortcuts if they fire. One
@@ -1014,7 +1037,9 @@ from the importance of the track.
 | Subphase | Proposed class | Planned acceptance | Impact facts that select it | Would escalate if |
 |---|---|---|---|---|
 | `P0` | `DOCUMENTATION_STATUS_ONLY` | `STATIC` | documents only | any product, verifier or prompt-contract path |
-| `A` | `INTEGRATED_PHASE`, **provisional** | registered `PHASE` + `INTEGRATION` | the working layer applies to **every** creation route (tools, Algebra input, scripts, macros, paste, load and undo rebuild), which is concrete integration coverage; view predicate; profile catalog | `P0` re-classifies `A` from its layer-extension design: widening shared layer or serialization assumptions for the author's arbitrary-layer target, moving the predicate into `GeoElement`, or persisting hidden layers through the shared XML handler (unless `AQ-L3` chooses `SESSION`) → `GLOBAL_IMPACT` |
+| `A-1` | `INTEGRATED_PHASE` (author-accepted 2026-10-02) | registered `PHASE` + `INTEGRATION` | working layer on every interactive creation route, shared view painting and hit testing in Graphics 1 and 2, Algebra View, profile catalog and application layout | domain widening, any serialization, or an exporter change → stop; that scope is `A-2`, `B` or `C` |
+| `A-2` | `GLOBAL_IMPACT` (author-accepted 2026-10-02) | `FINAL` | widens the shared `<layer>` domain read on every load and adds hidden-layer persistence to document serialization | — |
+| `A` (before the split; superseded) | `INTEGRATED_PHASE`, **provisional** | registered `PHASE` + `INTEGRATION` | the working layer applies to **every** creation route (tools, Algebra input, scripts, macros, paste, load and undo rebuild), which is concrete integration coverage; view predicate; profile catalog | `P0` re-classifies `A` from its layer-extension design: widening shared layer or serialization assumptions for the author's arbitrary-layer target, moving the predicate into `GeoElement`, or persisting hidden layers through the shared XML handler (unless `AQ-L3` chooses `SESSION`) → `GLOBAL_IMPACT` |
 | `B` | `INTEGRATED_PHASE` | registered `PHASE` + `INTEGRATION` | profile surface; shared export paint path consumed by picture, clipboard, GIF and print; shortcut routes | export area becomes document-serialized |
 | `D0` | `DOCUMENTATION_STATUS_ONLY` | `STATIC` | ADR and specification candidates | — |
 | `D1` | `GLOBAL_IMPACT` | `FINAL` | new document-semantic serialization in shared `<construction>` XML, read on every load, written on every save and undo; legacy byte-identity must be proven across all documents | — |
@@ -1039,6 +1064,11 @@ documentary reconciliation `D_R6PLUS_PLAN`. Rows marked **OPEN** or
 **DESIGN TARGET** are design work for `P0`. The remaining rows are still open
 questions; none is decided by this note. Each row names the earliest subphase
 it blocks.
+
+On 2026-10-02 the author decided `AQ-L1a`, `AQ-L1b`, `AQ-L1c`, `AQ-L2`,
+`AQ-L3`, `AQ-L4`, `AQ-L5`, `AQ-L7` and `AQ-L8`. The
+[A author-decision record](../validation/pre_g9b_r6_plus_a_author_decisions_record.md) is their authority
+and supersedes the planning recommendations in the corresponding rows below.
 
 | ID | Question | Blocks | Planning recommendation |
 |---|---|---|---|
@@ -1072,7 +1102,9 @@ PRE-G9B-R6-plus            = PLANNING PASS — AUTHOR APPROVED
                              PRODUCT IMPLEMENTATION NOT AUTHORIZED
 PRE-G9B-R6-plus PLANNING   = PASS — AUTHOR APPROVED (2026-10-01)
 PRE-G9B-R6-plus-P0         = PASS — AUTHOR APPROVED (2026-10-02; T_R6PLUS_P0 6b7fd5de)
-PRE-G9B-R6-plus-A … G      = NOT AUTHORIZED
+PRE-G9B-R6-plus-A-1        = NOT AUTHORIZED (next subphase; canonical prompt prepared)
+PRE-G9B-R6-plus-A-2        = NOT AUTHORIZED
+PRE-G9B-R6-plus-B … G      = NOT AUTHORIZED
 PRE-G9B-R7                 = DESIGNED — NOT AUTHORIZED
                              BLOCKED UNTIL PRE-G9B-R6-plus IS PASS — AUTHOR APPROVED
 G9B                        = NOT AUTHORIZED
