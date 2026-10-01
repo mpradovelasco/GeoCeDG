@@ -1,12 +1,14 @@
 # PRE-G9B-R6-plus — final refinement mini-track plan
 
-- Status: **PROPOSED PLANNING DESIGN — PENDING AUTHOR REVIEW — NO SUBPHASE AUTHORIZED**
+- Status: **AUTHOR APPROVED PLANNING DESIGN — NO SUBPHASE AUTHORIZED**
 - Recorded: 2026-10-01
-- Track state: `PRE-G9B-R6-plus` = `AUTHOR-DEFINED MINI-TRACK / PLANNING/DESIGN AUTHORIZED / PRODUCT IMPLEMENTATION NOT AUTHORIZED`
+- Track state: `PRE-G9B-R6-plus` = `PLANNING PASS — AUTHOR APPROVED / PRODUCT IMPLEMENTATION NOT AUTHORIZED`
+- Author disposition: `PRE-G9B-R6-plus PLANNING = PASS — AUTHOR APPROVED` (2026-10-01) on `T_R6PLUS_PLAN` `147dac8d838df9ee62c0ae9c4fa296b28b9b9b8f` as reconciled by `D_R6PLUS_PLAN` `af2aa1133620e49d68ac469ee8d10d273498cd95` ([closeout record](../validation/pre_g9b_r6_plus_planning_closeout_record.md))
 - Planning base: `P_R6` = `9b8bc5b10a7ef61da0095853ea4c572ca06bfa72`, tree `f5c8c9f0cc76982170c6282a1242d2a5d07a0897`
 - Change route: `ORDINARY`; frozen class of the planning task: `DOCUMENTATION_STATUS_ONLY`
-- Claim vocabulary: **proposed / not normative**. No normative geometric, unit,
-  layer or export contract is created here
+- Claim vocabulary: **accepted planning direction**. No normative geometric,
+  unit, layer or export contract is created here; the approval does not
+  promote any specification or ADR
 - Evidence record: [planning candidate report](../validation/pre_g9b_r6_plus_planning_candidate_report.md) and its machine-readable mirror `geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-planning.json`
 - First executable task: [`PRE-G9B-R6-plus-P0`](../../.github/prompts/tasks/pre-g9b-r6-plus-p0-integrated-characterization-and-design.prompt.md), proposed future, unexecuted, not authorized
 - Self approval: **false**
@@ -1066,9 +1068,9 @@ it blocks.
 
 ```text
 PRE-G9B-R6                 = PASS — AUTHOR APPROVED — PUBLISHED
-PRE-G9B-R6-plus            = AUTHOR-DEFINED MINI-TRACK
-                             PLANNING / DESIGN AUTHORIZED
+PRE-G9B-R6-plus            = PLANNING PASS — AUTHOR APPROVED
                              PRODUCT IMPLEMENTATION NOT AUTHORIZED
+PRE-G9B-R6-plus PLANNING   = PASS — AUTHOR APPROVED (2026-10-01)
 PRE-G9B-R6-plus-P0         = DESIGNED / CANONICAL PROMPT CREATED / NOT AUTHORIZED
 PRE-G9B-R6-plus-A … G      = NOT AUTHORIZED
 PRE-G9B-R7                 = DESIGNED — NOT AUTHORIZED
@@ -1078,7 +1080,9 @@ G11 / G12 / G15 ownership  = UNCHANGED
 selfApproved               = false
 ```
 
-The planning and design authorization covers the planning task that produced
-this note only. It does not authorize `P0`, `D0` or any other subphase, each of
-which needs its own explicit author instruction. There is no automatic
-transition from `PRE-G9B-R7` to `G9B`.
+The author approval concerns the mini-track plan only, as recorded in the
+[planning closeout record](../validation/pre_g9b_r6_plus_planning_closeout_record.md).
+It does not authorize `P0`, `D0` or any other subphase, each of which needs its
+own explicit author instruction naming an exact base, and it is not the
+`PRE-G9B-R6-plus` track closeout that `PRE-G9B-R7` depends on. There is no
+automatic transition from `PRE-G9B-R7` to `G9B`.

@@ -9,8 +9,9 @@ satisfied.
 
 **Depends on `PRE-G9B-R6-plus` = `PASS — AUTHOR APPROVED`.** The author
 declared `PRE-G9B-R6-plus` at the `PRE-G9B-R6` closeout as the phase before this
-one; its scope is pending author definition. This phase cannot be executed
-until `PRE-G9B-R6-plus` is closed with that author approval.
+one, and on 2026-10-01 defined its scope and approved its mini-track plan
+(planning only; no subphase authorized). This phase cannot be executed until
+`PRE-G9B-R6-plus` is closed with that author approval.
 
 Created under `AD-R0-9`, the separately authorized governance-layer task, from
 the author-approved `PRE-G9B-R0` closeout. The existence of this file is not

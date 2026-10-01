@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "recordKind": "AUTHOR_PLANNING_CLOSEOUT_DISPOSITION",
+  "status": "PRE-G9B-R6-plus PLANNING — PASS — AUTHOR APPROVED",
+  "record": "docs/validation/pre_g9b_r6_plus_planning_closeout_record.md",
+  "authorDecisionDate": "2026-10-01",
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "approvalScope": "the mini-track plan only; not P0, not any subphase, not the PRE-G9B-R6-plus track closeout",
+  "implementationAuthorized": false,
+  "planningCandidateFrozen": true,
+  "planningCandidateMutated": false,
+  "productPhaseEffect": "NONE",
+  "newHeavyIntegration": "NONE",
+  "newHeavyFinal": "NONE",
+  "authorApproval": "APPROVED",
+  "supersedes": {
+    "note": "the frozen planning report and its mirror carry no author-approval field, per the frozen-candidate rule; only the current-approval status is superseded here",
+    "paths": [
+      "docs/validation/pre_g9b_r6_plus_planning_candidate_report.md",
+      "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-planning.json"
+    ]
+  },
+  "publishedBase": {
+    "name": "P_R6",
+    "commit": "9b8bc5b10a7ef61da0095853ea4c572ca06bfa72",
+    "tree": "f5c8c9f0cc76982170c6282a1242d2a5d07a0897",
+    "state": "PRE-G9B-R6 = PASS — AUTHOR APPROVED — PUBLISHED"
+  },
+  "planningCandidate": {
+    "name": "T_R6PLUS_PLAN",
+    "commit": "147dac8d838df9ee62c0ae9c4fa296b28b9b9b8f",
+    "tree": "4122e5626a26d5e039e97d33def6ea9b1993c8b8",
+    "parent": "9b8bc5b10a7ef61da0095853ea4c572ca06bfa72",
+    "branch": "feature/pre-g9b-r6-plus-planning",
+    "branchPushed": false,
+    "modifiedByCloseout": false,
+    "evidence": {"profile": "STATIC", "run": "verification-9a3a79ecf3314e6fa58b3ad6fdff4dad", "exitCode": 0, "verdict": "ACCEPTED / COMPLETE", "checks": "3/3"}
+  },
+  "documentaryReconciliation": {
+    "name": "D_R6PLUS_PLAN",
+    "commit": "af2aa1133620e49d68ac469ee8d10d273498cd95",
+    "tree": "b6bd75cd0f1eea5dbb2910b4a2a962ee8f239620",
+    "parent": "147dac8d838df9ee62c0ae9c4fa296b28b9b9b8f",
+    "productPhaseEffect": "NONE",
+    "technicalVerificationClaim": "NONE",
+    "previousEvidenceReinterpreted": false,
+    "changedPaths": [
+      ".github/prompts/tasks/pre-g9b-r6-plus-p0-integrated-characterization-and-design.prompt.md",
+      "docs/architecture/pre_g9b_r6_plus_minitrack_plan.md",
+      "docs/validation/pre_g9b_r6_plus_planning_candidate_report.md",
+      "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-planning.json"
+    ],
+    "records": [
+      "AQ-X1 export clipping/padding and AQ-G3 sheet-tool modifications are author-supplied requirements, not missing inputs",
+      "AQ-U1 = RESOLVED — AUTHOR CONFIRMED",
+      "author targets: working layer not restricted by the current 0-9 UX/domain; working-layer toolbar entry = GeoCeDG mode compatible with the Move group",
+      "AQ-G1 repository structure and AQ-G5 packaging support stay design work for P0; GGT provenance and licensing gate",
+      "P0 establishes the semantic orientation authority per type before F1",
+      "out-of-scope observations stay observations"
+    ],
+    "evidence": {"profile": "STATIC", "run": "verification-a9163ec657c14298beb729dbad266eec", "exitCode": 0, "verdict": "ACCEPTED / COMPLETE", "checks": "3/3", "executionPlanHash": "25dfacc8b0c53df285a3ac19bbc438c5868d0c94dad7d1021727287ee892cc52", "resultHash": "57a1a48acef9e8e5a982a02917da1962dc58ad2ae1361037e0ea940135cbd0d5"}
+  },
+  "unitInterpretation": {
+    "AQ-U1": "RESOLVED — AUTHOR CONFIRMED",
+    "constructionUnit": "physical interpretation of one model unit",
+    "presentationUnit": "unit used to express dimensional presentation and physical export quantities",
+    "drawingScale": "dimensionless engineering ratio",
+    "invariant": "physical output size is invariant under an equivalent presentation-unit change",
+    "examples": ["10 cm at 1:2 = 5 cm = 50 mm on output", "100 mm at 1:2 = 50 mm on output"],
+    "presentationUnitIsScaleFactor": false
+  },
+  "p0Prompt": {
+    "path": ".github/prompts/tasks/pre-g9b-r6-plus-p0-integrated-characterization-and-design.prompt.md",
+    "blobAtD": "2c51ca73e6a1ccbd04d41885f8d4f86b69dd1578",
+    "state": "DESIGNED / CANONICAL PROMPT CREATED / NOT AUTHORIZED",
+    "implementationBase": "UNRESOLVED — the author will name the published planning closeout in an explicit authorization",
+    "validation": {"profile": "task", "executionSafe": true, "fieldsMissingDuplicatedUnknownOrOutOfOrder": 0, "titles": 1}
+  },
+  "r7PromptAmendment": {
+    "path": ".github/prompts/tasks/pre-g9b-r7-readiness-closeout.prompt.md",
+    "blobBefore": "0e423c5dda507e3c1f3a6e5ddec97c634ad09633",
+    "blobAfter": "be941a71454b85abf21a55f8f141b88b44a12281",
+    "authorizedBy": "author instruction of 2026-10-01",
+    "change": "replaces 'its scope is pending author definition' with the author's scope definition and mini-track plan approval of 2026-10-01 (planning only); otherwise unchanged",
+    "state": "PROPOSED FUTURE / UNEXECUTED / NOT AUTHORIZED",
+    "validation": {"profile": "task", "executionSafe": true, "fieldsMissingDuplicatedUnknownOrOutOfOrder": 0, "promptExecutionSafety": "CONTRACT_SATISFIED", "exitCode": 0, "lineEndings": "LF"}
+  },
+  "promotion": {
+    "authorized": true,
+    "history": ["9b8bc5b10a7ef61da0095853ea4c572ca06bfa72", "147dac8d838df9ee62c0ae9c4fa296b28b9b9b8f", "af2aa1133620e49d68ac469ee8d10d273498cd95", "this closeout commit"],
+    "method": "clean non-force fast-forward only",
+    "forbidden": ["merge commit", "rebase", "squash", "amend", "force push", "tag", "release", "binary publication", "product implementation"],
+    "remoteAtCloseoutEntry": {
+      "localMain": "9b8bc5b10a7ef61da0095853ea4c572ca06bfa72",
+      "originMain": "9b8bc5b10a7ef61da0095853ea4c572ca06bfa72",
+      "liveRemoteMain": "9b8bc5b10a7ef61da0095853ea4c572ca06bfa72",
+      "tree": "f5c8c9f0cc76982170c6282a1242d2a5d07a0897"
+    },
+    "identityAfterPromotion": "this record's own commit; reported with the promotion"
+  },
+  "authorizationState": {
+    "PRE-G9B-R6": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus": "PLANNING PASS — AUTHOR APPROVED / PRODUCT IMPLEMENTATION NOT AUTHORIZED",
+    "PRE-G9B-R6-plus PLANNING": "PASS — AUTHOR APPROVED",
+    "PRE-G9B-R6-plus-P0": "DESIGNED / CANONICAL PROMPT CREATED / NOT AUTHORIZED",
+    "laterSubphases": "NOT AUTHORIZED",
+    "PRE-G9B-R7": "DESIGNED — NOT AUTHORIZED; BLOCKED UNTIL PRE-G9B-R6-plus IS PASS — AUTHOR APPROVED",
+    "G9B": "NOT AUTHORIZED",
+    "g9bFollowsR7Automatically": false,
+    "tagOrReleaseAuthorized": false
+  }
+}
