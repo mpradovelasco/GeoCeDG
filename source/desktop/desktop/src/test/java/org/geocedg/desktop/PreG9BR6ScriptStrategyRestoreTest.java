@@ -61,7 +61,7 @@ class PreG9BR6ScriptStrategyRestoreTest {
 			// Typed text that does not evaluate stays the box text and becomes %0.
 			box.updateLinkedGeo("5$");
 
-			// Pressing Enter: the regex replacement of %0 fails on '$' inside the run.
+			// textSubmitted() (not symbolic Enter): %0 regex replacement fails on '$'.
 			assertThrows(IllegalArgumentException.class, box::textSubmitted);
 
 			assertEquals(CommandLookupStrategy.USER,

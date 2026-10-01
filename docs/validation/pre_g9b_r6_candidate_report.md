@@ -385,10 +385,16 @@ committed regressions failing on unfixed code):
    substitution runs before the loop: `%0` is replaced with
    `String.replaceAll`, whose replacement syntax rejects a lone `$`. A
    number-linked input box whose typed text does not evaluate (for example
-   `5$`) keeps that text, and pressing Enter runs its click script with it as
-   `%0`: `IllegalArgumentException` escapes, the kernel stays in `SCRIPT`, and
-   a later Spanish Algebra Input such as `Circunferencia((0,0),1)` fails with
-   `Comando desconocido` until something resets the strategy.
+   `5$`) keeps that text, and `GeoInputBox.textSubmitted()` runs its click
+   script with it as `%0`: `IllegalArgumentException` escapes, the kernel stays
+   in `SCRIPT`, and a later Spanish Algebra Input such as
+   `Circunferencia((0,0),1)` fails with `Comando desconocido` until something
+   resets the strategy. `textSubmitted()` is reached by `RunClickScript(box)`,
+   by the focus loss after an edit (including after Enter) of a classic,
+   non-symbolic box, or directly; the default symbolic box's Enter, focus-out
+   and mouse click never run its click script, because symbolic Enter only
+   updates the linked object (`UPDATE`, `%0` = box label). The regression below
+   calls `updateLinkedGeo` and `textSubmitted()` directly.
 2. *Swallowed throwable.* A throwable escaping
    `processAlgebraCommandNoExceptionHandling` (any non-`MyError` `Error`, or a
    failure inside the error presentation) is swallowed and `success` is not
@@ -570,12 +576,30 @@ SERIALIZATION_IMPACT = NONE
    - Undo once: both disappear together; redo.
    - Save as `.cedg`, switch to English (Options → GeoCeDG options → Product
      language…), reopen: the script text is unchanged and the button still works.
-2. Spanish UI: `n=1`, `m=0`, an input box for `n` with click script
-   `SetValue(m, %0)`. Type `5$` in the box and press Enter (the script fails).
-   Then type `Circunferencia((0,0),1)` in Algebra Input: a circle must be
-   created. Before the correction this second step failed as unknown command.
+2. Spanish UI: `n=1`, `m=0`, a (default, symbolic) input box for `n` with
+   click script `SetValue(m, %0)`.
+   - Type `7` in the box and press Enter: `n` becomes 7 and `m` stays 0, because
+     symbolic Enter does not run the click script.
+   - In Algebra Input type `RunClickScript(<box label>)`: `m` becomes 7, the
+     script having run with `%0` = the box text.
+   - Type `5$` in the box and press Enter: the numeric input becomes undefined.
+   - Type `RunClickScript(<box label>)` again: the `%0` substitution fails.
+   - Type `Circunferencia((0,0),1)`: a circle must be created. Before the
+     correction this step failed as unknown command.
+
+**Documentary reconciliation.** Step 2 originally asked to type `5$` and press
+Enter, which on the default symbolic box never runs the click script, so it could
+not exercise the failing path. A bounded investigation of the real Desktop
+Input Box event routes (identical at `P_R5B` and `T_R6`) found a smoke-design
+error, not a product defect, and the step above is the corrected route. The
+author executed both smoke steps with result PASS. This note and the wording of
+§16 item 1 were reconciled in the documentary descendant `D_R6_DOC` of `T_R6`;
+the technical evidence remains that of `T_R6`.
 
 ## 24. Authorization state
+
+State when `T_R6` was frozen; the closeout record is the sole authority for the
+current author decision.
 
 ```text
 PRE-G9B-R6     = TECHNICAL CANDIDATE PENDING AUTHOR REVIEW

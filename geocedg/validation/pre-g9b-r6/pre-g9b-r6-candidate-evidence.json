@@ -159,7 +159,7 @@
   "correction": {
     "debt": "TD-R0-GGBSCRIPT-STRATEGY-RESTORE",
     "reproductions": {
-      "strategyLeak": "number-linked input box with unevaluable typed text 5$; Enter runs the click script with %0; String.replaceAll throws IllegalArgumentException after SCRIPT is set; the kernel stays in SCRIPT and a later Spanish Algebra Input alias fails as UnknownCommand",
+      "strategyLeak": "number-linked input box whose unevaluable typed text 5$ stays its text; GeoInputBox.textSubmitted() runs the click script with %0 = that text (reached by RunClickScript(box), by the focus loss after an edit of a classic non-symbolic box, or directly; never by the default symbolic box's Enter, which only updates the linked object); String.replaceAll throws IllegalArgumentException after SCRIPT is set; the kernel stays in SCRIPT and a later Spanish Algebra Input alias fails as UnknownCommand",
       "swallowedThrowable": "a throwable escaping the line processor is swallowed and the script reports success; an update script then unblocks later update scripts",
       "nestedExecute": "Execute catches MyError and Exception only; a natural Lr={\"Execute(Lr)\"} evaluated by Execute(Lr) overflows the stack and leaves the XML strategy; an escaping Error inside a script leaves the next line under XML"
     },
