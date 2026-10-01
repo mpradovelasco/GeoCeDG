@@ -453,7 +453,14 @@ public final class GeoCeDGActionRegistry {
 				new String[] {"English", "Espa\u00f1ol"},
 				"es".equals(app.getLocale().getLanguage()) ? "Espa\u00f1ol" : "English");
 		if (choice != null) {
-			app.setLocale("Espa\u00f1ol".equals(choice) ? new Locale("es") : Locale.ENGLISH);
+			// PRE-G9B-R5-B-R1: the host language change, not the bare locale setter, so that
+			// labels, Input Help and the command tables change language together. The
+			// document content does not change, so an unmodified document stays saved.
+			boolean saved = app.isSaved();
+			app.setLanguage("Espa\u00f1ol".equals(choice) ? new Locale("es") : Locale.ENGLISH);
+			if (saved) {
+				app.setSaved();
+			}
 		}
 	}
 

@@ -1,0 +1,244 @@
+{
+  "schemaVersion": 1,
+  "phase": "PRE-G9B-R5-B",
+  "correctiveDescendant": "PRE-G9B-R5-B-R1",
+  "phaseKind": "AUTHOR_SMOKE_CORRECTIVE_DESCENDANT",
+  "report": "docs/validation/pre_g9b_r5_b_r1_corrective_candidate_report.md",
+  "technicalCandidateState": "FROZEN",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "authorDecisionAuthority": "a later explicit author decision naming the exact technical commit is the sole authority for approval",
+  "selfApproved": false,
+  "authorApproved": false,
+  "passClaimed": false,
+  "changeRoute": "ORDINARY",
+  "verificationClass": "INTEGRATED_PHASE",
+  "verificationClassEscalated": false,
+  "frozenAtPhaseStart": true,
+  "frozenAcceptance": "tools/agent/verify.ps1 -Profile INTEGRATION",
+  "staticRequired": false,
+  "staticNotRequiredReason": "no guide, prompt, ADR or specification changes; INTEGRATION executes the documentation, style and whitespace diagnostics",
+  "initialCandidate": {
+    "commit": "7bc113afb22bb6b97b2ad5e1e3f00117c8022be2",
+    "tree": "d47aafdfaace0aa7919f66dde9ff24ec3d1dac65",
+    "parent": "504a19f7e655ef50c4bfa8095a07f94c11b27a01",
+    "technicalVerification": "ACCEPTED / COMPLETE",
+    "integrationRun": "verification-cf57f99b1a6f4ebe8398837769747b2f",
+    "integrationLeaves": "19/19",
+    "staticRun": "verification-dc45cec7497c4993b76e84b0bb3f62db",
+    "staticLeaves": "3/3",
+    "authorSmoke": "CORRECTIVE FINDING",
+    "authorApproval": "NOT GRANTED",
+    "state": "preserved unchanged; superseded only if this descendant is successfully verified",
+    "report": "docs/validation/pre_g9b_r5_b_candidate_report.md"
+  },
+  "correctiveCommit": "the commit that contains this file; its parent is the initial candidate; not nameable inside it, reported separately",
+  "entry": {
+    "localMainOriginMainLiveRemoteMain": "504a19f7e655ef50c4bfa8095a07f94c11b27a01",
+    "head": "7bc113afb22bb6b97b2ad5e1e3f00117c8022be2",
+    "branchPublished": false,
+    "untrackedAtEntry": ["source/desktop/desktop/hs_err_pid32224.log"]
+  },
+  "authorRecordedFacts": {
+    "tShadowManualSmoke": "PASS",
+    "freshCircleInputAfterCircleLabel": "ordinary USER semantics, not the defect",
+    "observedDefectClass": "runtime localization lifecycle / Input Help refresh regression",
+    "shadowingRelated": "NO EVIDENCE"
+  },
+  "smokeArtifacts": [
+    {
+      "path": "artifacts/pre-g9b-r5/testCircle.cedg",
+      "sha256": "915f2b070e71e4fd47f15441e0ff2aae7f7795ab74863b7871faf1d0d6afd110",
+      "bytes": 7013,
+      "tracked": false,
+      "ignored": true,
+      "modified": false,
+      "use": "scratch copy opened by windowed probes; the defect reproduces without it; not promoted to committed fixtures"
+    },
+    {
+      "path": "artifacts/pre-g9b-r5/testCircle2.cedg",
+      "sha256": "2291223948a151abde0164f54f50a22b541ba219b0875c4f9b7e388dc8e9c93f",
+      "tracked": false,
+      "ignored": true,
+      "use": "not named by the author; not used"
+    },
+    {
+      "path": "artifacts/pre-g9b-r5/hs_err_pid32224.log",
+      "movedFrom": "source/desktop/desktop/hs_err_pid32224.log",
+      "sha256": "8309c05a8e8388a90fe3edbb8975fd3f9a76523e7fdd67a86d205acdd36f539d",
+      "bytes": 94353,
+      "contentChanged": false,
+      "tracked": false,
+      "ignored": true
+    }
+  ],
+  "exception": {
+    "recoverable": "JVM fatal-error log only",
+    "kind": "EXCEPTION_ACCESS_VIOLATION reading 0x64 in awt.dll",
+    "thread": "AWT-Windows (native message dispatch through COMCTL32 and the FlatLaf native window subclass); AWT-EventQueue-0 also in native",
+    "runtime": "Temurin 25.0.4+7, elapsed 782 s",
+    "productJavaFrames": "none",
+    "reproduced": false,
+    "attributed": false,
+    "claimedFixed": false
+  },
+  "reproduction": {
+    "probesCommitted": false,
+    "embeddedHost": "one AppGeoCeDG per scenario on the EDT, real settings.product-language action with only the chooser answered; EN->ES, EN->ES via setLanguage, ES->EN, EN->ES->EN, EN->ES->EN->ES",
+    "windowedProduct": "GeoCeDG.main with isolated --settingsfile, real menu item and real modal chooser, component-dispatched events, EDT watchdog, uncaught-exception capture, screenshots",
+    "windowedRuns": [
+      "T_R5B Java 17 EN->ES->EN->ES",
+      "P_DOTXML Java 17 EN->ES->EN->ES",
+      "T_R5B Temurin 25.0.4 EN->ES->EN->ES",
+      "T_R5B Temurin 25.0.4 testCircle copy, 16 switches, save after each",
+      "corrected tree Temurin 25.0.4 testCircle copy EN->ES->EN->ES"
+    ],
+    "windowedFreezeStallExceptionOrCrash": "none in any run; maximum EDT latency 576 ms",
+    "firstUseLookup": "both identities: after EN->ES Circunferencia unresolved, after ES->EN still resolves Circle; resolved correctly only after an unrelated dictionary access",
+    "minimalSequence": "EN start; c=Circle((0,0),2); show Input Help; Product language -> Espanol; read Input Help captions or type Circunferencia(...) first"
+  },
+  "behaviour": {
+    "P_DOTXML": {
+      "inputHelpRebuilt": false,
+      "labelsCurrent": false,
+      "firstUseAliasLookupCurrent": false,
+      "focusByCommand": "fails",
+      "staleLeafSyntax": "previous-language name with new-language head and body",
+      "paste": "previous-language name",
+      "realInputBarAutocompleteSpanish": "no completion",
+      "constructionXmlChanged": false
+    },
+    "T_R5B": {
+      "inputHelpRebuilt": false,
+      "labelsCurrent": false,
+      "firstUseAliasLookupCurrent": false,
+      "focusByCommand": "works by identity",
+      "staleLeafSyntax": "canonical head, new-language body",
+      "paste": "canonical head",
+      "realInputBarAutocompleteSpanish": "current",
+      "constructionXmlChanged": false
+    },
+    "hostSetLanguagePath": "coherent at both identities"
+  },
+  "classification": "B. PRE-EXISTING DEFECT MADE OBSERVABLE BY R5-B (NOT WORSENED)",
+  "classificationReason": "root cause in the G9U1 product-language action (b4921940), identical first-use lookup staleness and a superset of Input Help symptoms at P_DOTXML; at T_R5B the switch breaks accepted R5-B obligations (T-INPUT alias acceptance, Input Help captions and entries in the current UI language)",
+  "rootCause": "GeoCeDGActionRegistry.chooseLanguage used AppD.setLocale, which never runs AppD.setLanguage (updateConstructionLanguage, setLabels -> InputBarHelpPanelD.setCommands, updateCommandDictionary); Input Help kept the previous generation and App.getReverseCommand used the previous reverse table until a lazy isCommandChanged refill",
+  "orderingHypothesis": {
+    "verdict": "REJECTED as a cause",
+    "evidence": "InputBarHelpPanelD.setCommands starts with getSubCommandDictionary, which refills every dictionary when isCommandChanged; after setLanguage the entries equal a fresh start and the reverse table equals the fresh-start table (ES 983, EN 532)"
+  },
+  "placement": "Desktop runtime language-change lifecycle at its entry point: the GeoCeDG-owned product-language action enters the host AppD.setLanguage",
+  "correction": {
+    "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGActionRegistry.java",
+    "method": "chooseLanguage",
+    "change": "app.setLanguage(locale) instead of app.setLocale(locale); isSaved() preserved across the change",
+    "upstreamOwnedFilesChanged": 0
+  },
+  "preservedInvariants": [
+    "E(k) authority = English command bundle",
+    "USER, SCRIPT and XML lookup unchanged",
+    "reverse-table semantics unchanged",
+    "parser unchanged",
+    "serialization unchanged from P_DOTXML",
+    "localized aliases preserved",
+    "canonical English command presentation preserved",
+    "typed CANONICAL_HEAD_SHADOWED preserved",
+    "identity-carrying autocomplete preserved"
+  ],
+  "observableEffects": [
+    "labels, Input Help and command tables switch together",
+    "construction recomputed in the new language with unchanged XML and values",
+    "active tool returns to Move, as in the host language change",
+    "document saved state preserved",
+    "no undo point stored"
+  ],
+  "changedPaths": [
+    "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGActionRegistry.java",
+    "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR5BR1RuntimeLanguageSwitchTest.java",
+    "docs/upstream/modified-files.yml",
+    "geocedg/specs/operations/verification-junit-inventory.json",
+    "geocedg/specs/operations/verification-registry.json",
+    "docs/roadmap/geocedg_roadmap.md",
+    "docs/validation/pre_g9b_r5_b_r1_corrective_candidate_report.md",
+    "geocedg/validation/pre-g9b-r5-b/pre-g9b-r5-b-r1-corrective-evidence.json"
+  ],
+  "upstreamBoundary": {
+    "baseline": "9b93256b7df401ff056c37b502d82df4d72b1522",
+    "registeredFiles": 857,
+    "newUpstreamModifications": 0,
+    "newAddedEntries": ["source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR5BR1RuntimeLanguageSwitchTest.java"],
+    "purposeAppended": ["source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGActionRegistry.java"]
+  },
+  "regression": {
+    "class": "org.geocedg.desktop.PreG9BR5BR1RuntimeLanguageSwitchTest",
+    "tests": 4,
+    "obligations": ["T-DISPLAY", "T-INPUT", "T-AUTOCOMPLETE", "T-SYNTAX", "T-GEOCEDG", "T-ERROR", "T-DYNTEXT", "T-L01", "T-SHADOW (preserved)"],
+    "onUnchangedT_R5B": "3 failures at the first-use lookup, 1 pass",
+    "variantWithT_R5BActionBody": "3 failures at the Input Help captions, 1 pass",
+    "withCorrection": "4 passed"
+  },
+  "tests": {
+    "desktopComplete": {"tests": 1634, "failures": 0, "errors": 0, "skipped": 1},
+    "sharedModules": "byte-unchanged from T_R5B; final.shared runs in the INTEGRATION campaign"
+  },
+  "junitInventory": {
+    "updater": "tools/agent/update-verification-junit-inventory.ps1",
+    "discoveryEvidence": ["discovery.shared (dry run)", "discovery.desktop (dry run)"],
+    "selectionEvidence": ["final.desktop (executed: 1628 tests, 0 failures, 0 errors, 1 skipped)"],
+    "discoveryDesktop": {
+      "before": {"count": 1630, "sha256": "2ff7a5beb7982a1fd52f8d600a9b0c44895eb49ff00ae2fafb3a457c8f991202"},
+      "after": {"count": 1634, "sha256": "9dbc37a2318e7b11802616de45766a34d84ab2cc176e3dd4d25563574bcf7aab"}
+    },
+    "finalDesktop": {
+      "before": {"count": 1624, "sha256": "2f7fab36c91e1c60b5d01530256134564ad1f3e0a5c56769aa9b874603324432"},
+      "after": {"count": 1628, "sha256": "2f52a04499eebcfaf38a038bc50b8616fb8b9d3400e8df60e80e39b70486a841"}
+    },
+    "moduleDiscoveryEvidenceSha256": {
+      "shared": {"before": "9e210ea41e9dce251c53b55726277413c9a19cc99f69de9d4ad269c8f72807b3", "after": "53300434b81b1f6629e8c8941663a8dc00328e0fd789d9592c0b23709de5d8df"},
+      "desktop": {"before": "6d22a12326d19c64fcb089e92812f3913a924d8d43ca89e66d3e19b2ee1efcd7", "after": "b05567b708fbe90039924690e2df7a19d87fb77bf1e096f0059eaaf5305c9bb3"}
+    },
+    "otherSelections": "unchanged",
+    "registryPin": {
+      "before": "cc5ab6c77de6486c64e099b6d50c4b48bde9f7b2a986a83548e4105025fa909a",
+      "after": "ff4f70b53ccfca49b08dff23daceb2d9c4128d51849eb8ea902a617dbbb4b3fc"
+    },
+    "handEdited": false
+  },
+  "preCandidateChecks": {
+    "kind": "development diagnostics, not acceptance",
+    "checkstyle": {"desktopMain": {"files": 505, "findings": 0}, "desktopTest": {"files": 124, "findings": 0}},
+    "upstreamBoundary": "857 registered files, no unregistered path",
+    "diffCheck": "clean",
+    "planHashes": {
+      "INTEGRATION": "4502c4bd1bbe1a123089e9e524fd0afb354932afbcb410f93052555a16c77aea",
+      "STATIC": "25dfacc8b0c53df285a3ac19bbc438c5868d0c94dad7d1021727287ee892cc52",
+      "FINAL": "3d8752b91eb96bffa3cfae1d6f54378ccfa34451642d0172f1cdb73f01743517",
+      "unchangedFromT_R5B": true
+    },
+    "stagedInfraUnit": {"run": "verification-62515cfa30354d36967a485ea37f7f66", "verdict": "ACCEPTED / COMPLETE", "leaves": "22/22", "diagnostics": 0}
+  },
+  "guideImpact": "NONE",
+  "observations": [
+    "OBS-R5B-R1-NATIVE-AWT-CRASH-UNATTRIBUTED",
+    "OBS-R5B-R1-SYNTHETIC-INPUT",
+    "OBS-R5B-R1-LANGUAGE-CHANGE-RETURNS-TO-MOVE",
+    "OBS-R5B-R1-CAS-GROUP-READINESS",
+    "TD-DOT-XML-HISTORICAL-LOCALIZED-HEAD retained",
+    "R5-B observations carried forward unchanged"
+  ],
+  "impact": {
+    "guide": "NONE",
+    "bootstrap": "NO CHANGE REQUIRED",
+    "verificationInfrastructure": "CATALOG DATA ONLY",
+    "productPhaseEffect": "BOUNDED"
+  },
+  "state": {
+    "initialT_R5B": "TECHNICALLY ACCEPTED; SUPERSEDED BY CORRECTIVE DESCENDANT IF R1 SUCCEEDS; NOT AUTHOR APPROVED",
+    "PRE-G9B-R5-B-R1": "TECHNICAL CANDIDATE PENDING AUTHOR REVIEW",
+    "authorSmoke": "PENDING",
+    "authorApproval": "PENDING",
+    "promotion": "NONE",
+    "PRE-G9B-R6": "NOT AUTHORIZED",
+    "PRE-G9B-R7": "NOT AUTHORIZED",
+    "G9B": "NOT AUTHORIZED"
+  }
+}

@@ -3738,7 +3738,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGActionRegistry.java",
       "change": "added",
-      "purpose": "Bind every declared stable action to one frontend target with localized availability and shared state. G9U1 review round 1: route the existing user-tools action, quick-guide help and differentiated registered product icons without additional stable action IDs. G9U1 review round 3: use the view-specific construction-navigation seam and expose global preferences without implicit object selection. Final presentation polish resolves the optional profile-owned Locus V2 display name while retaining the inherited host action and all 110 stable IDs. PRE-G9B-R4: SplineV2 tools take the set-mode branch; the Algebra Input prefill is removed. PRE-G9B-R4 corrective: tool activation never opens Input Help; the Input Help, command-list and contextual help actions show it only on request, and AppGeoCeDG then selects the SplineV2 syntax while a SplineV2 tool is active. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-A: the user-guide action shows the single render of the edition with its derived outline. Authority: geocedg/specs/operations/documentation-maintenance.md.",
+      "purpose": "Bind every declared stable action to one frontend target with localized availability and shared state. G9U1 review round 1: route the existing user-tools action, quick-guide help and differentiated registered product icons without additional stable action IDs. G9U1 review round 3: use the view-specific construction-navigation seam and expose global preferences without implicit object selection. Final presentation polish resolves the optional profile-owned Locus V2 display name while retaining the inherited host action and all 110 stable IDs. PRE-G9B-R4: SplineV2 tools take the set-mode branch; the Algebra Input prefill is removed. PRE-G9B-R4 corrective: tool activation never opens Input Help; the Input Help, command-list and contextual help actions show it only on request, and AppGeoCeDG then selects the SplineV2 syntax while a SplineV2 tool is active. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-A: the user-guide action shows the single render of the edition with its derived outline. Authority: geocedg/specs/operations/documentation-maintenance.md. PRE-G9B-R5-B-R1: the product-language action enters the host language change (AppD.setLanguage) instead of the bare locale setter, so labels, Input Help and the command tables change language together; an unmodified document stays saved. Authority: geocedg/specs/ui/g9u1-construction-interaction.md section 9.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -5137,6 +5137,12 @@
       "path": "source/desktop/desktop/src/test/resources/org/geocedg/desktop/pre-g9b-r5-b/pre-g9b-r5-b-historical-es.cedg",
       "change": "added",
       "purpose": "PRE-G9B-R5-B test data: native document saved with the Spanish UI at P_DOTXML, reopened under EN and ES by T-XML.",
+      "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR5BR1RuntimeLanguageSwitchTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R5-B-R1 runtime language switch: the real product-language action in one session rebuilds Input Help captions, entries, selection and syntax and the lookup tables for the new language (T-DISPLAY, T-INPUT, T-AUTOCOMPLETE, T-SYNTAX, T-GEOCEDG, T-ERROR, T-DYNTEXT, T-L01) and leaves the construction, its XML and undo history unchanged.",
       "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
     }
   ]
