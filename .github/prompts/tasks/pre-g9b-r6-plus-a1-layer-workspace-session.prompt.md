@@ -1,40 +1,44 @@
 # PRE-G9B-R6-plus-A-1 — layer workspace with session-only layer state
 
-**CANONICAL PROMPT — PREPARED ON AN EXACT BASE — UNEXECUTED AND NOT AUTHORIZED.**
+**CANONICAL EXECUTION PROMPT — AUTHORIZED FOR IMPLEMENTATION AND TECHNICAL
+VERIFICATION ONLY.**
 
-This prompt was prepared at the author's instruction of 2026-10-02. That
-instruction fixed the decisions for `PRE-G9B-R6-plus-A`, split `A` into `A-1`
-and `A-2`, and named the exact published base below. It stated that these
-decisions **do not yet authorize implementation**. The decisions are recorded,
-versioned, in the
+The author's explicit instruction of 2026-10-02 names `PRE-G9B-R6-plus-A-1`,
+its exact implementation base (the published closeout of the `A-1`
+preparation package, `P_R6PLUS_A1_PROMPT`) and the scope of this canonical
+prompt. That instruction also authorizes this amendment, as the first tracked
+edit of the phase, so that the prompt becomes the executable contract of the
+phase. The amendment replaces the prepared prompt published in
+`P_R6PLUS_A1_PROMPT` (blob `38ac4be386b6b6ddb11eb422214a1357bfc59ad6`), records
+the authorized base, freezes the verification class and adds the author's
+precision on `AQ-L7` / `T-L7`. It keeps every other scope, forbidden-scope and
+stop rule of that prompt. The author decisions are recorded, versioned, in the
 [A author-decision record](../../../docs/validation/pre_g9b_r6_plus_a_author_decisions_record.md).
-The existence of this file is not authorization.
-
-Execution requires a new explicit author instruction that names
-`PRE-G9B-R6-plus-A-1` and confirms or replaces the base below. That instruction
-may authorize, as the first tracked edit of the phase, an amendment of this
-prompt to the authorized state, following the `P0` precedent. This file is an
-execution contract, not a second policy document: the design input is the
-`P0` [layer-workspace design candidate](../../../docs/architecture/pre_g9b_r6_plus_a_layer_workspace_design_candidate.md),
+This file is an execution contract, not a second policy document: the design
+input is the `P0`
+[layer-workspace design candidate](../../../docs/architecture/pre_g9b_r6_plus_a_layer_workspace_design_candidate.md),
 as amended by the author decisions.
 
 ```text
 PRE-G9B-R6-plus-A-1 =
-PREPARED — NOT AUTHORIZED
+AUTHORIZED FOR IMPLEMENTATION
 
 selfApproved             = false
 authorApproved           = false
-implementationAuthorized = false
+implementationAuthorized = true
 passClaimed              = false
 PHASE_KIND               = PRODUCT IMPLEMENTATION — DESKTOP SESSION AND VIEW PRESENTATION
 DEPENDS_ON               = PRE-G9B-R6-plus-P0 = PASS — AUTHOR APPROVED — PUBLISHED
+DEPENDS_ON_PACKAGE       = A-1 PREPARATION PACKAGE = PASS — AUTHOR APPROVED — PUBLISHED
 NEXT_SUBPHASE            = PRE-G9B-R6-plus-B
 ```
 
+`implementationAuthorized = true` authorizes only the implementation and
+technical verification defined below. It authorizes no later subphase.
 `authorApproved = false` means that no technical candidate of this phase has
 been author-approved. Technical verification never creates author approval.
-Once authorized, the phase stops with one exact technically verified candidate
-pending author review.
+The phase stops with one exact technically verified candidate pending author
+review.
 
 <!-- geocedg-field: objective -->
 ## Objective
@@ -60,9 +64,9 @@ export route belongs to `B`. The LaTeX and DXF exporters belong to `C`.
 
 ```text
 CHANGE_ROUTE         = ORDINARY
-VERIFICATION_CLASS   = INTEGRATED_PHASE        (author-accepted on 2026-10-02;
-                                                frozen at authorization)
-frozenAtPhaseStart   = REQUIRED AT AUTHORIZATION
+VERIFICATION_CLASS   = INTEGRATED_PHASE        (author-accepted and frozen
+                                                on 2026-10-02)
+frozenAtPhaseStart   = true
 PLANNED_ACCEPTANCE   = registered PHASE  -Phase PRE-G9B-R6-plus-A-1
                        + INTEGRATION
                        both on the same exact frozen candidate; no FINAL
@@ -111,6 +115,14 @@ which is their authority:
    silently changing presentation on load. `A-1` has no persistent hidden
    layers, so the case cannot arise in `A-1`.
 
+**Author precision of 2026-10-02 on `AQ-L7` (2) and `T-L7`.** A hidden layer
+selected explicitly through a route able to select or name that layer — for
+example the layer chooser, or the equivalent status-bar control — is shown and
+becomes the working layer. This must not be read as allowing the click mode to
+select an object that belongs to a hidden layer: objects on hidden layers stay
+not hittable. `T-HIDE-HIT` is not weakened, narrowed or bypassed to satisfy
+`T-L7`.
+
 No other open decision of the
 [P0 candidate report](../../../docs/validation/pre_g9b_r6_plus_p0_characterization_design_candidate_report.md)
 §15 is resolved by this prompt or by `A-1`.
@@ -132,10 +144,12 @@ author decision, and the authorizing instruction may change it.
   by undo, redo and redefinition. Never written to the document XML, the undo
   XML, the macro XML, the clipboard or the preferences. Toggling it creates no
   undo point and does not mark the document modified.
-- **How `AQ-L7` (1) is enforced.** The eye of the working layer is disabled in
+- **How `AQ-L7` is enforced.** The eye of the working layer is disabled in
   the Algebra View, so no normal interaction can hide it. Selecting a hidden
-  layer as working layer, by any route (mode, chooser, status-bar segment),
-  removes it from the hidden set.
+  layer as working layer through a route that names the layer (the chooser,
+  reached from an empty-space click of the mode or from the status-bar
+  segment) removes it from the hidden set. The click on an object cannot reach
+  a hidden layer, because its objects are not hittable.
 - **Mode gestures.** In the working-layer mode, a click on a hittable object
   adopts its layer and returns to Move. A click on empty space opens a numeric
   chooser bounded by `0..9`; a valid choice sets the working layer and returns
@@ -170,28 +184,30 @@ checklist. It does not correct it.
 
 ```text
 IMPLEMENTATION_BASE =
-562e2bb1e77b249b9c97c2e6e06e8b123d6de900          (P_R6PLUS_P0, published P0 closeout)
+069c7a03da92f2c30f015815a0aa278e7356b356          (P_R6PLUS_A1_PROMPT, published
+                                                    closeout of the A-1 preparation package)
 
 IMPLEMENTATION_BASE_TREE =
-9f578093f2f3cba481f5630fe827fd3ef08cff61
+707c0b557ed93de3aaf4fea7d76bb643fb20411a
 
-P0_STATE =
+A1_PREPARATION_PACKAGE_STATE =
 PASS — AUTHOR APPROVED — PUBLISHED
 
-P0_APPROVED_TECHNICAL_CANDIDATE =
-6b7fd5de343b6556b384e71a9345907e7944d1e5          (T_R6PLUS_P0)
+A1_PREPARATION_APPROVED_CANDIDATE =
+3c5aba19b2efd4b65d6f7b7deba6d3b19611630b          (T_R6PLUS_A1_PROMPT)
+
+P0_STATE =
+PASS — AUTHOR APPROVED — PUBLISHED                 (P_R6PLUS_P0 562e2bb1e77b249b9c97c2e6e06e8b123d6de900)
 ```
 
 A moving branch is not a base. Entry gate: local `main`, `origin/main` and the
 live remote `main` equal `IMPLEMENTATION_BASE`, its tree equals
-`IMPLEMENTATION_BASE_TREE`, and the worktree is clean. If the documentary
-commit that publishes this prompt and the author-decision record is published
-first, the authorizing instruction names that commit instead; this prompt
-assumes no later base on its own. The phase works on a new local branch from
-the named commit and is not rebased onto any later commit without a new author
-instruction. Between `P_R6PLUS_PLAN` (`babf20c7c03d0454e2da6760bf5d1fc3fa546f6b`)
-and this base only documentation changed, so the `P0` source citations still
-apply; the phase re-establishes every one it relies on before using it.
+`IMPLEMENTATION_BASE_TREE`, and the worktree is clean. The phase works on a new
+local branch from that commit and is not rebased onto any later commit without
+a new author instruction. Between `P_R6PLUS_PLAN`
+(`babf20c7c03d0454e2da6760bf5d1fc3fa546f6b`) and this base only documentation
+changed, so the `P0` source citations still apply; the phase re-establishes
+every one it relies on before using it.
 
 ## Authority and evidence hierarchy
 
@@ -357,7 +373,8 @@ except the layer of newly created objects.
 | object hidden, layer shown | as at the base |
 | every layer hidden | empty views; the status bar still shows the working layer |
 | working layer hidden | impossible through normal interaction (`AQ-L7` (1)) |
-| hidden layer selected as working layer | shown, then working layer (`AQ-L7` (2)) |
+| hidden layer selected as working layer through a route that names it | shown, then working layer (`AQ-L7` (2)) |
+| click of the mode on the position of an object on a hidden layer | no hit; treated as an empty-space click (`T-HIDE-HIT` unchanged) |
 | object without a drawable (numeric) | painting unaffected; `Sort by Layer` grouping as at the base |
 | dependent numeric without a `<layer>` tag, reloaded or undone | the upstream value, never the working layer |
 | slope field, ODE integral on a hidden layer | geometry computed as at the base |
@@ -391,7 +408,7 @@ executes all of them:
 | `T-STATUS` | the status bar survives every layout rebuild; `Layer: n` tracks every working-layer change; `en`/`es` strings |
 | `T-AV-ORDER` | numeric `Sort by Layer` order |
 | `T-AV-EYE` | the eye toggles the session state; the working layer's eye is disabled |
-| `T-L7` | the working layer cannot be hidden by any normal interaction; selecting a hidden layer as working layer, by every route, shows it and makes it the working layer |
+| `T-L7` | the working layer cannot be hidden by any normal interaction; selecting a hidden layer as working layer through every route that names a layer (chooser from the mode, status-bar control) shows it and makes it the working layer; a click on the position of an object on a hidden layer never adopts that layer |
 | `T-HIDE-PAINT` | Graphics 1 and Graphics 2 omit objects on hidden layers; showing the layer restores them; no drawable lost or duplicated |
 | `T-HIDE-HIT` | objects on hidden layers are not hittable by any mode |
 | `T-HIDE-STATE` | toggles create no undo point, do not mark the document modified, and write nothing to the document, undo, macro, clipboard or preferences XML; New and Open clear the set; undo and redo keep it |
@@ -430,11 +447,28 @@ it, the phase stops first. Report exact commands, exit codes and log paths.
 <!-- geocedg-field: authorization_boundary -->
 ## Authorization boundary
 
-Nothing in this file is authorized. The author decisions it records do not
-authorize implementation. Execution requires a new explicit author instruction
-naming `PRE-G9B-R6-plus-A-1` and its exact base. That instruction would
-authorize only the scope above: local implementation, local commits, technical
-verification and one frozen technical candidate for author review and smoke.
+Authorized by the author instruction of 2026-10-02, and only for the scope
+above: this amendment; local implementation of the working-layer session
+service; the creation hook with upstream-identical behavior outside GeoCeDG;
+coverage of tools, Algebra Input, GGBScript and `Execute`, macros, Locus V2 and
+Spline V2; `MODE_WORKING_LAYER = 141` after re-validating that it is free; its
+integration in the Move group; the `Layer: n` status bar; numeric
+`Sort by Layer` order; the per-layer eye; hidden-layer state exclusively
+`SESSION`; effective visibility in painting and hit testing of Graphics 1 and
+Graphics 2; the tests, documentation, `modified-files.yml` registration and
+PHASE registration this needs; the candidate report and its machine-readable
+evidence; local commits; technical verification; and one frozen technical
+candidate for author review and author smoke. The agent prepares the
+author-smoke checklist but neither performs nor attributes the author smoke.
+
+Not authorized: widening the `0..9` domain; any new serialization;
+hidden-layer persistence; any change to the undo XML or the preferences XML;
+any change to `ShowLayer`, `HideLayer`, `IsVisible`, `setLayerVisible` or
+Paste; any change to the SVG, LaTeX, DXF or any other exporter; resolving the
+interaction between Open and persistent hidden layers; and `A-2`, `B`, `D0`,
+`D1`, `C`, `E1`, `E2`, `E3`, `F1`, `F2`, `G`, `PRE-G9B-R7` and `G9B`. If any of
+these becomes necessary, the phase stops and reports the corresponding
+escalation instead of widening scope.
 
 `A-1` authorizes nothing that follows it. The accepted order is
 `A-1 → B → D0 → D1 → A-2 → C → E1 → E2 → E3 → F1 → F2 → G`. `A-2` needs its own
@@ -446,7 +480,7 @@ stay unauthorized. Author approval is never created by technical verification.
 <!-- geocedg-field: publication_boundary -->
 ## Publication boundary
 
-Once authorized: a local branch from the base and local commits only. Push,
+Authorized: a local branch from the base and local commits only. Push,
 branch publication, merge, promotion to `main`, rebase, squash, amend after
 freeze, force push, tag, release and binary publication are forbidden; each
 needs a separate explicit author instruction naming the exact candidate SHA.
