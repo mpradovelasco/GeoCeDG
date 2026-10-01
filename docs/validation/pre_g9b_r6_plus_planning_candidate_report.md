@@ -99,10 +99,27 @@ modified. Each `.ggt` was copied to the session scratchpad and unpacked there.
 | `translationcoor.ggt` | 2 553 | transport utility (`translationCoor`) | `ef05762d7e1847185374d737d929f868616e6c8a8d270483bd4b9c91ed47b42b` |
 
 Seventeen files, 69 869 bytes. No other asset (icon sources, models, images)
-was supplied. No expected input is missing for planning. Two author inputs are
-referred to but not supplied: the list of requested `sheetISOland` and
-`sheetISOvert` modifications, and the concrete clipping and padding
-observations. Both are recorded as author questions (§8).
+was supplied. No expected input is missing for planning.
+
+Two further author inputs are not files but requirements, and **the author had
+already supplied both** as normative `PRE-G9B-R6-plus` requirements:
+
+- **Export clipping and padding.** For PNG, PDF, SVG and EMF(+) with an area
+  defined by `Export_1` and `Export_2`, the current export appears to include a
+  small border outside the exact rectangle, and when part of the rectangle lies
+  outside the visible viewport it may be clipped to visible content. The
+  required behavior is exactly the rectangle the points define, exported
+  completely, independently of current viewport visibility.
+- **Sheet tools.** In their future authorized phase, `sheetISOland` and
+  `sheetISOvert` hide the outer dotted rectangle and all corner points.
+
+`P0` reproduces and characterizes the first against source and runtime. Neither
+is implemented by the planning.
+
+*Documentary reconciliation.* As frozen in `T_R6PLUS_PLAN`, this paragraph
+said these two inputs were "referred to but not supplied" and recorded them as
+author questions. That characterization was incorrect, and it was corrected in
+the documentary descendant `D_R6PLUS_PLAN` of `T_R6PLUS_PLAN` (see §14).
 
 ## 4. GGT pre-characterization
 
@@ -209,8 +226,10 @@ and then **forces every output onto `app.getMaxLayerUsed()`**
 - **Export.** Neither tool creates `Export_1`/`Export_2`, so neither defines an
   export area today.
 
-The requested `sheetISOland`/`sheetISOvert` modifications were not supplied
-with this instruction. They remain an author input for `P0` (§8).
+The author-required `sheetISOland`/`sheetISOvert` modifications are already
+supplied (§3): in their future authorized phase, the outer dotted rectangle
+(the trim edges, dotted, thickness 2) and all corner points are hidden. `P0`
+characterizes their effect on each macro's outputs.
 
 ## 5. Corrections and confirmations to the planning assumptions
 
@@ -225,10 +244,12 @@ report ("report §") that evidences it.
    bar is new work in `A`, and the unused `SOUTH` slot of the application panel
    can host it [§5.4].
 2. *Arbitrary layer numbers are a local change.* The domain is 0..9, clamped in
-   `GeoElement.setLayer`, and several consumers assume it. Widening is a global
-   change; the plan proposes keeping 0..9 in this track (`AQ-L1`) [§5.1].
+   `GeoElement.setLayer`, and several consumers assume it. The author target
+   remains a working layer not restricted to 0..9; `P0` must design the least
+   invasive correct extension and classify `A` from its real impact [§5.1].
 3. *The working-layer tool can sit with the Move tools.* Only if it is a mode:
-   native toolbar groups reject non-mode actions [§5.5].
+   native toolbar groups reject non-mode actions. The author target is
+   therefore a GeoCeDG mode compatible with the Move group [§5.5].
 4. *Hiding a layer from the Algebra View is available upstream.* Upstream
    `ShowLayer`/`HideLayer` rewrite each object's own visibility, which the
    author excludes; group nodes have no toggle [§5.3, §5.4].
@@ -321,9 +342,10 @@ Pre-existing at `P_R6`, found during pre-characterization, **not** fixed here:
 ## 8. Author decisions
 
 The decisions requested before each subphase are listed in the plan §13
-(`AQ-L1` … `AQ-R7`). Two inputs the instruction refers to were not supplied:
-the requested `sheetISOland`/`sheetISOvert` modifications (`AQ-G3`) and the
-concrete clipping and padding observations (`AQ-X1`).
+(`AQ-L1` … `AQ-R7`). After the documentary reconciliation (§14), `AQ-X1` and
+`AQ-G3` are author-supplied requirements, `AQ-U1` is resolved, `AQ-L1` and
+`AQ-L4` are fixed author targets, and `AQ-G1` and `AQ-G5` are design work for
+`P0`.
 
 The documentation-maintenance contract (§7, step 5) asks that a change of phase
 relationships update the roadmap, the phase plan, affected prompts and machine
@@ -335,7 +357,8 @@ prompt still says the scope of `PRE-G9B-R6-plus` is "pending author
 definition", although its dependency on `PRE-G9B-R6-plus = PASS — AUTHOR
 APPROVED` remains true. The instruction authorized creating the `P0` prompt
 only, and `CLAUDE.md` forbids editing `.github/prompts/**` as a side effect of
-another task. `AQ-R7` asks the author to authorize that minimal amendment.
+another task. `AQ-R7` asked the author to authorize that minimal amendment; the
+author's reconciliation instruction authorizes it for the planning closeout.
 
 ## 9. Canonical `P0` prompt and its validation
 
@@ -457,3 +480,53 @@ G9B                        = NOT AUTHORIZED
 PRODUCT IMPLEMENTATION     = NONE
 publication                = NONE (local commit only; no push, merge, tag or promotion)
 ```
+
+## 14. Documentary reconciliation `D_R6PLUS_PLAN`
+
+The author instruction of 2026-10-01 that reviewed this candidate authorized one
+strictly planning and documentary reconciliation descendant of
+`T_R6PLUS_PLAN` (`147dac8d838df9ee62c0ae9c4fa296b28b9b9b8f`, tree
+`4122e5626a26d5e039e97d33def6ea9b1993c8b8`). `T_R6PLUS_PLAN` itself is not
+amended, rebased, squashed or rewritten.
+
+The reconciliation corrects or records:
+
+1. **Two requirements were not missing.** The export clipping and padding
+   behavior and the sheet-tool modifications had already been supplied by the
+   author as normative requirements (§3, §4.4). The request that the author
+   supply them again is removed.
+2. **`AQ-U1 = RESOLVED — AUTHOR CONFIRMED`.** Physical output size is invariant
+   under an equivalent presentation-unit change, `presentationUnit` expresses
+   and converts dimensional and export quantities, and `drawingScale` is a
+   dimensionless ratio (plan §4.4).
+3. **Layer targets.** The author target is a working layer not restricted to
+   the current 0..9 domain; `P0` designs the least invasive correct extension
+   and classifies `A` from its real impact. The working-layer toolbar entry is
+   a GeoCeDG mode in the Move group; the status bar is complementary.
+4. **GGT design work.** The repository structure (`AQ-G1`) and packaging
+   support (`AQ-G5`) are design work for `P0`, not choices made by the planning,
+   and a provenance and licensing gate separates macro behavior, macro
+   provenance, owned replacement icons and redistributable assets.
+5. **Orientation authority.** `P0` must establish the semantic orientation
+   authority for each supported type before `F1`; no accessor is chosen by its
+   name.
+6. **Observations stay observations** (§7). `P0` may classify them and
+   recommend owners; none becomes product scope.
+
+Changed paths: this report, the plan, the machine-readable mirror and the `P0`
+prompt. The prompt stays `PROPOSED FUTURE / UNEXECUTED / NOT AUTHORIZED`. The
+pre-characterization findings, the source evidence, the verification class and
+§13's frozen state are unchanged. No product, test, build, packaging,
+specification or ADR path changes.
+
+```text
+PRODUCT_PHASE_EFFECT            = NONE
+TECHNICAL_VERIFICATION_CLAIM    = NONE (documentary reconciliation)
+PREVIOUS_EVIDENCE_REINTERPRETED = false
+```
+
+The `STATIC` acceptance evidence of `T_R6PLUS_PLAN`,
+`verification-9a3a79ecf3314e6fa58b3ad6fdff4dad` (`ACCEPTED / COMPLETE`, 3/3),
+stays bound to `T_R6PLUS_PLAN` and is not reattributed. `D_R6PLUS_PLAN`
+cannot name its own commit or its own `STATIC` run; both are recorded in the
+planning closeout record.

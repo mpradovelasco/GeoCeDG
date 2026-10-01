@@ -56,7 +56,10 @@
       {"name": "symmsymbol.ggt", "bytes": 2219, "sha256": "491628c089749cd99b5759b0ed9259e530284529bedb3d2f8dc33d44b01fa74e"},
       {"name": "translationcoor.ggt", "bytes": 2553, "sha256": "ef05762d7e1847185374d737d929f868616e6c8a8d270483bd4b9c91ed47b42b"}
     ],
-    "notSupplied": ["AQ-X1 clipping and padding observations", "AQ-G3 requested sheetISOland/sheetISOvert modifications"],
+    "authorSuppliedRequirements": [
+      {"id": "AQ-X1", "requirement": "PNG, PDF, SVG and EMF(+) with an Export_1/Export_2 area: export exactly the defined rectangle without the observed outside border, and the complete rectangle independently of viewport visibility", "owner": "P0 reproduces and characterizes; B implements"},
+      {"id": "AQ-G3", "requirement": "sheetISOland/sheetISOvert: hide the outer dotted rectangle and all corner points, only in their future authorized phase", "owner": "P0 characterizes; E1 implements when authorized"}
+    ],
     "ggtProvenance": "all 16 macros construction-equivalent to models/legacy/template-v7 macros, modulo eqnStyle tags and three missing icon references"
   },
   "subphases": [
@@ -80,7 +83,39 @@
     "publication, tag, release, binary publication and PROFILE COMMERCIAL are separate author decisions",
     "G11, G12 and G15 keep their ownership"
   ],
-  "authorQuestions": ["AQ-L1", "AQ-L2", "AQ-L3", "AQ-L4", "AQ-L5", "AQ-X1", "AQ-X2", "AQ-X3", "AQ-X4", "AQ-U1", "AQ-U2", "AQ-U3", "AQ-G1", "AQ-G2", "AQ-G3", "AQ-G4", "AQ-G5", "AQ-E1", "AQ-E2", "AQ-F1", "AQ-R7"],
+  "authorQuestions": {
+    "AQ-L1": "AUTHOR TARGET FIXED: working layer not restricted by the current 0-9 UX/domain; P0 designs the least invasive correct extension and classifies A",
+    "AQ-L2": "OPEN",
+    "AQ-L3": "OPEN",
+    "AQ-L4": "AUTHOR TARGET FIXED: working-layer toolbar entry = GeoCeDG mode compatible with the Move group; status bar complementary",
+    "AQ-L5": "OPEN",
+    "AQ-X1": "AUTHOR-SUPPLIED REQUIREMENT",
+    "AQ-X2": "OPEN",
+    "AQ-X3": "OPEN",
+    "AQ-X4": "OPEN",
+    "AQ-U1": "RESOLVED — AUTHOR CONFIRMED: physical output size invariant under an equivalent presentation-unit change; presentationUnit is never a second scale factor; drawingScale is dimensionless",
+    "AQ-U2": "OPEN",
+    "AQ-U3": "OPEN",
+    "AQ-G1": "OPEN — DESIGN WORK FOR P0 (repository structure; not chosen by convenience)",
+    "AQ-G2": "OPEN",
+    "AQ-G3": "AUTHOR-SUPPLIED REQUIREMENT",
+    "AQ-G4": "OPEN — provenance and licensing gate for E1; no legal conclusion by an agent",
+    "AQ-G5": "DESIGN TARGET: packaging support for the approved GGT library",
+    "AQ-E1": "OPEN",
+    "AQ-E2": "OPEN",
+    "AQ-F1": "OPEN; P0 establishes the semantic orientation authority per type before F1",
+    "AQ-R7": "authorized for the planning closeout"
+  },
+  "documentaryReconciliation": {
+    "name": "D_R6PLUS_PLAN",
+    "parent": "147dac8d838df9ee62c0ae9c4fa296b28b9b9b8f",
+    "authorizedBy": "author instruction of 2026-10-01",
+    "productPhaseEffect": "NONE",
+    "technicalVerificationClaim": "NONE",
+    "previousEvidenceReinterpreted": false,
+    "planningCandidateEvidence": {"run": "verification-9a3a79ecf3314e6fa58b3ad6fdff4dad", "profile": "STATIC", "boundTo": "147dac8d838df9ee62c0ae9c4fa296b28b9b9b8f", "verdict": "ACCEPTED / COMPLETE", "checks": "3/3"},
+    "ownIdentityAndStaticRun": "recorded in the planning closeout record"
+  },
   "observationsOutsideScope": ["OBS-R6P-SAVE-WARNING", "OBS-R6P-DXF-DEFAULT-DOC", "OBS-R6P-DXF-SPEC-HEADER", "OBS-R6P-DXF-VISIBLE-CONTRACT", "OBS-R6P-DOC-IDENTITY-HEADER", "OBS-R6P-CTRL-SHIFT-D", "OBS-R6P-ACTION-COUNT-DOC"],
   "roadmapSequence": ["PRE-G9B-R6", "PRE-G9B-R6-plus", "PRE-G9B-R7"],
   "stateWhenFrozen": {

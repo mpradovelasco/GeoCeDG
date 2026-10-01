@@ -22,6 +22,17 @@ the decomposition technically credible, and they are cited with `path:line`
 evidence. They are not normative. `P0` must re-establish every finding it uses
 at its own base and correct this note where the evidence differs.
 
+**Documentary reconciliation.** The planning candidate `T_R6PLUS_PLAN`
+(`147dac8d838df9ee62c0ae9c4fa296b28b9b9b8f`) was reconciled by the author
+instruction of 2026-10-01 in its direct descendant `D_R6PLUS_PLAN`, with no
+product delta. It records two requirements the author had already supplied
+(the `Export_1`/`Export_2` clipping and padding behavior, and the sheet-tool
+modifications), the author confirmation of `AQ-U1`, and the author targets for
+layer numbers and the Move-group working-layer mode. It also sharpens three
+design obligations for `P0`: the GGT repository structure and packaging, the
+GGT provenance and licensing gate, and the orientation authority for `F1`. The
+pre-characterization findings are unchanged.
+
 ## 1. Governing authority and placement
 
 The authority order is `AGENTS.md` §2, refined for this track by the author
@@ -51,7 +62,7 @@ ownership**, on the precedent of `POST-G9U1-A7`, which delivered a bounded
 
 | Owning gate | Roadmap scope | Bounded slice here | What stays with the gate |
 |---|---|---|---|
-| `G11` layers and view states | hierarchy, roles, locking, filters, per-view visibility, savable states, DXF/PDF integration | explicit working layer, flat hide/show of numeric layers, status display | hierarchy, roles, locking, filters, per-view states, named layer states |
+| `G11` layers and view states | hierarchy, roles, locking, filters, per-view visibility, savable states, DXF/PDF integration | explicit working layer, layer numbers beyond 0..9 (author target; extension designed by `P0`), flat hide/show of numeric layers, status display | hierarchy, roles, locking, filters, per-view states, named layer states |
 | `G12` navigation and scales | separation of model, view, drawing and print scale | `constructionUnit`, `presentationUnit` and engineering export scale | named views, extended scale profiles, the rest of `G12` |
 | `G15` sheets, PDF and formats | `DrawingSheet` presentation space, frames, title blocks, exact-size PDF, viewports | one export-area authority, ISO A border as a model-space annotation, physical scale on existing exporters | paper space, viewports, title blocks as a document service, sheet sets |
 
@@ -75,13 +86,25 @@ visibility, so that
 effectiveVisible(object) = objectVisible(object) AND NOT layerHidden(object.layer)
 ```
 
-The author wants arbitrary layer numbers. The upstream domain is characterized
-before that is promised (§5).
+```text
+AUTHOR TARGET = working layer not restricted by the current 0–9 UX/domain
+working-layer toolbar entry = GeoCeDG mode compatible with the Move group
+```
+
+The author requires that the user can choose an arbitrary layer number. The
+current upstream domain is 0..9 and several consumers rely on it (§5.1), so
+`P0` designs the least invasive correct extension and determines its real
+compatibility and verification impact. The widening is not implemented by the
+planning and is not presumed harmless. The working-layer tool stays in the
+current Move group, which accepts modes only (§5.5), so it is a GeoCeDG mode;
+`P0` confirms the exact implementation design.
 
 **Status bar.** The layer information strip becomes an extensible GeoCeDG status
 bar showing at least `Working layer | Construction unit | Presentation unit`,
 for example `Layer: 4 | Construction: mm | Dimensions: cm`. It is presentation
-and frontend state, never geometric authority.
+and frontend state, never geometric authority. It is complementary status
+information and may gain interaction if `P0` recommends it; it does not replace
+the Move-group tool.
 
 **File / Export and `ExportArea`.** Expose or reorganize: Graphics View as
 Picture (PNG, PDF, SVG, EMF/EMF+), DXF, PSTricks, PGF/TikZ and Asymptote. Do not
@@ -101,6 +124,20 @@ An explicit area larger than or outside the visible viewport is still exported
 completely. The visible Graphics View is the fallback only when no explicit
 area exists. The author's current preference is session lifetime.
 
+The author has reported, and requires correcting, two behaviors of PNG, PDF,
+SVG and EMF(+) export when the area is defined by `Export_1` and `Export_2`:
+
+- the exported area appears to include a small border outside the exact
+  rectangle; the required result is **exactly** the rectangle the two points
+  define;
+- when part of that rectangle lies outside the visible viewport, the export
+  may be clipped to the visible content; the required result is the
+  **complete** explicitly defined rectangle, independently of what the
+  viewport currently shows.
+
+These are author-supplied requirements. `P0` reproduces and characterizes them
+against source and runtime (§6.3); `B` implements them.
+
 **Semantic export.** Export support for `LocusV2` and `SplineV2` in the
 applicable LaTeX and vector exporters, without making render tessellation
 geometric authority:
@@ -114,10 +151,13 @@ kernel does not become an export formatter
 
 **GGT library.** A curated library using the local author tools as references,
 with provenance, eventual installer integration and GeoCeDG-owned,
-reproducibly maintained icons for every retained tool. Style through line type,
-color, thickness and remembered last style if sustainable; otherwise the author
-fallback of black at 3 pt. The requested `sheetISOland`/`sheetISOvert`
-modifications are characterized, not made, before their phase.
+reproducibly maintained icons for every retained tool. The author intends to
+ship the approved library, so packaging support is a **required design target**.
+Style through line type, color, thickness and remembered last style if
+sustainable; otherwise the author fallback of black at 3 pt. The author requires
+two modifications of the `sheetISOland`/`sheetISOvert` references, made only in
+their future authorized phase: the outer dotted rectangle is hidden, and all
+corner points are hidden.
 
 **Native dimensions.** `DirectDimension` and `AxisDimension`, with the supplied
 tools as behavioral references: Distance-group and Construction-menu
@@ -242,20 +282,22 @@ None of these orderings is a kernel dependency.
 Each brief states the minimum contract a future prompt must carry. `P0` turns
 each into an exact design candidate.
 
-- **`A` — layer workspace and status bar.** Working layer, chosen through the
-  `AQ-L4` form, applied to every creation route including macro outputs.
-  Per-layer hide/show in the Algebra View, with numeric group order, that never
-  writes an object's own visibility. The `effectiveVisible` rule at the view.
-  An extensible status bar showing the working layer. Persisted numeric domain
-  unchanged unless `AQ-L1` decides otherwise.
+- **`A` — layer workspace and status bar.** Working layer chosen through a
+  GeoCeDG mode in the Move group, not restricted to the current 0..9 domain,
+  through the extension `P0` designs, and applied to every creation route
+  including macro outputs. Per-layer hide/show in the Algebra View, with
+  numeric group order, that never writes an object's own visibility. The
+  `effectiveVisible` rule at the view. An extensible, complementary status bar
+  showing the working layer.
 - **`B` — export surface and `ExportArea`.** Expose PNG, PDF, SVG, EMF/EMF+,
   DXF, PSTricks, PGF/TikZ and Asymptote; never STL, Collada, HTML Collada or
   the worksheet upload, including through shortcuts if they fire. One
   `ExportArea` authority with explicit producers and the viewport fallback.
-  File actions to define and show it. Export rendering that does not lose
-  points, graphs, axes, grid or labels outside the viewport, in every picture
-  format including SVG, and no unintended padding. Update the profile's
-  `document.sheet-export` deferral.
+  File actions to define and show it. For an `Export_1`/`Export_2` area, the
+  exact rectangle with no outside border, and the complete rectangle even
+  where it lies outside the viewport (§2), in every picture format including
+  SVG, without losing points, graphs, axes, grid or labels. Update the
+  profile's `document.sheet-export` deferral.
 - **`D0` — unit-system design.** The unit ADR and normative specification
   carrying §4, its consequences (§4.5), the serialization and forward-
   compatibility rule, and the amendment of the accepted export foundation's
@@ -267,10 +309,11 @@ each into an exact design candidate.
   `Scale in cm` in the picture and LaTeX exporters; the DXF unit header; and
   semantic `LocusV2`/`SplineV2` output in PSTricks, PGF/TikZ and Asymptote from
   the semantic evaluator with explicit tolerance, on the DXF adapter model.
-- **`E1` — GGT library and assets.** The `AQ-G1` location, immutable originals,
-  curated derived definitions, the shipped selection (`AQ-G2`), owned icons
-  with a deterministic generator, the style decision (§8.3), the packaging
-  amendment and the rights record.
+- **`E1` — GGT library and assets.** The repository structure `P0` designs for
+  `AQ-G1`, the shipped selection (`AQ-G2`), the author-required sheet
+  modifications, owned icons with a deterministic generator, the style decision
+  (§8.3), packaging support for the approved library through an explicit
+  contract reconciliation, and the provenance and licensing gate (§8.2).
 - **`E2` — native dimensions.** §8.5.
 - **`E3` — `IsoABorder`.** §8.6.
 - **`F1` — direction cue.** §9.1, with the `AQ-F1` option scope.
@@ -339,17 +382,41 @@ does not replace native PDF, SVG, EMF or LaTeX device and file units. The
 engineering scale is written conventionally (`1:1`, `1:2`, `1:5`, `2:1`, …).
 The current `Scale in cm` wording is not the GeoCeDG contract.
 
+**Author confirmation (`AQ-U1 = RESOLVED — AUTHOR CONFIRMED`, 2026-10-01).**
+The normative interpretation is:
+
+```text
+constructionUnit = physical interpretation of one model unit
+presentationUnit = unit used to express dimensional presentation
+                   and physical export quantities
+drawingScale     = dimensionless engineering ratio
+```
+
+Changing only `presentationUnit`, with the equivalent dimensional conversion,
+does not change the physical printed or exported size:
+
+```text
+10 cm  at 1:2 = 5 cm on output = 50 mm on output
+100 mm at 1:2 = 50 mm on output
+
+physical output size is invariant under an equivalent presentation-unit change
+```
+
+`presentationUnit` is the physical unit used to express and convert dimensional
+and export quantities, which is how physical export uses the presentation-unit
+context. It is **not** a second geometric scale factor and must never be
+reinterpreted as one.
+
 ### 4.5 Consequences `D0` must make explicit
 
-These follow from §4.1–§4.4. They are stated so that `D0` addresses them, not
-as normative decisions.
+These follow from §4.1–§4.4. Item 1 is author-confirmed; the others are stated
+so that `D0` addresses them, not as normative decisions.
 
-1. **Invariance of printed size.** With a physical `constructionUnit` `c`, a
-   presentation unit `p` and scale `1:n`, a model length `L` prints as
-   `L·k(c→p)/n` in `p`, which is `L·k(c→mm)/n` millimetres whatever `p` is.
-   The presentation unit therefore fixes the unit in which the mapping is
-   **expressed**, never an extra factor. This is the only reading compatible
-   with §4.3; author confirmation is requested (§13, `AQ-U1`).
+1. **Invariance of printed size** (`AQ-U1`, author-confirmed in §4.4). With a
+   physical `constructionUnit` `c`, a presentation unit `p` and scale `1:n`, a
+   model length `L` prints as `L·k(c→p)/n` in `p`, which is `L·k(c→mm)/n`
+   millimetres whatever `p` is. `D0` carries this into the normative
+   specification.
 2. **Unspecified construction unit.** No physical interpretation exists.
    Dimensions show the bare model value with no unit. `D0` must decide what
    `presentationUnit` means then (forced to model unit, or recorded but inert),
@@ -418,13 +485,22 @@ with the selection sentinels and break the combo; layers above 9 break the
 combo, the scripting commands and the Algebra View order; very large values can
 overflow the comparator; and the persisted value is no longer readable by any
 build that clamps. Roadmap §14.1 also requires "compatibility with the
-inherited numeric layer". The plan therefore proposes:
+inherited numeric layer".
+
+The author has nevertheless fixed the target (§2):
 
 ```text
-R6-plus A keeps the persisted numeric domain 0..9.
-Arbitrary or hierarchical layers stay with G11, unless the author explicitly
-authorizes widening as its own GLOBAL_IMPACT slice (AQ-L1).
+AUTHOR TARGET = working layer not restricted by the current 0–9 UX/domain
 ```
+
+So the obligation moves to `P0`: design the **least invasive correct
+extension** that meets the target, and determine its real compatibility and
+verification impact, covering every consumer above, persistence and older
+builds. The widening is not implemented by the planning and is not
+pre-classified as harmless. If `P0` concludes that broad shared or
+serialization assumptions must change, it classifies `A` accordingly,
+including escalation beyond the currently recommended `INTEGRATED_PHASE`
+(§12). Hierarchical, named and role-based layers stay with `G11`.
 
 ### 5.2 New-object layer: upstream already has an implicit rule
 
@@ -498,11 +574,18 @@ Native toolbar groups accept **modes only**:
 `GeoCeDGToolbarContainer` throws "Non-mode action in native toolbar group"
 (`geocedg-desktop/GeoCeDGToolbarContainer.java:203-208`), and a profile flyout
 cannot precede the first native group (`:173-178`). The first group,
-`edit-selection`, is native. So "with the Move tools" holds only if the
-working-layer tool **is a mode**, for example a click mode that adopts the
-layer of the clicked object and offers a numeric chooser on an empty click. A
-non-mode selector belongs in the status bar. `P0` decides; either way the
-profile's action catalog grows, which changes the 115-action catalog pinned in
+`edit-selection`, is native. The author keeps the working-layer tool in that
+group, so the design target is:
+
+```text
+working-layer toolbar entry = GeoCeDG mode compatible with the Move group
+```
+
+For example, a click mode that adopts the layer of the clicked object and
+offers a numeric chooser on an empty click. `P0` confirms the exact
+implementation design. The status bar is complementary and may gain
+interaction if `P0` recommends it, but it does not replace the Move-group tool.
+The profile's action catalog grows, which changes the 115-action catalog pinned in
 `geocedg-desktop/GeoCeDGProfile.java:340-343` and its tests. (The workspace
 specification still names 110 stable action IDs at
 `geocedg/specs/ui/cedg-workspaces.md:457-458`, a figure from before
@@ -573,9 +656,13 @@ The only padding is the `+2` px added when `Export_1`/`Export_2` is the area
 (`EuclidianView.java:5216`, `:5234`). PDF page sizes are truncated to integers.
 INFERRED until probed: an explicit area larger than the viewport loses points,
 graphs, axes, grid, some labels and far legacy loci, and loses more in SVG.
-That matches the principle `explicit ExportArea != viewport` failing today. The
-author's concrete observations were not supplied; `P0` must reproduce them by
-probe on the exported files (`AQ-X1`).
+That matches the principle `explicit ExportArea != viewport` failing today.
+
+Both author-reported behaviors (§2) have a plausible source cause: the `+2` px
+is a border outside the exact `Export_1`/`Export_2` rectangle, and the
+view-bounded drawables explain clipping to visible content. These are
+pre-characterization hypotheses. `P0` must reproduce and characterize both
+observations against source and runtime, per format, on the exported files.
 
 ### 6.4 Units and scale per family
 
@@ -663,19 +750,33 @@ the starting dispositions below. The template manifest records redistribution
 review as **blocked**. Twelve of the supplied icons carry GeoGebra stock
 toolbar names.
 
+**Provenance and licensing gate for `E1`.** Geometric equivalence with the
+`template-v7` macros does not imply redistribution permission, and neither the
+planning nor any later agent makes a legal conclusion. `P0` and `E1` must keep
+four things distinct:
+
+```text
+macro behavior / reference      what a tool constructs; usable as a design reference
+macro source / provenance       who authored the definition and under which terms
+GeoCeDG-owned replacement icons new owned assets, never the bundled stock icons
+redistributable packaged asset  only after an explicit rights record and author decision
+```
+
 ### 8.2 Governance constraints on the library
 
-- **Location.** `AGENTS.md` §3.2 places `.ggt` resources under `models/` and
-  tooling under `tools/`. `AGENTS.md` §5 requires existing `.ggt` tools to be
-  imported first under `models/legacy/` with a manifest. The accepted
+- **Location (`AQ-G1`, open for `P0`).** The author requests a project library
+  at `tools/ggtfiles/`. Current governance and provenance conventions point
+  elsewhere: `AGENTS.md` §3.2 places `.ggt` resources under `models/` and
+  tooling under `tools/`; `AGENTS.md` §5 requires existing `.ggt` tools to be
+  imported first under `models/legacy/` with a manifest; and the accepted
   [controlled-integration contract](../../geocedg/specs/legacy/controlled-integration.md)
   fixes `original/` (immutable), `manifest.yml`, `curation.yml` and `derived/`,
-  through `tools/legacy/ingest.ps1`. The author's proposed `tools/ggtfiles/`
-  conflicts with both. The plan proposes immutable originals as a legacy
-  package, and GeoCeDG-curated derived tool definitions as owned product
-  resources registered in `geocedg/resources/assets-manifest.yml`. Keeping
-  `tools/ggtfiles/` instead needs an explicit `AGENTS.md` amendment
-  (`AQ-G1`).
+  through `tools/legacy/ingest.ps1`. This is a real governance conflict, and no
+  location is chosen here. `P0` must design a provenance-safe and
+  packaging-safe structure. It may recommend a canonical reference or source
+  under `models/legacy/`, a curated or generated distributable library
+  elsewhere, a manifest-driven packaging route, an explicit governance
+  amendment, or a combination, but must not choose by convenience.
 - **Promotion.** Making a tool available by default is a promotion. It needs a
   rights review, characterization, a placement decision, deterministic tests
   and a feature-manifest change. Presence in a toolbar is never a promotion
@@ -683,8 +784,10 @@ toolbar names.
 - **Packaging.** The accepted
   [Windows packaging contract](../../geocedg/specs/packaging/windows-packaging.md)
   requires the pipeline to **fail** if the package contains `.ggb`/`.ggt`
-  models. Installer integration therefore needs an amendment of that contract
-  (`AQ-G5`).
+  models. The author intends to ship the approved GGT library, so packaging
+  support is a required design target. The current exclusion is a contract
+  that `E1` must reconcile explicitly (`AQ-G5`), not evidence that GGT
+  distribution is unwanted. No packaging change is authorized by the planning.
 - **User-tool library.** The existing library installs only from a user-chosen
   file, stores itself next to the preferences file
   (`<preferences>.user-tools-v1.json`), ignores a package's own
@@ -720,7 +823,7 @@ dimension tools use thickness 2 and the sheet trim edges use a dotted thickness
 | Tool | G9U1 class | Proposed disposition |
 |---|---|---|
 | `directDimension`, `axisDimension` | 3 | behavioral references for native `E2`; retired from the shipped library once `E2` is accepted |
-| `sheetISOAnLand`, `sheetISOAnVert` | 5 | behavioral references for native `E3`; shipping a corrected version depends on the requested modifications (`AQ-G3`) |
+| `sheetISOAnLand`, `sheetISOAnVert` | 5 | behavioral references for native `E3`; in their future authorized phase the author-required modifications apply: hide the outer dotted rectangle and hide all corner points |
 | `SquarebyDiagonal`, `CirclebyD`, `circArcbyAngle`, `ellipseLength12`, `IFPositiveSelectPoint` | 2 | library candidates: explicit user-owned conveniences over native primitives |
 | `EllipseAxis` | 3 | library candidate with a documented validity domain: it assumes `C` lies on the axis perpendicular to `OB` |
 | `conj2mainAxesEllipse` | 3 | library candidate (Rytz construction) |
@@ -798,8 +901,14 @@ and point-on-path parameters.
 
 **Pitfall.** `GeoLine.getDirectionInD3()` returns `(−y, x)`, the **opposite**
 direction, when the line has no end point (`GeoLine.java:1402-1409`), which is
-the case for parallel, perpendicular and point–vector lines. The cue must use
-`getDirection`, never `getDirectionInD3`.
+the case for parallel, perpendicular and point–vector lines. At least one
+accessor therefore exposes a direction opposite to the construction
+convention. `F1` must not choose an accessor merely because its name begins
+with `getDirection`. Before `F1` is authorized, `P0` must establish the
+**semantic orientation authority** for each supported object type (line,
+segment, ray) and construction route, and name the accessor or derivation that
+implements it. Pre-characterization only indicates that `getDirection` and the
+path parameters agree with the construction convention.
 
 Only `GeoSegment` has arrow decorations today; `DrawLine` and `DrawRay` have
 none. `GeoCeDGEuclidianView.paint` already draws a transient non-semantic
@@ -903,7 +1012,7 @@ from the importance of the track.
 | Subphase | Proposed class | Planned acceptance | Impact facts that select it | Would escalate if |
 |---|---|---|---|---|
 | `P0` | `DOCUMENTATION_STATUS_ONLY` | `STATIC` | documents only | any product, verifier or prompt-contract path |
-| `A` | `INTEGRATED_PHASE` | registered `PHASE` + `INTEGRATION` | the working layer applies to **every** creation route (tools, Algebra input, scripts, macros, paste, load and undo rebuild), which is concrete integration coverage; view predicate; profile catalog | the numeric domain is widened, the predicate moves into `GeoElement`, or hidden layers are persisted through the shared XML handler (unless `AQ-L3` chooses `SESSION`) → `GLOBAL_IMPACT` |
+| `A` | `INTEGRATED_PHASE`, **provisional** | registered `PHASE` + `INTEGRATION` | the working layer applies to **every** creation route (tools, Algebra input, scripts, macros, paste, load and undo rebuild), which is concrete integration coverage; view predicate; profile catalog | `P0` re-classifies `A` from its layer-extension design: widening shared layer or serialization assumptions for the author's arbitrary-layer target, moving the predicate into `GeoElement`, or persisting hidden layers through the shared XML handler (unless `AQ-L3` chooses `SESSION`) → `GLOBAL_IMPACT` |
 | `B` | `INTEGRATED_PHASE` | registered `PHASE` + `INTEGRATION` | profile surface; shared export paint path consumed by picture, clipboard, GIF and print; shortcut routes | export area becomes document-serialized |
 | `D0` | `DOCUMENTATION_STATUS_ONLY` | `STATIC` | ADR and specification candidates | — |
 | `D1` | `GLOBAL_IMPACT` | `FINAL` | new document-semantic serialization in shared `<construction>` XML, read on every load, written on every save and undo; legacy byte-identity must be proven across all documents | — |
@@ -922,31 +1031,36 @@ the official mechanism.
 
 ## 13. Author decisions requested
 
-None of these is decided here. Each names the earliest subphase it blocks.
+Rows marked **AUTHOR TARGET FIXED**, **AUTHOR-SUPPLIED REQUIREMENT** or
+**RESOLVED** were settled by the author on 2026-10-01 and recorded in the
+documentary reconciliation `D_R6PLUS_PLAN`. Rows marked **OPEN** or
+**DESIGN TARGET** are design work for `P0`. The remaining rows are still open
+questions; none is decided by this note. Each row names the earliest subphase
+it blocks.
 
 | ID | Question | Blocks | Planning recommendation |
 |---|---|---|---|
-| `AQ-L1` | Arbitrary layer numbers now, or keep 0..9 in this track? | `A` | keep 0..9; arbitrary/hierarchical layers stay with `G11` unless separately authorized as a `GLOBAL_IMPACT` slice |
+| `AQ-L1` | **AUTHOR TARGET FIXED**: the working layer is not restricted by the current 0..9 UX/domain (§2, §5.1). | `P0` | `P0` designs the least invasive correct extension and classifies `A` from its real impact |
 | `AQ-L2` | Is the working layer `SESSION` or `DOCUMENT_PRESENTATION`, and what is it after New and Open? | `A` | `SESSION` |
 | `AQ-L3` | Are hidden layers per view or document-wide, persisted or session-only, and are hidden-layer objects excluded from LaTeX and DXF export (DXF could carry them on an "off" layer)? | `A`, `C` | per view, persisted; excluded from LaTeX; DXF policy decided in `C` |
-| `AQ-L4` | Is the working-layer tool a mode in the Move group, or a selector in the status bar? | `A` | a mode, if the author wants it with the Move tools; otherwise the status bar |
+| `AQ-L4` | **AUTHOR TARGET FIXED**: the working-layer toolbar entry is a GeoCeDG mode compatible with the Move group; the status bar is complementary (§2, §5.5). | `P0` | `P0` confirms the exact implementation design |
 | `AQ-L5` | Do the upstream `ShowLayer`/`HideLayer` commands stay unchanged? | `A` | unchanged; rerouting them would make them GeoCeDG-modified commands that must enter the GGBScript matrix |
-| `AQ-X1` | Which clipping and padding observations did the author make (format, area producer, zoom)? | `B` (`P0` probes generically if they are not supplied) | supply them for reproduction |
+| `AQ-X1` | **AUTHOR-SUPPLIED REQUIREMENT**: exact `Export_1`/`Export_2` rectangle with no outside border, and the complete rectangle even outside the viewport, for PNG, PDF, SVG and EMF(+) (§2). | `P0` | `P0` reproduces and characterizes against source and runtime; `B` implements |
 | `AQ-X2` | Precedence of `ExportArea` producers, and does a leftover selection rectangle still count? | `B` | explicit area > `Export_1`/`Export_2` > viewport; a leftover rectangle never counts |
 | `AQ-X3` | Close the hidden upstream export routes, including the `Ctrl+Shift+W` upload, if `P0` proves they fire? | `B` | yes |
 | `AQ-X4` | Are Graphics View to Clipboard, Animated GIF and Print Preview in the export surface and under `ExportArea`? | `B` | keep Print Preview; decide the other two explicitly |
-| `AQ-U1` | Confirm that the presentation unit only expresses the physical mapping, so printed size is invariant under it (§4.5). | `D0` | confirm |
+| `AQ-U1` | **RESOLVED — AUTHOR CONFIRMED**: printed and exported physical size is invariant under an equivalent presentation-unit change; `presentationUnit` is never a second scale factor (§4.4). | `D0` | carried into the `D0` specification |
 | `AQ-U2` | Which results present units: native dimensions only, or also `Distance`, `Length`, `LocusLength`? | `D0` | native dimensions only, first |
 | `AQ-U3` | Admitted unit set and behavior of older builds that ignore the new element. | `D0` | `mm`, `cm`, `m`; a decision on fail-closed versus lenient |
-| `AQ-G1` | GGT library location: `models/legacy/` plus owned resources, or an `AGENTS.md` amendment for `tools/ggtfiles/`? | `E1` | follow `AGENTS.md` |
+| `AQ-G1` | **OPEN — DESIGN WORK FOR `P0`**: repository structure reconciling the requested `tools/ggtfiles/` library with the `models/legacy/` provenance conventions (§8.2). | `E1` | `P0` designs a provenance-safe and packaging-safe structure, not chosen by convenience; the author decides |
 | `AQ-G2` | Which of the 16 tools ship, and are the dimension and sheet tools retired once native replacements exist? | `E1` | §8.4 |
-| `AQ-G3` | The requested `sheetISOland`/`sheetISOvert` modifications. | `E1` | supply them |
-| `AQ-G4` | Rights statement for redistributing the 16 macro definitions (icons are replaced). | `E1` | an explicit author statement |
-| `AQ-G5` | Amend the Windows packaging exclusion of `.ggt`, or seed the library from resources? | `E1` | amend explicitly, by named contract change |
+| `AQ-G3` | **AUTHOR-SUPPLIED REQUIREMENT**: in their future authorized phase, the sheet references hide the outer dotted rectangle and all corner points (§2). | `E1` | characterized by `P0`; implemented only when authorized |
+| `AQ-G4` | Provenance and licensing record for redistributing the macro definitions, with GeoCeDG-owned replacement icons (§8.1 gate). | `E1` | an explicit rights record and author decision; no legal conclusion by an agent |
+| `AQ-G5` | **DESIGN TARGET**: how packaging supports the approved GGT library, reconciling the current `.ggt` exclusion (§8.2). | `E1` | `P0` designs the route; the contract amendment needs its own author approval |
 | `AQ-E1` | Native dimension representation: composite object or composition of existing outputs? | `E2` | `P0` recommends from export and verification cost; the author decides |
 | `AQ-E2` | Does `IsoABorder` draw border only, without title block or margin? | `E3` | border only; title blocks stay with `G15` |
 | `AQ-F1` | Is the orientation cue a global or per-object option, and is it exported? | `F1` | global, screen-only |
-| `AQ-R7` | The future `PRE-G9B-R7` prompt still says the `R6-plus` scope is "pending author definition". Authorize a minimal governance amendment? | `G` | yes, in a later authorized governance task |
+| `AQ-R7` | The future `PRE-G9B-R7` prompt still says the `R6-plus` scope is "pending author definition". | planning closeout | minimal wording reconciliation, which the author authorized for the planning closeout |
 
 ## 14. Authorization state
 

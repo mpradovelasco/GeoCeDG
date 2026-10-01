@@ -62,20 +62,29 @@ design and planning paths. If the work would need a change to
 ### Author-fixed scope (plan §2)
 
 1. **Layers.** Explicit working layer, changeable at any time; new objects use
-   it; a working-layer tool with the Move tools unless characterization gives a
-   compelling reason otherwise; working layer in the status bar; Algebra View
-   `Sort by Layer` kept; layers hidden and shown from the Algebra View without
-   overwriting object visibility, so that `effectiveVisible(object) =
-   objectVisible(object) AND NOT layerHidden(object.layer)`. Characterize the
-   numeric domain before promising arbitrary layer numbers.
+   it; working layer in the status bar; Algebra View `Sort by Layer` kept;
+   layers hidden and shown from the Algebra View without overwriting object
+   visibility, so that `effectiveVisible(object) = objectVisible(object) AND
+   NOT layerHidden(object.layer)`. Author targets:
+   `AUTHOR TARGET = working layer not restricted by the current 0–9 UX/domain`
+   and `working-layer toolbar entry = GeoCeDG mode compatible with the Move
+   group`. The current upstream domain is 0..9 with several dependent
+   consumers, so design the least invasive correct extension, determine its
+   real compatibility and verification impact, and confirm the exact mode
+   design. Do not presume the widening harmless.
 2. **Status bar.** An extensible GeoCeDG status bar showing at least working
    layer, construction unit and presentation unit. It is presentation state,
-   never geometric authority.
+   never geometric authority. It is complementary, may gain interaction if
+   recommended, and does not replace the Move-group tool.
 3. **Export surface.** Expose Graphics View as Picture (PNG, PDF, SVG,
    EMF/EMF+), DXF, PSTricks, PGF/TikZ and Asymptote. Do not expose STL,
-   Collada, HTML Collada or Dynamic Worksheet as Web Page. Correct
-   explicit-area padding and clipping where source confirms them. File actions
-   to define and display the export area.
+   Collada, HTML Collada or Dynamic Worksheet as Web Page. File actions to
+   define and display the export area. Author-supplied requirement for PNG,
+   PDF, SVG and EMF(+) with an `Export_1`/`Export_2` area: the export must be
+   exactly the rectangle the points define, without the small outside border
+   currently observed, and must be the complete rectangle even where it lies
+   outside the visible viewport, where current export may clip to visible
+   content.
 4. **`ExportArea`.** One authority with candidate producers `Export_1`/
    `Export_2`, a manual rectangle, an ISO A selection and `IsoABorder`; an
    explicit area is exported completely even outside the viewport; the visible
@@ -84,10 +93,22 @@ design and planning paths. If the work would need a change to
 5. **Semantic export.** `LocusV2` and `SplineV2` in the applicable LaTeX and
    vector exporters, from semantic geometry, never from render tessellation.
 6. **Units.** `constructionUnit`, `presentationUnit` and physical export as
-   fixed in plan §4.
-7. **GGT library.** Curated library with provenance, eventual installer
-   integration and GeoCeDG-owned, reproducibly maintained icons; style memory
-   if sustainable, otherwise black at 3 pt.
+   fixed in plan §4, including `AQ-U1 = RESOLVED — AUTHOR CONFIRMED`:
+   `presentationUnit` expresses and converts dimensional and export
+   quantities, `drawingScale` is a dimensionless ratio, and physical output
+   size is invariant under an equivalent presentation-unit change (10 cm at
+   1:2 = 5 cm = 50 mm on output; 100 mm at 1:2 = 50 mm). `presentationUnit` is
+   never a second geometric scale factor.
+7. **GGT library.** Curated library with provenance, installer integration and
+   GeoCeDG-owned, reproducibly maintained icons; the author intends to ship the
+   approved library, so packaging support is a required design target; style
+   memory if sustainable, otherwise black at 3 pt. The repository structure
+   (requested `tools/ggtfiles/` versus the `models/legacy/` provenance
+   conventions) is open design work (`AQ-G1`): design a provenance-safe and
+   packaging-safe solution, never chosen by convenience. Author-supplied
+   requirement for `sheetISOland`/`sheetISOvert`, applied only in their future
+   authorized phase: hide the outer dotted rectangle and hide all corner
+   points.
 8. **Native dimensions.** `DirectDimension` and `AxisDimension` (placement,
    help, unit conversion, traceable and movable placement, no far-away
    placement, centred figure, deterministic above/left side, parallel text
@@ -97,6 +118,9 @@ design and planning paths. If the work would need a change to
    scale; may configure the common `ExportArea` after a yes/no question.
 10. **Orientation display.** Optional discreet cue (preferably a hollow arrow)
     of the kernel direction of a line, segment or ray; never from the viewport.
+    At least one accessor exposes the opposite direction for lines without an
+    end point, so establish the semantic orientation authority for each
+    supported object type before `F1`; never choose an accessor by its name.
 11. **Authoring refinements.** `Angle with Given Size` creates its angle hidden;
     independent remembered references for the parallel and perpendicular tools
     (point first reuses; reference first then point replaces and remembers;
@@ -113,7 +137,10 @@ IMPLEMENTATION_BASE_TREE = UNRESOLVED — MUST BE FROZEN AT AUTHORIZATION
 
 No future commit or tree is fixed here, and none is invented. The planning
 candidate that created this file cannot name its own commit. Its exact identity
-is recorded in the author's review and closeout record, not here.
+is recorded in the author's review and closeout record, not here. The author
+has stated that `P0` will be authorized on the published planning closeout
+(`P_R6PLUS_PLAN`); until an authorizing instruction names its exact commit and
+tree, both fields stay unresolved.
 
 Published provenance from which `PRE-G9B-R6-plus` planning began, recorded as
 provenance only and **not** as this phase's implementation identity:
@@ -197,13 +224,26 @@ it or copy it into a product path.
 - treat each `.ggt` as a behavioral and provenance reference, not as an approved
   product asset.
 
-Two author inputs that the scope refers to were **not supplied** with the
-planning instruction: the concrete clipping and padding observations
-(`AQ-X1`) and the list of requested `sheetISOland`/`sheetISOvert`
-modifications (`AQ-G3`). Use them if the authorizing instruction supplies them.
-Otherwise characterize clipping and padding with generic probes, leave the
-author-specific comparison open, and record the sheet modifications as an open
-author input. Never invent either.
+Two author requirements are **already supplied** and are scope, not missing
+input (author-fixed scope items 3 and 7; plan §2):
+
+- **Export clipping and padding (`AQ-X1`).** For PNG, PDF, SVG and EMF(+) with
+  an `Export_1`/`Export_2` area, the current export appears to include a small
+  border outside the exact rectangle, and may clip to visible content when part
+  of the rectangle lies outside the viewport. The required behavior is exactly
+  the defined rectangle, completely, independently of viewport visibility.
+  Reproduce and characterize both observations against source and runtime.
+- **Sheet tools (`AQ-G3`).** In their future authorized phase, `sheetISOland`
+  and `sheetISOvert` hide the outer dotted rectangle and all corner points.
+  Characterize what that means for each macro's outputs; do not modify them.
+
+Do not ask the author to supply these facts again.
+
+**Provenance and licensing gate.** Geometric equivalence of the supplied macros
+with `models/legacy/template-v7/` does not imply redistribution permission, and
+no agent makes a legal conclusion. Keep distinct: the macro behavior used as a
+reference, the macro source and its provenance, GeoCeDG-owned replacement
+icons, and a redistributable packaged asset.
 
 If an expected author-input file is missing, report that specific missing input
 and continue with every part of `P0` that repository or upstream evidence can
@@ -248,9 +288,11 @@ must end with a recorded result:
    `Ctrl+Shift+D` both opens the DXF dialog and toggles "selection allowed";
    also the command-line `--export` options, the scripting export API and what
    a v1-profile fallback exposes (plan §6.1);
-2. the exported files for an explicit area larger than or outside the
-   viewport, per picture format including SVG, and whether a leftover selection
-   rectangle crops a later export (plan §6.2, §6.3);
+2. the exported files for an `Export_1`/`Export_2` area that fits the viewport
+   and for one larger than or outside it, per picture format including SVG,
+   reproducing the author-reported outside border and viewport clipping, and
+   whether a leftover selection rectangle crops a later export (plan §2,
+   §6.2, §6.3);
 3. overriding `getMaxLayerUsed` for the working layer: the cap at 8 on the
    defaults path, the uncapped macro path, and objects rebuilt during load and
    undo (plan §5.2);
@@ -262,6 +304,13 @@ must end with a recorded result:
    (plan §9.2);
 7. how the SVG writer groups output by layer, as part of the layer-domain
    finding (plan §5.1).
+
+The pre-existing observations recorded in the planning candidate report §7
+(hidden or excluded export shortcut routes, the `Ctrl+Shift+D` conflict, the DXF
+documentation and state mismatches, the Locus V2 save warning that is never
+invoked, and the stale action count) stay observations. `P0` may classify them
+and recommend an owner for each. It must not turn any of them into product
+scope or fix one silently.
 
 <!-- geocedg-field: forbidden_scope -->
 ## Explicitly forbidden scope
@@ -343,7 +392,11 @@ and the probe that would settle it.
 1. The actual upstream layer numeric domain and every assumption that depends on
    it: clamping, sorting, hit testing, selection sentinels, UI controls, XML
    read and write, scripting commands, SVG and DXF layer naming, and the 3D
-   view.
+   view. Then the least invasive correct extension that meets the author target
+   (working layer not restricted to 0..9), its compatibility impact on legacy
+   documents and older builds, and the verification class it implies for `A`,
+   including escalation beyond `INTEGRATED_PHASE` if shared or serialization
+   assumptions must change.
 2. The ownership and persistence of the working layer.
 3. The ownership and persistence of the hidden-layer set.
 4. The exact current visibility decision path for painting an object, and where
@@ -355,10 +408,10 @@ and the probe that would settle it.
 6. The exact source, lifetime and persistence of `selectionRectangle`.
 7. The relation of `Export_1` and `Export_2` to `selectionRectangle`, per
    exporter family.
-8. Whether clipping and padding defects reproduce, including an explicit area
-   larger than, or outside, the visible viewport, proved by a scratch probe on
-   the exported file; and, if the author supplies observations (`AQ-X1`),
-   whether those reproduce.
+8. Whether the author-reported clipping and padding behaviors (`AQ-X1`)
+   reproduce, per format, for an `Export_1`/`Export_2` area that fits the
+   viewport and for one larger than or outside it, proved by a scratch probe
+   on the exported file, with the source cause of each.
 9. The current scale and unit implementation of each exporter family.
 10. Every legacy use of centimetres, physical scale, export unit and print
     scale, and whether each is only output-oriented. Classify each as a
@@ -374,13 +427,16 @@ and the probe that would settle it.
 15. Whether GGT style selection or memory (line type, color, thickness,
     remembered last style) is technically sustainable. If it is not, record that
     the author fallback of black at 3 pt applies.
-16. The precise behavior and provenance of every author-supplied GGT, and, if
-    the author supplies them (`AQ-G3`), the requested modifications to
-    `sheetISOland` and `sheetISOvert`. Do not modify either tool.
+16. The precise behavior and provenance of every author-supplied GGT, and the
+    effect of the author-required `sheetISOland`/`sheetISOvert` modifications
+    (`AQ-G3`: hide the outer dotted rectangle and all corner points) on each
+    macro's outputs. Do not modify either tool.
 17. The exact orientation semantics the kernel assigns to a line, a segment and
     a ray for each construction route (two points, parallel, perpendicular,
-    point and vector, command input, redefinition) and where that orientation is
-    already observable.
+    point and vector, command input, redefinition), where that orientation is
+    already observable, and the semantic orientation authority (accessor or
+    derivation) for each supported type, given that `getDirectionInD3` is
+    reversed for lines without an end point.
 18. The current mode implementation of the parallel and perpendicular tools:
     accepted selection orders, selection lifetime and the least invasive hook
     for a remembered reference.
@@ -544,9 +600,10 @@ Stop and report rather than guess when:
 - the author-fixed unit semantics cannot be preserved, or `constructionUnit =
   DOCUMENT_SEMANTIC` meets a demonstrated compatibility blocker. Report the
   blocker with evidence; do not choose a replacement rule;
-- arbitrary layer numbers would require widening serialization or range
-  assumptions without an author decision;
-- a GGT's rights or provenance are unclear;
+- the layer extension for the author's arbitrary-layer target would change
+  serialized semantics without a migration plan. Report the design and its
+  classification for author decision; do not choose a lossy rule;
+- a GGT's rights or provenance are unclear for an intended distribution;
 - a design would place geometric truth in a GUI, exporter, script, generated
   artifact or icon;
 - an `ExportArea` design would create a second hidden export-area mechanism;
