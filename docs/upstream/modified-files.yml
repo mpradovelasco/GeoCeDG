@@ -5016,7 +5016,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/plugin/script/GgbScript.java",
       "change": "modified",
-      "purpose": "PRE-G9B-R5-B (ADR 0031 decision 10): display script command heads by the command-head authority and, under a canonical profile, save canonical-first: a SCRIPT-resolvable token keeps its identity, only an unresolvable token uses UI-language aliases, and a conflict is SCRIPT_TOKEN_AMBIGUOUS; the SCRIPT runtime is unchanged.",
+      "purpose": "PRE-G9B-R5-B (ADR 0031 decision 10): display script command heads by the command-head authority and, under a canonical profile, save canonical-first: a SCRIPT-resolvable token keeps its identity, only an unresolvable token uses UI-language aliases, and a conflict is SCRIPT_TOKEN_AMBIGUOUS; the SCRIPT runtime is unchanged. PRE-G9B-R6 (TD-R0-GGBSCRIPT-STRATEGY-RESTORE): restore the previous command lookup strategy in a finally block after success or any throwable, and count an escaping throwable as a failed line instead of a successful script; lookup, delocalization, line continuation and command semantics are unchanged.",
       "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
     },
     {
@@ -5150,6 +5150,42 @@
       "change": "added",
       "purpose": "PRE-G9B-R5-B-R2 Input Help after reopen: through the Desktop file path, a product-language change and a component-tree UI refresh, an accepted completion focuses Input Help on its command identity with the canonical head and the current UI-language syntax body (T-AUTOCOMPLETE, T-SYNTAX, T-INPUT), across EN/ES save and reopen, without changing the construction.",
       "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/scripting/CmdExecute.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-R6: restore the previous command lookup strategy in a finally block after success or any throwable escaping the nested commands, so nested Execute never leaks the XML strategy into later input or script lines; its XML lookup, error reporting, break-on-error and returned argument list are unchanged.",
+      "authority": "docs/validation/pre_g9b_r6_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6ScriptHarness.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6 test host helpers: real Desktop Algebra-input submission, recorded error presentation and construction-XML snapshots; no command identity or geometric fact.",
+      "authority": "docs/validation/pre_g9b_r6_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6ScriptStrategyRestoreTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6 TD-R0-GGBSCRIPT-STRATEGY-RESTORE and nested Execute regressions: strategy restored after success or any throwable, escaping throwable is a failed line, update scripts stay blocked; failing before the correction.",
+      "authority": "docs/validation/pre_g9b_r6_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6CapabilityMatrix.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6 capability-matrix loader, structural completeness gate over the inventory derived from the kernel command enum, runtime dispatcher, this record and the English command bundle, and the row and probe executor.",
+      "authority": "docs/validation/pre_g9b_r6_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6CapabilityMatrixTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6 executable authority of the GGBScript capability matrix: completeness with negative controls and every row and lookup probe on ALGEBRA_INPUT, GGBSCRIPT and GGBSCRIPT_EXECUTE under EN and ES.",
+      "authority": "docs/validation/pre_g9b_r6_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6ScriptSurfaceBoundaryTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6 surface semantics: rich-result orchestration not inherited by scripts, undo storage per surface, the inherited nested Execute result contract, and the script-editor boundary across UI languages and a same-session language change.",
+      "authority": "docs/validation/pre_g9b_r6_candidate_report.md"
     }
   ]
 }

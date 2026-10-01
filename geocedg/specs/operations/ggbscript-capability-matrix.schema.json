@@ -1,0 +1,290 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://geocedg.local/schemas/ggbscript-capability-matrix-v1",
+  "title": "GeoCeDG GGBScript capability matrix (PRE-G9B-R6)",
+  "description": "Observational verification authority for the real script path. Command identities are kernel command enum constants and arity forms quote the English command bundle; neither is redeclared. Structural completeness against the derived inventory and the execution of every row are proven by the JUnit identity each row names.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_version", "matrix_id", "phase_id", "implementation_base", "authority", "inventory_rule", "surfaces", "locales", "processor_exclusions", "form_exclusions", "fixtures", "rows", "lookup_probes"],
+  "properties": {
+    "$schema": { "const": "geocedg/specs/operations/ggbscript-capability-matrix.schema.json" },
+    "schema_version": { "const": 1 },
+    "matrix_id": { "const": "pre-g9b-r6.ggbscript-capability-matrix" },
+    "phase_id": { "const": "PRE-G9B-R6" },
+    "implementation_base": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["commit", "tree"],
+      "properties": {
+        "commit": { "$ref": "#/$defs/sha1" },
+        "tree": { "$ref": "#/$defs/sha1" }
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "command_identity", "executable_authority", "second_command_registry", "geometric_values_asserted"],
+      "properties": {
+        "kind": { "const": "OBSERVATIONAL_VERIFICATION" },
+        "command_identity": { "const": "org.geogebra.common.kernel.commands.Commands" },
+        "executable_authority": { "$ref": "#/$defs/javaType" },
+        "second_command_registry": { "const": false },
+        "geometric_values_asserted": { "const": false }
+      }
+    },
+    "inventory_rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["host", "identity_source", "processor_source", "provenance_source", "provenance_changes", "geocedg_reference_marker", "syntax_source", "syntax_key_rule"],
+      "properties": {
+        "host": { "$ref": "#/$defs/javaType" },
+        "identity_source": { "const": "KERNEL_COMMAND_ENUM_INTERNAL_CONSTANTS" },
+        "processor_source": { "const": "RUNTIME_COMMAND_DISPATCHER_PROCESSOR_CLASS_CHAIN" },
+        "provenance_source": { "const": "docs/upstream/modified-files.yml" },
+        "provenance_changes": {
+          "type": "array",
+          "prefixItems": [{ "const": "added" }, { "const": "modified" }],
+          "items": false,
+          "minItems": 2
+        },
+        "geocedg_reference_marker": { "const": "org.geocedg." },
+        "syntax_source": { "const": "org/geogebra/common/jre/properties/command.properties" },
+        "syntax_key_rule": { "const": "SYNTAX3D_WHEN_PRESENT_ELSE_SYNTAX" }
+      }
+    },
+    "surfaces": {
+      "type": "array",
+      "minItems": 3,
+      "items": { "$ref": "#/$defs/surface" }
+    },
+    "locales": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["locale_id", "language_tag", "lifecycle"],
+        "properties": {
+          "locale_id": { "$ref": "#/$defs/locale" },
+          "language_tag": { "type": "string", "pattern": "^[a-z]{2}$" },
+          "lifecycle": { "const": "AppD.setLanguage" }
+        }
+      }
+    },
+    "processor_exclusions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["processor_class", "reason", "note"],
+        "properties": {
+          "processor_class": { "$ref": "#/$defs/javaType" },
+          "reason": { "const": "NO_GEOCEDG_SEMANTIC_REFERENCE" },
+          "note": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "form_exclusions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["command_id", "syntax_key", "syntax_index", "syntax_line", "reason"],
+        "properties": {
+          "command_id": { "$ref": "#/$defs/commandId" },
+          "syntax_key": { "$ref": "#/$defs/syntaxKey" },
+          "syntax_index": { "type": "integer", "minimum": 1 },
+          "syntax_line": { "$ref": "#/$defs/syntaxLine" },
+          "reason": { "const": "NO_GEOCEDG_BRANCH" }
+        }
+      }
+    },
+    "fixtures": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["fixture_id", "statements", "recompute_driver", "trigger"],
+        "properties": {
+          "fixture_id": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+          "statements": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+          "recompute_driver": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_]*$" },
+          "trigger": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "rows": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/row" }
+    },
+    "lookup_probes": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/probe" }
+    }
+  },
+  "$defs": {
+    "sha1": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "javaType": { "type": "string", "pattern": "^[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*)*\\.[A-Z][A-Za-z0-9_]*$" },
+    "commandId": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9]*$" },
+    "syntaxKey": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9]*\\.(Syntax|Syntax3D)$" },
+    "syntaxLine": { "type": "string", "pattern": "^\\[ .* \\]$" },
+    "surfaceId": { "enum": ["ALGEBRA_INPUT", "GGBSCRIPT", "GGBSCRIPT_EXECUTE"] },
+    "strategy": { "enum": ["USER", "SCRIPT", "XML"] },
+    "locale": { "enum": ["en", "es"] },
+    "verdictType": { "enum": ["SUPPORTED", "UNSUPPORTED_TRUTHFUL"] },
+    "errorExpectation": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["key", "catalog"],
+          "properties": {
+            "key": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9.]*$" },
+            "catalog": { "const": "ERROR" }
+          }
+        }
+      ]
+    },
+    "junit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["class", "method"],
+      "properties": {
+        "class": { "$ref": "#/$defs/javaType" },
+        "method": { "type": "string", "pattern": "^[a-z][A-Za-z0-9]*$" }
+      }
+    },
+    "surface": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["surface_id", "lookup_strategy", "entry_point", "authoring", "trigger", "undo_policy", "frontend_orchestration", "auto_materialize_default", "inner_failure_reported_to_script_result", "junit"],
+      "properties": {
+        "surface_id": { "$ref": "#/$defs/surfaceId" },
+        "lookup_strategy": { "$ref": "#/$defs/strategy" },
+        "entry_point": { "type": "string", "minLength": 1 },
+        "authoring": { "enum": ["TYPED", "SCRIPT_EDITOR"] },
+        "trigger": { "enum": ["EXPLICIT_SUBMISSION", "CLICK_SCRIPT"] },
+        "undo_policy": { "enum": ["ONE_UNDO_STEP_PER_SUCCESSFUL_SUBMISSION", "ONE_UNDO_STEP_PER_CHANGING_CLICK_RUN"] },
+        "frontend_orchestration": { "enum": ["HOST_POST_CREATION_ORCHESTRATION", "NOT_INHERITED"] },
+        "auto_materialize_default": { "enum": ["OFF", "NOT_APPLICABLE"] },
+        "inner_failure_reported_to_script_result": { "type": ["boolean", "null"] },
+        "string_argument_encoding": { "const": "UNICODE_TO_LETTER_34_CONCATENATION" },
+        "junit": { "$ref": "#/$defs/junit" }
+      }
+    },
+    "row": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["row_id", "command_id", "command_role", "arity_form", "entry_surface", "ui_locale", "lookup_strategy", "fixture_id", "input", "naming", "verdict_type", "capabilities", "expected_error", "frontend_orchestration", "junit"],
+      "properties": {
+        "row_id": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9]*#[1-9][0-9]*\\|(ALGEBRA_INPUT|GGBSCRIPT|GGBSCRIPT_EXECUTE)\\|(en|es)$" },
+        "command_id": { "$ref": "#/$defs/commandId" },
+        "command_role": { "enum": ["GEOCEDG_ADDED", "GEOCEDG_MODIFIED"] },
+        "arity_form": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["syntax_key", "syntax_index", "syntax_line"],
+          "properties": {
+            "syntax_key": { "$ref": "#/$defs/syntaxKey" },
+            "syntax_index": { "type": "integer", "minimum": 1 },
+            "syntax_line": { "$ref": "#/$defs/syntaxLine" }
+          }
+        },
+        "entry_surface": { "$ref": "#/$defs/surfaceId" },
+        "ui_locale": { "$ref": "#/$defs/locale" },
+        "lookup_strategy": { "$ref": "#/$defs/strategy" },
+        "fixture_id": { "type": "string", "minLength": 1 },
+        "input": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["statement", "surface_text", "command_token", "token_kind", "authoring"],
+          "properties": {
+            "statement": { "type": "string", "pattern": "^X=" },
+            "surface_text": { "type": "string", "minLength": 1 },
+            "command_token": { "$ref": "#/$defs/commandId" },
+            "token_kind": { "const": "CANONICAL_ENGLISH" },
+            "authoring": { "enum": ["TYPED", "SCRIPT_EDITOR"] }
+          }
+        },
+        "naming": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["display_name", "stored_representation", "runtime_token"],
+          "properties": {
+            "display_name": { "$ref": "#/$defs/commandId" },
+            "stored_representation": { "type": "string", "minLength": 1 },
+            "runtime_token": { "$ref": "#/$defs/commandId" }
+          }
+        },
+        "verdict_type": { "$ref": "#/$defs/verdictType" },
+        "capabilities": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name_lookup", "processor_dispatch", "dag_construction", "recompute", "undo", "native_persistence", "refusal_atomicity"],
+          "properties": {
+            "name_lookup": { "const": "RESOLVED" },
+            "processor_dispatch": { "enum": ["DISPATCHED", "REFUSED"] },
+            "dag_construction": { "enum": ["CONSTRUCTED", "NOT_APPLICABLE"] },
+            "recompute": { "enum": ["RECOMPUTED", "NOT_APPLICABLE"] },
+            "undo": { "enum": ["SINGLE_STEP_RESTORES_PRE_STATEMENT", "NO_UNDO_STEP"] },
+            "native_persistence": { "enum": ["ROUND_TRIP_IDENTICAL", "NOT_APPLICABLE"] },
+            "refusal_atomicity": { "enum": ["NOT_APPLICABLE", "CONSTRUCTION_XML_IDENTICAL"] }
+          }
+        },
+        "expected_error": { "$ref": "#/$defs/errorExpectation" },
+        "frontend_orchestration": { "enum": ["RICH_RESULT_SESSION_ACTIVATED", "HOST_PATH_WITHOUT_RICH_RESULT", "NOT_REACHED", "NOT_INHERITED"] },
+        "junit": { "$ref": "#/$defs/junit" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "verdict_type": { "const": "UNSUPPORTED_TRUTHFUL" } } },
+          "then": {
+            "properties": {
+              "expected_error": { "type": "object" },
+              "capabilities": { "properties": { "refusal_atomicity": { "const": "CONSTRUCTION_XML_IDENTICAL" }, "processor_dispatch": { "const": "REFUSED" } } }
+            }
+          },
+          "else": {
+            "properties": {
+              "expected_error": { "type": "null" },
+              "capabilities": { "properties": { "refusal_atomicity": { "const": "NOT_APPLICABLE" }, "processor_dispatch": { "const": "DISPATCHED" } } }
+            }
+          }
+        }
+      ]
+    },
+    "probe": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["probe_id", "command_id", "entry_surface", "ui_locale", "lookup_strategy", "token_kind", "authoring", "token", "fixture_id", "statement", "surface_text", "verdict_type", "expected_error", "refusal_atomicity", "junit"],
+      "properties": {
+        "probe_id": { "type": "string", "minLength": 1 },
+        "command_id": { "$ref": "#/$defs/commandId" },
+        "entry_surface": { "$ref": "#/$defs/surfaceId" },
+        "ui_locale": { "$ref": "#/$defs/locale" },
+        "lookup_strategy": { "$ref": "#/$defs/strategy" },
+        "token_kind": { "enum": ["CASE_VARIANT", "INTERNAL_NAME", "LOCALIZED_ALIAS", "FOREIGN_ALIAS"] },
+        "authoring": { "enum": ["TYPED", "RAW", "SCRIPT_EDITOR"] },
+        "token": { "type": "string", "minLength": 1 },
+        "fixture_id": { "type": "string", "minLength": 1 },
+        "statement": { "type": "string", "pattern": "^X=" },
+        "surface_text": { "type": "string", "minLength": 1 },
+        "verdict_type": { "$ref": "#/$defs/verdictType" },
+        "expected_error": { "$ref": "#/$defs/errorExpectation" },
+        "refusal_atomicity": { "enum": ["NOT_APPLICABLE", "CONSTRUCTION_XML_IDENTICAL"] },
+        "junit": { "$ref": "#/$defs/junit" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "verdict_type": { "const": "UNSUPPORTED_TRUTHFUL" } } },
+          "then": { "properties": { "expected_error": { "type": "object" }, "refusal_atomicity": { "const": "CONSTRUCTION_XML_IDENTICAL" } } },
+          "else": { "properties": { "expected_error": { "type": "null" }, "refusal_atomicity": { "const": "NOT_APPLICABLE" } } }
+        }
+      ]
+    }
+  }
+}

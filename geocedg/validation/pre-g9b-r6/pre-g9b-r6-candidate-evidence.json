@@ -1,0 +1,214 @@
+{
+  "schemaVersion": 1,
+  "phase": "PRE-G9B-R6",
+  "phaseKind": "GGBSCRIPT_COMPATIBILITY_GATE",
+  "report": "docs/validation/pre_g9b_r6_candidate_report.md",
+  "technicalCandidateState": "FROZEN",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "authorDecisionAuthority": "a later explicit author decision naming the exact technical commit is the sole authority for approval",
+  "selfApproved": false,
+  "authorApproved": false,
+  "implementationAuthorized": true,
+  "passClaimed": false,
+  "changeRoute": "ORDINARY",
+  "verificationClass": "OPERATIONAL_VERIFICATION_INFRASTRUCTURE",
+  "frozenAtPhaseStart": true,
+  "verificationInfrastructureImpact": "PHASE_LOCAL",
+  "frozenAcceptance": [
+    "tools/agent/verify.ps1 -Profile INFRA_UNIT",
+    "tools/agent/verify.ps1 -Profile STATIC",
+    "tools/agent/verify.ps1 -Profile PHASE -Phase PRE-G9B-R6"
+  ],
+  "finalRequired": false,
+  "finalNotRequiredReason": "verification-levels.md section 12.8 requires FINAL for this class only when global verification infrastructure changes; FINAL, INTEGRATION, INFRA_UNIT and STATIC plans are identical to the base",
+  "guideImpact": "NONE",
+  "bootstrapImpact": "NO CHANGE REQUIRED",
+  "serializationImpact": "NONE",
+  "entry": {
+    "implementationBase": {"commit": "e7401734b4ef76d8f79dd4b0535845304937e4f7", "tree": "3ad888b0895d0cb026be60e3d435c0819c4faed8"},
+    "localMainOriginMainLiveRemoteMain": "e7401734b4ef76d8f79dd4b0535845304937e4f7",
+    "worktree": "clean except ignored author artifacts",
+    "branch": "phase/pre-g9b-r6-ggbscript-compatibility",
+    "branchPublished": false,
+    "r5bState": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "r5bCloseout": "e7401734b4ef76d8f79dd4b0535845304937e4f7",
+    "r5bFinalTechnicalCandidate": "a1d96746a42c5ba7fc83d8909647083f11616009",
+    "r6StateBeforeInstruction": "DESIGNED — NOT AUTHORIZED",
+    "r7State": "DESIGNED — NOT AUTHORIZED",
+    "g9bState": "NOT AUTHORIZED"
+  },
+  "canonicalPrompt": {
+    "path": ".github/prompts/tasks/pre-g9b-r6-ggbscript-compatibility.prompt.md",
+    "blobBefore": "e1da5f3b4f0dcc9139b19788fdb1dd4f03138de6",
+    "blobAfter": "01eb1ed8259ebee2fefe4c03f5fa84da98cf3e82",
+    "validation": {"executionSafe": true, "promptExecutionSafety": "CONTRACT_SATISFIED", "exitCode": 0, "linksResolve": true, "lineEndings": "LF"}
+  },
+  "planIdentities": {
+    "FINAL": {"nodes": 68, "coverage": "COMPLETE", "planHash": "3d8752b91eb96bffa3cfae1d6f54378ccfa34451642d0172f1cdb73f01743517", "identicalToBase": true},
+    "INTEGRATION": {"nodes": 46, "coverage": "COMPLETE", "planHash": "4502c4bd1bbe1a123089e9e524fd0afb354932afbcb410f93052555a16c77aea", "identicalToBase": true},
+    "INFRA_UNIT": {"nodes": 22, "coverage": "COMPLETE", "planHash": "830887b17bb7030cdacda0da6999ad5fde64c86e52e96361a34d5f4cc2ffce1d", "identicalToBase": true},
+    "STATIC": {"nodes": 10, "coverage": "COMPLETE", "planHash": "25dfacc8b0c53df285a3ac19bbc438c5868d0c94dad7d1021727287ee892cc52", "identicalToBase": true},
+    "PHASE PRE-G9B-R6": {"nodes": 10, "coverage": "COMPLETE", "registeredByThisPhase": true}
+  },
+  "registration": {
+    "phaseId": "PRE-G9B-R6",
+    "requiredCheckIds": ["compile.shared.semantic", "compile.desktop.semantic", "junit.shared.pre-g9b-r6.semantic", "junit.desktop.pre-g9b-r6.semantic", "static.ggbscript-matrix-inputs.semantic", "ggbscript-matrix.product"],
+    "newNodesRequiredForProfiles": [],
+    "junitSelections": ["pre-g9b-r6.shared", "pre-g9b-r6.desktop"],
+    "staticContract": "pre-g9b-r6.ggbscript-capability-matrix",
+    "schemaChecker": "tools/agent/checks/ggbscript-capability-matrix.ps1",
+    "changeDetectorLiterals": {
+      "tools/agent/tests/verification-final-coverage.Tests.ps1": "inventory selections 30 -> 32; pre-g9b-r6.shared 11 and pre-g9b-r6.desktop 53 pinned; phase selections 41 -> 42",
+      "tools/agent/tests/verification-static-semantic.Tests.ps1": "static contracts 3 -> 4; PRODUCT 2 -> 3",
+      "precedent": "PRE-G9B-R4 and PRE-G9B-R5-A updated the same literals when registering their selections",
+      "foundBy": "development INFRA_UNIT on the staged tree before freezing"
+    },
+    "basePinsReproduced": {
+      "junit_inventory": "199d40a63228976ad2e19fe561fa3012742829b3d05d9922bc9cf7608d9d074b",
+      "static_contracts": "f32de70b01b1315a65ed9ebed8623ae85e36cc6def873385bb8a18561a1f481f"
+    },
+    "candidatePins": {
+      "junit_inventory": "a611c831ce8202167b084c7f7fcdd36b37efa9ed5001669541e9e14898e0b4e7",
+      "static_contracts": "fa2004a14cd0a56559e09671e61e490ca89c736ce7c6543380538ef9f4c31736"
+    },
+    "staticContractInputs": {
+      "geocedg/specs/operations/ggbscript-capability-matrix.schema.json": "6d73870aceb447e26f3cd322437f1919eb96f759d5f3babcd855ec8de8852f8b",
+      "geocedg/validation/pre-g9b-r6/ggbscript-capability-matrix.json": "ea6dcbf0861b83f5c3c3a2acd65b943b5808606828cd511877c07918a2ef227b",
+      "tools/agent/checks/ggbscript-capability-matrix.ps1": "eac16ea8d7ac9b1942a336585e4b6c404bdbaae886d90ff4be87305dcc26e165"
+    },
+    "junitInventory": {
+      "updater": "tools/agent/update-verification-junit-inventory.ps1",
+      "discoveryEvidence": ["discovery.shared (--test-dry-run)", "discovery.desktop (--test-dry-run)"],
+      "selectionEvidence": ["pre-g9b-r6.shared", "pre-g9b-r6.desktop", "final.desktop", "final.shared"],
+      "changed": {
+        "module desktop discovered": "1638 -> 1663",
+        "discovery.desktop": "1638 -> 1663 (790939ac…)",
+        "final.desktop": "1632 -> 1657 (a8f5c8dd…)",
+        "pre-g9b-r6.shared": "new, 11 (223f39bf…)",
+        "pre-g9b-r6.desktop": "new, 53 (196b16d5…)"
+      },
+      "unchanged": ["discovery.shared", "final.shared (6850)", "every other selection"]
+    }
+  },
+  "preFreezeRegression": {
+    "pre-g9b-r6.desktop": {"tests": 53, "failures": 0, "errors": 0, "skipped": 0},
+    "pre-g9b-r6.shared": {"tests": 11, "failures": 0, "errors": 0, "skipped": 0},
+    "final.desktop": {"tests": 1657, "failures": 0, "errors": 0, "skipped": 1},
+    "final.shared": {"tests": 6850, "failures": 0, "errors": 0, "skipped": 10},
+    "checkstyle": {"sharedMain": 0, "desktopTest": 0},
+    "upstreamBoundary": "864 registered files, nothing unregistered",
+    "note": "pre-freeze development evidence, not acceptance"
+  },
+  "inventory": {
+    "derivation": [
+      "internal constants of org.geogebra.common.kernel.commands.Commands",
+      "runtime processor of the AppGeoCeDG CommandDispatcher and its class chain",
+      "docs/upstream/modified-files.yml change added|modified and a source reference to org.geocedg.",
+      "syntax lines of <id>.Syntax3D when present, else <id>.Syntax, in command.properties"
+    ],
+    "commands": {
+      "GEOCEDG_ADDED": ["LocusV2", "LocusLength", "SplineV2"],
+      "GEOCEDG_MODIFIED": ["Point", "Length", "Intersect", "Translate", "Rotate", "Mirror", "Dilate"]
+    },
+    "processorExclusions": {
+      "org.geogebra.common.kernel.commands.CAScmdProcessor": "NO_GEOCEDG_SEMANTIC_REFERENCE; 24 CAS-only commands; R5-B command head in the CASViewOnly message only",
+      "org.geogebra.common.kernel.scripting.CmdExecute": "NO_GEOCEDG_SEMANTIC_REFERENCE; registered by this phase; the GGBSCRIPT_EXECUTE entry surface itself"
+    },
+    "coveredForms": 27,
+    "formExclusions": 14
+  },
+  "matrix": {
+    "schema": "geocedg/specs/operations/ggbscript-capability-matrix.schema.json",
+    "instance": "geocedg/validation/pre-g9b-r6/ggbscript-capability-matrix.json",
+    "rowIdentity": ["command_id", "arity_form", "entry_surface", "ui_locale"],
+    "surfaces": ["ALGEBRA_INPUT", "GGBSCRIPT", "GGBSCRIPT_EXECUTE"],
+    "locales": ["en", "es"],
+    "rows": {"total": 162, "SUPPORTED": 144, "UNSUPPORTED_TRUTHFUL": 18, "perSurfaceAndLocale": {"SUPPORTED": 24, "UNSUPPORTED_TRUTHFUL": 3}},
+    "rowsByCommand": {
+      "LocusV2": {"SUPPORTED": 18}, "LocusLength": {"SUPPORTED": 18}, "SplineV2": {"SUPPORTED": 24},
+      "Point": {"SUPPORTED": 12}, "Length": {"SUPPORTED": 12}, "Intersect": {"SUPPORTED": 18},
+      "Translate": {"SUPPORTED": 6}, "Rotate": {"SUPPORTED": 12, "UNSUPPORTED_TRUTHFUL": 6},
+      "Mirror": {"SUPPORTED": 12, "UNSUPPORTED_TRUTHFUL": 12}, "Dilate": {"SUPPORTED": 12}
+    },
+    "unsupportedTruthfulForms": {
+      "Rotate#3 [ <Object>, <Angle>, <Axis of Rotation> ]": "IllegalArgument",
+      "Mirror#3 [ <Object>, <Plane> ]": "IllegalArgument",
+      "Mirror#4 [ <Object>, <Circle> ]": "IllegalArgument"
+    },
+    "frontendOrchestration": {"RICH_RESULT_SESSION_ACTIVATED": 4, "HOST_PATH_WITHOUT_RICH_RESULT": 44, "NOT_REACHED": 6, "NOT_INHERITED": 108},
+    "lookupProbes": {"total": 138, "SUPPORTED": 64, "UNSUPPORTED_TRUTHFUL": 74},
+    "completenessGate": "no violation; negative controls fail for a new command, a new form, a missing cell, an added-command exclusion and a missing JUnit method",
+    "geometricValuesAsserted": false
+  },
+  "lookupRegimes": {
+    "USER": "canonical English, internal and case variants accepted; Spanish aliases accepted under the Spanish UI only",
+    "SCRIPT": "canonical English and internal names, case-insensitive; raw Spanish tokens are UnknownCommand; the script editor stores aliases as internal names",
+    "XML": "exact-case enum names only, including the English alias constant Reflect; lower-case and Spanish tokens are UnknownCommand; the Execute payload string is never delocalized"
+  },
+  "surfaceSemantics": {
+    "undo": {
+      "ALGEBRA_INPUT": "one undo step per successful submission",
+      "GGBSCRIPT": "one undo step per changing click run; none per line; none for update scripts",
+      "GGBSCRIPT_EXECUTE": "as GGBSCRIPT"
+    },
+    "frontendOrchestration": "Desktop intersection-session activation and opt-in auto-materialize only on explicit Algebra Input; off by default; not inherited by scripts",
+    "executeResultContract": "Execute returns its argument list, so an inner refusal is reported and atomic but the outer script line is not a failure; inherited, retained",
+    "executeStringArguments": "UnicodeToLetter(34) concatenation",
+    "persistence": "144 supported rows round-trip native .cedg with byte-identical construction XML and recompute after reopen"
+  },
+  "correction": {
+    "debt": "TD-R0-GGBSCRIPT-STRATEGY-RESTORE",
+    "reproductions": {
+      "strategyLeak": "number-linked input box with unevaluable typed text 5$; Enter runs the click script with %0; String.replaceAll throws IllegalArgumentException after SCRIPT is set; the kernel stays in SCRIPT and a later Spanish Algebra Input alias fails as UnknownCommand",
+      "swallowedThrowable": "a throwable escaping the line processor is swallowed and the script reports success; an update script then unblocks later update scripts",
+      "nestedExecute": "Execute catches MyError and Exception only; a natural Lr={\"Execute(Lr)\"} evaluated by Execute(Lr) overflows the stack and leaves the XML strategy; an escaping Error inside a script leaves the next line under XML"
+    },
+    "changes": {
+      "source/shared/common/src/main/java/org/geogebra/common/plugin/script/GgbScript.java": "restore the previous strategy in finally; an escaping per-line throwable is a failed line",
+      "source/shared/common/src/main/java/org/geogebra/common/kernel/scripting/CmdExecute.java": "restore the previous strategy in finally"
+    },
+    "authorization": {
+      "GgbScript": "TD-R0-GGBSCRIPT-STRATEGY-RESTORE",
+      "CmdExecute": "bounded truthful-failure correction: leaks lookup state after failure on the GGBSCRIPT_EXECUTE surface"
+    },
+    "preFixRegression": {
+      "class": "org.geocedg.desktop.PreG9BR6ScriptStrategyRestoreTest",
+      "preFix": {"tests": 6, "failures": 6, "junitReportSha256": "895ec30d7ac3cf2807e70421a1a1f519d31046223e84ef2265ef21209476fa73"},
+      "postFix": {"tests": 6, "failures": 0}
+    },
+    "unchanged": ["USER, SCRIPT and XML lookup", "script delocalization", "placeholder substitution semantics", "line continuation", "Execute XML lookup, error reporting, break-on-error and returned argument list", "command semantics", "serialization"]
+  },
+  "tests": {
+    "added": [
+      "org.geocedg.desktop.PreG9BR6CapabilityMatrixTest (14)",
+      "org.geocedg.desktop.PreG9BR6ScriptStrategyRestoreTest (6)",
+      "org.geocedg.desktop.PreG9BR6ScriptSurfaceBoundaryTest (5)"
+    ],
+    "helpers": ["org.geocedg.desktop.PreG9BR6CapabilityMatrix", "org.geocedg.desktop.PreG9BR6ScriptHarness"],
+    "adjacentReused": [
+      "org.geocedg.desktop.G9U1ScriptWorkflowTest",
+      "org.geocedg.desktop.G9U1AlgebraSubmissionTest",
+      "org.geocedg.desktop.PreG9BR5BCanonicalScriptTest",
+      "org.geocedg.desktop.PreG9BR5BCanonicalCommandGateTest",
+      "org.geocedg.desktop.DotXmlLocaleIndependentPersistenceTest",
+      "org.geogebra.common.plugin.GgbScriptTest",
+      "org.geocedg.common.kernel.commands.GeoCeDGCommandsTest",
+      "org.geogebra.common.kernel.commands.CommandsTest.cmdExecute"
+    ]
+  },
+  "retainedObservations": [
+    "OBS-R6-PLACEHOLDER-REGEX-REPLACEMENT",
+    "OBS-R6-EVENT-DISPATCH-SELF-GEO-ON-ESCAPE",
+    "OBS-R6-EXECUTE-INNER-FAILURE-NOT-PROPAGATED",
+    "OBS-R6-EXECUTE-ALIAS-SYNTAX-KEY",
+    "OBS-R6-ROTATE-FORM-4-UPSTREAM-REFUSAL"
+  ],
+  "authorizationState": {
+    "PRE-G9B-R6": "TECHNICAL CANDIDATE PENDING AUTHOR REVIEW",
+    "authorSmoke": "PENDING",
+    "authorApproval": "PENDING",
+    "promotion": "NONE",
+    "PRE-G9B-R7": "NOT AUTHORIZED",
+    "G9B": "NOT AUTHORIZED"
+  }
+}

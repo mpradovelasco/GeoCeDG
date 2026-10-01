@@ -64,25 +64,30 @@ public class GgbScript extends Script {
 		}
 		CommandLookupStrategy lookupStrategy = app.getKernel().getCommandLookupStrategy();
 		app.getKernel().setCommandLookupStrategy(CommandLookupStrategy.SCRIPT);
-		scriptText = substitutePlaceholders(text, evt);
-		String[] lines = scriptText.split("\n");
 		boolean success = true;
-		for (int i = 0; i < lines.length; i++) {
-			String line = lines[i].trim();
-			if ("".equals(line) || line.charAt(0) == '#') {
-				continue;
+		// GeoCeDG PRE-G9B-R6: restore the previous strategy after success or any throwable.
+		try {
+			scriptText = substitutePlaceholders(text, evt);
+			String[] lines = scriptText.split("\n");
+			for (int i = 0; i < lines.length; i++) {
+				String line = lines[i].trim();
+				if ("".equals(line) || line.charAt(0) == '#') {
+					continue;
+				}
+				try {
+					GeoElementND[] res = proc
+							.processAlgebraCommandNoExceptionHandling(line, false,
+									new ScriptErrorHandler(app, evt, i), false,
+									null);
+					success = success && res != null;
+				} catch (Throwable e) {
+					// GeoCeDG PRE-G9B-R6: an escaping throwable is a failed line.
+					success = false;
+				}
 			}
-			try {
-				GeoElementND[] res = proc
-						.processAlgebraCommandNoExceptionHandling(line, false,
-								new ScriptErrorHandler(app, evt, i), false,
-								null);
-				success = success && res != null;
-			} catch (Throwable e) {
-				// error handler should actually catch it
-			}
+		} finally {
+			app.getKernel().setCommandLookupStrategy(lookupStrategy);
 		}
-		app.getKernel().setCommandLookupStrategy(lookupStrategy);
 		return success;
 	}
 

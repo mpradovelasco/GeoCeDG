@@ -67,26 +67,30 @@ public class CmdExecute extends CmdScripting {
 		CommandLookupStrategy oldVal = kernel.getCommandLookupStrategy();
 		kernel.setCommandLookupStrategy(CommandLookupStrategy.XML);
 
-		for (int i = 0; i < list.size(); i++) {
-			try {
-				String cmdText = ((GeoText) list.get(i)).getTextStringSafe();
-				for (int k = 1; k < n; k++) {
-					cmdText = cmdText.replace("%" + k,
-							arg[k].getLabel(StringTemplate.maxDecimals));
+		// GeoCeDG PRE-G9B-R6: restore the previous strategy after success or any throwable.
+		try {
+			for (int i = 0; i < list.size(); i++) {
+				try {
+					String cmdText = ((GeoText) list.get(i)).getTextStringSafe();
+					for (int k = 1; k < n; k++) {
+						cmdText = cmdText.replace("%" + k,
+								arg[k].getLabel(StringTemplate.maxDecimals));
+					}
+					kernel.getAlgebraProcessor()
+							.processAlgebraCommandNoExceptionHandling(cmdText,
+									false, app.getErrorHandler(), false, null);
+				} catch (MyError e) {
+					app.showError(e);
+					break;
+				} catch (Exception e) {
+					app.showError(Errors.InvalidInput);
+					Log.debug(e);
+					break;
 				}
-				kernel.getAlgebraProcessor()
-						.processAlgebraCommandNoExceptionHandling(cmdText,
-								false, app.getErrorHandler(), false, null);
-			} catch (MyError e) {
-				app.showError(e);
-				break;
-			} catch (Exception e) {
-				app.showError(Errors.InvalidInput);
-				Log.debug(e);
-				break;
 			}
+		} finally {
+			kernel.setCommandLookupStrategy(oldVal);
 		}
-		kernel.setCommandLookupStrategy(oldVal);
 		return arg;
 	}
 }
