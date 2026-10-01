@@ -7,6 +7,11 @@ authorized prior `PRE-G9B-R` work.** At the time of writing, no `PRE-G9B-R`
 phase after `R0` has been authorized, so this phase has no prerequisites
 satisfied.
 
+**Depends on `PRE-G9B-R6-plus` = `PASS — AUTHOR APPROVED`.** The author
+declared `PRE-G9B-R6-plus` at the `PRE-G9B-R6` closeout as the phase before this
+one; its scope is pending author definition. This phase cannot be executed
+until `PRE-G9B-R6-plus` is closed with that author approval.
+
 Created under `AD-R0-9`, the separately authorized governance-layer task, from
 the author-approved `PRE-G9B-R0` closeout. The existence of this file is not
 authorization. Execution requires a new explicit author instruction naming
@@ -19,6 +24,7 @@ implementationAuthorized = false
 passClaimed              = false
 DEPENDS_ON               = closure or explicit author disposition of every
                            authorized prior PRE-G9B-R phase
+DEPENDS_ON_PHASE         = PRE-G9B-R6-plus = PASS — AUTHOR APPROVED
 ```
 
 <!-- geocedg-field: objective -->
@@ -130,7 +136,8 @@ Nothing in this file is authorized. Design existence is not execution
 authorization, and technical verification never creates author approval.
 Execution requires a new explicit author instruction naming `PRE-G9B-R7` and its
 exact implementation base, and requires every authorized prior phase to be closed
-or explicitly dispositioned.
+or explicitly dispositioned and `PRE-G9B-R6-plus` to be
+`PASS — AUTHOR APPROVED`.
 
 Closing this phase authorizes **nothing** that follows it. `G9B`, `G9C`, `G9U2`,
 productive `G10`, further `G12`, `PROFILE COMMERCIAL`, exact DXF `SPLINE`,
@@ -167,5 +174,6 @@ log paths; bootstrap- and infrastructure-impact outcomes; and `GUIDE_IMPACT`.
 Stop and report rather than guess when an open debt item has no owner; when an
 author decision from the `PRE-G9B-R0` decision list remains unresolved; when
 integrated verification cannot complete or is untrusted; when reconciliation
-would require relabelling historical evidence; or while `IMPLEMENTATION_BASE` or
-`AUTHORIZED_PRIOR_PHASES` remains `UNRESOLVED`.
+would require relabelling historical evidence; while `IMPLEMENTATION_BASE` or
+`AUTHORIZED_PRIOR_PHASES` remains `UNRESOLVED`; or while `PRE-G9B-R6-plus` is not
+`PASS — AUTHOR APPROVED`.

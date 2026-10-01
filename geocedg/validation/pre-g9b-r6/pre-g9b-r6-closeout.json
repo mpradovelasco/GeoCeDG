@@ -1,0 +1,231 @@
+{
+  "schemaVersion": 1,
+  "phase": "PRE-G9B-R6",
+  "recordKind": "AUTHOR_CLOSEOUT_DISPOSITION",
+  "status": "PRE-G9B-R6 — PASS — AUTHOR APPROVED",
+  "record": "docs/validation/pre_g9b_r6_closeout_record.md",
+  "authorDecisionDate": "2026-10-01",
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "technicalCandidateFrozen": true,
+  "candidateMutated": false,
+  "newHeavyIntegration": "NONE",
+  "newHeavyFinal": "NONE",
+  "authorSmoke": "PASS",
+  "authorApproval": "APPROVED",
+  "supersedes": {
+    "note": "the frozen candidate's report and evidence file necessarily carry no author-approval field, per the frozen-candidate rule; only the current-approval status is superseded here",
+    "paths": [
+      "docs/validation/pre_g9b_r6_candidate_report.md",
+      "geocedg/validation/pre-g9b-r6/pre-g9b-r6-candidate-evidence.json"
+    ]
+  },
+  "publishedBase": {
+    "name": "P_R5B",
+    "commit": "e7401734b4ef76d8f79dd4b0535845304937e4f7",
+    "tree": "3ad888b0895d0cb026be60e3d435c0819c4faed8",
+    "parent": "a1d96746a42c5ba7fc83d8909647083f11616009"
+  },
+  "approvedTechnicalCandidate": {
+    "name": "T_R6",
+    "commit": "4333d032f2e3b309ef9a22913686609c951b6f52",
+    "tree": "a781559e72ce4b56f6d6b3b871689fcf4e893c78",
+    "parent": "e7401734b4ef76d8f79dd4b0535845304937e4f7",
+    "branch": "phase/pre-g9b-r6-ggbscript-compatibility",
+    "branchPushed": false,
+    "state": "TECHNICAL CANDIDATE; PASS — AUTHOR APPROVED",
+    "authorSmoke": "PASS",
+    "authorApproval": "APPROVED",
+    "modifiedByCloseout": false
+  },
+  "documentaryReconciliation": {
+    "name": "D_R6_DOC",
+    "commit": "dd486b594a86b4853575e61e872d65325d05647e",
+    "tree": "099c8cbdba19a3153b554407804086eb2c872d6e",
+    "parent": "4333d032f2e3b309ef9a22913686609c951b6f52",
+    "state": "D_R6_DOC = DOCUMENTARY RECONCILIATION OF T_R6 EVIDENCE",
+    "technicalSourceCohort": "T_R6",
+    "productDeltaFromT_R6": "NONE",
+    "newTechnicalCandidate": false,
+    "changes": {
+      "docs/validation/pre_g9b_r6_candidate_report.md": "section 16 item 1 states the real textSubmitted() route; section 23 step 2 is the corrected smoke; reconciliation note; section 24 marked as the state when T_R6 was frozen",
+      "geocedg/validation/pre-g9b-r6/pre-g9b-r6-candidate-evidence.json": "correction.reproductions.strategyLeak states the real route",
+      "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6ScriptStrategyRestoreTest.java": "one comment line (64), same line count"
+    },
+    "bytecodeIdentity": {
+      "PreG9BR6ScriptStrategyRestoreTest.class": "3f633b28bfeb71ef37b72f3b07fab3dacb41f912b6c5dc433131d35a4db134bc",
+      "PreG9BR6ScriptStrategyRestoreTest$PresentationFailure.class": "35dd54c22bffeabde6ef03f59606329fd0179572dd076603b1ce40c318cbe1c1",
+      "identicalBeforeAndAfter": true
+    },
+    "unchanged": ["product", "test behaviour", "capability matrix", "matrix schema", "serialization", "command semantics", "GGBScript semantics", "verification semantics", "JUnit inventory", "registry pins"],
+    "frozenEvidenceFieldAuthorSmoke": "PENDING (frozen state, unchanged; this record carries the result)",
+    "staticCheck": {
+      "candidate": "dd486b594a86b4853575e61e872d65325d05647e",
+      "tree": "099c8cbdba19a3153b554407804086eb2c872d6e",
+      "profile": "STATIC",
+      "run": "verification-4c6e125d0dd54337990e5c1a1315a39a",
+      "planHash": "25dfacc8b0c53df285a3ac19bbc438c5868d0c94dad7d1021727287ee892cc52",
+      "verdict": "ACCEPTED / COMPLETE, 3/3",
+      "resultHash": "f35cafe58aecec4c3af6108dbd004f79674135bb44a2c7d6eec6086929e1cae0",
+      "resultFileSha256": "a7762efaf41eb4e57d5ce636fedf7e68a93dc755719f927acca1601cb70d3358",
+      "staticContract": "pre-g9b-r6.ggbscript-capability-matrix passes",
+      "diffCheck": "clean"
+    }
+  },
+  "history": "linear, single-parent, no merge",
+  "canonicalPrompt": {
+    "path": ".github/prompts/tasks/pre-g9b-r6-ggbscript-compatibility.prompt.md",
+    "blobBeforeT_R6": "e1da5f3b4f0dcc9139b19788fdb1dd4f03138de6",
+    "blob": "01eb1ed8259ebee2fefe4c03f5fa84da98cf3e82",
+    "editedByDocumentaryReconciliation": false,
+    "editedByCloseout": false
+  },
+  "acceptedEvidence": {
+    "changeRoute": "ORDINARY",
+    "verificationClass": "OPERATIONAL_VERIFICATION_INFRASTRUCTURE",
+    "frozenAtPhaseStart": true,
+    "escalated": false,
+    "verificationInfrastructureImpact": "PHASE_LOCAL",
+    "acceptance": ["INFRA_UNIT", "STATIC", "PHASE -Phase PRE-G9B-R6"],
+    "finalRequired": false,
+    "finalNotRequiredReason": "verification-levels.md section 12.8 requires FINAL for this class only when global verification infrastructure changes; FINAL, INTEGRATION, INFRA_UNIT and STATIC plans are identical to the base",
+    "authority": "geocedg/specs/operations/verification-levels.md section 12.8",
+    "candidate": "4333d032f2e3b309ef9a22913686609c951b6f52",
+    "tree": "a781559e72ce4b56f6d6b3b871689fcf4e893c78",
+    "runs": [
+      {"profile": "INFRA_UNIT", "run": "verification-2968b49a32834743a361e5511b544d1a", "planHash": "830887b17bb7030cdacda0da6999ad5fde64c86e52e96361a34d5f4cc2ffce1d", "verdict": "ACCEPTED / COMPLETE, 22/22", "resultHash": "6e6068541bc7cf49643c9acd8bfc8e8779e3a6f794be152b149b34b41f7066ae", "resultFileSha256": "13c58834667883a17aa42caccee82d5a618666800ae17b557259bab1ff297973"},
+      {"profile": "STATIC", "run": "verification-09701faa95f3447db42ab47c657b1295", "planHash": "25dfacc8b0c53df285a3ac19bbc438c5868d0c94dad7d1021727287ee892cc52", "verdict": "ACCEPTED / COMPLETE, 3/3", "resultHash": "be1e7e4004ba6dc2b8429f42112322baaa83ae3139bf91c19fdad13b06e6d3bc", "resultFileSha256": "3b24dac97285702b3d42c1364c127e86e719f056623ae018d2363f93cf53402f", "diagnostics": "standing diagnostic.governance FINDING and diagnostic.historical-consistency UNAVAILABLE"},
+      {"profile": "PHASE", "phase": "PRE-G9B-R6", "run": "verification-0115a60739804474b1c1bba79b132f0c", "planHash": "2583976cdd2a47df080a3f8f6834a33c6fd07d0ff4e29dacfa34b0f9143e21ae", "verdict": "ACCEPTED / COMPLETE, 6/6", "producers": 4, "resultHash": "c88174938e0d87c63eea2cce85bdc51c2e78facac6d3cd309fba291f35fb2824", "resultFileSha256": "ccbc055416767f554971c24d55f387183b5350ac5965e1ed6af876ce7526080c"}
+    ],
+    "acceptanceViolated": 0,
+    "acceptanceUntrusted": 0,
+    "acceptanceNotRun": 0,
+    "preFreezeEvidence": {
+      "pre-g9b-r6.desktop": {"tests": 53, "failures": 0, "errors": 0},
+      "pre-g9b-r6.shared": {"tests": 11, "failures": 0, "errors": 0},
+      "final.desktop": {"tests": 1657, "failures": 0, "errors": 0, "allowlistedSkips": 1},
+      "final.shared": {"tests": 6850, "failures": 0, "errors": 0, "allowlistedSkips": 10},
+      "strategyRestoreRegression": {"preFixFailures": 6, "postFixFailures": 0, "tests": 6},
+      "checkstyleFindings": 0,
+      "upstreamBoundary": "every changed source/ file registered",
+      "note": "pre-freeze regression evidence, not acceptance campaigns"
+    },
+    "developmentRuns": "the pre-g9b-r6-dev-* runs on the base are development evidence, not acceptance, and are not reattributed",
+    "crossCandidateEvidenceReuse": false,
+    "finalReceipt": "NONE; FINAL was not required and none is claimed, fabricated or fed to the FINAL-receipt identity-only closeout adapter; candidate identity recorded directly",
+    "localEvidence": [
+      "artifacts/agent/pre-g9b-r6-infra-unit-4333d032/",
+      "artifacts/agent/pre-g9b-r6-static-4333d032/",
+      "artifacts/agent/pre-g9b-r6-phase-4333d032/",
+      "artifacts/agent/pre-g9b-r6-doc-static-dd486b59/"
+    ]
+  },
+  "authorSmokeRecord": {
+    "final": "PASS: the author executed both steps of the corrected smoke checklist (candidate report section 23)",
+    "steps": [
+      "Spanish UI SplineV2 reflection and length through a button click script: English names in the editor, creation and drag update, one undo step and redo, .cedg round trip across a product-language change",
+      "Spanish UI default symbolic input box for n with click script SetValue(m, %0): symbolic Enter updates n and leaves m; RunClickScript(box) runs the script with %0 = box text; after 5$ RunClickScript(box) fails in the %0 substitution; a following Circunferencia((0,0),1) creates a circle"
+    ]
+  },
+  "inputBoxInvestigationDisposition": {
+    "primary": "A — SMOKE DESIGN ERROR",
+    "secondary": "B — TEST / REAL-UI PATH MISMATCH",
+    "rejected": ["C — product defect", "D — verification defect"],
+    "routesIdenticalAt": ["e7401734b4ef76d8f79dd4b0535845304937e4f7", "4333d032f2e3b309ef9a22913686609c951b6f52"],
+    "symbolicEnter": "SymbolicEditor.onEnter -> applyChanges -> updateLinkedGeo; UPDATE only, never the On Click script",
+    "mouseClick": "EuclidianController.runScriptsIfNeeded skips input boxes",
+    "onClickRoute": "GeoInputBox.textSubmitted(), reached by RunClickScript(box), by the focus loss after an edit of a classic non-symbolic box, or directly",
+    "correctedRouteReproduction": {"P_R5B": "SCRIPT strategy leaks; Spanish Circunferencia fails", "T_R6": "USER restored; circle created"},
+    "nonCausalTerminalMessages": ["file has 3D objects", "cbAlgebraView not implemented", "ScreenReader debug output"],
+    "reconciledIn": "D_R6_DOC"
+  },
+  "acceptedCapability": {
+    "capabilityMatrix": "schema geocedg/specs/operations/ggbscript-capability-matrix.schema.json and instance geocedg/validation/pre-g9b-r6/ggbscript-capability-matrix.json; rows command_id x arity_form x entry_surface x ui_locale over ALGEBRA_INPUT, GGBSCRIPT and GGBSCRIPT_EXECUTE in en/es; 162 rows (144 SUPPORTED, 18 UNSUPPORTED_TRUTHFUL) and 138 lookup probes",
+    "commands": {"GEOCEDG_ADDED": ["LocusV2", "LocusLength", "SplineV2"], "GEOCEDG_MODIFIED": ["Point", "Length", "Intersect", "Translate", "Rotate", "Mirror", "Dilate"]},
+    "completenessGate": "fails closed for a new command, a new form, a missing cell, an added-command exclusion or a missing JUnit method",
+    "lookupRegimes": "USER, SCRIPT and XML unchanged",
+    "undo": "one step per successful Algebra submission and per changing click run; none per line; none for update scripts",
+    "persistence": "supported rows round-trip native .cedg with byte-identical construction XML",
+    "strategyRestoration": "GgbScript.run restores the previous command lookup strategy in finally after success or any throwable, and an escaping per-line throwable is a failed line; CmdExecute restores its previous strategy in finally",
+    "unchanged": ["script delocalization", "placeholder substitution semantics", "line continuation", "Execute XML lookup, error reporting, break-on-error and returned argument list", "command semantics", "serialization"],
+    "guideImpact": "NONE",
+    "bootstrapImpact": "NO CHANGE REQUIRED",
+    "serializationImpact": "NONE"
+  },
+  "debtDisposition": {
+    "TD-R0-GGBSCRIPT-STRATEGY-RESTORE": "RESOLVED — AUTHOR APPROVED by the approved candidate T_R6",
+    "TD-DOT-XML-HISTORICAL-LOCALIZED-HEAD": "RETAINED",
+    "TD-R3-CONSTRUCTION-PROTOCOL-MINIMAL-REORDER": "RETAINED; owner and disposition due by the PRE-G9B-R7 closeout",
+    "BASELINE-G9U1-BRANDING-EVIDENCE-PIN": "CARRIED FORWARD UNCHANGED",
+    "OBS-R2-PHASE-SELECTION-COHORT": "CARRIED FORWARD UNCHANGED",
+    "GUIDE-A1-SECTION-9.3-STALE": "CARRIED FORWARD UNCHANGED"
+  },
+  "observationDisposition": {
+    "OBS-R6-PLACEHOLDER-REGEX-REPLACEMENT": "RETAINED",
+    "OBS-R6-EVENT-DISPATCH-SELF-GEO-ON-ESCAPE": "RETAINED",
+    "OBS-R6-EXECUTE-INNER-FAILURE-NOT-PROPAGATED": "RETAINED",
+    "OBS-R6-EXECUTE-ALIAS-SYNTAX-KEY": "RETAINED",
+    "OBS-R6-ROTATE-FORM-4-UPSTREAM-REFUSAL": "RETAINED",
+    "OBS-R6-SYMBOLIC-INPUTBOX-CLICK-SCRIPT-NOT-ON-ENTER": "INHERITED BEHAVIOR / NOT AN R6 DEFECT",
+    "R5-B ledger": "carried forward unchanged per docs/validation/pre_g9b_r5_b_closeout_record.md"
+  },
+  "closeoutClassification": {
+    "changeRoute": "ORDINARY",
+    "verificationClass": "DOCUMENTATION_STATUS_ONLY",
+    "acceptance": "STATIC",
+    "authority": "geocedg/specs/operations/verification-levels.md section 12.8: static validation only",
+    "ownRunsReportedWithPromotion": true
+  },
+  "statusOnlyChanges": [
+    "docs/validation/pre_g9b_r6_closeout_record.md",
+    "geocedg/validation/pre-g9b-r6/pre-g9b-r6-closeout.json",
+    "docs/roadmap/geocedg_roadmap.md",
+    ".github/prompts/tasks/pre-g9b-r7-readiness-closeout.prompt.md"
+  ],
+  "r7PromptAmendment": {
+    "path": ".github/prompts/tasks/pre-g9b-r7-readiness-closeout.prompt.md",
+    "blobBefore": "7fbe83997605f25b13188df6167fd31fd107b255",
+    "blobAfter": "0e423c5dda507e3c1f3a6e5ddec97c634ad09633",
+    "authorizedBy": "explicit author instruction of 2026-10-01",
+    "change": "adds the dependency PRE-G9B-R7 depends on PRE-G9B-R6-plus = PASS — AUTHOR APPROVED to the header, status block, authorization boundary and stop conditions; otherwise unchanged",
+    "state": "PROPOSED FUTURE / UNEXECUTED / NOT AUTHORIZED",
+    "validation": {"profile": "task", "executionSafe": true, "fieldsMissingDuplicatedUnknownOrOutOfOrder": 0, "promptExecutionSafety": "CONTRACT_SATISFIED", "exitCode": 0, "lineEndings": "LF"}
+  },
+  "r6Plus": {
+    "id": "PRE-G9B-R6-plus",
+    "state": "AUTHOR-DECLARED FUTURE PHASE / SCOPE PENDING AUTHOR DEFINITION / NOT AUTHORIZED",
+    "declaredObjective": "final refinement of this GeoCeDG version",
+    "designed": false,
+    "authorized": false,
+    "implementationReady": false,
+    "canonicalPrompt": "NONE",
+    "undefined": ["features", "kernel changes", "frontend changes", "debt", "verification class", "tests", "branch", "base", "ADR or specification", "smoke", "prompt"]
+  },
+  "roadmapSequence": ["PRE-G9B-R6", "PRE-G9B-R6-plus", "PRE-G9B-R7"],
+  "promotion": {
+    "authorized": true,
+    "history": ["e7401734b4ef76d8f79dd4b0535845304937e4f7", "4333d032f2e3b309ef9a22913686609c951b6f52", "dd486b594a86b4853575e61e872d65325d05647e", "this closeout commit"],
+    "method": "ordinary clean non-force fast-forward only",
+    "forbidden": ["merge commit", "rebase", "squash", "amend", "force push", "history rewrite", "working-branch push", "unrelated branch push", "tag", "GitHub release", "binary publication", "commercial publication"],
+    "remoteAtCloseoutEntry": {
+      "localMain": "e7401734b4ef76d8f79dd4b0535845304937e4f7",
+      "originMain": "e7401734b4ef76d8f79dd4b0535845304937e4f7",
+      "liveRemoteMain": "e7401734b4ef76d8f79dd4b0535845304937e4f7",
+      "tree": "3ad888b0895d0cb026be60e3d435c0819c4faed8"
+    },
+    "identityAfterPromotion": "this record's own commit; reported with the promotion",
+    "workingBranchRetained": true
+  },
+  "authorizationState": {
+    "PRE-G9B-R6": "PASS — AUTHOR APPROVED",
+    "ggbscriptCapabilityMatrix": "CLOSED",
+    "TD-R0-GGBSCRIPT-STRATEGY-RESTORE": "RESOLVED — AUTHOR APPROVED",
+    "D_R6_DOC": "DOCUMENTARY RECONCILIATION OF T_R6 EVIDENCE",
+    "PRE-G9B-R6-plus": "AUTHOR-DECLARED FUTURE PHASE / SCOPE PENDING AUTHOR DEFINITION / NOT AUTHORIZED",
+    "PRE-G9B-R7": "DESIGNED — NOT AUTHORIZED; BLOCKED UNTIL PRE-G9B-R6-plus IS CLOSED",
+    "G9B": "NOT AUTHORIZED",
+    "g9bFollowsR7Automatically": false,
+    "tagOrReleaseAuthorized": false
+  }
+}
