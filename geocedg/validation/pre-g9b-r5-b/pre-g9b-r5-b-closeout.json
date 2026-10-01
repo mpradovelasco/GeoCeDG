@@ -1,0 +1,238 @@
+{
+  "schemaVersion": 1,
+  "phase": "PRE-G9B-R5-B",
+  "recordKind": "AUTHOR_CLOSEOUT_DISPOSITION",
+  "status": "PRE-G9B-R5-B — PASS — AUTHOR APPROVED",
+  "record": "docs/validation/pre_g9b_r5_b_closeout_record.md",
+  "authorDecisionDate": "2026-10-01",
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "technicalCandidateFrozen": true,
+  "candidateMutated": false,
+  "newHeavyIntegration": "NONE",
+  "newHeavyFinal": "NONE",
+  "authorSmoke": "PASS",
+  "authorApproval": "APPROVED",
+  "supersedes": {
+    "note": "the frozen candidates' own reports and evidence files necessarily carried no author-approval field, per the frozen-candidate rule; only the current-approval status is superseded here",
+    "paths": [
+      "docs/validation/pre_g9b_r5_b_candidate_report.md",
+      "geocedg/validation/pre-g9b-r5-b/pre-g9b-r5-b-candidate-evidence.json",
+      "docs/validation/pre_g9b_r5_b_r1_corrective_candidate_report.md",
+      "geocedg/validation/pre-g9b-r5-b/pre-g9b-r5-b-r1-corrective-evidence.json",
+      "docs/validation/pre_g9b_r5_b_r2_corrective_candidate_report.md",
+      "geocedg/validation/pre-g9b-r5-b/pre-g9b-r5-b-r2-corrective-evidence.json"
+    ]
+  },
+  "publishedBase": {
+    "name": "P_DOTXML",
+    "commit": "504a19f7e655ef50c4bfa8095a07f94c11b27a01",
+    "tree": "63e7f0cd79aa9e1cf1259b6466e8ac16dc261704",
+    "parent": "4f9bc94440c772388381bd6970ed689a7502564b"
+  },
+  "initialCandidate": {
+    "name": "T_R5B",
+    "commit": "7bc113afb22bb6b97b2ad5e1e3f00117c8022be2",
+    "tree": "d47aafdfaace0aa7919f66dde9ff24ec3d1dac65",
+    "parent": "504a19f7e655ef50c4bfa8095a07f94c11b27a01",
+    "state": "TECHNICALLY ACCEPTED; SUPERSEDED; NOT AUTHOR APPROVED",
+    "authorSmoke": "CORRECTIVE FINDING",
+    "modifiedByCloseout": false
+  },
+  "firstCorrectiveCandidate": {
+    "name": "T_R5B_R1",
+    "commit": "919adc8e442d0143367063f1fb8dedbb02f8e796",
+    "tree": "c2c3364de6a97b7c7a41d974bfd07791a98da863",
+    "parent": "7bc113afb22bb6b97b2ad5e1e3f00117c8022be2",
+    "state": "TECHNICALLY ACCEPTED; SUPERSEDED; NOT AUTHOR APPROVED",
+    "authorSmoke": "CORRECTIVE FINDING",
+    "modifiedByCloseout": false
+  },
+  "approvedTechnicalCandidate": {
+    "name": "T_R5B_R2",
+    "commit": "a1d96746a42c5ba7fc83d8909647083f11616009",
+    "tree": "61af3ce965cf279924ab44486d93ca87886229e6",
+    "parent": "919adc8e442d0143367063f1fb8dedbb02f8e796",
+    "branch": "phase/pre-g9b-r5-b-canonical-english-command-surface",
+    "branchPushed": false,
+    "state": "FINAL TECHNICAL CANDIDATE; PASS — AUTHOR APPROVED",
+    "authorSmoke": "PASS",
+    "authorApproval": "APPROVED",
+    "modifiedByCloseout": false
+  },
+  "history": "linear, single-parent, no merge",
+  "canonicalPrompt": {
+    "path": ".github/prompts/tasks/pre-g9b-r5-b-canonical-english-command-surface.prompt.md",
+    "blob": "43901e3b8fe47f770d791097c5d5ecc6678b36aa",
+    "edited": false
+  },
+  "normativeAuthority": {
+    "adr": "docs/adr/0031-canonical-english-command-surface-compatibility.md",
+    "adrBlob": "af88ba3865fa4ca94696da7293d26ef8be734ca0",
+    "adrState": "ACCEPTED — AUTHOR APPROVED",
+    "decisionContent": "c459de9ab66d61fe849abbf9b9b8097c56605c48",
+    "decisionContentTree": "3c8d0943f2be7b990e0e4cc97cd114203dd47a49",
+    "adrCloseout": "e16697d96858639becf2dc72f7c7beaca8fcbd24",
+    "alternative": "D",
+    "reopened": false,
+    "dotXmlMaintenance": "docs/validation/maintenance_dot_xml_locale_independent_serialization_closeout_record.md"
+  },
+  "acceptedEvidence": {
+    "changeRoute": "ORDINARY",
+    "verificationClass": "INTEGRATED_PHASE",
+    "frozenAtPhaseStart": true,
+    "escalated": false,
+    "acceptanceLevel": "INTEGRATION",
+    "authority": "geocedg/specs/operations/verification-levels.md section 12.8",
+    "finalIntegration": {
+      "candidate": "a1d96746a42c5ba7fc83d8909647083f11616009",
+      "tree": "61af3ce965cf279924ab44486d93ca87886229e6",
+      "run": "verification-c23ef3bd3b8146f6a7ac64517e469dd1",
+      "planHash": "4502c4bd1bbe1a123089e9e524fd0afb354932afbcb410f93052555a16c77aea",
+      "acceptanceVerdict": "ACCEPTED",
+      "coverageVerdict": "COMPLETE",
+      "acceptanceSatisfied": 19,
+      "acceptanceViolated": 0,
+      "acceptanceUntrusted": 0,
+      "acceptanceNotRun": 0,
+      "producers": 17,
+      "resultHash": "87c6cb60d7a881367fd547113e8ff8bef995fa040847fdb885e86dd9766a7699",
+      "resultFileSha256": "d4bbcac2e58f7cee350eb613e60c051a7a4414b918da486466d24c784ceca3eb",
+      "junit": {
+        "final.shared": {"tests": 6850, "failures": 0, "errors": 0, "allowlistedSkips": 10},
+        "final.desktop": {"tests": 1632, "failures": 0, "errors": 0, "allowlistedSkips": 1},
+        "g9u1-isolated": {"tests": 5, "failures": 0}
+      },
+      "diagnostics": "8 clear; standing diagnostic.governance FINDING and diagnostic.historical-consistency UNAVAILABLE"
+    },
+    "finalCandidatePreFreezeEvidence": {
+      "desktopComplete": {"tests": 1638, "failures": 0, "errors": 0, "skipped": 1},
+      "checkstyleFindings": 0,
+      "upstreamBoundary": "858 registered files, nothing unregistered",
+      "infraUnit": {"run": "verification-d2317c8c746741159ccdff80ae16a8ed", "leaves": "22/22"},
+      "diffCheck": "clean"
+    },
+    "historicalRuns": [
+      {"candidate": "7bc113afb22bb6b97b2ad5e1e3f00117c8022be2", "profile": "INTEGRATION", "run": "verification-cf57f99b1a6f4ebe8398837769747b2f", "resultHash": "3852d157ffba0c7a0a7ef528adba9e338500a6870bb88b3799056c949ee6fe45", "resultFileSha256": "bc3636b78ab664e10c713f87fb906912eaff7b6c9c03eda4146d1f1c3c2e13ff", "verdict": "ACCEPTED / COMPLETE, 19/19", "disposition": "technically accepted, superseded"},
+      {"candidate": "7bc113afb22bb6b97b2ad5e1e3f00117c8022be2", "profile": "STATIC", "run": "verification-dc45cec7497c4993b76e84b0bb3f62db", "resultHash": "4a22d4ef670f35d7e7e4c36ceccb3c534615a9a83f60c531be293e0b78aa987a", "resultFileSha256": "9748bd6b3a11dab5d074f9b6626d15cb759b779e2c15f9ad678e72b299e457a8", "verdict": "ACCEPTED / COMPLETE, 3/3", "disposition": "guide-structure evidence of the initial candidate"},
+      {"candidate": "919adc8e442d0143367063f1fb8dedbb02f8e796", "profile": "INTEGRATION", "run": "verification-34c0b12566c14f54b45352b354c815c5", "resultHash": "d3c4a2d9f4d959888e31289591576a40458d74bffba9a765c14b7f2866a8c013", "resultFileSha256": "0cc1b7ba6eac7eb7ee9f0d7fe907a92050eafde51fcc2011963c8372ce910d9f", "verdict": "ACCEPTED / COMPLETE, 19/19", "disposition": "technically accepted, superseded"}
+    ],
+    "crossCandidateEvidenceReuse": false,
+    "finalReceipt": "NONE; INTEGRATION emits no FINAL acceptance receipt and none is claimed, fabricated or fed to the FINAL-receipt identity-only closeout adapter; candidate identity recorded directly",
+    "statusOnlyPrecedent": ["PRE-G9B-R4", "PRE-G9B-R5-A"],
+    "localEvidence": [
+      "artifacts/agent/pre-g9b-r5-b-integration-7bc113af/",
+      "artifacts/agent/pre-g9b-r5-b-static-7bc113af/",
+      "artifacts/agent/pre-g9b-r5-b-r1-integration-919adc8e/",
+      "artifacts/agent/pre-g9b-r5-b-r2-integration-a1d96746/"
+    ]
+  },
+  "authorSmokeRecord": {
+    "final": "PASS: focused final smoke on T_R5B_R2; the author reports that the system behaves correctly",
+    "earlierStatements": [
+      "manual T-SHADOW smoke PASS",
+      "clean-session runtime product-language switch behaved correctly after R1"
+    ],
+    "individualObservationsBeyondStatements": "none recorded; automated evidence is the authority for the T-* obligations"
+  },
+  "acceptedCapability": {
+    "canonicalCommandSurface": "E(k) = canonical English public command name from the English command bundle; internal identity unchanged; heads displayed, suggested, inserted and documented in English in every UI language; localized names remain USER compatibility aliases where already accepted",
+    "semanticSeparation": "identity, canonical English name, localized aliases, persistence vocabulary and presentation context distinct; identity never inferred from displayed text",
+    "syntax": "canonical English head + current UI-language body and placeholders",
+    "autocomplete": "canonical heads shown and inserted; localized aliases as search tokens; semantic identity carried",
+    "editableReentry": "presented canonical text keeps identity; shadowing fails closed with CANONICAL_HEAD_SHADOWED without construction, XML or undo mutation; fresh input keeps USER semantics",
+    "scripts": "SCRIPT runtime lookup unchanged; GGBScript canonical English/internal; no silent retargeting",
+    "xmlPersistence": "no XML vocabulary or serialization change; Dot/XML maintenance authoritative; no historical migration"
+  },
+  "acceptedR1Correction": "the product-language chooser enters AppD.setLanguage(locale) instead of setLocale(locale), so labels, Input Help, command dictionaries, aliases, syntax and other Desktop consumers refresh coherently; the inherited return to Move is accepted host behaviour",
+  "acceptedR2Correction": "under the GeoCeDG profile the preview/error command extraction uses the edit offset captured by the preview event with the same exact word resolution, not the later live caret; no fuzzy matching or display-derived identity; Classic unchanged",
+  "r2PersistenceDisposition": {
+    "testCircle3.cedg": "DIAGNOSTIC WITNESS, NOT CORRUPTED PERSISTENCE",
+    "testCircle3Sha256": "af9821c4a38dff49d58d047bd2553d9a912be5fb189bad976316b8abcef02c39",
+    "r2Defect": "RE-TRIGGERED LOAD/UI-REFRESH LIFECYCLE DEFECT",
+    "serializationImpact": "NONE",
+    "formatMigration": false,
+    "newPersistentMetadata": false
+  },
+  "debtDisposition": {
+    "TD-DOT-XML-HISTORICAL-LOCALIZED-HEAD": "RETAINED",
+    "HZ-R5B-DOT-LOCALIZED-XML": "RESOLVED — AUTHOR APPROVED by the published Dot/XML maintenance (unchanged here)",
+    "TD-R3-CONSTRUCTION-PROTOCOL-MINIMAL-REORDER": "RETAINED; owner and disposition due by the PRE-G9B-R7 closeout",
+    "BASELINE-G9U1-BRANDING-EVIDENCE-PIN": "CARRIED FORWARD UNCHANGED",
+    "OBS-R2-PHASE-SELECTION-COHORT": "CARRIED FORWARD UNCHANGED",
+    "GUIDE-A1-SECTION-9.3-STALE": "CARRIED FORWARD UNCHANGED"
+  },
+  "obligationDisposition": {
+    "HZ-R5B-LABEL-SHADOWING": "DISCHARGED BY THE APPROVED CANDIDATE (T-SHADOW)",
+    "HZ-R5B-MACRO-PRECEDENCE": "DISCHARGED BY THE APPROVED CANDIDATE (T-SHADOW)",
+    "HZ-R5B-IDENTITY-FROM-DISPLAY-TEXT": "DISCHARGED BY THE APPROVED CANDIDATE (T-AUTOCOMPLETE, T-REDEFINE)",
+    "HZ-R5B-DISPLAY-TEXT-MATCHERS": "DISCHARGED BY THE APPROVED CANDIDATE (T-DYNTEXT)",
+    "HZ-R5B-SCRIPT-EDITOR-RETARGET": "DISCHARGED BY THE APPROVED CANDIDATE (T-SCRIPT)"
+  },
+  "observationDisposition": {
+    "OBS-R5B-R1-NATIVE-AWT-CRASH-UNATTRIBUTED": "UNATTRIBUTED / NOT REPRODUCED",
+    "OBS-R5B-R2-CLASSIC-CARET-READ": "PRE-EXISTING / OUTSIDE R5-B SCOPE",
+    "OBS-R5B-R2-COMPLETIONS-POPUP-LISTENER-ORDER": "RETAINED OBSERVATION / NO OBSERVED PRODUCT FAILURE",
+    "HZ-R5B-ALIAS-CAS-STATE": "RETAINED COMPATIBILITY OBSERVATION",
+    "OBS-R5B-R1-LANGUAGE-CHANGE-RETURNS-TO-MOVE": "ACCEPTED INHERITED HOST BEHAVIOUR; NOT AN R5-B DEFECT",
+    "OBS-R5B-R1-SYNTHETIC-INPUT": "RETAINED",
+    "OBS-R5B-R1-CAS-GROUP-READINESS": "RETAINED",
+    "OBS-R5B-R2-EMBEDDED-HOST-ROOT": "RETAINED",
+    "OBS-R5B-CAS-TABLE-VERBATIM-HEADS": "RETAINED",
+    "OBS-R5B-HARDCODED-SYNTAX-HEADS": "RETAINED",
+    "OBS-R5B-PROVER-DETAILS-CAPTIONS": "RETAINED",
+    "OBS-R5B-INPUT-BAR-INSERTED-TEXT": "RETAINED",
+    "HZ-R5B-HARNESS-TABLE-FRESHNESS": "RETAINED",
+    "CSolve/CSolutions Algebra syntax": "PRE-EXISTING, OUTSIDE R5-B; RETAINED",
+    "OBS-R5A-GUIDE-STRUCTURE-CHECKS-OUTSIDE-FINAL": "RETAINED",
+    "OBS-R5A-LATENT-NESTED-LIST-CONTINUATION": "RETAINED",
+    "OBS-C1-COMMAND-NOT-LOADED-OUTER-RESTORE": "RETAINED",
+    "OBS-C1-DOPARSEXML-CLEAR-BEFORE-TRY": "RETAINED",
+    "OBS-U1-PLAIN-XML-PASTE-TOLERATES-COMMAND-ERRORS": "RETAINED",
+    "OBS-X1-MACRO-BUILDXML-REQUIRES-CONSISTENT-SET-ORDER": "RETAINED",
+    "OBS-R4-SPLINEV2-DURABLE-ARGUMENT-PROMOTION": "RETAINED",
+    "OBS-R4-KERNEL-CLOSURE-BY-ENDPOINT-VALUE-EQUALITY": "RETAINED",
+    "OBS-R4-TOOLS-SELECT-EXISTING-POINTS-ONLY": "RETAINED",
+    "OBS-R4C-LOCUS-V2-FAMILY-LAYER-BELOW-CONTAINING-LIST": "RETAINED",
+    "OBS-R4C-PROFILE-TOOLBAR-MENU-ONLY-MODE-KEEPS-SELECTION": "RETAINED"
+  },
+  "closeoutClassification": {
+    "changeRoute": "ORDINARY",
+    "verificationClass": "DOCUMENTATION_STATUS_ONLY",
+    "acceptance": "STATIC",
+    "authority": "geocedg/specs/operations/verification-levels.md section 12.8: static validation only",
+    "ownRunsReportedWithPromotion": true
+  },
+  "statusOnlyChanges": [
+    "docs/validation/pre_g9b_r5_b_closeout_record.md",
+    "geocedg/validation/pre-g9b-r5-b/pre-g9b-r5-b-closeout.json",
+    "docs/roadmap/geocedg_roadmap.md"
+  ],
+  "promotion": {
+    "authorized": true,
+    "history": ["504a19f7e655ef50c4bfa8095a07f94c11b27a01", "7bc113afb22bb6b97b2ad5e1e3f00117c8022be2", "919adc8e442d0143367063f1fb8dedbb02f8e796", "a1d96746a42c5ba7fc83d8909647083f11616009", "this closeout commit"],
+    "method": "ordinary clean non-force fast-forward only",
+    "forbidden": ["merge commit", "rebase", "squash", "amend", "force push", "history rewrite", "working-branch push", "unrelated branch push", "tag", "GitHub release", "binary publication", "commercial publication"],
+    "remoteAtCloseoutEntry": {
+      "localMain": "504a19f7e655ef50c4bfa8095a07f94c11b27a01",
+      "originMain": "504a19f7e655ef50c4bfa8095a07f94c11b27a01",
+      "liveRemoteMain": "504a19f7e655ef50c4bfa8095a07f94c11b27a01",
+      "tree": "63e7f0cd79aa9e1cf1259b6466e8ac16dc261704"
+    },
+    "identityAfterPromotion": "this record's own commit; reported with the promotion; sole valid implementation base for a future PRE-G9B-R6 authorization",
+    "workingBranchRetained": true
+  },
+  "authorizationState": {
+    "PRE-G9B-R5-B": "PASS — AUTHOR APPROVED",
+    "canonicalEnglishCommandSurface": "CLOSED",
+    "adr0031Implementation": "CLOSED",
+    "r1RuntimeLanguageCorrection": "INCORPORATED",
+    "r2InputHelpUiRefreshCorrection": "INCORPORATED",
+    "PRE-G9B-R6": "DESIGNED — NOT AUTHORIZED",
+    "PRE-G9B-R7": "DESIGNED — NOT AUTHORIZED",
+    "G9B": "NOT AUTHORIZED",
+    "r6PromptChanged": false,
+    "tagOrReleaseAuthorized": false
+  }
+}
