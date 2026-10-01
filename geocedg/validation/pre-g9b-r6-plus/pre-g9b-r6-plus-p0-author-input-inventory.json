@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-P0",
+  "recordKind": "AUTHOR_INPUT_INVENTORY",
+  "technicalCandidateState": "FROZEN",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "selfApproved": false,
+  "recorded": "2026-10-01",
+  "report": "docs/validation/pre_g9b_r6_plus_p0_characterization_design_candidate_report.md",
+  "base": {
+    "name": "P_R6PLUS_PLAN",
+    "commit": "babf20c7c03d0454e2da6760bf5d1fc3fa546f6b",
+    "tree": "3f7abded9163324a3142ad7446fb4e6c85407809"
+  },
+  "localAuthorInput": {
+    "path": "artifacts/author-input/g9b-r6-plus/",
+    "gitIgnoredBy": ".gitignore:7 /artifacts/*",
+    "committed": false,
+    "copiedIntoProductPath": false,
+    "handling": "read-only; each .ggt was copied into the session scratchpad and only the copy was unpacked",
+    "fileCount": 17,
+    "totalBytes": 69869,
+    "files": [
+      {"name": "ReportExport.md", "bytes": 26074, "sha256": "fbf8524cfdf147cbd6999f9ff3d6f5bfc8a48b164b236a4df21aad61bb8f52d3", "role": "author-commissioned analysis of the upstream export surface", "kind": "report"},
+      {"name": "axisdimension.ggt", "bytes": 2986, "sha256": "7989b4a87e1e10275627bc22ec3cb8f6783af7b05052dbbcc76610208b0d0936", "role": "dimension tool reference", "kind": "ggt", "macro": "axisDimension", "writerVersion": "5.2.826.0", "iconEntry": "GeoGebra_button_distance.png", "scripts": 0},
+      {"name": "circarcbyangle.ggt", "bytes": 2308, "sha256": "640f0906749b2396c676e0b3ed1f7324599ef1ec3302704784f225ed22fa5348", "role": "arc utility", "kind": "ggt", "macro": "circArcbyAngle", "writerVersion": "5.2.827.0", "iconEntry": "GeoGebra_button_circle_sector_3.png", "scripts": 0},
+      {"name": "circlebyD.ggt", "bytes": 2143, "sha256": "977d812d55d8a151f7ed8caa2983d0960daab72f7fc3010f5cccfe4b15bd76f8", "role": "circle utility", "kind": "ggt", "macro": "CirclebyD", "writerVersion": "5.2.820.0", "iconEntry": "circulodiametro.png", "scripts": 0},
+      {"name": "directdimension.ggt", "bytes": 2708, "sha256": "228d54d7f08316cbed9c0a84bc5d62085ca59931e573908990c84d60cacf0a01", "role": "dimension tool reference", "kind": "ggt", "macro": "directDimension", "writerVersion": "5.2.820.0", "iconEntry": "GeoGebra_button_distance.png", "scripts": 0},
+      {"name": "ductsymbol.ggt", "bytes": 3000, "sha256": "a2c1faa18d1727dd59bf590f998c360bb66d473174c605f4e127c96f5ea42890", "role": "presentation symbol", "kind": "ggt", "macro": "DuctSymbol", "writerVersion": "5.2.827.0", "iconEntry": "GeoGebra_button_copy_visual_style.png", "scripts": 0},
+      {"name": "ellipseaxisbyconjaxis.ggt", "bytes": 3747, "sha256": "7639c82aa2aad8b470f9f6ab9130e419c3e321f33f8d1ccc672326acf6c40539", "role": "conic utility (Rytz construction)", "kind": "ggt", "macro": "conj2mainAxesEllipse", "writerVersion": "5.2.829.0", "iconEntry": "GeoGebra_button_ellipse_3.png", "scripts": 0},
+      {"name": "ellipsebyaxis.ggt", "bytes": 1490, "sha256": "01437a90761366b619178cde37a3ebb88bc7ac51b6de0b04e3369d38ac77040b", "role": "conic utility", "kind": "ggt", "macro": "EllipseAxis", "writerVersion": "5.2.820.0", "iconEntry": null, "scripts": 0},
+      {"name": "ellipsepartiallength.ggt", "bytes": 2495, "sha256": "35c20a5d35d7bce362d36f2ef10f8db4d1b719e1254566234268f20cd16eb293", "role": "conic utility", "kind": "ggt", "macro": "ellipseLength12", "writerVersion": "5.2.832.0", "iconEntry": "GeoGebra_button_ellipse_3.png", "scripts": 0},
+      {"name": "IFpositivethenPoint.ggt", "bytes": 1263, "sha256": "c490e221a90e2acaeeaad3575ba172acc6cf0e82fcb765560bcafeb9cb7beb27", "role": "selection utility", "kind": "ggt", "macro": "IFPositiveSelectPoint", "writerVersion": "5.2.836.0", "iconEntry": "GeoGebra_button_relation.png", "scripts": 0},
+      {"name": "pointjump.ggt", "bytes": 988, "sha256": "a350031eb98be790627dd15294550a07638d0b7968c64e783695976ef8ba76f1", "role": "transport utility", "kind": "ggt", "macro": "pointJump", "writerVersion": "5.2.820.0", "iconEntry": null, "scripts": 0},
+      {"name": "relcoor.ggt", "bytes": 2327, "sha256": "95ff380d56bb70fd07457b06b977fb27d03de22bfc0dfdd4850ea4bed8b7a0b2", "role": "transport utility", "kind": "ggt", "macro": "relCoor", "writerVersion": "5.2.826.0", "iconEntry": "GeoGebra_button_translate_by_vector.png", "scripts": 0},
+      {"name": "sheetISOland.ggt", "bytes": 4900, "sha256": "d3b05cafb5d938ec4ddf096c0e1df60c7c0850ca6327cb8d42e0ca06c18e5c23", "role": "ISO sheet reference, landscape", "kind": "ggt", "macro": "sheetISOAnLand", "writerVersion": "5.2.820.0", "iconEntry": "GeoGebra_icon_perspective1.png", "scripts": 1, "scriptDetail": "ggbscript onUpdate=\"&#xd;&#xa;\" on input ISO216n (CR LF only)"},
+      {"name": "sheetISOvert.ggt", "bytes": 7268, "sha256": "4412824a19da659900dc269924bddfc6f5f03981c3f39c9286b08ef5538e2015", "role": "ISO sheet reference, portrait", "kind": "ggt", "macro": "sheetISOAnVert", "writerVersion": "5.2.820.0", "iconEntry": "GeoGebra_icon_perspective1.png", "scripts": 1, "scriptDetail": "ggbscript onUpdate=\"&#xd;&#xa;\" on input ISO216n (CR LF only)"},
+      {"name": "squarebydiagonal.ggt", "bytes": 1400, "sha256": "29e2a3d88d926f75f9b7fc0e24290340a10f092da7e161dc19c3a83129e9470f", "role": "planar utility", "kind": "ggt", "macro": "SquarebyDiagonal", "writerVersion": "5.2.820.0", "iconEntry": null, "scripts": 0},
+      {"name": "symmsymbol.ggt", "bytes": 2219, "sha256": "491628c089749cd99b5759b0ed9259e530284529bedb3d2f8dc33d44b01fa74e", "role": "presentation symbol", "kind": "ggt", "macro": "SymmSymbol", "writerVersion": "5.2.827.0", "iconEntry": "GeoGebra_button_copy_visual_style.png", "scripts": 0},
+      {"name": "translationcoor.ggt", "bytes": 2553, "sha256": "ef05762d7e1847185374d737d929f868616e6c8a8d270483bd4b9c91ed47b42b", "role": "transport utility", "kind": "ggt", "macro": "translationCoor", "writerVersion": "5.2.829.0", "iconEntry": "GeoGebra_button_translate_by_vector.png", "scripts": 0}
+    ]
+  },
+  "comparisonWithPlanningInventory": {
+    "planningRecord": "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-planning.json",
+    "compared": ["name", "bytes", "sha256"],
+    "added": [],
+    "removed": [],
+    "changed": [],
+    "identical": 17
+  },
+  "templateV7Comparison": {
+    "reference": "models/legacy/template-v7/original/Templatev7.ggb",
+    "referenceSha256": "f62e5b7a92bcd95f10b8afda348763a57ccbd0c10dbc0c2bccc7049831ed4113",
+    "method": "copy of the reference unpacked in the scratchpad; macros matched by cmdName; macroInput and macroOutput compared exactly; construction compared after whitespace normalization with and without removing <eqnStyle style=\"implicit\"/>",
+    "templateMacroCount": 24,
+    "authorMacrosPresentInTemplate": 16,
+    "orderedInputsAndOutputsEqual": 16,
+    "constructionEqualIgnoringEqnStyle": 16,
+    "constructionRawEqualAfterWhitespaceNormalization": ["circArcbyAngle", "CirclebyD", "conj2mainAxesEllipse", "EllipseAxis", "ellipseLength12", "IFPositiveSelectPoint", "pointJump", "relCoor", "translationCoor"],
+    "iconReferenceOnlyInTemplate": {"EllipseAxis": "9d793b2f6d09c1d4ac1386c0f987c5ef/Ellipse.png", "pointJump": "ffac980ceb8cc7727390bbc9511772dd/TranspLength.PNG", "SquarebyDiagonal": "d66a51ee99a80822e5c484f02d851013/Square.png"},
+    "bundledIconsByteIdenticalToTemplate": 13,
+    "equivalenceIsNotRedistributionPermission": true,
+    "templateRightsReviewStatus": "blocked (models/legacy/template-v7/manifest.yml:36-37)"
+  },
+  "userToolLibraryProbe": {
+    "probe": "P4 scratch probe: GeoCeDGUserToolLibrary.install on scratchpad copies",
+    "installed": 16,
+    "rejected": 0,
+    "note": "the CR LF-only ggbscript onUpdate of both sheet tools is accepted because the script rule rejects only non-blank content (GeoCeDGUserToolLibrary.java:828-837)"
+  },
+  "finalIntegrityCheck": {
+    "comparedAgainst": "entry inventory taken before characterization",
+    "result": "UNCHANGED",
+    "agentSideMutation": false,
+    "authorSideChangeDuringSession": false
+  }
+}

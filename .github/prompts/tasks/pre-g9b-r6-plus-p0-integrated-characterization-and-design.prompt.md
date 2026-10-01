@@ -1,25 +1,38 @@
 # PRE-G9B-R6-plus-P0 — integrated characterization and normative design
 
-**PROPOSED FUTURE PROMPT — UNEXECUTED AND NOT AUTHORIZED.**
+**CANONICAL EXECUTION PROMPT — AUTHORIZED FOR CHARACTERIZATION AND DESIGN
+EXECUTION ONLY.**
 
-Created by the `PRE-G9B-R6-plus` planning task, which the author authorized on
-2026-10-01 for planning and governance work only. That task froze a local
-planning candidate pending author review. The existence of this file is not
-authorization. Execution requires a new explicit author instruction that names
-`PRE-G9B-R6-plus-P0`, names the exact published commit and tree to start from,
-and replaces the unresolved base fields below. The planning authorization of the
-mini-track does not extend to `P0`.
+The author's explicit instruction of 2026-10-01 names `PRE-G9B-R6-plus-P0`, its
+exact implementation base (the published `PRE-G9B-R6-plus` planning closeout
+`P_R6PLUS_PLAN`) and the planning approval it depends on. That instruction also
+authorizes this amendment of the canonical prompt, before any other tracked
+edit, so that it becomes the executable contract of the phase. The amendment
+replaces the proposed future prompt created by the planning task (blob
+`2c51ca73e6a1ccbd04d41885f8d4f86b69dd1578`), whose base fields were unresolved.
+It keeps every author-fixed scope requirement, every author-fixed unit semantic
+and every forbidden-scope rule of that prompt. This file is an execution
+contract, not a second policy document.
 
 ```text
+PRE-G9B-R6-plus-P0 =
+AUTHORIZED FOR CHARACTERIZATION AND DESIGN EXECUTION
+
 selfApproved             = false
 authorApproved           = false
-implementationAuthorized = false
+implementationAuthorized = true
 passClaimed              = false
 PHASE_KIND               = CHARACTERIZATION AND DESIGN CANDIDATES — NO PRODUCT CHANGE
-DEPENDS_ON               = author approval of the PRE-G9B-R6-plus planning
-                           candidate, named by exact SHA
+DEPENDS_ON               = PRE-G9B-R6-plus PLANNING = PASS — AUTHOR APPROVED — PUBLISHED
 DEPENDS_ON_PHASE         = PRE-G9B-R6 = PASS — AUTHOR APPROVED — PUBLISHED
 ```
+
+`implementationAuthorized = true` authorizes only the characterization and
+design execution defined below. It authorizes no product implementation and no
+later `PRE-G9B-R6-plus` subphase. `authorApproved = false` means that the design
+candidate this phase produces has not been author-approved. Technical
+verification never creates author approval. The phase stops with one exact,
+immutable design candidate pending author review.
 
 `P0` is the first executable task of the mini-track. "Normative design" in its
 title means design **candidates** for normative contracts. `P0` accepts none of
@@ -47,16 +60,20 @@ finding it relies on from source at its own base, and must report a correction
 rather than inherit a wrong statement.
 
 ```text
-CHANGE_ROUTE        = ORDINARY
-VERIFICATION_CLASS  = DOCUMENTATION_STATUS_ONLY   (proposed)
-frozenAtPhaseStart  = REQUIRED AT AUTHORIZATION
-PLANNED_ACCEPTANCE  = STATIC on the frozen candidate; no FINAL
+CHANGE_ROUTE         = ORDINARY
+VERIFICATION_CLASS   = DOCUMENTATION_STATUS_ONLY
+frozenAtPhaseStart   = true
+PRODUCT_PHASE_EFFECT = NONE
+PLANNED_ACCEPTANCE   = STATIC on the exact frozen P0 candidate;
+                       no PHASE, no INTEGRATION, no FINAL
 ```
 
-`DOCUMENTATION_STATUS_ONLY` is correct only while `P0` touches documentation,
-design and planning paths. If the work would need a change to
-`geocedg/specs/operations/verification-*`, `prompt-contracts.json`, any
-`tools/agent/**` script or any `source/**` path, stop and report a
+`DOCUMENTATION_STATUS_ONLY` is correct only while `P0` touches
+characterization, documentation, design and planning paths. If the work would
+need a change to `source/**`, `apps/**`, `packaging/**`, any product resource,
+`geocedg/specs/operations/verification-*`, `prompt-contracts.json` or any
+`tools/agent/**` script, or would otherwise change executable, product,
+serialization, verification-infrastructure or build behavior, stop and report a
 `VERIFICATION_ESCALATION_REQUEST` instead of widening scope.
 
 ### Author-fixed scope (plan §2)
@@ -131,16 +148,31 @@ design and planning paths. If the work would need a change to
 ## Implementation base
 
 ```text
-IMPLEMENTATION_BASE      = UNRESOLVED — MUST BE FROZEN AT AUTHORIZATION
-IMPLEMENTATION_BASE_TREE = UNRESOLVED — MUST BE FROZEN AT AUTHORIZATION
+IMPLEMENTATION_BASE =
+babf20c7c03d0454e2da6760bf5d1fc3fa546f6b          (P_R6PLUS_PLAN, published planning closeout)
+
+IMPLEMENTATION_BASE_TREE =
+3f7abded9163324a3142ad7446fb4e6c85407809
+
+BASE_IDENTITY =
+P_R6PLUS_PLAN
+
+PRE-G9B-R6-plus PLANNING =
+PASS — AUTHOR APPROVED — PUBLISHED
 ```
 
-No future commit or tree is fixed here, and none is invented. The planning
-candidate that created this file cannot name its own commit. Its exact identity
-is recorded in the author's review and closeout record, not here. The author
-has stated that `P0` will be authorized on the published planning closeout
-(`P_R6PLUS_PLAN`); until an authorizing instruction names its exact commit and
-tree, both fields stay unresolved.
+Both fields are frozen by the authorizing instruction of 2026-10-01. A moving
+branch is not a base, and the phase is not rebased onto any later commit
+without a new author instruction.
+
+Planning provenance, carried by the linear published history
+`P_R6 → T_R6PLUS_PLAN → D_R6PLUS_PLAN → P_R6PLUS_PLAN`:
+
+```text
+T_R6PLUS_PLAN = 147dac8d838df9ee62c0ae9c4fa296b28b9b9b8f   (planning candidate)
+D_R6PLUS_PLAN = af2aa1133620e49d68ac469ee8d10d273498cd95   (documentary reconciliation)
+P_R6PLUS_PLAN = babf20c7c03d0454e2da6760bf5d1fc3fa546f6b   (planning closeout)
+```
 
 Published provenance from which `PRE-G9B-R6-plus` planning began, recorded as
 provenance only and **not** as this phase's implementation identity:
@@ -151,10 +183,12 @@ P_R6_TREE  = f5c8c9f0cc76982170c6282a1242d2a5d07a0897
 PRE-G9B-R6 = PASS — AUTHOR APPROVED — PUBLISHED
 ```
 
-At entry, verify that local `main`, `origin/main` and the live remote `main`
-equal the commit the author names, that the tracked worktree is clean, and that
-no remote change is unexpected. **Execution is forbidden while either base
-field remains unresolved.** If any identity differs, stop.
+At entry, after a fresh fetch, verify that local `main`, `origin/main` and the
+live remote `main` equal `IMPLEMENTATION_BASE`, that its tree equals
+`IMPLEMENTATION_BASE_TREE`, that the tracked worktree is clean, that no `P0`
+implementation already exists and that no remote change is unexpected. If any
+identity differs, stop. The preferred local branch is
+`phase/pre-g9b-r6-plus-p0-characterization-design`; it is never pushed.
 
 ## Authority and evidence hierarchy
 
@@ -222,7 +256,11 @@ it or copy it into a product path.
 - distinguish **author intent** (what the author wants a later phase to build)
   from **proven current behavior** (what the file or product does today);
 - treat each `.ggt` as a behavioral and provenance reference, not as an approved
-  product asset.
+  product asset;
+- at the end of the phase, verify that every file is unchanged from the entry
+  inventory. If a difference appears, distinguish an author-side change made
+  during the session from an agent-side mutation; agent-side mutation is
+  forbidden.
 
 Two author requirements are **already supplied** and are scope, not missing
 input (author-fixed scope items 3 and 7; plan §2):
@@ -268,11 +306,16 @@ establish. Never invent the behavior of a missing tool.
   candidates, `geocedg/specs/` with an explicit candidate status;
 - architecture-owner and persistence decisions, as candidates;
 - the verification plan for every later subphase, as a recommendation;
-- roadmap reconciliation limited to status and to corrections the evidence
-  forces, without marking anything authorized or approved;
-- canonical recommendations for each later subphase prompt. Creating or editing
-  prompt files is allowed only under `.github/prompts/tasks/pre-g9b-r6-plus-*`
-  and only if the authorizing instruction explicitly includes it.
+- roadmap reconciliation limited to status (`CHARACTERIZATION / DESIGN IN
+  PROGRESS`, then `TECHNICAL DESIGN CANDIDATE PENDING AUTHOR REVIEW`) and to
+  corrections the evidence forces, without marking anything authorized,
+  approved or `PASS`;
+- canonical recommendations for each later subphase prompt, recorded in the
+  report only. The authorizing instruction permits editing exactly one prompt
+  file, this canonical `P0` prompt, and only to make it executable and freeze
+  its exact base. It does not authorize creating or editing the canonical
+  prompt of `A`, `B`, `D0`, `D1`, `C`, `E1`, `E2`, `E3`, `F1`, `F2` or `G`;
+  those are generated only after author review of the `P0` design candidate.
 
 ```text
 PRODUCT_PHASE_EFFECT = NONE
@@ -289,8 +332,9 @@ must end with a recorded result:
    also the command-line `--export` options, the scripting export API and what
    a v1-profile fallback exposes (plan §6.1);
 2. the exported files for an `Export_1`/`Export_2` area that fits the viewport
-   and for one larger than or outside it, per picture format including SVG,
-   reproducing the author-reported outside border and viewport clipping, and
+   and for one larger than or outside it, per picture format (PNG, PDF, SVG and
+   EMF/EMF+ where executable), reproducing the author-reported outside border
+   and viewport clipping, and
    whether a leftover selection rectangle crops a later export (plan §2,
    §6.2, §6.3);
 3. overriding `getMaxLayerUsed` for the working layer: the cap at 8 on the
@@ -328,6 +372,8 @@ scope or fix one silently.
 - any new tool or command;
 - any new unit metadata or unit behavior;
 - any layer change;
+- creating or editing any prompt file other than this canonical `P0` prompt,
+  including the canonical prompts of the later subphases;
 - publication of any kind.
 
 It must also not: edit `AGENTS.md`, `CLAUDE.md`, `FIRST_AGENT_TASK.md` or
@@ -386,8 +432,8 @@ sheet/PDF generation are export services outside the kernel.
 
 The report must answer each question below explicitly, with exact
 `path:line` evidence, and must mark each answer `PROVEN FROM SOURCE`,
-`PROVEN BY PROBE` or `INFERRED`. "Unknown" is acceptable only with the reason
-and the probe that would settle it.
+`PROVEN BY PROBE`, `INFERRED` or `UNKNOWN`. `UNKNOWN` is acceptable only with
+the reason and the probe or reading that would settle it.
 
 1. The actual upstream layer numeric domain and every assumption that depends on
    it: clamping, sorting, hit testing, selection sentinels, UI controls, XML
@@ -519,20 +565,25 @@ or any array-index or range assumption.
 Characterization uses focused reading and scratch probes. Probes are not
 acceptance evidence and must not run a heavy campaign as a side effect.
 
-Acceptance for the proposed `DOCUMENTATION_STATUS_ONLY` class:
+Acceptance for the frozen `DOCUMENTATION_STATUS_ONLY` class:
 
 1. focused work and scratch probes;
-2. one clean immutable candidate commit;
-3. `tools/agent/verify.ps1 -Profile STATIC -LogDirectory <new external root>` on
+2. before freezing: JSON validity of every new machine-readable file,
+   resolution of every repository-relative Markdown link the phase adds,
+   validation of this amended prompt (below), `git diff --check`, proof that no
+   forbidden or product path changed, and the final local-input integrity
+   check against the entry inventory;
+3. one clean immutable candidate commit whose parent is
+   `IMPLEMENTATION_BASE`, staging only authorized `P0` paths;
+4. `tools/agent/verify.ps1 -Profile STATIC -LogDirectory <new external root>` on
    that exact candidate, with the verifier console redirected outside
-   `artifacts/`;
-4. JSON validity of every new machine-readable file, and resolution of every
-   repository-relative Markdown link the phase adds;
+   `artifacts/`; the required result is `ACCEPTED / COMPLETE` for the
+   applicable `STATIC` plan;
 5. `git diff --check`.
 
-If a prompt file is changed under an explicit authorization, also validate each
-changed task prompt with `Test-PromptContractDocument` from
-`tools/agent/prompt-contract-parser.psm1` and the `task` profile of
+This prompt is changed under the explicit authorization above. Validate it,
+after amendment and again before freezing, with `Test-PromptContractDocument`
+from `tools/agent/prompt-contract-parser.psm1` and the `task` profile of
 `geocedg/specs/operations/prompt-contracts.json`.
 
 No `PHASE`, `INTEGRATION` or `FINAL` run is part of `P0`. Report the profile,
@@ -542,9 +593,10 @@ diagnostic count and execution identity of every run.
 <!-- geocedg-field: authorization_boundary -->
 ## Authorization boundary
 
-Nothing in this file is authorized. Execution requires a new explicit author
-instruction naming `PRE-G9B-R6-plus-P0` and its exact base. That instruction
-authorizes only the characterization and design scope above.
+The author's explicit instruction of 2026-10-01 names `PRE-G9B-R6-plus-P0` and
+its exact base above. It authorizes only the characterization and design scope
+of this file, the amendment of this prompt, scratch probes, the design
+artifacts, one local frozen candidate and its `STATIC` verification.
 
 `P0` authorizes nothing that follows it. Subphases `A`, `B`, `D0`, `D1`, `C`,
 `E1`, `E2`, `E3`, `F1`, `F2` and `G` each need a separate explicit author
@@ -556,8 +608,8 @@ exact DXF `SPLINE`, STL and Collada support stay unauthorized.
 <!-- geocedg-field: publication_boundary -->
 ## Publication boundary
 
-Once `P0` is authorized, that authorization covers a local branch and one clean
-local candidate commit. Push, branch publication, merge, promotion to `main`,
+The authorization covers a local branch and one clean local candidate commit.
+Push, branch publication, merge, promotion to `main`,
 rebase, squash, amend after freeze, force push, tag, release and binary
 publication are forbidden. Each needs a separate explicit author instruction
 naming the exact candidate SHA. Acceptance evidence never grants publication
@@ -573,6 +625,9 @@ records only invariant facts:
 TECHNICAL_CANDIDATE_STATE = FROZEN
 AUTHOR_DECISION           = NOT_RECORDED_IN_THIS_ARTIFACT
 ```
+
+The candidate is never amended after freeze. If a correction is needed
+afterwards, stop and report rather than create an unrequested descendant.
 
 ## Required artifacts
 
@@ -593,10 +648,12 @@ AUTHOR_DECISION           = NOT_RECORDED_IN_THIS_ARTIFACT
 
 Stop and report rather than guess when:
 
-- `IMPLEMENTATION_BASE` or `IMPLEMENTATION_BASE_TREE` remains unresolved, or any
-  entry identity differs;
+- any entry identity differs from `IMPLEMENTATION_BASE` or
+  `IMPLEMENTATION_BASE_TREE`;
+- this prompt cannot be reconciled to the authorizing instruction without
+  changing the authorized `P0` scope;
 - a required finding would need a product, serialization, profile or packaging
-  change to establish;
+  change to establish, or `P0` itself would need a serialization change;
 - the author-fixed unit semantics cannot be preserved, or `constructionUnit =
   DOCUMENT_SEMANTIC` meets a demonstrated compatibility blocker. Report the
   blocker with evidence; do not choose a replacement rule;
@@ -606,8 +663,12 @@ Stop and report rather than guess when:
 - a GGT's rights or provenance are unclear for an intended distribution;
 - a design would place geometric truth in a GUI, exporter, script, generated
   artifact or icon;
-- an `ExportArea` design would create a second hidden export-area mechanism;
-- the work needs a verification level above `DOCUMENTATION_STATUS_ONLY`.
+- an `ExportArea` design would create a second hidden export-area mechanism or
+  several competing authorities;
+- the work needs a verification level above `DOCUMENTATION_STATUS_ONLY`;
+- the local author input was modified by the agent;
+- source evidence contradicts an author requirement in a way that requires an
+  author choice.
 
 A missing author input is **not** a stop condition: report it and continue with
 every part that repository or upstream evidence can establish.
