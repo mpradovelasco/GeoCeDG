@@ -11,7 +11,7 @@
   promote any specification or ADR
 - Evidence record: [planning candidate report](../validation/pre_g9b_r6_plus_planning_candidate_report.md) and its machine-readable mirror `geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-planning.json`
 - First executable task: [`PRE-G9B-R6-plus-P0`](../../.github/prompts/tasks/pre-g9b-r6-plus-p0-integrated-characterization-and-design.prompt.md), `PASS — AUTHOR APPROVED` (2026-10-02) on `T_R6PLUS_P0` `6b7fd5de343b6556b384e71a9345907e7944d1e5` ([closeout record](../validation/pre_g9b_r6_plus_p0_closeout_record.md)); its design candidates stay candidates and its open author decisions stay open
-- Author decisions for `A` (2026-10-02): [A author-decision record](../validation/pre_g9b_r6_plus_a_author_decisions_record.md). `A` is split into `A-1` (`INTEGRATED_PHASE`) and `A-2` (`GLOBAL_IMPACT`); the next subphase is `A-1`, whose [canonical prompt](../../.github/prompts/tasks/pre-g9b-r6-plus-a1-layer-workspace-session.prompt.md) is prepared on `562e2bb1e77b249b9c97c2e6e06e8b123d6de900`, tree `9f578093f2f3cba481f5630fe827fd3ef08cff61` and is `NOT AUTHORIZED`
+- Author decisions for `A` (2026-10-02): [A author-decision record](../validation/pre_g9b_r6_plus_a_author_decisions_record.md). `A` is split into `A-1` (`INTEGRATED_PHASE`) and `A-2` (`GLOBAL_IMPACT`); the next subphase is `A-1`, whose [canonical prompt](../../.github/prompts/tasks/pre-g9b-r6-plus-a1-layer-workspace-session.prompt.md) is prepared on `562e2bb1e77b249b9c97c2e6e06e8b123d6de900`, tree `9f578093f2f3cba481f5630fe827fd3ef08cff61` and is `NOT AUTHORIZED`; the preparation package `T_R6PLUS_A1_PROMPT` `3c5aba19b2efd4b65d6f7b7deba6d3b19611630b` is `PASS — AUTHOR APPROVED` (2026-10-02, [closeout record](../validation/pre_g9b_r6_plus_a1_prompt_closeout_record.md)); implementation stays not authorized
 - Self approval: **false**
 
 This note records the mini-track the author defined on 2026-10-01 as the final
@@ -276,8 +276,9 @@ This is the author's order, as accepted on 2026-10-02 with the split of `A`.
 `A-2` follows `D1`, so the two subphases that add shared serialization and
 need `FINAL` run adjacently. Since the split, `A` in the prose of this
 subsection means `A-1`, the subphase that introduces the effective-visibility
-rule and the status bar. `D0` is documentation and may run beside `A` or
-`B`. `F1` and `F2` are independent and may be scheduled anywhere after `P0`.
+rule and the status bar. The sequence is the operational order currently
+chosen by the author, not a dependency: `D0` is documentation, technically
+independent, and may be scheduled in parallel with `A-1` or `B`. `F1` and `F2` are independent and may be scheduled anywhere after `P0`.
 None of these orderings is a kernel dependency.
 
 **Global and release gates**
@@ -296,7 +297,8 @@ None of these orderings is a kernel dependency.
 Each brief states the minimum contract a future prompt must carry. `P0` turns
 each into an exact design candidate.
 
-- **`A` — layer workspace and status bar.** Working layer chosen through a
+- **`A` — layer workspace and status bar** (historical brief, **superseded by
+  `A-1`/`A-2`** below; not an executable phase). Working layer chosen through a
   GeoCeDG mode in the Move group, not restricted to the current 0..9 domain,
   through the extension `P0` designs, and applied to every creation route
   including macro outputs. Per-layer hide/show in the Algebra View, with
@@ -1039,7 +1041,7 @@ from the importance of the track.
 | `P0` | `DOCUMENTATION_STATUS_ONLY` | `STATIC` | documents only | any product, verifier or prompt-contract path |
 | `A-1` | `INTEGRATED_PHASE` (author-accepted 2026-10-02) | registered `PHASE` + `INTEGRATION` | working layer on every interactive creation route, shared view painting and hit testing in Graphics 1 and 2, Algebra View, profile catalog and application layout | domain widening, any serialization, or an exporter change → stop; that scope is `A-2`, `B` or `C` |
 | `A-2` | `GLOBAL_IMPACT` (author-accepted 2026-10-02) | `FINAL` | widens the shared `<layer>` domain read on every load and adds hidden-layer persistence to document serialization | — |
-| `A` (before the split; superseded) | `INTEGRATED_PHASE`, **provisional** | registered `PHASE` + `INTEGRATION` | the working layer applies to **every** creation route (tools, Algebra input, scripts, macros, paste, load and undo rebuild), which is concrete integration coverage; view predicate; profile catalog | `P0` re-classifies `A` from its layer-extension design: widening shared layer or serialization assumptions for the author's arbitrary-layer target, moving the predicate into `GeoElement`, or persisting hidden layers through the shared XML handler (unless `AQ-L3` chooses `SESSION`) → `GLOBAL_IMPACT` |
+| `A` — **superseded by `A-1`/`A-2`**; historical record only, not an executable phase | `INTEGRATED_PHASE`, **provisional** | registered `PHASE` + `INTEGRATION` | the working layer applies to **every** creation route (tools, Algebra input, scripts, macros, paste, load and undo rebuild), which is concrete integration coverage; view predicate; profile catalog | `P0` re-classifies `A` from its layer-extension design: widening shared layer or serialization assumptions for the author's arbitrary-layer target, moving the predicate into `GeoElement`, or persisting hidden layers through the shared XML handler (unless `AQ-L3` chooses `SESSION`) → `GLOBAL_IMPACT` |
 | `B` | `INTEGRATED_PHASE` | registered `PHASE` + `INTEGRATION` | profile surface; shared export paint path consumed by picture, clipboard, GIF and print; shortcut routes | export area becomes document-serialized |
 | `D0` | `DOCUMENTATION_STATUS_ONLY` | `STATIC` | ADR and specification candidates | — |
 | `D1` | `GLOBAL_IMPACT` | `FINAL` | new document-semantic serialization in shared `<construction>` XML, read on every load, written on every save and undo; legacy byte-identity must be proven across all documents | — |
@@ -1102,7 +1104,8 @@ PRE-G9B-R6-plus            = PLANNING PASS — AUTHOR APPROVED
                              PRODUCT IMPLEMENTATION NOT AUTHORIZED
 PRE-G9B-R6-plus PLANNING   = PASS — AUTHOR APPROVED (2026-10-01)
 PRE-G9B-R6-plus-P0         = PASS — AUTHOR APPROVED (2026-10-02; T_R6PLUS_P0 6b7fd5de)
-PRE-G9B-R6-plus-A-1        = NOT AUTHORIZED (next subphase; canonical prompt prepared)
+PRE-G9B-R6-plus-A-1        = NOT AUTHORIZED (next subphase; preparation package
+                             PASS — AUTHOR APPROVED 2026-10-02, T_R6PLUS_A1_PROMPT 3c5aba19)
 PRE-G9B-R6-plus-A-2        = NOT AUTHORIZED
 PRE-G9B-R6-plus-B … G      = NOT AUTHORIZED
 PRE-G9B-R7                 = DESIGNED — NOT AUTHORIZED

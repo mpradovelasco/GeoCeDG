@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-A-1",
+  "recordKind": "AUTHOR_CLOSEOUT_DISPOSITION",
+  "subject": "A-1 documentary preparation package (not a phase)",
+  "status": "PRE-G9B-R6-plus-A-1 PREPARATION PACKAGE — PASS — AUTHOR APPROVED",
+  "record": "docs/validation/pre_g9b_r6_plus_a1_prompt_closeout_record.md",
+  "authorDecisionDate": "2026-10-02",
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "approvalScope": "A-1 canonical prompt, versioned AQ-L author-decision record and its mirror, roadmap and mini-track plan updates; no implementation",
+  "implementationAuthorized": false,
+  "candidateFrozen": true,
+  "candidateMutated": false,
+  "productPhaseEffect": "NONE",
+  "newHeavyIntegration": "NONE",
+  "newHeavyFinal": "NONE",
+  "approvedPackage": [
+    ".github/prompts/tasks/pre-g9b-r6-plus-a1-layer-workspace-session.prompt.md",
+    "docs/validation/pre_g9b_r6_plus_a_author_decisions_record.md",
+    "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-a-author-decisions.json",
+    "docs/roadmap/geocedg_roadmap.md",
+    "docs/architecture/pre_g9b_r6_plus_minitrack_plan.md"
+  ],
+  "authorDispositions": [
+    {"id": "historical-A-row", "disposition": "the former A row may be kept only as a historical record, unequivocally marked superseded by A-1/A-2 and not confusable with a current executable phase", "appliedIn": ["docs/architecture/pre_g9b_r6_plus_minitrack_plan.md section 12", "docs/architecture/pre_g9b_r6_plus_minitrack_plan.md section 3.2"]},
+    {"id": "D0-scheduling", "disposition": "D0 is technically independent and may be scheduled in parallel with A-1 or B; A-1 -> B -> D0 -> D1 -> A-2 -> C -> E1 -> E2 -> E3 -> F1 -> F2 -> G is the operational order currently chosen, not an artificial dependency of D0", "appliedIn": ["docs/architecture/pre_g9b_r6_plus_minitrack_plan.md section 3.1", "docs/roadmap/geocedg_roadmap.md"], "readsAcceptedOrderOf": "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-a-author-decisions.json"}
+  ],
+  "publishedBase": {
+    "name": "P_R6PLUS_P0",
+    "commit": "562e2bb1e77b249b9c97c2e6e06e8b123d6de900",
+    "tree": "9f578093f2f3cba481f5630fe827fd3ef08cff61",
+    "state": "PRE-G9B-R6-plus-P0 = PASS — AUTHOR APPROVED — PUBLISHED"
+  },
+  "technicalCandidate": {
+    "name": "T_R6PLUS_A1_PROMPT",
+    "commit": "3c5aba19b2efd4b65d6f7b7deba6d3b19611630b",
+    "tree": "2b6242d805420fad0c48c7ca8c8f338219e4c78c",
+    "parent": "562e2bb1e77b249b9c97c2e6e06e8b123d6de900",
+    "branch": "phase/pre-g9b-r6-plus-a1-prompt",
+    "branchPushed": false,
+    "modifiedByCloseout": false,
+    "evidence": {"profile": "STATIC", "run": "verification-21a72bb8d7004c31ade6efe78d7d3860", "exitCode": 0, "verdict": "ACCEPTED / COMPLETE", "checks": "3/3", "executionPlanHash": "25dfacc8b0c53df285a3ac19bbc438c5868d0c94dad7d1021727287ee892cc52", "resultHash": "410a2638b56630b382a516bd9e97f1360f66adb23d8b2912052243d9df85d234", "standingDiagnostics": ["diagnostic.governance = DIAGNOSTIC_FINDING", "diagnostic.historical-consistency = DIAGNOSTIC_UNAVAILABLE"], "gitDiffCheckExit": 0, "promptContract": "task profile, execution_safe = true"}
+  },
+  "closeoutChangedPaths": [
+    "docs/architecture/pre_g9b_r6_plus_minitrack_plan.md",
+    "docs/roadmap/geocedg_roadmap.md",
+    "docs/validation/pre_g9b_r6_plus_a1_prompt_closeout_record.md",
+    "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-a1-prompt-closeout.json"
+  ],
+  "publication": {
+    "range": ["562e2bb1e77b249b9c97c2e6e06e8b123d6de900", "3c5aba19b2efd4b65d6f7b7deba6d3b19611630b", "P_R6PLUS_A1_PROMPT (this closeout commit)"],
+    "method": "clean non-force fast-forward of main",
+    "precondition": "local main = origin/main = live remote main = P_R6PLUS_P0"
+  },
+  "authorizationState": {
+    "PRE-G9B-R6-plus PLANNING": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-P0": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-A-1 preparation package": "PASS — AUTHOR APPROVED",
+    "PRE-G9B-R6-plus-A-1": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-A-2": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-B": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-D0": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-D1": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-C": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-E1": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-E2": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-E3": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-F1": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-F2": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-G": "NOT AUTHORIZED",
+    "PRE-G9B-R7": "DESIGNED — NOT AUTHORIZED; BLOCKED UNTIL PRE-G9B-R6-plus IS PASS — AUTHOR APPROVED",
+    "G9B": "NOT AUTHORIZED"
+  }
+}
