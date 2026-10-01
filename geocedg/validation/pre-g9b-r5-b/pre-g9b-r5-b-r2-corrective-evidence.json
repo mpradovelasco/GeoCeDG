@@ -1,0 +1,221 @@
+{
+  "schemaVersion": 1,
+  "phase": "PRE-G9B-R5-B",
+  "correctiveDescendant": "PRE-G9B-R5-B-R2",
+  "phaseKind": "AUTHOR_SMOKE_CORRECTIVE_DESCENDANT",
+  "report": "docs/validation/pre_g9b_r5_b_r2_corrective_candidate_report.md",
+  "technicalCandidateState": "FROZEN",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "authorDecisionAuthority": "a later explicit author decision naming the exact technical commit is the sole authority for approval",
+  "selfApproved": false,
+  "authorApproved": false,
+  "passClaimed": false,
+  "changeRoute": "ORDINARY",
+  "verificationClass": "INTEGRATED_PHASE",
+  "verificationClassEscalated": false,
+  "frozenAtPhaseStart": true,
+  "frozenAcceptance": "tools/agent/verify.ps1 -Profile INTEGRATION",
+  "staticRequired": false,
+  "staticNotRequiredReason": "no guide, prompt, ADR or specification changes; INTEGRATION executes the documentation, style and whitespace diagnostics",
+  "guideImpact": "NONE",
+  "serializationImpact": "NONE",
+  "candidateChain": {
+    "P_DOTXML": {"commit": "504a19f7e655ef50c4bfa8095a07f94c11b27a01", "tree": "63e7f0cd79aa9e1cf1259b6466e8ac16dc261704"},
+    "T_R5B": {"commit": "7bc113afb22bb6b97b2ad5e1e3f00117c8022be2", "tree": "d47aafdfaace0aa7919f66dde9ff24ec3d1dac65", "state": "TECHNICALLY ACCEPTED; SUPERSEDED"},
+    "T_R5B_R1": {
+      "commit": "919adc8e442d0143367063f1fb8dedbb02f8e796",
+      "tree": "c2c3364de6a97b7c7a41d974bfd07791a98da863",
+      "parent": "7bc113afb22bb6b97b2ad5e1e3f00117c8022be2",
+      "integrationRun": "verification-34c0b12566c14f54b45352b354c815c5",
+      "integrationVerdict": "ACCEPTED / COMPLETE, 19/19",
+      "authorSmoke": "clean-session language switch confirmed; CORRECTIVE FINDING remains",
+      "authorApproval": "NOT GRANTED",
+      "state": "preserved unchanged; superseded by R2 if R2 succeeds"
+    },
+    "T_R5B_R2": "the commit that contains this file; its parent is T_R5B_R1; reported separately"
+  },
+  "entry": {
+    "localMainOriginMainLiveRemoteMain": "504a19f7e655ef50c4bfa8095a07f94c11b27a01",
+    "head": "919adc8e442d0143367063f1fb8dedbb02f8e796",
+    "worktree": "clean",
+    "branchPublished": false
+  },
+  "authorFixture": {
+    "path": "artifacts/pre-g9b-r5/testCircle3.cedg",
+    "sha256": "af9821c4a38dff49d58d047bd2553d9a912be5fb189bad976316b8abcef02c39",
+    "bytes": 15164,
+    "tracked": false,
+    "ignored": true,
+    "modified": false,
+    "committed": false,
+    "use": "scratch copy only"
+  },
+  "otherLogs": "no new hs_err_pid*.log; hs_err_pid32224.log unrelated and unattributed",
+  "reproduction": {
+    "host": "real windowed GeoCeDG.main on Temurin 25.0.4, isolated settings file, GuiManagerD.loadFile, input-bar Input Help toggle, real autocompletion, validateAutoCompletion, Enter through the field key listeners",
+    "onT_R5B_R1": {
+      "fresh": "Input Help selects Line, pane shows Line syntax",
+      "freshTypedSameConstruction": "works",
+      "testCircle3Reopened": "fails: no selection, empty pane (also after Enter)",
+      "cleanControlReopened": "fails",
+      "emptyDocumentReopened": "fails",
+      "updateComponentTreeUIOnly": "fails",
+      "productLanguageRoundTripOnly": "fails"
+    }
+  },
+  "cleanControl": {
+    "produced": "fresh T_R5B_R1 session, c=Circle((0,0),2) and k=Circle((1,1),1) typed, saved",
+    "sha256": "56fa434d235f86579b25d8f685fb4d8a7938a7804603c5710740bdfb6bd5e498",
+    "reopenResult": "fails like testCircle3"
+  },
+  "minimizedWitness": "no persisted content needed: any native document whose opening reaches GuiManagerD.updateGUIafterLoadFile (an empty document suffices), or a component-tree UI refresh or product-language change without any document",
+  "contentComparison": {
+    "archiveEntries": ["geogebra.xml", "geogebra_defaults2d.xml", "geogebra_defaults3d.xml", "geogebra_javascript.js", "geogebra_thumbnail.png"],
+    "identical": ["construction objects", "command identities", "expressions", "labels", "scripts (empty ggbOnInit stub)", "macros (none)", "input bar settings <input show=true cmd=true top=algebra>", "language attributes (none)", "GeoCeDG metadata (none)", "geogebra_defaults3d.xml", "geogebra_javascript.js"],
+    "differentNotInputHelpRelated": ["document id", "window, pane dividers, view sizes and locations", "toolbar definition (author string lacks group 140)", "algebraStyle 2 vs 0", "object layer 5 vs 0", "default animation step 0.1 vs 1", "coordinate system float noise", "thumbnail"],
+    "commandHeadTextPersisted": false,
+    "r5bProvenancePersisted": false
+  },
+  "versionComparison": {
+    "P_DOTXML": {"fresh": "works", "reopenedControl": "fails", "reopenedTestCircle3": "fails", "uiRefresh": "fails"},
+    "T_R5B": {"fresh": "works", "reopenedControl": "fails", "reopenedTestCircle3": "fails", "uiRefresh": "fails"},
+    "T_R5B_R1": {"fresh": "works", "reopenedControl": "fails", "reopenedTestCircle3": "fails", "uiRefresh": "fails", "languageRoundTrip": "fails"},
+    "listenerReorderingIdenticalAtAllIdentities": true
+  },
+  "classification": "C. PRE-EXISTING DEFECT, NOW CONTRACT-RELEVANT TO R5-B (refined: not in the loader; the loader's UI refresh is one trigger)",
+  "badStatePersisted": false,
+  "relevanceToR1": "the same defect follows a product-language switch in a clean session before and after R1; R1's setLanguage fix is correct and retained; R2 removes this trigger with the others",
+  "stateCoherence": {
+    "locale": "unchanged",
+    "reverseTable": "unchanged (Line -> Line)",
+    "subCommandDictionariesAndCas": "unchanged",
+    "inputHelpTree": "same panel instance, 21 groups, canonical identity-carrying entries",
+    "selectedCommandBeforeCompletion": "none, as in a fresh session",
+    "directFocusCommandLine": "selects Line in every session",
+    "syntaxProvider": "unchanged",
+    "completions": "same 28 canonical completions with carried identity",
+    "reentryProvenance": "not involved, not persisted",
+    "changedState": "only the document-listener notification order of the Algebra Input field"
+  },
+  "rootCause": "under the GeoCeDG syntax-only preview, ErrorHelper.handleException reaches showCommandError (and so InputBarHelpPanelD.focusCommand) only when handler.getCurrentCommand() names a command; AlgebraInputErrorLogger read it from the field caret during the document event; after SwingUtilities.updateComponentTreeUI re-installs the field UI (updateGUIafterLoadFile, updateFonts for setLocale/setLanguage, updateToolBar, updateContentPane, theme refresh) DefaultCaret's listener is notified before the preview and has moved the caret to the end of the replaced text, so the word read is empty",
+  "loadOrderingHypothesis": "REJECTED: no command, dictionary or entry state is stale after reopen",
+  "listenerOrder": {
+    "afterStartup": ["AlgebraInputD$1", "CompletionsPopup$1", "BasicTextUI$UpdateHandler", "DefaultCaret$Handler"],
+    "afterUiRefresh": ["JTextComponent$InputMethodRequestsHandler", "BasicTextUI$UpdateHandler", "DefaultCaret$Handler", "AlgebraInputD$1", "CompletionsPopup$1"]
+  },
+  "placement": "Algebra Input -> Input Help focus bridge (AlgebraInputD preview listener and error logger)",
+  "correction": {
+    "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/inputbar/AlgebraInputD.java",
+    "change": "the preview passes the DocumentEvent offset to AlgebraInputErrorLogger; under the GeoCeDG profile getCurrentCommand applies InputHelper.updateCurrentWord(true, buffer, text, editOffset, true), the rule of AutoCompleteTextFieldD.getCommand(), at the edit instead of the live caret; Classic unchanged",
+    "fuzzyMatching": false,
+    "upstreamOwned": true,
+    "alreadyRegisteredAsModified": true
+  },
+  "preservedInvariants": [
+    "E(k) = English command bundle",
+    "USER, SCRIPT and XML lookup unchanged",
+    "reverse-table semantics unchanged",
+    "parser unchanged",
+    "serialization semantics unchanged",
+    "R1 host setLanguage lifecycle retained",
+    "localized aliases retained",
+    "canonical command heads retained",
+    "autocomplete identity explicit",
+    "CANONICAL_HEAD_SHADOWED retained",
+    "Dot/XML repair retained"
+  ],
+  "changedPaths": [
+    "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/inputbar/AlgebraInputD.java",
+    "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR5BR2InputHelpAfterReopenTest.java",
+    "docs/upstream/modified-files.yml",
+    "geocedg/specs/operations/verification-junit-inventory.json",
+    "geocedg/specs/operations/verification-registry.json",
+    "docs/roadmap/geocedg_roadmap.md",
+    "docs/validation/pre_g9b_r5_b_r2_corrective_candidate_report.md",
+    "geocedg/validation/pre-g9b-r5-b/pre-g9b-r5-b-r2-corrective-evidence.json"
+  ],
+  "upstreamBoundary": {
+    "baseline": "9b93256b7df401ff056c37b502d82df4d72b1522",
+    "registeredFiles": 858,
+    "newUpstreamModifications": 0,
+    "newAddedEntries": ["source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR5BR2InputHelpAfterReopenTest.java"],
+    "purposeAppended": ["source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/inputbar/AlgebraInputD.java"]
+  },
+  "regression": {
+    "class": "org.geocedg.desktop.PreG9BR5BR2InputHelpAfterReopenTest",
+    "tests": 4,
+    "scenarios": ["fresh control", "save -> new application -> GuiManagerD.loadFile -> completion -> submit", "save EN/ES x reopen EN/ES", "component-tree UI refresh and product-language EN->ES->EN"],
+    "obligations": ["T-AUTOCOMPLETE", "T-SYNTAX", "T-INPUT", "T-XML (construction unchanged)"],
+    "onUnchangedT_R5B_R1": "3 failures (Input Help not focused), control passes",
+    "withCorrection": "4 passed",
+    "committedFixture": false
+  },
+  "realUiAfterCorrection": "testCircle3 copy EN and ES, clean control, empty document, language round trip and bare UI refresh all select Line with the current-language body after completion and after Enter (Temurin 25.0.4)",
+  "tests": {
+    "desktopComplete": {"tests": 1638, "failures": 0, "errors": 0, "skipped": 1},
+    "unchangedFocal": ["PreG9BR5BR1RuntimeLanguageSwitchTest 4/4", "PreG9BR5BCanonicalReentryTest 5/5", "PreG9BR5BCanonicalHelpTest 4/4", "PreG9BR5BCanonicalDisplayTest 10/10", "PreG9BR5BCanonicalCommandGateTest 6/6", "PreG9BR5BCanonicalScriptTest 4/4", "DotXmlLocaleIndependentPersistenceTest 3/3", "G9U0LocalizationHelpTest 4/4", "G9S1NativeArchivePersistenceTest 2/2", "G9S1R1NativeArchivePersistenceTest 3/3"],
+    "sharedModules": "byte-unchanged from T_R5B_R1; final.shared (including DotXmlLocaleIndependentSerializationTest) runs in INTEGRATION"
+  },
+  "junitInventory": {
+    "updater": "tools/agent/update-verification-junit-inventory.ps1",
+    "discoveryEvidence": ["discovery.shared (dry run)", "discovery.desktop (dry run)"],
+    "selectionEvidence": ["final.desktop (executed: 1632 tests, 0 failures, 0 errors, 1 skipped)"],
+    "discoveryDesktop": {
+      "before": {"count": 1634, "sha256": "9dbc37a2318e7b11802616de45766a34d84ab2cc176e3dd4d25563574bcf7aab"},
+      "after": {"count": 1638, "sha256": "e6a029474240b4b72579208255da5d3b58633f7f383ba0e82047858396ca220b"}
+    },
+    "finalDesktop": {
+      "before": {"count": 1628, "sha256": "2f52a04499eebcfaf38a038bc50b8616fb8b9d3400e8df60e80e39b70486a841"},
+      "after": {"count": 1632, "sha256": "5deb5812acd22852f73336708b066edcdf931dccd6cf7a1e15a93c60a3c01dac"}
+    },
+    "moduleDiscoveryEvidenceSha256": {
+      "shared": {"before": "53300434b81b1f6629e8c8941663a8dc00328e0fd789d9592c0b23709de5d8df", "after": "0c6b216d8e254a405a1511caa645c59adf85a6dd6164d405bb92fad33d2925f8"},
+      "desktop": {"before": "b05567b708fbe90039924690e2df7a19d87fb77bf1e096f0059eaaf5305c9bb3", "after": "289a948d7cf46ecac13ff6d0901e90361bf5de24b729aa69ee72e01558f11449"}
+    },
+    "otherSelections": "unchanged",
+    "registryPin": {
+      "before": "ff4f70b53ccfca49b08dff23daceb2d9c4128d51849eb8ea902a617dbbb4b3fc",
+      "after": "199d40a63228976ad2e19fe561fa3012742829b3d05d9922bc9cf7608d9d074b"
+    },
+    "handEdited": false
+  },
+  "preCandidateChecks": {
+    "kind": "development diagnostics, not acceptance",
+    "checkstyle": {"desktopMain": {"files": 505, "findings": 0}, "desktopTest": {"files": 125, "findings": 0}},
+    "upstreamBoundary": "858 registered files, no unregistered path",
+    "diffCheck": "clean",
+    "planHashes": {
+      "INTEGRATION": "4502c4bd1bbe1a123089e9e524fd0afb354932afbcb410f93052555a16c77aea",
+      "STATIC": "25dfacc8b0c53df285a3ac19bbc438c5868d0c94dad7d1021727287ee892cc52",
+      "FINAL": "3d8752b91eb96bffa3cfae1d6f54378ccfa34451642d0172f1cdb73f01743517",
+      "unchangedFromT_R5B_R1": true
+    },
+    "stagedInfraUnit": {"run": "verification-d2317c8c746741159ccdff80ae16a8ed", "verdict": "ACCEPTED / COMPLETE", "leaves": "22/22", "diagnostics": 0}
+  },
+  "observations": [
+    "OBS-R5B-R2-CLASSIC-CARET-READ",
+    "OBS-R5B-R2-COMPLETIONS-POPUP-LISTENER-ORDER",
+    "OBS-R5B-R2-EMBEDDED-HOST-ROOT",
+    "OBS-R5B-R1-NATIVE-AWT-CRASH-UNATTRIBUTED",
+    "OBS-R5B-R1-SYNTHETIC-INPUT",
+    "R1 and R5-B observations and TD-DOT-XML-HISTORICAL-LOCALIZED-HEAD carried forward unchanged"
+  ],
+  "impact": {
+    "guide": "NONE",
+    "serialization": "NONE",
+    "bootstrap": "NO CHANGE REQUIRED",
+    "verificationInfrastructure": "CATALOG DATA ONLY",
+    "productPhaseEffect": "BOUNDED"
+  },
+  "state": {
+    "initialT_R5B": "TECHNICALLY ACCEPTED; SUPERSEDED",
+    "T_R5B_R1": "TECHNICALLY ACCEPTED; SUPERSEDED BY R2 IF R2 SUCCEEDS; NOT AUTHOR APPROVED",
+    "PRE-G9B-R5-B-R2": "TECHNICAL CANDIDATE PENDING AUTHOR REVIEW",
+    "authorSmoke": "PENDING",
+    "authorApproval": "PENDING",
+    "promotion": "NONE",
+    "PRE-G9B-R6": "NOT AUTHORIZED",
+    "PRE-G9B-R7": "NOT AUTHORIZED",
+    "G9B": "NOT AUTHORIZED"
+  }
+}

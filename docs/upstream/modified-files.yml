@@ -3822,7 +3822,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/inputbar/AlgebraInputD.java",
       "change": "modified",
-      "purpose": "Make explicit product submission atomic while focus loss, preview and Escape create no objects. Maintenance TD-DESKTOP-INPUT-REDEFINE-CANCEL-STRANDS-SUBMISSION: release the product submission guard when a synchronous submission ends without a result, such as a cancelled or unavailable spatial redefine. PRE-G9B-R5-B: under a canonical profile focus Input Help by the command identity of a command error.",
+      "purpose": "Make explicit product submission atomic while focus loss, preview and Escape create no objects. Maintenance TD-DESKTOP-INPUT-REDEFINE-CANCEL-STRANDS-SUBMISSION: release the product submission guard when a synchronous submission ends without a result, such as a cancelled or unavailable spatial redefine. PRE-G9B-R5-B: under a canonical profile focus Input Help by the command identity of a command error. PRE-G9B-R5-B-R2: under the GeoCeDG profile the input preview reads the current command at the offset of the edit, not at the caret, so a Swing UI refresh of the field (document open, language change) no longer stops an accepted completion from focusing Input Help.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -5143,6 +5143,12 @@
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR5BR1RuntimeLanguageSwitchTest.java",
       "change": "added",
       "purpose": "PRE-G9B-R5-B-R1 runtime language switch: the real product-language action in one session rebuilds Input Help captions, entries, selection and syntax and the lookup tables for the new language (T-DISPLAY, T-INPUT, T-AUTOCOMPLETE, T-SYNTAX, T-GEOCEDG, T-ERROR, T-DYNTEXT, T-L01) and leaves the construction, its XML and undo history unchanged.",
+      "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR5BR2InputHelpAfterReopenTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R5-B-R2 Input Help after reopen: through the Desktop file path, a product-language change and a component-tree UI refresh, an accepted completion focuses Input Help on its command identity with the canonical head and the current UI-language syntax body (T-AUTOCOMPLETE, T-SYNTAX, T-INPUT), across EN/ES save and reopen, without changing the construction.",
       "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
     }
   ]

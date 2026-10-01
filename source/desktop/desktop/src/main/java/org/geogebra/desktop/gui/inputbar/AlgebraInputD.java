@@ -41,6 +41,7 @@ import javax.swing.event.DocumentListener;
 import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
 import org.geocedg.desktop.GeoCeDGAlgebraInputSubmission;
 import org.geogebra.common.gui.SetLabels;
+import org.geogebra.common.gui.inputfield.InputHelper;
 import org.geogebra.common.kernel.commands.EvalInfo;
 import org.geogebra.common.kernel.kernelND.GeoElementND;
 import org.geogebra.common.main.App.InputPosition;
@@ -100,20 +101,20 @@ public class AlgebraInputD extends JPanel implements ActionListener,
 
 					@Override
 					public void changedUpdate(DocumentEvent e) {
-						preview();
+						preview(e);
 					}
 
 					@Override
 					public void removeUpdate(DocumentEvent e) {
-						preview();
+						preview(e);
 					}
 
 					@Override
 					public void insertUpdate(DocumentEvent e) {
-						preview();
+						preview(e);
 					}
 
-					public void preview() {
+					public void preview(DocumentEvent e) {
 						if (!inputField.isPreviewActive()) {
 							return;
 						}
@@ -121,7 +122,7 @@ public class AlgebraInputD extends JPanel implements ActionListener,
 						inputField.setBackground(Color.WHITE);
 						app.getKernel().getInputPreviewHelper()
 								.updatePreviewFromInputBar(inputField.getText(),
-										new AlgebraInputErrorLogger());
+										new AlgebraInputErrorLogger(e.getOffset()));
 					}
 				});
 	}
@@ -567,6 +568,17 @@ public class AlgebraInputD extends JPanel implements ActionListener,
 	}
 
 	private class AlgebraInputErrorLogger implements ErrorLogger {
+		/**
+		 * GeoCeDG PRE-G9B-R5-B-R2: offset of the edit that started this preview. The
+		 * caret is not read: during the edit it is before or after Swing's caret update,
+		 * depending on listener order, which every UI refresh of the field reverses.
+		 */
+		private final int editOffset;
+
+		AlgebraInputErrorLogger(int editOffset) {
+			this.editOffset = editOffset;
+		}
+
 		@Override
 		public void resetError() {
 			showError(null);
@@ -596,6 +608,13 @@ public class AlgebraInputD extends JPanel implements ActionListener,
 
 		@Override
 		public String getCurrentCommand() {
+			if (app.getConfig() instanceof AppConfigGeoCeDG) {
+				// the word rule of AutoCompleteTextFieldD.getCommand(), at the edit
+				StringBuilder word = new StringBuilder();
+				InputHelper.updateCurrentWord(true, word, inputField.getText(),
+						editOffset, true);
+				return word.toString();
+			}
 			return inputField.getCommand();
 		}
 
