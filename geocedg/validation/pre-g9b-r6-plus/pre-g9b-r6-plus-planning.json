@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "recordKind": "PLANNING_CANDIDATE",
+  "technicalCandidateState": "FROZEN",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "selfApproved": false,
+  "recorded": "2026-10-01",
+  "authorization": "author instruction of 2026-10-01: planning and governance work only",
+  "plan": "docs/architecture/pre_g9b_r6_plus_minitrack_plan.md",
+  "report": "docs/validation/pre_g9b_r6_plus_planning_candidate_report.md",
+  "p0Prompt": {
+    "path": ".github/prompts/tasks/pre-g9b-r6-plus-p0-integrated-characterization-and-design.prompt.md",
+    "state": "DESIGNED / CANONICAL PROMPT CREATED / NOT AUTHORIZED",
+    "implementationBase": "UNRESOLVED — MUST BE FROZEN AT AUTHORIZATION",
+    "registeredInPromptContracts": false
+  },
+  "planningBase": {
+    "name": "P_R6",
+    "commit": "9b8bc5b10a7ef61da0095853ea4c572ca06bfa72",
+    "tree": "f5c8c9f0cc76982170c6282a1242d2a5d07a0897",
+    "state": "PRE-G9B-R6 = PASS — AUTHOR APPROVED — PUBLISHED"
+  },
+  "verification": {
+    "changeRoute": "ORDINARY",
+    "verificationClass": "DOCUMENTATION_STATUS_ONLY",
+    "frozenAtPhaseStart": true,
+    "plannedAcceptance": "STATIC on the exact frozen candidate; no FINAL",
+    "productPhaseEffect": "NONE",
+    "verificationInfrastructureImpact": "NONE",
+    "bootstrapImpact": "NO CHANGE REQUIRED",
+    "guideImpact": "NONE"
+  },
+  "localAuthorInput": {
+    "path": "artifacts/author-input/g9b-r6-plus/",
+    "gitIgnoredBy": ".gitignore:7 /artifacts/*",
+    "committed": false,
+    "fileCount": 17,
+    "totalBytes": 69869,
+    "files": [
+      {"name": "ReportExport.md", "bytes": 26074, "sha256": "fbf8524cfdf147cbd6999f9ff3d6f5bfc8a48b164b236a4df21aad61bb8f52d3"},
+      {"name": "axisdimension.ggt", "bytes": 2986, "sha256": "7989b4a87e1e10275627bc22ec3cb8f6783af7b05052dbbcc76610208b0d0936"},
+      {"name": "circarcbyangle.ggt", "bytes": 2308, "sha256": "640f0906749b2396c676e0b3ed1f7324599ef1ec3302704784f225ed22fa5348"},
+      {"name": "circlebyD.ggt", "bytes": 2143, "sha256": "977d812d55d8a151f7ed8caa2983d0960daab72f7fc3010f5cccfe4b15bd76f8"},
+      {"name": "directdimension.ggt", "bytes": 2708, "sha256": "228d54d7f08316cbed9c0a84bc5d62085ca59931e573908990c84d60cacf0a01"},
+      {"name": "ductsymbol.ggt", "bytes": 3000, "sha256": "a2c1faa18d1727dd59bf590f998c360bb66d473174c605f4e127c96f5ea42890"},
+      {"name": "ellipseaxisbyconjaxis.ggt", "bytes": 3747, "sha256": "7639c82aa2aad8b470f9f6ab9130e419c3e321f33f8d1ccc672326acf6c40539"},
+      {"name": "ellipsebyaxis.ggt", "bytes": 1490, "sha256": "01437a90761366b619178cde37a3ebb88bc7ac51b6de0b04e3369d38ac77040b"},
+      {"name": "ellipsepartiallength.ggt", "bytes": 2495, "sha256": "35c20a5d35d7bce362d36f2ef10f8db4d1b719e1254566234268f20cd16eb293"},
+      {"name": "IFpositivethenPoint.ggt", "bytes": 1263, "sha256": "c490e221a90e2acaeeaad3575ba172acc6cf0e82fcb765560bcafeb9cb7beb27"},
+      {"name": "pointjump.ggt", "bytes": 988, "sha256": "a350031eb98be790627dd15294550a07638d0b7968c64e783695976ef8ba76f1"},
+      {"name": "relcoor.ggt", "bytes": 2327, "sha256": "95ff380d56bb70fd07457b06b977fb27d03de22bfc0dfdd4850ea4bed8b7a0b2"},
+      {"name": "sheetISOland.ggt", "bytes": 4900, "sha256": "d3b05cafb5d938ec4ddf096c0e1df60c7c0850ca6327cb8d42e0ca06c18e5c23"},
+      {"name": "sheetISOvert.ggt", "bytes": 7268, "sha256": "4412824a19da659900dc269924bddfc6f5f03981c3f39c9286b08ef5538e2015"},
+      {"name": "squarebydiagonal.ggt", "bytes": 1400, "sha256": "29e2a3d88d926f75f9b7fc0e24290340a10f092da7e161dc19c3a83129e9470f"},
+      {"name": "symmsymbol.ggt", "bytes": 2219, "sha256": "491628c089749cd99b5759b0ed9259e530284529bedb3d2f8dc33d44b01fa74e"},
+      {"name": "translationcoor.ggt", "bytes": 2553, "sha256": "ef05762d7e1847185374d737d929f868616e6c8a8d270483bd4b9c91ed47b42b"}
+    ],
+    "notSupplied": ["AQ-X1 clipping and padding observations", "AQ-G3 requested sheetISOland/sheetISOvert modifications"],
+    "ggtProvenance": "all 16 macros construction-equivalent to models/legacy/template-v7 macros, modulo eqnStyle tags and three missing icon references"
+  },
+  "subphases": [
+    {"id": "PRE-G9B-R6-plus-P0", "scope": "integrated characterization and normative design candidates", "state": "DESIGNED / CANONICAL PROMPT CREATED / NOT AUTHORIZED", "proposedClass": "DOCUMENTATION_STATUS_ONLY", "hard": ["author approval of the planning candidate"], "frontendScoped": [], "recommended": []},
+    {"id": "PRE-G9B-R6-plus-A", "scope": "layer workspace and status-bar foundation", "state": "NOT AUTHORIZED", "proposedClass": "INTEGRATED_PHASE", "hard": ["P0"], "frontendScoped": [], "recommended": ["P0"]},
+    {"id": "PRE-G9B-R6-plus-B", "scope": "export surface and ExportArea authority", "state": "NOT AUTHORIZED", "proposedClass": "INTEGRATED_PHASE", "hard": ["P0"], "frontendScoped": [], "recommended": ["A"]},
+    {"id": "PRE-G9B-R6-plus-D0", "scope": "unit-system normative design", "state": "NOT AUTHORIZED", "proposedClass": "DOCUMENTATION_STATUS_ONLY", "hard": ["P0"], "frontendScoped": [], "recommended": ["P0"]},
+    {"id": "PRE-G9B-R6-plus-D1", "scope": "unit-system implementation and status integration", "state": "NOT AUTHORIZED", "proposedClass": "GLOBAL_IMPACT", "hard": ["D0"], "frontendScoped": [{"on": "A", "part": "status-bar segment"}], "recommended": ["D0"]},
+    {"id": "PRE-G9B-R6-plus-C", "scope": "2D export completion and semantic curve exporters", "state": "NOT AUTHORIZED", "proposedClass": "INTEGRATED_PHASE", "hard": ["A", "B", "D1"], "frontendScoped": [], "recommended": ["D1"]},
+    {"id": "PRE-G9B-R6-plus-E1", "scope": "GGT library, assets and packaging", "state": "NOT AUTHORIZED", "proposedClass": "BOUNDED_PHASE", "hard": ["P0"], "frontendScoped": [], "recommended": ["C"]},
+    {"id": "PRE-G9B-R6-plus-E2", "scope": "native dimension tools", "state": "NOT AUTHORIZED", "proposedClass": "INTEGRATED_PHASE", "hard": ["D1"], "frontendScoped": [{"on": "E1", "part": "Desktop tool icons"}], "recommended": ["E1"]},
+    {"id": "PRE-G9B-R6-plus-E3", "scope": "IsoABorder and ExportArea integration", "state": "NOT AUTHORIZED", "proposedClass": "INTEGRATED_PHASE", "hard": ["D1"], "frontendScoped": [{"on": "B", "part": "ExportArea linkage"}], "recommended": ["E1", "E2"]},
+    {"id": "PRE-G9B-R6-plus-F1", "scope": "direction visualization", "state": "NOT AUTHORIZED", "proposedClass": "BOUNDED_PHASE", "hard": ["P0"], "frontendScoped": [], "recommended": ["E3"]},
+    {"id": "PRE-G9B-R6-plus-F2", "scope": "authoring-memory refinements", "state": "NOT AUTHORIZED", "proposedClass": "BOUNDED_PHASE", "hard": ["P0"], "frontendScoped": [], "recommended": ["F1"]},
+    {"id": "PRE-G9B-R6-plus-G", "scope": "help, integrated verification and R6-plus closeout", "state": "NOT AUTHORIZED", "proposedClass": "INTEGRATED_PHASE", "hard": ["A", "B", "C", "D1", "E1", "E2", "E3", "F1", "F2"], "frontendScoped": [], "recommended": ["F2"]}
+  ],
+  "recommendedExecutionOrder": ["P0", "A", "B", "D0", "D1", "C", "E1", "E2", "E3", "F1", "F2", "G"],
+  "globalGates": [
+    "PRE-G9B-R7 requires PRE-G9B-R6-plus = PASS — AUTHOR APPROVED",
+    "rights review of GGT definitions and icons before any distribution",
+    "publication, tag, release, binary publication and PROFILE COMMERCIAL are separate author decisions",
+    "G11, G12 and G15 keep their ownership"
+  ],
+  "authorQuestions": ["AQ-L1", "AQ-L2", "AQ-L3", "AQ-L4", "AQ-L5", "AQ-X1", "AQ-X2", "AQ-X3", "AQ-X4", "AQ-U1", "AQ-U2", "AQ-U3", "AQ-G1", "AQ-G2", "AQ-G3", "AQ-G4", "AQ-G5", "AQ-E1", "AQ-E2", "AQ-F1", "AQ-R7"],
+  "observationsOutsideScope": ["OBS-R6P-SAVE-WARNING", "OBS-R6P-DXF-DEFAULT-DOC", "OBS-R6P-DXF-SPEC-HEADER", "OBS-R6P-DXF-VISIBLE-CONTRACT", "OBS-R6P-DOC-IDENTITY-HEADER", "OBS-R6P-CTRL-SHIFT-D", "OBS-R6P-ACTION-COUNT-DOC"],
+  "roadmapSequence": ["PRE-G9B-R6", "PRE-G9B-R6-plus", "PRE-G9B-R7"],
+  "stateWhenFrozen": {
+    "note": "states at the moment this planning candidate was frozen; the author's later review and closeout record is the sole authority for current status",
+    "PRE-G9B-R6": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus": "AUTHOR-DEFINED MINI-TRACK / PLANNING/DESIGN AUTHORIZED / PRODUCT IMPLEMENTATION NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-P0": "DESIGNED / CANONICAL PROMPT CREATED / NOT AUTHORIZED",
+    "laterSubphases": "NOT AUTHORIZED",
+    "PRE-G9B-R7": "DESIGNED — NOT AUTHORIZED; BLOCKED UNTIL PRE-G9B-R6-plus IS PASS — AUTHOR APPROVED",
+    "G9B": "NOT AUTHORIZED",
+    "g9bFollowsR7Automatically": false,
+    "productImplementation": "NONE",
+    "publication": "NONE"
+  }
+}
