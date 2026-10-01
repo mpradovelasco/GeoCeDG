@@ -10,7 +10,7 @@
   unit, layer or export contract is created here; the approval does not
   promote any specification or ADR
 - Evidence record: [planning candidate report](../validation/pre_g9b_r6_plus_planning_candidate_report.md) and its machine-readable mirror `geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-planning.json`
-- First executable task: [`PRE-G9B-R6-plus-P0`](../../.github/prompts/tasks/pre-g9b-r6-plus-p0-integrated-characterization-and-design.prompt.md), proposed future, unexecuted, not authorized
+- First executable task: [`PRE-G9B-R6-plus-P0`](../../.github/prompts/tasks/pre-g9b-r6-plus-p0-integrated-characterization-and-design.prompt.md), `PASS — AUTHOR APPROVED` (2026-10-02) on `T_R6PLUS_P0` `6b7fd5de343b6556b384e71a9345907e7944d1e5` ([closeout record](../validation/pre_g9b_r6_plus_p0_closeout_record.md)); its design candidates stay candidates and its open author decisions stay open
 - Self approval: **false**
 
 This note records the mini-track the author defined on 2026-10-01 as the final
@@ -199,7 +199,7 @@ to the frontend part of a subphase, each justified in §3.1.
 
 | ID | Scope | Owning layers (§10) | Proposed class (§12) | State |
 |---|---|---|---|---|
-| `P0` | integrated characterization and normative design candidates | documentation | `DOCUMENTATION_STATUS_ONLY` | `DESIGNED / CANONICAL PROMPT CREATED / NOT AUTHORIZED` |
+| `P0` | integrated characterization and normative design candidates | documentation | `DOCUMENTATION_STATUS_ONLY` | `PASS — AUTHOR APPROVED` |
 | `A` | layer workspace and status-bar foundation | application/document model, view, Desktop | `INTEGRATED_PHASE` | `NOT AUTHORIZED` |
 | `B` | export surface and `ExportArea` authority | profile, Desktop, shared view export path | `INTEGRATED_PHASE` | `NOT AUTHORIZED` |
 | `D0` | unit-system normative design | documentation (ADR + specification) | `DOCUMENTATION_STATUS_ONLY` | `NOT AUTHORIZED` |
@@ -1071,7 +1071,7 @@ PRE-G9B-R6                 = PASS — AUTHOR APPROVED — PUBLISHED
 PRE-G9B-R6-plus            = PLANNING PASS — AUTHOR APPROVED
                              PRODUCT IMPLEMENTATION NOT AUTHORIZED
 PRE-G9B-R6-plus PLANNING   = PASS — AUTHOR APPROVED (2026-10-01)
-PRE-G9B-R6-plus-P0         = DESIGNED / CANONICAL PROMPT CREATED / NOT AUTHORIZED
+PRE-G9B-R6-plus-P0         = PASS — AUTHOR APPROVED (2026-10-02; T_R6PLUS_P0 6b7fd5de)
 PRE-G9B-R6-plus-A … G      = NOT AUTHORIZED
 PRE-G9B-R7                 = DESIGNED — NOT AUTHORIZED
                              BLOCKED UNTIL PRE-G9B-R6-plus IS PASS — AUTHOR APPROVED

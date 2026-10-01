@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-P0",
+  "recordKind": "AUTHOR_CLOSEOUT_DISPOSITION",
+  "status": "PRE-G9B-R6-plus-P0 — PASS — AUTHOR APPROVED",
+  "record": "docs/validation/pre_g9b_r6_plus_p0_closeout_record.md",
+  "authorDecisionDate": "2026-10-02",
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "approvalScope": "P0 characterization and design candidate only; design candidates stay candidates; no open author decision is resolved",
+  "implementationAuthorized": false,
+  "candidateFrozen": true,
+  "candidateMutated": false,
+  "productPhaseEffect": "NONE",
+  "newHeavyIntegration": "NONE",
+  "newHeavyFinal": "NONE",
+  "supersedes": {
+    "note": "the frozen P0 report, design candidates and JSON mirrors carry no author-approval field, per the frozen-candidate rule; only the current-approval status is superseded here",
+    "paths": [
+      "docs/validation/pre_g9b_r6_plus_p0_characterization_design_candidate_report.md",
+      "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-p0-author-input-inventory.json",
+      "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-p0-persistence-matrix.json"
+    ]
+  },
+  "publishedBase": {
+    "name": "P_R6PLUS_PLAN",
+    "commit": "babf20c7c03d0454e2da6760bf5d1fc3fa546f6b",
+    "tree": "3f7abded9163324a3142ad7446fb4e6c85407809",
+    "state": "PRE-G9B-R6-plus PLANNING = PASS — AUTHOR APPROVED — PUBLISHED"
+  },
+  "technicalCandidate": {
+    "name": "T_R6PLUS_P0",
+    "commit": "6b7fd5de343b6556b384e71a9345907e7944d1e5",
+    "tree": "cfff3a016956e32dd9503ca6c666a49ea794c2dc",
+    "parent": "babf20c7c03d0454e2da6760bf5d1fc3fa546f6b",
+    "branch": "phase/pre-g9b-r6-plus-p0-characterization-design",
+    "branchPushed": false,
+    "modifiedByCloseout": false,
+    "p0PromptBlob": "2444ddbac42bafad432e9ba83b0c261432ca47e7",
+    "evidence": {"profile": "STATIC", "run": "verification-29af42f9375e47efa22339e63dde647a", "exitCode": 0, "verdict": "ACCEPTED / COMPLETE", "checks": "3/3", "executionPlanHash": "25dfacc8b0c53df285a3ac19bbc438c5868d0c94dad7d1021727287ee892cc52", "resultHash": "bf6922becfd7ecb7d4b32746c46c71449b6f9908625aed8a82f7079385cb2190", "standingDiagnostics": ["diagnostic.governance = DIAGNOSTIC_FINDING", "diagnostic.historical-consistency = DIAGNOSTIC_UNAVAILABLE"], "gitDiffCheckExit": 0}
+  },
+  "openAuthorDecisionsResolved": [],
+  "closeoutChangedPaths": [
+    "docs/architecture/pre_g9b_r6_plus_minitrack_plan.md",
+    "docs/roadmap/geocedg_roadmap.md",
+    "docs/validation/pre_g9b_r6_plus_p0_closeout_record.md",
+    "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-p0-closeout.json"
+  ],
+  "publication": {
+    "range": ["babf20c7c03d0454e2da6760bf5d1fc3fa546f6b", "6b7fd5de343b6556b384e71a9345907e7944d1e5", "P_R6PLUS_P0 (this closeout commit)"],
+    "method": "clean non-force fast-forward of main",
+    "precondition": "local main = origin/main = live remote main = P_R6PLUS_PLAN"
+  },
+  "authorizationState": {
+    "PRE-G9B-R6-plus PLANNING": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-P0": "PASS — AUTHOR APPROVED",
+    "PRE-G9B-R6-plus-A": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-B": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-D0": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-D1": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-C": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-E1": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-E2": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-E3": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-F1": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-F2": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-G": "NOT AUTHORIZED",
+    "PRE-G9B-R7": "DESIGNED — NOT AUTHORIZED; BLOCKED UNTIL PRE-G9B-R6-plus IS PASS — AUTHOR APPROVED",
+    "G9B": "NOT AUTHORIZED"
+  }
+}
