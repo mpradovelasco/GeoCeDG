@@ -1,47 +1,56 @@
 # PRE-G9B-R6-plus-B — export surface and `ExportArea` authority
 
-**CANONICAL PROMPT — PREPARED ON AN EXACT BASE — UNEXECUTED AND NOT AUTHORIZED.**
+**CANONICAL EXECUTION PROMPT — AUTHORIZED FOR IMPLEMENTATION AND TECHNICAL
+VERIFICATION ONLY.**
 
-This prompt was prepared at the author's instruction of 2026-10-02. That
-instruction fixed the decisions for `PRE-G9B-R6-plus-B`, named the exact
-published base below, and authorized only the documentary preparation of this
-prompt, the record of the decisions and the status updates they require. It
-stated that it **does not authorize implementation**. The decisions are
-recorded, versioned, in the
+The author's explicit instruction of 2026-10-02 names `PRE-G9B-R6-plus-B`, its
+exact implementation base (the published closeout of the `B` preparation
+package, `P_R6PLUS_B_PROMPT`) and the scope of this canonical prompt read
+together with the
+[B preparation closeout record](../../../docs/validation/pre_g9b_r6_plus_b_prompt_closeout_record.md).
+That instruction also authorizes this amendment, as the first tracked edit of
+the phase, so that the prompt becomes the executable contract of the phase.
+The amendment replaces the prepared prompt published in `P_R6PLUS_B_PROMPT`
+(blob `4a1e0bc537885546aa17d4dae5a68e3a7a8920cf`): it records the authorized
+base, freezes the verification class, integrates the author dispositions on
+`DQ-B1` to `DQ-B9` and the corrections of the closeout record, and adds the
+author's explicit raster contract. Where the prepared prompt and the closeout
+record differed, the closeout prevailed; this amendment carries that
+precedence into the text. Every other scope, forbidden-scope and stop rule of
+the prepared prompt is kept. The author decisions are recorded, versioned, in
+the
 [B author-decision record](../../../docs/validation/pre_g9b_r6_plus_b_author_decisions_record.md).
-The existence of this file is not authorization.
-
-Execution requires a new explicit author instruction that names
-`PRE-G9B-R6-plus-B` and confirms or replaces the base below. That instruction
-may authorize, as the first tracked edit of the phase, an amendment of this
-prompt to the authorized state, following the `P0` and `A-1` precedent. This
-file is an execution contract, not a second policy document. The design input
-is the `P0`
+This file is an execution contract, not a second policy document. The design
+input is the `P0`
 [export-area design candidate](../../../docs/architecture/pre_g9b_r6_plus_b_export_area_design_candidate.md),
 as amended by the author decisions and re-characterized below against the
 base.
 
 ```text
 PRE-G9B-R6-plus-B =
-PREPARED — NOT AUTHORIZED
+AUTHORIZED FOR IMPLEMENTATION
 
 selfApproved             = false
 authorApproved           = false
-implementationAuthorized = false
+implementationAuthorized = true
 passClaimed              = false
 PHASE_KIND               = PRODUCT IMPLEMENTATION — EXPORT SURFACE, SESSION EXPORT AREA
                            AND SHARED EXPORT PAINT PATH
 DEPENDS_ON               = PRE-G9B-R6-plus-P0  = PASS — AUTHOR APPROVED — PUBLISHED
                            PRE-G9B-R6-plus-A-1 = PASS — AUTHOR APPROVED — PUBLISHED
                                                  (AUTHOR_SMOKE = PASS)
+DEPENDS_ON_PACKAGE       = B PREPARATION PACKAGE = PASS — AUTHOR APPROVED — PUBLISHED
 NEXT_SUBPHASE            = PRE-G9B-R6-plus-D0   (operational order; D0 is
                                                  technically independent)
 ```
 
+`implementationAuthorized = true` authorizes only the implementation and
+technical verification defined below. It authorizes no later subphase.
 `authorApproved = false` means that no technical candidate of this phase has
 been author-approved. Technical verification never creates author approval.
-Once authorized, the phase stops with one exact technically verified candidate
-pending author review and author smoke.
+The phase stops with one exact technically verified candidate pending author
+review and author smoke:
+`PRE-G9B-R6-plus-B = TECHNICAL CANDIDATE PENDING AUTHOR REVIEW`.
 
 <!-- geocedg-field: objective -->
 ## Objective
@@ -51,8 +60,8 @@ Give GeoCeDG one export surface and one export-area authority:
 - a GeoCeDG File/Export surface with `Graphics View as Picture…` (PNG, PDF,
   SVG, EMF/EMF+), `DXF…`, `PSTricks…`, `PGF/TikZ…`, `Asymptote…` and
   `Print Preview`, and no STL, Collada, HTML Collada, Dynamic Worksheet /
-  worksheet upload or Animated GIF, in the GeoCeDG profile and in the v1
-  fallback;
+  worksheet upload, Animated GIF or WebM animation, in the GeoCeDG profile and
+  in the v1 fallback;
 - one `SESSION` `ExportArea` authority, with the producers `EXPORT_POINTS` and
   `MANUAL`, consumed by every picture route: the Picture dialog and its
   preview, Print Preview, the graphics clipboard, the command line,
@@ -62,8 +71,9 @@ Give GeoCeDG one export surface and one export-area authority:
   visible viewport, in PNG, PDF, SVG and EMF/EMF+;
 - the hidden routes closed or rerouted (`Ctrl+Shift+U/C/W/M/D`, command line,
   v1 fallback);
-- `preview effective visibility == final export effective visibility`
-  (`OBS-R6PLUS-A1-EXPORT-PREVIEW-HIDDEN-LAYERS`).
+- `save-dialog generated preview effective visibility == final export
+  effective visibility` (`OBS-R6PLUS-A1-EXPORT-PREVIEW-HIDDEN-LAYERS`, as
+  precised by the author in the closeout record).
 
 ```text
 ExportArea := NONE | Rectangle(worldBounds, sourceViewId, producer)
@@ -83,9 +93,9 @@ integrate the LaTeX or DXF exporters with `ExportArea`; that is `C`.
 
 ```text
 CHANGE_ROUTE         = ORDINARY
-VERIFICATION_CLASS   = INTEGRATED_PHASE        (author-proposed on 2026-10-02;
-                                                frozen at authorization)
-frozenAtPhaseStart   = REQUIRED AT AUTHORIZATION
+VERIFICATION_CLASS   = INTEGRATED_PHASE        (author-proposed and frozen
+                                                on 2026-10-02)
+frozenAtPhaseStart   = true
 PLANNED_ACCEPTANCE   = registered PHASE  -Phase PRE-G9B-R6-plus-B
                        + INTEGRATION
                        both on the same exact frozen candidate; no FINAL
@@ -132,7 +142,7 @@ which is their authority:
 | `AQ-X5` | `--export` stays and uses the same service and area; `--exportAnimation` rejected explicitly. | implemented |
 | `AQ-X6` | `ExportImage` and the relevant graphics APIs obey `ExportArea`; `ExportImage` becomes GeoCeDG-modified and enters the GGBScript matrix and its tests. | implemented |
 | `AQ-X7` | `ISO_A_SELECTION` and `ISO_A_BORDER` in `E3`, after `D1`. | none; `E3` |
-| `OBS-R6PLUS-A1-EXPORT-PREVIEW-HIDDEN-LAYERS` | preview effective visibility equals final export effective visibility. | implemented |
+| `OBS-R6PLUS-A1-EXPORT-PREVIEW-HIDDEN-LAYERS` | as precised in the closeout record: the preview generated in the save dialog of the Picture export equals the final export in effective visibility, through the same `ExportArea`, hidden-layer state and rendering semantics. | reproduced first, then implemented |
 | `OBS-A1-BACKGROUND-IMAGE-LAYER` | re-characterized for preview and export; the general layer semantics of the normal view are not changed silently. | re-characterized; see *Contract details* |
 
 No other open decision of the
@@ -158,7 +168,7 @@ on it.
 | `A-1` hidden-layer hook | `drawGeometricObjects` and `drawObjects` filter by `isOnShownLayer` (`:3604-3631`, `:3649-3651`); masks and measurement tools also filtered | **new**: every route through `exportPaint` (PNG, PDF, EMF/EMF+, print, clipboard, view image, API PNG) already omits hidden layers |
 | SVG | own path: `exportPaintPre`, a direct `drawActionObjects`, then its own loop over `getAllDrawableList()` with `layer<n>` groups (`desktop/export/GraphicExportDialog.java:859-917`); no drawable re-update against the export frame | confirmed; the loop and the direct call bypass the `A-1` hook, so SVG still writes hidden layers |
 | PDF page size | `new Dimension((int) (getExportWidth() * printingScale / factor), …)` (`GraphicExportDialog.java:1008-1010`) | confirmed; the writer takes an integer `Dimension` |
-| Picture dialog preview | `GraphicExportDialog` has no rendered preview component (format, resolution and size label only, `:237-394`). The only image preview found on the Picture route is the file chooser's preview panel, which shows an image file **already on disk** (`desktop/gui/util/GeoGebraFileChooser.java:440-500`, `MyImageD.fromFile`); its save-mode thumbnail uses `getActiveEuclidianViewExportImage`, which goes through `exportPaint` | **new**: the source does not explain the preview reported in `A-1`; the phase reproduces and identifies it first |
+| Picture save-dialog preview (corrected by the closeout record) | `GraphicExportDialog` has no rendered preview component of its own (format, resolution and size label only, `:237-394`). Every `GuiManagerD.showSaveDialog` call, including the PNG, PDF, SVG and EMF calls of the dialog (`GraphicExportDialog.java:636`, `:670`, `:706`, `:749`), sets `GeoGebraFileChooser.MODE_GEOGEBRA_SAVE` (`desktop/gui/GuiManagerD.java:1702-1706`); in that mode the right-hand panel generates `app.getExportImage(THUMBNAIL_PIXELS_X, THUMBNAIL_PIXELS_Y)` during the save flow (`desktop/gui/util/GeoGebraFileChooser.java:474-479`). The same save-mode preview also serves the native document Save | **new**: read from source, that call reaches `exportPaint`, which `A-1` filters, so the source alone does not explain the observation; the phase reproduces the exact author flow first |
 | Print Preview | `EuclidianViewD.print` → `exportPaint` (`desktop/euclidian/EuclidianViewD.java:360-372`) | confirmed; already shares the frame rules and the `A-1` hook |
 | graphics clipboard | `AppD.copyGraphicsViewToClipboard` clears the object selection and calls `simpleExportToClipboard` → `getExportImage` (`desktop/main/AppD.java:1933-1987`); the dialog's Clipboard button (`GraphicExportDialog.java:370-394`, not shown on macOS) | confirmed |
 | hidden shortcuts | `Ctrl+Shift+W` `showWebpageExport` (`common/main/GlobalKeyDispatcher.java:678-688`), `Ctrl+Shift+C` `:719-731`, `Ctrl+Shift+M` `:733-741`, `Ctrl+Shift+B` `:743-749`, `Ctrl+Shift+U` `showGraphicExport` `:801-810` | confirmed |
@@ -179,31 +189,75 @@ on it.
 A contradiction that would change scope, owner, serialization or class stops
 the phase.
 
-### Decisions requested before authorization
+### Author dispositions on `DQ-B1` to `DQ-B9`
 
-The preparation found details that the author decisions do not settle. For
-each, this prompt fixes a **default contract**. The authorizing instruction may
-confirm or replace it; without an explicit replacement the default applies.
-None is an author decision until the author makes it.
+The preparation found details that the author decisions did not settle. The
+author disposed of each on 2026-10-02 in the
+[B preparation closeout record](../../../docs/validation/pre_g9b_r6_plus_b_prompt_closeout_record.md),
+which is their authority and prevails over the defaults of the prepared
+prompt.
 
-| ID | Question | Default contract of this prompt |
+| ID | Question | Author disposition |
 |---|---|---|
-| `DQ-B1` | `ExportImage` with `type` `gif` or `webm` is a silent no-op in GeoCeDG. | rejected explicitly with a localized error, consistent with `AQ-X4` and `AQ-X5`; the empty API methods `exportGIF`/`exportWebM` stay as upstream and are documented |
-| `DQ-B2` | `AQ-X3` lists STL, Collada, HTML Collada and Worksheet for the v1 fallback. Animated GIF and the HTML5 clipboard export are also expressly excluded. | the v1 fallback also filters Animated GIF; `Ctrl+Shift+M` is consumed in both profiles because the dispatcher override belongs to `AppGeoCeDG` |
-| `DQ-B3` | Screen-anchored objects (sliders, buttons, check boxes, input boxes, drop-down lists, texts and images with an absolute screen position) have no world position. | rendered at the world position that corresponds to their current screen position in the source view, so an area inside the visible viewport reproduces the base, and they appear only when that position lies in the area |
-| `DQ-B4` | Gesture that defines a `MANUAL` area. | a File dialog with world bounds `xmin`, `xmax`, `ymin`, `ymax`, prefilled from the current effective area, with a "use visible view" button; no drag gesture in `B` |
-| `DQ-B5` | Which views the producers apply to. | `MANUAL` is bound to Graphics 1 (`sourceViewId`); `EXPORT_POINTS` applies to any exported 2D view, as at the base; another 2D view without an applicable producer uses its visible viewport; the 3D-view picture export is unchanged and documented |
-| `DQ-B6` | `Ctrl+Shift+C`: open the Picture surface or copy directly? | copy the effective area directly as PNG through the same export service, identical to the dialog's Clipboard button at its default settings; no dialog |
-| `DQ-B7` | PSTricks, PGF/TikZ and Asymptote still read `selectionRectangle` until `C`. | unchanged in `B` and documented as the temporary inconsistency; the LaTeX exporters' area belongs to `C` |
-| `DQ-B8` | The PDF writer takes an integer `Dimension`. | the phase first establishes whether the vendored PDF writer can represent the exact page size; if it cannot, it stops and reports before choosing any rounding policy |
-| `DQ-B9` | Command-line `--export` ran on a zero-size view and wrote a 0-byte file (`OBS-R6P0-CLI-EXPORT-ZERO-SIZE`). | the viewport fallback uses the stored size of the document's Graphics 1; when no valid area can be resolved, the export fails with a message and a non-zero exit and writes no file |
+| `DQ-B1` | `ExportImage` with `type` `gif` or `webm` is a silent no-op in GeoCeDG. | **accepted**: rejected explicitly while Animated GIF/WebM stay outside the authorized surface; no silent no-op. The empty API methods `exportGIF`/`exportWebM` stay as upstream and are documented |
+| `DQ-B2` | `AQ-X3` lists STL, Collada, HTML Collada and Worksheet for the v1 fallback. | **accepted**: the v1 fallback also filters Animated GIF; `Ctrl+Shift+M` is consumed in both profiles because the dispatcher override belongs to `AppGeoCeDG` |
+| `DQ-B3` | Screen-anchored objects (sliders, buttons, check boxes, input boxes, drop-down lists, texts and images with an absolute screen position) have no world position. | **replaced**: `screen-anchored → export-canvas / presentation anchored`, never `screen position → live-view world coordinate → export authority`; see *Screen-anchored objects* below |
+| `DQ-B4` | Gesture that defines a `MANUAL` area. | **accepted**: a File dialog with world bounds `xmin`, `xmax`, `ymin`, `ymax`, prefilled from the current effective area, with a "use visible view" button; no drag gesture in `B` |
+| `DQ-B5` | Which views the producers apply to. | **accepted with a precision**: the initial UI may expose the `MANUAL` definition from Graphics 1 only; `ExportArea` and the shared service never hard-code Graphics 1 as a semantic identity, keep an explicit `sourceViewId` and stay valid for any supported 2D view; `EXPORT_POINTS` may be resolved for the corresponding 2D source view; the 3D-view export stays entirely outside `B` and does not change |
+| `DQ-B6` | `Ctrl+Shift+C`: open the Picture surface or copy directly? | **accepted**: the graphics copy runs directly through the common service and the same `ExportArea`; no Picture dialog; not a second authority |
+| `DQ-B7` | PSTricks, PGF/TikZ and Asymptote still read `selectionRectangle` until `C`. | **accepted**: their upstream area behavior, including `selectionRectangle`, is kept until `C` as an explicitly documented temporary inconsistency; `B` does not change it |
+| `DQ-B8` | The PDF writer takes an integer `Dimension`. | **accepted as an explicit stop condition**: PDF exactness is never obtained by silent rounding or truncation. If the PDF backend cannot represent the required physical size with the exactness of this contract, the phase stops, characterizes the limitation and requests an author decision before introducing any approximation |
+| `DQ-B9` | Command-line `--export` ran on a zero-size view and wrote a 0-byte file (`OBS-R6P0-CLI-EXPORT-ZERO-SIZE`). | **accepted**: when no valid area or output can be produced, the export fails explicitly with a message and a non-zero exit and leaves no empty file as an apparently valid result. The viewport fallback uses the stored size of the document's source view |
+
+### Screen-anchored objects (`DQ-B3`, author disposition)
+
+A screen-anchored object is **not** turned into a world-anchored object by
+computing its world position from the live viewport.
+
+```text
+contract : screen-anchored -> export-canvas / presentation anchored
+never    : screen position -> live-view world coordinate -> export authority
+```
+
+In the offscreen export viewport the object keeps, where technically
+sustainable, its presentation position relative to the output canvas; if it
+falls outside the canvas it is clipped normally. Presentation is never turned
+into geometry. The phase characterizes explicitly the compatibility with legacy
+documents that use `Export_1`/`Export_2`: at the base such an export shifts
+screen-anchored objects with the export translation, so their canvas position
+can differ from the base. If the backend cannot preserve this semantics
+without turning presentation into geometry or without a material widening of
+scope, the phase stops and reports the evidence for an author decision.
+
+### Raster discretization (author contract of 2026-10-02)
+
+`ExportArea.worldBounds` is the exact geometric authority. A PNG and every
+raster output necessarily have integer pixel dimensions; that discretization
+belongs exclusively to sampling and rendering. A deterministic, documented rule
+obtains the raster grid and, if needed, a sub-pixel adjustment of the
+transform, provided that:
+
+- the world bounds of `ExportArea` do not change;
+- the four exact bounds of the area map onto the output canvas;
+- there is no outside padding and no `+2`;
+- the world area is never widened or narrowed to fit the grid;
+- there is no silent crop;
+- every difference between the requested and the effective resolution caused
+  by the integer grid is documented as a sampling property, never as a
+  geometric change.
+
+No particular `floor`, `ceil` or `round` is imposed when the existing
+architecture allows a better representation; the phase adopts the minimal
+deterministic rule compatible with the backend and tests it. If the backend
+forces a change of the world bounds to produce the raster, the phase stops and
+reports the evidence. This does not relax `DQ-B8`: for PDF no silent rounding
+or truncation of the physical size is authorized.
 
 ### Contract details fixed by this prompt
 
-Where the author decisions and the requested decisions above leave a detail
-open, this prompt adopts the `P0` design candidate. Each item is a contract of
-the prepared prompt, not an author decision, and the authorizing instruction
-may change it.
+Where the author decisions and dispositions above leave a detail open, this
+prompt adopts the `P0` design candidate. Each item is a contract of this
+prompt, not an author decision.
 
 - **Owner.** `ExportArea` is application/session state, never geometry
   (`AGENTS.md` §4). A minimal export-area provider seam on shared `App`, whose
@@ -225,13 +279,13 @@ may change it.
   bounds) keep evaluating against the source view. It never changes the live
   view, its zoom, its settings, the selection or the undo history, and it is
   disposed after each export, leaving no drawable, render cache or listener.
+  It carries its own view identity, which never collides with Graphics 1 or 2,
+  and the Locus V2 render caches it creates are released with it.
 - **Exact dimensions.** The area width and height in world units times the
   source view scale and the export scale give the exact output size. Vector
-  formats (PDF, SVG, EMF/EMF+) use that size within the writer's representable
-  precision (`DQ-B8`). A raster image has
-  `round(exactWidth) × round(exactHeight)` pixels, and its transform maps the
-  area exactly onto that grid; the sub-pixel adjustment is deterministic,
-  smaller than one output pixel, and documented. There is no `+2`.
+  formats (PDF, SVG, EMF/EMF+) use that size exactly; for PDF any limitation of
+  the writer is the `DQ-B8` stop condition. Raster outputs follow the author's
+  *Raster discretization* contract above. There is no `+2`.
 - **Producers.**
   - `EXPORT_POINTS` is derived live from `Export_1` and `Export_2` whenever it
     is read. It is valid only when both labels name finite `GeoPoint` objects
@@ -255,10 +309,32 @@ may change it.
   `GeoCeDGEuclidianView.paint` precedent. It is presentation only, not
   geometry and not a construction object. It never reaches any export,
   preview, print, clipboard, command-line or API output.
-- **Preview.** Any preview the GeoCeDG Picture surface shows is rendered by the
-  export service from the same effective area and effective visibility as the
-  final file. A chooser preview of an image file already on disk is not
-  presented as a preview of the export.
+- **Save-dialog preview (author precision in the closeout record).** The
+  observed preview appears when Save is run from the Picture export window, in
+  the right-hand panel of the dialog that chooses the file name and path; it
+  is generated during the save flow of the pending export, not read from an
+  earlier file. The phase reproduces the exact flow
+  (`Picture export → Save → file chooser → right-hand preview panel`) before
+  changing anything and establishes which chooser mode and route generate the
+  preview. Contract:
+  `save-dialog generated preview effective visibility == final export effective visibility`.
+  With an `A-1` hidden layer, the side preview omits its objects and the PNG,
+  PDF, SVG or EMF file applies the same effective visibility. The preview
+  reuses, directly or indirectly, the same `ExportArea` authority, hidden-layer
+  state and effective rendering semantics as the pending export. It is never
+  resolved by hiding the panel, by presenting it as the preview of an earlier
+  file, or by a second independent render route with different semantics. If
+  the panel uses another route than inferred, the phase corrects that route
+  with the minimal change and documents the evidence; if the observation cannot
+  be reproduced, or the real route contradicts the characterization, the phase
+  stops and reports instead of inventing a correction. The same save-mode
+  preview serves the native document Save; that consumer is preserved and
+  tested. The general layer semantics outside the export surface are not
+  widened.
+- **Views (`DQ-B5`).** `ExportArea` carries an explicit `sourceViewId`. The
+  service resolves producers per 2D source view and never hard-codes Graphics 1
+  as a semantic identity; only the initial `MANUAL` UI is limited to
+  Graphics 1. The 3D-view export is outside `B` and unchanged.
 - **Hidden layers.** Every picture format, SVG included, applies the `A-1`
   effective-visibility predicate exactly as the normal view does. SVG keeps its
   `layer<n>` groups for the layers it writes.
@@ -277,6 +353,9 @@ may change it.
 - **Command line.** `--export` renders through the export service and the
   effective area of the opened document (`DQ-B9`). `--exportAnimation` is
   rejected with a message and a non-zero exit and writes no file.
+- **`ExportImage` animation (`DQ-B1`).** `type=gif` and `type=webm` are
+  rejected with a localized error in GeoCeDG; Classic keeps the upstream
+  behavior.
 - **v1 fallback.** The fallback menu filters STL, Collada, HTML Collada,
   Worksheet and Animated GIF (`DQ-B2`). Its remaining picture, clipboard and
   print entries reach the same export service and `ExportArea`.
@@ -307,28 +386,31 @@ It does not correct it.
 
 ```text
 IMPLEMENTATION_BASE =
-d32ad608ba8821bc18c9d4dc783c1b700a165ff2          (P_R6PLUS_A1, published A-1 closeout)
+f6194f09358de9c5f8ac5051c31b3a9dc8a9491b          (P_R6PLUS_B_PROMPT, published
+                                                    closeout of the B preparation package)
 
 IMPLEMENTATION_BASE_TREE =
-9b123be7ed8c7176b5a7e19f74be5946f0164c8b
+9ac09c5371bce7d9b093541f232b43464073118b
+
+B_PREPARATION_PACKAGE_STATE =
+PASS — AUTHOR APPROVED — PUBLISHED
+
+B_PREPARATION_APPROVED_CANDIDATE =
+7e00e451167b0d915b061655c478c2faac99e51c          (T_R6PLUS_B_PROMPT)
 
 A1_STATE =
-PASS — AUTHOR APPROVED — PUBLISHED                 (AUTHOR_SMOKE = PASS)
-
-A1_APPROVED_TECHNICAL_CANDIDATE =
-2a71133ad622e18e9963b04a466a92665a784722          (T_R6PLUS_A1)
+PASS — AUTHOR APPROVED — PUBLISHED                 (AUTHOR_SMOKE = PASS;
+                                                    T_R6PLUS_A1 2a71133ad622e18e9963b04a466a92665a784722)
 ```
 
 A moving branch is not a base. Entry gate: local `main`, `origin/main` and the
-live remote `main` equal the base the authorizing instruction names, its tree
-matches, and the worktree is clean. If the documentary commit that publishes
-this prompt and the author-decision record is published first, the authorizing
-instruction names that commit instead; this prompt assumes no later base on its
-own. The phase works on a new local branch from the named commit and is not
-rebased onto any later commit without a new author instruction. Between the
-base and that documentary commit only documentation changes, so the citations
-above still apply; the phase re-establishes every one it relies on before using
-it.
+live remote `main` equal `IMPLEMENTATION_BASE`, its tree equals
+`IMPLEMENTATION_BASE_TREE`, and the worktree is clean. The phase works on the
+new local branch `phase/pre-g9b-r6-plus-b-export-surface` from that commit and
+is not rebased onto any later commit without a new author instruction. Between
+`d32ad608ba8821bc18c9d4dc783c1b700a165ff2`, where the seams above were
+re-characterized, and this base only documentation changed, so the citations
+still apply; the phase re-establishes every one it relies on before using it.
 
 ## Authority and evidence hierarchy
 
@@ -336,7 +418,10 @@ it.
    verification contract (`verification-levels.md`, the typed registry and its
    schemas, `tools/agent/verify.ps1`).
 2. Current source and tests at the base.
-3. The [B author-decision record](../../../docs/validation/pre_g9b_r6_plus_b_author_decisions_record.md).
+3. The [B author-decision record](../../../docs/validation/pre_g9b_r6_plus_b_author_decisions_record.md)
+   and the [B preparation closeout record](../../../docs/validation/pre_g9b_r6_plus_b_prompt_closeout_record.md),
+   whose dispositions prevail over any contradicting default of the prepared
+   prompt.
 4. Design input, re-characterized before use: the `P0` export-area design
    candidate §2–§8, the
    [P0 report](../../../docs/validation/pre_g9b_r6_plus_p0_characterization_design_candidate_report.md)
@@ -441,8 +526,14 @@ it.
   Spline V2 export, DXF clipping and DXF hidden-layer policy (`C`).
 - Units, engineering scale, "Scale in cm" and physical size (`D1`, `C`).
 - Exposing or reopening STL, Collada, HTML Collada, Dynamic Worksheet /
-  worksheet upload, the HTML5 clipboard export or Animated GIF, in any profile
-  or mode.
+  worksheet upload, the HTML5 clipboard export, Animated GIF or WebM animation,
+  in any profile or mode.
+- Turning a screen-anchored object's presentation position into geometry, or
+  deriving its export position from live-view world coordinates (`DQ-B3`).
+- Widening or narrowing the world bounds of `ExportArea` to fit a raster grid,
+  or any silent rounding or truncation of the PDF physical size (`DQ-B8`).
+- Resolving the save-dialog preview by hiding the panel, by presenting it as an
+  earlier file, or by a second render route with different semantics.
 - Changes to the 3D view or its picture export, to Classic or Web behavior, or
   to the Classic diagnostic session, beyond upstream-identical seam defaults.
 - Every other subphase (`D0`, `D1`, `A-2`, `C`, `E1`, `E2`, `E3`, `F1`, `F2`,
@@ -501,7 +592,8 @@ or shortcut. Rendering data is never metric authority.
 | `MANUAL` zero-area or non-finite input | refused with a message; previous state kept |
 | area above the device limit | existing maximum-size handling with an explicit message; never a silent crop |
 | object on a hidden layer | omitted in preview and in every picture format |
-| screen-anchored object | `DQ-B3` |
+| screen-anchored object | anchored to the export canvas at its presentation position; clipped normally outside the canvas; never converted through live-view world coordinates (`DQ-B3`) |
+| raster output | integer grid by a documented deterministic rule; the four exact world bounds map onto the canvas; world bounds unchanged |
 | Locus V2 at high export resolution | tessellated for the export viewport, not reused from the live view |
 | legacy locus | sampled for the export viewport window |
 | view-dependent command (`Corner`) | value unchanged by the export |
@@ -512,7 +604,9 @@ or shortcut. Rendering data is never metric authority.
 No serialization change. Documents saved after `B` are byte-identical to the
 base for the same construction. Legacy `.cedg` and `.ggb` documents open and
 re-save unchanged; a legacy document with `Export_1`/`Export_2` exports the same
-rectangle without the 2-px band, which is the author-required correction. Older
+rectangle without the 2-px band, which is the author-required correction; the
+canvas position of its screen-anchored objects follows `DQ-B3` and is
+characterized against the base. Older
 GeoCeDG builds and Classic read `B` documents unchanged. No feature flag,
 migration or format version is introduced. Classic and Web keep the upstream
 frame rules through the seam defaults.
@@ -525,12 +619,16 @@ executes all of them:
 
 | ID | Obligation |
 |---|---|
-| `T-VIEWPORT` | the export viewport is built, painted and disposed without changing the live view, its settings, the selection, the undo history or any kernel value; no drawable, render cache or listener remains |
-| `T-EXACT-SIZE` | exact output size for inside, larger and disjoint areas in PNG (two scales), PDF, SVG, EMF and EMF+; no `+2`; the raster rounding rule; the PDF page size per `DQ-B8` |
+| `T-VIEWPORT` | the export viewport is built, painted and disposed without changing the live view, its settings, the selection, the undo history or any kernel value; no drawable, render cache or listener remains; its view identity never collides with Graphics 1 or 2 and its Locus V2 render caches are released |
+| `T-EXACT-SIZE` | exact output size for inside, larger and disjoint areas in PNG (two scales), PDF, SVG, EMF and EMF+; zero outside padding; no `+2` |
+| `T-RASTER-BOUNDS` | the documented raster rule: world bounds unchanged, the four exact bounds mapped onto the canvas, no padding, no crop; requested versus effective resolution recorded as a sampling property |
+| `T-PDF-EXACT` | the PDF page size equals the exact area without silent rounding or truncation, or the `DQ-B8` stop is recorded with its characterization |
 | `T-CONTENT` | points; lines, segments, rays and vectors; conics; polygons; functions; axes; grid; labels and text; legacy Locus; Locus V2 at export resolution — present and complete for inside, larger and disjoint areas in every picture format, with nothing outside the rectangle |
 | `T-SVG-AREA` | SVG is written from the area, not clipped to the view, with its layer groups |
 | `T-HIDDEN-LAYERS` | every picture format, SVG included, and the preview omit objects on hidden layers; showing the layer restores them |
-| `T-PREVIEW-FINAL` | first reproduces and identifies the preview reported in `OBS-R6PLUS-A1-EXPORT-PREVIEW-HIDDEN-LAYERS`; then preview effective visibility equals final export effective visibility |
+| `T-PREVIEW-FINAL` | first reproduces the author flow `Picture export → Save → file chooser → right-hand preview panel` and identifies its chooser mode and route; then the save-dialog generated preview equals the final export in effective visibility and area, with an `A-1` hidden layer |
+| `T-NATIVE-SAVE-PREVIEW` | the native document Save preview, which shares the save-mode route, keeps its behavior |
+| `T-SCREEN-ANCHORED` | screen-anchored objects keep their presentation position relative to the output canvas and are clipped normally; never converted through live-view world coordinates; the legacy `Export_1`/`Export_2` difference against the base is characterized |
 | `T-BACKGROUND-IMAGE` | the re-characterization of `OBS-A1-BACKGROUND-IMAGE-LAYER`; preview equals final; normal-view semantics unchanged |
 | `T-PRECEDENCE` | explicit producer > `EXPORT_POINTS` > viewport on every route; `selectionRectangle`, including a leftover one, ignored |
 | `T-EXPORT-POINTS` | live derivation; degeneracies; New and Open reactivate it automatically when both points are valid |
@@ -542,7 +640,7 @@ executes all of them:
 | `T-PRINT` | Print Preview renders the effective area and effective visibility |
 | `T-CLIPBOARD` | the dialog button and `Ctrl+Shift+C` produce the effective area through the same service |
 | `T-CLI` | `--export` writes the effective area of the opened document; the `DQ-B9` failure path; `--exportAnimation` rejected with a non-zero exit and no file |
-| `T-EXPORTIMAGE` | PNG, SVG, PDF and the clipboard argument obey the effective area; `DQ-B1`; the matrix rows and the derived-inventory pin |
+| `T-EXPORTIMAGE` | PNG, SVG, PDF and the clipboard argument obey the effective area; `type=gif` and `type=webm` rejected explicitly (`DQ-B1`); the matrix rows and the derived-inventory pin |
 | `T-API` | `writePNGtoFile`, `getPNGBase64`, `exportSVG` and `exportPDF` obey the effective area; `exportPGF`, `exportPSTricks` and `exportAsymptote` unchanged |
 | `T-FALLBACK-V1` | the fallback filters STL, Collada, HTML Collada, Worksheet and Animated GIF; its remaining picture, clipboard and print entries use the service |
 | `T-LEGACY` | legacy documents with `Export_1`/`Export_2` export the exact rectangle and re-save byte-identically |
@@ -590,11 +688,12 @@ it, the phase stops first. Report exact commands, exit codes and log paths.
 <!-- geocedg-field: authorization_boundary -->
 ## Authorization boundary
 
-Nothing in this file is authorized. The author decisions it records do not
-authorize implementation. Execution requires a new explicit author instruction
-naming `PRE-G9B-R6-plus-B` and its exact base. That instruction would
-authorize only the scope above: local implementation, local commits, technical
-verification and one frozen technical candidate for author review and smoke.
+The author instruction of 2026-10-02 authorizes only the scope above: local
+implementation, local commits, tests, the ordinary registry and inventory
+updates `B` needs, the registered PHASE run plus `INTEGRATION`, and one frozen
+technical candidate for author review and smoke. It does not authorize `FINAL`
+unless a stop or escalation condition is first raised and a new explicit author
+authorization follows.
 
 `B` authorizes nothing that follows it. The operational order is
 `A-1 → B → D0 → D1 → A-2 → C → E1 → E2 → E3 → F1 → F2 → G`; it is the order the
@@ -605,7 +704,7 @@ stay unauthorized. Author approval is never created by technical verification.
 <!-- geocedg-field: publication_boundary -->
 ## Publication boundary
 
-Once authorized: a local branch from the base and local commits only. Push,
+A local branch from the base and local commits only. Push,
 branch publication, merge, promotion to `main`, rebase, squash, amend after
 freeze, force push, tag, release and binary publication are forbidden; each
 needs a separate explicit author instruction naming the exact candidate SHA.
@@ -626,8 +725,10 @@ authorized documentary steps.
 - A candidate report under `docs/validation/` with: entry-gate evidence; the
   export-viewport feasibility evidence and its shared seams with their
   upstream-identical defaults; the re-characterized citations and any
-  correction to the design candidate; the identification of the preview
-  reported in `A-1`; the background-image re-characterization; the
+  correction to the design candidate; the reproduction and correction of the
+  save-dialog preview reported in `A-1`; the raster discretization rule
+  implemented; the PDF exactness evidence; the screen-anchored behavior and its
+  legacy characterization; the background-image re-characterization; the
   obligation-to-test map; the size table (inside, larger, disjoint × every
   format) against the `P0` probe P2 table; the temporary `B`/`C` inconsistency
   table; the route table (surface, shortcuts, command line, `ExportImage`,
@@ -650,8 +751,17 @@ Stop and report rather than improvise when:
 - the export viewport cannot be built without attaching it to the kernel in a
   way that changes a construction value, or without mutating the live view;
 - any part of `ExportArea` would be serialized or enter undo;
-- the preview reported in `A-1` cannot be reproduced or identified;
-- the PDF writer cannot represent the exact page size (`DQ-B8`);
+- the save-dialog preview reported in `A-1` cannot be reproduced or
+  identified, or its real route contradicts the characterization;
+- the PDF backend cannot represent the exact physical size without silent
+  rounding or truncation (`DQ-B8`): characterize, stop and request an author
+  decision before any approximation;
+- the raster backend would force a change of the `ExportArea` world bounds;
+- the canvas-anchored semantics of screen-anchored objects cannot be preserved
+  without turning presentation into geometry or materially widening scope
+  (`DQ-B3`);
+- the work would fall back to distributed per-drawable modifications as its
+  primary strategy;
 - `ExportImage` cannot enter the derived GGBScript inventory through the
   existing inventory rule, schema and gate;
 - resolving `OBS-A1-BACKGROUND-IMAGE-LAYER` would widen the normal-view layer
