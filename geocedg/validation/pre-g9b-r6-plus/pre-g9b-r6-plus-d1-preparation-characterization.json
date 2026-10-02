@@ -1,0 +1,700 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-D1",
+  "artifactKind": "DOCUMENTARY_PREPARATION_EVIDENCE",
+  "report": "docs/validation/pre_g9b_r6_plus_d1_preparation_characterization_report.md",
+  "canonicalPrompt": ".github/prompts/tasks/pre-g9b-r6-plus-d1-unit-system-implementation-and-status.prompt.md",
+  "authorDecisionRecord": "docs/validation/pre_g9b_r6_plus_d1_author_decisions_record.md",
+  "technicalCandidateState": "FROZEN",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "promptState": "PREPARED — NOT AUTHORIZED",
+  "selfApproved": false,
+  "authorApproved": false,
+  "implementationAuthorized": false,
+  "passClaimed": false,
+  "productChange": "NONE",
+  "serializationChange": "NONE",
+  "base": {
+    "name": "P_R6PLUS_D0",
+    "commit": "3268f9b99d20c5d9cf62f25d8066ee0a8e47765c",
+    "tree": "83b32b6cb579dc28162f990160c3eef0b1928be6"
+  },
+  "entryGate": {
+    "localMain": "3268f9b99d20c5d9cf62f25d8066ee0a8e47765c",
+    "originMain": "3268f9b99d20c5d9cf62f25d8066ee0a8e47765c",
+    "liveRemoteMain": "3268f9b99d20c5d9cf62f25d8066ee0a8e47765c",
+    "tree": "83b32b6cb579dc28162f990160c3eef0b1928be6",
+    "worktreeClean": true
+  },
+  "branchCleanup": {
+    "method": "git branch -d only; no remote ref touched",
+    "toolsReferencesToDeletedBranches": 0,
+    "otherTrackedMentions": "historical evidence fields in geocedg/validation/pre-g9b-r6-plus/*.json; no pinned ref",
+    "worktrees": [
+      "repository root on main"
+    ],
+    "branches": [
+      {
+        "branch": "phase/pre-g9b-r6-plus-b-export-surface",
+        "tip": "0ef616bb7bb8efd3e4f19762f38936ff4742d1c3",
+        "ancestorOfMain": true,
+        "uniqueCommits": 0,
+        "worktree": null,
+        "retentionReason": null,
+        "result": "DELETED"
+      },
+      {
+        "branch": "phase/pre-g9b-r6-plus-d0-prompt",
+        "tip": "3268f9b99d20c5d9cf62f25d8066ee0a8e47765c",
+        "ancestorOfMain": true,
+        "uniqueCommits": 0,
+        "worktree": null,
+        "retentionReason": null,
+        "result": "DELETED"
+      }
+    ],
+    "remainingLocalBranches": [
+      "feature/g9u1-construction-workspace-planning",
+      "feature/g9u1-construction-workspace-planning-after-r6",
+      "main",
+      "maintenance/retire-orphaned-historical-verification-suites",
+      "phase/pre-g9b-r6-plus-d1-prompt"
+    ]
+  },
+  "preparationBranch": "phase/pre-g9b-r6-plus-d1-prompt",
+  "probes": {
+    "P-BINARY64": {
+      "scratchOnly": true,
+      "sourceSha256": "b947a31801d6c5a9fbbfd7d6a80af66892f428047576e0b95a81e01912fd03f5",
+      "defaultLocale": "es_ES",
+      "sweep": {
+        "size": 400000,
+        "seed": 20261002,
+        "composition": "half uniform positive finite bit patterns, half m*10^e with 1 <= m < 10^6, -12 <= e < 9"
+      },
+      "referenceEntries": 48,
+      "distinctReferenceValues": 45,
+      "exactWriterReferenceSha256": "4581acb270d24b64840dd58e766973796263ef21f524feed04fde2fb08187841",
+      "exactWriterSweepSha256": "5f2cec099ad0f70c4a2398e1ae676f47911c02e7e10b453876e209ba73352303",
+      "runtimes": [
+        {
+          "runtime": "Corretto 17.0.10",
+          "doubleToStringReferenceMismatches": 8,
+          "doubleToStringSweepMismatches": 581,
+          "exactWriterIdentical": true
+        },
+        {
+          "runtime": "OpenJDK 17.0.8.1",
+          "doubleToStringReferenceMismatches": 8,
+          "doubleToStringSweepMismatches": 581,
+          "exactWriterIdentical": true
+        },
+        {
+          "runtime": "Java 22.0.2",
+          "doubleToStringReferenceMismatches": 0,
+          "doubleToStringSweepMismatches": 0,
+          "exactWriterIdentical": true
+        },
+        {
+          "runtime": "Temurin 25.0.4",
+          "doubleToStringReferenceMismatches": 0,
+          "doubleToStringSweepMismatches": 0,
+          "exactWriterIdentical": true
+        }
+      ],
+      "naiveHalfEvenWriterReferenceMismatches": 2,
+      "naiveHalfEvenWriterSweepMismatches": 0,
+      "parseDoubleRoundTripFailures": 0,
+      "conclusion": "JDK 17 Double.toString does not meet unit-system section 8.4; D1 provides a deterministic canonical writer",
+      "referenceTable": [
+        {
+          "index": 1,
+          "javaExpression": "0.0254",
+          "rawBits": "0x3F9A027525460AA6",
+          "canonical": "0.0254",
+          "jdk17DoubleToString": "0.0254",
+          "naiveHalfEvenWriter": "0.0254"
+        },
+        {
+          "index": 2,
+          "javaExpression": "0.3048",
+          "rawBits": "0x3FD381D7DBF487FD",
+          "canonical": "0.3048",
+          "jdk17DoubleToString": "0.3048",
+          "naiveHalfEvenWriter": "0.3048"
+        },
+        {
+          "index": 3,
+          "javaExpression": "0.9144",
+          "rawBits": "0x3FED42C3C9EECBFB",
+          "canonical": "0.9144",
+          "jdk17DoubleToString": "0.9144",
+          "naiveHalfEvenWriter": "0.9144"
+        },
+        {
+          "index": 4,
+          "javaExpression": "1609.344",
+          "rawBits": "0x409925604189374C",
+          "canonical": "1609.344",
+          "jdk17DoubleToString": "1609.344",
+          "naiveHalfEvenWriter": "1609.344"
+        },
+        {
+          "index": 5,
+          "javaExpression": "1852.0",
+          "rawBits": "0x409CF00000000000",
+          "canonical": "1852.0",
+          "jdk17DoubleToString": "1852.0",
+          "naiveHalfEvenWriter": "1852.0"
+        },
+        {
+          "index": 6,
+          "javaExpression": "1.0",
+          "rawBits": "0x3FF0000000000000",
+          "canonical": "1.0",
+          "jdk17DoubleToString": "1.0",
+          "naiveHalfEvenWriter": "1.0"
+        },
+        {
+          "index": 7,
+          "javaExpression": "0.001",
+          "rawBits": "0x3F50624DD2F1A9FC",
+          "canonical": "0.001",
+          "jdk17DoubleToString": "0.001",
+          "naiveHalfEvenWriter": "0.001"
+        },
+        {
+          "index": 8,
+          "javaExpression": "0.01",
+          "rawBits": "0x3F847AE147AE147B",
+          "canonical": "0.01",
+          "jdk17DoubleToString": "0.01",
+          "naiveHalfEvenWriter": "0.01"
+        },
+        {
+          "index": 9,
+          "javaExpression": "0.1",
+          "rawBits": "0x3FB999999999999A",
+          "canonical": "0.1",
+          "jdk17DoubleToString": "0.1",
+          "naiveHalfEvenWriter": "0.1"
+        },
+        {
+          "index": 10,
+          "javaExpression": "0.2",
+          "rawBits": "0x3FC999999999999A",
+          "canonical": "0.2",
+          "jdk17DoubleToString": "0.2",
+          "naiveHalfEvenWriter": "0.2"
+        },
+        {
+          "index": 11,
+          "javaExpression": "0.3",
+          "rawBits": "0x3FD3333333333333",
+          "canonical": "0.3",
+          "jdk17DoubleToString": "0.3",
+          "naiveHalfEvenWriter": "0.3"
+        },
+        {
+          "index": 12,
+          "javaExpression": "1.0E-6",
+          "rawBits": "0x3EB0C6F7A0B5ED8D",
+          "canonical": "1.0E-6",
+          "jdk17DoubleToString": "1.0E-6",
+          "naiveHalfEvenWriter": "1.0E-6"
+        },
+        {
+          "index": 13,
+          "javaExpression": "2.54E-5",
+          "rawBits": "0x3EFAA242B58735EA",
+          "canonical": "2.54E-5",
+          "jdk17DoubleToString": "2.54E-5",
+          "naiveHalfEvenWriter": "2.54E-5"
+        },
+        {
+          "index": 14,
+          "javaExpression": "1.0E-9",
+          "rawBits": "0x3E112E0BE826D695",
+          "canonical": "1.0E-9",
+          "jdk17DoubleToString": "1.0E-9",
+          "naiveHalfEvenWriter": "1.0E-9"
+        },
+        {
+          "index": 15,
+          "javaExpression": "1.0E7",
+          "rawBits": "0x416312D000000000",
+          "canonical": "1.0E7",
+          "jdk17DoubleToString": "1.0E7",
+          "naiveHalfEvenWriter": "1.0E7"
+        },
+        {
+          "index": 16,
+          "javaExpression": "Math.nextDown(1.0E7)",
+          "rawBits": "0x416312CFFFFFFFFF",
+          "canonical": "9999999.999999998",
+          "jdk17DoubleToString": "9999999.999999998",
+          "naiveHalfEvenWriter": "9999999.999999998"
+        },
+        {
+          "index": 17,
+          "javaExpression": "Math.nextDown(0.001)",
+          "rawBits": "0x3F50624DD2F1A9FB",
+          "canonical": "9.999999999999998E-4",
+          "jdk17DoubleToString": "9.999999999999998E-4",
+          "naiveHalfEvenWriter": "9.999999999999998E-4"
+        },
+        {
+          "index": 18,
+          "javaExpression": "Double.MIN_VALUE",
+          "rawBits": "0x0000000000000001",
+          "canonical": "4.9E-324",
+          "jdk17DoubleToString": "4.9E-324",
+          "naiveHalfEvenWriter": "5.0E-324"
+        },
+        {
+          "index": 19,
+          "javaExpression": "Double.MIN_NORMAL",
+          "rawBits": "0x0010000000000000",
+          "canonical": "2.2250738585072014E-308",
+          "jdk17DoubleToString": "2.2250738585072014E-308",
+          "naiveHalfEvenWriter": "2.2250738585072014E-308"
+        },
+        {
+          "index": 20,
+          "javaExpression": "Double.MAX_VALUE",
+          "rawBits": "0x7FEFFFFFFFFFFFFF",
+          "canonical": "1.7976931348623157E308",
+          "jdk17DoubleToString": "1.7976931348623157E308",
+          "naiveHalfEvenWriter": "1.7976931348623157E308"
+        },
+        {
+          "index": 21,
+          "javaExpression": "1.0E-300",
+          "rawBits": "0x01A56E1FC2F8F359",
+          "canonical": "1.0E-300",
+          "jdk17DoubleToString": "1.0E-300",
+          "naiveHalfEvenWriter": "1.0E-300"
+        },
+        {
+          "index": 22,
+          "javaExpression": "1.0E300",
+          "rawBits": "0x7E37E43C8800759C",
+          "canonical": "1.0E300",
+          "jdk17DoubleToString": "1.0E300",
+          "naiveHalfEvenWriter": "1.0E300"
+        },
+        {
+          "index": 23,
+          "javaExpression": "1.495978707E11",
+          "rawBits": "0x42416A5D2D360000",
+          "canonical": "1.495978707E11",
+          "jdk17DoubleToString": "1.495978707E11",
+          "naiveHalfEvenWriter": "1.495978707E11"
+        },
+        {
+          "index": 24,
+          "javaExpression": "9.4607304725808E15",
+          "rawBits": "0x4340CE3DFB912360",
+          "canonical": "9.4607304725808E15",
+          "jdk17DoubleToString": "9.4607304725808E15",
+          "naiveHalfEvenWriter": "9.4607304725808E15"
+        },
+        {
+          "index": 25,
+          "javaExpression": "3.0856775814913673E16",
+          "rawBits": "0x435B6804BE5727A2",
+          "canonical": "3.085677581491367E16",
+          "jdk17DoubleToString": "3.0856775814913672E16",
+          "naiveHalfEvenWriter": "3.085677581491367E16"
+        },
+        {
+          "index": 26,
+          "javaExpression": "1.616255E-35",
+          "rawBits": "0x38B57BD4AD4EFA96",
+          "canonical": "1.616255E-35",
+          "jdk17DoubleToString": "1.616255E-35",
+          "naiveHalfEvenWriter": "1.616255E-35"
+        },
+        {
+          "index": 27,
+          "javaExpression": "Math.scalb(1.0, -10)",
+          "rawBits": "0x3F50000000000000",
+          "canonical": "9.765625E-4",
+          "jdk17DoubleToString": "9.765625E-4",
+          "naiveHalfEvenWriter": "9.765625E-4"
+        },
+        {
+          "index": 28,
+          "javaExpression": "Math.scalb(1.0, -20)",
+          "rawBits": "0x3EB0000000000000",
+          "canonical": "9.5367431640625E-7",
+          "jdk17DoubleToString": "9.5367431640625E-7",
+          "naiveHalfEvenWriter": "9.5367431640625E-7"
+        },
+        {
+          "index": 29,
+          "javaExpression": "Math.scalb(1.0, 60)",
+          "rawBits": "0x43B0000000000000",
+          "canonical": "1.152921504606847E18",
+          "jdk17DoubleToString": "1.15292150460684698E18",
+          "naiveHalfEvenWriter": "1.152921504606847E18"
+        },
+        {
+          "index": 30,
+          "javaExpression": "1.0E23",
+          "rawBits": "0x44B52D02C7E14AF6",
+          "canonical": "1.0E23",
+          "jdk17DoubleToString": "9.999999999999999E22",
+          "naiveHalfEvenWriter": "1.0E23"
+        },
+        {
+          "index": 31,
+          "javaExpression": "2.0E23",
+          "rawBits": "0x44C52D02C7E14AF6",
+          "canonical": "2.0E23",
+          "jdk17DoubleToString": "1.9999999999999998E23",
+          "naiveHalfEvenWriter": "2.0E23"
+        },
+        {
+          "index": 32,
+          "javaExpression": "0.1 + 0.2",
+          "rawBits": "0x3FD3333333333334",
+          "canonical": "0.30000000000000004",
+          "jdk17DoubleToString": "0.30000000000000004",
+          "naiveHalfEvenWriter": "0.30000000000000004"
+        },
+        {
+          "index": 33,
+          "javaExpression": "1.0 / 3.0",
+          "rawBits": "0x3FD5555555555555",
+          "canonical": "0.3333333333333333",
+          "jdk17DoubleToString": "0.3333333333333333",
+          "naiveHalfEvenWriter": "0.3333333333333333"
+        },
+        {
+          "index": 34,
+          "javaExpression": "Math.PI",
+          "rawBits": "0x400921FB54442D18",
+          "canonical": "3.141592653589793",
+          "jdk17DoubleToString": "3.141592653589793",
+          "naiveHalfEvenWriter": "3.141592653589793"
+        },
+        {
+          "index": 35,
+          "javaExpression": "Math.E",
+          "rawBits": "0x4005BF0A8B145769",
+          "canonical": "2.718281828459045",
+          "jdk17DoubleToString": "2.718281828459045",
+          "naiveHalfEvenWriter": "2.718281828459045"
+        },
+        {
+          "index": 36,
+          "javaExpression": "1.0 + Math.ulp(1.0)",
+          "rawBits": "0x3FF0000000000001",
+          "canonical": "1.0000000000000002",
+          "jdk17DoubleToString": "1.0000000000000002",
+          "naiveHalfEvenWriter": "1.0000000000000002"
+        },
+        {
+          "index": 37,
+          "javaExpression": "0.1 + 0.7",
+          "rawBits": "0x3FE9999999999999",
+          "canonical": "0.7999999999999999",
+          "jdk17DoubleToString": "0.7999999999999999",
+          "naiveHalfEvenWriter": "0.7999999999999999"
+        },
+        {
+          "index": 38,
+          "javaExpression": "2.82879384806159E17",
+          "rawBits": "0x438F67EA69ED3795",
+          "canonical": "2.82879384806159E17",
+          "jdk17DoubleToString": "2.82879384806159008E17",
+          "naiveHalfEvenWriter": "2.82879384806159E17"
+        },
+        {
+          "index": 39,
+          "javaExpression": "1.18575755E-316",
+          "rawBits": "0x00000000016E3600",
+          "canonical": "1.18575755E-316",
+          "jdk17DoubleToString": "1.18575755E-316",
+          "naiveHalfEvenWriter": "1.18575755E-316"
+        },
+        {
+          "index": 40,
+          "javaExpression": "4.8726570057E288",
+          "rawBits": "0x7BE0000000000000",
+          "canonical": "4.8726570057E288",
+          "jdk17DoubleToString": "4.8726570056999995E288",
+          "naiveHalfEvenWriter": "4.8726570057E288"
+        },
+        {
+          "index": 41,
+          "javaExpression": "1.0E-5",
+          "rawBits": "0x3EE4F8B588E368F1",
+          "canonical": "1.0E-5",
+          "jdk17DoubleToString": "1.0E-5",
+          "naiveHalfEvenWriter": "1.0E-5"
+        },
+        {
+          "index": 42,
+          "javaExpression": "9.999999999999999E22",
+          "rawBits": "0x44B52D02C7E14AF6",
+          "canonical": "1.0E23",
+          "jdk17DoubleToString": "9.999999999999999E22",
+          "naiveHalfEvenWriter": "1.0E23"
+        },
+        {
+          "index": 43,
+          "javaExpression": "8.41E21",
+          "rawBits": "0x447C7E83209E90B2",
+          "canonical": "8.41E21",
+          "jdk17DoubleToString": "8.409999999999999E21",
+          "naiveHalfEvenWriter": "8.41E21"
+        },
+        {
+          "index": 44,
+          "javaExpression": "5.0E-324",
+          "rawBits": "0x0000000000000001",
+          "canonical": "4.9E-324",
+          "jdk17DoubleToString": "4.9E-324",
+          "naiveHalfEvenWriter": "5.0E-324"
+        },
+        {
+          "index": 45,
+          "javaExpression": "1.0E22",
+          "rawBits": "0x4480F0CF064DD592",
+          "canonical": "1.0E22",
+          "jdk17DoubleToString": "1.0E22",
+          "naiveHalfEvenWriter": "1.0E22"
+        },
+        {
+          "index": 46,
+          "javaExpression": "1.0E21",
+          "rawBits": "0x444B1AE4D6E2EF50",
+          "canonical": "1.0E21",
+          "jdk17DoubleToString": "1.0E21",
+          "naiveHalfEvenWriter": "1.0E21"
+        },
+        {
+          "index": 47,
+          "javaExpression": "123456789.0",
+          "rawBits": "0x419D6F3454000000",
+          "canonical": "1.23456789E8",
+          "jdk17DoubleToString": "1.23456789E8",
+          "naiveHalfEvenWriter": "1.23456789E8"
+        },
+        {
+          "index": 48,
+          "javaExpression": "0.30000000000000004",
+          "rawBits": "0x3FD3333333333334",
+          "canonical": "0.30000000000000004",
+          "jdk17DoubleToString": "0.30000000000000004",
+          "naiveHalfEvenWriter": "0.30000000000000004"
+        }
+      ]
+    },
+    "P-TWO-WINDOWS": {
+      "scratchOnly": true,
+      "sourceSha256": "5bb44c6f72fa17d9e79d24d0073d13354ba5b03e4f6e9b7564719b1783f9f6d9",
+      "resultJUnitSha256": "7934cd29523793bf89b8ab4285301cbf34f607680d872a69a192f0fb1985446b",
+      "testJvm": "Corretto 17.0.10",
+      "result": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0
+      },
+      "observations": {
+        "distinctBuffers": true,
+        "afterCopyInA": "A buffer filled; B buffer empty",
+        "ctrlVInB": "object count 1 -> 1; construction XML unchanged",
+        "sameWindowPaste": "object count 1 -> 2; no undo store within 2 s",
+        "bufferSurvivesNew": true,
+        "pasteAfterNew": "object P pasted into the new document"
+      },
+      "firstAttempt": "hung in the real save-changes dialog of File > New; JVM stopped; rerun with the document set saved"
+    },
+    "P-OLDER-READER": {
+      "scratchOnly": true,
+      "sourceSha256": "a4adc3f2792858b8e6743c7576c0f179c6defc056711151344b4732ab624989e",
+      "result": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0
+      },
+      "observations": {
+        "clearingLoad": "loads; element absent on re-save",
+        "futureVersion99": "loads; element absent on re-save",
+        "evalXML": "fragment point created; no element in the document",
+        "log": "MyXMLHandler.startConstructionElement[3093]: unknown tag in <construction>: geocedgUnits"
+      }
+    },
+    "cleanup": "probe classes removed by recompiling test sources without the probe directory; probe JUnit XML and compile-transaction stash copies deleted; worktree unchanged"
+  },
+  "keyFindings": [
+    {
+      "id": 1,
+      "prompt": "C1",
+      "finding": "archives with macros parse geogebra.xml with clearConstruction = false and a forced NATIVE_OR_UNDO_RESTORE purpose; the effective purpose must be captured at document-construction start",
+      "evidence": [
+        "source/shared/common-jre/src/main/java/org/geogebra/common/jre/io/MyXMLioJre.java:200-223",
+        "source/shared/common/src/main/java/org/geogebra/common/io/MyXMLio.java:419-421",
+        "source/shared/common/src/main/java/org/geogebra/common/io/MyXMLHandler.java:2984-2985"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "C2",
+      "finding": "getConstructionXML also serializes macro constructions and swallows writer exceptions",
+      "evidence": [
+        "source/shared/common/src/main/java/org/geogebra/common/kernel/Construction.java:1517-1550",
+        "source/shared/common/src/main/java/org/geogebra/common/kernel/Macro.java:175",
+        "source/shared/common/src/main/java/org/geogebra/common/kernel/Macro.java:792-796"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "C3",
+      "finding": "Desktop File > Open preflights .cedg and .ggb on a scratch app; the MyXMLio restore triggers only for spatial failures; every open failure shows LoadFileFailed",
+      "evidence": [
+        "source/desktop/desktop/src/main/java/org/geogebra/desktop/main/AppD.java:3135-3152",
+        "source/desktop/desktop/src/main/java/org/geogebra/desktop/io/DocumentArchivePreflight.java:36-52",
+        "source/shared/common/src/main/java/org/geogebra/common/io/MyXMLio.java:435-449",
+        "source/shared/common/src/main/java/org/geogebra/common/io/MyXMLio.java:495-529"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "C4",
+      "finding": "Desktop undo never de-duplicates; kernel settings create no undo point; isSaved() treats an unstarted construction as saved",
+      "evidence": [
+        "source/desktop/desktop/src/main/java/org/geogebra/desktop/main/undo/FileAppState.java:74-77",
+        "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/dialog/options/OptionsAdvancedD.java:598-608",
+        "source/shared/common/src/main/java/org/geogebra/common/main/App.java:1672-1675",
+        "source/shared/common/src/main/java/org/geogebra/common/kernel/Construction.java:4003-4005"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "C5",
+      "finding": "JDK 17 Double.toString does not meet unit-system section 8.4",
+      "evidence": [
+        "probe P-BINARY64"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "C6",
+      "finding": "New takes its undo baseline before the preferences XML, itself a clearing load; startup and New Window bypass fileNew; the startup decision is constructor-local",
+      "evidence": [
+        "source/desktop/desktop/src/main/java/org/geogebra/desktop/main/AppD.java:1149-1177",
+        "source/desktop/desktop/src/main/java/org/geogebra/desktop/main/AppD.java:2931-2945",
+        "source/desktop/desktop/src/main/java/org/geogebra/desktop/main/AppD.java:489",
+        "source/desktop/desktop/src/main/java/org/geogebra/desktop/main/AppD.java:505-508",
+        "source/desktop/desktop/src/main/java/org/geogebra/desktop/main/AppD.java:534"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "C8",
+      "finding": "the A-1 status bar has an addSegment extension point but refreshes only for layer and locale; no non-blocking notice mechanism exists",
+      "evidence": [
+        "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGStatusBar.java:20-81",
+        "source/desktop/desktop/src/main/java/org/geocedg/desktop/AppGeoCeDG.java:129-135"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "C9",
+      "finding": "the Desktop copy buffer is per window and never cleared on Desktop; Insert File replaces it",
+      "evidence": [
+        "source/desktop/desktop/src/main/java/org/geogebra/desktop/main/AppD.java:355",
+        "source/desktop/desktop/src/main/java/org/geogebra/desktop/main/AppD.java:5036-5044",
+        "source/desktop/desktop/src/main/java/org/geogebra/desktop/util/CopyPasteD.java:57-70",
+        "source/desktop/desktop/src/main/java/org/geogebra/desktop/util/CopyPasteD.java:607-616",
+        "source/desktop/desktop/src/main/java/org/geogebra/desktop/util/CopyPasteD.java:631-671",
+        "probe P-TWO-WINDOWS"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "Contradictions",
+      "finding": "specification section 9 evidence for New window and startup, and its section 11 clear point, drift from the base; no rule changes",
+      "evidence": [
+        "geocedg/specs/units/unit-system.md:498",
+        "geocedg/specs/units/unit-system.md:545"
+      ]
+    }
+  ],
+  "requestedDecisions": [
+    "DQ-D1-1",
+    "DQ-D1-2",
+    "DQ-D1-3",
+    "DQ-D1-4",
+    "DQ-D1-5",
+    "DQ-D1-6",
+    "DQ-D1-7",
+    "DQ-D1-8",
+    "DQ-D1-9",
+    "DQ-D1-10",
+    "DQ-D1-11"
+  ],
+  "plannedTests": [
+    "T-STATE",
+    "T-USM-VALIDATION",
+    "T-CANONICAL-FACTOR",
+    "T-LEXICAL",
+    "T-XML-WRITER",
+    "T-XML-READER",
+    "T-FAIL-CLOSED",
+    "T-LOAD-RESTORE",
+    "T-IGNORED",
+    "T-ROUTES",
+    "T-UNDO",
+    "T-REBUILD",
+    "T-NEW-OPEN",
+    "T-PREFS",
+    "T-USM-LIFECYCLE",
+    "T-INVARIANCE",
+    "T-NOTIFY",
+    "T-STATUS",
+    "T-UI",
+    "T-CLIPBOARD",
+    "T-LEGACY-BYTES",
+    "T-COMPAT-CORPUS",
+    "T-CLASSIC",
+    "T-EXPORT-REGRESSION",
+    "T-GGBSCRIPT",
+    "T-DETERMINISM",
+    "T-SMOKE"
+  ],
+  "proposedAcceptance": {
+    "verificationClass": "GLOBAL_IMPACT",
+    "authorFrozen": true,
+    "plannedAcceptance": "FINAL",
+    "finalRegistryNodesAtBase": 68,
+    "newPhaseSelection": false,
+    "commands": [
+      "tools/agent/verify.ps1 -Profile FINAL -PlanOnly",
+      "tools/agent/verify.ps1 -Profile FINAL -LogDirectory artifacts\\agent\\<fresh-name>"
+    ],
+    "finalDuringPreparation": false
+  },
+  "impact": {
+    "productPhaseEffect": "NONE",
+    "serializationChange": "NONE",
+    "verificationInfrastructureImpact": "NONE",
+    "bootstrapImpact": "NO CHANGE REQUIRED",
+    "guideImpact": "NONE",
+    "guideJustification": "documentary preparation of a phase prompt; no observable behavior, command, workflow or file-format contract changes"
+  },
+  "changedPaths": [
+    ".github/prompts/tasks/pre-g9b-r6-plus-d1-unit-system-implementation-and-status.prompt.md",
+    "docs/validation/pre_g9b_r6_plus_d1_author_decisions_record.md",
+    "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-d1-author-decisions.json",
+    "docs/validation/pre_g9b_r6_plus_d1_preparation_characterization_report.md",
+    "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-d1-preparation-characterization.json",
+    "docs/roadmap/geocedg_roadmap.md",
+    "docs/architecture/pre_g9b_r6_plus_minitrack_plan.md"
+  ]
+}
