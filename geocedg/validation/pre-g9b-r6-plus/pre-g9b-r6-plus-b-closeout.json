@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-B",
+  "recordKind": "AUTHOR_CLOSEOUT_DISPOSITION",
+  "status": "PRE-G9B-R6-plus-B — PASS — AUTHOR APPROVED",
+  "authorSmoke": "PASS",
+  "record": "docs/validation/pre_g9b_r6_plus_b_closeout_record.md",
+  "authorDecisionDate": "2026-10-02",
+  "authorConfirmedDirectly": true,
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "approvalScope": "PRE-G9B-R6-plus-B technical candidate only",
+  "implementationAuthorized": false,
+  "candidateFrozen": true,
+  "candidateMutated": false,
+  "serializationChange": "NONE",
+  "newHeavyIntegration": "NONE",
+  "newHeavyFinal": "NONE",
+  "smokeVerified": ["export surface", "ExportArea", "MANUAL area", "Export_1/Export_2 area", "overlay", "hidden layers", "Save preview regeneration", "disjoint areas", "LocusV2", "absolute screen position objects", "text export"],
+  "closedSmokeObservation": {"observation": "texts not exported", "disposition": "false alarm of visualization: the text is exported; with a transparent background its visibility depended on the viewer background", "productChange": false},
+  "identities": {
+    "implementationBase": {"name": "P_R6PLUS_B_PROMPT", "commit": "f6194f09358de9c5f8ac5051c31b3a9dc8a9491b", "tree": "9ac09c5371bce7d9b093541f232b43464073118b"},
+    "promptAmendments": [
+      {"name": "A_R6PLUS_B_PROMPT", "commit": "fe70c5ac6", "promptBlob": "d13b3cb182c0fed4b21bab30e074c697ec58f423"},
+      {"name": "A_R6PLUS_B_DQB8", "commit": "dd6d517c6", "promptBlob": "4ac70712bad82e6d5825c8fce2ed71f8b21742bc"},
+      {"name": "A_R6PLUS_B_STOPS", "commit": "574808a04647a9627d0d68ac8a32bb2730b7f286", "promptBlob": "feb0fb0d2e987477045c124f51216d11130f9083"}
+    ],
+    "technicalCandidate": {"name": "T_R6PLUS_B", "commit": "848206c413eb4f78694c9149e153f6e867eb9525", "tree": "b611506131b3d751627f87a31e3f3502e7ea6810", "parent": "574808a04647a9627d0d68ac8a32bb2730b7f286", "modifiedByCloseout": false},
+    "branch": "phase/pre-g9b-r6-plus-b-export-surface",
+    "branchPushed": false
+  },
+  "acceptedEvidence": [
+    {"profile": "PHASE", "command": "tools/agent/verify.ps1 -Profile PHASE -Phase PRE-G9B-R6-plus-B", "run": "verification-7f186595655b4640beb14fcaeb9f5c39", "exitCode": 0, "verdict": "ACCEPTED / COMPLETE", "acceptanceLeaves": "7/7", "executionPlanHash": "e98cf890c036e9b46d144543196b89d2d4d31375f00fa47a2692bc8a77ae2fd8", "resultHash": "7aebaae5ccf7cc331ee276dcfb332ba7613f4175f0e05c3e23584abff81c36cf"},
+    {"profile": "INTEGRATION", "command": "tools/agent/verify.ps1 -Profile INTEGRATION -LogDirectory artifacts/agent/pre-g9b-r6-plus-b-integration-848206c4", "run": "verification-fea933f1c0344f5f95830aab1bc80f2d", "exitCode": 0, "verdict": "ACCEPTED / COMPLETE", "acceptanceLeaves": "19/19", "executionPlanHash": "4502c4bd1bbe1a123089e9e524fd0afb354932afbcb410f93052555a16c77aea", "resultHash": "2444c18ff590643c9adec49d3723900c8285f6ec8cdf221f99d61fe5c3a9a5fc", "standingDiagnostics": ["diagnostic.governance = DIAGNOSTIC_FINDING", "diagnostic.historical-consistency = DIAGNOSTIC_UNAVAILABLE"]}
+  ],
+  "invalidHistoricalAttempts": [],
+  "gitDiffCheck": {"range": "f6194f09358de9c5f8ac5051c31b3a9dc8a9491b..848206c413eb4f78694c9149e153f6e867eb9525", "exitCode": 0},
+  "observations": [
+    {"id": "OBS-B-LEGACY-LOCUS-OFFSCREEN-COVERAGE", "disposition": "accepted; not promoted to C"},
+    {"id": "OBS-B-EMF-RCLFRAME-PHYSICAL-QUANTIZATION", "disposition": "accepted", "laterOwner": "PRE-G9B-R6-plus-C"},
+    {"id": "OBS-B-FREEHEP-PATH-COORDINATE-PRECISION", "disposition": "accepted"}
+  ],
+  "deferredImprovements": [
+    {"id": "ENH-B-MANUAL-EXPORT-AREA-DRAG", "blocking": false, "objective": "define the MANUAL producer also by an interactive rectangle gesture similar to ZoomWindow, besides entering coordinates", "contract": "interactive rectangle gesture -> world bounds -> ExportArea(MANUAL)", "constraints": ["the gesture is only a transient input mechanism", "it must not restore selectionRectangle as export authority", "it must not create a second area mechanism"], "candidateReopened": false}
+  ],
+  "temporaryInconsistencyWithC": "unchanged: PSTricks, PGF/TikZ, Asymptote and DXF ignore the export area and write hidden layers until C",
+  "closeoutChangedPaths": [
+    "docs/architecture/pre_g9b_r6_plus_minitrack_plan.md",
+    "docs/roadmap/geocedg_roadmap.md",
+    "docs/validation/pre_g9b_r6_plus_b_closeout_record.md",
+    "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-b-closeout.json"
+  ],
+  "publication": {
+    "range": ["f6194f09358de9c5f8ac5051c31b3a9dc8a9491b", "fe70c5ac6", "dd6d517c6", "574808a04647a9627d0d68ac8a32bb2730b7f286", "848206c413eb4f78694c9149e153f6e867eb9525", "P_R6PLUS_B (this closeout commit)"],
+    "method": "clean non-force fast-forward of main",
+    "precondition": "origin/main = live remote main = P_R6PLUS_B_PROMPT"
+  },
+  "authorizationState": {
+    "PRE-G9B-R6-plus-P0": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-A-1": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-B": "PASS — AUTHOR APPROVED",
+    "PRE-G9B-R6-plus-D0": "NOT AUTHORIZED (next operational subphase)",
+    "PRE-G9B-R6-plus-D1": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-A-2": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-C": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-E1": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-E2": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-E3": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-F1": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-F2": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-G": "NOT AUTHORIZED",
+    "PRE-G9B-R7": "DESIGNED — NOT AUTHORIZED; BLOCKED UNTIL PRE-G9B-R6-plus IS PASS — AUTHOR APPROVED",
+    "G9B": "NOT AUTHORIZED"
+  }
+}
