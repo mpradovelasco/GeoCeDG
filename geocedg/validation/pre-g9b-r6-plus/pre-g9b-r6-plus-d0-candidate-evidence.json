@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-D0",
+  "recordKind": "DOCUMENTARY_CANDIDATE_EVIDENCE",
+  "report": "docs/validation/pre_g9b_r6_plus_d0_candidate_report.md",
+  "state": "DOCUMENTARY CANDIDATE PENDING AUTHOR REVIEW",
+  "technicalCandidateState": "FROZEN",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "selfApproved": false,
+  "authorApproved": false,
+  "passClaimed": false,
+  "verificationClass": "DOCUMENTATION_STATUS_ONLY",
+  "plannedAcceptance": ["STATIC"],
+  "notRun": ["PHASE", "INTEGRATION", "FINAL"],
+  "productPhaseEffect": "NONE",
+  "serializationChange": "NONE",
+  "verificationInfrastructureImpact": "NONE",
+  "bootstrapImpact": "NO CHANGE",
+  "guideImpact": "NONE in D0; guide obligation recorded for D1",
+  "identities": {
+    "publishedBase": {"name": "P_R6PLUS_B", "commit": "0ef616bb7bb8efd3e4f19762f38936ff4742d1c3", "tree": "be7ef7acbc3503002f3dac2bc33f047795f7a644"},
+    "implementationBase": {"name": "T_R6PLUS_D0_PROMPT", "commit": "8814468101e3caef45d9f6cbad4bf563523c3478", "tree": "edbe623604330e62db11ff3d3b05b7d73671dbd0", "published": false, "amended": false},
+    "authorizationEdit": {"name": "A_R6PLUS_D0", "commit": "804e20c08f8d25419799ed10b780483fa1670920", "tree": "63c7cfa07f892f0dbcb7cf09a53539ca4c32b807", "promptBlob": "b6025b8c088e6dd1f0bd69a2d311d794ed882c14"},
+    "candidate": {"name": "T_R6PLUS_D0", "parent": "804e20c08f8d25419799ed10b780483fa1670920", "identity": "reported with the STATIC run; a frozen artifact cannot name its own commit"},
+    "branch": "phase/pre-g9b-r6-plus-d0-prompt",
+    "pushed": false
+  },
+  "authorizationEditPaths": [
+    ".github/prompts/tasks/pre-g9b-r6-plus-d0-normative-unit-system-design.prompt.md",
+    "docs/validation/pre_g9b_r6_plus_d0_prompt_closeout_record.md",
+    "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-d0-prompt-closeout.json"
+  ],
+  "candidatePaths": [
+    {"path": "docs/adr/0032-unit-system-semantics-and-persistence-ownership.md", "change": "added", "status": "PROPOSED"},
+    {"path": "geocedg/specs/units/unit-system.md", "change": "added", "status": "NORMATIVE CANDIDATE — NOT AUTHOR APPROVED", "version": "1.0"},
+    {"path": "geocedg/specs/export/geometry-export-foundation.md", "change": "pointer note only", "statusUnchanged": "Experimental", "rulesUnchanged": true},
+    {"path": "docs/architecture/pre_g9b_r6_plus_minitrack_plan.md", "change": "section 4.4 supersession note; D0 status"},
+    {"path": "docs/roadmap/geocedg_roadmap.md", "change": "version 4.46; D0 status"},
+    {"path": "docs/validation/pre_g9b_r6_plus_d0_candidate_report.md", "change": "added"},
+    {"path": "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-d0-candidate-evidence.json", "change": "added"}
+  ],
+  "unchangedByDecision": [
+    "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md",
+    "tools/agent/verify-g9x1-extended-dxf.ps1",
+    "source/**"
+  ],
+  "outputs": [
+    {"n": 1, "output": "unit-system ADR", "location": "docs/adr/0032-unit-system-semantics-and-persistence-ownership.md"},
+    {"n": 2, "output": "normative unit-system specification", "location": "geocedg/specs/units/unit-system.md"},
+    {"n": 3, "output": "proposed/future geometry-export amendment contract", "location": "geocedg/specs/units/unit-system.md section 15; pointer in geocedg/specs/export/geometry-export-foundation.md"},
+    {"n": 4, "output": "persistence and XML grammar contract for D1", "location": "unit-system.md sections 8 and 9"},
+    {"n": 5, "output": "exact usm grammar and lifecycle", "location": "unit-system.md sections 4, 8.2 and 8.4"},
+    {"n": 6, "output": "invariant matrix", "location": "unit-system.md section 17.1"},
+    {"n": 7, "output": "persistence/undo/compatibility matrix", "location": "unit-system.md sections 17.2 and 17.3"},
+    {"n": 8, "output": "AQ-U1..AQ-U6 traceability", "location": "unit-system.md section 19.1"},
+    {"n": 9, "output": "DQ-D0-1..DQ-D0-13 dispositions", "location": "docs/validation/pre_g9b_r6_plus_d0_prompt_closeout_record.md (authority); unit-system.md section 19.2"},
+    {"n": 10, "output": "contracts for D1, C, E2 and E3", "location": "unit-system.md section 18"},
+    {"n": 11, "output": "candidate report", "location": "docs/validation/pre_g9b_r6_plus_d0_candidate_report.md"},
+    {"n": 12, "output": "machine-readable evidence mirror", "location": "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-d0-candidate-evidence.json"}
+  ],
+  "unitGrammar": {
+    "element": "geocedgUnits",
+    "parent": "document <construction>, after <worksheetText>, before <geocedgSpatial> and the first construction element",
+    "attributeOrder": ["version", "construction", "presentation", "usmMetersPerUnit", "usmName", "usmSymbol"],
+    "version": "1",
+    "tokens": ["mm", "cm", "m", "usm"],
+    "unspecified": "absence of the construction attribute",
+    "constraints": ["presentation requires construction", "construction = usm or presentation = usm requires usmMetersPerUnit", "usmName and usmSymbol require usmMetersPerUnit"],
+    "omissionRule": "element written exactly when a construction unit is selected or a usm definition exists",
+    "factor": {"semantics": "finite binary64 > 0", "writer": "Java SE 19+ Double.toString specification (shortest round-trip decimal, locale-independent)", "reader": "1*DIGIT [\".\" 1*DIGIT] [(\"E\"/\"e\") [\"+\"/\"-\"] 1*DIGIT], round to nearest even, finite and > 0"},
+    "nameAndSymbol": "1..64 Unicode scalar values, no Cc, no leading or trailing white space; symbol fallback usm",
+    "failClosed": ["newer version", "malformed v1 element", "selected usm without valid factor", "duplicate element or ambiguous physical semantics"],
+    "ignored": ["macro constructions", "non-clearing parses (paste, evalXML)"],
+    "olderReaders": "lenient; element lost on re-save; explicit limitation"
+  },
+  "persistenceAndUndo": {
+    "reset": "Construction.clearConstruction resets to EMPTY for every load purpose",
+    "appliedBy": ["full document load", "undo/redo restore", "redefine rebuild", "rollback restore"],
+    "undoPoints": ["set construction unit (including to UNSPECIFIED_MODEL_UNIT)", "set or clear explicit presentation unit", "define, change factor, rename, remove usm"],
+    "notUndoable": ["drawingScale", "new-document preference change", "application of new-document defaults", "paste notice"],
+    "sessionSurvivesUndo": ["drawingScale", "ExportArea", "clipboard provenance"]
+  },
+  "dispositionClauses": [
+    {"id": "DQ-D0-1", "clauses": ["10"]},
+    {"id": "DQ-D0-2", "clauses": ["5.1", "5.2", "7.1", "8.2", "10"]},
+    {"id": "DQ-D0-3", "clauses": ["7.1", "8.2", "8.3"]},
+    {"id": "DQ-D0-4", "clauses": ["4.3", "8.6"]},
+    {"id": "DQ-D0-5", "clauses": ["4.4", "14.2"]},
+    {"id": "DQ-D0-6", "clauses": ["3.2", "4.1", "4.2", "5.4", "8.4"]},
+    {"id": "DQ-D0-7", "clauses": ["8.7", "8.9"]},
+    {"id": "DQ-D0-8", "clauses": ["11"]},
+    {"id": "DQ-D0-9", "clauses": ["6.2", "14.2"]},
+    {"id": "DQ-D0-10", "clauses": ["15.2", "15.3"]},
+    {"id": "DQ-D0-11", "clauses": ["13", "15.2"]},
+    {"id": "DQ-D0-12", "clauses": ["12", "13"]},
+    {"id": "DQ-D0-13", "clauses": ["16.3"]}
+  ],
+  "supersessions": [
+    "mini-track plan section 4.4 'physical model-to-output unit = presentationUnit' (note in the plan; rule in unit-system.md section 13)",
+    "P0 D0 inputs section 1 reading of presentationUnit as affecting export size",
+    "P0 D0 inputs section 3 fail-closed-marker option and section 7 labelled-legacy-mapping option",
+    "P0 D0 inputs section 6 description of the foundation as accepted"
+  ],
+  "d0DesignChoicesForAuthorReview": ["optional remove operation for an unused usm", "name/symbol grammar", "presentation preference default without usm", "canonical factor writer and lenient decimal reader", "fail closed on unknown attribute, duplicate element, child content, orphan name or symbol", "element placement", "ignored contexts logged, not validated", "binary64 comparison of built-in factors", "DXF codes 4/5/6 to be verified by C", "LaTeX physical xunit formula"],
+  "deviations": ["authorization edit also adds a closeout and authorization record and mirror (B precedent)", "base is the unpublished approved package, by author instruction", "prepared G9X1 cross-reference note not created (DQ-D0-10)"],
+  "unresolvedFindings": ["fail-closed restore extension and File > Open failure state (D1)", "canonical factor writer on every supported runtime (D1)", "unit user interface, preference UI and paste-notice presentation (D1 design)", "drawingScale holder phase (recommended C)", "two-window clipboard sharing INFERRED (D1 probe)", "C verification class given the G9X1 verifier pin change", "guide obligation for silent loss on re-save by older builds"],
+  "scratchProbes": "none",
+  "staticRun": "reported with the candidate identity after freeze"
+}

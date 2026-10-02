@@ -77,6 +77,16 @@ window bounds are excluded from the service API.
 Future physical-unit support requires an explicit document/application
 contract. It must not reinterpret screen scale as model scale.
 
+> **Pending unit amendment — not in force.** The document/application
+> contract required above is proposed in the
+> [GeoCeDG unit system](../units/unit-system.md) §15 (`NORMATIVE CANDIDATE —
+> NOT AUTHOR APPROVED`, `PRE-G9B-R6-plus-D0`). That section defines the future
+> DXF unit header and the amendment obligations of `PRE-G9B-R6-plus-C`. Until
+> `C` implements it and the author accepts it, every rule of this
+> specification, including `UNITLESS`, `$INSUNITS = 0` and the G5 PASS clause,
+> stays in force unchanged, and this specification keeps
+> `Status: Experimental`.
+
 ## Layers and style
 
 - layer `0` -> DXF `0`;
