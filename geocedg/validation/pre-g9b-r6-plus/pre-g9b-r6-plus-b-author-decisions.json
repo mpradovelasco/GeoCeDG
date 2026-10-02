@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-B",
+  "recordKind": "AUTHOR_DECISIONS",
+  "record": "docs/validation/pre_g9b_r6_plus_b_author_decisions_record.md",
+  "authorDecisionDate": "2026-10-02",
+  "decidedOnBase": {
+    "name": "P_R6PLUS_A1",
+    "commit": "d32ad608ba8821bc18c9d4dc783c1b700a165ff2",
+    "tree": "9b123be7ed8c7176b5a7e19f74be5946f0164c8b"
+  },
+  "selfApproved": false,
+  "implementationAuthorized": false,
+  "passClaimed": false,
+  "productPhaseEffect": "NONE",
+  "authorizedByThisInstruction": ["documentary preparation of the canonical B prompt", "record of the B author decisions", "strictly documentary status and decomposition updates"],
+  "decisions": [
+    {"id": "AQ-X1", "subphases": ["B"], "decision": "primary strategy is an offscreen export viewport whose geometry and coordinates represent the ExportArea at output resolution: exact rectangle, zero outside padding, complete content even partly or wholly outside the visible viewport, appropriate recomputation and rendering of points, functions, axes, grid, labels, legacy loci and LocusV2 for the export viewport, SVG based on the export area; no silent substitution by distributed per-drawable modifications; if the viewport is not viable without a material widening of the shared renderer or of the verification class, B stops and requests escalation"},
+    {"id": "AQ-X2", "subphases": ["B"], "decision": "precedence explicitly activated producer > Export_1/Export_2 > visible viewport; upstream selectionRectangle is never ExportArea authority and never silently displaces Export_1/Export_2; ExportArea is SESSION: not serialized, not part of undo, reset on New/Open, after which Export_1/Export_2 act again automatically when both valid points exist; producers implemented in B: EXPORT_POINTS and MANUAL; ISO_A_SELECTION and ISO_A_BORDER in E3"},
+    {"id": "AQ-X3", "subphases": ["B"], "decision": "surface: Graphics View as Picture (PNG, PDF, SVG, EMF/EMF+), DXF, PSTricks, PGF/TikZ, Asymptote, Print Preview; not exposed: STL, Collada, HTML Collada, Dynamic Worksheet / worksheet upload, Animated GIF; Ctrl+Shift+U -> GeoCeDG Picture surface; Ctrl+Shift+C -> the same Picture surface / graphics-clipboard service, no second direct route with its own authority; Ctrl+Shift+W consumed, no Worksheet; Ctrl+Shift+M consumed, no HTML5 export; Ctrl+Shift+D -> GeoCeDG DXF only, upstream double effect removed; Ctrl+Shift+B kept (Base64 document copy, not a graphics export); the v1 fallback also filters STL, Collada, HTML Collada and Worksheet; a fallback mode reopening an expressly excluded surface is not accepted"},
+    {"id": "AQ-X4", "subphases": ["B"], "decision": "Print Preview stays and obeys ExportArea; the graphics clipboard stays as a consumer of the same Picture/export service and ExportArea, not a second mechanism; Animated GIF is out of this generation"},
+    {"id": "AQ-X5", "subphases": ["B"], "decision": "--export stays supported and uses the same export service and ExportArea; --exportAnimation is rejected explicitly while Animated GIF stays out; no command-line route with a different area authority"},
+    {"id": "AQ-X6", "subphases": ["B"], "decision": "GGBScript ExportImage and the relevant graphics APIs obey the same ExportArea authority; ExportImage becomes a GeoCeDG-modified command and enters the GGBScript compatibility matrix and its tests"},
+    {"id": "AQ-X7", "subphases": ["E3"], "decision": "ISO_A_SELECTION and ISO_A_BORDER are not implemented in B; they are delivered in E3 after the D1 unit contract"}
+  ],
+  "inheritedObservations": [
+    {"id": "OBS-R6PLUS-A1-EXPORT-PREVIEW-HIDDEN-LAYERS", "requirement": "preview effective visibility == final export effective visibility; the A-1 case where the Graphics View as Picture preview shows a hidden layer and the final PNG does not is corrected in B"},
+    {"id": "OBS-A1-BACKGROUND-IMAGE-LAYER", "requirement": "re-characterized by B with respect to preview and export; B does not silently change the general layer semantics of the normal view; if widening is required, document and defer or request an author decision"}
+  ],
+  "scopeBoundaryBC": {
+    "B": "may expose PSTricks, PGF/TikZ, Asymptote and DXF in the File/Export surface without anticipating C; documents the temporary inconsistency between Picture and those exporters",
+    "C": ["final integration of the LaTeX exporters with ExportArea", "DXF hidden-layer policy and clipping by ExportArea", "semantic export of LocusV2/SplineV2 to PSTricks, PGF/TikZ and Asymptote", "unit and engineering-scale contract depending on D1"]
+  },
+  "requiredCoverage": ["exact dimensions without the current +2", "area inside the viewport", "area larger than the viewport", "area completely disjoint from the viewport", "PNG", "PDF", "SVG", "EMF/EMF+", "no integer truncation of the PDF frame where it affects exactness", "points", "lines/segments/rays/vectors", "conics", "polygons", "functions", "axes", "grid", "labels/text", "legacy Locus", "LocusV2 rendered at export resolution", "hidden layers", "preview = final", "selectionRectangle ignored as authority", "Export_1/Export_2 fallback", "MANUAL producer lifecycle", "ExportArea display overlay absent from export", "shortcuts", "Print Preview", "clipboard", "CLI", "ExportImage", "relevant APIs", "v1 fallback", "absence of serialization", "legacy document compatibility"],
+  "overlay": "transient presentation; not geometry; not a construction object",
+  "verificationClassProposal": {
+    "verificationClass": "INTEGRATED_PHASE",
+    "plannedAcceptance": ["PHASE -Phase PRE-G9B-R6-plus-B", "INTEGRATION"],
+    "sameCommitAndTree": true,
+    "final": "not run unless a prior stop or escalation requires it",
+    "reclassifyIf": ["any serialization of ExportArea", "any unplanned global widening of the renderer"],
+    "frozenAtSubphaseAuthorization": true
+  },
+  "logRootRule": {
+    "PHASE": "fresh root outside the repository allowed",
+    "STATIC": "fresh root outside the repository allowed",
+    "INTEGRATION": "artifacts/agent/<fresh> inside the repository",
+    "FINAL": "artifacts/agent/<fresh> inside the repository",
+    "consoleLogs": "outside artifacts/"
+  },
+  "canonicalPrompt": ".github/prompts/tasks/pre-g9b-r6-plus-b-export-surface-and-export-area.prompt.md",
+  "promptState": "PREPARED — NOT AUTHORIZED",
+  "stillOpen": ["DQ-B1 to DQ-B9 of the canonical B prompt (default contracts fixed by the prompt, not author decisions)", "AQ-L7 (3) before A-2", "DXF hidden-layer policy in C", "every other open decision of the P0 candidate report section 15"],
+  "operationalOrder": ["A-1", "B", "D0", "D1", "A-2", "C", "E1", "E2", "E3", "F1", "F2", "G"],
+  "authorizationState": {
+    "PRE-G9B-R6-plus-P0": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-A-1": "PASS — AUTHOR APPROVED — PUBLISHED (AUTHOR_SMOKE = PASS)",
+    "PRE-G9B-R6-plus-B": "PREPARED — NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-D0": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-D1": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-A-2": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-C": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-E1": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-E2": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-E3": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-F1": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-F2": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-G": "NOT AUTHORIZED",
+    "PRE-G9B-R7": "DESIGNED — NOT AUTHORIZED; BLOCKED UNTIL PRE-G9B-R6-plus IS PASS — AUTHOR APPROVED",
+    "G9B": "NOT AUTHORIZED"
+  }
+}

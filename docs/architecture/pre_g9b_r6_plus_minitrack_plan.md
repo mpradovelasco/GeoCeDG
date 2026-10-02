@@ -12,6 +12,7 @@
 - Evidence record: [planning candidate report](../validation/pre_g9b_r6_plus_planning_candidate_report.md) and its machine-readable mirror `geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-planning.json`
 - First executable task: [`PRE-G9B-R6-plus-P0`](../../.github/prompts/tasks/pre-g9b-r6-plus-p0-integrated-characterization-and-design.prompt.md), `PASS — AUTHOR APPROVED` (2026-10-02) on `T_R6PLUS_P0` `6b7fd5de343b6556b384e71a9345907e7944d1e5` ([closeout record](../validation/pre_g9b_r6_plus_p0_closeout_record.md)); its design candidates stay candidates and its open author decisions stay open
 - Author decisions for `A` (2026-10-02): [A author-decision record](../validation/pre_g9b_r6_plus_a_author_decisions_record.md). `A` is split into `A-1` (`INTEGRATED_PHASE`) and `A-2` (`GLOBAL_IMPACT`); the next subphase is `A-1`, whose [canonical prompt](../../.github/prompts/tasks/pre-g9b-r6-plus-a1-layer-workspace-session.prompt.md) is prepared on `562e2bb1e77b249b9c97c2e6e06e8b123d6de900`, tree `9f578093f2f3cba481f5630fe827fd3ef08cff61` and is `NOT AUTHORIZED`; the preparation package `T_R6PLUS_A1_PROMPT` `3c5aba19b2efd4b65d6f7b7deba6d3b19611630b` is `PASS — AUTHOR APPROVED` (2026-10-02, [closeout record](../validation/pre_g9b_r6_plus_a1_prompt_closeout_record.md)); implementation was authorized on 2026-10-02 on `069c7a03da92f2c30f015815a0aa278e7356b356` and `A-1` is `PASS — AUTHOR APPROVED` (2026-10-02, author smoke PASS, `T_R6PLUS_A1` `2a71133ad622e18e9963b04a466a92665a784722`; [closeout record](../validation/pre_g9b_r6_plus_a1_closeout_record.md)); the next operational subphase is `B`, `NOT AUTHORIZED`
+- Author decisions for `B` (2026-10-02): [B author-decision record](../validation/pre_g9b_r6_plus_b_author_decisions_record.md) (`AQ-X1` to `AQ-X7`). The [canonical `B` prompt](../../.github/prompts/tasks/pre-g9b-r6-plus-b-export-surface-and-export-area.prompt.md) is prepared on `d32ad608ba8821bc18c9d4dc783c1b700a165ff2`, tree `9b123be7ed8c7176b5a7e19f74be5946f0164c8b`: `PREPARED — NOT AUTHORIZED`, proposed class `INTEGRATED_PHASE`; implementation stays not authorized
 - Self approval: **false**
 
 This note records the mini-track the author defined on 2026-10-01 as the final
@@ -207,7 +208,7 @@ boundary changed.
 | `P0` | integrated characterization and normative design candidates | documentation | `DOCUMENTATION_STATUS_ONLY` | `PASS — AUTHOR APPROVED` |
 | `A-1` | layer workspace with session-only layer state: working layer, Move-group mode, status bar, numeric Algebra View order, effective hiding in the normal views; no domain widening, no new serialization, no exporter change | application session, view, Desktop | `INTEGRATED_PHASE` (author-accepted) | `PASS — AUTHOR APPROVED` (2026-10-02; `T_R6PLUS_A1` `2a71133a`) |
 | `A-2` | layer-domain widening to `0..99` and hidden-layer persistence | shared kernel/document serialization, Desktop | `GLOBAL_IMPACT` (author-accepted) | `NOT AUTHORIZED` |
-| `B` | export surface and `ExportArea` authority | profile, Desktop, shared view export path | `INTEGRATED_PHASE` | `NOT AUTHORIZED` |
+| `B` | export surface and `ExportArea` authority | profile, Desktop, shared view export path | `INTEGRATED_PHASE` (author-proposed; frozen at authorization) | `PREPARED — NOT AUTHORIZED` (canonical prompt prepared on `d32ad608`; author decisions `AQ-X1`–`AQ-X7` recorded 2026-10-02) |
 | `D0` | unit-system normative design | documentation (ADR + specification) | `DOCUMENTATION_STATUS_ONLY` | `NOT AUTHORIZED` |
 | `D1` | unit-system implementation and status integration | shared kernel/document serialization, Desktop | `GLOBAL_IMPACT` | `NOT AUTHORIZED` |
 | `C` | 2D export completion and semantic curve exporters | export adapters, shared export package | `INTEGRATED_PHASE` | `NOT AUTHORIZED` |
@@ -325,6 +326,11 @@ each into an exact design candidate.
   where it lies outside the viewport (§2), in every picture format including
   SVG, without losing points, graphs, axes, grid or labels. Update the
   profile's `document.sheet-export` deferral.
+  Fixed by the author on 2026-10-02 ([B author-decision record](../validation/pre_g9b_r6_plus_b_author_decisions_record.md)):
+  an offscreen export viewport; `SESSION` `ExportArea` with the producers
+  `EXPORT_POINTS` and `MANUAL` (`ISO_A_*` in `E3`); the selection rectangle is
+  never an authority; Animated GIF out of this generation; the LaTeX and DXF
+  integration with `ExportArea` stays in `C`.
 - **`D0` — unit-system design.** The unit ADR and normative specification
   carrying §4, its consequences (§4.5), the serialization and forward-
   compatibility rule, and the amendment of the accepted export foundation's
@@ -1042,7 +1048,7 @@ from the importance of the track.
 | `A-1` | `INTEGRATED_PHASE` (author-accepted 2026-10-02) | registered `PHASE` + `INTEGRATION` | working layer on every interactive creation route, shared view painting and hit testing in Graphics 1 and 2, Algebra View, profile catalog and application layout | domain widening, any serialization, or an exporter change → stop; that scope is `A-2`, `B` or `C` |
 | `A-2` | `GLOBAL_IMPACT` (author-accepted 2026-10-02) | `FINAL` | widens the shared `<layer>` domain read on every load and adds hidden-layer persistence to document serialization | — |
 | `A` — **superseded by `A-1`/`A-2`**; historical record only, not an executable phase | `INTEGRATED_PHASE`, **provisional** | registered `PHASE` + `INTEGRATION` | the working layer applies to **every** creation route (tools, Algebra input, scripts, macros, paste, load and undo rebuild), which is concrete integration coverage; view predicate; profile catalog | `P0` re-classifies `A` from its layer-extension design: widening shared layer or serialization assumptions for the author's arbitrary-layer target, moving the predicate into `GeoElement`, or persisting hidden layers through the shared XML handler (unless `AQ-L3` chooses `SESSION`) → `GLOBAL_IMPACT` |
-| `B` | `INTEGRATED_PHASE` | registered `PHASE` + `INTEGRATION` | profile surface; shared export paint path consumed by picture, clipboard, GIF and print; shortcut routes | export area becomes document-serialized |
+| `B` | `INTEGRATED_PHASE` (author-proposed 2026-10-02; frozen at authorization) | registered `PHASE` + `INTEGRATION` on the same commit and tree | profile surface; shared export-area seam and export paint path consumed by picture, preview, clipboard, print, command line, `ExportImage` and API; export viewport; shortcut routes; v1 fallback; GGBScript matrix rows | export area becomes serialized, or an unplanned global widening of the renderer → stop and reclassify |
 | `D0` | `DOCUMENTATION_STATUS_ONLY` | `STATIC` | ADR and specification candidates | — |
 | `D1` | `GLOBAL_IMPACT` | `FINAL` | new document-semantic serialization in shared `<construction>` XML, read on every load, written on every save and undo; legacy byte-identity must be proven across all documents | — |
 | `C` | `INTEGRATED_PHASE` | registered `PHASE` + `INTEGRATION` | shared LaTeX export package; DXF header under an amended accepted spec; no document serialization. Concrete integration coverage: three LaTeX exporters, the picture exporters and DXF must agree on one export area, one unit contract and one effective-visibility rule | the export area or scale becomes document-serialized |
@@ -1071,6 +1077,11 @@ On 2026-10-02 the author decided `AQ-L1a`, `AQ-L1b`, `AQ-L1c`, `AQ-L2`,
 `AQ-L3`, `AQ-L4`, `AQ-L5`, `AQ-L7` and `AQ-L8`. The
 [A author-decision record](../validation/pre_g9b_r6_plus_a_author_decisions_record.md) is their authority
 and supersedes the planning recommendations in the corresponding rows below.
+
+On 2026-10-02 the author also decided `AQ-X1` to `AQ-X7`. The
+[B author-decision record](../validation/pre_g9b_r6_plus_b_author_decisions_record.md)
+is their authority and supersedes the planning recommendations in the `AQ-X`
+rows below.
 
 | ID | Question | Blocks | Planning recommendation |
 |---|---|---|---|
@@ -1107,7 +1118,9 @@ PRE-G9B-R6-plus-P0         = PASS — AUTHOR APPROVED (2026-10-02; T_R6PLUS_P0 6
 PRE-G9B-R6-plus-A-1        = PASS — AUTHOR APPROVED (2026-10-02; T_R6PLUS_A1 2a71133a;
                              AUTHOR_SMOKE = PASS)
 PRE-G9B-R6-plus-A-2        = NOT AUTHORIZED
-PRE-G9B-R6-plus-B … G      = NOT AUTHORIZED (B is the next operational subphase)
+PRE-G9B-R6-plus-B          = PREPARED — NOT AUTHORIZED (next operational subphase;
+                             canonical prompt prepared on d32ad608)
+PRE-G9B-R6-plus-D0 … G     = NOT AUTHORIZED
 PRE-G9B-R7                 = DESIGNED — NOT AUTHORIZED
                              BLOCKED UNTIL PRE-G9B-R6-plus IS PASS — AUTHOR APPROVED
 G9B                        = NOT AUTHORIZED
